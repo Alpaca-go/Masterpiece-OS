@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { runPipeline } from '../src/pipeline.js';
 
-const projects = ['九州美学', '帅府', '小熊工坊'];
+const projects = ['匿名文旅Demo', '匿名食品Demo', '匿名文创Demo'];
 
 for (const project of projects) {
   test(`长期回归：${project}`, async () => {
@@ -33,7 +33,7 @@ for (const project of projects) {
 
 test('重复运行不会把自定义输出当作素材', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'design-factory-idempotent-'));
-  await fs.cp(path.resolve('examples', '九州美学'), root, { recursive: true });
+  await fs.cp(path.resolve('examples', '匿名文旅Demo'), root, { recursive: true });
   const output = path.join(root, 'reports', 'latest');
   const first = await runPipeline(root, { output });
   const second = await runPipeline(root, { output });

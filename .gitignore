@@ -3,3 +3,16 @@ design-factory-output/
 coverage/
 .DS_Store
 *.log
+
+# 项目数据永远保留在本地
+Design-Factory-Projects/
+
+# 客户源文件与交付物
+*.psd
+*.ai
+*.cdr
+*.pdf
+*.zip
+outputs/
+Review.md
+Chat生图任务包.md

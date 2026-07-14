@@ -36,11 +36,11 @@ node bin/design-factory.js inventory ./my-brand --json
 
 ```json
 {
-  "projectName": "九州美学",
+  "projectName": "匿名文旅 Demo",
   "projectType": "品牌视觉升级",
   "industry": "文化旅游",
   "brand": {
-    "name": "九州美学",
+    "name": "匿名文旅 Demo",
     "primaryColor": "#8B1E2D",
     "secondaryColors": ["#D8B36A", "#F3EBDD"],
     "fonts": ["思源宋体"],
@@ -64,6 +64,8 @@ node bin/design-factory.js inventory ./my-brand --json
 npm test
 ```
 
-回归测试覆盖“九州美学”“帅府”“小熊工坊”三个长期项目，检查 Brand Lock、缺图分析、13 张任务规划和任务包结构的一致性。
+回归测试覆盖三个完全自制的匿名 Demo，检查 Brand Lock、缺图分析、13 张任务规划和任务包结构的一致性。真实项目必须存放在仓库外的 `Design-Factory-Projects/`，不得提交到 GitHub。
+
+文件边界与提交规则见 [docs/GitHub文件管理规范.md](docs/GitHub文件管理规范.md)。
 
 更多说明见 [docs/使用手册.md](docs/使用手册.md) 与 [docs/架构说明.md](docs/架构说明.md)。
