@@ -22,13 +22,22 @@
 - [x] 素材安全移动、冲突预检、路径越界保护和幂等运行
 - [x] 旧版 `inputs/` 到标准 `input/` 的兼容迁移
 
-## v2.0（当前）
+## v2.0
 
 - [x] Design Review 五类专业评审与 P0/P1/P2
 - [x] 至少 3 条 Strengths 与 5 条可执行 Improvement
 - [x] 八维能力雷达、七项历史趋势和 Top 3 训练路线
 - [x] 本地 review.json / review.md 历史记录
 - [x] 四份正式输出与可选调试 JSON
+
+## v3.0（当前）
+
+- [x] 新增 Creative Reasoning，建立品牌定位、关键词、气质与视觉 DNA
+- [x] 新增摄影语言、创意方向和 Design Risks
+- [x] Chat 生图任务包重构为“品牌设计意图 + 图片任务”两层结构
+- [x] Fast Mode 成为默认，仅生成两份核心报告
+- [x] Review/Research Mode 保留四份编号报告和 Knowledge 只读边界
+- [x] 增加逐张视觉核验状态，阻止把文件名、OCR、尺寸或元数据当作画面事实
 
 ## 后续版本
 

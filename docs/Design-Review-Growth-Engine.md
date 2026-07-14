@@ -1,4 +1,6 @@
-# Design Review & Growth Engine
+# Design Review & Growth Engine（v3.0 Review Mode）
+
+> v3.0 默认 Fast Mode 不运行本引擎。只有显式使用 `--mode review` 或 `--mode research` 时才执行以下评审与成长记录。
 
 ## 定位
 

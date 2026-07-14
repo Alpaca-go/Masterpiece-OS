@@ -10,5 +10,37 @@
     "fontTemperament": "东方、人文、当代",
     "packaging": ["天地盖礼盒"],
     "coreVisualAssets": ["山水留白", "抽象云纹"]
+  },
+  "visualInspection": {
+    "verified": true,
+    "inspectedImageCount": 2,
+    "inspectedImages": ["assets/demo-logo.svg", "assets/demo-pattern.svg"],
+    "findings": ["Logo 以酒红圆形、金色山形曲线和米白背景构成东方印章感", "辅助图形使用单线连续波峰，节奏舒缓且留白充足"]
+  },
+  "creativeReasoning": {
+    "positioning": { "summary": "当代东方文化旅行品牌", "evidence": ["山形曲线和圆形印章建立文化地景联想", "简化线条和留白避免复古仿古感"] },
+    "keywords": [
+      { "keyword": "东方", "reason": "山形、圆印和酒红金色来自东方视觉语汇" },
+      { "keyword": "人文", "reason": "米白纸感与舒缓曲线强调文化体验而非景点促销" },
+      { "keyword": "当代", "reason": "传统意象被压缩为简洁几何和连续线条" }
+    ],
+    "temperament": { "summary": "克制、人文、开放", "evidence": ["大面积留白、低元素密度和缓慢曲线节奏"] },
+    "visualDNA": {
+      "color": "酒红 #8B1E2D 为识别色，金色 #D8B36A 点题，米白 #F3EBDD 为主要背景",
+      "composition": "圆形主标与水平延展曲线形成一主一辅的稳定结构",
+      "whitespace": "保持大面积米白呼吸区，让山水意象以少胜多",
+      "photography": "后续摄影应让真实地景和人物行动承担内容，图形只作克制连接",
+      "packaging": "天地盖礼盒来自配置，结构尺寸和开合细节仍需实物确认",
+      "craft": "适合纸张本色、压凹和局部哑金；具体工艺待打样验证",
+      "mustKeep": ["酒红、金、米白关系", "圆形山形主标", "连续云山曲线", "大面积留白"],
+      "mustAvoid": ["堆叠传统纹样", "高饱和旅游宣传照", "把东方感做成仿古装饰"]
+    },
+    "photographyLanguage": { "lighting": "自然散射光或清晨侧光", "lens": "35–50mm 环境叙事镜头", "materials": "自然地景、纸张、木石等真实材料", "atmosphere": "安静、有人文温度、可停留" },
+    "creativeDirection": "用当代几何重述东方山水，以真实地景、克制留白和人文温度贯穿所有触点。",
+    "designRisks": [
+      { "problem": "东方元素容易装饰化", "reason": "酒红、金色和云纹都具有强传统联想", "prevention": "每张画面只保留一个东方母题，并用现代网格控制" },
+      { "problem": "摄影容易变成通用旅游大片", "reason": "如果只追求风光冲击会脱离人文定位", "prevention": "加入真实人物行动和在地细节，避免过度 HDR" },
+      { "problem": "辅助曲线容易抢占主标", "reason": "连续纹样扩展后可能形成视觉噪声", "prevention": "限制线条密度和使用面积，始终让圆形主标承担第一识别" }
+    ]
   }
 }

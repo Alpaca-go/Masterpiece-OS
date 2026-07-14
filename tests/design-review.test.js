@@ -8,7 +8,7 @@ import { runPipeline } from '../src/pipeline.js';
 test('首次评审包含完整依据、建议、能力雷达和历史记录', async () => {
   const output = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-first-output-'));
   const historyDir = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-first-history-'));
-  const { result } = await runPipeline(path.resolve('examples', '匿名文旅Demo'), { output, historyDir });
+  const { result } = await runPipeline(path.resolve('examples', '匿名文旅Demo'), { output, historyDir, mode: 'review' });
 
   assert.equal(result.growth.status, '首次项目，暂无历史数据。');
   assert.equal(result.growth.historyCount, 0);
@@ -38,8 +38,8 @@ test('第二个项目读取历史并输出七项成长趋势', async () => {
   const historyDir = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-trend-history-'));
   const firstOutput = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-trend-first-'));
   const secondOutput = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-trend-second-'));
-  await runPipeline(path.resolve('examples', '匿名文旅Demo'), { output: firstOutput, historyDir });
-  const { result } = await runPipeline(path.resolve('examples', '匿名食品Demo'), { output: secondOutput, historyDir });
+  await runPipeline(path.resolve('examples', '匿名文旅Demo'), { output: firstOutput, historyDir, mode: 'review' });
+  const { result } = await runPipeline(path.resolve('examples', '匿名食品Demo'), { output: secondOutput, historyDir, mode: 'review' });
 
   assert.equal(result.growth.historyCount, 1);
   assert.match(result.growth.status, /已读取 1 个历史项目记录/);
@@ -64,7 +64,7 @@ test('人工 reviewScores 可覆盖评分但仍保留评分依据', async () => 
   await fs.writeFile(configFile, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
   const output = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-override-output-'));
   const historyDir = await fs.mkdtemp(path.join(os.tmpdir(), 'design-review-override-history-'));
-  const { result } = await runPipeline(root, { output, historyDir });
+  const { result } = await runPipeline(root, { output, historyDir, mode: 'review' });
   const byName = Object.fromEntries(result.designReview.radar.map((item) => [item.dimension, item]));
   assert.equal(byName.摄影.score, 91);
   assert.equal(byName.版式.score, 77);

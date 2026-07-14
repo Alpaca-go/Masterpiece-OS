@@ -1,7 +1,7 @@
 {
   "name": "design-factory-pack",
-  "version": "2.0.0",
-  "description": "Design Factory OS：品牌视觉分析、设计评审与成长引擎",
+  "version": "3.0.0",
+  "description": "Design Factory OS：以 Creative Reasoning 为核心的品牌视觉分析与图片规划",
   "type": "module",
   "bin": { "design-factory": "./bin/design-factory.js" },
   "scripts": {

@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.0.0 — 2026-07-14
+
+- 新增 Creative Reasoning，在图片规划前输出品牌定位、关键词、气质、视觉 DNA、摄影语言与创意方向。
+- 新增 Design Risks，以问题、原因、避免方式替代默认完整 Design Critic 链路。
+- Chat 生图任务包重构为“品牌设计意图 + 图片任务”，任务卡默认继承上层约束。
+- 新增 `visualInspection` 契约；未完成逐张视觉核验时明确标记待确认，不以文件名、OCR、尺寸或元数据伪造画面事实。
+- 默认启用 Fast Mode，只生成项目分析报告和 Chat 生图任务包。
+- 新增 `--mode review`、`--mode research`、`--review` 与 `--research`；完整评审仍保持四份既有文件名。
+- Fast Mode 跳过 Knowledge、Design Review 与历史写入；所有模式均禁止自动修改正式 Knowledge 或执行 Git 操作。
+
 ## 2.0.0 — 2026-07-14
 
 - 新增 Design Review & Growth Engine，以带依据的成长评审替代无依据的主观打分。

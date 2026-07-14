@@ -1,16 +1,36 @@
 ---
 name: design-factory-pack
-description: 盘点品牌项目素材，生成四份正式报告，并运行 Design Review & Growth Engine。
+description: 逐张核验品牌视觉素材，以 Creative Reasoning 建立品牌视觉 DNA，并生成分层 Chat 生图任务包。
 ---
 
-# Design Factory Pack
+# Design Factory Pack v3.0
 
-在仓库根目录运行：
+## 必须先做
+
+1. 实际查看项目中的每张视觉图片。
+2. 不得仅依据文件名、OCR、尺寸或元数据判断画面内容。
+3. 把核验数量、画面发现和不能确认的信息写入 `design-factory.json`。
+4. `visualInspection.verified` 只能在全部图片完成核验后设为 `true`。
+
+## 默认执行
 
 ```bash
 npm run analyze -- --project "项目名称"
 ```
 
-项目应位于 `projects/<项目名称>/`。命令会先安全创建 `input/` 与 `outputs/`，把项目根目录中的素材整理进 `input/`；存在同名冲突时必须停止，禁止覆盖。只有一个项目时可以省略 `--project`。如用户明确要求实时对标案例，添加 `--online`；只有调试时添加 `--debug`。
+Fast Mode 只检查：
 
-必须检查四份正式输出：`01-项目分析报告.md`、`02-Chat生图任务包.md`、`03-Knowledge-Review.md`、`04-Design-Review.md`。Design Review 的评分必须有依据，问题必须有影响与建议，Strengths 至少 3 条，Improvement 至少 5 条。首次项目应明确暂无历史，后续项目应读取 `history/reviews/` 输出趋势。不得把启发式识别结果描述为最终品牌规范，也不得自动修改 Knowledge、Rule、Prompt、Template 或执行 Git Commit/Push。
+- `01-项目分析报告.md`
+- `02-Chat生图任务包.md`
+
+项目分析必须包含品牌定位、关键词、气质、视觉 DNA、摄影语言、创意方向和 Design Risks。Chat 任务包必须先给出品牌设计意图，再给出默认继承该意图的图片任务。
+
+## 可选评审
+
+用户明确需要 Knowledge Review、Design Review 或成长分析时执行：
+
+```bash
+npm run analyze -- --project "项目名称" --mode review
+```
+
+此时检查全部四份编号报告。Knowledge、Rule、Prompt、Template 始终由人工审核，禁止自动修改；禁止自动执行 Git Commit/Push。

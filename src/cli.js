@@ -6,7 +6,7 @@ import { initializeProject, formatInitializationSummary } from './project-initia
 import { selectProject } from './project-selector.js';
 import { ensureDir, writeText } from './utils.js';
 
-const HELP = `Design Factory OS v2.0\n\n用法：\n  design-factory analyze --project <项目名称> [--config <文件>] [--knowledge-dir <目录>] [--history-dir <目录>] [--online] [--debug]\n  design-factory analyze <素材目录> [--output <目录>] [--config <文件>] [--online] [--debug]\n  design-factory inventory <素材目录> [--json]\n  design-factory init <项目目录> [--name <品牌名>]\n  design-factory help\n\n命令：\n  analyze    自动初始化项目，执行分析、Knowledge Review、Design Review 与成长分析\n  inventory  仅盘点 ZIP、PDF、PPT/PPTX、图片及常用文本素材\n  init       创建独立项目配置模板和 assets 目录\n\n选项：\n  --project          projects/ 下的一级项目名称；仅有一个项目时可省略\n  -o, --output       直接素材目录模式的输出目录；项目模式固定写入项目 outputs/\n  -c, --config       JSON 配置文件；项目模式默认读取项目根目录 design-factory.json\n  --knowledge-dir    Approved Rule 只读目录，默认系统 knowledge/approved\n  --history-dir      Review 历史目录，默认系统 history/reviews\n  --online           联网检索对标候选；失败时自动使用内置案例库\n  --debug            额外输出 design-factory-result.json\n  --json             inventory 命令输出 JSON\n`;
+const HELP = `Design Factory OS v3.0\n\n用法：\n  design-factory analyze --project <项目名称> [--mode fast|review|research] [--online] [--debug]\n  design-factory analyze <素材目录> [--output <目录>] [--config <文件>] [--mode fast|review|research]\n  design-factory inventory <素材目录> [--json]\n  design-factory init <项目目录> [--name <品牌名>]\n  design-factory help\n\n命令：\n  analyze    执行 Brand Lock、Benchmark、Creative Reasoning 与图片规划\n  inventory  仅盘点 ZIP、PDF、PPT/PPTX、图片及常用文本素材\n  init       创建独立项目配置模板和 assets 目录\n\n模式：\n  fast       默认；只生成项目分析报告与 Chat 生图任务包\n  review     增加 Knowledge Review、Design Review 与成长记录\n  research   开发/知识研究模式；保持 Knowledge 只读并生成四份审核文件\n\n选项：\n  --project          projects/ 下的一级项目名称；仅有一个项目时可省略\n  -o, --output       直接素材目录模式的输出目录；项目模式固定写入项目 outputs/\n  -c, --config       JSON 配置文件；项目模式默认读取项目根目录 design-factory.json\n  --mode             fast、review 或 research；默认 fast\n  --review           --mode review 的快捷方式\n  --research         --mode research 的快捷方式\n  --knowledge-dir    Approved Rule 只读目录，仅 review/research 使用\n  --history-dir      Review 历史目录，仅 review/research 使用\n  --online           联网检索对标候选；失败时自动使用内置案例库\n  --debug            额外输出 design-factory-result.json\n  --json             inventory 命令输出 JSON\n`;
 
 function parseArgs(args) {
   const positional = [];
@@ -14,10 +14,11 @@ function parseArgs(args) {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
     if (arg === '--online' || arg === '--json' || arg === '--debug') options[arg.slice(2)] = true;
-    else if (['--output', '-o', '--config', '-c', '--name', '--knowledge-dir', '--history-dir', '--project'].includes(arg)) {
+    else if (arg === '--review' || arg === '--research') options.mode = arg.slice(2);
+    else if (['--output', '-o', '--config', '-c', '--name', '--knowledge-dir', '--history-dir', '--project', '--mode'].includes(arg)) {
       const value = args[++i];
       if (!value || value.startsWith('-')) throw new Error(`${arg} 缺少参数值`);
-      const key = ({ '--output': 'output', '-o': 'output', '--config': 'config', '-c': 'config', '--name': 'name', '--knowledge-dir': 'knowledgeDir', '--history-dir': 'historyDir', '--project': 'project' })[arg];
+      const key = ({ '--output': 'output', '-o': 'output', '--config': 'config', '-c': 'config', '--name': 'name', '--knowledge-dir': 'knowledgeDir', '--history-dir': 'historyDir', '--project': 'project', '--mode': 'mode' })[arg];
       options[key] = value;
     } else if (arg.startsWith('-')) throw new Error(`未知选项：${arg}`);
     else positional.push(arg);
@@ -34,7 +35,16 @@ async function createStandaloneProject(dir, name) {
   const config = {
     projectName: name || path.basename(root), projectType: '品牌视觉优化', industry: '综合/待确认',
     brand: { name: name || path.basename(root), primaryColor: null, secondaryColors: [], fonts: [], fontTemperament: '', packaging: [], coreVisualAssets: [] },
-    benchmarks: [], commonTraits: [], knowledgeCandidates: []
+    benchmarks: [], commonTraits: [],
+    visualInspection: { verified: false, inspectedImageCount: 0, inspectedImages: [], findings: [] },
+    creativeReasoning: {
+      positioning: { summary: '', evidence: [] }, keywords: [],
+      temperament: { summary: '', evidence: [] },
+      visualDNA: { color: '', composition: '', whitespace: '', photography: '', packaging: '', craft: '', mustKeep: [], mustAvoid: [] },
+      photographyLanguage: { lighting: '', lens: '', materials: '', atmosphere: '' },
+      creativeDirection: '', designRisks: []
+    },
+    knowledgeCandidates: []
   };
   await writeText(configFile, `${JSON.stringify(config, null, 2)}\n`);
   return configFile;
@@ -78,8 +88,11 @@ export async function main(args) {
     }
     const { result, output } = await runPipeline(input, pipelineOptions);
     console.log(`分析完成：${result.brandLock.brandName}`);
+    console.log(`运行模式：${result.mode}`);
     console.log(`素材 ${result.inventory.totalFiles} 个，规划图片 ${result.imagePlan.count} 张`);
-    console.log(`知识建议：新增 ${result.knowledgeAnalysis.statistics.new}，更新 ${result.knowledgeAnalysis.statistics.update}，重复 ${result.knowledgeAnalysis.statistics.duplicate}，项目经验 ${result.knowledgeAnalysis.statistics.projectOnly}`);
+    if (result.knowledgeAnalysis) console.log(`知识建议：新增 ${result.knowledgeAnalysis.statistics.new}，更新 ${result.knowledgeAnalysis.statistics.update}，重复 ${result.knowledgeAnalysis.statistics.duplicate}，项目经验 ${result.knowledgeAnalysis.statistics.projectOnly}`);
+    console.log(`输出文件：${result.outputFiles.join('、')}`);
+    console.log(`耗时：${result.durationMs} ms`);
     console.log(`输出目录：${output}`);
     return;
   }

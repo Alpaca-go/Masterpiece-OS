@@ -12,6 +12,41 @@
     "coreVisualAssets": []
   },
   "benchmarks": [],
+  "visualInspection": {
+    "verified": false,
+    "inspectedImageCount": 0,
+    "inspectedImages": [],
+    "findings": []
+  },
+  "creativeReasoning": {
+    "positioning": {
+      "summary": "",
+      "evidence": []
+    },
+    "keywords": [],
+    "temperament": {
+      "summary": "",
+      "evidence": []
+    },
+    "visualDNA": {
+      "color": "",
+      "composition": "",
+      "whitespace": "",
+      "photography": "",
+      "packaging": "",
+      "craft": "",
+      "mustKeep": [],
+      "mustAvoid": []
+    },
+    "photographyLanguage": {
+      "lighting": "",
+      "lens": "",
+      "materials": "",
+      "atmosphere": ""
+    },
+    "creativeDirection": "",
+    "designRisks": []
+  },
   "reviewScores": {},
   "knowledgeCandidates": []
 }
