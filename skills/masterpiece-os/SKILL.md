@@ -1,36 +1,31 @@
 ---
 name: masterpiece-os
-description: 逐张核验品牌视觉素材，完成 Brand DNA Decision，并输出专业 Creative Brief。
+description: 逐张核验品牌视觉素材，通过 Brand DNA Decision 与信息压缩生成专业 Creative Brief。
 ---
 
-# Masterpiece-OS v3.2
+# Masterpiece-OS v3.3
 
 ## 必须先做
 
-1. 实际查看项目中的每张视觉图片。
-2. 不得仅依据文件名、OCR、尺寸或元数据判断画面内容。
-3. 识别品牌、行业、Logo、色彩、字体、版式、包装、核心资产、已有触点及当前优缺点。
-4. 联网核验至少三个真正同类型、同定位的公开案例。
-5. 把核验数量、画面事实和不能确认的信息写入 `masterpiece-os.json`。
-6. `visualInspection.verified` 只能在全部图片完成核验后设为 `true`。
-7. 按 Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA 完成决策；用户视觉方案不能直接成为 Brand DNA。
-8. 只有 Creative Director 显式批准后，Approved Brand DNA 才能进入 Brief。
+1. 实际查看全部视觉图片，不用文件名、OCR、尺寸或元数据替代画面判断。
+2. 联网核验至少三个真正同类型、同定位的案例。
+3. 完成 Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA。
+4. 用户现有视觉只能作为证据或候选，不能直接成为批准结论。
+5. 无法确定的内容保持待确认。
 
-## 执行
+## 运行
 
 ```bash
-npm run analyze -- --project "项目名称" --online
+npm run analyze -- --project "项目名称" --mode standard
 ```
 
-检查固定四份输出：
+- Quick：只生成 `02-Creative-Brief.md`。
+- Standard / Studio：生成 `01-Analysis.md`、`02-Creative-Brief.md`、`03-Design-Decisions.md`、`04-Design-Review.md`。
 
-- `01-项目分析报告.md`
-- `02-Creative-Brief.md`
-- `03-Knowledge-Review.md`
-- `04-Design-Review.md`
+## Brief 边界
 
-Creative Brief 必须完整覆盖十部分，面向专业品牌设计师或创意团队。它不是 Prompt，不得包含图片数量、画幅、任务卡、执行队列或对 AI 的操作命令。
+Brief 只有 Creative Vision、Brand Personality、Approved Brand DNA、Creative Principles、Must Keep、Can Explore、Photography Direction 与 Design Goal。不得混入对标、证据、Reasoning 或推导过程。
 
-交接给 GPT 时只提供已核验视觉方案与 `02-Creative-Brief.md`，由 GPT 自主完成图片规划和生成。
+Compiler 不进行新推理。完整风险进入 Analysis，Brief 只保留 Avoid Rules。GPT 专用压缩结果仅存在于运行时，不创建第五个正式文件。
 
-Knowledge 保存思考问题而不是项目答案。任何“待确认”内容都必须继续保持待确认，不得使用其他品牌或通用案例补写。本工作流不生成图片、不改正式系统知识，也不执行 Git Commit/Push。
+需要性能数据时使用 `--profile`；数据写入 `outputs/debug/performance.json`，不进入正式报告。

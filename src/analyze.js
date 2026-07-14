@@ -147,7 +147,7 @@ export async function analyzeBenchmarks(inventory, brandLock, config = {}, optio
     if (cases.length >= 3) break;
     if (!cases.some((x) => x.name === item.name)) cases.push(item);
   }
-  cases = cases.slice(0, Math.max(3, config.benchmarkLimit || 5));
+  cases = cases.slice(0, Math.max(3, config.benchmarkLimit || options.benchmarkLimit || 5));
   const commonTraits = config.commonTraits?.length ? config.commonTraits : [
     '核心品牌资产在包装、空间与数字触点中保持一致',
     '视觉表达由清晰的品牌概念驱动，而不是依赖孤立风格元素',

@@ -11,6 +11,12 @@
     "packaging": ["天地盖礼盒"],
     "coreVisualAssets": ["山水留白", "抽象云纹"]
   },
+  "benchmarks": [
+    { "name": "Visit Copenhagen", "url": "https://www.visitcopenhagen.com/", "reason": "以真实在地体验组织城市内容" },
+    { "name": "Japan National Tourism Organization", "url": "https://www.japan.travel/", "reason": "主题化目的地内容与清晰旅程入口" },
+    { "name": "The Met", "url": "https://www.metmuseum.org/", "reason": "文化资产的现代编辑与跨触点延展" }
+  ],
+  "benchmarkResearch": { "verified": true, "status": "匿名回归样例使用固定核验案例" },
   "visualInspection": {
     "verified": true,
     "inspectedImageCount": 2,

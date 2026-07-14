@@ -1,5 +1,15 @@
 # Changelog
 
+## 3.3.0 — 2026-07-14
+
+- 将 Analysis 与 Creative Brief 完全分离：研究、证据、推理和完整风险只进入 `01-Analysis.md`。
+- 新增纯信息组织层 Creative Brief Compiler，把批准信息压缩为八部分高密度 Brief，不重新推理或修改 Brand DNA。
+- 用 `03-Design-Decisions.md` 替代 Knowledge Review，集中保存关键决策、原因、取舍和批准状态。
+- Standard / Studio 固定生成四份正式输出；Quick 仅生成 `02-Creative-Brief.md`。
+- GPT 专用 Brief 只在内存生成，不创建第五个正式文件。
+- 新增七阶段 Performance Profiling；默认输出控制台，`--profile` 写入 `outputs/debug/performance.json`。
+- Design Review 改为检查八部分 Brief、信息压缩结果和 Analysis/Brief 分离状态。
+
 ## 3.2.0 — 2026-07-14
 
 - 新增独立 Brand DNA Decision 契约，强制执行 Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA。

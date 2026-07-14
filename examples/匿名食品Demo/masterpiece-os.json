@@ -11,6 +11,12 @@
     "packaging": ["书型礼盒"],
     "coreVisualAssets": ["抽象建筑剪影", "几何印章"]
   },
+  "benchmarks": [
+    { "name": "Oatly", "url": "https://www.oatly.com/", "reason": "包装、语气与产品证据协同" },
+    { "name": "Blue Bottle Coffee", "url": "https://bluebottlecoffee.com/", "reason": "稳定品牌资产与真实产品摄影" },
+    { "name": "Noma Projects", "url": "https://nomaprojects.com/", "reason": "编辑式食品表达与实验性包装" }
+  ],
+  "benchmarkResearch": { "verified": true, "status": "匿名回归样例使用固定核验案例" },
   "visualInspection": {
     "verified": true,
     "inspectedImageCount": 2,

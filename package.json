@@ -1,7 +1,7 @@
 {
   "name": "masterpiece-os",
-  "version": "3.2.0",
-  "description": "Masterpiece-OS：从品牌意图与视觉证据生成可追溯的专业 Creative Brief",
+  "version": "3.3.0",
+  "description": "Masterpiece-OS：将完整品牌分析压缩为面向设计团队与 GPT 的专业 Creative Brief",
   "type": "module",
   "bin": { "masterpiece-os": "./bin/masterpiece-os.js" },
   "scripts": {

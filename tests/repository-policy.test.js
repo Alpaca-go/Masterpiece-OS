@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 
 const forbiddenExtensions = new Set(['.psd', '.ai', '.cdr', '.pdf', '.zip', '.rar', '.7z']);
-const forbiddenNames = new Set(['review.md', 'chat生图任务包.md', 'knowledge-candidate.md', 'knowledge-analysis.md', '01-项目分析报告.md', '02-chat生图任务包.md', '02-creative-brief.md', '03-knowledge-review.md', '04-design-review.md']);
+const forbiddenNames = new Set(['review.md', 'chat生图任务包.md', 'knowledge-candidate.md', 'knowledge-analysis.md', '01-项目分析报告.md', '01-analysis.md', '02-chat生图任务包.md', '02-creative-brief.md', '03-knowledge-review.md', '03-design-decisions.md', '04-design-review.md']);
 const forbiddenRoots = ['Masterpiece-OS-Projects/'];
 const localProjectNames = ['九州美学', '帅府', '香辣虾', '小熊工坊'];
 const gitAvailable = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { encoding: 'utf8' }).status === 0;

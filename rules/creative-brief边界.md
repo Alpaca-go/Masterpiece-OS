@@ -1,12 +1,12 @@
-# Creative Brief 边界
+# Creative Brief 边界 v3.3
 
-1. 只把实际素材、人工核验记录和可追溯来源支持的内容写成项目事实。
-2. 对标案例用于解释行业语境和差异机会，不能替代本项目证据。
-3. Brand Identity 要说明品牌真正是什么，不只复述品类或产品。
-4. Design Language 要说明关系、原则与理由，不堆叠风格关键词。
-5. Photography Direction 描述长期摄影方向，不写单张创作指令。
-6. Must Keep 保护身份资产，Can Explore 为创意团队保留空间。
-7. 无法确认的信息标为“待确认”，不通过推断或创作补齐。
-8. Creative Brief 不包含图片数量、画幅比例、任务编号、执行队列或 Prompt。
-9. 用户视觉方案只能作为项目证据或 Brand DNA 候选，不得直接成为 Approved Brand DNA。
-10. Approved Brand DNA 必须经过 Original Intent、Industry Benchmark、Creative Decision 和显式批准。
+1. Analysis 保存证据、对标、推理、Creative Decision 与完整 Design Risks。
+2. Creative Brief 只保存最终设计方向，每句话必须帮助设计。
+3. Brief 固定为 Creative Vision、Brand Personality、Approved Brand DNA、Creative Principles、Must Keep、Can Explore、Photography Direction、Design Goal 八部分。
+4. Brief 禁止包含 Reasoning、Industry Benchmark、Competitor、Evidence、判断依据与推导过程。
+5. Design Risks 完整内容只进入 Analysis；Brief 仅保留简洁 Avoid Rules。
+6. Compiler 只压缩、选择和重组已批准信息，不重新推理或修改 Brand DNA。
+7. Quick 只输出 Brief；Standard / Studio 输出四份正式文件。
+8. GPT Brief 只在运行时生成，不保存为第五个正式输出。
+9. 无法确认的信息保持待确认，对标案例不能替代项目证据。
+10. 不生成图片数量、比例、任务编号、执行队列或 Prompt。

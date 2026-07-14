@@ -9,7 +9,7 @@ const brand = {
 };
 const benchmarks = { projectType: { value: '品牌视觉升级' }, industry: { value: '文化生活' } };
 
-test('v3.2 Creative Reasoning 只使用决策链批准后的十部分 Brief 事实', () => {
+test('v3.3 Analysis Reasoning 只使用决策链批准后的品牌事实', () => {
   const result = buildCreativeReasoning(inventory, brand, benchmarks, {
     visualInspection: { verified: true, inspectedImageCount: 2, findings: ['两张画面均采用大面积留白'] },
     brandDnaDecision: {

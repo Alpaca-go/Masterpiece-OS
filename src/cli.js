@@ -6,36 +6,40 @@ import { initializeProject, formatInitializationSummary } from './project-initia
 import { selectProject } from './project-selector.js';
 import { ensureDir, writeText } from './utils.js';
 
-const HELP = `Masterpiece-OS v3.2 — AI Creative Brief Generator
+const HELP = `Masterpiece-OS v3.3 — Creative Brief Operating System
 
 用法：
-  masterpiece-os analyze --project <项目名称> [--online] [--debug]
-  masterpiece-os analyze <素材目录> [--output <目录>] [--config <文件>] [--online]
+  masterpiece-os analyze --project <项目名称> [--mode quick|standard|studio] [--online] [--profile]
+  masterpiece-os analyze <素材目录> [--output <目录>] [--config <文件>] [--mode <模式>]
   masterpiece-os inventory <素材目录> [--json]
   masterpiece-os init <项目目录> [--name <品牌名>]
   masterpiece-os help
 
 命令：
-  analyze    从视觉素材生成项目分析、Creative Brief 与两份评审
+  analyze    运行可测量的品牌理解与 Creative Brief Pipeline
   inventory  盘点 ZIP、PDF、PPT/PPTX、图片及常用文本素材
   init       创建独立项目配置模板和 assets 目录
 
-Creative Brief 工作流：
-  Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA → Creative Brief
+Creative Pipeline：
+  Assets → Original Intent → Industry Benchmark → Creative Decision → Analysis → Brief Compiler → Review
 
-固定输出：
-  01-项目分析报告.md
+Standard / Studio 固定输出：
+  01-Analysis.md
   02-Creative-Brief.md
-  03-Knowledge-Review.md
+  03-Design-Decisions.md
   04-Design-Review.md
+
+Quick 仅输出：
+  02-Creative-Brief.md
 
 选项：
   --project          projects/ 下的一级项目名称；只有一个项目时可省略
   -o, --output       直接素材目录模式的输出目录；项目模式固定写入项目 outputs/
   -c, --config       JSON 配置文件；项目模式默认读取项目根目录 masterpiece-os.json
-  --thinking-dir     五个 Thinking Framework 文件所在目录
+  --mode             quick、standard（默认）或 studio
   --online           联网检索对标候选；失败时使用内置案例库
   --debug            额外输出 masterpiece-os-result.json
+  --profile          控制台显示耗时，并写入 outputs/debug/performance.json
   --json             inventory 命令输出 JSON
 `;
 
@@ -44,8 +48,10 @@ function parseArgs(args) {
   const options = {};
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg === '--online' || arg === '--json' || arg === '--debug') options[arg.slice(2)] = true;
-    else if (arg === '--review' || arg === '--research') options.mode = 'brief';
+    if (arg === '--online' || arg === '--json' || arg === '--debug' || arg === '--profile') options[arg.slice(2)] = true;
+    else if (arg === '--quick') options.mode = 'quick';
+    else if (arg === '--standard' || arg === '--review') options.mode = 'standard';
+    else if (arg === '--studio' || arg === '--research') options.mode = 'studio';
     else if (['--output', '-o', '--config', '-c', '--name', '--thinking-dir', '--knowledge-dir', '--history-dir', '--project', '--mode'].includes(arg)) {
       const value = args[++i];
       if (!value || value.startsWith('-')) throw new Error(`${arg} 缺少参数值`);
@@ -103,9 +109,23 @@ function initialConfig(name) {
       mustKeep: [],
       canExplore: [],
       designGoal: ''
-    },
-    thinkingQuestions: { identity: [], emotion: [], visual: [], brand: [], portfolio: [] }
+    }
   };
+}
+
+function printPerformance(performance) {
+  const labels = [
+    ['readAssets', 'Stage 1 Read Assets'],
+    ['intent', 'Stage 2 Original Intent'],
+    ['benchmark', 'Stage 3 Benchmark'],
+    ['decision', 'Stage 4 Creative Decision'],
+    ['analysis', 'Stage 5 Analysis'],
+    ['briefCompiler', 'Stage 6 Brief Compiler'],
+    ['review', 'Stage 7 Review'],
+    ['total', 'Total']
+  ];
+  console.log('Performance Profiling');
+  for (const [key, label] of labels) console.log(`${label}: ${Number(performance[key] || 0).toFixed(4)} s`);
 }
 
 async function createStandaloneProject(dir, name) {
@@ -166,11 +186,12 @@ export async function main(args) {
     }
     const { result, output } = await runPipeline(input, pipelineOptions);
     console.log(`Creative Brief 已完成：${result.brandLock.brandName}`);
+    console.log(`分析模式：${result.mode}`);
     console.log(`素材 ${result.inventory.totalFiles} 个，其中图片 ${result.inventory.imageCount} 张`);
     console.log(`视觉核验：${result.creativeReasoning.visualInspection.inspectedImageCount}/${result.creativeReasoning.visualInspection.totalImages} 张`);
     console.log(`Brand DNA Decision：${result.brandDnaDecision.status}`);
     console.log(`输出文件：${result.outputFiles.join('、')}`);
-    console.log(`耗时：${result.durationMs} ms`);
+    printPerformance(result.performance);
     console.log(`输出目录：${output}`);
     return;
   }

@@ -11,6 +11,12 @@
     "packaging": ["抽屉盒"],
     "coreVisualAssets": ["抽象动物吉祥物", "手绘植物"]
   },
+  "benchmarks": [
+    { "name": "MUJI", "url": "https://www.muji.com/", "reason": "稳定系统与真实材料语境" },
+    { "name": "HAY", "url": "https://www.hay.com/", "reason": "现代生活方式触点与色彩系统" },
+    { "name": "Kinfolk", "url": "https://www.kinfolk.com/", "reason": "编辑秩序与克制的人文叙事" }
+  ],
+  "benchmarkResearch": { "verified": true, "status": "匿名回归样例使用固定核验案例" },
   "visualInspection": {
     "verified": true,
     "inspectedImageCount": 2,

@@ -1,24 +1,20 @@
-# Creative Brief Review
+# Creative Brief Review v3.3
 
-v3.2 的 Design Review 评审的是 **Creative Brief 的准备度**，不是给尚未产生的设计作品打分。
+Design Review 评审的是压缩后的 Creative Brief 是否清晰、可执行并与 Analysis 分离。
 
-## 检查内容
+## 八项检查
 
-评审逐项检查 Brand Identity、Brand Positioning、Design Language、Emotional Direction、Approved Brand DNA、Photography Direction、Design Risks、Must Keep、Can Explore 和 Design Goal。
+1. Creative Vision
+2. Brand Personality
+3. Approved Brand DNA
+4. Creative Principles 与 Avoid Rules
+5. Must Keep
+6. Can Explore
+7. Photography Direction
+8. Design Goal
 
-Approved Brand DNA 只有在 Original Intent、Industry Benchmark、Creative Decision、九个 DNA 维度与显式批准全部完成时才可标记 `Ready`。
+## Information Architecture 检查
 
-每项只有两种状态：
+Brief 不得出现 Reasoning、Industry Benchmark、Competitor、Evidence、判断依据或推导过程。完整 Design Risks 留在 Analysis，Brief 只保留短而可执行的 Avoid Rules。
 
-- `Ready`：内容明确、非待确认，并具有足够依据。
-- `Needs Evidence`：内容缺失、仍是待确认，或关键关系没有证据。
-
-最终报告给出完整度、准备状态、已建立优势、待补证问题和需持续控制的设计风险。
-
-## 明确不做
-
-- 不生成能力雷达或主观分数。
-- 不写跨项目成长历史。
-- 不规划图片、任务编号、数量或比例。
-- 不自动修改 Knowledge、Rule、Template。
-- 不执行 Git 操作。
+Review 还记录压缩后内容字符数，并确认 GPT Runtime Brief 只在内存中生成。准备度通过不代表未核验的品牌事实自动成为真实结论。

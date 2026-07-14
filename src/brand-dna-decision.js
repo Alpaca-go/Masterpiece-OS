@@ -33,6 +33,11 @@ function statementSection(value) {
   };
 }
 
+export function buildOriginalIntent(config = {}) {
+  const supplied = config.brandDnaDecision || config.brandDNADecision || {};
+  return statementSection(supplied.originalIntent || config.originalIntent);
+}
+
 function normalizeDna(value = {}) {
   return Object.fromEntries(BRAND_DNA_DIMENSIONS.map(([id]) => {
     const item = value?.[id];
@@ -60,29 +65,38 @@ function benchmarkReferences(input, benchmarks) {
       });
 }
 
+export function buildIndustryBenchmark(benchmarks, config = {}) {
+  const supplied = config.brandDnaDecision || config.brandDNADecision || {};
+  const input = supplied.industryBenchmark || {};
+  return {
+    observations: strings(input.observations || input.findings || benchmarks.commonTraits),
+    opportunities: strings(input.opportunities || input.whiteSpace || input.whitespace),
+    references: benchmarkReferences(input, benchmarks),
+    context: clean(input.context) || `${benchmarks.industry.value} / ${benchmarks.projectType.value}`
+  };
+}
+
+export function buildCreativeDecision(config = {}) {
+  const supplied = config.brandDnaDecision || config.brandDNADecision || {};
+  const input = supplied.creativeDecision || {};
+  return {
+    statement: clean(typeof input === 'string' ? input : input.statement || input.summary) || PENDING,
+    rationale: strings(input.rationale || input.reasons || input.evidence),
+    tradeoffs: strings(input.tradeoffs || input.rejectedDirections || input.notDoing)
+  };
+}
+
 /**
  * Brand DNA can only become approved after the four-stage decision chain is
  * complete. Legacy visualDNA is retained as a candidate for migration, but it
  * is deliberately never promoted into the Creative Brief.
  */
-export function buildBrandDnaDecision(brand, benchmarks, config = {}) {
+export function buildBrandDnaDecision(brand, benchmarks, config = {}, stages = {}) {
   const supplied = config.brandDnaDecision || config.brandDNADecision || {};
   const legacyVisualDna = config.creativeReasoning?.visualDNA || config.creativeBrief?.visualDNA;
-  const originalIntent = statementSection(supplied.originalIntent || config.originalIntent);
-  const benchmarkInput = supplied.industryBenchmark || {};
-  const industryBenchmark = {
-    observations: strings(benchmarkInput.observations || benchmarkInput.findings || benchmarks.commonTraits),
-    opportunities: strings(benchmarkInput.opportunities || benchmarkInput.whiteSpace || benchmarkInput.whitespace),
-    references: benchmarkReferences(benchmarkInput, benchmarks),
-    context: clean(benchmarkInput.context)
-      || `${benchmarks.industry.value} / ${benchmarks.projectType.value}`
-  };
-  const decisionInput = supplied.creativeDecision || {};
-  const creativeDecision = {
-    statement: clean(typeof decisionInput === 'string' ? decisionInput : decisionInput.statement || decisionInput.summary) || PENDING,
-    rationale: strings(decisionInput.rationale || decisionInput.reasons || decisionInput.evidence),
-    tradeoffs: strings(decisionInput.tradeoffs || decisionInput.rejectedDirections || decisionInput.notDoing)
-  };
+  const originalIntent = stages.originalIntent || buildOriginalIntent(config);
+  const industryBenchmark = stages.industryBenchmark || buildIndustryBenchmark(benchmarks, config);
+  const creativeDecision = stages.creativeDecision || buildCreativeDecision(config);
   const draftApprovedBrandDNA = normalizeDna(supplied.approvedBrandDNA);
   const candidateBrandDNA = normalizeDna(supplied.candidateBrandDNA || legacyVisualDna);
   const approval = supplied.approval || {};

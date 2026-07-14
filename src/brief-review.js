@@ -1,58 +1,76 @@
 const PENDING_PATTERN = /待.*(?:确认|补充|验证|打样)|仍需.*确认|尚未|未完成|不得仅凭|视觉核验未闭环/;
+const FORBIDDEN = ['Reasoning', 'Industry Benchmark', 'Competitor', 'Evidence', '判断依据', '推导过程'];
+const GENERIC_COMPETITOR_ALIASES = new Set(['案例', '品牌', '升级', '设计', '系统', 'brand', 'design', 'case']);
+
+function competitorAliases(analysis) {
+  const aliases = [];
+  for (const item of analysis.competitorAnalysis || []) {
+    const name = String(item.name || '').trim();
+    if (!name) continue;
+    const withoutSuffix = name.replace(/(?:品牌升级|品牌设计|设计案例|品牌系统|升级|设计|案例|系统)$/u, '').trim();
+    const parts = name.split(/[·・|/()（）—–-]|\s+/u).map((part) => part.trim()).filter((part) => part.length >= 2);
+    const firstCjk = name.match(/^[\p{Script=Han}]{2,}/u)?.[0];
+    aliases.push(name, withoutSuffix, ...parts);
+    if (firstCjk && firstCjk.length > 4) aliases.push(firstCjk.slice(0, 3));
+  }
+  return [...new Set(aliases.filter((name) => name.length >= 2 && !GENERIC_COMPETITOR_ALIASES.has(name.toLowerCase())))];
+}
 
 function populated(value) {
   if (Array.isArray(value)) return value.length > 0 && value.every(populated);
-  if (value && typeof value === 'object') return Object.values(value).every(populated);
+  if (value && typeof value === 'object') return Object.entries(value)
+    .filter(([key]) => key !== 'compilation' && key !== 'runtimeGptBrief')
+    .every(([, item]) => populated(item));
   return typeof value === 'string' ? Boolean(value.trim()) && !PENDING_PATTERN.test(value) : value !== null && value !== undefined;
 }
 
-function check(section, value, evidence, nextStep, ready = populated(value)) {
-  return { section, status: ready ? 'Ready' : 'Needs Evidence', evidence, nextStep };
+function check(section, value, nextStep) {
+  const ready = populated(value);
+  return { section, status: ready ? 'Ready' : 'Needs Evidence', evidence: ready ? '内容已编译并可执行' : '存在空值或待确认内容', nextStep };
+}
+
+function contentCharacters(brief) {
+  return JSON.stringify(brief, (key, value) => ['compilation', 'runtimeGptBrief'].includes(key) ? undefined : value).length;
 }
 
 export function buildBriefReview(result) {
-  const reasoning = result.creativeReasoning;
-  const decision = reasoning.brandDnaDecision || result.brandDnaDecision || {};
-  const approvedBrandDNA = reasoning.approvedBrandDNA || decision.approvedBrandDNA || {};
-  const dnaReady = decision.status === 'Approved' && populated(approvedBrandDNA);
+  const brief = result.creativeBrief;
+  const serialized = JSON.stringify(brief, (key, value) => ['compilation', 'runtimeGptBrief'].includes(key) ? undefined : value);
+  const competitorMentions = competitorAliases(result.analysis).filter((name) => serialized.includes(name));
+  const forbiddenTerms = [...FORBIDDEN.filter((term) => serialized.includes(term)), ...competitorMentions.map((name) => `Competitor:${name}`)];
   const checks = [
-    check('Brand Identity', reasoning.brandIdentity, reasoning.brandIdentity.evidence.join('；') || '暂无依据', '用一句非品类描述说明品牌真正是什么，并补充视觉或用户证据。'),
-    check('Brand Positioning', reasoning.brandPositioning, reasoning.brandPositioning.evidence.join('；') || '暂无依据', '明确相对竞争环境的差异，并说明判断依据。'),
-    check('Design Language', reasoning.designLanguage, reasoning.designLanguage.rationale.join('；') || '暂无依据', '把风格形容词转化为可被设计团队执行的关系和原则。'),
-    check('Emotional Direction', reasoning.emotionalDirection, reasoning.emotionalDirection.evidence.join('；') || '暂无依据', '补充目标情绪与不希望出现的反向感受。'),
-    check(
-      'Approved Brand DNA',
-      approvedBrandDNA,
-      decision.status === 'Approved'
-        ? '四阶段 Brand DNA Decision 已完成并显式批准。'
-        : `决策链未完成：${decision.approval?.blockers?.join('；') || '缺少显式批准或决策依据'}`,
-      '完成 Original Intent → Industry Benchmark → Creative Decision，并显式批准九个 Brand DNA 维度。',
-      dnaReady
-    ),
-    check('Photography Direction', reasoning.photographyDirection, '已检查光线、取景、景深、材质和氛围。', '确保描述的是摄影方向而不是单张 Prompt。'),
-    check('Design Risks', reasoning.designRisks, `${reasoning.designRisks.length} 项风险`, '每项风险保留原因与防偏方式。'),
-    check('Must Keep', reasoning.mustKeep, `${reasoning.mustKeep.length} 项不可变资产`, '只保留真正影响品牌身份的长期资产。'),
-    check('Can Explore', reasoning.canExplore, `${reasoning.canExplore.length} 项探索空间`, '明确创新自由度，避免 Brief 只剩限制。'),
-    check('Design Goal', reasoning.designGoal, reasoning.designGoal, '用一句话定义项目最终要达到的品牌与作品集效果。')
+    check('Creative Vision', brief.creativeVision, '明确一个能直接指导设计的未来方向。'),
+    check('Brand Personality', brief.brandPersonality, '补齐希望与避免的品牌感受。'),
+    check('Approved Brand DNA', brief.approvedBrandDNA, '完成九个维度与显式批准。'),
+    check('Creative Principles', brief.creativePrinciples, '保留可执行原则和简洁 Avoid Rules。'),
+    check('Must Keep', brief.mustKeep, '明确不可改变的长期资产。'),
+    check('Can Explore', brief.canExplore, '为创意团队保留探索空间。'),
+    check('Photography Direction', brief.photographyDirection, '明确光线、取景、景深、材质与氛围。'),
+    check('Design Goal', brief.designGoal, '用一句话冻结设计目标。')
   ];
   const readyCount = checks.filter((item) => item.status === 'Ready').length;
-  const completeness = Math.round((readyCount / checks.length) * 100);
+  const separationReady = forbiddenTerms.length === 0;
+  const completeness = Math.round(((readyCount + (separationReady ? 1 : 0)) / (checks.length + 1)) * 100);
   const openQuestions = checks.filter((item) => item.status !== 'Ready').map((item) => `${item.section}：${item.nextStep}`);
+  if (!separationReady) openQuestions.push(`Information Architecture：移除 ${forbiddenTerms.join('、')}。`);
+  const analysis = result.analysis;
   const strengths = [
-    ...(reasoning.visualInspection.verified ? [`逐张视觉核验已覆盖 ${reasoning.visualInspection.inspectedImageCount}/${reasoning.visualInspection.totalImages} 张图片。`] : []),
-    ...(result.benchmarks.cases.length >= 3 ? [`Benchmark 已覆盖 ${result.benchmarks.cases.length} 个案例，并与项目事实分离。`] : []),
-    ...(reasoning.mustKeep.length >= 3 ? ['Must Keep 已形成足以约束跨触点设计的品牌资产边界。'] : []),
-    ...(reasoning.canExplore.length >= 2 ? ['Can Explore 为创意团队保留了明确创新空间。'] : [])
+    ...(analysis.evidence.assets.visualInspectionVerified ? [`逐张视觉核验已覆盖 ${analysis.evidence.assets.inspectedImageCount}/${analysis.evidence.assets.imageCount} 张图片。`] : []),
+    ...(analysis.competitorAnalysis.length >= 3 ? [`Analysis 已记录 ${analysis.competitorAnalysis.length} 个同类案例，Brief 未复制研究过程。`] : []),
+    ...(brief.mustKeep.length >= 3 ? ['Must Keep 已形成长期资产边界。'] : []),
+    ...(brief.canExplore.length >= 2 ? ['Can Explore 保留了明确创意空间。'] : [])
   ];
   return {
     completeness,
     readiness: completeness === 100 ? 'Ready for Creative Development' : 'Needs Evidence Before Creative Development',
     summary: completeness === 100
-      ? 'Creative Brief 已覆盖品牌身份、设计语言、情绪、Approved Brand DNA、创意边界与目标，可与已核验视觉方案一起交给 GPT 自主开展图片规划与生成。'
-      : 'Creative Brief 结构完整，但仍有内容依赖待确认信息；补齐证据前不应把这些判断作为正式设计结论。',
+      ? '八部分 Creative Brief 已完成信息压缩，与 Analysis 分离，可直接交给设计团队或作为 GPT 运行时输入。'
+      : 'Creative Brief 已完成结构编译，但仍存在证据缺口或分析语言残留。',
     checks,
     strengths,
     openQuestions,
-    risks: reasoning.designRisks
+    separationReady,
+    forbiddenTerms,
+    briefCharacters: contentCharacters(brief)
   };
 }

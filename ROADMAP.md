@@ -49,7 +49,7 @@
 - [x] Design Review 改为 Brief 证据完整度与创意准备度检查
 - [x] CLI、模板、Skill、规则、文档与测试统一到 v3.1
 
-## v3.2（当前）
+## v3.2
 
 - [x] Brand DNA Decision 强制执行 Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA
 - [x] 阻止旧 visualDNA 或用户视觉方案直接成为批准结论
@@ -58,6 +58,17 @@
 - [x] 明确“视觉方案 + Creative Brief → GPT 自主规划与生成”的协作边界
 - [x] 保持四份固定输出，不恢复 PKG、VI、Poster 或图片任务规划
 - [x] 定义真实项目 A/B 验证指标与成功判定口径
+
+## v3.3（当前）
+
+- [x] Analysis 与 Creative Brief 完全分离
+- [x] 新增 Creative Brief Compiler 信息压缩层
+- [x] Creative Brief 收敛为八部分执行结构
+- [x] 用 Design Decisions 替代 Knowledge Review 正式输出
+- [x] Quick 仅输出 Brief；Standard / Studio 保持四份正式输出
+- [x] GPT Brief 仅作为运行时内存结果
+- [x] Pipeline 七阶段独立计时并支持 `--profile`
+- [x] Design Review 检查信息架构分离与 Brief 执行准备度
 
 ## 后续版本
 

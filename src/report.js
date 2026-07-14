@@ -2,23 +2,19 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { ensureDir, mdCell, writeText } from './utils.js';
 
-const OUTPUT_FILES = [
-  '01-项目分析报告.md',
+export const STANDARD_OUTPUT_FILES = [
+  '01-Analysis.md',
   '02-Creative-Brief.md',
-  '03-Knowledge-Review.md',
+  '03-Design-Decisions.md',
   '04-Design-Review.md'
 ];
+export const QUICK_OUTPUT_FILES = ['02-Creative-Brief.md'];
 
-const LEGACY_OUTPUTS = [
-  '00-素材清单.md',
-  '01-Brand-Lock.md',
-  '02-视觉方案优化报告.md',
-  '03-缺图分析.md',
-  '04-图片规划.md',
-  'Chat生图任务包.md',
-  '02-Chat生图任务包.md',
-  'Knowledge-Candidate.md',
-  'Knowledge-Analysis.md'
+const RETIRED_OUTPUTS = [
+  '01-项目分析报告.md', '03-Knowledge-Review.md',
+  '00-素材清单.md', '01-Brand-Lock.md', '02-视觉方案优化报告.md', '03-缺图分析.md', '04-图片规划.md',
+  'Chat生图任务包.md', '02-Chat生图任务包.md', 'Knowledge-Candidate.md', 'Knowledge-Analysis.md',
+  '03-Decision-Log.md', 'Creative-Brief-GPT.md', '02-Creative-Brief-GPT.md'
 ];
 
 function header(title, result) {
@@ -29,151 +25,95 @@ function list(values, empty = '待确认') {
   return values?.length ? values.map((value) => `- ${value}`).join('\n') : `- ${empty}`;
 }
 
-function evidence(values) {
-  return values?.length ? values.join('；') : '待补充可核验依据';
+function inline(values, empty = '待确认') {
+  return values?.length ? values.join('；') : empty;
 }
 
-function renderBrandLock(result) {
-  const brand = result.brandLock;
-  return `## Brand Lock\n\n` +
-    `> 这里记录的是当前证据支持的品牌边界。标记“待确认”的内容不能作为正式设计事实。\n\n` +
-    `- 品牌名称：${brand.brandName}\n` +
-    `- Logo 素材：${brand.logo.files.join('、') || '待提供/待确认'}\n` +
-    `- 品牌主色：${brand.primaryColor || '待确认'}\n` +
+function brandLock(brand) {
+  return `## Evidence\n\n` +
+    `- 素材中的品牌名称：${brand.brandName}\n` +
+    `- Logo 候选：${brand.logo.files.join('、') || '待提供/待确认'}\n` +
+    `- 主色：${brand.primaryColor || '待确认'}\n` +
     `- 辅助色：${brand.secondaryColors.join('、') || '待确认'}\n` +
     `- 字体与版式气质：${brand.fontTemperament || '待确认'}\n` +
-    `- 已识别字体：${brand.fonts.join('、') || '待确认'}\n` +
-    `- 包装结构：${brand.packaging.join('、') || '待确认'}\n` +
+    `- 包装/载体：${brand.packaging.join('、') || '待确认'}\n` +
     `- 核心视觉资产：${brand.coreVisualAssets.join('、') || '待确认'}\n\n`;
 }
 
-function renderBenchmark(result) {
-  const benchmark = result.benchmarks;
-  const rows = benchmark.cases.length
-    ? benchmark.cases.map((item, index) => `| ${index + 1} | ${mdCell(item.name)} | ${mdCell(item.reason)} | ${item.url ? `[查看来源](${item.url})` : '未提供'} |`).join('\n')
-    : '| — | 待补充 | 当前没有可核验对标案例 | 未提供 |';
-  return `## Benchmark Analysis\n\n` +
-    `- 检索状态：${benchmark.search.status}\n` +
-    `- 项目类型：${benchmark.projectType.value}\n` +
-    `- 行业：${benchmark.industry.value}\n\n` +
-    `| # | 同类案例 | 参考原因 | 来源 |\n|---:|---|---|---|\n${rows}\n\n` +
-    `### 同类案例的共同特征\n\n${list(benchmark.commonTraits, '尚未形成有证据支持的共同特征')}\n\n`;
-}
-
-function renderReasoningSummary(result) {
-  const reasoning = result.creativeReasoning;
-  return `## Creative Reasoning\n\n` +
-    `> ${reasoning.evidenceStatus}\n\n` +
-    `### 品牌身份\n\n${reasoning.brandIdentity.statement}\n\n依据：${evidence(reasoning.brandIdentity.evidence)}。\n\n` +
-    `### 品牌定位\n\n${reasoning.brandPositioning.statement}\n\n依据：${evidence(reasoning.brandPositioning.evidence)}。\n\n` +
-    `### 设计语言与情绪\n\n- 设计语言：${reasoning.designLanguage.statement}\n- 设计依据：${evidence(reasoning.designLanguage.rationale)}\n- 情绪方向：${reasoning.emotionalDirection.statement}\n- 希望产生的感受：${reasoning.emotionalDirection.desiredFeelings.join('、') || '待确认'}\n- 应避免的感受：${reasoning.emotionalDirection.avoidFeelings.join('、') || '待确认'}\n\n` +
-    `### 设计目标\n\n${reasoning.designGoal}\n\n`;
-}
-
-function renderBrandDnaDecision(result) {
-  const decision = result.brandDnaDecision;
-  const benchmark = decision.industryBenchmark;
-  const references = benchmark.references.map((item) => item.url ? `[${item.name}](${item.url})` : item.name);
-  const approval = decision.approval;
-  return `## Brand DNA Decision\n\n` +
-    `> 状态：${decision.status}。${decision.sourcePolicy}\n\n` +
-    `### 1. Original Intent\n\n${decision.originalIntent.statement}\n\n` +
-    `依据：${evidence(decision.originalIntent.evidence)}。\n\n` +
-    `### 2. Industry Benchmark\n\n` +
-    `- 对标语境：${benchmark.context}\n` +
-    `- 共同观察：${benchmark.observations.join('；') || '待确认'}\n` +
-    `- 差异机会：${benchmark.opportunities.join('；') || '待确认'}\n` +
-    `- 参考案例：${references.join('、') || '待确认'}\n\n` +
-    `### 3. Creative Decision\n\n${decision.creativeDecision.statement}\n\n` +
-    `- 决策理由：${decision.creativeDecision.rationale.join('；') || '待确认'}\n` +
-    `- 主动取舍：${decision.creativeDecision.tradeoffs.join('；') || '待确认'}\n\n` +
-    `### 4. Approval\n\n` +
-    `- 批准状态：${approval.status}\n` +
-    `- 批准人：${approval.approvedBy || '待确认'}\n` +
-    `- 批准时间：${approval.approvedAt || '待确认'}\n` +
-    `- 阻塞项：${approval.blockers.join('；') || '无'}\n` +
-    `${decision.migration.message ? `- 迁移提示：${decision.migration.message}\n` : ''}\n`;
-}
-
-function projectAnalysis(result) {
-  const benchmark = result.benchmarks;
-  const inspected = result.creativeReasoning.visualInspection;
-  return header('项目分析报告', result) +
-    `## 项目证据概览\n\n` +
-    `- 工作流：Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA → Creative Brief\n` +
-    `- 素材文件：${result.inventory.totalFiles} 个\n` +
-    `- 图片素材：${result.inventory.imageCount} 张\n` +
-    `- 逐张视觉核验记录：${inspected.inspectedImageCount}/${inspected.totalImages} 张\n` +
-    `- 核验状态：${inspected.verified ? '已闭环' : '未闭环'}\n` +
-    `- 项目类型依据：${evidence(benchmark.projectType.evidence)}\n` +
-    `- 行业依据：${evidence(benchmark.industry.evidence)}\n\n` +
-    renderBrandLock(result) + renderBenchmark(result) + renderBrandDnaDecision(result) + renderReasoningSummary(result) +
-    `## 当前判断边界\n\n` +
-    `- 本报告只把素材、配置和公开来源能够支持的内容写成事实。\n` +
-    `- 未经完整视觉核验的构图、材质、工艺与摄影判断保留为待确认。\n` +
-    `- 对标案例用于解释行业语境，不会替代本项目自身证据。\n` +
-    `- 用户视觉方案只能作为证据或候选，不能直接成为 Approved Brand DNA。\n` +
-    `- 本阶段不规划图片数量、画幅比例或生图任务。\n`;
+function analysisReport(result) {
+  const a = result.analysis;
+  const inspection = a.evidence.assets;
+  const competitorRows = a.competitorAnalysis.length
+    ? a.competitorAnalysis.map((item, index) => `| ${index + 1} | ${mdCell(item.name)} | ${mdCell(item.relevance)} | ${item.url ? `[来源](${item.url})` : '未提供'} |`).join('\n')
+    : '| — | 待补充 | 尚无可核验同类案例 | 未提供 |';
+  const risks = a.designRisks.map((risk, index) =>
+    `### ${index + 1}. ${risk.problem}\n\n- 原因：${risk.reason}\n- 控制方式：${risk.prevention}`
+  ).join('\n\n');
+  return header('Analysis', result) +
+    `> Analysis 保存证据、研究、推理与完整风险，仅用于回溯和验证，不直接交给 GPT 生图。\n\n` +
+    `## Analysis Scope\n\n` +
+    `- 模式：${result.mode}\n- 素材：${inspection.totalFiles} 个文件，其中图片 ${inspection.imageCount} 张\n` +
+    `- 逐张视觉核验：${inspection.inspectedImageCount}/${inspection.imageCount}\n` +
+    `- 核验状态：${inspection.visualInspectionVerified ? '已闭环' : '未闭环'}\n\n` +
+    `## Original Intent\n\n${a.originalIntent.statement}\n\n**Evidence：** ${inline(a.originalIntent.evidence, '待补充可核验依据')}。\n\n` +
+    `## Industry Benchmark\n\n` +
+    `- 对标语境：${a.industryBenchmark.context}\n` +
+    `- 共同观察：${inline(a.industryBenchmark.observations)}\n` +
+    `- 差异机会：${inline(a.industryBenchmark.opportunities)}\n\n` +
+    `## Competitor Analysis\n\n| # | 案例 | 相关性 | 来源 |\n|---:|---|---|---|\n${competitorRows}\n\n` +
+    brandLock(a.evidence.brandLock) +
+    `### Visual Inspection Findings\n\n${list(inspection.findings, '尚无逐张画面结论')}\n\n` +
+    `## Reasoning\n\n` +
+    `### Brand Identity\n\n${a.reasoning.brandIdentity.statement}\n\n依据：${inline(a.reasoning.brandIdentity.evidence)}。\n\n` +
+    `### Brand Positioning\n\n${a.reasoning.brandPositioning.statement}\n\n依据：${inline(a.reasoning.brandPositioning.evidence)}。\n\n` +
+    `### Design Language\n\n${a.reasoning.designLanguage.statement}\n\n理由：${inline(a.reasoning.designLanguage.rationale)}。\n\n` +
+    `### Emotional Direction\n\n${a.reasoning.emotionalDirection.statement}\n\n` +
+    `- 希望产生：${inline(a.reasoning.emotionalDirection.desiredFeelings)}\n- 应避免：${inline(a.reasoning.emotionalDirection.avoidFeelings)}\n\n` +
+    `## Creative Decision\n\n${a.creativeDecision.statement}\n\n` +
+    `- 决策原因：${inline(a.creativeDecision.rationale)}\n- 主动取舍：${inline(a.creativeDecision.tradeoffs)}\n` +
+    `- 批准状态：${a.approval.status}\n- 批准人：${a.approval.approvedBy || '待确认'}\n- 批准时间：${a.approval.approvedAt || '待确认'}\n\n` +
+    `## Design Risks\n\n${risks || '完整设计风险待确认。'}\n\n` +
+    `## Analysis Boundary\n\n- 对标案例不能替代项目事实。\n- 用户现有视觉不能直接升级为 Approved Brand DNA。\n- 未核验内容继续保持待确认。\n`;
 }
 
 function creativeBrief(result) {
-  const r = result.creativeReasoning;
-  const decision = result.brandDnaDecision;
-  const dnaRows = [
-    ['Logo', r.approvedBrandDNA.logo],
-    ['Color', r.approvedBrandDNA.color],
-    ['Typography', r.approvedBrandDNA.typography],
-    ['Composition', r.approvedBrandDNA.composition],
-    ['Whitespace', r.approvedBrandDNA.whitespace],
-    ['Photography', r.approvedBrandDNA.photography],
-    ['Materials', r.approvedBrandDNA.materials],
-    ['Packaging', r.approvedBrandDNA.packaging],
-    ['Craft', r.approvedBrandDNA.craft]
-  ].map(([name, value]) => `| ${name} | ${mdCell(value)} |`).join('\n');
-  const photo = r.photographyDirection;
-  const risks = r.designRisks.map((risk, index) =>
-    `### ${index + 1}. ${risk.problem}\n\n- 原因：${risk.reason}\n- 防偏方式：${risk.prevention}`
-  ).join('\n\n');
+  const b = result.creativeBrief;
+  const dnaRows = Object.entries(b.approvedBrandDNA)
+    .map(([name, value]) => `| ${name} | ${mdCell(value)} |`).join('\n');
+  const photo = b.photographyDirection;
   return header('Creative Brief', result) +
-    `> 本简报面向品牌设计与创意团队，定义项目理解、设计边界和探索空间。Brand DNA Decision：${decision.status}。待确认项需在创意发展前补齐证据。\n> \n> 协作边界：Masterpiece-OS 到此停止；后续 GPT 以已核验视觉方案与本 Brief 为输入，自主完成图片规划与生成。\n\n` +
-    `## 1. Brand Identity\n\n${r.brandIdentity.statement}\n\n**判断依据：** ${evidence(r.brandIdentity.evidence)}。\n\n` +
-    `## 2. Brand Positioning\n\n${r.brandPositioning.statement}\n\n**定位依据：** ${evidence(r.brandPositioning.evidence)}。\n\n` +
-    `## 3. Design Language\n\n${r.designLanguage.statement}\n\n**为什么采用这一语言：** ${evidence(r.designLanguage.rationale)}。\n\n` +
-    `### 设计原则\n\n${list(r.designLanguage.principles, '设计原则待确认')}\n\n` +
-    `## 4. Emotional Direction\n\n${r.emotionalDirection.statement}\n\n- 希望产生的感受：${r.emotionalDirection.desiredFeelings.join('、') || '待确认'}\n- 应避免的感受：${r.emotionalDirection.avoidFeelings.join('、') || '待确认'}\n- 判断依据：${evidence(r.emotionalDirection.evidence)}\n\n` +
-    `## 5. Approved Brand DNA\n\n` +
-    `> ${decision.sourcePolicy}\n\n` +
-    `| 维度 | 已批准的品牌边界 |\n|---|---|\n${dnaRows}\n\n` +
-    `## 6. Photography Direction\n\n` +
-    `- 光线：${photo.lighting}\n- 取景与机位：${photo.framing}\n- 景深：${photo.depth}\n- 材质表现：${photo.materials}\n- 氛围：${photo.atmosphere}\n\n` +
-    `## 7. Design Risks\n\n${risks || '当前风险待确认。'}\n\n` +
-    `## 8. Must Keep\n\n${list(r.mustKeep, '尚无已确认的不可变资产')}\n\n` +
-    `## 9. Can Explore\n\n${list(r.canExplore, '探索空间待设计负责人与品牌方确认')}\n\n` +
-    `## 10. Design Goal\n\n${r.designGoal}\n`;
+    `> 面向设计团队与 GPT 的高密度设计方向。每句话都应帮助设计。\n\n` +
+    `## 1. Creative Vision\n\n${b.creativeVision.statement}\n\n${b.creativeVision.direction}\n\n` +
+    `## 2. Brand Personality\n\n${b.brandPersonality.statement}\n\n` +
+    `- 希望呈现：${inline(b.brandPersonality.desired)}\n- 必须避免：${inline(b.brandPersonality.avoid)}\n\n` +
+    `## 3. Approved Brand DNA\n\n| 维度 | 设计边界 |\n|---|---|\n${dnaRows}\n\n` +
+    `## 4. Creative Principles\n\n${b.creativePrinciples.statement}\n\n${list(b.creativePrinciples.principles, '设计原则待确认')}\n\n` +
+    `### Avoid Rules\n\n${list(b.creativePrinciples.avoidRules, '避免偏离已批准的品牌方向')}\n\n` +
+    `## 5. Must Keep\n\n${list(b.mustKeep, '不可变资产待确认')}\n\n` +
+    `## 6. Can Explore\n\n${list(b.canExplore, '探索空间待确认')}\n\n` +
+    `## 7. Photography Direction\n\n` +
+    `- 光线：${photo.lighting || '待确认'}\n- 取景：${photo.framing || '待确认'}\n- 景深：${photo.depth || '待确认'}\n` +
+    `- 材质：${photo.materials || '待确认'}\n- 氛围：${photo.atmosphere || '待确认'}\n\n` +
+    `## 8. Design Goal\n\n${b.designGoal}\n`;
 }
 
-function knowledgeReview(result) {
-  const review = result.thinkingReview;
-  const statusRows = review.categories.map((category) =>
-    `| ${category.title} | ${category.questions.length} | ${category.questions.length ? 'Available' : 'Missing'} |`
-  ).join('\n');
-  const systemQuestions = review.categories.map((category) =>
-    `### ${category.title}\n\n${list(category.questions, '该思考框架文件尚无问题')}`
-  ).join('\n\n');
-  const projectQuestions = review.categories.map((category) =>
-    `### ${category.title}\n\n${list(review.projectQuestions[category.id], '暂无项目问题')}`
-  ).join('\n\n');
-  return header('Knowledge Review', result) +
-    `> ${review.statement}\n\n` +
-    `## Thinking Framework 状态\n\n` +
-    `| 维度 | 问题数 | 状态 |\n|---|---:|---|\n${statusRows}\n\n` +
-    `### 读取警告\n\n${list(review.warnings, '无')}\n\n` +
-    `## 可复用思考问题\n\n${systemQuestions}\n\n` +
-    `## 本项目应继续回答的问题\n\n${projectQuestions}\n\n` +
-    `## 治理边界\n\n` +
-    `- 本次运行不会把项目结论写成通用答案。\n` +
-    `- 本次运行不会修改 Thinking Framework。\n` +
-    `- 问题用于帮助设计师检查判断，不会触发自动设计或图片规划。\n`;
+function designDecisions(result) {
+  const d = result.designDecisions;
+  const dnaRows = Object.entries(d.approvedBrandDNA)
+    .map(([name, value]) => `| ${name} | ${mdCell(value)} |`).join('\n');
+  return header('Design Decisions', result) +
+    `> 保存关键设计决策及其原因；Analysis 保留完整研究，Creative Brief 只承担执行表达。\n\n` +
+    `## Creative Decision\n\n${d.creativeDecision.statement}\n\n` +
+    `### Reasons\n\n${list(d.creativeDecision.reasons, '决策原因待确认')}\n\n` +
+    `### Rejected Directions\n\n${list(d.creativeDecision.rejectedDirections, '尚无明确取舍')}\n\n` +
+    `## Approved Brand DNA\n\n| 维度 | 已批准决策 |\n|---|---|\n${dnaRows}\n\n` +
+    `## Creative Principles\n\n${d.creativePrinciples.statement}\n\n${list(d.creativePrinciples.principles, '原则待确认')}\n\n` +
+    `### Why\n\n${list(d.creativePrinciples.reasons, '原则原因待确认')}\n\n` +
+    `## Must Keep\n\n${list(d.mustKeep)}\n\n` +
+    `## Can Explore\n\n${list(d.canExplore)}\n\n` +
+    `## Avoid Rules\n\n${list(d.avoidRules)}\n\n` +
+    `## Approval\n\n- 状态：${d.approval.status}\n- 批准人：${d.approval.approvedBy || '待确认'}\n` +
+    `- 批准时间：${d.approval.approvedAt || '待确认'}\n- 阻塞项：${inline(d.approval.blockers, '无')}\n`;
 }
 
 function designReview(result) {
@@ -181,42 +121,54 @@ function designReview(result) {
   const rows = review.checks.map((item) =>
     `| ${item.section} | ${item.status} | ${mdCell(item.evidence)} | ${mdCell(item.nextStep)} |`
   ).join('\n');
-  const risks = review.risks.map((risk) =>
-    `### ${risk.problem}\n\n- 原因：${risk.reason}\n- 防偏方式：${risk.prevention}`
-  ).join('\n\n');
   return header('Design Review', result) +
-    `> 本报告评审 Creative Brief 是否具备进入创意发展的证据与边界，不评价尚未产生的设计作品。\n\n` +
-    `## 总体结论\n\n` +
-    `- 准备状态：${review.readiness}\n` +
-    `- 完整度：${review.completeness}%\n` +
-    `- 结论：${review.summary}\n\n` +
-    `## 十项简报检查\n\n` +
-    `| 简报章节 | 状态 | 当前依据 | 下一步 |\n|---|---|---|---|\n${rows}\n\n` +
-    `## 已建立的优势\n\n${list(review.strengths, '暂无足够证据形成独立优势结论')}\n\n` +
-    `## 待补证问题\n\n${list(review.openQuestions, '无；十项内容已具备进入创意发展的基础')}\n\n` +
-    `## 需要持续控制的设计风险\n\n${risks || '当前风险待确认。'}\n\n` +
-    `## 评审结论边界\n\n` +
-    `本评审不生成图片任务、Prompt、数量或比例方案，也不会自动修改 Knowledge 或执行 Git 操作。\n`;
+    `> 评审压缩后的 Creative Brief 是否清晰、可执行并与 Analysis 分离。\n\n` +
+    `## Overall\n\n- 状态：${review.readiness}\n- 完整度：${review.completeness}%\n` +
+    `- Brief 内容字符：${review.briefCharacters}\n- 结论：${review.summary}\n\n` +
+    `## Eight-Part Brief Check\n\n| Section | Status | Current State | Next Step |\n|---|---|---|---|\n${rows}\n\n` +
+    `## Information Architecture Check\n\n` +
+    `- Analysis 与 Brief 分离：${review.separationReady ? '通过' : '未通过'}\n` +
+    `- Brief 未混入对标、证据或推理标签：${review.forbiddenTerms.length ? `未通过（${review.forbiddenTerms.join('、')}）` : '通过'}\n` +
+    `- GPT Runtime Brief：已在内存生成，未保存为正式文件\n\n` +
+    `## Strengths\n\n${list(review.strengths, '暂无足够证据形成优势结论')}\n\n` +
+    `## Open Questions\n\n${list(review.openQuestions, '无；八部分 Brief 已具备进入创意发展的基础')}\n\n` +
+    `## Boundary\n\n本评审不生成图片规划、Prompt 或第五个正式输出文件。\n`;
+}
+
+async function removeEmptyDebugDir(output) {
+  const debugDir = path.join(output, 'debug');
+  try {
+    if ((await fs.readdir(debugDir)).length === 0) await fs.rmdir(debugDir);
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
 }
 
 export async function renderAll(result, output, options = {}) {
   await ensureDir(output);
-  for (const name of [...new Set([...LEGACY_OUTPUTS, ...OUTPUT_FILES])]) {
+  for (const name of [...new Set([...RETIRED_OUTPUTS, ...STANDARD_OUTPUT_FILES])]) {
     await fs.rm(path.join(output, name), { force: true });
   }
   if (!options.debug) await fs.rm(path.join(output, 'masterpiece-os-result.json'), { force: true });
-  const files = {
-    '01-项目分析报告.md': projectAnalysis(result),
+  if (!options.profile) {
+    await fs.rm(path.join(output, 'debug', 'performance.json'), { force: true });
+    await removeEmptyDebugDir(output);
+  }
+
+  const allFiles = {
+    '01-Analysis.md': analysisReport(result),
     '02-Creative-Brief.md': creativeBrief(result),
-    '03-Knowledge-Review.md': knowledgeReview(result),
+    '03-Design-Decisions.md': designDecisions(result),
     '04-Design-Review.md': designReview(result)
   };
-  result.outputFiles = Object.keys(files);
-  for (const [name, content] of Object.entries(files)) {
-    await writeText(path.join(output, name), content);
+  const names = result.mode === 'quick' ? QUICK_OUTPUT_FILES : STANDARD_OUTPUT_FILES;
+  for (const name of names) await writeText(path.join(output, name), allFiles[name]);
+  result.outputFiles = names;
+  if (options.profile) {
+    await writeText(path.join(output, 'debug', 'performance.json'), `${JSON.stringify(result.performance, null, 2)}\n`);
   }
   if (options.debug) {
     await writeText(path.join(output, 'masterpiece-os-result.json'), `${JSON.stringify(result, null, 2)}\n`);
   }
-  return Object.keys(files);
+  return names;
 }

@@ -11,7 +11,7 @@ test('Thinking Framework 从五个文件读取设计问题而不是答案', asyn
   assert.ok(framework.categories.flatMap((category) => category.questions).every((question) => /[？?]$/.test(question)));
 });
 
-test('Knowledge Review 为具体项目生成五类开放问题', async () => {
+test('Thinking Framework 仍可独立生成五类开放问题', async () => {
   const framework = await loadThinkingFramework(path.resolve('knowledge', 'thinking'));
   const result = {
     brandLock: { brandName: '匿名品牌' },

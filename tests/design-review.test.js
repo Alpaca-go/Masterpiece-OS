@@ -6,65 +6,67 @@ import path from 'node:path';
 import { buildBriefReview } from '../src/brief-review.js';
 import { runPipeline } from '../src/pipeline.js';
 
-function completeReasoning() {
+function completeFixture() {
   const approvedBrandDNA = {
     logo: '授权标志', color: '深红与米白', typography: '清晰层级', composition: '非对称网格', whitespace: '稳定留白',
     photography: '真实生活摄影', materials: '真实纸张', packaging: '已确认盒型', craft: '压凹工艺'
   };
-  return {
-    visualInspection: { verified: true, inspectedImageCount: 3, totalImages: 3 },
-    brandIdentity: { statement: '以真实日常建立关系的生活品牌。', evidence: ['三张视觉素材'] },
-    brandPositioning: { statement: '面向重视体验的当代生活方式品牌。', evidence: ['同类案例与渠道'] },
-    designLanguage: { statement: '克制、温暖、清晰。', rationale: ['稳定网格与真实材质'], principles: ['单一重心'] },
-    emotionalDirection: { statement: '温暖而可信。', desiredFeelings: ['温暖'], avoidFeelings: ['浮夸'], evidence: ['柔和光线'] },
-    brandDnaDecision: { status: 'Approved', approvedBrandDNA, approval: { blockers: [] } },
+  const creativeBrief = {
+    creativeVision: { statement: '以真实日常建立关系。', direction: '建立跨触点品牌体验。' },
+    brandPersonality: { statement: '温暖而可信。', desired: ['温暖'], avoid: ['浮夸'] },
     approvedBrandDNA,
-    visualDNA: approvedBrandDNA,
-    photographyDirection: { lighting: '柔和侧光', framing: '平视', depth: '中景深', materials: '真实纸张', atmosphere: '温暖可信' },
-    designRisks: [{ problem: '容易模板化', reason: '依赖行业惯例', prevention: '回到品牌独有资产' }],
+    creativePrinciples: { statement: '克制、温暖、清晰。', principles: ['单一重心'], avoidRules: ['避免模板化'] },
     mustKeep: ['授权标志', '深红主色', '已确认盒型'],
     canExplore: ['摄影场景', '空间尺度'],
-    designGoal: '建立跨触点一致的品牌体验。'
+    photographyDirection: { lighting: '柔和侧光', framing: '平视', depth: '中景深', materials: '真实纸张', atmosphere: '温暖可信' },
+    designGoal: '建立跨触点一致的品牌体验。',
+    compilation: { source: 'Analysis' },
+    runtimeGptBrief: 'runtime only'
   };
+  const analysis = {
+    evidence: { assets: { visualInspectionVerified: true, inspectedImageCount: 3, imageCount: 3 } },
+    competitorAnalysis: [{}, {}, {}]
+  };
+  return { creativeBrief, analysis };
 }
 
-test('Brief Review 检查十部分并在证据完整时允许进入创意发展', () => {
-  const review = buildBriefReview({
-    creativeReasoning: completeReasoning(),
-    benchmarks: { cases: [{}, {}, {}] }
-  });
-  assert.equal(review.checks.length, 10);
+test('Brief Review 检查八部分并确认 Analysis 分离', () => {
+  const review = buildBriefReview(completeFixture());
+  assert.equal(review.checks.length, 8);
   assert.equal(review.completeness, 100);
   assert.equal(review.readiness, 'Ready for Creative Development');
-  assert.ok(review.checks.every((item) => item.status === 'Ready'));
-  assert.ok(review.strengths.length >= 4);
-  assert.deepEqual(review.openQuestions, []);
+  assert.equal(review.separationReady, true);
+  assert.deepEqual(review.forbiddenTerms, []);
 });
 
-test('Brief Review 对待确认内容标记 Needs Evidence', () => {
-  const reasoning = completeReasoning();
-  reasoning.approvedBrandDNA.photography = '摄影方向待确认';
-  reasoning.emotionalDirection.avoidFeelings = [];
-  const review = buildBriefReview({ creativeReasoning: reasoning, benchmarks: { cases: [{}, {}, {}] } });
+test('Brief Review 对待确认内容与分析语言标记未就绪', () => {
+  const fixture = completeFixture();
+  fixture.creativeBrief.approvedBrandDNA.photography = '摄影方向待确认';
+  fixture.creativeBrief.brandPersonality.avoid = [];
+  fixture.creativeBrief.creativeVision.direction = 'Industry Benchmark 表明需要升级。';
+  const review = buildBriefReview(fixture);
   assert.ok(review.completeness < 100);
-  assert.equal(review.readiness, 'Needs Evidence Before Creative Development');
+  assert.equal(review.separationReady, false);
+  assert.ok(review.forbiddenTerms.includes('Industry Benchmark'));
   assert.equal(review.checks.find((item) => item.section === 'Approved Brand DNA').status, 'Needs Evidence');
-  assert.equal(review.checks.find((item) => item.section === 'Emotional Direction').status, 'Needs Evidence');
-  assert.ok(review.openQuestions.some((item) => item.startsWith('Approved Brand DNA：')));
 });
 
-test('v3.2 流水线不再写入成长历史或使用 reviewScores', async () => {
-  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'brief-review-root-'));
-  await fs.cp(path.resolve('examples', '匿名文创Demo'), root, { recursive: true });
-  const configFile = path.join(root, 'masterpiece-os.json');
-  const config = JSON.parse(await fs.readFile(configFile, 'utf8'));
-  config.reviewScores = { 摄影: 99 };
-  await fs.writeFile(configFile, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
+test('Brief Review 将竞品简称视为信息架构泄漏', () => {
+  const fixture = completeFixture();
+  fixture.analysis.competitorAnalysis = [{ name: '案例 A 品牌升级' }, {}, {}];
+  fixture.creativeBrief.brandPersonality.avoid = ['避免案例 A风格'];
+  const review = buildBriefReview(fixture);
+  assert.equal(review.separationReady, false);
+  assert.ok(review.forbiddenTerms.includes('Competitor:案例 A'));
+});
+
+test('v3.3 流水线不写成长历史或 Knowledge Review', async () => {
   const output = await fs.mkdtemp(path.join(os.tmpdir(), 'brief-review-output-'));
   const historyDir = await fs.mkdtemp(path.join(os.tmpdir(), 'brief-review-history-'));
-  const { result } = await runPipeline(root, { output, historyDir });
+  const { result } = await runPipeline(path.resolve('examples', '匿名文创Demo'), { output, historyDir });
   assert.equal(result.growth, undefined);
-  assert.equal(result.designReview, undefined);
-  assert.equal(result.briefReview.checks.length, 10);
+  assert.equal(result.thinkingReview, undefined);
+  assert.equal(result.briefReview.checks.length, 8);
   assert.deepEqual(await fs.readdir(historyDir), []);
+  await assert.rejects(fs.access(path.join(output, '03-Knowledge-Review.md')), { code: 'ENOENT' });
 });
