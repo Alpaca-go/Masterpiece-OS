@@ -21,6 +21,8 @@ for (const project of projects) {
 
     assert.equal(result.version, '3.3.0');
     assert.equal(result.mode, 'standard');
+    assert.ok(result.projectBrief.path.endsWith(path.join('docs', 'Project Brief.md')));
+    assert.equal(result.projectBrief.requirements.minBenchmarks, 3);
     assert.equal(result.brandLock.brandName, project);
     assert.equal(result.brandDnaDecision.status, 'Approved');
     assert.deepEqual(result.outputFiles, standardFiles);

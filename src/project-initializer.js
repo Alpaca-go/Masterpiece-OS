@@ -2,11 +2,18 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { assertSafeProjectRoot, DEFAULT_PROJECTS_ROOT } from './project-paths.js';
 
-const RESERVED = new Set(['input', 'outputs', 'masterpiece-os.json', '.gitkeep']);
+const RESERVED = new Set([
+  'input', 'outputs', 'masterpiece-os.json', '.gitkeep',
+  'project brief.md', 'project-brief.md'
+]);
 const SYSTEM_FILES = new Set(['.DS_Store', 'Thumbs.db', 'desktop.ini']);
 
 function ignoredEntry(name) {
   return name.startsWith('.') || name.startsWith('~$') || SYSTEM_FILES.has(name);
+}
+
+function reservedEntry(name) {
+  return RESERVED.has(name.toLowerCase());
 }
 
 async function exists(target) {
@@ -46,7 +53,7 @@ export async function initializeProject(projectRoot, options = {}) {
   const rootEntries = await fs.readdir(resolvedProjectRoot, { withFileTypes: true });
   const operations = [];
   for (const entry of rootEntries) {
-    if (RESERVED.has(entry.name) || entry.name === 'inputs' || ignoredEntry(entry.name)) continue;
+    if (reservedEntry(entry.name) || entry.name === 'inputs' || ignoredEntry(entry.name)) continue;
     operations.push({ source: path.join(resolvedProjectRoot, entry.name), target: path.join(inputDir, entry.name), display: entry.name });
   }
 
@@ -91,7 +98,7 @@ export async function initializeProject(projectRoot, options = {}) {
   if (await exists(legacyInputDir) && await directoryEmpty(legacyInputDir)) await fs.rmdir(legacyInputDir);
   return {
     projectName, projectRoot: resolvedProjectRoot, inputDir, outputsDir,
-    moved, skipped: rootEntries.filter((entry) => RESERVED.has(entry.name) || ignoredEntry(entry.name)).map((entry) => entry.name),
+    moved, skipped: rootEntries.filter((entry) => reservedEntry(entry.name) || ignoredEntry(entry.name)).map((entry) => entry.name),
     conflicts: [], created, initialized: created.length > 0 || moved.length > 0
   };
 }

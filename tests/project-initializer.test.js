@@ -137,3 +137,13 @@ test('项目根目录配置与隐藏文件保留原位', async () => {
   assert.equal(await present(path.join(f.projectRoot, '.local-note')), true);
   assert.equal(await present(path.join(f.projectRoot, 'input', 'masterpiece-os.json')), false);
 });
+
+test('项目级 Project Brief 保留在根目录且不作为视觉素材移动', async () => {
+  const f = await fixture();
+  const brief = path.join(f.projectRoot, 'Project Brief.md');
+  await fs.writeFile(brief, '# Project Brief');
+  const result = await initializeProject(f.projectRoot, { projectsRoot: f.projectsRoot });
+  assert.equal(await present(brief), true);
+  assert.equal(await present(path.join(result.inputDir, 'Project Brief.md')), false);
+  assert.ok(result.skipped.includes('Project Brief.md'));
+});

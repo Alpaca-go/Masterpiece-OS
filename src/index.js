@@ -13,3 +13,4 @@ export { buildBriefReview } from './brief-review.js';
 export { initializeProject, formatInitializationSummary, ProjectInitializationError } from './project-initializer.js';
 export { listProjects, selectProject } from './project-selector.js';
 export { getProjectPaths, validateProjectName, DEFAULT_PROJECTS_ROOT } from './project-paths.js';
+export { loadProjectBrief, DEFAULT_PROJECT_BRIEF, PROJECT_BRIEF_FILENAMES } from './project-brief.js';

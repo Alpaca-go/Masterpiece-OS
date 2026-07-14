@@ -12,6 +12,7 @@ import { buildDesignDecisions } from './design-decisions.js';
 import { buildBriefReview } from './brief-review.js';
 import { renderAll } from './report.js';
 import { readJson } from './utils.js';
+import { loadProjectBrief } from './project-brief.js';
 
 const MODE_ALIASES = {
   quick: 'quick', fast: 'quick',
@@ -43,8 +44,9 @@ function profiler() {
 
 export async function runPipeline(input, options = {}) {
   const totalStarted = performance.now();
-  const mode = normalizeMode(options.mode);
   const root = path.resolve(input);
+  const projectBrief = await loadProjectBrief(root, options);
+  const mode = normalizeMode(options.mode || projectBrief.defaultMode);
   const configPath = options.config ? path.resolve(options.config) : path.join(root, 'masterpiece-os.json');
   const config = await readJson(configPath, {});
   const output = path.resolve(options.output || path.join(root, options.outputName || 'outputs'));
@@ -62,8 +64,11 @@ export async function runPipeline(input, options = {}) {
   const { benchmarks, industryBenchmark } = await timing.asyncStage('benchmark', async () => {
     const benchmarkOptions = {
       ...options,
-      online: options.online === true || mode === 'studio',
-      benchmarkLimit: mode === 'studio' ? 8 : 5
+      online: options.online === true || mode === 'studio' || projectBrief.requirements.onlineBenchmarks,
+      benchmarkLimit: Math.max(
+        mode === 'studio' ? 8 : 5,
+        projectBrief.requirements.minBenchmarks
+      )
     };
     const benchmarkResult = await analyzeBenchmarks(inventory, brandLock, config, benchmarkOptions);
     return { benchmarks: benchmarkResult, industryBenchmark: buildIndustryBenchmark(benchmarkResult, config) };
@@ -85,7 +90,7 @@ export async function runPipeline(input, options = {}) {
   const creativeBrief = timing.syncStage('briefCompiler', () => compileCreativeBrief(analysis));
   const designDecisions = buildDesignDecisions(analysis, creativeBrief);
   const result = {
-    version: '3.3.0', mode, generatedAt: new Date().toISOString(), configPath, config,
+    version: '3.3.0', mode, generatedAt: new Date().toISOString(), configPath, config, projectBrief,
     inventory, brandLock, benchmarks, brandDnaDecision, creativeReasoning,
     analysis, creativeBrief, designDecisions
   };

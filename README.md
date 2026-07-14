@@ -30,6 +30,14 @@ npm run analyze -- --project "我的品牌"
 
 项目缺少标准目录时，初始化器会安全创建 `input/` 与 `outputs/`，并在无冲突时把根目录素材移入 `input/`。
 
+每次启动视觉分析都会自动读取 [`docs/Project Brief.md`](docs/Project%20Brief.md) 作为 Pipeline 执行契约，并据此启用默认 Standard 模式、全部图片核验、至少三个同品类联网 Benchmark、七阶段 Profiling 与正式输出规则，无需把该文件复制到项目目录。
+
+如某个项目需要专属规则，可在项目根目录放置 `Project Brief.md` 或 `Project-Brief.md`；项目级文件优先于默认文档，并会被初始化器保留在根目录。也可以显式指定：
+
+```bash
+npm run analyze -- --project "我的品牌" --project-brief "D:/briefs/custom.md"
+```
+
 ## 分析模式
 
 ### Quick

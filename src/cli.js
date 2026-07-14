@@ -34,6 +34,7 @@ Quick 仅输出：
 
 选项：
   --project          projects/ 下的一级项目名称；只有一个项目时可省略
+  --project-brief    可选的项目级执行 Brief；默认自动读取项目根目录或 docs/Project Brief.md
   -o, --output       直接素材目录模式的输出目录；项目模式固定写入项目 outputs/
   -c, --config       JSON 配置文件；项目模式默认读取项目根目录 masterpiece-os.json
   --mode             quick、standard（默认）或 studio
@@ -52,13 +53,13 @@ function parseArgs(args) {
     else if (arg === '--quick') options.mode = 'quick';
     else if (arg === '--standard' || arg === '--review') options.mode = 'standard';
     else if (arg === '--studio' || arg === '--research') options.mode = 'studio';
-    else if (['--output', '-o', '--config', '-c', '--name', '--thinking-dir', '--knowledge-dir', '--history-dir', '--project', '--mode'].includes(arg)) {
+    else if (['--output', '-o', '--config', '-c', '--name', '--thinking-dir', '--knowledge-dir', '--history-dir', '--project', '--project-brief', '--mode'].includes(arg)) {
       const value = args[++i];
       if (!value || value.startsWith('-')) throw new Error(`${arg} 缺少参数值`);
       const key = ({
         '--output': 'output', '-o': 'output', '--config': 'config', '-c': 'config', '--name': 'name',
         '--thinking-dir': 'thinkingDir', '--knowledge-dir': 'thinkingDir', '--history-dir': 'historyDir',
-        '--project': 'project', '--mode': 'mode'
+        '--project': 'project', '--project-brief': 'projectBrief', '--mode': 'mode'
       })[arg];
       options[key] = value;
     } else if (arg.startsWith('-')) throw new Error(`未知选项：${arg}`);
@@ -176,6 +177,7 @@ export async function main(args) {
       console.log(formatInitializationSummary(initialized));
       input = initialized.inputDir;
       pipelineOptions.output = initialized.outputsDir;
+      pipelineOptions.projectRoot = selected.projectRoot;
       delete pipelineOptions.project;
       try {
         await fs.access(selected.configFile);
@@ -185,6 +187,7 @@ export async function main(args) {
       }
     }
     const { result, output } = await runPipeline(input, pipelineOptions);
+    console.log(`执行 Brief：${result.projectBrief.path}（${result.projectBrief.source}）`);
     console.log(`Creative Brief 已完成：${result.brandLock.brandName}`);
     console.log(`分析模式：${result.mode}`);
     console.log(`素材 ${result.inventory.totalFiles} 个，其中图片 ${result.inventory.imageCount} 张`);
