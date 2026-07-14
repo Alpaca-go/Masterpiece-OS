@@ -1,11 +1,12 @@
 {
   "name": "design-factory-pack",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Design Factory OS：生成品牌视觉规划、Knowledge Candidate 与 Knowledge Analysis",
   "type": "module",
   "bin": { "design-factory": "./bin/design-factory.js" },
   "scripts": {
     "start": "node ./bin/design-factory.js",
+    "analyze": "node ./bin/design-factory.js analyze",
     "test": "node --test",
     "test:regression": "node ./tests/regression-runner.js"
   },

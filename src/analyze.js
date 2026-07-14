@@ -89,7 +89,7 @@ function extractColors(inventory, configured = []) {
 export function buildBrandLock(inventory, config = {}) {
   const text = allText(inventory);
   const name = config.brand?.name || config.projectName || nameFromFiles(inventory);
-  const logos = inventory.items.filter((x) => /(logo|标志|标识|品牌标)/i.test(x.name)).map((x) => x.path);
+  const logos = unique([...(config.brand?.logoFiles || []), ...inventory.items.filter((x) => /(logo|标志|标识|品牌标)/i.test(x.name)).map((x) => x.path)]);
   const extractedColors = extractColors(inventory, [config.brand?.primaryColor, ...(config.brand?.secondaryColors || [])]);
   const industry = config.industry || detectByKeywords(`${name} ${text}`, INDUSTRIES, '综合/待确认').value;
   const temperament = config.brand?.fontTemperament || ({
@@ -140,8 +140,11 @@ export async function analyzeBenchmarks(inventory, brandLock, config = {}, optio
     ? { value: config.projectType, score: 99, evidence: ['项目配置'] }
     : detectByKeywords(text, TYPE_KEYWORDS, '品牌视觉优化');
   let cases = (config.benchmarks || []).map((x) => typeof x === 'string' ? { name: x, url: '', reason: '项目指定案例' } : x);
-  let search = { enabled: Boolean(options.online), status: '未启用（使用内置策展案例库）', query: null };
-  if (options.online) {
+  const verifiedResearch = config.benchmarkResearch?.verified === true;
+  let search = verifiedResearch
+    ? { enabled: true, status: config.benchmarkResearch.status || `已通过外部联网检索核验 ${cases.length} 个案例`, query: config.benchmarkResearch.query || null, verifiedAt: config.benchmarkResearch.verifiedAt || null }
+    : { enabled: Boolean(options.online), status: '未启用（使用内置策展案例库）', query: null };
+  if (options.online && !verifiedResearch) {
     search.query = `${industryResult.value} ${typeResult.value} 优秀品牌设计案例`;
     try {
       const found = await onlineBenchmarks(search.query);
@@ -178,6 +181,12 @@ function classifyExistingImages(inventory) {
 
 export function buildGapAnalysis(inventory, benchmarks, config = {}) {
   const existing = classifyExistingImages(inventory);
+  for (const [type, count] of Object.entries(config.existingImageTypes || {})) {
+    existing.counts[type] = Math.max(0, Number(count) || 0);
+  }
+  for (const [type, evidence] of Object.entries(config.existingImageEvidence || {})) {
+    existing.evidence[type] = Array.isArray(evidence) ? evidence : [String(evidence)];
+  }
   const benchmarkNeeds = config.imageTargets || {
     'logo': 1, '包装正面': 1, '包装侧面': 1, '包装背面': 1, '包装场景': 3, '产品特写': 2,
     '品牌标准字': 1, '色彩规范': 1, '字体规范': 1, '图形纹样': 2, '图标系统': 1,

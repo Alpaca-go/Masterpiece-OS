@@ -22,7 +22,7 @@ export async function runPipeline(input, options = {}) {
   const gaps = buildGapAnalysis(inventory, benchmarks, config);
   const imagePlan = buildImagePlan(gaps, brandLock, config);
   const priorities = buildPriorities(brandLock, gaps);
-  const result = { version: '1.1.0', generatedAt: new Date().toISOString(), configPath, config, inventory, brandLock, benchmarks, gaps, imagePlan, priorities };
+  const result = { version: '1.2.0', generatedAt: new Date().toISOString(), configPath, config, inventory, brandLock, benchmarks, gaps, imagePlan, priorities };
   const knowledgeApprovedPath = options.knowledgeDir
     ? path.resolve(options.knowledgeDir)
     : config.knowledgeApprovedPath

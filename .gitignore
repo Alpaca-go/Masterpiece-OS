@@ -6,7 +6,10 @@ coverage/
 
 # 项目数据永远保留在本地
 Design-Factory-Projects/
-Projects/
+
+# 保留 projects 目录本身，忽略其中所有真实项目
+projects/*
+!projects/.gitkeep
 
 # 客户源文件与交付物
 *.psd
@@ -14,6 +17,10 @@ Projects/
 *.cdr
 *.pdf
 *.zip
+*.rar
+*.7z
 outputs/
 Review.md
 Chat生图任务包.md
+Knowledge-Candidate.md
+Knowledge-Analysis.md

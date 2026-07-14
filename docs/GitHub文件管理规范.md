@@ -16,17 +16,19 @@
 - `knowledge/`：至少经过两个项目验证、可迁移且不包含客户信息的经验
 - `tests/`：测试脚本与脱敏夹具
 - `examples/`：完全自制或已脱敏并明确标识的 Demo
+- `projects/.gitkeep`：仅用于保留本地项目容器目录
 - 系统源码、README、Roadmap、Changelog、License 与版本文件
 
 ## 禁止提交
 
 - `Design-Factory-Projects/` 或任何真实项目目录
+- `projects/` 下除 `.gitkeep` 之外的任何真实项目内容
 - PSD、AI、CDR、PDF、ZIP 等客户源文件
 - 客户 Logo、包装刀版、Brief、合同与商业资料
 - 最终 PNG/JPG 和其他生成结果
 - `Review.md`、`Chat生图任务包.md`、修改记录与客户交付文件
 
-真实项目建议存放在本仓库之外的同级目录 `Design-Factory-Projects/`。
+真实项目默认存放在仓库内的 `projects/`，该目录内容已由 `.gitignore` 排除；也可继续存放在仓库外的同级目录 `Design-Factory-Projects/`。无论采用哪种方式，真实素材和交付物都不得进入 Git。
 
 ## Knowledge 准入规则
 
