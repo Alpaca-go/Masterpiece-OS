@@ -6,18 +6,21 @@ import { initializeProject, formatInitializationSummary } from './project-initia
 import { selectProject } from './project-selector.js';
 import { ensureDir, writeText } from './utils.js';
 import { formatPerformanceProfile } from './performance-profiler.js';
+import { formatValidationCheck, validateProjectDelivery } from './validation-check.js';
 
 const HELP = `Masterpiece-OS v4.0 — AI Creative Director Operating System
 
 用法：
   masterpiece-os analyze --project <项目名称> [--mode quick|standard|studio] [--online] [--profile]
   masterpiece-os analyze <素材目录> [--output <目录>] [--config <文件>] [--mode <模式>]
+  masterpiece-os validate --project <项目名称>
   masterpiece-os inventory <素材目录> [--json]
   masterpiece-os init <项目目录> [--name <品牌名>]
   masterpiece-os help
 
 命令：
   analyze    运行可测量的品牌理解与 Creative Brief Pipeline
+  validate   运行毫秒级项目交付检查，不执行完整开发测试
   inventory  盘点 ZIP、PDF、PPT/PPTX、图片及常用文本素材
   init       创建独立项目配置模板和 assets 目录
 
@@ -155,6 +158,18 @@ export async function main(args) {
     }
     return;
   }
+  if (command === 'validate') {
+    if (positional.length > 1) throw new Error('validate 最多接受一个项目目录');
+    if (positional[0] && options.project) throw new Error('不能同时使用项目目录和 --project');
+    const projectRoot = positional[0]
+      ? path.resolve(positional[0])
+      : (await selectProject({ projectName: options.project })).projectRoot;
+    const result = await validateProjectDelivery(projectRoot);
+    if (options.json) console.log(JSON.stringify(result, null, 2));
+    else console.log(formatValidationCheck(result));
+    if (result.status !== 'PASS') process.exitCode = 1;
+    return;
+  }
   if (command === 'analyze') {
     if (positional.length > 1) throw new Error('analyze 最多接受一个素材目录');
     if (positional[0] && options.project) throw new Error('不能同时使用素材目录和 --project，请选择一种分析模式');
@@ -185,7 +200,9 @@ export async function main(args) {
     console.log(`State Readiness：${result.state.governance.readiness}`);
     console.log(`Creative Freedom：${result.compilation.creativeFreedom.recommendation.freedom}% / ${result.compilation.creativeFreedom.recommendation.mode}`);
     console.log(`输出文件：${result.outputFiles.join('、')}`);
+    if (result.validationReport) console.log(`Validation Report：${result.validationReport.filename}`);
     printPerformance(result.performance);
+    console.log(`完整交付耗时：${Math.round(result.handoff.handoffDurationMs / 1000)} 秒`);
     console.log(`输出目录：${output}`);
     return;
   }

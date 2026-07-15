@@ -7,6 +7,7 @@
   "scripts": {
     "start": "node ./bin/masterpiece-os.js",
     "analyze": "node ./bin/masterpiece-os.js analyze",
+    "validate": "node ./bin/masterpiece-os.js validate",
     "test": "node --test",
     "test:regression": "node ./tests/regression-runner.js"
   },

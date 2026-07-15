@@ -112,3 +112,14 @@ export {
   V4_QUICK_OUTPUT_FILES,
   runV4Pipeline
 } from './v4-bootstrap.js';
+export {
+  VALIDATION_REPORT_PREFIX,
+  validationReportFilename,
+  createHandoffTiming,
+  renderValidationReport,
+  publishValidationReport
+} from './validation-report.js';
+export {
+  validateProjectDelivery,
+  formatValidationCheck
+} from './validation-check.js';

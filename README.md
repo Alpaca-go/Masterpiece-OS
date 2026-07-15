@@ -63,6 +63,14 @@ npm run analyze -- --project "我的品牌" --mode quick
 04-Design-Review.md
 ```
 
+当 Project Brief 包含 Validation Report 契约时，Pipeline 还会自动生成项目级验证记录：
+
+```text
+Masterpiece OS v4.0 Validation Report — <项目名称>.md
+```
+
+该文件记录 Creative Freedom、三态分类、正式输出完成时间与完整交付时间，但不计入四份正式输出契约。
+
 ### Studio
 
 用于正式品牌项目与深度行业研究；自动启用在线对标候选，正式输出仍为同样四份文件：
@@ -144,7 +152,15 @@ Original Intent
 npm run analyze -- --project "我的品牌" --debug
 ```
 
-这会生成 `outputs/debug/performance.json`。它是调试数据，不属于正式输出，也不会写入任何项目报告。旧 `--profile` 参数继续作为只写 Performance JSON 的兼容入口。
+这会生成 `outputs/debug/performance.json`。它是调试数据，不属于正式输出。旧 `--profile` 参数继续作为只写 Performance JSON 的兼容入口。
+
+日常项目 Validation 不需要运行完整开发测试。四份输出和 Validation Report 生成后，可执行毫秒级交付检查：
+
+```bash
+npm run validate -- --project "我的品牌"
+```
+
+该命令只检查 Active State、Digest、四份正式输出、Validation Report、Design Review 和 Runtime GPT Brief 边界。`npm test` 保留给代码、Prompt 或 Architecture 发生变化时的开发回归。
 
 ## GPT 协作边界
 
