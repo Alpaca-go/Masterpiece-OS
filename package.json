@@ -1,7 +1,7 @@
 {
   "name": "masterpiece-os",
-  "version": "3.3.0",
-  "description": "Masterpiece-OS：将完整品牌分析压缩为面向设计团队与 GPT 的专业 Creative Brief",
+  "version": "4.0.0",
+  "description": "Masterpiece OS v4.0：Think Once, Compile Many 的 AI Creative Director Operating System",
   "type": "module",
   "bin": { "masterpiece-os": "./bin/masterpiece-os.js" },
   "scripts": {

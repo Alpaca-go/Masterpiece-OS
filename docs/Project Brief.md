@@ -1,123 +1,119 @@
-# Masterpiece OS v3.3 - Project Startup Template (For Codex)
+# Masterpiece OS v4.0
+# Project Brief
 
-## Startup Principle
-
-> Masterpiece OS 的最终目标不是生成文档。
+> Version：v4.0
 >
-> Masterpiece OS 的最终目标是生成一份真正能够指导优秀设计的 Creative Brief。
+> 当前阶段：
 >
-> 不要为了分析而分析。
-> 不要为了生成 Markdown 而生成 Markdown。
-> 不要为了增加流程而增加流程。
->
-> 整个 Creative Pipeline 的最终价值只有一个：
->
-> **帮助 GPT 更准确地理解品牌，并输出更高质量的设计。**
+> Validation Phase（Feature Freeze）
 
 ---
 
-## Mission
+# Startup Principle
 
-本次任务不是开发功能，不是修改 Prompt，不是生成图片。
+Masterpiece OS 的职责不是生成更多分析。
 
-目标只有一个：
+Masterpiece OS 的职责是：
 
-执行 Masterpiece OS v3.3 Creative Pipeline。
+**帮助 GPT 更准确地理解品牌，并输出更高质量的设计。**
+
+本次任务属于：
+
+真实项目验证（Validation）。
+
+不是开发任务。
+
+不是调试任务。
+
+不要修改代码。
+
+不要修改 Prompt。
+
+不要修改 Architecture。
+
+不要新增任何功能。
+
+严格按照当前 v4.0 Pipeline 执行。
 
 ---
 
-## 项目信息
+# Project
 
-项目：<项目名称>
+项目名称：
 
-目录：
+<项目名称>
+
+项目目录：
 
 projects/<项目名称>/
 
-模式：
+分析模式：
 
-- Quick
-- Standard（默认）
-- Studio
+Standard
 
----
+Creative Freedom：
 
-## Pipeline
-
-1. Read Assets
-2. Original Intent
-3. Industry Benchmark
-4. Creative Decision
-5. Analysis
-6. Creative Brief Compiler
-7. Design Review
+Auto
 
 ---
 
-## 素材读取
+# Design Goal
 
-必须实际查看全部图片。
+根据当前项目，生成：
 
-禁止仅依据：
+- 4 张品牌海报
+- 4 张包装设计
+- 4 张 VI 应用
 
-- 文件名
-- OCR
-- 元数据
-- 关键词
-
-识别品牌、行业、Logo、字体、色彩、包装结构、品牌气质和 Original Intent。
+（根据实际项目自行修改。）
 
 ---
 
-## Industry Benchmark
+# Locked Assets（用户强制锁定）
 
-联网分析至少三个真正同品类优秀案例。
+以下资产绝对不能修改：
 
-不得跨行业。
+- 品牌名称
+- Logo
+- 包装结构
+- 行业属性
 
-总结行业共同趋势。
-
----
-
-## Creative Decision
-
-综合：
-
-- Original Intent
-- Industry Benchmark
-- 专业设计判断
-
-输出 Approved Brand DNA。
+其它资产由 Masterpiece 自动判断。
 
 ---
 
-## Creative Brief Compiler
+# Success Priority
 
-Creative Brief：
+本项目优先级：
 
-不是 Analysis。
+① 品牌一致性
 
-不是 Benchmark。
+② 视觉品质
 
-不是 Competitor Analysis。
+③ 创意突破
 
-遵守原则：
+当三者冲突时：
 
-Every sentence must help someone design.
-
-删除所有不能直接指导设计的信息。
+按照以上顺序进行权衡。
 
 ---
 
-## 输出规范
+# Special Notes（可选）
 
-Quick：
+例如：
 
-仅输出：
+- 用于 Behance 展示
+- 允许大胆摄影
+- 不允许修改品牌名称
+- 保留现有 IP 形象
 
-02-Creative-Brief.md
+没有特殊要求可留空。
 
-Standard / Studio：
+---
+
+# Expected Output
+
+完成分析后，输出：
 
 01-Analysis.md
 
@@ -129,53 +125,54 @@ Standard / Studio：
 
 ---
 
-## Performance Profiling
+# Validation Report
 
-统计：
+分析结束后，请汇报：
 
-- Read Assets
-- Original Intent
-- Benchmark
-- Creative Decision
-- Analysis
-- Brief Compiler
-- Review
-
-默认输出控制台。
-
-不要写入正式输出文件。
+- 实际分析耗时
+- Creative Freedom 推荐值
+- Recommended Mode
+- Locked / Evolve / Flexible 分类结果
+- 输出文件列表
+- 是否达到 Performance Target（10～11 分钟）
 
 ---
 
-## 完成后汇报
+# Stop Rule
 
-1. 分析模式
-2. 图片数量
-3. Original Intent
-4. Industry Benchmark
-5. Approved Brand DNA
-6. Creative Brief
-7. 输出文件
-8. 各阶段耗时
-9. 总耗时
-10. 是否修改代码
+分析完成后：
+
+立即停止。
+
+等待用户进行 GPT 生图验证。
+
+不要继续开发。
+
+不要继续修改项目。
+
+不要进入下一版本。
 
 ---
 
-## Final Reminder
+# Final Principle
 
-Masterpiece OS 负责：
+Masterpiece：
 
-- 品牌理解
-- Brand DNA
-- Creative Brief
+负责：
 
-GPT 负责：
+- 理解品牌
+- 制定 Creative Strategy
+- 定义 Design Constraints
+- 输出 Creative Brief
+
+GPT：
+
+负责：
 
 - 创意发挥
 - 图片规划
 - 图片生成
 
-最终目标：
+Masterpiece 的目标不是生成更多文档。
 
-帮助 GPT 更准确理解品牌，而不是生成更多文档。
+而是帮助 GPT 在最短时间内进入正确的创意状态。

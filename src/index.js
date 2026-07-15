@@ -76,3 +76,24 @@ export {
   createPerformanceProfiler,
   formatPerformanceProfile
 } from './performance-profiler.js';
+export {
+  BRAND_UNDERSTANDING_PROVIDER_ID,
+  BrandUnderstandingProviderError,
+  runBrandUnderstandingProvider
+} from './brand-understanding-provider.js';
+export {
+  INDUSTRY_BENCHMARK_PROVIDER_ID,
+  IndustryBenchmarkProviderError,
+  runIndustryBenchmarkProvider
+} from './industry-benchmark-provider.js';
+export {
+  CREATIVE_DECISION_IR_BUILDER_ID,
+  CreativeDecisionIrBuilderError,
+  buildCreativeDecisionIR
+} from './creative-decision-ir-builder.js';
+export {
+  V4_PIPELINE_ID,
+  V4_STANDARD_OUTPUT_FILES,
+  V4_QUICK_OUTPUT_FILES,
+  runV4Pipeline
+} from './v4-bootstrap.js';

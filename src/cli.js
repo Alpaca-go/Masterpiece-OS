@@ -1,13 +1,13 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { inventoryProject } from './inventory.js';
-import { runPipeline } from './pipeline.js';
+import { runV4Pipeline } from './v4-bootstrap.js';
 import { initializeProject, formatInitializationSummary } from './project-initializer.js';
 import { selectProject } from './project-selector.js';
 import { ensureDir, writeText } from './utils.js';
 import { formatPerformanceProfile } from './performance-profiler.js';
 
-const HELP = `Masterpiece-OS v3.3 — Creative Brief Operating System
+const HELP = `Masterpiece-OS v4.0 — AI Creative Director Operating System
 
 用法：
   masterpiece-os analyze --project <项目名称> [--mode quick|standard|studio] [--online] [--profile]
@@ -22,7 +22,7 @@ const HELP = `Masterpiece-OS v3.3 — Creative Brief Operating System
   init       创建独立项目配置模板和 assets 目录
 
 Creative Pipeline：
-  Assets → Original Intent → Industry Benchmark → Creative Decision → Analysis → Brief Compiler → Review
+  Assets → Brand Understanding → Industry Benchmark → Creative Decision State → Compiler Pipeline → Outputs
 
 Standard / Studio 固定输出：
   01-Analysis.md
@@ -176,13 +176,14 @@ export async function main(args) {
         if (error.code !== 'ENOENT') throw error;
       }
     }
-    const { result, output } = await runPipeline(input, pipelineOptions);
+    const { result, output } = await runV4Pipeline(input, pipelineOptions);
     console.log(`执行 Brief：${result.projectBrief.path}（${result.projectBrief.source}）`);
-    console.log(`Creative Brief 已完成：${result.brandLock.brandName}`);
+    console.log(`v4 Active State：${result.state.meta.decisionId}`);
     console.log(`分析模式：${result.mode}`);
     console.log(`素材 ${result.inventory.totalFiles} 个，其中图片 ${result.inventory.imageCount} 张`);
-    console.log(`视觉核验：${result.creativeReasoning.visualInspection.inspectedImageCount}/${result.creativeReasoning.visualInspection.totalImages} 张`);
-    console.log(`Brand DNA Decision：${result.brandDnaDecision.status}`);
+    console.log(`视觉核验：${result.brandUnderstanding.visualInspection.inspectedImages.length}/${result.inventory.imageCount} 张`);
+    console.log(`State Readiness：${result.state.governance.readiness}`);
+    console.log(`Creative Freedom：${result.compilation.creativeFreedom.recommendation.freedom}% / ${result.compilation.creativeFreedom.recommendation.mode}`);
     console.log(`输出文件：${result.outputFiles.join('、')}`);
     printPerformance(result.performance);
     console.log(`输出目录：${output}`);

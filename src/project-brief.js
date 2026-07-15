@@ -33,14 +33,15 @@ async function findProjectBrief(projectRoot) {
 }
 
 function requirementsFrom(content) {
+  const v4Contract = /Masterpiece\s*OS\s*v4\.0|Version\s*[：:]\s*v4\.0/i.test(content);
   const defaultMatch = content.match(/\b(Quick|Standard|Studio)\s*[（(]\s*默认\s*[）)]/i);
   const defaultMode = (defaultMatch?.[1] || 'standard').toLowerCase();
-  const minBenchmarks = /至少\s*(?:3|三)\s*个/.test(content) ? 3 : 0;
+  const minBenchmarks = v4Contract || /至少\s*(?:3|三)\s*个/.test(content) ? 3 : 0;
   return {
     defaultMode,
-    visualInspection: /必须实际查看全部图片/.test(content),
-    onlineBenchmarks: /联网分析/.test(content),
-    sameIndustryBenchmarks: /不得跨行业/.test(content),
+    visualInspection: v4Contract || /必须实际查看全部图片/.test(content),
+    onlineBenchmarks: v4Contract || /联网分析/.test(content),
+    sameIndustryBenchmarks: v4Contract || /不得跨行业/.test(content),
     minBenchmarks,
     performanceProfiling: /Performance Profiling/i.test(content),
     standardOutputs: [
