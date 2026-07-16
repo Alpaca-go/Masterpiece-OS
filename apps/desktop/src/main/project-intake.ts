@@ -29,9 +29,17 @@ const INDUSTRY_SIGNALS: Array<{ pattern: RegExp; industry: string; confidence: n
   { pattern: /地产|住宅|商业空间|建筑|家居|家具/i, industry: '地产 / 空间 / 家居', confidence: 0.74 }
 ];
 
+const GENERIC_PROJECT_NAMES = new Set([
+  'input', 'images', 'image', 'jpg', 'jpeg', 'png', 'webp', 'pdf', 'zip',
+  'visual', 'assets', 'files', 'upload', 'uploads', 'project', 'design',
+  '项目', '品牌', '方案', '视觉方案', '打包文件', '新建文件夹', '未命名'
+]);
+
+const EXCLUDED_NAME_SIGNALS = /站酷|zcool|behance|dribbble|pinterest|作品集|portfolio|mockup|样机|template|模板|watermark|水印|设计师|designer|design\s*by|designed\s*by|adobe|photoshop|illustrator|figma|masterpiece\s*os/i;
+
 function timestampName(now: Date): string {
   const pad = (value: number) => String(value).padStart(2, '0');
-  return `未命名视觉项目-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+  return `视觉项目-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 }
 
 function filenameStem(sourcePath: string): string {
@@ -52,27 +60,42 @@ function commonPrefix(values: string[]): string {
     .trim();
 }
 
+function cleanCandidate(value: string): string {
+  return value
+    .replace(/\.(?:jpe?g|png|webp|pdf|zip)$/i, '')
+    .replace(/(?:品牌)?(?:视觉方案|设计方案|品牌手册|视觉手册|VI手册|VI|design|proposal|presentation|最终版|终稿)+$/gi, '')
+    .replace(/^[\s._\-—–()（）【】\[\]0-9]+|[\s._\-—–()（）【】\[\]0-9]+$/g, '')
+    .trim();
+}
+
+export function isUsableProjectName(value: string): boolean {
+  const cleaned = cleanCandidate(value);
+  if (cleaned.length < 2 || cleaned.length > 80) return false;
+  if (GENERIC_PROJECT_NAMES.has(cleaned.toLowerCase())) return false;
+  if (EXCLUDED_NAME_SIGNALS.test(cleaned)) return false;
+  return true;
+}
+
 export function deriveProjectName(sources: IntakeSource[], now = new Date()): { projectName: string; projectNameSource: ProjectNameSource } {
   const archive = sources.find((source) => !source.isDirectory && path.extname(source.sourcePath).toLowerCase() === '.zip');
-  if (archive && filenameStem(archive.sourcePath)) {
-    return { projectName: filenameStem(archive.sourcePath), projectNameSource: 'uploaded-archive-name' };
+  if (archive && isUsableProjectName(filenameStem(archive.sourcePath))) {
+    return { projectName: cleanCandidate(filenameStem(archive.sourcePath)), projectNameSource: 'uploaded-archive-name' };
   }
   const folder = sources.find((source) => source.isDirectory);
-  if (folder && path.basename(folder.sourcePath).trim()) {
-    return { projectName: path.basename(folder.sourcePath).trim(), projectNameSource: 'uploaded-folder-name' };
+  if (folder && isUsableProjectName(path.basename(folder.sourcePath))) {
+    return { projectName: cleanCandidate(path.basename(folder.sourcePath)), projectNameSource: 'uploaded-folder-name' };
   }
   const stems = sources.filter((source) => !source.isDirectory).map((source) => filenameStem(source.sourcePath)).filter(Boolean);
   const prefix = commonPrefix(stems);
-  if (prefix.length >= 2) return { projectName: prefix, projectNameSource: 'common-file-prefix' };
-  if (stems.length === 1 && stems[0]) return { projectName: stems[0], projectNameSource: 'common-file-prefix' };
+  if (isUsableProjectName(prefix)) return { projectName: cleanCandidate(prefix), projectNameSource: 'common-file-prefix' };
+  if (stems.length === 1 && stems[0] && isUsableProjectName(stems[0])) {
+    return { projectName: cleanCandidate(stems[0]), projectNameSource: 'common-file-prefix' };
+  }
   return { projectName: timestampName(now), projectNameSource: 'fallback-datetime' };
 }
 
 function detectBrandName(projectName: string): string {
-  const cleaned = projectName
-    .replace(/(?:品牌)?(?:视觉方案|设计方案|品牌手册|视觉手册|VI手册|VI|design|proposal|presentation|最终版|终稿)+$/gi, '')
-    .replace(/[\s._\-—–()（）【】\[\]]+$/g, '')
-    .trim();
+  const cleaned = cleanCandidate(projectName);
   return cleaned || projectName;
 }
 

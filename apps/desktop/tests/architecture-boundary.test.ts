@@ -45,9 +45,10 @@ test('default Windows artifact is portable and does not create an installer', as
   assert.match(rootPackage, /desktop:package[^\n]+package:portable/);
 });
 
-test('new analysis UI contains only intake actions and no metadata form', async () => {
+test('new analysis UI contains intake actions and API Profile choice without metadata form', async () => {
   const source = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'ProjectWizard.tsx'), 'utf8');
-  assert.doesNotMatch(source, /<input|<textarea|<select/);
+  assert.doesNotMatch(source, /<input|<textarea/);
+  assert.match(source, /分析模型/);
   assert.doesNotMatch(source, /choose\('logo'\)|choose\('brief'\)/);
   assert.match(source, /选择文件夹/);
   assert.match(source, /开始分析/);

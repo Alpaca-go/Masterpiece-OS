@@ -10,7 +10,7 @@ test('project name follows ZIP, folder, common prefix, then timestamp priority',
 
   assert.deepEqual(deriveProjectName([
     { sourcePath: 'C:/方案/名济堂视觉方案', isDirectory: true }
-  ]), { projectName: '名济堂视觉方案', projectNameSource: 'uploaded-folder-name' });
+  ]), { projectName: '名济堂', projectNameSource: 'uploaded-folder-name' });
 
   assert.deepEqual(deriveProjectName([
     { sourcePath: 'C:/方案/蛙耶-01.png', isDirectory: false },
@@ -21,7 +21,14 @@ test('project name follows ZIP, folder, common prefix, then timestamp priority',
     { sourcePath: 'C:/方案/A.png', isDirectory: false },
     { sourcePath: 'C:/方案/B.pdf', isDirectory: false }
   ], new Date(2026, 6, 16, 9, 8, 7)), {
-    projectName: '未命名视觉项目-20260716-090807',
+    projectName: '视觉项目-20260716-090807',
+    projectNameSource: 'fallback-datetime'
+  });
+
+  assert.deepEqual(deriveProjectName([
+    { sourcePath: 'C:/方案/input.zip', isDirectory: false }
+  ], new Date(2026, 6, 16, 9, 8, 7)), {
+    projectName: '视觉项目-20260716-090807',
     projectNameSource: 'fallback-datetime'
   });
 });

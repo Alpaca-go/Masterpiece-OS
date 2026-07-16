@@ -5,6 +5,7 @@ import {
   buildFusionEnhancedTask,
   buildReportFilename,
   desktopFactualConstraints,
+  extractProjectNameFromReport,
   normalizeReportTitle,
   redactSecret,
   sanitizeFilenamePart,
@@ -37,6 +38,9 @@ test('report title is project-specific and final decision check fails closed', (
   assert.match(normalized, /^# 九州美学视觉方案升级报告/);
   assert.doesNotThrow(() => validateDesktopReport(normalized));
   assert.throws(() => validateDesktopReport('# incomplete'), /缺少章节/);
+  assert.equal(extractProjectNameFromReport('# 九州美学视觉方案升级报告\n\n正文'), '九州美学');
+  assert.equal(extractProjectNameFromReport('# input视觉方案升级报告\n\n正文'), null);
+  assert.equal(extractProjectNameFromReport('# 站酷作品集视觉方案升级报告\n\n正文'), null);
 });
 
 test('path boundary and secret redaction fail safely', () => {

@@ -7,6 +7,7 @@ import {
   buildFusionEnhancedTask,
   buildReportFilename,
   desktopFactualConstraints,
+  extractProjectNameFromReport,
   normalizeReportTitle,
   redactSecret,
   validateDesktopReport
@@ -19,12 +20,12 @@ import type { ProviderCredentials } from './settings-store';
 import { createQwenReasoner } from '../../../../src/v5/adapters/qwen-reasoner.js';
 
 type ProgressSink = (progress: AnalysisProgress) => void;
-type CredentialsReader = () => Promise<ProviderCredentials>;
+type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
 type SettingsReader = () => Promise<PublicSettings>;
 
 interface ActiveRun {
   controller: AbortController;
-  started: number;
+  startedAt: string;
 }
 
 function configurePromptRoot(): void {
@@ -64,57 +65,59 @@ export function createPipelineService(
 ) {
   const active = new Map<string, ActiveRun>();
 
-  async function start(projectId: string, forceReasoning = true): Promise<AnalysisResult> {
+  async function start(projectId: string, forceReasoning = true, apiProfileId?: string): Promise<AnalysisResult> {
     if (active.has(projectId)) throw new Error('该项目正在分析中');
-    const project = await projects.get(projectId);
     const summary = await projects.scan(projectId);
+    const project = await projects.get(projectId);
     if (!summary.totalFiles) throw new Error('项目素材为空，请先上传视觉方案');
     if (summary.imageCount + summary.pdfCount === 0) throw new Error('项目中没有可分析的图片或 PDF');
-    if (project.factConfidence.brandName <= 0 && project.factConfidence.industry <= 0) {
-      throw new Error('未识别到品牌或行业线索，请确保文件名、目录名或视觉方案中包含可识别信息');
-    }
     if (!project.logoLocked) throw new Error('Desktop 极简模式要求原始 Logo 默认锁定');
     if (project.outputLanguage !== 'zh-CN') throw new Error('Desktop 极简模式固定输出简体中文');
-    const credentials = await readCredentials();
+    const credentials = await readCredentials(apiProfileId || project.apiProfileId || undefined);
     const settings = await readSettings();
     const projectPaths = await projects.paths(projectId);
     const controller = new AbortController();
+    const startedAt = new Date().toISOString();
     const started = performance.now();
-    active.set(projectId, { controller, started });
+    let currentStage: AnalysisProgress['stage'] = 'preparing-assets';
+    active.set(projectId, { controller, startedAt });
 
     const progress = (
       stage: AnalysisProgress['stage'],
-      percent: number,
       message: string,
       extra: Partial<AnalysisProgress> = {}
-    ) => emitProgress({
-      projectId,
-      stage,
-      progress: percent,
-      message,
-      elapsedMs: Math.round(performance.now() - started),
-      assetCount: summary.totalFiles,
-      model: credentials.model,
-      ...extra
-    });
+    ) => {
+      currentStage = stage;
+      emitProgress({
+        projectId,
+        stage,
+        message,
+        startedAt,
+        elapsedMs: Math.round(performance.now() - started),
+        assetCount: summary.totalFiles,
+        model: credentials.model,
+        ...extra
+      });
+    };
 
     await projects.update(projectId, {
       status: 'running',
       provider: credentials.provider,
       model: credentials.model,
+      apiProfileId: credentials.profileId,
       lastError: null
     });
 
+    const configPath = path.join(projectPaths.runtime, 'masterpiece-os-v5.json');
     try {
-      progress('preparing-assets', 8, '正在检查视觉素材', {
+      progress('preparing-assets', '正在整理视觉素材', {
         cacheStatus: forceReasoning ? 'forced' : 'checking'
       });
-      progress('locking-facts', 18, '正在锁定品牌事实');
-      const configPath = path.join(projectPaths.runtime, 'masterpiece-os-v5.json');
+      progress('extracting-project-facts', '正在识别项目与品牌信息');
       const config = {
         version: '5.0',
         projectName: project.projectName,
-        userTask: buildFusionEnhancedTask(project.description),
+        userTask: buildFusionEnhancedTask(project.description, project.projectName),
         brandFacts: {
           brandName: project.brandName,
           industry: project.industry,
@@ -142,7 +145,7 @@ export function createPipelineService(
       };
       await fs.writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
       configurePromptRoot();
-      progress('building-prompt', 30, '正在构建融合增强分析任务');
+      progress('building-contact-sheet', '正在生成视觉总览');
 
       const baseReasoner = createQwenReasoner({
         apiKey: credentials.apiKey,
@@ -150,14 +153,16 @@ export function createPipelineService(
         baseUrl: credentials.baseUrl
       });
       const reasoner = async (context: Record<string, unknown> & { signal: AbortSignal }) => {
-        progress('reasoning', 48, '正在执行融合增强分析', {
+        progress('building-prompt', '正在构建分析任务');
+        await Promise.resolve();
+        progress('reasoning', '正在执行深度创意导演分析', {
           cacheStatus: forceReasoning ? 'forced' : 'miss'
         });
         const supplied = await baseReasoner({
           ...context,
           signal: combineSignals(context.signal, controller.signal)
         });
-        progress('generating-report', 82, '正在生成视觉升级报告');
+        progress('generating-report', '正在生成视觉方案升级报告');
         return { ...supplied, provider: providerLabel(credentials.provider) };
       };
 
@@ -175,37 +180,59 @@ export function createPipelineService(
       });
       if (controller.signal.aborted) throw new DOMException('用户主动取消', 'AbortError');
 
-      progress('validating-output', 92, '正在校验输出文件');
+      progress('validating-output', '正在校验报告');
       const coreReportPath = path.join(projectPaths.outputs, execution.result.outputFile);
       const rawReport = await fs.readFile(coreReportPath, 'utf8');
-      const report = normalizeReportTitle(rawReport, project.projectName, project.outputLanguage);
+      const finalProjectName = extractProjectNameFromReport(rawReport) || project.projectName;
+      const report = normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage);
       validateDesktopReport(report);
-      const reportFilename = buildReportFilename(project.projectName, credentials.model, project.outputLanguage);
+      const reportFilename = buildReportFilename(finalProjectName, credentials.model, project.outputLanguage);
       const reportPath = path.join(projectPaths.outputs, reportFilename);
       await fs.writeFile(reportPath, report, 'utf8');
       if (path.resolve(coreReportPath) !== path.resolve(reportPath)) await fs.rm(coreReportPath, { force: true });
+      if (project.lastReportFilename && project.lastReportFilename !== reportFilename) {
+        await fs.rm(path.join(projectPaths.outputs, project.lastReportFilename), { force: true });
+      }
 
+      const completedAt = new Date().toISOString();
+      const durationMs = Math.round(performance.now() - started);
       const runtimeReport = {
         ...execution.result.runReport,
         outputFile: reportFilename,
         analysisProfile: 'fusion-enhanced',
-        desktopProjectId: projectId
+        desktopProjectId: projectId,
+        apiProfileId: credentials.profileId,
+        provider: credentials.provider,
+        model: credentials.model,
+        startedAt,
+        completedAt,
+        durationMs
       };
       const runtimeReportPath = path.join(projectPaths.runtime, 'run-report.json');
       await fs.writeFile(runtimeReportPath, `${JSON.stringify(runtimeReport, null, 2)}\n`, 'utf8');
-      const durationMs = Math.round(performance.now() - started);
       const updated = await projects.update(projectId, {
+        projectName: finalProjectName,
+        detectedProjectName: finalProjectName,
+        projectNameSource: finalProjectName === project.projectName ? project.projectNameSource : 'visual-content',
+        projectNameConfidence: finalProjectName === project.projectName ? project.projectNameConfidence : 0.9,
+        brandName: finalProjectName === project.projectName ? project.brandName : finalProjectName,
+        detectedBrandName: finalProjectName === project.projectName ? project.detectedBrandName : finalProjectName,
+        factConfidence: {
+          ...project.factConfidence,
+          brandName: finalProjectName === project.projectName ? project.factConfidence.brandName : 0.9
+        },
         status: 'completed',
         provider: credentials.provider,
         model: credentials.model,
-        lastRunAt: new Date().toISOString(),
+        apiProfileId: credentials.profileId,
+        lastRunAt: completedAt,
         lastDurationMs: durationMs,
         lastReportFilename: reportFilename,
         lastError: null,
         assetCount: summary.totalFiles,
         imageCount: summary.imageCount
       });
-      progress('completed', 100, '分析完成', {
+      progress('completed', '分析完成', {
         cacheStatus: execution.result.runReport.reasoningCacheHit ? 'hit' : 'miss'
       });
       return {
@@ -213,6 +240,7 @@ export function createPipelineService(
         reportFilename,
         reportPath,
         runtimeReportPath,
+        apiProfileId: credentials.profileId,
         provider: execution.result.runReport.provider,
         model: execution.result.runReport.model,
         durationMs,
@@ -224,6 +252,10 @@ export function createPipelineService(
       const cancelled = controller.signal.aborted || (error as Error).name === 'AbortError';
       const message = cancelled ? '用户已取消分析' : friendlyPipelineError(error as Error, credentials.apiKey);
       await projects.update(projectId, { status: cancelled ? 'cancelled' : 'failed', lastError: message });
+      await fs.rm(configPath, { force: true }).catch(() => {});
+      progress(cancelled ? 'cancelled' : 'failed', cancelled ? '分析已取消' : `分析失败：${message}`, {
+        failedAtStage: currentStage as Exclude<AnalysisProgress['stage'], 'failed' | 'cancelled' | 'completed'>
+      });
       throw new Error(message);
     } finally {
       active.delete(projectId);

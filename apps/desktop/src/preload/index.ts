@@ -5,8 +5,11 @@ const api: DesktopApi = {
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     save: (input) => ipcRenderer.invoke('settings:save', input),
-    deleteCredentials: () => ipcRenderer.invoke('settings:delete-credentials'),
-    test: (input) => ipcRenderer.invoke('settings:test', input)
+    saveProfile: (input) => ipcRenderer.invoke('settings:save-profile', input),
+    deleteProfile: (profileId) => ipcRenderer.invoke('settings:delete-profile', profileId),
+    setDefaultProfile: (profileId) => ipcRenderer.invoke('settings:set-default-profile', profileId),
+    setProfileEnabled: (profileId, enabled) => ipcRenderer.invoke('settings:set-profile-enabled', profileId, enabled),
+    testProfile: (input) => ipcRenderer.invoke('settings:test-profile', input)
   },
   projects: {
     list: () => ipcRenderer.invoke('projects:list'),
@@ -16,10 +19,13 @@ const api: DesktopApi = {
     chooseFiles: (kind) => ipcRenderer.invoke('projects:choose-files', kind),
     chooseFolder: () => ipcRenderer.invoke('projects:choose-folder'),
     importFiles: (projectId, paths, kind) => ipcRenderer.invoke('projects:import-files', projectId, paths, kind),
-    scanAssets: (projectId) => ipcRenderer.invoke('projects:scan-assets', projectId)
+    scanAssets: (projectId) => ipcRenderer.invoke('projects:scan-assets', projectId),
+    removeAsset: (projectId, assetId) => ipcRenderer.invoke('projects:remove-asset', projectId, assetId),
+    removeBatch: (projectId, batchId) => ipcRenderer.invoke('projects:remove-batch', projectId, batchId),
+    clearAssets: (projectId) => ipcRenderer.invoke('projects:clear-assets', projectId)
   },
   analysis: {
-    start: (projectId, forceReasoning) => ipcRenderer.invoke('analysis:start', projectId, forceReasoning),
+    start: (projectId, forceReasoning, apiProfileId) => ipcRenderer.invoke('analysis:start', projectId, forceReasoning, apiProfileId),
     cancel: (projectId) => ipcRenderer.invoke('analysis:cancel', projectId),
     onProgress(callback) {
       const listener = (_event: Electron.IpcRendererEvent, progress: AnalysisProgress) => callback(progress);
@@ -29,6 +35,7 @@ const api: DesktopApi = {
   },
   report: {
     read: (projectId) => ipcRenderer.invoke('report:read', projectId),
+    rename: (projectId, filename) => ipcRenderer.invoke('report:rename', projectId, filename),
     export: (projectId) => ipcRenderer.invoke('report:export', projectId),
     openFolder: (projectId) => ipcRenderer.invoke('report:open-folder', projectId)
   },

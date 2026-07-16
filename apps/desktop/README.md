@@ -2,7 +2,9 @@
 
 Electron + React + TypeScript desktop client for the Masterpiece OS v5 analysis pipeline.
 
-The first-version analysis flow is intentionally minimal: choose or drop a ZIP, image set, PDF, or folder, review the automatically generated project name and detected clues, then click Start Analysis. Project name, brand, industry, Logo policy, and output language are not form fields. Original Logo assets are always locked and reports are always generated in Simplified Chinese.
+The analysis flow is intentionally focused: choose or drop a ZIP, image set, PDF, or folder, review and remove imported assets, choose an enabled API Profile, then click Start Analysis. ZIP files are read directly, only supported extracted assets are persisted, and duplicate content is removed by SHA-256. Original Logo assets are always locked and reports are always generated in Simplified Chinese.
+
+During a run, Desktop shows indeterminate activity, the current v5 stage, model, asset count, and a wall-clock timer. It never exposes hidden model reasoning or a fabricated percentage.
 
 ## Commands
 
@@ -30,13 +32,16 @@ If Electron or electron-builder assets are slow to download on a restricted netw
 ## Security and data
 
 - The renderer has no Node.js access. It communicates through the typed preload bridge and allow-listed IPC handlers.
-- API keys are encrypted by Electron `safeStorage` and saved only under Electron's per-user data directory. Project metadata never contains a key.
+- Each API Profile has an independently encrypted key stored in a separate credential file under Electron's per-user data directory. Settings JSON, project metadata, runtime records, logs, and reports never contain a key.
 - Imported ZIP paths and project file operations are checked against their expected root directories.
+- The original ZIP is never retained in the project or sent to the model. Removing an asset or batch also invalidates the prepared contact sheet.
 - Model requests are made only from the main process after an explicit user action.
 
 ## Pipeline boundary
 
 The main process calls `runV5Pipeline` directly. It does not launch the CLI or assemble terminal commands. Desktop contributes project preparation, credentials, progress events, cancellation, and the Fusion Enhanced task profile; v5 remains the owner of visual preparation, reasoning, cache behavior, and official report generation.
+
+The final project name is first inferred conservatively during intake, then finalized from the real name present in the same multimodal analysis result. Generic upload names such as `input`, `images`, or `assets` fall back to a timestamp until visual evidence provides a reliable name.
 
 The final report name follows:
 

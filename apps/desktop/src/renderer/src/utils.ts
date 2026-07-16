@@ -5,6 +5,13 @@ export function formatDuration(milliseconds: number | null): string {
   return `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
 }
 
+export function formatDurationHuman(milliseconds: number | null): string {
+  if (milliseconds === null) return '—';
+  const seconds = Math.max(0, Math.round(milliseconds / 1000));
+  const minutes = Math.floor(seconds / 60);
+  return `${minutes}分${String(seconds % 60).padStart(2, '0')}秒`;
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 ** 2) return `${(bytes / 1024).toFixed(1)} KB`;
