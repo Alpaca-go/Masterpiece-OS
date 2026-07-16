@@ -12,7 +12,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "package:dir": "npm run build && electron-builder --dir",
-    "package:win": "npm run build && node scripts/package-win.mjs"
+    "package:portable": "npm run build && node scripts/package-win.mjs",
+    "package:win": "npm run package:portable"
   },
   "dependencies": {
     "adm-zip": "^0.6.0",

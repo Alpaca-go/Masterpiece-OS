@@ -14,14 +14,14 @@ const bundled7Zip = path.join(
 );
 
 if (process.platform !== 'win32') {
-  throw new Error('package:win must be run on Windows.');
+  throw new Error('package:portable must be run on Windows.');
 }
 
 if (!fs.existsSync(bundled7Zip)) {
   throw new Error('The bundled 7-Zip helper is missing. Run npm install in apps/desktop first.');
 }
 
-const child = spawn(process.execPath, [builderCli, '--win', 'nsis'], {
+const child = spawn(process.execPath, [builderCli, '--win', 'portable'], {
   cwd: desktopRoot,
   env: {
     ...process.env,

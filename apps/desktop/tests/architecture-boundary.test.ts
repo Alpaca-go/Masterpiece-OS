@@ -27,6 +27,33 @@ test('Desktop calls runV5Pipeline directly and does not build terminal commands'
   assert.doesNotMatch(source, /child_process|exec\s*\(|spawn\s*\(|npm run analyze/);
 });
 
+test('sandboxed renderer loads the bundled CommonJS preload artifact', async () => {
+  const source = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'index.ts'), 'utf8');
+  const config = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'electron.vite.config.ts'), 'utf8');
+  assert.match(source, /preload\/index\.cjs/);
+  assert.doesNotMatch(source, /preload\/index\.js/);
+  assert.match(config, /format:\s*'cjs'/);
+  assert.match(config, /entryFileNames:\s*'\[name\]\.cjs'/);
+});
+
+test('default Windows artifact is portable and does not create an installer', async () => {
+  const config = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'electron-builder.yml'), 'utf8');
+  const rootPackage = await fs.readFile(path.join(repositoryRoot, 'package.json'), 'utf8');
+  assert.match(config, /target:\s*\r?\n\s*- portable/);
+  assert.match(config, /Desktop-Portable/);
+  assert.doesNotMatch(config, /\bnsis\b/i);
+  assert.match(rootPackage, /desktop:package[^\n]+package:portable/);
+});
+
+test('new analysis UI contains only intake actions and no metadata form', async () => {
+  const source = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'ProjectWizard.tsx'), 'utf8');
+  assert.doesNotMatch(source, /<input|<textarea|<select/);
+  assert.doesNotMatch(source, /choose\('logo'\)|choose\('brief'\)/);
+  assert.match(source, /选择文件夹/);
+  assert.match(source, /开始分析/);
+  assert.match(source, /sourcePaths/);
+});
+
 test('API Key is encrypted outside project records', async () => {
   const credentials = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'settings-store.ts'), 'utf8');
   const projects = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'project-store.ts'), 'utf8');

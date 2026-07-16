@@ -1,6 +1,6 @@
 appId: com.masterpieceos.desktop
 productName: Masterpiece OS Desktop
-artifactName: Masterpiece-OS-Desktop-${version}-${arch}.${ext}
+artifactName: Masterpiece-OS-Desktop-Portable-${version}-${arch}.${ext}
 directories:
   output: release
 electronDist: node_modules/electron/dist
@@ -18,11 +18,5 @@ extraResources:
       - v5/**/*
 win:
   target:
-    - nsis
+    - portable
   executableName: Masterpiece OS Desktop
-nsis:
-  oneClick: false
-  allowToChangeInstallationDirectory: true
-  createDesktopShortcut: true
-  createStartMenuShortcut: true
-  shortcutName: Masterpiece OS Desktop

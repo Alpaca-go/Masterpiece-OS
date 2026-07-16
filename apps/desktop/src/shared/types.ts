@@ -2,6 +2,7 @@ export type ProviderKind = 'qwen' | 'openai-compatible' | 'custom-openai-compati
 export type OutputLanguage = 'zh-CN' | 'en';
 export type AnalysisProfile = 'fusion-enhanced';
 export type ProjectStatus = 'draft' | 'ready' | 'running' | 'completed' | 'failed' | 'cancelled';
+export type ProjectNameSource = 'uploaded-archive-name' | 'uploaded-folder-name' | 'common-file-prefix' | 'fallback-datetime';
 
 export type AnalysisStage =
   | 'preparing-assets'
@@ -41,8 +42,15 @@ export interface SaveSettingsInput extends Omit<PublicSettings, 'hasApiKey' | 'c
 export interface ProjectRecord {
   id: string;
   projectName: string;
+  projectNameSource: ProjectNameSource;
   brandName: string;
   industry: string;
+  detectedBrandName: string;
+  detectedIndustry: string;
+  factConfidence: {
+    brandName: number;
+    industry: number;
+  };
   description: string;
   logoLocked: boolean;
   lockedFacts: string[];
@@ -64,13 +72,7 @@ export interface ProjectRecord {
 }
 
 export interface CreateProjectInput {
-  projectName: string;
-  brandName: string;
-  industry: string;
-  description: string;
-  logoLocked: boolean;
-  lockedFacts: string[];
-  outputLanguage: OutputLanguage;
+  sourcePaths: string[];
 }
 
 export interface AssetItem {
@@ -135,6 +137,7 @@ export interface DesktopApi {
     get(projectId: string): Promise<ProjectRecord>;
     remove(projectId: string): Promise<void>;
     chooseFiles(kind: 'assets' | 'logo' | 'brief'): Promise<string[]>;
+    chooseFolder(): Promise<string[]>;
     importFiles(projectId: string, paths: string[], kind: 'assets' | 'logo' | 'brief'): Promise<ImportResult>;
     scanAssets(projectId: string): Promise<AssetSummary>;
   };

@@ -2,6 +2,8 @@
 
 Electron + React + TypeScript desktop client for the Masterpiece OS v5 analysis pipeline.
 
+The first-version analysis flow is intentionally minimal: choose or drop a ZIP, image set, PDF, or folder, review the automatically generated project name and detected clues, then click Start Analysis. Project name, brand, industry, Logo policy, and output language are not form fields. Original Logo assets are always locked and reports are always generated in Simplified Chinese.
+
 ## Commands
 
 Run from the repository root:
@@ -13,11 +15,15 @@ npm run desktop:build
 npm run desktop:package
 ```
 
-The Windows installer is written to `apps/desktop/release/`. A runnable unpacked build can be created with:
+The default Windows artifact is a no-install Portable EXE written to `apps/desktop/release/`. Double-click it to run the current build without changing the installed applications on the machine.
+
+A runnable unpacked development build can also be created with:
 
 ```powershell
 npm --prefix apps/desktop run package:dir
 ```
+
+For the fastest edit-and-run loop, use `npm run desktop:dev`. Use `npm run desktop:package` only when a refreshed standalone EXE is needed.
 
 If Electron or electron-builder assets are slow to download on a restricted network, install dependencies with the appropriate approved mirror configured in the shell. The repository does not store mirror credentials or model API keys.
 
@@ -39,4 +45,3 @@ The final report name follows:
 ```
 
 Invalid Windows filename characters are normalized before writing.
-

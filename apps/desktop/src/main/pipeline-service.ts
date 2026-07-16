@@ -69,8 +69,12 @@ export function createPipelineService(
     const project = await projects.get(projectId);
     const summary = await projects.scan(projectId);
     if (!summary.totalFiles) throw new Error('项目素材为空，请先上传视觉方案');
-    if (!project.industry.trim()) throw new Error('行业属性必须由用户确认');
-    if (typeof project.logoLocked !== 'boolean') throw new Error('Logo 锁定状态尚未确认');
+    if (summary.imageCount + summary.pdfCount === 0) throw new Error('项目中没有可分析的图片或 PDF');
+    if (project.factConfidence.brandName <= 0 && project.factConfidence.industry <= 0) {
+      throw new Error('未识别到品牌或行业线索，请确保文件名、目录名或视觉方案中包含可识别信息');
+    }
+    if (!project.logoLocked) throw new Error('Desktop 极简模式要求原始 Logo 默认锁定');
+    if (project.outputLanguage !== 'zh-CN') throw new Error('Desktop 极简模式固定输出简体中文');
     const credentials = await readCredentials();
     const settings = await readSettings();
     const projectPaths = await projects.paths(projectId);
@@ -114,7 +118,10 @@ export function createPipelineService(
         brandFacts: {
           brandName: project.brandName,
           industry: project.industry,
-          factualConstraints: desktopFactualConstraints(project.industry, project.lockedFacts),
+          detectedBrandName: project.detectedBrandName,
+          detectedIndustry: project.detectedIndustry,
+          factConfidence: project.factConfidence,
+          factualConstraints: desktopFactualConstraints(project.industry, project.lockedFacts, project.factConfidence.industry),
           logoAssets: project.logoFiles
         },
         benchmarkContext: { category: [], creativeExcellence: [] },
@@ -127,7 +134,7 @@ export function createPipelineService(
         },
         overrides: {
           additionalLockedAssets: [],
-          allowLogoRedesign: !project.logoLocked,
+          allowLogoRedesign: false,
           requiredApplications: [],
           forbiddenChanges: project.lockedFacts,
           outputLanguage: project.outputLanguage

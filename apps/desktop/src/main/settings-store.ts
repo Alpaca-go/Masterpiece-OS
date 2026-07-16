@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { app, safeStorage } from 'electron';
+import sharp from 'sharp';
 import type { ConnectionTestResult, ProviderKind, PublicSettings, SaveSettingsInput } from '../shared/types';
 import { redactSecret } from './analysis-contract';
 
@@ -135,8 +136,6 @@ function endpoint(baseUrl: string): string {
     : `${parsed.toString().replace(/\/$/, '')}/chat/completions`;
 }
 
-const TEST_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-
 export async function testConnection(
   overrides: Partial<SaveSettingsInput> & { apiKey?: string } = {}
 ): Promise<ConnectionTestResult> {
@@ -145,6 +144,9 @@ export async function testConnection(
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25_000);
   try {
+    const testImage = await sharp({
+      create: { width: 96, height: 96, channels: 3, background: { r: 112, g: 68, b: 216 } }
+    }).png().toBuffer();
     const response = await fetch(endpoint(credentials.baseUrl), {
       method: 'POST',
       headers: { Authorization: `Bearer ${credentials.apiKey}`, 'Content-Type': 'application/json' },
@@ -153,7 +155,7 @@ export async function testConnection(
         messages: [{
           role: 'user',
           content: [
-            { type: 'image_url', image_url: { url: TEST_IMAGE } },
+            { type: 'image_url', image_url: { url: `data:image/png;base64,${testImage.toString('base64')}` } },
             { type: 'text', text: 'Reply with OK if you can read this image.' }
           ]
         }],
@@ -170,7 +172,9 @@ export async function testConnection(
       const detail = providerError?.message || providerError?.code || response.statusText;
       if (response.status === 401 || response.status === 403) throw new Error('API Key 无效或无权访问该模型');
       if (response.status === 404) throw new Error('Base URL 或 Model ID 不存在');
-      if (/image|vision|multimodal/i.test(String(detail))) throw new Error('当前模型不支持图片输入');
+      if (/(does not support|unsupported|not capable).*(image|vision|multimodal)|(image|vision|multimodal).*(not supported|unsupported)/i.test(String(detail))) {
+        throw new Error('当前模型或部署端点明确不支持图片输入');
+      }
       throw new Error(`连接失败（HTTP ${response.status}）：${detail}`);
     }
     const settings = await readStored();

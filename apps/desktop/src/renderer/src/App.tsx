@@ -30,6 +30,11 @@ export function App() {
   }
 
   useEffect(() => {
+    if (!window.masterpiece) {
+      setError('客户端安全桥接加载失败，请重新安装或联系维护人员。');
+      setLoading(false);
+      return;
+    }
     void refresh().then(({ settings: loaded, projects: existing }) => {
       if (!loaded.hasApiKey && existing.length === 0) setScreen('settings');
     }).catch((reason) => setError(cleanError(reason))).finally(() => setLoading(false));
@@ -72,10 +77,11 @@ export function App() {
     } catch (reason) { setError(cleanError(reason)); }
   }
 
-  if (loading || !settings) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
+  if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
+  if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
 
   if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={setSettings} onClose={() => setScreen('home')} />;
-  if (screen === 'create') return <ProjectWizard settings={settings} onCancel={() => setScreen('home')} onCreated={(project) => { setSelected(project); void openProject(project); void refresh(); }} />;
+  if (screen === 'create') return <ProjectWizard settings={settings} onCancel={() => setScreen('home')} onStart={(project) => { setSelected(project); void run(project, true); void refresh(); }} />;
   if (screen === 'analysis' && selected) return <AnalysisView project={selected} progress={progress} onCancel={() => window.masterpiece.analysis.cancel(selected.id)} />;
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force)} />;
 
@@ -89,8 +95,8 @@ export function App() {
       </section>
       <aside className="panel project-sidebar">
         <div className="section-heading"><span>02</span><div><h2>运行前检查</h2><p>必须全部明确</p></div></div>
-        <ul className="check-list"><li className={assets?.totalFiles ? 'pass' : ''}><span>{assets?.totalFiles ? '✓' : '!'}</span>项目素材不为空</li><li className={selected.industry ? 'pass' : ''}><span>✓</span>行业事实：{selected.industry}</li><li className="pass"><span>✓</span>Logo：{selected.logoLocked ? '锁定' : '已授权重设计'}</li><li className={settings.hasApiKey ? 'pass' : ''}><span>{settings.hasApiKey ? '✓' : '!'}</span>API Key 已安全保存</li><li className={settings.baseUrl && settings.model ? 'pass' : ''}><span>{settings.baseUrl && settings.model ? '✓' : '!'}</span>{settings.model || '模型未配置'}</li></ul>
-        <div className="facts-box"><small>用户锁定事实</small>{selected.lockedFacts.length ? selected.lockedFacts.map((fact) => <p key={fact}>{fact}</p>) : <p>无额外锁定项</p>}<button className="button text-button" onClick={() => importMore('logo')}>+ 补充独立 Logo</button><button className="button text-button" onClick={() => importMore('brief')}>+ 补充说明文件</button></div>
+        <ul className="check-list"><li className={assets?.totalFiles ? 'pass' : ''}><span>{assets?.totalFiles ? '✓' : '!'}</span>项目素材不为空</li><li className={selected.factConfidence.brandName > 0 || selected.factConfidence.industry > 0 ? 'pass' : ''}><span>{selected.factConfidence.brandName > 0 || selected.factConfidence.industry > 0 ? '✓' : '!'}</span>已识别品牌或行业线索</li><li className="pass"><span>✓</span>原始 Logo 默认锁定</li><li className="pass"><span>✓</span>固定输出简体中文</li><li className={settings.hasApiKey ? 'pass' : ''}><span>{settings.hasApiKey ? '✓' : '!'}</span>API Key 已安全保存</li><li className={settings.baseUrl && settings.model ? 'pass' : ''}><span>{settings.baseUrl && settings.model ? '✓' : '!'}</span>{settings.model || '模型未配置'}</li></ul>
+        <div className="facts-box"><small>自动识别线索</small><p>品牌：{selected.detectedBrandName}（{Math.round(selected.factConfidence.brandName * 100)}%）</p><p>行业：{selected.detectedIndustry}（{Math.round(selected.factConfidence.industry * 100)}%）</p><p>低置信度内容不会被写成确定事实。</p></div>
         <div className="profile-card"><small>默认分析模式</small><strong>融合增强</strong><p>一次多模态调用，强化事实判断、真实触点、材料与工艺。</p></div>
         <button className="button primary full" disabled={!assets?.totalFiles || !settings.hasApiKey || !settings.baseUrl || !settings.model} onClick={() => void run(selected, true)}>开始分析</button>
         <button className="button ghost full" disabled={!selected.lastReportFilename} onClick={() => void run(selected, false)}>使用精确缓存</button>

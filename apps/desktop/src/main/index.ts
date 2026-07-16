@@ -34,7 +34,7 @@ function createWindow(): void {
     title: 'Masterpiece OS Desktop',
     show: false,
     webPreferences: {
-      preload: path.join(__dirname, '../preload/index.js'),
+      preload: path.join(__dirname, '../preload/index.cjs'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true
@@ -69,6 +69,12 @@ function registerIpc(): void {
     const result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openFile', 'multiSelections'],
       filters
+    });
+    return result.canceled ? [] : result.filePaths;
+  });
+  ipcMain.handle('projects:choose-folder', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openDirectory']
     });
     return result.canceled ? [] : result.filePaths;
   });

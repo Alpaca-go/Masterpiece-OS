@@ -19,15 +19,16 @@ test('Windows-safe report filename includes project and model', () => {
   );
 });
 
-test('Fusion Enhanced is a single-call prompt profile and locks the confirmed industry', () => {
+test('Fusion Enhanced is a single-call prompt profile and preserves confidence boundaries', () => {
   const task = buildFusionEnhancedTask('审计现有方案');
   assert.match(task, /只调用一次模型/);
   assert.match(task, /材质、微结构、负形/);
   assert.match(task, /不得先生成多份报告再融合/);
   assert.deepEqual(desktopFactualConstraints('医学美学', ['品牌名不得修改']), [
-    '行业属性“医学美学”为用户确认事实，不得重新推断、覆盖或修改。',
+    '行业线索“医学美学”来自现有素材自动识别（置信度 1.00），分析不得擅自改写，并须说明识别来源。',
     '品牌名不得修改'
   ]);
+  assert.match(desktopFactualConstraints('待确认', [], 0)[0]!, /不得将行业猜测写成确定事实/);
 });
 
 test('report title is project-specific and final decision check fails closed', () => {

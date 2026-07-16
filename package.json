@@ -15,7 +15,7 @@
     "desktop:dev": "npm --prefix apps/desktop run dev",
     "desktop:build": "npm --prefix apps/desktop run build",
     "desktop:test": "npm --prefix apps/desktop test",
-    "desktop:package": "npm --prefix apps/desktop run package:win"
+    "desktop:package": "npm --prefix apps/desktop run package:portable"
   },
   "engines": { "node": ">=20.9.0" },
   "license": "MIT",

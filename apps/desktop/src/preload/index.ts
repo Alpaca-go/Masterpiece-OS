@@ -14,6 +14,7 @@ const api: DesktopApi = {
     get: (projectId) => ipcRenderer.invoke('projects:get', projectId),
     remove: (projectId) => ipcRenderer.invoke('projects:remove', projectId),
     chooseFiles: (kind) => ipcRenderer.invoke('projects:choose-files', kind),
+    chooseFolder: () => ipcRenderer.invoke('projects:choose-folder'),
     importFiles: (projectId, paths, kind) => ipcRenderer.invoke('projects:import-files', projectId, paths, kind),
     scanAssets: (projectId) => ipcRenderer.invoke('projects:scan-assets', projectId)
   },

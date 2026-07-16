@@ -24,15 +24,18 @@ export function buildFusionEnhancedTask(description: string): string {
   return `${description.trim() || '深度审计现有视觉方案并提出唯一、可执行的视觉升级方向'}
 
 分析配置：Fusion Enhanced。只调用一次模型，直接输出融合增强报告。
-- 以用户确认的品牌事实与行业属性为最高事实边界，不得重新推断、覆盖或改写。
+- 项目元数据中的品牌与行业来自上传素材自动识别；高置信度线索作为事实边界，低置信度线索必须明确标记“基于现有素材推断”或“待确认”，不得编造。
 - 强化行业理解、真实业务触点、合规边界、资产取舍、唯一视觉命题与图片职责。
 - 同时把材质、微结构、负形、触觉工艺、压纹、蚀刻、喷砂、透明分层、光线和表面细节转译为可执行动作。
 - 不得先生成多份报告再融合，不得追加第二次总结或模型裁决。`;
 }
 
-export function desktopFactualConstraints(industry: string, lockedFacts: string[]): string[] {
+export function desktopFactualConstraints(industry: string, lockedFacts: string[], industryConfidence = 1): string[] {
+  const industryConstraint = industryConfidence >= 0.75
+    ? `行业线索“${industry.trim()}”来自现有素材自动识别（置信度 ${industryConfidence.toFixed(2)}），分析不得擅自改写，并须说明识别来源。`
+    : '现有素材不足以可靠确认行业属性；报告必须使用“基于现有素材推断”或“待确认”，不得将行业猜测写成确定事实。';
   return [
-    `行业属性“${industry.trim()}”为用户确认事实，不得重新推断、覆盖或修改。`,
+    industryConstraint,
     ...lockedFacts.map((item) => item.trim()).filter(Boolean)
   ];
 }
