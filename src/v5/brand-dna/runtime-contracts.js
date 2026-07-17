@@ -90,7 +90,8 @@ function evidenceBackedItem(value, path, evidenceIds) {
 }
 
 function evidenceBackedArray(value, path, evidenceIds, options = {}) {
-  return arrayValue(value, path, options).map((item, index) =>
+  const normalized = value && typeof value === 'object' && !Array.isArray(value) ? [value] : value;
+  return arrayValue(normalized, path, options).map((item, index) =>
     evidenceBackedItem(item, `${path}[${index}]`, evidenceIds)
   );
 }

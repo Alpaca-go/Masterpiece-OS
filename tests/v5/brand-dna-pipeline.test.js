@@ -291,6 +291,11 @@ function responseForStage(stage, options = {}) {
       imageTasks: tasks
     }
   };
+  if (stage === 'strategic-model' && options.singletonStrategicCollections) {
+    for (const key of ['primaryAudience', 'userContext', 'jobsToBeDone', 'barriersAndTensions', 'functionalValue', 'emotionalValue', 'socialValue', 'reasonsToBelieve', 'differentiators']) {
+      outputs['strategic-model'].strategicModel[key] = outputs['strategic-model'].strategicModel[key][0];
+    }
+  }
   return outputs[stage];
 }
 
@@ -327,7 +332,8 @@ function mockReasoner(options = {}) {
         sourceId,
         auditPassed,
         invalidCreativeFreedom: options.invalidCreativeFreedom,
-        emptyFirstTaskConsistency: options.emptyFirstTaskConsistency
+        emptyFirstTaskConsistency: options.emptyFirstTaskConsistency,
+        singletonStrategicCollections: options.singletonStrategicCollections
       }))
     };
   };
@@ -362,6 +368,21 @@ test('Brand DNA deep protocol runs all stages, repairs one malformed stage, and 
   }));
   assert.ok(stages.includes('diagnosing-strategy'));
   assert.ok(stages.includes('planning-generation-tasks'));
+});
+
+test('strategic model canonicalizes singleton evidence objects into arrays without another model call', async () => {
+  const { reasoner, calls } = mockReasoner({ singletonStrategicCollections: true });
+  const result = await runBrandDnaPipeline({
+    corpus,
+    projectNameHint: '临时项目',
+    qualityTier: 'experimental',
+    reasoner
+  });
+  assert.equal(result.success, true);
+  assert.equal(result.schemaRetryCount, 0);
+  assert.equal(calls.filter((stage) => stage === 'strategic-model').length, 1);
+  assert.equal(result.intermediateObjects.strategicModel.functionalValue.length, 1);
+  assert.equal(result.intermediateObjects.strategicModel.functionalValue[0].statement, '降低进入门槛');
 });
 
 test('atomic evidence extraction automatically splits a truncated batch and continues', async () => {
