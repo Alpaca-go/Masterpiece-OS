@@ -4,5 +4,6 @@ export const V3_STAGE_PROFILES = Object.freeze({
   'decision-patch': { thinking: false, thinkingBudget: null, maxOutputTokens: 1500, requestTimeoutMs: 120000, stageBudgetMs: 150000 },
   '05-visual-system-task-plan': { thinking: true, thinkingBudget: 3000, maxOutputTokens: 8000, requestTimeoutMs: 240000, stageBudgetMs: 360000 },
   '06-image-prompt-compiler': { thinking: false, thinkingBudget: null, maxOutputTokens: 8000, requestTimeoutMs: 240000, stageBudgetMs: 360000 },
-  '07-final-audit': { thinking: true, thinkingBudget: 2500, maxOutputTokens: 4000, requestTimeoutMs: 240000, stageBudgetMs: 360000 }
+  '07-final-audit': { thinking: true, thinkingBudget: 2500, maxOutputTokens: 4000, requestTimeoutMs: 240000, stageBudgetMs: 360000 },
+  'audit-patch': { thinking: false, thinkingBudget: null, maxOutputTokens: 3000, requestTimeoutMs: 120000, stageBudgetMs: 150000 }
 });

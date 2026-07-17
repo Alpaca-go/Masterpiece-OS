@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { runBrandDnaV3Core } from '../../src/v5/brand-dna/v3/protocol/run-brand-dna-v3.js';
 import { runV3VisualExtension } from '../../src/v5/brand-dna/v3/protocol/run-visual-extension.js';
+import { runBrandDnaV3 } from '../../src/v5/brand-dna/v3/protocol/run-brand-dna-v3-complete.js';
 import { applyRestrictedPatch, validateRestrictedPatch } from '../../src/v5/brand-dna/v3/repair/restricted-patch.js';
+import { applyAuditPatch, buildAuditPatchRequest, validateAuditPatch } from '../../src/v5/brand-dna/v3/audit/audit-patch.js';
 
 const corpus = {
   documents: [{
@@ -34,6 +36,15 @@ function visualPlan() {
   return { visualPersonality: ['严谨', '温和'], visualKeywords: ['验证', '抵达', '安心轨迹'], distinctiveAssets: [{ assetId: 'a', name: '安心轨迹', mechanism: '节点经验证后才连接成连续秩序', geneIds: ['gene-capability', 'gene-relational'] }], directions: { color: direction, typography: direction, graphic: direction, composition: direction, photography: direction, illustration: direction, material: direction, lighting: direction, motion: direction }, imageSystem: { systemId: 'brand-image-system-v3', anchorVisual: '被逐层验证的节点形成从理性到温度的连续安心轨迹', compositionSystem: '由离散节点向稳定关系递进', colorSystem: ['理性底色与温度确认色'], materialSystem: ['哑光基底', '半透明验证层'], lightingSystem: '柔和定向光标记已验证节点', imageLanguage: '真实触点与抽象轨迹并置', consistencyRules: ['所有图沿用同一安心轨迹', '确认色只用于已验证节点'], textPolicy: '不生成未提供的品牌文字', logoPolicy: '未提供 Logo 时只预留位置，不得设计或仿造' }, generationBoundary: { lockedFacts: ['品牌服务医美产业链伙伴'], lockedAssets: [], verifiedRequiredElements: ['安心轨迹'], suggestedElements: ['可验证节点'], creativeFreedom: ['可设计不代表真实业务设施的抽象关系场景'], prohibitedElements: ['虚构 Logo', '认证标识'], prohibitedClaims: ['行业第一'], pendingConfirmations: ['正式 Logo'] }, taskPlan: [task(1, 'anchor-image', '建立全局视觉锚点'), task(2, 'service-scene', '验证服务关系'), task(3, 'detail-craft', '验证细节质感'), task(4, 'poster', '形成传播记忆')] };
 }
 
+function compiledTasks() {
+  const prompt = Array.from({ length: 190 }, (_, index) => `brand${index + 1}`).join(' ');
+  return visualPlan().taskPlan.map((task) => ({ taskId: task.taskId.replace('local-', 'task-'), subject: 'verified relationship nodes', environment: 'an abstract but credible service context', narrativeMoment: 'a node has just been verified', requiredElements: ['verified reassurance trajectory'], optionalElements: ['subtle human trace'], prohibitedElements: ['fabricated logo', 'certification mark'], composition: 'progressive stable composition', focus: 'verified node relationship', camera: 'natural eye-level perspective', color: 'rational base with restrained confirmation accent', material: 'matte base and translucent verification layer', lighting: 'soft directional light', atmosphere: 'credible calm and warm', lockedAssets: [], textPolicy: { mode: 'no-text', allowedText: [] }, logoPolicy: { mode: 'no-logo' }, consistencyWithGlobalSystem: ['use the reassurance trajectory'], consistencyWithPreviousTasks: task.sequence === 1 ? [] : ['continue the anchor trajectory'], differenceFromOtherTasks: task.differenceFromOtherTasks, aspectRatio: task.aspectRatio, finalPrompt: prompt }));
+}
+
+function passingAudit() {
+  return { status: 'pass', score: 92, dimensions: { identityAccuracy: 95, evidenceBoundary: 94, strategicDepth: 90, geneDistinctiveness: 91, thesisCoverage: 92, visualDistinctiveness: 90, taskExecutability: 91, crossFieldConsistency: 93 }, issues: [] };
+}
+
 function mockReasoner() {
   const calls = [];
   const contexts = [];
@@ -45,6 +56,10 @@ function mockReasoner() {
       ? { evidenceMap: { evidence: [{ evidenceId: 'local', category: 'positioning', statement: '九州美学以合规供应链和透明履约服务医美产业链伙伴', quote: '以合规供应链、透明履约和生态协同建立长期信任', sourceId: 'doc-1', chunkId, sectionPath: ['品牌定位'], confidence: 'high' }], conflicts: [], missingInformation: [{ missingId: 'm', topic: '消费者认知', whyNeeded: '判断 C 端延伸基础' }] } }
       : stage === '05-visual-system-task-plan'
         ? { visualSystemTaskPlan: visualPlan() }
+        : stage === '06-image-prompt-compiler'
+          ? { compiledImageTasks: compiledTasks() }
+          : stage === '07-final-audit'
+            ? { finalAudit: passingAudit() }
         : { brandCreativeDecision: decision() };
     return { runId: `run-${calls.length}`, provider: 'mock', model: 'mock-model', text: JSON.stringify(output), finishReason: 'stop', usage: { inputTokens: 100, outputTokens: 50 } };
   };
@@ -91,4 +106,46 @@ test('Sprint 2 produces one compact visual-system task plan without long prompts
   assert.deepEqual(extended.visualSystemTaskPlan.taskPlan[0].consistencyWithPreviousTasks, []);
   assert.ok(extended.visualSystemTaskPlan.distinctiveAssets.some((item) => /安心轨迹/.test(item.name)));
   assert.equal('finalPrompt' in extended.visualSystemTaskPlan.taskPlan[0], false);
+});
+
+test('Sprint 3 completes prompts, independent audit and local full report in five model calls', async () => {
+  const mock = mockReasoner();
+  const saved = {};
+  const result = await runBrandDnaV3({ projectId: 'project-1', corpus, reasoner: mock.reasoner, auditReasoner: mock.reasoner, provider: 'mock', modelId: 'mock-model', enableModelPatch: false, onCheckpoint(stage, value) { saved[stage] = value; } });
+  assert.equal(result.modelCallCount, 5);
+  assert.deepEqual(mock.calls, ['01-evidence-map', '02-brand-creative-decision', '05-visual-system-task-plan', '06-image-prompt-compiler', '07-final-audit']);
+  assert.equal(result.finalAudit.status, 'pass');
+  assert.match(result.fullReportMarkdown, /创意转译与生图执行扩展/);
+  assert.match(result.fullReportMarkdown, /执行附录：每张图片 Prompt/);
+  assert.ok(saved['08-final-report'].checkpoint.outputHash);
+});
+
+test('Sprint 3 only patches audit-approved fields and independently rechecks once', async () => {
+  const mock = mockReasoner();
+  const original = mock.reasoner;
+  const reasoner = async (messages, context) => {
+    const stage = messages[0].content.match(/PROTOCOL_STAGE=([^\n]+)/)?.[1];
+    if (!['07-final-audit', 'audit-patch', '07-final-audit-recheck'].includes(stage)) return original(messages, context);
+    mock.calls.push(stage);
+    mock.contexts.push(context);
+    const output = stage === '07-final-audit'
+      ? { finalAudit: { ...passingAudit(), status: 'needs-patch', score: 82, issues: [{ severity: 'major', path: '/compiledImageTasks/1/atmosphere', reason: '与 Anchor 的情绪职责过于接近', allowedRepairPaths: ['/compiledImageTasks/1/atmosphere'] }] } }
+      : stage === 'audit-patch'
+        ? { operations: [{ op: 'replace', path: '/compiledImageTasks/1/atmosphere', value: 'precise, operational and reassuring' }] }
+        : { finalAudit: passingAudit() };
+    return { runId: `run-${mock.calls.length}`, provider: 'mock', model: 'mock-model', text: JSON.stringify(output), finishReason: 'stop', usage: { inputTokens: 100, outputTokens: 50 } };
+  };
+  const result = await runBrandDnaV3({ projectId: 'project-1', corpus, reasoner, auditReasoner: reasoner, provider: 'mock', modelId: 'mock-model' });
+  assert.equal(result.modelCallCount, 7);
+  assert.equal(result.compiledImageTasks[1].atmosphere, 'precise, operational and reassuring');
+  assert.equal(result.finalAudit.status, 'pass');
+  assert.deepEqual(mock.calls.slice(-3), ['07-final-audit', 'audit-patch', '07-final-audit-recheck']);
+});
+
+test('audit patch refuses wholesale object replacement and identity changes', () => {
+  const payload = { decision: decision(), visualSystemTaskPlan: visualPlan(), compiledImageTasks: compiledTasks() };
+  assert.throws(() => buildAuditPatchRequest(payload, { issues: [{ allowedRepairPaths: ['/decision/identity/projectName'] }] }), (error) => error.code === 'AUDIT_PATCH_NOT_ALLOWED');
+  assert.throws(() => validateAuditPatch({ operations: [{ op: 'replace', path: '/visualSystemTaskPlan', value: {} }] }, ['/visualSystemTaskPlan']), (error) => error.code === 'PATCH_PATH_NOT_ALLOWED');
+  const patch = validateAuditPatch({ operations: [{ op: 'replace', path: '/compiledImageTasks/1/atmosphere', value: 'distinct' }] }, ['/compiledImageTasks/1/atmosphere']);
+  assert.equal(applyAuditPatch(payload, patch).compiledImageTasks[1].atmosphere, 'distinct');
 });

@@ -103,6 +103,9 @@ export async function runBrandDnaV3Core(input) {
     const patch = await model('decision-patch', request.messages, (value) => validateRestrictedPatch(value, request.paths), 'decision-patch');
     decision = validateBrandCreativeDecision(applyRestrictedPatch(decision, patch), evidenceMap);
     qualityGate = runCoreQualityGate(decision, evidenceMap);
+    if (qualityGate.passed) {
+      await save('02-brand-creative-decision', decision, { upstreamHash: decisionExpected.upstreamHash, promptVersion: decisionExpected.promptVersion, schemaVersion: decisionExpected.schemaVersion, profile: { ...V3_STAGE_PROFILES['02-brand-creative-decision'], provider: input.provider, modelId: input.modelId }, outputFile: 'brand-creative-decision.json' });
+    }
   }
   if (!qualityGate.passed) throw Object.assign(new Error(`核心质量门未通过：${qualityGate.issues.map((item) => `${item.path} ${item.message}`).join('；')}`), { code: 'CORE_QUALITY_GATE_FAILED', stageId: '03-core-quality-gate', issues: qualityGate.issues });
   await save('03-core-quality-gate', qualityGate, { upstreamHash: valueHash(decision), promptVersion: 'core-quality-gate-v3.1', schemaVersion: 'core-quality-gate-v3', outputFile: 'core-quality-gate.json' });

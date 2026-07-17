@@ -71,6 +71,12 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
 
   return async function reason(messages, context = {}) {
     let response;
+    const timeoutSignal = Number.isInteger(context.requestTimeoutMs) && context.requestTimeoutMs > 0
+      ? AbortSignal.timeout(context.requestTimeoutMs)
+      : null;
+    const requestSignal = timeoutSignal && context.signal
+      ? AbortSignal.any([context.signal, timeoutSignal])
+      : timeoutSignal || context.signal;
     try {
       const requestBody = {
         model,
@@ -90,9 +96,16 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
         method: 'POST',
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(requestBody),
-        signal: context.signal
+        signal: requestSignal
       });
     } catch (error) {
+      if (timeoutSignal?.aborted && !context.signal?.aborted) {
+        throw new OpenAICompatibleTextReasonerError(
+          'REQUEST_TIMEOUT',
+          `模型 API 请求超过 ${context.requestTimeoutMs} ms`,
+          { provider, model, requestTimeoutMs: context.requestTimeoutMs }
+        );
+      }
       if (error?.name === 'AbortError') throw error;
       throw new OpenAICompatibleTextReasonerError(
         'REQUEST_FAILED',
