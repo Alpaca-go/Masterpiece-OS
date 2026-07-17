@@ -6,10 +6,10 @@ function escapeCell(value) {
 
 function sourceText(fact) {
   if (!fact.evidence?.length) return '无直接来源';
-  return fact.evidence.map((item) => {
+  return [...new Set(fact.evidence.map((item) => {
     const location = [item.filename, item.section, item.page ? `第 ${item.page} 页` : ''].filter(Boolean).join(' / ');
-    return item.excerpt ? `${location}：“${item.excerpt}”` : location;
-  }).join('；');
+    return location;
+  }))].join('；');
 }
 
 function factLine(label, fact) {
@@ -66,6 +66,84 @@ function imageSystemBlock(system) {
 - **Negative Constraints**：${system.globalProhibitions?.join('；') || '不得伪造业务与视觉资产'}
 - **Text Policy**：${system.textPolicy}
 - **Logo Policy**：${system.logoPolicy}`;
+}
+
+export function compileBrandDnaCoreReport(dna, options = {}) {
+  const projectName = dna.projectName.status === 'missing' ? '品牌项目' : dna.projectName.value;
+  const genes = dna.genes.map((gene) =>
+    `| ${gene.type} | ${escapeCell(gene.statement)} | ${gene.confidence} | ${escapeCell(gene.evidenceIds.join('、'))} | ${escapeCell(gene.evidence.map((item) => item.filename).join('、') || '推断/建议')} |`
+  ).join('\n');
+  return `# ${projectName}品牌 DNA 核心分析报告
+
+${metadataBlock(options.metadata, options.qualityAudit)}> 当前已完成可独立使用的品牌 DNA 核心分析。视觉转译与生图任务属于后续扩展，可从阶段存档继续生成。
+
+## 1. 项目识别
+
+${factLine('项目名称', dna.projectName)}
+${factLine('品牌名称', dna.brandName)}
+${factLine('行业 / 品类', dna.category)}
+${factLine('商业模式', dna.businessModel)}
+${factLine('发展阶段', dna.developmentStage)}
+
+## 2. 核心目标人群
+
+${factTable(dna.audience.primary)}
+
+### 需求
+
+${factTable(dna.audience.needs)}
+
+### 阻力与场景
+
+${factTable([...dna.audience.barriers, ...dna.audience.usageScenarios])}
+
+## 3. 品牌战略
+
+${factLine('品牌使命 / 目的', dna.strategy.purpose)}
+${factLine('品牌定位', dna.strategy.positioning)}
+${factLine('品牌承诺', dna.strategy.brandPromise)}
+
+### 价值主张与差异化
+
+${factTable([...dna.strategy.valueProposition, ...dna.strategy.differentiators])}
+
+## 4. 品牌人格与文化
+
+${factLine('关系角色', dna.personality.relationshipRole)}
+
+${factTable([
+    ...dna.personality.traits,
+    ...dna.personality.toneOfVoice,
+    ...dna.personality.emotionalOutcome,
+    ...dna.culture.culturalContext,
+    ...dna.culture.narrativeThemes
+  ])}
+
+## 5. 品牌 DNA 基因
+
+| 基因类型 | DNA 表述 | 置信度 | Evidence IDs | 来源 |
+|---|---|---|---|---|
+${genes}
+
+## 6. 一句话品牌 DNA
+
+> ${dna.oneSentenceDna}
+
+## 7. 边界与风险
+
+${list([
+    ...dna.diagnosis.conflicts,
+    ...dna.diagnosis.missingInformation,
+    ...dna.diagnosis.genericStatements,
+    ...dna.diagnosis.strategicRisks,
+    ...dna.boundaries.prohibitedClaims.map((item) => `[${evidenceStatusLabel(item.status)}] ${item.value}`),
+    ...dna.boundaries.complianceRisks.map((item) => `[${evidenceStatusLabel(item.status)}] ${item.value}`)
+  ], '当前材料范围内未发现明确风险')}
+
+## 8. 创意扩展说明
+
+核心报告不把创意扩展统一标记为“未完成”；客户端会根据阶段存档显示创意命题、视觉映射、Image System 与生图任务的真实完成状态。
+`;
 }
 
 export function compileBrandDnaReport(dna, options = {}) {

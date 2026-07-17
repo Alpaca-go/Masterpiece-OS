@@ -64,7 +64,13 @@ function dnaStage() {
       { id: 'gene-cultural', type: 'cultural', statement: '以东方生活智慧为根', evidenceIds: [evidenceId], confidence: 'high' },
       { id: 'gene-behavioral', type: 'behavioral', statement: '克制表达并持续验证', evidenceIds: [evidenceId], confidence: 'medium' },
       { id: 'gene-aesthetic', type: 'aesthetic', statement: '克制留白而非符号堆砌', evidenceIds: [evidenceId], confidence: 'medium' }
-    ],
+    ].map((gene) => ({
+      ...gene,
+      relationships: ['与其他基因形成因果协同'],
+      brandDecisionImpact: ['用于约束品牌决策'],
+      visualDecisionImpact: ['用于约束视觉决策'],
+      mustNotBeMisreadAs: ['不得简化为表面风格标签']
+    })),
     oneSentenceDna: '品牌依靠文化研究能力，在当代生活情境中为重视审美的城市青年解决东方文化难以日常化的任务，以可信向导关系交付可使用与安定从容的价值，最终建立克制而真实的东方生活认知。',
     diagnosis: {
       conflicts: [],
@@ -215,7 +221,9 @@ function responseForStage(stage, options = {}) {
   };
   const visual = visualTranslation();
   const system = imageSystem();
+  if (options.invalidCreativeFreedom) system.creativeFreedom = '错误的字符串类型';
   const tasks = imageTasks();
+  if (options.emptyFirstTaskConsistency) tasks[0].consistencyWithPreviousTasks = [];
   const outputs = {
     'atomic-evidence': {
       atomicEvidence: [{
@@ -297,6 +305,11 @@ function mockReasoner(options = {}) {
     calls.push(stage);
     const attempt = (attempts.get(stage) || 0) + 1;
     attempts.set(stage, attempt);
+    if (options.truncatedFirstStage === stage && attempt === 1) {
+      throw Object.assign(new Error('模型输出达到长度上限，结构化 JSON 被截断'), {
+        code: 'OUTPUT_TRUNCATED'
+      });
+    }
     if (options.invalidFirstStage === stage && attempt === 1) {
       return { runId: `run-${calls.length}`, provider: 'mock', model: 'text-model', text: '{}' };
     }
@@ -309,7 +322,13 @@ function mockReasoner(options = {}) {
       runId: `run-${calls.length}`,
       provider: 'mock',
       model: 'text-model',
-      text: JSON.stringify(responseForStage(stage, { chunkId, sourceId, auditPassed }))
+      text: JSON.stringify(responseForStage(stage, {
+        chunkId,
+        sourceId,
+        auditPassed,
+        invalidCreativeFreedom: options.invalidCreativeFreedom,
+        emptyFirstTaskConsistency: options.emptyFirstTaskConsistency
+      }))
     };
   };
   return { reasoner, calls };
@@ -325,8 +344,8 @@ test('Brand DNA deep protocol runs all stages, repairs one malformed stage, and 
     reasoner,
     onProgress: ({ stage }) => stages.push(stage)
   });
-  assert.equal(result.metadata.protocolVersion, 'brand-dna-v1');
-  assert.equal(result.metadata.imageTaskSchemaVersion, 'gpt-image-task-v1');
+  assert.equal(result.metadata.protocolVersion, 'brand-dna-v2-reliable');
+  assert.equal(result.metadata.imageTaskSchemaVersion, 'gpt-image-task-v2');
   assert.equal(result.qualityAudit.totalScore, 91);
   assert.equal(result.deepBenchmarkPassed, false);
   assert.equal(result.schemaRetryCount, 1);
@@ -345,6 +364,35 @@ test('Brand DNA deep protocol runs all stages, repairs one malformed stage, and 
   assert.ok(stages.includes('planning-generation-tasks'));
 });
 
+test('atomic evidence extraction automatically splits a truncated batch and continues', async () => {
+  const twoSectionCorpus = {
+    ...corpus,
+    documents: [{
+      ...corpus.documents[0],
+      rawText: '品牌定位内容\n\n品牌价值内容',
+      sections: [
+        { heading: '品牌定位', content: '为城市青年提供可信赖的东方生活方式选择' },
+        { heading: '品牌价值', content: '通过文化研究与真实产品体验建立长期信任' }
+      ]
+    }]
+  };
+  const { reasoner, calls } = mockReasoner({ truncatedFirstStage: 'atomic-evidence' });
+  const progressMessages = [];
+  const result = await runBrandDnaPipeline({
+    corpus: twoSectionCorpus,
+    projectNameHint: '临时项目',
+    qualityTier: 'experimental',
+    reasoner,
+    onProgress: ({ message }) => progressMessages.push(message)
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(calls.filter((stage) => stage === 'atomic-evidence').length, 3);
+  assert.equal(result.intermediateObjects.chunks.length, 2);
+  assert.ok(result.intermediateObjects.trace.some((entry) => entry.adaptiveSplit === true));
+  assert.ok(progressMessages.some((message) => /自动拆分/.test(message)));
+});
+
 test('quality gate performs one targeted repair and fails closed when the second audit still fails', async () => {
   const { reasoner, calls } = mockReasoner({ auditSequence: [false, false] });
   await assert.rejects(
@@ -361,6 +409,69 @@ test('quality gate performs one targeted repair and fails closed when the second
   );
   assert.equal(calls.filter((stage) => stage === 'targeted-repair').length, 1);
   assert.equal(calls.filter((stage) => stage === 'quality-auditor').length, 2);
+});
+
+test('visual contract rejects creativeFreedom string before report generation and preserves the core result', async () => {
+  const { reasoner, calls } = mockReasoner({ invalidCreativeFreedom: true });
+  const coreResults = [];
+  await assert.rejects(
+    runBrandDnaPipeline({
+      corpus,
+      projectNameHint: '临时项目',
+      qualityTier: 'experimental',
+      reasoner,
+      onCoreComplete: (core) => coreResults.push(core)
+    }),
+    (error) => {
+      assert.equal(error.code, 'FAILED_SCHEMA');
+      assert.equal(error.stage, 'visual-causal-translation');
+      assert.match(error.message, /creativeFreedom/);
+      return true;
+    }
+  );
+  assert.equal(coreResults.length, 1);
+  assert.match(coreResults[0].reportMarkdown, /品牌 DNA 核心分析报告/);
+  assert.equal(calls.includes('gpt-image-task-compiler'), false);
+});
+
+test('valid stage checkpoints resume without repeating completed model stages', async () => {
+  const checkpoints = {};
+  const first = mockReasoner();
+  await runBrandDnaPipeline({
+    corpus,
+    projectNameHint: '临时项目',
+    qualityTier: 'experimental',
+    reasoner: first.reasoner,
+    onCheckpoint(stage, value) {
+      checkpoints[stage] = structuredClone(value);
+    }
+  });
+  const second = mockReasoner();
+  const result = await runBrandDnaPipeline({
+    corpus,
+    projectNameHint: '临时项目',
+    qualityTier: 'experimental',
+    reasoner: second.reasoner,
+    resumeStages: checkpoints
+  });
+  assert.equal(result.success, true);
+  assert.deepEqual(second.calls, ['quality-auditor']);
+  assert.ok(result.intermediateObjects.trace.some((entry) =>
+    entry.stage === 'visual-causal-translation' && entry.resumed === true
+  ));
+});
+
+test('safe image-task defaults complete an empty first-task consistency field without a costly model retry', async () => {
+  const { reasoner, calls } = mockReasoner({ emptyFirstTaskConsistency: true });
+  const result = await runBrandDnaPipeline({
+    corpus,
+    projectNameHint: '临时项目',
+    qualityTier: 'experimental',
+    reasoner
+  });
+  assert.equal(result.success, true);
+  assert.equal(calls.filter((stage) => stage === 'gpt-image-task-compiler').length, 1);
+  assert.ok(result.intermediateObjects.imageTasks[0].consistencyWithPreviousTasks.length > 0);
 });
 
 test('unsupported model tier is rejected before any model request', async () => {
@@ -406,4 +517,63 @@ test('OpenAI-compatible text reasoner never sends image_url content', async () =
   assert.ok(body.messages.every((message) => typeof message.content === 'string'));
   assert.doesNotMatch(requests[0].options.body, /image_url|data:image/);
   assert.equal(result.provider, 'generic-provider');
+});
+
+test('OpenAI-compatible text reasoner exposes output truncation before JSON parsing', async () => {
+  const reasoner = createOpenAICompatibleTextReasoner({
+    apiKey: 'secret-key',
+    baseUrl: 'https://example.test/v1',
+    model: 'limited-output-model',
+    provider: 'generic-provider',
+    client: async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({
+        id: 'response-truncated',
+        model: 'limited-output-model',
+        choices: [{
+          finish_reason: 'length',
+          message: { content: '{"atomicEvidence":[' }
+        }]
+      })
+    })
+  });
+
+  await assert.rejects(
+    reasoner([{ role: 'user', content: 'document text' }]),
+    (error) => {
+      assert.equal(error.code, 'OUTPUT_TRUNCATED');
+      assert.equal(error.details.finishReason, 'length');
+      assert.equal(error.details.outputCharacters, 19);
+      return true;
+    }
+  );
+});
+
+test('Alibaba-compatible reasoner explicitly controls thinking mode and budget per stage', async () => {
+  const requests = [];
+  const reasoner = createOpenAICompatibleTextReasoner({
+    apiKey: 'secret-key',
+    baseUrl: 'https://workspace.cn-beijing.maas.aliyuncs.com/compatible-mode/v1',
+    model: 'qwen3.6-plus',
+    provider: 'qwen',
+    client: async (_url, options) => {
+      requests.push(JSON.parse(options.body));
+      return {
+        ok: true,
+        status: 200,
+        text: async () => JSON.stringify({
+          id: 'response-thinking-control',
+          model: 'qwen3.6-plus',
+          choices: [{ message: { content: '{"ok":true}' }, finish_reason: 'stop' }]
+        })
+      };
+    }
+  });
+  await reasoner([{ role: 'user', content: 'test' }], { enableThinking: false });
+  await reasoner([{ role: 'user', content: 'test' }], { enableThinking: true, thinkingBudget: 4096 });
+  assert.equal(requests[0].enable_thinking, false);
+  assert.equal('thinking_budget' in requests[0], false);
+  assert.equal(requests[1].enable_thinking, true);
+  assert.equal(requests[1].thinking_budget, 4096);
 });

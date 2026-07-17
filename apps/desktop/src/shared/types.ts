@@ -11,6 +11,7 @@ export type ProjectStatus =
   | 'ready'
   | 'running'
   | 'completed'
+  | 'completed-core'
   | 'failed'
   | 'failed-schema'
   | 'failed-quality-gate'

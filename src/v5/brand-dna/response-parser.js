@@ -1,3 +1,5 @@
+import { jsonrepair } from 'jsonrepair';
+
 function extractJsonCandidate(value) {
   const text = String(value || '').trim()
     .replace(/^```(?:json)?\s*/i, '')
@@ -14,7 +16,13 @@ export function parseBrandDnaResponse(value) {
   const candidate = extractJsonCandidate(value);
   try {
     return JSON.parse(candidate);
-  } catch (error) {
-    throw new Error(`Brand DNA JSON 解析失败：${error.message}`);
+  } catch (initialError) {
+    try {
+      return JSON.parse(jsonrepair(candidate));
+    } catch (repairError) {
+      throw new Error(
+        `Brand DNA JSON 解析失败：${initialError.message}；本地语法修复失败：${repairError.message}`
+      );
+    }
   }
 }

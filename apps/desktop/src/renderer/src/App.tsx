@@ -20,6 +20,7 @@ function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
     ready: '可分析',
     running: '分析中',
     completed: '已完成',
+    'completed-core': '核心完成',
     failed: '失败',
     'failed-schema': '结构失败',
     'failed-quality-gate': '质量未通过',
@@ -86,7 +87,7 @@ export function App() {
       || enabledProfiles.find((item) => item.isDefault)
       || enabledProfiles[0];
     setSelectedApiProfileId(profile?.id || '');
-    setScreen(project.status === 'completed' && project.lastReportFilename ? 'report' : 'project');
+    setScreen(['completed', 'completed-core'].includes(project.status) && project.lastReportFilename ? 'report' : 'project');
     try {
       if (project.mode === 'brand-dna') {
         setAssets(null);

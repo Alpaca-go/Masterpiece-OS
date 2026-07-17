@@ -1,6 +1,6 @@
 # Brand DNA v1
 
-`brand-dna-v1` 是 Desktop 品牌 DNA 分析使用的独立深度协议，不修改现有视觉分析 Prompt 或 `runV5Pipeline()`。
+`brand-dna-v2-reliable` 是 Desktop 品牌 DNA 分析使用的独立深度协议，不修改现有视觉分析 Prompt 或 `runV5Pipeline()`。该版本增加完整运行时契约、阶段存档与核心结果优先交付。
 
 执行阶段：
 

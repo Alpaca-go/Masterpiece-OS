@@ -1,6 +1,15 @@
 import { performance } from 'node:perf_hooks';
 import { runBrandDnaDeepProtocol } from './deep-protocol.js';
-import { compileBrandDnaReport, validateBrandDnaReport } from './report-compiler.js';
+import {
+  compileBrandDnaCoreReport,
+  compileBrandDnaReport,
+  validateBrandDnaReport
+} from './report-compiler.js';
+import { BRAND_DNA_PROTOCOL } from './protocol-config.js';
+import {
+  validateImageSystemContract,
+  validateImageTasksContract
+} from './runtime-contracts.js';
 
 function emit(input, stage, message, started) {
   input.onProgress?.({
@@ -27,6 +36,20 @@ export async function runBrandDnaPipeline(input) {
     reasoner: input.reasoner,
     abortSignal: input.abortSignal,
     qualityTier: input.qualityTier,
+    resumeStages: input.resumeStages,
+    onCheckpoint: input.onCheckpoint,
+    async onCoreComplete(core) {
+      const metadata = {
+        ...BRAND_DNA_PROTOCOL,
+        qualityTier: input.qualityTier || 'experimental',
+        qualityScore: '待完成扩展审计'
+      };
+      await input.onCoreComplete?.({
+        ...core,
+        metadata,
+        reportMarkdown: compileBrandDnaCoreReport(core.brandDna, { metadata })
+      });
+    },
     onProtocolProgress(stage, message) {
       assertNotAborted(input.abortSignal);
       emit(input, stage, message, started);
@@ -34,15 +57,18 @@ export async function runBrandDnaPipeline(input) {
   });
   assertNotAborted(input.abortSignal);
   emit(input, 'generating-report', '正在编译品牌 DNA 与 GPT 生图标准报告', started);
+  const imageSystem = validateImageSystemContract(execution.imageSystem);
+  const geneIds = new Set(execution.brandDna.genes.map((gene) => gene.id));
+  const imageTasks = validateImageTasksContract(execution.imageTasks, imageSystem, geneIds);
   const reportMarkdown = compileBrandDnaReport(execution.brandDna, {
     metadata: execution.metadata,
     qualityAudit: execution.qualityAudit,
-    imageSystem: execution.imageSystem,
-    imageTasks: execution.imageTasks
+    imageSystem,
+    imageTasks
   });
   validateBrandDnaReport(reportMarkdown, {
-    imageSystem: execution.imageSystem,
-    imageTasks: execution.imageTasks
+    imageSystem,
+    imageTasks
   });
   return Object.freeze({
     success: true,

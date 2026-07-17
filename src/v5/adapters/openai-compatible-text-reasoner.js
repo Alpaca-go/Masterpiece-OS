@@ -39,6 +39,22 @@ function responseText(response) {
   return '';
 }
 
+function responseFinishReason(response) {
+  return String(
+    response?.choices?.[0]?.finish_reason
+    || response?.choices?.[0]?.finishReason
+    || response?.finish_reason
+    || response?.finishReason
+    || response?.stop_reason
+    || response?.stopReason
+    || ''
+  ).trim();
+}
+
+function reachedOutputLimit(reason) {
+  return /^(length|max[_-]?tokens?|token[_-]?limit|output[_-]?limit)$/i.test(reason);
+}
+
 export function createOpenAICompatibleTextReasoner(options = {}) {
   const apiKey = String(options.apiKey || '').trim();
   const model = String(options.model || '').trim();
@@ -47,6 +63,7 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
     ? options.maxTokens
     : 16_384;
   const url = completionUrl(String(options.baseUrl || '').trim());
+  const supportsThinkingControls = /(?:maas\.aliyuncs\.com|dashscope\.aliyuncs\.com)$/i.test(new URL(url).hostname);
   const client = options.client || fetch;
 
   if (!apiKey) throw new OpenAICompatibleTextReasonerError('API_KEY_MISSING', 'API Key 尚未配置');
@@ -55,10 +72,17 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
   return async function reason(messages, context = {}) {
     let response;
     try {
+      const requestBody = { model, messages, max_tokens: maxTokens, stream: false };
+      if (supportsThinkingControls && typeof context.enableThinking === 'boolean') {
+        requestBody.enable_thinking = context.enableThinking;
+        if (context.enableThinking && Number.isInteger(context.thinkingBudget) && context.thinkingBudget > 0) {
+          requestBody.thinking_budget = context.thinkingBudget;
+        }
+      }
       response = await client(url, {
         method: 'POST',
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ model, messages, max_tokens: maxTokens, stream: false }),
+        body: JSON.stringify(requestBody),
         signal: context.signal
       });
     } catch (error) {
@@ -89,6 +113,14 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
       );
     }
     const text = responseText(body);
+    const finishReason = responseFinishReason(body);
+    if (reachedOutputLimit(finishReason)) {
+      throw new OpenAICompatibleTextReasonerError(
+        'OUTPUT_TRUNCATED',
+        '模型输出达到长度上限，结构化 JSON 被截断',
+        { provider, model, finishReason, outputCharacters: text.length }
+      );
+    }
     if (!text) {
       throw new OpenAICompatibleTextReasonerError(
         'EMPTY_RESPONSE',
@@ -101,6 +133,7 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
       provider,
       model: String(body.model || model),
       text,
+      finishReason,
       completedAt: new Date().toISOString()
     });
   };

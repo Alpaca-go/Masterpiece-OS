@@ -1,9 +1,9 @@
 export const BRAND_DNA_PROTOCOL = Object.freeze({
   profile: 'deep',
-  protocolVersion: 'brand-dna-v1',
-  brandDnaSchemaVersion: 'brand-dna-schema-v1',
-  reportSchemaVersion: 'brand-dna-report-v1',
-  imageTaskSchemaVersion: 'gpt-image-task-v1',
+  protocolVersion: 'brand-dna-v2-reliable',
+  brandDnaSchemaVersion: 'brand-dna-schema-v2',
+  reportSchemaVersion: 'brand-dna-report-v2',
+  imageTaskSchemaVersion: 'gpt-image-task-v2',
   industryRuleVersion: 'default-v1'
 });
 

@@ -22,6 +22,20 @@ import {
   buildTargetedRepairPrompt
 } from './prompts/quality-auditor.js';
 import { DEFAULT_INDUSTRY_RULES } from './prompts/industry-rules/default.js';
+import {
+  arrayValue,
+  enumValue,
+  numberValue,
+  objectValue,
+  stringArray,
+  stringValue,
+  validateBrandDnaCoreContract,
+  validateEvidenceItemContract,
+  validateImageSystemContract,
+  validateImageTasksContract,
+  validateStrategicModelContract,
+  validateVisualTranslationContract
+} from './runtime-contracts.js';
 
 export class BrandDnaQualityGateError extends Error {
   constructor(audit) {
@@ -46,7 +60,12 @@ function stableId(prefix, value) {
   return `${prefix}-${crypto.createHash('sha256').update(String(value)).digest('hex').slice(0, 16)}`;
 }
 
-function splitContent(content, maximum = 12_000) {
+const EVIDENCE_BATCH_MAX_ITEMS = 2;
+const EVIDENCE_BATCH_MAX_CHARACTERS = 8_000;
+const EVIDENCE_RETRY_MIN_CHUNK_CHARACTERS = 800;
+const EVIDENCE_RETRY_MAX_DEPTH = 6;
+
+function splitContent(content, maximum = 4_000) {
   if (content.length <= maximum) return [content];
   const paragraphs = content.split(/\n{2,}/);
   const chunks = [];
@@ -120,6 +139,49 @@ function partition(items, maximumItems, maximumCharacters = Infinity) {
   return batches;
 }
 
+function evidenceBatchCharacters(batch) {
+  return batch.reduce((total, item) => total + JSON.stringify(item).length, 0);
+}
+
+function splitChunkForEvidenceRetry(chunk) {
+  const content = String(chunk?.content || '');
+  if (content.length < EVIDENCE_RETRY_MIN_CHUNK_CHARACTERS * 2) return null;
+  const midpoint = Math.floor(content.length / 2);
+  const lower = Math.floor(content.length * 0.35);
+  const upper = Math.ceil(content.length * 0.65);
+  const newlineAfter = content.indexOf('\n', midpoint);
+  const newlineBefore = content.lastIndexOf('\n', midpoint);
+  const splitAt = newlineAfter >= lower && newlineAfter <= upper
+    ? newlineAfter
+    : newlineBefore >= lower && newlineBefore <= upper
+      ? newlineBefore
+      : midpoint;
+  const parts = [content.slice(0, splitAt), content.slice(splitAt)].map((part) => part.trim()).filter(Boolean);
+  if (parts.length !== 2) return null;
+  return parts.map((part, index) => ({
+    ...chunk,
+    chunkId: stableId('chunk', `${chunk.chunkId}:adaptive:${index}:${part}`),
+    sectionPath: [...(chunk.sectionPath || []), `自动拆分 ${index + 1}/2`],
+    content: part
+  }));
+}
+
+function divideEvidenceBatch(batch) {
+  if (batch.length > 1) {
+    const midpoint = Math.ceil(batch.length / 2);
+    return [batch.slice(0, midpoint), batch.slice(midpoint)];
+  }
+  const chunks = splitChunkForEvidenceRetry(batch[0]);
+  return chunks ? chunks.map((chunk) => [chunk]) : null;
+}
+
+function isAdaptiveEvidenceError(error) {
+  if (!error) return false;
+  if (error.code === 'OUTPUT_TRUNCATED' || error.code === 'FAILED_SCHEMA') return true;
+  if (isAdaptiveEvidenceError(error.cause)) return true;
+  return /输出.*(?:长度|上限|截断)|finish.reason.*length|JSON.*(?:解析|parse)/i.test(String(error.message || ''));
+}
+
 function assertArray(value, label, minimum = 0) {
   if (!Array.isArray(value) || value.length < minimum) throw new Error(`${label} 必须至少包含 ${minimum} 项`);
   return value;
@@ -144,12 +206,11 @@ function validateEvidence(output, chunks) {
   const items = assertArray(output?.atomicEvidence, 'atomicEvidence', 1);
   uniqueIds(items, 'atomicEvidence');
   const chunkIds = new Set(chunks.map((chunk) => chunk.chunkId));
-  for (const item of items) {
-    assertString(item.claim, 'atomicEvidence.claim');
-    const refs = assertArray(item.sourceRefs, 'atomicEvidence.sourceRefs', 1);
-    if (refs.some((ref) => !chunkIds.has(ref.chunkId))) throw new Error('atomicEvidence 引用了不存在的 chunkId');
-  }
-  return items;
+  return items.map((item, index) => validateEvidenceItemContract(
+    item,
+    `atomicEvidence[${index}]`,
+    chunkIds
+  ));
 }
 
 function canonicalizeEvidence(items, offset) {
@@ -162,13 +223,21 @@ function canonicalizeEvidence(items, offset) {
 function validateFacts(output, evidenceIds) {
   const items = assertArray(output?.normalizedFacts, 'normalizedFacts', 1);
   uniqueIds(items, 'normalizedFacts');
-  for (const item of items) {
-    assertString(item.statement, 'normalizedFacts.statement');
-    const refs = assertArray(item.evidenceIds, 'normalizedFacts.evidenceIds', item.status === 'missing' ? 0 : 1);
-    if (refs.some((id) => !evidenceIds.has(id))) throw new Error('normalizedFacts 引用了不存在的 evidenceId');
-    assertString(item.reasoningSummary, 'normalizedFacts.reasoningSummary');
-  }
-  return items;
+  return items.map((value, index) => {
+    const path = `normalizedFacts[${index}]`;
+    const item = objectValue(value, path);
+    const status = enumValue(item.status, ['confirmed', 'inferred', 'conflicting', 'missing'], `${path}.status`);
+    const refs = stringArray(item.evidenceIds, `${path}.evidenceIds`, { min: status === 'missing' ? 0 : 1 });
+    if (refs.some((id) => !evidenceIds.has(id))) throw new Error(`${path}.evidenceIds 引用了不存在的证据`);
+    return {
+      id: stringValue(item.id, `${path}.id`),
+      statement: stringValue(item.statement, `${path}.statement`),
+      status,
+      evidenceIds: refs,
+      confidence: numberValue(item.confidence, `${path}.confidence`, { min: 0, max: 1 }),
+      reasoningSummary: stringValue(item.reasoningSummary, `${path}.reasoningSummary`)
+    };
+  });
 }
 
 function canonicalizeFacts(items) {
@@ -176,97 +245,116 @@ function canonicalizeFacts(items) {
 }
 
 function validateStrategicModel(output, evidenceIds) {
-  const value = output?.strategicModel;
-  if (!value || typeof value !== 'object') throw new Error('strategicModel 缺失');
-  assertString(value.positioning?.statement, 'strategicModel.positioning.statement');
-  assertArray(value.primaryAudience, 'strategicModel.primaryAudience', 1);
-  assertArray(value.jobsToBeDone, 'strategicModel.jobsToBeDone', 1);
-  assertArray(value.differentiators, 'strategicModel.differentiators', 1);
-  const verify = (item) => {
-    if (!item || typeof item !== 'object') return;
-    const ids = Array.isArray(item.evidenceIds) ? item.evidenceIds : [];
-    if (item.status !== 'missing' && (!ids.length || ids.some((id) => !evidenceIds.has(id)))) {
-      throw new Error('strategicModel 包含无效 evidenceIds');
-    }
-  };
-  Object.values(value).forEach((item) => Array.isArray(item) ? item.forEach(verify) : verify(item));
-  return value;
+  return validateStrategicModelContract(output?.strategicModel, evidenceIds);
 }
 
 function validateIssues(output, evidenceIds) {
   const items = assertArray(output?.strategicIssues, 'strategicIssues', 1);
   uniqueIds(items, 'strategicIssues');
-  for (const item of items) {
-    assertString(item.issue, 'strategicIssues.issue');
-    assertString(item.consequence, 'strategicIssues.consequence');
-    assertString(item.recommendation, 'strategicIssues.recommendation');
-    if (item.recommendationStatus !== 'suggested') throw new Error('战略诊断建议必须标记为 suggested');
-    if ((item.evidenceIds || []).some((id) => !evidenceIds.has(id))) throw new Error('strategicIssues 包含无效 evidenceIds');
-  }
-  return items;
+  return items.map((value, index) => {
+    const path = `strategicIssues[${index}]`;
+    const item = objectValue(value, path);
+    const refs = stringArray(item.evidenceIds, `${path}.evidenceIds`);
+    if (refs.some((id) => !evidenceIds.has(id))) throw new Error(`${path}.evidenceIds 包含未知证据`);
+    return {
+      id: stringValue(item.id, `${path}.id`),
+      severity: enumValue(item.severity, ['critical', 'major', 'minor'], `${path}.severity`),
+      issue: stringValue(item.issue, `${path}.issue`),
+      evidenceIds: refs,
+      consequence: stringValue(item.consequence, `${path}.consequence`),
+      recommendation: stringValue(item.recommendation, `${path}.recommendation`),
+      recommendationStatus: enumValue(item.recommendationStatus, ['suggested'], `${path}.recommendationStatus`)
+    };
+  });
 }
 
 function validateDnaStage(output) {
-  if (!output?.brandDna || typeof output.brandDna !== 'object') throw new Error('brandDna 缺失');
-  assertArray(output.brandDna.genes, 'brandDna.genes', 5);
-  assertString(output.brandDna.oneSentenceDna, 'brandDna.oneSentenceDna');
-  return output.brandDna;
+  return validateBrandDnaCoreContract(output?.brandDna);
 }
 
 function validateThesis(output, geneIds) {
-  const value = output?.creativeThesisDecision;
-  if (!value || typeof value !== 'object') throw new Error('creativeThesisDecision 缺失');
-  assertString(value.selected?.statement, 'creativeThesisDecision.selected.statement');
-  const basis = assertArray(value.selected?.dnaBasis, 'creativeThesisDecision.selected.dnaBasis', 1);
+  const value = objectValue(output?.creativeThesisDecision, 'creativeThesisDecision');
+  const selected = objectValue(value.selected, 'creativeThesisDecision.selected');
+  const basis = stringArray(selected.dnaBasis, 'creativeThesisDecision.selected.dnaBasis', { min: 1 });
   if (basis.some((id) => !geneIds.has(id))) throw new Error('创意命题引用了不存在的 DNA 基因');
-  assertArray(value.rejectedCandidateSummaries, 'creativeThesisDecision.rejectedCandidateSummaries', 2);
-  if (!Number.isFinite(value.decisionScore)) throw new Error('creativeThesisDecision.decisionScore 缺失');
-  return value;
+  const rejectedCandidateSummaries = arrayValue(
+    value.rejectedCandidateSummaries,
+    'creativeThesisDecision.rejectedCandidateSummaries',
+    { min: 2 }
+  ).map((candidate, index) => ({
+    reason: stringValue(
+      objectValue(candidate, `creativeThesisDecision.rejectedCandidateSummaries[${index}]`).reason,
+      `creativeThesisDecision.rejectedCandidateSummaries[${index}].reason`
+    )
+  }));
+  return {
+    selected: {
+      statement: stringValue(selected.statement, 'creativeThesisDecision.selected.statement'),
+      dnaBasis: basis,
+      visualPotential: stringValue(selected.visualPotential, 'creativeThesisDecision.selected.visualPotential')
+    },
+    rejectedCandidateSummaries,
+    decisionScore: numberValue(value.decisionScore, 'creativeThesisDecision.decisionScore', { min: 0, max: 100 })
+  };
 }
 
 function validateVisual(output, geneIds) {
-  const translation = output?.visualTranslation;
-  const system = output?.imageSystem;
-  if (!translation?.creativeTranslation || !Array.isArray(translation.mappings)) throw new Error('visualTranslation 缺失');
-  assertArray(translation.mappings, 'visualTranslation.mappings', 5);
-  if (translation.mappings.some((mapping) => !geneIds.has(mapping.dnaGeneId))) {
-    throw new Error('visualTranslation 引用了不存在的 DNA 基因');
-  }
-  if (!system || typeof system !== 'object') throw new Error('imageSystem 缺失');
-  return { translation, system };
+  return {
+    translation: validateVisualTranslationContract(output?.visualTranslation, geneIds),
+    system: validateImageSystemContract(output?.imageSystem)
+  };
+}
+
+function completeSafeImageTaskDefaults(tasks, imageSystem) {
+  if (!Array.isArray(tasks)) return tasks;
+  return tasks.map((value, index) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+    const task = structuredClone(value);
+    if (!Array.isArray(task.consistencyWithPreviousTasks) || !task.consistencyWithPreviousTasks.length) {
+      task.consistencyWithPreviousTasks = index === 0
+        ? [`首张任务负责建立 ${imageSystem.systemId} 的全局视觉锚点`, ...imageSystem.consistencyRules]
+        : [...imageSystem.consistencyRules];
+    }
+    if (!Array.isArray(task.intentionalDifferenceFromPreviousTasks) || !task.intentionalDifferenceFromPreviousTasks.length) {
+      task.intentionalDifferenceFromPreviousTasks = [index === 0
+        ? '首张任务建立母题，不与前序图片比较'
+        : `第 ${index + 1} 张任务必须承担区别于前序图片的独立验证职责`];
+    }
+    if (!Array.isArray(task.lockedAssetInstructions) || !task.lockedAssetInstructions.length) {
+      task.lockedAssetInstructions = imageSystem.knownAssets.length
+        ? imageSystem.knownAssets.map((asset) => `仅按已确认状态使用：${asset}`)
+        : ['未提供可锁定资产，不得自行生成或仿造正式品牌资产'];
+    }
+    return task;
+  });
 }
 
 function validateTasks(output, imageSystem, geneIds) {
-  const tasks = assertArray(output?.imageTasks, 'imageTasks', 4);
-  if (tasks.length > 8) throw new Error('imageTasks 不得超过 8 项');
-  uniqueIds(tasks, 'imageTasks');
-  if (tasks[0]?.role !== 'anchor-image') throw new Error('第一张图片任务必须是 anchor-image');
-  for (const [index, task] of tasks.entries()) {
-    for (const key of [
-      'objective', 'viewerTakeaway', 'subject', 'environment', 'composition',
-      'focalHierarchy', 'colorDirection', 'materialAndTexture', 'lighting',
-      'textPolicy', 'logoPolicy', 'aspectRatio', 'finalPrompt'
-    ]) assertString(task[key], `imageTasks[${index}].${key}`);
-    if (task.systemId !== imageSystem.systemId) throw new Error('图片任务没有引用统一的 systemId');
-    const basis = assertArray(task.brandDnaBasis, `imageTasks[${index}].brandDnaBasis`, 1);
-    if (basis.some((id) => !geneIds.has(id))) throw new Error('图片任务引用了不存在的 DNA 基因');
-    assertArray(task.prohibitedElements, `imageTasks[${index}].prohibitedElements`, 1);
-    assertArray(task.consistencyWithPreviousTasks, `imageTasks[${index}].consistencyWithPreviousTasks`, 1);
-  }
-  return tasks;
+  return validateImageTasksContract(
+    completeSafeImageTaskDefaults(output?.imageTasks, imageSystem),
+    imageSystem,
+    geneIds
+  );
 }
 
 function validateAudit(output) {
-  const audit = output?.qualityAudit;
-  if (!audit || typeof audit !== 'object') throw new Error('qualityAudit 缺失');
-  if (!Number.isFinite(audit.totalScore)) throw new Error('qualityAudit.totalScore 缺失');
-  if (!audit.dimensionScores || typeof audit.dimensionScores !== 'object') throw new Error('qualityAudit.dimensionScores 缺失');
-  for (const key of ['evidence', 'strategy', 'imageExecution']) {
-    if (!Number.isFinite(audit.dimensionScores[key])) throw new Error(`qualityAudit.dimensionScores.${key} 缺失`);
+  const audit = objectValue(output?.qualityAudit, 'qualityAudit');
+  const dimensions = objectValue(audit.dimensionScores, 'qualityAudit.dimensionScores');
+  if (typeof audit.passed !== 'boolean') throw new Error('qualityAudit.passed 必须是布尔值');
+  const dimensionScores = {};
+  for (const key of [
+    'evidence', 'strategy', 'diagnosis', 'brandDna', 'creativeThesis',
+    'visualTranslation', 'imageExecution', 'reusability'
+  ]) {
+    dimensionScores[key] = numberValue(dimensions[key], `qualityAudit.dimensionScores.${key}`, { min: 0, max: 100 });
   }
-  audit.hardFailures = Array.isArray(audit.hardFailures) ? audit.hardFailures.map(String) : [];
-  audit.repairInstructions = Array.isArray(audit.repairInstructions) ? audit.repairInstructions.map(String) : [];
-  return audit;
+  return {
+    passed: audit.passed,
+    totalScore: numberValue(audit.totalScore, 'qualityAudit.totalScore', { min: 0, max: 100 }),
+    dimensionScores,
+    hardFailures: stringArray(audit.hardFailures, 'qualityAudit.hardFailures'),
+    repairInstructions: stringArray(audit.repairInstructions, 'qualityAudit.repairInstructions')
+  };
 }
 
 function stageRepairMessages(prompt, invalidOutput, error) {
@@ -284,14 +372,29 @@ function stageRepairMessages(prompt, invalidOutput, error) {
   ];
 }
 
+function reasoningOptions(stageName, repairing = false) {
+  if (repairing) return { enableThinking: false };
+  const budgets = {
+    'dna-synthesis': 4_096,
+    'creative-thesis-decision': 2_048,
+    'targeted-repair': 2_048
+  };
+  return budgets[stageName]
+    ? { enableThinking: true, thinkingBudget: budgets[stageName] }
+    : { enableThinking: false };
+}
+
 async function runStructuredStage(reasoner, prompt, validator, signal, trace, stageName) {
-  let response = await reasoner(prompt, { signal });
+  let response = await reasoner(prompt, { signal, ...reasoningOptions(stageName) });
   try {
     const parsed = parseBrandDnaResponse(response.text);
     return { value: validator(parsed), response, retryCount: 0 };
   } catch (firstError) {
     try {
-      response = await reasoner(stageRepairMessages(prompt, response.text, firstError), { signal });
+      response = await reasoner(stageRepairMessages(prompt, response.text, firstError), {
+        signal,
+        ...reasoningOptions(stageName, true)
+      });
       const parsed = parseBrandDnaResponse(response.text);
       const value = validator(parsed);
       trace.push({ stage: stageName, schemaRepair: true, runId: response.runId });
@@ -329,6 +432,28 @@ function hydrateEvidence(value, references) {
     value.evidence = value.evidenceIds.flatMap((id) => references.get(id) || []);
   }
   Object.values(value).forEach((item) => hydrateEvidence(item, references));
+}
+
+function validateKnownEvidenceReferences(value, knownEvidenceIds, path = 'brandDna') {
+  if (Array.isArray(value)) {
+    value.forEach((item, index) => validateKnownEvidenceReferences(item, knownEvidenceIds, `${path}[${index}]`));
+    return;
+  }
+  if (!value || typeof value !== 'object') return;
+  if (Array.isArray(value.evidenceIds) && value.evidenceIds.some((id) => !knownEvidenceIds.has(id))) {
+    throw new Error(`${path}.evidenceIds 包含未知证据`);
+  }
+  for (const [key, item] of Object.entries(value)) {
+    validateKnownEvidenceReferences(item, knownEvidenceIds, `${path}.${key}`);
+  }
+}
+
+function assembleCorePackage(brandDna, atomicEvidence, chunks) {
+  const core = structuredClone(brandDna);
+  const knownEvidenceIds = new Set(atomicEvidence.map((item) => item.id));
+  validateKnownEvidenceReferences(core, knownEvidenceIds);
+  hydrateEvidence(core, evidenceReferences(atomicEvidence, chunks));
+  return core;
 }
 
 function assemblePackage(parts, atomicEvidence, chunks) {
@@ -398,96 +523,211 @@ export async function runBrandDnaDeepProtocol(input) {
   const chunks = buildDocumentChunks(input.corpus);
   const trace = [];
   let schemaRetryCount = 0;
+  let resumeOpen = true;
+  const resumeStages = input.resumeStages && typeof input.resumeStages === 'object'
+    ? input.resumeStages
+    : {};
+  const takeResume = (stageName, validator) => {
+    if (!resumeOpen || !Object.prototype.hasOwnProperty.call(resumeStages, stageName)) {
+      resumeOpen = false;
+      return { found: false };
+    }
+    try {
+      const value = validator(structuredClone(resumeStages[stageName]));
+      trace.push({ stage: stageName, resumed: true });
+      return { found: true, value };
+    } catch (error) {
+      resumeOpen = false;
+      trace.push({ stage: stageName, resumeInvalid: true, reason: error.message });
+      return { found: false };
+    }
+  };
+  const checkpoint = async (stageName, value) => {
+    await input.onCheckpoint?.(stageName, structuredClone(value));
+  };
   const run = async (stageName, prompt, validator) => {
     if (input.abortSignal?.aborted) throw new DOMException('用户主动取消', 'AbortError');
+    const startedAt = Date.now();
     const result = await runStructuredStage(input.reasoner, prompt, validator, input.abortSignal, trace, stageName);
     schemaRetryCount += result.retryCount;
     trace.push({
       stage: stageName,
       runId: result.response.runId,
       provider: result.response.provider,
-      model: result.response.model
+      model: result.response.model,
+      durationMs: Date.now() - startedAt
     });
     return result.value;
+  };
+  const runCached = async (stageName, prompt, validator, resumeValidator = validator) => {
+    const resumed = takeResume(stageName, resumeValidator);
+    if (resumed.found) return resumed.value;
+    const value = await run(stageName, prompt, validator);
+    await checkpoint(stageName, value);
+    return value;
   };
 
   input.onProtocolProgress?.('extracting-project-facts', '正在分段提取原子证据');
   let atomicEvidence = [];
-  for (const batch of partition(chunks, 20, 50_000)) {
-    const extracted = await run(
-      'atomic-evidence',
-      buildEvidenceExtractionPrompt(batch),
-      (output) => validateEvidence(output, batch)
-    );
-    atomicEvidence.push(...canonicalizeEvidence(extracted, atomicEvidence.length));
+  let evidenceChunks = [];
+  const resumedEvidence = takeResume('atomic-evidence', (saved) => {
+    const savedChunks = assertArray(saved?.chunks, 'atomic-evidence.chunks', 1);
+    const savedEvidence = validateEvidence({ atomicEvidence: saved?.atomicEvidence }, savedChunks);
+    return { chunks: savedChunks, atomicEvidence: savedEvidence };
+  });
+  if (resumedEvidence.found) {
+    atomicEvidence = resumedEvidence.value.atomicEvidence;
+    evidenceChunks = resumedEvidence.value.chunks;
+  }
+  const initialEvidenceBatches = partition(
+    chunks,
+    EVIDENCE_BATCH_MAX_ITEMS,
+    EVIDENCE_BATCH_MAX_CHARACTERS
+  );
+  const extractEvidenceBatch = async (batch, depth = 0) => {
+    try {
+      const items = await run(
+        'atomic-evidence',
+        buildEvidenceExtractionPrompt(batch),
+        (output) => validateEvidence(output, batch)
+      );
+      return { items, chunks: batch };
+    } catch (error) {
+      const divided = depth < EVIDENCE_RETRY_MAX_DEPTH && isAdaptiveEvidenceError(error)
+        ? divideEvidenceBatch(batch)
+        : null;
+      if (!divided) throw error;
+      trace.push({
+        stage: 'atomic-evidence',
+        adaptiveSplit: true,
+        depth: depth + 1,
+        reason: error.code || error.message,
+        inputItems: batch.length,
+        inputCharacters: evidenceBatchCharacters(batch)
+      });
+      input.onProtocolProgress?.(
+        'extracting-project-facts',
+        `证据输出过长，已自动拆分当前批次（第 ${depth + 1} 级）`
+      );
+      const results = [];
+      for (const childBatch of divided) {
+        results.push(await extractEvidenceBatch(childBatch, depth + 1));
+      }
+      return {
+        items: results.flatMap((result) => result.items),
+        chunks: results.flatMap((result) => result.chunks)
+      };
+    }
+  };
+  if (!resumedEvidence.found) {
+    const extractedBatches = [];
+    for (let offset = 0; offset < initialEvidenceBatches.length; offset += 2) {
+      const group = initialEvidenceBatches.slice(offset, offset + 2);
+      input.onProtocolProgress?.(
+        'extracting-project-facts',
+        `正在并行提取原子证据（批次 ${offset + 1}～${offset + group.length}/${initialEvidenceBatches.length}）`
+      );
+      extractedBatches.push(...await Promise.all(group.map((batch) => extractEvidenceBatch(batch))));
+    }
+    for (const extracted of extractedBatches) {
+      evidenceChunks.push(...extracted.chunks);
+      atomicEvidence.push(...canonicalizeEvidence(extracted.items, atomicEvidence.length));
+    }
+    await checkpoint('atomic-evidence', { chunks: evidenceChunks, atomicEvidence });
   }
   const evidenceIds = new Set(atomicEvidence.map((item) => item.id));
 
-  let normalizedFacts = [];
-  const evidenceBatches = partition(atomicEvidence, 80, 70_000);
-  for (const batch of evidenceBatches) {
-    normalizedFacts.push(...await run(
-      'normalized-facts',
-      buildFactNormalizationPrompt(batch),
-      (output) => validateFacts(output, evidenceIds)
-    ));
+  let normalizedFacts;
+  const resumedFacts = takeResume('normalized-facts', (saved) =>
+    validateFacts({ normalizedFacts: saved }, evidenceIds)
+  );
+  if (resumedFacts.found) {
+    normalizedFacts = resumedFacts.value;
+  } else {
+    normalizedFacts = [];
+    const evidenceBatches = partition(atomicEvidence, 80, 70_000);
+    for (const batch of evidenceBatches) {
+      normalizedFacts.push(...await run(
+        'normalized-facts',
+        buildFactNormalizationPrompt(batch),
+        (output) => validateFacts(output, evidenceIds)
+      ));
+    }
+    if (evidenceBatches.length > 1) {
+      normalizedFacts = await run(
+        'fact-reconciliation',
+        buildFactReconciliationPrompt(normalizedFacts),
+        (output) => validateFacts(output, evidenceIds)
+      );
+    }
+    normalizedFacts = canonicalizeFacts(normalizedFacts);
+    await checkpoint('normalized-facts', normalizedFacts);
   }
-  if (evidenceBatches.length > 1) {
-    normalizedFacts = await run(
-      'fact-reconciliation',
-      buildFactReconciliationPrompt(normalizedFacts),
-      (output) => validateFacts(output, evidenceIds)
-    );
-  }
-  normalizedFacts = canonicalizeFacts(normalizedFacts);
 
   input.onProtocolProgress?.('building-brand-dna', '正在重建品牌战略模型');
-  const strategicModel = await run(
+  const strategicModel = await runCached(
     'strategic-model',
     buildStrategicModelPrompt(normalizedFacts, atomicEvidence, DEFAULT_INDUSTRY_RULES),
-    (output) => validateStrategicModel(output, evidenceIds)
+    (output) => validateStrategicModel(output, evidenceIds),
+    (saved) => validateStrategicModel({ strategicModel: saved }, evidenceIds)
   );
   input.onProtocolProgress?.('diagnosing-strategy', '正在执行批判性战略诊断');
-  const strategicIssues = await run(
+  const strategicIssues = await runCached(
     'strategic-critic',
     buildStrategicCriticPrompt(strategicModel, normalizedFacts, DEFAULT_INDUSTRY_RULES),
-    (output) => validateIssues(output, evidenceIds)
+    (output) => validateIssues(output, evidenceIds),
+    (saved) => validateIssues({ strategicIssues: saved }, evidenceIds)
   );
 
   input.onProtocolProgress?.('building-brand-dna', '正在合成七类品牌 DNA');
-  let brandDna = await run(
+  let brandDna = await runCached(
     'dna-synthesis',
     buildDnaSynthesisPrompt({ atomicEvidence, normalizedFacts, strategicModel, strategicIssues }),
-    validateDnaStage
+    validateDnaStage,
+    (saved) => validateDnaStage({ brandDna: saved })
   );
   let geneIds = new Set(brandDna.genes.map((gene) => gene.id));
   if (geneIds.has('') || geneIds.size !== brandDna.genes.length) throw new BrandDnaSchemaError('dna-synthesis', new Error('DNA 基因 ID 缺失或重复'));
+  const coreBrandDna = assembleCorePackage(brandDna, atomicEvidence, evidenceChunks);
+  await input.onCoreComplete?.({
+    brandDna: coreBrandDna,
+    atomicEvidence,
+    normalizedFacts,
+    strategicModel,
+    strategicIssues
+  });
 
   input.onProtocolProgress?.('translating-creative-direction', '正在比较候选并选择唯一创意命题');
-  let creativeThesisDecision = await run(
+  let creativeThesisDecision = await runCached(
     'creative-thesis-decision',
     buildCreativeThesisPrompt(brandDna, strategicIssues),
-    (output) => validateThesis(output, geneIds)
+    (output) => validateThesis(output, geneIds),
+    (saved) => validateThesis({ creativeThesisDecision: saved }, geneIds)
   );
-  const visual = await run(
+  const visual = await runCached(
     'visual-causal-translation',
     buildVisualTranslationPrompt(brandDna, creativeThesisDecision),
-    (output) => validateVisual(output, geneIds)
+    (output) => validateVisual(output, geneIds),
+    (saved) => validateVisual({
+      visualTranslation: saved?.translation,
+      imageSystem: saved?.system
+    }, geneIds)
   );
   let visualTranslation = visual.translation;
   let imageSystem = visual.system;
 
   input.onProtocolProgress?.('planning-generation-tasks', '正在编译 GPT Image Task Standard');
-  let imageTasks = await run(
+  let imageTasks = await runCached(
     'gpt-image-task-compiler',
     buildImageTaskPrompt({ brandDna, creativeThesisDecision, visualTranslation, imageSystem }, DEFAULT_INDUSTRY_RULES),
-    (output) => validateTasks(output, imageSystem, geneIds)
+    (output) => validateTasks(output, imageSystem, geneIds),
+    (saved) => validateTasks({ imageTasks: saved }, imageSystem, geneIds)
   );
 
   let packageToAudit = assemblePackage(
     { brandDna, creativeThesisDecision, visualTranslation, imageSystem, imageTasks },
     atomicEvidence,
-    chunks
+    evidenceChunks
   );
   input.onProtocolProgress?.('validating-output', '正在执行独立质量审计与评分');
   let qualityAudit = await run('quality-auditor', buildAuditPrompt(packageToAudit), validateAudit);
@@ -503,14 +743,25 @@ export async function runBrandDnaDeepProtocol(input) {
         if (!output?.brandDna || !output?.creativeThesisDecision || !output?.visualTranslation || !output?.imageSystem) {
           throw new Error('定向修复输出不完整');
         }
-        const repairedGeneIds = new Set(output.brandDna.genes?.map((gene) => gene.id));
-        validateThesis({ creativeThesisDecision: output.creativeThesisDecision }, repairedGeneIds);
-        validateVisual({
+        const repairedBrandDna = validateDnaStage({ brandDna: output.brandDna });
+        const repairedGeneIds = new Set(repairedBrandDna.genes.map((gene) => gene.id));
+        const repairedThesis = validateThesis({ creativeThesisDecision: output.creativeThesisDecision }, repairedGeneIds);
+        const repairedVisual = validateVisual({
           visualTranslation: output.visualTranslation,
           imageSystem: output.imageSystem
         }, repairedGeneIds);
-        validateTasks({ imageTasks: output.imageTasks }, output.imageSystem, repairedGeneIds);
-        return output;
+        const repairedTasks = validateTasks(
+          { imageTasks: output.imageTasks },
+          repairedVisual.system,
+          repairedGeneIds
+        );
+        return {
+          brandDna: repairedBrandDna,
+          creativeThesisDecision: repairedThesis,
+          visualTranslation: repairedVisual.translation,
+          imageSystem: repairedVisual.system,
+          imageTasks: repairedTasks
+        };
       }
     );
     brandDna = repaired.brandDna;
@@ -519,10 +770,17 @@ export async function runBrandDnaDeepProtocol(input) {
     visualTranslation = repaired.visualTranslation;
     imageSystem = repaired.imageSystem;
     imageTasks = repaired.imageTasks;
+    await checkpoint('dna-synthesis', brandDna);
+    await checkpoint('creative-thesis-decision', creativeThesisDecision);
+    await checkpoint('visual-causal-translation', {
+      translation: visualTranslation,
+      system: imageSystem
+    });
+    await checkpoint('gpt-image-task-compiler', imageTasks);
     packageToAudit = assemblePackage(
       { brandDna, creativeThesisDecision, visualTranslation, imageSystem, imageTasks },
       atomicEvidence,
-      chunks
+      evidenceChunks
     );
     qualityAudit = await run('quality-auditor-recheck', buildAuditPrompt(packageToAudit), validateAudit);
     qualityAudit = applyQualityGate(qualityAudit, validateImageTaskStandard(imageSystem, imageTasks));
@@ -541,7 +799,7 @@ export async function runBrandDnaDeepProtocol(input) {
       generatedAt: new Date().toISOString()
     },
     intermediates: {
-      chunks,
+      chunks: evidenceChunks,
       atomicEvidence,
       normalizedFacts,
       strategicModel,

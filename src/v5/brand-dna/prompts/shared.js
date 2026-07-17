@@ -1,4 +1,4 @@
-export const SYSTEM_CORE = `你正在执行 Masterpiece OS 的 brand-dna-v1 深度分析协议。
+export const SYSTEM_CORE = `你正在执行 Masterpiece OS 的 brand-dna-v2-reliable 深度分析协议。
 
 共同规则：
 - 只使用输入中的文档证据和已批准的上游结构化对象。
