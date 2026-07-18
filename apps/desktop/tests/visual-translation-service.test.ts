@@ -3,7 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { createVisualTranslationService } from '../src/main/visual-translation-service.ts';
+import { createVisualTranslationService, deriveVisualTranslationProjectName } from '../src/main/visual-translation-service.ts';
+
+test('Visual Translation derives the project name from document content without manual input', () => {
+  const projectName = deriveVisualTranslationProjectName({
+    documents: [{ id: 'doc-1', filename: '01-名济堂-品牌市场调研报告-1.1(2).docx', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', title: '名济堂品牌市场调研报告', sourceType: 'docx', rawText: '名济堂品牌市场调研报告', sections: [], tables: [], characterCount: 10, parseWarnings: [] }],
+    sourceIndex: [], mergedText: '', warnings: []
+  });
+  assert.equal(projectName, '名济堂');
+});
 
 test('Visual Translation Desktop service persists documents, checkpoints, reports and resume state', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'visual-translation-service-'));
@@ -46,7 +54,7 @@ test('Visual Translation Desktop service persists documents, checkpoints, report
   try {
     const inspected = await service.inspectDocuments([source]);
     assert.equal(inspected[0]?.sourceType, 'markdown');
-    const first = await service.start({ projectName: '测试品牌', documentPaths: [source], apiProfileId: 'profile-test' });
+    const first = await service.start({ documentPaths: [source], apiProfileId: 'profile-test' });
     assert.equal(first.run.status, 'completed');
     assert.equal(first.run.modelCallCount, 3);
     assert.match(await fs.readFile(await service.reportPath(first.run.id), 'utf8'), /三个视觉方向/);

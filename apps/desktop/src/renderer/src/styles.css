@@ -64,6 +64,19 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .visual-progress-panel { margin-top: 22px; padding: 25px; }.visual-progress-panel h2 { margin: 7px 0 4px; }.visual-progress-panel p { margin: 0; color: #817a84; }
 .visual-stage-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 20px 0; }.visual-stage-strip > div { min-height: 72px; padding: 11px; border-radius: 8px; color: #9b949e; background: #efecf0; }.visual-stage-strip > div.active { color: #fff; background: #6c42d8; }.visual-stage-strip > div.done { color: #366b55; background: #dff0e7; }.visual-stage-strip span, .visual-stage-strip strong { display: block; }.visual-stage-strip span { font-size: 9px; }.visual-stage-strip strong { margin-top: 10px; font-size: 10px; line-height: 1.35; }
 .visual-translation-report .markdown-preview { margin-top: 24px; }
+.analysis-workspace-shell { min-height: 100vh; background: #f1efe9; }
+.analysis-mode-tabs { position: sticky; z-index: 20; top: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 760px; margin: 0 auto; padding: 18px 24px 0; background: linear-gradient(#f1efe9 76%, #f1efe900); }
+.analysis-mode-tabs button { display: grid; gap: 4px; padding: 14px 18px; text-align: left; border: 1px solid #d5d0ca; border-radius: 10px; color: #6f6972; background: #faf9f6; box-shadow: 0 8px 24px #2d26300a; }
+.analysis-mode-tabs button.active { color: #fff; border-color: #6c42d8; background: #6c42d8; box-shadow: 0 10px 28px #6c42d82e; }
+.analysis-mode-tabs span, .analysis-mode-tabs small { display: block; }.analysis-mode-tabs span { font-size: 14px; font-weight: 750; }.analysis-mode-tabs small { opacity: .72; font-size: 10px; font-weight: 500; }
+.translation-drop-zone { min-height: 210px; margin: 8px 0 14px; border-width: 2px; background: radial-gradient(circle at 50% 15%, #faf7ff, #f2eef7 72%); }
+.translation-drop-zone.busy { opacity: .7; }
+.translation-selected-documents { margin-top: 12px; }
+.auto-project-name-note { margin: 10px 0 15px; padding: 12px 14px; border-radius: 8px; color: #645b6d; background: #eee8f6; font-size: 11px; line-height: 1.55; }
+.record-type { display: inline-block; margin-right: 7px; padding: 3px 7px; border-radius: 99px; font-size: 9px; font-weight: 750; vertical-align: 1px; }
+.record-type.visual-analysis { color: #4d35a0; background: #e8e0fa; }
+.record-type.visual-translation { color: #9a5a20; background: #f7e6cf; }
+.record-spacer { width: 52px; }
 
 @media (max-width: 1080px) {
   .visual-translation-grid { grid-template-columns: 1fr; }

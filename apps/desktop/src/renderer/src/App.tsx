@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { AnalysisProgress, AssetSummary, ProjectRecord, PublicSettings } from '../../shared/types';
+import type { AnalysisProgress, AssetSummary, ProjectRecord, PublicSettings, VisualTranslationRunRecord } from '../../shared/types';
+import { AnalysisModeTabs, type AnalysisMode } from './components/AnalysisModeTabs';
 import { AnalysisView } from './components/AnalysisView';
 import { ProjectWizard } from './components/ProjectWizard';
 import { ReportView } from './components/ReportView';
@@ -7,10 +8,15 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { VisualTranslationWorkspace } from './components/VisualTranslationWorkspace';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'visual-translation';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
+  return <span className={`badge ${status}`}>{labels[status]}</span>;
+}
+
+function TranslationStatusBadge({ status }: { status: VisualTranslationRunRecord['status'] }) {
+  const labels: Record<VisualTranslationRunRecord['status'], string> = { running: '运行中', completed: '已完成', failed: '失败', cancelled: '已取消' };
   return <span className={`badge ${status}`}>{labels[status]}</span>;
 }
 
@@ -18,6 +24,9 @@ export function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [settings, setSettings] = useState<PublicSettings | null>(null);
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
+  const [translationRuns, setTranslationRuns] = useState<VisualTranslationRunRecord[]>([]);
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
+  const [requestedTranslationRunId, setRequestedTranslationRunId] = useState('');
   const [selected, setSelected] = useState<ProjectRecord | null>(null);
   const [selectedApiProfileId, setSelectedApiProfileId] = useState('');
   const [settingsReturnScreen, setSettingsReturnScreen] = useState<Screen>('home');
@@ -42,10 +51,11 @@ export function App() {
   }, [assets]);
 
   async function refresh() {
-    const [nextSettings, nextProjects] = await Promise.all([window.masterpiece.settings.get(), window.masterpiece.projects.list()]);
+    const [nextSettings, nextProjects, nextTranslationRuns] = await Promise.all([window.masterpiece.settings.get(), window.masterpiece.projects.list(), window.masterpiece.visualTranslation.listRuns()]);
     setSettings(nextSettings);
     setProjects(nextProjects);
-    return { settings: nextSettings, projects: nextProjects };
+    setTranslationRuns(nextTranslationRuns);
+    return { settings: nextSettings, projects: nextProjects, translationRuns: nextTranslationRuns };
   }
 
   useEffect(() => {
@@ -185,13 +195,16 @@ export function App() {
   if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
   if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
 
-  if (screen === 'visual-translation') return <VisualTranslationWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} onApiProfileChange={setSelectedApiProfileId} onBack={() => setScreen('home')} onOpenSettings={() => { setSettingsReturnScreen('visual-translation'); setScreen('settings'); }} />;
   if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
-  if (screen === 'create') return <ProjectWizard settings={settings} onCancel={() => setScreen('home')} onStart={(project, profileId) => {
-    setSelected(project);
-    setSelectedApiProfileId(profileId);
-    void run(project, true, profileId);
-  }} />;
+  if (screen === 'create') return <div className="analysis-workspace-shell">
+    <AnalysisModeTabs value={analysisMode} onChange={(mode) => { setAnalysisMode(mode); if (mode !== 'visual-translation') setRequestedTranslationRunId(''); }} />
+    <div hidden={analysisMode !== 'visual-analysis'}><ProjectWizard settings={settings} onCancel={() => { setScreen('home'); void refresh(); }} onStart={(project, profileId) => {
+      setSelected(project);
+      setSelectedApiProfileId(profileId);
+      void run(project, true, profileId);
+    }} /></div>
+    <div hidden={analysisMode !== 'visual-translation'}><VisualTranslationWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedTranslationRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
+  </div>;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
     progress={progress}
@@ -229,29 +242,37 @@ export function App() {
   const defaultProfile = settings.profiles.find((profile) => profile.isDefault)
     || settings.profiles.find((profile) => profile.isEnabled);
   const hasUsableProfile = enabledProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
+  const recentRecords = [
+    ...projects.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
+    ...translationRuns.map((run) => ({ kind: 'visual-translation' as const, createdAt: run.createdAt, run }))
+  ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   return <div className="app-shell">
-    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className="active">项目</button><button onClick={() => setScreen('visual-translation')}>视觉转译 V1</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
-    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => setScreen('visual-translation')}>文档视觉转译 V1</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => setScreen('create')}>新建视觉分析 <span>↗</span></button></div></header>
+    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className="active">项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
+    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('visual-translation'); setRequestedTranslationRunId(''); setScreen('create'); }}>文档视觉转译</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建分析 <span>↗</span></button></div></header>
       {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
       {error && <div className="notice error">{error}</div>}
-      <section className="recent-section"><div className="section-title"><div><span>RECENT PROJECTS</span><h2>最近项目</h2></div><small>{projects.length} 个本地项目</small></div>
-        {projects.length ? <div className="project-list">{projects.map((project, index) => <div className="project-row" key={project.id}>
-          <button className="project-row-open" onClick={() => void openProject(project)}>
+      <section className="recent-section"><div className="section-title"><div><span>RECENT ANALYSIS</span><h2>最近分析记录</h2></div><small>{recentRecords.length} 条本地记录</small></div>
+        {recentRecords.length ? <div className="project-list">{recentRecords.map((record, index) => record.kind === 'visual-analysis' ? <div className="project-row" key={`analysis-${record.project.id}`}>
+          <button className="project-row-open" onClick={() => void openProject(record.project)}>
             <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{project.projectName}</strong><small>{project.industry} · {project.assetCount} 个素材</small></div>
-            <StatusBadge status={project.status} />
-            <div className="project-model"><small>MODEL</small><strong>{project.model || '—'}</strong></div>
-            <div className="project-time"><small>DURATION</small><strong>{formatDuration(project.lastDurationMs)}</strong></div>
+            <div className="project-name"><strong>{record.project.projectName}</strong><small><span className="record-type visual-analysis">视觉分析</span>{record.project.industry} · {record.project.assetCount} 个素材</small></div>
+            <StatusBadge status={record.project.status} />
+            <div className="project-model"><small>MODEL</small><strong>{record.project.model || '—'}</strong></div>
+            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.project.lastDurationMs)}</strong></div>
             <span className="row-arrow">→</span>
           </button>
-          <button
-            className="project-delete"
-            disabled={project.status === 'running' || deletingProjectId === project.id}
-            title={project.status === 'running' ? '请先取消正在运行的分析' : `删除 ${project.projectName} 及本地文件夹`}
-            aria-label={`删除项目 ${project.projectName}`}
-            onClick={() => void deleteProject(project)}
-          >{deletingProjectId === project.id ? '…' : '删除'}</button>
-        </div>)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析项目</strong><p>创建项目、导入视觉方案，开始第一次融合增强分析。</p><button className="button primary" onClick={() => setScreen('create')}>创建第一个项目</button></div>}
+          <button className="project-delete" disabled={record.project.status === 'running' || deletingProjectId === record.project.id} title={record.project.status === 'running' ? '请先取消正在运行的分析' : `删除 ${record.project.projectName} 及本地文件夹`} aria-label={`删除项目 ${record.project.projectName}`} onClick={() => void deleteProject(record.project)}>{deletingProjectId === record.project.id ? '…' : '删除'}</button>
+        </div> : <div className="project-row translation-record" key={`translation-${record.run.id}`}>
+          <button className="project-row-open" onClick={() => { setRequestedTranslationRunId(record.run.id); setAnalysisMode('visual-translation'); setScreen('create'); }}>
+            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
+            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type visual-translation">文档视觉转译</span>{record.run.documentCount} 份文档</small></div>
+            <TranslationStatusBadge status={record.run.status} />
+            <div className="project-model"><small>MODEL</small><strong>{record.run.model || '—'}</strong></div>
+            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
+            <span className="row-arrow">→</span>
+          </button>
+          <span className="record-spacer" />
+        </div>)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析记录</strong><p>进入分析工作台，选择视觉分析或文档视觉转译开始第一次任务。</p><button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>开始第一次分析</button></div>}
       </section>
     </main>
   </div>;

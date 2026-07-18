@@ -284,7 +284,6 @@ export interface VisualTranslationRunRecord {
 }
 
 export interface StartVisualTranslationInput {
-  projectName: string;
   documentPaths: string[];
   apiProfileId: string;
 }

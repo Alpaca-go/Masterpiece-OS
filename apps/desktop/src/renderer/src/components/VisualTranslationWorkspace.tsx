@@ -13,6 +13,7 @@ import { cleanError, formatDurationHuman } from '../utils';
 interface Props {
   settings: PublicSettings;
   selectedApiProfileId: string;
+  initialRunId?: string;
   onApiProfileChange(profileId: string): void;
   onBack(): void;
   onOpenSettings(): void;
@@ -34,11 +35,10 @@ const STATUS_LABELS: Record<VisualTranslationRunRecord['status'], string> = {
   cancelled: '已取消'
 };
 
-export function VisualTranslationWorkspace({ settings, selectedApiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
+export function VisualTranslationWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings }: Props) {
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
-  const [projectName, setProjectName] = useState('');
   const [documents, setDocuments] = useState<VisualTranslationDocumentSummary[]>([]);
   const [runs, setRuns] = useState<VisualTranslationRunRecord[]>([]);
   const [activeRunId, setActiveRunId] = useState('');
@@ -72,10 +72,9 @@ export function VisualTranslationWorkspace({ settings, selectedApiProfileId, onA
     void Promise.resolve(marked.parse(reportMarkdown)).then((value) => setReportHtml(DOMPurify.sanitize(value)));
   }, [reportMarkdown]);
 
-  async function chooseDocuments() {
+  async function addDocuments(paths: string[]) {
     setError('');
     try {
-      const paths = await window.masterpiece.visualTranslation.chooseDocuments();
       if (!paths.length) return;
       setBusy(true);
       const mergedPaths = [...new Set([...documents.map((document) => document.path), ...paths])];
@@ -87,8 +86,23 @@ export function VisualTranslationWorkspace({ settings, selectedApiProfileId, onA
     }
   }
 
+  async function chooseDocuments() {
+    await addDocuments(await window.masterpiece.visualTranslation.chooseDocuments());
+  }
+
+  async function openInitialRun() {
+    if (!initialRunId) return;
+    const next = await refreshRuns();
+    const run = next.find((item) => item.id === initialRunId);
+    if (run?.status === 'completed') await openReport(run);
+  }
+
+  useEffect(() => {
+    void openInitialRun().catch((reason) => setError(cleanError(reason)));
+  }, [initialRunId]);
+
   async function start() {
-    if (!projectName.trim() || !documents.length || !profileId) return;
+    if (!documents.length || !profileId) return;
     setBusy(true);
     setError('');
     setNotice('');
@@ -96,7 +110,7 @@ export function VisualTranslationWorkspace({ settings, selectedApiProfileId, onA
     setSelectedRun(null);
     setReportMarkdown('');
     try {
-      const result = await window.masterpiece.visualTranslation.start({ projectName, documentPaths: documents.map((document) => document.path), apiProfileId: profileId });
+      const result = await window.masterpiece.visualTranslation.start({ documentPaths: documents.map((document) => document.path), apiProfileId: profileId });
       setSelectedRun(result.run);
       setReportMarkdown(result.reportMarkdown);
       setNotice('分析完成。三个方向仍需人工确认，客户端不会自动替你做最终选择。');
@@ -179,12 +193,20 @@ export function VisualTranslationWorkspace({ settings, selectedApiProfileId, onA
     <div className="visual-translation-grid">
       <section className="panel visual-translation-form">
         <div className="section-heading"><span>01</span><div><h2>准备分析任务</h2><p>支持 PDF、DOCX、Markdown 和 TXT</p></div></div>
-        <label>项目名称<input value={projectName} onChange={(event) => setProjectName(event.target.value)} placeholder="例如：九州美学" /></label>
         <label>分析模型<select value={profileId} onChange={(event) => onApiProfileChange(event.target.value)}><option value="">请选择 API Profile</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName} / {profile.modelId}</option>)}</select></label>
-        <div className="document-toolbar"><div><strong>策略文档</strong><small>{documents.length} 份 · {totalCharacters.toLocaleString('zh-CN')} 字符</small></div><button className="button secondary" disabled={busy} onClick={() => void chooseDocuments()}>选择文档</button></div>
-        {documents.length ? <div className="visual-document-list">{documents.map((document) => <div key={document.path}><span className="document-kind">{document.sourceType.toUpperCase()}</span><div><strong>{document.filename}</strong><small>{document.title || '未识别标题'} · {document.characterCount.toLocaleString('zh-CN')} 字符{document.pageCount ? ` · ${document.pageCount} 页` : ''}</small>{document.warnings.map((warning) => <em key={warning}>{warning}</em>)}</div><button aria-label={`移除 ${document.filename}`} onClick={() => setDocuments((current) => current.filter((item) => item.path !== document.path))}>×</button></div>)}</div> : <div className="visual-document-empty">选择用于视觉转译的品牌策略、创意简报、产品资料或市场研究文档。</div>}
+        <div className="document-toolbar"><div><strong>策略文档</strong><small>{documents.length} 份 · {totalCharacters.toLocaleString('zh-CN')} 字符</small></div></div>
+        <div className={`drop-zone translation-drop-zone ${busy ? 'busy' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
+          event.preventDefault();
+          void addDocuments(Array.from(event.dataTransfer.files).map((file) => window.masterpiece.files.getPathForFile(file)));
+        }}>
+          <div className="upload-orbit">↥</div>
+          <strong>{busy ? '正在读取与解析文档…' : '将策略文档拖到这里'}</strong>
+          <p>支持 PDF、DOCX、Markdown 和 TXT，可一次拖入多份文档</p>
+          <button className="button secondary" type="button" disabled={busy} onClick={() => void chooseDocuments()}>选择文档</button>
+        </div>
+        {documents.length ? <div className="visual-document-list translation-selected-documents">{documents.map((document) => <div key={document.path}><span className="document-kind">{document.sourceType.toUpperCase()}</span><div><strong>{document.filename}</strong><small>{document.title || '未识别标题'} · {document.characterCount.toLocaleString('zh-CN')} 字符{document.pageCount ? ` · ${document.pageCount} 页` : ''}</small>{document.warnings.map((warning) => <em key={warning}>{warning}</em>)}</div><button aria-label={`移除 ${document.filename}`} onClick={() => setDocuments((current) => current.filter((item) => item.path !== document.path))}>×</button></div>)}</div> : <div className="auto-project-name-note">上传后将从文档标题和正文自动识别项目名称，无需手动填写。</div>}
         {!profiles.some((profile) => profile.hasApiKey) && <div className="notice error">尚未配置可用的 API Profile，请先前往 API 设置。</div>}
-        <button className="button primary full" disabled={busy || !projectName.trim() || !documents.length || !profiles.find((profile) => profile.id === profileId)?.hasApiKey} onClick={() => void start()}>{busy ? '分析运行中…' : '开始 Visual Translation V1'}</button>
+        <button className="button primary full" disabled={busy || !documents.length || !profiles.find((profile) => profile.id === profileId)?.hasApiKey} onClick={() => void start()}>{busy ? '分析运行中…' : '开始 Visual Translation V1'}</button>
       </section>
 
       <aside className="panel visual-translation-history">

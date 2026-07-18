@@ -69,9 +69,24 @@ test('Visual Translation API selection is controlled by App and survives setting
   const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
   assert.match(app, /selectedApiProfileId=\{selectedApiProfileId\}/);
   assert.match(app, /onApiProfileChange=\{setSelectedApiProfileId\}/);
-  assert.match(app, /setSettingsReturnScreen\('visual-translation'\)/);
+  assert.match(app, /setSettingsReturnScreen\('create'\)/);
   assert.match(workspace, /onApiProfileChange\(event\.target\.value\)/);
   assert.doesNotMatch(workspace, /useState\(initialProfile\?\.id/);
+});
+
+test('analysis intake shares tabs, translation supports drop upload, and home distinguishes both record types', async () => {
+  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
+  const tabs = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'AnalysisModeTabs.tsx'), 'utf8');
+  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
+  assert.match(app, /<AnalysisModeTabs/);
+  assert.match(tabs, /视觉分析/);
+  assert.match(tabs, /文档视觉转译/);
+  assert.match(workspace, /onDrop=/);
+  assert.match(workspace, /getPathForFile/);
+  assert.doesNotMatch(workspace, /项目名称<input/);
+  assert.match(app, /record-type visual-analysis/);
+  assert.match(app, /record-type visual-translation/);
+  assert.match(app, /visualTranslation\.listRuns\(\)/);
 });
 
 test('recent project rows expose a destructive local-folder delete action', async () => {
