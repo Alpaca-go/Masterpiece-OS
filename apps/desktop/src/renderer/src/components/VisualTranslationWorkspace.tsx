@@ -12,6 +12,8 @@ import { cleanError, formatDurationHuman } from '../utils';
 
 interface Props {
   settings: PublicSettings;
+  selectedApiProfileId: string;
+  onApiProfileChange(profileId: string): void;
   onBack(): void;
   onOpenSettings(): void;
 }
@@ -32,11 +34,11 @@ const STATUS_LABELS: Record<VisualTranslationRunRecord['status'], string> = {
   cancelled: '已取消'
 };
 
-export function VisualTranslationWorkspace({ settings, onBack, onOpenSettings }: Props) {
+export function VisualTranslationWorkspace({ settings, selectedApiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
+  const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
   const [projectName, setProjectName] = useState('');
-  const [profileId, setProfileId] = useState(initialProfile?.id || '');
   const [documents, setDocuments] = useState<VisualTranslationDocumentSummary[]>([]);
   const [runs, setRuns] = useState<VisualTranslationRunRecord[]>([]);
   const [activeRunId, setActiveRunId] = useState('');
@@ -178,7 +180,7 @@ export function VisualTranslationWorkspace({ settings, onBack, onOpenSettings }:
       <section className="panel visual-translation-form">
         <div className="section-heading"><span>01</span><div><h2>准备分析任务</h2><p>支持 PDF、DOCX、Markdown 和 TXT</p></div></div>
         <label>项目名称<input value={projectName} onChange={(event) => setProjectName(event.target.value)} placeholder="例如：九州美学" /></label>
-        <label>分析模型<select value={profileId} onChange={(event) => setProfileId(event.target.value)}><option value="">请选择 API Profile</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName} / {profile.modelId}</option>)}</select></label>
+        <label>分析模型<select value={profileId} onChange={(event) => onApiProfileChange(event.target.value)}><option value="">请选择 API Profile</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName} / {profile.modelId}</option>)}</select></label>
         <div className="document-toolbar"><div><strong>策略文档</strong><small>{documents.length} 份 · {totalCharacters.toLocaleString('zh-CN')} 字符</small></div><button className="button secondary" disabled={busy} onClick={() => void chooseDocuments()}>选择文档</button></div>
         {documents.length ? <div className="visual-document-list">{documents.map((document) => <div key={document.path}><span className="document-kind">{document.sourceType.toUpperCase()}</span><div><strong>{document.filename}</strong><small>{document.title || '未识别标题'} · {document.characterCount.toLocaleString('zh-CN')} 字符{document.pageCount ? ` · ${document.pageCount} 页` : ''}</small>{document.warnings.map((warning) => <em key={warning}>{warning}</em>)}</div><button aria-label={`移除 ${document.filename}`} onClick={() => setDocuments((current) => current.filter((item) => item.path !== document.path))}>×</button></div>)}</div> : <div className="visual-document-empty">选择用于视觉转译的品牌策略、创意简报、产品资料或市场研究文档。</div>}
         {!profiles.some((profile) => profile.hasApiKey) && <div className="notice error">尚未配置可用的 API Profile，请先前往 API 设置。</div>}

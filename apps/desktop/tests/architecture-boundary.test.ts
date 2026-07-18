@@ -64,6 +64,16 @@ test('API Profile provider is free-form and not restricted to Qwen choices', asy
   assert.doesNotMatch(settings, /<select value=\{editor\.provider\}/);
 });
 
+test('Visual Translation API selection is controlled by App and survives settings navigation', async () => {
+  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
+  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
+  assert.match(app, /selectedApiProfileId=\{selectedApiProfileId\}/);
+  assert.match(app, /onApiProfileChange=\{setSelectedApiProfileId\}/);
+  assert.match(app, /setSettingsReturnScreen\('visual-translation'\)/);
+  assert.match(workspace, /onApiProfileChange\(event\.target\.value\)/);
+  assert.doesNotMatch(workspace, /useState\(initialProfile\?\.id/);
+});
+
 test('recent project rows expose a destructive local-folder delete action', async () => {
   const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
   const store = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'project-store.ts'), 'utf8');
