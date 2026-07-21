@@ -13,6 +13,30 @@ import {
 
 export const EXECUTION_READINESS_EVALUATOR_VERSION = 'execution-readiness-evaluator-v1';
 
+// v2.1.1 (doc section 五) — truthful Content Readiness. The old `readiness_score`
+// (with concept-art / real-estate penalties) stays the execution-status gate;
+// `content_readiness_score` is a transparent 6-dimension weighted score so a
+// direction that is content-thin (e.g. 2/5 touchpoints) can never read 100/100.
+export const CONTENT_READINESS_WEIGHTS = Object.freeze({
+  industry_recognition: 0.15,
+  direct_executability: 0.20,
+  reusable_asset_quality: 0.15,
+  graphic_translation: 0.15,
+  touchpoint_coverage: 0.20,
+  brand_exclusivity: 0.15
+});
+
+export function calculateContentReadiness(metrics) {
+  const weighted =
+    metrics.industry_recognition_strength * CONTENT_READINESS_WEIGHTS.industry_recognition +
+    metrics.directly_executable_degree * CONTENT_READINESS_WEIGHTS.direct_executability +
+    metrics.reusable_visual_asset_count * CONTENT_READINESS_WEIGHTS.reusable_asset_quality +
+    metrics.flat_design_conversion_ability * CONTENT_READINESS_WEIGHTS.graphic_translation +
+    metrics.real_touchpoint_coverage * CONTENT_READINESS_WEIGHTS.touchpoint_coverage +
+    metrics.brand_exclusivity * CONTENT_READINESS_WEIGHTS.brand_exclusivity;
+  return Math.round((weighted / 5) * 100);
+}
+
 // Hard pass criteria (doc section 7). Lower-is-better metrics use `max`.
 export const EXECUTION_READINESS_PASS_CRITERIA = Object.freeze({
   industry_recognition_strength: { min: 4 },
@@ -83,6 +107,12 @@ function scoreFlatDesign(direction, violationCount) {
 }
 
 function scoreTouchpointCoverage(direction) {
+  // v2.1.4 — read from unified execution_example_quality if available.
+  const quality = direction.execution_example_quality;
+  if (quality && typeof quality.final_touchpoint_score_5 === 'number') {
+    return Math.min(5, Math.max(1, Math.round(quality.final_touchpoint_score_5)));
+  }
+  // Fallback: old composition_templates-based count (deprecated in v2.1.4)
   const touchpoints = new Set((direction.composition_templates || []).map((t) => t.touchpoint));
   return Math.min(5, Math.max(1, touchpoints.size));
 }
@@ -160,12 +190,56 @@ export function evaluateExecutionReadiness(direction, { blockingFailure = false 
   const scoreCapped = failed.length > 0 || blockingFailure === true;
   const cappedScore = scoreCapped ? Math.min(readiness_score, 59) : readiness_score;
 
+  // v2.1.4.1 (doc §3.3) — transparent content-readiness score with explicit cap explanation.
+  const contentRaw = calculateContentReadiness(metrics);
+  const executionExampleIncomplete = (direction.execution_examples?.length || 0) < 3;
+  const qualityCapReasons = [];
+  let contentScore = contentRaw;
+  if (metrics.real_touchpoint_coverage <= 2) { contentScore = Math.min(contentScore, 85); qualityCapReasons.push('触点覆盖率不足（<=2）→ 质量上限 85'); }
+  if (metrics.brand_exclusivity <= 3) { contentScore = Math.min(contentScore, 79); qualityCapReasons.push('品牌专属性 3/5 → 质量上限 79'); }
+  if (executionExampleIncomplete) { contentScore = Math.min(contentScore, 79); qualityCapReasons.push('Execution Example 不完整（<3）→ 质量上限 79'); }
+
+  // Permission cap is determined by compile-level set gates (filled externally).
+  const permissionCap = scoreCapped ? Math.min(readiness_score, 59) : null;
+  const permissionCapReasons = [];
+  if (scoreCapped) {
+    if (failed.length > 0) {
+      for (const f of failed) permissionCapReasons.push(`硬指标未通过：${f.metric}=${f.actual}（要求${f.expected}）`);
+    }
+    if (blockingFailure === true) permissionCapReasons.push('集合级 Gate 失败（品牌身份、伪造数据等）→ 执行许可上限 59');
+  }
+  const finalScore = permissionCap !== null ? Math.min(contentScore, permissionCap) : contentScore;
+
   return {
     evaluator_version: EXECUTION_READINESS_EVALUATOR_VERSION,
     direction_id: direction.direction_id,
     direction_name: direction.direction_name,
     metrics,
     readiness_score: cappedScore,
+    // v2.1.4.1 — content readiness score with explicit cap explanation (doc §3.3).
+    content_readiness_score: finalScore,
+    content_readiness_explanation: {
+      raw_score: contentRaw,
+      quality_cap: contentScore,
+      quality_cap_reasons: qualityCapReasons,
+      permission_cap: permissionCap,
+      permission_cap_reasons: permissionCapReasons,
+      final_score: finalScore
+    },
+    // Keep legacy breakdown for backward compatibility.
+    content_readiness_breakdown: {
+      weights: CONTENT_READINESS_WEIGHTS,
+      dimensions: {
+        industry_recognition_strength: metrics.industry_recognition_strength,
+        directly_executable_degree: metrics.directly_executable_degree,
+        reusable_visual_asset_count: metrics.reusable_visual_asset_count,
+        flat_design_conversion_ability: metrics.flat_design_conversion_ability,
+        real_touchpoint_coverage: metrics.real_touchpoint_coverage,
+        brand_exclusivity: metrics.brand_exclusivity
+      },
+      raw: contentRaw,
+      caps: qualityCapReasons
+    },
     score_capped: scoreCapped,
     execution_status,
     failed_criteria: failed,

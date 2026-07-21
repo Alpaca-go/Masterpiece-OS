@@ -1,6 +1,7 @@
 {
-  "runner_version": "execution-oriented-v2-ab-runner-v1",
+  "runner_version": "execution-oriented-v2-ab-runner-v1.1",
   "project_count": 3,
+  "failed_count": 0,
   "comparisons": [
     {
       "project_id": "jiuzhou-meixue",
@@ -13,8 +14,8 @@
         "directly_executable_degree": 5,
         "reusable_visual_asset_count": 4,
         "flat_design_conversion_ability": 5,
-        "real_touchpoint_coverage": 2,
-        "brand_exclusivity": 4,
+        "real_touchpoint_coverage": 3,
+        "brand_exclusivity": 4.33,
         "concept_art_risk": 1,
         "real_estate_drift_risk": 1,
         "abstract_object_dependency": 1
@@ -54,7 +55,7 @@
         "directly_executable_degree": 5,
         "reusable_visual_asset_count": 4,
         "flat_design_conversion_ability": 5,
-        "real_touchpoint_coverage": 2,
+        "real_touchpoint_coverage": 3,
         "brand_exclusivity": 4,
         "concept_art_risk": 1,
         "real_estate_drift_risk": 1,
@@ -95,7 +96,7 @@
         "directly_executable_degree": 5,
         "reusable_visual_asset_count": 4,
         "flat_design_conversion_ability": 5,
-        "real_touchpoint_coverage": 2,
+        "real_touchpoint_coverage": 3,
         "brand_exclusivity": 3,
         "concept_art_risk": 1,
         "real_estate_drift_risk": 1,

@@ -61,7 +61,10 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
       response = await client(url, { method: 'POST', headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal });
     } catch (error) {
       if (error?.name === 'AbortError') throw error;
-      throw new OpenAICompatibleTextReasonerError('REQUEST_FAILED', `模型 API 请求失败：${redact(error?.message, apiKey)}`, { provider, model });
+      const cause = error?.cause;
+      const causeMessage = cause && cause.code ? ` (${cause.code})` : '';
+      const detail = `${redact(error?.message, apiKey)}${causeMessage}`;
+      throw new OpenAICompatibleTextReasonerError('REQUEST_FAILED', `模型 API 请求失败：${detail}`, { provider, model, causeCode: cause?.code || null });
     }
     const raw = await response.text();
     let body = null;

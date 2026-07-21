@@ -60,6 +60,75 @@ export const FORGERY_PATTERNS = Object.freeze([
 export const BRAND_ROLE_KEYWORDS = ['平台', 'B2B', 'B2B2C', '生态', '协同', '供应链', '机构'];
 export const STRATEGIC_THESIS_KEYWORDS = ['B2B2C', 'B2B', '供应链', '仓储', '温控', '合规', '上游', '平台', '机构', '消费者', '生态'];
 
+// ── v2.1.1 (P2): single source of truth for the Fabricated Data Gate ──
+// Every evaluator that inspects model output for forged / unverified data
+// imports these shared pattern sets so the detection口径 can no longer drift
+// between asset-authorization-evaluator.js and evaluator-keywords.js.
+//
+// Each pattern carries detection_type / rule_id / reason / rewrite so the gate
+// output is fully explainable (doc section 七 / 十). risk_level: 'blocked'
+// stops execution; 'warning' (field_structure / placeholder_value) is allowed
+// but must be flagged.
+
+// Concrete, unverified values (doc section 七 / 十 / 十一).
+export const FABRICATION_SPECIFIC_PATTERNS = Object.freeze([
+  { re: /注册证号[\s:：]*[A-Za-z0-9]{4,}/, rule_id: 'FABRICATED_DATA_REG_NUMBER', reason: '项目 Evidence 未提供真实注册证编号', rewrite: '改为「注册证结构示意」或脱敏占位', type: 'specific_unverified_value' },
+  { re: /注册证[\s\S]{0,12}(号|编号)[\s:：]*[A-Za-z0-9]{4,}/, rule_id: 'FABRICATED_DATA_REG_NUMBER', reason: '项目 Evidence 未提供真实注册证编号', rewrite: '改为「注册证结构示意」或脱敏占位', type: 'specific_unverified_value' },
+  { re: /批次编码[\s:：]*[A-Za-z0-9]{4,}/, rule_id: 'FABRICATED_DATA_BATCH_CODE', reason: '项目 Evidence 未提供真实批次编码', rewrite: '改为批次结构示意 / 脱敏占位', type: 'specific_unverified_value' },
+  { re: /批次号[\s:：]*[A-Za-z0-9]{4,}/, rule_id: 'FABRICATED_DATA_BATCH_CODE', reason: '项目 Evidence 未提供真实批次编号', rewrite: '改为批次结构示意 / 脱敏占位', type: 'specific_unverified_value' },
+  { re: /\b(?:19|20)\d{2}[-_][A-Za-z0-9]{1,5}[-_][A-Za-z0-9]{2,}\b/, rule_id: 'FABRICATED_DATA_BATCH_CODE', reason: '疑似未经 Evidence 支撑的具体批次编号', rewrite: '改为批次结构示意 / 脱敏占位', type: 'specific_unverified_value' },
+  { re: /合格率[\s:：]*\d{1,3}(\.\d+)?\s?%/, rule_id: 'FABRICATED_DATA_PASS_RATE', reason: '项目 Evidence 未提供真实合格率数据', rewrite: '改为合格率结构示意', type: 'specific_unverified_value' },
+  { re: /资质编号[\s:：]*[A-Za-z0-9]{4,}/, rule_id: 'FABRICATED_DATA_QUALIFICATION_ID', reason: '项目 Evidence 未提供真实资质编号', rewrite: '改为资质结构示意 / 脱敏占位', type: 'specific_unverified_value' },
+  { re: /责任人[\s:：]*[一-龥]{2,4}/, rule_id: 'FABRICATED_DATA_PERSON_NAME', reason: '项目 Evidence 未提供真实责任人姓名', rewrite: '改为脱敏字段占位「责任角色」', type: 'specific_unverified_value' },
+  { re: /采购匹配度[\s\S]{0,8}评分[\s:：]*\d/, rule_id: 'FABRICATED_DATA_PROCUREMENT_SCORE', reason: '项目 Evidence 未提供真实采购匹配评分', rewrite: '改为评分结构示意', type: 'specific_unverified_value' },
+  { re: /有效期倒计时[\s:：]*\d/, rule_id: 'FABRICATED_DATA_EXPIRY_COUNTDOWN', reason: '疑似未经 Evidence 支撑的具体有效期倒计时', rewrite: '改为有效期结构示意', type: 'specific_unverified_value' }
+]);
+
+// Forged official credentials / icons (doc section 七 / 十一).
+export const FABRICATION_CREDENTIAL_PATTERNS = Object.freeze([
+  { re: /认证徽章/, rule_id: 'FABRICATED_DATA_CREDENTIAL_BADGE', reason: '不得伪造官方认证徽章', rewrite: '使用抽象化资质示意，不仿制官方徽章', type: 'official_credential_imitation' },
+  { re: /官方资质图标/, rule_id: 'FABRICATED_DATA_CREDENTIAL_ICON', reason: '不得仿制官方资质图标', rewrite: '使用抽象化资质示意，不仿制官方图标', type: 'official_credential_imitation' }
+]);
+
+// Generic metric words with a concrete number attached (doc section 十):
+// 数 / 指数 / 评分 / 比例 / 覆盖率 / 参数 / 区间 / 排名 / 增长率 / 达标率 /
+// 准确率 / 合格率 / 时效 / 容量 / 规模 ...
+export const FABRICATION_DATA_METRIC_PATTERNS = Object.freeze([
+  { re: /[一-龥]{2,}(?:数|指数|评分|比例|覆盖率|参数|区间|排名|增长率|达标率|准确率|合格率|时效|容量|规模)[\s:：]*\d/, rule_id: 'FABRICATED_DATA_METRIC_VALUE', reason: '项目 Evidence 未提供该具体指标数值', rewrite: '改为指标结构示意 / 占位，并标注 structure_only', type: 'specific_unverified_value' },
+  // A bare percentage alone is NOT enough — layout ratios (subject 45% / info
+  // 35% / whitespace 20%) are legitimate design proportions, not fabricated
+  // metrics. Only a percentage attached to a metric word is blocked.
+  { re: /[一-龥]{1,6}(?:率|比例|覆盖率|达标率|准确率|合格率|增长|提升|指数|参数)[\s\S]{0,6}\d{1,3}(\.\d+)?\s?%/, rule_id: 'FABRICATED_DATA_METRIC_PERCENTAGE', reason: '项目 Evidence 未提供该具体百分比指标', rewrite: '改为百分比结构示意 / 占位', type: 'specific_unverified_value' },
+  { re: /[一-龥]{2,}(?:入驻|合作|服务|覆盖|合作机构|上游品牌)[\s:：]*\d{2,}\s?(?:家|个|项|家次|家机构)/, rule_id: 'FABRICATED_DATA_COUNT', reason: '项目 Evidence 未提供该具体数量', rewrite: '改为数量结构示意 / 占位', type: 'specific_unverified_value' }
+]);
+
+// Unsupported scientific / efficacy claims (doc section 十):
+// 安全性提升 30% / 功效提升 X% / 有效率 X% ...
+export const FABRICATION_SCIENTIFIC_PATTERNS = Object.freeze([
+  { re: /[一-龥]{2,}(?:安全性|功效|有效|吸收|满意|复购|转化)[\s\S]{0,6}(?:提升|提高|达|达至|增长)[\s\S]{0,6}\d{1,3}(\.\d+)?\s?%/, rule_id: 'FABRICATED_DATA_SCIENTIFIC_CLAIM', reason: '不得输出未经 Evidence 支撑的功效/安全性提升百分比', rewrite: '改为「经临床/检测验证」的定性表述或结构示意', type: 'unsupported_scientific_claim' },
+  { re: /[一-龥]{2,}(?:提升|提高|达至|增长)[\s\S]{0,6}\d{1,3}(\.\d+)?\s?%/, rule_id: 'FABRICATED_DATA_SCIENTIFIC_CLAIM', reason: '不得输出未经 Evidence 支撑的提升百分比', rewrite: '改为定性表述或结构示意', type: 'unsupported_scientific_claim' }
+]);
+
+// Bare field names / placeholders without a concrete value (doc section 十).
+// Negative lookaheads ensure we do NOT double-flag a concrete value (those are
+// already caught above as blocked).
+export const FABRICATION_FIELD_STRUCTURE_PATTERNS = Object.freeze([
+  { re: /责任人(?![\s:：]*[一-龥]{2,4})/, rule_id: 'FABRICATED_DATA_FIELD_STRUCTURE', reason: '责任人字段可保留结构，但不得填入真实姓名；标注为 structure_only / placeholder', rewrite: '改为「责任角色」占位', type: 'field_structure' },
+  { re: /批次(?![\s:：]*[A-Za-z0-9]{4,})/, rule_id: 'FABRICATED_DATA_FIELD_STRUCTURE', reason: '批次字段可保留结构 / 占位，不得填具体编码', rewrite: '改为批次结构示意 / 占位', type: 'field_structure' },
+  { re: /注册证(?![\s\S]{0,12}(号|编号)[\s:：]*[A-Za-z0-9]{4,})/, rule_id: 'FABRICATED_DATA_FIELD_STRUCTURE', reason: '注册证字段可保留结构 / 占位，不得填具体编号', rewrite: '改为「注册证结构示意」', type: 'field_structure' },
+  { re: /证书(?![\s:：]*[A-Za-z0-9]{4,})/, rule_id: 'FABRICATED_DATA_FIELD_STRUCTURE', reason: '证书字段可保留结构 / 占位', rewrite: '改为证书结构示意 / 占位', type: 'field_structure' },
+  { re: /合格率(?![\s:：]*\d{1,3}(\.\d+)?\s?%)/, rule_id: 'FABRICATED_DATA_FIELD_STRUCTURE', reason: '合格率字段可保留结构 / 占位，不得填具体比例', rewrite: '改为合格率结构示意', type: 'field_structure' },
+  { re: /(数|指数|比例|覆盖率|参数|区间|排名|增长率|达标率|准确率|合格率|时效|容量|规模)(?![\s:：]*\d)/, rule_id: 'FABRICATED_DATA_FIELD_STRUCTURE', reason: '该指标字段可保留结构 / 占位，不得填具体数值', rewrite: '改为指标结构示意 / 占位（structure_only）', type: 'field_structure' }
+]);
+
+export const FABRICATION_PLACEHOLDER_PATTERNS = Object.freeze([
+  { re: /(占位|示意|待补充|XXX|xxx|XX|xx|示例)/, rule_id: 'FABRICATED_DATA_PLACEHOLDER', reason: '检测到占位 / 示意标记，可作为 structure_only 字段保留', rewrite: '保留占位标记并标注 structure_only', type: 'placeholder_value' }
+]);
+
+export const PERSONAL_DATA_PATTERNS = Object.freeze([
+  { re: /责任人[\s:：]*[一-龥]{2,4}/, rule_id: 'FABRICATED_DATA_PERSON_NAME', reason: '项目 Evidence 未提供真实责任人姓名', rewrite: '改为脱敏字段占位「责任角色」', type: 'specific_unverified_value' }
+]);
+
 export function countKeywordHits(text, keywords) {
   if (!text) return 0;
   let hits = 0;

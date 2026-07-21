@@ -39,7 +39,7 @@ export function deriveComplianceWeights(direction) {
   return { ...normalized, derived: true };
 }
 
-function resolveWeights(direction) {
+export function resolveWeights(direction) {
   const explicit = direction.compliance_weights;
   if (explicit && typeof explicit === 'object') {
     const keys = ['compliance_weight', 'supply_chain_weight', 'product_material_weight', 'ecosystem_weight', 'brand_aesthetic_weight', 'consumer_value_weight'];

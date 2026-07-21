@@ -32,7 +32,15 @@ export function collectDirectionText(direction) {
     if (direction[field] != null) collectFrom(direction[field], out);
   }
   const layer = direction.industry_recognition_layer;
-  if (layer) collectFrom(layer, out);
+  if (layer) {
+    // Exclude prohibited_misleading_templates — these are "what NOT to do",
+    // not the direction's actual content, and their real-estate / exhibition
+    // keywords would otherwise false-positive the spatial-drift gate.
+    for (const [key, value] of Object.entries(layer)) {
+      if (key === 'prohibited_misleading_templates') continue;
+      collectFrom(value, out);
+    }
+  }
   const graphic = direction.graphic_system;
   if (graphic) collectFrom(graphic, out);
   const photo = direction.photography_object_system;
@@ -53,5 +61,9 @@ export function collectDirectionText(direction) {
   if (Array.isArray(direction.anti_concept_art_constraints)) {
     for (const c of direction.anti_concept_art_constraints) collectFrom(c, out);
   }
+  const dcv = direction.downstream_consumer_value;
+  if (dcv) collectFrom(dcv, out);
+  const mls = direction.material_and_light_support;
+  if (mls) collectFrom(mls, out);
   return out.join('\n');
 }

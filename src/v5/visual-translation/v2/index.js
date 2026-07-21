@@ -37,7 +37,9 @@ export {
 export {
   EXECUTION_READINESS_EVALUATOR_VERSION,
   EXECUTION_READINESS_PASS_CRITERIA,
-  evaluateExecutionReadiness
+  evaluateExecutionReadiness,
+  CONTENT_READINESS_WEIGHTS,
+  calculateContentReadiness
 } from './runtime/execution-readiness-evaluator.js';
 
 export {
@@ -54,7 +56,48 @@ export {
   guardAudienceBoundary
 } from './runtime/regression-guards.js';
 
-export { compileExecutionDirectionV2 } from './runtime/compile-execution-direction-v2.js';
+export { compileExecutionDirectionV2, hasCompleteExecutionExamples } from './runtime/compile-execution-direction-v2.js';
+
+export {
+  evaluateBrandIdentityPreservation
+} from './runtime/brand-identity-preservation-evaluator.js';
+export {
+  evaluateBusinessModelCoverage
+} from './runtime/business-model-coverage-evaluator.js';
+export {
+  evaluateConsumerValueCoverage
+} from './runtime/consumer-value-coverage-evaluator.js';
+export {
+  evaluateDirectionFamilyDifference
+} from './runtime/direction-family-difference-evaluator.js';
+export {
+  evaluateComplianceWeight
+} from './runtime/compliance-weight-controller.js';
+export {
+  evaluateE02AestheticGate
+} from './runtime/e02-aesthetic-gate.js';
+export {
+  evaluateSpatialDrift
+} from './runtime/spatial-drift-evaluator.js';
+export {
+  validateGlobalAssetIds
+} from './runtime/asset-id-validator.js';
+export {
+  evaluateConsumerWeightConsistency
+} from './runtime/consumer-weight-consistency.js';
+export {
+  evaluateExecutionExampleCompleteness
+} from './runtime/execution-example-completeness-evaluator.js';
+export {
+  evaluateExecutionExampleSpecificity
+} from './runtime/execution-example-specificity-evaluator.js';
+export {
+  evaluateIndustryRecognitionCoverage
+} from './runtime/industry-recognition-classifier.js';
+export {
+  evaluateAssetAuthorizationSet,
+  detectForgeryStructured
+} from './runtime/asset-authorization-evaluator.js';
 
 export {
   evaluateConceptualDirectionV1,

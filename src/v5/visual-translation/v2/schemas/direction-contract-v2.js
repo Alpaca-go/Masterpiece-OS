@@ -76,6 +76,31 @@ const ANTI_CONCEPT_ART_CONSTRAINT_IDS = ANTI_CONCEPT_ART_CONSTRAINTS.map((item) 
 // family each direction belongs to; the family-difference gate also derives it.
 export const DIRECTION_FAMILIES = Object.freeze(['A', 'B', 'C']);
 
+// v2.1 — semantic Direction Family types (doc section 五/八). `direction_family`
+// stays the A/B/C enum (doc 十五 forbids re-designing Direction Family); this
+// is the human-readable family kind used by the E02 Aesthetic Gate and the
+// Business Model Coverage Gate. A/B/C map 1:1 to these.
+export const DIRECTION_FAMILY_TYPES = Object.freeze([
+  'supply_chain_trust',
+  'product_material_aesthetics',
+  'industry_ecosystem'
+]);
+
+export const DIRECTION_FAMILY_TYPE_BY_LETTER = Object.freeze({
+  A: 'supply_chain_trust',
+  B: 'product_material_aesthetics',
+  C: 'industry_ecosystem'
+});
+
+// v2.1 — downstream consumer value roles (doc section 四/八).
+export const CONSUMER_VALUE_ROLES = Object.freeze([
+  'primary',
+  'strong_secondary',
+  'secondary',
+  'auxiliary',
+  'none'
+]);
+
 // Asset authorization control modes (doc section 9).
 export const ASSET_AUTHORIZATION_MODES = Object.freeze([
   'abstracted',
@@ -193,6 +218,27 @@ export function validateCompositionTemplate(value, path, assetIds) {
   };
 }
 
+function validateDownstreamConsumerValue(value, path) {
+  const item = objectValue(value, path);
+  const role = item.consumer_value_role === undefined
+    ? undefined
+    : enumValue(item.consumer_value_role, CONSUMER_VALUE_ROLES, `${path}.consumer_value_role`);
+  const present = item.present === undefined ? undefined : Boolean(item.present);
+  // doc section 七 — forbidden: a consumer value that is present but declares
+  // role `none` (contradictory). This is a hard schema violation.
+  if (present === true && role === 'none') {
+    fail(`${path} declares present=true together with consumer_value_role=none (contradictory)`, `${path}.consumer_value_role`);
+  }
+  return {
+    present,
+    value_statement: optionalString(item.value_statement),
+    visual_expression: optionalString(item.visual_expression),
+    touchpoints: stringArray(item.touchpoints, `${path}.touchpoints`, { min: 0 }),
+    evidence_ids: stringArray(item.evidence_ids, `${path}.evidence_ids`, { min: 0 }),
+    consumer_value_role: role
+  };
+}
+
 function validateExecutionExample(value, path, assetIds) {
   const item = objectValue(value, path);
   const reusedAssets = stringArray(item.reused_assets, `${path}.reused_assets`, { min: 1 });
@@ -213,10 +259,27 @@ function validateExecutionExample(value, path, assetIds) {
     audience: optionalString(item.audience),
     communication_goal: optionalString(item.communication_goal),
     hero_subject: optionalString(item.hero_subject),
+    hero_subject_position: optionalString(item.hero_subject_position),
+    hero_subject_scale: optionalString(item.hero_subject_scale),
+    supporting_subjects: optionalString(item.supporting_subjects),
+    graphic_overlay: optionalString(item.graphic_overlay),
     industry_content: optionalString(item.industry_content),
     layout_structure: optionalString(item.layout_structure),
+    information_zone: optionalString(item.information_zone),
+    information_hierarchy: optionalString(item.information_hierarchy),
+    brand_zone: optionalString(item.brand_zone),
+    whitespace_behavior: optionalString(item.whitespace_behavior),
+    canvas_ratio: optionalString(item.canvas_ratio),
+    photography_ratio: optionalString(item.photography_ratio),
+    graphic_ratio: optionalString(item.graphic_ratio),
+    information_ratio: optionalString(item.information_ratio),
+    responsive_adaptation: optionalString(item.responsive_adaptation),
     brand_specific_detail: optionalString(item.brand_specific_detail),
-    anti_concept_art_rule: optionalString(item.anti_concept_art_rule)
+    anti_concept_art_rule: optionalString(item.anti_concept_art_rule),
+    prohibited_content: optionalString(item.prohibited_content),
+    downstream_consumer_value: item.downstream_consumer_value === undefined
+      ? undefined
+      : validateDownstreamConsumerValue(item.downstream_consumer_value, `${path}.downstream_consumer_value`)
   };
 }
 
@@ -242,8 +305,13 @@ const COMPLIANCE_WEIGHT_KEYS = ['compliance_weight', 'supply_chain_weight', 'pro
 const INDUSTRY_CLASSIFICATION_KEYS = ['regulatory_objects', 'supply_chain_objects', 'product_material_objects', 'institution_service_objects', 'consumer_value_objects', 'aesthetic_culture_objects'];
 const ASSET_AUTHORIZATION_KEYS = ['data_authorization_level', 'document_visualization_mode', 'credential_usage_mode', 'generated_data_policy'];
 
+function resolveFamilyType(letter, explicit) {
+  if (explicit !== undefined && DIRECTION_FAMILY_TYPES.includes(explicit)) return explicit;
+  if (letter !== undefined && DIRECTION_FAMILY_TYPE_BY_LETTER[letter]) return DIRECTION_FAMILY_TYPE_BY_LETTER[letter];
+  return undefined;
+}
+
 function validateOptionalComplianceWeights(value, path) {
-  if (value === undefined || value === null) return undefined;
   const obj = objectValue(value, path);
   const out = {};
   for (const key of COMPLIANCE_WEIGHT_KEYS) {
@@ -309,9 +377,13 @@ export function validateExecutionDirectionV2(value, context = {}) {
     // doc sections 6/7/8/9 — optional structured fields the specialized-fix gates
     // consume. When absent, the evaluators derive the same signals from free text.
     direction_family: root.direction_family === undefined ? undefined : enumValue(root.direction_family, DIRECTION_FAMILIES, 'visualDirectionV2.direction_family'),
+    family_type: resolveFamilyType(root.direction_family, root.family_type),
     compliance_weights: validateOptionalComplianceWeights(root.compliance_weights, 'visualDirectionV2.compliance_weights'),
     industry_recognition_classification: validateOptionalIndustryClassification(root.industry_recognition_classification, 'visualDirectionV2.industry_recognition_classification'),
-    asset_authorization: validateOptionalAssetAuthorization(root.asset_authorization, 'visualDirectionV2.asset_authorization')
+    asset_authorization: validateOptionalAssetAuthorization(root.asset_authorization, 'visualDirectionV2.asset_authorization'),
+    downstream_consumer_value: root.downstream_consumer_value === undefined
+      ? undefined
+      : validateDownstreamConsumerValue(root.downstream_consumer_value, 'visualDirectionV2.downstream_consumer_value')
   };
 
   const assetIds = new Set(direction.core_reusable_assets.map((asset) => asset.asset_id));

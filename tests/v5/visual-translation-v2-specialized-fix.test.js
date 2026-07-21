@@ -33,6 +33,12 @@ const FIX = join(HERE, '..', 'fixtures', 'visual-direction-v2', 'jiuzhou-meixue'
 function loadFixture() {
   return JSON.parse(readFileSync(FIX, 'utf8'));
 }
+// The canonical jiuzhou-meixue fixture (v2-directions.json) is a v2.1 GOOD set.
+// The negative regression case is the homogeneous/degenerate fixture below.
+const HOM = join(HERE, '..', 'fixtures', 'visual-direction-v2', 'jiuzhou-meixue', 'v2-directions-homogeneous.json');
+function loadHomogeneous() {
+  return JSON.parse(readFileSync(HOM, 'utf8'));
+}
 function fixtureContext() {
   const ei = JSON.parse(readFileSync(join(HERE, '..', 'fixtures', 'visual-direction-v2', 'jiuzhou-meixue', 'evidence-index.json'), 'utf8'));
   const ab = JSON.parse(readFileSync(join(HERE, '..', 'fixtures', 'visual-direction-v2', 'jiuzhou-meixue', 'asset-boundary.json'), 'utf8'));
@@ -65,7 +71,8 @@ test('detectUnexpectedBrandNames flags a leaked example brand and passes the pro
 
 // ---- build a schema-valid, family-distinct "good" set ----
 function makeGoodRaw(family, idx) {
-  const base = structuredClone(loadFixture()[0]);
+  const fixtures = loadFixture();
+  const base = structuredClone(fixtures[{ A: 0, B: 1, C: 2 }[family]]);
   const fam = {
     A: {
       id: 'E0' + (idx + 1),
@@ -119,7 +126,7 @@ function makeGoodRaw(family, idx) {
       compInfo: ['右侧信息模块', '材料与能力', '前景信息'],
       exSubj: ['医美器械微观结构', '材料成分配比', '科学美学主视觉'],
       exStruct: ['左图右信息栅格', '能力说明页', '产品生态介绍页'],
-      weights: { compliance_weight: 0.15, supply_chain_weight: 0.1, product_material_weight: 0.5, ecosystem_weight: 0.1, brand_aesthetic_weight: 0.1, consumer_value_weight: 0.05 },
+      weights: { compliance_weight: 0.1, supply_chain_weight: 0.07, product_material_weight: 0.5, ecosystem_weight: 0.08, brand_aesthetic_weight: 0.15, consumer_value_weight: 0.1 },
       classification: { regulatory_objects: [], supply_chain_objects: [], product_material_objects: ['医美器械', '材料样本'], institution_service_objects: ['医美机构'], consumer_value_objects: ['消费者安心美学'], aesthetic_culture_objects: ['科学美学'] },
       touch: ['产品生态介绍页', '品牌峰会主视觉', '终端美学价值传播页']
     },
@@ -169,6 +176,18 @@ function makeGoodRaw(family, idx) {
     a.visual_description = fam.assetDesc[i];
     a.execution_role = fam.assetRole[i];
   });
+  // v2.1.1 — asset IDs cloned from a single fixture would be identical across
+  // all three directions; make them globally unique so the asset_id_uniqueness
+  // gate does not block the good set.
+  const assetIdRemap = {};
+  base.core_reusable_assets.forEach((a) => {
+    const newId = `${family}-${a.asset_id}`;
+    assetIdRemap[a.asset_id] = newId;
+    a.asset_id = newId;
+  });
+  const rewriteAssetRefs = (ids) => (ids || []).map((id) => assetIdRemap[id] || id);
+  base.composition_templates.forEach((t) => { t.reusable_assets = rewriteAssetRefs(t.reusable_assets); });
+  base.execution_examples.forEach((e) => { e.reused_assets = rewriteAssetRefs(e.reused_assets); });
   const g = base.graphic_system;
   g.how_graphics_form = fam.assetName[0] + '抽象为图形';
   g.brand_fact_mapping = '图形对应' + fam.core;
@@ -195,13 +214,19 @@ function makeGoodRaw(family, idx) {
     e.audience = 'B2B 采购决策者';
     e.communication_goal = '建立平台可信';
     e.hero_subject = fam.exSubj[i];
+    e.supporting_subjects = '品牌专属节点图形、数据信息卡';
     e.industry_content = fam.visual[i] || fam.exSubj[i];
     e.layout_structure = '左图右信息栅格';
+    e.information_hierarchy = '品牌-能力-数据-CTA';
     e.brand_specific_detail = fam.assetName[0];
     e.anti_concept_art_rule = '不得概念稿化';
+    e.prohibited_content = '建筑/展馆主体';
   });
   base.direction_family = family;
   base.compliance_weights = fam.weights;
+  // v2.1.1 — keep consumer_value_weight consistent with the inherited
+  // downstream_consumer_value role (strong_secondary requires >= 0.08).
+  base.compliance_weights.consumer_value_weight = 0.10;
   base.industry_recognition_classification = fam.classification;
   base.asset_authorization = { data_authorization_level: 'abstracted', document_visualization_mode: 'structure_only', credential_usage_mode: 'redacted', generated_data_policy: 'abstracted' };
   return base;
@@ -237,7 +262,7 @@ test('Business Model Coverage passes the good set and flags the homogeneous fixt
   assert.equal(goodG.all_four_dimensions_covered, true);
   assert.ok(goodG.per_direction.every((d) => d.meets_minimum));
 
-  const bad = loadFixture().map((raw) => validateExecutionDirectionV2(raw, ctx));
+  const bad = loadHomogeneous().map((raw) => validateExecutionDirectionV2(raw, ctx));
   const badG = evaluateBusinessModelCoverage(bad);
   assert.equal(badG.business_model_undercoverage, true);
 });
@@ -251,7 +276,7 @@ test('Direction Family Difference passes the good set and flags the homogeneous 
   assert.ok(Object.values(goodD.pairwise_similarity).every((s) => s <= 0.72), JSON.stringify(goodD.pairwise_similarity));
   assert.equal(goodD.declared_families_distinct, true);
 
-  const bad = loadFixture().map((raw) => validateExecutionDirectionV2(raw, ctx));
+  const bad = loadHomogeneous().map((raw) => validateExecutionDirectionV2(raw, ctx));
   const badD = evaluateDirectionFamilyDifference(bad);
   assert.equal(badD.direction_family_overlap, true);
   assert.equal(badD.rewrite_required, true);
@@ -266,7 +291,7 @@ test('Compliance Weight Control allows one compliance-primary direction and flag
   assert.equal(goodC.rewrite_required, false);
   assert.equal(goodC.primary_compliance_direction_count, 1);
 
-  const bad = loadFixture().map((raw) => validateExecutionDirectionV2(raw, ctx));
+  const bad = loadHomogeneous().map((raw) => validateExecutionDirectionV2(raw, ctx));
   const badC = evaluateComplianceWeight(bad);
   assert.equal(badC.compliance_supplychain_dominant, true);
   assert.equal(badC.rewrite_required, true);
@@ -280,7 +305,7 @@ test('Industry Recognition Classification passes the good set and flags the fixt
   assert.equal(goodI.rewrite_required, false);
   assert.equal(goodI.all_required_categories_covered, true);
 
-  const bad = loadFixture().map((raw) => validateExecutionDirectionV2(raw, ctx));
+  const bad = loadHomogeneous().map((raw) => validateExecutionDirectionV2(raw, ctx));
   const badI = evaluateIndustryRecognitionCoverage(bad);
   assert.equal(badI.rewrite_required, true);
 });
@@ -324,7 +349,7 @@ test('compile reports ready for the good family-distinct set and rewrite_require
   assert.equal(goodCompiled.gates.compliance_weight_control.compliance_overweight, false);
   assert.equal(goodCompiled.gates.direction_family_difference.rewrite_required, false);
 
-  const bad = loadFixture().map((raw) => validateExecutionDirectionV2(raw, ctx));
+  const bad = loadHomogeneous().map((raw) => validateExecutionDirectionV2(raw, ctx));
   const badCompiled = compileExecutionDirectionV2({ ...ctx, rawDirections: bad });
   assert.equal(badCompiled.overall_status, 'rewrite_required');
   assert.ok(badCompiled.blocking_reasons.length > 0);

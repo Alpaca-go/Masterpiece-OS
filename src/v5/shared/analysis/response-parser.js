@@ -10,11 +10,82 @@ function extractJsonCandidate(value) {
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '');
 }
 
+/**
+ * Repair common JSON syntax errors produced by large-language-model outputs,
+ * especially in very long JSON (~20 k tokens) where the model may forget
+ * commas between array / object elements.
+ *
+ * Fixes applied (only outside of string literals):
+ *   1. `}\s*{`   → `}, {`   (missing comma between objects)
+ *   2. `]\s*[`   → `], [`   (missing comma between arrays)
+ *   3. value `"`  → value, `"` (missing comma before next string: property
+ *      name, array string element, or next property value after a string)
+ */
+function repairJsonSyntax(text) {
+  let result = '';
+  let inString = false;
+  let escape = false;
+  let lastSignificantChar = null; // last non-whitespace char outside strings
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+
+    if (inString) {
+      result += char;
+      if (escape) {
+        escape = false;
+      } else if (char === '\\') {
+        escape = true;
+      } else if (char === '"') {
+        inString = false;
+        lastSignificantChar = '"';
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      // A new string literal starts. If the previous significant character
+      // looks like the end of a value (number, true/false/null literal,
+      // closing quote, `}` or `]`), the model probably forgot a comma.
+      if (lastSignificantChar && /[0-9a-z"\}\]]/i.test(lastSignificantChar)) {
+        result += ',';
+      }
+      result += char;
+      inString = true;
+      continue;
+    }
+
+    result += char;
+
+    if (!/\s/.test(char)) {
+      lastSignificantChar = char;
+    }
+
+    if (char === '}' || char === ']') {
+      // `}` or `]` immediately followed by `{` or `[` → missing comma
+      let j = i + 1;
+      while (j < text.length && /\s/.test(text[j])) j++;
+      if (j < text.length && (text[j] === '{' || text[j] === '[')) {
+        result += ',';
+      }
+    }
+  }
+
+  return result;
+}
+
 export function parseStructuredResponse(value) {
   const candidate = extractJsonCandidate(value);
   try {
     return JSON.parse(candidate);
   } catch (error) {
-    throw Object.assign(new Error(`结构化 JSON 解析失败：${error.message}`), { code: 'FAILED_SCHEMA', cause: error });
+    // Attempt to repair common LLM JSON syntax errors before giving up.
+    const repaired = repairJsonSyntax(candidate);
+    try {
+      return JSON.parse(repaired);
+    } catch {
+      // Repair did not help — preserve the original error message.
+      throw Object.assign(new Error(`结构化 JSON 解析失败：${error.message}`), { code: 'FAILED_SCHEMA', cause: error });
+    }
   }
 }

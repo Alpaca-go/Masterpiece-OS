@@ -69,6 +69,26 @@ test('structured response parser accepts fenced JSON with a trailing comma', () 
   assert.deepEqual(parseStructuredResponse('```json\n{"ok":true,}\n```'), { ok: true });
 });
 
+test('structured response parser repairs missing commas between object elements in arrays', () => {
+  const raw = '{"items":[{"a":1}{"b":2}]}';
+  assert.deepEqual(parseStructuredResponse(raw), { items: [{ a: 1 }, { b: 2 }] });
+});
+
+test('structured response parser repairs missing commas between object properties', () => {
+  const raw = '{"a":1 "b":2}';
+  assert.deepEqual(parseStructuredResponse(raw), { a: 1, b: 2 });
+});
+
+test('structured response parser repairs missing commas between string elements in arrays', () => {
+  const raw = '{"items":["a" "b" "c"]}';
+  assert.deepEqual(parseStructuredResponse(raw), { items: ['a', 'b', 'c'] });
+});
+
+test('structured response parser does NOT repair inside string literals', () => {
+  const raw = '{"msg":"a}  {b"}';
+  assert.deepEqual(parseStructuredResponse(raw), { msg: 'a}  {b' });
+});
+
 test('evidence quote grounding recovers punctuation and spacing but rejects paraphrases', () => {
   const chunk = 'Jiuzhou Aesthetics — a B2B industry platform.';
   assert.equal(resolveGroundedQuote('Jiuzhou Aesthetics', chunk), 'Jiuzhou Aesthetics');

@@ -75,13 +75,17 @@ function hasNamedDeliverableTemplates(v2Result) {
 export function runABComparison(projectConfig) {
   const { projectId, v1Directions = [], v2Directions = [], evidenceIndex = [], assetBoundary = {}, audienceBoundary = {}, selectedTouchpoints = [], humanPreference = 'unknown' } = projectConfig;
 
+  // v2.1.1 (P0) — A/B Runner compiles with failFast = false so a single schema
+  // invalid direction is isolated as a `blocked` entry instead of throwing and
+  // aborting the whole comparison.
   const v2Result = compileExecutionDirectionV2({
     brandFacts: projectConfig.brandFacts || { reportLanguage: 'zh-CN' },
     evidenceIndex,
     audienceBoundary,
     assetBoundary,
     selectedTouchpoints,
-    rawDirections: v2Directions
+    rawDirections: v2Directions,
+    failFast: false
   });
 
   const v2Evals = v2Result.directions.map((item) => item.readiness);
@@ -124,15 +128,53 @@ export function runABComparison(projectConfig) {
   };
 }
 
+// v2.1.1 (P0) — project-level error isolation. A single project that throws
+// inside runABComparison is captured as a `failed` result so it never aborts
+// the rest of the batch. The A/B Runner returns the *complete* project result
+// set regardless of individual failures.
+function serializeABRunnerError(error) {
+  return {
+    code: error?.code || 'UNKNOWN',
+    message: error?.message || String(error),
+    stack: error?.stack ? String(error.stack).split('\n').slice(0, 4).join('\n') : undefined
+  };
+}
+
+function runProjectABSafely(project) {
+  try {
+    return runABComparison(project);
+  } catch (error) {
+    return {
+      project_id: project?.projectId || 'unknown',
+      status: 'failed',
+      error: serializeABRunnerError(error),
+      v1_result: null,
+      v2_result: null
+    };
+  }
+}
+
 export function runABRunner(projects) {
-  const comparisons = projects.map((project) => runABComparison(project));
+  // projects may be sync or async; Promise.all keeps it order-stable.
+  const comparisons = projects.map((project) => runProjectABSafely(project));
+  const resolved = (typeof Promise.all === 'function' && comparisons.some((c) => c instanceof Promise))
+    ? Promise.all(comparisons)
+    : comparisons;
+  return resolved.then
+    ? resolved.then(finalizeABRunner)
+    : finalizeABRunner(comparisons);
+}
+
+function finalizeABRunner(comparisons) {
   const projectsMeetingCriteria = comparisons.filter((c) => c.project_verdict === 'pass').length;
+  const failedCount = comparisons.filter((c) => c.status === 'failed').length;
   const mergeRecommendation = projectsMeetingCriteria >= 2 ? 'candidate_for_merge' : 'keep_experimental';
-  const evidenceAssetAllIntact = comparisons.every((c) => c.measurable_criteria.evidence_asset_intact);
+  const evidenceAssetAllIntact = comparisons.every((c) => c.measurable_criteria?.evidence_asset_intact);
 
   return {
-    runner_version: 'execution-oriented-v2-ab-runner-v1',
+    runner_version: 'execution-oriented-v2-ab-runner-v1.1',
     project_count: comparisons.length,
+    failed_count: failedCount,
     comparisons,
     projects_meeting_criteria: projectsMeetingCriteria,
     evidence_asset_intact_all: evidenceAssetAllIntact,

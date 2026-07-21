@@ -160,7 +160,7 @@ export async function runVisualTranslationV2(input) {
 
     const runGeneration = async (maxOutputTokens, attemptLabel, retryCount = 0) => {
       let requestMessages = messages;
-      for (let attempt = 1; attempt <= 2; attempt += 1) {
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
         let response;
         let validationError = null;
         try {
@@ -182,14 +182,19 @@ export async function runVisualTranslationV2(input) {
           return output;
         } catch (error) {
           if (error.code === 'OUTPUT_TRUNCATED' || error.name === 'AbortError') throw error;
-          if (attempt < 2 && response?.text && (RETRYABLE_VALIDATION_CODES.has(error.code) || error instanceof SyntaxError)) {
+          const maxRetryAttempt = error?.code === 'REPORT_LANGUAGE_POLLUTION' ? 3 : 2;
+          if (attempt < maxRetryAttempt && response?.text && (RETRYABLE_VALIDATION_CODES.has(error.code) || error instanceof SyntaxError)) {
             validationError = error.message;
             recordDiagnostics(response, maxOutputTokens, attemptLabel, retryCount, error.message);
             metrics.push({ stageId, kind: 'model-retry', attempt, durationMs: Date.now() - started, resumed: false, usage: response.usage || null, modelId: response.model || input.modelId, provider: response.provider || input.provider, validationError: error.message });
+            let retryContent = `The previous JSON failed protocol validation: ${error.message}\nCorrect only the invalid fields.\nReturn the complete corrected JSON only.`;
+            if (error.code === 'REPORT_LANGUAGE_POLLUTION') {
+              retryContent += '\n\n重要：所有叙述性文本必须使用中文，不得使用英文。';
+            }
             requestMessages = [
               ...messages,
               { role: 'assistant', content: response.text },
-              { role: 'user', content: `The previous JSON failed protocol validation: ${error.message}\nCorrect only the invalid fields.\nReturn the complete corrected JSON only.` }
+              { role: 'user', content: retryContent }
             ];
             continue;
           }

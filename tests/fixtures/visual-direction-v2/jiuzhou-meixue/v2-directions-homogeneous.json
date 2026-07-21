@@ -1,44 +1,44 @@
 [
   {
     "direction_id": "E01",
-    "direction_name": "万科苏皖方向1",
-    "strategic_idea": "万科苏皖是社区生活服务商；以社区真实人物与物业巡检动线建立可落地视觉",
+    "direction_name": "九州美学方向1",
+    "strategic_idea": "九州美学是医美产业链 B2B 协同平台；以医美机构门头与诊疗空间与资质审核流程建立可落地视觉",
     "industry_recognition_layer": {
       "industry_visual_objects": [
-        "社区真实人物",
-        "便民服务站点",
-        "社区活动广场"
+        "医美机构门头与诊疗空间",
+        "冷链温控运输箱",
+        "GSP 仓储货架"
       ],
       "industry_data_objects": [
-        "社区活动频次",
-        "服务满意度"
+        "月度机构入驻数",
+        "GSP 温控曲线"
       ],
       "industry_process_objects": [
-        "物业巡检动线",
-        "社区共建流程"
+        "资质审核流程",
+        "冷链配送链路"
       ],
       "industry_space_and_real_scenes": [
-        "邻里聚餐实景",
-        "儿童友好空间"
+        "机构合作洽谈室",
+        "仓储分拣实景"
       ],
       "usable_business_objects": [
-        "社区地图",
-        "服务导视牌"
+        "合作机构铭牌",
+        "温控标签"
       ],
       "prohibited_misleading_templates": [
-        "宏大治愈空间",
-        "地产大片调性",
-        "空镜建筑"
+        "纯女性脸特写堆砌",
+        "玻璃球科技感",
+        "奢华地产大片"
       ],
       "minimum_industry_recognition_strength": 4
     },
     "core_reusable_assets": [
       {
         "asset_id": "A011",
-        "asset_name": "社区人物标",
+        "asset_name": "供应链节点图",
         "asset_type": "graphic_asset",
-        "visual_description": "居民剪影图形",
-        "business_evidence": "对应社区事实",
+        "visual_description": "由机构与温控节点构成",
+        "business_evidence": "对应 B2B 协同事实",
         "execution_role": "主体识别图形，贯穿所有触点",
         "reusable_touchpoints": [
           "poster",
@@ -49,10 +49,10 @@
       },
       {
         "asset_id": "A012",
-        "asset_name": "服务数据卡",
+        "asset_name": "资质数据卡",
         "asset_type": "information_asset",
-        "visual_description": "活动频次",
-        "business_evidence": "来自调研",
+        "visual_description": "GSP 与入驻数据",
+        "business_evidence": "来自 Evidence",
         "execution_role": "资质/数据信息模块",
         "reusable_touchpoints": [
           "capability_deck",
@@ -62,9 +62,9 @@
       },
       {
         "asset_id": "A013",
-        "asset_name": "邻里实景",
+        "asset_name": "冷链运输实景",
         "asset_type": "photography_asset",
-        "visual_description": "真实人物摄影",
+        "visual_description": "真实温控箱摄影",
         "business_evidence": "行业对象",
         "execution_role": "真实行业对象摄影",
         "reusable_touchpoints": [
@@ -89,8 +89,8 @@
       }
     ],
     "graphic_system": {
-      "how_graphics_form": "由社区真实人物抽象为节点化图形",
-      "brand_fact_mapping": "图形对应万科苏皖是社区生活服务商",
+      "how_graphics_form": "由医美机构门头与诊疗空间抽象为节点化图形",
+      "brand_fact_mapping": "图形对应九州美学是医美产业链 B2B 协同平台",
       "scale_crop_repeat": "可按 1:1 / 16:9 裁切，栅格内重复",
       "enter_touchpoints": "海报主体、手册页眉、页面 hero 共用",
       "must_not_become": "不得退化为玻璃球或发光节点"
@@ -98,11 +98,11 @@
     "photography_object_system": {
       "needs_photography": "required",
       "real_industry_objects": [
-        "社区真实人物",
-        "便民服务站点"
+        "医美机构门头与诊疗空间",
+        "冷链温控运输箱"
       ],
-      "subject_and_background": "社区真实人物为前景，实景仓储为背景",
-      "people_product_packaging": "真实居民与社区生活",
+      "subject_and_background": "医美机构门头与诊疗空间为前景，实景仓储为背景",
+      "people_product_packaging": "机构运营人员与产品同框",
       "graphic_overlay": "图形叠加于画面角落，保留真实占比",
       "real_content_ratio": {
         "real_industry_content_ratio": 0.4,
@@ -111,10 +111,10 @@
       }
     },
     "information_system": {
-      "core_brand_info": "万科苏皖是社区生活服务商",
-      "capability_product_info": "物业巡检动线",
-      "data_qualification_info": "社区活动频次",
-      "cta_info": "加入社区活动",
+      "core_brand_info": "九州美学是医美产业链 B2B 协同平台",
+      "capability_product_info": "资质审核流程",
+      "data_qualification_info": "月度机构入驻数",
+      "cta_info": "预约平台 Demo",
       "information_hierarchy": [
         "品牌主张",
         "能力/产品",
@@ -172,98 +172,41 @@
       {
         "example_id": "X011",
         "touchpoint_category": "core_brand",
-        "subject": "社区真实人物",
+        "subject": "医美机构门头与诊疗空间",
         "visual_structure": "左图右信息栅格",
         "information_position": "品牌主张+数据",
         "reused_assets": [
           "A011"
         ],
-        "industry_recognition_source": "来自社区真实人物",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "品牌主视觉传播页",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "社区真实人物",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自社区真实人物",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "strong_secondary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自医美机构门头与诊疗空间",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       },
       {
         "example_id": "X012",
         "touchpoint_category": "capability_product",
-        "subject": "物业巡检动线",
+        "subject": "资质审核流程",
         "visual_structure": "能力说明页",
         "information_position": "流程+资质",
         "reused_assets": [
           "A012"
         ],
-        "industry_recognition_source": "来自物业巡检动线",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "能力/产品介绍页",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "物业巡检动线",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自物业巡检动线",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "strong_secondary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自资质审核流程",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       },
       {
         "example_id": "X013",
         "touchpoint_category": "digital_event",
-        "subject": "邻里聚餐实景",
+        "subject": "机构合作洽谈室",
         "visual_structure": "页面 hero",
         "information_position": "行动召唤",
         "reused_assets": [
           "A013"
         ],
-        "industry_recognition_source": "来自邻里聚餐实景",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "数字活动首屏",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "邻里聚餐实景",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自邻里聚餐实景",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "strong_secondary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自机构合作洽谈室",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       }
     ],
-    "brand_evidence": "万科苏皖是社区生活服务商",
+    "brand_evidence": "九州美学是医美产业链 B2B 协同平台",
     "execution_constraints": [
       "不使用建筑/展馆为视觉主体",
       "不伪造数据与资质"
@@ -311,48 +254,42 @@
       "信息层级被压缩"
     ],
     "evidence_ids": [
-      "VE-WK-01",
-      "VE-WK-02"
+      "VE-JZ-01",
+      "VE-JZ-02"
     ],
     "asset_references": [
-      "AS-WK-LOGO",
-      "AS-WK-VI"
+      "AS-JZ-LOGO",
+      "AS-JZ-VI"
     ],
     "direction_family": "A",
     "family_type": "supply_chain_trust",
     "compliance_weights": {
-      "compliance_weight": 0.55,
-      "supply_chain_weight": 0.2,
+      "compliance_weight": 0.3,
+      "supply_chain_weight": 0.4,
       "product_material_weight": 0.1,
       "ecosystem_weight": 0.1,
-      "brand_aesthetic_weight": 0.03,
-      "consumer_value_weight": 0.02
+      "brand_aesthetic_weight": 0.05,
+      "consumer_value_weight": 0.05
     },
     "downstream_consumer_value": {
-      "present": true,
-      "consumer_value_role": "strong_secondary",
-      "value_statement": "上游供应链可信如何转化为消费者安全保障与安心感",
-      "visual_expression": "温控追溯可视化、资质透明化带来安心感",
-      "touchpoints": [
-        "官网安心专区",
-        "招商物料"
-      ],
+      "present": false,
+      "consumer_value_role": "none",
+      "value_statement": "",
+      "visual_expression": "",
+      "touchpoints": [],
       "evidence_ids": []
     },
     "industry_recognition_classification": {
-      "regulatory_objects": [],
-      "supply_chain_objects": [],
-      "product_material_objects": [
-        "社区真实人物",
-        "便民服务站点",
-        "社区活动广场"
+      "regulatory_objects": [
+        "资质审核流程"
       ],
-      "institution_service_objects": [
-        "服务导视牌"
+      "supply_chain_objects": [
+        "GSP 仓储",
+        "冷链配送"
       ],
-      "consumer_value_objects": [
-        "消费者安心美学"
-      ],
+      "product_material_objects": [],
+      "institution_service_objects": [],
+      "consumer_value_objects": [],
       "aesthetic_culture_objects": []
     },
     "asset_authorization": {
@@ -364,44 +301,44 @@
   },
   {
     "direction_id": "E02",
-    "direction_name": "万科苏皖方向2",
-    "strategic_idea": "万科苏皖是社区生活服务商；以社区真实人物与物业巡检动线建立可落地视觉",
+    "direction_name": "九州美学方向2",
+    "strategic_idea": "九州美学是医美产业链 B2B 协同平台；以医美机构门头与诊疗空间与资质审核流程建立可落地视觉",
     "industry_recognition_layer": {
       "industry_visual_objects": [
-        "社区真实人物",
-        "便民服务站点",
-        "社区活动广场"
+        "医美机构门头与诊疗空间",
+        "冷链温控运输箱",
+        "GSP 仓储货架"
       ],
       "industry_data_objects": [
-        "社区活动频次",
-        "服务满意度"
+        "月度机构入驻数",
+        "GSP 温控曲线"
       ],
       "industry_process_objects": [
-        "物业巡检动线",
-        "社区共建流程"
+        "资质审核流程",
+        "冷链配送链路"
       ],
       "industry_space_and_real_scenes": [
-        "邻里聚餐实景",
-        "儿童友好空间"
+        "机构合作洽谈室",
+        "仓储分拣实景"
       ],
       "usable_business_objects": [
-        "社区地图",
-        "服务导视牌"
+        "合作机构铭牌",
+        "温控标签"
       ],
       "prohibited_misleading_templates": [
-        "宏大治愈空间",
-        "地产大片调性",
-        "空镜建筑"
+        "纯女性脸特写堆砌",
+        "玻璃球科技感",
+        "奢华地产大片"
       ],
       "minimum_industry_recognition_strength": 4
     },
     "core_reusable_assets": [
       {
         "asset_id": "A021",
-        "asset_name": "社区人物标",
+        "asset_name": "供应链节点图",
         "asset_type": "graphic_asset",
-        "visual_description": "居民剪影图形",
-        "business_evidence": "对应社区事实",
+        "visual_description": "由机构与温控节点构成",
+        "business_evidence": "对应 B2B 协同事实",
         "execution_role": "主体识别图形，贯穿所有触点",
         "reusable_touchpoints": [
           "poster",
@@ -412,10 +349,10 @@
       },
       {
         "asset_id": "A022",
-        "asset_name": "服务数据卡",
+        "asset_name": "资质数据卡",
         "asset_type": "information_asset",
-        "visual_description": "活动频次",
-        "business_evidence": "来自调研",
+        "visual_description": "GSP 与入驻数据",
+        "business_evidence": "来自 Evidence",
         "execution_role": "资质/数据信息模块",
         "reusable_touchpoints": [
           "capability_deck",
@@ -425,9 +362,9 @@
       },
       {
         "asset_id": "A023",
-        "asset_name": "邻里实景",
+        "asset_name": "冷链运输实景",
         "asset_type": "photography_asset",
-        "visual_description": "真实人物摄影",
+        "visual_description": "真实温控箱摄影",
         "business_evidence": "行业对象",
         "execution_role": "真实行业对象摄影",
         "reusable_touchpoints": [
@@ -452,8 +389,8 @@
       }
     ],
     "graphic_system": {
-      "how_graphics_form": "由社区真实人物抽象为节点化图形",
-      "brand_fact_mapping": "图形对应万科苏皖是社区生活服务商",
+      "how_graphics_form": "由医美机构门头与诊疗空间抽象为节点化图形",
+      "brand_fact_mapping": "图形对应九州美学是医美产业链 B2B 协同平台",
       "scale_crop_repeat": "可按 1:1 / 16:9 裁切，栅格内重复",
       "enter_touchpoints": "海报主体、手册页眉、页面 hero 共用",
       "must_not_become": "不得退化为玻璃球或发光节点"
@@ -461,11 +398,11 @@
     "photography_object_system": {
       "needs_photography": "required",
       "real_industry_objects": [
-        "社区真实人物",
-        "便民服务站点"
+        "医美机构门头与诊疗空间",
+        "冷链温控运输箱"
       ],
-      "subject_and_background": "社区真实人物为前景，实景仓储为背景",
-      "people_product_packaging": "真实居民与社区生活",
+      "subject_and_background": "医美机构门头与诊疗空间为前景，实景仓储为背景",
+      "people_product_packaging": "机构运营人员与产品同框",
       "graphic_overlay": "图形叠加于画面角落，保留真实占比",
       "real_content_ratio": {
         "real_industry_content_ratio": 0.4,
@@ -474,10 +411,10 @@
       }
     },
     "information_system": {
-      "core_brand_info": "万科苏皖是社区生活服务商",
-      "capability_product_info": "物业巡检动线",
-      "data_qualification_info": "社区活动频次",
-      "cta_info": "加入社区活动",
+      "core_brand_info": "九州美学是医美产业链 B2B 协同平台",
+      "capability_product_info": "资质审核流程",
+      "data_qualification_info": "月度机构入驻数",
+      "cta_info": "预约平台 Demo",
       "information_hierarchy": [
         "品牌主张",
         "能力/产品",
@@ -535,98 +472,41 @@
       {
         "example_id": "X021",
         "touchpoint_category": "core_brand",
-        "subject": "社区真实人物",
+        "subject": "医美机构门头与诊疗空间",
         "visual_structure": "左图右信息栅格",
         "information_position": "品牌主张+数据",
         "reused_assets": [
           "A021"
         ],
-        "industry_recognition_source": "来自社区真实人物",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "品牌主视觉传播页",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "社区真实人物",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自社区真实人物",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "primary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自医美机构门头与诊疗空间",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       },
       {
         "example_id": "X022",
         "touchpoint_category": "capability_product",
-        "subject": "物业巡检动线",
+        "subject": "资质审核流程",
         "visual_structure": "能力说明页",
         "information_position": "流程+资质",
         "reused_assets": [
           "A022"
         ],
-        "industry_recognition_source": "来自物业巡检动线",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "能力/产品介绍页",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "物业巡检动线",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自物业巡检动线",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "primary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自资质审核流程",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       },
       {
         "example_id": "X023",
         "touchpoint_category": "digital_event",
-        "subject": "邻里聚餐实景",
+        "subject": "机构合作洽谈室",
         "visual_structure": "页面 hero",
         "information_position": "行动召唤",
         "reused_assets": [
           "A023"
         ],
-        "industry_recognition_source": "来自邻里聚餐实景",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "数字活动首屏",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "邻里聚餐实景",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自邻里聚餐实景",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "primary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自机构合作洽谈室",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       }
     ],
-    "brand_evidence": "万科苏皖是社区生活服务商",
+    "brand_evidence": "九州美学是医美产业链 B2B 协同平台",
     "execution_constraints": [
       "不使用建筑/展馆为视觉主体",
       "不伪造数据与资质"
@@ -674,48 +554,42 @@
       "信息层级被压缩"
     ],
     "evidence_ids": [
-      "VE-WK-01",
-      "VE-WK-02"
+      "VE-JZ-01",
+      "VE-JZ-02"
     ],
     "asset_references": [
-      "AS-WK-LOGO",
-      "AS-WK-VI"
+      "AS-JZ-LOGO",
+      "AS-JZ-VI"
     ],
-    "direction_family": "B",
-    "family_type": "product_material_aesthetics",
+    "direction_family": "A",
+    "family_type": "supply_chain_trust",
     "compliance_weights": {
-      "compliance_weight": 0.1,
-      "supply_chain_weight": 0.07,
-      "product_material_weight": 0.5,
-      "ecosystem_weight": 0.08,
-      "brand_aesthetic_weight": 0.15,
-      "consumer_value_weight": 0.1
+      "compliance_weight": 0.3,
+      "supply_chain_weight": 0.4,
+      "product_material_weight": 0.1,
+      "ecosystem_weight": 0.1,
+      "brand_aesthetic_weight": 0.05,
+      "consumer_value_weight": 0.05
     },
     "downstream_consumer_value": {
-      "present": true,
-      "consumer_value_role": "primary",
-      "value_statement": "医美材料科学美学如何转化为消费者可感知的安心、品质与精致体验",
-      "visual_expression": "材料微观精密质感与纯净透明美学传递品质感",
-      "touchpoints": [
-        "产品详情页",
-        "品牌美学传播"
-      ],
+      "present": false,
+      "consumer_value_role": "none",
+      "value_statement": "",
+      "visual_expression": "",
+      "touchpoints": [],
       "evidence_ids": []
     },
     "industry_recognition_classification": {
-      "regulatory_objects": [],
-      "supply_chain_objects": [],
-      "product_material_objects": [
-        "社区真实人物",
-        "便民服务站点",
-        "社区活动广场"
+      "regulatory_objects": [
+        "资质审核流程"
       ],
-      "institution_service_objects": [
-        "服务导视牌"
+      "supply_chain_objects": [
+        "GSP 仓储",
+        "冷链配送"
       ],
-      "consumer_value_objects": [
-        "消费者安心美学"
-      ],
+      "product_material_objects": [],
+      "institution_service_objects": [],
+      "consumer_value_objects": [],
       "aesthetic_culture_objects": []
     },
     "asset_authorization": {
@@ -727,44 +601,44 @@
   },
   {
     "direction_id": "E03",
-    "direction_name": "万科苏皖方向3",
-    "strategic_idea": "万科苏皖是社区生活服务商；以社区真实人物与物业巡检动线建立可落地视觉",
+    "direction_name": "九州美学方向3",
+    "strategic_idea": "九州美学是医美产业链 B2B 协同平台；以医美机构门头与诊疗空间与资质审核流程建立可落地视觉",
     "industry_recognition_layer": {
       "industry_visual_objects": [
-        "社区真实人物",
-        "便民服务站点",
-        "社区活动广场"
+        "医美机构门头与诊疗空间",
+        "冷链温控运输箱",
+        "GSP 仓储货架"
       ],
       "industry_data_objects": [
-        "社区活动频次",
-        "服务满意度"
+        "月度机构入驻数",
+        "GSP 温控曲线"
       ],
       "industry_process_objects": [
-        "物业巡检动线",
-        "社区共建流程"
+        "资质审核流程",
+        "冷链配送链路"
       ],
       "industry_space_and_real_scenes": [
-        "邻里聚餐实景",
-        "儿童友好空间"
+        "机构合作洽谈室",
+        "仓储分拣实景"
       ],
       "usable_business_objects": [
-        "社区地图",
-        "服务导视牌"
+        "合作机构铭牌",
+        "温控标签"
       ],
       "prohibited_misleading_templates": [
-        "宏大治愈空间",
-        "地产大片调性",
-        "空镜建筑"
+        "纯女性脸特写堆砌",
+        "玻璃球科技感",
+        "奢华地产大片"
       ],
       "minimum_industry_recognition_strength": 4
     },
     "core_reusable_assets": [
       {
         "asset_id": "A031",
-        "asset_name": "社区人物标",
+        "asset_name": "供应链节点图",
         "asset_type": "graphic_asset",
-        "visual_description": "居民剪影图形",
-        "business_evidence": "对应社区事实",
+        "visual_description": "由机构与温控节点构成",
+        "business_evidence": "对应 B2B 协同事实",
         "execution_role": "主体识别图形，贯穿所有触点",
         "reusable_touchpoints": [
           "poster",
@@ -775,10 +649,10 @@
       },
       {
         "asset_id": "A032",
-        "asset_name": "服务数据卡",
+        "asset_name": "资质数据卡",
         "asset_type": "information_asset",
-        "visual_description": "活动频次",
-        "business_evidence": "来自调研",
+        "visual_description": "GSP 与入驻数据",
+        "business_evidence": "来自 Evidence",
         "execution_role": "资质/数据信息模块",
         "reusable_touchpoints": [
           "capability_deck",
@@ -788,9 +662,9 @@
       },
       {
         "asset_id": "A033",
-        "asset_name": "邻里实景",
+        "asset_name": "冷链运输实景",
         "asset_type": "photography_asset",
-        "visual_description": "真实人物摄影",
+        "visual_description": "真实温控箱摄影",
         "business_evidence": "行业对象",
         "execution_role": "真实行业对象摄影",
         "reusable_touchpoints": [
@@ -815,8 +689,8 @@
       }
     ],
     "graphic_system": {
-      "how_graphics_form": "由社区真实人物抽象为节点化图形",
-      "brand_fact_mapping": "图形对应万科苏皖是社区生活服务商",
+      "how_graphics_form": "由医美机构门头与诊疗空间抽象为节点化图形",
+      "brand_fact_mapping": "图形对应九州美学是医美产业链 B2B 协同平台",
       "scale_crop_repeat": "可按 1:1 / 16:9 裁切，栅格内重复",
       "enter_touchpoints": "海报主体、手册页眉、页面 hero 共用",
       "must_not_become": "不得退化为玻璃球或发光节点"
@@ -824,11 +698,11 @@
     "photography_object_system": {
       "needs_photography": "required",
       "real_industry_objects": [
-        "社区真实人物",
-        "便民服务站点"
+        "医美机构门头与诊疗空间",
+        "冷链温控运输箱"
       ],
-      "subject_and_background": "社区真实人物为前景，实景仓储为背景",
-      "people_product_packaging": "真实居民与社区生活",
+      "subject_and_background": "医美机构门头与诊疗空间为前景，实景仓储为背景",
+      "people_product_packaging": "机构运营人员与产品同框",
       "graphic_overlay": "图形叠加于画面角落，保留真实占比",
       "real_content_ratio": {
         "real_industry_content_ratio": 0.4,
@@ -837,10 +711,10 @@
       }
     },
     "information_system": {
-      "core_brand_info": "万科苏皖是社区生活服务商",
-      "capability_product_info": "物业巡检动线",
-      "data_qualification_info": "社区活动频次",
-      "cta_info": "加入社区活动",
+      "core_brand_info": "九州美学是医美产业链 B2B 协同平台",
+      "capability_product_info": "资质审核流程",
+      "data_qualification_info": "月度机构入驻数",
+      "cta_info": "预约平台 Demo",
       "information_hierarchy": [
         "品牌主张",
         "能力/产品",
@@ -898,98 +772,41 @@
       {
         "example_id": "X031",
         "touchpoint_category": "core_brand",
-        "subject": "社区真实人物",
+        "subject": "医美机构门头与诊疗空间",
         "visual_structure": "左图右信息栅格",
         "information_position": "品牌主张+数据",
         "reused_assets": [
           "A031"
         ],
-        "industry_recognition_source": "来自社区真实人物",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "品牌主视觉传播页",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "社区真实人物",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自社区真实人物",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "primary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自医美机构门头与诊疗空间",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       },
       {
         "example_id": "X032",
         "touchpoint_category": "capability_product",
-        "subject": "物业巡检动线",
+        "subject": "资质审核流程",
         "visual_structure": "能力说明页",
         "information_position": "流程+资质",
         "reused_assets": [
           "A032"
         ],
-        "industry_recognition_source": "来自物业巡检动线",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "能力/产品介绍页",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "物业巡检动线",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自物业巡检动线",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "primary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自资质审核流程",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       },
       {
         "example_id": "X033",
         "touchpoint_category": "digital_event",
-        "subject": "邻里聚餐实景",
+        "subject": "机构合作洽谈室",
         "visual_structure": "页面 hero",
         "information_position": "行动召唤",
         "reused_assets": [
           "A033"
         ],
-        "industry_recognition_source": "来自邻里聚餐实景",
-        "anti_concept_art_note": "以真实行业对象避免概念稿化",
-        "touchpoint": "数字活动首屏",
-        "audience": "B2B 采购决策者 / 医美机构运营者",
-        "communication_goal": "建立平台专业可信与安心感",
-        "hero_subject": "邻里聚餐实景",
-        "supporting_subjects": "品牌专属节点图形、数据信息卡",
-        "industry_content": "来自邻里聚餐实景",
-        "layout_structure": "左图右信息栅格",
-        "information_hierarchy": "品牌-能力-数据-CTA",
-        "brand_specific_detail": "社区人物标",
-        "anti_concept_art_rule": "不得概念稿化、不得地产/展厅大片",
-        "prohibited_content": "建筑/展馆主体",
-        "downstream_consumer_value": {
-          "present": true,
-          "consumer_value_role": "primary",
-          "value_statement": "",
-          "visual_expression": "",
-          "touchpoints": [],
-          "evidence_ids": []
-        }
+        "industry_recognition_source": "来自机构合作洽谈室",
+        "anti_concept_art_note": "以真实行业对象避免概念稿化"
       }
     ],
-    "brand_evidence": "万科苏皖是社区生活服务商",
+    "brand_evidence": "九州美学是医美产业链 B2B 协同平台",
     "execution_constraints": [
       "不使用建筑/展馆为视觉主体",
       "不伪造数据与资质"
@@ -1037,48 +854,42 @@
       "信息层级被压缩"
     ],
     "evidence_ids": [
-      "VE-WK-01",
-      "VE-WK-02"
+      "VE-JZ-01",
+      "VE-JZ-02"
     ],
     "asset_references": [
-      "AS-WK-LOGO",
-      "AS-WK-VI"
+      "AS-JZ-LOGO",
+      "AS-JZ-VI"
     ],
-    "direction_family": "C",
-    "family_type": "industry_ecosystem",
+    "direction_family": "A",
+    "family_type": "supply_chain_trust",
     "compliance_weights": {
-      "compliance_weight": 0.1,
-      "supply_chain_weight": 0.1,
+      "compliance_weight": 0.3,
+      "supply_chain_weight": 0.4,
       "product_material_weight": 0.1,
-      "ecosystem_weight": 0.5,
-      "brand_aesthetic_weight": 0.1,
-      "consumer_value_weight": 0.1
+      "ecosystem_weight": 0.1,
+      "brand_aesthetic_weight": 0.05,
+      "consumer_value_weight": 0.05
     },
     "downstream_consumer_value": {
-      "present": true,
-      "consumer_value_role": "primary",
-      "value_statement": "平台生态协同如何为消费者带来安心的美学价值与机构专业体验",
-      "visual_expression": "机构专业服务与消费者安心体验一体化",
-      "touchpoints": [
-        "机构合作页",
-        "消费者体验空间"
-      ],
+      "present": false,
+      "consumer_value_role": "none",
+      "value_statement": "",
+      "visual_expression": "",
+      "touchpoints": [],
       "evidence_ids": []
     },
     "industry_recognition_classification": {
-      "regulatory_objects": [],
-      "supply_chain_objects": [],
-      "product_material_objects": [
-        "社区真实人物",
-        "便民服务站点",
-        "社区活动广场"
+      "regulatory_objects": [
+        "资质审核流程"
       ],
-      "institution_service_objects": [
-        "服务导视牌"
+      "supply_chain_objects": [
+        "GSP 仓储",
+        "冷链配送"
       ],
-      "consumer_value_objects": [
-        "消费者安心美学"
-      ],
+      "product_material_objects": [],
+      "institution_service_objects": [],
+      "consumer_value_objects": [],
       "aesthetic_culture_objects": []
     },
     "asset_authorization": {
