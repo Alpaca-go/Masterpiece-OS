@@ -1,20 +1,22 @@
-# 远程分支删除计划
+# Remote branch deletion plan
 
-状态：**仅计划，未获 Phase B 删除确认，不执行。**
+Status: **awaiting the user's second explicit confirmation; do not execute**.
 
-## 必须保留
+## Must retain
 
 - `main`
+- `develop`
 - `feature/reference-led-visual-direction`
-- Phase B 创建的 `develop`
 
-## Retrieval-First 合并后观察
+## Retain temporarily
 
-- `feature/retrieval-first-single-pipeline`：合并后建议保留 3–7 天，再单独确认删除。
+- `feature/retrieval-first-single-pipeline`: merged by PR #6. Keep for 3–7
+  days, then request a separate deletion confirmation.
 
-## 最终拟删除清单
+## Exact proposed deletion list
 
-以下每条分支只有在归档 Tag 远端存在且 Tag 解引用 SHA 与分支 HEAD 完全一致后，才有资格进入删除确认：
+Each branch below has a verified remote annotated archive tag whose peeled
+commit equals the branch head:
 
 - `v5-deep-creative-director`
 - `v5-desktop`
@@ -26,11 +28,16 @@
 - `experiment/execution-oriented-directions-v2`
 - `experiment/visual-fact-first-pipeline`
 
-## 删除前置条件
+## Preconditions completed
 
-1. Retrieval-First 已通过 PR 合入 main。
-2. `retrieval-first-core-beta-0.5` 已推送。
-3. `develop` 已创建并指向最新 main。
-4. PR #2、#3、#4、#5 已关闭。
-5. Reference Translation 分支已同步 develop 且仍在保留清单。
-6. 用户再次确认本文件中的最终删除清单。
+1. Retrieval-First was validated and merged into `main` by PR #6.
+2. `retrieval-first-core-beta-0.5` was pushed.
+3. `develop` was created from the merged `main`.
+4. PRs #2, #3, #4 and #5 were documented and closed.
+5. Reference-led work was synchronized with `develop`, validated, pushed and
+   opened as PR #7.
+
+## Remaining gate
+
+The user must explicitly confirm this exact nine-branch list before any
+deletion command is run. Archive tags are retained after branch deletion.
