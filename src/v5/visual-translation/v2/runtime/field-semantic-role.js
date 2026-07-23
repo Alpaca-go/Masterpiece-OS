@@ -10,7 +10,7 @@ const NEGATIVE_CONSTRAINT_FIELDS = new Set([
 
 const SOURCE_EVIDENCE_FIELDS = /(?:^|\.)(?:evidence_ids?|brand_evidence|business_evidence|industry_recognition_source)(?:\.|\[|$)/u;
 const METADATA_FIELDS = /(?:^|\.)(?:direction_id|example_id|asset_id|template_id|constraint_id|contract_version|direction_generation_mode)(?:\.|\[|$)/u;
-const NEGATION_MARKERS = /不得(?:使用|生成|出现)?|禁止(?:使用|出现|生成)?|避免(?:使用|生成|出现)?|严禁|不允许|不要|不可|不能|拒绝/u;
+const NEGATION_MARKERS = /不得(?:使用|生成|出现|替换)?|禁止(?:使用|出现|生成|替换)?|避免(?:使用|生成|出现|替换)?|严禁|不允许|不要|不可|不应|不能|未授权|非授权|拒绝/u;
 const CONTEXT_RESET = /(?:但是|但|然而|不过|却|；|;|。|！|!|？|\?|，|,)/gu;
 
 export function classifyFieldSemanticRole(fieldPath = '') {

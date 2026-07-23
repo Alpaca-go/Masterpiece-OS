@@ -12,6 +12,7 @@ import {
   runStableStep4
 } from '../../src/v5/visual-translation/v2/runtime/run-step4-stable.js';
 import {
+  COMPOSITION_TOUCHPOINTS,
   collectExecutionDirectionV2ValidationErrors,
   validateExecutionDirectionV2,
   validateExecutionDirectionV2Set
@@ -232,6 +233,46 @@ test('field repair prompt names the path, types and preservation rule', () => {
   assert.match(prompt, /"received_type":"null"/u);
   assert.match(prompt, /Preserve all unlisted fields/u);
   assert.match(prompt, /Do not return the complete document/u);
+});
+
+test('direction-specific composition touchpoints share one prompt and schema contract', () => {
+  const directions = JSON.parse(readFileSync(join(HERE, '..', 'fixtures', 'visual-direction-v2', 'jiuzhou-meixue', 'v2-directions.json'), 'utf8'));
+  const incidentTouchpoints = [
+    'quality_selection_board',
+    'product_selection_catalog',
+    'ecosystem_service_map',
+    'partner_portal_hero'
+  ];
+  directions[1].composition_templates[0].touchpoint = incidentTouchpoints[0];
+  directions[1].composition_templates[1].touchpoint = incidentTouchpoints[1];
+  directions[2].composition_templates[0].touchpoint = incidentTouchpoints[2];
+  directions[2].composition_templates[1].touchpoint = incidentTouchpoints[3];
+  const context = {
+    reportLanguage: 'zh-CN',
+    evidenceIds: new Set(directions.flatMap((item) => item.evidence_ids || [])),
+    allowedAssetIds: new Set(directions.flatMap((item) => item.asset_references || [])),
+    restrictedAssetIds: new Set()
+  };
+
+  for (const touchpoint of incidentTouchpoints) assert.ok(COMPOSITION_TOUCHPOINTS.includes(touchpoint));
+  assert.doesNotThrow(() => validateExecutionDirectionV2Set(directions, context));
+
+  const prompt = buildExecutionDirectionV2Prompt({ brandFacts: { reportLanguage: 'zh-CN' } })[0].content;
+  for (const touchpoint of incidentTouchpoints) assert.match(prompt, new RegExp(touchpoint, 'u'));
+});
+
+test('touchpoint repair explicitly constrains replacements to the shared enum', () => {
+  const path = 'visualDirectionV2Set.directions[0].composition_templates[0].touchpoint';
+  const prompt = buildFieldRepairPrompt({
+    originalJson: { visualDirectionV2Set: { directions: [{ composition_templates: [{ touchpoint: 'invented_touchpoint' }] }] } },
+    validationError: {
+      code: 'FAILED_SCHEMA',
+      issues: [{ path, received: 'invented_touchpoint', message: 'touchpoint is outside the enum' }]
+    }
+  })[0].content;
+  assert.match(prompt, /"expected":"one of: poster, capability_deck/u);
+  assert.match(prompt, /quality_selection_board/u);
+  assert.match(prompt, /copying the rejected value when it is outside the enum/u);
 });
 
 test('repair patch accepts every listed path exactly once and rejects scope expansion', () => {

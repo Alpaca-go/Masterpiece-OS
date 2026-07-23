@@ -1,4 +1,9 @@
 import { buildEvidenceBoundValueRegistry } from './evidence-bound-values.js';
+import {
+  sanitizeRejectedEvidenceBoundValue,
+  sanitizeSpecificBusinessValuesDeep,
+  sanitizeUnconfirmedFactRecord
+} from './specific-business-value-sanitizer.js';
 
 const unique = (values) => [...new Set(values.filter(Boolean))];
 
@@ -45,7 +50,8 @@ function factValue(field, facts) {
 function groupFacts(visualFacts) {
   const groups = { confirmed: [], inferred: [], conflicting: [], unknown: [], requires_confirmation: [] };
   for (const record of Object.values(visualFacts.fact_records || {})) {
-    groups[record.status].push({ ...record, value: record.value ?? factValue(record.field, visualFacts) });
+    const resolved = { ...record, value: record.value ?? factValue(record.field, visualFacts) };
+    groups[record.status].push(sanitizeUnconfirmedFactRecord(resolved));
   }
   return Object.freeze(Object.fromEntries(Object.entries(groups).map(([key, value]) => [key, Object.freeze(value)])));
 }
@@ -56,7 +62,9 @@ export function adaptVisualFactFirstToStep4({ visualFacts, visualAssetEvidence, 
   const confirmed = (field, value, fallback) => confirmedFields.has(field) ? value : fallback;
   const evidenceBoundValues = buildEvidenceBoundValueRegistry(visualFacts);
   const allowedEvidenceBoundValues = evidenceBoundValues.filter((item) => item.allowed_in_visual_direction);
-  const rejectedEvidenceBoundValues = evidenceBoundValues.filter((item) => !item.allowed_in_visual_direction);
+  const rejectedEvidenceBoundValues = evidenceBoundValues
+    .filter((item) => !item.allowed_in_visual_direction)
+    .map(sanitizeRejectedEvidenceBoundValue);
   const confirmedEvidenceIds = new Set(factsByStatus.confirmed.flatMap((item) => item.evidence_ids));
   const evidence = visualFacts.evidence_registry.map((item, index) => ({
     evidenceId: item.evidence_id || `VF${String(index + 1).padStart(3, '0')}`,
@@ -73,7 +81,7 @@ export function adaptVisualFactFirstToStep4({ visualFacts, visualAssetEvidence, 
     .flatMap(([group, value]) => value.map((item) => ({ ...item, group })));
   const allowedAssets = assetItems.filter((item) => item.authorization === 'locked' || item.authorization === 'editable').map((item) => item.evidence_id);
   const restrictedAssets = assetItems.filter((item) => !allowedAssets.includes(item.evidence_id)).map((item) => item.evidence_id);
-  return Object.freeze({
+  const context = {
     brand_identity: {
       brand_name: confirmed('brand_name', visualFacts.project_identity.brand_name, 'unknown'),
       industry: confirmed('industry', visualFacts.project_identity.industry, 'unknown'),
@@ -124,7 +132,7 @@ export function adaptVisualFactFirstToStep4({ visualFacts, visualAssetEvidence, 
     brandFacts: {
       reportLanguage: /[\u3400-\u9fff]/u.test(visualFacts.project_identity.brand_name) ? 'zh-CN' : 'en',
       brandRelationship: visualFacts.brand_relationship,
-      evidenceBoundValues,
+      evidenceBoundValues: allowedEvidenceBoundValues,
       identity: {
         brandName: confirmed('brand_name', visualFacts.project_identity.brand_name, 'unknown'),
         projectName: confirmed('brand_name', visualFacts.project_identity.brand_name, 'unknown'),
@@ -134,7 +142,9 @@ export function adaptVisualFactFirstToStep4({ visualFacts, visualAssetEvidence, 
         evidenceIds: factsByStatus.confirmed.flatMap((item) => item.evidence_ids)
       }
     }
-  });
+  };
+  const allowedNormalizedValues = new Set(allowedEvidenceBoundValues.map((item) => item.normalized_value));
+  return Object.freeze(sanitizeSpecificBusinessValuesDeep(context, allowedNormalizedValues));
 }
 
 export function buildCompatibilityEvidenceMap(context) {

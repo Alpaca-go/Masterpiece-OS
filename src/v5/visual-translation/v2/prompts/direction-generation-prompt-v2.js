@@ -13,7 +13,7 @@ import {
   REUSABLE_ASSET_TYPES
 } from '../schemas/direction-contract-v2.js';
 
-export const VISUAL_DIRECTIONS_PROMPT_V2_VERSION = 'visual-direction-v2-execution-step4-r3';
+export const VISUAL_DIRECTIONS_PROMPT_V2_VERSION = 'visual-direction-v2-execution-step4-r5';
 
 const OUTPUT_TYPE_SKELETON = Object.freeze({
   visualDirectionV2Set: {
@@ -265,12 +265,12 @@ asset_authorization 是程序注入的运行时策略元数据，模型不得输
 - brand_zone：object，必须含 position、logo_usage、safety_margin、relationship_to_main_visual、prohibited_behavior。
 
 画布比例必须匹配载体且三个触点不得统一：海报 4:5 或 1:1；手册 A4；官网 16:9 或 21:9；峰会/展览 16:9 或 3:1；短视频 9:16。
-E01 必须提供 brand_asset_derivation；E02 品牌专属材料机制必须说明来源、微观图形规则、材质光线、产品对象、信息美学、消费者感知与跨触点复用。
+若 Asset Boundary (allowed) 非空，每个方向至少在 asset_references 引用一个允许的原始资产 ID；locked 资产按原身份继承，editable 资产必须在 core_reusable_assets.business_evidence / visual_description 中说明如何重构及原因。restricted 资产不得引用。若确实没有可继承资产，必须在 brand_evidence 中明确“本方向主要由品牌事实驱动，未有效继承现有视觉资产”。
 
 三个方向的质量定义（必须写入现有字段，不新增 Schema 字段）：
 - E01「全链可信」：以验证窗口、温控时间带、批次轨迹切片、交付证据层、机构验收界面构成专属机制；consumer role=secondary、consumer_value_weight=0.05。资质覆盖地图、省区高亮、机构清单、印章、批号和集团 VI 只有在 Evidence 与授权同时存在时才可使用；否则只用结构占位、非具体地图、抽象节点、示意字段和非官方合规状态标签，并在 prohibited_content / execution_constraints 中明确禁止。
-- E02「平台品质选择」：九州美学是筛选、组织、解释并交付高质量医美产品与解决方案的平台，不是成分、配方、实验室、护肤品或单一医械品牌；consumer role=strong_secondary、consumer_value_weight=0.10。必须填写 selection_mechanism，说明甄选维度、标准到视觉的一一映射、多品类统一规则、比较行为和九州美学平台签名。核心触点优先 platform_product_showcase、quality_selection_board、institutional_product_guide、product_selection_catalog；除非证据确认自有包装产品，不得使用 packaging_front。
-- E03「生态价值流」：必须显式形成“上游品牌 → 九州平台 → 医美机构 → 消费者 → 安全、稳定、透明体验”的闭环；consumer role=secondary、consumer_value_weight=0.05。消费者价值只写安全、稳定、透明、可追溯、减少不确定性，机构运营价值另列。摄影只用匿名化机构服务场景、平台操作界面、物流基础设施、角色行为和服务交付节点，禁止拼接机构门头或 Logo；以角色价值带、服务交换单元、交付结果层、消费者结果回流和平台编排界面替代通用拓扑。核心触点优先 ecosystem_service_map、partner_portal_hero、institutional_collaboration_guide，exhibition_backdrop 只能作为可选示例。
+- E02「平台品质选择」：${brandName}作为筛选、组织、解释并交付高质量产品与解决方案的平台，不是成分、配方、实验室、护肤品或单一医械品牌；consumer role=strong_secondary、consumer_value_weight=0.10。必须填写 selection_mechanism，说明甄选维度、标准到视觉的一一映射、多品类统一规则、比较行为和项目品牌平台签名。核心触点优先 platform_product_showcase、quality_selection_board、institutional_product_guide、product_selection_catalog；除非证据确认自有包装产品，不得使用 packaging_front。
+- E03「生态价值流」：必须显式形成“上游品牌 → ${brandName}平台 → 机构 → 消费者 → 安全、稳定、透明体验”的闭环；consumer role=secondary、consumer_value_weight=0.05。安全、稳定、透明等消费者价值只能在 confirmed 事实支持时使用，机构运营价值另列。摄影只用匿名化机构服务场景、平台操作界面、基础设施、角色行为和服务交付节点，禁止拼接机构门头或 Logo；以角色价值带、服务交换单元、交付结果层、结果回流和平台编排界面替代通用拓扑。核心触点优先 ecosystem_service_map、partner_portal_hero、institutional_collaboration_guide，exhibition_backdrop 只能作为可选示例。
 
 生成前逐方向回答并落实到 strategic_idea、graphic_system、layout_behavior、composition_templates、execution_examples、brand_evidence、execution_constraints 和 template_risks：
 1. 视觉主角是什么；2. 视觉机制如何持续生成资产；3. 平台角色如何被看见；4. 消费者结果如何被看见；

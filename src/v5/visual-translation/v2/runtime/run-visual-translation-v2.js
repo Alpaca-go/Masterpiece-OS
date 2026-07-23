@@ -49,6 +49,11 @@ const DEFAULT_SELECTED_TOUCHPOINTS = Object.freeze([
 
 const STEP4_REPAIR_CHECKPOINT_STAGE = '04-step4-repair-pending';
 const STEP4_REPAIR_CHECKPOINT_SCHEMA = 'visual-direction-v2-step4-repair-pending-r1';
+const STEP4_REPAIR_COMPATIBLE_PROMPT_VERSIONS = new Set([
+  VISUAL_DIRECTIONS_PROMPT_V2_VERSION,
+  'visual-direction-v2-execution-step4-r4',
+  'visual-direction-v2-execution-step4-r3'
+]);
 const V2_STAGE_SEQUENCE = Object.freeze({
   '00-document-preparation': 0,
   '01-visual-evidence': 10,
@@ -334,7 +339,7 @@ export async function runVisualTranslationV2(input) {
     documentSetHash: prepared.documentSetHash,
     upstreamHash: directionsUpstream,
     promptVersion: VISUAL_DIRECTIONS_PROMPT_V2_VERSION,
-    schemaVersion: 'visual-direction-v2-execution-step4-r2'
+    schemaVersion: 'visual-direction-v2-execution-step4-r3'
   };
   const contractContext = {
     reportLanguage: evidenceMap.reportLanguage,
@@ -351,10 +356,14 @@ export async function runVisualTranslationV2(input) {
     schemaVersion: STEP4_REPAIR_CHECKPOINT_SCHEMA
   };
   const savedRepairCheckpoint = checkpoints[STEP4_REPAIR_CHECKPOINT_STAGE];
+  const savedRepairPromptVersion = savedRepairCheckpoint?.checkpoint?.promptVersion;
+  const compatibleRepairCheckpointExpected = STEP4_REPAIR_COMPATIBLE_PROMPT_VERSIONS.has(savedRepairPromptVersion)
+    ? { ...repairCheckpointExpected, promptVersion: savedRepairPromptVersion }
+    : repairCheckpointExpected;
   const repairCheckpoint = savedRepairCheckpoint
     && canResumeVisualTranslationCheckpoint(
       savedRepairCheckpoint.checkpoint,
-      repairCheckpointExpected,
+      compatibleRepairCheckpointExpected,
       savedRepairCheckpoint.output
     )
     && savedRepairCheckpoint.output?.kind === 'step4_repair_pending'
@@ -434,7 +443,10 @@ export async function runVisualTranslationV2(input) {
   const lightweightValidation = retrievalFirstActive
     ? validateLightweightDirections({ compiled: compiledBase, pipelineCompleteness: visualFactFirst?.pipelineCompleteness, benchmarkRetrieval: visualFactFirst?.benchmarkRetrieval })
     : null;
-  const modelCritic = retrievalFirstActive ? evaluateModelCriticAdvisory(compiledBase) : null;
+  const modelCritic = retrievalFirstActive ? evaluateModelCriticAdvisory(compiledBase, {
+    benchmarkRetrieval: visualFactFirst?.benchmarkRetrieval,
+    visualAssetEvidence: visualFactFirst?.visualAssetEvidence
+  }) : null;
   const compiled = lightweightValidation ? {
     ...compiledBase,
     legacy_gate_status: compiledBase.overall_status,

@@ -6,7 +6,8 @@
 // the Execution Readiness Evaluator can derive `concept_art_risk`.
 
 import {
-  ANTI_CONCEPT_ART_CONSTRAINT_IDS
+  ANTI_CONCEPT_ART_CONSTRAINT_IDS,
+  COMPOSITION_TOUCHPOINTS
 } from '../schemas/direction-contract-v2.js';
 
 function collectSubjectText(direction) {
@@ -62,8 +63,7 @@ const DETECTORS = [
   {
     constraint_id: 'must_convert_to_flat_design',
     test: (subject, visual, direction) => {
-      const flatTouchpoints = ['poster', 'packaging_front', 'digital_hero', 'capability_deck', 'exhibition_backdrop'];
-      const hasFlat = (direction.composition_templates || []).some((t) => flatTouchpoints.includes(t.touchpoint));
+      const hasFlat = (direction.composition_templates || []).some((template) => COMPOSITION_TOUCHPOINTS.includes(template.touchpoint));
       return !hasFlat;
     }
   },
@@ -82,8 +82,7 @@ const DETECTORS = [
   {
     constraint_id: 'must_generate_poster_booklet_packaging_page_template',
     test: (subject, visual, direction) => {
-      const named = ['poster', 'packaging_front', 'digital_hero', 'capability_deck'];
-      const hasNamed = (direction.composition_templates || []).some((t) => named.includes(t.touchpoint));
+      const hasNamed = (direction.composition_templates || []).some((template) => COMPOSITION_TOUCHPOINTS.includes(template.touchpoint));
       return !hasNamed;
     }
   }

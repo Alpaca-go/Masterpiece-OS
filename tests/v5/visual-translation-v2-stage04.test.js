@@ -293,6 +293,8 @@ test('v2 runner checkpoints a valid primary response and resumes with Repair onl
   }), (error) => error.code === 'STEP4_JSON_PARSE_FAILED');
   assert.equal(calls, 2);
   assert.ok(recoveryPayload);
+  recoveryPayload = structuredClone(recoveryPayload);
+  recoveryPayload.checkpoint.promptVersion = 'visual-direction-v2-execution-step4-r3';
 
   calls = 0;
   let removed = false;

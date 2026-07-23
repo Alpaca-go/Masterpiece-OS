@@ -214,13 +214,24 @@ export function validateVisualAssetEvidence(value) {
     if (!Array.isArray(root[group])) fail('must be an array', `visualAssetEvidence.${group}`);
     output[group] = root[group].map((raw, index) => {
       const item = object(raw, `visualAssetEvidence.${group}[${index}]`);
+      const owner = enumeration(item.owner || 'unknown', new Set(['project_brand', 'parent_group', 'partner_brand', 'third_party', 'unknown']), `visualAssetEvidence.${group}[${index}].owner`);
+      const authorization = enumeration(item.authorization, new Set(['locked', 'editable', 'reference_only', 'unknown']), `visualAssetEvidence.${group}[${index}].authorization`);
+      const inferredAuthorizationStatus = owner === 'project_brand' && authorization !== 'unknown' ? 'not_required'
+        : authorization === 'locked' ? 'confirmed'
+          : 'not_confirmed';
       return {
         evidence_id: string(item.evidence_id, `visualAssetEvidence.${group}[${index}].evidence_id`, { allowUnknown: true }),
         source: string(item.source, `visualAssetEvidence.${group}[${index}].source`, { allowUnknown: true }),
         observation: string(item.observation, `visualAssetEvidence.${group}[${index}].observation`, { allowUnknown: true }),
         visual_decision_impact: string(item.visual_decision_impact, `visualAssetEvidence.${group}[${index}].visual_decision_impact`, { allowUnknown: true }),
         confidence: number(item.confidence, `visualAssetEvidence.${group}[${index}].confidence`),
-        authorization: enumeration(item.authorization, new Set(['locked', 'editable', 'reference_only', 'unknown']), `visualAssetEvidence.${group}[${index}].authorization`)
+        authorization,
+        asset_type: item.asset_type || ({
+          logo: 'logo', color: 'color', typography: 'typography', graphic_assets: 'graphic',
+          photography: 'photography', packaging_structure: 'packaging'
+        }[group] || 'other'),
+        owner,
+        authorization_status: enumeration(item.authorization_status || inferredAuthorizationStatus, new Set(['confirmed', 'not_confirmed', 'forbidden', 'not_required']), `visualAssetEvidence.${group}[${index}].authorization_status`)
       };
     });
   }

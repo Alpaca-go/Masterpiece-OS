@@ -30,7 +30,9 @@ const NON_BRAND_PHRASES = new Set([
 const BRAND_CONTEXT_FIELDS = /direction_name|strategic_idea|brand_evidence|brand_fact_mapping|how_graphics_form|core_brand_info|cta_info|execution_role|brand_specific_detail/;
 
 // Prompt-instruction / negative-constraint markers (doc §三).
-const PROMPT_INSTRUCTION_MARKERS = /不得|禁止|必须|需要|应该|PRINCIPLE|原则|提示|prompt|instruction|constraint|约束/;
+const PROMPT_INSTRUCTION_MARKERS = /不得|禁止|不可|不应|不能|未授权|非授权|避免|严禁|必须|需要|应该|PRINCIPLE|原则|提示|prompt|instruction|constraint|约束/;
+const NEGATIVE_PREFIX_AT_START = /^(?:不得|禁止|不可|不应|不能|未授权|非授权|避免|严禁)/u;
+const NEGATIVE_PREFIX_OVERLAP = /(?:不得|禁止|不可|不应|不能|未授权|非授权|避免|严禁)/u;
 const BRAND_LEADING_RELATION_WORDS = /^(?:背靠|依托|来自|隶属于|由|以|作为|靠|基于)+/u;
 const INVALID_BRAND_FRAGMENTS = /^(?:真实业|真实业务|业务|品牌|项目|平台|主体|集团|实业)$|为基础|真实行业|作为品牌|^以真实/u;
 const RELATION_PATTERNS = [
@@ -122,10 +124,15 @@ export function detectUnexpectedBrandNames({
   const denied = new Set(knownExampleBrandNames || []);
   const found = [];
   const text = String(sourceText || '');
+  const inNegativeContext = (needle) => {
+    const index = text.indexOf(needle);
+    return index >= 0 && isNegatedContext(text, index);
+  };
 
   // 1) forbidden example brands (e.g. a demo brand that leaked into output).
   for (const name of denied) {
-    if (name && text.includes(name) && !allowlist.has(name)) {
+    if (name && text.includes(name) && !allowlist.has(name) && !inNegativeContext(name)
+      && !NEGATIVE_PREFIX_AT_START.test(text.slice(Math.max(0, text.indexOf(name) - 12), text.indexOf(name) + name.length))) {
       const idx = text.indexOf(name);
       const surrounding = text.slice(Math.max(0, idx - 30), idx + name.length + 30);
       const source = determineSource(fieldPath, text, name);
@@ -154,6 +161,11 @@ export function detectUnexpectedBrandNames({
       const rawCandidate = token.replace(BRAND_NAME_SUFFIX, '$1$2');
       const cleaned = normalizeBrandCandidate(rawCandidate);
       if (!cleaned) continue;
+      const tokenIndex = text.indexOf(token);
+      const cleanedIndex = text.indexOf(cleaned, Math.max(0, tokenIndex));
+      if (NEGATIVE_PREFIX_AT_START.test(token)
+        || NEGATIVE_PREFIX_OVERLAP.test(text.slice(Math.max(0, tokenIndex - 4), tokenIndex + Math.min(token.length, 6)))
+        || isNegatedContext(text, tokenIndex) || isNegatedContext(text, cleanedIndex)) continue;
       // Skip non-brand phrases (e.g. "提供真实行业对象")
       if (NON_BRAND_PHRASES.has(cleaned) || NON_BRAND_PHRASES.has(token)) continue;
       if (!allowlist.has(cleaned) && !found.some((f) => f.detected_text === cleaned)) {

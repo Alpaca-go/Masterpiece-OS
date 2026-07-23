@@ -3,6 +3,7 @@ import { parseStructuredResponse } from '../../../shared/analysis/response-parse
 import { VISUAL_TRANSLATION_V2_RUNTIME_CONFIG } from '../config/visual-translation-v2-runtime-config.js';
 import {
   ANTI_CONCEPT_ART_CONSTRAINTS,
+  COMPOSITION_TOUCHPOINTS,
   REQUIRED_REUSABLE_ASSET_TYPES
 } from '../schemas/direction-contract-v2.js';
 
@@ -99,6 +100,12 @@ function valueAtPath(value, path) {
 }
 
 const FIELD_RULES = Object.freeze({
+  touchpoint: {
+    expected: `one of: ${COMPOSITION_TOUCHPOINTS.join(', ')}`,
+    required: `choose exactly one composition touchpoint from this enum: ${COMPOSITION_TOUCHPOINTS.join(', ')}`,
+    example: 'quality_selection_board',
+    forbidden: 'a translated label, an invented touchpoint, an empty value, or copying the rejected value when it is outside the enum'
+  },
   brand_evidence: {
     expected: 'string',
     required: 'one Chinese sentence (maximum 500 characters) summarizing verified brand facts',

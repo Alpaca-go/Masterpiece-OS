@@ -49,7 +49,14 @@ export const COMPOSITION_TOUCHPOINTS = Object.freeze([
   'packaging_front',
   'exhibition_backdrop',
   'short_video_cover',
-  'map_or_activity'
+  'map_or_activity',
+  'platform_product_showcase',
+  'quality_selection_board',
+  'institutional_product_guide',
+  'product_selection_catalog',
+  'ecosystem_service_map',
+  'partner_portal_hero',
+  'institutional_collaboration_guide'
 ]);
 
 export const EXECUTION_EXAMPLE_CATEGORIES = Object.freeze([

@@ -57,14 +57,25 @@ test('formal report is decision-oriented while audit preserves technical evidenc
   assert.equal((report.match(/### 执行触点（3）/gu) || []).length, 3);
   assert.doesNotMatch(report, /三个执行触点（完整）|visualDirectionV2\.|field_path|matched_rule|moderate_confidence_brand_indicator|not_configured|fabricated_data_or_credentials|0\.\d{3,}/u);
   assert.ok(report.length <= legacyReport.length * 0.65, 'formal report must be at least 35% shorter than the legacy technical report');
-  assert.match(report, /标杆检索 \| 失败 \| 无可用检索案例/u);
-  assert.match(report, /方向 Critic/u);
+  assert.match(report, /标杆检索 \| 失败 \| 无可用检索案例 \| 方向可生成，但缺少外部参照/u);
+  assert.match(report, /当前优先保留方向：\*\*(?:E0[1-3]|暂不选择)\*\*/u);
+  assert.match(report, /正式推荐方向：\*\*(?:E0[1-3]|暂不确定)\*\*/u);
+  assert.match(report, /推荐原因：.+/u);
+  assert.match(report, /进入条件：\n\s+1\./u);
+  assert.match(report, /\| 主要修改项 \| Anchor \|/u);
+  assert.equal((report.match(/### 方向 Critic/gu) || []).length, 3);
+  assert.equal((report.match(/### 核心视觉系统/gu) || []).length, 3);
+  assert.match(report, /技术字段路径、Gate 规则与原始命中记录见：[\s\S]*06-Visual-Directions-Audit\.md/u);
+  assert.doesNotMatch(report, /已阻断|方向 Critic：|———|综合就绪|存在一项需要|根据技术审计|查看对应 Gate/u);
+  assert.ok((report.match(/^\d+\. \[(?:高|中|低)\]/gmu) || []).length <= 6);
 
   assert.match(audit, /"field_path":/u);
-  assert.match(audit, /"matched_rule":/u);
-  assert.match(audit, /## 1\. Pipeline Integrity/u);
-  assert.match(audit, /## 14\. Collection Status Compilation/u);
-  assert.doesNotMatch(audit, /## (3b|8b|8c|8d)\b/u);
+  assert.match(audit, /"rule_id":/u);
+  for (const heading of [
+    '## 1. Runtime 状态', '## 2. Pipeline Completeness 原始数据', '## 3. Gate 命中明细',
+    '## 4. EvidenceRef 审计', '## 5. 品牌与授权审计', '## 6. Execution Example 完整性',
+    '## 7. 方向相似度', '## 8. Model Critic 原始结果', '## 9. 原始字段路径索引'
+  ]) assert.match(audit, new RegExp(heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'u'));
 });
 
 test('issue grouping folds six identical temperature hits into one user issue', () => {
@@ -83,7 +94,21 @@ test('issue grouping folds six identical temperature hits into one user issue', 
   compiled.gate_issues = issues;
   const vm = compileVisualDirectionsReportViewModel({ projectId: 'temperature-grouping', compiled, visualFactFirst: visualFactFirstFixture() });
   const report = compileExecutionDirectionsReportV2({ projectId: 'temperature-grouping', compiled, visualFactFirst: visualFactFirstFixture() });
-  assert.equal(vm.issue_groups.length, 1);
-  assert.equal((report.match(/具体数值缺少事实依据/gu) || []).length, 1);
-  assert.match(report, /合并 6 处命中/u);
+  assert.equal(vm.grouped_issues.length, 1);
+  assert.equal((report.match(/#### 无证据具体数据/gu) || []).length, 1);
+  assert.match(report, /命中次数：6/u);
+});
+
+test('user report hides generic technical fallbacks while audit keeps the raw hit', () => {
+  const compiled = compiledFixture();
+  compiled.gate_issues = [{
+    code: 'UNCLASSIFIED_TECHNICAL_HIT', severity: 'warning', direction_id: 'E02',
+    field_path: 'visualDirectionV2.internal.value', matched_rule: 'internal_rule',
+    message: 'FIELD_PATH_MISSING', recommendation: '查看对应 Gate 明细和方向级证据后修正。'
+  }];
+  const report = compileExecutionDirectionsReportV2({ projectId: 'fallback-filter', compiled, visualFactFirst: visualFactFirstFixture() });
+  const audit = compileExecutionDirectionsAuditV2({ projectId: 'fallback-filter', compiled, visualFactFirst: visualFactFirstFixture() });
+  assert.doesNotMatch(report, /FIELD_PATH_MISSING|查看对应 Gate|internal_rule/u);
+  assert.match(audit, /FIELD_PATH_MISSING/u);
+  assert.match(audit, /internal_rule/u);
 });

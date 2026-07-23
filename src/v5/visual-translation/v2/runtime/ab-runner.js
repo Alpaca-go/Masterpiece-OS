@@ -8,6 +8,7 @@
 
 import { compileExecutionDirectionV2 } from './compile-execution-direction-v2.js';
 import { detectAbstractOnlyFromText, detectRealEstateDriftFromText } from './anti-concept-art-constraints.js';
+import { COMPOSITION_TOUCHPOINTS } from '../schemas/direction-contract-v2.js';
 
 const INDUSTRY_KEYWORDS = [
   '产业链', '供应链', 'GSP', '温控', '机构', '中医', '功效', '护肤', '包装', '社区',
@@ -68,8 +69,8 @@ function avgMetrics(evals) {
 }
 
 function hasNamedDeliverableTemplates(v2Result) {
-  const named = ['poster', 'packaging_front', 'digital_hero', 'capability_deck'];
-  return v2Result.directions.some((item) => (item.direction.composition_templates || []).some((t) => named.includes(t.touchpoint)));
+  return v2Result.directions.some((item) => (item.direction.composition_templates || [])
+    .some((template) => COMPOSITION_TOUCHPOINTS.includes(template.touchpoint)));
 }
 
 export function runABComparison(projectConfig) {

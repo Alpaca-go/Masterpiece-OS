@@ -7,6 +7,7 @@ import { validateBenchmarkQueryPlan, validateVisualAssetEvidence, validateVisual
 import { adaptVisualFactFirstToStep4, buildCompatibilityEvidenceMap } from './step4-input-adapter.js';
 import { evaluatePipelineCompleteness, VISUAL_FACT_FIRST_REQUIRED_ARTIFACTS } from './pipeline-completeness.js';
 import { compileVisualBrief, compileVisualBriefMarkdown } from '../retrieval-first/visual-brief.js';
+import { buildVisualAssetPipelineStatus } from './visual-asset-pipeline-status.js';
 
 const PROFILE = Object.freeze({ thinking: false, thinkingBudget: null, maxOutputTokens: 7000, requestTimeoutMs: 240000 });
 const SYNTHESIS_PROFILE = Object.freeze({ thinking: true, thinkingBudget: 3000, maxOutputTokens: 7000, requestTimeoutMs: 300000 });
@@ -43,6 +44,10 @@ export async function runVisualFactFirstUpstream({ input, prepared, model, local
     await save('02-visual-asset-evidence', visualAssetEvidence, { ...assetExpected, profile: observations.length ? { ...PROFILE, provider: input.provider, modelId: input.modelId } : undefined, outputFile: '02-Visual-Asset-Evidence.json' });
   }
   await save('02b-visual-asset-evidence-review', compileVisualAssetEvidenceMarkdown(visualAssetEvidence), { upstreamHash: valueHash(visualAssetEvidence), promptVersion: 'visual-asset-evidence-markdown-v1', schemaVersion: 'visual-asset-evidence-markdown-v1', outputFile: '02-Visual-Asset-Evidence.md' });
+  const visualAssetPipelineStatus = buildVisualAssetPipelineStatus({
+    visualAssetEvidence,
+    inputProvided: Array.isArray(input.visualAssetObservations) && input.visualAssetObservations.length > 0
+  });
 
   const queryUpstream = valueHash(visualFacts);
   const queryExpected = expected('03a-benchmark-query-compiler', queryUpstream, 'benchmark-query-compiler-v1', 'benchmark-query-plan-v1');
@@ -53,7 +58,7 @@ export async function runVisualFactFirstUpstream({ input, prepared, model, local
   }
 
   const retrievalUpstream = valueHash({ benchmarkQueryPlan, seeds: input.benchmarkCases || [] });
-  const retrievalExpected = expected('03b-benchmark-retrieval', retrievalUpstream, 'benchmark-retrieval-v1', 'benchmark-retrieval-v1');
+  const retrievalExpected = expected('03b-benchmark-retrieval', retrievalUpstream, 'benchmark-retrieval-v2', 'benchmark-retrieval-v2');
   let benchmarkRetrieval = resume('03b-benchmark-retrieval', retrievalExpected, (value) => value);
   if (!benchmarkRetrieval) {
     benchmarkRetrieval = await local('03b-benchmark-retrieval', () => retrieveBenchmarkCases({ queryPlan: benchmarkQueryPlan, retriever: input.benchmarkRetriever, seedCases: input.benchmarkCases, signal: input.abortSignal }));
@@ -73,7 +78,7 @@ export async function runVisualFactFirstUpstream({ input, prepared, model, local
   const step4Context = adaptVisualFactFirstToStep4({ visualFacts, visualAssetEvidence, benchmarkRetrieval, visualOpportunitySynthesis, selectedTouchpoints });
   await save('04-step4-input-context', step4Context, {
     upstreamHash: valueHash({ visualFacts, visualAssetEvidence, benchmarkRetrieval, visualOpportunitySynthesis }),
-    promptVersion: 'visual-fact-first-step4-adapter-v2', schemaVersion: 'visual-fact-first-step4-context-v2',
+    promptVersion: 'visual-fact-first-step4-adapter-v3', schemaVersion: 'visual-fact-first-step4-context-v3',
     outputFile: '05-Step4-Input-Context.json'
   });
   const artifactNames = VISUAL_FACT_FIRST_REQUIRED_ARTIFACTS.slice(0, 9);
@@ -81,7 +86,8 @@ export async function runVisualFactFirstUpstream({ input, prepared, model, local
     artifactNames, visualFacts, benchmarkRetrieval, visualOpportunitySynthesis, step4Context
   });
   return Object.freeze({
-    visualBrief, visualFacts, visualAssetEvidence, benchmarkQueryPlan, benchmarkRetrieval, visualOpportunitySynthesis,
+    visualBrief, visualFacts, visualAssetEvidence, visualAssetPipelineStatus,
+    benchmarkQueryPlan, benchmarkRetrieval, visualOpportunitySynthesis,
     step4Context, evidenceMap: buildCompatibilityEvidenceMap(step4Context),
     signalMap: { pipeline_mode: 'retrieval_first', visual_positioning: step4Context.visual_positioning },
     opportunityMap: visualOpportunitySynthesis,

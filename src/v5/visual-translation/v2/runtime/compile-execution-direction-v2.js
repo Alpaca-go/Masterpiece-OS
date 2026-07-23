@@ -48,6 +48,7 @@ import { evaluateExecutionExampleSpecificity } from './execution-example-specifi
 import { aggregateGateIssues } from './gate-issue-aggregator.js';
 import { evaluateGroupVisualAuthorization } from './group-visual-authorization-evaluator.js';
 import { evaluateDirectionTouchpointRisk } from './direction-touchpoint-risk-evaluator.js';
+import { classifyPlaceholder } from './placeholder-classifier.js';
 
 // v2.1.4 — unified execution example quality computation (doc §三).
 // Computes the single source of truth for touchpoint coverage scoring.
@@ -176,10 +177,15 @@ function buildStructuredGateIssues({
   issues.push(...(touchpointRisk?.issues || []));
 
   for (const item of assetAuthorizationSet.per_direction || []) {
+    const sourceDirection = validDirections.find((direction) => direction.direction_id === item.direction_id);
     for (const detection of item.detections || []) {
+      const placeholderType = detection.risk_level === 'warning'
+        ? classifyPlaceholder(detection, sourceDirection)
+        : undefined;
+      const safeStructure = placeholderType === 'safe_structure_placeholder';
       issues.push({
         code: detection.risk_level === 'blocked' ? 'FORGERY_DETECTED' : 'ASSET_AUTHORIZATION_WARNING',
-        severity: detection.risk_level === 'blocked' ? 'blocking' : 'warning',
+        severity: detection.risk_level === 'blocked' ? 'blocking' : safeStructure ? 'info' : 'warning',
         scope: 'direction', direction_id: item.direction_id,
         field_path: detection.field_path || 'visualDirectionV2',
         detected_value: detection.detected_text,
@@ -187,6 +193,9 @@ function buildStructuredGateIssues({
         evidence_excerpt: detection.reason || detection.detected_text,
         confidence: detection.confidence,
         value_source: detection.value_source || 'provider',
+        placeholder_type: placeholderType,
+        hide_from_user_issues: safeStructure,
+        keep_in_audit: true,
         message: detection.reason || '检测到资产授权或数据真实性风险。',
         recommendation: detection.suggested_rewrite || '仅使用有证据支持、已授权或结构化脱敏的内容。'
       });
@@ -528,7 +537,7 @@ export function compileExecutionDirectionV2({
   }
   const industryRecognition = evaluateIndustryRecognitionCoverage(validDirections);
   const assetAuthorizationSet = evaluateAssetAuthorizationSet(validDirections, evidenceBoundOptions);
-  const groupVisualAuthorization = evaluateGroupVisualAuthorization(validDirections, brandFacts?.brandRelationship);
+  const groupVisualAuthorization = evaluateGroupVisualAuthorization(validDirections, brandFacts?.brandRelationship, resolvedBrandName);
   const touchpointRisk = evaluateDirectionTouchpointRisk(validDirections);
   const assetIdUniqueness = validateGlobalAssetIds(validDirections);
   const spatialDrift = evaluateSpatialDrift(validDirections);

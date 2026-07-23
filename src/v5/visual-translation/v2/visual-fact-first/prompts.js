@@ -1,5 +1,5 @@
 export const VISUAL_FACTS_PROMPT_VERSION = 'visual-facts-prompt-v2';
-export const VISUAL_ASSET_EVIDENCE_PROMPT_VERSION = 'visual-asset-evidence-prompt-v1';
+export const VISUAL_ASSET_EVIDENCE_PROMPT_VERSION = 'visual-asset-evidence-prompt-v2';
 export const VISUAL_OPPORTUNITY_SYNTHESIS_PROMPT_VERSION = 'visual-opportunity-synthesis-prompt-v2';
 
 export function buildVisualFactsPrompt(prepared, lockedFacts = [], lockedAssets = []) {
@@ -26,7 +26,8 @@ export function buildVisualAssetEvidencePrompt({ prepared, visualFacts, visualAs
 PROMPT_VERSION=${VISUAL_ASSET_EVIDENCE_PROMPT_VERSION}
 
 只记录来源材料中可观察、可追溯的视觉资产，不重写品牌战略，不分析市场，不生成方向。没有提供可观察证据的类别必须输出空数组，并在 unresolved 中说明；不得根据品牌气质虚构 Logo、色彩、字体、摄影或包装。
-authorization 只能是 locked、editable、reference_only、unknown。集团关系不是集团 Logo/VI 授权。
+authorization 只能是 locked、editable、reference_only、unknown。owner 只能是 project_brand、parent_group、partner_brand、third_party、unknown。authorization_status 只能是 confirmed、not_confirmed、forbidden、not_required。
+项目自身 Logo 默认 owner=project_brand、authorization_status=not_required；母集团或合作方 Logo 必须明确 owner，未确认授权时 authorization_status=not_confirmed。集团关系不是集团 Logo/VI 授权。
 
 Visual Facts: ${JSON.stringify(visualFacts)}
 Document Sources: ${JSON.stringify(prepared.sourceDocuments)}
@@ -34,7 +35,7 @@ Explicit Visual Observations: ${JSON.stringify(visualAssetObservations)}
 
 只返回 JSON：
 {"visualAssetEvidence":{"logo":[],"color":[],"typography":[],"graphic_assets":[],"photography":[],"layout":[],"packaging_structure":[],"reusable_assets":[],"weak_assets":[],"replaceable_assets":[],"unresolved":["未提供关键视觉图片"]}}
-每个非空数组项：{"evidence_id":"VA001","source":"文件或观察 ID","observation":"只写可观察事实","visual_decision_impact":"影响的视觉决策","confidence":0.8,"authorization":"locked|editable|reference_only|unknown"}` }];
+每个非空数组项：{"evidence_id":"VA001","source":"文件或观察 ID","observation":"只写可观察事实","visual_decision_impact":"影响的视觉决策","confidence":0.8,"authorization":"locked|editable|reference_only|unknown","asset_type":"logo|color|graphic|photography|packaging|typography|other","owner":"project_brand|parent_group|partner_brand|third_party|unknown","authorization_status":"confirmed|not_confirmed|forbidden|not_required"}` }];
 }
 
 export function buildVisualOpportunitySynthesisPrompt({ visualFacts, visualAssetEvidence, benchmarkQueryPlan, benchmarkCases }) {

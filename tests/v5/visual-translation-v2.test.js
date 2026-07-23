@@ -83,6 +83,22 @@ test('Direction v2 schema rejects a direction missing a required asset type', ()
   assert.throws(() => v2.validateExecutionDirectionV2(raw, ctx), (e) => e.code === 'FAILED_SCHEMA');
 });
 
+test('direction-specific deliverable touchpoints remain executable and Anchor-compatible', () => {
+  const ctx = projectContext('jiuzhou-meixue');
+  const raw = structuredClone(load('jiuzhou-meixue', 'v2-directions.json')[1]);
+  raw.composition_templates[0].touchpoint = 'quality_selection_board';
+  raw.composition_templates[1].touchpoint = 'product_selection_catalog';
+  const direction = v2.validateExecutionDirectionV2(raw, ctx);
+  const antiConcept = v2.checkAntiConceptArtConstraints(direction);
+  assert.ok(!antiConcept.violations.includes('must_convert_to_flat_design'));
+  assert.ok(!antiConcept.violations.includes('must_generate_poster_booklet_packaging_page_template'));
+
+  const anchor = buildAnchor('jiuzhou-meixue', raw.core_reusable_assets[0].asset_id);
+  anchor.anchor_image_brief.expected_touchpoint = 'quality_selection_board';
+  assert.equal(v2.validateAnchorCandidateV2(anchor, { assetIds: new Set(raw.core_reusable_assets.map((asset) => asset.asset_id)) })
+    .anchor_image_brief.expected_touchpoint, 'quality_selection_board');
+});
+
 test('Direction v2 schema rejects unknown Evidence references', () => {
   const ctx = projectContext('jiuzhou-meixue');
   const raw = structuredClone(load('jiuzhou-meixue', 'v2-directions.json')[0]);

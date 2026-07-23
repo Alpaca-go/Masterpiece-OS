@@ -36,6 +36,9 @@ export function normalizeGateIssue(issue = {}) {
     confidence: Number.isFinite(issue.confidence) ? issue.confidence : undefined,
     message: clean(issue.message) || clean(issue.code) || '未提供问题说明',
     recommendation: clean(issue.recommendation) || '根据 Gate 明细复核并修正。',
+    placeholder_type: clean(issue.placeholder_type),
+    hide_from_user_issues: issue.hide_from_user_issues === true,
+    keep_in_audit: issue.keep_in_audit === true,
     occurrences: Array.isArray(issue.occurrences) ? issue.occurrences.filter(Boolean) : []
   };
   if (normalized.detected_value || normalized.evidence_excerpt) {
