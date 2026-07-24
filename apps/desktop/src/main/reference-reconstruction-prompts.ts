@@ -1,4 +1,5 @@
 import type { CurrentProjectProfile, ProjectRecord, ReferenceStyleProfile } from '../shared/types.ts';
+import { compileProjectFactsPromptConstraints } from './model-schema/project-facts.schema.ts';
 
 const jsonOnly = `
 只返回一个合法 JSON 对象。不要 Markdown、代码围栏、解释、标题或表格。
@@ -52,8 +53,11 @@ ${JSON.stringify({
   "confirmedFacts": ["图片或已知元数据明确支持的事实"]
 }
 
+字段约束（由统一 Schema Metadata 生成）：
+${compileProjectFactsPromptConstraints()}
+
 严禁把以下内容写入任何事实字段：色彩比例、字号、摄影、构图、材质、灯光、竞品、审计结论、升级／替换／保留／删除建议、Asset 编号、Markdown 片段、GPT 指令。
-coreProducts 中每项必须是产品或服务名；targetAudience 中每项必须描述人。
+coreProducts 中每项必须是产品或服务名；targetAudience 只做开放字符串结构校验，不得依赖有限关键词；视觉证据不足时返回空数组。
 包装结构只能填写真实包装；筷子套和纸巾进入 serviceMaterials，工作服和菜单进入 viApplications，不得混入 packagingStructures。
 ${jsonOnly}`;
 }

@@ -127,6 +127,8 @@ test('reference reconstruction isolates project facts, reference style and the i
   assert.match(workspace, /查看中间结果/);
   assert.match(workspace, /quality-validation\.json/);
   assert.match(workspace, /上传自己的视觉方案/);
+  assert.equal((workspace.match(/visualSchemeDropZone/g) || []).length, 2);
+  assert.match(workspace, /<strong>当前项目视觉方案<\/strong>/);
   assert.match(workspace, /role="current_project"/);
   assert.match(workspace, /currentProjectMode === 'upload'/);
   assert.match(workspace, />继续分析<\/button>/);

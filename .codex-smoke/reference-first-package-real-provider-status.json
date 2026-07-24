@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "run": {
+    "id": "8b42abcf-4b36-431c-b945-ede45c819f52",
+    "status": "completed",
+    "provider": "qwen",
+    "model": "qwen3.6-plus",
+    "documentCount": 1,
+    "documentNames": [
+      "Masterpiece-OS-文档分析流程协议-v3.1.docx"
+    ],
+    "startedAt": "2026-07-24T12:03:56.000Z",
+    "completedAt": "2026-07-24T12:10:49.000Z",
+    "durationMs": 412800,
+    "modelCallCount": 3,
+    "currentStage": "10-local-report-compiler",
+    "finalGateStatus": "rewrite_required",
+    "composition": {
+      "directionsJson": "06-Visual-Directions.json",
+      "reportMarkdown": "06-Visual-Directions-Report.md",
+      "auditMarkdown": "06-Visual-Directions-Audit.md",
+      "directionCount": 3
+    }
+  },
+  "reportPath": "C:\\Users\\Administrator\\AppData\\Local\\Temp\\masterpiece-vff-real-smoke-8b42abcf-4b36-431c-b945-ede45c819f52\\outputs\\06-Visual-Directions-Report.md"
+}

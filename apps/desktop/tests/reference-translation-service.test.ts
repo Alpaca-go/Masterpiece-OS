@@ -150,7 +150,18 @@ test('formal user flow analyzes reference assets and generates internal structur
       logoFiles: ['logo.png'],
       apiProfileId: 'profile-1',
       status: 'completed',
-      lastReportFilename: 'current-report.md'
+      lastReportFilename: 'current-report.md',
+      assets: [{
+        id: 'current-logo-asset-1',
+        batchId: 'batch-current',
+        sourceType: 'file',
+        originalName: 'logo.png',
+        relativePath: 'assets/logo.png',
+        mimeType: 'image/png',
+        sizeBytes: 11,
+        sha256: 'current-logo-sha',
+        status: 'ready'
+      }]
     };
     const referenceProject = {
       ...currentProject,
@@ -288,6 +299,34 @@ test('formal user flow analyzes reference assets and generates internal structur
       prohibitedActions: ['不得复制参考身份：参考茶研', '不得修改 Locked Asset：当前项目原始 Logo']
     };
     const pipeline = {
+      selectCurrentProjectAssets: async () => ({
+        value: [{
+          assetId: 'current-logo-asset-1',
+          filename: 'logo.png',
+          role: 'logo_evidence',
+          roles: ['logo_evidence', 'brand_identity_evidence'],
+          keepInCorePack: true,
+          includeInAnalysisEvidencePack: true,
+          includeInGenerationIdentityPack: true,
+          authenticity: 'user_confirmed_locked',
+          generationUsage: 'identity',
+          canProveIdentity: true,
+          canProveProductFact: false,
+          canProveStructure: false,
+          canInfluenceGenerationStyle: false,
+          keepReason: '当前项目锁定 Logo',
+          extractedFacts: ['当前品牌 Logo'],
+          lockedEvidence: ['当前项目原始 Logo'],
+          containsLegacyStyle: false,
+          legacyStyleShouldInfluenceOutput: false,
+          confidence: 0.99,
+          requiresHumanReview: false
+        }],
+        provider: 'test',
+        model: 'test',
+        durationMs: 1,
+        modelCallCount: 1
+      }),
       analyzeCurrentProjectProfile: async () => ({
         value: currentProfile, provider: 'test', model: 'test', durationMs: 1, modelCallCount: 1
       }),
@@ -296,6 +335,31 @@ test('formal user flow analyzes reference assets and generates internal structur
       }),
       generateVisualReconstructionDecision: async () => ({
         value: visualDirection, provider: 'test', model: 'test', durationMs: 1, modelCallCount: 1
+      }),
+      selectReferenceAssets: async () => ({
+        value: [{
+          assetId: 'reference-asset-1',
+          filename: 'reference.png',
+          role: 'system_overview',
+          primaryRole: 'system_overview',
+          secondaryRoles: ['display_layout'],
+          styleCarrierStrength: 'high',
+          includeInMasterSet: true,
+          eligibleOutputTypes: ['anchor_vi_system', 'packaging_single', 'brand_poster', 'vi_application'],
+          representedStyleCarriers: ['layout', 'typography', 'material'],
+          styleCarrierRules: [
+            { category: 'layout', readableRule: '主体沿稳定网格组织并保留大面积呼吸区', confidence: 0.94 },
+            { category: 'typography', readableRule: '标题、名称与说明形成三级信息层级', confidence: 0.92 },
+            { category: 'material', readableRule: '低反射表面配合柔和侧光呈现克制质感', confidence: 0.9 }
+          ],
+          confidence: 0.94,
+          reason: '测试视觉证据',
+          requiresHumanReview: false
+        }],
+        provider: 'test',
+        model: 'test',
+        durationMs: 1,
+        modelCallCount: 1
       })
     };
     const settings = { ...settingsWith(dataPath), defaultProfileId: 'profile-1' };
@@ -481,6 +545,202 @@ test('formal user flow analyzes reference assets and generates internal structur
       'resume-model-calls.json'
     ));
     assert.equal(failureEvidence.attempts[0].validationError.details.poster[0], '标题');
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true });
+  }
+});
+
+test('current core-pack failure stays in the current selection stage and preserves diagnostics', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-reference-core-pack-failure-'));
+  try {
+    const dataPath = path.join(temporary, 'data');
+    const referencePath = path.join(temporary, 'reference.png');
+    await fs.writeFile(referencePath, 'placeholder', 'utf8');
+    const currentAsset = {
+      id: 'current-asset-1',
+      batchId: 'batch-1',
+      sourceType: 'file',
+      originalName: 'current.png',
+      relativePath: 'assets/current.png',
+      mimeType: 'image/png',
+      sizeBytes: 11,
+      sha256: 'current-sha',
+      status: 'ready'
+    };
+    const currentProject = {
+      id: '33333333-3333-4333-8333-333333333333',
+      projectName: '当前项目',
+      brandName: '当前品牌',
+      detectedBrandName: '当前品牌',
+      industry: '餐饮',
+      detectedIndustry: '餐饮',
+      logoLocked: false,
+      logoFiles: [],
+      lockedFacts: [],
+      assets: [currentAsset]
+    };
+    let referenceSelectionCalled = false;
+    const service = createReferenceTranslationService(
+      () => ({ ...settingsWith(dataPath), defaultProfileId: 'profile-1' }),
+      {
+        projects: {
+          get: async () => currentProject,
+          create: async () => {
+            throw new Error('reference project should not be created');
+          },
+          paths: async () => ({ root: '', input: '', prepared: '', outputs: '', runtime: '' }),
+          scan: async () => ({ totalFiles: 0 }),
+          remove: async () => {}
+        },
+        pipeline: {
+          selectCurrentProjectAssets: async () => ({
+            value: [{
+              assetId: currentAsset.id,
+              filename: currentAsset.originalName,
+              role: 'uncertain',
+              roles: ['uncertain'],
+              keepInCorePack: false,
+              includeInGenerationIdentityPack: false,
+              authenticity: 'unknown',
+              generationUsage: 'exclude',
+              canProveIdentity: false,
+              canProveProductFact: false,
+              canProveStructure: false,
+              keepReason: '无法确认身份用途',
+              extractedFacts: [],
+              lockedEvidence: [],
+              containsLegacyStyle: false,
+              legacyStyleShouldInfluenceOutput: false,
+              confidence: 0.5,
+              requiresHumanReview: true
+            }],
+            provider: 'test',
+            model: 'test',
+            durationMs: 1,
+            modelCallCount: 1
+          }),
+          selectReferenceAssets: async () => {
+            referenceSelectionCalled = true;
+            return { value: [], provider: 'test', model: 'test', durationMs: 1, modelCallCount: 1 };
+          }
+        }
+      } as never
+    );
+
+    await assert.rejects(
+      () => service.runUserInput({
+        referenceAssetPaths: [referencePath],
+        currentProjectId: currentProject.id,
+        apiProfileId: 'profile-1'
+      }),
+      /当前项目身份资料不足/
+    );
+
+    assert.equal(referenceSelectionCalled, false);
+    const failed = (await service.listRuns()).find((run) => run.status === 'failed');
+    assert.equal(failed?.error?.code, 'CURRENT_CORE_PACK_INCOMPLETE');
+    assert.equal(failed?.error?.stage, 'SELECTING_CURRENT_CORE_PACK');
+    const runRoot = path.join(dataPath, 'reference-translation-v1', failed!.id);
+    await fs.access(path.join(runRoot, 'current-project-asset-decisions.json'));
+    await fs.access(path.join(runRoot, 'current-project-core-pack.json'));
+    const validation = JSON.parse(
+      await fs.readFile(path.join(runRoot, 'current-core-pack-validation.json'), 'utf8')
+    );
+    assert.equal(validation.hasLogoEvidence, false);
+    assert.equal(validation.passed, false);
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true });
+  }
+});
+
+test('continue analysis restarts a failed subset run from saved reference assets and runtime confirmation', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-reference-continue-'));
+  try {
+    const dataPath = path.join(temporary, 'data');
+    const runId = '44444444-4444-4444-8444-444444444444';
+    const runRoot = path.join(dataPath, 'reference-translation-v1', runId);
+    const savedReferenceDir = path.join(runRoot, 'input', 'reference-assets');
+    await fs.mkdir(savedReferenceDir, { recursive: true });
+    await fs.writeFile(path.join(savedReferenceDir, 'reference.png'), 'placeholder', 'utf8');
+    await fs.writeFile(path.join(runRoot, 'current-project-runtime-context.json'), JSON.stringify({
+      userConfirmedRealAssets: ['current-asset-1']
+    }), 'utf8');
+    await fs.writeFile(path.join(runRoot, 'run.json'), JSON.stringify({
+      id: runId,
+      status: 'failed',
+      createdAt: '2026-07-24T00:00:00.000Z',
+      cacheHit: false,
+      visualAnalysisFilename: '1 个参考来源',
+      projectContextFilename: '当前项目',
+      preference: '保留克制的材质关系',
+      lastError: '旧任务类型错误',
+      projectId: 'project-current',
+      stage: 'FAILED',
+      progress: 100,
+      totalAssetCount: 1,
+      analyzedAssetCount: 0,
+      reportFilename: null,
+      apiProfileId: 'profile-1',
+      error: {
+        code: 'PROJECT_MAPPING_FAILED',
+        message: '旧任务类型错误',
+        stage: 'BUILDING_TASK_REFERENCE_SUBSETS',
+        recoverable: false
+      }
+    }), 'utf8');
+    const currentProject = {
+      id: 'project-current',
+      projectName: '当前项目',
+      brandName: '当前品牌',
+      detectedBrandName: '当前品牌',
+      industry: '餐饮',
+      detectedIndustry: '餐饮',
+      logoLocked: true,
+      logoFiles: [],
+      lockedFacts: [],
+      assets: [{
+        id: 'current-asset-1',
+        batchId: 'batch-current',
+        sourceType: 'file',
+        originalName: 'current.png',
+        relativePath: 'assets/current.png',
+        mimeType: 'image/png',
+        sizeBytes: 11,
+        sha256: 'current-sha',
+        status: 'ready'
+      }]
+    };
+    let receivedConfirmedAssetIds: string[] = [];
+    const service = createReferenceTranslationService(
+      () => ({ ...settingsWith(dataPath), defaultProfileId: 'profile-1' }),
+      {
+        projects: {
+          get: async () => currentProject,
+          create: async () => currentProject,
+          paths: async () => ({ root: '', input: '', prepared: '', outputs: '', runtime: '' }),
+          scan: async () => ({ totalFiles: 0 }),
+          remove: async () => {}
+        },
+        pipeline: {
+          selectCurrentProjectAssets: async (
+            _projectId: string,
+            _profileId: string,
+            runtimeContext: { userConfirmedRealAssets: string[] }
+          ) => {
+            receivedConfirmedAssetIds = runtimeContext.userConfirmedRealAssets;
+            throw new Error('continuation reached current asset selection');
+          }
+        }
+      } as never
+    );
+
+    await assert.rejects(
+      () => service.resume(runId),
+      /continuation reached current asset selection/
+    );
+    assert.deepEqual(receivedConfirmedAssetIds, ['current-asset-1']);
+    const runs = await service.listRuns();
+    assert.ok(runs.some((run) => run.id !== runId && run.status === 'failed'));
   } finally {
     await fs.rm(temporary, { recursive: true, force: true });
   }

@@ -11,6 +11,7 @@ import type {
   FlexibleColorSystem,
   FlexibleCompositionSystem,
   ProjectTouchpointInventory,
+  ProjectRuntimeContext,
   PublicSettings,
   ReferenceAssetDecision,
   ReferenceInheritanceRule,
@@ -55,6 +56,17 @@ import {
   buildReferenceStylePrompt,
   buildVisualReconstructionDecisionPrompt
 } from './reference-reconstruction-prompts';
+import {
+  buildAudienceFacts,
+  parseProjectFactsModelOutput,
+  ProjectFactsSchema
+} from './model-schema/project-facts.schema.ts';
+import { MODEL_SCHEMA_REGISTRY } from './model-schema/schema-registry.ts';
+import {
+  compileRepairPrompt,
+  throwForValidationIssues,
+  type ValidationIssue
+} from './model-schema/validation-issues.ts';
 
 // Bundled from the repository core. Desktop remains the consumer, never the dependency.
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
@@ -110,6 +122,34 @@ interface StructuredStepAttempt {
     issues?: string[];
     details?: unknown;
   };
+}
+
+function parseModelStructuredResponse(rawResponse: string): Record<string, unknown> {
+  // 模型经常返回用 ```json ... ``` 包装的 JSON（忽略 prompt 中的裸 JSON 要求）。
+  // 先剥离 Markdown code fence，再交给引擎层的 parseStructuredResponse 解析（其
+  // extractJsonCandidate 同样会做一次 strip，此处是桌面端防御层）。
+  const stripped = rawResponse.trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```\s*$/i, '');
+  try {
+    return parseStructuredResponse(stripped) as Record<string, unknown>;
+  } catch (error) {
+    const trimmed = rawResponse.trim();
+    const likelyTruncated = /^[{[]/u.test(trimmed)
+      && !(/[}\]]$/u.test(trimmed));
+    throwForValidationIssues([{
+      path: '$',
+      issueType: likelyTruncated ? 'truncated' : 'json_parse_error',
+      receivedValue: rawResponse.slice(0, 200),
+      message: likelyTruncated
+        ? '模型输出在 JSON 完成前被截断。'
+        : `模型输出不是可解析的 JSON：${(error as Error).message}`,
+      validExamples: [{ field: 'value' }],
+      repairInstruction: '重新输出完整、闭合且可直接解析的裸 JSON；不要附加解释。',
+      severity: 'blocking'
+    }]);
+    throw error;
+  }
 }
 
 function preservePipelineError(
@@ -508,6 +548,7 @@ export function createPipelineService(
     includeVisualAssets: boolean;
     assetIds?: string[];
     maxVisualAssets?: number;
+    schemaSummary?: string;
     normalize(value: Record<string, unknown>, assetIds: string[]): T;
     validate(value: T): T;
   }): Promise<{
@@ -524,6 +565,23 @@ export function createPipelineService(
     const controller = new AbortController();
     const startedAt = new Date().toISOString();
     const started = performance.now();
+    const validationAuditRoot = path.join(
+      projectPaths.runtime,
+      'model-validation',
+      options.step.replace(/[^a-z0-9_-]+/giu, '-'),
+      startedAt.replace(/[:.]/gu, '-')
+    );
+    const persistValidationAudit = async (
+      filename: string,
+      payload: Record<string, unknown>
+    ): Promise<void> => {
+      await fs.mkdir(validationAuditRoot, { recursive: true });
+      await fs.writeFile(
+        path.join(validationAuditRoot, filename),
+        `${JSON.stringify(payload, null, 2)}\n`,
+        'utf8'
+      );
+    };
     active.set(options.projectId, { controller, startedAt });
     const allowedAssetIds = options.assetIds ? new Set(options.assetIds) : null;
     const visualAssets = options.includeVisualAssets
@@ -552,7 +610,8 @@ export function createPipelineService(
     let repairContext = '';
     const structuredAttempts: StructuredStepAttempt[] = [];
     try {
-      for (let attempt = 1; attempt <= 2; attempt += 1) {
+      const maxAttempts = 3;
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
         modelCallCount += 1;
         const response = await reasoner({
           prompt: {
@@ -577,9 +636,29 @@ export function createPipelineService(
           rawResponse: response.reportMarkdown.slice(0, 200_000)
         };
         try {
-          const parsed = parseStructuredResponse(response.reportMarkdown) as Record<string, unknown>;
+          const parsed = parseModelStructuredResponse(response.reportMarkdown);
           const value = options.validate(options.normalize(parsed, attachments.map((item) => item.assetId)));
           structuredAttempts.push(attemptRecord);
+          await persistValidationAudit(`attempt-${attempt}.json`, {
+            step: options.step,
+            promptVersion: options.step,
+            schemaVersion: 'runtime-schema-v1',
+            provider: providerLabel(credentials.provider),
+            model: response.model || credentials.model,
+            attempt,
+            sourceAssetIds: attachments.map((item) => item.assetId),
+            validationResult: 'passed',
+            rawResponse: attemptRecord.rawResponse,
+            completedAt: attemptRecord.completedAt
+          }).catch(() => {});
+          await persistValidationAudit('final-validation.json', {
+            step: options.step,
+            schemaVersion: 'runtime-schema-v1',
+            terminalStatus: 'passed',
+            modelCallCount,
+            repaired: attempt > 1,
+            completedAt: new Date().toISOString()
+          }).catch(() => {});
           return {
             value,
             provider: providerLabel(credentials.provider),
@@ -601,11 +680,36 @@ export function createPipelineService(
             details: structuredError.details
           };
           structuredAttempts.push(attemptRecord);
-          const detailText = structuredError.details
-            ? `\n缺项明细：${JSON.stringify(structuredError.details)}`
-            : '';
-          repairContext = `\n\n上一次输出未通过 Schema／质量校验：${structuredError.message}。${detailText}
-请逐项补齐缺失内容，保留所有已正确字段，并重新输出完整 JSON，不要解释。`;
+          const validationIssues = (
+            structuredError.details
+            && typeof structuredError.details === 'object'
+            && Array.isArray((structuredError.details as { issues?: unknown[] }).issues)
+          )
+            ? (structuredError.details as { issues: ValidationIssue[] }).issues
+            : [];
+          repairContext = validationIssues.length
+            ? compileRepairPrompt({
+              issues: validationIssues,
+              schemaSummary: options.schemaSummary || '保持原输出完整结构和字段类型。',
+              attempt,
+              maxAttempts: maxAttempts - 1
+            })
+            : `\n\n上一次输出未通过 Schema／质量校验：${structuredError.message}。
+请逐项修复失败内容，保留所有已正确字段，并重新输出完整 JSON，不要解释。`;
+          await persistValidationAudit(`attempt-${attempt}.json`, {
+            step: options.step,
+            promptVersion: options.step,
+            schemaVersion: 'runtime-schema-v1',
+            provider: providerLabel(credentials.provider),
+            model: response.model || credentials.model,
+            attempt,
+            sourceAssetIds: attachments.map((item) => item.assetId),
+            validationResult: 'failed',
+            validationError: attemptRecord.validationError,
+            rawResponse: attemptRecord.rawResponse,
+            repairPrompt: repairContext,
+            completedAt: attemptRecord.completedAt
+          }).catch(() => {});
         }
       }
       throw lastError instanceof Error ? lastError : new Error('结构化视觉分析未通过校验');
@@ -617,6 +721,15 @@ export function createPipelineService(
         issues?: string[];
         details?: unknown;
       };
+      await persistValidationAudit('final-validation.json', {
+        step: options.step,
+        schemaVersion: 'runtime-schema-v1',
+        terminalStatus: 'failed',
+        modelCallCount,
+        errorCode: source.code,
+        errorMessage: source.message,
+        completedAt: new Date().toISOString()
+      }).catch(() => {});
       throw preservePipelineError(Object.assign(source, {
         structuredStep: options.step,
         structuredAttempts
@@ -626,7 +739,11 @@ export function createPipelineService(
     }
   }
 
-  async function selectCurrentProjectAssets(projectId: string, apiProfileId?: string) {
+  async function selectCurrentProjectAssets(
+    projectId: string,
+    apiProfileId?: string,
+    runtimeContext?: ProjectRuntimeContext
+  ) {
     const project = await projects.get(projectId);
     const assets = (project.assets || []).filter((asset) =>
       asset.status !== 'deleted' && /^image\//iu.test(asset.mimeType));
@@ -650,9 +767,11 @@ export function createPipelineService(
         includeVisualAssets: true,
         assetIds: batch.map((asset) => asset.id),
         maxVisualAssets: 30,
+        schemaSummary: MODEL_SCHEMA_REGISTRY.assetAuthenticity.summary,
         normalize: (raw) => normalizeCurrentProjectDecisions(
-          Array.isArray(raw.decisions) ? raw.decisions as CurrentProjectAssetDecision[] : [],
-          batch
+          raw.decisions,
+          batch,
+          runtimeContext
         ),
         validate: (value) => {
           if (value.length !== batch.length) {
@@ -688,8 +807,9 @@ export function createPipelineService(
         includeVisualAssets: true,
         assetIds: batch.map((asset) => asset.id),
         maxVisualAssets: 30,
+        schemaSummary: MODEL_SCHEMA_REGISTRY.referenceAssets.summary,
         normalize: (raw) => normalizeReferenceDecisions(
-          Array.isArray(raw.decisions) ? raw.decisions as ReferenceAssetDecision[] : [],
+          raw.decisions,
           batch
         ),
         validate: (value) => {
@@ -726,12 +846,14 @@ export function createPipelineService(
       prompt: buildCurrentProjectFactsPrompt(project),
       includeVisualAssets: true,
       assetIds,
+      schemaSummary: ProjectFactsSchema.summary,
       normalize: (raw, assetIds) => {
+        const parsedFacts = parseProjectFactsModelOutput(raw);
         const classifiedTouchpoints = normalizeProjectTouchpointClassification({
-          packagingStructures: valueArray(raw.packagingStructures),
-          touchpointInventory: touchpointInventoryValue(raw.touchpointInventory)
+          packagingStructures: parsedFacts.packagingStructures,
+          touchpointInventory: parsedFacts.touchpointInventory
         });
-        const identity = resolveAnalyzedProjectIdentity(project, raw.brandName);
+        const identity = resolveAnalyzedProjectIdentity(project, parsedFacts.brandName);
         return {
           schemaVersion: 'current-project-profile-v3',
           projectId: project.id,
@@ -739,22 +861,23 @@ export function createPipelineService(
           brandName: identity.brandName,
           industry: !incompleteFact(project.industry)
             ? project.industry
-            : String(raw.industry || project.detectedIndustry || ''),
-          coreProducts: valueArray(raw.coreProducts),
-          targetAudience: valueArray(raw.targetAudience),
-          brandPositioning: String(raw.brandPositioning || '').trim(),
-          pricePositioning: String(raw.pricePositioning || '').trim() || undefined,
-          usageScenarios: valueArray(raw.usageScenarios),
-          businessTouchpoints: valueArray(raw.businessTouchpoints),
+            : parsedFacts.industry || project.detectedIndustry || '',
+          coreProducts: parsedFacts.coreProducts,
+          targetAudience: parsedFacts.targetAudience,
+          targetAudienceDetails: buildAudienceFacts(parsedFacts.targetAudience, assetIds),
+          brandPositioning: parsedFacts.brandPositioning,
+          pricePositioning: parsedFacts.pricePositioning,
+          usageScenarios: parsedFacts.usageScenarios,
+          businessTouchpoints: parsedFacts.businessTouchpoints,
           packagingStructures: classifiedTouchpoints.packagingStructures,
-          visualSources: visualSourcesValue(raw.visualSources),
+          visualSources: parsedFacts.visualSources,
           touchpointInventory: classifiedTouchpoints.touchpointInventory,
           lockedAssets: [...new Set([
             ...(project.logoLocked ? ['当前项目原始 Logo'] : []),
             ...(project.logoFiles || []),
             ...(project.lockedFacts || [])
           ])],
-          confirmedFacts: valueArray(raw.confirmedFacts),
+          confirmedFacts: parsedFacts.confirmedFacts,
           sourceArtifactIds: [`project:${project.id}`, ...assetIds],
           currentVisualAssets: (project.assets || []).map((asset) => asset.originalName)
         };

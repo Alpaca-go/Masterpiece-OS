@@ -103,8 +103,16 @@ export interface ProjectAsset {
 export type ConfidenceLevel = 'high' | 'medium' | 'low';
 
 export type CurrentProjectAssetRole =
+  | 'brand_identity_evidence'
   | 'logo_evidence'
   | 'logo_typography_evidence'
+  | 'service_fact_evidence'
+  | 'confirmed_structure_evidence'
+  | 'observed_copy'
+  | 'legacy_visual_only'
+  | 'stock_mockup'
+  | 'third_party_mockup'
+  | 'reference_only'
   | 'brand_name_evidence'
   | 'product_fact_evidence'
   | 'packaging_structure_evidence'
@@ -126,7 +134,12 @@ export interface CurrentProjectAssetDecision {
   keepInCorePack: boolean;
   includeInAnalysisEvidencePack?: boolean;
   includeInGenerationIdentityPack?: boolean;
-  generationUsage?: 'identity' | 'product' | 'structure_only' | 'locked_asset' | 'exclude';
+  authenticity?: AssetAuthenticity;
+  generationUsage?: 'identity' | 'product' | 'product_or_service' | 'structure_only' | 'locked_asset' | 'exclude';
+  canProveIdentity?: boolean;
+  canProveProductFact?: boolean;
+  canProveStructure?: boolean;
+  canInfluenceGenerationStyle?: boolean;
   keepReason: string;
   extractedFacts: string[];
   lockedEvidence: string[];
@@ -185,8 +198,10 @@ export interface CurrentProjectCorePackValidation {
 
 export type ReferenceAssetRole =
   | 'system_overview'
+  | 'brand_identity'
   | 'packaging'
   | 'packaging_detail'
+  | 'product'
   | 'poster'
   | 'vi_application'
   | 'material_detail'
@@ -194,12 +209,39 @@ export type ReferenceAssetRole =
   | 'graphic_detail'
   | 'spatial'
   | 'display_layout'
+  | 'interface'
+  | 'publication'
   | 'photography_style'
+  | 'motion'
   | 'brand_strategy_text'
   | 'pure_text_slide'
   | 'duplicate'
   | 'irrelevant'
   | 'uncertain';
+
+export type AssetAuthenticity =
+  | 'brand_original'
+  | 'user_confirmed_real'
+  | 'user_confirmed_locked'
+  | 'stock_mockup'
+  | 'third_party_mockup'
+  | 'design_concept_only'
+  | 'reference_only'
+  | 'unknown';
+
+export interface AssetAuthenticityDecision {
+  assetId: string;
+  authenticity: AssetAuthenticity;
+  confidence: number;
+  reason: string;
+  canProveIdentity: boolean;
+  canProveProductFact: boolean;
+  canProveStructure: boolean;
+  canProveLockedAsset: boolean;
+  includeInAnalysisEvidencePack: boolean;
+  includeInGenerationIdentityPack: boolean;
+  requiresHumanReview: boolean;
+}
 
 export type GenerationOutputType =
   | 'anchor_vi_system'
@@ -231,6 +273,11 @@ export interface ReferenceAssetDecision {
   includeInMasterSet: boolean;
   eligibleOutputTypes: GenerationOutputType[];
   representedStyleCarriers: StyleCarrierCategory[];
+  styleCarrierRules?: Array<{
+    category: StyleCarrierCategory;
+    readableRule: string;
+    confidence: number;
+  }>;
   duplicationGroupId?: string;
   confidence: number;
   reason: string;
@@ -241,6 +288,8 @@ export interface StyleCarrier {
   id: string;
   category: StyleCarrierCategory;
   description: string;
+  internalLabel?: string;
+  readableRule?: string;
   priority: 'primary' | 'secondary' | 'optional';
   supportingAssetIds: string[];
   mustBeVisibleInOutput: boolean;
@@ -650,6 +699,7 @@ export interface CurrentProjectProfile {
   industry: string;
   coreProducts: string[];
   targetAudience: string[];
+  targetAudienceDetails?: AudienceFact[];
   pricePositioning?: string;
   brandPositioning: string;
   usageScenarios: string[];
@@ -662,6 +712,29 @@ export interface CurrentProjectProfile {
   existingBrandCopy?: string[];
   visualSources: CurrentProjectVisualSources;
   touchpointInventory: ProjectTouchpointInventory;
+}
+
+export type FactSourceType =
+  | 'user_input'
+  | 'project_metadata'
+  | 'document'
+  | 'visual_asset'
+  | 'locked_config'
+  | 'human_confirmation';
+
+export type FactStatus = 'confirmed' | 'inferred' | 'unverified';
+
+export interface FactSource {
+  type: FactSourceType;
+  sourceId?: string;
+  confidence?: number;
+}
+
+export interface AudienceFact {
+  label: string;
+  status: FactStatus;
+  sources: FactSource[];
+  confidence: number;
 }
 
 export interface CurrentProjectVisualSources {
@@ -879,6 +952,12 @@ export interface ProjectGraphicAnchor {
   reconstructedForm: string;
   usageRole: 'primary' | 'secondary';
   extensionTouchpoints: string[];
+  formDescription?: string;
+  role?: 'primary' | 'secondary';
+  isClosed?: boolean;
+  isBadgeLike?: boolean;
+  resemblesReferenceSignatureGraphic?: boolean;
+  supportingFactIds?: string[];
 }
 
 export interface AnchorImageDefinition {
@@ -910,8 +989,10 @@ export interface TaskReferenceConfidence {
 
 export interface EvidenceBoundFact {
   id?: string;
+  key?: string;
   value: string;
   sourceAssetIds: string[];
+  sources?: FactEvidenceSource[];
   evidenceAssetIds?: string[];
   evidenceRegions?: Array<{
     assetId: string;
@@ -920,7 +1001,7 @@ export interface EvidenceBoundFact {
     width: number;
     height: number;
   }>;
-  classification?: 'identity_fact' | 'product_fact' | 'structure_fact' | 'touchpoint_fact'
+  classification?: 'identity_fact' | 'product_fact' | 'product_or_service_fact' | 'structure_fact' | 'touchpoint_fact'
     | 'observed_copy' | 'legacy_visual_observation';
   confidence: number;
   status: 'confirmed' | 'inferred' | 'unverified';
@@ -1034,6 +1115,7 @@ export interface BrandCopyRecord {
   text: string;
   status: 'observed' | 'replaceable' | 'user_retained' | 'locked';
   evidenceAssetIds: string[];
+  sources?: FactEvidenceSource[];
   useInGeneration: boolean;
 }
 
@@ -1196,6 +1278,17 @@ export interface ReferenceTranslationError {
     | 'RECONSTRUCTION_QUALITY_FAILED'
     | 'REFERENCE_FIRST_LEGACY_STYLE_NOT_SUPPRESSED'
     | 'REFERENCE_FIRST_REPORT_VALIDATION_FAILED'
+    | 'MODEL_OUTPUT_JSON_PARSE_ERROR'
+    | 'MODEL_OUTPUT_MARKDOWN_WRAPPER'
+    | 'MODEL_OUTPUT_TRUNCATED'
+    | 'MODEL_OUTPUT_INVALID_TYPE'
+    | 'MODEL_OUTPUT_INVALID_ENUM'
+    | 'MODEL_OUTPUT_MISSING_FIELD'
+    | 'MODEL_OUTPUT_INVALID_RANGE'
+    | 'FACT_INSUFFICIENT_EVIDENCE'
+    | 'FACT_STATUS_OVERCLAIMED'
+    | 'FACT_EVIDENCE_BROADCAST'
+    | 'FACT_EVIDENCE_POLLUTION'
     | 'PROJECT_CONTEXT_LOAD_FAILED'
     | 'REFERENCE_DNA_FAILED'
     | 'TRANSFERABILITY_FAILED'
@@ -1266,6 +1359,7 @@ export interface StartReferenceTranslationUserInput {
   referenceAssetPaths: string[];
   currentProjectId?: string;
   currentProjectSourcePaths?: string[];
+  confirmedCurrentAssetIds?: string[];
   apiProfileId?: string;
   referenceStylePreference?: string;
   preference?: string;
@@ -1367,4 +1461,153 @@ export interface DesktopApi {
   files: {
     getPathForFile(file: File): string;
   };
+}
+
+export type EvidenceSourceType =
+  | 'visual_asset'
+  | 'user_input'
+  | 'project_metadata'
+  | 'locked_config'
+  | 'human_confirmation';
+
+export interface FactEvidenceSource {
+  type: EvidenceSourceType;
+  sourceId?: string;
+  value: string;
+  confidence: number;
+}
+
+export interface UserLockedAsset {
+  assetId: string;
+  reason: string;
+}
+
+export interface UserRetainedCopy {
+  text: string;
+  sourceId?: string;
+}
+
+export interface ProjectRuntimeContext {
+  projectId: string;
+  brandName?: string;
+  industry?: string;
+  productFacts?: string[];
+  userLockedAssets: UserLockedAsset[];
+  userRetainedCopy: UserRetainedCopy[];
+  userConfirmedRealAssets: string[];
+  outputTasks: GenerationOutputType[];
+  referenceAssetIds: string[];
+  projectMetadata: Record<string, unknown>;
+}
+
+export interface EvidenceCoverage {
+  identity: boolean;
+  productOrService: boolean;
+  structure: boolean;
+  lockedAssets: boolean;
+  copy: boolean;
+}
+
+export interface AnalysisEvidencePack {
+  assetIds: string[];
+  evidenceCoverage: EvidenceCoverage;
+  uncertainAssetIds: string[];
+}
+
+export type StructureStatus =
+  | 'locked'
+  | 'user_confirmed'
+  | 'real_structure_detected'
+  | 'open_for_redesign'
+  | 'not_applicable';
+
+export interface StructurePolicy {
+  domain: 'packaging' | 'product' | 'space' | 'interface' | 'publication' | 'other';
+  status: StructureStatus;
+  confirmedAssetIds: string[];
+  excludedUnverifiedAssetIds: string[];
+  redesignAllowed: boolean;
+  requiresHumanConfirmation: boolean;
+}
+
+export interface UserStructureDecision {
+  domain?: StructurePolicy['domain'];
+  locked?: boolean;
+  confirmed?: boolean;
+  notApplicable?: boolean;
+  confirmedAssetIds?: string[];
+}
+
+export interface GenerationIdentityAsset {
+  assetId: string;
+  usage: 'identity' | 'product_or_service' | 'structure_only' | 'locked_asset';
+  reason: string;
+}
+
+export interface LockedAsset {
+  assetId: string;
+  reason: string;
+}
+
+export interface GenerationIdentityPack {
+  identityFacts: EvidenceBoundFact[];
+  productOrServiceFacts: EvidenceBoundFact[];
+  logoAssets: GenerationIdentityAsset[];
+  logoTypographyAssets: GenerationIdentityAsset[];
+  confirmedStructureAssets: GenerationIdentityAsset[];
+  lockedAssets: LockedAsset[];
+  retainedCopy: BrandCopyRecord[];
+  structurePolicy: StructurePolicy;
+  assets: GenerationIdentityAsset[];
+}
+
+export interface GenerationTaskDefinition {
+  outputType: GenerationOutputType;
+  taskPurpose: string;
+  primarySubjectTypes: string[];
+  requiredObjects: string[];
+  optionalObjects: string[];
+  compositionRules: string[];
+  typographyRules: string[];
+  materialRules: string[];
+  photographyRules: string[];
+  forbiddenOutputPatterns: string[];
+}
+
+export interface GenerationReadinessGate {
+  identityPackReady: boolean;
+  projectFactsReady: boolean;
+  structurePolicyResolved: boolean;
+  styleCarriersReady: boolean;
+  taskReferenceReady: boolean;
+  anchorDefinitionReady: boolean;
+  noSignatureGraphicLeak: boolean;
+  noUnverifiedAssetLeak: boolean;
+  generationBriefReady: boolean;
+  optionalAudienceContextAvailable?: boolean;
+  status: 'ready' | 'needs_review' | 'blocked';
+  blockingReasons: string[];
+  warnings?: string[];
+}
+
+export type ReferenceFirstProtocolErrorCode =
+  | 'GENERATION_IDENTITY_PACK_EMPTY'
+  | 'GENERATION_IDENTITY_PACK_MISSING_REQUIRED_IDENTITY'
+  | 'UNVERIFIED_ASSET_ENTERED_GENERATION_PACK'
+  | 'UNVERIFIED_ASSET_USED_AS_STRUCTURE_EVIDENCE'
+  | 'STRUCTURE_STATUS_UNRESOLVED'
+  | 'FACT_EVIDENCE_BROADCAST_DETECTED'
+  | 'STYLE_CARRIER_PLACEHOLDER_LEAK'
+  | 'STYLE_CARRIER_PRIORITY_INVALID'
+  | 'REFERENCE_SIGNATURE_GRAPHIC_LEAK'
+  | 'TASK_REFERENCE_MATCH_CONTRADICTION'
+  | 'GENERATION_BRIEF_MISSING_TASK_DETAILS';
+
+export interface ProtocolHardcodeScanResult {
+  projectNames: string[];
+  brandNames: string[];
+  industryTerms: string[];
+  productTerms: string[];
+  concreteTouchpointTerms: string[];
+  passed: boolean;
 }

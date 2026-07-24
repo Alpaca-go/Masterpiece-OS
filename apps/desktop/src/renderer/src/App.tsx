@@ -97,12 +97,30 @@ export function App() {
       setLoading(false);
       return;
     }
-    void refresh().then(({ settings: loaded, projects: existing }) => {
-      const initial = loaded.profiles.find((profile) => profile.isDefault && profile.isEnabled)
-        || loaded.profiles.find((profile) => profile.isEnabled);
-      setSelectedApiProfileId(initial?.id || '');
-      if (!loaded.profiles.length && existing.length === 0) setScreen('settings');
-    }).catch((reason) => setError(cleanError(reason))).finally(() => setLoading(false));
+    let settled = false;
+    const startupTimer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      setError('客户端初始化超时（20 秒）：主进程未响应启动请求。常见原因是默认数据目录位于不可访问的网络/重定向位置（如离线的 OneDrive、企业漫游配置文件），或主进程被阻塞。请确认数据目录可访问，或把数据目录改到本地路径后重试。');
+      setLoading(false);
+    }, 20000);
+    void refresh()
+      .then(({ settings: loaded, projects: existing }) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(startupTimer);
+        const initial = loaded.profiles.find((profile) => profile.isDefault && profile.isEnabled)
+          || loaded.profiles.find((profile) => profile.isEnabled);
+        setSelectedApiProfileId(initial?.id || '');
+        if (!loaded.profiles.length && existing.length === 0) setScreen('settings');
+      })
+      .catch((reason) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(startupTimer);
+        setError(cleanError(reason));
+      })
+      .finally(() => { if (settled) setLoading(false); });
     return window.masterpiece.analysis.onProgress((event) => setProgress(event));
   }, []);
 

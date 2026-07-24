@@ -26,6 +26,23 @@ const DNA_CATEGORY_LABELS: Record<string, string> = {
   materialAndLighting: '材质与光线',
   extensionMechanism: '延展机制'
 };
+const CONTINUABLE_ANALYSIS_STAGES = new Set([
+  'SELECTING_REFERENCE_MASTER_SET',
+  'BUILDING_TASK_REFERENCE_SUBSETS',
+  'LOADING_PROJECT_CONTEXT',
+  'ANALYZING_REFERENCE',
+  'SYNTHESIZING_REFERENCE_DNA',
+  'CLASSIFYING_TRANSFERABILITY',
+  'MAPPING_TO_PROJECT',
+  'GENERATING_DIRECTION'
+]);
+
+function canContinueAnalysis(run: ReferenceTranslationRunRecord): boolean {
+  const stage = run.error?.retryFromStage || run.error?.stage;
+  return run.status === 'failed'
+    && stage !== 'COMPILING_REPORT'
+    && Boolean(stage && CONTINUABLE_ANALYSIS_STAGES.has(stage));
+}
 
 function levelLabel(value?: string): string {
   return (value && COMPLETENESS_LABELS[value]) || value || '—';
@@ -234,7 +251,9 @@ export function ReferenceTranslationWorkspace({ initialRunId = '', onBack }: Pro
       setProfile(result.profile || null);
       setDirection(result.direction || null);
       setReconstruction(result.reconstruction || null);
-      setNotice(`继续分析完成；已复用前置结果，从 ${run.error?.stage || '失败阶段'} 恢复。`);
+      setNotice(run.error?.stage === 'GENERATING_DIRECTION'
+        ? '继续分析完成；已复用项目画像、参考风格和任务子集。'
+        : `继续分析完成；已复用保存的当前项目和参考素材，重新执行 ${run.error?.stage || '失败阶段'}。`);
     } catch (reason) {
       setError(cleanError(reason));
     } finally {
@@ -521,6 +540,7 @@ export function ReferenceTranslationWorkspace({ initialRunId = '', onBack }: Pro
           <div className="reference-uploader-heading"><strong>参考视觉方案</strong><small>拖入图片或文件夹，或点击选择。建议上传 4–8 张能够代表整套视觉系统的关键图片。</small></div>
           <VisualAssetUploader
             role="reference"
+            visualSchemeDropZone
             items={referenceAssets.map((item) => ({
               id: item.fingerprint,
               name: item.name,
@@ -576,11 +596,12 @@ export function ReferenceTranslationWorkspace({ initialRunId = '', onBack }: Pro
 
             {currentProjectMode === 'upload' && <>
               <div className="reference-uploader-heading">
-                <strong>上传自己的视觉方案</strong>
-                <small>系统将自动创建当前项目，并从素材中识别品牌、产品、结构与 Locked Assets。</small>
+                <strong>当前项目视觉方案</strong>
+                <small>拖入图片或文件夹，或点击选择。系统将自动创建当前项目，并识别真实资产、项目事实、结构状态与 Locked Assets。</small>
               </div>
               <VisualAssetUploader
                 role="current_project"
+                visualSchemeDropZone
                 items={currentProjectAssets.map((item) => ({
                   id: item.fingerprint,
                   name: item.name,
@@ -665,6 +686,8 @@ export function ReferenceTranslationWorkspace({ initialRunId = '', onBack }: Pro
               <small>{run.error.retryFromStage === 'GENERATING_DIRECTION'
                 || run.error.stage === 'GENERATING_DIRECTION'
                 ? '项目画像、参考风格和任务子集已保留，可从视觉方向阶段继续分析。'
+                : canContinueAnalysis(run)
+                  ? '当前项目和参考素材副本已保留，可点击继续分析重新进入失败阶段。'
                 : run.error.recoverable
                   ? '前置分析与中间结果已保留，可直接重新编译报告。'
                   : '核心分析未完成，需要重新运行分析。'}</small>
@@ -672,9 +695,7 @@ export function ReferenceTranslationWorkspace({ initialRunId = '', onBack }: Pro
             <div className="button-row">
               {run.status === 'completed' && <button className="button secondary" onClick={() => void openRun(run)}>查看结果</button>}
               {run.error?.retryFromStage === 'COMPILING_REPORT' && <button className="button secondary" onClick={() => void retryReport(run)}>重新编译报告</button>}
-              {run.status === 'failed'
-                && (run.error?.retryFromStage === 'GENERATING_DIRECTION'
-                  || run.error?.stage === 'GENERATING_DIRECTION')
+              {canContinueAnalysis(run)
                 && <button className="button primary" disabled={busy} onClick={() => void resumeAnalysis(run)}>继续分析</button>}
               {run.status !== 'running' && <button className="button ghost" onClick={() => void window.masterpiece.referenceTranslation.openFolder(run.id)}>查看运行日志</button>}
               {run.status === 'running' && <button className="button danger" onClick={() => void window.masterpiece.referenceTranslation.cancel(run.id)}>取消</button>}

@@ -8,9 +8,18 @@ import {
   createFallbackCurrentProjectDecisions,
   createFallbackReferenceDecisions,
   groupReferenceNearDuplicates,
+  normalizeCurrentProjectDecisions,
+  normalizeReferenceDecisions,
   validateReferenceMasterSet
 } from '../src/main/asset-selection-protocol/index.ts';
-import type { ProjectAsset, ProjectRecord, ReferenceAssetDecision } from '../src/shared/types.ts';
+import { buildReferenceAssetSelectionPrompt } from '../src/main/asset-selection-protocol/prompts.ts';
+import type {
+  CurrentProjectAssetDecision,
+  ProjectAsset,
+  ProjectRecord,
+  ProjectRuntimeContext,
+  ReferenceAssetDecision
+} from '../src/shared/types.ts';
 
 function asset(id: string, originalName: string, sha256 = id): ProjectAsset {
   return {
@@ -29,94 +38,196 @@ function asset(id: string, originalName: string, sha256 = id): ProjectAsset {
 function project(assets: ProjectAsset[]): ProjectRecord {
   return {
     id: 'project-1',
-    projectName: '云岭茶集',
-    brandName: '云岭茶集',
-    detectedBrandName: '云岭茶集',
-    industry: '茶饮',
-    detectedIndustry: '茶饮',
+    projectName: 'fixture-project',
+    brandName: 'fixture-brand',
+    detectedBrandName: 'fixture-brand',
+    industry: 'fixture-domain',
+    detectedIndustry: 'fixture-domain',
     logoLocked: true,
-    logoFiles: ['logo.png'],
-    lockedFacts: ['品牌名称不可更改'],
+    logoFiles: ['identity-source.png'],
+    lockedFacts: ['identity is retained'],
     assets
   } as ProjectRecord;
 }
 
-test('current core pack removes exact duplicates and keeps identity evidence separate from legacy style', () => {
-  const assets = [
-    asset('logo', 'brand-logo.png', 'same-logo'),
-    asset('logo-copy', 'brand-logo-copy.png', 'same-logo'),
-    asset('pack', 'cup-packaging.png'),
-    asset('product', 'tea-product.png')
-  ];
-  const current = createFallbackCurrentProjectDecisions(assets);
-  const reference = createFallbackReferenceDecisions([
-    asset('overview', 'system-overview.png'),
-    asset('poster', 'campaign-poster.png')
-  ]);
-  const protocol = assembleAssetSelectionProtocol(project(assets), current, reference);
+function referenceDecision(
+  assetId: string,
+  outputTypes: ReferenceAssetDecision['eligibleOutputTypes'],
+  strength: ReferenceAssetDecision['styleCarrierStrength'] = 'high'
+): ReferenceAssetDecision {
+  return {
+    assetId,
+    filename: `${assetId}.png`,
+    role: 'system_overview',
+    primaryRole: 'system_overview',
+    secondaryRoles: ['display_layout'],
+    styleCarrierStrength: strength,
+    includeInMasterSet: true,
+    eligibleOutputTypes: outputTypes,
+    representedStyleCarriers: ['layout', 'typography', 'graphic'],
+    styleCarrierRules: [
+      { category: 'layout', readableRule: '主体与信息区沿稳定网格分离，并保留明确呼吸区', confidence: 0.94 },
+      { category: 'typography', readableRule: '标题、名称与说明形成三级字号和字重层级', confidence: 0.92 },
+      { category: 'graphic', readableRule: '辅助图形以重复、裁切和密度变化连接不同输出', confidence: 0.9 }
+    ],
+    confidence: 0.93,
+    reason: 'fixture evidence',
+    requiresHumanReview: false
+  };
+}
 
-  assert.equal(protocol.currentProjectCorePack.sourceAssetIds.includes('logo-copy'), false);
+test('fallback does not infer asset truth or roles from filenames', () => {
+  const current = createFallbackCurrentProjectDecisions([
+    asset('identity', 'brand-logo.png'),
+    asset('structure', 'box-store-poster.png')
+  ]);
+  const reference = createFallbackReferenceDecisions([
+    asset('reference', 'system-overview-packaging.png')
+  ]);
+
+  assert.deepEqual(current.map((item) => item.role), ['uncertain', 'uncertain']);
+  assert.ok(current.every((item) =>
+    item.authenticity === 'unknown'
+    && item.includeInGenerationIdentityPack === false
+    && item.generationUsage === 'exclude'
+  ));
+  assert.equal(reference[0]?.role, 'uncertain');
+  assert.deepEqual(reference[0]?.eligibleOutputTypes, []);
+  assert.equal(reference[0]?.includeInMasterSet, false);
+});
+
+test('confirmed identity evidence enters the core pack while duplicates remain excluded', () => {
+  const assets = [
+    asset('identity', 'source-a.png', 'same'),
+    asset('duplicate', 'source-b.png', 'same')
+  ];
+  const raw: CurrentProjectAssetDecision[] = [{
+    ...createFallbackCurrentProjectDecisions([assets[0]!])[0]!,
+    role: 'brand_identity_evidence',
+    roles: ['brand_identity_evidence', 'logo_evidence'],
+    authenticity: 'user_confirmed_locked',
+    keepInCorePack: true,
+    includeInGenerationIdentityPack: true,
+    canProveIdentity: true,
+    generationUsage: 'identity',
+    confidence: 1,
+    requiresHumanReview: false
+  }];
+  const current = normalizeCurrentProjectDecisions(raw, assets);
+  const references = [referenceDecision('reference', ['anchor_vi_system'])];
+  const protocol = assembleAssetSelectionProtocol(project(assets), current, references);
+
+  assert.deepEqual(protocol.currentProjectCorePack.sourceAssetIds, ['identity']);
   assert.equal(protocol.currentCorePackValidation.excludesDuplicateAssets, true);
-  assert.equal(protocol.currentCorePackValidation.hasLogoEvidence, true);
-  assert.equal(current.find((item) => item.assetId === 'logo')?.includeInAnalysisEvidencePack, true);
-  assert.equal(current.find((item) => item.assetId === 'logo')?.generationUsage, 'identity');
+  assert.equal(current[0]?.generationUsage, 'identity');
   assert.doesNotThrow(() => assertAssetSelectionProtocol(protocol));
 });
 
-test('reference master set excludes text, business pages and near duplicates', () => {
-  const decisions: ReferenceAssetDecision[] = [
-    {
-      assetId: 'overview',
-      filename: 'overview.png',
-      role: 'system_overview',
-      styleCarrierStrength: 'high',
-      includeInMasterSet: true,
-      eligibleOutputTypes: ['anchor_vi_system', 'vi_application'],
-      representedStyleCarriers: ['color', 'layout', 'graphic'],
-      duplicationGroupId: 'group-overview',
-      confidence: 0.94,
-      reason: '系统总览',
-      requiresHumanReview: false
-    },
-    {
-      assetId: 'overview-copy',
-      filename: 'overview-copy.png',
-      role: 'system_overview',
-      styleCarrierStrength: 'medium',
-      includeInMasterSet: true,
-      eligibleOutputTypes: ['anchor_vi_system'],
-      representedStyleCarriers: ['color', 'layout'],
-      duplicationGroupId: 'group-overview',
-      confidence: 0.82,
-      reason: '近重复总览',
-      requiresHumanReview: false
-    },
-    {
-      assetId: 'text',
-      filename: 'strategy.png',
-      role: 'brand_strategy_text',
-      styleCarrierStrength: 'low',
-      includeInMasterSet: false,
-      eligibleOutputTypes: [],
-      representedStyleCarriers: [],
-      confidence: 0.95,
-      reason: '商业策略文字',
-      requiresHumanReview: false
+test('user-uploaded current visuals carry runtime authenticity into the identity pack and bind Logo evidence', () => {
+  const assets = [asset('uploaded-logo', 'current-brand-board.png')];
+  const raw: CurrentProjectAssetDecision[] = [{
+    ...createFallbackCurrentProjectDecisions(assets)[0]!,
+    role: 'brand_identity_evidence',
+    roles: ['brand_identity_evidence', 'logo_evidence'],
+    authenticity: 'unknown',
+    keepInCorePack: true,
+    includeInGenerationIdentityPack: false,
+    canProveIdentity: true,
+    generationUsage: 'exclude',
+    confidence: 0.96,
+    requiresHumanReview: false
+  }];
+  const runtimeContext: ProjectRuntimeContext = {
+    projectId: 'project-1',
+    brandName: 'fixture-brand',
+    userLockedAssets: [],
+    userRetainedCopy: [],
+    userConfirmedRealAssets: ['uploaded-logo'],
+    outputTasks: [],
+    referenceAssetIds: [],
+    projectMetadata: {
+      currentProjectSource: 'user_uploaded_visual_scheme'
     }
-  ];
-  const master = buildReferenceMasterSet(decisions);
-  const validation = validateReferenceMasterSet(master, decisions);
+  };
 
-  assert.deepEqual(master.assetIds, ['overview']);
-  assert.equal(validation.excludesBusinessAnalysisPages, true);
-  assert.equal(validation.excludesNearDuplicates, true);
+  const current = normalizeCurrentProjectDecisions(raw, assets, runtimeContext);
+  const protocol = assembleAssetSelectionProtocol(
+    project(assets),
+    current,
+    [referenceDecision('reference', ['anchor_vi_system'])]
+  );
+
+  assert.equal(current[0]?.authenticity, 'user_confirmed_real');
+  assert.equal(current[0]?.includeInGenerationIdentityPack, true);
+  assert.equal(current[0]?.generationUsage, 'identity');
+  assert.deepEqual(protocol.currentProjectCorePack.logoAssetIds, ['uploaded-logo']);
+  assert.deepEqual(
+    protocol.currentProjectCorePack.lockedAssets.find((item) => /logo/iu.test(item.name))?.assetIds,
+    ['uploaded-logo']
+  );
+  assert.equal(protocol.currentCorePackValidation.hasLogoEvidence, true);
+  assert.doesNotThrow(() => assertAssetSelectionProtocol(protocol));
 });
 
-test('perceptual hashes group visually near files even when their SHA-256 values differ', () => {
+test('reference master set excludes near duplicates and requires readable style rules', () => {
+  const first = referenceDecision('overview', ['anchor_vi_system']);
+  first.duplicationGroupId = 'same-visual';
+  const copy = { ...referenceDecision('overview-copy', ['anchor_vi_system'], 'medium'), duplicationGroupId: 'same-visual' };
+  const master = buildReferenceMasterSet([first, copy]);
+  const validation = validateReferenceMasterSet(master, [first, copy]);
+
+  assert.deepEqual(master.assetIds, ['overview']);
+  assert.ok(master.styleCarriers.every((item) => item.readableRule && !/跨参考视觉规律/u.test(item.readableRule)));
+  assert.equal(validation.excludesNearDuplicates, true);
+  assert.equal(validation.passed, true);
+});
+
+test('reference selection rejects model-invented output task names before subset paths are built', () => {
+  const source = asset('reference', 'reference.png');
+  const invalid = referenceDecision('reference', ['anchor_vi_system']);
+  invalid.eligibleOutputTypes = ['brand_guidelines' as never, 'mockups' as never];
+
+  assert.throws(
+    () => normalizeReferenceDecisions([invalid], [source]),
+    (error: unknown) => {
+      const structured = error as Error & {
+        code?: string;
+        details?: { issues?: Array<{ path: string; receivedValue?: unknown; allowedValues?: unknown[] }> };
+      };
+      assert.equal(structured.code, 'MODEL_OUTPUT_INVALID_ENUM');
+      assert.deepEqual(
+        structured.details?.issues?.map((issue) => issue.receivedValue),
+        ['brand_guidelines', 'mockups']
+      );
+      assert.ok(structured.details?.issues?.every((issue) =>
+        issue.path.includes('eligibleOutputTypes') && issue.allowedValues?.includes('anchor_vi_system')));
+      return true;
+    }
+  );
+});
+
+test('reference selection prompt enumerates every supported output task', () => {
+  const prompt = buildReferenceAssetSelectionPrompt([asset('reference', 'reference.png')]);
+  for (const outputType of [
+    'anchor_vi_system',
+    'packaging_single',
+    'packaging_series',
+    'brand_poster',
+    'product_poster',
+    'vi_application',
+    'spatial_scene',
+    'digital_campaign'
+  ]) {
+    assert.match(prompt, new RegExp(outputType));
+  }
+  assert.match(prompt, /不得自造 brand_guidelines、mockups、social_media、packaging_design/);
+});
+
+test('perceptual hashes group visually near files even when SHA-256 values differ', () => {
   const decisions = createFallbackReferenceDecisions([
-    asset('first', 'poster-a.png', 'sha-a'),
-    asset('second', 'poster-b.png', 'sha-b'),
-    asset('third', 'poster-c.png', 'sha-c')
+    asset('first', 'a.png', 'sha-a'),
+    asset('second', 'b.png', 'sha-b'),
+    asset('third', 'c.png', 'sha-c')
   ]);
   const grouped = groupReferenceNearDuplicates(decisions, {
     first: '00000000',
@@ -128,39 +239,17 @@ test('perceptual hashes group visually near files even when their SHA-256 values
   assert.notEqual(grouped[0]?.duplicationGroupId, grouped[2]?.duplicationGroupId);
 });
 
-test('task subsets contain at most four task-matched references and preserve one primary reference', () => {
-  const decisions = createFallbackReferenceDecisions([
-    asset('overview', 'system-overview.png'),
-    asset('pack', 'packaging.png'),
-    asset('poster', 'poster.png'),
-    asset('vi', 'vi-application.png'),
-    asset('space', 'store-space.png')
+test('task subsets are compiled only for output types declared by runtime evidence', () => {
+  const master = buildReferenceMasterSet([
+    referenceDecision('overview', ['anchor_vi_system', 'digital_campaign']),
+    referenceDecision('support', ['digital_campaign'], 'medium')
   ]);
-  decisions[0]!.styleCarrierStrength = 'high';
-  const master = buildReferenceMasterSet(decisions);
   const { subsets } = buildTaskReferenceSubsets(master);
 
-  assert.equal(subsets.length, 8);
+  assert.deepEqual(subsets.map((item) => item.outputType), ['anchor_vi_system', 'digital_campaign']);
   for (const subset of subsets) {
     assert.ok(subset.selectedAssetIds.length >= 1 && subset.selectedAssetIds.length <= 4);
     assert.ok(subset.selectedAssetIds.includes(subset.primaryReferenceAssetId));
-    assert.equal(
-      subset.supportingReferenceAssetIds.includes(subset.primaryReferenceAssetId),
-      false
-    );
+    assert.equal(subset.supportingReferenceAssetIds.includes(subset.primaryReferenceAssetId), false);
   }
-});
-
-test('VI overview with packaging as a secondary role is a compatible packaging reference', () => {
-  const decisions = createFallbackReferenceDecisions([
-    asset('vi', 'vi-application-overview.png')
-  ]);
-  assert.ok(decisions[0]?.secondaryRoles?.includes('packaging'));
-  const master = buildReferenceMasterSet(decisions);
-  const packaging = buildTaskReferenceSubsets(master).subsets
-    .find((item) => item.outputType === 'packaging_single')!;
-
-  assert.equal(packaging.matchLevel, 'compatible');
-  assert.match(packaging.selectionReason, /兼容参考/);
-  assert.doesNotMatch(packaging.selectionReason, /精确匹配/);
 });

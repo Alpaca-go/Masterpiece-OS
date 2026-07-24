@@ -66,7 +66,11 @@ function defaults(): StoredSettings {
   return {
     profiles: [],
     defaultProfileId: null,
-    defaultDataPath: path.join(app.getPath('documents'), 'Masterpiece OS Data'),
+    // 默认数据目录放在本地应用数据下，避免依赖「文档」已知文件夹
+    // （在文档被重定向到网络盘 / OneDrive 离线 / 企业漫游配置文件等环境下，
+    // 解析 app.getPath('documents') 或对其 readdir 会同步阻塞主线程或网络超时，
+    // 导致客户端启动 splash 永久卡死且无报错）。用户可在设置里另行指定数据目录。
+    defaultDataPath: path.join(app.getPath('userData'), 'Masterpiece OS Data'),
     cacheEnabled: true,
     logLevel: 'info',
     directionGenerationMode: 'execution_oriented_v2',

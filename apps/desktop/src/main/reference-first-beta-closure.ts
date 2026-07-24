@@ -25,7 +25,8 @@ const LEGACY_ROLES: CurrentProjectAssetRole[] = [
 ];
 const SIGNATURE_GRAPHIC_PATTERN = /砂锅|锅具|锅形|八角|印章|铜钱|窗棂|回纹|专属装饰带/u;
 
-const unique = (values: string[]) => [...new Set(values.map((value) => value.trim()).filter(Boolean))];
+const unique = <T extends string>(values: readonly T[]): T[] =>
+  [...new Set(values.map((value) => value.trim()).filter(Boolean))] as T[];
 const list = (values: string[], fallback = '无') =>
   values.length ? values.map((value) => `- ${value}`).join('\n') : `- ${fallback}`;
 
@@ -331,7 +332,7 @@ export function buildReferenceFirstBetaClosure(input: {
 }): ReferenceFirstBetaClosure {
   const { currentProjectProfile: current, strategy, assetSelectionProtocol: protocol } = input;
   const decisions = (protocol?.currentProjectAssetDecisions ?? []).map((item) => {
-    const roles = unique([...(item.roles || []), item.role]) as CurrentProjectAssetRole[];
+    const roles = unique([...(item.roles || []), item.role]);
     const locked = item.lockedEvidence.length > 0 || roles.includes('locked_asset_evidence');
     const usage = generationUsage(roles, locked);
     const legacy = roles.some((role) => LEGACY_ROLES.includes(role)) || item.containsLegacyStyle;

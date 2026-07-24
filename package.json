@@ -13,6 +13,7 @@
     "test": "node --test",
     "test:regression": "node ./tests/regression-runner.js",
     "verify:document-flows": "node ./scripts/verify-document-flows.mjs",
+    "verify:reference-first-protocol": "npm --prefix apps/desktop run verify:reference-first-protocol",
     "quality:shadow": "node ./scripts/quality-shadow.mjs",
     "quality:sprint2": "node ./scripts/sprint-2-quality.mjs",
     "freeze:cross-industry": "node ./scripts/cross-industry-freeze.mjs",

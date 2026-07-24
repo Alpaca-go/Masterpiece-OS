@@ -112,7 +112,7 @@ test('current project profile fails closed when required facts are absent', () =
       detectedIndustry: '待确认（基于现有素材推断）',
       assets: [],
     }), '# 空报告'),
-    /当前项目资料不足.*行业.*核心产品或服务.*目标人群.*业务触点/
+    /当前项目资料不足.*行业.*核心产品或服务.*业务触点/
   );
 });
 

@@ -28,7 +28,6 @@ const ASSET_NUMBER = /\bAsset[-_\s]?\d+\b/iu;
 const DESIGN_ADVICE = /(?:\d+(?:\.\d+)?\s*%.*(?:色|背景)|字号|字重|摄影|构图|版式|材质|灯光|渲染|升级|替换|删除|保留|应当|建议|Hierarchy is King|Creative Brief|GPT Execution|Runtime Protocol|竞品)/iu;
 const INTERNAL_CONTENT = /GPT Execution Core|Creative Authority|runtime protocol|运行时协议|竞品分析|资产决策|PTM-\d+/iu;
 const FIXED_WRAPPER = /通过可重复的节奏、密度和对比关系形成|通过网格、留白与信息区之间的稳定关系组织|将可识别形态抽象为可缩放、裁切和组合的图形语法|通过材质表面、光线方向与影像景深共同形成|通过母版结构与变量替换在不同触点延展/iu;
-const PEOPLE_TERMS = /用户|人群|消费者|顾客|客户|客群|上班族|家庭|亲子|年轻|年龄|岁|人群|食客|游客|学生|白领|居民|从业者/iu;
 const OFFERING_ADVICE = /需|建议|应|通过|呈现|强调|优先|避免|替代|升级|摄影|色彩|构图|字号|材质|灯光/iu;
 const LOW_SPECIFICITY_STACKS = [
   { pattern: /牛头[\s\S]{0,12}脸谱|脸谱[\s\S]{0,12}牛头/iu, terms: ['牛头', '脸谱'] },
@@ -215,7 +214,7 @@ export function normalizeProjectTouchpointClassification(input: {
 
 export interface ProjectProfileValidation {
   coreProductsContainOnlyOfferings: boolean;
-  targetAudienceContainsOnlyPeople: boolean;
+  targetAudienceFormatValid: boolean;
   noDesignAdviceInFacts: boolean;
   noMarkdownFragments: boolean;
   noAssetNumbers: boolean;
@@ -231,9 +230,10 @@ export function validateCurrentProjectProfile(
   profile: CurrentProjectProfile,
   referenceIdentityTerms: string[] = []
 ): ProjectProfileValidation {
+  const targetAudience = Array.isArray(profile.targetAudience) ? profile.targetAudience : [];
   const facts = [
     ...profile.coreProducts,
-    ...profile.targetAudience,
+    ...targetAudience,
     profile.brandPositioning,
     profile.pricePositioning || '',
     ...profile.usageScenarios,
@@ -253,8 +253,9 @@ export function validateCurrentProjectProfile(
   const validation = {
     coreProductsContainOnlyOfferings: profile.coreProducts.length > 0
       && profile.coreProducts.every((value) => !OFFERING_ADVICE.test(value)),
-    targetAudienceContainsOnlyPeople: profile.targetAudience.length > 0
-      && profile.targetAudience.every((value) => PEOPLE_TERMS.test(value) && !DESIGN_ADVICE.test(value)),
+    targetAudienceFormatValid: Array.isArray(profile.targetAudience)
+      && targetAudience.length <= 100
+      && targetAudience.every((value) => typeof value === 'string'),
     noDesignAdviceInFacts: facts.every((value) => !DESIGN_ADVICE.test(value)),
     noMarkdownFragments: facts.every((value) => !MARKDOWN_FRAGMENT.test(value) && !value.includes('|')),
     noAssetNumbers: facts.every((value) => !ASSET_NUMBER.test(value)),
@@ -266,7 +267,6 @@ export function validateCurrentProjectProfile(
       profile.brandName && !INCOMPLETE_VALUE.test(profile.brandName)
       && profile.industry && !INCOMPLETE_VALUE.test(profile.industry)
       && profile.coreProducts.length
-      && profile.targetAudience.length
       && profile.businessTouchpoints.length
       && profile.lockedAssets.length
       && Object.values(profile.visualSources || {}).filter((values) => values.length > 0).length >= 2
@@ -288,7 +288,6 @@ export function assertCurrentProjectProfile(
   if (!profile.brandName || INCOMPLETE_VALUE.test(profile.brandName)) missing.push('品牌名称');
   if (!profile.industry || INCOMPLETE_VALUE.test(profile.industry)) missing.push('行业');
   if (!profile.coreProducts.length) missing.push('核心产品或服务');
-  if (!profile.targetAudience.length) missing.push('目标人群');
   if (!profile.businessTouchpoints.length) missing.push('业务触点');
   if (!profile.lockedAssets.length) missing.push('Locked Assets');
   if (Object.values(profile.visualSources || {}).filter((values) => values.length > 0).length < 2) {
@@ -297,12 +296,35 @@ export function assertCurrentProjectProfile(
   const message = missing.length
     ? `当前项目资料不足，无法生成可靠的视觉重构文档。请先补充：${missing.join('、')}。`
     : `当前项目事实含有设计建议、Markdown、资产编号或非事实内容：${validation.issues.join('、')}`;
+  const issues = [
+    ...missing.map((field) => ({
+      type: 'missing_field' as const,
+      path: field,
+      value: undefined,
+      instruction: `${field} 是当前项目分析所需事实，请从当前项目资料中提取；证据不足时不要臆造。`,
+      severity: 'error' as const
+    })),
+    ...validation.issues
+      .filter((issue) => issue !== 'requiredFieldsComplete')
+      .map((issue) => ({
+        type: issue === 'targetAudienceFormatValid' ? 'invalid_type' as const : 'fact_pollution' as const,
+        path: issue === 'targetAudienceFormatValid' ? 'targetAudience' : issue,
+        value: issue === 'targetAudienceFormatValid' ? profile.targetAudience : undefined,
+        instruction: issue === 'targetAudienceFormatValid'
+          ? 'targetAudience 必须是字符串数组，允许为空，最多 100 项；不要使用封闭的人群词典判断语义。'
+          : '只保留有来源支持的当前项目事实，删除设计建议、Markdown、资产编号和参考品牌身份内容。',
+        severity: 'error' as const
+      }))
+  ];
   throw Object.assign(new Error(message), {
     code: missing.length ? 'CURRENT_PROJECT_CONTEXT_INCOMPLETE' : 'CURRENT_PROJECT_PROFILE_CONTAMINATED',
     validation,
-    details: validation.packagingAndTouchpointsSeparated
-      ? undefined
-      : { packagingAndTouchpointsSeparated: validation.invalidPackagingTouchpoints },
+    details: {
+      issues,
+      ...(validation.packagingAndTouchpointsSeparated
+        ? {}
+        : { packagingAndTouchpointsSeparated: validation.invalidPackagingTouchpoints })
+    },
     missingFields: missing
   });
 }

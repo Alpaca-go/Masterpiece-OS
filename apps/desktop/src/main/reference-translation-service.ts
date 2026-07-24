@@ -25,10 +25,14 @@ import type {
 import {
   assembleAssetSelectionProtocol,
   assertAssetSelectionProtocol,
+  assertCurrentProjectCorePack,
+  buildCurrentProjectCorePack,
   createFallbackCurrentProjectDecisions,
   createFallbackReferenceDecisions,
-  detectReferenceNearDuplicates
+  detectReferenceNearDuplicates,
+  validateCurrentProjectCorePack
 } from './asset-selection-protocol/index.ts';
+import { buildProjectRuntimeContext } from './reference-first/index.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { PipelineService } from './pipeline-service.ts';
@@ -52,6 +56,25 @@ const RUN_ID_PATTERN = /^[a-f0-9-]{36}$/i;
 const MAX_INPUT_BYTES = 20 * 1024 * 1024;
 const REFERENCE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.zip']);
 const IGNORED_DIRECTORIES = new Set(['node_modules', '.git', '.cache', 'cache', 'tmp', 'temp']);
+const MODEL_BOUNDARY_ERROR_CODES = [
+  'MODEL_OUTPUT_JSON_PARSE_ERROR',
+  'MODEL_OUTPUT_MARKDOWN_WRAPPER',
+  'MODEL_OUTPUT_TRUNCATED',
+  'MODEL_OUTPUT_INVALID_TYPE',
+  'MODEL_OUTPUT_INVALID_ENUM',
+  'MODEL_OUTPUT_MISSING_FIELD',
+  'MODEL_OUTPUT_INVALID_RANGE',
+  'FACT_INSUFFICIENT_EVIDENCE',
+  'FACT_STATUS_OVERCLAIMED',
+  'FACT_EVIDENCE_BROADCAST',
+  'FACT_EVIDENCE_POLLUTION'
+] as const satisfies readonly ReferenceTranslationError['code'][];
+
+function modelBoundaryErrorCode(code: string): ReferenceTranslationError['code'] | null {
+  return (MODEL_BOUNDARY_ERROR_CODES as readonly string[]).includes(code)
+    ? code as ReferenceTranslationError['code']
+    : null;
+}
 
 function safeRunId(runId: string): string {
   if (!RUN_ID_PATTERN.test(String(runId || ''))) throw new Error('无效的 Reference Translation 任务标识');
@@ -132,7 +155,13 @@ async function persistStructuredFailureEvidence(root: string, error: unknown): P
   };
   if (!structured.structuredAttempts?.length) return;
   const logs = path.join(root, 'logs');
-  await fs.mkdir(logs, { recursive: true });
+  const validation = path.join(root, 'validation');
+  const raw = path.join(root, 'raw');
+  await Promise.all([
+    fs.mkdir(logs, { recursive: true }),
+    fs.mkdir(validation, { recursive: true }),
+    fs.mkdir(raw, { recursive: true })
+  ]);
   await writeJson(path.join(logs, 'structured-attempts.json'), {
     terminalStatus: 'failed',
     step: structured.structuredStep || 'unknown',
@@ -141,6 +170,30 @@ async function persistStructuredFailureEvidence(root: string, error: unknown): P
       message: structured.message || '结构化视觉分析失败'
     },
     attempts: structured.structuredAttempts
+  });
+  await Promise.all(structured.structuredAttempts.map((attempt, index) => {
+    const record = attempt && typeof attempt === 'object'
+      ? attempt as Record<string, unknown>
+      : { value: attempt };
+    return Promise.all([
+      writeJson(path.join(validation, `attempt-${index + 1}.json`), {
+        step: structured.structuredStep || 'unknown',
+        terminalStatus: record.validationError ? 'failed' : 'passed',
+        ...record
+      }),
+      fs.writeFile(
+        path.join(raw, `attempt-${index + 1}.txt`),
+        String(record.rawResponse || ''),
+        'utf8'
+      )
+    ]);
+  }));
+  await writeJson(path.join(validation, 'final-validation.json'), {
+    terminalStatus: 'failed',
+    step: structured.structuredStep || 'unknown',
+    errorCode: structured.code || 'STRUCTURED_ANALYSIS_FAILED',
+    errorMessage: structured.message || '结构化视觉分析失败',
+    modelCallCount: structured.structuredAttempts.length
   });
 }
 
@@ -482,14 +535,14 @@ export function createReferenceTranslationService(
       const cancelled = code === 'CANCELLED';
       const stage = active?.progress.stage || 'FAILED';
       const recoverable = ['COMPILING_REPORT', 'VALIDATING_REPORT'].includes(stage);
-      const reconstructionCode = [
+      const reconstructionCode = modelBoundaryErrorCode(code) || ([
         'CURRENT_PROJECT_CONTEXT_INCOMPLETE',
         'REFERENCE_STYLE_INSUFFICIENT',
         'REFERENCE_BRAND_CONTAMINATION',
         'RECONSTRUCTION_QUALITY_FAILED',
         'REFERENCE_FIRST_LEGACY_STYLE_NOT_SUPPRESSED',
         'REFERENCE_FIRST_REPORT_VALIDATION_FAILED'
-      ].includes(code) ? code as ReferenceTranslationError['code'] : null;
+      ].includes(code) ? code as ReferenceTranslationError['code'] : null);
       const structuredError: ReferenceTranslationError = {
         code: cancelled ? 'CANCELLED'
           : reconstructionCode || (
@@ -604,10 +657,36 @@ export function createReferenceTranslationService(
       });
       active.pipelineProjectId = currentProject.id;
       await publishProgress(runId, currentProject.id, createdAt, 'SELECTING_CURRENT_CORE_PACK');
+      const currentAssets = (currentProject.assets || []).filter((asset) =>
+        asset.status !== 'deleted' && /^image\//iu.test(asset.mimeType)
+      );
+      const currentRuntimeContext = buildProjectRuntimeContext({
+        project: currentProject,
+        outputTasks: [],
+        referenceAssetIds: [],
+        userConfirmedRealAssets: input.confirmedCurrentAssetIds?.length
+          ? currentAssets
+            .filter((asset) => input.confirmedCurrentAssetIds!.includes(asset.id))
+            .map((asset) => asset.id)
+          : existingProject ? [] : currentAssets.map((asset) => asset.id),
+        userLockedAssets: currentAssets
+          .filter((asset) => (currentProject.logoFiles || []).includes(asset.originalName))
+          .map((asset) => ({
+            assetId: asset.id,
+            reason: '当前项目原始 Logo'
+          })),
+        projectMetadata: {
+          currentProjectSource: existingProject ? 'selected_existing_project' : 'user_uploaded_visual_scheme'
+        }
+      });
       const currentSelectionResult = dependencies.pipeline.selectCurrentProjectAssets
-        ? await dependencies.pipeline.selectCurrentProjectAssets(currentProject.id, apiProfileId)
+        ? await dependencies.pipeline.selectCurrentProjectAssets(
+          currentProject.id,
+          apiProfileId,
+          currentRuntimeContext
+        )
         : {
-          value: createFallbackCurrentProjectDecisions(currentProject.assets || []),
+          value: createFallbackCurrentProjectDecisions(currentAssets),
           provider: 'local',
           model: 'deterministic-fallback',
           durationMs: 0,
@@ -615,6 +694,20 @@ export function createReferenceTranslationService(
         };
       const currentDecisions = currentSelectionResult.value as CurrentProjectAssetDecision[];
       assertNotCancelled();
+      const root = await runRoot(runId);
+      const currentProjectCorePack = buildCurrentProjectCorePack(currentProject, currentDecisions);
+      const currentCorePackValidation = validateCurrentProjectCorePack(
+        currentProjectCorePack,
+        currentDecisions
+      );
+      await Promise.all([
+        writeJson(path.join(root, 'current-project-assets.json'), currentProject.assets || []),
+        writeJson(path.join(root, 'current-project-runtime-context.json'), currentRuntimeContext),
+        writeJson(path.join(root, 'current-project-asset-decisions.json'), currentDecisions),
+        writeJson(path.join(root, 'current-project-core-pack.json'), currentProjectCorePack),
+        writeJson(path.join(root, 'current-core-pack-validation.json'), currentCorePackValidation)
+      ]);
+      assertCurrentProjectCorePack(currentCorePackValidation);
 
       const referenceProject = await dependencies.projects.create({
         sourcePaths: referenceAssetPaths,
@@ -653,13 +746,20 @@ export function createReferenceTranslationService(
         currentDecisions,
         referenceDecisions
       );
+      await Promise.all([
+        writeJson(path.join(root, 'reference-assets.json'), referenceProject.assets || []),
+        writeJson(path.join(root, 'reference-asset-decisions.json'), referenceDecisions),
+        writeJson(path.join(root, 'reference-master-set.json'), assetSelectionProtocol.referenceMasterSet),
+        writeJson(path.join(root, 'reference-master-set-validation.json'), assetSelectionProtocol.referenceMasterSetValidation),
+        writeJson(path.join(root, 'style-carrier-ranking.json'), assetSelectionProtocol.referenceMasterSet.styleCarriers),
+        writeJson(path.join(root, 'asset-selection-protocol.json'), assetSelectionProtocol)
+      ]);
       assertAssetSelectionProtocol(assetSelectionProtocol);
       const lowConfidenceCurrent = currentDecisions.some((item) =>
         item.confidence < 0.6 || (item.role === 'uncertain' && item.requiresHumanReview));
       const lowConfidenceReference = referenceDecisions.some((item) =>
         item.confidence < 0.6 || (item.role === 'uncertain' && item.requiresHumanReview));
       await publishProgress(runId, targetProjectId, createdAt, 'BUILDING_TASK_REFERENCE_SUBSETS');
-      const root = await runRoot(runId);
       const taskSubsetDir = path.join(root, 'task-reference-subsets');
       await fs.mkdir(taskSubsetDir, { recursive: true });
       const subsetFilename: Record<string, string> = {
@@ -672,16 +772,20 @@ export function createReferenceTranslationService(
         spatial_scene: 'space.json',
         digital_campaign: 'digital-campaign.json'
       };
+      const namedTaskSubsetWrites = assetSelectionProtocol.taskReferenceSubsets.map((subset) => {
+        const filename = subsetFilename[subset.outputType];
+        if (!filename) {
+          throw Object.assign(
+            new Error(`任务子集包含协议外的输出类型，无法生成文件：${String(subset.outputType)}`),
+            {
+              code: 'TASK_REFERENCE_SUBSET_MISMATCH',
+              details: { outputType: subset.outputType }
+            }
+          );
+        }
+        return writeJson(path.join(taskSubsetDir, filename), subset);
+      });
       await Promise.all([
-        writeJson(path.join(root, 'current-project-assets.json'), currentProject.assets || []),
-        writeJson(path.join(root, 'current-project-asset-decisions.json'), currentDecisions),
-        writeJson(path.join(root, 'current-project-core-pack.json'), assetSelectionProtocol.currentProjectCorePack),
-        writeJson(path.join(root, 'current-core-pack-validation.json'), assetSelectionProtocol.currentCorePackValidation),
-        writeJson(path.join(root, 'reference-assets.json'), referenceProject.assets || []),
-        writeJson(path.join(root, 'reference-asset-decisions.json'), referenceDecisions),
-        writeJson(path.join(root, 'reference-master-set.json'), assetSelectionProtocol.referenceMasterSet),
-        writeJson(path.join(root, 'reference-master-set-validation.json'), assetSelectionProtocol.referenceMasterSetValidation),
-        writeJson(path.join(root, 'style-carrier-ranking.json'), assetSelectionProtocol.referenceMasterSet.styleCarriers),
         writeJson(path.join(root, 'user-confirmation.json'), {
           status: input.force
             ? 'confirmed_by_user'
@@ -694,8 +798,7 @@ export function createReferenceTranslationService(
             ? '存在置信度低于 0.8 或 requiresHumanReview 的素材决定'
             : '全部自动筛选决定置信度不低于 0.8'
         }),
-        ...assetSelectionProtocol.taskReferenceSubsets.map((subset) =>
-          writeJson(path.join(taskSubsetDir, subsetFilename[subset.outputType]!), subset)),
+        ...namedTaskSubsetWrites,
         ...assetSelectionProtocol.taskReferenceSubsets.map((subset) =>
           writeJson(path.join(taskSubsetDir, `${subset.outputType}.json`), subset))
       ]);
@@ -898,12 +1001,13 @@ export function createReferenceTranslationService(
       const cancelled = active?.cancelled || (error as Error).name === 'AbortError'
         || (error as { code?: string }).code === 'CANCELLED';
       const sourceCode = String((error as { code?: string }).code || '');
+      const boundaryCode = modelBoundaryErrorCode(sourceCode);
       const stage = active?.progress.stage || 'FAILED';
       const canResumeDirection = stage === 'GENERATING_DIRECTION'
         && sourceCode === 'VISUAL_DIRECTION_NOT_EXECUTABLE';
       const structuredError: ReferenceTranslationError = {
         code: cancelled ? 'CANCELLED'
-          : sourceCode === 'CURRENT_CORE_PACK_INCOMPLETE' ? 'CURRENT_CORE_PACK_INCOMPLETE'
+          : boundaryCode || (sourceCode === 'CURRENT_CORE_PACK_INCOMPLETE' ? 'CURRENT_CORE_PACK_INCOMPLETE'
             : sourceCode === 'CURRENT_CORE_PACK_CONTAMINATED' ? 'CURRENT_CORE_PACK_CONTAMINATED'
               : sourceCode === 'REFERENCE_MASTER_SET_INSUFFICIENT' ? 'REFERENCE_MASTER_SET_INSUFFICIENT'
                 : sourceCode === 'TASK_REFERENCE_SUBSET_MISMATCH' ? 'TASK_REFERENCE_SUBSET_MISMATCH'
@@ -924,7 +1028,7 @@ export function createReferenceTranslationService(
           : stage === 'PREPARING_ASSETS' ? 'REFERENCE_ASSET_PREPARATION_FAILED'
             : stage === 'ANALYZING_REFERENCE' ? 'REFERENCE_ANALYSIS_FAILED'
               : stage === 'LOADING_PROJECT_CONTEXT' ? 'PROJECT_CONTEXT_LOAD_FAILED'
-                : 'PROJECT_MAPPING_FAILED',
+                : 'PROJECT_MAPPING_FAILED'),
         message: cancelled ? '用户已取消参考转译' : (error as Error).message,
         stage,
         recoverable: canResumeDirection,
@@ -1024,11 +1128,43 @@ export function createReferenceTranslationService(
       return retryReport(runId);
     }
     const failedStage = record.error?.retryFromStage || record.error?.stage;
+    const root = await runRoot(runId);
     if (failedStage !== 'GENERATING_DIRECTION') {
-      throw new Error('该任务没有可复用的方向生成 Checkpoint，需要重新开始分析。');
+      const continuableStages = new Set<ReferenceTranslationStage>([
+        'SELECTING_REFERENCE_MASTER_SET',
+        'BUILDING_TASK_REFERENCE_SUBSETS',
+        'LOADING_PROJECT_CONTEXT',
+        'ANALYZING_REFERENCE',
+        'SYNTHESIZING_REFERENCE_DNA',
+        'CLASSIFYING_TRANSFERABILITY',
+        'MAPPING_TO_PROJECT'
+      ]);
+      if (!failedStage || !continuableStages.has(failedStage)) {
+        throw new Error('该任务尚未保存可继续使用的参考素材，需要重新选择素材开始分析。');
+      }
+      const referenceAssetSelection = await inspectReferenceAssets([
+        path.join(root, 'input', 'reference-assets')
+      ]);
+      if (!referenceAssetSelection.items.length) {
+        throw new Error('继续分析所需的参考素材副本不存在，需要重新选择参考素材。');
+      }
+      const project = record.projectId
+        ? await dependencies.projects.get(record.projectId).catch(() => null)
+        : null;
+      if (!project) throw new Error('继续分析所需的当前项目已不存在，无法复用失败任务。');
+      const runtimeContext = await readJson<{
+        userConfirmedRealAssets?: string[];
+      }>(path.join(root, 'current-project-runtime-context.json')).catch(() => null);
+      return runUserInput({
+        referenceAssetPaths: referenceAssetSelection.items.map((item) => item.sourcePath),
+        currentProjectId: project.id,
+        confirmedCurrentAssetIds: runtimeContext?.userConfirmedRealAssets || [],
+        apiProfileId: requestedApiProfileId || record.apiProfileId || project.apiProfileId || undefined,
+        preference: record.preference,
+        force: true
+      });
     }
 
-    const root = await runRoot(runId);
     const intermediateDir = path.join(root, 'intermediate');
     const [persistedCurrentProjectProfile, referenceStyleProfile] = await Promise.all([
       readJson<CurrentProjectProfile>(path.join(intermediateDir, 'current-project-profile.json')),

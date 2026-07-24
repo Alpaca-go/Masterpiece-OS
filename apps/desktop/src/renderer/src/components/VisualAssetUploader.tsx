@@ -11,6 +11,7 @@ export interface VisualAssetUploadItem {
 
 interface Props {
   role: 'current_project' | 'reference';
+  visualSchemeDropZone?: boolean;
   items: VisualAssetUploadItem[];
   busy?: boolean;
   notice?: string;
@@ -23,6 +24,7 @@ interface Props {
 
 export function VisualAssetUploader({
   role,
+  visualSchemeDropZone = false,
   items,
   busy = false,
   notice,
@@ -35,6 +37,7 @@ export function VisualAssetUploader({
   const [showAll, setShowAll] = useState(false);
   const visible = showAll ? items : items.slice(0, 8);
   const reference = role === 'reference';
+  const visualScheme = reference || visualSchemeDropZone;
   return <div className="visual-asset-uploader">
     <div className={`drop-zone intake-drop-zone ${busy ? 'busy' : ''}`} onDragOver={(event) => {
       event.preventDefault();
@@ -47,8 +50,8 @@ export function VisualAssetUploader({
       void onAddPaths(paths);
     }}>
       <div className="upload-orbit">↥</div>
-      <strong>{busy ? '正在读取、过滤与去重…' : reference ? '拖入图片或文件夹，或点击选择' : '将 ZIP、图片、PDF 或文件夹拖到这里'}</strong>
-      <p>{reference
+      <strong>{busy ? '正在读取、过滤与去重…' : visualScheme ? '拖入图片或文件夹，或点击选择' : '将 ZIP、图片、PDF 或文件夹拖到这里'}</strong>
+      <p>{visualScheme
         ? '建议上传 4–8 张能够代表整套视觉系统的关键图片。支持 JPG、JPEG、PNG、WebP、PDF、ZIP。'
         : '支持 ZIP、JPG、JPEG、PNG、WEBP、PDF，可多选'}</p>
       <div className="button-row">
@@ -61,8 +64,8 @@ export function VisualAssetUploader({
     {items.length > 0 && <div className="visual-uploader-selection">
       <div className="intake-heading">
         <div><small>已选择</small><h2>{items.length} 个文件</h2>
-          {reference && items.length < 4 && <p className="inline-warning">当前参考图较少，跨图规律判断可能不够稳定。</p>}
-          {reference && items.length > 12 && <p className="inline-warning">参考图较多，分析时间和 Token 消耗可能上升。</p>}
+          {visualScheme && items.length < 4 && <p className="inline-warning">当前视觉图较少，跨图规律判断可能不够稳定。</p>}
+          {visualScheme && items.length > 12 && <p className="inline-warning">视觉图较多，分析时间和 Token 消耗可能上升。</p>}
         </div>
         <div className="button-row">
           {items.length > 8 && <button className="button text-button" type="button" onClick={() => setShowAll((value) => !value)}>{showAll ? '收起' : `查看全部（仅展示前 8 个）`}</button>}
@@ -80,4 +83,3 @@ export function VisualAssetUploader({
     </div>}
   </div>;
 }
-
