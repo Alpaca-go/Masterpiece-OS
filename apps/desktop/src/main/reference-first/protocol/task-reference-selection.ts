@@ -1,7 +1,10 @@
 import type {
   GenerationOutputType,
   ReferenceMasterSet,
+  RequestedGenerationTask,
+  RequestedGenerationTaskManifest,
   TaskReferenceSubset,
+  TaskReferenceSubsetManifest,
   TaskSubsetValidation
 } from '../../../shared/types.ts';
 
@@ -79,4 +82,29 @@ export function selectTaskReferences(
     return validation;
   });
   return { subsets, validations };
+}
+
+/**
+ * §6.2 请求任务覆盖校验。
+ * 所有 required 的请求任务都必须有真实生成的 Task Subset（artifactPath 非空），
+ * 且不得用固定路径伪造。
+ */
+export function validateRequestedTaskCoverage(
+  requested: RequestedGenerationTaskManifest,
+  subsets: TaskReferenceSubsetManifest
+): Array<{ path: string; issueType: string; message: string; repairInstruction: string; severity: 'blocking' }> {
+  return requested.tasks
+    .filter((task) => task.required)
+    .filter((task) =>
+      !subsets.subsets.some(
+        (subset) => subset.outputType === task.outputType && Boolean(subset.artifactPath)
+      )
+    )
+    .map((task) => ({
+      path: `taskReferenceSubsets.${task.outputType}`,
+      issueType: 'missing_required',
+      message: `缺少请求任务 ${task.outputType} 的参考子集。`,
+      repairInstruction: '重新执行任务参考筛选，不得用固定路径代替实际产物。',
+      severity: 'blocking'
+    }));
 }

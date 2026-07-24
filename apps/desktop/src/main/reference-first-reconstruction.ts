@@ -383,7 +383,7 @@ export function buildReferenceFirstStrategy(input: {
       layoutGrammar: adoption.layoutSystem[0]?.description ?? '以参考方案的版式骨架建立新系统',
       typographyHierarchy: adoption.typographySystem[0]?.description ?? '以参考方案的字体层级建立新系统',
       materialLanguage: adoption.materialSystem[0]?.description ?? '以参考方案的材质语言建立新系统',
-      displayMode: adoption.displaySystem[0]?.description ?? '以参考方案的系统陈列方式建立新系统',
+      crossTouchpointConsistency: adoption.displaySystem[0]?.description ?? '以参考方案的系统陈列方式建立新系统',
       primaryStyleCarrierIds: primaryCarrierIds
     },
     projectGraphicAnchor: {

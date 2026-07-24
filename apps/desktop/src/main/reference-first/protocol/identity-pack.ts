@@ -3,9 +3,12 @@ import type {
   AssetAuthenticityDecision,
   BrandCopyRecord,
   CurrentProjectAssetDecision,
+  DerivedIdentityAsset,
   EvidenceBoundFact,
   GenerationIdentityAsset,
   GenerationIdentityPack,
+  GenerationIdentityUsage,
+  IdentityPackGranularityValidation,
   ProjectRuntimeContext,
   StructurePolicy
 } from '../../../shared/types.ts';
@@ -43,23 +46,48 @@ export function buildGenerationIdentityPack(input: {
   facts: EvidenceBoundFact[];
   copy: BrandCopyRecord[];
   structurePolicy: StructurePolicy;
+  /** §9.3 完整视觉方案页资产 id，默认不得进入 Identity Pack（除非用户显式锁定）。 */
+  fullPageAssetIds?: string[];
 }): GenerationIdentityPack {
   const authenticity = new Map(input.authenticityDecisions.map((item) => [item.assetId, item]));
+  const fullPages = new Set(input.fullPageAssetIds || []);
+  const lockedAssetIds = new Set(input.runtime.userLockedAssets.map((item) => item.assetId));
   const assets: GenerationIdentityAsset[] = [];
   for (const decision of input.assetDecisions) {
     const proof = authenticity.get(decision.assetId);
     if (!proof?.includeInGenerationIdentityPack) continue;
+    // §9.3 完整视觉方案页默认排除；仅当用户显式锁定整页时才保留。
+    if (fullPages.has(decision.assetId) && !lockedAssetIds.has(decision.assetId)) continue;
     const roles = rolesOf(decision);
-    const usage: GenerationIdentityAsset['usage'] = roles.includes('locked_asset_evidence')
-      ? 'locked_asset'
+    const usage: GenerationIdentityUsage = roles.includes('locked_asset_evidence')
+      ? 'user_locked_asset'
       : roles.includes('confirmed_structure_evidence')
-        ? 'structure_only'
-        : roles.some((role) => ['product_fact_evidence', 'service_fact_evidence'].includes(role))
-          ? 'product_or_service'
-          : 'identity';
-    assets.push({ assetId: decision.assetId, usage, reason: decision.keepReason });
+        ? 'confirmed_structure'
+        : roles.includes('logo_typography_evidence')
+          ? 'logo_wordmark'
+          : roles.includes('logo_evidence')
+            ? 'logo_graphic'
+            : roles.some((role) => ['product_fact_evidence', 'service_fact_evidence'].includes(role))
+              ? 'product_or_service_fact'
+              : 'brand_name';
+    assets.push({
+      assetId: decision.assetId,
+      usage,
+      reason: decision.keepReason,
+      containsLegacyStyle: Boolean(roles.includes('legacy_visual_only') || roles.includes('legacy_visual_style_only')),
+      confidence: proof.confidence
+    });
   }
-  const byUsage = (usage: GenerationIdentityAsset['usage']) => assets.filter((item) => item.usage === usage);
+  const byUsage = (usage: GenerationIdentityUsage) => assets.filter((item) => item.usage === usage);
+  const derived: DerivedIdentityAsset[] = assets
+    .filter((asset) => ['logo_graphic', 'logo_wordmark', 'brand_name'].includes(asset.usage))
+    .map((asset, index) => ({
+      id: `derived-${asset.assetId}-${index}`,
+      sourceAssetId: asset.assetId,
+      usage: asset.usage,
+      containsLegacyStyle: Boolean(asset.containsLegacyStyle),
+      confidence: asset.confidence ?? 0
+    }));
   return {
     identityFacts: input.facts.filter((fact) =>
       fact.classification === 'identity_fact' && fact.status === 'confirmed'
@@ -68,18 +96,51 @@ export function buildGenerationIdentityPack(input: {
       ['product_or_service_fact', 'product_fact'].includes(fact.classification || '')
       && fact.status === 'confirmed'
     ),
-    logoAssets: assets.filter((asset) => input.assetDecisions.some((decision) =>
-      decision.assetId === asset.assetId && rolesOf(decision).includes('logo_evidence')
-    )),
-    logoTypographyAssets: assets.filter((asset) => input.assetDecisions.some((decision) =>
-      decision.assetId === asset.assetId && rolesOf(decision).includes('logo_typography_evidence')
-    )),
-    confirmedStructureAssets: byUsage('structure_only'),
+    logoAssets: byUsage('logo_graphic'),
+    logoTypographyAssets: byUsage('logo_wordmark'),
+    confirmedStructureAssets: byUsage('confirmed_structure'),
     lockedAssets: input.runtime.userLockedAssets.map((item) => ({ ...item })),
     retainedCopy: input.copy.filter((item) =>
       (item.status === 'user_retained' || item.status === 'locked') && item.useInGeneration
     ),
     structurePolicy: input.structurePolicy,
-    assets
+    assets,
+    derivedAssets: derived
+  };
+}
+
+/**
+ * §9.4 Identity Pack 粒度校验。
+ * locked_asset 不得成为兜底角色；整页旧视觉不得进入；资产不得含旧视觉污染。
+ */
+export function validateIdentityPackGranularity(pack: GenerationIdentityPack): IdentityPackGranularityValidation {
+  const derivedIds = new Set((pack.derivedAssets || []).map((item) => item.sourceAssetId));
+  const fullPageAssetIds = pack.assets
+    .filter((item) =>
+      item.usage === 'user_locked_asset'
+      && item.containsLegacyStyle
+      && !derivedIds.has(item.assetId)
+    )
+    .map((item) => item.assetId);
+  const broadLockedAssetIds = pack.assets
+    .filter((item) =>
+      item.usage === 'user_locked_asset'
+      && /整页|整张|整体|全部视觉|完整方案|full[_ ]?page|whole[_ ]?page/iu.test(item.reason || '')
+    )
+    .map((item) => item.assetId);
+  const legacyStyleContaminatedAssetIds = pack.assets
+    .filter((item) => item.containsLegacyStyle && item.usage !== 'user_locked_asset')
+    .map((item) => item.assetId);
+  const missingRequiredIdentityUsages: string[] = [];
+  if (pack.assets.length === 0) missingRequiredIdentityUsages.push('identity');
+  return {
+    fullPageAssetIds,
+    broadLockedAssetIds,
+    legacyStyleContaminatedAssetIds,
+    missingRequiredIdentityUsages,
+    passed: fullPageAssetIds.length === 0
+      && broadLockedAssetIds.length === 0
+      && legacyStyleContaminatedAssetIds.length === 0
+      && missingRequiredIdentityUsages.length === 0
   };
 }

@@ -294,6 +294,38 @@ export interface StyleCarrier {
   supportingAssetIds: string[];
   mustBeVisibleInOutput: boolean;
   confidence: number;
+  /** 是否携带参考专属身份（参考身份、文案、专属图形）。一旦为 true 不得进入任何 Style Carrier Ranking。 */
+  containsReferenceIdentity?: boolean;
+  /** 关联到的禁止复制参考专属图形 id 列表。一旦非空不得进入 Ranking。 */
+  referencesSignatureGraphicIds?: string[];
+  /** 该载体可应用的输出任务类型。为空表示未声明（按全局处理）。 */
+  compatibleOutputTypes?: GenerationOutputType[];
+}
+
+/** 全局 Style Carrier Ranking（两级：primary / secondary / optional）。 */
+export interface GlobalStyleCarrierRanking {
+  primary: StyleCarrier[];
+  secondary: StyleCarrier[];
+  optional: StyleCarrier[];
+}
+
+/** 按单个输出任务筛选后的 Style Carrier 集合。 */
+export interface TaskScopedStyleCarrierSet {
+  outputType: GenerationOutputType;
+  requiredPrimary: StyleCarrier[];
+  supportingSecondary: StyleCarrier[];
+  excludedForTask: Array<{ carrierId: string; reason: string }>;
+}
+
+/** Style Carrier 与输出任务的兼容性描述。 */
+export interface StyleCarrierTaskCompatibility {
+  carrierId: string;
+  compatibleOutputTypes: GenerationOutputType[];
+  incompatibleOutputTypes: GenerationOutputType[];
+  requiresPhotography: boolean;
+  requiresSpace: boolean;
+  requiresMotion: boolean;
+  requiresPhysicalTouchpoint: boolean;
 }
 
 export interface ReferenceMasterSet {
@@ -331,6 +363,8 @@ export interface TaskReferenceSubset {
   requiresHumanReview?: boolean;
   coveredStyleCarrierIds?: string[];
   missingEvidence?: string[];
+  /** 真实生成的子集产物路径。禁止用固定路径伪造；未生成则为空。 */
+  artifactPath?: string;
 }
 
 export interface TaskSubsetValidation {
@@ -340,6 +374,32 @@ export interface TaskSubsetValidation {
   avoidsCrossTypeNoise: boolean;
   avoidsNearDuplicates: boolean;
   assetCountValid: boolean;
+  passed: boolean;
+}
+
+/** §6.1 单个请求的生成任务。 */
+export interface RequestedGenerationTask {
+  outputType: GenerationOutputType;
+  requestedBy: 'user' | 'system' | 'workflow';
+  required: boolean;
+}
+
+/** §6.1 请求任务清单。 */
+export interface RequestedGenerationTaskManifest {
+  tasks: RequestedGenerationTask[];
+}
+
+/** §6.2 Task Subset 完整性清单。 */
+export interface TaskReferenceSubsetManifest {
+  subsets: TaskReferenceSubset[];
+}
+
+/** §5.5 任务级 Style Carrier 校验结果。 */
+export interface TaskStyleCarrierValidation {
+  outputType: GenerationOutputType;
+  incompatibleCarrierIds: string[];
+  missingDominantCategories: string[];
+  primaryCountValid: boolean;
   passed: boolean;
 }
 
@@ -354,6 +414,14 @@ export interface AssetSelectionProtocolResult {
   taskSubsetValidations: TaskSubsetValidation[];
   requiresHumanConfirmation: boolean;
   schemaVersion: 'asset-selection-protocol-v1';
+  /** §3.4 参考专属图形泄漏校验。 */
+  signatureGraphicLeakValidation?: SignatureGraphicLeakValidation;
+  /** §5.5 任务级 Style Carrier 校验（按请求任务）。 */
+  taskStyleCarrierValidations?: TaskStyleCarrierValidation[];
+  /** §7 Generation Context Manifest：审计报告与 Brief 共用。 */
+  generationContextManifest?: GenerationContextManifest;
+  /** §6 请求任务清单（用于子集覆盖校验）。 */
+  requestedTasks?: RequestedGenerationTask[];
 }
 
 export interface ProjectRecord {
@@ -943,7 +1011,7 @@ export interface SystemAnchor {
   layoutGrammar: string;
   typographyHierarchy: string;
   materialLanguage: string;
-  displayMode: string;
+  crossTouchpointConsistency: string;
   primaryStyleCarrierIds: string[];
 }
 
@@ -958,6 +1026,23 @@ export interface ProjectGraphicAnchor {
   isBadgeLike?: boolean;
   resemblesReferenceSignatureGraphic?: boolean;
   supportingFactIds?: string[];
+}
+
+/** §4.3 Anchor 冲突校验结果。 */
+export interface AnchorContradictionValidation {
+  projectAnchorRoleConflict: boolean;
+  closedOpenConflict: boolean;
+  badgeConstraintConflict: boolean;
+  signatureSimilarityConflict: boolean;
+  conflictingSourceFields: string[];
+  passed: boolean;
+}
+
+/** §4.1 Reference-First 单一来源 Anchor 模型。 */
+export interface ReferenceFirstAnchorModel {
+  systemAnchor: SystemAnchor;
+  projectGraphicAnchor?: ProjectGraphicAnchor;
+  referenceSignatureGraphics: ReferenceSignatureGraphic[];
 }
 
 export interface AnchorImageDefinition {
@@ -1128,9 +1213,21 @@ export interface ReferenceGraphicStructure {
 }
 
 export interface ReferenceSignatureGraphic {
+  id?: string;
   description: string;
   forbiddenToCopy: boolean;
   evidenceAssetIds: string[];
+  semanticFingerprint?: string[];
+}
+
+/** §3.4 参考专属图形泄漏校验结果。 */
+export interface SignatureGraphicLeakValidation {
+  primaryStyleCarrierLeakIds: string[];
+  secondaryStyleCarrierLeakIds: string[];
+  systemAnchorLeakIds: string[];
+  projectGraphicAnchorLeakIds: string[];
+  generationBriefLeakIds: string[];
+  passed: boolean;
 }
 
 export interface GraphicReconstructionOutput {
@@ -1525,9 +1622,18 @@ export interface StructurePolicy {
   domain: 'packaging' | 'product' | 'space' | 'interface' | 'publication' | 'other';
   status: StructureStatus;
   confirmedAssetIds: string[];
+  inferredStructureObservations?: string[];
   excludedUnverifiedAssetIds: string[];
   redesignAllowed: boolean;
   requiresHumanConfirmation: boolean;
+}
+
+/** §8.4 结构策略校验结果。 */
+export interface StructurePolicyValidation {
+  inferredStructureEnteredLockedInfo: boolean;
+  inferredStructureEnteredIdentityPack: boolean;
+  promptStructureStatementMatchesPolicy: boolean;
+  passed: boolean;
 }
 
 export interface UserStructureDecision {
@@ -1538,10 +1644,41 @@ export interface UserStructureDecision {
   confirmedAssetIds?: string[];
 }
 
+export type GenerationIdentityUsage =
+  | 'brand_name'
+  | 'logo_graphic'
+  | 'logo_wordmark'
+  | 'product_or_service_fact'
+  | 'confirmed_structure'
+  | 'user_locked_asset'
+  | 'retained_copy';
+
 export interface GenerationIdentityAsset {
   assetId: string;
-  usage: 'identity' | 'product_or_service' | 'structure_only' | 'locked_asset';
+  usage: GenerationIdentityUsage;
   reason: string;
+  containsLegacyStyle?: boolean;
+  confidence?: number;
+}
+
+/** §9.2 派生身份资产（Logo 裁切 / 字标裁�� / 独立图形等）。 */
+export interface DerivedIdentityAsset {
+  id: string;
+  sourceAssetId: string;
+  usage: GenerationIdentityUsage;
+  cropRegion?: { x: number; y: number; width: number; height: number };
+  normalizedFilePath?: string;
+  containsLegacyStyle: boolean;
+  confidence: number;
+}
+
+/** §9.4 Identity Pack 粒度校验结果。 */
+export interface IdentityPackGranularityValidation {
+  fullPageAssetIds: string[];
+  broadLockedAssetIds: string[];
+  legacyStyleContaminatedAssetIds: string[];
+  missingRequiredIdentityUsages: string[];
+  passed: boolean;
 }
 
 export interface LockedAsset {
@@ -1559,6 +1696,7 @@ export interface GenerationIdentityPack {
   retainedCopy: BrandCopyRecord[];
   structurePolicy: StructurePolicy;
   assets: GenerationIdentityAsset[];
+  derivedAssets?: DerivedIdentityAsset[];
 }
 
 export interface GenerationTaskDefinition {
@@ -1571,13 +1709,48 @@ export interface GenerationTaskDefinition {
   typographyRules: string[];
   materialRules: string[];
   photographyRules: string[];
+  logoUsageRules: string[];
   forbiddenOutputPatterns: string[];
+}
+
+/** §7 Generation Context Manifest：两份报告共用同一任务上下文。 */
+export interface GenerationContextManifest {
+  jobId: string;
+  outputType: GenerationOutputType;
+  identityPackArtifactId: string;
+  generationBriefArtifactId: string;
+  taskReferenceSubsetArtifactId: string;
+  approvedAnchorArtifactId?: string;
+  taskScopedStyleCarrierIds: string[];
+  systemAnchorId: string;
+  projectGraphicAnchorId?: string;
+  structurePolicyId: string;
+  validationStatus: 'ready' | 'needs_review' | 'blocked';
+}
+
+/** §12 跨报告一致性校验结果。 */
+export interface CrossArtifactConsistencyValidation {
+  outputTypeMatches: boolean;
+  taskSubsetMatches: boolean;
+  styleCarrierIdsMatch: boolean;
+  systemAnchorMatches: boolean;
+  projectGraphicAnchorMatches: boolean;
+  structurePolicyMatches: boolean;
+  identityPackMatches: boolean;
+  contradictions: string[];
+  passed: boolean;
 }
 
 export interface GenerationReadinessGate {
   identityPackReady: boolean;
-  projectFactsReady: boolean;
+  identityPackGranularityReady: boolean;
   structurePolicyResolved: boolean;
+  referenceSignatureGraphicsIsolated: boolean;
+  anchorSingleSourceReady: boolean;
+  requestedTaskSubsetReady: boolean;
+  taskScopedStyleCarriersReady: boolean;
+  generationTaskDefinitionReady: boolean;
+  auditBriefConsistencyReady: boolean;
   styleCarriersReady: boolean;
   taskReferenceReady: boolean;
   anchorDefinitionReady: boolean;

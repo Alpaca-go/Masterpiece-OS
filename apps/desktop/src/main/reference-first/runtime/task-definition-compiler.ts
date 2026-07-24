@@ -35,6 +35,7 @@ export function compileTaskDefinition(input: {
     typographyRules: strings(taskMetadata.typographyRules),
     materialRules: strings(taskMetadata.materialRules),
     photographyRules: strings(taskMetadata.photographyRules),
+    logoUsageRules: strings(taskMetadata.logoUsageRules),
     forbiddenOutputPatterns: [
       ...strings(taskMetadata.forbiddenOutputPatterns),
       '不得复制参考身份、文案或专属图形',

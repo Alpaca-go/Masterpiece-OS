@@ -14,7 +14,10 @@ function list(values: string[]): string {
 export function compileGenerationBrief(input: {
   identityPack: GenerationIdentityPack;
   replaceableLegacyVisuals: string[];
+  /** 全局 Style Carrier Ranking（用于兜底）。 */
   styleCarriers: StyleCarrier[];
+  /** §5 当前任务筛选后的 Primary Style Carriers（优先使用）。 */
+  taskScopedPrimaryCarriers?: StyleCarrier[];
   systemAnchor: SystemAnchor;
   graphicAnchor: ProjectGraphicAnchor;
   task: GenerationTaskDefinition;
@@ -25,9 +28,10 @@ export function compileGenerationBrief(input: {
     ...input.identityPack.identityFacts.map((item) => `${item.key || item.id}: ${item.value}`),
     ...input.identityPack.productOrServiceFacts.map((item) => `${item.key || item.id}: ${item.value}`)
   ];
-  const primaryRules = input.styleCarriers
-    .filter((item) => item.priority === 'primary')
-    .map((item) => item.readableRule || item.description);
+  const primaryRules = (input.taskScopedPrimaryCarriers && input.taskScopedPrimaryCarriers.length
+    ? input.taskScopedPrimaryCarriers
+    : input.styleCarriers.filter((item) => item.priority === 'primary')
+  ).map((item) => item.readableRule || item.description);
   const prompt = `你正在执行 Reference-First Reconstruction。
 
 当前项目身份、事实、Locked Assets 与结构状态以 Project Runtime Context 和 Generation Identity Pack 为准。
@@ -58,7 +62,7 @@ ${list([
     input.systemAnchor.layoutGrammar,
     input.systemAnchor.typographyHierarchy,
     input.systemAnchor.materialLanguage,
-    input.systemAnchor.displayMode
+    input.systemAnchor.crossTouchpointConsistency
   ].filter(Boolean))}
 
 ## 6. Project Graphic Anchor
@@ -70,11 +74,15 @@ ${list([
 ## 7. Current Task Definition
 - outputType: ${input.task.outputType}
 - purpose: ${input.task.taskPurpose}
+- 画面主体类型：${list(input.task.primarySubjectTypes)}
+- 必需对象：${list(input.task.requiredObjects)}
+- 可选对象：${list(input.task.optionalObjects)}
 ${list([
     ...input.task.compositionRules,
     ...input.task.typographyRules,
     ...input.task.materialRules,
-    ...input.task.photographyRules
+    ...input.task.photographyRules,
+    ...input.task.logoUsageRules
   ])}
 
 ## 8. Reference Subset

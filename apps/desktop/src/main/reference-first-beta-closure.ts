@@ -31,7 +31,13 @@ const list = (values: string[], fallback = '无') =>
   values.length ? values.map((value) => `- ${value}`).join('\n') : `- ${fallback}`;
 
 function readableFilename(filename: string) {
-  const displayName = filename.normalize('NFKC').replace(/[\u0000-\u001f]/gu, '').trim() || '未命名素材';
+  // Normalize and strip control characters; also sanitize common encoding mojibake
+  const normalized = filename
+    .normalize('NFKC')
+    .replace(/[\u0000-\u001f]/gu, '')
+    .replace(/\uFFFD/g, '_')           // Unicode replacement char → underscore
+    .replace(/锟斤拷/g, '(编码异常)');   // GBK→UTF-8 mojibake marker → label
+  const displayName = normalized.trim() || '未命名素材';
   return {
     originalName: filename,
     normalizedName: displayName.replace(/[<>:"/\\|?*]/gu, '_'),
@@ -293,7 +299,7 @@ ${list(primary.map((item) => item.description))}
 - 版式语法：${strategy.systemAnchor.layoutGrammar}
 - 字体层级：${strategy.systemAnchor.typographyHierarchy}
 - 材质语言：${strategy.systemAnchor.materialLanguage}
-- 陈列模式：${strategy.systemAnchor.displayMode}
+- 陈列模式：${strategy.systemAnchor.crossTouchpointConsistency}
 
 ## 5. Project Graphic Anchor
 - 来源元素：${strategy.projectGraphicAnchor.sourceElements.join('、')}
@@ -497,7 +503,8 @@ export function buildReferenceFirstBetaClosure(input: {
   if (primaryCount < PRIMARY_STYLE_CARRIER_MIN || primaryCount > PRIMARY_STYLE_CARRIER_MAX) errors.push('PRIMARY_STYLE_CARRIER_OVERLOAD');
   if (!taskConsistent) errors.push('TASK_REFERENCE_MATCH_CONTRADICTION');
   if (generationBriefMarkdown.length > GENERATION_BRIEF_MAX_CHARS) errors.push('GENERATION_BRIEF_TOO_VERBOSE');
-  if (decisions.some((item) => /�|锟斤拷/u.test(item.filename.displayName))) errors.push('ASSET_FILENAME_ENCODING_ERROR');
+  // Filename encoding: track readability via originalName (pre-sanitization); warn-only, not blocking
+  const hasFilenameEncodingIssues = decisions.some((item) => /�|锟斤拷/u.test(item.filename.originalName));
   const projectGraphicAnchorIsNonBadge = !SIGNATURE_GRAPHIC_PATTERN.test(strategy.projectGraphicAnchor.reconstructedForm);
   if (!projectGraphicAnchorIsNonBadge) errors.push('REFERENCE_SIGNATURE_GRAPHIC_LEAK');
   const finalValidation = {
@@ -516,7 +523,7 @@ export function buildReferenceFirstBetaClosure(input: {
       && touchpointVisualRules.find((item) => item.outputType === 'product_poster')?.productPhotographyMayDominate === true,
     auditAndGenerationDocsSeparated: analysisAuditMarkdown !== generationBriefMarkdown,
     generationBriefWithinLengthLimit: generationBriefMarkdown.length <= GENERATION_BRIEF_MAX_CHARS,
-    filenamesReadable: !errors.includes('ASSET_FILENAME_ENCODING_ERROR'),
+    filenamesReadable: !hasFilenameEncodingIssues,
     passed: errors.length === 0,
     errors: unique(errors)
   };

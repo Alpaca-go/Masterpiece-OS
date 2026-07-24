@@ -741,10 +741,17 @@ export function createReferenceTranslationService(
         referenceProject.assets || [],
         referencePaths.input
       );
+      const requestedTasks = [
+        ...new Set(referenceDecisions.flatMap((item) => item.eligibleOutputTypes))
+      ].map((outputType) => ({ outputType, requestedBy: 'system' as const, required: true }));
       const assetSelectionProtocol = assembleAssetSelectionProtocol(
         currentProject,
         currentDecisions,
-        referenceDecisions
+        referenceDecisions,
+        {
+          signatureGraphics: [],
+          requestedTasks
+        }
       );
       await Promise.all([
         writeJson(path.join(root, 'reference-assets.json'), referenceProject.assets || []),
@@ -752,6 +759,9 @@ export function createReferenceTranslationService(
         writeJson(path.join(root, 'reference-master-set.json'), assetSelectionProtocol.referenceMasterSet),
         writeJson(path.join(root, 'reference-master-set-validation.json'), assetSelectionProtocol.referenceMasterSetValidation),
         writeJson(path.join(root, 'style-carrier-ranking.json'), assetSelectionProtocol.referenceMasterSet.styleCarriers),
+        writeJson(path.join(root, 'signature-graphic-leak-validation.json'), assetSelectionProtocol.signatureGraphicLeakValidation || {}),
+        writeJson(path.join(root, 'task-style-carrier-validations.json'), assetSelectionProtocol.taskStyleCarrierValidations || []),
+        writeJson(path.join(root, 'generation-context-manifest.json'), assetSelectionProtocol.generationContextManifest || {}),
         writeJson(path.join(root, 'asset-selection-protocol.json'), assetSelectionProtocol)
       ]);
       assertAssetSelectionProtocol(assetSelectionProtocol);
@@ -1108,7 +1118,10 @@ export function createReferenceTranslationService(
       readJson<CurrentProjectAssetDecision[]>(path.join(root, 'current-project-asset-decisions.json')),
       readJson<ReferenceAssetDecision[]>(path.join(root, 'reference-asset-decisions.json'))
     ]);
-    return assembleAssetSelectionProtocol(project, currentDecisions, referenceDecisions);
+    return assembleAssetSelectionProtocol(project, currentDecisions, referenceDecisions, {
+      signatureGraphics: [],
+      requestedTasks: []
+    });
   }
 
   async function resume(runId: string, requestedApiProfileId?: string): Promise<ReferenceTranslationResult> {

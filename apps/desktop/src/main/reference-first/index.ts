@@ -6,6 +6,8 @@ export * from './protocol/reference-master-set.ts';
 export * from './protocol/style-carrier-ranking.ts';
 export * from './protocol/graphic-reconstruction.ts';
 export * from './protocol/task-reference-selection.ts';
+export * from './protocol/anchor-section.ts';
+export * from './protocol/cross-artifact.ts';
 export * from './protocol/generation-readiness.ts';
 export * from './protocol/hardcode-scan.ts';
 export * from './runtime/project-runtime-context.ts';

@@ -1,13 +1,15 @@
 import type {
   ReferenceAssetDecision,
-  ReferenceMasterSet
+  ReferenceMasterSet,
+  ReferenceSignatureGraphic
 } from '../../../shared/types.ts';
 import { rankStyleCarriers } from './style-carrier-ranking.ts';
 
 const EXCLUDED_ROLES = new Set(['duplicate', 'irrelevant', 'uncertain']);
 
 export function buildGenericReferenceMasterSet(
-  decisions: ReferenceAssetDecision[]
+  decisions: ReferenceAssetDecision[],
+  signatureGraphics: ReferenceSignatureGraphic[] = []
 ): ReferenceMasterSet {
   const sorted = decisions
     .filter((item) => item.includeInMasterSet && !EXCLUDED_ROLES.has(item.primaryRole || item.role))
@@ -26,7 +28,7 @@ export function buildGenericReferenceMasterSet(
   return {
     assetIds: selected.map((item) => item.assetId),
     decisions: selected,
-    styleCarriers: rankStyleCarriers(selected),
+    styleCarriers: rankStyleCarriers(selected, { signatureGraphics }),
     schemaVersion: 'reference-master-set-v1'
   };
 }

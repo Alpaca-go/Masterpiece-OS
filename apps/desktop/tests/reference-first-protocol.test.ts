@@ -279,7 +279,7 @@ test('generation readiness blocks unverified assets and signature-graphic leakag
     layoutGrammar: '稳定网格',
     typographyHierarchy: '三级层级',
     materialLanguage: '真实表面',
-    displayMode: '清晰展示',
+    crossTouchpointConsistency: '清晰展示',
     primaryStyleCarrierIds: master.styleCarriers.map((item) => item.id)
   };
   const anchor: ProjectGraphicAnchor = {

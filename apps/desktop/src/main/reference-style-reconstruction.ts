@@ -1173,7 +1173,7 @@ ${bullet(direction.prohibitedActions)}
 - 版式语法：${strategy.systemAnchor.layoutGrammar}
 - 字体层级：${strategy.systemAnchor.typographyHierarchy}
 - 材质语言：${strategy.systemAnchor.materialLanguage}
-- 陈列模式：${strategy.systemAnchor.displayMode}
+- 陈列模式：${strategy.systemAnchor.crossTouchpointConsistency}
 - 主要风格载体：${strategy.systemAnchor.primaryStyleCarrierIds.join('、')}
 
 系统锚点优先级高于项目图形锚点。

@@ -4,6 +4,7 @@ import type {
   CurrentProjectAssetRole,
   CurrentProjectCorePack,
   CurrentProjectCorePackValidation,
+  GenerationContextManifest,
   GenerationOutputType,
   ProjectAsset,
   ProjectRecord,
@@ -12,15 +13,24 @@ import type {
   ReferenceAssetRole,
   ReferenceMasterSet,
   ReferenceMasterSetValidation,
+  ReferenceSignatureGraphic,
+  RequestedGenerationTask,
+  SignatureGraphicLeakValidation,
   StyleCarrier,
   TaskReferenceSubset,
+  TaskScopedStyleCarrierSet,
+  TaskStyleCarrierValidation,
   TaskSubsetValidation
 } from '../../shared/types.ts';
 import path from 'node:path';
 import sharp from 'sharp';
 import {
   buildGenericReferenceMasterSet,
-  selectTaskReferences
+  compileTaskScopedStyleCarriers,
+  selectTaskReferences,
+  validateSignatureGraphicLeak,
+  validateTaskStyleCarriers,
+  validateRequestedTaskCoverage
 } from '../reference-first/index.ts';
 import { parseCurrentProjectAssetDecisions } from '../model-schema/asset-authenticity.schema.ts';
 import { parseReferenceAssetDecisions } from '../model-schema/reference-assets.schema.ts';
@@ -384,8 +394,11 @@ export function validateCurrentProjectCorePack(
   };
 }
 
-export function buildReferenceMasterSet(decisions: ReferenceAssetDecision[]): ReferenceMasterSet {
-  const master = buildGenericReferenceMasterSet(decisions);
+export function buildReferenceMasterSet(
+  decisions: ReferenceAssetDecision[],
+  signatureGraphics: ReferenceSignatureGraphic[] = []
+): ReferenceMasterSet {
+  const master = buildGenericReferenceMasterSet(decisions, signatureGraphics);
   const parsed = StyleCarrierSchema.safeParse(master.styleCarriers);
   throwForValidationIssues(parsed.issues);
   return master;
@@ -452,13 +465,56 @@ export function buildTaskReferenceSubsets(master: ReferenceMasterSet): {
 export function assembleAssetSelectionProtocol(
   project: ProjectRecord,
   currentDecisions: CurrentProjectAssetDecision[],
-  referenceDecisions: ReferenceAssetDecision[]
+  referenceDecisions: ReferenceAssetDecision[],
+  options: {
+    signatureGraphics?: ReferenceSignatureGraphic[];
+    requestedTasks?: RequestedGenerationTask[];
+  } = {}
 ): AssetSelectionProtocolResult {
+  const signatureGraphics = options.signatureGraphics || [];
+  const requestedTasks = options.requestedTasks || [];
   const currentProjectCorePack = buildCurrentProjectCorePack(project, currentDecisions);
   const currentCorePackValidation = validateCurrentProjectCorePack(currentProjectCorePack, currentDecisions);
-  const referenceMasterSet = buildReferenceMasterSet(referenceDecisions);
+  const referenceMasterSet = buildReferenceMasterSet(referenceDecisions, signatureGraphics);
   const referenceMasterSetValidation = validateReferenceMasterSet(referenceMasterSet, referenceDecisions);
   const { subsets, validations } = buildTaskReferenceSubsets(referenceMasterSet);
+  const taskScopedStyleCarriers: TaskScopedStyleCarrierSet[] = unique(
+    subsets.map((subset) => subset.outputType)
+  ).map((outputType) => compileTaskScopedStyleCarriers(referenceMasterSet.styleCarriers, outputType));
+  const taskStyleCarrierValidations: TaskStyleCarrierValidation[] = taskScopedStyleCarriers.map(validateTaskStyleCarriers);
+  const signatureGraphicLeakValidation: SignatureGraphicLeakValidation = validateSignatureGraphicLeak({
+    signatures: signatureGraphics,
+    carriers: referenceMasterSet.styleCarriers
+  });
+  const requestedCoverageIssues = validateRequestedTaskCoverage(
+    { tasks: requestedTasks },
+    { subsets }
+  );
+  const taskScopedStyleCarrierIds = [
+    ...new Set(taskScopedStyleCarriers.flatMap((set) => set.requiredPrimary.map((item) => item.id)))
+  ];
+  const generationContextManifest: GenerationContextManifest | undefined = requestedTasks[0]
+    ? {
+        jobId: project.id,
+        outputType: requestedTasks[0]!.outputType,
+        identityPackArtifactId: 'generation-identity-pack',
+        generationBriefArtifactId: 'generation-brief',
+        taskReferenceSubsetArtifactId: `task-reference-subsets/${requestedTasks[0]!.outputType}`,
+        systemAnchorId: 'system-anchor',
+        structurePolicyId: 'structure-policy',
+        taskScopedStyleCarrierIds,
+        validationStatus: requestedCoverageIssues.length ? 'blocked' : 'ready'
+      }
+    : undefined;
+  const requiresHumanConfirmation = [
+      ...currentDecisions.map((item) => item.confidence),
+      ...referenceDecisions.map((item) => item.confidence)
+    ].some((confidence) => confidence < 0.8)
+      || currentDecisions.some((item) => item.requiresHumanReview)
+      || referenceDecisions.some((item) => item.requiresHumanReview)
+      || requestedCoverageIssues.length > 0
+      || taskStyleCarrierValidations.some((item) => !item.passed)
+      || !signatureGraphicLeakValidation.passed;
   return {
     currentProjectAssetDecisions: currentDecisions,
     currentProjectCorePack,
@@ -468,13 +524,12 @@ export function assembleAssetSelectionProtocol(
     referenceMasterSetValidation,
     taskReferenceSubsets: subsets,
     taskSubsetValidations: validations,
-    requiresHumanConfirmation: [
-      ...currentDecisions.map((item) => item.confidence),
-      ...referenceDecisions.map((item) => item.confidence)
-    ].some((confidence) => confidence < 0.8)
-      || currentDecisions.some((item) => item.requiresHumanReview)
-      || referenceDecisions.some((item) => item.requiresHumanReview),
-    schemaVersion: 'asset-selection-protocol-v1'
+    requiresHumanConfirmation,
+    schemaVersion: 'asset-selection-protocol-v1',
+    signatureGraphicLeakValidation,
+    taskStyleCarrierValidations,
+    generationContextManifest,
+    requestedTasks
   };
 }
 
