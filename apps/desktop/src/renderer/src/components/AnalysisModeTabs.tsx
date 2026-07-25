@@ -1,4 +1,4 @@
-export type AnalysisMode = 'visual-analysis' | 'visual-translation' | 'reference-translation';
+export type AnalysisMode = 'visual-analysis' | 'document-context' | 'visual-translation' | 'reference-translation';
 
 interface Props {
   value: AnalysisMode;
@@ -10,8 +10,11 @@ export function AnalysisModeTabs({ value, onChange }: Props) {
     <button role="tab" aria-selected={value === 'visual-analysis'} className={value === 'visual-analysis' ? 'active' : ''} onClick={() => onChange('visual-analysis')}>
       <span>视觉分析</span><small>上传视觉方案、图片、PDF 或 ZIP</small>
     </button>
+    <button role="tab" aria-selected={value === 'document-context'} className={value === 'document-context' ? 'active' : ''} onClick={() => onChange('document-context')}>
+      <span>文档上下文提取</span><small>提取品牌视觉事实，人工确认后生成项目简报</small>
+    </button>
     <button role="tab" aria-selected={value === 'visual-translation'} className={value === 'visual-translation' ? 'active' : ''} onClick={() => onChange('visual-translation')}>
-      <span>文档视觉转译</span><small>上传策略文档，生成三个视觉方向</small>
+      <span>文档视觉转译（旧）</span><small>旧三方向流程：上传策略文档，生成三个视觉方向</small>
     </button>
     <button role="tab" aria-selected={value === 'reference-translation'} className={value === 'reference-translation' ? 'active' : ''} onClick={() => onChange('reference-translation')}>
       <span>参考风格重构</span><small>将参考视觉风格应用到当前项目并生成 GPT 执行文档</small>

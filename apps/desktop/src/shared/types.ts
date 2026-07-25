@@ -803,6 +803,124 @@ export interface VisualTranslationResult {
   reportMarkdown: string;
 }
 
+// ── Document Context Extraction（Phase 2：文档分析上下文提取器）──
+// 默认流程：文档解析 → 视觉相关事实提取（1 次模型调用 + 最多 1 次 Repair）
+// → 确定性归一化 → 人工确认 → 本地简报编译。默认不联网做 Benchmark、
+// 不生成三个方向、不自动推荐、不生成技术审计。
+
+export type DocumentAnalysisMode = 'context_extraction' | 'legacy_three_directions';
+
+export type DocumentContextRunStatus =
+  | 'pending'
+  | 'parsing'
+  | 'extracting'
+  | 'repairing'
+  | 'awaiting_confirmation'
+  | 'compiling'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+export type DocumentContextStage =
+  | '00-document-preparation'
+  | '01-document-role-index'
+  | '02-visual-context-extraction'
+  | '03-local-normalization'
+  | '04-human-confirmation'
+  | '05-local-brief-compiler';
+
+export interface DocumentVisualContextEvidence {
+  field: string;
+  documentId: string;
+  filename: string;
+  section?: string;
+  page?: number;
+  summary: string;
+}
+
+export interface DocumentVisualContext {
+  schemaVersion: '1.0';
+  sourceRunId: string;
+  generatedAt: string;
+
+  brandName: string;
+  industry: string;
+
+  products: string[];
+  services: string[];
+  targetAudience: string[];
+
+  pricePositioning: string | null;
+  businessModel: string | null;
+
+  brandPersonality: string[];
+  visualPreferences: string[];
+
+  requiredTouchpoints: string[];
+  lockedFacts: string[];
+  prohibitedDirections: string[];
+
+  unknownFields: string[];
+
+  evidence: DocumentVisualContextEvidence[];
+
+  sourceDocuments: Array<{
+    documentId: string;
+    filename: string;
+    sourceType: 'pdf' | 'docx' | 'markdown' | 'text';
+    title?: string;
+    characterCount: number;
+    pageCount?: number;
+  }>;
+}
+
+// 非阻断警告（DOCUMENT_ROLE_UNKNOWN / TARGET_AUDIENCE_UNKNOWN / ...）
+export interface DocumentContextWarning {
+  code: string;
+  message: string;
+  field?: string;
+}
+
+export interface DocumentContextRun {
+  id: string;
+  mode: DocumentAnalysisMode;
+  projectName: string;
+  status: DocumentContextRunStatus;
+  apiProfileId: string;
+  provider: string;
+  model: string;
+  documentCount: number;
+  documentNames: string[];
+  createdAt: string;
+  startedAt: string;
+  completedAt?: string;
+  durationMs?: number;
+  currentStage?: DocumentContextStage;
+  modelCallCount?: number;
+  repairCount?: number;
+  warnings?: DocumentContextWarning[];
+  errorCode?: string | null;
+  lastError?: string | null;
+  briefFilename?: string | null;
+}
+
+export interface DocumentVisualContextResult {
+  run: DocumentContextRun;
+  context: DocumentVisualContext;
+  briefMarkdown: string;
+}
+
+export interface DocumentContextProgress {
+  runId: string;
+  projectName: string;
+  stage: DocumentContextStage;
+  status: DocumentContextRunStatus;
+  message: string;
+  startedAt: string;
+  elapsedMs: number;
+  model: string;
+}
+
 // ── Reference-Led Visual Direction（Reference Translation Profile）──
 // 离线确定性引擎：从参考项目视觉分析中提取可迁移机制，
 // 在不复制签名资产的前提下映射到当前项目。零模型调用。
@@ -1808,6 +1926,24 @@ export interface DesktopApi {
     remove(runId: string): Promise<void>;
     openFolder(runId: string): Promise<void>;
     onProgress(callback: (progress: ReferenceTranslationProgress) => void): () => void;
+  };
+  documentContext: {
+    chooseDocuments(): Promise<string[]>;
+    inspectDocuments(paths: string[]): Promise<VisualTranslationDocumentSummary[]>;
+    listRuns(): Promise<DocumentContextRun[]>;
+    getRun(runId: string): Promise<DocumentContextRun>;
+    start(paths: string[], profileId: string): Promise<DocumentContextRun>;
+    getExtracted(runId: string): Promise<DocumentVisualContext>;
+    confirm(runId: string, context: DocumentVisualContext): Promise<DocumentContextRun>;
+    compile(runId: string): Promise<DocumentVisualContextResult>;
+    resume(runId: string, apiProfileId?: string): Promise<DocumentContextRun>;
+    cancel(runId: string): Promise<boolean>;
+    remove(runId: string): Promise<void>;
+    readBrief(runId: string): Promise<string>;
+    export(runId: string): Promise<string | null>;
+    adaptLegacyRun(runId: string): Promise<DocumentVisualContext>;
+    openFolder(runId: string): Promise<void>;
+    onProgress(callback: (progress: DocumentContextProgress) => void): () => void;
   };
   files: {
     getPathForFile(file: File): string;

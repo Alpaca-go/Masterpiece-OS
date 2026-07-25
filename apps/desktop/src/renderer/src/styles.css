@@ -241,3 +241,40 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .reference-dna-group li span { display: block; font-size: 11px; }
 .reference-dna-group li small { display: block; margin-top: 2px; color: #847d87; font-size: 10px; line-height: 1.45; }
 .reference-translation-report .panel { margin-bottom: 16px; }
+
+/* Document Context Extraction (Phase 2) */
+.record-type.document-context { color: #245f8f; background: #ddecf8; }
+.notice.warn { color: #7a5c19; background: #f7efd7; }
+.notice.warn p { margin: 4px 0 0; }
+.badge.awaiting_confirmation, .badge.compiling { color: #7a5c19; background: #f2e8cb; }
+.badge.parsing, .badge.extracting, .badge.repairing, .badge.pending { color: #5c38bd; background: #e7defa; }
+.context-confirm-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; align-items: start; }
+@media (max-width: 1100px) { .context-confirm-grid { grid-template-columns: 1fr; } }
+.context-field { margin: 14px 0; padding: 13px 14px; border: 1px solid #e4dfda; border-radius: 10px; background: #fbfaf8; }
+.context-field.confirmed { border-color: #9ecdb4; background: #f3faf6; }
+.context-field-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 9px; }
+.context-field-head strong { font-size: 13px; color: #242126; }
+.context-field-head small { color: #8b8590; font-size: 10px; }
+.context-field-actions { margin-left: auto; display: flex; gap: 6px; }
+.chip { border: 1px solid #d3cec7; border-radius: 99px; padding: 4px 10px; font-size: 10px; font-weight: 700; background: #fff; color: #6c42d8; cursor: pointer; }
+.chip:hover { border-color: #815ad9; }
+.chip.active { color: #17734e; background: #dcefe6; border-color: #9ecdb4; }
+.chip.warn { color: #7a5c19; }
+.chip.warn.active { background: #f2e8cb; border-color: #dcc98a; }
+.context-item-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+.context-item-list li { display: flex; gap: 7px; align-items: center; }
+.context-item-list li button { flex: 0 0 auto; width: 28px; height: 28px; border: 1px solid #d3cec7; border-radius: 7px; background: #fff; color: #a13e3e; cursor: pointer; }
+.context-empty { margin: 2px 0; color: #8b8590; font-size: 11px; }
+.context-evidence { margin-top: 8px; font-size: 11px; }
+.context-evidence summary { cursor: pointer; color: #6c42d8; font-weight: 700; }
+.context-evidence ul { margin: 7px 0 0; padding-left: 16px; display: grid; gap: 6px; }
+.context-evidence li p { margin: 2px 0 0; color: #575159; }
+.context-confirm-footer { display: flex; align-items: center; gap: 16px; justify-content: space-between; margin-top: 18px; }
+.context-confirm-footer p { margin: 4px 0 0; color: #706a73; font-size: 11px; }
+.legacy-adapter-block { margin-top: 16px; padding: 12px 14px; border: 1px dashed #d3cec7; border-radius: 10px; font-size: 11px; color: #706a73; }
+.legacy-adapter-block summary { cursor: pointer; font-weight: 750; color: #49444c; }
+.legacy-adapter-block p { margin: 8px 0; }
+.legacy-run-list { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 7px; }
+.legacy-run-list li { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+.legacy-context-output { margin-top: 10px; }
+.legacy-context-output pre { max-height: 260px; overflow: auto; margin: 8px 0 0; padding: 10px; border-radius: 8px; background: #f2efe9; font-size: 10px; }

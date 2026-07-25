@@ -27,6 +27,7 @@ import { createPipelineService } from './pipeline-service';
 import { createVisualTranslationService } from './visual-translation-service';
 import { createReferenceTranslationService } from './reference-translation-service';
 import { createProjectContextService } from './project-context-service';
+import { createDocumentContextService } from './document-context-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -63,6 +64,11 @@ const referenceTranslation = createReferenceTranslationService(getSettings, {
   pipeline,
   emitProgress: (progress) => mainWindow?.webContents.send('reference-translation:progress', progress)
 });
+const documentContext = createDocumentContextService(
+  getProviderCredentials,
+  getSettings,
+  (progress) => mainWindow?.webContents.send('document-context:progress', progress)
+);
 const projectContext = createProjectContextService({
   projects,
   showSaveDialog: (defaultPath: string) =>
@@ -224,6 +230,45 @@ function registerIpc(): void {
   });
   ipcMain.handle('visual-translation:open-folder', async (_event, runId: string) => {
     const root = await visualTranslation.runRoot(runId);
+    const result = await shell.openPath(path.join(root, 'outputs'));
+    if (result) throw new Error(result);
+  });
+
+  ipcMain.handle('document-context:choose-documents', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: '策略文档', extensions: ['pdf', 'docx', 'md', 'markdown', 'txt'] }]
+    });
+    return result.canceled ? [] : result.filePaths;
+  });
+  ipcMain.handle('document-context:inspect-documents', (_event, paths: string[]) => documentContext.inspectDocuments(paths));
+  ipcMain.handle('document-context:list-runs', () => documentContext.listRuns());
+  ipcMain.handle('document-context:get-run', (_event, runId: string) => documentContext.getRun(runId));
+  ipcMain.handle('document-context:start', (_event, paths: string[], profileId: string) => documentContext.start(paths, profileId));
+  ipcMain.handle('document-context:get-extracted', (_event, runId: string) => documentContext.getExtracted(runId));
+  ipcMain.handle('document-context:confirm', (_event, runId: string, context) => documentContext.confirm(runId, context));
+  ipcMain.handle('document-context:compile', (_event, runId: string) => documentContext.compile(runId));
+  ipcMain.handle('document-context:resume', (_event, runId: string, apiProfileId?: string) => documentContext.resume(runId, apiProfileId));
+  ipcMain.handle('document-context:cancel', (_event, runId: string) => documentContext.cancel(runId));
+  ipcMain.handle('document-context:remove', async (_event, runId: string) => {
+    const record = await documentContext.getRun(runId).catch(() => null);
+    if (record && ['parsing', 'extracting', 'repairing'].includes(record.status)) throw new Error('正在分析的任务不能删除，请先取消分析');
+    await documentContext.remove(runId);
+  });
+  ipcMain.handle('document-context:read-brief', async (_event, runId: string) => fs.readFile(await documentContext.briefPath(runId), 'utf8'));
+  ipcMain.handle('document-context:export', async (_event, runId: string) => {
+    const source = await documentContext.briefPath(runId);
+    const result = await dialog.showSaveDialog(mainWindow!, {
+      defaultPath: path.basename(source),
+      filters: [{ name: 'Markdown', extensions: ['md'] }]
+    });
+    if (result.canceled || !result.filePath) return null;
+    await fs.copyFile(source, result.filePath);
+    return result.filePath;
+  });
+  ipcMain.handle('document-context:adapt-legacy-run', (_event, runId: string) => documentContext.adaptLegacyRun(runId));
+  ipcMain.handle('document-context:open-folder', async (_event, runId: string) => {
+    const root = await documentContext.runRoot(runId);
     const result = await shell.openPath(path.join(root, 'outputs'));
     if (result) throw new Error(result);
   });

@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer, webUtils } from 'electron';
 import type {
   AnalysisProgress,
   DesktopApi,
+  DocumentContextProgress,
   ReferenceTranslationProgress,
   VisualTranslationProgress
 } from '../shared/types';
@@ -60,6 +61,28 @@ const api: DesktopApi = {
       const listener = (_event: Electron.IpcRendererEvent, progress: VisualTranslationProgress) => callback(progress);
       ipcRenderer.on('visual-translation:progress', listener);
       return () => ipcRenderer.removeListener('visual-translation:progress', listener);
+    }
+  },
+  documentContext: {
+    chooseDocuments: () => ipcRenderer.invoke('document-context:choose-documents'),
+    inspectDocuments: (paths) => ipcRenderer.invoke('document-context:inspect-documents', paths),
+    listRuns: () => ipcRenderer.invoke('document-context:list-runs'),
+    getRun: (runId) => ipcRenderer.invoke('document-context:get-run', runId),
+    start: (paths, profileId) => ipcRenderer.invoke('document-context:start', paths, profileId),
+    getExtracted: (runId) => ipcRenderer.invoke('document-context:get-extracted', runId),
+    confirm: (runId, context) => ipcRenderer.invoke('document-context:confirm', runId, context),
+    compile: (runId) => ipcRenderer.invoke('document-context:compile', runId),
+    resume: (runId, apiProfileId) => ipcRenderer.invoke('document-context:resume', runId, apiProfileId),
+    cancel: (runId) => ipcRenderer.invoke('document-context:cancel', runId),
+    remove: (runId) => ipcRenderer.invoke('document-context:remove', runId),
+    readBrief: (runId) => ipcRenderer.invoke('document-context:read-brief', runId),
+    export: (runId) => ipcRenderer.invoke('document-context:export', runId),
+    adaptLegacyRun: (runId) => ipcRenderer.invoke('document-context:adapt-legacy-run', runId),
+    openFolder: (runId) => ipcRenderer.invoke('document-context:open-folder', runId),
+    onProgress(callback) {
+      const listener = (_event: Electron.IpcRendererEvent, progress: DocumentContextProgress) => callback(progress);
+      ipcRenderer.on('document-context:progress', listener);
+      return () => ipcRenderer.removeListener('document-context:progress', listener);
     }
   },
   referenceTranslation: {
