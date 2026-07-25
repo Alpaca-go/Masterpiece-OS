@@ -10,26 +10,35 @@
 
 export const EXECUTION_EXAMPLE_COMPLETENESS_VERSION = 'execution-example-completeness-evaluator-v1';
 
-function isFull(value) {
-  return typeof value === 'string' && value.trim().length > 0;
+const EMPTY_PLACEHOLDERS = new Set(['', '—', '-', 'n/a', 'na', '待补充', '待确认', '待定', '暂无', 'null', 'undefined']);
+
+export function hasMeaningfulValue(value) {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'string') return !EMPTY_PLACEHOLDERS.has(value.trim().toLowerCase());
+  if (typeof value === 'number') return Number.isFinite(value);
+  if (typeof value === 'boolean') return true;
+  if (Array.isArray(value)) return value.some(hasMeaningfulValue);
+  if (typeof value === 'object') return Object.values(value).some(hasMeaningfulValue);
+  return false;
 }
 
 const CRITICAL_FIELDS = [
   { key: 'touchpoint', alt: null },
   { key: 'hero_subject', alt: 'subject' },
-  { key: 'information_zone', alt: null },
-  { key: 'brand_zone', alt: null },
   { key: 'reused_assets', alt: null, isArray: true },
   { key: 'industry_recognition_source', alt: null }
 ];
 
 const REQUIRED_FIELDS = [
-  'canvas_ratio',
-  'hero_subject_position',
-  'hero_subject_scale',
-  'whitespace_behavior',
-  'responsive_adaptation',
-  'anti_concept_art_rule'
+  { key: 'information_zone' },
+  { key: 'brand_zone' },
+  { key: 'canvas_ratio' },
+  { key: 'subject' },
+  { key: 'visual_structure' },
+  { key: 'subject_position_scale', compound: ['hero_subject_position', 'hero_subject_scale'] },
+  { key: 'whitespace_behavior' },
+  { key: 'responsive_adaptation' },
+  { key: 'anti_concept_art_rule' }
 ];
 
 const OPTIONAL_FIELDS = [
@@ -39,6 +48,26 @@ const OPTIONAL_FIELDS = [
   { key: 'downstream_consumer_note', alt: null, dcv: true, dcvField: 'value_statement' }
 ];
 
+function hasCompleteInformationZone(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return hasMeaningfulValue(value);
+  return ['position', 'width_or_height', 'content_types', 'alignment', 'background_relationship']
+    .every((key) => hasMeaningfulValue(value[key]));
+}
+
+function hasCompleteBrandZone(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return hasMeaningfulValue(value);
+  return ['position', 'logo_usage', 'safety_margin', 'relationship_to_main_visual', 'prohibited_behavior']
+    .every((key) => hasMeaningfulValue(value[key]));
+}
+
+function requiredFieldValid(example, field) {
+  if (field.key === 'information_zone') return hasCompleteInformationZone(example[field.key]);
+  if (field.key === 'brand_zone') return hasCompleteBrandZone(example[field.key]);
+  return field.compound
+    ? field.compound.every((key) => hasMeaningfulValue(example[key]))
+    : hasMeaningfulValue(example[field.key]);
+}
+
 function checkExample(example) {
   const critical = [];
   const required = [];
@@ -46,27 +75,28 @@ function checkExample(example) {
 
   for (const f of CRITICAL_FIELDS) {
     if (f.isArray) {
-      if (!example[f.key] || !Array.isArray(example[f.key]) || example[f.key].length < 1) {
+      if (!Array.isArray(example[f.key]) || !hasMeaningfulValue(example[f.key])) {
         critical.push(f.key);
       }
       continue;
     }
-    if (!isFull(example[f.key]) && !isFull(example[f.alt])) {
+    if (!hasMeaningfulValue(example[f.key]) && !hasMeaningfulValue(example[f.alt])) {
       critical.push(f.key);
     }
   }
 
-  for (const f of REQUIRED_FIELDS) {
-    if (!isFull(example[f])) required.push(f);
+  for (const field of REQUIRED_FIELDS) {
+    const valid = requiredFieldValid(example, field);
+    if (!valid) required.push(field.key);
   }
 
   for (const f of OPTIONAL_FIELDS) {
     if (f.compound) {
-      if (!f.compound.some((k) => isFull(example[k]))) optional.push(f.key);
+      if (!f.compound.some((k) => hasMeaningfulValue(example[k]))) optional.push(f.key);
     } else if (f.dcv) {
       const dcv = example.downstream_consumer_value;
-      if (!dcv || !isFull(dcv[f.dcvField])) optional.push(f.key);
-    } else if (!isFull(example[f.key]) && !isFull(example[f.alt])) {
+      if (!dcv || !hasMeaningfulValue(dcv[f.dcvField])) optional.push(f.key);
+    } else if (!hasMeaningfulValue(example[f.key]) && !hasMeaningfulValue(example[f.alt])) {
       optional.push(f.key);
     }
   }
@@ -81,7 +111,7 @@ function computeTouchpointCoverageScore(directions) {
   const touchpoints = new Set();
   directions.forEach((d) => {
     (d.execution_examples || []).forEach((e) => {
-      if (e.touchpoint && e.touchpoint.trim()) touchpoints.add(e.touchpoint);
+      if (hasMeaningfulValue(e.touchpoint)) touchpoints.add(e.touchpoint.trim());
     });
   });
 
@@ -95,10 +125,15 @@ function computeTouchpointCoverageScore(directions) {
       for (const f of CRITICAL_FIELDS) {
         totalFields++;
         if (f.isArray) {
-          if (ex[f.key] && Array.isArray(ex[f.key]) && ex[f.key].length > 0) filledFields++;
-        } else if (isFull(ex[f.key]) || isFull(ex[f.alt])) {
+          if (Array.isArray(ex[f.key]) && hasMeaningfulValue(ex[f.key])) filledFields++;
+        } else if (hasMeaningfulValue(ex[f.key]) || hasMeaningfulValue(ex[f.alt])) {
           filledFields++;
         }
+      }
+      for (const field of REQUIRED_FIELDS) {
+        totalFields++;
+        const valid = requiredFieldValid(ex, field);
+        if (valid) filledFields++;
       }
     });
   });

@@ -23,7 +23,14 @@ export {
   EXECUTION_EXAMPLE_CATEGORIES,
   ANTI_CONCEPT_ART_CONSTRAINTS,
   ANTI_CONCEPT_ART_CONSTRAINT_IDS,
+  DIRECTION_FAMILIES,
+  DIRECTION_FAMILY_TYPES,
+  CONSUMER_VALUE_ROLES,
+  ASSET_AUTHORIZATION_MODES,
+  PHOTOGRAPHY_REQUIREMENT_MODES,
+  collectExecutionDirectionV2ValidationErrors,
   validateExecutionDirectionV2,
+  validateExecutionDirectionV2Set,
   validateReusableAsset,
   validateCompositionTemplate
 } from './schemas/direction-contract-v2.js';
@@ -68,6 +75,16 @@ export {
   evaluateConsumerValueCoverage
 } from './runtime/consumer-value-coverage-evaluator.js';
 export {
+  normalizeConsumerValue,
+  normalizeConsumerValues,
+  CONSUMER_VALUE_NORMALIZER_VERSION
+} from './runtime/consumer-value-normalizer.js';
+export {
+  aggregateGateIssues,
+  gateIssueKey,
+  GATE_ISSUE_AGGREGATOR_VERSION
+} from './runtime/gate-issue-aggregator.js';
+export {
   evaluateDirectionFamilyDifference
 } from './runtime/direction-family-difference-evaluator.js';
 export {
@@ -106,6 +123,28 @@ export {
 } from './runtime/ab-runner.js';
 
 export { buildExecutionDirectionV2Prompt, VISUAL_DIRECTIONS_PROMPT_V2_VERSION } from './prompts/direction-generation-prompt-v2.js';
+export { ANALYSIS_PIPELINE_MODES, DEFAULT_ANALYSIS_PIPELINE_MODE, normalizeAnalysisPipelineMode, isVisualFactFirstMode, isRetrievalFirstMode } from './config/analysis-pipeline-mode.js';
+export { validateVisualRelevantBrandFacts, validateVisualAssetEvidence, validateBenchmarkQueryPlan, validateBenchmarkCase, validateVisualOpportunitySynthesis } from './visual-fact-first/schemas.js';
+export { compileBenchmarkQueryPlan } from './visual-fact-first/benchmark-query-compiler.js';
+export { retrieveBenchmarkCases } from './visual-fact-first/benchmark-retrieval.js';
+export { adaptVisualFactFirstToStep4 } from './visual-fact-first/step4-input-adapter.js';
+export { evaluateVisualFactFirstAB } from './visual-fact-first/ab-evaluator.js';
+export { compileVisualBrief, compileVisualBriefMarkdown } from './retrieval-first/visual-brief.js';
+export { validateLightweightDirections, evaluateModelCriticAdvisory } from './runtime/lightweight-validator.js';
+export { buildDirectionFingerprint, compareDirectionFingerprints, evaluateCrossProjectDirectionSimilarity } from './runtime/direction-fingerprint.js';
+export { classifyPhotographySubject, PHOTOGRAPHY_SUBJECT_TYPES } from './runtime/photography-subject-classifier.js';
+export { compileDirectionFamilyCandidates } from './visual-fact-first/direction-family-compiler.js';
+export { resolveBenchmarkRequirementStatus, BENCHMARK_REQUIREMENTS } from './visual-fact-first/benchmark-status-resolver.js';
+export { evaluateFamilyRecommendationBias } from './freeze-test/family-bias-monitor.js';
 export { buildAnchorCandidateV2Prompt, ANCHOR_CANDIDATE_PROMPT_V2_VERSION } from './prompts/anchor-candidate-prompt-v2.js';
 
-export { compileExecutionDirectionsReportV2 } from './report/compile-execution-directions-report-v2.js';
+export { renderNestedField } from './report/compile-execution-directions-report-v2.js';
+export {
+  compileExecutionDirectionsReportV2,
+  compileExecutionDirectionsAuditV2,
+  compileVisualDirectionsReportViewModel,
+  compileVisualDirectionsAuditViewModel,
+  groupVisualDirectionIssues,
+  renderVisualDirectionsReport,
+  renderVisualDirectionsAudit
+} from './report/visual-directions-report-compiler.js';

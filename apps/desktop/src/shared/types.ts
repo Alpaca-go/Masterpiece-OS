@@ -75,6 +75,7 @@ export interface PublicSettings {
   cacheEnabled: boolean;
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode?: DirectionGenerationMode;
+  analysisPipelineMode?: AnalysisPipelineMode;
   connectionStatus: 'untested' | 'connected' | 'failed';
 }
 
@@ -83,6 +84,7 @@ export interface SaveSettingsInput {
   cacheEnabled: boolean;
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode?: DirectionGenerationMode;
+  analysisPipelineMode?: AnalysisPipelineMode;
 }
 
 export interface ProjectAsset {
@@ -96,6 +98,381 @@ export interface ProjectAsset {
   sha256: string;
   status: 'ready' | 'ignored' | 'deleted' | 'failed';
   archiveSourceName?: string;
+}
+
+export type ConfidenceLevel = 'high' | 'medium' | 'low';
+
+export type CurrentProjectAssetRole =
+  | 'brand_identity_evidence'
+  | 'logo_evidence'
+  | 'logo_typography_evidence'
+  | 'service_fact_evidence'
+  | 'confirmed_structure_evidence'
+  | 'observed_copy'
+  | 'legacy_visual_only'
+  | 'stock_mockup'
+  | 'third_party_mockup'
+  | 'reference_only'
+  | 'brand_name_evidence'
+  | 'product_fact_evidence'
+  | 'packaging_structure_evidence'
+  | 'product_structure_evidence'
+  | 'touchpoint_evidence'
+  | 'locked_asset_evidence'
+  | 'brand_copy_evidence'
+  | 'spatial_structure_evidence'
+  | 'legacy_visual_style_only'
+  | 'duplicate'
+  | 'irrelevant'
+  | 'uncertain';
+
+export interface CurrentProjectAssetDecision {
+  assetId: string;
+  filename: string;
+  role: CurrentProjectAssetRole;
+  roles?: CurrentProjectAssetRole[];
+  keepInCorePack: boolean;
+  includeInAnalysisEvidencePack?: boolean;
+  includeInGenerationIdentityPack?: boolean;
+  authenticity?: AssetAuthenticity;
+  generationUsage?: 'identity' | 'product' | 'product_or_service' | 'structure_only' | 'locked_asset' | 'exclude';
+  canProveIdentity?: boolean;
+  canProveProductFact?: boolean;
+  canProveStructure?: boolean;
+  canInfluenceGenerationStyle?: boolean;
+  keepReason: string;
+  extractedFacts: string[];
+  lockedEvidence: string[];
+  containsLegacyStyle: boolean;
+  legacyStyleShouldInfluenceOutput: false;
+  confidence: number;
+  requiresHumanReview: boolean;
+}
+
+export interface PackagingStructureEvidence {
+  assetId: string;
+  description: string;
+  confidence: number;
+}
+
+export interface LockedAssetEvidence {
+  name: string;
+  assetIds: string[];
+  reason: string;
+}
+
+export interface CurrentProjectCorePack {
+  projectId: string;
+  brandName: string;
+  industry: string;
+  productFacts: string[];
+  targetAudience?: string[];
+  brandPositioning?: string;
+  logoAssetIds: string[];
+  logoTypographyAssetIds: string[];
+  packagingStructures: PackagingStructureEvidence[];
+  productAssets: string[];
+  touchpoints: ProjectTouchpointInventory;
+  confirmedBrandCopy: string[];
+  lockedAssets: LockedAssetEvidence[];
+  excludedLegacyStyleAssetIds: string[];
+  uncertainAssetIds: string[];
+  sourceAssetIds: string[];
+  schemaVersion: 'current-project-core-pack-v1';
+}
+
+export interface CurrentProjectCorePackValidation {
+  hasBrandName: boolean;
+  hasLogoEvidence: boolean;
+  hasLogoTypographyEvidence: boolean;
+  hasProductFactEvidence: boolean;
+  hasRequiredStructureEvidence: boolean;
+  hasLockedAssetEvidence: boolean;
+  excludesLegacyStyleOnlyAssets: boolean;
+  excludesDuplicateAssets: boolean;
+  noReferenceAssetsMixedIn: boolean;
+  unresolvedUncertainAssets: string[];
+  passed: boolean;
+  warnings: string[];
+}
+
+export type ReferenceAssetRole =
+  | 'system_overview'
+  | 'brand_identity'
+  | 'packaging'
+  | 'packaging_detail'
+  | 'product'
+  | 'poster'
+  | 'vi_application'
+  | 'material_detail'
+  | 'typography_detail'
+  | 'graphic_detail'
+  | 'spatial'
+  | 'display_layout'
+  | 'interface'
+  | 'publication'
+  | 'photography_style'
+  | 'motion'
+  | 'brand_strategy_text'
+  | 'pure_text_slide'
+  | 'duplicate'
+  | 'irrelevant'
+  | 'uncertain';
+
+export type AssetAuthenticity =
+  | 'brand_original'
+  | 'user_confirmed_real'
+  | 'user_confirmed_locked'
+  | 'stock_mockup'
+  | 'third_party_mockup'
+  | 'design_concept_only'
+  | 'reference_only'
+  | 'unknown';
+
+export interface AssetAuthenticityDecision {
+  assetId: string;
+  authenticity: AssetAuthenticity;
+  confidence: number;
+  reason: string;
+  canProveIdentity: boolean;
+  canProveProductFact: boolean;
+  canProveStructure: boolean;
+  canProveLockedAsset: boolean;
+  includeInAnalysisEvidencePack: boolean;
+  includeInGenerationIdentityPack: boolean;
+  requiresHumanReview: boolean;
+}
+
+export type GenerationOutputType =
+  | 'anchor_vi_system'
+  | 'packaging_single'
+  | 'packaging_series'
+  | 'brand_poster'
+  | 'product_poster'
+  | 'vi_application'
+  | 'spatial_scene'
+  | 'digital_campaign';
+
+export type StyleCarrierCategory =
+  | 'color'
+  | 'layout'
+  | 'typography'
+  | 'graphic'
+  | 'material'
+  | 'photography'
+  | 'display'
+  | 'spatial';
+
+/**
+ * §2 参考身份污染类型。任一非 'none' 的类型都不得进入 Style Carrier Ranking。
+ * 生产协议保持项目无关：污染由数据标注驱动，不得靠具体品牌/行业词硬编码。
+ */
+export type ReferenceContaminationType =
+  | 'brand_name'
+  | 'brand_logo'
+  | 'brand_wordmark'
+  | 'product_name'
+  | 'slogan'
+  | 'signature_graphic'
+  | 'proprietary_pattern'
+  | 'proprietary_character'
+  | 'none';
+
+/** §2 进入 Ranking 前的 Style Carrier 候选（携带污染标注）。 */
+export interface StyleCarrierCandidate {
+  id: string;
+  readableRule: string;
+  category: StyleCarrierCategory;
+  supportingAssetIds: string[];
+  contaminationTypes: ReferenceContaminationType[];
+  signatureGraphicIds: string[];
+  compatibleOutputTypes: GenerationOutputType[];
+  confidence?: number;
+}
+
+export interface ReferenceAssetDecision {
+  assetId: string;
+  filename: string;
+  role: ReferenceAssetRole;
+  primaryRole?: ReferenceAssetRole;
+  secondaryRoles?: ReferenceAssetRole[];
+  styleCarrierStrength: ConfidenceLevel;
+  includeInMasterSet: boolean;
+  eligibleOutputTypes: GenerationOutputType[];
+  representedStyleCarriers: StyleCarrierCategory[];
+  styleCarrierRules?: Array<{
+    category: StyleCarrierCategory;
+    readableRule: string;
+    confidence: number;
+    /** §2 该规则携带的参考身份污染类型；任一非 'none' 者不得进入 Ranking。 */
+    contaminationTypes?: ReferenceContaminationType[];
+    /** §2 该规则关联的禁止复制参考专属图形 id；非空者不得进入 Ranking。 */
+    signatureGraphicIds?: string[];
+  }>;
+  duplicationGroupId?: string;
+  confidence: number;
+  reason: string;
+  requiresHumanReview: boolean;
+}
+
+export interface StyleCarrier {
+  id: string;
+  category: StyleCarrierCategory;
+  description: string;
+  internalLabel?: string;
+  readableRule?: string;
+  priority: 'primary' | 'secondary' | 'optional';
+  supportingAssetIds: string[];
+  mustBeVisibleInOutput: boolean;
+  confidence: number;
+  /** 是否携带参考专属身份（参考身份、文案、专属图形）。一旦为 true 不得进入任何 Style Carrier Ranking。 */
+  containsReferenceIdentity?: boolean;
+  /** 关联到的禁止复制参考专属图形 id 列表。一旦非空不得进入 Ranking。 */
+  referencesSignatureGraphicIds?: string[];
+  /** §2 该载体携带的参考身份污染类型（品牌名 / Logo / 文案等）。任一非 'none' 者不得进入 Ranking。 */
+  contaminationTypes?: ReferenceContaminationType[];
+  /** 该载体可应用的输出任务类型。为空表示未声明（按全局处理）。 */
+  compatibleOutputTypes?: GenerationOutputType[];
+  /** §3 该载体是否要求真实摄影表现（摄影类载体不得进入禁止摄影的任务）。 */
+  requiresPhotography?: boolean;
+  /** §3 该载体是否要求空间/场景表现。 */
+  requiresSpace?: boolean;
+  /** §3 该载体是否要求动效表现。 */
+  requiresMotion?: boolean;
+  /** §3 该载体是否要求真实实体触点（材质/包装等）。 */
+  requiresPhysicalTouchpoint?: boolean;
+}
+
+/** §3 编译任务级 Style Carrier 时的任务约束种子（决定摄影/空间/动效是否允许）。 */
+export interface TaskDefinitionSeed {
+  outputType?: GenerationOutputType;
+  photographyAllowed?: boolean;
+  spatialSceneAllowed?: boolean;
+  motionAllowed?: boolean;
+  physicalObjectAllowed?: boolean;
+  typographyRequired?: boolean;
+}
+
+/** 全局 Style Carrier Ranking（两级：primary / secondary / optional）。 */
+export interface GlobalStyleCarrierRanking {
+  primary: StyleCarrier[];
+  secondary: StyleCarrier[];
+  optional: StyleCarrier[];
+}
+
+/** 按单个输出任务筛选后的 Style Carrier 集合。 */
+export interface TaskScopedStyleCarrierSet {
+  outputType: GenerationOutputType;
+  requiredPrimary: StyleCarrier[];
+  supportingSecondary: StyleCarrier[];
+  excludedForTask: Array<{ carrierId: string; reason: string }>;
+}
+
+/** Style Carrier 与输出任务的兼容性描述。 */
+export interface StyleCarrierTaskCompatibility {
+  carrierId: string;
+  compatibleOutputTypes: GenerationOutputType[];
+  incompatibleOutputTypes: GenerationOutputType[];
+  requiresPhotography: boolean;
+  requiresSpace: boolean;
+  requiresMotion: boolean;
+  requiresPhysicalTouchpoint: boolean;
+}
+
+export interface ReferenceMasterSet {
+  assetIds: string[];
+  decisions: ReferenceAssetDecision[];
+  styleCarriers: StyleCarrier[];
+  schemaVersion: 'reference-master-set-v1';
+}
+
+export interface ReferenceMasterSetValidation {
+  hasSystemOverview: boolean;
+  hasCrossTouchpointCoverage: boolean;
+  hasPrimaryStyleCarrierEvidence: boolean;
+  hasPackagingEvidence: boolean;
+  hasPosterOrLayoutEvidence: boolean;
+  hasMaterialOrDetailEvidence: boolean;
+  excludesPureTextSlides: boolean;
+  excludesBusinessAnalysisPages: boolean;
+  excludesNearDuplicates: boolean;
+  missingCoverageRoles: ReferenceAssetRole[];
+  passed: boolean;
+  warnings: string[];
+}
+
+export interface TaskReferenceSubset {
+  outputType: GenerationOutputType;
+  selectedAssetIds: string[];
+  primaryReferenceAssetId: string;
+  supportingReferenceAssetIds: string[];
+  coveredPrimaryStyleCarrierIds: string[];
+  missingStyleCarrierIds: string[];
+  selectionReason: string;
+  confidence: number;
+  matchLevel?: 'exact' | 'compatible' | 'inferred' | 'insufficient';
+  requiresHumanReview?: boolean;
+  coveredStyleCarrierIds?: string[];
+  missingEvidence?: string[];
+  /** 真实生成的子集产物路径。禁止用固定路径伪造；未生成则为空。 */
+  artifactPath?: string;
+}
+
+export interface TaskSubsetValidation {
+  matchesOutputType: boolean;
+  hasHighStrengthPrimaryReference: boolean;
+  coversPrimaryStyleCarriers: boolean;
+  avoidsCrossTypeNoise: boolean;
+  avoidsNearDuplicates: boolean;
+  assetCountValid: boolean;
+  passed: boolean;
+}
+
+/** §6.1 单个请求的生成任务。 */
+export interface RequestedGenerationTask {
+  outputType: GenerationOutputType;
+  requestedBy: 'user' | 'system' | 'workflow';
+  required: boolean;
+}
+
+/** §6.1 请求任务清单。 */
+export interface RequestedGenerationTaskManifest {
+  tasks: RequestedGenerationTask[];
+}
+
+/** §6.2 Task Subset 完整性清单。 */
+export interface TaskReferenceSubsetManifest {
+  subsets: TaskReferenceSubset[];
+}
+
+/** §5.5 任务级 Style Carrier 校验结果。 */
+export interface TaskStyleCarrierValidation {
+  outputType: GenerationOutputType;
+  incompatibleCarrierIds: string[];
+  missingDominantCategories: string[];
+  primaryCountValid: boolean;
+  passed: boolean;
+}
+
+export interface AssetSelectionProtocolResult {
+  currentProjectAssetDecisions: CurrentProjectAssetDecision[];
+  currentProjectCorePack: CurrentProjectCorePack;
+  currentCorePackValidation: CurrentProjectCorePackValidation;
+  referenceAssetDecisions: ReferenceAssetDecision[];
+  referenceMasterSet: ReferenceMasterSet;
+  referenceMasterSetValidation: ReferenceMasterSetValidation;
+  taskReferenceSubsets: TaskReferenceSubset[];
+  taskSubsetValidations: TaskSubsetValidation[];
+  requiresHumanConfirmation: boolean;
+  schemaVersion: 'asset-selection-protocol-v1';
+  /** §3.4 参考专属图形泄漏校验。 */
+  signatureGraphicLeakValidation?: SignatureGraphicLeakValidation;
+  /** §5.5 任务级 Style Carrier 校验（按请求任务）。 */
+  taskStyleCarrierValidations?: TaskStyleCarrierValidation[];
+  /** §7 Generation Context Manifest：审计报告与 Brief 共用。 */
+  generationContextManifest?: GenerationContextManifest;
+  /** §6 请求任务清单（用于子集覆盖校验）。 */
+  requestedTasks?: RequestedGenerationTask[];
 }
 
 export interface ProjectRecord {
@@ -132,6 +509,75 @@ export interface ProjectRecord {
   logoFiles: string[];
   briefFiles: string[];
   assets: ProjectAsset[];
+  visualContextFilename?: string | null;
+  visualContextStatus?: 'missing' | 'ready' | 'failed';
+  visualContextSchemaVersion?: string | null;
+  visualContextLastBuiltAt?: string | null;
+}
+
+export type PackagingStructureStatus = 'confirmed' | 'legacy_observed' | 'unknown';
+
+export type ProjectVisualContextStatus = 'missing' | 'ready' | 'failed';
+
+export interface ProjectVisualContext {
+  schemaVersion: '1.0';
+  projectId: string;
+  sourceRunId: string;
+  generatedAt: string;
+  identity: {
+    projectName: string;
+    brandName: string;
+    industry: string;
+  };
+  confidence: {
+    projectName: number;
+    brandName: number;
+    industry: number;
+  };
+  lockedAssets: {
+    logoLocked: boolean;
+    logoAssetIds: string[];
+    lockedAssetIds: string[];
+    lockedFacts: string[];
+  };
+  products: {
+    coreProducts: string[];
+    secondaryProducts: string[];
+  };
+  currentVisualSystem: {
+    existingVisualAssets: string[];
+    primaryColors: string[];
+    supportingColors: string[];
+    graphicAssets: string[];
+    typographySignals: string[];
+    materialSignals: string[];
+    photographySignals: string[];
+  };
+  packaging: {
+    structures: string[];
+    status: PackagingStructureStatus;
+    evidenceSources: string[];
+  };
+  businessTouchpoints: {
+    packaging: string[];
+    viApplications: string[];
+    spatial: string[];
+    digital: string[];
+  };
+  evaluation: {
+    visualStrengths: string[];
+    visualProblems: string[];
+    modifiableAssets: string[];
+  };
+  uncertainties: string[];
+  source: {
+    reportPath: string;
+    runtimeReportPath: string;
+    assetCount: number;
+    imageCount: number;
+    provider: string;
+    model: string;
+  };
 }
 
 export interface CreateProjectInput {
@@ -233,18 +679,48 @@ export interface VisualStrategyCorpus {
   warnings: string[];
 }
 
-export type DirectionGenerationMode = 'conceptual_v1' | 'execution_oriented_v2';
+export type DirectionGenerationMode = 'execution_oriented_v2' | 'conceptual_v1';
+export type AnalysisPipelineMode =
+  | 'retrieval_first'
+  | 'visual_fact_first_legacy'
+  | 'deep_analysis_legacy'
+  | 'visual_fact_first'
+  | 'legacy_deep_analysis';
 
 export type VisualTranslationStage =
   | '00-document-preparation'
   | '01-visual-evidence'
+  | '01-visual-relevant-facts'
+  | '01-visual-brief'
+  | '01b-visual-brief-review'
+  | '01b-visual-facts-review'
   | '02-visual-signal-opportunity'
+  | '02-visual-asset-evidence'
+  | '02b-visual-asset-evidence-review'
+  | '03a-benchmark-query-compiler'
+  | '03b-benchmark-retrieval'
+  | '03c-visual-opportunity-synthesis'
+  | '03d-visual-opportunity-review'
   | '04-three-creative-directions'
   | '04b-compile-execution-directions'
   | '05-direction-recommendation'
-  | '10-local-report-compiler';
+  | '10-local-report-compiler'
+  | '10b-local-audit-compiler';
 
-export type VisualTranslationRunStatus = 'running' | 'completed' | 'failed' | 'cancelled';
+export type VisualTranslationRunStatus = 'pending' | 'running' | 'completed' | 'failed' | 'timed_out' | 'cancelled';
+export type VisualTranslationStep4Status = VisualTranslationRunStatus;
+export type VisualTranslationAnalysisStatus = 'pending' | 'running' | 'validated' | 'result_committed' | 'completed' | 'failed_before_completion';
+export type VisualTranslationPersistenceStatus = 'healthy' | 'degraded' | 'projection_sync_failed' | 'recovery_required';
+
+export interface VisualTranslationRuntimeIssue {
+  category: 'ANALYSIS_ERROR' | 'RESULT_COMMIT_ERROR' | 'PROJECTION_WRITE_ERROR' | 'EVENT_LOG_ERROR' | 'RECOVERY_ERROR';
+  code: string;
+  message: string;
+  severity: 'warning' | 'error';
+  recoverable: boolean;
+  analysisCompleted: boolean;
+  tempPath?: string;
+}
 
 export interface VisualTranslationDocumentSummary {
   path: string;
@@ -269,8 +745,17 @@ export interface VisualTranslationProgress {
 export interface VisualTranslationRunRecord {
   id: string;
   analysisRunId: string;
+  activeRunId?: string;
   projectName: string;
   status: VisualTranslationRunStatus;
+  analysisStatus?: VisualTranslationAnalysisStatus;
+  persistenceStatus?: VisualTranslationPersistenceStatus;
+  recoverable?: boolean;
+  revision?: number;
+  checkpointRefs?: string[];
+  artifactRefs?: string[];
+  runtimeIssue?: VisualTranslationRuntimeIssue | null;
+  uiMessage?: string | null;
   apiProfileId: string;
   provider: string;
   model: string;
@@ -281,6 +766,9 @@ export interface VisualTranslationRunRecord {
   completedAt?: string;
   durationMs?: number;
   currentStage?: VisualTranslationStage;
+  step4Status?: VisualTranslationStep4Status;
+  step4ErrorCode?: string | null;
+  step4UpdatedAt?: string;
   lastError?: string | null;
   userError?: VisualTranslationUserError | null;
   reportFilename?: string | null;
@@ -313,6 +801,944 @@ export interface VisualTranslationUserError {
 export interface VisualTranslationResult {
   run: VisualTranslationRunRecord;
   reportMarkdown: string;
+}
+
+// ── Reference-Led Visual Direction（Reference Translation Profile）──
+// 离线确定性引擎：从参考项目视觉分析中提取可迁移机制，
+// 在不复制签名资产的前提下映射到当前项目。零模型调用。
+
+export interface ReferenceTranslationRule {
+  name: string;
+  evidence: string[];
+  mechanism: string;
+  function: string;
+  confidence: number;
+}
+
+export interface ReferenceTransferabilityItem {
+  item_id: string;
+  name: string;
+  source_rule: string;
+  reason: string;
+  evidence: string[];
+  confidence: number;
+}
+
+export interface ReferenceTranslationMatrixItem {
+  translation_id: string;
+  referenceMechanism: string;
+  referenceFunction: string;
+  projectCondition: string;
+  translatedMechanism: string;
+  retainedProperties: string[];
+  changedProperties: string[];
+  prohibitedElements: string[];
+  confidence: number;
+}
+
+export interface ReferenceTranslationProfile {
+  schema_version: string;
+  source_role: string;
+  referenceIdentity: {
+    detectedIndustry?: string;
+    touchpoints: string[];
+    assetCount: number;
+    completeness: 'low' | 'medium' | 'high';
+    consistency: 'low' | 'medium' | 'high';
+    missingEvidence: string[];
+  };
+  referenceVisualDNA: Record<string, ReferenceTranslationRule[]>;
+  transferability: {
+    directlyTransferable: ReferenceTransferabilityItem[];
+    requiresReinterpretation: ReferenceTransferabilityItem[];
+    prohibitedToCopy: ReferenceTransferabilityItem[];
+  };
+  sourceRisks: {
+    signatureAssets: string[];
+    recognizableCombinations: string[];
+    similarityWarnings: string[];
+  };
+  projectTranslationMatrix: ReferenceTranslationMatrixItem[];
+}
+
+export interface ReferenceLedDirection {
+  directionName: string;
+  coreProposition: string;
+  visualAnchor: string;
+  compositionSystem: string[];
+  graphicSystem: string[];
+  colorSystem: string[];
+  materialSystem: string[];
+  typographySystem: string[];
+  touchpointRules: {
+    packaging: string[];
+    poster: string[];
+    vi: string[];
+    spatial?: string[];
+  };
+  prohibitedActions: string[];
+}
+
+export interface CurrentProjectProfile {
+  schemaVersion: string;
+  projectId: string;
+  projectName: string;
+  brandName: string;
+  industry: string;
+  coreProducts: string[];
+  targetAudience: string[];
+  targetAudienceDetails?: AudienceFact[];
+  pricePositioning?: string;
+  brandPositioning: string;
+  usageScenarios: string[];
+  businessTouchpoints: string[];
+  lockedAssets: string[];
+  packagingStructures: string[];
+  confirmedFacts: string[];
+  sourceArtifactIds: string[];
+  currentVisualAssets?: string[];
+  existingBrandCopy?: string[];
+  visualSources: CurrentProjectVisualSources;
+  touchpointInventory: ProjectTouchpointInventory;
+}
+
+export type FactSourceType =
+  | 'user_input'
+  | 'project_metadata'
+  | 'document'
+  | 'visual_asset'
+  | 'locked_config'
+  | 'human_confirmation';
+
+export type FactStatus = 'confirmed' | 'inferred' | 'unverified';
+
+export interface FactSource {
+  type: FactSourceType;
+  sourceId?: string;
+  confidence?: number;
+}
+
+export interface AudienceFact {
+  label: string;
+  status: FactStatus;
+  sources: FactSource[];
+  confidence: number;
+}
+
+export interface CurrentProjectVisualSources {
+  productForms: string[];
+  cookingActions: string[];
+  sensorySignals: string[];
+  consumptionActions: string[];
+  brandNameSemantics: string[];
+  spatialObjects: string[];
+}
+
+export interface ProjectTouchpointInventory {
+  primaryPackaging: string[];
+  secondaryPackaging: string[];
+  serviceMaterials: string[];
+  viApplications: string[];
+  spatialTouchpoints: string[];
+  digitalTouchpoints: string[];
+}
+
+export type ReferenceInheritanceLevel = 'principle' | 'relationship' | 'surface';
+
+export interface ReferenceInheritanceRule {
+  level: ReferenceInheritanceLevel;
+  weight: number;
+  rule: string;
+}
+
+export type ExecutionDetailLevel = 'gpt_visual' | 'design_guideline' | 'production_spec';
+
+export interface VisualAnchor {
+  name: string;
+  sourceElements: string[];
+  transformationLogic: string;
+  visualForm: string;
+  extensionTouchpoints: string[];
+  referenceSurfaceSimilarityRisk: 'low' | 'medium' | 'high';
+}
+
+export interface FlexibleColorSystem {
+  identityColorRole: string;
+  backgroundOptions: string[];
+  textAndStructureColors: string[];
+  accentOptions: string[];
+  saturationGuideline: string;
+  touchpointVariations: string[];
+}
+
+export interface FlexibleCompositionSystem {
+  fixedPrinciples: string[];
+  allowedVariations: string[];
+  seriesConsistencyRules: string[];
+  prohibitedLayouts: string[];
+}
+
+export interface ReferenceStyleRule {
+  rule: string;
+  inheritanceLevel?: ReferenceInheritanceLevel;
+  evidence: string[];
+  designEffect: string;
+  confidence: number;
+}
+
+export type VisualAnalysisPurpose = 'current_project_audit' | 'reference_style';
+
+export interface ReferenceStyleProfile {
+  schemaVersion: string;
+  overallTemperament: ReferenceStyleRule[];
+  colorSystem: ReferenceStyleRule[];
+  compositionSystem: ReferenceStyleRule[];
+  graphicLanguage: ReferenceStyleRule[];
+  typographySystem: ReferenceStyleRule[];
+  materialSystem: ReferenceStyleRule[];
+  lightingSystem: ReferenceStyleRule[];
+  photographySystem: ReferenceStyleRule[];
+  packagingPresentation: ReferenceStyleRule[];
+  posterPresentation: ReferenceStyleRule[];
+  viExtensionSystem: ReferenceStyleRule[];
+  excludedIdentityTerms: string[];
+  sourceAssetIds: string[];
+  portfolioPresentation?: ReferenceStyleRule[];
+}
+
+export interface StyleApplicationPlan {
+  retainedProjectIdentity: string[];
+  currentVisualElementsToRetain: string[];
+  currentVisualElementsToRedesign: string[];
+  referenceStyleToApply: Array<{
+    referenceRule: string;
+    applicationToCurrentProject: string;
+    affectedTouchpoints: string[];
+  }>;
+  projectSpecificReinterpretation: Array<{
+    sourceVisualFunction: string;
+    projectSpecificSource: string;
+    reconstructionRule: string;
+  }>;
+  touchpointStrategy: Record<string, string[]>;
+  prohibitedActions: string[];
+}
+
+export interface VisualReconstructionDirection {
+  directionName: string;
+  coreProposition: string;
+  visualAnchor: string;
+  visualAnchorDefinition: VisualAnchor;
+  executionDetailLevel: ExecutionDetailLevel;
+  referenceInheritance: ReferenceInheritanceRule[];
+  flexibleColorSystem: FlexibleColorSystem;
+  flexibleCompositionSystem: FlexibleCompositionSystem;
+  currentProjectIdentityToRetain: string[];
+  currentVisualElementsToRedesign: string[];
+  compositionSystem: string[];
+  graphicSystem: string[];
+  colorSystem: string[];
+  typographySystem: string[];
+  materialSystem: string[];
+  lightingSystem: string[];
+  photographySystem: string[];
+  touchpointRules: {
+    packaging: string[];
+    poster: string[];
+    vi: string[];
+    space?: string[];
+  };
+  prohibitedActions: string[];
+}
+
+export type ReconstructionPermission =
+  | 'locked'
+  | 'retained_by_user'
+  | 'replaceable'
+  | 'adopt_from_reference'
+  | 'reconstruct_from_reference'
+  | 'forbidden';
+
+export interface ReferenceFirstPermissionMatrix {
+  currentProject: {
+    brandName: 'locked';
+    logoGraphic: 'locked';
+    logoTypography: 'locked';
+    industry: 'locked';
+    productFacts: 'locked';
+    packagingStructures: 'locked';
+    confirmedBrandCopy: 'retained_by_user';
+    colorSystem: 'replaceable';
+    layoutSystem: 'replaceable';
+    typographySystem: 'replaceable';
+    graphicSystem: 'replaceable';
+    materialSystem: 'replaceable';
+    photographySystem: 'replaceable';
+    lightingSystem: 'replaceable';
+    spatialSystem: 'replaceable';
+    displaySystem: 'replaceable';
+  };
+  referenceProject: {
+    brandName: 'forbidden';
+    logoGraphic: 'forbidden';
+    logoTypography: 'forbidden';
+    slogan: 'forbidden';
+    productNames: 'forbidden';
+    signatureSymbols: 'forbidden';
+    colorSystem: 'adopt_from_reference';
+    layoutSystem: 'adopt_from_reference';
+    typographySystem: 'adopt_from_reference';
+    materialSystem: 'adopt_from_reference';
+    photographySystem: 'adopt_from_reference';
+    displaySystem: 'adopt_from_reference';
+    graphicSystem: 'reconstruct_from_reference';
+  };
+}
+
+export interface CurrentProjectVisualPermissions {
+  lockedAssets: string[];
+  replaceableLegacyVisuals: string[];
+  userRetainedAssets: string[];
+}
+
+export interface ReferenceIdentityBoundary {
+  forbiddenBrandNames: string[];
+  forbiddenLogos: string[];
+  forbiddenCopy: string[];
+  forbiddenProductNames: string[];
+  forbiddenSignatureGraphics: string[];
+}
+
+export interface AdoptedVisualRule {
+  description: string;
+  supportingAssetIds: string[];
+  priority: 'primary' | 'secondary' | 'optional';
+  mustBeVisibleInOutput: boolean;
+}
+
+export interface ReferenceFirstAdoption {
+  colorSystem: AdoptedVisualRule[];
+  layoutSystem: AdoptedVisualRule[];
+  typographySystem: AdoptedVisualRule[];
+  materialSystem: AdoptedVisualRule[];
+  photographySystem: AdoptedVisualRule[];
+  displaySystem: AdoptedVisualRule[];
+  graphicStructure: AdoptedVisualRule[];
+}
+
+export interface SystemAnchor {
+  colorRelationship: string;
+  layoutGrammar: string;
+  typographyHierarchy: string;
+  materialLanguage: string;
+  crossTouchpointConsistency: string;
+  primaryStyleCarrierIds: string[];
+}
+
+export interface ProjectGraphicAnchor {
+  sourceElements: string[];
+  reconstructedForm: string;
+  usageRole: 'primary' | 'secondary';
+  extensionTouchpoints: string[];
+  formDescription?: string;
+  role?: 'primary' | 'secondary';
+  isClosed?: boolean;
+  isBadgeLike?: boolean;
+  resemblesReferenceSignatureGraphic?: boolean;
+  supportingFactIds?: string[];
+}
+
+/** §4.3 Anchor 冲突校验结果。 */
+export interface AnchorContradictionValidation {
+  projectAnchorRoleConflict: boolean;
+  closedOpenConflict: boolean;
+  badgeConstraintConflict: boolean;
+  signatureSimilarityConflict: boolean;
+  conflictingSourceFields: string[];
+  passed: boolean;
+}
+
+/** §4.1 Reference-First 单一来源 Anchor 模型。 */
+export interface ReferenceFirstAnchorModel {
+  systemAnchor: SystemAnchor;
+  projectGraphicAnchor?: ProjectGraphicAnchor;
+  referenceSignatureGraphics: ReferenceSignatureGraphic[];
+}
+
+export interface AnchorImageDefinition {
+  outputType: GenerationOutputType;
+  primaryVisualSubject: string;
+  referenceAssetIds: string[];
+  forbiddenOutputPatterns: string[];
+}
+
+export interface UserReadableAssetReference {
+  assetId: string;
+  filename: string;
+  thumbnailPath?: string;
+  role: string;
+  styleCarrierStrength?: ConfidenceLevel;
+  selectedAs: 'core_pack' | 'master_set' | 'task_primary' | 'task_supporting';
+  selectionReason: string;
+  confidence: number;
+}
+
+export interface TaskReferenceConfidence {
+  outputType: GenerationOutputType;
+  hasDirectTypeMatch: boolean;
+  inferredFromOtherTypes: boolean;
+  confidence: number;
+  requiresHumanReview: boolean;
+  warning?: string;
+}
+
+export interface EvidenceBoundFact {
+  id?: string;
+  key?: string;
+  value: string;
+  sourceAssetIds: string[];
+  sources?: FactEvidenceSource[];
+  evidenceAssetIds?: string[];
+  evidenceRegions?: Array<{
+    assetId: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }>;
+  classification?: 'identity_fact' | 'product_fact' | 'product_or_service_fact' | 'structure_fact' | 'touchpoint_fact'
+    | 'observed_copy' | 'legacy_visual_observation';
+  confidence: number;
+  status: 'confirmed' | 'inferred' | 'unverified';
+  entersGenerationIdentityPack?: boolean;
+  influencesGenerationStyle?: boolean;
+}
+
+export interface ReferenceFirstGenerationContext {
+  currentProjectCorePackId?: string;
+  executionBriefId?: string;
+  generationIdentityPackId: string;
+  generationBriefId: string;
+  taskReferenceSubsetId: string;
+  approvedAnchorContextId?: string;
+  outputType: GenerationOutputType;
+  prompt: string;
+}
+
+export interface LegacyVisualSuppressionValidation {
+  oldColorSystemSuppressed: boolean;
+  oldLayoutSuppressed: boolean;
+  oldTypographySuppressed: boolean;
+  oldGraphicSystemSuppressed: boolean;
+  oldPhotographySuppressed: boolean;
+  oldMaterialSystemSuppressed: boolean;
+}
+
+export interface ReferenceFirstReportValidation {
+  hasMinimumIdentityCore: boolean;
+  hasReplaceableLegacyVisuals: boolean;
+  hasReferenceStyleCarriers: boolean;
+  hasPermissionMatrix: boolean;
+  hasSystemAnchor: boolean;
+  hasProjectGraphicAnchor: boolean;
+  hasDefinedAnchorImageType: boolean;
+  hasReadableAssetReferences: boolean;
+  hasTaskReferenceSubsets: boolean;
+  hasGenerationContextInstructions: boolean;
+  hasLegacyStyleSuppression: boolean;
+  passed: boolean;
+  issues: string[];
+}
+
+export interface ReferenceFirstStrategy {
+  permissionMatrix: ReferenceFirstPermissionMatrix;
+  currentProjectVisualPermissions: CurrentProjectVisualPermissions;
+  referenceIdentityBoundary: ReferenceIdentityBoundary;
+  adoption: ReferenceFirstAdoption;
+  systemAnchor: SystemAnchor;
+  projectGraphicAnchor: ProjectGraphicAnchor;
+  anchorImage: AnchorImageDefinition;
+  currentProjectReadableAssets: UserReadableAssetReference[];
+  referenceReadableAssets: UserReadableAssetReference[];
+  taskReferenceConfidence: TaskReferenceConfidence[];
+  evidenceBoundFacts: EvidenceBoundFact[];
+  generationContexts: ReferenceFirstGenerationContext[];
+  legacyVisualSuppression: LegacyVisualSuppressionValidation;
+  reportValidation: ReferenceFirstReportValidation;
+  betaClosure: ReferenceFirstBetaClosure;
+  schemaVersion: 'reference-first-strategy-v1';
+}
+
+export interface AssetFilename {
+  originalName: string;
+  normalizedName: string;
+  displayName: string;
+}
+
+export interface StructureOnlyAsset {
+  sourceAssetId: string;
+  usage: 'structure_only';
+  cropRegion?: { x: number; y: number; width: number; height: number };
+  maskLegacyVisual?: boolean;
+  textualStructureDescription?: string;
+}
+
+export interface CurrentProjectAnalysisEvidencePack {
+  id: string;
+  assetIds: string[];
+  purpose: 'analysis_only';
+  schemaVersion: 'current-project-analysis-evidence-pack-v1';
+}
+
+export interface CurrentProjectGenerationIdentityPack {
+  id: string;
+  brandName: string;
+  identityAssetIds: string[];
+  productAssetIds: string[];
+  structureOnlyAssets: StructureOnlyAsset[];
+  lockedAssetIds: string[];
+  retainedCopy: string[];
+  assetIds: string[];
+  schemaVersion: 'current-project-generation-identity-pack-v1';
+}
+
+export interface GenerationIdentityPackValidation {
+  hasLogo: boolean;
+  hasLogoTypography: boolean;
+  hasProductEvidence: boolean;
+  hasRequiredStructureEvidence: boolean;
+  hasLockedAssets: boolean;
+  excludesLegacyPosters: boolean;
+  excludesLegacyColorBoards: boolean;
+  excludesLegacyGraphicSystems: boolean;
+  excludesLegacySpatialStyle: boolean;
+  passed: boolean;
+  errors: Array<'GENERATION_IDENTITY_PACK_CONTAMINATED' | 'GENERATION_IDENTITY_PACK_INCOMPLETE'>;
+}
+
+export interface BrandCopyRecord {
+  text: string;
+  status: 'observed' | 'replaceable' | 'user_retained' | 'locked';
+  evidenceAssetIds: string[];
+  sources?: FactEvidenceSource[];
+  useInGeneration: boolean;
+}
+
+export interface ReferenceGraphicStructure {
+  structuralRole: string;
+  layoutPosition: string;
+  repetitionLogic: string;
+  density: string;
+  crossTouchpointUsage: string[];
+}
+
+export interface ReferenceSignatureGraphic {
+  id?: string;
+  description: string;
+  forbiddenToCopy: boolean;
+  evidenceAssetIds: string[];
+  semanticFingerprint?: string[];
+}
+
+/** §3.4 参考专属图形泄漏校验结果。 */
+export interface SignatureGraphicLeakValidation {
+  primaryStyleCarrierLeakIds: string[];
+  secondaryStyleCarrierLeakIds: string[];
+  systemAnchorLeakIds: string[];
+  projectGraphicAnchorLeakIds: string[];
+  generationBriefLeakIds: string[];
+  passed: boolean;
+}
+
+export interface GraphicReconstructionOutput {
+  reconstructedGraphic: string;
+  sourceElements: string[];
+  structuralSimilarity: string;
+  identitySimilarityRisk: 'low' | 'medium' | 'high';
+}
+
+export interface OutputStyleCarrierRequirement {
+  outputType: GenerationOutputType;
+  requiredPrimaryCarrierIds: string[];
+  optionalSecondaryCarrierIds: string[];
+}
+
+export interface TouchpointVisualRule {
+  outputType: GenerationOutputType;
+  primarySubjectType: 'typography' | 'graphic_system' | 'material_system' | 'product' | 'space';
+  productPhotographyAllowed: boolean;
+  productPhotographyMayDominate: boolean;
+}
+
+export interface ReferenceFirstBetaFinalValidation {
+  analysisAndGenerationPacksSeparated: boolean;
+  generationIdentityPackHasNoLegacyStylePollution: boolean;
+  factsHavePreciseEvidence: boolean;
+  observedCopyNotAutoRetained: boolean;
+  primaryStyleCarrierCountValid: boolean;
+  referenceSignatureGraphicsExcluded: boolean;
+  projectGraphicAnchorIsNonBadge: boolean;
+  taskReferenceMatchTextConsistent: boolean;
+  referenceAssetsSupportMultipleRoles: boolean;
+  brandAndProductPosterRulesSeparated: boolean;
+  auditAndGenerationDocsSeparated: boolean;
+  generationBriefWithinLengthLimit: boolean;
+  filenamesReadable: boolean;
+  passed: boolean;
+  errors: string[];
+}
+
+export interface ReferenceFirstBetaClosure {
+  currentProjectAssetDecisions: Array<{
+    assetId: string;
+    filename: AssetFilename;
+    roles: CurrentProjectAssetRole[];
+    includeInAnalysisEvidencePack: boolean;
+    includeInGenerationIdentityPack: boolean;
+    generationUsage: 'identity' | 'product' | 'structure_only' | 'locked_asset' | 'exclude';
+    reason: string;
+    confidence: number;
+  }>;
+  analysisEvidencePack: CurrentProjectAnalysisEvidencePack;
+  generationIdentityPack: CurrentProjectGenerationIdentityPack;
+  generationIdentityPackValidation: GenerationIdentityPackValidation;
+  observedCopy: BrandCopyRecord[];
+  legacyVisualObservations: EvidenceBoundFact[];
+  referenceGraphicStructures: ReferenceGraphicStructure[];
+  referenceSignatureGraphics: ReferenceSignatureGraphic[];
+  graphicReconstruction: GraphicReconstructionOutput;
+  styleCarrierRanking: StyleCarrier[];
+  outputStyleCarrierRequirements: OutputStyleCarrierRequirement[];
+  touchpointVisualRules: TouchpointVisualRule[];
+  analysisAuditMarkdown: string;
+  generationBriefMarkdown: string;
+  finalValidation: ReferenceFirstBetaFinalValidation;
+}
+
+export interface BetaContentValidation {
+  visualAnchorUsesCurrentProjectSources: boolean;
+  noGenericTraditionalSymbolStacking: boolean;
+  noSurfaceStyleOverCopying: boolean;
+  colorRulesAreFlexible: boolean;
+  compositionAllowsVariation: boolean;
+  noUnnecessaryProductionParameters: boolean;
+  packagingAndTouchpointsSeparated: boolean;
+  touchpointRulesAreDistinct: boolean;
+  directionNameIsSpecific: boolean;
+  gptExecutionReady: boolean;
+}
+
+export interface ReconstructionQualityValidation extends BetaContentValidation {
+  currentProjectContextComplete: boolean;
+  lockedAssetsPresent: boolean;
+  referenceStyleProfilePresent: boolean;
+  noReferenceBrandPollution: boolean;
+  noInternalSystemTerms: boolean;
+  noMarkdownFragments: boolean;
+  styleApplicationIsProjectSpecific: boolean;
+  visualDirectionIsExecutable: boolean;
+  touchpointRulesPresent: boolean;
+  gptExecutionConstraintsPresent: boolean;
+  projectProfileClean?: boolean;
+  outputNotDuplicated?: boolean;
+  visualDirectionSpecific?: boolean;
+  passed: boolean;
+  issues: string[];
+}
+
+export interface ReferenceStyleReconstruction {
+  currentProjectProfile: CurrentProjectProfile;
+  referenceStyleProfile: ReferenceStyleProfile;
+  styleApplicationPlan?: StyleApplicationPlan;
+  visualReconstructionDirection: VisualReconstructionDirection;
+  assetSelectionProtocol?: AssetSelectionProtocolResult;
+  referenceFirstStrategy?: ReferenceFirstStrategy;
+  /** §14 生产链路 Generation Readiness 闭环结果，供桌面 UI 展示阻断原因。 */
+  generationReadiness?: GenerationReadinessGate;
+  /** §ValidationIssue 聚合与 Readiness 单一事实源：所有报告/UI 共用的根因与派生症状。 */
+  generationReadinessResult?: GenerationReadinessResult;
+  /** §15 Resolved Project Facts 单一来源（审计报告 / Runtime Fact Validator / UI 项目摘要共用）。 */
+  resolvedProjectFacts?: ResolvedProjectFacts;
+  validation: ReconstructionQualityValidation;
+}
+
+/**
+ * §统一 ValidationIssue（参考优先 Readiness 域）。
+ * 注意：与 model-schema/validation-issues.ts 的 schema 校验用 ValidationIssue 是不同概念，
+ * 此处命名为 ReadinessValidationIssue 以避免跨模块同名冲突。
+ */
+export type ReadinessValidationIssueSeverity = 'warning' | 'error' | 'blocking';
+
+export type ReadinessValidationIssueCategory =
+  | 'reference_sanitization'
+  | 'task_reference'
+  | 'task_style_carrier'
+  | 'structure_policy'
+  | 'identity_pack'
+  | 'runtime_fact'
+  | 'anchor'
+  | 'cross_artifact'
+  | 'brief_compilation'
+  | 'readiness';
+
+export interface ReadinessValidationIssue {
+  code: string;
+  category: ReadinessValidationIssueCategory;
+  severity: ReadinessValidationIssueSeverity;
+  /** 失败字段路径（JSON 路径或字段名）。 */
+  path: string;
+  receivedValue?: unknown;
+  message: string;
+  repairInstruction: string;
+  artifactPath?: string;
+  sourceValidator: string;
+  dependsOnIssueCodes?: string[];
+  causedByIssueCodes?: string[];
+  autoRepairable: boolean;
+  requiresHumanReview: boolean;
+}
+
+export interface ReadinessValidatorResult {
+  validatorId: string;
+  passed: boolean;
+  issues: ReadinessValidationIssue[];
+}
+
+/** §3 Validator Registry：统一的 Validator 阶段枚举。 */
+export type ReferenceFirstValidatorStage =
+  | 'reference_sanitization'
+  | 'task_reference'
+  | 'task_style_carrier'
+  | 'structure_policy'
+  | 'identity_pack'
+  | 'runtime_fact'
+  | 'anchor'
+  | 'cross_artifact'
+  | 'brief_compilation';
+
+/** §3.2 Validator Registry 执行编排产出的完整 ValidatorResult。 */
+export interface ReferenceFirstValidatorResult extends ReadinessValidatorResult {
+  stage: ReferenceFirstValidatorStage;
+  skipped: boolean;
+  startedAt: string;
+  completedAt: string;
+  artifactPaths: string[];
+}
+
+/** §7 Validator 执行审计清单（runs/<job-id>/validation/validator-execution-manifest.json）。 */
+export interface ValidatorExecutionManifest {
+  jobId: string;
+  registeredValidatorIds: string[];
+  executedValidatorIds: string[];
+  skippedValidatorIds: string[];
+  failedValidatorIds: string[];
+  expectedValidatorCount: number;
+  executedValidatorCount: number;
+  complete: boolean;
+}
+
+/** §15 Resolved Project Facts：单一来源的项目事实。 */
+export type ResolvedFactSource =
+  | 'user_input'
+  | 'project_metadata'
+  | 'model_analysis';
+
+export type ResolvedFactStatus = 'confirmed' | 'inferred' | 'unverified';
+
+export interface ResolvedFact<T> {
+  value: T;
+  source: ResolvedFactSource;
+  status: ResolvedFactStatus;
+}
+
+/** §15 runs/<job-id>/runtime/resolved-project-facts.json —— 审计报告 / Runtime Fact Validator / Brief / UI 共用。 */
+export interface ResolvedProjectFacts {
+  brandName?: ResolvedFact<string>;
+  industry?: ResolvedFact<string>;
+  products?: ResolvedFact<string[]>;
+  targetAudience?: ResolvedFact<string[]>;
+  positioning?: ResolvedFact<string>;
+  resolvedAt: string;
+}
+
+export interface ReadinessValidationAggregation {
+  allIssues: ReadinessValidationIssue[];
+  rootIssues: ReadinessValidationIssue[];
+  derivedIssues: ReadinessValidationIssue[];
+  warnings: ReadinessValidationIssue[];
+  status: 'ready' | 'needs_review' | 'blocked';
+}
+
+/** §9 Generation Readiness 单一事实源产物（runs/<job-id>/validation/generation-readiness-result.json）。 */
+export interface GenerationReadinessResult {
+  jobId: string;
+  outputType: GenerationOutputType;
+  status: 'ready' | 'needs_review' | 'blocked';
+  rootIssues: ReadinessValidationIssue[];
+  derivedIssues: ReadinessValidationIssue[];
+  warnings: ReadinessValidationIssue[];
+  /** §11 Validator 执行完整性（单一事实源必须可见）。 */
+  validatorExecution: {
+    expected: number;
+    executed: number;
+    complete: boolean;
+  };
+  referenceSelectionStatus: 'passed' | 'needs_review' | 'blocked';
+  generationContextStatus: 'ready' | 'needs_review' | 'blocked';
+  generatedAt: string;
+}
+
+export type ReferenceTranslationStage =
+  | 'PREPARING_ASSETS'
+  | 'SELECTING_CURRENT_CORE_PACK'
+  | 'SELECTING_REFERENCE_MASTER_SET'
+  | 'BUILDING_TASK_REFERENCE_SUBSETS'
+  | 'ANALYZING_REFERENCE'
+  | 'LOADING_PROJECT_CONTEXT'
+  | 'SYNTHESIZING_REFERENCE_DNA'
+  | 'CLASSIFYING_TRANSFERABILITY'
+  | 'MAPPING_TO_PROJECT'
+  | 'GENERATING_DIRECTION'
+  | 'COMPILING_REPORT'
+  | 'VALIDATING_REPORT'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'CANCELLED';
+
+export type ReferenceTranslationRunStatus = 'running' | 'completed' | 'failed' | 'cancelled';
+
+export interface ReferenceTranslationError {
+  code:
+    | 'REFERENCE_ASSET_PREPARATION_FAILED'
+    | 'CURRENT_CORE_PACK_INCOMPLETE'
+    | 'CURRENT_CORE_PACK_CONTAMINATED'
+    | 'REFERENCE_MASTER_SET_INSUFFICIENT'
+    | 'TASK_REFERENCE_SUBSET_MISMATCH'
+    | 'TASK_REFERENCE_SUBSET_TOO_WEAK'
+    | 'REFERENCE_ANALYSIS_FAILED'
+    | 'CURRENT_PROJECT_CONTEXT_INCOMPLETE'
+    | 'CURRENT_PROJECT_PROFILE_CONTAMINATED'
+    | 'REFERENCE_STYLE_INSUFFICIENT'
+    | 'REFERENCE_STYLE_PROFILE_CONTAMINATED'
+    | 'REFERENCE_BRAND_CONTAMINATION'
+    | 'REFERENCE_IDENTITY_LEAKAGE'
+    | 'RECONSTRUCTION_OUTPUT_DUPLICATED'
+    | 'VISUAL_DIRECTION_NOT_EXECUTABLE'
+    | 'RECONSTRUCTION_QUALITY_FAILED'
+    | 'REFERENCE_FIRST_LEGACY_STYLE_NOT_SUPPRESSED'
+    | 'REFERENCE_FIRST_REPORT_VALIDATION_FAILED'
+    | 'MODEL_OUTPUT_JSON_PARSE_ERROR'
+    | 'MODEL_OUTPUT_MARKDOWN_WRAPPER'
+    | 'MODEL_OUTPUT_TRUNCATED'
+    | 'MODEL_OUTPUT_INVALID_TYPE'
+    | 'MODEL_OUTPUT_INVALID_ENUM'
+    | 'MODEL_OUTPUT_MISSING_FIELD'
+    | 'MODEL_OUTPUT_INVALID_RANGE'
+    | 'FACT_INSUFFICIENT_EVIDENCE'
+    | 'FACT_STATUS_OVERCLAIMED'
+    | 'FACT_EVIDENCE_BROADCAST'
+    | 'FACT_EVIDENCE_POLLUTION'
+    | 'PROJECT_CONTEXT_LOAD_FAILED'
+    | 'REFERENCE_DNA_FAILED'
+    | 'TRANSFERABILITY_FAILED'
+    | 'PROJECT_MAPPING_FAILED'
+    | 'DIRECTION_GENERATION_FAILED'
+    | 'MARKDOWN_COMPILE_FAILED'
+    | 'MARKDOWN_VALIDATION_FAILED'
+    | 'REPORT_WRITE_FAILED'
+    | 'CANCELLED';
+  message: string;
+  stage: ReferenceTranslationStage;
+  recoverable: boolean;
+  retryFromStage?: ReferenceTranslationStage;
+}
+
+export interface ReferenceTranslationProgress {
+  jobId: string;
+  projectId: string;
+  jobType: 'reference_translation';
+  status: ReferenceTranslationRunStatus;
+  stage: ReferenceTranslationStage;
+  stageIndex: number;
+  stageCount: number;
+  progress: number;
+  analyzedAssetCount?: number;
+  totalAssetCount?: number;
+  startedAt: string;
+  updatedAt: string;
+  message?: string;
+}
+
+export interface ReferenceTranslationRunRecord {
+  id: string;
+  status: ReferenceTranslationRunStatus;
+  createdAt: string;
+  completedAt?: string;
+  durationMs?: number;
+  cacheHit: boolean;
+  visualAnalysisFilename: string;
+  projectContextFilename: string;
+  preference: string;
+  completeness?: string;
+  consistency?: string;
+  matrixCount?: number;
+  prohibitedCount?: number;
+  lastError?: string | null;
+  projectId?: string;
+  stage?: ReferenceTranslationStage;
+  progress?: number;
+  analyzedAssetCount?: number;
+  totalAssetCount?: number;
+  reportFilename?: string | null;
+  error?: ReferenceTranslationError | null;
+  apiProfileId?: string;
+  modelCallCount?: number;
+  resumedStageCount?: number;
+  /** §14 Generation Readiness 闭环状态，供运行列表快速展示是否可放行。 */
+  readinessStatus?: GenerationReadinessGate['status'];
+}
+
+export interface StartReferenceTranslationInput {
+  visualAnalysisPath: string;
+  projectContextPath: string;
+  referenceStylePreference?: string;
+  preference?: string;
+  force?: boolean;
+}
+
+export interface StartReferenceTranslationUserInput {
+  referenceAssetPaths: string[];
+  currentProjectId?: string;
+  currentProjectSourcePaths?: string[];
+  confirmedCurrentAssetIds?: string[];
+  apiProfileId?: string;
+  referenceStylePreference?: string;
+  preference?: string;
+  force?: boolean;
+}
+
+export interface ReferenceAssetSelectionItem {
+  sourcePath: string;
+  name: string;
+  extension: string;
+  sizeBytes: number;
+  fingerprint: string;
+  thumbnailDataUrl?: string;
+}
+
+export interface ReferenceAssetSelection {
+  items: ReferenceAssetSelectionItem[];
+  skipped: string[];
+  duplicateCount: number;
+}
+
+export interface ReferenceTranslationResult {
+  run: ReferenceTranslationRunRecord;
+  profile?: ReferenceTranslationProfile;
+  direction?: ReferenceLedDirection;
+  reportMarkdown?: string;
+  reconstruction?: ReferenceStyleReconstruction;
+  assetSelectionProtocol?: AssetSelectionProtocolResult;
 }
 
 export interface DesktopApi {
@@ -363,7 +1789,262 @@ export interface DesktopApi {
     openFolder(runId: string): Promise<void>;
     onProgress(callback: (progress: VisualTranslationProgress) => void): () => void;
   };
+  referenceTranslation: {
+    chooseInput(): Promise<string[]>;
+    chooseReferenceAssets(): Promise<string[]>;
+    chooseProjectSources(): Promise<string[]>;
+    inspectAssets(paths: string[]): Promise<ReferenceAssetSelection>;
+    runUserInput(input: StartReferenceTranslationUserInput): Promise<ReferenceTranslationResult>;
+    run(input: StartReferenceTranslationInput): Promise<ReferenceTranslationResult>;
+    listRuns(): Promise<ReferenceTranslationRunRecord[]>;
+    getActive(): Promise<ReferenceTranslationProgress | null>;
+    getProfile(runId: string): Promise<ReferenceTranslationProfile>;
+    getDirection(runId: string): Promise<ReferenceLedDirection>;
+    getReconstruction(runId: string): Promise<ReferenceStyleReconstruction>;
+    readReport(runId: string): Promise<string>;
+    resume(runId: string, apiProfileId?: string): Promise<ReferenceTranslationResult>;
+    retryReport(runId: string): Promise<ReferenceTranslationResult>;
+    cancel(runId: string): Promise<boolean>;
+    remove(runId: string): Promise<void>;
+    openFolder(runId: string): Promise<void>;
+    onProgress(callback: (progress: ReferenceTranslationProgress) => void): () => void;
+  };
   files: {
     getPathForFile(file: File): string;
   };
+  projectContext: {
+    get(projectId: string): Promise<ProjectVisualContext>;
+    rebuild(projectId: string): Promise<ProjectVisualContext>;
+    export(projectId: string): Promise<string | null>;
+  };
+}
+
+export type EvidenceSourceType =
+  | 'visual_asset'
+  | 'user_input'
+  | 'project_metadata'
+  | 'locked_config'
+  | 'human_confirmation';
+
+export interface FactEvidenceSource {
+  type: EvidenceSourceType;
+  sourceId?: string;
+  value: string;
+  confidence: number;
+}
+
+export interface UserLockedAsset {
+  assetId: string;
+  reason: string;
+}
+
+export interface UserRetainedCopy {
+  text: string;
+  sourceId?: string;
+}
+
+export interface ProjectRuntimeContext {
+  projectId: string;
+  brandName?: string;
+  industry?: string;
+  productFacts?: string[];
+  userLockedAssets: UserLockedAsset[];
+  userRetainedCopy: UserRetainedCopy[];
+  userConfirmedRealAssets: string[];
+  outputTasks: GenerationOutputType[];
+  referenceAssetIds: string[];
+  projectMetadata: Record<string, unknown>;
+}
+
+export interface EvidenceCoverage {
+  identity: boolean;
+  productOrService: boolean;
+  structure: boolean;
+  lockedAssets: boolean;
+  copy: boolean;
+}
+
+export interface AnalysisEvidencePack {
+  assetIds: string[];
+  evidenceCoverage: EvidenceCoverage;
+  uncertainAssetIds: string[];
+}
+
+export type StructureStatus =
+  | 'locked'
+  | 'user_confirmed'
+  | 'real_structure_detected'
+  | 'open_for_redesign'
+  | 'not_applicable';
+
+export interface StructurePolicy {
+  domain: 'packaging' | 'product' | 'space' | 'interface' | 'publication' | 'other';
+  status: StructureStatus;
+  confirmedAssetIds: string[];
+  inferredStructureObservations?: string[];
+  excludedUnverifiedAssetIds: string[];
+  redesignAllowed: boolean;
+  requiresHumanConfirmation: boolean;
+}
+
+/** §8.4 结构策略校验结果。 */
+export interface StructurePolicyValidation {
+  inferredStructureEnteredLockedInfo: boolean;
+  inferredStructureEnteredIdentityPack: boolean;
+  promptStructureStatementMatchesPolicy: boolean;
+  passed: boolean;
+}
+
+export interface UserStructureDecision {
+  domain?: StructurePolicy['domain'];
+  locked?: boolean;
+  confirmed?: boolean;
+  notApplicable?: boolean;
+  confirmedAssetIds?: string[];
+}
+
+export type GenerationIdentityUsage =
+  | 'brand_name'
+  | 'logo_graphic'
+  | 'logo_wordmark'
+  | 'product_or_service_fact'
+  | 'confirmed_structure'
+  | 'user_locked_asset'
+  | 'retained_copy';
+
+export interface GenerationIdentityAsset {
+  assetId: string;
+  usage: GenerationIdentityUsage;
+  reason: string;
+  containsLegacyStyle?: boolean;
+  confidence?: number;
+}
+
+/** §9.2 派生身份资产（Logo 裁切 / 字标裁�� / 独立图形等）。 */
+export interface DerivedIdentityAsset {
+  id: string;
+  sourceAssetId: string;
+  usage: GenerationIdentityUsage;
+  cropRegion?: { x: number; y: number; width: number; height: number };
+  normalizedFilePath?: string;
+  containsLegacyStyle: boolean;
+  confidence: number;
+}
+
+/** §9.4 Identity Pack 粒度校验结果。 */
+export interface IdentityPackGranularityValidation {
+  fullPageAssetIds: string[];
+  broadLockedAssetIds: string[];
+  legacyStyleContaminatedAssetIds: string[];
+  missingRequiredIdentityUsages: string[];
+  passed: boolean;
+}
+
+export interface LockedAsset {
+  assetId: string;
+  reason: string;
+}
+
+export interface GenerationIdentityPack {
+  identityFacts: EvidenceBoundFact[];
+  productOrServiceFacts: EvidenceBoundFact[];
+  logoAssets: GenerationIdentityAsset[];
+  logoTypographyAssets: GenerationIdentityAsset[];
+  confirmedStructureAssets: GenerationIdentityAsset[];
+  lockedAssets: LockedAsset[];
+  retainedCopy: BrandCopyRecord[];
+  structurePolicy: StructurePolicy;
+  assets: GenerationIdentityAsset[];
+  derivedAssets?: DerivedIdentityAsset[];
+}
+
+export interface GenerationTaskDefinition {
+  outputType: GenerationOutputType;
+  taskPurpose: string;
+  primarySubjectTypes: string[];
+  requiredObjects: string[];
+  optionalObjects: string[];
+  /** §3 当前任务必需的 Style Rules（来自 Task-Scoped Primary，视觉规则，不是画面必需对象）。 */
+  requiredStyleRules?: string[];
+  /** §3 当前任务的辅助 Style Rules（来自 Task-Scoped Secondary）。 */
+  supportingStyleRules?: string[];
+  compositionRules: string[];
+  typographyRules: string[];
+  materialRules: string[];
+  photographyRules: string[];
+  logoUsageRules: string[];
+  forbiddenOutputPatterns: string[];
+}
+
+/** §7 Generation Context Manifest：两份报告共用同一任务上下文。 */
+export interface GenerationContextManifest {
+  jobId: string;
+  outputType: GenerationOutputType;
+  identityPackArtifactId: string;
+  generationBriefArtifactId: string;
+  taskReferenceSubsetArtifactId: string;
+  approvedAnchorArtifactId?: string;
+  taskScopedStyleCarrierIds: string[];
+  systemAnchorId: string;
+  projectGraphicAnchorId?: string;
+  structurePolicyId: string;
+  validationStatus: 'ready' | 'needs_review' | 'blocked';
+}
+
+/** §12 跨报告一致性校验结果。 */
+export interface CrossArtifactConsistencyValidation {
+  outputTypeMatches: boolean;
+  taskSubsetMatches: boolean;
+  styleCarrierIdsMatch: boolean;
+  systemAnchorMatches: boolean;
+  projectGraphicAnchorMatches: boolean;
+  structurePolicyMatches: boolean;
+  identityPackMatches: boolean;
+  taskDefinitionMatches: boolean;
+  contradictions: string[];
+  passed: boolean;
+}
+
+export interface GenerationReadinessGate {
+  identityPackReady: boolean;
+  identityPackGranularityReady: boolean;
+  structurePolicyResolved: boolean;
+  referenceSignatureGraphicsIsolated: boolean;
+  anchorSingleSourceReady: boolean;
+  requestedTaskSubsetReady: boolean;
+  taskScopedStyleCarriersReady: boolean;
+  generationTaskDefinitionReady: boolean;
+  auditBriefConsistencyReady: boolean;
+  styleCarriersReady: boolean;
+  taskReferenceReady: boolean;
+  anchorDefinitionReady: boolean;
+  noSignatureGraphicLeak: boolean;
+  noUnverifiedAssetLeak: boolean;
+  generationBriefReady: boolean;
+  optionalAudienceContextAvailable?: boolean;
+  status: 'ready' | 'needs_review' | 'blocked';
+  blockingReasons: string[];
+  warnings?: string[];
+}
+
+export type ReferenceFirstProtocolErrorCode =
+  | 'GENERATION_IDENTITY_PACK_EMPTY'
+  | 'GENERATION_IDENTITY_PACK_MISSING_REQUIRED_IDENTITY'
+  | 'UNVERIFIED_ASSET_ENTERED_GENERATION_PACK'
+  | 'UNVERIFIED_ASSET_USED_AS_STRUCTURE_EVIDENCE'
+  | 'STRUCTURE_STATUS_UNRESOLVED'
+  | 'FACT_EVIDENCE_BROADCAST_DETECTED'
+  | 'STYLE_CARRIER_PLACEHOLDER_LEAK'
+  | 'STYLE_CARRIER_PRIORITY_INVALID'
+  | 'REFERENCE_SIGNATURE_GRAPHIC_LEAK'
+  | 'TASK_REFERENCE_MATCH_CONTRADICTION'
+  | 'GENERATION_BRIEF_MISSING_TASK_DETAILS';
+
+export interface ProtocolHardcodeScanResult {
+  projectNames: string[];
+  brandNames: string[];
+  industryTerms: string[];
+  productTerms: string[];
+  concreteTouchpointTerms: string[];
+  passed: boolean;
 }

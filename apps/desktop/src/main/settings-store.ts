@@ -5,6 +5,7 @@ import { app, safeStorage } from 'electron';
 import sharp from 'sharp';
 import type {
   ApiProfile,
+  AnalysisPipelineMode,
   ConnectionTestResult,
   DirectionGenerationMode,
   ProviderKind,
@@ -23,9 +24,11 @@ interface StoredSettings {
   cacheEnabled: boolean;
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode: DirectionGenerationMode;
+  analysisPipelineMode: AnalysisPipelineMode;
 }
 
 const DIRECTION_GENERATION_MODES = Object.freeze(['conceptual_v1', 'execution_oriented_v2']);
+const ANALYSIS_PIPELINE_MODES = Object.freeze(['retrieval_first', 'visual_fact_first_legacy', 'deep_analysis_legacy', 'legacy_deep_analysis', 'visual_fact_first']);
 
 interface LegacySettings {
   provider?: ProviderKind;
@@ -63,10 +66,15 @@ function defaults(): StoredSettings {
   return {
     profiles: [],
     defaultProfileId: null,
-    defaultDataPath: path.join(app.getPath('documents'), 'Masterpiece OS Data'),
+    // 默认数据目录放在本地应用数据下，避免依赖「文档」已知文件夹
+    // （在文档被重定向到网络盘 / OneDrive 离线 / 企业漫游配置文件等环境下，
+    // 解析 app.getPath('documents') 或对其 readdir 会同步阻塞主线程或网络超时，
+    // 导致客户端启动 splash 永久卡死且无报错）。用户可在设置里另行指定数据目录。
+    defaultDataPath: path.join(app.getPath('userData'), 'Masterpiece OS Data'),
     cacheEnabled: true,
     logLevel: 'info',
-    directionGenerationMode: 'conceptual_v1'
+    directionGenerationMode: 'execution_oriented_v2',
+    analysisPipelineMode: 'retrieval_first'
   };
 }
 
@@ -125,6 +133,8 @@ async function readStored(): Promise<StoredSettings> {
     const parsed = JSON.parse(await fs.readFile(settingsPath(), 'utf8')) as StoredSettings | LegacySettings;
     if (!Array.isArray((parsed as StoredSettings).profiles)) return migrateLegacy(parsed as LegacySettings);
     const stored = { ...defaults(), ...(parsed as StoredSettings) };
+    if (!DIRECTION_GENERATION_MODES.includes(stored.directionGenerationMode)) stored.directionGenerationMode = 'execution_oriented_v2';
+    if (!ANALYSIS_PIPELINE_MODES.includes(stored.analysisPipelineMode)) stored.analysisPipelineMode = 'retrieval_first';
     stored.profiles = stored.profiles.map((profile) => ({
       ...profile,
       provider: String(profile.provider || 'openai-compatible').trim(),
@@ -159,6 +169,7 @@ async function publicSettings(settings: StoredSettings): Promise<PublicSettings>
     cacheEnabled: settings.cacheEnabled,
     logLevel: settings.logLevel,
     directionGenerationMode: settings.directionGenerationMode,
+    analysisPipelineMode: settings.analysisPipelineMode,
     connectionStatus: defaultProfile ? profileStatus(defaultProfile) : 'untested'
   };
 }
@@ -194,6 +205,9 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
   settings.logLevel = input.logLevel;
   if (input.directionGenerationMode && DIRECTION_GENERATION_MODES.includes(input.directionGenerationMode)) {
     settings.directionGenerationMode = input.directionGenerationMode;
+  }
+  if (input.analysisPipelineMode && ANALYSIS_PIPELINE_MODES.includes(input.analysisPipelineMode)) {
+    settings.analysisPipelineMode = input.analysisPipelineMode;
   }
   await writeStored(settings);
   return publicSettings(settings);

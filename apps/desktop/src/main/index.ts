@@ -7,6 +7,8 @@ import type {
   CreateProjectInput,
   SaveApiProfileInput,
   SaveSettingsInput,
+  StartReferenceTranslationInput,
+  StartReferenceTranslationUserInput,
   StartVisualTranslationInput,
   VisualTranslationProgress
 } from '../shared/types';
@@ -23,10 +25,26 @@ import {
 } from './settings-store';
 import { createPipelineService } from './pipeline-service';
 import { createVisualTranslationService } from './visual-translation-service';
+import { createReferenceTranslationService } from './reference-translation-service';
+import { createProjectContextService } from './project-context-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow: BrowserWindow | null = null;
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  console.warn(JSON.stringify({ event: 'SECOND_INSTANCE_BLOCKED', timestamp: new Date().toISOString() }));
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    console.warn(JSON.stringify({ event: 'SECOND_INSTANCE_BLOCKED', timestamp: new Date().toISOString() }));
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+}
 
 const projects = createProjectStore(getSettings);
 const pipeline = createPipelineService(
@@ -40,6 +58,19 @@ const visualTranslation = createVisualTranslationService(
   getSettings,
   (progress: VisualTranslationProgress) => mainWindow?.webContents.send('visual-translation:progress', progress)
 );
+const referenceTranslation = createReferenceTranslationService(getSettings, {
+  projects,
+  pipeline,
+  emitProgress: (progress) => mainWindow?.webContents.send('reference-translation:progress', progress)
+});
+const projectContext = createProjectContextService({
+  projects,
+  showSaveDialog: (defaultPath: string) =>
+    dialog.showSaveDialog(mainWindow!, {
+      defaultPath,
+      filters: [{ name: 'JSON', extensions: ['json'] }]
+    })
+});
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -154,6 +185,10 @@ function registerIpc(): void {
     if (result) throw new Error(result);
   });
 
+  ipcMain.handle('project-context:get', (_event, projectId: string) => projectContext.get(projectId));
+  ipcMain.handle('project-context:rebuild', (_event, projectId: string) => projectContext.rebuild(projectId));
+  ipcMain.handle('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
+
   ipcMain.handle('visual-translation:choose-documents', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openFile', 'multiSelections'],
@@ -188,6 +223,54 @@ function registerIpc(): void {
     const result = await shell.openPath(path.join(root, 'outputs'));
     if (result) throw new Error(result);
   });
+
+  ipcMain.handle('reference-translation:choose-input', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile'],
+      filters: [{ name: '结构化 JSON', extensions: ['json'] }]
+    });
+    return result.canceled ? [] : result.filePaths;
+  });
+  ipcMain.handle('reference-translation:choose-reference-assets', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: '参考视觉方案', extensions: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'zip'] }]
+    });
+    return result.canceled ? [] : result.filePaths;
+  });
+  ipcMain.handle('reference-translation:choose-project-sources', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: '项目文档与视觉资产', extensions: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'zip'] }]
+    });
+    return result.canceled ? [] : result.filePaths;
+  });
+  ipcMain.handle('reference-translation:inspect-assets', (_event, paths: string[]) =>
+    referenceTranslation.inspectAssets(paths));
+  ipcMain.handle('reference-translation:run-user-input', (
+    _event,
+    input: StartReferenceTranslationUserInput
+  ) => referenceTranslation.runUserInput(input));
+  ipcMain.handle('reference-translation:run', (_event, input: StartReferenceTranslationInput) => referenceTranslation.run(input));
+  ipcMain.handle('reference-translation:list-runs', () => referenceTranslation.listRuns());
+  ipcMain.handle('reference-translation:get-active', () => referenceTranslation.getActive());
+  ipcMain.handle('reference-translation:get-profile', (_event, runId: string) => referenceTranslation.getProfile(runId));
+  ipcMain.handle('reference-translation:get-direction', (_event, runId: string) => referenceTranslation.getDirection(runId));
+  ipcMain.handle('reference-translation:get-reconstruction', (_event, runId: string) => referenceTranslation.getReconstruction(runId));
+  ipcMain.handle('reference-translation:read-report', (_event, runId: string) => referenceTranslation.readReport(runId));
+  ipcMain.handle('reference-translation:resume', (
+    _event,
+    runId: string,
+    apiProfileId?: string
+  ) => referenceTranslation.resume(runId, apiProfileId));
+  ipcMain.handle('reference-translation:retry-report', (_event, runId: string) => referenceTranslation.retryReport(runId));
+  ipcMain.handle('reference-translation:cancel', (_event, runId: string) => referenceTranslation.cancel(runId));
+  ipcMain.handle('reference-translation:remove', (_event, runId: string) => referenceTranslation.remove(runId));
+  ipcMain.handle('reference-translation:open-folder', async (_event, runId: string) => {
+    const outputPath = await referenceTranslation.ensureReportDelivery(runId);
+    const result = await shell.openPath(outputPath);
+    if (result) throw new Error(result);
+  });
 }
 
 function commandLineValue(name: string): string | undefined {
@@ -195,7 +278,7 @@ function commandLineValue(name: string): string | undefined {
   return process.argv.find((argument) => argument.startsWith(prefix))?.slice(prefix.length);
 }
 
-app.whenReady().then(async () => {
+if (gotTheLock) app.whenReady().then(async () => {
   const smokeRunId = commandLineValue('visual-translation-smoke-run');
   const smokeDocumentPath = commandLineValue('visual-translation-smoke-document');
   const smokeProfileId = commandLineValue('visual-translation-smoke-profile');

@@ -17,18 +17,11 @@ import {
   stringArray,
   stringValue
 } from './schema-utils-v2.js';
+import { COMPOSITION_TOUCHPOINTS } from './direction-contract-v2.js';
 
 export const ANCHOR_V2_CONTRACT_VERSION = 'visual-direction-v2-anchor';
 
-export const ANCHOR_IMAGE_EXPECTED_TOUCHPOINTS = Object.freeze([
-  'poster',
-  'capability_deck',
-  'digital_hero',
-  'packaging_front',
-  'exhibition_backdrop',
-  'short_video_cover',
-  'map_or_activity'
-]);
+export const ANCHOR_IMAGE_EXPECTED_TOUCHPOINTS = Object.freeze([...COMPOSITION_TOUCHPOINTS]);
 
 function validateCoreAssetCombination(value, path, assetIds) {
   const item = objectValue(value, path);

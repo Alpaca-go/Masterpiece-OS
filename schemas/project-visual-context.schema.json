@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/schemas/project-visual-context.schema.json",
+  "title": "Project Visual Context V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "sourceRunId",
+    "generatedAt",
+    "identity",
+    "confidence",
+    "lockedAssets",
+    "products",
+    "currentVisualSystem",
+    "packaging",
+    "businessTouchpoints",
+    "evaluation",
+    "uncertainties",
+    "source"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "sourceRunId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projectName", "brandName", "industry"],
+      "properties": {
+        "projectName": { "type": "string", "minLength": 1 },
+        "brandName": { "type": "string", "minLength": 1 },
+        "industry": { "type": "string", "minLength": 1 }
+      }
+    },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projectName", "brandName", "industry"],
+      "properties": {
+        "projectName": { "type": "number", "minimum": 0, "maximum": 1 },
+        "brandName": { "type": "number", "minimum": 0, "maximum": 1 },
+        "industry": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "lockedAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logoLocked", "logoAssetIds", "lockedAssetIds", "lockedFacts"],
+      "properties": {
+        "logoLocked": { "type": "boolean" },
+        "logoAssetIds": { "type": "array", "items": { "type": "string" } },
+        "lockedAssetIds": { "type": "array", "items": { "type": "string" } },
+        "lockedFacts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "products": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coreProducts", "secondaryProducts"],
+      "properties": {
+        "coreProducts": { "type": "array", "items": { "type": "string" } },
+        "secondaryProducts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "currentVisualSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "existingVisualAssets",
+        "primaryColors",
+        "supportingColors",
+        "graphicAssets",
+        "typographySignals",
+        "materialSignals",
+        "photographySignals"
+      ],
+      "properties": {
+        "existingVisualAssets": { "type": "array", "items": { "type": "string" } },
+        "primaryColors": { "type": "array", "items": { "type": "string" } },
+        "supportingColors": { "type": "array", "items": { "type": "string" } },
+        "graphicAssets": { "type": "array", "items": { "type": "string" } },
+        "typographySignals": { "type": "array", "items": { "type": "string" } },
+        "materialSignals": { "type": "array", "items": { "type": "string" } },
+        "photographySignals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "packaging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structures", "status", "evidenceSources"],
+      "properties": {
+        "structures": { "type": "array", "items": { "type": "string" } },
+        "status": { "enum": ["confirmed", "legacy_observed", "unknown"] },
+        "evidenceSources": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "businessTouchpoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packaging", "viApplications", "spatial", "digital"],
+      "properties": {
+        "packaging": { "type": "array", "items": { "type": "string" } },
+        "viApplications": { "type": "array", "items": { "type": "string" } },
+        "spatial": { "type": "array", "items": { "type": "string" } },
+        "digital": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visualStrengths", "visualProblems", "modifiableAssets"],
+      "properties": {
+        "visualStrengths": { "type": "array", "items": { "type": "string" } },
+        "visualProblems": { "type": "array", "items": { "type": "string" } },
+        "modifiableAssets": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "uncertainties": { "type": "array", "items": { "type": "string" } },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reportPath",
+        "runtimeReportPath",
+        "assetCount",
+        "imageCount",
+        "provider",
+        "model"
+      ],
+      "properties": {
+        "reportPath": { "type": "string", "minLength": 1 },
+        "runtimeReportPath": { "type": "string", "minLength": 1 },
+        "assetCount": { "type": "integer", "minimum": 0 },
+        "imageCount": { "type": "integer", "minimum": 0 },
+        "provider": { "type": "string", "minLength": 1 },
+        "model": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

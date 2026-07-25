@@ -49,7 +49,14 @@ export const COMPOSITION_TOUCHPOINTS = Object.freeze([
   'packaging_front',
   'exhibition_backdrop',
   'short_video_cover',
-  'map_or_activity'
+  'map_or_activity',
+  'platform_product_showcase',
+  'quality_selection_board',
+  'institutional_product_guide',
+  'product_selection_catalog',
+  'ecosystem_service_map',
+  'partner_portal_hero',
+  'institutional_collaboration_guide'
 ]);
 
 export const EXECUTION_EXAMPLE_CATEGORIES = Object.freeze([
@@ -72,8 +79,9 @@ export const ANTI_CONCEPT_ART_CONSTRAINTS = Object.freeze([
 
 const ANTI_CONCEPT_ART_CONSTRAINT_IDS = ANTI_CONCEPT_ART_CONSTRAINTS.map((item) => item.constraint_id);
 
-// Direction families (doc section 6). Optional: the model may declare which
-// family each direction belongs to; the family-difference gate also derives it.
+// Legacy values remain exported for archived fixture compatibility. New runs
+// use the selected DirectionFamilyCandidate id/name and do not map A/B/C to a
+// semantic family.
 export const DIRECTION_FAMILIES = Object.freeze(['A', 'B', 'C']);
 
 // v2.1 — semantic Direction Family types (doc section 五/八). `direction_family`
@@ -110,6 +118,12 @@ export const ASSET_AUTHORIZATION_MODES = Object.freeze([
   'prohibited'
 ]);
 
+export const PHOTOGRAPHY_REQUIREMENT_MODES = Object.freeze([
+  'required',
+  'optional',
+  'none'
+]);
+
 function optionalString(value, fallback) {
   return value === undefined || value === null ? fallback : String(value);
 }
@@ -118,6 +132,30 @@ function optionalNumber(value, fallback) {
   if (value === undefined || value === null) return fallback;
   const n = Number(value);
   return Number.isFinite(n) ? n : fallback;
+}
+
+function validateInformationZone(value, path) {
+  if (value === undefined || value === null || typeof value === 'string') return optionalString(value);
+  const item = objectValue(value, path);
+  return {
+    position: stringValue(item.position, `${path}.position`),
+    width_or_height: stringValue(item.width_or_height, `${path}.width_or_height`),
+    content_types: stringArray(item.content_types || [], `${path}.content_types`, { min: 1 }),
+    alignment: stringValue(item.alignment, `${path}.alignment`),
+    background_relationship: stringValue(item.background_relationship, `${path}.background_relationship`)
+  };
+}
+
+function validateBrandZone(value, path) {
+  if (value === undefined || value === null || typeof value === 'string') return optionalString(value);
+  const item = objectValue(value, path);
+  return {
+    position: stringValue(item.position, `${path}.position`),
+    logo_usage: stringValue(item.logo_usage, `${path}.logo_usage`),
+    safety_margin: stringValue(item.safety_margin, `${path}.safety_margin`),
+    relationship_to_main_visual: stringValue(item.relationship_to_main_visual, `${path}.relationship_to_main_visual`),
+    prohibited_behavior: stringArray(item.prohibited_behavior || [], `${path}.prohibited_behavior`, { min: 1 })
+  };
 }
 
 export function validateReusableAsset(value, path) {
@@ -168,7 +206,7 @@ function validatePhotographyObjectSystem(value, path) {
   const info = numberValue(ratio.information_layout_ratio, `${path}.real_content_ratio.information_layout_ratio`, { min: 0, max: 1 });
   if (Math.abs(realIndustry + branded + info - 1) > 0.01) fail(`${path}.real_content_ratio components must sum to 1.0`, `${path}.real_content_ratio`);
   return {
-    needs_photography: enumValue(item.needs_photography, ['required', 'optional', 'none'], `${path}.needs_photography`),
+    needs_photography: enumValue(item.needs_photography, PHOTOGRAPHY_REQUIREMENT_MODES, `${path}.needs_photography`),
     real_industry_objects: stringArray(item.real_industry_objects, `${path}.real_industry_objects`, { min: 1 }),
     subject_and_background: stringValue(item.subject_and_background, `${path}.subject_and_background`, { maxLength: 300 }),
     people_product_packaging: stringValue(item.people_product_packaging, `${path}.people_product_packaging`, { maxLength: 300 }),
@@ -265,9 +303,9 @@ function validateExecutionExample(value, path, assetIds) {
     graphic_overlay: optionalString(item.graphic_overlay),
     industry_content: optionalString(item.industry_content),
     layout_structure: optionalString(item.layout_structure),
-    information_zone: optionalString(item.information_zone),
+    information_zone: validateInformationZone(item.information_zone, `${path}.information_zone`),
     information_hierarchy: optionalString(item.information_hierarchy),
-    brand_zone: optionalString(item.brand_zone),
+    brand_zone: validateBrandZone(item.brand_zone, `${path}.brand_zone`),
     whitespace_behavior: optionalString(item.whitespace_behavior),
     canvas_ratio: optionalString(item.canvas_ratio),
     photography_ratio: optionalString(item.photography_ratio),
@@ -306,7 +344,7 @@ const INDUSTRY_CLASSIFICATION_KEYS = ['regulatory_objects', 'supply_chain_object
 const ASSET_AUTHORIZATION_KEYS = ['data_authorization_level', 'document_visualization_mode', 'credential_usage_mode', 'generated_data_policy'];
 
 function resolveFamilyType(letter, explicit) {
-  if (explicit !== undefined && DIRECTION_FAMILY_TYPES.includes(explicit)) return explicit;
+  if (explicit !== undefined && explicit !== null) return String(explicit);
   if (letter !== undefined && DIRECTION_FAMILY_TYPE_BY_LETTER[letter]) return DIRECTION_FAMILY_TYPE_BY_LETTER[letter];
   return undefined;
 }
@@ -342,6 +380,18 @@ function validateOptionalAssetAuthorization(value, path) {
   };
 }
 
+function validateOptionalSelectionMechanism(value, path) {
+  if (value === undefined || value === null) return undefined;
+  const obj = objectValue(value, path);
+  return {
+    selection_dimensions: stringArray(obj.selection_dimensions || [], `${path}.selection_dimensions`, { min: 1 }),
+    visual_mapping_rule: stringValue(obj.visual_mapping_rule, `${path}.visual_mapping_rule`, { maxLength: 300 }),
+    multi_category_rule: stringValue(obj.multi_category_rule, `${path}.multi_category_rule`, { maxLength: 300 }),
+    comparison_behavior: stringValue(obj.comparison_behavior, `${path}.comparison_behavior`, { maxLength: 300 }),
+    platform_signature: stringValue(obj.platform_signature, `${path}.platform_signature`, { maxLength: 300 })
+  };
+}
+
 export function validateExecutionDirectionV2(value, context = {}) {
   const root = objectValue(value?.visualDirectionV2 || value, 'visualDirectionV2');
   const reportLanguage = context.reportLanguage || 'zh-CN';
@@ -357,6 +407,7 @@ export function validateExecutionDirectionV2(value, context = {}) {
     direction_id: stringValue(root.direction_id, 'visualDirectionV2.direction_id'),
     direction_name: stringValue(root.direction_name, 'visualDirectionV2.direction_name'),
     strategic_idea: strategicIdea,
+    source_opportunity_ids: uniqueStringArray(root.source_opportunity_ids || [], 'visualDirectionV2.source_opportunity_ids'),
     industry_recognition_layer: validateIndustryRecognitionLayer(root.industry_recognition_layer, 'visualDirectionV2.industry_recognition_layer'),
     core_reusable_assets: arrayValue(root.core_reusable_assets, 'visualDirectionV2.core_reusable_assets', { min: 3 })
       .map((item, index) => validateReusableAsset(item, `visualDirectionV2.core_reusable_assets[${index}]`)),
@@ -376,11 +427,12 @@ export function validateExecutionDirectionV2(value, context = {}) {
     readiness_score: root.readiness_score === undefined ? null : numberValue(root.readiness_score, 'visualDirectionV2.readiness_score', { min: 0, max: 100 }),
     // doc sections 6/7/8/9 — optional structured fields the specialized-fix gates
     // consume. When absent, the evaluators derive the same signals from free text.
-    direction_family: root.direction_family === undefined ? undefined : enumValue(root.direction_family, DIRECTION_FAMILIES, 'visualDirectionV2.direction_family'),
+    direction_family: root.direction_family === undefined ? undefined : stringValue(root.direction_family, 'visualDirectionV2.direction_family'),
     family_type: resolveFamilyType(root.direction_family, root.family_type),
     compliance_weights: validateOptionalComplianceWeights(root.compliance_weights, 'visualDirectionV2.compliance_weights'),
     industry_recognition_classification: validateOptionalIndustryClassification(root.industry_recognition_classification, 'visualDirectionV2.industry_recognition_classification'),
     asset_authorization: validateOptionalAssetAuthorization(root.asset_authorization, 'visualDirectionV2.asset_authorization'),
+    selection_mechanism: validateOptionalSelectionMechanism(root.selection_mechanism, 'visualDirectionV2.selection_mechanism'),
     downstream_consumer_value: root.downstream_consumer_value === undefined
       ? undefined
       : validateDownstreamConsumerValue(root.downstream_consumer_value, 'visualDirectionV2.downstream_consumer_value')
@@ -428,6 +480,160 @@ export function validateExecutionDirectionV2(value, context = {}) {
   }
 
   return deepFreeze(direction);
+}
+
+const ENUM_FIELD_SPECS = Object.freeze([
+  { path: 'photography_object_system.needs_photography', allowed: PHOTOGRAPHY_REQUIREMENT_MODES },
+  { path: 'downstream_consumer_value.consumer_value_role', allowed: CONSUMER_VALUE_ROLES, optional: true }
+]);
+
+function readPath(value, path) {
+  const tokens = [...String(path).matchAll(/(?:^|\.)([^.[\]]+)|\[(\d+)\]/gu)]
+    .map((match) => match[1] ?? Number(match[2]));
+  return tokens.reduce((current, key) => current?.[key], value);
+}
+
+function collectEnumIssue(issues, direction, directionIndex, relativePath, allowed, optional = false) {
+  const received = readPath(direction, relativePath);
+  if (optional && (received === undefined || received === null)) return;
+  if (allowed.includes(received)) return;
+  const path = `visualDirectionV2Set.directions[${directionIndex}].${relativePath}`;
+  issues.push({
+    code: 'FAILED_SCHEMA',
+    path,
+    expected: [...allowed],
+    received,
+    message: `${path} must be one of: ${allowed.join(', ')}`
+  });
+}
+
+function collectRepeatedEnumIssues(issues, direction, directionIndex, collectionName, relativePath, allowed) {
+  const collection = direction?.[collectionName];
+  if (!Array.isArray(collection)) return;
+  collection.forEach((item, itemIndex) => collectEnumIssue(
+    issues,
+    direction,
+    directionIndex,
+    `${collectionName}[${itemIndex}].${relativePath}`,
+    allowed
+  ));
+}
+
+function collectConsumerValueContradiction(issues, direction, directionIndex, relativePath) {
+  const consumerValue = readPath(direction, relativePath);
+  if (consumerValue?.present !== true || consumerValue?.consumer_value_role !== 'none') return;
+  const path = `visualDirectionV2Set.directions[${directionIndex}].${relativePath}.consumer_value_role`;
+  issues.push({
+    code: 'FAILED_SCHEMA',
+    path,
+    expected: CONSUMER_VALUE_ROLES.filter((role) => role !== 'none'),
+    received: 'none',
+    message: `${path} cannot be none when present=true`
+  });
+}
+
+const SELECTION_MECHANISM_STRING_FIELDS = Object.freeze([
+  'visual_mapping_rule', 'multi_category_rule', 'comparison_behavior', 'platform_signature'
+]);
+
+function collectSelectionMechanismIssues(issues, direction, directionIndex) {
+  const mechanism = direction?.selection_mechanism;
+  if (mechanism === undefined || mechanism === null) return;
+  if (!mechanism || typeof mechanism !== 'object' || Array.isArray(mechanism)) return;
+  const base = `visualDirectionV2Set.directions[${directionIndex}].selection_mechanism`;
+  if (!Array.isArray(mechanism.selection_dimensions)
+    || mechanism.selection_dimensions.length < 1
+    || mechanism.selection_dimensions.some((item) => typeof item !== 'string' || !item.trim())) {
+    issues.push({
+      code: 'FAILED_SCHEMA', path: `${base}.selection_dimensions`, expected: 'non-empty string[]',
+      received: mechanism.selection_dimensions,
+      message: `${base}.selection_dimensions must contain at least one non-empty string`
+    });
+  }
+  for (const field of SELECTION_MECHANISM_STRING_FIELDS) {
+    if (typeof mechanism[field] === 'string' && mechanism[field].trim()) continue;
+    issues.push({
+      code: 'FAILED_SCHEMA', path: `${base}.${field}`, expected: 'non-empty string',
+      received: mechanism[field], message: `${base}.${field} must be a non-empty string`
+    });
+  }
+}
+
+function indexedValidationPath(path, directionIndex) {
+  return String(path || 'visualDirectionV2')
+    .replace(/^visualDirectionV2(?=\.|$)/u, `visualDirectionV2Set.directions[${directionIndex}]`);
+}
+
+// Collect every enum violation across the set before falling back to one
+// non-enum schema error per direction. This keeps the single repair call
+// bounded while avoiding the old one-error/one-repair structural dead end.
+export function collectExecutionDirectionV2ValidationErrors(directions, context = {}) {
+  const list = Array.isArray(directions) ? directions : [];
+  const issues = [];
+  list.forEach((raw, directionIndex) => {
+    const direction = raw?.visualDirectionV2 || raw;
+    for (const spec of ENUM_FIELD_SPECS) {
+      collectEnumIssue(issues, direction, directionIndex, spec.path, spec.allowed, spec.optional);
+    }
+    collectConsumerValueContradiction(issues, direction, directionIndex, 'downstream_consumer_value');
+    collectSelectionMechanismIssues(issues, direction, directionIndex);
+    collectRepeatedEnumIssues(issues, direction, directionIndex, 'core_reusable_assets', 'asset_type', REUSABLE_ASSET_TYPES);
+    collectRepeatedEnumIssues(issues, direction, directionIndex, 'composition_templates', 'touchpoint', COMPOSITION_TOUCHPOINTS);
+    collectRepeatedEnumIssues(issues, direction, directionIndex, 'execution_examples', 'touchpoint_category', EXECUTION_EXAMPLE_CATEGORIES);
+    const examples = Array.isArray(direction?.execution_examples) ? direction.execution_examples : [];
+    examples.forEach((example, exampleIndex) => {
+      const consumerValue = example?.downstream_consumer_value;
+      if (consumerValue?.consumer_value_role === undefined) return;
+      collectEnumIssue(
+        issues,
+        direction,
+        directionIndex,
+        `execution_examples[${exampleIndex}].downstream_consumer_value.consumer_value_role`,
+        CONSUMER_VALUE_ROLES
+      );
+      collectConsumerValueContradiction(
+        issues,
+        direction,
+        directionIndex,
+        `execution_examples[${exampleIndex}].downstream_consumer_value`
+      );
+    });
+
+    try {
+      validateExecutionDirectionV2(raw, context);
+    } catch (error) {
+      const path = indexedValidationPath(error?.path, directionIndex);
+      if (!issues.some((issue) => issue.path === path)) {
+        issues.push({
+          code: error?.code || 'FAILED_SCHEMA',
+          path,
+          expected: error?.expected,
+          received: readPath(direction, path.replace(/^visualDirectionV2Set\.directions\[\d+\]\.?/u, '')),
+          message: error?.message || 'Direction schema validation failed'
+        });
+      }
+    }
+  });
+  // When the formal validator reports a missing/invalid parent object, repairing
+  // that parent also resolves its speculative enum children. Keep only the
+  // shallowest path so patch application never depends on model-defined order.
+  return issues.filter((issue, index) => !issues.some((other, otherIndex) => (
+    otherIndex !== index
+    && other.path !== issue.path
+    && (issue.path.startsWith(`${other.path}.`) || issue.path.startsWith(`${other.path}[`))
+  )));
+}
+
+export function validateExecutionDirectionV2Set(directions, context = {}) {
+  const issues = collectExecutionDirectionV2ValidationErrors(directions, context);
+  if (issues.length) {
+    throw Object.assign(new Error(`Direction set contains ${issues.length} validation error(s)`), {
+      code: issues[0].code || 'FAILED_SCHEMA',
+      path: issues[0].path,
+      issues
+    });
+  }
+  return directions;
 }
 
 export { ANTI_CONCEPT_ART_CONSTRAINT_IDS };

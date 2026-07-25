@@ -24,6 +24,9 @@ import {
   FABRICATION_PLACEHOLDER_PATTERNS,
   PERSONAL_DATA_PATTERNS
 } from './evaluator-keywords.js';
+import { classifyFieldSemanticRole, isNegatedContext } from './field-semantic-role.js';
+import { allowedEvidenceValueSet, detectUnsupportedSpecificData, detectionIsEvidenceBound } from './specific-data-evidence-evaluator.js';
+import { extractEvidenceBoundValues } from '../visual-fact-first/evidence-bound-values.js';
 
 const ALLOWED_MODES = ['abstracted', 'redacted', 'structure_only', 'real_data_required', 'prohibited'];
 
@@ -55,8 +58,16 @@ function walkStrings(value, basePath, out) {
   }
 }
 
+function nonNegatedMatches(text, expression) {
+  const flags = expression.flags.includes('g') ? expression.flags : `${expression.flags}g`;
+  return [...String(text).matchAll(new RegExp(expression.source, flags))]
+    .filter((match) => !isNegatedContext(text, match.index || 0));
+}
+
 function classifyFragment({ path, text }, directionId) {
   const detections = [];
+  const semanticRole = classifyFieldSemanticRole(path);
+  if (semanticRole === 'negative_constraint' || semanticRole === 'metadata') return detections;
 
   // v2.1.2 — design-context fields: proportion/ratio/adaptation terms are legitimate
   // layout language, not fabricated data. Skip blocked metric/scientific patterns
@@ -74,13 +85,15 @@ function classifyFragment({ path, text }, directionId) {
   ];
   for (const set of blockedSets) {
     for (const pattern of set) {
-      if (pattern.re.test(text)) {
+      for (const match of nonNegatedMatches(text, pattern.re)) {
         detections.push({
           direction_id: directionId,
           field_path: path,
-          detected_text: text.match(pattern.re)[0] || text.slice(0, 40),
+          detected_text: match[0] || text.slice(0, 40),
           detection_type: pattern.type,
           source_type: 'model_output',
+          value_source: 'provider',
+          field_semantic_role: semanticRole,
           confidence: 0.92,
           rule_id: pattern.rule_id,
           reason: pattern.reason,
@@ -97,13 +110,15 @@ function classifyFragment({ path, text }, directionId) {
     const warningSets = [FABRICATION_FIELD_STRUCTURE_PATTERNS, FABRICATION_PLACEHOLDER_PATTERNS];
     for (const set of warningSets) {
       for (const pattern of set) {
-        if (pattern.re.test(text)) {
+        for (const match of nonNegatedMatches(text, pattern.re)) {
           detections.push({
             direction_id: directionId,
             field_path: path,
-            detected_text: text.match(pattern.re)[0] || text.slice(0, 40),
+            detected_text: match[0] || text.slice(0, 40),
             detection_type: pattern.type,
             source_type: 'model_output',
+            value_source: 'provider',
+            field_semantic_role: semanticRole,
             confidence: 0.6,
             rule_id: pattern.rule_id,
             reason: pattern.reason,
@@ -117,24 +132,31 @@ function classifyFragment({ path, text }, directionId) {
   return detections;
 }
 
-export function detectForgeryStructured(direction) {
+export function detectForgeryStructured(direction, { evidenceBoundValues = [], enforceEvidenceBoundValues = false } = {}) {
   const leaves = [];
   walkStrings(direction, 'visualDirectionV2', leaves);
   const detections = [];
   for (const leaf of leaves) detections.push(...classifyFragment(leaf, direction.direction_id));
-  return detections;
+  if (!enforceEvidenceBoundValues) return detections;
+  const allowedValues = allowedEvidenceValueSet(evidenceBoundValues);
+  const unbound = detectUnsupportedSpecificData(direction, evidenceBoundValues);
+  return [...detections.filter((item) => {
+    if (detectionIsEvidenceBound(item.detected_text, allowedValues)) return false;
+    return extractEvidenceBoundValues(item.detected_text).length === 0;
+  }), ...unbound]
+    .filter((item, index, all) => all.findIndex((candidate) => candidate.field_path === item.field_path && candidate.rule_id === item.rule_id && candidate.detected_text === item.detected_text) === index);
 }
 
-export function evaluateAssetAuthorization(direction) {
-  const detections = detectForgeryStructured(direction);
+export function evaluateAssetAuthorization(direction, options = {}) {
+  const detections = detectForgeryStructured(direction, options);
   const blocked = detections.filter((d) => d.risk_level === 'blocked');
   const ok = blocked.length === 0;
 
   const explicit = direction.asset_authorization || {};
-  const dataAuthorizationLevel = explicit.data_authorization_level || (blocked.length ? 'prohibited' : 'abstracted');
+  const dataAuthorizationLevel = blocked.length ? 'prohibited' : (explicit.data_authorization_level || 'abstracted');
   const documentVisualizationMode = explicit.document_visualization_mode || 'structure_only';
   const credentialUsageMode = explicit.credential_usage_mode || 'redacted';
-  const generatedDataPolicy = explicit.generated_data_policy || (blocked.length ? 'prohibited' : 'abstracted');
+  const generatedDataPolicy = blocked.length ? 'prohibited' : (explicit.generated_data_policy || 'abstracted');
 
   return {
     direction_id: direction.direction_id,
@@ -148,8 +170,8 @@ export function evaluateAssetAuthorization(direction) {
   };
 }
 
-export function evaluateAssetAuthorizationSet(directions = []) {
-  const perDirection = directions.map((d) => evaluateAssetAuthorization(d));
+export function evaluateAssetAuthorizationSet(directions = [], options = {}) {
+  const perDirection = directions.map((d) => evaluateAssetAuthorization(d, options));
   const anyForgery = perDirection.some((item) => !item.ok);
   return {
     evaluator_version: 'asset-authorization-evaluator-v1.1',
