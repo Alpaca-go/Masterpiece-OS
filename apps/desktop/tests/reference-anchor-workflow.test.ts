@@ -5,14 +5,21 @@ import os from 'node:os';
 import path from 'node:path';
 import { createReferenceAnchorService } from '../src/main/reference-anchor-service.ts';
 import {
+  ABSTRACT_GRAPHIC_MECHANISM,
   BRIEF_MAX_LENGTH,
   MAX_RULES_PER_CATEGORY,
+  abstractGraphicRule,
   adaptLegacyReferenceResultToStyleCapsule,
+  classifyProjectFacts,
   compileAnchorBrief,
   compileCapsuleMarkdown,
   compileReferenceStyleCapsule,
+  dedupeBriefRules,
   detectReferenceIdentityLeaks,
+  detectReferenceSignatureReentry,
+  filterStyleCapsuleForTask,
   mergeCurrentProjectContext,
+  normalizeAspectRatio,
   validateAnchorBrief,
   validateReferenceStyleCapsule
 } from '../src/main/reference-anchor-core.ts';
@@ -408,4 +415,142 @@ test('orphaned executing run downgrades to awaiting_decision when outputs alread
   await fs.writeFile(recordPath, JSON.stringify(record), 'utf8');
   const reconciled = await harness.service.getRun(result.run.id);
   assert.equal(reconciled.status, 'awaiting_decision');
+});
+
+// ── v5.3.1 §14 质量修复回归 ──
+
+// Test 1：产品分类 —— 名片/工牌/菜单不得进入 coreProducts
+test('v5.3.1 Test1: classifyProjectFacts routes VI touchpoints out of coreProducts', () => {
+  const { facts, auditCodes } = classifyProjectFacts({ candidateProducts: ['名片', '工牌', '菜单', '跷脚牛肉'] });
+  assert.deepEqual(facts.coreProducts, ['跷脚牛肉']);
+  assert.deepEqual(facts.touchpoints.viApplications, ['名片', '工牌', '菜单']);
+  assert.ok(auditCodes.includes('CORE_PRODUCTS_CONTAIN_TOUCHPOINTS'));
+});
+
+// Test 2：设计建议清洗 —— 名片：简洁设计，突出 Logo，使用特种纸
+test('v5.3.1 Test2: classifyProjectFacts extracts design advice from touchpoint clauses', () => {
+  const { facts, auditCodes } = classifyProjectFacts({ candidateProducts: ['名片：简洁设计，突出 Logo，使用特种纸'] });
+  assert.deepEqual(facts.touchpoints.viApplications, ['名片']);
+  assert.deepEqual(facts.designAdvice, ['简洁设计', '突出 Logo', '使用特种纸']);
+  assert.equal(facts.coreProducts.length, 0);
+  assert.ok(auditCodes.includes('CORE_PRODUCTS_CONTAIN_DESIGN_ADVICE'));
+  assert.ok(auditCodes.includes('CORE_PRODUCTS_EMPTY_WITH_FALSE_FALLBACK'));
+});
+
+// Test 3：参考专属图形回流 —— 正向规则含禁止表层元素 → blocking
+test('v5.3.1 Test3: reference signature reentry is detected and blocks at service level', async () => {
+  const conflicts = detectReferenceSignatureReentry(['以砂锅轮廓作为超级符号'], ['砂锅轮廓', '参考印章', '连纹']);
+  assert.ok(conflicts.length >= 1);
+  assert.equal(conflicts[0]!.value, '砂锅轮廓');
+
+  // 服务级：图形规则被抽象为机制并写入 prohibited；同一表层元素若残留在其他正向规则则硬阻断。
+  const harness = await buildHarness();
+  harness.setReferenceStyle(buildReferenceStyle({
+    graphicLanguage: [{ rule: '以砂锅轮廓作为超级符号，结合印章与连纹', confidence: 0.9 }],
+    colorSystem: [{ rule: '延续砂锅轮廓的暖橙色调作为主色', confidence: 0.9 }]
+  } as unknown as Partial<ReferenceStyleProfile>));
+  await assert.rejects(
+    () => harness.service.start({ currentProjectId: 'project-current', referenceAssetPaths: harness.assetPaths, apiProfileId: 'profile-1' }),
+    (error: Error & { code?: string }) => ['PROHIBITED_REFERENCE_ELEMENT_IN_POSITIVE_RULES', 'REFERENCE_SIGNATURE_REENTERED_ANCHOR_BRIEF'].includes(error.code || '')
+  );
+  const runs = await harness.service.listRuns();
+  assert.equal(runs[0]!.status, 'failed');
+});
+
+// Test 4：机制抽象 —— 砂锅轮廓 → 抽象机制，绝不保留表层元素
+test('v5.3.1 Test4: graphic rule is abstracted to mechanism, surface elements go to prohibited', () => {
+  const { rule, prohibitedSurface } = abstractGraphicRule('参考以砂锅轮廓作为超级符号，结合印章与连纹');
+  assert.equal(rule, ABSTRACT_GRAPHIC_MECHANISM);
+  assert.ok(prohibitedSurface.includes('砂锅轮廓'));
+  assert.ok(!rule.includes('砂锅'));
+
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle({
+      graphicLanguage: [{ rule: '以砂锅轮廓作为超级符号', confidence: 0.9 }]
+    } as unknown as Partial<ReferenceStyleProfile>)
+  });
+  assert.ok(capsule.inheritedStyle.graphicLanguage.includes(ABSTRACT_GRAPHIC_MECHANISM));
+  assert.ok(!capsule.inheritedStyle.graphicLanguage.some((r) => r.includes('砂锅')));
+  assert.ok(capsule.prohibitedReferenceIdentity.signatureGraphics.some((r) => r.includes('砂锅轮廓')));
+});
+
+// Test 5：Anchor 任务过滤 —— 保留天然材质/暖光，移除厨师/空间/微距
+test('v5.3.1 Test5: filterStyleCapsuleForTask removes food/kitchen/space rules for anchor_vi_system', () => {
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle()
+  });
+  capsule.inheritedStyle.materialAndPhotography = ['食品微距特写', '厨师烹饪动态', '用餐空间氛围', '天然材质哑光', '方向性暖光'];
+  const task = filterStyleCapsuleForTask(capsule, 'anchor_vi_system');
+  assert.ok(task.inheritedStyle.materialAndPhotography.includes('天然材质哑光'));
+  assert.ok(task.inheritedStyle.materialAndPhotography.includes('方向性暖光'));
+  assert.ok(!task.inheritedStyle.materialAndPhotography.some((r) => r.includes('厨师')));
+  assert.ok(!task.inheritedStyle.materialAndPhotography.some((r) => r.includes('空间氛围')));
+  assert.ok(task.removedRules.some((r) => r.includes('食品微距')));
+});
+
+// Test 6：Warning —— 存在推断/待确认/专属元素风险时人工注意事项不为空
+test('v5.3.1 Test6: warning compiler produces non-empty humanNotes when risks exist', () => {
+  const visual = buildVisualContext();
+  (visual as unknown as { identity: { industry: string } }).identity.industry = '';
+  (visual as unknown as { products: { coreProducts: string[] } }).products.coreProducts = [];
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle({
+      graphicLanguage: [{ rule: '以砂锅轮廓作为超级符号', confidence: 0.9 }]
+    } as unknown as Partial<ReferenceStyleProfile>)
+  });
+  assert.ok(capsule.humanNotes.length > 0);
+  assert.ok(capsule.humanNotes.some((n) => n.includes('行业')));
+  assert.ok(capsule.humanNotes.some((n) => n.includes('核心产品')));
+  assert.ok(capsule.humanNotes.some((n) => n.includes('专属')));
+  const capsuleMd = compileCapsuleMarkdown(capsule);
+  assert.ok(!capsuleMd.includes('暂无需要特别注意的事项'));
+});
+
+// Test 7：比例 —— "3:4 或 1:1" 触发 ANCHOR_ASPECT_RATIO_AMBIGUOUS，单值通过
+test('v5.3.1 Test7: ambiguous aspect ratio is rejected, single value passes', () => {
+  assert.equal(normalizeAspectRatio('3:4 或 1:1'), '16:9');
+  assert.equal(normalizeAspectRatio('4:5'), '4:5');
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle()
+  });
+  const brief = compileAnchorBrief(capsule);
+  assert.equal(validateAnchorBrief(brief).valid, true);
+  assert.ok(brief.includes('比例 16:9'));
+  const polluted = brief.replace('比例 16:9', '比例 3:4 或 1:1');
+  const validation = validateAnchorBrief(polluted);
+  assert.equal(validation.valid, false);
+  assert.ok(validation.errors.some((e) => e.includes('ANCHOR_ASPECT_RATIO_AMBIGUOUS')));
+});
+
+// Test 8：去重 —— Locked Assets 只列一次、语义重复合并
+test('v5.3.1 Test8: dedupeBriefRules merges duplicate/semantic-duplicate rules', () => {
+  const deduped = dedupeBriefRules(['简体中文输出', '简体中文输出', '简体中文', '品牌名称：冯烫烫']);
+  assert.equal(deduped.filter((x) => x.includes('简体中文')).length, 1);
+  assert.ok(deduped.includes('品牌名称：冯烫烫'));
+
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle()
+  });
+  const brief = compileAnchorBrief(capsule);
+  const bBlock = brief.slice(brief.indexOf('## B.'), brief.indexOf('## C.'));
+  const cBlock = brief.slice(brief.indexOf('## C.'), brief.indexOf('## D.'));
+  // Locked Assets 只在 B 部分出现，C 部分不重复 Logo 锁定表述
+  assert.ok(bBlock.includes('简体中文输出'));
+  assert.ok(!cBlock.includes('简体中文输出'));
+  assert.ok(!cBlock.includes('Logo：已锁定'));
 });
