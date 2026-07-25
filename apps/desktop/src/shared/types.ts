@@ -1884,6 +1884,37 @@ export type ReferenceAnchorStage =
   | '03-anchor-brief'
   | '04-anchor-decision';
 
+/** §10 Anchor 输出比例（单值，不得输出「3:4 或 1:1」这类不确定表述）。 */
+export type AnchorAspectRatio = '16:9' | '4:5' | '3:4' | '1:1';
+
+/** v5.3.1 §3 当前项目事实分类：核心产品与业务触点、设计建议严格分离。 */
+export interface NormalizedProjectFacts {
+  coreProducts: string[];
+  services: string[];
+  touchpoints: {
+    packaging: string[];
+    viApplications: string[];
+    serviceMaterials: string[];
+    spatial: string[];
+    digital: string[];
+  };
+  designAdvice: string[];
+  uncertainties: string[];
+}
+
+/** v5.3.1 §4/§5 参考元素三层转译模式。 */
+export type ReferenceElementTransferMode = 'mechanism_only' | 'reinterpret' | 'prohibited';
+
+/** v5.3.1 §5 参考机制抽象中间结构：只保留运行方法，表层专属元素进入 prohibitedSurfaceElements。 */
+export interface ReferenceMechanismRule {
+  id: string;
+  category: 'color' | 'layout_typography' | 'graphic_organization' | 'material_photography' | 'extension';
+  sourceDescription: string;
+  abstractMechanism: string;
+  transferMode: ReferenceElementTransferMode;
+  prohibitedSurfaceElements: string[];
+}
+
 /** §7 参考风格胶囊：每类规则最多 3–5 条，禁止输出几十条碎片规则。 */
 export interface ReferenceStyleCapsule {
   schemaVersion: '1.0';
@@ -1900,6 +1931,9 @@ export interface ReferenceStyleCapsule {
     coreProducts: string[];
     businessTouchpoints: string[];
   };
+
+  /** v5.3.1 §3 分类后的当前项目事实（核心产品 / 触点 / 设计建议分离）。 */
+  projectFacts: NormalizedProjectFacts;
 
   inheritedStyle: {
     color: string[];
@@ -1921,6 +1955,10 @@ export interface ReferenceStyleCapsule {
   };
 
   anchorGoal: string;
+  /** v5.3.1 §10 输出比例单值。 */
+  aspectRatio: AnchorAspectRatio;
+  /** v5.3.1 §7 人工注意事项（Warning Compiler 汇总，存在风险时不得为空）。 */
+  humanNotes: string[];
   uncertainties: string[];
 }
 
@@ -1974,6 +2012,8 @@ export interface StartReferenceAnchorInput {
   preference?: string;
   /** 用户明确不要继承的内容。 */
   avoidance?: string[];
+  /** v5.3.1 §10 输出比例（单值）；缺省时使用系统默认 16:9。 */
+  aspectRatio?: AnchorAspectRatio;
 }
 
 export interface ReferenceAnchorResult {
