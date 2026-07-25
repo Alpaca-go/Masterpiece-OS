@@ -16,6 +16,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type {
+  AnchorAspectRatio,
   AnchorDecision,
   DocumentVisualContext,
   ProjectVisualContext,
@@ -46,6 +47,9 @@ import {
   compileCapsuleMarkdown,
   compileReferenceStyleCapsule,
   detectReferenceIdentityLeaks,
+  detectReferenceSignatureReentry,
+  ensureProjectFacts,
+  filterStyleCapsuleForTask,
   mergeCurrentProjectContext,
   validateAnchorBrief,
   validateReferenceStyleCapsule,
@@ -264,13 +268,16 @@ export function createReferenceAnchorService(
     referenceStyle: ReferenceStyleProfile;
     preference: string | null;
     avoidance: string[];
+    aspectRatio?: AnchorAspectRatio;
     baseWarnings: ReferenceAnchorWarning[];
     startedAt: string;
     startedTick: number;
   }
 
   async function compileAndPersist(params: CompileParams): Promise<ReferenceAnchorResult> {
-    const { record, merged, visual, referenceStyle } = params;
+    const { record, visual, referenceStyle } = params;
+    // v5.3.1 §3：兜底重建事实分类（旧缓存 merged 可能缺 facts）。
+    const merged: MergedCurrentProject = { ...params.merged, facts: ensureProjectFacts(params.merged) };
     const root = await runRoot(record.id);
 
     // 02-style-capsule
@@ -282,7 +289,8 @@ export function createReferenceAnchorService(
       merged,
       referenceStyle,
       userPreference: params.preference,
-      userAvoidance: params.avoidance
+      userAvoidance: params.avoidance,
+      aspectRatio: params.aspectRatio
     });
     const capsule = compiled.capsule;
 
@@ -314,6 +322,22 @@ export function createReferenceAnchorService(
       throw blockingError(first.code, `${first.message}：${first.rule.slice(0, 80)}`);
     }
 
+    // v5.3.1 §4.4 参考专属元素回流硬阻断：正向规则 / anchorGoal 中不得出现禁止的表层专属元素。
+    const positiveRules = [...inheritedRules, capsule.anchorGoal];
+    const reentry = detectReferenceSignatureReentry(positiveRules, compiled.prohibitedSurfaceElements);
+    if (reentry.length) {
+      const first = reentry[0]!;
+      await writeJson(path.join(root, 'debug', 'validation-details.json'), {
+        terminalStatus: 'blocked',
+        code: 'PROHIBITED_REFERENCE_ELEMENT_IN_POSITIVE_RULES',
+        conflicts: reentry
+      });
+      throw blockingError(
+        'PROHIBITED_REFERENCE_ELEMENT_IN_POSITIVE_RULES',
+        `参考专属表层元素「${first.value}」回流到正向继承规则，必须抽象为机制后再使用`
+      );
+    }
+
     // §12 Schema 硬校验
     const capsuleValidation = validateReferenceStyleCapsule(capsule);
     if (!capsuleValidation.valid) {
@@ -329,6 +353,14 @@ export function createReferenceAnchorService(
     const briefValidation = validateAnchorBrief(briefMarkdown);
     if (!briefValidation.valid) {
       throw blockingError('SCHEMA_VALIDATION_FAILED', `Anchor Brief 未通过校验：${briefValidation.errors.join('；')}`);
+    }
+    // v5.3.1 §4.4 Brief 级回流阻断：禁止表层元素不得出现在最终 Brief。
+    const briefReentry = detectReferenceSignatureReentry([briefMarkdown], compiled.prohibitedSurfaceElements);
+    if (briefReentry.length) {
+      throw blockingError(
+        'REFERENCE_SIGNATURE_REENTERED_ANCHOR_BRIEF',
+        `Anchor Brief 中出现参考专属表层元素「${briefReentry[0]!.value}」，必须抽象为机制`
+      );
     }
 
     const warnings: ReferenceAnchorWarning[] = [...params.baseWarnings, ...compiled.warnings];
@@ -501,6 +533,7 @@ export function createReferenceAnchorService(
         referenceStyle,
         preference,
         avoidance,
+        aspectRatio: input.aspectRatio,
         baseWarnings,
         startedAt: createdAt,
         startedTick
