@@ -3,6 +3,7 @@ import type {
   AnalysisProgress,
   DesktopApi,
   DocumentContextProgress,
+  ReferenceAnchorProgress,
   ReferenceTranslationProgress,
   VisualTranslationProgress
 } from '../shared/types';
@@ -107,6 +108,29 @@ const api: DesktopApi = {
       const listener = (_event: Electron.IpcRendererEvent, progress: ReferenceTranslationProgress) => callback(progress);
       ipcRenderer.on('reference-translation:progress', listener);
       return () => ipcRenderer.removeListener('reference-translation:progress', listener);
+    }
+  },
+  referenceAnchor: {
+    chooseReferenceAssets: () => ipcRenderer.invoke('reference-anchor:choose-reference-assets'),
+    inspectAssets: (paths) => ipcRenderer.invoke('reference-anchor:inspect-assets', paths),
+    listRuns: () => ipcRenderer.invoke('reference-anchor:list-runs'),
+    getRun: (runId) => ipcRenderer.invoke('reference-anchor:get-run', runId),
+    start: (input) => ipcRenderer.invoke('reference-anchor:start', input),
+    getCapsule: (runId) => ipcRenderer.invoke('reference-anchor:get-capsule', runId),
+    getBrief: (runId) => ipcRenderer.invoke('reference-anchor:get-brief', runId),
+    getCapsuleMarkdown: (runId) => ipcRenderer.invoke('reference-anchor:get-capsule-markdown', runId),
+    updatePreference: (runId, preference, avoidance) => ipcRenderer.invoke('reference-anchor:update-preference', runId, preference, avoidance),
+    retryBrief: (runId, editedBrief) => ipcRenderer.invoke('reference-anchor:retry-brief', runId, editedBrief),
+    setDecision: (runId, decision, note) => ipcRenderer.invoke('reference-anchor:set-decision', runId, decision, note),
+    adaptLegacyRun: (runId) => ipcRenderer.invoke('reference-anchor:adapt-legacy-run', runId),
+    cancel: (runId) => ipcRenderer.invoke('reference-anchor:cancel', runId),
+    remove: (runId) => ipcRenderer.invoke('reference-anchor:remove', runId),
+    export: (runId) => ipcRenderer.invoke('reference-anchor:export', runId),
+    openFolder: (runId) => ipcRenderer.invoke('reference-anchor:open-folder', runId),
+    onProgress(callback) {
+      const listener = (_event: Electron.IpcRendererEvent, progress: ReferenceAnchorProgress) => callback(progress);
+      ipcRenderer.on('reference-anchor:progress', listener);
+      return () => ipcRenderer.removeListener('reference-anchor:progress', listener);
     }
   },
   files: {

@@ -1,0 +1,411 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import { createReferenceAnchorService } from '../src/main/reference-anchor-service.ts';
+import {
+  BRIEF_MAX_LENGTH,
+  MAX_RULES_PER_CATEGORY,
+  adaptLegacyReferenceResultToStyleCapsule,
+  compileAnchorBrief,
+  compileCapsuleMarkdown,
+  compileReferenceStyleCapsule,
+  detectReferenceIdentityLeaks,
+  mergeCurrentProjectContext,
+  validateAnchorBrief,
+  validateReferenceStyleCapsule
+} from '../src/main/reference-anchor-core.ts';
+import type {
+  DocumentVisualContext,
+  ProjectVisualContext,
+  PublicSettings,
+  ReferenceCurrentProjectContext,
+  ReferenceStyleProfile
+} from '../src/shared/types';
+
+// ── 共享 fixture ──
+
+function buildVisualContext(): ProjectVisualContext {
+  return {
+    schemaVersion: '1.0',
+    projectId: 'project-current',
+    identity: { brandName: '九州美学', projectName: '九州美学品牌升级', industry: '文创礼品' },
+    lockedAssets: { logoLocked: true, logoAssetIds: ['asset-logo-1'], lockedFacts: ['Logo 为篆书印章造型，不可重绘'] },
+    products: { coreProducts: ['节气茶礼盒', '山水丝巾'] },
+    businessTouchpoints: { packaging: ['礼盒包装'], viApplications: ['名片'], spatial: [], digital: ['小程序首页'] },
+    packaging: { status: 'confirmed' }
+  } as unknown as ProjectVisualContext;
+}
+
+function buildDocumentContext(): DocumentVisualContext {
+  return {
+    brandName: '观夏东方',
+    industry: '香氛家居',
+    products: ['昆仑煮雪香薰'],
+    targetAudience: ['25-40 岁新中产'],
+    requiredTouchpoints: ['电商详情页'],
+    lockedFacts: ['价格带 300-800 元'],
+    unknownFields: [],
+    evidence: []
+  } as unknown as DocumentVisualContext;
+}
+
+function buildReferenceStyle(overrides: Partial<ReferenceStyleProfile> = {}): ReferenceStyleProfile {
+  const rule = (text: string, confidence = 0.9) => ({ rule: text, confidence });
+  return {
+    schemaVersion: '1.0',
+    overallTemperament: '克制的东方现代主义',
+    colorSystem: [rule('以米白为底、朱砂红为唯一强调色，强调色面积不超过 10%'), rule('大面积留白承载呼吸感', 0.85)],
+    compositionSystem: [rule('竖向中轴构图，信息沿中线对称展开')],
+    graphicLanguage: [rule('用细线描摹的山形轮廓做贯穿性图形母题')],
+    typographySystem: [rule('宋体标题与无衬线正文形成级差')],
+    materialSystem: [rule('哑光纸面质感，避免高反光')],
+    lightingSystem: [rule('顶光柔和过渡')],
+    photographySystem: [rule('产品置于素色织物上俯拍')],
+    packagingPresentation: [rule('包装以套盒抽屉结构呈现')],
+    posterPresentation: [rule('海报保留三分之一净空')],
+    viExtensionSystem: [rule('通过强调色位置变化区分系列')],
+    excludedIdentityTerms: ['观夏', 'To Summer'],
+    sourceAssetIds: ['ref-1', 'ref-2'],
+    ...overrides
+  } as unknown as ReferenceStyleProfile;
+}
+
+// ── §17.1 参考身份隔离（确定性兜底）──
+
+test('detectReferenceIdentityLeaks blocks reference brand terms but tolerates current-project terms', () => {
+  const leaks = detectReferenceIdentityLeaks(
+    ['继承观夏的留白节奏', '大面积米白底色'],
+    '为九州美学生成主视觉',
+    ['观夏', 'To Summer', '九州美学'],
+    ['九州美学', '文创礼品']
+  );
+  assert.equal(leaks.length, 1);
+  assert.equal(leaks[0]!.code, 'REFERENCE_BRAND_IDENTITY_LEAK');
+  assert.match(leaks[0]!.message, /观夏/u);
+});
+
+test('detectReferenceIdentityLeaks catches logo copy / slogan / signature graphic directives', () => {
+  const leaks = detectReferenceIdentityLeaks(
+    ['直接使用参考方案的 Logo 作为角标', '沿用参考品牌的 Slogan 文案', '照搬参考方案的山形图案作为主图形'],
+    '',
+    [],
+    []
+  );
+  const codes = leaks.map((item) => item.code).sort();
+  assert.deepEqual(codes, ['REFERENCE_LOGO_DIRECT_COPY', 'REFERENCE_SIGNATURE_GRAPHIC_DIRECT_COPY', 'REFERENCE_SLOGAN_LEAK']);
+});
+
+// ── §17.2 合并视图（§11 文档不得覆盖当前项目身份）──
+
+test('mergeCurrentProjectContext keeps current-project identity and records conflicts', () => {
+  const merged = mergeCurrentProjectContext({
+    visual: buildVisualContext(),
+    document: buildDocumentContext()
+  } as ReferenceCurrentProjectContext);
+  assert.equal(merged.brandName, '九州美学');
+  assert.equal(merged.industry, '文创礼品');
+  assert.deepEqual(merged.coreProducts, ['节气茶礼盒', '山水丝巾']);
+  assert.ok(merged.conflicts.some((item) => item.includes('观夏东方') && item.includes('以当前项目为准')));
+  assert.ok(merged.conflicts.some((item) => item.includes('香氛家居')));
+  assert.ok(merged.lockedFacts.includes('Logo 为篆书印章造型，不可重绘'));
+  assert.ok(merged.lockedFacts.includes('价格带 300-800 元'));
+  assert.ok(merged.businessTouchpoints.includes('电商详情页'));
+});
+
+test('mergeCurrentProjectContext lets document fill gaps only when visual context is empty', () => {
+  const visual = buildVisualContext();
+  (visual as unknown as { identity: { industry: string } }).identity.industry = '';
+  (visual as unknown as { products: { coreProducts: string[] } }).products.coreProducts = [];
+  const merged = mergeCurrentProjectContext({ visual, document: buildDocumentContext() } as ReferenceCurrentProjectContext);
+  assert.equal(merged.industry, '香氛家居');
+  assert.deepEqual(merged.coreProducts, ['昆仑煮雪香薰']);
+});
+
+// ── §17.3 胶囊质量（每类 ≤5 条、禁止项齐全、Schema 校验）──
+
+test('compileReferenceStyleCapsule caps rules per category and fills prohibited identity', () => {
+  const manyRules = Array.from({ length: 12 }, (_, index) => ({ rule: `色彩规则长描述第 ${index + 1} 条`, confidence: 1 - index * 0.05 }));
+  const { capsule, warnings } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle({ colorSystem: manyRules } as unknown as Partial<ReferenceStyleProfile>)
+  });
+  assert.ok(capsule.inheritedStyle.color.length <= MAX_RULES_PER_CATEGORY);
+  assert.equal(capsule.inheritedStyle.color[0], '色彩规则长描述第 1 条');
+  assert.deepEqual(capsule.prohibitedReferenceIdentity.brandNames, ['观夏', 'To Summer']);
+  assert.ok(capsule.prohibitedReferenceIdentity.logos.length);
+  assert.ok(capsule.anchorGoal.includes('九州美学'));
+  assert.ok(warnings.every((warning) => typeof warning.code === 'string'));
+  const validation = validateReferenceStyleCapsule(capsule);
+  assert.equal(validation.valid, true, validation.errors.join(';'));
+});
+
+test('validateReferenceStyleCapsule rejects category overflow and missing fields', () => {
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle()
+  });
+  const broken = structuredClone(capsule) as unknown as { inheritedStyle: { color: string[] }; anchorGoal: string };
+  broken.inheritedStyle.color = Array.from({ length: MAX_RULES_PER_CATEGORY + 1 }, (_, index) => `超量规则 ${index}`);
+  broken.anchorGoal = '';
+  const validation = validateReferenceStyleCapsule(broken);
+  assert.equal(validation.valid, false);
+  assert.ok(validation.errors.some((item) => item.includes('inheritedStyle.color')));
+  assert.ok(validation.errors.some((item) => item.includes('anchorGoal')));
+});
+
+// ── §17.4 Anchor Brief（七块齐全、无内部 ID、长度受控）──
+
+test('compileAnchorBrief produces all 7 blocks and passes validation', () => {
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle(),
+    userPreference: '继承它的留白节奏',
+    userAvoidance: ['不要它的插画风格']
+  });
+  const brief = compileAnchorBrief(capsule);
+  for (const block of ['## A.', '## B.', '## C.', '## D.', '## E.', '## F.', '## G.']) {
+    assert.ok(brief.includes(block), `缺少区块 ${block}`);
+  }
+  assert.ok(brief.includes('九州美学'));
+  assert.ok(brief.includes('禁止出现参考品牌的名称与文字：观夏、To Summer'));
+  assert.ok(brief.includes('禁止：不要它的插画风格'));
+  const validation = validateAnchorBrief(brief);
+  assert.equal(validation.valid, true, validation.errors.join(';'));
+  assert.ok(validation.lengthChars <= BRIEF_MAX_LENGTH * 2);
+  // 胶囊 Markdown 六节齐全
+  const capsuleMd = compileCapsuleMarkdown(capsule);
+  for (const section of ['## 1. 当前项目', '## 2. 本次主要继承', '## 3. 当前项目必须重建', '## 4. 禁止复制', '## 5. Anchor Image 目标', '## 6. 人工注意事项']) {
+    assert.ok(capsuleMd.includes(section), `胶囊缺少 ${section}`);
+  }
+});
+
+test('validateAnchorBrief blocks internal UUID / PTM / ranking / quality-score leakage', () => {
+  const base = compileAnchorBrief(compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle()
+  }).capsule);
+  const polluted = `${base}\n内部追踪：3f2c1a08-9b7d-4e21-a5c3-0d9e8f7a6b5c PTM-3 Style Carrier 排名 质量总分 87`;
+  const validation = validateAnchorBrief(polluted);
+  assert.equal(validation.valid, false);
+  assert.ok(validation.errors.some((item) => item.includes('UUID')));
+  assert.ok(validation.errors.some((item) => item.includes('PTM')));
+  assert.ok(validation.errors.some((item) => item.includes('排名')));
+  assert.ok(validation.errors.some((item) => item.includes('质量总分')));
+});
+
+// ── §17.5 Legacy 适配器（尽力提取、绝不编造）──
+
+test('adaptLegacyReferenceResultToStyleCapsule extracts old reconstruction without fabrication', () => {
+  const capsule = adaptLegacyReferenceResultToStyleCapsule({
+    run: { id: 'legacy-run-1', preference: '延续留白' },
+    reconstruction: {
+      currentProjectProfile: {
+        projectId: 'project-legacy',
+        brandName: '明济堂',
+        industry: '中式健康食品',
+        coreProducts: ['八珍糕'],
+        lockedAssets: ['明济堂 Logo 印章'],
+        businessTouchpoints: ['礼盒']
+      },
+      referenceStyleProfile: {
+        colorSystem: [{ rule: '低饱和青绿主色' }],
+        graphicLanguage: [{ translatedMechanism: '细线药草插图网格' }],
+        excludedIdentityTerms: ['同仁堂']
+      }
+    }
+  });
+  assert.equal(capsule.schemaVersion, '1.0');
+  assert.equal(capsule.currentProject.brandName, '明济堂');
+  assert.equal(capsule.currentProject.logoLocked, true);
+  assert.deepEqual(capsule.inheritedStyle.color, ['低饱和青绿主色']);
+  assert.deepEqual(capsule.inheritedStyle.graphicLanguage, ['细线药草插图网格']);
+  assert.deepEqual(capsule.prohibitedReferenceIdentity.brandNames, ['同仁堂']);
+  assert.ok(capsule.uncertainties.some((item) => item.includes('旧参考转译结果转换')));
+  const validation = validateReferenceStyleCapsule(capsule);
+  assert.equal(validation.valid, true, validation.errors.join(';'));
+});
+
+test('adaptLegacyReferenceResultToStyleCapsule surfaces missing data as uncertainties', () => {
+  const capsule = adaptLegacyReferenceResultToStyleCapsule({ run: {}, reconstruction: {} });
+  assert.equal(capsule.currentProject.brandName, '');
+  assert.ok(capsule.uncertainties.some((item) => item.includes('未找到当前项目品牌名')));
+  assert.ok(capsule.uncertainties.some((item) => item.includes('未提取到可继承的色彩或图形规则')));
+});
+
+// ── §17.6 服务级：1 次模型调用、缓存重试零调用、决策流转、身份泄漏硬阻断 ──
+
+interface ServiceHarness {
+  service: ReturnType<typeof createReferenceAnchorService>;
+  modelCalls: () => number;
+  removedProjects: string[];
+  dataPath: string;
+  assetPaths: string[];
+  setReferenceStyle: (profile: ReferenceStyleProfile) => void;
+  setVisualContext: (context: ProjectVisualContext | null) => void;
+}
+
+async function buildHarness(): Promise<ServiceHarness> {
+  const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'reference-anchor-test-'));
+  const assetPaths: string[] = [];
+  for (let index = 0; index < 2; index += 1) {
+    const assetPath = path.join(dataPath, `ref-${index + 1}.jpg`);
+    await fs.writeFile(assetPath, Buffer.from([0xff, 0xd8, 0xff, 0xdb, index]));
+    assetPaths.push(assetPath);
+  }
+  const settings = {
+    defaultDataPath: dataPath,
+    defaultProfileId: 'profile-1',
+    profiles: [{ id: 'profile-1', isEnabled: true, isDefault: true, hasApiKey: true, displayName: 'Mock', modelId: 'mock-model', baseUrl: 'https://example.test/v1' }]
+  } as unknown as PublicSettings;
+
+  let callCount = 0;
+  let referenceStyle = buildReferenceStyle();
+  let visualContext: ProjectVisualContext | null = buildVisualContext();
+  const removedProjects: string[] = [];
+
+  const service = createReferenceAnchorService(() => settings, {
+    projects: {
+      get: async () => ({ id: 'project-current', projectName: '九州美学品牌升级', brandName: '九州美学', apiProfileId: 'profile-1' }),
+      create: async () => ({ id: 'reference-temp-project' }),
+      scan: async () => ({}),
+      remove: async (projectId: string) => { removedProjects.push(projectId); }
+    } as never,
+    pipeline: {
+      analyzeReferenceStyle: async () => {
+        callCount += 1;
+        return { value: referenceStyle, provider: 'mock', model: 'mock-model', modelCallCount: 1 };
+      },
+      cancel: () => undefined
+    } as never,
+    projectContext: {
+      get: async () => {
+        if (!visualContext) throw new Error('project-visual-context.json 不存在');
+        return visualContext;
+      }
+    } as never,
+    documentContext: {
+      getExtracted: async () => buildDocumentContext()
+    } as never
+  });
+  return {
+    service,
+    modelCalls: () => callCount,
+    removedProjects,
+    dataPath,
+    assetPaths,
+    setReferenceStyle: (profile) => { referenceStyle = profile; },
+    setVisualContext: (context) => { visualContext = context; }
+  };
+}
+
+test('service start runs full pipeline with exactly 1 model call and awaits decision', async () => {
+  const harness = await buildHarness();
+  const result = await harness.service.start({
+    currentProjectId: 'project-current',
+    referenceAssetPaths: harness.assetPaths,
+    apiProfileId: 'profile-1',
+    documentRunId: 'doc-run-1',
+    preference: '继承留白节奏',
+    avoidance: ['不要插画风格']
+  });
+  assert.equal(result.run.status, 'awaiting_decision');
+  assert.equal(result.run.decision, 'pending');
+  assert.equal(harness.modelCalls(), 1);
+  assert.equal(result.run.modelCallCount, 1);
+  // 临时参考项目已清理
+  assert.deepEqual(harness.removedProjects, ['reference-temp-project']);
+  // 参考图不足 4 张 → 非阻断警告
+  assert.ok(result.run.warnings?.some((warning) => warning.code === 'REFERENCE_ASSETS_TOO_FEW'));
+  // §6 目录结构与产物
+  const root = path.join(harness.dataPath, 'reference-runs', result.run.id);
+  for (const relative of [
+    'outputs/reference-style-capsule.json',
+    'outputs/参考风格胶囊.md',
+    'outputs/Anchor-Generation-Brief.md',
+    'runtime/run.json',
+    'debug/raw-reference-observations.json',
+    'debug/validation-details.json',
+    'input/current-project-context.json',
+    'input/reference-assets/01-ref-1.jpg'
+  ]) {
+    await fs.access(path.join(root, ...relative.split('/')));
+  }
+  // 胶囊内容：当前项目身份 + 文档冲突进入 uncertainties
+  assert.equal(result.capsule.currentProject.brandName, '九州美学');
+  assert.ok(result.capsule.uncertainties.some((item) => item.includes('观夏东方')));
+
+  // §13/§16 修改偏好 → 重编胶囊+Brief，零额外模型调用
+  const updated = await harness.service.updatePreference(result.run.id, '突出朱砂红点缀', ['不要复刻版式骨架']);
+  assert.equal(harness.modelCalls(), 1);
+  assert.equal(updated.run.retryCount, 1);
+  assert.equal(updated.capsule.userPreference, '突出朱砂红点缀');
+  assert.ok(updated.briefMarkdown.includes('突出朱砂红点缀'));
+
+  // §13 只重编 Brief（胶囊不变）
+  const retried = await harness.service.retryBrief(result.run.id);
+  assert.equal(harness.modelCalls(), 1);
+  assert.equal(retried.run.retryCount, 2);
+  assert.equal(retried.capsule.userPreference, '突出朱砂红点缀');
+
+  // 编辑后的 Brief：合法则采用，泄漏内部 ID 则硬阻断
+  const edited = `${retried.briefMarkdown}\n\n（设计师补充：强调礼盒场景）`;
+  const adopted = await harness.service.retryBrief(result.run.id, edited);
+  assert.ok(adopted.briefMarkdown.includes('设计师补充'));
+  await assert.rejects(
+    () => harness.service.retryBrief(result.run.id, `${retried.briefMarkdown}\nUUID: 3f2c1a08-9b7d-4e21-a5c3-0d9e8f7a6b5c`),
+    (error: Error & { code?: string }) => error.code === 'SCHEMA_VALIDATION_FAILED'
+  );
+
+  // §13 决策流转：approved → completed
+  const approved = await harness.service.setDecision(result.run.id, 'approved', '方向正确');
+  assert.equal(approved.status, 'completed');
+  assert.equal(approved.decision, 'approved');
+  assert.ok(approved.completedAt);
+});
+
+test('service start hard-blocks reference identity leak with §12 code', async () => {
+  const harness = await buildHarness();
+  harness.setReferenceStyle(buildReferenceStyle({
+    colorSystem: [{ rule: '延续观夏的米白底与琥珀色点缀', confidence: 0.9 }],
+    excludedIdentityTerms: ['观夏']
+  } as unknown as Partial<ReferenceStyleProfile>));
+  await assert.rejects(
+    () => harness.service.start({ currentProjectId: 'project-current', referenceAssetPaths: harness.assetPaths, apiProfileId: 'profile-1' }),
+    (error: Error & { code?: string }) => error.code === 'REFERENCE_BRAND_IDENTITY_LEAK'
+  );
+  const runs = await harness.service.listRuns();
+  assert.equal(runs.length, 1);
+  assert.equal(runs[0]!.status, 'failed');
+  assert.equal(runs[0]!.errorCode, 'REFERENCE_BRAND_IDENTITY_LEAK');
+});
+
+test('service start blocks when current project context is missing (zero model calls)', async () => {
+  const harness = await buildHarness();
+  harness.setVisualContext(null);
+  await assert.rejects(
+    () => harness.service.start({ currentProjectId: 'project-current', referenceAssetPaths: harness.assetPaths, apiProfileId: 'profile-1' }),
+    (error: Error & { code?: string }) => error.code === 'CURRENT_PROJECT_CONTEXT_MISSING'
+  );
+  assert.equal(harness.modelCalls(), 0);
+});
+
+test('orphaned executing run downgrades to awaiting_decision when outputs already exist', async () => {
+  const harness = await buildHarness();
+  const result = await harness.service.start({ currentProjectId: 'project-current', referenceAssetPaths: harness.assetPaths, apiProfileId: 'profile-1' });
+  const recordPath = path.join(harness.dataPath, 'reference-runs', result.run.id, 'runtime', 'run.json');
+  const record = JSON.parse(await fs.readFile(recordPath, 'utf8'));
+  record.status = 'analyzing_reference';
+  await fs.writeFile(recordPath, JSON.stringify(record), 'utf8');
+  const reconciled = await harness.service.getRun(result.run.id);
+  assert.equal(reconciled.status, 'awaiting_decision');
+});

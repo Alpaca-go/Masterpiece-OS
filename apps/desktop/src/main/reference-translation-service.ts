@@ -396,7 +396,7 @@ function uniqueStrings(values: Array<string | undefined>): string[] {
   return [...new Set(values.map((value) => String(value || '').trim()).filter(Boolean))];
 }
 
-async function inspectReferenceAssets(paths: string[]): Promise<ReferenceAssetSelection> {
+export async function inspectReferenceAssets(paths: string[]): Promise<ReferenceAssetSelection> {
   const candidates: string[] = [];
   const skipped: string[] = [];
   async function visit(source: string): Promise<void> {

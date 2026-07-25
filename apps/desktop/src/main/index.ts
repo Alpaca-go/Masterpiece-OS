@@ -7,6 +7,8 @@ import type {
   CreateProjectInput,
   SaveApiProfileInput,
   SaveSettingsInput,
+  AnchorDecision,
+  StartReferenceAnchorInput,
   StartReferenceTranslationInput,
   StartReferenceTranslationUserInput,
   StartVisualTranslationInput,
@@ -26,6 +28,7 @@ import {
 import { createPipelineService } from './pipeline-service';
 import { createVisualTranslationService } from './visual-translation-service';
 import { createReferenceTranslationService } from './reference-translation-service';
+import { createReferenceAnchorService } from './reference-anchor-service';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
@@ -76,6 +79,13 @@ const projectContext = createProjectContextService({
       defaultPath,
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
+});
+const referenceAnchor = createReferenceAnchorService(getSettings, {
+  projects,
+  pipeline,
+  projectContext,
+  documentContext,
+  emitProgress: (progress) => mainWindow?.webContents.send('reference-anchor:progress', progress)
 });
 
 function createWindow(): void {
@@ -318,6 +328,59 @@ function registerIpc(): void {
   ipcMain.handle('reference-translation:open-folder', async (_event, runId: string) => {
     const outputPath = await referenceTranslation.ensureReportDelivery(runId);
     const result = await shell.openPath(outputPath);
+    if (result) throw new Error(result);
+  });
+
+  // ── Phase 3：参考视觉转换 Anchor 工作流 ──
+  ipcMain.handle('reference-anchor:choose-reference-assets', async () => {
+    const result = await dialog.showOpenDialog(mainWindow!, {
+      properties: ['openFile', 'multiSelections'],
+      filters: [{ name: '核心参考图', extensions: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'zip'] }]
+    });
+    return result.canceled ? [] : result.filePaths;
+  });
+  ipcMain.handle('reference-anchor:inspect-assets', (_event, paths: string[]) => referenceAnchor.inspectAssets(paths));
+  ipcMain.handle('reference-anchor:list-runs', () => referenceAnchor.listRuns());
+  ipcMain.handle('reference-anchor:get-run', (_event, runId: string) => referenceAnchor.getRun(runId));
+  ipcMain.handle('reference-anchor:start', (_event, input: StartReferenceAnchorInput) => referenceAnchor.start(input));
+  ipcMain.handle('reference-anchor:get-capsule', (_event, runId: string) => referenceAnchor.getCapsule(runId));
+  ipcMain.handle('reference-anchor:get-capsule-markdown', (_event, runId: string) => referenceAnchor.getCapsuleMarkdown(runId));
+  ipcMain.handle('reference-anchor:get-brief', (_event, runId: string) => referenceAnchor.getBrief(runId));
+  ipcMain.handle('reference-anchor:update-preference', (
+    _event,
+    runId: string,
+    preference: string,
+    avoidance: string[]
+  ) => referenceAnchor.updatePreference(runId, preference, avoidance));
+  ipcMain.handle('reference-anchor:retry-brief', (_event, runId: string, editedBrief?: string) => referenceAnchor.retryBrief(runId, editedBrief));
+  ipcMain.handle('reference-anchor:set-decision', (
+    _event,
+    runId: string,
+    decision: AnchorDecision,
+    note?: string
+  ) => referenceAnchor.setDecision(runId, decision, note));
+  ipcMain.handle('reference-anchor:adapt-legacy-run', (_event, runId: string) => referenceAnchor.adaptLegacyRun(runId));
+  ipcMain.handle('reference-anchor:cancel', (_event, runId: string) => referenceAnchor.cancel(runId));
+  ipcMain.handle('reference-anchor:remove', async (_event, runId: string) => {
+    const record = await referenceAnchor.getRun(runId).catch(() => null);
+    if (record && ['preparing', 'analyzing_reference', 'compiling_capsule', 'compiling_brief'].includes(record.status)) {
+      throw new Error('正在分析的 Anchor 任务不能删除，请先取消分析');
+    }
+    await referenceAnchor.remove(runId);
+  });
+  ipcMain.handle('reference-anchor:export', async (_event, runId: string) => {
+    const source = await referenceAnchor.briefPath(runId);
+    const result = await dialog.showSaveDialog(mainWindow!, {
+      defaultPath: path.basename(source),
+      filters: [{ name: 'Markdown', extensions: ['md'] }]
+    });
+    if (result.canceled || !result.filePath) return null;
+    await fs.copyFile(source, result.filePath);
+    return result.filePath;
+  });
+  ipcMain.handle('reference-anchor:open-folder', async (_event, runId: string) => {
+    const root = await referenceAnchor.runRoot(runId);
+    const result = await shell.openPath(path.join(root, 'outputs'));
     if (result) throw new Error(result);
   });
 }

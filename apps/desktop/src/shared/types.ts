@@ -1859,6 +1859,141 @@ export interface ReferenceTranslationResult {
   assetSelectionProtocol?: AssetSelectionProtocolResult;
 }
 
+// ── Phase 3：参考视觉转换 Anchor 工作流 ──
+// 参考风格胶囊 → Anchor Generation Brief → Anchor 人工确认。
+// 不再默认生成面向用户的长篇转译矩阵；旧 referenceTranslation 流程保留为开发者模式。
+
+export type AnchorDecision = 'pending' | 'approved' | 'retry' | 'rejected';
+
+export type ReferenceAnchorRunStatus =
+  | 'pending'
+  | 'preparing'
+  | 'analyzing_reference'
+  | 'compiling_capsule'
+  | 'compiling_brief'
+  | 'awaiting_decision'
+  | 'completed'
+  | 'rejected'
+  | 'failed'
+  | 'cancelled';
+
+export type ReferenceAnchorStage =
+  | '00-load-current-project'
+  | '01-reference-analysis'
+  | '02-style-capsule'
+  | '03-anchor-brief'
+  | '04-anchor-decision';
+
+/** §7 参考风格胶囊：每类规则最多 3–5 条，禁止输出几十条碎片规则。 */
+export interface ReferenceStyleCapsule {
+  schemaVersion: '1.0';
+  sourceRunId: string;
+  currentProjectId: string;
+  generatedAt: string;
+
+  currentProject: {
+    brandName: string;
+    industry: string;
+    logoLocked: boolean;
+    logoAssetIds: string[];
+    lockedFacts: string[];
+    coreProducts: string[];
+    businessTouchpoints: string[];
+  };
+
+  inheritedStyle: {
+    color: string[];
+    layoutAndTypography: string[];
+    graphicLanguage: string[];
+    materialAndPhotography: string[];
+    extensionMechanism: string[];
+  };
+
+  userPreference: string | null;
+  userAvoidance: string[];
+
+  prohibitedReferenceIdentity: {
+    brandNames: string[];
+    logos: string[];
+    slogans: string[];
+    signatureGraphics: string[];
+    proprietaryPatterns: string[];
+  };
+
+  anchorGoal: string;
+  uncertainties: string[];
+}
+
+/** §11 Reference Workflow 内部只读合并视图（文档上下文不得覆盖当前项目身份）。 */
+export interface ReferenceCurrentProjectContext {
+  visual: ProjectVisualContext;
+  document?: DocumentVisualContext;
+}
+
+export interface ReferenceAnchorWarning {
+  code: string;
+  message: string;
+}
+
+export interface ReferenceAnchorRun {
+  id: string;
+  projectId: string;
+  projectName: string;
+  status: ReferenceAnchorRunStatus;
+  decision: AnchorDecision;
+  decisionNote?: string | null;
+  decidedAt?: string | null;
+  apiProfileId: string;
+  provider: string;
+  model: string;
+  referenceAssetCount: number;
+  referenceAssetNames: string[];
+  documentRunId?: string | null;
+  preference: string | null;
+  avoidance: string[];
+  createdAt: string;
+  startedAt: string;
+  completedAt?: string;
+  durationMs?: number;
+  currentStage?: ReferenceAnchorStage;
+  modelCallCount?: number;
+  retryCount?: number;
+  warnings?: ReferenceAnchorWarning[];
+  errorCode?: string | null;
+  lastError?: string | null;
+  briefFilename?: string | null;
+}
+
+export interface StartReferenceAnchorInput {
+  currentProjectId: string;
+  referenceAssetPaths: string[];
+  apiProfileId?: string;
+  /** 可选：加载 Phase 2 文档上下文任务的输出。 */
+  documentRunId?: string;
+  /** 用户希望继承的内容。 */
+  preference?: string;
+  /** 用户明确不要继承的内容。 */
+  avoidance?: string[];
+}
+
+export interface ReferenceAnchorResult {
+  run: ReferenceAnchorRun;
+  capsule: ReferenceStyleCapsule;
+  capsuleMarkdown: string;
+  briefMarkdown: string;
+}
+
+export interface ReferenceAnchorProgress {
+  runId: string;
+  projectName: string;
+  stage: ReferenceAnchorStage;
+  status: ReferenceAnchorRunStatus;
+  message: string;
+  startedAt: string;
+  elapsedMs: number;
+  model: string;
+}
+
 export interface DesktopApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -1944,6 +2079,25 @@ export interface DesktopApi {
     adaptLegacyRun(runId: string): Promise<DocumentVisualContext>;
     openFolder(runId: string): Promise<void>;
     onProgress(callback: (progress: DocumentContextProgress) => void): () => void;
+  };
+  referenceAnchor: {
+    chooseReferenceAssets(): Promise<string[]>;
+    inspectAssets(paths: string[]): Promise<ReferenceAssetSelection>;
+    listRuns(): Promise<ReferenceAnchorRun[]>;
+    getRun(runId: string): Promise<ReferenceAnchorRun>;
+    start(input: StartReferenceAnchorInput): Promise<ReferenceAnchorResult>;
+    getCapsule(runId: string): Promise<ReferenceStyleCapsule>;
+    getBrief(runId: string): Promise<string>;
+    getCapsuleMarkdown(runId: string): Promise<string>;
+    updatePreference(runId: string, preference: string, avoidance: string[]): Promise<ReferenceAnchorResult>;
+    retryBrief(runId: string, editedBrief?: string): Promise<ReferenceAnchorResult>;
+    setDecision(runId: string, decision: AnchorDecision, note?: string): Promise<ReferenceAnchorRun>;
+    adaptLegacyRun(runId: string): Promise<ReferenceStyleCapsule>;
+    cancel(runId: string): Promise<boolean>;
+    remove(runId: string): Promise<void>;
+    export(runId: string): Promise<string | null>;
+    openFolder(runId: string): Promise<void>;
+    onProgress(callback: (progress: ReferenceAnchorProgress) => void): () => void;
   };
   files: {
     getPathForFile(file: File): string;
