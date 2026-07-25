@@ -106,12 +106,16 @@ function registerIpc(): void {
   ipcMain.handle('settings:set-profile-enabled', (_event, profileId: string, enabled: boolean) => setApiProfileEnabled(profileId, enabled));
   ipcMain.handle('settings:test-profile', (_event, input: SaveApiProfileInput) => testApiProfile(input));
 
-  ipcMain.handle('projects:list', () => projects.list());
+  ipcMain.handle('projects:list', async () => {
+    const records = await projects.list();
+    return Promise.all(records.map((record) => pipeline.reconcileOrphanedProject(record)));
+  });
   ipcMain.handle('projects:create', (_event, input: CreateProjectInput) => projects.create(input));
-  ipcMain.handle('projects:get', (_event, projectId: string) => projects.get(projectId));
+  ipcMain.handle('projects:get', async (_event, projectId: string) => pipeline.reconcileOrphanedProject(await projects.get(projectId)));
   ipcMain.handle('projects:remove', async (_event, projectId: string) => {
-    const project = await projects.get(projectId);
-    if (project.status === 'running') throw new Error('正在分析的项目不能删除，请先取消分析');
+    // 以内存活跃表为准：僵尸 running 记录（应用异常退出遗留）会先被自动降级为 failed，随后放行删除
+    const project = await pipeline.reconcileOrphanedProject(await projects.get(projectId));
+    if (project.status === 'running' || pipeline.isActive(projectId)) throw new Error('正在分析的项目不能删除，请先取消分析');
     await projects.remove(projectId);
   });
   ipcMain.handle('projects:scan-assets', (_event, projectId: string) => projects.scan(projectId));

@@ -321,15 +321,42 @@ export function createVisualTranslationService(
     return writeCoordinator.enqueue(record.id, 'run-projection', () => rawSaveRun(record));
   }
 
+  const ORPHANED_RUN_MESSAGE = '应用在任务运行期间异常退出，任务已自动标记为失败；现在可以删除或重新运行。';
+
+  /**
+   * 僵尸任务自动降级：磁盘记录为 running 但内存 active 表中不存在，
+   * 说明应用在任务执行期间异常退出（执行路径总是先登记 active 再写盘 running）。
+   * 将其降级为 failed，解除“运行中任务禁止删除”的永久锁死。
+   */
+  async function reconcileOrphanedRun(record: VisualTranslationRunRecord): Promise<VisualTranslationRunRecord> {
+    if (record.status !== 'running' || active.has(record.id)) return record;
+    const downgraded: VisualTranslationRunRecord = {
+      ...record,
+      status: 'failed',
+      analysisStatus: 'failed_before_completion',
+      step4Status: record.step4Status === 'running' ? 'failed' : record.step4Status,
+      lastError: record.lastError || ORPHANED_RUN_MESSAGE,
+      uiMessage: ORPHANED_RUN_MESSAGE
+    };
+    try {
+      const saved = await saveRun(downgraded);
+      await appendRuntimeEvent(path.join(await runRoot(record.id), 'runtime'), record.id, 'ORPHANED_RUN_DOWNGRADED', { previous_status: 'running', reason: 'app_exit_during_run' });
+      return saved;
+    } catch {
+      // 写盘失败也返回降级后的视图，避免 UI 继续显示不可删除的“运行中”
+      return downgraded;
+    }
+  }
+
   async function getRun(runId: string): Promise<VisualTranslationRunRecord> {
     const root = await runRoot(runId);
     const recovery = await findRecoverableRunProjection(root, safeRunId(runId));
     if (!recovery.record) throw new Error('Visual Translation 运行记录不存在或无法恢复');
-    if (!recovery.recovered) return recovery.record;
+    if (!recovery.recovered) return reconcileOrphanedRun(recovery.record);
     try {
       const saved = await saveRun(recovery.record);
       await appendRuntimeEvent(path.join(root, 'runtime'), runId, 'RECOVERY_COMPLETED', { source: recovery.source || null, quarantined: recovery.quarantined.length });
-      return saved;
+      return reconcileOrphanedRun(saved);
     } catch (error) {
       return { ...recovery.record, persistenceStatus: 'recovery_required', recoverable: true, runtimeIssue: { category: 'RECOVERY_ERROR', code: (error as { code?: string }).code || 'RECOVERY_WRITE_FAILED', message: (error as Error).message, severity: 'warning', recoverable: true, analysisCompleted: recovery.record.status === 'completed' } };
     }

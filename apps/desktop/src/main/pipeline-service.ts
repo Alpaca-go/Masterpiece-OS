@@ -10,6 +10,7 @@ import type {
   CurrentProjectVisualSources,
   FlexibleColorSystem,
   FlexibleCompositionSystem,
+  ProjectRecord,
   ProjectTouchpointInventory,
   ProjectRuntimeContext,
   PublicSettings,
@@ -1039,6 +1040,27 @@ export function createPipelineService(
     return true;
   }
 
+  function isActive(projectId: string): boolean {
+    return active.has(projectId);
+  }
+
+  const ORPHANED_PROJECT_MESSAGE = '应用在分析运行期间异常退出，任务已自动标记为失败；现在可以删除项目或重新分析。';
+
+  /**
+   * 僵尸项目自动降级：项目记录为 running 但当前进程没有对应的活跃分析任务，
+   * 说明应用在分析期间异常退出（start 总是先登记 active 再写盘 running）。
+   * 降级为 failed，解除“正在分析的项目不能删除”的永久锁死。
+   */
+  async function reconcileOrphanedProject(project: ProjectRecord): Promise<ProjectRecord> {
+    if (project.status !== 'running' || active.has(project.id)) return project;
+    try {
+      return await projects.update(project.id, { status: 'failed', lastError: project.lastError || ORPHANED_PROJECT_MESSAGE });
+    } catch {
+      // 写盘失败也返回降级后的视图，避免 UI 永久显示“运行中”
+      return { ...project, status: 'failed', lastError: project.lastError || ORPHANED_PROJECT_MESSAGE };
+    }
+  }
+
   return {
     start,
     selectCurrentProjectAssets,
@@ -1046,7 +1068,9 @@ export function createPipelineService(
     analyzeCurrentProjectProfile,
     analyzeReferenceStyle,
     generateVisualReconstructionDecision,
-    cancel
+    cancel,
+    isActive,
+    reconcileOrphanedProject
   };
 }
 

@@ -27,4 +27,5 @@
 - 本仓库所有 refs 都在 `packed-refs`，`.git/refs/heads/` 默认为空。
 - 带斜杠的引用名（如 `feature/xxx`）在 unborn 分支上 `git update-ref` / `git checkout -b` 会**静默失败**（exit 0 但不写文件）：新分支停在 unborn 状态，`git commit` 后 commit 对象悬空、ref 不前进、`git log` 报 “does not have any commits yet”。
 - **修复**：先 `mkdir -p .git/refs/heads/<dir>` 再 `git update-ref refs/heads/<slash/name> <hash>`；若仍不落盘，直接用 `printf '<hash>\n' > .git/refs/heads/<slash/name>` 写 loose ref 文件即可被 git 读取。
+- **升级坑（2026-07-26 实测）**：loose ref 文件会被本机某后台进程在数秒内删除（连 `git commit` 成功后自己写的 ref 都会消失，表现为 commit 对象存在但分支不前进、`git ls-tree HEAD` 报 not valid object）。**最稳方案：直接编辑 `.git/packed-refs`**——按排序插入 `<hash> refs/heads/<name>` 行（新建分支）或替换行首哈希（推进分支），git 立即可读且不会被删。提交后务必 `git log --oneline -1` 复核分支已前进。
 - 在 unborn 分支上做提交前，先把 index reset 到正确父提交（`git reset --mixed <parent>`），只 `git add` 目标文件并用 `git diff --cached --stat` 校验，避免误把整仓 staged。

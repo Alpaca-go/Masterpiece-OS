@@ -501,10 +501,34 @@ export function createReferenceTranslationService(
     return path.join(await runRoot(runId), 'input', 'project-context.json');
   }
 
+  const ORPHANED_RUN_MESSAGE = '应用在任务运行期间异常退出，任务已自动标记为失败；现在可以删除或重新运行。';
+
+  /**
+   * 僵尸任务自动降级：磁盘记录为 running 但当前进程没有对应的活跃任务，
+   * 说明应用在任务执行期间异常退出（start 总是先登记 active 再写盘 running）。
+   */
+  async function reconcileOrphanedRun(runId: string, record: ReferenceTranslationRunRecord): Promise<ReferenceTranslationRunRecord> {
+    if (record.status !== 'running' || active?.progress.jobId === runId) return record;
+    const downgraded: ReferenceTranslationRunRecord = {
+      ...record,
+      status: 'failed',
+      stage: 'FAILED',
+      lastError: record.lastError || ORPHANED_RUN_MESSAGE
+    };
+    try {
+      await writeJson(await recordPath(runId), downgraded);
+    } catch {
+      // 写盘失败也返回降级后的视图，避免 UI 永久显示“运行中”
+    }
+    return downgraded;
+  }
+
   async function getRun(runId: string): Promise<ReferenceTranslationRunRecord> {
-    const current = await recordPath(runId);
-    return readJson<ReferenceTranslationRunRecord>(current).catch(async () =>
-      readJson<ReferenceTranslationRunRecord>(path.join(await runRoot(runId), 'run-record.json')));
+    const safe = safeRunId(runId);
+    const current = await recordPath(safe);
+    const record = await readJson<ReferenceTranslationRunRecord>(current).catch(async () =>
+      readJson<ReferenceTranslationRunRecord>(path.join(await runRoot(safe), 'run-record.json')));
+    return reconcileOrphanedRun(safe, record);
   }
 
   async function listRuns(): Promise<ReferenceTranslationRunRecord[]> {
