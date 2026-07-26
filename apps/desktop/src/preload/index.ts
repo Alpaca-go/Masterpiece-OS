@@ -100,6 +100,7 @@ const api: DesktopApi = {
     retry: (input) => ipcRenderer.invoke('image-generation:retry', input),
     saveReview: (review) => ipcRenderer.invoke('image-generation:save-review', review),
     openFolder: (runId) => ipcRenderer.invoke('image-generation:open-folder', runId),
+    getImageDataUrl: (runId, imageId) => ipcRenderer.invoke('image-generation:get-image-data-url', runId, imageId),
     onRunUpdated(callback) {
       const listener = (_event: Electron.IpcRendererEvent, progress: ImageGenerationProgress) => callback(progress);
       ipcRenderer.on('image-generation:run-updated', listener);

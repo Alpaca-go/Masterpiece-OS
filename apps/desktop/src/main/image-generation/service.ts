@@ -168,6 +168,31 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     return REGION_ENDPOINTS[region] ?? REGION_ENDPOINTS.beijing;
   }
 
+  /** 返回 Provider 静态能力（用于 UI 展示与 Prompt 编译约束；不依赖 API Key）。 */
+  function getCapabilities(): ImageProviderCapabilities {
+    return DASHSCOPE_CAPABILITIES;
+  }
+
+  /** 解析某运行的本地根目录（供 open-folder / 读取图片使用）。 */
+  async function runRoot(runId: string): Promise<string | null> {
+    const run = await getRun(runId);
+    if (!run) return null;
+    return runRootUnder(await resolveProjectRoot(deps.dataPath, run.projectId), runId);
+  }
+
+  /** 读取已生成图片并以 data URL 形式返回给 Renderer 预览（主进程读盘，渲染层不直接接触文件）。 */
+  async function readImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null> {
+    const run = await getRun(runId);
+    if (!run) return null;
+    const image = run.images.find((i) => i.imageId === imageId);
+    if (!image) return null;
+    const root = runRootUnder(await resolveProjectRoot(deps.dataPath, run.projectId), runId);
+    const filePath = path.join(root, image.relativePath);
+    const buffer = await fs.readFile(filePath);
+    const mimeType = image.mimeType || 'image/png';
+    return { mimeType, dataUrl: `data:${mimeType};base64,${buffer.toString('base64')}` };
+  }
+
   /** 编译（dry-run 核心），持久化编译产物，返回结果。不提交 Provider。 */
   async function compile(options: StartOptions): Promise<{
     run: ImageGenerationRun;
@@ -807,6 +832,9 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     onRunUpdated,
     resume,
     recoverAll,
+    runRoot,
+    readImageDataUrl,
+    getCapabilities,
     toProgress,
   };
 }

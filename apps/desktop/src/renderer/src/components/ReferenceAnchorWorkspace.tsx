@@ -25,6 +25,7 @@ interface Props {
   onApiProfileChange(profileId: string): void;
   onBack(): void;
   onOpenSettings(): void;
+  onGenerateMasterAnchor(projectId: string, referenceAnchorRunId: string): void;
 }
 
 const STAGES: Array<[ReferenceAnchorStage, string]> = [
@@ -72,7 +73,7 @@ function splitLines(value: string): string[] {
   return value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
 }
 
-export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings }: Props) {
+export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateMasterAnchor }: Props) {
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
@@ -433,6 +434,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         <button className="button primary" onClick={() => void exportBrief()}>导出 Brief</button>
         <button className="button secondary" onClick={() => void navigator.clipboard.writeText(resultTab === 'brief' ? briefMarkdown : capsuleMarkdown).then(() => setNotice('内容已复制。'))}>复制内容</button>
         <button className="button secondary" onClick={() => void window.masterpiece.referenceAnchor.openFolder(selectedRun.id)}>打开输出文件夹</button>
+        {selectedRun.decision === 'approved' && <button className="button primary" onClick={() => onGenerateMasterAnchor(selectedRun.projectId, selectedRun.id)}>生成 Master Anchor Image</button>}
       </div>
       {notice && <div className="notice ok">{notice}</div>}
       {error && <div className="notice error">{error}</div>}

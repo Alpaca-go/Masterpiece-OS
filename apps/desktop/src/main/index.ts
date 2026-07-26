@@ -6,9 +6,12 @@ import type {
   AnalysisProgress,
   ConflictResolutionInput,
   CreateProjectInput,
+  ImageGenerationReview,
+  RetryImageGenerationInput,
   SaveApiProfileInput,
   SaveSettingsInput,
   AnchorDecision,
+  StartImageGenerationInput,
   StartReferenceAnchorInput
 } from '../shared/types';
 import { createProjectStore } from './project-store';
@@ -24,6 +27,8 @@ import {
 } from './settings-store';
 import { createPipelineService } from './pipeline-service';
 import { createReferenceAnchorService } from './reference-anchor-service';
+import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
+import { createFileContextLoader } from './image-generation/context-loader';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
 import { createContextIntegrationService } from './context-integration-service';
@@ -47,6 +52,8 @@ if (!gotTheLock) {
 }
 
 const projects = createProjectStore(getSettings);
+/** 生图功能 V1 主进程服务（在 app ready 后构造，以便安全解析数据目录）。 */
+let imageGeneration: ImageGenerationService;
 const pipeline = createPipelineService(
   projects,
   getProviderCredentials,
@@ -314,9 +321,58 @@ function registerIpc(): void {
     const result = await shell.openPath(path.join(root, 'outputs'));
     if (result) throw new Error(result);
   });
+
+  // ---- 生图功能 V1（§16 Desktop IPC）----
+  ipcMain.handle('image-generation:get-capabilities', async () => imageGeneration.getCapabilities());
+  ipcMain.handle('image-generation:compile', async (_event, input: StartImageGenerationInput) =>
+    imageGeneration.compile({
+      projectId: input.projectId,
+      referenceAnchorRunId: input.referenceAnchorRunId,
+      outputType: input.outputType,
+      apiProfileId: input.apiProfileId,
+      size: input.size,
+      region: input.region,
+    }));
+  ipcMain.handle('image-generation:start', async (_event, input: StartImageGenerationInput) =>
+    imageGeneration.start({
+      projectId: input.projectId,
+      referenceAnchorRunId: input.referenceAnchorRunId,
+      outputType: input.outputType,
+      apiProfileId: input.apiProfileId,
+      size: input.size,
+      region: input.region,
+    }));
+  ipcMain.handle('image-generation:get-run', async (_event, runId: string) => imageGeneration.getRun(runId));
+  ipcMain.handle('image-generation:list-runs', async (_event, projectId?: string) => imageGeneration.listRuns(projectId));
+  ipcMain.handle('image-generation:cancel', async (_event, runId: string) => imageGeneration.cancel(runId));
+  ipcMain.handle('image-generation:retry', async (_event, input: RetryImageGenerationInput) =>
+    imageGeneration.retry({
+      runId: input.runId,
+      mode: input.mode,
+      editedPrompt: input.editedPrompt,
+      apiProfileId: input.apiProfileId,
+    }));
+  ipcMain.handle('image-generation:save-review', async (_event, review: ImageGenerationReview) => imageGeneration.saveReview(review));
+  ipcMain.handle('image-generation:open-folder', async (_event, runId: string) => {
+    const root = await imageGeneration.runRoot(runId);
+    if (!root) throw new Error('运行记录不存在。');
+    const result = await shell.openPath(root);
+    if (result) throw new Error(result);
+  });
+  ipcMain.handle('image-generation:get-image-data-url', async (_event, runId: string, imageId: string) =>
+    imageGeneration.readImageDataUrl(runId, imageId));
 }
 
 if (gotTheLock) app.whenReady().then(async () => {
+  const settings = await getSettings();
+  const dataPath = path.resolve(settings.defaultDataPath);
+  imageGeneration = createImageGenerationService({
+    readSettings: getSettings,
+    readCredentials: (profileId) => getProviderCredentials(profileId),
+    loadContext: createFileContextLoader(dataPath, projects).loadContext,
+    dataPath,
+    emitRunUpdated: (progress) => mainWindow?.webContents.send('image-generation:run-updated', progress),
+  });
   registerIpc();
   createWindow();
   app.on('activate', () => {

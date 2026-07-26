@@ -1818,6 +1818,8 @@ export interface DesktopApi {
     retry(input: RetryImageGenerationInput): Promise<ImageGenerationRun>;
     saveReview(review: ImageGenerationReview): Promise<ImageGenerationRun>;
     openFolder(runId: string): Promise<void>;
+    /** 读取已生成图片的 data URL（主进程读盘，渲染层不直接接触本地文件）。 */
+    getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;
     /** §16.3 运行状态广播。 */
     onRunUpdated(callback: (progress: ImageGenerationProgress) => void): () => void;
   };

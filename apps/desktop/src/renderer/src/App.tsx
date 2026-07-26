@@ -3,6 +3,7 @@ import type {
   AnalysisProgress,
   AssetSummary,
   DocumentContextRun,
+  ImageGenerationRunSummary,
   ProjectRecord,
   PublicSettings,
   ReferenceAnchorRun
@@ -14,10 +15,11 @@ import { ReportView } from './components/ReportView';
 import { SettingsPanel } from './components/SettingsPanel';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
+import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -72,6 +74,7 @@ export function App() {
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
   const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
   const [referenceAnchorRuns, setReferenceAnchorRuns] = useState<ReferenceAnchorRun[]>([]);
+  const [requestedImageGen, setRequestedImageGen] = useState<{ projectId: string; referenceAnchorRunId: string } | null>(null);
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
   const [requestedDocumentContextRunId, setRequestedDocumentContextRunId] = useState('');
   const [requestedReferenceAnchorRunId, setRequestedReferenceAnchorRunId] = useState('');
@@ -324,7 +327,7 @@ export function App() {
       setSelectedApiProfileId(profileId);
       void run(project, true, profileId);
     }} /></div>
-    <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
+    <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => { setRequestedImageGen({ projectId, referenceAnchorRunId }); setScreen('image-generation'); }} /></div>
     <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
   </div>;
   if (screen === 'analysis' && selected) return <AnalysisView
@@ -336,6 +339,15 @@ export function App() {
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} />;
+
+  if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
+    projectId={requestedImageGen.projectId}
+    referenceAnchorRunId={requestedImageGen.referenceAnchorRunId}
+    apiProfileId={selectedApiProfileId}
+    onApiProfileChange={setSelectedApiProfileId}
+    onBack={() => { setRequestedImageGen(null); setScreen('home'); void refresh(); }}
+    onOpenSettings={() => { setSettingsReturnScreen('image-generation'); setScreen('settings'); }}
+  />;
 
   if (screen === 'project' && selected) {
     const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
