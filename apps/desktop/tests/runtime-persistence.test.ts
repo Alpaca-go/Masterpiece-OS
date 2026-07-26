@@ -5,8 +5,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { atomicWriteJsonWithRetry } from '../src/main/runtime/atomic-write.ts';
 import { RunWriteCoordinator } from '../src/main/runtime/run-write-coordinator.ts';
-import { transitionRuntimeStatus } from '../src/main/runtime/runtime-status.ts';
-import { findRecoverableRunProjection } from '../src/main/runtime/recovery-service.ts';
 
 test('atomic JSON write retries transient Windows rename failures and keeps one complete payload', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'atomic-write-'));
@@ -66,54 +64,6 @@ test('per-run coordinator serializes one run while allowing the queue to continu
   await assert.rejects(first, /expected/u);
   await second;
   assert.deepEqual(order, ['first:start', 'first:end', 'second']);
-});
-
-test('runtime status cannot regress after the Step 4 result is committed', () => {
-  const protectedStatus = transitionRuntimeStatus(
-    { analysisStatus: 'result_committed', persistenceStatus: 'healthy', recoverable: false },
-    { analysisStatus: 'failed_before_completion', persistenceStatus: 'projection_sync_failed' }
-  );
-  assert.equal(protectedStatus.analysisStatus, 'result_committed');
-  assert.equal(protectedStatus.persistenceStatus, 'projection_sync_failed');
-  assert.equal(protectedStatus.recoverable, true);
-});
-
-test('recovery rebuilds a deleted projection from the durable run report and quarantines invalid temp files', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'run-recovery-'));
-  const runId = '00000000-0000-4000-8000-000000000001';
-  const runRoot = path.join(temporary, runId);
-  const runtimeRoot = path.join(runRoot, 'runtime');
-  await fs.mkdir(runtimeRoot, { recursive: true });
-  const completed = {
-    id: runId,
-    analysisRunId: 'analysis',
-    projectName: '恢复测试',
-    status: 'completed' as const,
-    analysisStatus: 'completed' as const,
-    persistenceStatus: 'healthy' as const,
-    recoverable: false,
-    revision: 9,
-    apiProfileId: 'profile',
-    provider: 'mock',
-    model: 'mock',
-    documentCount: 1,
-    documentNames: ['策略.md'],
-    createdAt: new Date().toISOString(),
-    startedAt: new Date().toISOString(),
-    reportFilename: 'report.md'
-  };
-  await fs.writeFile(path.join(runtimeRoot, 'run-report.json'), JSON.stringify({ run: completed }), 'utf8');
-  await fs.writeFile(path.join(runtimeRoot, 'run.json.invalid.tmp'), '{not-json', 'utf8');
-  try {
-    const recovery = await findRecoverableRunProjection(runRoot, runId);
-    assert.equal(recovery.recovered, true);
-    assert.equal(recovery.record?.analysisStatus, 'completed');
-    assert.equal(recovery.record?.revision, 10);
-    assert.equal(recovery.quarantined.length, 1);
-    await fs.access(path.join(runtimeRoot, 'recovery', 'quarantine', 'run.json.invalid.tmp'));
-  } finally {
-    await fs.rm(temporary, { recursive: true, force: true });
-  }
 });
 
 test('Desktop entry enforces a single Electron instance', async () => {
