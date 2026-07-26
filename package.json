@@ -6,7 +6,8 @@
   "bin": { "masterpiece-os": "./bin/masterpiece-os.js" },
   "scripts": {
     "analyze": "node ./bin/masterpiece-os.js analyze",
-    "test": "node --test tests/*.test.js tests/v5/*.test.js",
+    "test": "node --test tests/*.test.js tests/v5/*.test.js tests/image-generation/*.test.js",
+    "test:image-generation": "node --test tests/image-generation/*.test.js",
     "verify:current-flows": "node ./scripts/verify-current-flows.mjs",
     "verify:production-boundaries": "node ./scripts/verify-production-boundaries.mjs",
     "verify:no-obsolete-code": "node ./scripts/verify-no-obsolete-code.mjs",
