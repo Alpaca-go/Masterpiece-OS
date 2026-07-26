@@ -309,6 +309,23 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .ctx-link-picker label { margin: 0; font-size: 11px; font-weight: 700; color: #49444c; }
 .empty-state.small { min-height: 0; padding: 14px 0; text-align: left; color: #8b858d; font-size: 12px; }
 
+/* ── 精简重构：历史任务页（只读旧版流程） ── */
+.history-page { max-width: 1080px; margin: 0 auto; padding: 32px 28px 64px; }
+.history-tabs { display: flex; gap: 10px; margin: 18px 0 14px; }
+.history-tabs button { border: 1px solid #e0d9d1; background: #fff; border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 13px; color: #6b646f; cursor: pointer; }
+.history-tabs button.active { background: #2b262e; color: #fff; border-color: #2b262e; }
+.history-list { display: grid; gap: 12px; }
+.history-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; border: 1px solid #ece6df; border-radius: 14px; background: #fff; }
+.history-meta { min-width: 0; }
+.history-meta strong { display: block; font-size: 14px; color: #2b262e; }
+.history-meta small { display: block; margin-top: 4px; color: #8b858d; font-size: 12px; }
+.history-actions { flex: 0 0 auto; flex-wrap: wrap; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(28, 24, 31, 0.46); display: grid; place-items: center; padding: 32px; z-index: 50; }
+.modal { background: #fff; border-radius: 16px; width: min(820px, 100%); max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 24px 60px rgba(0,0,0,0.28); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 22px; border-bottom: 1px solid #efe9e2; }
+.modal-head h2 { font-size: 16px; color: #2b262e; }
+.report-modal .report-body { margin: 0; padding: 22px; overflow: auto; white-space: pre-wrap; font: 13px/1.7 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; color: #3a353e; }
+
 .ctx-conflict-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: #1a1620aa; padding: 28px; }
 .ctx-conflict-inner { width: min(720px, 100%); max-height: 84vh; overflow: auto; padding: 26px; border-radius: 14px; background: #faf9f6; box-shadow: 0 30px 80px #1a162055; }
 .ctx-conflict-list { display: grid; gap: 14px; margin: 16px 0 0; padding: 0; list-style: none; }

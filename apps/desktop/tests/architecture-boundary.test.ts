@@ -84,22 +84,28 @@ test('Visual Translation exposes one formal workflow without internal version se
   assert.doesNotMatch(workspace, /方向生成模式|文档分析流程|概念方向 V1|执行向 V2|视觉事实优先 V2|深度分析 V1|实验分支|生产基线/u);
 });
 
-test('analysis intake shares tabs, translation supports drop upload, and home distinguishes all record types', async () => {
+test('analysis intake shares tabs, legacy translation supports drop upload, and home distinguishes the three production record types', async () => {
   const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
   const tabs = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'AnalysisModeTabs.tsx'), 'utf8');
   const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
+  const history = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'LegacyHistoryWorkspace.tsx'), 'utf8');
   assert.match(app, /<AnalysisModeTabs/);
   assert.match(tabs, /视觉分析/);
-  assert.match(tabs, /文档视觉转译/);
+  assert.match(tabs, /文档上下文提取/);
+  assert.match(tabs, /参考锚定（Anchor）/);
+  assert.doesNotMatch(tabs, /文档视觉转译/);
+  assert.doesNotMatch(tabs, /参考风格重构/);
   assert.match(workspace, /onDrop=/);
   assert.match(workspace, /getPathForFile/);
   assert.doesNotMatch(workspace, /项目名称<input/);
   assert.match(app, /record-type visual-analysis/);
-  assert.match(app, /record-type visual-translation/);
-  assert.match(app, /record-type reference-reconstruction/);
+  assert.match(app, /record-type document-context/);
+  assert.match(app, /record-type reference-anchor/);
   assert.match(app, /visualTranslation\.listRuns\(\)/);
   assert.match(app, /referenceTranslation\.listRuns\(\)/);
-  assert.match(app, /initialRunId=\{requestedReconstructionRunId\}/);
+  assert.match(app, /历史任务/);
+  assert.match(history, /LegacyHistoryWorkspace/);
+  assert.doesNotMatch(app, /initialRunId=\{requestedReconstructionRunId\}/);
 });
 
 test('recent project rows expose a destructive local-folder delete action', async () => {

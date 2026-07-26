@@ -14,22 +14,16 @@ import { AnalysisView } from './components/AnalysisView';
 import { ProjectWizard } from './components/ProjectWizard';
 import { ReportView } from './components/ReportView';
 import { SettingsPanel } from './components/SettingsPanel';
-import { VisualTranslationWorkspace } from './components/VisualTranslationWorkspace';
-import { ReferenceTranslationWorkspace } from './components/ReferenceTranslationWorkspace';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
+import { LegacyHistoryWorkspace } from './components/LegacyHistoryWorkspace';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'history';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
-  return <span className={`badge ${status}`}>{labels[status]}</span>;
-}
-
-function TranslationStatusBadge({ status }: { status: VisualTranslationRunRecord['status'] }) {
-  const labels: Record<VisualTranslationRunRecord['status'], string> = { pending: '等待中', running: '运行中', completed: '已完成', failed: '失败', timed_out: '已超时', cancelled: '已取消' };
   return <span className={`badge ${status}`}>{labels[status]}</span>;
 }
 
@@ -75,16 +69,6 @@ function ReferenceAnchorStatusBadge({ status }: { status: ReferenceAnchorRun['st
   return <span className={`badge ${tone}`}>{labels[status]}</span>;
 }
 
-function ReconstructionStatusBadge({ status }: { status: ReferenceTranslationRunRecord['status'] }) {
-  const labels: Record<ReferenceTranslationRunRecord['status'], string> = {
-    running: '运行中',
-    completed: '已完成',
-    failed: '失败',
-    cancelled: '已取消'
-  };
-  return <span className={`badge ${status}`}>{labels[status]}</span>;
-}
-
 export function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [settings, setSettings] = useState<PublicSettings | null>(null);
@@ -94,8 +78,6 @@ export function App() {
   const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
   const [referenceAnchorRuns, setReferenceAnchorRuns] = useState<ReferenceAnchorRun[]>([]);
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
-  const [requestedTranslationRunId, setRequestedTranslationRunId] = useState('');
-  const [requestedReconstructionRunId, setRequestedReconstructionRunId] = useState('');
   const [requestedDocumentContextRunId, setRequestedDocumentContextRunId] = useState('');
   const [requestedReferenceAnchorRunId, setRequestedReferenceAnchorRunId] = useState('');
   const [selected, setSelected] = useState<ProjectRecord | null>(null);
@@ -300,9 +282,6 @@ export function App() {
     try {
       await window.masterpiece.visualTranslation.remove(run.id);
       setTranslationRuns((current) => current.filter((item) => item.id !== run.id));
-      if (requestedTranslationRunId === run.id) {
-        setRequestedTranslationRunId('');
-      }
     } catch (reason) {
       setError(cleanError(reason));
     } finally {
@@ -318,7 +297,6 @@ export function App() {
     try {
       await window.masterpiece.referenceTranslation.remove(run.id);
       setReconstructionRuns((current) => current.filter((item) => item.id !== run.id));
-      if (requestedReconstructionRunId === run.id) setRequestedReconstructionRunId('');
     } catch (reason) {
       setError(cleanError(reason));
     } finally {
@@ -381,8 +359,6 @@ export function App() {
   if (screen === 'create') return <div className="analysis-workspace-shell">
     <AnalysisModeTabs value={analysisMode} onChange={(mode) => {
       setAnalysisMode(mode);
-      if (mode !== 'visual-translation') setRequestedTranslationRunId('');
-      if (mode !== 'reference-translation') setRequestedReconstructionRunId('');
       if (mode !== 'document-context') setRequestedDocumentContextRunId('');
       if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
     }} />
@@ -391,9 +367,7 @@ export function App() {
       setSelectedApiProfileId(profileId);
       void run(project, true, profileId);
     }} /></div>
-    <div hidden={analysisMode !== 'visual-translation'}><VisualTranslationWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedTranslationRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
     <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
-    <div hidden={analysisMode !== 'reference-translation'}><ReferenceTranslationWorkspace initialRunId={requestedReconstructionRunId} onBack={() => { setScreen('home'); void refresh(); }} /></div>
     <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
   </div>;
   if (screen === 'analysis' && selected) return <AnalysisView
@@ -405,6 +379,7 @@ export function App() {
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} />;
+  if (screen === 'history') return <LegacyHistoryWorkspace onBack={() => { setScreen('home'); void refresh(); }} />;
 
   if (screen === 'project' && selected) {
     const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
@@ -436,14 +411,12 @@ export function App() {
   const hasUsableProfile = enabledProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
   const recentRecords = [
     ...projects.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
-    ...translationRuns.map((run) => ({ kind: 'visual-translation' as const, createdAt: run.createdAt, run })),
-    ...reconstructionRuns.map((run) => ({ kind: 'reference-reconstruction' as const, createdAt: run.createdAt, run })),
     ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   return <div className="app-shell">
-    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className="active">项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
-    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('visual-translation'); setRequestedTranslationRunId(''); setScreen('create'); }}>文档视觉转译</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建分析 <span>↗</span></button></div></header>
+    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => setScreen('history')}>历史任务</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
+    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
       {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
       {error && <div className="notice error">{error}</div>}
       <section className="recent-section"><div className="section-title"><div><span>RECENT ANALYSIS</span><h2>最近分析记录</h2></div><small>{recentRecords.length} 条本地记录</small></div>
@@ -457,16 +430,6 @@ export function App() {
             <span className="row-arrow">→</span>
           </button>
           <button className="project-delete" disabled={record.project.status === 'running' || deletingProjectId === record.project.id} title={record.project.status === 'running' ? '请先取消正在运行的分析' : `删除 ${record.project.projectName} 及本地文件夹`} aria-label={`删除项目 ${record.project.projectName}`} onClick={() => void deleteProject(record.project)}>{deletingProjectId === record.project.id ? '…' : '删除'}</button>
-        </div> : record.kind === 'visual-translation' ? <div className="project-row translation-record" key={`translation-${record.run.id}`}>
-          <button className="project-row-open" onClick={() => { setRequestedTranslationRunId(record.run.id); setAnalysisMode('visual-translation'); setScreen('create'); }}>
-            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type visual-translation">文档视觉转译</span>{record.run.documentCount} 份文档</small></div>
-            <TranslationStatusBadge status={record.run.status} />
-            <div className="project-model"><small>MODEL</small><strong>{record.run.model || '—'}</strong></div>
-            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
-            <span className="row-arrow">→</span>
-          </button>
-          <button className="project-delete" disabled={record.run.status === 'running' || deletingRunId === record.run.id} title={record.run.status === 'running' ? '请先取消正在运行的分析' : `删除文档视觉转译任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除文档视觉转译任务 ${record.run.projectName}`} onClick={() => void deleteTranslationRun(record.run)}>{deletingRunId === record.run.id ? '…' : '删除'}</button>
         </div> : record.kind === 'reference-anchor' ? <div className="project-row translation-record" key={`reference-anchor-${record.run.id}`}>
           <button className="project-row-open" onClick={() => { setRequestedReferenceAnchorRunId(record.run.id); setAnalysisMode('reference-anchor'); setScreen('create'); }}>
             <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
@@ -487,21 +450,7 @@ export function App() {
             <span className="row-arrow">→</span>
           </button>
           <button className="project-delete" disabled={DOCUMENT_CONTEXT_EXECUTING.has(record.run.status) || deletingDocumentContextRunId === record.run.id} title={DOCUMENT_CONTEXT_EXECUTING.has(record.run.status) ? '请先取消正在运行的提取任务' : `删除文档上下文提取任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除文档上下文提取任务 ${record.run.projectName}`} onClick={() => void deleteDocumentContextRun(record.run)}>{deletingDocumentContextRunId === record.run.id ? '…' : '删除'}</button>
-        </div> : <div className="project-row translation-record" key={`reconstruction-${record.run.id}`}>
-          <button className="project-row-open" onClick={() => {
-            setRequestedReconstructionRunId(record.run.id);
-            setAnalysisMode('reference-translation');
-            setScreen('create');
-          }}>
-            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{record.run.projectContextFilename}</strong><small><span className="record-type reference-reconstruction">参考风格重构</span>{record.run.visualAnalysisFilename}</small></div>
-            <ReconstructionStatusBadge status={record.run.status} />
-            <div className="project-model"><small>OUTPUT</small><strong>{record.run.reportFilename ? 'GPT 执行文档' : '—'}</strong></div>
-            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
-            <span className="row-arrow">→</span>
-          </button>
-          <button className="project-delete" disabled={record.run.status === 'running' || deletingReconstructionRunId === record.run.id} title={record.run.status === 'running' ? '请先取消正在运行的重构任务' : `删除参考风格重构任务 ${record.run.projectContextFilename} 及本地文件夹`} aria-label={`删除参考风格重构任务 ${record.run.projectContextFilename}`} onClick={() => void deleteReconstructionRun(record.run)}>{deletingReconstructionRunId === record.run.id ? '…' : '删除'}</button>
-        </div>)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析记录</strong><p>进入分析工作台，选择视觉分析或文档视觉转译开始第一次任务。</p><button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>开始第一次分析</button></div>}
+        </div> : null)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析记录</strong><p>进入分析工作台，选择视觉分析、文档分析或参考视觉转换开始第一次任务。</p><button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>开始第一次分析</button></div>}
       </section>
     </main>
   </div>;
