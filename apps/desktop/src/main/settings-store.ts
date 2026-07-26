@@ -341,7 +341,49 @@ function endpoint(baseUrl: string): string {
     : `${parsed.toString().replace(/\/$/, '')}/chat/completions`;
 }
 
+async function dashScopeConnectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
+  const started = performance.now();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 25_000);
+  try {
+    const baseUrl = (credentials.baseUrl?.trim() || 'https://dashscope.aliyuncs.com').replace(/\/$/, '');
+    const probePath = '/api/v1/tasks/00000000-0000-0000-0000-000000000000';
+    const response = await fetch(`${baseUrl}${probePath}`, {
+      method: 'GET',
+      headers: { Authorization: `Bearer ${credentials.apiKey}`, 'Content-Type': 'application/json' },
+      signal: controller.signal,
+    });
+    const raw = await response.text();
+    let body: Record<string, unknown> = {};
+    try { body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}; } catch { /* ignore */ }
+    if (response.status === 401 || response.status === 403) {
+      throw new Error('API Key 无效或无权访问该模型');
+    }
+    // 401/403 之外均视为鉴权通过：404=探针 task 不存在（预期）；400/429=请求或限流但鉴权已通过。
+    if (response.status >= 500) {
+      const providerError = body.error as { message?: string; code?: string } | undefined;
+      const detail = providerError?.message || providerError?.code || response.statusText;
+      throw new Error(`连接失败（HTTP ${response.status}）：${detail}`);
+    }
+    return {
+      ok: true,
+      message: 'DashScope 连接成功，API Key 有效（图像生成模型不兼容聊天格式连接测试）',
+      model: credentials.model || 'wan2.7-image-pro',
+      supportsImages: true,
+      elapsedMs: Math.round(performance.now() - started),
+    };
+  } catch (error) {
+    const message = (error as Error).name === 'AbortError'
+      ? '连接测试超时，请检查网络、Base URL 和模型状态'
+      : redactSecret((error as Error).message, credentials.apiKey);
+    throw new Error(message);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function connectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
+  if (credentials.provider === 'dashscope') return dashScopeConnectionRequest(credentials);
   const started = performance.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25_000);
