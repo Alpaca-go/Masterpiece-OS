@@ -354,8 +354,11 @@ export function createReferenceAnchorService(
     if (!briefValidation.valid) {
       throw blockingError('SCHEMA_VALIDATION_FAILED', `Anchor Brief 未通过校验：${briefValidation.errors.join('；')}`);
     }
-    // v5.3.1 §4.4 Brief 级回流阻断：禁止表层元素不得出现在最终 Brief。
-    const briefReentry = detectReferenceSignatureReentry([briefMarkdown], compiled.prohibitedSurfaceElements);
+    // v5.3.1 §4.4 Brief 级回流阻断：禁止表层元素不得出现在 Brief 的正向规则区域。
+    // 注意：只扫描 §A–§E + 继承风格块（正向内容）；§F 禁止事项 / §H 人工注意事项
+    // 按定义会列举被禁元素名，必须排除，否则必然误报。
+    const briefPositivePart = briefMarkdown.split(/\n## [F-H]\./u)[0] || briefMarkdown;
+    const briefReentry = detectReferenceSignatureReentry([briefPositivePart], compiled.prohibitedSurfaceElements);
     if (briefReentry.length) {
       throw blockingError(
         'REFERENCE_SIGNATURE_REENTERED_ANCHOR_BRIEF',
