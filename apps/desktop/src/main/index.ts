@@ -239,19 +239,8 @@ function registerIpc(): void {
   });
   ipcMain.handle('context-integration:is-doc-referenced', (_event, runId: string) => contextIntegration.isDocumentContextReferenced(runId));
 
-  ipcMain.handle('visual-translation:choose-documents', async () => {
-    const result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openFile', 'multiSelections'],
-      filters: [{ name: '策略文档', extensions: ['pdf', 'docx', 'md', 'markdown', 'txt'] }]
-    });
-    return result.canceled ? [] : result.filePaths;
-  });
-  ipcMain.handle('visual-translation:inspect-documents', (_event, paths: string[]) => visualTranslation.inspectDocuments(paths));
   ipcMain.handle('visual-translation:list-runs', () => visualTranslation.listRuns());
   ipcMain.handle('visual-translation:get-run', (_event, runId: string) => visualTranslation.getRun(runId));
-  ipcMain.handle('visual-translation:start', (_event, input: StartVisualTranslationInput) => visualTranslation.start(input));
-  ipcMain.handle('visual-translation:resume', (_event, runId: string, apiProfileId?: string) => visualTranslation.resume(runId, apiProfileId));
-  ipcMain.handle('visual-translation:cancel', (_event, runId: string) => visualTranslation.cancel(runId));
   ipcMain.handle('visual-translation:remove', async (_event, runId: string) => {
     const record = await visualTranslation.getRun(runId).catch(() => null);
     if (record?.status === 'running') throw new Error('正在分析的任务不能删除，请先取消分析');
@@ -313,47 +302,9 @@ function registerIpc(): void {
     if (result) throw new Error(result);
   });
 
-  ipcMain.handle('reference-translation:choose-input', async () => {
-    const result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openFile'],
-      filters: [{ name: '结构化 JSON', extensions: ['json'] }]
-    });
-    return result.canceled ? [] : result.filePaths;
-  });
-  ipcMain.handle('reference-translation:choose-reference-assets', async () => {
-    const result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openFile', 'multiSelections'],
-      filters: [{ name: '参考视觉方案', extensions: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'zip'] }]
-    });
-    return result.canceled ? [] : result.filePaths;
-  });
-  ipcMain.handle('reference-translation:choose-project-sources', async () => {
-    const result = await dialog.showOpenDialog(mainWindow!, {
-      properties: ['openFile', 'multiSelections'],
-      filters: [{ name: '项目文档与视觉资产', extensions: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'zip'] }]
-    });
-    return result.canceled ? [] : result.filePaths;
-  });
-  ipcMain.handle('reference-translation:inspect-assets', (_event, paths: string[]) =>
-    referenceTranslation.inspectAssets(paths));
-  ipcMain.handle('reference-translation:run-user-input', (
-    _event,
-    input: StartReferenceTranslationUserInput
-  ) => referenceTranslation.runUserInput(input));
-  ipcMain.handle('reference-translation:run', (_event, input: StartReferenceTranslationInput) => referenceTranslation.run(input));
   ipcMain.handle('reference-translation:list-runs', () => referenceTranslation.listRuns());
-  ipcMain.handle('reference-translation:get-active', () => referenceTranslation.getActive());
-  ipcMain.handle('reference-translation:get-profile', (_event, runId: string) => referenceTranslation.getProfile(runId));
-  ipcMain.handle('reference-translation:get-direction', (_event, runId: string) => referenceTranslation.getDirection(runId));
-  ipcMain.handle('reference-translation:get-reconstruction', (_event, runId: string) => referenceTranslation.getReconstruction(runId));
+  ipcMain.handle('reference-translation:get-run', (_event, runId: string) => referenceTranslation.getRun(runId));
   ipcMain.handle('reference-translation:read-report', (_event, runId: string) => referenceTranslation.readReport(runId));
-  ipcMain.handle('reference-translation:resume', (
-    _event,
-    runId: string,
-    apiProfileId?: string
-  ) => referenceTranslation.resume(runId, apiProfileId));
-  ipcMain.handle('reference-translation:retry-report', (_event, runId: string) => referenceTranslation.retryReport(runId));
-  ipcMain.handle('reference-translation:cancel', (_event, runId: string) => referenceTranslation.cancel(runId));
   ipcMain.handle('reference-translation:remove', (_event, runId: string) => referenceTranslation.remove(runId));
   ipcMain.handle('reference-translation:open-folder', async (_event, runId: string) => {
     const outputPath = await referenceTranslation.ensureReportDelivery(runId);

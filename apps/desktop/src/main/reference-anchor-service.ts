@@ -36,7 +36,7 @@ import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import { appendRuntimeEvent } from './runtime/event-log.ts';
 import { RunWriteCoordinator } from './runtime/run-write-coordinator.ts';
 import { assertInside } from './analysis-contract.ts';
-import { inspectReferenceAssets } from './reference-translation-service.ts';
+import { inspectReferenceAssets } from './reference-asset-inspector.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { PipelineService } from './pipeline-service.ts';
 import type { ProjectContextService } from './project-context-service.ts';

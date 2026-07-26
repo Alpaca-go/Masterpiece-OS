@@ -396,64 +396,8 @@ function uniqueStrings(values: Array<string | undefined>): string[] {
   return [...new Set(values.map((value) => String(value || '').trim()).filter(Boolean))];
 }
 
-export async function inspectReferenceAssets(paths: string[]): Promise<ReferenceAssetSelection> {
-  const candidates: string[] = [];
-  const skipped: string[] = [];
-  async function visit(source: string): Promise<void> {
-    const resolved = path.resolve(source);
-    const stat = await fs.stat(resolved).catch(() => null);
-    if (!stat) {
-      skipped.push(path.basename(resolved));
-      return;
-    }
-    if (stat.isDirectory()) {
-      for (const entry of await fs.readdir(resolved, { withFileTypes: true })) {
-        if (entry.name.startsWith('.') || (entry.isDirectory() && IGNORED_DIRECTORIES.has(entry.name.toLowerCase()))) continue;
-        await visit(path.join(resolved, entry.name));
-      }
-      return;
-    }
-    const extension = path.extname(resolved).toLowerCase();
-    if (!REFERENCE_EXTENSIONS.has(extension) || /(?:thumbs\.db|desktop\.ini|~\$)/iu.test(path.basename(resolved))) {
-      skipped.push(path.basename(resolved));
-      return;
-    }
-    candidates.push(resolved);
-  }
-  for (const source of [...new Set(paths.filter(Boolean))]) await visit(source);
-  const items: ReferenceAssetSelection['items'] = [];
-  const seen = new Set<string>();
-  let duplicateCount = 0;
-  for (const sourcePath of candidates) {
-    const stat = await fs.stat(sourcePath);
-    const fingerprint = `${path.basename(sourcePath).toLowerCase()}|${stat.size}|${Math.round(stat.mtimeMs)}`;
-    if (seen.has(fingerprint)) {
-      duplicateCount += 1;
-      continue;
-    }
-    seen.add(fingerprint);
-    const extension = path.extname(sourcePath).toLowerCase();
-    let thumbnailDataUrl: string | undefined;
-    if (['.jpg', '.jpeg', '.png', '.webp'].includes(extension)) {
-      thumbnailDataUrl = await sharp(sourcePath)
-        .rotate()
-        .resize({ width: 240, height: 160, fit: 'cover' })
-        .jpeg({ quality: 72 })
-        .toBuffer()
-        .then((value) => `data:image/jpeg;base64,${value.toString('base64')}`)
-        .catch(() => undefined);
-    }
-    items.push({
-      sourcePath,
-      name: path.basename(sourcePath),
-      extension,
-      sizeBytes: stat.size,
-      fingerprint,
-      thumbnailDataUrl
-    });
-  }
-  return { items, skipped, duplicateCount };
-}
+import { inspectReferenceAssets } from './reference-asset-inspector.ts';
+export { inspectReferenceAssets };
 
 export function createReferenceTranslationService(
   readSettings: SettingsReader,
