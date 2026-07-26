@@ -554,6 +554,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         await store.saveRun(failed);
         await store.appendEvent(runId, 'RUN_RECOVERY_FAILED', {});
         emit(failed);
+        return failed;
       }
       return run;
     }
