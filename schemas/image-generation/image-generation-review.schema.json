@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-review-v1",
+  "title": "Image Generation Review V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runId", "imageId", "decision", "reviewedAt"],
+  "properties": {
+    "runId": { "type": "string", "minLength": 1 },
+    "imageId": { "type": "string", "minLength": 1 },
+    "decision": {
+      "enum": ["selected", "usable_after_edit", "reference_only", "rejected"]
+    },
+    "score": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "directionCorrect": { "type": "boolean" },
+    "brandIdentityCorrect": { "type": "boolean" },
+    "referenceUsageCorrect": { "type": "boolean" },
+    "compositionUseful": { "type": "boolean" },
+    "notes": { "type": "string" },
+    "reviewedAt": { "type": "string", "minLength": 1 }
+  }
+}

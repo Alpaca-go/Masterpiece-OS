@@ -543,6 +543,54 @@ import type {
   ResolvedProjectContext
 } from '../../../../packages/project-contracts/src/index';
 
+// ── 生图功能 V1 契约类型已迁移至 packages/image-generation-contracts（生图 V1 Phase 1）──
+export type {
+  ImageGenerationOutputType,
+  ImageProviderRegion,
+  ImageProviderId,
+  ImageProviderCapabilities,
+  ImageReferenceRole,
+  ImageReferenceSource,
+  ImageGenerationReference,
+  ImageGenerationTaskParameters,
+  ImageGenerationTask,
+  SourceContextSnapshot,
+  ImageGenerationRunStatus,
+  GateAErrorCode,
+  GateBErrorCode,
+  GateCErrorCode,
+  ImageGenerationBlockingCode,
+  ImageGenerationGate,
+  ImageGenerationWarningCode,
+  ImageGenerationBlockingError,
+  ImageGenerationWarning,
+  ImageGenerationGateResult,
+  ProviderTaskState,
+  ProviderResultImage,
+  ProviderTaskStatus,
+  ImageGenerationSubmitResult,
+  ImageGenerationProvider,
+  GeneratedImage,
+  ImageReviewDecision,
+  ImageGenerationReview,
+  ImageGenerationRetryMode,
+  ImageGenerationRetryRecord,
+  ImageGenerationMetrics,
+  ImageGenerationRun,
+  ImageGenerationRunSummary
+} from '../../../../packages/image-generation-contracts/src/index';
+import type {
+  ImageGenerationRun,
+  ImageGenerationRunSummary,
+  ImageGenerationRunStatus,
+  ImageGenerationGateResult,
+  ImageGenerationReview,
+  ImageGenerationRetryMode,
+  ImageProviderCapabilities,
+  ImageGenerationOutputType,
+  ImageProviderRegion
+} from '../../../../packages/image-generation-contracts/src/index';
+
 export interface CreateProjectInput {
   sourcePaths: string[];
   apiProfileId: string;
@@ -1639,6 +1687,52 @@ export interface ReferenceAnchorProgress {
   model: string;
 }
 
+// ── 生图功能 V1：Desktop 专属输入 / 进度类型 ──
+
+/** §16 image-generation:compile / start 输入。 */
+export interface StartImageGenerationInput {
+  projectId: string;
+  /** 已批准的 Reference Anchor 运行 ID（唯一正式上游）。 */
+  referenceAnchorRunId: string;
+  outputType?: ImageGenerationOutputType;
+  apiProfileId?: string;
+  /** 可选：编译后覆盖 Prompt（edited_prompt 场景由 retry 走）。 */
+  size?: string;
+  region?: ImageProviderRegion;
+}
+
+/** §13 重试输入。 */
+export interface RetryImageGenerationInput {
+  runId: string;
+  mode: ImageGenerationRetryMode;
+  /** edited_prompt 模式下的新 Prompt。 */
+  editedPrompt?: string;
+  apiProfileId?: string;
+}
+
+/** §16.3 运行事件广播载荷（image-generation:run-updated）。 */
+export interface ImageGenerationProgress {
+  runId: string;
+  projectId: string;
+  status: ImageGenerationRunStatus;
+  message: string;
+  startedAt: string;
+  elapsedMs: number;
+  providerId: string;
+  modelId: string;
+  providerTaskId?: string;
+}
+
+/** compile 返回：编译产物预览（不提交 Provider）。 */
+export interface ImageGenerationCompileResult {
+  runId: string;
+  compiledPrompt: string;
+  promptVersion: number;
+  gate: ImageGenerationGateResult;
+  providerPayloadPreview: Record<string, unknown>;
+  promptSourceMap: Record<string, unknown>;
+}
+
 export interface DesktopApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -1709,6 +1803,23 @@ export interface DesktopApi {
     export(runId: string): Promise<string | null>;
     openFolder(runId: string): Promise<void>;
     onProgress(callback: (progress: ReferenceAnchorProgress) => void): () => void;
+  };
+  imageGeneration: {
+    /** §16 获取 Provider 能力（用于 UI 展示与 Prompt 编译约束）。 */
+    getCapabilities(apiProfileId?: string): Promise<ImageProviderCapabilities>;
+    /** §16 编译 Prompt 并执行三层 Gate（不提交 Provider）。 */
+    compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
+    /** §16 编译 + Gate 通过后提交生图任务。 */
+    start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
+    getRun(runId: string): Promise<ImageGenerationRun>;
+    listRuns(projectId?: string): Promise<ImageGenerationRunSummary[]>;
+    cancel(runId: string): Promise<boolean>;
+    /** §13 手动重试，创建新 runId 并保留 parentRunId。 */
+    retry(input: RetryImageGenerationInput): Promise<ImageGenerationRun>;
+    saveReview(review: ImageGenerationReview): Promise<ImageGenerationRun>;
+    openFolder(runId: string): Promise<void>;
+    /** §16.3 运行状态广播。 */
+    onRunUpdated(callback: (progress: ImageGenerationProgress) => void): () => void;
   };
   files: {
     getPathForFile(file: File): string;

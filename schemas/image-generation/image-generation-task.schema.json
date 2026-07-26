@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-task-v1",
+  "title": "Image Generation Task V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "taskId",
+    "projectId",
+    "runId",
+    "outputType",
+    "sourceReferenceAnchorRunId",
+    "contextSnapshotPath",
+    "anchorBriefPath",
+    "references",
+    "compiledPrompt",
+    "promptVersion",
+    "providerId",
+    "modelId",
+    "region",
+    "parameters",
+    "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "taskId": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "outputType": { "const": "master_anchor_image" },
+    "sourceVisualRunId": { "type": "string" },
+    "sourceDocumentRunId": { "type": "string" },
+    "sourceReferenceAnchorRunId": { "type": "string", "minLength": 1 },
+    "contextSnapshotPath": { "type": "string", "minLength": 1 },
+    "anchorBriefPath": { "type": "string", "minLength": 1 },
+    "references": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/reference" }
+    },
+    "compiledPrompt": { "type": "string", "minLength": 1 },
+    "promptVersion": { "type": "integer", "minimum": 1 },
+    "providerId": { "const": "dashscope" },
+    "modelId": { "type": "string", "minLength": 1 },
+    "region": { "enum": ["beijing", "singapore"] },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size", "outputCount", "watermark"],
+      "properties": {
+        "size": { "type": "string", "minLength": 1 },
+        "outputCount": { "const": 1 },
+        "watermark": { "const": false },
+        "thinkingMode": { "type": "boolean" }
+      }
+    },
+    "createdAt": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assetId", "role", "localPath", "sha256", "source", "includeReason"],
+      "properties": {
+        "assetId": { "type": "string", "minLength": 1 },
+        "role": {
+          "enum": [
+            "current_project_logo",
+            "current_project_product",
+            "current_project_identity",
+            "reference_style"
+          ]
+        },
+        "localPath": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "minLength": 1 },
+        "source": {
+          "enum": ["project_visual_context", "reference_anchor_run", "user_selected"]
+        },
+        "includeReason": { "type": "string", "minLength": 1 },
+        "exclusionNotes": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

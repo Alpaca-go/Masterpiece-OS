@@ -3,7 +3,8 @@ import type {
   AnalysisProgress,
   DesktopApi,
   DocumentContextProgress,
-  ReferenceAnchorProgress
+  ReferenceAnchorProgress,
+  ImageGenerationProgress
 } from '../shared/types';
 
 const api: DesktopApi = {
@@ -87,6 +88,22 @@ const api: DesktopApi = {
       const listener = (_event: Electron.IpcRendererEvent, progress: ReferenceAnchorProgress) => callback(progress);
       ipcRenderer.on('reference-anchor:progress', listener);
       return () => ipcRenderer.removeListener('reference-anchor:progress', listener);
+    }
+  },
+  imageGeneration: {
+    getCapabilities: (apiProfileId) => ipcRenderer.invoke('image-generation:get-capabilities', apiProfileId),
+    compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
+    start: (input) => ipcRenderer.invoke('image-generation:start', input),
+    getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
+    listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),
+    cancel: (runId) => ipcRenderer.invoke('image-generation:cancel', runId),
+    retry: (input) => ipcRenderer.invoke('image-generation:retry', input),
+    saveReview: (review) => ipcRenderer.invoke('image-generation:save-review', review),
+    openFolder: (runId) => ipcRenderer.invoke('image-generation:open-folder', runId),
+    onRunUpdated(callback) {
+      const listener = (_event: Electron.IpcRendererEvent, progress: ImageGenerationProgress) => callback(progress);
+      ipcRenderer.on('image-generation:run-updated', listener);
+      return () => ipcRenderer.removeListener('image-generation:run-updated', listener);
     }
   },
   files: {

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-provider-capabilities-v1",
+  "title": "Image Provider Capabilities V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "providerId",
+    "modelId",
+    "supportsTextToImage",
+    "supportsMultiImageReference",
+    "supportsNegativePrompt",
+    "supportsRemoteCancel",
+    "maxReferenceImages",
+    "maxOutputCount",
+    "supportedSizes",
+    "outputMimeTypes"
+  ],
+  "properties": {
+    "providerId": { "type": "string", "minLength": 1 },
+    "modelId": { "type": "string", "minLength": 1 },
+    "supportsTextToImage": { "type": "boolean" },
+    "supportsMultiImageReference": { "type": "boolean" },
+    "supportsNegativePrompt": { "type": "boolean" },
+    "supportsRemoteCancel": { "type": "boolean" },
+    "maxReferenceImages": { "type": "integer", "minimum": 0 },
+    "maxOutputCount": { "type": "integer", "minimum": 1 },
+    "supportedSizes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "outputMimeTypes": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  }
+}
