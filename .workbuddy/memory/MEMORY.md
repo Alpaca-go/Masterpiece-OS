@@ -5,24 +5,23 @@
 - **恢复法**：回收站在 `D:\$RECYCLE.BIN\S-1-5-21-3696747777-479842500-757859879-500`；用 python 解析 `$I*` 元数据（offset 24 读 namelen，offset 28 起 utf-16-le 原路径），找到对应 `$R*` 目录后 `mv` 回原路径即可，未提交编辑不丢失。
 - 目录消失时**严禁**直接 `git checkout -- <dir>`（会把未暂存编辑回滚到 HEAD），先查回收站。
 
-## 实验分支 / v2 视觉方向
-- 当前工作分支：`experiment/execution-oriented-directions-v2`（基于 v1.3.3 提交 `b404c76`）。
-- 桌面端默认走 **V1（conceptual_v1）**；v2（execution_oriented_v2）需用户在 UI「方向生成模式」手动开启。
-- v2 协议名是 `visual-translation-v2-execution`，**不是** v2.1；v2.1 仅为一次「专项修复」升级（见 2026-07-21 日志），协议名维持 v2。
-
-## v2.1 fixtures 约定（重要）
-- `tests/fixtures/visual-direction-v2/jiuzhou-meixue/v2-directions.json` = **v2.1 好集合**（3 方向 A/B/C 真实差异，整体现 ready/allowed）。它是「九州美学新报告」交付物的输入，不要改回同质集合。
-- `v2-directions-homogeneous.json` = v2.1 合法但**同质退化**的负面回归用例。**不是** git 原始 fixture（原始缺 compliance_weights 等字段，已不合法）。由 `scripts/gen-negative-jzmx-fixture.mjs` 生成。
-- 三项目（jiuzhou-meixue / mingjitang / vanke-suwan）A/B 快照在 `tests/snapshots/visual-direction-v2/`，改 fixture 后必须 `node scripts/regen-v2-snapshots.mjs` 再生。
-- 报告交付物在 `docs/v2.1-deliverables/`（`gen-jzmx-reports.mjs` 生成）。
+## 仓库结构（repository-slimming-v2 之后，2026-07-26 终态）
+- 当前工作分支：`refactor/repository-slimming-v2`（HEAD `a71196d`，8 个 Phase 提交链见当日日志）。
+- 结构：根 `src/`+`bin/masterpiece-os.js` = v5 引擎（仅 analyze/inventory，qwen provider）；`apps/desktop` = 三项生产功能（视觉分析/文档上下文/Reference Anchor）；`labs/document-visual-directions` 与 `labs/reference-style-conversion` = 两个实验管线（独立 CLI，不进 Desktop UI/IPC/打包）；共享能力在 `packages/`。
+- 旧 V4、Visual Translation V1/V2（生产侧）、Reference Translation、reference-first readiness/validator 树已**物理删除**。旧 fixtures/snapshots/v2.1 交付物均已删；v2 实验测试只在 labs 内。
+- 偏差记录在 `docs/cleanup/repository-slimming-v2-validation.md`：① reference-first 保留 5 个协议文件（style-carrier-ranking/task-reference-selection 生产在用）；② lab 内 v1 目录是 v2 的冻结上游库依赖；③ architecture-boundary.test.ts 负向断言白名单。
 
 ## 测试 / 门禁
-- 改 report compiler 等文档流代码后必须跑 `npm run verify:document-flows`（离线，不调真实模型 API）。
-- v2 专项测试只存在于 `tests/v5/visual-translation-v2*.test.js` 三个文件；其余测试不 import v2 模块。
+- 文档流门禁已更名：`npm run verify:current-flows`（原 verify:document-flows；离线，不调真实模型 API）。desktop prepackage 钩子与 AGENTS.md 已同步。
+- Phase 6 门禁：`npm run verify:no-obsolete-code`（禁止关键字扫描，labs 豁免）、`npm run verify:production-boundaries`（desktop 不 import labs、打包不含 labs、preload 无遗留 API）。
+- 根 `test` 必须 `node --test tests/*.test.js tests/v5/*.test.js`；裸 `node --test` 会递归扫 desktop .ts 与 labs 致假失败，传目录 `tests/` 报 Cannot find module。
+- node22 已知 flaky：根 openai-compatible-stream 5 个、lab document-directions 21 个 `cancelledByParent`（node24 全过），不计失败。
 
 ## 桌面端打包（重要环境坑）
 - 命令：`npm --prefix apps/desktop run package:portable` → 产物 `apps/desktop/release/Masterpiece-OS-Desktop-Portable-0.1.0-x64.exe`（portable，已签名）。
-- 该命令会先跑 `verify:document-flows` 门禁，再 `npm run build`（typecheck + electron-vite build）后 electron-builder。
+- 该命令会先跑 `verify:current-flows` 门禁，再 `npm run build`（typecheck + electron-vite build）后 electron-builder。
+- **electron/dist 缺失坑**：报 "specified electronDist does not exist" 且 install.js 联网失败时，`%LOCALAPPDATA%/electron/Cache/<hash>/electron-v43.1.1-win32-x64.zip` 通常还在——用 Python zipfile 解压到 `node_modules/electron/dist` 并写 `path.txt`（内容 `electron.exe`）即可。
+- **rm 不存在目录坑**：`rm -rf` 一个不存在的目录会被 safe-delete shim fail-closed 中断整条 && 链；先 `ls` 确认存在再删。
 - **沙箱陷阱 A（删除 shim）**：WorkBuddy 通过 `NODE_OPTIONS=--require=.../genie-safe-delete.cjs` 注入回收站安全 shim，会拦截 `fs.rmSync`，导致 vite `emptyOutDir` 清 `out/` 失败、构建中断。
   - **修复**：打包时改为 `NODE_OPTIONS="--use-system-ca" npm --prefix apps/desktop run package:portable`（去掉 --require shim），vite 走原生删除即可。仅删自身 `out/` 产物，安全。
 - **沙箱陷阱 B（覆盖写入）**：沙箱禁止**覆盖** `release/` 内已存在的文件（报 `EPERM: ... open '.../release/builder-debug.yml'`），但允许写入**新**文件。改代码后重打包若 release/ 残留旧产物，会在收尾写调试文件时失败（EPERM），而 EXE 实际已生成。
