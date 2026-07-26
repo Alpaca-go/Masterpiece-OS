@@ -1,0 +1,15 @@
+{
+  "name": "@masterpiece/model-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Provider clients (Qwen / OpenAI-compatible), structured response parsing, repair, token metrics, cancellation and unified model errors.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./qwen-reasoner": "./src/qwen-reasoner.js",
+    "./openai-compatible-text-reasoner": "./src/openai-compatible-text-reasoner.js",
+    "./model-capabilities": "./src/model-capabilities.js",
+    "./response-parser": "./src/response-parser.js"
+  }
+}

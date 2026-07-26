@@ -1,0 +1,13 @@
+{
+  "name": "@masterpiece/runtime-core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Checkpoint store and runtime contracts shared by experimental pipelines (labs).",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./checkpoint-store": "./src/checkpoint-store.js",
+    "./runtime-contracts": "./src/runtime-contracts.js"
+  }
+}

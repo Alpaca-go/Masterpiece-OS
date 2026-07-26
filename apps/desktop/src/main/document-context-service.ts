@@ -33,9 +33,9 @@ import { deriveVisualTranslationProjectName } from './visual-translation-service
 
 // Bundled from the repository core. Desktop owns persistence and user interaction only.
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.
-import { createOpenAICompatibleTextReasoner } from '../../../../src/v5/adapters/openai-compatible-text-reasoner.js';
+import { createOpenAICompatibleTextReasoner } from '../../../../packages/model-runtime/src/openai-compatible-text-reasoner.js';
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.
-import { classifyDocumentRole } from '../../../../src/v5/shared/analysis/document-preparation.js';
+import { classifyDocumentRole } from '../../../../packages/document-ingestion/src/document-preparation.js';
 
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
 type SettingsReader = () => Promise<PublicSettings>;

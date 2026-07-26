@@ -76,9 +76,9 @@ import {
 
 // Bundled from the repository core. Desktop remains the consumer, never the dependency.
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-import { createQwenReasoner } from '../../../../src/v5/adapters/qwen-reasoner.js';
+import { createQwenReasoner } from '../../../../packages/model-runtime/src/qwen-reasoner.js';
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-import { parseStructuredResponse } from '../../../../src/v5/shared/analysis/response-parser.js';
+import { parseStructuredResponse } from '../../../../packages/model-runtime/src/response-parser.js';
 
 type ProgressSink = (progress: AnalysisProgress) => void;
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;

@@ -1,0 +1,15 @@
+{
+  "name": "@masterpiece/document-ingestion",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "PDF / DOCX / Markdown / TXT parsing, multi-document corpus preparation, source indexing and dedupe.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./document-preparation": "./src/document-preparation.js"
+  },
+  "dependencies": {
+    "sharp": "^0.35.3"
+  }
+}
