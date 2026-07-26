@@ -288,6 +288,10 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .reference-anchor-page label { display: block; margin: 12px 0; font-size: 12px; font-weight: 700; color: #47424b; }
 .reference-anchor-page label select { margin-top: 6px; }
 .reference-anchor-asset-grid { margin-top: 12px; }
+.anchor-project-source-tabs { margin: 6px 0 14px; }
+.anchor-project-upload { margin-bottom: 14px; }
+.anchor-project-upload .facts-box { margin-top: 12px; }
+.anchor-project-upload .button-row { margin-top: 12px; }
 .reference-anchor-result-tabs { margin: 18px 0 14px; }
 .reference-anchor-decision { margin-top: 18px; gap: 16px; }
 .reference-anchor-decision input { width: 100%; margin-top: 8px; border: 1px solid #d9d3cc; border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 12px; }

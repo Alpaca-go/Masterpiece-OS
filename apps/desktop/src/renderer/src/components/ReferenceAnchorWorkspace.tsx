@@ -2,6 +2,8 @@ import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import { useEffect, useMemo, useState } from 'react';
 import type {
+  AnalysisProgress,
+  AssetSummary,
   DocumentContextRun,
   ProjectDocumentContextLink,
   ProjectRecord,
@@ -15,6 +17,7 @@ import type {
   ResolvedProjectContext
 } from '../../../shared/types';
 import { cleanError, formatBytes, formatDurationHuman } from '../utils';
+import { VisualAssetUploader } from './VisualAssetUploader';
 
 interface Props {
   settings: PublicSettings;
@@ -78,6 +81,11 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
   const [documentRuns, setDocumentRuns] = useState<DocumentContextRun[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState('');
+  const [projectSourceMode, setProjectSourceMode] = useState<'existing' | 'upload'>('existing');
+  const [uploadProject, setUploadProject] = useState<ProjectRecord | null>(null);
+  const [uploadSummary, setUploadSummary] = useState<AssetSummary | null>(null);
+  const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgress | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
   const [selectedDocumentRunId, setSelectedDocumentRunId] = useState('');
   const [selection, setSelection] = useState<ReferenceAssetSelection | null>(null);
   const [preference, setPreference] = useState('');
@@ -133,6 +141,14 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     });
   }, []);
 
+  // 上传新项目时订阅视觉分析进度（仅展示当前上传项目的进度）。
+  useEffect(() => {
+    if (!uploadProject) return;
+    return window.masterpiece.analysis.onProgress((event) => {
+      if (event.projectId === uploadProject.id) setAnalysisProgress(event);
+    });
+  }, [uploadProject]);
+
   useEffect(() => {
     void Promise.resolve(marked.parse(capsuleMarkdown)).then((value) => setCapsuleHtml(DOMPurify.sanitize(value)));
   }, [capsuleMarkdown]);
@@ -178,6 +194,82 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
 
   function removeAsset(sourcePath: string) {
     setSelection((current) => current ? { ...current, items: current.items.filter((item) => item.sourcePath !== sourcePath) } : current);
+  }
+
+  // ── 上传新项目（拖入图片 → 建项目 → 视觉分析 → 设为当前项目）──
+  async function addProjectAssets(paths: string[]) {
+    const unique = [...new Set(paths.filter(Boolean))];
+    if (!unique.length) return;
+    if (!profileId) { setError('请先在下方选择分析模型（API Profile）。'); return; }
+    setError('');
+    setNotice('');
+    setBusy(true);
+    try {
+      if (uploadProject) {
+        const imported = await window.masterpiece.projects.importFiles(uploadProject.id, unique, 'assets');
+        setUploadProject(await window.masterpiece.projects.get(uploadProject.id));
+        setUploadSummary(imported.summary);
+        if (imported.skipped.length) setNotice(`已忽略 ${imported.skipped.length} 个不支持或重复的文件。`);
+      } else {
+        const created = await window.masterpiece.projects.create({ sourcePaths: unique, apiProfileId: profileId });
+        setUploadProject(created);
+        setUploadSummary(await window.masterpiece.projects.scanAssets(created.id));
+      }
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function removeUploadAsset(assetId: string) {
+    if (!uploadProject) return;
+    setBusy(true);
+    try { setUploadSummary(await window.masterpiece.projects.removeAsset(uploadProject.id, assetId)); }
+    catch (reason) { setError(cleanError(reason)); }
+    finally { setBusy(false); }
+  }
+
+  async function clearUploadAssets() {
+    if (!uploadProject || !window.confirm('确定清空全部素材吗？')) return;
+    setBusy(true);
+    try { setUploadSummary(await window.masterpiece.projects.clearAssets(uploadProject.id)); }
+    catch (reason) { setError(cleanError(reason)); }
+    finally { setBusy(false); }
+  }
+
+  async function discardUploadProject() {
+    if (uploadProject && !window.confirm(`放弃并删除刚上传的项目「${uploadProject.projectName}」吗？`)) return;
+    const target = uploadProject;
+    setUploadProject(null);
+    setUploadSummary(null);
+    setAnalysisProgress(null);
+    if (target) await window.masterpiece.projects.remove(target.id).catch(() => {});
+  }
+
+  async function analyzeAndSelect() {
+    if (!uploadProject || !uploadSummary?.totalFiles || !profileId) return;
+    setAnalyzing(true);
+    setError('');
+    setNotice('');
+    setAnalysisProgress(null);
+    try {
+      const result = await window.masterpiece.analysis.start(uploadProject.id, false, profileId);
+      const finished = result.project;
+      setProjects(await window.masterpiece.projects.list());
+      setSelectedProjectId(finished.id);
+      setProjectSourceMode('existing');
+      setUploadProject(null);
+      setUploadSummary(null);
+      setAnalysisProgress(null);
+      setNotice(`「${finished.projectName}」视觉分析已完成，已设为当前项目，现在可以上传参考图开始锚定。`);
+    } catch (reason) {
+      setError(cleanError(reason));
+      const refreshed = await window.masterpiece.projects.get(uploadProject.id).catch(() => null);
+      if (refreshed) setUploadProject(refreshed);
+    } finally {
+      setAnalyzing(false);
+    }
   }
 
   function applyResult(result: ReferenceAnchorResult) {
@@ -420,24 +512,62 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     <div className="visual-translation-grid">
       <section className="panel visual-translation-form">
         <div className="section-heading"><span>01</span><div><h2>当前项目</h2><p>必须已完成视觉分析（读取项目视觉上下文与 Locked Assets）</p></div></div>
-        <label>当前项目<select value={selectedProjectId} onChange={(event) => setSelectedProjectId(event.target.value)}>
-          <option value="">请选择已完成视觉分析的项目</option>
-          {readyProjects.map((project) => <option key={project.id} value={project.id}>{project.projectName} · {project.brandName}</option>)}
-        </select></label>
-        {!readyProjects.length && <div className="notice warn">还没有已完成视觉分析的项目。请先在「视觉分析」中完成一次分析。</div>}
-        {selectedProject && <div className="facts-box"><small>身份锁定</small><p>品牌：{selectedProject.brandName} · 行业：{selectedProject.industry}</p><p>参考图仅用于提炼风格规则；参考品牌的名称 / Logo / Slogan / 标志性图形不会进入生成。</p></div>}
-        {selectedProject && sourceInfo && (
-          <div className="source-banner">
-            <small>当前读取来源（§7.3）</small>
-            <ul>
-              <li><span>当前项目</span><strong>{selectedProject.projectName}</strong></li>
-              <li><span>视觉上下文</span><strong>{sourceInfo.visual.status === 'ready' ? `v${sourceInfo.visual.schemaVersion ?? ''}` : '未生成'}</strong></li>
-              <li><span>文档上下文</span><strong>{sourceInfo.link ? '已关联' : '未关联'}</strong></li>
-              <li><span>合并状态</span><strong>{!sourceInfo.link ? '仅视觉上下文' : sourceInfo.resolved ? (sourceInfo.resolved.conflicts.some((conflict) => conflict.resolution === 'unresolved') ? '有冲突' : '可用') : '未生成'}</strong></li>
-              <li><span>Locked Assets</span><strong>{sourceInfo.resolved ? sourceInfo.resolved.lockedAssets.logoAssetIds.length + sourceInfo.resolved.lockedAssets.lockedFacts.length : 0} 项</strong></li>
-            </ul>
+        <div className="analysis-mode-tabs anchor-project-source-tabs" role="tablist" aria-label="当前项目来源">
+          <button role="tab" aria-selected={projectSourceMode === 'existing'} className={projectSourceMode === 'existing' ? 'active' : ''} disabled={analyzing} onClick={() => setProjectSourceMode('existing')}><span>选择已有项目</span><small>已完成视觉分析</small></button>
+          <button role="tab" aria-selected={projectSourceMode === 'upload'} className={projectSourceMode === 'upload' ? 'active' : ''} disabled={analyzing} onClick={() => setProjectSourceMode('upload')}><span>上传新项目</span><small>拖入图片，自动分析</small></button>
+        </div>
+
+        {projectSourceMode === 'existing' && <>
+          <label>当前项目<select value={selectedProjectId} onChange={(event) => setSelectedProjectId(event.target.value)}>
+            <option value="">请选择已完成视觉分析的项目</option>
+            {readyProjects.map((project) => <option key={project.id} value={project.id}>{project.projectName} · {project.brandName}</option>)}
+          </select></label>
+          {!readyProjects.length && <div className="notice warn">还没有已完成视觉分析的项目。可切到「上传新项目」直接拖入图片，或先在「视觉分析」中完成一次分析。</div>}
+          {selectedProject && <div className="facts-box"><small>身份锁定</small><p>品牌：{selectedProject.brandName} · 行业：{selectedProject.industry}</p><p>参考图仅用于提炼风格规则；参考品牌的名称 / Logo / Slogan / 标志性图形不会进入生成。</p></div>}
+          {selectedProject && sourceInfo && (
+            <div className="source-banner">
+              <small>当前读取来源（§7.3）</small>
+              <ul>
+                <li><span>当前项目</span><strong>{selectedProject.projectName}</strong></li>
+                <li><span>视觉上下文</span><strong>{sourceInfo.visual.status === 'ready' ? `v${sourceInfo.visual.schemaVersion ?? ''}` : '未生成'}</strong></li>
+                <li><span>文档上下文</span><strong>{sourceInfo.link ? '已关联' : '未关联'}</strong></li>
+                <li><span>合并状态</span><strong>{!sourceInfo.link ? '仅视觉上下文' : sourceInfo.resolved ? (sourceInfo.resolved.conflicts.some((conflict) => conflict.resolution === 'unresolved') ? '有冲突' : '可用') : '未生成'}</strong></li>
+                <li><span>Locked Assets</span><strong>{sourceInfo.resolved ? sourceInfo.resolved.lockedAssets.logoAssetIds.length + sourceInfo.resolved.lockedAssets.lockedFacts.length : 0} 项</strong></li>
+              </ul>
+            </div>
+          )}
+        </>}
+
+        {projectSourceMode === 'upload' && <div className="anchor-project-upload">
+          <VisualAssetUploader
+            role="current_project"
+            busy={busy}
+            items={(uploadSummary?.items || []).map((item) => ({
+              id: item.id,
+              name: item.name,
+              extension: item.extension,
+              bytes: item.bytes,
+              thumbnailDataUrl: item.thumbnailDataUrl
+            }))}
+            onAddPaths={addProjectAssets}
+            onChooseFiles={() => window.masterpiece.projects.chooseFiles('assets')}
+            onChooseFolder={() => window.masterpiece.projects.chooseFolder()}
+            onRemove={removeUploadAsset}
+            onClear={clearUploadAssets}
+          />
+          {uploadProject && uploadSummary && <div className="facts-box">
+            <small>已识别项目（深度分析后会优先使用视觉内容中的真实名称）</small>
+            <p>{uploadProject.detectedProjectName || uploadProject.projectName} · {uploadSummary.totalFiles} 个素材（图片 {uploadSummary.imageCount} · PDF {uploadSummary.pdfCount}）</p>
+            <p>品牌线索：{uploadProject.detectedBrandName}（{Math.round(uploadProject.factConfidence.brandName * 100)}%） · 行业线索：{uploadProject.detectedIndustry}（{Math.round(uploadProject.factConfidence.industry * 100)}%）</p>
+          </div>}
+          {analyzing && <div className="notice">视觉分析中：{analysisProgress?.message || '正在准备素材…'}{analysisProgress?.model ? ` · ${analysisProgress.model}` : ''}</div>}
+          <div className="button-row">
+            <button className="button primary" disabled={busy || analyzing || !uploadSummary?.totalFiles || !profiles.find((profile) => profile.id === profileId)?.hasApiKey} onClick={() => void analyzeAndSelect()}>{analyzing ? '视觉分析中…' : '开始视觉分析并设为当前项目'}</button>
+            {analyzing && uploadProject && <button className="button danger" onClick={() => void window.masterpiece.analysis.cancel(uploadProject.id)}>取消分析</button>}
+            {!analyzing && uploadProject && <button className="button ghost" disabled={busy} onClick={() => void discardUploadProject()}>放弃</button>}
           </div>
-        )}
+          {!profiles.some((profile) => profile.hasApiKey) && <div className="notice error">尚未配置可用的 API Profile，请先前往 API 设置。</div>}
+        </div>}
         <label>文档上下文（可选）<select value={selectedDocumentRunId} onChange={(event) => setSelectedDocumentRunId(event.target.value)}>
           <option value="">不加载文档上下文</option>
           {readyDocumentRuns.map((run) => <option key={run.id} value={run.id}>{run.projectName} · {new Date(run.createdAt).toLocaleDateString('zh-CN')}</option>)}

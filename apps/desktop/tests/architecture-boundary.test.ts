@@ -141,6 +141,21 @@ test('reference reconstruction isolates project facts, reference style and the i
   assert.match(workspace, /referenceTranslation\.resume\(run\.id\)/);
 });
 
+test('Reference Anchor workspace supports uploading a new current project inline', async () => {
+  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'ReferenceAnchorWorkspace.tsx'), 'utf8');
+  // 当前项目来源切换：选择已有项目 / 上传新项目。
+  assert.match(workspace, /projectSourceMode/);
+  assert.match(workspace, /上传新项目/);
+  assert.match(workspace, /选择已有项目/);
+  // 上传模式复用通用拖拽上传组件，并驱动建项目 + 视觉分析。
+  assert.match(workspace, /VisualAssetUploader/);
+  assert.match(workspace, /role="current_project"/);
+  assert.match(workspace, /projects\.create\(\{ sourcePaths/);
+  assert.match(workspace, /analysis\.start\(uploadProject\.id/);
+  // 分析完成后自动设为当前项目。
+  assert.match(workspace, /setSelectedProjectId\(finished\.id\)/);
+});
+
 test('API Key is encrypted outside project records', async () => {
   const credentials = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'settings-store.ts'), 'utf8');
   const projects = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'project-store.ts'), 'utf8');
