@@ -1,5 +1,10 @@
 # Masterpiece OS — 项目长期记忆
 
+## 删除操作级联回收坑（2026-07-26 实测，最高危）
+- 本机某后台安全删除机制会在 `git rm` 单个文件后的数十秒内，把其**父目录链逐层送入回收站**（tests→desktop→apps 全部消失）。任何删除操作后必须立刻 `ls` 验证父目录仍在。
+- **恢复法**：回收站在 `D:\$RECYCLE.BIN\S-1-5-21-3696747777-479842500-757859879-500`；用 python 解析 `$I*` 元数据（offset 24 读 namelen，offset 28 起 utf-16-le 原路径），找到对应 `$R*` 目录后 `mv` 回原路径即可，未提交编辑不丢失。
+- 目录消失时**严禁**直接 `git checkout -- <dir>`（会把未暂存编辑回滚到 HEAD），先查回收站。
+
 ## 实验分支 / v2 视觉方向
 - 当前工作分支：`experiment/execution-oriented-directions-v2`（基于 v1.3.3 提交 `b404c76`）。
 - 桌面端默认走 **V1（conceptual_v1）**；v2（execution_oriented_v2）需用户在 UI「方向生成模式」手动开启。

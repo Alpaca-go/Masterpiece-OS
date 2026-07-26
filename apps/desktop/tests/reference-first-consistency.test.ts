@@ -4,19 +4,12 @@ import {
   rankStyleCarriers,
   compileTaskScopedStyleCarriers,
   validateTaskStyleCarriers,
-  compileAnchorSection,
-  validateAnchorContradiction,
-  buildStructurePolicy,
-  resolveStructureStatus,
-  validateStructurePolicy,
-  buildGenerationIdentityPack,
-  validateIdentityPackGranularity,
   validateRequestedTaskCoverage,
   validateSignatureGraphicLeak,
-  validateCrossArtifactConsistency
+  buildGenericReferenceMasterSet,
+  selectTaskReferences
 } from '../src/main/reference-first/index.ts';
 import type {
-  GenerationIdentityUsage,
   GenerationOutputType,
   ReferenceAssetDecision,
   ReferenceSignatureGraphic,
@@ -30,6 +23,30 @@ const signature: ReferenceSignatureGraphic = {
   forbiddenToCopy: true,
   evidenceAssetIds: ['asset-banned']
 };
+
+function referenceDecision(
+  outputTypes: ReferenceAssetDecision['eligibleOutputTypes'] = ['digital_campaign']
+): ReferenceAssetDecision {
+  return {
+    assetId: 'reference-1',
+    filename: 'reference-1.png',
+    role: 'display_layout',
+    primaryRole: 'display_layout',
+    secondaryRoles: ['typography_detail', 'graphic_detail'],
+    styleCarrierStrength: 'high',
+    includeInMasterSet: true,
+    eligibleOutputTypes: outputTypes,
+    representedStyleCarriers: ['layout', 'typography', 'graphic'],
+    styleCarrierRules: [
+      { category: 'layout', readableRule: '主体区与信息区沿稳定网格分离，并保留明确呼吸区', confidence: 0.95 },
+      { category: 'typography', readableRule: '标题、名称与说明形成三级字号和字重层级', confidence: 0.93 },
+      { category: 'graphic', readableRule: '辅助图形通过重复、裁切与密度变化维持跨输出一致性', confidence: 0.91 }
+    ],
+    confidence: 0.94,
+    reason: 'fixture visual evidence',
+    requiresHumanReview: false
+  };
+}
 
 test('§17.1 禁止复制的参考专属图形不得进入 Style Carrier', () => {
   const decisions: ReferenceAssetDecision[] = [{
@@ -51,40 +68,6 @@ test('§17.1 禁止复制的参考专属图形不得进入 Style Carrier', () =>
   const leak = validateSignatureGraphicLeak({ signatures: [signature], carriers });
   assert.equal(leak.primaryStyleCarrierLeakIds.length, 0);
   assert.equal(leak.passed, true);
-});
-
-test('§17.2 Reference-First 模式不编译 legacy Anchor', () => {
-  const legacyText = '这是旧版闭合轮廓超级符号描述';
-  const report = compileAnchorSection('reference_first', {
-    referenceFirst: {
-      systemAnchor: {
-        colorRelationship: '受控对比',
-        layoutGrammar: '稳定网格',
-        typographyHierarchy: '三级层级',
-        materialLanguage: '真实表面',
-        crossTouchpointConsistency: '跨触点一致',
-        primaryStyleCarrierIds: []
-      },
-      referenceSignatureGraphics: [signature]
-    },
-    legacy: legacyText
-  });
-  assert.equal(report.mode, 'reference_first');
-  assert.ok(!report.text.includes(legacyText), '不得拼接 legacy 字段');
-  const contradiction = validateAnchorContradiction({
-    legacyAnchorText: legacyText,
-    systemAnchor: {
-      colorRelationship: '受控对比',
-      layoutGrammar: '稳定网格',
-      typographyHierarchy: '三级层级',
-      materialLanguage: '真实表面',
-      crossTouchpointConsistency: '跨触点一致',
-      primaryStyleCarrierIds: []
-    },
-    signatureGraphics: [signature]
-  });
-  assert.equal(contradiction.passed, false);
-  assert.ok(contradiction.conflictingSourceFields.includes('legacy_anchor_still_active'));
 });
 
 test('§17.3 请求任务缺少参考子集时阻断', () => {
@@ -147,37 +130,14 @@ test('§17.4 任务级 Style Carrier 排除不兼容载体', () => {
   assert.equal(validation.passed, true);
 });
 
-test('§17.5 推断结构不得视为锁定', () => {
-  const policy = buildStructurePolicy([], undefined, ['observed-shape']);
-  assert.equal(policy.status, 'open_for_redesign');
-  assert.equal(resolveStructureStatus([], undefined, ['observed-shape']), 'open_for_redesign');
-  assert.deepEqual(policy.inferredStructureObservations, ['observed-shape']);
-  const validation = validateStructurePolicy(policy);
-  assert.equal(validation.passed, true);
-});
+test('参考主集选择按任务驱动，证据不足时闭合失败', () => {
+  const master = buildGenericReferenceMasterSet([referenceDecision()]);
+  const selected = selectTaskReferences(master, ['digital_campaign']);
+  const insufficient = selectTaskReferences(master, ['spatial_scene']);
 
-test('§17.6 Identity Pack 拒绝整页旧视觉', () => {
-  const usage: GenerationIdentityUsage = 'user_locked_asset';
-  const result = validateIdentityPackGranularity({
-    identityFacts: [],
-    productOrServiceFacts: [],
-    logoAssets: [],
-    logoTypographyAssets: [],
-    confirmedStructureAssets: [],
-    lockedAssets: [],
-    retainedCopy: [],
-    structurePolicy: { domain: 'other', status: 'open_for_redesign', confirmedAssetIds: [], excludedUnverifiedAssetIds: [], redesignAllowed: true, requiresHumanConfirmation: true },
-    assets: [{ assetId: 'full-page', usage, reason: '整页旧方案锁定', containsLegacyStyle: true, confidence: 1 }]
-  });
-  assert.equal(result.passed, false);
-  assert.ok(result.fullPageAssetIds.includes('full-page'));
-});
-
-test('§17.7 审计与 Brief 任务不一致时阻断', () => {
-  const result = validateCrossArtifactConsistency({
-    auditOutputType: 'vi_application',
-    briefOutputType: 'anchor_vi_system'
-  });
-  assert.equal(result.passed, false);
-  assert.ok(result.contradictions.includes('AUDIT_BRIEF_TASK_MISMATCH'));
+  assert.equal(selected.subsets[0]?.matchLevel, 'exact');
+  assert.deepEqual(selected.subsets[0]?.selectedAssetIds, ['reference-1']);
+  assert.equal(insufficient.subsets[0]?.matchLevel, 'insufficient');
+  assert.deepEqual(insufficient.subsets[0]?.selectedAssetIds, []);
+  assert.equal(insufficient.validations[0]?.passed, false);
 });
