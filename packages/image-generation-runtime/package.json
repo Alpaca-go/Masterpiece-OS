@@ -1,0 +1,16 @@
+{
+  "name": "@masterpiece/image-generation-runtime",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Deterministic image-generation runtime: context snapshot, reference selector, prompt compiler, three-layer gates, dry-run. No model calls in the compiler, no Electron.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./reference-selector": "./src/reference-selector.js",
+    "./prompt-compiler": "./src/prompt-compiler.js",
+    "./gates": "./src/gates.js",
+    "./context-snapshot": "./src/context-snapshot.js",
+    "./task-builder": "./src/task-builder.js"
+  }
+}
