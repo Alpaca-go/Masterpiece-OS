@@ -118,7 +118,10 @@ export interface ClassifyProjectFactsInput {
  * - 简洁设计/突出 Logo/使用特种纸 等 → designAdvice
  * - 无核心产品证据 → coreProducts=[] + uncertainties（绝不用触点补位）
  */
-export function classifyProjectFacts(input: ClassifyProjectFactsInput): ProjectFactsClassification {
+export function classifyProjectFacts(
+  input: ClassifyProjectFactsInput,
+  profile: AnchorDomainProfile = DEFAULT_ANCHOR_DOMAIN_PROFILE
+): ProjectFactsClassification {
   const facts: NormalizedProjectFacts = {
     coreProducts: [],
     services: cleanList(input.services),
@@ -140,19 +143,19 @@ export function classifyProjectFacts(input: ClassifyProjectFactsInput): ProjectF
     const { head, clauses } = splitHeadAndClauses(raw);
     // 附带子句中的设计建议单独抽出
     for (const clause of clauses) {
-      if (matchesAny(clause, DESIGN_ADVICE_MARKERS)) {
+      if (matchesAny(clause, profile.designAdviceMarkers)) {
         if (!facts.designAdvice.includes(clause)) facts.designAdvice.push(clause);
         extractedAdvice = true;
       }
     }
     if (!head) continue;
-    if (matchesAny(head, VI_APPLICATION_TERMS)) {
+    if (matchesAny(head, profile.viApplicationTerms)) {
       if (!facts.touchpoints.viApplications.includes(head)) facts.touchpoints.viApplications.push(head);
       reroutedTouchpoint = true;
-    } else if (matchesAny(head, SERVICE_MATERIAL_TERMS)) {
+    } else if (matchesAny(head, profile.serviceMaterialTerms)) {
       if (!facts.touchpoints.serviceMaterials.includes(head)) facts.touchpoints.serviceMaterials.push(head);
       reroutedTouchpoint = true;
-    } else if (matchesAny(head, DESIGN_ADVICE_MARKERS)) {
+    } else if (matchesAny(head, profile.designAdviceMarkers)) {
       if (!facts.designAdvice.includes(head)) facts.designAdvice.push(head);
       extractedAdvice = true;
     } else if (!facts.coreProducts.includes(head)) {
@@ -465,6 +468,36 @@ const ANCHOR_OPTIONAL_TERMS = [
   '真实食物', '少量食物', '食物辅助', '食材点缀', '菜品点缀', '少量菜品'
 ];
 
+/**
+ * 行业中性化（精简重构叠加层）：把原本硬编码在分类/过滤/编译逻辑里的领域词表抽象为可替换的
+ * 「领域词库画像」。引擎本身不再绑定任何具体行业，默认画像 DEFAULT_ANCHOR_DOMAIN_PROFILE
+ * 承载现有（含川味餐饮验证项）的词表，从而保持 v5.3.1 行为完全一致；其他行业可传入自定义画像。
+ */
+export interface AnchorDomainProfile {
+  /** VI 应用物料词（命中则归入 touchpoints.viApplications，绝不作核心产品）。 */
+  viApplicationTerms: string[];
+  /** 服务/辅助物料词（命中则归入 touchpoints.serviceMaterials）。 */
+  serviceMaterialTerms: string[];
+  /** 设计建议标记（命中则归入 designAdvice，不作产品事实）。 */
+  designAdviceMarkers: string[];
+  /** anchor_vi_system 禁止作为画面主导的表达（命中即从继承规则移除）。 */
+  anchorBlacklistTerms: string[];
+  /** anchor_vi_system 中降级为可选（非主导）的表达。 */
+  anchorOptionalTerms: string[];
+  /** Brief 禁止事项中「主体不得被某类题材主导」的成文表述。 */
+  subjectDominanceProhibition: string;
+}
+
+/** 默认领域词库画像：与 v5.3.1 既有行为完全等价（含冯烫烫×超级渝验证项所需词表）。 */
+export const DEFAULT_ANCHOR_DOMAIN_PROFILE: AnchorDomainProfile = {
+  viApplicationTerms: VI_APPLICATION_TERMS,
+  serviceMaterialTerms: SERVICE_MATERIAL_TERMS,
+  designAdviceMarkers: DESIGN_ADVICE_MARKERS,
+  anchorBlacklistTerms: ANCHOR_BLACKLIST_TERMS,
+  anchorOptionalTerms: ANCHOR_OPTIONAL_TERMS,
+  subjectDominanceProhibition: '禁止以厨师、烹饪动态、火焰锅气、食品微距或用餐空间氛围作为画面主导'
+};
+
 export interface TaskStyleCapsule {
   outputType: GenerationOutputType;
   inheritedStyle: ReferenceStyleCapsule['inheritedStyle'];
@@ -481,7 +514,8 @@ export interface TaskStyleCapsule {
  */
 export function filterStyleCapsuleForTask(
   capsule: ReferenceStyleCapsule,
-  outputType: GenerationOutputType
+  outputType: GenerationOutputType,
+  profile: AnchorDomainProfile = DEFAULT_ANCHOR_DOMAIN_PROFILE
 ): TaskStyleCapsule {
   const style = capsule.inheritedStyle;
   if (outputType !== 'anchor_vi_system') {
@@ -492,9 +526,9 @@ export function filterStyleCapsuleForTask(
   const filterCategory = (rules: string[]): string[] => {
     const kept: string[] = [];
     for (const rule of rules) {
-      if (matchesAny(rule, ANCHOR_BLACKLIST_TERMS)) {
+      if (matchesAny(rule, profile.anchorBlacklistTerms)) {
         removedRules.push(rule);
-      } else if (matchesAny(rule, ANCHOR_OPTIONAL_TERMS)) {
+      } else if (matchesAny(rule, profile.anchorOptionalTerms)) {
         optionalRules.push(rule);
       } else {
         kept.push(rule);
@@ -861,11 +895,14 @@ const FORBIDDEN_BRIEF_PATTERNS: Array<{ pattern: RegExp; label: string }> = [
   { pattern: /质量总分|quality score/iu, label: '自动质量总分' }
 ];
 
-export function compileAnchorBrief(capsule: ReferenceStyleCapsule): string {
+export function compileAnchorBrief(
+  capsule: ReferenceStyleCapsule,
+  profile: AnchorDomainProfile = DEFAULT_ANCHOR_DOMAIN_PROFILE
+): string {
   const project = capsule.currentProject;
   const facts = capsule.projectFacts;
   // §6 Anchor 任务级过滤：只保留 anchor_vi_system 相关规则。
-  const task = filterStyleCapsuleForTask(capsule, 'anchor_vi_system');
+  const task = filterStyleCapsuleForTask(capsule, 'anchor_vi_system', profile);
   const style = task.inheritedStyle;
   const aspectRatio = normalizeAspectRatio(capsule.aspectRatio);
   // §8/§9 视觉不变量不重复 Locked Assets；Logo 表述改为非伪精确。
@@ -890,7 +927,7 @@ export function compileAnchorBrief(capsule: ReferenceStyleCapsule): string {
       .filter((item) => !item.includes('专属图形、吉祥物'))
       .map((item) => `禁止迁移参考专属表层元素：${item}`),
     '禁止把参考方案中的产品照片或产品结构当作当前项目产品',
-    '禁止以厨师、烹饪动态、火焰锅气、食品微距或用餐空间氛围作为画面主导',
+    profile.subjectDominanceProhibition,
     ...capsule.userAvoidance.map((item) => `禁止：${item}`)
   ]);
   const inheritedBlocks = [

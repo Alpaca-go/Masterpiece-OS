@@ -7,6 +7,7 @@ import { createReferenceAnchorService } from '../src/main/reference-anchor-servi
 import {
   ABSTRACT_GRAPHIC_MECHANISM,
   BRIEF_MAX_LENGTH,
+  DEFAULT_ANCHOR_DOMAIN_PROFILE,
   MAX_RULES_PER_CATEGORY,
   abstractGraphicRule,
   adaptLegacyReferenceResultToStyleCapsule,
@@ -553,4 +554,51 @@ test('v5.3.1 Test8: dedupeBriefRules merges duplicate/semantic-duplicate rules',
   assert.ok(bBlock.includes('简体中文输出'));
   assert.ok(!cBlock.includes('简体中文输出'));
   assert.ok(!cBlock.includes('Logo：已锁定'));
+});
+
+// 行业中性化（精简重构叠加层）：领域词库画像可替换，引擎不绑定具体行业。
+test('domain profile is swappable: a non-catering profile classifies and filters its own vocabulary', () => {
+  // 默认画像保持既有（含餐饮验证项）行为。
+  assert.ok(DEFAULT_ANCHOR_DOMAIN_PROFILE.serviceMaterialTerms.includes('筷子套'));
+  assert.ok(DEFAULT_ANCHOR_DOMAIN_PROFILE.anchorBlacklistTerms.includes('厨师'));
+
+  // 自定义「服装零售」画像：不含任何餐饮词，改用本行业词表。
+  const apparelProfile = {
+    viApplicationTerms: ['吊牌', '海报', '名片'],
+    serviceMaterialTerms: ['购物袋', '包装盒', '防尘袋'],
+    designAdviceMarkers: ['建议', '突出 Logo'],
+    anchorBlacklistTerms: ['模特走秀', 'T台动态', '橱窗空间主导'],
+    anchorOptionalTerms: ['少量道具'],
+    subjectDominanceProhibition: '禁止以模特走秀、T台动态或橱窗空间氛围作为画面主导'
+  };
+
+  // 事实分类使用自定义画像：购物袋 → serviceMaterials，吊牌 → viApplications，连衣裙 → coreProducts。
+  const { facts, auditCodes } = classifyProjectFacts(
+    { candidateProducts: ['吊牌', '购物袋', '连衣裙：突出 Logo'] },
+    apparelProfile
+  );
+  assert.deepEqual(facts.coreProducts, ['连衣裙']);
+  assert.deepEqual(facts.touchpoints.viApplications, ['吊牌']);
+  assert.deepEqual(facts.touchpoints.serviceMaterials, ['购物袋']);
+  assert.ok(facts.designAdvice.includes('突出 Logo'));
+  assert.ok(auditCodes.includes('CORE_PRODUCTS_CONTAIN_TOUCHPOINTS'));
+
+  // 任务过滤使用自定义黑名单：移除模特走秀，保留其它；餐饮词此时不再被视为黑名单。
+  const { capsule } = compileReferenceStyleCapsule({
+    runId: 'run-1',
+    projectId: 'project-current',
+    merged: mergeCurrentProjectContext({ visual: buildVisualContext() } as ReferenceCurrentProjectContext),
+    referenceStyle: buildReferenceStyle()
+  });
+  capsule.inheritedStyle.materialAndPhotography = ['模特走秀动态', '厨师烹饪动态', '天然材质哑光'];
+  const task = filterStyleCapsuleForTask(capsule, 'anchor_vi_system', apparelProfile);
+  assert.ok(task.removedRules.some((r) => r.includes('模特走秀')));
+  assert.ok(task.inheritedStyle.materialAndPhotography.includes('天然材质哑光'));
+  // 餐饮词不在服装画像黑名单里，应被保留（证明引擎已解绑餐饮硬编码）。
+  assert.ok(task.inheritedStyle.materialAndPhotography.includes('厨师烹饪动态'));
+
+  // Brief 禁止事项使用自定义主体主导禁令。
+  const brief = compileAnchorBrief(capsule, apparelProfile);
+  assert.ok(brief.includes('模特走秀'));
+  assert.ok(!brief.includes('禁止以厨师、烹饪动态'));
 });
