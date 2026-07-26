@@ -3,6 +3,7 @@ import { marked } from 'marked';
 import { useEffect, useMemo, useState } from 'react';
 import type {
   DocumentContextRun,
+  ProjectDocumentContextLink,
   ProjectRecord,
   PublicSettings,
   ReferenceAnchorProgress,
@@ -10,7 +11,8 @@ import type {
   ReferenceAnchorRun,
   ReferenceAnchorStage,
   ReferenceAssetSelection,
-  ReferenceTranslationRunRecord
+  ReferenceTranslationRunRecord,
+  ResolvedProjectContext
 } from '../../../shared/types';
 import { cleanError, formatBytes, formatDurationHuman } from '../utils';
 
@@ -100,6 +102,11 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   const [notice, setNotice] = useState('');
   const [legacyRuns, setLegacyRuns] = useState<ReferenceTranslationRunRecord[] | null>(null);
   const [legacyCapsuleJson, setLegacyCapsuleJson] = useState('');
+  const [sourceInfo, setSourceInfo] = useState<{
+    visual: { status: string; schemaVersion?: string | null };
+    link: ProjectDocumentContextLink | null;
+    resolved: ResolvedProjectContext | null;
+  } | null>(null);
   const activeStageIndex = progress ? STAGE_INDEX[progress.stage] : -1;
 
   const readyProjects = useMemo(() => projects.filter((project) => project.status === 'completed'), [projects]);
@@ -142,6 +149,16 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
       if (run) await openRun(run);
     })().catch((reason) => setError(cleanError(reason)));
   }, [initialRunId]);
+
+  // §7.3 当前读取来源横幅：视觉上下文 + 文档关联 + 合并状态 + Locked Assets。
+  useEffect(() => {
+    if (!selectedProjectId) { setSourceInfo(null); return; }
+    void Promise.all([
+      window.masterpiece.contextIntegration.getVisualStatus(selectedProjectId),
+      window.masterpiece.contextIntegration.getLink(selectedProjectId),
+      window.masterpiece.contextIntegration.getResolved(selectedProjectId)
+    ]).then(([visual, link, resolved]) => setSourceInfo({ visual, link, resolved })).catch(() => setSourceInfo(null));
+  }, [selectedProjectId]);
 
   async function addAssets(paths: string[]) {
     if (!paths.length) return;
@@ -409,6 +426,18 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         </select></label>
         {!readyProjects.length && <div className="notice warn">还没有已完成视觉分析的项目。请先在「视觉分析」中完成一次分析。</div>}
         {selectedProject && <div className="facts-box"><small>身份锁定</small><p>品牌：{selectedProject.brandName} · 行业：{selectedProject.industry}</p><p>参考图仅用于提炼风格规则；参考品牌的名称 / Logo / Slogan / 标志性图形不会进入生成。</p></div>}
+        {selectedProject && sourceInfo && (
+          <div className="source-banner">
+            <small>当前读取来源（§7.3）</small>
+            <ul>
+              <li><span>当前项目</span><strong>{selectedProject.projectName}</strong></li>
+              <li><span>视觉上下文</span><strong>{sourceInfo.visual.status === 'ready' ? `v${sourceInfo.visual.schemaVersion ?? ''}` : '未生成'}</strong></li>
+              <li><span>文档上下文</span><strong>{sourceInfo.link ? '已关联' : '未关联'}</strong></li>
+              <li><span>合并状态</span><strong>{!sourceInfo.link ? '仅视觉上下文' : sourceInfo.resolved ? (sourceInfo.resolved.conflicts.some((conflict) => conflict.resolution === 'unresolved') ? '有冲突' : '可用') : '未生成'}</strong></li>
+              <li><span>Locked Assets</span><strong>{sourceInfo.resolved ? sourceInfo.resolved.lockedAssets.logoAssetIds.length + sourceInfo.resolved.lockedAssets.lockedFacts.length : 0} 项</strong></li>
+            </ul>
+          </div>
+        )}
         <label>文档上下文（可选）<select value={selectedDocumentRunId} onChange={(event) => setSelectedDocumentRunId(event.target.value)}>
           <option value="">不加载文档上下文</option>
           {readyDocumentRuns.map((run) => <option key={run.id} value={run.id}>{run.projectName} · {new Date(run.createdAt).toLocaleDateString('zh-CN')}</option>)}

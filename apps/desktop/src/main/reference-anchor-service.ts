@@ -51,10 +51,13 @@ import {
   ensureProjectFacts,
   filterStyleCapsuleForTask,
   mergeCurrentProjectContext,
+  resolvedToMerged,
   validateAnchorBrief,
   validateReferenceStyleCapsule,
   type MergedCurrentProject
 } from './reference-anchor-core.ts';
+import { BLOCKING_CONFLICT_FIELDS } from './context-resolver.ts';
+import type { ContextIntegrationService } from './context-integration-service.ts';
 
 type SettingsReader = () => Promise<PublicSettings> | PublicSettings;
 type ProgressSink = (progress: ReferenceAnchorProgress) => void;
@@ -64,6 +67,8 @@ interface ReferenceAnchorDependencies {
   pipeline: PipelineService;
   projectContext: ProjectContextService;
   documentContext: DocumentContextService;
+  /** Phase 4：优先读取 Resolved Context（§6.4），未解决身份/Locked 冲突阻断（§9）。 */
+  contextIntegration?: ContextIntegrationService;
   emitProgress?: ProgressSink;
 }
 
@@ -242,6 +247,36 @@ export function createReferenceAnchorService(
       throw blockingError('CURRENT_PROJECT_IDENTITY_MISSING', '当前项目品牌名与项目名均缺失，无法进行身份隔离，请先补全项目身份');
     }
     const warnings: ReferenceAnchorWarning[] = [];
+
+    // ─ Phase 4：优先读取 Resolved Context（§6.4）──
+    const resolved = dependencies.contextIntegration
+      ? await dependencies.contextIntegration.getResolved(projectId).catch(() => null)
+      : null;
+    if (resolved) {
+      const blocking = resolved.conflicts.find(
+        (conflict) => conflict.resolution === 'unresolved' && BLOCKING_CONFLICT_FIELDS.has(conflict.field)
+      );
+      if (blocking) {
+        const code =
+          blocking.field === 'brandName' || blocking.field === 'industry'
+            ? 'IDENTITY_CONFLICT_UNRESOLVED'
+            : 'LOCKED_ASSET_CONFLICT_UNRESOLVED';
+        throw blockingError(
+          code,
+          `当前项目与文档上下文存在未解决的「${blocking.field}」冲突，请先在项目页确认合并后再开始参考视觉转换`
+        );
+      }
+      const merged = resolvedToMerged(resolved);
+      if (String(visual.packaging?.status || 'unknown') !== 'confirmed') {
+        warnings.push({ code: 'PACKAGING_STRUCTURE_UNCERTAIN', message: '当前项目包装结构未确认，Anchor 中的包装形态需人工复核' });
+      }
+      if (!resolved.targetAudience?.length) {
+        warnings.push({ code: 'TARGET_AUDIENCE_UNKNOWN', message: '合并上下文未提供目标人群信息' });
+      }
+      return { visual, document: null, merged, warnings };
+    }
+
+    // ── 回退：仅视觉上下文 + 可选文档上下文（未生成 Resolved Context 时）──
     let document: DocumentVisualContext | null = null;
     if (documentRunId) {
       document = await dependencies.documentContext.getExtracted(documentRunId).catch(() => null);

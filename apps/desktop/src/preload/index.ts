@@ -140,6 +140,19 @@ const api: DesktopApi = {
     get: (projectId) => ipcRenderer.invoke('project-context:get', projectId),
     rebuild: (projectId) => ipcRenderer.invoke('project-context:rebuild', projectId),
     export: (projectId) => ipcRenderer.invoke('project-context:export', projectId)
+  },
+  contextIntegration: {
+    linkDocumentContext: (projectId, runId) => ipcRenderer.invoke('context-integration:link', projectId, runId),
+    unlinkDocumentContext: (projectId) => ipcRenderer.invoke('context-integration:unlink', projectId),
+    getLink: (projectId) => ipcRenderer.invoke('context-integration:get-link', projectId),
+    getVisualStatus: (projectId) => ipcRenderer.invoke('context-integration:get-visual-status', projectId),
+    getResolved: (projectId) => ipcRenderer.invoke('context-integration:get-resolved', projectId),
+    resolve: (projectId, userOverrides) => ipcRenderer.invoke('context-integration:resolve', projectId, userOverrides),
+    listConflicts: (projectId) => ipcRenderer.invoke('context-integration:list-conflicts', projectId),
+    applyConflictResolution: (projectId, resolutions) => ipcRenderer.invoke('context-integration:apply-conflict-resolution', projectId, resolutions),
+    migrate: (projectId) => ipcRenderer.invoke('context-integration:migrate', projectId),
+    export: (projectId) => ipcRenderer.invoke('context-integration:export', projectId),
+    isDocumentContextReferenced: (runId) => ipcRenderer.invoke('context-integration:is-doc-referenced', runId)
   }
 };
 

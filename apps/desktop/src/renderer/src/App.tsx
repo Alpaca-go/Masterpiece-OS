@@ -18,6 +18,7 @@ import { VisualTranslationWorkspace } from './components/VisualTranslationWorksp
 import { ReferenceTranslationWorkspace } from './components/ReferenceTranslationWorkspace';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
+import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
 type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report';
@@ -347,6 +348,12 @@ export function App() {
     setDeletingDocumentContextRunId(run.id);
     setError('');
     try {
+      const referenced = await window.masterpiece.contextIntegration.isDocumentContextReferenced(run.id).catch(() => false);
+      if (referenced) {
+        setError('该文档上下文已被视觉项目引用，请先在对应项目的「项目上下文」中解除关联后再删除。');
+        setDeletingDocumentContextRunId('');
+        return;
+      }
       await window.masterpiece.documentContext.remove(run.id);
       setDocumentContextRuns((current) => current.filter((item) => item.id !== run.id));
       if (requestedDocumentContextRunId === run.id) setRequestedDocumentContextRunId('');
@@ -420,6 +427,7 @@ export function App() {
           <button className="button ghost full" disabled={!selected.lastReportFilename || !canAnalyze} onClick={() => void run(selected, false, selectedProfile?.id)}>使用精确缓存</button>
         </aside>
       </div>
+      <ContextIntegrationPanel projectId={selected.id} projectName={selected.projectName} onOpenReference={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }} />
     </div>;
   }
 

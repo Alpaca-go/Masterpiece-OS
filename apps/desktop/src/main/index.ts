@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron';
 import type {
   AnalysisProgress,
+  ConflictResolutionInput,
   CreateProjectInput,
   SaveApiProfileInput,
   SaveSettingsInput,
@@ -31,6 +32,7 @@ import { createReferenceTranslationService } from './reference-translation-servi
 import { createReferenceAnchorService } from './reference-anchor-service';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
+import { createContextIntegrationService } from './context-integration-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -80,11 +82,23 @@ const projectContext = createProjectContextService({
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
 });
+const contextIntegration = createContextIntegrationService({
+  readSettings: getSettings,
+  projects,
+  projectContext,
+  documentContext,
+  showSaveDialog: (defaultPath: string) =>
+    dialog.showSaveDialog(mainWindow!, {
+      defaultPath,
+      filters: [{ name: 'JSON', extensions: ['json'] }]
+    })
+});
 const referenceAnchor = createReferenceAnchorService(getSettings, {
   projects,
   pipeline,
   projectContext,
   documentContext,
+  contextIntegration,
   emitProgress: (progress) => mainWindow?.webContents.send('reference-anchor:progress', progress)
 });
 
@@ -208,6 +222,22 @@ function registerIpc(): void {
   ipcMain.handle('project-context:get', (_event, projectId: string) => projectContext.get(projectId));
   ipcMain.handle('project-context:rebuild', (_event, projectId: string) => projectContext.rebuild(projectId));
   ipcMain.handle('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
+
+  // ── Phase 4：三大功能轻量整合（Context Integration）──
+  ipcMain.handle('context-integration:link', (_event, projectId: string, runId: string) => contextIntegration.linkDocumentContext(projectId, runId));
+  ipcMain.handle('context-integration:unlink', (_event, projectId: string) => contextIntegration.unlinkDocumentContext(projectId));
+  ipcMain.handle('context-integration:get-link', (_event, projectId: string) => contextIntegration.getLink(projectId));
+  ipcMain.handle('context-integration:get-visual-status', (_event, projectId: string) => contextIntegration.getVisualStatus(projectId));
+  ipcMain.handle('context-integration:get-resolved', (_event, projectId: string) => contextIntegration.getResolved(projectId));
+  ipcMain.handle('context-integration:resolve', (_event, projectId: string, userOverrides?: Record<string, unknown>) => contextIntegration.resolve(projectId, userOverrides));
+  ipcMain.handle('context-integration:list-conflicts', (_event, projectId: string) => contextIntegration.listConflicts(projectId));
+  ipcMain.handle('context-integration:apply-conflict-resolution', (_event, projectId: string, resolutions: ConflictResolutionInput[]) => contextIntegration.applyConflictResolution(projectId, resolutions));
+  ipcMain.handle('context-integration:migrate', (_event, projectId: string) => contextIntegration.migrate(projectId));
+  ipcMain.handle('context-integration:export', async (_event, projectId: string) => {
+    const source = await contextIntegration.export(projectId);
+    return source;
+  });
+  ipcMain.handle('context-integration:is-doc-referenced', (_event, runId: string) => contextIntegration.isDocumentContextReferenced(runId));
 
   ipcMain.handle('visual-translation:choose-documents', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {

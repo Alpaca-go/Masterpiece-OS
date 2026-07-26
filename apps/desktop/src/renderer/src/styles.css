@@ -295,3 +295,37 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .reference-anchor-retry-body { margin-top: 14px; display: grid; gap: 12px; }
 .reference-anchor-retry-body label { display: block; font-size: 12px; font-weight: 700; color: #47424b; }
 .reference-anchor-retry-body label textarea { margin-top: 6px; font-weight: 400; }
+
+/* ── Phase 4 三大功能轻量整合 UI ── */
+.context-integration-panel { padding: 28px; margin-top: 22px; }
+.context-integration-panel .panel-meta { margin-top: 4px; color: #8b858d; font-size: 11px; }
+.ctx-status-list { display: grid; gap: 10px; margin: 18px 0; padding: 0; list-style: none; }
+.ctx-status-row { display: flex; align-items: center; gap: 12px; }
+.ctx-status-row > div { min-width: 0; }
+.ctx-status-row strong { display: block; font-size: 13px; }
+.ctx-status-row small { color: #8b858d; font-size: 11px; }
+.ctx-actions { margin-top: 8px; }
+.ctx-link-picker { margin-top: 14px; display: grid; gap: 6px; }
+.ctx-link-picker label { margin: 0; font-size: 11px; font-weight: 700; color: #49444c; }
+.empty-state.small { min-height: 0; padding: 14px 0; text-align: left; color: #8b858d; font-size: 12px; }
+
+.ctx-conflict-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: #1a1620aa; padding: 28px; }
+.ctx-conflict-inner { width: min(720px, 100%); max-height: 84vh; overflow: auto; padding: 26px; border-radius: 14px; background: #faf9f6; box-shadow: 0 30px 80px #1a162055; }
+.ctx-conflict-list { display: grid; gap: 14px; margin: 16px 0 0; padding: 0; list-style: none; }
+.ctx-conflict-list .conflict { padding: 16px; border: 1px solid #ded9d3; border-radius: 10px; background: #fff; }
+.ctx-conflict-list .conflict.blocking { border-color: #e7b9b9; background: #fdf3f3; }
+.conflict-field { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.conflict-field strong { font-size: 14px; }
+.conflict-values { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
+.conflict-values div { min-width: 0; padding: 10px; border-radius: 8px; background: #f3f0f7; }
+.conflict-values small { display: block; margin-bottom: 4px; color: #847d88; font-size: 10px; }
+.conflict-values code { font-size: 11px; word-break: break-all; white-space: pre-wrap; }
+.conflict-note { margin: 10px 0 0; color: #9b5b4c; font-size: 11px; }
+.conflict .button-row { margin-top: 12px; }
+
+.source-banner { margin: 16px 0 4px; padding: 16px; border-radius: 9px; background: #eeeaf4; }
+.source-banner > small { display: block; margin-bottom: 10px; color: #6c42d8; font-size: 10px; font-weight: 700; letter-spacing: .14em; }
+.source-banner ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.source-banner li { display: grid; gap: 3px; }
+.source-banner span { color: #847d88; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.source-banner strong { font-size: 13px; }

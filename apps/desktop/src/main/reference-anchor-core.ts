@@ -22,7 +22,8 @@ import type {
   ReferenceMechanismRule,
   ReferenceStyleCapsule,
   ReferenceStyleProfile,
-  ReferenceStyleRule
+  ReferenceStyleRule,
+  ResolvedProjectContext
 } from '../shared/types';
 
 export const REFERENCE_STYLE_CAPSULE_SCHEMA_VERSION = '1.0';
@@ -194,6 +195,46 @@ export function ensureProjectFacts(merged: MergedCurrentProject): NormalizedProj
     candidateProducts: merged.coreProducts,
     viApplications: merged.businessTouchpoints
   }).facts;
+}
+
+/**
+ * Phase 4：把 ResolvedProjectContext 适配为 Reference 流水线消费的 MergedCurrentProject。
+ * 身份 / Locked Assets / 核心产品 / 包装结构均来自视觉主源，文档补充字段进入 facts。
+ * 冲突（§9）通过 factsAudit/conflicts 透传给下游校验与 Brief。
+ */
+export function resolvedToMerged(resolved: ResolvedProjectContext): MergedCurrentProject {
+  const flatTouchpoints = [
+    ...resolved.businessTouchpoints.packaging,
+    ...resolved.businessTouchpoints.viApplications,
+    ...resolved.businessTouchpoints.spatial,
+    ...resolved.businessTouchpoints.digital
+  ];
+  const mergedLike: MergedCurrentProject = {
+    brandName: resolved.identity.brandName,
+    industry: resolved.identity.industry,
+    logoLocked: resolved.lockedAssets.logoLocked,
+    logoAssetIds: resolved.lockedAssets.logoAssetIds,
+    lockedFacts: resolved.lockedAssets.lockedFacts,
+    coreProducts: resolved.products,
+    businessTouchpoints: flatTouchpoints,
+    facts: {
+      coreProducts: resolved.products,
+      services: resolved.services,
+      touchpoints: {
+        packaging: resolved.businessTouchpoints.packaging,
+        viApplications: resolved.businessTouchpoints.viApplications,
+        serviceMaterials: [],
+        spatial: resolved.businessTouchpoints.spatial,
+        digital: resolved.businessTouchpoints.digital
+      },
+      designAdvice: [],
+      uncertainties: resolved.uncertainties
+    },
+    factsAudit: [],
+    conflicts: resolved.conflicts.map((conflict) => `上下文合并冲突（${conflict.field}）：${conflict.note ?? ''}`)
+  };
+  mergedLike.facts = ensureProjectFacts(mergedLike);
+  return mergedLike;
 }
 
 /**

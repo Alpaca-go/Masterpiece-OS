@@ -2023,6 +2023,72 @@ export interface ReferenceAnchorResult {
   briefMarkdown: string;
 }
 
+// ── Phase 4 三大功能轻量整合：Resolved Project Context ──
+
+/** §3 / §9 上下文合并冲突记录。所有冲突可追溯；§4.3 字段冲突 resolution=unresolved 时阻断参考视觉转换。 */
+export interface ContextConflict {
+  field: string;
+  visualValue: unknown;
+  documentValue: unknown;
+  resolution: 'visual_wins' | 'document_wins' | 'user_confirmed' | 'unresolved';
+  note?: string;
+}
+
+/** §3 Resolved Project Context：视觉事实主源 + 文档业务补充的只读合并结果。 */
+export interface ResolvedProjectContext {
+  schemaVersion: '1.0';
+  projectId: string;
+  generatedAt: string;
+  identity: {
+    projectName: string;
+    brandName: string;
+    industry: string;
+  };
+  lockedAssets: {
+    logoLocked: boolean;
+    logoAssetIds: string[];
+    lockedFacts: string[];
+  };
+  products: string[];
+  services: string[];
+  targetAudience: string[];
+  pricePositioning: string | null;
+  businessModel: string | null;
+  brandPersonality: string[];
+  visualPreferences: string[];
+  currentVisualSystem: ProjectVisualContext['currentVisualSystem'];
+  packaging: ProjectVisualContext['packaging'];
+  businessTouchpoints: ProjectVisualContext['businessTouchpoints'];
+  prohibitedDirections: string[];
+  uncertainties: string[];
+  conflicts: ContextConflict[];
+  sourceVersions: {
+    projectVisualContext?: string;
+    documentVisualContext?: string;
+    resolverVersion: string;
+  };
+  /** §10 缓存失效指纹：合并时所依赖的视觉/文档上下文生成时间，用于判断 Resolved Context 是否过期。 */
+  sourceFingerprint?: {
+    visualGeneratedAt?: string;
+    documentGeneratedAt?: string;
+  };
+}
+
+/** §8 视觉项目与文档 Context 的本地关联记录（一个文档 Context 可被多个视觉项目引用）。 */
+export interface ProjectDocumentContextLink {
+  projectId: string;
+  documentContextRunId: string;
+  linkedAt: string;
+  lastResolvedAt?: string;
+}
+
+/** §9 冲突确认输入。 */
+export interface ConflictResolutionInput {
+  field: string;
+  resolution: ContextConflict['resolution'];
+  value?: unknown;
+}
+
 export interface ReferenceAnchorProgress {
   runId: string;
   projectName: string;
@@ -2146,6 +2212,20 @@ export interface DesktopApi {
     get(projectId: string): Promise<ProjectVisualContext>;
     rebuild(projectId: string): Promise<ProjectVisualContext>;
     export(projectId: string): Promise<string | null>;
+  };
+  contextIntegration: {
+    linkDocumentContext(projectId: string, runId: string): Promise<ProjectDocumentContextLink>;
+    unlinkDocumentContext(projectId: string): Promise<void>;
+    getLink(projectId: string): Promise<ProjectDocumentContextLink | null>;
+    getVisualStatus(projectId: string): Promise<{ status: 'missing' | 'ready' | 'failed'; schemaVersion?: string | null }>;
+    getResolved(projectId: string): Promise<ResolvedProjectContext | null>;
+    resolve(projectId: string, userOverrides?: Record<string, unknown>): Promise<ResolvedProjectContext>;
+    listConflicts(projectId: string): Promise<ContextConflict[]>;
+    applyConflictResolution(projectId: string, resolutions: ConflictResolutionInput[]): Promise<ResolvedProjectContext>;
+    migrate(projectId: string): Promise<{ visualContextStatus: string; resolvedGeneratedAt?: string | null }>;
+    export(projectId: string): Promise<string | null>;
+    /** §8 删除被引用的文档 Context 前检查引用关系。 */
+    isDocumentContextReferenced(runId: string): Promise<boolean>;
   };
 }
 

@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/resolved-project-context-v1",
+  "title": "Resolved Project Context V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "generatedAt",
+    "identity",
+    "lockedAssets",
+    "products",
+    "services",
+    "targetAudience",
+    "pricePositioning",
+    "businessModel",
+    "brandPersonality",
+    "visualPreferences",
+    "currentVisualSystem",
+    "packaging",
+    "businessTouchpoints",
+    "prohibitedDirections",
+    "uncertainties",
+    "conflicts",
+    "sourceVersions"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["projectName", "brandName", "industry"],
+      "properties": {
+        "projectName": { "type": "string" },
+        "brandName": { "type": "string" },
+        "industry": { "type": "string" }
+      }
+    },
+    "lockedAssets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logoLocked", "logoAssetIds", "lockedFacts"],
+      "properties": {
+        "logoLocked": { "type": "boolean" },
+        "logoAssetIds": { "type": "array", "items": { "type": "string" } },
+        "lockedFacts": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "products": { "type": "array", "items": { "type": "string" } },
+    "services": { "type": "array", "items": { "type": "string" } },
+    "targetAudience": { "type": "array", "items": { "type": "string" } },
+    "pricePositioning": { "type": ["string", "null"] },
+    "businessModel": { "type": ["string", "null"] },
+    "brandPersonality": { "type": "array", "items": { "type": "string" } },
+    "visualPreferences": { "type": "array", "items": { "type": "string" } },
+    "currentVisualSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "existingVisualAssets",
+        "primaryColors",
+        "supportingColors",
+        "graphicAssets",
+        "typographySignals",
+        "materialSignals",
+        "photographySignals"
+      ],
+      "properties": {
+        "existingVisualAssets": { "type": "array", "items": { "type": "string" } },
+        "primaryColors": { "type": "array", "items": { "type": "string" } },
+        "supportingColors": { "type": "array", "items": { "type": "string" } },
+        "graphicAssets": { "type": "array", "items": { "type": "string" } },
+        "typographySignals": { "type": "array", "items": { "type": "string" } },
+        "materialSignals": { "type": "array", "items": { "type": "string" } },
+        "photographySignals": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "packaging": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structures", "status", "evidenceSources"],
+      "properties": {
+        "structures": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["confirmed", "legacy_observed", "unknown"] },
+        "evidenceSources": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "businessTouchpoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["packaging", "viApplications", "spatial", "digital"],
+      "properties": {
+        "packaging": { "type": "array", "items": { "type": "string" } },
+        "viApplications": { "type": "array", "items": { "type": "string" } },
+        "spatial": { "type": "array", "items": { "type": "string" } },
+        "digital": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "prohibitedDirections": { "type": "array", "items": { "type": "string" } },
+    "uncertainties": { "type": "array", "items": { "type": "string" } },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "visualValue", "documentValue", "resolution"],
+        "properties": {
+          "field": { "type": "string" },
+          "visualValue": {},
+          "documentValue": {},
+          "resolution": { "type": "string", "enum": ["visual_wins", "document_wins", "user_confirmed", "unresolved"] },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "sourceVersions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["resolverVersion"],
+      "properties": {
+        "projectVisualContext": { "type": ["string", "null"] },
+        "documentVisualContext": { "type": ["string", "null"] },
+        "resolverVersion": { "type": "string" }
+      }
+    },
+    "sourceFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visualGeneratedAt": { "type": ["string", "null"] },
+        "documentGeneratedAt": { "type": ["string", "null"] }
+      }
+    }
+  }
+}
