@@ -18,6 +18,20 @@ const SUBMIT_PATH = '/api/v1/services/aigc/text2image/image-synthesis';
 const TASK_PATH = (taskId) => `/api/v1/tasks/${encodeURIComponent(taskId)}`;
 const CANCEL_PATH = (taskId) => `/api/v1/tasks/${encodeURIComponent(taskId)}/cancel`;
 
+/** §6.1 DashScope wan2.7-image-pro 静态能力（无需 API Key 即可获取，用于 dry-run 与 Gate 校验）。 */
+export const DASHSCOPE_CAPABILITIES = Object.freeze({
+  providerId: 'dashscope',
+  modelId: 'wan2.7-image-pro',
+  supportsTextToImage: true,
+  supportsMultiImageReference: true,
+  supportsNegativePrompt: true,
+  supportsRemoteCancel: true,
+  maxReferenceImages: 6,
+  maxOutputCount: 1,
+  supportedSizes: ['2048*1152', '1152*2048', '1440*1440', '1024*1024'],
+  outputMimeTypes: ['image/png'],
+});
+
 export class DashScopeProviderError extends Error {
   /**
    * @param {string} code 归一化错误码
@@ -177,18 +191,7 @@ export function createDashScopeProvider(config = {}) {
 
   return {
     async getCapabilities() {
-      return {
-        providerId: 'dashscope',
-        modelId,
-        supportsTextToImage: true,
-        supportsMultiImageReference: true,
-        supportsNegativePrompt: true,
-        supportsRemoteCancel: true,
-        maxReferenceImages: 6,
-        maxOutputCount: 1,
-        supportedSizes: ['2048*1152', '1152*2048', '1440*1440', '1024*1024'],
-        outputMimeTypes: ['image/png'],
-      };
+      return { ...DASHSCOPE_CAPABILITIES, modelId };
     },
 
     async submit(task, signal) {
