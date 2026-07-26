@@ -22,3 +22,7 @@ export {
 export { buildSourceContextSnapshot } from './context-snapshot.js';
 
 export { compileImageGenerationTask } from './task-builder.js';
+
+export { downloadAndVerifyImage } from './download-verify.js';
+
+export { redactProviderRequest, redactProviderResponse } from './redact.js';
