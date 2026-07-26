@@ -1,6 +1,5 @@
 import path from 'node:path';
 import { isUsableProjectName } from './project-intake.ts';
-import { validateReferenceTranslationMarkdown, type ReportType } from './reference-translation-report.ts';
 
 const WINDOWS_FORBIDDEN = /[<>:"/\\|?*\u0000-\u001F]/g;
 const ASSET_DECISIONS = new Set(['保留', '升级', '替换', '删除', '新增']);
@@ -84,18 +83,6 @@ export function validateVisualUpgradeMarkdown(markdown: string): void {
   if (invalid.length) {
     throw new Error(`Markdown 校验失败：资产决策值无效 ${invalid.map((row) => `${row.asset}:${row.decision}`).join('、')}`);
   }
-}
-
-export function validateMarkdownReport(
-  reportType: ReportType,
-  markdown: string,
-  structuredResult?: unknown
-): void {
-  if (reportType === 'visual_upgrade') return validateVisualUpgradeMarkdown(markdown);
-  if (reportType === 'reference_translation') {
-    return validateReferenceTranslationMarkdown(markdown, structuredResult as Parameters<typeof validateReferenceTranslationMarkdown>[1]);
-  }
-  throw new Error(`Unsupported report type: ${reportType}`);
 }
 
 // Backward-compatible visual-upgrade entry point.

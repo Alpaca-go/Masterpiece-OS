@@ -9,11 +9,7 @@ import type {
   SaveApiProfileInput,
   SaveSettingsInput,
   AnchorDecision,
-  StartReferenceAnchorInput,
-  StartReferenceTranslationInput,
-  StartReferenceTranslationUserInput,
-  StartVisualTranslationInput,
-  VisualTranslationProgress
+  StartReferenceAnchorInput
 } from '../shared/types';
 import { createProjectStore } from './project-store';
 import {
@@ -27,8 +23,6 @@ import {
   testApiProfile
 } from './settings-store';
 import { createPipelineService } from './pipeline-service';
-import { createVisualTranslationService } from './visual-translation-service';
-import { createReferenceTranslationService } from './reference-translation-service';
 import { createReferenceAnchorService } from './reference-anchor-service';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
@@ -59,16 +53,6 @@ const pipeline = createPipelineService(
   getSettings,
   (progress: AnalysisProgress) => mainWindow?.webContents.send('analysis:progress', progress)
 );
-const visualTranslation = createVisualTranslationService(
-  getProviderCredentials,
-  getSettings,
-  (progress: VisualTranslationProgress) => mainWindow?.webContents.send('visual-translation:progress', progress)
-);
-const referenceTranslation = createReferenceTranslationService(getSettings, {
-  projects,
-  pipeline,
-  emitProgress: (progress) => mainWindow?.webContents.send('reference-translation:progress', progress)
-});
 const documentContext = createDocumentContextService(
   getProviderCredentials,
   getSettings,
@@ -239,30 +223,6 @@ function registerIpc(): void {
   });
   ipcMain.handle('context-integration:is-doc-referenced', (_event, runId: string) => contextIntegration.isDocumentContextReferenced(runId));
 
-  ipcMain.handle('visual-translation:list-runs', () => visualTranslation.listRuns());
-  ipcMain.handle('visual-translation:get-run', (_event, runId: string) => visualTranslation.getRun(runId));
-  ipcMain.handle('visual-translation:remove', async (_event, runId: string) => {
-    const record = await visualTranslation.getRun(runId).catch(() => null);
-    if (record?.status === 'running') throw new Error('正在分析的任务不能删除，请先取消分析');
-    await visualTranslation.remove(runId);
-  });
-  ipcMain.handle('visual-translation:read-report', async (_event, runId: string) => fs.readFile(await visualTranslation.reportPath(runId), 'utf8'));
-  ipcMain.handle('visual-translation:export-report', async (_event, runId: string) => {
-    const source = await visualTranslation.reportPath(runId);
-    const result = await dialog.showSaveDialog(mainWindow!, {
-      defaultPath: path.basename(source),
-      filters: [{ name: 'Markdown', extensions: ['md'] }]
-    });
-    if (result.canceled || !result.filePath) return null;
-    await fs.copyFile(source, result.filePath);
-    return result.filePath;
-  });
-  ipcMain.handle('visual-translation:open-folder', async (_event, runId: string) => {
-    const root = await visualTranslation.runRoot(runId);
-    const result = await shell.openPath(path.join(root, 'outputs'));
-    if (result) throw new Error(result);
-  });
-
   ipcMain.handle('document-context:choose-documents', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {
       properties: ['openFile', 'multiSelections'],
@@ -299,16 +259,6 @@ function registerIpc(): void {
   ipcMain.handle('document-context:open-folder', async (_event, runId: string) => {
     const root = await documentContext.runRoot(runId);
     const result = await shell.openPath(path.join(root, 'outputs'));
-    if (result) throw new Error(result);
-  });
-
-  ipcMain.handle('reference-translation:list-runs', () => referenceTranslation.listRuns());
-  ipcMain.handle('reference-translation:get-run', (_event, runId: string) => referenceTranslation.getRun(runId));
-  ipcMain.handle('reference-translation:read-report', (_event, runId: string) => referenceTranslation.readReport(runId));
-  ipcMain.handle('reference-translation:remove', (_event, runId: string) => referenceTranslation.remove(runId));
-  ipcMain.handle('reference-translation:open-folder', async (_event, runId: string) => {
-    const outputPath = await referenceTranslation.ensureReportDelivery(runId);
-    const result = await shell.openPath(outputPath);
     if (result) throw new Error(result);
   });
 
@@ -366,35 +316,7 @@ function registerIpc(): void {
   });
 }
 
-function commandLineValue(name: string): string | undefined {
-  const prefix = `--${name}=`;
-  return process.argv.find((argument) => argument.startsWith(prefix))?.slice(prefix.length);
-}
-
 if (gotTheLock) app.whenReady().then(async () => {
-  const smokeRunId = commandLineValue('visual-translation-smoke-run');
-  const smokeDocumentPath = commandLineValue('visual-translation-smoke-document');
-  const smokeProfileId = commandLineValue('visual-translation-smoke-profile');
-  const smokeStatusPath = commandLineValue('visual-translation-smoke-status');
-  if ((smokeRunId || smokeDocumentPath) && smokeStatusPath) {
-    const statusPath = path.resolve(smokeStatusPath);
-    try {
-      await fs.writeFile(statusPath, `${JSON.stringify({ status: 'running', runId: smokeRunId || null, startedAt: new Date().toISOString() }, null, 2)}\n`, 'utf8');
-      let result;
-      if (smokeDocumentPath) {
-        if (!smokeProfileId) throw new Error('Fresh Visual Translation smoke test requires --visual-translation-smoke-profile');
-        result = await visualTranslation.start({ documentPaths: [path.resolve(smokeDocumentPath)], apiProfileId: smokeProfileId });
-      } else {
-        result = await visualTranslation.resume(smokeRunId!, smokeProfileId);
-      }
-      await fs.writeFile(statusPath, `${JSON.stringify({ status: 'passed', run: result.run, reportPath: await visualTranslation.reportPath(result.run.id) }, null, 2)}\n`, 'utf8');
-      app.exit(0);
-    } catch (error) {
-      await fs.writeFile(statusPath, `${JSON.stringify({ status: 'failed', runId: smokeRunId || null, error: { name: (error as Error).name, message: (error as Error).message } }, null, 2)}\n`, 'utf8').catch(() => {});
-      app.exit(1);
-    }
-    return;
-  }
   registerIpc();
   createWindow();
   app.on('activate', () => {

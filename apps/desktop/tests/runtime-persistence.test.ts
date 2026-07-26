@@ -7,7 +7,6 @@ import { atomicWriteJsonWithRetry } from '../src/main/runtime/atomic-write.ts';
 import { RunWriteCoordinator } from '../src/main/runtime/run-write-coordinator.ts';
 import { transitionRuntimeStatus } from '../src/main/runtime/runtime-status.ts';
 import { findRecoverableRunProjection } from '../src/main/runtime/recovery-service.ts';
-import { createVisualTranslationService } from '../src/main/visual-translation-service.ts';
 
 test('atomic JSON write retries transient Windows rename failures and keeps one complete payload', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'atomic-write-'));
@@ -124,54 +123,3 @@ test('Desktop entry enforces a single Electron instance', async () => {
   assert.match(source, /mainWindow\.focus\(\)/u);
 });
 
-test('completed analysis survives permanent run.json rename failure without another model run', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'visual-translation-projection-failure-'));
-  const source = path.join(temporary, '策略.md');
-  await fs.writeFile(source, '# 策略\n\n以可靠交付建立信任。', 'utf8');
-  let runnerCalls = 0;
-  const runner = async (input: Record<string, any>) => {
-    runnerCalls += 1;
-    await input.onCheckpoint('04-three-creative-directions', {
-      checkpoint: { outputFile: 'visual-direction-v2-set.json' },
-      output: [{ direction_id: 'VDA001', title: '可信秩序' }]
-    });
-    await input.onCheckpoint('10-local-report-compiler', {
-      checkpoint: { outputFile: 'visual-directions-report-v2-experimental.md' },
-      output: '# 已完成报告'
-    });
-    return { reportMarkdown: '# 已完成报告', reportBasename: 'visual-directions-report-v2-experimental.md', protocolVersion: 'test-v2', modelCallCount: 1, metrics: [], composition: { visualRatio: 0.75 } };
-  };
-  const service = createVisualTranslationService(
-    async () => ({ profileId: 'profile', provider: 'mock', baseUrl: 'https://example.test/v1', model: 'mock-model', apiKey: 'secret' }),
-    async () => ({ profiles: [], defaultProfileId: null, provider: '', baseUrl: '', model: '', hasApiKey: false, defaultDataPath: temporary, cacheEnabled: true, logLevel: 'info', connectionStatus: 'untested', directionGenerationMode: 'execution_oriented_v2' }),
-    () => undefined,
-    () => async () => ({ text: '{}' }),
-    async () => { throw new Error('v1 must not run'); },
-    runner,
-    {
-      projectionWriter: async (target, data: any, options) => atomicWriteJsonWithRetry(target, data, data.analysisStatus === 'completed' ? {
-        ...options,
-        maxAttempts: 2,
-        baseDelayMs: 1,
-        wait: async () => undefined,
-        rename: (async () => { throw Object.assign(new Error('simulated permanent lock'), { code: 'EPERM' }); }) as typeof fs.rename
-      } : options)
-    }
-  );
-  try {
-    const result = await service.start({ documentPaths: [source], apiProfileId: 'profile' });
-    assert.equal(result.run.analysisStatus, 'completed');
-    assert.equal(result.run.persistenceStatus, 'projection_sync_failed');
-    assert.equal(result.run.recoverable, true);
-    const root = await service.runRoot(result.run.id);
-    await fs.access(path.join(root, 'checkpoints', 'step4-result.json'));
-    await fs.access(path.join(root, 'artifacts', 'visual-directions-v2.json'));
-    await fs.access(path.join(root, 'runtime', 'run-report.json'));
-    const recovered = await service.resume(result.run.id, 'profile');
-    assert.equal(recovered.run.status, 'completed');
-    assert.match(recovered.reportMarkdown, /已完成报告/u);
-    assert.equal(runnerCalls, 1);
-  } finally {
-    await fs.rm(temporary, { recursive: true, force: true });
-  }
-});

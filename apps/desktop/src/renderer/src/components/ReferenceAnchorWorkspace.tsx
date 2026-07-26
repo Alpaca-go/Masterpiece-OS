@@ -13,7 +13,6 @@ import type {
   ReferenceAnchorRun,
   ReferenceAnchorStage,
   ReferenceAssetSelection,
-  ReferenceTranslationRunRecord,
   ResolvedProjectContext
 } from '../../../shared/types';
 import { cleanError, formatBytes, formatDurationHuman } from '../utils';
@@ -108,8 +107,6 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  const [legacyRuns, setLegacyRuns] = useState<ReferenceTranslationRunRecord[] | null>(null);
-  const [legacyCapsuleJson, setLegacyCapsuleJson] = useState('');
   const [sourceInfo, setSourceInfo] = useState<{
     visual: { status: string; schemaVersion?: string | null };
     link: ProjectDocumentContextLink | null;
@@ -418,24 +415,6 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     } catch (reason) { setError(cleanError(reason)); }
   }
 
-  async function loadLegacyRuns() {
-    setError('');
-    try {
-      const all = await window.masterpiece.referenceTranslation.listRuns();
-      setLegacyRuns(all.filter((run) => run.status === 'completed'));
-    } catch (reason) { setError(cleanError(reason)); }
-  }
-
-  async function convertLegacyRun(runId: string) {
-    setError('');
-    setLegacyCapsuleJson('');
-    try {
-      const capsule = await window.masterpiece.referenceAnchor.adaptLegacyRun(runId);
-      setLegacyCapsuleJson(JSON.stringify(capsule, null, 2));
-      setNotice('旧参考风格重构任务已按 ReferenceStyleCapsule v1.0 转换（缺失字段列入 uncertainties，不伪造）。');
-    } catch (reason) { setError(cleanError(reason)); }
-  }
-
   // ── 结果 / 决策页 ──
   if (view === 'result' && selectedRun) {
     const decided = selectedRun.decision === 'approved' || selectedRun.decision === 'rejected';
@@ -612,16 +591,6 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
           </div>
         </div>)}</div> : <div className="visual-document-empty">还没有参考锚定任务。</div>}
 
-        <details className="legacy-adapter-block">
-          <summary>旧「参考风格重构」任务转换（Legacy）</summary>
-          <p>把旧流程产物转换为 ReferenceStyleCapsule v1.0。缺失字段会列入 uncertainties，不会伪造。</p>
-          <button className="button ghost" onClick={() => void loadLegacyRuns()}>加载旧任务列表</button>
-          {legacyRuns && (legacyRuns.length ? <ul className="legacy-run-list">{legacyRuns.map((run) => <li key={run.id}><span>{run.projectContextFilename}</span><button className="button secondary" onClick={() => void convertLegacyRun(run.id)}>转换</button></li>)}</ul> : <p>没有已完成的旧任务。</p>)}
-          {legacyCapsuleJson && <div className="legacy-context-output">
-            <div className="button-row"><button className="button secondary" onClick={() => void navigator.clipboard.writeText(legacyCapsuleJson).then(() => setNotice('转换结果已复制。'))}>复制 JSON</button><button className="button ghost" onClick={() => setLegacyCapsuleJson('')}>关闭</button></div>
-            <pre>{legacyCapsuleJson}</pre>
-          </div>}
-        </details>
       </aside>
     </div>
 

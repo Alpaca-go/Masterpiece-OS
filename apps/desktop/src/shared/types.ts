@@ -1933,40 +1933,6 @@ export interface DesktopApi {
     export(projectId: string): Promise<string | null>;
     openFolder(projectId: string): Promise<void>;
   };
-  visualTranslation: {
-    chooseDocuments(): Promise<string[]>;
-    inspectDocuments(paths: string[]): Promise<VisualTranslationDocumentSummary[]>;
-    listRuns(): Promise<VisualTranslationRunRecord[]>;
-    getRun(runId: string): Promise<VisualTranslationRunRecord>;
-    start(input: StartVisualTranslationInput): Promise<VisualTranslationResult>;
-    resume(runId: string, apiProfileId?: string): Promise<VisualTranslationResult>;
-    cancel(runId: string): Promise<boolean>;
-    remove(runId: string): Promise<void>;
-    readReport(runId: string): Promise<string>;
-    exportReport(runId: string): Promise<string | null>;
-    openFolder(runId: string): Promise<void>;
-    onProgress(callback: (progress: VisualTranslationProgress) => void): () => void;
-  };
-  referenceTranslation: {
-    chooseInput(): Promise<string[]>;
-    chooseReferenceAssets(): Promise<string[]>;
-    chooseProjectSources(): Promise<string[]>;
-    inspectAssets(paths: string[]): Promise<ReferenceAssetSelection>;
-    runUserInput(input: StartReferenceTranslationUserInput): Promise<ReferenceTranslationResult>;
-    run(input: StartReferenceTranslationInput): Promise<ReferenceTranslationResult>;
-    listRuns(): Promise<ReferenceTranslationRunRecord[]>;
-    getActive(): Promise<ReferenceTranslationProgress | null>;
-    getProfile(runId: string): Promise<ReferenceTranslationProfile>;
-    getDirection(runId: string): Promise<ReferenceLedDirection>;
-    getReconstruction(runId: string): Promise<ReferenceStyleReconstruction>;
-    readReport(runId: string): Promise<string>;
-    resume(runId: string, apiProfileId?: string): Promise<ReferenceTranslationResult>;
-    retryReport(runId: string): Promise<ReferenceTranslationResult>;
-    cancel(runId: string): Promise<boolean>;
-    remove(runId: string): Promise<void>;
-    openFolder(runId: string): Promise<void>;
-    onProgress(callback: (progress: ReferenceTranslationProgress) => void): () => void;
-  };
   documentContext: {
     chooseDocuments(): Promise<string[]>;
     inspectDocuments(paths: string[]): Promise<VisualTranslationDocumentSummary[]>;

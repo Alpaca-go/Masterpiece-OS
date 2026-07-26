@@ -7,8 +7,7 @@ import type {
   DocumentContextStage,
   DocumentVisualContext,
   PublicSettings,
-  VisualTranslationDocumentSummary,
-  VisualTranslationRunRecord
+  VisualTranslationDocumentSummary
 } from '../../../shared/types';
 import { cleanError, formatDurationHuman } from '../utils';
 
@@ -105,8 +104,6 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  const [legacyRuns, setLegacyRuns] = useState<VisualTranslationRunRecord[] | null>(null);
-  const [legacyContextJson, setLegacyContextJson] = useState('');
   const activeStageIndex = progress ? STAGE_INDEX[progress.stage] : -1;
   const totalCharacters = useMemo(() => documents.reduce((sum, document) => sum + document.characterCount, 0), [documents]);
 
@@ -330,24 +327,6 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
     } catch (reason) { setError(cleanError(reason)); }
   }
 
-  async function loadLegacyRuns() {
-    setError('');
-    try {
-      const all = await window.masterpiece.visualTranslation.listRuns();
-      setLegacyRuns(all.filter((run) => run.status === 'completed'));
-    } catch (reason) { setError(cleanError(reason)); }
-  }
-
-  async function convertLegacyRun(runId: string) {
-    setError('');
-    setLegacyContextJson('');
-    try {
-      const context = await window.masterpiece.documentContext.adaptLegacyRun(runId);
-      setLegacyContextJson(JSON.stringify(context, null, 2));
-      setNotice('旧任务已按 DocumentVisualContext v1.0 转换（缺失字段已列入待确认信息）。');
-    } catch (reason) { setError(cleanError(reason)); }
-  }
-
   // ── 简报页 ──
   if (view === 'brief' && selectedRun) return <div className="page report-page visual-translation-report">
     <header className="page-header">
@@ -482,16 +461,6 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
           </div>
         </div>)}</div> : <div className="visual-document-empty">还没有文档上下文提取任务。</div>}
 
-        <details className="legacy-adapter-block">
-          <summary>旧「文档视觉转译」任务转换（Legacy）</summary>
-          <p>把旧三方向流程的产物转换为 DocumentVisualContext v1.0。缺失字段会列入待确认信息，不会伪造。</p>
-          <button className="button ghost" onClick={() => void loadLegacyRuns()}>加载旧任务列表</button>
-          {legacyRuns && (legacyRuns.length ? <ul className="legacy-run-list">{legacyRuns.map((run) => <li key={run.id}><span>{run.projectName}</span><button className="button secondary" onClick={() => void convertLegacyRun(run.id)}>转换</button></li>)}</ul> : <p>没有已完成的旧任务。</p>)}
-          {legacyContextJson && <div className="legacy-context-output">
-            <div className="button-row"><button className="button secondary" onClick={() => void navigator.clipboard.writeText(legacyContextJson).then(() => setNotice('转换结果已复制。'))}>复制 JSON</button><button className="button ghost" onClick={() => setLegacyContextJson('')}>关闭</button></div>
-            <pre>{legacyContextJson}</pre>
-          </div>}
-        </details>
       </aside>
     </div>
 

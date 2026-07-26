@@ -5,9 +5,7 @@ import type {
   DocumentContextRun,
   ProjectRecord,
   PublicSettings,
-  ReferenceAnchorRun,
-  ReferenceTranslationRunRecord,
-  VisualTranslationRunRecord
+  ReferenceAnchorRun
 } from '../../shared/types';
 import { AnalysisModeTabs, type AnalysisMode } from './components/AnalysisModeTabs';
 import { AnalysisView } from './components/AnalysisView';
@@ -17,10 +15,9 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
-import { LegacyHistoryWorkspace } from './components/LegacyHistoryWorkspace';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'history';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -73,8 +70,6 @@ export function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [settings, setSettings] = useState<PublicSettings | null>(null);
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
-  const [translationRuns, setTranslationRuns] = useState<VisualTranslationRunRecord[]>([]);
-  const [reconstructionRuns, setReconstructionRuns] = useState<ReferenceTranslationRunRecord[]>([]);
   const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
   const [referenceAnchorRuns, setReferenceAnchorRuns] = useState<ReferenceAnchorRun[]>([]);
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
@@ -88,8 +83,6 @@ export function App() {
   const [error, setError] = useState('');
   const [runFailure, setRunFailure] = useState('');
   const [deletingProjectId, setDeletingProjectId] = useState('');
-  const [deletingRunId, setDeletingRunId] = useState('');
-  const [deletingReconstructionRunId, setDeletingReconstructionRunId] = useState('');
   const [deletingDocumentContextRunId, setDeletingDocumentContextRunId] = useState('');
   const [deletingReferenceAnchorRunId, setDeletingReferenceAnchorRunId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -108,25 +101,19 @@ export function App() {
   }, [assets]);
 
   async function refresh() {
-    const [nextSettings, nextProjects, nextTranslationRuns, nextReconstructionRuns, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
+    const [nextSettings, nextProjects, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
       window.masterpiece.settings.get(),
       window.masterpiece.projects.list(),
-      window.masterpiece.visualTranslation.listRuns(),
-      window.masterpiece.referenceTranslation.listRuns(),
       window.masterpiece.documentContext.listRuns(),
       window.masterpiece.referenceAnchor.listRuns()
     ]);
     setSettings(nextSettings);
     setProjects(nextProjects);
-    setTranslationRuns(nextTranslationRuns);
-    setReconstructionRuns(nextReconstructionRuns);
     setDocumentContextRuns(nextDocumentContextRuns);
     setReferenceAnchorRuns(nextReferenceAnchorRuns);
     return {
       settings: nextSettings,
       projects: nextProjects,
-      translationRuns: nextTranslationRuns,
-      reconstructionRuns: nextReconstructionRuns,
       documentContextRuns: nextDocumentContextRuns,
       referenceAnchorRuns: nextReferenceAnchorRuns
     };
@@ -274,36 +261,6 @@ export function App() {
     }
   }
 
-  async function deleteTranslationRun(run: VisualTranslationRunRecord) {
-    if (run.status === 'running') return;
-    if (!window.confirm(`确定删除文档视觉转译任务“${run.projectName}”吗？\n\n此操作会同时永久删除该任务对应的本地文件夹，包括策略文档、缓存、报告和运行记录，且无法撤销。`)) return;
-    setDeletingRunId(run.id);
-    setError('');
-    try {
-      await window.masterpiece.visualTranslation.remove(run.id);
-      setTranslationRuns((current) => current.filter((item) => item.id !== run.id));
-    } catch (reason) {
-      setError(cleanError(reason));
-    } finally {
-      setDeletingRunId('');
-    }
-  }
-
-  async function deleteReconstructionRun(run: ReferenceTranslationRunRecord) {
-    if (run.status === 'running') return;
-    if (!window.confirm(`确定删除参考风格重构任务“${run.projectContextFilename}”吗？\n\n此操作会永久删除该任务的中间产物、执行文档和本地任务文件夹，且无法撤销。`)) return;
-    setDeletingReconstructionRunId(run.id);
-    setError('');
-    try {
-      await window.masterpiece.referenceTranslation.remove(run.id);
-      setReconstructionRuns((current) => current.filter((item) => item.id !== run.id));
-    } catch (reason) {
-      setError(cleanError(reason));
-    } finally {
-      setDeletingReconstructionRunId('');
-    }
-  }
-
   async function deleteReferenceAnchorRun(run: ReferenceAnchorRun) {
     if (REFERENCE_ANCHOR_EXECUTING.has(run.status)) return;
     if (!window.confirm(`确定删除参考锚定任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的参考图副本、风格胶囊、Anchor Brief 和运行记录，且无法撤销。`)) return;
@@ -379,7 +336,6 @@ export function App() {
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} />;
-  if (screen === 'history') return <LegacyHistoryWorkspace onBack={() => { setScreen('home'); void refresh(); }} />;
 
   if (screen === 'project' && selected) {
     const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
@@ -415,7 +371,7 @@ export function App() {
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   return <div className="app-shell">
-    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => setScreen('history')}>历史任务</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
+    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
     <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
       {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
       {error && <div className="notice error">{error}</div>}

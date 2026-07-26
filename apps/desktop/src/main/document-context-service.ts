@@ -29,7 +29,7 @@ import {
   parseModelJson,
   validateDocumentVisualContext
 } from './document-context-core.ts';
-import { deriveVisualTranslationProjectName } from './visual-translation-service.ts';
+import { deriveDocumentProjectName } from './document-project-name.ts';
 
 // Bundled from the repository core. Desktop owns persistence and user interaction only.
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.
@@ -368,7 +368,7 @@ export function createDocumentContextService(
     }
     record = await saveRun({
       ...record,
-      projectName: deriveVisualTranslationProjectName(corpus),
+      projectName: deriveDocumentProjectName(corpus),
       documentCount: corpus.documents.length,
       documentNames: corpus.documents.map((document) => document.filename.replace(/^\d{2}-/, '')),
       currentStage: '01-document-role-index'

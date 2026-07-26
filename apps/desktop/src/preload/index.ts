@@ -3,9 +3,7 @@ import type {
   AnalysisProgress,
   DesktopApi,
   DocumentContextProgress,
-  ReferenceAnchorProgress,
-  ReferenceTranslationProgress,
-  VisualTranslationProgress
+  ReferenceAnchorProgress
 } from '../shared/types';
 
 const api: DesktopApi = {
@@ -46,24 +44,6 @@ const api: DesktopApi = {
     export: (projectId) => ipcRenderer.invoke('report:export', projectId),
     openFolder: (projectId) => ipcRenderer.invoke('report:open-folder', projectId)
   },
-  visualTranslation: {
-    chooseDocuments: () => ipcRenderer.invoke('visual-translation:choose-documents'),
-    inspectDocuments: (paths) => ipcRenderer.invoke('visual-translation:inspect-documents', paths),
-    listRuns: () => ipcRenderer.invoke('visual-translation:list-runs'),
-    getRun: (runId) => ipcRenderer.invoke('visual-translation:get-run', runId),
-    start: (input) => ipcRenderer.invoke('visual-translation:start', input),
-    resume: (runId, apiProfileId) => ipcRenderer.invoke('visual-translation:resume', runId, apiProfileId),
-    cancel: (runId) => ipcRenderer.invoke('visual-translation:cancel', runId),
-    remove: (runId) => ipcRenderer.invoke('visual-translation:remove', runId),
-    readReport: (runId) => ipcRenderer.invoke('visual-translation:read-report', runId),
-    exportReport: (runId) => ipcRenderer.invoke('visual-translation:export-report', runId),
-    openFolder: (runId) => ipcRenderer.invoke('visual-translation:open-folder', runId),
-    onProgress(callback) {
-      const listener = (_event: Electron.IpcRendererEvent, progress: VisualTranslationProgress) => callback(progress);
-      ipcRenderer.on('visual-translation:progress', listener);
-      return () => ipcRenderer.removeListener('visual-translation:progress', listener);
-    }
-  },
   documentContext: {
     chooseDocuments: () => ipcRenderer.invoke('document-context:choose-documents'),
     inspectDocuments: (paths) => ipcRenderer.invoke('document-context:inspect-documents', paths),
@@ -84,30 +64,6 @@ const api: DesktopApi = {
       const listener = (_event: Electron.IpcRendererEvent, progress: DocumentContextProgress) => callback(progress);
       ipcRenderer.on('document-context:progress', listener);
       return () => ipcRenderer.removeListener('document-context:progress', listener);
-    }
-  },
-  referenceTranslation: {
-    chooseInput: () => ipcRenderer.invoke('reference-translation:choose-input'),
-    chooseReferenceAssets: () => ipcRenderer.invoke('reference-translation:choose-reference-assets'),
-    chooseProjectSources: () => ipcRenderer.invoke('reference-translation:choose-project-sources'),
-    inspectAssets: (paths) => ipcRenderer.invoke('reference-translation:inspect-assets', paths),
-    runUserInput: (input) => ipcRenderer.invoke('reference-translation:run-user-input', input),
-    run: (input) => ipcRenderer.invoke('reference-translation:run', input),
-    listRuns: () => ipcRenderer.invoke('reference-translation:list-runs'),
-    getActive: () => ipcRenderer.invoke('reference-translation:get-active'),
-    getProfile: (runId) => ipcRenderer.invoke('reference-translation:get-profile', runId),
-    getDirection: (runId) => ipcRenderer.invoke('reference-translation:get-direction', runId),
-    getReconstruction: (runId) => ipcRenderer.invoke('reference-translation:get-reconstruction', runId),
-    readReport: (runId) => ipcRenderer.invoke('reference-translation:read-report', runId),
-    resume: (runId, apiProfileId) => ipcRenderer.invoke('reference-translation:resume', runId, apiProfileId),
-    retryReport: (runId) => ipcRenderer.invoke('reference-translation:retry-report', runId),
-    cancel: (runId) => ipcRenderer.invoke('reference-translation:cancel', runId),
-    remove: (runId) => ipcRenderer.invoke('reference-translation:remove', runId),
-    openFolder: (runId) => ipcRenderer.invoke('reference-translation:open-folder', runId),
-    onProgress(callback) {
-      const listener = (_event: Electron.IpcRendererEvent, progress: ReferenceTranslationProgress) => callback(progress);
-      ipcRenderer.on('reference-translation:progress', listener);
-      return () => ipcRenderer.removeListener('reference-translation:progress', listener);
     }
   },
   referenceAnchor: {

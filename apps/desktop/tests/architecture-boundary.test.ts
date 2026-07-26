@@ -67,44 +67,42 @@ test('API Profile provider is free-form and not restricted to Qwen choices', asy
   assert.doesNotMatch(settings, /<select value=\{editor\.provider\}/);
 });
 
-test('Visual Translation API selection is controlled by App and survives settings navigation', async () => {
+test('analysis API selection is controlled by App and survives settings navigation', async () => {
   const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
-  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
   assert.match(app, /selectedApiProfileId=\{selectedApiProfileId\}/);
   assert.match(app, /onApiProfileChange=\{setSelectedApiProfileId\}/);
   assert.match(app, /setSettingsReturnScreen\('create'\)/);
-  assert.match(workspace, /onApiProfileChange\(event\.target\.value\)/);
-  assert.doesNotMatch(workspace, /useState\(initialProfile\?\.id/);
 });
 
-test('Visual Translation exposes one formal workflow without internal version selectors', async () => {
-  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
-  assert.match(workspace, /系统将提取视觉相关品牌事实/);
-  assert.match(workspace, /'开始分析'/);
-  assert.doesNotMatch(workspace, /方向生成模式|文档分析流程|概念方向 V1|执行向 V2|视觉事实优先 V2|深度分析 V1|实验分支|生产基线/u);
+test('Desktop no longer wires the experimental visual-translation / reference-translation flows', async () => {
+  const componentsRoot = path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components');
+  const componentFiles = await fs.readdir(componentsRoot);
+  assert.ok(!componentFiles.includes('VisualTranslationWorkspace.tsx'), 'VisualTranslationWorkspace.tsx 应已删除');
+  assert.ok(!componentFiles.includes('ReferenceTranslationWorkspace.tsx'), 'ReferenceTranslationWorkspace.tsx 应已删除');
+  assert.ok(!componentFiles.includes('LegacyHistoryWorkspace.tsx'), 'LegacyHistoryWorkspace.tsx 应已删除');
+  const mainFiles = await fs.readdir(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main'));
+  assert.ok(!mainFiles.includes('visual-translation-service.ts'), 'visual-translation-service.ts 应已删除');
+  assert.ok(!mainFiles.includes('reference-translation-service.ts'), 'reference-translation-service.ts 应已删除');
+  const mainIndex = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'index.ts'), 'utf8');
+  const preload = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'preload', 'index.ts'), 'utf8');
+  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
+  assert.doesNotMatch(mainIndex, /visual-translation:|reference-translation:/);
+  assert.doesNotMatch(preload, /visualTranslation|referenceTranslation/);
+  assert.doesNotMatch(app, /visualTranslation\.|referenceTranslation\.|LegacyHistoryWorkspace/);
 });
 
-test('analysis intake shares tabs, legacy translation supports drop upload, and home distinguishes the three production record types', async () => {
+test('analysis intake shares tabs and home distinguishes the three production record types', async () => {
   const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
   const tabs = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'AnalysisModeTabs.tsx'), 'utf8');
-  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualTranslationWorkspace.tsx'), 'utf8');
-  const history = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'LegacyHistoryWorkspace.tsx'), 'utf8');
   assert.match(app, /<AnalysisModeTabs/);
   assert.match(tabs, /视觉分析/);
   assert.match(tabs, /文档上下文提取/);
   assert.match(tabs, /参考锚定（Anchor）/);
   assert.doesNotMatch(tabs, /文档视觉转译/);
   assert.doesNotMatch(tabs, /参考风格重构/);
-  assert.match(workspace, /onDrop=/);
-  assert.match(workspace, /getPathForFile/);
-  assert.doesNotMatch(workspace, /项目名称<input/);
   assert.match(app, /record-type visual-analysis/);
   assert.match(app, /record-type document-context/);
   assert.match(app, /record-type reference-anchor/);
-  assert.match(app, /visualTranslation\.listRuns\(\)/);
-  assert.match(app, /referenceTranslation\.listRuns\(\)/);
-  assert.match(app, /历史任务/);
-  assert.match(history, /LegacyHistoryWorkspace/);
   assert.doesNotMatch(app, /initialRunId=\{requestedReconstructionRunId\}/);
 });
 
@@ -117,28 +115,11 @@ test('recent project rows expose a destructive local-folder delete action', asyn
   assert.match(store, /fs\.rm\(root,\s*\{\s*recursive:\s*true/);
 });
 
-test('reference reconstruction isolates project facts, reference style and the independent decision step', async () => {
-  const service = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'reference-translation-service.ts'), 'utf8');
+test('reference reconstruction prompts stay isolated from upstream Markdown reports', async () => {
   const prompts = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'reference-reconstruction-prompts.ts'), 'utf8');
-  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'ReferenceTranslationWorkspace.tsx'), 'utf8');
-  assert.match(service, /analyzeCurrentProjectProfile/);
-  assert.match(service, /analyzeReferenceStyle/);
-  assert.match(service, /generateVisualReconstructionDecision/);
-  assert.match(service, /async function resume\(runId:/);
-  assert.match(service, /resumedFromStage: 'GENERATING_DIRECTION'/);
-  assert.doesNotMatch(service, /const currentReport|const referenceReport|reportObservations/);
   assert.match(prompts, /只能使用下面两个干净 JSON/);
   assert.match(prompts, /不得假设或引用任何上游 Markdown 报告/);
   assert.doesNotMatch(prompts, /CATEGORY_PREFIX|wrapAsStyleRule/);
-  assert.match(workspace, /查看中间结果/);
-  assert.match(workspace, /quality-validation\.json/);
-  assert.match(workspace, /上传自己的视觉方案/);
-  assert.equal((workspace.match(/visualSchemeDropZone/g) || []).length, 2);
-  assert.match(workspace, /<strong>当前项目视觉方案<\/strong>/);
-  assert.match(workspace, /role="current_project"/);
-  assert.match(workspace, /currentProjectMode === 'upload'/);
-  assert.match(workspace, />继续分析<\/button>/);
-  assert.match(workspace, /referenceTranslation\.resume\(run\.id\)/);
 });
 
 test('Reference Anchor workspace supports uploading a new current project inline', async () => {
