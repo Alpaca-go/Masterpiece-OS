@@ -1,0 +1,11 @@
+{
+  "name": "@masterpiece-labs/reference-style-conversion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "实验 Lab：参考风格转译（原 src/reference-translation）。与正式产品隔离，不进入 Desktop 构建。",
+  "scripts": {
+    "run": "node bin/run.mjs",
+    "test": "node --test tests/*.test.js"
+  }
+}
