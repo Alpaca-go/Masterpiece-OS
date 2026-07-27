@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "run-legacy",
+  "projectId": "project-legacy",
+  "taskId": "igt-legacy",
+  "status": "succeeded",
+  "outputType": "master_anchor_image",
+  "providerId": "dashscope",
+  "modelId": "wan2.7-image-pro",
+  "region": "beijing",
+  "createdAt": "2026-01-01T00:00:00.000Z",
+  "updatedAt": "2026-01-01T00:01:00.000Z",
+  "gate": {
+    "blocked": false,
+    "errors": [],
+    "warnings": []
+  },
+  "images": []
+}
