@@ -17,6 +17,8 @@ export {
   evaluateTaskGate,
   evaluateArtifactGate,
   evaluatePreSubmitGates,
+  evaluateSourceGate,
+  resolvePresetWarnings,
 } from './gates.js';
 
 export { buildSourceContextSnapshot } from './context-snapshot.js';

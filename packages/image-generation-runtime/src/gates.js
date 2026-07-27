@@ -8,9 +8,78 @@
 // 本阶段不得恢复旧的大型 Readiness / Validator 树。
 
 import { hasCurrentProjectReference } from './reference-selector.js';
+import { resolveGenerationPolicy } from './policies.js';
 
 function err(code, gate, message, detail) {
   return detail === undefined ? { code, gate, message } : { code, gate, message, detail };
+}
+
+function hasReferenceStyleImage(references = []) {
+  return references.some((reference) => reference.role === 'reference_style');
+}
+
+export function resolvePresetWarnings(input) {
+  const { sources, context } = input ?? {};
+  const warnings = [];
+  const add = (code, message) => warnings.push({ code, message });
+  if (sources?.preset === 'visual_extension') {
+    add('DOCUMENT_CONTEXT_NOT_USED', '本次未使用文档上下文。');
+    add('REFERENCE_STYLE_NOT_USED', '本次未使用 Reference Anchor 风格上下文。');
+  }
+  if (sources?.preset === 'document_concept') {
+    add('CONCEPT_ONLY', '当前输出仅用于概念方向探索。');
+    add('BRAND_IDENTITY_NOT_FULLY_BOUND', '当前未绑定完整品牌身份。');
+    add('LOGO_RENDERING_NOT_GUARANTEED', '不保证准确生成 Logo。');
+    add('PACKAGING_STRUCTURE_NOT_GUARANTEED', '不保证形成可生产的包装结构。');
+  }
+  if (sources?.preset === 'reference_preview') {
+    add('VISUAL_CONTEXT_NOT_USED', '本次未使用视觉分析上下文。');
+    if (context?.referenceDecision?.status === 'awaiting_decision') {
+      add('UNAPPROVED_REFERENCE_PREVIEW', 'Reference Anchor 尚未人工批准，本次仅用于预览。');
+    }
+    if (!hasCurrentProjectReference(context?.references)) {
+      add('CURRENT_IDENTITY_NOT_BOUND', '当前项目身份未绑定。');
+    }
+  }
+  if (!sources?.userIntent?.prompt?.trim()) add('USER_INTENT_EMPTY', '未填写本次生成意图，已使用预设默认意图。');
+  return warnings;
+}
+
+export function evaluateSourceGate(input) {
+  const { sources, context } = input ?? {};
+  const errors = [];
+  const gate = 'identity_safety';
+  let policy;
+  try { policy = input?.policy ?? resolveGenerationPolicy(sources?.preset); }
+  catch (error) {
+    return [err(error.code || 'GENERATION_PRESET_UNSUPPORTED', gate, error.message)];
+  }
+  if (policy.requireVisualContext && !context?.visualContext) errors.push(err('VISUAL_CONTEXT_REQUIRED', gate, '当前预设要求视觉分析上下文。'));
+  if (policy.requireDocumentContext && !context?.documentContext) errors.push(err('DOCUMENT_CONTEXT_REQUIRED', gate, '当前预设要求文档上下文。'));
+  if (policy.requireResolvedContext && !context?.resolvedContext) errors.push(err('RESOLVED_CONTEXT_REQUIRED', gate, '当前预设要求 ResolvedProjectContext。'));
+  if (policy.requireReferenceContext && !context?.referenceCapsule) errors.push(err('REFERENCE_CONTEXT_REQUIRED', gate, '当前预设要求 Reference Anchor 上下文。'));
+  const referenceStatus = context?.referenceDecision?.status;
+  const referenceDecision = context?.referenceDecision?.decision;
+  if (['rejected', 'failed', 'cancelled'].includes(referenceStatus) || referenceDecision === 'rejected') {
+    errors.push(err('REFERENCE_RUN_REJECTED', gate, 'Reference Anchor 已拒绝、失败或取消。'));
+  }
+  if (policy.requireReferenceApproval && referenceDecision !== 'approved') {
+    errors.push(err('REFERENCE_ANCHOR_NOT_APPROVED', gate, 'Reference Anchor 尚未获得人工批准。'));
+  }
+  if (policy.requireCurrentIdentityImage && !hasCurrentProjectReference(context?.references)) {
+    errors.push(err('CURRENT_IDENTITY_IMAGE_REQUIRED', gate, '当前预设要求至少一张当前项目身份图。'));
+  }
+  if (policy.requireReferenceImage && !hasReferenceStyleImage(context?.references)) {
+    errors.push(err('REFERENCE_IMAGE_REQUIRED', gate, '当前预设要求至少一张参考风格图。'));
+  }
+  if (policy.requireCurrentIdentity && !context?.resolvedContext?.identity?.brandName) {
+    errors.push(err('CURRENT_PROJECT_IDENTITY_MISSING', gate, '当前项目缺少品牌身份。'));
+  }
+  if (sources?.preset === 'integrated_anchor') {
+    const unresolved = (context?.resolvedContext?.conflicts ?? []).filter((item) => item.resolution === 'unresolved');
+    if (unresolved.length) errors.push(err('LOCKED_ASSET_CONFLICT_UNRESOLVED', gate, '存在未解决的 Locked Asset 冲突。'));
+  }
+  return errors;
 }
 
 /**
@@ -205,6 +274,21 @@ export function evaluateArtifactGate(input) {
  * @returns {import('@masterpiece/image-generation-contracts').ImageGenerationGateResult}
  */
 export function evaluatePreSubmitGates(input) {
+  if (input?.policy || input?.sources || input?.context) {
+    const errors = [...evaluateSourceGate(input)];
+    const taskErrors = evaluateTaskGate({
+      ...input,
+      anchorBriefMarkdown: input.policy?.requireReferenceContext ? input.context?.anchorBriefMarkdown : '# not required',
+      references: input.context?.references ?? input.references,
+    }).filter((error) => ![
+      'REFERENCE_IMAGE_MISSING',
+      'OUTPUT_TYPE_UNSUPPORTED',
+      'IMAGE_GENERATION_TASK_INVALID',
+    ].includes(error.code));
+    errors.push(...taskErrors);
+    const warnings = [...(input?.warnings ?? []), ...resolvePresetWarnings(input)];
+    return { blocked: errors.length > 0, errors, warnings };
+  }
   const errors = [...evaluateIdentityGate(input), ...evaluateTaskGate(input)];
   const warnings = input?.warnings ?? [];
   return {
