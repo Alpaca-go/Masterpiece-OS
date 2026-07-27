@@ -8,3 +8,4 @@ export {
   buildDeliverableReferencePlan,
   materializeDeliverableReferences,
 } from './deliverable-reference-policy.js';
+export { stableHash, createCompileFingerprint, verifyCompileFingerprint } from './compile-fingerprint.js';
