@@ -337,6 +337,27 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .prompt-preview pre { margin-top: 10px; max-height: 320px; overflow: auto; padding: 14px; border: 1px solid #e0dcd6; border-radius: 9px; background: #fff; font-size: 11px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; color: #3a353f; }
 .review-notes { margin: 14px 0; }
 .generation-actions { margin-top: 22px; }
+.image-generation-grid { grid-template-columns: minmax(420px, 1.3fr) minmax(300px, .9fr) minmax(300px, .9fr); }
+.deliverable-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.deliverable-card { min-height: 72px; padding: 10px; border: 1px solid #d9d2df; border-radius: 9px; background: #fff; color: #332d38; text-align: left; cursor: pointer; }
+.deliverable-card strong, .deliverable-card span { display: block; }
+.deliverable-card strong { font-size: 11px; }
+.deliverable-card span { margin-top: 5px; color: #817987; font-size: 9px; line-height: 1.4; }
+.deliverable-card:hover { border-color: #9d82dc; }
+.deliverable-card.selected { border-color: #6c42d8; background: #f2ecff; box-shadow: 0 0 0 1px #6c42d8 inset; }
+.compile-state { display: grid; gap: 4px; margin: 12px 0; padding: 12px; border-radius: 9px; font-size: 11px; }
+.compile-state span { font-size: 9px; }
+.compile-state.stale { border: 1px solid #e6c697; background: #fff4df; color: #79511c; }
+.compile-state.current { border: 1px solid #b7d8c6; background: #e9f6ef; color: #315c46; }
+.deliverable-rules { display: grid; gap: 12px; margin: 14px 0; padding: 14px; border: 1px solid #ded8e4; border-radius: 9px; background: #fff; }
+.deliverable-rules small, .reference-plan small { color: #817987; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
+.rule-list { display: grid; gap: 5px; margin: 7px 0 0; padding: 0; list-style: none; font-size: 10px; }
+.rule-list.required { color: #315c46; }
+.rule-list.forbidden { color: #8b3e3e; }
+.reference-plan { margin-top: 10px; padding: 12px; border-radius: 9px; background: #f4f1f7; }
+.reference-plan p { margin: 5px 0 10px; font-size: 10px; overflow-wrap: anywhere; }
+.compact-empty { margin: 12px 0; padding: 14px; border: 1px dashed #d9d2df; border-radius: 9px; color: #817987; font-size: 10px; line-height: 1.5; }
+@media (max-width: 1280px) { .image-generation-grid { grid-template-columns: 1fr; } }
 .edit-prompt { margin-top: 14px; display: grid; gap: 10px; }
 .review-actions { margin-top: 14px; }
 .context-confirm-footer.panel { margin-top: 28px; padding: 26px; }
