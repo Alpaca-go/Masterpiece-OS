@@ -397,7 +397,7 @@ async function dashScopeConnectionRequest(credentials: Omit<ProviderCredentials,
     }
     return {
       ok: true,
-      message: 'DashScope 连接成功，API Key 有效（图像生成模型不兼容聊天格式连接测试）',
+      message: 'DashScope API Key 与业务空间端点可访问；实际生图能力将在首次生成时按同步/异步契约校验',
       model: credentials.model || 'wan2.7-image-pro',
       supportsImages: true,
       elapsedMs: Math.round(performance.now() - started),

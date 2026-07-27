@@ -14,6 +14,7 @@ import {
   normalizeTaskState,
   buildSubmitBody,
   REGION_ENDPOINTS,
+  resolveDashScopeEndpoint,
 } from '../../packages/image-provider-dashscope/src/index.js';
 import { downloadAndVerifyImage } from '../../packages/image-generation-runtime/src/download-verify.js';
 import {
@@ -88,8 +89,9 @@ test('getCapabilities 返回 wan2.7-image-pro 能力', async () => {
   assert.equal(caps.modelId, 'wan2.7-image-pro');
   assert.equal(caps.supportsTextToImage, true);
   assert.equal(caps.supportsMultiImageReference, true);
-  assert.equal(caps.supportsNegativePrompt, true);
+  assert.equal(caps.supportsNegativePrompt, false);
   assert.equal(caps.supportsRemoteCancel, true);
+  assert.equal(caps.maxReferenceImages, 9);
   assert.equal(caps.maxOutputCount, 1);
 });
 
@@ -100,40 +102,71 @@ test('区域解析：beijing 与 singapore 映射到正确 Endpoint', () => {
   assert.equal(REGION_ENDPOINTS.singapore, 'https://dashscope-intl.aliyuncs.com');
 });
 
-test('baseUrl 覆盖 Endpoint 且去掉结尾斜杠', async () => {
-  const { fetchImpl } = makeFetchSpy(async () => makeResponse({ output: { task_id: 't1' }, request_id: 'r1' }));
-  const p = createDashScopeProvider({ apiKey: 'sk', baseUrl: 'https://proxy.local/', fetchImpl });
-  await p.submit(sampleTask(), undefined);
+test('业务空间 compatible-mode Base URL 归一化为原生 API origin', () => {
   assert.equal(
-    // submit 第一次调用是 SUBMIT_PATH
-    fetchImpl && true,
-    true,
+    resolveDashScopeEndpoint('beijing', 'https://ws-example.cn-beijing.maas.aliyuncs.com/compatible-mode/v1'),
+    'https://ws-example.cn-beijing.maas.aliyuncs.com',
+  );
+  assert.equal(
+    resolveDashScopeEndpoint('beijing', 'https://ws-example.cn-beijing.maas.aliyuncs.com/api/v1/'),
+    'https://ws-example.cn-beijing.maas.aliyuncs.com',
   );
 });
 
-// ── submit：异步提交并解析 task_id ──
+// ── submit：同步优先，端点明确要求时才回退异步 ──
 
-test('submit 异步提交，报告 X-DashScope-Async 头并返回 providerTaskId', async () => {
+test('submit 默认同步调用且直接返回终态图片', async () => {
   const { fetchImpl, calls } = makeFetchSpy(async () =>
-    makeResponse({ output: { task_id: 'dash-task-1' }, request_id: 'req-1' }),
+    makeResponse({
+      output: {
+        finished: true,
+        choices: [{ message: { content: [{ type: 'image', image: 'https://cdn.example/sync.png' }] } }],
+      },
+      usage: { image_count: 1 },
+      request_id: 'req-1',
+    }),
   );
   const p = createDashScopeProvider({ apiKey: 'sk-test', fetchImpl });
   const result = await p.submit(sampleTask(), undefined);
 
-  assert.equal(result.providerTaskId, 'dash-task-1');
+  assert.equal(result.providerTaskId, 'sync:req-1');
   assert.equal(result.requestId, 'req-1');
+  assert.equal(result.executionMode, 'synchronous');
+  assert.equal(result.initialStatus.state, 'succeeded');
+  assert.equal(result.initialStatus.images[0].url, 'https://cdn.example/sync.png');
   assert.equal(calls.length, 1);
   assert.equal(calls[0].url, 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation');
-  assert.equal(calls[0].options.headers['X-DashScope-Async'], 'enable');
+  assert.equal(calls[0].options.headers['X-DashScope-Async'], undefined);
   assert.equal(calls[0].options.headers.Authorization, 'Bearer sk-test');
 });
 
-test('submit 缺少 task_id 抛 PROVIDER_TASK_ID_MISSING', async () => {
+test('submit 在端点明确拒绝同步时改走异步专用路径', async () => {
+  const { fetchImpl, calls } = makeFetchSpy(async (url) => {
+    if (String(url).includes('multimodal-generation')) {
+      return makeResponse(
+        { message: 'current user api does not support synchronous calls' },
+        { status: 403 },
+      );
+    }
+    return makeResponse({ output: { task_id: 'dash-task-1' }, request_id: 'req-async' });
+  });
+  const p = createDashScopeProvider({ apiKey: 'sk-test', fetchImpl });
+  const result = await p.submit(sampleTask(), undefined);
+
+  assert.equal(result.providerTaskId, 'dash-task-1');
+  assert.equal(result.executionMode, 'asynchronous');
+  assert.equal(result.initialStatus, undefined);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[1].url, 'https://dashscope.aliyuncs.com/api/v1/services/aigc/image-generation/generation');
+  assert.equal(calls[1].options.headers['X-DashScope-Async'], 'enable');
+});
+
+test('submit 同步响应缺少图片时抛 PROVIDER_RESPONSE_INVALID', async () => {
   const { fetchImpl } = makeFetchSpy(async () => makeResponse({ output: {}, request_id: 'r' }));
   const p = createDashScopeProvider({ apiKey: 'sk', fetchImpl });
   await assert.rejects(() => p.submit(sampleTask(), undefined), (e) => {
     assert.ok(e instanceof DashScopeProviderError);
-    assert.equal(e.code, 'PROVIDER_TASK_ID_MISSING');
+    assert.equal(e.code, 'PROVIDER_RESPONSE_INVALID');
     return true;
   });
 });
@@ -148,12 +181,12 @@ test('buildSubmitBody 将参考图编码为 base64（单张保持标量）', asy
     { fileReader },
   );
   assert.equal(body.model, 'wan2.7-image-pro');
-  assert.equal(body.input.messages[0].content[0].text, 'A warm brand hero image for 冯烫烫.');
+  assert.equal(body.input.messages[0].content[1].text, 'A warm brand hero image for 冯烫烫.');
   assert.equal(body.parameters.n, 1);
   assert.equal(body.parameters.watermark, false);
   // 单张参考图 → ref_img 为标量 data URL
   assert.equal(body.input.messages[0].role, 'user');
-  assert.equal(body.input.messages[0].content[1].image, `data:image/png;base64,${raw.toString('base64')}`);
+  assert.equal(body.input.messages[0].content[0].image, `data:image/png;base64,${raw.toString('base64')}`);
 });
 
 test('buildSubmitBody 多张参考图编码为数组', async () => {
@@ -166,8 +199,9 @@ test('buildSubmitBody 多张参考图编码为数组', async () => {
     { fileReader },
   );
   assert.equal(body.input.messages[0].content.length, 3);
+  assert.match(body.input.messages[0].content[0].image, /^data:image\/png;base64,/);
   assert.match(body.input.messages[0].content[1].image, /^data:image\/png;base64,/);
-  assert.match(body.input.messages[0].content[2].image, /^data:image\/png;base64,/);
+  assert.equal(body.input.messages[0].content[2].text, 'A warm brand hero image for 冯烫烫.');
 });
 
 // ── getStatus：轮询解析结果与状态 ──

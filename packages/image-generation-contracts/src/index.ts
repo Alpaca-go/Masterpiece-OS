@@ -413,6 +413,9 @@ export interface ProviderTaskStatus {
 export interface ImageGenerationSubmitResult {
   providerTaskId: string;
   requestId?: string;
+  executionMode?: 'synchronous' | 'asynchronous';
+  /** 同步调用会直接返回终态，调用方无需再查询任务接口。 */
+  initialStatus?: ProviderTaskStatus;
 }
 
 export interface ImageGenerationProvider {
@@ -532,6 +535,9 @@ export interface ImageGenerationRun {
   providerId: ImageProviderId;
   modelId: string;
   region: ImageProviderRegion;
+  /** 生成时实际使用的 API Profile，供重试与恢复继续使用同一配置。 */
+  apiProfileId?: string;
+  providerExecutionMode?: 'synchronous' | 'asynchronous';
 
   /** §13 重试链：根运行为 undefined。 */
   parentRunId?: string;

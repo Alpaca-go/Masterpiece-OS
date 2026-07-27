@@ -3,7 +3,7 @@
  *
  * 职责：
  * - compile：Prompt 编译 + 三层 Gate（不提交 Provider），持久化编译产物（§15.2 dry-run 核心）
- * - start：compile → 若 Gate 通过 → DashScope 异步提交 → 轮询 → 下载校验 → Gate C → 落盘 → 成功/失败
+ * - start：compile → 若 Gate 通过 → DashScope 同步优先提交（必要时异步轮询）→ 下载校验 → Gate C → 落盘
  * - retry（§13）：新建 runId + parentRunId，继承上下文快照，记录 Prompt 差异
  * - cancel / saveReview / getRun / listRuns / openFolder / onRunUpdated
  *
@@ -28,6 +28,7 @@ import type {
   GenerationSourceContext,
   ImageProviderCapabilities,
   ImageProviderRegion,
+  ProviderTaskStatus,
   PublicSettings,
 } from '../../shared/types';
 import { compileImageGenerationTask } from '../../../../../packages/image-generation-runtime/src/task-builder.js';
@@ -37,7 +38,7 @@ import {
   createDashScopeProvider,
   buildSubmitBody,
   DASHSCOPE_CAPABILITIES,
-  REGION_ENDPOINTS,
+  resolveDashScopeEndpoint,
 } from '../../../../../packages/image-provider-dashscope/src/index.js';
 import { redactProviderRequest, redactProviderResponse } from '../../../../../packages/image-generation-runtime/src/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
@@ -83,7 +84,13 @@ export interface ImageGenerationServiceDeps {
   /** 保留以兼容 Desktop 装配；服务内部凭据解析走 readCredentials + 环境变量。 */
   readSettings?: () => Promise<PublicSettings> | PublicSettings;
   /** 解密并读取 Provider 凭据（与 pipeline-service 一致；PublicSettings 不含明文 Key）。 */
-  readCredentials?: (profileId?: string) => Promise<{ apiKey: string; baseUrl?: string; model?: string }>;
+  readCredentials?: (profileId?: string) => Promise<{
+    apiKey: string;
+    baseUrl?: string;
+    model?: string;
+    protocol?: string;
+    profileId?: string;
+  }>;
   /** 加载上游上下文（由调用方用文件加载器或真实服务装配）。 */
   loadContext: (input: { referenceRunId: string; projectId: string; logoAssetPath?: string }) => Promise<GenerationContext>;
   loadSources?: (sources: ImageGenerationSourceBundle) => Promise<GenerationSourceContext>;
@@ -162,23 +169,53 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     deps.emitRunUpdated?.(progress);
   }
 
-  /** 解析 API Key：显式 > 解密凭据（profile） > 环境变量。 */
-  async function resolveApiKey(options: { apiKey?: string; apiProfileId?: string }): Promise<string | undefined> {
-    if (options.apiKey) return options.apiKey;
+  /** 解析完整 Provider 配置，避免只取 Key 后丢失 Profile 的业务空间 Endpoint 与模型。 */
+  async function resolveProviderConfig(options: {
+    apiKey?: string;
+    apiProfileId?: string;
+    baseUrl?: string;
+    modelId?: string;
+  }): Promise<{ apiKey?: string; baseUrl?: string; model?: string; profileId?: string }> {
+    if (options.apiKey) {
+      return {
+        apiKey: options.apiKey,
+        baseUrl: options.baseUrl,
+        model: options.modelId,
+        profileId: options.apiProfileId,
+      };
+    }
     if (deps.readCredentials) {
       try {
         const credentials = await deps.readCredentials(options.apiProfileId || undefined);
-        if (credentials?.apiKey) return credentials.apiKey;
-      } catch {
-        /* 无可用凭据时回退到环境变量 */
+        if (credentials?.protocol && credentials.protocol !== 'dashscope-wan-image') {
+          throw Object.assign(
+            new Error('所选 API Profile 不是 DashScope Wan 生图协议，请重新选择生图 Profile。'),
+            { code: 'PROVIDER_PROFILE_INCOMPATIBLE' },
+          );
+        }
+        if (credentials?.apiKey) {
+          return {
+            apiKey: credentials.apiKey,
+            baseUrl: options.baseUrl || credentials.baseUrl,
+            model: options.modelId || credentials.model,
+            profileId: options.apiProfileId || credentials.profileId,
+          };
+        }
+      } catch (error) {
+        // 用户明确选择了 Profile 时，配置错误必须暴露，不能静默换用其他 Key。
+        if (options.apiProfileId) throw error;
       }
     }
-    return process.env.MASTERPIECE_DASHSCOPE_API_KEY || undefined;
+    return {
+      apiKey: process.env.MASTERPIECE_DASHSCOPE_API_KEY || undefined,
+      baseUrl: options.baseUrl,
+      model: options.modelId,
+      profileId: options.apiProfileId,
+    };
   }
 
   function endpointFor(region: ImageProviderRegion, baseUrl?: string): string {
-    if (baseUrl) return baseUrl.replace(/\/$/, '');
-    return REGION_ENDPOINTS[region] ?? REGION_ENDPOINTS.beijing;
+    return resolveDashScopeEndpoint(region, baseUrl);
   }
 
   /** 返回 Provider 静态能力（用于 UI 展示与 Prompt 编译约束；不依赖 API Key）。 */
@@ -285,8 +322,10 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const region = options.region ?? 'beijing';
     const modelId = options.modelId ?? DASHSCOPE_CAPABILITIES.modelId;
     const capabilities = DASHSCOPE_CAPABILITIES;
-    const apiKey = await resolveApiKey(options);
-    const endpoint = endpointFor(region, options.baseUrl);
+    const providerConfig = await resolveProviderConfig(options);
+    const apiKey = providerConfig.apiKey;
+    const endpoint = endpointFor(region, providerConfig.baseUrl);
+    const resolvedModelId = options.modelId ?? providerConfig.model ?? modelId;
     // dry-run 不调用模型，允许无凭据完成离线 Gate 校验；真实运行仍要求真实 Key（否则 Gate B 阻断）。
     // 占位符仅用于 Gate 判定，不会写入 task.json（task-builder 不落盘 providerConfig）。
     const gateApiKey = apiKey ?? (options.dryRun ? 'DRY_RUN_PLACEHOLDER' : '');
@@ -298,7 +337,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
           taskId,
           sources,
           context: ctx,
-          capabilities,
+          capabilities: { ...capabilities, modelId: resolvedModelId },
           providerConfig: { apiKey: gateApiKey, baseUrl: endpoint },
           parameters: { size, region, thinkingMode: false },
           createdAt: now,
@@ -313,7 +352,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
           capsule: ctx.referenceCapsule,
           anchorBriefMarkdown: ctx.anchorBriefMarkdown,
           references: ctx.references,
-          capabilities,
+          capabilities: { ...capabilities, modelId: resolvedModelId },
           providerConfig: { apiKey: gateApiKey, baseUrl: endpoint },
           parameters: { size, region, thinkingMode: false },
           createdAt: now,
@@ -339,8 +378,9 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       status: compiled.gate.blocked ? 'blocked' : 'ready',
       outputType: compiled.task.outputType as ImageGenerationOutputType,
       providerId: 'dashscope',
-      modelId,
+      modelId: resolvedModelId,
       region,
+      ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
       createdAt: now,
       updatedAt: now,
       gate: compiled.gate,
@@ -377,11 +417,16 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   /** 提交并执行实时轮询/下载（被 start 与 retry 共用）。 */
   async function executeLive(
     run: ImageGenerationRun,
-    options: { apiKey?: string; apiProfileId?: string; baseUrl?: string },
+    options: { apiKey?: string; apiProfileId?: string; baseUrl?: string; modelId?: string },
   ): Promise<ImageGenerationRun> {
     const store = storeFor(run.projectId);
     const now = nowFn();
-    const apiKey = await resolveApiKey(options);
+    const providerConfig = await resolveProviderConfig({
+      ...options,
+      apiProfileId: options.apiProfileId || run.apiProfileId,
+      modelId: options.modelId || run.modelId,
+    });
+    const apiKey = providerConfig.apiKey;
     if (!apiKey) {
       const blocked: ImageGenerationRun = {
         ...run,
@@ -397,7 +442,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
 
     const region = run.region;
     const modelId = run.modelId;
-    const endpoint = endpointFor(region, options.baseUrl);
+    const endpoint = endpointFor(region, providerConfig.baseUrl);
     const provider: ImageGenerationProvider = createDashScopeProvider({
       apiKey,
       region,
@@ -430,7 +475,13 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       const submitResult = await provider.submit(persistedTask, undefined);
       providerTaskId = submitResult.providerTaskId;
       metrics.providerRequestCount += 1;
-      activeRun = { ...activeRun, providerTaskId, providerRequestId: submitResult.requestId, status: 'submitting' };
+      activeRun = {
+        ...activeRun,
+        providerTaskId,
+        providerRequestId: submitResult.requestId,
+        providerExecutionMode: submitResult.executionMode,
+        status: 'submitting',
+      };
       await store.saveRun(activeRun);
 
       // 脱敏请求记录
@@ -440,7 +491,18 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         redactProviderRequest({ endpoint, region, modelId, body }),
       );
 
-      return await pollAndDownload(activeRun, provider, providerTaskId, persistedTask, endpoint, region, modelId, metrics, now);
+      return await pollAndDownload(
+        activeRun,
+        provider,
+        providerTaskId,
+        persistedTask,
+        endpoint,
+        region,
+        modelId,
+        metrics,
+        now,
+        submitResult.initialStatus,
+      );
     } catch (error) {
       const code = (error as { code?: string }).code ?? 'PROVIDER_ERROR';
       const message = (error as Error).message;
@@ -456,7 +518,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       await store.saveRun(activeRun).catch(() => undefined);
       await store.appendEvent(activeRun.runId, 'RUN_FAILED', { errorCode: code }).catch(() => undefined);
       emit(activeRun);
-      throw error;
+      return activeRun;
     }
   }
 
@@ -474,13 +536,16 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     modelId: string,
     metrics: Record<string, unknown>,
     startedAt: string,
+    initialStatus?: ProviderTaskStatus,
   ): Promise<ImageGenerationRun> {
     const store = storeFor(initialRun.projectId);
     let activeRun = initialRun;
 
-    let finalStatus = await provider.getStatus(providerTaskId);
-    (metrics as { providerPollCount: number }).providerPollCount =
-      ((metrics as { providerPollCount?: number }).providerPollCount ?? 0) + 1;
+    let finalStatus = initialStatus ?? await provider.getStatus(providerTaskId);
+    if (!initialStatus) {
+      (metrics as { providerPollCount: number }).providerPollCount =
+        ((metrics as { providerPollCount?: number }).providerPollCount ?? 0) + 1;
+    }
     let attempts = 0;
     while (['pending', 'running'].includes(finalStatus.state) && attempts < MAX_POLL_ATTEMPTS) {
       await new Promise((resolve) => setTimeout(resolve, sleepMs));
@@ -508,6 +573,19 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         break;
       }
     }
+
+    await store.writeProviderResponse(
+      activeRun.runId,
+      redactProviderResponse({
+        requestId: finalStatus.requestId,
+        providerTaskId,
+        state: finalStatus.state,
+        model: modelId,
+        parameters: (persistedTask as { parameters?: unknown })?.parameters,
+        usage: finalStatus.usage,
+        images: finalStatus.images,
+      }),
+    );
 
     if (finalStatus.state === 'cancelled') {
       activeRun = { ...activeRun, status: 'cancelled', completedAt: nowFn(), updatedAt: nowFn() };
@@ -647,11 +725,27 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       }
       return run;
     }
-    const apiKey = await resolveApiKey({});
+    if (run.providerExecutionMode === 'synchronous') {
+      const failed: ImageGenerationRun = {
+        ...run,
+        status: 'failed',
+        errorCode: 'RUN_RECOVERY_RETRY_REQUIRED',
+        errorMessage: '同步生图在客户端退出后无法恢复远端结果，请使用“相同 Prompt 重试”。',
+        updatedAt: nowFn(),
+      };
+      await store.saveRun(failed);
+      emit(failed);
+      return failed;
+    }
+    const providerConfig = await resolveProviderConfig({
+      apiProfileId: run.apiProfileId,
+      modelId: run.modelId,
+    });
+    const apiKey = providerConfig.apiKey;
     if (!apiKey) {
       return run; // 无 Key 无法恢复，保留原状由用户手动重试
     }
-    const endpoint = endpointFor(run.region);
+    const endpoint = endpointFor(run.region, providerConfig.baseUrl);
     const provider = createDashScopeProvider({
       apiKey,
       region: run.region,
@@ -794,6 +888,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         retryMode: options.mode,
         providerTaskId: undefined,
         providerRequestId: undefined,
+        providerExecutionMode: undefined,
+        apiProfileId: options.apiProfileId || parent.apiProfileId,
         createdAt: now,
         updatedAt: now,
         startedAt: undefined,
@@ -815,7 +911,10 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       await store.writeRetryHistory(parent.runId, history);
       emit(run);
       if (options.dryRun || run.gate.blocked) return run;
-      return executeLive(run, { apiKey: options.apiKey, apiProfileId: options.apiProfileId });
+      return executeLive(run, {
+        apiKey: options.apiKey,
+        apiProfileId: options.apiProfileId || parent.apiProfileId,
+      });
     }
 
     const now = nowFn();
@@ -827,8 +926,13 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const size = persistedTask.parameters?.size ?? DEFAULT_SIZE;
     const region: ImageProviderRegion = persistedTask.region ?? 'beijing';
     const modelId = persistedTask.modelId ?? DASHSCOPE_CAPABILITIES.modelId;
-    const apiKey = await resolveApiKey({ apiKey: options.apiKey, apiProfileId: options.apiProfileId });
-    const endpoint = endpointFor(region);
+    const providerConfig = await resolveProviderConfig({
+      apiKey: options.apiKey,
+      apiProfileId: options.apiProfileId || parent.apiProfileId,
+      modelId,
+    });
+    const apiKey = providerConfig.apiKey;
+    const endpoint = endpointFor(region, providerConfig.baseUrl);
     const gateApiKey = apiKey ?? (options.dryRun ? 'DRY_RUN_PLACEHOLDER' : '');
     const runId = crypto.randomUUID();
     const taskId = `igt-${runId.slice(0, 8)}`;
@@ -890,6 +994,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       providerId: 'dashscope',
       modelId,
       region,
+      ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
       parentRunId: parent.runId,
       retryMode: options.mode,
       createdAt: now,
@@ -916,7 +1021,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     // 完整重试：复用 executeLive（不重新编译，避免产生第三个 run）
     return executeLive(run, {
       apiKey: options.apiKey,
-      apiProfileId: options.apiProfileId,
+      apiProfileId: options.apiProfileId || parent.apiProfileId,
       baseUrl: endpoint,
     });
   }

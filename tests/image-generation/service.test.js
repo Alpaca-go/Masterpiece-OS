@@ -127,22 +127,17 @@ async function realPngBuffer(size = 32) {
     .toBuffer();
 }
 function makeFetchResponder({ finalImageUrl = 'https://cdn.example/x.png' } = {}) {
-  let statusCalls = 0;
   const calls = [];
   const fetchImpl = async (url, options = {}) => {
     const u = String(url);
     calls.push({ url: u, method: options.method });
     if (u.includes('multimodal-generation/generation')) {
-      return makeResponse({ output: { task_id: 'dash-task-1' }, request_id: 'req-sub' });
-    }
-    if (u.includes('/tasks/') && !u.includes('cancel')) {
-      statusCalls += 1;
-      if (statusCalls === 1) {
-        return makeResponse({ request_id: 'req-poll', output: { task_status: 'RUNNING', results: [] } });
-      }
       return makeResponse({
-        request_id: 'req-done',
-        output: { task_status: 'SUCCEEDED', results: [{ url: finalImageUrl }] },
+        request_id: 'req-sync',
+        output: {
+          finished: true,
+          choices: [{ message: { content: [{ type: 'image', image: finalImageUrl }] } }],
+        },
         usage: { image_count: 1 },
       });
     }
@@ -160,7 +155,7 @@ function makeFetchResponder({ finalImageUrl = 'https://cdn.example/x.png' } = {}
   return { fetchImpl, calls };
 }
 
-function makeService(dataPath, { fetchImpl, emitRunUpdated, loadSources }) {
+function makeService(dataPath, { fetchImpl, emitRunUpdated, loadSources, readCredentials }) {
   const projectDir = path.join(dataPath, 'projects', `${PROJECT_NAME}-${PROJECT_ID.slice(0, 8)}`);
   return createImageGenerationService({
     loadContext: async () => ({
@@ -173,7 +168,7 @@ function makeService(dataPath, { fetchImpl, emitRunUpdated, loadSources }) {
     ...(loadSources ? { loadSources } : {}),
     dataPath,
     fetchImpl,
-    readCredentials: async () => ({ apiKey: 'sk-test' }),
+    readCredentials: readCredentials ?? (async () => ({ apiKey: 'sk-test' })),
     fileReader: async () => Buffer.from(''),
     sleepMs: 0,
     now: () => '2026-01-01T00:00:00.000Z',
@@ -240,9 +235,59 @@ test('start 完整流程（mock fetch）→ succeeded 且图片落盘', async ()
   const runDir = path.join(projectDir, 'image-generation', run.runId);
   assert.equal(fsSync.existsSync(path.join(runDir, 'images', 'image-01.png')), true, '图片应落盘');
 
-  // 至少一次提交 + 一次轮询
+  // 同步优先：一次提交直接取得结果，不调用异步任务查询接口
   assert.ok(calls.some((c) => c.url.includes('multimodal-generation/generation')), '应调用提交接口');
-  assert.ok(calls.some((c) => c.url.includes('/tasks/')), '应调用轮询接口');
+  assert.equal(calls.some((c) => c.url.includes('/tasks/')), false, '同步成功后不应轮询');
+
+  await fs.rm(dataPath, { recursive: true, force: true });
+});
+
+test('start 使用所选生图 Profile 的业务空间 Endpoint、模型并持久化 Profile ID', async () => {
+  const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'ig-svc-profile-'));
+  await buildProject(dataPath);
+  const { fetchImpl, calls } = makeFetchResponder();
+  const profileId = 'profile-wan';
+  const svc = makeService(dataPath, {
+    fetchImpl,
+    readCredentials: async (requestedProfileId) => {
+      assert.equal(requestedProfileId, profileId);
+      return {
+        profileId,
+        protocol: 'dashscope-wan-image',
+        apiKey: 'sk-workspace',
+        model: 'wan2.7-image-pro',
+        baseUrl: 'https://ws-example.cn-beijing.maas.aliyuncs.com/compatible-mode/v1',
+      };
+    },
+  });
+
+  const run = await svc.start({ ...COMPILE_OPTS, apiProfileId: profileId });
+  assert.equal(run.status, 'succeeded');
+  assert.equal(run.apiProfileId, profileId);
+  assert.equal(run.modelId, 'wan2.7-image-pro');
+  assert.equal(run.providerExecutionMode, 'synchronous');
+  assert.ok(calls.some((call) =>
+    call.url === 'https://ws-example.cn-beijing.maas.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'
+  ));
+
+  await fs.rm(dataPath, { recursive: true, force: true });
+});
+
+test('start 将 Provider 参数错误落盘并返回 failed run，不把主进程异常抛给 Renderer', async () => {
+  const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'ig-svc-provider-error-'));
+  await buildProject(dataPath);
+  const svc = makeService(dataPath, {
+    fetchImpl: async () => makeResponse(
+      { code: 'InvalidParameter', message: 'bad image payload' },
+      { status: 400 },
+    ),
+  });
+
+  const run = await svc.start(COMPILE_OPTS);
+  assert.equal(run.status, 'failed');
+  assert.equal(run.errorCode, 'PROVIDER_REQUEST_INVALID');
+  assert.match(run.errorMessage, /bad image payload/);
+  assert.equal((await svc.getRun(run.runId)).status, 'failed');
 
   await fs.rm(dataPath, { recursive: true, force: true });
 });

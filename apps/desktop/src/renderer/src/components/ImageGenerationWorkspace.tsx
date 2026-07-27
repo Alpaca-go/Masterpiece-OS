@@ -226,7 +226,8 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
       const run = await window.masterpiece.imageGeneration.retry({
         runId: activeRunId,
         mode,
-        editedPrompt: mode === 'edited_prompt' ? editedPrompt : undefined
+        editedPrompt: mode === 'edited_prompt' ? editedPrompt : undefined,
+        apiProfileId
       });
       setActiveRunId(run.runId);
       await loadRun(run.runId);
