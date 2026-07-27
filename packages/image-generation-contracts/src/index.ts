@@ -28,9 +28,31 @@ export const GENERATION_DELIVERABLE_LABELS: Record<GenerationDeliverable, string
 export interface ImageGenerationCompileFingerprint { sourceBundleHash: string; userIntentHash: string; deliverableHash: string; referencePlanHash: string; compiledPromptHash: string; compiledAt: string; }
 export interface UserIntentResolution { originalPrompt: string; normalizedPrompt: string; detectedDeliverable?: GenerationDeliverable; conflicts: string[]; }
 export interface ImageGenerationSourceBundleV3 {
-  schemaVersion: '3.0'; sourcePreset: GenerationSourcePreset; deliverable: GenerationDeliverable; purpose: ImageGenerationPurpose; projectId?: string;
-  visual?: { projectId: string; visualRunId?: string; selectedAssetIds?: string[] }; document?: { documentRunId: string }; reference?: { referenceAnchorRunId: string };
+  schemaVersion: '3.0';
+  sourcePreset: GenerationSourcePreset;
+  deliverable: GenerationDeliverable;
+  purpose: ImageGenerationPurpose;
+  projectId?: string;
+  visual?: { projectId: string; visualRunId?: string; selectedAssetIds?: string[] };
+  document?: { documentRunId: string };
+  reference?: { referenceAnchorRunId: string };
   userIntent: { prompt: string; subject?: string; locationType?: string; aspectRatio?: string };
+}
+
+export interface PromptSourceMapV3 {
+  schemaVersion: '3.0';
+  sourcePreset: GenerationSourcePreset;
+  deliverable: GenerationDeliverable;
+  priorityOrder: [
+    'deliverable',
+    'userIntent',
+    'lockedAssets',
+    'identity',
+    'upstreamContext',
+    'references',
+    'defaults'
+  ];
+  sections: Array<{ id: string; source: string[]; priority: number }>;
 }
 
 export type ImageGenerationPurpose = 'exploration' | 'production';
@@ -255,6 +277,32 @@ export interface ImageGenerationTask {
 
   parameters: ImageGenerationTaskParameters;
 
+  createdAt: string;
+}
+
+export interface ImageGenerationTaskV3 {
+  schemaVersion: '3.0';
+  taskId: string;
+  runId: string;
+  sourcePreset: GenerationSourcePreset;
+  deliverable: GenerationDeliverable;
+  purpose: ImageGenerationPurpose;
+  projectId?: string;
+  virtualProjectId?: string;
+  sources: {
+    visualRunId?: string;
+    documentRunId?: string;
+    referenceAnchorRunId?: string;
+  };
+  userIntent: { original: string; normalized: string };
+  references: ImageGenerationReference[];
+  compiledPrompt: string;
+  promptVersion: 3;
+  compileFingerprint: ImageGenerationCompileFingerprint;
+  providerId: ImageProviderId;
+  modelId: string;
+  region: ImageProviderRegion;
+  parameters: ImageGenerationTaskParameters;
   createdAt: string;
 }
 

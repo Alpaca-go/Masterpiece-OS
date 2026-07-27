@@ -26,7 +26,9 @@ const SCHEMA_FILES = [
   'image-generation-task-v2.schema.json',
   'source-context-snapshot-v2.schema.json',
   'generation-transformation-brief.schema.json',
-  'creative-director-run.schema.json'
+  'creative-director-run.schema.json',
+  'image-generation-source-bundle-v3.schema.json',
+  'image-generation-task-v3.schema.json'
 ];
 
 test('all image-generation schemas exist and are valid draft 2020-12 objects', () => {
@@ -42,6 +44,25 @@ test('all image-generation schemas exist and are valid draft 2020-12 objects', (
     assert.equal(schema.additionalProperties, false, `${name} must forbid additional properties`);
     assert.ok(Array.isArray(schema.required) && schema.required.length > 0, `${name} must list required`);
   }
+});
+
+test('V3 source bundle separates source preset from deliverable', () => {
+  const bundle = loadSchema('image-generation-source-bundle-v3.schema.json');
+  assert.deepEqual(bundle.properties.sourcePreset.enum, [
+    'visual_analysis', 'document_context', 'reference_anchor', 'integrated_context'
+  ]);
+  assert.deepEqual(bundle.properties.deliverable.enum, [
+    'anchor_image', 'brand_poster', 'packaging_render', 'vi_application',
+    'interior_scene', 'storefront_scene', 'free_concept'
+  ]);
+});
+
+test('V3 task requires a compile fingerprint and one-image output contract', () => {
+  const task = loadSchema('image-generation-task-v3.schema.json');
+  assert.ok(task.required.includes('compileFingerprint'));
+  assert.equal(task.properties.promptVersion.const, 3);
+  assert.equal(task.properties.parameters.properties.outputCount.const, 1);
+  assert.equal(task.properties.parameters.properties.watermark.const, false);
 });
 
 test('creative director schemas define the three modes and confirmation lifecycle', () => {
