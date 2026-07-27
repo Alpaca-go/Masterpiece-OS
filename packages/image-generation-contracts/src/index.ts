@@ -45,10 +45,10 @@ export interface GenerationSourceContext {
   preset: ImageGenerationPreset;
   purpose: ImageGenerationPurpose;
   projectId?: string;
-  visualContext?: Record<string, unknown>;
-  documentContext?: Record<string, unknown>;
-  resolvedContext?: Record<string, unknown>;
-  referenceCapsule?: Record<string, unknown>;
+  visualContext?: unknown;
+  documentContext?: unknown;
+  resolvedContext?: unknown;
+  referenceCapsule?: unknown;
   anchorBriefMarkdown?: string;
   referenceDecision?: { status: string; decision?: string };
   references: ImageGenerationReference[];

@@ -549,6 +549,12 @@ import type {
 // ── 生图功能 V1 契约类型已迁移至 packages/image-generation-contracts（生图 V1 Phase 1）──
 export type {
   ImageGenerationOutputType,
+  ImageGenerationPreset,
+  ImageGenerationPurpose,
+  ImageGenerationSourceBundle,
+  GenerationSourceContext,
+  ImageGenerationPolicy,
+  ImageGenerationPresetCapability,
   ImageProviderRegion,
   ImageProviderId,
   ImageProviderCapabilities,
@@ -591,6 +597,8 @@ import type {
   ImageGenerationRetryMode,
   ImageProviderCapabilities,
   ImageGenerationOutputType,
+  ImageGenerationSourceBundle,
+  GenerationSourceContext,
   ImageProviderRegion
 } from '../../../../packages/image-generation-contracts/src/index';
 
