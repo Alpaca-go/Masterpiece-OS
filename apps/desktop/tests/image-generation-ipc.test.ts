@@ -29,7 +29,18 @@ function makeFakeService() {
     },
     compile: async (input: any) => {
       calls.compile = [input];
-      return { run: { runId: 'r-compile' } };
+      return {
+        run: { runId: 'r-compile' },
+        result: {
+          runId: 'r-compile',
+          compiledPrompt: '# prompt',
+          promptVersion: 2,
+          gate: { blocked: false, errors: [], warnings: [] },
+          providerPayloadPreview: {},
+          promptSourceMap: {},
+        },
+        context: {},
+      };
     },
     start: async (input: any) => {
       calls.start = [input];
@@ -131,8 +142,11 @@ test('compile forwards V2 sources unchanged', async () => {
     },
     apiProfileId: 'wan-profile',
   };
-  await handlers['image-generation:compile']({}, input);
+  const result = await handlers['image-generation:compile']({}, input);
   assert.deepEqual(calls.compile[0], input);
+  assert.equal(result.runId, 'r-compile');
+  assert.equal(result.gate.blocked, false);
+  assert.equal(result.run, undefined, 'IPC must not leak the internal service wrapper');
 });
 
 test('compile 转发并映射 StartImageGenerationInput 字段', async () => {
@@ -141,7 +155,8 @@ test('compile 转发并映射 StartImageGenerationInput 字段', async () => {
   registerImageGenerationIpc(svc, ipcMain);
   const input = { projectId: 'p1', referenceAnchorRunId: 'ref1', outputType: 'master_anchor_image', apiProfileId: 'prof1', size: '1024*1024', region: 'beijing' };
   const result = await handlers['image-generation:compile']({}, input);
-  assert.equal(result.run.runId, 'r-compile');
+  assert.equal(result.runId, 'r-compile');
+  assert.equal(result.gate.blocked, false);
   assert.equal(calls.compile[0].projectId, 'p1');
   assert.equal(calls.compile[0].referenceAnchorRunId, 'ref1');
   assert.equal(calls.compile[0].apiProfileId, 'prof1');

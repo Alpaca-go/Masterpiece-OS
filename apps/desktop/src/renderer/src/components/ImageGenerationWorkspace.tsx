@@ -66,6 +66,19 @@ const PRESET_LABELS: Record<ImageGenerationSourceBundle['preset'], string> = {
   integrated_anchor: '使用完整上下文生成',
 };
 
+function assertCompileResult(value: ImageGenerationCompileResult): ImageGenerationCompileResult {
+  if (
+    !value
+    || typeof value.runId !== 'string'
+    || !value.gate
+    || !Array.isArray(value.gate.errors)
+    || !Array.isArray(value.gate.warnings)
+  ) {
+    throw new Error('生图编译结果格式无效，请更新客户端后重试。');
+  }
+  return value;
+}
+
 export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
   const [userIntent, setUserIntent] = useState(sourceBundle.userIntent?.prompt || '');
   const input: StartImageGenerationInput = useMemo(() => ({
@@ -99,7 +112,7 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
   const [showEditPrompt, setShowEditPrompt] = useState(false);
   const [editedPrompt, setEditedPrompt] = useState('');
 
-  const gateBlocked = Boolean(compileResult?.gate.blocked);
+  const gateBlocked = Boolean(compileResult?.gate?.blocked);
 
   async function refreshRuns() {
     const next = await window.masterpiece.imageGeneration.listRuns(runScopeId);
@@ -136,7 +149,8 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
     ]).catch((reason) => setError(cleanError(reason)));
     // 自动编译以展示 Prompt 预览与 Gate 结果
     window.masterpiece.imageGeneration.compile(input)
-      .then((result) => {
+      .then((rawResult) => {
+        const result = assertCompileResult(rawResult);
         setCompileResult(result);
         if (result.gate.blocked) {
           setNotice(`三层 Gate 已阻断：${result.gate.errors.map((e) => e.message).join('；')}`);

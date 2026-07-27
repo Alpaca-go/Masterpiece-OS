@@ -22,8 +22,10 @@ export function registerImageGenerationIpc(service: ImageGenerationService, ipcM
   ipcMain.handle('image-generation:get-source-preview', async (_event, input: StartImageGenerationInput) =>
     service.getSourcePreview(input));
 
-  ipcMain.handle('image-generation:compile', async (_event, input: StartImageGenerationInput) =>
-    service.compile(input));
+  ipcMain.handle('image-generation:compile', async (_event, input: StartImageGenerationInput) => {
+    const compiled = await service.compile(input);
+    return compiled.result;
+  });
 
   ipcMain.handle('image-generation:start', async (_event, input: StartImageGenerationInput) =>
     service.start(input));

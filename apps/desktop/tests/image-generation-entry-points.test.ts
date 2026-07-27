@@ -9,6 +9,8 @@ const generationSource = fs.readFileSync(path.join(rendererRoot, 'components', '
 const referenceSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ReferenceAnchorWorkspace.tsx'), 'utf8');
 const documentSource = fs.readFileSync(path.join(rendererRoot, 'components', 'DocumentContextWorkspace.tsx'), 'utf8');
 const reportSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ReportView.tsx'), 'utf8');
+const mainSource = fs.readFileSync(path.join(rendererRoot, 'main.tsx'), 'utf8');
+const errorBoundarySource = fs.readFileSync(path.join(rendererRoot, 'components', 'AppErrorBoundary.tsx'), 'utf8');
 
 test('renderer exposes all four generation presets from their owning workspaces', () => {
   for (const preset of ['visual_extension', 'document_concept', 'reference_preview', 'integrated_anchor']) {
@@ -31,4 +33,12 @@ test('generation workspace uses source bundles, displays source usage and only o
 test('rejected reference anchors never expose the preview action', () => {
   assert.match(referenceSource, /selectedRun\.status !== 'rejected'/);
   assert.match(referenceSource, /onGenerateReferencePreview/);
+});
+
+test('renderer validates compile responses before storing them and has a global error boundary', () => {
+  assert.match(generationSource, /assertCompileResult\(rawResult\)/);
+  assert.match(generationSource, /生图编译结果格式无效/);
+  assert.match(mainSource, /<AppErrorBoundary>/);
+  assert.match(errorBoundarySource, /getDerivedStateFromError/);
+  assert.match(errorBoundarySource, /页面加载失败/);
 });
