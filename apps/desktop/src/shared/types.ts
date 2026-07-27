@@ -1,6 +1,7 @@
 // Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
 // multimodal endpoint instead of restricting profiles to a vendor allow-list.
 export type ProviderKind = string;
+export type ApiProtocol = 'openai-chat-multimodal' | 'dashscope-wan-image';
 export type OutputLanguage = 'zh-CN' | 'en';
 export type AnalysisProfile = 'fusion-enhanced';
 export type ProjectStatus = 'draft' | 'ready' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -41,6 +42,7 @@ export interface ApiProfile {
   id: string;
   displayName: string;
   provider: ProviderKind;
+  protocol?: ApiProtocol;
   modelId: string;
   baseUrl: string;
   credentialKey: string;
@@ -57,6 +59,7 @@ export interface SaveApiProfileInput {
   id?: string;
   displayName: string;
   provider: ProviderKind;
+  protocol: ApiProtocol;
   modelId: string;
   baseUrl: string;
   apiKey?: string;

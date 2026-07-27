@@ -123,7 +123,7 @@ test('submit 异步提交，报告 X-DashScope-Async 头并返回 providerTaskId
   assert.equal(result.providerTaskId, 'dash-task-1');
   assert.equal(result.requestId, 'req-1');
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis');
+  assert.equal(calls[0].url, 'https://dashscope.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation');
   assert.equal(calls[0].options.headers['X-DashScope-Async'], 'enable');
   assert.equal(calls[0].options.headers.Authorization, 'Bearer sk-test');
 });
@@ -148,11 +148,12 @@ test('buildSubmitBody 将参考图编码为 base64（单张保持标量）', asy
     { fileReader },
   );
   assert.equal(body.model, 'wan2.7-image-pro');
-  assert.equal(body.input.prompt, 'A warm brand hero image for 冯烫烫.');
+  assert.equal(body.input.messages[0].content[0].text, 'A warm brand hero image for 冯烫烫.');
   assert.equal(body.parameters.n, 1);
   assert.equal(body.parameters.watermark, false);
   // 单张参考图 → ref_img 为标量 data URL
-  assert.equal(body.input.ref_img, `data:image/png;base64,${raw.toString('base64')}`);
+  assert.equal(body.input.messages[0].role, 'user');
+  assert.equal(body.input.messages[0].content[1].image, `data:image/png;base64,${raw.toString('base64')}`);
 });
 
 test('buildSubmitBody 多张参考图编码为数组', async () => {
@@ -164,8 +165,9 @@ test('buildSubmitBody 多张参考图编码为数组', async () => {
     ]),
     { fileReader },
   );
-  assert.ok(Array.isArray(body.input.ref_img));
-  assert.equal(body.input.ref_img.length, 2);
+  assert.equal(body.input.messages[0].content.length, 3);
+  assert.match(body.input.messages[0].content[1].image, /^data:image\/png;base64,/);
+  assert.match(body.input.messages[0].content[2].image, /^data:image\/png;base64,/);
 });
 
 // ── getStatus：轮询解析结果与状态 ──
@@ -202,6 +204,20 @@ test('getStatus 解析 FAILED 并在 error.retryable=false', async () => {
   assert.ok(status.error);
   assert.equal(status.error.code, 'PROVIDER_TASK_FAILED');
   assert.equal(status.error.retryable, false);
+});
+
+test('getStatus parses Wan 2.7 choices image content', async () => {
+  const { fetchImpl } = makeFetchSpy(async () => makeResponse({
+    output: {
+      task_status: 'SUCCEEDED',
+      choices: [{ message: { content: [{ type: 'image', image: 'https://cdn.example/wan.png' }] } }],
+    },
+  }));
+  const p = createDashScopeProvider({ apiKey: 'sk', fetchImpl });
+  const status = await p.getStatus('dash-task-1');
+  assert.equal(status.state, 'succeeded');
+  assert.equal(status.images.length, 1);
+  assert.equal(status.images[0].url, 'https://cdn.example/wan.png');
 });
 
 // ── cancel ──
@@ -376,13 +392,11 @@ test('redactProviderRequest 省略 ref_img base64，Authorization 脱敏', () =>
     endpoint: 'https://dashscope.aliyuncs.com',
     region: 'beijing',
     modelId: 'wan2.7-image-pro',
-    body: { model: 'wan2.7-image-pro', input: { prompt: 'p', ref_img: ['data:image/png;base64,AAAA', 'data:image/png;base64,BBBB'] } },
+    body: { model: 'wan2.7-image-pro', input: { messages: [{ role: 'user', content: [{ text: 'p' }, { image: 'data:image/png;base64,AAAA' }] }] } },
   });
   assert.equal(r.authorization, '[REDACTED]');
   assert.equal(r.endpoint, 'https://dashscope.aliyuncs.com');
-  // ref_img 已被替换为摘要字符串，不再保留原始 base64
-  assert.equal(typeof r.body.input.ref_img, 'string');
-  assert.match(r.body.input.ref_img, /reference image\(s\), base64 omitted/);
+  assert.equal(r.body.input.messages[0].content[1].image, '[reference image, base64 omitted]');
 });
 
 test('redactProviderResponse 仅保留脱敏结果摘要', () => {

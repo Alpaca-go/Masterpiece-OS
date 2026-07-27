@@ -132,7 +132,7 @@ function makeFetchResponder({ finalImageUrl = 'https://cdn.example/x.png' } = {}
   const fetchImpl = async (url, options = {}) => {
     const u = String(url);
     calls.push({ url: u, method: options.method });
-    if (u.includes('image-synthesis')) {
+    if (u.includes('multimodal-generation/generation')) {
       return makeResponse({ output: { task_id: 'dash-task-1' }, request_id: 'req-sub' });
     }
     if (u.includes('/tasks/') && !u.includes('cancel')) {
@@ -240,7 +240,7 @@ test('start 完整流程（mock fetch）→ succeeded 且图片落盘', async ()
   assert.equal(fsSync.existsSync(path.join(runDir, 'images', 'image-01.png')), true, '图片应落盘');
 
   // 至少一次提交 + 一次轮询
-  assert.ok(calls.some((c) => c.url.includes('image-synthesis')), '应调用提交接口');
+  assert.ok(calls.some((c) => c.url.includes('multimodal-generation/generation')), '应调用提交接口');
   assert.ok(calls.some((c) => c.url.includes('/tasks/')), '应调用轮询接口');
 
   await fs.rm(dataPath, { recursive: true, force: true });

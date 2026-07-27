@@ -34,6 +34,12 @@ export function redactProviderRequest(input = {}) {
     const refs = Array.isArray(safeBody.input.ref_img) ? safeBody.input.ref_img : [safeBody.input.ref_img];
     safeBody.input.ref_img = `[${refs.length} reference image(s), base64 omitted]`;
   }
+  const content = safeBody?.input?.messages?.flatMap((message) => Array.isArray(message?.content) ? message.content : []) ?? [];
+  for (const item of content) {
+    if (item?.image && typeof item.image === 'string' && item.image.startsWith('data:')) {
+      item.image = '[reference image, base64 omitted]';
+    }
+  }
   return {
     endpoint,
     region,

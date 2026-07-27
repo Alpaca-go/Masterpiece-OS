@@ -18,6 +18,7 @@ function profileInput(profile?: ApiProfile): SaveApiProfileInput {
     id: profile?.id,
     displayName: profile?.displayName || '',
     provider: profile?.provider || '',
+    protocol: profile?.protocol || 'openai-chat-multimodal',
     modelId: profile?.modelId || '',
     baseUrl: profile?.baseUrl || '',
     apiKey: '',
@@ -135,6 +136,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
             </div>
             <dl>
               <div><dt>Provider</dt><dd>{profile.provider}</dd></div>
+              <div><dt>协议</dt><dd>{profile.protocol === 'dashscope-wan-image' ? 'DashScope Wan 图像生成' : 'OpenAI 兼容多模态'}</dd></div>
               <div><dt>Model</dt><dd>{profile.modelId}</dd></div>
               <div><dt>状态</dt><dd>{statusLabel(profile)} · {profile.hasApiKey ? 'Key 已保存' : '缺少 Key'}</dd></div>
             </dl>
@@ -151,6 +153,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
         {editor && <div className="profile-editor">
           <div className="section-heading compact"><span>+</span><div><h2>{editor.id ? '编辑 API 配置' : '新增 API 配置'}</h2><p>API Key 留空时保留已保存的凭据</p></div></div>
           <label>配置名称<input value={editor.displayName} placeholder="例如：千问 VL Plus / GPT Vision / 本地模型" onChange={(event) => updateProfile('displayName', event.target.value)} /></label>
+          <label>调用协议<select value={editor.protocol} onChange={(event) => updateProfile('protocol', event.target.value as SaveApiProfileInput['protocol'])}><option value="openai-chat-multimodal">OpenAI 兼容多模态（分析 / 视觉理解）</option><option value="dashscope-wan-image">DashScope Wan 原生图像生成</option></select><small className="field-help">协议决定连接测试和请求格式；Provider 仅用于标识与记录。</small></label>
           <label>Provider 标识<input list="provider-suggestions" value={editor.provider} placeholder="自由输入，例如 aliyun-bailian" onChange={(event) => updateProfile('provider', event.target.value)} /><small className="field-help">仅作为配置与运行记录标识，不限制厂商；请求协议需兼容 OpenAI Chat Completions。</small></label>
           <datalist id="provider-suggestions">
             <option value="aliyun-bailian" />

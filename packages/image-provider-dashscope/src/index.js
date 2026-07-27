@@ -14,7 +14,9 @@ export const REGION_ENDPOINTS = {
   singapore: 'https://dashscope-intl.aliyuncs.com',
 };
 
-const SUBMIT_PATH = '/api/v1/services/aigc/text2image/image-synthesis';
+// Wan 2.7 Image uses the native multimodal-generation API, rather than the
+// legacy text2image endpoint or OpenAI-compatible Chat Completions.
+const SUBMIT_PATH = '/api/v1/services/aigc/multimodal-generation/generation';
 const TASK_PATH = (taskId) => `/api/v1/tasks/${encodeURIComponent(taskId)}`;
 const CANCEL_PATH = (taskId) => `/api/v1/tasks/${encodeURIComponent(taskId)}/cancel`;
 
@@ -117,13 +119,11 @@ export async function buildSubmitBody(task, { fileReader } = {}) {
   for (const ref of task.references ?? []) {
     refImages.push(await encodeReferenceImage(ref.localPath, reader));
   }
-  const input = { prompt: task.compiledPrompt };
-  if (refImages.length > 0) {
-    input.ref_img = refImages.length === 1 ? refImages[0] : refImages;
-  }
+  const content = [{ text: task.compiledPrompt }];
+  for (const image of refImages) content.push({ image });
   return {
     model: task.modelId,
-    input,
+    input: { messages: [{ role: 'user', content }] },
     parameters: {
       size: task.parameters?.size,
       n: task.parameters?.outputCount ?? 1,
@@ -213,9 +213,12 @@ export function createDashScopeProvider(config = {}) {
       const output = json?.output ?? {};
       const state = normalizeTaskState(output.task_status);
       const results = Array.isArray(output.results) ? output.results : [];
-      const images = results
-        .filter((r) => r && (r.url || r.b64_image))
-        .map((r) => ({ url: r.url, b64: r.b64_image, mimeType: 'image/png' }));
+      const choiceContent = Array.isArray(output.choices)
+        ? output.choices.flatMap((choice) => Array.isArray(choice?.message?.content) ? choice.message.content : [])
+        : [];
+      const images = [...results, ...choiceContent]
+        .filter((item) => item && (item.url || item.b64_image || item.image))
+        .map((item) => ({ url: item.url || item.image, b64: item.b64_image, mimeType: 'image/png' }));
 
       /** @type {import('@masterpiece/image-generation-contracts').ProviderTaskStatus} */
       const status = {

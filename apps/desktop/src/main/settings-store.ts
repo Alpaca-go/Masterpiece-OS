@@ -5,6 +5,7 @@ import { app, safeStorage } from 'electron';
 import sharp from 'sharp';
 import type {
   ApiProfile,
+  ApiProtocol,
   AnalysisPipelineMode,
   ConnectionTestResult,
   DirectionGenerationMode,
@@ -41,9 +42,16 @@ interface LegacySettings {
   connectionStatus?: 'untested' | 'connected' | 'failed';
 }
 
+function inferProtocol(provider: string, modelId: string): ApiProtocol {
+  return provider.trim().toLowerCase() === 'dashscope' || /^wan2\.7-image(?:-|$)/i.test(modelId.trim())
+    ? 'dashscope-wan-image'
+    : 'openai-chat-multimodal';
+}
+
 export interface ProviderCredentials {
   profileId: string;
   provider: ProviderKind;
+  protocol?: ApiProtocol;
   baseUrl: string;
   model: string;
   apiKey: string;
@@ -105,6 +113,7 @@ async function migrateLegacy(value: LegacySettings): Promise<StoredSettings> {
       id,
       displayName: value.model || '默认 API 配置',
       provider: value.provider || 'openai-compatible',
+      protocol: inferProtocol(value.provider || '', value.model || ''),
       modelId: value.model || '',
       baseUrl: value.baseUrl || '',
       credentialKey: `masterpiece-os/${id}`,
@@ -138,6 +147,8 @@ async function readStored(): Promise<StoredSettings> {
     stored.profiles = stored.profiles.map((profile) => ({
       ...profile,
       provider: String(profile.provider || 'openai-compatible').trim(),
+      protocol: profile.protocol === 'dashscope-wan-image' || profile.protocol === 'openai-chat-multimodal'
+        ? profile.protocol : inferProtocol(String(profile.provider || ''), profile.modelId || ''),
       credentialKey: profile.credentialKey || `masterpiece-os/${profile.id}`,
       isEnabled: profile.isEnabled !== false,
       isDefault: profile.id === stored.defaultProfileId
@@ -216,6 +227,7 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
 function validateProfileInput(input: SaveApiProfileInput): void {
   if (!input.displayName.trim()) throw new Error('配置名称不能为空');
   if (!input.provider.trim()) throw new Error('Provider 标识不能为空');
+  if (input.protocol !== 'openai-chat-multimodal' && input.protocol !== 'dashscope-wan-image') throw new Error('API 协议类型无效');
   if (!input.baseUrl.trim()) throw new Error('Base URL 不能为空');
   if (!input.modelId.trim()) throw new Error('Model ID 不能为空');
   if (input.isDefault && !input.isEnabled) throw new Error('默认 API Profile 必须保持启用');
@@ -230,6 +242,7 @@ export async function saveApiProfile(input: SaveApiProfileInput): Promise<Public
   const now = new Date().toISOString();
   const connectionChanged = current ? (
     current.provider !== input.provider
+    || current.protocol !== input.protocol
     || current.modelId !== input.modelId.trim()
     || current.baseUrl !== input.baseUrl.trim()
     || Boolean(input.apiKey?.trim())
@@ -238,6 +251,7 @@ export async function saveApiProfile(input: SaveApiProfileInput): Promise<Public
     id,
     displayName: input.displayName.trim(),
     provider: input.provider.trim(),
+    protocol: input.protocol,
     modelId: input.modelId.trim(),
     baseUrl: input.baseUrl.trim(),
     credentialKey: `masterpiece-os/${id}`,
@@ -325,6 +339,7 @@ export async function getProviderCredentials(profileId?: string): Promise<Provid
   return {
     profileId: profile.id,
     provider: profile.provider,
+    protocol: profile.protocol,
     baseUrl: profile.baseUrl,
     model: profile.modelId,
     apiKey
@@ -341,13 +356,28 @@ function endpoint(baseUrl: string): string {
     : `${parsed.toString().replace(/\/$/, '')}/chat/completions`;
 }
 
+function dashScopeApiBaseUrl(baseUrl: string): string {
+  let parsed: URL;
+  try { parsed = new URL(baseUrl); }
+  catch { throw new Error('Base URL 格式无效'); }
+  if (!['https:', 'http:'].includes(parsed.protocol)) throw new Error('Base URL 必须使用 HTTP(S)');
+
+  // A profile used for text models often stores the OpenAI-compatible URL.
+  // Wan image generation uses the native DashScope /api/v1 API instead.
+  const pathname = parsed.pathname.replace(/\/$/, '');
+  parsed.pathname = /\/compatible-mode\/v1$/i.test(pathname)
+    ? pathname.replace(/\/compatible-mode\/v1$/i, '/api/v1')
+    : (pathname === '' || pathname === '/' ? '/api/v1' : pathname);
+  return parsed.toString().replace(/\/$/, '');
+}
+
 async function dashScopeConnectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
   const started = performance.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25_000);
   try {
-    const baseUrl = (credentials.baseUrl?.trim() || 'https://dashscope.aliyuncs.com').replace(/\/$/, '');
-    const probePath = '/api/v1/tasks/00000000-0000-0000-0000-000000000000';
+    const baseUrl = dashScopeApiBaseUrl(credentials.baseUrl?.trim() || 'https://dashscope.aliyuncs.com');
+    const probePath = '/tasks/00000000-0000-0000-0000-000000000000';
     const response = await fetch(`${baseUrl}${probePath}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${credentials.apiKey}`, 'Content-Type': 'application/json' },
@@ -383,7 +413,7 @@ async function dashScopeConnectionRequest(credentials: Omit<ProviderCredentials,
 }
 
 async function connectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
-  if (credentials.provider === 'dashscope') return dashScopeConnectionRequest(credentials);
+  if (credentials.protocol === 'dashscope-wan-image') return dashScopeConnectionRequest(credentials);
   const started = performance.now();
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 25_000);
@@ -446,6 +476,7 @@ export async function testApiProfile(input: SaveApiProfileInput): Promise<Connec
   try {
     const result = await connectionRequest({
       provider: input.provider,
+      protocol: input.protocol,
       baseUrl: input.baseUrl.trim(),
       model: input.modelId.trim(),
       apiKey

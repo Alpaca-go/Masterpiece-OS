@@ -85,7 +85,7 @@ function makeFetchResponder({ finalImageUrl = 'https://cdn.example/x.png' } = {}
   const fetchImpl = async (url, options = {}) => {
     const u = String(url);
     calls.push({ url: u });
-    if (u.includes('image-synthesis')) return makeResponse({ output: { task_id: 'dash-task-1' }, request_id: 'req-sub' });
+    if (u.includes('multimodal-generation/generation')) return makeResponse({ output: { task_id: 'dash-task-1' }, request_id: 'req-sub' });
     if (u.includes('/tasks/') && !u.includes('cancel')) {
       return makeResponse({
         request_id: 'req-done',
