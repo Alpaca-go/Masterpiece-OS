@@ -24,7 +24,9 @@ const SCHEMA_FILES = [
   'image-generation-gate-result.schema.json',
   'image-generation-run.schema.json',
   'image-generation-task-v2.schema.json',
-  'source-context-snapshot-v2.schema.json'
+  'source-context-snapshot-v2.schema.json',
+  'generation-transformation-brief.schema.json',
+  'creative-director-run.schema.json'
 ];
 
 test('all image-generation schemas exist and are valid draft 2020-12 objects', () => {
@@ -40,6 +42,17 @@ test('all image-generation schemas exist and are valid draft 2020-12 objects', (
     assert.equal(schema.additionalProperties, false, `${name} must forbid additional properties`);
     assert.ok(Array.isArray(schema.required) && schema.required.length > 0, `${name} must list required`);
   }
+});
+
+test('creative director schemas define the three modes and confirmation lifecycle', () => {
+  const brief = loadSchema('generation-transformation-brief.schema.json');
+  const run = loadSchema('creative-director-run.schema.json');
+  assert.deepEqual(brief.properties.mode.enum, ['extend', 'upgrade', 'rebuild']);
+  assert.equal(brief.properties.outputTask.$ref, '#/$defs/outputTask');
+  assert.deepEqual(run.properties.status.enum, [
+    'created', 'compiling', 'repairing', 'validating', 'awaiting_confirmation',
+    'approved', 'rejected', 'failed', 'cancelled'
+  ]);
 });
 
 test('run status enum matches documented §6.4 state machine (11 states)', () => {

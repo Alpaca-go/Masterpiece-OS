@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece://schemas/image-generation/generation-transformation-brief.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "mode", "outputTask", "preserve", "mustChange", "prohibitedCarryover", "newDirection", "imageReferencePlan", "creativeDifferenceTarget", "warnings", "generatedAt"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" }, "projectId": { "type": "string", "minLength": 1 },
+    "mode": { "enum": ["extend", "upgrade", "rebuild"] },
+    "outputTask": { "$ref": "#/$defs/outputTask" }, "preserve": { "$ref": "#/$defs/preserve" },
+    "mustChange": { "$ref": "#/$defs/mustChange" }, "prohibitedCarryover": { "$ref": "#/$defs/strings" },
+    "newDirection": { "$ref": "#/$defs/newDirection" }, "imageReferencePlan": { "$ref": "#/$defs/referencePlan" },
+    "creativeDifferenceTarget": { "type": "object", "additionalProperties": false, "required": ["level", "explanation"], "properties": { "level": { "enum": ["low", "medium", "high"] }, "explanation": { "type": "string" } } },
+    "warnings": { "$ref": "#/$defs/strings" }, "generatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": { "type": "array", "items": { "type": "string" } },
+    "outputTask": { "type": "object", "additionalProperties": false, "required": ["type", "responsibility", "aspectRatio"], "properties": { "type": { "const": "anchor_image" }, "responsibility": { "type": "string" }, "aspectRatio": { "type": "string" } } },
+    "preserve": { "type": "object", "additionalProperties": false, "required": ["identity", "visualAssets", "structures"], "properties": { "identity": { "$ref": "#/$defs/strings" }, "visualAssets": { "$ref": "#/$defs/strings" }, "structures": { "$ref": "#/$defs/strings" } } },
+    "mustChange": { "type": "object", "additionalProperties": false, "required": ["composition", "graphicLanguage", "hierarchy", "material", "photography", "applicationStrategy"], "properties": { "composition": { "$ref": "#/$defs/strings" }, "graphicLanguage": { "$ref": "#/$defs/strings" }, "hierarchy": { "$ref": "#/$defs/strings" }, "material": { "$ref": "#/$defs/strings" }, "photography": { "$ref": "#/$defs/strings" }, "applicationStrategy": { "$ref": "#/$defs/strings" } } },
+    "newDirection": { "type": "object", "additionalProperties": false, "required": ["visualAnchor", "sceneMechanism", "compositionStrategy", "colorRelationship", "materialAndLighting", "typographyRelationship", "informationHierarchy"], "properties": { "visualAnchor": { "type": "string" }, "sceneMechanism": { "type": "string" }, "compositionStrategy": { "$ref": "#/$defs/strings" }, "colorRelationship": { "$ref": "#/$defs/strings" }, "materialAndLighting": { "$ref": "#/$defs/strings" }, "typographyRelationship": { "$ref": "#/$defs/strings" }, "informationHierarchy": { "$ref": "#/$defs/strings" } } },
+    "referencePlan": { "type": "object", "additionalProperties": false, "required": ["identity_reference", "structure_reference", "style_reference", "analysis_only", "excluded"], "properties": { "identity_reference": { "$ref": "#/$defs/strings" }, "structure_reference": { "$ref": "#/$defs/strings" }, "style_reference": { "$ref": "#/$defs/strings" }, "analysis_only": { "$ref": "#/$defs/strings" }, "excluded": { "$ref": "#/$defs/strings" } } }
+  }
+}

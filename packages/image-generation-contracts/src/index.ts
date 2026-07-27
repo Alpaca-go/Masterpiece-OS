@@ -22,6 +22,51 @@ export type ImageGenerationPreset =
 
 export type ImageGenerationPurpose = 'exploration' | 'production';
 
+/** Creative authority used when generating a visual direction from analysis. */
+export type VisualGenerationMode = 'extend' | 'upgrade' | 'rebuild';
+
+export type GenerationImageRole =
+  | 'identity_reference'
+  | 'structure_reference'
+  | 'style_reference'
+  | 'analysis_only'
+  | 'excluded';
+
+export interface GenerationTransformationBrief {
+  schemaVersion: '1.0';
+  projectId: string;
+  mode: VisualGenerationMode;
+  outputTask: { type: 'anchor_image'; responsibility: string; aspectRatio: string };
+  preserve: { identity: string[]; visualAssets: string[]; structures: string[] };
+  mustChange: {
+    composition: string[]; graphicLanguage: string[]; hierarchy: string[];
+    material: string[]; photography: string[]; applicationStrategy: string[];
+  };
+  prohibitedCarryover: string[];
+  newDirection: {
+    visualAnchor: string; sceneMechanism: string; compositionStrategy: string[];
+    colorRelationship: string[]; materialAndLighting: string[];
+    typographyRelationship: string[]; informationHierarchy: string[];
+  };
+  imageReferencePlan: Record<GenerationImageRole, string[]>;
+  creativeDifferenceTarget: { level: 'low' | 'medium' | 'high'; explanation: string };
+  warnings: string[];
+  generatedAt: string;
+}
+
+export type CreativeDirectorRunStatus =
+  | 'created' | 'compiling' | 'repairing' | 'validating' | 'awaiting_confirmation'
+  | 'approved' | 'rejected' | 'failed' | 'cancelled';
+
+export interface CreativeDirectorRun {
+  schemaVersion: '1.0'; runId: string; projectId: string; visualGenerationMode: VisualGenerationMode;
+  status: CreativeDirectorRunStatus; modelId: string; apiProfileId: string;
+  sourceVisualRunId?: string; sourceReportPath: string;
+  transformationBriefPath?: string; transformationBriefMarkdownPath?: string;
+  createdAt: string; updatedAt: string; completedAt?: string;
+  errorCode?: string; errorMessage?: string;
+}
+
 export interface ImageGenerationSourceBundle {
   preset: ImageGenerationPreset;
   purpose: ImageGenerationPurpose;
@@ -177,6 +222,12 @@ export interface ImageGenerationTask {
   anchorBriefPath?: string;
 
   references: ImageGenerationReference[];
+
+  visualGenerationMode?: VisualGenerationMode;
+  creativeDirectorRunId?: string;
+  transformationBriefPath?: string;
+  referencePlan?: Array<{ assetId: string; role: GenerationImageRole }>;
+  creativeDifferenceTarget?: { level: 'low' | 'medium' | 'high'; explanation: string };
 
   compiledPrompt: string;
   promptVersion: number;

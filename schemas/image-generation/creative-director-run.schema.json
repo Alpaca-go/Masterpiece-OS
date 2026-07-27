@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece://schemas/image-generation/creative-director-run.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "projectId", "visualGenerationMode", "status", "modelId", "apiProfileId", "sourceReportPath", "createdAt", "updatedAt"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" }, "runId": { "type": "string" }, "projectId": { "type": "string" },
+    "visualGenerationMode": { "enum": ["extend", "upgrade", "rebuild"] },
+    "status": { "enum": ["created", "compiling", "repairing", "validating", "awaiting_confirmation", "approved", "rejected", "failed", "cancelled"] },
+    "modelId": { "type": "string" }, "apiProfileId": { "type": "string" }, "sourceVisualRunId": { "type": "string" }, "sourceReportPath": { "type": "string" },
+    "transformationBriefPath": { "type": "string" }, "transformationBriefMarkdownPath": { "type": "string" }, "createdAt": { "type": "string", "format": "date-time" }, "updatedAt": { "type": "string", "format": "date-time" }, "completedAt": { "type": "string", "format": "date-time" }, "errorCode": { "type": "string" }, "errorMessage": { "type": "string" }
+  }
+}
