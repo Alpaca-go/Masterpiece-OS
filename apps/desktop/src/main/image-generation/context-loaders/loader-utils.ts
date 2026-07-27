@@ -15,6 +15,23 @@ export async function hashFile(filePath: string): Promise<string> {
   }
 }
 
+export function resolveProjectAssetPath(projectRoot: string, relativePath: string): string {
+  const normalized = relativePath.replaceAll('\\', '/').replace(/^\.\/+/, '');
+  const inputRoot = path.resolve(projectRoot, 'input');
+  const candidate = normalized === 'input' || normalized.startsWith('input/')
+    ? path.resolve(projectRoot, normalized)
+    : path.resolve(inputRoot, normalized);
+  const relativeToInput = path.relative(inputRoot, candidate);
+  if (
+    relativeToInput === '..'
+    || relativeToInput.startsWith(`..${path.sep}`)
+    || path.isAbsolute(relativeToInput)
+  ) {
+    throw Object.assign(new Error(`项目素材路径越界：${relativePath}`), { code: 'SOURCE_ASSET_PATH_INVALID' });
+  }
+  return candidate;
+}
+
 export async function referenceFiles(
   directory: string,
   role: ImageGenerationReference['role'],

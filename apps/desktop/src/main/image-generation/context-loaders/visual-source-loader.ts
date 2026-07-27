@@ -1,7 +1,7 @@
 import path from 'node:path';
 import type { GenerationSourceContext, ImageGenerationSourceBundle, ProjectVisualContext } from '../../../shared/types';
 import { resolveProjectRoot } from '../paths.ts';
-import { hashFile, readJson } from './loader-utils.ts';
+import { hashFile, readJson, resolveProjectAssetPath } from './loader-utils.ts';
 
 export function createVisualSourceLoader(dataPath: string) {
   return {
@@ -19,7 +19,7 @@ export function createVisualSourceLoader(dataPath: string) {
         .sort((a, b) => String(a.relativePath).localeCompare(String(b.relativePath)))
         .slice(0, 6);
       const references = await Promise.all(assets.map(async (asset) => {
-        const localPath = path.join(projectRoot, asset.relativePath!);
+        const localPath = resolveProjectAssetPath(projectRoot, asset.relativePath!);
         return {
           assetId: asset.id,
           role: 'current_project_identity' as const,

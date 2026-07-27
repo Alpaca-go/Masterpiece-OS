@@ -18,6 +18,7 @@ import type {
 } from '../../shared/types';
 import type { ProjectStore } from '../project-store.ts';
 import { resolveProjectRoot } from './paths.ts';
+import { resolveProjectAssetPath } from './context-loaders/loader-utils.ts';
 
 export interface GenerationContext {
   resolvedContext: ResolvedProjectContext;
@@ -112,7 +113,7 @@ export function createFileContextLoader(
         const project = await projects.get(projectId).catch(() => null);
         const asset = project?.assets?.find((a) => a.id === logoAssetId && a.status === 'ready');
         if (asset?.relativePath) {
-          logoPath = path.join(projectRoot, asset.relativePath);
+          logoPath = resolveProjectAssetPath(projectRoot, asset.relativePath);
         }
       }
       // Headless（无 Electron ProjectStore）时，直接读 project.json 解析 Logo 资产
@@ -122,7 +123,7 @@ export function createFileContextLoader(
         );
         const asset = record?.assets?.find((a) => a.id === logoAssetId && a.status === 'ready');
         if (asset?.relativePath) {
-          logoPath = path.join(projectRoot, asset.relativePath);
+          logoPath = resolveProjectAssetPath(projectRoot, asset.relativePath);
         }
       }
       if (logoPath) {

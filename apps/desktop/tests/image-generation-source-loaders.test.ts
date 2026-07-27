@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createGenerationSourceLoader, normalizeImageGenerationSources } from '../src/main/image-generation/context-loaders/index';
+import { resolveProjectAssetPath } from '../src/main/image-generation/context-loaders/loader-utils';
 
 test('legacy start input maps to integrated_anchor without rewriting upstream files', () => {
   const sources = normalizeImageGenerationSources({ projectId: 'p1', referenceAnchorRunId: 'ra1' });
@@ -18,15 +19,15 @@ test('visual loader reads only visual project context and deterministically sele
   try {
     const projectRoot = path.join(root, 'projects', 'demo-p1');
     await fs.mkdir(path.join(projectRoot, 'outputs'), { recursive: true });
-    await fs.mkdir(path.join(projectRoot, 'input'), { recursive: true });
+    await fs.mkdir(path.join(projectRoot, 'input', 'assets'), { recursive: true });
     await fs.writeFile(path.join(projectRoot, 'outputs', 'project-visual-context.json'), JSON.stringify({ schemaVersion: '1.0', projectId: 'p1' }));
-    await fs.writeFile(path.join(projectRoot, 'input', 'b.png'), 'b');
-    await fs.writeFile(path.join(projectRoot, 'input', 'a.png'), 'a');
+    await fs.writeFile(path.join(projectRoot, 'input', 'assets', 'b.png'), 'b');
+    await fs.writeFile(path.join(projectRoot, 'input', 'assets', 'a.png'), 'a');
     await fs.writeFile(path.join(projectRoot, 'project.json'), JSON.stringify({
       id: 'p1',
       assets: [
-        { id: 'b', status: 'ready', mimeType: 'image/png', relativePath: 'input/b.png' },
-        { id: 'a', status: 'ready', mimeType: 'image/png', relativePath: 'input/a.png' },
+        { id: 'b', status: 'ready', mimeType: 'image/png', relativePath: 'assets/b.png' },
+        { id: 'a', status: 'ready', mimeType: 'image/png', relativePath: 'assets/a.png' },
       ],
     }));
     const context = await createGenerationSourceLoader(root).load({
@@ -43,6 +44,22 @@ test('visual loader reads only visual project context and deterministically sele
   } finally {
     await fs.rm(root, { recursive: true, force: true });
   }
+});
+
+test('project asset paths are relative to input and legacy input-prefixed records remain readable', () => {
+  const projectRoot = path.join('C:', 'data', 'projects', 'demo-p1');
+  assert.equal(
+    resolveProjectAssetPath(projectRoot, 'assets/a.png'),
+    path.resolve(projectRoot, 'input', 'assets', 'a.png'),
+  );
+  assert.equal(
+    resolveProjectAssetPath(projectRoot, 'input/assets/a.png'),
+    path.resolve(projectRoot, 'input', 'assets', 'a.png'),
+  );
+  assert.throws(
+    () => resolveProjectAssetPath(projectRoot, '../outside.png'),
+    (error: Error & { code?: string }) => error.code === 'SOURCE_ASSET_PATH_INVALID',
+  );
 });
 
 test('document loader does not require or create a visual project', async () => {
