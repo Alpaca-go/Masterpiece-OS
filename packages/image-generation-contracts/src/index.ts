@@ -398,7 +398,12 @@ export type ImageGenerationWarningCode =
   | 'UNAPPROVED_REFERENCE_PREVIEW'
   | 'LIMITED_VISUAL_EVIDENCE'
   | 'LIMITED_DOCUMENT_EVIDENCE'
-  | 'USER_INTENT_EMPTY';
+  | 'USER_INTENT_EMPTY'
+  | 'NO_NEW_STYLE_REFERENCE'
+  | 'ORIGINAL_STYLE_REFERENCE_REDUCED'
+  | 'CREATIVE_DIFFERENCE_MAY_BE_LOW'
+  | 'ANCHOR_FIRST_ONLY'
+  | 'REFERENCE_PLAN_AUTO_REDUCED';
 
 export interface ImageGenerationBlockingError {
   code: ImageGenerationBlockingCode;
