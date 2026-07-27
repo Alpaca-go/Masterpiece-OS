@@ -92,6 +92,8 @@ const api: DesktopApi = {
   },
   imageGeneration: {
     getCapabilities: (apiProfileId) => ipcRenderer.invoke('image-generation:get-capabilities', apiProfileId),
+    getPresetCapabilities: () => ipcRenderer.invoke('image-generation:get-preset-capabilities'),
+    getSourcePreview: (input) => ipcRenderer.invoke('image-generation:get-source-preview', input),
     compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),

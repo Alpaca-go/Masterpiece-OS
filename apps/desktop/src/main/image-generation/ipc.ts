@@ -18,26 +18,15 @@ import type {
 
 export function registerImageGenerationIpc(service: ImageGenerationService, ipcMain: IpcMain): void {
   ipcMain.handle('image-generation:get-capabilities', async () => service.getCapabilities());
+  ipcMain.handle('image-generation:get-preset-capabilities', async () => service.getPresetCapabilities());
+  ipcMain.handle('image-generation:get-source-preview', async (_event, input: StartImageGenerationInput) =>
+    service.getSourcePreview(input));
 
   ipcMain.handle('image-generation:compile', async (_event, input: StartImageGenerationInput) =>
-    service.compile({
-      projectId: input.projectId,
-      referenceAnchorRunId: input.referenceAnchorRunId,
-      outputType: input.outputType,
-      apiProfileId: input.apiProfileId,
-      size: input.size,
-      region: input.region,
-    }));
+    service.compile(input));
 
   ipcMain.handle('image-generation:start', async (_event, input: StartImageGenerationInput) =>
-    service.start({
-      projectId: input.projectId,
-      referenceAnchorRunId: input.referenceAnchorRunId,
-      outputType: input.outputType,
-      apiProfileId: input.apiProfileId,
-      size: input.size,
-      region: input.region,
-    }));
+    service.start(input));
 
   ipcMain.handle('image-generation:get-run', async (_event, runId: string) => service.getRun(runId));
   ipcMain.handle('image-generation:list-runs', async (_event, projectId?: string) => service.listRuns(projectId));

@@ -22,6 +22,11 @@ function makeFakeService() {
   const calls: any = {};
   const svc: any = {
     getCapabilities: async () => 'CAPS',
+    getPresetCapabilities: async () => 'PRESET_CAPS',
+    getSourcePreview: async (input: any) => {
+      calls.getSourcePreview = [input];
+      return { preset: input.sources.preset };
+    },
     compile: async (input: any) => {
       calls.compile = [input];
       return { run: { runId: 'r-compile' } };
@@ -64,6 +69,8 @@ function makeFakeService() {
 
 const EXPECTED_CHANNELS = [
   'image-generation:get-capabilities',
+  'image-generation:get-preset-capabilities',
+  'image-generation:get-source-preview',
   'image-generation:compile',
   'image-generation:start',
   'image-generation:get-run',
@@ -90,6 +97,42 @@ test('get-capabilities 转发', async () => {
   registerImageGenerationIpc(svc, ipcMain);
   const result = await handlers['image-generation:get-capabilities']({}, undefined);
   assert.equal(result, 'CAPS');
+});
+
+test('preset capabilities and source preview preserve the complete source bundle', async () => {
+  const { ipcMain, handlers } = makeFakeIpcMain() as any;
+  const { svc, calls } = makeFakeService();
+  registerImageGenerationIpc(svc, ipcMain);
+  assert.equal(await handlers['image-generation:get-preset-capabilities']({}), 'PRESET_CAPS');
+
+  const input = {
+    sources: {
+      preset: 'document_concept',
+      purpose: 'exploration',
+      document: { documentRunId: 'doc-1' },
+      userIntent: { prompt: '探索一个概念方向' },
+    },
+  };
+  const preview = await handlers['image-generation:get-source-preview']({}, input);
+  assert.equal(preview.preset, 'document_concept');
+  assert.deepEqual(calls.getSourcePreview[0], input);
+});
+
+test('compile forwards V2 sources unchanged', async () => {
+  const { ipcMain, handlers } = makeFakeIpcMain() as any;
+  const { svc, calls } = makeFakeService();
+  registerImageGenerationIpc(svc, ipcMain);
+  const input = {
+    sources: {
+      preset: 'reference_preview',
+      purpose: 'exploration',
+      reference: { referenceAnchorRunId: 'ref-v2' },
+      userIntent: { prompt: '验证风格转译' },
+    },
+    apiProfileId: 'wan-profile',
+  };
+  await handlers['image-generation:compile']({}, input);
+  assert.deepEqual(calls.compile[0], input);
 });
 
 test('compile 转发并映射 StartImageGenerationInput 字段', async () => {
