@@ -3,7 +3,16 @@ import { createVisualSourceLoader } from './visual-source-loader.ts';
 import { createDocumentSourceLoader } from './document-source-loader.ts';
 import { createReferenceSourceLoader } from './reference-source-loader.ts';
 import { createIntegratedSourceLoader } from './integrated-source-loader.ts';
-export { normalizeImageGenerationSources } from './legacy-context-adapter.ts';
+import {
+  toLegacyImageGenerationSources,
+  type AnyImageGenerationSourceBundle,
+} from './legacy-context-adapter.ts';
+
+export {
+  normalizeImageGenerationSources,
+  toLegacyImageGenerationSources,
+  type AnyImageGenerationSourceBundle,
+} from './legacy-context-adapter.ts';
 
 export interface ImageGenerationSourceLoader {
   supports(preset: string): boolean;
@@ -18,10 +27,14 @@ export function createGenerationSourceLoader(dataPath: string) {
     createIntegratedSourceLoader(dataPath),
   ];
   return {
-    async load(bundle: ImageGenerationSourceBundle): Promise<GenerationSourceContext> {
-      const loader = loaders.find((candidate) => candidate.supports(bundle.preset));
-      if (!loader) throw Object.assign(new Error(`不支持的生图预设：${bundle.preset}`), { code: 'GENERATION_PRESET_UNSUPPORTED' });
-      return loader.load(bundle);
+    async load(bundle: AnyImageGenerationSourceBundle): Promise<GenerationSourceContext> {
+      const legacyBundle = toLegacyImageGenerationSources(bundle);
+      const loader = loaders.find((candidate) => candidate.supports(legacyBundle.preset));
+      if (!loader) throw Object.assign(
+        new Error(`不支持的生图预设：${legacyBundle.preset}`),
+        { code: 'GENERATION_PRESET_UNSUPPORTED' },
+      );
+      return loader.load(legacyBundle);
     },
   };
 }

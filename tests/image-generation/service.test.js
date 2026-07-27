@@ -317,7 +317,7 @@ test('retry dryRun：新建独立 run，继承 parentRunId，父运行追加 ret
   await fs.rm(dataPath, { recursive: true, force: true });
 });
 
-test('Task V2 retry reuses the persisted source snapshot without reloading upstream sources', async () => {
+test('Task V2 retry migrates to V3 while reusing the persisted source snapshot', async () => {
   const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'mp-image-v2-retry-'));
   const projectDir = await buildProject(dataPath);
   let loadCount = 0;
@@ -349,9 +349,77 @@ test('Task V2 retry reuses the persisted source snapshot without reloading upstr
   const retried = await svc.retry({ runId: parent.run.runId, mode: 'same_prompt', dryRun: true });
 
   assert.equal(parent.run.schemaVersion, '2.0');
-  assert.equal(retried.schemaVersion, '2.0');
+  assert.equal(retried.schemaVersion, '3.0');
+  assert.equal(retried.sourcePreset, 'visual_analysis');
+  assert.equal(retried.deliverable, 'anchor_image');
   assert.equal(retried.parentRunId, parent.run.runId);
   assert.equal(loadCount, 1, 'retry must not reload mutable upstream sources');
+});
+
+test('V3 compile persists deliverable artifacts and start rejects a stale input revision', async () => {
+  const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'mp-image-v3-compile-'));
+  const projectDir = await buildProject(dataPath);
+  const svc = makeService(dataPath, {
+    loadSources: async (sources) => ({
+      preset: sources.preset,
+      purpose: sources.purpose,
+      projectId: PROJECT_ID,
+      visualContext: resolvedContext(),
+      resolvedContext: resolvedContext(),
+      references: identityReferences(projectDir),
+      warnings: [],
+      sourceMetadata: { visualRunId: sources.visual?.visualRunId },
+    }),
+  });
+  const sources = {
+    schemaVersion: '3.0',
+    sourcePreset: 'visual_analysis',
+    deliverable: 'anchor_image',
+    purpose: 'production',
+    projectId: PROJECT_ID,
+    visual: { projectId: PROJECT_ID, visualRunId: 'visual-v3-1' },
+    userIntent: { prompt: '基于当前品牌身份生成一张主视觉锚点图' },
+  };
+
+  const compiled = await svc.compile({ sources, dryRun: true });
+  assert.equal(compiled.run.schemaVersion, '3.0');
+  assert.equal(compiled.result.deliverable, 'anchor_image');
+  const runDir = path.join(
+    dataPath,
+    'projects',
+    `${PROJECT_NAME}-${PROJECT_ID.slice(0, 8)}`,
+    'image-generation',
+    compiled.run.runId,
+  );
+  for (const file of [
+    'deliverable-policy.json',
+    'user-intent-resolution.json',
+    'reference-plan.json',
+    'compile-fingerprint.json',
+  ]) {
+    assert.equal(fsSync.existsSync(path.join(runDir, file)), true, `${file} must be persisted`);
+  }
+
+  const confirmed = await svc.start({
+    sources,
+    compileRunId: compiled.run.runId,
+    dryRun: true,
+  });
+  assert.equal(confirmed.runId, compiled.run.runId);
+
+  await assert.rejects(
+    svc.start({
+      sources: {
+        ...sources,
+        userIntent: { prompt: '改成一张店内空间效果图' },
+      },
+      compileRunId: compiled.run.runId,
+      dryRun: true,
+    }),
+    (error) => error?.code === 'COMPILE_INPUT_STALE',
+  );
+
+  await fs.rm(dataPath, { recursive: true, force: true });
 });
 
 test('retry edited_prompt：改写 Prompt 并重新执行 Gate A', async () => {

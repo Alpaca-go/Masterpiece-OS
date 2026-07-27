@@ -25,13 +25,23 @@ import type {
   ImageGenerationRetryRecord,
   ImageGenerationOutputType,
   ImageGenerationSourceBundle,
+  ImageGenerationSourceBundleV3,
   GenerationSourceContext,
   ImageProviderCapabilities,
   ImageProviderRegion,
   ProviderTaskStatus,
   PublicSettings,
 } from '../../shared/types';
-import { compileImageGenerationTask } from '../../../../../packages/image-generation-runtime/src/task-builder.js';
+import {
+  compileImageGenerationTask,
+  migrateImageGenerationSourcesV2,
+} from '../../../../../packages/image-generation-runtime/src/task-builder.js';
+import {
+  createCompileFingerprint,
+  stableHash,
+  verifyCompileFingerprint,
+} from '../../../../../packages/image-generation-runtime/src/deliverables/compile-fingerprint.js';
+import { evaluateDeliverableGate } from '../../../../../packages/image-generation-runtime/src/gates/deliverable-gate.js';
 import { downloadAndVerifyImage } from '../../../../../packages/image-generation-runtime/src/download-verify.js';
 import { evaluateArtifactGate, evaluateIdentityGate } from '../../../../../packages/image-generation-runtime/src/gates.js';
 import {
@@ -43,7 +53,12 @@ import {
 import { redactProviderRequest, redactProviderResponse } from '../../../../../packages/image-generation-runtime/src/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
 import type { GenerationContext, FileContextLoader } from './context-loader.ts';
-import { createGenerationSourceLoader, normalizeImageGenerationSources } from './context-loaders/index.ts';
+import {
+  createGenerationSourceLoader,
+  normalizeImageGenerationSources,
+  toLegacyImageGenerationSources,
+  type AnyImageGenerationSourceBundle,
+} from './context-loaders/index.ts';
 import { resolveProjectRoot, runRootUnder, standaloneImageGenRoot, imagesDir, thumbnailsDir, RUN_FILES } from './paths.ts';
 import { EXECUTING_IMAGE_RUN_STATUSES } from '../../../../../packages/image-generation-contracts/src/index.ts';
 import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '../../../../../packages/image-generation-runtime/src/policies.js';
@@ -53,7 +68,9 @@ export const POLL_INTERVAL_MS = 3000;
 export const MAX_POLL_ATTEMPTS = 200;
 
 export interface StartOptions {
-  sources?: ImageGenerationSourceBundle;
+  sources?: ImageGenerationSourceBundle | ImageGenerationSourceBundleV3;
+  /** V3 正式提交必须指向用户最后确认的编译 revision。 */
+  compileRunId?: string;
   projectId?: string;
   referenceAnchorRunId?: string;
   outputType?: ImageGenerationOutputType;
@@ -227,10 +244,10 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     return IMAGE_GENERATION_PRESET_CAPABILITIES;
   }
 
-  async function loadSourceContext(options: StartOptions, sources: ImageGenerationSourceBundle): Promise<GenerationSourceContext> {
+  async function loadSourceContext(options: StartOptions, sources: AnyImageGenerationSourceBundle): Promise<GenerationSourceContext> {
     if (options.sources) {
       return deps.loadSources
-        ? deps.loadSources(sources)
+        ? deps.loadSources(toLegacyImageGenerationSources(sources))
         : createGenerationSourceLoader(deps.dataPath).load(sources);
     }
     const legacy = await deps.loadContext({
@@ -275,7 +292,10 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     });
     const used = compiled.snapshot.sourcesUsed;
     return {
-      preset: sources.preset,
+      preset: 'sourcePreset' in sources ? sources.sourcePreset : sources.preset,
+      ...('sourcePreset' in sources
+        ? { sourcePreset: sources.sourcePreset, deliverable: sources.deliverable }
+        : {}),
       purpose: sources.purpose,
       sourcesUsed: used,
       sourcesNotUsed: Object.entries(used).filter(([, value]) => !value).map(([key]) => key),
@@ -330,8 +350,9 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     // 占位符仅用于 Gate 判定，不会写入 task.json（task-builder 不落盘 providerConfig）。
     const gateApiKey = apiKey ?? (options.dryRun ? 'DRY_RUN_PLACEHOLDER' : '');
 
-    const isV2Request = Boolean(options.sources);
-    const compiled = isV2Request
+    const isSourceBundleRequest = Boolean(options.sources);
+    const isV3Request = 'sourcePreset' in sources;
+    const compiled = isSourceBundleRequest
       ? compileTask({
           runId,
           taskId,
@@ -367,13 +388,31 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     await store.writeCompiledPrompt(runId, compiled.compiledPromptMarkdown);
     await store.writePromptSourceMap(runId, compiled.promptSourceMap);
     await store.writeWarnings(runId, compiled.gate.warnings);
+    if (isV3Request) {
+      await store.writeDeliverableArtifacts(runId, {
+        deliverablePolicy: compiled.deliverablePolicy,
+        userIntentResolution: compiled.userIntentResolution,
+        referencePlan: compiled.referencePlan,
+        compileFingerprint: compiled.compileFingerprint,
+      });
+    }
 
     const run: ImageGenerationRun = {
-      schemaVersion: isV2Request ? '2.0' : '1.0',
+      schemaVersion: isV3Request ? '3.0' : isSourceBundleRequest ? '2.0' : '1.0',
       runId,
       projectId: scopeId,
       ...(compiled.task.virtualProjectId ? { virtualProjectId: compiled.task.virtualProjectId } : {}),
-      ...(isV2Request ? { preset: sources.preset, purpose: sources.purpose, sources } : {}),
+      ...(isSourceBundleRequest && !isV3Request
+        ? { preset: sources.preset, purpose: sources.purpose, sources }
+        : {}),
+      ...(isV3Request
+        ? {
+            sourcePreset: sources.sourcePreset,
+            deliverable: sources.deliverable,
+            purpose: sources.purpose,
+            sources,
+          }
+        : {}),
       taskId,
       status: compiled.gate.blocked ? 'blocked' : 'ready',
       outputType: compiled.task.outputType as ImageGenerationOutputType,
@@ -403,12 +442,74 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       gate: compiled.gate,
       providerPayloadPreview: compiled.providerPayloadPreview as Record<string, unknown>,
       promptSourceMap: compiled.promptSourceMap as Record<string, unknown>,
+      ...(isV3Request
+        ? {
+            sourcePreset: sources.sourcePreset,
+            deliverable: sources.deliverable,
+            deliverablePolicy: compiled.deliverablePolicy,
+            userIntentResolution: compiled.userIntentResolution,
+            referencePlan: compiled.referencePlan,
+            compileFingerprint: compiled.compileFingerprint,
+          }
+        : {}),
     };
     return { run, result, context: ctx };
   }
 
   /** 完整运行：compile → 提交 → 轮询 → 下载 → Gate C → 落盘。 */
   async function start(options: StartOptions): Promise<ImageGenerationRun> {
+    const sources = normalizeImageGenerationSources(options);
+    if ('sourcePreset' in sources) {
+      if (!options.compileRunId) {
+        throw blockingError('COMPILE_INPUT_STALE', '请先编译并确认当前交付类型与用户要求，再开始生图。');
+      }
+      const run = await getRun(options.compileRunId);
+      if (!run || run.schemaVersion !== '3.0') {
+        throw blockingError('COMPILE_INPUT_STALE', '已确认的编译 revision 不存在，请重新编译。');
+      }
+      const persistedTask = await readPersistedTask(run.runId, run.projectId);
+      const earlyMismatches = [
+        stableHash(sources) !== persistedTask.compileFingerprint?.sourceBundleHash ? 'sourceBundleHash' : undefined,
+        stableHash(sources.userIntent) !== persistedTask.compileFingerprint?.userIntentHash ? 'userIntentHash' : undefined,
+        stableHash(sources.deliverable) !== persistedTask.compileFingerprint?.deliverableHash ? 'deliverableHash' : undefined,
+      ].filter(Boolean);
+      if (earlyMismatches.length) {
+        throw Object.assign(
+          new Error(`当前生图输入已变化（${earlyMismatches.join(', ')}），请重新编译确认。`),
+          { code: 'COMPILE_INPUT_STALE', mismatches: earlyMismatches },
+        );
+      }
+      const context = await loadSourceContext(options, sources);
+      const current = compileTask({
+        runId: run.runId,
+        taskId: run.taskId,
+        sources,
+        context,
+        capabilities: { ...DASHSCOPE_CAPABILITIES, modelId: run.modelId },
+        providerConfig: { apiKey: 'FINGERPRINT_CHECK' },
+        parameters: {
+          size: options.size ?? persistedTask.parameters?.size ?? DEFAULT_SIZE,
+          region: options.region ?? persistedTask.region ?? 'beijing',
+          thinkingMode: persistedTask.parameters?.thinkingMode ?? false,
+        },
+        createdAt: persistedTask.compileFingerprint?.compiledAt ?? persistedTask.createdAt,
+      });
+      const verification = verifyCompileFingerprint(persistedTask.compileFingerprint, {
+        sourceBundle: sources,
+        userIntent: sources.userIntent,
+        deliverable: sources.deliverable,
+        referencePlan: current.referencePlan,
+        compiledPrompt: current.compiledPromptMarkdown,
+      });
+      if (!verification.valid) {
+        throw Object.assign(
+          new Error(`当前生图输入已变化（${verification.mismatches.join(', ')}），请重新编译确认。`),
+          { code: 'COMPILE_INPUT_STALE', mismatches: verification.mismatches },
+        );
+      }
+      if (run.gate.blocked || options.dryRun) return run;
+      return executeLive(run, options);
+    }
     const { run } = await compile(options);
     if (run.gate.blocked || options.dryRun) return run;
     return executeLive(run, options);
@@ -861,29 +962,130 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const persistedTask = await readPersistedTask(parent.runId, parent.projectId).catch(() => null);
     if (!persistedTask) throw new Error('父运行缺少 task.json，无法重试。');
 
-    if (persistedTask.schemaVersion === '2.0') {
+    if (persistedTask.schemaVersion === '2.0' || persistedTask.schemaVersion === '3.0') {
       const now = nowFn();
       const runId = crypto.randomUUID();
       const taskId = `igt-${runId.slice(0, 8)}`;
-      const prompt = options.mode === 'edited_prompt' && options.editedPrompt?.trim()
-        ? options.editedPrompt.trim()
-        : persistedTask.compiledPrompt;
-      const task = { ...persistedTask, runId, taskId, compiledPrompt: prompt, createdAt: now };
-      const store = storeFor(parent.projectId);
+      const sourceCandidate = parent.sources ??
+        (persistedTask.schemaVersion === '3.0'
+          ? {
+              schemaVersion: '3.0',
+              sourcePreset: persistedTask.sourcePreset,
+              deliverable: persistedTask.deliverable,
+              purpose: persistedTask.purpose,
+              projectId: persistedTask.projectId,
+              visual: persistedTask.sources?.visualRunId
+                ? { projectId: persistedTask.projectId, visualRunId: persistedTask.sources.visualRunId }
+                : undefined,
+              document: persistedTask.sources?.documentRunId
+                ? { documentRunId: persistedTask.sources.documentRunId }
+                : undefined,
+              reference: persistedTask.sources?.referenceAnchorRunId
+                ? { referenceAnchorRunId: persistedTask.sources.referenceAnchorRunId }
+                : undefined,
+              userIntent: { prompt: persistedTask.userIntent?.original ?? '' },
+            }
+          : undefined);
+      if (!sourceCandidate) {
+        throw blockingError('SOURCE_BUNDLE_INVALID', '旧运行缺少来源快照，无法安全迁移到 V3 后重试。');
+      }
+      const sources = migrateImageGenerationSourcesV2(sourceCandidate) as ImageGenerationSourceBundleV3;
       const parentRoot = await rootForRun(parent);
       const snapshot = JSON.parse(await fs.readFile(path.join(parentRoot, RUN_FILES.snapshot), 'utf8'));
-      const sourceMap = JSON.parse(await fs.readFile(path.join(parentRoot, RUN_FILES.promptSourceMap), 'utf8').catch(() => '{}'));
-      await store.writeTask(runId, task);
-      await store.writeSnapshot(runId, snapshot);
-      await store.writeCompiledPrompt(runId, prompt);
-      await store.writePromptSourceMap(runId, sourceMap);
-      await store.writeWarnings(runId, parent.gate.warnings);
-      const run: ImageGenerationRun = {
-        ...parent,
-        schemaVersion: '2.0',
+      const context: GenerationSourceContext = {
+        preset: 'integrated_anchor',
+        purpose: sources.purpose,
+        projectId: sources.projectId,
+        visualContext: snapshot.visualSummary,
+        documentContext: snapshot.documentSummary,
+        resolvedContext: snapshot.visualSummary?.identity
+          ? snapshot.visualSummary
+          : {
+              identity: snapshot.identity,
+              lockedAssets: snapshot.lockedAssets,
+              conflicts: [],
+            },
+        referenceCapsule: snapshot.referenceSummary,
+        references: persistedTask.references ?? [],
+        warnings: snapshot.warnings ?? [],
+        sourceMetadata: persistedTask.sources ?? {},
+      };
+      const providerConfig = await resolveProviderConfig({
+        apiKey: options.apiKey,
+        apiProfileId: options.apiProfileId || parent.apiProfileId,
+        modelId: parent.modelId,
+      });
+      const compiled = compileTask({
         runId,
         taskId,
-        status: parent.gate.blocked ? 'blocked' : 'ready',
+        sources,
+        context,
+        capabilities: { ...DASHSCOPE_CAPABILITIES, modelId: parent.modelId },
+        providerConfig: {
+          apiKey: providerConfig.apiKey ?? (options.dryRun ? 'DRY_RUN_PLACEHOLDER' : ''),
+          baseUrl: providerConfig.baseUrl,
+        },
+        parameters: {
+          size: persistedTask.parameters?.size ?? DEFAULT_SIZE,
+          region: persistedTask.region ?? parent.region,
+          thinkingMode: persistedTask.parameters?.thinkingMode ?? false,
+        },
+        createdAt: now,
+      });
+      if (options.mode === 'edited_prompt' && options.editedPrompt?.trim()) {
+        const prompt = options.editedPrompt.trim();
+        compiled.compiledPromptMarkdown = prompt;
+        compiled.task.compiledPrompt = prompt;
+        compiled.compileFingerprint = createCompileFingerprint({
+          sourceBundle: sources,
+          userIntent: sources.userIntent,
+          deliverable: sources.deliverable,
+          referencePlan: compiled.referencePlan,
+          compiledPrompt: prompt,
+          compiledAt: now,
+        });
+        compiled.task.compileFingerprint = compiled.compileFingerprint;
+        const deliverableErrors = evaluateDeliverableGate({
+          deliverable: sources.deliverable,
+          userIntentResolution: compiled.userIntentResolution,
+          compiledPrompt: prompt,
+          referencePlan: compiled.referencePlan,
+        });
+        compiled.gate.errors = [
+          ...compiled.gate.errors.filter((error: { code: string }) =>
+            ![
+              'DELIVERABLE_PROMPT_INCOMPLETE',
+              'INTERIOR_SCENE_SPATIAL_REQUIREMENTS_MISSING',
+              'STOREFRONT_SCENE_REQUIREMENTS_MISSING',
+            ].includes(error.code)),
+          ...deliverableErrors,
+        ];
+        compiled.gate.blocked = compiled.gate.errors.length > 0;
+      }
+      const store = storeFor(parent.projectId);
+      await store.writeTask(runId, compiled.task);
+      await store.writeSnapshot(runId, compiled.snapshot);
+      await store.writeCompiledPrompt(runId, compiled.compiledPromptMarkdown);
+      await store.writePromptSourceMap(runId, compiled.promptSourceMap);
+      await store.writeWarnings(runId, compiled.gate.warnings);
+      await store.writeDeliverableArtifacts(runId, {
+        deliverablePolicy: compiled.deliverablePolicy,
+        userIntentResolution: compiled.userIntentResolution,
+        referencePlan: compiled.referencePlan,
+        compileFingerprint: compiled.compileFingerprint,
+      });
+      const run: ImageGenerationRun = {
+        ...parent,
+        schemaVersion: '3.0',
+        runId,
+        taskId,
+        sourcePreset: sources.sourcePreset,
+        deliverable: sources.deliverable,
+        preset: undefined,
+        sources,
+        outputType: compiled.task.outputType,
+        status: compiled.gate.blocked ? 'blocked' : 'ready',
+        gate: compiled.gate,
         parentRunId: parent.runId,
         retryMode: options.mode,
         providerTaskId: undefined,
@@ -896,8 +1098,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         completedAt: undefined,
         images: [],
         review: undefined,
-        errorCode: parent.gate.blocked ? parent.errorCode : undefined,
-        errorMessage: parent.gate.blocked ? parent.errorMessage : undefined,
+        errorCode: compiled.gate.blocked ? compiled.gate.errors[0]?.code : undefined,
+        errorMessage: compiled.gate.blocked ? compiled.gate.errors[0]?.message : undefined,
       };
       await store.saveRun(run);
       const history = await store.readRetryHistory(parent.runId);
@@ -906,7 +1108,9 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         parentRunId: parent.runId,
         mode: options.mode,
         createdAt: now,
-        ...(options.mode === 'edited_prompt' ? { promptDiffSummary: `edited_prompt (${prompt.length} chars)` } : {}),
+        ...(options.mode === 'edited_prompt'
+          ? { promptDiffSummary: `edited_prompt (${compiled.compiledPromptMarkdown.length} chars)` }
+          : {}),
       });
       await store.writeRetryHistory(parent.runId, history);
       emit(run);

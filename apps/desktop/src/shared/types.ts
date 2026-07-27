@@ -552,6 +552,11 @@ export type {
   ImageGenerationPreset,
   ImageGenerationPurpose,
   ImageGenerationSourceBundle,
+  ImageGenerationSourceBundleV3,
+  GenerationSourcePreset,
+  GenerationDeliverable,
+  UserIntentResolution,
+  ImageGenerationCompileFingerprint,
   GenerationSourceContext,
   ImageGenerationPolicy,
   ImageGenerationPresetCapability,
@@ -599,6 +604,12 @@ import type {
   ImageProviderCapabilities,
   ImageGenerationOutputType,
   ImageGenerationSourceBundle,
+  ImageGenerationSourceBundleV3,
+  ImageGenerationPurpose,
+  GenerationSourcePreset,
+  GenerationDeliverable,
+  UserIntentResolution,
+  ImageGenerationCompileFingerprint,
   GenerationSourceContext,
   ImageGenerationContextSnapshotV2,
   ImageGenerationWarning,
@@ -1714,7 +1725,8 @@ export interface LegacyStartImageGenerationInput {
 }
 
 export type StartImageGenerationInput = {
-  sources: ImageGenerationSourceBundle;
+  sources: ImageGenerationSourceBundle | ImageGenerationSourceBundleV3;
+  compileRunId?: string;
   apiProfileId?: string;
   size?: string;
   region?: ImageProviderRegion;
@@ -1723,8 +1735,10 @@ export type StartImageGenerationInput = {
 } | LegacyStartImageGenerationInput;
 
 export interface ImageGenerationSourcePreview {
-  preset: ImageGenerationSourceBundle['preset'];
-  purpose: ImageGenerationSourceBundle['purpose'];
+  preset: ImageGenerationSourceBundle['preset'] | GenerationSourcePreset;
+  sourcePreset?: GenerationSourcePreset;
+  deliverable?: GenerationDeliverable;
+  purpose: ImageGenerationPurpose;
   sourcesUsed: { visual: boolean; document: boolean; reference: boolean; resolved: boolean };
   sourcesNotUsed: string[];
   referenceCount: number;
@@ -1764,6 +1778,12 @@ export interface ImageGenerationCompileResult {
   gate: ImageGenerationGateResult;
   providerPayloadPreview: Record<string, unknown>;
   promptSourceMap: Record<string, unknown>;
+  sourcePreset?: GenerationSourcePreset;
+  deliverable?: GenerationDeliverable;
+  deliverablePolicy?: Record<string, unknown>;
+  userIntentResolution?: UserIntentResolution;
+  referencePlan?: Record<string, unknown>;
+  compileFingerprint?: ImageGenerationCompileFingerprint;
 }
 
 export interface DesktopApi {

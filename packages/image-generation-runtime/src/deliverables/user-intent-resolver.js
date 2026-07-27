@@ -1,4 +1,5 @@
 const DELIVERABLE_PATTERNS = [
+  ['anchor_image', /锚点图|主视觉锚点|anchor\s*image/iu],
   ['interior_scene', /店内|室内|装修|空间设计|餐厅|用餐区|收银台|点餐区/iu],
   ['storefront_scene', /门头|店面|外立面|店铺入口|招牌/iu],
   ['packaging_render', /包装|礼盒|瓶身|瓶型|盒型|包装渲染/iu],

@@ -76,6 +76,16 @@
           "enum": ["project_visual_context", "reference_anchor_run", "user_selected"]
         },
         "includeReason": { "type": "string", "minLength": 1 },
+        "generationRole": {
+          "enum": [
+            "identity_reference",
+            "structure_reference",
+            "style_reference",
+            "spatial_reference",
+            "analysis_only",
+            "excluded"
+          ]
+        },
         "exclusionNotes": { "type": "array", "items": { "type": "string" } }
       }
     }

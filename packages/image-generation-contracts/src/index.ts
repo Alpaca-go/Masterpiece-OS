@@ -26,7 +26,17 @@ export const GENERATION_DELIVERABLE_LABELS: Record<GenerationDeliverable, string
   anchor_image: 'Anchor Image', brand_poster: '品牌海报', packaging_render: '包装渲染图', vi_application: 'VI 应用图', interior_scene: '店内空间效果图', storefront_scene: '店面 / 门头效果图', free_concept: '自由概念图'
 };
 export interface ImageGenerationCompileFingerprint { sourceBundleHash: string; userIntentHash: string; deliverableHash: string; referencePlanHash: string; compiledPromptHash: string; compiledAt: string; }
-export interface UserIntentResolution { originalPrompt: string; normalizedPrompt: string; detectedDeliverable?: GenerationDeliverable; conflicts: string[]; }
+export interface UserIntentResolution {
+  originalPrompt: string;
+  normalizedPrompt: string;
+  detectedDeliverable?: GenerationDeliverable;
+  conflicts: Array<{
+    code: 'DELIVERABLE_USER_INTENT_CONFLICT';
+    selectedDeliverable: GenerationDeliverable;
+    detectedDeliverable: GenerationDeliverable;
+    message: string;
+  }>;
+}
 export interface ImageGenerationSourceBundleV3 {
   schemaVersion: '3.0';
   sourcePreset: GenerationSourcePreset;
@@ -219,6 +229,7 @@ export interface ImageGenerationReference {
   source: ImageReferenceSource;
 
   includeReason: string;
+  generationRole?: GenerationImageRole;
   exclusionNotes?: string[];
 }
 
@@ -299,6 +310,8 @@ export interface ImageGenerationTaskV3 {
   compiledPrompt: string;
   promptVersion: 3;
   compileFingerprint: ImageGenerationCompileFingerprint;
+  outputType?: ImageGenerationOutputType;
+  contextSnapshotPath?: string;
   providerId: ImageProviderId;
   modelId: string;
   region: ImageProviderRegion;
@@ -478,7 +491,9 @@ export type ImageGenerationWarningCode =
   | 'ORIGINAL_STYLE_REFERENCE_REDUCED'
   | 'CREATIVE_DIFFERENCE_MAY_BE_LOW'
   | 'ANCHOR_FIRST_ONLY'
-  | 'REFERENCE_PLAN_AUTO_REDUCED';
+  | 'REFERENCE_PLAN_AUTO_REDUCED'
+  | 'NO_SPATIAL_REFERENCE'
+  | 'VI_COLLECTIONS_MOVED_TO_ANALYSIS_ONLY';
 
 export interface ImageGenerationBlockingError {
   code: ImageGenerationBlockingCode;
@@ -650,14 +665,16 @@ export interface ImageGenerationMetrics {
 // ---------------------------------------------------------------------------
 
 export interface ImageGenerationRun {
-  schemaVersion: '1.0' | '2.0';
+  schemaVersion: '1.0' | '2.0' | '3.0';
 
   runId: string;
   projectId: string;
   virtualProjectId?: string;
   preset?: ImageGenerationPreset;
+  sourcePreset?: GenerationSourcePreset;
+  deliverable?: GenerationDeliverable;
   purpose?: ImageGenerationPurpose;
-  sources?: ImageGenerationSourceBundle;
+  sources?: ImageGenerationSourceBundle | ImageGenerationSourceBundleV3;
   taskId: string;
 
   status: ImageGenerationRunStatus;

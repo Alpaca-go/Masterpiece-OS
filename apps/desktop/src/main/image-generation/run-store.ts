@@ -89,7 +89,7 @@ export function createRunStore(dataPath: string, projectId: string) {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.task), task);
     },
 
-    async writeSnapshot(runId: string, snapshot: SourceContextSnapshot | ImageGenerationContextSnapshotV2): Promise<void> {
+    async writeSnapshot(runId: string, snapshot: SourceContextSnapshot | ImageGenerationContextSnapshotV2 | unknown): Promise<void> {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.snapshot), snapshot);
     },
 
@@ -100,6 +100,21 @@ export function createRunStore(dataPath: string, projectId: string) {
 
     async writePromptSourceMap(runId: string, map: unknown): Promise<void> {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.promptSourceMap), map);
+    },
+
+    async writeDeliverableArtifacts(runId: string, artifacts: {
+      deliverablePolicy: unknown;
+      userIntentResolution: unknown;
+      referencePlan: unknown;
+      compileFingerprint: unknown;
+    }): Promise<void> {
+      const r = await root(runId);
+      await Promise.all([
+        writeJsonSafe(path.join(r, RUN_FILES.deliverablePolicy), artifacts.deliverablePolicy),
+        writeJsonSafe(path.join(r, RUN_FILES.userIntentResolution), artifacts.userIntentResolution),
+        writeJsonSafe(path.join(r, RUN_FILES.referencePlan), artifacts.referencePlan),
+        writeJsonSafe(path.join(r, RUN_FILES.compileFingerprint), artifacts.compileFingerprint),
+      ]);
     },
 
     async writeProviderRequest(runId: string, redacted: unknown): Promise<void> {

@@ -9,6 +9,223 @@ import { composePrompt } from './prompt/index.js';
 import { evaluatePreSubmitGates } from './gates.js';
 import { buildSourceContextSnapshot } from './context-snapshot.js';
 import { resolveGenerationPolicy } from './policies.js';
+import {
+  buildDeliverableReferencePlan,
+  materializeDeliverableReferences,
+  compileDeliverablePrompt,
+  createCompileFingerprint,
+} from './deliverables/index.js';
+import { evaluateDeliverableGate } from './gates/deliverable-gate.js';
+
+const V3_TO_V2_PRESET = {
+  visual_analysis: 'visual_extension',
+  document_context: 'document_concept',
+  reference_anchor: 'reference_preview',
+  integrated_context: 'integrated_anchor',
+};
+
+const V2_TO_V3_PRESET = {
+  visual_extension: 'visual_analysis',
+  document_concept: 'document_context',
+  reference_preview: 'reference_anchor',
+  integrated_anchor: 'integrated_context',
+};
+
+const V2_DEFAULT_DELIVERABLE = {
+  visual_extension: 'anchor_image',
+  document_concept: 'free_concept',
+  reference_preview: 'anchor_image',
+  integrated_anchor: 'anchor_image',
+};
+
+function compactContextLines(value, prefix = '') {
+  if (value == null) return [];
+  if (typeof value !== 'object') return [`${prefix}${String(value)}`];
+  if (Array.isArray(value)) return value.flatMap((item) => compactContextLines(item, prefix)).slice(0, 24);
+  return Object.entries(value)
+    .flatMap(([key, item]) => compactContextLines(item, `${prefix}${key}: `))
+    .slice(0, 24);
+}
+
+function toV2Sources(sources) {
+  return {
+    ...sources,
+    preset: V3_TO_V2_PRESET[sources.sourcePreset],
+    userIntent: {
+      ...sources.userIntent,
+      outputDescription: sources.userIntent?.prompt,
+    },
+  };
+}
+
+function warningFor(code) {
+  const messages = {
+    REFERENCE_PLAN_AUTO_REDUCED: '参考图超过当前交付类型或 Provider 限制，已自动降级为仅分析。',
+    NO_SPATIAL_REFERENCE: '空间类交付物缺少空间参考图，将主要依赖文字上下文。',
+    VI_COLLECTIONS_MOVED_TO_ANALYSIS_ONLY: 'VI 物料合集已移出直接生成参考，仅用于分析。',
+  };
+  return { code, message: messages[code] ?? code };
+}
+
+function compileImageGenerationTaskV3(input) {
+  const {
+    sources,
+    context,
+    runId,
+    taskId,
+    capabilities,
+    providerConfig,
+    parameters = {},
+    createdAt,
+    contextSnapshotPath = 'source-context-snapshot.json',
+  } = input;
+  const referencePlan = buildDeliverableReferencePlan({
+    deliverable: sources.deliverable,
+    references: context?.references ?? [],
+    capabilities,
+  });
+  const selected = materializeDeliverableReferences(referencePlan, context?.references ?? []);
+  const legacySources = toV2Sources(sources);
+  const selectedContext = { ...context, references: selected };
+  const identity = compactContextLines(context?.resolvedContext?.identity ?? context?.visualContext?.identity);
+  const lockedAssets = compactContextLines(context?.resolvedContext?.lockedAssets ?? context?.visualContext?.lockedAssets);
+  const upstreamContext = [
+    ...compactContextLines(context?.visualContext, 'visual.'),
+    ...compactContextLines(context?.documentContext, 'document.'),
+    ...compactContextLines(context?.referenceCapsule, 'reference.'),
+  ].slice(0, 40);
+  const compiled = compileDeliverablePrompt({
+    sourcePreset: sources.sourcePreset,
+    deliverable: sources.deliverable,
+    userIntent: sources.userIntent,
+    lockedAssets,
+    identity,
+    upstreamContext,
+    references: selected,
+    textSafety: ['不得臆造不可辨识的小字；品牌文字与标志只按已锁定资产呈现。'],
+    outputSpec: [
+      `画布尺寸：${parameters.size ?? ''}`,
+      `宽高比：${sources.userIntent?.aspectRatio ?? '按画布尺寸'}`,
+      '只输出一张图像。',
+    ],
+  });
+  const compileFingerprint = createCompileFingerprint({
+    sourceBundle: sources,
+    userIntent: sources.userIntent,
+    deliverable: sources.deliverable,
+    referencePlan,
+    compiledPrompt: compiled.compiledPromptMarkdown,
+    compiledAt: createdAt,
+  });
+  const outputType = sources.deliverable === 'anchor_image' ? 'master_anchor_image' : 'concept_image';
+  const projectId = sources.projectId ?? sources.visual?.projectId;
+  const virtualProjectId = projectId ? undefined : `document-${sources.document?.documentRunId}`;
+  const task = {
+    schemaVersion: '3.0',
+    taskId,
+    runId,
+    ...(projectId ? { projectId } : { virtualProjectId }),
+    sourcePreset: sources.sourcePreset,
+    deliverable: sources.deliverable,
+    purpose: sources.purpose,
+    sources: {
+      visualRunId: context?.sourceMetadata?.visualRunId,
+      documentRunId: context?.sourceMetadata?.documentRunId,
+      referenceAnchorRunId: context?.sourceMetadata?.referenceAnchorRunId,
+    },
+    userIntent: {
+      original: compiled.userIntentResolution.originalPrompt,
+      normalized: compiled.userIntentResolution.normalizedPrompt,
+    },
+    references: selected,
+    compiledPrompt: compiled.compiledPromptMarkdown,
+    promptVersion: compiled.promptVersion,
+    compileFingerprint,
+    outputType,
+    contextSnapshotPath,
+    providerId: 'dashscope',
+    modelId: capabilities?.modelId ?? providerConfig?.model ?? 'wan2.7-image-pro',
+    region: parameters.region ?? 'beijing',
+    parameters: {
+      size: parameters.size ?? '',
+      outputCount: 1,
+      watermark: false,
+      thinkingMode: parameters.thinkingMode,
+    },
+    createdAt,
+  };
+  const snapshot = {
+    schemaVersion: '3.0',
+    sourcePreset: sources.sourcePreset,
+    deliverable: sources.deliverable,
+    purpose: sources.purpose,
+    sourcesUsed: {
+      visual: Boolean(context?.visualContext),
+      document: Boolean(context?.documentContext),
+      reference: Boolean(context?.referenceCapsule),
+      resolved: Boolean(context?.resolvedContext),
+    },
+    sourceIds: { projectId, ...context?.sourceMetadata },
+    identity: context?.resolvedContext?.identity,
+    lockedAssets: context?.resolvedContext?.lockedAssets,
+    visualSummary: context?.visualContext,
+    documentSummary: context?.documentContext,
+    referenceSummary: context?.referenceCapsule,
+    userIntent: sources.userIntent,
+    warnings: context?.warnings ?? [],
+    capturedAt: createdAt,
+  };
+  const legacyPolicy = resolveGenerationPolicy(legacySources.preset);
+  const legacyGate = evaluatePreSubmitGates({
+    policy: legacyPolicy,
+    sources: legacySources,
+    context: selectedContext,
+    task,
+    compiledPromptMarkdown: compiled.compiledPromptMarkdown,
+    capabilities,
+    providerConfig,
+    parameters,
+    warnings: [
+      ...(context?.warnings ?? []),
+      ...referencePlan.warnings.map(warningFor),
+    ],
+  });
+  const deliverableErrors = evaluateDeliverableGate({
+    deliverable: sources.deliverable,
+    userIntentResolution: compiled.userIntentResolution,
+    compiledPrompt: compiled.compiledPromptMarkdown,
+    referencePlan,
+  });
+  const gate = {
+    ...legacyGate,
+    blocked: legacyGate.blocked || deliverableErrors.length > 0,
+    errors: [...legacyGate.errors, ...deliverableErrors],
+  };
+  snapshot.warnings = gate.warnings;
+  return {
+    task,
+    snapshot,
+    compiledPromptMarkdown: compiled.compiledPromptMarkdown,
+    providerPayloadPreview: {
+      model: task.modelId,
+      prompt: compiled.compiledPromptMarkdown,
+      references: selected.map((reference) => ({
+        assetId: reference.assetId,
+        role: reference.generationRole,
+        localPath: reference.localPath,
+      })),
+      parameters: task.parameters,
+    },
+    promptSourceMap: compiled.promptSourceMap,
+    gate,
+    selectedReferences: selected,
+    droppedReferences: referencePlan.analysisOnly,
+    deliverablePolicy: compiled.deliverablePolicy,
+    userIntentResolution: compiled.userIntentResolution,
+    referencePlan,
+    compileFingerprint,
+  };
+}
 
 function compileImageGenerationTaskV2(input) {
   const {
@@ -129,6 +346,7 @@ function compileImageGenerationTaskV2(input) {
  * @param {Record<string,string>} [input.upstreamFileHashes]
  */
 export function compileImageGenerationTask(input) {
+  if (input?.sources?.schemaVersion === '3.0') return compileImageGenerationTaskV3(input);
   if (input?.sources) return compileImageGenerationTaskV2(input);
   const {
     projectId,
@@ -246,5 +464,24 @@ export function migrateImageGenerationTaskV1(task) {
       referenceAnchorRunId: task.sourceReferenceAnchorRunId,
     },
     outputType: 'master_anchor_image',
+  };
+}
+
+export function migrateImageGenerationSourcesV2(sources) {
+  if (!sources || sources.schemaVersion === '3.0') return sources;
+  return {
+    schemaVersion: '3.0',
+    sourcePreset: V2_TO_V3_PRESET[sources.preset] ?? 'integrated_context',
+    deliverable: V2_DEFAULT_DELIVERABLE[sources.preset] ?? 'free_concept',
+    purpose: sources.purpose ?? 'production',
+    projectId: sources.projectId,
+    visual: sources.visual,
+    document: sources.document,
+    reference: sources.reference,
+    userIntent: {
+      prompt: sources.userIntent?.prompt ?? sources.userIntent?.outputDescription ?? '',
+      subject: sources.userIntent?.subject,
+      aspectRatio: sources.userIntent?.aspectRatio,
+    },
   };
 }

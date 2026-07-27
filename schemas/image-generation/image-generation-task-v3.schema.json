@@ -47,6 +47,8 @@
         "compiledAt": { "type": "string", "format": "date-time" }
       }
     },
+    "outputType": { "enum": ["concept_image", "master_anchor_image"] },
+    "contextSnapshotPath": { "type": "string", "minLength": 1 },
     "providerId": { "type": "string", "minLength": 1 },
     "modelId": { "type": "string", "minLength": 1 },
     "region": { "type": "string", "minLength": 1 },

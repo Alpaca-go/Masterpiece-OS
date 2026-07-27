@@ -186,7 +186,9 @@ test('gate-result warning enum matches documented §9.4 (8 non-blocking codes)',
     'ORIGINAL_STYLE_REFERENCE_REDUCED',
     'CREATIVE_DIFFERENCE_MAY_BE_LOW',
     'ANCHOR_FIRST_ONLY',
-    'REFERENCE_PLAN_AUTO_REDUCED'
+    'REFERENCE_PLAN_AUTO_REDUCED',
+    'NO_SPATIAL_REFERENCE',
+    'VI_COLLECTIONS_MOVED_TO_ANALYSIS_ONLY'
   ]);
 });
 
