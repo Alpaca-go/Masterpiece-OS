@@ -4,6 +4,12 @@ import { isUsableProjectName } from './project-intake.ts';
 const WINDOWS_FORBIDDEN = /[<>:"/\\|?*\u0000-\u001F]/g;
 const ASSET_DECISIONS = new Set(['保留', '升级', '替换', '删除', '新增']);
 
+function isValidAssetDecision(value: string): boolean {
+  const normalized = value.trim().replace(/／/gu, '/').replace(/\s+/gu, '');
+  const parts = normalized.split('/');
+  return parts.length > 0 && parts.every((part) => ASSET_DECISIONS.has(part));
+}
+
 export function sanitizeFilenamePart(value: string): string {
   const safe = String(value || '')
     .trim()
@@ -79,7 +85,10 @@ export function validateVisualUpgradeMarkdown(markdown: string): void {
   if (!decisionRows.length) {
     throw new Error('Markdown 校验失败：视觉资产决策表为空或格式无效');
   }
-  const invalid = decisionRows.filter((row) => !ASSET_DECISIONS.has(row.decision));
+  // A visual asset can intentionally retain its identity while its expression
+  // is upgraded (for example, "保留/升级").  Accept only slash-composed
+  // combinations of the canonical decisions; arbitrary prose still fails closed.
+  const invalid = decisionRows.filter((row) => !isValidAssetDecision(row.decision));
   if (invalid.length) {
     throw new Error(`Markdown 校验失败：资产决策值无效 ${invalid.map((row) => `${row.asset}:${row.decision}`).join('、')}`);
   }

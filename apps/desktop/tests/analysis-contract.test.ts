@@ -48,6 +48,8 @@ test('report title is project-specific and final decision check fails closed', (
   assert.match(normalized, /^# 九州美学视觉方案升级报告/);
   assert.doesNotThrow(() => validateDesktopReport(normalized));
   assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 删除 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留/升级 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留／升级 |')));
   assert.throws(
     () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 观察 |')),
     /资产决策值无效/
