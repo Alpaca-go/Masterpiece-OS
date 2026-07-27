@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "references": [
+    { "assetId": "logo-1", "role": "current_project_logo", "description": "品牌身份" },
+    { "assetId": "menu-board", "role": "current_project_identity", "description": "菜单平铺" },
+    { "assetId": "apron-mockup", "role": "current_project_identity", "description": "围裙样机" },
+    { "assetId": "business-card-grid", "role": "current_project_identity", "description": "名片合集" },
+    { "assetId": "packaging-bags", "role": "current_project_identity", "description": "包装袋排列" }
+  ]
+}
