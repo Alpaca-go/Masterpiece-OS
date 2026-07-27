@@ -556,7 +556,10 @@ export function createPipelineService(
         cacheStatus: execution.result.runReport.reasoningCacheHit ? 'hit' : 'miss'
       });
       return {
-        project: updated,
+        // The context status is persisted after `updated` is created. Return a
+        // fresh record so the renderer does not keep the generation entry
+        // disabled after a successful local context compile.
+        project: await projects.get(projectId),
         reportFilename,
         reportPath,
         runtimeReportPath,

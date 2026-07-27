@@ -43,7 +43,9 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
       setNotice('报告文件名已更新。');
     } catch (error) { setNotice(cleanError(error)); }
   }
-  const contextStatus = project.visualContextStatus ?? 'missing';
+  // The IPC read is authoritative after a local rebuild.  The project prop can
+  // briefly lag behind the final persistence update at analysis completion.
+  const contextStatus = context ? 'ready' : project.visualContextStatus ?? 'missing';
   const contextStatusLabel =
     contextStatus === 'ready' ? '已生成' : contextStatus === 'failed' ? '生成失败' : '尚未生成';
   async function viewContextJson() {
