@@ -1,4 +1,5 @@
 node_modules/
+.npmcache/
 masterpiece-os-output/
 coverage/
 .masterpiece-os/
