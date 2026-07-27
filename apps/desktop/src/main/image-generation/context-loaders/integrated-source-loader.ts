@@ -1,10 +1,10 @@
 import path from 'node:path';
 import type { GenerationSourceContext, ImageGenerationSourceBundle, ResolvedProjectContext } from '../../../shared/types';
-import { resolveProjectRoot } from '../paths';
-import { readJson } from './loader-utils';
-import { createVisualSourceLoader } from './visual-source-loader';
-import { createReferenceSourceLoader } from './reference-source-loader';
-import { createDocumentSourceLoader } from './document-source-loader';
+import { resolveProjectRoot } from '../paths.ts';
+import { readJson } from './loader-utils.ts';
+import { createVisualSourceLoader } from './visual-source-loader.ts';
+import { createReferenceSourceLoader } from './reference-source-loader.ts';
+import { createDocumentSourceLoader } from './document-source-loader.ts';
 
 export function createIntegratedSourceLoader(dataPath: string) {
   return {

@@ -564,6 +564,7 @@ export type {
   ImageGenerationTaskParameters,
   ImageGenerationTask,
   SourceContextSnapshot,
+  ImageGenerationContextSnapshotV2,
   ImageGenerationRunStatus,
   GateAErrorCode,
   GateBErrorCode,
@@ -599,6 +600,9 @@ import type {
   ImageGenerationOutputType,
   ImageGenerationSourceBundle,
   GenerationSourceContext,
+  ImageGenerationContextSnapshotV2,
+  ImageGenerationWarning,
+  ImageGenerationPresetCapability,
   ImageProviderRegion
 } from '../../../../packages/image-generation-contracts/src/index';
 
@@ -1700,16 +1704,34 @@ export interface ReferenceAnchorProgress {
 
 // ── 生图功能 V1：Desktop 专属输入 / 进度类型 ──
 
-/** §16 image-generation:compile / start 输入。 */
-export interface StartImageGenerationInput {
+export interface LegacyStartImageGenerationInput {
   projectId: string;
-  /** 已批准的 Reference Anchor 运行 ID（唯一正式上游）。 */
   referenceAnchorRunId: string;
   outputType?: ImageGenerationOutputType;
   apiProfileId?: string;
-  /** 可选：编译后覆盖 Prompt（edited_prompt 场景由 retry 走）。 */
   size?: string;
   region?: ImageProviderRegion;
+}
+
+export type StartImageGenerationInput = {
+  sources: ImageGenerationSourceBundle;
+  apiProfileId?: string;
+  size?: string;
+  region?: ImageProviderRegion;
+  modelId?: string;
+  dryRun?: boolean;
+} | LegacyStartImageGenerationInput;
+
+export interface ImageGenerationSourcePreview {
+  preset: ImageGenerationSourceBundle['preset'];
+  purpose: ImageGenerationSourceBundle['purpose'];
+  sourcesUsed: { visual: boolean; document: boolean; reference: boolean; resolved: boolean };
+  sourcesNotUsed: string[];
+  referenceCount: number;
+  identityBound: boolean;
+  referenceStatus?: string;
+  warnings: ImageGenerationWarning[];
+  gate: ImageGenerationGateResult;
 }
 
 /** §13 重试输入。 */
@@ -1818,6 +1840,8 @@ export interface DesktopApi {
   imageGeneration: {
     /** §16 获取 Provider 能力（用于 UI 展示与 Prompt 编译约束）。 */
     getCapabilities(apiProfileId?: string): Promise<ImageProviderCapabilities>;
+    getPresetCapabilities(): Promise<ImageGenerationPresetCapability[]>;
+    getSourcePreview(input: StartImageGenerationInput): Promise<ImageGenerationSourcePreview>;
     /** §16 编译 Prompt 并执行三层 Gate（不提交 Provider）。 */
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
     /** §16 编译 + Gate 通过后提交生图任务。 */

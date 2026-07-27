@@ -1,9 +1,9 @@
 import type { GenerationSourceContext, ImageGenerationSourceBundle } from '../../../shared/types';
-import { createVisualSourceLoader } from './visual-source-loader';
-import { createDocumentSourceLoader } from './document-source-loader';
-import { createReferenceSourceLoader } from './reference-source-loader';
-import { createIntegratedSourceLoader } from './integrated-source-loader';
-export { normalizeImageGenerationSources } from './legacy-context-adapter';
+import { createVisualSourceLoader } from './visual-source-loader.ts';
+import { createDocumentSourceLoader } from './document-source-loader.ts';
+import { createReferenceSourceLoader } from './reference-source-loader.ts';
+import { createIntegratedSourceLoader } from './integrated-source-loader.ts';
+export { normalizeImageGenerationSources } from './legacy-context-adapter.ts';
 
 export interface ImageGenerationSourceLoader {
   supports(preset: string): boolean;

@@ -29,7 +29,7 @@ export {
   resolveGenerationPolicy,
 } from './policies.js';
 
-export { compileImageGenerationTask } from './task-builder.js';
+export { compileImageGenerationTask, migrateImageGenerationTaskV1 } from './task-builder.js';
 
 export { downloadAndVerifyImage } from './download-verify.js';
 

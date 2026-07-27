@@ -278,7 +278,7 @@ export function evaluatePreSubmitGates(input) {
     const errors = [...evaluateSourceGate(input)];
     const taskErrors = evaluateTaskGate({
       ...input,
-      anchorBriefMarkdown: input.policy?.requireReferenceContext ? input.context?.anchorBriefMarkdown : '# not required',
+      anchorBriefMarkdown: input.sources?.preset === 'integrated_anchor' ? input.context?.anchorBriefMarkdown : '# not required',
       references: input.context?.references ?? input.references,
     }).filter((error) => ![
       'REFERENCE_IMAGE_MISSING',

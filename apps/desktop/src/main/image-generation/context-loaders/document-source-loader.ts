@@ -1,6 +1,6 @@
 import path from 'node:path';
 import type { DocumentVisualContext, GenerationSourceContext, ImageGenerationSourceBundle } from '../../../shared/types';
-import { readJson } from './loader-utils';
+import { readJson } from './loader-utils.ts';
 
 export function createDocumentSourceLoader(dataPath: string) {
   return {

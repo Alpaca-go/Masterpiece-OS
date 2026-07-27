@@ -5,8 +5,107 @@
 
 import { selectReferences } from './reference-selector.js';
 import { compilePrompt } from './prompt-compiler.js';
+import { composePrompt } from './prompt/index.js';
 import { evaluatePreSubmitGates } from './gates.js';
 import { buildSourceContextSnapshot } from './context-snapshot.js';
+import { resolveGenerationPolicy } from './policies.js';
+
+function compileImageGenerationTaskV2(input) {
+  const {
+    sources,
+    context,
+    runId,
+    taskId,
+    capabilities,
+    providerConfig,
+    parameters = {},
+    createdAt,
+    contextSnapshotPath = 'source-context-snapshot.json',
+  } = input;
+  const policy = resolveGenerationPolicy(sources?.preset);
+  const { selected, dropped, warnings: selectWarnings } = selectReferences(context?.references ?? [], capabilities);
+  const selectedContext = { ...context, references: selected };
+  const compiled = composePrompt({
+    sources,
+    context: selectedContext,
+    capabilities,
+    parameters,
+    modelId: capabilities?.modelId ?? providerConfig?.model,
+  });
+  const outputType = sources.preset === 'integrated_anchor' ? 'master_anchor_image' : 'concept_image';
+  const projectId = sources.projectId ?? sources.visual?.projectId;
+  const virtualProjectId = projectId ? undefined : `document-${sources.document?.documentRunId}`;
+  const task = {
+    schemaVersion: '2.0',
+    taskId,
+    runId,
+    ...(projectId ? { projectId } : { virtualProjectId }),
+    preset: sources.preset,
+    purpose: sources.purpose,
+    sources: {
+      visualRunId: context?.sourceMetadata?.visualRunId,
+      documentRunId: context?.sourceMetadata?.documentRunId,
+      referenceAnchorRunId: context?.sourceMetadata?.referenceAnchorRunId,
+    },
+    outputType,
+    contextSnapshotPath,
+    references: selected,
+    compiledPrompt: compiled.compiledPromptMarkdown,
+    promptVersion: compiled.promptVersion,
+    providerId: 'dashscope',
+    modelId: capabilities?.modelId ?? providerConfig?.model ?? 'wan2.7-image-pro',
+    region: parameters.region ?? 'beijing',
+    parameters: {
+      size: parameters.size ?? '',
+      outputCount: 1,
+      watermark: false,
+      thinkingMode: parameters.thinkingMode,
+    },
+    createdAt,
+  };
+  const snapshot = {
+    schemaVersion: '2.0',
+    preset: sources.preset,
+    purpose: sources.purpose,
+    sourcesUsed: {
+      visual: Boolean(context?.visualContext),
+      document: Boolean(context?.documentContext),
+      reference: Boolean(context?.referenceCapsule),
+      resolved: Boolean(context?.resolvedContext),
+    },
+    sourceIds: { projectId, ...context?.sourceMetadata },
+    identity: context?.resolvedContext?.identity,
+    lockedAssets: context?.resolvedContext?.lockedAssets,
+    visualSummary: context?.visualContext,
+    documentSummary: context?.documentContext,
+    referenceSummary: context?.referenceCapsule,
+    userIntent: sources.userIntent ?? {},
+    warnings: context?.warnings ?? [],
+    capturedAt: createdAt,
+  };
+  const gate = evaluatePreSubmitGates({
+    policy,
+    sources,
+    context: selectedContext,
+    task,
+    compiledPromptMarkdown: compiled.compiledPromptMarkdown,
+    capabilities,
+    providerConfig,
+    parameters,
+    warnings: [...(context?.warnings ?? []), ...selectWarnings],
+  });
+  snapshot.warnings = gate.warnings;
+  return {
+    task,
+    snapshot,
+    compiledPromptMarkdown: compiled.compiledPromptMarkdown,
+    providerPayloadPreview: compiled.providerPayloadPreview,
+    promptSourceMap: compiled.promptSourceMap,
+    gate,
+    selectedReferences: selected,
+    droppedReferences: dropped,
+  };
+}
 
 /**
  * @param {object} input
@@ -30,6 +129,7 @@ import { buildSourceContextSnapshot } from './context-snapshot.js';
  * @param {Record<string,string>} [input.upstreamFileHashes]
  */
 export function compileImageGenerationTask(input) {
+  if (input?.sources) return compileImageGenerationTaskV2(input);
   const {
     projectId,
     runId,
@@ -130,5 +230,21 @@ export function compileImageGenerationTask(input) {
     gate,
     selectedReferences: selected,
     droppedReferences: dropped,
+  };
+}
+
+export function migrateImageGenerationTaskV1(task) {
+  if (!task || task.schemaVersion !== '1.0') return task;
+  return {
+    ...task,
+    schemaVersion: '2.0',
+    preset: 'integrated_anchor',
+    purpose: 'production',
+    sources: {
+      visualRunId: task.sourceVisualRunId,
+      documentRunId: task.sourceDocumentRunId,
+      referenceAnchorRunId: task.sourceReferenceAnchorRunId,
+    },
+    outputType: 'master_anchor_image',
   };
 }

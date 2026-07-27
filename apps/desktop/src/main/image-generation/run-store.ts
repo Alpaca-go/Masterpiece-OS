@@ -17,8 +17,9 @@ import type {
   ImageGenerationRetryRecord,
   ImageGenerationWarning,
   SourceContextSnapshot,
+  ImageGenerationContextSnapshotV2,
 } from '../../shared/types';
-import { resolveProjectRoot, runRootUnder, imageGenRootUnder, RUN_FILES, imagesDir, thumbnailsDir } from './paths.ts';
+import { resolveProjectRoot, runRootUnder, imageGenRootUnder, standaloneImageGenRoot, RUN_FILES, imagesDir, thumbnailsDir } from './paths.ts';
 
 export class RunStoreError extends Error {
   code: string;
@@ -45,6 +46,7 @@ async function readJsonSafe<T>(filePath: string): Promise<T | null> {
 }
 
 export function createRunStore(dataPath: string, projectId: string) {
+  const standalone = projectId.startsWith('document-');
   const coordinator = new RunWriteCoordinator((metrics: RunWriteMetrics) => {
     if (!metrics.success) {
       console.warn(`[image-generation] run-store write failed: ${metrics.operation} (run ${metrics.runId})`);
@@ -53,12 +55,14 @@ export function createRunStore(dataPath: string, projectId: string) {
 
   let projectRootPromise: Promise<string> | null = null;
   function projectRoot(): Promise<string> {
-    if (!projectRootPromise) projectRootPromise = resolveProjectRoot(dataPath, projectId);
+    if (!projectRootPromise) projectRootPromise = standalone
+      ? Promise.resolve(standaloneImageGenRoot(dataPath, projectId))
+      : resolveProjectRoot(dataPath, projectId);
     return projectRootPromise;
   }
 
   async function root(runId: string): Promise<string> {
-    return runRootUnder(await projectRoot(), runId);
+    return standalone ? path.join(await projectRoot(), runId) : runRootUnder(await projectRoot(), runId);
   }
 
   async function ensureDirs(runId: string): Promise<string> {
@@ -85,7 +89,7 @@ export function createRunStore(dataPath: string, projectId: string) {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.task), task);
     },
 
-    async writeSnapshot(runId: string, snapshot: SourceContextSnapshot): Promise<void> {
+    async writeSnapshot(runId: string, snapshot: SourceContextSnapshot | ImageGenerationContextSnapshotV2): Promise<void> {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.snapshot), snapshot);
     },
 
@@ -137,7 +141,7 @@ export function createRunStore(dataPath: string, projectId: string) {
 
     /** 列出本项目的全部生图运行（按 createdAt 倒序）。 */
     async listRuns(): Promise<ImageGenerationRun[]> {
-      const base = imageGenRootUnder(await projectRoot());
+      const base = standalone ? await projectRoot() : imageGenRootUnder(await projectRoot());
       const entries = await fs.readdir(base, { withFileTypes: true }).catch(() => []);
       const runs = await Promise.all(
         entries

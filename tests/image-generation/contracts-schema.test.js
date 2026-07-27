@@ -22,7 +22,9 @@ const SCHEMA_FILES = [
   'image-generation-task.schema.json',
   'image-generation-review.schema.json',
   'image-generation-gate-result.schema.json',
-  'image-generation-run.schema.json'
+  'image-generation-run.schema.json',
+  'image-generation-task-v2.schema.json',
+  'source-context-snapshot-v2.schema.json'
 ];
 
 test('all image-generation schemas exist and are valid draft 2020-12 objects', () => {
@@ -70,7 +72,17 @@ test('gate-result error enum matches documented §9 blocking codes (8+9+8=25 uni
     'REFERENCE_BRAND_IDENTITY_LEAK',
     'REFERENCE_LOGO_DIRECT_COPY',
     'REFERENCE_SLOGAN_LEAK',
-    'REFERENCE_SIGNATURE_GRAPHIC_DIRECT_COPY'
+    'REFERENCE_SIGNATURE_GRAPHIC_DIRECT_COPY',
+    'GENERATION_PRESET_MISSING',
+    'GENERATION_PRESET_UNSUPPORTED',
+    'VISUAL_CONTEXT_REQUIRED',
+    'DOCUMENT_CONTEXT_REQUIRED',
+    'RESOLVED_CONTEXT_REQUIRED',
+    'REFERENCE_CONTEXT_REQUIRED',
+    'CURRENT_IDENTITY_IMAGE_REQUIRED',
+    'REFERENCE_RUN_REJECTED',
+    'REFERENCE_RUN_NOT_READY',
+    'SOURCE_BUNDLE_INVALID'
   ];
   const gateB = [
     'ANCHOR_GENERATION_BRIEF_MISSING',
@@ -81,7 +93,11 @@ test('gate-result error enum matches documented §9 blocking codes (8+9+8=25 uni
     'REFERENCE_IMAGE_MISSING',
     'REFERENCE_IMAGE_LIMIT_EXCEEDED',
     'PROVIDER_CONFIG_MISSING',
-    'PROVIDER_MODEL_UNAVAILABLE'
+    'PROVIDER_MODEL_UNAVAILABLE',
+    'REFERENCE_IMAGE_REQUIRED',
+    'GENERATION_INTENT_MISSING',
+    'PROMPT_FRAGMENT_EMPTY',
+    'PROMPT_COMPOSITION_FAILED'
   ];
   const gateC = [
     'PROVIDER_TASK_ID_MISSING',
@@ -109,7 +125,19 @@ test('gate-result warning enum matches documented §9.4 (8 non-blocking codes)',
     'VISUAL_DIRECTION_MAY_BE_WEAK',
     'PACKAGING_STRUCTURE_UNCONFIRMED',
     'REFERENCE_IMAGES_REDUCED',
-    'INFORMATION_DENSITY_MAY_BE_HIGH'
+    'INFORMATION_DENSITY_MAY_BE_HIGH',
+    'CONCEPT_ONLY',
+    'BRAND_IDENTITY_NOT_FULLY_BOUND',
+    'CURRENT_IDENTITY_NOT_BOUND',
+    'LOGO_RENDERING_NOT_GUARANTEED',
+    'PACKAGING_STRUCTURE_NOT_GUARANTEED',
+    'DOCUMENT_CONTEXT_NOT_USED',
+    'REFERENCE_STYLE_NOT_USED',
+    'VISUAL_CONTEXT_NOT_USED',
+    'UNAPPROVED_REFERENCE_PREVIEW',
+    'LIMITED_VISUAL_EVIDENCE',
+    'LIMITED_DOCUMENT_EVIDENCE',
+    'USER_INTENT_EMPTY'
   ]);
 });
 

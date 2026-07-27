@@ -153,20 +153,28 @@ export interface ImageGenerationTaskParameters {
 }
 
 export interface ImageGenerationTask {
-  schemaVersion: '1.0';
+  schemaVersion: '1.0' | '2.0';
 
   taskId: string;
-  projectId: string;
+  projectId?: string;
+  virtualProjectId?: string;
   runId: string;
 
   outputType: ImageGenerationOutputType;
+  preset?: ImageGenerationPreset;
+  purpose?: ImageGenerationPurpose;
+  sources?: {
+    visualRunId?: string;
+    documentRunId?: string;
+    referenceAnchorRunId?: string;
+  };
 
   sourceVisualRunId?: string;
   sourceDocumentRunId?: string;
-  sourceReferenceAnchorRunId: string;
+  sourceReferenceAnchorRunId?: string;
 
   contextSnapshotPath: string;
-  anchorBriefPath: string;
+  anchorBriefPath?: string;
 
   references: ImageGenerationReference[];
 
@@ -209,6 +217,32 @@ export interface SourceContextSnapshot {
   };
 
   upstreamFileHashes: Record<string, string>;
+}
+
+export interface ImageGenerationContextSnapshotV2 {
+  schemaVersion: '2.0';
+  preset: ImageGenerationPreset;
+  purpose: ImageGenerationPurpose;
+  sourcesUsed: {
+    visual: boolean;
+    document: boolean;
+    reference: boolean;
+    resolved: boolean;
+  };
+  sourceIds: {
+    projectId?: string;
+    visualRunId?: string;
+    documentRunId?: string;
+    referenceAnchorRunId?: string;
+  };
+  identity?: unknown;
+  lockedAssets?: unknown;
+  visualSummary?: unknown;
+  documentSummary?: unknown;
+  referenceSummary?: unknown;
+  userIntent: ImageGenerationSourceBundle['userIntent'];
+  warnings: ImageGenerationWarning[];
+  capturedAt: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -482,10 +516,14 @@ export interface ImageGenerationMetrics {
 // ---------------------------------------------------------------------------
 
 export interface ImageGenerationRun {
-  schemaVersion: '1.0';
+  schemaVersion: '1.0' | '2.0';
 
   runId: string;
   projectId: string;
+  virtualProjectId?: string;
+  preset?: ImageGenerationPreset;
+  purpose?: ImageGenerationPurpose;
+  sources?: ImageGenerationSourceBundle;
   taskId: string;
 
   status: ImageGenerationRunStatus;

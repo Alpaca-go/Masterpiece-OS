@@ -24,6 +24,8 @@ import type {
   ImageGenerationRetryMode,
   ImageGenerationRetryRecord,
   ImageGenerationOutputType,
+  ImageGenerationSourceBundle,
+  GenerationSourceContext,
   ImageProviderCapabilities,
   ImageProviderRegion,
   PublicSettings,
@@ -40,16 +42,19 @@ import {
 import { redactProviderRequest, redactProviderResponse } from '../../../../../packages/image-generation-runtime/src/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
 import type { GenerationContext, FileContextLoader } from './context-loader.ts';
-import { resolveProjectRoot, runRootUnder, imagesDir, thumbnailsDir, RUN_FILES } from './paths.ts';
+import { createGenerationSourceLoader, normalizeImageGenerationSources } from './context-loaders/index.ts';
+import { resolveProjectRoot, runRootUnder, standaloneImageGenRoot, imagesDir, thumbnailsDir, RUN_FILES } from './paths.ts';
 import { EXECUTING_IMAGE_RUN_STATUSES } from '../../../../../packages/image-generation-contracts/src/index.ts';
+import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '../../../../../packages/image-generation-runtime/src/policies.js';
 
 export const DEFAULT_SIZE = '1024*1024';
 export const POLL_INTERVAL_MS = 3000;
 export const MAX_POLL_ATTEMPTS = 200;
 
 export interface StartOptions {
-  projectId: string;
-  referenceAnchorRunId: string;
+  sources?: ImageGenerationSourceBundle;
+  projectId?: string;
+  referenceAnchorRunId?: string;
   outputType?: ImageGenerationOutputType;
   apiProfileId?: string;
   size?: string;
@@ -81,6 +86,7 @@ export interface ImageGenerationServiceDeps {
   readCredentials?: (profileId?: string) => Promise<{ apiKey: string; baseUrl?: string; model?: string }>;
   /** 加载上游上下文（由调用方用文件加载器或真实服务装配）。 */
   loadContext: (input: { referenceRunId: string; projectId: string; logoAssetPath?: string }) => Promise<GenerationContext>;
+  loadSources?: (sources: ImageGenerationSourceBundle) => Promise<GenerationSourceContext>;
   /** 运行目录根（dataPath）。 */
   dataPath: string;
   emitRunUpdated?: (progress: ImageGenerationProgress) => void;
@@ -111,6 +117,7 @@ function blockingError(code: string, message: string): Error {
 }
 
 export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
+  const compileTask = compileImageGenerationTask as any;
   const fetchImpl = deps.fetchImpl ?? globalThis.fetch;
   const fileReader = deps.fileReader ?? ((p: string) => fs.readFile(p));
   const sleepMs = deps.sleepMs ?? POLL_INTERVAL_MS;
@@ -119,6 +126,11 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
 
   function storeFor(projectId: string) {
     return createRunStore(deps.dataPath, projectId);
+  }
+
+  async function rootForRun(run: ImageGenerationRun): Promise<string> {
+    if (run.virtualProjectId) return path.join(standaloneImageGenRoot(deps.dataPath, run.virtualProjectId), run.runId);
+    return runRootUnder(await resolveProjectRoot(deps.dataPath, run.projectId), run.runId);
   }
 
   function toProgress(run: ImageGenerationRun): ImageGenerationProgress {
@@ -174,11 +186,75 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     return DASHSCOPE_CAPABILITIES;
   }
 
+  function getPresetCapabilities() {
+    return IMAGE_GENERATION_PRESET_CAPABILITIES;
+  }
+
+  async function loadSourceContext(options: StartOptions, sources: ImageGenerationSourceBundle): Promise<GenerationSourceContext> {
+    if (options.sources) {
+      return deps.loadSources
+        ? deps.loadSources(sources)
+        : createGenerationSourceLoader(deps.dataPath).load(sources);
+    }
+    const legacy = await deps.loadContext({
+      referenceRunId: options.referenceAnchorRunId!,
+      projectId: options.projectId!,
+      logoAssetPath: options.logoAssetPath,
+    });
+    return {
+      preset: 'integrated_anchor',
+      purpose: 'production',
+      projectId: options.projectId,
+      visualContext: legacy.resolvedContext,
+      resolvedContext: legacy.resolvedContext,
+      referenceCapsule: legacy.capsule,
+      anchorBriefMarkdown: legacy.anchorBriefMarkdown,
+      referenceDecision: {
+        status: legacy.anchorApproved ? 'completed' : 'awaiting_decision',
+        decision: legacy.anchorApproved ? 'approved' : undefined,
+      },
+      references: legacy.references,
+      warnings: [],
+      sourceMetadata: {
+        visualRunId: options.visualRunId,
+        documentRunId: options.documentRunId,
+        referenceAnchorRunId: options.referenceAnchorRunId,
+      },
+    };
+  }
+
+  async function getSourcePreview(options: StartOptions) {
+    const sources = normalizeImageGenerationSources(options);
+    const context = await loadSourceContext(options, sources);
+    const compiled = compileTask({
+      runId: 'preview',
+      taskId: 'preview',
+      sources,
+      context,
+      capabilities: DASHSCOPE_CAPABILITIES,
+      providerConfig: { apiKey: 'PREVIEW', baseUrl: endpointFor(options.region ?? 'beijing', options.baseUrl) },
+      parameters: { size: options.size ?? DEFAULT_SIZE, region: options.region ?? 'beijing' },
+      createdAt: nowFn(),
+    });
+    const used = compiled.snapshot.sourcesUsed;
+    return {
+      preset: sources.preset,
+      purpose: sources.purpose,
+      sourcesUsed: used,
+      sourcesNotUsed: Object.entries(used).filter(([, value]) => !value).map(([key]) => key),
+      referenceCount: context.references.length,
+      identityBound: context.references.some((item) => item.role !== 'reference_style'),
+      referenceStatus: context.referenceDecision?.status,
+      warnings: compiled.gate.warnings,
+      gate: compiled.gate,
+    };
+  }
+
   /** 解析某运行的本地根目录（供 open-folder / 读取图片使用）。 */
   async function runRoot(runId: string): Promise<string | null> {
     const run = await getRun(runId);
     if (!run) return null;
-    return runRootUnder(await resolveProjectRoot(deps.dataPath, run.projectId), runId);
+    return rootForRun(run);
   }
 
   /** 读取已生成图片并以 data URL 形式返回给 Renderer 预览（主进程读盘，渲染层不直接接触文件）。 */
@@ -187,7 +263,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     if (!run) return null;
     const image = run.images.find((i) => i.imageId === imageId);
     if (!image) return null;
-    const root = runRootUnder(await resolveProjectRoot(deps.dataPath, run.projectId), runId);
+    const root = await rootForRun(run);
     const filePath = path.join(root, image.relativePath);
     const buffer = await fs.readFile(filePath);
     const mimeType = image.mimeType || 'image/png';
@@ -198,14 +274,11 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   async function compile(options: StartOptions): Promise<{
     run: ImageGenerationRun;
     result: ImageGenerationCompileResult;
-    context: GenerationContext;
+    context: GenerationSourceContext;
   }> {
     const now = nowFn();
-    const ctx = await deps.loadContext({
-      referenceRunId: options.referenceAnchorRunId,
-      projectId: options.projectId,
-      logoAssetPath: options.logoAssetPath,
-    });
+    const sources = normalizeImageGenerationSources(options);
+    const ctx = await loadSourceContext(options, sources);
     const runId = crypto.randomUUID();
     const taskId = `igt-${runId.slice(0, 8)}`;
     const size = options.size ?? DEFAULT_SIZE;
@@ -218,25 +291,38 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     // 占位符仅用于 Gate 判定，不会写入 task.json（task-builder 不落盘 providerConfig）。
     const gateApiKey = apiKey ?? (options.dryRun ? 'DRY_RUN_PLACEHOLDER' : '');
 
-    const compiled = compileImageGenerationTask({
-      projectId: options.projectId,
-      runId,
-      taskId,
-      referenceAnchorRunId: options.referenceAnchorRunId,
-      anchorApproved: ctx.anchorApproved,
-      resolvedContext: ctx.resolvedContext,
-      capsule: ctx.capsule,
-      anchorBriefMarkdown: ctx.anchorBriefMarkdown,
-      references: ctx.references,
-      capabilities,
-      providerConfig: { apiKey: gateApiKey, baseUrl: endpoint },
-      parameters: { size, region, thinkingMode: false },
-      createdAt: now,
-      visualRunId: options.visualRunId,
-      documentRunId: options.documentRunId,
-    });
+    const isV2Request = Boolean(options.sources);
+    const compiled = isV2Request
+      ? compileTask({
+          runId,
+          taskId,
+          sources,
+          context: ctx,
+          capabilities,
+          providerConfig: { apiKey: gateApiKey, baseUrl: endpoint },
+          parameters: { size, region, thinkingMode: false },
+          createdAt: now,
+        })
+      : compileTask({
+          projectId: options.projectId,
+          runId,
+          taskId,
+          referenceAnchorRunId: options.referenceAnchorRunId,
+          anchorApproved: ctx.referenceDecision?.decision === 'approved',
+          resolvedContext: ctx.resolvedContext,
+          capsule: ctx.referenceCapsule,
+          anchorBriefMarkdown: ctx.anchorBriefMarkdown,
+          references: ctx.references,
+          capabilities,
+          providerConfig: { apiKey: gateApiKey, baseUrl: endpoint },
+          parameters: { size, region, thinkingMode: false },
+          createdAt: now,
+          visualRunId: options.visualRunId,
+          documentRunId: options.documentRunId,
+        });
 
-    const store = storeFor(options.projectId);
+    const scopeId = sources.projectId || sources.visual?.projectId || `document-${sources.document?.documentRunId}`;
+    const store = storeFor(scopeId);
     await store.writeTask(runId, compiled.task);
     await store.writeSnapshot(runId, compiled.snapshot);
     await store.writeCompiledPrompt(runId, compiled.compiledPromptMarkdown);
@@ -244,12 +330,14 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     await store.writeWarnings(runId, compiled.gate.warnings);
 
     const run: ImageGenerationRun = {
-      schemaVersion: '1.0',
+      schemaVersion: isV2Request ? '2.0' : '1.0',
       runId,
-      projectId: options.projectId,
+      projectId: scopeId,
+      ...(compiled.task.virtualProjectId ? { virtualProjectId: compiled.task.virtualProjectId } : {}),
+      ...(isV2Request ? { preset: sources.preset, purpose: sources.purpose, sources } : {}),
       taskId,
       status: compiled.gate.blocked ? 'blocked' : 'ready',
-      outputType: 'master_anchor_image',
+      outputType: compiled.task.outputType as ImageGenerationOutputType,
       providerId: 'dashscope',
       modelId,
       region,
@@ -466,7 +554,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       return activeRun;
     }
 
-    const root = runRootUnder(await resolveProjectRoot(deps.dataPath, activeRun.projectId), activeRun.runId);
+    const root = await rootForRun(activeRun);
     const targetPath = path.join(imagesDir(root), 'image-01.png');
     const thumbPath = path.join(thumbnailsDir(root), 'image-01.webp');
     const downloaded = await downloadAndVerifyImage({
@@ -588,7 +676,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   }
 
   async function readPersistedTask(runId: string, projectId: string) {
-    const root = runRootUnder(await resolveProjectRoot(deps.dataPath, projectId), runId);
+    const run = await storeFor(projectId).readRun(runId);
+    const root = run ? await rootForRun(run) : runRootUnder(await resolveProjectRoot(deps.dataPath, projectId), runId);
     return JSON.parse(await fs.readFile(path.join(root, RUN_FILES.task), 'utf8'));
   }
 
@@ -606,6 +695,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         if (record.id) ids.push(record.id);
       } catch { /* 跳过损坏目录 */ }
     }
+    const standalone = await fs.readdir(path.join(deps.dataPath, 'standalone-image-generation'), { withFileTypes: true }).catch(() => []);
+    ids.push(...standalone.filter((entry) => entry.isDirectory() && entry.name.startsWith('document-')).map((entry) => entry.name));
     return ids;
   }
 
@@ -676,6 +767,57 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const persistedTask = await readPersistedTask(parent.runId, parent.projectId).catch(() => null);
     if (!persistedTask) throw new Error('父运行缺少 task.json，无法重试。');
 
+    if (persistedTask.schemaVersion === '2.0') {
+      const now = nowFn();
+      const runId = crypto.randomUUID();
+      const taskId = `igt-${runId.slice(0, 8)}`;
+      const prompt = options.mode === 'edited_prompt' && options.editedPrompt?.trim()
+        ? options.editedPrompt.trim()
+        : persistedTask.compiledPrompt;
+      const task = { ...persistedTask, runId, taskId, compiledPrompt: prompt, createdAt: now };
+      const store = storeFor(parent.projectId);
+      const parentRoot = await rootForRun(parent);
+      const snapshot = JSON.parse(await fs.readFile(path.join(parentRoot, RUN_FILES.snapshot), 'utf8'));
+      const sourceMap = JSON.parse(await fs.readFile(path.join(parentRoot, RUN_FILES.promptSourceMap), 'utf8').catch(() => '{}'));
+      await store.writeTask(runId, task);
+      await store.writeSnapshot(runId, snapshot);
+      await store.writeCompiledPrompt(runId, prompt);
+      await store.writePromptSourceMap(runId, sourceMap);
+      await store.writeWarnings(runId, parent.gate.warnings);
+      const run: ImageGenerationRun = {
+        ...parent,
+        schemaVersion: '2.0',
+        runId,
+        taskId,
+        status: parent.gate.blocked ? 'blocked' : 'ready',
+        parentRunId: parent.runId,
+        retryMode: options.mode,
+        providerTaskId: undefined,
+        providerRequestId: undefined,
+        createdAt: now,
+        updatedAt: now,
+        startedAt: undefined,
+        completedAt: undefined,
+        images: [],
+        review: undefined,
+        errorCode: parent.gate.blocked ? parent.errorCode : undefined,
+        errorMessage: parent.gate.blocked ? parent.errorMessage : undefined,
+      };
+      await store.saveRun(run);
+      const history = await store.readRetryHistory(parent.runId);
+      history.push({
+        retryRunId: runId,
+        parentRunId: parent.runId,
+        mode: options.mode,
+        createdAt: now,
+        ...(options.mode === 'edited_prompt' ? { promptDiffSummary: `edited_prompt (${prompt.length} chars)` } : {}),
+      });
+      await store.writeRetryHistory(parent.runId, history);
+      emit(run);
+      if (options.dryRun || run.gate.blocked) return run;
+      return executeLive(run, { apiKey: options.apiKey, apiProfileId: options.apiProfileId });
+    }
+
     const now = nowFn();
     const ctx = await deps.loadContext({
       referenceRunId: persistedTask.sourceReferenceAnchorRunId,
@@ -691,7 +833,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const runId = crypto.randomUUID();
     const taskId = `igt-${runId.slice(0, 8)}`;
 
-    const compiled = compileImageGenerationTask({
+    const compiled = compileTask({
       projectId: parent.projectId,
       runId,
       taskId,
@@ -798,7 +940,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       await deps.openRunFolder(runId);
       return;
     }
-    const root = runRootUnder(await resolveProjectRoot(deps.dataPath, run.projectId), runId);
+    const root = await rootForRun(run);
     await fs.mkdir(root, { recursive: true });
     if (process.platform === 'win32') {
       // best-effort：仅确保目录存在；Headless 下不弹窗
@@ -837,6 +979,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     runRoot,
     readImageDataUrl,
     getCapabilities,
+    getPresetCapabilities,
+    getSourcePreview,
     toProgress,
   };
 }

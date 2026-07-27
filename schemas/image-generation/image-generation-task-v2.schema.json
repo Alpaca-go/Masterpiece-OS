@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-task-v2",
+  "title": "Image Generation Task V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "taskId", "runId", "preset", "purpose", "sources", "outputType", "contextSnapshotPath", "references", "compiledPrompt", "promptVersion", "providerId", "modelId", "region", "parameters", "createdAt"],
+  "anyOf": [{ "required": ["projectId"] }, { "required": ["virtualProjectId"] }],
+  "properties": {
+    "schemaVersion": { "const": "2.0" },
+    "taskId": { "type": "string", "minLength": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "virtualProjectId": { "type": "string", "minLength": 1 },
+    "preset": { "enum": ["visual_extension", "document_concept", "reference_preview", "integrated_anchor"] },
+    "purpose": { "enum": ["exploration", "production"] },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visualRunId": { "type": "string" },
+        "documentRunId": { "type": "string" },
+        "referenceAnchorRunId": { "type": "string" }
+      }
+    },
+    "outputType": { "enum": ["concept_image", "master_anchor_image"] },
+    "contextSnapshotPath": { "type": "string", "minLength": 1 },
+    "references": { "type": "array" },
+    "compiledPrompt": { "type": "string", "minLength": 1 },
+    "promptVersion": { "type": "integer", "minimum": 2 },
+    "providerId": { "type": "string", "minLength": 1 },
+    "modelId": { "type": "string", "minLength": 1 },
+    "region": { "type": "string", "minLength": 1 },
+    "parameters": {
+      "type": "object",
+      "required": ["size", "outputCount", "watermark"],
+      "properties": {
+        "size": { "type": "string", "minLength": 1 },
+        "outputCount": { "const": 1 },
+        "watermark": { "const": false },
+        "thinkingMode": { "type": "boolean" }
+      }
+    },
+    "createdAt": { "type": "string", "minLength": 1 }
+  }
+}

@@ -46,6 +46,10 @@ export function runRootUnder(projectRoot: string, runId: string): string {
   return path.join(imageGenRootUnder(projectRoot), runId);
 }
 
+export function standaloneImageGenRoot(dataPath: string, virtualProjectId: string): string {
+  return path.join(path.resolve(dataPath), 'standalone-image-generation', virtualProjectId);
+}
+
 export const RUN_FILES = {
   run: 'run.json',
   task: 'task.json',

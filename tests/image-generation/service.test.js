@@ -160,7 +160,7 @@ function makeFetchResponder({ finalImageUrl = 'https://cdn.example/x.png' } = {}
   return { fetchImpl, calls };
 }
 
-function makeService(dataPath, { fetchImpl, emitRunUpdated }) {
+function makeService(dataPath, { fetchImpl, emitRunUpdated, loadSources }) {
   const projectDir = path.join(dataPath, 'projects', `${PROJECT_NAME}-${PROJECT_ID.slice(0, 8)}`);
   return createImageGenerationService({
     loadContext: async () => ({
@@ -170,6 +170,7 @@ function makeService(dataPath, { fetchImpl, emitRunUpdated }) {
       anchorApproved: true,
       references: identityReferences(projectDir),
     }),
+    ...(loadSources ? { loadSources } : {}),
     dataPath,
     fetchImpl,
     readCredentials: async () => ({ apiKey: 'sk-test' }),
@@ -269,6 +270,43 @@ test('retry dryRun：新建独立 run，继承 parentRunId，父运行追加 ret
   assert.equal(history[0].parentRunId, parent.run.runId);
 
   await fs.rm(dataPath, { recursive: true, force: true });
+});
+
+test('Task V2 retry reuses the persisted source snapshot without reloading upstream sources', async () => {
+  const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'mp-image-v2-retry-'));
+  const projectDir = await buildProject(dataPath);
+  let loadCount = 0;
+  const svc = makeService(dataPath, {
+    loadSources: async (sources) => {
+      loadCount += 1;
+      return {
+        preset: sources.preset,
+        purpose: sources.purpose,
+        projectId: PROJECT_ID,
+        visualContext: resolvedContext(),
+        references: identityReferences(projectDir),
+        warnings: [],
+        sourceMetadata: { visualRunId: sources.visual.visualRunId },
+      };
+    },
+  });
+
+  const parent = await svc.compile({
+    sources: {
+      preset: 'visual_extension',
+      purpose: 'production',
+      projectId: PROJECT_ID,
+      visual: { projectId: PROJECT_ID, visualRunId: 'visual-v2-1' },
+      userIntent: { prompt: '延展当前暖橙视觉语言' },
+    },
+    dryRun: true,
+  });
+  const retried = await svc.retry({ runId: parent.run.runId, mode: 'same_prompt', dryRun: true });
+
+  assert.equal(parent.run.schemaVersion, '2.0');
+  assert.equal(retried.schemaVersion, '2.0');
+  assert.equal(retried.parentRunId, parent.run.runId);
+  assert.equal(loadCount, 1, 'retry must not reload mutable upstream sources');
 });
 
 test('retry edited_prompt：改写 Prompt 并重新执行 Gate A', async () => {

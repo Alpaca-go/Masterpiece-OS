@@ -1,7 +1,7 @@
 import path from 'node:path';
 import type { GenerationSourceContext, ImageGenerationSourceBundle, ProjectVisualContext } from '../../../shared/types';
-import { resolveProjectRoot } from '../paths';
-import { hashFile, readJson } from './loader-utils';
+import { resolveProjectRoot } from '../paths.ts';
+import { hashFile, readJson } from './loader-utils.ts';
 
 export function createVisualSourceLoader(dataPath: string) {
   return {

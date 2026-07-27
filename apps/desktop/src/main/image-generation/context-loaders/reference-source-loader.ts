@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import type { GenerationSourceContext, ImageGenerationSourceBundle, ReferenceStyleCapsule } from '../../../shared/types';
-import { readJson, referenceFiles } from './loader-utils';
+import { readJson, referenceFiles } from './loader-utils.ts';
 
 export function createReferenceSourceLoader(dataPath: string) {
   return {
