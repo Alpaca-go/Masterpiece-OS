@@ -20,6 +20,19 @@ export type ImageGenerationPreset =
   | 'reference_preview'
   | 'integrated_anchor';
 
+export type GenerationSourcePreset = 'visual_analysis' | 'document_context' | 'reference_anchor' | 'integrated_context';
+export type GenerationDeliverable = 'anchor_image' | 'brand_poster' | 'packaging_render' | 'vi_application' | 'interior_scene' | 'storefront_scene' | 'free_concept';
+export const GENERATION_DELIVERABLE_LABELS: Record<GenerationDeliverable, string> = {
+  anchor_image: 'Anchor Image', brand_poster: '品牌海报', packaging_render: '包装渲染图', vi_application: 'VI 应用图', interior_scene: '店内空间效果图', storefront_scene: '店面 / 门头效果图', free_concept: '自由概念图'
+};
+export interface ImageGenerationCompileFingerprint { sourceBundleHash: string; userIntentHash: string; deliverableHash: string; referencePlanHash: string; compiledPromptHash: string; compiledAt: string; }
+export interface UserIntentResolution { originalPrompt: string; normalizedPrompt: string; detectedDeliverable?: GenerationDeliverable; conflicts: string[]; }
+export interface ImageGenerationSourceBundleV3 {
+  schemaVersion: '3.0'; sourcePreset: GenerationSourcePreset; deliverable: GenerationDeliverable; purpose: ImageGenerationPurpose; projectId?: string;
+  visual?: { projectId: string; visualRunId?: string; selectedAssetIds?: string[] }; document?: { documentRunId: string }; reference?: { referenceAnchorRunId: string };
+  userIntent: { prompt: string; subject?: string; locationType?: string; aspectRatio?: string };
+}
+
 export type ImageGenerationPurpose = 'exploration' | 'production';
 
 /** Creative authority used when generating a visual direction from analysis. */
@@ -29,6 +42,7 @@ export type GenerationImageRole =
   | 'identity_reference'
   | 'structure_reference'
   | 'style_reference'
+  | 'spatial_reference'
   | 'analysis_only'
   | 'excluded';
 
@@ -198,7 +212,7 @@ export interface ImageGenerationTaskParameters {
 }
 
 export interface ImageGenerationTask {
-  schemaVersion: '1.0' | '2.0';
+  schemaVersion: '1.0' | '2.0' | '3.0';
 
   taskId: string;
   projectId?: string;
@@ -208,6 +222,9 @@ export interface ImageGenerationTask {
   outputType: ImageGenerationOutputType;
   preset?: ImageGenerationPreset;
   purpose?: ImageGenerationPurpose;
+  sourcePreset?: GenerationSourcePreset;
+  deliverable?: GenerationDeliverable;
+  compileFingerprint?: ImageGenerationCompileFingerprint;
   sources?: {
     visualRunId?: string;
     documentRunId?: string;
