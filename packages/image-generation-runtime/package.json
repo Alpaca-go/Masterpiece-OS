@@ -12,5 +12,6 @@
     "./gates": "./src/gates.js",
     "./context-snapshot": "./src/context-snapshot.js",
     "./task-builder": "./src/task-builder.js"
+    ,"./creative-director": "./src/creative-director/index.js"
   }
 }
