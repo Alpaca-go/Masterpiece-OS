@@ -61,6 +61,7 @@ export const DELIVERABLE_POLICIES = Object.freeze({
       requiredReferenceRoles: ['identity_reference'],
       allowsFlatLay: true,
       allowsMockupCollection: true,
+      maxStyleReferences: 4,
     },
   ),
   interior_scene: policy(
@@ -72,6 +73,7 @@ export const DELIVERABLE_POLICIES = Object.freeze({
       requiredReferenceRoles: ['identity_reference'],
       allowedReferenceRoles: ['identity_reference', 'structure_reference', 'style_reference', 'spatial_reference'],
       maxSpatialReferences: 3,
+      maxStructureReferences: 0,
       requiresSpatialDepth: true,
       requiresPhysicalStructure: true,
     },
