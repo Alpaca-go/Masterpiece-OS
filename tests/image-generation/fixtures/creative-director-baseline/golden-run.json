@@ -1,0 +1,13 @@
+{
+  "fixtureVersion": "1.0",
+  "projectId": "golden-winter-hotpot",
+  "mode": "legacy",
+  "outputType": "master_anchor_image",
+  "expectedOutputCount": 1,
+  "referenceSelection": [
+    { "assetId": "logo-1", "role": "current_project_logo" },
+    { "assetId": "product-1", "role": "current_project_product" },
+    { "assetId": "legacy-board-1", "role": "reference_style" }
+  ],
+  "snapshot": "../prompt-snapshots/visual_extension.prompt.md"
+}

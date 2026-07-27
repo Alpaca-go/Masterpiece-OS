@@ -11,7 +11,10 @@ const snapshotDir = path.join(import.meta.dirname, 'fixtures', 'prompt-snapshots
 
 function assertStructureSnapshot(preset, prompt) {
   const actual = prompt.match(/^#{1,2} .+$/gm)?.join('\n') || '';
-  const expected = fs.readFileSync(path.join(snapshotDir, `${preset}.prompt.md`), 'utf8').trim();
+  const expected = fs
+    .readFileSync(path.join(snapshotDir, `${preset}.prompt.md`), 'utf8')
+    .replace(/\r\n/g, '\n')
+    .trim();
   assert.equal(actual, expected);
 }
 
