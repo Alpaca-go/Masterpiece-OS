@@ -18,6 +18,7 @@ interface Props {
   onApiProfileChange(profileId: string): void;
   onBack(): void;
   onOpenSettings(): void;
+  onGenerateConcept(documentRunId: string): void;
 }
 
 const STAGES: Array<[DocumentContextStage, string]> = [
@@ -87,7 +88,7 @@ function FieldEvidence({ field, context }: { field: string; context: DocumentVis
   </details>;
 }
 
-export function DocumentContextWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings }: Props) {
+export function DocumentContextWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateConcept }: Props) {
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
@@ -343,6 +344,7 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
       <button className="button primary" onClick={() => void exportBrief()}>导出简报</button>
       <button className="button secondary" onClick={() => void navigator.clipboard.writeText(briefMarkdown).then(() => setNotice('简报内容已复制。'))}>复制内容</button>
       <button className="button secondary" onClick={() => void window.masterpiece.documentContext.openFolder(selectedRun.id)}>打开输出文件夹</button>
+      <button className="button primary" onClick={() => onGenerateConcept(selectedRun.id)}>生成概念稿</button>
     </div>
     {notice && <div className="notice ok">{notice}</div>}
     {error && <div className="notice error">{error}</div>}

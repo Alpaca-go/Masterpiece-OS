@@ -6,14 +6,17 @@ import type {
   ImageGenerationRun,
   ImageGenerationRunStatus,
   ImageGenerationRunSummary,
+  ImageGenerationSourceBundle,
+  ImageGenerationSourcePreview,
   ImageProviderCapabilities,
+  PublicSettings,
   StartImageGenerationInput
 } from '../../../shared/types';
 import { cleanError } from '../utils';
 
 interface Props {
-  projectId: string;
-  referenceAnchorRunId: string;
+  sourceBundle: ImageGenerationSourceBundle;
+  settings: PublicSettings;
   apiProfileId: string;
   onApiProfileChange(profileId: string): void;
   onBack(): void;
@@ -56,15 +59,31 @@ const REVIEW_LABELS: Record<ImageReviewDecision, string> = {
 };
 
 const EXECUTING: Array<ImageGenerationRunStatus> = ['created', 'validating', 'ready', 'submitting', 'queued', 'running', 'downloading'];
+const PRESET_LABELS: Record<ImageGenerationSourceBundle['preset'], string> = {
+  visual_extension: '基于当前视觉继续生成',
+  document_concept: '基于文档生成概念稿',
+  reference_preview: '试生成参考效果',
+  integrated_anchor: '使用完整上下文生成',
+};
 
-export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
+export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
+  const [userIntent, setUserIntent] = useState(sourceBundle.userIntent?.prompt || '');
   const input: StartImageGenerationInput = useMemo(() => ({
-    projectId,
-    referenceAnchorRunId,
+    sources: sourceBundle,
     apiProfileId
-  }), [projectId, referenceAnchorRunId, apiProfileId]);
+  }), [sourceBundle, apiProfileId]);
+  const currentInput = (): StartImageGenerationInput => ({
+    sources: {
+      ...sourceBundle,
+      userIntent: { ...sourceBundle.userIntent, prompt: userIntent.trim() },
+    },
+    apiProfileId,
+  });
+  const runScopeId = sourceBundle.projectId || sourceBundle.visual?.projectId || `document-${sourceBundle.document?.documentRunId}`;
+  const imageProfiles = settings.profiles.filter((profile) => profile.isEnabled && profile.protocol === 'dashscope-wan-image');
 
   const [capabilities, setCapabilities] = useState<ImageProviderCapabilities | null>(null);
+  const [sourcePreview, setSourcePreview] = useState<ImageGenerationSourcePreview | null>(null);
   const [compileResult, setCompileResult] = useState<ImageGenerationCompileResult | null>(null);
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
   const [activeRunId, setActiveRunId] = useState('');
@@ -83,7 +102,7 @@ export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiP
   const gateBlocked = Boolean(compileResult?.gate.blocked);
 
   async function refreshRuns() {
-    const next = await window.masterpiece.imageGeneration.listRuns(projectId);
+    const next = await window.masterpiece.imageGeneration.listRuns(runScopeId);
     setRuns(next);
     return next;
   }
@@ -112,6 +131,7 @@ export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiP
     setCompileResult(null);
     void Promise.all([
       window.masterpiece.imageGeneration.getCapabilities().then(setCapabilities),
+      window.masterpiece.imageGeneration.getSourcePreview(input).then(setSourcePreview),
       refreshRuns()
     ]).catch((reason) => setError(cleanError(reason)));
     // 自动编译以展示 Prompt 预览与 Gate 结果
@@ -151,7 +171,7 @@ export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiP
     setError('');
     setNotice('正在生成 Master Anchor Image…');
     try {
-      const run = await window.masterpiece.imageGeneration.start(input);
+      const run = await window.masterpiece.imageGeneration.start(currentInput());
       setActiveRunId(run.runId);
       await loadRun(run.runId);
       if (run.status === 'blocked') {
@@ -233,9 +253,9 @@ export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiP
   return <div className="page project-page">
     <header className="page-header">
       <div>
-        <p className="eyebrow">MASTER ANCHOR IMAGE</p>
-        <div className="title-line"><h1>生成 Master Anchor Image</h1></div>
-        <p>基于已通过的 Reference Anchor · 运行 {referenceAnchorRunId.slice(0, 8)} · 项目 {projectId.slice(0, 8)}</p>
+        <p className="eyebrow">IMAGE GENERATION</p>
+        <div className="title-line"><h1>{PRESET_LABELS[sourceBundle.preset]}</h1></div>
+        <p>预设 {sourceBundle.preset} · 用途 {sourceBundle.purpose === 'production' ? '正式生成' : '方向探索'}</p>
       </div>
       <div className="button-row">
         <button className="button ghost" onClick={onBack}>返回</button>
@@ -252,8 +272,11 @@ export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiP
         <div className="section-heading"><span>01</span><div><h2>来源上下文</h2><p>仅继承参考风格机制，不迁移参考品牌身份</p></div></div>
         <div className="facts-box">
           <small>上游</small>
-          <p>Reference Anchor：{referenceAnchorRunId.slice(0, 8)}（已批准）</p>
-          <p>当前项目：{projectId.slice(0, 8)}（Resolved Context）</p>
+          {sourceBundle.visual && <p>视觉项目：{sourceBundle.visual.projectId.slice(0, 8)}</p>}
+          {sourceBundle.document && <p>文档上下文：{sourceBundle.document.documentRunId.slice(0, 8)}</p>}
+          {sourceBundle.reference && <p>Reference Anchor：{sourceBundle.reference.referenceAnchorRunId.slice(0, 8)}</p>}
+          {sourcePreview && <p>实际使用：{Object.entries(sourcePreview.sourcesUsed).filter(([, used]) => used).map(([name]) => name).join(' / ') || '无'}</p>}
+          {sourcePreview?.sourcesNotUsed.length ? <p>未使用：{sourcePreview.sourcesNotUsed.join(' / ')}</p> : null}
         </div>
         <div className="facts-box">
           <small>Provider 能力</small>
@@ -265,8 +288,10 @@ export function ImageGenerationWorkspace({ projectId, referenceAnchorRunId, apiP
           <small>配置</small>
           <label>生成模型<select value={apiProfileId} onChange={(event) => onApiProfileChange(event.target.value)}>
             <option value="">请选择 API Profile</option>
+            {imageProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
           </select></label>
-          {!apiProfileId && <em>未选择 Profile，请先在 API 设置中配置。</em>}
+          {!imageProfiles.length && <em>暂无已启用的 DashScope Wan 生图 Profile，请先在 API 设置中配置。</em>}
+          <label>本次生成意图<textarea rows={4} value={userIntent} onChange={(event) => setUserIntent(event.target.value)} placeholder="描述希望生成的画面、触点或探索方向" /></label>
         </div>
         {historyRuns.length > 0 && <div className="facts-box">
           <small>历史运行</small>

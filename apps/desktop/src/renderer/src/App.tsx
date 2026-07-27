@@ -3,6 +3,7 @@ import type {
   AnalysisProgress,
   AssetSummary,
   DocumentContextRun,
+  ImageGenerationSourceBundle,
   ImageGenerationRunSummary,
   ProjectRecord,
   PublicSettings,
@@ -74,7 +75,7 @@ export function App() {
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
   const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
   const [referenceAnchorRuns, setReferenceAnchorRuns] = useState<ReferenceAnchorRun[]>([]);
-  const [requestedImageGen, setRequestedImageGen] = useState<{ projectId: string; referenceAnchorRunId: string } | null>(null);
+  const [requestedImageGen, setRequestedImageGen] = useState<ImageGenerationSourceBundle | null>(null);
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
   const [requestedDocumentContextRunId, setRequestedDocumentContextRunId] = useState('');
   const [requestedReferenceAnchorRunId, setRequestedReferenceAnchorRunId] = useState('');
@@ -312,6 +313,14 @@ export function App() {
     }
   }
 
+  function openImageGeneration(sources: ImageGenerationSourceBundle) {
+    const imageProfile = settings?.profiles.find((profile) => profile.isEnabled && profile.protocol === 'dashscope-wan-image' && profile.isDefault)
+      || settings?.profiles.find((profile) => profile.isEnabled && profile.protocol === 'dashscope-wan-image');
+    setSelectedApiProfileId(imageProfile?.id || '');
+    setRequestedImageGen(sources);
+    setScreen('image-generation');
+  }
+
   if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
   if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
 
@@ -327,8 +336,8 @@ export function App() {
       setSelectedApiProfileId(profileId);
       void run(project, true, profileId);
     }} /></div>
-    <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => { setRequestedImageGen({ projectId, referenceAnchorRunId }); setScreen('image-generation'); }} /></div>
-    <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
+    <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateReferencePreview={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'reference_preview', purpose: 'exploration', projectId, reference: { referenceAnchorRunId }, userIntent: {} })} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'integrated_anchor', purpose: 'production', projectId, visual: { projectId }, reference: { referenceAnchorRunId }, userIntent: {} })} /></div>
+    <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
   </div>;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
@@ -338,11 +347,11 @@ export function App() {
     onRetry={() => void run(selected, true, selectedApiProfileId)}
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
-  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} />;
+  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => openImageGeneration({ preset: 'visual_extension', purpose: 'production', projectId: selected.id, visual: { projectId: selected.id }, userIntent: {} })} />;
 
   if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
-    projectId={requestedImageGen.projectId}
-    referenceAnchorRunId={requestedImageGen.referenceAnchorRunId}
+    sourceBundle={requestedImageGen}
+    settings={settings}
     apiProfileId={selectedApiProfileId}
     onApiProfileChange={setSelectedApiProfileId}
     onBack={() => { setRequestedImageGen(null); setScreen('home'); void refresh(); }}
