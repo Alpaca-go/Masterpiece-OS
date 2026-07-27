@@ -11,6 +11,7 @@ export {
 } from './reference-selector.js';
 
 export { TEXT_SAFETY_RULES, compilePrompt } from './prompt-compiler.js';
+export { composePrompt, DEFAULT_INTENTS } from './prompt/index.js';
 
 export {
   evaluateIdentityGate,
