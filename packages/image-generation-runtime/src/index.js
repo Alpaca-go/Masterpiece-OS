@@ -37,3 +37,4 @@ export { redactProviderRequest, redactProviderResponse } from './redact.js';
 
 export * from './creative-director/index.js';
 export * from './reference-plan/index.js';
+export * from './deliverables/index.js';
