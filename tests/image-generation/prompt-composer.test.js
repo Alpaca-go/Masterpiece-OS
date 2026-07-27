@@ -1,10 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
 import { composePrompt } from '../../packages/image-generation-runtime/src/prompt/index.js';
 
 const capabilities = { modelId: 'wan2.7-image-pro' };
 const ref = (role) => ({ role, assetId: role, localPath: '/x.png', sha256: 'x', source: 'user_selected', includeReason: 'test' });
 const sources = (preset) => ({ preset, purpose: preset === 'visual_extension' || preset === 'integrated_anchor' ? 'production' : 'exploration', userIntent: {} });
+const snapshotDir = path.join(import.meta.dirname, 'fixtures', 'prompt-snapshots');
+
+function assertStructureSnapshot(preset, prompt) {
+  const actual = prompt.match(/^#{1,2} .+$/gm)?.join('\n') || '';
+  const expected = fs.readFileSync(path.join(snapshotDir, `${preset}.prompt.md`), 'utf8').trim();
+  assert.equal(actual, expected);
+}
 
 test('visual extension prompt contains visual-only structure', () => {
   const prompt = composePrompt({
@@ -15,6 +24,7 @@ test('visual extension prompt contains visual-only structure', () => {
   }).compiledPromptMarkdown;
   assert.match(prompt, /当前视觉项目/);
   assert.doesNotMatch(prompt, /Reference Anchor 风格预览|文策商业结论/);
+  assertStructureSnapshot('visual_extension', prompt);
 });
 
 test('document concept prompt declares exploration boundaries without Logo requirements', () => {
@@ -27,6 +37,7 @@ test('document concept prompt declares exploration boundaries without Logo requi
   assert.match(prompt, /这是一张概念探索图/);
   assert.match(prompt, /不要求生成准确 Logo/);
   assert.doesNotMatch(prompt, /Logo 锁定/);
+  assertStructureSnapshot('document_concept', prompt);
 });
 
 test('reference preview prompt does not load document context and marks unapproved preview', () => {
@@ -43,6 +54,7 @@ test('reference preview prompt does not load document context and marks unapprov
   assert.match(prompt, /尚未人工批准/);
   assert.match(prompt, /参考品牌/);
   assert.doesNotMatch(prompt, /目标用户|文策/);
+  assertStructureSnapshot('reference_preview', prompt);
 });
 
 test('integrated anchor keeps legacy identity and Locked Assets sections', () => {
@@ -59,4 +71,5 @@ test('integrated anchor keeps legacy identity and Locked Assets sections', () =>
   }).compiledPromptMarkdown;
   assert.match(prompt, /不可修改资产/);
   assert.match(prompt, /用户本次明确要求/);
+  assertStructureSnapshot('integrated_anchor', prompt);
 });

@@ -47,7 +47,7 @@ function makeProject(overrides: Record<string, unknown> = {}) {
 
 test('冻结项目·冯烫烫：确认品牌优先、普通样机不确认为包装结构、零模型调用', async () => {
   const report = await fs.readFile(
-    path.join(repoRoot, 'projects/冯烫烫/outputs/视觉方案升级报告.md'),
+    path.join(here, 'fixtures/project-visual-context/feng-tang-tang-report.md'),
     'utf8'
   );
   const project = makeProject({
