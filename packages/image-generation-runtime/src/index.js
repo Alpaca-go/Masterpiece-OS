@@ -20,6 +20,11 @@ export {
 } from './gates.js';
 
 export { buildSourceContextSnapshot } from './context-snapshot.js';
+export {
+  IMAGE_GENERATION_POLICIES,
+  IMAGE_GENERATION_PRESET_CAPABILITIES,
+  resolveGenerationPolicy,
+} from './policies.js';
 
 export { compileImageGenerationTask } from './task-builder.js';
 

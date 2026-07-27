@@ -12,7 +12,77 @@
 // ---------------------------------------------------------------------------
 
 /** §3.1 P0 唯一正式输出类型。 */
-export type ImageGenerationOutputType = 'master_anchor_image';
+export type ImageGenerationOutputType = 'concept_image' | 'master_anchor_image';
+
+export type ImageGenerationPreset =
+  | 'visual_extension'
+  | 'document_concept'
+  | 'reference_preview'
+  | 'integrated_anchor';
+
+export type ImageGenerationPurpose = 'exploration' | 'production';
+
+export interface ImageGenerationSourceBundle {
+  preset: ImageGenerationPreset;
+  purpose: ImageGenerationPurpose;
+  projectId?: string;
+  visual?: {
+    projectId: string;
+    visualRunId?: string;
+    selectedAssetIds?: string[];
+  };
+  document?: { documentRunId: string };
+  reference?: { referenceAnchorRunId: string };
+  userIntent: {
+    prompt?: string;
+    outputDescription?: string;
+    subject?: string;
+    aspectRatio?: string;
+  };
+}
+
+export interface GenerationSourceContext {
+  preset: ImageGenerationPreset;
+  purpose: ImageGenerationPurpose;
+  projectId?: string;
+  visualContext?: Record<string, unknown>;
+  documentContext?: Record<string, unknown>;
+  resolvedContext?: Record<string, unknown>;
+  referenceCapsule?: Record<string, unknown>;
+  anchorBriefMarkdown?: string;
+  referenceDecision?: { status: string; decision?: string };
+  references: ImageGenerationReference[];
+  warnings: ImageGenerationWarning[];
+  sourceMetadata: {
+    visualRunId?: string;
+    documentRunId?: string;
+    referenceAnchorRunId?: string;
+  };
+}
+
+export interface ImageGenerationPolicy {
+  preset: ImageGenerationPreset;
+  requireVisualContext: boolean;
+  requireDocumentContext: boolean;
+  requireResolvedContext: boolean;
+  requireReferenceContext: boolean;
+  requireReferenceApproval: boolean;
+  requireCurrentIdentity: boolean;
+  requireCurrentIdentityImage: boolean;
+  requireReferenceImage: boolean;
+  allowTextOnlyGeneration: boolean;
+  allowUnapprovedReferencePreview: boolean;
+}
+
+export interface ImageGenerationPresetCapability {
+  preset: ImageGenerationPreset;
+  displayName: string;
+  description: string;
+  purpose: ImageGenerationPurpose;
+  requiredSources: string[];
+  optionalSources: string[];
+  warnings: string[];
+}
 
 /** §10.5 显式配置区域。 */
 export type ImageProviderRegion = 'beijing' | 'singapore';
@@ -217,7 +287,19 @@ export type ImageGenerationWarningCode =
   | 'VISUAL_DIRECTION_MAY_BE_WEAK'
   | 'PACKAGING_STRUCTURE_UNCONFIRMED'
   | 'REFERENCE_IMAGES_REDUCED'
-  | 'INFORMATION_DENSITY_MAY_BE_HIGH';
+  | 'INFORMATION_DENSITY_MAY_BE_HIGH'
+  | 'CONCEPT_ONLY'
+  | 'BRAND_IDENTITY_NOT_FULLY_BOUND'
+  | 'CURRENT_IDENTITY_NOT_BOUND'
+  | 'LOGO_RENDERING_NOT_GUARANTEED'
+  | 'PACKAGING_STRUCTURE_NOT_GUARANTEED'
+  | 'DOCUMENT_CONTEXT_NOT_USED'
+  | 'REFERENCE_STYLE_NOT_USED'
+  | 'VISUAL_CONTEXT_NOT_USED'
+  | 'UNAPPROVED_REFERENCE_PREVIEW'
+  | 'LIMITED_VISUAL_EVIDENCE'
+  | 'LIMITED_DOCUMENT_EVIDENCE'
+  | 'USER_INTENT_EMPTY';
 
 export interface ImageGenerationBlockingError {
   code: ImageGenerationBlockingCode;

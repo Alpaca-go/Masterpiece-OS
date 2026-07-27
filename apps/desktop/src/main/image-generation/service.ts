@@ -23,6 +23,7 @@ import type {
   ImageGenerationRunSummary,
   ImageGenerationRetryMode,
   ImageGenerationRetryRecord,
+  ImageGenerationOutputType,
   ImageProviderCapabilities,
   ImageProviderRegion,
   PublicSettings,
@@ -49,7 +50,7 @@ export const MAX_POLL_ATTEMPTS = 200;
 export interface StartOptions {
   projectId: string;
   referenceAnchorRunId: string;
-  outputType?: 'master_anchor_image';
+  outputType?: ImageGenerationOutputType;
   apiProfileId?: string;
   size?: string;
   region?: ImageProviderRegion;
