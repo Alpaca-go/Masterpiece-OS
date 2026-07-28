@@ -32,7 +32,7 @@ export function createGenerationPromptService(
 
   async function compile(projectId: string, input: {
     userRequest: string;
-    outputType: GenerationPromptSnapshot['outputType'];
+    outputType?: GenerationPromptSnapshot['outputType'];
     requestId?: string;
   }): Promise<GenerationPromptSnapshot> {
     const [session, styleProfile, visualCanon, locks] = await Promise.all([

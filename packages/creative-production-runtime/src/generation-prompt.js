@@ -17,6 +17,20 @@ const CANON_TYPE_BY_OUTPUT = {
   illustration: 'illustration',
 };
 
+export function inferGenerationOutputType(userRequest) {
+  const task = text(userRequest);
+  if (!task) throw Object.assign(new Error('生成任务不能为空。'), { code: 'GENERATION_TASK_EMPTY' });
+  if (/包装|包材|盒型|袋装|瓶装/iu.test(task)) return 'packaging_render';
+  if (/门头|店招|外立面|店面外观/iu.test(task)) return 'storefront_scene';
+  if (/店内|室内|空间|装修|展厅/iu.test(task)) return 'interior_scene';
+  if (/海报|主视觉|KV/iu.test(task)) return 'brand_poster';
+  if (/插画|角色|人物设定/iu.test(task)) return 'illustration';
+  if (/VI|名片|菜单|工牌|物料|应用/iu.test(task)) return 'vi_application';
+  throw Object.assign(new Error('无法从用户任务判断单一结果类型，请明确说明要生成空间、门店、包装、海报、VI 应用或插画。'), {
+    code: 'GENERATION_OUTPUT_AMBIGUOUS',
+  });
+}
+
 function text(value) { return String(value ?? '').trim(); }
 function unique(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(text).filter(Boolean))];
@@ -85,13 +99,14 @@ function responsibility(outputType) {
 export function compileGenerationPromptSnapshot(input, now = new Date().toISOString()) {
   const userRequest = text(input?.userRequest);
   if (!userRequest) throw Object.assign(new Error('生成任务不能为空。'), { code: 'GENERATION_TASK_EMPTY' });
-  if (!OUTPUT_TYPES.includes(input?.outputType)) {
+  const outputType = input?.outputType || inferGenerationOutputType(userRequest);
+  if (!OUTPUT_TYPES.includes(outputType)) {
     throw Object.assign(new Error('生成输出类型无效。'), { code: 'GENERATION_OUTPUT_INVALID' });
   }
   if (input?.styleProfile?.status !== 'confirmed') {
     throw Object.assign(new Error('生成前必须确认 Style Profile。'), { code: 'STYLE_PROFILE_NOT_CONFIRMED' });
   }
-  const canonImages = resolveCanonImagesForTask(input.visualCanon, input.outputType);
+  const canonImages = resolveCanonImagesForTask(input.visualCanon, outputType);
   const lockedAssets = input.lockedAssets ?? [];
   const critical = lockedAssets.filter((asset) => asset.priority === 'critical');
   if (critical.some((asset) => !asset.rule || !asset.forbiddenChanges?.length)) {
@@ -108,7 +123,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     ...input.styleProfile.promptComponents.negative,
     ...input.styleProfile.forbiddenVariations,
   ]);
-  const sceneDescription = `${userRequest}；${responsibility(input.outputType)}`;
+  const sceneDescription = `${userRequest}；${responsibility(outputType)}`;
   const composition = unique([
     ...input.styleProfile.compositionSystem.hierarchy,
     ...input.styleProfile.compositionSystem.focalPointRules,
@@ -126,7 +141,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     '# User Task — highest priority',
     userRequest,
     '# Output Responsibility',
-    responsibility(input.outputType),
+    responsibility(outputType),
     '# Preserve',
     list(preserve),
     '# Visual Canon',
@@ -145,7 +160,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
   const instruction = {
     schemaVersion: '1.0',
     task: userRequest,
-    outputResponsibility: responsibility(input.outputType),
+    outputResponsibility: responsibility(outputType),
     preserve,
     avoid,
     sceneDescription,
@@ -163,7 +178,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     sessionId: text(input.sessionId),
     requestId: text(input.requestId) || `request-${crypto.randomUUID()}`,
     userRequest,
-    outputType: input.outputType,
+    outputType,
     styleProfileId: input.styleProfile.id,
     styleProfileVersion: input.styleProfile.version,
     visualCanonId: input.visualCanon.id,

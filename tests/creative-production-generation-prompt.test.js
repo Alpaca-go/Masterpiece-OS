@@ -2,7 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { compileGenerationPromptSnapshot } from '../packages/creative-production-runtime/src/generation-prompt.js';
+import {
+  compileGenerationPromptSnapshot,
+  inferGenerationOutputType,
+} from '../packages/creative-production-runtime/src/generation-prompt.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 const style = {
@@ -93,4 +96,11 @@ test('Generation Prompt Snapshot schema is closed and references max three image
   assert.equal(schema.additionalProperties, false);
   assert.equal(schema.properties.selectedReferences.maxItems, 3);
   assert.ok(schema.properties.instruction.required.includes('finalPrompt'));
+});
+
+test('conversational request infers one hidden output responsibility without Preset input', () => {
+  assert.equal(inferGenerationOutputType('生成一张店内装修效果图'), 'interior_scene');
+  assert.equal(inferGenerationOutputType('生成升级后的包装渲染'), 'packaging_render');
+  assert.equal(inferGenerationOutputType('生成一张横版品牌海报'), 'brand_poster');
+  assert.throws(() => inferGenerationOutputType('帮我做个设计'), { code: 'GENERATION_OUTPUT_AMBIGUOUS' });
 });

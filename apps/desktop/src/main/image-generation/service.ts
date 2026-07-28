@@ -32,6 +32,8 @@ import type {
   ProviderTaskStatus,
   PublicSettings,
 } from '../../shared/types';
+import type { GenerationPromptSnapshot } from '../../../../../packages/project-contracts/src/index.ts';
+import { validateGenerationPromptSnapshot } from '../../../../../packages/creative-production-runtime/src/generation-prompt.js';
 import {
   compileImageGenerationTask,
   migrateImageGenerationSourcesV2,
@@ -94,6 +96,17 @@ export interface RetryOptions {
   editedPrompt?: string;
   apiKey?: string;
   apiProfileId?: string;
+  dryRun?: boolean;
+}
+
+export interface CreativePromptStartOptions {
+  snapshot: GenerationPromptSnapshot;
+  apiProfileId?: string;
+  size?: string;
+  region?: ImageProviderRegion;
+  modelId?: string;
+  apiKey?: string;
+  baseUrl?: string;
   dryRun?: boolean;
 }
 
@@ -512,6 +525,100 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     }
     const { run } = await compile(options);
     if (run.gate.blocked || options.dryRun) return run;
+    return executeLive(run, options);
+  }
+
+  /**
+   * V18 Provider Bridge：复用现有 Run Store / Provider / 下载与恢复链路，
+   * 但直接使用已验证的 Generation Prompt Snapshot，不再经过 legacy Preset 编译器。
+   */
+  async function startPromptSnapshot(options: CreativePromptStartOptions): Promise<ImageGenerationRun> {
+    const snapshot = validateGenerationPromptSnapshot(options.snapshot) as GenerationPromptSnapshot;
+    const projectRoot = await resolveProjectRoot(deps.dataPath, snapshot.projectId);
+    const references = await Promise.all(snapshot.selectedReferences.map(async (reference) => {
+      const localPath = path.resolve(projectRoot, reference.projectRelativePath);
+      if (localPath !== projectRoot && !localPath.startsWith(`${projectRoot}${path.sep}`)) {
+        throw blockingError('REFERENCE_ASSET_NOT_FOUND', '最终参考图路径越界。');
+      }
+      const content = await fs.readFile(localPath).catch(() => null);
+      if (!content) throw blockingError('REFERENCE_ASSET_NOT_FOUND', `最终参考图不存在：${reference.id}`);
+      const role = reference.role === 'identity_reference'
+        ? 'current_project_logo'
+        : reference.role === 'structure_reference'
+          ? 'current_project_product'
+          : 'reference_style';
+      return {
+        assetId: reference.id,
+        role,
+        localPath,
+        sha256: crypto.createHash('sha256').update(content).digest('hex'),
+        source: 'user_selected',
+        includeReason: `Creative Session ${reference.role}`,
+      };
+    }));
+    const providerConfig = await resolveProviderConfig(options);
+    const runId = crypto.randomUUID();
+    const taskId = `igt-${crypto.randomUUID()}`;
+    const now = nowFn();
+    const region = options.region ?? 'beijing';
+    const modelId = options.modelId || providerConfig.model || DASHSCOPE_CAPABILITIES.modelId;
+    const task = {
+      schemaVersion: '1.0',
+      taskId,
+      projectId: snapshot.projectId,
+      runId,
+      outputType: 'concept_image',
+      contextSnapshotPath: RUN_FILES.snapshot,
+      references,
+      compiledPrompt: snapshot.instruction.finalPrompt,
+      promptVersion: snapshot.compilerVersion,
+      providerId: 'dashscope',
+      modelId,
+      region,
+      parameters: {
+        size: options.size ?? DEFAULT_SIZE,
+        outputCount: 1,
+        watermark: false,
+        thinkingMode: false,
+      },
+      createdAt: now,
+    };
+    const run: ImageGenerationRun = {
+      schemaVersion: '1.0',
+      runId,
+      projectId: snapshot.projectId,
+      taskId,
+      status: 'ready',
+      outputType: 'concept_image',
+      providerId: 'dashscope',
+      modelId,
+      region,
+      ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
+      createdAt: now,
+      updatedAt: now,
+      gate: { blocked: false, errors: [], warnings: [] },
+      images: [],
+    };
+    const store = storeFor(snapshot.projectId);
+    await store.writeTask(runId, task);
+    await store.writeSnapshot(runId, snapshot);
+    await store.writeCompiledPrompt(runId, snapshot.instruction.finalPrompt);
+    await store.writePromptSourceMap(runId, {
+      promptSnapshotId: snapshot.id,
+      sessionId: snapshot.sessionId,
+      styleProfile: `${snapshot.styleProfileId}@${snapshot.styleProfileVersion}`,
+      visualCanon: `${snapshot.visualCanonId}@${snapshot.visualCanonVersion}`,
+      lockedAssetIds: snapshot.lockedAssetIds,
+      selectedReferences: snapshot.selectedReferences,
+    });
+    await store.writeWarnings(runId, []);
+    await store.saveRun(run);
+    await store.appendEvent(runId, 'CREATIVE_PROMPT_SNAPSHOT_ATTACHED', {
+      promptSnapshotId: snapshot.id,
+      sessionId: snapshot.sessionId,
+    });
+    emit(run);
+    if (options.dryRun) return run;
     return executeLive(run, options);
   }
 
@@ -1276,6 +1383,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   return {
     compile,
     start,
+    startPromptSnapshot,
     retry,
     cancel,
     getRun,

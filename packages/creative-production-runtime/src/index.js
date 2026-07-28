@@ -43,6 +43,7 @@ export {
 } from './visual-canon.js';
 export {
   GENERATION_PROMPT_COMPILER_VERSION,
+  inferGenerationOutputType,
   compileGenerationPromptSnapshot,
   resolveCanonImagesForTask,
   selectGenerationReferences,
