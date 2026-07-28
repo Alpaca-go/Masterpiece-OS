@@ -51,17 +51,44 @@ V18 验收点已由自动化测试覆盖：自然语言单入口、Reading 不�
 - `npm run verify:no-obsolete-code`：通过。
 - Desktop TypeScript：通过。
 
-## 真实 Provider 验收记录模板
+## 真实 Provider 验收记录
 
-执行前需用户明确授权。完成后记录：
+用户于 2026-07-28 明确授权使用客户端已配置的 API 和代表性本地项目执行发布前验收。
 
-- Provider / Model
-- 代表性项目与本地输入文档
-- 最终状态
-- 模型调用次数
-- 总耗时
-- 报告路径
-- 生图输出路径
-- 组成结果：单图任务是否保持单一职责、身份是否保留、旧版式复刻是否下降
+| 项目 | 分析 |
+| --- | --- |
+| 代表性项目 | 冯烫烫（10 张本地视觉素材） |
+| Provider / Model | qwen / qwen3.6-plus |
+| 最终状态 | completed，最终报告校验通过 |
+| 模型调用次数 | 1 |
+| 耗时 | 151,064 ms（其中 Provider 推理与报告生成约 140,856 ms） |
+| 报告路径 | `C:\Users\Administrator\Documents\Masterpiece OS Data\projects\未标题-c68c6211\outputs\冯烫烫-视觉方案升级报告-qwen3.6-plus.md` |
+| Runtime 报告 | `C:\Users\Administrator\Documents\Masterpiece OS Data\projects\未标题-c68c6211\runtime\run-report.json` |
 
-只有真实运行到最终报告和目标生图成功后，才能按仓库发布门禁打包并交付新的 Portable 客户端。
+| 项目 | 生图 |
+| --- | --- |
+| Provider / Model | dashscope / wan2.7-image-pro |
+| 最终状态 | succeeded，图片下载与本地校验通过 |
+| 模型调用次数 | 1 |
+| 耗时 | 9,891 ms |
+| Run ID | `0f9d1ca8-66ee-4c86-878e-ad13308fba8c` |
+| 输出路径 | `C:\Users\Administrator\Documents\Masterpiece OS Data\projects\未标题-c68c6211\image-generation\0f9d1ca8-66ee-4c86-878e-ad13308fba8c\images\image-01.png` |
+
+人工组成检查：
+
+- 结果为单一完整餐饮室内空间，不是 VI 合集、多格拼贴或物料展示板。
+- 空间透视、桌椅、后厨、灯光与真实材质关系完整，满足单图任务责任。
+- 保留“冯烫烫 / 跷脚牛肉”身份语义，没有引入其他品牌身份。
+- 未复刻旧版多格物料版式；升级方向表现为克制暖色、木质材料和可信商业空间。
+- 中文招牌仍存在生成模型常见的字形失真，属于视觉质量问题，不影响本次 API、状态机、下载和单一职责门禁通过。
+
+可复用命令：
+
+```powershell
+$env:MASTERPIECE_SMOKE_PROJECT_ID='<project-id>'
+$env:MASTERPIECE_SMOKE_TEXT_PROFILE_ID='<text-profile-id>'
+$env:MASTERPIECE_SMOKE_IMAGE_PROFILE_ID='<image-profile-id>'
+npm --prefix apps/desktop run smoke:real-provider
+```
+
+脚本只读取 Desktop 安全凭据存储，不打印 API Key。
