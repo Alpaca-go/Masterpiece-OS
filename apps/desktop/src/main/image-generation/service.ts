@@ -111,6 +111,27 @@ export interface CreativePromptStartOptions {
   dryRun?: boolean;
 }
 
+export interface CompiledCreativeTaskStartOptions {
+  projectId: string;
+  compiledPrompt: string;
+  promptVersion: string;
+  snapshot: unknown;
+  sourceMap: Record<string, unknown>;
+  references: Array<{
+    id: string;
+    role: 'identity_reference' | 'structure_reference' | 'core_reference';
+    projectRelativePath: string;
+  }>;
+  event: string;
+  apiProfileId?: string;
+  size?: string;
+  region?: ImageProviderRegion;
+  modelId?: string;
+  apiKey?: string;
+  baseUrl?: string;
+  dryRun?: boolean;
+}
+
 export interface ImageGenerationServiceDeps {
   /** 保留以兼容 Desktop 装配；服务内部凭据解析走 readCredentials + 环境变量。 */
   readSettings?: () => Promise<PublicSettings> | PublicSettings;
@@ -533,6 +554,96 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
    * V18 Provider Bridge：复用现有 Run Store / Provider / 下载与恢复链路，
    * 但直接使用已验证的 Generation Prompt Snapshot，不再经过 legacy Preset 编译器。
    */
+  async function startCompiledCreativeTask(
+    options: CompiledCreativeTaskStartOptions,
+  ): Promise<ImageGenerationRun> {
+    if (!options.compiledPrompt.trim()) {
+      throw Object.assign(new Error('Creative Task Prompt 不能为空。'), { code: 'PROMPT_EMPTY' });
+    }
+    if (options.references.length > 3) {
+      throw Object.assign(new Error('Creative Task 最多只能发送 3 张参考图。'), {
+        code: 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
+      });
+    }
+    const projectRoot = await resolveProjectRoot(deps.dataPath, options.projectId);
+    const references = await Promise.all(options.references.map(async (reference) => {
+      const localPath = path.resolve(projectRoot, reference.projectRelativePath);
+      if (localPath !== projectRoot && !localPath.startsWith(`${projectRoot}${path.sep}`)) {
+        throw blockingError('REFERENCE_ASSET_NOT_FOUND', 'Creative Task 参考图路径越界。');
+      }
+      const content = await fs.readFile(localPath).catch(() => null);
+      if (!content) {
+        throw blockingError('REFERENCE_ASSET_NOT_FOUND', `Creative Task 参考图不存在：${reference.id}`);
+      }
+      return {
+        assetId: reference.id,
+        role: reference.role === 'identity_reference'
+          ? 'current_project_logo'
+          : reference.role === 'structure_reference'
+            ? 'current_project_product'
+            : 'reference_style',
+        localPath,
+        sha256: crypto.createHash('sha256').update(content).digest('hex'),
+        source: 'user_selected',
+        includeReason: `Creative Production ${reference.role}`,
+      };
+    }));
+    const providerConfig = await resolveProviderConfig(options);
+    const runId = crypto.randomUUID();
+    const taskId = `igt-${crypto.randomUUID()}`;
+    const now = nowFn();
+    const region = options.region ?? 'beijing';
+    const modelId = options.modelId || providerConfig.model || DASHSCOPE_CAPABILITIES.modelId;
+    const task = {
+      schemaVersion: '1.0',
+      taskId,
+      projectId: options.projectId,
+      runId,
+      outputType: 'concept_image',
+      contextSnapshotPath: RUN_FILES.snapshot,
+      references,
+      compiledPrompt: options.compiledPrompt,
+      promptVersion: options.promptVersion,
+      providerId: 'dashscope',
+      modelId,
+      region,
+      parameters: {
+        size: options.size ?? DEFAULT_SIZE,
+        outputCount: 1,
+        watermark: false,
+        thinkingMode: false,
+      },
+      createdAt: now,
+    };
+    const run: ImageGenerationRun = {
+      schemaVersion: '1.0',
+      runId,
+      projectId: options.projectId,
+      taskId,
+      status: 'ready',
+      outputType: 'concept_image',
+      providerId: 'dashscope',
+      modelId,
+      region,
+      ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
+      createdAt: now,
+      updatedAt: now,
+      gate: { blocked: false, errors: [], warnings: [] },
+      images: [],
+    };
+    const store = storeFor(options.projectId);
+    await store.writeTask(runId, task);
+    await store.writeSnapshot(runId, options.snapshot);
+    await store.writeCompiledPrompt(runId, options.compiledPrompt);
+    await store.writePromptSourceMap(runId, options.sourceMap);
+    await store.writeWarnings(runId, []);
+    await store.saveRun(run);
+    await store.appendEvent(runId, options.event, options.sourceMap);
+    emit(run);
+    if (options.dryRun) return run;
+    return executeLive(run, options);
+  }
+
   async function startPromptSnapshot(options: CreativePromptStartOptions): Promise<ImageGenerationRun> {
     const snapshot = validateGenerationPromptSnapshot(options.snapshot) as GenerationPromptSnapshot;
     const projectRoot = await resolveProjectRoot(deps.dataPath, snapshot.projectId);
@@ -1396,6 +1507,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     compile,
     start,
     startPromptSnapshot,
+    startCompiledCreativeTask,
     retry,
     cancel,
     getRun,

@@ -2,6 +2,7 @@
 // multimodal endpoint instead of restricting profiles to a vendor allow-list.
 import type {
   AnchorCandidate,
+  AnchorCandidateEvaluation,
   CreativeSession,
   CreativeUnderstanding,
   GenerationOutput,
@@ -12,6 +13,7 @@ import type {
 } from '../../../../packages/project-contracts/src/index';
 export type {
   AnchorCandidate,
+  AnchorCandidateEvaluation,
   CreativeSession,
   CreativeUnderstanding,
   GenerationOutput,
@@ -1927,10 +1929,40 @@ export interface DesktopApi {
     getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;
   };
   creativeProduction: {
+    prepare(projectId: string): Promise<{
+      session: CreativeSession;
+      styleProfile: StyleProfile;
+      lockedAssets: CreativeLockedAsset[];
+    }>;
     listLockedAssets(projectId: string): Promise<CreativeLockedAsset[]>;
     listAnchorCandidates(projectId: string): Promise<AnchorCandidate[]>;
+    confirmStyleProfile(projectId: string, profileId: string): Promise<StyleProfile>;
+    generateAnchor(projectId: string, input: {
+      purpose?: string;
+      aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+      apiProfileId?: string;
+      dryRun?: boolean;
+    }): Promise<{ candidate: AnchorCandidate; run: ImageGenerationRun }>;
+    reviewAnchor(projectId: string, candidateId: string, input: {
+      action: 'accept_primary' | 'minor_adjustment' | 'retry' | 'modify_style_profile' | 'reject';
+      feedback: string;
+      evaluation: AnchorCandidateEvaluation;
+    }): Promise<AnchorCandidate>;
     listStyleProfiles(projectId: string): Promise<StyleProfile[]>;
     listVisualCanons(projectId: string): Promise<VisualCanon[]>;
+    buildVisualCanon(projectId: string, input: {
+      primaryCandidateId: string;
+      primary?: Record<string, unknown>;
+      supporting?: Array<{
+        candidateId: string;
+        type?: string;
+        role?: string;
+        observations?: unknown;
+      }>;
+      sharedRules?: string[];
+      variationRules?: string[];
+    }): Promise<VisualCanon>;
+    confirmVisualCanon(projectId: string, canonId: string): Promise<VisualCanon>;
     getSeries(projectId: string, seriesId: string): Promise<GenerationSeries | null>;
     listFormalAssets(projectId: string, seriesId: string): Promise<GenerationOutput[]>;
   };

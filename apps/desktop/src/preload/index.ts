@@ -126,14 +126,25 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-session:get-image-data-url', runId, imageId)
   },
   creativeProduction: {
+    prepare: (projectId) => ipcRenderer.invoke('creative-production:prepare', projectId),
     listLockedAssets: (projectId) =>
       ipcRenderer.invoke('creative-production:list-locked-assets', projectId),
     listAnchorCandidates: (projectId) =>
       ipcRenderer.invoke('creative-production:list-anchor-candidates', projectId),
+    confirmStyleProfile: (projectId, profileId) =>
+      ipcRenderer.invoke('creative-production:confirm-style-profile', projectId, profileId),
+    generateAnchor: (projectId, input) =>
+      ipcRenderer.invoke('creative-production:generate-anchor', projectId, input),
+    reviewAnchor: (projectId, candidateId, input) =>
+      ipcRenderer.invoke('creative-production:review-anchor', projectId, candidateId, input),
     listStyleProfiles: (projectId) =>
       ipcRenderer.invoke('creative-production:list-style-profiles', projectId),
     listVisualCanons: (projectId) =>
       ipcRenderer.invoke('creative-production:list-visual-canons', projectId),
+    buildVisualCanon: (projectId, input) =>
+      ipcRenderer.invoke('creative-production:build-visual-canon', projectId, input),
+    confirmVisualCanon: (projectId, canonId) =>
+      ipcRenderer.invoke('creative-production:confirm-visual-canon', projectId, canonId),
     getSeries: (projectId, seriesId) =>
       ipcRenderer.invoke('creative-production:get-series', projectId, seriesId),
     listFormalAssets: (projectId, seriesId) =>
