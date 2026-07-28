@@ -347,7 +347,27 @@ export interface GenerationTask {
   generationRunIds: string[];
   outputIds: string[];
   attemptCount: number;
+  mode?: 'original' | 'edit' | 'variant';
+  parentTaskId?: string;
+  baseImageId?: string;
   lastError?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GenerationOutput {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  seriesId: string;
+  taskId: string;
+  generationRunId: string;
+  imagePath: string;
+  version: number;
+  parentOutputId?: string;
+  status: 'candidate' | 'formal' | 'rejected' | 'supporting_canon';
+  reviewNote?: string;
+  failureReason?: string;
   createdAt: string;
   updatedAt: string;
 }

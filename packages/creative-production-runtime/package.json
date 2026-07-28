@@ -14,6 +14,7 @@
     "./visual-canon": "./src/visual-canon.js",
     "./generation-prompt": "./src/generation-prompt.js",
     "./creative-reading": "./src/creative-reading.js",
-    "./generation-series": "./src/generation-series.js"
+    "./generation-series": "./src/generation-series.js",
+    "./revision-assets": "./src/revision-assets.js"
   }
 }

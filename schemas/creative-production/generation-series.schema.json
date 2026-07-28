@@ -66,6 +66,9 @@
           "generationRunIds": { "$ref": "#/$defs/strings" },
           "outputIds": { "$ref": "#/$defs/strings" },
           "attemptCount": { "type": "integer", "minimum": 0 },
+          "mode": { "enum": ["original", "edit", "variant"] },
+          "parentTaskId": { "type": "string", "minLength": 1 },
+          "baseImageId": { "type": "string", "minLength": 1 },
           "lastError": { "type": "string" },
           "createdAt": { "type": "string", "format": "date-time" },
           "updatedAt": { "type": "string", "format": "date-time" }

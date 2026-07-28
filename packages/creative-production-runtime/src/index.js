@@ -65,3 +65,9 @@ export {
   recoverFailedGenerationTask,
   validateGenerationSeries,
 } from './generation-series.js';
+export {
+  createRevisionTask,
+  createGenerationOutput,
+  reviewGenerationOutput,
+  validateGenerationOutput,
+} from './revision-assets.js';

@@ -9,6 +9,7 @@ import {
   transitionGenerationTask,
   validateGenerationSeries,
 } from '../../../../packages/creative-production-runtime/src/generation-series.js';
+import { createRevisionTask } from '../../../../packages/creative-production-runtime/src/revision-assets.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
@@ -84,6 +85,11 @@ export function createGenerationSeriesService(
       mutate(projectId, id, (value) => recordGenerationTaskRun(value, taskId, run) as GenerationSeries),
     recoverTask: (projectId: string, id: string, taskId: string) =>
       mutate(projectId, id, (value) => recoverFailedGenerationTask(value, taskId) as GenerationSeries),
+    createRevision: async (projectId: string, id: string, input: unknown) => {
+      const locks = await lockedAssets.list(projectId);
+      return mutate(projectId, id, (value) =>
+        createRevisionTask(value, input, locks) as GenerationSeries);
+    },
   };
 }
 
