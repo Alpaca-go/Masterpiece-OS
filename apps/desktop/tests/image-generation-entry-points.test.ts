@@ -46,6 +46,17 @@ test('V6 workspace exposes production gates instead of bypassing confirmation', 
   assert.match(creativeSessionSource, /apiProfileId: imageApiProfileId/);
 });
 
+test('V6 generation workspace exposes Series controls, output versions and Prompt drawer', () => {
+  assert.match(creativeSessionSource, /创建基础系列/);
+  assert.match(creativeSessionSource, /执行未完成任务/);
+  assert.match(creativeSessionSource, /pauseSeries/);
+  assert.match(creativeSessionSource, /resumeSeries/);
+  assert.match(creativeSessionSource, /确认为正式资产/);
+  assert.match(creativeSessionSource, /提升 Supporting Canon/);
+  assert.match(creativeSessionSource, /getRunPrompt/);
+  assert.match(creativeSessionSource, /Prompt Snapshot/);
+});
+
 test('generation workspace uses source bundles, displays source usage and only offers Wan image profiles', () => {
   assert.match(generationSource, /sourceBundle: ImageGenerationSourceBundle/);
   assert.match(generationSource, /getSourcePreview/);

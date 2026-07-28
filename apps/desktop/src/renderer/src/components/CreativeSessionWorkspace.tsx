@@ -3,6 +3,8 @@ import type {
   CreativeSession,
   AnchorCandidate,
   AnchorCandidateEvaluation,
+  GenerationOutput,
+  GenerationSeries,
   ImageGenerationRun,
   ImageGenerationRunSummary,
   ProjectRecord,
@@ -35,6 +37,8 @@ interface ProductionState {
   anchors: AnchorCandidate[];
   styles: StyleProfile[];
   canons: VisualCanon[];
+  series: GenerationSeries[];
+  outputs: GenerationOutput[];
 }
 
 const ANCHOR_DIMENSIONS: Array<{
@@ -82,26 +86,38 @@ export function CreativeSessionWorkspace({
 }: Props) {
   const [workspace, setWorkspace] = useState<WorkspaceState | null>(null);
   const [runViews, setRunViews] = useState<RunView[]>([]);
-  const [production, setProduction] = useState<ProductionState>({ anchors: [], styles: [], canons: [] });
+  const [production, setProduction] = useState<ProductionState>({
+    anchors: [],
+    styles: [],
+    canons: [],
+    series: [],
+    outputs: []
+  });
   const [tab, setTab] = useState<'session' | 'anchor' | 'canon' | 'generation'>('session');
   const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
   const [reviewFeedback, setReviewFeedback] = useState('');
   const [reviewScores, setReviewScores] = useState<Record<string, number>>(
     Object.fromEntries(ANCHOR_DIMENSIONS.map(({ key }) => [key, 4]))
   );
+  const [promptDrawer, setPromptDrawer] = useState<{ runId: string; prompt: string } | null>(null);
   const [request, setRequest] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<'loading' | 'reading' | 'generating' | ''>('loading');
 
   const refresh = useCallback(async () => {
-    const [next, anchors, styles, canons] = await Promise.all([
+    const [next, anchors, styles, canons, series] = await Promise.all([
       window.masterpiece.creativeSession.getWorkspace(project.id),
       window.masterpiece.creativeProduction.listAnchorCandidates(project.id),
       window.masterpiece.creativeProduction.listStyleProfiles(project.id),
-      window.masterpiece.creativeProduction.listVisualCanons(project.id)
+      window.masterpiece.creativeProduction.listVisualCanons(project.id),
+      window.masterpiece.creativeProduction.listSeries(project.id)
     ]);
     setWorkspace(next);
-    setProduction({ anchors, styles, canons });
+    const activeSeries = series.find((item) => item.id === next.session.activeSeriesId) || series[0];
+    const outputs = activeSeries
+      ? await window.masterpiece.creativeProduction.listFormalAssets(project.id, activeSeries.id)
+      : [];
+    setProduction({ anchors, styles, canons, series, outputs });
     const fullRuns = await Promise.all(next.runs.slice(0, 12).map(async (summary) => {
       const run = await window.masterpiece.creativeSession.getRun(summary.runId);
       if (!run) return null;
@@ -241,6 +257,8 @@ export function CreativeSessionWorkspace({
   const anchorRunView = activeAnchor?.generationRunId
     ? runViews.find((item) => item.run.runId === activeAnchor.generationRunId)
     : undefined;
+  const activeSeries = production.series.find((item) => item.id === workspace?.session.activeSeriesId)
+    || production.series[0];
 
   return <div className="page creative-session-page">
     <header className="page-header">
@@ -262,7 +280,7 @@ export function CreativeSessionWorkspace({
       <button className={tab === 'canon' ? 'active' : ''} onClick={() => setTab('canon')}>Visual Canon</button>
       <button className={tab === 'generation' ? 'active' : ''} onClick={() => setTab('generation')}>生成与版本</button>
     </nav>
-    {(tab === 'session' || tab === 'generation') && <div className="creative-session-layout">
+    {tab === 'session' && <div className="creative-session-layout">
       <aside className="panel creative-context-panel">
         <div className="section-heading"><span>01</span><div><h2>项目理解</h2><p>持续上下文与已确认基准</p></div></div>
         <ul className="creative-checks">
@@ -488,6 +506,153 @@ export function CreativeSessionWorkspace({
           >确认 Visual Canon</button>}
         </div>}
       </section>
+    </div>}
+
+    {tab === 'generation' && <div className="generation-series-workspace">
+      <section className="panel generation-series-head">
+        <div>
+          <p className="eyebrow">GENERATION SERIES</p>
+          <h2>{activeSeries?.name || '尚未创建生成系列'}</h2>
+          <p>
+            Style {workspace?.styleProfile?.version || '—'} · Canon {workspace?.visualCanon?.version || '—'}
+            {activeSeries ? ` · ${activeSeries.tasks.filter((item) => item.status === 'succeeded').length}/${activeSeries.tasks.length}` : ''}
+          </p>
+        </div>
+        {!activeSeries && <button
+          className="button primary"
+          disabled={workspace?.visualCanon?.status !== 'confirmed' || Boolean(busy)}
+          onClick={() => void runProductionAction(
+            () => window.masterpiece.creativeProduction.createSeries(project.id, {
+              name: `${project.projectName} 首轮生产系列`,
+              tasks: [
+                {
+                  taskType: 'packaging_render',
+                  title: '包装渲染',
+                  responsibility: '生成一个真实、完整的升级后包装渲染结果',
+                  subject: project.brandName,
+                  aspectRatio: '4:5',
+                  preserve: workspace?.visualCanon?.sharedRules || [],
+                  change: workspace?.visualCanon?.variationRules || [],
+                  forbidden: workspace?.styleProfile?.forbiddenVariations || []
+                },
+                {
+                  taskType: 'poster',
+                  title: '品牌海报',
+                  responsibility: '生成一张单一主画面的升级后品牌海报',
+                  subject: project.brandName,
+                  aspectRatio: '4:5',
+                  preserve: workspace?.visualCanon?.sharedRules || [],
+                  change: workspace?.visualCanon?.variationRules || [],
+                  forbidden: workspace?.styleProfile?.forbiddenVariations || []
+                },
+                {
+                  taskType: 'vi_application',
+                  title: 'VI 应用',
+                  responsibility: '生成一种明确、真实的品牌 VI 应用',
+                  subject: project.brandName,
+                  aspectRatio: '4:5',
+                  preserve: workspace?.visualCanon?.sharedRules || [],
+                  change: workspace?.visualCanon?.variationRules || [],
+                  forbidden: workspace?.styleProfile?.forbiddenVariations || []
+                }
+              ]
+            })
+          )}
+        >创建基础系列</button>}
+        {activeSeries && <div className="button-row">
+          {['ready', 'running', 'failed'].includes(activeSeries.status) && <button
+            className="button primary"
+            disabled={!imageApiProfileId || Boolean(busy)}
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction
+                .runSeries(project.id, activeSeries.id, imageApiProfileId || undefined)
+            )}
+          >执行未完成任务</button>}
+          {activeSeries.status === 'running' && <button className="button secondary" onClick={() => void runProductionAction(
+            () => window.masterpiece.creativeProduction.pauseSeries(project.id, activeSeries.id)
+          )}>暂停</button>}
+          {activeSeries.status === 'paused' && <button className="button secondary" onClick={() => void runProductionAction(
+            () => window.masterpiece.creativeProduction.resumeSeries(project.id, activeSeries.id)
+          )}>继续</button>}
+          {!['completed', 'cancelled'].includes(activeSeries.status) && <button className="button ghost" onClick={() => void runProductionAction(
+            () => window.masterpiece.creativeProduction.cancelSeries(project.id, activeSeries.id)
+          )}>取消系列</button>}
+        </div>}
+      </section>
+
+      {activeSeries && <div className="generation-task-grid">
+        {activeSeries.tasks.map((task) => <article className="panel generation-task-card" key={task.id}>
+          <div className="task-card-head">
+            <span>{task.taskCode}</span>
+            <strong>{task.status}</strong>
+          </div>
+          <h3>{task.title}</h3>
+          <p>{task.responsibility}</p>
+          <small>{task.aspectRatio} · 尝试 {task.attemptCount} 次 · 版本 {task.mode || 'original'}</small>
+          <ul>
+            {task.preserve.slice(0, 3).map((item) => <li key={item}>保留 · {item}</li>)}
+            {task.change.slice(0, 2).map((item) => <li key={item}>改变 · {item}</li>)}
+          </ul>
+          {['ready', 'failed'].includes(task.status) && <button
+            className="button secondary full"
+            disabled={!imageApiProfileId || Boolean(busy) || activeSeries.status === 'paused'}
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction
+                .runSeriesTask(project.id, activeSeries.id, task.id, imageApiProfileId || undefined)
+            )}
+          >执行此任务</button>}
+        </article>)}
+      </div>}
+
+      <div className="creative-production-grid generation-output-grid">
+        <section className="panel">
+          <div className="section-heading"><span>02</span><div><h2>输出与版本</h2><p>候选、正式资产和 Supporting Canon</p></div></div>
+          <div className="generation-output-list">
+            {production.outputs.length ? production.outputs.map((output) => {
+              const view = runViews.find((item) => item.run.runId === output.generationRunId);
+              return <article key={output.id}>
+                {view?.imageUrls[0] && <img src={view.imageUrls[0]} alt="Generation Output" />}
+                <div><strong>V{output.version} · {output.status}</strong><small>{output.taskId}</small></div>
+                <div className="button-row">
+                  {output.status === 'candidate' && <button onClick={() => void runProductionAction(
+                    () => window.masterpiece.creativeProduction.reviewFormalAsset(
+                      project.id, output.seriesId, output.id, { action: 'accept_formal', note: '确认为正式资产。' }
+                    )
+                  )}>确认为正式资产</button>}
+                  {output.status === 'candidate' && <button onClick={() => void runProductionAction(
+                    () => window.masterpiece.creativeProduction.reviewFormalAsset(
+                      project.id,
+                      output.seriesId,
+                      output.id,
+                      { action: 'promote_supporting_canon', humanConfirmed: true, note: '人工确认提升为 Supporting Canon。' }
+                    )
+                  )}>提升 Supporting Canon</button>}
+                  <button onClick={() => void window.masterpiece.creativeProduction
+                    .getRunPrompt(output.generationRunId)
+                    .then((prompt) => setPromptDrawer({ runId: output.generationRunId, prompt: prompt || 'Prompt 不可用。' }))
+                  }>查看 Prompt</button>
+                </div>
+              </article>;
+            }) : <div className="empty-state small">尚无系列输出。</div>}
+          </div>
+        </section>
+        <section className="panel">
+          <div className="section-heading"><span>03</span><div><h2>历史系列</h2><p>上下文与版本可追溯</p></div></div>
+          <div className="series-history-list">
+            {production.series.map((series) => <article key={series.id}>
+              <strong>{series.name}</strong>
+              <small>{series.status} · Style {series.styleProfileVersion} · Canon {series.visualCanonVersion}</small>
+            </article>)}
+          </div>
+        </section>
+      </div>
+    </div>}
+
+    {promptDrawer && <div className="modal-overlay" onClick={() => setPromptDrawer(null)}>
+      <div className="modal prompt-drawer" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-head"><div><small>RUN {promptDrawer.runId}</small><h2>Prompt Snapshot</h2></div><button onClick={() => setPromptDrawer(null)}>关闭</button></div>
+        <pre>{promptDrawer.prompt}</pre>
+      </div>
     </div>}
   </div>;
 }

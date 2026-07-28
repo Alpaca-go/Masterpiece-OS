@@ -1964,7 +1964,46 @@ export interface DesktopApi {
     }): Promise<VisualCanon>;
     confirmVisualCanon(projectId: string, canonId: string): Promise<VisualCanon>;
     getSeries(projectId: string, seriesId: string): Promise<GenerationSeries | null>;
+    listSeries(projectId: string): Promise<GenerationSeries[]>;
+    createSeries(projectId: string, input: {
+      name: string;
+      tasks: Array<{
+        taskType: 'canon_candidate' | 'packaging_render' | 'poster' | 'vi_application';
+        title: string;
+        responsibility: string;
+        subject?: string;
+        scene?: string;
+        composition?: string;
+        camera?: string;
+        aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+        preserve?: string[];
+        change?: string[];
+        forbidden?: string[];
+      }>;
+    }): Promise<GenerationSeries>;
+    pauseSeries(projectId: string, seriesId: string): Promise<GenerationSeries>;
+    resumeSeries(projectId: string, seriesId: string): Promise<GenerationSeries>;
+    cancelSeries(projectId: string, seriesId: string): Promise<GenerationSeries>;
+    runSeriesTask(
+      projectId: string,
+      seriesId: string,
+      taskId: string,
+      apiProfileId?: string
+    ): Promise<GenerationSeries>;
+    runSeries(projectId: string, seriesId: string, apiProfileId?: string): Promise<GenerationSeries>;
     listFormalAssets(projectId: string, seriesId: string): Promise<GenerationOutput[]>;
+    reviewFormalAsset(
+      projectId: string,
+      seriesId: string,
+      outputId: string,
+      input: {
+        action: 'accept_formal' | 'reject' | 'promote_supporting_canon';
+        humanConfirmed?: boolean;
+        note?: string;
+        failureReason?: string;
+      }
+    ): Promise<GenerationOutput>;
+    getRunPrompt(runId: string): Promise<string | null>;
   };
   files: {
     getPathForFile(file: File): string;

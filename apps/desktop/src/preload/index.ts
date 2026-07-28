@@ -147,8 +147,26 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:confirm-visual-canon', projectId, canonId),
     getSeries: (projectId, seriesId) =>
       ipcRenderer.invoke('creative-production:get-series', projectId, seriesId),
+    listSeries: (projectId) =>
+      ipcRenderer.invoke('creative-production:list-series', projectId),
+    createSeries: (projectId, input) =>
+      ipcRenderer.invoke('creative-production:create-series', projectId, input),
+    pauseSeries: (projectId, seriesId) =>
+      ipcRenderer.invoke('creative-production:pause-series', projectId, seriesId),
+    resumeSeries: (projectId, seriesId) =>
+      ipcRenderer.invoke('creative-production:resume-series', projectId, seriesId),
+    cancelSeries: (projectId, seriesId) =>
+      ipcRenderer.invoke('creative-production:cancel-series', projectId, seriesId),
+    runSeriesTask: (projectId, seriesId, taskId, apiProfileId) =>
+      ipcRenderer.invoke('creative-production:run-series-task', projectId, seriesId, taskId, apiProfileId),
+    runSeries: (projectId, seriesId, apiProfileId) =>
+      ipcRenderer.invoke('creative-production:run-series', projectId, seriesId, apiProfileId),
     listFormalAssets: (projectId, seriesId) =>
-      ipcRenderer.invoke('creative-production:list-formal-assets', projectId, seriesId)
+      ipcRenderer.invoke('creative-production:list-formal-assets', projectId, seriesId),
+    reviewFormalAsset: (projectId, seriesId, outputId, input) =>
+      ipcRenderer.invoke('creative-production:review-formal-asset', projectId, seriesId, outputId, input),
+    getRunPrompt: (runId) =>
+      ipcRenderer.invoke('creative-production:get-run-prompt', runId)
   },
   files: {
     getPathForFile: (file) => webUtils.getPathForFile(file)

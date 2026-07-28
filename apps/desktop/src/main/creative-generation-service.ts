@@ -1,4 +1,5 @@
 import type { ImageGenerationRun } from '../shared/types.ts';
+import type { GenerationPromptSnapshot } from '../../../../packages/project-contracts/src/index.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { GenerationPromptService } from './generation-prompt-service.ts';
 import type { ImageGenerationService } from './image-generation/service.ts';
@@ -13,8 +14,12 @@ export function createCreativeGenerationService(
     apiProfileId?: string;
     size?: string;
     dryRun?: boolean;
+    outputType?: GenerationPromptSnapshot['outputType'];
   }): Promise<ImageGenerationRun> {
-    const snapshot = await prompts.compile(projectId, { userRequest: input.userRequest });
+    const snapshot = await prompts.compile(projectId, {
+      userRequest: input.userRequest,
+      outputType: input.outputType,
+    });
     const session = await sessions.create(projectId);
     if (session.workflowState === 'GENERATION_READY') {
       await sessions.transition(projectId, 'GENERATING', 'Creative Session 生图运行已开始。');

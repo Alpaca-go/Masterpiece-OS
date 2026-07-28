@@ -48,6 +48,15 @@ export function createGenerationSeriesService(
       return validateGenerationSeries(value) as GenerationSeries;
     } catch { return null; }
   }
+  async function list(projectId: string): Promise<GenerationSeries[]> {
+    const generationsRoot = path.join((await projects.paths(projectId)).root, 'generations');
+    const entries = await fs.readdir(generationsRoot, { withFileTypes: true }).catch(() => []);
+    const values = await Promise.all(entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => get(projectId, entry.name)));
+    return values.filter((value): value is GenerationSeries => Boolean(value))
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+  }
   async function create(projectId: string, input: { name: string; tasks: unknown[] }) {
     const [style, canon, locks] = await Promise.all([
       styles.getActive(projectId), canons.getActive(projectId), lockedAssets.list(projectId),
@@ -75,10 +84,12 @@ export function createGenerationSeriesService(
   return {
     create,
     get,
+    list,
     start: (projectId: string, id: string) => mutate(projectId, id, (value) => transitionGenerationSeries(value, 'running') as GenerationSeries),
     pause: (projectId: string, id: string) => mutate(projectId, id, (value) => transitionGenerationSeries(value, 'paused') as GenerationSeries),
     resume: (projectId: string, id: string) => mutate(projectId, id, (value) => transitionGenerationSeries(value, 'running') as GenerationSeries),
     cancel: (projectId: string, id: string) => mutate(projectId, id, (value) => transitionGenerationSeries(value, 'cancelled') as GenerationSeries),
+    complete: (projectId: string, id: string) => mutate(projectId, id, (value) => transitionGenerationSeries(value, 'completed') as GenerationSeries),
     transitionTask: (projectId: string, id: string, taskId: string, status: string) =>
       mutate(projectId, id, (value) => transitionGenerationTask(value, taskId, status) as GenerationSeries),
     recordRun: (projectId: string, id: string, taskId: string, run: unknown) =>

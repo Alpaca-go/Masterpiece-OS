@@ -42,6 +42,10 @@ import { createGenerationSeriesService } from './generation-series-service';
 import { createFormalAssetsService } from './formal-assets-service';
 import { createAnchorGenerationService, type AnchorGenerationService } from './anchor-generation-service';
 import { createCreativeProductionBootstrapService } from './creative-production-bootstrap-service';
+import {
+  createGenerationSeriesExecutionService,
+  type GenerationSeriesExecutionService
+} from './generation-series-execution-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -66,6 +70,7 @@ const projects = createProjectStore(getSettings);
 let imageGeneration: ImageGenerationService;
 let creativeGeneration: CreativeGenerationService;
 let anchorGeneration: AnchorGenerationService;
+let generationSeriesExecution: GenerationSeriesExecutionService;
 const pipeline = createPipelineService(
   projects,
   getProviderCredentials,
@@ -454,11 +459,49 @@ function registerIpc(): void {
   ) => visualCanons.confirm(projectId, canonId));
   ipcMain.handle('creative-production:get-series', (_event, projectId: string, seriesId: string) =>
     generationSeries.get(projectId, seriesId));
+  ipcMain.handle('creative-production:list-series', (_event, projectId: string) =>
+    generationSeries.list(projectId));
+  ipcMain.handle('creative-production:create-series', (
+    _event,
+    projectId: string,
+    input: { name: string; tasks: unknown[] }
+  ) => generationSeries.create(projectId, input));
+  ipcMain.handle('creative-production:pause-series', (_event, projectId: string, seriesId: string) =>
+    generationSeries.pause(projectId, seriesId));
+  ipcMain.handle('creative-production:resume-series', (_event, projectId: string, seriesId: string) =>
+    generationSeries.resume(projectId, seriesId));
+  ipcMain.handle('creative-production:cancel-series', (_event, projectId: string, seriesId: string) =>
+    generationSeries.cancel(projectId, seriesId));
+  ipcMain.handle('creative-production:run-series-task', (
+    _event,
+    projectId: string,
+    seriesId: string,
+    taskId: string,
+    apiProfileId?: string
+  ) => generationSeriesExecution.runTask(projectId, seriesId, taskId, apiProfileId));
+  ipcMain.handle('creative-production:run-series', (
+    _event,
+    projectId: string,
+    seriesId: string,
+    apiProfileId?: string
+  ) => generationSeriesExecution.runAll(projectId, seriesId, apiProfileId));
   ipcMain.handle('creative-production:list-formal-assets', (
     _event,
     projectId: string,
     seriesId: string
   ) => formalAssets.list(projectId, seriesId));
+  ipcMain.handle('creative-production:review-formal-asset', (
+    _event,
+    projectId: string,
+    seriesId: string,
+    outputId: string,
+    input: unknown
+  ) => formalAssets.review(projectId, seriesId, outputId, input));
+  ipcMain.handle('creative-production:get-run-prompt', async (_event, runId: string) => {
+    const root = await imageGeneration.runRoot(runId);
+    if (!root) return null;
+    return fs.readFile(path.join(root, 'compiled-prompt.md'), 'utf8').catch(() => null);
+  });
 }
 
 if (gotTheLock) app.whenReady().then(async () => {
@@ -487,6 +530,11 @@ if (gotTheLock) app.whenReady().then(async () => {
     lockedAssets,
     anchorCandidates,
     imageGeneration
+  );
+  generationSeriesExecution = createGenerationSeriesExecutionService(
+    generationSeries,
+    creativeGeneration,
+    formalAssets
   );
   registerIpc();
   createWindow();
