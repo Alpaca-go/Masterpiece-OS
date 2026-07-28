@@ -74,6 +74,8 @@ function resolveVisualUpgradeArtifacts(snapshot: unknown, run: ImageGenerationRu
     creativeDirectionSnapshot?: Record<string, unknown>;
     creativeDirection?: Record<string, unknown>;
     generationBlueprint?: Record<string, unknown>;
+    visualMemory?: Record<string, unknown>;
+    referencePack?: Record<string, unknown>;
   };
   const creativeDirection = value?.creativeDirectionSnapshot || value?.creativeDirection;
   const generationBlueprint = value?.generationBlueprint;
@@ -89,6 +91,8 @@ function resolveVisualUpgradeArtifacts(snapshot: unknown, run: ImageGenerationRu
     },
     creativeDirection,
     generationBlueprint,
+    ...(value.visualMemory ? { visualMemory: value.visualMemory } : {}),
+    ...(value.referencePack ? { referencePack: value.referencePack } : {}),
     generationResult: run,
   };
 }
@@ -749,6 +753,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       sessionId: snapshot.sessionId,
       styleProfile: `${snapshot.styleProfileId}@${snapshot.styleProfileVersion}`,
       visualCanon: `${snapshot.visualCanonId}@${snapshot.visualCanonVersion}`,
+      ...(snapshot.visualMemoryId ? { visualMemory: snapshot.visualMemoryId } : {}),
+      ...(snapshot.referencePackId ? { referencePack: snapshot.referencePackId } : {}),
       lockedAssetIds: snapshot.lockedAssetIds,
       selectedReferences: snapshot.selectedReferences,
     });

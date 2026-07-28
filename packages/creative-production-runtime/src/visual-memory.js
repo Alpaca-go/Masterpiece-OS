@@ -248,3 +248,32 @@ export function validateVisualMemory(memory) {
   }
   return memory;
 }
+
+export function compileVisualMemoryPrompt(memory) {
+  const value = validateVisualMemory(memory);
+  const list = (items) => items.map((item) => `- ${item}`).join('\n') || '- 无';
+  return [
+    '# Visual Memory — compressed execution context',
+    '## Brand Core',
+    `- Industry: ${value.brand_core.industry}`,
+    `- Positioning: ${value.brand_core.positioning}`,
+    `- Mood: ${value.brand_core.mood.join('；') || '无'}`,
+    `- Core temperament: ${value.brand_core.core_temperament.join('；') || '无'}`,
+    '## Visual DNA',
+    `- Colors: ${value.visual_dna.colors.join('；') || '无'}`,
+    `- Materials: ${value.visual_dna.materials.join('；') || '无'}`,
+    `- Photography: ${value.visual_dna.photography.join('；') || '无'}`,
+    `- Composition: ${value.visual_dna.composition.join('；') || '无'}`,
+    `- Graphic language: ${value.visual_dna.graphic_language.join('；') || '无'}`,
+    '## Problems that must not be inherited',
+    list(value.visual_problems),
+    '## New visual opportunities',
+    list(value.visual_opportunities),
+    '## Generation Rules — preserve',
+    list(value.generation_rules.preserve),
+    '## Generation Rules — transform',
+    list(value.generation_rules.transform),
+    '## Generation Rules — avoid',
+    list(value.generation_rules.avoid),
+  ].join('\n');
+}

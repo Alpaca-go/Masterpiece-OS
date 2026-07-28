@@ -70,6 +70,8 @@ export const RUN_FILES = {
   visualAnalysis: 'visual-analysis.json',
   creativeDirection: 'creative-direction.json',
   generationBlueprint: 'generation-blueprint.json',
+  visualMemory: 'visual-memory.json',
+  referencePack: 'reference-pack.json',
   generationResult: 'generation-result.json',
 } as const;
 

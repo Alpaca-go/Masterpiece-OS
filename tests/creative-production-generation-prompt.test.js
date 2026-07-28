@@ -5,7 +5,10 @@ import path from 'node:path';
 import {
   compileGenerationPromptSnapshot,
   inferGenerationOutputType,
+  validateGenerationPromptSnapshot,
 } from '../packages/creative-production-runtime/src/generation-prompt.js';
+import { compileVisualMemory } from '../packages/creative-production-runtime/src/visual-memory.js';
+import { compileReferencePack } from '../packages/creative-production-runtime/src/reference-pack.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 const style = {
@@ -83,6 +86,81 @@ test('v18.1 prompt snapshot keeps finalPrompt in Run snapshot and selects at mos
   assert.match(snapshot.instruction.finalPrompt, /只生成一个可生产包装成品/);
   assert.match(snapshot.instruction.finalPrompt, /旧包装换皮/);
   assert.ok(!Object.hasOwn(snapshot, 'messages'));
+});
+
+test('Visual Memory prompt freezes Memory and Reference Pack while selecting task-specific provider references', () => {
+  const assets = [
+    { id: 'logo-1', relativePath: 'assets/logo.png', mimeType: 'image/png', status: 'ready' },
+    { id: 'package-1', relativePath: 'assets/package.png', mimeType: 'image/png', status: 'ready' },
+    ...Array.from({ length: 3 }, (_, index) => ({
+      id: `style-${index}`,
+      relativePath: `assets/style-${index}.png`,
+      mimeType: 'image/png',
+      status: 'ready',
+    })),
+  ];
+  const visualMemory = compileVisualMemory({
+    projectId: 'project-1',
+    visualContext: {
+      generatedAt: NOW,
+      identity: { industry: 'hospitality' },
+      currentVisualSystem: {},
+      evaluation: { visualProblems: ['fragmented visual language'] },
+    },
+    understanding: {
+      generatedAt: NOW,
+      projectIdentity: { industry: 'hospitality' },
+      valuableAssets: [],
+      currentProblems: ['inconsistent hierarchy'],
+      upgradePrinciples: ['build one coherent world'],
+      oldPatternsToAvoid: ['do not copy the old poster'],
+      assetReadingSummary: assets.map((asset, index) => ({
+        assetId: asset.id,
+        summary: `reference ${index}`,
+        recommendedUsage: index === 0 ? 'identity_reference'
+          : index === 1 ? 'structure_reference'
+            : 'reading_only',
+      })),
+    },
+    creativeDirection: direction,
+    lockedAssets: locks,
+    assets,
+  }, NOW);
+  const referencePack = compileReferencePack({
+    visualMemory,
+    anchors: [{
+      asset_id: 'canon-image-1',
+      source_path: canon.canonImages[0].imagePath,
+      rationale: 'confirmed primary anchor',
+      signals: ['packaging_render', 'primary'],
+    }],
+  }, NOW);
+  const snapshot = compileGenerationPromptSnapshot({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    requestId: 'request-memory',
+    userRequest: 'generate a new packaging render',
+    outputType: 'packaging_render',
+    creativeDirection: direction,
+    styleProfile: style,
+    visualCanon: canon,
+    lockedAssets: locks,
+    visualMemory,
+    referencePack,
+  }, NOW);
+  assert.equal(validateGenerationPromptSnapshot(snapshot), snapshot);
+  assert.equal(snapshot.compilerVersion, 'visual-memory-1.0.0');
+  assert.equal(snapshot.visualMemoryId, visualMemory.id);
+  assert.equal(snapshot.referencePackId, referencePack.id);
+  assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
+    'structure_reference',
+    'core_reference',
+  ]);
+  assert.ok(snapshot.selectedReferences.every((item) =>
+    item.projectRelativePath.startsWith('visual-memory/reference-pack/')));
+  assert.match(snapshot.instruction.finalPrompt, /Visual Memory/);
+  assert.match(snapshot.instruction.finalPrompt, /Reference Pack Policy/);
+  assert.match(snapshot.instruction.finalPrompt, /fragmented visual language/);
 });
 
 test('reading-only legacy assets cannot enter the final provider reference set', () => {

@@ -110,6 +110,8 @@ export function createRunStore(dataPath: string, projectId: string) {
       visualAnalysis: unknown;
       creativeDirection: unknown;
       generationBlueprint: unknown;
+      visualMemory?: unknown;
+      referencePack?: unknown;
       generationResult: unknown;
     }): Promise<void> {
       const r = await root(runId);
@@ -117,6 +119,12 @@ export function createRunStore(dataPath: string, projectId: string) {
         writeJsonSafe(path.join(r, RUN_FILES.visualAnalysis), artifacts.visualAnalysis),
         writeJsonSafe(path.join(r, RUN_FILES.creativeDirection), artifacts.creativeDirection),
         writeJsonSafe(path.join(r, RUN_FILES.generationBlueprint), artifacts.generationBlueprint),
+        ...(artifacts.visualMemory
+          ? [writeJsonSafe(path.join(r, RUN_FILES.visualMemory), artifacts.visualMemory)]
+          : []),
+        ...(artifacts.referencePack
+          ? [writeJsonSafe(path.join(r, RUN_FILES.referencePack), artifacts.referencePack)]
+          : []),
         writeJsonSafe(path.join(r, RUN_FILES.generationResult), artifacts.generationResult),
       ]);
     },

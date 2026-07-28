@@ -2,17 +2,26 @@ import type {
   CreativeDirection,
   GenerationBlueprint,
   LockedAsset,
+  ReferencePackItem,
   StyleProfile,
 } from '../../../../packages/project-contracts/src/index.ts';
 import {
   compileGenerationBlueprintPrompt,
 } from '../../../../packages/creative-production-runtime/src/generation-blueprint.js';
+import {
+  compileVisualMemoryPrompt,
+} from '../../../../packages/creative-production-runtime/src/visual-memory.js';
+import {
+  selectProviderReferencesFromPack,
+} from '../../../../packages/creative-production-runtime/src/reference-pack.js';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
 import type { GenerationBlueprintService } from './generation-blueprint-service.ts';
 import type { AnchorCandidateService } from './anchor-candidate-service.ts';
 import type { ImageGenerationService } from './image-generation/service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { StyleProfileService } from './style-profile-service.ts';
+import type { VisualMemoryService } from './visual-memory-service.ts';
+import type { ReferencePackService } from './reference-pack-service.ts';
 
 function resolveBlueprintPurpose(purpose: string): GenerationBlueprint['imagePurpose'] {
   if (/店内|室内|空间|装修|门店|店面|外立面|门头/iu.test(purpose)) {
@@ -40,6 +49,8 @@ export function createAnchorGenerationService(
   imageGeneration: ImageGenerationService,
   directions: CreativeDirectionService,
   blueprints: GenerationBlueprintService,
+  memories?: VisualMemoryService,
+  referencePacks?: ReferencePackService,
 ) {
   async function execute(
     projectId: string,
@@ -84,12 +95,33 @@ export function createAnchorGenerationService(
         ...style.forbiddenVariations,
       ],
     });
-    const references = blueprint.imagePurpose === 'vi_application'
-      ? availableReferences.filter((reference) => reference.role === 'identity_reference').slice(0, 1)
-      : blueprint.imagePurpose === 'packaging_render'
-        ? availableReferences.filter((reference) => reference.role === 'structure_reference').slice(0, 1)
-        : [];
-    const compiledPrompt = compileGenerationBlueprintPrompt(blueprint);
+    const visualMemory = memories ? await memories.compile(projectId) : undefined;
+    const referencePack = visualMemory && referencePacks
+      ? await referencePacks.build(projectId)
+      : undefined;
+    const references = referencePack
+      ? selectProviderReferencesFromPack(referencePack, blueprint.imagePurpose).map((reference: ReferencePackItem) => ({
+        id: reference.asset_id,
+        role: reference.role === 'anchor'
+          ? 'core_reference' as const
+          : reference.signals.some((signal) => /structure_reference|packaging_structure/iu.test(signal))
+            ? 'structure_reference' as const
+            : 'identity_reference' as const,
+        projectRelativePath: reference.pack_path,
+      }))
+      : blueprint.imagePurpose === 'vi_application'
+        ? availableReferences.filter((reference) => reference.role === 'identity_reference').slice(0, 1)
+        : blueprint.imagePurpose === 'packaging_render'
+          ? availableReferences.filter((reference) => reference.role === 'structure_reference').slice(0, 1)
+          : [];
+    const compiledPrompt = [
+      ...(visualMemory ? [compileVisualMemoryPrompt(visualMemory)] : []),
+      ...(referencePack ? [
+        '## Reference Pack Policy',
+        'Use only the task-selected reference files. Preserve identity and structure; do not copy obsolete style.',
+      ] : []),
+      compileGenerationBlueprintPrompt(blueprint),
+    ].join('\n\n');
     const snapshot = {
       schemaVersion: '1.0',
       kind: 'anchor-candidate-prompt',
@@ -102,6 +134,8 @@ export function createAnchorGenerationService(
       creativeDirectionSnapshot: direction,
       generationBlueprintId: blueprint.id,
       generationBlueprint: blueprint,
+      ...(visualMemory ? { visualMemoryId: visualMemory.id, visualMemory } : {}),
+      ...(referencePack ? { referencePackId: referencePack.id, referencePack } : {}),
       lockedAssetIds: locks.map((item) => item.id),
       purpose,
       references,
@@ -117,6 +151,8 @@ export function createAnchorGenerationService(
         styleProfile: `${style.id}@${style.version}`,
         creativeDirection: `${direction.id}@${direction.version}`,
         generationBlueprint: blueprint.id,
+        ...(visualMemory ? { visualMemory: visualMemory.id } : {}),
+        ...(referencePack ? { referencePack: referencePack.id } : {}),
         lockedAssetIds: locks.map((item) => item.id),
         references,
       },

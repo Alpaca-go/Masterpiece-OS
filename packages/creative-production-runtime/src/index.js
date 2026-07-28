@@ -43,6 +43,7 @@ export {
 } from './visual-canon.js';
 export {
   GENERATION_PROMPT_COMPILER_VERSION,
+  VISUAL_MEMORY_PROMPT_COMPILER_VERSION,
   inferGenerationOutputType,
   compileGenerationPromptSnapshot,
   resolveCanonImagesForTask,
@@ -75,6 +76,7 @@ export {
   VISUAL_MEMORY_COMPILER_VERSION,
   compileVisualMemory,
   validateVisualMemory,
+  compileVisualMemoryPrompt,
 } from './visual-memory.js';
 export {
   REFERENCE_PACK_COMPILER_VERSION,

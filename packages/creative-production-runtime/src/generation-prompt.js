@@ -5,8 +5,14 @@ import {
   compileGenerationBlueprintPrompt,
   validateGenerationBlueprint,
 } from './generation-blueprint.js';
+import { compileVisualMemoryPrompt, validateVisualMemory } from './visual-memory.js';
+import {
+  selectProviderReferencesFromPack,
+  validateReferencePack,
+} from './reference-pack.js';
 
 export const GENERATION_PROMPT_COMPILER_VERSION = 'visual-upgrade-1.0.0';
+export const VISUAL_MEMORY_PROMPT_COMPILER_VERSION = 'visual-memory-1.0.0';
 
 const OUTPUT_TYPES = [
   'interior_scene', 'storefront_scene', 'packaging_render',
@@ -127,6 +133,17 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     });
   }
   const direction = input.creativeDirection;
+  const visualMemory = input.visualMemory ? validateVisualMemory(input.visualMemory) : null;
+  const referencePack = input.referencePack ? validateReferencePack(input.referencePack) : null;
+  if (Boolean(visualMemory) !== Boolean(referencePack)
+    || (visualMemory && referencePack
+      && (visualMemory.project_id !== text(input.projectId)
+        || referencePack.project_id !== text(input.projectId)
+        || referencePack.visual_memory_id !== visualMemory.id))) {
+    throw Object.assign(new Error('Visual Memory 与 Reference Pack 不匹配。'), {
+      code: 'VISUAL_MEMORY_STALE',
+    });
+  }
   const blueprint = input.generationBlueprint
     ? validateGenerationBlueprint(input.generationBlueprint)
     : compileGenerationBlueprint({
@@ -154,15 +171,28 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
   if (critical.some((asset) => !asset.rule || !asset.forbiddenChanges?.length)) {
     throw Object.assign(new Error('critical Locked Asset 规则不完整。'), { code: 'CRITICAL_LOCK_RULE_MISSING' });
   }
-  const references = selectGenerationReferences(lockedAssets, outputType);
+  const references = referencePack
+    ? selectProviderReferencesFromPack(referencePack, outputType).map((reference) => ({
+        id: reference.asset_id,
+        role: reference.role === 'anchor'
+          ? 'core_reference'
+          : reference.signals.some((signal) => /structure_reference|packaging_structure/iu.test(signal))
+            ? 'structure_reference'
+            : 'identity_reference',
+        projectRelativePath: reference.pack_path,
+      }))
+    : selectGenerationReferences(lockedAssets, outputType);
   const recentContext = unique(input.recentContext).slice(-5);
   const preserve = unique([
     ...blueprint.brandAssetRules,
     ...critical.map((asset) => asset.rule),
+    ...(visualMemory?.generation_rules.preserve ?? []),
   ]);
   const avoid = unique([
     ...blueprint.avoid,
     ...lockedAssets.flatMap((asset) => asset.forbiddenChanges),
+    ...(visualMemory?.visual_problems ?? []),
+    ...(visualMemory?.generation_rules.avoid ?? []),
   ]);
   const sceneDescription = blueprint.sceneDescription;
   const composition = blueprint.composition;
@@ -180,6 +210,12 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     userRequest,
     ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
     '# Approved Generation Blueprint — execute, do not redesign',
+    ...(visualMemory ? [compileVisualMemoryPrompt(visualMemory)] : []),
+    ...(referencePack ? [
+      '# Reference Pack Policy',
+      `Audited pack: ${referencePack.id} (${referencePack.items.length} candidates).`,
+      `Task-selected Provider references: ${references.length}; never use excluded or unselected assets.`,
+    ] : []),
     compileGenerationBlueprintPrompt(blueprint),
   ].join('\n\n');
   const instruction = {
@@ -206,6 +242,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     creativeDirectionId: direction.id,
     creativeDirectionVersion: direction.version,
     generationBlueprintId: blueprint.id,
+    ...(visualMemory ? { visualMemoryId: visualMemory.id, visualMemory } : {}),
+    ...(referencePack ? { referencePackId: referencePack.id, referencePack } : {}),
     creativeDirectionSnapshot: direction,
     generationBlueprint: blueprint,
     outputType,
@@ -217,7 +255,9 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     selectedReferences: references,
     instruction,
     negativePrompt: avoid.join(', '),
-    compilerVersion: GENERATION_PROMPT_COMPILER_VERSION,
+    compilerVersion: visualMemory
+      ? VISUAL_MEMORY_PROMPT_COMPILER_VERSION
+      : GENERATION_PROMPT_COMPILER_VERSION,
     createdAt: now,
   });
 }
@@ -242,6 +282,28 @@ export function validateGenerationPromptSnapshot(snapshot) {
     throw Object.assign(new Error('Visual Upgrade Prompt Snapshot 缺少 Generation Blueprint。'), {
       code: 'GENERATION_BLUEPRINT_MISSING',
     });
+  }
+  if (snapshot.compilerVersion === VISUAL_MEMORY_PROMPT_COMPILER_VERSION) {
+    if (!text(snapshot.generationBlueprintId)
+      || !text(snapshot.visualMemoryId)
+      || !text(snapshot.referencePackId)
+      || !snapshot.visualMemory
+      || !snapshot.referencePack) {
+      throw Object.assign(new Error('Visual Memory Prompt Snapshot 缺少不可变上下文。'), {
+        code: 'VISUAL_MEMORY_SNAPSHOT_MISSING',
+      });
+    }
+    const memory = validateVisualMemory(snapshot.visualMemory);
+    const pack = validateReferencePack(snapshot.referencePack);
+    if (memory.id !== snapshot.visualMemoryId
+      || pack.id !== snapshot.referencePackId
+      || pack.visual_memory_id !== memory.id
+      || memory.project_id !== snapshot.projectId
+      || pack.project_id !== snapshot.projectId) {
+      throw Object.assign(new Error('Visual Memory Prompt Snapshot 的版本关系无效。'), {
+        code: 'VISUAL_MEMORY_STALE',
+      });
+    }
   }
   if (!Array.isArray(snapshot.selectedReferences) || snapshot.selectedReferences.length > 2) {
     throw Object.assign(new Error('Generation Reference 超过 v18.1 小参考集上限。'), {

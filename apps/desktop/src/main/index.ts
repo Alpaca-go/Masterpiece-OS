@@ -165,7 +165,9 @@ const generationPrompts = createGenerationPromptService(
   lockedAssets,
   visualCanons,
   creativeDirections,
-  generationBlueprints
+  generationBlueprints,
+  visualMemory,
+  referencePacks
 );
 const creativeReading = createCreativeReadingService(
   projects,
@@ -187,7 +189,9 @@ const creativeProductionBootstrap = createCreativeProductionBootstrapService(
   creativeSessions,
   lockedAssets,
   styleProfiles,
-  creativeDirections
+  creativeDirections,
+  visualMemory,
+  referencePacks
 );
 const quickStyleExtraction = createQuickStyleExtractionService(
   referenceAnchor,
@@ -614,7 +618,9 @@ if (gotTheLock) app.whenReady().then(async () => {
     anchorCandidates,
     imageGeneration,
     creativeDirections,
-    generationBlueprints
+    generationBlueprints,
+    visualMemory,
+    referencePacks
   );
   generationSeriesExecution = createGenerationSeriesExecutionService(
     generationSeries,

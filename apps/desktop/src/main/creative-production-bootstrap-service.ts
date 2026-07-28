@@ -9,6 +9,8 @@ import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { StyleProfileService } from './style-profile-service.ts';
+import type { VisualMemoryService } from './visual-memory-service.ts';
+import type { ReferencePackService } from './reference-pack-service.ts';
 
 export function createCreativeProductionBootstrapService(
   projects: ProjectStore,
@@ -16,7 +18,15 @@ export function createCreativeProductionBootstrapService(
   lockedAssets: LockedAssetsService,
   styles: StyleProfileService,
   directions: CreativeDirectionService,
+  memories?: VisualMemoryService,
+  referencePacks?: ReferencePackService,
 ) {
+  async function attachVisualMemoryContext(projectId: string) {
+    if (!memories || !referencePacks) return {};
+    const visualMemory = await memories.compile(projectId);
+    const referencePack = await referencePacks.build(projectId);
+    return { visualMemory, referencePack };
+  }
   function creativeDecisionFromDirection(
     projectId: string,
     understanding: NonNullable<Awaited<ReturnType<CreativeSessionService['create']>>['understanding']>,
@@ -79,7 +89,12 @@ export function createCreativeProductionBootstrapService(
       });
     }
     if (active?.source.creativeDecisionId === `creative-decision-${direction.id}`) {
-      return { session, styleProfile: active, lockedAssets: await lockedAssets.list(projectId) };
+      return {
+        session,
+        styleProfile: active,
+        lockedAssets: await lockedAssets.list(projectId),
+        ...await attachVisualMemoryContext(projectId),
+      };
     }
     const projectPaths = await projects.paths(projectId);
     const visualContext = await fs
@@ -107,7 +122,12 @@ export function createCreativeProductionBootstrapService(
       await sessions.transition(projectId, 'CREATIVE_DECISION_COMPLETED', 'Creative Decision 已由 Creative Direction 建立。');
     }
     const styleProfile = await styles.compile(projectId, creativeDecision);
-    return { session: await sessions.create(projectId), styleProfile, lockedAssets: locks };
+    return {
+      session: await sessions.create(projectId),
+      styleProfile,
+      lockedAssets: locks,
+      ...await attachVisualMemoryContext(projectId),
+    };
   }
 
   async function regenerate(projectId: string, input: { directionBrief?: string }) {
@@ -154,6 +174,7 @@ export function createCreativeProductionBootstrapService(
       creativeDirection: directionResult.direction,
       styleProfile,
       lockedAssets: locks,
+      ...await attachVisualMemoryContext(projectId),
       invalidated: {
         anchorCandidates: true,
         visualCanon: true,

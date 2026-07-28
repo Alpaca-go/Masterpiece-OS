@@ -14,6 +14,8 @@ import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { VisualCanonService } from './visual-canon-service.ts';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
 import type { GenerationBlueprintService } from './generation-blueprint-service.ts';
+import type { VisualMemoryService } from './visual-memory-service.ts';
+import type { ReferencePackService } from './reference-pack-service.ts';
 
 async function writeJson(filename: string, value: unknown) {
   const result = await atomicWriteJsonWithRetry(filename, value);
@@ -30,6 +32,8 @@ export function createGenerationPromptService(
   canons: VisualCanonService,
   directions: CreativeDirectionService,
   blueprints: GenerationBlueprintService,
+  memories?: VisualMemoryService,
+  referencePacks?: ReferencePackService,
 ) {
   async function root(projectId: string) {
     return path.join((await projects.paths(projectId)).root, 'generations', 'prompt-snapshots');
@@ -52,6 +56,10 @@ export function createGenerationPromptService(
         code: 'GENERATION_CONTEXT_MISSING',
       });
     }
+    const visualMemory = memories ? await memories.compile(projectId) : undefined;
+    const referencePack = visualMemory && referencePacks
+      ? await referencePacks.build(projectId)
+      : undefined;
     const blueprint = await blueprints.compile(projectId, {
       userRequest: input.userRequest,
       imagePurpose: input.outputType || inferGenerationOutputType(input.userRequest),
@@ -65,6 +73,8 @@ export function createGenerationPromptService(
       avoid: [
         ...(styleProfile.promptComponents.negative ?? []),
         ...(styleProfile.forbiddenVariations ?? []),
+        ...(visualMemory?.visual_problems ?? []),
+        ...(visualMemory?.generation_rules.avoid ?? []),
       ],
     });
     const snapshot = compileGenerationPromptSnapshot({
@@ -78,6 +88,8 @@ export function createGenerationPromptService(
       styleProfile,
       visualCanon,
       lockedAssets: locks,
+      visualMemory,
+      referencePack,
       recentContext: (session.messages ?? [])
         .filter((message) => ['user_feedback', 'generation_result'].includes(message.type))
         .slice(-5)

@@ -21,8 +21,12 @@
     "creativeDirectionId": { "type": "string", "minLength": 1 },
     "creativeDirectionVersion": { "type": "string", "minLength": 1 },
     "generationBlueprintId": { "type": "string", "minLength": 1 },
+    "visualMemoryId": { "type": "string", "minLength": 1 },
+    "referencePackId": { "type": "string", "minLength": 1 },
     "creativeDirectionSnapshot": { "type": "object" },
     "generationBlueprint": { "type": "object" },
+    "visualMemory": { "type": "object" },
+    "referencePack": { "type": "object" },
     "outputType": {
       "enum": ["interior_scene", "storefront_scene", "packaging_render", "brand_poster", "vi_application", "illustration"]
     },
@@ -72,6 +76,17 @@
     "compilerVersion": { "type": "string", "minLength": 1 },
     "createdAt": { "type": "string", "format": "date-time" }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "compilerVersion": { "const": "visual-memory-1.0.0" } },
+        "required": ["compilerVersion"]
+      },
+      "then": {
+        "required": ["visualMemoryId", "referencePackId", "visualMemory", "referencePack"]
+      }
+    }
+  ],
   "$defs": {
     "strings": {
       "type": "array",
