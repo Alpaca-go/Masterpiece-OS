@@ -30,6 +30,16 @@ import { createFileContextLoader } from './image-generation/context-loader';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
 import { createContextIntegrationService } from './context-integration-service';
+import { createCreativeSessionService } from './creative-session-service';
+import { createCreativeReadingService } from './creative-reading-service';
+import { createStyleProfileService } from './style-profile-service';
+import { createLockedAssetsService } from './locked-assets-service';
+import { createAnchorCandidateService } from './anchor-candidate-service';
+import { createVisualCanonService } from './visual-canon-service';
+import { createGenerationPromptService } from './generation-prompt-service';
+import { createCreativeGenerationService, type CreativeGenerationService } from './creative-generation-service';
+import { createGenerationSeriesService } from './generation-series-service';
+import { createFormalAssetsService } from './formal-assets-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -52,6 +62,7 @@ if (!gotTheLock) {
 const projects = createProjectStore(getSettings);
 /** 生图功能 V1 主进程服务（在 app ready 后构造，以便安全解析数据目录）。 */
 let imageGeneration: ImageGenerationService;
+let creativeGeneration: CreativeGenerationService;
 const pipeline = createPipelineService(
   projects,
   getProviderCredentials,
@@ -90,6 +101,32 @@ const referenceAnchor = createReferenceAnchorService(getSettings, {
   contextIntegration,
   emitProgress: (progress) => mainWindow?.webContents.send('reference-anchor:progress', progress)
 });
+const creativeSessions = createCreativeSessionService(projects);
+const styleProfiles = createStyleProfileService(projects, creativeSessions);
+const lockedAssets = createLockedAssetsService(projects, creativeSessions);
+const anchorCandidates = createAnchorCandidateService(projects, creativeSessions, styleProfiles, lockedAssets);
+const visualCanons = createVisualCanonService(projects, creativeSessions, styleProfiles, lockedAssets, anchorCandidates);
+const generationPrompts = createGenerationPromptService(
+  projects,
+  creativeSessions,
+  styleProfiles,
+  lockedAssets,
+  visualCanons
+);
+const creativeReading = createCreativeReadingService(
+  projects,
+  creativeSessions,
+  lockedAssets,
+  getProviderCredentials
+);
+const generationSeries = createGenerationSeriesService(
+  projects,
+  creativeSessions,
+  styleProfiles,
+  lockedAssets,
+  visualCanons
+);
+const formalAssets = createFormalAssetsService(projects);
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -322,6 +359,52 @@ function registerIpc(): void {
 
   // ---- 生图功能 V1（§16 Desktop IPC）----
   registerImageGenerationIpc(imageGeneration, ipcMain);
+  ipcMain.handle('creative-session:get', (_event, projectId: string) =>
+    creativeSessions.get(projectId));
+  ipcMain.handle('creative-session:create', (_event, projectId: string) =>
+    creativeSessions.create(projectId));
+  ipcMain.handle('creative-session:get-workspace', async (_event, projectId: string) => {
+    const [session, styleProfile, visualCanon, runs] = await Promise.all([
+      creativeSessions.create(projectId),
+      styleProfiles.getActive(projectId),
+      visualCanons.getActive(projectId),
+      imageGeneration.listRuns(projectId),
+    ]);
+    return { session, styleProfile, visualCanon, runs };
+  });
+  ipcMain.handle('creative-session:read', (_event, projectId: string, apiProfileId?: string) =>
+    creativeReading.run(projectId, apiProfileId));
+  ipcMain.handle('creative-session:generate', (
+    _event,
+    projectId: string,
+    input: { userRequest: string; apiProfileId?: string; size?: string; dryRun?: boolean }
+  ) => creativeGeneration.generate(projectId, input));
+  ipcMain.handle('creative-session:append-feedback', (_event, projectId: string, content: string) =>
+    creativeSessions.appendMessage(projectId, {
+      role: 'user',
+      type: 'user_feedback',
+      content,
+    }));
+  ipcMain.handle('creative-session:get-run', (_event, runId: string) =>
+    imageGeneration.getRun(runId));
+  ipcMain.handle('creative-session:get-image-data-url', (_event, runId: string, imageId: string) =>
+    imageGeneration.readImageDataUrl(runId, imageId));
+
+  ipcMain.handle('creative-production:list-locked-assets', (_event, projectId: string) =>
+    lockedAssets.list(projectId));
+  ipcMain.handle('creative-production:list-anchor-candidates', (_event, projectId: string) =>
+    anchorCandidates.list(projectId));
+  ipcMain.handle('creative-production:list-style-profiles', (_event, projectId: string) =>
+    styleProfiles.list(projectId));
+  ipcMain.handle('creative-production:list-visual-canons', (_event, projectId: string) =>
+    visualCanons.list(projectId));
+  ipcMain.handle('creative-production:get-series', (_event, projectId: string, seriesId: string) =>
+    generationSeries.get(projectId, seriesId));
+  ipcMain.handle('creative-production:list-formal-assets', (
+    _event,
+    projectId: string,
+    seriesId: string
+  ) => formalAssets.list(projectId, seriesId));
 }
 
 if (gotTheLock) app.whenReady().then(async () => {
@@ -340,6 +423,11 @@ if (gotTheLock) app.whenReady().then(async () => {
       if (result) throw new Error(result);
     },
   });
+  creativeGeneration = createCreativeGenerationService(
+    generationPrompts,
+    imageGeneration,
+    creativeSessions
+  );
   registerIpc();
   createWindow();
   app.on('activate', () => {

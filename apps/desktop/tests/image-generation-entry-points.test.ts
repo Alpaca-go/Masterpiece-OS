@@ -11,15 +11,27 @@ const documentSource = fs.readFileSync(path.join(rendererRoot, 'components', 'Do
 const reportSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ReportView.tsx'), 'utf8');
 const mainSource = fs.readFileSync(path.join(rendererRoot, 'main.tsx'), 'utf8');
 const errorBoundarySource = fs.readFileSync(path.join(rendererRoot, 'components', 'AppErrorBoundary.tsx'), 'utf8');
+const creativeSessionSource = fs.readFileSync(path.join(rendererRoot, 'components', 'CreativeSessionWorkspace.tsx'), 'utf8');
 
-test('renderer exposes all four generation presets from their owning workspaces', () => {
-  for (const preset of ['visual_extension', 'document_concept', 'reference_preview', 'integrated_anchor']) {
+test('renderer keeps specialist legacy presets but routes analysis reports into Creative Session', () => {
+  for (const preset of ['document_concept', 'reference_preview', 'integrated_anchor']) {
     assert.match(appSource, new RegExp(`preset: '${preset}'`));
   }
-  assert.match(reportSource, /基于当前视觉继续生成/);
+  assert.doesNotMatch(appSource, /preset: 'visual_extension'/);
+  assert.match(appSource, /setScreen\('creative-session'\)/);
+  assert.match(reportSource, /根据分析继续创作/);
   assert.match(documentSource, /生成概念稿/);
   assert.match(referenceSource, /试生成参考效果/);
   assert.match(referenceSource, /生成 Master Anchor Image/);
+});
+
+test('Creative Session workspace keeps a single natural-language creation input', () => {
+  assert.match(creativeSessionSource, /creativeSession\.getWorkspace/);
+  assert.match(creativeSessionSource, /creativeSession\.read/);
+  assert.match(creativeSessionSource, /creativeSession\.generate/);
+  assert.match(creativeSessionSource, /例如：生成一张升级后的店内装修效果图/);
+  assert.match(creativeSessionSource, /开始创作/);
+  assert.doesNotMatch(creativeSessionSource, /GenerationSourcePreset|Reference Role|deliverable-card/);
 });
 
 test('generation workspace uses source bundles, displays source usage and only offers Wan image profiles', () => {

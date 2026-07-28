@@ -17,10 +17,11 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
+import { CreativeSessionWorkspace } from './components/CreativeSessionWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -347,7 +348,14 @@ export function App() {
     onRetry={() => void run(selected, true, selectedApiProfileId)}
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
-  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => openImageGeneration({ preset: 'visual_extension', purpose: 'production', projectId: selected.id, visual: { projectId: selected.id }, userIntent: {} })} />;
+  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
+
+  if (screen === 'creative-session' && selected) return <CreativeSessionWorkspace
+    project={selected}
+    apiProfileId={selectedApiProfileId}
+    onBack={() => setScreen('report')}
+    onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
+  />;
 
   if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
     sourceBundle={requestedImageGen}

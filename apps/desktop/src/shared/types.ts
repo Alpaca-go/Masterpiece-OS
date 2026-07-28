@@ -1,5 +1,25 @@
 // Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
 // multimodal endpoint instead of restricting profiles to a vendor allow-list.
+import type {
+  AnchorCandidate,
+  CreativeSession,
+  CreativeUnderstanding,
+  GenerationOutput,
+  GenerationSeries,
+  LockedAsset as CreativeLockedAsset,
+  StyleProfile,
+  VisualCanon
+} from '../../../../packages/project-contracts/src/index';
+export type {
+  AnchorCandidate,
+  CreativeSession,
+  CreativeUnderstanding,
+  GenerationOutput,
+  GenerationSeries,
+  StyleProfile,
+  VisualCanon
+} from '../../../../packages/project-contracts/src/index';
+
 export type ProviderKind = string;
 export type ApiProtocol = 'openai-chat-multimodal' | 'dashscope-wan-image';
 export type OutputLanguage = 'zh-CN' | 'en';
@@ -1877,6 +1897,40 @@ export interface DesktopApi {
     getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;
     /** §16.3 运行状态广播。 */
     onRunUpdated(callback: (progress: ImageGenerationProgress) => void): () => void;
+  };
+  creativeSession: {
+    get(projectId: string): Promise<CreativeSession | null>;
+    create(projectId: string): Promise<CreativeSession>;
+    getWorkspace(projectId: string): Promise<{
+      session: CreativeSession;
+      styleProfile: StyleProfile | null;
+      visualCanon: VisualCanon | null;
+      runs: ImageGenerationRunSummary[];
+    }>;
+    read(projectId: string, apiProfileId?: string): Promise<{
+      understanding: CreativeUnderstanding;
+      provider: string;
+      model: string;
+      modelCallCount: number;
+      outputRoot: string;
+    }>;
+    generate(projectId: string, input: {
+      userRequest: string;
+      apiProfileId?: string;
+      size?: string;
+      dryRun?: boolean;
+    }): Promise<ImageGenerationRun>;
+    appendFeedback(projectId: string, content: string): Promise<CreativeSession>;
+    getRun(runId: string): Promise<ImageGenerationRun | null>;
+    getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;
+  };
+  creativeProduction: {
+    listLockedAssets(projectId: string): Promise<CreativeLockedAsset[]>;
+    listAnchorCandidates(projectId: string): Promise<AnchorCandidate[]>;
+    listStyleProfiles(projectId: string): Promise<StyleProfile[]>;
+    listVisualCanons(projectId: string): Promise<VisualCanon[]>;
+    getSeries(projectId: string, seriesId: string): Promise<GenerationSeries | null>;
+    listFormalAssets(projectId: string, seriesId: string): Promise<GenerationOutput[]>;
   };
   files: {
     getPathForFile(file: File): string;

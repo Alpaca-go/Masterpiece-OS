@@ -109,6 +109,32 @@ const api: DesktopApi = {
       return () => ipcRenderer.removeListener('image-generation:run-updated', listener);
     }
   },
+  creativeSession: {
+    get: (projectId) => ipcRenderer.invoke('creative-session:get', projectId),
+    create: (projectId) => ipcRenderer.invoke('creative-session:create', projectId),
+    getWorkspace: (projectId) => ipcRenderer.invoke('creative-session:get-workspace', projectId),
+    read: (projectId, apiProfileId) => ipcRenderer.invoke('creative-session:read', projectId, apiProfileId),
+    generate: (projectId, input) => ipcRenderer.invoke('creative-session:generate', projectId, input),
+    appendFeedback: (projectId, content) =>
+      ipcRenderer.invoke('creative-session:append-feedback', projectId, content),
+    getRun: (runId) => ipcRenderer.invoke('creative-session:get-run', runId),
+    getImageDataUrl: (runId, imageId) =>
+      ipcRenderer.invoke('creative-session:get-image-data-url', runId, imageId)
+  },
+  creativeProduction: {
+    listLockedAssets: (projectId) =>
+      ipcRenderer.invoke('creative-production:list-locked-assets', projectId),
+    listAnchorCandidates: (projectId) =>
+      ipcRenderer.invoke('creative-production:list-anchor-candidates', projectId),
+    listStyleProfiles: (projectId) =>
+      ipcRenderer.invoke('creative-production:list-style-profiles', projectId),
+    listVisualCanons: (projectId) =>
+      ipcRenderer.invoke('creative-production:list-visual-canons', projectId),
+    getSeries: (projectId, seriesId) =>
+      ipcRenderer.invoke('creative-production:get-series', projectId, seriesId),
+    listFormalAssets: (projectId, seriesId) =>
+      ipcRenderer.invoke('creative-production:list-formal-assets', projectId, seriesId)
+  },
   files: {
     getPathForFile: (file) => webUtils.getPathForFile(file)
   },
