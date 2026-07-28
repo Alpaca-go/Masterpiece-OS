@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type {
   CreativeSession,
+  AnchorCandidate,
+  AnchorCandidateEvaluation,
   ImageGenerationRun,
   ImageGenerationRunSummary,
   ProjectRecord,
@@ -12,6 +14,7 @@ import { cleanError } from '../utils';
 interface Props {
   project: ProjectRecord;
   apiProfileId: string;
+  imageApiProfileId: string;
   onBack(): void;
   onOpenSettings(): void;
 }
@@ -27,6 +30,25 @@ interface RunView {
   run: ImageGenerationRun;
   imageUrls: string[];
 }
+
+interface ProductionState {
+  anchors: AnchorCandidate[];
+  styles: StyleProfile[];
+  canons: VisualCanon[];
+}
+
+const ANCHOR_DIMENSIONS: Array<{
+  key: Exclude<keyof AnchorCandidateEvaluation, 'evaluatedAt'>;
+  label: string;
+}> = [
+  { key: 'color', label: '色彩' },
+  { key: 'composition', label: '构图' },
+  { key: 'material', label: '材质' },
+  { key: 'lighting', label: '光线' },
+  { key: 'graphic_language', label: '图形语言' },
+  { key: 'brand_assets', label: '品牌资产' },
+  { key: 'overall_tone', label: '整体气质' }
+];
 
 const QUICK_TASKS = [
   '生成一张升级后的品牌海报',
@@ -51,16 +73,35 @@ const STATE_LABELS: Partial<Record<CreativeSession['workflowState'], string>> = 
   CANCELLED: '已取消'
 };
 
-export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpenSettings }: Props) {
+export function CreativeSessionWorkspace({
+  project,
+  apiProfileId,
+  imageApiProfileId,
+  onBack,
+  onOpenSettings
+}: Props) {
   const [workspace, setWorkspace] = useState<WorkspaceState | null>(null);
   const [runViews, setRunViews] = useState<RunView[]>([]);
+  const [production, setProduction] = useState<ProductionState>({ anchors: [], styles: [], canons: [] });
+  const [tab, setTab] = useState<'session' | 'anchor' | 'canon' | 'generation'>('session');
+  const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
+  const [reviewFeedback, setReviewFeedback] = useState('');
+  const [reviewScores, setReviewScores] = useState<Record<string, number>>(
+    Object.fromEntries(ANCHOR_DIMENSIONS.map(({ key }) => [key, 4]))
+  );
   const [request, setRequest] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<'loading' | 'reading' | 'generating' | ''>('loading');
 
   const refresh = useCallback(async () => {
-    const next = await window.masterpiece.creativeSession.getWorkspace(project.id);
+    const [next, anchors, styles, canons] = await Promise.all([
+      window.masterpiece.creativeSession.getWorkspace(project.id),
+      window.masterpiece.creativeProduction.listAnchorCandidates(project.id),
+      window.masterpiece.creativeProduction.listStyleProfiles(project.id),
+      window.masterpiece.creativeProduction.listVisualCanons(project.id)
+    ]);
     setWorkspace(next);
+    setProduction({ anchors, styles, canons });
     const fullRuns = await Promise.all(next.runs.slice(0, 12).map(async (summary) => {
       const run = await window.masterpiece.creativeSession.getRun(summary.runId);
       if (!run) return null;
@@ -94,6 +135,7 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
     understanding
     && workspace?.styleProfile?.status === 'confirmed'
     && workspace?.visualCanon?.status === 'confirmed'
+    && imageApiProfileId
   );
   const recentMessages = useMemo(
     () => workspace?.session.messages.slice(-8) || [],
@@ -121,7 +163,7 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
     try {
       await window.masterpiece.creativeSession.generate(project.id, {
         userRequest,
-        apiProfileId: apiProfileId || undefined
+        apiProfileId: imageApiProfileId || undefined
       });
       setRequest('');
       await refresh();
@@ -154,10 +196,10 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
     try {
       if (regenerate) {
         await window.masterpiece.creativeSession
-          .regenerateInstruction(project.id, runId, apiProfileId || undefined);
+          .regenerateInstruction(project.id, runId, imageApiProfileId || undefined);
       } else {
         await window.masterpiece.creativeSession
-          .retrySame(project.id, runId, apiProfileId || undefined);
+          .retrySame(project.id, runId, imageApiProfileId || undefined);
       }
       await refresh();
     } catch (reason) {
@@ -166,6 +208,39 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
       setBusy('');
     }
   }
+
+  async function runProductionAction(action: () => Promise<unknown>, mode: 'reading' | 'generating' = 'generating') {
+    setBusy(mode);
+    setError('');
+    try {
+      await action();
+      await refresh();
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy('');
+    }
+  }
+
+  function anchorEvaluation(): AnchorCandidateEvaluation {
+    const notes = reviewFeedback.trim() || '已按当前视觉方向完成审核。';
+    return {
+      evaluatedAt: new Date().toISOString(),
+      color: { score: reviewScores.color as 1 | 2 | 3 | 4 | 5, notes },
+      composition: { score: reviewScores.composition as 1 | 2 | 3 | 4 | 5, notes },
+      material: { score: reviewScores.material as 1 | 2 | 3 | 4 | 5, notes },
+      lighting: { score: reviewScores.lighting as 1 | 2 | 3 | 4 | 5, notes },
+      graphic_language: { score: reviewScores.graphic_language as 1 | 2 | 3 | 4 | 5, notes },
+      brand_assets: { score: reviewScores.brand_assets as 1 | 2 | 3 | 4 | 5, notes },
+      overall_tone: { score: reviewScores.overall_tone as 1 | 2 | 3 | 4 | 5, notes }
+    };
+  }
+
+  const activeAnchor = production.anchors.find((item) => item.status === 'accepted')
+    || production.anchors[0];
+  const anchorRunView = activeAnchor?.generationRunId
+    ? runViews.find((item) => item.run.runId === activeAnchor.generationRunId)
+    : undefined;
 
   return <div className="page creative-session-page">
     <header className="page-header">
@@ -181,7 +256,13 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
     </header>
 
     {error && <div className="notice error top-notice">{error}</div>}
-    <div className="creative-session-layout">
+    <nav className="creative-workspace-tabs" aria-label="Creative Production 工作区">
+      <button className={tab === 'session' ? 'active' : ''} onClick={() => setTab('session')}>Session 状态</button>
+      <button className={tab === 'anchor' ? 'active' : ''} onClick={() => setTab('anchor')}>Anchor 审核</button>
+      <button className={tab === 'canon' ? 'active' : ''} onClick={() => setTab('canon')}>Visual Canon</button>
+      <button className={tab === 'generation' ? 'active' : ''} onClick={() => setTab('generation')}>生成与版本</button>
+    </nav>
+    {(tab === 'session' || tab === 'generation') && <div className="creative-session-layout">
       <aside className="panel creative-context-panel">
         <div className="section-heading"><span>01</span><div><h2>项目理解</h2><p>持续上下文与已确认基准</p></div></div>
         <ul className="creative-checks">
@@ -232,7 +313,9 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
           placeholder="例如：生成一张升级后的店内装修效果图"
         />
         {!canGenerate && understanding && <p className="creative-gate-note">
-          需要先在当前项目流程中确认 Style Profile 与 Visual Canon，系统不会在方向未确认时直接生图。
+          {!imageApiProfileId
+            ? '请先在模型设置中启用一个图像生成模型。'
+            : '需要先在当前项目流程中确认 Style Profile 与 Visual Canon，系统不会在方向未确认时直接生图。'}
         </p>}
         <div className="creative-submit-row">
           <button
@@ -262,6 +345,149 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
           </article>) : <div className="empty-state small">尚无生成结果。</div>}
         </div>
       </aside>
-    </div>
+    </div>}
+
+    {tab === 'anchor' && <div className="creative-production-grid">
+      <section className="panel">
+        <div className="section-heading"><span>01</span><div><h2>生产上下文</h2><p>Style Profile 与 Locked Assets</p></div></div>
+        {!understanding && <div className="empty-state small">请先在 Session 状态页建立项目理解。</div>}
+        {understanding && !workspace?.styleProfile && <button
+          className="button primary full"
+          disabled={Boolean(busy)}
+          onClick={() => void runProductionAction(
+            () => window.masterpiece.creativeProduction.prepare(project.id)
+          )}
+        >建立 Style Profile 与 Locked Assets</button>}
+        {workspace?.styleProfile && <div className="production-summary-card">
+          <small>STYLE PROFILE / {workspace.styleProfile.version}</small>
+          <h3>{workspace.styleProfile.name}</h3>
+          <p>{workspace.styleProfile.styleEssence.summary}</p>
+          <span className={`badge ${workspace.styleProfile.status === 'confirmed' ? 'completed' : 'ready'}`}>
+            {workspace.styleProfile.status}
+          </span>
+          {workspace.styleProfile.status !== 'confirmed' && <button
+            className="button primary full"
+            disabled={Boolean(busy)}
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction
+                .confirmStyleProfile(project.id, workspace.styleProfile!.id)
+            )}
+          >确认 Style Profile</button>}
+        </div>}
+      </section>
+
+      <section className="panel">
+        <div className="section-heading"><span>02</span><div><h2>Anchor Candidate</h2><p>单图验证新的整体视觉方向</p></div></div>
+        {!activeAnchor && <div className="anchor-create-form">
+          <label>候选图任务<textarea rows={3} value={anchorPurpose} onChange={(event) => setAnchorPurpose(event.target.value)} /></label>
+          <button
+            className="button primary full"
+            disabled={workspace?.styleProfile?.status !== 'confirmed' || !imageApiProfileId || Boolean(busy)}
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction.generateAnchor(project.id, {
+                purpose: anchorPurpose,
+                aspectRatio: '1:1',
+                apiProfileId: imageApiProfileId || undefined
+              })
+            )}
+          >{busy === 'generating' ? '正在生成 Anchor…' : '生成 Anchor Candidate'}</button>
+        </div>}
+        {activeAnchor && <div className="anchor-review-card">
+          {anchorRunView?.imageUrls[0] && <img src={anchorRunView.imageUrls[0]} alt="Anchor Candidate" />}
+          <div className="production-summary-card">
+            <small>CANDIDATE / REVISION {activeAnchor.revision}</small>
+            <h3>{activeAnchor.task.purpose}</h3>
+            <span className={`badge ${activeAnchor.status === 'accepted' ? 'completed' : 'ready'}`}>
+              {activeAnchor.status}
+            </span>
+          </div>
+          {activeAnchor.status === 'pending_review' && <>
+            <div className="anchor-score-grid">
+              {ANCHOR_DIMENSIONS.map(({ key, label }) => <label key={key}>{label}
+                <select value={reviewScores[key]} onChange={(event) => setReviewScores((current) => ({
+                  ...current,
+                  [key]: Number(event.target.value)
+                }))}>
+                  {[1, 2, 3, 4, 5].map((score) => <option key={score} value={score}>{score} 分</option>)}
+                </select>
+              </label>)}
+            </div>
+            <label>审核意见<textarea rows={3} value={reviewFeedback} onChange={(event) => setReviewFeedback(event.target.value)} /></label>
+            <div className="button-row">
+              <button className="button primary" disabled={Boolean(busy)} onClick={() => void runProductionAction(
+                () => window.masterpiece.creativeProduction.reviewAnchor(project.id, activeAnchor.id, {
+                  action: 'accept_primary',
+                  feedback: reviewFeedback || '接受为 Primary Canon。',
+                  evaluation: anchorEvaluation()
+                })
+              )}>接受为 Primary Canon</button>
+              <button className="button secondary" disabled={Boolean(busy)} onClick={() => void runProductionAction(
+                () => window.masterpiece.creativeProduction.reviewAnchor(project.id, activeAnchor.id, {
+                  action: 'minor_adjustment',
+                  feedback: reviewFeedback || '需要轻微调整。',
+                  evaluation: anchorEvaluation()
+                })
+              )}>轻微调整</button>
+              <button className="button ghost" disabled={Boolean(busy)} onClick={() => void runProductionAction(
+                () => window.masterpiece.creativeProduction.reviewAnchor(project.id, activeAnchor.id, {
+                  action: 'reject',
+                  feedback: reviewFeedback || '当前方向不通过。',
+                  evaluation: anchorEvaluation()
+                })
+              )}>驳回</button>
+            </div>
+          </>}
+        </div>}
+      </section>
+    </div>}
+
+    {tab === 'canon' && <div className="creative-production-grid">
+      <section className="panel">
+        <div className="section-heading"><span>01</span><div><h2>Primary Canon</h2><p>已接受的 Anchor 基准</p></div></div>
+        {activeAnchor?.status === 'accepted' ? <div className="production-summary-card">
+          {anchorRunView?.imageUrls[0] && <img src={anchorRunView.imageUrls[0]} alt="Primary Canon" />}
+          <h3>{activeAnchor.task.purpose}</h3>
+          <p>Style Profile {activeAnchor.styleProfileVersion}</p>
+        </div> : <div className="empty-state small">请先在 Anchor 审核页接受一个 Candidate。</div>}
+      </section>
+      <section className="panel">
+        <div className="section-heading"><span>02</span><div><h2>Visual Canon</h2><p>共享规则、变化规则与冲突警告</p></div></div>
+        {!workspace?.visualCanon && activeAnchor?.status === 'accepted' && <button
+          className="button primary full"
+          disabled={Boolean(busy)}
+          onClick={() => void runProductionAction(
+            () => window.masterpiece.creativeProduction.buildVisualCanon(project.id, {
+              primaryCandidateId: activeAnchor.id
+            })
+          )}
+        >从 Primary Anchor 建立 Visual Canon</button>}
+        {workspace?.visualCanon && <div className="canon-details">
+          <div className="production-summary-card">
+            <small>VISUAL CANON / {workspace.visualCanon.version}</small>
+            <h3>{workspace.visualCanon.name}</h3>
+            <span className={`badge ${workspace.visualCanon.status === 'confirmed' ? 'completed' : 'ready'}`}>
+              {workspace.visualCanon.status}
+            </span>
+          </div>
+          <h4>Shared Rules</h4>
+          <ul>{workspace.visualCanon.sharedRules.map((item) => <li key={item}>{item}</li>)}</ul>
+          <h4>Variation Rules</h4>
+          <ul>{workspace.visualCanon.variationRules.map((item) => <li key={item}>{item}</li>)}</ul>
+          <h4>Conflict Warnings</h4>
+          {workspace.visualCanon.conflicts.length
+            ? <ul>{workspace.visualCanon.conflicts.map((item, index) =>
+              <li key={`${item.dimension}-${index}`}>{item.severity} · {item.message}</li>)}</ul>
+            : <p>未发现冲突。</p>}
+          {workspace.visualCanon.status !== 'confirmed' && <button
+            className="button primary full"
+            disabled={Boolean(busy) || workspace.visualCanon.conflicts.some((item) => item.severity === 'blocking')}
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction
+                .confirmVisualCanon(project.id, workspace.visualCanon!.id)
+            )}
+          >确认 Visual Canon</button>}
+        </div>}
+      </section>
+    </div>}
   </div>;
 }
