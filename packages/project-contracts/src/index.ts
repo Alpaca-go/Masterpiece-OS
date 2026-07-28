@@ -227,6 +227,54 @@ export interface AnchorCandidate {
   updatedAt: string;
 }
 
+export type CanonImageType =
+  | 'brand_hero'
+  | 'packaging'
+  | 'poster_graphic'
+  | 'vi_application'
+  | 'spatial'
+  | 'illustration';
+
+export interface VisualCanonConflict {
+  dimension: 'color' | 'material' | 'lighting' | 'graphic_language' | 'composition_density' | 'locked_assets';
+  severity: 'warning' | 'blocking';
+  message: string;
+  canonImageIds: string[];
+}
+
+export interface VisualCanon {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  name: string;
+  version: string;
+  status: 'draft' | 'confirmed' | 'superseded';
+  styleProfileId: string;
+  styleProfileVersion: string;
+  primaryCanonImageId: string;
+  canonImages: Array<{
+    id: string;
+    type: CanonImageType;
+    role: string;
+    imagePath: string;
+    sourceAnchorId: string;
+    priority: 'primary' | 'supporting';
+    observations: {
+      colors: string[];
+      materials: string[];
+      lighting: string[];
+      graphicLanguage: string[];
+      compositionDensity?: string;
+      preservedLockedAssetIds: string[];
+    };
+  }>;
+  sharedRules: string[];
+  variationRules: string[];
+  conflicts: VisualCanonConflict[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreativeDecision {
   schemaVersion: '6.0';
   id: string;

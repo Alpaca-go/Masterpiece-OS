@@ -34,3 +34,10 @@ export {
   retryAnchorCandidate,
   validateAnchorCandidate,
 } from './anchor-candidate.js';
+export {
+  buildVisualCanon,
+  checkVisualCanonConflicts,
+  confirmVisualCanon,
+  nextVisualCanonVersion,
+  validateVisualCanon,
+} from './visual-canon.js';
