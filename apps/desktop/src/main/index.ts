@@ -32,6 +32,7 @@ import { createDocumentContextService } from './document-context-service';
 import { createContextIntegrationService } from './context-integration-service';
 import { createCreativeSessionService } from './creative-session-service';
 import { createCreativeReadingService } from './creative-reading-service';
+import { createCreativeDirectionService } from './creative-direction-service';
 import { createStyleProfileService } from './style-profile-service';
 import { createLockedAssetsService } from './locked-assets-service';
 import { createAnchorCandidateService } from './anchor-candidate-service';
@@ -111,6 +112,11 @@ const referenceAnchor = createReferenceAnchorService(getSettings, {
   emitProgress: (progress) => mainWindow?.webContents.send('reference-anchor:progress', progress)
 });
 const creativeSessions = createCreativeSessionService(projects);
+const creativeDirections = createCreativeDirectionService(
+  projects,
+  creativeSessions,
+  getProviderCredentials
+);
 const styleProfiles = createStyleProfileService(projects, creativeSessions);
 const lockedAssets = createLockedAssetsService(projects, creativeSessions);
 const anchorCandidates = createAnchorCandidateService(projects, creativeSessions, styleProfiles, lockedAssets);
@@ -126,7 +132,8 @@ const creativeReading = createCreativeReadingService(
   projects,
   creativeSessions,
   lockedAssets,
-  getProviderCredentials
+  getProviderCredentials,
+  creativeDirections
 );
 const generationSeries = createGenerationSeriesService(
   projects,
@@ -140,7 +147,8 @@ const creativeProductionBootstrap = createCreativeProductionBootstrapService(
   projects,
   creativeSessions,
   lockedAssets,
-  styleProfiles
+  styleProfiles,
+  creativeDirections
 );
 const quickStyleExtraction = createQuickStyleExtractionService(
   referenceAnchor,
@@ -385,13 +393,14 @@ function registerIpc(): void {
   ipcMain.handle('creative-session:create', (_event, projectId: string) =>
     creativeSessions.create(projectId));
   ipcMain.handle('creative-session:get-workspace', async (_event, projectId: string) => {
-    const [session, styleProfile, visualCanon, runs] = await Promise.all([
+    const [session, creativeDirection, styleProfile, visualCanon, runs] = await Promise.all([
       creativeSessions.create(projectId),
+      creativeDirections.getActive(projectId),
       styleProfiles.getActive(projectId),
       visualCanons.getActive(projectId),
       imageGeneration.listRuns(projectId),
     ]);
-    return { session, styleProfile, visualCanon, runs };
+    return { session, creativeDirection, styleProfile, visualCanon, runs };
   });
   ipcMain.handle('creative-session:read', (_event, projectId: string, apiProfileId?: string) =>
     creativeReading.run(projectId, apiProfileId));

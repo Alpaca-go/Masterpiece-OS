@@ -1,6 +1,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { CreativeUnderstanding, ProjectVisualContext } from '../../../../packages/project-contracts/src/index.ts';
+import type {
+  CreativeDirection,
+  CreativeUnderstanding,
+  ProjectVisualContext,
+} from '../../../../packages/project-contracts/src/index.ts';
 import {
   buildCreativeReadingPrompt,
   compileCreativeUnderstandingMarkdown,
@@ -13,6 +17,7 @@ import type { ProviderCredentials } from './settings-store.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
+import type { CreativeDirectionService } from './creative-direction-service.ts';
 
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
 type ReasonerFactory = typeof createQwenReasoner;
@@ -29,6 +34,7 @@ export function createCreativeReadingService(
   sessions: CreativeSessionService,
   lockedAssets: LockedAssetsService,
   readCredentials: CredentialsReader,
+  directions: CreativeDirectionService,
   reasonerFactory: ReasonerFactory = createQwenReasoner,
 ) {
   async function locations(projectId: string) {
@@ -47,9 +53,12 @@ export function createCreativeReadingService(
 
   async function run(projectId: string, apiProfileId?: string): Promise<{
     understanding: CreativeUnderstanding;
+    direction: CreativeDirection;
     provider: string;
     model: string;
     modelCallCount: number;
+    readingModelCallCount: number;
+    directionModelCallCount: number;
     outputRoot: string;
   }> {
     const [project, target, session, locks] = await Promise.all([
@@ -154,11 +163,18 @@ export function createCreativeReadingService(
     await writeJson(target.understandingJson, understanding);
     await fs.writeFile(target.understandingMarkdown, compileCreativeUnderstandingMarkdown(understanding), 'utf8');
     await sessions.saveUnderstanding(projectId, understanding);
+    const directionResult = await directions.generate(projectId, {
+      apiProfileId,
+      understanding,
+    });
     return {
       understanding,
+      direction: directionResult.direction,
       provider: credentials.provider,
       model: credentials.model,
-      modelCallCount,
+      modelCallCount: modelCallCount + directionResult.modelCallCount,
+      readingModelCallCount: modelCallCount,
+      directionModelCallCount: directionResult.modelCallCount,
       outputRoot: target.root,
     };
   }

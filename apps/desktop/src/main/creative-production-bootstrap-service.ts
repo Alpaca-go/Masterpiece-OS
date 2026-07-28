@@ -1,6 +1,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ProjectVisualContext } from '../../../../packages/project-contracts/src/index.ts';
+import type {
+  CreativeDirection,
+  ProjectVisualContext,
+} from '../../../../packages/project-contracts/src/index.ts';
+import type { CreativeDirectionService } from './creative-direction-service.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { ProjectStore } from './project-store.ts';
@@ -11,6 +15,7 @@ export function createCreativeProductionBootstrapService(
   sessions: CreativeSessionService,
   lockedAssets: LockedAssetsService,
   styles: StyleProfileService,
+  directions: CreativeDirectionService,
 ) {
   function creativeDecisionFromUnderstanding(
     projectId: string,
@@ -53,16 +58,69 @@ export function createCreativeProductionBootstrapService(
     };
   }
 
+  function creativeDecisionFromDirection(
+    projectId: string,
+    understanding: NonNullable<Awaited<ReturnType<CreativeSessionService['create']>>['understanding']>,
+    direction: CreativeDirection,
+  ) {
+    const strategyRules = [
+      direction.designStrategy,
+      direction.primaryConcept,
+      direction.colorStrategy,
+      direction.materialStrategy,
+      direction.compositionStrategy,
+      direction.photographyStrategy,
+      direction.spaceStrategy,
+      direction.packagingStrategy,
+      direction.posterStrategy,
+    ].filter((item): item is string => Boolean(item?.trim()));
+    return {
+      schemaVersion: '6.0',
+      id: `creative-decision-${direction.id}`,
+      projectId,
+      version: direction.version,
+      brandCoreJudgment: understanding.identityLocks,
+      currentVisualProblems: direction.oldVisualProblems,
+      retainedAssets: direction.thingsToKeep,
+      reconstructableAssets: strategyRules,
+      inheritedReferenceMechanisms: [],
+      prohibitedReferenceContent: direction.thingsToRemove,
+      visualUpgradeThesis: direction.projectTransformation,
+      primaryDirection: {
+        name: direction.primaryConcept,
+        summary: direction.designStrategy,
+        keywords: direction.visualKeywords,
+        mood: direction.visualKeywords,
+      },
+      styleBoundaries: {
+        allowed: [...strategyRules, ...direction.generationRules],
+        forbidden: [...direction.thingsToRemove, ...direction.generationRules],
+      },
+      outputPriorities: [direction.spaceStrategy, direction.packagingStrategy, direction.posterStrategy]
+        .filter((item): item is string => Boolean(item?.trim())),
+      risks: understanding.currentProblems,
+      createdAt: direction.generatedAt,
+    };
+  }
+
   async function prepare(projectId: string) {
-    const [session, active] = await Promise.all([
+    const [session, active, direction] = await Promise.all([
       sessions.create(projectId),
       styles.getActive(projectId),
+      directions.getActive(projectId),
     ]);
-    if (active) return { session, styleProfile: active, lockedAssets: await lockedAssets.list(projectId) };
     if (!session.understanding) {
       throw Object.assign(new Error('请先完成 Creative Reading，再建立生产上下文。'), {
         code: 'CREATIVE_UNDERSTANDING_MISSING',
       });
+    }
+    if (!direction) {
+      throw Object.assign(new Error('请先生成 Creative Direction，再建立生产上下文。'), {
+        code: 'CREATIVE_DIRECTION_MISSING',
+      });
+    }
+    if (active?.source.creativeDecisionId === `creative-decision-${direction.id}`) {
+      return { session, styleProfile: active, lockedAssets: await lockedAssets.list(projectId) };
     }
     const projectPaths = await projects.paths(projectId);
     const visualContext = await fs
@@ -73,21 +131,21 @@ export function createCreativeProductionBootstrapService(
       visualContext,
       understanding: session.understanding,
     });
-    const creativeDecision = creativeDecisionFromUnderstanding(
+    const creativeDecision = creativeDecisionFromDirection(
       projectId,
-      session.id,
       session.understanding,
+      direction,
     );
     await sessions.recordDecision(projectId, {
       type: 'creative_direction',
       summary: creativeDecision.visualUpgradeThesis || 'Creative Reading 生产方向已建立。',
-      rationale: '由已验证的 Creative Understanding 转换为 V6 Creative Decision。',
+      rationale: `由 Creative Direction ${direction.version} 转换为 V6 Creative Decision。`,
       outcome: 'confirmed',
       source: 'analysis',
     });
     const current = await sessions.create(projectId);
-    if (current.workflowState === 'SESSION_CREATED') {
-      await sessions.transition(projectId, 'CREATIVE_DECISION_COMPLETED', 'Creative Decision 已由 Reading 结果建立。');
+    if (current.workflowState === 'DIRECTION_READY') {
+      await sessions.transition(projectId, 'CREATIVE_DECISION_COMPLETED', 'Creative Decision 已由 Creative Direction 建立。');
     }
     const styleProfile = await styles.compile(projectId, creativeDecision);
     return { session: await sessions.create(projectId), styleProfile, lockedAssets: locks };

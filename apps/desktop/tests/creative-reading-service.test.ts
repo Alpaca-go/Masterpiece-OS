@@ -78,10 +78,19 @@ test('Creative Reading performs multimodal understanding only and persists all f
         model: 'mock-vision',
         apiKey: 'secret',
       }),
+      {
+        generate: async () => ({
+          direction: { id: 'direction-1', version: '1.0.0' },
+          modelCallCount: 1,
+        }),
+      } as never,
       reasonerFactory as never,
     );
     const result = await service.run('project-1');
-    assert.equal(result.modelCallCount, 1);
+    assert.equal(result.modelCallCount, 2);
+    assert.equal(result.readingModelCallCount, 1);
+    assert.equal(result.directionModelCallCount, 1);
+    assert.equal(result.direction.id, 'direction-1');
     assert.equal(calls, 1);
     assert.equal(messages.length, 1);
     assert.equal(saved.length, 1);

@@ -1905,18 +1905,22 @@ export interface DesktopApi {
   creativeSession: {
     get(projectId: string): Promise<CreativeSession | null>;
     create(projectId: string): Promise<CreativeSession>;
-    getWorkspace(projectId: string): Promise<{
-      session: CreativeSession;
-      styleProfile: StyleProfile | null;
+      getWorkspace(projectId: string): Promise<{
+        session: CreativeSession;
+        creativeDirection: CreativeDirection | null;
+        styleProfile: StyleProfile | null;
       visualCanon: VisualCanon | null;
       runs: ImageGenerationRunSummary[];
     }>;
-    read(projectId: string, apiProfileId?: string): Promise<{
-      understanding: CreativeUnderstanding;
-      provider: string;
-      model: string;
-      modelCallCount: number;
-      outputRoot: string;
+      read(projectId: string, apiProfileId?: string): Promise<{
+        understanding: CreativeUnderstanding;
+        direction: CreativeDirection;
+        provider: string;
+        model: string;
+        modelCallCount: number;
+        readingModelCallCount: number;
+        directionModelCallCount: number;
+        outputRoot: string;
     }>;
     generate(projectId: string, input: {
       userRequest: string;

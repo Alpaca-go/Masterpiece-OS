@@ -33,6 +33,9 @@ test('Creative Session workspace keeps a single natural-language creation input'
   assert.match(creativeSessionSource, /creativeSession\.generate/);
   assert.match(creativeSessionSource, /例如：生成一张升级后的店内装修效果图/);
   assert.match(creativeSessionSource, /开始创作/);
+  assert.match(creativeSessionSource, /已制定创意方向/);
+  assert.match(creativeSessionSource, /当前创作方向/);
+  assert.match(creativeSessionSource, /设计重点/);
   assert.doesNotMatch(creativeSessionSource, /GenerationSourcePreset|Reference Role|deliverable-card/);
 });
 

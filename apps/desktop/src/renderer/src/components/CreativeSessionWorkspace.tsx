@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type {
   CreativeSession,
+  CreativeDirection,
   AnchorCandidate,
   AnchorCandidateEvaluation,
   GenerationOutput,
@@ -23,6 +24,7 @@ interface Props {
 
 interface WorkspaceState {
   session: CreativeSession;
+  creativeDirection: CreativeDirection | null;
   styleProfile: StyleProfile | null;
   visualCanon: VisualCanon | null;
   runs: ImageGenerationRunSummary[];
@@ -63,6 +65,8 @@ const QUICK_TASKS = [
 const STATE_LABELS: Partial<Record<CreativeSession['workflowState'], string>> = {
   CREATED: '会话已创建',
   SESSION_CREATED: '会话已创建',
+  DIRECTION_GENERATING: '创意总监正在制定方向',
+  DIRECTION_READY: '创意方向已制定',
   CREATIVE_DECISION_COMPLETED: '创意决策已完成',
   STYLE_PROFILE_CREATED: '风格档案已建立',
   PRIMARY_ANCHOR_PENDING_REVIEW: '等待确认主视觉锚点',
@@ -168,6 +172,7 @@ export function CreativeSessionWorkspace({
   }, [project.id, refresh]);
 
   const understanding = workspace?.session.understanding;
+  const creativeDirection = workspace?.creativeDirection;
   const currentCanon = workspace?.visualCanon
     && workspace?.styleProfile
     && workspace.visualCanon.styleProfileId === workspace.styleProfile.id
@@ -176,6 +181,7 @@ export function CreativeSessionWorkspace({
     : null;
   const canGenerate = Boolean(
     understanding
+    && creativeDirection
     && workspace?.styleProfile?.status === 'confirmed'
     && currentCanon?.status === 'confirmed'
     && imageApiProfileId
@@ -319,10 +325,9 @@ export function CreativeSessionWorkspace({
       <aside className="panel creative-context-panel">
         <div className="section-heading"><span>01</span><div><h2>项目理解</h2><p>持续上下文与已确认基准</p></div></div>
         <ul className="creative-checks">
-          <li className="pass">✓ 原视觉方案</li>
-          <li className={project.lastReportFilename ? 'pass' : ''}>✓ 视觉分析报告</li>
-          <li className={understanding ? 'pass' : ''}>{understanding ? '✓' : '○'} 品牌身份与保留资产</li>
-          <li className={understanding ? 'pass' : ''}>{understanding ? '✓' : '○'} 升级原则与旧模式禁区</li>
+          <li className="pass">✓ 已读取视觉方案</li>
+          <li className={understanding ? 'pass' : ''}>{understanding ? '✓' : '○'} 已完成品牌理解</li>
+          <li className={creativeDirection ? 'pass' : ''}>{creativeDirection ? '✓' : '○'} 已制定创意方向</li>
           <li className={workspace?.styleProfile?.status === 'confirmed' ? 'pass' : ''}>
             {workspace?.styleProfile?.status === 'confirmed' ? '✓' : '○'} Style Profile
           </li>
@@ -343,6 +348,16 @@ export function CreativeSessionWorkspace({
             disabled={Boolean(busy)}
             onClick={() => void runReading()}
           >重新读取项目</button>
+        </div>}
+        {creativeDirection && <div className="understanding-summary creative-direction-summary">
+          <small>当前创作方向 · {creativeDirection.version}</small>
+          <h3>{creativeDirection.primaryConcept}</h3>
+          <p>{creativeDirection.projectTransformation}</p>
+          <small>设计重点</small>
+          <p>{creativeDirection.designStrategy}</p>
+          <div className="direction-keywords">
+            {creativeDirection.visualKeywords.slice(0, 6).map((item) => <span key={item}>{item}</span>)}
+          </div>
         </div>}
       </aside>
 
@@ -373,7 +388,7 @@ export function CreativeSessionWorkspace({
         <div className="creative-submit-row">
           <button
             className="button secondary"
-            disabled={!understanding || !request.trim() || Boolean(busy)}
+            disabled={!understanding || !creativeDirection || !request.trim() || Boolean(busy)}
             onClick={() => void saveFeedback()}
           >记录为反馈</button>
           <button
@@ -404,7 +419,7 @@ export function CreativeSessionWorkspace({
       <section className="panel">
         <div className="section-heading"><span>01</span><div><h2>生产上下文</h2><p>Style Profile 与 Locked Assets</p></div></div>
         {!understanding && <div className="empty-state small">请先在 Session 状态页建立项目理解。</div>}
-        {understanding && !workspace?.styleProfile && <button
+        {understanding && creativeDirection && !workspace?.styleProfile && <button
           className="button primary full"
           disabled={Boolean(busy)}
           onClick={() => void runProductionAction(

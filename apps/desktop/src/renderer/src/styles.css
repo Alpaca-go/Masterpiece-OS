@@ -455,6 +455,10 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .understanding-summary { margin-top: 22px; padding: 16px; border-radius: 10px; background: #f1edf7; }
 .understanding-summary small { color: #6c42d8; font-weight: 700; }
 .understanding-summary ul { margin: 10px 0 0; padding-left: 18px; font-size: 12px; line-height: 1.6; }
+.creative-direction-summary { border-top: 1px solid #d9cfea; }
+.creative-direction-summary h3 { margin: 6px 0 8px; }
+.direction-keywords { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.direction-keywords span { background: #e7def8; border-radius: 999px; font-size: 11px; padding: 4px 9px; }
 .creative-message-list { display: grid; gap: 10px; min-height: 250px; max-height: 360px; margin: 16px 0; overflow: auto; }
 .creative-message { max-width: 88%; padding: 12px 14px; border-radius: 12px; background: #f3f0f7; }
 .creative-message.user { justify-self: end; background: #eee7ff; }
