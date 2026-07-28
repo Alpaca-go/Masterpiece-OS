@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/style-profile.schema.json",
+  "title": "Style Profile V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "name", "version", "status",
+    "styleEssence", "colorSystem", "shapeLanguage", "graphicLanguage",
+    "compositionSystem", "materialAndTexture", "lightingSystem",
+    "typographyCompatibility", "allowedVariations", "forbiddenVariations",
+    "promptComponents", "source", "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["draft", "confirmed", "superseded"] },
+    "styleEssence": { "$ref": "#/$defs/styleEssence" },
+    "colorSystem": { "$ref": "#/$defs/colorSystem" },
+    "shapeLanguage": { "$ref": "#/$defs/shapeLanguage" },
+    "graphicLanguage": { "$ref": "#/$defs/graphicLanguage" },
+    "compositionSystem": { "$ref": "#/$defs/compositionSystem" },
+    "materialAndTexture": { "$ref": "#/$defs/materialAndTexture" },
+    "lightingSystem": { "$ref": "#/$defs/lightingSystem" },
+    "typographyCompatibility": { "$ref": "#/$defs/strings" },
+    "allowedVariations": { "$ref": "#/$defs/strings" },
+    "forbiddenVariations": { "$ref": "#/$defs/strings" },
+    "promptComponents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "positive", "negative"],
+      "properties": {
+        "required": { "$ref": "#/$defs/strings" },
+        "positive": { "$ref": "#/$defs/strings" },
+        "negative": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["creativeDecisionId", "creativeDecisionVersion", "compilerVersion"],
+      "properties": {
+        "creativeDecisionId": { "type": "string", "minLength": 1 },
+        "creativeDecisionVersion": { "type": "string", "minLength": 1 },
+        "compilerVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "styleEssence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["summary", "keywords", "mood", "visualPositioning"],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1 },
+        "keywords": { "$ref": "#/$defs/strings" },
+        "mood": { "$ref": "#/$defs/strings" },
+        "visualPositioning": { "type": "string", "minLength": 1 }
+      }
+    },
+    "colorSystem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["primary", "secondary", "neutral", "accent", "distributionRules", "forbiddenColors"],
+      "properties": {
+        "primary": { "$ref": "#/$defs/strings" }, "secondary": { "$ref": "#/$defs/strings" },
+        "neutral": { "$ref": "#/$defs/strings" }, "accent": { "$ref": "#/$defs/strings" },
+        "distributionRules": { "$ref": "#/$defs/strings" }, "forbiddenColors": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "shapeLanguage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["geometry", "silhouetteRules", "proportionRules"],
+      "properties": {
+        "geometry": { "$ref": "#/$defs/strings" },
+        "silhouetteRules": { "$ref": "#/$defs/strings" },
+        "proportionRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "graphicLanguage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["coreMotifs", "patternRules", "lineRules", "illustrationRules", "layoutRhythm"],
+      "properties": {
+        "coreMotifs": { "$ref": "#/$defs/strings" }, "patternRules": { "$ref": "#/$defs/strings" },
+        "lineRules": { "$ref": "#/$defs/strings" }, "illustrationRules": { "$ref": "#/$defs/strings" },
+        "layoutRhythm": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "compositionSystem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["hierarchy", "density", "negativeSpace", "focalPointRules", "cameraRules", "croppingRules"],
+      "properties": {
+        "hierarchy": { "$ref": "#/$defs/strings" }, "density": { "type": "string" },
+        "negativeSpace": { "type": "string" }, "focalPointRules": { "$ref": "#/$defs/strings" },
+        "cameraRules": { "$ref": "#/$defs/strings" }, "croppingRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "materialAndTexture": {
+      "type": "object", "additionalProperties": false,
+      "required": ["materials", "surfaceRules", "printFeeling", "renderingRules", "forbiddenTextures"],
+      "properties": {
+        "materials": { "$ref": "#/$defs/strings" }, "surfaceRules": { "$ref": "#/$defs/strings" },
+        "printFeeling": { "$ref": "#/$defs/strings" }, "renderingRules": { "$ref": "#/$defs/strings" },
+        "forbiddenTextures": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "lightingSystem": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "contrast", "shadow", "temperature"],
+      "properties": {
+        "type": { "type": "string" }, "contrast": { "type": "string" },
+        "shadow": { "type": "string" }, "temperature": { "type": "string" }
+      }
+    }
+  }
+}

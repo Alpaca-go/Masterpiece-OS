@@ -50,6 +50,43 @@ export interface CreativeSessionHistoryEntry {
   createdAt: string;
 }
 
+export interface CreativeUnderstanding {
+  schemaVersion: '1.0';
+  projectIdentity: {
+    brandName?: string;
+    industry?: string;
+    products?: string[];
+  };
+  identityLocks: string[];
+  valuableAssets: string[];
+  currentProblems: string[];
+  upgradePrinciples: string[];
+  oldPatternsToAvoid: string[];
+  creativeFreedom: string[];
+  assetReadingSummary: Array<{
+    assetId: string;
+    summary: string;
+    recommendedUsage: 'identity_reference' | 'structure_reference' | 'reading_only' | 'exclude';
+  }>;
+  generatedAt: string;
+}
+
+export interface CreativeSessionMessage {
+  messageId: string;
+  role: 'system' | 'user' | 'assistant';
+  type:
+    | 'reading_instruction'
+    | 'reading_result'
+    | 'generation_request'
+    | 'generation_result'
+    | 'user_feedback'
+    | 'system_event';
+  /** 只保存会话文本或摘要；完整 Final Prompt 必须保存在 generation run snapshot。 */
+  content: string;
+  generationRunId?: string;
+  createdAt: string;
+}
+
 /** V6 Creative Session 仅保存持续上下文和实体引用，禁止持有最终 Prompt。 */
 export interface CreativeSession {
   schemaVersion: '6.0';
@@ -74,11 +111,116 @@ export interface CreativeSession {
     referenceAnalysisVersion?: string;
     creativeDecisionVersion?: string;
   };
+  sourceVisualRunId?: string;
+  sourceReportPath?: string;
+  understanding?: CreativeUnderstanding;
+  messages: CreativeSessionMessage[];
+  generationRunIds: string[];
   decisions: CreativeSessionDecision[];
   activeStyleProfileId?: string;
   activeVisualCanonId?: string;
   activeSeriesId?: string;
   history: CreativeSessionHistoryEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreativeDecision {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  version: string;
+  brandCoreJudgment: string[];
+  currentVisualProblems: string[];
+  retainedAssets: string[];
+  reconstructableAssets: string[];
+  inheritedReferenceMechanisms: string[];
+  prohibitedReferenceContent: string[];
+  visualUpgradeThesis: string;
+  primaryDirection: {
+    name: string;
+    summary: string;
+    keywords: string[];
+    mood: string[];
+  };
+  styleBoundaries: {
+    allowed: string[];
+    forbidden: string[];
+  };
+  outputPriorities: string[];
+  risks: string[];
+  createdAt: string;
+}
+
+export type StyleProfileStatus = 'draft' | 'confirmed' | 'superseded';
+
+export interface StyleProfile {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  name: string;
+  version: string;
+  status: StyleProfileStatus;
+  styleEssence: {
+    summary: string;
+    keywords: string[];
+    mood: string[];
+    visualPositioning: string;
+  };
+  colorSystem: {
+    primary: string[];
+    secondary: string[];
+    neutral: string[];
+    accent: string[];
+    distributionRules: string[];
+    forbiddenColors: string[];
+  };
+  shapeLanguage: {
+    geometry: string[];
+    silhouetteRules: string[];
+    proportionRules: string[];
+  };
+  graphicLanguage: {
+    coreMotifs: string[];
+    patternRules: string[];
+    lineRules: string[];
+    illustrationRules: string[];
+    layoutRhythm: string[];
+  };
+  compositionSystem: {
+    hierarchy: string[];
+    density: string;
+    negativeSpace: string;
+    focalPointRules: string[];
+    cameraRules: string[];
+    croppingRules: string[];
+  };
+  materialAndTexture: {
+    materials: string[];
+    surfaceRules: string[];
+    printFeeling: string[];
+    renderingRules: string[];
+    forbiddenTextures: string[];
+  };
+  lightingSystem: {
+    type: string;
+    contrast: string;
+    shadow: string;
+    temperature: string;
+  };
+  typographyCompatibility: string[];
+  allowedVariations: string[];
+  forbiddenVariations: string[];
+  promptComponents: {
+    required: string[];
+    positive: string[];
+    negative: string[];
+  };
+  source: {
+    creativeDecisionId: string;
+    creativeDecisionVersion: string;
+    compilerVersion: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

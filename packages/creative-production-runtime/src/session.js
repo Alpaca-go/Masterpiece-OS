@@ -47,6 +47,11 @@ export function createCreativeSession(input, now = new Date().toISOString()) {
       documentIds: uniqueStrings(input?.inputs?.documentIds),
     },
     analysis: { ...(input?.analysis ?? {}) },
+    ...(input?.sourceVisualRunId ? { sourceVisualRunId: String(input.sourceVisualRunId) } : {}),
+    ...(input?.sourceReportPath ? { sourceReportPath: String(input.sourceReportPath) } : {}),
+    ...(input?.understanding ? { understanding: input.understanding } : {}),
+    messages: [],
+    generationRunIds: [],
     decisions: [],
     history: [historyEntry('SESSION_CREATED', 'Creative Session 已创建。', now, { toState: 'SESSION_CREATED' })],
     createdAt: now,
@@ -72,8 +77,12 @@ export function validateCreativeSession(session) {
       throw Object.assign(new Error(`Creative Session 禁止保存 ${forbidden}。`), { code: 'SESSION_INVALID' });
     }
   }
-  if (!Array.isArray(session.decisions) || !Array.isArray(session.history)) {
-    throw Object.assign(new Error('Creative Session decisions/history 必须为数组。'), { code: 'SESSION_INVALID' });
+  if (!Array.isArray(session.messages) || !Array.isArray(session.generationRunIds)
+    || !Array.isArray(session.decisions) || !Array.isArray(session.history)) {
+    throw Object.assign(new Error('Creative Session messages/generationRunIds/decisions/history 必须为数组。'), { code: 'SESSION_INVALID' });
+  }
+  if (session.messages.some((message) => message.type === 'generation_instruction' || /"finalPrompt"\s*:/.test(message.content))) {
+    throw Object.assign(new Error('Creative Session 消息禁止保存完整 Final Generation Instruction。'), { code: 'SESSION_INVALID' });
   }
   return session;
 }
@@ -154,6 +163,58 @@ export function updateSessionEntityReference(session, entityType, entity, now = 
   });
 }
 
+export function appendSessionMessage(session, message, now = new Date().toISOString()) {
+  validateCreativeSession(session);
+  const type = message?.type || 'system_event';
+  const allowedTypes = [
+    'reading_instruction', 'reading_result', 'generation_request',
+    'generation_result', 'user_feedback', 'system_event',
+  ];
+  if (!allowedTypes.includes(type)) {
+    throw Object.assign(new Error(`Session 消息类型无效：${type}`), { code: 'SESSION_INVALID' });
+  }
+  const content = String(message?.content ?? '').trim();
+  if (!content) throw Object.assign(new Error('Session 消息不能为空。'), { code: 'SESSION_INVALID' });
+  if (/"finalPrompt"\s*:/.test(content)) {
+    throw Object.assign(new Error('Session 消息不得嵌入 Final Prompt。'), { code: 'SESSION_INVALID' });
+  }
+  const entry = {
+    messageId: message?.messageId || `message-${crypto.randomUUID()}`,
+    role: message?.role || 'user',
+    type,
+    content,
+    ...(message?.generationRunId ? { generationRunId: String(message.generationRunId) } : {}),
+    createdAt: now,
+  };
+  return validateCreativeSession({
+    ...session,
+    messages: [...session.messages, entry],
+    generationRunIds: entry.generationRunId
+      ? uniqueStrings([...session.generationRunIds, entry.generationRunId])
+      : session.generationRunIds,
+    updatedAt: now,
+  });
+}
+
+export function setCreativeUnderstanding(session, understanding, now = new Date().toISOString()) {
+  validateCreativeSession(session);
+  if (!understanding || understanding.schemaVersion !== '1.0') {
+    throw Object.assign(new Error('Creative Understanding 无效。'), { code: 'CREATIVE_UNDERSTANDING_MISSING' });
+  }
+  return validateCreativeSession({
+    ...session,
+    understanding,
+    messages: [...session.messages, {
+      messageId: `message-${crypto.randomUUID()}`,
+      role: 'assistant',
+      type: 'reading_result',
+      content: 'Creative Understanding 已生成并保存。',
+      createdAt: now,
+    }],
+    updatedAt: now,
+  });
+}
+
 export function migrateLegacyCreativeSession(legacy, now = new Date().toISOString()) {
   if (legacy?.schemaVersion === '6.0') return validateCreativeSession(legacy);
   const session = createCreativeSession({
@@ -162,6 +223,9 @@ export function migrateLegacyCreativeSession(legacy, now = new Date().toISOStrin
     projectContext: legacy?.projectContext,
     inputs: legacy?.inputs,
     analysis: legacy?.analysis,
+    sourceVisualRunId: legacy?.sourceVisualRunId,
+    sourceReportPath: legacy?.sourceReportPath,
+    understanding: legacy?.understanding,
   }, legacy?.createdAt || now);
   let migrated = {
     ...session,
@@ -178,10 +242,34 @@ export function migrateLegacyCreativeSession(legacy, now = new Date().toISOStrin
           createdAt: item.createdAt || now,
         }))
       : [],
+    messages: Array.isArray(legacy?.messages)
+      ? legacy.messages.map((item) => {
+          const isInstruction = item.type === 'generation_instruction';
+          return {
+            messageId: item.messageId || `message-${crypto.randomUUID()}`,
+            role: ['system', 'user', 'assistant'].includes(item.role) ? item.role : 'system',
+            type: isInstruction ? 'system_event' : (
+              ['reading_instruction', 'reading_result', 'generation_request', 'generation_result', 'user_feedback', 'system_event'].includes(item.type)
+                ? item.type
+                : 'system_event'
+            ),
+            content: isInstruction
+              ? `旧版 Final Generation Instruction 已迁移为运行快照引用${item.generationRunId ? `：${item.generationRunId}` : ''}。`
+              : String(item.content || '旧版会话事件'),
+            ...(item.generationRunId ? { generationRunId: String(item.generationRunId) } : {}),
+            createdAt: item.createdAt || now,
+          };
+        })
+      : [],
+    generationRunIds: uniqueStrings(legacy?.generationRunIds || legacy?.generationRuns),
     updatedAt: now,
   };
   migrated = {
     ...migrated,
+    generationRunIds: uniqueStrings([
+      ...migrated.generationRunIds,
+      ...migrated.messages.map((message) => message.generationRunId).filter(Boolean),
+    ]),
     history: [...migrated.history, historyEntry(
       'SESSION_MIGRATED',
       '旧版 Creative Session 已迁移；Final Generation Instruction 未被保留。',

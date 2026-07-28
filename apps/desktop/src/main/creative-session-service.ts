@@ -9,6 +9,8 @@ import {
   createCreativeSession,
   migrateLegacyCreativeSession,
   recordSessionDecision,
+  appendSessionMessage,
+  setCreativeUnderstanding,
   transitionCreativeSession,
   updateSessionEntityReference,
   validateCreativeSession,
@@ -107,7 +109,17 @@ export function createCreativeSessionService(projects: ProjectStore) {
     );
   }
 
-  return { create, get, transition, recordDecision, setActiveEntity };
+  async function appendMessage(projectId: string, message: unknown): Promise<CreativeSession> {
+    const current = await create(projectId);
+    return persist(appendSessionMessage(current, message) as CreativeSession, 'MESSAGE_APPENDED');
+  }
+
+  async function saveUnderstanding(projectId: string, understanding: unknown): Promise<CreativeSession> {
+    const current = await create(projectId);
+    return persist(setCreativeUnderstanding(current, understanding) as CreativeSession, 'UNDERSTANDING_SAVED');
+  }
+
+  return { create, get, transition, recordDecision, setActiveEntity, appendMessage, saveUnderstanding };
 }
 
 export type CreativeSessionService = ReturnType<typeof createCreativeSessionService>;

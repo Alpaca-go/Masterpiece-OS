@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "id", "projectId", "status", "workflowState",
-    "projectContext", "inputs", "analysis", "decisions", "history",
+    "projectContext", "inputs", "analysis", "messages", "generationRunIds", "decisions", "history",
     "createdAt", "updatedAt"
   ],
   "properties": {
@@ -55,6 +55,73 @@
         "creativeDecisionVersion": { "type": "string" }
       }
     },
+    "sourceVisualRunId": { "type": "string" },
+    "sourceReportPath": { "type": "string" },
+    "understanding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion", "projectIdentity", "identityLocks", "valuableAssets",
+        "currentProblems", "upgradePrinciples", "oldPatternsToAvoid",
+        "creativeFreedom", "assetReadingSummary", "generatedAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "projectIdentity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "brandName": { "type": "string" },
+            "industry": { "type": "string" },
+            "products": { "$ref": "#/$defs/strings" }
+          }
+        },
+        "identityLocks": { "$ref": "#/$defs/strings" },
+        "valuableAssets": { "$ref": "#/$defs/strings" },
+        "currentProblems": { "$ref": "#/$defs/strings" },
+        "upgradePrinciples": { "$ref": "#/$defs/strings" },
+        "oldPatternsToAvoid": { "$ref": "#/$defs/strings" },
+        "creativeFreedom": { "$ref": "#/$defs/strings" },
+        "assetReadingSummary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assetId", "summary", "recommendedUsage"],
+            "properties": {
+              "assetId": { "type": "string", "minLength": 1 },
+              "summary": { "type": "string" },
+              "recommendedUsage": {
+                "enum": ["identity_reference", "structure_reference", "reading_only", "exclude"]
+              }
+            }
+          }
+        },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["messageId", "role", "type", "content", "createdAt"],
+        "properties": {
+          "messageId": { "type": "string", "minLength": 1 },
+          "role": { "enum": ["system", "user", "assistant"] },
+          "type": {
+            "enum": [
+              "reading_instruction", "reading_result", "generation_request",
+              "generation_result", "user_feedback", "system_event"
+            ]
+          },
+          "content": { "type": "string" },
+          "generationRunId": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "generationRunIds": { "$ref": "#/$defs/strings" },
     "decisions": {
       "type": "array",
       "items": {
@@ -98,6 +165,7 @@
     "updatedAt": { "type": "string", "format": "date-time" }
   },
   "$defs": {
+    "strings": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
     "workflowState": {
       "enum": [
         "CREATED", "FILES_IMPORTED", "ANALYZING", "ANALYSIS_COMPLETED",

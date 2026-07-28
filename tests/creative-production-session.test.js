@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   createCreativeSession,
+  appendSessionMessage,
   migrateLegacyCreativeSession,
   recordSessionDecision,
   transitionCreativeSession,
@@ -31,6 +32,8 @@ test('Creative Session keeps context and entity references but never stores a fi
   assert.equal(session.decisions.length, 1);
   assert.equal(Object.hasOwn(session, 'finalPrompt'), false);
   assert.equal(Object.hasOwn(session, 'finalGenerationInstruction'), false);
+  assert.deepEqual(session.messages, []);
+  assert.deepEqual(session.generationRunIds, []);
 });
 
 test('Creative Session rejects backward and terminal transitions', () => {
@@ -57,6 +60,12 @@ test('V18 migration removes Final Generation Instruction and preserves decisions
     projectContext: { brandName: 'Legacy' },
     decisions: [{ type: 'direction', label: '保留暖色' }],
     styleProfileId: 'style-old',
+    messages: [{
+      role: 'assistant',
+      type: 'generation_instruction',
+      content: '{"finalPrompt":"must not survive"}',
+      generationRunId: 'run-old',
+    }],
     finalGenerationInstruction: 'must not survive',
     finalPrompt: 'must not survive',
   }, '2026-07-28T00:00:00.000Z');
@@ -65,7 +74,31 @@ test('V18 migration removes Final Generation Instruction and preserves decisions
   assert.equal(migrated.activeStyleProfileId, 'style-old');
   assert.equal(migrated.decisions[0].source, 'migration');
   assert.equal(Object.hasOwn(migrated, 'finalGenerationInstruction'), false);
+  assert.equal(migrated.messages[0].type, 'system_event');
+  assert.doesNotMatch(migrated.messages[0].content, /must not survive/);
+  assert.deepEqual(migrated.generationRunIds, ['run-old']);
   assert.doesNotThrow(() => validateCreativeSession(migrated));
+});
+
+test('Session records natural-language requests and run references without embedding prompts', () => {
+  let session = createCreativeSession({ projectId: 'p' });
+  session = appendSessionMessage(session, {
+    role: 'user',
+    type: 'generation_request',
+    content: '生成一张店内装修效果图',
+  });
+  session = appendSessionMessage(session, {
+    role: 'assistant',
+    type: 'generation_result',
+    content: '已生成候选图。',
+    generationRunId: 'run-1',
+  });
+  assert.equal(session.messages.length, 2);
+  assert.deepEqual(session.generationRunIds, ['run-1']);
+  assert.throws(
+    () => appendSessionMessage(session, { content: '{"finalPrompt":"hidden"}' }),
+    (error) => error.code === 'SESSION_INVALID',
+  );
 });
 
 test('Creative Session JSON Schema exists and forbids unknown prompt fields', () => {
