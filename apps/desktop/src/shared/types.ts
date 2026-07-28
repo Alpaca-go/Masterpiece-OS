@@ -9,6 +9,7 @@ import type {
   GenerationOutput,
   GenerationSeries,
   LockedAsset as CreativeLockedAsset,
+  ReferencePack,
   StyleProfile,
   VisualMemory,
   VisualCanon
@@ -21,6 +22,7 @@ export type {
   CreativeUnderstanding,
   GenerationOutput,
   GenerationSeries,
+  ReferencePack,
   StyleProfile,
   VisualMemory,
   VisualCanon
@@ -2055,6 +2057,8 @@ export interface DesktopApi {
   visualMemory: {
     get(projectId: string): Promise<VisualMemory | null>;
     compile(projectId: string): Promise<VisualMemory>;
+    getReferencePack(projectId: string): Promise<ReferencePack | null>;
+    buildReferencePack(projectId: string): Promise<ReferencePack>;
   };
   contextIntegration: {
     linkDocumentContext(projectId: string, runId: string): Promise<ProjectDocumentContextLink>;

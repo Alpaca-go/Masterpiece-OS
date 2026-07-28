@@ -221,6 +221,41 @@ export interface VisualMemory {
   generated_at: string;
 }
 
+export type ReferencePackRole = 'locked' | 'style' | 'anchor';
+
+export interface ReferencePackItem {
+  asset_id: string;
+  source_kind: 'original_asset' | 'generated_anchor';
+  role: ReferencePackRole;
+  source_path: string;
+  pack_path: string;
+  rationale: string;
+  signals: string[];
+  score: number;
+}
+
+export interface ReferencePack {
+  schema_version: '1.0';
+  id: string;
+  project_id: string;
+  visual_memory_id: string;
+  selection: {
+    input_count: number;
+    eligible_count: number;
+    selected_count: number;
+    target_min: 5;
+    target_max: 8;
+    status: 'ready' | 'insufficient_eligible_assets';
+  };
+  items: ReferencePackItem[];
+  excluded: Array<{
+    asset_id: string;
+    source_path: string;
+    reason: string;
+  }>;
+  created_at: string;
+}
+
 export interface CreativeSessionMessage {
   messageId: string;
   role: 'system' | 'user' | 'assistant';

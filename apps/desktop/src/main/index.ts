@@ -40,6 +40,7 @@ import { createVisualCanonService } from './visual-canon-service';
 import { createGenerationPromptService } from './generation-prompt-service';
 import { createGenerationBlueprintService } from './generation-blueprint-service';
 import { createVisualMemoryService } from './visual-memory-service';
+import { createReferencePackService } from './reference-pack-service';
 import { createCreativeGenerationService, type CreativeGenerationService } from './creative-generation-service';
 import { createGenerationSeriesService } from './generation-series-service';
 import { createFormalAssetsService } from './formal-assets-service';
@@ -156,6 +157,7 @@ const visualMemory = createVisualMemoryService(
 );
 const anchorCandidates = createAnchorCandidateService(projects, creativeSessions, styleProfiles, lockedAssets);
 const visualCanons = createVisualCanonService(projects, creativeSessions, styleProfiles, lockedAssets, anchorCandidates);
+const referencePacks = createReferencePackService(projects, visualMemory, visualCanons);
 const generationPrompts = createGenerationPromptService(
   projects,
   creativeSessions,
@@ -316,6 +318,8 @@ function registerIpc(): void {
   registerHandler('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
   registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
   registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
+  registerHandler('visual-memory:get-reference-pack', (_event, projectId: string) => referencePacks.get(projectId));
+  registerHandler('visual-memory:build-reference-pack', (_event, projectId: string) => referencePacks.build(projectId));
 
   // ── Phase 4：三大功能轻量整合（Context Integration）──
   registerHandler('context-integration:link', (_event, projectId: string, runId: string) => contextIntegration.linkDocumentContext(projectId, runId));

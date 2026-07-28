@@ -77,6 +77,12 @@ export {
   validateVisualMemory,
 } from './visual-memory.js';
 export {
+  REFERENCE_PACK_COMPILER_VERSION,
+  compileReferencePack,
+  validateReferencePack,
+  selectProviderReferencesFromPack,
+} from './reference-pack.js';
+export {
   createGenerationSeries,
   transitionGenerationSeries,
   transitionGenerationTask,

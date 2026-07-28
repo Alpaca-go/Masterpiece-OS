@@ -186,7 +186,9 @@ const api: DesktopApi = {
   },
   visualMemory: {
     get: (projectId) => ipcRenderer.invoke('visual-memory:get', projectId),
-    compile: (projectId) => ipcRenderer.invoke('visual-memory:compile', projectId)
+    compile: (projectId) => ipcRenderer.invoke('visual-memory:compile', projectId),
+    getReferencePack: (projectId) => ipcRenderer.invoke('visual-memory:get-reference-pack', projectId),
+    buildReferencePack: (projectId) => ipcRenderer.invoke('visual-memory:build-reference-pack', projectId)
   },
   contextIntegration: {
     linkDocumentContext: (projectId, runId) => ipcRenderer.invoke('context-integration:link', projectId, runId),
