@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { GenerationPromptSnapshot } from '../../../../packages/project-contracts/src/index.ts';
 import {
   compileGenerationPromptSnapshot,
+  inferGenerationOutputType,
   validateGenerationPromptSnapshot,
 } from '../../../../packages/creative-production-runtime/src/generation-prompt.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
@@ -12,6 +13,7 @@ import type { StyleProfileService } from './style-profile-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { VisualCanonService } from './visual-canon-service.ts';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
+import type { GenerationBlueprintService } from './generation-blueprint-service.ts';
 
 async function writeJson(filename: string, value: unknown) {
   const result = await atomicWriteJsonWithRetry(filename, value);
@@ -27,6 +29,7 @@ export function createGenerationPromptService(
   lockedAssets: LockedAssetsService,
   canons: VisualCanonService,
   directions: CreativeDirectionService,
+  blueprints: GenerationBlueprintService,
 ) {
   async function root(projectId: string) {
     return path.join((await projects.paths(projectId)).root, 'generations', 'prompt-snapshots');
@@ -49,6 +52,22 @@ export function createGenerationPromptService(
         code: 'GENERATION_CONTEXT_MISSING',
       });
     }
+    const blueprint = await blueprints.compile(projectId, {
+      userRequest: input.userRequest,
+      imagePurpose: input.outputType || inferGenerationOutputType(input.userRequest),
+      materialRules: [
+        ...(styleProfile.materialAndTexture.materials ?? []),
+        ...(styleProfile.materialAndTexture.surfaceRules ?? []),
+      ],
+      brandAssetRules: [
+        ...locks.filter((item) => item.priority === 'critical').map((item) => item.rule),
+        ...(visualCanon.sharedRules ?? []),
+      ],
+      avoid: [
+        ...(styleProfile.promptComponents.negative ?? []),
+        ...(styleProfile.forbiddenVariations ?? []),
+      ],
+    });
     const snapshot = compileGenerationPromptSnapshot({
       projectId,
       sessionId: session.id,
@@ -56,6 +75,7 @@ export function createGenerationPromptService(
       userRequest: input.userRequest,
       outputType: input.outputType,
       creativeDirection,
+      generationBlueprint: blueprint,
       styleProfile,
       visualCanon,
       lockedAssets: locks,
@@ -73,7 +93,7 @@ export function createGenerationPromptService(
       content: snapshot.userRequest,
     });
     const current = await sessions.create(projectId);
-    if (current.workflowState === 'VISUAL_CANON_CONFIRMED') {
+    if (['VISUAL_CANON_CONFIRMED', 'BLUEPRINT_READY'].includes(current.workflowState)) {
       await sessions.transition(projectId, 'GENERATION_READY', 'Generation Prompt Snapshot 已编译。');
     }
     return snapshot;

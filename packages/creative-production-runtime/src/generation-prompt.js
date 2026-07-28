@@ -1,7 +1,12 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
+import {
+  compileGenerationBlueprint,
+  compileGenerationBlueprintPrompt,
+  validateGenerationBlueprint,
+} from './generation-blueprint.js';
 
-export const GENERATION_PROMPT_COMPILER_VERSION = '18.1.0';
+export const GENERATION_PROMPT_COMPILER_VERSION = 'visual-upgrade-1.0.0';
 
 const OUTPUT_TYPES = [
   'interior_scene', 'storefront_scene', 'packaging_render',
@@ -119,6 +124,27 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     });
   }
   const direction = input.creativeDirection;
+  const blueprint = input.generationBlueprint
+    ? validateGenerationBlueprint(input.generationBlueprint)
+    : compileGenerationBlueprint({
+        projectId: input.projectId,
+        sessionId: input.sessionId,
+        creativeDirection: direction,
+        imagePurpose: outputType,
+        userRequest,
+        materialRules: input.styleProfile.materialAndTexture.materials,
+        brandAssetRules: input.visualCanon.sharedRules,
+        avoid: input.styleProfile.forbiddenVariations,
+      }, now);
+  if (blueprint.projectId !== text(input.projectId)
+    || blueprint.sessionId !== text(input.sessionId)
+    || blueprint.creativeDirectionId !== direction.id
+    || blueprint.creativeDirectionVersion !== direction.version
+    || blueprint.imagePurpose !== outputType) {
+    throw Object.assign(new Error('Generation Blueprint 与当前任务或 Creative Direction 不匹配。'), {
+      code: 'GENERATION_BLUEPRINT_STALE',
+    });
+  }
   const canonImages = resolveCanonImagesForTask(input.visualCanon, outputType);
   const lockedAssets = input.lockedAssets ?? [];
   const critical = lockedAssets.filter((asset) => asset.priority === 'critical');
@@ -128,30 +154,18 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
   const references = selectGenerationReferences(lockedAssets);
   const recentContext = unique(input.recentContext).slice(-5);
   const preserve = unique([
+    ...blueprint.brandAssetRules,
     ...critical.map((asset) => asset.rule),
-    ...direction.thingsToKeep,
-    ...input.styleProfile.promptComponents.required,
-    ...input.visualCanon.sharedRules,
   ]);
   const avoid = unique([
-    ...direction.thingsToRemove,
-    ...direction.generationRules,
+    ...blueprint.avoid,
     ...lockedAssets.flatMap((asset) => asset.forbiddenChanges),
-    ...input.styleProfile.promptComponents.negative,
-    ...input.styleProfile.forbiddenVariations,
   ]);
-  const sceneDescription = `${userRequest}；${responsibility(outputType)}`;
-  const composition = unique([
-    direction.compositionStrategy,
-    ...input.styleProfile.compositionSystem.hierarchy,
-    ...input.styleProfile.compositionSystem.focalPointRules,
-  ]).join('；');
+  const sceneDescription = blueprint.sceneDescription;
+  const composition = blueprint.composition;
   const materialAndLighting = unique([
-    direction.materialStrategy,
-    direction.photographyStrategy,
-    ...input.styleProfile.materialAndTexture.materials,
-    input.styleProfile.lightingSystem.type,
-    input.styleProfile.lightingSystem.contrast,
+    ...blueprint.materials,
+    blueprint.lighting,
   ]).join('；');
   const typographyAndGraphicUse = unique([
     direction.primaryConcept,
@@ -162,37 +176,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     '# User Task — highest priority',
     userRequest,
     ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
-    '# Output Responsibility',
-    responsibility(outputType),
-    '# Creative Direction — defines the new visual language',
-    list([
-      direction.projectTransformation,
-      direction.designStrategy,
-      `Primary concept: ${direction.primaryConcept}`,
-      `Task strategy: ${directionStrategy(direction, outputType)}`,
-      ...direction.visualKeywords,
-    ]),
-    '# Brand Identity — preserve only',
-    list(preserve),
-    '# Must stop carrying over from the old visual system',
-    list(direction.thingsToRemove),
-    '# Visual Canon — rules only, no Canon image is sent by default',
-    list([
-      ...(input.visualCanon.sharedRules ?? []),
-      ...(input.visualCanon.variationRules ?? []),
-    ]),
-    '# Composition',
-    composition || '遵循 Primary Canon 的层级、密度与单一焦点。',
-    '# Material and Lighting',
-    materialAndLighting || '遵循 Primary Canon 的材质与光线。',
-    '# Typography and Graphic Use',
-    typographyAndGraphicUse || '仅在任务需要时使用品牌图形与文字。',
-    '# Avoid',
-    list(avoid),
-    '# Anti-copy rules',
-    '原方案只负责品牌身份。禁止复制旧 VI、旧海报换内容、旧包装换皮、旧空间重新排列。',
-    '# Single-output rule',
-    '禁止拼贴、禁止多格合集、禁止一次生成多个结果类型。',
+    '# Approved Generation Blueprint — execute, do not redesign',
+    compileGenerationBlueprintPrompt(blueprint),
   ].join('\n\n');
   const instruction = {
     schemaVersion: '1.0',
@@ -217,6 +202,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     userRequest,
     creativeDirectionId: direction.id,
     creativeDirectionVersion: direction.version,
+    generationBlueprintId: blueprint.id,
     outputType,
     styleProfileId: input.styleProfile.id,
     styleProfileVersion: input.styleProfile.version,
@@ -244,6 +230,12 @@ export function validateGenerationPromptSnapshot(snapshot) {
     || snapshot.instruction?.task !== snapshot.userRequest) {
     throw Object.assign(new Error('Final Generation Instruction 无效。'), {
       code: 'FINAL_GENERATION_INSTRUCTION_MISSING',
+    });
+  }
+  if (snapshot.compilerVersion === GENERATION_PROMPT_COMPILER_VERSION
+    && !text(snapshot.generationBlueprintId)) {
+    throw Object.assign(new Error('Visual Upgrade Prompt Snapshot 缺少 Generation Blueprint。'), {
+      code: 'GENERATION_BLUEPRINT_MISSING',
     });
   }
   if (!Array.isArray(snapshot.selectedReferences) || snapshot.selectedReferences.length > 2) {

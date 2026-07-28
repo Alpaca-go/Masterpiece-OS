@@ -38,6 +38,7 @@ import { createLockedAssetsService } from './locked-assets-service';
 import { createAnchorCandidateService } from './anchor-candidate-service';
 import { createVisualCanonService } from './visual-canon-service';
 import { createGenerationPromptService } from './generation-prompt-service';
+import { createGenerationBlueprintService } from './generation-blueprint-service';
 import { createCreativeGenerationService, type CreativeGenerationService } from './creative-generation-service';
 import { createGenerationSeriesService } from './generation-series-service';
 import { createFormalAssetsService } from './formal-assets-service';
@@ -117,6 +118,11 @@ const creativeDirections = createCreativeDirectionService(
   creativeSessions,
   getProviderCredentials
 );
+const generationBlueprints = createGenerationBlueprintService(
+  projects,
+  creativeSessions,
+  creativeDirections
+);
 const styleProfiles = createStyleProfileService(projects, creativeSessions);
 const lockedAssets = createLockedAssetsService(projects, creativeSessions);
 const anchorCandidates = createAnchorCandidateService(projects, creativeSessions, styleProfiles, lockedAssets);
@@ -127,7 +133,8 @@ const generationPrompts = createGenerationPromptService(
   styleProfiles,
   lockedAssets,
   visualCanons,
-  creativeDirections
+  creativeDirections,
+  generationBlueprints
 );
 const creativeReading = createCreativeReadingService(
   projects,
@@ -569,7 +576,8 @@ if (gotTheLock) app.whenReady().then(async () => {
     lockedAssets,
     anchorCandidates,
     imageGeneration,
-    creativeDirections
+    creativeDirections,
+    generationBlueprints
   );
   generationSeriesExecution = createGenerationSeriesExecutionService(
     generationSeries,

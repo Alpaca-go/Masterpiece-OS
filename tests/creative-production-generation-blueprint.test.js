@@ -53,6 +53,7 @@ test('Generation Blueprint compiles a single execution plan from approved Creati
 
   assert.equal(blueprint.imagePurpose, 'interior_scene');
   assert.equal(blueprint.creativeDirectionId, 'direction-1');
+  assert.ok(blueprint.creativeDirectionSummary.includes(direction().projectTransformation));
   assert.match(blueprint.sceneDescription, /地面、墙面、顶面、纵深、动线/);
   assert.match(blueprint.camera, /24–28mm/);
   assert.ok(blueprint.avoid.includes('VI 展示板'));
@@ -60,7 +61,7 @@ test('Generation Blueprint compiles a single execution plan from approved Creati
 
   const prompt = compileGenerationBlueprintPrompt(blueprint);
   assert.match(prompt, /Role:/);
-  assert.match(prompt, /Creative Direction:/);
+  assert.match(prompt, /Creative Direction — defines the new visual language:/);
   assert.match(prompt, /Camera:/);
   assert.match(prompt, /Materials:/);
   assert.doesNotMatch(prompt, /视觉分析报告|Original Visual Project/);

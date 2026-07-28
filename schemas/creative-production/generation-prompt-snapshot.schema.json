@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "id", "projectId", "sessionId", "requestId", "userRequest",
-    "creativeDirectionId", "creativeDirectionVersion", "outputType",
+    "creativeDirectionId", "creativeDirectionVersion", "generationBlueprintId", "outputType",
     "styleProfileId", "styleProfileVersion", "visualCanonId",
     "visualCanonVersion", "lockedAssetIds", "selectedReferences", "instruction",
     "negativePrompt", "compilerVersion", "createdAt"
@@ -20,6 +20,7 @@
     "userRequest": { "type": "string", "minLength": 1 },
     "creativeDirectionId": { "type": "string", "minLength": 1 },
     "creativeDirectionVersion": { "type": "string", "minLength": 1 },
+    "generationBlueprintId": { "type": "string", "minLength": 1 },
     "outputType": {
       "enum": ["interior_scene", "storefront_scene", "packaging_render", "brand_poster", "vi_application", "illustration"]
     },

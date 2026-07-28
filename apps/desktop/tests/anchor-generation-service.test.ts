@@ -60,10 +60,10 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
           role: 'identity_reference',
           projectRelativePath: 'input/assets/logo.png',
         }]);
-        assert.match(input.compiledPrompt, /Deliverable hard gate/);
-        assert.match(input.compiledPrompt, /地面、墙面、顶面、空间纵深/);
-        assert.match(input.compiledPrompt, /禁止品牌 VI 展示板/);
-        assert.match(input.compiledPrompt, /Task-specific Creative Direction/);
+        assert.match(input.compiledPrompt, /approved Generation Blueprint/);
+        assert.match(input.compiledPrompt, /地面、墙面、顶面、纵深、动线/);
+        assert.match(input.compiledPrompt, /VI 展示板/);
+        assert.match(input.compiledPrompt, /Camera:/);
         calls.push('provider');
         return {
           runId: 'run-1',
@@ -85,6 +85,31 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
         spaceStrategy: '以开放后厨和共享餐桌建立新的空间动线',
         generationRules: ['禁止复制旧 VI 和旧包装换皮'],
       }),
+    } as never,
+    {
+      compile: async (_projectId: string, input: { imagePurpose: string }) => {
+        assert.equal(input.imagePurpose, 'interior_scene');
+        return {
+          schemaVersion: '1.0',
+          id: 'blueprint-1',
+          projectId: 'project-1',
+          sessionId: 'session-1',
+          creativeDirectionId: 'direction-1',
+          creativeDirectionVersion: '1.0.0',
+          creativeDirectionSummary: ['建立新的品牌体验', '以开放后厨和共享餐桌建立新的空间动线'],
+          imagePurpose: 'interior_scene',
+          sceneDescription: '完整空间，包含地面、墙面、顶面、纵深、动线',
+          camera: '单一人眼视角',
+          composition: '真实前中后景',
+          materials: ['真实材质'],
+          lighting: '自然光',
+          colorDirection: '克制品牌色',
+          brandAssetRules: ['Logo 不变'],
+          avoid: ['VI 展示板'],
+          compilerVersion: '1.0.0',
+          generatedAt: '2026-07-28T00:00:00.000Z',
+        };
+      },
     } as never,
   );
   const result = await service.generate('project-1', {

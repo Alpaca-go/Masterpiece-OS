@@ -135,7 +135,14 @@ export interface GenerationBlueprint {
   sessionId: string;
   creativeDirectionId: string;
   creativeDirectionVersion: string;
-  imagePurpose: string;
+  creativeDirectionSummary: string[];
+  imagePurpose:
+    | 'interior_scene'
+    | 'storefront_scene'
+    | 'packaging_render'
+    | 'brand_poster'
+    | 'vi_application'
+    | 'illustration';
   sceneDescription: string;
   camera: string;
   composition: string;

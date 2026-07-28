@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "id", "projectId", "sessionId",
-    "creativeDirectionId", "creativeDirectionVersion", "imagePurpose",
+    "creativeDirectionId", "creativeDirectionVersion", "creativeDirectionSummary", "imagePurpose",
     "sceneDescription", "camera", "composition", "materials", "lighting",
     "colorDirection", "brandAssetRules", "avoid", "compilerVersion", "generatedAt"
   ],
@@ -17,6 +17,7 @@
     "sessionId": { "type": "string", "minLength": 1 },
     "creativeDirectionId": { "type": "string", "minLength": 1 },
     "creativeDirectionVersion": { "type": "string", "minLength": 1 },
+    "creativeDirectionSummary": { "$ref": "#/$defs/nonEmptyStrings" },
     "imagePurpose": {
       "enum": [
         "interior_scene", "storefront_scene", "packaging_render",

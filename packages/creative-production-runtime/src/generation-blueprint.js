@@ -95,6 +95,15 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
     sessionId: text(input.sessionId),
     creativeDirectionId: text(direction.id),
     creativeDirectionVersion: text(direction.version),
+    creativeDirectionSummary: unique([
+      direction.brandReposition,
+      direction.projectTransformation,
+      direction.creativeConcept,
+      direction.primaryConcept,
+      direction.visualWorld,
+      direction.visualMechanism,
+      strategy,
+    ]),
     imagePurpose,
     sceneDescription: `${userRequest}。${task.scene}。执行策略：${strategy}`,
     camera: task.camera,
@@ -116,6 +125,7 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
       ...(input.avoid ?? []),
       '完整视觉方案图片合集',
       '大量原海报或全部包装图作为风格参考',
+      '禁止拼贴、禁止多格合集、禁止一次生成多个结果类型',
     ]),
     compilerVersion: GENERATION_BLUEPRINT_COMPILER_VERSION,
     generatedAt: now,
@@ -145,7 +155,7 @@ export function validateGenerationBlueprint(blueprint) {
       code: 'GENERATION_BLUEPRINT_INVALID',
     });
   }
-  for (const field of ['materials', 'brandAssetRules', 'avoid']) {
+  for (const field of ['creativeDirectionSummary', 'materials', 'brandAssetRules', 'avoid']) {
     if (!unique(blueprint[field]).length) {
       throw Object.assign(new Error(`Generation Blueprint 缺少 ${field}。`), {
         code: 'GENERATION_BLUEPRINT_INVALID',
@@ -160,8 +170,8 @@ export function compileGenerationBlueprintPrompt(blueprint) {
   return [
     'Role:',
     'You are a senior brand designer executing an approved Generation Blueprint.',
-    'Creative Direction:',
-    `${blueprint.creativeDirectionId}@${blueprint.creativeDirectionVersion}`,
+    'Creative Direction — defines the new visual language:',
+    `${blueprint.creativeDirectionId}@${blueprint.creativeDirectionVersion}\n${list(blueprint.creativeDirectionSummary)}`,
     'Scene:',
     blueprint.sceneDescription,
     'Camera:',
@@ -182,4 +192,3 @@ export function compileGenerationBlueprintPrompt(blueprint) {
     'Generate exactly one finished commercial image. Do not output a design board, explanation, collage, or alternatives.',
   ].join('\n\n');
 }
-
