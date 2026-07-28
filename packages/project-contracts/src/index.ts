@@ -314,6 +314,62 @@ export interface GenerationPromptSnapshot {
   createdAt: string;
 }
 
+export type GenerationTaskType = 'canon_candidate' | 'packaging_render' | 'poster' | 'vi_application';
+export type GenerationTaskStatus = 'ready' | 'queued' | 'running' | 'paused' | 'succeeded' | 'failed' | 'cancelled';
+
+export interface GenerationTask {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  seriesId: string;
+  taskCode: string;
+  taskType: GenerationTaskType;
+  title: string;
+  responsibility: string;
+  subject: string;
+  scene: string;
+  composition: string;
+  camera: string;
+  aspectRatio: '16:9' | '4:5' | '3:4' | '1:1';
+  outputCount: 1;
+  styleProfileId: string;
+  styleProfileVersion: string;
+  visualCanonId: string;
+  visualCanonVersion: string;
+  preferredCanonImageTypes: CanonImageType[];
+  lockedAssetIds: string[];
+  referenceAssetIds: string[];
+  preserve: string[];
+  change: string[];
+  forbidden: string[];
+  status: GenerationTaskStatus;
+  promptCompilerVersion: string;
+  generationRunIds: string[];
+  outputIds: string[];
+  attemptCount: number;
+  lastError?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GenerationSeries {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  name: string;
+  status: 'draft' | 'ready' | 'running' | 'paused' | 'completed' | 'failed' | 'cancelled';
+  styleProfileId: string;
+  styleProfileVersion: string;
+  visualCanonId: string;
+  visualCanonVersion: string;
+  lockedAssetIds: string[];
+  promptCompilerVersion: string;
+  modelAdapterVersion: string;
+  tasks: GenerationTask[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreativeDecision {
   schemaVersion: '6.0';
   id: string;

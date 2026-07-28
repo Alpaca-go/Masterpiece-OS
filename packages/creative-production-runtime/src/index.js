@@ -57,3 +57,11 @@ export {
   validateCreativeUnderstanding,
   compileCreativeUnderstandingMarkdown,
 } from './creative-reading.js';
+export {
+  createGenerationSeries,
+  transitionGenerationSeries,
+  transitionGenerationTask,
+  recordGenerationTaskRun,
+  recoverFailedGenerationTask,
+  validateGenerationSeries,
+} from './generation-series.js';
