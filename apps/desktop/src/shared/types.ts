@@ -1940,11 +1940,12 @@ export interface DesktopApi {
       styleProfile: StyleProfile;
       lockedAssets: CreativeLockedAsset[];
     }>;
-    regenerateContext(projectId: string, input: {
-      directionBrief: string;
-    }): Promise<{
-      session: CreativeSession;
-      styleProfile: StyleProfile;
+      regenerateContext(projectId: string, input: {
+        directionBrief: string;
+      }): Promise<{
+        session: CreativeSession;
+        creativeDirection: CreativeDirection;
+        styleProfile: StyleProfile;
       lockedAssets: CreativeLockedAsset[];
       invalidated: {
         anchorCandidates: true;

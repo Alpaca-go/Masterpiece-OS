@@ -17,47 +17,6 @@ export function createCreativeProductionBootstrapService(
   styles: StyleProfileService,
   directions: CreativeDirectionService,
 ) {
-  function creativeDecisionFromUnderstanding(
-    projectId: string,
-    sessionId: string,
-    understanding: NonNullable<Awaited<ReturnType<CreativeSessionService['create']>>['understanding']>,
-    directionBrief?: string,
-    version = '1.0.0',
-  ) {
-    const regeneratedDirection = directionBrief?.trim();
-    const baseDirection = understanding.upgradePrinciples.join('；');
-    const thesis = regeneratedDirection || baseDirection;
-    const directionRules = regeneratedDirection
-      ? [regeneratedDirection, ...understanding.creativeFreedom]
-      : understanding.creativeFreedom;
-    return {
-      schemaVersion: '6.0',
-      id: `creative-decision-${sessionId}-${version}`,
-      projectId,
-      version,
-      brandCoreJudgment: understanding.identityLocks,
-      currentVisualProblems: understanding.currentProblems,
-      retainedAssets: understanding.identityLocks,
-      reconstructableAssets: directionRules,
-      inheritedReferenceMechanisms: [],
-      prohibitedReferenceContent: understanding.oldPatternsToAvoid,
-      visualUpgradeThesis: thesis,
-      primaryDirection: {
-        name: regeneratedDirection ? 'User Regenerated Direction' : 'Creative Reading Direction',
-        summary: thesis,
-        keywords: directionRules.slice(0, 8),
-        mood: regeneratedDirection ? [regeneratedDirection] : [],
-      },
-      styleBoundaries: {
-        allowed: directionRules,
-        forbidden: understanding.oldPatternsToAvoid,
-      },
-      outputPriorities: [],
-      risks: understanding.currentProblems,
-      createdAt: new Date().toISOString(),
-    };
-  }
-
   function creativeDecisionFromDirection(
     projectId: string,
     understanding: NonNullable<Awaited<ReturnType<CreativeSessionService['create']>>['understanding']>,
@@ -173,14 +132,14 @@ export function createCreativeProductionBootstrapService(
         code: 'STYLE_PROFILE_MISSING',
       });
     }
-    const [major = 1, minor = 0] = active.version.split('.').map(Number);
-    const decisionVersion = `${major}.${minor + 1}.0`;
-    const decision = creativeDecisionFromUnderstanding(
-      projectId,
-      session.id,
-      session.understanding,
+    const directionResult = await directions.generate(projectId, {
+      understanding: session.understanding,
       directionBrief,
-      decisionVersion,
+    });
+    const decision = creativeDecisionFromDirection(
+      projectId,
+      session.understanding,
+      directionResult.direction,
     );
     await sessions.recordDecision(projectId, {
       type: 'creative_direction_regenerated',
@@ -192,6 +151,7 @@ export function createCreativeProductionBootstrapService(
     const styleProfile = await styles.compile(projectId, decision);
     return {
       session: await sessions.create(projectId),
+      creativeDirection: directionResult.direction,
       styleProfile,
       lockedAssets: locks,
       invalidated: {

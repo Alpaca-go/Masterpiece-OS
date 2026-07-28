@@ -32,15 +32,33 @@ test('Generation Prompt service persists finalPrompt outside Session and records
     canonImages: [{ id: 'image-1', type: 'brand_hero', priority: 'primary', role: '基准', imagePath: 'canon/a.webp' }],
   }) };
   const locks = { list: async () => [] };
+  const directions = { getActive: async () => ({
+    id: 'direction-1',
+    version: '1.0.0',
+    status: 'ready',
+    projectTransformation: '建立新的品牌体验',
+    designStrategy: '用单一叙事焦点建立跨触点系统',
+    primaryConcept: '真实品牌时刻',
+    visualKeywords: ['真实'],
+    thingsToRemove: ['停止旧 VI 拼贴'],
+    thingsToKeep: ['保留品牌名和 Logo'],
+    colorStrategy: '重建身份色比例',
+    materialStrategy: '真实材质',
+    compositionStrategy: '单一焦点',
+    photographyStrategy: '自然光真实情境',
+    generationRules: ['禁止复制旧 VI 和旧包装换皮'],
+  }) };
   try {
     const service = createGenerationPromptService(
       projects as never, sessions as never, styles as never, locks as never, canons as never,
+      directions as never,
     );
     const snapshot = await service.compile(projectId, {
       userRequest: '生成一张品牌海报',
       outputType: 'brand_poster',
     });
     assert.ok((await service.get(projectId, snapshot.id))?.instruction.finalPrompt);
+    assert.equal(snapshot.creativeDirectionId, 'direction-1');
     assert.equal(messages[0]?.content, '生成一张品牌海报');
     assert.ok(!JSON.stringify(messages).includes('finalPrompt'));
     await service.recordRun(projectId, snapshot.id, 'run-1', '生成完成');

@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import path from 'node:path';
 
-export const GENERATION_PROMPT_COMPILER_VERSION = '1.0.0';
+export const GENERATION_PROMPT_COMPILER_VERSION = '18.1.0';
 
 const OUTPUT_TYPES = [
   'interior_scene', 'storefront_scene', 'packaging_render',
@@ -61,10 +61,9 @@ export function resolveCanonImagesForTask(canon, outputType) {
  * V18 默认小参考集：最多一张身份、一张必要结构、一张核心 Canon。
  * reading_only / exclude 资产从不由此函数接收，因此不会误发给 Image Provider。
  */
-export function selectGenerationReferences(lockedAssets, canonImages) {
+export function selectGenerationReferences(lockedAssets) {
   const logo = lockedAssets.find((asset) => asset.type === 'logo' && asset.sourceFile);
   const structure = lockedAssets.find((asset) => asset.type === 'packaging_structure' && asset.sourceFile);
-  const core = canonImages[0];
   return [
     ...(logo ? [{
       id: logo.sourceAssetId || logo.id,
@@ -76,12 +75,7 @@ export function selectGenerationReferences(lockedAssets, canonImages) {
       role: 'structure_reference',
       projectRelativePath: relative(`input/${structure.sourceFile}`),
     }] : []),
-    ...(core ? [{
-      id: core.id,
-      role: 'core_reference',
-      projectRelativePath: relative(core.imagePath),
-    }] : []),
-  ].slice(0, 3);
+  ].slice(0, 2);
 }
 
 function responsibility(outputType) {
@@ -96,6 +90,19 @@ function responsibility(outputType) {
   return map[outputType];
 }
 
+function directionStrategy(direction, outputType) {
+  if (['interior_scene', 'storefront_scene'].includes(outputType)) {
+    return direction.spaceStrategy || direction.designStrategy;
+  }
+  if (outputType === 'packaging_render') {
+    return direction.packagingStrategy || direction.designStrategy;
+  }
+  if (outputType === 'brand_poster') {
+    return direction.posterStrategy || direction.designStrategy;
+  }
+  return direction.designStrategy;
+}
+
 export function compileGenerationPromptSnapshot(input, now = new Date().toISOString()) {
   const userRequest = text(input?.userRequest);
   if (!userRequest) throw Object.assign(new Error('生成任务不能为空。'), { code: 'GENERATION_TASK_EMPTY' });
@@ -106,35 +113,48 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
   if (input?.styleProfile?.status !== 'confirmed') {
     throw Object.assign(new Error('生成前必须确认 Style Profile。'), { code: 'STYLE_PROFILE_NOT_CONFIRMED' });
   }
+  if (input?.creativeDirection?.status !== 'ready') {
+    throw Object.assign(new Error('生成前必须存在 ready Creative Direction。'), {
+      code: 'CREATIVE_DIRECTION_NOT_READY',
+    });
+  }
+  const direction = input.creativeDirection;
   const canonImages = resolveCanonImagesForTask(input.visualCanon, outputType);
   const lockedAssets = input.lockedAssets ?? [];
   const critical = lockedAssets.filter((asset) => asset.priority === 'critical');
   if (critical.some((asset) => !asset.rule || !asset.forbiddenChanges?.length)) {
     throw Object.assign(new Error('critical Locked Asset 规则不完整。'), { code: 'CRITICAL_LOCK_RULE_MISSING' });
   }
-  const references = selectGenerationReferences(lockedAssets, canonImages);
+  const references = selectGenerationReferences(lockedAssets);
   const recentContext = unique(input.recentContext).slice(-5);
   const preserve = unique([
     ...critical.map((asset) => asset.rule),
+    ...direction.thingsToKeep,
     ...input.styleProfile.promptComponents.required,
     ...input.visualCanon.sharedRules,
   ]);
   const avoid = unique([
+    ...direction.thingsToRemove,
+    ...direction.generationRules,
     ...lockedAssets.flatMap((asset) => asset.forbiddenChanges),
     ...input.styleProfile.promptComponents.negative,
     ...input.styleProfile.forbiddenVariations,
   ]);
   const sceneDescription = `${userRequest}；${responsibility(outputType)}`;
   const composition = unique([
+    direction.compositionStrategy,
     ...input.styleProfile.compositionSystem.hierarchy,
     ...input.styleProfile.compositionSystem.focalPointRules,
   ]).join('；');
   const materialAndLighting = unique([
+    direction.materialStrategy,
+    direction.photographyStrategy,
     ...input.styleProfile.materialAndTexture.materials,
     input.styleProfile.lightingSystem.type,
     input.styleProfile.lightingSystem.contrast,
   ]).join('；');
   const typographyAndGraphicUse = unique([
+    direction.primaryConcept,
     ...input.styleProfile.typographyCompatibility,
     ...input.styleProfile.graphicLanguage.coreMotifs,
   ]).join('；');
@@ -144,10 +164,23 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
     '# Output Responsibility',
     responsibility(outputType),
-    '# Preserve',
+    '# Creative Direction — defines the new visual language',
+    list([
+      direction.projectTransformation,
+      direction.designStrategy,
+      `Primary concept: ${direction.primaryConcept}`,
+      `Task strategy: ${directionStrategy(direction, outputType)}`,
+      ...direction.visualKeywords,
+    ]),
+    '# Brand Identity — preserve only',
     list(preserve),
-    '# Visual Canon',
-    list(canonImages.map((image) => `${image.role}；图像仅作视觉基准，不复制无关物料组合`)),
+    '# Must stop carrying over from the old visual system',
+    list(direction.thingsToRemove),
+    '# Visual Canon — rules only, no Canon image is sent by default',
+    list([
+      ...(input.visualCanon.sharedRules ?? []),
+      ...(input.visualCanon.variationRules ?? []),
+    ]),
     '# Composition',
     composition || '遵循 Primary Canon 的层级、密度与单一焦点。',
     '# Material and Lighting',
@@ -156,6 +189,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     typographyAndGraphicUse || '仅在任务需要时使用品牌图形与文字。',
     '# Avoid',
     list(avoid),
+    '# Anti-copy rules',
+    '原方案只负责品牌身份。禁止复制旧 VI、旧海报换内容、旧包装换皮、旧空间重新排列。',
     '# Single-output rule',
     '禁止拼贴、禁止多格合集、禁止一次生成多个结果类型。',
   ].join('\n\n');
@@ -180,6 +215,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     sessionId: text(input.sessionId),
     requestId: text(input.requestId) || `request-${crypto.randomUUID()}`,
     userRequest,
+    creativeDirectionId: direction.id,
+    creativeDirectionVersion: direction.version,
     outputType,
     styleProfileId: input.styleProfile.id,
     styleProfileVersion: input.styleProfile.version,
@@ -197,7 +234,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
 export function validateGenerationPromptSnapshot(snapshot) {
   if (!snapshot || snapshot.schemaVersion !== '6.0'
     || !text(snapshot.id) || !text(snapshot.projectId) || !text(snapshot.sessionId)
-    || !text(snapshot.requestId) || !OUTPUT_TYPES.includes(snapshot.outputType)) {
+    || !text(snapshot.requestId) || !text(snapshot.creativeDirectionId)
+    || !text(snapshot.creativeDirectionVersion) || !OUTPUT_TYPES.includes(snapshot.outputType)) {
     throw Object.assign(new Error('Generation Prompt Snapshot 基础字段无效。'), {
       code: 'GENERATION_SNAPSHOT_INVALID',
     });
@@ -208,8 +246,8 @@ export function validateGenerationPromptSnapshot(snapshot) {
       code: 'FINAL_GENERATION_INSTRUCTION_MISSING',
     });
   }
-  if (!Array.isArray(snapshot.selectedReferences) || snapshot.selectedReferences.length > 3) {
-    throw Object.assign(new Error('Generation Reference 超过 V18 小参考集上限。'), {
+  if (!Array.isArray(snapshot.selectedReferences) || snapshot.selectedReferences.length > 2) {
+    throw Object.assign(new Error('Generation Reference 超过 v18.1 小参考集上限。'), {
       code: 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
     });
   }

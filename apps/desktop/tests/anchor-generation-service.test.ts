@@ -69,6 +69,19 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
         };
       },
     } as never,
+    {
+      getActive: async () => ({
+        id: 'direction-1',
+        version: '1.0.0',
+        status: 'ready',
+        projectTransformation: '建立新的品牌体验',
+        designStrategy: '用单一叙事焦点建立跨触点系统',
+        primaryConcept: '真实品牌时刻',
+        visualKeywords: ['真实'],
+        thingsToRemove: ['停止旧 VI 拼贴'],
+        generationRules: ['禁止复制旧 VI 和旧包装换皮'],
+      }),
+    } as never,
   );
   const result = await service.generate('project-1', { purpose: '建立品牌主视觉', apiProfileId: 'image-profile' });
   assert.equal(result.candidate.status, 'pending_review');

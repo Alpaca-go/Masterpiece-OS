@@ -38,14 +38,35 @@ const locks = [
     rule: '包装结构不变', forbiddenChanges: ['不得改变盒型'],
   },
 ];
+const direction = {
+  id: 'direction-1',
+  version: '1.0.0',
+  status: 'ready',
+  projectTransformation: '从旧式物料陈列升级为真实、连贯的品牌体验',
+  oldVisualProblems: ['旧 VI 依赖拼贴陈列'],
+  designStrategy: '以单一叙事焦点和真实使用情境建立跨触点系统',
+  primaryConcept: '真实品牌时刻',
+  visualKeywords: ['真实', '克制', '连贯'],
+  thingsToRemove: ['停止旧 VI 拼贴与旧海报版式'],
+  thingsToKeep: ['保留品牌名和 Logo'],
+  colorStrategy: '保留身份色但重新建立比例',
+  materialStrategy: '真实、可触摸的材质',
+  compositionStrategy: '单一焦点与明确留白',
+  photographyStrategy: '自然光下的真实使用情境',
+  spaceStrategy: '建立新的空间体验而不是 Logo 墙',
+  packagingStrategy: '建立新的包装信息与材质系统',
+  posterStrategy: '建立单一视觉叙事',
+  generationRules: ['禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列'],
+};
 
-test('V18 prompt snapshot keeps finalPrompt in Run snapshot and selects at most three references', () => {
+test('v18.1 prompt snapshot keeps finalPrompt in Run snapshot and selects at most two references', () => {
   const snapshot = compileGenerationPromptSnapshot({
     projectId: 'project-1',
     sessionId: 'session-1',
     requestId: 'request-1',
     userRequest: '生成一张升级后的包装渲染图',
     outputType: 'packaging_render',
+    creativeDirection: direction,
     styleProfile: style,
     visualCanon: canon,
     lockedAssets: locks,
@@ -54,9 +75,12 @@ test('V18 prompt snapshot keeps finalPrompt in Run snapshot and selects at most 
   assert.match(snapshot.instruction.finalPrompt, /User Task — highest priority/);
   assert.match(snapshot.instruction.finalPrompt, /禁止拼贴/);
   assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
-    'identity_reference', 'structure_reference', 'core_reference',
+    'identity_reference', 'structure_reference',
   ]);
-  assert.equal(snapshot.selectedReferences.length, 3);
+  assert.equal(snapshot.selectedReferences.length, 2);
+  assert.equal(snapshot.creativeDirectionId, direction.id);
+  assert.match(snapshot.instruction.finalPrompt, /Creative Direction — defines the new visual language/);
+  assert.match(snapshot.instruction.finalPrompt, /旧包装换皮/);
   assert.ok(!Object.hasOwn(snapshot, 'messages'));
 });
 
@@ -66,6 +90,7 @@ test('reading-only legacy assets cannot enter the final provider reference set',
     sessionId: 'session-1',
     userRequest: '生成品牌海报',
     outputType: 'brand_poster',
+    creativeDirection: direction,
     styleProfile: style,
     visualCanon: canon,
     lockedAssets: locks,
@@ -79,22 +104,24 @@ test('reading-only legacy assets cannot enter the final provider reference set',
 test('prompt compiler fails closed for empty tasks and unconfirmed Canon', () => {
   assert.throws(() => compileGenerationPromptSnapshot({
     projectId: 'project-1', sessionId: 'session-1', userRequest: '',
-    outputType: 'brand_poster', styleProfile: style, visualCanon: canon, lockedAssets: locks,
+    outputType: 'brand_poster', creativeDirection: direction,
+    styleProfile: style, visualCanon: canon, lockedAssets: locks,
   }, NOW), { code: 'GENERATION_TASK_EMPTY' });
   assert.throws(() => compileGenerationPromptSnapshot({
     projectId: 'project-1', sessionId: 'session-1', userRequest: '海报',
-    outputType: 'brand_poster', styleProfile: style,
+    outputType: 'brand_poster', creativeDirection: direction, styleProfile: style,
     visualCanon: { ...canon, status: 'draft' }, lockedAssets: locks,
   }, NOW), { code: 'VISUAL_CANON_NOT_CONFIRMED' });
 });
 
-test('Generation Prompt Snapshot schema is closed and references max three images', () => {
+test('Generation Prompt Snapshot schema is closed and references max two identity/structure images', () => {
   const schema = JSON.parse(fs.readFileSync(
     path.join(process.cwd(), 'schemas/creative-production/generation-prompt-snapshot.schema.json'),
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);
-  assert.equal(schema.properties.selectedReferences.maxItems, 3);
+  assert.equal(schema.properties.selectedReferences.maxItems, 2);
+  assert.ok(schema.required.includes('creativeDirectionId'));
   assert.ok(schema.properties.instruction.required.includes('finalPrompt'));
 });
 
@@ -111,6 +138,7 @@ test('recent Session feedback enters the next prompt with a bounded five-message
     sessionId: 'session-1',
     userRequest: '生成一张品牌海报',
     outputType: 'brand_poster',
+    creativeDirection: direction,
     styleProfile: style,
     visualCanon: canon,
     lockedAssets: locks,

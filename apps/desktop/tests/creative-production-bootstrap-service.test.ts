@@ -106,7 +106,17 @@ test('production context regeneration compiles a new user-directed Style Profile
         return { id: 'style-2', version: '1.1.0', status: 'draft' };
       },
     } as never,
-    { getActive: async () => null } as never,
+    {
+      getActive: async () => null,
+      generate: async (_projectId: string, input: { directionBrief: string }) => ({
+        direction: {
+          ...direction,
+          version: '1.1.0',
+          projectTransformation: input.directionBrief,
+          primaryConcept: '明亮社区小馆',
+        },
+      }),
+    } as never,
   );
   const result = await service.regenerate('project-1', {
     directionBrief: '改为明亮的现代社区小馆，强化晨间光线与开放式后厨',
@@ -117,7 +127,7 @@ test('production context regeneration compiles a new user-directed Style Profile
   assert.match(String(compiledDecision?.visualUpgradeThesis), /晨间光线/);
   assert.equal(
     (compiledDecision?.primaryDirection as { name: string }).name,
-    'User Regenerated Direction',
+    '明亮社区小馆',
   );
   assert.equal(decisions[0]?.type, 'creative_direction_regenerated');
 });

@@ -94,6 +94,7 @@ export function createCreativeDirectionService(
   async function generate(projectId: string, input?: {
     apiProfileId?: string;
     understanding?: CreativeUnderstanding;
+    directionBrief?: string;
   }): Promise<{
     direction: CreativeDirection;
     provider: string;
@@ -123,7 +124,11 @@ export function createCreativeDirectionService(
     const reportRelativePath = path.relative(target.projectRoot, reportPath).replaceAll('\\', '/');
     const version = nextVersion(active?.version);
     const id = `creative-direction-${crypto.randomUUID()}`;
-    const prompt = buildCreativeDirectionPrompt({ understanding, analysisReport });
+    const prompt = buildCreativeDirectionPrompt({
+      understanding,
+      analysisReport,
+      directionBrief: input?.directionBrief,
+    });
     const credentials = await readCredentials(input?.apiProfileId || project.apiProfileId || undefined);
     const reasoner = reasonerFactory({
       apiKey: credentials.apiKey,
@@ -140,6 +145,7 @@ export function createCreativeDirectionService(
       understanding,
       reportPath: reportRelativePath,
       reportSha256: crypto.createHash('sha256').update(analysisReport).digest('hex'),
+      ...(input?.directionBrief?.trim() ? { directionBrief: input.directionBrief.trim() } : {}),
       imageAttachments: [],
       createdAt: new Date().toISOString(),
     });

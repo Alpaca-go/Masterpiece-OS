@@ -17,7 +17,8 @@
     "workflowState": {
       "enum": [
         "CREATED", "FILES_IMPORTED", "ANALYZING", "ANALYSIS_COMPLETED",
-        "SESSION_CREATED", "CREATIVE_DECISION_COMPLETED", "STYLE_PROFILE_COMPILING",
+        "SESSION_CREATED", "DIRECTION_GENERATING", "DIRECTION_READY",
+        "CREATIVE_DECISION_COMPLETED", "STYLE_PROFILE_COMPILING",
         "STYLE_PROFILE_CREATED", "PRIMARY_ANCHOR_READY", "PRIMARY_ANCHOR_GENERATING",
         "PRIMARY_ANCHOR_PENDING_REVIEW", "PRIMARY_ANCHOR_CONFIRMED", "CANON_BUILDING",
         "VISUAL_CANON_CONFIRMED", "GENERATION_READY", "GENERATING",
@@ -140,6 +141,7 @@
         }
       }
     },
+    "activeCreativeDirectionId": { "type": "string", "minLength": 1 },
     "activeStyleProfileId": { "type": "string", "minLength": 1 },
     "activeVisualCanonId": { "type": "string", "minLength": 1 },
     "activeSeriesId": { "type": "string", "minLength": 1 },
@@ -155,7 +157,7 @@
           "fromState": { "$ref": "#/$defs/workflowState" },
           "toState": { "$ref": "#/$defs/workflowState" },
           "summary": { "type": "string", "minLength": 1 },
-          "entityType": { "enum": ["creative_decision", "style_profile", "visual_canon", "generation_series", "decision"] },
+          "entityType": { "enum": ["creative_direction", "creative_decision", "style_profile", "visual_canon", "generation_series", "decision"] },
           "entityId": { "type": "string" },
           "version": { "type": "string" },
           "createdAt": { "type": "string", "format": "date-time" }
@@ -170,7 +172,8 @@
     "workflowState": {
       "enum": [
         "CREATED", "FILES_IMPORTED", "ANALYZING", "ANALYSIS_COMPLETED",
-        "SESSION_CREATED", "CREATIVE_DECISION_COMPLETED", "STYLE_PROFILE_COMPILING",
+        "SESSION_CREATED", "DIRECTION_GENERATING", "DIRECTION_READY",
+        "CREATIVE_DECISION_COMPLETED", "STYLE_PROFILE_COMPILING",
         "STYLE_PROFILE_CREATED", "PRIMARY_ANCHOR_READY", "PRIMARY_ANCHOR_GENERATING",
         "PRIMARY_ANCHOR_PENDING_REVIEW", "PRIMARY_ANCHOR_CONFIRMED", "CANON_BUILDING",
         "VISUAL_CANON_CONFIRMED", "GENERATION_READY", "GENERATING",

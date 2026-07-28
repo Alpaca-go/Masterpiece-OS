@@ -334,6 +334,8 @@ export interface GenerationPromptSnapshot {
   sessionId: string;
   requestId: string;
   userRequest: string;
+  creativeDirectionId: string;
+  creativeDirectionVersion: string;
   outputType: 'interior_scene' | 'storefront_scene' | 'packaging_render' | 'brand_poster' | 'vi_application' | 'illustration';
   styleProfileId: string;
   styleProfileVersion: string;

@@ -11,6 +11,7 @@ import type { CreativeSessionService } from './creative-session-service.ts';
 import type { StyleProfileService } from './style-profile-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { VisualCanonService } from './visual-canon-service.ts';
+import type { CreativeDirectionService } from './creative-direction-service.ts';
 
 async function writeJson(filename: string, value: unknown) {
   const result = await atomicWriteJsonWithRetry(filename, value);
@@ -25,6 +26,7 @@ export function createGenerationPromptService(
   styles: StyleProfileService,
   lockedAssets: LockedAssetsService,
   canons: VisualCanonService,
+  directions: CreativeDirectionService,
 ) {
   async function root(projectId: string) {
     return path.join((await projects.paths(projectId)).root, 'generations', 'prompt-snapshots');
@@ -35,14 +37,15 @@ export function createGenerationPromptService(
     outputType?: GenerationPromptSnapshot['outputType'];
     requestId?: string;
   }): Promise<GenerationPromptSnapshot> {
-    const [session, styleProfile, visualCanon, locks] = await Promise.all([
+    const [session, creativeDirection, styleProfile, visualCanon, locks] = await Promise.all([
       sessions.create(projectId),
+      directions.getActive(projectId),
       styles.getActive(projectId),
       canons.getActive(projectId),
       lockedAssets.list(projectId),
     ]);
-    if (!styleProfile || !visualCanon) {
-      throw Object.assign(new Error('生成前缺少 active Style Profile 或 Visual Canon。'), {
+    if (!creativeDirection || !styleProfile || !visualCanon) {
+      throw Object.assign(new Error('生成前缺少 active Creative Direction、Style Profile 或 Visual Canon。'), {
         code: 'GENERATION_CONTEXT_MISSING',
       });
     }
@@ -52,6 +55,7 @@ export function createGenerationPromptService(
       requestId: input.requestId,
       userRequest: input.userRequest,
       outputType: input.outputType,
+      creativeDirection,
       styleProfile,
       visualCanon,
       lockedAssets: locks,

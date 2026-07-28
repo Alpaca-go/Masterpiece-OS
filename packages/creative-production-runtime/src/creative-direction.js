@@ -27,6 +27,7 @@ function strings(value) {
 }
 
 export function buildCreativeDirectionPrompt(input) {
+  const userDirection = text(input.directionBrief);
   return `你现在是该品牌项目的创意总监。
 
 你已经获得经过校验的 Creative Understanding 与视觉分析升级报告。现在不要生成图片，也不要重新读取或猜测任何原始图片。
@@ -67,6 +68,10 @@ export function buildCreativeDirectionPrompt(input) {
 3. designStrategy 与 primaryConcept 必须给出一条可执行的新方向，而不是“更高级、更现代”等空泛形容词。
 4. generationRules 必须明确禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列。
 5. 空间、包装、海报策略必须分别说明如何建立新系统。
+
+${userDirection
+    ? `用户要求的下一版变化方向（必须落实，但仍需由你扩展成完整系统）：\n${userDirection}\n`
+    : ''}
 
 Creative Understanding：
 ${JSON.stringify(input.understanding, null, 2)}

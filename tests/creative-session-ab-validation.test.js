@@ -26,6 +26,26 @@ const locks = [{
   sourceAssetId: 'logo', sourceFile: 'assets/logo.png',
   rule: 'Logo 原样保留', forbiddenChanges: ['不得重绘 Logo'],
 }];
+const direction = {
+  id: 'direction-ab',
+  version: '1.0.0',
+  status: 'ready',
+  projectTransformation: '从旧式 VI 陈列升级为真实、连贯的品牌体验',
+  oldVisualProblems: ['旧物料缺少叙事'],
+  designStrategy: '以单一场景叙事和真实使用关系建立新系统',
+  primaryConcept: '真实品牌时刻',
+  visualKeywords: ['真实', '开放', '连贯'],
+  thingsToRemove: ['停止旧 VI 平铺与物料合集'],
+  thingsToKeep: ['保留品牌名和 Logo'],
+  colorStrategy: '重新建立身份色比例',
+  materialStrategy: '使用真实材质',
+  compositionStrategy: '单一焦点',
+  photographyStrategy: '自然光下的真实使用情境',
+  spaceStrategy: '建立新的品牌空间体验，禁止 Logo 墙加 VI 展示',
+  packagingStrategy: '建立新的包装系统，禁止旧包装换材质',
+  posterStrategy: '建立新的视觉叙事，禁止 Logo 加产品照片',
+  generationRules: ['禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列'],
+};
 
 const cases = [
   {
@@ -58,6 +78,7 @@ for (const item of cases) {
       sessionId: `session-${item.project}`,
       userRequest: item.task,
       outputType: item.outputType,
+      creativeDirection: direction,
       styleProfile: style,
       visualCanon: canon,
       lockedAssets: locks,
@@ -68,10 +89,9 @@ for (const item of cases) {
       snapshot.instruction.outputResponsibility,
       item.forbiddenPositive,
     );
-    assert.ok(snapshot.selectedReferences.length <= 3);
+    assert.ok(snapshot.selectedReferences.length <= 2);
     assert.deepEqual(snapshot.selectedReferences.map((reference) => reference.role), [
       'identity_reference',
-      'core_reference',
     ]);
   });
 }
@@ -83,6 +103,7 @@ test('offline A/B baseline exposes the legacy mismatch that the candidate blocks
     sessionId: 'session-feng',
     userRequest: '生成一张升级后的店内装修效果图',
     outputType: 'interior_scene',
+    creativeDirection: direction,
     styleProfile: style,
     visualCanon: canon,
     lockedAssets: locks,

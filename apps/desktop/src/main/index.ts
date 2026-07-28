@@ -126,7 +126,8 @@ const generationPrompts = createGenerationPromptService(
   creativeSessions,
   styleProfiles,
   lockedAssets,
-  visualCanons
+  visualCanons,
+  creativeDirections
 );
 const creativeReading = createCreativeReadingService(
   projects,
@@ -567,7 +568,8 @@ if (gotTheLock) app.whenReady().then(async () => {
     styleProfiles,
     lockedAssets,
     anchorCandidates,
-    imageGeneration
+    imageGeneration,
+    creativeDirections
   );
   generationSeriesExecution = createGenerationSeriesExecutionService(
     generationSeries,

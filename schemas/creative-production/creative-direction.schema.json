@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/creative-direction.schema.json",
+  "title": "Creative Direction v18.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "sessionId", "version", "status",
+    "projectTransformation", "oldVisualProblems", "designStrategy", "primaryConcept",
+    "visualKeywords", "thingsToRemove", "thingsToKeep", "colorStrategy",
+    "materialStrategy", "compositionStrategy", "photographyStrategy",
+    "generationRules", "source", "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "status": { "enum": ["ready", "superseded"] },
+    "projectTransformation": { "type": "string", "minLength": 1 },
+    "oldVisualProblems": { "$ref": "#/$defs/nonEmptyStrings" },
+    "designStrategy": { "type": "string", "minLength": 1 },
+    "primaryConcept": { "type": "string", "minLength": 1 },
+    "visualKeywords": { "$ref": "#/$defs/nonEmptyStrings" },
+    "thingsToRemove": { "$ref": "#/$defs/nonEmptyStrings" },
+    "thingsToKeep": { "$ref": "#/$defs/nonEmptyStrings" },
+    "colorStrategy": { "type": "string", "minLength": 1 },
+    "materialStrategy": { "type": "string", "minLength": 1 },
+    "compositionStrategy": { "type": "string", "minLength": 1 },
+    "photographyStrategy": { "type": "string", "minLength": 1 },
+    "spaceStrategy": { "type": "string", "minLength": 1 },
+    "packagingStrategy": { "type": "string", "minLength": 1 },
+    "posterStrategy": { "type": "string", "minLength": 1 },
+    "generationRules": { "$ref": "#/$defs/nonEmptyStrings" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["understandingGeneratedAt", "reportPath", "runtimeVersion"],
+      "properties": {
+        "understandingGeneratedAt": { "type": "string", "minLength": 1 },
+        "reportPath": { "type": "string", "minLength": 1 },
+        "runtimeVersion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "generatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
