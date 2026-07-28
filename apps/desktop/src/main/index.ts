@@ -437,6 +437,12 @@ function registerIpc(): void {
       dryRun?: boolean;
     }
   ) => anchorGeneration.generate(projectId, input));
+  ipcMain.handle('creative-production:retry-anchor', (
+    _event,
+    projectId: string,
+    candidateId: string,
+    input: { apiProfileId?: string; dryRun?: boolean }
+  ) => anchorGeneration.retry(projectId, candidateId, input));
   ipcMain.handle('creative-production:review-anchor', (
     _event,
     projectId: string,
@@ -466,6 +472,12 @@ function registerIpc(): void {
     projectId: string,
     input: { name: string; tasks: unknown[] }
   ) => generationSeries.create(projectId, input));
+  ipcMain.handle('creative-production:create-revision', (
+    _event,
+    projectId: string,
+    seriesId: string,
+    input: unknown
+  ) => generationSeries.createRevision(projectId, seriesId, input));
   ipcMain.handle('creative-production:pause-series', (_event, projectId: string, seriesId: string) =>
     generationSeries.pause(projectId, seriesId));
   ipcMain.handle('creative-production:resume-series', (_event, projectId: string, seriesId: string) =>

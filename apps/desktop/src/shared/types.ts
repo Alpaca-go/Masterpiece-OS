@@ -1943,6 +1943,10 @@ export interface DesktopApi {
       apiProfileId?: string;
       dryRun?: boolean;
     }): Promise<{ candidate: AnchorCandidate; run: ImageGenerationRun }>;
+    retryAnchor(projectId: string, candidateId: string, input: {
+      apiProfileId?: string;
+      dryRun?: boolean;
+    }): Promise<{ candidate: AnchorCandidate; run: ImageGenerationRun }>;
     reviewAnchor(projectId: string, candidateId: string, input: {
       action: 'accept_primary' | 'minor_adjustment' | 'retry' | 'modify_style_profile' | 'reject';
       feedback: string;
@@ -1980,6 +1984,14 @@ export interface DesktopApi {
         change?: string[];
         forbidden?: string[];
       }>;
+    }): Promise<GenerationSeries>;
+    createRevision(projectId: string, seriesId: string, input: {
+      parentTaskId: string;
+      baseImageId: string;
+      mode: 'edit' | 'variant';
+      title?: string;
+      preserve: string[];
+      change: string[];
     }): Promise<GenerationSeries>;
     pauseSeries(projectId: string, seriesId: string): Promise<GenerationSeries>;
     resumeSeries(projectId: string, seriesId: string): Promise<GenerationSeries>;

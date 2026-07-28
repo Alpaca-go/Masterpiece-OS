@@ -62,26 +62,18 @@ export function createAnchorGenerationService(
   candidates: AnchorCandidateService,
   imageGeneration: ImageGenerationService,
 ) {
-  async function generate(projectId: string, input: {
-    purpose?: string;
-    aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
-    apiProfileId?: string;
-    dryRun?: boolean;
-  }) {
-    const [style, locks] = await Promise.all([
-      styles.getActive(projectId),
-      lockedAssets.list(projectId),
-    ]);
-    if (!style || style.status !== 'confirmed') {
-      throw Object.assign(new Error('生成 Anchor Candidate 前必须确认 Style Profile。'), {
-        code: 'STYLE_PROFILE_NOT_CONFIRMED',
-      });
-    }
-    const purpose = input.purpose?.trim() || '建立新的品牌主视觉方向';
-    const candidate = await candidates.create(projectId, {
-      purpose,
-      aspectRatio: input.aspectRatio,
-    });
+  async function execute(
+    projectId: string,
+    candidate: Awaited<ReturnType<AnchorCandidateService['create']>>,
+    style: StyleProfile,
+    locks: LockedAsset[],
+    input: {
+      apiProfileId?: string;
+      dryRun?: boolean;
+    },
+  ) {
+    const purpose = candidate.task.purpose;
+    const aspectRatio = candidate.task.aspectRatio;
     const references = locks
       .filter((item) => item.sourceFile && ['logo', 'packaging_structure'].includes(item.type))
       .sort((left, right) => left.type === 'logo' ? -1 : right.type === 'logo' ? 1 : 0)
@@ -118,9 +110,9 @@ export function createAnchorGenerationService(
       references,
       event: 'ANCHOR_CANDIDATE_PROMPT_ATTACHED',
       apiProfileId: input.apiProfileId,
-      size: input.aspectRatio === '16:9' ? '1440*810'
-        : input.aspectRatio === '4:5' ? '1024*1280'
-          : input.aspectRatio === '3:4' ? '1024*1365'
+      size: aspectRatio === '16:9' ? '1440*810'
+        : aspectRatio === '4:5' ? '1024*1280'
+          : aspectRatio === '3:4' ? '1024*1365'
             : '1024*1024',
       dryRun: input.dryRun,
     });
@@ -136,7 +128,47 @@ export function createAnchorGenerationService(
     return { candidate: completed, run };
   }
 
-  return { generate };
+  async function generate(projectId: string, input: {
+    purpose?: string;
+    aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+    apiProfileId?: string;
+    dryRun?: boolean;
+  }) {
+    const [style, locks] = await Promise.all([
+      styles.getActive(projectId),
+      lockedAssets.list(projectId),
+    ]);
+    if (!style || style.status !== 'confirmed') {
+      throw Object.assign(new Error('生成 Anchor Candidate 前必须确认 Style Profile。'), {
+        code: 'STYLE_PROFILE_NOT_CONFIRMED',
+      });
+    }
+    const purpose = input.purpose?.trim() || '建立新的品牌主视觉方向';
+    const candidate = await candidates.create(projectId, {
+      purpose,
+      aspectRatio: input.aspectRatio,
+    });
+    return execute(projectId, candidate, style, locks, input);
+  }
+
+  async function retry(projectId: string, candidateId: string, input: {
+    apiProfileId?: string;
+    dryRun?: boolean;
+  }) {
+    const [style, locks] = await Promise.all([
+      styles.getActive(projectId),
+      lockedAssets.list(projectId),
+    ]);
+    if (!style || style.status !== 'confirmed') {
+      throw Object.assign(new Error('重试 Anchor Candidate 前必须确认 Style Profile。'), {
+        code: 'STYLE_PROFILE_NOT_CONFIRMED',
+      });
+    }
+    const candidate = await candidates.retry(projectId, candidateId);
+    return execute(projectId, candidate, style, locks, input);
+  }
+
+  return { generate, retry };
 }
 
 export type AnchorGenerationService = ReturnType<typeof createAnchorGenerationService>;

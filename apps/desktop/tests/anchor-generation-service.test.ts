@@ -30,7 +30,13 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
     {
       create: async () => {
         calls.push('candidate:create');
-        return { id: 'candidate-1' };
+        return {
+          id: 'candidate-1',
+          task: {
+            purpose: '建立品牌主视觉',
+            aspectRatio: '4:5',
+          },
+        };
       },
       beginGeneration: async (_projectId: string, candidateId: string, runId: string) => {
         assert.equal(candidateId, 'candidate-1');

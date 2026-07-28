@@ -434,6 +434,10 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .generation-output-list article small { margin-top: 4px; color: #8b858d; font-size: 9px; overflow-wrap: anywhere; }
 .generation-output-list .button-row { padding-top: 0; }
 .generation-output-list button { border: 0; background: transparent; color: #6c42d8; font: inherit; font-size: 9px; cursor: pointer; }
+.version-compare-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #e4ded7; }
+.version-compare-grid article { overflow: hidden; border: 1px solid #d8cdef; border-radius: 10px; background: #f9f6ff; }
+.version-compare-grid img { display: block; width: 100%; }
+.version-compare-grid strong, .version-compare-grid small { display: block; margin: 8px 10px; }
 .series-history-list { display: grid; gap: 10px; margin-top: 16px; }
 .series-history-list article { padding: 13px; border-radius: 9px; background: #f4f1f7; }
 .series-history-list strong, .series-history-list small { display: block; }

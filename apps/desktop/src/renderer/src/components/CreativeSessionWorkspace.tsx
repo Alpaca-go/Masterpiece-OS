@@ -100,6 +100,14 @@ export function CreativeSessionWorkspace({
     Object.fromEntries(ANCHOR_DIMENSIONS.map(({ key }) => [key, 4]))
   );
   const [promptDrawer, setPromptDrawer] = useState<{ runId: string; prompt: string } | null>(null);
+  const [revisionDraft, setRevisionDraft] = useState<{
+    outputId: string;
+    taskId: string;
+    mode: 'edit' | 'variant';
+    preserve: string;
+    change: string;
+  } | null>(null);
+  const [compareOutputIds, setCompareOutputIds] = useState<string[]>([]);
   const [request, setRequest] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<'loading' | 'reading' | 'generating' | ''>('loading');
@@ -455,6 +463,17 @@ export function CreativeSessionWorkspace({
               )}>驳回</button>
             </div>
           </>}
+          {['revision_required', 'rejected'].includes(activeAnchor.status) && <button
+            className="button primary full"
+            disabled={!imageApiProfileId || Boolean(busy)}
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction.retryAnchor(
+                project.id,
+                activeAnchor.id,
+                { apiProfileId: imageApiProfileId || undefined }
+              )
+            )}
+          >生成下一版 Anchor</button>}
         </div>}
       </section>
     </div>}
@@ -614,6 +633,20 @@ export function CreativeSessionWorkspace({
                 {view?.imageUrls[0] && <img src={view.imageUrls[0]} alt="Generation Output" />}
                 <div><strong>V{output.version} · {output.status}</strong><small>{output.taskId}</small></div>
                 <div className="button-row">
+                  <button onClick={() => setCompareOutputIds((current) => {
+                    if (current.includes(output.id)) return current.filter((id) => id !== output.id);
+                    return [...current.slice(-1), output.id];
+                  })}>{compareOutputIds.includes(output.id) ? '移出对比' : '加入对比'}</button>
+                  <button onClick={() => {
+                    const task = activeSeries?.tasks.find((item) => item.id === output.taskId);
+                    setRevisionDraft({
+                      outputId: output.id,
+                      taskId: output.taskId,
+                      mode: 'edit',
+                      preserve: task?.preserve.join('\n') || '',
+                      change: ''
+                    });
+                  }}>创建修正版</button>
                   {output.status === 'candidate' && <button onClick={() => void runProductionAction(
                     () => window.masterpiece.creativeProduction.reviewFormalAsset(
                       project.id, output.seriesId, output.id, { action: 'accept_formal', note: '确认为正式资产。' }
@@ -635,6 +668,19 @@ export function CreativeSessionWorkspace({
               </article>;
             }) : <div className="empty-state small">尚无系列输出。</div>}
           </div>
+          {compareOutputIds.length === 2 && <div className="version-compare-grid">
+            {compareOutputIds.map((outputId) => {
+              const output = production.outputs.find((item) => item.id === outputId);
+              const view = output
+                ? runViews.find((item) => item.run.runId === output.generationRunId)
+                : undefined;
+              return output ? <article key={output.id}>
+                {view?.imageUrls[0] && <img src={view.imageUrls[0]} alt={`版本 ${output.version}`} />}
+                <strong>V{output.version}</strong>
+                <small>{output.status} · {output.taskId}</small>
+              </article> : null;
+            })}
+          </div>}
         </section>
         <section className="panel">
           <div className="section-heading"><span>03</span><div><h2>历史系列</h2><p>上下文与版本可追溯</p></div></div>
@@ -652,6 +698,51 @@ export function CreativeSessionWorkspace({
       <div className="modal prompt-drawer" onClick={(event) => event.stopPropagation()}>
         <div className="modal-head"><div><small>RUN {promptDrawer.runId}</small><h2>Prompt Snapshot</h2></div><button onClick={() => setPromptDrawer(null)}>关闭</button></div>
         <pre>{promptDrawer.prompt}</pre>
+      </div>
+    </div>}
+    {revisionDraft && activeSeries && <div className="modal-overlay" onClick={() => setRevisionDraft(null)}>
+      <div className="modal prompt-drawer" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-head">
+          <div><small>REVISION</small><h2>创建修正版或变体</h2></div>
+          <button onClick={() => setRevisionDraft(null)}>关闭</button>
+        </div>
+        <label>类型<select
+          value={revisionDraft.mode}
+          onChange={(event) => setRevisionDraft((current) => current && ({
+            ...current,
+            mode: event.target.value as 'edit' | 'variant'
+          }))}
+        ><option value="edit">修正版</option><option value="variant">变体</option></select></label>
+        <label>必须保留（每行一条）<textarea
+          rows={5}
+          value={revisionDraft.preserve}
+          onChange={(event) => setRevisionDraft((current) => current && ({
+            ...current,
+            preserve: event.target.value
+          }))}
+        /></label>
+        <label>本次改变（每行一条）<textarea
+          rows={5}
+          value={revisionDraft.change}
+          onChange={(event) => setRevisionDraft((current) => current && ({
+            ...current,
+            change: event.target.value
+          }))}
+        /></label>
+        <button
+          className="button primary full"
+          disabled={!revisionDraft.change.trim() || Boolean(busy)}
+          onClick={() => void runProductionAction(async () => {
+            await window.masterpiece.creativeProduction.createRevision(project.id, activeSeries.id, {
+              parentTaskId: revisionDraft.taskId,
+              baseImageId: revisionDraft.outputId,
+              mode: revisionDraft.mode,
+              preserve: revisionDraft.preserve.split('\n').map((item) => item.trim()).filter(Boolean),
+              change: revisionDraft.change.split('\n').map((item) => item.trim()).filter(Boolean)
+            });
+            setRevisionDraft(null);
+          })}
+        >创建并加入任务队列</button>
       </div>
     </div>}
   </div>;

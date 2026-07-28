@@ -135,6 +135,8 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:confirm-style-profile', projectId, profileId),
     generateAnchor: (projectId, input) =>
       ipcRenderer.invoke('creative-production:generate-anchor', projectId, input),
+    retryAnchor: (projectId, candidateId, input) =>
+      ipcRenderer.invoke('creative-production:retry-anchor', projectId, candidateId, input),
     reviewAnchor: (projectId, candidateId, input) =>
       ipcRenderer.invoke('creative-production:review-anchor', projectId, candidateId, input),
     listStyleProfiles: (projectId) =>
@@ -151,6 +153,8 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:list-series', projectId),
     createSeries: (projectId, input) =>
       ipcRenderer.invoke('creative-production:create-series', projectId, input),
+    createRevision: (projectId, seriesId, input) =>
+      ipcRenderer.invoke('creative-production:create-revision', projectId, seriesId, input),
     pauseSeries: (projectId, seriesId) =>
       ipcRenderer.invoke('creative-production:pause-series', projectId, seriesId),
     resumeSeries: (projectId, seriesId) =>
