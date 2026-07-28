@@ -113,6 +113,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     throw Object.assign(new Error('critical Locked Asset 规则不完整。'), { code: 'CRITICAL_LOCK_RULE_MISSING' });
   }
   const references = selectGenerationReferences(lockedAssets, canonImages);
+  const recentContext = unique(input.recentContext).slice(-5);
   const preserve = unique([
     ...critical.map((asset) => asset.rule),
     ...input.styleProfile.promptComponents.required,
@@ -140,6 +141,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
   const finalPrompt = [
     '# User Task — highest priority',
     userRequest,
+    ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
     '# Output Responsibility',
     responsibility(outputType),
     '# Preserve',

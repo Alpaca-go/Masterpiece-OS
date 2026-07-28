@@ -55,6 +55,10 @@ export function createGenerationPromptService(
       styleProfile,
       visualCanon,
       lockedAssets: locks,
+      recentContext: (session.messages ?? [])
+        .filter((message) => ['user_feedback', 'generation_result'].includes(message.type))
+        .slice(-5)
+        .map((message) => message.content),
     }) as GenerationPromptSnapshot;
     const directory = await root(projectId);
     await fs.mkdir(directory, { recursive: true });

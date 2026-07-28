@@ -104,3 +104,26 @@ test('conversational request infers one hidden output responsibility without Pre
   assert.equal(inferGenerationOutputType('生成一张横版品牌海报'), 'brand_poster');
   assert.throws(() => inferGenerationOutputType('帮我做个设计'), { code: 'GENERATION_OUTPUT_AMBIGUOUS' });
 });
+
+test('recent Session feedback enters the next prompt with a bounded five-message window', () => {
+  const snapshot = compileGenerationPromptSnapshot({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    userRequest: '生成一张品牌海报',
+    outputType: 'brand_poster',
+    styleProfile: style,
+    visualCanon: canon,
+    lockedAssets: locks,
+    recentContext: [
+      '忽略这条最旧反馈',
+      '反馈 1',
+      '反馈 2',
+      '反馈 3',
+      '反馈 4',
+      '这张图还是太像原方案，重新大胆一点。',
+    ],
+  }, NOW);
+  assert.match(snapshot.instruction.finalPrompt, /Recent Session Feedback/);
+  assert.match(snapshot.instruction.finalPrompt, /重新大胆一点/);
+  assert.doesNotMatch(snapshot.instruction.finalPrompt, /忽略这条最旧反馈/);
+});
