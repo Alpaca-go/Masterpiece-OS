@@ -5,10 +5,17 @@ const REQUIRED_ARRAY_FIELDS = [
   'visualKeywords',
   'thingsToRemove',
   'thingsToKeep',
+  'keepAssets',
+  'removeAssets',
+  'transformAssets',
   'generationRules',
 ];
 
 const REQUIRED_TEXT_FIELDS = [
+  'brandReposition',
+  'creativeConcept',
+  'visualWorld',
+  'visualMechanism',
   'projectTransformation',
   'designStrategy',
   'primaryConcept',
@@ -45,6 +52,13 @@ export function buildCreativeDirectionPrompt(input) {
 必须输出且只输出一个 JSON 对象：
 {
   "schemaVersion": "1.0",
+  "brandReposition": string,
+  "creativeConcept": string,
+  "visualWorld": string,
+  "visualMechanism": string,
+  "keepAssets": string[],
+  "removeAssets": string[],
+  "transformAssets": string[],
   "projectTransformation": string,
   "oldVisualProblems": string[],
   "designStrategy": string,
@@ -65,9 +79,11 @@ export function buildCreativeDirectionPrompt(input) {
 要求：
 1. thingsToKeep 只能保留品牌身份与真正有价值的资产，不能把旧构图、旧版式、旧场景整体保留。
 2. thingsToRemove 必须明确列出停止沿用的旧视觉机制。
-3. designStrategy 与 primaryConcept 必须给出一条可执行的新方向，而不是“更高级、更现代”等空泛形容词。
-4. generationRules 必须明确禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列。
-5. 空间、包装、海报策略必须分别说明如何建立新系统。
+3. brandReposition 必须说明商业定位变化；visualWorld 必须描述新的感官与叙事世界；visualMechanism 必须是可跨触点复用的识别机制。
+4. transformAssets 必须说明旧资产如何被重新解释，不能只是换颜色、换材质或换场景。
+5. designStrategy 与 primaryConcept 必须给出一条可执行的新方向，而不是“更高级、更现代”等空泛形容词。
+6. generationRules 必须明确禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列。
+7. 空间、包装、海报策略必须分别说明如何建立新系统。
 
 ${userDirection
     ? `用户要求的下一版变化方向（必须落实，但仍需由你扩展成完整系统）：\n${userDirection}\n`
@@ -100,6 +116,8 @@ export function parseCreativeDirectionResponse(rawText) {
 }
 
 export function normalizeCreativeDirection(value, metadata, now = new Date().toISOString()) {
+  const thingsToKeep = strings(value?.thingsToKeep ?? value?.keepAssets);
+  const thingsToRemove = strings(value?.thingsToRemove ?? value?.removeAssets);
   const direction = {
     schemaVersion: '1.0',
     id: text(metadata.id),
@@ -107,13 +125,22 @@ export function normalizeCreativeDirection(value, metadata, now = new Date().toI
     sessionId: text(metadata.sessionId),
     version: text(metadata.version),
     status: 'ready',
+    brandReposition: text(value?.brandReposition ?? value?.projectTransformation),
+    creativeConcept: text(value?.creativeConcept ?? value?.primaryConcept),
+    visualWorld: text(value?.visualWorld ?? value?.designStrategy),
+    visualMechanism: text(value?.visualMechanism ?? value?.compositionStrategy),
+    keepAssets: strings(value?.keepAssets ?? thingsToKeep),
+    removeAssets: strings(value?.removeAssets ?? thingsToRemove),
+    transformAssets: strings(value?.transformAssets ?? [
+      '将旧视觉资产转译为新的构图、材质、空间与叙事机制，而不是直接复制',
+    ]),
     projectTransformation: text(value?.projectTransformation),
     oldVisualProblems: strings(value?.oldVisualProblems),
     designStrategy: text(value?.designStrategy),
     primaryConcept: text(value?.primaryConcept),
     visualKeywords: strings(value?.visualKeywords),
-    thingsToRemove: strings(value?.thingsToRemove),
-    thingsToKeep: strings(value?.thingsToKeep),
+    thingsToRemove,
+    thingsToKeep,
     colorStrategy: text(value?.colorStrategy),
     materialStrategy: text(value?.materialStrategy),
     compositionStrategy: text(value?.compositionStrategy),
@@ -158,7 +185,9 @@ export function validateCreativeDirection(direction) {
     });
   }
   const keep = new Set(strings(direction.thingsToKeep).map((item) => item.toLowerCase()));
-  if (strings(direction.thingsToRemove).some((item) => keep.has(item.toLowerCase()))) {
+  const keepAssets = new Set(strings(direction.keepAssets).map((item) => item.toLowerCase()));
+  if (strings(direction.thingsToRemove).some((item) => keep.has(item.toLowerCase()))
+    || strings(direction.removeAssets).some((item) => keepAssets.has(item.toLowerCase()))) {
     throw Object.assign(new Error('Creative Direction 的保留项与删除项冲突。'), {
       code: 'CREATIVE_DIRECTION_CONFLICT',
     });
@@ -176,12 +205,17 @@ export function compileCreativeDirectionMarkdown(direction) {
   const list = (values) => values.map((item) => `- ${item}`).join('\n');
   return [
     `# Creative Direction ${direction.version}`,
+    `## 品牌重新定位\n\n${direction.brandReposition}`,
+    `## 创意概念\n\n${direction.creativeConcept}`,
+    `## 新视觉世界\n\n${direction.visualWorld}`,
+    `## 视觉识别机制\n\n${direction.visualMechanism}`,
     `## 项目转型\n\n${direction.projectTransformation}`,
     `## 核心概念\n\n${direction.primaryConcept}`,
     `## 设计策略\n\n${direction.designStrategy}`,
     `## 当前问题\n\n${list(direction.oldVisualProblems)}`,
     `## 停止沿用\n\n${list(direction.thingsToRemove)}`,
     `## 必须保留\n\n${list(direction.thingsToKeep)}`,
+    `## 重新解释\n\n${list(direction.transformAssets)}`,
     `## 视觉关键词\n\n${list(direction.visualKeywords)}`,
     `## 色彩\n\n${direction.colorStrategy}`,
     `## 材质\n\n${direction.materialStrategy}`,

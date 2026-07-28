@@ -66,6 +66,12 @@ export {
   compileCreativeDirectionMarkdown,
 } from './creative-direction.js';
 export {
+  GENERATION_BLUEPRINT_COMPILER_VERSION,
+  compileGenerationBlueprint,
+  validateGenerationBlueprint,
+  compileGenerationBlueprintPrompt,
+} from './generation-blueprint.js';
+export {
   createGenerationSeries,
   transitionGenerationSeries,
   transitionGenerationTask,

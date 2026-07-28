@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/generation-blueprint.schema.json",
+  "title": "Generation Blueprint v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "sessionId",
+    "creativeDirectionId", "creativeDirectionVersion", "imagePurpose",
+    "sceneDescription", "camera", "composition", "materials", "lighting",
+    "colorDirection", "brandAssetRules", "avoid", "compilerVersion", "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "creativeDirectionId": { "type": "string", "minLength": 1 },
+    "creativeDirectionVersion": { "type": "string", "minLength": 1 },
+    "imagePurpose": {
+      "enum": [
+        "interior_scene", "storefront_scene", "packaging_render",
+        "brand_poster", "vi_application", "illustration"
+      ]
+    },
+    "sceneDescription": { "type": "string", "minLength": 1 },
+    "camera": { "type": "string", "minLength": 1 },
+    "composition": { "type": "string", "minLength": 1 },
+    "materials": { "$ref": "#/$defs/nonEmptyStrings" },
+    "lighting": { "type": "string", "minLength": 1 },
+    "colorDirection": { "type": "string", "minLength": 1 },
+    "brandAssetRules": { "$ref": "#/$defs/nonEmptyStrings" },
+    "avoid": { "$ref": "#/$defs/nonEmptyStrings" },
+    "compilerVersion": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

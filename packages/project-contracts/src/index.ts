@@ -10,9 +10,14 @@ export type CreativeWorkflowState =
   | 'FILES_IMPORTED'
   | 'ANALYZING'
   | 'ANALYSIS_COMPLETED'
+  | 'VISUAL_ANALYSIS_COMPLETED'
   | 'SESSION_CREATED'
   | 'DIRECTION_GENERATING'
+  | 'CREATIVE_DIRECTION_GENERATING'
   | 'DIRECTION_READY'
+  | 'CREATIVE_DIRECTION_READY'
+  | 'BLUEPRINT_GENERATING'
+  | 'BLUEPRINT_READY'
   | 'CREATIVE_DECISION_COMPLETED'
   | 'STYLE_PROFILE_COMPILING'
   | 'STYLE_PROFILE_CREATED'
@@ -24,6 +29,7 @@ export type CreativeWorkflowState =
   | 'VISUAL_CANON_CONFIRMED'
   | 'GENERATION_READY'
   | 'GENERATING'
+  | 'IMAGE_GENERATING'
   | 'REVIEWING_OUTPUTS'
   | 'REVISION_IN_PROGRESS'
   | 'COMPLETED'
@@ -46,7 +52,7 @@ export interface CreativeSessionHistoryEntry {
   fromState?: CreativeWorkflowState;
   toState?: CreativeWorkflowState;
   summary: string;
-  entityType?: 'creative_direction' | 'creative_decision' | 'style_profile' | 'visual_canon' | 'generation_series' | 'decision';
+  entityType?: 'creative_direction' | 'generation_blueprint' | 'creative_decision' | 'style_profile' | 'visual_canon' | 'generation_series' | 'decision';
   entityId?: string;
   version?: string;
   createdAt: string;
@@ -84,6 +90,17 @@ export interface CreativeDirection {
   sessionId: string;
   version: string;
   status: 'ready' | 'superseded';
+  /** Visual Upgrade Engine v1：品牌由旧方案转向何种商业定位。 */
+  brandReposition: string;
+  /** Visual Upgrade Engine v1：贯穿所有触点的核心创意概念。 */
+  creativeConcept: string;
+  /** 新系统所处的感官、空间与叙事世界。 */
+  visualWorld: string;
+  /** 可跨海报、空间、包装复用的识别机制。 */
+  visualMechanism: string;
+  keepAssets: string[];
+  removeAssets: string[];
+  transformAssets: string[];
   projectTransformation: string;
   oldVisualProblems: string[];
   designStrategy: string;
@@ -104,6 +121,30 @@ export interface CreativeDirection {
     reportPath: string;
     runtimeVersion: string;
   };
+  generatedAt: string;
+}
+
+/**
+ * Visual Upgrade Engine v1 的图片执行契约。
+ * Creative Direction 决定“设计什么”，Blueprint 仅负责“这一张图如何执行”。
+ */
+export interface GenerationBlueprint {
+  schemaVersion: '1.0';
+  id: string;
+  projectId: string;
+  sessionId: string;
+  creativeDirectionId: string;
+  creativeDirectionVersion: string;
+  imagePurpose: string;
+  sceneDescription: string;
+  camera: string;
+  composition: string;
+  materials: string[];
+  lighting: string;
+  colorDirection: string;
+  brandAssetRules: string[];
+  avoid: string[];
+  compilerVersion: string;
   generatedAt: string;
 }
 
@@ -151,6 +192,7 @@ export interface CreativeSession {
   sourceReportPath?: string;
   understanding?: CreativeUnderstanding;
   activeCreativeDirectionId?: string;
+  activeGenerationBlueprintId?: string;
   messages: CreativeSessionMessage[];
   generationRunIds: string[];
   lockedAssetIds: string[];
@@ -336,6 +378,7 @@ export interface GenerationPromptSnapshot {
   userRequest: string;
   creativeDirectionId: string;
   creativeDirectionVersion: string;
+  generationBlueprintId?: string;
   outputType: 'interior_scene' | 'storefront_scene' | 'packaging_render' | 'brand_poster' | 'vi_application' | 'illustration';
   styleProfileId: string;
   styleProfileVersion: string;

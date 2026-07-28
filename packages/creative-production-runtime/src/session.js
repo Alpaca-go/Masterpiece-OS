@@ -1,12 +1,13 @@
 import crypto from 'node:crypto';
 
 export const CREATIVE_WORKFLOW_STATES = Object.freeze([
-  'CREATED', 'FILES_IMPORTED', 'ANALYZING', 'ANALYSIS_COMPLETED', 'SESSION_CREATED',
-  'DIRECTION_GENERATING', 'DIRECTION_READY',
+  'CREATED', 'FILES_IMPORTED', 'ANALYZING', 'ANALYSIS_COMPLETED', 'VISUAL_ANALYSIS_COMPLETED',
+  'SESSION_CREATED', 'DIRECTION_GENERATING', 'CREATIVE_DIRECTION_GENERATING',
+  'DIRECTION_READY', 'CREATIVE_DIRECTION_READY', 'BLUEPRINT_GENERATING', 'BLUEPRINT_READY',
   'CREATIVE_DECISION_COMPLETED', 'STYLE_PROFILE_COMPILING', 'STYLE_PROFILE_CREATED',
   'PRIMARY_ANCHOR_READY', 'PRIMARY_ANCHOR_GENERATING', 'PRIMARY_ANCHOR_PENDING_REVIEW',
   'PRIMARY_ANCHOR_CONFIRMED', 'CANON_BUILDING', 'VISUAL_CANON_CONFIRMED',
-  'GENERATION_READY', 'GENERATING', 'REVIEWING_OUTPUTS', 'REVISION_IN_PROGRESS',
+  'GENERATION_READY', 'GENERATING', 'IMAGE_GENERATING', 'REVIEWING_OUTPUTS', 'REVISION_IN_PROGRESS',
   'COMPLETED', 'FAILED', 'CANCELLED',
 ]);
 
@@ -148,6 +149,7 @@ export function updateSessionEntityReference(session, entityType, entity, now = 
   validateCreativeSession(session);
   const mapping = {
     creative_direction: 'activeCreativeDirectionId',
+    generation_blueprint: 'activeGenerationBlueprintId',
     style_profile: 'activeStyleProfileId',
     visual_canon: 'activeVisualCanonId',
     generation_series: 'activeSeriesId',
