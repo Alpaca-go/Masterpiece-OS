@@ -18,6 +18,21 @@ function unique(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(text).filter(Boolean))];
 }
 
+function compact(values, limit) {
+  const selected = [];
+  for (const value of unique(values)) {
+    const normalized = value.toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, '');
+    if (selected.some((item) => {
+      const existing = item.toLowerCase().replace(/[\s\p{P}\p{S}]+/gu, '');
+      return normalized.length >= 6
+        && (existing.includes(normalized) || normalized.includes(existing));
+    })) continue;
+    selected.push(value);
+    if (selected.length >= limit) break;
+  }
+  return selected;
+}
+
 function relative(value) {
   const normalized = text(value).replaceAll('\\', '/').replace(/^\.?\//u, '');
   if (!normalized || path.posix.isAbsolute(normalized) || /^[a-z]:\//iu.test(normalized)
@@ -134,7 +149,7 @@ export function compileVisualMemory(input, now = new Date().toISOString()) {
         ...(visual.currentVisualSystem?.photographySignals ?? []),
         direction.photographyStrategy,
       ]),
-      composition: unique([direction.compositionStrategy, direction.spaceStrategy]),
+      composition: unique([direction.compositionStrategy]),
       graphic_language: unique([
         ...(visual.currentVisualSystem?.graphicAssets ?? []),
         direction.visualMechanism,
@@ -153,9 +168,6 @@ export function compileVisualMemory(input, now = new Date().toISOString()) {
       direction.visualWorld,
       direction.visualMechanism,
       direction.materialStrategy,
-      direction.spaceStrategy,
-      direction.packagingStrategy,
-      direction.posterStrategy,
     ]),
     reference_strategy: {
       pack_size: { min: 5, max: 8 },
@@ -251,29 +263,29 @@ export function validateVisualMemory(memory) {
 
 export function compileVisualMemoryPrompt(memory) {
   const value = validateVisualMemory(memory);
-  const list = (items) => items.map((item) => `- ${item}`).join('\n') || '- 无';
+  const list = (items, limit) => compact(items, limit).map((item) => `- ${item}`).join('\n') || '- 无';
   return [
     '# Visual Memory — compressed execution context',
     '## Brand Core',
     `- Industry: ${value.brand_core.industry}`,
     `- Positioning: ${value.brand_core.positioning}`,
-    `- Mood: ${value.brand_core.mood.join('；') || '无'}`,
-    `- Core temperament: ${value.brand_core.core_temperament.join('；') || '无'}`,
+    `- Mood: ${compact(value.brand_core.mood, 6).join('；') || '无'}`,
+    `- Core temperament: ${compact(value.brand_core.core_temperament, 3).join('；') || '无'}`,
     '## Visual DNA',
-    `- Colors: ${value.visual_dna.colors.join('；') || '无'}`,
-    `- Materials: ${value.visual_dna.materials.join('；') || '无'}`,
-    `- Photography: ${value.visual_dna.photography.join('；') || '无'}`,
-    `- Composition: ${value.visual_dna.composition.join('；') || '无'}`,
-    `- Graphic language: ${value.visual_dna.graphic_language.join('；') || '无'}`,
+    `- Colors: ${compact(value.visual_dna.colors, 6).join('；') || '无'}`,
+    `- Materials: ${compact(value.visual_dna.materials, 5).join('；') || '无'}`,
+    `- Photography: ${compact(value.visual_dna.photography, 5).join('；') || '无'}`,
+    `- Composition: ${compact(value.visual_dna.composition, 3).join('；') || '无'}`,
+    `- Graphic language: ${compact(value.visual_dna.graphic_language, 5).join('；') || '无'}`,
     '## Problems that must not be inherited',
-    list(value.visual_problems),
+    list(value.visual_problems, 8),
     '## New visual opportunities',
-    list(value.visual_opportunities),
+    list(value.visual_opportunities, 6),
     '## Generation Rules — preserve',
-    list(value.generation_rules.preserve),
+    list(value.generation_rules.preserve, 8),
     '## Generation Rules — transform',
-    list(value.generation_rules.transform),
+    list(value.generation_rules.transform, 6),
     '## Generation Rules — avoid',
-    list(value.generation_rules.avoid),
+    list(value.generation_rules.avoid, 10),
   ].join('\n');
 }

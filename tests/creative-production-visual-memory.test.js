@@ -3,6 +3,7 @@ import test from 'node:test';
 import fs from 'node:fs';
 import {
   compileVisualMemory,
+  compileVisualMemoryPrompt,
   validateVisualMemory,
   VISUAL_MEMORY_COMPILER_VERSION,
 } from '../packages/creative-production-runtime/src/visual-memory.js';
@@ -58,6 +59,9 @@ function fixture() {
       removeAssets: ['低质量 Mockup'],
       thingsToRemove: [],
       generationRules: ['禁止作品集拼贴'],
+      spaceStrategy: '空间专用策略不应污染包装和海报任务',
+      packagingStrategy: '包装专用策略由 Blueprint 按任务注入',
+      posterStrategy: '海报专用策略由 Blueprint 按任务注入',
     },
     lockedAssets: [{
       id: 'lock-logo',
@@ -86,6 +90,19 @@ test('Visual Memory compresses analysis, direction and asset roles without losin
   assert.ok(memory.visual_problems.includes('视觉碎片化'));
   assert.ok(memory.visual_opportunities.includes('建立一致的材质语言'));
   assert.ok(memory.generation_rules.avoid.includes('旧版作品集拼贴'));
+});
+
+test('execution prompt is bounded and leaves touchpoint-specific strategy to Generation Blueprint', () => {
+  const input = fixture();
+  input.understanding.currentProblems = Array.from(
+    { length: 20 },
+    (_, index) => `问题 ${index}: 不得继承的旧视觉模式`,
+  );
+  const memory = compileVisualMemory(input, '2026-07-28T00:02:00.000Z');
+  const prompt = compileVisualMemoryPrompt(memory);
+  assert.doesNotMatch(prompt, /空间专用策略|包装专用策略|海报专用策略/);
+  assert.ok((prompt.match(/^- 问题 /gmu) ?? []).length <= 8);
+  assert.ok(prompt.length < 6_000);
 });
 
 test('Visual Memory schema is closed and exposes all seven required memory sections', () => {

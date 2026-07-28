@@ -17,6 +17,9 @@ import {
   getSettings,
 } from '../src/main/settings-store.ts';
 import { createStyleProfileService } from '../src/main/style-profile-service.ts';
+import { createVisualCanonService } from '../src/main/visual-canon-service.ts';
+import { createVisualMemoryService } from '../src/main/visual-memory-service.ts';
+import { createReferencePackService } from '../src/main/reference-pack-service.ts';
 import {
   normalizeCreativeUnderstanding,
   parseCreativeReadingResponse,
@@ -56,14 +59,30 @@ async function main(): Promise<void> {
   const lockedAssets = createLockedAssetsService(projects, sessions);
   const styles = createStyleProfileService(projects, sessions);
   const blueprints = createGenerationBlueprintService(projects, sessions, directions);
+  const candidates = createAnchorCandidateService(projects, sessions, styles, lockedAssets);
+  const canons = createVisualCanonService(
+    projects,
+    sessions,
+    styles,
+    lockedAssets,
+    candidates,
+  );
+  const visualMemory = createVisualMemoryService(
+    projects,
+    sessions,
+    directions,
+    lockedAssets,
+  );
+  const referencePacks = createReferencePackService(projects, visualMemory, canons);
   const bootstrap = createCreativeProductionBootstrapService(
     projects,
     sessions,
     lockedAssets,
     styles,
     directions,
+    visualMemory,
+    referencePacks,
   );
-  const candidates = createAnchorCandidateService(projects, sessions, styles, lockedAssets);
   const imageGeneration = createImageGenerationService({
     readSettings: getSettings,
     readCredentials: getProviderCredentials,
@@ -85,6 +104,8 @@ async function main(): Promise<void> {
     imageGeneration,
     directions,
     blueprints,
+    visualMemory,
+    referencePacks,
   );
   const project = await projects.get(projectId);
   let session = await sessions.create(projectId);
@@ -154,6 +175,8 @@ async function main(): Promise<void> {
   const confirmedStyle = prepared.styleProfile.status === 'confirmed'
     ? prepared.styleProfile
     : await styles.confirm(projectId, prepared.styleProfile.id);
+  const memory = prepared.visualMemory || await visualMemory.compile(projectId);
+  const pack = prepared.referencePack || await referencePacks.build(projectId);
 
   const imageStartedAt = Date.now();
   const anchorResult = await anchors.generate(projectId, {
@@ -188,6 +211,20 @@ async function main(): Promise<void> {
       status: confirmedStyle.status,
       sourceCreativeDecisionId: confirmedStyle.source.creativeDecisionId,
     },
+    visualMemory: {
+      id: memory.id,
+      candidateCount: memory.reference_strategy.candidates.length,
+      problemCount: memory.visual_problems.length,
+      opportunityCount: memory.visual_opportunities.length,
+    },
+    referencePack: {
+      id: pack.id,
+      inputCount: pack.selection.input_count,
+      eligibleCount: pack.selection.eligible_count,
+      selectedCount: pack.selection.selected_count,
+      status: pack.selection.status,
+      roles: pack.items.map((item) => item.role),
+    },
     image: {
       provider: anchorResult.run.providerId,
       model: anchorResult.run.modelId,
@@ -199,6 +236,8 @@ async function main(): Promise<void> {
       referenceCount: Array.isArray(persistedTask?.references) ? persistedTask.references.length : 0,
       promptContainsCreativeDirection: prompt.includes('Creative Direction — defines the new visual language'),
       promptContainsGenerationBlueprint: prompt.includes('Generation Blueprint'),
+      promptContainsVisualMemory: prompt.includes('Visual Memory'),
+      promptContainsReferencePack: prompt.includes('Reference Pack Policy'),
       promptContainsAntiCopyRules: prompt.includes('旧包装换皮') && prompt.includes('旧空间重新排列'),
       imagePaths: anchorResult.run.images.map((image) => path.join(runRoot || '', image.relativePath)),
     },
