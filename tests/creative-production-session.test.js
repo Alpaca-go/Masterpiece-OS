@@ -54,6 +54,25 @@ test('Creative Session rejects backward and terminal transitions', () => {
   );
 });
 
+test('Creative Session allows a scoped Generation Blueprint loop without allowing unrelated regression', () => {
+  let session = transitionCreativeSession(
+    createCreativeSession({ projectId: 'p' }),
+    'GENERATION_READY',
+    'generation ready',
+  );
+  session = transitionCreativeSession(session, 'BLUEPRINT_GENERATING', 'compile blueprint');
+  session = updateSessionEntityReference(session, 'generation_blueprint', {
+    id: 'generation-blueprint-1',
+  });
+  session = transitionCreativeSession(session, 'BLUEPRINT_READY', 'blueprint ready');
+  session = transitionCreativeSession(session, 'GENERATION_READY', 'resume generation');
+  assert.equal(session.activeGenerationBlueprintId, 'generation-blueprint-1');
+  assert.throws(
+    () => transitionCreativeSession(session, 'ANALYSIS_COMPLETED', 'unrelated regression'),
+    (error) => error.code === 'SESSION_INVALID',
+  );
+});
+
 test('V18 migration removes Final Generation Instruction and preserves decisions/references', () => {
   const migrated = migrateLegacyCreativeSession({
     id: 'legacy-session',

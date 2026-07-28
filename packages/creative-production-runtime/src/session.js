@@ -13,6 +13,13 @@ export const CREATIVE_WORKFLOW_STATES = Object.freeze([
 
 const TERMINAL_STATES = new Set(['COMPLETED', 'FAILED', 'CANCELLED']);
 const RECOVERABLE_TERMINAL_TRANSITIONS = new Set(['FAILED:SESSION_CREATED', 'CANCELLED:SESSION_CREATED']);
+const BLUEPRINT_LOOP_TARGETS = new Set([
+  'PRIMARY_ANCHOR_READY',
+  'PRIMARY_ANCHOR_GENERATING',
+  'GENERATION_READY',
+  'GENERATING',
+  'IMAGE_GENERATING',
+]);
 
 function uniqueStrings(values) {
   return [...new Set((Array.isArray(values) ? values : []).map((value) => String(value).trim()).filter(Boolean))];
@@ -99,10 +106,13 @@ export function transitionCreativeSession(session, nextState, summary, now = new
   const currentIndex = CREATIVE_WORKFLOW_STATES.indexOf(session.workflowState);
   const nextIndex = CREATIVE_WORKFLOW_STATES.indexOf(nextState);
   const terminalRecovery = RECOVERABLE_TERMINAL_TRANSITIONS.has(`${session.workflowState}:${nextState}`);
+  const blueprintLoop = nextState === 'BLUEPRINT_GENERATING'
+    || (session.workflowState === 'BLUEPRINT_READY' && BLUEPRINT_LOOP_TARGETS.has(nextState));
   if (TERMINAL_STATES.has(session.workflowState) && !terminalRecovery) {
     throw Object.assign(new Error(`终态 ${session.workflowState} 不能直接转为 ${nextState}。`), { code: 'SESSION_INVALID' });
   }
-  if (!terminalRecovery && nextState !== 'FAILED' && nextState !== 'CANCELLED' && nextIndex < currentIndex) {
+  if (!terminalRecovery && !blueprintLoop
+    && nextState !== 'FAILED' && nextState !== 'CANCELLED' && nextIndex < currentIndex) {
     throw Object.assign(new Error(`工作流不能从 ${session.workflowState} 倒退到 ${nextState}。`), { code: 'SESSION_INVALID' });
   }
   return validateCreativeSession({
