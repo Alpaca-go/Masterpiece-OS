@@ -58,6 +58,14 @@ export {
   compileCreativeUnderstandingMarkdown,
 } from './creative-reading.js';
 export {
+  CREATIVE_DIRECTION_RUNTIME_VERSION,
+  buildCreativeDirectionPrompt,
+  parseCreativeDirectionResponse,
+  normalizeCreativeDirection,
+  validateCreativeDirection,
+  compileCreativeDirectionMarkdown,
+} from './creative-direction.js';
+export {
   createGenerationSeries,
   transitionGenerationSeries,
   transitionGenerationTask,

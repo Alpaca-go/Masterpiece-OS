@@ -3,6 +3,7 @@
 import type {
   AnchorCandidate,
   AnchorCandidateEvaluation,
+  CreativeDirection,
   CreativeSession,
   CreativeUnderstanding,
   GenerationOutput,
@@ -14,6 +15,7 @@ import type {
 export type {
   AnchorCandidate,
   AnchorCandidateEvaluation,
+  CreativeDirection,
   CreativeSession,
   CreativeUnderstanding,
   GenerationOutput,

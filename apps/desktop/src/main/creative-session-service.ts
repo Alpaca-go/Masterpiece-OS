@@ -101,7 +101,7 @@ export function createCreativeSessionService(projects: ProjectStore) {
 
   async function setActiveEntity(
     projectId: string,
-    entityType: 'style_profile' | 'visual_canon' | 'generation_series',
+    entityType: 'creative_direction' | 'style_profile' | 'visual_canon' | 'generation_series',
     entity: { id: string; version?: string },
   ): Promise<CreativeSession> {
     const current = await create(projectId);

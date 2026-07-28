@@ -42,12 +42,14 @@ test('Creative Session service persists state, decisions and active references a
       outcome: 'confirmed',
       source: 'user',
     });
+    await service.setActiveEntity(project.id, 'creative_direction', { id: 'direction-1', version: '1.0.0' });
     await service.setActiveEntity(project.id, 'style_profile', { id: 'style-1', version: '1.0.0' });
     await service.transition(project.id, 'STYLE_PROFILE_CREATED', 'Style Profile 已创建');
 
     const restarted = createCreativeSessionService(projects as never);
     const loaded = await restarted.get(project.id);
     assert.equal(loaded?.activeStyleProfileId, 'style-1');
+    assert.equal(loaded?.activeCreativeDirectionId, 'direction-1');
     assert.equal(loaded?.decisions.length, 1);
     assert.equal(loaded?.workflowState, 'STYLE_PROFILE_CREATED');
     assert.ok((await fs.readFile(path.join(projectRoot, 'logs', 'creative-session.ndjson'), 'utf8')).includes('WORKFLOW_TRANSITION'));

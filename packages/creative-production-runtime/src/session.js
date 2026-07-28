@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 
 export const CREATIVE_WORKFLOW_STATES = Object.freeze([
   'CREATED', 'FILES_IMPORTED', 'ANALYZING', 'ANALYSIS_COMPLETED', 'SESSION_CREATED',
+  'DIRECTION_GENERATING', 'DIRECTION_READY',
   'CREATIVE_DECISION_COMPLETED', 'STYLE_PROFILE_COMPILING', 'STYLE_PROFILE_CREATED',
   'PRIMARY_ANCHOR_READY', 'PRIMARY_ANCHOR_GENERATING', 'PRIMARY_ANCHOR_PENDING_REVIEW',
   'PRIMARY_ANCHOR_CONFIRMED', 'CANON_BUILDING', 'VISUAL_CANON_CONFIRMED',
@@ -146,6 +147,7 @@ export function recordSessionDecision(session, decision, now = new Date().toISOS
 export function updateSessionEntityReference(session, entityType, entity, now = new Date().toISOString()) {
   validateCreativeSession(session);
   const mapping = {
+    creative_direction: 'activeCreativeDirectionId',
     style_profile: 'activeStyleProfileId',
     visual_canon: 'activeVisualCanonId',
     generation_series: 'activeSeriesId',

@@ -11,6 +11,8 @@ export type CreativeWorkflowState =
   | 'ANALYZING'
   | 'ANALYSIS_COMPLETED'
   | 'SESSION_CREATED'
+  | 'DIRECTION_GENERATING'
+  | 'DIRECTION_READY'
   | 'CREATIVE_DECISION_COMPLETED'
   | 'STYLE_PROFILE_COMPILING'
   | 'STYLE_PROFILE_CREATED'
@@ -44,7 +46,7 @@ export interface CreativeSessionHistoryEntry {
   fromState?: CreativeWorkflowState;
   toState?: CreativeWorkflowState;
   summary: string;
-  entityType?: 'creative_decision' | 'style_profile' | 'visual_canon' | 'generation_series' | 'decision';
+  entityType?: 'creative_direction' | 'creative_decision' | 'style_profile' | 'visual_canon' | 'generation_series' | 'decision';
   entityId?: string;
   version?: string;
   createdAt: string;
@@ -68,6 +70,40 @@ export interface CreativeUnderstanding {
     summary: string;
     recommendedUsage: 'identity_reference' | 'structure_reference' | 'reading_only' | 'exclude';
   }>;
+  generatedAt: string;
+}
+
+/**
+ * v18.1 Creative Director 的持久化决策实体。
+ * 原始视觉仅负责 Reading；本实体只由 Creative Understanding 与视觉分析报告生成。
+ */
+export interface CreativeDirection {
+  schemaVersion: '1.0';
+  id: string;
+  projectId: string;
+  sessionId: string;
+  version: string;
+  status: 'ready' | 'superseded';
+  projectTransformation: string;
+  oldVisualProblems: string[];
+  designStrategy: string;
+  primaryConcept: string;
+  visualKeywords: string[];
+  thingsToRemove: string[];
+  thingsToKeep: string[];
+  colorStrategy: string;
+  materialStrategy: string;
+  compositionStrategy: string;
+  photographyStrategy: string;
+  spaceStrategy?: string;
+  packagingStrategy?: string;
+  posterStrategy?: string;
+  generationRules: string[];
+  source: {
+    understandingGeneratedAt: string;
+    reportPath: string;
+    runtimeVersion: string;
+  };
   generatedAt: string;
 }
 
@@ -114,6 +150,7 @@ export interface CreativeSession {
   sourceVisualRunId?: string;
   sourceReportPath?: string;
   understanding?: CreativeUnderstanding;
+  activeCreativeDirectionId?: string;
   messages: CreativeSessionMessage[];
   generationRunIds: string[];
   lockedAssetIds: string[];
