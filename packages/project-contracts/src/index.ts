@@ -155,6 +155,72 @@ export interface GenerationBlueprint {
   generatedAt: string;
 }
 
+export type VisualMemoryReferenceRole =
+  | 'keep_reference'
+  | 'style_reference'
+  | 'ignore_reference'
+  | 'anchor_reference';
+
+export interface VisualMemoryReferenceCandidate {
+  asset_id: string;
+  source_kind: 'original_asset' | 'generated_anchor';
+  source_path: string;
+  role: VisualMemoryReferenceRole;
+  rationale: string;
+  signals: string[];
+  score: number;
+}
+
+/**
+ * Visual Memory Engine v1：分析阶段的全集信息被压缩为生成阶段可执行的视觉记忆。
+ * 字段名遵循需求文档，持久化文件固定为 visual-memory.json。
+ */
+export interface VisualMemory {
+  schema_version: '1.0';
+  id: string;
+  project_id: string;
+  brand_core: {
+    industry: string;
+    positioning: string;
+    mood: string[];
+    core_temperament: string[];
+  };
+  locked_assets: Array<{
+    locked_asset_id: string;
+    type: LockedAssetType;
+    name: string;
+    rule: string;
+    source_asset_id?: string;
+  }>;
+  visual_dna: {
+    colors: string[];
+    materials: string[];
+    photography: string[];
+    composition: string[];
+    graphic_language: string[];
+  };
+  visual_problems: string[];
+  visual_opportunities: string[];
+  reference_strategy: {
+    pack_size: { min: 5; max: 8 };
+    provider_reference_limit: 2;
+    candidates: VisualMemoryReferenceCandidate[];
+  };
+  generation_rules: {
+    preserve: string[];
+    transform: string[];
+    avoid: string[];
+  };
+  source: {
+    visual_context_generated_at: string;
+    creative_understanding_generated_at: string;
+    creative_direction_id: string;
+    creative_direction_version: string;
+    compiler_version: string;
+  };
+  generated_at: string;
+}
+
 export interface CreativeSessionMessage {
   messageId: string;
   role: 'system' | 'user' | 'assistant';

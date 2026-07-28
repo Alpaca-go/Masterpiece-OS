@@ -10,6 +10,7 @@ import type {
   GenerationSeries,
   LockedAsset as CreativeLockedAsset,
   StyleProfile,
+  VisualMemory,
   VisualCanon
 } from '../../../../packages/project-contracts/src/index';
 export type {
@@ -21,6 +22,7 @@ export type {
   GenerationOutput,
   GenerationSeries,
   StyleProfile,
+  VisualMemory,
   VisualCanon
 } from '../../../../packages/project-contracts/src/index';
 
@@ -2049,6 +2051,10 @@ export interface DesktopApi {
     get(projectId: string): Promise<ProjectVisualContext>;
     rebuild(projectId: string): Promise<ProjectVisualContext>;
     export(projectId: string): Promise<string | null>;
+  };
+  visualMemory: {
+    get(projectId: string): Promise<VisualMemory | null>;
+    compile(projectId: string): Promise<VisualMemory>;
   };
   contextIntegration: {
     linkDocumentContext(projectId: string, runId: string): Promise<ProjectDocumentContextLink>;

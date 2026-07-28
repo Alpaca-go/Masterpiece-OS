@@ -39,6 +39,7 @@ import { createAnchorCandidateService } from './anchor-candidate-service';
 import { createVisualCanonService } from './visual-canon-service';
 import { createGenerationPromptService } from './generation-prompt-service';
 import { createGenerationBlueprintService } from './generation-blueprint-service';
+import { createVisualMemoryService } from './visual-memory-service';
 import { createCreativeGenerationService, type CreativeGenerationService } from './creative-generation-service';
 import { createGenerationSeriesService } from './generation-series-service';
 import { createFormalAssetsService } from './formal-assets-service';
@@ -147,6 +148,12 @@ const generationBlueprints = createGenerationBlueprintService(
 );
 const styleProfiles = createStyleProfileService(projects, creativeSessions);
 const lockedAssets = createLockedAssetsService(projects, creativeSessions);
+const visualMemory = createVisualMemoryService(
+  projects,
+  creativeSessions,
+  creativeDirections,
+  lockedAssets
+);
 const anchorCandidates = createAnchorCandidateService(projects, creativeSessions, styleProfiles, lockedAssets);
 const visualCanons = createVisualCanonService(projects, creativeSessions, styleProfiles, lockedAssets, anchorCandidates);
 const generationPrompts = createGenerationPromptService(
@@ -307,6 +314,8 @@ function registerIpc(): void {
   registerHandler('project-context:get', (_event, projectId: string) => projectContext.get(projectId));
   registerHandler('project-context:rebuild', (_event, projectId: string) => projectContext.rebuild(projectId));
   registerHandler('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
+  registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
+  registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
 
   // ── Phase 4：三大功能轻量整合（Context Integration）──
   registerHandler('context-integration:link', (_event, projectId: string, runId: string) => contextIntegration.linkDocumentContext(projectId, runId));

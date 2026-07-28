@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/visual-memory.schema.json",
+  "title": "Visual Memory Engine v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "project_id", "brand_core", "locked_assets",
+    "visual_dna", "visual_problems", "visual_opportunities",
+    "reference_strategy", "generation_rules", "source", "generated_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "brand_core": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["industry", "positioning", "mood", "core_temperament"],
+      "properties": {
+        "industry": { "type": "string", "minLength": 1 },
+        "positioning": { "type": "string", "minLength": 1 },
+        "mood": { "$ref": "#/$defs/strings" },
+        "core_temperament": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "locked_assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["locked_asset_id", "type", "name", "rule"],
+        "properties": {
+          "locked_asset_id": { "type": "string", "minLength": 1 },
+          "type": {
+            "enum": [
+              "brand_name", "logo", "product_category", "packaging_structure",
+              "packaging_artwork", "product_color", "product_arrangement",
+              "core_symbol", "required_visual_element", "forbidden_reference_content"
+            ]
+          },
+          "name": { "type": "string", "minLength": 1 },
+          "rule": { "type": "string", "minLength": 1 },
+          "source_asset_id": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "visual_dna": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["colors", "materials", "photography", "composition", "graphic_language"],
+      "properties": {
+        "colors": { "$ref": "#/$defs/strings" },
+        "materials": { "$ref": "#/$defs/strings" },
+        "photography": { "$ref": "#/$defs/strings" },
+        "composition": { "$ref": "#/$defs/strings" },
+        "graphic_language": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "visual_problems": { "$ref": "#/$defs/strings" },
+    "visual_opportunities": { "$ref": "#/$defs/strings" },
+    "reference_strategy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pack_size", "provider_reference_limit", "candidates"],
+      "properties": {
+        "pack_size": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["min", "max"],
+          "properties": {
+            "min": { "const": 5 },
+            "max": { "const": 8 }
+          }
+        },
+        "provider_reference_limit": { "const": 2 },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "asset_id", "source_kind", "source_path", "role",
+              "rationale", "signals", "score"
+            ],
+            "properties": {
+              "asset_id": { "type": "string", "minLength": 1 },
+              "source_kind": { "enum": ["original_asset", "generated_anchor"] },
+              "source_path": { "type": "string", "minLength": 1 },
+              "role": {
+                "enum": [
+                  "keep_reference", "style_reference",
+                  "ignore_reference", "anchor_reference"
+                ]
+              },
+              "rationale": { "type": "string", "minLength": 1 },
+              "signals": { "$ref": "#/$defs/strings" },
+              "score": { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          }
+        }
+      }
+    },
+    "generation_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preserve", "transform", "avoid"],
+      "properties": {
+        "preserve": { "$ref": "#/$defs/strings" },
+        "transform": { "$ref": "#/$defs/strings" },
+        "avoid": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visual_context_generated_at", "creative_understanding_generated_at",
+        "creative_direction_id", "creative_direction_version", "compiler_version"
+      ],
+      "properties": {
+        "visual_context_generated_at": { "type": "string", "minLength": 1 },
+        "creative_understanding_generated_at": { "type": "string", "minLength": 1 },
+        "creative_direction_id": { "type": "string", "minLength": 1 },
+        "creative_direction_version": { "type": "string", "minLength": 1 },
+        "compiler_version": { "const": "visual-memory-1.0.0" }
+      }
+    },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

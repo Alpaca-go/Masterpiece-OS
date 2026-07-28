@@ -72,6 +72,11 @@ export {
   compileGenerationBlueprintPrompt,
 } from './generation-blueprint.js';
 export {
+  VISUAL_MEMORY_COMPILER_VERSION,
+  compileVisualMemory,
+  validateVisualMemory,
+} from './visual-memory.js';
+export {
   createGenerationSeries,
   transitionGenerationSeries,
   transitionGenerationTask,

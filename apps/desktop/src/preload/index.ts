@@ -184,6 +184,10 @@ const api: DesktopApi = {
     rebuild: (projectId) => ipcRenderer.invoke('project-context:rebuild', projectId),
     export: (projectId) => ipcRenderer.invoke('project-context:export', projectId)
   },
+  visualMemory: {
+    get: (projectId) => ipcRenderer.invoke('visual-memory:get', projectId),
+    compile: (projectId) => ipcRenderer.invoke('visual-memory:compile', projectId)
+  },
   contextIntegration: {
     linkDocumentContext: (projectId, runId) => ipcRenderer.invoke('context-integration:link', projectId, runId),
     unlinkDocumentContext: (projectId) => ipcRenderer.invoke('context-integration:unlink', projectId),
