@@ -52,7 +52,7 @@ export function createCreativeProductionBootstrapService(
         mood: direction.visualKeywords,
       },
       styleBoundaries: {
-        allowed: [...strategyRules, ...direction.generationRules],
+        allowed: strategyRules,
         forbidden: [...direction.thingsToRemove, ...direction.generationRules],
       },
       outputPriorities: [direction.spaceStrategy, direction.packagingStrategy, direction.posterStrategy]

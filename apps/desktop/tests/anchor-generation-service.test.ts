@@ -33,7 +33,7 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
         return {
           id: 'candidate-1',
           task: {
-            purpose: '建立品牌主视觉',
+            purpose: '建立新的品牌店内空间体验',
             aspectRatio: '4:5',
           },
         };
@@ -60,7 +60,10 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
           role: 'identity_reference',
           projectRelativePath: 'input/assets/logo.png',
         }]);
-        assert.match(input.compiledPrompt, /Primary Anchor Candidate/);
+        assert.match(input.compiledPrompt, /Deliverable hard gate/);
+        assert.match(input.compiledPrompt, /地面、墙面、顶面、空间纵深/);
+        assert.match(input.compiledPrompt, /禁止品牌 VI 展示板/);
+        assert.match(input.compiledPrompt, /Task-specific Creative Direction/);
         calls.push('provider');
         return {
           runId: 'run-1',
@@ -79,11 +82,15 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
         primaryConcept: '真实品牌时刻',
         visualKeywords: ['真实'],
         thingsToRemove: ['停止旧 VI 拼贴'],
+        spaceStrategy: '以开放后厨和共享餐桌建立新的空间动线',
         generationRules: ['禁止复制旧 VI 和旧包装换皮'],
       }),
     } as never,
   );
-  const result = await service.generate('project-1', { purpose: '建立品牌主视觉', apiProfileId: 'image-profile' });
+  const result = await service.generate('project-1', {
+    purpose: '建立新的品牌店内空间体验',
+    apiProfileId: 'image-profile',
+  });
   assert.equal(result.candidate.status, 'pending_review');
   assert.deepEqual(calls, ['candidate:create', 'provider', 'candidate:generating', 'candidate:pending-review']);
 });

@@ -22,13 +22,13 @@ test('Locked Assets service writes item records, thumbnails, index and Session r
     id: projectId,
     brandName: '测试品牌',
     logoLocked: true,
-    logoFiles: [sourceRelative],
+    logoFiles: [],
     lockedFacts: ['主色红色不可改变'],
     assets: [{
       id: 'logo-1',
       batchId: 'batch-1',
       sourceType: 'file',
-      originalName: 'logo.png',
+      originalName: 'legacy-board-05.png',
       relativePath: sourceRelative,
       mimeType: 'image/png',
       sizeBytes: PNG.length,
@@ -45,9 +45,18 @@ test('Locked Assets service writes item records, thumbnails, index and Session r
   };
   try {
     const service = createLockedAssetsService(projects as never, sessions as never);
-    const locked = await service.compile(projectId);
+    const locked = await service.compile(projectId, {
+      understanding: {
+        assetReadingSummary: [{
+          assetId: 'logo-1',
+          recommendedUsage: 'identity_reference',
+        }],
+      },
+    });
     const logo = locked.find((asset) => asset.type === 'logo');
     assert.ok(logo);
+    assert.equal(logo.sourceAssetId, 'logo-1');
+    assert.equal(logo.sourceFile, sourceRelative);
     assert.match(logo.thumbnail ?? '', /^locked-assets\/thumbnails\/.+\.webp$/);
     await fs.access(path.join(projectRoot, logo.thumbnail!));
     assert.deepEqual(await service.get(projectId, logo.id), logo);

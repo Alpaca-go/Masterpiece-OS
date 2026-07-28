@@ -13,7 +13,12 @@ import type { CreativeSessionService } from './creative-session-service.ts';
 
 interface CompileLockedAssetsInput {
   visualContext?: ProjectVisualContext;
-  understanding?: unknown;
+  understanding?: {
+    assetReadingSummary?: Array<{
+      assetId: string;
+      recommendedUsage: string;
+    }>;
+  };
   explicitAssets?: unknown[];
 }
 
@@ -120,7 +125,7 @@ export function createLockedAssetsService(projects: ProjectStore, sessions: Crea
       .filter((asset) => project.logoFiles.includes(asset.relativePath)
         || /logo|标志|标识|标准字/iu.test(asset.originalName))
       .map((asset) => asset.id);
-    const visualContext = input.visualContext ?? {
+    const baseVisualContext = input.visualContext ?? {
       projectId,
       identity: { brandName: project.brandName },
       lockedAssets: {
@@ -130,6 +135,19 @@ export function createLockedAssetsService(projects: ProjectStore, sessions: Crea
       },
       products: { coreProducts: [] },
       packaging: { status: 'unknown', structures: [] },
+    };
+    const identityReferenceIds = (input.understanding?.assetReadingSummary ?? [])
+      .filter((item) => item.recommendedUsage === 'identity_reference')
+      .map((item) => item.assetId)
+      .filter((id) => project.assets.some((asset) => asset.id === id));
+    const visualContext = {
+      ...baseVisualContext,
+      lockedAssets: {
+        ...baseVisualContext.lockedAssets,
+        logoAssetIds: baseVisualContext.lockedAssets.logoAssetIds?.length
+          ? baseVisualContext.lockedAssets.logoAssetIds
+          : identityReferenceIds.slice(0, 1),
+      },
     };
     const existingById = new Map(existing.map((asset) => [asset.id, asset]));
     const compiled = compileLockedAssets({

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createCreativeProductionBootstrapService } from '../src/main/creative-production-bootstrap-service.ts';
+import { compileStyleProfile } from '../../../packages/creative-production-runtime/src/style-profile.js';
 
 const understanding = {
   schemaVersion: '1.0',
@@ -80,6 +81,18 @@ test('production bootstrap compiles Style Profile from the active model-generate
     (compiledDecision?.primaryDirection as { name: string }).name,
     direction.primaryConcept,
   );
+  const boundaries = compiledDecision?.styleBoundaries as {
+    allowed: string[];
+    forbidden: string[];
+  };
+  assert.deepEqual(
+    boundaries.allowed.filter((item) => boundaries.forbidden.includes(item)),
+    [],
+  );
+  assert.doesNotThrow(() => compileStyleProfile({
+    creativeDecision: compiledDecision,
+    version: '1.0.0',
+  }));
   assert.equal(workflowState, 'CREATIVE_DECISION_COMPLETED');
 });
 
