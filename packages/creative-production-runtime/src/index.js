@@ -48,3 +48,11 @@ export {
   selectGenerationReferences,
   validateGenerationPromptSnapshot,
 } from './generation-prompt.js';
+export {
+  CREATIVE_READING_PROMPT_VERSION,
+  buildCreativeReadingPrompt,
+  parseCreativeReadingResponse,
+  normalizeCreativeUnderstanding,
+  validateCreativeUnderstanding,
+  compileCreativeUnderstandingMarkdown,
+} from './creative-reading.js';
