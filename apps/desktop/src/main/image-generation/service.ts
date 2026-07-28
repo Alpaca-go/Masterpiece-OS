@@ -69,6 +69,30 @@ export const DEFAULT_SIZE = '1024*1024';
 export const POLL_INTERVAL_MS = 3000;
 export const MAX_POLL_ATTEMPTS = 200;
 
+function resolveVisualUpgradeArtifacts(snapshot: unknown, run: ImageGenerationRun) {
+  const value = snapshot as {
+    creativeDirectionSnapshot?: Record<string, unknown>;
+    creativeDirection?: Record<string, unknown>;
+    generationBlueprint?: Record<string, unknown>;
+  };
+  const creativeDirection = value?.creativeDirectionSnapshot || value?.creativeDirection;
+  const generationBlueprint = value?.generationBlueprint;
+  if (!creativeDirection || !generationBlueprint) return null;
+  const source = (creativeDirection.source ?? {}) as Record<string, unknown>;
+  return {
+    visualAnalysis: {
+      schemaVersion: '1.0',
+      projectId: run.projectId,
+      sourceReportPath: source.reportPath,
+      oldVisualProblems: creativeDirection.oldVisualProblems ?? [],
+      capturedAt: run.createdAt,
+    },
+    creativeDirection,
+    generationBlueprint,
+    generationResult: run,
+  };
+}
+
 export interface StartOptions {
   sources?: ImageGenerationSourceBundle | ImageGenerationSourceBundleV3;
   /** V3 正式提交必须指向用户最后确认的编译 revision。 */
@@ -560,8 +584,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     if (!options.compiledPrompt.trim()) {
       throw Object.assign(new Error('Creative Task Prompt 不能为空。'), { code: 'PROMPT_EMPTY' });
     }
-    if (options.references.length > 3) {
-      throw Object.assign(new Error('Creative Task 最多只能发送 3 张参考图。'), {
+    if (options.references.length > 2) {
+      throw Object.assign(new Error('Creative Task 最多只能发送 2 张必要品牌资产。'), {
         code: 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
       });
     }
@@ -638,10 +662,14 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     await store.writePromptSourceMap(runId, options.sourceMap);
     await store.writeWarnings(runId, []);
     await store.saveRun(run);
+    const artifacts = resolveVisualUpgradeArtifacts(options.snapshot, run);
+    if (artifacts) await store.writeVisualUpgradeArtifacts(runId, artifacts);
     await store.appendEvent(runId, options.event, options.sourceMap);
     emit(run);
     if (options.dryRun) return run;
-    return executeLive(run, options);
+    const completed = await executeLive(run, options);
+    if (artifacts) await store.writeGenerationResult(runId, completed);
+    return completed;
   }
 
   async function startPromptSnapshot(options: CreativePromptStartOptions): Promise<ImageGenerationRun> {
@@ -726,13 +754,17 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     });
     await store.writeWarnings(runId, []);
     await store.saveRun(run);
+    const artifacts = resolveVisualUpgradeArtifacts(snapshot, run);
+    if (artifacts) await store.writeVisualUpgradeArtifacts(runId, artifacts);
     await store.appendEvent(runId, 'CREATIVE_PROMPT_SNAPSHOT_ATTACHED', {
       promptSnapshotId: snapshot.id,
       sessionId: snapshot.sessionId,
     });
     emit(run);
     if (options.dryRun) return run;
-    return executeLive(run, options);
+    const completed = await executeLive(run, options);
+    if (artifacts) await store.writeGenerationResult(runId, completed);
+    return completed;
   }
 
   /** 提交并执行实时轮询/下载（被 start 与 retry 共用）。 */

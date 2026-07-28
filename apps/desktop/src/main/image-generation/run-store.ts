@@ -106,6 +106,25 @@ export function createRunStore(dataPath: string, projectId: string) {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.promptSourceMap), map);
     },
 
+    async writeVisualUpgradeArtifacts(runId: string, artifacts: {
+      visualAnalysis: unknown;
+      creativeDirection: unknown;
+      generationBlueprint: unknown;
+      generationResult: unknown;
+    }): Promise<void> {
+      const r = await root(runId);
+      await Promise.all([
+        writeJsonSafe(path.join(r, RUN_FILES.visualAnalysis), artifacts.visualAnalysis),
+        writeJsonSafe(path.join(r, RUN_FILES.creativeDirection), artifacts.creativeDirection),
+        writeJsonSafe(path.join(r, RUN_FILES.generationBlueprint), artifacts.generationBlueprint),
+        writeJsonSafe(path.join(r, RUN_FILES.generationResult), artifacts.generationResult),
+      ]);
+    },
+
+    async writeGenerationResult(runId: string, result: unknown): Promise<void> {
+      await writeJsonSafe(path.join(await root(runId), RUN_FILES.generationResult), result);
+    },
+
     async writeDeliverableArtifacts(runId: string, artifacts: {
       deliverablePolicy: unknown;
       userIntentResolution: unknown;

@@ -21,6 +21,18 @@ test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bo
     userRequest: '生成一张品牌海报',
     creativeDirectionId: 'direction-1',
     creativeDirectionVersion: '1.0.0',
+    generationBlueprintId: 'blueprint-1',
+    creativeDirectionSnapshot: {
+      id: 'direction-1',
+      version: '1.0.0',
+      oldVisualProblems: ['旧海报依赖固定版式'],
+      source: { reportPath: 'outputs/report.md' },
+    },
+    generationBlueprint: {
+      id: 'blueprint-1',
+      creativeDirectionId: 'direction-1',
+      imagePurpose: 'brand_poster',
+    },
     outputType: 'brand_poster',
     styleProfileId: 'style-1',
     styleProfileVersion: '1.0.0',
@@ -45,7 +57,7 @@ test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bo
       generatedAt: '2026-07-28T00:00:00.000Z',
     },
     negativePrompt: '拼贴',
-    compilerVersion: '18.1.0',
+    compilerVersion: 'visual-upgrade-1.0.0',
     createdAt: '2026-07-28T00:00:00.000Z',
   };
   try {
@@ -68,10 +80,50 @@ test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bo
     assert.equal(task.references.length, 1);
     assert.equal(storedSnapshot.id, 'snapshot-1');
     assert.equal(
+      JSON.parse(await fs.readFile(path.join(root, 'visual-analysis.json'), 'utf8')).sourceReportPath,
+      'outputs/report.md',
+    );
+    assert.equal(
+      JSON.parse(await fs.readFile(path.join(root, 'creative-direction.json'), 'utf8')).id,
+      'direction-1',
+    );
+    assert.equal(
+      JSON.parse(await fs.readFile(path.join(root, 'generation-blueprint.json'), 'utf8')).id,
+      'blueprint-1',
+    );
+    assert.equal(
+      JSON.parse(await fs.readFile(path.join(root, 'generation-result.json'), 'utf8')).runId,
+      run.runId,
+    );
+    assert.equal(
       await fs.readFile(path.join(root, 'compiled-prompt.md'), 'utf8'),
       'EXACT v18.1 DIRECTION-BOUND FINAL PROMPT',
     );
   } finally {
     await fs.rm(dataPath, { recursive: true, force: true });
   }
+});
+
+test('Visual Upgrade Provider bridge rejects more than two necessary brand references', async () => {
+  const service = createImageGenerationService({
+    dataPath: os.tmpdir(),
+    loadContext: async () => { throw new Error('must not load'); },
+  });
+  await assert.rejects(
+    service.startCompiledCreativeTask({
+      projectId: 'project-1',
+      compiledPrompt: 'prompt',
+      promptVersion: 'visual-upgrade-1.0.0',
+      snapshot: {},
+      sourceMap: {},
+      event: 'TEST',
+      dryRun: true,
+      references: [
+        { id: 'logo', role: 'identity_reference', projectRelativePath: 'input/logo.png' },
+        { id: 'product', role: 'structure_reference', projectRelativePath: 'input/product.png' },
+        { id: 'extra', role: 'core_reference', projectRelativePath: 'input/extra.png' },
+      ],
+    }),
+    (error) => error.code === 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
+  );
 });

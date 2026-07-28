@@ -81,6 +81,7 @@ export function createAnchorGenerationService(
       styleProfileVersion: style.version,
       creativeDirectionId: direction.id,
       creativeDirectionVersion: direction.version,
+      creativeDirectionSnapshot: direction,
       generationBlueprintId: blueprint.id,
       generationBlueprint: blueprint,
       lockedAssetIds: locks.map((item) => item.id),

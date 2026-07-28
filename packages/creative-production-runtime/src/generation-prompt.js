@@ -203,6 +203,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     creativeDirectionId: direction.id,
     creativeDirectionVersion: direction.version,
     generationBlueprintId: blueprint.id,
+    creativeDirectionSnapshot: direction,
+    generationBlueprint: blueprint,
     outputType,
     styleProfileId: input.styleProfile.id,
     styleProfileVersion: input.styleProfile.version,

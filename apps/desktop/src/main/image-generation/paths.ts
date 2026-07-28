@@ -67,6 +67,10 @@ export const RUN_FILES = {
   metrics: 'metrics.json',
   review: 'review.json',
   retryHistory: 'retry-history.json',
+  visualAnalysis: 'visual-analysis.json',
+  creativeDirection: 'creative-direction.json',
+  generationBlueprint: 'generation-blueprint.json',
+  generationResult: 'generation-result.json',
 } as const;
 
 export function imagesDir(runRootPath: string): string {

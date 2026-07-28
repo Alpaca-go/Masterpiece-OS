@@ -386,6 +386,9 @@ export interface GenerationPromptSnapshot {
   creativeDirectionId: string;
   creativeDirectionVersion: string;
   generationBlueprintId?: string;
+  /** Run Store 自包含快照；重试不得重新读取后来被替换的 active 实体。 */
+  creativeDirectionSnapshot?: CreativeDirection;
+  generationBlueprint?: GenerationBlueprint;
   outputType: 'interior_scene' | 'storefront_scene' | 'packaging_render' | 'brand_poster' | 'vi_application' | 'illustration';
   styleProfileId: string;
   styleProfileVersion: string;

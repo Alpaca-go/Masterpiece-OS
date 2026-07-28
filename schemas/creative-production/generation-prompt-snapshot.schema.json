@@ -21,6 +21,8 @@
     "creativeDirectionId": { "type": "string", "minLength": 1 },
     "creativeDirectionVersion": { "type": "string", "minLength": 1 },
     "generationBlueprintId": { "type": "string", "minLength": 1 },
+    "creativeDirectionSnapshot": { "type": "object" },
+    "generationBlueprint": { "type": "object" },
     "outputType": {
       "enum": ["interior_scene", "storefront_scene", "packaging_render", "brand_poster", "vi_application", "illustration"]
     },
