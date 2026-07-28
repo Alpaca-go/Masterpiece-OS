@@ -23,6 +23,8 @@ test('renderer keeps specialist legacy presets but routes analysis reports into 
   assert.match(documentSource, /生成概念稿/);
   assert.match(referenceSource, /试生成参考效果/);
   assert.match(referenceSource, /生成 Master Anchor Image/);
+  assert.match(referenceSource, /快速提取到生产系统/);
+  assert.match(referenceSource, /quickExtractStyle/);
 });
 
 test('Creative Session workspace keeps a single natural-language creation input', () => {

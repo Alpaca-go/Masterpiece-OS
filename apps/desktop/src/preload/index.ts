@@ -127,6 +127,8 @@ const api: DesktopApi = {
   },
   creativeProduction: {
     prepare: (projectId) => ipcRenderer.invoke('creative-production:prepare', projectId),
+    quickExtractStyle: (projectId, referenceAnchorRunId) =>
+      ipcRenderer.invoke('creative-production:quick-extract-style', projectId, referenceAnchorRunId),
     listLockedAssets: (projectId) =>
       ipcRenderer.invoke('creative-production:list-locked-assets', projectId),
     listAnchorCandidates: (projectId) =>

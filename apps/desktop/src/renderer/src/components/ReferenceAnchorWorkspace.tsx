@@ -27,6 +27,7 @@ interface Props {
   onOpenSettings(): void;
   onGenerateMasterAnchor(projectId: string, referenceAnchorRunId: string): void;
   onGenerateReferencePreview(projectId: string, referenceAnchorRunId: string): void;
+  onContinueCreativeProduction(projectId: string): void;
 }
 
 const STAGES: Array<[ReferenceAnchorStage, string]> = [
@@ -74,7 +75,7 @@ function splitLines(value: string): string[] {
   return value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
 }
 
-export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateMasterAnchor, onGenerateReferencePreview }: Props) {
+export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateMasterAnchor, onGenerateReferencePreview, onContinueCreativeProduction }: Props) {
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
@@ -417,6 +418,24 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     } catch (reason) { setError(cleanError(reason)); }
   }
 
+  async function quickExtractStyle() {
+    if (!selectedRun) return;
+    setBusy(true);
+    setError('');
+    try {
+      await window.masterpiece.creativeProduction.quickExtractStyle(
+        selectedRun.projectId,
+        selectedRun.id,
+      );
+      setNotice('风格已提取为标准 Style Profile，并进入同一套 Anchor / Canon / Series 流程。');
+      onContinueCreativeProduction(selectedRun.projectId);
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   // ── 结果 / 决策页 ──
   if (view === 'result' && selectedRun) {
     const decided = selectedRun.decision === 'approved' || selectedRun.decision === 'rejected';
@@ -436,6 +455,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         <button className="button secondary" onClick={() => void navigator.clipboard.writeText(resultTab === 'brief' ? briefMarkdown : capsuleMarkdown).then(() => setNotice('内容已复制。'))}>复制内容</button>
         <button className="button secondary" onClick={() => void window.masterpiece.referenceAnchor.openFolder(selectedRun.id)}>打开输出文件夹</button>
         {selectedRun.status !== 'rejected' && selectedRun.status !== 'failed' && selectedRun.status !== 'cancelled' && <button className="button secondary" onClick={() => onGenerateReferencePreview(selectedRun.projectId, selectedRun.id)}>试生成参考效果</button>}
+        {selectedRun.decision === 'approved' && <button className="button secondary" disabled={busy} onClick={() => void quickExtractStyle()}>快速提取到生产系统</button>}
         {selectedRun.decision === 'approved' && <button className="button primary" onClick={() => onGenerateMasterAnchor(selectedRun.projectId, selectedRun.id)}>生成 Master Anchor Image</button>}
       </div>
       {notice && <div className="notice ok">{notice}</div>}

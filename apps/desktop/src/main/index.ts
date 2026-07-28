@@ -42,6 +42,7 @@ import { createGenerationSeriesService } from './generation-series-service';
 import { createFormalAssetsService } from './formal-assets-service';
 import { createAnchorGenerationService, type AnchorGenerationService } from './anchor-generation-service';
 import { createCreativeProductionBootstrapService } from './creative-production-bootstrap-service';
+import { createQuickStyleExtractionService } from './quick-style-extraction-service';
 import {
   createGenerationSeriesExecutionService,
   type GenerationSeriesExecutionService
@@ -137,6 +138,12 @@ const generationSeries = createGenerationSeriesService(
 const formalAssets = createFormalAssetsService(projects);
 const creativeProductionBootstrap = createCreativeProductionBootstrapService(
   projects,
+  creativeSessions,
+  lockedAssets,
+  styleProfiles
+);
+const quickStyleExtraction = createQuickStyleExtractionService(
+  referenceAnchor,
   creativeSessions,
   lockedAssets,
   styleProfiles
@@ -420,6 +427,11 @@ function registerIpc(): void {
     lockedAssets.list(projectId));
   ipcMain.handle('creative-production:prepare', (_event, projectId: string) =>
     creativeProductionBootstrap.prepare(projectId));
+  ipcMain.handle('creative-production:quick-extract-style', (
+    _event,
+    projectId: string,
+    referenceAnchorRunId: string
+  ) => quickStyleExtraction.extract(projectId, referenceAnchorRunId));
   ipcMain.handle('creative-production:confirm-style-profile', (
     _event,
     projectId: string,
