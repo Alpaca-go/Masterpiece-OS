@@ -95,6 +95,7 @@ export function CreativeSessionWorkspace({
   });
   const [tab, setTab] = useState<'session' | 'anchor' | 'canon' | 'generation'>('session');
   const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
+  const [contextDirection, setContextDirection] = useState('');
   const [reviewFeedback, setReviewFeedback] = useState('');
   const [reviewScores, setReviewScores] = useState<Record<string, number>>(
     Object.fromEntries(ANCHOR_DIMENSIONS.map(({ key }) => [key, 4]))
@@ -121,7 +122,19 @@ export function CreativeSessionWorkspace({
       window.masterpiece.creativeProduction.listSeries(project.id)
     ]);
     setWorkspace(next);
-    const activeSeries = series.find((item) => item.id === next.session.activeSeriesId) || series[0];
+    const currentCanon = next.visualCanon
+      && next.styleProfile
+      && next.visualCanon.styleProfileId === next.styleProfile.id
+      && next.visualCanon.styleProfileVersion === next.styleProfile.version
+      ? next.visualCanon
+      : null;
+    const activeSeries = series.find((item) =>
+      item.styleProfileVersion === next.styleProfile?.version
+      && item.visualCanonVersion === currentCanon?.version
+      && item.id === next.session.activeSeriesId)
+      || series.find((item) =>
+        item.styleProfileVersion === next.styleProfile?.version
+        && item.visualCanonVersion === currentCanon?.version);
     const outputs = activeSeries
       ? await window.masterpiece.creativeProduction.listFormalAssets(project.id, activeSeries.id)
       : [];
@@ -155,10 +168,16 @@ export function CreativeSessionWorkspace({
   }, [project.id, refresh]);
 
   const understanding = workspace?.session.understanding;
+  const currentCanon = workspace?.visualCanon
+    && workspace?.styleProfile
+    && workspace.visualCanon.styleProfileId === workspace.styleProfile.id
+    && workspace.visualCanon.styleProfileVersion === workspace.styleProfile.version
+    ? workspace.visualCanon
+    : null;
   const canGenerate = Boolean(
     understanding
     && workspace?.styleProfile?.status === 'confirmed'
-    && workspace?.visualCanon?.status === 'confirmed'
+    && currentCanon?.status === 'confirmed'
     && imageApiProfileId
   );
   const recentMessages = useMemo(
@@ -260,13 +279,21 @@ export function CreativeSessionWorkspace({
     };
   }
 
-  const activeAnchor = production.anchors.find((item) => item.status === 'accepted')
-    || production.anchors[0];
+  const anchorsForCurrentStyle = production.anchors.filter((item) =>
+    item.styleProfileId === workspace?.styleProfile?.id
+    && item.styleProfileVersion === workspace?.styleProfile?.version);
+  const activeAnchor = anchorsForCurrentStyle.find((item) => item.status === 'accepted')
+    || anchorsForCurrentStyle[0];
   const anchorRunView = activeAnchor?.generationRunId
     ? runViews.find((item) => item.run.runId === activeAnchor.generationRunId)
     : undefined;
-  const activeSeries = production.series.find((item) => item.id === workspace?.session.activeSeriesId)
-    || production.series[0];
+  const activeSeries = production.series.find((item) =>
+    item.id === workspace?.session.activeSeriesId
+    && item.styleProfileVersion === workspace?.styleProfile?.version
+    && item.visualCanonVersion === currentCanon?.version)
+    || production.series.find((item) =>
+      item.styleProfileVersion === workspace?.styleProfile?.version
+      && item.visualCanonVersion === currentCanon?.version);
 
   return <div className="page creative-session-page">
     <header className="page-header">
@@ -299,8 +326,8 @@ export function CreativeSessionWorkspace({
           <li className={workspace?.styleProfile?.status === 'confirmed' ? 'pass' : ''}>
             {workspace?.styleProfile?.status === 'confirmed' ? '✓' : '○'} Style Profile
           </li>
-          <li className={workspace?.visualCanon?.status === 'confirmed' ? 'pass' : ''}>
-            {workspace?.visualCanon?.status === 'confirmed' ? '✓' : '○'} Visual Canon
+          <li className={currentCanon?.status === 'confirmed' ? 'pass' : ''}>
+            {currentCanon?.status === 'confirmed' ? '✓' : '○'} Visual Canon
           </li>
         </ul>
         {!understanding && <button
@@ -400,6 +427,27 @@ export function CreativeSessionWorkspace({
             )}
           >确认 Style Profile</button>}
         </div>}
+        {workspace?.styleProfile && <div className="context-regeneration-form">
+          <label>下一版 Anchor 的变化方向
+            <textarea
+              rows={4}
+              value={contextDirection}
+              placeholder="例如：减少传统装饰，改成更明亮的现代社区小馆；强化自然木材、晨间光线和开放式后厨。"
+              onChange={(event) => setContextDirection(event.target.value)}
+            />
+          </label>
+          <p>将创建新版本 Style Profile；旧 Anchor、Visual Canon 和 Series 会保留为历史，但不会继续用于新版本。</p>
+          <button
+            className="button secondary full"
+            disabled={contextDirection.trim().length < 8 || Boolean(busy)}
+            onClick={() => void runProductionAction(async () => {
+              await window.masterpiece.creativeProduction.regenerateContext(project.id, {
+                directionBrief: contextDirection.trim()
+              });
+              setContextDirection('');
+            })}
+          >根据变化方向重新生成上下文</button>
+        </div>}
       </section>
 
       <section className="panel">
@@ -489,7 +537,7 @@ export function CreativeSessionWorkspace({
       </section>
       <section className="panel">
         <div className="section-heading"><span>02</span><div><h2>Visual Canon</h2><p>共享规则、变化规则与冲突警告</p></div></div>
-        {!workspace?.visualCanon && activeAnchor?.status === 'accepted' && <button
+        {!currentCanon && activeAnchor?.status === 'accepted' && <button
           className="button primary full"
           disabled={Boolean(busy)}
           onClick={() => void runProductionAction(
@@ -498,29 +546,29 @@ export function CreativeSessionWorkspace({
             })
           )}
         >从 Primary Anchor 建立 Visual Canon</button>}
-        {workspace?.visualCanon && <div className="canon-details">
+        {currentCanon && <div className="canon-details">
           <div className="production-summary-card">
-            <small>VISUAL CANON / {workspace.visualCanon.version}</small>
-            <h3>{workspace.visualCanon.name}</h3>
-            <span className={`badge ${workspace.visualCanon.status === 'confirmed' ? 'completed' : 'ready'}`}>
-              {workspace.visualCanon.status}
+            <small>VISUAL CANON / {currentCanon.version}</small>
+            <h3>{currentCanon.name}</h3>
+            <span className={`badge ${currentCanon.status === 'confirmed' ? 'completed' : 'ready'}`}>
+              {currentCanon.status}
             </span>
           </div>
           <h4>Shared Rules</h4>
-          <ul>{workspace.visualCanon.sharedRules.map((item) => <li key={item}>{item}</li>)}</ul>
+          <ul>{currentCanon.sharedRules.map((item) => <li key={item}>{item}</li>)}</ul>
           <h4>Variation Rules</h4>
-          <ul>{workspace.visualCanon.variationRules.map((item) => <li key={item}>{item}</li>)}</ul>
+          <ul>{currentCanon.variationRules.map((item) => <li key={item}>{item}</li>)}</ul>
           <h4>Conflict Warnings</h4>
-          {workspace.visualCanon.conflicts.length
-            ? <ul>{workspace.visualCanon.conflicts.map((item, index) =>
+          {currentCanon.conflicts.length
+            ? <ul>{currentCanon.conflicts.map((item, index) =>
               <li key={`${item.dimension}-${index}`}>{item.severity} · {item.message}</li>)}</ul>
             : <p>未发现冲突。</p>}
-          {workspace.visualCanon.status !== 'confirmed' && <button
+          {currentCanon.status !== 'confirmed' && <button
             className="button primary full"
-            disabled={Boolean(busy) || workspace.visualCanon.conflicts.some((item) => item.severity === 'blocking')}
+            disabled={Boolean(busy) || currentCanon.conflicts.some((item) => item.severity === 'blocking')}
             onClick={() => void runProductionAction(
               () => window.masterpiece.creativeProduction
-                .confirmVisualCanon(project.id, workspace.visualCanon!.id)
+                .confirmVisualCanon(project.id, currentCanon.id)
             )}
           >确认 Visual Canon</button>}
         </div>}
@@ -533,13 +581,13 @@ export function CreativeSessionWorkspace({
           <p className="eyebrow">GENERATION SERIES</p>
           <h2>{activeSeries?.name || '尚未创建生成系列'}</h2>
           <p>
-            Style {workspace?.styleProfile?.version || '—'} · Canon {workspace?.visualCanon?.version || '—'}
+            Style {workspace?.styleProfile?.version || '—'} · Canon {currentCanon?.version || '—'}
             {activeSeries ? ` · ${activeSeries.tasks.filter((item) => item.status === 'succeeded').length}/${activeSeries.tasks.length}` : ''}
           </p>
         </div>
         {!activeSeries && <button
           className="button primary"
-          disabled={workspace?.visualCanon?.status !== 'confirmed' || Boolean(busy)}
+          disabled={currentCanon?.status !== 'confirmed' || Boolean(busy)}
           onClick={() => void runProductionAction(
             () => window.masterpiece.creativeProduction.createSeries(project.id, {
               name: `${project.projectName} 首轮生产系列`,
@@ -550,8 +598,8 @@ export function CreativeSessionWorkspace({
                   responsibility: '生成一个真实、完整的升级后包装渲染结果',
                   subject: project.brandName,
                   aspectRatio: '4:5',
-                  preserve: workspace?.visualCanon?.sharedRules || [],
-                  change: workspace?.visualCanon?.variationRules || [],
+                  preserve: currentCanon?.sharedRules || [],
+                  change: currentCanon?.variationRules || [],
                   forbidden: workspace?.styleProfile?.forbiddenVariations || []
                 },
                 {
@@ -560,8 +608,8 @@ export function CreativeSessionWorkspace({
                   responsibility: '生成一张单一主画面的升级后品牌海报',
                   subject: project.brandName,
                   aspectRatio: '4:5',
-                  preserve: workspace?.visualCanon?.sharedRules || [],
-                  change: workspace?.visualCanon?.variationRules || [],
+                  preserve: currentCanon?.sharedRules || [],
+                  change: currentCanon?.variationRules || [],
                   forbidden: workspace?.styleProfile?.forbiddenVariations || []
                 },
                 {
@@ -570,8 +618,8 @@ export function CreativeSessionWorkspace({
                   responsibility: '生成一种明确、真实的品牌 VI 应用',
                   subject: project.brandName,
                   aspectRatio: '4:5',
-                  preserve: workspace?.visualCanon?.sharedRules || [],
-                  change: workspace?.visualCanon?.variationRules || [],
+                  preserve: currentCanon?.sharedRules || [],
+                  change: currentCanon?.variationRules || [],
                   forbidden: workspace?.styleProfile?.forbiddenVariations || []
                 }
               ]

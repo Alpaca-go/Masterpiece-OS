@@ -61,6 +61,9 @@ test('V6 generation workspace exposes Series controls, output versions and Promp
   assert.match(creativeSessionSource, /创建修正版或变体/);
   assert.match(creativeSessionSource, /version-compare-grid/);
   assert.match(creativeSessionSource, /retryAnchor/);
+  assert.match(creativeSessionSource, /regenerateContext/);
+  assert.match(creativeSessionSource, /根据变化方向重新生成上下文/);
+  assert.match(creativeSessionSource, /styleProfileVersion === workspace\?\.styleProfile\?\.version/);
 });
 
 test('generation workspace uses source bundles, displays source usage and only offers Wan image profiles', () => {

@@ -80,7 +80,10 @@ export function createStyleProfileService(projects: ProjectStore, sessions: Crea
       updatedAt: profile.updatedAt,
     });
     await sessions.setActiveEntity(projectId, 'style_profile', profile);
-    await sessions.transition(projectId, 'STYLE_PROFILE_CREATED', `Style Profile ${profile.version} 已创建。`);
+    const session = await sessions.create(projectId);
+    if (session.workflowState === 'CREATIVE_DECISION_COMPLETED') {
+      await sessions.transition(projectId, 'STYLE_PROFILE_CREATED', `Style Profile ${profile.version} 已创建。`);
+    }
     return profile;
   }
 

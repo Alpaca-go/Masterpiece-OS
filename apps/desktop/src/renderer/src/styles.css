@@ -434,6 +434,10 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .generation-output-list article small { margin-top: 4px; color: #8b858d; font-size: 9px; overflow-wrap: anywhere; }
 .generation-output-list .button-row { padding-top: 0; }
 .generation-output-list button { border: 0; background: transparent; color: #6c42d8; font: inherit; font-size: 9px; cursor: pointer; }
+.context-regeneration-form { display: grid; gap: 10px; margin-top: 14px; padding: 14px; border: 1px dashed #cfc2ea; border-radius: 10px; background: #fbf9ff; }
+.context-regeneration-form label { display: grid; gap: 7px; font-size: 11px; font-weight: 700; }
+.context-regeneration-form textarea { width: 100%; resize: vertical; }
+.context-regeneration-form p { margin: 0; color: #756d7c; font-size: 10px; line-height: 1.55; }
 .version-compare-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; padding-top: 18px; border-top: 1px solid #e4ded7; }
 .version-compare-grid article { overflow: hidden; border: 1px solid #d8cdef; border-radius: 10px; background: #f9f6ff; }
 .version-compare-grid img { display: block; width: 100%; }

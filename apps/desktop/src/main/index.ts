@@ -427,6 +427,11 @@ function registerIpc(): void {
     lockedAssets.list(projectId));
   ipcMain.handle('creative-production:prepare', (_event, projectId: string) =>
     creativeProductionBootstrap.prepare(projectId));
+  ipcMain.handle('creative-production:regenerate-context', (
+    _event,
+    projectId: string,
+    input: { directionBrief?: string }
+  ) => creativeProductionBootstrap.regenerate(projectId, input));
   ipcMain.handle('creative-production:quick-extract-style', (
     _event,
     projectId: string,

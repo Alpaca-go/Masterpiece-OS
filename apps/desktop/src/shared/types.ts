@@ -1934,6 +1934,18 @@ export interface DesktopApi {
       styleProfile: StyleProfile;
       lockedAssets: CreativeLockedAsset[];
     }>;
+    regenerateContext(projectId: string, input: {
+      directionBrief: string;
+    }): Promise<{
+      session: CreativeSession;
+      styleProfile: StyleProfile;
+      lockedAssets: CreativeLockedAsset[];
+      invalidated: {
+        anchorCandidates: true;
+        visualCanon: true;
+        generationSeries: true;
+      };
+    }>;
     quickExtractStyle(projectId: string, referenceAnchorRunId: string): Promise<{
       session: CreativeSession;
       styleProfile: StyleProfile;

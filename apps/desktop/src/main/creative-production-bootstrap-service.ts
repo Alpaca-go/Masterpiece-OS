@@ -12,6 +12,47 @@ export function createCreativeProductionBootstrapService(
   lockedAssets: LockedAssetsService,
   styles: StyleProfileService,
 ) {
+  function creativeDecisionFromUnderstanding(
+    projectId: string,
+    sessionId: string,
+    understanding: NonNullable<Awaited<ReturnType<CreativeSessionService['create']>>['understanding']>,
+    directionBrief?: string,
+    version = '1.0.0',
+  ) {
+    const regeneratedDirection = directionBrief?.trim();
+    const baseDirection = understanding.upgradePrinciples.join('；');
+    const thesis = regeneratedDirection || baseDirection;
+    const directionRules = regeneratedDirection
+      ? [regeneratedDirection, ...understanding.creativeFreedom]
+      : understanding.creativeFreedom;
+    return {
+      schemaVersion: '6.0',
+      id: `creative-decision-${sessionId}-${version}`,
+      projectId,
+      version,
+      brandCoreJudgment: understanding.identityLocks,
+      currentVisualProblems: understanding.currentProblems,
+      retainedAssets: understanding.identityLocks,
+      reconstructableAssets: directionRules,
+      inheritedReferenceMechanisms: [],
+      prohibitedReferenceContent: understanding.oldPatternsToAvoid,
+      visualUpgradeThesis: thesis,
+      primaryDirection: {
+        name: regeneratedDirection ? 'User Regenerated Direction' : 'Creative Reading Direction',
+        summary: thesis,
+        keywords: directionRules.slice(0, 8),
+        mood: regeneratedDirection ? [regeneratedDirection] : [],
+      },
+      styleBoundaries: {
+        allowed: directionRules,
+        forbidden: understanding.oldPatternsToAvoid,
+      },
+      outputPriorities: [],
+      risks: understanding.currentProblems,
+      createdAt: new Date().toISOString(),
+    };
+  }
+
   async function prepare(projectId: string) {
     const [session, active] = await Promise.all([
       sessions.create(projectId),
@@ -32,33 +73,11 @@ export function createCreativeProductionBootstrapService(
       visualContext,
       understanding: session.understanding,
     });
-    const understanding = session.understanding;
-    const creativeDecision = {
-      schemaVersion: '6.0',
-      id: `creative-decision-${session.id}`,
+    const creativeDecision = creativeDecisionFromUnderstanding(
       projectId,
-      version: '1.0.0',
-      brandCoreJudgment: understanding.identityLocks,
-      currentVisualProblems: understanding.currentProblems,
-      retainedAssets: understanding.identityLocks,
-      reconstructableAssets: understanding.creativeFreedom,
-      inheritedReferenceMechanisms: [],
-      prohibitedReferenceContent: understanding.oldPatternsToAvoid,
-      visualUpgradeThesis: understanding.upgradePrinciples.join('；'),
-      primaryDirection: {
-        name: 'Creative Reading Direction',
-        summary: understanding.upgradePrinciples.join('；'),
-        keywords: understanding.creativeFreedom.slice(0, 8),
-        mood: [],
-      },
-      styleBoundaries: {
-        allowed: understanding.creativeFreedom,
-        forbidden: understanding.oldPatternsToAvoid,
-      },
-      outputPriorities: [],
-      risks: understanding.currentProblems,
-      createdAt: new Date().toISOString(),
-    };
+      session.id,
+      session.understanding,
+    );
     await sessions.recordDecision(projectId, {
       type: 'creative_direction',
       summary: creativeDecision.visualUpgradeThesis || 'Creative Reading 生产方向已建立。',
@@ -74,7 +93,58 @@ export function createCreativeProductionBootstrapService(
     return { session: await sessions.create(projectId), styleProfile, lockedAssets: locks };
   }
 
-  return { prepare };
+  async function regenerate(projectId: string, input: { directionBrief?: string }) {
+    const directionBrief = input.directionBrief?.trim() || '';
+    if (directionBrief.length < 8) {
+      throw Object.assign(new Error('请至少输入 8 个字，说明这次希望 Anchor 改变的视觉方向。'), {
+        code: 'PRODUCTION_CONTEXT_DIRECTION_REQUIRED',
+      });
+    }
+    const [session, active, locks] = await Promise.all([
+      sessions.create(projectId),
+      styles.getActive(projectId),
+      lockedAssets.list(projectId),
+    ]);
+    if (!session.understanding) {
+      throw Object.assign(new Error('请先完成 Creative Reading，再重新生成生产上下文。'), {
+        code: 'CREATIVE_UNDERSTANDING_MISSING',
+      });
+    }
+    if (!active) {
+      throw Object.assign(new Error('尚未建立初始 Style Profile，请先建立生产上下文。'), {
+        code: 'STYLE_PROFILE_MISSING',
+      });
+    }
+    const [major = 1, minor = 0] = active.version.split('.').map(Number);
+    const decisionVersion = `${major}.${minor + 1}.0`;
+    const decision = creativeDecisionFromUnderstanding(
+      projectId,
+      session.id,
+      session.understanding,
+      directionBrief,
+      decisionVersion,
+    );
+    await sessions.recordDecision(projectId, {
+      type: 'creative_direction_regenerated',
+      summary: directionBrief,
+      rationale: `用户要求在 Style Profile ${active.version} 基础上重新生成生产上下文。`,
+      outcome: 'confirmed',
+      source: 'user',
+    });
+    const styleProfile = await styles.compile(projectId, decision);
+    return {
+      session: await sessions.create(projectId),
+      styleProfile,
+      lockedAssets: locks,
+      invalidated: {
+        anchorCandidates: true,
+        visualCanon: true,
+        generationSeries: true,
+      },
+    };
+  }
+
+  return { prepare, regenerate };
 }
 
 export type CreativeProductionBootstrapService = ReturnType<typeof createCreativeProductionBootstrapService>;

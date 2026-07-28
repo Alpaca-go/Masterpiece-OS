@@ -11,10 +11,15 @@ test('Style Profile service versions profiles, updates active pointer and Sessio
   const projectRoot = path.join(root, 'project');
   const transitions: string[] = [];
   const entities: string[] = [];
+  let workflowState = 'CREATIVE_DECISION_COMPLETED';
   const projects = { paths: async () => ({ root: projectRoot }) };
   const sessions = {
     setActiveEntity: async (_projectId: string, _type: string, entity: { id: string }) => { entities.push(entity.id); },
-    transition: async (_projectId: string, state: string) => { transitions.push(state); },
+    create: async () => ({ workflowState }),
+    transition: async (_projectId: string, state: string) => {
+      transitions.push(state);
+      workflowState = state;
+    },
   };
   const decision = {
     projectId,
@@ -34,7 +39,7 @@ test('Style Profile service versions profiles, updates active pointer and Sessio
     assert.equal((await service.list(projectId)).length, 2);
     const old = (await service.list(projectId)).find((item) => item.id === v1.id);
     assert.equal(old?.status, 'superseded');
-    assert.deepEqual(transitions, ['STYLE_PROFILE_CREATED', 'STYLE_PROFILE_CREATED']);
+    assert.deepEqual(transitions, ['STYLE_PROFILE_CREATED']);
     assert.deepEqual(entities, [v1.id, v2.id]);
   } finally {
     await fs.rm(root, { recursive: true, force: true });
