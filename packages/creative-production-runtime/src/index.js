@@ -41,3 +41,10 @@ export {
   nextVisualCanonVersion,
   validateVisualCanon,
 } from './visual-canon.js';
+export {
+  GENERATION_PROMPT_COMPILER_VERSION,
+  compileGenerationPromptSnapshot,
+  resolveCanonImagesForTask,
+  selectGenerationReferences,
+  validateGenerationPromptSnapshot,
+} from './generation-prompt.js';

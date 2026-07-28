@@ -11,6 +11,7 @@
     "./style-profile": "./src/style-profile.js",
     "./locked-assets": "./src/locked-assets.js",
     "./anchor-candidate": "./src/anchor-candidate.js",
-    "./visual-canon": "./src/visual-canon.js"
+    "./visual-canon": "./src/visual-canon.js",
+    "./generation-prompt": "./src/generation-prompt.js"
   }
 }

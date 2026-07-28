@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/generation-prompt-snapshot.schema.json",
+  "title": "Generation Prompt Snapshot V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "sessionId", "requestId", "userRequest",
+    "outputType", "styleProfileId", "styleProfileVersion", "visualCanonId",
+    "visualCanonVersion", "lockedAssetIds", "selectedReferences", "instruction",
+    "negativePrompt", "compilerVersion", "createdAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "sessionId": { "type": "string", "minLength": 1 },
+    "requestId": { "type": "string", "minLength": 1 },
+    "userRequest": { "type": "string", "minLength": 1 },
+    "outputType": {
+      "enum": ["interior_scene", "storefront_scene", "packaging_render", "brand_poster", "vi_application", "illustration"]
+    },
+    "styleProfileId": { "type": "string", "minLength": 1 },
+    "styleProfileVersion": { "type": "string", "minLength": 1 },
+    "visualCanonId": { "type": "string", "minLength": 1 },
+    "visualCanonVersion": { "type": "string", "minLength": 1 },
+    "lockedAssetIds": { "$ref": "#/$defs/strings" },
+    "selectedReferences": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "role", "projectRelativePath"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "role": { "enum": ["identity_reference", "structure_reference", "core_reference"] },
+          "projectRelativePath": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "instruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion", "task", "outputResponsibility", "preserve", "avoid",
+        "sceneDescription", "composition", "materialAndLighting",
+        "typographyAndGraphicUse", "referenceAssetIds", "finalPrompt", "generatedAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "task": { "type": "string", "minLength": 1 },
+        "outputResponsibility": { "type": "string", "minLength": 1 },
+        "preserve": { "$ref": "#/$defs/strings" },
+        "avoid": { "$ref": "#/$defs/strings" },
+        "sceneDescription": { "type": "string", "minLength": 1 },
+        "composition": { "type": "string" },
+        "materialAndLighting": { "type": "string" },
+        "typographyAndGraphicUse": { "type": "string" },
+        "referenceAssetIds": { "$ref": "#/$defs/strings" },
+        "finalPrompt": { "type": "string", "minLength": 1 },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "negativePrompt": { "type": "string" },
+    "compilerVersion": { "type": "string", "minLength": 1 },
+    "createdAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

@@ -275,6 +275,45 @@ export interface VisualCanon {
   updatedAt: string;
 }
 
+export interface FinalGenerationInstruction {
+  schemaVersion: '1.0';
+  task: string;
+  outputResponsibility: string;
+  preserve: string[];
+  avoid: string[];
+  sceneDescription: string;
+  composition: string;
+  materialAndLighting: string;
+  typographyAndGraphicUse: string;
+  referenceAssetIds: string[];
+  finalPrompt: string;
+  generatedAt: string;
+}
+
+export interface GenerationPromptSnapshot {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  sessionId: string;
+  requestId: string;
+  userRequest: string;
+  outputType: 'interior_scene' | 'storefront_scene' | 'packaging_render' | 'brand_poster' | 'vi_application' | 'illustration';
+  styleProfileId: string;
+  styleProfileVersion: string;
+  visualCanonId: string;
+  visualCanonVersion: string;
+  lockedAssetIds: string[];
+  selectedReferences: Array<{
+    id: string;
+    role: 'identity_reference' | 'structure_reference' | 'core_reference';
+    projectRelativePath: string;
+  }>;
+  instruction: FinalGenerationInstruction;
+  negativePrompt: string;
+  compilerVersion: string;
+  createdAt: string;
+}
+
 export interface CreativeDecision {
   schemaVersion: '6.0';
   id: string;
