@@ -23,6 +23,14 @@ export default defineConfig({
   },
   renderer: {
     root: resolve('src/renderer'),
-    plugins: [react()]
+    plugins: [react()],
+    server: {
+      proxy: {
+        '/_masterpiece': {
+          target: process.env.MASTERPIECE_WEB_RPC_URL ?? 'http://127.0.0.1:4317',
+          changeOrigin: false
+        }
+      }
+    }
   }
 });

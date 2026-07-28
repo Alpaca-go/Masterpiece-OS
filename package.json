@@ -17,6 +17,7 @@
     "lab:reference-conversion": "node ./labs/reference-style-conversion/bin/run.mjs",
     "lab:reference-conversion:test": "node --test labs/reference-style-conversion/tests/*.test.js",
     "desktop:dev": "npm --prefix apps/desktop run dev",
+    "web:dev": "npm --prefix apps/desktop run web:dev",
     "desktop:build": "npm --prefix apps/desktop run build",
     "desktop:test": "npm --prefix apps/desktop test",
     "desktop:package": "npm --prefix apps/desktop run package:portable"
