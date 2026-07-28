@@ -3,6 +3,86 @@
 // ProjectVisualContext / DocumentVisualContext / ReferenceStyleCapsule / ResolvedProjectContext
 // 实验（labs）专属类型不得写入本包。
 
+export type CreativeSessionStatus = 'active' | 'archived' | 'failed';
+
+export type CreativeWorkflowState =
+  | 'CREATED'
+  | 'FILES_IMPORTED'
+  | 'ANALYZING'
+  | 'ANALYSIS_COMPLETED'
+  | 'SESSION_CREATED'
+  | 'CREATIVE_DECISION_COMPLETED'
+  | 'STYLE_PROFILE_COMPILING'
+  | 'STYLE_PROFILE_CREATED'
+  | 'PRIMARY_ANCHOR_READY'
+  | 'PRIMARY_ANCHOR_GENERATING'
+  | 'PRIMARY_ANCHOR_PENDING_REVIEW'
+  | 'PRIMARY_ANCHOR_CONFIRMED'
+  | 'CANON_BUILDING'
+  | 'VISUAL_CANON_CONFIRMED'
+  | 'GENERATION_READY'
+  | 'GENERATING'
+  | 'REVIEWING_OUTPUTS'
+  | 'REVISION_IN_PROGRESS'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'CANCELLED';
+
+export interface CreativeSessionDecision {
+  id: string;
+  type: string;
+  summary: string;
+  rationale?: string;
+  outcome: 'confirmed' | 'rejected' | 'superseded';
+  source: 'user' | 'analysis' | 'migration' | 'system';
+  createdAt: string;
+}
+
+export interface CreativeSessionHistoryEntry {
+  id: string;
+  event: string;
+  fromState?: CreativeWorkflowState;
+  toState?: CreativeWorkflowState;
+  summary: string;
+  entityType?: 'creative_decision' | 'style_profile' | 'visual_canon' | 'generation_series' | 'decision';
+  entityId?: string;
+  version?: string;
+  createdAt: string;
+}
+
+/** V6 Creative Session 仅保存持续上下文和实体引用，禁止持有最终 Prompt。 */
+export interface CreativeSession {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  status: CreativeSessionStatus;
+  workflowState: CreativeWorkflowState;
+  projectContext: {
+    brandName: string;
+    industry: string;
+    projectType: string;
+    goals: string[];
+    constraints: string[];
+  };
+  inputs: {
+    originalAssetIds: string[];
+    referenceAssetIds: string[];
+    documentIds: string[];
+  };
+  analysis: {
+    brandUnderstandingVersion?: string;
+    referenceAnalysisVersion?: string;
+    creativeDecisionVersion?: string;
+  };
+  decisions: CreativeSessionDecision[];
+  activeStyleProfileId?: string;
+  activeVisualCanonId?: string;
+  activeSeriesId?: string;
+  history: CreativeSessionHistoryEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type PackagingStructureStatus = 'confirmed' | 'legacy_observed' | 'unknown';
 
 export type ProjectVisualContextStatus = 'missing' | 'ready' | 'failed';
