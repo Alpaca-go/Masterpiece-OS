@@ -101,6 +101,7 @@ export interface RetryOptions {
 
 export interface CreativePromptStartOptions {
   snapshot: GenerationPromptSnapshot;
+  parentRunId?: string;
   apiProfileId?: string;
   size?: string;
   region?: ImageProviderRegion;
@@ -594,6 +595,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       modelId,
       region,
       ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
+      ...(options.parentRunId ? { parentRunId: options.parentRunId, retryMode: 'same_prompt' as const } : {}),
       createdAt: now,
       updatedAt: now,
       gate: { blocked: false, errors: [], warnings: [] },
@@ -1380,6 +1382,16 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     return results;
   }
 
+  async function readPromptSnapshot(runId: string, projectId: string): Promise<GenerationPromptSnapshot | null> {
+    const raw = await storeFor(projectId).readSnapshot(runId);
+    if (!raw || (raw as { schemaVersion?: string }).schemaVersion !== '6.0') return null;
+    try {
+      return validateGenerationPromptSnapshot(raw) as GenerationPromptSnapshot;
+    } catch {
+      return null;
+    }
+  }
+
   return {
     compile,
     start,
@@ -1395,6 +1407,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     recoverAll,
     runRoot,
     readImageDataUrl,
+    readPromptSnapshot,
     getCapabilities,
     getPresetCapabilities,
     getSourcePreview,

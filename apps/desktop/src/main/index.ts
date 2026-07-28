@@ -379,6 +379,18 @@ function registerIpc(): void {
     projectId: string,
     input: { userRequest: string; apiProfileId?: string; size?: string; dryRun?: boolean }
   ) => creativeGeneration.generate(projectId, input));
+  ipcMain.handle('creative-session:retry-same', (
+    _event,
+    projectId: string,
+    runId: string,
+    apiProfileId?: string
+  ) => creativeGeneration.retrySameInstruction(projectId, runId, apiProfileId));
+  ipcMain.handle('creative-session:regenerate-instruction', (
+    _event,
+    projectId: string,
+    runId: string,
+    apiProfileId?: string
+  ) => creativeGeneration.regenerateInstruction(projectId, runId, apiProfileId));
   ipcMain.handle('creative-session:append-feedback', (_event, projectId: string, content: string) =>
     creativeSessions.appendMessage(projectId, {
       role: 'user',

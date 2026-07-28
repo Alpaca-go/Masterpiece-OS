@@ -115,6 +115,10 @@ const api: DesktopApi = {
     getWorkspace: (projectId) => ipcRenderer.invoke('creative-session:get-workspace', projectId),
     read: (projectId, apiProfileId) => ipcRenderer.invoke('creative-session:read', projectId, apiProfileId),
     generate: (projectId, input) => ipcRenderer.invoke('creative-session:generate', projectId, input),
+    retrySame: (projectId, runId, apiProfileId) =>
+      ipcRenderer.invoke('creative-session:retry-same', projectId, runId, apiProfileId),
+    regenerateInstruction: (projectId, runId, apiProfileId) =>
+      ipcRenderer.invoke('creative-session:regenerate-instruction', projectId, runId, apiProfileId),
     appendFeedback: (projectId, content) =>
       ipcRenderer.invoke('creative-session:append-feedback', projectId, content),
     getRun: (runId) => ipcRenderer.invoke('creative-session:get-run', runId),

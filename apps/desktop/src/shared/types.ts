@@ -1920,6 +1920,8 @@ export interface DesktopApi {
       size?: string;
       dryRun?: boolean;
     }): Promise<ImageGenerationRun>;
+    retrySame(projectId: string, runId: string, apiProfileId?: string): Promise<ImageGenerationRun>;
+    regenerateInstruction(projectId: string, runId: string, apiProfileId?: string): Promise<ImageGenerationRun>;
     appendFeedback(projectId: string, content: string): Promise<CreativeSession>;
     getRun(runId: string): Promise<ImageGenerationRun | null>;
     getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;

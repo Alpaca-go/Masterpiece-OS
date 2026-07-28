@@ -132,6 +132,41 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
     }
   }
 
+  async function saveFeedback() {
+    const content = request.trim();
+    if (!content) return;
+    setBusy('generating');
+    setError('');
+    try {
+      await window.masterpiece.creativeSession.appendFeedback(project.id, content);
+      setRequest('');
+      await refresh();
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy('');
+    }
+  }
+
+  async function retry(runId: string, regenerate: boolean) {
+    setBusy('generating');
+    setError('');
+    try {
+      if (regenerate) {
+        await window.masterpiece.creativeSession
+          .regenerateInstruction(project.id, runId, apiProfileId || undefined);
+      } else {
+        await window.masterpiece.creativeSession
+          .retrySame(project.id, runId, apiProfileId || undefined);
+      }
+      await refresh();
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy('');
+    }
+  }
+
   return <div className="page creative-session-page">
     <header className="page-header">
       <div>
@@ -169,6 +204,11 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
         {understanding && <div className="understanding-summary">
           <small>升级原则</small>
           <ul>{understanding.upgradePrinciples.slice(0, 5).map((item) => <li key={item}>{item}</li>)}</ul>
+          <button
+            className="button ghost full"
+            disabled={Boolean(busy)}
+            onClick={() => void runReading()}
+          >重新读取项目</button>
         </div>}
       </aside>
 
@@ -194,11 +234,18 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
         {!canGenerate && understanding && <p className="creative-gate-note">
           需要先在当前项目流程中确认 Style Profile 与 Visual Canon，系统不会在方向未确认时直接生图。
         </p>}
-        <button
-          className="button primary full"
-          disabled={!canGenerate || !request.trim() || Boolean(busy)}
-          onClick={() => void generate()}
-        >{busy === 'generating' ? '正在创作…' : '开始创作'}</button>
+        <div className="creative-submit-row">
+          <button
+            className="button secondary"
+            disabled={!understanding || !request.trim() || Boolean(busy)}
+            onClick={() => void saveFeedback()}
+          >记录为反馈</button>
+          <button
+            className="button primary"
+            disabled={!canGenerate || !request.trim() || Boolean(busy)}
+            onClick={() => void generate()}
+          >{busy === 'generating' ? '正在处理…' : '开始创作'}</button>
+        </div>
       </main>
 
       <aside className="panel creative-results-panel">
@@ -208,6 +255,10 @@ export function CreativeSessionWorkspace({ project, apiProfileId, onBack, onOpen
             {imageUrls.map((url, index) => <img key={`${run.runId}-${index}`} src={url} alt="生成结果" />)}
             <div><strong>{run.status}</strong><small>{new Date(run.createdAt).toLocaleString()}</small></div>
             {run.errorMessage && <p className="error-text">{run.errorMessage}</p>}
+            <div className="creative-retry-row">
+              <button disabled={Boolean(busy)} onClick={() => void retry(run.runId, false)}>相同指令重试</button>
+              <button disabled={Boolean(busy)} onClick={() => void retry(run.runId, true)}>重新生成指令</button>
+            </div>
           </article>) : <div className="empty-state small">尚无生成结果。</div>}
         </div>
       </aside>

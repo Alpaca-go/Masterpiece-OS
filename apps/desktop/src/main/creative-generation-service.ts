@@ -40,7 +40,38 @@ export function createCreativeGenerationService(
     return run;
   }
 
-  return { generate };
+  async function retrySameInstruction(projectId: string, runId: string, apiProfileId?: string) {
+    const snapshot = await imageGeneration.readPromptSnapshot(runId, projectId);
+    if (!snapshot) {
+      throw Object.assign(new Error('无法恢复该运行的 Prompt Snapshot，旧版运行请重新生成指令。'), {
+        code: 'GENERATION_SNAPSHOT_MISSING',
+      });
+    }
+    const run = await imageGeneration.startPromptSnapshot({
+      snapshot,
+      parentRunId: runId,
+      apiProfileId,
+    });
+    await prompts.recordRun(
+      projectId,
+      snapshot.id,
+      run.runId,
+      `使用相同生成指令重试：${run.status}。`,
+    );
+    return run;
+  }
+
+  async function regenerateInstruction(projectId: string, runId: string, apiProfileId?: string) {
+    const snapshot = await imageGeneration.readPromptSnapshot(runId, projectId);
+    if (!snapshot) {
+      throw Object.assign(new Error('无法恢复该运行的用户任务。'), {
+        code: 'GENERATION_SNAPSHOT_MISSING',
+      });
+    }
+    return generate(projectId, { userRequest: snapshot.userRequest, apiProfileId });
+  }
+
+  return { generate, retrySameInstruction, regenerateInstruction };
 }
 
 export type CreativeGenerationService = ReturnType<typeof createCreativeGenerationService>;

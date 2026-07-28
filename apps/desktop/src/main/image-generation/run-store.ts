@@ -93,6 +93,10 @@ export function createRunStore(dataPath: string, projectId: string) {
       await writeJsonSafe(path.join(await root(runId), RUN_FILES.snapshot), snapshot);
     },
 
+    async readSnapshot<T = unknown>(runId: string): Promise<T | null> {
+      return readJsonSafe<T>(path.join(await root(runId), RUN_FILES.snapshot));
+    },
+
     async writeCompiledPrompt(runId: string, markdown: string): Promise<void> {
       const r = await root(runId);
       await fs.writeFile(path.join(r, RUN_FILES.compiledPrompt), markdown, 'utf8');

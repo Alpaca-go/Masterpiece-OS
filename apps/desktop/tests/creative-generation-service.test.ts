@@ -48,3 +48,33 @@ test('Conversational generation accepts only user request and records the result
     'REVIEWING_OUTPUTS',
   ]);
 });
+
+test('same-instruction retry reuses the persisted snapshot without rerunning Reading or compiling', async () => {
+  const snapshot = { id: 'snapshot-1', userRequest: '生成一张品牌海报' };
+  let recordedRunId = '';
+  const service = createCreativeGenerationService(
+    {
+      compile: async () => { throw new Error('compile must not run'); },
+      recordRun: async (_projectId: string, snapshotId: string, runId: string) => {
+        assert.equal(snapshotId, snapshot.id);
+        recordedRunId = runId;
+      },
+    } as never,
+    {
+      readPromptSnapshot: async (runId: string, projectId: string) => {
+        assert.equal(runId, 'run-parent');
+        assert.equal(projectId, 'project-1');
+        return snapshot;
+      },
+      startPromptSnapshot: async (input: { snapshot: unknown; parentRunId?: string }) => {
+        assert.equal(input.snapshot, snapshot);
+        assert.equal(input.parentRunId, 'run-parent');
+        return { runId: 'run-retry', status: 'succeeded' };
+      },
+    } as never,
+    {} as never,
+  );
+  const run = await service.retrySameInstruction('project-1', 'run-parent', 'profile-image');
+  assert.equal(run.runId, 'run-retry');
+  assert.equal(recordedRunId, 'run-retry');
+});
