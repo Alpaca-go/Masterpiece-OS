@@ -163,6 +163,70 @@ export interface LockedAsset {
   updatedAt: string;
 }
 
+export type AnchorCandidateStatus =
+  | 'not_created'
+  | 'task_ready'
+  | 'generating'
+  | 'pending_review'
+  | 'accepted'
+  | 'rejected'
+  | 'revision_required';
+
+export type AnchorEvaluationDimension =
+  | 'color'
+  | 'composition'
+  | 'material'
+  | 'lighting'
+  | 'graphic_language'
+  | 'brand_assets'
+  | 'overall_tone';
+
+export interface AnchorCandidateEvaluationItem {
+  score: 1 | 2 | 3 | 4 | 5;
+  notes: string;
+}
+
+export interface AnchorCandidateEvaluation {
+  color: AnchorCandidateEvaluationItem;
+  composition: AnchorCandidateEvaluationItem;
+  material: AnchorCandidateEvaluationItem;
+  lighting: AnchorCandidateEvaluationItem;
+  graphic_language: AnchorCandidateEvaluationItem;
+  brand_assets: AnchorCandidateEvaluationItem;
+  overall_tone: AnchorCandidateEvaluationItem;
+  evaluatedAt: string;
+}
+
+export interface AnchorCandidate {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  status: AnchorCandidateStatus;
+  revision: number;
+  parentCandidateId?: string;
+  styleProfileId: string;
+  styleProfileVersion: string;
+  lockedAssetIds: string[];
+  task: {
+    type: 'brand_hero';
+    purpose: string;
+    aspectRatio: '16:9' | '4:5' | '3:4' | '1:1';
+    outputCount: 1;
+  };
+  source?: 'generated' | 'uploaded';
+  generationRunId?: string;
+  imagePath?: string;
+  thumbnailPath?: string;
+  evaluation?: AnchorCandidateEvaluation;
+  reviewHistory: Array<{
+    action: 'accept_primary' | 'minor_adjustment' | 'retry' | 'modify_style_profile' | 'reject';
+    feedback: string;
+    createdAt: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreativeDecision {
   schemaVersion: '6.0';
   id: string;

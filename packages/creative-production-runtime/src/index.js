@@ -24,3 +24,13 @@ export {
   validateLockedAsset,
   validateLockedAssetCollection,
 } from './locked-assets.js';
+export {
+  ANCHOR_CANDIDATE_STATUSES,
+  ANCHOR_EVALUATION_DIMENSIONS,
+  createAnchorCandidateTask,
+  transitionAnchorCandidate,
+  attachAnchorCandidateOutput,
+  reviewAnchorCandidate,
+  retryAnchorCandidate,
+  validateAnchorCandidate,
+} from './anchor-candidate.js';

@@ -9,6 +9,7 @@
     ".": "./src/index.js",
     "./session": "./src/session.js",
     "./style-profile": "./src/style-profile.js",
-    "./locked-assets": "./src/locked-assets.js"
+    "./locked-assets": "./src/locked-assets.js",
+    "./anchor-candidate": "./src/anchor-candidate.js"
   }
 }

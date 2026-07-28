@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/anchor-candidate.schema.json",
+  "title": "Anchor Candidate V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "status", "revision",
+    "styleProfileId", "styleProfileVersion", "lockedAssetIds",
+    "task", "reviewHistory", "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "status": {
+      "enum": [
+        "not_created", "task_ready", "generating", "pending_review",
+        "accepted", "rejected", "revision_required"
+      ]
+    },
+    "revision": { "type": "integer", "minimum": 1 },
+    "parentCandidateId": { "type": "string", "minLength": 1 },
+    "styleProfileId": { "type": "string", "minLength": 1 },
+    "styleProfileVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "lockedAssetIds": { "$ref": "#/$defs/strings" },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "purpose", "aspectRatio", "outputCount"],
+      "properties": {
+        "type": { "const": "brand_hero" },
+        "purpose": { "type": "string", "minLength": 1 },
+        "aspectRatio": { "enum": ["16:9", "4:5", "3:4", "1:1"] },
+        "outputCount": { "const": 1 }
+      }
+    },
+    "source": { "enum": ["generated", "uploaded"] },
+    "generationRunId": { "type": "string", "minLength": 1 },
+    "imagePath": { "$ref": "#/$defs/relativePath" },
+    "thumbnailPath": { "$ref": "#/$defs/relativePath" },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color", "composition", "material", "lighting", "graphic_language",
+        "brand_assets", "overall_tone", "evaluatedAt"
+      ],
+      "properties": {
+        "color": { "$ref": "#/$defs/evaluationItem" },
+        "composition": { "$ref": "#/$defs/evaluationItem" },
+        "material": { "$ref": "#/$defs/evaluationItem" },
+        "lighting": { "$ref": "#/$defs/evaluationItem" },
+        "graphic_language": { "$ref": "#/$defs/evaluationItem" },
+        "brand_assets": { "$ref": "#/$defs/evaluationItem" },
+        "overall_tone": { "$ref": "#/$defs/evaluationItem" },
+        "evaluatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "reviewHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["action", "feedback", "createdAt"],
+        "properties": {
+          "action": {
+            "enum": ["accept_primary", "minor_adjustment", "retry", "modify_style_profile", "reject"]
+          },
+          "feedback": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "not": { "pattern": "^(?:[A-Za-z]:[\\\\/]|[/\\\\]{2}|/)" }
+    },
+    "evaluationItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "notes"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
