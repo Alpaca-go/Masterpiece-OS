@@ -7,6 +7,7 @@ export {
   updateSessionEntityReference,
   appendSessionMessage,
   setCreativeUnderstanding,
+  setSessionLockedAssetReferences,
   migrateLegacyCreativeSession,
 } from './session.js';
 export {
@@ -16,3 +17,10 @@ export {
   validateStyleProfile,
   nextStyleProfileVersion,
 } from './style-profile.js';
+export {
+  LOCKED_ASSET_TYPES,
+  LOCKED_ASSET_PRIORITIES,
+  compileLockedAssets,
+  validateLockedAsset,
+  validateLockedAssetCollection,
+} from './locked-assets.js';

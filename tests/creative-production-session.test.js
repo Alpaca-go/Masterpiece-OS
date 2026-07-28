@@ -34,6 +34,7 @@ test('Creative Session keeps context and entity references but never stores a fi
   assert.equal(Object.hasOwn(session, 'finalGenerationInstruction'), false);
   assert.deepEqual(session.messages, []);
   assert.deepEqual(session.generationRunIds, []);
+  assert.deepEqual(session.lockedAssetIds, []);
 });
 
 test('Creative Session rejects backward and terminal transitions', () => {

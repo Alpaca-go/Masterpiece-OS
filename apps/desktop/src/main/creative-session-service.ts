@@ -11,6 +11,7 @@ import {
   recordSessionDecision,
   appendSessionMessage,
   setCreativeUnderstanding,
+  setSessionLockedAssetReferences,
   transitionCreativeSession,
   updateSessionEntityReference,
   validateCreativeSession,
@@ -59,7 +60,8 @@ export function createCreativeSessionService(projects: ProjectStore) {
     const target = await locations(projectId);
     const raw = await readJson(target.session);
     if (!raw) return null;
-    if ((raw as { schemaVersion?: string }).schemaVersion !== '6.0') {
+    if ((raw as { schemaVersion?: string; lockedAssetIds?: unknown }).schemaVersion !== '6.0'
+      || !Array.isArray((raw as { lockedAssetIds?: unknown }).lockedAssetIds)) {
       return persist(migrateLegacyCreativeSession(raw), 'SESSION_MIGRATED');
     }
     return validateCreativeSession(raw) as CreativeSession;
@@ -119,7 +121,24 @@ export function createCreativeSessionService(projects: ProjectStore) {
     return persist(setCreativeUnderstanding(current, understanding) as CreativeSession, 'UNDERSTANDING_SAVED');
   }
 
-  return { create, get, transition, recordDecision, setActiveEntity, appendMessage, saveUnderstanding };
+  async function setLockedAssets(projectId: string, lockedAssetIds: string[]): Promise<CreativeSession> {
+    const current = await create(projectId);
+    return persist(
+      setSessionLockedAssetReferences(current, lockedAssetIds) as CreativeSession,
+      'LOCKED_ASSETS_UPDATED',
+    );
+  }
+
+  return {
+    create,
+    get,
+    transition,
+    recordDecision,
+    setActiveEntity,
+    appendMessage,
+    saveUnderstanding,
+    setLockedAssets,
+  };
 }
 
 export type CreativeSessionService = ReturnType<typeof createCreativeSessionService>;

@@ -52,6 +52,7 @@ export function createCreativeSession(input, now = new Date().toISOString()) {
     ...(input?.understanding ? { understanding: input.understanding } : {}),
     messages: [],
     generationRunIds: [],
+    lockedAssetIds: [],
     decisions: [],
     history: [historyEntry('SESSION_CREATED', 'Creative Session 已创建。', now, { toState: 'SESSION_CREATED' })],
     createdAt: now,
@@ -78,8 +79,9 @@ export function validateCreativeSession(session) {
     }
   }
   if (!Array.isArray(session.messages) || !Array.isArray(session.generationRunIds)
+    || !Array.isArray(session.lockedAssetIds)
     || !Array.isArray(session.decisions) || !Array.isArray(session.history)) {
-    throw Object.assign(new Error('Creative Session messages/generationRunIds/decisions/history 必须为数组。'), { code: 'SESSION_INVALID' });
+    throw Object.assign(new Error('Creative Session messages/generationRunIds/lockedAssetIds/decisions/history 必须为数组。'), { code: 'SESSION_INVALID' });
   }
   if (session.messages.some((message) => message.type === 'generation_instruction' || /"finalPrompt"\s*:/.test(message.content))) {
     throw Object.assign(new Error('Creative Session 消息禁止保存完整 Final Generation Instruction。'), { code: 'SESSION_INVALID' });
@@ -215,8 +217,34 @@ export function setCreativeUnderstanding(session, understanding, now = new Date(
   });
 }
 
+export function setSessionLockedAssetReferences(session, lockedAssetIds, now = new Date().toISOString()) {
+  validateCreativeSession(session);
+  const references = uniqueStrings(lockedAssetIds);
+  return validateCreativeSession({
+    ...session,
+    lockedAssetIds: references,
+    history: [...session.history, historyEntry(
+      'LOCKED_ASSETS_UPDATED',
+      'Locked Assets 引用已更新。',
+      now,
+      { lockedAssetIds: references },
+    )],
+    updatedAt: now,
+  });
+}
+
 export function migrateLegacyCreativeSession(legacy, now = new Date().toISOString()) {
-  if (legacy?.schemaVersion === '6.0') return validateCreativeSession(legacy);
+  if (legacy?.schemaVersion === '6.0') {
+    return validateCreativeSession({
+      ...legacy,
+      messages: Array.isArray(legacy.messages) ? legacy.messages : [],
+      generationRunIds: uniqueStrings(legacy.generationRunIds),
+      lockedAssetIds: uniqueStrings(legacy.lockedAssetIds),
+      decisions: Array.isArray(legacy.decisions) ? legacy.decisions : [],
+      history: Array.isArray(legacy.history) ? legacy.history : [],
+      updatedAt: legacy.updatedAt || now,
+    });
+  }
   const session = createCreativeSession({
     id: legacy?.id,
     projectId: legacy?.projectId,
@@ -262,6 +290,7 @@ export function migrateLegacyCreativeSession(legacy, now = new Date().toISOStrin
         })
       : [],
     generationRunIds: uniqueStrings(legacy?.generationRunIds || legacy?.generationRuns),
+    lockedAssetIds: uniqueStrings(legacy?.lockedAssetIds),
     updatedAt: now,
   };
   migrated = {

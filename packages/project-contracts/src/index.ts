@@ -116,11 +116,49 @@ export interface CreativeSession {
   understanding?: CreativeUnderstanding;
   messages: CreativeSessionMessage[];
   generationRunIds: string[];
+  lockedAssetIds: string[];
   decisions: CreativeSessionDecision[];
   activeStyleProfileId?: string;
   activeVisualCanonId?: string;
   activeSeriesId?: string;
   history: CreativeSessionHistoryEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type LockedAssetType =
+  | 'brand_name'
+  | 'logo'
+  | 'product_category'
+  | 'packaging_structure'
+  | 'packaging_artwork'
+  | 'product_color'
+  | 'product_arrangement'
+  | 'core_symbol'
+  | 'required_visual_element'
+  | 'forbidden_reference_content';
+
+export type LockedAssetPriority = 'critical' | 'high' | 'medium' | 'low';
+
+export interface LockedAsset {
+  schemaVersion: '6.0';
+  id: string;
+  projectId: string;
+  type: LockedAssetType;
+  name: string;
+  sourceAssetId?: string;
+  /** 项目 input 目录下的相对路径；不得保存工作区外绝对路径。 */
+  sourceFile?: string;
+  /** 项目内生成的缩略图相对路径。 */
+  thumbnail?: string;
+  rule: string;
+  priority: LockedAssetPriority;
+  allowedChanges: string[];
+  forbiddenChanges: string[];
+  evidence: {
+    source: 'project_visual_context' | 'creative_understanding' | 'user_confirmed';
+    description: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

@@ -6,7 +6,7 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "id", "projectId", "status", "workflowState",
-    "projectContext", "inputs", "analysis", "messages", "generationRunIds", "decisions", "history",
+    "projectContext", "inputs", "analysis", "messages", "generationRunIds", "lockedAssetIds", "decisions", "history",
     "createdAt", "updatedAt"
   ],
   "properties": {
@@ -122,6 +122,7 @@
       }
     },
     "generationRunIds": { "$ref": "#/$defs/strings" },
+    "lockedAssetIds": { "$ref": "#/$defs/strings" },
     "decisions": {
       "type": "array",
       "items": {
