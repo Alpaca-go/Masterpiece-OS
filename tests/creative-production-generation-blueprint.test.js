@@ -57,6 +57,7 @@ test('Generation Blueprint compiles a single execution plan from approved Creati
   assert.match(blueprint.sceneDescription, /地面、墙面、顶面、纵深、动线/);
   assert.match(blueprint.camera, /24–28mm/);
   assert.ok(blueprint.avoid.includes('VI 展示板'));
+  assert.ok(blueprint.avoid.includes('禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列'));
   assert.equal(validateGenerationBlueprint(blueprint), blueprint);
 
   const prompt = compileGenerationBlueprintPrompt(blueprint);
@@ -64,6 +65,11 @@ test('Generation Blueprint compiles a single execution plan from approved Creati
   assert.match(prompt, /Creative Direction — defines the new visual language:/);
   assert.match(prompt, /Camera:/);
   assert.match(prompt, /Materials:/);
+  assert.match(prompt, /画面 100% 必须是同一透视下的完整空间/);
+  assert.match(prompt, /不得上下分栏/);
+  assert.match(prompt, /Logo 与品牌字样合计不得超过画面面积的 5%/);
+  assert.match(prompt, /禁止边框、留边、色块画框、网格叠线/);
+  assert.doesNotMatch(blueprint.composition, /12列|8px/);
   assert.doesNotMatch(prompt, /视觉分析报告|Original Visual Project/);
 });
 

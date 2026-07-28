@@ -75,11 +75,12 @@ test('v18.1 prompt snapshot keeps finalPrompt in Run snapshot and selects at mos
   assert.match(snapshot.instruction.finalPrompt, /User Task — highest priority/);
   assert.match(snapshot.instruction.finalPrompt, /禁止拼贴/);
   assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
-    'identity_reference', 'structure_reference',
+    'structure_reference',
   ]);
-  assert.equal(snapshot.selectedReferences.length, 2);
+  assert.equal(snapshot.selectedReferences.length, 1);
   assert.equal(snapshot.creativeDirectionId, direction.id);
   assert.match(snapshot.instruction.finalPrompt, /Creative Direction — defines the new visual language/);
+  assert.match(snapshot.instruction.finalPrompt, /只生成一个可生产包装成品/);
   assert.match(snapshot.instruction.finalPrompt, /旧包装换皮/);
   assert.ok(!Object.hasOwn(snapshot, 'messages'));
 });

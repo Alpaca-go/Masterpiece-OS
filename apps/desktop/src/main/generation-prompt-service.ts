@@ -61,7 +61,6 @@ export function createGenerationPromptService(
       ],
       brandAssetRules: [
         ...locks.filter((item) => item.priority === 'critical').map((item) => item.rule),
-        ...(visualCanon.sharedRules ?? []),
       ],
       avoid: [
         ...(styleProfile.promptComponents.negative ?? []),

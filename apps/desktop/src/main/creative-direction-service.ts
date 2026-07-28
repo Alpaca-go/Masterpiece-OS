@@ -44,6 +44,29 @@ function nextVersion(current?: string): string {
   return `${Number.isFinite(major) ? major : 1}.${Number.isFinite(minor) ? minor + 1 : 1}.0`;
 }
 
+function readCompatibleDirection(value: CreativeDirection): CreativeDirection {
+  try {
+    return validateCreativeDirection(value) as CreativeDirection;
+  } catch (error) {
+    if (value?.schemaVersion !== '1.0'
+      || !value.id || !value.projectId || !value.sessionId || !value.version) {
+      throw error;
+    }
+    const migrated = normalizeCreativeDirection(value, {
+      id: value.id,
+      projectId: value.projectId,
+      sessionId: value.sessionId,
+      version: value.version,
+      understandingGeneratedAt: value.source?.understandingGeneratedAt,
+      reportPath: value.source?.reportPath,
+    }, value.generatedAt) as CreativeDirection;
+    return validateCreativeDirection({
+      ...migrated,
+      status: value.status,
+    }) as CreativeDirection;
+  }
+}
+
 export function createCreativeDirectionService(
   projects: ProjectStore,
   sessions: CreativeSessionService,
@@ -69,7 +92,7 @@ export function createCreativeDirectionService(
       .map((filename) => readJson<CreativeDirection>(path.join(target.root, filename))));
     return values
       .filter((item): item is CreativeDirection => Boolean(item))
-      .map((item) => validateCreativeDirection(item) as CreativeDirection)
+      .map((item) => readCompatibleDirection(item))
       .sort((left, right) => right.version.localeCompare(left.version, undefined, { numeric: true }));
   }
 
@@ -78,7 +101,7 @@ export function createCreativeDirectionService(
     const pointer = await readJson<{ filename?: string }>(target.active);
     if (!pointer?.filename) return null;
     const value = await readJson<CreativeDirection>(path.join(target.root, pointer.filename));
-    return value ? validateCreativeDirection(value) as CreativeDirection : null;
+    return value ? readCompatibleDirection(value) : null;
   }
 
   async function beginDirectionState(projectId: string): Promise<void> {

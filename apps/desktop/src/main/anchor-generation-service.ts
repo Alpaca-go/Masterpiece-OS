@@ -24,6 +24,15 @@ function resolveBlueprintPurpose(purpose: string): GenerationBlueprint['imagePur
   return 'brand_poster';
 }
 
+function defaultAspectRatio(
+  imagePurpose: GenerationBlueprint['imagePurpose'],
+): '16:9' | '4:5' | '3:4' | '1:1' {
+  if (['interior_scene', 'storefront_scene'].includes(imagePurpose)) return '16:9';
+  if (imagePurpose === 'brand_poster') return '4:5';
+  if (imagePurpose === 'illustration') return '3:4';
+  return '1:1';
+}
+
 export function createAnchorGenerationService(
   styles: StyleProfileService,
   lockedAssets: LockedAssetsService,
@@ -45,15 +54,20 @@ export function createAnchorGenerationService(
   ) {
     const purpose = candidate.task.purpose;
     const aspectRatio = candidate.task.aspectRatio;
-    const references = locks
+    const availableReferences = locks
       .filter((item) => item.sourceFile && ['logo', 'packaging_structure'].includes(item.type))
       .sort((left, right) => left.type === 'logo' ? -1 : right.type === 'logo' ? 1 : 0)
       .slice(0, 2)
-      .map((item) => ({
-        id: item.sourceAssetId || item.id,
-        role: item.type === 'logo' ? 'identity_reference' as const : 'structure_reference' as const,
-        projectRelativePath: `input/${item.sourceFile!.replaceAll('\\', '/')}`,
-      }));
+      .map((item) => {
+        const projectRelativePath = item.type === 'logo' && item.thumbnail
+          ? item.thumbnail
+          : `input/${item.sourceFile!.replaceAll('\\', '/')}`;
+        return {
+          id: item.sourceAssetId || item.id,
+          role: item.type === 'logo' ? 'identity_reference' as const : 'structure_reference' as const,
+          projectRelativePath,
+        };
+      });
     const blueprint = await blueprints.compile(projectId, {
       userRequest: purpose,
       imagePurpose: resolveBlueprintPurpose(purpose),
@@ -63,7 +77,6 @@ export function createAnchorGenerationService(
       ],
       brandAssetRules: [
         ...locks.filter((item) => item.priority === 'critical').map((item) => item.rule),
-        ...style.promptComponents.required,
       ],
       avoid: [
         ...locks.flatMap((item) => item.forbiddenChanges),
@@ -71,6 +84,11 @@ export function createAnchorGenerationService(
         ...style.forbiddenVariations,
       ],
     });
+    const references = blueprint.imagePurpose === 'vi_application'
+      ? availableReferences.filter((reference) => reference.role === 'identity_reference').slice(0, 1)
+      : blueprint.imagePurpose === 'packaging_render'
+        ? availableReferences.filter((reference) => reference.role === 'structure_reference').slice(0, 1)
+        : [];
     const compiledPrompt = compileGenerationBlueprintPrompt(blueprint);
     const snapshot = {
       schemaVersion: '1.0',
@@ -145,9 +163,10 @@ export function createAnchorGenerationService(
       });
     }
     const purpose = input.purpose?.trim() || '建立新的品牌主视觉方向';
+    const imagePurpose = resolveBlueprintPurpose(purpose);
     const candidate = await candidates.create(projectId, {
       purpose,
-      aspectRatio: input.aspectRatio,
+      aspectRatio: input.aspectRatio || defaultAspectRatio(imagePurpose),
     });
     return execute(projectId, candidate, style, direction, locks, input);
   }

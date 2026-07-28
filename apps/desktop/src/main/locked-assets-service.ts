@@ -99,7 +99,9 @@ export function createLockedAssetsService(projects: ProjectStore, sessions: Crea
     const destination = inside(target.thumbnails, path.join(target.thumbnails, filename));
     const temporary = `${destination}.tmp`;
     try {
-      await sharp(source).rotate().resize({ width: 512, height: 512, fit: 'inside', withoutEnlargement: true })
+      await sharp(source).rotate().resize(asset.type === 'logo'
+        ? { width: 512, height: 512, fit: 'cover', position: 'attention' }
+        : { width: 512, height: 512, fit: 'inside', withoutEnlargement: true })
         .webp({ quality: 80 })
         .toFile(temporary);
       await fs.rename(temporary, destination);

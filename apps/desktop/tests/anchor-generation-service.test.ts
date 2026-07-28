@@ -19,6 +19,7 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
     id: 'lock-logo',
     sourceAssetId: 'asset-logo',
     sourceFile: 'assets/logo.png',
+    thumbnail: 'locked-assets/thumbnails/logo.webp',
     type: 'logo',
     priority: 'critical',
     rule: 'Logo 不变',
@@ -28,7 +29,8 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
     { getActive: async () => style } as never,
     { list: async () => locks } as never,
     {
-      create: async () => {
+      create: async (_projectId: string, input: { aspectRatio: string }) => {
+        assert.equal(input.aspectRatio, '16:9');
         calls.push('candidate:create');
         return {
           id: 'candidate-1',
@@ -55,11 +57,7 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
         references: Array<{ role: string; projectRelativePath: string }>;
         compiledPrompt: string;
       }) => {
-        assert.deepEqual(input.references, [{
-          id: 'asset-logo',
-          role: 'identity_reference',
-          projectRelativePath: 'input/assets/logo.png',
-        }]);
+        assert.deepEqual(input.references, []);
         assert.match(input.compiledPrompt, /approved Generation Blueprint/);
         assert.match(input.compiledPrompt, /地面、墙面、顶面、纵深、动线/);
         assert.match(input.compiledPrompt, /VI 展示板/);

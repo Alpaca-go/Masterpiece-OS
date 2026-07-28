@@ -101,13 +101,17 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
       direction.creativeConcept,
       direction.primaryConcept,
       direction.visualWorld,
-      direction.visualMechanism,
+      ...(['packaging_render', 'brand_poster', 'vi_application', 'illustration'].includes(imagePurpose)
+        ? [direction.visualMechanism]
+        : []),
       strategy,
     ]),
     imagePurpose,
     sceneDescription: `${userRequest}。${task.scene}。执行策略：${strategy}`,
     camera: task.camera,
-    composition: `${task.composition}。${direction.compositionStrategy}`,
+    composition: ['interior_scene', 'storefront_scene'].includes(imagePurpose)
+      ? task.composition
+      : `${task.composition}。${direction.compositionStrategy}`,
     materials: unique([
       direction.materialStrategy,
       ...(input.materialRules ?? []),
@@ -125,6 +129,7 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
       ...(input.avoid ?? []),
       '完整视觉方案图片合集',
       '大量原海报或全部包装图作为风格参考',
+      '禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列',
       '禁止拼贴、禁止多格合集、禁止一次生成多个结果类型',
     ]),
     compilerVersion: GENERATION_BLUEPRINT_COMPILER_VERSION,
@@ -165,9 +170,46 @@ export function validateGenerationBlueprint(blueprint) {
   return blueprint;
 }
 
+function deliverableHardGate(imagePurpose) {
+  const gates = {
+    interior_scene: [
+      '【最高优先级交付物】只生成一张单一、连续、占满整幅画面的真实室内空间摄影。',
+      '画面 100% 必须是同一透视下的完整空间；不得分屏、不得上下分栏、不得拼贴、不得附带 Logo/名片/物料展示区。',
+      '同一画面必须可见地面、墙面、顶面、纵深、顾客动线与服务设施。',
+      '必须呈现至少三个功能区域或服务行为；Logo 与品牌字样合计不得超过画面面积的 5%，不得以 Logo 墙作为主视觉。',
+      '空间摄影必须铺满画布四边；禁止边框、留边、色块画框、网格叠线、坐标线或作品集版式。',
+    ],
+    storefront_scene: [
+      '【最高优先级交付物】只生成一张单一、连续、占满整幅画面的真实门店外立面摄影。',
+      '不得生成立面展板、分屏、物料合集、Logo 特写或多方案排版。',
+    ],
+    packaging_render: [
+      '【最高优先级交付物】只生成一个可生产包装成品的单一商业摄影画面。',
+      '不得生成包装合集、展开图拼贴、设计提案板、随机表格、日历或占位文字。',
+    ],
+    brand_poster: [
+      '【最高优先级交付物】只生成一张正面、完整、画布边缘即海报边缘的商业品牌海报。',
+      '不得生成文件夹、名片、包装、Logo 特写、海报 Mockup、海报展示场景、设计板或多张海报。',
+      '海报必须以用户任务要求的真实事件或主体为视觉核心；Logo 与品牌字样不得超过画面面积的 10%。',
+      '海报设计必须延伸到输出图片四边；禁止白底环境、纸张边缘、投影、相框、墙面或任何 Mockup 背景。',
+    ],
+    vi_application: [
+      '【最高优先级交付物】只生成一种明确且真实可用的品牌应用物料。',
+      '不得生成物料合集、规范页、分屏、设计过程或多个应用结果。',
+    ],
+    illustration: [
+      '【最高优先级交付物】只生成一张完整叙事插画。',
+      '不得生成角色设定表、分镜、拼贴、样张合集或设计说明板。',
+    ],
+  };
+  return gates[imagePurpose];
+}
+
 export function compileGenerationBlueprintPrompt(blueprint) {
   const list = (values) => unique(values).map((value) => `- ${value}`).join('\n');
+  const hardGate = deliverableHardGate(blueprint.imagePurpose);
   return [
+    ...hardGate,
     'Role:',
     'You are a senior brand designer executing an approved Generation Blueprint.',
     'Creative Direction — defines the new visual language:',
@@ -189,6 +231,8 @@ export function compileGenerationBlueprintPrompt(blueprint) {
     'Avoid:',
     list(blueprint.avoid),
     'Output:',
-    'Generate exactly one finished commercial image. Do not output a design board, explanation, collage, or alternatives.',
+    '只输出一张完成的商业图片，不输出解释、设计板、拼贴或备选方案。',
+    'Repeat the non-negotiable deliverable:',
+    ...hardGate,
   ].join('\n\n');
 }

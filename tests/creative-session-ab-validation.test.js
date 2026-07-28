@@ -111,8 +111,10 @@ function locksFor(project) {
 
 function scoreContract(snapshot, project, taskCase) {
   const prompt = snapshot.instruction.finalPrompt;
+  const expectedReferenceCount = 0;
   return {
-    brandAccuracy: prompt.includes(project.name) && snapshot.selectedReferences.length === 1 ? 5 : 1,
+    brandAccuracy: prompt.includes(project.name)
+      && snapshot.selectedReferences.length === expectedReferenceCount ? 5 : 1,
     reconstruction: prompt.includes(project.direction.projectTransformation)
       && prompt.includes('旧包装换皮') ? 5 : 1,
     analysisImplementation: prompt.includes(project.direction[taskCase.strategyField])
@@ -124,7 +126,7 @@ function scoreContract(snapshot, project, taskCase) {
 
 for (const project of Object.values(projects)) {
   for (const taskCase of taskCases) {
-    test(`v18.1 offline A/B: ${project.name} ${taskCase.outputType} reaches all four contract targets`, () => {
+    test(`Visual Upgrade v1 offline A/B: ${project.name} ${taskCase.outputType} reaches all four contract targets`, () => {
       const snapshot = compileGenerationPromptSnapshot({
         projectId: `project-${project.direction.id}`,
         sessionId: `session-${project.direction.id}`,
@@ -139,9 +141,10 @@ for (const project of Object.values(projects)) {
       assert.ok(Object.values(scores).every((score) => score >= 4), JSON.stringify(scores));
       assert.match(taskCase.legacyRisk, /Logo|旧包装|产品照片/u);
       assert.ok(snapshot.selectedReferences.length <= 2);
-      assert.deepEqual(snapshot.selectedReferences.map((reference) => reference.role), [
-        'identity_reference',
-      ]);
+      assert.deepEqual(
+        snapshot.selectedReferences.map((reference) => reference.role),
+        [],
+      );
     });
   }
 }

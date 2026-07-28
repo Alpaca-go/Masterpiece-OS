@@ -66,21 +66,24 @@ export function resolveCanonImagesForTask(canon, outputType) {
  * V18 默认小参考集：最多一张身份、一张必要结构、一张核心 Canon。
  * reading_only / exclude 资产从不由此函数接收，因此不会误发给 Image Provider。
  */
-export function selectGenerationReferences(lockedAssets) {
-  const logo = lockedAssets.find((asset) => asset.type === 'logo' && asset.sourceFile);
-  const structure = lockedAssets.find((asset) => asset.type === 'packaging_structure' && asset.sourceFile);
-  return [
-    ...(logo ? [{
+export function selectGenerationReferences(lockedAssets, outputType) {
+  if (outputType === 'vi_application') {
+    const logo = lockedAssets.find((asset) => asset.type === 'logo' && asset.sourceFile);
+    return logo ? [{
       id: logo.sourceAssetId || logo.id,
       role: 'identity_reference',
-      projectRelativePath: relative(`input/${logo.sourceFile}`),
-    }] : []),
+      projectRelativePath: relative(logo.thumbnail || `input/${logo.sourceFile}`),
+    }] : [];
+  }
+  if (outputType !== 'packaging_render') return [];
+  const structure = lockedAssets.find((asset) => asset.type === 'packaging_structure' && asset.sourceFile);
+  return [
     ...(structure ? [{
       id: structure.sourceAssetId || structure.id,
       role: 'structure_reference',
       projectRelativePath: relative(`input/${structure.sourceFile}`),
     }] : []),
-  ].slice(0, 2);
+  ];
 }
 
 function responsibility(outputType) {
@@ -151,7 +154,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
   if (critical.some((asset) => !asset.rule || !asset.forbiddenChanges?.length)) {
     throw Object.assign(new Error('critical Locked Asset 规则不完整。'), { code: 'CRITICAL_LOCK_RULE_MISSING' });
   }
-  const references = selectGenerationReferences(lockedAssets);
+  const references = selectGenerationReferences(lockedAssets, outputType);
   const recentContext = unique(input.recentContext).slice(-5);
   const preserve = unique([
     ...blueprint.brandAssetRules,

@@ -115,3 +115,46 @@ test('Creative Director service calls a text-only model, retries invalid JSON an
     await fs.rm(temp, { recursive: true, force: true });
   }
 });
+
+test('Creative Director service reads persisted v18.1 directions through an in-memory v1 migration', async () => {
+  const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-direction-legacy-'));
+  const root = path.join(temp, 'project');
+  const directionRoot = path.join(root, 'creative-session', 'direction');
+  await fs.mkdir(directionRoot, { recursive: true });
+  const legacy = {
+    schemaVersion: '1.0',
+    id: 'direction-legacy',
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    version: '1.0.0',
+    status: 'ready',
+    ...modelDirection(),
+    source: {
+      understandingGeneratedAt: '2026-07-28T00:00:00.000Z',
+      reportPath: 'outputs/report.md',
+      runtimeVersion: '18.1.0',
+    },
+    generatedAt: '2026-07-28T01:00:00.000Z',
+  };
+  await fs.writeFile(
+    path.join(directionRoot, 'creative-direction-v1.0.0.json'),
+    JSON.stringify(legacy),
+  );
+  await fs.writeFile(
+    path.join(directionRoot, 'active-direction.json'),
+    JSON.stringify({ filename: 'creative-direction-v1.0.0.json' }),
+  );
+  try {
+    const service = createCreativeDirectionService(
+      { paths: async () => ({ root }) } as never,
+      {} as never,
+      async () => { throw new Error('must not read credentials'); },
+    );
+    const migrated = await service.getActive('project-1');
+    assert.equal(migrated?.brandReposition, legacy.projectTransformation);
+    assert.equal(migrated?.creativeConcept, legacy.primaryConcept);
+    assert.ok(migrated?.transformAssets.length);
+  } finally {
+    await fs.rm(temp, { recursive: true, force: true });
+  }
+});

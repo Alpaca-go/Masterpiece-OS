@@ -55,6 +55,13 @@ test('Creative Understanding minimal gates block all-final-reference and changea
   }), ['logo', 'poster'], NOW), { code: 'LOGO_MARKED_CHANGEABLE' });
 });
 
+test('Creative Understanding allows new mechanisms derived from locked Logo geometry', () => {
+  assert.doesNotThrow(() => normalizeCreativeUnderstanding({
+    ...valid(),
+    creativeFreedom: ['辅助图形可基于 Logo 曲线逻辑开发，但不得修改 Logo 本体'],
+  }, ['logo', 'poster'], NOW));
+});
+
 test('Creative Understanding rejects missing or invented asset classifications', () => {
   assert.throws(() => normalizeCreativeUnderstanding(valid({
     assetReadingSummary: [{ assetId: 'invented', summary: '虚构', recommendedUsage: 'reading_only' }],

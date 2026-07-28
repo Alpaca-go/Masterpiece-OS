@@ -128,7 +128,18 @@ export function validateCreativeUnderstanding(understanding, assetIds = []) {
       code: 'ALL_ASSETS_MARKED_FINAL_REFERENCE',
     });
   }
-  if (understanding.creativeFreedom.some((rule) => /logo|标志|品牌名|标准字/iu.test(rule))) {
+  const identityTerm = '(?:logo|标志|品牌名|标准字)';
+  const mutationTerm = '(?:可修改|修改|重绘|重构|替换|拆解|变形|改造)';
+  const identityMutation = new RegExp(
+    `(?:${mutationTerm}.{0,16}${identityTerm}|${identityTerm}.{0,16}${mutationTerm})`,
+    'iu',
+  );
+  const protectedIdentityRule = new RegExp(
+    `(?:不得|禁止|不可|不能)[^，。；;]*${identityTerm}[^，。；;]*`,
+    'giu',
+  );
+  if (understanding.creativeFreedom.some((rule) =>
+    identityMutation.test(rule.replace(protectedIdentityRule, '')))) {
     throw Object.assign(new Error('Logo 或品牌身份被错误标记为可修改。'), {
       code: 'LOGO_MARKED_CHANGEABLE',
     });
