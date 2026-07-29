@@ -42,6 +42,10 @@ test('Creative Session workspace separates Visual Analysis from the creative wor
   assert.match(creativeSessionSource, /outputType: selectedCommand\?\.outputType/);
   assert.match(creativeSessionSource, /Prompt Compiler/);
   assert.match(creativeSessionSource, /Image Generation Adapter/);
+  assert.match(creativeSessionSource, /generateAnchorSet/);
+  assert.match(creativeSessionSource, /Anchor Candidates/);
+  assert.match(creativeSessionSource, /anchor-comparison-grid/);
+  assert.match(creativeSessionSource, /多候选比较与人工 Primary 选择/);
   for (const ruleGroup of ['色彩', '材质', '光线', '构图', '字体', '空间', '禁止项']) {
     assert.match(creativeSessionSource, new RegExp(`label: '${ruleGroup}'`));
   }
@@ -60,7 +64,7 @@ test('Creative Session workspace separates Visual Analysis from the creative wor
 test('V6 workspace exposes production gates instead of bypassing confirmation', () => {
   assert.match(creativeSessionSource, /建立 Style Profile 与 Locked Assets/);
   assert.match(creativeSessionSource, /确认 Style Profile/);
-  assert.match(creativeSessionSource, /生成 Anchor Candidate/);
+  assert.match(creativeSessionSource, /生成 \$\{anchorCandidateCount\} 个候选/);
   assert.match(creativeSessionSource, /接受为 Primary Canon/);
   assert.match(creativeSessionSource, /从 Primary Anchor 建立 Visual Canon/);
   assert.match(creativeSessionSource, /确认 Visual Canon/);

@@ -8,6 +8,7 @@ import {
   failAnchorCandidateGeneration,
   retryAnchorCandidate,
   reviewAnchorCandidate,
+  supersedeAnchorCandidate,
   transitionAnchorCandidate,
 } from '../packages/creative-production-runtime/src/anchor-candidate.js';
 
@@ -88,6 +89,42 @@ test('Anchor Candidate records generation failure and creates a retry revision',
   assert.equal(retried.parentCandidateId, failed.id);
 });
 
+test('Anchor Candidate Set keeps comparable variants and supersedes non-selected siblings', () => {
+  const candidates = [1, 2, 3].map((candidateIndex) =>
+    createAnchorCandidateTask({
+      projectId: 'project-1',
+      styleProfile,
+      candidateSetId: 'anchor-set-1',
+      candidateIndex,
+      candidateCount: 3,
+    }, NOW));
+  const pending = candidates.map((candidate, index) =>
+    attachAnchorCandidateOutput(candidate, {
+      source: 'uploaded',
+      imagePath: `anchors/candidates/${index + 1}/image.webp`,
+    }, NOW));
+  const selected = reviewAnchorCandidate(pending[1], {
+    action: 'accept_primary',
+    feedback: '第二个候选最适合作为长期视觉基准',
+    evaluation: evaluation(),
+  }, NOW);
+  const superseded = [
+    supersedeAnchorCandidate(pending[0], selected.id, NOW),
+    supersedeAnchorCandidate(pending[2], selected.id, NOW),
+  ];
+  assert.equal(selected.status, 'accepted');
+  assert.deepEqual(superseded.map((item) => item.status), ['superseded', 'superseded']);
+  assert.ok(superseded.every((item) =>
+    item.reviewHistory.at(-1).action === 'supersede'));
+  assert.throws(() => createAnchorCandidateTask({
+    projectId: 'project-1',
+    styleProfile,
+    candidateSetId: 'broken-set',
+    candidateIndex: 3,
+    candidateCount: 2,
+  }, NOW), { code: 'ANCHOR_CANDIDATE_INVALID' });
+});
+
 test('Anchor acceptance gate blocks weak brand assets and invalid transitions', () => {
   const ready = createAnchorCandidateTask({ projectId: 'project-1', styleProfile }, NOW);
   assert.throws(() => transitionAnchorCandidate(ready, 'accepted', NOW), {
@@ -127,5 +164,7 @@ test('Anchor Candidate JSON Schema is closed and fixes outputCount to one', () =
   assert.equal(schema.properties.task.properties.outputCount.const, 1);
   assert.equal(schema.properties.evaluation.required.length, 8);
   assert.ok(schema.properties.status.enum.includes('generation_failed'));
+  assert.ok(schema.properties.status.enum.includes('superseded'));
+  assert.deepEqual(schema.dependentRequired.candidateSetId, ['candidateIndex', 'candidateCount']);
   assert.deepEqual(schema.allOf[0].then.required, ['generationFailure']);
 });

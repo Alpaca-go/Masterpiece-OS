@@ -139,6 +139,8 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:confirm-style-profile', projectId, profileId),
     generateAnchor: (projectId, input) =>
       ipcRenderer.invoke('creative-production:generate-anchor', projectId, input),
+    generateAnchorSet: (projectId, input) =>
+      ipcRenderer.invoke('creative-production:generate-anchor-set', projectId, input),
     retryAnchor: (projectId, candidateId, input) =>
       ipcRenderer.invoke('creative-production:retry-anchor', projectId, candidateId, input),
     reviewAnchor: (projectId, candidateId, input) =>

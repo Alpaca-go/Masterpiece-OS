@@ -16,11 +16,14 @@
     "status": {
       "enum": [
         "not_created", "task_ready", "generating", "generation_failed", "pending_review",
-        "accepted", "rejected", "revision_required"
+        "accepted", "rejected", "superseded", "revision_required"
       ]
     },
     "revision": { "type": "integer", "minimum": 1 },
     "parentCandidateId": { "type": "string", "minLength": 1 },
+    "candidateSetId": { "type": "string", "minLength": 1 },
+    "candidateIndex": { "type": "integer", "minimum": 1, "maximum": 4 },
+    "candidateCount": { "type": "integer", "minimum": 2, "maximum": 4 },
     "styleProfileId": { "type": "string", "minLength": 1 },
     "styleProfileVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
     "lockedAssetIds": { "$ref": "#/$defs/strings" },
@@ -75,7 +78,7 @@
         "required": ["action", "feedback", "createdAt"],
         "properties": {
           "action": {
-            "enum": ["accept_primary", "minor_adjustment", "retry", "modify_style_profile", "reject"]
+            "enum": ["accept_primary", "minor_adjustment", "retry", "modify_style_profile", "reject", "supersede"]
           },
           "feedback": { "type": "string" },
           "createdAt": { "type": "string", "format": "date-time" }
@@ -94,6 +97,11 @@
       "then": { "required": ["generationFailure"] }
     }
   ],
+  "dependentRequired": {
+    "candidateSetId": ["candidateIndex", "candidateCount"],
+    "candidateIndex": ["candidateSetId", "candidateCount"],
+    "candidateCount": ["candidateSetId", "candidateIndex"]
+  },
   "$defs": {
     "strings": {
       "type": "array",

@@ -78,3 +78,48 @@ test('Anchor Candidate service persists upload, review, retry and advances Sessi
     await fs.rm(temp, { recursive: true, force: true });
   }
 });
+
+test('selecting one Candidate Set member supersedes its comparable siblings', async () => {
+  const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'anchor-candidate-set-'));
+  const projectId = 'project-set';
+  const projectRoot = path.join(temp, 'project');
+  const upload = path.join(temp, 'anchor.png');
+  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.writeFile(upload, PNG);
+  let workflowState: CreativeWorkflowState = 'STYLE_PROFILE_CREATED';
+  const service = createAnchorCandidateService(
+    { paths: async () => ({ root: projectRoot }) } as never,
+    {
+      create: async () => ({ workflowState }),
+      transition: async (_projectId: string, next: CreativeWorkflowState) => {
+        workflowState = next;
+      },
+      recordDecision: async () => undefined,
+    } as never,
+    {
+      getActive: async () => ({ id: 'style-1', version: '1.0.0', status: 'confirmed' }),
+    } as never,
+    { list: async () => [{ id: 'lock-1' }] } as never,
+  );
+  try {
+    const ready = await Promise.all([1, 2, 3].map((candidateIndex) =>
+      service.create(projectId, {
+        candidateSetId: 'anchor-set-1',
+        candidateIndex,
+        candidateCount: 3,
+      })));
+    const pending = await Promise.all(ready.map((candidate) =>
+      service.upload(projectId, candidate.id, upload)));
+    const selected = await service.review(projectId, pending[1]!.id, {
+      action: 'accept_primary',
+      feedback: '人工选择第二个候选',
+      evaluation: evaluation(),
+    });
+    const candidates = await service.list(projectId);
+    assert.equal(selected.status, 'accepted');
+    assert.equal(candidates.filter((item) => item.status === 'accepted').length, 1);
+    assert.equal(candidates.filter((item) => item.status === 'superseded').length, 2);
+  } finally {
+    await fs.rm(temp, { recursive: true, force: true });
+  }
+});

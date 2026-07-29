@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import type {
   CreativeDirection,
   GenerationBlueprint,
@@ -121,12 +122,30 @@ export function createAnchorGenerationService(
         'Use only the task-selected reference files. Preserve identity and structure; do not copy obsolete style.',
       ] : []),
       compileGenerationBlueprintPrompt(blueprint),
+      ...(candidate.candidateSetId ? [
+        [
+          '## Candidate Set Variation',
+          `Candidate ${candidate.candidateIndex}/${candidate.candidateCount}.`,
+          [
+            '优先探索构图层级与留白关系。',
+            '优先探索材质、光线与商业真实感。',
+            '优先探索图形机制与品牌记忆点。',
+            '优先探索跨触点延展与长期可复用性。',
+          ][(candidate.candidateIndex ?? 1) - 1],
+          '必须服从同一 Style Profile、Locked Assets 与 Creative Direction；差异只用于人工比较。',
+        ].filter(Boolean).join('\n'),
+      ] : []),
     ].join('\n\n');
     const snapshot = {
       schemaVersion: '1.0',
       kind: 'anchor-candidate-prompt',
       projectId,
       candidateId: candidate.id,
+      ...(candidate.candidateSetId ? {
+        candidateSetId: candidate.candidateSetId,
+        candidateIndex: candidate.candidateIndex,
+        candidateCount: candidate.candidateCount,
+      } : {}),
       styleProfileId: style.id,
       styleProfileVersion: style.version,
       creativeDirectionId: direction.id,
@@ -148,6 +167,11 @@ export function createAnchorGenerationService(
       snapshot,
       sourceMap: {
         candidateId: candidate.id,
+        ...(candidate.candidateSetId ? {
+          candidateSetId: candidate.candidateSetId,
+          candidateIndex: candidate.candidateIndex,
+          candidateCount: candidate.candidateCount,
+        } : {}),
         styleProfile: `${style.id}@${style.version}`,
         creativeDirection: `${direction.id}@${direction.version}`,
         generationBlueprint: blueprint.id,
@@ -211,6 +235,52 @@ export function createAnchorGenerationService(
     return execute(projectId, candidate, style, direction, locks, input);
   }
 
+  async function generateSet(projectId: string, input: {
+    purpose?: string;
+    aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+    candidateCount?: number;
+    apiProfileId?: string;
+    dryRun?: boolean;
+  }) {
+    const candidateCount = input.candidateCount ?? 3;
+    if (!Number.isInteger(candidateCount) || candidateCount < 2 || candidateCount > 4) {
+      throw Object.assign(new Error('Anchor Candidate Set 数量必须在 2 到 4 之间。'), {
+        code: 'ANCHOR_CANDIDATE_SET_INVALID',
+      });
+    }
+    const [style, direction, locks] = await Promise.all([
+      styles.getActive(projectId),
+      directions.getActive(projectId),
+      lockedAssets.list(projectId),
+    ]);
+    if (!style || style.status !== 'confirmed') {
+      throw Object.assign(new Error('生成 Anchor Candidate Set 前必须确认 Style Profile。'), {
+        code: 'STYLE_PROFILE_NOT_CONFIRMED',
+      });
+    }
+    if (!direction || direction.status !== 'ready') {
+      throw Object.assign(new Error('生成 Anchor Candidate Set 前必须存在 ready Creative Direction。'), {
+        code: 'CREATIVE_DIRECTION_NOT_READY',
+      });
+    }
+    const purpose = input.purpose?.trim() || '建立新的品牌主视觉方向';
+    const imagePurpose = resolveBlueprintPurpose(purpose);
+    const aspectRatio = input.aspectRatio || defaultAspectRatio(imagePurpose);
+    const candidateSetId = `anchor-set-${crypto.randomUUID()}`;
+    const results = [];
+    for (let index = 1; index <= candidateCount; index += 1) {
+      const candidate = await candidates.create(projectId, {
+        purpose,
+        aspectRatio,
+        candidateSetId,
+        candidateIndex: index,
+        candidateCount,
+      });
+      results.push(await execute(projectId, candidate, style, direction, locks, input));
+    }
+    return { candidateSetId, results };
+  }
+
   async function retry(projectId: string, candidateId: string, input: {
     apiProfileId?: string;
     dryRun?: boolean;
@@ -262,7 +332,7 @@ export function createAnchorGenerationService(
     }));
   }
 
-  return { generate, retry, list };
+  return { generate, generateSet, retry, list };
 }
 
 export type AnchorGenerationService = ReturnType<typeof createAnchorGenerationService>;

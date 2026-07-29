@@ -519,6 +519,17 @@ function registerIpc(): void {
       dryRun?: boolean;
     }
   ) => anchorGeneration.generate(projectId, input));
+  registerHandler('creative-production:generate-anchor-set', (
+    _event,
+    projectId: string,
+    input: {
+      purpose?: string;
+      aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+      candidateCount?: number;
+      apiProfileId?: string;
+      dryRun?: boolean;
+    }
+  ) => anchorGeneration.generateSet(projectId, input));
   registerHandler('creative-production:retry-anchor', (
     _event,
     projectId: string,

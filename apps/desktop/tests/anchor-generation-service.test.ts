@@ -175,3 +175,92 @@ test('Anchor Provider bridge reconciles a stale generating candidate from its fa
   assert.equal(result[0]?.status, 'generation_failed');
   assert.deepEqual(calls, ['run:read', 'candidate:failed']);
 });
+
+test('Anchor Provider bridge generates a traceable multi-candidate set for comparison', async () => {
+  const prompts: string[] = [];
+  let runIndex = 0;
+  const service = createAnchorGenerationService(
+    {
+      getActive: async () => ({
+        id: 'style-1',
+        version: '1.0.0',
+        status: 'confirmed',
+        materialAndTexture: { materials: [], surfaceRules: [] },
+        promptComponents: { negative: [] },
+        forbiddenVariations: [],
+      }),
+    } as never,
+    { list: async () => [] } as never,
+    {
+      create: async (_projectId: string, input: {
+        purpose: string;
+        aspectRatio: string;
+        candidateSetId: string;
+        candidateIndex: number;
+        candidateCount: number;
+      }) => ({
+        id: `candidate-${input.candidateIndex}`,
+        candidateSetId: input.candidateSetId,
+        candidateIndex: input.candidateIndex,
+        candidateCount: input.candidateCount,
+        task: { purpose: input.purpose, aspectRatio: input.aspectRatio },
+      }),
+      beginGeneration: async () => undefined,
+      completeGeneration: async (_projectId: string, candidateId: string) => ({
+        id: candidateId,
+        status: 'pending_review',
+      }),
+    } as never,
+    {
+      startCompiledCreativeTask: async (input: { compiledPrompt: string }) => {
+        prompts.push(input.compiledPrompt);
+        runIndex += 1;
+        return {
+          runId: `run-${runIndex}`,
+          status: 'succeeded',
+          images: [{ relativePath: `images/candidate-${runIndex}.png` }],
+        };
+      },
+    } as never,
+    {
+      getActive: async () => ({
+        id: 'direction-1',
+        version: '1.0.0',
+        status: 'ready',
+      }),
+    } as never,
+    {
+      compile: async () => ({
+        schemaVersion: '1.0',
+        id: 'blueprint-1',
+        projectId: 'project-1',
+        sessionId: 'session-1',
+        creativeDirectionId: 'direction-1',
+        creativeDirectionVersion: '1.0.0',
+        creativeDirectionSummary: ['统一方向'],
+        imagePurpose: 'brand_poster',
+        sceneDescription: '完整品牌主视觉',
+        camera: '正面视角',
+        composition: '单一焦点',
+        materials: ['真实材质'],
+        lighting: '柔和光线',
+        colorDirection: '品牌色有序分配',
+        brandAssetRules: ['品牌身份准确'],
+        avoid: ['禁止拼贴'],
+        compilerVersion: '1.0.0',
+        generatedAt: '2026-07-29T00:00:00.000Z',
+      }),
+    } as never,
+  );
+  const result = await service.generateSet('project-1', {
+    purpose: '建立新的品牌主视觉方向',
+    candidateCount: 2,
+    dryRun: true,
+  });
+  assert.equal(result.results.length, 2);
+  assert.ok(result.results.every((item) => item.candidate.status === 'pending_review'));
+  assert.match(result.candidateSetId, /^anchor-set-/u);
+  assert.match(prompts[0]!, /Candidate 1\/2/u);
+  assert.match(prompts[1]!, /Candidate 2\/2/u);
+  assert.notEqual(prompts[0], prompts[1]);
+});

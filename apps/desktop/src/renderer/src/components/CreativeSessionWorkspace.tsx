@@ -142,6 +142,8 @@ export function CreativeSessionWorkspace({
   });
   const [tab, setTab] = useState<'foundation' | 'anchor' | 'visual-system' | 'versions'>('foundation');
   const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
+  const [anchorCandidateCount, setAnchorCandidateCount] = useState(3);
+  const [selectedAnchorId, setSelectedAnchorId] = useState('');
   const [contextDirection, setContextDirection] = useState('');
   const [reviewFeedback, setReviewFeedback] = useState('');
   const [reviewScores, setReviewScores] = useState<Record<string, number>>(
@@ -415,7 +417,8 @@ export function CreativeSessionWorkspace({
   const anchorsForCurrentStyle = production.anchors.filter((item) =>
     item.styleProfileId === workspace?.styleProfile?.id
     && item.styleProfileVersion === workspace?.styleProfile?.version);
-  const activeAnchor = anchorsForCurrentStyle.find((item) => item.status === 'accepted')
+  const activeAnchor = anchorsForCurrentStyle.find((item) => item.id === selectedAnchorId)
+    || anchorsForCurrentStyle.find((item) => item.status === 'accepted')
     || anchorsForCurrentStyle[0];
   const anchorRunView = activeAnchor?.generationRunId
     ? runViews.find((item) => item.run.runId === activeAnchor.generationRunId)
@@ -611,20 +614,53 @@ export function CreativeSessionWorkspace({
       </section>
 
       <section className="panel">
-        <div className="section-heading"><span>02</span><div><h2>Anchor Candidate</h2><p>单图验证新的整体视觉方向</p></div></div>
-        {!activeAnchor && <div className="anchor-create-form">
+        <div className="section-heading"><span>02</span><div><h2>Anchor Candidates</h2><p>多候选比较与人工 Primary 选择</p></div></div>
+        <div className="anchor-create-form">
           <label>候选图任务<textarea rows={3} value={anchorPurpose} onChange={(event) => setAnchorPurpose(event.target.value)} /></label>
+          <label>候选数量<select
+            value={anchorCandidateCount}
+            onChange={(event) => setAnchorCandidateCount(Number(event.target.value))}
+          >
+            {[2, 3, 4].map((count) => <option key={count} value={count}>{count} 个候选</option>)}
+          </select></label>
           <button
             className="button primary full"
             disabled={workspace?.styleProfile?.status !== 'confirmed' || !imageApiProfileId || Boolean(busy)}
-            onClick={() => void runProductionAction(
-              () => window.masterpiece.creativeProduction.generateAnchor(project.id, {
+            onClick={() => void runProductionAction(async () => {
+              const result = await window.masterpiece.creativeProduction.generateAnchorSet(project.id, {
                 purpose: anchorPurpose,
                 aspectRatio: '1:1',
+                candidateCount: anchorCandidateCount,
                 apiProfileId: imageApiProfileId || undefined
-              })
-            )}
-          >{busy === 'generating' ? '正在生成 Anchor…' : '生成 Anchor Candidate'}</button>
+              });
+              setSelectedAnchorId(result.results[0]?.candidate.id || '');
+            })}
+          >{busy === 'generating' ? '正在生成候选组…' : `生成 ${anchorCandidateCount} 个候选`}</button>
+        </div>
+        {anchorsForCurrentStyle.length > 0 && <div className="anchor-comparison-grid">
+          {anchorsForCurrentStyle.map((candidate) => {
+            const view = candidate.generationRunId
+              ? runViews.find((item) => item.run.runId === candidate.generationRunId)
+              : undefined;
+            const score = candidate.generationRunId
+              ? evaluationScoreForRun(candidate.generationRunId)
+              : null;
+            return <button
+              type="button"
+              key={candidate.id}
+              className={activeAnchor?.id === candidate.id ? 'active' : ''}
+              onClick={() => setSelectedAnchorId(candidate.id)}
+            >
+              {view?.imageUrls[0]
+                ? <img src={view.imageUrls[0]} alt={`Anchor Candidate ${candidate.candidateIndex || ''}`} />
+                : <div className="anchor-candidate-placeholder">{candidate.status}</div>}
+              <span>
+                候选 {candidate.candidateIndex || candidate.revision}
+                {candidate.candidateCount ? ` / ${candidate.candidateCount}` : ''}
+              </span>
+              <small>{candidate.status} · {score === null ? '待评估' : `${score.toFixed(1)} 分`}</small>
+            </button>;
+          })}
         </div>}
         {activeAnchor && <div className="anchor-review-card">
           {anchorRunView?.imageUrls[0] && <img src={anchorRunView.imageUrls[0]} alt="Anchor Candidate" />}

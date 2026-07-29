@@ -9,6 +9,7 @@ export const ANCHOR_CANDIDATE_STATUSES = Object.freeze([
   'pending_review',
   'accepted',
   'rejected',
+  'superseded',
   'revision_required',
 ]);
 
@@ -27,10 +28,11 @@ const TRANSITIONS = Object.freeze({
   task_ready: ['generating', 'pending_review'],
   generating: ['generation_failed', 'pending_review', 'rejected'],
   generation_failed: [],
-  pending_review: ['accepted', 'rejected', 'revision_required'],
+  pending_review: ['accepted', 'rejected', 'superseded', 'revision_required'],
   revision_required: ['task_ready'],
-  accepted: [],
+  accepted: ['superseded'],
   rejected: [],
+  superseded: [],
 });
 
 function text(value) {
@@ -74,6 +76,11 @@ export function createAnchorCandidateTask(input, now = new Date().toISOString())
     status: 'task_ready',
     revision: Number.isInteger(input?.revision) && input.revision > 0 ? input.revision : 1,
     ...(input?.parentCandidateId ? { parentCandidateId: text(input.parentCandidateId) } : {}),
+    ...(input?.candidateSetId ? {
+      candidateSetId: text(input.candidateSetId),
+      candidateIndex: input.candidateIndex,
+      candidateCount: input.candidateCount,
+    } : {}),
     styleProfileId: text(input.styleProfile.id),
     styleProfileVersion: text(input.styleProfile.version),
     lockedAssetIds: unique(input?.lockedAssetIds),
@@ -209,6 +216,30 @@ export function reviewAnchorCandidate(candidate, review, now = new Date().toISOS
   return transitionAnchorCandidate(updated, nextStatus, now);
 }
 
+export function supersedeAnchorCandidate(candidate, selectedCandidateId, now = new Date().toISOString()) {
+  validateAnchorCandidate(candidate);
+  if (!['pending_review', 'accepted'].includes(candidate.status)) {
+    throw Object.assign(new Error('只有可比较或已接受的 Candidate 可以被替代。'), {
+      code: 'ANCHOR_CANDIDATE_TRANSITION_INVALID',
+    });
+  }
+  const selected = text(selectedCandidateId);
+  if (!selected || selected === candidate.id) {
+    throw Object.assign(new Error('Anchor Candidate 替代关系无效。'), {
+      code: 'ANCHOR_CANDIDATE_INVALID',
+    });
+  }
+  return transitionAnchorCandidate({
+    ...candidate,
+    reviewHistory: [...candidate.reviewHistory, {
+      action: 'supersede',
+      feedback: `同组候选 ${selected} 已被人工选为 Primary Canon。`,
+      createdAt: now,
+    }],
+    updatedAt: now,
+  }, 'superseded', now);
+}
+
 export function retryAnchorCandidate(candidate, now = new Date().toISOString()) {
   validateAnchorCandidate(candidate);
   if (!['generation_failed', 'revision_required', 'rejected'].includes(candidate.status)) {
@@ -228,6 +259,9 @@ export function retryAnchorCandidate(candidate, now = new Date().toISOString()) 
     aspectRatio: candidate.task.aspectRatio,
     revision: candidate.revision + 1,
     parentCandidateId: candidate.id,
+    candidateSetId: candidate.candidateSetId,
+    candidateIndex: candidate.candidateIndex,
+    candidateCount: candidate.candidateCount,
   }, now);
 }
 
@@ -245,6 +279,17 @@ export function validateAnchorCandidate(candidate) {
     || !Array.isArray(candidate.lockedAssetIds) || !Array.isArray(candidate.reviewHistory)) {
     throw Object.assign(new Error('Anchor Candidate 状态、版本或引用无效。'), { code: 'ANCHOR_CANDIDATE_INVALID' });
   }
+  const hasCandidateSet = Boolean(candidate.candidateSetId);
+  if (hasCandidateSet !== (
+    Number.isInteger(candidate.candidateIndex) && Number.isInteger(candidate.candidateCount)
+  ) || (hasCandidateSet && (
+    candidate.candidateCount < 2
+    || candidate.candidateCount > 4
+    || candidate.candidateIndex < 1
+    || candidate.candidateIndex > candidate.candidateCount
+  ))) {
+    throw Object.assign(new Error('Anchor Candidate Set 信息无效。'), { code: 'ANCHOR_CANDIDATE_INVALID' });
+  }
   if (candidate.task?.type !== 'brand_hero' || candidate.task?.outputCount !== 1
     || !text(candidate.task?.purpose)
     || !['16:9', '4:5', '3:4', '1:1'].includes(candidate.task?.aspectRatio)) {
@@ -260,7 +305,7 @@ export function validateAnchorCandidate(candidate) {
       code: 'ANCHOR_CANDIDATE_INVALID',
     });
   }
-  if (['pending_review', 'accepted', 'rejected', 'revision_required'].includes(candidate.status)
+  if (['pending_review', 'accepted', 'rejected', 'superseded', 'revision_required'].includes(candidate.status)
     && !candidate.imagePath) {
     throw Object.assign(new Error('可评审 Candidate 必须包含图片。'), { code: 'ANCHOR_OUTPUT_MISSING' });
   }

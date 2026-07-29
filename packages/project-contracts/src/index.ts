@@ -388,6 +388,7 @@ export type AnchorCandidateStatus =
   | 'pending_review'
   | 'accepted'
   | 'rejected'
+  | 'superseded'
   | 'revision_required';
 
 export type AnchorEvaluationDimension =
@@ -422,6 +423,9 @@ export interface AnchorCandidate {
   status: AnchorCandidateStatus;
   revision: number;
   parentCandidateId?: string;
+  candidateSetId?: string;
+  candidateIndex?: number;
+  candidateCount?: number;
   styleProfileId: string;
   styleProfileVersion: string;
   lockedAssetIds: string[];
@@ -442,7 +446,7 @@ export interface AnchorCandidate {
   };
   evaluation?: AnchorCandidateEvaluation;
   reviewHistory: Array<{
-    action: 'accept_primary' | 'minor_adjustment' | 'retry' | 'modify_style_profile' | 'reject';
+    action: 'accept_primary' | 'minor_adjustment' | 'retry' | 'modify_style_profile' | 'reject' | 'supersede';
     feedback: string;
     createdAt: string;
   }>;

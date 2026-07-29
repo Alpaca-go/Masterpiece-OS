@@ -1974,6 +1974,16 @@ export interface DesktopApi {
       apiProfileId?: string;
       dryRun?: boolean;
     }): Promise<{ candidate: AnchorCandidate; run: ImageGenerationRun }>;
+    generateAnchorSet(projectId: string, input: {
+      purpose?: string;
+      aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+      candidateCount?: number;
+      apiProfileId?: string;
+      dryRun?: boolean;
+    }): Promise<{
+      candidateSetId: string;
+      results: Array<{ candidate: AnchorCandidate; run: ImageGenerationRun }>;
+    }>;
     retryAnchor(projectId: string, candidateId: string, input: {
       apiProfileId?: string;
       dryRun?: boolean;

@@ -11,6 +11,7 @@ import {
   failAnchorCandidateGeneration,
   retryAnchorCandidate,
   reviewAnchorCandidate,
+  supersedeAnchorCandidate,
   transitionAnchorCandidate,
   validateAnchorCandidate,
 } from '../../../../packages/creative-production-runtime/src/anchor-candidate.js';
@@ -103,7 +104,13 @@ export function createAnchorCandidateService(
 
   async function create(
     projectId: string,
-    input: { purpose?: string; aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1' } = {},
+    input: {
+      purpose?: string;
+      aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
+      candidateSetId?: string;
+      candidateIndex?: number;
+      candidateCount?: number;
+    } = {},
   ): Promise<AnchorCandidate> {
     const [styleProfile, locks] = await Promise.all([
       styles.getActive(projectId),
@@ -120,6 +127,9 @@ export function createAnchorCandidateService(
       lockedAssetIds: locks.map((asset) => asset.id),
       purpose: input.purpose,
       aspectRatio: input.aspectRatio,
+      candidateSetId: input.candidateSetId,
+      candidateIndex: input.candidateIndex,
+      candidateCount: input.candidateCount,
     }) as AnchorCandidate;
     await persist(candidate);
     await advanceSession(projectId, 'PRIMARY_ANCHOR_READY', 'Anchor Candidate Task 已准备。');
@@ -247,6 +257,14 @@ export function createAnchorCandidateService(
     const reviewed = reviewAnchorCandidate(candidate, input) as AnchorCandidate;
     await persist(reviewed);
     if (reviewed.status === 'accepted') {
+      if (reviewed.candidateSetId) {
+        const siblings = (await list(projectId)).filter((item) =>
+          item.id !== reviewed.id
+          && item.candidateSetId === reviewed.candidateSetId
+          && ['pending_review', 'accepted'].includes(item.status));
+        await Promise.all(siblings.map((item) =>
+          persist(supersedeAnchorCandidate(item, reviewed.id) as AnchorCandidate)));
+      }
       await advanceSession(projectId, 'PRIMARY_ANCHOR_CONFIRMED', 'Anchor Candidate 已接受为 Primary Canon。');
     } else {
       await sessions.recordDecision(projectId, {
