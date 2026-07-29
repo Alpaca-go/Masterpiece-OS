@@ -10,6 +10,29 @@ function kebab(value: string): string {
   return value.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 }
 
+/**
+ * Desktop preload methods normally map to IPC channels by kebab-casing the
+ * namespace and method. Keep the exceptions explicit here instead of trying to
+ * infer semantic channel aliases such as `compileVNext -> vnext-compile`.
+ */
+export const WEB_RPC_CHANNEL_OVERRIDES: Readonly<Record<string, string>> = Object.freeze({
+  'imageGeneration.compileVNext': 'image-generation:vnext-compile',
+  'imageGeneration.getVNextOptions': 'image-generation:vnext-options',
+  'imageGeneration.startVNext': 'image-generation:vnext-start',
+  'imageGeneration.startValidatedVNext': 'image-generation:vnext-start-validated',
+  'imageGeneration.getVNextSession': 'image-generation:vnext-session',
+  'imageGeneration.confirmVNextDirection': 'image-generation:vnext-confirm-direction',
+  'imageGeneration.continueVNextSameType': 'image-generation:vnext-continue-same-type',
+  'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
+  'projectContext.getVNext': 'project-context:get-vnext',
+  'projectContext.rebuildVNext': 'project-context:rebuild-vnext'
+});
+
+export function resolveWebRpcChannel(namespace: string, method: string): string {
+  return WEB_RPC_CHANNEL_OVERRIDES[`${namespace}.${method}`]
+    ?? `${kebab(namespace)}:${kebab(method)}`;
+}
+
 function ensureEventSource(): EventSource {
   if (eventSource) return eventSource;
   eventSource = new EventSource('/_masterpiece/events');
@@ -70,7 +93,7 @@ function namespaceProxy(namespace: string): unknown {
       if (progressEvent) {
         return (callback: ProgressCallback) => subscribe(progressEvent, callback);
       }
-      const channel = `${kebab(namespace)}:${kebab(method)}`;
+      const channel = resolveWebRpcChannel(namespace, method);
       return (...args: unknown[]) => invoke(channel, args);
     }
   });

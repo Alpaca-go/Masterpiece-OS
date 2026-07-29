@@ -93,6 +93,17 @@ const EXPECTED_CHANNELS = [
   'image-generation:get-image-data-url',
 ];
 
+const EXPECTED_VNEXT_CHANNELS = [
+  'image-generation:vnext-options',
+  'image-generation:vnext-compile',
+  'image-generation:vnext-start',
+  'image-generation:vnext-start-validated',
+  'image-generation:vnext-session',
+  'image-generation:vnext-confirm-direction',
+  'image-generation:vnext-continue-same-type',
+  'image-generation:vnext-save-prompt-asset',
+];
+
 test('registerImageGenerationIpc 注册全部 §16.1 handler', () => {
   const { ipcMain, handlers } = makeFakeIpcMain() as any;
   const { svc, calls } = makeFakeService();
@@ -221,4 +232,25 @@ test('save-review / open-folder / get-image-data-url 转发参数', async () => 
   assert.equal(dataUrl.mimeType, 'image/png');
   assert.equal(calls.getImageDataUrl[0], 'r3');
   assert.equal(calls.getImageDataUrl[1], 'image-01');
+});
+
+test('registerImageGenerationIpc registers the complete vNext channel family', () => {
+  const { ipcMain, handlers } = makeFakeIpcMain() as any;
+  const { svc } = makeFakeService();
+  const vnextService = {
+    listOptions: async () => ({}),
+    compile: async () => ({}),
+    start: async () => ({}),
+    startValidated: async () => ({}),
+    getSession: async () => ({}),
+    confirmDirection: async () => ({}),
+    continueSameType: async () => ({}),
+    saveProjectPromptAsset: async () => ({}),
+  };
+
+  registerImageGenerationIpc(svc, ipcMain, vnextService as any);
+
+  for (const channel of EXPECTED_VNEXT_CHANNELS) {
+    assert.ok(handlers[channel], `expected vNext IPC registration for ${channel}`);
+  }
 });
