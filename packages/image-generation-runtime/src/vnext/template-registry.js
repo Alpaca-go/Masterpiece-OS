@@ -1,4 +1,4 @@
-export const VNEXT_TEMPLATE_REGISTRY_VERSION = '2.0.0';
+export const VNEXT_TEMPLATE_REGISTRY_VERSION = '2.1.0';
 const MODELS = ['seedream-5.0-pro'];
 
 function template(value) {
@@ -26,9 +26,24 @@ const FAMILY_TEMPLATES = [
       professionalRequirements: [
         'Translate brand identity into spatial material, proportion, detail, and environmental graphics; do not display a collection of VI mockups.',
         'Material junctions, furniture scale, lighting installation, and circulation must be buildable.',
+        'Build foreground, middle ground, and background as one continuous scene with a legible arrival sequence and unobstructed circulation.',
+        'Use brand motifs as abstract spatial behavior, never as a literal oversized icon, repeated wallpaper, or decorative prop.',
       ],
-      realism: ['Commercial architectural photography realism with physically credible material, light, shadow, and scale.'],
-      negative: ['VI display board', 'brand guideline page', 'material board', 'moodboard', 'concept layout board', 'stationery mockup'],
+      realism: [
+        'Commercial architectural photography realism with physically credible material, light, shadow, scale, lens perspective, and construction detail.',
+        'The result must read as one finished photograph of a real place, never as a design-process artifact.',
+      ],
+      negative: [
+        'VI display board',
+        'brand guideline page',
+        'material board',
+        'moodboard',
+        'concept layout board',
+        'stationery mockup',
+        'collage',
+        'split-screen comparison',
+        'floating product platform unrelated to the requested function',
+      ],
     },
   }),
   template({

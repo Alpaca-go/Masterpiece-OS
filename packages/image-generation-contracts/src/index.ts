@@ -842,6 +842,19 @@ export interface VNextCompiledPrompt {
   taskContract: VNextTaskContract;
   projectContextVersion: number;
   route: VNextTemplateRoute;
+  blocks: Array<{
+    id: string;
+    title: string;
+    items: string[];
+    sources: string[];
+  }>;
+  sourceMap: Record<string, string[]>;
+  completeness: {
+    complete: boolean;
+    requiredBlockIds: string[];
+    missingBlockIds: string[];
+    conflictCount: number;
+  };
   finalPrompt: string;
   editablePrompt: string;
   negativeConstraints: string[];
