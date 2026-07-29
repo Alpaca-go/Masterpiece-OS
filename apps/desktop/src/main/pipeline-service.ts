@@ -44,6 +44,10 @@ import {
   writeProjectVisualContext,
   PROJECT_VISUAL_CONTEXT_SCHEMA_VERSION
 } from './project-visual-context-compiler';
+import {
+  buildProjectVisualContextVNext,
+  writeProjectVisualContextVNext,
+} from './project-context-vnext-builder.ts';
 import type { ProjectStore } from './project-store';
 import {
   incompleteProjectIdentity,
@@ -550,6 +554,44 @@ export function createPipelineService(
             visualContextLastBuiltAt: new Date().toISOString()
           })
           .catch(() => undefined);
+      }
+
+      // vNext context is a sibling of the report. It is compiled only from the
+      // project record and original asset inventory; report markdown is never
+      // accepted by the builder.
+      try {
+        const previousVNext = updated.visualContextVNextStatus === 'ready'
+          ? await fs.readFile(
+            path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
+            'utf8',
+          ).then((value) => JSON.parse(value)).catch(() => null)
+          : null;
+        const vnextContext = buildProjectVisualContextVNext({
+          project: updated,
+          previousContext: previousVNext,
+          structuredAnalysisRunId: execution.result.runReport.reasoningRunId,
+        });
+        await writeProjectVisualContextVNext(
+          path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
+          vnextContext,
+        );
+        await projects.update(projectId, {
+          visualContextVNextFilename: 'project-visual-context.vnext.json',
+          visualContextVNextStatus: 'ready',
+          visualContextVNextVersion: vnextContext.version,
+          visualContextVNextLastBuiltAt: vnextContext.generatedAt,
+        });
+      } catch (contextError) {
+        const message = contextError instanceof Error ? contextError.message : String(contextError);
+        console.warn(JSON.stringify({
+          event: 'PROJECT_VISUAL_CONTEXT_VNEXT_COMPILE_FAILED',
+          projectId,
+          message,
+        }));
+        await projects.update(projectId, {
+          visualContextVNextStatus: 'failed',
+          visualContextVNextLastBuiltAt: new Date().toISOString(),
+        }).catch(() => undefined);
       }
 
       progress('completed', '分析完成', {

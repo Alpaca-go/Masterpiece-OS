@@ -785,3 +785,84 @@ export const DEFAULT_IMAGE_PROVIDER_ID: ImageProviderId = 'dashscope';
 export const DEFAULT_IMAGE_MODEL_ID = 'wan2.7-image-pro';
 export const DEFAULT_IMAGE_OUTPUT_TYPE: ImageGenerationOutputType = 'master_anchor_image';
 export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
+
+// ---------------------------------------------------------------------------
+// vNext short-pipeline contracts
+// ---------------------------------------------------------------------------
+
+export type VNextDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
+export type VNextAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
+
+export interface VNextTaskContract {
+  schemaVersion: '1.0';
+  taskId: string;
+  projectId: string;
+  deliverableFamily: VNextDeliverableFamily;
+  subtype: string;
+  shot: string;
+  count: 1 | 2;
+  aspectRatio: VNextAspectRatio;
+  currentInstruction: string;
+  mustInclude: string[];
+  mustAvoid: string[];
+  referenceAssetIds: string[];
+  createdAt: string;
+}
+
+export interface VNextPromptTemplate {
+  id: string;
+  version: string;
+  kind: 'family' | 'subtype' | 'shot';
+  deliverableFamily: VNextDeliverableFamily;
+  appliesTo: {
+    subtypes?: string[];
+    shots?: string[];
+    models: string[];
+  };
+  requiredFields: string[];
+  forbiddenInheritanceFields: string[];
+  sections: {
+    definition?: string[];
+    professionalRequirements?: string[];
+    composition?: string[];
+    realism?: string[];
+    negative?: string[];
+  };
+}
+
+export interface VNextTemplateRoute {
+  familyTemplateId: string;
+  subtypeTemplateId: string;
+  shotTemplateId: string;
+  templateVersions: Record<string, string>;
+}
+
+export interface VNextCompiledPrompt {
+  schemaVersion: '1.0';
+  taskContract: VNextTaskContract;
+  projectContextVersion: number;
+  route: VNextTemplateRoute;
+  finalPrompt: string;
+  editablePrompt: string;
+  negativeConstraints: string[];
+  referenceAssetIds: string[];
+  compiledAt: string;
+  trace: {
+    compilerId: string;
+    compilerVersion: string;
+    adapterId: string;
+    adapterVersion: string;
+    sourceFingerprint: string;
+  };
+}
+
+export interface VNextModelPromptPayload {
+  adapterId: string;
+  adapterVersion: string;
+  model: string;
+  prompt: string;
+  size: '2K';
+  aspectRatio: VNextAspectRatio;
+  count: 1 | 2;
+  referenceAssetIds: string[];
+}

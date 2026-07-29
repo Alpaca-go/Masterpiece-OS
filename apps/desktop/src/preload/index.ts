@@ -95,6 +95,7 @@ const api: DesktopApi = {
     getPresetCapabilities: () => ipcRenderer.invoke('image-generation:get-preset-capabilities'),
     getSourcePreview: (input) => ipcRenderer.invoke('image-generation:get-source-preview', input),
     compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
+    compileVNext: (input) => ipcRenderer.invoke('image-generation:vnext-compile', input),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
     listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),
@@ -220,7 +221,9 @@ const api: DesktopApi = {
   projectContext: {
     get: (projectId) => ipcRenderer.invoke('project-context:get', projectId),
     rebuild: (projectId) => ipcRenderer.invoke('project-context:rebuild', projectId),
-    export: (projectId) => ipcRenderer.invoke('project-context:export', projectId)
+    export: (projectId) => ipcRenderer.invoke('project-context:export', projectId),
+    getVNext: (projectId) => ipcRenderer.invoke('project-context:get-vnext', projectId),
+    rebuildVNext: (projectId) => ipcRenderer.invoke('project-context:rebuild-vnext', projectId)
   },
   visualMemory: {
     get: (projectId) => ipcRenderer.invoke('visual-memory:get', projectId),

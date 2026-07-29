@@ -572,6 +572,10 @@ export interface ProjectRecord {
   visualContextStatus?: 'missing' | 'ready' | 'failed';
   visualContextSchemaVersion?: string | null;
   visualContextLastBuiltAt?: string | null;
+  visualContextVNextFilename?: string | null;
+  visualContextVNextStatus?: 'missing' | 'ready' | 'failed';
+  visualContextVNextVersion?: number | null;
+  visualContextVNextLastBuiltAt?: string | null;
 }
 
 // ── 共享契约类型已迁移至 packages/project-contracts（repository-slimming-v2 Phase 1）──
@@ -579,6 +583,7 @@ export type {
   PackagingStructureStatus,
   ProjectVisualContextStatus,
   ProjectVisualContext,
+  ProjectVisualContextVNext,
   DocumentVisualContextEvidence,
   DocumentVisualContext,
   ReferenceAssetSelectionItem,
@@ -591,6 +596,7 @@ export type {
 } from '../../../../packages/project-contracts/src/index';
 import type {
   ProjectVisualContext,
+  ProjectVisualContextVNext,
   DocumentVisualContext,
   DocumentVisualContextEvidence,
   ReferenceAssetSelection,
@@ -648,11 +654,17 @@ export type {
   ImageGenerationRetryRecord,
   ImageGenerationMetrics,
   ImageGenerationRun,
-  ImageGenerationRunSummary
+  ImageGenerationRunSummary,
+  VNextTaskContract,
+  VNextCompiledPrompt,
+  VNextModelPromptPayload
 } from '../../../../packages/image-generation-contracts/src/index';
 import type {
   ImageGenerationRun,
   ImageGenerationRunSummary,
+  VNextTaskContract,
+  VNextCompiledPrompt,
+  VNextModelPromptPayload,
   ImageGenerationRunStatus,
   ImageGenerationGateResult,
   ImageGenerationReview,
@@ -1853,6 +1865,21 @@ export interface ImageGenerationCompileResult {
   compileFingerprint?: ImageGenerationCompileFingerprint;
 }
 
+export interface CompileVNextGenerationInput {
+  projectId: string;
+  model?: string;
+  task: Omit<VNextTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
+    taskId?: string;
+  };
+}
+
+export interface CompileVNextGenerationResult {
+  taskContract: VNextTaskContract;
+  compiledPrompt: VNextCompiledPrompt;
+  payload: VNextModelPromptPayload;
+  artifactDirectory: string;
+}
+
 export interface ModelBenchmarkScoreSet {
   brandAlignment: number;
   visualQuality: number;
@@ -1999,6 +2026,7 @@ export interface DesktopApi {
     getSourcePreview(input: StartImageGenerationInput): Promise<ImageGenerationSourcePreview>;
     /** §16 编译 Prompt 并执行三层 Gate（不提交 Provider）。 */
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
+    compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
     /** §16 编译 + Gate 通过后提交生图任务。 */
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
     getRun(runId: string): Promise<ImageGenerationRun>;
@@ -2215,6 +2243,8 @@ export interface DesktopApi {
     get(projectId: string): Promise<ProjectVisualContext>;
     rebuild(projectId: string): Promise<ProjectVisualContext>;
     export(projectId: string): Promise<string | null>;
+    getVNext(projectId: string): Promise<ProjectVisualContextVNext>;
+    rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext>;
   };
   visualMemory: {
     get(projectId: string): Promise<VisualMemory | null>;

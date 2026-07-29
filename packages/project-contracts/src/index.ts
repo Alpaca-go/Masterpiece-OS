@@ -897,6 +897,67 @@ export interface ProjectVisualContext {
   };
 }
 
+/**
+ * Execution-only project context for the vNext image-generation pipeline.
+ *
+ * This is intentionally a sibling of the human-readable analysis report. It
+ * may only contain facts from the project record, original assets, structured
+ * analysis output, or explicit user decisions. Report markdown is not a valid
+ * source.
+ */
+export interface ProjectVisualContextVNext {
+  schemaVersion: '2.0';
+  projectId: string;
+  version: number;
+  generatedAt: string;
+  brandCore: {
+    name: string;
+    industry: string;
+    brandRole: string | null;
+    audience: string[];
+  };
+  lockedAssets: {
+    logoAssetIds: string[];
+    brandNameLocked: boolean;
+    confirmedColors: string[];
+    packageStructures: string[];
+    productAssetIds: string[];
+    lockedAssetIds: string[];
+    mustPreserve: string[];
+  };
+  visualIdentity: {
+    tone: string[];
+    colorBehavior: string[];
+    graphicBehavior: string[];
+    materialBehavior: string[];
+    compositionBehavior: string[];
+    lightingBehavior: string[];
+  };
+  styleBoundaries: {
+    mustAvoid: string[];
+    uncertainItems: string[];
+  };
+  confirmedDecisions: Array<{
+    id: string;
+    value: string;
+    source: 'project_record' | 'structured_analysis' | 'user_confirmation';
+    confirmedAt?: string;
+  }>;
+  sourceAssetRefs: Array<{
+    assetId: string;
+    name: string;
+    relativePath: string;
+    role: 'logo' | 'product' | 'package_structure' | 'visual_reference' | 'source';
+  }>;
+  provenance: {
+    builderId: string;
+    builderVersion: string;
+    sourceKinds: Array<'project_record' | 'original_asset' | 'structured_analysis' | 'user_confirmation'>;
+    structuredAnalysisRunId?: string;
+    sourceFingerprint: string;
+  };
+}
+
 export interface DocumentVisualContextEvidence {
   field: string;
   documentId: string;

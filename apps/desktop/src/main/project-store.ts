@@ -49,7 +49,11 @@ function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
     logoLocked: record.logoLocked !== false,
     outputLanguage: 'zh-CN',
     analysisProfile: 'fusion-enhanced',
-    assets: Array.isArray(record.assets) ? record.assets : []
+    assets: Array.isArray(record.assets) ? record.assets : [],
+    visualContextVNextFilename: record.visualContextVNextFilename || null,
+    visualContextVNextStatus: record.visualContextVNextStatus || 'missing',
+    visualContextVNextVersion: record.visualContextVNextVersion || null,
+    visualContextVNextLastBuiltAt: record.visualContextVNextLastBuiltAt || null
   };
 }
 

@@ -28,6 +28,7 @@ import { createPipelineService } from './pipeline-service';
 import { createReferenceAnchorService } from './reference-anchor-service';
 import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
 import { registerImageGenerationIpc } from './image-generation/ipc';
+import { createVNextImageGenerationService } from './image-generation/vnext-service.ts';
 import { createFileContextLoader } from './image-generation/context-loader';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
@@ -124,6 +125,7 @@ const projectContext = createProjectContextService({
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
 });
+const vnextImageGeneration = createVNextImageGenerationService(projects, projectContext);
 const contextIntegration = createContextIntegrationService({
   readSettings: getSettings,
   projects,
@@ -327,6 +329,8 @@ function registerIpc(): void {
   registerHandler('project-context:get', (_event, projectId: string) => projectContext.get(projectId));
   registerHandler('project-context:rebuild', (_event, projectId: string) => projectContext.rebuild(projectId));
   registerHandler('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
+  registerHandler('project-context:get-vnext', (_event, projectId: string) => projectContext.getVNext(projectId));
+  registerHandler('project-context:rebuild-vnext', (_event, projectId: string) => projectContext.rebuildVNext(projectId));
   registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
   registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
   registerHandler('visual-memory:get-reference-pack', (_event, projectId: string) => referencePacks.get(projectId));
@@ -443,7 +447,7 @@ function registerIpc(): void {
   // ---- 生图功能 V1（§16 Desktop IPC）----
   registerImageGenerationIpc(imageGeneration, {
     handle: registerHandler
-  } as unknown as IpcMain);
+  } as unknown as IpcMain, vnextImageGeneration);
   registerHandler('creative-session:get', (_event, projectId: string) =>
     creativeSessions.get(projectId));
   registerHandler('creative-session:create', (_event, projectId: string) =>

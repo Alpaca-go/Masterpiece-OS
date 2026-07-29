@@ -11,12 +11,18 @@
 import type { IpcMain } from 'electron';
 import type { ImageGenerationService } from './service';
 import type {
+  CompileVNextGenerationInput,
   StartImageGenerationInput,
   RetryImageGenerationInput,
   ImageGenerationReview,
 } from '../../shared/types';
+import type { VNextImageGenerationService } from './vnext-service.ts';
 
-export function registerImageGenerationIpc(service: ImageGenerationService, ipcMain: IpcMain): void {
+export function registerImageGenerationIpc(
+  service: ImageGenerationService,
+  ipcMain: IpcMain,
+  vnextService?: VNextImageGenerationService,
+): void {
   ipcMain.handle('image-generation:get-capabilities', async () => service.getCapabilities());
   ipcMain.handle('image-generation:get-preset-capabilities', async () => service.getPresetCapabilities());
   ipcMain.handle('image-generation:get-source-preview', async (_event, input: StartImageGenerationInput) =>
@@ -49,4 +55,8 @@ export function registerImageGenerationIpc(service: ImageGenerationService, ipcM
 
   ipcMain.handle('image-generation:get-image-data-url', async (_event, runId: string, imageId: string) =>
     service.readImageDataUrl(runId, imageId));
+  if (vnextService) {
+    ipcMain.handle('image-generation:vnext-compile', async (_event, input: CompileVNextGenerationInput) =>
+      vnextService.compile(input));
+  }
 }

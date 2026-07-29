@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ProjectVisualContext } from '../shared/types';
+import type { ProjectVisualContext, ProjectVisualContextVNext } from '../shared/types';
 import type { ProjectStore } from './project-store';
 import {
   compileProjectVisualContext,
@@ -9,8 +9,14 @@ import {
   ProjectVisualContextError,
   PROJECT_VISUAL_CONTEXT_SCHEMA_VERSION
 } from './project-visual-context-compiler';
+import {
+  buildProjectVisualContextVNext,
+  validateProjectVisualContextVNext,
+  writeProjectVisualContextVNext,
+} from './project-context-vnext-builder.ts';
 
 export const PROJECT_VISUAL_CONTEXT_FILENAME = 'project-visual-context.json';
+export const PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME = 'project-visual-context.vnext.json';
 
 export interface SaveDialogResult {
   canceled: boolean;
@@ -35,6 +41,10 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
 
   function contextTarget(outputsDir: string): string {
     return path.join(outputsDir, PROJECT_VISUAL_CONTEXT_FILENAME);
+  }
+
+  function contextVNextTarget(projectRoot: string): string {
+    return path.join(projectRoot, 'project-context', PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME);
   }
 
   async function get(projectId: string): Promise<ProjectVisualContext> {
@@ -126,6 +136,49 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return context;
   }
 
+  async function getVNext(projectId: string): Promise<ProjectVisualContextVNext> {
+    const project = await projects.get(projectId);
+    if (project.visualContextVNextStatus !== 'ready' || !project.visualContextVNextFilename) {
+      throw new ProjectContextNotReadyError('Project Visual Context vNext is not ready');
+    }
+    const paths = await projects.paths(projectId);
+    const filename = path.basename(project.visualContextVNextFilename);
+    const value = JSON.parse(
+      await fs.readFile(path.join(paths.root, 'project-context', filename), 'utf8'),
+    ) as ProjectVisualContextVNext;
+    const validation = validateProjectVisualContextVNext(value);
+    if (!validation.valid) {
+      throw new ProjectContextNotReadyError(`Project Visual Context vNext is invalid: ${validation.errors.join('; ')}`);
+    }
+    return value;
+  }
+
+  async function rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext> {
+    const project = await projects.get(projectId);
+    const paths = await projects.paths(projectId);
+    const previousContext = await getVNext(projectId).catch(() => null);
+    const context = buildProjectVisualContextVNext({
+      project,
+      previousContext,
+    });
+    try {
+      await writeProjectVisualContextVNext(contextVNextTarget(paths.root), context);
+      await projects.update(projectId, {
+        visualContextVNextFilename: PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME,
+        visualContextVNextStatus: 'ready',
+        visualContextVNextVersion: context.version,
+        visualContextVNextLastBuiltAt: context.generatedAt,
+      });
+    } catch (error) {
+      await projects.update(projectId, {
+        visualContextVNextStatus: 'failed',
+        visualContextVNextLastBuiltAt: new Date().toISOString(),
+      }).catch(() => undefined);
+      throw error;
+    }
+    return context;
+  }
+
   async function exportContext(projectId: string): Promise<string | null> {
     const context = await get(projectId);
     if (!deps.showSaveDialog) throw new Error('未配置导出对话框');
@@ -138,7 +191,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return result.filePath;
   }
 
-  return { get, rebuild, export: exportContext };
+  return { get, rebuild, export: exportContext, getVNext, rebuildVNext };
 }
 
 export type ProjectContextService = ReturnType<typeof createProjectContextService>;
