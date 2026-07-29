@@ -97,6 +97,20 @@ const api: DesktopApi = {
     compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
     compileVNext: (input) => ipcRenderer.invoke('image-generation:vnext-compile', input),
     getVNextOptions: () => ipcRenderer.invoke('image-generation:vnext-options'),
+    startVNext: (input) => ipcRenderer.invoke('image-generation:vnext-start', input),
+    getVNextSession: (projectId) => ipcRenderer.invoke('image-generation:vnext-session', projectId),
+    confirmVNextDirection: (projectId, runId, imageId) =>
+      ipcRenderer.invoke('image-generation:vnext-confirm-direction', projectId, runId, imageId),
+    continueVNextSameType: (projectId, currentInstruction, apiProfileId, dryRun) =>
+      ipcRenderer.invoke(
+        'image-generation:vnext-continue-same-type',
+        projectId,
+        currentInstruction,
+        apiProfileId,
+        dryRun,
+      ),
+    saveVNextProjectPromptAsset: (input) =>
+      ipcRenderer.invoke('image-generation:vnext-save-prompt-asset', input),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
     listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),

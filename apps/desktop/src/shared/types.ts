@@ -657,7 +657,9 @@ export type {
   ImageGenerationRunSummary,
   VNextTaskContract,
   VNextCompiledPrompt,
-  VNextModelPromptPayload
+  VNextModelPromptPayload,
+  VNextCreativeSession,
+  VNextProjectPromptAsset
 } from '../../../../packages/image-generation-contracts/src/index';
 import type {
   ImageGenerationRun,
@@ -665,6 +667,8 @@ import type {
   VNextTaskContract,
   VNextCompiledPrompt,
   VNextModelPromptPayload,
+  VNextCreativeSession,
+  VNextProjectPromptAsset,
   ImageGenerationRunStatus,
   ImageGenerationGateResult,
   ImageGenerationReview,
@@ -1880,6 +1884,22 @@ export interface CompileVNextGenerationResult {
   artifactDirectory: string;
 }
 
+export interface StartVNextGenerationInput {
+  projectId: string;
+  taskId: string;
+  apiProfileId?: string;
+  editedPrompt?: string;
+  dryRun?: boolean;
+}
+
+export interface SaveVNextProjectPromptAssetInput {
+  projectId: string;
+  deliverableFamily: VNextTaskContract['deliverableFamily'];
+  name: string;
+  promptFragments: string[];
+  negativeConstraints?: string[];
+}
+
 export interface ModelBenchmarkScoreSet {
   brandAlignment: number;
   visualQuality: number;
@@ -2028,6 +2048,18 @@ export interface DesktopApi {
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
     compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
     getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
+    startVNext(input: StartVNextGenerationInput): Promise<ImageGenerationRun>;
+    getVNextSession(projectId: string): Promise<VNextCreativeSession>;
+    confirmVNextDirection(projectId: string, runId: string, imageId: string): Promise<VNextCreativeSession>;
+    continueVNextSameType(
+      projectId: string,
+      currentInstruction: string,
+      apiProfileId?: string,
+      dryRun?: boolean
+    ): Promise<ImageGenerationRun>;
+    saveVNextProjectPromptAsset(
+      input: SaveVNextProjectPromptAssetInput
+    ): Promise<VNextProjectPromptAsset>;
     /** §16 编译 + Gate 通过后提交生图任务。 */
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
     getRun(runId: string): Promise<ImageGenerationRun>;

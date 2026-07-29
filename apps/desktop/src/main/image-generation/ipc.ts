@@ -12,6 +12,8 @@ import type { IpcMain } from 'electron';
 import type { ImageGenerationService } from './service';
 import type {
   CompileVNextGenerationInput,
+  SaveVNextProjectPromptAssetInput,
+  StartVNextGenerationInput,
   StartImageGenerationInput,
   RetryImageGenerationInput,
   ImageGenerationReview,
@@ -59,5 +61,29 @@ export function registerImageGenerationIpc(
     ipcMain.handle('image-generation:vnext-options', async () => vnextService.listOptions());
     ipcMain.handle('image-generation:vnext-compile', async (_event, input: CompileVNextGenerationInput) =>
       vnextService.compile(input));
+    ipcMain.handle('image-generation:vnext-start', async (_event, input: StartVNextGenerationInput) =>
+      vnextService.start(input));
+    ipcMain.handle('image-generation:vnext-session', async (_event, projectId: string) =>
+      vnextService.getSession(projectId));
+    ipcMain.handle(
+      'image-generation:vnext-confirm-direction',
+      async (_event, projectId: string, runId: string, imageId: string) =>
+        vnextService.confirmDirection(projectId, runId, imageId),
+    );
+    ipcMain.handle(
+      'image-generation:vnext-continue-same-type',
+      async (
+        _event,
+        projectId: string,
+        currentInstruction: string,
+        apiProfileId?: string,
+        dryRun?: boolean,
+      ) => vnextService.continueSameType(projectId, currentInstruction, apiProfileId, dryRun),
+    );
+    ipcMain.handle(
+      'image-generation:vnext-save-prompt-asset',
+      async (_event, input: SaveVNextProjectPromptAssetInput) =>
+        vnextService.saveProjectPromptAsset(input),
+    );
   }
 }

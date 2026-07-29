@@ -125,7 +125,11 @@ const projectContext = createProjectContextService({
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
 });
-const vnextImageGeneration = createVNextImageGenerationService(projects, projectContext);
+const vnextImageGeneration = createVNextImageGenerationService(
+  projects,
+  projectContext,
+  () => imageGeneration,
+);
 const contextIntegration = createContextIntegrationService({
   readSettings: getSettings,
   projects,

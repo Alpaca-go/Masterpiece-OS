@@ -882,3 +882,36 @@ export interface VNextProjectPromptAsset {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface VNextImplicitAnchor {
+  deliverableFamily: VNextDeliverableFamily;
+  runId: string;
+  imageId: string;
+  projectRelativePath: string;
+  promptFingerprint: string;
+  confirmedAt: string;
+}
+
+export interface VNextSessionHistoryEntry {
+  id: string;
+  type: 'compiled' | 'generated' | 'direction_confirmed' | 'prompt_asset_saved';
+  taskId: string;
+  deliverableFamily: VNextDeliverableFamily;
+  subtype: string;
+  shot: string;
+  promptFingerprint: string;
+  runId?: string;
+  imageId?: string;
+  createdAt: string;
+}
+
+export interface VNextCreativeSession {
+  schemaVersion: '1.0';
+  projectId: string;
+  currentTask: VNextTaskContract | null;
+  history: VNextSessionHistoryEntry[];
+  implicitAnchors: Partial<Record<VNextDeliverableFamily, VNextImplicitAnchor>>;
+  projectPromptAssets: Partial<Record<VNextDeliverableFamily, string>>;
+  createdAt: string;
+  updatedAt: string;
+}
