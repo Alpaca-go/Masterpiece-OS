@@ -956,6 +956,115 @@ export interface ProjectVisualContextVNext {
     structuredAnalysisRunId?: string;
     sourceFingerprint: string;
   };
+  /**
+   * Project-specific generation evidence. This is additive so persisted 2.0
+   * contexts remain readable and can be upgraded without reading a report.
+   */
+  promptSourceObject?: PromptSourceObject;
+}
+
+export type PromptSourceLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
+
+export interface PromptSourceToneBoundary {
+  target: string;
+  avoid: string[];
+}
+
+export interface PromptSourceVisualTransformation {
+  sourceAsset: string;
+  abstractProperties: string[];
+  newExpression: string[];
+  forbiddenLiteralUse: string[];
+}
+
+export interface PromptSourceColorUsage {
+  name: string;
+  ratio?: number;
+  role: string;
+}
+
+export interface PromptSourceColorBehavior {
+  primary: PromptSourceColorUsage[];
+  secondary: PromptSourceColorUsage[];
+  accent: PromptSourceColorUsage[];
+  forbidden: string[];
+}
+
+export interface PromptSourceMaterialBehavior {
+  material: string;
+  behavior: string[];
+  brandRole: string;
+  forbidden: string[];
+}
+
+export interface PromptSourceLightingBehavior {
+  source: string[];
+  contrast: string;
+  interactionWithMaterials: string[];
+  forbidden: string[];
+}
+
+/**
+ * Project-level source object consumed by the image Prompt Compiler.
+ *
+ * The current generation task intentionally lives outside this structure:
+ * binding one shot/subtype here would make later tasks inherit stale intent.
+ */
+export interface PromptSourceObject {
+  schemaVersion: '1.0';
+  projectId: string;
+  generatedAt: string;
+  projectFacts: {
+    brandName: string;
+    industry: string;
+    brandRole: string;
+    businessModel: string | null;
+    primaryOfferings: string[];
+  };
+  lockedAssets: {
+    logoAssetIds: string[];
+    preferredLogoAssetId: string | null;
+    logoUsageMode: PromptSourceLogoUsageMode;
+    confirmedColors: string[];
+    mustPreserve: string[];
+    immutableStructures: string[];
+  };
+  sourceVisualState: {
+    valuableAssets: string[];
+    overusedElements: string[];
+    outdatedExpressions: string[];
+    genericIndustryCliches: string[];
+    brandMisreadRisks: string[];
+  };
+  upgradeTranslation: {
+    preserve: string[];
+    weaken: string[];
+    remove: string[];
+    targetWorldview: string[];
+    toneBoundaries: PromptSourceToneBoundary[];
+    transformations: PromptSourceVisualTransformation[];
+  };
+  renderLanguage: {
+    colorBehavior: PromptSourceColorBehavior;
+    materialBehavior: PromptSourceMaterialBehavior[];
+    lightingBehavior: PromptSourceLightingBehavior;
+    graphicBehavior: string[];
+  };
+  negativeRules: {
+    project: string[];
+    model: string[];
+  };
+  confidence: {
+    projectFacts: number;
+    lockedAssets: number;
+    sourceVisualState: number;
+    upgradeTranslation: number;
+  };
+  provenance: {
+    sourceKinds: Array<'project_record' | 'original_asset' | 'structured_analysis' | 'user_confirmation' | 'legacy_migration'>;
+    structuredAnalysisRunId?: string;
+    sourceFingerprint: string;
+  };
 }
 
 export interface DocumentVisualContextEvidence {

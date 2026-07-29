@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type {
   LockedAsset,
+  PromptSourceObject,
   ProjectVisualContextVNext,
 } from '../../../../packages/project-contracts/src/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
@@ -57,6 +58,110 @@ function sourceFingerprint(value: unknown): string {
     .createHash('sha256')
     .update(JSON.stringify(stableValue(value)))
     .digest('hex');
+}
+
+function confidence(value: boolean, confirmed = false): number {
+  if (confirmed) return 1;
+  return value ? 0.7 : 0;
+}
+
+/**
+ * Add the execution source object to contexts created before Golden Prompt
+ * calibration. The migration is deterministic and never reads report text.
+ */
+export function migrateProjectVisualContextVNext(
+  context: ProjectVisualContextVNext,
+): ProjectVisualContextVNext & { promptSourceObject: PromptSourceObject } {
+  if (context.promptSourceObject?.schemaVersion === '1.0') {
+    return context as ProjectVisualContextVNext & { promptSourceObject: PromptSourceObject };
+  }
+  const hasLogo = context.lockedAssets.logoAssetIds.length > 0;
+  const promptSourceObject: PromptSourceObject = {
+    schemaVersion: '1.0',
+    projectId: context.projectId,
+    generatedAt: context.generatedAt,
+    projectFacts: {
+      brandName: context.brandCore.name,
+      industry: context.brandCore.industry,
+      brandRole: context.brandCore.brandRole ?? '',
+      businessModel: null,
+      primaryOfferings: [],
+    },
+    lockedAssets: {
+      logoAssetIds: [...context.lockedAssets.logoAssetIds],
+      preferredLogoAssetId: context.lockedAssets.logoAssetIds[0] ?? null,
+      logoUsageMode: hasLogo ? 'reference' : 'blank_area',
+      confirmedColors: [...context.lockedAssets.confirmedColors],
+      mustPreserve: [...context.lockedAssets.mustPreserve],
+      immutableStructures: [...context.lockedAssets.packageStructures],
+    },
+    sourceVisualState: {
+      valuableAssets: [...context.lockedAssets.mustPreserve],
+      overusedElements: [],
+      outdatedExpressions: [],
+      genericIndustryCliches: [],
+      brandMisreadRisks: [],
+    },
+    upgradeTranslation: {
+      preserve: [...context.lockedAssets.mustPreserve],
+      weaken: [],
+      remove: [],
+      targetWorldview: [...context.visualIdentity.tone],
+      toneBoundaries: context.visualIdentity.tone.map((target) => ({ target, avoid: [] })),
+      transformations: [],
+    },
+    renderLanguage: {
+      colorBehavior: {
+        primary: context.lockedAssets.confirmedColors.map((name) => ({
+          name,
+          role: 'confirmed project color',
+        })),
+        secondary: [],
+        accent: [],
+        forbidden: [],
+      },
+      materialBehavior: context.visualIdentity.materialBehavior.map((material) => ({
+        material,
+        behavior: [],
+        brandRole: '',
+        forbidden: [],
+      })),
+      lightingBehavior: {
+        source: [...context.visualIdentity.lightingBehavior],
+        contrast: '',
+        interactionWithMaterials: [],
+        forbidden: [],
+      },
+      graphicBehavior: [...context.visualIdentity.graphicBehavior],
+    },
+    negativeRules: {
+      project: [...context.styleBoundaries.mustAvoid],
+      model: ['随机中文', '错误英文品牌名', '自行生成 slogan', '模糊文字'],
+    },
+    confidence: {
+      projectFacts: confidence(
+        context.brandCore.name !== 'unknown' && context.brandCore.industry !== 'unknown',
+        context.lockedAssets.brandNameLocked,
+      ),
+      lockedAssets: confidence(
+        context.lockedAssets.mustPreserve.length > 0 || hasLogo,
+        hasLogo && context.lockedAssets.brandNameLocked,
+      ),
+      sourceVisualState: 0,
+      upgradeTranslation: context.visualIdentity.tone.length ? 0.4 : 0,
+    },
+    provenance: {
+      sourceKinds: [...context.provenance.sourceKinds, 'legacy_migration'],
+      ...(context.provenance.structuredAnalysisRunId
+        ? { structuredAnalysisRunId: context.provenance.structuredAnalysisRunId }
+        : {}),
+      sourceFingerprint: sourceFingerprint({
+        contextFingerprint: context.provenance.sourceFingerprint,
+        migrationVersion: '1.0.0',
+      }),
+    },
+  };
+  return { ...context, promptSourceObject };
 }
 
 function assetRole(
@@ -157,7 +262,7 @@ export function buildProjectVisualContextVNext(
     structuredAnalysis: structured,
   };
 
-  return {
+  const context: ProjectVisualContextVNext = {
     schemaVersion: '2.0',
     projectId: project.id,
     version: (input.previousContext?.version ?? 0) + 1,
@@ -211,6 +316,7 @@ export function buildProjectVisualContextVNext(
       sourceFingerprint: sourceFingerprint(fingerprintInput),
     },
   };
+  return migrateProjectVisualContextVNext(context);
 }
 
 export function validateProjectVisualContextVNext(

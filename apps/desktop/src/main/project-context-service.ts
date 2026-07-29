@@ -11,6 +11,7 @@ import {
 } from './project-visual-context-compiler';
 import {
   buildProjectVisualContextVNext,
+  migrateProjectVisualContextVNext,
   validateProjectVisualContextVNext,
   writeProjectVisualContextVNext,
 } from './project-context-vnext-builder.ts';
@@ -150,7 +151,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     if (!validation.valid) {
       throw new ProjectContextNotReadyError(`Project Visual Context vNext is invalid: ${validation.errors.join('; ')}`);
     }
-    return value;
+    return migrateProjectVisualContextVNext(value);
   }
 
   async function rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext> {

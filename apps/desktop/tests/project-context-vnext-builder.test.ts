@@ -3,6 +3,7 @@ import test from 'node:test';
 import type { ProjectRecord } from '../src/shared/types.ts';
 import {
   buildProjectVisualContextVNext,
+  migrateProjectVisualContextVNext,
   validateProjectVisualContextVNext,
 } from '../src/main/project-context-vnext-builder.ts';
 
@@ -81,4 +82,21 @@ test('vNext context version increments independently of a report filename', () =
   });
   assert.equal(second.version, 2);
   assert.equal(second.projectId, first.projectId);
+});
+
+test('legacy vNext context migrates to a report-independent PromptSourceObject', () => {
+  const legacy = buildProjectVisualContextVNext({
+    project: project(),
+    generatedAt: '2026-07-30T00:00:00.000Z',
+  });
+  const withoutPromptSource = { ...legacy, promptSourceObject: undefined };
+  const migrated = migrateProjectVisualContextVNext(withoutPromptSource);
+
+  assert.equal(migrated.promptSourceObject.schemaVersion, '1.0');
+  assert.equal(migrated.promptSourceObject.projectFacts.brandName, 'Brand One');
+  assert.equal(migrated.promptSourceObject.provenance.sourceKinds.includes('legacy_migration'), true);
+  assert.equal(
+    migrated.promptSourceObject.provenance.sourceKinds.includes('analysis_report' as never),
+    false,
+  );
 });
