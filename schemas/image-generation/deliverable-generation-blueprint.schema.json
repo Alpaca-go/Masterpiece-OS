@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/image-generation/deliverable-generation-blueprint.schema.json",
+  "title": "Deliverable Generation Blueprint v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "templateId", "templateVersion", "templateSource",
+    "deliverableType", "task", "brandContext", "visualDirection", "color",
+    "material", "composition", "photography", "referenceAssets", "negativeRules"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "templateId": { "enum": ["interior", "packaging", "poster"] },
+    "templateVersion": { "const": "1.0.0" },
+    "templateSource": { "type": "string", "minLength": 1 },
+    "deliverableType": { "enum": ["interior_scene", "packaging_render", "brand_poster"] },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["definition", "userGoal", "usageScenario", "commercialUse"],
+      "properties": {
+        "definition": { "type": "string", "minLength": 1 },
+        "userGoal": { "type": "string", "minLength": 1 },
+        "usageScenario": { "type": "string", "minLength": 1 },
+        "commercialUse": { "type": "string", "minLength": 1 }
+      }
+    },
+    "brandContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["positioning", "industry", "temperament"],
+      "properties": {
+        "positioning": { "type": "string", "minLength": 1 },
+        "industry": { "type": "string", "minLength": 1 },
+        "temperament": { "$ref": "#/$defs/nonEmptyStrings" }
+      }
+    },
+    "visualDirection": { "$ref": "#/$defs/nonEmptyStrings" },
+    "color": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["palette", "usageRule", "forbidden"],
+      "properties": {
+        "palette": { "$ref": "#/$defs/nonEmptyStrings" },
+        "usageRule": { "type": "string", "minLength": 1 },
+        "forbidden": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "material": { "$ref": "#/$defs/nonEmptyStrings" },
+    "composition": { "$ref": "#/$defs/nonEmptyStrings" },
+    "photography": { "$ref": "#/$defs/nonEmptyStrings" },
+    "referenceAssets": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assetId", "role", "rationale"],
+        "properties": {
+          "assetId": { "type": "string", "minLength": 1 },
+          "role": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string" }
+        }
+      }
+    },
+    "negativeRules": { "$ref": "#/$defs/nonEmptyStrings" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

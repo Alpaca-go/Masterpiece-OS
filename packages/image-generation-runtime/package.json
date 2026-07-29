@@ -11,8 +11,9 @@
     "./prompt-compiler": "./src/prompt-compiler.js",
     "./gates": "./src/gates.js",
     "./context-snapshot": "./src/context-snapshot.js",
-    "./task-builder": "./src/task-builder.js"
-    ,"./creative-director": "./src/creative-director/index.js",
+    "./task-builder": "./src/task-builder.js",
+    "./prompt-templates": "./src/prompt-templates/deliverable-template-system.js",
+    "./creative-director": "./src/creative-director/index.js",
     "./reference-plan": "./src/reference-plan/index.js"
   }
 }
