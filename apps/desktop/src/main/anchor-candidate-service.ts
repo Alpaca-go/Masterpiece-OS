@@ -8,6 +8,7 @@ import type {
 import {
   attachAnchorCandidateOutput,
   createAnchorCandidateTask,
+  failAnchorCandidateGeneration,
   retryAnchorCandidate,
   reviewAnchorCandidate,
   transitionAnchorCandidate,
@@ -203,6 +204,25 @@ export function createAnchorCandidateService(
     return pending;
   }
 
+  async function failGeneration(
+    projectId: string,
+    candidateId: string,
+    failure: { errorCode?: string; errorMessage?: string },
+  ): Promise<AnchorCandidate> {
+    const candidate = await get(projectId, candidateId);
+    if (!candidate) throw Object.assign(new Error('Anchor Candidate 不存在。'), { code: 'ANCHOR_CANDIDATE_MISSING' });
+    const failed = failAnchorCandidateGeneration(candidate, failure) as AnchorCandidate;
+    await persist(failed);
+    await sessions.recordDecision(projectId, {
+      type: 'anchor_generation_failed',
+      summary: `Anchor Candidate 生成失败：${failed.generationFailure?.errorMessage}`,
+      rationale: failed.generationFailure?.errorCode,
+      outcome: 'rejected',
+      source: 'system',
+    });
+    return failed;
+  }
+
   async function upload(projectId: string, candidateId: string, sourcePath: string): Promise<AnchorCandidate> {
     const candidate = await get(projectId, candidateId);
     if (!candidate) throw Object.assign(new Error('Anchor Candidate 不存在。'), { code: 'ANCHOR_CANDIDATE_MISSING' });
@@ -245,7 +265,7 @@ export function createAnchorCandidateService(
     return persist(retryAnchorCandidate(candidate) as AnchorCandidate);
   }
 
-  return { create, beginGeneration, completeGeneration, upload, review, retry, get, list };
+  return { create, beginGeneration, completeGeneration, failGeneration, upload, review, retry, get, list };
 }
 
 export type AnchorCandidateService = ReturnType<typeof createAnchorCandidateService>;

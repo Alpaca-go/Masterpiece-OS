@@ -5,6 +5,7 @@ export const ANCHOR_CANDIDATE_STATUSES = Object.freeze([
   'not_created',
   'task_ready',
   'generating',
+  'generation_failed',
   'pending_review',
   'accepted',
   'rejected',
@@ -24,7 +25,8 @@ export const ANCHOR_EVALUATION_DIMENSIONS = Object.freeze([
 const TRANSITIONS = Object.freeze({
   not_created: ['task_ready'],
   task_ready: ['generating', 'pending_review'],
-  generating: ['pending_review', 'rejected'],
+  generating: ['generation_failed', 'pending_review', 'rejected'],
+  generation_failed: [],
   pending_review: ['accepted', 'rejected', 'revision_required'],
   revision_required: ['task_ready'],
   accepted: [],
@@ -137,6 +139,26 @@ export function attachAnchorCandidateOutput(candidate, output, now = new Date().
   return transitionAnchorCandidate(withOutput, 'pending_review', now);
 }
 
+export function failAnchorCandidateGeneration(candidate, failure, now = new Date().toISOString()) {
+  validateAnchorCandidate(candidate);
+  if (candidate.status !== 'generating') {
+    throw Object.assign(new Error('只有 generating Candidate 可以记录生成失败。'), {
+      code: 'ANCHOR_CANDIDATE_TRANSITION_INVALID',
+    });
+  }
+  const errorCode = text(failure?.errorCode) || 'IMAGE_GENERATION_FAILED';
+  const errorMessage = text(failure?.errorMessage) || 'Anchor Candidate 图片生成失败。';
+  return transitionAnchorCandidate({
+    ...candidate,
+    generationFailure: {
+      errorCode,
+      errorMessage,
+      failedAt: now,
+    },
+    updatedAt: now,
+  }, 'generation_failed', now);
+}
+
 function validateEvaluation(evaluation) {
   if (!evaluation || !text(evaluation.evaluatedAt)) {
     throw Object.assign(new Error('Anchor Candidate 缺少七维评价。'), { code: 'ANCHOR_EVALUATION_MISSING' });
@@ -189,7 +211,7 @@ export function reviewAnchorCandidate(candidate, review, now = new Date().toISOS
 
 export function retryAnchorCandidate(candidate, now = new Date().toISOString()) {
   validateAnchorCandidate(candidate);
-  if (!['revision_required', 'rejected'].includes(candidate.status)) {
+  if (!['generation_failed', 'revision_required', 'rejected'].includes(candidate.status)) {
     throw Object.assign(new Error('只有需要修改或已驳回的 Candidate 可以重试。'), {
       code: 'ANCHOR_CANDIDATE_TRANSITION_INVALID',
     });
@@ -230,6 +252,14 @@ export function validateAnchorCandidate(candidate) {
   }
   if (candidate.imagePath) relativeFile(candidate.imagePath, 'imagePath');
   if (candidate.thumbnailPath) relativeFile(candidate.thumbnailPath, 'thumbnailPath');
+  if (candidate.status === 'generation_failed'
+    && (!text(candidate.generationFailure?.errorCode)
+      || !text(candidate.generationFailure?.errorMessage)
+      || !text(candidate.generationFailure?.failedAt))) {
+    throw Object.assign(new Error('生成失败的 Anchor Candidate 必须包含错误详情。'), {
+      code: 'ANCHOR_CANDIDATE_INVALID',
+    });
+  }
   if (['pending_review', 'accepted', 'rejected', 'revision_required'].includes(candidate.status)
     && !candidate.imagePath) {
     throw Object.assign(new Error('可评审 Candidate 必须包含图片。'), { code: 'ANCHOR_OUTPUT_MISSING' });

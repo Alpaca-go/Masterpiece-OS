@@ -15,7 +15,7 @@
     "projectId": { "type": "string", "minLength": 1 },
     "status": {
       "enum": [
-        "not_created", "task_ready", "generating", "pending_review",
+        "not_created", "task_ready", "generating", "generation_failed", "pending_review",
         "accepted", "rejected", "revision_required"
       ]
     },
@@ -39,6 +39,16 @@
     "generationRunId": { "type": "string", "minLength": 1 },
     "imagePath": { "$ref": "#/$defs/relativePath" },
     "thumbnailPath": { "$ref": "#/$defs/relativePath" },
+    "generationFailure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["errorCode", "errorMessage", "failedAt"],
+      "properties": {
+        "errorCode": { "type": "string", "minLength": 1 },
+        "errorMessage": { "type": "string", "minLength": 1 },
+        "failedAt": { "type": "string", "format": "date-time" }
+      }
+    },
     "evaluation": {
       "type": "object",
       "additionalProperties": false,
@@ -75,6 +85,15 @@
     "createdAt": { "type": "string", "format": "date-time" },
     "updatedAt": { "type": "string", "format": "date-time" }
   },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "generation_failed" } },
+        "required": ["status"]
+      },
+      "then": { "required": ["generationFailure"] }
+    }
+  ],
   "$defs": {
     "strings": {
       "type": "array",

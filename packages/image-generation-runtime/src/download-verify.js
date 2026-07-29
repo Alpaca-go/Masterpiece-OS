@@ -46,6 +46,9 @@ export async function downloadAndVerifyImage(input) {
     allowedMimeTypes = ALLOWED_MIME,
     fetchImpl = globalThis.fetch,
     decode = true,
+    maxAttempts = 3,
+    retryDelayMs = 300,
+    sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds)),
   } = input ?? {};
 
   let buffer;
@@ -57,9 +60,27 @@ export async function downloadAndVerifyImage(input) {
       const cleaned = b64.replace(/^data:image\/\w+;base64,/, '');
       buffer = Buffer.from(cleaned, 'base64');
     } else if (url) {
-      const response = await fetchImpl(url);
-      if (!response.ok) {
-        return { downloadFailed: true, error: `HTTP ${response.status}` };
+      let response;
+      let lastError;
+      const attempts = Math.max(1, Number.isInteger(maxAttempts) ? maxAttempts : 3);
+      for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        try {
+          response = await fetchImpl(url);
+          if (response.ok) break;
+          lastError = new Error(`HTTP ${response.status}`);
+          if (![408, 425, 429].includes(response.status) && response.status < 500) break;
+        } catch (error) {
+          lastError = error;
+        }
+        if (attempt < attempts) await sleep(retryDelayMs * attempt);
+      }
+      if (!response?.ok) {
+        const causeCode = lastError?.cause?.code || lastError?.code;
+        const detail = lastError?.message || 'unknown error';
+        return {
+          downloadFailed: true,
+          error: `下载异常：${detail}${causeCode ? ` (${causeCode})` : ''}`,
+        };
       }
       const contentType = response.headers?.get?.('content-type') || '';
       if (contentType) mimeType = contentType.split(';')[0].trim();

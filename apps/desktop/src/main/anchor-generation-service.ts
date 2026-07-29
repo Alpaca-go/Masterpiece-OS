@@ -165,9 +165,13 @@ export function createAnchorGenerationService(
             : '1024*1024',
       dryRun: input.dryRun,
     });
-    const generating = await candidates.beginGeneration(projectId, candidate.id, run.runId);
+    await candidates.beginGeneration(projectId, candidate.id, run.runId);
     if (run.status !== 'succeeded' || !run.images[0]) {
-      return { candidate: generating, run };
+      const failed = await candidates.failGeneration(projectId, candidate.id, {
+        errorCode: run.errorCode || 'IMAGE_GENERATION_FAILED',
+        errorMessage: run.errorMessage || 'Anchor Candidate 图片生成失败，请重试。',
+      });
+      return { candidate: failed, run };
     }
     const completed = await candidates.completeGeneration(
       projectId,
@@ -230,7 +234,35 @@ export function createAnchorGenerationService(
     return execute(projectId, candidate, style, direction, locks, input);
   }
 
-  return { generate, retry };
+  async function list(projectId: string) {
+    const items = await candidates.list(projectId);
+    return Promise.all(items.map(async (candidate) => {
+      if (candidate.status !== 'generating' || !candidate.generationRunId) return candidate;
+      const run = await imageGeneration.getRun(candidate.generationRunId).catch(() => null);
+      if (!run) {
+        return candidates.failGeneration(projectId, candidate.id, {
+          errorCode: 'ANCHOR_GENERATION_RUN_MISSING',
+          errorMessage: '找不到 Anchor 对应的图片生成记录，请重新生成。',
+        });
+      }
+      if (run.status === 'succeeded' && run.images[0]) {
+        return candidates.completeGeneration(
+          projectId,
+          candidate.id,
+          `image-generation/${run.runId}/${run.images[0].relativePath}`,
+        );
+      }
+      if (['blocked', 'failed', 'cancelled'].includes(run.status)) {
+        return candidates.failGeneration(projectId, candidate.id, {
+          errorCode: run.errorCode || `IMAGE_GENERATION_${run.status.toUpperCase()}`,
+          errorMessage: run.errorMessage || `图片生成已${run.status}，请重新生成。`,
+        });
+      }
+      return candidate;
+    }));
+  }
+
+  return { generate, retry, list };
 }
 
 export type AnchorGenerationService = ReturnType<typeof createAnchorGenerationService>;

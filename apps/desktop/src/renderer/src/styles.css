@@ -475,6 +475,7 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .creative-result-list article > div { display: flex; justify-content: space-between; gap: 10px; padding: 10px 12px; font-size: 11px; }
 .creative-result-list article small { color: #817987; }
 .creative-result-list .error-text { margin: 0; padding: 0 12px 12px; color: #9b3d3d; font-size: 10px; }
+.anchor-review-card .error-text { margin: 10px 0 0; color: #9b3d3d; font-size: 12px; }
 .creative-retry-row { border-top: 1px solid #eee8e2; }
 .creative-retry-row button { border: 0; background: transparent; color: #6c42d8; font: inherit; font-size: 10px; cursor: pointer; }
 @media (max-width: 1180px) {

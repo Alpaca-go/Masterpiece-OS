@@ -30,6 +30,7 @@ export {
   createAnchorCandidateTask,
   transitionAnchorCandidate,
   attachAnchorCandidateOutput,
+  failAnchorCandidateGeneration,
   reviewAnchorCandidate,
   retryAnchorCandidate,
   validateAnchorCandidate,

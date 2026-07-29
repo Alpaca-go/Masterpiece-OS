@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   attachAnchorCandidateOutput,
   createAnchorCandidateTask,
+  failAnchorCandidateGeneration,
   retryAnchorCandidate,
   reviewAnchorCandidate,
   transitionAnchorCandidate,
@@ -68,6 +69,25 @@ test('Anchor Candidate supports external upload, revision and independent retry 
   assert.notEqual(retried.id, revision.id);
 });
 
+test('Anchor Candidate records generation failure and creates a retry revision', () => {
+  const ready = createAnchorCandidateTask({ projectId: 'project-1', styleProfile }, NOW);
+  const generating = transitionAnchorCandidate(ready, 'generating', NOW);
+  const failed = failAnchorCandidateGeneration(generating, {
+    errorCode: 'IMAGE_DOWNLOAD_FAILED',
+    errorMessage: '下载失败',
+  }, NOW);
+  assert.equal(failed.status, 'generation_failed');
+  assert.deepEqual(failed.generationFailure, {
+    errorCode: 'IMAGE_DOWNLOAD_FAILED',
+    errorMessage: '下载失败',
+    failedAt: NOW,
+  });
+  const retried = retryAnchorCandidate(failed, NOW);
+  assert.equal(retried.status, 'task_ready');
+  assert.equal(retried.revision, 2);
+  assert.equal(retried.parentCandidateId, failed.id);
+});
+
 test('Anchor acceptance gate blocks weak brand assets and invalid transitions', () => {
   const ready = createAnchorCandidateTask({ projectId: 'project-1', styleProfile }, NOW);
   assert.throws(() => transitionAnchorCandidate(ready, 'accepted', NOW), {
@@ -106,4 +126,6 @@ test('Anchor Candidate JSON Schema is closed and fixes outputCount to one', () =
   assert.equal(schema.additionalProperties, false);
   assert.equal(schema.properties.task.properties.outputCount.const, 1);
   assert.equal(schema.properties.evaluation.required.length, 8);
+  assert.ok(schema.properties.status.enum.includes('generation_failed'));
+  assert.deepEqual(schema.allOf[0].then.required, ['generationFailure']);
 });

@@ -489,6 +489,9 @@ export function CreativeSessionWorkspace({
             <span className={`badge ${activeAnchor.status === 'accepted' ? 'completed' : 'ready'}`}>
               {activeAnchor.status}
             </span>
+            {activeAnchor.status === 'generation_failed' && <p className="error-text">
+              {activeAnchor.generationFailure?.errorMessage || '图片生成失败，请重试。'}
+            </p>}
           </div>
           {activeAnchor.status === 'pending_review' && <>
             <div className="anchor-score-grid">
@@ -526,7 +529,7 @@ export function CreativeSessionWorkspace({
               )}>驳回</button>
             </div>
           </>}
-          {['revision_required', 'rejected'].includes(activeAnchor.status) && <button
+          {['generation_failed', 'revision_required', 'rejected'].includes(activeAnchor.status) && <button
             className="button primary full"
             disabled={!imageApiProfileId || Boolean(busy)}
             onClick={() => void runProductionAction(

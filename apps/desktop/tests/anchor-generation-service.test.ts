@@ -121,3 +121,57 @@ test('Anchor Provider bridge compiles one candidate, reuses image Run Store and 
   assert.equal(result.candidate.status, 'pending_review');
   assert.deepEqual(calls, ['candidate:create', 'provider', 'candidate:generating', 'candidate:pending-review']);
 });
+
+test('Anchor Provider bridge reconciles a stale generating candidate from its failed image run', async () => {
+  const calls: string[] = [];
+  const candidate = {
+    id: 'candidate-failed',
+    projectId: 'project-1',
+    status: 'generating',
+    generationRunId: 'run-failed',
+  };
+  const service = createAnchorGenerationService(
+    {} as never,
+    {} as never,
+    {
+      list: async () => [candidate],
+      failGeneration: async (_projectId: string, candidateId: string, failure: {
+        errorCode?: string;
+        errorMessage?: string;
+      }) => {
+        calls.push('candidate:failed');
+        assert.equal(candidateId, candidate.id);
+        assert.equal(failure.errorCode, 'IMAGE_DOWNLOAD_FAILED');
+        assert.equal(failure.errorMessage, '下载图片失败');
+        return {
+          ...candidate,
+          status: 'generation_failed',
+          generationFailure: {
+            errorCode: failure.errorCode,
+            errorMessage: failure.errorMessage,
+            failedAt: '2026-07-29T00:00:00.000Z',
+          },
+        };
+      },
+    } as never,
+    {
+      getRun: async (runId: string) => {
+        calls.push('run:read');
+        assert.equal(runId, 'run-failed');
+        return {
+          runId,
+          status: 'failed',
+          images: [],
+          errorCode: 'IMAGE_DOWNLOAD_FAILED',
+          errorMessage: '下载图片失败',
+        };
+      },
+    } as never,
+    {} as never,
+    {} as never,
+  );
+
+  const result = await service.list('project-1');
+  assert.equal(result[0]?.status, 'generation_failed');
+  assert.deepEqual(calls, ['run:read', 'candidate:failed']);
+});

@@ -501,7 +501,7 @@ function registerIpc(): void {
     profileId: string
   ) => styleProfiles.confirm(projectId, profileId));
   registerHandler('creative-production:list-anchor-candidates', (_event, projectId: string) =>
-    anchorCandidates.list(projectId));
+    anchorGeneration.list(projectId));
   registerHandler('creative-production:generate-anchor', (
     _event,
     projectId: string,

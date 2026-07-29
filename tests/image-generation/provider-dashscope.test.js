@@ -405,6 +405,55 @@ test('downloadAndVerifyImage HTTP 非 200 → downloadFailed', async () => {
   assert.match(out.error, /404/);
 });
 
+test('downloadAndVerifyImage retries transient fetch failures and preserves the signed URL', async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'img-gen-retry-'));
+  const signedUrl = 'https://cdn.example/x.png?Expires=123&Signature=secret';
+  let calls = 0;
+  try {
+    const buf = await realPngBuffer(8);
+    const fetchImpl = async (url) => {
+      calls += 1;
+      assert.equal(url, signedUrl);
+      if (calls < 3) throw Object.assign(new Error('fetch failed'), { cause: { code: 'ECONNRESET' } });
+      return {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'image/png' },
+        arrayBuffer: async () => buf,
+      };
+    };
+    const out = await downloadAndVerifyImage({
+      url: signedUrl,
+      targetPath: path.join(dir, 'retry.png'),
+      fetchImpl,
+      retryDelayMs: 0,
+      sleep: async () => undefined,
+    });
+    assert.equal(calls, 3);
+    assert.equal(out.downloadFailed, false);
+    assert.equal(out.written, true);
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('downloadAndVerifyImage does not retry a deterministic 403 response', async () => {
+  let calls = 0;
+  const out = await downloadAndVerifyImage({
+    url: 'https://cdn.example/private.png?Signature=invalid',
+    targetPath: '/tmp/private.png',
+    fetchImpl: async () => {
+      calls += 1;
+      return { ok: false, status: 403, headers: { get: () => 'application/xml' } };
+    },
+    retryDelayMs: 0,
+    sleep: async () => undefined,
+  });
+  assert.equal(calls, 1);
+  assert.equal(out.downloadFailed, true);
+  assert.match(out.error, /403/);
+});
+
 test('downloadAndVerifyImage 既无 url 也无 b64 → downloadFailed', async () => {
   const out = await downloadAndVerifyImage({ targetPath: '/tmp/x.png' });
   assert.equal(out.downloadFailed, true);

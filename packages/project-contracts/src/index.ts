@@ -384,6 +384,7 @@ export type AnchorCandidateStatus =
   | 'not_created'
   | 'task_ready'
   | 'generating'
+  | 'generation_failed'
   | 'pending_review'
   | 'accepted'
   | 'rejected'
@@ -434,6 +435,11 @@ export interface AnchorCandidate {
   generationRunId?: string;
   imagePath?: string;
   thumbnailPath?: string;
+  generationFailure?: {
+    errorCode: string;
+    errorMessage: string;
+    failedAt: string;
+  };
   evaluation?: AnchorCandidateEvaluation;
   reviewHistory: Array<{
     action: 'accept_primary' | 'minor_adjustment' | 'retry' | 'modify_style_profile' | 'reject';
