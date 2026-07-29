@@ -14,6 +14,7 @@ import type {
   CompileVNextGenerationInput,
   SaveVNextProjectPromptAssetInput,
   StartVNextGenerationInput,
+  StartValidatedVNextGenerationInput,
   StartImageGenerationInput,
   RetryImageGenerationInput,
   ImageGenerationReview,
@@ -63,6 +64,11 @@ export function registerImageGenerationIpc(
       vnextService.compile(input));
     ipcMain.handle('image-generation:vnext-start', async (_event, input: StartVNextGenerationInput) =>
       vnextService.start(input));
+    ipcMain.handle(
+      'image-generation:vnext-start-validated',
+      async (_event, input: StartValidatedVNextGenerationInput) =>
+        vnextService.startValidated(input),
+    );
     ipcMain.handle('image-generation:vnext-session', async (_event, projectId: string) =>
       vnextService.getSession(projectId));
     ipcMain.handle(

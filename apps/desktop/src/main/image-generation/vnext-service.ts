@@ -9,8 +9,10 @@ import type {
   VNextModelPromptPayload,
   VNextTaskContract,
   VNextProjectPromptAsset,
+  VNextValidatedGenerationResult,
 } from '../../../../../packages/image-generation-contracts/src/index.ts';
 import {
+  compileVNextCorrectionPrompt,
   compileVNextImageGeneration,
   listVNextTemplateOptions,
 } from '../../../../../packages/image-generation-runtime/src/vnext/index.js';
@@ -18,6 +20,7 @@ import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import type { ImageGenerationService } from './service.ts';
+import type { VNextDeliverableValidatorService } from './vnext-deliverable-validator-service.ts';
 
 export interface CompileVNextGenerationInput {
   projectId: string;
@@ -40,6 +43,10 @@ export interface StartVNextGenerationInput {
   apiProfileId?: string;
   editedPrompt?: string;
   dryRun?: boolean;
+}
+
+export interface StartValidatedVNextGenerationInput extends StartVNextGenerationInput {
+  validatorProfileId?: string;
 }
 
 export interface SaveVNextProjectPromptAssetInput {
@@ -75,6 +82,7 @@ export function createVNextImageGenerationService(
   projects: ProjectStore,
   projectContext: ProjectContextService,
   getImageGeneration: () => ImageGenerationService,
+  getValidator?: () => VNextDeliverableValidatorService,
 ) {
   async function vnextRoot(projectId: string): Promise<string> {
     return path.join((await projects.paths(projectId)).root, 'image-generation-vnext');
@@ -337,6 +345,81 @@ export function createVNextImageGenerationService(
     });
   }
 
+  async function startValidated(
+    input: StartValidatedVNextGenerationInput,
+  ): Promise<VNextValidatedGenerationResult> {
+    const validator = getValidator?.();
+    if (!validator) throw new Error('vNext deliverable validator is not configured');
+    const compilation = await readCompilation(input.projectId, input.taskId);
+    const initialRun = await start(input);
+    if (initialRun.status !== 'succeeded' || !initialRun.images[0]) {
+      throw Object.assign(new Error(initialRun.errorMessage || 'Initial image generation failed'), {
+        code: initialRun.errorCode || 'VNEXT_INITIAL_GENERATION_FAILED',
+      });
+    }
+    const initialValidation = await validator.validate({
+      projectId: input.projectId,
+      taskContract: compilation.taskContract,
+      runId: initialRun.runId,
+      validatorProfileId: input.validatorProfileId,
+    });
+    if (initialValidation.status !== 'failed' || !initialValidation.retryRecommended) {
+      const result: VNextValidatedGenerationResult = {
+        initialRun,
+        initialValidation,
+        terminalStatus: initialValidation.status,
+        automaticRetryCount: 0,
+      };
+      await writeJson(
+        path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
+        result,
+      );
+      return result;
+    }
+    const correctionPrompt = compileVNextCorrectionPrompt({
+      originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,
+      taskContract: compilation.taskContract,
+      validation: initialValidation,
+    });
+    const correctionRun = await start({
+      ...input,
+      editedPrompt: correctionPrompt,
+    });
+    if (correctionRun.status !== 'succeeded' || !correctionRun.images[0]) {
+      const result: VNextValidatedGenerationResult = {
+        initialRun,
+        initialValidation,
+        correctionRun,
+        terminalStatus: 'failed',
+        automaticRetryCount: 1,
+      };
+      await writeJson(
+        path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
+        result,
+      );
+      return result;
+    }
+    const correctionValidation = await validator.validate({
+      projectId: input.projectId,
+      taskContract: compilation.taskContract,
+      runId: correctionRun.runId,
+      validatorProfileId: input.validatorProfileId,
+    });
+    const result: VNextValidatedGenerationResult = {
+      initialRun,
+      initialValidation,
+      correctionRun,
+      correctionValidation,
+      terminalStatus: correctionValidation.status,
+      automaticRetryCount: 1,
+    };
+    await writeJson(
+      path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
+      result,
+    );
+    return result;
+  }
+
   async function continueSameType(
     projectId: string,
     currentInstruction: string,
@@ -414,6 +497,7 @@ export function createVNextImageGenerationService(
   return {
     compile,
     start,
+    startValidated,
     getSession: readSession,
     confirmDirection,
     continueSameType,

@@ -21,3 +21,9 @@ export {
   createSeedreamVNextAdapter,
 } from './seedream-adapter.js';
 export { compileVNextImageGeneration } from './compile.js';
+export {
+  VNEXT_DELIVERABLE_VALIDATOR_ID,
+  VNEXT_DELIVERABLE_VALIDATOR_VERSION,
+  compileVNextCorrectionPrompt,
+  validateVNextDeliverableEvidence,
+} from './deliverable-validator.js';

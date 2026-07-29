@@ -659,7 +659,9 @@ export type {
   VNextCompiledPrompt,
   VNextModelPromptPayload,
   VNextCreativeSession,
-  VNextProjectPromptAsset
+  VNextProjectPromptAsset,
+  VNextDeliverableValidation,
+  VNextValidatedGenerationResult
 } from '../../../../packages/image-generation-contracts/src/index';
 import type {
   ImageGenerationRun,
@@ -669,6 +671,8 @@ import type {
   VNextModelPromptPayload,
   VNextCreativeSession,
   VNextProjectPromptAsset,
+  VNextDeliverableValidation,
+  VNextValidatedGenerationResult,
   ImageGenerationRunStatus,
   ImageGenerationGateResult,
   ImageGenerationReview,
@@ -1892,6 +1896,10 @@ export interface StartVNextGenerationInput {
   dryRun?: boolean;
 }
 
+export interface StartValidatedVNextGenerationInput extends StartVNextGenerationInput {
+  validatorProfileId?: string;
+}
+
 export interface SaveVNextProjectPromptAssetInput {
   projectId: string;
   deliverableFamily: VNextTaskContract['deliverableFamily'];
@@ -2049,6 +2057,9 @@ export interface DesktopApi {
     compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
     getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
     startVNext(input: StartVNextGenerationInput): Promise<ImageGenerationRun>;
+    startValidatedVNext(
+      input: StartValidatedVNextGenerationInput
+    ): Promise<VNextValidatedGenerationResult>;
     getVNextSession(projectId: string): Promise<VNextCreativeSession>;
     confirmVNextDirection(projectId: string, runId: string, imageId: string): Promise<VNextCreativeSession>;
     continueVNextSameType(

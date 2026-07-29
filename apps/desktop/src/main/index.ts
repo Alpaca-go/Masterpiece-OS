@@ -29,6 +29,7 @@ import { createReferenceAnchorService } from './reference-anchor-service';
 import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
 import { registerImageGenerationIpc } from './image-generation/ipc';
 import { createVNextImageGenerationService } from './image-generation/vnext-service.ts';
+import { createVNextDeliverableValidatorService } from './image-generation/vnext-deliverable-validator-service.ts';
 import { createFileContextLoader } from './image-generation/context-loader';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
@@ -125,10 +126,17 @@ const projectContext = createProjectContextService({
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
 });
+const vnextDeliverableValidator = createVNextDeliverableValidatorService(
+  projects,
+  () => imageGeneration,
+  getSettings,
+  getProviderCredentials,
+);
 const vnextImageGeneration = createVNextImageGenerationService(
   projects,
   projectContext,
   () => imageGeneration,
+  () => vnextDeliverableValidator,
 );
 const contextIntegration = createContextIntegrationService({
   readSettings: getSettings,

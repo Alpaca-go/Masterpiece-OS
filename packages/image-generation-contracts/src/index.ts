@@ -915,3 +915,42 @@ export interface VNextCreativeSession {
   createdAt: string;
   updatedAt: string;
 }
+
+export type VNextDeliverableMismatchType =
+  | 'wrong_family'
+  | 'wrong_subtype'
+  | 'missing_required_structure'
+  | 'locked_asset_violation'
+  | 'forbidden_content'
+  | 'brand_mismatch'
+  | 'quality_issue';
+
+export interface VNextDeliverableValidation {
+  schemaVersion: '1.0';
+  projectId: string;
+  taskId: string;
+  runId: string;
+  imageId: string;
+  status: 'passed' | 'failed' | 'unverified';
+  detectedFamily: VNextDeliverableFamily | 'unknown';
+  detectedSubtype: string | 'unknown';
+  visibleEvidence: string[];
+  missingRequiredItems: string[];
+  forbiddenItemsFound: string[];
+  lockedAssetViolations: string[];
+  brandMatch: 'matched' | 'mismatched' | 'uncertain';
+  mismatchTypes: VNextDeliverableMismatchType[];
+  retryRecommended: boolean;
+  validatorId: string;
+  validatorVersion: string;
+  validatedAt: string;
+}
+
+export interface VNextValidatedGenerationResult {
+  initialRun: ImageGenerationRun;
+  initialValidation: VNextDeliverableValidation;
+  correctionRun?: ImageGenerationRun;
+  correctionValidation?: VNextDeliverableValidation;
+  terminalStatus: 'passed' | 'failed' | 'unverified';
+  automaticRetryCount: 0 | 1;
+}

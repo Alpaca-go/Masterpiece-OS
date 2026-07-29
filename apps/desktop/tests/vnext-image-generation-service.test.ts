@@ -82,6 +82,32 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
       return runs.get(runId) ?? null;
     },
   };
+  let validationCalls = 0;
+  const validator = {
+    async validate(input: { projectId: string; taskContract: { taskId: string }; runId: string }) {
+      validationCalls += 1;
+      return {
+        schemaVersion: '1.0',
+        projectId: input.projectId,
+        taskId: input.taskContract.taskId,
+        runId: input.runId,
+        imageId: `image-${validationCalls + 2}`,
+        status: validationCalls === 1 ? 'failed' : 'passed',
+        detectedFamily: validationCalls === 1 ? 'vi' : 'poster',
+        detectedSubtype: validationCalls === 1 ? 'business_card' : 'brand_key_visual',
+        visibleEvidence: ['visible result'],
+        missingRequiredItems: [],
+        forbiddenItemsFound: validationCalls === 1 ? ['VI display board'] : [],
+        lockedAssetViolations: [],
+        brandMatch: 'matched',
+        mismatchTypes: validationCalls === 1 ? ['wrong_family', 'forbidden_content'] : [],
+        retryRecommended: validationCalls === 1,
+        validatorId: 'test-validator',
+        validatorVersion: '1',
+        validatedAt: '2026-07-29T00:00:02.000Z',
+      };
+    },
+  };
   const service = createVNextImageGenerationService(
     { paths: async () => ({
       root,
@@ -95,6 +121,7 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
       rebuildVNext: async () => context,
     } as never,
     () => imageGeneration as never,
+    () => validator as never,
   );
 
   const compiled = await service.compile({
@@ -138,4 +165,27 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   });
   assert.equal(asset.version, 1);
   assert.equal((await service.getSession(projectId)).projectPromptAssets.space, asset.id);
+
+  const poster = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'poster',
+      subtype: 'brand_key_visual',
+      shot: 'subject_centered',
+      count: 1,
+      aspectRatio: '3:4',
+      currentInstruction: 'Create one formal brand poster.',
+      mustInclude: [],
+      mustAvoid: ['VI display board'],
+      referenceAssetIds: [],
+    },
+  });
+  const validated = await service.startValidated({
+    projectId,
+    taskId: poster.taskContract.taskId,
+  });
+  assert.equal(validated.automaticRetryCount, 1);
+  assert.equal(validated.terminalStatus, 'passed');
+  assert.equal(validationCalls, 2);
+  assert.equal(counter, 4);
 });

@@ -158,18 +158,27 @@ export function VNextGenerationWorkspace({
     setError('');
     setNotice('正在生成第一张正式成果…');
     try {
-      const run = await window.masterpiece.imageGeneration.startVNext({
+      const validated = await window.masterpiece.imageGeneration.startValidatedVNext({
         projectId: project.id,
         taskId: compiled.taskContract.taskId,
         apiProfileId: imageApiProfileId,
         editedPrompt,
       });
+      const run = validated.correctionRun ?? validated.initialRun;
       setActiveRun(run);
       if (run.status === 'succeeded' && run.images[0]) {
         const image = await window.masterpiece.imageGeneration
           .getImageDataUrl(run.runId, run.images[0].imageId);
         setImageDataUrl(image?.dataUrl ?? '');
-        setNotice('正式成果已生成。确认后可沿用为本类型参考。');
+        if (validated.terminalStatus === 'passed') {
+          setNotice(validated.automaticRetryCount
+            ? '首次结果对题失败，系统已完成一次纠偏；纠偏结果通过验证。'
+            : '正式成果已生成并通过对题验证。确认后可沿用为本类型参考。');
+        } else if (validated.terminalStatus === 'unverified') {
+          setNotice('正式成果已生成，但没有可用的多模态分析配置，结果尚未自动验证。');
+        } else {
+          setError('结果仍未通过对题验证。系统已停止自动扩展，请调整要求后重做。');
+        }
       } else if (run.status === 'failed' || run.status === 'blocked') {
         setError(run.errorMessage || '生成失败');
       }
