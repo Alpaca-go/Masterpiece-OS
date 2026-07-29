@@ -6,6 +6,7 @@ import {
   validateGenerationBlueprint,
 } from '../packages/creative-production-runtime/src/generation-blueprint.js';
 import { normalizeCreativeDirection } from '../packages/creative-production-runtime/src/creative-direction.js';
+import { compileCreativeDecision } from '../packages/creative-production-runtime/src/creative-decision.js';
 
 function direction() {
   return normalizeCreativeDirection({
@@ -53,6 +54,8 @@ test('Generation Blueprint compiles a single execution plan from approved Creati
 
   assert.equal(blueprint.imagePurpose, 'interior_scene');
   assert.equal(blueprint.creativeDirectionId, 'direction-1');
+  assert.equal(blueprint.creativeDecisionId, 'direction-1');
+  assert.equal(blueprint.creativeDecisionSourcePath, 'outputs/creative_decision.json');
   assert.ok(blueprint.creativeDirectionSummary.includes(direction().projectTransformation));
   assert.match(blueprint.sceneDescription, /地面、墙面、顶面、纵深、动线/);
   assert.match(blueprint.camera, /24–28mm/);
@@ -63,6 +66,7 @@ test('Generation Blueprint compiles a single execution plan from approved Creati
   const prompt = compileGenerationBlueprintPrompt(blueprint);
   assert.match(prompt, /Role:/);
   assert.match(prompt, /Creative Direction — defines the new visual language:/);
+  assert.match(prompt, /Creative Decision — mandatory recommended direction and generation goal:/);
   assert.match(prompt, /Camera:/);
   assert.match(prompt, /Materials:/);
   assert.match(prompt, /画面 100% 必须是同一透视下的完整空间/);
@@ -90,4 +94,20 @@ test('Generation Blueprint rejects unknown purposes and missing execution arrays
     userRequest: '生成新包装',
   });
   assert.throws(() => validateGenerationBlueprint({ ...valid, materials: [] }), /缺少 materials/);
+});
+
+test('Generation Blueprint rejects a Creative Decision from another direction version', () => {
+  const creativeDirection = direction();
+  const staleDecision = {
+    ...compileCreativeDecision(creativeDirection),
+    direction_version: '0.9.0',
+  };
+  assert.throws(() => compileGenerationBlueprint({
+    projectId: 'project-1',
+    sessionId: 'session-1',
+    creativeDirection,
+    creativeDecision: staleDecision,
+    imagePurpose: 'brand_poster',
+    userRequest: '生成一张新的品牌海报',
+  }), (error) => error?.code === 'CREATIVE_DECISION_STALE');
 });

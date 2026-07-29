@@ -63,9 +63,10 @@ export function createGenerationBlueprintService(
     brandAssetRules?: string[];
     avoid?: string[];
   }): Promise<GenerationBlueprint> {
-    const [session, direction, target] = await Promise.all([
+    const [session, direction, creativeDecision, target] = await Promise.all([
       sessions.create(projectId),
       directions.getActive(projectId),
+      directions.ensureCreativeDecision(projectId),
       locations(projectId),
     ]);
     if (!direction) {
@@ -79,6 +80,7 @@ export function createGenerationBlueprintService(
         projectId,
         sessionId: session.id,
         creativeDirection: direction,
+        creativeDecision,
         ...input,
       }) as GenerationBlueprint;
       await fs.mkdir(target.root, { recursive: true });

@@ -1,4 +1,8 @@
 import crypto from 'node:crypto';
+import {
+  compileCreativeDecision,
+  validateCreativeDecision,
+} from './creative-decision.js';
 
 export const GENERATION_BLUEPRINT_COMPILER_VERSION = '1.0.0';
 
@@ -86,6 +90,20 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
       code: 'GENERATION_TASK_EMPTY',
     });
   }
+  const decision = input?.creativeDecision
+    ? validateCreativeDecision(input.creativeDecision)
+    : compileCreativeDecision({
+        ...direction,
+        projectId: text(direction.projectId || input.projectId),
+        generatedAt: text(direction.generatedAt || now),
+      });
+  if (decision.project_id !== text(input.projectId)
+    || decision.direction_id !== text(direction.id)
+    || decision.direction_version !== text(direction.version)) {
+    throw Object.assign(new Error('Creative Decision does not match the active Creative Direction.'), {
+      code: 'CREATIVE_DECISION_STALE',
+    });
+  }
   const task = purposeRules(imagePurpose, direction);
   const strategy = text(task.strategy) || text(direction.designStrategy);
   return validateGenerationBlueprint({
@@ -106,6 +124,18 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
         : []),
       strategy,
     ]),
+    creativeDecisionId: decision.direction_id,
+    creativeDecisionVersion: decision.direction_version,
+    creativeDecisionSummary: unique([
+      decision.brand_strategy,
+      decision.visual_direction.recommended,
+      decision.visual_direction.rationale,
+      ...decision.color_system,
+      ...decision.material_system,
+      ...decision.composition_rule,
+      ...decision.generation_goal,
+    ]),
+    creativeDecisionSourcePath: 'outputs/creative_decision.json',
     imagePurpose,
     sceneDescription: `${userRequest}。${task.scene}。执行策略：${strategy}`,
     camera: task.camera,
@@ -113,16 +143,21 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
       ? task.composition
       : `${task.composition}。${direction.compositionStrategy}`,
     materials: unique([
+      ...decision.material_system,
       direction.materialStrategy,
       ...(input.materialRules ?? []),
     ]),
     lighting: direction.photographyStrategy,
-    colorDirection: direction.colorStrategy,
+    colorDirection: unique([
+      ...decision.color_system,
+      direction.colorStrategy,
+    ]).join('；'),
     brandAssetRules: unique([
       ...(direction.keepAssets ?? direction.thingsToKeep ?? []),
       ...(input.brandAssetRules ?? []),
     ]),
     avoid: unique([
+      ...decision.avoid_assets,
       ...task.avoid,
       ...(direction.removeAssets ?? direction.thingsToRemove ?? []),
       ...(direction.generationRules ?? []),
@@ -138,8 +173,19 @@ export function compileGenerationBlueprint(input, now = new Date().toISOString()
 }
 
 export function validateGenerationBlueprint(blueprint) {
+  const compatible = blueprint && !blueprint.creativeDecisionId
+    ? {
+        ...blueprint,
+        creativeDecisionId: blueprint.creativeDirectionId,
+        creativeDecisionVersion: blueprint.creativeDirectionVersion,
+        creativeDecisionSummary: unique(blueprint.creativeDirectionSummary),
+        creativeDecisionSourcePath: 'outputs/creative_decision.json',
+      }
+    : blueprint;
+  blueprint = compatible;
   const textFields = [
     'id', 'projectId', 'sessionId', 'creativeDirectionId', 'creativeDirectionVersion',
+    'creativeDecisionId', 'creativeDecisionVersion', 'creativeDecisionSourcePath',
     'imagePurpose', 'sceneDescription', 'camera', 'composition', 'lighting',
     'colorDirection', 'compilerVersion', 'generatedAt',
   ];
@@ -160,7 +206,9 @@ export function validateGenerationBlueprint(blueprint) {
       code: 'GENERATION_BLUEPRINT_INVALID',
     });
   }
-  for (const field of ['creativeDirectionSummary', 'materials', 'brandAssetRules', 'avoid']) {
+  for (const field of [
+    'creativeDirectionSummary', 'creativeDecisionSummary', 'materials', 'brandAssetRules', 'avoid',
+  ]) {
     if (!unique(blueprint[field]).length) {
       throw Object.assign(new Error(`Generation Blueprint 缺少 ${field}。`), {
         code: 'GENERATION_BLUEPRINT_INVALID',
@@ -214,6 +262,8 @@ export function compileGenerationBlueprintPrompt(blueprint) {
     'You are a senior brand designer executing an approved Generation Blueprint.',
     'Creative Direction — defines the new visual language:',
     `${blueprint.creativeDirectionId}@${blueprint.creativeDirectionVersion}\n${list(blueprint.creativeDirectionSummary)}`,
+    'Creative Decision — mandatory recommended direction and generation goal:',
+    `${blueprint.creativeDecisionId}@${blueprint.creativeDecisionVersion}\n${list(blueprint.creativeDecisionSummary)}`,
     'Scene:',
     blueprint.sceneDescription,
     'Camera:',

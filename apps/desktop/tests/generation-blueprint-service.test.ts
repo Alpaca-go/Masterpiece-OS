@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createGenerationBlueprintService } from '../src/main/generation-blueprint-service.ts';
 import { normalizeCreativeDirection } from '../../../packages/creative-production-runtime/src/creative-direction.js';
+import { compileCreativeDecision } from '../../../packages/creative-production-runtime/src/creative-decision.js';
 
 function direction() {
   return normalizeCreativeDirection({
@@ -54,6 +55,7 @@ test('Generation Blueprint service persists active execution plan and lifecycle'
     } as never,
     {
       getActive: async () => direction(),
+      ensureCreativeDecision: async () => compileCreativeDecision(direction()),
     } as never,
   );
 
@@ -63,6 +65,8 @@ test('Generation Blueprint service persists active execution plan and lifecycle'
   });
   assert.deepEqual(transitions, ['BLUEPRINT_GENERATING', 'BLUEPRINT_READY']);
   assert.equal(activeBlueprintId, blueprint.id);
+  assert.equal(blueprint.creativeDecisionId, direction().id);
+  assert.equal(blueprint.creativeDecisionSourcePath, 'outputs/creative_decision.json');
   assert.equal((await service.getActive('project-1'))?.id, blueprint.id);
   assert.equal(
     JSON.parse(await fs.readFile(path.join(root, 'creative-session', 'blueprints', `${blueprint.id}.json`), 'utf8')).imagePurpose,

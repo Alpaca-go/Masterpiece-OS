@@ -6,7 +6,9 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "id", "projectId", "sessionId",
-    "creativeDirectionId", "creativeDirectionVersion", "creativeDirectionSummary", "imagePurpose",
+    "creativeDirectionId", "creativeDirectionVersion", "creativeDirectionSummary",
+    "creativeDecisionId", "creativeDecisionVersion", "creativeDecisionSummary",
+    "creativeDecisionSourcePath", "imagePurpose",
     "sceneDescription", "camera", "composition", "materials", "lighting",
     "colorDirection", "brandAssetRules", "avoid", "compilerVersion", "generatedAt"
   ],
@@ -18,6 +20,10 @@
     "creativeDirectionId": { "type": "string", "minLength": 1 },
     "creativeDirectionVersion": { "type": "string", "minLength": 1 },
     "creativeDirectionSummary": { "$ref": "#/$defs/nonEmptyStrings" },
+    "creativeDecisionId": { "type": "string", "minLength": 1 },
+    "creativeDecisionVersion": { "type": "string", "minLength": 1 },
+    "creativeDecisionSummary": { "$ref": "#/$defs/nonEmptyStrings" },
+    "creativeDecisionSourcePath": { "const": "outputs/creative_decision.json" },
     "imagePurpose": {
       "enum": [
         "interior_scene", "storefront_scene", "packaging_render",

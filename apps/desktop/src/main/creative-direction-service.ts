@@ -128,6 +128,26 @@ export function createCreativeDirectionService(
     }
   }
 
+  async function ensureCreativeDecision(projectId: string): Promise<CreativeDecision> {
+    const existing = await getCreativeDecision(projectId);
+    const direction = await getActive(projectId);
+    if (existing && direction
+      && existing.direction_id === direction.id
+      && existing.direction_version === direction.version) return existing;
+    if (!direction) {
+      throw Object.assign(new Error('Creative Decision requires an active Creative Direction.'), {
+        code: 'CREATIVE_DIRECTION_NOT_READY',
+      });
+    }
+    const target = await locations(projectId);
+    const decision = compileCreativeDecision(direction) as CreativeDecision;
+    const markdown = compileCreativeDecisionMarkdown(direction, decision);
+    await fs.mkdir(target.outputs, { recursive: true });
+    await writeJson(target.creativeDecision, decision);
+    await fs.writeFile(target.creativeDecisionReport, markdown, 'utf8');
+    return decision;
+  }
+
   async function beginDirectionState(projectId: string): Promise<void> {
     let session = await sessions.create(projectId);
     if (session.workflowState === 'FAILED' || session.workflowState === 'CANCELLED') {
@@ -307,7 +327,7 @@ export function createCreativeDirectionService(
     }
   }
 
-  return { generate, getActive, getCreativeDecision, list };
+  return { generate, getActive, getCreativeDecision, ensureCreativeDecision, list };
 }
 
 export type CreativeDirectionService = ReturnType<typeof createCreativeDirectionService>;

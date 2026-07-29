@@ -162,6 +162,10 @@ export interface GenerationBlueprint {
   creativeDirectionId: string;
   creativeDirectionVersion: string;
   creativeDirectionSummary: string[];
+  creativeDecisionId: string;
+  creativeDecisionVersion: string;
+  creativeDecisionSummary: string[];
+  creativeDecisionSourcePath: 'outputs/creative_decision.json';
   imagePurpose:
     | 'interior_scene'
     | 'storefront_scene'

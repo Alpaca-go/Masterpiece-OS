@@ -160,6 +160,10 @@ test('Creative Director service reads persisted v18.1 directions through an in-m
     assert.equal(migrated?.brandReposition, legacy.projectTransformation);
     assert.equal(migrated?.creativeConcept, legacy.primaryConcept);
     assert.ok(migrated?.transformAssets.length);
+    const decision = await service.ensureCreativeDecision('project-1');
+    assert.equal(decision.direction_id, legacy.id);
+    await fs.access(path.join(root, 'outputs', 'creative_decision.json'));
+    await fs.access(path.join(root, 'outputs', '05-Creative-Decision.md'));
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
   }
