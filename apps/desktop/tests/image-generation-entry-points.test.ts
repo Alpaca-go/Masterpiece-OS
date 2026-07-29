@@ -108,11 +108,11 @@ test('V6 generation workspace exposes Series controls, output versions and Promp
   assert.match(creativeSessionSource, /styleProfileVersion === workspace\?\.styleProfile\?\.version/);
 });
 
-test('generation workspace uses source bundles, displays source usage and only offers Wan image profiles', () => {
+test('generation workspace uses source bundles, displays source usage and offers registered image models', () => {
   assert.match(generationSource, /sourceBundle: ImageGenerationSourceBundle/);
   assert.match(generationSource, /getSourcePreview/);
   assert.match(generationSource, /sourcesNotUsed/);
-  assert.match(generationSource, /profile\.protocol === 'dashscope-wan-image'/);
+  assert.match(generationSource, /profile\.modelType === 'image_generation'/);
   assert.match(generationSource, /本次生成意图/);
 });
 

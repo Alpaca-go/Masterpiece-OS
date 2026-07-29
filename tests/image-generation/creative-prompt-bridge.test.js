@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import sharp from 'sharp';
 import { createImageGenerationService } from '../../apps/desktop/src/main/image-generation/service.ts';
 
 test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bound prompt/reference set', async () => {
@@ -126,4 +127,117 @@ test('Visual Upgrade Provider bridge rejects more than two necessary brand refer
     }),
     (error) => error.code === 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
   );
+});
+
+test('multi-model Provider bridge executes GPT Image and persists normalized Run Store artifacts', async () => {
+  const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-gpt-provider-'));
+  const projectId = '22222222-3333-4444-5555-888888888888';
+  const projectRoot = path.join(dataPath, 'projects', 'gpt-project');
+  const png = await sharp({
+    create: {
+      width: 16,
+      height: 16,
+      channels: 4,
+      background: { r: 124, g: 88, b: 255, alpha: 1 },
+    },
+  }).png().toBuffer();
+  await fs.mkdir(path.join(projectRoot, 'input'), { recursive: true });
+  await fs.writeFile(path.join(projectRoot, 'project.json'), JSON.stringify({ id: projectId }));
+  await fs.writeFile(path.join(projectRoot, 'input', 'logo.png'), png);
+  const snapshot = {
+    schemaVersion: '6.0',
+    id: 'snapshot-gpt-1',
+    projectId,
+    sessionId: 'session-gpt-1',
+    requestId: 'request-gpt-1',
+    userRequest: 'Generate a brand poster',
+    creativeDirectionId: 'direction-gpt-1',
+    creativeDirectionVersion: '1.0.0',
+    generationBlueprintId: 'blueprint-gpt-1',
+    creativeDirectionSnapshot: {
+      id: 'direction-gpt-1',
+      version: '1.0.0',
+      oldVisualProblems: [],
+      source: { reportPath: 'outputs/report.md' },
+    },
+    generationBlueprint: {
+      id: 'blueprint-gpt-1',
+      creativeDirectionId: 'direction-gpt-1',
+      imagePurpose: 'brand_poster',
+    },
+    outputType: 'brand_poster',
+    styleProfileId: 'style-gpt-1',
+    styleProfileVersion: '1.0.0',
+    visualCanonId: 'canon-gpt-1',
+    visualCanonVersion: '1.0.0',
+    lockedAssetIds: ['logo'],
+    selectedReferences: [
+      { id: 'logo', role: 'identity_reference', projectRelativePath: 'input/logo.png' },
+    ],
+    instruction: {
+      schemaVersion: '1.0',
+      task: 'Generate a brand poster',
+      outputResponsibility: 'One finished poster',
+      preserve: ['Logo'],
+      avoid: ['Unapproved brand marks'],
+      sceneDescription: 'Single poster',
+      composition: 'Single focal point',
+      materialAndLighting: '',
+      typographyAndGraphicUse: '',
+      referenceAssetIds: ['logo'],
+      finalPrompt: 'EXACT MULTI MODEL PROMPT',
+      generatedAt: '2026-07-29T00:00:00.000Z',
+    },
+    negativePrompt: 'Unapproved brand marks',
+    compilerVersion: 'visual-upgrade-1.0.0',
+    createdAt: '2026-07-29T00:00:00.000Z',
+  };
+  const calls = [];
+  try {
+    const service = createImageGenerationService({
+      dataPath,
+      loadContext: async () => { throw new Error('legacy loader must not run'); },
+      readCredentials: async () => ({
+        apiKey: 'test-gpt-key',
+        protocol: 'openai-image-generation',
+        provider: 'openai',
+        baseUrl: 'https://api.openai.com/v1',
+        model: 'gpt-image-2',
+        profileId: 'gpt-profile',
+      }),
+      fetchImpl: async (url, options) => {
+        calls.push({ url: String(url), method: options?.method });
+        return {
+          ok: true,
+          status: 200,
+          text: async () => JSON.stringify({
+            id: 'gpt-request-1',
+            model: 'gpt-image-2',
+            data: [{ b64_json: png.toString('base64'), mime_type: 'image/png' }],
+          }),
+        };
+      },
+    });
+    const run = await service.startPromptSnapshot({ snapshot, apiProfileId: 'gpt-profile' });
+    assert.equal(run.status, 'succeeded');
+    assert.equal(run.providerId, 'openai');
+    assert.equal(run.modelId, 'gpt-image-2');
+    assert.equal(run.providerTaskId, 'gpt-request-1');
+    assert.equal(run.images.length, 1);
+    assert.match(calls[0].url, /\/images\/edits$/);
+
+    const runRoot = path.join(projectRoot, 'image-generation', run.runId);
+    const task = JSON.parse(await fs.readFile(path.join(runRoot, 'task.json'), 'utf8'));
+    const request = JSON.parse(await fs.readFile(
+      path.join(runRoot, 'provider-request.redacted.json'),
+      'utf8',
+    ));
+    assert.equal(task.providerId, 'openai');
+    assert.equal(task.compiledPrompt, 'EXACT MULTI MODEL PROMPT');
+    assert.equal(request.adapterId, 'gpt-image-2');
+    assert.equal(request.referenceCount, 1);
+    assert.equal((await fs.stat(path.join(runRoot, run.images[0].relativePath))).size > 0, true);
+  } finally {
+    await fs.rm(dataPath, { recursive: true, force: true });
+  }
 });

@@ -4,6 +4,7 @@ import type {
   CreativeDirection,
   AnchorCandidate,
   AnchorCandidateEvaluation,
+  ApiProfile,
   GenerationOutput,
   GenerationSeries,
   ImageGenerationRun,
@@ -17,7 +18,9 @@ import { cleanError } from '../utils';
 
 interface Props {
   project: ProjectRecord;
+  imageProfiles: ApiProfile[];
   imageApiProfileId: string;
+  onImageApiProfileChange(profileId: string): void;
   onBack(): void;
   onOpenSettings(): void;
 }
@@ -144,7 +147,9 @@ const STATE_LABELS: Partial<Record<CreativeSession['workflowState'], string>> = 
 
 export function CreativeSessionWorkspace({
   project,
+  imageProfiles,
   imageApiProfileId,
+  onImageApiProfileChange,
   onBack,
   onOpenSettings
 }: Props) {
@@ -473,6 +478,20 @@ export function CreativeSessionWorkspace({
         <p>{STATE_LABELS[workspace?.session.workflowState || 'CREATED'] || workspace?.session.workflowState}</p>
       </div>
       <div className="button-row">
+        <label className="compact-field">
+          <span>生成模型</span>
+          <select
+            value={imageApiProfileId}
+            onChange={(event) => onImageApiProfileChange(event.target.value)}
+          >
+            <option value="">请选择模型</option>
+            {imageProfiles.map((profile) => (
+              <option key={profile.id} value={profile.id}>
+                {profile.displayName} / {profile.modelId}
+              </option>
+            ))}
+          </select>
+        </label>
         <button className="button ghost" onClick={onBack}>返回报告</button>
         <button className="button secondary" onClick={onOpenSettings}>模型设置</button>
       </div>

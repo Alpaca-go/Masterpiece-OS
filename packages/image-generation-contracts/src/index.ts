@@ -179,7 +179,7 @@ export interface ImageGenerationPresetCapability {
 export type ImageProviderRegion = 'beijing' | 'singapore';
 
 /** §3.1 P0 Provider 标识。 */
-export type ImageProviderId = 'dashscope';
+export type ImageProviderId = 'dashscope' | 'openai' | 'google' | 'volcengine';
 
 // ---------------------------------------------------------------------------
 // §6.1 Provider Capability

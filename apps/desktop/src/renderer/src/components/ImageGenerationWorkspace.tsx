@@ -132,7 +132,9 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
     ...(compileRunId ? { compileRunId } : {}),
   });
   const runScopeId = sourceBundle.projectId || sourceBundle.visual?.projectId || `document-${sourceBundle.document?.documentRunId}`;
-  const imageProfiles = settings.profiles.filter((profile) => profile.isEnabled && profile.protocol === 'dashscope-wan-image');
+  const imageProfiles = settings.profiles.filter((profile) => (
+    profile.isEnabled && profile.modelType === 'image_generation'
+  ));
 
   const [capabilities, setCapabilities] = useState<ImageProviderCapabilities | null>(null);
   const [sourcePreview, setSourcePreview] = useState<ImageGenerationSourcePreview | null>(null);
@@ -401,7 +403,7 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
             <option value="">请选择 API Profile</option>
             {imageProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
           </select></label>
-          {!imageProfiles.length && <em>暂无已启用的 DashScope Wan 生图 Profile，请先在 API 设置中配置。</em>}
+          {!imageProfiles.length && <em>暂无已启用的图像生成模型，请先在模型设置中配置。</em>}
           <label>本次生成意图<textarea rows={4} value={userIntent} onChange={(event) => {
             setUserIntent(event.target.value);
             invalidateCompileRevision();

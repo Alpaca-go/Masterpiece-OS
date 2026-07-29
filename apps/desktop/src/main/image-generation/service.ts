@@ -53,6 +53,7 @@ import {
 } from '../../../../../packages/image-provider-dashscope/src/index.js';
 import {
   createWanImageGenerationAdapter,
+  createMultiModelImageAdapter,
 } from '../../../../../packages/image-generation-adapter/src/index.js';
 import { redactProviderRequest, redactProviderResponse } from '../../../../../packages/image-generation-runtime/src/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
@@ -68,6 +69,19 @@ import { EXECUTING_IMAGE_RUN_STATUSES } from '../../../../../packages/image-gene
 import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '../../../../../packages/image-generation-runtime/src/policies.js';
 
 export const DEFAULT_SIZE = '1024*1024';
+
+function sizeToAspectRatio(size: string): string {
+  const match = size.match(/^(\d+)[*xX](\d+)$/);
+  if (!match) return '1:1';
+  const width = Number(match[1]);
+  const height = Number(match[2]);
+  if (!width || !height) return '1:1';
+  const divisor = (left: number, right: number): number => (
+    right === 0 ? left : divisor(right, left % right)
+  );
+  const common = divisor(width, height);
+  return `${width / common}:${height / common}`;
+}
 export const POLL_INTERVAL_MS = 3000;
 export const MAX_POLL_ATTEMPTS = 200;
 
@@ -171,6 +185,7 @@ export interface ImageGenerationServiceDeps {
     baseUrl?: string;
     model?: string;
     protocol?: string;
+    provider?: string;
     profileId?: string;
   }>;
   /** 加载上游上下文（由调用方用文件加载器或真实服务装配）。 */
@@ -257,30 +272,35 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     apiProfileId?: string;
     baseUrl?: string;
     modelId?: string;
-  }): Promise<{ apiKey?: string; baseUrl?: string; model?: string; profileId?: string }> {
+  }): Promise<{
+    apiKey?: string;
+    baseUrl?: string;
+    model?: string;
+    profileId?: string;
+    protocol?: string;
+    provider?: string;
+  }> {
     if (options.apiKey) {
       return {
         apiKey: options.apiKey,
         baseUrl: options.baseUrl,
         model: options.modelId,
         profileId: options.apiProfileId,
+        protocol: 'dashscope-wan-image',
+        provider: 'dashscope',
       };
     }
     if (deps.readCredentials) {
       try {
         const credentials = await deps.readCredentials(options.apiProfileId || undefined);
-        if (credentials?.protocol && credentials.protocol !== 'dashscope-wan-image') {
-          throw Object.assign(
-            new Error('所选 API Profile 不是 DashScope Wan 生图协议，请重新选择生图 Profile。'),
-            { code: 'PROVIDER_PROFILE_INCOMPATIBLE' },
-          );
-        }
         if (credentials?.apiKey) {
           return {
             apiKey: credentials.apiKey,
             baseUrl: options.baseUrl || credentials.baseUrl,
             model: options.modelId || credentials.model,
             profileId: options.apiProfileId || credentials.profileId,
+            protocol: credentials.protocol,
+            provider: credentials.provider,
           };
         }
       } catch (error) {
@@ -293,7 +313,25 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       baseUrl: options.baseUrl,
       model: options.modelId,
       profileId: options.apiProfileId,
+      protocol: 'dashscope-wan-image',
+      provider: 'dashscope',
     };
+  }
+
+  function multiModelAdapterId(protocol?: string) {
+    const map: Record<string, 'gpt-image-2' | 'nano-banana' | 'seedream-5.0-pro'> = {
+      'openai-image-generation': 'gpt-image-2',
+      'google-gemini-image': 'nano-banana',
+      'seedream-image': 'seedream-5.0-pro',
+    };
+    return protocol ? map[protocol] : undefined;
+  }
+
+  function providerIdForProtocol(protocol?: string): ImageGenerationRun['providerId'] {
+    if (protocol === 'openai-image-generation') return 'openai';
+    if (protocol === 'google-gemini-image') return 'google';
+    if (protocol === 'seedream-image') return 'volcengine';
+    return 'dashscope';
   }
 
   function endpointFor(region: ImageProviderRegion, baseUrl?: string): string {
@@ -448,7 +486,13 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
 
     const scopeId = sources.projectId || sources.visual?.projectId || `document-${sources.document?.documentRunId}`;
     const store = storeFor(scopeId);
-    await store.writeTask(runId, compiled.task);
+    const providerId = providerIdForProtocol(providerConfig.protocol);
+    const storedTask = {
+      ...compiled.task,
+      providerId,
+      modelId: resolvedModelId,
+    };
+    await store.writeTask(runId, storedTask);
     await store.writeSnapshot(runId, compiled.snapshot);
     await store.writeCompiledPrompt(runId, compiled.compiledPromptMarkdown);
     await store.writePromptSourceMap(runId, compiled.promptSourceMap);
@@ -481,7 +525,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       taskId,
       status: compiled.gate.blocked ? 'blocked' : 'ready',
       outputType: compiled.task.outputType as ImageGenerationOutputType,
-      providerId: 'dashscope',
+      providerId,
       modelId: resolvedModelId,
       region,
       ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
@@ -624,6 +668,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const now = nowFn();
     const region = options.region ?? 'beijing';
     const modelId = options.modelId || providerConfig.model || DASHSCOPE_CAPABILITIES.modelId;
+    const providerId = providerIdForProtocol(providerConfig.protocol);
     const task = {
       schemaVersion: '1.0',
       taskId,
@@ -634,7 +679,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       references,
       compiledPrompt: options.compiledPrompt,
       promptVersion: options.promptVersion,
-      providerId: 'dashscope',
+      providerId,
       modelId,
       region,
       parameters: {
@@ -652,7 +697,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       taskId,
       status: 'ready',
       outputType: 'concept_image',
-      providerId: 'dashscope',
+      providerId,
       modelId,
       region,
       ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
@@ -673,7 +718,14 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     await store.appendEvent(runId, options.event, options.sourceMap);
     emit(run);
     if (options.dryRun) return run;
-    const completed = await executeLive(run, options);
+    const adapterId = multiModelAdapterId(providerConfig.protocol);
+    const completed = adapterId
+      ? await executeMultiModelLive(run, task, references, {
+        prompt: options.compiledPrompt,
+        negativeRules: [],
+        aspectRatio: sizeToAspectRatio(options.size ?? DEFAULT_SIZE),
+      }, providerConfig, adapterId)
+      : await executeLive(run, options);
     if (artifacts) await store.writeGenerationResult(runId, completed);
     return completed;
   }
@@ -708,6 +760,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const now = nowFn();
     const region = options.region ?? 'beijing';
     const modelId = options.modelId || providerConfig.model || DASHSCOPE_CAPABILITIES.modelId;
+    const providerId = providerIdForProtocol(providerConfig.protocol);
     const task = {
       schemaVersion: '1.0',
       taskId,
@@ -735,7 +788,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
           ? { fingerprint: snapshot.promptFingerprint }
           : {}),
       },
-      providerId: 'dashscope',
+      providerId,
       modelId,
       region,
       parameters: {
@@ -753,7 +806,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       taskId,
       status: 'ready',
       outputType: 'concept_image',
-      providerId: 'dashscope',
+      providerId,
       modelId,
       region,
       ...(providerConfig.profileId ? { apiProfileId: providerConfig.profileId } : {}),
@@ -787,9 +840,192 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     });
     emit(run);
     if (options.dryRun) return run;
-    const completed = await executeLive(run, options);
+    const adapterId = multiModelAdapterId(providerConfig.protocol);
+    const completed = adapterId
+      ? await executeMultiModelLive(run, task, references, {
+        prompt: snapshot.instruction.finalPrompt,
+        negativeRules: snapshot.instruction.avoid,
+        aspectRatio: aspectRatioForSnapshot(snapshot),
+        promptFingerprint: snapshot.promptFingerprint,
+      }, providerConfig, adapterId)
+      : await executeLive(run, options);
     if (artifacts) await store.writeGenerationResult(runId, completed);
     return completed;
+  }
+
+  function aspectRatioForSnapshot(snapshot: GenerationPromptSnapshot): string {
+    if (['interior_scene', 'storefront_scene'].includes(snapshot.outputType)) return '16:9';
+    if (snapshot.outputType === 'packaging_render') return '3:4';
+    if (snapshot.outputType === 'vi_application') return '1:1';
+    return '4:5';
+  }
+
+  async function executeMultiModelLive(
+    initialRun: ImageGenerationRun,
+    task: Record<string, unknown>,
+    references: Array<{ localPath: string; assetId: string; role: string }>,
+    generationInput: {
+      prompt: string;
+      negativeRules: string[];
+      aspectRatio: string;
+      promptFingerprint?: string;
+    },
+    providerConfig: {
+      apiKey?: string;
+      baseUrl?: string;
+      model?: string;
+      protocol?: string;
+    },
+    adapterId: 'gpt-image-2' | 'nano-banana' | 'seedream-5.0-pro',
+  ): Promise<ImageGenerationRun> {
+    const store = storeFor(initialRun.projectId);
+    const startedAt = nowFn();
+    let run: ImageGenerationRun = {
+      ...initialRun,
+      status: 'submitting',
+      startedAt,
+      updatedAt: startedAt,
+      providerExecutionMode: 'synchronous',
+    };
+    await store.saveRun(run);
+    emit(run);
+    try {
+      const adapter = createMultiModelImageAdapter({
+        adapterId,
+        apiKey: providerConfig.apiKey,
+        baseUrl: providerConfig.baseUrl,
+        modelId: providerConfig.model,
+      });
+      const adapterReferences = await Promise.all(references.map(async (reference) => {
+        const data = await fileReader(reference.localPath);
+        const extension = path.extname(reference.localPath).toLowerCase();
+        const mimeType = extension === '.jpg' || extension === '.jpeg'
+          ? 'image/jpeg'
+          : extension === '.webp'
+            ? 'image/webp'
+            : 'image/png';
+        return {
+          name: path.basename(reference.localPath),
+          mimeType,
+          data: data.toString('base64'),
+        };
+      }));
+      const universalInput = {
+        prompt: generationInput.prompt,
+        negativeRules: generationInput.negativeRules,
+        aspectRatio: generationInput.aspectRatio,
+        imageSize: '2K',
+        outputCount: 1,
+        references: adapterReferences,
+      };
+      const request = adapter.compileRequest(universalInput);
+      await store.writeProviderRequest(run.runId, {
+        adapterId,
+        adapterVersion: adapter.version,
+        method: request.method,
+        url: new URL(request.url).origin + new URL(request.url).pathname,
+        bodyKind: request.bodyKind,
+        modelId: run.modelId,
+        referenceCount: references.length,
+        ...(generationInput.promptFingerprint
+          ? { promptFingerprint: generationInput.promptFingerprint }
+          : {}),
+      });
+      await store.appendEvent(run.runId, 'MULTI_MODEL_REQUEST_SUBMITTED', {
+        adapterId,
+        modelId: run.modelId,
+      });
+      run = { ...run, status: 'running', updatedAt: nowFn() };
+      await store.saveRun(run);
+      emit(run);
+      const result = await adapter.execute(universalInput, { fetchImpl });
+      const providerTaskId = result.requestId || `sync-${run.runId}`;
+      await store.writeProviderResponse(run.runId, {
+        adapterId,
+        status: result.status,
+        requestId: result.requestId,
+        modelId: result.modelId,
+        imageCount: result.images.length,
+      });
+      run = {
+        ...run,
+        providerTaskId,
+        status: 'downloading',
+        updatedAt: nowFn(),
+      };
+      await store.saveRun(run);
+      emit(run);
+      const first = result.images[0];
+      const root = await rootForRun(run);
+      const downloaded = await downloadAndVerifyImage({
+        url: first?.url,
+        b64: first?.b64,
+        targetPath: path.join(imagesDir(root), 'image-01.png'),
+        thumbnailPath: path.join(thumbnailsDir(root), 'image-01.webp'),
+        fetchImpl,
+        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/webp'],
+      });
+      if (downloaded.downloadFailed || !downloaded.written || !downloaded.decoded) {
+        throw Object.assign(new Error(downloaded.error || 'Generated image validation failed.'), {
+          code: 'IMAGE_DOWNLOAD_FAILED',
+        });
+      }
+      const completedAt = nowFn();
+      const generated: GeneratedImage = {
+        imageId: 'image-01',
+        relativePath: 'images/image-01.png',
+        thumbnailRelativePath: 'thumbnails/image-01.webp',
+        mimeType: downloaded.mimeType || first?.mimeType || 'image/png',
+        sizeBytes: downloaded.sizeBytes || 0,
+        width: downloaded.width,
+        height: downloaded.height,
+        sha256: downloaded.sha256 || '',
+        downloadedAt: completedAt,
+      };
+      run = {
+        ...run,
+        status: 'succeeded',
+        images: [generated],
+        completedAt,
+        updatedAt: completedAt,
+      };
+      await store.saveRun(run);
+      await store.writeGenerationResult(run.runId, run);
+      await store.writeMetrics(run.runId, {
+        startedAt,
+        completedAt,
+        durationMs: Math.max(0, Date.parse(completedAt) - Date.parse(startedAt)),
+        providerSubmitCount: 1,
+        providerPollCount: 0,
+        outputImageCount: 1,
+        outputSize: downloaded.width && downloaded.height
+          ? `${downloaded.width}x${downloaded.height}`
+          : undefined,
+      } as never);
+      await store.appendEvent(run.runId, 'RUN_SUCCEEDED', {
+        adapterId,
+        imageCount: 1,
+      });
+      emit(run);
+      return run;
+    } catch (error) {
+      const failed: ImageGenerationRun = {
+        ...run,
+        status: 'failed',
+        completedAt: nowFn(),
+        updatedAt: nowFn(),
+        errorCode: String((error as { code?: string }).code || 'MODEL_ADAPTER_REQUEST_FAILED'),
+        errorMessage: (error as Error).message,
+      };
+      await store.saveRun(failed);
+      await store.writeGenerationResult(failed.runId, failed);
+      await store.appendEvent(failed.runId, 'RUN_FAILED', {
+        adapterId,
+        errorCode: failed.errorCode,
+      });
+      emit(failed);
+      return failed;
+    }
   }
 
   /** 提交并执行实时轮询/下载（被 start 与 retry 共用）。 */
@@ -818,6 +1054,46 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       return blocked;
     }
 
+    const persistedTask = await readPersistedTask(run.runId, run.projectId);
+    const adapterId = multiModelAdapterId(providerConfig.protocol);
+    if (adapterId) {
+      const persisted = persistedTask as {
+        compiledPrompt?: string;
+        parameters?: { size?: string };
+        references?: Array<{ localPath: string; assetId: string; role: string }>;
+        promptSnapshot?: { fingerprint?: string };
+      };
+      return executeMultiModelLive(
+        {
+          ...run,
+          providerId: providerIdForProtocol(providerConfig.protocol),
+        },
+        persistedTask,
+        persisted.references ?? [],
+        {
+          prompt: persisted.compiledPrompt ?? '',
+          negativeRules: [],
+          aspectRatio: sizeToAspectRatio(persisted.parameters?.size ?? DEFAULT_SIZE),
+          promptFingerprint: persisted.promptSnapshot?.fingerprint,
+        },
+        providerConfig,
+        adapterId,
+      );
+    }
+    if (providerConfig.protocol && providerConfig.protocol !== 'dashscope-wan-image') {
+      const failed: ImageGenerationRun = {
+        ...run,
+        status: 'failed',
+        completedAt: now,
+        updatedAt: now,
+        errorCode: 'PROVIDER_PROFILE_INCOMPATIBLE',
+        errorMessage: `不支持的图像生成协议：${providerConfig.protocol}`,
+      };
+      await store.saveRun(failed);
+      emit(failed);
+      return failed;
+    }
+
     const region = run.region;
     const modelId = run.modelId;
     const endpoint = endpointFor(region, providerConfig.baseUrl);
@@ -829,8 +1105,6 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       fetchImpl,
       fileReader,
     });
-
-    const persistedTask = await readPersistedTask(run.runId, run.projectId);
 
     const metrics = {
       providerId: 'dashscope',
