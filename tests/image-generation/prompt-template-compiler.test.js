@@ -69,7 +69,7 @@ const canon = {
   sharedRules: ['保持细线框架'],
 };
 
-test('Prompt Compiler v1 converts a Blueprint into a deterministic professional prompt', () => {
+test('Prompt Compiler v2 converts a Blueprint into a deterministic professional prompt', () => {
   const blueprint = compileDeliverableGenerationBlueprint({
     visualMemory: memory,
     visualCanon: canon,
@@ -96,7 +96,7 @@ test('Prompt Compiler v1 converts a Blueprint into a deterministic professional 
   const second = compilePromptTemplate(input);
   assert.deepEqual(first, second);
   assert.equal(first.compilerVersion, PROMPT_TEMPLATE_COMPILER_VERSION);
-  assert.match(first.promptVersion, /interior@1\.1\.0/u);
+  assert.match(first.promptVersion, /interior@2\.0\.0/u);
   assert.match(first.promptFingerprint, /^[a-f0-9]{64}$/u);
   for (const heading of [
     '## 1. Task Definition',

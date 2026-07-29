@@ -1,4 +1,4 @@
-export const DELIVERABLE_TEMPLATE_VERSION = '1.1.0';
+export const DELIVERABLE_TEMPLATE_VERSION = '2.0.0';
 
 const TEMPLATES = Object.freeze({
   interior_scene: Object.freeze({
@@ -97,6 +97,70 @@ const TEMPLATES = Object.freeze({
       '禁止复制旧海报构图或使用 Logo 加产品的模板化结构。',
     ],
   }),
+  product_scene: Object.freeze({
+    deliverableType: 'brand_poster',
+    templateId: 'product_scene',
+    sourcePath: 'prompt-templates/image-generation/product-scene.md',
+    taskDefinition: '生成一张以单一产品为明确主体、具有真实使用语境和商业摄影完成度的产品场景图。',
+    commercialUse: '产品发布、品牌电商、产品提案与商业传播。',
+    visualMechanism: [
+      '把 Visual Canon 转译为产品所处的环境、道具关系、色彩节奏与材质对比，不复刻 Anchor 的具体画面。',
+      '产品始终是唯一视觉主体，品牌氛围由空间、光线与材质共同建立。',
+    ],
+    colorUsageRule: '以 Canon 主色建立环境基调，辅助色服务产品识别，强调色不超过画面的 10%。',
+    materialBehavior: [
+      '产品材质、接触面、道具和背景必须具有可信的尺度、纹理、反射与使用痕迹。',
+      '场景材质服务于产品功能和品牌气质，不得用无关装饰掩盖产品。',
+    ],
+    composition: [
+      '使用一个明确的产品主体、一个主要使用情境和克制的辅助道具，保持充足负空间。',
+      '建立可读的前中后景与稳定视觉动线，不生成产品合集、拼贴或多方案板。',
+    ],
+    photography: [
+      '使用可信的商业产品摄影机位、焦段、景深和接触阴影。',
+      '光线应解释产品体积、材质与使用方式，同时符合 Canon Lighting System。',
+    ],
+    assetRules: [
+      '产品与身份资产只按批准角色进入场景，必须保持结构、比例与可识别特征。',
+      '场景参考只约束使用语境和空间关系，不继承旧构图、文案或品牌标识。',
+    ],
+    negativeRules: [
+      '禁止产品合集、电商九宫格、悬浮拼贴、提案板和无使用逻辑的道具堆砌。',
+      '禁止让环境压过产品主体，禁止复制 Anchor 的 Logo、文字和具体布局。',
+    ],
+  }),
+  ip_scene: Object.freeze({
+    deliverableType: 'illustration',
+    templateId: 'ip_scene',
+    sourcePath: 'prompt-templates/image-generation/ip-scene.md',
+    taskDefinition: '生成一张角色身份稳定、具有明确叙事动作和品牌世界观的完整 IP 场景。',
+    commercialUse: '品牌 IP 传播、角色世界观展示、活动内容与商业插画。',
+    visualMechanism: [
+      '把 Visual Canon 转译为角色所在世界的空间、色彩、材质、图形节奏与叙事气质。',
+      '保持角色身份与比例稳定，用单一事件建立场景，不复制 Anchor 的具体构图。',
+    ],
+    colorUsageRule: '以 Canon 色彩系统统一角色与环境，强调色只用于叙事焦点且不超过画面的 10%。',
+    materialBehavior: [
+      '角色服装、道具、地面和环境表面应遵循统一材质语言并保持触感可信。',
+      '材质细节服务角色动作和世界观，不得堆叠廉价卡通装饰。',
+    ],
+    composition: [
+      '一个主要角色或已批准角色组合、一个清晰动作、一个完整场景和明确负空间。',
+      '通过前中后景、视线与动作方向建立叙事动线，不生成角色设定表或分格合集。',
+    ],
+    photography: [
+      '采用与叙事一致的镜头高度、景别、透视和景深，即使是插画也保持空间可信。',
+      '光线明确角色轮廓、表情、动作和环境层次，并遵循 Canon Lighting System。',
+    ],
+    assetRules: [
+      '角色身份资产必须保持轮廓、比例、面部特征、服装关键点和品牌识别稳定。',
+      '其他参考只约束指定角色或场景功能，不得拼贴成角色设定板。',
+    ],
+    negativeRules: [
+      '禁止角色设定表、表情九宫格、多格漫画、贴纸合集和无叙事动作的站桩图。',
+      '禁止擅自改写角色身份、Logo、品牌文字，禁止复制 Anchor 的具体布局。',
+    ],
+  }),
 });
 
 function text(value) {
@@ -146,7 +210,14 @@ export function getDeliverablePromptTemplate(deliverableType) {
 export function compileDeliverableGenerationBlueprint(input) {
   const visualMemory = input?.visualMemory;
   const deliverableType = text(input?.deliverableType);
-  const template = getDeliverablePromptTemplate(deliverableType);
+  const template = getDeliverablePromptTemplate(text(input?.templateType) || deliverableType);
+  if (template.deliverableType !== deliverableType) {
+    throw Object.assign(new Error(
+      `Template ${template.templateId} cannot compile output type ${deliverableType || 'missing'}.`,
+    ), {
+      code: 'DELIVERABLE_TEMPLATE_OUTPUT_MISMATCH',
+    });
+  }
   if (!visualMemory || visualMemory.schema_version !== '1.0') {
     throw Object.assign(new Error('Deliverable template requires Visual Memory v1.'), {
       code: 'VISUAL_MEMORY_REQUIRED',

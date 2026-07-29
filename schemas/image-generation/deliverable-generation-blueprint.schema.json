@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://masterpiece.local/schemas/image-generation/deliverable-generation-blueprint.schema.json",
-  "title": "Deliverable Generation Blueprint v1",
+  "title": "Deliverable Generation Blueprint v2",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -12,13 +12,13 @@
   ],
   "properties": {
     "schemaVersion": { "const": "1.0" },
-    "templateId": { "enum": ["interior", "packaging", "poster"] },
-    "templateVersion": { "const": "1.1.0" },
+    "templateId": { "enum": ["interior", "packaging", "poster", "product_scene", "ip_scene"] },
+    "templateVersion": { "const": "2.0.0" },
     "templateSource": { "type": "string", "minLength": 1 },
     "visualMemoryId": { "type": "string", "minLength": 1 },
     "visualCanonId": { "type": "string", "minLength": 1 },
     "visualCanonVersion": { "type": "string", "minLength": 1 },
-    "deliverableType": { "enum": ["interior_scene", "packaging_render", "brand_poster"] },
+    "deliverableType": { "enum": ["interior_scene", "packaging_render", "brand_poster", "illustration"] },
     "templateStack": {
       "type": "object",
       "additionalProperties": false,

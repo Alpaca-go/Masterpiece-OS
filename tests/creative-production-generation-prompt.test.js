@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   compileGenerationPromptSnapshot,
   inferGenerationOutputType,
+  resolveGenerationTemplateType,
   validateGenerationPromptSnapshot,
 } from '../packages/creative-production-runtime/src/generation-prompt.js';
 import { compileVisualMemory } from '../packages/creative-production-runtime/src/visual-memory.js';
@@ -89,6 +90,20 @@ const direction = {
   posterStrategy: '建立单一视觉叙事',
   generationRules: ['禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列'],
 };
+
+test('v2 routes product and IP scene intents to independent templates without expanding provider output types', () => {
+  assert.equal(inferGenerationOutputType('生成产品场景商业摄影'), 'brand_poster');
+  assert.equal(
+    resolveGenerationTemplateType('brand_poster', '生成产品场景商业摄影'),
+    'product_scene',
+  );
+  assert.equal(inferGenerationOutputType('生成 IP 场景插画'), 'illustration');
+  assert.equal(
+    resolveGenerationTemplateType('illustration', '生成 IP 场景插画'),
+    'ip_scene',
+  );
+  assert.equal(resolveGenerationTemplateType('brand_poster', '生成品牌海报'), 'brand_poster');
+});
 
 test('v18.1 prompt snapshot keeps finalPrompt in Run snapshot and selects at most two references', () => {
   const snapshot = compileGenerationPromptSnapshot({
@@ -177,12 +192,12 @@ test('Visual Memory prompt freezes Memory and Reference Pack while selecting tas
     referencePack,
   }, NOW);
   assert.equal(validateGenerationPromptSnapshot(snapshot), snapshot);
-  assert.equal(snapshot.compilerVersion, 'prompt-template-1.1.0');
+  assert.equal(snapshot.compilerVersion, 'prompt-template-2.0.0');
   assert.equal(snapshot.visualMemoryId, visualMemory.id);
   assert.equal(snapshot.referencePackId, referencePack.id);
   assert.equal(snapshot.deliverableTemplateId, 'packaging');
-  assert.equal(snapshot.deliverableTemplateVersion, '1.1.0');
-  assert.match(snapshot.promptVersion, /packaging@1\.1\.0/u);
+  assert.equal(snapshot.deliverableTemplateVersion, '2.0.0');
+  assert.match(snapshot.promptVersion, /packaging@2\.0\.0/u);
   assert.match(snapshot.promptFingerprint, /^[a-f0-9]{64}$/u);
   assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
     'structure_reference',

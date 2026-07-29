@@ -40,7 +40,9 @@ const ANCHOR_VISUAL_ONLY_NEGATIVE_RULES = Object.freeze([
   '禁止从 Anchor Image 继承、重绘或仿制 Logo 与品牌文字。',
   '禁止继承 Anchor Image 的标题排版、海报文案与图片内具体布局。',
 ]);
-const TEMPLATE_OUTPUT_TYPES = new Set(['interior_scene', 'packaging_render', 'brand_poster']);
+const TEMPLATE_OUTPUT_TYPES = new Set([
+  'interior_scene', 'packaging_render', 'brand_poster', 'illustration',
+]);
 
 const OUTPUT_TYPES = [
   'interior_scene', 'storefront_scene', 'packaging_render',
@@ -62,12 +64,22 @@ export function inferGenerationOutputType(userRequest) {
   if (/包装|包材|盒型|袋装|瓶装/iu.test(task)) return 'packaging_render';
   if (/门头|店招|外立面|店面外观/iu.test(task)) return 'storefront_scene';
   if (/店内|室内|空间|装修|展厅/iu.test(task)) return 'interior_scene';
+  if (/产品场景|产品摄影|产品情境|商品场景/iu.test(task)) return 'brand_poster';
   if (/海报|主视觉|KV/iu.test(task)) return 'brand_poster';
-  if (/插画|角色|人物设定/iu.test(task)) return 'illustration';
+  if (/IP\s*场景|插画|角色|人物设定/iu.test(task)) return 'illustration';
   if (/VI|名片|菜单|工牌|物料|应用/iu.test(task)) return 'vi_application';
   throw Object.assign(new Error('无法从用户任务判断单一结果类型，请明确说明要生成空间、门店、包装、海报、VI 应用或插画。'), {
     code: 'GENERATION_OUTPUT_AMBIGUOUS',
   });
+}
+
+export function resolveGenerationTemplateType(outputType, userRequest) {
+  if (outputType === 'illustration') return 'ip_scene';
+  if (outputType === 'brand_poster'
+    && /产品场景|产品摄影|产品情境|商品场景/iu.test(text(userRequest))) {
+    return 'product_scene';
+  }
+  return outputType;
 }
 
 function text(value) { return String(value ?? '').trim(); }
@@ -239,6 +251,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
         visualMemory,
         visualCanon: input.visualCanon,
         deliverableType: outputType,
+        templateType: resolveGenerationTemplateType(outputType, userRequest),
         userIntent: userRequest,
         referenceAssets: references.map((reference) => ({
           assetId: reference.id,

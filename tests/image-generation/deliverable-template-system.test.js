@@ -75,14 +75,23 @@ for (const [deliverableType, templateId, source] of [
   ['interior_scene', 'interior', 'interior.md'],
   ['packaging_render', 'packaging', 'packaging.md'],
   ['brand_poster', 'poster', 'poster.md'],
+  ['brand_poster', 'product_scene', 'product-scene.md'],
+  ['illustration', 'ip_scene', 'ip-scene.md'],
 ]) {
   test(`${templateId} template compiles Visual Memory into a complete Generation Blueprint`, () => {
-    const template = getDeliverablePromptTemplate(deliverableType);
+    const template = getDeliverablePromptTemplate(
+      templateId === 'product_scene' || templateId === 'ip_scene'
+        ? templateId
+        : deliverableType,
+    );
     assert.equal(template.templateId, templateId);
     const blueprint = compileDeliverableGenerationBlueprint({
       visualMemory: visualMemory(),
       visualCanon: visualCanon(),
       deliverableType,
+      ...(templateId === 'product_scene' || templateId === 'ip_scene'
+        ? { templateType: templateId }
+        : {}),
       userIntent: `生成${templateId}商业提案图`,
       referenceAssets: Array.from({ length: 7 }, (_, index) => ({
         assetId: `asset-${index}`,
@@ -105,7 +114,9 @@ for (const [deliverableType, templateId, source] of [
 }
 
 test('Markdown templates expose the required eight-section contract', () => {
-  for (const filename of ['interior.md', 'packaging.md', 'poster.md']) {
+  for (const filename of [
+    'interior.md', 'packaging.md', 'poster.md', 'product-scene.md', 'ip-scene.md',
+  ]) {
     const markdown = fs.readFileSync(
       new URL(`../../prompt-templates/image-generation/${filename}`, import.meta.url),
       'utf8',
@@ -129,12 +140,21 @@ test('Deliverable Generation Blueprint schema is closed and versioned', () => {
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);
-  assert.equal(schema.properties.templateVersion.const, '1.1.0');
+  assert.equal(schema.properties.templateVersion.const, '2.0.0');
   assert.equal(schema.properties.referenceAssets.maxItems, 5);
   assert.equal(schema.properties.templateStack.additionalProperties, false);
 });
 
 test('template system rejects unsupported deliverables and missing frozen inputs', () => {
+  assert.throws(
+    () => compileDeliverableGenerationBlueprint({
+      visualMemory: visualMemory(),
+      visualCanon: visualCanon(),
+      deliverableType: 'illustration',
+      templateType: 'product_scene',
+    }),
+    (error) => error.code === 'DELIVERABLE_TEMPLATE_OUTPUT_MISMATCH',
+  );
   assert.throws(
     () => getDeliverablePromptTemplate('free_concept'),
     (error) => error.code === 'DELIVERABLE_TEMPLATE_UNSUPPORTED',

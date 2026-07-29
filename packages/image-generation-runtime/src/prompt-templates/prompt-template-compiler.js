@@ -4,7 +4,7 @@ import {
   validateDeliverableGenerationBlueprint,
 } from './deliverable-template-system.js';
 
-export const PROMPT_TEMPLATE_COMPILER_VERSION = 'prompt-template-1.1.0';
+export const PROMPT_TEMPLATE_COMPILER_VERSION = 'prompt-template-2.0.0';
 
 function text(value) {
   return String(value ?? '').trim();

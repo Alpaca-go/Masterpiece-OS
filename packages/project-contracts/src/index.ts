@@ -624,7 +624,7 @@ export interface GenerationPromptSnapshot {
   generationBlueprint?: GenerationBlueprint;
   visualMemory?: VisualMemory;
   referencePack?: ReferencePack;
-  deliverableTemplateId?: 'interior' | 'packaging' | 'poster';
+  deliverableTemplateId?: 'interior' | 'packaging' | 'poster' | 'product_scene' | 'ip_scene';
   deliverableTemplateVersion?: string;
   deliverableTemplateBlueprint?: Record<string, unknown>;
   templateCompiledPrompt?: string;
