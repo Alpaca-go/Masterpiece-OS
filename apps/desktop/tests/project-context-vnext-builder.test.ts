@@ -100,3 +100,92 @@ test('legacy vNext context migrates to a report-independent PromptSourceObject',
     false,
   );
 });
+
+test('structured Prompt Source enriches context while ProjectRecord keeps identity authority', () => {
+  const context = buildProjectVisualContextVNext({
+    project: project(),
+    generatedAt: '2026-07-30T00:00:00.000Z',
+    structuredAnalysisRunId: 'prompt-source-run-1',
+    structuredAnalysis: {
+      promptSourceObject: {
+        schemaVersion: '1.0',
+        projectId: 'project-1',
+        generatedAt: '2026-07-30T00:00:00.000Z',
+        projectFacts: {
+          brandName: '模型错误品牌',
+          industry: '模型错误行业',
+          brandRole: 'premium hospitality platform',
+          businessModel: null,
+          primaryOfferings: ['service'],
+        },
+        lockedAssets: {
+          logoAssetIds: [],
+          preferredLogoAssetId: null,
+          logoUsageMode: 'blank_area',
+          confirmedColors: ['mineral violet'],
+          mustPreserve: ['layered identity rhythm'],
+          immutableStructures: [],
+        },
+        sourceVisualState: {
+          valuableAssets: ['layered identity rhythm'],
+          overusedElements: ['saturated gradient'],
+          outdatedExpressions: ['literal mascot'],
+          genericIndustryCliches: ['generic lounge'],
+          brandMisreadRisks: ['tea room'],
+        },
+        upgradeTranslation: {
+          preserve: ['identity rhythm'],
+          weaken: ['literal mascot'],
+          remove: ['neon gradient'],
+          targetWorldview: ['calm precision'],
+          toneBoundaries: [{ target: 'calm', avoid: ['cold laboratory'] }],
+          transformations: [{
+            sourceAsset: 'layered mark',
+            abstractProperties: ['rhythm'],
+            newExpression: ['translucent spatial layers'],
+            forbiddenLiteralUse: ['pasted symbol'],
+          }],
+        },
+        renderLanguage: {
+          colorBehavior: {
+            primary: [{ name: 'warm white', ratio: 70, role: 'stable base' }],
+            secondary: [],
+            accent: [{ name: 'mineral violet', ratio: 10, role: 'identity accent' }],
+            forbidden: ['neon violet'],
+          },
+          materialBehavior: [{
+            material: 'frosted glass',
+            behavior: ['diffuse'],
+            brandRole: 'precision',
+            forbidden: [],
+          }],
+          lightingBehavior: {
+            source: ['side daylight'],
+            contrast: 'low',
+            interactionWithMaterials: ['transmission'],
+            forbidden: ['stage light'],
+          },
+          graphicBehavior: ['layered rhythm'],
+        },
+        negativeRules: { project: ['tea room'], model: ['random text'] },
+        confidence: {
+          projectFacts: 0.8,
+          lockedAssets: 0.8,
+          sourceVisualState: 0.8,
+          upgradeTranslation: 0.8,
+        },
+        provenance: {
+          sourceKinds: ['project_record', 'original_asset', 'structured_analysis'],
+          structuredAnalysisRunId: 'prompt-source-run-1',
+          sourceFingerprint: 'structured-fingerprint',
+        },
+      },
+    },
+  });
+
+  assert.equal(context.promptSourceObject?.projectFacts.brandName, 'Brand One');
+  assert.equal(context.promptSourceObject?.projectFacts.industry, 'hospitality');
+  assert.equal(context.promptSourceObject?.lockedAssets.preferredLogoAssetId, 'asset-logo');
+  assert.equal(context.promptSourceObject?.lockedAssets.logoUsageMode, 'reference');
+  assert.deepEqual(context.promptSourceObject?.sourceVisualState.brandMisreadRisks, ['tea room']);
+});

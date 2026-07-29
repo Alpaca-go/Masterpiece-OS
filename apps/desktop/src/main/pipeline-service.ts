@@ -22,6 +22,7 @@ import type {
   VisualAnalysisPurpose,
   VisualReconstructionDirection
 } from '../shared/types';
+import type { PromptSourceObject } from '../../../../packages/project-contracts/src/index.ts';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
@@ -48,6 +49,11 @@ import {
   buildProjectVisualContextVNext,
   writeProjectVisualContextVNext,
 } from './project-context-vnext-builder.ts';
+import {
+  buildPromptSourceExtractionPrompt,
+  normalizePromptSourceExtraction,
+  validatePromptSourceExtraction,
+} from './prompt-source-extraction.ts';
 import type { ProjectStore } from './project-store';
 import {
   incompleteProjectIdentity,
@@ -482,6 +488,87 @@ export function createPipelineService(
         await fs.rm(path.join(projectPaths.outputs, project.lastReportFilename), { force: true });
       }
 
+      // Prompt Source is extracted directly from ProjectRecord + original
+      // visual assets. It is deliberately independent from report markdown.
+      let promptSourceObject: PromptSourceObject | undefined;
+      let promptSourceModelCallCount = 0;
+      let promptSourceRunId: string | undefined;
+      const promptSourceProject: ProjectRecord = {
+        ...project,
+        projectName: finalProjectName,
+        brandName: project.brandName || finalProjectName,
+      };
+      const promptSourceAssets = (project.assets || [])
+        .filter((asset) => asset.status === 'ready' && /^image\//iu.test(asset.mimeType))
+        .slice(0, 30);
+      if (promptSourceAssets.length) {
+        const prompt = buildPromptSourceExtractionPrompt(
+          promptSourceProject,
+          promptSourceAssets.map((asset) => asset.id),
+        );
+        let repair = '';
+        for (let attempt = 1; attempt <= 2 && !promptSourceObject; attempt += 1) {
+          promptSourceModelCallCount += 1;
+          try {
+            progress('validating-output', `正在提取生图项目语义（第 ${attempt} 次）`);
+            const response = await baseReasoner({
+              prompt: {
+                messages: [
+                  {
+                    role: 'system',
+                    content: '你是项目视觉证据提取器。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
+                  },
+                  { role: 'user', content: `${prompt}${repair}` },
+                ],
+                attachments: promptSourceAssets.map((asset) => ({
+                  assetId: asset.id,
+                  path: path.join(projectPaths.input, asset.relativePath),
+                  mediaType: 'image',
+                  format: path.extname(asset.relativePath).slice(1),
+                  readable: true,
+                })),
+              },
+              signal: controller.signal,
+              maximumDurationMs: 15 * 60_000,
+            });
+            const normalized = normalizePromptSourceExtraction(
+              parseModelStructuredResponse(response.reportMarkdown),
+            );
+            validatePromptSourceExtraction(normalized);
+            promptSourceRunId = response.runId;
+            promptSourceObject = {
+              schemaVersion: '1.0',
+              projectId: project.id,
+              generatedAt: new Date().toISOString(),
+              ...normalized,
+              provenance: {
+                sourceKinds: ['project_record', 'original_asset', 'structured_analysis'],
+                structuredAnalysisRunId: response.runId,
+                sourceFingerprint: crypto
+                  .createHash('sha256')
+                  .update(JSON.stringify({
+                    projectId: project.id,
+                    assetIds: promptSourceAssets.map((asset) => asset.id),
+                    normalized,
+                  }))
+                  .digest('hex'),
+              },
+            };
+          } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            repair = `\n\n上一次结构化输出未通过校验：${message}\n请保留正确字段，修复缺失字段，并重新输出完整裸 JSON。`;
+            if (attempt === 2) {
+              console.warn(JSON.stringify({
+                event: 'PROMPT_SOURCE_EXTRACTION_FAILED',
+                projectId,
+                attempts: attempt,
+                message,
+              }));
+            }
+          }
+        }
+      }
+
       const completedAt = new Date().toISOString();
       const durationMs = Math.round(performance.now() - started);
       const runtimeReport = {
@@ -494,7 +581,11 @@ export function createPipelineService(
         model: credentials.model,
         startedAt,
         completedAt,
-        durationMs
+        durationMs,
+        promptSourceModelCallCount,
+        promptSourceRunId,
+        modelCallsThisRun: Number(execution.result.runReport.modelCallsThisRun || 0)
+          + promptSourceModelCallCount
       };
       const runtimeReportPath = path.join(projectPaths.runtime, 'run-report.json');
       await fs.writeFile(runtimeReportPath, `${JSON.stringify(runtimeReport, null, 2)}\n`, 'utf8');
@@ -569,7 +660,13 @@ export function createPipelineService(
         const vnextContext = buildProjectVisualContextVNext({
           project: updated,
           previousContext: previousVNext,
-          structuredAnalysisRunId: execution.result.runReport.reasoningRunId,
+          structuredAnalysis: promptSourceObject
+            ? { promptSourceObject }
+            : previousVNext?.promptSourceObject
+              ? { promptSourceObject: previousVNext.promptSourceObject }
+              : undefined,
+          structuredAnalysisRunId: promptSourceRunId
+            || execution.result.runReport.reasoningRunId,
         });
         await writeProjectVisualContextVNext(
           path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),

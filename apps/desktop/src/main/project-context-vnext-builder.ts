@@ -65,6 +65,80 @@ function confidence(value: boolean, confirmed = false): number {
   return value ? 0.7 : 0;
 }
 
+function mergePromptSourceObject(
+  context: ProjectVisualContextVNext,
+  extractedValue: unknown,
+  structuredAnalysisRunId?: string,
+): PromptSourceObject {
+  const migrated = migrateProjectVisualContextVNext(context).promptSourceObject;
+  const extracted = record(extractedValue) as Partial<PromptSourceObject>;
+  if (extracted.schemaVersion !== '1.0') return migrated;
+  const extractedFacts = extracted.projectFacts ?? migrated.projectFacts;
+  const extractedLocks = extracted.lockedAssets ?? migrated.lockedAssets;
+  const logoAssetIds = [...context.lockedAssets.logoAssetIds];
+  const hasLogo = logoAssetIds.length > 0;
+  const sourceKinds = [
+    ...context.provenance.sourceKinds,
+    'structured_analysis' as const,
+  ].filter((item, index, values) => values.indexOf(item) === index);
+  return {
+    ...migrated,
+    generatedAt: context.generatedAt,
+    projectFacts: {
+      ...migrated.projectFacts,
+      ...extractedFacts,
+      // ProjectRecord identity is authoritative over model inference.
+      brandName: context.brandCore.name,
+      industry: context.brandCore.industry !== 'unknown'
+        ? context.brandCore.industry
+        : extractedFacts.industry,
+      brandRole: extractedFacts.brandRole || context.brandCore.brandRole || '',
+    },
+    lockedAssets: {
+      ...migrated.lockedAssets,
+      ...extractedLocks,
+      logoAssetIds,
+      preferredLogoAssetId: logoAssetIds[0] ?? null,
+      logoUsageMode: hasLogo ? 'reference' : 'blank_area',
+      confirmedColors: strings(
+        context.lockedAssets.confirmedColors,
+        extractedLocks.confirmedColors,
+      ),
+      mustPreserve: strings(
+        context.lockedAssets.mustPreserve,
+        extractedLocks.mustPreserve,
+      ),
+      immutableStructures: strings(
+        context.lockedAssets.packageStructures,
+        extractedLocks.immutableStructures,
+      ),
+    },
+    sourceVisualState: extracted.sourceVisualState ?? migrated.sourceVisualState,
+    upgradeTranslation: extracted.upgradeTranslation ?? migrated.upgradeTranslation,
+    renderLanguage: extracted.renderLanguage ?? migrated.renderLanguage,
+    negativeRules: {
+      project: strings(
+        context.styleBoundaries.mustAvoid,
+        extracted.negativeRules?.project,
+      ),
+      model: strings(
+        migrated.negativeRules.model,
+        extracted.negativeRules?.model,
+      ),
+    },
+    confidence: extracted.confidence ?? migrated.confidence,
+    provenance: {
+      sourceKinds,
+      ...(structuredAnalysisRunId ? { structuredAnalysisRunId } : {}),
+      sourceFingerprint: sourceFingerprint({
+        contextFingerprint: context.provenance.sourceFingerprint,
+        extracted: stableValue(extracted),
+        promptSourceBuilderVersion: '1.0.0',
+      }),
+    },
+  };
+}
+
 /**
  * Add the execution source object to contexts created before Golden Prompt
  * calibration. The migration is deterministic and never reads report text.
@@ -268,8 +342,8 @@ export function buildProjectVisualContextVNext(
     version: (input.previousContext?.version ?? 0) + 1,
     generatedAt: input.generatedAt ?? new Date().toISOString(),
     brandCore: {
-      name: strings(brandCore.name, project.brandName, project.projectName)[0] ?? 'unknown',
-      industry: strings(brandCore.industry, project.industry, project.detectedIndustry)[0] ?? 'unknown',
+      name: strings(project.brandName, project.projectName, brandCore.name)[0] ?? 'unknown',
+      industry: strings(project.industry, project.detectedIndustry, brandCore.industry)[0] ?? 'unknown',
       brandRole: strings(brandCore.brandRole)[0] ?? null,
       audience: strings(brandCore.audience),
     },
@@ -316,7 +390,15 @@ export function buildProjectVisualContextVNext(
       sourceFingerprint: sourceFingerprint(fingerprintInput),
     },
   };
-  return migrateProjectVisualContextVNext(context);
+  const migrated = migrateProjectVisualContextVNext(context);
+  return {
+    ...migrated,
+    promptSourceObject: mergePromptSourceObject(
+      migrated,
+      structured.promptSourceObject ?? input.previousContext?.promptSourceObject,
+      input.structuredAnalysisRunId,
+    ),
+  };
 }
 
 export function validateProjectVisualContextVNext(
