@@ -162,6 +162,7 @@ export function CreativeSessionWorkspace({
     'foundation' | 'exploration' | 'anchor' | 'visual-system' | 'versions'
   >('foundation');
   const [explorationCount, setExplorationCount] = useState(5);
+  const [selectionRationale, setSelectionRationale] = useState('');
   const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
   const [anchorCandidateCount, setAnchorCandidateCount] = useState(3);
   const [selectedAnchorId, setSelectedAnchorId] = useState('');
@@ -630,12 +631,24 @@ export function CreativeSessionWorkspace({
               <p>{exploration.status} · Direction {exploration.creativeDirectionVersion}</p>
             </div>
           </div>
+          <label className="designer-selection-rationale">
+            Designer Selection · 选择理由
+            <textarea
+              rows={2}
+              placeholder="说明该方向为何最适合建立品牌视觉系统。"
+              value={selectionRationale}
+              onChange={(event) => setSelectionRationale(event.target.value)}
+            />
+          </label>
           <div className="visual-concept-grid">
             {exploration.concepts.map((concept) => {
               const view = concept.generationRunId
                 ? runViews.find((item) => item.run.runId === concept.generationRunId)
                 : undefined;
-              return <article key={concept.id}>
+              return <article
+                className={concept.selectionStatus === 'selected' ? 'selected' : ''}
+                key={concept.id}
+              >
                 {view?.imageUrls[0]
                   ? <img src={view.imageUrls[0]} alt={concept.title} />
                   : <div className="history-image-placeholder">{concept.status}</div>}
@@ -643,6 +656,21 @@ export function CreativeSessionWorkspace({
                   <small>{String(concept.index).padStart(2, '0')} · {concept.type}</small>
                   <h3>{concept.title}</h3>
                   <p>{concept.objective}</p>
+                  {concept.selectionStatus === 'selected'
+                    ? <strong className="selection-badge">Designer Selected</strong>
+                    : concept.status === 'generated' && <button
+                      className="button secondary full"
+                      disabled={!selectionRationale.trim() || Boolean(busy)}
+                      onClick={() => void runProductionAction(async () => {
+                        await window.masterpiece.creativeProduction.selectVisualConcept(
+                          project.id,
+                          exploration.id,
+                          concept.id,
+                          selectionRationale.trim()
+                        );
+                        setSelectionRationale('');
+                      })}
+                    >选择此视觉方向</button>}
                   {concept.errorMessage && <p className="error-inline">{concept.errorMessage}</p>}
                 </div>
               </article>;

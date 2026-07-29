@@ -11,6 +11,7 @@ test('Visual Exploration service generates five isolated concept runs with no im
   const transitions: string[] = [];
   const prompts: string[] = [];
   const snapshots: any[] = [];
+  const decisions: any[] = [];
   let runIndex = 0;
   const service = createVisualExplorationService(
     { paths: async () => ({ root }) } as never,
@@ -22,6 +23,9 @@ test('Visual Exploration service generates five isolated concept runs with no im
       transition: async (_projectId: string, next: string) => {
         workflowState = next;
         transitions.push(next);
+      },
+      recordDecision: async (_projectId: string, decision: any) => {
+        decisions.push(decision);
       },
     } as never,
     {
@@ -78,8 +82,18 @@ test('Visual Exploration service generates five isolated concept runs with no im
       'VISUAL_EXPLORATION_GENERATING',
       'VISUAL_EXPLORATION_READY',
     ]);
+    const selected = await service.select(
+      'project-1',
+      exploration.id,
+      exploration.concepts[1]!.id,
+      'The packaging direction has the strongest reusable system.',
+    );
+    assert.equal(selected.status, 'selected');
+    assert.equal(selected.selectedConceptId, exploration.concepts[1]!.id);
+    assert.equal(decisions[0]?.type, 'visual_direction_selection');
+    assert.equal(transitions.at(-1), 'VISUAL_DIRECTION_SELECTED');
     const stored = await service.list('project-1');
-    assert.equal(stored[0]?.id, exploration.id);
+    assert.equal(stored[0]?.selectedConceptId, exploration.concepts[1]!.id);
   } finally {
     await fs.rm(root, { recursive: true, force: true });
   }

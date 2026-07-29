@@ -47,6 +47,9 @@ test('Creative Session workspace separates Visual Analysis from the creative wor
   assert.match(creativeSessionSource, /generateVisualExploration/);
   assert.match(creativeSessionSource, /Space、Packaging、Product Scene、Graphic 与 Material Concept/);
   assert.match(creativeSessionSource, /\[4, 5, 6\]/);
+  assert.match(creativeSessionSource, /Designer Selection/);
+  assert.match(creativeSessionSource, /selectVisualConcept/);
+  assert.match(creativeSessionSource, /选择此视觉方向/);
   assert.match(creativeSessionSource, /Anchor Candidates/);
   assert.match(creativeSessionSource, /anchor-comparison-grid/);
   assert.match(creativeSessionSource, /多候选比较与人工 Primary 选择/);

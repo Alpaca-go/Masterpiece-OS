@@ -8,6 +8,7 @@ import type {
 } from '../../../../packages/project-contracts/src/index.ts';
 import {
   createVisualExploration,
+  selectVisualExplorationConcept,
   updateVisualExplorationConcept,
   validateVisualExploration,
 } from '../../../../packages/creative-production-runtime/src/visual-exploration.js';
@@ -252,7 +253,43 @@ export function createVisualExplorationService(
     return exploration;
   }
 
-  return { get, list: listExplorations, generate };
+  async function select(
+    projectId: string,
+    explorationId: string,
+    conceptId: string,
+    rationale: string,
+  ): Promise<VisualExploration> {
+    const exploration = await get(projectId, explorationId);
+    if (!exploration) {
+      throw Object.assign(new Error('Visual Exploration 不存在。'), {
+        code: 'VISUAL_EXPLORATION_MISSING',
+      });
+    }
+    const selected = selectVisualExplorationConcept(
+      exploration,
+      conceptId,
+      rationale,
+    ) as VisualExploration;
+    await persist(selected);
+    await sessions.recordDecision(projectId, {
+      type: 'visual_direction_selection',
+      summary: `设计师选择 ${selected.concepts.find((item) => item.id === conceptId)?.title}。`,
+      rationale: selected.selection?.rationale,
+      outcome: 'confirmed',
+      source: 'user',
+    });
+    const session = await sessions.create(projectId);
+    if (session.workflowState === 'VISUAL_EXPLORATION_READY') {
+      await sessions.transition(
+        projectId,
+        'VISUAL_DIRECTION_SELECTED',
+        'Designer Selection 已确认，可建立 Visual Canon。',
+      );
+    }
+    return selected;
+  }
+
+  return { get, list: listExplorations, generate, select };
 }
 
 export type VisualExplorationService = ReturnType<typeof createVisualExplorationService>;

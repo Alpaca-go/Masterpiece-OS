@@ -542,6 +542,13 @@ function registerIpc(): void {
       dryRun?: boolean;
     }
   ) => visualExplorations.generate(projectId, input));
+  registerHandler('creative-production:select-visual-concept', (
+    _event,
+    projectId: string,
+    explorationId: string,
+    conceptId: string,
+    rationale: string
+  ) => visualExplorations.select(projectId, explorationId, conceptId, rationale));
   registerHandler('creative-production:generate-anchor', (
     _event,
     projectId: string,

@@ -18,7 +18,7 @@
     "styleProfileId": { "type": "string", "minLength": 1 },
     "styleProfileVersion": { "type": "string", "minLength": 1 },
     "status": {
-      "enum": ["planned", "generating", "prepared", "ready", "partially_ready", "failed"]
+      "enum": ["planned", "generating", "prepared", "ready", "partially_ready", "selected", "failed"]
     },
     "conceptCount": { "type": "integer", "minimum": 4, "maximum": 6 },
     "concepts": {
@@ -41,6 +41,7 @@
           "outputType": { "enum": ["interior_scene", "packaging_render", "brand_poster"] },
           "aspectRatio": { "enum": ["16:9", "4:5", "1:1"] },
           "status": { "enum": ["planned", "generating", "prepared", "generated", "failed"] },
+          "selectionStatus": { "enum": ["selected", "not_selected"] },
           "generationRunId": { "type": "string", "minLength": 1 },
           "imagePath": { "type": "string", "minLength": 1 },
           "errorCode": { "type": "string", "minLength": 1 },
@@ -50,7 +51,28 @@
         }
       }
     },
+    "selectedConceptId": { "type": "string", "minLength": 1 },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["conceptId", "rationale", "selectedBy", "selectedAt"],
+      "properties": {
+        "conceptId": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "selectedBy": { "const": "designer" },
+        "selectedAt": { "type": "string", "minLength": 1 }
+      }
+    },
     "createdAt": { "type": "string", "minLength": 1 },
     "updatedAt": { "type": "string", "minLength": 1 }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "selected" } },
+        "required": ["status"]
+      },
+      "then": { "required": ["selectedConceptId", "selection"] }
+    }
+  ]
 }

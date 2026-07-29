@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   createVisualExploration,
+  selectVisualExplorationConcept,
   updateVisualExplorationConcept,
   validateVisualExploration,
 } from '../packages/creative-production-runtime/src/visual-exploration.js';
@@ -54,6 +55,19 @@ test('Visual Exploration reaches ready only after four or more generated concept
     });
   }
   assert.equal(exploration.status, 'ready');
+  const selected = selectVisualExplorationConcept(
+    exploration,
+    exploration.concepts[2].id,
+    'This direction creates the clearest reusable visual system.',
+    '2026-07-29T01:00:00.000Z',
+  );
+  assert.equal(selected.status, 'selected');
+  assert.equal(selected.selectedConceptId, exploration.concepts[2].id);
+  assert.equal(selected.selection.selectedBy, 'designer');
+  assert.equal(
+    selected.concepts.filter((item) => item.selectionStatus === 'selected').length,
+    1,
+  );
   assert.throws(
     () => createVisualExploration({
       projectId: 'project-1',
@@ -80,4 +94,5 @@ test('Visual Exploration schema is closed and defines the five concept types', (
     'graphic',
     'material',
   ]);
+  assert.ok(schema.allOf[0].then.required.includes('selection'));
 });

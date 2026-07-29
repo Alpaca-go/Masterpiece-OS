@@ -55,6 +55,7 @@ export interface VisualExplorationConcept {
   outputType: 'interior_scene' | 'packaging_render' | 'brand_poster';
   aspectRatio: '16:9' | '4:5' | '1:1';
   status: 'planned' | 'generating' | 'prepared' | 'generated' | 'failed';
+  selectionStatus?: 'selected' | 'not_selected';
   generationRunId?: string;
   imagePath?: string;
   errorCode?: string;
@@ -71,9 +72,16 @@ export interface VisualExploration {
   creativeDirectionVersion: string;
   styleProfileId: string;
   styleProfileVersion: string;
-  status: 'planned' | 'generating' | 'prepared' | 'ready' | 'partially_ready' | 'failed';
+  status: 'planned' | 'generating' | 'prepared' | 'ready' | 'partially_ready' | 'selected' | 'failed';
   conceptCount: number;
   concepts: VisualExplorationConcept[];
+  selectedConceptId?: string;
+  selection?: {
+    conceptId: string;
+    rationale: string;
+    selectedBy: 'designer';
+    selectedAt: string;
+  };
   createdAt: string;
   updatedAt: string;
 }

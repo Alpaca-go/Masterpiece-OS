@@ -143,6 +143,14 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:list-visual-explorations', projectId),
     generateVisualExploration: (projectId, input) =>
       ipcRenderer.invoke('creative-production:generate-visual-exploration', projectId, input),
+    selectVisualConcept: (projectId, explorationId, conceptId, rationale) =>
+      ipcRenderer.invoke(
+        'creative-production:select-visual-concept',
+        projectId,
+        explorationId,
+        conceptId,
+        rationale
+      ),
     confirmStyleProfile: (projectId, profileId) =>
       ipcRenderer.invoke('creative-production:confirm-style-profile', projectId, profileId),
     generateAnchor: (projectId, input) =>

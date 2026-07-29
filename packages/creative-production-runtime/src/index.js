@@ -115,6 +115,7 @@ export {
   VISUAL_EXPLORATION_MIN_CONCEPTS,
   VISUAL_EXPLORATION_MAX_CONCEPTS,
   createVisualExploration,
+  selectVisualExplorationConcept,
   updateVisualExplorationConcept,
   validateVisualExploration,
 } from './visual-exploration.js';

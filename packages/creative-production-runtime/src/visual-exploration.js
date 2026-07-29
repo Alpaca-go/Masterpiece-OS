@@ -145,12 +145,57 @@ export function updateVisualExplorationConcept(
   });
 }
 
+export function selectVisualExplorationConcept(
+  exploration,
+  conceptId,
+  rationale,
+  now = new Date().toISOString(),
+) {
+  validateVisualExploration(exploration);
+  if (!['ready', 'partially_ready', 'selected'].includes(exploration.status)
+    || exploration.concepts.filter((item) => item.status === 'generated').length
+      < VISUAL_EXPLORATION_MIN_CONCEPTS) {
+    throw Object.assign(new Error('Designer Selection 前必须至少有 4 个可比较的 Concept Image。'), {
+      code: 'VISUAL_EXPLORATION_NOT_SELECTABLE',
+    });
+  }
+  const selected = exploration.concepts.find((item) => item.id === conceptId);
+  const reason = text(rationale);
+  if (!selected || selected.status !== 'generated') {
+    throw Object.assign(new Error('只能选择已生成的 Visual Concept。'), {
+      code: 'VISUAL_CONCEPT_NOT_SELECTABLE',
+    });
+  }
+  if (!reason) {
+    throw Object.assign(new Error('Designer Selection 必须记录选择理由。'), {
+      code: 'VISUAL_SELECTION_RATIONALE_REQUIRED',
+    });
+  }
+  return validateVisualExploration({
+    ...exploration,
+    status: 'selected',
+    selectedConceptId: selected.id,
+    selection: {
+      conceptId: selected.id,
+      rationale: reason,
+      selectedBy: 'designer',
+      selectedAt: now,
+    },
+    concepts: exploration.concepts.map((concept) => ({
+      ...concept,
+      selectionStatus: concept.id === selected.id ? 'selected' : 'not_selected',
+      updatedAt: now,
+    })),
+    updatedAt: now,
+  });
+}
+
 export function validateVisualExploration(exploration) {
   if (!exploration || exploration.schemaVersion !== '1.0'
     || !text(exploration.id) || !text(exploration.projectId)
     || !text(exploration.creativeDirectionId) || !text(exploration.creativeDirectionVersion)
     || !text(exploration.styleProfileId) || !text(exploration.styleProfileVersion)
-    || !['planned', 'generating', 'prepared', 'ready', 'partially_ready', 'failed'].includes(
+    || !['planned', 'generating', 'prepared', 'ready', 'partially_ready', 'selected', 'failed'].includes(
       exploration.status,
     )
     || !Number.isInteger(exploration.conceptCount)
@@ -171,6 +216,8 @@ export function validateVisualExploration(exploration) {
       || !['interior_scene', 'packaging_render', 'brand_poster'].includes(concept.outputType)
       || !['16:9', '4:5', '1:1'].includes(concept.aspectRatio)
       || !['planned', 'generating', 'prepared', 'generated', 'failed'].includes(concept.status)
+      || (concept.selectionStatus
+        && !['selected', 'not_selected'].includes(concept.selectionStatus))
       || (concept.status === 'generated' && (!text(concept.generationRunId) || !text(concept.imagePath)))
       || (concept.status === 'failed' && !text(concept.errorMessage))) {
       throw Object.assign(new Error('Visual Concept 结构或状态无效。'), {
@@ -179,5 +226,18 @@ export function validateVisualExploration(exploration) {
     }
     ids.add(concept.id);
   });
+  if (exploration.status === 'selected') {
+    const selected = exploration.concepts.filter((item) => item.selectionStatus === 'selected');
+    if (selected.length !== 1
+      || exploration.selectedConceptId !== selected[0].id
+      || exploration.selection?.conceptId !== selected[0].id
+      || exploration.selection?.selectedBy !== 'designer'
+      || !text(exploration.selection?.rationale)
+      || !text(exploration.selection?.selectedAt)) {
+      throw Object.assign(new Error('Designer Selection 记录无效。'), {
+        code: 'VISUAL_EXPLORATION_INVALID',
+      });
+    }
+  }
   return exploration;
 }

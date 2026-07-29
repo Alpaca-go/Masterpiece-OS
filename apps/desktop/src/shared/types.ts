@@ -1986,6 +1986,12 @@ export interface DesktopApi {
       apiProfileId?: string;
       dryRun?: boolean;
     }): Promise<VisualExploration>;
+    selectVisualConcept(
+      projectId: string,
+      explorationId: string,
+      conceptId: string,
+      rationale: string
+    ): Promise<VisualExploration>;
     confirmStyleProfile(projectId: string, profileId: string): Promise<StyleProfile>;
     generateAnchor(projectId: string, input: {
       purpose?: string;
