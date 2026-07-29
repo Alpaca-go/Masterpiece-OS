@@ -358,7 +358,6 @@ export function App() {
 
   if (screen === 'creative-session' && selected) return <CreativeSessionWorkspace
     project={selected}
-    apiProfileId={selectedApiProfileId}
     imageApiProfileId={(settings.profiles.find((profile) =>
       profile.isEnabled && profile.protocol === 'dashscope-wan-image' && profile.isDefault)
       || settings.profiles.find((profile) =>

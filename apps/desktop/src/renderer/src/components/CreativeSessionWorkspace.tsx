@@ -16,7 +16,6 @@ import { cleanError } from '../utils';
 
 interface Props {
   project: ProjectRecord;
-  apiProfileId: string;
   imageApiProfileId: string;
   onBack(): void;
   onOpenSettings(): void;
@@ -83,7 +82,6 @@ const STATE_LABELS: Partial<Record<CreativeSession['workflowState'], string>> = 
 
 export function CreativeSessionWorkspace({
   project,
-  apiProfileId,
   imageApiProfileId,
   onBack,
   onOpenSettings
@@ -97,7 +95,7 @@ export function CreativeSessionWorkspace({
     series: [],
     outputs: []
   });
-  const [tab, setTab] = useState<'session' | 'anchor' | 'canon' | 'generation'>('session');
+  const [tab, setTab] = useState<'foundation' | 'anchor' | 'visual-system' | 'versions'>('foundation');
   const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
   const [contextDirection, setContextDirection] = useState('');
   const [reviewFeedback, setReviewFeedback] = useState('');
@@ -190,19 +188,6 @@ export function CreativeSessionWorkspace({
     () => workspace?.session.messages.slice(-8) || [],
     [workspace?.session.messages]
   );
-
-  async function runReading() {
-    setBusy('reading');
-    setError('');
-    try {
-      await window.masterpiece.creativeSession.read(project.id, apiProfileId || undefined);
-      await refresh();
-    } catch (reason) {
-      setError(cleanError(reason));
-    } finally {
-      setBusy('');
-    }
-  }
 
   async function generate() {
     const userRequest = request.trim();
@@ -316,38 +301,37 @@ export function CreativeSessionWorkspace({
 
     {error && <div className="notice error top-notice">{error}</div>}
     <nav className="creative-workspace-tabs" aria-label="Creative Production 工作区">
-      <button className={tab === 'session' ? 'active' : ''} onClick={() => setTab('session')}>Session 状态</button>
-      <button className={tab === 'anchor' ? 'active' : ''} onClick={() => setTab('anchor')}>Anchor 审核</button>
-      <button className={tab === 'canon' ? 'active' : ''} onClick={() => setTab('canon')}>Visual Canon</button>
-      <button className={tab === 'generation' ? 'active' : ''} onClick={() => setTab('generation')}>生成与版本</button>
+      <button className={tab === 'foundation' ? 'active' : ''} onClick={() => setTab('foundation')}>Creative Foundation</button>
+      <button className={tab === 'anchor' ? 'active' : ''} onClick={() => setTab('anchor')}>Anchor</button>
+      <button className={tab === 'visual-system' ? 'active' : ''} onClick={() => setTab('visual-system')}>Visual System</button>
+      <button className={tab === 'versions' ? 'active' : ''} onClick={() => setTab('versions')}>Versions</button>
     </nav>
-    {tab === 'session' && <div className="creative-session-layout">
+    {tab === 'foundation' && <div className="creative-session-layout">
       <aside className="panel creative-context-panel">
-        <div className="section-heading"><span>01</span><div><h2>项目理解</h2><p>持续上下文与已确认基准</p></div></div>
+        <div className="section-heading"><span>01</span><div><h2>Creative Foundation</h2><p>AI 已建立完成的设计基础，不是待办任务</p></div></div>
         <ul className="creative-checks">
-          <li className="pass">✓ 已读取视觉方案</li>
-          <li className={understanding ? 'pass' : ''}>{understanding ? '✓' : '○'} 已完成品牌理解</li>
-          <li className={creativeDirection ? 'pass' : ''}>{creativeDirection ? '✓' : '○'} 已制定创意方向</li>
+          <li className={understanding ? 'pass' : ''}>{understanding ? '✓' : '○'} Visual Analysis 完成</li>
+          <li className={understanding ? 'pass' : ''}>{understanding ? '✓' : '○'} Brand Understanding</li>
+          <li className={creativeDirection ? 'pass' : ''}>{creativeDirection ? '✓' : '○'} Creative Direction</li>
           <li className={workspace?.styleProfile?.status === 'confirmed' ? 'pass' : ''}>
             {workspace?.styleProfile?.status === 'confirmed' ? '✓' : '○'} Style Profile
           </li>
           <li className={currentCanon?.status === 'confirmed' ? 'pass' : ''}>
-            {currentCanon?.status === 'confirmed' ? '✓' : '○'} Visual Canon
+            {currentCanon?.status === 'confirmed' ? '✓' : '○'} Visual System
           </li>
         </ul>
-        {!understanding && <button
-          className="button primary full"
-          disabled={Boolean(busy)}
-          onClick={() => void runReading()}
-        >{busy === 'reading' ? '正在完整阅读…' : '建立项目理解'}</button>}
+        {!understanding && <div className="foundation-gate">
+          <p>Creative Foundation 尚未建立。请先返回 Visual Analysis 完成项目理解。</p>
+          <button className="button primary full" onClick={onBack}>返回 Visual Analysis</button>
+        </div>}
         {understanding && <div className="understanding-summary">
+          <small>BRAND UNDERSTANDING</small>
+          <h3>{understanding.projectIdentity.brandName || project.brandName}</h3>
+          <p>{understanding.projectIdentity.industry || '行业待确认'}</p>
+          <small>身份锁定 · {understanding.identityLocks.length}</small>
+          <ul>{understanding.identityLocks.slice(0, 3).map((item) => <li key={item}>{item}</li>)}</ul>
           <small>升级原则</small>
           <ul>{understanding.upgradePrinciples.slice(0, 5).map((item) => <li key={item}>{item}</li>)}</ul>
-          <button
-            className="button ghost full"
-            disabled={Boolean(busy)}
-            onClick={() => void runReading()}
-          >重新读取项目</button>
         </div>}
         {creativeDirection && <div className="understanding-summary creative-direction-summary">
           <small>当前创作方向 · {creativeDirection.version}</small>
@@ -359,10 +343,15 @@ export function CreativeSessionWorkspace({
             {creativeDirection.visualKeywords.slice(0, 6).map((item) => <span key={item}>{item}</span>)}
           </div>
         </div>}
+        {workspace?.styleProfile && <div className="understanding-summary">
+          <small>STYLE PROFILE · {workspace.styleProfile.version}</small>
+          <h3>{workspace.styleProfile.name}</h3>
+          <p>{workspace.styleProfile.styleEssence.summary}</p>
+        </div>}
       </aside>
 
       <main className="panel creative-conversation-panel">
-        <div className="section-heading"><span>02</span><div><h2>继续创作</h2><p>同一 Session 继承项目理解与反馈</p></div></div>
+        <div className="section-heading"><span>02</span><div><h2>Creative Command</h2><p>描述本次创作需求，继承已确认的设计基础</p></div></div>
         <div className="creative-message-list">
           {recentMessages.length ? recentMessages.map((message) =>
             <article className={`creative-message ${message.role}`} key={message.messageId}>
@@ -400,7 +389,7 @@ export function CreativeSessionWorkspace({
       </main>
 
       <aside className="panel creative-results-panel">
-        <div className="section-heading"><span>03</span><div><h2>生成结果</h2><p>{workspace?.runs.length || 0} 次历史运行</p></div></div>
+        <div className="section-heading"><span>03</span><div><h2>Generation History</h2><p>{workspace?.runs.length || 0} 次历史运行</p></div></div>
         <div className="creative-result-list">
           {runViews.length ? runViews.map(({ run, imageUrls }) => <article key={run.runId}>
             {imageUrls.map((url, index) => <img key={`${run.runId}-${index}`} src={url} alt="生成结果" />)}
@@ -418,7 +407,7 @@ export function CreativeSessionWorkspace({
     {tab === 'anchor' && <div className="creative-production-grid">
       <section className="panel">
         <div className="section-heading"><span>01</span><div><h2>生产上下文</h2><p>Style Profile 与 Locked Assets</p></div></div>
-        {!understanding && <div className="empty-state small">请先在 Session 状态页建立项目理解。</div>}
+        {!understanding && <div className="empty-state small">请先返回 Visual Analysis 建立 Creative Foundation。</div>}
         {understanding && creativeDirection && !workspace?.styleProfile && <button
           className="button primary full"
           disabled={Boolean(busy)}
@@ -544,7 +533,7 @@ export function CreativeSessionWorkspace({
       </section>
     </div>}
 
-    {tab === 'canon' && <div className="creative-production-grid">
+    {tab === 'visual-system' && <div className="creative-production-grid">
       <section className="panel">
         <div className="section-heading"><span>01</span><div><h2>Primary Canon</h2><p>已接受的 Anchor 基准</p></div></div>
         {activeAnchor?.status === 'accepted' ? <div className="production-summary-card">
@@ -593,7 +582,7 @@ export function CreativeSessionWorkspace({
       </section>
     </div>}
 
-    {tab === 'generation' && <div className="generation-series-workspace">
+    {tab === 'versions' && <div className="generation-series-workspace">
       <section className="panel generation-series-head">
         <div>
           <p className="eyebrow">GENERATION SERIES</p>

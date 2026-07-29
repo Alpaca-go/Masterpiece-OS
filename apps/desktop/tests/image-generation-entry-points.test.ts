@@ -27,13 +27,18 @@ test('renderer keeps specialist legacy presets but routes analysis reports into 
   assert.match(referenceSource, /quickExtractStyle/);
 });
 
-test('Creative Session workspace keeps a single natural-language creation input', () => {
+test('Creative Session workspace separates Visual Analysis from the creative workbench', () => {
   assert.match(creativeSessionSource, /creativeSession\.getWorkspace/);
-  assert.match(creativeSessionSource, /creativeSession\.read/);
+  assert.doesNotMatch(creativeSessionSource, /creativeSession\.read/);
   assert.match(creativeSessionSource, /creativeSession\.generate/);
+  assert.match(creativeSessionSource, /Creative Foundation/);
+  assert.match(creativeSessionSource, /Creative Command/);
+  assert.match(creativeSessionSource, /Generation History/);
+  assert.match(creativeSessionSource, /Visual System/);
+  assert.match(creativeSessionSource, /返回 Visual Analysis/);
   assert.match(creativeSessionSource, /例如：生成一张升级后的店内装修效果图/);
   assert.match(creativeSessionSource, /开始创作/);
-  assert.match(creativeSessionSource, /已制定创意方向/);
+  assert.match(creativeSessionSource, /Creative Direction/);
   assert.match(creativeSessionSource, /当前创作方向/);
   assert.match(creativeSessionSource, /设计重点/);
   assert.doesNotMatch(creativeSessionSource, /GenerationSourcePreset|Reference Role|deliverable-card/);

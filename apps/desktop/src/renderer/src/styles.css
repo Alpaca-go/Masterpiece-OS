@@ -452,6 +452,8 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .creative-checks { display: grid; gap: 10px; margin: 22px 0; padding: 0; list-style: none; color: #8b858d; font-size: 13px; }
 .creative-checks li { padding: 9px 11px; border-radius: 8px; background: #f4f1f7; }
 .creative-checks li.pass { color: #315c46; background: #e9f6ef; }
+.foundation-gate { display: grid; gap: 12px; padding: 16px; border: 1px solid #ead8b9; border-radius: 10px; background: #fff9ed; }
+.foundation-gate p { margin: 0; color: #7e6237; font-size: 12px; line-height: 1.6; }
 .understanding-summary { margin-top: 22px; padding: 16px; border-radius: 10px; background: #f1edf7; }
 .understanding-summary small { color: #6c42d8; font-weight: 700; }
 .understanding-summary ul { margin: 10px 0 0; padding-left: 18px; font-size: 12px; line-height: 1.6; }
