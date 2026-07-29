@@ -4,6 +4,7 @@ import type { VisualCanon } from '../../../../packages/project-contracts/src/ind
 import {
   buildVisualCanon,
   confirmVisualCanon,
+  migrateVisualCanon,
   nextVisualCanonVersion,
   validateVisualCanon,
 } from '../../../../packages/creative-production-runtime/src/visual-canon.js';
@@ -45,15 +46,39 @@ export function createVisualCanonService(
     const pointer = await readJson<{ filename: string }>(target.active);
     if (!pointer) return null;
     const canon = await readJson<VisualCanon>(path.join(target.root, pointer.filename));
-    return canon ? validateVisualCanon(canon) as VisualCanon : null;
+    if (!canon) return null;
+    const [profiles, session] = await Promise.all([
+      styles.list(projectId),
+      sessions.create(projectId),
+    ]);
+    return validateVisualCanon(migrateVisualCanon(canon, {
+      styleProfile: profiles.find((profile) =>
+        profile.id === canon.styleProfileId && profile.version === canon.styleProfileVersion),
+      industryAttributes: [
+        session.understanding?.projectIdentity.industry,
+        session.projectContext.industry,
+      ],
+    })) as VisualCanon;
   }
 
   async function list(projectId: string): Promise<VisualCanon[]> {
     const target = await locations(projectId);
     const files = await fs.readdir(target.root).catch(() => []);
-    const values = await Promise.all(files.filter((file) => /^visual-canon-v.+\.json$/iu.test(file))
-      .map((file) => readJson<VisualCanon>(path.join(target.root, file))));
+    const [values, profiles, session] = await Promise.all([
+      Promise.all(files.filter((file) => /^visual-canon-v.+\.json$/iu.test(file))
+        .map((file) => readJson<VisualCanon>(path.join(target.root, file)))),
+      styles.list(projectId),
+      sessions.create(projectId),
+    ]);
     return values.filter((value): value is VisualCanon => Boolean(value))
+      .map((value) => validateVisualCanon(migrateVisualCanon(value, {
+        styleProfile: profiles.find((profile) =>
+          profile.id === value.styleProfileId && profile.version === value.styleProfileVersion),
+        industryAttributes: [
+          session.understanding?.projectIdentity.industry,
+          session.projectContext.industry,
+        ],
+      })) as VisualCanon)
       .sort((a, b) => b.version.localeCompare(a.version, undefined, { numeric: true }));
   }
 
@@ -64,11 +89,12 @@ export function createVisualCanonService(
     sharedRules?: string[];
     variationRules?: string[];
   }): Promise<VisualCanon> {
-    const [styleProfile, locks, active, primaryAnchor] = await Promise.all([
+    const [styleProfile, locks, active, primaryAnchor, session] = await Promise.all([
       styles.getActive(projectId),
       lockedAssets.list(projectId),
       getActive(projectId),
       anchors.get(projectId, input.primaryCandidateId),
+      sessions.create(projectId),
     ]);
     if (!styleProfile || !primaryAnchor) {
       throw Object.assign(new Error('Visual Canon 缺少 Style Profile 或 Primary Anchor。'), {
@@ -89,6 +115,10 @@ export function createVisualCanonService(
       supporting,
       sharedRules: input.sharedRules,
       variationRules: input.variationRules,
+      industryAttributes: [
+        session.understanding?.projectIdentity.industry,
+        session.projectContext.industry,
+      ],
     }) as VisualCanon;
     const target = await locations(projectId);
     await fs.mkdir(target.root, { recursive: true });

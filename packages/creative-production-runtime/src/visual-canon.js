@@ -15,6 +15,70 @@ function lower(values) {
   return unique(values).map((value) => value.toLowerCase());
 }
 
+export function compileVisualCanonSystems(input) {
+  const profile = input?.styleProfile ?? {};
+  const observations = input?.primaryObservations ?? {};
+  const essence = profile.styleEssence ?? {};
+  const color = profile.colorSystem ?? {};
+  const material = profile.materialAndTexture ?? {};
+  const lighting = profile.lightingSystem ?? {};
+  const composition = profile.compositionSystem ?? {};
+  const graphic = profile.graphicLanguage ?? {};
+  const industry = unique(input?.industryAttributes);
+  return {
+    visualDNA: {
+      brandKeywords: unique([...(essence.keywords ?? []), ...(profile.graphicLanguage?.coreMotifs ?? [])]),
+      moodAttributes: unique(essence.mood),
+      industryAttributes: industry.length ? industry : ['待确认'],
+      coreVisualMetaphor: text(input?.coreVisualMetaphor)
+        || text(essence.visualPositioning)
+        || text(essence.summary)
+        || '待确认',
+    },
+    colorSystem: {
+      primary: unique([...(color.primary ?? []), ...(observations.colors ?? [])]),
+      secondary: unique([...(color.secondary ?? []), ...(color.neutral ?? [])]),
+      accent: unique(color.accent),
+      forbidden: unique(color.forbiddenColors),
+    },
+    materialSystem: {
+      materialLanguage: unique([...(material.materials ?? []), ...(observations.materials ?? [])]),
+      surfaceTextures: unique(material.surfaceRules),
+      craftRules: unique([...(material.printFeeling ?? []), ...(material.renderingRules ?? [])]),
+    },
+    lightingSystem: {
+      direction: unique([lighting.type, ...(observations.lighting ?? [])]),
+      contrast: unique([lighting.contrast]),
+      photographyAtmosphere: unique([lighting.shadow, lighting.temperature]),
+    },
+    compositionSystem: {
+      compositionMethods: unique([
+        ...(composition.hierarchy ?? []),
+        ...(composition.focalPointRules ?? []),
+        observations.compositionDensity,
+      ]),
+      gridRules: unique([...(graphic.layoutRhythm ?? []), ...(composition.croppingRules ?? [])]),
+      negativeSpaceRules: unique([composition.negativeSpace]),
+    },
+  };
+}
+
+export function migrateVisualCanon(canon, context = {}) {
+  if (!canon || canon.schemaVersion !== '6.0') return canon;
+  if (canon.visualDNA && canon.colorSystem && canon.materialSystem
+    && canon.lightingSystem && canon.compositionSystem) return canon;
+  const primary = canon.canonImages?.find((image) => image.priority === 'primary');
+  return {
+    ...canon,
+    ...compileVisualCanonSystems({
+      styleProfile: context.styleProfile,
+      primaryObservations: primary?.observations,
+      industryAttributes: context.industryAttributes,
+      coreVisualMetaphor: context.coreVisualMetaphor,
+    }),
+  };
+}
+
 function relativePath(value) {
   const normalized = text(value).replaceAll('\\', '/');
   if (!normalized || path.posix.isAbsolute(normalized) || /^[a-z]:\//iu.test(normalized)
@@ -140,6 +204,12 @@ export function buildVisualCanon(input, now = new Date().toISOString()) {
     styleProfileVersion: styleProfile.version,
     primaryCanonImageId: primary.id,
     canonImages: [primary, ...supporting],
+    ...compileVisualCanonSystems({
+      styleProfile,
+      primaryObservations: primary.observations,
+      industryAttributes: input.industryAttributes,
+      coreVisualMetaphor: input.coreVisualMetaphor,
+    }),
     sharedRules: unique(input.sharedRules ?? styleProfile.promptComponents?.required),
     variationRules: unique(input.variationRules ?? styleProfile.allowedVariations),
     conflicts: [],
@@ -166,6 +236,28 @@ export function validateVisualCanon(canon) {
   if (!['draft', 'confirmed', 'superseded'].includes(canon.status)
     || !Array.isArray(canon.canonImages) || canon.canonImages.length < 1 || canon.canonImages.length > 4) {
     throw Object.assign(new Error('Visual Canon 状态或图片数量无效。'), { code: 'VISUAL_CANON_INVALID' });
+  }
+  const systemArrays = [
+    canon.visualDNA?.brandKeywords,
+    canon.visualDNA?.moodAttributes,
+    canon.visualDNA?.industryAttributes,
+    canon.colorSystem?.primary,
+    canon.colorSystem?.secondary,
+    canon.colorSystem?.accent,
+    canon.colorSystem?.forbidden,
+    canon.materialSystem?.materialLanguage,
+    canon.materialSystem?.surfaceTextures,
+    canon.materialSystem?.craftRules,
+    canon.lightingSystem?.direction,
+    canon.lightingSystem?.contrast,
+    canon.lightingSystem?.photographyAtmosphere,
+    canon.compositionSystem?.compositionMethods,
+    canon.compositionSystem?.gridRules,
+    canon.compositionSystem?.negativeSpaceRules,
+  ];
+  if (!text(canon.visualDNA?.coreVisualMetaphor)
+    || systemArrays.some((value) => !Array.isArray(value))) {
+    throw Object.assign(new Error('Visual Canon 规则系统结构无效。'), { code: 'VISUAL_CANON_INVALID' });
   }
   const primaries = canon.canonImages.filter((image) => image.priority === 'primary');
   if (primaries.length !== 1 || primaries[0].id !== canon.primaryCanonImageId) {

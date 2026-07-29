@@ -7,7 +7,8 @@
   "required": [
     "schemaVersion", "id", "projectId", "name", "version", "status",
     "styleProfileId", "styleProfileVersion", "primaryCanonImageId",
-    "canonImages", "sharedRules", "variationRules", "conflicts", "createdAt", "updatedAt"
+    "canonImages", "visualDNA", "colorSystem", "materialSystem", "lightingSystem",
+    "compositionSystem", "sharedRules", "variationRules", "conflicts", "createdAt", "updatedAt"
   ],
   "properties": {
     "schemaVersion": { "const": "6.0" },
@@ -50,6 +51,58 @@
             }
           }
         }
+      }
+    },
+    "visualDNA": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["brandKeywords", "moodAttributes", "industryAttributes", "coreVisualMetaphor"],
+      "properties": {
+        "brandKeywords": { "$ref": "#/$defs/strings" },
+        "moodAttributes": { "$ref": "#/$defs/strings" },
+        "industryAttributes": { "$ref": "#/$defs/strings" },
+        "coreVisualMetaphor": { "type": "string", "minLength": 1 }
+      }
+    },
+    "colorSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "secondary", "accent", "forbidden"],
+      "properties": {
+        "primary": { "$ref": "#/$defs/strings" },
+        "secondary": { "$ref": "#/$defs/strings" },
+        "accent": { "$ref": "#/$defs/strings" },
+        "forbidden": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "materialSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["materialLanguage", "surfaceTextures", "craftRules"],
+      "properties": {
+        "materialLanguage": { "$ref": "#/$defs/strings" },
+        "surfaceTextures": { "$ref": "#/$defs/strings" },
+        "craftRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "lightingSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["direction", "contrast", "photographyAtmosphere"],
+      "properties": {
+        "direction": { "$ref": "#/$defs/strings" },
+        "contrast": { "$ref": "#/$defs/strings" },
+        "photographyAtmosphere": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "compositionSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compositionMethods", "gridRules", "negativeSpaceRules"],
+      "properties": {
+        "compositionMethods": { "$ref": "#/$defs/strings" },
+        "gridRules": { "$ref": "#/$defs/strings" },
+        "negativeSpaceRules": { "$ref": "#/$defs/strings" }
       }
     },
     "sharedRules": { "$ref": "#/$defs/strings" },

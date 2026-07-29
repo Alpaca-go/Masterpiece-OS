@@ -491,6 +491,33 @@ export interface VisualCanon {
       preservedLockedAssetIds: string[];
     };
   }>;
+  visualDNA: {
+    brandKeywords: string[];
+    moodAttributes: string[];
+    industryAttributes: string[];
+    coreVisualMetaphor: string;
+  };
+  colorSystem: {
+    primary: string[];
+    secondary: string[];
+    accent: string[];
+    forbidden: string[];
+  };
+  materialSystem: {
+    materialLanguage: string[];
+    surfaceTextures: string[];
+    craftRules: string[];
+  };
+  lightingSystem: {
+    direction: string[];
+    contrast: string[];
+    photographyAtmosphere: string[];
+  };
+  compositionSystem: {
+    compositionMethods: string[];
+    gridRules: string[];
+    negativeSpaceRules: string[];
+  };
   sharedRules: string[];
   variationRules: string[];
   conflicts: VisualCanonConflict[];

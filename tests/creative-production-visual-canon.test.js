@@ -5,6 +5,7 @@ import path from 'node:path';
 import {
   buildVisualCanon,
   confirmVisualCanon,
+  migrateVisualCanon,
   nextVisualCanonVersion,
 } from '../packages/creative-production-runtime/src/visual-canon.js';
 
@@ -14,8 +15,38 @@ const style = {
   name: 'Primary',
   version: '1.0.0',
   status: 'confirmed',
-  colorSystem: { forbiddenColors: ['荧光绿'] },
-  materialAndTexture: { forbiddenTextures: ['廉价塑料'] },
+  styleEssence: {
+    keywords: ['东方秩序', '克制'],
+    mood: ['安静', '高级'],
+    visualPositioning: '以山水层叠隐喻文化传承',
+  },
+  colorSystem: {
+    primary: ['暖橙'],
+    secondary: ['米白'],
+    neutral: [],
+    accent: ['朱砂红'],
+    forbiddenColors: ['荧光绿'],
+  },
+  graphicLanguage: { coreMotifs: ['层叠轮廓'], layoutRhythm: ['十二列网格'] },
+  compositionSystem: {
+    hierarchy: ['单一焦点'],
+    focalPointRules: ['主体居中'],
+    croppingRules: [],
+    negativeSpace: '上部保留三分之一留白',
+  },
+  materialAndTexture: {
+    materials: ['磨砂纸'],
+    surfaceRules: ['细颗粒表面'],
+    printFeeling: ['压凹工艺'],
+    renderingRules: [],
+    forbiddenTextures: ['廉价塑料'],
+  },
+  lightingSystem: {
+    type: '柔和侧光',
+    contrast: '中低对比',
+    shadow: '自然软阴影',
+    temperature: '暖中性',
+  },
   forbiddenVariations: ['复制参考品牌图形'],
   promptComponents: { required: ['暖色层次'] },
   allowedVariations: ['触点构图可变化'],
@@ -52,10 +83,17 @@ test('Visual Canon builds one Primary plus supporting images and reports soft co
         preservedLockedAssetIds: ['lock-critical'],
       },
     }],
+    industryAttributes: ['东方生活美学'],
   }, NOW);
   assert.equal(canon.canonImages.length, 2);
   assert.equal(canon.canonImages.filter((item) => item.priority === 'primary').length, 1);
   assert.ok(canon.conflicts.some((item) => item.dimension === 'lighting' && item.severity === 'warning'));
+  assert.deepEqual(canon.visualDNA.industryAttributes, ['东方生活美学']);
+  assert.equal(canon.visualDNA.coreVisualMetaphor, '以山水层叠隐喻文化传承');
+  assert.ok(canon.colorSystem.primary.includes('暖橙'));
+  assert.ok(canon.materialSystem.craftRules.includes('压凹工艺'));
+  assert.ok(canon.lightingSystem.direction.includes('柔和侧光'));
+  assert.ok(canon.compositionSystem.gridRules.includes('十二列网格'));
   assert.equal(confirmVisualCanon(canon, NOW).status, 'confirmed');
 });
 
@@ -91,6 +129,32 @@ test('Visual Canon caps images at four and versions deterministically', () => {
   assert.equal(nextVisualCanonVersion('1.2.3', 'patch'), '1.2.4');
 });
 
+test('legacy Visual Canon migrates its reusable rule systems without changing identity or version', () => {
+  const current = buildVisualCanon({
+    projectId: 'project-1',
+    styleProfile: style,
+    lockedAssets: [lock],
+    primary: { anchor },
+    industryAttributes: ['东方生活美学'],
+  }, NOW);
+  const {
+    visualDNA: _visualDNA,
+    colorSystem: _colorSystem,
+    materialSystem: _materialSystem,
+    lightingSystem: _lightingSystem,
+    compositionSystem: _compositionSystem,
+    ...legacy
+  } = current;
+  const migrated = migrateVisualCanon(legacy, {
+    styleProfile: style,
+    industryAttributes: ['东方生活美学'],
+  });
+  assert.equal(migrated.id, current.id);
+  assert.equal(migrated.version, current.version);
+  assert.deepEqual(migrated.visualDNA.industryAttributes, ['东方生活美学']);
+  assert.doesNotThrow(() => confirmVisualCanon(migrated, NOW));
+});
+
 test('Visual Canon JSON Schema is closed and caps canonImages at four', () => {
   const schema = JSON.parse(fs.readFileSync(
     path.join(process.cwd(), 'schemas/creative-production/visual-canon.schema.json'),
@@ -98,4 +162,10 @@ test('Visual Canon JSON Schema is closed and caps canonImages at four', () => {
   ));
   assert.equal(schema.additionalProperties, false);
   assert.equal(schema.properties.canonImages.maxItems, 4);
+  for (const field of [
+    'visualDNA', 'colorSystem', 'materialSystem', 'lightingSystem', 'compositionSystem',
+  ]) {
+    assert.ok(schema.required.includes(field));
+    assert.equal(schema.properties[field].additionalProperties, false);
+  }
 });

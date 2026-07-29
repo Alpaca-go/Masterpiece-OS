@@ -12,10 +12,14 @@ test('Visual Canon service versions, confirms and updates active Session referen
   const entities: string[] = [];
   const projects = { paths: async () => ({ root: path.join(temp, 'project') }) };
   const sessions = {
+    create: async () => ({
+      projectContext: { industry: '文化零售' },
+      understanding: { projectIdentity: { industry: '东方生活美学' } },
+    }),
     transition: async (_projectId: string, state: string) => { transitions.push(state); },
     setActiveEntity: async (_projectId: string, _type: string, entity: { id: string }) => { entities.push(entity.id); },
   };
-  const styles = { getActive: async () => ({
+  const style = {
     id: 'style-1',
     name: 'Style',
     version: '1.0.0',
@@ -25,7 +29,11 @@ test('Visual Canon service versions, confirms and updates active Session referen
     forbiddenVariations: [],
     promptComponents: { required: ['统一气质'] },
     allowedVariations: [],
-  }) };
+  };
+  const styles = {
+    getActive: async () => style,
+    list: async () => [style],
+  };
   const locks = { list: async () => [{ id: 'lock-1', priority: 'critical' }] };
   const anchors = { get: async (_projectId: string, id: string) => ({
     id,
@@ -44,6 +52,7 @@ test('Visual Canon service versions, confirms and updates active Session referen
     const draft = await service.build(projectId, { primaryCandidateId: 'anchor-1' });
     const confirmed = await service.confirm(projectId, draft.id);
     assert.equal(confirmed.status, 'confirmed');
+    assert.deepEqual(confirmed.visualDNA.industryAttributes, ['东方生活美学', '文化零售']);
     assert.equal((await service.getActive(projectId))?.id, confirmed.id);
     assert.deepEqual(transitions, ['CANON_BUILDING', 'VISUAL_CANON_CONFIRMED']);
     assert.deepEqual(entities, [confirmed.id]);
