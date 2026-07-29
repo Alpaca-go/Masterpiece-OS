@@ -8,6 +8,8 @@ import type {
   CreateProjectInput,
   SaveApiProfileInput,
   SaveSettingsInput,
+  SaveModelBenchmarkEvaluationInput,
+  StartModelBenchmarkInput,
   AnchorDecision,
   StartReferenceAnchorInput
 } from '../shared/types';
@@ -482,6 +484,21 @@ function registerIpc(): void {
     runId: string,
     apiProfileId?: string
   ) => creativeGeneration.regenerateInstruction(projectId, runId, apiProfileId));
+  registerHandler('creative-session:start-benchmark', (
+    _event,
+    projectId: string,
+    input: StartModelBenchmarkInput
+  ) => creativeGeneration.startBenchmark(projectId, input));
+  registerHandler('creative-session:list-benchmarks', (
+    _event,
+    projectId: string
+  ) => creativeGeneration.listBenchmarks(projectId));
+  registerHandler('creative-session:save-benchmark-evaluation', (
+    _event,
+    projectId: string,
+    benchmarkId: string,
+    input: SaveModelBenchmarkEvaluationInput
+  ) => creativeGeneration.saveBenchmarkEvaluation(projectId, benchmarkId, input));
   registerHandler('creative-session:evaluate', (
     _event,
     projectId: string,

@@ -315,8 +315,8 @@ export function App() {
   }
 
   function openImageGeneration(sources: ImageGenerationSourceBundle) {
-    const imageProfile = settings?.profiles.find((profile) => profile.isEnabled && profile.modelType === 'image_generation' && profile.isDefault)
-      || settings?.profiles.find((profile) => profile.isEnabled && profile.modelType === 'image_generation');
+    const imageProfile = settings?.profiles.find((profile) => profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation' && profile.isDefault)
+      || settings?.profiles.find((profile) => profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation');
     setSelectedApiProfileId(imageProfile?.id || '');
     setRequestedImageGen(sources);
     setScreen('image-generation');
@@ -359,14 +359,14 @@ export function App() {
   if (screen === 'creative-session' && selected) return <CreativeSessionWorkspace
     project={selected}
     imageProfiles={settings.profiles.filter((profile) =>
-      profile.isEnabled && profile.modelType === 'image_generation')}
+      profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation')}
     imageApiProfileId={(settings.profiles.some((profile) =>
-      profile.id === selectedApiProfileId && profile.isEnabled && profile.modelType === 'image_generation')
+      profile.id === selectedApiProfileId && profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation')
       ? selectedApiProfileId
       : (settings.profiles.find((profile) =>
-        profile.isEnabled && profile.modelType === 'image_generation' && profile.isDefault)
+        profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation' && profile.isDefault)
         || settings.profiles.find((profile) =>
-          profile.isEnabled && profile.modelType === 'image_generation'))?.id) || ''}
+          profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation'))?.id) || ''}
     onImageApiProfileChange={setSelectedApiProfileId}
     onBack={() => setScreen('report')}
     onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}

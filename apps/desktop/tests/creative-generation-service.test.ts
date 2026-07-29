@@ -169,3 +169,49 @@ test('evaluation is persisted against the generating Canon and drives a traceabl
     'REVIEWING_OUTPUTS',
   ]);
 });
+
+test('benchmark compiles once and sends the same Prompt Snapshot to every selected model', async () => {
+  const snapshot = {
+    id: 'snapshot-benchmark',
+    projectId: 'project-1',
+    visualCanonId: 'canon-1',
+    visualCanonVersion: '1.0.0',
+    instruction: { finalPrompt: 'ONE FROZEN PROMPT' },
+  };
+  let compileCount = 0;
+  const recordedRuns: string[] = [];
+  const service = createCreativeGenerationService(
+    {
+      compile: async () => {
+        compileCount += 1;
+        return snapshot;
+      },
+      recordRun: async (_projectId: string, snapshotId: string, runId: string) => {
+        assert.equal(snapshotId, snapshot.id);
+        recordedRuns.push(runId);
+      },
+    } as never,
+    {
+      startBenchmark: async (receivedSnapshot: unknown, apiProfileIds: string[]) => {
+        assert.equal(receivedSnapshot, snapshot);
+        assert.deepEqual(apiProfileIds, ['gpt', 'nano']);
+        return {
+          benchmarkId: 'benchmark-1',
+          tasks: [
+            { apiProfileId: 'gpt', runId: 'run-gpt', modelId: 'gpt-image-2', status: 'succeeded' },
+            { apiProfileId: 'nano', runId: 'run-nano', modelId: 'gemini-image', status: 'succeeded' },
+          ],
+        };
+      },
+    } as never,
+    {} as never,
+  );
+  const benchmark = await service.startBenchmark('project-1', {
+    userRequest: 'Compare models',
+    apiProfileIds: ['gpt', 'nano'],
+    outputType: 'brand_poster',
+  });
+  assert.equal(compileCount, 1);
+  assert.equal(benchmark.benchmarkId, 'benchmark-1');
+  assert.deepEqual(recordedRuns, ['run-gpt', 'run-nano']);
+});

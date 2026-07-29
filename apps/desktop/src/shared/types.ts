@@ -1841,6 +1841,62 @@ export interface ImageGenerationCompileResult {
   compileFingerprint?: ImageGenerationCompileFingerprint;
 }
 
+export interface ModelBenchmarkScoreSet {
+  brandAlignment: number;
+  visualQuality: number;
+  referenceCompliance: number;
+  commercialUsability: number;
+}
+
+export interface ModelBenchmarkEvaluation {
+  mode: 'human';
+  runId: string;
+  imageId: string;
+  scores: ModelBenchmarkScoreSet;
+  notes: string;
+  evaluatedAt: string;
+}
+
+export interface ModelBenchmark {
+  schemaVersion: '1.0.0';
+  benchmarkId: string;
+  projectId: string;
+  status: 'ready' | 'running' | 'completed' | 'completed_with_failures';
+  frozenInput: {
+    visualCanonId: string;
+    visualCanonVersion: string;
+    promptSnapshotId: string;
+    promptFingerprint?: string;
+    promptTemplateId?: string;
+    promptTemplateVersion?: string;
+    prompt: string;
+  };
+  tasks: Array<{
+    apiProfileId: string;
+    status: string;
+    runId?: string;
+    providerId?: string;
+    modelId?: string;
+    imageId?: string;
+  }>;
+  evaluations: ModelBenchmarkEvaluation[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface StartModelBenchmarkInput {
+  userRequest: string;
+  apiProfileIds: string[];
+  outputType?: GenerationPromptSnapshot['outputType'];
+  dryRun?: boolean;
+}
+
+export interface SaveModelBenchmarkEvaluationInput {
+  runId: string;
+  scores: ModelBenchmarkScoreSet;
+  notes?: string;
+}
+
 export interface DesktopApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -1973,6 +2029,13 @@ export interface DesktopApi {
       runId: string,
       apiProfileId?: string
     ): Promise<ImageGenerationRun>;
+    startBenchmark(projectId: string, input: StartModelBenchmarkInput): Promise<ModelBenchmark>;
+    listBenchmarks(projectId: string): Promise<ModelBenchmark[]>;
+    saveBenchmarkEvaluation(
+      projectId: string,
+      benchmarkId: string,
+      input: SaveModelBenchmarkEvaluationInput
+    ): Promise<ModelBenchmark>;
     appendFeedback(projectId: string, content: string): Promise<CreativeSession>;
     getRun(runId: string): Promise<ImageGenerationRun | null>;
     getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;

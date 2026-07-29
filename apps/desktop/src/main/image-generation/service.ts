@@ -31,6 +31,8 @@ import type {
   ImageProviderRegion,
   ProviderTaskStatus,
   PublicSettings,
+  ModelBenchmark,
+  SaveModelBenchmarkEvaluationInput,
 } from '../../shared/types';
 import type { GenerationPromptSnapshot } from '../../../../../packages/project-contracts/src/index.ts';
 import { validateGenerationPromptSnapshot } from '../../../../../packages/creative-production-runtime/src/generation-prompt.js';
@@ -67,6 +69,12 @@ import {
 import { resolveProjectRoot, runRootUnder, standaloneImageGenRoot, imagesDir, thumbnailsDir, RUN_FILES } from './paths.ts';
 import { EXECUTING_IMAGE_RUN_STATUSES } from '../../../../../packages/image-generation-contracts/src/index.ts';
 import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '../../../../../packages/image-generation-runtime/src/policies.js';
+import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
+import {
+  attachBenchmarkRuns,
+  createModelBenchmark,
+  saveHumanBenchmarkEvaluation,
+} from '../../../../../packages/model-benchmark/src/index.js';
 
 export const DEFAULT_SIZE = '1024*1024';
 
@@ -230,6 +238,37 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
 
   function storeFor(projectId: string) {
     return createRunStore(deps.dataPath, projectId);
+  }
+
+  async function benchmarkRoot(projectId: string): Promise<string> {
+    const projectRoot = await resolveProjectRoot(deps.dataPath, projectId);
+    return path.join(projectRoot, 'image-generation', 'benchmarks');
+  }
+
+  async function writeBenchmark(benchmark: ModelBenchmark): Promise<ModelBenchmark> {
+    const root = await benchmarkRoot(benchmark.projectId);
+    await fs.mkdir(root, { recursive: true });
+    const result = await atomicWriteJsonWithRetry(
+      path.join(root, `${benchmark.benchmarkId}.json`),
+      benchmark,
+    );
+    if (!result.success) {
+      throw Object.assign(new Error(result.errorMessage || 'Benchmark 写入失败。'), {
+        code: 'MODEL_BENCHMARK_WRITE_FAILED',
+      });
+    }
+    return benchmark;
+  }
+
+  async function readBenchmark(projectId: string, benchmarkId: string): Promise<ModelBenchmark | null> {
+    try {
+      return JSON.parse(await fs.readFile(
+        path.join(await benchmarkRoot(projectId), `${benchmarkId}.json`),
+        'utf8',
+      )) as ModelBenchmark;
+    } catch {
+      return null;
+    }
   }
 
   async function rootForRun(run: ImageGenerationRun): Promise<string> {
@@ -1026,6 +1065,78 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       emit(failed);
       return failed;
     }
+  }
+
+  async function startBenchmark(
+    snapshotInput: GenerationPromptSnapshot,
+    apiProfileIds: string[],
+    dryRun = false,
+  ): Promise<ModelBenchmark> {
+    const snapshot = validateGenerationPromptSnapshot(snapshotInput) as GenerationPromptSnapshot;
+    await Promise.all(apiProfileIds.map(async (apiProfileId) => {
+      const config = await resolveProviderConfig({ apiProfileId });
+      if (!config.apiKey) {
+        throw Object.assign(new Error(`Benchmark 模型配置缺少 API Key：${apiProfileId}`), {
+          code: 'PROVIDER_CONFIG_MISSING',
+        });
+      }
+      if (config.protocol !== 'dashscope-wan-image' && !multiModelAdapterId(config.protocol)) {
+        throw Object.assign(new Error(`Benchmark 不支持协议：${config.protocol || 'missing'}`), {
+          code: 'PROVIDER_PROFILE_INCOMPATIBLE',
+        });
+      }
+    }));
+    let benchmark = createModelBenchmark({
+      projectId: snapshot.projectId,
+      promptSnapshot: snapshot,
+      apiProfileIds,
+    }) as ModelBenchmark;
+    await writeBenchmark(benchmark);
+    benchmark = {
+      ...benchmark,
+      status: 'running',
+      updatedAt: nowFn(),
+    };
+    await writeBenchmark(benchmark);
+    const runs = await Promise.all(benchmark.tasks.map((task) => startPromptSnapshot({
+      snapshot,
+      apiProfileId: task.apiProfileId,
+      dryRun,
+    })));
+    benchmark = attachBenchmarkRuns(benchmark, runs, { now: nowFn }) as ModelBenchmark;
+    return writeBenchmark(benchmark);
+  }
+
+  async function listBenchmarks(projectId: string): Promise<ModelBenchmark[]> {
+    const root = await benchmarkRoot(projectId);
+    const entries = await fs.readdir(root, { withFileTypes: true }).catch(() => []);
+    const values = await Promise.all(entries
+      .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+      .map(async (entry) => {
+        try {
+          return JSON.parse(await fs.readFile(path.join(root, entry.name), 'utf8')) as ModelBenchmark;
+        } catch {
+          return null;
+        }
+      }));
+    return values
+      .filter((value): value is ModelBenchmark => Boolean(value))
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  }
+
+  async function saveBenchmarkEvaluation(
+    projectId: string,
+    benchmarkId: string,
+    input: SaveModelBenchmarkEvaluationInput,
+  ): Promise<ModelBenchmark> {
+    const benchmark = await readBenchmark(projectId, benchmarkId);
+    if (!benchmark) {
+      throw Object.assign(new Error('Benchmark 不存在。'), {
+        code: 'MODEL_BENCHMARK_NOT_FOUND',
+      });
+    }
+    const updated = saveHumanBenchmarkEvaluation(benchmark, input, { now: nowFn }) as ModelBenchmark;
+    return writeBenchmark(updated);
   }
 
   /** 提交并执行实时轮询/下载（被 start 与 retry 共用）。 */
@@ -1839,6 +1950,9 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     start,
     startPromptSnapshot,
     startCompiledCreativeTask,
+    startBenchmark,
+    listBenchmarks,
+    saveBenchmarkEvaluation,
     retry,
     cancel,
     getRun,

@@ -133,7 +133,7 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
   });
   const runScopeId = sourceBundle.projectId || sourceBundle.visual?.projectId || `document-${sourceBundle.document?.documentRunId}`;
   const imageProfiles = settings.profiles.filter((profile) => (
-    profile.isEnabled && profile.modelType === 'image_generation'
+    profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation'
   ));
 
   const [capabilities, setCapabilities] = useState<ImageProviderCapabilities | null>(null);

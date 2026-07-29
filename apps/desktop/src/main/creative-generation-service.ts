@@ -1,4 +1,9 @@
-import type { ImageGenerationRun } from '../shared/types.ts';
+import type {
+  ImageGenerationRun,
+  ModelBenchmark,
+  SaveModelBenchmarkEvaluationInput,
+  StartModelBenchmarkInput,
+} from '../shared/types.ts';
 import type { GenerationPromptSnapshot } from '../../../../packages/project-contracts/src/index.ts';
 import type { ImageGenerationEvaluation } from '../../../../packages/image-generation-contracts/src/index.ts';
 import {
@@ -85,6 +90,44 @@ export function createCreativeGenerationService(
       });
     }
     return generate(projectId, { userRequest: snapshot.userRequest, apiProfileId });
+  }
+
+  async function startBenchmark(
+    projectId: string,
+    input: StartModelBenchmarkInput,
+  ): Promise<ModelBenchmark> {
+    const snapshot = await prompts.compile(projectId, {
+      userRequest: input.userRequest,
+      outputType: input.outputType,
+    });
+    const benchmark = await imageGeneration.startBenchmark(
+      snapshot,
+      input.apiProfileIds,
+      input.dryRun,
+    );
+    for (const task of benchmark.tasks) {
+      if (task.runId) {
+        await prompts.recordRun(
+          projectId,
+          snapshot.id,
+          task.runId,
+          `Benchmark ${benchmark.benchmarkId}：${task.modelId || task.apiProfileId} / ${task.status}`,
+        );
+      }
+    }
+    return benchmark;
+  }
+
+  function listBenchmarks(projectId: string): Promise<ModelBenchmark[]> {
+    return imageGeneration.listBenchmarks(projectId);
+  }
+
+  function saveBenchmarkEvaluation(
+    projectId: string,
+    benchmarkId: string,
+    input: SaveModelBenchmarkEvaluationInput,
+  ): Promise<ModelBenchmark> {
+    return imageGeneration.saveBenchmarkEvaluation(projectId, benchmarkId, input);
   }
 
   async function evaluate(projectId: string, runId: string, input: {
@@ -189,6 +232,9 @@ export function createCreativeGenerationService(
     generate,
     retrySameInstruction,
     regenerateInstruction,
+    startBenchmark,
+    listBenchmarks,
+    saveBenchmarkEvaluation,
     evaluate,
     regenerateFromEvaluation,
   };

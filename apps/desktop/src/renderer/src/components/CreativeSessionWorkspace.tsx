@@ -9,6 +9,8 @@ import type {
   GenerationSeries,
   ImageGenerationRun,
   ImageGenerationRunSummary,
+  ModelBenchmark,
+  ModelBenchmarkScoreSet,
   ProjectRecord,
   StyleProfile,
   VisualCanon,
@@ -54,6 +56,12 @@ interface EvaluationDraft {
   assetNotes: string;
   deviationSeverity: 'none' | 'minor' | 'major';
   deviationFindings: string;
+}
+
+interface BenchmarkEvaluationDraft {
+  runId: string;
+  scores: ModelBenchmarkScoreSet;
+  notes: string;
 }
 
 interface ProductionState {
@@ -188,17 +196,22 @@ export function CreativeSessionWorkspace({
   const [compareOutputIds, setCompareOutputIds] = useState<string[]>([]);
   const [request, setRequest] = useState('');
   const [selectedCommand, setSelectedCommand] = useState<QuickCommand | null>(null);
+  const [benchmarks, setBenchmarks] = useState<ModelBenchmark[]>([]);
+  const [benchmarkProfileIds, setBenchmarkProfileIds] = useState<string[]>([]);
+  const [benchmarkEvaluationDraft, setBenchmarkEvaluationDraft] =
+    useState<BenchmarkEvaluationDraft | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<'loading' | 'reading' | 'generating' | ''>('loading');
 
   const refresh = useCallback(async () => {
-    const [next, anchors, explorations, styles, canons, series] = await Promise.all([
+    const [next, anchors, explorations, styles, canons, series, nextBenchmarks] = await Promise.all([
       window.masterpiece.creativeSession.getWorkspace(project.id),
       window.masterpiece.creativeProduction.listAnchorCandidates(project.id),
       window.masterpiece.creativeProduction.listVisualExplorations(project.id),
       window.masterpiece.creativeProduction.listStyleProfiles(project.id),
       window.masterpiece.creativeProduction.listVisualCanons(project.id),
-      window.masterpiece.creativeProduction.listSeries(project.id)
+      window.masterpiece.creativeProduction.listSeries(project.id),
+      window.masterpiece.creativeSession.listBenchmarks(project.id)
     ]);
     setWorkspace(next);
     const currentCanon = next.visualCanon
@@ -218,6 +231,7 @@ export function CreativeSessionWorkspace({
       ? await window.masterpiece.creativeProduction.listFormalAssets(project.id, activeSeries.id)
       : [];
     setProduction({ anchors, explorations, styles, canons, series, outputs });
+    setBenchmarks(nextBenchmarks);
     const fullRuns = await Promise.all(next.runs.slice(0, 12).map(async (summary) => {
       const run = await window.masterpiece.creativeSession.getRun(summary.runId);
       if (!run) return null;
@@ -469,6 +483,45 @@ export function CreativeSessionWorkspace({
   const selectedConceptView = selectedConcept?.generationRunId
     ? runViews.find((item) => item.run.runId === selectedConcept.generationRunId)
     : undefined;
+  const activeBenchmark = benchmarks[0];
+
+  async function runBenchmark() {
+    const userRequest = selectedCommand?.request || request.trim();
+    if (!userRequest || benchmarkProfileIds.length < 2 || benchmarkProfileIds.length > 3) return;
+    setBusy('generating');
+    setError('');
+    try {
+      await window.masterpiece.creativeSession.startBenchmark(project.id, {
+        userRequest,
+        apiProfileIds: benchmarkProfileIds,
+        outputType: selectedCommand?.outputType,
+      });
+      await refresh();
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy('');
+    }
+  }
+
+  async function saveBenchmarkEvaluation() {
+    if (!activeBenchmark || !benchmarkEvaluationDraft) return;
+    setBusy('generating');
+    setError('');
+    try {
+      await window.masterpiece.creativeSession.saveBenchmarkEvaluation(
+        project.id,
+        activeBenchmark.benchmarkId,
+        benchmarkEvaluationDraft
+      );
+      setBenchmarkEvaluationDraft(null);
+      await refresh();
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy('');
+    }
+  }
 
   return <div className="page creative-session-page">
     <header className="page-header">
@@ -951,6 +1004,96 @@ export function CreativeSessionWorkspace({
     </div>}
 
     {tab === 'versions' && <div className="generation-series-workspace">
+      <section className="panel generation-history-overview">
+        <div className="section-heading"><span>B</span><div><h2>Model Benchmark</h2><p>同一 Visual Canon、同一 Prompt Snapshot，对比 2–3 个模型</p></div></div>
+        <div className="benchmark-model-picker">
+          {imageProfiles.map((profile) => <label key={profile.id}>
+            <input
+              type="checkbox"
+              checked={benchmarkProfileIds.includes(profile.id)}
+              disabled={!benchmarkProfileIds.includes(profile.id) && benchmarkProfileIds.length >= 3}
+              onChange={(event) => setBenchmarkProfileIds((current) => (
+                event.target.checked
+                  ? [...current, profile.id]
+                  : current.filter((id) => id !== profile.id)
+              ))}
+            />
+            <span>{profile.displayName} / {profile.modelId}</span>
+          </label>)}
+        </div>
+        <button
+          className="button primary"
+          disabled={!canGenerate || Boolean(busy) || benchmarkProfileIds.length < 2
+            || benchmarkProfileIds.length > 3 || !(selectedCommand?.request || request.trim())}
+          onClick={() => void runBenchmark()}
+        >运行多模型对比</button>
+        {!activeBenchmark && <div className="empty-state small">尚未创建 Benchmark。</div>}
+        {activeBenchmark && <div>
+          <div className="facts-box">
+            <small>{activeBenchmark.benchmarkId}</small>
+            <p>Canon：{activeBenchmark.frozenInput.visualCanonId} / {activeBenchmark.frozenInput.visualCanonVersion}</p>
+            <p>Prompt Snapshot：{activeBenchmark.frozenInput.promptSnapshotId}</p>
+            <p>状态：{activeBenchmark.status}</p>
+          </div>
+          <div className="version-compare-grid">
+            {activeBenchmark.tasks.map((task) => {
+              const view = task.runId
+                ? runViews.find((item) => item.run.runId === task.runId)
+                : undefined;
+              const evaluation = activeBenchmark.evaluations.find((item) => item.runId === task.runId);
+              return <article key={task.apiProfileId}>
+                {view?.imageUrls[0]
+                  ? <img src={view.imageUrls[0]} alt={`${task.modelId} benchmark result`} />
+                  : <div className="history-image-placeholder">{task.status}</div>}
+                <strong>{task.modelId || task.apiProfileId}</strong>
+                <small>{task.providerId} / {task.status}</small>
+                {evaluation
+                  ? <ul>
+                    <li>Brand Alignment：{evaluation.scores.brandAlignment}</li>
+                    <li>Visual Quality：{evaluation.scores.visualQuality}</li>
+                    <li>Reference Compliance：{evaluation.scores.referenceCompliance}</li>
+                    <li>Commercial Usability：{evaluation.scores.commercialUsability}</li>
+                  </ul>
+                  : task.status === 'succeeded' && task.runId && <button onClick={() =>
+                    setBenchmarkEvaluationDraft({
+                      runId: task.runId!,
+                      scores: {
+                        brandAlignment: 4,
+                        visualQuality: 4,
+                        referenceCompliance: 4,
+                        commercialUsability: 4,
+                      },
+                      notes: '',
+                    })
+                  }>人工评价</button>}
+              </article>;
+            })}
+          </div>
+        </div>}
+        {benchmarkEvaluationDraft && <div className="evaluation-editor">
+          {(Object.keys(benchmarkEvaluationDraft.scores) as Array<keyof ModelBenchmarkScoreSet>)
+            .map((dimension) => <label key={dimension}>{dimension}
+              <select
+                value={benchmarkEvaluationDraft.scores[dimension]}
+                onChange={(event) => setBenchmarkEvaluationDraft((current) => current && ({
+                  ...current,
+                  scores: { ...current.scores, [dimension]: Number(event.target.value) }
+                }))}
+              >
+                {[1, 2, 3, 4, 5].map((score) => <option key={score} value={score}>{score}</option>)}
+              </select>
+            </label>)}
+          <label>设计师备注<textarea
+            rows={3}
+            value={benchmarkEvaluationDraft.notes}
+            onChange={(event) => setBenchmarkEvaluationDraft((current) => current && ({
+              ...current,
+              notes: event.target.value
+            }))}
+          /></label>
+          <button className="button primary" onClick={() => void saveBenchmarkEvaluation()}>保存人工评价</button>
+        </div>}
+      </section>
       <section className="panel generation-history-overview">
         <div className="section-heading"><span>01</span><div><h2>Generation History</h2><p>图像、Prompt、模型、评估与修改记录</p></div></div>
         <div className="generation-history-grid">

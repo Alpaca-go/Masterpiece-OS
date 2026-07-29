@@ -119,6 +119,17 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-session:retry-same', projectId, runId, apiProfileId),
     regenerateInstruction: (projectId, runId, apiProfileId) =>
       ipcRenderer.invoke('creative-session:regenerate-instruction', projectId, runId, apiProfileId),
+    startBenchmark: (projectId, input) =>
+      ipcRenderer.invoke('creative-session:start-benchmark', projectId, input),
+    listBenchmarks: (projectId) =>
+      ipcRenderer.invoke('creative-session:list-benchmarks', projectId),
+    saveBenchmarkEvaluation: (projectId, benchmarkId, input) =>
+      ipcRenderer.invoke(
+        'creative-session:save-benchmark-evaluation',
+        projectId,
+        benchmarkId,
+        input
+      ),
     evaluate: (projectId, runId, input) =>
       ipcRenderer.invoke('creative-session:evaluate', projectId, runId, input),
     regenerateFromEvaluation: (projectId, runId, apiProfileId) =>
