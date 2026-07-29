@@ -596,6 +596,20 @@ function registerIpc(): void {
     if (!root) return null;
     return fs.readFile(path.join(root, 'compiled-prompt.md'), 'utf8').catch(() => null);
   });
+  registerHandler('creative-production:get-run-metadata', async (
+    _event,
+    projectId: string,
+    runId: string
+  ) => {
+    const snapshot = await imageGeneration.readPromptSnapshot(runId, projectId);
+    if (!snapshot) return null;
+    return {
+      outputType: snapshot.outputType,
+      promptVersion: snapshot.promptVersion || snapshot.compilerVersion,
+      templateId: snapshot.deliverableTemplateId,
+      templateVersion: snapshot.deliverableTemplateVersion
+    };
+  });
 }
 
 if (gotTheLock) app.whenReady().then(async () => {

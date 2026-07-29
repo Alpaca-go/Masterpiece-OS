@@ -2047,6 +2047,12 @@ export interface DesktopApi {
       }
     ): Promise<GenerationOutput>;
     getRunPrompt(runId: string): Promise<string | null>;
+    getRunMetadata(projectId: string, runId: string): Promise<{
+      outputType: GenerationPromptSnapshot['outputType'];
+      promptVersion: string;
+      templateId?: GenerationPromptSnapshot['deliverableTemplateId'];
+      templateVersion?: string;
+    } | null>;
   };
   files: {
     getPathForFile(file: File): string;

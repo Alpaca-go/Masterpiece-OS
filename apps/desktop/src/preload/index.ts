@@ -174,7 +174,9 @@ const api: DesktopApi = {
     reviewFormalAsset: (projectId, seriesId, outputId, input) =>
       ipcRenderer.invoke('creative-production:review-formal-asset', projectId, seriesId, outputId, input),
     getRunPrompt: (runId) =>
-      ipcRenderer.invoke('creative-production:get-run-prompt', runId)
+      ipcRenderer.invoke('creative-production:get-run-prompt', runId),
+    getRunMetadata: (projectId, runId) =>
+      ipcRenderer.invoke('creative-production:get-run-metadata', projectId, runId)
   },
   files: {
     getPathForFile: (file) => webUtils.getPathForFile(file)

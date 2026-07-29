@@ -32,6 +32,12 @@ interface WorkspaceState {
 interface RunView {
   run: ImageGenerationRun;
   imageUrls: string[];
+  metadata: {
+    outputType: string;
+    promptVersion: string;
+    templateId?: string;
+    templateVersion?: string;
+  } | null;
 }
 
 interface ProductionState {
@@ -190,9 +196,12 @@ export function CreativeSessionWorkspace({
           .catch(() => null);
         return value?.dataUrl || '';
       }))).filter(Boolean);
-      return { run, imageUrls };
+      const metadata = await window.masterpiece.creativeProduction
+        .getRunMetadata(project.id, run.runId)
+        .catch(() => null);
+      return { run, imageUrls, metadata };
     }));
-    setRunViews(fullRuns.filter((item): item is RunView => Boolean(item)));
+    setRunViews(fullRuns.filter((item) => item !== null));
   }, [project.id]);
 
   useEffect(() => {
@@ -228,6 +237,97 @@ export function CreativeSessionWorkspace({
     () => workspace?.session.messages.slice(-8) || [],
     [workspace?.session.messages]
   );
+  const visualRuleGroups = useMemo(() => {
+    const profile = workspace?.styleProfile;
+    if (!profile) return [];
+    return [
+      {
+        id: 'color',
+        label: '色彩',
+        rules: [
+          ...profile.colorSystem.primary.map((item) => `主色 · ${item}`),
+          ...profile.colorSystem.secondary.map((item) => `辅色 · ${item}`),
+          ...profile.colorSystem.accent.map((item) => `强调色 · ${item}`),
+          ...profile.colorSystem.distributionRules
+        ]
+      },
+      {
+        id: 'material',
+        label: '材质',
+        rules: [
+          ...profile.materialAndTexture.materials,
+          ...profile.materialAndTexture.surfaceRules,
+          ...profile.materialAndTexture.renderingRules
+        ]
+      },
+      {
+        id: 'lighting',
+        label: '光线',
+        rules: [
+          profile.lightingSystem.type,
+          profile.lightingSystem.contrast,
+          profile.lightingSystem.shadow,
+          profile.lightingSystem.temperature
+        ]
+      },
+      {
+        id: 'composition',
+        label: '构图',
+        rules: [
+          ...profile.compositionSystem.hierarchy,
+          `密度 · ${profile.compositionSystem.density}`,
+          `留白 · ${profile.compositionSystem.negativeSpace}`,
+          ...profile.compositionSystem.focalPointRules,
+          ...profile.compositionSystem.croppingRules
+        ]
+      },
+      {
+        id: 'typography',
+        label: '字体',
+        rules: profile.typographyCompatibility
+      },
+      {
+        id: 'spatial',
+        label: '空间',
+        rules: [
+          creativeDirection?.spaceStrategy || '',
+          ...profile.compositionSystem.cameraRules,
+          ...profile.shapeLanguage.proportionRules
+        ]
+      },
+      {
+        id: 'forbidden',
+        label: '禁止项',
+        rules: [
+          ...profile.colorSystem.forbiddenColors,
+          ...profile.materialAndTexture.forbiddenTextures,
+          ...profile.forbiddenVariations,
+          ...profile.promptComponents.negative,
+          ...(currentCanon?.conflicts.map((item) => item.message) || [])
+        ]
+      }
+    ].map((group) => ({
+      ...group,
+      rules: [...new Set(group.rules.map((item) => item.trim()).filter(Boolean))]
+    }));
+  }, [workspace?.styleProfile, creativeDirection, currentCanon]);
+
+  function evaluationScoreForRun(runId: string) {
+    const evaluation = production.anchors.find((item) =>
+      item.generationRunId === runId)?.evaluation;
+    if (!evaluation) return null;
+    const values = ANCHOR_DIMENSIONS.map(({ key }) => evaluation[key].score);
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+
+  function changeSummaryForRun(runId: string) {
+    const output = production.outputs.find((item) => item.generationRunId === runId);
+    const task = output
+      ? production.series.flatMap((item) => item.tasks).find((item) => item.id === output.taskId)
+      : undefined;
+    if (!task) return '首次生成';
+    return task.change.length ? task.change.slice(0, 2).join('；') : task.mode || '首次生成';
+  }
 
   async function generate() {
     const userRequest = request.trim();
@@ -599,7 +699,7 @@ export function CreativeSessionWorkspace({
         </div> : <div className="empty-state small">请先在 Anchor 审核页接受一个 Candidate。</div>}
       </section>
       <section className="panel">
-        <div className="section-heading"><span>02</span><div><h2>Visual Canon</h2><p>共享规则、变化规则与冲突警告</p></div></div>
+        <div className="section-heading"><span>02</span><div><h2>Visual System</h2><p>从 Style Profile 与 Canon 汇总的可执行规则库</p></div></div>
         {!currentCanon && activeAnchor?.status === 'accepted' && <button
           className="button primary full"
           disabled={Boolean(busy)}
@@ -609,6 +709,14 @@ export function CreativeSessionWorkspace({
             })
           )}
         >从 Primary Anchor 建立 Visual Canon</button>}
+        {workspace?.styleProfile && <div className="visual-rule-library">
+          {visualRuleGroups.map((group) => <article key={group.id}>
+            <div><span>{group.label}</span><small>{group.rules.length} 条规则</small></div>
+            {group.rules.length
+              ? <ul>{group.rules.slice(0, 8).map((item) => <li key={item}>{item}</li>)}</ul>
+              : <p>当前 Style Profile 未定义此类规则。</p>}
+          </article>)}
+        </div>}
         {currentCanon && <div className="canon-details">
           <div className="production-summary-card">
             <small>VISUAL CANON / {currentCanon.version}</small>
@@ -639,6 +747,27 @@ export function CreativeSessionWorkspace({
     </div>}
 
     {tab === 'versions' && <div className="generation-series-workspace">
+      <section className="panel generation-history-overview">
+        <div className="section-heading"><span>01</span><div><h2>Generation History</h2><p>图像、Prompt、模型、评估与修改记录</p></div></div>
+        <div className="generation-history-grid">
+          {runViews.length ? runViews.map(({ run, imageUrls, metadata }) => {
+            const evaluationScore = evaluationScoreForRun(run.runId);
+            return <article key={run.runId}>
+              {imageUrls[0]
+                ? <img src={imageUrls[0]} alt="Generation History" />
+                : <div className="history-image-placeholder">{run.status}</div>}
+              <div className="generation-history-meta">
+                <strong>{metadata?.outputType || run.outputType}</strong>
+                <small>Run · {run.runId}</small>
+                <small>Prompt · {metadata?.promptVersion || 'Legacy / unavailable'}</small>
+                <small>Model · {run.providerId} / {run.modelId}</small>
+                <small>Evaluation Score · {evaluationScore === null ? '待评估' : evaluationScore.toFixed(1)}</small>
+                <small>修改内容 · {changeSummaryForRun(run.runId)}</small>
+              </div>
+            </article>;
+          }) : <div className="empty-state small">尚无生成历史。</div>}
+        </div>
+      </section>
       <section className="panel generation-series-head">
         <div>
           <p className="eyebrow">GENERATION SERIES</p>
