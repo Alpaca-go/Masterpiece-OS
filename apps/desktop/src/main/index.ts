@@ -131,6 +131,7 @@ const vnextDeliverableValidator = createVNextDeliverableValidatorService(
   () => imageGeneration,
   getSettings,
   getProviderCredentials,
+  projectContext,
 );
 const vnextImageGeneration = createVNextImageGenerationService(
   projects,

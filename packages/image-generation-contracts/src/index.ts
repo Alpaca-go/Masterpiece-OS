@@ -941,6 +941,9 @@ export type VNextDeliverableMismatchType =
   | 'locked_asset_violation'
   | 'forbidden_content'
   | 'brand_mismatch'
+  | 'brand_tone_mismatch'
+  | 'scene_incomplete'
+  | 'logo_text_error'
   | 'quality_issue';
 
 export interface VNextDeliverableValidation {
@@ -957,6 +960,10 @@ export interface VNextDeliverableValidation {
   forbiddenItemsFound: string[];
   lockedAssetViolations: string[];
   brandMatch: 'matched' | 'mismatched' | 'uncertain';
+  brandToneMatch: 'matched' | 'mismatched' | 'uncertain';
+  sceneCompleteness: 'complete' | 'incomplete' | 'uncertain';
+  logoTextStatus: 'correct' | 'incorrect' | 'absent' | 'uncertain' | 'not_required';
+  qualityIssues: string[];
   mismatchTypes: VNextDeliverableMismatchType[];
   retryRecommended: boolean;
   validatorId: string;

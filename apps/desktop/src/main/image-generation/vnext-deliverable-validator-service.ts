@@ -8,6 +8,7 @@ import type {
 import { validateVNextDeliverableEvidence } from '../../../../../packages/image-generation-runtime/src/vnext/index.js';
 import { createQwenReasoner } from '../../../../../packages/model-runtime/src/qwen-reasoner.js';
 import type { ProjectStore } from '../project-store.ts';
+import type { ProjectContextService } from '../project-context-service.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import type { ImageGenerationService } from './service.ts';
 
@@ -41,6 +42,7 @@ export function createVNextDeliverableValidatorService(
   getImageGeneration: () => ImageGenerationService,
   readSettings: () => Promise<PublicSettings>,
   readCredentials: (profileId?: string) => Promise<Credentials>,
+  projectContext?: ProjectContextService,
 ) {
   async function persist(
     projectId: string,
@@ -92,6 +94,22 @@ export function createVNextDeliverableValidatorService(
     const runRoot = await getImageGeneration().runRoot(run.runId);
     if (!runRoot) throw new Error('Image run directory is missing');
     const imagePath = path.join(runRoot, image.relativePath);
+    const context = await projectContext?.getVNext(input.projectId).catch(() => undefined);
+    const promptSource = context?.promptSourceObject;
+    const targetTone = promptSource?.upgradeTranslation.toneBoundaries
+      .map((item) => item.target)
+      .filter(Boolean)
+      .join('; ')
+      || context?.visualIdentity.tone.join('; ')
+      || '(not confirmed)';
+    const toneAvoid = promptSource?.upgradeTranslation.toneBoundaries
+      .flatMap((item) => item.avoid)
+      .join('; ')
+      || '(none confirmed)';
+    const lockedRequirements = [
+      ...(context?.lockedAssets.mustPreserve ?? []),
+      ...(promptSource?.lockedAssets.mustPreserve ?? []),
+    ];
     const reasoner = createQwenReasoner({
       apiKey: credentials.apiKey,
       model: credentials.model,
@@ -112,6 +130,10 @@ export function createVNextDeliverableValidatorService(
               `Requested shot/composition: ${input.taskContract.shot}`,
               `Must include: ${input.taskContract.mustInclude.join('; ') || '(none)'}`,
               `Must avoid: ${input.taskContract.mustAvoid.join('; ') || '(none)'}`,
+              `Logo mode: ${input.taskContract.logoUsageMode || 'blank_area'}`,
+              `Confirmed brand tone: ${targetTone}`,
+              `Tone boundaries to avoid: ${toneAvoid}`,
+              `Locked visible requirements: ${lockedRequirements.join('; ') || '(none)'}`,
               '',
               'Return exactly:',
               JSON.stringify({
@@ -122,7 +144,14 @@ export function createVNextDeliverableValidatorService(
                 forbiddenItemsFound: ['forbidden visible content'],
                 lockedAssetViolations: ['visible violations only'],
                 brandMatch: 'matched|mismatched|uncertain',
+                brandToneMatch: 'matched|mismatched|uncertain',
+                sceneCompleteness: 'complete|incomplete|uncertain',
+                logoTextStatus: 'correct|incorrect|absent|uncertain|not_required',
+                qualityIssues: ['visible rendering or composition defects'],
               }),
+              'For a space result, complete means one continuous enterable scene with floor, walls, ceiling, usable function, circulation, foreground, middle ground, background, and credible scale.',
+              'In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.',
+              'Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.',
               'Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain.',
             ].join('\n'),
           },

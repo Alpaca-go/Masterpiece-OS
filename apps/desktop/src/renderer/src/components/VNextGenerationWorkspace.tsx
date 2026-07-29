@@ -5,6 +5,7 @@ import type {
   ImageGenerationRun,
   ProjectRecord,
   VNextCreativeSession,
+  VNextDeliverableValidation,
   VNextLogoUsageMode,
   VNextTaskContract,
 } from '../../../shared/types';
@@ -58,6 +59,7 @@ export function VNextGenerationWorkspace({
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState('');
+  const [lastValidation, setLastValidation] = useState<VNextDeliverableValidation | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -132,6 +134,7 @@ export function VNextGenerationWorkspace({
     setEditedPrompt('');
     setActiveRun(null);
     setImageDataUrl('');
+    setLastValidation(null);
   }
 
   async function compilePrompt() {
@@ -182,6 +185,7 @@ export function VNextGenerationWorkspace({
         editedPrompt,
       });
       const run = validated.correctionRun ?? validated.initialRun;
+      setLastValidation(validated.correctionValidation ?? validated.initialValidation);
       setActiveRun(run);
       if (run.status === 'succeeded' && run.images[0]) {
         const image = await window.masterpiece.imageGeneration
@@ -245,6 +249,20 @@ export function VNextGenerationWorkspace({
     } finally {
       setBusy(false);
     }
+  }
+
+  function applyResultFeedback(kind: 'deliverable' | 'tone' | 'logo_text') {
+    const instructionByKind = {
+      deliverable: '纠偏：必须生成完整、连续、功能清晰的当前成果物，不能变成展板、拼贴或局部装饰。',
+      tone: '纠偏：品牌气质不正确，请恢复已确认的色彩、材质、光线与形态边界，去除模板化行业风格。',
+      logo_text: logoUsageMode === 'reference'
+        ? '纠偏：Logo/文字不正确，只能使用真实 Logo 参考，不得改形、重复或杜撰文字。'
+        : '纠偏：移除所有 Logo、文字、字母与伪文字，只保留干净的标识安装区域。',
+    }[kind];
+    setInstruction((current) => `${current.trim()}\n${instructionByKind}`.trim());
+    setCompiled(null);
+    setLastValidation(null);
+    setNotice('已加入纠偏要求，请重新查看最终 Prompt。');
   }
 
   return <div className="page project-page">
@@ -373,9 +391,20 @@ export function VNextGenerationWorkspace({
 
         {imageDataUrl && <div className="result-card">
           <img src={imageDataUrl} alt="vNext generation result" />
+          {lastValidation && <div className="validation-summary">
+            <strong>结果校验：{lastValidation.status}</strong>
+            <p>{lastValidation.mismatchTypes.length
+              ? lastValidation.mismatchTypes.join(' · ')
+              : '未发现可见结构性偏差'}</p>
+          </div>}
           <div className="button-row">
             <button className="button primary" disabled={busy} onClick={() => void confirmDirection()}>沿用此方向</button>
             <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
+          </div>
+          <div className="button-row result-feedback">
+            <button className="button ghost" onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
+            <button className="button ghost" onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>
+            <button className="button ghost" onClick={() => applyResultFeedback('logo_text')}>Logo/文字不对</button>
           </div>
         </div>}
         {session?.history.length ? <div className="facts-box">

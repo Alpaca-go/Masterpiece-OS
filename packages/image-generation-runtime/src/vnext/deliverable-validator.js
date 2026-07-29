@@ -1,5 +1,5 @@
 export const VNEXT_DELIVERABLE_VALIDATOR_ID = 'vnext-deliverable-validator';
-export const VNEXT_DELIVERABLE_VALIDATOR_VERSION = '1.0.0';
+export const VNEXT_DELIVERABLE_VALIDATOR_VERSION = '2.0.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -32,6 +32,17 @@ export function validateVNextDeliverableEvidence({
   const brandMatch = ['matched', 'mismatched', 'uncertain'].includes(evidence?.brandMatch)
     ? evidence.brandMatch
     : 'uncertain';
+  const brandToneMatch = ['matched', 'mismatched', 'uncertain'].includes(evidence?.brandToneMatch)
+    ? evidence.brandToneMatch
+    : 'uncertain';
+  const sceneCompleteness = ['complete', 'incomplete', 'uncertain'].includes(evidence?.sceneCompleteness)
+    ? evidence.sceneCompleteness
+    : 'uncertain';
+  const logoTextStatus = ['correct', 'incorrect', 'absent', 'uncertain', 'not_required']
+    .includes(evidence?.logoTextStatus)
+    ? evidence.logoTextStatus
+    : 'uncertain';
+  const qualityIssues = list(evidence?.qualityIssues);
   const mismatchTypes = [];
   if (detectedFamily !== 'unknown' && detectedFamily !== taskContract.deliverableFamily) {
     mismatchTypes.push('wrong_family');
@@ -45,6 +56,10 @@ export function validateVNextDeliverableEvidence({
   if (lockedAssetViolations.length) mismatchTypes.push('locked_asset_violation');
   if (forbiddenItemsFound.length) mismatchTypes.push('forbidden_content');
   if (brandMatch === 'mismatched') mismatchTypes.push('brand_mismatch');
+  if (brandToneMatch === 'mismatched') mismatchTypes.push('brand_tone_mismatch');
+  if (sceneCompleteness === 'incomplete') mismatchTypes.push('scene_incomplete');
+  if (logoTextStatus === 'incorrect') mismatchTypes.push('logo_text_error');
+  if (qualityIssues.length) mismatchTypes.push('quality_issue');
 
   const unverified = detectedFamily === 'unknown' || visibleEvidence.length === 0;
   const status = unverified ? 'unverified' : mismatchTypes.length ? 'failed' : 'passed';
@@ -62,6 +77,10 @@ export function validateVNextDeliverableEvidence({
     forbiddenItemsFound,
     lockedAssetViolations,
     brandMatch,
+    brandToneMatch,
+    sceneCompleteness,
+    logoTextStatus,
+    qualityIssues,
     mismatchTypes,
     retryRecommended: status === 'failed' && mismatchTypes.some((type) => [
       'wrong_family',
@@ -69,6 +88,10 @@ export function validateVNextDeliverableEvidence({
       'missing_required_structure',
       'forbidden_content',
       'locked_asset_violation',
+      'brand_tone_mismatch',
+      'scene_incomplete',
+      'logo_text_error',
+      'quality_issue',
     ].includes(type)),
     validatorId: VNEXT_DELIVERABLE_VALIDATOR_ID,
     validatorVersion: VNEXT_DELIVERABLE_VALIDATOR_VERSION,
@@ -94,6 +117,18 @@ export function compileVNextCorrectionPrompt({
     ...validation.missingRequiredItems.map((item) => `Missing required structure: ${item}.`),
     ...validation.lockedAssetViolations.map((item) => `Restore locked requirement: ${item}.`),
     ...validation.forbiddenItemsFound.map((item) => `Do not show: ${item}.`),
+    validation.mismatchTypes.includes('brand_tone_mismatch')
+      ? 'Restore the confirmed project tone and remove generic category styling.'
+      : '',
+    validation.mismatchTypes.includes('scene_incomplete')
+      ? 'Rebuild a complete, continuous and functionally legible scene.'
+      : '',
+    validation.mismatchTypes.includes('logo_text_error')
+      ? taskContract.logoUsageMode === 'reference'
+        ? 'Use only the supplied identity reference; do not invent or repeat logos or text.'
+        : 'Remove every logo, letter, word and pseudo-text; keep only a clean placement area.'
+      : '',
+    ...list(validation.qualityIssues).map((item) => `Repair visible quality issue: ${item}.`),
   ].filter(Boolean);
   return [
     originalPrompt.trim(),

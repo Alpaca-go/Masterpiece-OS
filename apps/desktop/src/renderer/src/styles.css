@@ -348,6 +348,9 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .prompt-source-summary small, .prompt-block-list small { color: #847d88; font-size: 9px; }
 .prompt-block-list { display: grid; gap: 6px; margin-top: 10px; }
 .prompt-block-list small { margin-top: 4px; overflow-wrap: anywhere; }
+.validation-summary { margin: 12px 0; padding: 12px; border-radius: 8px; background: #f3eff8; }
+.validation-summary p { margin: 5px 0 0; color: #756c7e; font-size: 10px; }
+.result-feedback { margin-top: 8px; flex-wrap: wrap; }
 .review-notes { margin: 14px 0; }
 .generation-actions { margin-top: 22px; }
 .image-generation-grid { grid-template-columns: minmax(420px, 1.3fr) minmax(300px, .9fr) minmax(300px, .9fr); }
