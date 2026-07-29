@@ -32,7 +32,24 @@ export type {
 } from '../../../../packages/project-contracts/src/index';
 
 export type ProviderKind = string;
-export type ApiProtocol = 'openai-chat-multimodal' | 'dashscope-wan-image';
+export type ApiProtocol =
+  | 'openai-chat-multimodal'
+  | 'dashscope-wan-image'
+  | 'openai-image-generation'
+  | 'google-gemini-image'
+  | 'seedream-image';
+export type ModelType = 'analysis' | 'image_generation';
+export interface ModelRegistryEntry {
+  id: string;
+  name: string;
+  type: ModelType;
+  provider: string;
+  protocol: ApiProtocol;
+  capabilities: string[];
+  referenceSupport: boolean;
+  enabledByDefault: boolean;
+  legacyCompatible?: boolean;
+}
 export type OutputLanguage = 'zh-CN' | 'en';
 export type AnalysisProfile = 'fusion-enhanced';
 export type ProjectStatus = 'draft' | 'ready' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -74,6 +91,10 @@ export interface ApiProfile {
   displayName: string;
   provider: ProviderKind;
   protocol?: ApiProtocol;
+  modelType?: ModelType;
+  registryModelId?: string;
+  capabilities?: string[];
+  referenceSupport?: boolean;
   modelId: string;
   baseUrl: string;
   credentialKey: string;
@@ -91,6 +112,8 @@ export interface SaveApiProfileInput {
   displayName: string;
   provider: ProviderKind;
   protocol: ApiProtocol;
+  modelType: ModelType;
+  registryModelId?: string;
   modelId: string;
   baseUrl: string;
   apiKey?: string;
@@ -100,6 +123,7 @@ export interface SaveApiProfileInput {
 
 export interface PublicSettings {
   profiles: ApiProfile[];
+  modelRegistry?: ModelRegistryEntry[];
   defaultProfileId: string | null;
   provider: ProviderKind;
   baseUrl: string;

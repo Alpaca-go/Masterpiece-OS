@@ -19,6 +19,8 @@ function profileInput(profile?: ApiProfile): SaveApiProfileInput {
     displayName: profile?.displayName || '',
     provider: profile?.provider || '',
     protocol: profile?.protocol || 'openai-chat-multimodal',
+    modelType: profile?.modelType || 'analysis',
+    registryModelId: profile?.registryModelId,
     modelId: profile?.modelId || '',
     baseUrl: profile?.baseUrl || '',
     apiKey: '',
@@ -34,6 +36,7 @@ function statusLabel(profile: ApiProfile): string {
 }
 
 export function SettingsPanel({ settings, onSaved, onClose }: Props) {
+  const registry = settings.modelRegistry ?? [];
   const [localForm, setLocalForm] = useState<SaveSettingsInput>({
     defaultDataPath: settings.defaultDataPath,
     cacheEnabled: settings.cacheEnabled,
@@ -49,6 +52,18 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   };
   const updateProfile = <K extends keyof SaveApiProfileInput>(key: K, value: SaveApiProfileInput[K]) => {
     setEditor((current) => current ? { ...current, [key]: value } : current);
+  };
+  const selectRegistryModel = (registryModelId: string) => {
+    const model = registry.find((item) => item.id === registryModelId);
+    setEditor((current) => current && model ? {
+      ...current,
+      registryModelId: model.id,
+      displayName: current.displayName || model.name,
+      provider: model.provider,
+      protocol: model.protocol,
+      modelType: model.type,
+      modelId: model.id,
+    } : current ? { ...current, registryModelId: undefined } : current);
   };
 
   async function perform(key: string, action: () => Promise<PublicSettings>, message: string) {
@@ -111,7 +126,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
 
   return <div className="page settings-page">
     <header className="page-header">
-      <div><p className="eyebrow">SYSTEM SETTINGS</p><h1>API 与模型</h1><p>每个 Profile 的 Key 独立加密，不进入设置 JSON、项目、报告或日志。</p></div>
+      <div><p className="eyebrow">MODEL CENTER</p><h1>API 与模型</h1><p>分析模型与生成模型职责隔离；每个 Provider Key 独立加密。</p></div>
       <button className="button ghost" onClick={onClose}>返回</button>
     </header>
 
@@ -121,7 +136,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
       <section className="panel form-panel">
         <div className="section-heading">
           <span>01</span>
-          <div><h2>API Profile 列表</h2><p>可新增、编辑、测试、启停并设置默认配置</p></div>
+          <div><h2>Provider Manager</h2><p>可新增、编辑、测试、启停并设置默认配置</p></div>
           <button className="button text-button" onClick={() => { setEditor(profileInput()); setShowKey(false); }}>+ 添加 API 配置</button>
         </div>
 
@@ -132,11 +147,11 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
                 <span className={`status-dot ${profile.lastTestStatus === 'success' ? 'connected' : profile.lastTestStatus === 'failed' ? 'failed' : 'untested'}`} />
                 <strong>{profile.displayName}</strong>
               </div>
-              <div className="profile-tags">{profile.isDefault && <span>默认</span>}{!profile.isEnabled && <span>已停用</span>}</div>
+              <div className="profile-tags"><span>{profile.modelType === 'image_generation' ? '生成模型' : '分析模型'}</span>{profile.isDefault && <span>默认</span>}{!profile.isEnabled && <span>已停用</span>}</div>
             </div>
             <dl>
               <div><dt>Provider</dt><dd>{profile.provider}</dd></div>
-              <div><dt>协议</dt><dd>{profile.protocol === 'dashscope-wan-image' ? 'DashScope Wan 图像生成' : 'OpenAI 兼容多模态'}</dd></div>
+              <div><dt>协议</dt><dd>{profile.protocol}</dd></div>
               <div><dt>Model</dt><dd>{profile.modelId}</dd></div>
               <div><dt>状态</dt><dd>{statusLabel(profile)} · {profile.hasApiKey ? 'Key 已保存' : '缺少 Key'}</dd></div>
             </dl>
@@ -152,8 +167,14 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
 
         {editor && <div className="profile-editor">
           <div className="section-heading compact"><span>+</span><div><h2>{editor.id ? '编辑 API 配置' : '新增 API 配置'}</h2><p>API Key 留空时保留已保存的凭据</p></div></div>
+          <label>Registry 模型<select value={editor.registryModelId || ''} onChange={(event) => selectRegistryModel(event.target.value)}>
+            <option value="">自定义模型</option>
+            <optgroup label="Analysis Models">{registry.filter((model) => model.type === 'analysis').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
+            <optgroup label="Generation Models">{registry.filter((model) => model.type === 'image_generation').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
+          </select></label>
+          <label>模型职责<select value={editor.modelType} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('modelType', event.target.value as SaveApiProfileInput['modelType'])}><option value="analysis">Analysis Model</option><option value="image_generation">Generation Model</option></select></label>
           <label>配置名称<input value={editor.displayName} placeholder="例如：千问 VL Plus / GPT Vision / 本地模型" onChange={(event) => updateProfile('displayName', event.target.value)} /></label>
-          <label>调用协议<select value={editor.protocol} onChange={(event) => updateProfile('protocol', event.target.value as SaveApiProfileInput['protocol'])}><option value="openai-chat-multimodal">OpenAI 兼容多模态（分析 / 视觉理解）</option><option value="dashscope-wan-image">DashScope Wan 原生图像生成</option></select><small className="field-help">协议决定连接测试和请求格式；Provider 仅用于标识与记录。</small></label>
+          <label>调用协议<select value={editor.protocol} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('protocol', event.target.value as SaveApiProfileInput['protocol'])}><option value="openai-chat-multimodal">OpenAI 兼容多模态</option><option value="openai-image-generation">OpenAI Image Generation</option><option value="google-gemini-image">Google Gemini Image</option><option value="seedream-image">Seedream Image</option><option value="dashscope-wan-image">DashScope Wan Image</option></select><small className="field-help">协议决定连接测试和 Adapter 请求格式。</small></label>
           <label>Provider 标识<input list="provider-suggestions" value={editor.provider} placeholder="自由输入，例如 aliyun-bailian" onChange={(event) => updateProfile('provider', event.target.value)} /><small className="field-help">仅作为配置与运行记录标识，不限制厂商；请求协议需兼容 OpenAI Chat Completions。</small></label>
           <datalist id="provider-suggestions">
             <option value="aliyun-bailian" />
@@ -180,7 +201,10 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
       </section>
 
       <aside className="panel side-panel">
-        <div className="section-heading"><span>02</span><div><h2>本地行为</h2><p>项目数据始终位于仓库之外</p></div></div>
+        <div className="section-heading"><span>02</span><div><h2>Model Registry</h2><p>Think Once, Compile Many</p></div></div>
+        <div className="security-card"><strong>Analysis Models</strong><p>{registry.filter((model) => model.type === 'analysis').map((model) => model.name).join(' · ') || '未注册'}</p></div>
+        <div className="security-card"><strong>Generation Models</strong><p>{registry.filter((model) => model.type === 'image_generation' && model.enabledByDefault).map((model) => model.name).join(' · ') || '未注册'}</p></div>
+        <div className="section-heading"><span>03</span><div><h2>本地行为</h2><p>项目数据始终位于仓库之外</p></div></div>
         <label>项目数据目录<input value={localForm.defaultDataPath} onChange={(event) => updateLocal('defaultDataPath', event.target.value)} /></label>
         <label className="toggle"><input type="checkbox" checked={localForm.cacheEnabled} onChange={(event) => updateLocal('cacheEnabled', event.target.checked)} /><span>启用视觉准备与精确结果缓存</span></label>
         <label>日志级别<select value={localForm.logLevel} onChange={(event) => updateLocal('logLevel', event.target.value as SaveSettingsInput['logLevel'])}><option value="error">仅错误</option><option value="info">标准</option><option value="debug">调试</option></select></label>

@@ -9,12 +9,18 @@ import type {
   AnalysisPipelineMode,
   ConnectionTestResult,
   DirectionGenerationMode,
+  ModelType,
   ProviderKind,
   PublicSettings,
   SaveApiProfileInput,
   SaveSettingsInput
 } from '../shared/types';
 import { redactSecret } from './analysis-contract';
+import {
+  inferModelType,
+  listRegisteredModels,
+  validateModelProfile,
+} from '../../../../packages/model-registry/src/index.js';
 
 interface StoredProfile extends Omit<ApiProfile, 'hasApiKey'> {}
 
@@ -46,6 +52,28 @@ function inferProtocol(provider: string, modelId: string): ApiProtocol {
   return provider.trim().toLowerCase() === 'dashscope' || /^wan2\.7-image(?:-|$)/i.test(modelId.trim())
     ? 'dashscope-wan-image'
     : 'openai-chat-multimodal';
+}
+
+interface ModelProfileMetadata {
+  modelType: ModelType;
+  registryModelId?: string;
+  capabilities: string[];
+  referenceSupport: boolean;
+}
+
+function modelProfileMetadata(input: {
+  modelId?: string;
+  registryModelId?: string;
+  modelType?: string;
+  protocol?: string;
+}): ModelProfileMetadata {
+  const value = validateModelProfile(input);
+  return {
+    modelType: value.modelType as ModelType,
+    ...(value.registryModelId ? { registryModelId: value.registryModelId } : {}),
+    capabilities: [...value.capabilities],
+    referenceSupport: value.referenceSupport,
+  };
 }
 
 export interface ProviderCredentials {
@@ -114,6 +142,12 @@ async function migrateLegacy(value: LegacySettings): Promise<StoredSettings> {
       displayName: value.model || '默认 API 配置',
       provider: value.provider || 'openai-compatible',
       protocol: inferProtocol(value.provider || '', value.model || ''),
+      modelType: inferModelType({
+        modelId: value.model || '',
+        protocol: inferProtocol(value.provider || '', value.model || ''),
+      }),
+      capabilities: [],
+      referenceSupport: false,
       modelId: value.model || '',
       baseUrl: value.baseUrl || '',
       credentialKey: `masterpiece-os/${id}`,
@@ -148,7 +182,16 @@ async function readStored(): Promise<StoredSettings> {
       ...profile,
       provider: String(profile.provider || 'openai-compatible').trim(),
       protocol: profile.protocol === 'dashscope-wan-image' || profile.protocol === 'openai-chat-multimodal'
+        || profile.protocol === 'openai-image-generation'
+        || profile.protocol === 'google-gemini-image'
+        || profile.protocol === 'seedream-image'
         ? profile.protocol : inferProtocol(String(profile.provider || ''), profile.modelId || ''),
+      ...modelProfileMetadata({
+        modelId: profile.modelId,
+        registryModelId: profile.registryModelId,
+        modelType: profile.modelType,
+        protocol: profile.protocol || inferProtocol(String(profile.provider || ''), profile.modelId || ''),
+      }),
       credentialKey: profile.credentialKey || `masterpiece-os/${profile.id}`,
       isEnabled: profile.isEnabled !== false,
       isDefault: profile.id === stored.defaultProfileId
@@ -171,6 +214,10 @@ async function publicSettings(settings: StoredSettings): Promise<PublicSettings>
     || null;
   return {
     profiles,
+    modelRegistry: listRegisteredModels().map((model) => ({
+      ...model,
+      capabilities: [...model.capabilities],
+    })),
     defaultProfileId: defaultProfile?.id || null,
     provider: defaultProfile?.provider || '',
     baseUrl: defaultProfile?.baseUrl || '',
@@ -227,7 +274,14 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
 function validateProfileInput(input: SaveApiProfileInput): void {
   if (!input.displayName.trim()) throw new Error('配置名称不能为空');
   if (!input.provider.trim()) throw new Error('Provider 标识不能为空');
-  if (input.protocol !== 'openai-chat-multimodal' && input.protocol !== 'dashscope-wan-image') throw new Error('API 协议类型无效');
+  if (![
+    'openai-chat-multimodal',
+    'dashscope-wan-image',
+    'openai-image-generation',
+    'google-gemini-image',
+    'seedream-image',
+  ].includes(input.protocol)) throw new Error('API 协议类型无效');
+  modelProfileMetadata(input);
   if (!input.baseUrl.trim()) throw new Error('Base URL 不能为空');
   if (!input.modelId.trim()) throw new Error('Model ID 不能为空');
   if (input.isDefault && !input.isEnabled) throw new Error('默认 API Profile 必须保持启用');
@@ -252,6 +306,7 @@ export async function saveApiProfile(input: SaveApiProfileInput): Promise<Public
     displayName: input.displayName.trim(),
     provider: input.provider.trim(),
     protocol: input.protocol,
+    ...modelProfileMetadata(input),
     modelId: input.modelId.trim(),
     baseUrl: input.baseUrl.trim(),
     credentialKey: `masterpiece-os/${id}`,
