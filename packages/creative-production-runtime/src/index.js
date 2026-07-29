@@ -52,6 +52,9 @@ export {
 } from './generation-prompt.js';
 export {
   CREATIVE_READING_PROMPT_VERSION,
+  ANALYSIS_POOL_TARGET_MIN,
+  ANALYSIS_POOL_TARGET_MAX,
+  selectAnalysisPool,
   buildCreativeReadingPrompt,
   parseCreativeReadingResponse,
   normalizeCreativeUnderstanding,

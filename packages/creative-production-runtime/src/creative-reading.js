@@ -5,6 +5,38 @@ function strings(value) {
   return [...new Set((Array.isArray(value) ? value : []).map(text).filter(Boolean))];
 }
 
+export const ANALYSIS_POOL_TARGET_MIN = 6;
+export const ANALYSIS_POOL_TARGET_MAX = 20;
+
+export function selectAnalysisPool(assets, priorityAssetIds = []) {
+  const all = Array.isArray(assets) ? assets.filter((asset) => text(asset?.id)) : [];
+  const priority = new Set((Array.isArray(priorityAssetIds) ? priorityAssetIds : []).map(text));
+  const selected = all.filter((asset) => priority.has(text(asset.id))).slice(0, ANALYSIS_POOL_TARGET_MAX);
+  const remaining = all.filter((asset) => !selected.includes(asset));
+  const availableSlots = ANALYSIS_POOL_TARGET_MAX - selected.length;
+  for (let slot = 0; slot < availableSlots && remaining.length; slot += 1) {
+    const position = availableSlots <= 1
+      ? Math.floor((remaining.length - 1) / 2)
+      : Math.round(slot * (remaining.length - 1) / (availableSlots - 1));
+    const candidate = remaining[position];
+    if (candidate && !selected.includes(candidate)) selected.push(candidate);
+  }
+  for (const candidate of remaining) {
+    if (selected.length >= Math.min(ANALYSIS_POOL_TARGET_MAX, all.length)) break;
+    if (!selected.includes(candidate)) selected.push(candidate);
+  }
+  const selectedIds = new Set(selected.map((asset) => text(asset.id)));
+  return {
+    inputCount: all.length,
+    selectedCount: selected.length,
+    targetMin: ANALYSIS_POOL_TARGET_MIN,
+    targetMax: ANALYSIS_POOL_TARGET_MAX,
+    status: selected.length >= ANALYSIS_POOL_TARGET_MIN ? 'ready' : 'insufficient_assets',
+    selected,
+    excluded: all.filter((asset) => !selectedIds.has(text(asset.id))),
+  };
+}
+
 export function buildCreativeReadingPrompt(input) {
   const assets = input.assets.map((asset) => `- ${asset.id} | ${asset.name}`).join('\n');
   return `你是负责该项目视觉升级的创意总监。完整阅读原始视觉设计方案、视觉分析升级报告和项目上下文。

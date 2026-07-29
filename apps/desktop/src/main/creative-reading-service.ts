@@ -10,6 +10,7 @@ import {
   compileCreativeUnderstandingMarkdown,
   normalizeCreativeUnderstanding,
   parseCreativeReadingResponse,
+  selectAnalysisPool,
 } from '../../../../packages/creative-production-runtime/src/creative-reading.js';
 import { createQwenReasoner } from '../../../../packages/model-runtime/src/qwen-reasoner.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
@@ -85,12 +86,18 @@ export function createCreativeReadingService(
         code: 'READING_ASSETS_MISSING',
       });
     }
+    const analysisPool = selectAnalysisPool(
+      imageAssets,
+      locks.map((asset) => asset.sourceAssetId).filter(Boolean),
+    );
+    const analysisAssets = analysisPool.selected;
+    const analysisAssetIds = new Set(analysisAssets.map((asset) => asset.id));
     await fs.mkdir(target.root, { recursive: true });
     const prompt = buildCreativeReadingPrompt({
       visualContext,
       reportText,
       lockedAssets: locks,
-      assets: imageAssets.map((asset) => ({ id: asset.id, name: asset.originalName })),
+      assets: analysisAssets.map((asset) => ({ id: asset.id, name: asset.originalName })),
     });
     await writeJson(target.inputSnapshot, {
       schemaVersion: '1.0',
@@ -99,10 +106,20 @@ export function createCreativeReadingService(
       reportPath: path.relative(target.projectRoot, reportPath).replaceAll('\\', '/'),
       visualContextPath: path.relative(target.projectRoot, visualContextPath).replaceAll('\\', '/'),
       lockedAssetIds: locks.map((asset) => asset.id),
+      analysisPool: {
+        inputCount: analysisPool.inputCount,
+        selectedCount: analysisPool.selectedCount,
+        targetMin: analysisPool.targetMin,
+        targetMax: analysisPool.targetMax,
+        status: analysisPool.status,
+        selectedAssetIds: analysisAssets.map((asset) => asset.id),
+        excludedAssetIds: analysisPool.excluded.map((asset) => asset.id),
+      },
       assets: imageAssets.map((asset) => ({
         id: asset.id,
         name: asset.originalName,
         relativePath: asset.relativePath,
+        includedInAnalysisPool: analysisAssetIds.has(asset.id),
       })),
       createdAt: new Date().toISOString(),
     });
@@ -117,7 +134,7 @@ export function createCreativeReadingService(
       model: credentials.model,
       baseUrl: credentials.baseUrl,
     });
-    const attachments = imageAssets.map((asset) => ({
+    const attachments = analysisAssets.map((asset) => ({
       assetId: asset.id,
       path: path.join(target.input, asset.relativePath),
       mediaType: 'image',
@@ -151,7 +168,7 @@ export function createCreativeReadingService(
       try {
         understanding = normalizeCreativeUnderstanding(
           parseCreativeReadingResponse(raw),
-          imageAssets.map((asset) => asset.id),
+          analysisAssets.map((asset) => asset.id),
         ) as CreativeUnderstanding;
         break;
       } catch (error) {

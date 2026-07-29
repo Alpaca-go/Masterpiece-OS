@@ -23,15 +23,15 @@
       "properties": {
         "input_count": { "type": "integer", "minimum": 0 },
         "eligible_count": { "type": "integer", "minimum": 0 },
-        "selected_count": { "type": "integer", "minimum": 0, "maximum": 8 },
-        "target_min": { "const": 5 },
-        "target_max": { "const": 8 },
+        "selected_count": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "target_min": { "const": 3 },
+        "target_max": { "const": 5 },
         "status": { "enum": ["ready", "insufficient_eligible_assets"] }
       }
     },
     "items": {
       "type": "array",
-      "maxItems": 8,
+      "maxItems": 5,
       "items": {
         "type": "object",
         "additionalProperties": false,

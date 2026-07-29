@@ -3,8 +3,8 @@ import path from 'node:path';
 import { validateVisualMemory } from './visual-memory.js';
 
 export const REFERENCE_PACK_COMPILER_VERSION = 'reference-pack-1.0.0';
-const TARGET_MIN = 5;
-const TARGET_MAX = 8;
+const TARGET_MIN = 3;
+const TARGET_MAX = 5;
 
 function text(value) {
   return String(value ?? '').trim();
@@ -137,7 +137,7 @@ export function compileReferencePack(input, now = new Date().toISOString()) {
         source_path: relative(item.source_path),
         reason: item.role === 'ignore_reference'
           ? item.rationale
-          : '超过 Reference Pack 5–8 张上限，保留在 Visual Memory 中但不进入执行包。',
+          : '超过 Generation Reference Pool 3–5 张上限，保留在 Visual Memory 中但不进入执行包。',
       })),
     created_at: now,
   };
@@ -179,7 +179,7 @@ export function validateReferencePack(pack) {
 }
 
 /**
- * 5–8 张 Reference Pack 是可审计候选集；最终 Provider 按任务最多取 2 张。
+ * 3–5 张 Generation Reference Pool 是可审计候选集；最终 Provider 按任务最多取 2 张。
  * 旧 style 图片不会默认进入 Provider，以免重新引入 Reference Dilution。
  */
 export function selectProviderReferencesFromPack(pack, outputType) {

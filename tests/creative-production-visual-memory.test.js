@@ -82,8 +82,8 @@ test('Visual Memory compresses analysis, direction and asset roles without losin
   const memory = compileVisualMemory(fixture(), '2026-07-28T00:02:00.000Z');
   assert.equal(validateVisualMemory(memory), memory);
   assert.equal(memory.source.compiler_version, VISUAL_MEMORY_COMPILER_VERSION);
-  assert.equal(memory.reference_strategy.pack_size.min, 5);
-  assert.equal(memory.reference_strategy.pack_size.max, 8);
+  assert.equal(memory.reference_strategy.pack_size.min, 3);
+  assert.equal(memory.reference_strategy.pack_size.max, 5);
   assert.equal(memory.reference_strategy.provider_reference_limit, 2);
   assert.equal(memory.reference_strategy.candidates.find((item) => item.asset_id === 'logo').role, 'keep_reference');
   assert.equal(memory.reference_strategy.candidates.find((item) => item.asset_id === 'bad').role, 'ignore_reference');

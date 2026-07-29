@@ -69,8 +69,8 @@
           "additionalProperties": false,
           "required": ["min", "max"],
           "properties": {
-            "min": { "const": 5 },
-            "max": { "const": 8 }
+            "min": { "const": 3 },
+            "max": { "const": 5 }
           }
         },
         "provider_reference_limit": { "const": 2 },

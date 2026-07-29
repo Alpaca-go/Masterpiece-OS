@@ -94,7 +94,9 @@ export function compileVisualMemory(input, now = new Date().toISOString()) {
     .map((item) => [text(item.sourceAssetId), item]));
 
   const candidates = assets
-    .filter((asset) => /^image\//iu.test(text(asset.mimeType)) && text(asset.status || 'ready') === 'ready')
+    .filter((asset) => /^image\//iu.test(text(asset.mimeType))
+      && text(asset.status || 'ready') === 'ready'
+      && (readingById.has(text(asset.id)) || lockedBySourceId.has(text(asset.id))))
     .map((asset) => {
       const assetId = text(asset.id);
       const reading = readingById.get(assetId);
@@ -170,7 +172,7 @@ export function compileVisualMemory(input, now = new Date().toISOString()) {
       direction.materialStrategy,
     ]),
     reference_strategy: {
-      pack_size: { min: 5, max: 8 },
+      pack_size: { min: 3, max: 5 },
       provider_reference_limit: 2,
       candidates,
     },
@@ -229,8 +231,8 @@ export function validateVisualMemory(memory) {
   for (const field of ['preserve', 'transform', 'avoid']) {
     stringArray(memory.generation_rules?.[field], `generation_rules.${field}`);
   }
-  if (memory.reference_strategy?.pack_size?.min !== 5
-    || memory.reference_strategy?.pack_size?.max !== 8
+  if (memory.reference_strategy?.pack_size?.min !== 3
+    || memory.reference_strategy?.pack_size?.max !== 5
     || memory.reference_strategy?.provider_reference_limit !== 2
     || !Array.isArray(memory.reference_strategy?.candidates)) {
     throw Object.assign(new Error('Visual Memory reference_strategy 无效。'), {

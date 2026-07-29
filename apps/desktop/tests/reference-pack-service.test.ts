@@ -32,7 +32,7 @@ test('Reference Pack service creates locked/style/exclude/anchor folders and cop
     visual_problems: [],
     visual_opportunities: [],
     reference_strategy: {
-      pack_size: { min: 5, max: 8 },
+      pack_size: { min: 3, max: 5 },
       provider_reference_limit: 2,
       candidates,
     },
@@ -52,7 +52,7 @@ test('Reference Pack service creates locked/style/exclude/anchor folders and cop
     { getActive: async () => null } as never,
   );
   const pack = await service.build('p1');
-  assert.equal(pack.items.length, 8);
+  assert.equal(pack.items.length, 5);
   for (const folder of ['locked', 'style', 'exclude', 'anchor']) {
     assert.ok(await fs.stat(path.join(root, 'visual-memory', 'reference-pack', folder)));
   }

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   buildCreativeReadingPrompt,
   normalizeCreativeUnderstanding,
+  selectAnalysisPool,
 } from '../packages/creative-production-runtime/src/creative-reading.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
@@ -66,4 +67,19 @@ test('Creative Understanding rejects missing or invented asset classifications',
   assert.throws(() => normalizeCreativeUnderstanding(valid({
     assetReadingSummary: [{ assetId: 'invented', summary: '虚构', recommendedUsage: 'reading_only' }],
   }), ['logo', 'poster'], NOW), { code: 'ASSET_READING_SUMMARY_INVALID' });
+});
+
+test('Analysis Pool keeps priority assets and bounds multimodal inputs to 6-20 images', () => {
+  const assets = Array.from({ length: 30 }, (_, index) => ({ id: `asset-${index}` }));
+  const pool = selectAnalysisPool(assets, ['asset-29', 'asset-0']);
+  assert.equal(pool.inputCount, 30);
+  assert.equal(pool.selectedCount, 20);
+  assert.equal(pool.status, 'ready');
+  assert.ok(pool.selected.some((asset) => asset.id === 'asset-29'));
+  assert.ok(pool.selected.some((asset) => asset.id === 'asset-0'));
+  assert.equal(pool.excluded.length, 10);
+
+  const small = selectAnalysisPool(assets.slice(0, 4));
+  assert.equal(small.selectedCount, 4);
+  assert.equal(small.status, 'insufficient_assets');
 });

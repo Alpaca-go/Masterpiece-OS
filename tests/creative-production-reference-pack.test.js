@@ -79,7 +79,7 @@ function memoryWithAssets(count = 30) {
   });
 }
 
-test('Reference Selection compresses 30 inputs to a diverse 5–8 image pack', () => {
+test('Reference Selection compresses 30 inputs to a diverse 3–5 image generation pool', () => {
   const pack = compileReferencePack({
     visualMemory: memoryWithAssets(),
     anchors: [{
@@ -91,7 +91,7 @@ test('Reference Selection compresses 30 inputs to a diverse 5–8 image pack', (
   });
   assert.equal(validateReferencePack(pack), pack);
   assert.equal(pack.selection.input_count, 30);
-  assert.ok(pack.items.length >= 5 && pack.items.length <= 8);
+  assert.ok(pack.items.length >= 3 && pack.items.length <= 5);
   assert.equal(pack.selection.status, 'ready');
   assert.ok(pack.items.some((item) => item.role === 'anchor'));
   assert.ok(pack.items.some((item) => item.role === 'locked'));
@@ -118,11 +118,11 @@ test('Provider selection uses at most two task-specific references and never sen
   assert.deepEqual(vi.map((item) => item.role), ['locked']);
 });
 
-test('Reference Pack schema is closed and caps items at eight', () => {
+test('Reference Pack schema is closed and caps the generation pool at five', () => {
   const schema = JSON.parse(fs.readFileSync(
     new URL('../schemas/creative-production/reference-pack.schema.json', import.meta.url),
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);
-  assert.equal(schema.properties.items.maxItems, 8);
+  assert.equal(schema.properties.items.maxItems, 5);
 });

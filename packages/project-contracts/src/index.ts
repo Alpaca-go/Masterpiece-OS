@@ -232,7 +232,7 @@ export interface VisualMemory {
   visual_problems: string[];
   visual_opportunities: string[];
   reference_strategy: {
-    pack_size: { min: 5; max: 8 };
+    pack_size: { min: 3; max: 5 };
     provider_reference_limit: 2;
     candidates: VisualMemoryReferenceCandidate[];
   };
@@ -273,8 +273,8 @@ export interface ReferencePack {
     input_count: number;
     eligible_count: number;
     selected_count: number;
-    target_min: 5;
-    target_max: 8;
+    target_min: 3;
+    target_max: 5;
     status: 'ready' | 'insufficient_eligible_assets';
   };
   items: ReferencePackItem[];

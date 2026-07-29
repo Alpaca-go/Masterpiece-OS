@@ -100,6 +100,19 @@ test('Creative Reading performs multimodal understanding only and persists all f
       'reading-input-snapshot.json',
       'reading-response.raw.txt',
     ]) await fs.access(path.join(result.outputRoot, filename));
+    const snapshot = JSON.parse(await fs.readFile(
+      path.join(result.outputRoot, 'reading-input-snapshot.json'),
+      'utf8',
+    ));
+    assert.deepEqual(snapshot.analysisPool, {
+      inputCount: 2,
+      selectedCount: 2,
+      targetMin: 6,
+      targetMax: 20,
+      status: 'insufficient_assets',
+      selectedAssetIds: ['logo', 'poster'],
+      excludedAssetIds: [],
+    });
   } finally {
     await fs.rm(temp, { recursive: true, force: true });
   }
