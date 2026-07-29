@@ -18,6 +18,7 @@ import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace'
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
 import { CreativeSessionWorkspace } from './components/CreativeSessionWorkspace';
+import { VNextGenerationWorkspace } from './components/VNextGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
@@ -355,6 +356,25 @@ export function App() {
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
+
+  if (screen === 'creative-session' && selected && settings.imageGenerationPipelineMode !== 'legacy') {
+    const imageProfiles = settings.profiles.filter((profile) =>
+      profile.isEnabled
+      && profile.hasApiKey
+      && profile.modelType === 'image_generation'
+      && profile.protocol === 'seedream-image');
+    const imageApiProfileId = (imageProfiles.some((profile) => profile.id === selectedApiProfileId)
+      ? selectedApiProfileId
+      : (imageProfiles.find((profile) => profile.isDefault) || imageProfiles[0])?.id) || '';
+    return <VNextGenerationWorkspace
+      project={selected}
+      imageProfiles={imageProfiles}
+      imageApiProfileId={imageApiProfileId}
+      onImageApiProfileChange={setSelectedApiProfileId}
+      onBack={() => setScreen('report')}
+      onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
+    />;
+  }
 
   if (screen === 'creative-session' && selected) return <CreativeSessionWorkspace
     project={selected}

@@ -190,7 +190,8 @@ export function createVNextImageGenerationService(
       contextVersion: result.compiledPrompt.projectContextVersion,
       templateIds: Object.keys(result.compiledPrompt.route.templateVersions),
       adapterId: result.compiledPrompt.trace.adapterId,
-      promptCharacters: [...result.compiledPrompt.finalPrompt].length,
+      promptCharacters: result.compiledPrompt.trace.promptCharacters,
+      compileDurationMs: result.compiledPrompt.trace.compileDurationMs,
     }));
     const session = await readSession(input.projectId);
     await saveSession({

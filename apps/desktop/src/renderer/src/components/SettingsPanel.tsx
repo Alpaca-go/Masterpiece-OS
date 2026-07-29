@@ -41,7 +41,8 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   const [localForm, setLocalForm] = useState<SaveSettingsInput>({
     defaultDataPath: settings.defaultDataPath,
     cacheEnabled: settings.cacheEnabled,
-    logLevel: settings.logLevel
+    logLevel: settings.logLevel,
+    imageGenerationPipelineMode: settings.imageGenerationPipelineMode ?? 'vnext'
   });
   const [editor, setEditor] = useState<SaveApiProfileInput | null>(null);
   const [showKey, setShowKey] = useState(false);
@@ -235,6 +236,19 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
         <label>项目数据目录<input value={localForm.defaultDataPath} onChange={(event) => updateLocal('defaultDataPath', event.target.value)} /></label>
         <label className="toggle"><input type="checkbox" checked={localForm.cacheEnabled} onChange={(event) => updateLocal('cacheEnabled', event.target.checked)} /><span>启用视觉准备与精确结果缓存</span></label>
         <label>日志级别<select value={localForm.logLevel} onChange={(event) => updateLocal('logLevel', event.target.value as SaveSettingsInput['logLevel'])}><option value="error">仅错误</option><option value="info">标准</option><option value="debug">调试</option></select></label>
+        <label>生图主链路
+          <select
+            value={localForm.imageGenerationPipelineMode ?? 'vnext'}
+            onChange={(event) => updateLocal(
+              'imageGenerationPipelineMode',
+              event.target.value as SaveSettingsInput['imageGenerationPipelineMode'],
+            )}
+          >
+            <option value="vnext">vNext 短链路（默认）</option>
+            <option value="legacy">Legacy 旧链路（回滚）</option>
+          </select>
+          <small className="field-help">切换时保留两套历史数据，不删除已有运行记录。</small>
+        </label>
         <button className="button primary full" disabled={Boolean(busy)} onClick={() => void saveLocal()}>{busy === 'local' ? '保存中…' : '保存本地设置'}</button>
         <div className="security-card"><strong>Windows 安全存储</strong><p>每个 API Key 使用 Electron safeStorage 加密后独立保存，仅在主进程发起请求时短暂解密。删除 Profile 会同步删除对应凭据。</p></div>
       </aside>

@@ -3,7 +3,7 @@ export const IMAGE_GENERATION_PIPELINE_MODES = Object.freeze({
   VNEXT: 'vnext',
 });
 
-export function resolveImageGenerationPipelineMode(value, fallback = IMAGE_GENERATION_PIPELINE_MODES.LEGACY) {
+export function resolveImageGenerationPipelineMode(value, fallback = IMAGE_GENERATION_PIPELINE_MODES.VNEXT) {
   const normalized = String(value ?? '').trim().toLowerCase();
   if (!normalized) return fallback;
   if (Object.values(IMAGE_GENERATION_PIPELINE_MODES).includes(normalized)) return normalized;

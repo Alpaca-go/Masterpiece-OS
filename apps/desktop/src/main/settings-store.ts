@@ -8,6 +8,7 @@ import type {
   AnalysisPipelineMode,
   ConnectionTestResult,
   DirectionGenerationMode,
+  ImageGenerationPipelineMode,
   ModelType,
   ProviderKind,
   PublicSettings,
@@ -31,10 +32,12 @@ interface StoredSettings {
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode: DirectionGenerationMode;
   analysisPipelineMode: AnalysisPipelineMode;
+  imageGenerationPipelineMode: ImageGenerationPipelineMode;
 }
 
 const DIRECTION_GENERATION_MODES = Object.freeze(['conceptual_v1', 'execution_oriented_v2']);
 const ANALYSIS_PIPELINE_MODES = Object.freeze(['retrieval_first', 'visual_fact_first_legacy', 'deep_analysis_legacy', 'legacy_deep_analysis', 'visual_fact_first']);
+const IMAGE_GENERATION_PIPELINE_MODES = Object.freeze(['legacy', 'vnext']);
 
 interface LegacySettings {
   provider?: ProviderKind;
@@ -110,7 +113,8 @@ function defaults(): StoredSettings {
     cacheEnabled: true,
     logLevel: 'info',
     directionGenerationMode: 'execution_oriented_v2',
-    analysisPipelineMode: 'retrieval_first'
+    analysisPipelineMode: 'retrieval_first',
+    imageGenerationPipelineMode: 'vnext'
   };
 }
 
@@ -178,6 +182,9 @@ async function readStored(): Promise<StoredSettings> {
     const stored = { ...defaults(), ...(parsed as StoredSettings) };
     if (!DIRECTION_GENERATION_MODES.includes(stored.directionGenerationMode)) stored.directionGenerationMode = 'execution_oriented_v2';
     if (!ANALYSIS_PIPELINE_MODES.includes(stored.analysisPipelineMode)) stored.analysisPipelineMode = 'retrieval_first';
+    if (!IMAGE_GENERATION_PIPELINE_MODES.includes(stored.imageGenerationPipelineMode)) {
+      stored.imageGenerationPipelineMode = 'vnext';
+    }
     stored.profiles = stored.profiles.map((profile) => ({
       ...profile,
       provider: String(profile.provider || 'openai-compatible').trim(),
@@ -228,6 +235,7 @@ async function publicSettings(settings: StoredSettings): Promise<PublicSettings>
     logLevel: settings.logLevel,
     directionGenerationMode: settings.directionGenerationMode,
     analysisPipelineMode: settings.analysisPipelineMode,
+    imageGenerationPipelineMode: settings.imageGenerationPipelineMode,
     connectionStatus: defaultProfile ? profileStatus(defaultProfile) : 'untested'
   };
 }
@@ -266,6 +274,10 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
   }
   if (input.analysisPipelineMode && ANALYSIS_PIPELINE_MODES.includes(input.analysisPipelineMode)) {
     settings.analysisPipelineMode = input.analysisPipelineMode;
+  }
+  if (input.imageGenerationPipelineMode
+    && IMAGE_GENERATION_PIPELINE_MODES.includes(input.imageGenerationPipelineMode)) {
+    settings.imageGenerationPipelineMode = input.imageGenerationPipelineMode;
   }
   await writeStored(settings);
   return publicSettings(settings);

@@ -855,6 +855,8 @@ export interface VNextCompiledPrompt {
     sourceFingerprint: string;
     projectPromptAssetId?: string;
     projectPromptAssetVersion?: number;
+    promptCharacters?: number;
+    compileDurationMs?: number;
   };
 }
 

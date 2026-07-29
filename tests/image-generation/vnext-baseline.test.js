@@ -11,8 +11,12 @@ const fixture = (name) => fileURLToPath(
   new URL(`./fixtures/vnext-baseline/${name}`, import.meta.url),
 );
 
-test('Phase 0 keeps legacy as the explicit default while reserving vNext', () => {
-  assert.equal(resolveImageGenerationPipelineMode(), IMAGE_GENERATION_PIPELINE_MODES.LEGACY);
+test('Phase 0 keeps an explicit legacy rollback after Phase 5 changes the default to vNext', () => {
+  assert.equal(resolveImageGenerationPipelineMode(), IMAGE_GENERATION_PIPELINE_MODES.VNEXT);
+  assert.equal(
+    resolveImageGenerationPipelineMode(undefined, IMAGE_GENERATION_PIPELINE_MODES.LEGACY),
+    IMAGE_GENERATION_PIPELINE_MODES.LEGACY,
+  );
   assert.equal(resolveImageGenerationPipelineMode('vnext'), IMAGE_GENERATION_PIPELINE_MODES.VNEXT);
   assert.throws(
     () => resolveImageGenerationPipelineMode('implicit-anchor-chain'),

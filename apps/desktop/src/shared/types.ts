@@ -52,6 +52,7 @@ export interface ModelRegistryEntry {
   legacyCompatible?: boolean;
 }
 export type OutputLanguage = 'zh-CN' | 'en';
+export type ImageGenerationPipelineMode = 'legacy' | 'vnext';
 export type AnalysisProfile = 'fusion-enhanced';
 export type ProjectStatus = 'draft' | 'ready' | 'running' | 'completed' | 'failed' | 'cancelled';
 export type ProjectNameSource =
@@ -135,6 +136,7 @@ export interface PublicSettings {
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode?: DirectionGenerationMode;
   analysisPipelineMode?: AnalysisPipelineMode;
+  imageGenerationPipelineMode?: ImageGenerationPipelineMode;
   connectionStatus: 'untested' | 'connected' | 'failed';
 }
 
@@ -144,6 +146,7 @@ export interface SaveSettingsInput {
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode?: DirectionGenerationMode;
   analysisPipelineMode?: AnalysisPipelineMode;
+  imageGenerationPipelineMode?: ImageGenerationPipelineMode;
 }
 
 export interface ProjectAsset {
