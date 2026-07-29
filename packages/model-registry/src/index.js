@@ -76,6 +76,7 @@ export function getRegisteredModel(modelId) {
 export function inferModelType(input = {}) {
   const registered = getRegisteredModel(input.registryModelId || input.modelId);
   if (registered) return registered.type;
+  if (text(input.protocol) === 'openai-video-generation') return 'video_generation';
   return [
     'dashscope-wan-image',
     'openai-image-generation',
@@ -88,8 +89,8 @@ export function inferModelType(input = {}) {
 
 export function validateModelProfile(input = {}) {
   const modelType = text(input.modelType) || inferModelType(input);
-  if (!['analysis', 'image_generation'].includes(modelType)) {
-    throw Object.assign(new Error('Model type must be analysis or image_generation.'), {
+  if (!['analysis', 'image_generation', 'video_generation'].includes(modelType)) {
+    throw Object.assign(new Error('Model type must be analysis, image_generation or video_generation.'), {
       code: 'MODEL_TYPE_INVALID',
     });
   }
@@ -108,6 +109,16 @@ export function validateModelProfile(input = {}) {
   }
   if (modelType === 'image_generation' && text(input.protocol) === 'openai-chat-multimodal') {
     throw Object.assign(new Error('Generation models cannot use the analysis protocol.'), {
+      code: 'MODEL_PROFILE_INCOMPATIBLE',
+    });
+  }
+  if (modelType === 'image_generation' && text(input.protocol) === 'openai-video-generation') {
+    throw Object.assign(new Error('Image generation models cannot use the video generation protocol.'), {
+      code: 'MODEL_PROFILE_INCOMPATIBLE',
+    });
+  }
+  if (modelType === 'video_generation' && text(input.protocol) !== 'openai-video-generation') {
+    throw Object.assign(new Error('Video generation models must use the video generation protocol.'), {
       code: 'MODEL_PROFILE_INCOMPATIBLE',
     });
   }

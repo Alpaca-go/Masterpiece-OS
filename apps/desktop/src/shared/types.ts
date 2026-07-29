@@ -37,8 +37,9 @@ export type ApiProtocol =
   | 'dashscope-wan-image'
   | 'openai-image-generation'
   | 'google-gemini-image'
-  | 'seedream-image';
-export type ModelType = 'analysis' | 'image_generation';
+  | 'seedream-image'
+  | 'openai-video-generation';
+export type ModelType = 'analysis' | 'image_generation' | 'video_generation';
 export interface ModelRegistryEntry {
   id: string;
   name: string;
@@ -726,6 +727,17 @@ export interface AnalysisResult {
 export interface ConnectionTestResult {
   ok: boolean;
   message: string;
+  provider: string;
+  requestInterface:
+    | 'chat_completions'
+    | 'image_generation'
+    | 'image_generation_native_probe'
+    | 'video_generation';
+  httpStatus?: number;
+  upstreamErrorCode?: string;
+  upstreamErrorMessage?: string;
+  requestId?: string;
+  responseBody?: string;
   model: string;
   supportsImages: boolean;
   elapsedMs: number;

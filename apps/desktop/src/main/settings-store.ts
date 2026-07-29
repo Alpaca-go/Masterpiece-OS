@@ -2,7 +2,6 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { app, safeStorage } from 'electron';
-import sharp from 'sharp';
 import type {
   ApiProfile,
   ApiProtocol,
@@ -15,7 +14,7 @@ import type {
   SaveApiProfileInput,
   SaveSettingsInput
 } from '../shared/types';
-import { redactSecret } from './analysis-contract';
+import { runProviderConnectionTest } from './provider-connection-test.ts';
 import {
   inferModelType,
   listRegisteredModels,
@@ -80,6 +79,7 @@ export interface ProviderCredentials {
   profileId: string;
   provider: ProviderKind;
   protocol?: ApiProtocol;
+  modelType?: ModelType;
   baseUrl: string;
   model: string;
   apiKey: string;
@@ -280,6 +280,7 @@ function validateProfileInput(input: SaveApiProfileInput): void {
     'openai-image-generation',
     'google-gemini-image',
     'seedream-image',
+    'openai-video-generation',
   ].includes(input.protocol)) throw new Error('API 协议类型无效');
   modelProfileMetadata(input);
   if (!input.baseUrl.trim()) throw new Error('Base URL 不能为空');
@@ -395,132 +396,11 @@ export async function getProviderCredentials(profileId?: string): Promise<Provid
     profileId: profile.id,
     provider: profile.provider,
     protocol: profile.protocol,
+    modelType: profile.modelType,
     baseUrl: profile.baseUrl,
     model: profile.modelId,
     apiKey
   };
-}
-
-function endpoint(baseUrl: string): string {
-  let parsed: URL;
-  try { parsed = new URL(baseUrl); }
-  catch { throw new Error('Base URL 格式无效'); }
-  if (!['https:', 'http:'].includes(parsed.protocol)) throw new Error('Base URL 必须使用 HTTP(S)');
-  return parsed.pathname.endsWith('/chat/completions')
-    ? parsed.toString()
-    : `${parsed.toString().replace(/\/$/, '')}/chat/completions`;
-}
-
-function dashScopeApiBaseUrl(baseUrl: string): string {
-  let parsed: URL;
-  try { parsed = new URL(baseUrl); }
-  catch { throw new Error('Base URL 格式无效'); }
-  if (!['https:', 'http:'].includes(parsed.protocol)) throw new Error('Base URL 必须使用 HTTP(S)');
-
-  // A profile used for text models often stores the OpenAI-compatible URL.
-  // Wan image generation uses the native DashScope /api/v1 API instead.
-  const pathname = parsed.pathname.replace(/\/$/, '');
-  parsed.pathname = /\/compatible-mode\/v1$/i.test(pathname)
-    ? pathname.replace(/\/compatible-mode\/v1$/i, '/api/v1')
-    : (pathname === '' || pathname === '/' ? '/api/v1' : pathname);
-  return parsed.toString().replace(/\/$/, '');
-}
-
-async function dashScopeConnectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
-  const started = performance.now();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25_000);
-  try {
-    const baseUrl = dashScopeApiBaseUrl(credentials.baseUrl?.trim() || 'https://dashscope.aliyuncs.com');
-    const probePath = '/tasks/00000000-0000-0000-0000-000000000000';
-    const response = await fetch(`${baseUrl}${probePath}`, {
-      method: 'GET',
-      headers: { Authorization: `Bearer ${credentials.apiKey}`, 'Content-Type': 'application/json' },
-      signal: controller.signal,
-    });
-    const raw = await response.text();
-    let body: Record<string, unknown> = {};
-    try { body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {}; } catch { /* ignore */ }
-    if (response.status === 401 || response.status === 403) {
-      throw new Error('API Key 无效或无权访问该模型');
-    }
-    // 401/403 之外均视为鉴权通过：404=探针 task 不存在（预期）；400/429=请求或限流但鉴权已通过。
-    if (response.status >= 500) {
-      const providerError = body.error as { message?: string; code?: string } | undefined;
-      const detail = providerError?.message || providerError?.code || response.statusText;
-      throw new Error(`连接失败（HTTP ${response.status}）：${detail}`);
-    }
-    return {
-      ok: true,
-      message: 'DashScope API Key 与业务空间端点可访问；实际生图能力将在首次生成时按同步/异步契约校验',
-      model: credentials.model || 'wan2.7-image-pro',
-      supportsImages: true,
-      elapsedMs: Math.round(performance.now() - started),
-    };
-  } catch (error) {
-    const message = (error as Error).name === 'AbortError'
-      ? '连接测试超时，请检查网络、Base URL 和模型状态'
-      : redactSecret((error as Error).message, credentials.apiKey);
-    throw new Error(message);
-  } finally {
-    clearTimeout(timeout);
-  }
-}
-
-async function connectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
-  if (credentials.protocol === 'dashscope-wan-image') return dashScopeConnectionRequest(credentials);
-  const started = performance.now();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25_000);
-  try {
-    const testImage = await sharp({
-      create: { width: 96, height: 96, channels: 3, background: { r: 112, g: 68, b: 216 } }
-    }).png().toBuffer();
-    const response = await fetch(endpoint(credentials.baseUrl), {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${credentials.apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: credentials.model,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image_url', image_url: { url: `data:image/png;base64,${testImage.toString('base64')}` } },
-            { type: 'text', text: 'Reply with OK if you can read this image.' }
-          ]
-        }],
-        max_tokens: 8,
-        stream: false
-      }),
-      signal: controller.signal
-    });
-    const raw = await response.text();
-    let body: Record<string, unknown> = {};
-    try { body = raw ? JSON.parse(raw) as Record<string, unknown> : {}; } catch { /* bounded below */ }
-    if (!response.ok) {
-      const providerError = body.error as { message?: string; code?: string } | undefined;
-      const detail = providerError?.message || providerError?.code || response.statusText;
-      if (response.status === 401 || response.status === 403) throw new Error('API Key 无效或无权访问该模型');
-      if (response.status === 404) throw new Error('Base URL 或 Model ID 不存在');
-      if (/(does not support|unsupported|not capable).*(image|vision|multimodal)|(image|vision|multimodal).*(not supported|unsupported)/i.test(String(detail))) {
-        throw new Error('当前模型或部署端点明确不支持图片输入');
-      }
-      throw new Error(`连接失败（HTTP ${response.status}）：${detail}`);
-    }
-    return {
-      ok: true,
-      message: '连接成功，模型可接收图片输入',
-      model: String(body.model || credentials.model),
-      supportsImages: true,
-      elapsedMs: Math.round(performance.now() - started)
-    };
-  } catch (error) {
-    const message = (error as Error).name === 'AbortError'
-      ? '连接测试超时，请检查网络、Base URL 和模型状态'
-      : redactSecret((error as Error).message, credentials.apiKey);
-    throw new Error(message);
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 export async function testApiProfile(input: SaveApiProfileInput): Promise<ConnectionTestResult> {
@@ -529,9 +409,10 @@ export async function testApiProfile(input: SaveApiProfileInput): Promise<Connec
   const apiKey = input.apiKey?.trim() || storedKey;
   if (!apiKey) throw new Error('请先输入或保存 API Key');
   try {
-    const result = await connectionRequest({
+    const result = await runProviderConnectionTest({
       provider: input.provider,
       protocol: input.protocol,
+      modelType: input.modelType,
       baseUrl: input.baseUrl.trim(),
       model: input.modelId.trim(),
       apiKey
@@ -539,7 +420,11 @@ export async function testApiProfile(input: SaveApiProfileInput): Promise<Connec
     if (input.id) {
       const settings = await readStored();
       settings.profiles = settings.profiles.map((profile) => profile.id === input.id
-        ? { ...profile, lastTestedAt: new Date().toISOString(), lastTestStatus: 'success' }
+        ? {
+          ...profile,
+          lastTestedAt: new Date().toISOString(),
+          lastTestStatus: result.ok ? 'success' : 'failed',
+        }
         : profile);
       await writeStored(settings);
     }

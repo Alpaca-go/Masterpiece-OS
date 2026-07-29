@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type {
   ApiProfile,
+  ConnectionTestResult,
   PublicSettings,
   SaveApiProfileInput,
   SaveSettingsInput
@@ -45,7 +46,11 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   const [editor, setEditor] = useState<SaveApiProfileInput | null>(null);
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState('');
-  const [notice, setNotice] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null);
+  const [notice, setNotice] = useState<{
+    tone: 'ok' | 'error';
+    text: string;
+    connectionResult?: ConnectionTestResult;
+  } | null>(null);
 
   const updateLocal = <K extends keyof SaveSettingsInput>(key: K, value: SaveSettingsInput[K]) => {
     setLocalForm((current) => ({ ...current, [key]: value }));
@@ -105,7 +110,11 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
     try {
       const result = await window.masterpiece.settings.testProfile(input);
       onSaved(await window.masterpiece.settings.get());
-      setNotice({ tone: 'ok', text: `${result.message} · ${result.elapsedMs} ms` });
+      setNotice({
+        tone: result.ok ? 'ok' : 'error',
+        text: `${result.message} · ${result.elapsedMs} ms`,
+        connectionResult: result,
+      });
     } catch (error) {
       onSaved(await window.masterpiece.settings.get().catch(() => settings));
       setNotice({ tone: 'error', text: cleanError(error) });
@@ -130,7 +139,21 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
       <button className="button ghost" onClick={onClose}>返回</button>
     </header>
 
-    {notice && <div className={`notice ${notice.tone}`}>{notice.text}</div>}
+    {notice && <div className={`notice ${notice.tone}`}>
+      <strong>{notice.text}</strong>
+      {notice.connectionResult && !notice.connectionResult.ok && <dl className="connection-error-details">
+        <div><dt>上游服务</dt><dd>{notice.connectionResult.provider || '未知'}</dd></div>
+        <div><dt>请求接口类型</dt><dd>{notice.connectionResult.requestInterface || '未知'}</dd></div>
+        <div><dt>HTTP 状态码</dt><dd>{notice.connectionResult.httpStatus ?? '未收到响应'}</dd></div>
+        <div><dt>上游错误码</dt><dd>{notice.connectionResult.upstreamErrorCode || '未提供'}</dd></div>
+        <div><dt>上游错误信息</dt><dd>{notice.connectionResult.upstreamErrorMessage || '未提供'}</dd></div>
+        <div><dt>request id</dt><dd>{notice.connectionResult.requestId || '未提供'}</dd></div>
+        {notice.connectionResult.responseBody && <div className="connection-response-body">
+          <dt>response body</dt>
+          <dd><pre>{notice.connectionResult.responseBody}</pre></dd>
+        </div>}
+      </dl>}
+    </div>}
 
     <div className="settings-grid">
       <section className="panel form-panel">
@@ -147,7 +170,11 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
                 <span className={`status-dot ${profile.lastTestStatus === 'success' ? 'connected' : profile.lastTestStatus === 'failed' ? 'failed' : 'untested'}`} />
                 <strong>{profile.displayName}</strong>
               </div>
-              <div className="profile-tags"><span>{profile.modelType === 'image_generation' ? '生成模型' : '分析模型'}</span>{profile.isDefault && <span>默认</span>}{!profile.isEnabled && <span>已停用</span>}</div>
+              <div className="profile-tags"><span>{profile.modelType === 'image_generation'
+                ? '图片生成模型'
+                : profile.modelType === 'video_generation'
+                  ? '视频生成模型'
+                  : '分析模型'}</span>{profile.isDefault && <span>默认</span>}{!profile.isEnabled && <span>已停用</span>}</div>
             </div>
             <dl>
               <div><dt>Provider</dt><dd>{profile.provider}</dd></div>
@@ -172,10 +199,10 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
             <optgroup label="Analysis Models">{registry.filter((model) => model.type === 'analysis').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
             <optgroup label="Generation Models">{registry.filter((model) => model.type === 'image_generation').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
           </select></label>
-          <label>模型职责<select value={editor.modelType} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('modelType', event.target.value as SaveApiProfileInput['modelType'])}><option value="analysis">Analysis Model</option><option value="image_generation">Generation Model</option></select></label>
+          <label>模型职责<select value={editor.modelType} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('modelType', event.target.value as SaveApiProfileInput['modelType'])}><option value="analysis">Analysis Model</option><option value="image_generation">Image Generation Model</option><option value="video_generation">Video Generation Model</option></select></label>
           <label>配置名称<input value={editor.displayName} placeholder="例如：千问 VL Plus / GPT Vision / 本地模型" onChange={(event) => updateProfile('displayName', event.target.value)} /></label>
-          <label>调用协议<select value={editor.protocol} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('protocol', event.target.value as SaveApiProfileInput['protocol'])}><option value="openai-chat-multimodal">OpenAI 兼容多模态</option><option value="openai-image-generation">OpenAI Image Generation</option><option value="google-gemini-image">Google Gemini Image</option><option value="seedream-image">Seedream Image</option><option value="dashscope-wan-image">DashScope Wan Image</option></select><small className="field-help">协议决定连接测试和 Adapter 请求格式。</small></label>
-          <label>Provider 标识<input list="provider-suggestions" value={editor.provider} placeholder="自由输入，例如 aliyun-bailian" onChange={(event) => updateProfile('provider', event.target.value)} /><small className="field-help">仅作为配置与运行记录标识，不限制厂商；请求协议需兼容 OpenAI Chat Completions。</small></label>
+          <label>调用协议<select value={editor.protocol} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('protocol', event.target.value as SaveApiProfileInput['protocol'])}><option value="openai-chat-multimodal">OpenAI 兼容多模态</option><option value="openai-image-generation">OpenAI Image Generation</option><option value="google-gemini-image">Google Gemini Image</option><option value="seedream-image">Seedream Image</option><option value="dashscope-wan-image">DashScope Wan Image</option><option value="openai-video-generation">Video Generation</option></select><small className="field-help">协议决定连接测试和 Adapter 请求格式。</small></label>
+          <label>Provider 标识<input list="provider-suggestions" value={editor.provider} placeholder="自由输入，例如 aliyun-bailian" onChange={(event) => updateProfile('provider', event.target.value)} /><small className="field-help">仅作为配置与运行记录标识，不限制厂商；请求接口由模型类型与调用协议共同决定。</small></label>
           <datalist id="provider-suggestions">
             <option value="aliyun-bailian" />
             <option value="openai" />
@@ -194,7 +221,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
           </div>
           <div className="button-row">
             <button className="button primary" disabled={Boolean(busy)} onClick={() => void saveProfile()}>{busy === 'profile-save' ? '保存中…' : '保存配置'}</button>
-            <button className="button secondary" disabled={Boolean(busy)} onClick={() => void testProfile(editor, 'editor-test')}>{busy === 'editor-test' ? '测试中…' : '测试图片连接'}</button>
+            <button className="button secondary" disabled={Boolean(busy)} onClick={() => void testProfile(editor, 'editor-test')}>{busy === 'editor-test' ? '测试中…' : '测试模型连接'}</button>
             <button className="button ghost" disabled={Boolean(busy)} onClick={() => setEditor(null)}>取消编辑</button>
           </div>
         </div>}

@@ -12,6 +12,7 @@ const reportSource = fs.readFileSync(path.join(rendererRoot, 'components', 'Repo
 const mainSource = fs.readFileSync(path.join(rendererRoot, 'main.tsx'), 'utf8');
 const errorBoundarySource = fs.readFileSync(path.join(rendererRoot, 'components', 'AppErrorBoundary.tsx'), 'utf8');
 const creativeSessionSource = fs.readFileSync(path.join(rendererRoot, 'components', 'CreativeSessionWorkspace.tsx'), 'utf8');
+const settingsSource = fs.readFileSync(path.join(rendererRoot, 'components', 'SettingsPanel.tsx'), 'utf8');
 
 test('renderer keeps specialist legacy presets but routes analysis reports into Creative Session', () => {
   for (const preset of ['document_concept', 'reference_preview', 'integrated_anchor']) {
@@ -114,6 +115,21 @@ test('generation workspace uses source bundles, displays source usage and offers
   assert.match(generationSource, /sourcesNotUsed/);
   assert.match(generationSource, /profile\.modelType === 'image_generation'/);
   assert.match(generationSource, /本次生成意图/);
+});
+
+test('model connection failures expose structured upstream diagnostics', () => {
+  for (const label of [
+    '上游服务',
+    '请求接口类型',
+    'HTTP 状态码',
+    '上游错误码',
+    '上游错误信息',
+    'request id',
+  ]) {
+    assert.match(settingsSource, new RegExp(label));
+  }
+  assert.match(settingsSource, /connectionResult\.responseBody/);
+  assert.match(settingsSource, /openai-video-generation/);
 });
 
 test('rejected reference anchors never expose the preview action', () => {

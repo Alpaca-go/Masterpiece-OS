@@ -44,3 +44,17 @@ test('Model Registry blocks analysis/generation responsibility conflicts', () =>
     protocol: 'seedream-image',
   }), 'image_generation');
 });
+
+test('custom video profiles are isolated from chat and image protocols', () => {
+  assert.equal(inferModelType({ protocol: 'openai-video-generation' }), 'video_generation');
+  assert.equal(validateModelProfile({
+    modelType: 'video_generation',
+    protocol: 'openai-video-generation',
+    modelId: 'video-model',
+  }).modelType, 'video_generation');
+  assert.throws(() => validateModelProfile({
+    modelType: 'video_generation',
+    protocol: 'openai-chat-multimodal',
+    modelId: 'video-model',
+  }), (error) => error.code === 'MODEL_PROFILE_INCOMPATIBLE');
+});
