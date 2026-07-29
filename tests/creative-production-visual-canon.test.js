@@ -94,6 +94,7 @@ test('Visual Canon builds one Primary plus supporting images and reports soft co
   assert.ok(canon.materialSystem.craftRules.includes('压凹工艺'));
   assert.ok(canon.lightingSystem.direction.includes('柔和侧光'));
   assert.ok(canon.compositionSystem.gridRules.includes('十二列网格'));
+  assert.ok(canon.spatialSystem.displayRules.includes('单一焦点'));
   assert.equal(confirmVisualCanon(canon, NOW).status, 'confirmed');
 });
 
@@ -129,6 +130,38 @@ test('Visual Canon caps images at four and versions deterministically', () => {
   assert.equal(nextVisualCanonVersion('1.2.3', 'patch'), '1.2.4');
 });
 
+test('Visual Canon binds Designer Selection instead of treating the Concept as a provider reference', () => {
+  const concept = {
+    id: 'concept-space',
+    type: 'space',
+    status: 'generated',
+    imagePath: 'image-generation/run-concept/images/concept.png',
+  };
+  const canon = buildVisualCanon({
+    projectId: 'project-1',
+    styleProfile: style,
+    lockedAssets: [lock],
+    sourceExplorationId: 'exploration-1',
+    selectedConceptId: concept.id,
+    coreVisualMetaphor: '以安静层叠空间建立品牌体验',
+    primary: {
+      concept,
+      explorationId: 'exploration-1',
+      observations: {
+        preservedLockedAssetIds: ['lock-critical'],
+        spatialStructure: '层叠空间结构',
+        displayStrategy: '克制的重点陈列',
+      },
+    },
+  }, NOW);
+  assert.equal(canon.sourceExplorationId, 'exploration-1');
+  assert.equal(canon.selectedConceptId, 'concept-space');
+  assert.equal(canon.canonImages[0].sourceKind, 'visual_concept');
+  assert.equal(canon.canonImages[0].sourceConceptId, 'concept-space');
+  assert.ok(canon.spatialSystem.structureRules.includes('层叠空间结构'));
+  assert.ok(canon.spatialSystem.displayRules.includes('克制的重点陈列'));
+});
+
 test('legacy Visual Canon migrates its reusable rule systems without changing identity or version', () => {
   const current = buildVisualCanon({
     projectId: 'project-1',
@@ -143,6 +176,7 @@ test('legacy Visual Canon migrates its reusable rule systems without changing id
     materialSystem: _materialSystem,
     lightingSystem: _lightingSystem,
     compositionSystem: _compositionSystem,
+    spatialSystem: _spatialSystem,
     ...legacy
   } = current;
   const migrated = migrateVisualCanon(legacy, {
@@ -164,6 +198,7 @@ test('Visual Canon JSON Schema is closed and caps canonImages at four', () => {
   assert.equal(schema.properties.canonImages.maxItems, 4);
   for (const field of [
     'visualDNA', 'colorSystem', 'materialSystem', 'lightingSystem', 'compositionSystem',
+    'spatialSystem',
   ]) {
     assert.ok(schema.required.includes(field));
     assert.equal(schema.properties[field].additionalProperties, false);

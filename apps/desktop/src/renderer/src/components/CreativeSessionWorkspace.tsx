@@ -456,6 +456,14 @@ export function CreativeSessionWorkspace({
     || production.series.find((item) =>
       item.styleProfileVersion === workspace?.styleProfile?.version
       && item.visualCanonVersion === currentCanon?.version);
+  const activeExploration = production.explorations.find((item) =>
+    item.id === workspace?.session.activeVisualExplorationId)
+    || production.explorations[0];
+  const selectedConcept = activeExploration?.concepts.find((item) =>
+    item.id === activeExploration.selectedConceptId);
+  const selectedConceptView = selectedConcept?.generationRunId
+    ? runViews.find((item) => item.run.runId === selectedConcept.generationRunId)
+    : undefined;
 
   return <div className="page creative-session-page">
     <header className="page-header">
@@ -657,7 +665,17 @@ export function CreativeSessionWorkspace({
                   <h3>{concept.title}</h3>
                   <p>{concept.objective}</p>
                   {concept.selectionStatus === 'selected'
-                    ? <strong className="selection-badge">Designer Selected</strong>
+                    ? <div className="selected-concept-actions">
+                      <strong className="selection-badge">Designer Selected</strong>
+                      {!currentCanon && <button
+                        className="button primary full"
+                        disabled={Boolean(busy)}
+                        onClick={() => void runProductionAction(
+                          () => window.masterpiece.creativeProduction
+                            .buildVisualCanonFromExploration(project.id, exploration.id, {})
+                        )}
+                      >从所选方向建立 Visual Canon</button>}
+                    </div>
                     : concept.status === 'generated' && <button
                       className="button secondary full"
                       disabled={!selectionRationale.trim() || Boolean(busy)}
@@ -846,12 +864,16 @@ export function CreativeSessionWorkspace({
 
     {tab === 'visual-system' && <div className="creative-production-grid">
       <section className="panel">
-        <div className="section-heading"><span>01</span><div><h2>Primary Canon</h2><p>已接受的 Anchor 基准</p></div></div>
-        {activeAnchor?.status === 'accepted' ? <div className="production-summary-card">
+        <div className="section-heading"><span>01</span><div><h2>Selected Direction</h2><p>Designer Selection 是 Visual Canon 的唯一新流程入口</p></div></div>
+        {selectedConcept ? <div className="production-summary-card">
+          {selectedConceptView?.imageUrls[0] && <img src={selectedConceptView.imageUrls[0]} alt="Selected Visual Concept" />}
+          <h3>{selectedConcept.title}</h3>
+          <p>{activeExploration?.selection?.rationale}</p>
+        </div> : activeAnchor?.status === 'accepted' ? <div className="production-summary-card">
           {anchorRunView?.imageUrls[0] && <img src={anchorRunView.imageUrls[0]} alt="Primary Canon" />}
           <h3>{activeAnchor.task.purpose}</h3>
-          <p>Style Profile {activeAnchor.styleProfileVersion}</p>
-        </div> : <div className="empty-state small">请先在 Anchor 审核页接受一个 Candidate。</div>}
+          <p>Legacy Anchor · Style Profile {activeAnchor.styleProfileVersion}</p>
+        </div> : <div className="empty-state small">请先在 Visual Exploration 中完成 Designer Selection。</div>}
       </section>
       <section className="panel">
         <div className="section-heading"><span>02</span><div><h2>Visual System</h2><p>从 Style Profile 与 Canon 汇总的可执行规则库</p></div></div>
@@ -884,6 +906,14 @@ export function CreativeSessionWorkspace({
           <ul>{currentCanon.sharedRules.map((item) => <li key={item}>{item}</li>)}</ul>
           <h4>Variation Rules</h4>
           <ul>{currentCanon.variationRules.map((item) => <li key={item}>{item}</li>)}</ul>
+          <h4>Spatial System</h4>
+          <ul>
+            {[
+              ...currentCanon.spatialSystem.structureRules,
+              ...currentCanon.spatialSystem.displayRules,
+              ...currentCanon.spatialSystem.negativeSpaceRules
+            ].map((item) => <li key={item}>{item}</li>)}
+          </ul>
           <h4>Conflict Warnings</h4>
           {currentCanon.conflicts.length
             ? <ul>{currentCanon.conflicts.map((item, index) =>

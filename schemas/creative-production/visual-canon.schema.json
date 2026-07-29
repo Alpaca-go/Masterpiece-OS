@@ -8,7 +8,7 @@
     "schemaVersion", "id", "projectId", "name", "version", "status",
     "styleProfileId", "styleProfileVersion", "primaryCanonImageId",
     "canonImages", "visualDNA", "colorSystem", "materialSystem", "lightingSystem",
-    "compositionSystem", "sharedRules", "variationRules", "conflicts", "createdAt", "updatedAt"
+    "compositionSystem", "spatialSystem", "sharedRules", "variationRules", "conflicts", "createdAt", "updatedAt"
   ],
   "properties": {
     "schemaVersion": { "const": "6.0" },
@@ -20,6 +20,8 @@
     "styleProfileId": { "type": "string", "minLength": 1 },
     "styleProfileVersion": { "type": "string", "minLength": 1 },
     "primaryCanonImageId": { "type": "string", "minLength": 1 },
+    "sourceExplorationId": { "type": "string", "minLength": 1 },
+    "selectedConceptId": { "type": "string", "minLength": 1 },
     "canonImages": {
       "type": "array",
       "minItems": 1,
@@ -27,7 +29,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "type", "role", "imagePath", "sourceAnchorId", "priority", "observations"],
+        "required": ["id", "type", "role", "imagePath", "sourceKind", "priority", "observations"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "type": {
@@ -35,7 +37,10 @@
           },
           "role": { "type": "string", "minLength": 1 },
           "imagePath": { "type": "string", "minLength": 1 },
+          "sourceKind": { "enum": ["anchor", "visual_concept"] },
           "sourceAnchorId": { "type": "string", "minLength": 1 },
+          "sourceConceptId": { "type": "string", "minLength": 1 },
+          "sourceExplorationId": { "type": "string", "minLength": 1 },
           "priority": { "enum": ["primary", "supporting"] },
           "observations": {
             "type": "object",
@@ -47,6 +52,8 @@
               "lighting": { "$ref": "#/$defs/strings" },
               "graphicLanguage": { "$ref": "#/$defs/strings" },
               "compositionDensity": { "type": "string" },
+              "spatialStructure": { "type": "string" },
+              "displayStrategy": { "type": "string" },
               "preservedLockedAssetIds": { "$ref": "#/$defs/strings" }
             }
           }
@@ -102,6 +109,16 @@
       "properties": {
         "compositionMethods": { "$ref": "#/$defs/strings" },
         "gridRules": { "$ref": "#/$defs/strings" },
+        "negativeSpaceRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "spatialSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structureRules", "displayRules", "negativeSpaceRules"],
+      "properties": {
+        "structureRules": { "$ref": "#/$defs/strings" },
+        "displayRules": { "$ref": "#/$defs/strings" },
         "negativeSpaceRules": { "$ref": "#/$defs/strings" }
       }
     },

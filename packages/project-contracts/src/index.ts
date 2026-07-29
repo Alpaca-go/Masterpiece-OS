@@ -530,12 +530,17 @@ export interface VisualCanon {
   styleProfileId: string;
   styleProfileVersion: string;
   primaryCanonImageId: string;
+  sourceExplorationId?: string;
+  selectedConceptId?: string;
   canonImages: Array<{
     id: string;
     type: CanonImageType;
     role: string;
     imagePath: string;
-    sourceAnchorId: string;
+    sourceKind: 'anchor' | 'visual_concept';
+    sourceAnchorId?: string;
+    sourceConceptId?: string;
+    sourceExplorationId?: string;
     priority: 'primary' | 'supporting';
     observations: {
       colors: string[];
@@ -543,6 +548,8 @@ export interface VisualCanon {
       lighting: string[];
       graphicLanguage: string[];
       compositionDensity?: string;
+      spatialStructure?: string;
+      displayStrategy?: string;
       preservedLockedAssetIds: string[];
     };
   }>;
@@ -571,6 +578,11 @@ export interface VisualCanon {
   compositionSystem: {
     compositionMethods: string[];
     gridRules: string[];
+    negativeSpaceRules: string[];
+  };
+  spatialSystem: {
+    structureRules: string[];
+    displayRules: string[];
     negativeSpaceRules: string[];
   };
   sharedRules: string[];

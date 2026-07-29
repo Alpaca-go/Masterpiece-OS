@@ -50,6 +50,9 @@ test('Creative Session workspace separates Visual Analysis from the creative wor
   assert.match(creativeSessionSource, /Designer Selection/);
   assert.match(creativeSessionSource, /selectVisualConcept/);
   assert.match(creativeSessionSource, /选择此视觉方向/);
+  assert.match(creativeSessionSource, /buildVisualCanonFromExploration/);
+  assert.match(creativeSessionSource, /从所选方向建立 Visual Canon/);
+  assert.match(creativeSessionSource, /Spatial System/);
   assert.match(creativeSessionSource, /Anchor Candidates/);
   assert.match(creativeSessionSource, /anchor-comparison-grid/);
   assert.match(creativeSessionSource, /多候选比较与人工 Primary 选择/);

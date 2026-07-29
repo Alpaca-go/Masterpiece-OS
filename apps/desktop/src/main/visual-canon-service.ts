@@ -1,6 +1,9 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { VisualCanon } from '../../../../packages/project-contracts/src/index.ts';
+import type {
+  VisualCanon,
+  VisualExploration,
+} from '../../../../packages/project-contracts/src/index.ts';
 import {
   buildVisualCanon,
   confirmVisualCanon,
@@ -134,6 +137,104 @@ export function createVisualCanonService(
     return canon;
   }
 
+  async function buildFromExploration(projectId: string, input: {
+    exploration: VisualExploration;
+    observations?: {
+      colors?: string[];
+      materials?: string[];
+      lighting?: string[];
+      graphicLanguage?: string[];
+      compositionDensity?: string;
+      spatialStructure?: string;
+      displayStrategy?: string;
+    };
+    sharedRules?: string[];
+    variationRules?: string[];
+  }): Promise<VisualCanon> {
+    const exploration = input.exploration;
+    const selected = exploration.concepts.find((item) =>
+      item.id === exploration.selectedConceptId);
+    if (exploration.projectId !== projectId
+      || exploration.status !== 'selected'
+      || !selected
+      || selected.status !== 'generated') {
+      throw Object.assign(new Error('Visual Canon 需要当前项目中 Designer-selected Concept。'), {
+        code: 'VISUAL_CONCEPT_NOT_SELECTED',
+      });
+    }
+    const [styleProfile, locks, active, session] = await Promise.all([
+      styles.getActive(projectId),
+      lockedAssets.list(projectId),
+      getActive(projectId),
+      sessions.create(projectId),
+    ]);
+    if (!styleProfile
+      || styleProfile.id !== exploration.styleProfileId
+      || styleProfile.version !== exploration.styleProfileVersion) {
+      throw Object.assign(new Error('Designer Selection 绑定的 Style Profile 已过期。'), {
+        code: 'VISUAL_EXPLORATION_STALE',
+      });
+    }
+    const version = active ? nextVisualCanonVersion(active.version) : '1.0.0';
+    const canon = buildVisualCanon({
+      projectId,
+      version,
+      styleProfile,
+      lockedAssets: locks,
+      sourceExplorationId: exploration.id,
+      selectedConceptId: selected.id,
+      primary: {
+        concept: selected,
+        explorationId: exploration.id,
+        role: `Designer-selected ${selected.title}`,
+        observations: {
+          colors: styleProfile.colorSystem?.primary ?? [],
+          materials: styleProfile.materialAndTexture?.materials ?? [],
+          lighting: [styleProfile.lightingSystem?.type].filter(Boolean),
+          graphicLanguage: styleProfile.graphicLanguage?.coreMotifs ?? [],
+          compositionDensity: styleProfile.compositionSystem?.density,
+          spatialStructure: selected.type === 'space' ? selected.objective : undefined,
+          displayStrategy: selected.objective,
+          preservedLockedAssetIds: locks.map((item) => item.id),
+          ...input.observations,
+        },
+      },
+      sharedRules: [
+        selected.objective,
+        ...(input.sharedRules ?? styleProfile.promptComponents?.required ?? []),
+      ],
+      variationRules: input.variationRules,
+      industryAttributes: [
+        session.understanding?.projectIdentity.industry,
+        session.projectContext.industry,
+      ],
+      coreVisualMetaphor: exploration.selection?.rationale,
+    }) as VisualCanon;
+    const target = await locations(projectId);
+    await fs.mkdir(target.root, { recursive: true });
+    if (active) {
+      await writeJson(path.join(target.root, `visual-canon-v${active.version}.json`), {
+        ...active,
+        status: 'superseded',
+        updatedAt: canon.updatedAt,
+      });
+    }
+    const filename = `visual-canon-v${canon.version}.json`;
+    await writeJson(path.join(target.root, filename), canon);
+    await writeJson(target.active, {
+      canonId: canon.id,
+      version: canon.version,
+      filename,
+      updatedAt: canon.updatedAt,
+    });
+    await sessions.transition(
+      projectId,
+      'CANON_BUILDING',
+      `已从 Designer Selection 建立 Visual Canon ${canon.version}。`,
+    );
+    return canon;
+  }
+
   async function confirm(projectId: string, canonId: string): Promise<VisualCanon> {
     const candidates = await list(projectId);
     const canon = candidates.find((item) => item.id === canonId);
@@ -153,7 +254,7 @@ export function createVisualCanonService(
     return confirmed;
   }
 
-  return { build, confirm, getActive, list };
+  return { build, buildFromExploration, confirm, getActive, list };
 }
 
 export type VisualCanonService = ReturnType<typeof createVisualCanonService>;

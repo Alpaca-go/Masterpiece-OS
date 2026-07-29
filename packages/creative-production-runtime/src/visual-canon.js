@@ -24,6 +24,7 @@ export function compileVisualCanonSystems(input) {
   const lighting = profile.lightingSystem ?? {};
   const composition = profile.compositionSystem ?? {};
   const graphic = profile.graphicLanguage ?? {};
+  const shape = profile.shapeLanguage ?? {};
   const industry = unique(input?.industryAttributes);
   return {
     visualDNA: {
@@ -60,16 +61,37 @@ export function compileVisualCanonSystems(input) {
       gridRules: unique([...(graphic.layoutRhythm ?? []), ...(composition.croppingRules ?? [])]),
       negativeSpaceRules: unique([composition.negativeSpace]),
     },
+    spatialSystem: {
+      structureRules: unique([
+        ...(composition.cameraRules ?? []),
+        ...(shape.proportionRules ?? []),
+        observations.spatialStructure,
+      ]),
+      displayRules: unique([
+        ...(composition.hierarchy ?? []),
+        ...(composition.focalPointRules ?? []),
+        observations.displayStrategy,
+      ]),
+      negativeSpaceRules: unique([
+        composition.negativeSpace,
+        ...(composition.croppingRules ?? []),
+      ]),
+    },
   };
 }
 
 export function migrateVisualCanon(canon, context = {}) {
   if (!canon || canon.schemaVersion !== '6.0') return canon;
   if (canon.visualDNA && canon.colorSystem && canon.materialSystem
-    && canon.lightingSystem && canon.compositionSystem) return canon;
+    && canon.lightingSystem && canon.compositionSystem && canon.spatialSystem
+    && canon.canonImages?.every((image) => image.sourceKind)) return canon;
   const primary = canon.canonImages?.find((image) => image.priority === 'primary');
   return {
     ...canon,
+    canonImages: (canon.canonImages ?? []).map((image) => ({
+      ...image,
+      sourceKind: image.sourceKind || 'anchor',
+    })),
     ...compileVisualCanonSystems({
       styleProfile: context.styleProfile,
       primaryObservations: primary?.observations,
@@ -100,12 +122,25 @@ export function nextVisualCanonVersion(current, level = 'minor') {
 
 function toCanonImage(input, priority) {
   const anchor = input.anchor;
-  if (anchor?.status !== 'accepted' || !anchor?.imagePath) {
+  const concept = input.concept;
+  if (!concept && (anchor?.status !== 'accepted' || !anchor?.imagePath)) {
     throw Object.assign(new Error('Visual Canon 只能引用 accepted Anchor Candidate。'), {
       code: 'ANCHOR_NOT_ACCEPTED',
     });
   }
-  const type = input.type || (priority === 'primary' ? 'brand_hero' : 'vi_application');
+  if (concept && (concept.status !== 'generated' || !concept.imagePath)) {
+    throw Object.assign(new Error('Visual Canon 只能引用 Designer-selected generated Concept。'), {
+      code: 'VISUAL_CONCEPT_NOT_SELECTED',
+    });
+  }
+  const conceptType = {
+    space: 'spatial',
+    packaging: 'packaging',
+    product_scene: 'brand_hero',
+    graphic: 'poster_graphic',
+    material: 'brand_hero',
+  }[concept?.type];
+  const type = input.type || conceptType || (priority === 'primary' ? 'brand_hero' : 'vi_application');
   if (!IMAGE_TYPES.includes(type)) {
     throw Object.assign(new Error('Canon Image 类型无效。'), { code: 'VISUAL_CANON_INVALID' });
   }
@@ -113,8 +148,14 @@ function toCanonImage(input, priority) {
     id: input.id || `canon-image-${crypto.randomUUID()}`,
     type,
     role: text(input.role) || (priority === 'primary' ? '定义整体视觉基准' : `补充 ${type} 触点基准`),
-    imagePath: relativePath(anchor.imagePath),
-    sourceAnchorId: anchor.id,
+    imagePath: relativePath(concept?.imagePath || anchor.imagePath),
+    sourceKind: concept ? 'visual_concept' : 'anchor',
+    ...(concept ? {
+      sourceConceptId: concept.id,
+      sourceExplorationId: text(input.explorationId),
+    } : {
+      sourceAnchorId: anchor.id,
+    }),
     priority,
     observations: {
       colors: unique(input.observations?.colors),
@@ -124,7 +165,15 @@ function toCanonImage(input, priority) {
       ...(text(input.observations?.compositionDensity)
         ? { compositionDensity: text(input.observations.compositionDensity) }
         : {}),
-      preservedLockedAssetIds: unique(input.observations?.preservedLockedAssetIds ?? anchor.lockedAssetIds),
+      ...(text(input.observations?.spatialStructure)
+        ? { spatialStructure: text(input.observations.spatialStructure) }
+        : {}),
+      ...(text(input.observations?.displayStrategy)
+        ? { displayStrategy: text(input.observations.displayStrategy) }
+        : {}),
+      preservedLockedAssetIds: unique(
+        input.observations?.preservedLockedAssetIds ?? anchor?.lockedAssetIds,
+      ),
     },
   };
 }
@@ -203,6 +252,10 @@ export function buildVisualCanon(input, now = new Date().toISOString()) {
     styleProfileId: styleProfile.id,
     styleProfileVersion: styleProfile.version,
     primaryCanonImageId: primary.id,
+    ...(text(input.sourceExplorationId) ? {
+      sourceExplorationId: text(input.sourceExplorationId),
+      selectedConceptId: text(input.selectedConceptId),
+    } : {}),
     canonImages: [primary, ...supporting],
     ...compileVisualCanonSystems({
       styleProfile,
@@ -254,6 +307,9 @@ export function validateVisualCanon(canon) {
     canon.compositionSystem?.compositionMethods,
     canon.compositionSystem?.gridRules,
     canon.compositionSystem?.negativeSpaceRules,
+    canon.spatialSystem?.structureRules,
+    canon.spatialSystem?.displayRules,
+    canon.spatialSystem?.negativeSpaceRules,
   ];
   if (!text(canon.visualDNA?.coreVisualMetaphor)
     || systemArrays.some((value) => !Array.isArray(value))) {
@@ -266,7 +322,11 @@ export function validateVisualCanon(canon) {
     });
   }
   for (const image of canon.canonImages) {
-    if (!IMAGE_TYPES.includes(image.type) || !text(image.id) || !text(image.sourceAnchorId)
+    if (!IMAGE_TYPES.includes(image.type) || !text(image.id)
+      || !['anchor', 'visual_concept'].includes(image.sourceKind)
+      || (image.sourceKind === 'anchor' && !text(image.sourceAnchorId))
+      || (image.sourceKind === 'visual_concept'
+        && (!text(image.sourceConceptId) || !text(image.sourceExplorationId)))
       || !text(image.role) || !['primary', 'supporting'].includes(image.priority)) {
       throw Object.assign(new Error('Canon Image 字段无效。'), { code: 'VISUAL_CANON_INVALID' });
     }
@@ -274,6 +334,16 @@ export function validateVisualCanon(canon) {
     if (!Array.isArray(image.observations?.preservedLockedAssetIds)) {
       throw Object.assign(new Error('Canon Image 缺少 Locked Asset 检查结果。'), { code: 'VISUAL_CANON_INVALID' });
     }
+  }
+  if (canon.sourceExplorationId
+    && (!text(canon.selectedConceptId)
+      || !canon.canonImages.some((image) =>
+        image.sourceKind === 'visual_concept'
+        && image.sourceExplorationId === canon.sourceExplorationId
+        && image.sourceConceptId === canon.selectedConceptId))) {
+    throw Object.assign(new Error('Visual Canon 的 Designer Selection 来源无效。'), {
+      code: 'VISUAL_CANON_INVALID',
+    });
   }
   return canon;
 }

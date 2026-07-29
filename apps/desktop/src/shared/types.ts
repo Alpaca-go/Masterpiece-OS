@@ -2032,6 +2032,14 @@ export interface DesktopApi {
       sharedRules?: string[];
       variationRules?: string[];
     }): Promise<VisualCanon>;
+    buildVisualCanonFromExploration(
+      projectId: string,
+      explorationId: string,
+      input: {
+        sharedRules?: string[];
+        variationRules?: string[];
+      }
+    ): Promise<VisualCanon>;
     confirmVisualCanon(projectId: string, canonId: string): Promise<VisualCanon>;
     getSeries(projectId: string, seriesId: string): Promise<GenerationSeries | null>;
     listSeries(projectId: string): Promise<GenerationSeries[]>;

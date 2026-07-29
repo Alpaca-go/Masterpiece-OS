@@ -591,6 +591,23 @@ function registerIpc(): void {
     projectId: string,
     input: Parameters<typeof visualCanons.build>[1]
   ) => visualCanons.build(projectId, input));
+  registerHandler('creative-production:build-visual-canon-from-exploration', async (
+    _event,
+    projectId: string,
+    explorationId: string,
+    input: {
+      sharedRules?: string[];
+      variationRules?: string[];
+    }
+  ) => {
+    const exploration = await visualExplorations.get(projectId, explorationId);
+    if (!exploration) {
+      throw Object.assign(new Error('Visual Exploration 不存在。'), {
+        code: 'VISUAL_EXPLORATION_MISSING'
+      });
+    }
+    return visualCanons.buildFromExploration(projectId, { exploration, ...input });
+  });
   registerHandler('creative-production:confirm-visual-canon', (
     _event,
     projectId: string,

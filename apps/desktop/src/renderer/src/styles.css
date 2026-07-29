@@ -445,6 +445,7 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .visual-concept-grid p { margin: 0; font-size: 11px; color: #6f6874; }
 .visual-concept-grid button, .selection-badge { margin-top: 12px; }
 .selection-badge { display: inline-flex; padding: 5px 8px; border-radius: 999px; background: #ebe5ff; color: #5333c9; font-size: 10px; }
+.selected-concept-actions { display: grid; gap: 8px; }
 .designer-selection-rationale { display: grid; gap: 7px; margin-top: 16px; font-size: 11px; }
 .generation-history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
 .generation-history-grid article { overflow: hidden; border: 1px solid #e4ded7; border-radius: 11px; background: #fff; }

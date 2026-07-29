@@ -167,6 +167,13 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:list-visual-canons', projectId),
     buildVisualCanon: (projectId, input) =>
       ipcRenderer.invoke('creative-production:build-visual-canon', projectId, input),
+    buildVisualCanonFromExploration: (projectId, explorationId, input) =>
+      ipcRenderer.invoke(
+        'creative-production:build-visual-canon-from-exploration',
+        projectId,
+        explorationId,
+        input
+      ),
     confirmVisualCanon: (projectId, canonId) =>
       ipcRenderer.invoke('creative-production:confirm-visual-canon', projectId, canonId),
     getSeries: (projectId, seriesId) =>
