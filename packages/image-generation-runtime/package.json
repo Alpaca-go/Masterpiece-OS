@@ -12,6 +12,7 @@
     "./gates": "./src/gates.js",
     "./context-snapshot": "./src/context-snapshot.js",
     "./task-builder": "./src/task-builder.js",
+    "./pipeline-mode": "./src/pipeline-mode.js",
     "./prompt-templates": "./src/prompt-templates/deliverable-template-system.js",
     "./prompt-template-compiler": "./src/prompt-templates/prompt-template-compiler.js",
     "./creative-director": "./src/creative-director/index.js",
