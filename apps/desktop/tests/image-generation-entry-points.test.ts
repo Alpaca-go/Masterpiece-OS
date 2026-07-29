@@ -51,6 +51,13 @@ test('Creative Session workspace separates Visual Analysis from the creative wor
   }
   assert.match(creativeSessionSource, /getRunMetadata/);
   assert.match(creativeSessionSource, /Evaluation Score/);
+  assert.match(creativeSessionSource, /Brand Alignment/);
+  assert.match(creativeSessionSource, /Visual Consistency/);
+  assert.match(creativeSessionSource, /Asset Usability/);
+  assert.match(creativeSessionSource, /Deviation Detection/);
+  assert.match(creativeSessionSource, /creativeSession\.evaluate/);
+  assert.match(creativeSessionSource, /regenerateFromEvaluation/);
+  assert.match(creativeSessionSource, /按评价重新生成/);
   assert.match(creativeSessionSource, /修改内容/);
   assert.match(creativeSessionSource, /返回 Visual Analysis/);
   assert.match(creativeSessionSource, /例如：生成一张升级后的店内装修效果图/);

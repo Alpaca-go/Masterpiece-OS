@@ -477,6 +477,23 @@ function registerIpc(): void {
     runId: string,
     apiProfileId?: string
   ) => creativeGeneration.regenerateInstruction(projectId, runId, apiProfileId));
+  registerHandler('creative-session:evaluate', (
+    _event,
+    projectId: string,
+    runId: string,
+    input: {
+      brandAlignment: { score: number; notes: string };
+      visualConsistency: { score: number; notes: string };
+      assetUsability: { score: number; notes: string };
+      deviationDetection: { severity: 'none' | 'minor' | 'major'; findings: string[] };
+    }
+  ) => creativeGeneration.evaluate(projectId, runId, input));
+  registerHandler('creative-session:regenerate-from-evaluation', (
+    _event,
+    projectId: string,
+    runId: string,
+    apiProfileId?: string
+  ) => creativeGeneration.regenerateFromEvaluation(projectId, runId, apiProfileId));
   registerHandler('creative-session:append-feedback', (_event, projectId: string, content: string) =>
     creativeSessions.appendMessage(projectId, {
       role: 'user',

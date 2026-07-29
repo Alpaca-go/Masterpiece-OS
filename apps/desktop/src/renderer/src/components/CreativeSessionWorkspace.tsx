@@ -40,6 +40,18 @@ interface RunView {
   } | null;
 }
 
+interface EvaluationDraft {
+  runId: string;
+  brandAlignment: number;
+  brandNotes: string;
+  visualConsistency: number;
+  visualNotes: string;
+  assetUsability: number;
+  assetNotes: string;
+  deviationSeverity: 'none' | 'minor' | 'major';
+  deviationFindings: string;
+}
+
 interface ProductionState {
   anchors: AnchorCandidate[];
   styles: StyleProfile[];
@@ -150,6 +162,7 @@ export function CreativeSessionWorkspace({
     Object.fromEntries(ANCHOR_DIMENSIONS.map(({ key }) => [key, 4]))
   );
   const [promptDrawer, setPromptDrawer] = useState<{ runId: string; prompt: string } | null>(null);
+  const [evaluationDraft, setEvaluationDraft] = useState<EvaluationDraft | null>(null);
   const [revisionDraft, setRevisionDraft] = useState<{
     outputId: string;
     taskId: string;
@@ -315,6 +328,8 @@ export function CreativeSessionWorkspace({
   }, [workspace?.styleProfile, creativeDirection, currentCanon]);
 
   function evaluationScoreForRun(runId: string) {
+    const runEvaluation = runViews.find((item) => item.run.runId === runId)?.run.review?.evaluation;
+    if (runEvaluation) return runEvaluation.overallScore;
     const evaluation = production.anchors.find((item) =>
       item.generationRunId === runId)?.evaluation;
     if (!evaluation) return null;
@@ -794,6 +809,33 @@ export function CreativeSessionWorkspace({
                 : <div className="history-image-placeholder">{run.status}</div>}
               <div className="generation-history-meta">
                 <strong>{metadata?.outputType || run.outputType}</strong>
+                {run.review?.evaluation && <>
+                  <small>Deviation Detection · {run.review.evaluation.deviationDetection.severity}</small>
+                  <small>Prompt Adjustment · {run.review.evaluation.promptAdjustments.join(' / ')}</small>
+                </>}
+                {run.images.length > 0 && <div className="button-row evaluation-actions">
+                  <button onClick={() => setEvaluationDraft({
+                    runId: run.runId,
+                    brandAlignment: run.review?.evaluation?.brandAlignment.score || 4,
+                    brandNotes: run.review?.evaluation?.brandAlignment.notes || '品牌表达与 Visual Canon 基本一致。',
+                    visualConsistency: run.review?.evaluation?.visualConsistency.score || 4,
+                    visualNotes: run.review?.evaluation?.visualConsistency.notes || '色彩、材质、光线与构图系统基本一致。',
+                    assetUsability: run.review?.evaluation?.assetUsability.score || 4,
+                    assetNotes: run.review?.evaluation?.assetUsability.notes || '当前结果可用于后续设计与交付。',
+                    deviationSeverity: run.review?.evaluation?.deviationDetection.severity || 'none',
+                    deviationFindings: run.review?.evaluation?.deviationDetection.findings.join('\n') || ''
+                  })}>评估此版本</button>
+                  {run.review?.evaluation && <button
+                    disabled={!imageApiProfileId || Boolean(busy)}
+                    onClick={() => void runProductionAction(
+                      () => window.masterpiece.creativeSession.regenerateFromEvaluation(
+                        project.id,
+                        run.runId,
+                        imageApiProfileId || undefined
+                      )
+                    )}
+                  >按评价重新生成</button>}
+                </div>}
                 <small>Run · {run.runId}</small>
                 <small>Prompt · {metadata?.promptVersion || 'Legacy / unavailable'}</small>
                 <small>Model · {run.providerId} / {run.modelId}</small>
@@ -974,6 +1016,100 @@ export function CreativeSessionWorkspace({
       <div className="modal prompt-drawer" onClick={(event) => event.stopPropagation()}>
         <div className="modal-head"><div><small>RUN {promptDrawer.runId}</small><h2>Prompt Snapshot</h2></div><button onClick={() => setPromptDrawer(null)}>关闭</button></div>
         <pre>{promptDrawer.prompt}</pre>
+      </div>
+    </div>}
+    {evaluationDraft && <div className="modal-overlay" onClick={() => setEvaluationDraft(null)}>
+      <div className="modal prompt-drawer evaluation-modal" onClick={(event) => event.stopPropagation()}>
+        <div className="modal-head">
+          <div><small>IMAGE EVALUATION</small><h2>图像评价与偏差检测</h2></div>
+          <button onClick={() => setEvaluationDraft(null)}>关闭</button>
+        </div>
+        {([
+          ['brandAlignment', 'brandNotes', 'Brand Alignment', '品牌一致性'],
+          ['visualConsistency', 'visualNotes', 'Visual Consistency', '视觉系统一致性'],
+          ['assetUsability', 'assetNotes', 'Asset Usability', '资产可用性']
+        ] as const).map(([scoreKey, notesKey, label, help]) => <fieldset key={scoreKey}>
+          <legend>{label} · {help}</legend>
+          <label>评分（1–5）
+            <select
+              value={evaluationDraft[scoreKey]}
+              onChange={(event) => setEvaluationDraft((current) => current && ({
+                ...current,
+                [scoreKey]: Number(event.target.value)
+              }))}
+            >
+              {[1, 2, 3, 4, 5].map((score) => <option key={score} value={score}>{score}</option>)}
+            </select>
+          </label>
+          <label>评价说明
+            <textarea
+              rows={2}
+              value={evaluationDraft[notesKey]}
+              onChange={(event) => setEvaluationDraft((current) => current && ({
+                ...current,
+                [notesKey]: event.target.value
+              }))}
+            />
+          </label>
+        </fieldset>)}
+        <fieldset>
+          <legend>Deviation Detection · 偏差检测</legend>
+          <label>偏差程度
+            <select
+              value={evaluationDraft.deviationSeverity}
+              onChange={(event) => setEvaluationDraft((current) => current && ({
+                ...current,
+                deviationSeverity: event.target.value as EvaluationDraft['deviationSeverity']
+              }))}
+            >
+              <option value="none">无偏差</option>
+              <option value="minor">轻微偏差</option>
+              <option value="major">重大偏差</option>
+            </select>
+          </label>
+          <label>偏差项（每行一条）
+            <textarea
+              rows={4}
+              value={evaluationDraft.deviationFindings}
+              onChange={(event) => setEvaluationDraft((current) => current && ({
+                ...current,
+                deviationFindings: event.target.value
+              }))}
+            />
+          </label>
+        </fieldset>
+        <button
+          className="button primary full"
+          disabled={
+            Boolean(busy)
+            || !evaluationDraft.brandNotes.trim()
+            || !evaluationDraft.visualNotes.trim()
+            || !evaluationDraft.assetNotes.trim()
+            || (evaluationDraft.deviationSeverity !== 'none' && !evaluationDraft.deviationFindings.trim())
+          }
+          onClick={() => void runProductionAction(async () => {
+            await window.masterpiece.creativeSession.evaluate(project.id, evaluationDraft.runId, {
+              brandAlignment: {
+                score: evaluationDraft.brandAlignment,
+                notes: evaluationDraft.brandNotes.trim()
+              },
+              visualConsistency: {
+                score: evaluationDraft.visualConsistency,
+                notes: evaluationDraft.visualNotes.trim()
+              },
+              assetUsability: {
+                score: evaluationDraft.assetUsability,
+                notes: evaluationDraft.assetNotes.trim()
+              },
+              deviationDetection: {
+                severity: evaluationDraft.deviationSeverity,
+                findings: evaluationDraft.deviationFindings
+                  .split('\n').map((item) => item.trim()).filter(Boolean)
+              }
+            });
+            setEvaluationDraft(null);
+          })}
+        >保存评价并生成 Prompt Adjustment</button>
       </div>
     </div>}
     {revisionDraft && activeSeries && <div className="modal-overlay" onClick={() => setRevisionDraft(null)}>

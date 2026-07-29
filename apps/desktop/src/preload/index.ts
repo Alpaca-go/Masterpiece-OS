@@ -119,6 +119,10 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-session:retry-same', projectId, runId, apiProfileId),
     regenerateInstruction: (projectId, runId, apiProfileId) =>
       ipcRenderer.invoke('creative-session:regenerate-instruction', projectId, runId, apiProfileId),
+    evaluate: (projectId, runId, input) =>
+      ipcRenderer.invoke('creative-session:evaluate', projectId, runId, input),
+    regenerateFromEvaluation: (projectId, runId, apiProfileId) =>
+      ipcRenderer.invoke('creative-session:regenerate-from-evaluation', projectId, runId, apiProfileId),
     appendFeedback: (projectId, content) =>
       ipcRenderer.invoke('creative-session:append-feedback', projectId, content),
     getRun: (runId) => ipcRenderer.invoke('creative-session:get-run', runId),

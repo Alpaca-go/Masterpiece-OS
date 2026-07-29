@@ -438,6 +438,8 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .generation-history-meta { display: grid; gap: 5px; padding: 11px; }
 .generation-history-meta strong { font-size: 12px; }
 .generation-history-meta small { color: #756d7c; font-size: 9px; overflow-wrap: anywhere; }
+.evaluation-actions { margin-top: 5px; }
+.evaluation-actions button { font-size: 10px; padding: 7px 9px; }
 .generation-series-head { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 24px; }
 .generation-series-head h2 { margin: 5px 0; }
 .generation-series-head p { color: #817987; font-size: 12px; }
@@ -471,6 +473,12 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .series-history-list small { margin-top: 5px; color: #817987; font-size: 10px; }
 .prompt-drawer { width: min(920px, 100%); }
 .prompt-drawer pre { margin: 0; padding: 24px; overflow: auto; white-space: pre-wrap; font: 12px/1.65 ui-monospace, Consolas, monospace; }
+.evaluation-modal { max-height: calc(100vh - 64px); overflow: auto; padding: 24px; }
+.evaluation-modal .modal-head { margin-bottom: 16px; }
+.evaluation-modal fieldset { display: grid; grid-template-columns: 150px 1fr; gap: 12px; margin: 0 0 14px; padding: 14px; border: 1px solid #e4ded7; border-radius: 10px; }
+.evaluation-modal legend { padding: 0 6px; font-size: 12px; font-weight: 700; }
+.evaluation-modal label { display: grid; gap: 6px; font-size: 11px; }
+.evaluation-modal textarea, .evaluation-modal select { width: 100%; }
 .creative-session-layout > .panel { min-height: 590px; padding: 24px; }
 .creative-checks { display: grid; gap: 10px; margin: 22px 0; padding: 0; list-style: none; color: #8b858d; font-size: 13px; }
 .creative-checks li { padding: 9px 11px; border-radius: 8px; background: #f4f1f7; }

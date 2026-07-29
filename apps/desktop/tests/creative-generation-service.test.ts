@@ -81,3 +81,79 @@ test('same-instruction retry reuses the persisted snapshot without rerunning Rea
   assert.equal(run.runId, 'run-retry');
   assert.equal(recordedRunId, 'run-retry');
 });
+
+test('evaluation is persisted against the generating Canon and drives a traceable regeneration', async () => {
+  let workflowState = 'REVIEWING_OUTPUTS';
+  let savedReview: any;
+  let regeneratedRequest = '';
+  const parentSnapshot = {
+    id: 'snapshot-parent',
+    userRequest: 'Create the approved packaging render.',
+    outputType: 'packaging_render',
+    visualCanonId: 'canon-1',
+    visualCanonVersion: '2.0.0',
+  };
+  const parentRun: any = {
+    runId: 'run-parent',
+    projectId: 'project-1',
+    images: [{ imageId: 'image-1' }],
+  };
+  const prompts = {
+    compile: async (_projectId: string, input: { userRequest: string; outputType?: string }) => {
+      regeneratedRequest = input.userRequest;
+      assert.equal(input.outputType, 'packaging_render');
+      return { ...parentSnapshot, id: 'snapshot-revision', userRequest: input.userRequest };
+    },
+    recordRun: async () => undefined,
+  };
+  const imageGeneration = {
+    getRun: async () => parentRun,
+    readPromptSnapshot: async () => parentSnapshot,
+    saveReview: async (review: any) => {
+      savedReview = review;
+      parentRun.review = review;
+      return parentRun;
+    },
+    startPromptSnapshot: async (input: { parentRunId?: string }) => {
+      assert.equal(input.parentRunId, 'run-parent');
+      return { runId: 'run-revision', status: 'succeeded' };
+    },
+  };
+  const decisions: any[] = [];
+  const transitions: string[] = [];
+  const sessions = {
+    create: async () => ({ workflowState }),
+    transition: async (_projectId: string, next: string) => {
+      workflowState = next;
+      transitions.push(next);
+    },
+    recordDecision: async (_projectId: string, decision: any) => {
+      decisions.push(decision);
+    },
+  };
+  const service = createCreativeGenerationService(
+    prompts as never,
+    imageGeneration as never,
+    sessions as never,
+  );
+
+  await service.evaluate('project-1', 'run-parent', {
+    brandAlignment: { score: 2, notes: 'Restore the Canon palette.' },
+    visualConsistency: { score: 3, notes: 'Restore the approved lighting.' },
+    assetUsability: { score: 4, notes: 'Composition is usable.' },
+    deviationDetection: { severity: 'major', findings: ['Logo placement is incorrect.'] },
+  });
+  assert.equal(savedReview.decision, 'rejected');
+  assert.equal(savedReview.evaluation.evaluatedAgainst.visualCanonVersion, '2.0.0');
+  assert.equal(decisions[0].type, 'image_evaluation');
+
+  const run = await service.regenerateFromEvaluation('project-1', 'run-parent', 'profile-image');
+  assert.equal(run.runId, 'run-revision');
+  assert.match(regeneratedRequest, /Restore the Canon palette/);
+  assert.match(regeneratedRequest, /Logo placement is incorrect/);
+  assert.deepEqual(transitions, [
+    'REVISION_IN_PROGRESS',
+    'GENERATING',
+    'REVIEWING_OUTPUTS',
+  ]);
+});

@@ -108,10 +108,12 @@ export function transitionCreativeSession(session, nextState, summary, now = new
   const terminalRecovery = RECOVERABLE_TERMINAL_TRANSITIONS.has(`${session.workflowState}:${nextState}`);
   const blueprintLoop = nextState === 'BLUEPRINT_GENERATING'
     || (session.workflowState === 'BLUEPRINT_READY' && BLUEPRINT_LOOP_TARGETS.has(nextState));
+  const evaluationLoop = ['REVIEWING_OUTPUTS', 'REVISION_IN_PROGRESS'].includes(session.workflowState)
+    && ['REVISION_IN_PROGRESS', 'GENERATING'].includes(nextState);
   if (TERMINAL_STATES.has(session.workflowState) && !terminalRecovery) {
     throw Object.assign(new Error(`终态 ${session.workflowState} 不能直接转为 ${nextState}。`), { code: 'SESSION_INVALID' });
   }
-  if (!terminalRecovery && !blueprintLoop
+  if (!terminalRecovery && !blueprintLoop && !evaluationLoop
     && nextState !== 'FAILED' && nextState !== 'CANCELLED' && nextIndex < currentIndex) {
     throw Object.assign(new Error(`工作流不能从 ${session.workflowState} 倒退到 ${nextState}。`), { code: 'SESSION_INVALID' });
   }

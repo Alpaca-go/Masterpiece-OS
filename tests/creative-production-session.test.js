@@ -73,6 +73,22 @@ test('Creative Session allows a scoped Generation Blueprint loop without allowin
   );
 });
 
+test('Creative Session allows the evaluation and regeneration loop without opening unrelated regressions', () => {
+  let session = transitionCreativeSession(
+    createCreativeSession({ projectId: 'evaluation-project' }),
+    'REVIEWING_OUTPUTS',
+    'generated output is ready for review',
+  );
+  session = transitionCreativeSession(session, 'REVISION_IN_PROGRESS', 'evaluation created adjustments');
+  session = transitionCreativeSession(session, 'GENERATING', 'regenerate from evaluation');
+  session = transitionCreativeSession(session, 'REVIEWING_OUTPUTS', 'revised output is ready');
+  assert.equal(session.workflowState, 'REVIEWING_OUTPUTS');
+  assert.throws(
+    () => transitionCreativeSession(session, 'ANALYSIS_COMPLETED', 'unrelated regression'),
+    (error) => error.code === 'SESSION_INVALID',
+  );
+});
+
 test('V18 migration removes Final Generation Instruction and preserves decisions/references', () => {
   const migrated = migrateLegacyCreativeSession({
     id: 'legacy-session',

@@ -53,4 +53,8 @@ export {
   compilePromptTemplate,
   verifyPromptTemplateFingerprint,
 } from './prompt-templates/prompt-template-compiler.js';
+export {
+  compileImageEvaluation,
+  compileEvaluationPromptAdjustment,
+} from './evaluation.js';
 export { evaluateDeliverableGate } from './gates/deliverable-gate.js';

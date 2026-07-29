@@ -1936,6 +1936,17 @@ export interface DesktopApi {
     }): Promise<ImageGenerationRun>;
     retrySame(projectId: string, runId: string, apiProfileId?: string): Promise<ImageGenerationRun>;
     regenerateInstruction(projectId: string, runId: string, apiProfileId?: string): Promise<ImageGenerationRun>;
+    evaluate(projectId: string, runId: string, input: {
+      brandAlignment: { score: number; notes: string };
+      visualConsistency: { score: number; notes: string };
+      assetUsability: { score: number; notes: string };
+      deviationDetection: { severity: 'none' | 'minor' | 'major'; findings: string[] };
+    }): Promise<ImageGenerationRun>;
+    regenerateFromEvaluation(
+      projectId: string,
+      runId: string,
+      apiProfileId?: string
+    ): Promise<ImageGenerationRun>;
     appendFeedback(projectId: string, content: string): Promise<CreativeSession>;
     getRun(runId: string): Promise<ImageGenerationRun | null>;
     getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;

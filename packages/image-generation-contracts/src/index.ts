@@ -618,6 +618,23 @@ export type ImageReviewDecision =
   | 'reference_only'
   | 'rejected';
 
+export interface ImageGenerationEvaluation {
+  schemaVersion: '1.0';
+  brandAlignment: { score: 1 | 2 | 3 | 4 | 5; notes: string };
+  visualConsistency: { score: 1 | 2 | 3 | 4 | 5; notes: string };
+  assetUsability: { score: 1 | 2 | 3 | 4 | 5; notes: string };
+  deviationDetection: {
+    severity: 'none' | 'minor' | 'major';
+    findings: string[];
+  };
+  overallScore: number;
+  promptAdjustments: string[];
+  evaluatedAgainst: {
+    visualCanonId: string;
+    visualCanonVersion: string;
+  };
+}
+
 export interface ImageGenerationReview {
   runId: string;
   imageId: string;
@@ -631,6 +648,7 @@ export interface ImageGenerationReview {
   compositionUseful?: boolean;
 
   notes?: string;
+  evaluation?: ImageGenerationEvaluation;
   reviewedAt: string;
 }
 
