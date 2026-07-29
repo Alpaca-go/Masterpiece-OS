@@ -659,6 +659,7 @@ export type {
   ImageGenerationRun,
   ImageGenerationRunSummary,
   VNextTaskContract,
+  VNextLogoUsageMode,
   VNextCompiledPrompt,
   VNextModelPromptPayload,
   VNextCreativeSession,

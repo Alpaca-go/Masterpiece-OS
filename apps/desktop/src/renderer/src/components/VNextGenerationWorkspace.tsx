@@ -5,6 +5,7 @@ import type {
   ImageGenerationRun,
   ProjectRecord,
   VNextCreativeSession,
+  VNextLogoUsageMode,
   VNextTaskContract,
 } from '../../../shared/types';
 import { cleanError } from '../utils';
@@ -50,6 +51,9 @@ export function VNextGenerationWorkspace({
   const [shot, setShot] = useState(DEFAULTS.space.shot);
   const [aspectRatio, setAspectRatio] = useState<VNextTaskContract['aspectRatio']>('16:9');
   const [instruction, setInstruction] = useState('');
+  const [mustIncludeText, setMustIncludeText] = useState('');
+  const [mustAvoidText, setMustAvoidText] = useState('');
+  const [logoUsageMode, setLogoUsageMode] = useState<VNextLogoUsageMode>('blank_area');
   const [compiled, setCompiled] = useState<CompileVNextGenerationResult | null>(null);
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
@@ -62,6 +66,9 @@ export function VNextGenerationWorkspace({
   const familyOptions = options?.[family];
   const canCompile = Boolean(instruction.trim() && subtype && shot);
   const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
+  function splitRules(value: string): string[] {
+    return [...new Set(value.split(/\r?\n|；|;/u).map((item) => item.trim()).filter(Boolean))];
+  }
   const compileStale = useMemo(() => {
     if (!compiled) return true;
     const task = compiled.taskContract;
@@ -69,8 +76,11 @@ export function VNextGenerationWorkspace({
       || task.subtype !== subtype
       || task.shot !== shot
       || task.aspectRatio !== aspectRatio
-      || task.currentInstruction !== instruction.trim();
-  }, [compiled, family, subtype, shot, aspectRatio, instruction]);
+      || task.currentInstruction !== instruction.trim()
+      || task.logoUsageMode !== logoUsageMode
+      || task.mustInclude.join('\n') !== splitRules(mustIncludeText).join('\n')
+      || task.mustAvoid.join('\n') !== splitRules(mustAvoidText).join('\n');
+  }, [compiled, family, subtype, shot, aspectRatio, instruction, logoUsageMode, mustIncludeText, mustAvoidText]);
 
   async function refreshSession() {
     const next = await window.masterpiece.imageGeneration.getVNextSession(project.id);
@@ -84,7 +94,13 @@ export function VNextGenerationWorkspace({
       window.masterpiece.projectContext.getVNext(project.id)
         .catch(() => window.masterpiece.projectContext.rebuildVNext(project.id)),
       refreshSession(),
-    ]).then(([nextOptions]) => setOptions(nextOptions as TemplateOptions))
+    ]).then(([nextOptions, context]) => {
+      setOptions(nextOptions as TemplateOptions);
+      setLogoUsageMode(
+        context.promptSourceObject?.lockedAssets.logoUsageMode
+          || (context.lockedAssets.logoAssetIds.length ? 'reference' : 'blank_area'),
+      );
+    })
       .catch((reason) => setError(cleanError(reason)));
   }, [project.id]);
 
@@ -132,9 +148,10 @@ export function VNextGenerationWorkspace({
           count: 1,
           aspectRatio,
           currentInstruction: instruction.trim(),
-          mustInclude: [],
-          mustAvoid: [],
+          mustInclude: splitRules(mustIncludeText),
+          mustAvoid: splitRules(mustAvoidText),
           referenceAssetIds: [],
+          logoUsageMode,
         },
       });
       setCompiled(result);
@@ -289,6 +306,30 @@ export function VNextGenerationWorkspace({
           />
         </label>
         {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
+        <label>Logo 处理方式
+          <select value={logoUsageMode} onChange={(event) =>
+            setLogoUsageMode(event.target.value as VNextLogoUsageMode)}>
+            <option value="reference">使用真实 Logo 作为身份参考</option>
+            <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
+            <option value="post_composite" disabled>后期合成（后续版本）</option>
+          </select>
+        </label>
+        <label>必须包含（每行一项）
+          <textarea
+            rows={3}
+            value={mustIncludeText}
+            onChange={(event) => setMustIncludeText(event.target.value)}
+            placeholder="例如：完整前台；清晰入口动线"
+          />
+        </label>
+        <label>必须避免（每行一项）
+          <textarea
+            rows={3}
+            value={mustAvoidText}
+            onChange={(event) => setMustAvoidText(event.target.value)}
+            placeholder="例如：VI 展板；错误品牌文字"
+          />
+        </label>
         <button className="button primary full" disabled={!canCompile || busy} onClick={() => void compilePrompt()}>
           查看最终 Prompt
         </button>
@@ -297,6 +338,31 @@ export function VNextGenerationWorkspace({
       <section className="panel">
         <div className="section-heading"><span>02</span><div><h2>Prompt 与正式成果</h2><p>可轻度编辑、恢复模板编译结果或保存为项目资产</p></div></div>
         {compiled ? <>
+          <div className="prompt-source-summary">
+            <div>
+              <small>Logo 策略</small>
+              <strong>{compiled.compiledPrompt.logoUsageMode === 'reference'
+                ? '真实 Logo 参考'
+                : '无文字 · 预留干净区域'}</strong>
+            </div>
+            <div>
+              <small>必须包含</small>
+              <p>{compiled.taskContract.mustInclude.join('；') || '仅执行本轮任务要求'}</p>
+            </div>
+            <div>
+              <small>必须避免</small>
+              <p>{compiled.taskContract.mustAvoid.join('；') || '使用项目与模板默认禁用项'}</p>
+            </div>
+          </div>
+          <details className="prompt-preview">
+            <summary>查看 12 个 Prompt 区块与来源</summary>
+            <div className="prompt-block-list">
+              {compiled.compiledPrompt.blocks.map((block) => <div key={block.id}>
+                <strong>{block.title}</strong>
+                <small>{block.sources.join(' · ')}</small>
+              </div>)}
+            </div>
+          </details>
           <textarea rows={18} value={editedPrompt} onChange={(event) => setEditedPrompt(event.target.value)} />
           <div className="button-row">
             <button className="button ghost" onClick={() => setEditedPrompt(compiled.compiledPrompt.finalPrompt)}>恢复模板默认</button>

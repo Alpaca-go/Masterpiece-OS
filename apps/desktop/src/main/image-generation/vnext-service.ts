@@ -133,6 +133,29 @@ export function createVNextImageGenerationService(
   async function compile(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult> {
     const context = await projectContext.getVNext(input.projectId)
       .catch(() => projectContext.rebuildVNext(input.projectId));
+    const preferredLogoAssetId = context.promptSourceObject?.lockedAssets.preferredLogoAssetId
+      || context.lockedAssets.logoAssetIds[0]
+      || null;
+    const logoUsageMode = input.task.logoUsageMode
+      || context.promptSourceObject?.lockedAssets.logoUsageMode
+      || (preferredLogoAssetId ? 'reference' : 'blank_area');
+    if (logoUsageMode === 'post_composite') {
+      throw Object.assign(
+        new Error('Post-composite Logo mode is reserved but not available in this version'),
+        { code: 'VNEXT_LOGO_POST_COMPOSITE_UNAVAILABLE' },
+      );
+    }
+    if (logoUsageMode === 'reference' && !preferredLogoAssetId) {
+      throw Object.assign(
+        new Error('Logo reference mode requires a confirmed Logo asset'),
+        { code: 'VNEXT_LOGO_REFERENCE_MISSING' },
+      );
+    }
+    const logoAssetIds = new Set(context.lockedAssets.logoAssetIds);
+    const requestedReferenceIds = input.task.referenceAssetIds ?? [];
+    const referenceAssetIds = logoUsageMode === 'reference'
+      ? [...new Set([preferredLogoAssetId!, ...requestedReferenceIds])]
+      : requestedReferenceIds.filter((assetId) => !logoAssetIds.has(assetId));
     const paths = await projects.paths(input.projectId);
     const projectPromptAsset = await fs.readFile(
       path.join(
@@ -150,6 +173,8 @@ export function createVNextImageGenerationService(
       task: {
         ...input.task,
         projectId: input.projectId,
+        logoUsageMode,
+        referenceAssetIds,
       },
     }) as Omit<CompileVNextGenerationResult, 'artifactDirectory'> & {
       route: unknown;

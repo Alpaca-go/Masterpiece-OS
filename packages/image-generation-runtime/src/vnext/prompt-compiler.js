@@ -147,6 +147,10 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     source?.lockedAssets?.logoAssetIds,
     projectContext.lockedAssets.logoAssetIds,
   );
+  const logoUsageMode = taskContract.logoUsageMode || source?.lockedAssets?.logoUsageMode || 'blank_area';
+  if (logoUsageMode === 'reference' && !logoAssetIds.length) {
+    throw new Error('Logo reference mode requires a confirmed logo asset');
+  }
 
   // Fixed block order is part of the provider contract. Within each block the
   // priority is task > locked facts > extracted translation > context > template.
@@ -274,9 +278,11 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       'logo_text_and_negatives',
       '12 Logo, Text and Strict Negatives',
       [
-        logoAssetIds.length
+        logoUsageMode === 'reference'
           ? `Use the supplied logo asset as the only identity reference; preserve its structure and do not redesign it.`
-          : 'Do not invent a logo. Reserve a clean identity placement area when signage is needed.',
+          : logoUsageMode === 'post_composite'
+            ? 'Do not render any logo or brand text. Reserve a clean, front-facing signage area for controlled post-compositing.'
+            : 'Do not render any logo, letters, words, or signage copy. Reserve a clean identity placement area when signage is needed.',
         taskContract.mustAvoid.map((item) => `User prohibition: ${item}`),
         negativeConstraints.map((item) => `Strict negative: ${item}`),
       ],
@@ -333,6 +339,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     editablePrompt: finalPrompt,
     negativeConstraints,
     referenceAssetIds: taskContract.referenceAssetIds,
+    logoUsageMode,
     compiledAt: new Date().toISOString(),
     trace: {
       compilerId: VNEXT_PROMPT_COMPILER_ID,

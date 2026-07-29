@@ -792,6 +792,7 @@ export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 
 export type VNextDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
 export type VNextAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
+export type VNextLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
 
 export interface VNextTaskContract {
   schemaVersion: '1.0';
@@ -806,6 +807,7 @@ export interface VNextTaskContract {
   mustInclude: string[];
   mustAvoid: string[];
   referenceAssetIds: string[];
+  logoUsageMode?: VNextLogoUsageMode;
   createdAt: string;
 }
 
@@ -859,6 +861,7 @@ export interface VNextCompiledPrompt {
   editablePrompt: string;
   negativeConstraints: string[];
   referenceAssetIds: string[];
+  logoUsageMode: VNextLogoUsageMode;
   compiledAt: string;
   trace: {
     compilerId: string;

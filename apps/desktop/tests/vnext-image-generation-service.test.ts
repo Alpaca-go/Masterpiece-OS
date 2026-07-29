@@ -17,12 +17,12 @@ const context: ProjectVisualContextVNext = {
   generatedAt: '2026-07-29T00:00:00.000Z',
   brandCore: { name: 'Session Brand', industry: 'test', brandRole: null, audience: [] },
   lockedAssets: {
-    logoAssetIds: [],
+    logoAssetIds: ['logo-asset'],
     brandNameLocked: true,
     confirmedColors: [],
     packageStructures: [],
     productAssetIds: [],
-    lockedAssetIds: [],
+    lockedAssetIds: ['logo-asset'],
     mustPreserve: [],
   },
   visualIdentity: {
@@ -35,7 +35,12 @@ const context: ProjectVisualContextVNext = {
   },
   styleBoundaries: { mustAvoid: [], uncertainItems: [] },
   confirmedDecisions: [],
-  sourceAssetRefs: [],
+  sourceAssetRefs: [{
+    assetId: 'logo-asset',
+    name: 'Confirmed Logo',
+    relativePath: 'brand/logo.png',
+    role: 'logo',
+  }],
   provenance: {
     builderId: 'test',
     builderVersion: '1',
@@ -47,9 +52,14 @@ const context: ProjectVisualContextVNext = {
 test('vNext session promotes a formal result to a family-scoped implicit anchor', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-vnext-session-'));
   const runs = new Map<string, ImageGenerationRun>();
+  let latestReferences: Array<{ id: string; role: string; projectRelativePath: string }> = [];
   let counter = 0;
   const imageGeneration = {
-    async startCompiledCreativeTask(options: { projectId: string }) {
+    async startCompiledCreativeTask(options: {
+      projectId: string;
+      references?: Array<{ id: string; role: string; projectRelativePath: string }>;
+    }) {
+      latestReferences = options.references ?? [];
       counter += 1;
       const runId = `run-${counter}`;
       const run: ImageGenerationRun = {
@@ -139,6 +149,13 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
     },
   });
   const firstRun = await service.start({ projectId, taskId: compiled.taskContract.taskId });
+  assert.deepEqual(latestReferences, [{
+    id: 'logo-asset',
+    role: 'identity_reference',
+    projectRelativePath: 'input/brand/logo.png',
+  }]);
+  assert.deepEqual(compiled.payload.referenceAssetIds, ['logo-asset']);
+  assert.equal(compiled.compiledPrompt.logoUsageMode, 'reference');
   const confirmed = await service.confirmDirection(
     projectId,
     firstRun.runId,
@@ -165,6 +182,24 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   });
   assert.equal(asset.version, 1);
   assert.equal((await service.getSession(projectId)).projectPromptAssets.space, asset.id);
+
+  const blankArea = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create a reception with a clean signage area.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['logo-asset'],
+      logoUsageMode: 'blank_area',
+    },
+  });
+  assert.deepEqual(blankArea.payload.referenceAssetIds, []);
+  assert.match(blankArea.compiledPrompt.finalPrompt, /Do not render any logo, letters, words/u);
 
   const poster = await service.compile({
     projectId,

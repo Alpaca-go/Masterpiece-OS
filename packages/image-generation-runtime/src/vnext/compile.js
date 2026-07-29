@@ -6,7 +6,26 @@ import { createSeedreamVNextAdapter } from './seedream-adapter.js';
 export function compileVNextImageGeneration(input) {
   const started = performance.now();
   const adapter = input.adapter || createSeedreamVNextAdapter({ model: input.model });
-  const taskContract = createVNextTaskContract(input.task, { now: input.now });
+  const logoAssetIds = input.projectContext?.promptSourceObject?.lockedAssets?.logoAssetIds
+    || input.projectContext?.lockedAssets?.logoAssetIds
+    || [];
+  const preferredLogoAssetId = input.projectContext?.promptSourceObject?.lockedAssets?.preferredLogoAssetId
+    || logoAssetIds[0]
+    || null;
+  const inferredLogoUsageMode = input.projectContext?.promptSourceObject?.lockedAssets?.logoUsageMode
+    || (preferredLogoAssetId ? 'reference' : 'blank_area');
+  const logoUsageMode = input.task?.logoUsageMode || inferredLogoUsageMode;
+  const requestedReferenceIds = Array.isArray(input.task?.referenceAssetIds)
+    ? input.task.referenceAssetIds
+    : [];
+  const referenceAssetIds = logoUsageMode === 'reference' && preferredLogoAssetId
+    ? [...new Set([preferredLogoAssetId, ...requestedReferenceIds])]
+    : requestedReferenceIds.filter((assetId) => !logoAssetIds.includes(assetId));
+  const taskContract = createVNextTaskContract({
+    ...input.task,
+    logoUsageMode,
+    referenceAssetIds,
+  }, { now: input.now });
   const route = routeVNextTemplates(taskContract, { model: adapter.id });
   const compiledPrompt = compileVNextPrompt({
     projectContext: input.projectContext,
