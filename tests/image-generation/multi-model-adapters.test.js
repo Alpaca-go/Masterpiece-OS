@@ -63,7 +63,62 @@ test('Seedream Adapter maps Chinese commercial task and references to image gene
   assert.match(request.url, /\/api\/v3\/images\/generations$/u);
   assert.match(request.body.prompt, /生成一张完整/u);
   assert.match(request.body.image[0], /^data:image\/png;base64,/u);
-  assert.equal(request.body.sequential_image_generation, 'disabled');
+  assert.equal(request.body.size, '2K');
+  assert.equal('quality' in request.body, false);
+  assert.equal('sequential_image_generation' in request.body, false);
+});
+
+test('Seedream Adapter sends sequential generation only to models that support it', () => {
+  const seedream4 = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey: 'test-key',
+    modelId: 'doubao-seedream-4-0-250828',
+  });
+  assert.equal(
+    seedream4.compileRequest({ ...universal, references: [] })
+      .body.sequential_image_generation,
+    'disabled',
+  );
+
+  const seedream5 = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey: 'test-key',
+    modelId: 'doubao-seedream-5-0-pro-260628',
+  });
+  assert.equal(
+    'sequential_image_generation' in seedream5.compileRequest({
+      ...universal,
+      references: [],
+    }).body,
+    false,
+  );
+});
+
+test('multi-model adapters accept either an API root or a complete endpoint URL', () => {
+  const seedream = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey: 'test-key',
+    baseUrl: 'https://ark.cn-beijing.volces.com/api/v3/images/generations/',
+  });
+  assert.equal(
+    seedream.compileRequest({ ...universal, references: [] }).url,
+    'https://ark.cn-beijing.volces.com/api/v3/images/generations',
+  );
+  const seedreamTextToImage = seedream.compileRequest({ ...universal, references: [] });
+  assert.equal('image' in seedreamTextToImage.body, false);
+  assert.equal(seedreamTextToImage.body.size, '2K');
+  assert.match(seedreamTextToImage.body.prompt, /Output aspect ratio: 16:9/u);
+
+  const gpt = createMultiModelImageAdapter({
+    adapterId: 'gpt-image-2',
+    apiKey: 'test-key',
+    baseUrl: 'https://api.openai.com/v1/images/generations',
+  });
+  assert.equal(
+    gpt.compileRequest({ ...universal, references: [] }).url,
+    'https://api.openai.com/v1/images/generations',
+  );
+  assert.equal(gpt.compileRequest(universal).url, 'https://api.openai.com/v1/images/edits');
 });
 
 test('all adapters normalize base64 and URL image responses', () => {

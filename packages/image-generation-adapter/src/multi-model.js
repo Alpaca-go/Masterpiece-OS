@@ -29,6 +29,20 @@ function trimSlash(value) {
   return text(value).replace(/\/+$/u, '');
 }
 
+function endpointUrl(baseUrl, suffix) {
+  const normalized = trimSlash(baseUrl);
+  const knownSuffixes = [
+    '/chat/completions',
+    '/images/generations',
+    '/images/edits',
+    '/interactions',
+  ];
+  const lower = normalized.toLowerCase();
+  const matched = knownSuffixes.find((known) => lower.endsWith(known));
+  const apiRoot = matched ? normalized.slice(0, -matched.length) : normalized;
+  return `${apiRoot}${suffix}`;
+}
+
 function assertUniversalInput(input, adapter) {
   if (!input || !text(input.prompt)) {
     throw Object.assign(new Error('Universal Prompt is required.'), {
@@ -75,6 +89,9 @@ function modelPrompt(adapterId, input) {
   };
   return [
     ...wrappers[adapterId],
+    ...(adapterId === 'seedream-5.0-pro'
+      ? [`Output aspect ratio: ${input.aspectRatio}. Generate exactly one image.`]
+      : []),
     input.prompt,
     ...(negative.length ? ['Negative rules:', ...negative.map((rule) => `- ${rule}`)] : []),
   ].join('\n');
@@ -103,7 +120,7 @@ function buildGptRequest(config, input, references) {
   if (!references.length) {
     return {
       method: 'POST',
-      url: `${baseUrl}/images/generations`,
+      url: endpointUrl(baseUrl, '/images/generations'),
       headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
       bodyKind: 'json',
       body: fields,
@@ -111,7 +128,7 @@ function buildGptRequest(config, input, references) {
   }
   return {
     method: 'POST',
-    url: `${baseUrl}/images/edits`,
+    url: endpointUrl(baseUrl, '/images/edits'),
     headers: { Authorization: `Bearer ${config.apiKey}` },
     bodyKind: 'multipart',
     body: {
@@ -133,7 +150,7 @@ function buildNanoRequest(config, input, references) {
     : config.modelId;
   return {
     method: 'POST',
-    url: `${baseUrl}/interactions`,
+    url: endpointUrl(baseUrl, '/interactions'),
     headers: { 'x-goog-api-key': config.apiKey, 'Content-Type': 'application/json' },
     bodyKind: 'json',
     body: {
@@ -158,20 +175,24 @@ function buildNanoRequest(config, input, references) {
 
 function buildSeedreamRequest(config, input, references) {
   const baseUrl = trimSlash(config.baseUrl || ADAPTERS['seedream-5.0-pro'].defaultBaseUrl);
+  const images = references.map(dataUri);
+  const modelId = config.modelId || 'seedream-5.0-pro';
+  const supportsSequentialGeneration = /seedream-4[-_.]?0/iu.test(modelId);
   return {
     method: 'POST',
-    url: `${baseUrl}/images/generations`,
+    url: endpointUrl(baseUrl, '/images/generations'),
     headers: { Authorization: `Bearer ${config.apiKey}`, 'Content-Type': 'application/json' },
     bodyKind: 'json',
     body: {
-      model: config.modelId || 'seedream-5.0-pro',
+      model: modelId,
       prompt: modelPrompt('seedream-5.0-pro', input),
-      image: references.map(dataUri),
-      size: input.aspectRatio,
-      quality: input.quality || 'high',
+      ...(images.length ? { image: images } : {}),
+      size: input.imageSize || '2K',
       response_format: 'b64_json',
       watermark: false,
-      sequential_image_generation: 'disabled',
+      ...(supportsSequentialGeneration
+        ? { sequential_image_generation: 'disabled' }
+        : {}),
     },
   };
 }

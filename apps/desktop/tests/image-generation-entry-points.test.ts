@@ -30,7 +30,8 @@ test('renderer keeps specialist legacy presets but routes analysis reports into 
 
 test('Creative Session workspace separates Visual Analysis from the creative workbench', () => {
   assert.match(creativeSessionSource, /creativeSession\.getWorkspace/);
-  assert.doesNotMatch(creativeSessionSource, /creativeSession\.read/);
+  assert.match(creativeSessionSource, /creativeSession\.read\(project\.id\)/);
+  assert.match(creativeSessionSource, /建立 Creative Foundation/);
   assert.match(creativeSessionSource, /creativeSession\.generate/);
   assert.match(creativeSessionSource, /Creative Foundation/);
   assert.match(creativeSessionSource, /Creative Command/);

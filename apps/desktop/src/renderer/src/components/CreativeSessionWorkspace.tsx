@@ -445,6 +445,15 @@ export function CreativeSessionWorkspace({
     }
   }
 
+  async function buildCreativeFoundation() {
+    // Creative Reading intentionally uses the project's analysis profile, not the
+    // image-generation model selected in this workspace.
+    await runProductionAction(
+      () => window.masterpiece.creativeSession.read(project.id),
+      'reading'
+    );
+  }
+
   function anchorEvaluation(): AnchorCandidateEvaluation {
     const notes = reviewFeedback.trim() || '已按当前视觉方向完成审核。';
     return {
@@ -573,8 +582,13 @@ export function CreativeSessionWorkspace({
           </li>
         </ul>
         {!understanding && <div className="foundation-gate">
-          <p>Creative Foundation 尚未建立。请先返回 Visual Analysis 完成项目理解。</p>
-          <button className="button primary full" onClick={onBack}>返回 Visual Analysis</button>
+          <p>请先基于已完成的 Visual Analysis 建立 Creative Foundation，系统会生成项目理解和创意方向。</p>
+          <button
+            className="button primary full"
+            disabled={Boolean(busy)}
+            onClick={() => void buildCreativeFoundation()}
+          >{busy === 'reading' ? '正在建立 Creative Foundation…' : '建立 Creative Foundation'}</button>
+          <button className="button ghost full" disabled={Boolean(busy)} onClick={onBack}>返回 Visual Analysis</button>
         </div>}
         {understanding && <div className="understanding-summary">
           <small>BRAND UNDERSTANDING</small>
