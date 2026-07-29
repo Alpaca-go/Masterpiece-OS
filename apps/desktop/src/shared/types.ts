@@ -1855,6 +1855,18 @@ export interface ModelBenchmarkEvaluation {
   scores: ModelBenchmarkScoreSet;
   notes: string;
   evaluatedAt: string;
+  evaluationLoop?: {
+    schemaVersion: '1.0.0';
+    trace: {
+      projectId: string;
+      benchmarkId: string;
+      visualCanonId: string;
+      visualCanonVersion: string;
+      promptSnapshotId: string;
+      generationRunId: string;
+      imageId: string;
+    };
+  };
 }
 
 export interface ModelBenchmark {

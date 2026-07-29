@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { validateEvaluationLoopSubmission } from '../../evaluation-loop-contracts/src/index.js';
 
 export const MODEL_BENCHMARK_VERSION = '1.0.0';
 export const BENCHMARK_DIMENSIONS = Object.freeze([
@@ -108,13 +109,32 @@ export function saveHumanBenchmarkEvaluation(benchmark, input, options = {}) {
     scores[dimension] = score;
   }
   const evaluatedAt = options.now?.() ?? new Date().toISOString();
+  const envelope = validateEvaluationLoopSubmission({
+    evaluator: { type: 'human' },
+    trace: {
+      projectId: benchmark.projectId,
+      benchmarkId: benchmark.benchmarkId,
+      visualCanonId: benchmark.frozenInput.visualCanonId,
+      visualCanonVersion: benchmark.frozenInput.visualCanonVersion,
+      promptSnapshotId: benchmark.frozenInput.promptSnapshotId,
+      generationRunId: task.runId,
+      imageId: task.imageId,
+    },
+    scores,
+    notes: input?.notes,
+    evaluatedAt,
+  });
   const evaluation = {
     mode: 'human',
     runId: task.runId,
     imageId: task.imageId,
-    scores,
-    notes: String(input?.notes ?? '').trim(),
-    evaluatedAt,
+    scores: envelope.scores,
+    notes: envelope.notes,
+    evaluatedAt: envelope.evaluatedAt,
+    evaluationLoop: {
+      schemaVersion: envelope.schemaVersion,
+      trace: envelope.trace,
+    },
   };
   return {
     ...benchmark,
