@@ -22,8 +22,36 @@ const style = {
   graphicLanguage: { coreMotifs: ['抽象线条'] },
 };
 const canon = {
+  schemaVersion: '6.0',
   id: 'canon-1', version: '1.0.0', status: 'confirmed',
   primaryCanonImageId: 'canon-image-1',
+  visualDNA: {
+    brandKeywords: ['真实', '克制'],
+    moodAttributes: ['温暖'],
+    industryAttributes: ['hospitality'],
+    coreVisualMetaphor: '真实品牌时刻',
+  },
+  colorSystem: {
+    primary: ['暖橙'],
+    secondary: ['暖白'],
+    accent: [],
+    forbidden: [],
+  },
+  materialSystem: {
+    materialLanguage: ['磨砂纸'],
+    surfaceTextures: [],
+    craftRules: [],
+  },
+  lightingSystem: {
+    direction: ['柔和侧光'],
+    contrast: ['中低对比'],
+    photographyAtmosphere: ['真实商业摄影'],
+  },
+  compositionSystem: {
+    compositionMethods: ['主次清晰'],
+    gridRules: [],
+    negativeSpaceRules: ['明确留白'],
+  },
   sharedRules: ['整体气质统一'],
   canonImages: [{
     id: 'canon-image-1', type: 'brand_hero', priority: 'primary',
@@ -149,12 +177,12 @@ test('Visual Memory prompt freezes Memory and Reference Pack while selecting tas
     referencePack,
   }, NOW);
   assert.equal(validateGenerationPromptSnapshot(snapshot), snapshot);
-  assert.equal(snapshot.compilerVersion, 'prompt-template-1.0.0');
+  assert.equal(snapshot.compilerVersion, 'prompt-template-1.1.0');
   assert.equal(snapshot.visualMemoryId, visualMemory.id);
   assert.equal(snapshot.referencePackId, referencePack.id);
   assert.equal(snapshot.deliverableTemplateId, 'packaging');
-  assert.equal(snapshot.deliverableTemplateVersion, '1.0.0');
-  assert.match(snapshot.promptVersion, /packaging@1\.0\.0/u);
+  assert.equal(snapshot.deliverableTemplateVersion, '1.1.0');
+  assert.match(snapshot.promptVersion, /packaging@1\.1\.0/u);
   assert.match(snapshot.promptFingerprint, /^[a-f0-9]{64}$/u);
   assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
     'structure_reference',
@@ -163,7 +191,7 @@ test('Visual Memory prompt freezes Memory and Reference Pack while selecting tas
   assert.ok(snapshot.selectedReferences.every((item) =>
     item.projectRelativePath.startsWith('visual-memory/reference-pack/')));
   assert.match(snapshot.instruction.finalPrompt, /Brand Context/);
-  assert.match(snapshot.instruction.finalPrompt, /Reference Conditioning/);
+  assert.match(snapshot.instruction.finalPrompt, /Asset Template \/ Reference Conditioning/);
   assert.match(snapshot.instruction.finalPrompt, /fragmented visual language/);
 });
 

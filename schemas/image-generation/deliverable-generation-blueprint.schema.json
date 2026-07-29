@@ -6,16 +6,30 @@
   "additionalProperties": false,
   "required": [
     "schemaVersion", "templateId", "templateVersion", "templateSource", "visualMemoryId",
-    "deliverableType", "task", "brandContext", "visualDirection", "color",
+    "visualCanonId", "visualCanonVersion", "deliverableType", "templateStack",
+    "task", "brandContext", "visualDirection", "color", "industryRules", "assetRules",
     "material", "composition", "photography", "referenceAssets", "negativeRules"
   ],
   "properties": {
     "schemaVersion": { "const": "1.0" },
     "templateId": { "enum": ["interior", "packaging", "poster"] },
-    "templateVersion": { "const": "1.0.0" },
+    "templateVersion": { "const": "1.1.0" },
     "templateSource": { "type": "string", "minLength": 1 },
     "visualMemoryId": { "type": "string", "minLength": 1 },
+    "visualCanonId": { "type": "string", "minLength": 1 },
+    "visualCanonVersion": { "type": "string", "minLength": 1 },
     "deliverableType": { "enum": ["interior_scene", "packaging_render", "brand_poster"] },
+    "templateStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visualCanon", "industry", "asset", "photography"],
+      "properties": {
+        "visualCanon": { "type": "string", "minLength": 1 },
+        "industry": { "type": "string", "minLength": 1 },
+        "asset": { "type": "string", "minLength": 1 },
+        "photography": { "type": "string", "minLength": 1 }
+      }
+    },
     "task": {
       "type": "object",
       "additionalProperties": false,
@@ -38,6 +52,8 @@
       }
     },
     "visualDirection": { "$ref": "#/$defs/nonEmptyStrings" },
+    "industryRules": { "$ref": "#/$defs/nonEmptyStrings" },
+    "assetRules": { "$ref": "#/$defs/nonEmptyStrings" },
     "color": {
       "type": "object",
       "additionalProperties": false,

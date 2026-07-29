@@ -34,6 +34,43 @@ function visualMemory() {
   };
 }
 
+function visualCanon(industry = '品牌餐饮') {
+  return {
+    schemaVersion: '6.0',
+    id: `canon-${industry}`,
+    version: '1.0.0',
+    status: 'confirmed',
+    visualDNA: {
+      brandKeywords: ['当代东方', '清晰秩序'],
+      moodAttributes: ['克制', '温暖'],
+      industryAttributes: [industry],
+      coreVisualMetaphor: '层叠路径连接品牌与日常体验',
+    },
+    colorSystem: {
+      primary: ['暖白'],
+      secondary: ['深灰'],
+      accent: ['铜色'],
+      forbidden: ['荧光色'],
+    },
+    materialSystem: {
+      materialLanguage: ['未涂布纸'],
+      surfaceTextures: ['细颗粒哑光'],
+      craftRules: ['压凹工艺'],
+    },
+    lightingSystem: {
+      direction: ['自然侧光'],
+      contrast: ['中低对比'],
+      photographyAtmosphere: ['真实商业摄影'],
+    },
+    compositionSystem: {
+      compositionMethods: ['单一焦点'],
+      gridRules: ['模块化网格'],
+      negativeSpaceRules: ['保留明确呼吸区'],
+    },
+    sharedRules: ['保持层叠路径机制'],
+  };
+}
+
 for (const [deliverableType, templateId, source] of [
   ['interior_scene', 'interior', 'interior.md'],
   ['packaging_render', 'packaging', 'packaging.md'],
@@ -44,6 +81,7 @@ for (const [deliverableType, templateId, source] of [
     assert.equal(template.templateId, templateId);
     const blueprint = compileDeliverableGenerationBlueprint({
       visualMemory: visualMemory(),
+      visualCanon: visualCanon(),
       deliverableType,
       userIntent: `生成${templateId}商业提案图`,
       referenceAssets: Array.from({ length: 7 }, (_, index) => ({
@@ -55,6 +93,8 @@ for (const [deliverableType, templateId, source] of [
     assert.equal(validateDeliverableGenerationBlueprint(blueprint), blueprint);
     assert.equal(blueprint.templateId, templateId);
     assert.equal(blueprint.visualMemoryId, 'visual-memory-1');
+    assert.equal(blueprint.visualCanonVersion, '1.0.0');
+    assert.equal(blueprint.templateStack.visualCanon, 'canon-品牌餐饮@1.0.0');
     assert.match(blueprint.templateSource, new RegExp(`${source}$`));
     assert.equal(blueprint.referenceAssets.length, 5);
     assert.ok(blueprint.color.usageRule.includes('10%'));
@@ -89,11 +129,12 @@ test('Deliverable Generation Blueprint schema is closed and versioned', () => {
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);
-  assert.equal(schema.properties.templateVersion.const, '1.0.0');
+  assert.equal(schema.properties.templateVersion.const, '1.1.0');
   assert.equal(schema.properties.referenceAssets.maxItems, 5);
+  assert.equal(schema.properties.templateStack.additionalProperties, false);
 });
 
-test('template system rejects unsupported deliverables and missing Visual Memory', () => {
+test('template system rejects unsupported deliverables and missing frozen inputs', () => {
   assert.throws(
     () => getDeliverablePromptTemplate('free_concept'),
     (error) => error.code === 'DELIVERABLE_TEMPLATE_UNSUPPORTED',
@@ -102,4 +143,33 @@ test('template system rejects unsupported deliverables and missing Visual Memory
     () => compileDeliverableGenerationBlueprint({ deliverableType: 'interior_scene' }),
     (error) => error.code === 'VISUAL_MEMORY_REQUIRED',
   );
+  assert.throws(
+    () => compileDeliverableGenerationBlueprint({
+      visualMemory: visualMemory(),
+      deliverableType: 'interior_scene',
+    }),
+    (error) => error.code === 'VISUAL_CANON_REQUIRED',
+  );
 });
+
+for (const [benchmark, industry, deliverableType, expectedIndustryTemplate] of [
+  ['九州美学', '东方生活美学', 'interior_scene', 'industry:culture-and-aesthetics'],
+  ['冯烫烫', '中式餐饮', 'interior_scene', 'industry:food-and-hospitality'],
+  ['中秋礼盒', '节庆食品礼盒', 'packaging_render', 'industry:food-and-hospitality'],
+  ['儿童IP', '儿童文化IP', 'brand_poster', 'industry:children-and-ip'],
+]) {
+  test(`${benchmark} benchmark composes Canon, industry, asset and photography templates`, () => {
+    const blueprint = compileDeliverableGenerationBlueprint({
+      visualMemory: visualMemory(),
+      visualCanon: visualCanon(industry),
+      deliverableType,
+      userIntent: `${benchmark}生成测试`,
+    });
+    assert.equal(blueprint.templateStack.industry, expectedIndustryTemplate);
+    assert.match(blueprint.templateStack.asset, /^asset:/u);
+    assert.match(blueprint.templateStack.photography, /^photography:/u);
+    assert.ok(blueprint.visualDirection.includes('层叠路径连接品牌与日常体验'));
+    assert.ok(blueprint.assetRules.length > 0);
+    assert.ok(blueprint.photography.includes('自然侧光'));
+  });
+}

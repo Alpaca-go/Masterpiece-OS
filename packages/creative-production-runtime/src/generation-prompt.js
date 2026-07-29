@@ -216,8 +216,9 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     ...input.styleProfile.graphicLanguage.coreMotifs,
   ]).join('；');
   const templateBlueprint = visualMemory && TEMPLATE_OUTPUT_TYPES.has(outputType)
-    ? compileDeliverableGenerationBlueprint({
+      ? compileDeliverableGenerationBlueprint({
         visualMemory,
+        visualCanon: input.visualCanon,
         deliverableType: outputType,
         userIntent: userRequest,
         referenceAssets: references.map((reference) => ({
@@ -228,9 +229,10 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
       })
     : null;
   const templateCompilation = templateBlueprint
-    ? compilePromptTemplate({
+      ? compilePromptTemplate({
         blueprint: templateBlueprint,
         visualMemory,
+        visualCanon: input.visualCanon,
         modelConstraints: {
           preserve,
           executionRules: unique([

@@ -1,4 +1,4 @@
-export const DELIVERABLE_TEMPLATE_VERSION = '1.0.0';
+export const DELIVERABLE_TEMPLATE_VERSION = '1.1.0';
 
 const TEMPLATES = Object.freeze({
   interior_scene: Object.freeze({
@@ -23,6 +23,10 @@ const TEMPLATES = Object.freeze({
     photography: [
       '人眼高度的建筑摄影视角，受控广角，校正垂直线。',
       '曝光与光线真实可信，达到商业空间摄影完成度。',
+    ],
+    assetRules: [
+      'Logo、品牌名称和已锁定识别资产只用于真实空间触点，不得改写或装饰化重绘。',
+      '结构参考只约束空间尺度、动线与设施关系，不继承旧视觉表面。',
     ],
     negativeRules: [
       '禁止 VI 物料平铺、情绪板、分屏、作品集网格和孤立 Logo 墙。',
@@ -52,6 +56,10 @@ const TEMPLATES = Object.freeze({
       '高完成度商业产品摄影，透视准确，高光受控。',
       '保留可信的接触阴影、材质细节与真实比例。',
     ],
+    assetRules: [
+      '身份资产必须保持准确；包装结构参考约束盒型、开合、比例与承重逻辑。',
+      '不得把结构参考误当成可复制的旧包装视觉。',
+    ],
     negativeRules: [
       '禁止包装合集、展开图拼贴、提案板和随机占位文字。',
       '禁止旧包装换皮或复制旧包装信息层级。',
@@ -80,6 +88,10 @@ const TEMPLATES = Object.freeze({
       '选择一种可信的商业摄影或图形观察视角。',
       '光线、裁切和满版呈现必须服务唯一传播焦点。',
     ],
+    assetRules: [
+      '身份资产必须准确且克制地进入唯一主画面。',
+      '参考资产只按指定角色约束身份、主体或结构，不得拼贴成提案板。',
+    ],
     negativeRules: [
       '禁止海报合集、样机场景、作品集板式和随机大段文字。',
       '禁止复制旧海报构图或使用 Logo 加产品的模板化结构。',
@@ -93,6 +105,32 @@ function text(value) {
 
 function unique(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(text).filter(Boolean))];
+}
+
+function resolveIndustryTemplate(industry) {
+  const value = text(industry);
+  const templates = [
+    {
+      id: 'food-and-hospitality',
+      pattern: /餐饮|食品|饮品|烘焙|茶|咖啡|礼盒/u,
+      rules: ['强调真实食欲、卫生可信度、服务场景与品类识别，不使用虚假食品结构。'],
+    },
+    {
+      id: 'children-and-ip',
+      pattern: /儿童|亲子|母婴|IP|玩具|教育/u,
+      rules: ['保持角色与品牌识别稳定，控制亲和力、年龄适配与安全感，避免廉价卡通堆叠。'],
+    },
+    {
+      id: 'culture-and-aesthetics',
+      pattern: /文化|文创|美学|艺术|东方|家居|香氛/u,
+      rules: ['以文化语义、材质克制与当代秩序建立高级感，避免传统符号直接堆砌。'],
+    },
+  ];
+  const selected = templates.find((item) => item.pattern.test(value));
+  return selected ?? {
+    id: 'general-brand',
+    rules: ['遵守当前行业的真实商业尺度、使用语境与合规表达，不制造未经确认的产品事实。'],
+  };
 }
 
 export function getDeliverablePromptTemplate(deliverableType) {
@@ -114,6 +152,16 @@ export function compileDeliverableGenerationBlueprint(input) {
       code: 'VISUAL_MEMORY_REQUIRED',
     });
   }
+  const visualCanon = input?.visualCanon;
+  if (!visualCanon || visualCanon.schemaVersion !== '6.0' || visualCanon.status !== 'confirmed'
+    || !text(visualCanon.id) || !text(visualCanon.version)) {
+    throw Object.assign(new Error('Deliverable template requires a confirmed Visual Canon.'), {
+      code: 'VISUAL_CANON_REQUIRED',
+    });
+  }
+  const industryTemplate = resolveIndustryTemplate(
+    visualCanon.visualDNA?.industryAttributes?.join('；') || visualMemory.brand_core?.industry,
+  );
   const references = (Array.isArray(input?.referenceAssets) ? input.referenceAssets : [])
     .slice(0, 5)
     .map((reference) => ({
@@ -128,7 +176,15 @@ export function compileDeliverableGenerationBlueprint(input) {
     templateVersion: DELIVERABLE_TEMPLATE_VERSION,
     templateSource: template.sourcePath,
     visualMemoryId: text(visualMemory.id),
+    visualCanonId: text(visualCanon.id),
+    visualCanonVersion: text(visualCanon.version),
     deliverableType,
+    templateStack: {
+      visualCanon: `${visualCanon.id}@${visualCanon.version}`,
+      industry: `industry:${industryTemplate.id}`,
+      asset: `asset:${template.templateId}`,
+      photography: `photography:${template.templateId}`,
+    },
     task: {
       definition: template.taskDefinition,
       userGoal: text(input?.userIntent) || template.taskDefinition,
@@ -139,26 +195,56 @@ export function compileDeliverableGenerationBlueprint(input) {
       positioning: text(visualMemory.brand_core?.positioning),
       industry: text(visualMemory.brand_core?.industry),
       temperament: unique([
+        ...(visualCanon.visualDNA?.moodAttributes ?? []),
         ...(visualMemory.brand_core?.mood ?? []),
         ...(visualMemory.brand_core?.core_temperament ?? []),
       ]),
     },
     visualDirection: unique([
+      visualCanon.visualDNA?.coreVisualMetaphor,
+      ...(visualCanon.visualDNA?.brandKeywords ?? []),
+      ...(visualCanon.sharedRules ?? []),
       ...(visualMemory.visual_dna?.graphic_language ?? []),
       ...(visualMemory.visual_opportunities ?? []),
       ...template.visualMechanism,
     ]),
     color: {
-      palette: unique(visualMemory.visual_dna?.colors),
+      palette: unique([
+        ...(visualCanon.colorSystem?.primary ?? []),
+        ...(visualCanon.colorSystem?.secondary ?? []),
+        ...(visualCanon.colorSystem?.accent ?? []),
+        ...(visualMemory.visual_dna?.colors ?? []),
+      ]),
       usageRule: template.colorUsageRule,
-      forbidden: unique(input?.forbiddenColors),
+      forbidden: unique([
+        ...(visualCanon.colorSystem?.forbidden ?? []),
+        ...(input?.forbiddenColors ?? []),
+      ]),
     },
+    industryRules: unique(industryTemplate.rules),
+    assetRules: unique([
+      ...template.assetRules,
+      ...(input?.assetRules ?? []),
+      ...references.map((reference) =>
+        `${reference.role}：${reference.rationale || '仅按已批准角色使用，不继承未授权视觉特征。'}`),
+    ]),
     material: unique([
+      ...(visualCanon.materialSystem?.materialLanguage ?? []),
+      ...(visualCanon.materialSystem?.surfaceTextures ?? []),
+      ...(visualCanon.materialSystem?.craftRules ?? []),
       ...(visualMemory.visual_dna?.materials ?? []),
       ...template.materialBehavior,
     ]),
-    composition: unique(template.composition),
+    composition: unique([
+      ...(visualCanon.compositionSystem?.compositionMethods ?? []),
+      ...(visualCanon.compositionSystem?.gridRules ?? []),
+      ...(visualCanon.compositionSystem?.negativeSpaceRules ?? []),
+      ...template.composition,
+    ]),
     photography: unique([
+      ...(visualCanon.lightingSystem?.direction ?? []),
+      ...(visualCanon.lightingSystem?.contrast ?? []),
+      ...(visualCanon.lightingSystem?.photographyAtmosphere ?? []),
       ...(visualMemory.visual_dna?.photography ?? []),
       ...template.photography,
     ]),
@@ -166,6 +252,7 @@ export function compileDeliverableGenerationBlueprint(input) {
     negativeRules: unique([
       ...(visualMemory.visual_problems ?? []),
       ...(visualMemory.generation_rules?.avoid ?? []),
+      ...(visualCanon.colorSystem?.forbidden ?? []).map((item) => `禁止颜色：${item}`),
       ...template.negativeRules,
     ]),
   };
@@ -179,9 +266,19 @@ export function validateDeliverableGenerationBlueprint(blueprint) {
       code: 'DELIVERABLE_BLUEPRINT_INVALID',
     });
   }
-  for (const field of ['templateId', 'templateSource', 'visualMemoryId', 'deliverableType']) {
+  for (const field of [
+    'templateId', 'templateSource', 'visualMemoryId', 'visualCanonId',
+    'visualCanonVersion', 'deliverableType',
+  ]) {
     if (!text(blueprint[field])) {
       throw Object.assign(new Error(`Deliverable Generation Blueprint is missing ${field}.`), {
+        code: 'DELIVERABLE_BLUEPRINT_INVALID',
+      });
+    }
+  }
+  for (const field of ['visualCanon', 'industry', 'asset', 'photography']) {
+    if (!text(blueprint.templateStack?.[field])) {
+      throw Object.assign(new Error(`Deliverable Generation Blueprint templateStack is missing ${field}.`), {
         code: 'DELIVERABLE_BLUEPRINT_INVALID',
       });
     }
@@ -205,7 +302,8 @@ export function validateDeliverableGenerationBlueprint(blueprint) {
     });
   }
   for (const field of [
-    'visualDirection', 'material', 'composition', 'photography', 'negativeRules',
+    'visualDirection', 'industryRules', 'assetRules', 'material',
+    'composition', 'photography', 'negativeRules',
   ]) {
     if (!unique(blueprint[field]).length) {
       throw Object.assign(new Error(`Deliverable Generation Blueprint ${field} must not be empty.`), {
