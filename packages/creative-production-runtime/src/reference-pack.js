@@ -184,7 +184,6 @@ export function validateReferencePack(pack) {
  */
 export function selectProviderReferencesFromPack(pack, outputType) {
   validateReferencePack(pack);
-  const anchors = pack.items.filter((item) => item.role === 'anchor');
   const locked = pack.items.filter((item) => item.role === 'locked');
   const bySignal = (pattern) => locked.find((item) =>
     item.signals.some((signal) => pattern.test(signal)));
@@ -194,7 +193,7 @@ export function selectProviderReferencesFromPack(pack, outputType) {
   }
   if (outputType === 'packaging_render') {
     const structure = bySignal(/structure_reference|packaging_structure/iu);
-    return [...(structure ? [structure] : []), ...anchors].slice(0, 2);
+    return structure ? [structure] : [];
   }
-  return anchors.slice(0, 1);
+  return [];
 }

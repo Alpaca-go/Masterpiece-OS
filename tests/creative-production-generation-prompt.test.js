@@ -186,13 +186,18 @@ test('Visual Memory prompt freezes Memory and Reference Pack while selecting tas
   assert.match(snapshot.promptFingerprint, /^[a-f0-9]{64}$/u);
   assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
     'structure_reference',
-    'core_reference',
   ]);
+  assert.equal(snapshot.anchorReferencePolicy.mode, 'visual_rules_only');
+  assert.equal(snapshot.anchorReferencePolicy.providerImageReferenceAllowed, false);
+  assert.ok(snapshot.anchorReferencePolicy.forbiddenInheritance.includes('logo'));
+  assert.ok(!snapshot.selectedReferences.some((item) => item.id === 'canon-image-1'));
   assert.ok(snapshot.selectedReferences.every((item) =>
     item.projectRelativePath.startsWith('visual-memory/reference-pack/')));
   assert.match(snapshot.instruction.finalPrompt, /Brand Context/);
   assert.match(snapshot.instruction.finalPrompt, /Asset Template \/ Reference Conditioning/);
   assert.match(snapshot.instruction.finalPrompt, /fragmented visual language/);
+  assert.match(snapshot.instruction.finalPrompt, /Anchor Visual Only Policy/);
+  assert.match(snapshot.instruction.finalPrompt, /禁止继承 Anchor Image 的标题排版/);
 });
 
 test('reading-only legacy assets cannot enter the final provider reference set', () => {
@@ -232,6 +237,11 @@ test('Generation Prompt Snapshot schema is closed and references max two identit
   ));
   assert.equal(schema.additionalProperties, false);
   assert.equal(schema.properties.selectedReferences.maxItems, 2);
+  assert.deepEqual(schema.properties.selectedReferences.items.properties.role.enum, [
+    'identity_reference',
+    'structure_reference',
+  ]);
+  assert.equal(schema.properties.anchorReferencePolicy.properties.mode.const, 'visual_rules_only');
   assert.ok(schema.required.includes('creativeDirectionId'));
   assert.ok(schema.properties.instruction.required.includes('finalPrompt'));
 });

@@ -41,6 +41,33 @@
     "styleProfileVersion": { "type": "string", "minLength": 1 },
     "visualCanonId": { "type": "string", "minLength": 1 },
     "visualCanonVersion": { "type": "string", "minLength": 1 },
+    "anchorReferencePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode", "ruleSources", "providerImageReferenceAllowed", "forbiddenInheritance"
+      ],
+      "properties": {
+        "mode": { "const": "visual_rules_only" },
+        "ruleSources": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "enum": ["visual_memory", "visual_canon"] }
+        },
+        "providerImageReferenceAllowed": { "const": false },
+        "forbiddenInheritance": {
+          "type": "array",
+          "minItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "logo", "brand_text", "title_typography", "poster_copy", "concrete_layout"
+            ]
+          }
+        }
+      }
+    },
     "lockedAssetIds": { "$ref": "#/$defs/strings" },
     "selectedReferences": {
       "type": "array",
@@ -51,7 +78,7 @@
         "required": ["id", "role", "projectRelativePath"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
-          "role": { "enum": ["identity_reference", "structure_reference", "core_reference"] },
+          "role": { "enum": ["identity_reference", "structure_reference"] },
           "projectRelativePath": { "type": "string", "minLength": 1 }
         }
       }

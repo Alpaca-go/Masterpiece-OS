@@ -573,6 +573,14 @@ export interface GenerationPromptSnapshot {
   styleProfileVersion: string;
   visualCanonId: string;
   visualCanonVersion: string;
+  anchorReferencePolicy?: {
+    mode: 'visual_rules_only';
+    ruleSources: Array<'visual_memory' | 'visual_canon'>;
+    providerImageReferenceAllowed: false;
+    forbiddenInheritance: Array<
+      'logo' | 'brand_text' | 'title_typography' | 'poster_copy' | 'concrete_layout'
+    >;
+  };
   lockedAssetIds: string[];
   selectedReferences: Array<{
     id: string;

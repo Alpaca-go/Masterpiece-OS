@@ -22,6 +22,24 @@ import {
 
 export const GENERATION_PROMPT_COMPILER_VERSION = 'visual-upgrade-1.0.0';
 export const VISUAL_MEMORY_PROMPT_COMPILER_VERSION = 'visual-memory-1.0.0';
+export const ANCHOR_VISUAL_ONLY_POLICY = Object.freeze({
+  mode: 'visual_rules_only',
+  ruleSources: Object.freeze(['visual_memory', 'visual_canon']),
+  providerImageReferenceAllowed: false,
+  forbiddenInheritance: Object.freeze([
+    'logo',
+    'brand_text',
+    'title_typography',
+    'poster_copy',
+    'concrete_layout',
+  ]),
+});
+const ANCHOR_VISUAL_ONLY_NEGATIVE_RULES = Object.freeze([
+  'Anchor Image 只用于提取色彩关系、材质语言、光线、空间关系、构图规则与品牌气质。',
+  '禁止把 Anchor Image 作为后续 Image Provider 的图片参考。',
+  '禁止从 Anchor Image 继承、重绘或仿制 Logo 与品牌文字。',
+  '禁止继承 Anchor Image 的标题排版、海报文案与图片内具体布局。',
+]);
 const TEMPLATE_OUTPUT_TYPES = new Set(['interior_scene', 'packaging_render', 'brand_poster']);
 
 const OUTPUT_TYPES = [
@@ -203,6 +221,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     ...lockedAssets.flatMap((asset) => asset.forbiddenChanges),
     ...(visualMemory?.visual_problems ?? []),
     ...(visualMemory?.generation_rules.avoid ?? []),
+    ...ANCHOR_VISUAL_ONLY_NEGATIVE_RULES,
   ]);
   const sceneDescription = blueprint.sceneDescription;
   const composition = blueprint.composition;
@@ -247,6 +266,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
           textSafety: [
             '不伪造品牌名称、价格、二维码、法律信息或不可读的小字。',
             '仅保留少量可控占位文字；品牌文字必须来自已锁定资产。',
+            ...ANCHOR_VISUAL_ONLY_NEGATIVE_RULES,
           ],
           outputSpec: ['单张图片', '无水印', '完整商业画面'],
         },
@@ -263,6 +283,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
       `Audited pack: ${referencePack.id} (${referencePack.items.length} candidates).`,
       `Task-selected Provider references: ${references.length}; never use excluded or unselected assets.`,
     ] : []),
+    '# Anchor Visual Only Policy',
+    list(ANCHOR_VISUAL_ONLY_NEGATIVE_RULES),
     compileGenerationBlueprintPrompt(blueprint),
   ].join('\n\n');
   const finalPrompt = templateCompilation
@@ -270,6 +292,8 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
         '# User Task — highest priority',
         userRequest,
         ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
+        '# Anchor Visual Only Policy',
+        list(ANCHOR_VISUAL_ONLY_NEGATIVE_RULES),
         templateCompilation.finalPrompt,
       ].join('\n\n')
     : legacyFinalPrompt;
@@ -315,6 +339,7 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     styleProfileVersion: input.styleProfile.version,
     visualCanonId: input.visualCanon.id,
     visualCanonVersion: input.visualCanon.version,
+    anchorReferencePolicy: ANCHOR_VISUAL_ONLY_POLICY,
     lockedAssetIds: lockedAssets.map((asset) => asset.id),
     selectedReferences: references,
     instruction,
@@ -410,6 +435,26 @@ export function validateGenerationPromptSnapshot(snapshot) {
   if (!Array.isArray(snapshot.selectedReferences) || snapshot.selectedReferences.length > 2) {
     throw Object.assign(new Error('Generation Reference 超过 v18.1 小参考集上限。'), {
       code: 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
+    });
+  }
+  if (snapshot.anchorReferencePolicy) {
+    const policy = snapshot.anchorReferencePolicy;
+    if (policy.mode !== 'visual_rules_only'
+      || policy.providerImageReferenceAllowed !== false
+      || !Array.isArray(policy.ruleSources)
+      || !['visual_memory', 'visual_canon'].every((source) => policy.ruleSources.includes(source))
+      || !Array.isArray(policy.forbiddenInheritance)
+      || !ANCHOR_VISUAL_ONLY_POLICY.forbiddenInheritance.every(
+        (rule) => policy.forbiddenInheritance.includes(rule),
+      )) {
+      throw Object.assign(new Error('Anchor Visual Only Policy 无效。'), {
+        code: 'ANCHOR_REFERENCE_POLICY_INVALID',
+      });
+    }
+  }
+  if (snapshot.selectedReferences.some((reference) => reference.role === 'core_reference')) {
+    throw Object.assign(new Error('Anchor Image 不得进入后续 Provider 图片参考。'), {
+      code: 'ANCHOR_PROVIDER_REFERENCE_FORBIDDEN',
     });
   }
   for (const reference of snapshot.selectedReferences) relative(reference.projectRelativePath);

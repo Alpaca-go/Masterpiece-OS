@@ -99,7 +99,7 @@ test('Reference Selection compresses 30 inputs to a diverse 3–5 image generati
   assert.ok(pack.excluded.some((item) => item.asset_id === 'asset-29'));
 });
 
-test('Provider selection uses at most two task-specific references and never sends old style images by default', () => {
+test('Provider selection never sends Anchor or old style images and keeps only task-required locked assets', () => {
   const pack = compileReferencePack({
     visualMemory: memoryWithAssets(),
     anchors: [{
@@ -112,9 +112,9 @@ test('Provider selection uses at most two task-specific references and never sen
   const spatial = selectProviderReferencesFromPack(pack, 'interior_scene');
   const packaging = selectProviderReferencesFromPack(pack, 'packaging_render');
   const vi = selectProviderReferencesFromPack(pack, 'vi_application');
-  assert.deepEqual(spatial.map((item) => item.role), ['anchor']);
-  assert.ok(packaging.length <= 2);
-  assert.ok(packaging.every((item) => item.role !== 'style'));
+  assert.deepEqual(spatial, []);
+  assert.deepEqual(packaging.map((item) => item.role), ['locked']);
+  assert.ok(packaging.every((item) => item.role !== 'style' && item.role !== 'anchor'));
   assert.deepEqual(vi.map((item) => item.role), ['locked']);
 });
 
