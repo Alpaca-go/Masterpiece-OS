@@ -63,6 +63,31 @@ test('Creative Understanding allows new mechanisms derived from locked Logo geom
   }, ['logo', 'poster'], NOW));
 });
 
+test('Creative Understanding distinguishes non-Logo freedom from Logo mutation', () => {
+  for (const creativeFreedom of [
+    '所有非 Logo 的图形元素（替换为抽象结构）。',
+    '除 Logo 外，其他图形均可替换。',
+    'Logo 之外的辅助图形可以重构。',
+    '保持 Logo 不变，其余视觉元素可改造。',
+    'Logo 不得修改；场景和构图可以重构。',
+  ]) {
+    assert.doesNotThrow(() => normalizeCreativeUnderstanding({
+      ...valid(),
+      creativeFreedom: [creativeFreedom],
+    }, ['logo', 'poster'], NOW), creativeFreedom);
+  }
+
+  for (const creativeFreedom of [
+    'Logo 图形可以重构。',
+    '可以替换品牌名和标准字。',
+  ]) {
+    assert.throws(() => normalizeCreativeUnderstanding({
+      ...valid(),
+      creativeFreedom: [creativeFreedom],
+    }, ['logo', 'poster'], NOW), { code: 'LOGO_MARKED_CHANGEABLE' });
+  }
+});
+
 test('Creative Understanding rejects missing or invented asset classifications', () => {
   assert.throws(() => normalizeCreativeUnderstanding(valid({
     assetReadingSummary: [{ assetId: 'invented', summary: '虚构', recommendedUsage: 'reading_only' }],

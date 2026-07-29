@@ -122,6 +122,23 @@ export function normalizeCreativeUnderstanding(value, assetIds, now = new Date()
   return validateCreativeUnderstanding(understanding, assetIds);
 }
 
+function removeProtectedIdentityScopes(rule, identityTerm) {
+  const clause = '[^，。；;！？!?]*';
+  const patterns = [
+    // “不得修改 Logo” / “禁止重绘品牌名”：整段是保护要求，不是修改授权。
+    new RegExp(`(?:不得|禁止|不可|不能|不应|无须|无需)${clause}${identityTerm}${clause}`, 'giu'),
+    // “Logo 不得修改” / “标准字禁止重绘”。
+    new RegExp(`${identityTerm}${clause}(?:不得|禁止|不可|不能|不应)${clause}`, 'giu'),
+    // “保持 Logo 不变” / “Logo 原样保留”。
+    new RegExp(`(?:保持|保留|锁定|固定)\\s*${identityTerm}(?:本体)?(?:\\s*(?:不变|原样))?`, 'giu'),
+    new RegExp(`${identityTerm}(?:本体)?\\s*(?:保持不变|原样保留|锁定|固定)`, 'giu'),
+    // “所有非 Logo 元素” / “除 Logo 外”明确把身份资产排除在修改范围外。
+    new RegExp(`(?:非|除(?:了|去)?|不含|不包括|不涉及|排除)\\s*(?:所有)?\\s*${identityTerm}(?:本体)?`, 'giu'),
+    new RegExp(`${identityTerm}(?:本体)?\\s*(?:之外|以外|除外)`, 'giu'),
+  ];
+  return patterns.reduce((sanitized, pattern) => sanitized.replace(pattern, ''), rule);
+}
+
 export function validateCreativeUnderstanding(understanding, assetIds = []) {
   if (!understanding || understanding.schemaVersion !== '1.0') {
     throw Object.assign(new Error('Creative Understanding 缺失。'), { code: 'CREATIVE_UNDERSTANDING_MISSING' });
@@ -166,12 +183,8 @@ export function validateCreativeUnderstanding(understanding, assetIds = []) {
     `(?:${mutationTerm}.{0,16}${identityTerm}|${identityTerm}.{0,16}${mutationTerm})`,
     'iu',
   );
-  const protectedIdentityRule = new RegExp(
-    `(?:不得|禁止|不可|不能)[^，。；;]*${identityTerm}[^，。；;]*`,
-    'giu',
-  );
   if (understanding.creativeFreedom.some((rule) =>
-    identityMutation.test(rule.replace(protectedIdentityRule, '')))) {
+    identityMutation.test(removeProtectedIdentityScopes(rule, identityTerm)))) {
     throw Object.assign(new Error('Logo 或品牌身份被错误标记为可修改。'), {
       code: 'LOGO_MARKED_CHANGEABLE',
     });
