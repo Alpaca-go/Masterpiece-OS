@@ -35,8 +35,13 @@ export function compileImageEvaluation(input) {
   }
   const visualCanonId = text(input?.visualCanonId);
   const visualCanonVersion = text(input?.visualCanonVersion);
-  if (!visualCanonId || !visualCanonVersion) {
-    throw Object.assign(new Error('Image Evaluation 必须绑定 Visual Canon。'), {
+  const generationRunId = text(input?.generationRunId);
+  const imageId = text(input?.imageId);
+  const promptSnapshotId = text(input?.promptSnapshotId);
+  if (!visualCanonId || !visualCanonVersion || !generationRunId || !imageId || !promptSnapshotId) {
+    throw Object.assign(new Error(
+      'Image Evaluation 必须绑定 Visual Canon、Generation Run、Result Image 与 Prompt Snapshot。',
+    ), {
       code: 'IMAGE_EVALUATION_INVALID',
     });
   }
@@ -65,7 +70,13 @@ export function compileImageEvaluation(input) {
     promptAdjustments: promptAdjustments.length
       ? promptAdjustments
       : ['保持当前 Visual Canon、构图、材质、光线与品牌资产关系。'],
-    evaluatedAgainst: { visualCanonId, visualCanonVersion },
+    evaluatedAgainst: {
+      visualCanonId,
+      visualCanonVersion,
+      generationRunId,
+      imageId,
+      promptSnapshotId,
+    },
   };
 }
 

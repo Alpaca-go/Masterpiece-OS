@@ -717,7 +717,24 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       contextSnapshotPath: RUN_FILES.snapshot,
       references,
       compiledPrompt: snapshot.instruction.finalPrompt,
-      promptVersion: snapshot.compilerVersion,
+      promptVersion: snapshot.promptVersion || snapshot.compilerVersion,
+      assetType: snapshot.outputType,
+      visualCanon: {
+        id: snapshot.visualCanonId,
+        version: snapshot.visualCanonVersion,
+      },
+      promptSnapshot: {
+        id: snapshot.id,
+        ...(snapshot.deliverableTemplateId
+          ? { templateId: snapshot.deliverableTemplateId }
+          : {}),
+        ...(snapshot.deliverableTemplateVersion
+          ? { templateVersion: snapshot.deliverableTemplateVersion }
+          : {}),
+        ...(snapshot.promptFingerprint
+          ? { fingerprint: snapshot.promptFingerprint }
+          : {}),
+      },
       providerId: 'dashscope',
       modelId,
       region,

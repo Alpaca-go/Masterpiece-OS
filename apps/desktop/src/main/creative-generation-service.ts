@@ -21,10 +21,14 @@ export function createCreativeGenerationService(
     dryRun?: boolean;
     outputType?: GenerationPromptSnapshot['outputType'];
     parentRunId?: string;
+    expectedVisualCanonId?: string;
+    expectedVisualCanonVersion?: string;
   }): Promise<ImageGenerationRun> {
     const snapshot = await prompts.compile(projectId, {
       userRequest: input.userRequest,
       outputType: input.outputType,
+      expectedVisualCanonId: input.expectedVisualCanonId,
+      expectedVisualCanonVersion: input.expectedVisualCanonVersion,
     });
     const session = await sessions.create(projectId);
     if (['GENERATION_READY', 'REVISION_IN_PROGRESS'].includes(session.workflowState)) {
@@ -107,6 +111,9 @@ export function createCreativeGenerationService(
       ...input,
       visualCanonId: snapshot.visualCanonId,
       visualCanonVersion: snapshot.visualCanonVersion,
+      generationRunId: runId,
+      imageId: run.images[0].imageId,
+      promptSnapshotId: snapshot.id,
     }) as ImageGenerationEvaluation;
     const decision = evaluation.deviationDetection.severity === 'major' || evaluation.overallScore < 3
       ? 'rejected'
@@ -152,7 +159,18 @@ export function createCreativeGenerationService(
         code: 'GENERATION_SNAPSHOT_MISSING',
       });
     }
-    const adjustment = compileEvaluationPromptAdjustment(run.review?.evaluation);
+    const evaluation = run.review?.evaluation;
+    if (!evaluation
+      || evaluation.evaluatedAgainst.generationRunId !== runId
+      || evaluation.evaluatedAgainst.imageId !== run.images[0]?.imageId
+      || evaluation.evaluatedAgainst.promptSnapshotId !== snapshot.id
+      || evaluation.evaluatedAgainst.visualCanonId !== snapshot.visualCanonId
+      || evaluation.evaluatedAgainst.visualCanonVersion !== snapshot.visualCanonVersion) {
+      throw Object.assign(new Error('评价与当前 Generation Result 或 Prompt Snapshot 不匹配。'), {
+        code: 'IMAGE_EVALUATION_STALE',
+      });
+    }
+    const adjustment = compileEvaluationPromptAdjustment(evaluation);
     const session = await sessions.create(projectId);
     if (session.workflowState === 'REVIEWING_OUTPUTS') {
       await sessions.transition(projectId, 'REVISION_IN_PROGRESS', '已根据版本评价建立 Prompt Adjustment。');
@@ -162,6 +180,8 @@ export function createCreativeGenerationService(
       outputType: snapshot.outputType,
       apiProfileId,
       parentRunId: runId,
+      expectedVisualCanonId: snapshot.visualCanonId,
+      expectedVisualCanonVersion: snapshot.visualCanonVersion,
     });
   }
 

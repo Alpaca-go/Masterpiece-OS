@@ -18,6 +18,9 @@ test('image evaluation compiles four decision dimensions into deterministic prom
     },
     visualCanonId: 'canon-1',
     visualCanonVersion: '2.0.0',
+    generationRunId: 'run-1',
+    imageId: 'image-1',
+    promptSnapshotId: 'snapshot-1',
   });
 
   assert.equal(evaluation.overallScore, 3);
@@ -25,6 +28,9 @@ test('image evaluation compiles four decision dimensions into deterministic prom
   assert.deepEqual(evaluation.evaluatedAgainst, {
     visualCanonId: 'canon-1',
     visualCanonVersion: '2.0.0',
+    generationRunId: 'run-1',
+    imageId: 'image-1',
+    promptSnapshotId: 'snapshot-1',
   });
   assert.equal(evaluation.promptAdjustments.length, 4);
   const adjustment = compileEvaluationPromptAdjustment(evaluation);
@@ -40,7 +46,18 @@ test('image evaluation rejects incomplete deviations and out-of-range scores', (
     assetUsability: { score: 4, notes: 'Usable.' },
     visualCanonId: 'canon-1',
     visualCanonVersion: '1.0.0',
+    generationRunId: 'run-1',
+    imageId: 'image-1',
+    promptSnapshotId: 'snapshot-1',
   };
+  assert.throws(
+    () => compileImageEvaluation({
+      ...base,
+      generationRunId: '',
+      deviationDetection: { severity: 'none', findings: [] },
+    }),
+    (error) => error.code === 'IMAGE_EVALUATION_INVALID',
+  );
   assert.throws(
     () => compileImageEvaluation({
       ...base,
@@ -77,6 +94,16 @@ test('image review schema persists evaluation dimensions and Canon traceability'
       'overallScore',
       'promptAdjustments',
       'evaluatedAgainst',
+    ],
+  );
+  assert.deepEqual(
+    evaluation.properties.evaluatedAgainst.required,
+    [
+      'visualCanonId',
+      'visualCanonVersion',
+      'generationRunId',
+      'imageId',
+      'promptSnapshotId',
     ],
   );
 });

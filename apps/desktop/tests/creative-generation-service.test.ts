@@ -99,9 +99,18 @@ test('evaluation is persisted against the generating Canon and drives a traceabl
     images: [{ imageId: 'image-1' }],
   };
   const prompts = {
-    compile: async (_projectId: string, input: { userRequest: string; outputType?: string }) => {
+    compile: async (_projectId: string, input: {
+      userRequest: string;
+      outputType?: string;
+      expectedVisualCanonId?: string;
+      expectedVisualCanonVersion?: string;
+    }) => {
       regeneratedRequest = input.userRequest;
       assert.equal(input.outputType, 'packaging_render');
+      if (input.expectedVisualCanonId) {
+        assert.equal(input.expectedVisualCanonId, 'canon-1');
+        assert.equal(input.expectedVisualCanonVersion, '2.0.0');
+      }
       return { ...parentSnapshot, id: 'snapshot-revision', userRequest: input.userRequest };
     },
     recordRun: async () => undefined,
@@ -145,6 +154,9 @@ test('evaluation is persisted against the generating Canon and drives a traceabl
   });
   assert.equal(savedReview.decision, 'rejected');
   assert.equal(savedReview.evaluation.evaluatedAgainst.visualCanonVersion, '2.0.0');
+  assert.equal(savedReview.evaluation.evaluatedAgainst.generationRunId, 'run-parent');
+  assert.equal(savedReview.evaluation.evaluatedAgainst.imageId, 'image-1');
+  assert.equal(savedReview.evaluation.evaluatedAgainst.promptSnapshotId, 'snapshot-parent');
   assert.equal(decisions[0].type, 'image_evaluation');
 
   const run = await service.regenerateFromEvaluation('project-1', 'run-parent', 'profile-image');

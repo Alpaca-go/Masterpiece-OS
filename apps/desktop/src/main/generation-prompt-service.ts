@@ -43,6 +43,8 @@ export function createGenerationPromptService(
     userRequest: string;
     outputType?: GenerationPromptSnapshot['outputType'];
     requestId?: string;
+    expectedVisualCanonId?: string;
+    expectedVisualCanonVersion?: string;
   }): Promise<GenerationPromptSnapshot> {
     const [session, creativeDirection, styleProfile, visualCanon, locks] = await Promise.all([
       sessions.create(projectId),
@@ -54,6 +56,14 @@ export function createGenerationPromptService(
     if (!creativeDirection || !styleProfile || !visualCanon) {
       throw Object.assign(new Error('生成前缺少 active Creative Direction、Style Profile 或 Visual Canon。'), {
         code: 'GENERATION_CONTEXT_MISSING',
+      });
+    }
+    if ((input.expectedVisualCanonId && visualCanon.id !== input.expectedVisualCanonId)
+      || (input.expectedVisualCanonVersion && visualCanon.version !== input.expectedVisualCanonVersion)) {
+      throw Object.assign(new Error(
+        '评价所绑定的 Visual Canon 已不是当前版本，请确认 Canon 后再建立新的生成任务。',
+      ), {
+        code: 'GENERATION_VISUAL_CANON_STALE',
       });
     }
     const visualMemory = memories ? await memories.compile(projectId) : undefined;

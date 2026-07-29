@@ -296,7 +296,16 @@ export interface ImageGenerationTask {
   creativeDifferenceTarget?: { level: 'low' | 'medium' | 'high'; explanation: string };
 
   compiledPrompt: string;
-  promptVersion: number;
+  promptVersion: number | string;
+  /** Creative Session v2 traceability fields. */
+  assetType?: string;
+  visualCanon?: { id: string; version: string };
+  promptSnapshot?: {
+    id: string;
+    templateId?: string;
+    templateVersion?: string;
+    fingerprint?: string;
+  };
 
   providerId: ImageProviderId;
   modelId: string;
@@ -632,6 +641,9 @@ export interface ImageGenerationEvaluation {
   evaluatedAgainst: {
     visualCanonId: string;
     visualCanonVersion: string;
+    generationRunId: string;
+    imageId: string;
+    promptSnapshotId: string;
   };
 }
 

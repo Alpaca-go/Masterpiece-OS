@@ -48,10 +48,15 @@
         "evaluatedAgainst": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["visualCanonId", "visualCanonVersion"],
+          "required": [
+            "visualCanonId", "visualCanonVersion", "generationRunId", "imageId", "promptSnapshotId"
+          ],
           "properties": {
             "visualCanonId": { "type": "string", "minLength": 1 },
-            "visualCanonVersion": { "type": "string", "minLength": 1 }
+            "visualCanonVersion": { "type": "string", "minLength": 1 },
+            "generationRunId": { "type": "string", "minLength": 1 },
+            "imageId": { "type": "string", "minLength": 1 },
+            "promptSnapshotId": { "type": "string", "minLength": 1 }
           }
         }
       }
