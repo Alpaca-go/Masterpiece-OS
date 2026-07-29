@@ -7,6 +7,7 @@ import type {
   CreativeSession,
   CreativeUnderstanding,
   GenerationOutput,
+  GenerationPromptSnapshot,
   GenerationSeries,
   LockedAsset as CreativeLockedAsset,
   ReferencePack,
@@ -1931,6 +1932,7 @@ export interface DesktopApi {
       apiProfileId?: string;
       size?: string;
       dryRun?: boolean;
+      outputType?: GenerationPromptSnapshot['outputType'];
     }): Promise<ImageGenerationRun>;
     retrySame(projectId: string, runId: string, apiProfileId?: string): Promise<ImageGenerationRun>;
     regenerateInstruction(projectId: string, runId: string, apiProfileId?: string): Promise<ImageGenerationRun>;

@@ -9,7 +9,7 @@ test('Conversational generation accepts only user request and records the result
   const prompts = {
     compile: async (_projectId: string, input: { userRequest: string; outputType?: string }) => {
       assert.equal(input.userRequest, '生成一张横版品牌海报');
-      assert.equal(input.outputType, undefined);
+      assert.equal(input.outputType, 'brand_poster');
       calls.push('compile');
       return snapshot;
     },
@@ -38,7 +38,10 @@ test('Conversational generation accepts only user request and records the result
     imageGeneration as never,
     sessions as never,
   );
-  const run = await service.generate('project-1', { userRequest: '生成一张横版品牌海报' });
+  const run = await service.generate('project-1', {
+    userRequest: '生成一张横版品牌海报',
+    outputType: 'brand_poster',
+  });
   assert.equal(run.runId, 'run-1');
   assert.deepEqual(calls, [
     'compile',

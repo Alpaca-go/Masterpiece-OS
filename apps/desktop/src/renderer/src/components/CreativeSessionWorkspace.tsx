@@ -55,10 +55,49 @@ const ANCHOR_DIMENSIONS: Array<{
   { key: 'overall_tone', label: '整体气质' }
 ];
 
-const QUICK_TASKS = [
-  '生成一张升级后的品牌海报',
-  '生成一张升级后的包装渲染图',
-  '生成一张升级后的店内空间效果图'
+type CreativeCommandOutputType =
+  | 'brand_poster'
+  | 'packaging_render'
+  | 'interior_scene'
+  | 'vi_application';
+
+interface QuickCommand {
+  id: string;
+  label: string;
+  request: string;
+  outputType: CreativeCommandOutputType;
+  templateLabel: string;
+}
+
+const QUICK_COMMANDS: QuickCommand[] = [
+  {
+    id: 'poster',
+    label: '品牌升级海报',
+    request: '生成一张升级后的品牌海报',
+    outputType: 'brand_poster',
+    templateLabel: 'Poster Template'
+  },
+  {
+    id: 'packaging',
+    label: '包装效果图',
+    request: '生成一张升级后的包装渲染图',
+    outputType: 'packaging_render',
+    templateLabel: 'Packaging Template'
+  },
+  {
+    id: 'interior',
+    label: '店内空间效果图',
+    request: '生成一张升级后的店内空间效果图',
+    outputType: 'interior_scene',
+    templateLabel: 'Interior Template'
+  },
+  {
+    id: 'vi',
+    label: 'VI 应用展示',
+    request: '生成一张升级后的 VI 应用物料展示图',
+    outputType: 'vi_application',
+    templateLabel: 'VI Template · 预留'
+  }
 ];
 
 const STATE_LABELS: Partial<Record<CreativeSession['workflowState'], string>> = {
@@ -112,6 +151,7 @@ export function CreativeSessionWorkspace({
   } | null>(null);
   const [compareOutputIds, setCompareOutputIds] = useState<string[]>([]);
   const [request, setRequest] = useState('');
+  const [selectedCommand, setSelectedCommand] = useState<QuickCommand | null>(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState<'loading' | 'reading' | 'generating' | ''>('loading');
 
@@ -197,9 +237,11 @@ export function CreativeSessionWorkspace({
     try {
       await window.masterpiece.creativeSession.generate(project.id, {
         userRequest,
-        apiProfileId: imageApiProfileId || undefined
+        apiProfileId: imageApiProfileId || undefined,
+        outputType: selectedCommand?.outputType
       });
       setRequest('');
+      setSelectedCommand(null);
       await refresh();
     } catch (reason) {
       setError(cleanError(reason));
@@ -360,8 +402,22 @@ export function CreativeSessionWorkspace({
             </article>
           ) : <div className="empty-state small">完成项目理解后，输入这次想生成什么。</div>}
         </div>
-        <div className="quick-task-row">
-          {QUICK_TASKS.map((item) => <button key={item} onClick={() => setRequest(item)}>{item}</button>)}
+        <div className="quick-task-row" aria-label="快捷创作入口">
+          {QUICK_COMMANDS.map((item) => <button
+            key={item.id}
+            className={selectedCommand?.id === item.id ? 'active' : ''}
+            onClick={() => {
+              setSelectedCommand(item);
+              setRequest(item.request);
+            }}
+          >{item.label}</button>)}
+        </div>
+        <div className="creative-command-pipeline">
+          <span>{selectedCommand?.templateLabel || '选择输出类型'}</span>
+          <i>→</i>
+          <span>Prompt Compiler</span>
+          <i>→</i>
+          <span>Image Generation Adapter</span>
         </div>
         <textarea
           rows={4}

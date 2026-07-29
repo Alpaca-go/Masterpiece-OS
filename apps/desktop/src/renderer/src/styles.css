@@ -468,6 +468,10 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .creative-message p { margin: 5px 0 0; font-size: 12px; line-height: 1.55; }
 .quick-task-row { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0; }
 .quick-task-row button { border: 1px solid #d9d2df; border-radius: 999px; padding: 7px 11px; background: #fff; color: #6c42d8; font: inherit; font-size: 10px; cursor: pointer; }
+.quick-task-row button.active { border-color: #6c42d8; background: #eee7ff; }
+.creative-command-pipeline { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 0 0 12px; color: #756d7c; font-size: 9px; }
+.creative-command-pipeline span { padding: 5px 8px; border-radius: 6px; background: #f4f1f7; }
+.creative-command-pipeline i { color: #a89eae; font-style: normal; }
 .creative-conversation-panel textarea { width: 100%; resize: vertical; }
 .creative-gate-note { margin: 10px 0; color: #98652c; font-size: 11px; line-height: 1.5; }
 .creative-submit-row { display: grid; grid-template-columns: auto 1fr; gap: 9px; }

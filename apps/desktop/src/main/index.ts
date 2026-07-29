@@ -456,7 +456,14 @@ function registerIpc(): void {
   registerHandler('creative-session:generate', (
     _event,
     projectId: string,
-    input: { userRequest: string; apiProfileId?: string; size?: string; dryRun?: boolean }
+    input: {
+      userRequest: string;
+      apiProfileId?: string;
+      size?: string;
+      dryRun?: boolean;
+      outputType?: 'interior_scene' | 'storefront_scene' | 'packaging_render'
+        | 'brand_poster' | 'vi_application' | 'illustration';
+    }
   ) => creativeGeneration.generate(projectId, input));
   registerHandler('creative-session:retry-same', (
     _event,
