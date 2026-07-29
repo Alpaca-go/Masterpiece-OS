@@ -107,8 +107,14 @@ test('Creative Director service calls a text-only model, retries invalid JSON an
       'direction-response-v1.0.0.raw.txt',
       'creative-direction-v1.0.0.json',
       'creative-direction-v1.0.0.md',
+      'creative-decision-v1.0.0.json',
+      'creative-decision-v1.0.0.md',
       'active-direction.json',
     ]) await fs.access(path.join(result.outputRoot, filename));
+    for (const filename of ['creative_decision.json', '05-Creative-Decision.md']) {
+      await fs.access(path.join(projectRoot, 'outputs', filename));
+    }
+    assert.equal((await service.getCreativeDecision('project-1'))?.direction_id, result.direction.id);
     const input = JSON.parse(await fs.readFile(path.join(result.outputRoot, 'direction-input-v1.0.0.json'), 'utf8'));
     assert.deepEqual(input.imageAttachments, []);
   } finally {

@@ -106,6 +106,12 @@ export interface CreativeDirection {
   designStrategy: string;
   primaryConcept: string;
   visualKeywords: string[];
+  visualDirections: Array<{
+    name: string;
+    summary: string;
+    rationale: string;
+    recommended: boolean;
+  }>;
   thingsToRemove: string[];
   thingsToKeep: string[];
   colorStrategy: string;
@@ -122,6 +128,26 @@ export interface CreativeDirection {
     runtimeVersion: string;
   };
   generatedAt: string;
+}
+
+export interface CreativeDecision {
+  schema_version: '1.0';
+  project_id: string;
+  direction_id: string;
+  direction_version: string;
+  brand_strategy: string;
+  visual_direction: {
+    recommended: string;
+    rationale: string;
+    alternatives: string[];
+  };
+  keep_assets: string[];
+  avoid_assets: string[];
+  color_system: string[];
+  material_system: string[];
+  composition_rule: string[];
+  generation_goal: string[];
+  generated_at: string;
 }
 
 /**

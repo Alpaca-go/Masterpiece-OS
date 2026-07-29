@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/creative-decision.schema.json",
+  "title": "Creative Decision Engine v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "direction_id",
+    "direction_version",
+    "brand_strategy",
+    "visual_direction",
+    "keep_assets",
+    "avoid_assets",
+    "color_system",
+    "material_system",
+    "composition_rule",
+    "generation_goal",
+    "generated_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "project_id": { "type": "string", "minLength": 1 },
+    "direction_id": { "type": "string", "minLength": 1 },
+    "direction_version": { "type": "string", "minLength": 1 },
+    "brand_strategy": { "type": "string", "minLength": 1 },
+    "visual_direction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended", "rationale", "alternatives"],
+      "properties": {
+        "recommended": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "alternatives": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "keep_assets": { "$ref": "#/$defs/nonEmptyStrings" },
+    "avoid_assets": { "$ref": "#/$defs/nonEmptyStrings" },
+    "color_system": { "$ref": "#/$defs/nonEmptyStrings" },
+    "material_system": { "$ref": "#/$defs/nonEmptyStrings" },
+    "composition_rule": { "$ref": "#/$defs/nonEmptyStrings" },
+    "generation_goal": { "$ref": "#/$defs/nonEmptyStrings" },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

@@ -46,7 +46,7 @@ export function buildCreativeDirectionPrompt(input) {
 - 原海报换产品或重新排列
 - 原包装只换材质
 - 原空间只替换表面装饰
-- 输出多个备选方向
+- 把多个候选方向混合为一套互相冲突的执行指令
 - 输出图片、Markdown 或 JSON 之外的解释
 
 必须输出且只输出一个 JSON 对象：
@@ -64,6 +64,14 @@ export function buildCreativeDirectionPrompt(input) {
   "designStrategy": string,
   "primaryConcept": string,
   "visualKeywords": string[],
+  "visualDirections": [
+    {
+      "name": string,
+      "summary": string,
+      "rationale": string,
+      "recommended": boolean
+    }
+  ],
   "thingsToRemove": string[],
   "thingsToKeep": string[],
   "colorStrategy": string,
@@ -84,6 +92,7 @@ export function buildCreativeDirectionPrompt(input) {
 5. designStrategy 与 primaryConcept 必须给出一条可执行的新方向，而不是“更高级、更现代”等空泛形容词。
 6. generationRules 必须明确禁止复制旧 VI、旧海报换内容、旧包装换皮和旧空间重新排列。
 7. 空间、包装、海报策略必须分别说明如何建立新系统。
+8. visualDirections 必须给出 2–3 个保持品牌身份一致但视觉机制不同的候选方向，并且只能推荐一个；primaryConcept、designStrategy 与 generationRules 只能执行该推荐方向。
 
 ${userDirection
     ? `用户要求的下一版变化方向（必须落实，但仍需由你扩展成完整系统）：\n${userDirection}\n`
@@ -139,6 +148,23 @@ export function normalizeCreativeDirection(value, metadata, now = new Date().toI
     designStrategy: text(value?.designStrategy),
     primaryConcept: text(value?.primaryConcept),
     visualKeywords: strings(value?.visualKeywords),
+    visualDirections: (() => {
+      const candidates = Array.isArray(value?.visualDirections) && value.visualDirections.length
+        ? value.visualDirections
+        : [{
+          name: text(value?.primaryConcept ?? value?.creativeConcept),
+          summary: text(value?.designStrategy ?? value?.visualWorld),
+          rationale: text(value?.projectTransformation ?? value?.brandReposition),
+          recommended: true,
+        }];
+      const recommendedIndex = candidates.findIndex((candidate) => candidate?.recommended === true);
+      return candidates.map((candidate, index) => ({
+        name: text(candidate?.name),
+        summary: text(candidate?.summary),
+        rationale: text(candidate?.rationale),
+        recommended: index === (recommendedIndex >= 0 ? recommendedIndex : 0),
+      }));
+    })(),
     thingsToRemove,
     thingsToKeep,
     colorStrategy: text(value?.colorStrategy),
@@ -179,6 +205,16 @@ export function validateCreativeDirection(direction) {
       });
     }
   }
+  if (!Array.isArray(direction.visualDirections)
+    || direction.visualDirections.length < 1
+    || direction.visualDirections.length > 3
+    || direction.visualDirections.some((candidate) =>
+      !text(candidate?.name) || !text(candidate?.summary) || !text(candidate?.rationale))
+    || direction.visualDirections.filter((candidate) => candidate.recommended === true).length !== 1) {
+    throw Object.assign(new Error('Creative Direction visualDirections must contain 1-3 options with one recommendation.'), {
+      code: 'CREATIVE_DIRECTION_INVALID',
+    });
+  }
   if (!['ready', 'superseded'].includes(direction.status)) {
     throw Object.assign(new Error('Creative Direction 状态无效。'), {
       code: 'CREATIVE_DIRECTION_INVALID',
@@ -217,6 +253,8 @@ export function compileCreativeDirectionMarkdown(direction) {
     `## 必须保留\n\n${list(direction.thingsToKeep)}`,
     `## 重新解释\n\n${list(direction.transformAssets)}`,
     `## 视觉关键词\n\n${list(direction.visualKeywords)}`,
+    `## 视觉方向\n\n${direction.visualDirections.map((candidate) =>
+      `### ${candidate.recommended ? '推荐：' : ''}${candidate.name}\n\n${candidate.summary}\n\n${candidate.rationale}`).join('\n\n')}`,
     `## 色彩\n\n${direction.colorStrategy}`,
     `## 材质\n\n${direction.materialStrategy}`,
     `## 构图\n\n${direction.compositionStrategy}`,

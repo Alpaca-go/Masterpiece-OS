@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type {
+  CreativeDecision,
   CreativeDirection,
   CreativeUnderstanding,
 } from '../../../../packages/project-contracts/src/index.ts';
@@ -11,6 +12,13 @@ import {
   normalizeCreativeDirection,
   validateCreativeDirection,
 } from '../../../../packages/creative-production-runtime/src/creative-direction.js';
+import {
+  CREATIVE_DECISION_JSON_FILENAME,
+  CREATIVE_DECISION_REPORT_FILENAME,
+  compileCreativeDecision,
+  compileCreativeDecisionMarkdown,
+  validateCreativeDecision,
+} from '../../../../packages/creative-production-runtime/src/creative-decision.js';
 import { parseCreativeDirectionResponse } from '../../../../packages/creative-production-runtime/src/creative-direction.js';
 import { createQwenReasoner } from '../../../../packages/model-runtime/src/qwen-reasoner.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
@@ -76,11 +84,15 @@ export function createCreativeDirectionService(
   async function locations(projectId: string) {
     const projectPaths = await projects.paths(projectId);
     const root = path.join(projectPaths.root, 'creative-session', 'direction');
+    const outputs = projectPaths.outputs || path.join(projectPaths.root, 'outputs');
     return {
       ...projectPaths,
+      outputs,
       projectRoot: projectPaths.root,
       root,
       active: path.join(root, 'active-direction.json'),
+      creativeDecision: path.join(outputs, CREATIVE_DECISION_JSON_FILENAME),
+      creativeDecisionReport: path.join(outputs, CREATIVE_DECISION_REPORT_FILENAME),
     };
   }
 
@@ -104,6 +116,18 @@ export function createCreativeDirectionService(
     return value ? readCompatibleDirection(value) : null;
   }
 
+  async function getCreativeDecision(projectId: string): Promise<CreativeDecision | null> {
+    const target = await locations(projectId);
+    const value = await readJson<CreativeDecision>(target.creativeDecision);
+    if (!value) return null;
+    try {
+      const decision = validateCreativeDecision(value) as CreativeDecision;
+      return decision.project_id === projectId ? decision : null;
+    } catch {
+      return null;
+    }
+  }
+
   async function beginDirectionState(projectId: string): Promise<void> {
     let session = await sessions.create(projectId);
     if (session.workflowState === 'FAILED' || session.workflowState === 'CANCELLED') {
@@ -120,6 +144,7 @@ export function createCreativeDirectionService(
     directionBrief?: string;
   }): Promise<{
     direction: CreativeDirection;
+    creativeDecision: CreativeDecision;
     provider: string;
     model: string;
     modelCallCount: number;
@@ -227,12 +252,26 @@ export function createCreativeDirectionService(
         );
       }
       const filename = `creative-direction-v${version}.json`;
+      const creativeDecision = compileCreativeDecision(direction) as CreativeDecision;
+      const creativeDecisionMarkdown = compileCreativeDecisionMarkdown(direction, creativeDecision);
       await writeJson(path.join(target.root, filename), direction);
       await fs.writeFile(
         path.join(target.root, `creative-direction-v${version}.md`),
         compileCreativeDirectionMarkdown(direction),
         'utf8',
       );
+      await writeJson(
+        path.join(target.root, `creative-decision-v${version}.json`),
+        creativeDecision,
+      );
+      await fs.writeFile(
+        path.join(target.root, `creative-decision-v${version}.md`),
+        creativeDecisionMarkdown,
+        'utf8',
+      );
+      await fs.mkdir(target.outputs, { recursive: true });
+      await writeJson(target.creativeDecision, creativeDecision);
+      await fs.writeFile(target.creativeDecisionReport, creativeDecisionMarkdown, 'utf8');
       await writeJson(target.active, {
         directionId: direction.id,
         version: direction.version,
@@ -253,6 +292,7 @@ export function createCreativeDirectionService(
       }
       return {
         direction,
+        creativeDecision,
         provider: credentials.provider,
         model: credentials.model,
         modelCallCount,
@@ -267,7 +307,7 @@ export function createCreativeDirectionService(
     }
   }
 
-  return { generate, getActive, list };
+  return { generate, getActive, getCreativeDecision, list };
 }
 
 export type CreativeDirectionService = ReturnType<typeof createCreativeDirectionService>;

@@ -67,6 +67,14 @@ export {
   compileCreativeDirectionMarkdown,
 } from './creative-direction.js';
 export {
+  CREATIVE_DECISION_SCHEMA_VERSION,
+  CREATIVE_DECISION_REPORT_FILENAME,
+  CREATIVE_DECISION_JSON_FILENAME,
+  compileCreativeDecision,
+  validateCreativeDecision,
+  compileCreativeDecisionMarkdown,
+} from './creative-decision.js';
+export {
   GENERATION_BLUEPRINT_COMPILER_VERSION,
   compileGenerationBlueprint,
   validateGenerationBlueprint,

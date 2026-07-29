@@ -9,7 +9,7 @@
     "brandReposition", "creativeConcept", "visualWorld", "visualMechanism",
     "keepAssets", "removeAssets", "transformAssets",
     "projectTransformation", "oldVisualProblems", "designStrategy", "primaryConcept",
-    "visualKeywords", "thingsToRemove", "thingsToKeep", "colorStrategy",
+    "visualKeywords", "visualDirections", "thingsToRemove", "thingsToKeep", "colorStrategy",
     "materialStrategy", "compositionStrategy", "photographyStrategy",
     "generationRules", "source", "generatedAt"
   ],
@@ -32,6 +32,22 @@
     "designStrategy": { "type": "string", "minLength": 1 },
     "primaryConcept": { "type": "string", "minLength": 1 },
     "visualKeywords": { "$ref": "#/$defs/nonEmptyStrings" },
+    "visualDirections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "summary", "rationale", "recommended"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 },
+          "recommended": { "type": "boolean" }
+        }
+      }
+    },
     "thingsToRemove": { "$ref": "#/$defs/nonEmptyStrings" },
     "thingsToKeep": { "$ref": "#/$defs/nonEmptyStrings" },
     "colorStrategy": { "type": "string", "minLength": 1 },
