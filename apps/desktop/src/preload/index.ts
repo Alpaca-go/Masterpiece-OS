@@ -139,6 +139,10 @@ const api: DesktopApi = {
       ipcRenderer.invoke('creative-production:list-locked-assets', projectId),
     listAnchorCandidates: (projectId) =>
       ipcRenderer.invoke('creative-production:list-anchor-candidates', projectId),
+    listVisualExplorations: (projectId) =>
+      ipcRenderer.invoke('creative-production:list-visual-explorations', projectId),
+    generateVisualExploration: (projectId, input) =>
+      ipcRenderer.invoke('creative-production:generate-visual-exploration', projectId, input),
     confirmStyleProfile: (projectId, profileId) =>
       ipcRenderer.invoke('creative-production:confirm-style-profile', projectId, profileId),
     generateAnchor: (projectId, input) =>

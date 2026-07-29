@@ -21,6 +21,9 @@ export type CreativeWorkflowState =
   | 'CREATIVE_DECISION_COMPLETED'
   | 'STYLE_PROFILE_COMPILING'
   | 'STYLE_PROFILE_CREATED'
+  | 'VISUAL_EXPLORATION_GENERATING'
+  | 'VISUAL_EXPLORATION_READY'
+  | 'VISUAL_DIRECTION_SELECTED'
   | 'PRIMARY_ANCHOR_READY'
   | 'PRIMARY_ANCHOR_GENERATING'
   | 'PRIMARY_ANCHOR_PENDING_REVIEW'
@@ -35,6 +38,45 @@ export type CreativeWorkflowState =
   | 'COMPLETED'
   | 'FAILED'
   | 'CANCELLED';
+
+export type VisualConceptType =
+  | 'space'
+  | 'packaging'
+  | 'product_scene'
+  | 'graphic'
+  | 'material';
+
+export interface VisualExplorationConcept {
+  id: string;
+  index: number;
+  type: VisualConceptType;
+  title: string;
+  objective: string;
+  outputType: 'interior_scene' | 'packaging_render' | 'brand_poster';
+  aspectRatio: '16:9' | '4:5' | '1:1';
+  status: 'planned' | 'generating' | 'prepared' | 'generated' | 'failed';
+  generationRunId?: string;
+  imagePath?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VisualExploration {
+  schemaVersion: '1.0';
+  id: string;
+  projectId: string;
+  creativeDirectionId: string;
+  creativeDirectionVersion: string;
+  styleProfileId: string;
+  styleProfileVersion: string;
+  status: 'planned' | 'generating' | 'prepared' | 'ready' | 'partially_ready' | 'failed';
+  conceptCount: number;
+  concepts: VisualExplorationConcept[];
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface CreativeSessionDecision {
   id: string;
@@ -336,6 +378,7 @@ export interface CreativeSession {
   lockedAssetIds: string[];
   decisions: CreativeSessionDecision[];
   activeStyleProfileId?: string;
+  activeVisualExplorationId?: string;
   activeVisualCanonId?: string;
   activeSeriesId?: string;
   history: CreativeSessionHistoryEntry[];

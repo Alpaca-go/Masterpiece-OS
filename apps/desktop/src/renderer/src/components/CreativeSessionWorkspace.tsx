@@ -10,7 +10,8 @@ import type {
   ImageGenerationRunSummary,
   ProjectRecord,
   StyleProfile,
-  VisualCanon
+  VisualCanon,
+  VisualExploration
 } from '../../../shared/types';
 import { cleanError } from '../utils';
 
@@ -54,6 +55,7 @@ interface EvaluationDraft {
 
 interface ProductionState {
   anchors: AnchorCandidate[];
+  explorations: VisualExploration[];
   styles: StyleProfile[];
   canons: VisualCanon[];
   series: GenerationSeries[];
@@ -125,6 +127,9 @@ const STATE_LABELS: Partial<Record<CreativeSession['workflowState'], string>> = 
   DIRECTION_READY: '创意方向已制定',
   CREATIVE_DECISION_COMPLETED: '创意决策已完成',
   STYLE_PROFILE_CREATED: '风格档案已建立',
+  VISUAL_EXPLORATION_GENERATING: '正在探索视觉方向',
+  VISUAL_EXPLORATION_READY: '视觉方向等待设计师选择',
+  VISUAL_DIRECTION_SELECTED: '设计师已选择视觉方向',
   PRIMARY_ANCHOR_PENDING_REVIEW: '等待确认主视觉锚点',
   PRIMARY_ANCHOR_CONFIRMED: '主视觉锚点已确认',
   VISUAL_CANON_CONFIRMED: '视觉规范已确认',
@@ -147,12 +152,16 @@ export function CreativeSessionWorkspace({
   const [runViews, setRunViews] = useState<RunView[]>([]);
   const [production, setProduction] = useState<ProductionState>({
     anchors: [],
+    explorations: [],
     styles: [],
     canons: [],
     series: [],
     outputs: []
   });
-  const [tab, setTab] = useState<'foundation' | 'anchor' | 'visual-system' | 'versions'>('foundation');
+  const [tab, setTab] = useState<
+    'foundation' | 'exploration' | 'anchor' | 'visual-system' | 'versions'
+  >('foundation');
+  const [explorationCount, setExplorationCount] = useState(5);
   const [anchorPurpose, setAnchorPurpose] = useState('建立新的品牌主视觉方向');
   const [anchorCandidateCount, setAnchorCandidateCount] = useState(3);
   const [selectedAnchorId, setSelectedAnchorId] = useState('');
@@ -177,9 +186,10 @@ export function CreativeSessionWorkspace({
   const [busy, setBusy] = useState<'loading' | 'reading' | 'generating' | ''>('loading');
 
   const refresh = useCallback(async () => {
-    const [next, anchors, styles, canons, series] = await Promise.all([
+    const [next, anchors, explorations, styles, canons, series] = await Promise.all([
       window.masterpiece.creativeSession.getWorkspace(project.id),
       window.masterpiece.creativeProduction.listAnchorCandidates(project.id),
+      window.masterpiece.creativeProduction.listVisualExplorations(project.id),
       window.masterpiece.creativeProduction.listStyleProfiles(project.id),
       window.masterpiece.creativeProduction.listVisualCanons(project.id),
       window.masterpiece.creativeProduction.listSeries(project.id)
@@ -201,7 +211,7 @@ export function CreativeSessionWorkspace({
     const outputs = activeSeries
       ? await window.masterpiece.creativeProduction.listFormalAssets(project.id, activeSeries.id)
       : [];
-    setProduction({ anchors, styles, canons, series, outputs });
+    setProduction({ anchors, explorations, styles, canons, series, outputs });
     const fullRuns = await Promise.all(next.runs.slice(0, 12).map(async (summary) => {
       const run = await window.masterpiece.creativeSession.getRun(summary.runId);
       if (!run) return null;
@@ -462,6 +472,7 @@ export function CreativeSessionWorkspace({
     {error && <div className="notice error top-notice">{error}</div>}
     <nav className="creative-workspace-tabs" aria-label="Creative Production 工作区">
       <button className={tab === 'foundation' ? 'active' : ''} onClick={() => setTab('foundation')}>Creative Foundation</button>
+      <button className={tab === 'exploration' ? 'active' : ''} onClick={() => setTab('exploration')}>Visual Exploration</button>
       <button className={tab === 'anchor' ? 'active' : ''} onClick={() => setTab('anchor')}>Anchor</button>
       <button className={tab === 'visual-system' ? 'active' : ''} onClick={() => setTab('visual-system')}>Visual System</button>
       <button className={tab === 'versions' ? 'active' : ''} onClick={() => setTab('versions')}>Versions</button>
@@ -576,6 +587,71 @@ export function CreativeSessionWorkspace({
           </article>) : <div className="empty-state small">尚无生成结果。</div>}
         </div>
       </aside>
+    </div>}
+
+    {tab === 'exploration' && <div className="visual-exploration-workspace">
+      <section className="panel visual-exploration-head">
+        <div>
+          <p className="eyebrow">VISUAL EXPLORATION SYSTEM</p>
+          <h2>在建立 Visual Canon 前探索多个视觉方向</h2>
+          <p>Concept Image 只表达色彩、材质、光线、空间和构图关系，不继承 Logo、文字与具体版式。</p>
+        </div>
+        <div className="visual-exploration-controls">
+          <label>概念数量
+            <select
+              value={explorationCount}
+              onChange={(event) => setExplorationCount(Number(event.target.value))}
+            >
+              {[4, 5, 6].map((count) => <option key={count} value={count}>{count} 张</option>)}
+            </select>
+          </label>
+          <button
+            className="button primary"
+            disabled={
+              workspace?.styleProfile?.status !== 'confirmed'
+              || !imageApiProfileId
+              || Boolean(busy)
+            }
+            onClick={() => void runProductionAction(
+              () => window.masterpiece.creativeProduction.generateVisualExploration(project.id, {
+                conceptCount: explorationCount,
+                apiProfileId: imageApiProfileId || undefined
+              })
+            )}
+          >生成 Visual Exploration</button>
+        </div>
+      </section>
+      {production.explorations.length ? production.explorations.map((exploration) =>
+        <section className="panel" key={exploration.id}>
+          <div className="section-heading">
+            <span>{exploration.conceptCount}</span>
+            <div>
+              <h2>Concept Images</h2>
+              <p>{exploration.status} · Direction {exploration.creativeDirectionVersion}</p>
+            </div>
+          </div>
+          <div className="visual-concept-grid">
+            {exploration.concepts.map((concept) => {
+              const view = concept.generationRunId
+                ? runViews.find((item) => item.run.runId === concept.generationRunId)
+                : undefined;
+              return <article key={concept.id}>
+                {view?.imageUrls[0]
+                  ? <img src={view.imageUrls[0]} alt={concept.title} />
+                  : <div className="history-image-placeholder">{concept.status}</div>}
+                <div>
+                  <small>{String(concept.index).padStart(2, '0')} · {concept.type}</small>
+                  <h3>{concept.title}</h3>
+                  <p>{concept.objective}</p>
+                  {concept.errorMessage && <p className="error-inline">{concept.errorMessage}</p>}
+                </div>
+              </article>;
+            })}
+          </div>
+        </section>
+      ) : <section className="panel empty-state">
+        尚未生成视觉探索。系统会创建 Space、Packaging、Product Scene、Graphic 与 Material Concept。
+      </section>}
     </div>}
 
     {tab === 'anchor' && <div className="creative-production-grid">

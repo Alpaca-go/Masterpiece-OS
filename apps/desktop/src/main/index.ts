@@ -45,6 +45,10 @@ import { createCreativeGenerationService, type CreativeGenerationService } from 
 import { createGenerationSeriesService } from './generation-series-service';
 import { createFormalAssetsService } from './formal-assets-service';
 import { createAnchorGenerationService, type AnchorGenerationService } from './anchor-generation-service';
+import {
+  createVisualExplorationService,
+  type VisualExplorationService
+} from './visual-exploration-service';
 import { createCreativeProductionBootstrapService } from './creative-production-bootstrap-service';
 import { createQuickStyleExtractionService } from './quick-style-extraction-service';
 import {
@@ -97,6 +101,7 @@ const projects = createProjectStore(getSettings);
 let imageGeneration: ImageGenerationService;
 let creativeGeneration: CreativeGenerationService;
 let anchorGeneration: AnchorGenerationService;
+let visualExplorations: VisualExplorationService;
 let generationSeriesExecution: GenerationSeriesExecutionService;
 const pipeline = createPipelineService(
   projects,
@@ -526,6 +531,17 @@ function registerIpc(): void {
   ) => styleProfiles.confirm(projectId, profileId));
   registerHandler('creative-production:list-anchor-candidates', (_event, projectId: string) =>
     anchorGeneration.list(projectId));
+  registerHandler('creative-production:list-visual-explorations', (_event, projectId: string) =>
+    visualExplorations.list(projectId));
+  registerHandler('creative-production:generate-visual-exploration', (
+    _event,
+    projectId: string,
+    input: {
+      conceptCount?: number;
+      apiProfileId?: string;
+      dryRun?: boolean;
+    }
+  ) => visualExplorations.generate(projectId, input));
   registerHandler('creative-production:generate-anchor', (
     _event,
     projectId: string,
@@ -670,6 +686,13 @@ if (gotTheLock) app.whenReady().then(async () => {
     generationBlueprints,
     visualMemory,
     referencePacks
+  );
+  visualExplorations = createVisualExplorationService(
+    projects,
+    creativeSessions,
+    creativeDirections,
+    styleProfiles,
+    imageGeneration
   );
   generationSeriesExecution = createGenerationSeriesExecutionService(
     generationSeries,

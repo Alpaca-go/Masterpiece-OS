@@ -13,6 +13,7 @@ import type {
   ReferencePack,
   StyleProfile,
   VisualMemory,
+  VisualExploration,
   VisualCanon
 } from '../../../../packages/project-contracts/src/index';
 export type {
@@ -26,6 +27,7 @@ export type {
   ReferencePack,
   StyleProfile,
   VisualMemory,
+  VisualExploration,
   VisualCanon
 } from '../../../../packages/project-contracts/src/index';
 
@@ -1978,6 +1980,12 @@ export interface DesktopApi {
     }>;
     listLockedAssets(projectId: string): Promise<CreativeLockedAsset[]>;
     listAnchorCandidates(projectId: string): Promise<AnchorCandidate[]>;
+    listVisualExplorations(projectId: string): Promise<VisualExploration[]>;
+    generateVisualExploration(projectId: string, input: {
+      conceptCount?: number;
+      apiProfileId?: string;
+      dryRun?: boolean;
+    }): Promise<VisualExploration>;
     confirmStyleProfile(projectId: string, profileId: string): Promise<StyleProfile>;
     generateAnchor(projectId: string, input: {
       purpose?: string;

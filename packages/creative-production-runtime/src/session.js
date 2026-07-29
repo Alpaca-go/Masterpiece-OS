@@ -5,6 +5,7 @@ export const CREATIVE_WORKFLOW_STATES = Object.freeze([
   'SESSION_CREATED', 'DIRECTION_GENERATING', 'CREATIVE_DIRECTION_GENERATING',
   'DIRECTION_READY', 'CREATIVE_DIRECTION_READY', 'BLUEPRINT_GENERATING', 'BLUEPRINT_READY',
   'CREATIVE_DECISION_COMPLETED', 'STYLE_PROFILE_COMPILING', 'STYLE_PROFILE_CREATED',
+  'VISUAL_EXPLORATION_GENERATING', 'VISUAL_EXPLORATION_READY', 'VISUAL_DIRECTION_SELECTED',
   'PRIMARY_ANCHOR_READY', 'PRIMARY_ANCHOR_GENERATING', 'PRIMARY_ANCHOR_PENDING_REVIEW',
   'PRIMARY_ANCHOR_CONFIRMED', 'CANON_BUILDING', 'VISUAL_CANON_CONFIRMED',
   'GENERATION_READY', 'GENERATING', 'IMAGE_GENERATING', 'REVIEWING_OUTPUTS', 'REVISION_IN_PROGRESS',
@@ -163,6 +164,7 @@ export function updateSessionEntityReference(session, entityType, entity, now = 
     creative_direction: 'activeCreativeDirectionId',
     generation_blueprint: 'activeGenerationBlueprintId',
     style_profile: 'activeStyleProfileId',
+    visual_exploration: 'activeVisualExplorationId',
     visual_canon: 'activeVisualCanonId',
     generation_series: 'activeSeriesId',
   };
@@ -274,6 +276,7 @@ export function migrateLegacyCreativeSession(legacy, now = new Date().toISOStrin
   let migrated = {
     ...session,
     activeStyleProfileId: legacy?.activeStyleProfileId || legacy?.styleProfileId || undefined,
+    activeVisualExplorationId: legacy?.activeVisualExplorationId || undefined,
     activeVisualCanonId: legacy?.activeVisualCanonId || legacy?.visualCanonId || undefined,
     activeSeriesId: legacy?.activeSeriesId || legacy?.seriesId || undefined,
     decisions: Array.isArray(legacy?.decisions)

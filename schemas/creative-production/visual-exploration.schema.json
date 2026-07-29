@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/visual-exploration.schema.json",
+  "title": "Visual Exploration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "creativeDirectionId", "creativeDirectionVersion",
+    "styleProfileId", "styleProfileVersion", "status", "conceptCount", "concepts",
+    "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "creativeDirectionId": { "type": "string", "minLength": 1 },
+    "creativeDirectionVersion": { "type": "string", "minLength": 1 },
+    "styleProfileId": { "type": "string", "minLength": 1 },
+    "styleProfileVersion": { "type": "string", "minLength": 1 },
+    "status": {
+      "enum": ["planned", "generating", "prepared", "ready", "partially_ready", "failed"]
+    },
+    "conceptCount": { "type": "integer", "minimum": 4, "maximum": 6 },
+    "concepts": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "index", "type", "title", "objective", "outputType",
+          "aspectRatio", "status", "createdAt", "updatedAt"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "index": { "type": "integer", "minimum": 1, "maximum": 6 },
+          "type": { "enum": ["space", "packaging", "product_scene", "graphic", "material"] },
+          "title": { "type": "string", "minLength": 1 },
+          "objective": { "type": "string", "minLength": 1 },
+          "outputType": { "enum": ["interior_scene", "packaging_render", "brand_poster"] },
+          "aspectRatio": { "enum": ["16:9", "4:5", "1:1"] },
+          "status": { "enum": ["planned", "generating", "prepared", "generated", "failed"] },
+          "generationRunId": { "type": "string", "minLength": 1 },
+          "imagePath": { "type": "string", "minLength": 1 },
+          "errorCode": { "type": "string", "minLength": 1 },
+          "errorMessage": { "type": "string", "minLength": 1 },
+          "createdAt": { "type": "string", "minLength": 1 },
+          "updatedAt": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "minLength": 1 },
+    "updatedAt": { "type": "string", "minLength": 1 }
+  }
+}

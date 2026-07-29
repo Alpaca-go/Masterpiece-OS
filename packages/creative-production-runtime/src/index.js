@@ -110,3 +110,11 @@ export {
   reviewGenerationOutput,
   validateGenerationOutput,
 } from './revision-assets.js';
+export {
+  VISUAL_CONCEPT_TYPES,
+  VISUAL_EXPLORATION_MIN_CONCEPTS,
+  VISUAL_EXPLORATION_MAX_CONCEPTS,
+  createVisualExploration,
+  updateVisualExplorationConcept,
+  validateVisualExploration,
+} from './visual-exploration.js';

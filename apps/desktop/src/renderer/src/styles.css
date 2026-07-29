@@ -431,6 +431,17 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .visual-rule-library article p { margin: 10px 0 0; color: #8b858d; font-size: 10px; }
 .generation-series-workspace { display: grid; gap: 18px; }
 .generation-history-overview { margin-bottom: 0; }
+.visual-exploration-workspace { display: grid; gap: 18px; }
+.visual-exploration-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; }
+.visual-exploration-head > div:first-child { max-width: 720px; }
+.visual-exploration-controls { display: flex; align-items: end; gap: 10px; }
+.visual-exploration-controls label { display: grid; gap: 6px; font-size: 11px; }
+.visual-concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 16px; }
+.visual-concept-grid article { overflow: hidden; border: 1px solid #e4ded7; border-radius: 12px; background: #fff; }
+.visual-concept-grid img, .visual-concept-grid .history-image-placeholder { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.visual-concept-grid article > div:last-child { padding: 14px; }
+.visual-concept-grid h3 { margin: 5px 0; }
+.visual-concept-grid p { margin: 0; font-size: 11px; color: #6f6874; }
 .generation-history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
 .generation-history-grid article { overflow: hidden; border: 1px solid #e4ded7; border-radius: 11px; background: #fff; }
 .generation-history-grid img, .history-image-placeholder { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
