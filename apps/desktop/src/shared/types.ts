@@ -2027,6 +2027,7 @@ export interface DesktopApi {
     /** §16 编译 Prompt 并执行三层 Gate（不提交 Provider）。 */
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
     compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
+    getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
     /** §16 编译 + Gate 通过后提交生图任务。 */
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
     getRun(runId: string): Promise<ImageGenerationRun>;

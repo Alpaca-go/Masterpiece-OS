@@ -12,8 +12,8 @@ export function compileVNextImageGeneration(input) {
     taskContract,
     route,
     adapter,
+    projectPromptAsset: input.projectPromptAsset,
   });
   const payload = adapter.compile(compiledPrompt);
   return { taskContract, route, compiledPrompt, payload };
 }
-

@@ -4,8 +4,12 @@ import type {
   VNextCompiledPrompt,
   VNextModelPromptPayload,
   VNextTaskContract,
+  VNextProjectPromptAsset,
 } from '../../../../../packages/image-generation-contracts/src/index.ts';
-import { compileVNextImageGeneration } from '../../../../../packages/image-generation-runtime/src/vnext/index.js';
+import {
+  compileVNextImageGeneration,
+  listVNextTemplateOptions,
+} from '../../../../../packages/image-generation-runtime/src/vnext/index.js';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
@@ -41,9 +45,20 @@ export function createVNextImageGenerationService(
   async function compile(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult> {
     const context = await projectContext.getVNext(input.projectId)
       .catch(() => projectContext.rebuildVNext(input.projectId));
+    const paths = await projects.paths(input.projectId);
+    const projectPromptAsset = await fs.readFile(
+      path.join(
+        paths.root,
+        'image-generation-vnext',
+        'prompt-assets',
+        `${input.task.deliverableFamily}.json`,
+      ),
+      'utf8',
+    ).then((value) => JSON.parse(value) as VNextProjectPromptAsset).catch(() => undefined);
     const result = compileVNextImageGeneration({
       projectContext: context,
       model: input.model,
+      projectPromptAsset,
       task: {
         ...input.task,
         projectId: input.projectId,
@@ -51,7 +66,6 @@ export function createVNextImageGenerationService(
     }) as Omit<CompileVNextGenerationResult, 'artifactDirectory'> & {
       route: unknown;
     };
-    const paths = await projects.paths(input.projectId);
     const artifactDirectory = path.join(
       paths.root,
       'image-generation-vnext',
@@ -98,7 +112,7 @@ export function createVNextImageGenerationService(
     };
   }
 
-  return { compile };
+  return { compile, listOptions: listVNextTemplateOptions };
 }
 
 export type VNextImageGenerationService = ReturnType<typeof createVNextImageGenerationService>;

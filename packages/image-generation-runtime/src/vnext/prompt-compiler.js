@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { assertVNextProjectPromptAsset } from './project-prompt-asset.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
 export const VNEXT_PROMPT_COMPILER_VERSION = '1.0.0';
@@ -23,7 +24,7 @@ function section(title, values) {
   return `【${title}】\n${values.map((value) => `- ${value}`).join('\n')}`;
 }
 
-export function compileVNextPrompt({ projectContext, taskContract, route, adapter }) {
+export function compileVNextPrompt({ projectContext, taskContract, route, adapter, projectPromptAsset }) {
   if (projectContext.schemaVersion !== '2.0') {
     throw new Error('vNext prompt compiler requires Project Visual Context 2.0');
   }
@@ -31,12 +32,20 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     throw new Error('Task Contract and Project Visual Context belong to different projects');
   }
   const templates = route.templates;
+  const promptAsset = projectPromptAsset
+    ? assertVNextProjectPromptAsset(
+      projectPromptAsset,
+      taskContract.projectId,
+      taskContract.deliverableFamily,
+    )
+    : null;
   const templateSections = (key) => cleanList(
     templates.map((template) => template.sections?.[key] ?? []),
   );
   const negativeConstraints = cleanList(
     taskContract.mustAvoid,
     projectContext.styleBoundaries.mustAvoid,
+    promptAsset?.negativeConstraints,
     templateSections('negative'),
   );
   const parts = [
@@ -70,6 +79,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       projectContext.visualIdentity.compositionBehavior,
       projectContext.visualIdentity.lightingBehavior,
     )),
+    section('项目级 Prompt 资产', cleanList(promptAsset?.promptFragments)),
     section('子类型专业要求', templateSections('professionalRequirements')),
     section('镜头与构图', cleanList(
       templateSections('composition'),
@@ -88,6 +98,9 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       shotTemplateId: route.shotTemplateId,
       templateVersions: route.templateVersions,
     },
+    projectPromptAsset: promptAsset
+      ? { id: promptAsset.id, version: promptAsset.version }
+      : null,
     finalPrompt,
   };
   return {
@@ -111,7 +124,10 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       adapterId: adapter.id,
       adapterVersion: adapter.version,
       sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify(traceValue)).digest('hex'),
+      ...(promptAsset ? {
+        projectPromptAssetId: promptAsset.id,
+        projectPromptAssetVersion: promptAsset.version,
+      } : {}),
     },
   };
 }
-

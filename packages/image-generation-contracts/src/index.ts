@@ -853,6 +853,8 @@ export interface VNextCompiledPrompt {
     adapterId: string;
     adapterVersion: string;
     sourceFingerprint: string;
+    projectPromptAssetId?: string;
+    projectPromptAssetVersion?: number;
   };
 }
 
@@ -865,4 +867,18 @@ export interface VNextModelPromptPayload {
   aspectRatio: VNextAspectRatio;
   count: 1 | 2;
   referenceAssetIds: string[];
+}
+
+export interface VNextProjectPromptAsset {
+  schemaVersion: '1.0';
+  id: string;
+  projectId: string;
+  deliverableFamily: VNextDeliverableFamily;
+  name: string;
+  version: number;
+  promptFragments: string[];
+  negativeConstraints: string[];
+  source: 'user_saved' | 'confirmed_result' | 'migration';
+  createdAt: string;
+  updatedAt: string;
 }

@@ -56,6 +56,7 @@ export function registerImageGenerationIpc(
   ipcMain.handle('image-generation:get-image-data-url', async (_event, runId: string, imageId: string) =>
     service.readImageDataUrl(runId, imageId));
   if (vnextService) {
+    ipcMain.handle('image-generation:vnext-options', async () => vnextService.listOptions());
     ipcMain.handle('image-generation:vnext-compile', async (_event, input: CompileVNextGenerationInput) =>
       vnextService.compile(input));
   }

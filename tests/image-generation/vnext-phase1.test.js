@@ -92,8 +92,8 @@ test('Phase 1 routes reception space only through space templates', () => {
       'shot.space.entrance_three_quarter_wide',
     ],
   );
-  assert.match(result.compiledPrompt.finalPrompt, /真实、可进入/u);
-  assert.match(result.compiledPrompt.finalPrompt, /VI 展示板/u);
+  assert.match(result.compiledPrompt.finalPrompt, /real, enterable/u);
+  assert.match(result.compiledPrompt.finalPrompt, /VI display board/u);
   assert.match(result.compiledPrompt.finalPrompt, /Create a buildable reception interior/u);
   assert.equal(result.payload.size, '2K');
   assert.equal(result.payload.count, 1);
@@ -105,4 +105,3 @@ test('Phase 1 public templates contain no project-specific aesthetic answer', ()
   const serialized = JSON.stringify(listVNextTemplates());
   assert.doesNotMatch(serialized, /九州|冯烫烫|深紫|陶红|羽翼/u);
 });
-

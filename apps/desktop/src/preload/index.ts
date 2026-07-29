@@ -96,6 +96,7 @@ const api: DesktopApi = {
     getSourcePreview: (input) => ipcRenderer.invoke('image-generation:get-source-preview', input),
     compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
     compileVNext: (input) => ipcRenderer.invoke('image-generation:vnext-compile', input),
+    getVNextOptions: () => ipcRenderer.invoke('image-generation:vnext-options'),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
     listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),
