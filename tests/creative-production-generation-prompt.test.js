@@ -149,17 +149,21 @@ test('Visual Memory prompt freezes Memory and Reference Pack while selecting tas
     referencePack,
   }, NOW);
   assert.equal(validateGenerationPromptSnapshot(snapshot), snapshot);
-  assert.equal(snapshot.compilerVersion, 'visual-memory-1.0.0');
+  assert.equal(snapshot.compilerVersion, 'prompt-template-1.0.0');
   assert.equal(snapshot.visualMemoryId, visualMemory.id);
   assert.equal(snapshot.referencePackId, referencePack.id);
+  assert.equal(snapshot.deliverableTemplateId, 'packaging');
+  assert.equal(snapshot.deliverableTemplateVersion, '1.0.0');
+  assert.match(snapshot.promptVersion, /packaging@1\.0\.0/u);
+  assert.match(snapshot.promptFingerprint, /^[a-f0-9]{64}$/u);
   assert.deepEqual(snapshot.selectedReferences.map((item) => item.role), [
     'structure_reference',
     'core_reference',
   ]);
   assert.ok(snapshot.selectedReferences.every((item) =>
     item.projectRelativePath.startsWith('visual-memory/reference-pack/')));
-  assert.match(snapshot.instruction.finalPrompt, /Visual Memory/);
-  assert.match(snapshot.instruction.finalPrompt, /Reference Pack Policy/);
+  assert.match(snapshot.instruction.finalPrompt, /Brand Context/);
+  assert.match(snapshot.instruction.finalPrompt, /Reference Conditioning/);
   assert.match(snapshot.instruction.finalPrompt, /fragmented visual language/);
 });
 

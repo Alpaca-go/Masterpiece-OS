@@ -524,6 +524,13 @@ export interface GenerationPromptSnapshot {
   generationBlueprint?: GenerationBlueprint;
   visualMemory?: VisualMemory;
   referencePack?: ReferencePack;
+  deliverableTemplateId?: 'interior' | 'packaging' | 'poster';
+  deliverableTemplateVersion?: string;
+  deliverableTemplateBlueprint?: Record<string, unknown>;
+  templateCompiledPrompt?: string;
+  promptVersion?: string;
+  promptFingerprint?: string;
+  promptSourceMap?: Record<string, unknown>;
   outputType: 'interior_scene' | 'storefront_scene' | 'packaging_render' | 'brand_poster' | 'vi_application' | 'illustration';
   styleProfileId: string;
   styleProfileVersion: string;

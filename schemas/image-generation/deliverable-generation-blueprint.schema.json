@@ -5,7 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schemaVersion", "templateId", "templateVersion", "templateSource",
+    "schemaVersion", "templateId", "templateVersion", "templateSource", "visualMemoryId",
     "deliverableType", "task", "brandContext", "visualDirection", "color",
     "material", "composition", "photography", "referenceAssets", "negativeRules"
   ],
@@ -14,6 +14,7 @@
     "templateId": { "enum": ["interior", "packaging", "poster"] },
     "templateVersion": { "const": "1.0.0" },
     "templateSource": { "type": "string", "minLength": 1 },
+    "visualMemoryId": { "type": "string", "minLength": 1 },
     "deliverableType": { "enum": ["interior_scene", "packaging_render", "brand_poster"] },
     "task": {
       "type": "object",

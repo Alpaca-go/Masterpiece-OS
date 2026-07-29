@@ -48,4 +48,9 @@ export {
   compileDeliverableGenerationBlueprint,
   validateDeliverableGenerationBlueprint,
 } from './prompt-templates/deliverable-template-system.js';
+export {
+  PROMPT_TEMPLATE_COMPILER_VERSION,
+  compilePromptTemplate,
+  verifyPromptTemplateFingerprint,
+} from './prompt-templates/prompt-template-compiler.js';
 export { evaluateDeliverableGate } from './gates/deliverable-gate.js';

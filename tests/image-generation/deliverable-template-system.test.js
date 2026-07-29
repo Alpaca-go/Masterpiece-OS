@@ -10,6 +10,7 @@ import {
 function visualMemory() {
   return {
     schema_version: '1.0',
+    id: 'visual-memory-1',
     brand_core: {
       industry: '品牌餐饮',
       positioning: '面向城市生活的当代东方体验',
@@ -53,6 +54,7 @@ for (const [deliverableType, templateId, source] of [
     });
     assert.equal(validateDeliverableGenerationBlueprint(blueprint), blueprint);
     assert.equal(blueprint.templateId, templateId);
+    assert.equal(blueprint.visualMemoryId, 'visual-memory-1');
     assert.match(blueprint.templateSource, new RegExp(`${source}$`));
     assert.equal(blueprint.referenceAssets.length, 5);
     assert.ok(blueprint.color.usageRule.includes('10%'));

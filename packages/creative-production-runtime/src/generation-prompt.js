@@ -10,9 +10,19 @@ import {
   selectProviderReferencesFromPack,
   validateReferencePack,
 } from './reference-pack.js';
+import {
+  compileDeliverableGenerationBlueprint,
+  validateDeliverableGenerationBlueprint,
+} from '../../image-generation-runtime/src/prompt-templates/deliverable-template-system.js';
+import {
+  PROMPT_TEMPLATE_COMPILER_VERSION,
+  compilePromptTemplate,
+  verifyPromptTemplateFingerprint,
+} from '../../image-generation-runtime/src/prompt-templates/prompt-template-compiler.js';
 
 export const GENERATION_PROMPT_COMPILER_VERSION = 'visual-upgrade-1.0.0';
 export const VISUAL_MEMORY_PROMPT_COMPILER_VERSION = 'visual-memory-1.0.0';
+const TEMPLATE_OUTPUT_TYPES = new Set(['interior_scene', 'packaging_render', 'brand_poster']);
 
 const OUTPUT_TYPES = [
   'interior_scene', 'storefront_scene', 'packaging_render',
@@ -205,7 +215,42 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     ...input.styleProfile.typographyCompatibility,
     ...input.styleProfile.graphicLanguage.coreMotifs,
   ]).join('；');
-  const finalPrompt = [
+  const templateBlueprint = visualMemory && TEMPLATE_OUTPUT_TYPES.has(outputType)
+    ? compileDeliverableGenerationBlueprint({
+        visualMemory,
+        deliverableType: outputType,
+        userIntent: userRequest,
+        referenceAssets: references.map((reference) => ({
+          assetId: reference.id,
+          role: reference.role,
+          rationale: `仅作为 ${reference.role} 使用，不继承其他构图或旧视觉语言。`,
+        })),
+      })
+    : null;
+  const templateCompilation = templateBlueprint
+    ? compilePromptTemplate({
+        blueprint: templateBlueprint,
+        visualMemory,
+        modelConstraints: {
+          preserve,
+          executionRules: unique([
+            responsibility(outputType),
+            blueprint.sceneDescription,
+            blueprint.camera,
+            blueprint.composition,
+            blueprint.colorDirection,
+            ...blueprint.brandAssetRules,
+            typographyAndGraphicUse,
+          ]),
+          textSafety: [
+            '不伪造品牌名称、价格、二维码、法律信息或不可读的小字。',
+            '仅保留少量可控占位文字；品牌文字必须来自已锁定资产。',
+          ],
+          outputSpec: ['单张图片', '无水印', '完整商业画面'],
+        },
+      })
+    : null;
+  const legacyFinalPrompt = [
     '# User Task — highest priority',
     userRequest,
     ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
@@ -218,6 +263,14 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     ] : []),
     compileGenerationBlueprintPrompt(blueprint),
   ].join('\n\n');
+  const finalPrompt = templateCompilation
+    ? [
+        '# User Task — highest priority',
+        userRequest,
+        ...(recentContext.length ? ['# Recent Session Feedback', list(recentContext)] : []),
+        templateCompilation.finalPrompt,
+      ].join('\n\n')
+    : legacyFinalPrompt;
   const instruction = {
     schemaVersion: '1.0',
     task: userRequest,
@@ -244,6 +297,15 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     generationBlueprintId: blueprint.id,
     ...(visualMemory ? { visualMemoryId: visualMemory.id, visualMemory } : {}),
     ...(referencePack ? { referencePackId: referencePack.id, referencePack } : {}),
+    ...(templateBlueprint && templateCompilation ? {
+      deliverableTemplateId: templateBlueprint.templateId,
+      deliverableTemplateVersion: templateBlueprint.templateVersion,
+      deliverableTemplateBlueprint: templateBlueprint,
+      templateCompiledPrompt: templateCompilation.finalPrompt,
+      promptVersion: templateCompilation.promptVersion,
+      promptFingerprint: templateCompilation.promptFingerprint,
+      promptSourceMap: templateCompilation.promptSourceMap,
+    } : {}),
     creativeDirectionSnapshot: direction,
     generationBlueprint: blueprint,
     outputType,
@@ -255,8 +317,10 @@ export function compileGenerationPromptSnapshot(input, now = new Date().toISOStr
     selectedReferences: references,
     instruction,
     negativePrompt: avoid.join(', '),
-    compilerVersion: visualMemory
-      ? VISUAL_MEMORY_PROMPT_COMPILER_VERSION
+    compilerVersion: templateCompilation
+      ? PROMPT_TEMPLATE_COMPILER_VERSION
+      : visualMemory
+        ? VISUAL_MEMORY_PROMPT_COMPILER_VERSION
       : GENERATION_PROMPT_COMPILER_VERSION,
     createdAt: now,
   });
@@ -302,6 +366,42 @@ export function validateGenerationPromptSnapshot(snapshot) {
       || pack.project_id !== snapshot.projectId) {
       throw Object.assign(new Error('Visual Memory Prompt Snapshot 的版本关系无效。'), {
         code: 'VISUAL_MEMORY_STALE',
+      });
+    }
+  }
+  if (snapshot.compilerVersion === PROMPT_TEMPLATE_COMPILER_VERSION) {
+    if (!text(snapshot.visualMemoryId)
+      || !text(snapshot.referencePackId)
+      || !text(snapshot.deliverableTemplateId)
+      || !text(snapshot.deliverableTemplateVersion)
+      || !snapshot.deliverableTemplateBlueprint
+      || !text(snapshot.templateCompiledPrompt)
+      || !text(snapshot.promptVersion)
+      || !/^[a-f0-9]{64}$/u.test(text(snapshot.promptFingerprint))
+      || !snapshot.promptSourceMap) {
+      throw Object.assign(new Error('Prompt Template Snapshot 缺少版本化编译产物。'), {
+        code: 'PROMPT_TEMPLATE_SNAPSHOT_MISSING',
+      });
+    }
+    const memory = validateVisualMemory(snapshot.visualMemory);
+    const pack = validateReferencePack(snapshot.referencePack);
+    const templateBlueprint = validateDeliverableGenerationBlueprint(
+      snapshot.deliverableTemplateBlueprint,
+    );
+    if (memory.id !== snapshot.visualMemoryId
+      || pack.id !== snapshot.referencePackId
+      || templateBlueprint.visualMemoryId !== memory.id
+      || templateBlueprint.templateId !== snapshot.deliverableTemplateId
+      || templateBlueprint.templateVersion !== snapshot.deliverableTemplateVersion
+      || !verifyPromptTemplateFingerprint({
+        blueprint: templateBlueprint,
+        promptVersion: snapshot.promptVersion,
+        finalPrompt: snapshot.templateCompiledPrompt,
+        promptSourceMap: snapshot.promptSourceMap,
+        promptFingerprint: snapshot.promptFingerprint,
+      })) {
+      throw Object.assign(new Error('Prompt Template Snapshot 的版本关系无效。'), {
+        code: 'PROMPT_TEMPLATE_SNAPSHOT_STALE',
       });
     }
   }

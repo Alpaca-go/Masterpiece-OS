@@ -27,6 +27,13 @@
     "generationBlueprint": { "type": "object" },
     "visualMemory": { "type": "object" },
     "referencePack": { "type": "object" },
+    "deliverableTemplateId": { "enum": ["interior", "packaging", "poster"] },
+    "deliverableTemplateVersion": { "type": "string", "minLength": 1 },
+    "deliverableTemplateBlueprint": { "type": "object" },
+    "templateCompiledPrompt": { "type": "string", "minLength": 1 },
+    "promptVersion": { "type": "string", "minLength": 1 },
+    "promptFingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "promptSourceMap": { "type": "object" },
     "outputType": {
       "enum": ["interior_scene", "storefront_scene", "packaging_render", "brand_poster", "vi_application", "illustration"]
     },
@@ -84,6 +91,21 @@
       },
       "then": {
         "required": ["visualMemoryId", "referencePackId", "visualMemory", "referencePack"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "compilerVersion": { "const": "prompt-template-1.0.0" } },
+        "required": ["compilerVersion"]
+      },
+      "then": {
+        "required": [
+          "visualMemoryId", "referencePackId", "visualMemory", "referencePack",
+          "deliverableTemplateId", "deliverableTemplateVersion",
+          "deliverableTemplateBlueprint", "templateCompiledPrompt",
+          "promptVersion", "promptFingerprint",
+          "promptSourceMap"
+        ]
       }
     }
   ],

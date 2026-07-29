@@ -127,6 +127,7 @@ export function compileDeliverableGenerationBlueprint(input) {
     templateId: template.templateId,
     templateVersion: DELIVERABLE_TEMPLATE_VERSION,
     templateSource: template.sourcePath,
+    visualMemoryId: text(visualMemory.id),
     deliverableType,
     task: {
       definition: template.taskDefinition,
@@ -178,7 +179,7 @@ export function validateDeliverableGenerationBlueprint(blueprint) {
       code: 'DELIVERABLE_BLUEPRINT_INVALID',
     });
   }
-  for (const field of ['templateId', 'templateSource', 'deliverableType']) {
+  for (const field of ['templateId', 'templateSource', 'visualMemoryId', 'deliverableType']) {
     if (!text(blueprint[field])) {
       throw Object.assign(new Error(`Deliverable Generation Blueprint is missing ${field}.`), {
         code: 'DELIVERABLE_BLUEPRINT_INVALID',
