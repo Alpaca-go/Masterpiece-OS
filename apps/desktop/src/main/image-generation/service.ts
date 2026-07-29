@@ -47,11 +47,13 @@ import { evaluateDeliverableGate } from '../../../../../packages/image-generatio
 import { downloadAndVerifyImage } from '../../../../../packages/image-generation-runtime/src/download-verify.js';
 import { evaluateArtifactGate, evaluateIdentityGate } from '../../../../../packages/image-generation-runtime/src/gates.js';
 import {
-  createDashScopeProvider,
   buildSubmitBody,
   DASHSCOPE_CAPABILITIES,
   resolveDashScopeEndpoint,
 } from '../../../../../packages/image-provider-dashscope/src/index.js';
+import {
+  createWanImageGenerationAdapter,
+} from '../../../../../packages/image-generation-adapter/src/index.js';
 import { redactProviderRequest, redactProviderResponse } from '../../../../../packages/image-generation-runtime/src/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
 import type { GenerationContext, FileContextLoader } from './context-loader.ts';
@@ -802,7 +804,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     const region = run.region;
     const modelId = run.modelId;
     const endpoint = endpointFor(region, providerConfig.baseUrl);
-    const provider: ImageGenerationProvider = createDashScopeProvider({
+    const provider: ImageGenerationProvider = createWanImageGenerationAdapter({
       apiKey,
       region,
       modelId,
@@ -1105,7 +1107,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       return run; // 无 Key 无法恢复，保留原状由用户手动重试
     }
     const endpoint = endpointFor(run.region, providerConfig.baseUrl);
-    const provider = createDashScopeProvider({
+    const provider = createWanImageGenerationAdapter({
       apiKey,
       region: run.region,
       modelId: run.modelId,

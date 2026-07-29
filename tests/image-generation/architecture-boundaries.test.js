@@ -47,6 +47,7 @@ const CODE_EXT = ['.js', '.mjs', '.ts', '.tsx'];
 test('image-generation packages never depend on Electron', () => {
   const files = [
     ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-generation-contracts'), CODE_EXT),
+    ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-generation-adapter'), CODE_EXT),
     ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-generation-runtime'), CODE_EXT),
     ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-provider-dashscope'), CODE_EXT)
   ];
@@ -56,6 +57,7 @@ test('image-generation packages never depend on Electron', () => {
 test('image-generation packages never depend on apps/desktop or labs', () => {
   const files = [
     ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-generation-contracts'), CODE_EXT),
+    ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-generation-adapter'), CODE_EXT),
     ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-generation-runtime'), CODE_EXT),
     ...collectSourceFiles(path.join(repoRoot, 'packages', 'image-provider-dashscope'), CODE_EXT)
   ];

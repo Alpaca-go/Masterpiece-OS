@@ -200,6 +200,22 @@ export interface ImageProviderCapabilities {
   outputMimeTypes: string[];
 }
 
+export interface ImageGenerationAdapterInput {
+  prompt: string;
+  promptVersion: string;
+  references: ImageGenerationReference[];
+  model: string;
+  ratio: '1:1' | '16:9' | '9:16' | string;
+  count: 1;
+}
+
+export interface ImageGenerationAdapterResult {
+  images: ProviderResultImage[];
+  model: string;
+  promptVersion: string;
+  timestamp: string;
+}
+
 // ---------------------------------------------------------------------------
 // §6.2 参考图片
 // ---------------------------------------------------------------------------
