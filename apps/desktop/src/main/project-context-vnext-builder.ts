@@ -147,6 +147,12 @@ function mergePromptSourceObject(
 export function migrateProjectVisualContextVNext(
   context: ProjectVisualContextVNext,
 ): ProjectVisualContextVNext & { promptSourceObject: PromptSourceObject } {
+  if (context.visualDecisionPacket) {
+    context = {
+      ...context,
+      visualDecisionPacket: migrateVisualDecisionPacketShape(context.visualDecisionPacket),
+    };
+  }
   if (context.promptSourceObject?.schemaVersion === '1.0') {
     return context as ProjectVisualContextVNext & { promptSourceObject: PromptSourceObject };
   }

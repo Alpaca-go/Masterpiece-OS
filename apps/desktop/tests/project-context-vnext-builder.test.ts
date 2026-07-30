@@ -228,3 +228,61 @@ test('validated Visual Decision Packet is persisted beside the compatibility Pro
   assert.equal(context.visualDecisionPacket?.provenance.sourceFingerprint, 'packet-fingerprint');
   assert.deepEqual(validateProjectVisualContextVNext(context), { valid: true, errors: [] });
 });
+
+test('persisted vNext context migrates a legacy Packet even when Prompt Source already exists', () => {
+  const context = buildProjectVisualContextVNext({
+    project: project(),
+    structuredAnalysis: {
+      visualDecisionPacket: {
+        schemaVersion: '1.0',
+        projectId: 'project-1',
+        projectFacts: {},
+        lockedAssets: [],
+        assetInventory: {},
+        diagnosis: {},
+        creativeDecision: {},
+        abstractions: [],
+        mediaTranslations: {
+          spatial: {
+            status: 'ready',
+            structureLanguage: [],
+            materialLanguage: [],
+            lightingLanguage: { source: [], contrast: '', materialInteraction: [], forbidden: [] },
+            colorBehavior: { primary: [], secondary: [], accent: [], forbidden: [] },
+            brandIntegration: [],
+            functionalExperience: ['legacy reception and consultation program'],
+            sceneMisreadRisks: [],
+          },
+        },
+        colorSystem: {},
+        materialSystem: [],
+        lightingSystem: {},
+        provenance: {
+          createdFrom: [],
+          generatedAt: '2026-07-30T00:00:00.000Z',
+          modelId: 'test',
+          sourceFingerprint: 'legacy-packet-fingerprint',
+        },
+        validation: {
+          hardFactStatus: 'pass',
+          mode: 'formal_generation',
+          missingRequiredFacts: [],
+          conflicts: [],
+          executionDataStatus: 'ready',
+          missingExecutionFields: [],
+        },
+      },
+    },
+  });
+  const persistedLegacy = structuredClone(context);
+  const spatial = persistedLegacy.visualDecisionPacket?.mediaTranslations.spatial;
+  if (!spatial) throw new Error('test fixture is missing spatial translation');
+  delete (spatial as { sceneProgram?: string[] }).sceneProgram;
+
+  const migrated = migrateProjectVisualContextVNext(persistedLegacy);
+
+  assert.deepEqual(
+    migrated.visualDecisionPacket?.mediaTranslations.spatial.sceneProgram,
+    ['legacy reception and consultation program'],
+  );
+});
