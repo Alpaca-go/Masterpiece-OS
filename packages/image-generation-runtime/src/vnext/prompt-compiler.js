@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { assertVNextProjectPromptAsset } from './project-prompt-asset.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '3.1.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '3.2.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -168,27 +168,42 @@ function assertPacketConflicts({ packetSource, taskContract, negativeConstraints
   }
 }
 
-function platformRoleContract(taskContract, packetSource) {
-  const roleText = cleanList(
+function roleEvidenceText(taskContract, packetSource) {
+  return cleanList(
     taskContract.currentInstruction,
     taskContract.mustInclude,
+    packetSource?.projectFacts?.industry,
     packetSource?.projectFacts?.brandRole,
     packetSource?.creativeDecision?.brandRoleStatement,
   ).join(' ');
-  return /全链|生态平台|产业平台|ecosystem|platform|network/iu.test(roleText)
-    ? [
-      'Brand role contract: high-end full-chain ecosystem platform and flagship composite experience, not a single consumer beauty store.',
-      'Platform relationship contract: visibly connect at least two functions — reception, consultation, capability display, partner communication, waiting, or professional back-of-house; no data walls, retail shelving, exhibition graphics, or treatment scenes.',
-      'Human behavior contract: include 1–3 naturally behaving Chinese adults as secondary evidence of scale and use; show restrained reception, waiting, consultation, display, or partner conversation. No posing, selfies, greeting lineups, exaggerated smiles, injections, treatment beds, nursing, or advertising portraits.',
-    ].join(' ')
-    : '';
+}
+
+function isPlatformRole(roleText) {
+  return /全链|生态平台|产业平台|协作平台|服务平台|ecosystem|platform|network/iu.test(roleText);
+}
+
+function isMedicalAestheticsRole(roleText) {
+  return /医美|医疗美容|医学美容|medical\s+aesthetics?|aesthetic\s+medicine|cosmetic\s+medicine/iu.test(roleText);
+}
+
+function platformRoleContract(taskContract, packetSource) {
+  const roleText = roleEvidenceText(taskContract, packetSource);
+  if (!isPlatformRole(roleText)) return '';
+  return [
+    'Brand role contract: express the confirmed ecosystem or platform role through a coherent composite experience, not a generic single-purpose storefront.',
+    'Platform relationship contract: visibly connect at least two functions supported by project evidence — such as arrival or reception, consultation or collaboration, capability display, waiting, or back-of-house circulation. Do not invent unsupported functions or replace spatial relationships with explanatory graphics.',
+    'Human behavior contract: when people are appropriate, use 1–3 naturally behaving adults only as secondary evidence of scale and use. No posing, selfies, greeting lineups, exaggerated smiles, or advertising portraits.',
+    ...(isMedicalAestheticsRole(roleText) ? [
+      'Medical-aesthetics boundary: this flagship experience space is not a single consumer beauty store; do not show injections, treatment beds, nursing, or staged treatment scenes.',
+    ] : []),
+  ].join(' ');
 }
 
 function assertProjectSpecificity({ packetSource, taskContract, logoUsageMode }) {
   if (!packetSource || taskContract.deliverableFamily !== 'space') return;
   const issues = [];
-  const platformContract = platformRoleContract(taskContract, packetSource);
-  if (!platformContract) return;
+  const roleText = roleEvidenceText(taskContract, packetSource);
+  if (!isPlatformRole(roleText)) return;
 
   const integration = cleanList(packetSource.spatial?.brandIntegration).join(' ');
   const interfaceCount = [
@@ -218,17 +233,16 @@ function assertProjectSpecificity({ packetSource, taskContract, logoUsageMode })
     if (!pattern.test(story)) issues.push(`scene_story_${id}`);
   }
 
-  const primaryRatio = cleanList(packetSource.colorBehavior?.primary)
-    ? (packetSource.colorBehavior?.primary || []).reduce((sum, item) => sum + Number(item?.ratio || 0), 0)
-    : 0;
+  const primaryRatio = (packetSource.colorBehavior?.primary || [])
+    .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
   const secondaryRatio = (packetSource.colorBehavior?.secondary || [])
     .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
   const accentRatio = (packetSource.colorBehavior?.accent || [])
     .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
-  if (primaryRatio < 65 || primaryRatio > 75
-    || secondaryRatio < 15 || secondaryRatio > 25
-    || accentRatio < 5 || accentRatio > 15) {
-    issues.push('color_70_20_10_behavior');
+  const colorRatioTotal = primaryRatio + secondaryRatio + accentRatio;
+  if (colorRatioTotal > 0
+    && (Math.abs(colorRatioTotal - 100) > 1 || primaryRatio <= accentRatio)) {
+    issues.push('color_hierarchy_behavior');
   }
   const accentFamilies = new Set(
     (packetSource.colorBehavior?.accent || []).flatMap((item) =>
@@ -245,23 +259,14 @@ function assertProjectSpecificity({ packetSource, taskContract, logoUsageMode })
   }
 
   const materials = JSON.stringify(packetSource.materialBehavior || []);
-  for (const [id, pattern] of [
-    ['translucent_structure', /半透明.*(?:树脂|亚克力)|translucent.*(?:resin|acrylic)/iu],
-    ['frosted_glass', /(?:低铁|中性)?磨砂玻璃|frosted glass/iu],
-    ['pearl_surface', /珍珠|珠光|pearl/iu],
-    ['cool_silver_detail', /冷银|拉丝.*(?:不锈钢|银|金属)|brushed.*(?:stainless|silver|metal)/iu],
-    ['physical_behavior', /厚度|接缝|收边|透射|漫反射|thickness|joint|edge|transmission|diffuse/iu],
-  ]) {
-    if (!pattern.test(materials)) issues.push(`material_${id}`);
+  if (!/厚度|接缝|收边|透射|反射|肌理|触感|thickness|joint|edge|transmission|reflection|texture|tactile/iu.test(materials)) {
+    issues.push('material_physical_behavior');
   }
 
   const lighting = JSON.stringify(packetSource.lightingBehavior || {});
-  for (const [id, pattern] of [
-    ['natural_side_light', /自然侧光|侧向自然光|侧面自然光|natural side light/iu],
-    ['diffuse_reflection', /漫反射|diffuse/iu],
-    ['material_transmission', /透射|穿透|穿过|transmission|through/iu],
-  ]) {
-    if (!pattern.test(lighting)) issues.push(`lighting_${id}`);
+  if (!/光|照明|light|lighting/iu.test(lighting)
+    || !/反射|透射|穿透|阴影|高光|reflection|transmission|through|shadow|highlight/iu.test(lighting)) {
+    issues.push('lighting_material_interaction');
   }
 
   const negatives = cleanList(
@@ -269,16 +274,8 @@ function assertProjectSpecificity({ packetSource, taskContract, logoUsageMode })
     packetSource.spatial?.sceneMisreadRisks,
     packetSource.creativeDecision?.strategicNegatives,
     taskContract.mustAvoid,
-  ).join(' ');
-  for (const [id, pattern] of [
-    ['beauty_salon', /美容院|beauty salon/iu],
-    ['hospital', /医院|诊室|临床|hospital|clinic/iu],
-    ['tea_hospitality', /茶空间|茶室|会所|tea space|club/iu],
-    ['lifestyle_retail', /生活方式.*零售|零售(?:店|空间|展示)|lifestyle retail/iu],
-    ['sales_office', /售楼处|地产展示|sales office/iu],
-  ]) {
-    if (!pattern.test(negatives)) issues.push(`negative_${id}`);
-  }
+  );
+  if (negatives.length < 2) issues.push('project_specific_scene_negatives');
 
   if (issues.length) {
     throw Object.assign(

@@ -222,7 +222,7 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     'Use the supplied logo asset',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.1.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.2.0');
   assert.deepEqual(result.compiledPrompt.completeness.coverage, {
     hardFacts: 1,
     upgradeThesis: 1,
@@ -490,4 +490,68 @@ test('restaurant and Mid-Autumn consumer projects do not inherit Jiuzhou answers
       /九州美学|医美|孔雀羽毛|矿物紫|半透明生物组织|医疗专业感/u,
     );
   }
+});
+
+test('non-medical platform receives generic collaboration rules without medical-aesthetics leakage', () => {
+  const packetValue = alternatePacket({
+    projectId: 'industrial-collaboration-platform',
+    brandName: '联创引擎',
+    industry: '工业创新服务',
+    brandRole: '制造业协作与能力连接平台',
+    sourceAsset: '互锁节点',
+    thesis: '从孤立展项升级为能力连接、项目协作与共享制造秩序',
+    worldview: ['开放协作', '精密制造'],
+    structure: '互锁框架与连续路径',
+    colors: ['石墨灰', '雾白', '信号橙'],
+    material: '再生铝、深灰石材与吸音织物',
+    risks: ['传统企业展厅', '产品零售门店'],
+  });
+  packetValue.mediaTranslations.spatial.colorBehavior = {
+    primary: [{ name: '石墨灰', ratio: 60, role: '主体基底' }],
+    secondary: [{ name: '雾白', ratio: 30, role: '结构层次' }],
+    accent: [{ name: '信号橙', ratio: 10, role: '识别点缀' }],
+    forbidden: ['医疗紫'],
+  };
+  packetValue.colorSystem = packetValue.mediaTranslations.spatial.colorBehavior;
+  packetValue.mediaTranslations.spatial.brandIntegration = [
+    '互锁节点分散进入墙体、展示界面与动线节点',
+    'Logo 小面积位于后方协作服务台',
+  ];
+  packetValue.mediaTranslations.spatial.functionalExperience = [
+    '前景为到达，中景为项目协作，背景为共享制造能力区',
+    '连续动线连接接待、协作和后方支持空间',
+  ];
+  packetValue.mediaTranslations.spatial.lightingLanguage = {
+    source: ['顶部漫射照明'],
+    contrast: '中低对比',
+    interactionWithMaterials: ['在再生铝和石材上形成柔和反射与阴影'],
+    forbidden: ['舞台灯'],
+  };
+  packetValue.lightingSystem = packetValue.mediaTranslations.spatial.lightingLanguage;
+
+  const result = compileVNextImageGeneration({
+    projectContext: context(packetValue),
+    task: {
+      projectId: packetValue.projectId,
+      deliverableFamily: 'space',
+      subtype: 'exhibition',
+      shot: 'three_quarter_wide',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: '生成联创引擎制造业协作平台的能力连接与合作空间。',
+    },
+  });
+
+  assert.match(result.compiledPrompt.finalPrompt, /Platform relationship contract/u);
+  assert.match(result.compiledPrompt.finalPrompt, /Human behavior contract/u);
+  assert.doesNotMatch(
+    result.compiledPrompt.finalPrompt,
+    /Medical-aesthetics|consumer beauty store|injections|treatment beds|nursing|医美|美容院/u,
+  );
+});
+
+test('medical-aesthetics platform keeps its evidence-specific treatment boundary', () => {
+  const result = compile({ packet: packet() });
+  assert.match(result.compiledPrompt.finalPrompt, /Medical-aesthetics boundary/u);
+  assert.match(result.compiledPrompt.finalPrompt, /injections, treatment beds, nursing/u);
 });
