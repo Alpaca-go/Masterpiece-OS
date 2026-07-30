@@ -14,7 +14,8 @@ test('Golden Prompt fixture freezes the complete confirmed source text verbatim'
     fs.readFile(sourceUrl, 'utf8'),
   ]);
   const sourceBody = sourceDocument.slice(sourceDocument.indexOf('请生成一张'));
-  assert.equal(fixture.trim(), sourceBody.trim());
+  const normalizeNewlines = (value) => value.replace(/\r\n?/gu, '\n').trim();
+  assert.equal(normalizeNewlines(fixture), normalizeNewlines(sourceBody));
 });
 
 test('Golden Prompt fixture retains every calibration evidence block', async () => {

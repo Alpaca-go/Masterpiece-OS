@@ -6,14 +6,23 @@ import { createSeedreamVNextAdapter } from './seedream-adapter.js';
 export function compileVNextImageGeneration(input) {
   const started = performance.now();
   const adapter = input.adapter || createSeedreamVNextAdapter({ model: input.model });
-  const logoAssetIds = input.projectContext?.promptSourceObject?.lockedAssets?.logoAssetIds
+  const packetLogoAssetIds = input.projectContext?.visualDecisionPacket?.lockedAssets
+    ?.filter((item) => item?.type === 'logo')
+    .map((item) => item.assetId)
+    || [];
+  const logoAssetIds = packetLogoAssetIds.length
+    ? packetLogoAssetIds
+    : input.projectContext?.promptSourceObject?.lockedAssets?.logoAssetIds
     || input.projectContext?.lockedAssets?.logoAssetIds
     || [];
-  const preferredLogoAssetId = input.projectContext?.promptSourceObject?.lockedAssets?.preferredLogoAssetId
+  const preferredLogoAssetId = packetLogoAssetIds[0]
+    || input.projectContext?.promptSourceObject?.lockedAssets?.preferredLogoAssetId
     || logoAssetIds[0]
     || null;
-  const inferredLogoUsageMode = input.projectContext?.promptSourceObject?.lockedAssets?.logoUsageMode
-    || (preferredLogoAssetId ? 'reference' : 'blank_area');
+  const inferredLogoUsageMode = packetLogoAssetIds.length
+    ? 'reference'
+    : input.projectContext?.promptSourceObject?.lockedAssets?.logoUsageMode
+      || (preferredLogoAssetId ? 'reference' : 'blank_area');
   const logoUsageMode = input.task?.logoUsageMode || inferredLogoUsageMode;
   const requestedReferenceIds = Array.isArray(input.task?.referenceAssetIds)
     ? input.task.referenceAssetIds
