@@ -1067,6 +1067,139 @@ export interface PromptSourceObject {
   };
 }
 
+export type VisualFactSource =
+  | 'source_document'
+  | 'visual_asset'
+  | 'user_input'
+  | 'file_metadata'
+  | 'project_record'
+  | 'model_inference';
+
+export type VisualFactStatus = 'confirmed' | 'probable' | 'unknown' | 'conflict';
+
+export interface SourcedVisualFact<T> {
+  value: T;
+  source: VisualFactSource;
+  evidenceRefs: string[];
+  confidence: number;
+  status: VisualFactStatus;
+}
+
+export type VisualInventoryAssetKind =
+  | 'logo'
+  | 'color'
+  | 'typography'
+  | 'graphic_motif'
+  | 'imagery'
+  | 'layout_pattern'
+  | 'material_cue'
+  | 'packaging_structure'
+  | 'spatial_cue'
+  | 'copy';
+
+export interface VisualInventoryAsset {
+  assetId: string;
+  name: string;
+  kind: VisualInventoryAssetKind;
+  occurrenceRefs: string[];
+  frequency: number;
+  visualFeatures: string[];
+  possibleBrandMeaning: string[];
+  isOriginalAsset: boolean;
+  userConfirmed: boolean;
+  editable: boolean | null;
+  contextRole: 'brand_asset' | 'mockup_environment' | 'reference_case' | 'display_decoration' | 'unknown';
+  confidence: number;
+}
+
+export interface VisualAssetInventoryV2 {
+  logoAssets: VisualInventoryAsset[];
+  colorAssets: VisualInventoryAsset[];
+  typographyAssets: VisualInventoryAsset[];
+  graphicMotifs: VisualInventoryAsset[];
+  imageryAssets: VisualInventoryAsset[];
+  layoutPatterns: VisualInventoryAsset[];
+  materialCues: VisualInventoryAsset[];
+  packagingStructures: VisualInventoryAsset[];
+  spatialCues: VisualInventoryAsset[];
+  copyAssets: VisualInventoryAsset[];
+}
+
+export interface VisualDiagnosisItemV2 {
+  target: string;
+  observation: string;
+  whyItMatters: string;
+  evidenceRefs: string[];
+  confidence: number;
+}
+
+export interface VisualDiagnosisV2 {
+  valuableAssets: VisualDiagnosisItemV2[];
+  overusedExpressions: VisualDiagnosisItemV2[];
+  outdatedExpressions: VisualDiagnosisItemV2[];
+  weakSystemAreas: VisualDiagnosisItemV2[];
+  categoryCliches: VisualDiagnosisItemV2[];
+  brandMisreadRisks: VisualDiagnosisItemV2[];
+  crossMediaGaps: VisualDiagnosisItemV2[];
+}
+
+export interface CreativeToneBoundaryV2 {
+  target: string;
+  avoid: string[];
+}
+
+export interface CreativeDecisionV2 {
+  brandRoleStatement: string;
+  upgradeFrom: string[];
+  preserveCore: string[];
+  upgradeTo: string[];
+  uniqueUpgradeThesis: string;
+  targetWorldview: string[];
+  toneBoundaries: CreativeToneBoundaryV2[];
+  strategicNegatives: string[];
+}
+
+export interface VisualDecisionLockedAsset {
+  assetId: string;
+  type: 'logo' | 'brand_name' | 'packaging_structure' | 'color' | 'copy' | 'other';
+  value: string;
+  lockSource: 'source_fact' | 'user_confirmed';
+  evidenceRefs: string[];
+}
+
+/**
+ * Modules A-D of Unified Visual Understanding. This object exists before
+ * cross-media translation and can enter exploration mode when hard facts are
+ * incomplete. It never promotes model inference into Locked Assets.
+ */
+export interface VisualUnderstandingCore {
+  schemaVersion: '1.0';
+  projectId: string;
+  projectFacts: {
+    brandName: SourcedVisualFact<string>;
+    industry: SourcedVisualFact<string>;
+    brandRole: SourcedVisualFact<string>;
+    businessModel?: SourcedVisualFact<string>;
+    targetAudience?: SourcedVisualFact<string[]>;
+  };
+  lockedAssets: VisualDecisionLockedAsset[];
+  assetInventory: VisualAssetInventoryV2;
+  diagnosis: VisualDiagnosisV2;
+  creativeDecision: CreativeDecisionV2;
+  provenance: {
+    createdFrom: string[];
+    generatedAt: string;
+    modelId: string;
+  };
+  validation: {
+    hardFactStatus: 'pass' | 'block' | 'low_confidence';
+    mode: 'formal_upgrade' | 'exploration';
+    missingRequiredFacts: string[];
+    conflicts: string[];
+    message?: string;
+  };
+}
+
 export interface DocumentVisualContextEvidence {
   field: string;
   documentId: string;
