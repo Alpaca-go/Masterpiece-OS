@@ -176,7 +176,11 @@ function platformRoleContract(taskContract, packetSource) {
     packetSource?.creativeDecision?.brandRoleStatement,
   ).join(' ');
   return /全链|生态平台|产业平台|ecosystem|platform|network/iu.test(roleText)
-    ? 'Brand role contract: high-end full-chain ecosystem platform and flagship composite experience, not a single consumer beauty store.'
+    ? [
+      'Brand role contract: high-end full-chain ecosystem platform and flagship composite experience, not a single consumer beauty store.',
+      'Platform relationship contract: visibly connect at least two functions — reception, consultation, capability display, partner communication, waiting, or professional back-of-house; no data walls, retail shelving, exhibition graphics, or treatment scenes.',
+      'Human behavior contract: include 1–3 naturally behaving Chinese adults as secondary evidence of scale and use; show restrained reception, waiting, consultation, display, or partner conversation. No posing, selfies, greeting lineups, exaggerated smiles, injections, treatment beds, nursing, or advertising portraits.',
+    ].join(' ')
     : '';
 }
 

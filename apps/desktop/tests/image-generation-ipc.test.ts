@@ -102,6 +102,7 @@ const EXPECTED_VNEXT_CHANNELS = [
   'image-generation:vnext-confirm-direction',
   'image-generation:vnext-continue-same-type',
   'image-generation:vnext-save-prompt-asset',
+  'image-generation:vnext-post-composite-logo',
 ];
 
 test('registerImageGenerationIpc 注册全部 §16.1 handler', () => {
@@ -246,6 +247,7 @@ test('registerImageGenerationIpc registers the complete vNext channel family', (
     confirmDirection: async () => ({}),
     continueSameType: async () => ({}),
     saveProjectPromptAsset: async () => ({}),
+    postCompositeLogo: async () => ({}),
   };
 
   registerImageGenerationIpc(svc, ipcMain, vnextService as any);

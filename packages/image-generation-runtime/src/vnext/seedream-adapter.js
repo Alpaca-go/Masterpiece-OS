@@ -14,8 +14,11 @@ export function createSeedreamVNextAdapter(options = {}) {
     compile(compiledPrompt) {
       const prompt = String(compiledPrompt.editablePrompt || compiledPrompt.finalPrompt).trim();
       if (!prompt) throw new Error('Seedream prompt cannot be empty');
-      if ([...prompt].length > MAX_PROMPT_CHARACTERS) {
-        throw new Error(`Seedream prompt exceeds ${MAX_PROMPT_CHARACTERS} characters`);
+      const promptCharacters = [...prompt].length;
+      if (promptCharacters > MAX_PROMPT_CHARACTERS) {
+        throw new Error(
+          `Seedream prompt exceeds ${MAX_PROMPT_CHARACTERS} characters (${promptCharacters})`,
+        );
       }
       return {
         adapterId: SEEDREAM_VNEXT_ADAPTER_ID,

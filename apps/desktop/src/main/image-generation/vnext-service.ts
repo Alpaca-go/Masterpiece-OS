@@ -21,6 +21,11 @@ import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import type { ImageGenerationService } from './service.ts';
 import type { VNextDeliverableValidatorService } from './vnext-deliverable-validator-service.ts';
+import {
+  postCompositeConfirmedLogo,
+  type NormalizedPlacement,
+  type PixelRect,
+} from './logo-post-composite.ts';
 
 export interface CompileVNextGenerationInput {
   projectId: string;
@@ -47,6 +52,20 @@ export interface StartVNextGenerationInput {
 
 export interface StartValidatedVNextGenerationInput extends StartVNextGenerationInput {
   validatorProfileId?: string;
+}
+
+export interface PostCompositeVNextLogoInput {
+  projectId: string;
+  runId: string;
+  imageId: string;
+  logoAssetId: string;
+  confirmedByUser: true;
+  sourceCrop: PixelRect;
+  placement: NormalizedPlacement;
+  removeBackground?: {
+    enabled: boolean;
+    tolerance?: number;
+  };
 }
 
 export interface SaveVNextProjectPromptAssetInput {
@@ -151,15 +170,10 @@ export function createVNextImageGenerationService(
         ? 'reference'
         : context.promptSourceObject?.lockedAssets.logoUsageMode
           || (preferredLogoAssetId ? 'reference' : 'blank_area'));
-    if (logoUsageMode === 'post_composite') {
+    if ((logoUsageMode === 'reference' || logoUsageMode === 'post_composite')
+      && !preferredLogoAssetId) {
       throw Object.assign(
-        new Error('Post-composite Logo mode is reserved but not available in this version'),
-        { code: 'VNEXT_LOGO_POST_COMPOSITE_UNAVAILABLE' },
-      );
-    }
-    if (logoUsageMode === 'reference' && !preferredLogoAssetId) {
-      throw Object.assign(
-        new Error('Logo reference mode requires a confirmed Logo asset'),
+        new Error(`${logoUsageMode} Logo mode requires a confirmed Logo asset`),
         { code: 'VNEXT_LOGO_REFERENCE_MISSING' },
       );
     }
@@ -211,6 +225,19 @@ export function createVNextImageGenerationService(
         trace: result.compiledPrompt.trace,
         compiledAt: result.compiledPrompt.compiledAt,
       }),
+      ...(logoUsageMode === 'post_composite' ? [
+        writeJson(path.join(artifactDirectory, 'logo-post-composite-plan.json'), {
+          schemaVersion: '1.0',
+          projectId: input.projectId,
+          taskId: result.taskContract.taskId,
+          logoAssetId: preferredLogoAssetId,
+          status: 'awaiting_generation_and_placement',
+          source: packetLogoAssetIds.includes(preferredLogoAssetId || '')
+            ? 'visual_decision_packet.lockedAssets'
+            : 'project_context.lockedAssets',
+          createdAt: result.compiledPrompt.compiledAt,
+        }),
+      ] : []),
       fs.writeFile(
         path.join(artifactDirectory, 'compiled-prompt.md'),
         `${result.compiledPrompt.editablePrompt}\n`,
@@ -262,6 +289,13 @@ export function createVNextImageGenerationService(
       });
     }
     const currentContext = await projectContext.getVNext(input.projectId);
+    const lockedLogoAssetIds = new Set([
+      ...(currentContext.visualDecisionPacket?.lockedAssets
+        .filter((item) => item.type === 'logo')
+        .map((item) => item.assetId) ?? []),
+      ...(currentContext.promptSourceObject?.lockedAssets.logoAssetIds ?? []),
+      ...currentContext.lockedAssets.logoAssetIds,
+    ]);
     const traceFile = JSON.parse(
       await fs.readFile(path.join(compilation.artifactDirectory, 'trace.json'), 'utf8'),
     ) as { contextFingerprint?: string };
@@ -278,7 +312,7 @@ export function createVNextImageGenerationService(
       if (!asset || asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
       return [{
         id: asset.assetId,
-        role: asset.role === 'logo'
+        role: lockedLogoAssetIds.has(asset.assetId) || asset.role === 'logo'
           ? 'identity_reference' as const
           : asset.role === 'package_structure'
             ? 'structure_reference' as const
@@ -534,6 +568,76 @@ export function createVNextImageGenerationService(
     }).then(() => asset);
   }
 
+  async function postCompositeLogo(input: PostCompositeVNextLogoInput) {
+    if (input.confirmedByUser !== true) {
+      throw Object.assign(new Error('Logo post-composite requires explicit user confirmation'), {
+        code: 'LOGO_POST_COMPOSITE_CONFIRMATION_REQUIRED',
+      });
+    }
+    const [run, project, paths] = await Promise.all([
+      getImageGeneration().getRun(input.runId),
+      projects.get(input.projectId),
+      projects.paths(input.projectId),
+    ]);
+    if (!run || run.projectId !== input.projectId || run.status !== 'succeeded') {
+      throw Object.assign(new Error('Logo post-composite requires a succeeded project run'), {
+        code: 'LOGO_POST_COMPOSITE_RUN_INVALID',
+      });
+    }
+    const image = run.images.find((item) => item.imageId === input.imageId);
+    if (!image) {
+      throw Object.assign(new Error('Generated image does not exist in the selected run'), {
+        code: 'LOGO_POST_COMPOSITE_IMAGE_MISSING',
+      });
+    }
+    const logoAsset = project.assets.find((item) => item.id === input.logoAssetId);
+    if (!logoAsset || logoAsset.status !== 'ready') {
+      throw Object.assign(new Error('Confirmed Logo asset does not exist in the project'), {
+        code: 'LOGO_POST_COMPOSITE_ASSET_MISSING',
+      });
+    }
+    const runRoot = await getImageGeneration().runRoot(input.runId);
+    if (!runRoot) throw new Error('Image generation run root is unavailable');
+    const snapshot = await fs.readFile(
+      path.join(runRoot, 'source-context-snapshot.json'),
+      'utf8',
+    ).then((value) => JSON.parse(value) as {
+      taskContract?: { logoUsageMode?: string };
+    }).catch(() => null);
+    if (snapshot?.taskContract?.logoUsageMode !== 'post_composite') {
+      throw Object.assign(new Error('Selected run was not generated with a blank post-composite identity area'), {
+        code: 'LOGO_POST_COMPOSITE_MODE_REQUIRED',
+      });
+    }
+    const scenePath = path.resolve(runRoot, image.relativePath);
+    const logoPath = path.resolve(paths.input, logoAsset.relativePath);
+    const outputPath = path.join(runRoot, 'images', `${path.parse(image.relativePath).name}.post-composite.png`);
+    const composite = await postCompositeConfirmedLogo({
+      scenePath,
+      logoPath,
+      outputPath,
+      sourceCrop: input.sourceCrop,
+      placement: input.placement,
+      removeBackground: input.removeBackground,
+    });
+    const audit = {
+      schemaVersion: '1.0',
+      status: 'completed',
+      projectId: input.projectId,
+      runId: input.runId,
+      sourceImageId: input.imageId,
+      sourceImagePath: scenePath,
+      logoAssetId: logoAsset.id,
+      logoAssetOriginalName: logoAsset.originalName,
+      logoAssetProjectRelativePath: `input/${logoAsset.relativePath}`,
+      confirmationSource: 'user_confirmed',
+      ...composite,
+      completedAt: new Date().toISOString(),
+    };
+    await writeJson(path.join(runRoot, 'logo-post-composite.json'), audit);
+    return audit;
+  }
+
   return {
     compile,
     start,
@@ -541,6 +645,7 @@ export function createVNextImageGenerationService(
     getSession: readSession,
     confirmDirection,
     continueSameType,
+    postCompositeLogo,
     saveProjectPromptAsset,
     listOptions: listVNextTemplateOptions,
   };

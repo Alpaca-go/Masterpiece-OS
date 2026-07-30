@@ -1,5 +1,7 @@
 # 九州美学空间图 A/B/Golden 回归验收
 
+> v1.1 更新：B 组状态已确认为 `pass_with_residual_risk`，人物行为、平台关系、真实 Logo 后合成和三次稳定性抽样已完成。最终 `production_pass` 见 [v1.1 收尾验收](../jiuzhou-space-feedback-v1.1/production-pass.md)。本文保留为 A/B/Golden 历史对照，不再代表当前最终状态。
+
 日期：2026-07-30
 专项依据：《九州美学空间图验收反馈清单 v1.0》
 统一图像 Provider / Model：Volcengine / `doubao-seedream-5-0-pro-260628`

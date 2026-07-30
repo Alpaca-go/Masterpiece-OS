@@ -24,6 +24,7 @@ export const WEB_RPC_CHANNEL_OVERRIDES: Readonly<Record<string, string>> = Objec
   'imageGeneration.confirmVNextDirection': 'image-generation:vnext-confirm-direction',
   'imageGeneration.continueVNextSameType': 'image-generation:vnext-continue-same-type',
   'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
+  'imageGeneration.postCompositeVNextLogo': 'image-generation:vnext-post-composite-logo',
   'projectContext.getVNext': 'project-context:get-vnext',
   'projectContext.rebuildVNext': 'project-context:rebuild-vnext'
 });

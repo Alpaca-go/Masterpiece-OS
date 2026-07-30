@@ -112,6 +112,8 @@ const api: DesktopApi = {
       ),
     saveVNextProjectPromptAsset: (input) =>
       ipcRenderer.invoke('image-generation:vnext-save-prompt-asset', input),
+    postCompositeVNextLogo: (input) =>
+      ipcRenderer.invoke('image-generation:vnext-post-composite-logo', input),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
     listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),

@@ -39,7 +39,7 @@ const context: ProjectVisualContextVNext = {
     assetId: 'logo-asset',
     name: 'Confirmed Logo',
     relativePath: 'brand/logo.png',
-    role: 'logo',
+    role: 'source',
   }],
   provenance: {
     builderId: 'test',
@@ -212,6 +212,32 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   });
   assert.deepEqual(blankArea.payload.referenceAssetIds, []);
   assert.match(blankArea.compiledPrompt.finalPrompt, /Do not render any logo, letters, words/u);
+
+  const postComposite = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create a reception with a front-facing identity area for exact post-compositing.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['logo-asset'],
+      logoUsageMode: 'post_composite',
+    },
+  });
+  assert.deepEqual(postComposite.payload.referenceAssetIds, []);
+  assert.equal(postComposite.compiledPrompt.logoUsageMode, 'post_composite');
+  assert.match(postComposite.compiledPrompt.finalPrompt, /controlled post-compositing/u);
+  assert.equal(
+    await fs.stat(path.join(
+      postComposite.artifactDirectory,
+      'logo-post-composite-plan.json',
+    )).then(() => true),
+    true,
+  );
 
   const poster = await service.compile({
     projectId,

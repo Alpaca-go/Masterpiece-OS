@@ -1904,6 +1904,29 @@ export interface StartValidatedVNextGenerationInput extends StartVNextGeneration
   validatorProfileId?: string;
 }
 
+export interface PostCompositeVNextLogoInput {
+  projectId: string;
+  runId: string;
+  imageId: string;
+  logoAssetId: string;
+  confirmedByUser: true;
+  sourceCrop: {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  };
+  placement: {
+    x: number;
+    y: number;
+    width: number;
+  };
+  removeBackground?: {
+    enabled: boolean;
+    tolerance?: number;
+  };
+}
+
 export interface SaveVNextProjectPromptAssetInput {
   projectId: string;
   deliverableFamily: VNextTaskContract['deliverableFamily'];
@@ -2075,6 +2098,9 @@ export interface DesktopApi {
     saveVNextProjectPromptAsset(
       input: SaveVNextProjectPromptAssetInput
     ): Promise<VNextProjectPromptAsset>;
+    postCompositeVNextLogo(
+      input: PostCompositeVNextLogoInput
+    ): Promise<Record<string, unknown>>;
     /** §16 编译 + Gate 通过后提交生图任务。 */
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
     getRun(runId: string): Promise<ImageGenerationRun>;

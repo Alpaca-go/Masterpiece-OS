@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "sampleId": "jiuzhou-space-production-003",
+  "status": "production_pass",
+  "projectId": "f67ac606-5b60-4cc9-9955-5aa43ecbab16",
+  "taskId": "vnext-task-3ca27617-8b0d-4b9a-84f9-33852f005fb3",
+  "promptVersion": "9759648a10d23223ce19c92ea7208742c261c99d80792f7240d117fb3a5771ea",
+  "promptPath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-f67ac606\\image-generation-vnext\\compilations\\vnext-task-3ca27617-8b0d-4b9a-84f9-33852f005fb3\\compiled-prompt.md",
+  "promptSha256": "c849e207bcd4b8e6f170c1205c1c16321233f01b570b5e8ad1474673ad871711",
+  "providerId": "volcengine",
+  "modelId": "doubao-seedream-5-0-pro-260628",
+  "logoUsageMode": "post_composite",
+  "stability": {
+    "sampleCount": 3,
+    "strongPassCount": 2,
+    "coreDirectionPassCount": 3,
+    "threshold": "at least 2 of 3 strong passes",
+    "passed": true,
+    "runIds": [
+      "caff9043-c1fe-4a56-bc07-88264245356c",
+      "b2f2b8a2-3ea7-44eb-9847-ee38a91d0f74",
+      "9f63a824-260e-4f2d-9bca-9abacc6e0977"
+    ]
+  },
+  "delivery": {
+    "sourceRunId": "caff9043-c1fe-4a56-bc07-88264245356c",
+    "sourceImageSha256": "155f876e9008e8e9f6c3649540ead9d219314036f69e8d1ab31a32a57aa90845",
+    "logoAssetId": "e6b766fd-d25a-41b4-a78f-b5d547eca93f",
+    "logoAssetSha256": "cdf8f6087c6ffbe7bdc3458374bcb1f45d9e2f005f6fb0af8c1a76b20603d270",
+    "postCompositePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-f67ac606\\image-generation\\caff9043-c1fe-4a56-bc07-88264245356c\\images\\image-01.post-composite.png",
+    "postCompositeSha256": "39187256247c7153a39b0ebcc915737655afa09636a5edaf99649b2db9e0f579"
+  },
+  "frozenAt": "2026-07-30T15:30:35+08:00"
+}

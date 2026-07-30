@@ -12,6 +12,7 @@ import type { IpcMain } from 'electron';
 import type { ImageGenerationService } from './service';
 import type {
   CompileVNextGenerationInput,
+  PostCompositeVNextLogoInput,
   SaveVNextProjectPromptAssetInput,
   StartVNextGenerationInput,
   StartValidatedVNextGenerationInput,
@@ -90,6 +91,11 @@ export function registerImageGenerationIpc(
       'image-generation:vnext-save-prompt-asset',
       async (_event, input: SaveVNextProjectPromptAssetInput) =>
         vnextService.saveProjectPromptAsset(input),
+    );
+    ipcMain.handle(
+      'image-generation:vnext-post-composite-logo',
+      async (_event, input: PostCompositeVNextLogoInput) =>
+        vnextService.postCompositeLogo(input),
     );
   }
 }
