@@ -1,8 +1,17 @@
 import crypto from 'node:crypto';
 import { assertVNextProjectPromptAsset } from './project-prompt-asset.js';
+import {
+  assertProjectSpecificGenerationContract,
+  compileProjectSpecificGenerationContract,
+} from '../../../creative-production-runtime/src/project-generation-contract.js';
+import {
+  assertPackagingTranslation,
+  buildPackagingTranslation,
+} from '../../../creative-production-runtime/src/packaging-translation.js';
+import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '3.3.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '4.0.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -71,13 +80,32 @@ function packetExecutionSource(packet, family) {
       { code: 'VISUAL_DECISION_PACKET_INSUFFICIENT' },
     );
   }
-  if (family !== 'space') {
+  if (!['space', 'packaging'].includes(family)) {
     throw Object.assign(
       new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: ${family} media translation is interface-only`),
       { code: 'VISUAL_DECISION_PACKET_INSUFFICIENT' },
     );
   }
   const spatial = packet.mediaTranslations?.spatial || {};
+  if (family === 'packaging') {
+    return {
+      projectFacts: {
+        brandName: packet.projectFacts?.brandName?.value,
+        industry: packet.projectFacts?.industry?.value,
+        brandRole: packet.projectFacts?.brandRole?.value,
+      },
+      projectFactStatus: {
+        industry: packet.projectFacts?.industry?.status,
+        brandRole: packet.projectFacts?.brandRole?.status,
+      },
+      lockedAssets: packet.lockedAssets || [],
+      diagnosis: packet.diagnosis || {},
+      creativeDecision: packet.creativeDecision || {},
+      abstractions: packet.abstractions || [],
+      packaging: packet.mediaTranslations?.packaging || {},
+      fingerprint: packet.provenance?.sourceFingerprint,
+    };
+  }
   const missingStructuredFields = [
     !cleanList(spatial.sceneProgram).length && 'mediaTranslations.spatial.sceneProgram',
     !cleanList(spatial.structureLanguage).length && 'mediaTranslations.spatial.structureLanguage',
@@ -340,6 +368,87 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       negativeConstraints,
       logoUsageMode,
     });
+  }
+
+  if (packet && taskContract.deliverableFamily === 'packaging') {
+    const packagingTranslation = assertPackagingTranslation(buildPackagingTranslation({
+      visualDecisionPacket: packet,
+    }));
+    const projectGenerationContract = assertProjectSpecificGenerationContract(
+      compileProjectSpecificGenerationContract({
+        visualDecisionPacket: packet,
+        deliverable: 'packaging',
+      }),
+    );
+    const packagingContract = compilePackagingPromptContract({
+      projectContract: projectGenerationContract,
+      packagingTranslation,
+      taskContract,
+      logoUsageMode,
+      templateSections,
+    });
+    const blocks = packagingContract.blocks;
+    const finalPrompt = adapter.orderSections(blocks.map(renderBlock)).join('\n\n');
+    const traceValue = {
+      projectContextFingerprint: projectContext.provenance.sourceFingerprint,
+      promptSourceFingerprint: packetSource.fingerprint,
+      projectGenerationContractFingerprint: projectGenerationContract.provenance.sourceFingerprint,
+      packagingContractVersion: packagingContract.version,
+      taskContract,
+      route: {
+        familyTemplateId: route.familyTemplateId,
+        subtypeTemplateId: route.subtypeTemplateId,
+        shotTemplateId: route.shotTemplateId,
+        templateVersions: route.templateVersions,
+      },
+      blocks,
+      finalPrompt,
+    };
+    return {
+      schemaVersion: '1.0',
+      taskContract,
+      projectContextVersion: projectContext.version,
+      route: {
+        familyTemplateId: route.familyTemplateId,
+        subtypeTemplateId: route.subtypeTemplateId,
+        shotTemplateId: route.shotTemplateId,
+        templateVersions: route.templateVersions,
+      },
+      blocks,
+      sourceMap: packagingContract.sourceMap,
+      projectGenerationContract,
+      packagingTranslation,
+      packagingPromptContractVersion: packagingContract.version,
+      completeness: {
+        complete: true,
+        requiredBlockIds: blocks.map((block) => block.id),
+        missingBlockIds: [],
+        conflictCount: conflicts.length,
+        coverage: {
+          hardFacts: 1,
+          upgradeThesis: 1,
+          brandTranslation: 1,
+          toneBoundaries: 1,
+          colorMaterialLighting: 1,
+          taskContract: 1,
+          packagingStructure: 1,
+          packagingProfessionalContract: 1,
+        },
+      },
+      finalPrompt,
+      editablePrompt: finalPrompt,
+      negativeConstraints,
+      referenceAssetIds: taskContract.referenceAssetIds,
+      logoUsageMode,
+      compiledAt: new Date().toISOString(),
+      trace: {
+        compilerId: VNEXT_PROMPT_COMPILER_ID,
+        compilerVersion: VNEXT_PROMPT_COMPILER_VERSION,
+        adapterId: adapter.id,
+        adapterVersion: adapter.version,
+        sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify(traceValue)).digest('hex'),
+      },
+    };
   }
 
   // Fixed block order is part of the provider contract. Within each block the

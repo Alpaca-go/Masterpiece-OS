@@ -196,9 +196,10 @@ test('spatial translation compiles project-specific color, material and light be
   assert.deepEqual(validateVisualDecisionPacket(packet), { valid: true, errors: [] });
 });
 
-test('other media retain explicit interfaces without pretending to be implemented', () => {
+test('packaging is a formal insufficient contract while poster and VI remain interfaces', () => {
   const packet = buildVisualDecisionPacket({ core, extracted });
-  assert.equal(packet.mediaTranslations.packaging.status, 'interface_only');
+  assert.equal(packet.mediaTranslations.packaging.status, 'insufficient');
+  assert.ok(packet.mediaTranslations.packaging.missingRequiredFields.includes('structureStrategy'));
   assert.equal(packet.mediaTranslations.poster.status, 'interface_only');
   assert.equal(packet.mediaTranslations.vi.status, 'interface_only');
 });

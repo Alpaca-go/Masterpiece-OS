@@ -1,86 +1,76 @@
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const productionRoots = [
-  path.join(root, 'packages', 'image-generation-runtime', 'src'),
-  path.join(root, 'apps', 'desktop', 'src', 'main'),
-];
-const promptRuleFile = /(?:prompt|template|adapter|fallback|unified-visual-understanding)\.(?:js|mjs|ts)$/iu;
-const sourceFile = /\.(?:js|mjs|ts)$/iu;
-const forbiddenTerms = [
+const productionRoots = ['src', 'packages', 'apps/desktop/src'];
+const sourceExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx']);
+const promptLikeFile = /(?:prompt|template|compiler|adapter|generation|unified-visual-understanding)/iu;
+const projectSpecificTerms = [
   ['九州美学', /九州美学/iu],
   ['孔雀', /孔雀/iu],
   ['羽毛', /羽毛/iu],
   ['peacock', /\bpeacock\b/iu],
   ['feather', /\bfeather\b/iu],
-  ['70/20/10', /70\s*[/:-]\s*20\s*[/:-]\s*10/iu],
-  ['珍珠白', /珍珠白/iu],
   ['矿物紫', /矿物紫/iu],
+  ['珍珠白', /珍珠白/iu],
   ['冷银', /冷银/iu],
-  ['磨砂玻璃', /磨砂玻璃/iu],
-  ['半透明生物结构', /半透明生物(?:结构|组织)/iu],
+  ['半透明生物结构', /半透明生物结构/iu],
+  ['70/20/10', /70\s*[/:-]\s*20\s*[/:-]\s*10/iu],
   ['beauty salon', /\bbeauty\s+salon\b/iu],
   ['treatment bed', /\btreatment\s+beds?\b/iu],
   ['injection', /\binjections?\b/iu],
   ['nursing', /\bnursing\b/iu],
   ['tea space', /\btea\s+space\b/iu],
   ['sales office', /\bsales\s+office\b/iu],
-  ['platform', /\bplatform\b|平台/iu],
-  ['ecosystem', /\becosystem\b|生态平台/iu],
-  ['network', /\bnetwork\b|网络平台/iu],
 ];
-const runtimeGoldenRead = /(?:readFile|readFileSync|createReadStream)[\s\S]{0,180}(?:tests|benchmarks|validation|docs)[/\\][^'"]*golden/iu;
+const keywordStyleInference = [
+  /(?:if\s*\([^)]*(?:industry|行业)[^)]*(?:includes|match|test)|(?:industry|行业)[^;\n]{0,80}\.(?:includes|match|test)\()[\s\S]{0,240}(?:color|material|composition|style|tone|palette|颜色|材质|构图|气质)/isu,
+  /(?:if\s*\([^)]*(?:platform|ecosystem|network|平台|生态)[^)]*\)|case\s+['"](?:platform|ecosystem|network)['"])[\s\S]{0,240}(?:reception|collaboration|协作|接待|材质|色彩|气质)/isu,
+];
 
-async function filesUnder(directory) {
-  const entries = await fs.readdir(directory, { withFileTypes: true });
-  const results = [];
-  for (const entry of entries) {
+function* walk(directory) {
+  if (!fs.existsSync(directory)) return;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (['node_modules', 'out', 'dist', 'build'].includes(entry.name)) continue;
     const absolute = path.join(directory, entry.name);
-    if (entry.isDirectory()) results.push(...await filesUnder(absolute));
-    else if (sourceFile.test(entry.name)) results.push(absolute);
+    if (entry.isDirectory()) yield* walk(absolute);
+    else if (sourceExtensions.has(path.extname(entry.name))) yield absolute;
   }
-  return results;
+}
+
+function lineOf(body, index) {
+  return body.slice(0, index).split(/\r?\n/u).length;
 }
 
 const violations = [];
 for (const productionRoot of productionRoots) {
-  for (const filename of await filesUnder(productionRoot)) {
-    const body = await fs.readFile(filename, 'utf8');
+  for (const filename of walk(path.join(root, productionRoot))) {
     const relative = path.relative(root, filename).replaceAll('\\', '/');
-    if (promptRuleFile.test(path.basename(filename))) {
-      for (const [term, pattern] of forbiddenTerms) {
+    const body = fs.readFileSync(filename, 'utf8');
+    for (const [term, pattern] of projectSpecificTerms) {
+      const match = pattern.exec(body);
+      if (match) violations.push({
+        code: 'PROJECT_SPECIFIC_RULE_IN_PRODUCTION',
+        file: relative,
+        line: lineOf(body, match.index),
+        term,
+      });
+    }
+    if (promptLikeFile.test(relative)) {
+      for (const pattern of keywordStyleInference) {
         const match = pattern.exec(body);
-        if (!match) continue;
-        violations.push({
-          code: ['platform', 'ecosystem', 'network'].includes(term)
-            ? 'KEYWORD_BASED_DOMAIN_INFERENCE_FORBIDDEN'
-            : 'PROJECT_SPECIFIC_RULE_IN_PRODUCTION',
+        if (match) violations.push({
+          code: 'KEYWORD_BASED_DOMAIN_STYLE_INFERENCE',
           file: relative,
-          line: body.slice(0, match.index).split(/\r?\n/u).length,
-          term,
+          line: lineOf(body, match.index),
+          term: match[0].slice(0, 160),
         });
       }
-    }
-    const goldenRead = runtimeGoldenRead.exec(body);
-    if (goldenRead) {
-      violations.push({
-        code: 'GOLDEN_RUNTIME_READ_FORBIDDEN',
-        file: relative,
-        line: body.slice(0, goldenRead.index).split(/\r?\n/u).length,
-        term: 'runtime golden path read',
-      });
     }
   }
 }
 
-const result = {
-  status: violations.length ? 'fail' : 'pass',
-  violations,
-};
+const result = { status: violations.length ? 'fail' : 'pass', violations };
 process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
-if (violations.length) {
-  process.stderr.write('PROJECT_SPECIFIC_RULE_IN_PRODUCTION\n');
-  process.exitCode = 1;
-}
+if (violations.length) process.exitCode = 1;

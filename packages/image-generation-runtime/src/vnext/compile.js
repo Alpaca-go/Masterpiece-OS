@@ -2,6 +2,7 @@ import { createVNextTaskContract } from './task-contract.js';
 import { routeVNextTemplates } from './template-router.js';
 import { compileVNextPrompt } from './prompt-compiler.js';
 import { createSeedreamVNextAdapter } from './seedream-adapter.js';
+import { assertPromptPreflight, runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 
 export function compileVNextImageGeneration(input) {
   const started = performance.now();
@@ -43,6 +44,14 @@ export function compileVNextImageGeneration(input) {
     adapter,
     projectPromptAsset: input.projectPromptAsset,
   });
+  if (compiledPrompt.projectGenerationContract) {
+    compiledPrompt.preflightReport = assertPromptPreflight(runPromptPreflightGate({
+      finalPrompt: compiledPrompt.finalPrompt,
+      taskContract,
+      projectContract: compiledPrompt.projectGenerationContract,
+      packagingTranslation: compiledPrompt.packagingTranslation,
+    }));
+  }
   const payload = adapter.compile(compiledPrompt);
   compiledPrompt.trace.promptCharacters = [...compiledPrompt.finalPrompt].length;
   compiledPrompt.trace.compileDurationMs = Number((performance.now() - started).toFixed(3));

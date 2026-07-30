@@ -106,7 +106,8 @@ for (const [deliverableType, templateId, source] of [
     assert.equal(blueprint.templateStack.visualCanon, 'canon-品牌餐饮@1.0.0');
     assert.match(blueprint.templateSource, new RegExp(`${source}$`));
     assert.equal(blueprint.referenceAssets.length, 5);
-    assert.ok(blueprint.color.usageRule.includes('10%'));
+    assert.ok(blueprint.color.usageRule.includes('不套用固定比例'));
+    assert.doesNotMatch(blueprint.color.usageRule, /10%/u);
     for (const field of [
       'visualDirection', 'material', 'composition', 'photography', 'negativeRules',
     ]) assert.ok(blueprint[field].length > 0, field);
@@ -172,20 +173,21 @@ test('template system rejects unsupported deliverables and missing frozen inputs
   );
 });
 
-for (const [benchmark, industry, deliverableType, expectedIndustryTemplate] of [
-  ['九州美学', '东方生活美学', 'interior_scene', 'industry:culture-and-aesthetics'],
-  ['冯烫烫', '中式餐饮', 'interior_scene', 'industry:food-and-hospitality'],
-  ['中秋礼盒', '节庆食品礼盒', 'packaging_render', 'industry:food-and-hospitality'],
-  ['儿童IP', '儿童文化IP', 'brand_poster', 'industry:children-and-ip'],
+for (const [benchmark, industry, deliverableType] of [
+  ['九州美学', '东方生活美学', 'interior_scene'],
+  ['冯烫烫', '中式餐饮', 'interior_scene'],
+  ['中秋礼盒', '节庆食品礼盒', 'packaging_render'],
+  ['儿童IP', '儿童文化IP', 'brand_poster'],
 ]) {
-  test(`${benchmark} benchmark composes Canon, industry, asset and photography templates`, () => {
+  test(`${benchmark} benchmark uses a factual industry boundary without aesthetic routing`, () => {
     const blueprint = compileDeliverableGenerationBlueprint({
       visualMemory: visualMemory(),
       visualCanon: visualCanon(industry),
       deliverableType,
       userIntent: `${benchmark}生成测试`,
     });
-    assert.equal(blueprint.templateStack.industry, expectedIndustryTemplate);
+    assert.equal(blueprint.templateStack.industry, 'industry:factual-boundary');
+    assert.ok(blueprint.industryRules.every((rule) => rule.includes('不得推断')));
     assert.match(blueprint.templateStack.asset, /^asset:/u);
     assert.match(blueprint.templateStack.photography, /^photography:/u);
     assert.ok(blueprint.visualDirection.includes('层叠路径连接品牌与日常体验'));

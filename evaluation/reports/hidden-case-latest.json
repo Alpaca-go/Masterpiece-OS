@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "status": "pass",
+  "rule": "First observation only; no prompt repair or production mutation performed.",
+  "metrics": [
+    {
+      "caseId": "hidden-case-001",
+      "projectId": "unseen-local-001",
+      "deliverable": "packaging",
+      "identityAccuracy": 0.9,
+      "directionAccuracy": 0.85,
+      "deliverableAccuracy": 1,
+      "projectSpecificity": 0.85,
+      "severeMisread": false,
+      "promptRewriteRequired": false,
+      "firstImagePass": true,
+      "recordedAt": "2026-07-30T12:13:03.807Z"
+    }
+  ]
+}

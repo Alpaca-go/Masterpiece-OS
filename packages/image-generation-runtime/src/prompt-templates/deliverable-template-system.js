@@ -11,7 +11,7 @@ const TEMPLATES = Object.freeze({
       '把已批准的图形语言转译为空间节奏、导视、服务节点与克制的身份触点。',
       '品牌标志只承担身份识别，不得取代完整空间设计。',
     ],
-    colorUsageRule: '环境基底为主色层，品牌色为辅助层，强调色不超过画面的 10%。',
+    colorUsageRule: '按当前项目已确认的色彩行为建立主色、身份色与强调关系，不套用固定比例。',
     materialBehavior: [
       '说明真实建筑材料、表面工艺、收口、触感、反射行为与可施工性。',
       '材质必须参与空间功能和动线，不得只是表面换皮。',
@@ -43,7 +43,7 @@ const TEMPLATES = Object.freeze({
       '把已批准的图形语言应用到包装结构与信息层级。',
       '不得复制旧包装版式或仅替换材质。',
     ],
-    colorUsageRule: '包装主视觉建立主色层、身份辅助层与不超过 10% 的强调层。',
+    colorUsageRule: '包装色彩只执行当前项目已确认的基底、身份与强调行为，不套用固定比例。',
     materialBehavior: [
       '说明基材、表面工艺、印刷行为、边缘、开合、触感与反光。',
       '材质选择必须支持品类属性和真实生产。',
@@ -75,7 +75,7 @@ const TEMPLATES = Object.freeze({
       '把已批准的图形语言转化为可复用的活动传播机制。',
       '不得重新排列旧海报或套用 Logo 加产品模板。',
     ],
-    colorUsageRule: '建立主导色场、身份辅助层与不超过 10% 的强调层，并服务信息对比。',
+    colorUsageRule: '按当前项目已确认的色彩行为建立信息对比，不套用固定比例。',
     materialBehavior: [
       '说明图像质感、印刷或屏幕表现、表面深度与必要的摄影材质线索。',
       '材质表现必须服务主叙事，不得成为无意义装饰。',
@@ -107,7 +107,7 @@ const TEMPLATES = Object.freeze({
       '把 Visual Canon 转译为产品所处的环境、道具关系、色彩节奏与材质对比，不复刻 Anchor 的具体画面。',
       '产品始终是唯一视觉主体，品牌氛围由空间、光线与材质共同建立。',
     ],
-    colorUsageRule: '以 Canon 主色建立环境基调，辅助色服务产品识别，强调色不超过画面的 10%。',
+    colorUsageRule: '以已确认的 Canon 色彩行为建立环境与产品识别关系，不套用固定比例。',
     materialBehavior: [
       '产品材质、接触面、道具和背景必须具有可信的尺度、纹理、反射与使用痕迹。',
       '场景材质服务于产品功能和品牌气质，不得用无关装饰掩盖产品。',
@@ -139,7 +139,7 @@ const TEMPLATES = Object.freeze({
       '把 Visual Canon 转译为角色所在世界的空间、色彩、材质、图形节奏与叙事气质。',
       '保持角色身份与比例稳定，用单一事件建立场景，不复制 Anchor 的具体构图。',
     ],
-    colorUsageRule: '以 Canon 色彩系统统一角色与环境，强调色只用于叙事焦点且不超过画面的 10%。',
+    colorUsageRule: '以已确认的 Canon 色彩行为统一角色与环境，不套用固定比例。',
     materialBehavior: [
       '角色服装、道具、地面和环境表面应遵循统一材质语言并保持触感可信。',
       '材质细节服务角色动作和世界观，不得堆叠廉价卡通装饰。',
@@ -171,29 +171,10 @@ function unique(values) {
   return [...new Set((Array.isArray(values) ? values : []).map(text).filter(Boolean))];
 }
 
-function resolveIndustryTemplate(industry) {
-  const value = text(industry);
-  const templates = [
-    {
-      id: 'food-and-hospitality',
-      pattern: /餐饮|食品|饮品|烘焙|茶|咖啡|礼盒/u,
-      rules: ['强调真实食欲、卫生可信度、服务场景与品类识别，不使用虚假食品结构。'],
-    },
-    {
-      id: 'children-and-ip',
-      pattern: /儿童|亲子|母婴|IP|玩具|教育/u,
-      rules: ['保持角色与品牌识别稳定，控制亲和力、年龄适配与安全感，避免廉价卡通堆叠。'],
-    },
-    {
-      id: 'culture-and-aesthetics',
-      pattern: /文化|文创|美学|艺术|东方|家居|香氛/u,
-      rules: ['以文化语义、材质克制与当代秩序建立高级感，避免传统符号直接堆砌。'],
-    },
-  ];
-  const selected = templates.find((item) => item.pattern.test(value));
-  return selected ?? {
-    id: 'general-brand',
-    rules: ['遵守当前行业的真实商业尺度、使用语境与合规表达，不制造未经确认的产品事实。'],
+function resolveIndustryTemplate() {
+  return {
+    id: 'factual-boundary',
+    rules: ['行业字段只用于核对客观品类、真实使用尺度与合规边界，不得推断颜色、材料、构图或气质。'],
   };
 }
 

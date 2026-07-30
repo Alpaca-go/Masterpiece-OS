@@ -257,7 +257,7 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     'Use the supplied logo asset',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.3.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.0.0');
   assert.deepEqual(result.compiledPrompt.completeness.coverage, {
     hardFacts: 1,
     upgradeThesis: 1,

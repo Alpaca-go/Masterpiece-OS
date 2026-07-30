@@ -1,0 +1,32 @@
+[
+  {
+    "caseId": "same-domain-different-character",
+    "candidateOutput": "A precise clinical identity using its own confirmed cobalt and warm gray system, modular information blocks, and a calm diagnostic-service role.",
+    "mustInclude": ["cobalt", "diagnostic-service role"],
+    "mustExclude": ["peacock", "feather", "mineral purple", "pearl white", "ecosystem reception"]
+  },
+  {
+    "caseId": "treatment-room",
+    "candidateOutput": "A functional treatment room with a confirmed treatment bed, medical equipment clearances, hygiene surfaces, and task lighting.",
+    "mustInclude": ["treatment bed", "medical equipment"],
+    "mustExclude": ["reception desk", "forbid treatment bed"]
+  },
+  {
+    "caseId": "technology-platform",
+    "candidateOutput": "A software platform identity whose visual rules come only from the project's confirmed electric blue grid and dense data hierarchy.",
+    "mustInclude": ["software platform", "confirmed electric blue grid"],
+    "mustExclude": ["medical aesthetics", "peacock", "forced collaboration scene"]
+  },
+  {
+    "caseId": "education-platform",
+    "candidateOutput": "An education platform with a confirmed editorial system and accessible course-navigation hierarchy.",
+    "mustInclude": ["education platform", "course-navigation"],
+    "mustExclude": ["injection", "nursing", "medical negative"]
+  },
+  {
+    "caseId": "cross-media-packaging",
+    "candidateOutput": "A locked lid-and-base box with a translucent sleeve, layered line embossing, pearl paper, restrained identity accent, organized inserts, and three-quarter product photography.",
+    "mustInclude": ["lid-and-base box", "organized inserts", "product photography"],
+    "mustExclude": ["reception desk", "circulation", "ceiling", "35mm", "consultation behavior"]
+  }
+]

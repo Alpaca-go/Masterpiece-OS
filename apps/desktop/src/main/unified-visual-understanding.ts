@@ -123,7 +123,22 @@ export function buildUnifiedVisualUnderstandingPrompt(
       "functionalExperience": [],
       "sceneMisreadRisks": []
     },
-    "packaging": { "concept": "", "expressionLanguage": [], "misreadRisks": [] },
+    "packaging": {
+      "packagingConcept": "",
+      "productAndCategoryRole": [],
+      "structureStrategy": [{ "structure": "", "purpose": "", "locked": false, "evidenceRefs": [] }],
+      "openingExperience": [],
+      "productArrangement": [],
+      "graphicTranslation": [{ "sourceMeaning": "", "packagingExpression": [], "forbiddenLiteralUse": [] }],
+      "informationHierarchy": [],
+      "substrateLanguage": [],
+      "craftLanguage": [{ "craft": "", "purpose": "", "forbiddenUse": [] }],
+      "colorBehavior": { "base": [], "identity": [], "accent": [], "forbidden": [] },
+      "logoPolicy": [],
+      "seriesArchitecture": [],
+      "photographyDirection": [],
+      "packagingMisreadRisks": []
+    },
     "poster": { "concept": "", "expressionLanguage": [], "misreadRisks": [] },
     "vi": { "concept": "", "expressionLanguage": [], "misreadRisks": [] }
   }
@@ -147,7 +162,7 @@ brandMisreadRisks 使用以下字段：
 6. 抽象不得只输出“几何纹理”；必须同时覆盖语义、形式、节奏、材料潜力、光线潜力和禁止字面复制。
 7. spatial 必须把抽象属性转成真实空间结构、材料行为、光线行为、色彩行为和显式场景程序；没有证据时人物和功能关系保持空数组。
 8. 不得根据行业词、品牌角色词、项目名称或抽象气质词推断具体材料、人物、功能关系、空间程序或负面场景。
-9. packaging/poster/vi 本轮只保留接口，可以留空；spatial 在硬事实充分时不得留空。
+9. packaging 必须把项目决策转译为包装结构、开合、内装、图形信息、基材、工艺、色彩与产品摄影语言；没有包装结构证据时 structureStrategy 留空，禁止猜测盒型。poster/vi 本轮仍可留空。
 10. 不得复制 Golden Prompt 或任何固定项目答案；所有结论必须由当前项目证据推出。`;
 }
 

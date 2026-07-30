@@ -1263,6 +1263,111 @@ export interface SpatialTranslationV2 {
   sceneMisreadRisks: string[];
 }
 
+export type ProjectGenerationContractStatus = 'ready' | 'insufficient' | 'conflicted';
+
+export interface ProjectSpecificGenerationContract {
+  schemaVersion: '1.0';
+  projectId: string;
+  generatedAt: string;
+  projectIdentity: {
+    brandName: string;
+    industry: string;
+    brandRole: string;
+    businessModel?: string | null;
+  };
+  upgradeThesis: {
+    from: string[];
+    to: string[];
+    statement: string;
+  };
+  mustPreserve: Array<{
+    value: string;
+    source: 'locked_asset' | 'confirmed_fact' | 'user_confirmation';
+    evidenceRefs: string[];
+  }>;
+  mustTransform: Array<{
+    sourceAsset: string;
+    semanticMeaning: string[];
+    targetExpression: string[];
+    forbiddenLiteralUse: string[];
+    evidenceRefs: string[];
+  }>;
+  toneBoundaries: CreativeToneBoundaryV2[];
+  brandMisreadRisks: Array<{
+    code: string;
+    description: string;
+    appliesTo: {
+      deliverables?: string[];
+      subtypes?: string[];
+    };
+    evidenceRefs: string[];
+    status: 'confirmed' | 'probable';
+    confidence: number;
+  }>;
+  sharedVisualRules: {
+    colorBehavior: string[];
+    materialBehavior: string[];
+    graphicBehavior: string[];
+    compositionBehavior: string[];
+    lightingBehavior: string[];
+  };
+  deliverableSuccessCriteria: Record<string, string[]>;
+  validation: {
+    status: ProjectGenerationContractStatus;
+    missingRequiredFields: string[];
+    conflicts: string[];
+  };
+  provenance: {
+    sourceKinds: Array<
+      | 'project_record'
+      | 'original_asset'
+      | 'structured_analysis'
+      | 'user_confirmation'
+    >;
+    sourceFingerprint: string;
+    compilerVersion: string;
+  };
+}
+
+export interface PackagingColorBehaviorV2 {
+  base: string[];
+  identity: string[];
+  accent: string[];
+  forbidden: string[];
+}
+
+export interface PackagingTranslationV2 {
+  status: 'ready' | 'insufficient';
+  packagingConcept: string;
+  productAndCategoryRole: string[];
+  structureStrategy: Array<{
+    structure: string;
+    purpose: string;
+    locked: boolean;
+    evidenceRefs: string[];
+  }>;
+  openingExperience: string[];
+  productArrangement: string[];
+  graphicTranslation: Array<{
+    sourceMeaning: string;
+    packagingExpression: string[];
+    forbiddenLiteralUse: string[];
+  }>;
+  informationHierarchy: string[];
+  substrateLanguage: string[];
+  craftLanguage: Array<{
+    craft: string;
+    purpose: string;
+    forbiddenUse: string[];
+  }>;
+  colorBehavior: PackagingColorBehaviorV2;
+  logoPolicy: string[];
+  seriesArchitecture: string[];
+  photographyDirection: string[];
+  packagingMisreadRisks: string[];
+  missingRequiredFields: string[];
+}
+
 export interface DeferredMediaTranslationV2 {
   status: 'interface_only';
   concept: string;
@@ -1273,7 +1378,7 @@ export interface DeferredMediaTranslationV2 {
 export interface MediaTranslationPacketV2 {
   sharedBrandCore: string[];
   spatial: SpatialTranslationV2;
-  packaging: DeferredMediaTranslationV2;
+  packaging: PackagingTranslationV2;
   poster: DeferredMediaTranslationV2;
   vi: DeferredMediaTranslationV2;
 }
@@ -1301,6 +1406,43 @@ export interface VisualDecisionPacket {
     executionDataStatus: 'ready' | 'insufficient';
     missingExecutionFields: string[];
   };
+}
+
+export interface GoldenCase {
+  schemaVersion: '1.0';
+  caseId: string;
+  domain: string;
+  brandRole: string;
+  deliverable: string;
+  subtype: string;
+  sourceProjectRefs: string[];
+  expected: {
+    facts: string[];
+    diagnosis: string[];
+    creativeDecision: string[];
+    mediaTranslation: string[];
+    promptContractCoverage: string[];
+  };
+  goldenPromptPath?: string;
+  acceptedOutputRefs: string[];
+  partialOutputRefs: string[];
+  failedOutputRefs: string[];
+  antiCaseIds: string[];
+  visibility: 'development' | 'validation' | 'hidden';
+}
+
+export interface FirstPassMetrics {
+  caseId: string;
+  projectId: string;
+  deliverable: string;
+  identityAccuracy: number;
+  directionAccuracy: number;
+  deliverableAccuracy: number;
+  projectSpecificity: number;
+  severeMisread: boolean;
+  promptRewriteRequired: boolean;
+  firstImagePass: boolean;
+  recordedAt: string;
 }
 
 export interface DocumentVisualContextEvidence {

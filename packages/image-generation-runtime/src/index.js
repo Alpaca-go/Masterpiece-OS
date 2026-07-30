@@ -62,4 +62,13 @@ export {
   compileEvaluationPromptAdjustment,
 } from './evaluation.js';
 export { evaluateDeliverableGate } from './gates/deliverable-gate.js';
+export {
+  PACKAGING_PROMPT_CONTRACT_VERSION,
+  PACKAGING_PROMPT_BLOCKS,
+  compilePackagingPromptContract,
+} from './prompt-contracts/packaging-contract.js';
+export {
+  runPromptPreflightGate,
+  assertPromptPreflight,
+} from './gates/prompt-preflight-gate.js';
 export * from './vnext/index.js';
