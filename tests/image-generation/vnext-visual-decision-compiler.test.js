@@ -268,6 +268,20 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
   });
 });
 
+test('formal Packet derives project-specific tone boundaries when the model omits the explicit array', () => {
+  const packetValue = packet();
+  packetValue.creativeDecision.toneBoundaries = [];
+  const result = compile({ packet: packetValue });
+  const toneBlock = result.compiledPrompt.blocks.find((block) => block.id === 'tone_boundary');
+
+  assert.deepEqual(toneBlock.items, [
+    '目标气质：东方生命美学；避免：生活方式零售、传统紫色医美、具象孔雀羽毛、发光渐变',
+    '目标气质：现代医疗专业感；避免：生活方式零售、传统紫色医美、具象孔雀羽毛、发光渐变',
+    '目标气质：未来材料科技感；避免：生活方式零售、传统紫色医美、具象孔雀羽毛、发光渐变',
+  ]);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /保持品牌气质清晰、克制且一致/u);
+});
+
 test('formal Packet blocks compilation when execution data is insufficient', () => {
   const incomplete = packet({
     validation: {

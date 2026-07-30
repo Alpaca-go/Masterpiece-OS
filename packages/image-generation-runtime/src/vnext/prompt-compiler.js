@@ -268,6 +268,24 @@ function toneItems(boundaries, fallback) {
   return values.length ? values : cleanList(fallback, '保持品牌气质清晰、克制且一致。');
 }
 
+function packetToneItems(creativeDecision) {
+  const explicit = cleanList(creativeDecision?.toneBoundaries?.map((item) => {
+    const avoids = cleanList(item?.avoid);
+    return item?.target
+      ? `目标气质：${item.target}${avoids.length ? `；避免：${avoids.join('、')}` : ''}`
+      : '';
+  }));
+  if (explicit.length) return explicit;
+
+  const targets = cleanList(creativeDecision?.targetWorldview);
+  const avoids = cleanList(
+    creativeDecision?.strategicNegatives,
+    creativeDecision?.upgradeFrom,
+  );
+  return targets.map((target) =>
+    `目标气质：${target}${avoids.length ? `；避免：${avoids.join('、')}` : ''}`);
+}
+
 function materialItems(materials, fallback) {
   const values = cleanList(materials?.map((item) => {
     const behavior = cleanList(item?.behavior).join('、');
@@ -524,10 +542,12 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     createBlock(
       'tone_boundary',
       '05 Tone Boundaries',
-      toneItems(
-        packetSource?.creativeDecision?.toneBoundaries || source?.upgradeTranslation?.toneBoundaries,
-        strictPacket ? [] : projectContext.visualIdentity.tone,
-      ),
+      packetSource
+        ? packetToneItems(packetSource.creativeDecision)
+        : toneItems(
+          source?.upgradeTranslation?.toneBoundaries,
+          projectContext.visualIdentity.tone,
+        ),
       [
         ...(packetSource
           ? ['visual_decision_packet.creativeDecision.toneBoundaries']
