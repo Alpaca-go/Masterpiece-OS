@@ -11,6 +11,7 @@ function run(label, executable, args) {
 }
 
 run('Engine document preparation paths', process.execPath, ['--test', 'tests/v5/document-preparation.test.js']);
+run('No project-specific production prompt rules', process.execPath, ['scripts/verify-no-project-specific-production-rules.mjs']);
 run('Desktop document parsing and delivery paths', process.execPath, ['apps/desktop/node_modules/tsx/dist/cli.mjs', '--test', 'apps/desktop/tests/visual-translation-document-processing.test.ts', 'apps/desktop/tests/document-context-service.test.ts']);
 run('Desktop TypeScript contracts', process.execPath, ['apps/desktop/node_modules/typescript/bin/tsc', '--noEmit', '-p', 'apps/desktop/tsconfig.json']);
 process.stdout.write('\n[current-flows] PASS — current-flows gate completed without external API calls.\n');

@@ -1135,13 +1135,24 @@ export interface VisualDiagnosisItemV2 {
   confidence: number;
 }
 
+export interface BrandMisreadRiskV2 extends VisualDiagnosisItemV2 {
+  code: string;
+  description: string;
+  appliesTo: {
+    taskFamilies?: string[];
+    subtypes?: string[];
+    scenes?: string[];
+  };
+  status: 'confirmed' | 'probable';
+}
+
 export interface VisualDiagnosisV2 {
   valuableAssets: VisualDiagnosisItemV2[];
   overusedExpressions: VisualDiagnosisItemV2[];
   outdatedExpressions: VisualDiagnosisItemV2[];
   weakSystemAreas: VisualDiagnosisItemV2[];
   categoryCliches: VisualDiagnosisItemV2[];
-  brandMisreadRisks: VisualDiagnosisItemV2[];
+  brandMisreadRisks: BrandMisreadRiskV2[];
   crossMediaGaps: VisualDiagnosisItemV2[];
 }
 
@@ -1243,7 +1254,12 @@ export interface SpatialTranslationV2 {
   lightingLanguage: SpatialLightingBehaviorV2;
   colorBehavior: SpatialColorBehaviorV2;
   brandIntegration: string[];
+  functionalRelationships: string[];
+  sceneProgram: string[];
+  peopleBehavior: string[];
+  /** @deprecated Read-only compatibility field for packets created before structured scene decisions. */
   functionalExperience: string[];
+  /** @deprecated New packets should use diagnosis.brandMisreadRisks with appliesTo. */
   sceneMisreadRisks: string[];
 }
 

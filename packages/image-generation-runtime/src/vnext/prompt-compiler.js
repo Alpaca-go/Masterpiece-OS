@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { assertVNextProjectPromptAsset } from './project-prompt-asset.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '3.2.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '3.3.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -61,20 +61,34 @@ function packetExecutionSource(packet, family) {
   }
   if (packet.validation?.hardFactStatus !== 'pass') {
     throw Object.assign(
-      new Error(`PROMPT_SOURCE_INSUFFICIENT: hard facts ${packet.validation?.hardFactStatus || 'unknown'}`),
-      { code: 'PROMPT_SOURCE_INSUFFICIENT' },
+      new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: hard facts ${packet.validation?.hardFactStatus || 'unknown'}`),
+      { code: 'VISUAL_DECISION_PACKET_INSUFFICIENT' },
     );
   }
   if (packet.validation?.executionDataStatus !== 'ready') {
     throw Object.assign(
-      new Error(`PROMPT_SOURCE_INSUFFICIENT: ${cleanList(packet.validation?.missingExecutionFields).join(', ') || 'execution data'}`),
-      { code: 'PROMPT_SOURCE_INSUFFICIENT' },
+      new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: ${cleanList(packet.validation?.missingExecutionFields).join(', ') || 'execution data'}`),
+      { code: 'VISUAL_DECISION_PACKET_INSUFFICIENT' },
     );
   }
   if (family !== 'space') {
     throw Object.assign(
-      new Error(`PROMPT_SOURCE_INSUFFICIENT: ${family} media translation is interface-only`),
-      { code: 'PROMPT_SOURCE_INSUFFICIENT' },
+      new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: ${family} media translation is interface-only`),
+      { code: 'VISUAL_DECISION_PACKET_INSUFFICIENT' },
+    );
+  }
+  const spatial = packet.mediaTranslations?.spatial || {};
+  const missingStructuredFields = [
+    !cleanList(spatial.sceneProgram).length && 'mediaTranslations.spatial.sceneProgram',
+    !cleanList(spatial.structureLanguage).length && 'mediaTranslations.spatial.structureLanguage',
+    !(Array.isArray(spatial.materialLanguage) && spatial.materialLanguage.length)
+      && 'mediaTranslations.spatial.materialLanguage',
+    !cleanList(spatial.lightingLanguage?.source).length && 'mediaTranslations.spatial.lightingLanguage',
+  ].filter(Boolean);
+  if (missingStructuredFields.length) {
+    throw Object.assign(
+      new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: ${missingStructuredFields.join(', ')}`),
+      { code: 'VISUAL_DECISION_PACKET_INSUFFICIENT', issues: missingStructuredFields },
     );
   }
   return {
@@ -82,6 +96,10 @@ function packetExecutionSource(packet, family) {
       brandName: packet.projectFacts?.brandName?.value,
       industry: packet.projectFacts?.industry?.value,
       brandRole: packet.projectFacts?.brandRole?.value,
+    },
+    projectFactStatus: {
+      industry: packet.projectFacts?.industry?.status,
+      brandRole: packet.projectFacts?.brandRole?.status,
     },
     lockedAssets: packet.lockedAssets || [],
     diagnosis: packet.diagnosis || {},
@@ -168,121 +186,25 @@ function assertPacketConflicts({ packetSource, taskContract, negativeConstraints
   }
 }
 
-function roleEvidenceText(taskContract, packetSource) {
-  return cleanList(
-    taskContract.currentInstruction,
-    taskContract.mustInclude,
-    packetSource?.projectFacts?.industry,
-    packetSource?.projectFacts?.brandRole,
-    packetSource?.creativeDecision?.brandRoleStatement,
-  ).join(' ');
+function riskAppliesToTask(risk, taskContract) {
+  if (risk?.status !== 'confirmed') return false;
+  const families = cleanList(risk?.appliesTo?.taskFamilies);
+  const subtypes = cleanList(risk?.appliesTo?.subtypes);
+  const scenes = cleanList(risk?.appliesTo?.scenes);
+  if (!subtypes.length || !subtypes.includes(taskContract.subtype)) return false;
+  if (families.length && !families.includes(taskContract.deliverableFamily)) return false;
+  if (scenes.length && (!taskContract.scene || !scenes.includes(taskContract.scene))) return false;
+  return true;
 }
 
-function isPlatformRole(roleText) {
-  return /全链|生态平台|产业平台|协作平台|服务平台|ecosystem|platform|network/iu.test(roleText);
-}
-
-function isMedicalAestheticsRole(roleText) {
-  return /医美|医疗美容|医学美容|medical\s+aesthetics?|aesthetic\s+medicine|cosmetic\s+medicine/iu.test(roleText);
-}
-
-function platformRoleContract(taskContract, packetSource) {
-  const roleText = roleEvidenceText(taskContract, packetSource);
-  if (!isPlatformRole(roleText)) return '';
-  return [
-    'Brand role contract: express the confirmed ecosystem or platform role through a coherent composite experience, not a generic single-purpose storefront.',
-    'Platform relationship contract: visibly connect at least two functions supported by project evidence — such as arrival or reception, consultation or collaboration, capability display, waiting, or back-of-house circulation. Do not invent unsupported functions or replace spatial relationships with explanatory graphics.',
-    'Human behavior contract: when people are appropriate, use 1–3 naturally behaving adults only as secondary evidence of scale and use. No posing, selfies, greeting lineups, exaggerated smiles, or advertising portraits.',
-    ...(isMedicalAestheticsRole(roleText) ? [
-      'Medical-aesthetics boundary: this flagship experience space is not a single consumer beauty store; do not show injections, treatment beds, nursing, or staged treatment scenes.',
-    ] : []),
-  ].join(' ');
-}
-
-function assertProjectSpecificity({ packetSource, taskContract, logoUsageMode }) {
-  if (!packetSource || taskContract.deliverableFamily !== 'space') return;
-  const issues = [];
-  const roleText = roleEvidenceText(taskContract, packetSource);
-  if (!isPlatformRole(roleText)) return;
-
-  const integration = cleanList(packetSource.spatial?.brandIntegration).join(' ');
-  const interfaceCount = [
-    /隔断|partition/iu,
-    /墙体|墙面|wall/iu,
-    /天花|顶面|ceiling/iu,
-    /光线|光过滤|lighting|light-filter/iu,
-    /展示|display/iu,
-    /动线|路径|circulation|path/iu,
-  ].filter((pattern) => pattern.test(integration)).length;
-  if (interfaceCount < 2 || /单一.*(?:雕塑|装置)|巨型.*(?:雕塑|装置)|打卡装置/iu.test(integration)) {
-    issues.push('distributed_spatial_translation');
+function applicableConfirmedRisks(packetSource, taskContract) {
+  if (packetSource?.projectFactStatus?.industry !== 'confirmed'
+    || packetSource?.projectFactStatus?.brandRole !== 'confirmed') {
+    return [];
   }
-  if (logoUsageMode === 'reference'
-    && (!/(小面积|次层级|后方|内部|预留|留白|small|subtle|background|internal|reserved)/iu.test(integration)
-      || /顶部中央|入口门头|主招牌|最大视觉中心|top center|storefront sign/iu.test(integration))) {
-    issues.push('subtle_logo_behavior');
-  }
-
-  const story = cleanList(packetSource.spatial?.functionalExperience).join(' ');
-  for (const [id, pattern] of [
-    ['foreground', /前景|foreground/iu],
-    ['midground', /中景|midground/iu],
-    ['background', /背景|background/iu],
-    ['circulation', /动线|进入|前往后方|circulation|arrival.*consult/iu],
-  ]) {
-    if (!pattern.test(story)) issues.push(`scene_story_${id}`);
-  }
-
-  const primaryRatio = (packetSource.colorBehavior?.primary || [])
-    .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
-  const secondaryRatio = (packetSource.colorBehavior?.secondary || [])
-    .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
-  const accentRatio = (packetSource.colorBehavior?.accent || [])
-    .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
-  const colorRatioTotal = primaryRatio + secondaryRatio + accentRatio;
-  if (colorRatioTotal > 0
-    && (Math.abs(colorRatioTotal - 100) > 1 || primaryRatio <= accentRatio)) {
-    issues.push('color_hierarchy_behavior');
-  }
-  const accentFamilies = new Set(
-    (packetSource.colorBehavior?.accent || []).flatMap((item) =>
-      [...String(item?.name || '').matchAll(/[紫红蓝绿橙黄金粉]|purple|violet|red|blue|green|orange|gold|pink/giu)]
-        .map((match) => match[0].toLowerCase())),
-  );
-  const nonAccentColors = [
-    ...(packetSource.colorBehavior?.primary || []),
-    ...(packetSource.colorBehavior?.secondary || []),
-  ];
-  if (nonAccentColors.some((item) =>
-    [...accentFamilies].some((family) => String(item?.name || '').toLowerCase().includes(family)))) {
-    issues.push('accent_color_overweight');
-  }
-
-  const materials = JSON.stringify(packetSource.materialBehavior || []);
-  if (!/厚度|接缝|收边|透射|反射|肌理|触感|thickness|joint|edge|transmission|reflection|texture|tactile/iu.test(materials)) {
-    issues.push('material_physical_behavior');
-  }
-
-  const lighting = JSON.stringify(packetSource.lightingBehavior || {});
-  if (!/光|照明|light|lighting/iu.test(lighting)
-    || !/反射|透射|穿透|阴影|高光|reflection|transmission|through|shadow|highlight/iu.test(lighting)) {
-    issues.push('lighting_material_interaction');
-  }
-
-  const negatives = cleanList(
-    packetSource.diagnosis?.brandMisreadRisks?.map((item) => item.target),
-    packetSource.spatial?.sceneMisreadRisks,
-    packetSource.creativeDecision?.strategicNegatives,
-    taskContract.mustAvoid,
-  );
-  if (negatives.length < 2) issues.push('project_specific_scene_negatives');
-
-  if (issues.length) {
-    throw Object.assign(
-      new Error(`PROMPT_PROJECT_SPECIFICITY_INSUFFICIENT: ${issues.join(', ')}`),
-      { code: 'PROMPT_PROJECT_SPECIFICITY_INSUFFICIENT', issues },
-    );
-  }
+  return (packetSource?.diagnosis?.brandMisreadRisks || [])
+    .filter((risk) => riskAppliesToTask(risk, taskContract))
+    .map((risk) => risk.description || risk.target);
 }
 
 function renderBlock(block) {
@@ -330,8 +252,8 @@ function materialItems(materials, fallback) {
 function createBlock(id, title, items, sources, fallback, strict = false) {
   const normalized = cleanList(items);
   if (strict && !normalized.length) {
-    throw Object.assign(new Error(`PROMPT_SOURCE_INSUFFICIENT: ${id}`), {
-      code: 'PROMPT_SOURCE_INSUFFICIENT',
+    throw Object.assign(new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: ${id}`), {
+      code: 'VISUAL_DECISION_PACKET_INSUFFICIENT',
       blockId: id,
     });
   }
@@ -376,9 +298,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
 
   const negativeConstraints = cleanList(
     taskContract.mustAvoid,
-    packetSource?.creativeDecision?.strategicNegatives,
-    packetSource?.diagnosis?.brandMisreadRisks?.map((item) => item.target),
-    packetSource?.spatial?.sceneMisreadRisks,
+    packetSource ? applicableConfirmedRisks(packetSource, taskContract) : [],
     packetSource ? [] : source?.negativeRules?.project,
     packetSource ? [] : projectContext.styleBoundaries.mustAvoid,
     promptAsset?.negativeConstraints,
@@ -420,11 +340,6 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       negativeConstraints,
       logoUsageMode,
     });
-    assertProjectSpecificity({
-      packetSource,
-      taskContract,
-      logoUsageMode,
-    });
   }
 
   // Fixed block order is part of the provider contract. Within each block the
@@ -446,6 +361,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       [
         taskContract.currentInstruction,
         taskContract.mustInclude.map((item) => `Must include: ${item}`),
+        taskContract.scene ? `Scene: ${taskContract.scene}` : '',
         `Aspect ratio: ${taskContract.aspectRatio}`,
       ],
       ['task_contract'],
@@ -462,7 +378,6 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
         packetSource?.projectFacts?.brandRole || source?.projectFacts?.brandRole || projectContext.brandCore.brandRole
           ? `Brand role: ${packetSource?.projectFacts?.brandRole || source?.projectFacts?.brandRole || projectContext.brandCore.brandRole}`
           : '',
-        platformRoleContract(taskContract, packetSource),
         !packetSource && source?.projectFacts?.primaryOfferings?.length
           ? `Primary offerings: ${source.projectFacts.primaryOfferings.join('、')}`
           : '',
@@ -527,7 +442,9 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
         packetSource?.lockedAssets?.map((item) => `Locked — preserve ${item.type}: ${item.value}`),
         packetSource ? packetTransformationItems(packetSource.abstractions, packetSource.spatial) : [],
         packetSource?.spatial?.brandIntegration?.map((item) => `Brand integration: ${item}`),
-        packetSource?.spatial?.functionalExperience?.map((item) => `Functional experience: ${item}`),
+        packetSource?.spatial?.functionalRelationships?.map((item) => `Functional relationship: ${item}`),
+        packetSource?.spatial?.sceneProgram?.map((item) => `Scene program: ${item}`),
+        packetSource?.spatial?.peopleBehavior?.map((item) => `People behavior: ${item}`),
         packetSource ? [] : projectContext.lockedAssets.mustPreserve.map((item) => `Locked — preserve: ${item}`),
         packetSource ? [] : source?.lockedAssets?.mustPreserve?.map((item) => `Locked — preserve: ${item}`),
         packetSource ? [] : transformationItems(source?.upgradeTranslation?.transformations),
@@ -618,9 +535,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
         'locked_assets.logoAssetIds',
         ...(packetSource
           ? [
-            'visual_decision_packet.creativeDecision.strategicNegatives',
             'visual_decision_packet.diagnosis.brandMisreadRisks',
-            'visual_decision_packet.mediaTranslations.spatial.sceneMisreadRisks',
           ]
           : ['prompt_source.negativeRules']),
         ...templates.map((item) => item.id),
@@ -648,8 +563,8 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     const leaked = genericProductionPlaceholders.filter((placeholder) =>
       blocks.some((block) => block.items.includes(placeholder)));
     if (leaked.length) {
-      throw Object.assign(new Error(`PROMPT_SOURCE_INSUFFICIENT: generic placeholders leaked: ${leaked.join(' | ')}`), {
-        code: 'PROMPT_SOURCE_INSUFFICIENT',
+      throw Object.assign(new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: generic placeholders leaked: ${leaked.join(' | ')}`), {
+        code: 'VISUAL_DECISION_PACKET_INSUFFICIENT',
       });
     }
   }

@@ -80,12 +80,14 @@ async function main(): Promise<void> {
   });
   const prompt = compilation.compiledPrompt.finalPrompt;
   for (const signal of [
-    'Human behavior contract',
-    'Platform relationship contract',
     'controlled post-compositing',
-    '1–3 naturally behaving Chinese adults',
+    '至少两类平台功能关系',
+    '1-3 位自然人物',
   ]) {
     if (!prompt.includes(signal)) throw new Error(`收尾自动 Prompt 缺少信号：${signal}`);
+  }
+  if (/Platform relationship contract|Human behavior contract|Medical-aesthetics boundary/u.test(prompt)) {
+    throw new Error('生产 Prompt 出现基于行业或品牌角色关键词的公共注入规则');
   }
 
   const results = [];

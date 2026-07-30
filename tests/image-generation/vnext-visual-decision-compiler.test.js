@@ -26,8 +26,39 @@ function packet(overrides = {}) {
       weakSystemAreas: [],
       categoryCliches: [],
       brandMisreadRisks: [
-        { target: '普通美容院', observation: '甜美装饰导致误读', whyItMatters: '削弱平台角色', evidenceRefs: ['asset:12'], confidence: 0.9 },
-        { target: '传统医院诊室', observation: '只强调医疗会过冷', whyItMatters: '失去品牌生命美学', evidenceRefs: ['asset:05'], confidence: 0.9 },
+        {
+          code: 'consumer_beauty_salon',
+          description: '不要呈现普通美容院或普通消费型美容门店',
+          target: '普通美容院',
+          observation: '甜美装饰导致误读',
+          whyItMatters: '削弱平台角色',
+          appliesTo: { taskFamilies: ['space'], subtypes: ['reception'], scenes: ['flagship_reception'] },
+          evidenceRefs: ['asset:12'],
+          confidence: 0.9,
+          status: 'confirmed',
+        },
+        {
+          code: 'treatment_room',
+          description: '不要呈现传统医院诊室、注射操作、护理床或护理场景',
+          target: '传统医院诊室',
+          observation: '只强调医疗会过冷',
+          whyItMatters: '失去品牌生命美学',
+          appliesTo: { taskFamilies: ['space'], subtypes: ['reception'], scenes: ['flagship_reception'] },
+          evidenceRefs: ['asset:05'],
+          confidence: 0.9,
+          status: 'confirmed',
+        },
+        ...['茶空间', '生活方式零售', '售楼处', '霓虹空间'].map((target, index) => ({
+          code: `scene_misread_${index + 1}`,
+          description: `禁止${target}`,
+          target,
+          observation: `${target}会造成错误项目理解`,
+          whyItMatters: '偏离当前旗舰接待场景',
+          appliesTo: { taskFamilies: ['space'], subtypes: ['reception'], scenes: ['flagship_reception'] },
+          evidenceRefs: ['asset:12'],
+          confidence: 0.9,
+          status: 'confirmed',
+        })),
       ],
       crossMediaGaps: [],
     },
@@ -85,6 +116,9 @@ function packet(overrides = {}) {
           '羽毛抽象分散进入半透明隔断、曲面墙体与天花层次',
           'Logo 小面积位于后方内部服务节点或保留干净识别位',
         ],
+        functionalRelationships: ['接待连接等候、咨询与后方服务'],
+        sceneProgram: ['前景到达、中景咨询、背景接待与后场'],
+        peopleBehavior: ['访客自然等候，工作人员处理接待'],
         functionalExperience: [
           '前景为到达与等候，中景为咨询、展示和半透明分区，背景为接待识别与后方服务空间',
           '动线从入口进入、停留、咨询展示并前往后方',
@@ -197,6 +231,7 @@ function compile(overrides = {}) {
       projectId: projectContext.projectId,
       deliverableFamily: 'space',
       subtype: 'reception',
+      scene: 'flagship_reception',
       shot: 'entrance_three_quarter_wide',
       count: 1,
       aspectRatio: '16:9',
@@ -222,7 +257,7 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     'Use the supplied logo asset',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.2.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.3.0');
   assert.deepEqual(result.compiledPrompt.completeness.coverage, {
     hardFacts: 1,
     upgradeThesis: 1,
@@ -241,7 +276,7 @@ test('formal Packet blocks compilation when execution data is insufficient', () 
       missingExecutionFields: ['abstractions'],
     },
   });
-  assert.throws(() => compile({ packet: incomplete }), /PROMPT_SOURCE_INSUFFICIENT/u);
+  assert.throws(() => compile({ packet: incomplete }), /VISUAL_DECISION_PACKET_INSUFFICIENT/u);
 });
 
 test('compiler detects Logo, text and saturation conflicts', () => {
@@ -274,7 +309,7 @@ test('interface-only media translation cannot enter formal generation', () => {
         currentInstruction: '生成品牌海报',
       },
     }),
-    /PROMPT_SOURCE_INSUFFICIENT.*interface-only/u,
+    /VISUAL_DECISION_PACKET_INSUFFICIENT.*interface-only/u,
   );
 });
 
@@ -315,38 +350,10 @@ test('Jiuzhou automatic Prompt meets all 22 Golden backtrace atoms', () => {
 });
 
 test('Logo preservation rule does not conflict with a confirmed Logo reference', () => {
-  const packetValue = packet();
-  packetValue.creativeDecision.strategicNegatives.push('禁止将 Logo 变形或拆解');
-  const result = compile({ packet: packetValue });
+  const result = compile({ task: { mustAvoid: ['禁止将 Logo 变形或拆解'] } });
   assert.equal(result.taskContract.logoUsageMode, 'reference');
   assert.match(result.compiledPrompt.finalPrompt, /禁止将 Logo 变形或拆解/u);
   assert.equal(result.compiledPrompt.completeness.conflictCount, 0);
-});
-
-test('platform space fails closed when project specificity regresses to storefront decoration', () => {
-  const packetValue = packet();
-  packetValue.mediaTranslations.spatial.brandIntegration = [
-    '入口顶部中央使用大型发光 Logo 主招牌',
-    '右侧放置单一巨型羽毛雕塑打卡装置',
-  ];
-  packetValue.mediaTranslations.spatial.functionalExperience = [
-    '入口、前台和沙发等候区',
-  ];
-  packetValue.mediaTranslations.spatial.colorBehavior = {
-    primary: [{ name: '暖白', ratio: 70, role: '空间基底' }],
-    secondary: [{ name: '珠光紫', ratio: 20, role: '品牌氛围' }],
-    accent: [{ name: '孔雀紫', ratio: 10, role: '品牌识别' }],
-    forbidden: [],
-  };
-  packetValue.colorSystem = packetValue.mediaTranslations.spatial.colorBehavior;
-  assert.throws(
-    () => compile({ packet: packetValue }),
-    (error) => error?.code === 'PROMPT_PROJECT_SPECIFICITY_INSUFFICIENT'
-      && error.issues.includes('distributed_spatial_translation')
-      && error.issues.includes('subtle_logo_behavior')
-      && error.issues.includes('accent_color_overweight')
-      && error.issues.includes('scene_story_foreground'),
-  );
 });
 
 function alternatePacket({
@@ -378,12 +385,16 @@ function alternatePacket({
     evidenceRefs: ['asset:1'],
     confidence: 0.95,
   };
-  value.diagnosis.brandMisreadRisks = risks.map((target) => ({
+  value.diagnosis.brandMisreadRisks = risks.map((target, index) => ({
+    code: `project_risk_${index + 1}`,
+    description: `避免${target}`,
     target,
     observation: `${target}会造成错误品类理解`,
     whyItMatters: '削弱真实商业角色',
+    appliesTo: { taskFamilies: ['space'], subtypes: ['exhibition'] },
     evidenceRefs: ['asset:2'],
     confidence: 0.9,
+    status: 'confirmed',
   }));
   value.creativeDecision = {
     brandRoleStatement: brandRole,
@@ -431,6 +442,9 @@ function alternatePacket({
     },
     colorBehavior,
     brandIntegration: ['小面积真实 Logo'],
+    functionalRelationships: [],
+    sceneProgram: ['当前项目证据确认的品牌体验程序'],
+    peopleBehavior: [],
     functionalExperience: ['清晰到达与服务动线'],
     sceneMisreadRisks: risks,
   };
@@ -492,7 +506,7 @@ test('restaurant and Mid-Autumn consumer projects do not inherit Jiuzhou answers
   }
 });
 
-test('non-medical platform receives generic collaboration rules without medical-aesthetics leakage', () => {
+test('technology platform keywords do not create people, collaboration or medical rules', () => {
   const packetValue = alternatePacket({
     projectId: 'industrial-collaboration-platform',
     brandName: '联创引擎',
@@ -542,16 +556,111 @@ test('non-medical platform receives generic collaboration rules without medical-
     },
   });
 
-  assert.match(result.compiledPrompt.finalPrompt, /Platform relationship contract/u);
-  assert.match(result.compiledPrompt.finalPrompt, /Human behavior contract/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Functional relationship:|People behavior:/u);
   assert.doesNotMatch(
     result.compiledPrompt.finalPrompt,
-    /Medical-aesthetics|consumer beauty store|injections|treatment beds|nursing|医美|美容院/u,
+    /consumer beauty store|injections|treatment beds|nursing|医美|美容院|珍珠白|矿物紫|孔雀羽毛/u,
   );
 });
 
-test('medical-aesthetics platform keeps its evidence-specific treatment boundary', () => {
-  const result = compile({ packet: packet() });
-  assert.match(result.compiledPrompt.finalPrompt, /Medical-aesthetics boundary/u);
-  assert.match(result.compiledPrompt.finalPrompt, /injections, treatment beds, nursing/u);
+test('medical treatment scene does not inherit reception-only treatment negatives', () => {
+  const result = compile({
+    task: {
+      subtype: 'interior_panorama',
+      scene: 'treatment_room',
+      currentInstruction: '生成医美诊疗室，明确包含护理床和必要医疗设备。',
+    },
+  });
+  assert.equal(result.taskContract.scene, 'treatment_room');
+  assert.match(result.compiledPrompt.finalPrompt, /护理床和必要医疗设备/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Strict negative:.*(?:注射|护理床|护理场景)/u);
+});
+
+test('non-platform medical brand does not receive platform collaboration behavior', () => {
+  const packetValue = alternatePacket({
+    projectId: 'consumer-medical-brand',
+    brandName: '清颜',
+    industry: 'medical_aesthetics',
+    brandRole: 'consumer_service_brand',
+    sourceAsset: '柔和圆角标识',
+    thesis: '从通用促销表达升级为证据支持的克制服务体验',
+    worldview: ['清晰服务', '可信沟通'],
+    structure: '柔和圆角界面',
+    colors: ['暖白', '浅灰', '珊瑚色'],
+    material: '浅色石材与细纹饰面',
+    risks: ['无关零售陈列', '夸张广告人像'],
+  });
+  const result = compileVNextImageGeneration({
+    projectContext: context(packetValue),
+    task: {
+      projectId: packetValue.projectId,
+      deliverableFamily: 'space',
+      subtype: 'exhibition',
+      shot: 'three_quarter_wide',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: '生成清颜的消费服务体验空间。',
+    },
+  });
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Functional relationship:|People behavior:|全链协同|合作伙伴/u);
+});
+
+test('education and food platform words compile only explicit structured scene decisions', () => {
+  for (const [projectId, industry, role] of [
+    ['education-hub', '教育', '学习资源协作平台'],
+    ['food-supply', '餐饮供应链', '供应网络与服务平台'],
+  ]) {
+    const packetValue = alternatePacket({
+      projectId,
+      brandName: projectId,
+      industry,
+      brandRole: role,
+      sourceAsset: '连接节点',
+      thesis: '从分散信息升级为当前证据支持的连续体验',
+      worldview: ['清晰连接', '开放秩序'],
+      structure: '连续路径',
+      colors: ['中性白', '浅灰', '橙色'],
+      material: '木纤维板与哑光饰面',
+      risks: ['无关展陈', '错误功能分区'],
+    });
+    packetValue.mediaTranslations.spatial.functionalRelationships = [];
+    packetValue.mediaTranslations.spatial.peopleBehavior = [];
+    const result = compileVNextImageGeneration({
+      projectContext: context(packetValue),
+      task: {
+        projectId,
+        deliverableFamily: 'space',
+        subtype: 'exhibition',
+        shot: 'three_quarter_wide',
+        count: 1,
+        aspectRatio: '16:9',
+        currentInstruction: `生成${role}的空间。`,
+      },
+    });
+    assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Functional relationship:|People behavior:/u);
+    assert.doesNotMatch(result.compiledPrompt.finalPrompt, /医美|注射|护理床|珍珠白|矿物紫|孔雀|羽毛/u);
+  }
+});
+
+test('confirmed scoped risk and structured scene behavior compile only for their matching task', () => {
+  const result = compile();
+  assert.match(result.compiledPrompt.finalPrompt, /Functional relationship: 接待连接等候、咨询与后方服务/u);
+  assert.match(result.compiledPrompt.finalPrompt, /People behavior: 访客自然等候/u);
+  assert.match(result.compiledPrompt.finalPrompt, /Strict negative: 不要呈现传统医院诊室、注射操作、护理床或护理场景/u);
+});
+
+test('risk stays non-executable without confirmed facts and confirmed task scope', () => {
+  const probableRiskPacket = packet();
+  probableRiskPacket.diagnosis.brandMisreadRisks[1].status = 'probable';
+  assert.doesNotMatch(
+    compile({ packet: probableRiskPacket }).compiledPrompt.finalPrompt,
+    /Strict negative:.*护理床/u,
+  );
+
+  const probableRolePacket = packet();
+  probableRolePacket.projectFacts.brandRole.status = 'probable';
+  assert.doesNotMatch(
+    compile({ packet: probableRolePacket }).compiledPrompt.finalPrompt,
+    /Strict negative:.*护理床/u,
+  );
 });

@@ -83,18 +83,26 @@ const core = buildVisualUnderstandingCore({
       }],
       brandMisreadRisks: [
         {
+          code: 'consumer_salon',
+          description: '避免误读为普通美容院',
           target: '普通美容院',
           observation: '甜美紫色与羽毛贴图容易误读',
           whyItMatters: '错误表达商业角色',
+          appliesTo: { taskFamilies: ['space'], subtypes: ['reception'] },
           evidenceRefs: ['asset:page-12'],
           confidence: 0.9,
+          status: 'confirmed',
         },
         {
+          code: 'clinical_room',
+          description: '避免误读为传统医院诊室',
           target: '传统医院诊室',
           observation: '只强调医疗会失去品牌生命美学',
           whyItMatters: '空间变得冰冷同质',
+          appliesTo: { taskFamilies: ['space'], subtypes: ['reception'] },
           evidenceRefs: ['asset:page-05'],
           confidence: 0.88,
+          status: 'confirmed',
         },
       ],
     },
@@ -158,6 +166,9 @@ const extracted = {
         forbidden: ['大面积亮紫', '霓虹紫', '高饱和渐变'],
       },
       brandIntegration: ['Logo 小面积位于后方识别墙或保留干净识别位'],
+      functionalRelationships: ['接待连接等候与后场'],
+      sceneProgram: ['入口、接待、等候与后场'],
+      peopleBehavior: [],
       functionalExperience: ['入口到接待、等候与后场的清晰动线'],
       sceneMisreadRisks: ['茶空间', '生活方式零售', '售楼处', '普通办公室', '霓虹空间'],
     },
@@ -199,10 +210,10 @@ test('missing spatial behavior fails closed as PROMPT source insufficiency data'
   assert.equal(packet.mediaTranslations.spatial.status, 'insufficient');
 });
 
-test('compatibility adapter preserves the causal translation and strict scene risks', () => {
+test('compatibility adapter preserves causal translation without widening scoped risks', () => {
   const source = visualDecisionPacketToPromptSourceObject(buildVisualDecisionPacket({ core, extracted }));
   assert.ok(source.upgradeTranslation.transformations[0]?.abstractProperties.includes('柔性曲线'));
   assert.ok(source.upgradeTranslation.transformations[0]?.newExpression.includes('半透明树脂'));
-  assert.ok(source.negativeRules.project.includes('茶空间'));
+  assert.deepEqual(source.negativeRules.project, []);
   assert.equal(source.renderLanguage.colorBehavior.primary[0]?.ratio, 70);
 });

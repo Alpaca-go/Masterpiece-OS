@@ -14,6 +14,7 @@ function cleanList(value) {
 export function createVNextTaskContract(input, options = {}) {
   const family = String(input?.deliverableFamily ?? '').trim();
   const subtype = String(input?.subtype ?? '').trim();
+  const scene = String(input?.scene ?? '').trim();
   const shot = String(input?.shot ?? '').trim();
   const currentInstruction = String(input?.currentInstruction ?? '').trim();
   const count = Number(input?.count ?? 1);
@@ -38,6 +39,7 @@ export function createVNextTaskContract(input, options = {}) {
     projectId: input.projectId,
     deliverableFamily: family,
     subtype,
+    ...(scene ? { scene } : {}),
     shot,
     count,
     aspectRatio,

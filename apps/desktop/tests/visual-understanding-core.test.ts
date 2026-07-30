@@ -110,11 +110,15 @@ const extracted = {
       confidence: 0.9,
     }],
     brandMisreadRisks: [{
+      code: 'consumer_salon',
+      description: '不要误读为普通美容院',
       target: '普通美容院',
       observation: '甜美紫色和装饰羽毛会弱化平台角色',
       whyItMatters: '错误表达业务规模与专业可信度',
+      appliesTo: { taskFamilies: ['space'], subtypes: ['reception'] },
       evidenceRefs: ['asset:page-12'],
       confidence: 0.9,
+      status: 'confirmed',
     }],
   },
   creativeDecision: {

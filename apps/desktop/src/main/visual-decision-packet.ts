@@ -139,6 +139,7 @@ function spatialTranslation(value: unknown): SpatialTranslationV2 {
     && structureLanguage.length
     && materialLanguage.length
     && lightingLanguage.source.length
+    && strings(candidate.sceneProgram).length
     && [...colors.primary, ...colors.secondary, ...colors.accent].length,
   );
   return {
@@ -149,6 +150,9 @@ function spatialTranslation(value: unknown): SpatialTranslationV2 {
     lightingLanguage,
     colorBehavior: colors,
     brandIntegration: strings(candidate.brandIntegration),
+    functionalRelationships: strings(candidate.functionalRelationships),
+    sceneProgram: strings(candidate.sceneProgram),
+    peopleBehavior: strings(candidate.peopleBehavior),
     functionalExperience: strings(candidate.functionalExperience),
     sceneMisreadRisks: strings(candidate.sceneMisreadRisks),
   };
@@ -185,6 +189,7 @@ function missingExecutionFields(
   if (!spatial.structureLanguage.length) missing.push('mediaTranslations.spatial.structureLanguage');
   if (!spatial.materialLanguage.length) missing.push('mediaTranslations.spatial.materialLanguage');
   if (!spatial.lightingLanguage.source.length) missing.push('mediaTranslations.spatial.lightingLanguage');
+  if (!spatial.sceneProgram.length) missing.push('mediaTranslations.spatial.sceneProgram');
   if (![...spatial.colorBehavior.primary, ...spatial.colorBehavior.secondary, ...spatial.colorBehavior.accent].length) {
     missing.push('mediaTranslations.spatial.colorBehavior');
   }
@@ -313,11 +318,9 @@ export function visualDecisionPacketToPromptSourceObject(
       graphicBehavior: [...spatial.structureLanguage],
     },
     negativeRules: {
-      project: [
-        ...packet.creativeDecision.strategicNegatives,
-        ...packet.diagnosis.brandMisreadRisks.map((item) => item.target),
-        ...spatial.sceneMisreadRisks,
-      ],
+      // Task scoping cannot be represented by the legacy PromptSourceObject.
+      // Keep project risks in the Packet instead of widening them here.
+      project: [],
       model: ['随机中文', '错误英文品牌名', '自行生成 slogan', '模糊文字'],
     },
     confidence: {

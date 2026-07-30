@@ -42,7 +42,7 @@ const FAMILY_TEMPLATES = [
         'stationery mockup',
         'collage',
         'split-screen comparison',
-        'floating product platform unrelated to the requested function',
+        'floating product plinth unrelated to the requested function',
       ],
     },
   }),

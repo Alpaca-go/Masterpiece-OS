@@ -113,8 +113,11 @@ ${bullets(packet.abstractions.map((item) => `[AI Diagnosis] ${item.sourceAsset}
 - [Creative Proposal] 空间概念：${spatial.spatialConcept || '数据不足'}
 ${bullets(spatial.structureLanguage.map((item) => `[Creative Proposal] 结构：${item}`))}
 ${bullets(spatial.brandIntegration.map((item) => `[Creative Proposal] 品牌融合：${item}`))}
-${bullets(spatial.functionalExperience.map((item) => `[Creative Proposal] 功能体验：${item}`))}
-${bullets(spatial.sceneMisreadRisks.map((item) => `[Creative Proposal] 场景禁止：${item}`))}
+${bullets(spatial.functionalRelationships.map((item) => `[Creative Proposal] 功能关系：${item}`))}
+${bullets(spatial.sceneProgram.map((item) => `[Creative Proposal] 场景程序：${item}`))}
+${bullets(spatial.peopleBehavior.map((item) => `[Creative Proposal] 人物行为：${item}`))}
+${bullets(packet.diagnosis.brandMisreadRisks.map((item) =>
+    `[AI Diagnosis] 误读风险 ${item.code}（${item.status}）：${item.description}`))}
 
 ## 11. VI 转译
 
@@ -151,9 +154,9 @@ ${bullets(packet.lightingSystem.forbidden.map((item) => `[Creative Proposal] 光
 - 世界观：${creative.targetWorldview.join('、') || '数据不足'}
 - 空间结构：${spatial.structureLanguage.join('、') || '数据不足'}
 - 项目专属禁止：${[
-    ...creative.strategicNegatives,
-    ...packet.diagnosis.brandMisreadRisks.map((item) => item.target),
-    ...spatial.sceneMisreadRisks,
+    ...packet.diagnosis.brandMisreadRisks
+      .filter((item) => item.status === 'confirmed')
+      .map((item) => item.description),
   ].filter((item, index, values) => values.indexOf(item) === index).join('、') || '数据不足'}
 `;
 }

@@ -800,6 +800,7 @@ export interface VNextTaskContract {
   projectId: string;
   deliverableFamily: VNextDeliverableFamily;
   subtype: string;
+  scene?: string;
   shot: string;
   count: 1 | 2;
   aspectRatio: VNextAspectRatio;

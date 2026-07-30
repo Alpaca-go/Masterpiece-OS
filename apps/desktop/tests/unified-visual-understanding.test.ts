@@ -71,11 +71,15 @@ const extracted = {
       confidence: 0.9,
     }],
     brandMisreadRisks: [{
+      code: 'generic_office',
+      description: '避免通用办公室表达',
       target: '普通办公室',
       observation: '通用办公表达会削弱平台身份',
       whyItMatters: '失去专业差异',
+      appliesTo: { taskFamilies: ['space'], subtypes: ['reception'] },
       evidenceRefs: ['asset:2'],
       confidence: 0.9,
+      status: 'confirmed',
     }],
   },
   creativeDecision: {
@@ -123,6 +127,9 @@ const extracted = {
         forbidden: ['科技蓝满版'],
       },
       brandIntegration: ['小面积 Logo'],
+      functionalRelationships: [],
+      sceneProgram: ['接待与到达空间'],
+      peopleBehavior: [],
       functionalExperience: ['清晰接待动线'],
       sceneMisreadRisks: ['普通办公室'],
     },
@@ -161,7 +168,7 @@ test('unified prompt requests evidence-rich A-F modules without embedding Jiuzho
 test('formal unified output fails closed when execution data is incomplete', () => {
   assert.throws(
     () => normalizeUnifiedVisualUnderstanding({ project: project(), extracted: { ...extracted, abstractions: [] } }),
-    (error: Error & { code?: string }) => error.code === 'PROMPT_SOURCE_INSUFFICIENT',
+    (error: Error & { code?: string }) => error.code === 'VISUAL_DECISION_PACKET_INSUFFICIENT',
   );
 });
 

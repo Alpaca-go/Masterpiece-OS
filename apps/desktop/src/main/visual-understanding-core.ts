@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import type {
+  BrandMisreadRiskV2,
   CreativeDecisionV2,
   SourcedVisualFact,
   VisualAssetInventoryV2,
@@ -223,12 +224,35 @@ function normalizeDiagnosisItem(value: unknown): VisualDiagnosisItemV2 | null {
   };
 }
 
+function normalizeBrandMisreadRisk(value: unknown): BrandMisreadRiskV2 | null {
+  const candidate = record(value);
+  const base = normalizeDiagnosisItem(candidate);
+  const code = text(candidate.code);
+  const description = text(candidate.description) || base?.target || '';
+  const appliesTo = record(candidate.appliesTo);
+  const normalizedStatus = text(candidate.status);
+  if (!base || !code || !description) return null;
+  return {
+    ...base,
+    code,
+    description,
+    appliesTo: {
+      taskFamilies: strings(appliesTo.taskFamilies),
+      subtypes: strings(appliesTo.subtypes),
+      scenes: strings(appliesTo.scenes),
+    },
+    status: normalizedStatus === 'confirmed' ? 'confirmed' : 'probable',
+  };
+}
+
 function normalizeDiagnosis(value: unknown): VisualDiagnosisV2 {
   const candidate = record(value);
   const diagnosis = Object.fromEntries(DIAGNOSIS_FIELDS.map((field) => [field, []])) as unknown as VisualDiagnosisV2;
   for (const field of DIAGNOSIS_FIELDS) {
     diagnosis[field] = (Array.isArray(candidate[field]) ? candidate[field] : [])
-      .flatMap((item) => normalizeDiagnosisItem(item) ?? []);
+      .flatMap((item) => field === 'brandMisreadRisks'
+        ? normalizeBrandMisreadRisk(item) ?? []
+        : normalizeDiagnosisItem(item) ?? []) as never;
   }
   return diagnosis;
 }

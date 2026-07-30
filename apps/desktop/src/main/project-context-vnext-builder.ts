@@ -10,7 +10,7 @@ import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 
 export const PROJECT_VISUAL_CONTEXT_VNEXT_SCHEMA_VERSION = '2.0';
 export const PROJECT_CONTEXT_VNEXT_BUILDER_ID = 'project-context-builder';
-export const PROJECT_CONTEXT_VNEXT_BUILDER_VERSION = '1.0.0';
+export const PROJECT_CONTEXT_VNEXT_BUILDER_VERSION = '1.1.0';
 
 export interface BuildProjectVisualContextVNextInput {
   project: ProjectRecord;
@@ -257,6 +257,37 @@ function assetRole(
   return 'source';
 }
 
+function migrateVisualDecisionPacketShape(packet: VisualDecisionPacket): VisualDecisionPacket {
+  const migrated = structuredClone(packet);
+  const spatial = migrated.mediaTranslations?.spatial;
+  if (!spatial) return migrated;
+  spatial.functionalRelationships = Array.isArray(spatial.functionalRelationships)
+    ? spatial.functionalRelationships
+    : [];
+  spatial.sceneProgram = Array.isArray(spatial.sceneProgram) && spatial.sceneProgram.length
+    ? spatial.sceneProgram
+    : Array.isArray(spatial.functionalExperience)
+      ? [...spatial.functionalExperience]
+      : [];
+  spatial.peopleBehavior = Array.isArray(spatial.peopleBehavior)
+    ? spatial.peopleBehavior
+    : [];
+  const legacyRisks = Array.isArray(migrated.diagnosis?.brandMisreadRisks)
+    ? migrated.diagnosis.brandMisreadRisks
+    : [];
+  migrated.diagnosis.brandMisreadRisks = legacyRisks.map((risk, index) => ({
+    ...risk,
+    code: risk.code || `legacy-risk-${index + 1}`,
+    description: risk.description || risk.target,
+    appliesTo: risk.appliesTo || {},
+    // Legacy risks had no task boundary and must never become executable by migration.
+    status: risk.status === 'confirmed' && risk.appliesTo?.subtypes?.length
+      ? 'confirmed'
+      : 'probable',
+  }));
+  return migrated;
+}
+
 /**
  * Builds an execution context without reading or accepting report markdown.
  * Unknown structured-analysis shapes degrade to explicit uncertainties.
@@ -392,9 +423,9 @@ export function buildProjectVisualContextVNext(
       sourceFingerprint: sourceFingerprint(fingerprintInput),
     },
     ...(suppliedPacket.schemaVersion === '1.0' && suppliedPacket.projectId === project.id
-      ? { visualDecisionPacket: structuredClone(suppliedPacket as VisualDecisionPacket) }
+      ? { visualDecisionPacket: migrateVisualDecisionPacketShape(suppliedPacket as VisualDecisionPacket) }
       : input.previousContext?.visualDecisionPacket
-        ? { visualDecisionPacket: structuredClone(input.previousContext.visualDecisionPacket) }
+        ? { visualDecisionPacket: migrateVisualDecisionPacketShape(input.previousContext.visualDecisionPacket) }
         : {}),
   };
   const migrated = migrateProjectVisualContextVNext(context);
