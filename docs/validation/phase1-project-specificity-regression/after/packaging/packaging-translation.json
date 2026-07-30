@@ -1,0 +1,114 @@
+{
+  "status": "insufficient",
+  "packagingConcept": "精致礼盒体验，通过简约白色基底与紫色点缀传达高端医美产品/服务价值",
+  "productAndCategoryRole": [
+    "医美产品包装",
+    "服务礼品包装",
+    "客户体验延伸"
+  ],
+  "productRoleEvidenceRefs": [],
+  "structureStrategy": [
+    {
+      "structure": "翻盖式纸盒",
+      "purpose": "提供开启仪式感",
+      "locked": false,
+      "evidenceRefs": [
+        "b2c502c1-8f0e-4422-b252-81afb2ce9dc4"
+      ]
+    },
+    {
+      "structure": "手提袋",
+      "purpose": "品牌携带体验",
+      "locked": false,
+      "evidenceRefs": [
+        "b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08"
+      ]
+    }
+  ],
+  "openingExperience": [
+    "丝带开启仪式感",
+    "分层结构探索感",
+    "内衬材质触感体验"
+  ],
+  "productArrangement": [
+    "定制化内衬",
+    "产品分层展示",
+    "说明书精致放置"
+  ],
+  "graphicTranslation": [
+    {
+      "sourceMeaning": "孔雀流线形态",
+      "packagingExpression": [
+        "简约线条压印",
+        "局部UV工艺",
+        "渐变色彩印刷"
+      ],
+      "forbiddenLiteralUse": [
+        "避免直接印刷孔雀照片"
+      ]
+    }
+  ],
+  "informationHierarchy": [
+    "品牌标志优先",
+    "产品名称清晰",
+    "使用说明适度"
+  ],
+  "substrateLanguage": [
+    "高品质哑光纸",
+    "触感膜处理",
+    "环保材质选择"
+  ],
+  "craftLanguage": [
+    {
+      "craft": "丝带装饰",
+      "purpose": "提升礼品感与开启仪式",
+      "forbiddenUse": [
+        "避免过度装饰影响简约感"
+      ]
+    },
+    {
+      "craft": "局部UV",
+      "purpose": "强调品牌标志与关键信息",
+      "forbiddenUse": [
+        "避免大面积使用导致视觉混乱"
+      ]
+    }
+  ],
+  "colorBehavior": {
+    "base": [
+      "哑光白",
+      "浅灰"
+    ],
+    "identity": [
+      "Peacock Violet"
+    ],
+    "accent": [
+      "金属金"
+    ],
+    "forbidden": [
+      "避免高饱和度对比色组合"
+    ]
+  },
+  "logoPolicy": [
+    "标志位置固定于包装正面中上部",
+    "最小尺寸限制确保识别度",
+    "反白使用规范"
+  ],
+  "seriesArchitecture": [
+    "基础系列白色为主",
+    "高端系列紫色为主",
+    "限量版特殊工艺"
+  ],
+  "photographyDirection": [
+    "产品特写突出质感",
+    "使用场景展示",
+    "光线强调材质细节"
+  ],
+  "packagingMisreadRisks": [
+    "过度礼品化可能被误解为化妆品而非医美产品"
+  ],
+  "missingRequiredFields": [
+    "productRoleEvidenceRefs"
+  ]
+}

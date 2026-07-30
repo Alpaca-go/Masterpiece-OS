@@ -4,14 +4,11 @@ import {
   assertProjectSpecificGenerationContract,
   compileProjectSpecificGenerationContract,
 } from '../../../creative-production-runtime/src/project-generation-contract.js';
-import {
-  assertPackagingTranslation,
-  buildPackagingTranslation,
-} from '../../../creative-production-runtime/src/packaging-translation.js';
+import { buildPackagingTranslation } from '../../../creative-production-runtime/src/packaging-translation.js';
 import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '4.0.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '4.1.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -158,7 +155,12 @@ function packetTransformationItems(abstractions, spatial) {
       ? `光线转译潜力：${cleanList(item.lightingPotential).join('、')}`
       : '',
     cleanList(item?.forbiddenLiteralUse).length
-      ? `不得字面复制：${cleanList(item.forbiddenLiteralUse).join('、')}`
+      ? [
+        `Strict non-literal prohibition: ${cleanList(item.forbiddenLiteralUse).join('、')}.`,
+        spatial
+          ? 'No large-scale wall, partition, mural, furniture silhouette, or repeated surface may visually resolve into those legacy source objects.'
+          : 'No dominant object or repeated surface may visually resolve into those legacy source objects.',
+      ].join(' ')
       : '',
     ]),
     spatial?.structureLanguage?.map((item) => `空间结构转译：${item}`),
@@ -178,7 +180,7 @@ function assertPacketConflicts({ packetSource, taskContract, negativeConstraints
     [taskContract.currentInstruction, taskContract.mustInclude],
     [/文字|文案|标题|slogan|copy|headline|wordmark/iu],
   );
-  if (requiresText && logoUsageMode === 'blank_area') {
+  if (requiresText && logoUsageMode !== 'reference') {
     conflicts.push('task requires text while logo/text mode forbids rendered text');
   }
 
@@ -268,6 +270,16 @@ function toneItems(boundaries, fallback) {
   return values.length ? values : cleanList(fallback, '保持品牌气质清晰、克制且一致。');
 }
 
+function approvedProhibitionsForDeliverable(items, deliverableFamily) {
+  const current = deliverableFamily === 'space'
+    ? /空间|建筑|动线|space|interior|architecture/iu
+    : /包装|盒|袋|开盒|packag|box|bag/iu;
+  const other = deliverableFamily === 'space'
+    ? /包装|盒|袋|开盒|名片|标签|海报|排版|slogan|12\s*列|packag|box|bag|poster|typograph/iu
+    : /空间|建筑|动线|space|interior|architecture/iu;
+  return cleanList(items).filter((item) => current.test(item) || !other.test(item));
+}
+
 function packetToneItems(creativeDecision) {
   const explicit = cleanList(creativeDecision?.toneBoundaries?.map((item) => {
     const avoids = cleanList(item?.avoid);
@@ -311,7 +323,14 @@ function createBlock(id, title, items, sources, fallback, strict = false) {
   };
 }
 
-export function compileVNextPrompt({ projectContext, taskContract, route, adapter, projectPromptAsset }) {
+export function compileVNextPrompt({
+  projectContext,
+  taskContract,
+  route,
+  adapter,
+  projectPromptAsset,
+  approvedCreativeDecision,
+}) {
   if (projectContext.schemaVersion !== '2.0') {
     throw new Error('vNext prompt compiler requires Project Visual Context 2.0');
   }
@@ -387,17 +406,22 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       logoUsageMode,
     });
   }
+  const projectGenerationContract = packet
+    ? assertProjectSpecificGenerationContract(compileProjectSpecificGenerationContract({
+      visualDecisionPacket: packet,
+      deliverable: taskContract.deliverableFamily,
+      approvedCreativeDecision: approvedCreativeDecision || projectContext.approvedCreativeDecision,
+      approvedCreativeDecisionSourcePath: approvedCreativeDecision || projectContext.approvedCreativeDecision
+        ? 'outputs/creative_decision.json'
+        : '',
+    }))
+    : null;
+  const projectDecisions = projectGenerationContract?.projectSpecificDecisions || {};
 
   if (packet && taskContract.deliverableFamily === 'packaging') {
-    const packagingTranslation = assertPackagingTranslation(buildPackagingTranslation({
+    const packagingTranslation = buildPackagingTranslation({
       visualDecisionPacket: packet,
-    }));
-    const projectGenerationContract = assertProjectSpecificGenerationContract(
-      compileProjectSpecificGenerationContract({
-        visualDecisionPacket: packet,
-        deliverable: 'packaging',
-      }),
-    );
+    });
     const packagingContract = compilePackagingPromptContract({
       projectContract: projectGenerationContract,
       packagingTranslation,
@@ -520,12 +544,25 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       'upgrade_thesis',
       '04 Upgrade Thesis',
       [
-        packetSource?.creativeDecision?.uniqueUpgradeThesis
-          ? `Unique upgrade thesis: ${packetSource.creativeDecision.uniqueUpgradeThesis}`
+        projectDecisions.specificity?.status === 'ready'
+          && projectGenerationContract?.upgradeThesis?.statement
+          ? `Approved upgrade thesis: ${projectGenerationContract.upgradeThesis.statement}`
+          : packetSource?.creativeDecision?.uniqueUpgradeThesis
+            ? `Unique upgrade thesis: ${packetSource.creativeDecision.uniqueUpgradeThesis}`
+            : '',
+        projectDecisions.specificity?.status === 'ready'
+          ? []
+          : packetSource?.creativeDecision?.upgradeFrom?.map((item) => `Upgrade from: ${item}`),
+        projectDecisions.specificity?.status === 'ready'
+          ? []
+          : packetSource?.creativeDecision?.preserveCore?.map((item) => `Preserve core: ${item}`),
+        projectDecisions.specificity?.status === 'ready'
+          ? []
+          : packetSource?.creativeDecision?.upgradeTo?.map((item) => `Upgrade to: ${item}`),
+        projectDecisions.recommendedDirection
+          ? `Approved creative direction: ${projectDecisions.recommendedDirection}`
           : '',
-        packetSource?.creativeDecision?.upgradeFrom?.map((item) => `Upgrade from: ${item}`),
-        packetSource?.creativeDecision?.preserveCore?.map((item) => `Preserve core: ${item}`),
-        packetSource?.creativeDecision?.upgradeTo?.map((item) => `Upgrade to: ${item}`),
+        projectDecisions.generationGoals?.map((item) => `Approved generation goal: ${item}`),
         packetSource ? [] : source?.upgradeTranslation?.preserve?.map((item) => `Preserve: ${item}`),
         packetSource ? [] : source?.upgradeTranslation?.weaken?.map((item) => `Weaken: ${item}`),
         packetSource ? [] : source?.upgradeTranslation?.remove?.map((item) => `Remove: ${item}`),
@@ -533,7 +570,10 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
         promptAsset?.promptFragments,
       ],
       [
-        ...(packetSource ? ['visual_decision_packet.creativeDecision'] : ['prompt_source.upgradeTranslation']),
+        ...(packetSource ? [
+          'visual_decision_packet.creativeDecision',
+          'project_generation_contract.projectSpecificDecisions',
+        ] : ['prompt_source.upgradeTranslation']),
         ...(promptAsset ? [`project_prompt_asset:${promptAsset.id}`] : []),
       ],
       'Upgrade the existing identity through relationships, proportion and behavior rather than literal decoration.',
@@ -543,7 +583,13 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       'tone_boundary',
       '05 Tone Boundaries',
       packetSource
-        ? packetToneItems(packetSource.creativeDecision)
+        ? cleanList(
+          packetToneItems(packetSource.creativeDecision),
+          projectGenerationContract?.toneBoundaries?.flatMap((item) => [
+            `Approved tone target: ${item.target}`,
+            item.avoid?.map((avoid) => `Approved tone prohibition: ${avoid}`),
+          ]),
+        )
         : toneItems(
           source?.upgradeTranslation?.toneBoundaries,
           projectContext.visualIdentity.tone,
@@ -574,6 +620,10 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
         packetSource?.spatial?.functionalRelationships?.map((item) => `Functional relationship: ${item}`),
         packetSource?.spatial?.sceneProgram?.map((item) => `Scene program: ${item}`),
         packetSource?.spatial?.peopleBehavior?.map((item) => `People behavior: ${item}`),
+        approvedProhibitionsForDeliverable(
+          projectDecisions.prohibitedExpressions,
+          taskContract.deliverableFamily,
+        ).map((item) => `Approved project prohibition: ${item}`),
         packetSource ? [] : projectContext.lockedAssets.mustPreserve.map((item) => `Locked — preserve: ${item}`),
         packetSource ? [] : source?.lockedAssets?.mustPreserve?.map((item) => `Locked — preserve: ${item}`),
         packetSource ? [] : transformationItems(source?.upgradeTranslation?.transformations),
@@ -583,7 +633,11 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       [
         'locked_assets',
         ...(packetSource
-          ? ['visual_decision_packet.abstractions', 'visual_decision_packet.mediaTranslations.spatial']
+          ? [
+            'visual_decision_packet.abstractions',
+            'visual_decision_packet.mediaTranslations.spatial',
+            'project_generation_contract.projectSpecificDecisions',
+          ]
           : ['prompt_source.upgradeTranslation.transformations']),
         'project_context.visualIdentity',
       ],
@@ -593,7 +647,10 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     createBlock(
       'color_system',
       '08 Color System',
-      colorItems,
+      projectDecisions.specificity?.status === 'ready'
+        ? projectGenerationContract.sharedVisualRules.colorBehavior
+          .map((item) => `Approved project color system: ${item}`)
+        : colorItems,
       packetSource
         ? ['visual_decision_packet.colorSystem', 'visual_decision_packet.lockedAssets']
         : ['locked_assets.confirmedColors', 'prompt_source.renderLanguage.colorBehavior', 'project_context.visualIdentity.colorBehavior'],
@@ -603,10 +660,13 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     createBlock(
       'material_system',
       '09 Material System',
-      materialItems(
-        packetSource?.materialBehavior || source?.renderLanguage?.materialBehavior,
-        strictPacket ? [] : projectContext.visualIdentity.materialBehavior,
-      ),
+      projectDecisions.specificity?.status === 'ready'
+        ? projectGenerationContract.sharedVisualRules.materialBehavior
+          .map((item) => `Approved project material behavior: ${item}`)
+        : materialItems(
+          packetSource?.materialBehavior || source?.renderLanguage?.materialBehavior,
+          strictPacket ? [] : projectContext.visualIdentity.materialBehavior,
+        ),
       [
         ...(packetSource
           ? ['visual_decision_packet.materialSystem']
@@ -620,10 +680,15 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       'lighting_system',
       '10 Lighting System',
       [
-        lighting?.source?.length ? `Light sources: ${lighting.source.join('、')}` : '',
-        lighting?.contrast ? `Contrast: ${lighting.contrast}` : '',
-        lighting?.interactionWithMaterials?.map((item) => `Light/material behavior: ${item}`),
-        lighting?.forbidden?.map((item) => `Lighting prohibition: ${item}`),
+        projectDecisions.specificity?.status === 'ready'
+          ? projectGenerationContract.sharedVisualRules.lightingBehavior
+            .map((item) => `Approved project light/material behavior: ${item}`)
+          : [
+            lighting?.source?.length ? `Light sources: ${lighting.source.join('、')}` : '',
+            lighting?.contrast ? `Contrast: ${lighting.contrast}` : '',
+            lighting?.interactionWithMaterials?.map((item) => `Light/material behavior: ${item}`),
+            lighting?.forbidden?.map((item) => `Lighting prohibition: ${item}`),
+          ],
         packetSource ? [] : projectContext.visualIdentity.lightingBehavior,
       ],
       [
@@ -641,6 +706,9 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       [
         templateSections('composition'),
         projectContext.visualIdentity.compositionBehavior,
+        taskContract.deliverableFamily === 'packaging'
+          ? projectDecisions.compositionRules?.map((item) => `Approved project composition rule: ${item}`)
+          : [],
         templateSections('realism'),
         `Output ratio: ${taskContract.aspectRatio}`,
       ],
@@ -730,6 +798,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
     },
     blocks,
     sourceMap,
+    projectGenerationContract,
     completeness: {
       complete: true,
       requiredBlockIds: [...REQUIRED_BLOCK_IDS],

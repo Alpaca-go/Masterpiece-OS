@@ -166,12 +166,14 @@ export function createVNextImageGenerationService(
       || logoAssetIds[0]
       || null;
     const logoUsageMode = input.task.logoUsageMode
-      || (packetLogoAssetIds.length
-        ? 'reference'
-        : context.promptSourceObject?.lockedAssets.logoUsageMode
-          || (preferredLogoAssetId ? 'reference' : 'blank_area'));
-    if ((logoUsageMode === 'reference' || logoUsageMode === 'post_composite')
-      && !preferredLogoAssetId) {
+      || (preferredLogoAssetId ? 'post_composite' : 'blank_area');
+    if (preferredLogoAssetId && logoUsageMode !== 'post_composite') {
+      throw Object.assign(
+        new Error('LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: confirmed Logo must use post-composite mode.'),
+        { code: 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED' },
+      );
+    }
+    if (logoUsageMode === 'post_composite' && !preferredLogoAssetId) {
       throw Object.assign(
         new Error(`${logoUsageMode} Logo mode requires a confirmed Logo asset`),
         { code: 'VNEXT_LOGO_REFERENCE_MISSING' },
@@ -183,6 +185,10 @@ export function createVNextImageGenerationService(
       ? [...new Set([preferredLogoAssetId!, ...requestedReferenceIds])]
       : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId));
     const paths = await projects.paths(input.projectId);
+    const approvedCreativeDecision = await fs.readFile(
+      path.join(paths.root, 'outputs', 'creative_decision.json'),
+      'utf8',
+    ).then((value) => JSON.parse(value) as Record<string, unknown>).catch(() => undefined);
     const projectPromptAsset = await fs.readFile(
       path.join(
         paths.root,
@@ -196,6 +202,7 @@ export function createVNextImageGenerationService(
       projectContext: context,
       model: input.model,
       projectPromptAsset,
+      approvedCreativeDecision,
       task: {
         ...input.task,
         projectId: input.projectId,
@@ -283,6 +290,20 @@ export function createVNextImageGenerationService(
 
   async function start(input: StartVNextGenerationInput): Promise<ImageGenerationRun> {
     const compilation = await readCompilation(input.projectId, input.taskId);
+    const preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
+      preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
+    }).preflightReport;
+    if (preflight?.status !== 'pass') {
+      throw Object.assign(new Error(
+        `PROMPT_PREFLIGHT_BLOCKED: ${(preflight?.findings || [])
+          .map((item) => item.code)
+          .filter(Boolean)
+          .join(', ')}`,
+      ), {
+        code: preflight?.findings?.[0]?.code || 'PROMPT_PREFLIGHT_BLOCKED',
+        findings: preflight?.findings || [],
+      });
+    }
     if (compilation.taskContract.count !== 1) {
       throw Object.assign(new Error('vNext formal-first generation starts with exactly one image'), {
         code: 'VNEXT_FORMAL_FIRST_COUNT_INVALID',

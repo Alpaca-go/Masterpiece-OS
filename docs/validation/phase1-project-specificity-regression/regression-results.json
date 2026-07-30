@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "status": "partial",
+  "cases": [
+    {
+      "id": "jiuzhou-space-dry-run",
+      "kind": "project",
+      "status": "pass",
+      "preflight": "pass",
+      "modelCalled": false,
+      "notes": "批准 Creative Decision 已进入 Project Contract；旧 Packet 的 Peacock Violet、哑光白、金属金和紫色亚克力不再覆盖批准决策；Logo 为 post_composite，模型参考图为空。"
+    },
+    {
+      "id": "jiuzhou-packaging-dry-run",
+      "kind": "project",
+      "status": "blocked_as_designed",
+      "preflight": "blocked",
+      "modelCalled": false,
+      "codes": [
+        "PACKAGING_PRODUCT_ROLE_MISSING",
+        "UNSUPPORTED_PRODUCT_INVENTION"
+      ],
+      "notes": "结构有来源证据，但产品/品类角色无确认来源，正式生成被阻断。"
+    },
+    {
+      "id": "same-domain-different-medical-project",
+      "kind": "offline_control",
+      "status": "pass",
+      "modelCalled": false,
+      "coverage": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "notes": "本机没有第二个可用医疗项目，使用仓库既有不同医疗品牌结构化回归夹具；未伪造真实项目。"
+    },
+    {
+      "id": "non-medical-control",
+      "kind": "offline_control",
+      "status": "pass",
+      "modelCalled": false,
+      "coverage": 1,
+      "crossCaseLeakage": 0,
+      "crossMediaLeakage": 0,
+      "notes": "餐饮/消费项目夹具未继承九州美学方向、色材、空间关系或医疗规则；本机冯烫烫项目仅用于边界存在性核对。"
+    },
+    {
+      "id": "jiuzhou-space-real-provider-first-repair",
+      "kind": "real_provider",
+      "status": "fail",
+      "provider": "volcengine",
+      "model": "doubao-seedream-5-0-pro-260628",
+      "modelCallCount": 1,
+      "durationMs": 71893,
+      "runId": "ea21d802-a334-486e-8892-035dbb963e7c",
+      "notes": "Logo 后合成生效，但 Prompt 中批准决策与旧 Packet 并列冲突，结果仍为羽片墙和紫色发光前台。该结果已登记 Regression Fail。"
+    },
+    {
+      "id": "jiuzhou-space-real-provider-after-contract-precedence-fix",
+      "kind": "real_provider",
+      "status": "partial_fail",
+      "provider": "volcengine",
+      "model": "doubao-seedream-5-0-pro-260628",
+      "modelCallCount": 1,
+      "durationMs": 93260,
+      "runId": "8551a8c0-ea48-4765-a27f-c7c2ff140ae7",
+      "preflight": "pass",
+      "logoUsageMode": "post_composite",
+      "referenceAssetIds": [],
+      "notes": "无 Logo、金色装饰、紫色灯带和大尺度羽片墙；但暖白石材占比仍高，鳞羽压纹仍较可读，视觉验收只算部分改善。首次错误层已修复，剩余偏差归入模型服从/Model Adapter 观察，不在本次越层修改。"
+    }
+  ]
+}

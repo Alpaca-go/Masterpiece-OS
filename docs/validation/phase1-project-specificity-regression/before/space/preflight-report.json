@@ -1,0 +1,6 @@
+{
+  "schemaVersion": "1.0",
+  "artifact": "preflight-report.json",
+  "status": "missing",
+  "reason": "The legacy compiler did not run project preflight for this branch."
+}

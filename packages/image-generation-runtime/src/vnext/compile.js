@@ -2,7 +2,7 @@ import { createVNextTaskContract } from './task-contract.js';
 import { routeVNextTemplates } from './template-router.js';
 import { compileVNextPrompt } from './prompt-compiler.js';
 import { createSeedreamVNextAdapter } from './seedream-adapter.js';
-import { assertPromptPreflight, runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
+import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 
 export function compileVNextImageGeneration(input) {
   const started = performance.now();
@@ -20,11 +20,13 @@ export function compileVNextImageGeneration(input) {
     || input.projectContext?.promptSourceObject?.lockedAssets?.preferredLogoAssetId
     || logoAssetIds[0]
     || null;
-  const inferredLogoUsageMode = packetLogoAssetIds.length
-    ? 'reference'
-    : input.projectContext?.promptSourceObject?.lockedAssets?.logoUsageMode
-      || (preferredLogoAssetId ? 'reference' : 'blank_area');
+  const inferredLogoUsageMode = preferredLogoAssetId ? 'post_composite' : 'blank_area';
   const logoUsageMode = input.task?.logoUsageMode || inferredLogoUsageMode;
+  if (preferredLogoAssetId && logoUsageMode !== 'post_composite') {
+    throw Object.assign(new Error(
+      'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: confirmed Logo must use post-composite mode.',
+    ), { code: 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED' });
+  }
   const requestedReferenceIds = Array.isArray(input.task?.referenceAssetIds)
     ? input.task.referenceAssetIds
     : [];
@@ -43,15 +45,15 @@ export function compileVNextImageGeneration(input) {
     route,
     adapter,
     projectPromptAsset: input.projectPromptAsset,
+    approvedCreativeDecision: input.approvedCreativeDecision
   });
-  if (compiledPrompt.projectGenerationContract) {
-    compiledPrompt.preflightReport = assertPromptPreflight(runPromptPreflightGate({
-      finalPrompt: compiledPrompt.finalPrompt,
-      taskContract,
-      projectContract: compiledPrompt.projectGenerationContract,
-      packagingTranslation: compiledPrompt.packagingTranslation,
-    }));
-  }
+  compiledPrompt.preflightReport = runPromptPreflightGate({
+    finalPrompt: compiledPrompt.finalPrompt,
+    taskContract,
+    projectContract: compiledPrompt.projectGenerationContract,
+    packagingTranslation: compiledPrompt.packagingTranslation,
+    requireProjectContract: Boolean(input.projectContext?.visualDecisionPacket),
+  });
   const payload = adapter.compile(compiledPrompt);
   compiledPrompt.trace.promptCharacters = [...compiledPrompt.finalPrompt].length;
   compiledPrompt.trace.compileDurationMs = Number((performance.now() - started).toFixed(3));

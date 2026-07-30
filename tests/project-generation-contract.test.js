@@ -13,7 +13,7 @@ test('project generation contract compiles grounded identity, upgrade and proven
   });
   assert.equal(contract.validation.status, 'ready');
   assert.equal(contract.projectIdentity.brandRole, '高端医美全链生态平台');
-  assert.equal(contract.provenance.compilerVersion, '1.0.0');
+  assert.equal(contract.provenance.compilerVersion, '1.1.0');
   assert.ok(contract.mustTransform[0].targetExpression.includes('半透明套封'));
 });
 
@@ -39,7 +39,7 @@ test('project generation contract blocks a missing upgrade thesis', () => {
   assert.ok(contract.validation.missingRequiredFields.includes('upgradeThesis'));
 });
 
-test('project generation contract derives tone boundaries only from project decisions', () => {
+test('project generation contract does not invent tone boundaries from generic worldview fields', () => {
   const packet = phase1Packet();
   packet.creativeDecision.toneBoundaries = [];
   const contract = compileProjectSpecificGenerationContract({
@@ -47,12 +47,8 @@ test('project generation contract derives tone boundaries only from project deci
     deliverable: 'packaging',
   });
 
-  assert.deepEqual(contract.toneBoundaries, [
-    { target: '专业可信赖', avoid: ['廉价装饰', '具象羽毛装饰', '旧式发光渐变'] },
-    { target: '东方但不古典', avoid: ['廉价装饰', '具象羽毛装饰', '旧式发光渐变'] },
-    { target: '未来但不科幻', avoid: ['廉价装饰', '具象羽毛装饰', '旧式发光渐变'] },
-  ]);
-  assert.equal(contract.validation.status, 'ready');
+  assert.deepEqual(contract.toneBoundaries, []);
+  assert.equal(contract.validation.status, 'insufficient');
 });
 
 test('project generation contract reports project conflicts', () => {

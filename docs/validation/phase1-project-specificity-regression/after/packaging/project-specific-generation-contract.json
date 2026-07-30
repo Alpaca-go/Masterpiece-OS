@@ -1,0 +1,346 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+  "generatedAt": "2026-07-30T14:41:05.804Z",
+  "projectIdentity": {
+    "brandName": "九州美学",
+    "industry": "医美/美学服务",
+    "brandRole": "美学服务提供者",
+    "businessModel": null
+  },
+  "upgradeThesis": {
+    "from": [
+      "传统医美品牌的冰冷技术感",
+      "过度依赖动物意象的表面美学"
+    ],
+    "to": [
+      "科学与美学深度融合的表达",
+      "更具包容性的性别中性设计",
+      "多维度的品牌体验系统"
+    ],
+    "statement": "从‘依赖传统具象图腾的东方礼品供应商’升级为‘以精密几何结构与微观材质触感为核心的当代高端美学品牌’，商业重心由符号装饰转向体验质感，面向追求克制留白、工艺细节与沉浸式开箱体验的高净值人群。"
+  },
+  "mustPreserve": [
+    {
+      "value": "九州美学",
+      "source": "locked_asset",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ]
+    },
+    {
+      "value": "九州美学主标志",
+      "source": "locked_asset",
+      "evidenceRefs": [
+        "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "5b35ba88-efee-4a25-a7e3-eacb9c6a83d7"
+      ]
+    },
+    {
+      "value": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "source": "user_confirmation",
+      "evidenceRefs": [
+        "project_record:lockedFacts[0]"
+      ]
+    },
+    {
+      "value": "输出语言固定为简体中文。",
+      "source": "user_confirmation",
+      "evidenceRefs": [
+        "project_record:lockedFacts[1]"
+      ]
+    },
+    {
+      "value": "原始 Locked Logo（图形标及‘九州美学’标准字形）",
+      "source": "approved_creative_decision",
+      "evidenceRefs": [
+        "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+        "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "asset:b1b50608-1579-453b-9964-28f95890723f",
+        "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+        "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+        "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+        "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+        "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+        "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+        "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+        "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+        "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+        "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+        "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+        "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+        "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+        "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+        "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+        "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+        "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+      ]
+    },
+    {
+      "value": "核心 Slogan ‘精琢每一片翎羽’ 文本内容",
+      "source": "approved_creative_decision",
+      "evidenceRefs": [
+        "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+        "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "asset:b1b50608-1579-453b-9964-28f95890723f",
+        "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+        "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+        "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+        "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+        "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+        "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+        "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+        "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+        "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+        "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+        "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+        "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+        "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+        "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+        "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+        "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+        "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+      ]
+    },
+    {
+      "value": "品牌中英文名称 ‘九州美学 / Jointown Aesthetics’",
+      "source": "approved_creative_decision",
+      "evidenceRefs": [
+        "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+        "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "asset:b1b50608-1579-453b-9964-28f95890723f",
+        "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+        "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+        "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+        "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+        "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+        "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+        "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+        "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+        "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+        "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+        "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+        "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+        "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+        "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+        "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+        "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+        "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+      ]
+    }
+  ],
+  "mustTransform": [
+    {
+      "sourceAsset": "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+      "semanticMeaning": [
+        "蜕变",
+        "精致",
+        "流动",
+        "高贵"
+      ],
+      "targetExpression": [
+        "金属光泽表面",
+        "半透明材质",
+        "渐变色彩层",
+        "柔和反射光",
+        "渐变照明",
+        "重点照明突出流线"
+      ],
+      "forbiddenLiteralUse": [
+        "直接使用孔雀照片",
+        "写实动物形态",
+        "具象羽毛复制"
+      ],
+      "evidenceRefs": [
+        "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "b1b50608-1579-453b-9964-28f95890723f"
+      ]
+    },
+    {
+      "sourceAsset": "88a16d72-55ee-4796-a88b-ef9d89df485e",
+      "semanticMeaning": [
+        "自然纹理",
+        "高贵质感",
+        "纯净基础"
+      ],
+      "targetExpression": [
+        "大理石表面",
+        "哑光与光泽对比",
+        "细微纹理材质",
+        "自然光模拟",
+        "材质纹理强调光",
+        "柔和环境光"
+      ],
+      "forbiddenLiteralUse": [
+        "直接复制孔雀羽毛纹理",
+        "过度使用大理石图案"
+      ],
+      "evidenceRefs": [
+        "88a16d72-55ee-4796-a88b-ef9d89df485e"
+      ]
+    }
+  ],
+  "toneBoundaries": [
+    {
+      "target": "B. 结构显影 (Structural Reveal)",
+      "avoid": []
+    }
+  ],
+  "projectSpecificDecisions": {
+    "decisionId": "creative-direction-e2fd113f-ead9-472f-8b06-fb2d6d758cdc",
+    "decisionVersion": "1.0.0",
+    "recommendedDirection": "B. 结构显影 (Structural Reveal)",
+    "rationale": "完美契合‘精琢’内核与高端定位，用物理触感替代视觉喧哗，留白提供呼吸感，材质差异建立跨触点的一致性，且具备极高的工艺落地可行性。",
+    "brandStrategy": "从‘依赖传统具象图腾的东方礼品供应商’升级为‘以精密几何结构与微观材质触感为核心的当代高端美学品牌’，商业重心由符号装饰转向体验质感，面向追求克制留白、工艺细节与沉浸式开箱体验的高净值人群。",
+    "colorSystem": [
+      "建立‘深午夜紫 (#2E004F) + 暖米白 (#F5F5F0)’双极画布，彻底停用高饱和亮紫作为主色。光泽色（虹光银/珠光白）禁止使用 CMYK 平印实现，强制依赖烫印、镭射膜或特种纸原生反光。色彩应用严格遵循 60% 留白/30% 纹理/10% 品牌色点缀的配比原则。"
+    ],
+    "materialSystem": [
+      "触感优先于视觉：全线导入 600g+ 特种触感纸、冷烫银与无墨击凸。‘翎羽矩阵’必须以物理凹凸或局部高反差材质呈现，利用侧光扫描显影图形，替代传统油墨印刷的平面覆盖，实现‘远观素净、近触精微’的工艺升级。"
+    ],
+    "compositionRules": [
+      "强制采用 12 列基础网格与严格对齐系统。建立‘呼吸区-纹理锚点-信息区’三级结构，所有视觉元素必须贴合网格节点或黄金分割线。Slogan 与信息层级通过字重对比（如 Regular/Light）与字间距拉伸实现，杜绝中心对称、元素堆叠与无边界出血。"
+    ],
+    "generationGoals": [
+      "以‘参数化结构’替代‘具象插画’，以‘材质显影’替代‘色彩平涂’，以‘网格呼吸’替代‘中心对称’，建立一套可无缝穿透包装、海报、空间与数字端的现代东方视觉操作系统。",
+      "一个以深午夜紫与暖米白为基底的静谧场域。空间与物料摒弃喧闹装饰，仅保留大面积中性画布与精密压印的纹理。侧光掠过表面时，微观几何单元折射出虹彩光泽，营造出介于现代建筑理性与东方禅意克制之间的沉浸叙事。",
+      "‘翎羽矩阵’（Feather Matrix）参数化纹理系统：基于羽毛鳞片的层叠拓扑关系，提取为固定极坐标网格下的基础模块。该模块通过预设的缩放、旋转与透明度算法生成无限延展的平铺图案，并强制绑定物理工艺（击凸/局部UV/冷烫银）作为唯一显影方式，实现跨媒介的统一识别。"
+    ],
+    "prohibitedExpressions": [
+      "写实孔雀插画 (Asset abba5eaa/ddb219ec)",
+      "高饱和亮紫色主视觉 (Asset 88a16d72)",
+      "‘笔锋软化’字体处理 (Asset c0b498b1)",
+      "满版印花与过度装饰底纹 (Asset 1c3bbfdf)",
+      "无业务逻辑的 Mockup 堆砌 (Asset 84d678ad/bd76c510)",
+      "莲花/宝石等无关辅助图形 (Asset fe8570ca/005)",
+      "绝对禁止复制、修改、重绘或拆解原始 Locked Logo",
+      "严禁沿袭旧 VI 的写实孔雀插画、高饱和亮紫与软化字体处理",
+      "严禁将旧海报内容简单替换为新元素或重新排列旧构图",
+      "严禁在旧包装结构上仅更换材质或进行表面贴图换肤",
+      "严禁对旧空间仅做装饰面替换而不重构光影、动线与材质逻辑",
+      "所有生成必须严格遵循‘结构显影’推荐方向与 12 列网格系统",
+      "视觉重心必须强制向物理材质、击凸纹理与留白呼吸倾斜",
+      "禁止生成任何脱离业务真实触点的无意义 Mockup 堆砌画面"
+    ],
+    "specificity": {
+      "status": "ready",
+      "populatedCategories": 6,
+      "requiredCategories": 4
+    }
+  },
+  "brandMisreadRisks": [
+    {
+      "code": "MR001",
+      "description": "孔雀意象可能被误解为纯粹的自然/动物品牌，而非医美/美学服务",
+      "appliesTo": {
+        "deliverables": [
+          "brand_strategy",
+          "visual_identity"
+        ],
+        "subtypes": [
+          "positioning",
+          "messaging"
+        ]
+      },
+      "evidenceRefs": [
+        "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "f275926e-d3b5-4916-b5bb-b26c5301d674"
+      ],
+      "status": "confirmed",
+      "confidence": 0.85
+    },
+    {
+      "code": "MR002",
+      "description": "紫色调可能被误解为女性专属品牌，限制男性客户群体",
+      "appliesTo": {
+        "deliverables": [
+          "visual_identity",
+          "marketing"
+        ],
+        "subtypes": [
+          "color_strategy",
+          "audience_targeting"
+        ]
+      },
+      "evidenceRefs": [
+        "88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "b2c502c1-8f0e-4422-b252-81afb2ce9dc4"
+      ],
+      "status": "probable",
+      "confidence": 0.75
+    }
+  ],
+  "sharedVisualRules": {
+    "colorBehavior": [
+      "建立‘深午夜紫 (#2E004F) + 暖米白 (#F5F5F0)’双极画布，彻底停用高饱和亮紫作为主色。光泽色（虹光银/珠光白）禁止使用 CMYK 平印实现，强制依赖烫印、镭射膜或特种纸原生反光。色彩应用严格遵循 60% 留白/30% 纹理/10% 品牌色点缀的配比原则。"
+    ],
+    "materialBehavior": [
+      "触感优先于视觉：全线导入 600g+ 特种触感纸、冷烫银与无墨击凸。‘翎羽矩阵’必须以物理凹凸或局部高反差材质呈现，利用侧光扫描显影图形，替代传统油墨印刷的平面覆盖，实现‘远观素净、近触精微’的工艺升级。"
+    ],
+    "graphicBehavior": [
+      "以‘参数化结构’替代‘具象插画’，以‘材质显影’替代‘色彩平涂’，以‘网格呼吸’替代‘中心对称’，建立一套可无缝穿透包装、海报、空间与数字端的现代东方视觉操作系统。",
+      "一个以深午夜紫与暖米白为基底的静谧场域。空间与物料摒弃喧闹装饰，仅保留大面积中性画布与精密压印的纹理。侧光掠过表面时，微观几何单元折射出虹彩光泽，营造出介于现代建筑理性与东方禅意克制之间的沉浸叙事。",
+      "‘翎羽矩阵’（Feather Matrix）参数化纹理系统：基于羽毛鳞片的层叠拓扑关系，提取为固定极坐标网格下的基础模块。该模块通过预设的缩放、旋转与透明度算法生成无限延展的平铺图案，并强制绑定物理工艺（击凸/局部UV/冷烫银）作为唯一显影方式，实现跨媒介的统一识别。"
+    ],
+    "compositionBehavior": [
+      "以‘参数化结构’替代‘具象插画’，以‘材质显影’替代‘色彩平涂’，以‘网格呼吸’替代‘中心对称’，建立一套可无缝穿透包装、海报、空间与数字端的现代东方视觉操作系统。",
+      "一个以深午夜紫与暖米白为基底的静谧场域。空间与物料摒弃喧闹装饰，仅保留大面积中性画布与精密压印的纹理。侧光掠过表面时，微观几何单元折射出虹彩光泽，营造出介于现代建筑理性与东方禅意克制之间的沉浸叙事。",
+      "‘翎羽矩阵’（Feather Matrix）参数化纹理系统：基于羽毛鳞片的层叠拓扑关系，提取为固定极坐标网格下的基础模块。该模块通过预设的缩放、旋转与透明度算法生成无限延展的平铺图案，并强制绑定物理工艺（击凸/局部UV/冷烫银）作为唯一显影方式，实现跨媒介的统一识别。"
+    ],
+    "lightingBehavior": [
+      "以‘参数化结构’替代‘具象插画’，以‘材质显影’替代‘色彩平涂’，以‘网格呼吸’替代‘中心对称’，建立一套可无缝穿透包装、海报、空间与数字端的现代东方视觉操作系统。",
+      "一个以深午夜紫与暖米白为基底的静谧场域。空间与物料摒弃喧闹装饰，仅保留大面积中性画布与精密压印的纹理。侧光掠过表面时，微观几何单元折射出虹彩光泽，营造出介于现代建筑理性与东方禅意克制之间的沉浸叙事。",
+      "‘翎羽矩阵’（Feather Matrix）参数化纹理系统：基于羽毛鳞片的层叠拓扑关系，提取为固定极坐标网格下的基础模块。该模块通过预设的缩放、旋转与透明度算法生成无限延展的平铺图案，并强制绑定物理工艺（击凸/局部UV/冷烫银）作为唯一显影方式，实现跨媒介的统一识别。"
+    ]
+  },
+  "deliverableSuccessCriteria": {
+    "packaging": [
+      "packaging media translation is complete",
+      "Use a confirmed, physically credible structure",
+      "Explain opening and internal arrangement",
+      "Render one clear commercial deliverable"
+    ]
+  },
+  "validation": {
+    "status": "ready",
+    "missingRequiredFields": [],
+    "conflicts": []
+  },
+  "provenance": {
+    "sourceKinds": [
+      "project_record",
+      "original_asset",
+      "structured_analysis",
+      "approved_creative_decision"
+    ],
+    "approvedDecision": {
+      "id": "creative-direction-e2fd113f-ead9-472f-8b06-fb2d6d758cdc",
+      "version": "1.0.0",
+      "sourcePath": "outputs/creative_decision.json"
+    },
+    "sourceFingerprint": "2f07b0e4ef51ca2686a9ad0e1fb2632ea648dc0157d7feb13045161d0fd862e7",
+    "compilerVersion": "1.1.0"
+  }
+}

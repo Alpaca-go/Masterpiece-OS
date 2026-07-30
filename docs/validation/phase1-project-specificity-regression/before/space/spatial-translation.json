@@ -1,0 +1,94 @@
+{
+  "status": "ready",
+  "spatialConcept": "流动的美学空间，通过流线型设计和紫色调营造精致、专业的医美环境",
+  "structureLanguage": [
+    "流线型隔断",
+    "弧形墙面",
+    "层次化空间布局"
+  ],
+  "materialLanguage": [
+    {
+      "material": "哑光白色石材",
+      "behavior": [
+        "提供纯净背景",
+        "反射柔和光线"
+      ],
+      "brandRole": "营造专业、纯净的医美环境基础",
+      "forbidden": [
+        "避免使用过于冰冷的工业材料"
+      ]
+    },
+    {
+      "material": "紫色半透明亚克力",
+      "behavior": [
+        "透光性",
+        "色彩渐变效果"
+      ],
+      "brandRole": "强化品牌色彩识别，营造流动美学感",
+      "forbidden": [
+        "避免过度使用导致视觉疲劳"
+      ]
+    }
+  ],
+  "lightingLanguage": {
+    "source": [
+      "间接照明",
+      "重点照明",
+      "渐变照明"
+    ],
+    "contrast": "柔和对比，避免强烈明暗反差",
+    "interactionWithMaterials": [
+      "在半透明材质上创造渐变效果",
+      "在石材表面形成柔和反射"
+    ],
+    "forbidden": [
+      "避免刺眼直射光",
+      "避免冷色调照明"
+    ]
+  },
+  "colorBehavior": {
+    "primary": [
+      {
+        "name": "Peacock Violet",
+        "role": "品牌识别核心，营造美学氛围"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "哑光白",
+        "role": "空间基础色调，营造专业感"
+      }
+    ],
+    "accent": [
+      {
+        "name": "金属金",
+        "role": "点缀色，提升精致感"
+      }
+    ],
+    "forbidden": [
+      "避免使用高饱和度对比色",
+      "避免纯黑色大面积使用"
+    ]
+  },
+  "brandIntegration": [
+    "流线型标志在空间中的立体应用",
+    "紫色调在关键接触点的强调",
+    "品牌文案在等候区的艺术化展示"
+  ],
+  "functionalRelationships": [],
+  "sceneProgram": [
+    "接待区",
+    "等候区",
+    "咨询室",
+    "治疗室"
+  ],
+  "peopleBehavior": [],
+  "functionalExperience": [
+    "流线型导视系统",
+    "色彩分区的功能指引",
+    "材质触感体验"
+  ],
+  "sceneMisreadRisks": [
+    "空间紫色调过重可能被误解为娱乐场所而非专业医美机构"
+  ]
+}

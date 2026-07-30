@@ -14,7 +14,7 @@ test('Jiuzhou spatial decisions compile into a fourteen-block packaging contract
       count: 1,
       aspectRatio: '4:3',
       currentInstruction: '生成一张完整的品牌产品礼盒开盒主视觉。',
-      logoUsageMode: 'reference',
+      logoUsageMode: 'post_composite',
     },
     now: '2026-07-30T00:00:00.000Z',
   });
@@ -39,7 +39,7 @@ test('formal packaging compilation blocks when package structure is unconfirmed'
       subtype: 'lid_and_base_box',
       shot: 'open_box',
       currentInstruction: '生成正式包装。',
-      logoUsageMode: 'reference',
+      logoUsageMode: 'post_composite',
     },
   }), (error) => error.code === 'PACKAGING_STRUCTURE_EVIDENCE_MISSING');
 });

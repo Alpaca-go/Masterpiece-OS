@@ -161,13 +161,9 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   });
   assert.equal(latestModelId, undefined);
   assert.equal(latestApiProfileId, 'seedream-profile');
-  assert.deepEqual(latestReferences, [{
-    id: 'logo-asset',
-    role: 'identity_reference',
-    projectRelativePath: 'input/brand/logo.png',
-  }]);
-  assert.deepEqual(compiled.payload.referenceAssetIds, ['logo-asset']);
-  assert.equal(compiled.compiledPrompt.logoUsageMode, 'reference');
+  assert.deepEqual(latestReferences, []);
+  assert.deepEqual(compiled.payload.referenceAssetIds, []);
+  assert.equal(compiled.compiledPrompt.logoUsageMode, 'post_composite');
   const confirmed = await service.confirmDirection(
     projectId,
     firstRun.runId,
@@ -195,7 +191,7 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   assert.equal(asset.version, 1);
   assert.equal((await service.getSession(projectId)).projectPromptAssets.space, asset.id);
 
-  const blankArea = await service.compile({
+  await assert.rejects(() => service.compile({
     projectId,
     task: {
       deliverableFamily: 'space',
@@ -209,9 +205,8 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
       referenceAssetIds: ['logo-asset'],
       logoUsageMode: 'blank_area',
     },
-  });
-  assert.deepEqual(blankArea.payload.referenceAssetIds, []);
-  assert.match(blankArea.compiledPrompt.finalPrompt, /Do not render any logo, letters, words/u);
+  }), (error: unknown) =>
+    (error as { code?: string }).code === 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED');
 
   const postComposite = await service.compile({
     projectId,

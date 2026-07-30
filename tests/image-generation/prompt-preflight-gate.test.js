@@ -37,3 +37,36 @@ test('preflight detects other-project and Golden content leakage', () => {
   assert.ok(report.findings.some((item) => item.code === 'OTHER_PROJECT_SEMANTIC_LEAK'));
   assert.ok(report.findings.some((item) => item.code === 'GOLDEN_CONTENT_LEAK'));
 });
+
+test('preflight exposes project specificity, legacy reuse, packaging evidence and Logo route codes', () => {
+  const packet = phase1Packet();
+  const projectContract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'packaging',
+  });
+  projectContract.mustTransform[0].targetExpression = ['写实羽毛照片'];
+  const report = runPromptPreflightGate({
+    finalPrompt: 'Generate a serum bottle package.',
+    taskContract: {
+      deliverableFamily: 'packaging',
+      currentInstruction: '生成精华瓶包装',
+      logoUsageMode: 'reference',
+    },
+    projectContract,
+    packagingTranslation: {
+      ...packet.mediaTranslations.packaging,
+      productRoleEvidenceRefs: [],
+      structureStrategy: [{ structure: '盒', evidenceRefs: [] }],
+    },
+  });
+  const codes = new Set(report.findings.map((item) => item.code));
+  for (const code of [
+    'PROJECT_SPECIFICITY_TOO_LOW',
+    'GENERIC_INDUSTRY_FALLBACK',
+    'LITERAL_LEGACY_ASSET_REUSE',
+    'PACKAGING_STRUCTURE_EVIDENCE_MISSING',
+    'PACKAGING_PRODUCT_ROLE_MISSING',
+    'UNSUPPORTED_PRODUCT_INVENTION',
+    'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED',
+  ]) assert.equal(codes.has(code), true, code);
+});

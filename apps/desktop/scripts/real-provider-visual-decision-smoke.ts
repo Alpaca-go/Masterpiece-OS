@@ -167,6 +167,9 @@ async function main(): Promise<void> {
   });
 
   const prompt = compilation.compiledPrompt.finalPrompt;
+  const projectContract = compilation.compiledPrompt.projectGenerationContract;
+  const approvedSpecificityReady =
+    projectContract?.projectSpecificDecisions?.specificity?.status === 'ready';
   const firstAbstraction = packet.abstractions[0];
   const sharedSignalGroups = [
     { id: 'brand', alternatives: [brandName] },
@@ -192,18 +195,38 @@ async function main(): Promise<void> {
       { id: 'packaging-photography', alternatives: packaging.photographyDirection },
     ]
     : [
-      { id: 'upgrade-thesis', alternatives: [packet.creativeDecision.uniqueUpgradeThesis] },
+      {
+        id: 'upgrade-thesis',
+        alternatives: approvedSpecificityReady
+          ? [projectContract.upgradeThesis.statement]
+          : [packet.creativeDecision.uniqueUpgradeThesis],
+      },
       { id: 'target-worldview', alternatives: packet.creativeDecision.targetWorldview },
       { id: 'nonliteral-translation', alternatives: firstAbstraction?.forbiddenLiteralUse || [] },
       { id: 'spatial-concept', alternatives: [packet.mediaTranslations.spatial.spatialConcept] },
       { id: 'structure-language', alternatives: packet.mediaTranslations.spatial.structureLanguage },
-      { id: 'color-system', alternatives: [
-        ...packet.colorSystem.primary.map((item) => item.name),
-        ...packet.colorSystem.secondary.map((item) => item.name),
-        ...packet.colorSystem.accent.map((item) => item.name),
-      ] },
-      { id: 'material-system', alternatives: packet.materialSystem.map((item) => item.material) },
-      { id: 'lighting-system', alternatives: packet.lightingSystem.source },
+      {
+        id: 'color-system',
+        alternatives: approvedSpecificityReady
+          ? projectContract.sharedVisualRules.colorBehavior
+          : [
+            ...packet.colorSystem.primary.map((item) => item.name),
+            ...packet.colorSystem.secondary.map((item) => item.name),
+            ...packet.colorSystem.accent.map((item) => item.name),
+          ],
+      },
+      {
+        id: 'material-system',
+        alternatives: approvedSpecificityReady
+          ? projectContract.sharedVisualRules.materialBehavior
+          : packet.materialSystem.map((item) => item.material),
+      },
+      {
+        id: 'lighting-system',
+        alternatives: approvedSpecificityReady
+          ? projectContract.sharedVisualRules.lightingBehavior
+          : packet.lightingSystem.source,
+      },
     ];
   const requiredPromptSignalGroups = [...sharedSignalGroups, ...deliverableSignalGroups]
     .filter((group) => group.alternatives.some((value) => Boolean(value?.trim())));

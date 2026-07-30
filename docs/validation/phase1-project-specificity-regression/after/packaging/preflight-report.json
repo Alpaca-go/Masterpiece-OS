@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "status": "blocked",
+  "findings": [
+    {
+      "code": "PACKAGING_PRODUCT_ROLE_MISSING",
+      "severity": "block",
+      "detail": "Packaging product/category role has no confirmed evidence."
+    },
+    {
+      "code": "UNSUPPORTED_PRODUCT_INVENTION",
+      "severity": "block",
+      "detail": "The prompt could cause an unconfirmed product or container to be invented."
+    }
+  ],
+  "checkedAt": "2026-07-30T14:41:05.808Z"
+}

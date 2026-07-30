@@ -122,7 +122,7 @@ const scenes = [
     subtype: 'reception',
     shot: 'entrance_three_quarter_wide',
     instruction: '生成旗舰店入口接待空间，建立门槛、到达、前台与后场动线。',
-    mode: 'reference',
+    mode: 'post_composite',
     mustInclude: ['完整入口', '接待前台'],
     mustAvoid: ['VI 展板'],
   },
@@ -131,7 +131,7 @@ const scenes = [
     subtype: 'reception',
     shot: 'front',
     instruction: '生成前台中景，保持连续空间，不要中央展示设备。',
-    mode: 'blank_area',
+    mode: 'post_composite',
     mustInclude: ['前台中景', '连续空间'],
     mustAvoid: ['中央展示设备'],
   },
@@ -140,7 +140,7 @@ const scenes = [
     subtype: 'lobby',
     shot: 'three_quarter_wide',
     instruction: '生成完整 Lobby，明确到达、等候、导向与流线。',
-    mode: 'blank_area',
+    mode: 'post_composite',
     mustInclude: ['等候区', '清晰导向'],
     mustAvoid: ['产品展台'],
   },
@@ -170,7 +170,7 @@ test('three Jiuzhou space scenes preserve task overrides and Logo mode boundarie
     assert.equal(result.compiledPrompt.logoUsageMode, scene.mode, scene.name);
     assert.deepEqual(
       result.payload.referenceAssetIds,
-      scene.mode === 'reference' ? ['real-logo'] : [],
+      [],
       scene.name,
     );
     assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true, scene.name);

@@ -254,10 +254,10 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     '微水泥、哑光石材、珍珠涂层、磨砂玻璃、半透明树脂与拉丝冷银金属',
     '柔和自然侧光',
     '茶空间',
-    'Use the supplied logo asset',
+    'controlled post-compositing',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.0.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.1.0');
   assert.deepEqual(result.compiledPrompt.completeness.coverage, {
     hardFacts: 1,
     upgradeThesis: 1,
@@ -268,18 +268,13 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
   });
 });
 
-test('formal Packet derives project-specific tone boundaries when the model omits the explicit array', () => {
+test('formal Packet does not invent tone boundaries when no approved decision supplies them', () => {
   const packetValue = packet();
   packetValue.creativeDecision.toneBoundaries = [];
-  const result = compile({ packet: packetValue });
-  const toneBlock = result.compiledPrompt.blocks.find((block) => block.id === 'tone_boundary');
-
-  assert.deepEqual(toneBlock.items, [
-    '目标气质：东方生命美学；避免：生活方式零售、传统紫色医美、具象孔雀羽毛、发光渐变',
-    '目标气质：现代医疗专业感；避免：生活方式零售、传统紫色医美、具象孔雀羽毛、发光渐变',
-    '目标气质：未来材料科技感；避免：生活方式零售、传统紫色医美、具象孔雀羽毛、发光渐变',
-  ]);
-  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /保持品牌气质清晰、克制且一致/u);
+  assert.throws(
+    () => compile({ packet: packetValue }),
+    /PROJECT_GENERATION_CONTRACT_INSUFFICIENT.*toneBoundaries/u,
+  );
 });
 
 test('formal Packet blocks compilation when execution data is insufficient', () => {
@@ -293,13 +288,12 @@ test('formal Packet blocks compilation when execution data is insufficient', () 
   assert.throws(() => compile({ packet: incomplete }), /VISUAL_DECISION_PACKET_INSUFFICIENT/u);
 });
 
-test('compiler detects Logo, text and saturation conflicts', () => {
-  assert.throws(
+test('compiler enforces post-composite Logo, text and saturation conflicts', () => {
+  assert.doesNotThrow(
     () => compile({ task: { mustAvoid: ['禁止任何 Logo'] } }),
-    /PROMPT_CONFLICT.*no-Logo/iu,
   );
   assert.throws(
-    () => compile({ task: { logoUsageMode: 'blank_area', mustInclude: ['准确标题文字'] } }),
+    () => compile({ task: { mustInclude: ['准确标题文字'] } }),
     /PROMPT_CONFLICT.*requires text/iu,
   );
   assert.throws(
@@ -363,9 +357,9 @@ test('Jiuzhou automatic Prompt meets all 22 Golden backtrace atoms', () => {
   assert.equal(audit.summary.conflictCount, 0);
 });
 
-test('Logo preservation rule does not conflict with a confirmed Logo reference', () => {
+test('Logo preservation rule routes a confirmed Logo to post-composite', () => {
   const result = compile({ task: { mustAvoid: ['禁止将 Logo 变形或拆解'] } });
-  assert.equal(result.taskContract.logoUsageMode, 'reference');
+  assert.equal(result.taskContract.logoUsageMode, 'post_composite');
   assert.match(result.compiledPrompt.finalPrompt, /禁止将 Logo 变形或拆解/u);
   assert.equal(result.compiledPrompt.completeness.conflictCount, 0);
 });

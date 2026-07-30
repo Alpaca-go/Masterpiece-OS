@@ -1,4 +1,4 @@
-export const PACKAGING_PROMPT_CONTRACT_VERSION = '1.0.0';
+export const PACKAGING_PROMPT_CONTRACT_VERSION = '1.1.0';
 
 export const PACKAGING_PROMPT_BLOCKS = Object.freeze([
   ['output_task', 'A. Single Output Task'],
@@ -47,13 +47,20 @@ export function compilePackagingPromptContract({
     });
   }
   if (packagingTranslation?.status !== 'ready') {
-    const code = packagingTranslation?.missingRequiredFields?.includes('structureStrategy')
-      ? 'PACKAGING_STRUCTURE_EVIDENCE_MISSING'
-      : 'PACKAGING_TRANSLATION_INSUFFICIENT';
-    throw Object.assign(new Error(`${code}: ${(packagingTranslation?.missingRequiredFields || []).join(', ')}`), {
-      code,
-      issues: packagingTranslation?.missingRequiredFields || [],
-    });
+    const evidenceOnly = new Set(['structureEvidenceRefs', 'productRoleEvidenceRefs']);
+    const contentIssues = (packagingTranslation?.missingRequiredFields || [])
+      .filter((item) => !evidenceOnly.has(item));
+    if (contentIssues.length) {
+      const code = contentIssues.includes('structureStrategy')
+        ? 'PACKAGING_STRUCTURE_EVIDENCE_MISSING'
+        : contentIssues.includes('productAndCategoryRole')
+          ? 'PACKAGING_PRODUCT_ROLE_MISSING'
+          : 'PACKAGING_TRANSLATION_INSUFFICIENT';
+      throw Object.assign(new Error(`${code}: ${contentIssues.join(', ')}`), {
+        code,
+        issues: contentIssues,
+      });
+    }
   }
   const identity = projectContract.projectIdentity;
   const colors = packagingTranslation.colorBehavior;
@@ -90,28 +97,47 @@ export function compilePackagingPromptContract({
       ]),
       projectContract.mustTransform.map((item) =>
         `${item.sourceAsset}: preserve ${item.semanticMeaning.join('; ')} through approved packaging expressions.`),
-    ], ['packaging_translation.graphicTranslation', 'project_generation_contract.mustTransform']),
+      projectContract.projectSpecificDecisions?.generationGoals
+        ?.map((item) => `Approved project-specific goal: ${item}`),
+      projectContract.projectSpecificDecisions?.prohibitedExpressions
+        ?.map((item) => `Approved project-specific prohibition: ${item}`),
+    ], [
+      'packaging_translation.graphicTranslation',
+      'project_generation_contract.mustTransform',
+      'project_generation_contract.projectSpecificDecisions',
+    ]),
     block('graphic_information', PACKAGING_PROMPT_BLOCKS[6][1],
       packagingTranslation.informationHierarchy,
       ['packaging_translation.informationHierarchy']),
     block('color_behavior', PACKAGING_PROMPT_BLOCKS[7][1], [
+      projectContract.projectSpecificDecisions?.colorSystem
+        ?.map((item) => `Approved project color system: ${item}`),
       colors.base.map((item) => `Base color behavior: ${item}`),
       colors.identity.map((item) => `Identity color behavior: ${item}`),
       colors.accent.map((item) => `Accent color behavior: ${item}`),
       colors.forbidden.map((item) => `Forbidden color behavior: ${item}`),
-    ], ['packaging_translation.colorBehavior']),
+    ], [
+      'packaging_translation.colorBehavior',
+      'project_generation_contract.projectSpecificDecisions.colorSystem',
+    ]),
     block('substrate_craft', PACKAGING_PROMPT_BLOCKS[8][1], [
+      projectContract.projectSpecificDecisions?.materialSystem
+        ?.map((item) => `Approved project material system: ${item}`),
       packagingTranslation.substrateLanguage.map((item) => `Substrate: ${item}`),
       packagingTranslation.craftLanguage.flatMap((item) => [
         `Craft: ${item.craft}; purpose: ${item.purpose}`,
         item.forbiddenUse.length ? `Do not use ${item.craft} for ${item.forbiddenUse.join('; ')}` : '',
       ]),
-    ], ['packaging_translation.substrateLanguage', 'packaging_translation.craftLanguage']),
+    ], [
+      'packaging_translation.substrateLanguage',
+      'packaging_translation.craftLanguage',
+      'project_generation_contract.projectSpecificDecisions.materialSystem',
+    ]),
     block('logo_required_information', PACKAGING_PROMPT_BLOCKS[9][1], [
       packagingTranslation.logoPolicy,
-      logoUsageMode === 'reference'
-        ? 'Use only the supplied logo reference and preserve its geometry.'
-        : 'Reserve a clean, production-credible logo and information area; do not invent a logo.',
+      logoUsageMode === 'post_composite'
+        ? 'Do not render any logo, brand name, letters, or slogan. Reserve one clean, front-facing, production-credible identity area for controlled post-compositing.'
+        : 'Do not render any logo, letters, words, or slogan. Reserve one clean identity area.',
     ], ['packaging_translation.logoPolicy', 'task_contract.logoUsageMode']),
     block('photography_view', PACKAGING_PROMPT_BLOCKS[10][1], [
       packagingTranslation.photographyDirection,

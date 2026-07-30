@@ -78,6 +78,7 @@ export function phase1Packet() {
         status: 'ready',
         packagingConcept: '可开启的生命层叠档案',
         productAndCategoryRole: ['用于专业产品礼赠与品牌建立'],
+        productRoleEvidenceRefs: ['project:confirmed-product-role'],
         structureStrategy: [{ structure: '天地盖硬盒', purpose: '保护产品并建立克制开盒仪式', locked: true, evidenceRefs: ['asset:box'] }],
         openingExperience: ['提起上盖后逐层显露半透明套封与内托'],
         productArrangement: ['产品按真实尺寸嵌入纸浆模塑内托'],
@@ -162,6 +163,19 @@ export function phase1Context(packet = phase1Packet()) {
     confirmedDecisions: [],
     sourceAssetRefs: [],
     visualDecisionPacket: packet,
+    approvedCreativeDecision: {
+      direction_id: 'approved-direction-1',
+      direction_version: '1.0.0',
+      visual_direction: {
+        recommended: '结构显影',
+        rationale: '以项目资产关系而非行业模板建立表达。',
+      },
+      color_system: ['珍珠白、暖灰与低饱和紫按确认层级使用'],
+      material_system: ['低反射表面与浅浮雕建立精密层叠'],
+      composition_rule: ['以非中心层叠结构建立阅读顺序'],
+      generation_goal: ['将生命成长转译为可生产的层叠结构'],
+      avoid_assets: ['写实羽毛照片', '普通美容院礼盒'],
+    },
     provenance: {
       builderId: 'fixture',
       builderVersion: '1',

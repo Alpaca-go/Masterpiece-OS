@@ -1,0 +1,61 @@
+{
+  "deliverable_identity": [
+    "task_contract",
+    "family.space",
+    "subtype.space.reception",
+    "shot.space.entrance_three_quarter_wide"
+  ],
+  "task_contract": [
+    "task_contract"
+  ],
+  "project_identity": [
+    "project_record",
+    "structured_analysis"
+  ],
+  "upgrade_thesis": [
+    "visual_decision_packet.creativeDecision",
+    "project_generation_contract.projectSpecificDecisions"
+  ],
+  "tone_boundary": [
+    "visual_decision_packet.creativeDecision.toneBoundaries",
+    "project_context.visualIdentity.tone"
+  ],
+  "professional_contract": [
+    "family.space",
+    "subtype.space.reception",
+    "shot.space.entrance_three_quarter_wide"
+  ],
+  "brand_translation": [
+    "locked_assets",
+    "visual_decision_packet.abstractions",
+    "visual_decision_packet.mediaTranslations.spatial",
+    "project_generation_contract.projectSpecificDecisions",
+    "project_context.visualIdentity"
+  ],
+  "color_system": [
+    "visual_decision_packet.colorSystem",
+    "visual_decision_packet.lockedAssets"
+  ],
+  "material_system": [
+    "visual_decision_packet.materialSystem",
+    "project_context.visualIdentity.materialBehavior"
+  ],
+  "lighting_system": [
+    "visual_decision_packet.lightingSystem",
+    "project_context.visualIdentity.lightingBehavior"
+  ],
+  "camera_composition": [
+    "family.space",
+    "subtype.space.reception",
+    "shot.space.entrance_three_quarter_wide",
+    "project_context.visualIdentity.compositionBehavior"
+  ],
+  "logo_text_and_negatives": [
+    "task_contract.mustAvoid",
+    "locked_assets.logoAssetIds",
+    "visual_decision_packet.diagnosis.brandMisreadRisks",
+    "family.space",
+    "subtype.space.reception",
+    "shot.space.entrance_three_quarter_wide"
+  ]
+}

@@ -23,8 +23,11 @@ export function validatePackagingTranslation(translation) {
   const missing = [];
   if (!translation?.packagingConcept) missing.push('packagingConcept');
   if (!list(translation?.productAndCategoryRole).length) missing.push('productAndCategoryRole');
+  if (!list(translation?.productRoleEvidenceRefs).length) missing.push('productRoleEvidenceRefs');
   if (!Array.isArray(translation?.structureStrategy) || !translation.structureStrategy.length) {
     missing.push('structureStrategy');
+  } else if (!translation.structureStrategy.some((item) => list(item?.evidenceRefs).length)) {
+    missing.push('structureEvidenceRefs');
   }
   if (!list(translation?.openingExperience).length) missing.push('openingExperience');
   if (!list(translation?.productArrangement).length) missing.push('productArrangement');
@@ -108,6 +111,7 @@ export function buildPackagingTranslation(input = {}) {
     packagingConcept: spatialLeaks(source.packagingConcept)
       ? '' : String(source.packagingConcept ?? '').trim(),
     productAndCategoryRole: clean(source.productAndCategoryRole),
+    productRoleEvidenceRefs: list(source.productRoleEvidenceRefs),
     structureStrategy,
     openingExperience: clean(source.openingExperience),
     productArrangement: clean(source.productArrangement),
@@ -136,9 +140,14 @@ export function buildPackagingTranslation(input = {}) {
 export function assertPackagingTranslation(translation) {
   const validation = validatePackagingTranslation(translation);
   if (validation.status !== 'ready') {
-    const structureMissing = validation.missingRequiredFields.includes('structureStrategy');
+    const structureMissing = validation.missingRequiredFields.some((item) =>
+      item === 'structureStrategy' || item === 'structureEvidenceRefs');
+    const productRoleMissing = validation.missingRequiredFields.some((item) =>
+      item === 'productAndCategoryRole' || item === 'productRoleEvidenceRefs');
     const code = structureMissing
       ? 'PACKAGING_STRUCTURE_EVIDENCE_MISSING'
+      : productRoleMissing
+        ? 'PACKAGING_PRODUCT_ROLE_MISSING'
       : 'PACKAGING_TRANSLATION_INSUFFICIENT';
     throw Object.assign(new Error(`${code}: ${validation.missingRequiredFields.join(', ')}`), {
       code,
