@@ -1,4 +1,3 @@
-import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { app } from 'electron';
@@ -22,7 +21,10 @@ import type {
   VisualAnalysisPurpose,
   VisualReconstructionDirection
 } from '../shared/types';
-import type { PromptSourceObject } from '../../../../packages/project-contracts/src/index.ts';
+import type {
+  PromptSourceObject,
+  VisualDecisionPacket,
+} from '../../../../packages/project-contracts/src/index.ts';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
@@ -50,10 +52,13 @@ import {
   writeProjectVisualContextVNext,
 } from './project-context-vnext-builder.ts';
 import {
-  buildPromptSourceExtractionPrompt,
-  normalizePromptSourceExtraction,
-  validatePromptSourceExtraction,
-} from './prompt-source-extraction.ts';
+  buildUnifiedVisualUnderstandingPrompt,
+  normalizeUnifiedVisualUnderstanding,
+} from './unified-visual-understanding.ts';
+import {
+  visualDecisionPacketToPromptSourceObject,
+} from './visual-decision-packet.ts';
+import { compileVisualDecisionReport } from './visual-decision-report-compiler.ts';
 import type { ProjectStore } from './project-store';
 import {
   incompleteProjectIdentity,
@@ -476,21 +481,21 @@ export function createPipelineService(
       progress('validating-output', '正在校验报告');
       const coreReportPath = path.join(projectPaths.outputs, execution.result.outputFile);
       const rawReport = await fs.readFile(coreReportPath, 'utf8');
-      const finalProjectName = extractProjectNameFromReport(rawReport) || project.projectName;
-      const report = normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage);
-      if (validationMode === 'visual_upgrade') validateDesktopReport(report);
-      else if (!report.trim()) throw new Error('参考视觉分析结果为空');
+      // ProjectRecord identity is authoritative. A free-form legacy report may
+      // only fill an actually empty name; it must never rename the project.
+      const finalProjectName = project.projectName || extractProjectNameFromReport(rawReport);
+      const legacyReport = normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage);
+      if (validationMode === 'visual_upgrade') validateDesktopReport(legacyReport);
+      else if (!legacyReport.trim()) throw new Error('参考视觉分析结果为空');
       const reportFilename = buildReportFilename(finalProjectName, credentials.model, project.outputLanguage);
       const reportPath = path.join(projectPaths.outputs, reportFilename);
-      await fs.writeFile(reportPath, report, 'utf8');
-      if (path.resolve(coreReportPath) !== path.resolve(reportPath)) await fs.rm(coreReportPath, { force: true });
-      if (project.lastReportFilename && project.lastReportFilename !== reportFilename) {
-        await fs.rm(path.join(projectPaths.outputs, project.lastReportFilename), { force: true });
-      }
+      let report = legacyReport;
 
-      // Prompt Source is extracted directly from ProjectRecord + original
-      // visual assets. It is deliberately independent from report markdown.
+      // Unified Visual Understanding is extracted directly from ProjectRecord
+      // and original assets. The final human report and Prompt Source are
+      // siblings rendered from the same Visual Decision Packet.
       let promptSourceObject: PromptSourceObject | undefined;
+      let visualDecisionPacket: VisualDecisionPacket | undefined;
       let promptSourceModelCallCount = 0;
       let promptSourceRunId: string | undefined;
       const promptSourceProject: ProjectRecord = {
@@ -502,7 +507,7 @@ export function createPipelineService(
         .filter((asset) => asset.status === 'ready' && /^image\//iu.test(asset.mimeType))
         .slice(0, 30);
       if (promptSourceAssets.length) {
-        const prompt = buildPromptSourceExtractionPrompt(
+        const prompt = buildUnifiedVisualUnderstandingPrompt(
           promptSourceProject,
           promptSourceAssets.map((asset) => asset.id),
         );
@@ -516,7 +521,7 @@ export function createPipelineService(
                 messages: [
                   {
                     role: 'system',
-                    content: '你是项目视觉证据提取器。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
+                    content: '你是 Unified Visual Understanding 引擎。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
                   },
                   { role: 'user', content: `${prompt}${repair}` },
                 ],
@@ -531,29 +536,20 @@ export function createPipelineService(
               signal: controller.signal,
               maximumDurationMs: 15 * 60_000,
             });
-            const normalized = normalizePromptSourceExtraction(
-              parseModelStructuredResponse(response.reportMarkdown),
-            );
-            validatePromptSourceExtraction(normalized);
-            promptSourceRunId = response.runId;
-            promptSourceObject = {
-              schemaVersion: '1.0',
-              projectId: project.id,
+            const normalized = normalizeUnifiedVisualUnderstanding({
+              project: promptSourceProject,
+              extracted: parseModelStructuredResponse(response.reportMarkdown),
               generatedAt: new Date().toISOString(),
-              ...normalized,
-              provenance: {
-                sourceKinds: ['project_record', 'original_asset', 'structured_analysis'],
-                structuredAnalysisRunId: response.runId,
-                sourceFingerprint: crypto
-                  .createHash('sha256')
-                  .update(JSON.stringify({
-                    projectId: project.id,
-                    assetIds: promptSourceAssets.map((asset) => asset.id),
-                    normalized,
-                  }))
-                  .digest('hex'),
-              },
-            };
+              modelId: credentials.model,
+              sourceRefs: promptSourceAssets.map((asset) => `asset:${asset.id}`),
+            });
+            promptSourceRunId = response.runId;
+            visualDecisionPacket = normalized.packet;
+            promptSourceObject = visualDecisionPacketToPromptSourceObject(normalized.packet);
+            promptSourceObject.provenance.structuredAnalysisRunId = response.runId;
+            report = compileVisualDecisionReport(normalized.packet, {
+              title: `${finalProjectName}视觉方案升级报告`,
+            });
           } catch (error) {
             const message = error instanceof Error ? error.message : String(error);
             repair = `\n\n上一次结构化输出未通过校验：${message}\n请保留正确字段，修复缺失字段，并重新输出完整裸 JSON。`;
@@ -567,6 +563,11 @@ export function createPipelineService(
             }
           }
         }
+      }
+      await fs.writeFile(reportPath, report, 'utf8');
+      if (path.resolve(coreReportPath) !== path.resolve(reportPath)) await fs.rm(coreReportPath, { force: true });
+      if (project.lastReportFilename && project.lastReportFilename !== reportFilename) {
+        await fs.rm(path.join(projectPaths.outputs, project.lastReportFilename), { force: true });
       }
 
       const completedAt = new Date().toISOString();
@@ -661,9 +662,12 @@ export function createPipelineService(
           project: updated,
           previousContext: previousVNext,
           structuredAnalysis: promptSourceObject
-            ? { promptSourceObject }
+            ? { promptSourceObject, visualDecisionPacket }
             : previousVNext?.promptSourceObject
-              ? { promptSourceObject: previousVNext.promptSourceObject }
+              ? {
+                promptSourceObject: previousVNext.promptSourceObject,
+                visualDecisionPacket: previousVNext.visualDecisionPacket,
+              }
               : undefined,
           structuredAnalysisRunId: promptSourceRunId
             || execution.result.runReport.reasoningRunId,
@@ -672,6 +676,13 @@ export function createPipelineService(
           path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
           vnextContext,
         );
+        if (visualDecisionPacket) {
+          await fs.writeFile(
+            path.join(projectPaths.root, 'project-context', 'visual-decision-packet.json'),
+            `${JSON.stringify(visualDecisionPacket, null, 2)}\n`,
+            'utf8',
+          );
+        }
         await projects.update(projectId, {
           visualContextVNextFilename: 'project-visual-context.vnext.json',
           visualContextVNextStatus: 'ready',

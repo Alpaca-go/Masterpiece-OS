@@ -189,3 +189,42 @@ test('structured Prompt Source enriches context while ProjectRecord keeps identi
   assert.equal(context.promptSourceObject?.lockedAssets.logoUsageMode, 'reference');
   assert.deepEqual(context.promptSourceObject?.sourceVisualState.brandMisreadRisks, ['tea room']);
 });
+
+test('validated Visual Decision Packet is persisted beside the compatibility Prompt Source', () => {
+  const base = buildProjectVisualContextVNext({ project: project() });
+  const packet = {
+    schemaVersion: '1.0',
+    projectId: 'project-1',
+    projectFacts: {},
+    lockedAssets: [],
+    assetInventory: {},
+    diagnosis: {},
+    creativeDecision: {},
+    abstractions: [],
+    mediaTranslations: {},
+    colorSystem: {},
+    materialSystem: [],
+    lightingSystem: {},
+    provenance: {
+      createdFrom: [],
+      generatedAt: '2026-07-30T00:00:00.000Z',
+      modelId: 'test',
+      sourceFingerprint: 'packet-fingerprint',
+    },
+    validation: {
+      hardFactStatus: 'block',
+      mode: 'exploration',
+      missingRequiredFacts: ['brandRole'],
+      conflicts: [],
+      executionDataStatus: 'insufficient',
+      missingExecutionFields: ['abstractions'],
+    },
+  };
+  const context = buildProjectVisualContextVNext({
+    project: project(),
+    previousContext: base,
+    structuredAnalysis: { visualDecisionPacket: packet },
+  });
+  assert.equal(context.visualDecisionPacket?.provenance.sourceFingerprint, 'packet-fingerprint');
+  assert.deepEqual(validateProjectVisualContextVNext(context), { valid: true, errors: [] });
+});

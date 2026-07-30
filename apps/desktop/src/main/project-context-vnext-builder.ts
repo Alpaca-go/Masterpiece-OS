@@ -3,6 +3,7 @@ import type {
   LockedAsset,
   PromptSourceObject,
   ProjectVisualContextVNext,
+  VisualDecisionPacket,
 } from '../../../../packages/project-contracts/src/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
@@ -265,6 +266,7 @@ export function buildProjectVisualContextVNext(
 ): ProjectVisualContextVNext {
   const { project } = input;
   const structured = record(input.structuredAnalysis);
+  const suppliedPacket = record(structured.visualDecisionPacket) as Partial<VisualDecisionPacket>;
   const brandCore = record(structured.brandCore);
   const structuredLocks = record(structured.lockedAssets);
   const visualIdentity = record(structured.visualIdentity);
@@ -389,6 +391,11 @@ export function buildProjectVisualContextVNext(
         : {}),
       sourceFingerprint: sourceFingerprint(fingerprintInput),
     },
+    ...(suppliedPacket.schemaVersion === '1.0' && suppliedPacket.projectId === project.id
+      ? { visualDecisionPacket: structuredClone(suppliedPacket as VisualDecisionPacket) }
+      : input.previousContext?.visualDecisionPacket
+        ? { visualDecisionPacket: structuredClone(input.previousContext.visualDecisionPacket) }
+        : {}),
   };
   const migrated = migrateProjectVisualContextVNext(context);
   return {
@@ -413,6 +420,13 @@ export function validateProjectVisualContextVNext(
   if (!Array.isArray(record(context.lockedAssets).mustPreserve)) errors.push('lockedAssets.mustPreserve must be an array');
   if (!Array.isArray(context.sourceAssetRefs)) errors.push('sourceAssetRefs must be an array');
   if (!record(context.provenance).sourceFingerprint) errors.push('provenance.sourceFingerprint is required');
+  if (
+    context.visualDecisionPacket
+    && (
+      record(context.visualDecisionPacket).schemaVersion !== '1.0'
+      || record(context.visualDecisionPacket).projectId !== context.projectId
+    )
+  ) errors.push('visualDecisionPacket must be schema 1.0 and belong to the project');
   return { valid: errors.length === 0, errors };
 }
 
