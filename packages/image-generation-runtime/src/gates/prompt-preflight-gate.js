@@ -18,6 +18,7 @@ export function runPromptPreflightGate({
   taskContract,
   projectContract,
   packagingTranslation,
+  spatialTranslation,
   otherProjectTerms = [],
   goldenFragments = [],
   requireProjectContract = true,
@@ -35,6 +36,18 @@ export function runPromptPreflightGate({
       'PROJECT_SPECIFICITY_TOO_LOW',
       'block',
       'No sufficiently specific approved creative decision reached the project contract.',
+    );
+  }
+  const thesis = projectContract?.upgradeThesis;
+  if (requireProjectContract && (
+    !String(thesis?.statement ?? '').trim()
+    || !list(thesis?.from).length
+    || !list(thesis?.to).length
+  )) {
+    add(
+      'UNIQUE_UPGRADE_THESIS_MISSING',
+      'block',
+      'A project-specific upgrade statement with explicit from/to decisions is required.',
     );
   }
   if (requireProjectContract
@@ -55,6 +68,49 @@ export function runPromptPreflightGate({
       'block',
       'A target expression reuses a forbidden literal legacy asset expression.',
     );
+  }
+  const positivePrompt = prompt
+    .split(/\r?\n/u)
+    .filter((line) => !/prohibition|negative|不得|禁止|避免|不要|不做|不形成|而非|do not|no large-scale/iu.test(line))
+    .join('\n');
+  for (const forbidden of list(projectContract?.mustTransform
+    ?.flatMap((item) => item?.forbiddenLiteralUse))) {
+    if (forbidden.length >= 2 && positivePrompt.includes(forbidden)) {
+      add(
+        'LITERAL_LEGACY_ASSET_REUSE',
+        'block',
+        `Positive generation instruction reuses forbidden literal legacy expression: ${forbidden}`,
+      );
+    }
+  }
+  if (requireProjectContract && taskContract?.deliverableFamily === 'space') {
+    const brandRole = String(projectContract?.projectIdentity?.brandRole ?? '').trim();
+    const relationships = list(spatialTranslation?.functionalRelationships);
+    const scenes = list(spatialTranslation?.sceneProgram);
+    if (!brandRole || !prompt.includes(brandRole) || relationships.length < 1 || scenes.length < 1) {
+      add(
+        'BRAND_ROLE_UNDEREXPRESSED',
+        'block',
+        'The spatial prompt must express the confirmed brand role through multiple functional relationships and scene programs.',
+      );
+    }
+    if (requireProjectContract && (
+      list(projectContract?.projectSpecificDecisions?.generationGoals).length < 2
+      || !Array.isArray(projectContract?.mustTransform)
+      || projectContract.mustTransform.length < 1
+      || relationships.length < 1
+    )) {
+      add(
+        'PROJECT_SPECIFICITY_TOO_LOW',
+        'block',
+        'Project decisions do not yet contain enough transformation, generation-goal, and spatial-relationship evidence.',
+      );
+      add(
+        'GENERIC_INDUSTRY_FALLBACK',
+        'block',
+        'The remaining instructions could be satisfied by a generic industry scene.',
+      );
+    }
   }
   const hasLockedLogo = projectContract?.mustPreserve?.some((item) =>
     /logo|标志|标识/iu.test(String(item?.value ?? '')));

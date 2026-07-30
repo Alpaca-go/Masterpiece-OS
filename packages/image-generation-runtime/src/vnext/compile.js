@@ -45,13 +45,15 @@ export function compileVNextImageGeneration(input) {
     route,
     adapter,
     projectPromptAsset: input.projectPromptAsset,
-    approvedCreativeDecision: input.approvedCreativeDecision
+    approvedCreativeDecision: input.approvedCreativeDecision,
+    userConfirmedVisualDecision: input.userConfirmedVisualDecision,
   });
   compiledPrompt.preflightReport = runPromptPreflightGate({
     finalPrompt: compiledPrompt.finalPrompt,
     taskContract,
     projectContract: compiledPrompt.projectGenerationContract,
     packagingTranslation: compiledPrompt.packagingTranslation,
+    spatialTranslation: compiledPrompt.spatialTranslation,
     requireProjectContract: Boolean(input.projectContext?.visualDecisionPacket),
   });
   const payload = adapter.compile(compiledPrompt);

@@ -6,9 +6,10 @@ import {
 } from '../../../creative-production-runtime/src/project-generation-contract.js';
 import { buildPackagingTranslation } from '../../../creative-production-runtime/src/packaging-translation.js';
 import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
+import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '4.1.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '4.2.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -330,6 +331,7 @@ export function compileVNextPrompt({
   adapter,
   projectPromptAsset,
   approvedCreativeDecision,
+  userConfirmedVisualDecision,
 }) {
   if (projectContext.schemaVersion !== '2.0') {
     throw new Error('vNext prompt compiler requires Project Visual Context 2.0');
@@ -350,7 +352,13 @@ export function compileVNextPrompt({
     templates.map((template) => template.sections?.[key] ?? []),
   );
   const source = projectContext.promptSourceObject;
-  const packet = projectContext.visualDecisionPacket;
+  const confirmedDecision = applyUserConfirmedVisualDecision(
+    projectContext.visualDecisionPacket,
+    userConfirmedVisualDecision,
+    taskContract.projectId,
+    taskContract.deliverableFamily,
+  );
+  const packet = confirmedDecision.packet;
   if (packet && packet.projectId !== taskContract.projectId) {
     throw new Error('Visual Decision Packet and Task Contract belong to different projects');
   }
@@ -410,9 +418,13 @@ export function compileVNextPrompt({
     ? assertProjectSpecificGenerationContract(compileProjectSpecificGenerationContract({
       visualDecisionPacket: packet,
       deliverable: taskContract.deliverableFamily,
-      approvedCreativeDecision: approvedCreativeDecision || projectContext.approvedCreativeDecision,
-      approvedCreativeDecisionSourcePath: approvedCreativeDecision || projectContext.approvedCreativeDecision
-        ? 'outputs/creative_decision.json'
+      approvedCreativeDecision: confirmedDecision.approvedCreativeDecision
+        || approvedCreativeDecision
+        || projectContext.approvedCreativeDecision,
+      approvedCreativeDecisionSourcePath: confirmedDecision.approvedCreativeDecision
+        ? `user_confirmed_visual_decision:${confirmedDecision.confirmation.id}`
+        : approvedCreativeDecision || projectContext.approvedCreativeDecision
+          ? 'outputs/creative_decision.json'
         : '',
     }))
     : null;
@@ -460,6 +472,8 @@ export function compileVNextPrompt({
       sourceMap: packagingContract.sourceMap,
       projectGenerationContract,
       packagingTranslation,
+      effectiveVisualDecisionPacket: packet,
+      userConfirmedVisualDecision: confirmedDecision.confirmation,
       packagingPromptContractVersion: packagingContract.version,
       completeness: {
         complete: true,
@@ -604,15 +618,8 @@ export function compileVNextPrompt({
       strictPacket,
     ),
     createBlock(
-      'professional_contract',
-      taskContract.deliverableFamily === 'space' ? '06 Spatial Contract' : '06 Professional Contract',
-      templateSections('professionalRequirements'),
-      templates.map((item) => item.id),
-      'Make the requested result physically credible, usable and professionally resolved.',
-    ),
-    createBlock(
       'brand_translation',
-      '07 Brand Translation',
+      '06 Brand Translation',
       [
         packetSource?.lockedAssets?.map((item) => `Locked — preserve ${item.type}: ${item.value}`),
         packetSource ? packetTransformationItems(packetSource.abstractions, packetSource.spatial) : [],
@@ -646,7 +653,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'color_system',
-      '08 Color System',
+      '07 Color System',
       projectDecisions.specificity?.status === 'ready'
         ? projectGenerationContract.sharedVisualRules.colorBehavior
           .map((item) => `Approved project color system: ${item}`)
@@ -659,7 +666,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'material_system',
-      '09 Material System',
+      '08 Material System',
       projectDecisions.specificity?.status === 'ready'
         ? projectGenerationContract.sharedVisualRules.materialBehavior
           .map((item) => `Approved project material behavior: ${item}`)
@@ -678,7 +685,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'lighting_system',
-      '10 Lighting System',
+      '09 Lighting System',
       [
         projectDecisions.specificity?.status === 'ready'
           ? projectGenerationContract.sharedVisualRules.lightingBehavior
@@ -702,7 +709,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'camera_composition',
-      '11 Camera, Composition and Realism',
+      '10 Camera, Composition and Realism',
       [
         templateSections('composition'),
         projectContext.visualIdentity.compositionBehavior,
@@ -714,6 +721,13 @@ export function compileVNextPrompt({
       ],
       [...templates.map((item) => item.id), 'project_context.visualIdentity.compositionBehavior'],
       'Use a credible commercial camera view with controlled perspective, hierarchy, depth and scale.',
+    ),
+    createBlock(
+      'professional_contract',
+      taskContract.deliverableFamily === 'space' ? '11 Spatial Production Contract' : '11 Professional Production Contract',
+      templateSections('professionalRequirements'),
+      templates.map((item) => item.id),
+      'Make the requested result physically credible, usable and professionally resolved.',
     ),
     createBlock(
       'logo_text_and_negatives',
@@ -769,6 +783,15 @@ export function compileVNextPrompt({
   const renderedBlocks = blocks.map(renderBlock);
   const finalPrompt = adapter.orderSections(renderedBlocks).join('\n\n');
   const sourceMap = Object.fromEntries(blocks.map((block) => [block.id, [...block.sources]]));
+  if (confirmedDecision.confirmation) {
+    for (const blockId of ['project_identity', 'upgrade_thesis', 'tone_boundary', 'brand_translation',
+      'color_system', 'material_system', 'lighting_system']) {
+      sourceMap[blockId] = [
+        `user_confirmed_visual_decision:${confirmedDecision.confirmation.id}`,
+        ...sourceMap[blockId],
+      ];
+    }
+  }
   const traceValue = {
     projectContextFingerprint: projectContext.provenance.sourceFingerprint,
     promptSourceFingerprint: packetSource?.fingerprint ?? source?.provenance?.sourceFingerprint ?? null,
@@ -799,6 +822,9 @@ export function compileVNextPrompt({
     blocks,
     sourceMap,
     projectGenerationContract,
+    spatialTranslation: packetSource?.spatial || null,
+    effectiveVisualDecisionPacket: packet,
+    userConfirmedVisualDecision: confirmedDecision.confirmation,
     completeness: {
       complete: true,
       requiredBlockIds: [...REQUIRED_BLOCK_IDS],

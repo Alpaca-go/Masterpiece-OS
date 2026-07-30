@@ -15,6 +15,7 @@ const projectId = process.env.MASTERPIECE_SMOKE_PROJECT_ID?.trim() || '';
 const textProfileId = process.env.MASTERPIECE_SMOKE_TEXT_PROFILE_ID?.trim() || '';
 const imageProfileId = process.env.MASTERPIECE_SMOKE_IMAGE_PROFILE_ID?.trim() || '';
 const reuseAnalysis = process.env.MASTERPIECE_SMOKE_REUSE_ANALYSIS === '1';
+const dryRun = process.env.MASTERPIECE_SMOKE_DRY_RUN === '1';
 const deliverableFamily = process.env.MASTERPIECE_SMOKE_DELIVERABLE === 'packaging'
   ? 'packaging'
   : 'space';
@@ -29,7 +30,7 @@ function result(value: unknown): void {
 }
 
 async function main(): Promise<void> {
-  if (!projectId || !textProfileId || !imageProfileId) {
+  if (!projectId || !textProfileId || (!dryRun && !imageProfileId)) {
     throw new Error(
       '缺少 MASTERPIECE_SMOKE_PROJECT_ID / MASTERPIECE_SMOKE_TEXT_PROFILE_ID / MASTERPIECE_SMOKE_IMAGE_PROFILE_ID。',
     );
@@ -168,9 +169,10 @@ async function main(): Promise<void> {
 
   const prompt = compilation.compiledPrompt.finalPrompt;
   const projectContract = compilation.compiledPrompt.projectGenerationContract;
+  const effectivePacket = compilation.compiledPrompt.effectiveVisualDecisionPacket || packet;
   const approvedSpecificityReady =
     projectContract?.projectSpecificDecisions?.specificity?.status === 'ready';
-  const firstAbstraction = packet.abstractions[0];
+  const firstAbstraction = effectivePacket.abstractions[0];
   const sharedSignalGroups = [
     { id: 'brand', alternatives: [brandName] },
     { id: 'industry', alternatives: [packet.projectFacts.industry.value] },
@@ -201,10 +203,10 @@ async function main(): Promise<void> {
           ? [projectContract.upgradeThesis.statement]
           : [packet.creativeDecision.uniqueUpgradeThesis],
       },
-      { id: 'target-worldview', alternatives: packet.creativeDecision.targetWorldview },
+      { id: 'target-worldview', alternatives: effectivePacket.creativeDecision.targetWorldview },
       { id: 'nonliteral-translation', alternatives: firstAbstraction?.forbiddenLiteralUse || [] },
-      { id: 'spatial-concept', alternatives: [packet.mediaTranslations.spatial.spatialConcept] },
-      { id: 'structure-language', alternatives: packet.mediaTranslations.spatial.structureLanguage },
+      { id: 'spatial-concept', alternatives: [effectivePacket.mediaTranslations.spatial.spatialConcept] },
+      { id: 'structure-language', alternatives: effectivePacket.mediaTranslations.spatial.structureLanguage },
       {
         id: 'color-system',
         alternatives: approvedSpecificityReady
@@ -238,6 +240,26 @@ async function main(): Promise<void> {
       missingPromptSignals,
       conflictCount: compilation.compiledPrompt.completeness.conflictCount,
     })}`);
+  }
+  if (dryRun) {
+    if (compilation.compiledPrompt.preflightReport?.status !== 'pass') {
+      throw new Error(`dry-run preflight 未通过：${JSON.stringify(
+        compilation.compiledPrompt.preflightReport,
+      )}`);
+    }
+    result({
+      userAuthorized: true,
+      dryRun: true,
+      projectId,
+      taskId: compilation.taskContract.taskId,
+      artifactDirectory: compilation.artifactDirectory,
+      promptCharacters: [...prompt].length,
+      missingPromptSignals,
+      preflightReport: compilation.compiledPrompt.preflightReport,
+      logoUsageMode: compilation.taskContract.logoUsageMode,
+      referenceAssetIds: compilation.taskContract.referenceAssetIds,
+    });
+    return;
   }
 
   const imageStartedAt = Date.now();

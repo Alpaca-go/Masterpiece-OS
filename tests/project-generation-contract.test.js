@@ -13,7 +13,7 @@ test('project generation contract compiles grounded identity, upgrade and proven
   });
   assert.equal(contract.validation.status, 'ready');
   assert.equal(contract.projectIdentity.brandRole, '高端医美全链生态平台');
-  assert.equal(contract.provenance.compilerVersion, '1.1.0');
+  assert.equal(contract.provenance.compilerVersion, '1.2.0');
   assert.ok(contract.mustTransform[0].targetExpression.includes('半透明套封'));
 });
 

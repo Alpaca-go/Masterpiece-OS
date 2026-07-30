@@ -25,6 +25,7 @@ export {
   generateGoldenBacktraceAudit,
   renderGoldenBacktraceAuditMarkdown,
 } from './golden-backtrace-audit.js';
+export { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 export {
   VNEXT_DELIVERABLE_VALIDATOR_ID,
   VNEXT_DELIVERABLE_VALIDATOR_VERSION,

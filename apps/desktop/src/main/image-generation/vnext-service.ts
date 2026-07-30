@@ -189,6 +189,10 @@ export function createVNextImageGenerationService(
       path.join(paths.root, 'outputs', 'creative_decision.json'),
       'utf8',
     ).then((value) => JSON.parse(value) as Record<string, unknown>).catch(() => undefined);
+    const userConfirmedVisualDecision = await fs.readFile(
+      path.join(paths.root, 'project-context', 'user-confirmed-visual-decision.json'),
+      'utf8',
+    ).then((value) => JSON.parse(value) as Record<string, unknown>).catch(() => undefined);
     const projectPromptAsset = await fs.readFile(
       path.join(
         paths.root,
@@ -203,6 +207,7 @@ export function createVNextImageGenerationService(
       model: input.model,
       projectPromptAsset,
       approvedCreativeDecision,
+      userConfirmedVisualDecision,
       task: {
         ...input.task,
         projectId: input.projectId,
@@ -223,6 +228,13 @@ export function createVNextImageGenerationService(
       writeJson(path.join(artifactDirectory, 'task-contract.json'), result.taskContract),
       writeJson(path.join(artifactDirectory, 'compiled-prompt.json'), result.compiledPrompt),
       writeJson(path.join(artifactDirectory, 'model-payload.json'), result.payload),
+      writeJson(path.join(artifactDirectory, 'provider-payload-preview.json'), result.payload),
+      ...(result.compiledPrompt.effectiveVisualDecisionPacket ? [
+        writeJson(
+          path.join(artifactDirectory, 'effective-visual-decision-packet.json'),
+          result.compiledPrompt.effectiveVisualDecisionPacket,
+        ),
+      ] : []),
       writeJson(path.join(artifactDirectory, 'trace.json'), {
         projectId: input.projectId,
         taskId: result.taskContract.taskId,

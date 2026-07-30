@@ -852,6 +852,12 @@ export interface VNextCompiledPrompt {
     sources: string[];
   }>;
   sourceMap: Record<string, string[]>;
+  effectiveVisualDecisionPacket?: unknown;
+  userConfirmedVisualDecision?: {
+    id: string;
+    sourceDocument?: string;
+    sourceFingerprint: string;
+  } | null;
   completeness: {
     complete: boolean;
     requiredBlockIds: string[];

@@ -1,0 +1,158 @@
+{
+  "schemaVersion": "1.0",
+  "projectIdentity": {
+    "brandName": "九州美学",
+    "industry": "高端东方美学生活方式品牌",
+    "products": [
+      "名片",
+      "手提袋",
+      "标签/封口贴",
+      "礼盒",
+      "包装"
+    ]
+  },
+  "identityLocks": [
+    "原始 Logo (图形标及'九州美学'字形) 绝对锁定，不得修改、重绘、拆解、替换或改变内部结构。",
+    "品牌名称：'九州美学' (Jointown Aesthetics)。",
+    "核心 Slogan：'精琢每一片翎羽'。"
+  ],
+  "valuableAssets": [
+    "品牌名与 Logo 的独特识别度。",
+    "核心文案 '精琢每一片翎羽' 所传达的工匠精神。",
+    "几何花瓣/放射图形 (Asset e32408d4) 中蕴含的抽象化与微观几何潜力。"
+  ],
+  "currentProblems": [
+    "Logo 应用僵硬，缺乏呼吸感，常置于杂乱背景。",
+    "辅助图形干扰：具象孔雀插画 (Asset abba5eaa) 视觉过强，稀释品牌识别。",
+    "老气与俗艳：高饱和紫色搭配写实孔雀，像婚庆或低端旅游纪念品。",
+    "缺乏现代感：视觉语言陈旧，缺乏当代极简主义和几何构成感。",
+    "图形不统一：写实插画、简单线条、生硬几何体混杂，缺乏系统性。",
+    "字体设计业余：'笔锋软化' (Asset c0b498b1) 破坏了汉字骨架美。",
+    "Mockup 堆砌：胸针、手提包等样机缺乏真实场景逻辑，降低调性。"
+  ],
+  "upgradePrinciples": [
+    "从 '繁复孔雀图腾' 升级为 '流光翎羽几何'。",
+    "去具象化：删除写实孔雀，提取羽毛微观鳞片结构。",
+    "微观几何：建立 '翎羽矩阵' 超级纹样系统。",
+    "虹光色泽：通过材质 (烫银、镭射、珠光) 而非单一色彩体现光泽。",
+    "克制用色：引入深午夜紫、暖米白、深灰，减少高饱和紫色大面积使用。",
+    "留白呼吸：大幅增加留白，体现高端与精密感。"
+  ],
+  "oldPatternsToAvoid": [
+    "写实孔雀插画 (Asset abba5eaa, ddb219ec)。",
+    "高饱和亮紫色作为主色 (Asset 88a16d72)。",
+    "'笔锋软化' 的字体设计处理 (Asset c0b498b1)。",
+    "无意义的 Mockup 堆砌 (Asset 84d678ad, bd76c510)。",
+    "满版印花和过度装饰 (Asset 1c3bbfdf)。"
+  ],
+  "creativeFreedom": [
+    "辅助图形：全面重设计为 '翎羽矩阵' 几何纹样。",
+    "色彩系统：引入深紫、虹光银、暖米白、深灰。",
+    "字体选择：替换为现代宋体 (如思源宋体)，增加字间距。",
+    "摄影风格：转向微距、抽象、光影流转。",
+    "材质工艺：引入击凸、烫银、UV、特种纸触感。"
+  ],
+  "assetReadingSummary": [
+    {
+      "assetId": "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+      "summary": "写实紫色孔雀插画，视觉冲击过强，导致品牌老气俗艳。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "f275926e-d3b5-4916-b5bb-b26c5301d674",
+      "summary": "品牌概念推导图（9+孔雀），展示了原始意象来源。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "b1b50608-1579-453b-9964-28f95890723f",
+      "summary": "Logo 图形标的网格构建图，展示了 Locked Logo 的几何结构。",
+      "recommendedUsage": "identity_reference"
+    },
+    {
+      "assetId": "c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+      "summary": "字体设计展示，'笔锋软化'处理显得业余，破坏汉字结构。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+      "summary": "字体网格规范图，展示了原始排版尝试。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+      "summary": "Logo 组合规范展示，包含图形标与标准字，是核心身份资产。",
+      "recommendedUsage": "identity_reference"
+    },
+    {
+      "assetId": "88a16d72-55ee-4796-a88b-ef9d89df485e",
+      "summary": "色彩规范图，定义了高饱和 'Peacock Violet'，需升级。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "e32408d4-a320-4b0e-991f-3bd022566196",
+      "summary": "几何花瓣/放射图形尝试，虽未完成但指明了抽象化方向。",
+      "recommendedUsage": "structure_reference"
+    },
+    {
+      "assetId": "fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+      "summary": "辅助图形（紫色宝石花朵），与翎羽主题关联弱。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "34a2f52b-bba3-4494-984e-4d79d798567d",
+      "summary": "3D Logo 图形展示，确立了图形标的三维形态参考。",
+      "recommendedUsage": "identity_reference"
+    },
+    {
+      "assetId": "57872e78-f607-4c22-ad32-9449aa6395dd",
+      "summary": "系列海报设计，使用了抽象羽毛图形，但排版拥挤。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+      "summary": "空间导视应用，展示了 Logo 在墙面的应用效果。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+      "summary": "礼盒与手提袋包装，展示了基础包装结构。",
+      "recommendedUsage": "structure_reference"
+    },
+    {
+      "assetId": "84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+      "summary": "西装胸针 Mockup，属于无意义堆砌，与核心业务关联弱。",
+      "recommendedUsage": "exclude"
+    },
+    {
+      "assetId": "bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+      "summary": "信封与名片设计，展示了 VI 延展。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+      "summary": "亚克力发光标识，展示了空间材质应用。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "41702497-d809-487a-a793-5f7b94fe4b55",
+      "summary": "名片设计，展示了纸张与 Logo 的组合。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+      "summary": "纸杯设计，底部有羽毛图案，属于过度包装案例。",
+      "recommendedUsage": "reading_only"
+    },
+    {
+      "assetId": "bd76c510-429b-4e06-8f17-53e67583f82d",
+      "summary": "金色手拿包置于羽毛上，属于 Mockup 堆砌，调性不符。",
+      "recommendedUsage": "exclude"
+    },
+    {
+      "assetId": "ddb219ec-0c32-47b1-8abf-9bdb81f290c4",
+      "summary": "户外广告牌，使用了具象孔雀与人物，视觉老气。",
+      "recommendedUsage": "reading_only"
+    }
+  ],
+  "generatedAt": "2026-07-29T12:48:45.892Z"
+}

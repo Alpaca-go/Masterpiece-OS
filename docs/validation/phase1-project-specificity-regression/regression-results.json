@@ -8,7 +8,7 @@
       "status": "pass",
       "preflight": "pass",
       "modelCalled": false,
-      "notes": "批准 Creative Decision 已进入 Project Contract；旧 Packet 的 Peacock Violet、哑光白、金属金和紫色亚克力不再覆盖批准决策；Logo 为 post_composite，模型参考图为空。"
+      "notes": "用户确认的 Visual Decision 已进入 Effective Packet 与 Project Contract；项目身份、升级命题、服务链、抽象转译和色材光位于公共生产模板之前；Logo 为 post_composite，模型参考图为空。"
     },
     {
       "id": "jiuzhou-packaging-dry-run",
@@ -66,6 +66,22 @@
       "logoUsageMode": "post_composite",
       "referenceAssetIds": [],
       "notes": "无 Logo、金色装饰、紫色灯带和大尺度羽片墙；但暖白石材占比仍高，鳞羽压纹仍较可读，视觉验收只算部分改善。首次错误层已修复，剩余偏差归入模型服从/Model Adapter 观察，不在本次越层修改。"
+    },
+    {
+      "id": "jiuzhou-space-real-provider-after-visual-decision-recovery",
+      "kind": "real_provider",
+      "status": "partial_pass",
+      "provider": "volcengine",
+      "model": "doubao-seedream-5-0-pro-260628",
+      "modelCallCount": 1,
+      "durationMs": 83226,
+      "runId": "d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "compilationId": "vnext-task-d0997d7e-29ec-493c-9681-d1185995e325",
+      "preflight": "pass",
+      "logoUsageMode": "post_composite",
+      "referenceAssetIds": [],
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\d7fe0976-018c-41e9-9759-bcaf45e3acf3\\images\\image-01.png",
+      "notes": "结构性回归通过：无孔雀/羽毛、紫色灯带、金色装饰、大 Logo 墙，入口—接待—咨询层级、连续曲面、半透明界面和后合成留白可见。项目气质仍仅部分通过：画面偏暖白极简诊所/办公室，旗舰展示和全链生态平台的独特识别不足。本任务按约束不再采样。"
     }
   ]
 }

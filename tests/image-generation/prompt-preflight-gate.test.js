@@ -70,3 +70,57 @@ test('preflight exposes project specificity, legacy reuse, packaging evidence an
     'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED',
   ]) assert.equal(codes.has(code), true, code);
 });
+
+test('spatial preflight requires a unique upgrade thesis and functional brand-role expression', () => {
+  const packet = phase1Packet();
+  const projectContract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'space',
+  });
+  projectContract.upgradeThesis.statement = '';
+  const report = runPromptPreflightGate({
+    finalPrompt: 'Generic reception interior.',
+    taskContract: { deliverableFamily: 'space', logoUsageMode: 'post_composite' },
+    projectContract,
+    spatialTranslation: {
+      functionalRelationships: [],
+      sceneProgram: [],
+    },
+  });
+  const codes = new Set(report.findings.map((item) => item.code));
+  assert.equal(codes.has('UNIQUE_UPGRADE_THESIS_MISSING'), true);
+  assert.equal(codes.has('BRAND_ROLE_UNDEREXPRESSED'), true);
+});
+
+test('literal legacy asset scan ignores explicit prohibitions but blocks positive reuse', () => {
+  const packet = phase1Packet();
+  const projectContract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'space',
+  });
+  const forbidden = projectContract.mustTransform[0].forbiddenLiteralUse[0];
+  const base = {
+    taskContract: { deliverableFamily: 'space', logoUsageMode: 'post_composite' },
+    projectContract,
+    spatialTranslation: {
+      functionalRelationships: ['入口连接展示与接待', '咨询连接系统服务'],
+      sceneProgram: ['入口识别', '专业咨询'],
+    },
+  };
+  const prohibition = runPromptPreflightGate({
+    ...base,
+    finalPrompt: `${projectContract.projectIdentity.brandRole}\n禁止${forbidden}`,
+  });
+  assert.equal(
+    prohibition.findings.some((item) =>
+      item.code === 'LITERAL_LEGACY_ASSET_REUSE'
+      && item.detail.includes('Positive generation instruction')),
+    false,
+  );
+  const positive = runPromptPreflightGate({
+    ...base,
+    finalPrompt: `${projectContract.projectIdentity.brandRole}\n主体装饰使用${forbidden}`,
+  });
+  assert.equal(positive.findings.some((item) =>
+    item.code === 'LITERAL_LEGACY_ASSET_REUSE'), true);
+});

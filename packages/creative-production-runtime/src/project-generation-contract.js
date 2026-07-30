@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-export const PROJECT_GENERATION_CONTRACT_COMPILER_VERSION = '1.1.0';
+export const PROJECT_GENERATION_CONTRACT_COMPILER_VERSION = '1.2.0';
 
 function list(...values) {
   const result = [];
@@ -221,9 +221,7 @@ export function compileProjectSpecificGenerationContract(input = {}) {
         ? projectSpecificDecisions.colorSystem
         : colorRules(packet),
       materialBehavior: hasApprovedDecision
-        ? deliverable === 'packaging'
-          ? projectSpecificDecisions.materialSystem
-          : projectSpecificDecisions.generationGoals
+        ? projectSpecificDecisions.materialSystem
         : list((packet.materialSystem || []).flatMap((item) =>
           [item?.material, item?.behavior, item?.brandRole])),
       graphicBehavior: hasApprovedDecision
@@ -233,7 +231,12 @@ export function compileProjectSpecificGenerationContract(input = {}) {
         ? projectSpecificDecisions.generationGoals
         : list(packet.mediaTranslations?.spatial?.structureLanguage),
       lightingBehavior: hasApprovedDecision
-        ? projectSpecificDecisions.generationGoals
+        ? list(
+          packet.lightingSystem?.source,
+          packet.lightingSystem?.contrast,
+          packet.lightingSystem?.interactionWithMaterials,
+          packet.lightingSystem?.forbidden,
+        )
         : list(
           packet.lightingSystem?.source,
           packet.lightingSystem?.contrast,

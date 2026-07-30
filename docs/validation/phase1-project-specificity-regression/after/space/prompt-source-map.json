@@ -9,23 +9,22 @@
     "task_contract"
   ],
   "project_identity": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "project_record",
     "structured_analysis"
   ],
   "upgrade_thesis": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "visual_decision_packet.creativeDecision",
     "project_generation_contract.projectSpecificDecisions"
   ],
   "tone_boundary": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "visual_decision_packet.creativeDecision.toneBoundaries",
     "project_context.visualIdentity.tone"
   ],
-  "professional_contract": [
-    "family.space",
-    "subtype.space.reception",
-    "shot.space.entrance_three_quarter_wide"
-  ],
   "brand_translation": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "locked_assets",
     "visual_decision_packet.abstractions",
     "visual_decision_packet.mediaTranslations.spatial",
@@ -33,14 +32,17 @@
     "project_context.visualIdentity"
   ],
   "color_system": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "visual_decision_packet.colorSystem",
     "visual_decision_packet.lockedAssets"
   ],
   "material_system": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "visual_decision_packet.materialSystem",
     "project_context.visualIdentity.materialBehavior"
   ],
   "lighting_system": [
+    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "visual_decision_packet.lightingSystem",
     "project_context.visualIdentity.lightingBehavior"
   ],
@@ -49,6 +51,11 @@
     "subtype.space.reception",
     "shot.space.entrance_three_quarter_wide",
     "project_context.visualIdentity.compositionBehavior"
+  ],
+  "professional_contract": [
+    "family.space",
+    "subtype.space.reception",
+    "shot.space.entrance_three_quarter_wide"
   ],
   "logo_text_and_negatives": [
     "task_contract.mustAvoid",

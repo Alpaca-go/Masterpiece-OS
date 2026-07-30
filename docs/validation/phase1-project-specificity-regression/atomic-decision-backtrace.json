@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "source": "user_confirmation:九州美学空间专属性恢复审计与修复任务文档-v1.0",
+  "firstLossLayer": "visual_decision_packet",
+  "decisions": [
+    {"id":"brand-role","decision":"高端医美全链生态平台","effectivePacket":"projectFacts.brandRole","contract":"projectIdentity.brandRole","promptBlock":"project_identity","payload":"prompt"},
+    {"id":"service-chain","decision":"展示—接待—咨询—系统服务连续关系","effectivePacket":"mediaTranslations.spatial.functionalRelationships","contract":"deliverableSuccessCriteria.space","promptBlock":"brand_translation","payload":"prompt"},
+    {"id":"upgrade","decision":"从具象孔雀羽毛与通用奢华前台升级","effectivePacket":"creativeDecision.uniqueUpgradeThesis","contract":"upgradeThesis","promptBlock":"upgrade_thesis","payload":"prompt"},
+    {"id":"east-not-classical","decision":"东方但不古典","effectivePacket":"creativeDecision.toneBoundaries","contract":"toneBoundaries","promptBlock":"tone_boundary","payload":"prompt"},
+    {"id":"premium-not-luxury","decision":"高端但不奢华堆砌","effectivePacket":"creativeDecision.toneBoundaries","contract":"toneBoundaries","promptBlock":"tone_boundary","payload":"prompt"},
+    {"id":"professional-not-cold","decision":"专业但不冰冷","effectivePacket":"creativeDecision.toneBoundaries","contract":"toneBoundaries","promptBlock":"tone_boundary","payload":"prompt"},
+    {"id":"vital-not-literal","decision":"有生命感但不具象仿生","effectivePacket":"creativeDecision.toneBoundaries","contract":"toneBoundaries","promptBlock":"tone_boundary","payload":"prompt"},
+    {"id":"legacy-abstraction","decision":"只保留生长、轻盈、层级和有序展开","effectivePacket":"abstractions","contract":"mustTransform","promptBlock":"brand_translation","payload":"prompt"},
+    {"id":"anti-fallback","decision":"禁止孔雀主题、羽毛墙、羽片屏风和白紫金模板","effectivePacket":"diagnosis.brandMisreadRisks + abstractions.forbiddenLiteralUse","contract":"brandMisreadRisks + mustTransform","promptBlock":"logo_text_and_negatives","payload":"prompt"},
+    {"id":"logo-route","decision":"Logo 预留干净识别区并后合成","effectivePacket":"mediaTranslations.spatial.brandIntegration","contract":"mustPreserve","promptBlock":"logo_text_and_negatives","payload":"referenceAssetIds=[]"}
+  ]
+}

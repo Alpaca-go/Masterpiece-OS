@@ -257,7 +257,10 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     'controlled post-compositing',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.1.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.2.0');
+  const blockIds = result.compiledPrompt.blocks.map((block) => block.id);
+  assert.ok(blockIds.indexOf('brand_translation') < blockIds.indexOf('professional_contract'));
+  assert.ok(blockIds.indexOf('lighting_system') < blockIds.indexOf('professional_contract'));
   assert.deepEqual(result.compiledPrompt.completeness.coverage, {
     hardFacts: 1,
     upgradeThesis: 1,

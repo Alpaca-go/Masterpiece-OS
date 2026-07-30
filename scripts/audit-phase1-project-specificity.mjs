@@ -95,6 +95,17 @@ const context = await readJson(path.join(projectRoot, 'project-context', 'projec
 const packet = await readJson(path.join(projectRoot, 'project-context', 'visual-decision-packet.json'));
 context.visualDecisionPacket = packet;
 const approvedDecision = await readJson(path.join(projectRoot, 'outputs', 'creative_decision.json'));
+const userConfirmedVisualDecision = await readJson(path.join(
+  projectRoot,
+  'project-context',
+  'user-confirmed-visual-decision.json',
+));
+const visualUnderstandingCore = await readJson(path.join(
+  projectRoot,
+  'creative-session',
+  'reading',
+  'creative-understanding.json',
+));
 const activePointer = await readJson(path.join(
   projectRoot,
   'creative-session',
@@ -123,6 +134,7 @@ for (const family of ['space', 'packaging']) {
   const result = compileVNextImageGeneration({
     projectContext: context,
     approvedCreativeDecision: approvedDecision,
+    userConfirmedVisualDecision,
     task: taskInput(oldTask),
     now: '2026-07-30T00:00:00.000Z',
   });
@@ -133,6 +145,7 @@ for (const family of ['space', 'packaging']) {
         'The legacy space compiler did not assemble a Project-Specific Generation Contract.',
       ),
     'visual-decision-packet.json': packet,
+    'visual-understanding-core.json': visualUnderstandingCore,
     'spatial-translation.json': packet.mediaTranslations?.spatial
       || missingArtifact('spatial-translation.json', 'No spatial translation was stored.'),
     'packaging-translation.json': oldCompiled.packagingTranslation
@@ -146,16 +159,21 @@ for (const family of ['space', 'packaging']) {
         'preflight-report.json',
         'The legacy compiler did not run project preflight for this branch.',
       ),
+    'provider-payload-preview.json': await readJson(path.join(oldCompilationRoot, 'model-payload.json'))
+      .catch(() => missingArtifact('provider-payload-preview.json', 'No provider payload preview was stored.')),
   };
   const afterArtifacts = {
     'project-specific-generation-contract.json': result.compiledPrompt.projectGenerationContract,
-    'visual-decision-packet.json': packet,
-    'spatial-translation.json': packet.mediaTranslations?.spatial,
+    'visual-decision-packet.json': result.compiledPrompt.effectiveVisualDecisionPacket || packet,
+    'visual-understanding-core.json': visualUnderstandingCore,
+    'spatial-translation.json': result.compiledPrompt.spatialTranslation
+      || packet.mediaTranslations?.spatial,
     'packaging-translation.json': result.compiledPrompt.packagingTranslation
       || packet.mediaTranslations?.packaging,
     'generation-blueprint.json': activeBlueprint,
     'prompt-source-map.json': result.compiledPrompt.sourceMap,
     'preflight-report.json': result.compiledPrompt.preflightReport,
+    'provider-payload-preview.json': result.payload,
   };
   for (const [filename, value] of Object.entries(beforeArtifacts)) {
     await writeJson(path.join(auditRoot, 'before', family, filename), value);
@@ -220,6 +238,15 @@ for (const family of ['space', 'packaging']) {
       observedRegression: attempt.observedRegression,
     });
   }
+}
+
+const peacockCase = failCases.find((item) =>
+  item.failedRunId === 'ea21d802-a334-486e-8892-035dbb963e7c');
+const genericPartialCase = failCases.find((item) =>
+  item.failedRunId === '8551a8c0-ea48-4765-a27f-c7c2ff140ae7');
+if (peacockCase) failCases.push({ ...peacockCase, id: 'jiuzhou-space-peacock-theme-fail' });
+if (genericPartialCase) {
+  failCases.push({ ...genericPartialCase, id: 'jiuzhou-space-generic-medical-partial' });
 }
 
 await writeJson(path.join(auditRoot, 'regression-fail-cases.json'), {
