@@ -40,6 +40,17 @@ function colorRules(packet) {
   );
 }
 
+function toneBoundaries(decision) {
+  const explicit = (Array.isArray(decision?.toneBoundaries) ? decision.toneBoundaries : [])
+    .flatMap((item) => item?.target
+      ? [{ target: String(item.target).trim(), avoid: list(item.avoid) }]
+      : []);
+  if (explicit.length) return explicit;
+
+  const avoid = list(decision?.strategicNegatives, decision?.upgradeFrom);
+  return list(decision?.targetWorldview).map((target) => ({ target, avoid }));
+}
+
 export function validateProjectSpecificGenerationContract(contract) {
   const missing = [];
   if (!contract?.projectIdentity?.brandName) missing.push('projectIdentity.brandName');
@@ -138,8 +149,7 @@ export function compileProjectSpecificGenerationContract(input = {}) {
     },
     mustPreserve,
     mustTransform,
-    toneBoundaries: (Array.isArray(decision.toneBoundaries) ? decision.toneBoundaries : [])
-      .flatMap((item) => item?.target ? [{ target: String(item.target).trim(), avoid: list(item.avoid) }] : []),
+    toneBoundaries: toneBoundaries(decision),
     brandMisreadRisks: (packet.diagnosis?.brandMisreadRisks || []).map((risk) => ({
       code: String(risk?.code ?? '').trim(),
       description: String(risk?.description ?? risk?.target ?? '').trim(),

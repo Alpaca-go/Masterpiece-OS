@@ -15,6 +15,9 @@ const projectId = process.env.MASTERPIECE_SMOKE_PROJECT_ID?.trim() || '';
 const textProfileId = process.env.MASTERPIECE_SMOKE_TEXT_PROFILE_ID?.trim() || '';
 const imageProfileId = process.env.MASTERPIECE_SMOKE_IMAGE_PROFILE_ID?.trim() || '';
 const reuseAnalysis = process.env.MASTERPIECE_SMOKE_REUSE_ANALYSIS === '1';
+const deliverableFamily = process.env.MASTERPIECE_SMOKE_DELIVERABLE === 'packaging'
+  ? 'packaging'
+  : 'space';
 const desktopUserData = process.env.MASTERPIECE_SMOKE_USER_DATA?.trim()
   || path.join(process.env.APPDATA || '', 'masterpiece-os-desktop');
 
@@ -104,55 +107,106 @@ async function main(): Promise<void> {
   const brandRole = packet.projectFacts.brandRole.value === 'unknown'
     ? ''
     : packet.projectFacts.brandRole.value;
+  const packaging = packet.mediaTranslations.packaging;
+  const primaryPackagingStructure = packaging.structureStrategy[0]?.structure || '';
   const compilation = await vnext.compile({
     projectId,
     model: 'seedream-5.0-pro',
-    task: {
-      deliverableFamily: 'space',
-      subtype: 'reception',
-      shot: 'entrance_three_quarter_wide',
-      count: 1,
-      aspectRatio: '16:9',
-      currentInstruction: [
-        `生成${brandName}${brandRole ? `作为${brandRole}` : ''}的品牌体验与接待空间效果图。`,
-        '从入口向内部观看，采用视平线高度的单一广角透视，清楚呈现到达、接待、等候与后方空间的连续关系。',
-        '品牌视觉、结构、色彩、材料与光线必须完全服从本次 Visual Decision Packet，不补写未被项目证据支持的行业风格。',
-      ].join(''),
-      mustInclude: [
-        '入口、接待与等候的空间层次',
-        '具有真实厚度、接缝、边缘和物理响应的可建造材料',
-        '由当前项目资产抽象而来的品牌识别关系',
-      ],
-      mustAvoid: [
-        'VI 展示板',
-        '多格拼贴',
-        '脱离项目证据的行业模板',
-        '随机构造的 Logo、品牌文字或 slogan',
-      ],
-      referenceAssetIds: [],
-    },
+    task: deliverableFamily === 'packaging'
+      ? {
+        deliverableFamily: 'packaging',
+        subtype: 'gift_set',
+        shot: 'open_box',
+        count: 1,
+        aspectRatio: '4:3',
+        currentInstruction: [
+          `生成${brandName}${brandRole ? `作为${brandRole}` : ''}的产品包装效果图。`,
+          primaryPackagingStructure
+            ? `以 Visual Decision Packet 中有证据的“${primaryPackagingStructure}”作为主包装结构，呈现打开状态及内部组织。`
+            : '',
+          '只生成一套完整、可生产的包装产品摄影，不扩展为随机 VI 物料合集。',
+        ].join(''),
+        mustInclude: [
+          '清楚可读的包装结构、开合逻辑与内部组织',
+          '具有真实厚度、折边、接缝、内托和表面工艺的可生产包装',
+          '由当前项目资产抽象而来的品牌识别关系',
+        ],
+        mustAvoid: [
+          '空间效果图',
+          'VI 展示板',
+          '多格拼贴',
+          '无结构的平面贴图',
+          '随机构造的 Logo、品牌文字或 slogan',
+        ],
+        referenceAssetIds: [],
+      }
+      : {
+        deliverableFamily: 'space',
+        subtype: 'reception',
+        shot: 'entrance_three_quarter_wide',
+        count: 1,
+        aspectRatio: '16:9',
+        currentInstruction: [
+          `生成${brandName}${brandRole ? `作为${brandRole}` : ''}的品牌体验与接待空间效果图。`,
+          '从入口向内部观看，采用视平线高度的单一广角透视，清楚呈现到达、接待、等候与后方空间的连续关系。',
+          '品牌视觉、结构、色彩、材料与光线必须完全服从本次 Visual Decision Packet，不补写未被项目证据支持的行业风格。',
+        ].join(''),
+        mustInclude: [
+          '入口、接待与等候的空间层次',
+          '具有真实厚度、接缝、边缘和物理响应的可建造材料',
+          '由当前项目资产抽象而来的品牌识别关系',
+        ],
+        mustAvoid: [
+          'VI 展示板',
+          '多格拼贴',
+          '脱离项目证据的行业模板',
+          '随机构造的 Logo、品牌文字或 slogan',
+        ],
+        referenceAssetIds: [],
+      },
   });
 
   const prompt = compilation.compiledPrompt.finalPrompt;
   const firstAbstraction = packet.abstractions[0];
-  const requiredPromptSignalGroups = [
+  const sharedSignalGroups = [
     { id: 'brand', alternatives: [brandName] },
     { id: 'industry', alternatives: [packet.projectFacts.industry.value] },
     { id: 'brand-role', alternatives: [brandRole] },
-    { id: 'upgrade-thesis', alternatives: [packet.creativeDecision.uniqueUpgradeThesis] },
-    { id: 'target-worldview', alternatives: packet.creativeDecision.targetWorldview },
-    { id: 'spatial-concept', alternatives: [packet.mediaTranslations.spatial.spatialConcept] },
-    { id: 'structure-language', alternatives: packet.mediaTranslations.spatial.structureLanguage },
-    { id: 'color-system', alternatives: [
-      ...packet.colorSystem.primary.map((item) => item.name),
-      ...packet.colorSystem.secondary.map((item) => item.name),
-      ...packet.colorSystem.accent.map((item) => item.name),
-    ] },
-    { id: 'material-system', alternatives: packet.materialSystem.map((item) => item.material) },
-    { id: 'lighting-system', alternatives: packet.lightingSystem.source },
-    { id: 'nonliteral-translation', alternatives: firstAbstraction?.forbiddenLiteralUse || [] },
     { id: 'logo-policy', alternatives: ['Logo', 'logo asset'] },
-  ].filter((group) => group.alternatives.some((value) => Boolean(value?.trim())));
+  ];
+  const deliverableSignalGroups = deliverableFamily === 'packaging'
+    ? [
+      { id: 'packaging-concept', alternatives: [packaging.packagingConcept] },
+      { id: 'packaging-structure', alternatives: packaging.structureStrategy.map((item) => item.structure) },
+      { id: 'opening-experience', alternatives: packaging.openingExperience },
+      { id: 'product-arrangement', alternatives: packaging.productArrangement },
+      { id: 'substrate-language', alternatives: packaging.substrateLanguage },
+      { id: 'craft-language', alternatives: packaging.craftLanguage.map((item) => item.craft) },
+      { id: 'nonliteral-translation', alternatives: packaging.graphicTranslation
+        .flatMap((item) => item.forbiddenLiteralUse) },
+      { id: 'packaging-color', alternatives: [
+        ...packaging.colorBehavior.base,
+        ...packaging.colorBehavior.identity,
+        ...packaging.colorBehavior.accent,
+      ] },
+      { id: 'packaging-photography', alternatives: packaging.photographyDirection },
+    ]
+    : [
+      { id: 'upgrade-thesis', alternatives: [packet.creativeDecision.uniqueUpgradeThesis] },
+      { id: 'target-worldview', alternatives: packet.creativeDecision.targetWorldview },
+      { id: 'nonliteral-translation', alternatives: firstAbstraction?.forbiddenLiteralUse || [] },
+      { id: 'spatial-concept', alternatives: [packet.mediaTranslations.spatial.spatialConcept] },
+      { id: 'structure-language', alternatives: packet.mediaTranslations.spatial.structureLanguage },
+      { id: 'color-system', alternatives: [
+        ...packet.colorSystem.primary.map((item) => item.name),
+        ...packet.colorSystem.secondary.map((item) => item.name),
+        ...packet.colorSystem.accent.map((item) => item.name),
+      ] },
+      { id: 'material-system', alternatives: packet.materialSystem.map((item) => item.material) },
+      { id: 'lighting-system', alternatives: packet.lightingSystem.source },
+    ];
+  const requiredPromptSignalGroups = [...sharedSignalGroups, ...deliverableSignalGroups]
+    .filter((group) => group.alternatives.some((value) => Boolean(value?.trim())));
   const missingPromptSignals = requiredPromptSignalGroups
     .filter((group) => !group.alternatives.some((signal) => prompt.includes(signal)))
     .map((group) => group.id);
@@ -179,6 +233,7 @@ async function main(): Promise<void> {
     userAuthorized: true,
     projectId,
     projectName: analysis.project.projectName,
+    deliverableFamily,
     analysis: {
       provider: analysis.provider,
       model: analysis.model,
@@ -196,6 +251,7 @@ async function main(): Promise<void> {
         creativeProposalTags: (report.match(/\[Creative Proposal\]/gu) ?? []).length,
         abstractionCount: packet.abstractions.length,
         spatialStatus: packet.mediaTranslations.spatial.status,
+        packagingStatus: packet.mediaTranslations.packaging.status,
       },
       validation: packet.validation,
     },
@@ -206,6 +262,7 @@ async function main(): Promise<void> {
       requiredSignalCount: requiredPromptSignalGroups.length,
       missingPromptSignals,
       completeness: compilation.compiledPrompt.completeness,
+      preflightReport: compilation.compiledPrompt.preflightReport,
       logoUsageMode: compilation.taskContract.logoUsageMode,
       referenceAssetIds: compilation.taskContract.referenceAssetIds,
     },

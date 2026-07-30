@@ -39,6 +39,22 @@ test('project generation contract blocks a missing upgrade thesis', () => {
   assert.ok(contract.validation.missingRequiredFields.includes('upgradeThesis'));
 });
 
+test('project generation contract derives tone boundaries only from project decisions', () => {
+  const packet = phase1Packet();
+  packet.creativeDecision.toneBoundaries = [];
+  const contract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'packaging',
+  });
+
+  assert.deepEqual(contract.toneBoundaries, [
+    { target: '专业可信赖', avoid: ['廉价装饰', '具象羽毛装饰', '旧式发光渐变'] },
+    { target: '东方但不古典', avoid: ['廉价装饰', '具象羽毛装饰', '旧式发光渐变'] },
+    { target: '未来但不科幻', avoid: ['廉价装饰', '具象羽毛装饰', '旧式发光渐变'] },
+  ]);
+  assert.equal(contract.validation.status, 'ready');
+});
+
 test('project generation contract reports project conflicts', () => {
   const packet = phase1Packet();
   packet.validation.conflicts = ['locked color conflicts with confirmed removal'];
