@@ -961,6 +961,8 @@ export interface ProjectVisualContextVNext {
    * contexts remain readable and can be upgraded without reading a report.
    */
   promptSourceObject?: PromptSourceObject;
+  /** Primary project semantics for report and Prompt compilation. */
+  visualDecisionPacket?: VisualDecisionPacket;
 }
 
 export type PromptSourceLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
@@ -1197,6 +1199,91 @@ export interface VisualUnderstandingCore {
     missingRequiredFacts: string[];
     conflicts: string[];
     message?: string;
+  };
+}
+
+export interface VisualAbstractionV2 {
+  sourceAsset: string;
+  semanticMeaning: string[];
+  formalProperties: string[];
+  rhythmProperties: string[];
+  materialPotential: string[];
+  lightingPotential: string[];
+  forbiddenLiteralUse: string[];
+  evidenceRefs: string[];
+  confidence: number;
+}
+
+export interface SpatialMaterialBehaviorV2 {
+  material: string;
+  behavior: string[];
+  brandRole: string;
+  forbidden: string[];
+}
+
+export interface SpatialLightingBehaviorV2 {
+  source: string[];
+  contrast: string;
+  interactionWithMaterials: string[];
+  forbidden: string[];
+}
+
+export interface SpatialColorBehaviorV2 {
+  primary: PromptSourceColorUsage[];
+  secondary: PromptSourceColorUsage[];
+  accent: PromptSourceColorUsage[];
+  forbidden: string[];
+}
+
+export interface SpatialTranslationV2 {
+  status: 'ready' | 'insufficient';
+  spatialConcept: string;
+  structureLanguage: string[];
+  materialLanguage: SpatialMaterialBehaviorV2[];
+  lightingLanguage: SpatialLightingBehaviorV2;
+  colorBehavior: SpatialColorBehaviorV2;
+  brandIntegration: string[];
+  functionalExperience: string[];
+  sceneMisreadRisks: string[];
+}
+
+export interface DeferredMediaTranslationV2 {
+  status: 'interface_only';
+  concept: string;
+  expressionLanguage: string[];
+  misreadRisks: string[];
+}
+
+export interface MediaTranslationPacketV2 {
+  sharedBrandCore: string[];
+  spatial: SpatialTranslationV2;
+  packaging: DeferredMediaTranslationV2;
+  poster: DeferredMediaTranslationV2;
+  vi: DeferredMediaTranslationV2;
+}
+
+export interface VisualDecisionPacket {
+  schemaVersion: '1.0';
+  projectId: string;
+  projectFacts: VisualUnderstandingCore['projectFacts'];
+  lockedAssets: VisualDecisionLockedAsset[];
+  assetInventory: VisualAssetInventoryV2;
+  diagnosis: VisualDiagnosisV2;
+  creativeDecision: CreativeDecisionV2;
+  abstractions: VisualAbstractionV2[];
+  mediaTranslations: MediaTranslationPacketV2;
+  colorSystem: SpatialColorBehaviorV2;
+  materialSystem: SpatialMaterialBehaviorV2[];
+  lightingSystem: SpatialLightingBehaviorV2;
+  provenance: {
+    createdFrom: string[];
+    generatedAt: string;
+    modelId: string;
+    sourceFingerprint: string;
+  };
+  validation: VisualUnderstandingCore['validation'] & {
+    executionDataStatus: 'ready' | 'insufficient';
+    missingExecutionFields: string[];
   };
 }
 
