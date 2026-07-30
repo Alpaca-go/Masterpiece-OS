@@ -53,13 +53,19 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-vnext-session-'));
   const runs = new Map<string, ImageGenerationRun>();
   let latestReferences: Array<{ id: string; role: string; projectRelativePath: string }> = [];
+  let latestModelId: string | undefined;
+  let latestApiProfileId: string | undefined;
   let counter = 0;
   const imageGeneration = {
     async startCompiledCreativeTask(options: {
       projectId: string;
       references?: Array<{ id: string; role: string; projectRelativePath: string }>;
+      modelId?: string;
+      apiProfileId?: string;
     }) {
       latestReferences = options.references ?? [];
+      latestModelId = options.modelId;
+      latestApiProfileId = options.apiProfileId;
       counter += 1;
       const runId = `run-${counter}`;
       const run: ImageGenerationRun = {
@@ -148,7 +154,13 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
       referenceAssetIds: [],
     },
   });
-  const firstRun = await service.start({ projectId, taskId: compiled.taskContract.taskId });
+  const firstRun = await service.start({
+    projectId,
+    taskId: compiled.taskContract.taskId,
+    apiProfileId: 'seedream-profile',
+  });
+  assert.equal(latestModelId, undefined);
+  assert.equal(latestApiProfileId, 'seedream-profile');
   assert.deepEqual(latestReferences, [{
     id: 'logo-asset',
     role: 'identity_reference',

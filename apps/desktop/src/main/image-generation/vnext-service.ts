@@ -133,12 +133,24 @@ export function createVNextImageGenerationService(
   async function compile(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult> {
     const context = await projectContext.getVNext(input.projectId)
       .catch(() => projectContext.rebuildVNext(input.projectId));
-    const preferredLogoAssetId = context.promptSourceObject?.lockedAssets.preferredLogoAssetId
-      || context.lockedAssets.logoAssetIds[0]
+    const packetLogoAssetIds = context.visualDecisionPacket?.lockedAssets
+      .filter((item) => item.type === 'logo')
+      .map((item) => item.assetId)
+      ?? [];
+    const logoAssetIds = packetLogoAssetIds.length
+      ? packetLogoAssetIds
+      : context.promptSourceObject?.lockedAssets.logoAssetIds.length
+        ? context.promptSourceObject.lockedAssets.logoAssetIds
+        : context.lockedAssets.logoAssetIds;
+    const preferredLogoAssetId = packetLogoAssetIds[0]
+      || context.promptSourceObject?.lockedAssets.preferredLogoAssetId
+      || logoAssetIds[0]
       || null;
     const logoUsageMode = input.task.logoUsageMode
-      || context.promptSourceObject?.lockedAssets.logoUsageMode
-      || (preferredLogoAssetId ? 'reference' : 'blank_area');
+      || (packetLogoAssetIds.length
+        ? 'reference'
+        : context.promptSourceObject?.lockedAssets.logoUsageMode
+          || (preferredLogoAssetId ? 'reference' : 'blank_area'));
     if (logoUsageMode === 'post_composite') {
       throw Object.assign(
         new Error('Post-composite Logo mode is reserved but not available in this version'),
@@ -151,11 +163,11 @@ export function createVNextImageGenerationService(
         { code: 'VNEXT_LOGO_REFERENCE_MISSING' },
       );
     }
-    const logoAssetIds = new Set(context.lockedAssets.logoAssetIds);
+    const logoAssetIdSet = new Set(logoAssetIds);
     const requestedReferenceIds = input.task.referenceAssetIds ?? [];
     const referenceAssetIds = logoUsageMode === 'reference'
       ? [...new Set([preferredLogoAssetId!, ...requestedReferenceIds])]
-      : requestedReferenceIds.filter((assetId) => !logoAssetIds.has(assetId));
+      : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId));
     const paths = await projects.paths(input.projectId);
     const projectPromptAsset = await fs.readFile(
       path.join(
@@ -305,7 +317,9 @@ export function createVNextImageGenerationService(
       references,
       event: 'VNEXT_FORMAL_RESULT_STARTED',
       apiProfileId: input.apiProfileId,
-      modelId: compilation.payload.model,
+      // A selected API Profile owns the provider's deployable endpoint model.
+      // The adapter id is a compilation contract and may not be callable.
+      modelId: input.apiProfileId ? undefined : compilation.payload.model,
       size: aspectSize(compilation.taskContract.aspectRatio),
       dryRun: input.dryRun,
     });

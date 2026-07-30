@@ -136,10 +136,10 @@ function assertPacketConflicts({ packetSource, taskContract, negativeConstraints
     conflicts.push('task requires text while logo/text mode forbids rendered text');
   }
 
-  const forbidsLogo = containsAny(
-    negativeConstraints,
-    [/禁止.*logo|不要.*logo|no\s+logo|without\s+logo/iu],
-  );
+  const logoPreservationVerbs = /变形|拆解|修改|重绘|替换|仿造|改变|distort|deform|redraw|replace|alter/iu;
+  const forbidsLogo = cleanList(negativeConstraints).some((item) =>
+    !logoPreservationVerbs.test(item)
+    && /禁止(?:任何|全部|所有|画面|场景|出现|呈现|展示|使用|添加|\s)*logo|不要(?:任何|\s)*logo|移除(?:任何|\s)*logo|去除(?:任何|\s)*logo|no\s+logo|without\s+logo/iu.test(item));
   if (logoUsageMode === 'reference' && forbidsLogo) {
     conflicts.push('confirmed Logo reference conflicts with a no-Logo rule');
   }

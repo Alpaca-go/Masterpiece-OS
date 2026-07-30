@@ -129,6 +129,18 @@ const extracted = {
   },
 };
 
+extracted.creativeDecision.toneBoundaries.push(
+  { target: '当代', avoid: ['廉价科技蓝'] },
+  { target: '人文温度', avoid: ['柔弱甜美'] },
+  { target: '文化语义', avoid: ['符号堆砌'] },
+);
+extracted.mediaTranslations.spatial.sceneMisreadRisks.push(
+  '科技展厅',
+  '生活方式店',
+  '售楼处',
+  '文化会所',
+);
+
 test('unified prompt requests evidence-rich A-F modules without embedding Jiuzhou answers', () => {
   const prompt = buildUnifiedVisualUnderstandingPrompt(project(), ['asset:1']);
   assert.match(prompt, /assetInventory/u);

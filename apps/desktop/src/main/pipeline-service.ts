@@ -483,7 +483,10 @@ export function createPipelineService(
       const rawReport = await fs.readFile(coreReportPath, 'utf8');
       // ProjectRecord identity is authoritative. A free-form legacy report may
       // only fill an actually empty name; it must never rename the project.
-      const finalProjectName = project.projectName || extractProjectNameFromReport(rawReport);
+      const finalProjectName = project.projectName
+        || extractProjectNameFromReport(rawReport)
+        || project.brandName
+        || '未命名项目';
       const legacyReport = normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage);
       if (validationMode === 'visual_upgrade') validateDesktopReport(legacyReport);
       else if (!legacyReport.trim()) throw new Error('参考视觉分析结果为空');
@@ -543,10 +546,10 @@ export function createPipelineService(
               modelId: credentials.model,
               sourceRefs: promptSourceAssets.map((asset) => `asset:${asset.id}`),
             });
-            promptSourceRunId = response.runId;
+            promptSourceRunId = response.runId || undefined;
             visualDecisionPacket = normalized.packet;
             promptSourceObject = visualDecisionPacketToPromptSourceObject(normalized.packet);
-            promptSourceObject.provenance.structuredAnalysisRunId = response.runId;
+            promptSourceObject.provenance.structuredAnalysisRunId = response.runId || undefined;
             report = compileVisualDecisionReport(normalized.packet, {
               title: `${finalProjectName}视觉方案升级报告`,
             });
@@ -563,6 +566,12 @@ export function createPipelineService(
             }
           }
         }
+      }
+      if (promptSourceAssets.length && (!promptSourceObject || !visualDecisionPacket)) {
+        throw Object.assign(
+          new Error('PROMPT_SOURCE_INSUFFICIENT: unified visual understanding failed after repair'),
+          { code: 'PROMPT_SOURCE_INSUFFICIENT' },
+        );
       }
       await fs.writeFile(reportPath, report, 'utf8');
       if (path.resolve(coreReportPath) !== path.resolve(reportPath)) await fs.rm(coreReportPath, { force: true });
