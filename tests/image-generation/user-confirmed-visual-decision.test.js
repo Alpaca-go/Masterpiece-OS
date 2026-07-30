@@ -28,12 +28,17 @@ test('user-confirmed visual decision overlays only its own project packet', () =
     }],
     spatialTranslation: {
       spatialConcept: '以连续服务链组织空间',
+      brandRoleManifestation: ['平台角色通过入口、展示、咨询与服务连接被看见'],
+      signatureSpatialMechanism: ['连续半透明结构连接多个服务节点'],
+      functionalNetwork: ['入口连接展示', '展示连接咨询', '咨询连接服务'],
+      positiveDifferentiators: ['同一结构在多个节点发生可见变化'],
+      mustBeVisible: ['单一画面可追踪连续结构与三个节点'],
       structureLanguage: ['入口连接展示、咨询与服务'],
       materialLanguage: [{ material: '矿物涂层', behavior: ['低反射'] }],
       lightingLanguage: { source: ['自然光'] },
       colorBehavior: { primary: [{ name: '暖白', role: '基础', ratio: 80 }] },
       functionalRelationships: ['入口连接展示', '咨询连接服务'],
-      sceneProgram: ['入口', '咨询'],
+      sceneProgram: ['入口', '展示接待', '咨询'],
     },
   };
   const result = applyUserConfirmedVisualDecision(packet, confirmation, packet.projectId);

@@ -33,6 +33,8 @@ export function buildUnifiedVisualUnderstandingPrompt(
 - creativeDecision 说明保留、削弱、移除和升级关系；不得用通用气质词替代当前项目判断。
 - abstractions 仅从当前资产证据提取语义、形式、节奏、材料和光线潜力，并明确禁止字面复制。
 - spatial 的结构、材料、光线、色彩和品牌整合必须是当前项目的结构化决策，不能由行业名称或品牌角色补齐。
+- brandRoleManifestation、signatureSpatialMechanism、functionalNetwork、positiveDifferentiators 和 mustBeVisible 只能来自当前项目证据或用户确认；不得从项目名、行业或通用模板推断。
+- signatureSpatialMechanism 必须描述一个可以被直接画出并在多个服务节点连续追踪的核心空间组织机制；mustBeVisible 说明单张结果中必须可见的证据。
 - functionalRelationships 只列证据明确支持的功能关系；sceneProgram 只列当前成果物所需的空间程序；peopleBehavior 为空即表示不要求人物。
 - 颜色层级、材料物理行为和光线互动必须可执行，但不得套用固定比例、固定材质或固定气质答案。
 - 项目误读风险不得写入无关任务；appliesTo 是后续 Compiler 是否应用该风险的唯一场景边界。
@@ -100,6 +102,11 @@ export function buildUnifiedVisualUnderstandingPrompt(
     "sharedBrandCore": [],
     "spatial": {
       "spatialConcept": "",
+      "brandRoleManifestation": [],
+      "signatureSpatialMechanism": [],
+      "functionalNetwork": [],
+      "positiveDifferentiators": [],
+      "mustBeVisible": [],
       "structureLanguage": [],
       "materialLanguage": [
         { "material": "当前项目证据支持的材料", "behavior": ["可观察的物理行为"], "brandRole": "该材料在当前设计决策中的作用", "forbidden": [] }

@@ -154,7 +154,7 @@ function compileSpace(projectContext, overrides = {}) {
   });
 }
 
-test('Golden calibration compiles twelve traceable blocks from Jiuzhou project evidence', () => {
+test('Golden calibration compiles thirteen traceable blocks from Jiuzhou project evidence', () => {
   const source = promptSource({
     projectId: 'jiuzhou',
     brand: '九州美学',
@@ -184,10 +184,10 @@ test('Golden calibration compiles twelve traceable blocks from Jiuzhou project e
     promptSourceObject: source,
   }));
 
-  assert.equal(result.compiledPrompt.blocks.length, 12);
+  assert.equal(result.compiledPrompt.blocks.length, 13);
   assert.equal(result.compiledPrompt.completeness.complete, true);
   assert.deepEqual(result.compiledPrompt.completeness.missingBlockIds, []);
-  assert.equal(Object.keys(result.compiledPrompt.sourceMap).length, 12);
+  assert.equal(Object.keys(result.compiledPrompt.sourceMap).length, 13);
   for (const signal of [
     '九州美学',
     '低饱和矿物紫',
@@ -200,7 +200,7 @@ test('Golden calibration compiles twelve traceable blocks from Jiuzhou project e
   ]) {
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   }
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.2.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.0');
   assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true);
 });
 

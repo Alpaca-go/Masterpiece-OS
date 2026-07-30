@@ -257,7 +257,7 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     'controlled post-compositing',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.2.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.0');
   const blockIds = result.compiledPrompt.blocks.map((block) => block.id);
   assert.ok(blockIds.indexOf('brand_translation') < blockIds.indexOf('professional_contract'));
   assert.ok(blockIds.indexOf('lighting_system') < blockIds.indexOf('professional_contract'));
@@ -655,7 +655,7 @@ test('education and food platform words compile only explicit structured scene d
 
 test('confirmed scoped risk and structured scene behavior compile only for their matching task', () => {
   const result = compile();
-  assert.match(result.compiledPrompt.finalPrompt, /Functional relationship: 接待连接等候、咨询与后方服务/u);
+  assert.match(result.compiledPrompt.finalPrompt, /Functional network: 接待连接等候、咨询与后方服务/u);
   assert.match(result.compiledPrompt.finalPrompt, /People behavior: 访客自然等候/u);
   assert.match(result.compiledPrompt.finalPrompt, /Strict negative: 不要呈现传统医院诊室、注射操作、护理床或护理场景/u);
 });

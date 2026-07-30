@@ -9,7 +9,7 @@ import { compilePackagingPromptContract } from '../prompt-contracts/packaging-co
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '4.2.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '4.3.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -324,6 +324,11 @@ function createBlock(id, title, items, sources, fallback, strict = false) {
   };
 }
 
+function labeledJoined(label, values) {
+  const items = cleanList(values);
+  return items.length ? `${label}: ${items.join('；')}` : '';
+}
+
 export function compileVNextPrompt({
   projectContext,
   taskContract,
@@ -593,17 +598,48 @@ export function compileVNextPrompt({
       'Upgrade the existing identity through relationships, proportion and behavior rather than literal decoration.',
       strictPacket,
     ),
+    ...(taskContract.deliverableFamily === 'space' ? [createBlock(
+      'positive_spatial_mechanism',
+      '05 Positive Spatial Mechanism — Must Drive the Image',
+      [
+        labeledJoined('Brand role manifestation',
+          projectGenerationContract?.brandRoleManifestation,
+        ),
+        labeledJoined('Signature spatial mechanism',
+          projectGenerationContract?.signatureSpatialMechanism,
+        ),
+        labeledJoined('Functional network',
+          projectGenerationContract?.functionalNetwork,
+        ),
+        labeledJoined('Scene program', projectGenerationContract?.sceneProgram),
+        labeledJoined('Positive differentiators',
+          projectGenerationContract?.positiveDifferentiators,
+        ),
+        labeledJoined('Must be visibly legible in this single image',
+          projectGenerationContract?.mustBeVisible,
+        ),
+      ],
+      [
+        'project_generation_contract.brandRoleManifestation',
+        'project_generation_contract.signatureSpatialMechanism',
+        'project_generation_contract.functionalNetwork',
+        'project_generation_contract.sceneProgram',
+        'project_generation_contract.positiveDifferentiators',
+        'project_generation_contract.mustBeVisible',
+      ],
+      'Express the confirmed project role through a visible, project-grounded spatial mechanism.',
+      false,
+    )] : []),
     createBlock(
       'tone_boundary',
-      '05 Tone Boundaries',
+      '06 Tone Boundaries',
       packetSource
-        ? cleanList(
-          packetToneItems(packetSource.creativeDecision),
-          projectGenerationContract?.toneBoundaries?.flatMap((item) => [
+        ? cleanList(projectGenerationContract?.toneBoundaries?.length
+          ? projectGenerationContract.toneBoundaries.flatMap((item) => [
             `Approved tone target: ${item.target}`,
             item.avoid?.map((avoid) => `Approved tone prohibition: ${avoid}`),
-          ]),
-        )
+          ])
+          : packetToneItems(packetSource.creativeDecision))
         : toneItems(
           source?.upgradeTranslation?.toneBoundaries,
           projectContext.visualIdentity.tone,
@@ -619,13 +655,11 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'brand_translation',
-      '06 Brand Translation',
+      '07 Brand Translation',
       [
         packetSource?.lockedAssets?.map((item) => `Locked — preserve ${item.type}: ${item.value}`),
         packetSource ? packetTransformationItems(packetSource.abstractions, packetSource.spatial) : [],
         packetSource?.spatial?.brandIntegration?.map((item) => `Brand integration: ${item}`),
-        packetSource?.spatial?.functionalRelationships?.map((item) => `Functional relationship: ${item}`),
-        packetSource?.spatial?.sceneProgram?.map((item) => `Scene program: ${item}`),
         packetSource?.spatial?.peopleBehavior?.map((item) => `People behavior: ${item}`),
         approvedProhibitionsForDeliverable(
           projectDecisions.prohibitedExpressions,
@@ -653,7 +687,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'color_system',
-      '07 Color System',
+      '08 Color System',
       projectDecisions.specificity?.status === 'ready'
         ? projectGenerationContract.sharedVisualRules.colorBehavior
           .map((item) => `Approved project color system: ${item}`)
@@ -666,7 +700,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'material_system',
-      '08 Material System',
+      '09 Material System',
       projectDecisions.specificity?.status === 'ready'
         ? projectGenerationContract.sharedVisualRules.materialBehavior
           .map((item) => `Approved project material behavior: ${item}`)
@@ -685,7 +719,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'lighting_system',
-      '09 Lighting System',
+      '10 Lighting System',
       [
         projectDecisions.specificity?.status === 'ready'
           ? projectGenerationContract.sharedVisualRules.lightingBehavior
@@ -709,7 +743,7 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'camera_composition',
-      '10 Camera, Composition and Realism',
+      '11 Camera, Composition and Realism',
       [
         templateSections('composition'),
         projectContext.visualIdentity.compositionBehavior,
@@ -724,14 +758,14 @@ export function compileVNextPrompt({
     ),
     createBlock(
       'professional_contract',
-      taskContract.deliverableFamily === 'space' ? '11 Spatial Production Contract' : '11 Professional Production Contract',
+      taskContract.deliverableFamily === 'space' ? '12 Spatial Production Contract' : '12 Professional Production Contract',
       templateSections('professionalRequirements'),
       templates.map((item) => item.id),
       'Make the requested result physically credible, usable and professionally resolved.',
     ),
     createBlock(
       'logo_text_and_negatives',
-      '12 Logo, Text and Strict Negatives',
+      '13 Logo, Text and Strict Negatives',
       [
         logoUsageMode === 'reference'
           ? `Use the supplied logo asset as the only identity reference; preserve its structure and do not redesign it.`
@@ -785,7 +819,8 @@ export function compileVNextPrompt({
   const sourceMap = Object.fromEntries(blocks.map((block) => [block.id, [...block.sources]]));
   if (confirmedDecision.confirmation) {
     for (const blockId of ['project_identity', 'upgrade_thesis', 'tone_boundary', 'brand_translation',
-      'color_system', 'material_system', 'lighting_system']) {
+      'positive_spatial_mechanism', 'color_system', 'material_system', 'lighting_system']) {
+      if (!sourceMap[blockId]) continue;
       sourceMap[blockId] = [
         `user_confirmed_visual_decision:${confirmedDecision.confirmation.id}`,
         ...sourceMap[blockId],

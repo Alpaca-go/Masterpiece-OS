@@ -146,6 +146,11 @@ function spatialTranslation(value: unknown): SpatialTranslationV2 {
   return {
     status: ready ? 'ready' : 'insufficient',
     spatialConcept,
+    brandRoleManifestation: strings(candidate.brandRoleManifestation),
+    signatureSpatialMechanism: strings(candidate.signatureSpatialMechanism),
+    functionalNetwork: strings(candidate.functionalNetwork),
+    positiveDifferentiators: strings(candidate.positiveDifferentiators),
+    mustBeVisible: strings(candidate.mustBeVisible),
     structureLanguage,
     materialLanguage,
     lightingLanguage,

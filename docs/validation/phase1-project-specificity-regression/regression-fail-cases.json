@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "registeredAt": "2026-07-30T15:12:15.772Z",
+  "registeredAt": "2026-07-30T15:33:18.407Z",
   "cases": [
     {
       "id": "REGRESSION-SPACE-8204e627-d0f8-43e0-9e98-9c698b35714d",
@@ -42,6 +42,19 @@
       ]
     },
     {
+      "id": "REGRESSION-SPACE-d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "failedCompilationId": "vnext-task-d0997d7e-29ec-493c-9681-d1185995e325",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\d7fe0976-018c-41e9-9759-bcaf45e3acf3\\images\\image-01.png",
+      "observedRegression": [
+        "结构性回归通过，已移除孔雀羽毛、紫色灯带、金色装饰和大 Logo 墙",
+        "结果仍属于暖白极简诊所或办公室式安全通用表达，旗舰展示、全链平台角色和唯一正向空间机制未充分显现"
+      ]
+    },
+    {
       "id": "REGRESSION-PACKAGING-071af71a-c0a2-48af-850e-3f734c2c15dc",
       "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
       "family": "packaging",
@@ -78,6 +91,19 @@
       "observedRegression": [
         "已移除 Logo、金色装饰、紫色灯带与大尺度羽片墙，证明 Project Contract 优先级修复生效",
         "结果仍以暖白石材和可读鳞羽压纹为主，项目专属性仅部分恢复，真实视觉验收未完全通过"
+      ]
+    },
+    {
+      "id": "jiuzhou-space-safe-generic-clinic-partial",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "partial_fail",
+      "failedRunId": "d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "failedCompilationId": "vnext-task-d0997d7e-29ec-493c-9681-d1185995e325",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\d7fe0976-018c-41e9-9759-bcaf45e3acf3\\images\\image-01.png",
+      "observedRegression": [
+        "结构性回归通过，已移除孔雀羽毛、紫色灯带、金色装饰和大 Logo 墙",
+        "结果仍属于暖白极简诊所或办公室式安全通用表达，旗舰展示、全链平台角色和唯一正向空间机制未充分显现"
       ]
     }
   ]

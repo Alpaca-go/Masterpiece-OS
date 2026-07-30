@@ -124,3 +124,32 @@ test('literal legacy asset scan ignores explicit prohibitions but blocks positiv
   assert.equal(positive.findings.some((item) =>
     item.code === 'LITERAL_LEGACY_ASSET_REUSE'), true);
 });
+
+test('spatial preflight exposes all positive mechanism gate codes', () => {
+  const packet = phase1Packet();
+  const projectContract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'space',
+  });
+  const report = runPromptPreflightGate({
+    finalPrompt: `${projectContract.projectIdentity.brandRole}\nStrict negative: generic`,
+    taskContract: { deliverableFamily: 'space', logoUsageMode: 'post_composite' },
+    projectContract,
+    spatialTranslation: {
+      functionalRelationships: ['接待连接咨询'],
+      sceneProgram: ['接待'],
+      brandRoleManifestation: [],
+      signatureSpatialMechanism: [],
+      functionalNetwork: [],
+      positiveDifferentiators: [],
+      mustBeVisible: [],
+    },
+  });
+  const codes = new Set(report.findings.map((item) => item.code));
+  for (const code of [
+    'POSITIVE_SPATIAL_MECHANISM_MISSING',
+    'BRAND_ROLE_NOT_SPATIALLY_MANIFESTED',
+    'FLAGSHIP_PROGRAM_TOO_GENERIC',
+    'NEGATIVE_RULES_OUTWEIGH_POSITIVE_MECHANISM',
+  ]) assert.equal(codes.has(code), true, code);
+});

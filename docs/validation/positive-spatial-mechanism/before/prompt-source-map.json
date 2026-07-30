@@ -18,15 +18,6 @@
     "visual_decision_packet.creativeDecision",
     "project_generation_contract.projectSpecificDecisions"
   ],
-  "positive_spatial_mechanism": [
-    "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
-    "project_generation_contract.brandRoleManifestation",
-    "project_generation_contract.signatureSpatialMechanism",
-    "project_generation_contract.functionalNetwork",
-    "project_generation_contract.sceneProgram",
-    "project_generation_contract.positiveDifferentiators",
-    "project_generation_contract.mustBeVisible"
-  ],
   "tone_boundary": [
     "user_confirmed_visual_decision:user-confirmed-jiuzhou-space-specificity-v1",
     "visual_decision_packet.creativeDecision.toneBoundaries",

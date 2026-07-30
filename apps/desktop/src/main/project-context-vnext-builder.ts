@@ -267,6 +267,21 @@ function migrateVisualDecisionPacketShape(packet: VisualDecisionPacket): VisualD
   const migrated = structuredClone(packet);
   const spatial = migrated.mediaTranslations?.spatial;
   if (!spatial) return migrated;
+  spatial.brandRoleManifestation = Array.isArray(spatial.brandRoleManifestation)
+    ? spatial.brandRoleManifestation
+    : [];
+  spatial.signatureSpatialMechanism = Array.isArray(spatial.signatureSpatialMechanism)
+    ? spatial.signatureSpatialMechanism
+    : [];
+  spatial.functionalNetwork = Array.isArray(spatial.functionalNetwork)
+    ? spatial.functionalNetwork
+    : [];
+  spatial.positiveDifferentiators = Array.isArray(spatial.positiveDifferentiators)
+    ? spatial.positiveDifferentiators
+    : [];
+  spatial.mustBeVisible = Array.isArray(spatial.mustBeVisible)
+    ? spatial.mustBeVisible
+    : [];
   spatial.functionalRelationships = Array.isArray(spatial.functionalRelationships)
     ? spatial.functionalRelationships
     : [];

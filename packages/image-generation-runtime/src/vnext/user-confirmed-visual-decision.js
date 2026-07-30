@@ -20,6 +20,11 @@ function assertSpatial(value) {
     !list(spatial.lightingLanguage?.source).length && 'lightingLanguage.source',
     !list(spatial.sceneProgram).length && 'sceneProgram',
     !list(spatial.functionalRelationships).length && 'functionalRelationships',
+    !list(spatial.brandRoleManifestation).length && 'brandRoleManifestation',
+    !list(spatial.signatureSpatialMechanism).length && 'signatureSpatialMechanism',
+    !list(spatial.functionalNetwork).length && 'functionalNetwork',
+    !list(spatial.positiveDifferentiators).length && 'positiveDifferentiators',
+    !list(spatial.mustBeVisible).length && 'mustBeVisible',
   ].filter(Boolean);
   if (missing.length) {
     throw Object.assign(new Error(

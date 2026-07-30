@@ -1249,6 +1249,11 @@ export interface SpatialColorBehaviorV2 {
 export interface SpatialTranslationV2 {
   status: 'ready' | 'insufficient';
   spatialConcept: string;
+  brandRoleManifestation: string[];
+  signatureSpatialMechanism: string[];
+  functionalNetwork: string[];
+  positiveDifferentiators: string[];
+  mustBeVisible: string[];
   structureLanguage: string[];
   materialLanguage: SpatialMaterialBehaviorV2[];
   lightingLanguage: SpatialLightingBehaviorV2;
@@ -1280,6 +1285,12 @@ export interface ProjectSpecificGenerationContract {
     to: string[];
     statement: string;
   };
+  brandRoleManifestation: string[];
+  signatureSpatialMechanism: string[];
+  functionalNetwork: string[];
+  sceneProgram: string[];
+  positiveDifferentiators: string[];
+  mustBeVisible: string[];
   mustPreserve: Array<{
     value: string;
     source: 'locked_asset' | 'confirmed_fact' | 'user_confirmation';

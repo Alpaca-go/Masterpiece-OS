@@ -244,9 +244,18 @@ const peacockCase = failCases.find((item) =>
   item.failedRunId === 'ea21d802-a334-486e-8892-035dbb963e7c');
 const genericPartialCase = failCases.find((item) =>
   item.failedRunId === '8551a8c0-ea48-4765-a27f-c7c2ff140ae7');
+const safeGenericClinicCase = failCases.find((item) =>
+  item.failedRunId === 'd7fe0976-018c-41e9-9759-bcaf45e3acf3');
 if (peacockCase) failCases.push({ ...peacockCase, id: 'jiuzhou-space-peacock-theme-fail' });
 if (genericPartialCase) {
   failCases.push({ ...genericPartialCase, id: 'jiuzhou-space-generic-medical-partial' });
+}
+if (safeGenericClinicCase) {
+  failCases.push({
+    ...safeGenericClinicCase,
+    id: 'jiuzhou-space-safe-generic-clinic-partial',
+    status: 'partial_fail',
+  });
 }
 
 await writeJson(path.join(auditRoot, 'regression-fail-cases.json'), {

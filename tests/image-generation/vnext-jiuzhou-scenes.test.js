@@ -164,7 +164,7 @@ test('three Jiuzhou space scenes preserve task overrides and Logo mode boundarie
         logoUsageMode: scene.mode,
       },
     });
-    assert.equal(result.compiledPrompt.blocks.length, 12, scene.name);
+    assert.equal(result.compiledPrompt.blocks.length, 13, scene.name);
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(scene.mustInclude[0], 'u'), scene.name);
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(scene.mustAvoid[0], 'u'), scene.name);
     assert.equal(result.compiledPrompt.logoUsageMode, scene.mode, scene.name);

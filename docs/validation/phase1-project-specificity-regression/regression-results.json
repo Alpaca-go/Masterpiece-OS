@@ -82,6 +82,21 @@
       "referenceAssetIds": [],
       "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\d7fe0976-018c-41e9-9759-bcaf45e3acf3\\images\\image-01.png",
       "notes": "结构性回归通过：无孔雀/羽毛、紫色灯带、金色装饰、大 Logo 墙，入口—接待—咨询层级、连续曲面、半透明界面和后合成留白可见。项目气质仍仅部分通过：画面偏暖白极简诊所/办公室，旗舰展示和全链生态平台的独特识别不足。本任务按约束不再采样。"
+    },
+    {
+      "id": "jiuzhou-space-positive-spatial-mechanism-smoke",
+      "kind": "real_provider",
+      "status": "pass",
+      "provider": "volcengine",
+      "model": "doubao-seedream-5-0-pro-260628",
+      "modelCallCount": 1,
+      "durationMs": 101898,
+      "runId": "ee5cfaa8-7996-459c-9721-60a0b2bbaf22",
+      "compilationId": "vnext-task-a2ff29ee-01fa-4a2f-900f-3c1edaa542b5",
+      "preflight": "pass",
+      "logoUsageMode": "post_composite",
+      "referenceAssetIds": [],
+      "notes": "双层半透明柔性服务脊带成为画面主导结构，并以加宽下沉、层级错位和向后连续组织展示、接待、咨询与系统服务。无 Logo 仍可由结构机制和功能网络识别项目；未随机重试。"
     }
   ]
 }

@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-export const PROJECT_GENERATION_CONTRACT_COMPILER_VERSION = '1.2.0';
+export const PROJECT_GENERATION_CONTRACT_COMPILER_VERSION = '1.3.0';
 
 function list(...values) {
   const result = [];
@@ -201,6 +201,14 @@ export function compileProjectSpecificGenerationContract(input = {}) {
         deliverable,
       ),
     },
+    brandRoleManifestation: list(media?.brandRoleManifestation),
+    signatureSpatialMechanism: list(media?.signatureSpatialMechanism),
+    functionalNetwork: list(media?.functionalNetwork).length
+      ? list(media.functionalNetwork)
+      : list(media?.functionalRelationships),
+    sceneProgram: list(media?.sceneProgram),
+    positiveDifferentiators: list(media?.positiveDifferentiators),
+    mustBeVisible: list(media?.mustBeVisible),
     mustPreserve,
     mustTransform,
     toneBoundaries: toneBoundaries(decision, approvedDecision),

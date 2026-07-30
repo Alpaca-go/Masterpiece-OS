@@ -87,6 +87,11 @@ export function runPromptPreflightGate({
     const brandRole = String(projectContract?.projectIdentity?.brandRole ?? '').trim();
     const relationships = list(spatialTranslation?.functionalRelationships);
     const scenes = list(spatialTranslation?.sceneProgram);
+    const roleManifestation = list(spatialTranslation?.brandRoleManifestation);
+    const signatureMechanism = list(spatialTranslation?.signatureSpatialMechanism);
+    const functionalNetwork = list(spatialTranslation?.functionalNetwork);
+    const differentiators = list(spatialTranslation?.positiveDifferentiators);
+    const mustBeVisible = list(spatialTranslation?.mustBeVisible);
     if (!brandRole || !prompt.includes(brandRole) || relationships.length < 1 || scenes.length < 1) {
       add(
         'BRAND_ROLE_UNDEREXPRESSED',
@@ -109,6 +114,57 @@ export function runPromptPreflightGate({
         'GENERIC_INDUSTRY_FALLBACK',
         'block',
         'The remaining instructions could be satisfied by a generic industry scene.',
+      );
+    }
+    if (!signatureMechanism.length || !differentiators.length || !mustBeVisible.length) {
+      add(
+        'POSITIVE_SPATIAL_MECHANISM_MISSING',
+        'block',
+        'Formal space generation requires a drawable signature mechanism, positive differentiators, and visible evidence.',
+      );
+    }
+    if (!roleManifestation.length
+      || !roleManifestation.some((item) => prompt.includes(item))
+      || !functionalNetwork.length) {
+      add(
+        'BRAND_ROLE_NOT_SPATIALLY_MANIFESTED',
+        'block',
+        'The confirmed brand role is not manifested through visible spatial relationships.',
+      );
+    }
+    if (scenes.length < 3 || functionalNetwork.length < 3) {
+      add(
+        'FLAGSHIP_PROGRAM_TOO_GENERIC',
+        'block',
+        'The scene program and functional network do not establish a sufficiently specific multi-node flagship experience.',
+      );
+    }
+    const positiveItems = list(
+      roleManifestation,
+      signatureMechanism,
+      functionalNetwork,
+      scenes,
+      differentiators,
+      mustBeVisible,
+    );
+    const negativeItems = list(
+      projectContract?.toneBoundaries?.flatMap((item) => item?.avoid),
+      projectContract?.brandMisreadRisks?.map((item) => item?.description),
+      projectContract?.mustTransform?.flatMap((item) => item?.forbiddenLiteralUse),
+      taskContract?.mustAvoid,
+    );
+    const positiveCharacters = positiveItems.join('').length;
+    const negativeCharacters = negativeItems.join('').length;
+    const positiveStart = prompt.indexOf('Positive Spatial Mechanism');
+    const firstNegative = prompt.search(/prohibition|Strict negative|严格禁止|不得|禁止/iu);
+    if (!positiveCharacters
+      || negativeCharacters > positiveCharacters
+      || positiveStart < 0
+      || (firstNegative >= 0 && positiveStart > firstNegative)) {
+      add(
+        'NEGATIVE_RULES_OUTWEIGH_POSITIVE_MECHANISM',
+        'block',
+        'Positive spatial propositions must precede and outweigh negative constraints.',
       );
     }
   }
