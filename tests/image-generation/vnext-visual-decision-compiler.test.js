@@ -64,8 +64,8 @@ function packet(overrides = {}) {
         spatialConcept: '将羽毛的层叠、生长、精密和轻盈转化为可进入的半透明生物组织空间。',
         structureLanguage: ['柔性层叠曲面隔断', '渐进尺度天花节奏'],
         materialLanguage: [{
-          material: '微水泥、哑光石材、磨砂玻璃与半透明树脂',
-          behavior: ['低反射', '透射', '漫反射', '真实厚度'],
+          material: '微水泥、哑光石材、珍珠涂层、磨砂玻璃、半透明树脂与拉丝冷银金属',
+          behavior: ['低反射', '透射', '漫反射', '真实厚度', '精细接缝与收边'],
           brandRole: '建立医疗专业基底与生命结构层次',
           forbidden: ['廉价塑料感', '过度镜面'],
         }],
@@ -81,8 +81,14 @@ function packet(overrides = {}) {
           accent: [{ name: '低饱和矿物紫与冷银', ratio: 10, role: '品牌识别点缀' }],
           forbidden: ['大面积亮紫', '霓虹紫', '高饱和渐变'],
         },
-        brandIntegration: ['Logo 小面积位于后方识别墙或保留干净识别位'],
-        functionalExperience: ['入口到接待、等候与后场的清晰动线'],
+        brandIntegration: [
+          '羽毛抽象分散进入半透明隔断、曲面墙体与天花层次',
+          'Logo 小面积位于后方内部服务节点或保留干净识别位',
+        ],
+        functionalExperience: [
+          '前景为到达与等候，中景为咨询、展示和半透明分区，背景为接待识别与后方服务空间',
+          '动线从入口进入、停留、咨询展示并前往后方',
+        ],
         sceneMisreadRisks: ['茶空间', '生活方式零售', '售楼处', '普通办公室', '霓虹空间'],
       },
       packaging: { status: 'interface_only', concept: '', expressionLanguage: [], misreadRisks: [] },
@@ -96,8 +102,8 @@ function packet(overrides = {}) {
       forbidden: ['大面积亮紫', '霓虹紫', '高饱和渐变'],
     },
     materialSystem: [{
-      material: '微水泥、哑光石材、磨砂玻璃与半透明树脂',
-      behavior: ['低反射', '透射', '漫反射', '真实厚度'],
+      material: '微水泥、哑光石材、珍珠涂层、磨砂玻璃、半透明树脂与拉丝冷银金属',
+      behavior: ['低反射', '透射', '漫反射', '真实厚度', '精细接缝与收边'],
       brandRole: '建立医疗专业基底与生命结构层次',
       forbidden: ['廉价塑料感', '过度镜面'],
     }],
@@ -210,13 +216,13 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     '半透明生物组织空间',
     '珍珠白与暖灰',
     '建议占比 70%',
-    '微水泥、哑光石材、磨砂玻璃与半透明树脂',
+    '微水泥、哑光石材、珍珠涂层、磨砂玻璃、半透明树脂与拉丝冷银金属',
     '柔和自然侧光',
     '茶空间',
     'Use the supplied logo asset',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.0.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '3.1.0');
   assert.deepEqual(result.compiledPrompt.completeness.coverage, {
     hardFacts: 1,
     upgradeThesis: 1,
@@ -315,6 +321,32 @@ test('Logo preservation rule does not conflict with a confirmed Logo reference',
   assert.equal(result.taskContract.logoUsageMode, 'reference');
   assert.match(result.compiledPrompt.finalPrompt, /禁止将 Logo 变形或拆解/u);
   assert.equal(result.compiledPrompt.completeness.conflictCount, 0);
+});
+
+test('platform space fails closed when project specificity regresses to storefront decoration', () => {
+  const packetValue = packet();
+  packetValue.mediaTranslations.spatial.brandIntegration = [
+    '入口顶部中央使用大型发光 Logo 主招牌',
+    '右侧放置单一巨型羽毛雕塑打卡装置',
+  ];
+  packetValue.mediaTranslations.spatial.functionalExperience = [
+    '入口、前台和沙发等候区',
+  ];
+  packetValue.mediaTranslations.spatial.colorBehavior = {
+    primary: [{ name: '暖白', ratio: 70, role: '空间基底' }],
+    secondary: [{ name: '珠光紫', ratio: 20, role: '品牌氛围' }],
+    accent: [{ name: '孔雀紫', ratio: 10, role: '品牌识别' }],
+    forbidden: [],
+  };
+  packetValue.colorSystem = packetValue.mediaTranslations.spatial.colorBehavior;
+  assert.throws(
+    () => compile({ packet: packetValue }),
+    (error) => error?.code === 'PROMPT_PROJECT_SPECIFICITY_INSUFFICIENT'
+      && error.issues.includes('distributed_spatial_translation')
+      && error.issues.includes('subtle_logo_behavior')
+      && error.issues.includes('accent_color_overweight')
+      && error.issues.includes('scene_story_foreground'),
+  );
 });
 
 function alternatePacket({

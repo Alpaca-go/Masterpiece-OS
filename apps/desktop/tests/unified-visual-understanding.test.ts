@@ -140,6 +140,14 @@ extracted.mediaTranslations.spatial.sceneMisreadRisks.push(
   '售楼处',
   '文化会所',
 );
+extracted.mediaTranslations.spatial.brandIntegration = [
+  '核心抽象分散进入半透明隔断与曲面墙体',
+  '小面积 Logo 位于后方内部服务节点',
+];
+extracted.mediaTranslations.spatial.functionalExperience = [
+  '前景为到达与等候，中景为咨询和半透明分区，背景为接待与后方服务空间',
+  '动线从入口进入、停留咨询并前往后方',
+];
 
 test('unified prompt requests evidence-rich A-F modules without embedding Jiuzhou answers', () => {
   const prompt = buildUnifiedVisualUnderstandingPrompt(project(), ['asset:1']);

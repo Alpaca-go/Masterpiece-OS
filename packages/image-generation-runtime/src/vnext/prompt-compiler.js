@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import { assertVNextProjectPromptAsset } from './project-prompt-asset.js';
 
 export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '3.0.0';
+export const VNEXT_PROMPT_COMPILER_VERSION = '3.1.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -168,6 +168,122 @@ function assertPacketConflicts({ packetSource, taskContract, negativeConstraints
   }
 }
 
+function platformRoleContract(taskContract, packetSource) {
+  const roleText = cleanList(
+    taskContract.currentInstruction,
+    taskContract.mustInclude,
+    packetSource?.projectFacts?.brandRole,
+    packetSource?.creativeDecision?.brandRoleStatement,
+  ).join(' ');
+  return /全链|生态平台|产业平台|ecosystem|platform|network/iu.test(roleText)
+    ? 'Brand role contract: high-end full-chain ecosystem platform and flagship composite experience, not a single consumer beauty store.'
+    : '';
+}
+
+function assertProjectSpecificity({ packetSource, taskContract, logoUsageMode }) {
+  if (!packetSource || taskContract.deliverableFamily !== 'space') return;
+  const issues = [];
+  const platformContract = platformRoleContract(taskContract, packetSource);
+  if (!platformContract) return;
+
+  const integration = cleanList(packetSource.spatial?.brandIntegration).join(' ');
+  const interfaceCount = [
+    /隔断|partition/iu,
+    /墙体|墙面|wall/iu,
+    /天花|顶面|ceiling/iu,
+    /光线|光过滤|lighting|light-filter/iu,
+    /展示|display/iu,
+    /动线|路径|circulation|path/iu,
+  ].filter((pattern) => pattern.test(integration)).length;
+  if (interfaceCount < 2 || /单一.*(?:雕塑|装置)|巨型.*(?:雕塑|装置)|打卡装置/iu.test(integration)) {
+    issues.push('distributed_spatial_translation');
+  }
+  if (logoUsageMode === 'reference'
+    && (!/(小面积|次层级|后方|内部|预留|留白|small|subtle|background|internal|reserved)/iu.test(integration)
+      || /顶部中央|入口门头|主招牌|最大视觉中心|top center|storefront sign/iu.test(integration))) {
+    issues.push('subtle_logo_behavior');
+  }
+
+  const story = cleanList(packetSource.spatial?.functionalExperience).join(' ');
+  for (const [id, pattern] of [
+    ['foreground', /前景|foreground/iu],
+    ['midground', /中景|midground/iu],
+    ['background', /背景|background/iu],
+    ['circulation', /动线|进入|前往后方|circulation|arrival.*consult/iu],
+  ]) {
+    if (!pattern.test(story)) issues.push(`scene_story_${id}`);
+  }
+
+  const primaryRatio = cleanList(packetSource.colorBehavior?.primary)
+    ? (packetSource.colorBehavior?.primary || []).reduce((sum, item) => sum + Number(item?.ratio || 0), 0)
+    : 0;
+  const secondaryRatio = (packetSource.colorBehavior?.secondary || [])
+    .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
+  const accentRatio = (packetSource.colorBehavior?.accent || [])
+    .reduce((sum, item) => sum + Number(item?.ratio || 0), 0);
+  if (primaryRatio < 65 || primaryRatio > 75
+    || secondaryRatio < 15 || secondaryRatio > 25
+    || accentRatio < 5 || accentRatio > 15) {
+    issues.push('color_70_20_10_behavior');
+  }
+  const accentFamilies = new Set(
+    (packetSource.colorBehavior?.accent || []).flatMap((item) =>
+      [...String(item?.name || '').matchAll(/[紫红蓝绿橙黄金粉]|purple|violet|red|blue|green|orange|gold|pink/giu)]
+        .map((match) => match[0].toLowerCase())),
+  );
+  const nonAccentColors = [
+    ...(packetSource.colorBehavior?.primary || []),
+    ...(packetSource.colorBehavior?.secondary || []),
+  ];
+  if (nonAccentColors.some((item) =>
+    [...accentFamilies].some((family) => String(item?.name || '').toLowerCase().includes(family)))) {
+    issues.push('accent_color_overweight');
+  }
+
+  const materials = JSON.stringify(packetSource.materialBehavior || []);
+  for (const [id, pattern] of [
+    ['translucent_structure', /半透明.*(?:树脂|亚克力)|translucent.*(?:resin|acrylic)/iu],
+    ['frosted_glass', /(?:低铁|中性)?磨砂玻璃|frosted glass/iu],
+    ['pearl_surface', /珍珠|珠光|pearl/iu],
+    ['cool_silver_detail', /冷银|拉丝.*(?:不锈钢|银|金属)|brushed.*(?:stainless|silver|metal)/iu],
+    ['physical_behavior', /厚度|接缝|收边|透射|漫反射|thickness|joint|edge|transmission|diffuse/iu],
+  ]) {
+    if (!pattern.test(materials)) issues.push(`material_${id}`);
+  }
+
+  const lighting = JSON.stringify(packetSource.lightingBehavior || {});
+  for (const [id, pattern] of [
+    ['natural_side_light', /自然侧光|侧向自然光|侧面自然光|natural side light/iu],
+    ['diffuse_reflection', /漫反射|diffuse/iu],
+    ['material_transmission', /透射|穿透|穿过|transmission|through/iu],
+  ]) {
+    if (!pattern.test(lighting)) issues.push(`lighting_${id}`);
+  }
+
+  const negatives = cleanList(
+    packetSource.diagnosis?.brandMisreadRisks?.map((item) => item.target),
+    packetSource.spatial?.sceneMisreadRisks,
+    packetSource.creativeDecision?.strategicNegatives,
+    taskContract.mustAvoid,
+  ).join(' ');
+  for (const [id, pattern] of [
+    ['beauty_salon', /美容院|beauty salon/iu],
+    ['hospital', /医院|诊室|临床|hospital|clinic/iu],
+    ['tea_hospitality', /茶空间|茶室|会所|tea space|club/iu],
+    ['lifestyle_retail', /生活方式.*零售|零售(?:店|空间|展示)|lifestyle retail/iu],
+    ['sales_office', /售楼处|地产展示|sales office/iu],
+  ]) {
+    if (!pattern.test(negatives)) issues.push(`negative_${id}`);
+  }
+
+  if (issues.length) {
+    throw Object.assign(
+      new Error(`PROMPT_PROJECT_SPECIFICITY_INSUFFICIENT: ${issues.join(', ')}`),
+      { code: 'PROMPT_PROJECT_SPECIFICITY_INSUFFICIENT', issues },
+    );
+  }
+}
+
 function renderBlock(block) {
   return `【${block.title}】\n${block.items.map((item) => `- ${item}`).join('\n')}`;
 }
@@ -303,6 +419,11 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
       negativeConstraints,
       logoUsageMode,
     });
+    assertProjectSpecificity({
+      packetSource,
+      taskContract,
+      logoUsageMode,
+    });
   }
 
   // Fixed block order is part of the provider contract. Within each block the
@@ -340,6 +461,7 @@ export function compileVNextPrompt({ projectContext, taskContract, route, adapte
         packetSource?.projectFacts?.brandRole || source?.projectFacts?.brandRole || projectContext.brandCore.brandRole
           ? `Brand role: ${packetSource?.projectFacts?.brandRole || source?.projectFacts?.brandRole || projectContext.brandCore.brandRole}`
           : '',
+        platformRoleContract(taskContract, packetSource),
         !packetSource && source?.projectFacts?.primaryOfferings?.length
           ? `Primary offerings: ${source.projectFacts.primaryOfferings.join('、')}`
           : '',
