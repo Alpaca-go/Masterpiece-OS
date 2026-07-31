@@ -1,32 +1,85 @@
 import { useEffect, useMemo, useState } from 'react';
-import type { AnalysisProgress, AssetSummary, ProjectRecord, PublicSettings, VisualTranslationRunRecord } from '../../shared/types';
+import type {
+  AnalysisProgress,
+  AssetSummary,
+  DocumentContextRun,
+  ImageGenerationSourceBundle,
+  ImageGenerationRunSummary,
+  ProjectRecord,
+  PublicSettings,
+  ReferenceAnchorRun
+} from '../../shared/types';
 import { AnalysisModeTabs, type AnalysisMode } from './components/AnalysisModeTabs';
 import { AnalysisView } from './components/AnalysisView';
 import { ProjectWizard } from './components/ProjectWizard';
 import { ReportView } from './components/ReportView';
 import { SettingsPanel } from './components/SettingsPanel';
-import { VisualTranslationWorkspace } from './components/VisualTranslationWorkspace';
+import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
+import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
+import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
+import { VNextGenerationWorkspace } from './components/VNextGenerationWorkspace';
+import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
   return <span className={`badge ${status}`}>{labels[status]}</span>;
 }
 
-function TranslationStatusBadge({ status }: { status: VisualTranslationRunRecord['status'] }) {
-  const labels: Record<VisualTranslationRunRecord['status'], string> = { pending: '等待中', running: '运行中', completed: '已完成', failed: '失败', timed_out: '已超时', cancelled: '已取消' };
-  return <span className={`badge ${status}`}>{labels[status]}</span>;
+const DOCUMENT_CONTEXT_EXECUTING = new Set<DocumentContextRun['status']>(['pending', 'parsing', 'extracting', 'repairing']);
+
+function DocumentContextStatusBadge({ status }: { status: DocumentContextRun['status'] }) {
+  const labels: Record<DocumentContextRun['status'], string> = {
+    pending: '等待中',
+    parsing: '解析中',
+    extracting: '提取中',
+    repairing: '修复中',
+    awaiting_confirmation: '待确认',
+    compiling: '待编译',
+    completed: '已完成',
+    failed: '失败',
+    cancelled: '已取消'
+  };
+  const tone = DOCUMENT_CONTEXT_EXECUTING.has(status) ? 'running'
+    : status === 'awaiting_confirmation' || status === 'compiling' ? 'ready'
+    : status;
+  return <span className={`badge ${tone}`}>{labels[status]}</span>;
+}
+
+const REFERENCE_ANCHOR_EXECUTING = new Set<ReferenceAnchorRun['status']>(['pending', 'preparing', 'analyzing_reference', 'compiling_capsule', 'compiling_brief']);
+
+function ReferenceAnchorStatusBadge({ status }: { status: ReferenceAnchorRun['status'] }) {
+  const labels: Record<ReferenceAnchorRun['status'], string> = {
+    pending: '等待中',
+    preparing: '准备中',
+    analyzing_reference: '参考分析中',
+    compiling_capsule: '胶囊编译中',
+    compiling_brief: 'Brief 编译中',
+    awaiting_decision: '待决策',
+    completed: '已通过',
+    rejected: '已拒绝',
+    failed: '失败',
+    cancelled: '已取消'
+  };
+  const tone = REFERENCE_ANCHOR_EXECUTING.has(status) ? 'running'
+    : status === 'awaiting_decision' ? 'ready'
+    : status === 'rejected' ? 'failed'
+    : status;
+  return <span className={`badge ${tone}`}>{labels[status]}</span>;
 }
 
 export function App() {
   const [screen, setScreen] = useState<Screen>('home');
   const [settings, setSettings] = useState<PublicSettings | null>(null);
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
-  const [translationRuns, setTranslationRuns] = useState<VisualTranslationRunRecord[]>([]);
+  const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
+  const [referenceAnchorRuns, setReferenceAnchorRuns] = useState<ReferenceAnchorRun[]>([]);
+  const [requestedImageGen, setRequestedImageGen] = useState<ImageGenerationSourceBundle | null>(null);
   const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
-  const [requestedTranslationRunId, setRequestedTranslationRunId] = useState('');
+  const [requestedDocumentContextRunId, setRequestedDocumentContextRunId] = useState('');
+  const [requestedReferenceAnchorRunId, setRequestedReferenceAnchorRunId] = useState('');
   const [selected, setSelected] = useState<ProjectRecord | null>(null);
   const [selectedApiProfileId, setSelectedApiProfileId] = useState('');
   const [settingsReturnScreen, setSettingsReturnScreen] = useState<Screen>('home');
@@ -35,7 +88,8 @@ export function App() {
   const [error, setError] = useState('');
   const [runFailure, setRunFailure] = useState('');
   const [deletingProjectId, setDeletingProjectId] = useState('');
-  const [deletingRunId, setDeletingRunId] = useState('');
+  const [deletingDocumentContextRunId, setDeletingDocumentContextRunId] = useState('');
+  const [deletingReferenceAnchorRunId, setDeletingReferenceAnchorRunId] = useState('');
   const [loading, setLoading] = useState(true);
   const enabledProfiles = settings?.profiles.filter((profile) => profile.isEnabled) || [];
   const selectedProfile = enabledProfiles.find((profile) => profile.id === selectedApiProfileId)
@@ -52,11 +106,22 @@ export function App() {
   }, [assets]);
 
   async function refresh() {
-    const [nextSettings, nextProjects, nextTranslationRuns] = await Promise.all([window.masterpiece.settings.get(), window.masterpiece.projects.list(), window.masterpiece.visualTranslation.listRuns()]);
+    const [nextSettings, nextProjects, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
+      window.masterpiece.settings.get(),
+      window.masterpiece.projects.list(),
+      window.masterpiece.documentContext.listRuns(),
+      window.masterpiece.referenceAnchor.listRuns()
+    ]);
     setSettings(nextSettings);
     setProjects(nextProjects);
-    setTranslationRuns(nextTranslationRuns);
-    return { settings: nextSettings, projects: nextProjects, translationRuns: nextTranslationRuns };
+    setDocumentContextRuns(nextDocumentContextRuns);
+    setReferenceAnchorRuns(nextReferenceAnchorRuns);
+    return {
+      settings: nextSettings,
+      projects: nextProjects,
+      documentContextRuns: nextDocumentContextRuns,
+      referenceAnchorRuns: nextReferenceAnchorRuns
+    };
   }
 
   useEffect(() => {
@@ -65,12 +130,30 @@ export function App() {
       setLoading(false);
       return;
     }
-    void refresh().then(({ settings: loaded, projects: existing }) => {
-      const initial = loaded.profiles.find((profile) => profile.isDefault && profile.isEnabled)
-        || loaded.profiles.find((profile) => profile.isEnabled);
-      setSelectedApiProfileId(initial?.id || '');
-      if (!loaded.profiles.length && existing.length === 0) setScreen('settings');
-    }).catch((reason) => setError(cleanError(reason))).finally(() => setLoading(false));
+    let settled = false;
+    const startupTimer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      setError('客户端初始化超时（20 秒）：主进程未响应启动请求。常见原因是默认数据目录位于不可访问的网络/重定向位置（如离线的 OneDrive、企业漫游配置文件），或主进程被阻塞。请确认数据目录可访问，或把数据目录改到本地路径后重试。');
+      setLoading(false);
+    }, 20000);
+    void refresh()
+      .then(({ settings: loaded, projects: existing }) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(startupTimer);
+        const initial = loaded.profiles.find((profile) => profile.isDefault && profile.isEnabled)
+          || loaded.profiles.find((profile) => profile.isEnabled);
+        setSelectedApiProfileId(initial?.id || '');
+        if (!loaded.profiles.length && existing.length === 0) setScreen('settings');
+      })
+      .catch((reason) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(startupTimer);
+        setError(cleanError(reason));
+      })
+      .finally(() => { if (settled) setLoading(false); });
     return window.masterpiece.analysis.onProgress((event) => setProgress(event));
   }, []);
 
@@ -183,21 +266,41 @@ export function App() {
     }
   }
 
-  async function deleteTranslationRun(run: VisualTranslationRunRecord) {
-    if (run.status === 'running') return;
-    if (!window.confirm(`确定删除文档视觉转译任务“${run.projectName}”吗？\n\n此操作会同时永久删除该任务对应的本地文件夹，包括策略文档、缓存、报告和运行记录，且无法撤销。`)) return;
-    setDeletingRunId(run.id);
+  async function deleteReferenceAnchorRun(run: ReferenceAnchorRun) {
+    if (REFERENCE_ANCHOR_EXECUTING.has(run.status)) return;
+    if (!window.confirm(`确定删除参考锚定任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的参考图副本、风格胶囊、Anchor Brief 和运行记录，且无法撤销。`)) return;
+    setDeletingReferenceAnchorRunId(run.id);
     setError('');
     try {
-      await window.masterpiece.visualTranslation.remove(run.id);
-      setTranslationRuns((current) => current.filter((item) => item.id !== run.id));
-      if (requestedTranslationRunId === run.id) {
-        setRequestedTranslationRunId('');
-      }
+      await window.masterpiece.referenceAnchor.remove(run.id);
+      setReferenceAnchorRuns((current) => current.filter((item) => item.id !== run.id));
+      if (requestedReferenceAnchorRunId === run.id) setRequestedReferenceAnchorRunId('');
     } catch (reason) {
       setError(cleanError(reason));
     } finally {
-      setDeletingRunId('');
+      setDeletingReferenceAnchorRunId('');
+    }
+  }
+
+  async function deleteDocumentContextRun(run: DocumentContextRun) {
+    if (DOCUMENT_CONTEXT_EXECUTING.has(run.status)) return;
+    if (!window.confirm(`确定删除文档上下文提取任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的文档副本、中间产物、简报和运行记录，且无法撤销。`)) return;
+    setDeletingDocumentContextRunId(run.id);
+    setError('');
+    try {
+      const referenced = await window.masterpiece.contextIntegration.isDocumentContextReferenced(run.id).catch(() => false);
+      if (referenced) {
+        setError('该文档上下文已被视觉项目引用，请先在对应项目的「项目上下文」中解除关联后再删除。');
+        setDeletingDocumentContextRunId('');
+        return;
+      }
+      await window.masterpiece.documentContext.remove(run.id);
+      setDocumentContextRuns((current) => current.filter((item) => item.id !== run.id));
+      if (requestedDocumentContextRunId === run.id) setRequestedDocumentContextRunId('');
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setDeletingDocumentContextRunId('');
     }
   }
 
@@ -211,18 +314,37 @@ export function App() {
     }
   }
 
+  function openImageGeneration(sources: ImageGenerationSourceBundle) {
+    const imageProfile = settings?.profiles.find((profile) => profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation' && profile.isDefault)
+      || settings?.profiles.find((profile) => profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation');
+    setSelectedApiProfileId(imageProfile?.id || '');
+    setRequestedImageGen(sources);
+    setScreen('image-generation');
+  }
+
   if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
   if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
 
   if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
   if (screen === 'create') return <div className="analysis-workspace-shell">
-    <AnalysisModeTabs value={analysisMode} onChange={(mode) => { setAnalysisMode(mode); if (mode !== 'visual-translation') setRequestedTranslationRunId(''); }} />
+    <AnalysisModeTabs value={analysisMode} onChange={(mode) => {
+      setAnalysisMode(mode);
+      if (mode !== 'document-context') setRequestedDocumentContextRunId('');
+      if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
+    }} />
     <div hidden={analysisMode !== 'visual-analysis'}><ProjectWizard settings={settings} onCancel={() => { setScreen('home'); void refresh(); }} onStart={(project, profileId) => {
       setSelected(project);
       setSelectedApiProfileId(profileId);
       void run(project, true, profileId);
     }} /></div>
-    <div hidden={analysisMode !== 'visual-translation'}><VisualTranslationWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedTranslationRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} /></div>
+    <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateReferencePreview={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'reference_preview', purpose: 'exploration', projectId, reference: { referenceAnchorRunId }, userIntent: {} })} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'integrated_anchor', purpose: 'production', projectId, visual: { projectId }, reference: { referenceAnchorRunId }, userIntent: {} })} onContinueCreativeProduction={(projectId) => {
+      const project = projects.find((item) => item.id === projectId);
+      if (project) {
+        setSelected(project);
+        setScreen('creative-session');
+      }
+    }} /></div>
+    <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
   </div>;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
@@ -232,7 +354,35 @@ export function App() {
     onRetry={() => void run(selected, true, selectedApiProfileId)}
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
-  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} />;
+  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
+
+  if (screen === 'creative-session' && selected) {
+    const imageProfiles = settings.profiles.filter((profile) =>
+      profile.isEnabled
+      && profile.hasApiKey
+      && profile.modelType === 'image_generation'
+      && profile.protocol === 'seedream-image');
+    const imageApiProfileId = (imageProfiles.some((profile) => profile.id === selectedApiProfileId)
+      ? selectedApiProfileId
+      : (imageProfiles.find((profile) => profile.isDefault) || imageProfiles[0])?.id) || '';
+    return <VNextGenerationWorkspace
+      project={selected}
+      imageProfiles={imageProfiles}
+      imageApiProfileId={imageApiProfileId}
+      onImageApiProfileChange={setSelectedApiProfileId}
+      onBack={() => setScreen('report')}
+      onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
+    />;
+  }
+
+  if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
+    sourceBundle={requestedImageGen}
+    settings={settings}
+    apiProfileId={selectedApiProfileId}
+    onApiProfileChange={setSelectedApiProfileId}
+    onBack={() => { setRequestedImageGen(null); setScreen('home'); void refresh(); }}
+    onOpenSettings={() => { setSettingsReturnScreen('image-generation'); setScreen('settings'); }}
+  />;
 
   if (screen === 'project' && selected) {
     const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
@@ -255,6 +405,7 @@ export function App() {
           <button className="button ghost full" disabled={!selected.lastReportFilename || !canAnalyze} onClick={() => void run(selected, false, selectedProfile?.id)}>使用精确缓存</button>
         </aside>
       </div>
+      <ContextIntegrationPanel projectId={selected.id} projectName={selected.projectName} onOpenReference={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }} />
     </div>;
   }
 
@@ -263,11 +414,12 @@ export function App() {
   const hasUsableProfile = enabledProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
   const recentRecords = [
     ...projects.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
-    ...translationRuns.map((run) => ({ kind: 'visual-translation' as const, createdAt: run.createdAt, run }))
+    ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),
+    ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   return <div className="app-shell">
-    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Desktop / v5</small></div></div><nav><button className="active">项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
-    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('visual-translation'); setRequestedTranslationRunId(''); setScreen('create'); }}>文档视觉转译</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建分析 <span>↗</span></button></div></header>
+    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>{document.documentElement.dataset.runtime === 'web' ? 'Web / v5' : 'Desktop / v5'}</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
+    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
       {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
       {error && <div className="notice error">{error}</div>}
       <section className="recent-section"><div className="section-title"><div><span>RECENT ANALYSIS</span><h2>最近分析记录</h2></div><small>{recentRecords.length} 条本地记录</small></div>
@@ -281,17 +433,27 @@ export function App() {
             <span className="row-arrow">→</span>
           </button>
           <button className="project-delete" disabled={record.project.status === 'running' || deletingProjectId === record.project.id} title={record.project.status === 'running' ? '请先取消正在运行的分析' : `删除 ${record.project.projectName} 及本地文件夹`} aria-label={`删除项目 ${record.project.projectName}`} onClick={() => void deleteProject(record.project)}>{deletingProjectId === record.project.id ? '…' : '删除'}</button>
-        </div> : <div className="project-row translation-record" key={`translation-${record.run.id}`}>
-          <button className="project-row-open" onClick={() => { setRequestedTranslationRunId(record.run.id); setAnalysisMode('visual-translation'); setScreen('create'); }}>
+        </div> : record.kind === 'reference-anchor' ? <div className="project-row translation-record" key={`reference-anchor-${record.run.id}`}>
+          <button className="project-row-open" onClick={() => { setRequestedReferenceAnchorRunId(record.run.id); setAnalysisMode('reference-anchor'); setScreen('create'); }}>
             <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type visual-translation">文档视觉转译</span>{record.run.documentCount} 份文档</small></div>
-            <TranslationStatusBadge status={record.run.status} />
+            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type reference-anchor">参考锚定</span>{record.run.referenceAssetCount} 张参考图</small></div>
+            <ReferenceAnchorStatusBadge status={record.run.status} />
             <div className="project-model"><small>MODEL</small><strong>{record.run.model || '—'}</strong></div>
             <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
             <span className="row-arrow">→</span>
           </button>
-          <button className="project-delete" disabled={record.run.status === 'running' || deletingRunId === record.run.id} title={record.run.status === 'running' ? '请先取消正在运行的分析' : `删除文档视觉转译任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除文档视觉转译任务 ${record.run.projectName}`} onClick={() => void deleteTranslationRun(record.run)}>{deletingRunId === record.run.id ? '…' : '删除'}</button>
-        </div>)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析记录</strong><p>进入分析工作台，选择视觉分析或文档视觉转译开始第一次任务。</p><button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>开始第一次分析</button></div>}
+          <button className="project-delete" disabled={REFERENCE_ANCHOR_EXECUTING.has(record.run.status) || deletingReferenceAnchorRunId === record.run.id} title={REFERENCE_ANCHOR_EXECUTING.has(record.run.status) ? '请先取消正在运行的锚定任务' : `删除参考锚定任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除参考锚定任务 ${record.run.projectName}`} onClick={() => void deleteReferenceAnchorRun(record.run)}>{deletingReferenceAnchorRunId === record.run.id ? '…' : '删除'}</button>
+        </div> : record.kind === 'document-context' ? <div className="project-row translation-record" key={`document-context-${record.run.id}`}>
+          <button className="project-row-open" onClick={() => { setRequestedDocumentContextRunId(record.run.id); setAnalysisMode('document-context'); setScreen('create'); }}>
+            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
+            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type document-context">文档上下文提取</span>{record.run.documentCount} 份文档</small></div>
+            <DocumentContextStatusBadge status={record.run.status} />
+            <div className="project-model"><small>MODEL</small><strong>{record.run.model || '—'}</strong></div>
+            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
+            <span className="row-arrow">→</span>
+          </button>
+          <button className="project-delete" disabled={DOCUMENT_CONTEXT_EXECUTING.has(record.run.status) || deletingDocumentContextRunId === record.run.id} title={DOCUMENT_CONTEXT_EXECUTING.has(record.run.status) ? '请先取消正在运行的提取任务' : `删除文档上下文提取任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除文档上下文提取任务 ${record.run.projectName}`} onClick={() => void deleteDocumentContextRun(record.run)}>{deletingDocumentContextRunId === record.run.id ? '…' : '删除'}</button>
+        </div> : null)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析记录</strong><p>进入分析工作台，选择视觉分析、文档分析或参考视觉转换开始第一次任务。</p><button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>开始第一次分析</button></div>}
       </section>
     </main>
   </div>;

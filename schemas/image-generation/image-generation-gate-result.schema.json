@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-gate-result-v1",
+  "title": "Image Generation Gate Result V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["blocked", "errors", "warnings"],
+  "properties": {
+    "blocked": { "type": "boolean" },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "gate", "message"],
+        "properties": {
+          "code": {
+            "enum": [
+              "CURRENT_PROJECT_CONTEXT_MISSING",
+              "CURRENT_PROJECT_IDENTITY_MISSING",
+              "REFERENCE_ANCHOR_NOT_APPROVED",
+              "LOCKED_ASSET_CONFLICT_UNRESOLVED",
+              "REFERENCE_BRAND_IDENTITY_LEAK",
+              "REFERENCE_LOGO_DIRECT_COPY",
+              "REFERENCE_SLOGAN_LEAK",
+              "REFERENCE_SIGNATURE_GRAPHIC_DIRECT_COPY",
+              "GENERATION_PRESET_MISSING",
+              "GENERATION_PRESET_UNSUPPORTED",
+              "VISUAL_CONTEXT_REQUIRED",
+              "DOCUMENT_CONTEXT_REQUIRED",
+              "RESOLVED_CONTEXT_REQUIRED",
+              "REFERENCE_CONTEXT_REQUIRED",
+              "CURRENT_IDENTITY_IMAGE_REQUIRED",
+              "REFERENCE_RUN_REJECTED",
+              "REFERENCE_RUN_NOT_READY",
+              "SOURCE_BUNDLE_INVALID",
+              "ANCHOR_GENERATION_BRIEF_MISSING",
+              "IMAGE_GENERATION_TASK_INVALID",
+              "TASK_PROMPT_EMPTY",
+              "OUTPUT_TYPE_UNSUPPORTED",
+              "ASPECT_OR_SIZE_UNSUPPORTED",
+              "REFERENCE_IMAGE_MISSING",
+              "REFERENCE_IMAGE_LIMIT_EXCEEDED",
+              "PROVIDER_CONFIG_MISSING",
+              "PROVIDER_MODEL_UNAVAILABLE",
+              "REFERENCE_IMAGE_REQUIRED",
+              "GENERATION_INTENT_MISSING",
+              "PROMPT_FRAGMENT_EMPTY",
+              "PROMPT_COMPOSITION_FAILED",
+              "DELIVERABLE_MISSING",
+              "DELIVERABLE_UNSUPPORTED",
+              "DELIVERABLE_USER_INTENT_CONFLICT",
+              "DELIVERABLE_PROMPT_INCOMPLETE",
+              "DELIVERABLE_REFERENCE_MISMATCH",
+              "INTERIOR_SCENE_SPATIAL_REQUIREMENTS_MISSING",
+              "INTERIOR_SCENE_FLATLAY_CONFLICT",
+              "STOREFRONT_SCENE_REQUIREMENTS_MISSING",
+              "PACKAGING_STRUCTURE_REFERENCE_MISSING",
+              "COMPILE_INPUT_STALE",
+              "PROVIDER_TASK_ID_MISSING",
+              "PROVIDER_RESULT_MISSING",
+              "IMAGE_RESULT_URL_MISSING",
+              "IMAGE_DOWNLOAD_FAILED",
+              "IMAGE_MIME_INVALID",
+              "IMAGE_FILE_EMPTY",
+              "IMAGE_HASH_FAILED",
+              "OUTPUT_WRITE_FAILED"
+            ]
+          },
+          "gate": {
+            "enum": ["identity_safety", "task_executability", "artifact_completeness"]
+          },
+          "message": { "type": "string", "minLength": 1 },
+          "detail": { "type": "object" }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "message"],
+        "properties": {
+          "code": {
+            "enum": [
+              "LOGO_RENDERING_MAY_BE_INACCURATE",
+              "GENERATED_TEXT_MAY_BE_UNSAFE",
+              "GRAPHIC_ANCHOR_MAY_BE_GENERIC",
+              "COLOR_BALANCE_MAY_BE_SUBOPTIMAL",
+              "VISUAL_DIRECTION_MAY_BE_WEAK",
+              "PACKAGING_STRUCTURE_UNCONFIRMED",
+              "REFERENCE_IMAGES_REDUCED",
+              "INFORMATION_DENSITY_MAY_BE_HIGH",
+              "CONCEPT_ONLY",
+              "BRAND_IDENTITY_NOT_FULLY_BOUND",
+              "CURRENT_IDENTITY_NOT_BOUND",
+              "LOGO_RENDERING_NOT_GUARANTEED",
+              "PACKAGING_STRUCTURE_NOT_GUARANTEED",
+              "DOCUMENT_CONTEXT_NOT_USED",
+              "REFERENCE_STYLE_NOT_USED",
+              "VISUAL_CONTEXT_NOT_USED",
+              "UNAPPROVED_REFERENCE_PREVIEW",
+              "LIMITED_VISUAL_EVIDENCE",
+              "LIMITED_DOCUMENT_EVIDENCE",
+              "USER_INTENT_EMPTY",
+              "NO_NEW_STYLE_REFERENCE",
+              "ORIGINAL_STYLE_REFERENCE_REDUCED",
+              "CREATIVE_DIFFERENCE_MAY_BE_LOW",
+              "ANCHOR_FIRST_ONLY",
+              "REFERENCE_PLAN_AUTO_REDUCED",
+              "NO_SPATIAL_REFERENCE",
+              "VI_COLLECTIONS_MOVED_TO_ANALYSIS_ONLY"
+            ]
+          },
+          "message": { "type": "string", "minLength": 1 },
+          "detail": { "type": "object" }
+        }
+      }
+    }
+  }
+}

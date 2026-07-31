@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/locked-asset.schema.json",
+  "title": "Locked Asset V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "type", "name", "rule", "priority",
+    "allowedChanges", "forbiddenChanges", "evidence", "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "type": {
+      "enum": [
+        "brand_name", "logo", "product_category", "packaging_structure",
+        "packaging_artwork", "product_color", "product_arrangement",
+        "core_symbol", "required_visual_element", "forbidden_reference_content"
+      ]
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "sourceAssetId": { "type": "string", "minLength": 1 },
+    "sourceFile": {
+      "type": "string",
+      "minLength": 1,
+      "not": { "pattern": "^(?:[A-Za-z]:[\\\\/]|[/\\\\]{2}|/)" }
+    },
+    "thumbnail": {
+      "type": "string",
+      "minLength": 1,
+      "not": { "pattern": "^(?:[A-Za-z]:[\\\\/]|[/\\\\]{2}|/)" }
+    },
+    "rule": { "type": "string", "minLength": 1 },
+    "priority": { "enum": ["critical", "high", "medium", "low"] },
+    "allowedChanges": { "$ref": "#/$defs/strings" },
+    "forbiddenChanges": { "$ref": "#/$defs/strings" },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "description"],
+      "properties": {
+        "source": {
+          "enum": ["project_visual_context", "creative_understanding", "user_confirmed"]
+        },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

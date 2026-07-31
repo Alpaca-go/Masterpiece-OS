@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/reference-style-capsule-v1",
+  "title": "Reference Style Capsule V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sourceRunId",
+    "currentProjectId",
+    "generatedAt",
+    "currentProject",
+    "projectFacts",
+    "inheritedStyle",
+    "userPreference",
+    "userAvoidance",
+    "prohibitedReferenceIdentity",
+    "anchorGoal",
+    "aspectRatio",
+    "humanNotes",
+    "uncertainties"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "sourceRunId": { "type": "string", "minLength": 1 },
+    "currentProjectId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "currentProject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "brandName",
+        "industry",
+        "logoLocked",
+        "logoAssetIds",
+        "lockedFacts",
+        "coreProducts",
+        "businessTouchpoints"
+      ],
+      "properties": {
+        "brandName": { "type": "string" },
+        "industry": { "type": "string" },
+        "logoLocked": { "type": "boolean" },
+        "logoAssetIds": { "type": "array", "items": { "type": "string" } },
+        "lockedFacts": { "type": "array", "items": { "type": "string" } },
+        "coreProducts": { "type": "array", "items": { "type": "string" } },
+        "businessTouchpoints": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "projectFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coreProducts", "services", "touchpoints", "designAdvice", "uncertainties"],
+      "properties": {
+        "coreProducts": { "type": "array", "items": { "type": "string" } },
+        "services": { "type": "array", "items": { "type": "string" } },
+        "touchpoints": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["packaging", "viApplications", "serviceMaterials", "spatial", "digital"],
+          "properties": {
+            "packaging": { "type": "array", "items": { "type": "string" } },
+            "viApplications": { "type": "array", "items": { "type": "string" } },
+            "serviceMaterials": { "type": "array", "items": { "type": "string" } },
+            "spatial": { "type": "array", "items": { "type": "string" } },
+            "digital": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "designAdvice": { "type": "array", "items": { "type": "string" } },
+        "uncertainties": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "inheritedStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "color",
+        "layoutAndTypography",
+        "graphicLanguage",
+        "materialAndPhotography",
+        "extensionMechanism"
+      ],
+      "properties": {
+        "color": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+        "layoutAndTypography": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+        "graphicLanguage": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+        "materialAndPhotography": { "type": "array", "items": { "type": "string" }, "maxItems": 5 },
+        "extensionMechanism": { "type": "array", "items": { "type": "string" }, "maxItems": 5 }
+      }
+    },
+    "userPreference": { "type": ["string", "null"] },
+    "userAvoidance": { "type": "array", "items": { "type": "string" } },
+    "prohibitedReferenceIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["brandNames", "logos", "slogans", "signatureGraphics", "proprietaryPatterns"],
+      "properties": {
+        "brandNames": { "type": "array", "items": { "type": "string" } },
+        "logos": { "type": "array", "items": { "type": "string" } },
+        "slogans": { "type": "array", "items": { "type": "string" } },
+        "signatureGraphics": { "type": "array", "items": { "type": "string" } },
+        "proprietaryPatterns": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "anchorGoal": { "type": "string" },
+    "aspectRatio": { "enum": ["16:9", "4:5", "3:4", "1:1"] },
+    "humanNotes": { "type": "array", "items": { "type": "string" } },
+    "uncertainties": { "type": "array", "items": { "type": "string" } }
+  }
+}

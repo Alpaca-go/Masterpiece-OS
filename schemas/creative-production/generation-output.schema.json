@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/generation-output.schema.json",
+  "title": "Generation Output V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "seriesId", "taskId", "generationRunId",
+    "imagePath", "version", "status", "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "seriesId": { "type": "string", "minLength": 1 },
+    "taskId": { "type": "string", "minLength": 1 },
+    "generationRunId": { "type": "string", "minLength": 1 },
+    "imagePath": { "type": "string", "minLength": 1 },
+    "version": { "type": "integer", "minimum": 1 },
+    "parentOutputId": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["candidate", "formal", "rejected", "supporting_canon"] },
+    "reviewNote": { "type": "string" },
+    "failureReason": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

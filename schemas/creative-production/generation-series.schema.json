@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/generation-series.schema.json",
+  "title": "Generation Series V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "name", "status", "styleProfileId",
+    "styleProfileVersion", "visualCanonId", "visualCanonVersion", "lockedAssetIds",
+    "promptCompilerVersion", "modelAdapterVersion", "tasks", "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["draft", "ready", "running", "paused", "completed", "failed", "cancelled"] },
+    "styleProfileId": { "type": "string", "minLength": 1 },
+    "styleProfileVersion": { "type": "string", "minLength": 1 },
+    "visualCanonId": { "type": "string", "minLength": 1 },
+    "visualCanonVersion": { "type": "string", "minLength": 1 },
+    "lockedAssetIds": { "$ref": "#/$defs/strings" },
+    "promptCompilerVersion": { "type": "string", "minLength": 1 },
+    "modelAdapterVersion": { "type": "string", "minLength": 1 },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schemaVersion", "id", "projectId", "seriesId", "taskCode", "taskType",
+          "title", "responsibility", "subject", "scene", "composition", "camera",
+          "aspectRatio", "outputCount", "styleProfileId", "styleProfileVersion",
+          "visualCanonId", "visualCanonVersion", "preferredCanonImageTypes",
+          "lockedAssetIds", "referenceAssetIds", "preserve", "change", "forbidden",
+          "status", "promptCompilerVersion", "generationRunIds", "outputIds",
+          "attemptCount", "createdAt", "updatedAt"
+        ],
+        "properties": {
+          "schemaVersion": { "const": "6.0" },
+          "id": { "type": "string" },
+          "projectId": { "type": "string" },
+          "seriesId": { "type": "string" },
+          "taskCode": { "type": "string", "minLength": 1 },
+          "taskType": { "enum": ["canon_candidate", "packaging_render", "poster", "vi_application"] },
+          "title": { "type": "string" },
+          "responsibility": { "type": "string" },
+          "subject": { "type": "string" },
+          "scene": { "type": "string" },
+          "composition": { "type": "string" },
+          "camera": { "type": "string" },
+          "aspectRatio": { "enum": ["16:9", "4:5", "3:4", "1:1"] },
+          "outputCount": { "const": 1 },
+          "styleProfileId": { "type": "string" },
+          "styleProfileVersion": { "type": "string" },
+          "visualCanonId": { "type": "string" },
+          "visualCanonVersion": { "type": "string" },
+          "preferredCanonImageTypes": { "$ref": "#/$defs/strings" },
+          "lockedAssetIds": { "$ref": "#/$defs/strings" },
+          "referenceAssetIds": { "$ref": "#/$defs/strings" },
+          "preserve": { "$ref": "#/$defs/strings" },
+          "change": { "$ref": "#/$defs/strings" },
+          "forbidden": { "$ref": "#/$defs/strings" },
+          "status": { "enum": ["ready", "queued", "running", "paused", "succeeded", "failed", "cancelled"] },
+          "promptCompilerVersion": { "type": "string" },
+          "generationRunIds": { "$ref": "#/$defs/strings" },
+          "outputIds": { "$ref": "#/$defs/strings" },
+          "attemptCount": { "type": "integer", "minimum": 0 },
+          "mode": { "enum": ["original", "edit", "variant"] },
+          "parentTaskId": { "type": "string", "minLength": 1 },
+          "baseImageId": { "type": "string", "minLength": 1 },
+          "lastError": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

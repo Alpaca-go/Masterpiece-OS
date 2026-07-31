@@ -1,0 +1,207 @@
+{
+  "generated_at": "2026-07-26",
+  "base_branch": "feature/reference-anchor-workflow",
+  "base_commit": "b8bea75e871d9ade590918fcc381489db05f0499",
+  "archive_tag": "archive/pre-repository-slimming-v2",
+  "work_branch": "refactor/repository-slimming-v2",
+  "legend": {
+    "migrate_to_package": "copy capability into packages/* then delete original",
+    "migrate_to_lab_document": "copy into labs/document-visual-directions then delete original",
+    "migrate_to_lab_reference": "copy into labs/reference-style-conversion then delete original",
+    "delete": "physically delete, no migration needed",
+    "keep_current": "production code, stays (possibly relocated within apps/desktop)"
+  },
+  "groups": {
+    "production_v5_engine_keep": {
+      "action": "keep_current",
+      "note": "Reached at runtime by apps/desktop pipeline-service via dynamic import of src/v5/bootstrap.js (runV5Pipeline). This IS the production visual-analysis engine.",
+      "files": [
+        "src/inventory.js",
+        "src/parsers.js",
+        "src/runtime-trace.js",
+        "src/utils.js",
+        "src/v5/bootstrap.js",
+        "src/v5/config/defaults.js",
+        "src/v5/config/schema.js",
+        "src/v5/creative-director/deep-creative-director.js",
+        "src/v5/creative-director/output-writer.js",
+        "src/v5/creative-director/prompt-builder.js",
+        "src/v5/creative-director/session-guard.js",
+        "src/v5/preparation/benchmark-preparation.js",
+        "src/v5/preparation/reasoning-cache.js",
+        "src/v5/preparation/visual-preparation.js",
+        "src/v5/telemetry/run-logger.js"
+      ]
+    },
+    "shared_to_model_runtime": {
+      "action": "migrate_to_package",
+      "target": "packages/model-runtime",
+      "files": [
+        "src/v5/adapters/qwen-reasoner.js",
+        "src/v5/adapters/openai-compatible-text-reasoner.js",
+        "src/v5/adapters/model-capabilities.js",
+        "src/v5/shared/analysis/response-parser.js"
+      ]
+    },
+    "shared_to_document_ingestion": {
+      "action": "migrate_to_package",
+      "target": "packages/document-ingestion",
+      "files": [
+        "src/v5/shared/analysis/document-preparation.js"
+      ]
+    },
+    "shared_to_runtime_core": {
+      "action": "migrate_to_package",
+      "target": "packages/runtime-core",
+      "files": [
+        "src/v5/shared/analysis/checkpoint-store.js",
+        "src/v5/shared/analysis/runtime-contracts.js"
+      ]
+    },
+    "lab_document_visual_directions": {
+      "action": "migrate_to_lab_document",
+      "target": "labs/document-visual-directions",
+      "note": "Full transitive closure of src/v5/visual-translation/v2/runtime/run-visual-translation-v2.js (71 files incl. 10 v1 schema/prompt deps folded in). Single pipeline only; A/B runner and freeze-test dropped.",
+      "entry": "src/v5/visual-translation/v2/runtime/run-visual-translation-v2.js",
+      "file_count": 71
+    },
+    "lab_reference_style_conversion": {
+      "action": "migrate_to_lab_reference",
+      "target": "labs/reference-style-conversion",
+      "note": "Self-contained, zero external repo deps.",
+      "files": [
+        "src/reference-translation/index.js",
+        "src/reference-translation/types.js",
+        "src/reference-translation/schemas.js",
+        "src/reference-translation/reference-visual-dna.js",
+        "src/reference-translation/classify-transferability.js",
+        "src/reference-translation/map-to-project.js",
+        "src/reference-translation/run-reference-translation.js"
+      ]
+    },
+    "v4_engine_delete": {
+      "action": "delete",
+      "note": "v4-era engine + support dirs. Reached only by bin/masterpiece-os.js CLI and old root tests. NOT reachable from desktop.",
+      "files": [
+        "src/v4-bootstrap.js",
+        "src/analysis.js",
+        "src/pipeline.js",
+        "src/cli.js (v4 routes removed; file rewritten for v5-only or deleted with bin)",
+        "adapters/ (root, 8 files)",
+        "orchestrators/ (4 files)",
+        "reviews/ (4 files)",
+        "validators/ (root, 14 files)",
+        "storage/ (3 files)",
+        "metrics/ (3 files)",
+        "run-visual-analysis.mjs"
+      ]
+    },
+    "visual_translation_delete_after_migration": {
+      "action": "delete",
+      "note": "Delete AFTER lab A migration copied the closure.",
+      "files": [
+        "src/v5/visual-translation/v1/ (49 files)",
+        "src/v5/visual-translation/v2/ (72 files)",
+        "src/v5/adapters/reasoner-factory.js",
+        "src/v5/adapters/codex-host-reasoner.js (if unused by production)",
+        "apps/desktop/src/main/visual-translation-service.ts",
+        "apps/desktop/src/renderer/src/components/VisualTranslationWorkspace.tsx"
+      ]
+    },
+    "reference_translation_delete_after_migration": {
+      "action": "delete",
+      "files": [
+        "src/reference-translation/",
+        "apps/desktop/src/main/reference-translation-service.ts",
+        "apps/desktop/src/main/reference-translation-report.ts",
+        "apps/desktop/src/main/reference-style-reconstruction.ts",
+        "apps/desktop/src/main/reference-reconstruction-prompts.ts",
+        "apps/desktop/src/main/reference-first-beta-closure.ts",
+        "apps/desktop/src/main/reference-first-reconstruction.ts",
+        "apps/desktop/src/renderer/src/components/ReferenceTranslationWorkspace.tsx"
+      ]
+    },
+    "reference_first_keep_minimal": {
+      "action": "keep_current",
+      "note": "DEVIATION from doc section 6.4: style-carrier-ranking.ts and task-reference-selection.ts are listed for deletion in the doc but are ACTIVELY USED by production pipeline-service via asset-selection-protocol. They are kept.",
+      "files": [
+        "apps/desktop/src/main/reference-first/index.ts (trimmed to re-export only the 5 kept protocol files)",
+        "apps/desktop/src/main/reference-first/protocol/reference-master-set.ts",
+        "apps/desktop/src/main/reference-first/protocol/style-carrier-ranking.ts",
+        "apps/desktop/src/main/reference-first/protocol/reference-identity-filter.ts",
+        "apps/desktop/src/main/reference-first/protocol/task-reference-selection.ts",
+        "apps/desktop/src/main/reference-first/protocol/graphic-reconstruction.ts"
+      ]
+    },
+    "reference_first_overbuilt_delete": {
+      "action": "delete",
+      "note": "21 legacy-only files exercised only by reference-translation-service and legacy tests.",
+      "files": [
+        "apps/desktop/src/main/reference-first/protocol/anchor-section.ts",
+        "apps/desktop/src/main/reference-first/protocol/asset-authenticity.ts",
+        "apps/desktop/src/main/reference-first/protocol/cross-artifact.ts",
+        "apps/desktop/src/main/reference-first/protocol/evidence-binding.ts",
+        "apps/desktop/src/main/reference-first/protocol/generation-readiness.ts",
+        "apps/desktop/src/main/reference-first/protocol/hardcode-scan.ts",
+        "apps/desktop/src/main/reference-first/protocol/identity-pack.ts",
+        "apps/desktop/src/main/reference-first/protocol/structure-policy.ts",
+        "apps/desktop/src/main/reference-first/runtime/blocked-generation-report-compiler.ts",
+        "apps/desktop/src/main/reference-first/runtime/generation-brief-compiler.ts",
+        "apps/desktop/src/main/reference-first/runtime/generation-readiness-orchestrator.ts",
+        "apps/desktop/src/main/reference-first/runtime/project-fact-resolver.ts",
+        "apps/desktop/src/main/reference-first/runtime/project-runtime-context.ts",
+        "apps/desktop/src/main/reference-first/runtime/resolved-project-facts.ts",
+        "apps/desktop/src/main/reference-first/runtime/task-definition-compiler.ts",
+        "apps/desktop/src/main/reference-first/readiness/generation-readiness-resolver.ts",
+        "apps/desktop/src/main/reference-first/readiness/issue-dependency-graph.ts",
+        "apps/desktop/src/main/reference-first/readiness/validation-issue-aggregator.ts",
+        "apps/desktop/src/main/reference-first/validators/run-all-validators.ts",
+        "apps/desktop/src/main/reference-first/validators/validator-registry.ts",
+        "apps/desktop/src/main/reference-first/validators/validator-registry-validation.ts"
+      ]
+    },
+    "desktop_legacy_wiring_delete": {
+      "action": "delete",
+      "files": [
+        "apps/desktop/src/main/index.ts lines 242-260 (visual-translation:* IPC)",
+        "apps/desktop/src/main/index.ts lines 305-309 (reference-translation:* IPC)",
+        "apps/desktop/src/main/index.ts lines 375-390 (--visual-translation-smoke-* CLI flags)",
+        "apps/desktop/src/preload/index.ts lines 50-64 (visualTranslation API)",
+        "apps/desktop/src/preload/index.ts lines 90-106 (referenceTranslation API)",
+        "apps/desktop/src/renderer/src/components/LegacyHistoryWorkspace.tsx (uses only legacy APIs)"
+      ]
+    },
+    "scripts_delete": {
+      "action": "delete",
+      "files": [
+        "scripts/_verify_imports.mjs",
+        "scripts/augment-v2-fixtures.mjs",
+        "scripts/cross-industry-freeze.mjs",
+        "scripts/gen-good-jzmx-fixture.mjs",
+        "scripts/gen-jzmx-reports.mjs",
+        "scripts/gen-jzmx-reports-v212.mjs",
+        "scripts/gen-negative-jzmx-fixture.mjs",
+        "scripts/real-provider-vff-smoke.mjs",
+        "scripts/reference-translate.mjs",
+        "scripts/regen-v2-snapshots.mjs",
+        "scripts/sprint-2-quality.mjs",
+        "scripts/quality-shadow.mjs"
+      ]
+    },
+    "scripts_rewrite": {
+      "action": "keep_current",
+      "note": "verify-document-flows.mjs must be rewritten as verify:current-flows: drop v1/v2/visual-translation-service test steps, keep document-processing test + desktop typecheck + current-feature tests.",
+      "files": [
+        "scripts/verify-document-flows.mjs -> scripts/verify-current-flows.mjs"
+      ]
+    },
+    "tests_delete": {
+      "action": "delete",
+      "note": "Root: all tests/v5/*visual-translation*, visual-fact-first, visual-directions-report-structure, retrieval-transport-final-cleanup, cross-industry-*, reference-translation.test.js, v4-era root tests (v4-bootstrap, compiler-pipeline-v4, and all tests importing root src/ v4 engine), plus fixtures/snapshots for v2. Desktop: visual-translation-service, reference-translation-service, orphaned-run-reconciliation (legacy parts), architecture-boundary (rewrite), reference-first-reconstruction, reference-style-reconstruction, reference-first readiness/validators tests (reference-first-validator-registry, run-all-validators-production, validator-registry-production-entry, structure-policy-production, warning-root-separation, reference-first-fixtures helper). Keep + adapt: task-scoped-style-carrier, requested-task-coverage (they test KEPT protocol files)."
+    },
+    "package_scripts_final": {
+      "action": "keep_current",
+      "note": "Root scripts final set per doc section Phase 5: analyze, test, verify:current-flows, verify:production-boundaries, verify:no-obsolete-code, desktop:dev/build/test/package, lab:document-directions, lab:reference-conversion. Deleted: analyze:v4, validate (v4), reference-translate, verify:reference-first-protocol, quality:shadow, quality:sprint2, freeze:cross-industry, test:regression (v4-era), start (v4 CLI), bin field."
+    }
+  }
+}

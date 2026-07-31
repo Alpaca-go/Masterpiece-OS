@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-review-v1",
+  "title": "Image Generation Review V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runId", "imageId", "decision", "reviewedAt"],
+  "properties": {
+    "runId": { "type": "string", "minLength": 1 },
+    "imageId": { "type": "string", "minLength": 1 },
+    "decision": {
+      "enum": ["selected", "usable_after_edit", "reference_only", "rejected"]
+    },
+    "score": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "directionCorrect": { "type": "boolean" },
+    "brandIdentityCorrect": { "type": "boolean" },
+    "referenceUsageCorrect": { "type": "boolean" },
+    "compositionUseful": { "type": "boolean" },
+    "notes": { "type": "string" },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion", "brandAlignment", "visualConsistency", "assetUsability",
+        "deviationDetection", "overallScore", "promptAdjustments", "evaluatedAgainst"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "brandAlignment": { "$ref": "#/$defs/dimension" },
+        "visualConsistency": { "$ref": "#/$defs/dimension" },
+        "assetUsability": { "$ref": "#/$defs/dimension" },
+        "deviationDetection": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["severity", "findings"],
+          "properties": {
+            "severity": { "enum": ["none", "minor", "major"] },
+            "findings": { "$ref": "#/$defs/strings" }
+          }
+        },
+        "overallScore": { "type": "number", "minimum": 1, "maximum": 5 },
+        "promptAdjustments": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "evaluatedAgainst": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "visualCanonId", "visualCanonVersion", "generationRunId", "imageId", "promptSnapshotId"
+          ],
+          "properties": {
+            "visualCanonId": { "type": "string", "minLength": 1 },
+            "visualCanonVersion": { "type": "string", "minLength": 1 },
+            "generationRunId": { "type": "string", "minLength": 1 },
+            "imageId": { "type": "string", "minLength": 1 },
+            "promptSnapshotId": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    },
+    "reviewedAt": { "type": "string", "minLength": 1 }
+  },
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "notes"],
+      "properties": {
+        "score": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "notes": { "type": "string", "minLength": 1 }
+      }
+    },
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

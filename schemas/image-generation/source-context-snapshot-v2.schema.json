@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-context-snapshot-v2",
+  "title": "Image Generation Context Snapshot V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "preset", "purpose", "sourcesUsed", "sourceIds", "userIntent", "warnings", "capturedAt"],
+  "properties": {
+    "schemaVersion": { "const": "2.0" },
+    "preset": { "enum": ["visual_extension", "document_concept", "reference_preview", "integrated_anchor"] },
+    "purpose": { "enum": ["exploration", "production"] },
+    "sourcesUsed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["visual", "document", "reference", "resolved"],
+      "properties": {
+        "visual": { "type": "boolean" },
+        "document": { "type": "boolean" },
+        "reference": { "type": "boolean" },
+        "resolved": { "type": "boolean" }
+      }
+    },
+    "sourceIds": { "type": "object" },
+    "identity": {},
+    "lockedAssets": {},
+    "visualSummary": {},
+    "documentSummary": {},
+    "referenceSummary": {},
+    "userIntent": { "type": "object" },
+    "warnings": { "type": "array" },
+    "capturedAt": { "type": "string", "minLength": 1 }
+  }
+}

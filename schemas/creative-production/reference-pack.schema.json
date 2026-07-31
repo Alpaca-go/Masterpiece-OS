@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/reference-pack.schema.json",
+  "title": "Visual Memory Reference Pack v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "project_id", "visual_memory_id",
+    "selection", "items", "excluded", "created_at"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "project_id": { "type": "string", "minLength": 1 },
+    "visual_memory_id": { "type": "string", "minLength": 1 },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_count", "eligible_count", "selected_count",
+        "target_min", "target_max", "status"
+      ],
+      "properties": {
+        "input_count": { "type": "integer", "minimum": 0 },
+        "eligible_count": { "type": "integer", "minimum": 0 },
+        "selected_count": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "target_min": { "const": 3 },
+        "target_max": { "const": 5 },
+        "status": { "enum": ["ready", "insufficient_eligible_assets"] }
+      }
+    },
+    "items": {
+      "type": "array",
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "asset_id", "source_kind", "role", "source_path", "pack_path",
+          "rationale", "signals", "score"
+        ],
+        "properties": {
+          "asset_id": { "type": "string", "minLength": 1 },
+          "source_kind": { "enum": ["original_asset", "generated_anchor"] },
+          "role": { "enum": ["locked", "style", "anchor"] },
+          "source_path": { "type": "string", "minLength": 1 },
+          "pack_path": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string", "minLength": 1 },
+          "signals": { "$ref": "#/$defs/strings" },
+          "score": { "type": "number", "minimum": 0, "maximum": 100 }
+        }
+      }
+    },
+    "excluded": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["asset_id", "source_path", "reason"],
+        "properties": {
+          "asset_id": { "type": "string", "minLength": 1 },
+          "source_path": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

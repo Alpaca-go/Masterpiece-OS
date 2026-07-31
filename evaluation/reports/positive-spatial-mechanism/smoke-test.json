@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "status": "pass",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "modelCallCount": 1,
+  "durationMs": 101898,
+  "compilationId": "vnext-task-a2ff29ee-01fa-4a2f-900f-3c1edaa542b5",
+  "runId": "ee5cfaa8-7996-459c-9721-60a0b2bbaf22",
+  "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\ee5cfaa8-7996-459c-9721-60a0b2bbaf22\\images\\image-01.png",
+  "preflight": "pass",
+  "gateErrors": [],
+  "gateWarnings": [],
+  "logoUsageMode": "post_composite",
+  "referenceAssetIds": [],
+  "visibleEvidence": [
+    "双层半透明柔性服务脊带成为画面主导结构",
+    "脊带从入口跨越接待中心并继续进入后方咨询和服务空间",
+    "接待节点发生加宽下沉，后方形成多层透明服务深度",
+    "左侧展示、中央接待、后方咨询与深处端点可在单一视角读取",
+    "无模型生成 Logo，保留后合成识别区域"
+  ],
+  "retryCount": 0
+}

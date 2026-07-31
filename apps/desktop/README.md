@@ -14,10 +14,27 @@ Run from the repository root:
 
 ```powershell
 npm run desktop:dev
+npm run web:dev
 npm run desktop:test
 npm run desktop:build
 npm run desktop:package
 ```
+
+### Browser development mode
+
+Run `npm run web:dev` from the repository root. The command starts the existing
+Electron main-process services as a local-only backend and opens the React
+renderer in the default browser. It uses the same settings, encrypted API
+profiles, projects, generation pipeline, and data directory as Desktop, so no
+portable executable needs to be rebuilt during feature testing.
+
+The local RPC bridge listens only on `127.0.0.1:4317` and accepts the active
+renderer origin. Keep the terminal process running while testing. Stop it with
+`Ctrl+C`.
+
+Browser security does not expose an absolute path for files dragged from
+Explorer. In browser mode, use the existing **选择文件** / **选择文件夹** buttons;
+the local backend opens the native picker and imports the selected paths.
 
 The default Windows artifact is a no-install Portable EXE written to `apps/desktop/release/`. Double-click it to run the current build without changing the installed applications on the machine.
 

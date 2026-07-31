@@ -2,18 +2,25 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { app, safeStorage } from 'electron';
-import sharp from 'sharp';
 import type {
   ApiProfile,
+  ApiProtocol,
   AnalysisPipelineMode,
   ConnectionTestResult,
   DirectionGenerationMode,
+  ImageGenerationPipelineMode,
+  ModelType,
   ProviderKind,
   PublicSettings,
   SaveApiProfileInput,
   SaveSettingsInput
 } from '../shared/types';
-import { redactSecret } from './analysis-contract';
+import { runProviderConnectionTest } from './provider-connection-test.ts';
+import {
+  inferModelType,
+  listRegisteredModels,
+  validateModelProfile,
+} from '@masterpiece/model-registry/index.js';
 
 interface StoredProfile extends Omit<ApiProfile, 'hasApiKey'> {}
 
@@ -25,10 +32,12 @@ interface StoredSettings {
   logLevel: 'error' | 'info' | 'debug';
   directionGenerationMode: DirectionGenerationMode;
   analysisPipelineMode: AnalysisPipelineMode;
+  imageGenerationPipelineMode: ImageGenerationPipelineMode;
 }
 
 const DIRECTION_GENERATION_MODES = Object.freeze(['conceptual_v1', 'execution_oriented_v2']);
 const ANALYSIS_PIPELINE_MODES = Object.freeze(['retrieval_first', 'visual_fact_first_legacy', 'deep_analysis_legacy', 'legacy_deep_analysis', 'visual_fact_first']);
+const IMAGE_GENERATION_PIPELINE_MODES = Object.freeze(['legacy', 'vnext']);
 
 interface LegacySettings {
   provider?: ProviderKind;
@@ -41,9 +50,39 @@ interface LegacySettings {
   connectionStatus?: 'untested' | 'connected' | 'failed';
 }
 
+function inferProtocol(provider: string, modelId: string): ApiProtocol {
+  return provider.trim().toLowerCase() === 'dashscope' || /^wan2\.7-image(?:-|$)/i.test(modelId.trim())
+    ? 'dashscope-wan-image'
+    : 'openai-chat-multimodal';
+}
+
+interface ModelProfileMetadata {
+  modelType: ModelType;
+  registryModelId?: string;
+  capabilities: string[];
+  referenceSupport: boolean;
+}
+
+function modelProfileMetadata(input: {
+  modelId?: string;
+  registryModelId?: string;
+  modelType?: string;
+  protocol?: string;
+}): ModelProfileMetadata {
+  const value = validateModelProfile(input);
+  return {
+    modelType: value.modelType as ModelType,
+    ...(value.registryModelId ? { registryModelId: value.registryModelId } : {}),
+    capabilities: [...value.capabilities],
+    referenceSupport: value.referenceSupport,
+  };
+}
+
 export interface ProviderCredentials {
   profileId: string;
   provider: ProviderKind;
+  protocol?: ApiProtocol;
+  modelType?: ModelType;
   baseUrl: string;
   model: string;
   apiKey: string;
@@ -66,11 +105,16 @@ function defaults(): StoredSettings {
   return {
     profiles: [],
     defaultProfileId: null,
-    defaultDataPath: path.join(app.getPath('documents'), 'Masterpiece OS Data'),
+    // 默认数据目录放在本地应用数据下，避免依赖「文档」已知文件夹
+    // （在文档被重定向到网络盘 / OneDrive 离线 / 企业漫游配置文件等环境下，
+    // 解析 app.getPath('documents') 或对其 readdir 会同步阻塞主线程或网络超时，
+    // 导致客户端启动 splash 永久卡死且无报错）。用户可在设置里另行指定数据目录。
+    defaultDataPath: path.join(app.getPath('userData'), 'Masterpiece OS Data'),
     cacheEnabled: true,
     logLevel: 'info',
     directionGenerationMode: 'execution_oriented_v2',
-    analysisPipelineMode: 'retrieval_first'
+    analysisPipelineMode: 'retrieval_first',
+    imageGenerationPipelineMode: 'vnext'
   };
 }
 
@@ -101,6 +145,13 @@ async function migrateLegacy(value: LegacySettings): Promise<StoredSettings> {
       id,
       displayName: value.model || '默认 API 配置',
       provider: value.provider || 'openai-compatible',
+      protocol: inferProtocol(value.provider || '', value.model || ''),
+      modelType: inferModelType({
+        modelId: value.model || '',
+        protocol: inferProtocol(value.provider || '', value.model || ''),
+      }),
+      capabilities: [],
+      referenceSupport: false,
       modelId: value.model || '',
       baseUrl: value.baseUrl || '',
       credentialKey: `masterpiece-os/${id}`,
@@ -131,9 +182,23 @@ async function readStored(): Promise<StoredSettings> {
     const stored = { ...defaults(), ...(parsed as StoredSettings) };
     if (!DIRECTION_GENERATION_MODES.includes(stored.directionGenerationMode)) stored.directionGenerationMode = 'execution_oriented_v2';
     if (!ANALYSIS_PIPELINE_MODES.includes(stored.analysisPipelineMode)) stored.analysisPipelineMode = 'retrieval_first';
+    if (!IMAGE_GENERATION_PIPELINE_MODES.includes(stored.imageGenerationPipelineMode)) {
+      stored.imageGenerationPipelineMode = 'vnext';
+    }
     stored.profiles = stored.profiles.map((profile) => ({
       ...profile,
       provider: String(profile.provider || 'openai-compatible').trim(),
+      protocol: profile.protocol === 'dashscope-wan-image' || profile.protocol === 'openai-chat-multimodal'
+        || profile.protocol === 'openai-image-generation'
+        || profile.protocol === 'google-gemini-image'
+        || profile.protocol === 'seedream-image'
+        ? profile.protocol : inferProtocol(String(profile.provider || ''), profile.modelId || ''),
+      ...modelProfileMetadata({
+        modelId: profile.modelId,
+        registryModelId: profile.registryModelId,
+        modelType: profile.modelType,
+        protocol: profile.protocol || inferProtocol(String(profile.provider || ''), profile.modelId || ''),
+      }),
       credentialKey: profile.credentialKey || `masterpiece-os/${profile.id}`,
       isEnabled: profile.isEnabled !== false,
       isDefault: profile.id === stored.defaultProfileId
@@ -156,6 +221,10 @@ async function publicSettings(settings: StoredSettings): Promise<PublicSettings>
     || null;
   return {
     profiles,
+    modelRegistry: listRegisteredModels().map((model) => ({
+      ...model,
+      capabilities: [...model.capabilities],
+    })),
     defaultProfileId: defaultProfile?.id || null,
     provider: defaultProfile?.provider || '',
     baseUrl: defaultProfile?.baseUrl || '',
@@ -166,6 +235,7 @@ async function publicSettings(settings: StoredSettings): Promise<PublicSettings>
     logLevel: settings.logLevel,
     directionGenerationMode: settings.directionGenerationMode,
     analysisPipelineMode: settings.analysisPipelineMode,
+    imageGenerationPipelineMode: settings.imageGenerationPipelineMode,
     connectionStatus: defaultProfile ? profileStatus(defaultProfile) : 'untested'
   };
 }
@@ -205,6 +275,10 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
   if (input.analysisPipelineMode && ANALYSIS_PIPELINE_MODES.includes(input.analysisPipelineMode)) {
     settings.analysisPipelineMode = input.analysisPipelineMode;
   }
+  if (input.imageGenerationPipelineMode
+    && IMAGE_GENERATION_PIPELINE_MODES.includes(input.imageGenerationPipelineMode)) {
+    settings.imageGenerationPipelineMode = input.imageGenerationPipelineMode;
+  }
   await writeStored(settings);
   return publicSettings(settings);
 }
@@ -212,6 +286,15 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
 function validateProfileInput(input: SaveApiProfileInput): void {
   if (!input.displayName.trim()) throw new Error('配置名称不能为空');
   if (!input.provider.trim()) throw new Error('Provider 标识不能为空');
+  if (![
+    'openai-chat-multimodal',
+    'dashscope-wan-image',
+    'openai-image-generation',
+    'google-gemini-image',
+    'seedream-image',
+    'openai-video-generation',
+  ].includes(input.protocol)) throw new Error('API 协议类型无效');
+  modelProfileMetadata(input);
   if (!input.baseUrl.trim()) throw new Error('Base URL 不能为空');
   if (!input.modelId.trim()) throw new Error('Model ID 不能为空');
   if (input.isDefault && !input.isEnabled) throw new Error('默认 API Profile 必须保持启用');
@@ -226,6 +309,7 @@ export async function saveApiProfile(input: SaveApiProfileInput): Promise<Public
   const now = new Date().toISOString();
   const connectionChanged = current ? (
     current.provider !== input.provider
+    || current.protocol !== input.protocol
     || current.modelId !== input.modelId.trim()
     || current.baseUrl !== input.baseUrl.trim()
     || Boolean(input.apiKey?.trim())
@@ -234,6 +318,8 @@ export async function saveApiProfile(input: SaveApiProfileInput): Promise<Public
     id,
     displayName: input.displayName.trim(),
     provider: input.provider.trim(),
+    protocol: input.protocol,
+    ...modelProfileMetadata(input),
     modelId: input.modelId.trim(),
     baseUrl: input.baseUrl.trim(),
     credentialKey: `masterpiece-os/${id}`,
@@ -321,75 +407,12 @@ export async function getProviderCredentials(profileId?: string): Promise<Provid
   return {
     profileId: profile.id,
     provider: profile.provider,
+    protocol: profile.protocol,
+    modelType: profile.modelType,
     baseUrl: profile.baseUrl,
     model: profile.modelId,
     apiKey
   };
-}
-
-function endpoint(baseUrl: string): string {
-  let parsed: URL;
-  try { parsed = new URL(baseUrl); }
-  catch { throw new Error('Base URL 格式无效'); }
-  if (!['https:', 'http:'].includes(parsed.protocol)) throw new Error('Base URL 必须使用 HTTP(S)');
-  return parsed.pathname.endsWith('/chat/completions')
-    ? parsed.toString()
-    : `${parsed.toString().replace(/\/$/, '')}/chat/completions`;
-}
-
-async function connectionRequest(credentials: Omit<ProviderCredentials, 'profileId'>): Promise<ConnectionTestResult> {
-  const started = performance.now();
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25_000);
-  try {
-    const testImage = await sharp({
-      create: { width: 96, height: 96, channels: 3, background: { r: 112, g: 68, b: 216 } }
-    }).png().toBuffer();
-    const response = await fetch(endpoint(credentials.baseUrl), {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${credentials.apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: credentials.model,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image_url', image_url: { url: `data:image/png;base64,${testImage.toString('base64')}` } },
-            { type: 'text', text: 'Reply with OK if you can read this image.' }
-          ]
-        }],
-        max_tokens: 8,
-        stream: false
-      }),
-      signal: controller.signal
-    });
-    const raw = await response.text();
-    let body: Record<string, unknown> = {};
-    try { body = raw ? JSON.parse(raw) as Record<string, unknown> : {}; } catch { /* bounded below */ }
-    if (!response.ok) {
-      const providerError = body.error as { message?: string; code?: string } | undefined;
-      const detail = providerError?.message || providerError?.code || response.statusText;
-      if (response.status === 401 || response.status === 403) throw new Error('API Key 无效或无权访问该模型');
-      if (response.status === 404) throw new Error('Base URL 或 Model ID 不存在');
-      if (/(does not support|unsupported|not capable).*(image|vision|multimodal)|(image|vision|multimodal).*(not supported|unsupported)/i.test(String(detail))) {
-        throw new Error('当前模型或部署端点明确不支持图片输入');
-      }
-      throw new Error(`连接失败（HTTP ${response.status}）：${detail}`);
-    }
-    return {
-      ok: true,
-      message: '连接成功，模型可接收图片输入',
-      model: String(body.model || credentials.model),
-      supportsImages: true,
-      elapsedMs: Math.round(performance.now() - started)
-    };
-  } catch (error) {
-    const message = (error as Error).name === 'AbortError'
-      ? '连接测试超时，请检查网络、Base URL 和模型状态'
-      : redactSecret((error as Error).message, credentials.apiKey);
-    throw new Error(message);
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 export async function testApiProfile(input: SaveApiProfileInput): Promise<ConnectionTestResult> {
@@ -398,8 +421,10 @@ export async function testApiProfile(input: SaveApiProfileInput): Promise<Connec
   const apiKey = input.apiKey?.trim() || storedKey;
   if (!apiKey) throw new Error('请先输入或保存 API Key');
   try {
-    const result = await connectionRequest({
+    const result = await runProviderConnectionTest({
       provider: input.provider,
+      protocol: input.protocol,
+      modelType: input.modelType,
       baseUrl: input.baseUrl.trim(),
       model: input.modelId.trim(),
       apiKey
@@ -407,7 +432,11 @@ export async function testApiProfile(input: SaveApiProfileInput): Promise<Connec
     if (input.id) {
       const settings = await readStored();
       settings.profiles = settings.profiles.map((profile) => profile.id === input.id
-        ? { ...profile, lastTestedAt: new Date().toISOString(), lastTestStatus: 'success' }
+        ? {
+          ...profile,
+          lastTestedAt: new Date().toISOString(),
+          lastTestStatus: result.ok ? 'success' : 'failed',
+        }
         : profile);
       await writeStored(settings);
     }

@@ -1,0 +1,339 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+  "generatedAt": "2026-07-30T13:12:32.954Z",
+  "projectIdentity": {
+    "brandName": "九州美学",
+    "industry": "医美/美学服务",
+    "brandRole": "美学服务提供者",
+    "businessModel": null
+  },
+  "upgradeThesis": {
+    "from": [
+      "传统医美品牌的冰冷技术感",
+      "过度依赖动物意象的表面美学"
+    ],
+    "to": [
+      "科学与美学深度融合的表达",
+      "更具包容性的性别中性设计",
+      "多维度的品牌体验系统"
+    ],
+    "statement": "从单一孔雀意象升级为科学与美学相遇的品牌叙事，保留紫色调和流线型设计核心，通过材质、光线和空间体验强化精致工艺感，避免将品牌局限为纯女性或纯自然美学定位"
+  },
+  "mustPreserve": [
+    {
+      "value": "九州美学",
+      "source": "locked_asset",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ]
+    },
+    {
+      "value": "九州美学主标志",
+      "source": "locked_asset",
+      "evidenceRefs": [
+        "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "5b35ba88-efee-4a25-a7e3-eacb9c6a83d7"
+      ]
+    },
+    {
+      "value": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "source": "user_confirmation",
+      "evidenceRefs": [
+        "project_record:lockedFacts[0]"
+      ]
+    },
+    {
+      "value": "输出语言固定为简体中文。",
+      "source": "user_confirmation",
+      "evidenceRefs": [
+        "project_record:lockedFacts[1]"
+      ]
+    },
+    {
+      "value": "紫色孔雀标志的核心形态",
+      "source": "confirmed_fact",
+      "evidenceRefs": [
+        "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+        "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "asset:b1b50608-1579-453b-9964-28f95890723f",
+        "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+        "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+        "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+        "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+        "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+        "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+        "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+        "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+        "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+        "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+        "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+        "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+        "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+        "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+        "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+        "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+        "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+      ]
+    },
+    {
+      "value": "Peacock Violet主色调",
+      "source": "confirmed_fact",
+      "evidenceRefs": [
+        "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+        "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "asset:b1b50608-1579-453b-9964-28f95890723f",
+        "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+        "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+        "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+        "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+        "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+        "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+        "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+        "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+        "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+        "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+        "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+        "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+        "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+        "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+        "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+        "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+        "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+      ]
+    },
+    {
+      "value": "精琢每一片翎羽的品牌理念",
+      "source": "confirmed_fact",
+      "evidenceRefs": [
+        "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+        "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "asset:b1b50608-1579-453b-9964-28f95890723f",
+        "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+        "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+        "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+        "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+        "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+        "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+        "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+        "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+        "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+        "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+        "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+        "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+        "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+        "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+        "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+        "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+        "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+      ]
+    }
+  ],
+  "mustTransform": [
+    {
+      "sourceAsset": "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+      "semanticMeaning": [
+        "蜕变",
+        "精致",
+        "流动",
+        "高贵"
+      ],
+      "targetExpression": [
+        "金属光泽表面",
+        "半透明材质",
+        "渐变色彩层",
+        "柔和反射光",
+        "渐变照明",
+        "重点照明突出流线"
+      ],
+      "forbiddenLiteralUse": [
+        "直接使用孔雀照片",
+        "写实动物形态",
+        "具象羽毛复制"
+      ],
+      "evidenceRefs": [
+        "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "b1b50608-1579-453b-9964-28f95890723f"
+      ]
+    },
+    {
+      "sourceAsset": "88a16d72-55ee-4796-a88b-ef9d89df485e",
+      "semanticMeaning": [
+        "自然纹理",
+        "高贵质感",
+        "纯净基础"
+      ],
+      "targetExpression": [
+        "大理石表面",
+        "哑光与光泽对比",
+        "细微纹理材质",
+        "自然光模拟",
+        "材质纹理强调光",
+        "柔和环境光"
+      ],
+      "forbiddenLiteralUse": [
+        "直接复制孔雀羽毛纹理",
+        "过度使用大理石图案"
+      ],
+      "evidenceRefs": [
+        "88a16d72-55ee-4796-a88b-ef9d89df485e"
+      ]
+    }
+  ],
+  "toneBoundaries": [
+    {
+      "target": "科学与美学的和谐统一",
+      "avoid": [
+        "不使用过度具象的孔雀写实图像",
+        "不采用纯女性化色彩组合",
+        "不强调单一技术或纯美学",
+        "传统医美品牌的冰冷技术感",
+        "过度依赖动物意象的表面美学"
+      ]
+    },
+    {
+      "target": "精致工艺与人文关怀并重",
+      "avoid": [
+        "不使用过度具象的孔雀写实图像",
+        "不采用纯女性化色彩组合",
+        "不强调单一技术或纯美学",
+        "传统医美品牌的冰冷技术感",
+        "过度依赖动物意象的表面美学"
+      ]
+    },
+    {
+      "target": "信任与温度共生的服务体验",
+      "avoid": [
+        "不使用过度具象的孔雀写实图像",
+        "不采用纯女性化色彩组合",
+        "不强调单一技术或纯美学",
+        "传统医美品牌的冰冷技术感",
+        "过度依赖动物意象的表面美学"
+      ]
+    }
+  ],
+  "brandMisreadRisks": [
+    {
+      "code": "MR001",
+      "description": "孔雀意象可能被误解为纯粹的自然/动物品牌，而非医美/美学服务",
+      "appliesTo": {
+        "deliverables": [
+          "brand_strategy",
+          "visual_identity"
+        ],
+        "subtypes": [
+          "positioning",
+          "messaging"
+        ]
+      },
+      "evidenceRefs": [
+        "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "f275926e-d3b5-4916-b5bb-b26c5301d674"
+      ],
+      "status": "confirmed",
+      "confidence": 0.85
+    },
+    {
+      "code": "MR002",
+      "description": "紫色调可能被误解为女性专属品牌，限制男性客户群体",
+      "appliesTo": {
+        "deliverables": [
+          "visual_identity",
+          "marketing"
+        ],
+        "subtypes": [
+          "color_strategy",
+          "audience_targeting"
+        ]
+      },
+      "evidenceRefs": [
+        "88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "b2c502c1-8f0e-4422-b252-81afb2ce9dc4"
+      ],
+      "status": "probable",
+      "confidence": 0.75
+    }
+  ],
+  "sharedVisualRules": {
+    "colorBehavior": [
+      "Peacock Violet: 品牌识别核心，营造美学氛围",
+      "哑光白: 空间基础色调，营造专业感",
+      "金属金: 点缀色，提升精致感",
+      "避免使用高饱和度对比色",
+      "避免纯黑色大面积使用"
+    ],
+    "materialBehavior": [
+      "哑光白色石材",
+      "提供纯净背景",
+      "反射柔和光线",
+      "营造专业、纯净的医美环境基础",
+      "紫色半透明亚克力",
+      "透光性",
+      "色彩渐变效果",
+      "强化品牌色彩识别，营造流动美学感"
+    ],
+    "graphicBehavior": [
+      "紫色孔雀流线标志",
+      "Peacock Violet主色调",
+      "精琢每一片翎羽理念",
+      "科学与美学相遇叙事"
+    ],
+    "compositionBehavior": [
+      "流线型隔断",
+      "弧形墙面",
+      "层次化空间布局"
+    ],
+    "lightingBehavior": [
+      "间接照明",
+      "重点照明",
+      "渐变照明",
+      "柔和对比，避免强烈明暗反差",
+      "在半透明材质上创造渐变效果",
+      "在石材表面形成柔和反射"
+    ]
+  },
+  "deliverableSuccessCriteria": {
+    "packaging": [
+      "packaging media translation is complete",
+      "Use a confirmed, physically credible structure",
+      "Explain opening and internal arrangement",
+      "Render one clear commercial deliverable"
+    ]
+  },
+  "validation": {
+    "status": "ready",
+    "missingRequiredFields": [],
+    "conflicts": []
+  },
+  "provenance": {
+    "sourceKinds": [
+      "project_record",
+      "original_asset",
+      "structured_analysis"
+    ],
+    "sourceFingerprint": "2f07b0e4ef51ca2686a9ad0e1fb2632ea648dc0157d7feb13045161d0fd862e7",
+    "compilerVersion": "1.0.0"
+  }
+}

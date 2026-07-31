@@ -1,10 +1,20 @@
 node_modules/
+.npmcache/
 masterpiece-os-output/
 coverage/
 .masterpiece-os/
 .runtime/
+.codex-runtime/
+.codex-smoke/
+.codex-smoke-app/
+.codex-temp/
+.workbuddy/
+help/.runtime/
 .DS_Store
 *.log
+.tmp-*.log
+.tmp-*.err.log
+.tmp-*.out.log
 .env
 .env.*
 !.env.example
@@ -15,6 +25,9 @@ apps/desktop/.vite/
 # 项目数据永远保留在本地
 Masterpiece-OS-Projects/
 cross-industry-freeze-test/
+evaluation/known-cases/jiuzhou-aesthetic/垂直测试/
+evaluation/known-cases/yi-ji-liang-fang/垂直测试/
+evaluation/known-cases/feng-tang-tang/垂直测试/
 
 # 保留 projects 目录本身，忽略其中所有真实项目
 projects/*
@@ -44,3 +57,6 @@ Knowledge-Analysis.md
 04-Design-Review.md
 视觉方案升级报告.md
 Creative-Upgrade-Brief.md
+
+# Lab experiment outputs
+.lab-data/

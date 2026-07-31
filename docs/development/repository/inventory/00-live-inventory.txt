@@ -1,0 +1,542 @@
+﻿================================================================================
+CURRENT
+$ git status && echo --- && git branch --show-current && git rev-parse HEAD
+================================================================================
+On branch codex/visual-memory-engine-v1
+Your branch is up to date with 'origin/codex/visual-memory-engine-v1'.
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	collect-versions.cjs
+	repository-inventory.txt
+
+nothing added to commit but untracked files present (use "git add" to track)
+--- 
+codex/visual-memory-engine-v1
+96aa40f48220b38900cd37ff230127a6672e84c7
+
+================================================================================
+REMOTE BRANCHES (committerdate desc)
+$ git branch -r --sort=-committerdate
+================================================================================
+  origin/codex/visual-memory-engine-v1
+  origin/experiment/pre-overfitting-baseline
+  origin/feature/image-generation-deliverables
+  origin/feature/image-generation-creative-director
+  origin/feature/image-generation-multi-source
+  origin/feature/image-generation-v1
+  origin/refactor/repository-slimming-v2
+  origin/feature/reference-anchor-workflow
+  origin/feature/document-context-extractor
+  origin/feature/visual-context-contract
+  origin/feature/reference-asset-selection-protocol
+  origin/feature/reference-led-visual-direction
+  origin/HEAD -> origin/main
+  origin/develop
+  origin/main
+
+================================================================================
+LOCAL BRANCHES (committerdate desc)
+$ git branch -vv --sort=-committerdate
+================================================================================
+* codex/visual-memory-engine-v1              96aa40f [origin/codex/visual-memory-engine-v1] chore: align version to 5.0.0 and clean stale repository state
++ experiment/pre-overfitting-baseline        c89116d (D:/Masterpiece-OS-pre-overfitting-baseline) [origin/experiment/pre-overfitting-baseline: behind 3] test(experiment): freeze pre-overfitting comparison baseline
+  feature/image-generation-deliverables      5191a49 [origin/feature/image-generation-deliverables] test(v18.1): expand project-level creative direction ab
+  feature/image-generation-creative-director c9e2955 [origin/feature/image-generation-creative-director] fix(desktop): return current visual context after analysis
+  feature/image-generation-v1                49c9c61 [origin/feature/image-generation-v1] fix(image-generation): align DashScope execution contract
+  refactor/repository-slimming-v2            c863a54 [origin/refactor/repository-slimming-v2] 6
+  feature/reference-anchor-workflow          2c7b691 [origin/feature/reference-anchor-workflow: behind 1] feat(reference-anchor): add drag-and-drop upload for the current project
+  feature/visual-context-contract            4f484b5 [origin/feature/visual-context-contract] chore: 更新 2026-07-26 工作日志（僵尸任务降级修复记录）
+  feature/reference-led-visual-direction     71e0311 [origin/feature/reference-led-visual-direction: behind 3] docs: record retrieval-first branch removal
+  experiment/visual-fact-first-pipeline      9f862fd [origin/experiment/visual-fact-first-pipeline: gone] fix: prepare visual fact first desktop release
+  v5-deep-creative-director                  7a89c2a [origin/v5-deep-creative-director: gone] perf(v5): add batch preparation and runtime budgets
+  main                                       96132e3 [origin/main: behind 38] 3.3.1
+
+================================================================================
+TAGS (creatordate desc)
+$ git tag --sort=-creatordate
+================================================================================
+pre-overfitting-baseline-v1
+phase1-generalization-validation-v1
+archive/pre-repository-slimming-v2
+retrieval-first-core-beta-0.5
+archive/brand-dna-report-v2-20260723
+archive/brand-dna-v3-deep-compact-20260723
+archive/brand-dna-v3-quality-20260723
+archive/execution-oriented-directions-v2-20260723
+archive/v5-deep-creative-director-20260723
+archive/v5-desktop-20260723
+archive/visual-fact-first-pipeline-20260723
+archive/visual-translation-v1-20260723
+archive/brand-dna-analysis-20260723
+sprint1-mvp-v1.3.3
+v1.0.1
+
+================================================================================
+RECENT HISTORY (graph, all, max 300)
+$ git log --all --graph --decorate --oneline --date-order --max-count=300
+================================================================================
+* 96aa40f (HEAD -> codex/visual-memory-engine-v1, origin/codex/visual-memory-engine-v1) chore: align version to 5.0.0 and clean stale repository state
+* c47f3d6 fix(analysis+desktop+contracts): repair loop, logo route, contract stub, cached-preflight recovery
+* 330fe4c feat: integrate structured analysis self-healing
+* 8ea5ad1 feat: orchestrate structured analysis self-healing
+* dbb94b7 feat: add evidence-safe analysis repair core
+* 25df543 feat: add scoped analysis repair policies
+* 078854a fix: harden visual analysis generation handoff
+* 2e3551b chore: ignore vertical test assets
+| * 9b1543e (origin/experiment/pre-overfitting-baseline) 1
+| * d89748f test(experiment): add yiji liangfang baseline case
+| * 06e1d4d chore: ignore yiji liangfang vertical test assets
+| * c89116d (experiment/pre-overfitting-baseline) test(experiment): freeze pre-overfitting comparison baseline
+* | 71d9b32 (tag: phase1-generalization-validation-v1) fix(vnext): add positive spatial mechanisms
+* | e67d069 fix(vnext): restore jiuzhou spatial specificity
+* | c4fb504 fix(vnext): restore project-specific generation contracts
+* | 39bbc69 fix(packaging): generalize real provider validation
+* | 87c95e4 fix(vnext): remove golden assumptions from real smoke
+* | 1c9704a feat(vnext): add phase1 generation reliability gates
+* | 9b246b7 fix(vnext): migrate persisted decision packets on read
+* | b99ae46 fix(vnext): make prompt compilation evidence-only
+* | 9304820 fix(vnext): prevent platform prompt overfitting
+|/  
+* 1b54642 (tag: pre-overfitting-baseline-v1) feat(vnext): finalize production identity flow
+* ccfdb37 fix(vnext): enforce platform space specificity
+* 4dac183 test(vnext): validate Jiuzhou visual decision pipeline
+* 0275a9a feat(vnext): compile prompts directly from decision packets
+* 675cbe2 feat(analysis): render reports from visual decision packets
+* b33b977 feat(analysis): add visual decision packet and spatial translation
+* e1ec39b feat(analysis): add evidence-based visual understanding core
+* cc688ae test(vnext): freeze Jiuzhou golden audit baseline
+* 0e5385c 1
+* d2380ff feat(vnext): calibrate result validation for space scenes
+* 0822e57 feat(vnext): add explicit logo generation modes
+* 309ac9f feat(vnext): compile traceable twelve-block prompts
+* 8d506d2 feat(vnext): extract prompt sources from original assets
+* 7de4571 feat(vnext): add Golden Prompt source contract
+* 20e6656 fix(web): bridge vNext image generation RPC channels
+* 574d8d5 feat(vnext): make short image pipeline the default
+* a904fb7 feat(vnext): validate deliverables with one correction retry
+* d1dd295 feat(vnext): add session history and implicit anchors
+* c01b430 feat(vnext): add isolated MVP deliverable templates
+* 5edf46d feat(vnext): build report-independent image prompt pipeline
+* c274d70 test(vnext): freeze legacy image-generation baseline
+* aed1609 fix(creative-session): restore foundation and Seedream generation
+* ec2efe3 fix(model-center): route connection tests by model type
+* 81fab91 feat(evaluation-loop): reserve human-only evaluation contract
+* cf089aa feat(model-benchmark): compare frozen prompts across models
+* de2bafe feat(generation-engine): route tasks across image models
+* fd0679f feat(model-adapters): add GPT Nano Banana and Seedream
+* 601fce5 feat(model-center): add provider profiles and model registry
+* 4ec2a81 feat(generation-engine): bind evaluations to generated results
+* 09b2c31 feat(prompt-templates): add product and IP scene templates
+* a16b9a7 feat(visual-canon): compile designer-selected spatial systems
+* 5ded7c1 feat(designer-selection): confirm exploration directions
+* 9023335 feat(visual-exploration): generate concept direction sets
+* e877e06 fix(anchor-reference): enforce visual-only inheritance
+* 144d234 feat(image-evaluation): close the regeneration feedback loop
+* df00739 feat(anchor-candidates): add comparison sets and selection
+* d286fdc feat(prompt-templates): compose canon-aware template stack
+* c4a229e feat(visual-canon): compile reusable visual systems
+* 78049f4 feat(creative-session): add visual system and history
+* b6418e6 feat(creative-session): add structured creative commands
+* c21840f feat(creative-session): separate creative foundation
+* 83d6ba1 fix(anchor-generation): recover failed image downloads
+* c08f6bc fix(creative-reading): respect identity exclusion scopes
+* 4b8246c feat(image-generation): add provider-neutral Wan adapter
+* 8873fe7 feat(prompt-compiler): version template prompt snapshots
+* 720792c feat(prompt-templates): add deliverable blueprint system
+* 4b095c9 feat(reference-conditioning): separate bounded image pools
+* b853398 feat(generation): compile prompts from creative decision
+* 87649b0 feat(creative-decision): add decision report contract
+* 33ab7a2 test(visual-memory): validate real project generation
+* 3dcf0ae feat(visual-memory): integrate memory into image generation
+* e4bc2e3 feat(visual-memory): build bounded reference packs
+* 8f905b6 feat(visual-memory): add memory contract and compiler
+* 8b3c137 feat(web): add browser development mode
+* a80ff36 test(visual-upgrade): validate project generation quality
+* fe9753b feat(visual-upgrade): persist self-contained generation runs
+* a9799b5 feat(visual-upgrade): drive generation from blueprints
+* 520571f feat(visual-upgrade): persist generation blueprints
+* f2e43af feat(visual-upgrade): add generation blueprint contract
+* 5191a49 (origin/feature/image-generation-deliverables, feature/image-generation-deliverables) test(v18.1): expand project-level creative direction ab
+* 6ea33c6 fix(v18.1): enforce provider deliverable boundaries
+* c92811e feat(v18.1): bind generation to creative direction
+* 6774988 feat(v18.1): integrate creative direction into session
+* 8365f06 feat(v18.1): add creative director runtime
+* 4f229f0 feat(v18.1): add creative direction contract
+* 1423ade feat(v6): regenerate versioned production context
+* d22a4a1 test(release): record real provider v6 smoke
+* f3eaa0e docs(v6): record development completion audit
+* 21f61d4 feat(v6): add quick style extraction path
+* d6531fd feat(v6): complete anchor retry and revision UI
+* bd4fc7b test(creative-session): validate offline ab workflow
+* db181b6 feat(v6): complete generation series workspace
+* 95107c7 feat(v6): add anchor and canon review workspace
+* d8e4338 feat(v6): bridge anchor candidates to provider
+* e80063b feat(creative-session): add resume and retry flows
+* 6565e12 feat(desktop): add creative session workspace
+* 08c8d33 feat(v6): add revisions and formal assets
+* 8833cd9 feat(v6): add generation series queue
+* 42313c4 feat(creative-session): bridge conversational generation
+* cc0e9d7 feat(creative-session): add project reading stage
+* ff5be54 feat(v6): compile canon-backed prompt snapshots
+* 453da37 feat(v6): build versioned visual canon
+* 3446535 feat(v6): add anchor candidate review workflow
+* a35c3bc feat(v6): promote locked assets to first-class entities
+* 60e8e8b feat(v6): compile versioned style profiles
+* ac593bc feat(v6): establish creative session domain
+* 45cb04f test(image-generation): validate deliverable-specific generation
+* 2bc55f1 feat(desktop): add deliverable selection and compile review
+* 2177f10 feat(image-generation): integrate V3 deliverable compilation
+* 2df0323 feat(image-generation): validate deliverables and compile revisions
+* ccf2ae1 feat(image-generation): rebuild deliverable-aware reference planning
+* c8ef58a feat(image-generation): rebuild deliverable-specific prompts
+* 64dab82 feat(image-generation): rebuild deliverable policies
+* f589713 feat(image-generation): rebuild deliverable contracts and schemas
+* 46607da chore(image-generation): refreeze deliverable mismatch baseline
+* 794817d feat(image-generation): plan references by deliverable
+* 0b0c727 feat(image-generation): compile deliverable-specific prompts
+* 37f9732 feat(image-generation): add deliverable policies
+* 5570302 feat(image-generation): add deliverable contracts
+* c998632 chore(image-generation): freeze deliverable mismatch baseline
+* c9e2955 (origin/feature/image-generation-creative-director, feature/image-generation-creative-director) fix(desktop): return current visual context after analysis
+* 1a369c3 fix(desktop): accept compound visual asset decisions
+* 537f614 feat(image-generation): compile creative core into final prompts
+* 65a5c4c feat(image-generation): add mode-aware reference planning
+* df689dc feat(image-generation): compile transformation briefs
+* dc93e69 feat(image-generation): add creative director contracts
+* 05922da chore(image-generation): freeze visual generation baseline
+* 49c9c61 (origin/feature/image-generation-v1, origin/feature/image-generation-multi-source, feature/image-generation-v1) fix(image-generation): align DashScope execution contract
+* e3b6938 fix(image-generation): resolve project assets from input root
+* 4646bbe fix(image-generation): align compile ipc contract
+* 914bad1 test(image-generation): lock multi-source regression coverage
+* b35e889 feat(desktop): add independent generation entry points
+* 397b430 feat(desktop): expose multi-source generation ipc
+* 2798006 feat(image-generation): support source bundles and legacy runs
+* 256b731 feat(image-generation): compose prompts from selected sources
+* 6b8f01a feat(image-generation): make gates preset-aware
+* 6bc9b21 feat(image-generation): decouple generation context loaders
+* 066b905 feat(image-generation): add multi-source generation contracts
+* 20351b0 chore(image-generation): freeze v1 compatibility fixtures
+* d066551 API配置增加其他类型模型选项
+* 547d30f chore(deps): refresh desktop security resolutions
+* 998d8dd chore: ignore .npmcache/ to prevent committing npm local cache
+* 06277dc 7.1
+* 49dfe1f test(image-generation): add Phase 6 tests + fix resume recovery bug
+* 4a8d426 fix(settings): provider-aware API connection test for dashscope
+* 2351c63 7
+* c59d680 feat(image-generation): add desktop IPC and minimal UI
+* 51e76fe feat(image-generation): add headless CLI and recovery
+* c54ccca feat(image-generation): add dashscope provider and asset persistence
+* 0911988 feat(image-generation): compile anchor tasks and gates
+* e774d96 feat(image-generation): add contracts and schemas
+* b61adc6 chore(image-generation): establish v1 boundaries
+* c863a54 (origin/refactor/repository-slimming-v2, refactor/repository-slimming-v2) 6
+* a71196d chore: enforce obsolete-code and production-boundary gates
+* 8dbc7e7 chore: clean scripts tests and type boundaries
+* 56cbf4f remove: prune desktop dead runtime modules and legacy shared types
+* 79b3707 remove: delete migrated legacy pipelines and obsolete tests
+* c4448d2 refactor(desktop): remove experimental visual/reference translation wiring
+* 81dda8a refactor: isolate experimental capabilities into labs
+* eb6b25e refactor: extract shared production packages
+* 122fb45 chore: inventory legacy dependencies before repository slimming
+* b8bea75 (tag: archive/pre-repository-slimming-v2, origin/feature/reference-anchor-workflow) 5
+* 2c7b691 (feature/reference-anchor-workflow) feat(reference-anchor): add drag-and-drop upload for the current project
+* efd5120 refactor(reference): make anchor domain vocabulary a swappable profile
+* fd8ffef refactor(legacy): make legacy pipelines read-only
+* a2fd227 refactor(ui): hide legacy production workflows
+* 20202f1 4
+* 70abf2f docs(phase4): 整合验证报告——Resolved Context 合并与冲突人工确认
+* c9d255b feat(phase4): 三大功能轻量整合——Resolved Context 合并与冲突人工确认
+* 38d48d6 fix(desktop): 修复 Brief 级回流检测误报（结构性缺陷）
+* 5d688b8 3
+* 0b05b8d test(desktop): v5.3.1 S4 报告收口回归测试与自检
+* 7f743c8 feat(desktop): v5.3.1 S3 参考专属元素回流阻断与任务级规则过滤服务编排
+* dc84098 feat(desktop): v5.3.1 S2 参考专属元素冲突检测与抽象转译核心逻辑
+* aa647eb feat(desktop): v5.3.1 S1 当前项目事实分类词表与契约扩展
+* 7f713e5 2
+* 57514fa feat(desktop): Phase 3 参考视觉转换 Anchor 工作流（v5.3-reference-anchor）
+* a8b550c (origin/feature/document-context-extractor) 1
+* dc6471e feat(desktop): Phase 2 文档分析上下文提取器（context_extraction 默认模式）
+* 4f484b5 (origin/feature/visual-context-contract, feature/visual-context-contract) chore: 更新 2026-07-26 工作日志（僵尸任务降级修复记录）
+* 928e51e fix(desktop): 应用异常退出后 running 僵尸任务自动降级为 failed，解除删除锁死
+* 2ce4e1a feat(desktop): Phase 1 视觉分析接口稳定化 — 项目视觉上下文契约
+| * c12e76f (origin/feature/reference-asset-selection-protocol) 继续迭代
+| * 7119462 继续迭代
+| * cee9fe9 优化分析协议（已跑通）
+| * d3f41a7 2
+| * f2b95e2 1
+| * fe53fca feat: 新增参考资产选择协议（reference-asset-selection-protocol）
+| * cbe19aa (origin/feature/reference-led-visual-direction) 冻结当前分支
+| * 2f0ed88 优化视觉转译分析流程
+| * 3e9001e 修复视觉转译上传窗口
+| * 71e0311 (feature/reference-led-visual-direction) docs: record retrieval-first branch removal
+| * 4b08db7 docs: record archived branch deletion
+| * de0a5ce docs: record repository consolidation phase b
+| * 9927eaa docs: record reference-led validation
+| *   515ffbd Merge remote-tracking branch 'origin/develop' into feature/reference-led-visual-direction
+| |\  
+| | *   5f9ac06 (tag: retrieval-first-core-beta-0.5, origin/main, origin/develop, origin/HEAD) feat: establish Retrieval-First as the core pipeline (#6)
+| | |\  
+| | | * 509e92b docs: record retrieval-first validation
+| | | * 66ea441 chore: sync package lock node requirement
+| | | * 85d0fe7 docs: record verified repository archive tags
+| | | * 52f6e09 docs: record repository consolidation phase a audit
+| * | | 7ea9959 feat: add reference translation profile command
+| | |/  
+| |/|   
+| * | 66e867a 修复分析方向锁死问题
+| * | f33f082 改善分析流程
+| * | 12f2e7b retrieval-first
+| * | 9f862fd (tag: archive/visual-fact-first-pipeline-20260723, experiment/visual-fact-first-pipeline) fix: prepare visual fact first desktop release
+| * | 54069d2 feat: add visual fact first pipeline
+| * | 21cb8ea (tag: archive/execution-oriented-directions-v2-20260723) 2.1.5
+|/ /  
+* | f3a5b14 2.1.4.1
+* | 70fc5be v2协议
+* | 39f0181 chore: 记录 v2 实验分支提交哈希
+* | d426dda feat: 实验分支 v2 执行向视觉方向（防概念稿 / 落地可执行）
+* | b404c76 (tag: sprint1-mvp-v1.3.3, tag: archive/visual-translation-v1-20260723) 1.3.3
+* | 9dab2fa 重写分析协议Phase 4A
+* | 4805a33 feat: unify analysis intake workspace
+* | 1164a1a fix: ground multi-document visual evidence
+* | 724e989 fix: validate real visual translation provider flow
+* | 0c25718 fix: persist visual translation api selection
+* | 2b4d84b fix: ground visual evidence quotes from documents
+* | e69099c feat: add visual translation desktop workspace
+* | d6c9027 feat: add visual translation v1 sprint one
+| | * c48cb5e (tag: archive/brand-dna-v3-quality-20260723) fix: harden brand dna v3 real provider flow
+| | * ba75fb1 test: gate brand dna v3 core quality delivery
+| | * 9bedcd0 feat: compile brand dna v3 core quality report
+| | * 81996a4 fix: enforce brand dna v3 core decision quality
+| | * 4fe4a2e (tag: archive/brand-dna-v3-deep-compact-20260723) fix: harden document analysis release flow
+| | * 806e206 feat: add desktop gray routing for brand dna v3
+| | * 6c14f7c feat: complete brand dna v3 prompt audit pipeline
+| | * 002dd04 feat: add brand dna v3 visual system task plan
+| | * 0b1b897 feat: add brand dna v3 compact core pipeline
+| | * cae0da6 fix: stabilize brand dna v2 analysis delivery
+| | | * ba27aad (tag: archive/brand-dna-report-v2-20260723) 优化策划报告生成流程
+| | |/  
+| | * 92a2550 (tag: archive/brand-dna-analysis-20260723) feat: add Brand DNA deep reasoning analysis
+| |/  
+|/|   
+* | abc51a4 (tag: archive/v5-desktop-20260723) 优化UI
+* | 33866e1 优化UI
+* | 48e1cb6 portable
+* | fc2acb7 feat(desktop): add Electron analysis client
+| *   cf55955 Merge pull request #1 from Alpaca-go/v5-deep-creative-director
+| |\  
+| |/  
+|/|   
+* | 7a89c2a (tag: archive/v5-deep-creative-director-20260723, v5-deep-creative-director) perf(v5): add batch preparation and runtime budgets
+* | 24d4d35 feat(v5): add deep creative director prompt
+* | 9a841b9 feat(v5): establish deep single-output pipeline
+* | 8de6c30 perf(v4): automate validation handoff
+|/  
+* 98b155c 修改report文档存放目录
+* a7560bb 增加Runtime功能，查看各个环节分析时间
+* 06ae98f 修复3.3与4.0接口问题
+* edf3df8 4.0
+* 8e3e6ec feat(v4): add decision state and compiler pipeline
+* 96132e3 (main) 3.3.1
+* 0de360b 3.3
+* 22c595b Release Masterpiece-OS 3.2.0
+* 51ffd4f 3.1
+* c64cfc0 V3.0，增加品牌深度分析功能
+* 54d9723 分析香辣虾后的knowledge增长
+* b0729c8 新增项目分析功能
+* 90e0329 待分析项目的自动规整
+* ae16d7e 忽略本地项目
+* 9f2e31f 自动写knowledge
+* 2aed79d (tag: v1.0.1) chore: enforce GitHub file management policy
+* dceb2f0 feat: release Design Factory OS v1.0
+
+================================================================================
+PACKAGE VERSIONS
+================================================================================
+  apps\desktop\out\real-provider-visual-decision-smoke-app\package.json  ->  
+  apps\desktop\package.json  ->  5.0.0
+  labs\document-visual-directions\package.json  ->  0.1.0
+  labs\reference-style-conversion\package.json  ->  0.1.0
+  package.json  ->  5.0.0
+  packages\analysis-runtime\package.json  ->  1.0.0
+  packages\creative-production-runtime\package.json  ->  1.0.0
+  packages\document-ingestion\package.json  ->  1.0.0
+  packages\evaluation-loop-contracts\package.json  ->  1.0.0
+  packages\image-generation-adapter\package.json  ->  1.0.0
+  packages\image-generation-contracts\package.json  ->  1.0.0
+  packages\image-generation-runtime\package.json  ->  1.0.0
+  packages\image-provider-dashscope\package.json  ->  1.0.0
+  packages\model-benchmark\package.json  ->  1.0.0
+  packages\model-registry\package.json  ->  1.0.0
+  packages\model-runtime\package.json  ->  1.0.0
+  packages\project-contracts\package.json  ->  1.0.0
+  packages\reference-asset-inspector\package.json  ->  1.0.0
+  packages\runtime-core\package.json  ->  1.0.0
+  VERSION  ->  5.0.0
+
+================================================================================
+ROOT DIRECTORIES (maxdepth 3, excluding node_modules and .git)
+================================================================================
+  .codex-runtime
+  .codex-smoke
+  .codex-smoke-app
+  .codex-temp
+  .workbuddy
+  apps
+  bin
+  docs
+  evaluation
+  examples
+  history
+  knowledge
+  labs
+  packages
+  projects
+  prompt-templates
+  prompts
+  rules
+  schemas
+  scripts
+  skills
+  src
+  standards
+  templates
+  tests
+  ui-redesign
+  .codex-runtime/desktop-dev.stderr.log  [F]
+  .codex-runtime/desktop-dev.stdout.log  [F]
+  .codex-runtime/jiuzhou-packaging-image-final  [D]
+  .codex-runtime/jiuzhou-packaging-real-run  [D]
+  .codex-runtime/jiuzhou-phase1-image-final  [D]
+  .codex-runtime/jiuzhou-phase1-image-retry  [D]
+  .codex-runtime/jiuzhou-phase1-real-run  [D]
+  .codex-runtime/web-dev-5174.stderr.log  [F]
+  .codex-runtime/web-dev-5174.stdout.log  [F]
+  .codex-runtime/web-dev.stderr.log  [F]
+  .codex-runtime/web-dev.stdout.log  [F]
+  .codex-smoke/electron-polluted-backup  [D]
+  .codex-smoke/phase351-status.json  [F]
+  .codex-smoke/reference-first-package-real-provider-status.json  [F]
+  .codex-smoke/sprint2c-real-provider-status-2.json  [F]
+  .codex-smoke/sprint2c-real-provider-status-3.json  [F]
+  .codex-smoke/sprint2c-real-provider-status-4.json  [F]
+  .codex-smoke/sprint2c-real-provider-status-5.json  [F]
+  .codex-smoke/sprint2c-real-provider-status-6.json  [F]
+  .codex-smoke/sprint2c-real-provider-status.json  [F]
+  .codex-temp/render_protocol  [D]
+  .workbuddy/memory  [D]
+  apps/desktop  [D]
+  bin/masterpiece-os.js  [F]
+  docs/cleanup  [D]
+  docs/document-feature-release-gate.md  [F]
+  docs/GitHub文件管理规范.md  [F]
+  docs/Masterpiece-OS-文档分析流程协议-v3.1.docx  [F]
+  docs/phase1-generalization-and-first-delivery-reliability.md  [F]
+  docs/phase1.5-contract-decay-audit.md  [F]
+  docs/phase1.5-project-quality-recovery-loop.md  [F]
+  docs/phase1.5-repo-cleanup-stage0.md  [F]
+  docs/phase4-context-integration-report.md  [F]
+  docs/repository-consolidation  [D]
+  docs/validation  [D]
+  docs/九州美学垂直测试  [D]
+  docs/使用手册.md  [F]
+  docs/架构说明.md  [F]
+  docs/项目自动初始化.md  [F]
+  evaluation/anti-cases  [D]
+  evaluation/contracts  [D]
+  evaluation/golden-cases  [D]
+  evaluation/hidden-cases  [D]
+  evaluation/reports  [D]
+  examples/匿名文创Demo  [D]
+  examples/匿名文旅Demo  [D]
+  examples/匿名食品Demo  [D]
+  history/reviews  [D]
+  knowledge/thinking  [D]
+  knowledge/对标方法.md  [F]
+  labs/document-visual-directions  [D]
+  labs/reference-style-conversion  [D]
+  packages/analysis-runtime  [D]
+  packages/creative-production-runtime  [D]
+  packages/document-ingestion  [D]
+  packages/evaluation-loop-contracts  [D]
+  packages/image-generation-adapter  [D]
+  packages/image-generation-contracts  [D]
+  packages/image-generation-runtime  [D]
+  packages/image-provider-dashscope  [D]
+  packages/model-benchmark  [D]
+  packages/model-registry  [D]
+  packages/model-runtime  [D]
+  packages/project-contracts  [D]
+  packages/reference-asset-inspector  [D]
+  packages/runtime-core  [D]
+  projects/.gitkeep  [F]
+  projects/冯烫烫  [D]
+  projects/蛙耶  [D]
+  prompt-templates/image-generation  [D]
+  prompts/v5  [D]
+  rules/creative-brief边界.md  [F]
+  schemas/anti-pattern-result.schema.json  [F]
+  schemas/creative-production  [D]
+  schemas/document-visual-context.schema.json  [F]
+  schemas/human-review-import.schema.json  [F]
+  schemas/human-review.schema.json  [F]
+  schemas/image-generation  [D]
+  schemas/mqs-score.schema.json  [F]
+  schemas/project-visual-context.schema.json  [F]
+  schemas/quality-context.schema.json  [F]
+  schemas/reference-style-capsule.schema.json  [F]
+  schemas/resolved-project-context.schema.json  [F]
+  schemas/shadow-validation-record.schema.json  [F]
+  schemas/validation-result.schema.json  [F]
+  scripts/audit-phase1-project-specificity.mjs  [F]
+  scripts/audit-positive-spatial-mechanism.mjs  [F]
+  scripts/image-generation  [D]
+  scripts/run-golden-evaluation.mjs  [F]
+  scripts/run-hidden-cases.mjs  [F]
+  scripts/validation  [D]
+  scripts/verify-current-flows.mjs  [F]
+  scripts/verify-golden-production-boundary.mjs  [F]
+  scripts/verify-no-obsolete-code.mjs  [F]
+  scripts/verify-no-project-specific-production-rules.mjs  [F]
+  scripts/verify-production-boundaries.mjs  [F]
+  skills/masterpiece-os  [D]
+  src/inventory.js  [F]
+  src/parsers.js  [F]
+  src/runtime-trace.js  [F]
+  src/utils.js  [F]
+  src/v5  [D]
+  standards/README.md  [F]
+  templates/creative-upgrade-report.md  [F]
+  templates/masterpiece-os-v5.json  [F]
+  templates/masterpiece-os.json  [F]
+  tests/anti-case.test.js  [F]
+  tests/creative-production-anchor-candidate.test.js  [F]
+  tests/creative-production-creative-decision.test.js  [F]
+  tests/creative-production-generation-blueprint.test.js  [F]
+  tests/creative-production-generation-prompt.test.js  [F]
+  tests/creative-production-generation-series.test.js  [F]
+  tests/creative-production-locked-assets.test.js  [F]
+  tests/creative-production-reading.test.js  [F]
+  tests/creative-production-reference-pack.test.js  [F]
+  tests/creative-production-revision-assets.test.js  [F]
+  tests/creative-production-session.test.js  [F]
+  tests/creative-production-style-profile.test.js  [F]
+  tests/creative-production-visual-canon.test.js  [F]
+  tests/creative-production-visual-exploration.test.js  [F]
+  tests/creative-production-visual-memory.test.js  [F]
+  tests/creative-session-ab-validation.test.js  [F]
+  tests/evaluation-loop-contracts.test.js  [F]
+  tests/fixtures  [D]
+  tests/golden-boundary.test.js  [F]
+  tests/image-generation  [D]
+  tests/model-benchmark.test.js  [F]
+  tests/model-registry.test.js  [F]
+  tests/packaging-translation.test.js  [F]
+  tests/parsers.test.js  [F]
+  tests/phase1-fixtures.js  [F]
+  tests/project-generation-contract.test.js  [F]
+  tests/project-rule-scanner.test.js  [F]
+  tests/repository-policy.test.js  [F]
+  tests/runtime-trace.test.js  [F]
+  tests/v5  [D]
+

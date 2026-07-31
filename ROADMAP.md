@@ -1,81 +1,64 @@
-# Roadmap
+# Masterpiece-OS Roadmap
 
-## v1.0
+本文件只描述 Masterpiece-OS 当前 5.x 阶段的目标。历史版本演进记录
+见 `docs/archive/v4.0/roadmap-history.md`。
 
-- [x] 素材盘点：ZIP、PDF、PPTX、常见图片及文本
-- [x] Brand Lock 识别与配置覆盖
-- [x] 可选联网对标、内置案例库与 P0/P1/P2
-- [x] 缺图矩阵、13 张图片规划与 Chat 生图任务包
-- [x] 三项目长期回归测试
+## 5.0 Release Candidate
 
-## v1.1
+Masterpiece-OS 5.0 的目标是把仓库重整、产品入口单一化与评估体系隔离
+三件事在同一发布候选中交付。
 
-- [x] Knowledge Candidate 标准输出
-- [x] Knowledge Analysis 新增、更新、重复与项目经验分类
-- [x] 五类知识库健康度、P0–P3 优先级与人工审核清单
-- [x] Approved Rule 只读加载和防修改测试
+- [x] 产品版本统一为 `5.0.0-rc.1`，来源 `/VERSION`，由
+      `scripts/sync-product-version.mjs` 同步到 `package.json`、
+      `apps/desktop/package.json`、`apps/cli/package.json`、CHANGELOG
+      与 Electron artifactName。
+- [x] 启用 npm Workspaces，统一内部包命名空间为 `@masterpiece/*`。
+- [x] 替换 175 处深层 `packages/*/src/*` 相对导入为 `@masterpiece/*`。
+- [x] Desktop 正式 UI 唯一保留 Short-Chain 生图路径，移除
+      `vNext / Legacy` 模式切换。
+- [x] CLI 从根目录迁出到 `apps/cli/`，根 `npm run analyze` 直接调用
+      `node ./apps/cli/bin/masterpiece-os.js analyze`。
+- [x] 文档目录收敛到 `docs/{product,architecture,development,releases,archive}/`。
+- [x] 验证资产与生产 Runtime 通过 `verify:golden-boundary` 硬门禁隔离。
+- [x] 删除迁移 shim 与 README / ROADMAP 中过期的 v3.3 / v4.0 表述。
 
-## v1.2
+## 5.0 Release Gates
 
-- [x] `projects/` 自动初始化与 `.gitkeep`
-- [x] `--project` 选择、单项目自动选择与多项目防误选
-- [x] 素材安全移动、冲突预检、路径越界保护和幂等运行
-- [x] 旧版 `inputs/` 到标准 `input/` 的兼容迁移
+发布 `5.0.0` 之前必须保持绿色：
 
-## v2.0
+- [ ] `npm run verify:version-consistency`  PASS
+- [ ] `npm run verify:workspace-boundaries`   PASS
+- [ ] `npm run verify:current-flows`          PASS（离线，不调用真实 Provider）
+- [ ] `npm run verify:no-obsolete-code`       PASS
+- [ ] `npm run verify:production-boundaries`  PASS
+- [ ] `npm run verify:no-project-specific-production-rules`  PASS
+- [ ] `npm run verify:golden-boundary`        PASS
+- [ ] `npm test`                              PASS（根 + Desktop 公共契约）
+- [ ] `npm run cli:test`                      PASS
+- [ ] `npm run desktop:test`                  PASS
+- [ ] `npm run desktop:build`                 PASS（含 typecheck）
+- [ ] 1 次真实 Provider 视觉分析（端到端到正式报告）
+- [ ] 1 次真实 Provider 空间生图 + 1 次真实 Provider 非医疗项目生图
+- [ ] `chore/repository-consolidation-5.0` 已合并 `main`
+- [ ] `experiment/pre-overfitting-baseline` 的 archive tag 已落库
+      且分支未合并
+- [ ] 已合并 Feature 分支（`feature/visual-upgrade-engine-v1`、
+      `feature/image-generation-deliverables`、`feature/image-generation-v1`、
+      `feature/image-generation-multi-source`）已删除
 
-- [x] Design Review 五类专业评审与 P0/P1/P2
-- [x] 至少 3 条 Strengths 与 5 条可执行 Improvement
-- [x] 八维能力雷达、七项历史趋势和 Top 3 训练路线
-- [x] 本地 review.json / review.md 历史记录
-- [x] 四份正式输出与可选调试 JSON
+## 5.1 Planned
 
-## v3.0
+- [ ] 视觉升级与文档上下文的可视化报告（一页 HTML）
+- [ ] Provider Adapter 失败时的标准化降级策略
+- [ ] 评估资产更细粒度的隐藏用例发布流程
+- [ ] `apps/cli` 的子命令扩展面（`validate`、`doctor`、`fixture`）
+- [ ] Desktop 的 `dev` 模式直接复用 `apps/cli` 的 Prompt 模板
 
-- [x] 新增 Creative Reasoning，建立品牌定位、关键词、气质与视觉 DNA
-- [x] 新增摄影语言、创意方向和 Design Risks
-- [x] Chat 生图任务包重构为“品牌设计意图 + 图片任务”两层结构
-- [x] Fast Mode 成为默认，仅生成两份核心报告
-- [x] Review/Research Mode 保留四份编号报告和 Knowledge 只读边界
-- [x] 增加逐张视觉核验状态，阻止把文件名、OCR、尺寸或元数据当作画面事实
+## Backlog
 
-## v3.1
-
-- [x] 产品定位升级为 AI Creative Brief Generator
-- [x] Creative Reasoning 扩展为十部分专业 Creative Brief 契约
-- [x] 固定输出项目分析、Creative Brief、Knowledge Review 与 Design Review
-- [x] 删除图片数量、画幅、任务卡和 Chat 生图执行规划
-- [x] Knowledge 重构为 identity、emotion、visual、brand、portfolio 五类思考问题
-- [x] Design Review 改为 Brief 证据完整度与创意准备度检查
-- [x] CLI、模板、Skill、规则、文档与测试统一到 v3.1
-
-## v3.2
-
-- [x] Brand DNA Decision 强制执行 Original Intent → Industry Benchmark → Creative Decision → Approved Brand DNA
-- [x] 阻止旧 visualDNA 或用户视觉方案直接成为批准结论
-- [x] Creative Brief 与 Design Review 改用 Approved Brand DNA
-- [x] Thinking Framework 保留问题并增加决策追溯检查
-- [x] 明确“视觉方案 + Creative Brief → GPT 自主规划与生成”的协作边界
-- [x] 保持四份固定输出，不恢复 PKG、VI、Poster 或图片任务规划
-- [x] 定义真实项目 A/B 验证指标与成功判定口径
-
-## v3.3（当前）
-
-- [x] Analysis 与 Creative Brief 完全分离
-- [x] 新增 Creative Brief Compiler 信息压缩层
-- [x] Creative Brief 收敛为八部分执行结构
-- [x] 用 Design Decisions 替代 Knowledge Review 正式输出
-- [x] Quick 仅输出 Brief；Standard / Studio 保持四份正式输出
-- [x] GPT Brief 仅作为运行时内存结果
-- [x] Pipeline 七阶段独立计时并支持 `--profile`
-- [x] Design Review 检查信息架构分离与 Brief 执行准备度
-
-## 后续版本
-
-- [ ] 增强旧版 `.ppt` 解析（当前只登记文件，深度解析针对 `.pptx`）
-- [ ] 增加 JPEG/WebP 像素级主色抽样
-- [ ] 增加可插拔搜索提供商与案例人工审阅状态
-
-- [ ] HTML 可视化报告
+- [ ] JPEG / WebP 像素级主色抽样
+- [ ] 旧版 `.ppt` 解析（当前仅 `.pptx`）
+- [ ] 可插拔搜索提供商 + 案例人工审阅状态
 - [ ] Creative Brief 协作批注与版本比较
-- [ ] Benchmark 来源可信度和定位相似度辅助审阅
+- [ ] Benchmark 来源可信度与定位相似度辅助审阅
+- [ ] `.codex-smoke/` 转为 GitHub Actions Artifact + 脱敏 JSON 摘要

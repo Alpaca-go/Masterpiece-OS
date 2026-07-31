@@ -1,0 +1,12 @@
+{
+  "name": "@masterpiece/image-provider-dashscope",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DashScope wan2.7-image-pro image provider adapter: async submit / poll / cancel, region+endpoint resolution, provider error normalization, capabilities. No project context, no prompt decisions, no local file structure.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./*": "./src/*"
+  }
+}

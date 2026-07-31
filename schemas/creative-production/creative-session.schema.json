@@ -1,0 +1,190 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/creative-session.schema.json",
+  "title": "Creative Session V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "status", "workflowState",
+    "projectContext", "inputs", "analysis", "messages", "generationRunIds", "lockedAssetIds", "decisions", "history",
+    "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["active", "archived", "failed"] },
+    "workflowState": {
+      "enum": [
+        "CREATED", "FILES_IMPORTED", "ANALYZING", "ANALYSIS_COMPLETED", "VISUAL_ANALYSIS_COMPLETED",
+        "SESSION_CREATED", "DIRECTION_GENERATING", "CREATIVE_DIRECTION_GENERATING",
+        "DIRECTION_READY", "CREATIVE_DIRECTION_READY", "BLUEPRINT_GENERATING", "BLUEPRINT_READY",
+        "CREATIVE_DECISION_COMPLETED", "STYLE_PROFILE_COMPILING",
+        "STYLE_PROFILE_CREATED", "VISUAL_EXPLORATION_GENERATING", "VISUAL_EXPLORATION_READY",
+        "VISUAL_DIRECTION_SELECTED", "PRIMARY_ANCHOR_READY", "PRIMARY_ANCHOR_GENERATING",
+        "PRIMARY_ANCHOR_PENDING_REVIEW", "PRIMARY_ANCHOR_CONFIRMED", "CANON_BUILDING",
+        "VISUAL_CANON_CONFIRMED", "GENERATION_READY", "GENERATING", "IMAGE_GENERATING",
+        "REVIEWING_OUTPUTS", "REVISION_IN_PROGRESS", "COMPLETED", "FAILED", "CANCELLED"
+      ]
+    },
+    "projectContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["brandName", "industry", "projectType", "goals", "constraints"],
+      "properties": {
+        "brandName": { "type": "string" },
+        "industry": { "type": "string" },
+        "projectType": { "type": "string" },
+        "goals": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "constraints": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["originalAssetIds", "referenceAssetIds", "documentIds"],
+      "properties": {
+        "originalAssetIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "referenceAssetIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "documentIds": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "brandUnderstandingVersion": { "type": "string" },
+        "referenceAnalysisVersion": { "type": "string" },
+        "creativeDecisionVersion": { "type": "string" }
+      }
+    },
+    "sourceVisualRunId": { "type": "string" },
+    "sourceReportPath": { "type": "string" },
+    "understanding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion", "projectIdentity", "identityLocks", "valuableAssets",
+        "currentProblems", "upgradePrinciples", "oldPatternsToAvoid",
+        "creativeFreedom", "assetReadingSummary", "generatedAt"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "1.0" },
+        "projectIdentity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "brandName": { "type": "string" },
+            "industry": { "type": "string" },
+            "products": { "$ref": "#/$defs/strings" }
+          }
+        },
+        "identityLocks": { "$ref": "#/$defs/strings" },
+        "valuableAssets": { "$ref": "#/$defs/strings" },
+        "currentProblems": { "$ref": "#/$defs/strings" },
+        "upgradePrinciples": { "$ref": "#/$defs/strings" },
+        "oldPatternsToAvoid": { "$ref": "#/$defs/strings" },
+        "creativeFreedom": { "$ref": "#/$defs/strings" },
+        "assetReadingSummary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["assetId", "summary", "recommendedUsage"],
+            "properties": {
+              "assetId": { "type": "string", "minLength": 1 },
+              "summary": { "type": "string" },
+              "recommendedUsage": {
+                "enum": ["identity_reference", "structure_reference", "reading_only", "exclude"]
+              }
+            }
+          }
+        },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["messageId", "role", "type", "content", "createdAt"],
+        "properties": {
+          "messageId": { "type": "string", "minLength": 1 },
+          "role": { "enum": ["system", "user", "assistant"] },
+          "type": {
+            "enum": [
+              "reading_instruction", "reading_result", "generation_request",
+              "generation_result", "user_feedback", "system_event"
+            ]
+          },
+          "content": { "type": "string" },
+          "generationRunId": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "generationRunIds": { "$ref": "#/$defs/strings" },
+    "lockedAssetIds": { "$ref": "#/$defs/strings" },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "summary", "outcome", "source", "createdAt"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "type": { "type": "string", "minLength": 1 },
+          "summary": { "type": "string", "minLength": 1 },
+          "rationale": { "type": "string" },
+          "outcome": { "enum": ["confirmed", "rejected", "superseded"] },
+          "source": { "enum": ["user", "analysis", "migration", "system"] },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "activeCreativeDirectionId": { "type": "string", "minLength": 1 },
+    "activeGenerationBlueprintId": { "type": "string", "minLength": 1 },
+    "activeStyleProfileId": { "type": "string", "minLength": 1 },
+    "activeVisualExplorationId": { "type": "string", "minLength": 1 },
+    "activeVisualCanonId": { "type": "string", "minLength": 1 },
+    "activeSeriesId": { "type": "string", "minLength": 1 },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "event", "summary", "createdAt"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "event": { "type": "string", "minLength": 1 },
+          "fromState": { "$ref": "#/$defs/workflowState" },
+          "toState": { "$ref": "#/$defs/workflowState" },
+          "summary": { "type": "string", "minLength": 1 },
+          "entityType": { "enum": ["creative_direction", "creative_decision", "style_profile", "visual_canon", "generation_series", "decision"] },
+          "entityId": { "type": "string" },
+          "version": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "workflowState": {
+      "enum": [
+        "CREATED", "FILES_IMPORTED", "ANALYZING", "ANALYSIS_COMPLETED", "VISUAL_ANALYSIS_COMPLETED",
+        "SESSION_CREATED", "DIRECTION_GENERATING", "CREATIVE_DIRECTION_GENERATING",
+        "DIRECTION_READY", "CREATIVE_DIRECTION_READY", "BLUEPRINT_GENERATING", "BLUEPRINT_READY",
+        "CREATIVE_DECISION_COMPLETED", "STYLE_PROFILE_COMPILING",
+        "STYLE_PROFILE_CREATED", "VISUAL_EXPLORATION_GENERATING", "VISUAL_EXPLORATION_READY",
+        "VISUAL_DIRECTION_SELECTED", "PRIMARY_ANCHOR_READY", "PRIMARY_ANCHOR_GENERATING",
+        "PRIMARY_ANCHOR_PENDING_REVIEW", "PRIMARY_ANCHOR_CONFIRMED", "CANON_BUILDING",
+        "VISUAL_CANON_CONFIRMED", "GENERATION_READY", "GENERATING", "IMAGE_GENERATING",
+        "REVIEWING_OUTPUTS", "REVISION_IN_PROGRESS", "COMPLETED", "FAILED", "CANCELLED"
+      ]
+    }
+  }
+}

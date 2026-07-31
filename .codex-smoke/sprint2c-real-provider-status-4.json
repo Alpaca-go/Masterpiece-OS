@@ -1,8 +1,0 @@
-{
-  "status": "failed",
-  "runId": null,
-  "error": {
-    "name": "Error",
-    "message": "04-three-creative-directions: visualCreativeDirections.differenceMatrix.pairs[0] scores shared visual traits as fully different: graphic_mechanism"
-  }
-}

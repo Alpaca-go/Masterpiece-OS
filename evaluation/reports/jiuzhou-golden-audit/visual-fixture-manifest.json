@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "fixtureRoot": "evaluation/known-cases/jiuzhou-aesthetic/垂直测试",
+  "sourceProject": {
+    "directory": "九州美学原视觉方案",
+    "expectedImageCount": 27
+  },
+  "files": [
+    {
+      "path": "jiuzhou-space-golden-prompt.md",
+      "role": "golden_prompt",
+      "sizeBytes": 3983,
+      "sha256": "040d11a9acc782e642cf047a707e64b1f983bda8ad84e47bfd64c6f3631799e0"
+    },
+    {
+      "path": "真实logo.png",
+      "role": "confirmed_logo",
+      "sizeBytes": 98270,
+      "sha256": "c8cfb3404af230bd69a83576296c3c169210b01cae3a62ee26b2903b0e8892c2"
+    },
+    {
+      "path": "失败图-1.png",
+      "role": "bad_output",
+      "sizeBytes": 1729166,
+      "sha256": "b14134c3bcc65ac7bf203cfeb4333aa1d30a7b7fd5ecfcdc4fe05ef4209690e0"
+    },
+    {
+      "path": "失败图-2.png",
+      "role": "bad_output",
+      "sizeBytes": 2039001,
+      "sha256": "02b32a308955c8ecfeef4dcae5aa8825c0bce268be8557c0d034dbed1c87066e"
+    },
+    {
+      "path": "失败图-3.png",
+      "role": "bad_output",
+      "sizeBytes": 1827517,
+      "sha256": "6e2f9b907a143f9a8d70a2a45caa43eed59e32ee35391b0f248f74141ee7df73"
+    },
+    {
+      "path": "成功图-1.jpeg",
+      "role": "golden_output",
+      "sizeBytes": 432642,
+      "sha256": "9b57a781d0d6e208a70429dd5a7f30a4183f3f7ca9b5a1f8953173667979cc8b"
+    },
+    {
+      "path": "成功图-2.jpeg",
+      "role": "golden_output",
+      "sizeBytes": 410386,
+      "sha256": "73cd439a0bbe40ef339867049a7b6da43fd6892bd1f6a654615ebf1680acecca"
+    },
+    {
+      "path": "成功图-3.png",
+      "role": "golden_output",
+      "sizeBytes": 421170,
+      "sha256": "1030b48ac15da278cc2eb34ac325b95a625b0d9b1964f285f03b261772336d4a"
+    }
+  ]
+}

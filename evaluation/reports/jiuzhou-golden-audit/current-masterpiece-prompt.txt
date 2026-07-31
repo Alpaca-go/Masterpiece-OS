@@ -1,0 +1,65 @@
+【01 Deliverable Identity】
+- Generate exactly one space / reception / entrance_view result.
+- Generate a real, enterable, dimensionally credible architectural space, not a flat graphic-design presentation.
+- The image must clearly establish floor, walls, ceiling, circulation, functional zones, and human scale.
+
+【02 Current Task — Highest Priority】
+- 生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质
+- Aspect ratio: 16:9
+
+【03 Project Identity】
+- Brand: 九州美学
+- Industry: 待确认（基于现有素材推断）
+
+【04 Upgrade Thesis】
+- Preserve: 原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。
+- Preserve: 输出语言固定为简体中文。
+
+【05 Tone Boundaries】
+- 保持品牌气质清晰、克制且一致。
+
+【06 Spatial Contract】
+- Translate brand identity into spatial material, proportion, detail, and environmental graphics; do not display a collection of VI mockups.
+- Material junctions, furniture scale, lighting installation, and circulation must be buildable.
+- Build foreground, middle ground, and background as one continuous scene with a legible arrival sequence and unobstructed circulation.
+- Use brand motifs as abstract spatial behavior, never as a literal oversized icon, repeated wallpaper, or decorative prop.
+- Include a usable reception desk, visitor pause area, and clear relationship to circulation or back-of-house.
+
+【07 Brand Translation】
+- Locked — preserve: 原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。
+- Locked — preserve: 输出语言固定为简体中文。
+
+【08 Color System】
+- Use a controlled brand-led palette with clear dominant, secondary and accent hierarchy.
+
+【09 Material System】
+- 材料、接缝、厚度与表面响应必须真实可建造。
+
+【10 Lighting System】
+- Use physically plausible layered lighting with readable material response and no blown highlights.
+
+【11 Camera, Composition and Realism】
+- View from or near the entrance and explain threshold, arrival sequence, primary function, and circulation.
+- Commercial architectural photography realism with physically credible material, light, shadow, scale, lens perspective, and construction detail.
+- The result must read as one finished photograph of a real place, never as a design-process artifact.
+- Output ratio: 16:9
+
+【12 Logo, Text and Strict Negatives】
+- Do not render any logo, letters, words, or signage copy. Reserve a clean identity placement area when signage is needed.
+- Strict negative: 随机中文
+- Strict negative: 错误英文品牌名
+- Strict negative: 自行生成 slogan
+- Strict negative: 模糊文字
+- Strict negative: VI display board
+- Strict negative: brand guideline page
+- Strict negative: material board
+- Strict negative: moodboard
+- Strict negative: concept layout board
+- Strict negative: stationery mockup
+- Strict negative: collage
+- Strict negative: split-screen comparison
+- Strict negative: floating product platform unrelated to the requested function
+- Strict negative: fisheye distortion
+- Strict negative: axonometric diagram
+- Strict negative: floor plan
+- Strict negative: space without depth

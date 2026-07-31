@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "igt-legacy",
+  "projectId": "project-legacy",
+  "runId": "run-legacy",
+  "outputType": "master_anchor_image",
+  "sourceVisualRunId": "visual-legacy",
+  "sourceDocumentRunId": "document-legacy",
+  "sourceReferenceAnchorRunId": "reference-legacy",
+  "contextSnapshotPath": "source-context-snapshot.json",
+  "anchorBriefPath": "Anchor-Generation-Brief.md",
+  "references": [],
+  "compiledPrompt": "# Legacy prompt",
+  "promptVersion": 1,
+  "providerId": "dashscope",
+  "modelId": "wan2.7-image-pro",
+  "region": "beijing",
+  "parameters": {
+    "size": "1024*1024",
+    "outputCount": 1,
+    "watermark": false
+  },
+  "createdAt": "2026-01-01T00:00:00.000Z"
+}

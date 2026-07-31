@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "1.0",
+  "status": "pass",
+  "findings": [
+    {
+      "code": "LOCKED_ASSET_OMITTED",
+      "severity": "warn",
+      "detail": "九州美学主标志"
+    },
+    {
+      "code": "LOCKED_ASSET_OMITTED",
+      "severity": "warn",
+      "detail": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。"
+    },
+    {
+      "code": "LOCKED_ASSET_OMITTED",
+      "severity": "warn",
+      "detail": "输出语言固定为简体中文。"
+    },
+    {
+      "code": "LOCKED_ASSET_OMITTED",
+      "severity": "warn",
+      "detail": "紫色孔雀标志的核心形态"
+    },
+    {
+      "code": "LOCKED_ASSET_OMITTED",
+      "severity": "warn",
+      "detail": "Peacock Violet主色调"
+    },
+    {
+      "code": "LOCKED_ASSET_OMITTED",
+      "severity": "warn",
+      "detail": "精琢每一片翎羽的品牌理念"
+    }
+  ],
+  "checkedAt": "2026-07-30T13:12:32.956Z"
+}

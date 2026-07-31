@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "1.0",
+  "legacyPreset": "visual_extension",
+  "userIntent": "生成一张店内装修图",
+  "legacyOutputType": "concept_image",
+  "legacyReferenceRoles": ["current_project_logo", "current_project_identity", "current_project_identity", "reference_style"],
+  "failure": "The task cannot distinguish an interior scene from a VI material collection."
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "sampleId": "jiuzhou-space-auto-b-002",
+  "status": "pass_with_residual_risk",
+  "projectId": "f67ac606-5b60-4cc9-9955-5aa43ecbab16",
+  "taskId": "vnext-task-fde9fd7b-30b3-4e9f-8ea3-91cca168bc5c",
+  "runId": "3e67e719-8683-41b1-ab72-824ee7e1dc76",
+  "providerId": "volcengine",
+  "modelId": "doubao-seedream-5-0-pro-260628",
+  "promptPath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-f67ac606\\image-generation-vnext\\compilations\\vnext-task-fde9fd7b-30b3-4e9f-8ea3-91cca168bc5c\\compiled-prompt.md",
+  "promptSha256": "e361bb8a6a0e388a51bc98f435ea8605441a8391bf99141a62bdc0b1a94526bf",
+  "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-f67ac606\\image-generation\\3e67e719-8683-41b1-ab72-824ee7e1dc76\\images\\image-01.png",
+  "imageSha256": "e8f5dc2d33b1707679d062926408725c269c05a2740d97029ce006eb1aa0fdfd",
+  "frozenAt": "2026-07-30T00:00:00+08:00",
+  "residualRisk": [
+    "humanBehavior",
+    "platformFunctionExpression",
+    "logoAssetAccuracy"
+  ],
+  "notes": "v1.1 接受的 B 组回归基线。不得以 Golden Prompt 原文替代此自动链路基线。"
+}

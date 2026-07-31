@@ -1,0 +1,104 @@
+【A. Single Output Task】
+- 生成九州美学作为美学服务提供者的产品包装效果图。以 Visual Decision Packet 中有证据的“翻盖式纸盒”作为主包装结构，呈现打开状态及内部组织。只生成一套完整、可生产的包装产品摄影，不扩展为随机 VI 物料合集。
+- Generate exactly one finished packaging deliverable, never a collage, comparison board, or multi-panel proposal.
+
+【B. Brand and Product Identity】
+- Brand: 九州美学
+- Industry/category: 医美/美学服务
+- Brand role: 美学服务提供者
+- 医美产品包装
+- 服务礼品包装
+- 客户体验延伸
+
+【C. Packaging Category and Commercial Use】
+- Generate a physically credible packaging product render with an unambiguous construction and use.
+- Show the package as a three-dimensional manufactured object, not loose artwork pasted onto undefined paper.
+- Make opening logic, folds, edges, thickness, inserts, material, and finishing processes physically coherent.
+- Apply brand identity to appropriate structural surfaces while preserving confirmed package structures.
+- Show a coordinated gift-box set with outer structure, internal organization, and consistent hierarchy.
+
+【D. Locked Packaging Structure】
+- Exploratory structure: 翻盖式纸盒; purpose: 提供开启仪式感
+- Exploratory structure: 手提袋; purpose: 品牌携带体验
+
+【E. Opening and Internal Arrangement】
+- Opening: 丝带开启仪式感
+- Opening: 分层结构探索感
+- Opening: 内衬材质触感体验
+- Arrangement: 定制化内衬
+- Arrangement: 产品分层展示
+- Arrangement: 说明书精致放置
+
+【F. Brand-to-Packaging Translation】
+- Packaging concept: 精致礼盒体验，通过简约白色基底与紫色点缀传达高端医美产品/服务价值
+- 孔雀流线形态 becomes 简约线条压印; 局部UV工艺; 渐变色彩印刷
+- Do not translate it literally as 避免直接印刷孔雀照片
+- 6bb3bd56-290d-45e5-b5cc-57beaf03e4de: preserve 蜕变; 精致; 流动; 高贵 through approved packaging expressions.
+- 88a16d72-55ee-4796-a88b-ef9d89df485e: preserve 自然纹理; 高贵质感; 纯净基础 through approved packaging expressions.
+- Approved project-specific goal: 以‘参数化结构’替代‘具象插画’，以‘材质显影’替代‘色彩平涂’，以‘网格呼吸’替代‘中心对称’，建立一套可无缝穿透包装、海报、空间与数字端的现代东方视觉操作系统。
+- Approved project-specific goal: 一个以深午夜紫与暖米白为基底的静谧场域。空间与物料摒弃喧闹装饰，仅保留大面积中性画布与精密压印的纹理。侧光掠过表面时，微观几何单元折射出虹彩光泽，营造出介于现代建筑理性与东方禅意克制之间的沉浸叙事。
+- Approved project-specific goal: ‘翎羽矩阵’（Feather Matrix）参数化纹理系统：基于羽毛鳞片的层叠拓扑关系，提取为固定极坐标网格下的基础模块。该模块通过预设的缩放、旋转与透明度算法生成无限延展的平铺图案，并强制绑定物理工艺（击凸/局部UV/冷烫银）作为唯一显影方式，实现跨媒介的统一识别。
+- Approved project-specific prohibition: 写实孔雀插画 (Asset abba5eaa/ddb219ec)
+- Approved project-specific prohibition: 高饱和亮紫色主视觉 (Asset 88a16d72)
+- Approved project-specific prohibition: ‘笔锋软化’字体处理 (Asset c0b498b1)
+- Approved project-specific prohibition: 满版印花与过度装饰底纹 (Asset 1c3bbfdf)
+- Approved project-specific prohibition: 无业务逻辑的 Mockup 堆砌 (Asset 84d678ad/bd76c510)
+- Approved project-specific prohibition: 莲花/宝石等无关辅助图形 (Asset fe8570ca/005)
+- Approved project-specific prohibition: 绝对禁止复制、修改、重绘或拆解原始 Locked Logo
+- Approved project-specific prohibition: 严禁沿袭旧 VI 的写实孔雀插画、高饱和亮紫与软化字体处理
+- Approved project-specific prohibition: 严禁将旧海报内容简单替换为新元素或重新排列旧构图
+- Approved project-specific prohibition: 严禁在旧包装结构上仅更换材质或进行表面贴图换肤
+- Approved project-specific prohibition: 严禁对旧空间仅做装饰面替换而不重构光影、动线与材质逻辑
+- Approved project-specific prohibition: 所有生成必须严格遵循‘结构显影’推荐方向与 12 列网格系统
+- Approved project-specific prohibition: 视觉重心必须强制向物理材质、击凸纹理与留白呼吸倾斜
+- Approved project-specific prohibition: 禁止生成任何脱离业务真实触点的无意义 Mockup 堆砌画面
+
+【G. Graphic and Information Hierarchy】
+- 品牌标志优先
+- 产品名称清晰
+- 使用说明适度
+
+【H. Color Behavior】
+- Approved project color system: 建立‘深午夜紫 (#2E004F) + 暖米白 (#F5F5F0)’双极画布，彻底停用高饱和亮紫作为主色。光泽色（虹光银/珠光白）禁止使用 CMYK 平印实现，强制依赖烫印、镭射膜或特种纸原生反光。色彩应用严格遵循 60% 留白/30% 纹理/10% 品牌色点缀的配比原则。
+- Base color behavior: 哑光白
+- Base color behavior: 浅灰
+- Identity color behavior: Peacock Violet
+- Accent color behavior: 金属金
+- Forbidden color behavior: 避免高饱和度对比色组合
+
+【I. Substrate and Craft】
+- Approved project material system: 触感优先于视觉：全线导入 600g+ 特种触感纸、冷烫银与无墨击凸。‘翎羽矩阵’必须以物理凹凸或局部高反差材质呈现，利用侧光扫描显影图形，替代传统油墨印刷的平面覆盖，实现‘远观素净、近触精微’的工艺升级。
+- Substrate: 高品质哑光纸
+- Substrate: 触感膜处理
+- Substrate: 环保材质选择
+- Craft: 丝带装饰; purpose: 提升礼品感与开启仪式
+- Do not use 丝带装饰 for 避免过度装饰影响简约感
+- Craft: 局部UV; purpose: 强调品牌标志与关键信息
+- Do not use 局部UV for 避免大面积使用导致视觉混乱
+
+【J. Logo and Required Information】
+- 标志位置固定于包装正面中上部
+- 最小尺寸限制确保识别度
+- 反白使用规范
+- Do not render any logo, brand name, letters, or slogan. Reserve one clean, front-facing, production-credible identity area for controlled post-compositing.
+
+【K. Product Photography and View】
+- 产品特写突出质感
+- 使用场景展示
+- 光线强调材质细节
+- Show the package open with a physically credible lid, drawer, insert, hinge, or closure state.
+- High-end product photography with credible contact shadows, surface response, edge detail, and production tolerances.
+
+【L. Packaging Misread Risks】
+- Avoid misread: 过度礼品化可能被误解为化妆品而非医美产品
+- Do not restyle an old package surface while leaving the underlying design problem unchanged.
+
+【M. Text Safety】
+- Do not invent slogans, claims, ingredients, regulatory copy, or random characters.
+- Only render supplied mandatory text when reliable; otherwise preserve deliberate text-safe areas.
+
+【N. Output Specification】
+- Aspect ratio: 4:3
+- Shot: open_box
+- Show credible proportions, construction, opening logic, product placement, contact shadows, and manufacturable detail.
+- Output one clear commercial packaging image.

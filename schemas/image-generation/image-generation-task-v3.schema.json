@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece://schemas/image-generation/image-generation-task-v3.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "taskId", "runId", "sourcePreset", "deliverable", "purpose", "sources", "userIntent", "references", "compiledPrompt", "promptVersion", "compileFingerprint", "providerId", "modelId", "region", "parameters", "createdAt"],
+  "properties": {
+    "schemaVersion": { "const": "3.0" },
+    "taskId": { "type": "string", "minLength": 1 },
+    "runId": { "type": "string", "minLength": 1 },
+    "sourcePreset": { "enum": ["visual_analysis", "document_context", "reference_anchor", "integrated_context"] },
+    "deliverable": { "enum": ["anchor_image", "brand_poster", "packaging_render", "vi_application", "interior_scene", "storefront_scene", "free_concept"] },
+    "purpose": { "enum": ["exploration", "production"] },
+    "projectId": { "type": "string" },
+    "virtualProjectId": { "type": "string" },
+    "sources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "visualRunId": { "type": "string" },
+        "documentRunId": { "type": "string" },
+        "referenceAnchorRunId": { "type": "string" }
+      }
+    },
+    "userIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["original", "normalized"],
+      "properties": {
+        "original": { "type": "string" },
+        "normalized": { "type": "string" }
+      }
+    },
+    "references": { "type": "array", "items": { "$ref": "image-generation-task.schema.json#/$defs/reference" } },
+    "compiledPrompt": { "type": "string", "minLength": 1 },
+    "promptVersion": { "const": 3 },
+    "compileFingerprint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceBundleHash", "userIntentHash", "deliverableHash", "referencePlanHash", "compiledPromptHash", "compiledAt"],
+      "properties": {
+        "sourceBundleHash": { "type": "string", "minLength": 1 },
+        "userIntentHash": { "type": "string", "minLength": 1 },
+        "deliverableHash": { "type": "string", "minLength": 1 },
+        "referencePlanHash": { "type": "string", "minLength": 1 },
+        "compiledPromptHash": { "type": "string", "minLength": 1 },
+        "compiledAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "outputType": { "enum": ["concept_image", "master_anchor_image"] },
+    "contextSnapshotPath": { "type": "string", "minLength": 1 },
+    "providerId": { "type": "string", "minLength": 1 },
+    "modelId": { "type": "string", "minLength": 1 },
+    "region": { "type": "string", "minLength": 1 },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["size", "outputCount", "watermark"],
+      "properties": {
+        "size": { "type": "string" },
+        "outputCount": { "const": 1 },
+        "watermark": { "const": false },
+        "thinkingMode": { "type": "boolean" }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "anyOf": [
+        { "required": ["projectId"] },
+        { "required": ["virtualProjectId"] }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "output_task": [
+    "task_contract.currentInstruction",
+    "family.packaging"
+  ],
+  "brand_product_identity": [
+    "project_generation_contract.projectIdentity",
+    "packaging_translation.productAndCategoryRole"
+  ],
+  "category_commercial_use": [
+    "family.packaging",
+    "subtype.packaging.gift_set"
+  ],
+  "locked_structure": [
+    "packaging_translation.structureStrategy"
+  ],
+  "opening_arrangement": [
+    "packaging_translation.openingExperience",
+    "packaging_translation.productArrangement"
+  ],
+  "brand_translation": [
+    "packaging_translation.graphicTranslation",
+    "project_generation_contract.mustTransform"
+  ],
+  "graphic_information": [
+    "packaging_translation.informationHierarchy"
+  ],
+  "color_behavior": [
+    "packaging_translation.colorBehavior"
+  ],
+  "substrate_craft": [
+    "packaging_translation.substrateLanguage",
+    "packaging_translation.craftLanguage"
+  ],
+  "logo_required_information": [
+    "packaging_translation.logoPolicy",
+    "task_contract.logoUsageMode"
+  ],
+  "photography_view": [
+    "packaging_translation.photographyDirection",
+    "shot.packaging.open_box"
+  ],
+  "misread_risks": [
+    "packaging_translation.packagingMisreadRisks",
+    "project_generation_contract.brandMisreadRisks"
+  ],
+  "text_safety": [
+    "family.packaging.textSafety"
+  ],
+  "output_specification": [
+    "task_contract.aspectRatio",
+    "task_contract.shot",
+    "family.packaging"
+  ]
+}

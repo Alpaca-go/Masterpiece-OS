@@ -1,0 +1,928 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+  "projectFacts": {
+    "brandName": {
+      "value": "九州美学",
+      "source": "project_record",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    "industry": {
+      "value": "医美/美学服务",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "d92b5dd3-9551-4719-8e20-883c4a137f00"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    "brandRole": {
+      "value": "美学服务提供者",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+        "d92b5dd3-9551-4719-8e20-883c4a137f00"
+      ],
+      "confidence": 0.85,
+      "status": "confirmed"
+    }
+  },
+  "lockedAssets": [
+    {
+      "assetId": "brand-name-32fa23e11f42",
+      "type": "brand_name",
+      "value": "九州美学",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ]
+    },
+    {
+      "assetId": "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+      "type": "logo",
+      "value": "九州美学主标志",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+        "5b35ba88-efee-4a25-a7e3-eacb9c6a83d7"
+      ]
+    },
+    {
+      "assetId": "user-lock-1",
+      "type": "other",
+      "value": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[0]"
+      ]
+    },
+    {
+      "assetId": "user-lock-2",
+      "type": "other",
+      "value": "输出语言固定为简体中文。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[1]"
+      ]
+    }
+  ],
+  "assetInventory": {
+    "logoAssets": [
+      {
+        "assetId": "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "name": "九州美学主标志",
+        "kind": "logo",
+        "occurrenceRefs": [
+          "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+          "8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+          "5b35ba88-efee-4a25-a7e3-eacb9c6a83d7"
+        ],
+        "frequency": 15,
+        "visualFeatures": [
+          "紫色渐变孔雀/羽毛形态",
+          "流线型设计",
+          "抽象化动物形态"
+        ],
+        "possibleBrandMeaning": [
+          "美学",
+          "精致",
+          "蜕变",
+          "高贵"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.95
+      }
+    ],
+    "colorAssets": [
+      {
+        "assetId": "88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "name": "品牌色彩系统",
+        "kind": "color",
+        "occurrenceRefs": [
+          "88a16d72-55ee-4796-a88b-ef9d89df485e"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "Peacock Violet #5837BD",
+          "Sub Color #A971E7",
+          "Black #000000",
+          "White #FFFFFF"
+        ],
+        "possibleBrandMeaning": [
+          "高贵",
+          "神秘",
+          "专业",
+          "纯净"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.95
+      }
+    ],
+    "typographyAssets": [
+      {
+        "assetId": "c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+        "name": "品牌字体设计",
+        "kind": "typography",
+        "occurrenceRefs": [
+          "c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+          "ac2633e7-b029-4bf5-8e0c-4d687f7c4a10"
+        ],
+        "frequency": 8,
+        "visualFeatures": [
+          "定制中文字体",
+          "笔锋软化处理",
+          "现代感衬线体"
+        ],
+        "possibleBrandMeaning": [
+          "专业",
+          "精致",
+          "现代"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "graphicMotifs": [
+      {
+        "assetId": "49afbaea-6b53-4428-9707-6edc2158a55c",
+        "name": "孔雀羽毛图形提取",
+        "kind": "graphic_motif",
+        "occurrenceRefs": [
+          "49afbaea-6b53-4428-9707-6edc2158a55c",
+          "e32408d4-a320-4b0e-991f-3bd022566196"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "几何花瓣形状",
+          "放射状排列",
+          "紫色线条"
+        ],
+        "possibleBrandMeaning": [
+          "美学",
+          "精致",
+          "自然"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.85
+      }
+    ],
+    "imageryAssets": [
+      {
+        "assetId": "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "name": "孔雀意象摄影",
+        "kind": "imagery",
+        "occurrenceRefs": [
+          "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+          "f275926e-d3b5-4916-b5bb-b26c5301d674"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "紫色调孔雀",
+          "飞行姿态",
+          "羽毛细节"
+        ],
+        "possibleBrandMeaning": [
+          "高贵",
+          "美丽",
+          "蜕变"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "layoutPatterns": [
+      {
+        "assetId": "e32408d4-a320-4b0e-991f-3bd022566196",
+        "name": "平面创意方向-底纹",
+        "kind": "layout_pattern",
+        "occurrenceRefs": [
+          "e32408d4-a320-4b0e-991f-3bd022566196"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "放射状渐变",
+          "几何分割",
+          "紫色调"
+        ],
+        "possibleBrandMeaning": [
+          "美学",
+          "精致",
+          "现代"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.8
+      }
+    ],
+    "materialCues": [
+      {
+        "assetId": "88a16d72-55ee-4796-a88b-ef9d89df485e",
+        "name": "材质参考",
+        "kind": "material_cue",
+        "occurrenceRefs": [
+          "88a16d72-55ee-4796-a88b-ef9d89df485e"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "孔雀羽毛纹理",
+          "黑色石材",
+          "白色大理石"
+        ],
+        "possibleBrandMeaning": [
+          "自然",
+          "高贵",
+          "纯净"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.75
+      }
+    ],
+    "packagingStructures": [
+      {
+        "assetId": "b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+        "name": "包装结构",
+        "kind": "packaging_structure",
+        "occurrenceRefs": [
+          "b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+          "8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08"
+        ],
+        "frequency": 2,
+        "visualFeatures": [
+          "白色纸盒",
+          "紫色丝带",
+          "简约设计"
+        ],
+        "possibleBrandMeaning": [
+          "精致",
+          "高端",
+          "礼品感"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.85
+      }
+    ],
+    "spatialCues": [
+      {
+        "assetId": "e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+        "name": "空间导视",
+        "kind": "spatial_cue",
+        "occurrenceRefs": [
+          "e9b356d3-966c-40b0-adf7-9c2db31d1afb"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "混凝土墙面",
+          "紫色标识",
+          "箭头导视"
+        ],
+        "possibleBrandMeaning": [
+          "专业",
+          "现代",
+          "指引"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.8
+      }
+    ],
+    "copyAssets": [
+      {
+        "assetId": "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+        "name": "品牌文案",
+        "kind": "copy",
+        "occurrenceRefs": [
+          "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+          "ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+          "d92b5dd3-9551-4719-8e20-883c4a137f00"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "精琢每一片翎羽",
+          "科学与美学相遇，信任与温度共生",
+          "因美而生"
+        ],
+        "possibleBrandMeaning": [
+          "精致",
+          "专业",
+          "美学",
+          "信任"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "diagnosis": {
+    "valuableAssets": [
+      {
+        "target": "logoAssets",
+        "observation": "紫色孔雀/羽毛形态标志具有高度识别性，流线型设计传达美学与精致感",
+        "whyItMatters": "作为品牌核心视觉资产，已在多种媒介中保持一致应用",
+        "evidenceRefs": [
+          "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+          "8b8ee9b8-8e3e-4da0-af15-f452f86bfd37"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "target": "colorAssets",
+        "observation": "Peacock Violet (#5837BD) 作为主色，与孔雀意象高度一致，形成独特品牌色彩记忆",
+        "whyItMatters": "色彩系统在包装、空间、平面等媒介中保持一致，强化品牌识别",
+        "evidenceRefs": [
+          "88a16d72-55ee-4796-a88b-ef9d89df485e",
+          "b2c502c1-8f0e-4422-b252-81afb2ce9dc4"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "overusedExpressions": [
+      {
+        "target": "graphicMotifs",
+        "observation": "孔雀羽毛图形在多个媒介中重复使用，可能造成视觉疲劳",
+        "whyItMatters": "过度使用可能削弱图形的特殊性和品牌独特性",
+        "evidenceRefs": [
+          "49afbaea-6b53-4428-9707-6edc2158a55c",
+          "e32408d4-a320-4b0e-991f-3bd022566196",
+          "d92b5dd3-9551-4719-8e20-883c4a137f00"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "outdatedExpressions": [],
+    "weakSystemAreas": [
+      {
+        "target": "typographyAssets",
+        "observation": "中文字体设计虽有笔锋软化处理，但在小尺寸应用时可能识别度下降",
+        "whyItMatters": "影响品牌在不同媒介和尺寸下的一致性表现",
+        "evidenceRefs": [
+          "c0b498b1-50a7-4ae1-a399-25f4bda2dfeb"
+        ],
+        "confidence": 0.7
+      }
+    ],
+    "categoryCliches": [
+      {
+        "target": "imageryAssets",
+        "observation": "孔雀意象在美学/医美行业中较为常见，可能缺乏差异化",
+        "whyItMatters": "需要强化品牌独特表达方式，避免行业同质化",
+        "evidenceRefs": [
+          "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+          "f275926e-d3b5-4916-b5bb-b26c5301d674"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "brandMisreadRisks": [
+      {
+        "target": "imageryAssets",
+        "observation": "孔雀图形在视觉上占主导，可能掩盖品牌的医美服务属性",
+        "whyItMatters": "影响目标客户对品牌核心业务的理解",
+        "evidenceRefs": [
+          "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+          "f275926e-d3b5-4916-b5bb-b26c5301d674"
+        ],
+        "confidence": 0.85,
+        "code": "MR001",
+        "description": "孔雀意象可能被误解为纯粹的自然/动物品牌，而非医美/美学服务",
+        "appliesTo": {
+          "taskFamilies": [
+            "brand_strategy",
+            "visual_identity"
+          ],
+          "subtypes": [
+            "positioning",
+            "messaging"
+          ],
+          "scenes": [
+            "customer_acquisition",
+            "brand_education"
+          ]
+        },
+        "status": "confirmed"
+      },
+      {
+        "target": "colorAssets",
+        "observation": "紫色在色彩心理学中常与女性、浪漫关联，可能影响品牌性别包容性",
+        "whyItMatters": "医美/美学服务通常面向全性别客户群体",
+        "evidenceRefs": [
+          "88a16d72-55ee-4796-a88b-ef9d89df485e",
+          "b2c502c1-8f0e-4422-b252-81afb2ce9dc4"
+        ],
+        "confidence": 0.75,
+        "code": "MR002",
+        "description": "紫色调可能被误解为女性专属品牌，限制男性客户群体",
+        "appliesTo": {
+          "taskFamilies": [
+            "visual_identity",
+            "marketing"
+          ],
+          "subtypes": [
+            "color_strategy",
+            "audience_targeting"
+          ],
+          "scenes": [
+            "customer_acquisition",
+            "brand_positioning"
+          ]
+        },
+        "status": "probable"
+      }
+    ],
+    "crossMediaGaps": [
+      {
+        "target": "spatialCues",
+        "observation": "空间导视系统中的品牌应用相对简单，缺乏与平面/包装系统的深度整合",
+        "whyItMatters": "影响品牌体验的一致性",
+        "evidenceRefs": [
+          "e9b356d3-966c-40b0-adf7-9c2db31d1afb"
+        ],
+        "confidence": 0.7
+      }
+    ]
+  },
+  "creativeDecision": {
+    "brandRoleStatement": "九州美学作为医美/美学服务提供者，通过精致工艺与科学美学的结合，为客户创造信任与温度共生的体验",
+    "upgradeFrom": [
+      "传统医美品牌的冰冷技术感",
+      "过度依赖动物意象的表面美学"
+    ],
+    "preserveCore": [
+      "紫色孔雀标志的核心形态",
+      "Peacock Violet主色调",
+      "精琢每一片翎羽的品牌理念"
+    ],
+    "upgradeTo": [
+      "科学与美学深度融合的表达",
+      "更具包容性的性别中性设计",
+      "多维度的品牌体验系统"
+    ],
+    "uniqueUpgradeThesis": "从单一孔雀意象升级为科学与美学相遇的品牌叙事，保留紫色调和流线型设计核心，通过材质、光线和空间体验强化精致工艺感，避免将品牌局限为纯女性或纯自然美学定位",
+    "targetWorldview": [
+      "科学与美学的和谐统一",
+      "精致工艺与人文关怀并重",
+      "信任与温度共生的服务体验"
+    ],
+    "toneBoundaries": [],
+    "strategicNegatives": [
+      "不使用过度具象的孔雀写实图像",
+      "不采用纯女性化色彩组合",
+      "不强调单一技术或纯美学"
+    ]
+  },
+  "abstractions": [
+    {
+      "sourceAsset": "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+      "semanticMeaning": [
+        "蜕变",
+        "精致",
+        "流动",
+        "高贵"
+      ],
+      "formalProperties": [
+        "流线型曲线",
+        "渐变色彩",
+        "抽象化形态",
+        "动态平衡"
+      ],
+      "rhythmProperties": [
+        "柔和过渡",
+        "优雅节奏",
+        "视觉流动性"
+      ],
+      "materialPotential": [
+        "金属光泽表面",
+        "半透明材质",
+        "渐变色彩层"
+      ],
+      "lightingPotential": [
+        "柔和反射光",
+        "渐变照明",
+        "重点照明突出流线"
+      ],
+      "forbiddenLiteralUse": [
+        "直接使用孔雀照片",
+        "写实动物形态",
+        "具象羽毛复制"
+      ],
+      "evidenceRefs": [
+        "6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+        "b1b50608-1579-453b-9964-28f95890723f"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "sourceAsset": "88a16d72-55ee-4796-a88b-ef9d89df485e",
+      "semanticMeaning": [
+        "自然纹理",
+        "高贵质感",
+        "纯净基础"
+      ],
+      "formalProperties": [
+        "细微纹理",
+        "对比材质",
+        "纯净背景"
+      ],
+      "rhythmProperties": [
+        "自然节奏",
+        "材质对比韵律"
+      ],
+      "materialPotential": [
+        "大理石表面",
+        "哑光与光泽对比",
+        "细微纹理材质"
+      ],
+      "lightingPotential": [
+        "自然光模拟",
+        "材质纹理强调光",
+        "柔和环境光"
+      ],
+      "forbiddenLiteralUse": [
+        "直接复制孔雀羽毛纹理",
+        "过度使用大理石图案"
+      ],
+      "evidenceRefs": [
+        "88a16d72-55ee-4796-a88b-ef9d89df485e"
+      ],
+      "confidence": 0.85
+    }
+  ],
+  "mediaTranslations": {
+    "sharedBrandCore": [
+      "紫色孔雀流线标志",
+      "Peacock Violet主色调",
+      "精琢每一片翎羽理念",
+      "科学与美学相遇叙事"
+    ],
+    "spatial": {
+      "status": "ready",
+      "spatialConcept": "流动的美学空间，通过流线型设计和紫色调营造精致、专业的医美环境",
+      "structureLanguage": [
+        "流线型隔断",
+        "弧形墙面",
+        "层次化空间布局"
+      ],
+      "materialLanguage": [
+        {
+          "material": "哑光白色石材",
+          "behavior": [
+            "提供纯净背景",
+            "反射柔和光线"
+          ],
+          "brandRole": "营造专业、纯净的医美环境基础",
+          "forbidden": [
+            "避免使用过于冰冷的工业材料"
+          ]
+        },
+        {
+          "material": "紫色半透明亚克力",
+          "behavior": [
+            "透光性",
+            "色彩渐变效果"
+          ],
+          "brandRole": "强化品牌色彩识别，营造流动美学感",
+          "forbidden": [
+            "避免过度使用导致视觉疲劳"
+          ]
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "间接照明",
+          "重点照明",
+          "渐变照明"
+        ],
+        "contrast": "柔和对比，避免强烈明暗反差",
+        "interactionWithMaterials": [
+          "在半透明材质上创造渐变效果",
+          "在石材表面形成柔和反射"
+        ],
+        "forbidden": [
+          "避免刺眼直射光",
+          "避免冷色调照明"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "Peacock Violet",
+            "role": "品牌识别核心，营造美学氛围"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "哑光白",
+            "role": "空间基础色调，营造专业感"
+          }
+        ],
+        "accent": [
+          {
+            "name": "金属金",
+            "role": "点缀色，提升精致感"
+          }
+        ],
+        "forbidden": [
+          "避免使用高饱和度对比色",
+          "避免纯黑色大面积使用"
+        ]
+      },
+      "brandIntegration": [
+        "流线型标志在空间中的立体应用",
+        "紫色调在关键接触点的强调",
+        "品牌文案在等候区的艺术化展示"
+      ],
+      "functionalRelationships": [],
+      "sceneProgram": [
+        "接待区",
+        "等候区",
+        "咨询室",
+        "治疗室"
+      ],
+      "peopleBehavior": [],
+      "functionalExperience": [
+        "流线型导视系统",
+        "色彩分区的功能指引",
+        "材质触感体验"
+      ],
+      "sceneMisreadRisks": [
+        "空间紫色调过重可能被误解为娱乐场所而非专业医美机构"
+      ]
+    },
+    "packaging": {
+      "status": "ready",
+      "packagingConcept": "精致礼盒体验，通过简约白色基底与紫色点缀传达高端医美产品/服务价值",
+      "productAndCategoryRole": [
+        "医美产品包装",
+        "服务礼品包装",
+        "客户体验延伸"
+      ],
+      "structureStrategy": [
+        {
+          "structure": "翻盖式纸盒",
+          "purpose": "提供开启仪式感",
+          "locked": false,
+          "evidenceRefs": [
+            "b2c502c1-8f0e-4422-b252-81afb2ce9dc4"
+          ]
+        },
+        {
+          "structure": "手提袋",
+          "purpose": "品牌携带体验",
+          "locked": false,
+          "evidenceRefs": [
+            "b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+            "8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08"
+          ]
+        }
+      ],
+      "openingExperience": [
+        "丝带开启仪式感",
+        "分层结构探索感",
+        "内衬材质触感体验"
+      ],
+      "productArrangement": [
+        "定制化内衬",
+        "产品分层展示",
+        "说明书精致放置"
+      ],
+      "graphicTranslation": [
+        {
+          "sourceMeaning": "孔雀流线形态",
+          "packagingExpression": [
+            "简约线条压印",
+            "局部UV工艺",
+            "渐变色彩印刷"
+          ],
+          "forbiddenLiteralUse": [
+            "避免直接印刷孔雀照片"
+          ]
+        }
+      ],
+      "informationHierarchy": [
+        "品牌标志优先",
+        "产品名称清晰",
+        "使用说明适度"
+      ],
+      "substrateLanguage": [
+        "高品质哑光纸",
+        "触感膜处理",
+        "环保材质选择"
+      ],
+      "craftLanguage": [
+        {
+          "craft": "丝带装饰",
+          "purpose": "提升礼品感与开启仪式",
+          "forbiddenUse": [
+            "避免过度装饰影响简约感"
+          ]
+        },
+        {
+          "craft": "局部UV",
+          "purpose": "强调品牌标志与关键信息",
+          "forbiddenUse": [
+            "避免大面积使用导致视觉混乱"
+          ]
+        }
+      ],
+      "colorBehavior": {
+        "base": [
+          "哑光白",
+          "浅灰"
+        ],
+        "identity": [
+          "Peacock Violet"
+        ],
+        "accent": [
+          "金属金"
+        ],
+        "forbidden": [
+          "避免高饱和度对比色组合"
+        ]
+      },
+      "logoPolicy": [
+        "标志位置固定于包装正面中上部",
+        "最小尺寸限制确保识别度",
+        "反白使用规范"
+      ],
+      "seriesArchitecture": [
+        "基础系列白色为主",
+        "高端系列紫色为主",
+        "限量版特殊工艺"
+      ],
+      "photographyDirection": [
+        "产品特写突出质感",
+        "使用场景展示",
+        "光线强调材质细节"
+      ],
+      "packagingMisreadRisks": [
+        "过度礼品化可能被误解为化妆品而非医美产品"
+      ],
+      "missingRequiredFields": []
+    },
+    "poster": {
+      "status": "interface_only",
+      "concept": "科学与美学相遇的视觉叙事，通过流线型设计与紫色调营造专业而温暖的品牌形象",
+      "expressionLanguage": [
+        "抽象孔雀流线",
+        "渐变紫色背景",
+        "科学元素与美学图形融合"
+      ],
+      "misreadRisks": [
+        "过于艺术化可能弱化医美专业性",
+        "紫色调过重可能限制受众性别感知"
+      ]
+    },
+    "vi": {
+      "status": "interface_only",
+      "concept": "统一而灵活的品牌视觉系统，通过核心标志、色彩和图形元素在不同媒介中保持一致性",
+      "expressionLanguage": [
+        "标志多版本应用",
+        "色彩系统分级使用",
+        "辅助图形灵活组合"
+      ],
+      "misreadRisks": [
+        "系统过于复杂可能导致执行不一致",
+        "辅助图形过度使用可能稀释核心标志识别度"
+      ]
+    }
+  },
+  "colorSystem": {
+    "primary": [
+      {
+        "name": "Peacock Violet",
+        "role": "品牌识别核心，营造美学氛围"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "哑光白",
+        "role": "空间基础色调，营造专业感"
+      }
+    ],
+    "accent": [
+      {
+        "name": "金属金",
+        "role": "点缀色，提升精致感"
+      }
+    ],
+    "forbidden": [
+      "避免使用高饱和度对比色",
+      "避免纯黑色大面积使用"
+    ]
+  },
+  "materialSystem": [
+    {
+      "material": "哑光白色石材",
+      "behavior": [
+        "提供纯净背景",
+        "反射柔和光线"
+      ],
+      "brandRole": "营造专业、纯净的医美环境基础",
+      "forbidden": [
+        "避免使用过于冰冷的工业材料"
+      ]
+    },
+    {
+      "material": "紫色半透明亚克力",
+      "behavior": [
+        "透光性",
+        "色彩渐变效果"
+      ],
+      "brandRole": "强化品牌色彩识别，营造流动美学感",
+      "forbidden": [
+        "避免过度使用导致视觉疲劳"
+      ]
+    }
+  ],
+  "lightingSystem": {
+    "source": [
+      "间接照明",
+      "重点照明",
+      "渐变照明"
+    ],
+    "contrast": "柔和对比，避免强烈明暗反差",
+    "interactionWithMaterials": [
+      "在半透明材质上创造渐变效果",
+      "在石材表面形成柔和反射"
+    ],
+    "forbidden": [
+      "避免刺眼直射光",
+      "避免冷色调照明"
+    ]
+  },
+  "provenance": {
+    "createdFrom": [
+      "asset:abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+      "asset:f275926e-d3b5-4916-b5bb-b26c5301d674",
+      "asset:6bb3bd56-290d-45e5-b5cc-57beaf03e4de",
+      "asset:b1b50608-1579-453b-9964-28f95890723f",
+      "asset:c0b498b1-50a7-4ae1-a399-25f4bda2dfeb",
+      "asset:ac2633e7-b029-4bf5-8e0c-4d687f7c4a10",
+      "asset:8b8ee9b8-8e3e-4da0-af15-f452f86bfd37",
+      "asset:5b35ba88-efee-4a25-a7e3-eacb9c6a83d7",
+      "asset:88a16d72-55ee-4796-a88b-ef9d89df485e",
+      "asset:49afbaea-6b53-4428-9707-6edc2158a55c",
+      "asset:e32408d4-a320-4b0e-991f-3bd022566196",
+      "asset:fe8570ca-e89e-4aed-a9f6-167f61d3660b",
+      "asset:34a2f52b-bba3-4494-984e-4d79d798567d",
+      "asset:d92b5dd3-9551-4719-8e20-883c4a137f00",
+      "asset:57872e78-f607-4c22-ad32-9449aa6395dd",
+      "asset:e9b356d3-966c-40b0-adf7-9c2db31d1afb",
+      "asset:b2c502c1-8f0e-4422-b252-81afb2ce9dc4",
+      "asset:6f0524f2-81d2-4afe-960e-f5b4155cc1cb",
+      "asset:84d678ad-5e74-42e7-b9b5-64fb3bc1cc40",
+      "asset:bc84a2fc-a956-41f4-97ab-c27ca2082fce",
+      "asset:8f5aacb1-6d2a-44bd-b5f6-7c4da5314e08",
+      "asset:42d03336-360c-42ca-8d06-ef9a3a2a25ee",
+      "asset:41702497-d809-487a-a793-5f7b94fe4b55",
+      "asset:1c3bbfdf-c4cf-4446-a157-2e28ff701d6e",
+      "asset:6dd5185a-cf5e-485e-a455-3c60a19eee2f",
+      "asset:bd76c510-429b-4e06-8f17-53e67583f82d",
+      "asset:ddb219ec-0c32-47b1-8abf-9bdb81f290c4"
+    ],
+    "generatedAt": "2026-07-30T12:48:05.399Z",
+    "modelId": "qwen3.6-plus",
+    "sourceFingerprint": "2f07b0e4ef51ca2686a9ad0e1fb2632ea648dc0157d7feb13045161d0fd862e7"
+  },
+  "validation": {
+    "hardFactStatus": "pass",
+    "mode": "formal_upgrade",
+    "missingRequiredFacts": [],
+    "conflicts": [],
+    "executionDataStatus": "ready",
+    "missingExecutionFields": []
+  }
+}

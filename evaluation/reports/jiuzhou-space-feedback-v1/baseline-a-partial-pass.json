@@ -1,0 +1,31 @@
+{
+  "sampleId": "jiuzhou-space-latest-001",
+  "status": "partial_pass",
+  "promptTaskId": "vnext-task-b5205ac2-7404-4057-863e-033232f86cec",
+  "imageRunId": "cb8a852d-6867-4e32-9f7d-104588672839",
+  "passed": [
+    "real_space",
+    "correct_general_scene",
+    "basic_logo_presence",
+    "initial_feather_translation",
+    "material_quality",
+    "architectural_photography"
+  ],
+  "failed": [
+    "platform_brand_role",
+    "subtle_logo_behavior",
+    "color_ratio",
+    "distributed_spatial_translation",
+    "future_material_language",
+    "foreground_midground_background_story"
+  ],
+  "failureTags": [
+    "oversized_brand_installation",
+    "purple_overweight",
+    "logo_too_prominent",
+    "beauty_clinic_bias",
+    "storefront_composition"
+  ],
+  "promptPath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-f67ac606\\image-generation-vnext\\compilations\\vnext-task-b5205ac2-7404-4057-863e-033232f86cec\\compiled-prompt.md",
+  "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-f67ac606\\image-generation\\cb8a852d-6867-4e32-9f7d-104588672839\\images\\image-01.png"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "@masterpiece/creative-production-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "V6 deterministic Creative Session, Style Profile, Visual Canon and Generation Series domain runtime.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./*": "./src/*",
+    "./session": "./src/session.js",
+    "./style-profile": "./src/style-profile.js",
+    "./locked-assets": "./src/locked-assets.js",
+    "./anchor-candidate": "./src/anchor-candidate.js",
+    "./visual-canon": "./src/visual-canon.js",
+    "./generation-prompt": "./src/generation-prompt.js",
+    "./creative-reading": "./src/creative-reading.js",
+    "./creative-direction": "./src/creative-direction.js",
+    "./generation-series": "./src/generation-series.js",
+    "./revision-assets": "./src/revision-assets.js"
+  }
+}

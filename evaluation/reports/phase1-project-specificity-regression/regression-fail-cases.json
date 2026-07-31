@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0",
+  "registeredAt": "2026-07-30T15:33:18.407Z",
+  "cases": [
+    {
+      "id": "REGRESSION-SPACE-8204e627-d0f8-43e0-9e98-9c698b35714d",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "8204e627-d0f8-43e0-9e98-9c698b35714d",
+      "failedCompilationId": "vnext-task-f6deb562-5479-40d7-8ff8-929f8a82fe96",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\8204e627-d0f8-43e0-9e98-9c698b35714d\\images\\image-01.png",
+      "observedRegression": [
+        "白色大理石、紫色灯带、金色羽毛装饰与大 Logo 墙组成通用高端医美模板",
+        "已批准的结构显影、微观材质触感、深午夜紫/暖米白、侧光显影与参数化翎羽矩阵未进入最终表达"
+      ]
+    },
+    {
+      "id": "REGRESSION-SPACE-ea21d802-a334-486e-8892-035dbb963e7c",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "ea21d802-a334-486e-8892-035dbb963e7c",
+      "failedCompilationId": "vnext-task-4dbd04ce-e666-4c97-b1c7-2210599b7e28",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\ea21d802-a334-486e-8892-035dbb963e7c\\images\\image-01.png",
+      "observedRegression": [
+        "Logo 后合成路由生效，但大面积具象羽片墙与紫色发光前台仍构成模板化表达",
+        "Prompt 同时包含批准色彩系统与旧 Packet 的 Peacock Violet/哑光白/金属金/紫色亚克力，暴露 Project Contract 来源优先级错误"
+      ]
+    },
+    {
+      "id": "REGRESSION-SPACE-8551a8c0-ea48-4765-a27f-c7c2ff140ae7",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "8551a8c0-ea48-4765-a27f-c7c2ff140ae7",
+      "failedCompilationId": "vnext-task-4a335cba-130d-45ce-be43-ae6eafd2ed82",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\8551a8c0-ea48-4765-a27f-c7c2ff140ae7\\images\\image-01.png",
+      "observedRegression": [
+        "已移除 Logo、金色装饰、紫色灯带与大尺度羽片墙，证明 Project Contract 优先级修复生效",
+        "结果仍以暖白石材和可读鳞羽压纹为主，项目专属性仅部分恢复，真实视觉验收未完全通过"
+      ]
+    },
+    {
+      "id": "REGRESSION-SPACE-d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "failedCompilationId": "vnext-task-d0997d7e-29ec-493c-9681-d1185995e325",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\d7fe0976-018c-41e9-9759-bcaf45e3acf3\\images\\image-01.png",
+      "observedRegression": [
+        "结构性回归通过，已移除孔雀羽毛、紫色灯带、金色装饰和大 Logo 墙",
+        "结果仍属于暖白极简诊所或办公室式安全通用表达，旗舰展示、全链平台角色和唯一正向空间机制未充分显现"
+      ]
+    },
+    {
+      "id": "REGRESSION-PACKAGING-071af71a-c0a2-48af-850e-3f734c2c15dc",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "packaging",
+      "status": "regression_fail",
+      "failedRunId": "071af71a-c0a2-48af-850e-3f734c2c15dc",
+      "failedCompilationId": "vnext-task-79118849-8967-4c18-bdfd-3cec3339906b",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\071af71a-c0a2-48af-850e-3f734c2c15dc\\images\\image-01.png",
+      "observedRegression": [
+        "白盒、紫丝带、金边与具象羽毛纹样组成通用美容礼盒",
+        "在产品角色和产品证据未确认时生成了疑似产品瓶器"
+      ]
+    },
+    {
+      "id": "jiuzhou-space-peacock-theme-fail",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "ea21d802-a334-486e-8892-035dbb963e7c",
+      "failedCompilationId": "vnext-task-4dbd04ce-e666-4c97-b1c7-2210599b7e28",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\ea21d802-a334-486e-8892-035dbb963e7c\\images\\image-01.png",
+      "observedRegression": [
+        "Logo 后合成路由生效，但大面积具象羽片墙与紫色发光前台仍构成模板化表达",
+        "Prompt 同时包含批准色彩系统与旧 Packet 的 Peacock Violet/哑光白/金属金/紫色亚克力，暴露 Project Contract 来源优先级错误"
+      ]
+    },
+    {
+      "id": "jiuzhou-space-generic-medical-partial",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "regression_fail",
+      "failedRunId": "8551a8c0-ea48-4765-a27f-c7c2ff140ae7",
+      "failedCompilationId": "vnext-task-4a335cba-130d-45ce-be43-ae6eafd2ed82",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\8551a8c0-ea48-4765-a27f-c7c2ff140ae7\\images\\image-01.png",
+      "observedRegression": [
+        "已移除 Logo、金色装饰、紫色灯带与大尺度羽片墙，证明 Project Contract 优先级修复生效",
+        "结果仍以暖白石材和可读鳞羽压纹为主，项目专属性仅部分恢复，真实视觉验收未完全通过"
+      ]
+    },
+    {
+      "id": "jiuzhou-space-safe-generic-clinic-partial",
+      "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+      "family": "space",
+      "status": "partial_fail",
+      "failedRunId": "d7fe0976-018c-41e9-9759-bcaf45e3acf3",
+      "failedCompilationId": "vnext-task-d0997d7e-29ec-493c-9681-d1185995e325",
+      "imagePath": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-a7a56ed7\\image-generation\\d7fe0976-018c-41e9-9759-bcaf45e3acf3\\images\\image-01.png",
+      "observedRegression": [
+        "结构性回归通过，已移除孔雀羽毛、紫色灯带、金色装饰和大 Logo 墙",
+        "结果仍属于暖白极简诊所或办公室式安全通用表达，旗舰展示、全链平台角色和唯一正向空间机制未充分显现"
+      ]
+    }
+  ]
+}

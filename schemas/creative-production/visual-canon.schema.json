@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-production/visual-canon.schema.json",
+  "title": "Visual Canon V6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "id", "projectId", "name", "version", "status",
+    "styleProfileId", "styleProfileVersion", "primaryCanonImageId",
+    "canonImages", "visualDNA", "colorSystem", "materialSystem", "lightingSystem",
+    "compositionSystem", "spatialSystem", "sharedRules", "variationRules", "conflicts", "createdAt", "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "6.0" },
+    "id": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "status": { "enum": ["draft", "confirmed", "superseded"] },
+    "styleProfileId": { "type": "string", "minLength": 1 },
+    "styleProfileVersion": { "type": "string", "minLength": 1 },
+    "primaryCanonImageId": { "type": "string", "minLength": 1 },
+    "sourceExplorationId": { "type": "string", "minLength": 1 },
+    "selectedConceptId": { "type": "string", "minLength": 1 },
+    "canonImages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "type", "role", "imagePath", "sourceKind", "priority", "observations"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "type": {
+            "enum": ["brand_hero", "packaging", "poster_graphic", "vi_application", "spatial", "illustration"]
+          },
+          "role": { "type": "string", "minLength": 1 },
+          "imagePath": { "type": "string", "minLength": 1 },
+          "sourceKind": { "enum": ["anchor", "visual_concept"] },
+          "sourceAnchorId": { "type": "string", "minLength": 1 },
+          "sourceConceptId": { "type": "string", "minLength": 1 },
+          "sourceExplorationId": { "type": "string", "minLength": 1 },
+          "priority": { "enum": ["primary", "supporting"] },
+          "observations": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["colors", "materials", "lighting", "graphicLanguage", "preservedLockedAssetIds"],
+            "properties": {
+              "colors": { "$ref": "#/$defs/strings" },
+              "materials": { "$ref": "#/$defs/strings" },
+              "lighting": { "$ref": "#/$defs/strings" },
+              "graphicLanguage": { "$ref": "#/$defs/strings" },
+              "compositionDensity": { "type": "string" },
+              "spatialStructure": { "type": "string" },
+              "displayStrategy": { "type": "string" },
+              "preservedLockedAssetIds": { "$ref": "#/$defs/strings" }
+            }
+          }
+        }
+      }
+    },
+    "visualDNA": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["brandKeywords", "moodAttributes", "industryAttributes", "coreVisualMetaphor"],
+      "properties": {
+        "brandKeywords": { "$ref": "#/$defs/strings" },
+        "moodAttributes": { "$ref": "#/$defs/strings" },
+        "industryAttributes": { "$ref": "#/$defs/strings" },
+        "coreVisualMetaphor": { "type": "string", "minLength": 1 }
+      }
+    },
+    "colorSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "secondary", "accent", "forbidden"],
+      "properties": {
+        "primary": { "$ref": "#/$defs/strings" },
+        "secondary": { "$ref": "#/$defs/strings" },
+        "accent": { "$ref": "#/$defs/strings" },
+        "forbidden": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "materialSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["materialLanguage", "surfaceTextures", "craftRules"],
+      "properties": {
+        "materialLanguage": { "$ref": "#/$defs/strings" },
+        "surfaceTextures": { "$ref": "#/$defs/strings" },
+        "craftRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "lightingSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["direction", "contrast", "photographyAtmosphere"],
+      "properties": {
+        "direction": { "$ref": "#/$defs/strings" },
+        "contrast": { "$ref": "#/$defs/strings" },
+        "photographyAtmosphere": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "compositionSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["compositionMethods", "gridRules", "negativeSpaceRules"],
+      "properties": {
+        "compositionMethods": { "$ref": "#/$defs/strings" },
+        "gridRules": { "$ref": "#/$defs/strings" },
+        "negativeSpaceRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "spatialSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["structureRules", "displayRules", "negativeSpaceRules"],
+      "properties": {
+        "structureRules": { "$ref": "#/$defs/strings" },
+        "displayRules": { "$ref": "#/$defs/strings" },
+        "negativeSpaceRules": { "$ref": "#/$defs/strings" }
+      }
+    },
+    "sharedRules": { "$ref": "#/$defs/strings" },
+    "variationRules": { "$ref": "#/$defs/strings" },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension", "severity", "message", "canonImageIds"],
+        "properties": {
+          "dimension": {
+            "enum": ["color", "material", "lighting", "graphic_language", "composition_density", "locked_assets"]
+          },
+          "severity": { "enum": ["warning", "blocking"] },
+          "message": { "type": "string", "minLength": 1 },
+          "canonImageIds": { "$ref": "#/$defs/strings" }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "strings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

@@ -1,5 +1,68 @@
 # Changelog
 
+## 5.0.0-rc.1 — 2026-07-31
+
+> 仓库清理与版本对齐：合并 v5 引擎 / V6 Creative Production / V18 Creative Director / vnext 短链路 / Phase 1.5 Quality Recovery Loop 的工作，正式发布版本统一为 5.0.0-rc.1；待真实 Provider smoke 通过与分支治理完成后 cut 为 5.0.0。
+
+### 仓库治理（Stage 0–8 汇总）
+
+- 产品版本源统一为 `/VERSION`（`5.0.0-rc.1`），由 `scripts/sync-product-version.mjs` 同步到根 / `apps/desktop` / `apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION`。
+- 启用 npm Workspaces；单根 `package-lock.json`，`apps/desktop/package-lock.json` 已删除。
+- 14 个内部包统一为 `@masterpiece/*`，`{private:true, version:"0.0.0"}`；175 处深层 `packages/*/src/*` 相对 import 改写为 `@masterpiece/*`。
+- `apps/desktop/src/{shared/types.ts,main/reference-asset-inspector.ts}` 修复 `'/index'` → `'/index.ts'` 子路径，`tsc --noEmit` 0 错误。
+- 文档与目录归并到 `docs/{product,architecture,development,releases,archive/{v3.3,v4.0}}`；`docs/validation/*` 迁入 `evaluation/reports/`；`examples/` 旧格式 Demo、`knowledge/`、`rules/`、`standards/`、`skills/masterpiece-os/` 全部迁入 `docs/archive/v4.0/`；`prompt-templates/image-generation/` 迁入 `docs/development/prompt-templates/`，5 个 `sourcePath` 字符串同步更新。
+- Desktop 正式 UI 只保留 Short-Chain 路径，移除 `vNext / Legacy` 模式切换。
+- `.codex-smoke/` 9 个 tracked 文件（44 MB，含 45 MB `app.asar`）解除追踪，数据保留在磁盘供本地 replay。
+- 6 个 verify gate 全部 PASS；`npm test` 301 / `npm run cli:test` 38 / `npm run desktop:test` 265 / `npm run desktop:build` PASS。
+- 分支治理决策表：`docs/development/repository/reference-branch-disposition.md`。
+- 完成报告：`docs/releases/5.0-repository-consolidation.md`。
+- 工程现实（给 AI / 开发者）：`AGENTS.md` 已重写为 5.0 视角。
+
+### v5 引擎：一次深度 Creative Director 推理
+
+- 分析层重构为 `VisualDecisionPacket` 单一事实来源（`apps/desktop/src/main/visual-decision-packet.ts` + `packages/project-contracts/src/index.ts`）。
+- `视觉方案升级报告.md` 改为从 Packet 确定性编译（`apps/desktop/src/main/visual-decision-report-compiler.ts`），每行带 `[User Confirmed]` / `[Source Fact]` / `[AI Diagnosis]` / `[Creative Proposal]` / `[Unknown]` 五种来源标签。
+- 新增 Project-Specific Generation Contract、Media Translation V2、Prompt Contract、Prompt Preflight Gate。
+- Provider 抽象：`packages/model-runtime`（qwen / openai-compatible），`packages/image-provider-dashscope`。
+- 性能预算 10 分钟，可接受 15 分钟；超过 5 张图片自动生成 Contact Sheet。
+- 唯一正式输出仍为 `视觉方案升级报告.md`；`--force-reasoning` 跳过精确推理缓存；API Key 仅从环境变量读取。
+
+### Desktop 桌面端（V6 / V18 / vnext）
+
+- **V6 Creative Production**：Creative Session、Style Profile、Locked Assets、Anchor Candidate、Visual Canon、Reference Pack、Generation Series（队列 / 重试 / 恢复 / 归档）、Revision、Formal Assets、Quick Style Extraction。
+- **V18 Creative Director Runtime**：Reading 阶段、Instruction Compiler、Provider Bridge、Resume / Retry、Model Benchmark、Generation Blueprint、Visual Exploration、Designer Selection。
+- **vnext 短链路**：`VisualDecisionPacket → ProjectSpecificGenerationContract → MediaTranslation → PromptContract → Preflight → Adapter`，作为默认生图路径。
+- **Logo 锁定协议**：默认 `post_composite` 路线，参考图里永不画 logo；上游三处 `'reference'` 默认已切到 `'post_composite'`。
+- **缓存 preflight 失败恢复**：`vnext-service.start()` 检测到缓存 `!== 'pass'` 时，从 `task-contract.json` 重建并复用 `taskId` 覆盖同一输出目录，避免泄漏到新目录。
+- Electron + React 19 + TypeScript 7 + electron-vite；新增 `MASTERPIECE_WEB_MODE=1` 浏览器开发模式，Web 端通过本地 RPC 复用全部 IPC handler。
+
+### Phase 1.5：项目内质量恢复与公共能力升级
+
+- 6 种失败类型与一一对应的项目层修复器：输入证据不足 / 字段缺失 / 字段冲突 / 媒介转译太浅 / Prompt 编译丢信息 / Prompt 正确但图片执行失败。
+- Project-Specific Quality Contract 与 Generation Contract 独立生成、独立评估，两者一致才算 pass。
+- 内部并行 2-3 个候选方向，评审后只展示最优 1 个（用户操作负担不变）。
+- 公共代码修改门槛：两个以上无关项目同型失败 或 明确工程错误。
+- Contract Decay Audit：7 种 drift 模式 + 25 文件白名单 + 4 步执行流程。
+- Analysis 自愈：analysis-runtime 引入 `repair-planner` / `deterministic-repair` / `evidence-safe-merge` / `field-repair-policy` / `schema-migrations` / `analysis-completion-orchestrator`。
+
+### 共享包层
+
+- 新增 14 个 `packages/*` 共享运行时（`analysis-runtime` / `creative-production-runtime` / `image-generation-runtime` / `image-generation-contracts` / `image-generation-adapter` / `image-provider-dashscope` / `document-ingestion` / `model-runtime` / `model-registry` / `model-benchmark` / `evaluation-loop-contracts` / `project-contracts` / `reference-asset-inspector` / `runtime-core`），全部 1.0.0 共享发布。
+- `project-contracts` 主导跨模块类型单一事实源，含 35+ 状态机 `CreativeWorkflowState`。
+
+### 验证门禁
+
+- 引擎测试 203/203、桌面测试 170/170、`desktop:build`（含 typecheck）、`verify:current-flows`（离线，不调真实模型 API）、`verify:no-obsolete-code`、`verify:production-boundaries`、`verify:no-project-specific-production-rules` 全部通过。
+- 一次用户授权的真实 Provider 端到端 smoke 已记录：冯烫烫项目（`qwen3.6-plus` 分析 151 s + `dashscope / wan2.7-image-pro` 生图 9.9 s）。
+- **V18 Phase 7 真实 Provider 视觉 A/B 仍待用户授权**——这是发版前最后一个硬阻塞。
+
+### 仓库治理
+
+- 5 个本地 v3 残留分支删除（内容已归档至 `archive/brand-dna-*` 标签）：`v5-desktop`、`feature/brand-dna-report-v2`、`feature/brand-dna-stability-performance`、`feature/token-usage-tracking`，加上 `experiment/execution-oriented-directions-v2`（5 个）。
+- 版本号统一：`VERSION`、根 `package.json`、`apps/desktop/package.json` → 5.0.0；`packages/model-registry` 从 2.0.0 对齐到 1.0.0；其余 packages 保持 1.0.0。
+- `.gitignore` 显式列出 `.tmp-*.log` / `.tmp-*.err.log` / `.tmp-*.out.log`，并删除根目录历史临时日志。
+- 暂未处理（用户已确认 skip）：PR #7（`feature/reference-led-visual-direction` retrieval-first 方向）、9 个已完全并入 HEAD 的本地分支（`main` 除外）、`.codex-smoke/` 中 9 个被跟踪的 45 MB smoke 状态文件。
+
 ## 3.3.0 — 2026-07-14
 
 - 将 Analysis 与 Creative Brief 完全分离：研究、证据、推理和完整风险只进入 `01-Analysis.md`。

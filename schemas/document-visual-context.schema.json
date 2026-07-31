@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/schemas/document-visual-context.schema.json",
+  "title": "Document Visual Context V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "sourceRunId",
+    "generatedAt",
+    "brandName",
+    "industry",
+    "products",
+    "services",
+    "targetAudience",
+    "pricePositioning",
+    "businessModel",
+    "brandPersonality",
+    "visualPreferences",
+    "requiredTouchpoints",
+    "lockedFacts",
+    "prohibitedDirections",
+    "unknownFields",
+    "evidence",
+    "sourceDocuments"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "sourceRunId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "brandName": { "type": "string" },
+    "industry": { "type": "string" },
+    "products": { "type": "array", "items": { "type": "string" } },
+    "services": { "type": "array", "items": { "type": "string" } },
+    "targetAudience": { "type": "array", "items": { "type": "string" } },
+    "pricePositioning": { "type": ["string", "null"] },
+    "businessModel": { "type": ["string", "null"] },
+    "brandPersonality": { "type": "array", "items": { "type": "string" } },
+    "visualPreferences": { "type": "array", "items": { "type": "string" } },
+    "requiredTouchpoints": { "type": "array", "items": { "type": "string" } },
+    "lockedFacts": { "type": "array", "items": { "type": "string" } },
+    "prohibitedDirections": { "type": "array", "items": { "type": "string" } },
+    "unknownFields": { "type": "array", "items": { "type": "string" } },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "documentId", "filename", "summary"],
+        "properties": {
+          "field": { "type": "string", "minLength": 1 },
+          "documentId": { "type": "string", "minLength": 1 },
+          "filename": { "type": "string", "minLength": 1 },
+          "section": { "type": "string" },
+          "page": { "type": "number" },
+          "summary": { "type": "string" }
+        }
+      }
+    },
+    "sourceDocuments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["documentId", "filename", "sourceType", "characterCount"],
+        "properties": {
+          "documentId": { "type": "string", "minLength": 1 },
+          "filename": { "type": "string", "minLength": 1 },
+          "sourceType": { "enum": ["pdf", "docx", "markdown", "text"] },
+          "title": { "type": "string" },
+          "characterCount": { "type": "number", "minimum": 0 },
+          "pageCount": { "type": "number", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

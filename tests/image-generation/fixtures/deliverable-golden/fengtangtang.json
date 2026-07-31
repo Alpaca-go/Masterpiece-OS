@@ -1,0 +1,69 @@
+{
+  "projectId": "fengtangtang-golden",
+  "identity": {
+    "projectName": "冯烫烫",
+    "brandName": "冯烫烫",
+    "industry": "中式餐饮"
+  },
+  "lockedAssets": {
+    "logoLocked": true,
+    "logoAssetIds": ["logo-current"],
+    "lockedFacts": ["品牌名称与 Logo 不得修改"]
+  },
+  "references": [
+    {
+      "assetId": "logo-current",
+      "role": "current_project_logo",
+      "name": "冯烫烫当前 Logo",
+      "localPath": "/golden/logo-current.png",
+      "sha256": "sha-logo-current",
+      "source": "project_visual_context",
+      "includeReason": "锁定当前品牌身份"
+    },
+    {
+      "assetId": "brand-color",
+      "role": "reference_style",
+      "name": "冯烫烫品牌色参考",
+      "localPath": "/golden/brand-color.png",
+      "sha256": "sha-brand-color",
+      "source": "project_visual_context",
+      "includeReason": "保持品牌色关系"
+    },
+    {
+      "assetId": "restaurant-space",
+      "role": "reference_style",
+      "name": "餐饮店内空间参考 interior",
+      "localPath": "/golden/restaurant-space.png",
+      "sha256": "sha-restaurant-space",
+      "source": "user_selected",
+      "includeReason": "提供餐饮空间与动线参考"
+    },
+    {
+      "assetId": "packaging-box",
+      "role": "current_project_product",
+      "name": "真实包装盒型 structure",
+      "localPath": "/golden/packaging-box.png",
+      "sha256": "sha-packaging-box",
+      "source": "project_visual_context",
+      "includeReason": "锁定包装结构"
+    },
+    {
+      "assetId": "menu-flatlay",
+      "role": "current_project_identity",
+      "name": "菜单册平铺 VI mockup",
+      "localPath": "/golden/menu-flatlay.png",
+      "sha256": "sha-menu-flatlay",
+      "source": "project_visual_context",
+      "includeReason": "旧 VI 应用参考"
+    },
+    {
+      "assetId": "apron-mockup",
+      "role": "current_project_identity",
+      "name": "围裙样机 VI collection",
+      "localPath": "/golden/apron-mockup.png",
+      "sha256": "sha-apron-mockup",
+      "source": "project_visual_context",
+      "includeReason": "旧 VI 应用参考"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterpiece-os/image-generation-run-v1",
+  "title": "Image Generation Run V1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "runId",
+    "projectId",
+    "taskId",
+    "status",
+    "outputType",
+    "providerId",
+    "modelId",
+    "region",
+    "createdAt",
+    "updatedAt",
+    "gate",
+    "images"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "runId": { "type": "string", "minLength": 1 },
+    "projectId": { "type": "string", "minLength": 1 },
+    "taskId": { "type": "string", "minLength": 1 },
+    "status": {
+      "enum": [
+        "created",
+        "validating",
+        "blocked",
+        "ready",
+        "submitting",
+        "queued",
+        "running",
+        "downloading",
+        "succeeded",
+        "failed",
+        "cancelled"
+      ]
+    },
+    "outputType": { "const": "master_anchor_image" },
+    "providerId": { "const": "dashscope" },
+    "modelId": { "type": "string", "minLength": 1 },
+    "region": { "enum": ["beijing", "singapore"] },
+    "parentRunId": { "type": "string" },
+    "retryMode": { "enum": ["same_prompt", "edited_prompt"] },
+    "providerTaskId": { "type": "string" },
+    "providerRequestId": { "type": "string" },
+    "createdAt": { "type": "string", "minLength": 1 },
+    "updatedAt": { "type": "string", "minLength": 1 },
+    "startedAt": { "type": "string" },
+    "completedAt": { "type": "string" },
+    "gate": { "$ref": "masterpiece-os/image-generation-gate-result-v1" },
+    "images": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/generatedImage" }
+    },
+    "review": { "$ref": "masterpiece-os/image-generation-review-v1" },
+    "errorCode": { "type": "string" },
+    "errorMessage": { "type": "string" }
+  },
+  "$defs": {
+    "generatedImage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["imageId", "relativePath", "mimeType", "sizeBytes", "sha256", "downloadedAt"],
+      "properties": {
+        "imageId": { "type": "string", "minLength": 1 },
+        "relativePath": { "type": "string", "minLength": 1 },
+        "thumbnailRelativePath": { "type": "string" },
+        "mimeType": { "type": "string", "minLength": 1 },
+        "sizeBytes": { "type": "integer", "minimum": 1 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "sha256": { "type": "string", "minLength": 1 },
+        "downloadedAt": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
