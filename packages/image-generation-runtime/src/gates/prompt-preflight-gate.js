@@ -139,20 +139,20 @@ export function runPromptPreflightGate({
         'The scene program and functional network do not establish a sufficiently specific multi-node flagship experience.',
       );
     }
-    const positiveItems = list(
-      roleManifestation,
-      signatureMechanism,
-      functionalNetwork,
-      scenes,
-      differentiators,
-      mustBeVisible,
-    );
-    const negativeItems = list(
-      projectContract?.toneBoundaries?.flatMap((item) => item?.avoid),
-      projectContract?.brandMisreadRisks?.map((item) => item?.description),
-      projectContract?.mustTransform?.flatMap((item) => item?.forbiddenLiteralUse),
-      taskContract?.mustAvoid,
-    );
+    const positiveItems = list([
+      ...(roleManifestation || []),
+      ...(signatureMechanism || []),
+      ...(functionalNetwork || []),
+      ...(scenes || []),
+      ...(differentiators || []),
+      ...(mustBeVisible || []),
+    ]);
+    const negativeItems = list([
+      ...(projectContract?.toneBoundaries?.flatMap((item) => item?.avoid) || []),
+      ...(projectContract?.brandMisreadRisks?.map((item) => item?.description) || []),
+      ...(projectContract?.mustTransform?.flatMap((item) => item?.forbiddenLiteralUse) || []),
+      ...(taskContract?.mustAvoid || []),
+    ]);
     const positiveCharacters = positiveItems.join('').length;
     const negativeCharacters = negativeItems.join('').length;
     const positiveStart = prompt.indexOf('Positive Spatial Mechanism');
