@@ -65,6 +65,16 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     requiredEvidencePaths: ['projectFacts.brandRole'],
   }),
   policy({
+    path: 'diagnosis.valuableAssets',
+    code: 'VALUABLE_ASSETS_MISSING',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    requiredEvidencePaths: [
+      'assetInventory',
+      'creativeDecision.preserveCore',
+    ],
+  }),
+  policy({
     path: 'creativeDecision.brandRoleStatement',
     code: 'BRAND_ROLE_STATEMENT_MISSING',
     severity: 'repairable',
@@ -132,6 +142,51 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
       'abstractions',
     ],
   }),
+  policy({
+    path: 'mediaTranslations.spatial.structureLanguage',
+    code: 'SPATIAL_STRUCTURE_LANGUAGE_MISSING',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'abstractions',
+      'mediaTranslations.spatial.spatialConcept',
+    ],
+  }),
+  policy({
+    path: 'mediaTranslations.spatial.materialLanguage',
+    code: 'SPATIAL_MATERIAL_LANGUAGE_MISSING',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'abstractions',
+      'creativeDecision.preserveCore',
+    ],
+  }),
+  policy({
+    path: 'mediaTranslations.spatial.lightingLanguage.source',
+    code: 'SPATIAL_LIGHTING_LANGUAGE_MISSING',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'abstractions',
+      'mediaTranslations.spatial.materialLanguage',
+    ],
+  }),
+  ...(['primary', 'secondary', 'accent'] as const).map((group) => policy({
+    path: `mediaTranslations.spatial.colorBehavior.${group}`,
+    code: `SPATIAL_${group.toUpperCase()}_COLOR_MISSING`,
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'assetInventory.colorAssets',
+      'creativeDecision.preserveCore',
+      'diagnosis.valuableAssets',
+    ],
+  })),
   policy({
     path: 'mediaTranslations.spatial.signatureSpatialMechanism',
     code: 'SIGNATURE_MECHANISM_MISSING',

@@ -160,6 +160,16 @@ export function createQwenReasoner(options = {}) {
       ],
       stream: false
     };
+    if (context.responseSchema && typeof context.responseSchema === 'object') {
+      body.response_format = {
+        type: 'json_schema',
+        json_schema: {
+          name: String(context.responseSchemaName || 'structured_response'),
+          strict: true,
+          schema: context.responseSchema
+        }
+      };
+    }
     let response;
     try {
       response = await client({

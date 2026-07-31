@@ -189,6 +189,7 @@ export function normalizeUnifiedVisualUnderstanding(input: {
   generatedAt?: string;
   modelId?: string;
   sourceRefs?: string[];
+  enforceExecutionSufficiency?: boolean;
 }): { core: VisualUnderstandingCore; packet: VisualDecisionPacket } {
   const core = buildVisualUnderstandingCore(input);
   const coreValidation = validateVisualUnderstandingCore(core);
@@ -206,7 +207,12 @@ export function normalizeUnifiedVisualUnderstanding(input: {
       issues: packetValidation.errors,
     });
   }
-  if (packet.validation.hardFactStatus === 'pass' && packet.validation.executionDataStatus !== 'ready') {
+  const enforceExecutionSufficiency = input.enforceExecutionSufficiency !== false;
+  if (
+    enforceExecutionSufficiency
+    && packet.validation.hardFactStatus === 'pass'
+    && packet.validation.executionDataStatus !== 'ready'
+  ) {
     throw Object.assign(
       new Error(`VISUAL_DECISION_PACKET_INSUFFICIENT: ${packet.validation.missingExecutionFields.join(', ')}`),
       {
@@ -215,7 +221,7 @@ export function normalizeUnifiedVisualUnderstanding(input: {
       },
     );
   }
-  if (packet.validation.hardFactStatus === 'pass') {
+  if (enforceExecutionSufficiency && packet.validation.hardFactStatus === 'pass') {
     const issues: string[] = [];
     if (!packet.diagnosis.valuableAssets.length) issues.push('diagnosis.valuableAssets');
     if (!packet.creativeDecision.uniqueUpgradeThesis) issues.push('creativeDecision.uniqueUpgradeThesis');

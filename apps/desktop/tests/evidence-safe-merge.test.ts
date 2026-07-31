@@ -92,6 +92,37 @@ test('evidence-safe merge rejects changes to user-confirmed fields even when emp
   ]);
 });
 
+test('evidence-safe merge may replace a validated-invalid target but not a confirmed one', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.creativeDecision.toneBoundaries = [
+    { target: 'confident', avoid: [] },
+  ];
+  const replacement = patch('creativeDecision.toneBoundaries', [
+    { target: 'confident', avoid: ['institutional'] },
+    { target: 'warm', avoid: ['decorative nostalgia'] },
+  ]);
+
+  const repaired = evidenceSafeMerge({
+    packet,
+    sourceFingerprint: 'fingerprint-generic',
+    repairablePaths: ['creativeDecision.toneBoundaries'],
+    patches: [replacement],
+  });
+  assert.deepEqual(repaired.applied, ['creativeDecision.toneBoundaries']);
+
+  const protectedResult = evidenceSafeMerge({
+    packet,
+    sourceFingerprint: 'fingerprint-generic',
+    repairablePaths: ['creativeDecision.toneBoundaries'],
+    confirmedPaths: ['creativeDecision.toneBoundaries'],
+    patches: [replacement],
+  });
+  assert.deepEqual(protectedResult.applied, []);
+  assert.deepEqual(protectedResult.conflicts, [
+    'CONFIRMED_FIELD_CONFLICT:creativeDecision.toneBoundaries',
+  ]);
+});
+
 test('evidence-safe merge rejects ungrounded or stale repair output', () => {
   const packet = structuredAnalysisPacketFixture();
   packet.creativeDecision.toneBoundaries = [];

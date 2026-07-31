@@ -6,47 +6,18 @@ import type {
 } from './contracts.ts';
 import { MAX_REPAIR_ATTEMPTS } from './contracts.ts';
 
-function overlaps(left: string[], right: string[]): boolean {
-  return left.some((item) => right.includes(item));
-}
-
 function buildAiBatches(issues: MissingFieldIssue[]): RepairPlanBatch[] {
-  const groups: Array<{
-    issues: MissingFieldIssue[];
-    evidencePaths: string[];
-    evidenceRefs: string[];
-  }> = [];
-
-  for (const issue of issues) {
-    const existing = groups.find((group) => (
-      overlaps(group.evidencePaths, issue.requiredEvidencePaths)
-    ));
-    if (existing) {
-      existing.issues.push(issue);
-      existing.evidencePaths = [...new Set([
-        ...existing.evidencePaths,
-        ...issue.requiredEvidencePaths,
-      ])];
-      existing.evidenceRefs = [...new Set([
-        ...existing.evidenceRefs,
-        ...issue.availableEvidenceRefs,
-      ])];
-      continue;
-    }
-    groups.push({
-      issues: [issue],
-      evidencePaths: [...issue.requiredEvidencePaths],
-      evidenceRefs: [...issue.availableEvidenceRefs],
-    });
-  }
-
-  return groups.map((group, index) => ({
-    id: `repair-batch-${String(index + 1).padStart(2, '0')}`,
+  if (!issues.length) return [];
+  // One strictly scoped request per attempt is both cheaper and easier to
+  // audit. The response schema still requires every requested field exactly
+  // once, so unrelated fields cannot leak into the merge.
+  return [{
+    id: 'repair-batch-01',
     strategy: 'ai_from_evidence',
-    fieldPaths: group.issues.map((issue) => issue.path),
-    evidencePaths: group.evidencePaths,
-    evidenceRefs: group.evidenceRefs,
-  }));
+    fieldPaths: issues.map((issue) => issue.path),
+    evidencePaths: [...new Set(issues.flatMap((issue) => issue.requiredEvidencePaths))],
+    evidenceRefs: [...new Set(issues.flatMap((issue) => issue.availableEvidenceRefs))],
+  }];
 }
 
 export function createRepairPlan(input: {

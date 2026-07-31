@@ -256,6 +256,10 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     '茶空间',
     'controlled post-compositing',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
+  assert.match(
+    result.compiledPrompt.finalPrompt,
+    /Target worldview: 东方生命美学/u,
+  );
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
   assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.0');
   const blockIds = result.compiledPrompt.blocks.map((block) => block.id);

@@ -582,6 +582,9 @@ export function compileVNextPrompt({
           ? `Approved creative direction: ${projectDecisions.recommendedDirection}`
           : '',
         projectDecisions.generationGoals?.map((item) => `Approved generation goal: ${item}`),
+        packetSource?.creativeDecision?.targetWorldview?.map(
+          (item) => `Target worldview: ${item}`,
+        ),
         packetSource ? [] : source?.upgradeTranslation?.preserve?.map((item) => `Preserve: ${item}`),
         packetSource ? [] : source?.upgradeTranslation?.weaken?.map((item) => `Weaken: ${item}`),
         packetSource ? [] : source?.upgradeTranslation?.remove?.map((item) => `Remove: ${item}`),

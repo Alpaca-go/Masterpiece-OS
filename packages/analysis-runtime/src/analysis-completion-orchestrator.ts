@@ -228,6 +228,7 @@ export async function completeStructuredAnalysis(input: {
           repairedAt: now(),
           lockedPaths: input.lockedPaths,
           confirmedPaths: input.confirmedPaths,
+          repairablePaths: batch.fieldPaths,
         });
         packet = merged.packet;
         merged.applied.forEach((path) => {

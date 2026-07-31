@@ -6,6 +6,7 @@ import type {
   VisualDecisionPacket,
 } from '../../../../packages/project-contracts/src/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
+import { migrateAnalysisPacket } from '../../../../packages/analysis-runtime/src/index.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 
 export const PROJECT_VISUAL_CONTEXT_VNEXT_SCHEMA_VERSION = '2.0';
@@ -264,75 +265,7 @@ function assetRole(
 }
 
 function migrateVisualDecisionPacketShape(packet: VisualDecisionPacket): VisualDecisionPacket {
-  const migrated = structuredClone(packet);
-  const decision = migrated.creativeDecision;
-  if (decision) {
-    const fallbackAvoid = strings(
-      decision.strategicNegatives,
-      migrated.diagnosis?.brandMisreadRisks?.map((risk) => [
-        risk.description,
-        risk.target,
-      ]),
-      migrated.diagnosis?.categoryCliches?.map((item) => item.observation),
-    ).slice(0, 6);
-    const existing = (Array.isArray(decision.toneBoundaries) ? decision.toneBoundaries : [])
-      .flatMap((item) => {
-        const target = typeof item?.target === 'string' ? item.target.trim() : '';
-        if (!target) return [];
-        const avoid = strings(item.avoid);
-        return [{ target, avoid: avoid.length ? avoid : fallbackAvoid }];
-      });
-    if (existing.length < 2 && fallbackAvoid.length) {
-      for (const target of strings(decision.targetWorldview, decision.upgradeTo)) {
-        if (existing.some((item) => item.target === target)) continue;
-        existing.push({ target, avoid: [...fallbackAvoid] });
-        if (existing.length >= 4) break;
-      }
-    }
-    decision.toneBoundaries = existing;
-  }
-  const spatial = migrated.mediaTranslations?.spatial;
-  if (!spatial) return migrated;
-  spatial.brandRoleManifestation = Array.isArray(spatial.brandRoleManifestation)
-    ? spatial.brandRoleManifestation
-    : [];
-  spatial.signatureSpatialMechanism = Array.isArray(spatial.signatureSpatialMechanism)
-    ? spatial.signatureSpatialMechanism
-    : [];
-  spatial.functionalNetwork = Array.isArray(spatial.functionalNetwork)
-    ? spatial.functionalNetwork
-    : [];
-  spatial.positiveDifferentiators = Array.isArray(spatial.positiveDifferentiators)
-    ? spatial.positiveDifferentiators
-    : [];
-  spatial.mustBeVisible = Array.isArray(spatial.mustBeVisible)
-    ? spatial.mustBeVisible
-    : [];
-  spatial.functionalRelationships = Array.isArray(spatial.functionalRelationships)
-    ? spatial.functionalRelationships
-    : [];
-  spatial.sceneProgram = Array.isArray(spatial.sceneProgram) && spatial.sceneProgram.length
-    ? spatial.sceneProgram
-    : Array.isArray(spatial.functionalExperience)
-      ? [...spatial.functionalExperience]
-      : [];
-  spatial.peopleBehavior = Array.isArray(spatial.peopleBehavior)
-    ? spatial.peopleBehavior
-    : [];
-  const legacyRisks = Array.isArray(migrated.diagnosis?.brandMisreadRisks)
-    ? migrated.diagnosis.brandMisreadRisks
-    : [];
-  migrated.diagnosis.brandMisreadRisks = legacyRisks.map((risk, index) => ({
-    ...risk,
-    code: risk.code || `legacy-risk-${index + 1}`,
-    description: risk.description || risk.target,
-    appliesTo: risk.appliesTo || {},
-    // Legacy risks had no task boundary and must never become executable by migration.
-    status: risk.status === 'confirmed' && risk.appliesTo?.subtypes?.length
-      ? 'confirmed'
-      : 'probable',
-  }));
-  return migrated;
+  return migrateAnalysisPacket(packet).packet as unknown as VisualDecisionPacket;
 }
 
 /**

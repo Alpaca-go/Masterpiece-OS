@@ -72,6 +72,7 @@ export type AnalysisStage =
   | 'reasoning'
   | 'generating-report'
   | 'validating-output'
+  | 'repairing-decisions'
   | 'completed'
   | 'failed'
   | 'cancelled';

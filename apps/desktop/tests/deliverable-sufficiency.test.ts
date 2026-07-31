@@ -80,6 +80,31 @@ test('space execution parameters are defaultable rather than fatal', () => {
   );
 });
 
+test('space retains the pre-existing structure, material, lighting, and color gate', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.structureLanguage = [];
+  packet.mediaTranslations.spatial.materialLanguage = [];
+  packet.mediaTranslations.spatial.lightingLanguage.source = [];
+  packet.mediaTranslations.spatial.colorBehavior.accent = [];
+
+  const result = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution,
+  });
+
+  assert.equal(result.status, 'repairable');
+  assert.deepEqual(
+    result.issues.map((issue) => issue.code).sort(),
+    [
+      'SPATIAL_ACCENT_COLOR_MISSING',
+      'SPATIAL_LIGHTING_LANGUAGE_MISSING',
+      'SPATIAL_MATERIAL_LANGUAGE_MISSING',
+      'SPATIAL_STRUCTURE_LANGUAGE_MISSING',
+    ],
+  );
+});
+
 test('unknown brand facts require confirmation instead of AI invention', () => {
   const packet = structuredAnalysisPacketFixture();
   packet.projectFacts.brandRole.value = 'unknown';

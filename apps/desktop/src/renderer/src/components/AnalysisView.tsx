@@ -10,6 +10,7 @@ const stages: Array<[AnalysisProgress['stage'], string]> = [
   ['reasoning', '深度创意导演分析'],
   ['generating-report', '报告生成'],
   ['validating-output', '输出校验'],
+  ['repairing-decisions', '完善项目决策'],
   ['completed', '分析完成']
 ];
 

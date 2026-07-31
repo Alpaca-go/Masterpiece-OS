@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { app } from 'electron';
@@ -25,6 +26,11 @@ import type {
   PromptSourceObject,
   VisualDecisionPacket,
 } from '../../../../packages/project-contracts/src/index.ts';
+import {
+  completeStructuredAnalysis,
+  type AnalysisRepairResult,
+  type StructuredRepairModelRequest,
+} from '../../../../packages/analysis-runtime/src/index.ts';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
@@ -59,6 +65,7 @@ import {
   visualDecisionPacketToPromptSourceObject,
 } from './visual-decision-packet.ts';
 import { compileVisualDecisionReport } from './visual-decision-report-compiler.ts';
+import { createAnalysisRepairStore } from './analysis-repair-store.ts';
 import type { ProjectStore } from './project-store';
 import {
   incompleteProjectIdentity,
@@ -501,6 +508,9 @@ export function createPipelineService(
       let visualDecisionPacket: VisualDecisionPacket | undefined;
       let promptSourceModelCallCount = 0;
       let promptSourceRunId: string | undefined;
+      let analysisRepairRunId: string | undefined;
+      let analysisRepairAttempts = 0;
+      let analysisRepairStatus: AnalysisRepairResult['status'] | undefined;
       const promptSourceProject: ProjectRecord = {
         ...project,
         projectName: finalProjectName,
@@ -514,58 +524,106 @@ export function createPipelineService(
           promptSourceProject,
           promptSourceAssets.map((asset) => asset.id),
         );
-        let repair = '';
-        for (let attempt = 1; attempt <= 2 && !promptSourceObject; attempt += 1) {
-          promptSourceModelCallCount += 1;
-          try {
-            progress('validating-output', `正在提取生图项目语义（第 ${attempt} 次）`);
-            const response = await baseReasoner({
+        const attachments = promptSourceAssets.map((asset) => ({
+          assetId: asset.id,
+          path: path.join(projectPaths.input, asset.relativePath),
+          mediaType: 'image',
+          format: path.extname(asset.relativePath).slice(1),
+          readable: true,
+        }));
+        progress('validating-output', '正在提取生图项目语义');
+        promptSourceModelCallCount += 1;
+        const response = await baseReasoner({
+          prompt: {
+            messages: [
+              {
+                role: 'system',
+                content: '你是 Unified Visual Understanding 引擎。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
+              },
+              { role: 'user', content: prompt },
+            ],
+            attachments,
+          },
+          signal: controller.signal,
+          maximumDurationMs: 15 * 60_000,
+        });
+        const normalized = normalizeUnifiedVisualUnderstanding({
+          project: promptSourceProject,
+          extracted: parseModelStructuredResponse(response.reportMarkdown),
+          generatedAt: new Date().toISOString(),
+          modelId: credentials.model,
+          sourceRefs: promptSourceAssets.map((asset) => `asset:${asset.id}`),
+          enforceExecutionSufficiency: false,
+        });
+        promptSourceRunId = response.runId || undefined;
+        analysisRepairRunId = `repair-run-${crypto.randomUUID()}`;
+        const repairStore = createAnalysisRepairStore({
+          projectRoot: projectPaths.root,
+          dataRoot: path.resolve(settings.defaultDataPath),
+          runId: analysisRepairRunId,
+        });
+        const completion = await completeStructuredAnalysis({
+          packet: normalized.packet,
+          deliverable: 'space',
+          execution: { outputLanguage: project.outputLanguage },
+          projectLanguage: project.outputLanguage,
+          lockedPaths: [
+            'projectId',
+            'projectFacts',
+            'lockedAssets',
+          ],
+          persistence: repairStore,
+          runId: analysisRepairRunId,
+          onProgress: () => {
+            progress('repairing-decisions', '正在完善项目决策');
+          },
+          model: async (request: StructuredRepairModelRequest) => {
+            const repairResponse = await baseReasoner({
               prompt: {
                 messages: [
                   {
                     role: 'system',
-                    content: '你是 Unified Visual Understanding 引擎。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
+                    content: '你是项目决策定向修复器。只能使用当前项目附件和提示中列出的当前项目证据，并严格按 JSON Schema 返回。',
                   },
-                  { role: 'user', content: `${prompt}${repair}` },
+                  { role: 'user', content: request.prompt },
                 ],
-                attachments: promptSourceAssets.map((asset) => ({
-                  assetId: asset.id,
-                  path: path.join(projectPaths.input, asset.relativePath),
-                  mediaType: 'image',
-                  format: path.extname(asset.relativePath).slice(1),
-                  readable: true,
-                })),
+                attachments,
               },
+              responseSchema: request.responseSchema,
+              responseSchemaName: 'analysis_repair',
               signal: controller.signal,
               maximumDurationMs: 15 * 60_000,
             });
-            const normalized = normalizeUnifiedVisualUnderstanding({
-              project: promptSourceProject,
-              extracted: parseModelStructuredResponse(response.reportMarkdown),
-              generatedAt: new Date().toISOString(),
-              modelId: credentials.model,
-              sourceRefs: promptSourceAssets.map((asset) => `asset:${asset.id}`),
-            });
-            promptSourceRunId = response.runId || undefined;
-            visualDecisionPacket = normalized.packet;
-            promptSourceObject = visualDecisionPacketToPromptSourceObject(normalized.packet);
-            promptSourceObject.provenance.structuredAnalysisRunId = response.runId || undefined;
-            report = compileVisualDecisionReport(normalized.packet, {
-              title: `${finalProjectName}视觉方案升级报告`,
-            });
-          } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            repair = `\n\n上一次结构化输出未通过校验：${message}\n请保留正确字段，修复缺失字段，并重新输出完整裸 JSON。`;
-            if (attempt === 2) {
-              console.warn(JSON.stringify({
-                event: 'PROMPT_SOURCE_EXTRACTION_FAILED',
-                projectId,
-                attempts: attempt,
-                message,
-              }));
-            }
-          }
+            return repairResponse.reportMarkdown;
+          },
+        });
+        promptSourceModelCallCount += completion.modelCallCount;
+        analysisRepairAttempts = completion.attempts;
+        analysisRepairStatus = completion.status;
+        if (completion.status === 'requires_confirmation') {
+          const questions = completion.clarificationQuestions
+            .slice(0, 3)
+            .map((item) => item.question)
+            .join('\n');
+          throw Object.assign(
+            new Error(questions || '当前项目还缺少必须由你确认的真实信息。'),
+            { code: 'ANALYSIS_CONFIRMATION_REQUIRED' },
+          );
         }
+        if (completion.status === 'failed') {
+          throw Object.assign(
+            new Error('项目决策完善失败，请检查当前资料后重试。'),
+            { code: 'ANALYSIS_REPAIR_FAILED' },
+          );
+        }
+        visualDecisionPacket = completion.packet as unknown as VisualDecisionPacket;
+        visualDecisionPacket.validation.executionDataStatus = 'ready';
+        visualDecisionPacket.validation.missingExecutionFields = [];
+        promptSourceObject = visualDecisionPacketToPromptSourceObject(visualDecisionPacket);
+        promptSourceObject.provenance.structuredAnalysisRunId = response.runId || undefined;
+        report = compileVisualDecisionReport(visualDecisionPacket, {
+          title: `${finalProjectName}视觉方案升级报告`,
+        });
       }
       if (promptSourceAssets.length && (!promptSourceObject || !visualDecisionPacket)) {
         throw Object.assign(
@@ -594,6 +652,9 @@ export function createPipelineService(
         durationMs,
         promptSourceModelCallCount,
         promptSourceRunId,
+        analysisRepairRunId,
+        analysisRepairAttempts,
+        analysisRepairStatus,
         modelCallsThisRun: Number(execution.result.runReport.modelCallsThisRun || 0)
           + promptSourceModelCallCount
       };

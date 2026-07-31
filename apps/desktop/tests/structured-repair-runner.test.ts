@@ -83,3 +83,35 @@ test('structured repair runner does not call a model without evidence', async ()
   );
   assert.equal(calls, 0);
 });
+
+test('structured repair runner rejects a scalar for an array-valued field', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.colorBehavior.accent = [];
+  const accentBatch: RepairPlanBatch = {
+    id: 'repair-batch-01',
+    strategy: 'ai_from_evidence',
+    fieldPaths: ['mediaTranslations.spatial.colorBehavior.accent'],
+    evidencePaths: ['diagnosis.valuableAssets'],
+    evidenceRefs: ['asset:motif-1'],
+  };
+
+  await assert.rejects(
+    () => runStructuredRepair({
+      batch: accentBatch,
+      packet,
+      attempt: 1,
+      sourceFingerprint: packet.provenance.sourceFingerprint,
+      model: async () => ({
+        repairs: [{
+          path: 'mediaTranslations.spatial.colorBehavior.accent',
+          value: '#B00000',
+          status: 'inferred',
+          confidence: 0.9,
+          evidenceRefs: accentBatch.evidenceRefs,
+        }],
+      }),
+    }),
+    (error: Error & { code?: string }) => error.code === 'REPAIR_RESPONSE_INVALID'
+      && /invalid value shape/u.test(error.message),
+  );
+});

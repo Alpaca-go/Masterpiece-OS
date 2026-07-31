@@ -309,19 +309,7 @@ test('persisted vNext context migrates a legacy Packet even when Prompt Source a
   );
   assert.deepEqual(
     migrated.visualDecisionPacket?.creativeDecision.toneBoundaries,
-    [
-      {
-        target: '专业可信',
-        avoid: ['冰冷机构感', '避免被误读为冰冷诊疗空间', '冰冷诊疗空间'],
-      },
-      {
-        target: '人文温度',
-        avoid: ['冰冷机构感', '避免被误读为冰冷诊疗空间', '冰冷诊疗空间'],
-      },
-      {
-        target: '有温度的当代服务体验',
-        avoid: ['冰冷机构感', '避免被误读为冰冷诊疗空间', '冰冷诊疗空间'],
-      },
-    ],
+    [],
+    'schema migration repairs shape but leaves project-specific tone to targeted repair',
   );
 });

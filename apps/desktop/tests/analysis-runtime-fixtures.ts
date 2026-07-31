@@ -47,7 +47,13 @@ export function structuredAnalysisPacketFixture(): VisualDecisionPacket {
       copyAssets: [],
     },
     diagnosis: {
-      valuableAssets: [],
+      valuableAssets: [{
+        target: 'confirmed identity',
+        observation: 'The source contains a repeatable open-frame motif',
+        whyItMatters: 'It can preserve recognition across media',
+        evidenceRefs: ['asset:motif-1'],
+        confidence: 0.9,
+      }],
       overusedExpressions: [],
       outdatedExpressions: [],
       weakSystemAreas: [],
@@ -115,7 +121,7 @@ export function structuredAnalysisPacketFixture(): VisualDecisionPacket {
         colorBehavior: {
           primary: [{ name: 'warm white', role: 'clear base' }],
           secondary: [{ name: 'natural wood', role: 'human warmth' }],
-          accent: [],
+          accent: [{ name: 'identity black', role: 'precise identity emphasis' }],
           forbidden: ['neon gradient'],
         },
         brandIntegration: ['identity at arrival'],
@@ -173,7 +179,7 @@ export function structuredAnalysisPacketFixture(): VisualDecisionPacket {
     colorSystem: {
       primary: [{ name: 'warm white', role: 'clear base' }],
       secondary: [{ name: 'natural wood', role: 'human warmth' }],
-      accent: [],
+      accent: [{ name: 'identity black', role: 'precise identity emphasis' }],
       forbidden: ['neon gradient'],
     },
     materialSystem: [{

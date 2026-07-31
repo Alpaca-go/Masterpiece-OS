@@ -21,6 +21,12 @@ interface RequiredFieldRule {
 }
 
 const SHARED_RULES: RequiredFieldRule[] = [
+  {
+    path: 'diagnosis.valuableAssets',
+    code: 'VALUABLE_ASSETS_MISSING',
+    kind: 'array',
+    minimumItems: 1,
+  },
   { path: 'creativeDecision.brandRoleStatement', code: 'BRAND_ROLE_STATEMENT_MISSING' },
   { path: 'creativeDecision.uniqueUpgradeThesis', code: 'UPGRADE_THESIS_INCOMPLETE' },
   {
@@ -41,6 +47,42 @@ const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
   space: [
     { path: 'abstractions', code: 'VISUAL_ABSTRACTIONS_MISSING', kind: 'array', minimumItems: 1 },
     { path: 'mediaTranslations.spatial.spatialConcept', code: 'SPATIAL_TRANSLATION_INCOMPLETE' },
+    {
+      path: 'mediaTranslations.spatial.structureLanguage',
+      code: 'SPATIAL_STRUCTURE_LANGUAGE_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.materialLanguage',
+      code: 'SPATIAL_MATERIAL_LANGUAGE_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.lightingLanguage.source',
+      code: 'SPATIAL_LIGHTING_LANGUAGE_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.colorBehavior.primary',
+      code: 'SPATIAL_PRIMARY_COLOR_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.colorBehavior.secondary',
+      code: 'SPATIAL_SECONDARY_COLOR_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.colorBehavior.accent',
+      code: 'SPATIAL_ACCENT_COLOR_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
     {
       path: 'mediaTranslations.spatial.signatureSpatialMechanism',
       code: 'SIGNATURE_MECHANISM_MISSING',

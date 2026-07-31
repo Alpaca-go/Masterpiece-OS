@@ -21,6 +21,7 @@ export function resolveRepairConflict(input: {
   patch: RepairFieldPatch;
   lockedPaths?: string[];
   confirmedPaths?: string[];
+  repairablePaths?: string[];
 }): RepairConflict | null {
   const lockedPaths = [
     ...ALWAYS_PROTECTED_PREFIXES,
@@ -46,6 +47,8 @@ export function resolveRepairConflict(input: {
   }
   const existing = valueAtPath(input.packet, input.patch.path);
   if (
+    !(input.repairablePaths ?? []).includes(input.patch.path)
+    &&
     isMeaningfulValue(existing)
     && JSON.stringify(existing) !== JSON.stringify(input.patch.value.value)
   ) {

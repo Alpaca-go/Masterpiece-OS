@@ -30,6 +30,141 @@ function invalid(message: string): never {
   });
 }
 
+const stringArraySchema = {
+  type: 'array',
+  minItems: 1,
+  items: { type: 'string', minLength: 1 },
+};
+
+function objectSchema(
+  properties: Record<string, unknown>,
+  required = Object.keys(properties),
+): Record<string, unknown> {
+  return {
+    type: 'object',
+    additionalProperties: false,
+    required,
+    properties,
+  };
+}
+
+function valueSchemaForPath(path: string): Record<string, unknown> {
+  if ([
+    'creativeDecision.brandRoleStatement',
+    'creativeDecision.uniqueUpgradeThesis',
+    'mediaTranslations.spatial.spatialConcept',
+  ].includes(path)) {
+    return { type: 'string', minLength: 1 };
+  }
+  if (path === 'creativeDecision.toneBoundaries') {
+    return {
+      type: 'array',
+      minItems: 2,
+      items: objectSchema({
+        target: { type: 'string', minLength: 1 },
+        avoid: stringArraySchema,
+      }),
+    };
+  }
+  if (path === 'diagnosis.valuableAssets') {
+    return {
+      type: 'array',
+      minItems: 1,
+      items: objectSchema({
+        target: { type: 'string', minLength: 1 },
+        observation: { type: 'string', minLength: 1 },
+        whyItMatters: { type: 'string', minLength: 1 },
+        evidenceRefs: stringArraySchema,
+        confidence: { type: 'number', minimum: 0, maximum: 1 },
+      }),
+    };
+  }
+  if (path === 'diagnosis.brandMisreadRisks') {
+    return {
+      type: 'array',
+      minItems: 1,
+      items: objectSchema({
+        code: { type: 'string', minLength: 1 },
+        description: { type: 'string', minLength: 1 },
+        target: { type: 'string', minLength: 1 },
+        observation: { type: 'string', minLength: 1 },
+        whyItMatters: { type: 'string', minLength: 1 },
+        appliesTo: objectSchema({
+          taskFamilies: stringArraySchema,
+          subtypes: { type: 'array', items: { type: 'string' } },
+          scenes: { type: 'array', items: { type: 'string' } },
+        }),
+        evidenceRefs: stringArraySchema,
+        confidence: { type: 'number', minimum: 0, maximum: 1 },
+        status: { type: 'string', enum: ['confirmed', 'probable'] },
+      }),
+    };
+  }
+  if (path === 'abstractions') {
+    return {
+      type: 'array',
+      minItems: 1,
+      items: objectSchema({
+        sourceAsset: { type: 'string', minLength: 1 },
+        semanticMeaning: stringArraySchema,
+        formalProperties: stringArraySchema,
+        rhythmProperties: stringArraySchema,
+        materialPotential: stringArraySchema,
+        lightingPotential: stringArraySchema,
+        forbiddenLiteralUse: stringArraySchema,
+        evidenceRefs: stringArraySchema,
+        confidence: { type: 'number', minimum: 0, maximum: 1 },
+      }),
+    };
+  }
+  if (path === 'mediaTranslations.spatial.materialLanguage') {
+    return {
+      type: 'array',
+      minItems: 1,
+      items: objectSchema({
+        material: { type: 'string', minLength: 1 },
+        behavior: stringArraySchema,
+        brandRole: { type: 'string', minLength: 1 },
+        forbidden: { type: 'array', items: { type: 'string' } },
+      }),
+    };
+  }
+  if (path.startsWith('mediaTranslations.spatial.colorBehavior.')) {
+    return {
+      type: 'array',
+      minItems: 1,
+      items: objectSchema({
+        name: { type: 'string', minLength: 1 },
+        role: { type: 'string', minLength: 1 },
+      }),
+    };
+  }
+  return stringArraySchema;
+}
+
+function matchesValueSchema(path: string, value: unknown): boolean {
+  const schema = valueSchemaForPath(path);
+  if (schema.type === 'string') return typeof value === 'string' && value.trim().length > 0;
+  if (schema.type !== 'array' || !Array.isArray(value) || value.length < Number(schema.minItems ?? 0)) {
+    return false;
+  }
+  const items = schema.items as Record<string, unknown> | undefined;
+  if (items?.type === 'string') {
+    return value.every((item) => typeof item === 'string' && item.trim().length > 0);
+  }
+  if (items?.type !== 'object') return true;
+  const required = Array.isArray(items.required) ? items.required as string[] : [];
+  return value.every((item) => (
+    isRecord(item)
+    && required.every((key) => {
+      const child = item[key];
+      if (typeof child === 'string') return child.trim().length > 0;
+      if (Array.isArray(child)) return child.length > 0;
+      return child !== undefined && child !== null;
+    })
+  ));
+}
+
 function responseSchema(targetFields: string[]): Record<string, unknown> {
   return {
     type: 'object',
@@ -41,20 +176,13 @@ function responseSchema(targetFields: string[]): Record<string, unknown> {
         minItems: targetFields.length,
         maxItems: targetFields.length,
         items: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['path', 'value', 'status', 'confidence', 'evidenceRefs'],
-          properties: {
-            path: { type: 'string', enum: targetFields },
-            value: {},
+          oneOf: targetFields.map((path) => objectSchema({
+            path: { type: 'string', enum: [path] },
+            value: valueSchemaForPath(path),
             status: { type: 'string', enum: ['inferred', 'proposed'] },
             confidence: { type: 'number', minimum: 0, maximum: 1 },
-            evidenceRefs: {
-              type: 'array',
-              minItems: 1,
-              items: { type: 'string' },
-            },
-          },
+            evidenceRefs: stringArraySchema,
+          })),
         },
       },
     },
@@ -125,6 +253,9 @@ export async function runStructuredRepair(input: {
     }
     if (!isMeaningfulValue(candidate.value)) {
       invalid(`Repair field ${path} contains an empty value.`);
+    }
+    if (!matchesValueSchema(path, candidate.value)) {
+      invalid(`Repair field ${path} has an invalid value shape.`);
     }
     return {
       path,

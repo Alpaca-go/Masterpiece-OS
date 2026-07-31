@@ -31,6 +31,7 @@ export function evidenceSafeMerge(input: {
   repairedAt?: string;
   lockedPaths?: string[];
   confirmedPaths?: string[];
+  repairablePaths?: string[];
 }): EvidenceSafeMergeReport {
   if (!isRecord(input.packet)) {
     throw Object.assign(new Error('Cannot merge into a corrupted analysis packet.'), {
@@ -61,6 +62,7 @@ export function evidenceSafeMerge(input: {
       patch,
       lockedPaths: input.lockedPaths,
       confirmedPaths: input.confirmedPaths,
+      repairablePaths: input.repairablePaths,
     });
     if (conflict) {
       rejected.push(patch.path);
