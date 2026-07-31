@@ -229,8 +229,18 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     severity: 'repairable',
     repairStrategy: 'ai_from_evidence',
     appliesTo: ['space'],
+    // The two original `requiredEvidencePaths` only referenced sibling fields
+    // (`functionalNetwork`, `sceneProgram`) that are themselves new creative
+    // output and never carry `evidenceRefs`. That made the AI batch impossible
+    // to satisfy (`REPAIR_EVIDENCE_UNAVAILABLE`), and the orchestrator marked
+    // every `deliverable: 'space'` run as failed without ever calling the
+    // model. The fix anchors on the upstream `projectFacts.brandRole` (which
+    // always carries `evidenceRefs` whenever the run has reached this stage)
+    // and keeps `sceneProgram` and the unique upgrade thesis as semantic
+    // guidance that the model can cite even when those fields are empty.
     requiredEvidencePaths: [
-      'mediaTranslations.spatial.functionalNetwork',
+      'projectFacts.brandRole',
+      'creativeDecision.uniqueUpgradeThesis',
       'mediaTranslations.spatial.sceneProgram',
     ],
   }),

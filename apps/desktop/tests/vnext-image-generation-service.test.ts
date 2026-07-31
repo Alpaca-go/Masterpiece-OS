@@ -208,6 +208,30 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   }), (error: unknown) =>
     (error as { code?: string }).code === 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED');
 
+  // Regression: when a project confirms a logo, `logoUsageMode: 'reference'`
+  // must also be rejected. The renderer workspace used to default to this
+  // value for every logo-locked project, which made every compile call fail
+  // with `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED`. The default has since
+  // been flipped to `post_composite`, but the backend must keep enforcing
+  // the contract in case a stale or programmatic caller still sends
+  // `reference`.
+  await assert.rejects(() => service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Try to use the real logo as a model reference.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['logo-asset'],
+      logoUsageMode: 'reference',
+    },
+  }), (error: unknown) =>
+    (error as { code?: string }).code === 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED');
+
   const postComposite = await service.compile({
     projectId,
     task: {
@@ -256,4 +280,119 @@ test('vNext session promotes a formal result to a family-scoped implicit anchor'
   assert.equal(validated.terminalStatus, 'passed');
   assert.equal(validationCalls, 2);
   assert.equal(counter, 4);
+});
+
+// Regression: previously `vnext-service.start` trusted the
+// `preflightReport` cached in the compile artifact verbatim. That meant
+// any change to the preflight gate rules (or any pre-existing compile
+// artifact that was written by an older client build) could keep
+// surfacing `PROMPT_PREFLIGHT_BLOCKED` even after the underlying
+// problem was fixed. The service now transparently re-compiles the
+// task using the stored `task-contract.json` + the current context, and
+// only raises the block error if the *fresh* preflight still fails.
+test('vNext start recompiles when the cached preflight is stale and would otherwise block', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-vnext-stale-preflight-'));
+  const runs = new Map<string, ImageGenerationRun>();
+  const localImageGeneration = {
+    async startCompiledCreativeTask(options: { compiledPrompt: string }) {
+      const run: ImageGenerationRun = {
+        schemaVersion: '1.0',
+        runId: `run-${runs.size + 1}`,
+        projectId,
+        taskId: options.compiledPrompt.slice(0, 4),
+        status: 'succeeded',
+        outputType: 'concept_image',
+        providerId: 'dashscope',
+        modelId: 'seedream-5',
+        region: 'beijing',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        gate: { blocked: false, errors: [], warnings: [] },
+        images: [{
+          imageId: 'image-1',
+          relativePath: 'image-1.png',
+          mimeType: 'image/png',
+          sizeBytes: 1024,
+          width: 1024,
+          height: 576,
+          sha256: 'image-1-sha256',
+          downloadedAt: new Date().toISOString(),
+        }],
+      };
+      runs.set(run.runId, run);
+      return run;
+    },
+    async getRun(runId: string) { return runs.get(runId) ?? null; },
+    async runRoot() { return path.join(root, 'image-generation'); },
+  };
+  const localProjects = {
+    async paths(_id: string) {
+      return {
+        root,
+        input: path.join(root, 'input'),
+        prepared: path.join(root, 'prepared'),
+        outputs: path.join(root, 'outputs'),
+        runtime: path.join(root, 'runtime'),
+      };
+    },
+    async get() { return { apiProfileId: 'stale-profile' }; },
+  } as never;
+  const localContext = {
+    getVNext: async () => context,
+    rebuildVNext: async () => context,
+  } as never;
+  const service = createVNextImageGenerationService(
+    localProjects,
+    localContext,
+    () => localImageGeneration as never,
+  );
+
+  // Compile once, then poison the cached preflight report so the next
+  // start() would block under the old code path.
+  const initialCompile = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'entrance_view',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create the first formal reception result.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: [],
+    },
+  });
+  const compiledPromptPath = path.join(
+    initialCompile.artifactDirectory,
+    'compiled-prompt.json',
+  );
+  const cached = JSON.parse(await fs.readFile(compiledPromptPath, 'utf8'));
+  cached.preflightReport = {
+    status: 'blocked',
+    findings: [
+      { code: 'PROJECT_SPECIFICITY_TOO_LOW', severity: 'block' },
+      { code: 'GENERIC_INDUSTRY_FALLBACK', severity: 'block' },
+    ],
+  };
+  await fs.writeFile(compiledPromptPath, JSON.stringify(cached, null, 2));
+
+  // Without the regression fix this call would throw
+  // `PROMPT_PREFLIGHT_BLOCKED`. With the fix it must transparently
+  // re-compile the task using the current context (which carries a
+  // valid `visualDecisionPacket`, so the synthesised
+  // `projectSpecificDecisions` will be `ready`) and proceed without
+  // surfacing the stale block codes.
+  const run = await service.start({
+    projectId,
+    taskId: initialCompile.taskContract.taskId,
+    apiProfileId: 'stale-profile',
+  });
+  assert.equal(run.status, 'succeeded');
+  // The recompile must have replaced the on-disk cached preflight
+  // report with a passing one; otherwise the next start would still
+  // need to recompile.
+  const refreshed = JSON.parse(await fs.readFile(compiledPromptPath, 'utf8'));
+  assert.equal(refreshed.preflightReport?.status, 'pass');
 });

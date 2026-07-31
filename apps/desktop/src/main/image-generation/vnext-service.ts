@@ -301,10 +301,58 @@ export function createVNextImageGenerationService(
   }
 
   async function start(input: StartVNextGenerationInput): Promise<ImageGenerationRun> {
-    const compilation = await readCompilation(input.projectId, input.taskId);
-    const preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
+    let compilation = await readCompilation(input.projectId, input.taskId);
+    let preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
       preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
     }).preflightReport;
+    if (preflight?.status !== 'pass') {
+      // The cached `preflightReport` was produced at compile time. When
+      // the vNext preflight rules are tightened or relaxed (or when a
+      // stale build is loaded after a Desktop upgrade), a previously
+      // passing compile can suddenly appear blocked, or a previously
+      // blocked compile can become passing. Trusting the cached value
+      // blindly would force every user to re-click "查看最终 Prompt"
+      // after every code change. Instead, transparently re-compile the
+      // task using the stored `task-contract.json` + any user-edited
+      // prompt, then re-check the preflight against the current code.
+      // Only when the *fresh* compile still blocks do we surface the
+      // error to the user.
+      try {
+        const task = compilation.taskContract;
+        const apiProfileId = (await projects.get(input.projectId)).apiProfileId;
+        // Reuse the existing `taskId` so the recompile overwrites the
+        // exact same compile artifact directory; otherwise the new run
+        // would land next to the old one and `start` would keep reading
+        // the stale `compiled-prompt.json` on the next attempt.
+        compilation = await compile({
+          projectId: input.projectId,
+          task: {
+            taskId: task.taskId,
+            deliverableFamily: task.deliverableFamily,
+            subtype: task.subtype,
+            shot: task.shot,
+            count: task.count,
+            aspectRatio: task.aspectRatio,
+            currentInstruction: task.currentInstruction,
+            mustInclude: [...task.mustInclude],
+            mustAvoid: [...task.mustAvoid],
+            referenceAssetIds: [...task.referenceAssetIds],
+            logoUsageMode: task.logoUsageMode,
+          },
+          ...(apiProfileId ? { apiProfileId } : {}),
+        });
+        preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
+          preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
+        }).preflightReport;
+      } catch (recompileError) {
+        // Re-compile failed for some other reason; fall through to the
+        // original blocked report so the user still sees the underlying
+        // finding codes.
+        preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
+          preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
+        }).preflightReport;
+      }
+    }
     if (preflight?.status !== 'pass') {
       throw Object.assign(new Error(
         `PROMPT_PREFLIGHT_BLOCKED: ${(preflight?.findings || [])

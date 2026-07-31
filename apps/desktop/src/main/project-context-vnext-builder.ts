@@ -101,7 +101,10 @@ function mergePromptSourceObject(
       ...extractedLocks,
       logoAssetIds,
       preferredLogoAssetId: logoAssetIds[0] ?? null,
-      logoUsageMode: hasLogo ? 'reference' : 'blank_area',
+      // See the comment in `visual-decision-packet.ts`: a project that has
+      // a confirmed logo is bound by the v5 logo-locked contract, which
+      // only accepts `post_composite` on the vNext image pipeline.
+      logoUsageMode: hasLogo ? 'post_composite' : 'blank_area',
       confirmedColors: strings(
         context.lockedAssets.confirmedColors,
         extractedLocks.confirmedColors,
@@ -172,7 +175,10 @@ export function migrateProjectVisualContextVNext(
     lockedAssets: {
       logoAssetIds: [...context.lockedAssets.logoAssetIds],
       preferredLogoAssetId: context.lockedAssets.logoAssetIds[0] ?? null,
-      logoUsageMode: hasLogo ? 'reference' : 'blank_area',
+      // See the comment in `visual-decision-packet.ts`: a project that has
+      // a confirmed logo is bound by the v5 logo-locked contract, which
+      // only accepts `post_composite` on the vNext image pipeline.
+      logoUsageMode: hasLogo ? 'post_composite' : 'blank_area',
       confirmedColors: [...context.lockedAssets.confirmedColors],
       mustPreserve: [...context.lockedAssets.mustPreserve],
       immutableStructures: [...context.lockedAssets.packageStructures],

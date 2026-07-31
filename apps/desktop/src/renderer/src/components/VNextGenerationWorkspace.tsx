@@ -98,10 +98,28 @@ export function VNextGenerationWorkspace({
       refreshSession(),
     ]).then(([nextOptions, context]) => {
       setOptions(nextOptions as TemplateOptions);
-      setLogoUsageMode(
-        context.promptSourceObject?.lockedAssets.logoUsageMode
-          || (context.lockedAssets.logoAssetIds.length ? 'reference' : 'blank_area'),
-      );
+      // A project with a confirmed logo is always subject to the v5
+      // "logo locked" contract. The backend therefore refuses any
+      // `logoUsageMode` other than `post_composite` for those projects
+      // (see `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED` in
+      // `apps/desktop/src/main/image-generation/vnext-service.ts`). The
+      // previous default of `reference` here forced every logo-locked
+      // project into a guaranteed compile failure; the new default flips
+      // straight to `post_composite` so the workspace never opens in an
+      // illegal state. Projects without a confirmed logo still default
+      // to `blank_area`, which remains valid.
+      //
+      // Belt-and-braces: the upstream `promptSourceObject` was emitting
+      // `'reference'` for logo-locked projects up to this fix, and any
+      // project on disk with that stale value would still re-trigger the
+      // backend error. The conditional below coerces those leftovers
+      // into `post_composite` on first load, so legacy project data
+      // heals automatically.
+      const hasLogo = context.lockedAssets.logoAssetIds.length > 0;
+      const upstream = context.promptSourceObject?.lockedAssets.logoUsageMode;
+      const initialMode: VNextLogoUsageMode =
+        hasLogo ? 'post_composite' : (upstream === 'reference' ? 'blank_area' : (upstream || 'blank_area'));
+      setLogoUsageMode(initialMode);
     })
       .catch((reason) => setError(cleanError(reason)));
   }, [project.id]);
@@ -327,9 +345,9 @@ export function VNextGenerationWorkspace({
         <label>Logo 处理方式
           <select value={logoUsageMode} onChange={(event) =>
             setLogoUsageMode(event.target.value as VNextLogoUsageMode)}>
-            <option value="reference">使用真实 Logo 作为身份参考</option>
+            <option value="post_composite">后期合成 Logo 到结果图（v5 Logo Locked 项目必须）</option>
             <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
-            <option value="post_composite" disabled>后期合成（后续版本）</option>
+            <option value="reference" disabled>把真实 Logo 作为模型参考（仅无 logo 项目可用）</option>
           </select>
         </label>
         <label>必须包含（每行一项）

@@ -75,3 +75,52 @@ test('repair planner enforces the two-attempt limit', () => {
     (error: Error & { code?: string }) => error.code === 'REPAIR_ATTEMPTS_EXHAUSTED',
   );
 });
+
+// Regression: `mediaTranslations.spatial.functionalRelationships` previously
+// only referenced sibling fields (`functionalNetwork`, `sceneProgram`) which
+// are themselves new creative output and never carry `evidenceRefs`. That made
+// the resulting AI batch unsatisfiable (`REPAIR_EVIDENCE_UNAVAILABLE`) for
+// every `deliverable: 'space'` run, so the orchestrator fast-failed without
+// ever calling the model. The policy now anchors on the upstream
+// `projectFacts.brandRole`, which always carries evidence refs by the time a
+// project reaches the decision-refinement stage.
+test('repair planner attaches current-project evidence to the spatial functional-relationships batch', () => {
+  const packet = structuredAnalysisPacketFixture();
+  // Force the missing-field issue into the active plan.
+  packet.mediaTranslations.spatial.functionalRelationships = [];
+  const sufficiency = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution,
+  });
+  const issues = sufficiency.issues.filter(
+    (issue) => issue.path === 'mediaTranslations.spatial.functionalRelationships',
+  );
+  assert.equal(issues.length, 1);
+
+  const plan = createRepairPlan({
+    deliverable: 'space',
+    attempt: 1,
+    issues,
+  });
+  assert.equal(plan.aiBatches.length, 1);
+  const batch = plan.aiBatches[0];
+  assert.deepEqual(batch?.fieldPaths, [
+    'mediaTranslations.spatial.functionalRelationships',
+  ]);
+  // The batch must expose at least one current-project evidence ref so the
+  // structured-repair runner will actually invoke the model. If this
+  // assertion ever fires again, it means a policy was added or changed that
+  // only references paths without `evidenceRefs`, which re-introduces the
+  // 2026-07-31 fast-fail regression.
+  assert.ok(
+    (batch?.evidenceRefs?.length ?? 0) > 0,
+    'functional-relationships AI batch must carry at least one evidence ref',
+  );
+  // And those refs must trace back to a current-project fact (brandRole),
+  // not to the sibling `sceneProgram` (which only stores string values).
+  assert.ok(
+    (batch?.evidenceRefs ?? []).some((ref) => ref === 'document:brand-role'),
+    'expected the brand-role evidence ref to anchor the batch',
+  );
+});
