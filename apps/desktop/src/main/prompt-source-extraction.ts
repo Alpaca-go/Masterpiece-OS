@@ -5,7 +5,7 @@ import type {
   PromptSourceObject,
   PromptSourceToneBoundary,
   PromptSourceVisualTransformation,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
 
 type UnknownRecord = Record<string, unknown>;

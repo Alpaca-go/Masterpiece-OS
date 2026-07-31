@@ -5,16 +5,16 @@ import type {
   LockedAsset,
   ReferencePackItem,
   StyleProfile,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   compileGenerationBlueprintPrompt,
-} from '../../../../packages/creative-production-runtime/src/generation-blueprint.js';
+} from '@masterpiece/creative-production-runtime/generation-blueprint.js';
 import {
   compileVisualMemoryPrompt,
-} from '../../../../packages/creative-production-runtime/src/visual-memory.js';
+} from '@masterpiece/creative-production-runtime/visual-memory.js';
 import {
   selectProviderReferencesFromPack,
-} from '../../../../packages/creative-production-runtime/src/reference-pack.js';
+} from '@masterpiece/creative-production-runtime/reference-pack.js';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
 import type { GenerationBlueprintService } from './generation-blueprint-service.ts';
 import type { AnchorCandidateService } from './anchor-candidate-service.ts';

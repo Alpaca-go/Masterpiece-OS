@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compileGenerationPromptSnapshot } from '../packages/creative-production-runtime/src/generation-prompt.js';
+import { compileGenerationPromptSnapshot } from '@masterpiece/creative-production-runtime/generation-prompt.js';
 
 const style = {
   id: 'style-ab', version: '1.0.0', status: 'confirmed',

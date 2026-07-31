@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   EVALUATION_LOOP_CAPABILITIES,
   validateEvaluationLoopSubmission,
-} from '../packages/evaluation-loop-contracts/src/index.js';
+} from '@masterpiece/evaluation-loop-contracts/index.js';
 
 const submission = {
   evaluator: { type: 'human' },

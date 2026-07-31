@@ -4,12 +4,12 @@ import type {
   SaveModelBenchmarkEvaluationInput,
   StartModelBenchmarkInput,
 } from '../shared/types.ts';
-import type { GenerationPromptSnapshot } from '../../../../packages/project-contracts/src/index.ts';
-import type { ImageGenerationEvaluation } from '../../../../packages/image-generation-contracts/src/index.ts';
+import type { GenerationPromptSnapshot } from '@masterpiece/project-contracts/index.ts';
+import type { ImageGenerationEvaluation } from '@masterpiece/image-generation-contracts/index.ts';
 import {
   compileEvaluationPromptAdjustment,
   compileImageEvaluation,
-} from '../../../../packages/image-generation-runtime/src/evaluation.js';
+} from '@masterpiece/image-generation-runtime/evaluation.js';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { GenerationPromptService } from './generation-prompt-service.ts';
 import type { ImageGenerationService } from './image-generation/service.ts';

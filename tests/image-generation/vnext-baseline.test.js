@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import {
   IMAGE_GENERATION_PIPELINE_MODES,
   resolveImageGenerationPipelineMode,
-} from '../../packages/image-generation-runtime/src/pipeline-mode.js';
+} from '@masterpiece/image-generation-runtime/pipeline-mode.js';
 
 const fixture = (name) => fileURLToPath(
   new URL(`./fixtures/vnext-baseline/${name}`, import.meta.url),

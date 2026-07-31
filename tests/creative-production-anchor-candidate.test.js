@@ -10,7 +10,7 @@ import {
   reviewAnchorCandidate,
   supersedeAnchorCandidate,
   transitionAnchorCandidate,
-} from '../packages/creative-production-runtime/src/anchor-candidate.js';
+} from '@masterpiece/creative-production-runtime/anchor-candidate.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 const styleProfile = { id: 'style-1', version: '1.0.0', status: 'confirmed' };

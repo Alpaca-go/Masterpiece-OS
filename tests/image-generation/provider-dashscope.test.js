@@ -15,13 +15,13 @@ import {
   buildSubmitBody,
   REGION_ENDPOINTS,
   resolveDashScopeEndpoint,
-} from '../../packages/image-provider-dashscope/src/index.js';
-import { downloadAndVerifyImage } from '../../packages/image-generation-runtime/src/download-verify.js';
+} from '@masterpiece/image-provider-dashscope/index.js';
+import { downloadAndVerifyImage } from '@masterpiece/image-generation-runtime/download-verify.js';
 import {
   redactUrl,
   redactProviderRequest,
   redactProviderResponse,
-} from '../../packages/image-generation-runtime/src/redact.js';
+} from '@masterpiece/image-generation-runtime/redact.js';
 
 // ── Mock 工具 ──
 

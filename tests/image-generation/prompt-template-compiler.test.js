@@ -2,12 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   compileDeliverableGenerationBlueprint,
-} from '../../packages/image-generation-runtime/src/prompt-templates/deliverable-template-system.js';
+} from '@masterpiece/image-generation-runtime/prompt-templates/deliverable-template-system.js';
 import {
   PROMPT_TEMPLATE_COMPILER_VERSION,
   compilePromptTemplate,
   verifyPromptTemplateFingerprint,
-} from '../../packages/image-generation-runtime/src/prompt-templates/prompt-template-compiler.js';
+} from '@masterpiece/image-generation-runtime/prompt-templates/prompt-template-compiler.js';
 
 const memory = {
   schema_version: '1.0',

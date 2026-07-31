@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   evidenceSafeMerge,
   type RepairFieldPatch,
-} from '../../../packages/analysis-runtime/src/index.ts';
+} from '@masterpiece/analysis-runtime/index.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 
 function patch(path: string, value: unknown): RepairFieldPatch {

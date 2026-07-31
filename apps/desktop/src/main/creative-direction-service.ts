@@ -5,22 +5,22 @@ import type {
   CreativeDecision,
   CreativeDirection,
   CreativeUnderstanding,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   buildCreativeDirectionPrompt,
   compileCreativeDirectionMarkdown,
   normalizeCreativeDirection,
   validateCreativeDirection,
-} from '../../../../packages/creative-production-runtime/src/creative-direction.js';
+} from '@masterpiece/creative-production-runtime/creative-direction.js';
 import {
   CREATIVE_DECISION_JSON_FILENAME,
   CREATIVE_DECISION_REPORT_FILENAME,
   compileCreativeDecision,
   compileCreativeDecisionMarkdown,
   validateCreativeDecision,
-} from '../../../../packages/creative-production-runtime/src/creative-decision.js';
-import { parseCreativeDirectionResponse } from '../../../../packages/creative-production-runtime/src/creative-direction.js';
-import { createQwenReasoner } from '../../../../packages/model-runtime/src/qwen-reasoner.js';
+} from '@masterpiece/creative-production-runtime/creative-decision.js';
+import { parseCreativeDirectionResponse } from '@masterpiece/creative-production-runtime/creative-direction.js';
+import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProviderCredentials } from './settings-store.ts';
 import type { ProjectStore } from './project-store.ts';

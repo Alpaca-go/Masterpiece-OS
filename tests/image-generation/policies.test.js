@@ -4,7 +4,7 @@ import {
   IMAGE_GENERATION_POLICIES,
   IMAGE_GENERATION_PRESET_CAPABILITIES,
   resolveGenerationPolicy,
-} from '../../packages/image-generation-runtime/src/policies.js';
+} from '@masterpiece/image-generation-runtime/policies.js';
 
 test('four generation presets expose distinct policies', () => {
   assert.deepEqual(Object.keys(IMAGE_GENERATION_POLICIES), [

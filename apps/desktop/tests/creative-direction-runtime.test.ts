@@ -5,7 +5,7 @@ import {
   normalizeCreativeDirection,
   parseCreativeDirectionResponse,
   validateCreativeDirection,
-} from '../../../packages/creative-production-runtime/src/creative-direction.js';
+} from '@masterpiece/creative-production-runtime/creative-direction.js';
 
 function validDirection() {
   return {

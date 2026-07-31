@@ -33,9 +33,9 @@ import { deriveDocumentProjectName } from './document-project-name.ts';
 
 // Bundled from the repository core. Desktop owns persistence and user interaction only.
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.
-import { createOpenAICompatibleTextReasoner } from '../../../../packages/model-runtime/src/openai-compatible-text-reasoner.js';
+import { createOpenAICompatibleTextReasoner } from '@masterpiece/model-runtime/openai-compatible-text-reasoner.js';
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.
-import { classifyDocumentRole } from '../../../../packages/document-ingestion/src/document-preparation.js';
+import { classifyDocumentRole } from '@masterpiece/document-ingestion/document-preparation.js';
 
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
 type SettingsReader = () => Promise<PublicSettings>;

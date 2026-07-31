@@ -4,14 +4,14 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compileImageGenerationTask } from '../../packages/image-generation-runtime/src/task-builder.js';
-import { compilePrompt, TEXT_SAFETY_RULES } from '../../packages/image-generation-runtime/src/prompt-compiler.js';
-import { orderReferences, selectReferences } from '../../packages/image-generation-runtime/src/reference-selector.js';
+import { compileImageGenerationTask } from '@masterpiece/image-generation-runtime/task-builder.js';
+import { compilePrompt, TEXT_SAFETY_RULES } from '@masterpiece/image-generation-runtime/prompt-compiler.js';
+import { orderReferences, selectReferences } from '@masterpiece/image-generation-runtime/reference-selector.js';
 import {
   evaluateIdentityGate,
   evaluateTaskGate,
   evaluateArtifactGate,
-} from '../../packages/image-generation-runtime/src/gates.js';
+} from '@masterpiece/image-generation-runtime/gates.js';
 
 // ── Fixtures ──
 

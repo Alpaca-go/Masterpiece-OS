@@ -10,12 +10,12 @@ import type {
   VNextTaskContract,
   VNextProjectPromptAsset,
   VNextValidatedGenerationResult,
-} from '../../../../../packages/image-generation-contracts/src/index.ts';
+} from '@masterpiece/image-generation-contracts/index.ts';
 import {
   compileVNextCorrectionPrompt,
   compileVNextImageGeneration,
   listVNextTemplateOptions,
-} from '../../../../../packages/image-generation-runtime/src/vnext/index.js';
+} from '@masterpiece/image-generation-runtime/vnext/index.js';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';

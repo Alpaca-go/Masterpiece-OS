@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import type {
   AnchorCandidate,
   AnchorCandidateEvaluation,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   attachAnchorCandidateOutput,
   createAnchorCandidateTask,
@@ -14,8 +14,8 @@ import {
   supersedeAnchorCandidate,
   transitionAnchorCandidate,
   validateAnchorCandidate,
-} from '../../../../packages/creative-production-runtime/src/anchor-candidate.js';
-import { CREATIVE_WORKFLOW_STATES } from '../../../../packages/creative-production-runtime/src/session.js';
+} from '@masterpiece/creative-production-runtime/anchor-candidate.js';
+import { CREATIVE_WORKFLOW_STATES } from '@masterpiece/creative-production-runtime/session.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { composePrompt } from '../../packages/image-generation-runtime/src/prompt/index.js';
+import { composePrompt } from '@masterpiece/image-generation-runtime/prompt/index.js';
 
 const capabilities = { modelId: 'wan2.7-image-pro' };
 const ref = (role) => ({ role, assetId: role, localPath: '/x.png', sha256: 'x', source: 'user_selected', includeReason: 'test' });

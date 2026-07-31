@@ -4,7 +4,7 @@ import {
   compileVNextImageGeneration,
   createVNextTaskContract,
   listVNextTemplates,
-} from '../../packages/image-generation-runtime/src/vnext/index.js';
+} from '@masterpiece/image-generation-runtime/vnext/index.js';
 
 const projectContext = {
   schemaVersion: '2.0',

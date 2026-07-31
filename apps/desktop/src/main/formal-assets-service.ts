@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { GenerationOutput } from '../../../../packages/project-contracts/src/index.ts';
+import type { GenerationOutput } from '@masterpiece/project-contracts/index.ts';
 import {
   createGenerationOutput,
   reviewGenerationOutput,
   validateGenerationOutput,
-} from '../../../../packages/creative-production-runtime/src/revision-assets.js';
+} from '@masterpiece/creative-production-runtime/revision-assets.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 

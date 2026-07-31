@@ -6,7 +6,7 @@ import {
   compileVisualMemoryPrompt,
   validateVisualMemory,
   VISUAL_MEMORY_COMPILER_VERSION,
-} from '../packages/creative-production-runtime/src/visual-memory.js';
+} from '@masterpiece/creative-production-runtime/visual-memory.js';
 
 function fixture() {
   return {

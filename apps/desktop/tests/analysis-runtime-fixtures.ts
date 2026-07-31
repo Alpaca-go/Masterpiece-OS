@@ -1,4 +1,4 @@
-import type { VisualDecisionPacket } from '../../../packages/project-contracts/src/index.ts';
+import type { VisualDecisionPacket } from '@masterpiece/project-contracts/index.ts';
 
 export function structuredAnalysisPacketFixture(): VisualDecisionPacket {
   return {

@@ -1,7 +1,7 @@
 import type {
   VisualDecisionPacket,
   VisualUnderstandingCore,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
 import {
   buildVisualUnderstandingCore,

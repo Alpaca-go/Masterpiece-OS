@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { VisualDecisionPacket } from '../../../packages/project-contracts/src/index.ts';
+import type { VisualDecisionPacket } from '@masterpiece/project-contracts/index.ts';
 import { createFileContextLoader } from '../src/main/image-generation/context-loader.ts';
 import { createImageGenerationService } from '../src/main/image-generation/service.ts';
 import { createVNextImageGenerationService } from '../src/main/image-generation/vnext-service.ts';

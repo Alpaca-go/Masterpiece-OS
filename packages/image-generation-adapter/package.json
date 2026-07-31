@@ -7,6 +7,7 @@
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
+    "./*": "./src/*",
     "./wan": "./src/wan.js",
     "./multi-model": "./src/multi-model.js"
   }

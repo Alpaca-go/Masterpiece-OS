@@ -4,7 +4,7 @@ import {
   attachBenchmarkRuns,
   createModelBenchmark,
   saveHumanBenchmarkEvaluation,
-} from '../packages/model-benchmark/src/index.js';
+} from '@masterpiece/model-benchmark/index.js';
 
 const snapshot = {
   id: 'prompt-1',

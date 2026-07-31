@@ -4,15 +4,15 @@ import type {
   CreativeDirection,
   CreativeUnderstanding,
   ProjectVisualContext,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   buildCreativeReadingPrompt,
   compileCreativeUnderstandingMarkdown,
   normalizeCreativeUnderstanding,
   parseCreativeReadingResponse,
   selectAnalysisPool,
-} from '../../../../packages/creative-production-runtime/src/creative-reading.js';
-import { createQwenReasoner } from '../../../../packages/model-runtime/src/qwen-reasoner.js';
+} from '@masterpiece/creative-production-runtime/creative-reading.js';
+import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProviderCredentials } from './settings-store.ts';
 import type { ProjectStore } from './project-store.ts';

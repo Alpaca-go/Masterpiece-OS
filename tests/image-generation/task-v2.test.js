@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compileImageGenerationTask, migrateImageGenerationTaskV1 } from '../../packages/image-generation-runtime/src/task-builder.js';
+import { compileImageGenerationTask, migrateImageGenerationTaskV1 } from '@masterpiece/image-generation-runtime/task-builder.js';
 
 const capabilities = {
   providerId: 'dashscope',

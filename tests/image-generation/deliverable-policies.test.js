@@ -4,7 +4,7 @@ import {
   DELIVERABLE_POLICIES,
   getDeliverableNegativeRules,
   validateAllDeliverablePolicies,
-} from '../../packages/image-generation-runtime/src/deliverables/index.js';
+} from '@masterpiece/image-generation-runtime/deliverables/index.js';
 
 test('all seven deliverable policies are structurally valid', () => {
   assert.equal(Object.keys(DELIVERABLE_POLICIES).length, 7);

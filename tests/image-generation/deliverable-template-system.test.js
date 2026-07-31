@@ -5,7 +5,7 @@ import {
   compileDeliverableGenerationBlueprint,
   getDeliverablePromptTemplate,
   validateDeliverableGenerationBlueprint,
-} from '../../packages/image-generation-runtime/src/prompt-templates/deliverable-template-system.js';
+} from '@masterpiece/image-generation-runtime/prompt-templates/deliverable-template-system.js';
 
 function visualMemory() {
   return {

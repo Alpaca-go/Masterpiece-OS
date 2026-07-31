@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { StyleProfile } from '../../../../packages/project-contracts/src/index.ts';
+import type { StyleProfile } from '@masterpiece/project-contracts/index.ts';
 import {
   compileStyleProfile,
   nextStyleProfileVersion,
   validateStyleProfile,
-} from '../../../../packages/creative-production-runtime/src/style-profile.js';
+} from '@masterpiece/creative-production-runtime/style-profile.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

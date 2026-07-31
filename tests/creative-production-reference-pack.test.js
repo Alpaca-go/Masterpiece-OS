@@ -5,8 +5,8 @@ import {
   compileReferencePack,
   selectProviderReferencesFromPack,
   validateReferencePack,
-} from '../packages/creative-production-runtime/src/reference-pack.js';
-import { compileVisualMemory } from '../packages/creative-production-runtime/src/visual-memory.js';
+} from '@masterpiece/creative-production-runtime/reference-pack.js';
+import { compileVisualMemory } from '@masterpiece/creative-production-runtime/visual-memory.js';
 
 function memoryWithAssets(count = 30) {
   const assets = Array.from({ length: count }, (_, index) => ({

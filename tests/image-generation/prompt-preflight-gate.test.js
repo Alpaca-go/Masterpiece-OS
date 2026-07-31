@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { runPromptPreflightGate } from '../../packages/image-generation-runtime/src/gates/prompt-preflight-gate.js';
-import { compileProjectSpecificGenerationContract } from '../../packages/creative-production-runtime/src/project-generation-contract.js';
+import { runPromptPreflightGate } from '@masterpiece/image-generation-runtime/gates/prompt-preflight-gate.js';
+import { compileProjectSpecificGenerationContract } from '@masterpiece/creative-production-runtime/project-generation-contract.js';
 import { phase1Packet } from '../phase1-fixtures.js';
 
 test('preflight blocks cross-media language in a packaging prompt', () => {

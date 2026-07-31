@@ -34,30 +34,30 @@ import type {
   ModelBenchmark,
   SaveModelBenchmarkEvaluationInput,
 } from '../../shared/types';
-import type { GenerationPromptSnapshot } from '../../../../../packages/project-contracts/src/index.ts';
-import { validateGenerationPromptSnapshot } from '../../../../../packages/creative-production-runtime/src/generation-prompt.js';
+import type { GenerationPromptSnapshot } from '@masterpiece/project-contracts/index.ts';
+import { validateGenerationPromptSnapshot } from '@masterpiece/creative-production-runtime/generation-prompt.js';
 import {
   compileImageGenerationTask,
   migrateImageGenerationSourcesV2,
-} from '../../../../../packages/image-generation-runtime/src/task-builder.js';
+} from '@masterpiece/image-generation-runtime/task-builder.js';
 import {
   createCompileFingerprint,
   stableHash,
   verifyCompileFingerprint,
-} from '../../../../../packages/image-generation-runtime/src/deliverables/compile-fingerprint.js';
-import { evaluateDeliverableGate } from '../../../../../packages/image-generation-runtime/src/gates/deliverable-gate.js';
-import { downloadAndVerifyImage } from '../../../../../packages/image-generation-runtime/src/download-verify.js';
-import { evaluateArtifactGate, evaluateIdentityGate } from '../../../../../packages/image-generation-runtime/src/gates.js';
+} from '@masterpiece/image-generation-runtime/deliverables/compile-fingerprint.js';
+import { evaluateDeliverableGate } from '@masterpiece/image-generation-runtime/gates/deliverable-gate.js';
+import { downloadAndVerifyImage } from '@masterpiece/image-generation-runtime/download-verify.js';
+import { evaluateArtifactGate, evaluateIdentityGate } from '@masterpiece/image-generation-runtime/gates.js';
 import {
   buildSubmitBody,
   DASHSCOPE_CAPABILITIES,
   resolveDashScopeEndpoint,
-} from '../../../../../packages/image-provider-dashscope/src/index.js';
+} from '@masterpiece/image-provider-dashscope/index.js';
 import {
   createWanImageGenerationAdapter,
   createMultiModelImageAdapter,
-} from '../../../../../packages/image-generation-adapter/src/index.js';
-import { redactProviderRequest, redactProviderResponse } from '../../../../../packages/image-generation-runtime/src/redact.js';
+} from '@masterpiece/image-generation-adapter/index.js';
+import { redactProviderRequest, redactProviderResponse } from '@masterpiece/image-generation-runtime/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
 import type { GenerationContext, FileContextLoader } from './context-loader.ts';
 import {
@@ -67,14 +67,14 @@ import {
   type AnyImageGenerationSourceBundle,
 } from './context-loaders/index.ts';
 import { resolveProjectRoot, runRootUnder, standaloneImageGenRoot, imagesDir, thumbnailsDir, RUN_FILES } from './paths.ts';
-import { EXECUTING_IMAGE_RUN_STATUSES } from '../../../../../packages/image-generation-contracts/src/index.ts';
-import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '../../../../../packages/image-generation-runtime/src/policies.js';
+import { EXECUTING_IMAGE_RUN_STATUSES } from '@masterpiece/image-generation-contracts/index.ts';
+import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '@masterpiece/image-generation-runtime/policies.js';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import {
   attachBenchmarkRuns,
   createModelBenchmark,
   saveHumanBenchmarkEvaluation,
-} from '../../../../../packages/model-benchmark/src/index.js';
+} from '@masterpiece/model-benchmark/index.js';
 
 export const DEFAULT_SIZE = '1024*1024';
 

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { compileDeliverablePrompt, resolveUserIntent } from '../../packages/image-generation-runtime/src/deliverables/index.js';
+import { compileDeliverablePrompt, resolveUserIntent } from '@masterpiece/image-generation-runtime/deliverables/index.js';
 
 const EXPECTED = {
   interior_scene: ['店内空间效果图', '完整室内空间', '墙面', '地面', '天花', '顾客用餐区', '动线', '空间纵深', 'VI 物料平铺', '多格拼贴'],

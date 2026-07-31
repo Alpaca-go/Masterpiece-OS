@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   buildPackagingTranslation,
   validatePackagingTranslation,
-} from '../packages/creative-production-runtime/src/packaging-translation.js';
+} from '@masterpiece/creative-production-runtime/packaging-translation.js';
 import { phase1Packet } from './phase1-fixtures.js';
 
 test('packaging translation preserves packaging decisions and removes spatial language', () => {

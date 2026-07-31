@@ -5,7 +5,7 @@ import {
   compileCreativeDecision,
   compileCreativeDecisionMarkdown,
   validateCreativeDecision,
-} from '../packages/creative-production-runtime/src/creative-decision.js';
+} from '@masterpiece/creative-production-runtime/creative-decision.js';
 
 function direction() {
   return {

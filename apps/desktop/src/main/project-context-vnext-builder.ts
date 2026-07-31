@@ -4,9 +4,9 @@ import type {
   PromptSourceObject,
   ProjectVisualContextVNext,
   VisualDecisionPacket,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
-import { migrateAnalysisPacket } from '../../../../packages/analysis-runtime/src/index.ts';
+import { migrateAnalysisPacket } from '@masterpiece/analysis-runtime/index.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 
 export const PROJECT_VISUAL_CONTEXT_VNEXT_SCHEMA_VERSION = '2.0';

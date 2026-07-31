@@ -3,11 +3,11 @@ import path from 'node:path';
 import type {
   ReferencePack,
   VisualMemoryReferenceCandidate,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   compileReferencePack,
   validateReferencePack,
-} from '../../../../packages/creative-production-runtime/src/reference-pack.js';
+} from '@masterpiece/creative-production-runtime/reference-pack.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { VisualMemoryService } from './visual-memory-service.ts';

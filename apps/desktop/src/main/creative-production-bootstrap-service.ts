@@ -3,7 +3,7 @@ import path from 'node:path';
 import type {
   CreativeDirection,
   ProjectVisualContext,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';

@@ -4,7 +4,7 @@ import {
   createRepairPlan,
   evaluateDeliverableSufficiency,
   MAX_REPAIR_ATTEMPTS,
-} from '../../../packages/analysis-runtime/src/index.ts';
+} from '@masterpiece/analysis-runtime/index.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 
 const execution = {

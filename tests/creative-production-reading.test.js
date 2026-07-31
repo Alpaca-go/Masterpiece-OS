@@ -4,7 +4,7 @@ import {
   buildCreativeReadingPrompt,
   normalizeCreativeUnderstanding,
   selectAnalysisPool,
-} from '../packages/creative-production-runtime/src/creative-reading.js';
+} from '@masterpiece/creative-production-runtime/creative-reading.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 

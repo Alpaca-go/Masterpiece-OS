@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   createMultiModelImageAdapter,
   listMultiModelAdapters,
-} from '../../packages/image-generation-adapter/src/multi-model.js';
+} from '@masterpiece/image-generation-adapter/multi-model.js';
 
 const universal = {
   prompt: 'Approved Visual Canon commercial scene.',

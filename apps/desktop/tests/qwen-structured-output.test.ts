@@ -3,7 +3,7 @@ import test from 'node:test';
 
 // JavaScript runtime adapter intentionally has no declaration file.
 // @ts-ignore
-import { createQwenReasoner } from '../../../packages/model-runtime/src/qwen-reasoner.js';
+import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 
 test('Qwen reasoner forwards strict JSON Schema for targeted repair calls', async () => {
   let capturedBody: Record<string, unknown> | undefined;

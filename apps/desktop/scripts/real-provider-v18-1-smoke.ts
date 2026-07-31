@@ -23,7 +23,7 @@ import { createReferencePackService } from '../src/main/reference-pack-service.t
 import {
   normalizeCreativeUnderstanding,
   parseCreativeReadingResponse,
-} from '../../../packages/creative-production-runtime/src/creative-reading.js';
+} from '@masterpiece/creative-production-runtime/creative-reading.js';
 
 const projectId = process.env.MASTERPIECE_SMOKE_PROJECT_ID?.trim() || '';
 const textProfileId = process.env.MASTERPIECE_SMOKE_TEXT_PROFILE_ID?.trim() || '';

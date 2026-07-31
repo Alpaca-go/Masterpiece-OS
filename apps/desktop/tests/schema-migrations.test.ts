@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { migrateAnalysisPacket } from '../../../packages/analysis-runtime/src/index.ts';
+import { migrateAnalysisPacket } from '@masterpiece/analysis-runtime/index.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 
 test('legacy packet migration initializes new shape and requests targeted repair', () => {

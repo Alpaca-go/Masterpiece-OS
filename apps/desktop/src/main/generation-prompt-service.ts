@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { GenerationPromptSnapshot } from '../../../../packages/project-contracts/src/index.ts';
+import type { GenerationPromptSnapshot } from '@masterpiece/project-contracts/index.ts';
 import {
   compileGenerationPromptSnapshot,
   inferGenerationOutputType,
   validateGenerationPromptSnapshot,
-} from '../../../../packages/creative-production-runtime/src/generation-prompt.js';
+} from '@masterpiece/creative-production-runtime/generation-prompt.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

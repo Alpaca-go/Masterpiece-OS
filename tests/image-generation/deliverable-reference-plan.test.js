@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   buildDeliverableReferencePlan,
   materializeDeliverableReferences,
-} from '../../packages/image-generation-runtime/src/deliverables/index.js';
+} from '@masterpiece/image-generation-runtime/deliverables/index.js';
 
 function reference(assetId, role, name) {
   return {

@@ -6,7 +6,7 @@ import {
   inferModelType,
   listRegisteredModels,
   validateModelProfile,
-} from '../packages/model-registry/src/index.js';
+} from '@masterpiece/model-registry/index.js';
 
 test('Model Registry v2 separates the analysis model from generation models', () => {
   assert.equal(MODEL_REGISTRY_VERSION, '2.0.0');

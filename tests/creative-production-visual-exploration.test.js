@@ -7,7 +7,7 @@ import {
   selectVisualExplorationConcept,
   updateVisualExplorationConcept,
   validateVisualExploration,
-} from '../packages/creative-production-runtime/src/visual-exploration.js';
+} from '@masterpiece/creative-production-runtime/visual-exploration.js';
 
 const direction = {
   id: 'direction-1',

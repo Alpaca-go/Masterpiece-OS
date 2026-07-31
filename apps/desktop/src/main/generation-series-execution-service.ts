@@ -2,7 +2,7 @@ import type {
   GenerationPromptSnapshot,
   GenerationSeries,
   GenerationTask,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import type { CreativeGenerationService } from './creative-generation-service.ts';
 import type { FormalAssetsService } from './formal-assets-service.ts';
 import type { GenerationSeriesService } from './generation-series-service.ts';

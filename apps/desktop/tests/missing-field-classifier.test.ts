@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { classifyMissingFields } from '../../../packages/analysis-runtime/src/index.ts';
+import { classifyMissingFields } from '@masterpiece/analysis-runtime/index.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 
 test('classifier maps repairable fields to current-project evidence only', () => {

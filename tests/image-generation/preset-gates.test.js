@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { evaluateSourceGate, resolvePresetWarnings } from '../../packages/image-generation-runtime/src/gates.js';
-import { resolveGenerationPolicy } from '../../packages/image-generation-runtime/src/policies.js';
+import { evaluateSourceGate, resolvePresetWarnings } from '@masterpiece/image-generation-runtime/gates.js';
+import { resolveGenerationPolicy } from '@masterpiece/image-generation-runtime/policies.js';
 
 const source = (preset) => ({ preset, purpose: preset === 'integrated_anchor' || preset === 'visual_extension' ? 'production' : 'exploration', userIntent: {} });
 const reference = (role) => ({ role, assetId: role, localPath: '/x', sha256: 'x', source: 'user_selected', includeReason: 'test' });

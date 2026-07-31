@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import type { CreativeWorkflowState } from '../../../packages/project-contracts/src/index.ts';
+import type { CreativeWorkflowState } from '@masterpiece/project-contracts/index.ts';
 import { createAnchorCandidateService } from '../src/main/anchor-candidate-service.ts';
 
 const PNG = Buffer.from(

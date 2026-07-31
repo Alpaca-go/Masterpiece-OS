@@ -7,6 +7,7 @@
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
+    "./*": "./src/*",
     "./reference-selector": "./src/reference-selector.js",
     "./prompt-compiler": "./src/prompt-compiler.js",
     "./gates": "./src/gates.js",

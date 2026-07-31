@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { compileImageGenerationTask } from '../../packages/image-generation-runtime/src/task-builder.js';
+import { compileImageGenerationTask } from '@masterpiece/image-generation-runtime/task-builder.js';
 
 const fixture = JSON.parse(await readFile(
   new URL('./fixtures/deliverable-golden/fengtangtang.json', import.meta.url),

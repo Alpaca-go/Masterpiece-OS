@@ -4,8 +4,8 @@ import {
   compileDeliverablePrompt,
   createCompileFingerprint,
   verifyCompileFingerprint,
-} from '../../packages/image-generation-runtime/src/deliverables/index.js';
-import { evaluateDeliverableGate } from '../../packages/image-generation-runtime/src/gates/deliverable-gate.js';
+} from '@masterpiece/image-generation-runtime/deliverables/index.js';
+import { evaluateDeliverableGate } from '@masterpiece/image-generation-runtime/gates/deliverable-gate.js';
 
 function compiled(deliverable = 'interior_scene', prompt = '生成店内装修图') {
   return compileDeliverablePrompt({

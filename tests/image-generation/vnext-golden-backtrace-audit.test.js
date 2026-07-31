@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   generateGoldenBacktraceAudit,
   renderGoldenBacktraceAuditMarkdown,
-} from '../../packages/image-generation-runtime/src/vnext/index.js';
+} from '@masterpiece/image-generation-runtime/vnext/index.js';
 
 const items = [
   {

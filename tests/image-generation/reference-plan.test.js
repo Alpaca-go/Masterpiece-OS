@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compileReferencePlan, materializeReferencePlan, validateReferencePlan } from '../../packages/image-generation-runtime/src/reference-plan/index.js';
+import { compileReferencePlan, materializeReferencePlan, validateReferencePlan } from '@masterpiece/image-generation-runtime/reference-plan/index.js';
 
 const assets = [
   { assetId: 'logo', name: 'Logo', assetRole: 'identity', path: '/logo.png' },

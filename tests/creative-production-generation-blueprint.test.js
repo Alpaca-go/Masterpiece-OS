@@ -4,9 +4,9 @@ import {
   compileGenerationBlueprint,
   compileGenerationBlueprintPrompt,
   validateGenerationBlueprint,
-} from '../packages/creative-production-runtime/src/generation-blueprint.js';
-import { normalizeCreativeDirection } from '../packages/creative-production-runtime/src/creative-direction.js';
-import { compileCreativeDecision } from '../packages/creative-production-runtime/src/creative-decision.js';
+} from '@masterpiece/creative-production-runtime/generation-blueprint.js';
+import { normalizeCreativeDirection } from '@masterpiece/creative-production-runtime/creative-direction.js';
+import { compileCreativeDecision } from '@masterpiece/creative-production-runtime/creative-decision.js';
 
 function direction() {
   return normalizeCreativeDirection({

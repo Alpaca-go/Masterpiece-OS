@@ -6,7 +6,7 @@ import {
   transitionGenerationTask,
   recordGenerationTaskRun,
   recoverFailedGenerationTask,
-} from '../packages/creative-production-runtime/src/generation-series.js';
+} from '@masterpiece/creative-production-runtime/generation-series.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 function series() {

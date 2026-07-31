@@ -3,7 +3,7 @@ import path from 'node:path';
 import type {
   AnalysisCompletionPersistence,
   AnalysisRepairAudit,
-} from '../../../../packages/analysis-runtime/src/index.ts';
+} from '@masterpiece/analysis-runtime/index.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 
 const RUNTIME_FILENAMES = new Set([

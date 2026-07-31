@@ -2,7 +2,7 @@ import type {
   SourcedVisualFact,
   VisualDecisionPacket,
   VisualDiagnosisItemV2,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 
 function bullets(values: string[], empty = '[Unknown] 暂无可靠证据'): string {
   return values.length ? values.map((item) => `- ${item}`).join('\n') : `- ${empty}`;

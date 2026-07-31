@@ -5,13 +5,13 @@ import type {
   StyleProfile,
   VisualExploration,
   VisualExplorationConcept,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   createVisualExploration,
   selectVisualExplorationConcept,
   updateVisualExplorationConcept,
   validateVisualExploration,
-} from '../../../../packages/creative-production-runtime/src/visual-exploration.js';
+} from '@masterpiece/creative-production-runtime/visual-exploration.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

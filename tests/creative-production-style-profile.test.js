@@ -6,7 +6,7 @@ import {
   compileStyleProfile,
   nextStyleProfileVersion,
   validateStyleProfile,
-} from '../packages/creative-production-runtime/src/style-profile.js';
+} from '@masterpiece/creative-production-runtime/style-profile.js';
 
 function transformation(projectId, visualAnchor) {
   return {

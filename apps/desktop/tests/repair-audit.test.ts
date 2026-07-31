@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { completeStructuredAnalysis } from '../../../packages/analysis-runtime/src/index.ts';
+import { completeStructuredAnalysis } from '@masterpiece/analysis-runtime/index.ts';
 import { createAnalysisRepairStore } from '../src/main/analysis-repair-store.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 

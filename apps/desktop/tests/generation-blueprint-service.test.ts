@@ -4,8 +4,8 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { createGenerationBlueprintService } from '../src/main/generation-blueprint-service.ts';
-import { normalizeCreativeDirection } from '../../../packages/creative-production-runtime/src/creative-direction.js';
-import { compileCreativeDecision } from '../../../packages/creative-production-runtime/src/creative-decision.js';
+import { normalizeCreativeDirection } from '@masterpiece/creative-production-runtime/creative-direction.js';
+import { compileCreativeDecision } from '@masterpiece/creative-production-runtime/creative-decision.js';
 
 function direction() {
   return normalizeCreativeDirection({

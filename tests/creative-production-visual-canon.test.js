@@ -7,7 +7,7 @@ import {
   confirmVisualCanon,
   migrateVisualCanon,
   nextVisualCanonVersion,
-} from '../packages/creative-production-runtime/src/visual-canon.js';
+} from '@masterpiece/creative-production-runtime/visual-canon.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 const style = {

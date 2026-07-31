@@ -4,7 +4,7 @@ import type {
   CreativeSession,
   CreativeSessionDecision,
   CreativeWorkflowState,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   createCreativeSession,
   migrateLegacyCreativeSession,
@@ -15,7 +15,7 @@ import {
   transitionCreativeSession,
   updateSessionEntityReference,
   validateCreativeSession,
-} from '../../../../packages/creative-production-runtime/src/session.js';
+} from '@masterpiece/creative-production-runtime/session.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 

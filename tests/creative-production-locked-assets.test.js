@@ -5,7 +5,7 @@ import path from 'node:path';
 import {
   compileLockedAssets,
   validateLockedAsset,
-} from '../packages/creative-production-runtime/src/locked-assets.js';
+} from '@masterpiece/creative-production-runtime/locked-assets.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 

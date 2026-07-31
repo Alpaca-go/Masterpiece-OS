@@ -1,12 +1,12 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
-import type { LockedAsset, ProjectVisualContext } from '../../../../packages/project-contracts/src/index.ts';
+import type { LockedAsset, ProjectVisualContext } from '@masterpiece/project-contracts/index.ts';
 import {
   compileLockedAssets,
   validateLockedAsset,
   validateLockedAssetCollection,
-} from '../../../../packages/creative-production-runtime/src/locked-assets.js';
+} from '@masterpiece/creative-production-runtime/locked-assets.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

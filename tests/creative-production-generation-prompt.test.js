@@ -7,9 +7,9 @@ import {
   inferGenerationOutputType,
   resolveGenerationTemplateType,
   validateGenerationPromptSnapshot,
-} from '../packages/creative-production-runtime/src/generation-prompt.js';
-import { compileVisualMemory } from '../packages/creative-production-runtime/src/visual-memory.js';
-import { compileReferencePack } from '../packages/creative-production-runtime/src/reference-pack.js';
+} from '@masterpiece/creative-production-runtime/generation-prompt.js';
+import { compileVisualMemory } from '@masterpiece/creative-production-runtime/visual-memory.js';
+import { compileReferencePack } from '@masterpiece/creative-production-runtime/reference-pack.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 const style = {

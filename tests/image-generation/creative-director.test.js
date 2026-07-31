@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compileTransformationBrief, validateCreativeDirectorBrief } from '../../packages/image-generation-runtime/src/creative-director/index.js';
+import { compileTransformationBrief, validateCreativeDirectorBrief } from '@masterpiece/image-generation-runtime/creative-director/index.js';
 
 const input = {
   projectId: 'project-1', mode: 'upgrade', generatedAt: '2026-07-27T00:00:00.000Z',

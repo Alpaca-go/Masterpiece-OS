@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { compileVNextImageGeneration } from '../../packages/image-generation-runtime/src/vnext/index.js';
+import { compileVNextImageGeneration } from '@masterpiece/image-generation-runtime/vnext/index.js';
 
 const projectContext = {
   schemaVersion: '2.0',

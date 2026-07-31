@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   runStructuredRepair,
   type RepairPlanBatch,
-} from '../../../packages/analysis-runtime/src/index.ts';
+} from '@masterpiece/analysis-runtime/index.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 
 const batch: RepairPlanBatch = {

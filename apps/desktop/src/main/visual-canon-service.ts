@@ -3,14 +3,14 @@ import path from 'node:path';
 import type {
   VisualCanon,
   VisualExploration,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   buildVisualCanon,
   confirmVisualCanon,
   migrateVisualCanon,
   nextVisualCanonVersion,
   validateVisualCanon,
-} from '../../../../packages/creative-production-runtime/src/visual-canon.js';
+} from '@masterpiece/creative-production-runtime/visual-canon.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

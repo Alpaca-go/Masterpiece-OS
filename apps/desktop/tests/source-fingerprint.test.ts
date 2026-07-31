@@ -4,7 +4,7 @@ import {
   computeSourceFingerprint,
   markStaleRepairMetadata,
   type RepairFieldMetadata,
-} from '../../../packages/analysis-runtime/src/index.ts';
+} from '@masterpiece/analysis-runtime/index.ts';
 
 test('source fingerprint is stable across key order and ignores volatile timestamps', () => {
   const left = computeSourceFingerprint({

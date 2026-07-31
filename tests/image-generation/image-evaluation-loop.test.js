@@ -5,7 +5,7 @@ import path from 'node:path';
 import {
   compileEvaluationPromptAdjustment,
   compileImageEvaluation,
-} from '../../packages/image-generation-runtime/src/evaluation.js';
+} from '@masterpiece/image-generation-runtime/evaluation.js';
 
 test('image evaluation compiles four decision dimensions into deterministic prompt adjustments', () => {
   const evaluation = compileImageEvaluation({

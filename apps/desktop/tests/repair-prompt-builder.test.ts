@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { buildRepairPrompt } from '../../../packages/analysis-runtime/src/index.ts';
+import { buildRepairPrompt } from '@masterpiece/analysis-runtime/index.ts';
 import { structuredAnalysisPacketFixture } from './analysis-runtime-fixtures.ts';
 
 test('repair prompt includes only requested fields and selected current-project evidence', () => {

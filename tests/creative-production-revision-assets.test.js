@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createGenerationSeries } from '../packages/creative-production-runtime/src/generation-series.js';
+import { createGenerationSeries } from '@masterpiece/creative-production-runtime/generation-series.js';
 import {
   createRevisionTask,
   createGenerationOutput,
   reviewGenerationOutput,
-} from '../packages/creative-production-runtime/src/revision-assets.js';
+} from '@masterpiece/creative-production-runtime/revision-assets.js';
 
 const NOW = '2026-07-28T00:00:00.000Z';
 function baseSeries() {

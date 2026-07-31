@@ -118,7 +118,7 @@ for (const consumer of consumerRoots) {
   const imported = new Set();
   const deepImported = new Set();
   const files = walkFiles(consumer);
-  const importRe = /from\s+['"](?:@masterpiece\/([\w.-]+))['"]/gu;
+  const importRe = /from\s+['"]@masterpiece\/([\w.-]+)(?:\/[^'"]*)?['"]/gu;
   const deepReLocal = /from\s+['"](?:\.\.\/)+packages\/([\w.-]+)\/src\//gu;
   for (const f of files) {
     let text;
@@ -165,48 +165,57 @@ for (const consumer of consumerRoots) {
   }
 }
 
-// ---- 3. (WARN) Deep imports of packages/*/src/* from apps/** ----
-console.log('\n[3] Scanning for deep relative imports of packages/*/src/* from apps/** (WARN)...');
+// ---- 3. (FAIL) Deep imports of packages/*/src/* from apps/** or tests/** ----
+console.log('\n[3] Scanning for deep relative imports of packages/*/src/* from apps/** and tests/**...');
 const deepRe = /from\s+['"](?:\.\.\/)+packages\/([\w.-]+)\/src\//gu;
 let deepImportFiles = 0;
 let deepImportCount = 0;
-for (const f of walkFiles('apps')) {
-  let text;
-  try { text = readText(f); } catch { continue; }
-  const matches = [...text.matchAll(deepRe)];
-  if (matches.length === 0) continue;
-  deepImportFiles += 1;
-  deepImportCount += matches.length;
+const deepByPkg = new Map();
+for (const dir of ['apps', 'tests']) {
+  for (const f of walkFiles(dir)) {
+    let text;
+    try { text = readText(f); } catch { continue; }
+    const matches = [...text.matchAll(deepRe)];
+    if (matches.length === 0) continue;
+    deepImportFiles += 1;
+    deepImportCount += matches.length;
+    for (const m of matches) {
+      const pkg = m[1];
+      deepByPkg.set(pkg, (deepByPkg.get(pkg) || 0) + 1);
+    }
+  }
 }
 if (deepImportCount === 0) {
-  ok('no deep imports of packages/*/src/* in apps/**');
+  ok('no deep imports of packages/*/src/* in apps/** or tests/**');
 } else {
-  warn(
-    `deep imports of packages/*/src/* in apps/**`,
-    `${deepImportCount} occurrences across ${deepImportFiles} file(s) — to be replaced by @masterpiece/* in Stage 3`,
+  fail(
+    `apps/** and tests/** deep-imports packages/*/src/*`,
+    `${deepImportCount} occurrence(s) across ${deepImportFiles} file(s); packages: ${[...deepByPkg.entries()].map(([p, c]) => `${p}=${c}`).join(', ')}`,
   );
 }
 
-// ---- 4. (WARN) Subpath imports that are not exported ----
-console.log('\n[4] Scanning for subpath imports that are not in package.json exports (WARN)...');
+// ---- 4. (FAIL) Subpath imports that are not exported ----
+console.log('\n[4] Scanning for subpath imports that are not in package.json exports...');
 const subRe = /from\s+['"](?:\.\.\/)+packages\/([\w.-]+)\/src\/(.+?)['"]/gu;
 const subViolations = new Map();
-for (const f of walkFiles('apps')) {
-  let text;
-  try { text = readText(f); } catch { continue; }
-  let m;
-  while ((m = subRe.exec(text)) !== null) {
-    const pkgName = m[1];
-    const subPath = m[2];
-    if (!subViolations.has(pkgName)) subViolations.set(pkgName, new Set());
-    subViolations.get(pkgName).add(subPath);
+for (const dir of ['apps', 'tests']) {
+  for (const f of walkFiles(dir)) {
+    let text;
+    try { text = readText(f); } catch { continue; }
+    let m;
+    while ((m = subRe.exec(text)) !== null) {
+      const pkgName = m[1];
+      const subPath = m[2];
+      if (!subViolations.has(pkgName)) subViolations.set(pkgName, new Set());
+      subViolations.get(pkgName).add(subPath);
+    }
   }
 }
 if (subViolations.size === 0) {
-  ok('all subpath imports in apps/** are valid');
+  ok('all subpath imports in apps/** and tests/** are valid');
 } else {
   for (const [pkgName, subPaths] of subViolations) {
-    warn(`apps/** deep-imports subpaths from packages/${pkgName}`, `${subPaths.size} unique subpath(s)`);
+    fail(`${dir}/** deep-imports subpaths from packages/${pkgName}`, `${subPaths.size} unique subpath(s)`);
   }
 }
 
@@ -217,9 +226,4 @@ if (failures.length > 0) {
   for (const f of failures) console.log(`  - ${f.label}${f.detail ? ' — ' + f.detail : ''}`);
   process.exit(1);
 }
-if (warnings.length > 0) {
-  console.log('\nWARN — deep imports will block Stage 3 gate; not blocking now.');
-  process.exit(0);
-}
-console.log('PASS — workspace boundary gate clean.');
-process.exit(0);
+console.log('\nPASS — workspace boundary gate clean. No deep imports remain.');

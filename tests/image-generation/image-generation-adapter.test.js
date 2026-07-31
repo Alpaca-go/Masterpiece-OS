@@ -6,7 +6,7 @@ import {
   createImageGenerationAdapter,
   createWanImageGenerationAdapter,
   resolveWanSize,
-} from '../../packages/image-generation-adapter/src/index.js';
+} from '@masterpiece/image-generation-adapter/index.js';
 
 function response(body, status = 200) {
   return {

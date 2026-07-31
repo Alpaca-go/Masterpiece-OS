@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createCreativeProductionBootstrapService } from '../src/main/creative-production-bootstrap-service.ts';
-import { compileStyleProfile } from '../../../packages/creative-production-runtime/src/style-profile.js';
+import { compileStyleProfile } from '@masterpiece/creative-production-runtime/style-profile.js';
 
 const understanding = {
   schemaVersion: '1.0',

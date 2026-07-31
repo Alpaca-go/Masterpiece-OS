@@ -1,4 +1,4 @@
-import type { ReferenceStyleCapsule } from '../../../../packages/project-contracts/src/index.ts';
+import type { ReferenceStyleCapsule } from '@masterpiece/project-contracts/index.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { ReferenceAnchorService } from './reference-anchor-service.ts';

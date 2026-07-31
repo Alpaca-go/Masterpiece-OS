@@ -20,7 +20,7 @@ import {
   inferModelType,
   listRegisteredModels,
   validateModelProfile,
-} from '../../../../packages/model-registry/src/index.js';
+} from '@masterpiece/model-registry/index.js';
 
 interface StoredProfile extends Omit<ApiProfile, 'hasApiKey'> {}
 

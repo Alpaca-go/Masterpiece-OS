@@ -7,6 +7,7 @@
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",
+    "./*": "./src/*",
     "./qwen-reasoner": "./src/qwen-reasoner.js",
     "./openai-compatible-text-reasoner": "./src/openai-compatible-text-reasoner.js",
     "./model-capabilities": "./src/model-capabilities.js",

@@ -5,7 +5,7 @@ import {
   IMAGE_GENERATION_PIPELINE_MODES,
   compileVNextImageGeneration,
   resolveImageGenerationPipelineMode,
-} from '../../packages/image-generation-runtime/src/index.js';
+} from '@masterpiece/image-generation-runtime/index.js';
 
 const fixture = (name) => new URL(`./fixtures/vnext-baseline/${name}`, import.meta.url);
 
@@ -83,12 +83,19 @@ test('Phase 5 fixed-project regression keeps exact routing, project identity, pr
 });
 
 test('Phase 5 vNext implementation has no analysis-report or execution-document dependency', async () => {
+  // The vnext runtime source files are read directly for the
+  // "no analysis-report / execution-document" regression check.
+  // `import.meta.resolve` maps the package specifier to the real
+  // installed package root under `node_modules/@masterpiece/...`,
+  // which is a symlink to `packages/image-generation-runtime/`.
+  const { fileURLToPath } = await import('node:url');
+  const pkgRoot = fileURLToPath(import.meta.resolve('@masterpiece/image-generation-runtime'));
   const sources = await Promise.all([
-    '../../packages/image-generation-runtime/src/vnext/compile.js',
-    '../../packages/image-generation-runtime/src/vnext/prompt-compiler.js',
-    '../../packages/image-generation-runtime/src/vnext/template-router.js',
-    '../../apps/desktop/src/main/image-generation/vnext-service.ts',
-  ].map((relative) => readFile(new URL(relative, import.meta.url), 'utf8')));
+    readFile(new URL('./vnext/compile.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
+    readFile(new URL('./vnext/prompt-compiler.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
+    readFile(new URL('./vnext/template-router.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
+    readFile(new URL('../../apps/desktop/src/main/image-generation/vnext-service.ts', import.meta.url), 'utf8'),
+  ]);
   const joined = sources.join('\n');
   assert.doesNotMatch(joined, /reportMarkdown|lastReportFilename|execution document|执行文档/iu);
 });

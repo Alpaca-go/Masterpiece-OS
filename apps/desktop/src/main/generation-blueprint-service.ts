@@ -3,11 +3,11 @@ import path from 'node:path';
 import type {
   GenerationBlueprint,
   GenerationPromptSnapshot,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   compileGenerationBlueprint,
   validateGenerationBlueprint,
-} from '../../../../packages/creative-production-runtime/src/generation-blueprint.js';
+} from '@masterpiece/creative-production-runtime/generation-blueprint.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeDirectionService } from './creative-direction-service.ts';

@@ -15,7 +15,7 @@ import type {
   VisualMemory,
   VisualExploration,
   VisualCanon
-} from '../../../../packages/project-contracts/src/index';
+} from '@masterpiece/project-contracts/index';
 export type {
   AnchorCandidate,
   AnchorCandidateEvaluation,
@@ -29,7 +29,7 @@ export type {
   VisualMemory,
   VisualExploration,
   VisualCanon
-} from '../../../../packages/project-contracts/src/index';
+} from '@masterpiece/project-contracts/index';
 
 export type ProviderKind = string;
 export type ApiProtocol =
@@ -597,7 +597,7 @@ export type {
   ReferenceStyleCapsule,
   ContextConflict,
   ResolvedProjectContext
-} from '../../../../packages/project-contracts/src/index';
+} from '@masterpiece/project-contracts/index';
 import type {
   ProjectVisualContext,
   ProjectVisualContextVNext,
@@ -610,7 +610,7 @@ import type {
   ReferenceStyleCapsule,
   ContextConflict,
   ResolvedProjectContext
-} from '../../../../packages/project-contracts/src/index';
+} from '@masterpiece/project-contracts/index';
 
 // ── 生图功能 V1 契约类型已迁移至 packages/image-generation-contracts（生图 V1 Phase 1）──
 export type {
@@ -667,7 +667,7 @@ export type {
   VNextProjectPromptAsset,
   VNextDeliverableValidation,
   VNextValidatedGenerationResult
-} from '../../../../packages/image-generation-contracts/src/index';
+} from '@masterpiece/image-generation-contracts/index';
 import type {
   ImageGenerationRun,
   ImageGenerationRunSummary,
@@ -696,7 +696,7 @@ import type {
   ImageGenerationWarning,
   ImageGenerationPresetCapability,
   ImageProviderRegion
-} from '../../../../packages/image-generation-contracts/src/index';
+} from '@masterpiece/image-generation-contracts/index';
 
 export interface CreateProjectInput {
   sourcePaths: string[];

@@ -10,7 +10,7 @@ import {
   transitionCreativeSession,
   updateSessionEntityReference,
   validateCreativeSession,
-} from '../packages/creative-production-runtime/src/session.js';
+} from '@masterpiece/creative-production-runtime/session.js';
 
 test('Creative Session keeps context and entity references but never stores a final prompt', () => {
   let session = createCreativeSession({

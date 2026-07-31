@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   compileProjectSpecificGenerationContract,
   validateProjectSpecificGenerationContract,
-} from '../packages/creative-production-runtime/src/project-generation-contract.js';
+} from '@masterpiece/creative-production-runtime/project-generation-contract.js';
 import { phase1Packet } from './phase1-fixtures.js';
 
 test('project generation contract compiles grounded identity, upgrade and provenance', () => {

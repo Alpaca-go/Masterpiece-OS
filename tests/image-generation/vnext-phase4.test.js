@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   compileVNextCorrectionPrompt,
   validateVNextDeliverableEvidence,
-} from '../../packages/image-generation-runtime/src/vnext/index.js';
+} from '@masterpiece/image-generation-runtime/vnext/index.js';
 
 const taskContract = {
   schemaVersion: '1.0',

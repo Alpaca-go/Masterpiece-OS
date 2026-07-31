@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
-import { compileCreativeCore, compileFinalPrompt } from '../../packages/image-generation-runtime/src/prompt/index.js';
+import { compileCreativeCore, compileFinalPrompt } from '@masterpiece/image-generation-runtime/prompt/index.js';
 
 function brief(mode) {
   return { mode, outputTask: { responsibility: 'Establish the first anchor image.' }, preserve: { identity: ['Brand identity'], structures: ['Package silhouette'] }, mustChange: { composition: ['Change composition'] }, prohibitedCarryover: mode === 'extend' ? [] : ['Do not reuse the legacy collage'], newDirection: { visualAnchor: 'A new hero scene', sceneMechanism: 'Layered depth', compositionStrategy: ['Hero-first'], colorRelationship: ['Warm / neutral'], materialAndLighting: ['Soft light'], typographyRelationship: [] }, creativeDifferenceTarget: { level: mode === 'extend' ? 'low' : mode === 'upgrade' ? 'medium' : 'high', explanation: 'Intentional difference.' } };

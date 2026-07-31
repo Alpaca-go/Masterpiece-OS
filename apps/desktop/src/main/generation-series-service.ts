@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { GenerationSeries } from '../../../../packages/project-contracts/src/index.ts';
+import type { GenerationSeries } from '@masterpiece/project-contracts/index.ts';
 import {
   createGenerationSeries,
   recordGenerationTaskRun,
@@ -8,8 +8,8 @@ import {
   transitionGenerationSeries,
   transitionGenerationTask,
   validateGenerationSeries,
-} from '../../../../packages/creative-production-runtime/src/generation-series.js';
-import { createRevisionTask } from '../../../../packages/creative-production-runtime/src/revision-assets.js';
+} from '@masterpiece/creative-production-runtime/generation-series.js';
+import { createRevisionTask } from '@masterpiece/creative-production-runtime/revision-assets.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';

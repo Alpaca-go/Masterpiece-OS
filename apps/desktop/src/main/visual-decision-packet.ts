@@ -12,7 +12,7 @@ import type {
   VisualAbstractionV2,
   VisualDecisionPacket,
   VisualUnderstandingCore,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 
 type UnknownRecord = Record<string, unknown>;
 

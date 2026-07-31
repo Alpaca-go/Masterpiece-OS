@@ -25,12 +25,12 @@ import type {
 import type {
   PromptSourceObject,
   VisualDecisionPacket,
-} from '../../../../packages/project-contracts/src/index.ts';
+} from '@masterpiece/project-contracts/index.ts';
 import {
   completeStructuredAnalysis,
   type AnalysisRepairResult,
   type StructuredRepairModelRequest,
-} from '../../../../packages/analysis-runtime/src/index.ts';
+} from '@masterpiece/analysis-runtime/index.ts';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
@@ -98,9 +98,9 @@ import {
 
 // Bundled from the repository core. Desktop remains the consumer, never the dependency.
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-import { createQwenReasoner } from '../../../../packages/model-runtime/src/qwen-reasoner.js';
+import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-import { parseStructuredResponse } from '../../../../packages/model-runtime/src/response-parser.js';
+import { parseStructuredResponse } from '@masterpiece/model-runtime/response-parser.js';
 
 type ProgressSink = (progress: AnalysisProgress) => void;
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
