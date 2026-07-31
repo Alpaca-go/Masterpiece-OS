@@ -112,9 +112,15 @@ interface ActiveRun {
 }
 
 function configurePromptRoot(): void {
+  // Stage 5 moved the v5 prompt bundle from the repository root
+  // (./prompts/v5) into the CLI workspace (./apps/cli/prompts/v5).
+  // The desktop pipeline still reads from those files, so the
+  // dev path now resolves to apps/cli/prompts/v5. In a packaged
+  // build the CLI assets sit beside the desktop binary under
+  // process.resourcesPath/../cli/prompts/v5.
   process.env.MASTERPIECE_PROMPT_ROOT = app.isPackaged
-    ? path.join(process.resourcesPath, 'prompts', 'v5')
-    : path.resolve(app.getAppPath(), '..', '..', 'prompts', 'v5');
+    ? path.join(process.resourcesPath, '..', 'cli', 'prompts', 'v5')
+    : path.resolve(app.getAppPath(), '..', '..', 'apps', 'cli', 'prompts', 'v5');
 }
 
 function providerLabel(provider: ProviderCredentials['provider']): string {

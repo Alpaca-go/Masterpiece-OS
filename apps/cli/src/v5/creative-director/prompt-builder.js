@@ -3,6 +3,10 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+// Stage 5 already keeps the v5 prompt bundle inside the CLI
+// workspace at apps/cli/prompts/v5. From
+// apps/cli/src/v5/creative-director/prompt-builder.js, three
+// `..` segments land at apps/cli/, which is the correct parent.
 const REPOSITORY_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
 const PROMPT_ROOT = process.env.MASTERPIECE_PROMPT_ROOT
   ? path.resolve(process.env.MASTERPIECE_PROMPT_ROOT)
