@@ -4,7 +4,7 @@ const TEMPLATES = Object.freeze({
   interior_scene: Object.freeze({
     deliverableType: 'interior_scene',
     templateId: 'interior',
-    sourcePath: 'prompt-templates/image-generation/interior.md',
+    sourcePath: 'docs/development/prompt-templates/image-generation/interior.md',
     taskDefinition: '生成一个完整、可进入、具备真实商业尺度的品牌室内空间场景。',
     commercialUse: '品牌空间提案、门店设计评审与商业展示。',
     visualMechanism: [
@@ -36,7 +36,7 @@ const TEMPLATES = Object.freeze({
   packaging_render: Object.freeze({
     deliverableType: 'packaging_render',
     templateId: 'packaging',
-    sourcePath: 'prompt-templates/image-generation/packaging.md',
+    sourcePath: 'docs/development/prompt-templates/image-generation/packaging.md',
     taskDefinition: '生成一个结构可信、可生产、具有商业货架价值的包装主视觉渲染。',
     commercialUse: '包装设计提案、结构与工艺评审、商业展示。',
     visualMechanism: [
@@ -68,7 +68,7 @@ const TEMPLATES = Object.freeze({
   brand_poster: Object.freeze({
     deliverableType: 'brand_poster',
     templateId: 'poster',
-    sourcePath: 'prompt-templates/image-generation/poster.md',
+    sourcePath: 'docs/development/prompt-templates/image-generation/poster.md',
     taskDefinition: '生成一张具有明确传播事件、视觉锚点和商业展示价值的完整品牌海报。',
     commercialUse: '品牌活动传播、设计提案与商业展示。',
     visualMechanism: [
@@ -100,7 +100,7 @@ const TEMPLATES = Object.freeze({
   product_scene: Object.freeze({
     deliverableType: 'brand_poster',
     templateId: 'product_scene',
-    sourcePath: 'prompt-templates/image-generation/product-scene.md',
+    sourcePath: 'docs/development/prompt-templates/image-generation/product-scene.md',
     taskDefinition: '生成一张以单一产品为明确主体、具有真实使用语境和商业摄影完成度的产品场景图。',
     commercialUse: '产品发布、品牌电商、产品提案与商业传播。',
     visualMechanism: [
@@ -132,7 +132,7 @@ const TEMPLATES = Object.freeze({
   ip_scene: Object.freeze({
     deliverableType: 'illustration',
     templateId: 'ip_scene',
-    sourcePath: 'prompt-templates/image-generation/ip-scene.md',
+    sourcePath: 'docs/development/prompt-templates/image-generation/ip-scene.md',
     taskDefinition: '生成一张角色身份稳定、具有明确叙事动作和品牌世界观的完整 IP 场景。',
     commercialUse: '品牌 IP 传播、角色世界观展示、活动内容与商业插画。',
     visualMechanism: [

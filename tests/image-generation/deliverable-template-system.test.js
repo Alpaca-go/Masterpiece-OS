@@ -119,7 +119,7 @@ test('Markdown templates expose the required eight-section contract', () => {
     'interior.md', 'packaging.md', 'poster.md', 'product-scene.md', 'ip-scene.md',
   ]) {
     const markdown = fs.readFileSync(
-      new URL(`../../prompt-templates/image-generation/${filename}`, import.meta.url),
+      new URL(`../../docs/development/prompt-templates/image-generation/${filename}`, import.meta.url),
       'utf8',
     );
     for (const heading of [
