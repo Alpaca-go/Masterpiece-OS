@@ -4,6 +4,10 @@ masterpiece-os-output/
 coverage/
 .masterpiece-os/
 .runtime/
+.codex-runtime/
+.codex-smoke/
+.codex-smoke-app/
+.codex-temp/
 .DS_Store
 *.log
 .tmp-*.log
