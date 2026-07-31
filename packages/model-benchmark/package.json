@@ -1,5 +1,5 @@
 {
-  "name": "@masterpiece-os/model-benchmark",
+  "name": "@masterpiece/model-benchmark",
   "version": "0.0.0",
   "type": "module",
   "exports": {

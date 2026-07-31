@@ -25,6 +25,18 @@
     "package:win": "npm run package:portable"
   },
   "dependencies": {
+    "@masterpiece/analysis-runtime": "workspace:*",
+    "@masterpiece/creative-production-runtime": "workspace:*",
+    "@masterpiece/document-ingestion": "workspace:*",
+    "@masterpiece/image-generation-adapter": "workspace:*",
+    "@masterpiece/image-generation-contracts": "workspace:*",
+    "@masterpiece/image-generation-runtime": "workspace:*",
+    "@masterpiece/image-provider-dashscope": "workspace:*",
+    "@masterpiece/model-benchmark": "workspace:*",
+    "@masterpiece/model-registry": "workspace:*",
+    "@masterpiece/model-runtime": "workspace:*",
+    "@masterpiece/project-contracts": "workspace:*",
+    "@masterpiece/reference-asset-inspector": "workspace:*",
     "adm-zip": "^0.6.0",
     "dompurify": "^3.4.12",
     "marked": "^18.0.6",
