@@ -3,7 +3,7 @@
 日期：2026-07-30
 用户授权：是（用户要求使用同一 Seedream 验证自动 Prompt）
 验证项目：九州美学，27 张原始视觉方案图
-基准：`docs/九州美学垂直测试`
+基准：`evaluation/known-cases/jiuzhou-aesthetic/垂直测试`
 
 ## 最终分析结果
 

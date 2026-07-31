@@ -107,7 +107,7 @@ test('execution prompt is bounded and leaves touchpoint-specific strategy to Gen
 
 test('Visual Memory schema is closed and exposes all seven required memory sections', () => {
   const schema = JSON.parse(fs.readFileSync(
-    new URL('../schemas/creative-production/visual-memory.schema.json', import.meta.url),
+    new URL('../../../schemas/creative-production/visual-memory.schema.json', import.meta.url),
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);

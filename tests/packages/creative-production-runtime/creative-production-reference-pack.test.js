@@ -120,7 +120,7 @@ test('Provider selection never sends Anchor or old style images and keeps only t
 
 test('Reference Pack schema is closed and caps the generation pool at five', () => {
   const schema = JSON.parse(fs.readFileSync(
-    new URL('../schemas/creative-production/reference-pack.schema.json', import.meta.url),
+    new URL('../../../schemas/creative-production/reference-pack.schema.json', import.meta.url),
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { compileVNextImageGeneration } from '@masterpiece/image-generation-runtime/vnext/index.js';
-import { phase1Context } from '../phase1-fixtures.js';
+import { phase1Context } from '../fixtures/phase1.js';
 
 test('Jiuzhou spatial decisions compile into a fourteen-block packaging contract', () => {
   const result = compileVNextImageGeneration({

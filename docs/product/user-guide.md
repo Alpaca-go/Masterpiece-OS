@@ -12,7 +12,7 @@ Visual Assets
 → .runtime/run-report.json
 ```
 
-项目配置使用 `masterpiece-os-v5.json`，模板位于 `templates/masterpiece-os-v5.json`。默认锁定 Logo，除 Logo 与客观事实外使用 Maximum Creative Authority。
+项目配置使用 `masterpiece-os-v5.json`，模板位于 `apps/cli/templates/masterpiece-os-v5.json`。默认锁定 Logo，除 Logo 与客观事实外使用 Maximum Creative Authority。
 
 ```bash
 npm run analyze -- --project "项目名称"
@@ -24,10 +24,10 @@ Sprint 1 已建立单一 Reasoning Session 契约和单文档输出。Sprint 2 �
 
 Prompt 模块：
 
-- `prompts/v5/deep-creative-director.md`
-- `prompts/v5/benchmark-instructions.md`
-- `prompts/v5/execution-core-template.md`
-- `prompts/v5/report-schema.md`
+- `apps/cli/prompts/v5/deep-creative-director.md`
+- `apps/cli/prompts/v5/benchmark-instructions.md`
+- `apps/cli/prompts/v5/execution-core-template.md`
+- `apps/cli/prompts/v5/report-schema.md`
 
 Integrity Guard 仍未实现，属于 Sprint 3。
 

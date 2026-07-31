@@ -77,7 +77,7 @@ test('Creative Decision report contains every required section', () => {
 
 test('Creative Decision JSON schema is closed and exposes the documented interface', () => {
   const schema = JSON.parse(fs.readFileSync(
-    new URL('../schemas/creative-production/creative-decision.schema.json', import.meta.url),
+    new URL('../../../schemas/creative-production/creative-decision.schema.json', import.meta.url),
     'utf8',
   ));
   assert.equal(schema.additionalProperties, false);

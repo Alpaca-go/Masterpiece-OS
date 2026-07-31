@@ -39,7 +39,7 @@
 
 ### C：Golden Prompt 原文
 
-- Prompt：[jiuzhou-space-golden-prompt.md](<E:/Masterpiece-OS/docs/九州美学垂直测试/jiuzhou-space-golden-prompt.md>)
+- Prompt：[jiuzhou-space-golden-prompt.md](<E:/Masterpiece-OS/evaluation/known-cases/jiuzhou-aesthetic/垂直测试/jiuzhou-space-golden-prompt.md>)
 - Prompt 长度：1,595 个 Unicode 字符
 - Image run：`baabcb12-351b-48d5-97c6-a2a305a7d908`
 - Image：[image-01.png](<C:/Users/Administrator/Documents/Masterpiece OS Data/projects/九州美学-f67ac606/image-generation/baabcb12-351b-48d5-97c6-a2a305a7d908/images/image-01.png>)

@@ -7,7 +7,7 @@
 
 | Phase | 提交 | 内容 |
 | --- | --- | --- |
-| 0 | `122fb45` | 冻结基线 + 遗留代码盘点（docs/cleanup/legacy-inventory.json） |
+| 0 | `122fb45` | 冻结基线 + 遗留代码盘点（docs/development/repository/cleanup/legacy-inventory.json） |
 | 1 | `eb6b25e` | 共享 packages 抽取（model-runtime、document-ingestion、reference-asset-inspector、runtime-core、project-contracts） |
 | 2 | `81dda8a` | 建立两个 Labs（labs/document-visual-directions、labs/reference-style-conversion） |
 | 3 | `c4448d2` | Desktop 切断实验功能接线（移除实验 UI/IPC/preload 面） |

@@ -4,7 +4,7 @@ import {
   compileProjectSpecificGenerationContract,
   validateProjectSpecificGenerationContract,
 } from '@masterpiece/creative-production-runtime/project-generation-contract.js';
-import { phase1Packet } from './phase1-fixtures.js';
+import { phase1Packet } from '../../fixtures/phase1.js';
 
 test('project generation contract compiles grounded identity, upgrade and provenance', () => {
   const contract = compileProjectSpecificGenerationContract({

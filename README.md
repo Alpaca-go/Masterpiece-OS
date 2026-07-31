@@ -1,17 +1,17 @@
 # Masterpiece-OS
 
-Masterpiece-OS 是一个 **AI Creative Director Preparation System**。仓库由三部分组成：
+Masterpiece-OS 是一个 **AI Creative Director Preparation System**，目标是把项目级素材转化为可受控、可复核、可交付的视觉决策。仓库由三部分组成：
 
 ```text
-1. v5 引擎（根 src/）      一次 Deep Creative Director 推理 → 视觉方案升级报告.md
+1. v5 引擎（apps/cli/）       一次 Deep Creative Director 推理 → 视觉方案升级报告.md
 2. Desktop 客户端（apps/desktop/）   视觉分析、文档上下文、Reference Anchor 三项生产功能
-3. 实验 Labs（labs/）      两个独立实验管线，不进入 Desktop UI、IPC、构建与打包
+3. 实验 Labs（labs/）          两个独立实验管线，不进入 Desktop UI、IPC、构建与打包
 ```
 
 ## 环境
 
 - Node.js 20 或更高版本
-- 根引擎无第三方运行依赖；Desktop 与 Labs 各自维护自己的 `package.json`
+- 根 `package.json` 是 workspaces 容器；`apps/cli`、`apps/desktop` 与 `packages/*` 各自维护自己的 `package.json`
 
 ## 快速开始（v5 引擎 CLI）
 
@@ -21,7 +21,7 @@ Masterpiece-OS 是一个 **AI Creative Director Preparation System**。仓库由
 npm run analyze -- <素材目录>
 ```
 
-配置模板见 `templates/masterpiece-os-v5.json`。宿主可注入单一 `deepCreativeDirectorReasoner`，或从配置读取一份已完成的 `deepCreativeDirectorResult`。
+配置模板见 `apps/cli/templates/masterpiece-os-v5.json`。宿主可注入单一 `deepCreativeDirectorReasoner`，或从配置读取一份已完成的 `deepCreativeDirectorResult`。
 
 ### Reasoner Provider
 
@@ -57,7 +57,7 @@ System Prompt
 → 视觉方案升级报告.md
 ```
 
-模板位于 `prompts/v5/`。报告使用固定 0–10 章节，资产决策值只允许“保留、升级、替换、删除、新增”。
+模板位于 `apps/cli/prompts/v5/`。报告使用固定 0–10 章节，资产决策值只允许“保留、升级、替换、删除、新增”。
 
 ## v5 性能预算
 
@@ -72,7 +72,7 @@ npm run desktop:test       # 测试
 npm run desktop:package    # portable 打包（先跑 verify:current-flows 门禁）
 ```
 
-Desktop 只包含三项生产功能：视觉分析、文档上下文、Reference Anchor。
+Desktop 只包含三项生产功能：视觉分析、文档上下文、Reference Anchor，运行时使用唯一一条 Short-Chain 生图路径。
 
 ## 实验 Labs
 
@@ -85,17 +85,36 @@ npm run lab:reference-conversion:test
 
 Labs 通过独立 CLI 运行，不进入 Electron UI、IPC、构建和打包。
 
+## 评估资产
+
+`evaluation/` 目录与生产代码严格隔离：
+
+```text
+evaluation/known-cases/        已知样例（带脱敏输入摘要与结构化预期）
+evaluation/anti-cases/         反例与边界场景
+evaluation/hidden-cases/       隐藏评分用例
+evaluation/contracts/          评分协议（golden-case.schema.json）
+evaluation/reports/            真实 Provider 验收报告与回归报告
+```
+
+所有验证门禁不读取上述目录中的任何图像或 Provider 原始响应，资产与生产 Runtime 隔离由 `verify:golden-boundary` 硬门禁守护。
+
 ## 开发验证
 
 ```bash
-npm test                              # 根引擎测试
+npm test                              # 根引擎 + Desktop 公共契约测试
+npm run cli:test                      # v5 CLI 自身测试
+npm run desktop:test                  # Desktop 单元测试
 npm run verify:current-flows          # 文档流离线门禁（不调用真实模型 API）
+npm run verify:version-consistency    # 版本号与产品 lockfile 一致性
+npm run verify:workspace-boundaries   # 内部包边界 + 防止深层 src/* 导入
 npm run verify:no-obsolete-code       # 零旧代码门禁
 npm run verify:production-boundaries  # Desktop 与 Labs 边界门禁
+npm run verify:golden-boundary        # Golden / Hidden 与生产 Runtime 隔离门禁
 ```
 
 ## GPT 协作边界
 
 GPT 的输入是已核验视觉方案与运行时高密度 Brief。GPT 自主完成创意、图片规划和图片生成；Masterpiece 不生成图片数量、比例、任务卡、执行队列或 Prompt。
 
-更多说明见 [使用手册](docs/使用手册.md) 与 [架构说明](docs/架构说明.md)。
+更多说明见 [User Guide](docs/product/user-guide.md) 与 [System Architecture](docs/architecture/system-architecture.md)。

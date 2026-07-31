@@ -12,7 +12,7 @@
 
 ## 本地视觉样本
 
-大体积二进制样本位于仓库根目录下被 Git 忽略的 `docs/九州美学垂直测试/`。运行人工视觉验收前，应先执行：
+大体积二进制样本位于仓库内被 Git 忽略的 `evaluation/known-cases/jiuzhou-aesthetic/垂直测试/`。运行人工视觉验收前，应先执行：
 
 ```powershell
 node scripts/validation/verify-jiuzhou-golden-baseline.mjs

@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const fixtureUrl = new URL('../fixtures/prompts/jiuzhou-space-golden-prompt.md', import.meta.url);
 const sourceUrl = new URL(
-  '../../docs/九州美学垂直测试/jiuzhou-space-golden-prompt.md',
+  '../../evaluation/known-cases/jiuzhou-aesthetic/垂直测试/jiuzhou-space-golden-prompt.md',
   import.meta.url,
 );
 

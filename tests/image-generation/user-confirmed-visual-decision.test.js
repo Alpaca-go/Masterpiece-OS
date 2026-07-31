@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { applyUserConfirmedVisualDecision } from '@masterpiece/image-generation-runtime/vnext/index.js';
-import { phase1Packet } from '../phase1-fixtures.js';
+import { phase1Packet } from '../fixtures/phase1.js';
 
 test('user-confirmed visual decision overlays only its own project packet', () => {
   const packet = phase1Packet();

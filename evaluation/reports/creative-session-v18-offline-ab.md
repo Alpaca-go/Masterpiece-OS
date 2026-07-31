@@ -24,5 +24,5 @@
 这些分数只证明 Prompt/快照合同，不代表图片质量。
 
 真实 Provider 结果已单独记录于
-`docs/validation/creative-director-v18.1-real-provider.md`。当前本机只有冯烫烫完整项目，
+`evaluation/reports/creative-director-v18.1-real-provider.md`。当前本机只有冯烫烫完整项目，
 因此九州美学仅报告离线冻结回归，不冒充真实图片 A/B。

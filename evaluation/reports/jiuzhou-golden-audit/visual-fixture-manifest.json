@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "fixtureRoot": "docs/九州美学垂直测试",
+  "fixtureRoot": "evaluation/known-cases/jiuzhou-aesthetic/垂直测试",
   "sourceProject": {
     "directory": "九州美学原视觉方案",
     "expectedImageCount": 27
