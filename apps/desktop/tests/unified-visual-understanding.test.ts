@@ -160,6 +160,8 @@ test('unified prompt requests evidence-rich A-F modules without embedding Jiuzho
   const prompt = buildUnifiedVisualUnderstandingPrompt(project(), ['asset:1']);
   assert.match(prompt, /assetInventory/u);
   assert.match(prompt, /creativeDecision/u);
+  assert.match(prompt, /"toneBoundaries": \[\s*\{/u);
+  assert.match(prompt, /toneBoundaries 至少输出 2 项/u);
   assert.match(prompt, /abstractions/u);
   assert.match(prompt, /mediaTranslations/u);
   assert.doesNotMatch(prompt, /珍珠白|孔雀羽毛|矿物紫|医美全链/u);
@@ -169,6 +171,35 @@ test('formal unified output fails closed when execution data is incomplete', () 
   assert.throws(
     () => normalizeUnifiedVisualUnderstanding({ project: project(), extracted: { ...extracted, abstractions: [] } }),
     (error: Error & { code?: string }) => error.code === 'VISUAL_DECISION_PACKET_INSUFFICIENT',
+  );
+});
+
+test('formal unified output requests repair when tone boundaries are missing or non-actionable', () => {
+  const missingBoundaries = structuredClone(extracted);
+  missingBoundaries.creativeDecision.toneBoundaries = [];
+  assert.throws(
+    () => normalizeUnifiedVisualUnderstanding({ project: project(), extracted: missingBoundaries }),
+    (error: Error & { code?: string }) => error.code === 'VISUAL_DECISION_PACKET_INSUFFICIENT'
+      && /creativeDecision\.toneBoundaries/u.test(error.message),
+  );
+
+  const missingAvoid = structuredClone(extracted);
+  missingAvoid.creativeDecision.toneBoundaries = [
+    { target: '专业', avoid: [] },
+    { target: '当代', avoid: ['廉价科技蓝'] },
+  ];
+  assert.throws(
+    () => normalizeUnifiedVisualUnderstanding({ project: project(), extracted: missingAvoid }),
+    (error: Error & { code?: string }) => error.code === 'VISUAL_DECISION_PACKET_INSUFFICIENT'
+      && /creativeDecision\.toneBoundaries\.avoid/u.test(error.message),
+  );
+
+  const onlyOneBoundary = structuredClone(extracted);
+  onlyOneBoundary.creativeDecision.toneBoundaries = [{ target: '专业', avoid: ['普通办公室'] }];
+  assert.throws(
+    () => normalizeUnifiedVisualUnderstanding({ project: project(), extracted: onlyOneBoundary }),
+    (error: Error & { code?: string }) => error.code === 'VISUAL_DECISION_PACKET_INSUFFICIENT'
+      && /creativeDecision\.toneBoundaries/u.test(error.message),
   );
 });
 

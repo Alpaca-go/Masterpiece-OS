@@ -21,6 +21,48 @@ const ADAPTERS = Object.freeze({
   }),
 });
 
+const SAFE_PRECONNECT_ERRORS = Object.freeze({
+  UND_ERR_CONNECT_TIMEOUT: Object.freeze({
+    code: 'MODEL_ADAPTER_CONNECT_TIMEOUT',
+    detail: 'connection timed out before an HTTP response',
+  }),
+  EAI_AGAIN: Object.freeze({
+    code: 'MODEL_ADAPTER_DNS_RETRYABLE',
+    detail: 'temporary DNS resolution failure before an HTTP response',
+  }),
+  ENETUNREACH: Object.freeze({
+    code: 'MODEL_ADAPTER_NETWORK_UNREACHABLE',
+    detail: 'network was unreachable before an HTTP response',
+  }),
+  EHOSTUNREACH: Object.freeze({
+    code: 'MODEL_ADAPTER_HOST_UNREACHABLE',
+    detail: 'provider host was unreachable before an HTTP response',
+  }),
+});
+
+function normalizeTransportError(adapterId, error) {
+  const candidate = text(error?.cause?.code || error?.code);
+  const safe = Object.hasOwn(SAFE_PRECONNECT_ERRORS, candidate)
+    ? SAFE_PRECONNECT_ERRORS[candidate]
+    : undefined;
+  if (safe) {
+    return Object.assign(
+      new Error(`${adapterId} ${safe.detail} (${candidate}).`),
+      {
+        code: safe.code,
+        retryable: true,
+      },
+    );
+  }
+  return Object.assign(
+    new Error(`${adapterId} network request failed before an HTTP response.`),
+    {
+      code: 'MODEL_ADAPTER_REQUEST_FAILED',
+      retryable: false,
+    },
+  );
+}
+
 function text(value) {
   return String(value ?? '').trim();
 }
@@ -272,12 +314,17 @@ export function createMultiModelImageAdapter(config = {}) {
     } else {
       body = JSON.stringify(request.body);
     }
-    const response = await fetchImpl(request.url, {
-      method: request.method,
-      headers,
-      body,
-      signal: options.signal,
-    });
+    let response;
+    try {
+      response = await fetchImpl(request.url, {
+        method: request.method,
+        headers,
+        body,
+        signal: options.signal,
+      });
+    } catch (error) {
+      throw normalizeTransportError(adapterId, error);
+    }
     const raw = await response.text();
     let parsed;
     try {

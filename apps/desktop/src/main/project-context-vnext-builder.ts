@@ -265,6 +265,32 @@ function assetRole(
 
 function migrateVisualDecisionPacketShape(packet: VisualDecisionPacket): VisualDecisionPacket {
   const migrated = structuredClone(packet);
+  const decision = migrated.creativeDecision;
+  if (decision) {
+    const fallbackAvoid = strings(
+      decision.strategicNegatives,
+      migrated.diagnosis?.brandMisreadRisks?.map((risk) => [
+        risk.description,
+        risk.target,
+      ]),
+      migrated.diagnosis?.categoryCliches?.map((item) => item.observation),
+    ).slice(0, 6);
+    const existing = (Array.isArray(decision.toneBoundaries) ? decision.toneBoundaries : [])
+      .flatMap((item) => {
+        const target = typeof item?.target === 'string' ? item.target.trim() : '';
+        if (!target) return [];
+        const avoid = strings(item.avoid);
+        return [{ target, avoid: avoid.length ? avoid : fallbackAvoid }];
+      });
+    if (existing.length < 2 && fallbackAvoid.length) {
+      for (const target of strings(decision.targetWorldview, decision.upgradeTo)) {
+        if (existing.some((item) => item.target === target)) continue;
+        existing.push({ target, avoid: [...fallbackAvoid] });
+        if (existing.length >= 4) break;
+      }
+    }
+    decision.toneBoundaries = existing;
+  }
   const spatial = migrated.mediaTranslations?.spatial;
   if (!spatial) return migrated;
   spatial.brandRoleManifestation = Array.isArray(spatial.brandRoleManifestation)

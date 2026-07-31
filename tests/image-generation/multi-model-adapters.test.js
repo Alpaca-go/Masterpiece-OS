@@ -141,3 +141,88 @@ test('all adapters normalize base64 and URL image responses', () => {
   assert.equal(seedream.parseResponse({ data: [{ url: 'https://example.test/image.png' }] })
     .images[0].url, 'https://example.test/image.png');
 });
+
+test('Seedream Adapter safely classifies a pre-connect timeout as retryable', async () => {
+  const apiKey = 'must-not-leak';
+  const adapter = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey,
+  });
+  const transportError = new TypeError('fetch failed');
+  transportError.cause = {
+    code: 'UND_ERR_CONNECT_TIMEOUT',
+    message: `connection failed with ${apiKey}`,
+  };
+
+  await assert.rejects(
+    adapter.execute(
+      { ...universal, references: [] },
+      { fetchImpl: async () => { throw transportError; } },
+    ),
+    (error) => {
+      assert.equal(error.code, 'MODEL_ADAPTER_CONNECT_TIMEOUT');
+      assert.equal(error.retryable, true);
+      assert.match(error.message, /UND_ERR_CONNECT_TIMEOUT/u);
+      assert.doesNotMatch(error.message, new RegExp(apiKey, 'u'));
+      return true;
+    },
+  );
+});
+
+test('Seedream Adapter does not expose unknown transport details', async () => {
+  const apiKey = 'must-not-leak';
+  const adapter = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey,
+  });
+  const transportError = new TypeError(`fetch failed with ${apiKey}`);
+  transportError.cause = {
+    code: 'SENSITIVE_PROVIDER_DETAIL',
+    message: `provider response included ${apiKey}`,
+  };
+
+  await assert.rejects(
+    adapter.execute(
+      { ...universal, references: [] },
+      { fetchImpl: async () => { throw transportError; } },
+    ),
+    (error) => {
+      assert.equal(error.code, 'MODEL_ADAPTER_REQUEST_FAILED');
+      assert.equal(error.retryable, false);
+      assert.equal(
+        error.message,
+        'seedream-5.0-pro network request failed before an HTTP response.',
+      );
+      assert.doesNotMatch(error.message, new RegExp(apiKey, 'u'));
+      return true;
+    },
+  );
+});
+
+test('Seedream Adapter preserves HTTP auth failures as non-retryable', async () => {
+  const adapter = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey: 'test-key',
+  });
+
+  await assert.rejects(
+    adapter.execute(
+      { ...universal, references: [] },
+      {
+        fetchImpl: async () => new Response(
+          JSON.stringify({ error: { message: 'denied' } }),
+          {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        ),
+      },
+    ),
+    (error) => {
+      assert.equal(error.code, 'MODEL_ADAPTER_AUTH_FAILED');
+      assert.equal(error.retryable, false);
+      assert.match(error.message, /request failed \(403\): denied/u);
+      return true;
+    },
+  );
+});

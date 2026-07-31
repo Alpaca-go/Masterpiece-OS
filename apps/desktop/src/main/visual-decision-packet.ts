@@ -257,9 +257,14 @@ function mediaTranslations(value: unknown): MediaTranslationPacketV2 {
 }
 
 function missingExecutionFields(
-  packet: Pick<VisualDecisionPacket, 'abstractions' | 'mediaTranslations'>,
+  packet: Pick<VisualDecisionPacket, 'creativeDecision' | 'abstractions' | 'mediaTranslations'>,
 ): string[] {
   const missing: string[] = [];
+  if (packet.creativeDecision.toneBoundaries.length < 2) {
+    missing.push('creativeDecision.toneBoundaries');
+  } else if (packet.creativeDecision.toneBoundaries.some((item) => !item.avoid.length)) {
+    missing.push('creativeDecision.toneBoundaries.avoid');
+  }
   if (!packet.abstractions.length) missing.push('abstractions');
   const spatial = packet.mediaTranslations.spatial;
   if (!spatial.spatialConcept) missing.push('mediaTranslations.spatial.spatialConcept');
@@ -281,6 +286,7 @@ export function buildVisualDecisionPacket(input: {
   const normalizedAbstractions = abstractions(extracted.abstractions);
   const normalizedTranslations = mediaTranslations(extracted.mediaTranslations);
   const partial = {
+    creativeDecision: input.core.creativeDecision,
     abstractions: normalizedAbstractions,
     mediaTranslations: normalizedTranslations,
   };

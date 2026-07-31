@@ -239,8 +239,30 @@ test('persisted vNext context migrates a legacy Packet even when Prompt Source a
         projectFacts: {},
         lockedAssets: [],
         assetInventory: {},
-        diagnosis: {},
-        creativeDecision: {},
+        diagnosis: {
+          brandMisreadRisks: [{
+            code: 'legacy-clinic-risk',
+            description: '避免被误读为冰冷诊疗空间',
+            target: '冰冷诊疗空间',
+            observation: '旧表达过度依赖机构白',
+            whyItMatters: '削弱品牌温度',
+            appliesTo: { taskFamilies: ['space'], subtypes: ['reception'], scenes: [] },
+            evidenceRefs: ['asset:legacy'],
+            confidence: 0.9,
+            status: 'confirmed',
+          }],
+          categoryCliches: [],
+        },
+        creativeDecision: {
+          brandRoleStatement: '',
+          upgradeFrom: [],
+          preserveCore: [],
+          upgradeTo: ['有温度的当代服务体验'],
+          uniqueUpgradeThesis: '',
+          targetWorldview: ['专业可信', '人文温度'],
+          toneBoundaries: [],
+          strategicNegatives: ['冰冷机构感'],
+        },
         abstractions: [],
         mediaTranslations: {
           spatial: {
@@ -284,5 +306,22 @@ test('persisted vNext context migrates a legacy Packet even when Prompt Source a
   assert.deepEqual(
     migrated.visualDecisionPacket?.mediaTranslations.spatial.sceneProgram,
     ['legacy reception and consultation program'],
+  );
+  assert.deepEqual(
+    migrated.visualDecisionPacket?.creativeDecision.toneBoundaries,
+    [
+      {
+        target: '专业可信',
+        avoid: ['冰冷机构感', '避免被误读为冰冷诊疗空间', '冰冷诊疗空间'],
+      },
+      {
+        target: '人文温度',
+        avoid: ['冰冷机构感', '避免被误读为冰冷诊疗空间', '冰冷诊疗空间'],
+      },
+      {
+        target: '有温度的当代服务体验',
+        avoid: ['冰冷机构感', '避免被误读为冰冷诊疗空间', '冰冷诊疗空间'],
+      },
+    ],
   );
 });
