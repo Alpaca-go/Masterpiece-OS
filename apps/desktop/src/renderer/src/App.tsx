@@ -17,7 +17,6 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
-import { CreativeSessionWorkspace } from './components/CreativeSessionWorkspace';
 import { VNextGenerationWorkspace } from './components/VNextGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
@@ -357,7 +356,7 @@ export function App() {
   />;
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
 
-  if (screen === 'creative-session' && selected && settings.imageGenerationPipelineMode !== 'legacy') {
+  if (screen === 'creative-session' && selected) {
     const imageProfiles = settings.profiles.filter((profile) =>
       profile.isEnabled
       && profile.hasApiKey
@@ -375,22 +374,6 @@ export function App() {
       onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
     />;
   }
-
-  if (screen === 'creative-session' && selected) return <CreativeSessionWorkspace
-    project={selected}
-    imageProfiles={settings.profiles.filter((profile) =>
-      profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation')}
-    imageApiProfileId={(settings.profiles.some((profile) =>
-      profile.id === selectedApiProfileId && profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation')
-      ? selectedApiProfileId
-      : (settings.profiles.find((profile) =>
-        profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation' && profile.isDefault)
-        || settings.profiles.find((profile) =>
-          profile.isEnabled && profile.hasApiKey && profile.modelType === 'image_generation'))?.id) || ''}
-    onImageApiProfileChange={setSelectedApiProfileId}
-    onBack={() => setScreen('report')}
-    onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
-  />;
 
   if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
     sourceBundle={requestedImageGen}
