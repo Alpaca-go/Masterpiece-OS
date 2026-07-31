@@ -1413,6 +1413,33 @@ export interface VisualDecisionPacket {
     modelId: string;
     sourceFingerprint: string;
   };
+  repairMetadata?: {
+    schemaVersion: '1.0';
+    fields: Record<string, {
+      status:
+        | 'confirmed'
+        | 'source_fact'
+        | 'inferred'
+        | 'proposed'
+        | 'system_default'
+        | 'unknown'
+        | 'conflicted'
+        | 'stale';
+      confidence: number;
+      evidenceRefs: string[];
+      generatedBy:
+        | 'user'
+        | 'source_parser'
+        | 'analysis_model'
+        | 'repair_model'
+        | 'deterministic_rule'
+        | 'system_default';
+      sourceFingerprint: string;
+      schemaVersion: string;
+      repairVersion?: string;
+      repairedAt: string;
+    }>;
+  };
   validation: VisualUnderstandingCore['validation'] & {
     executionDataStatus: 'ready' | 'insufficient';
     missingExecutionFields: string[];

@@ -41,3 +41,32 @@ export function collectEvidenceRefs(root: unknown, paths: string[]): string[] {
   paths.forEach((path) => visit(valueAtPath(root, path)));
   return refs.slice(0, 80);
 }
+
+export function setValueAtPath(root: UnknownRecord, path: string, value: unknown): void {
+  const segments = path.split('.');
+  const leaf = segments.pop();
+  if (!leaf) return;
+  let current = root;
+  for (const segment of segments) {
+    if (!isRecord(current[segment])) current[segment] = {};
+    current = current[segment] as UnknownRecord;
+  }
+  current[leaf] = value;
+}
+
+export function isMeaningfulValue(value: unknown): boolean {
+  if (typeof value === 'string') return Boolean(value.trim());
+  if (Array.isArray(value)) return value.length > 0;
+  if (isRecord(value)) return Object.keys(value).length > 0;
+  return value !== undefined && value !== null;
+}
+
+export function stableValue(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (!isRecord(value)) return value;
+  return Object.fromEntries(
+    Object.entries(value)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([key, child]) => [key, stableValue(child)]),
+  );
+}

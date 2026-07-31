@@ -107,3 +107,63 @@ export interface DeliverableSufficiencyResult {
   status: 'ready' | 'ready_with_warnings' | 'repairable' | 'requires_confirmation' | 'failed';
   issues: MissingFieldIssue[];
 }
+
+export const MAX_REPAIR_ATTEMPTS = 2;
+
+export interface RepairPlanBatch {
+  id: string;
+  strategy: Extract<RepairStrategy, 'ai_from_evidence'>;
+  fieldPaths: string[];
+  evidencePaths: string[];
+  evidenceRefs: string[];
+}
+
+export interface RepairPlan {
+  deliverable: AnalysisDeliverable;
+  attempt: number;
+  deterministic: MissingFieldIssue[];
+  aiBatches: RepairPlanBatch[];
+  systemDefaults: MissingFieldIssue[];
+  ignored: MissingFieldIssue[];
+  requiresConfirmation: MissingFieldIssue[];
+  fatal: MissingFieldIssue[];
+}
+
+export interface RepairFieldPatch {
+  path: string;
+  value: EvidenceBackedValue<unknown>;
+}
+
+export interface RepairFieldMetadata {
+  status: DecisionStatus;
+  confidence: number;
+  evidenceRefs: string[];
+  generatedBy: RepairGeneratedBy;
+  sourceFingerprint: string;
+  schemaVersion: string;
+  repairVersion?: string;
+  repairedAt: string;
+}
+
+export interface EvidenceSafeMergeReport {
+  packet: Record<string, unknown>;
+  applied: string[];
+  unchanged: string[];
+  rejected: string[];
+  conflicts: string[];
+  metadata: Record<string, RepairFieldMetadata>;
+}
+
+export interface SystemDefaultResult {
+  execution: DeliverableExecutionContext;
+  defaulted: Record<string, EvidenceBackedValue<unknown>>;
+}
+
+export interface SchemaMigrationResult {
+  packet: Record<string, unknown>;
+  fromVersion: string;
+  toVersion: string;
+  migrated: boolean;
+  changes: string[];
+  requiresRepair: string[];
+}
