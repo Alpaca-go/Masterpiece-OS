@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/image-generation-contracts",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Shared image-generation contract types: task, run status, provider capability, reference role, result, gate errors/warnings, review. No file IO, no API calls, no prompt compilation, no Electron IPC.",

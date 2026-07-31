@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/creative-production-runtime",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "V6 deterministic Creative Session, Style Profile, Visual Canon and Generation Series domain runtime.",

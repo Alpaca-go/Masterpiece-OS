@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/image-generation-runtime",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Deterministic image-generation runtime: context snapshot, reference selector, prompt compiler, three-layer gates, dry-run. No model calls in the compiler, no Electron.",

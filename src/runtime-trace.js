@@ -3,6 +3,11 @@ import { performance } from 'node:perf_hooks';
 
 export const RUNTIME_TRACE_SCHEMA_VERSION = '1.0.0';
 
+// Default product version when caller does not supply context.appVersion.
+// This constant is kept in sync with /VERSION by scripts/sync-product-version.mjs.
+// Do NOT hand-edit — run `npm run sync:version` instead.
+export const DEFAULT_APP_VERSION = '5.0.0-rc.1';
+
 export const RUNTIME_STAGE_ORDER = Object.freeze([
   'readAssets',
   'brandUnderstanding',
@@ -410,7 +415,7 @@ export class RuntimeTraceCollector {
         retries: flattened.reduce((sum, item) => sum + (item.metrics?.retries || 0), 0)
       },
       environment: {
-        appVersion: context.appVersion || '4.0.0',
+        appVersion: context.appVersion || DEFAULT_APP_VERSION,
         nodeVersion: process.version,
         platform: process.platform
       },

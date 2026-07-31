@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/analysis-runtime",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Deliverable-scoped structured analysis validation and self-healing runtime.",

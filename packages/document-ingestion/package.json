@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/document-ingestion",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "PDF / DOCX / Markdown / TXT parsing, multi-document corpus preparation, source indexing and dedupe.",

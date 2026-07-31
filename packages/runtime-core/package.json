@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/runtime-core",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Checkpoint store and runtime contracts shared by experimental pipelines (labs).",

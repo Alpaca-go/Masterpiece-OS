@@ -1,6 +1,6 @@
 {
   "name": "masterpiece-os-desktop",
-  "version": "5.0.0",
+  "version": "5.0.0-rc.1",
   "private": true,
   "type": "module",
   "description": "Masterpiece OS Desktop — multimodal API client",

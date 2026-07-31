@@ -1,8 +1,9 @@
 {
   "name": "@masterpiece-os/evaluation-loop-contracts",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "type": "module",
   "exports": {
     ".": "./src/index.js"
-  }
+  },
+  "private": true
 }

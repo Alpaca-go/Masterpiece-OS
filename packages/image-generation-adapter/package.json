@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/image-generation-adapter",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Provider-neutral image generation adapter with an explicit Wan implementation and a unified result contract.",

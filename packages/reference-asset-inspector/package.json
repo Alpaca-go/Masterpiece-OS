@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/reference-asset-inspector",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Reference asset inspection: directory expansion, extension filtering, dedupe fingerprinting and thumbnail generation for images / PDF / ZIP.",

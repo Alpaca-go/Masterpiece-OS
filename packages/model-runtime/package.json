@@ -1,6 +1,6 @@
 {
   "name": "@masterpiece/model-runtime",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "description": "Provider clients (Qwen / OpenAI-compatible), structured response parsing, repair, token metrics, cancellation and unified model errors.",
