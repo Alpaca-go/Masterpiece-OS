@@ -1,0 +1,20 @@
+{
+  "name": "@masterpiece/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Masterpiece OS 5 headless CLI — Deep Creative Director analyser. One source of project visual understanding, one-shot `visual plan upgrade report`.",
+  "bin": {
+    "masterpiece-os": "./bin/masterpiece-os.js"
+  },
+  "main": "./bin/masterpiece-os.js",
+  "scripts": {
+    "analyze": "node ./bin/masterpiece-os.js analyze",
+    "inventory": "node ./bin/masterpiece-os.js inventory",
+    "test": "node --test tests/*.test.js tests/v5/*.test.js"
+  },
+  "dependencies": {
+    "@masterpiece/document-ingestion": "file:../../packages/document-ingestion",
+    "@masterpiece/model-runtime": "file:../../packages/model-runtime"
+  }
+}

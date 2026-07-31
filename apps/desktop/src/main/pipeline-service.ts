@@ -473,7 +473,7 @@ export function createPipelineService(
 
       // Dynamic import ensures the packaged prompt resource path is configured first.
       // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-      const { runV5Pipeline } = await import('../../../../src/v5/bootstrap.js');
+      const { runV5Pipeline } = await import('../../../../apps/cli/src/v5/bootstrap.js');
       const execution = await runV5Pipeline(projectPaths.input, {
         projectRoot: projectPaths.root,
         output: projectPaths.outputs,

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createOpenAICompatibleTextReasoner } from '../../src/v5/adapters/openai-compatible-text-reasoner.js';
+import { createOpenAICompatibleTextReasoner } from '@masterpiece/model-runtime/openai-compatible-text-reasoner.js';
 
 const encoder = new TextEncoder();
 

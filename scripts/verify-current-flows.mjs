@@ -10,7 +10,7 @@ function run(label, executable, args) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-run('Engine document preparation paths', process.execPath, ['--test', 'tests/v5/document-preparation.test.js']);
+run('Engine document preparation paths', process.execPath, ['--test', 'apps/cli/tests/v5/document-preparation.test.js']);
 run('No project-specific production prompt rules', process.execPath, ['scripts/verify-no-project-specific-production-rules.mjs']);
 run('Golden and fixture production boundary', process.execPath, ['scripts/verify-golden-production-boundary.mjs']);
 run('Offline cross-project evaluation', process.execPath, ['scripts/run-golden-evaluation.mjs']);

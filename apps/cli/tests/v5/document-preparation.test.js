@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { classifyDocumentRole, splitTextAtNaturalBoundaries } from '../../src/v5/shared/analysis/document-preparation.js';
+import { classifyDocumentRole, splitTextAtNaturalBoundaries } from '@masterpiece/document-ingestion/document-preparation.js';
 
 test('document preparation prefers market research over generic brand strategy labels', () => {
   const role = classifyDocumentRole({

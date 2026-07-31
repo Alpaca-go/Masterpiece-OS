@@ -16,7 +16,7 @@ async function filesUnder(root: string): Promise<string[]> {
 }
 
 test('core v5 never depends on Desktop', async () => {
-  const files = await filesUnder(path.join(repositoryRoot, 'src', 'v5'));
+  const files = await filesUnder(path.join(repositoryRoot, 'apps', 'cli', 'src', 'v5'));
   const source = (await Promise.all(files.filter((file) => file.endsWith('.js')).map((file) => fs.readFile(file, 'utf8')))).join('\n');
   assert.doesNotMatch(source, /apps[\\/]desktop|desktop[\\/](src|out)/i);
 });

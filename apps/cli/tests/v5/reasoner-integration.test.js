@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { createQwenReasoner } from '../../src/v5/adapters/qwen-reasoner.js';
+import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 import { runV5Pipeline } from '../../src/v5/bootstrap.js';
 
 const ONE_PIXEL_PNG = Buffer.from(

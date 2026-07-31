@@ -122,8 +122,8 @@ check(
   extraLockfiles.length ? `found: ${extraLockfiles.join(', ')}` : '',
 );
 
-// 6. runtime-trace.js DEFAULT_APP_VERSION
-const rtPath = path.join(root, 'src', 'runtime-trace.js');
+// 6. apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION
+const rtPath = path.join(root, 'apps', 'cli', 'src', 'runtime-trace.js');
 if (existsSync(rtPath)) {
   const rt = readFileSync(rtPath, 'utf8');
   const m = /export const DEFAULT_APP_VERSION = '([^']+)'/.exec(rt);

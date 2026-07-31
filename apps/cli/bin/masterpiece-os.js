@@ -2,7 +2,7 @@
 import path from 'node:path';
 import { runV5Pipeline } from '../src/v5/bootstrap.js';
 import { inventoryProject } from '../src/inventory.js';
-import { createQwenReasoner } from '../src/v5/adapters/qwen-reasoner.js';
+import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 
 const HELP = `Masterpiece-OS v5.0 — Deep Creative Director Preparation System
 
