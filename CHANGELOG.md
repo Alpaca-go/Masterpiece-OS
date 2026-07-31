@@ -4,6 +4,20 @@
 
 > 仓库清理与版本对齐：合并 v5 引擎 / V6 Creative Production / V18 Creative Director / vnext 短链路 / Phase 1.5 Quality Recovery Loop 的工作，正式发布版本统一为 5.0.0-rc.1；待真实 Provider smoke 通过与分支治理完成后 cut 为 5.0.0。
 
+### 仓库治理（Stage 0–8 汇总）
+
+- 产品版本源统一为 `/VERSION`（`5.0.0-rc.1`），由 `scripts/sync-product-version.mjs` 同步到根 / `apps/desktop` / `apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION`。
+- 启用 npm Workspaces；单根 `package-lock.json`，`apps/desktop/package-lock.json` 已删除。
+- 14 个内部包统一为 `@masterpiece/*`，`{private:true, version:"0.0.0"}`；175 处深层 `packages/*/src/*` 相对 import 改写为 `@masterpiece/*`。
+- `apps/desktop/src/{shared/types.ts,main/reference-asset-inspector.ts}` 修复 `'/index'` → `'/index.ts'` 子路径，`tsc --noEmit` 0 错误。
+- 文档与目录归并到 `docs/{product,architecture,development,releases,archive/{v3.3,v4.0}}`；`docs/validation/*` 迁入 `evaluation/reports/`；`examples/` 旧格式 Demo、`knowledge/`、`rules/`、`standards/`、`skills/masterpiece-os/` 全部迁入 `docs/archive/v4.0/`；`prompt-templates/image-generation/` 迁入 `docs/development/prompt-templates/`，5 个 `sourcePath` 字符串同步更新。
+- Desktop 正式 UI 只保留 Short-Chain 路径，移除 `vNext / Legacy` 模式切换。
+- `.codex-smoke/` 9 个 tracked 文件（44 MB，含 45 MB `app.asar`）解除追踪，数据保留在磁盘供本地 replay。
+- 6 个 verify gate 全部 PASS；`npm test` 301 / `npm run cli:test` 38 / `npm run desktop:test` 265 / `npm run desktop:build` PASS。
+- 分支治理决策表：`docs/development/repository/reference-branch-disposition.md`。
+- 完成报告：`docs/releases/5.0-repository-consolidation.md`。
+- 工程现实（给 AI / 开发者）：`AGENTS.md` 已重写为 5.0 视角。
+
 ### v5 引擎：一次深度 Creative Director 推理
 
 - 分析层重构为 `VisualDecisionPacket` 单一事实来源（`apps/desktop/src/main/visual-decision-packet.ts` + `packages/project-contracts/src/index.ts`）。

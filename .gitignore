@@ -8,6 +8,8 @@ coverage/
 .codex-smoke/
 .codex-smoke-app/
 .codex-temp/
+.workbuddy/
+help/.runtime/
 .DS_Store
 *.log
 .tmp-*.log
