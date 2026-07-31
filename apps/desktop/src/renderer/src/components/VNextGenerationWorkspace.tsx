@@ -286,7 +286,7 @@ export function VNextGenerationWorkspace({
   return <div className="page project-page">
     <header className="page-header">
       <div>
-        <p className="eyebrow">VNEXT IMAGE GENERATION</p>
+        <p className="eyebrow">图片生成</p>
         <h1>{project.projectName}</h1>
         <p>{project.brandName} · 首图直接交付，无需先选 Anchor</p>
       </div>
@@ -408,7 +408,7 @@ export function VNextGenerationWorkspace({
         </> : <div className="empty-state"><strong>先明确成果物，再查看最终 Prompt</strong><p>默认只生成 1 张，避免错误批量放大。</p></div>}
 
         {imageDataUrl && <div className="result-card">
-          <img src={imageDataUrl} alt="vNext generation result" />
+          <img src={imageDataUrl} alt="已生成的图片" />
           {lastValidation && <div className="validation-summary">
             <strong>结果校验：{lastValidation.status}</strong>
             <p>{lastValidation.mismatchTypes.length
