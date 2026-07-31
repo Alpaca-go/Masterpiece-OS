@@ -1,6 +1,6 @@
 {
   "name": "masterpiece-os",
-  "version": "5.0.0-alpha.1",
+  "version": "5.0.0",
   "description": "Masterpiece OS v5.0：一次深度 Creative Director 推理，一份视觉方案升级报告",
   "type": "module",
   "bin": { "masterpiece-os": "./bin/masterpiece-os.js" },
