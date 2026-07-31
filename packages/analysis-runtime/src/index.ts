@@ -1,3 +1,5 @@
+export * from './analysis-completion-orchestrator.ts';
+export * from './clarification-builder.ts';
 export * from './contracts.ts';
 export * from './conflict-resolver.ts';
 export * from './deliverable-sufficiency.ts';
@@ -6,6 +8,9 @@ export * from './evidence-safe-merge.ts';
 export * from './field-repair-policy.ts';
 export * from './missing-field-classifier.ts';
 export * from './repair-planner.ts';
+export * from './repair-audit.ts';
+export * from './repair-prompt-builder.ts';
 export * from './schema-migrations.ts';
 export * from './schema-validator.ts';
 export * from './source-fingerprint.ts';
+export * from './structured-repair-runner.ts';

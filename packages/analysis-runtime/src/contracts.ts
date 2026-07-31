@@ -167,3 +167,79 @@ export interface SchemaMigrationResult {
   changes: string[];
   requiresRepair: string[];
 }
+
+export interface StructuredRepairModelRequest {
+  prompt: string;
+  attempt: number;
+  batchId: string;
+  targetFields: string[];
+  responseSchema: Record<string, unknown>;
+}
+
+export type StructuredRepairModel = (
+  request: StructuredRepairModelRequest,
+) => Promise<unknown>;
+
+export interface StructuredRepairRunResult {
+  batchId: string;
+  attempt: number;
+  patches: RepairFieldPatch[];
+  promptRedacted: string;
+  responseRedacted: {
+    repairs: Array<{
+      path: string;
+      value: unknown;
+      status: 'inferred' | 'proposed';
+      confidence: number;
+      evidenceRefs: string[];
+    }>;
+  };
+}
+
+export interface AnalysisRepairAuditField {
+  path: string;
+  strategy: RepairStrategy;
+  previousState: 'missing' | 'invalid' | 'stale';
+  newStatus?: DecisionStatus;
+  confidence?: number;
+  evidenceRefs?: string[];
+}
+
+export interface AnalysisRepairAudit {
+  schemaVersion: '1.0';
+  repairVersion: '1.0';
+  runId: string;
+  status: AnalysisRepairResult['status'];
+  attempts: number;
+  modelCallCount: number;
+  sourceFingerprint: string;
+  startedAt: string;
+  completedAt: string;
+  repairedFields: AnalysisRepairAuditField[];
+  defaultedFields: AnalysisRepairAuditField[];
+  ignoredFields: AnalysisRepairAuditField[];
+  unresolvedFields: AnalysisRepairAuditField[];
+  conflicts: string[];
+  clarificationQuestions: ClarificationQuestion[];
+  errors: Array<{
+    code: string;
+    message: string;
+    attempt?: number;
+  }>;
+}
+
+export interface AnalysisCompletionPersistence {
+  saveInitial(packet: unknown): Promise<void>;
+  saveAttempt(attempt: number, packet: unknown): Promise<void>;
+  saveFinal(packet: unknown): Promise<void>;
+  saveAudit(audit: AnalysisRepairAudit): Promise<void>;
+  saveRuntimeArtifact(filename: string, value: unknown): Promise<void>;
+}
+
+export interface AnalysisCompletionOutcome extends AnalysisRepairResult {
+  runId: string;
+  packet: Record<string, unknown>;
+  execution: DeliverableExecutionContext;
+  modelCallCount: number;
+  audit: AnalysisRepairAudit;
+}
