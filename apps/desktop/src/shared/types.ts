@@ -1,4 +1,4 @@
-// Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
+﻿// Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
 // multimodal endpoint instead of restricting profiles to a vendor allow-list.
 import type {
   AnchorCandidate,
@@ -15,7 +15,7 @@ import type {
   VisualMemory,
   VisualExploration,
   VisualCanon
-} from '@masterpiece/project-contracts/index';
+} from '@masterpiece/project-contracts/index.ts';
 export type {
   AnchorCandidate,
   AnchorCandidateEvaluation,
@@ -29,7 +29,7 @@ export type {
   VisualMemory,
   VisualExploration,
   VisualCanon
-} from '@masterpiece/project-contracts/index';
+} from '@masterpiece/project-contracts/index.ts';
 
 export type ProviderKind = string;
 export type ApiProtocol =
@@ -327,8 +327,8 @@ export type StyleCarrierCategory =
   | 'spatial';
 
 /**
- * §2 参考身份污染类型。任一非 'none' 的类型都不得进入 Style Carrier Ranking。
- * 生产协议保持项目无关：污染由数据标注驱动，不得靠具体品牌/行业词硬编码。
+ * 搂2 鍙傝€冭韩浠芥薄鏌撶被鍨嬨€備换涓€闈?'none' 鐨勭被鍨嬮兘涓嶅緱杩涘叆 Style Carrier Ranking銆?
+ * 鐢熶骇鍗忚淇濇寔椤圭洰鏃犲叧锛氭薄鏌撶敱鏁版嵁鏍囨敞椹卞姩锛屼笉寰楅潬鍏蜂綋鍝佺墝/琛屼笟璇嶇‖缂栫爜銆?
  */
 export type ReferenceContaminationType =
   | 'brand_name'
@@ -341,7 +341,7 @@ export type ReferenceContaminationType =
   | 'proprietary_character'
   | 'none';
 
-/** §2 进入 Ranking 前的 Style Carrier 候选（携带污染标注）。 */
+/** 搂2 杩涘叆 Ranking 鍓嶇殑 Style Carrier 鍊欓€夛紙鎼哄甫姹℃煋鏍囨敞锛夈€?*/
 export interface StyleCarrierCandidate {
   id: string;
   readableRule: string;
@@ -367,9 +367,9 @@ export interface ReferenceAssetDecision {
     category: StyleCarrierCategory;
     readableRule: string;
     confidence: number;
-    /** §2 该规则携带的参考身份污染类型；任一非 'none' 者不得进入 Ranking。 */
+    /** 搂2 璇ヨ鍒欐惡甯︾殑鍙傝€冭韩浠芥薄鏌撶被鍨嬶紱浠讳竴闈?'none' 鑰呬笉寰楄繘鍏?Ranking銆?*/
     contaminationTypes?: ReferenceContaminationType[];
-    /** §2 该规则关联的禁止复制参考专属图形 id；非空者不得进入 Ranking。 */
+    /** 搂2 璇ヨ鍒欏叧鑱旂殑绂佹澶嶅埗鍙傝€冧笓灞炲浘褰?id锛涢潪绌鸿€呬笉寰楄繘鍏?Ranking銆?*/
     signatureGraphicIds?: string[];
   }>;
   duplicationGroupId?: string;
@@ -388,25 +388,25 @@ export interface StyleCarrier {
   supportingAssetIds: string[];
   mustBeVisibleInOutput: boolean;
   confidence: number;
-  /** 是否携带参考专属身份（参考身份、文案、专属图形）。一旦为 true 不得进入任何 Style Carrier Ranking。 */
+  /** 鏄惁鎼哄甫鍙傝€冧笓灞炶韩浠斤紙鍙傝€冭韩浠姐€佹枃妗堛€佷笓灞炲浘褰級銆備竴鏃︿负 true 涓嶅緱杩涘叆浠讳綍 Style Carrier Ranking銆?*/
   containsReferenceIdentity?: boolean;
-  /** 关联到的禁止复制参考专属图形 id 列表。一旦非空不得进入 Ranking。 */
+  /** 鍏宠仈鍒扮殑绂佹澶嶅埗鍙傝€冧笓灞炲浘褰?id 鍒楄〃銆備竴鏃﹂潪绌轰笉寰楄繘鍏?Ranking銆?*/
   referencesSignatureGraphicIds?: string[];
-  /** §2 该载体携带的参考身份污染类型（品牌名 / Logo / 文案等）。任一非 'none' 者不得进入 Ranking。 */
+  /** 搂2 璇ヨ浇浣撴惡甯︾殑鍙傝€冭韩浠芥薄鏌撶被鍨嬶紙鍝佺墝鍚?/ Logo / 鏂囨绛夛級銆備换涓€闈?'none' 鑰呬笉寰楄繘鍏?Ranking銆?*/
   contaminationTypes?: ReferenceContaminationType[];
-  /** 该载体可应用的输出任务类型。为空表示未声明（按全局处理）。 */
+  /** 璇ヨ浇浣撳彲搴旂敤鐨勮緭鍑轰换鍔＄被鍨嬨€備负绌鸿〃绀烘湭澹版槑锛堟寜鍏ㄥ眬澶勭悊锛夈€?*/
   compatibleOutputTypes?: GenerationOutputType[];
-  /** §3 该载体是否要求真实摄影表现（摄影类载体不得进入禁止摄影的任务）。 */
+  /** 搂3 璇ヨ浇浣撴槸鍚﹁姹傜湡瀹炴憚褰辫〃鐜帮紙鎽勫奖绫昏浇浣撲笉寰楄繘鍏ョ姝㈡憚褰辩殑浠诲姟锛夈€?*/
   requiresPhotography?: boolean;
-  /** §3 该载体是否要求空间/场景表现。 */
+  /** 搂3 璇ヨ浇浣撴槸鍚﹁姹傜┖闂?鍦烘櫙琛ㄧ幇銆?*/
   requiresSpace?: boolean;
-  /** §3 该载体是否要求动效表现。 */
+  /** 搂3 璇ヨ浇浣撴槸鍚﹁姹傚姩鏁堣〃鐜般€?*/
   requiresMotion?: boolean;
-  /** §3 该载体是否要求真实实体触点（材质/包装等）。 */
+  /** 搂3 璇ヨ浇浣撴槸鍚﹁姹傜湡瀹炲疄浣撹Е鐐癸紙鏉愯川/鍖呰绛夛級銆?*/
   requiresPhysicalTouchpoint?: boolean;
 }
 
-/** §3 编译任务级 Style Carrier 时的任务约束种子（决定摄影/空间/动效是否允许）。 */
+/** 搂3 缂栬瘧浠诲姟绾?Style Carrier 鏃剁殑浠诲姟绾︽潫绉嶅瓙锛堝喅瀹氭憚褰?绌洪棿/鍔ㄦ晥鏄惁鍏佽锛夈€?*/
 export interface TaskDefinitionSeed {
   outputType?: GenerationOutputType;
   photographyAllowed?: boolean;
@@ -416,14 +416,14 @@ export interface TaskDefinitionSeed {
   typographyRequired?: boolean;
 }
 
-/** 全局 Style Carrier Ranking（两级：primary / secondary / optional）。 */
+/** 鍏ㄥ眬 Style Carrier Ranking锛堜袱绾э細primary / secondary / optional锛夈€?*/
 export interface GlobalStyleCarrierRanking {
   primary: StyleCarrier[];
   secondary: StyleCarrier[];
   optional: StyleCarrier[];
 }
 
-/** 按单个输出任务筛选后的 Style Carrier 集合。 */
+/** 鎸夊崟涓緭鍑轰换鍔＄瓫閫夊悗鐨?Style Carrier 闆嗗悎銆?*/
 export interface TaskScopedStyleCarrierSet {
   outputType: GenerationOutputType;
   requiredPrimary: StyleCarrier[];
@@ -431,7 +431,7 @@ export interface TaskScopedStyleCarrierSet {
   excludedForTask: Array<{ carrierId: string; reason: string }>;
 }
 
-/** Style Carrier 与输出任务的兼容性描述。 */
+/** Style Carrier 涓庤緭鍑轰换鍔＄殑鍏煎鎬ф弿杩般€?*/
 export interface StyleCarrierTaskCompatibility {
   carrierId: string;
   compatibleOutputTypes: GenerationOutputType[];
@@ -477,7 +477,7 @@ export interface TaskReferenceSubset {
   requiresHumanReview?: boolean;
   coveredStyleCarrierIds?: string[];
   missingEvidence?: string[];
-  /** 真实生成的子集产物路径。禁止用固定路径伪造；未生成则为空。 */
+  /** 鐪熷疄鐢熸垚鐨勫瓙闆嗕骇鐗╄矾寰勩€傜姝㈢敤鍥哄畾璺緞浼€狅紱鏈敓鎴愬垯涓虹┖銆?*/
   artifactPath?: string;
 }
 
@@ -491,24 +491,24 @@ export interface TaskSubsetValidation {
   passed: boolean;
 }
 
-/** §6.1 单个请求的生成任务。 */
+/** 搂6.1 鍗曚釜璇锋眰鐨勭敓鎴愪换鍔°€?*/
 export interface RequestedGenerationTask {
   outputType: GenerationOutputType;
   requestedBy: 'user' | 'system' | 'workflow';
   required: boolean;
 }
 
-/** §6.1 请求任务清单。 */
+/** 搂6.1 璇锋眰浠诲姟娓呭崟銆?*/
 export interface RequestedGenerationTaskManifest {
   tasks: RequestedGenerationTask[];
 }
 
-/** §6.2 Task Subset 完整性清单。 */
+/** 搂6.2 Task Subset 瀹屾暣鎬ф竻鍗曘€?*/
 export interface TaskReferenceSubsetManifest {
   subsets: TaskReferenceSubset[];
 }
 
-/** §5.5 任务级 Style Carrier 校验结果。 */
+/** 搂5.5 浠诲姟绾?Style Carrier 鏍￠獙缁撴灉銆?*/
 export interface TaskStyleCarrierValidation {
   outputType: GenerationOutputType;
   incompatibleCarrierIds: string[];
@@ -528,13 +528,13 @@ export interface AssetSelectionProtocolResult {
   taskSubsetValidations: TaskSubsetValidation[];
   requiresHumanConfirmation: boolean;
   schemaVersion: 'asset-selection-protocol-v1';
-  /** §3.4 参考专属图形泄漏校验。 */
+  /** 搂3.4 鍙傝€冧笓灞炲浘褰㈡硠婕忔牎楠屻€?*/
   signatureGraphicLeakValidation?: SignatureGraphicLeakValidation;
-  /** §5.5 任务级 Style Carrier 校验（按请求任务）。 */
+  /** 搂5.5 浠诲姟绾?Style Carrier 鏍￠獙锛堟寜璇锋眰浠诲姟锛夈€?*/
   taskStyleCarrierValidations?: TaskStyleCarrierValidation[];
-  /** §7 Generation Context Manifest：审计报告与 Brief 共用。 */
+  /** 搂7 Generation Context Manifest锛氬璁℃姤鍛婁笌 Brief 鍏辩敤銆?*/
   generationContextManifest?: GenerationContextManifest;
-  /** §6 请求任务清单（用于子集覆盖校验）。 */
+  /** 搂6 璇锋眰浠诲姟娓呭崟锛堢敤浜庡瓙闆嗚鐩栨牎楠岋級銆?*/
   requestedTasks?: RequestedGenerationTask[];
 }
 
@@ -582,7 +582,7 @@ export interface ProjectRecord {
   visualContextVNextLastBuiltAt?: string | null;
 }
 
-// ── 共享契约类型已迁移至 packages/project-contracts（repository-slimming-v2 Phase 1）──
+// 鈹€鈹€ 鍏变韩濂戠害绫诲瀷宸茶縼绉昏嚦 packages/project-contracts锛坮epository-slimming-v2 Phase 1锛夆攢鈹€
 export type {
   PackagingStructureStatus,
   ProjectVisualContextStatus,
@@ -597,7 +597,7 @@ export type {
   ReferenceStyleCapsule,
   ContextConflict,
   ResolvedProjectContext
-} from '@masterpiece/project-contracts/index';
+} from '@masterpiece/project-contracts/index.ts';
 import type {
   ProjectVisualContext,
   ProjectVisualContextVNext,
@@ -610,9 +610,9 @@ import type {
   ReferenceStyleCapsule,
   ContextConflict,
   ResolvedProjectContext
-} from '@masterpiece/project-contracts/index';
+} from '@masterpiece/project-contracts/index.ts';
 
-// ── 生图功能 V1 契约类型已迁移至 packages/image-generation-contracts（生图 V1 Phase 1）──
+// 鈹€鈹€ 鐢熷浘鍔熻兘 V1 濂戠害绫诲瀷宸茶縼绉昏嚦 packages/image-generation-contracts锛堢敓鍥?V1 Phase 1锛夆攢鈹€
 export type {
   ImageGenerationOutputType,
   ImageGenerationPreset,
@@ -667,7 +667,7 @@ export type {
   VNextProjectPromptAsset,
   VNextDeliverableValidation,
   VNextValidatedGenerationResult
-} from '@masterpiece/image-generation-contracts/index';
+} from '@masterpiece/image-generation-contracts/index.ts';
 import type {
   ImageGenerationRun,
   ImageGenerationRunSummary,
@@ -696,7 +696,7 @@ import type {
   ImageGenerationWarning,
   ImageGenerationPresetCapability,
   ImageProviderRegion
-} from '@masterpiece/image-generation-contracts/index';
+} from '@masterpiece/image-generation-contracts/index.ts';
 
 export interface CreateProjectInput {
   sourcePaths: string[];
@@ -828,10 +828,10 @@ export interface VisualTranslationDocumentSummary {
 }
 
 
-// ── Document Context Extraction（Phase 2：文档分析上下文提取器）──
-// 默认流程：文档解析 → 视觉相关事实提取（1 次模型调用 + 最多 1 次 Repair）
-// → 确定性归一化 → 人工确认 → 本地简报编译。默认不联网做 Benchmark、
-// 不生成三个方向、不自动推荐、不生成技术审计。
+// 鈹€鈹€ Document Context Extraction锛圥hase 2锛氭枃妗ｅ垎鏋愪笂涓嬫枃鎻愬彇鍣級鈹€鈹€
+// 榛樿娴佺▼锛氭枃妗ｈВ鏋?鈫?瑙嗚鐩稿叧浜嬪疄鎻愬彇锛? 娆℃ā鍨嬭皟鐢?+ 鏈€澶?1 娆?Repair锛?
+// 鈫?纭畾鎬у綊涓€鍖?鈫?浜哄伐纭 鈫?鏈湴绠€鎶ョ紪璇戙€傞粯璁や笉鑱旂綉鍋?Benchmark銆?
+// 涓嶇敓鎴愪笁涓柟鍚戙€佷笉鑷姩鎺ㄨ崘銆佷笉鐢熸垚鎶€鏈璁°€?
 
 export type DocumentAnalysisMode = 'context_extraction' | 'legacy_three_directions';
 
@@ -854,9 +854,9 @@ export type DocumentContextStage =
   | '04-human-confirmation'
   | '05-local-brief-compiler';
 
-// DocumentVisualContextEvidence / DocumentVisualContext 已迁移至 packages/project-contracts。
+// DocumentVisualContextEvidence / DocumentVisualContext 宸茶縼绉昏嚦 packages/project-contracts銆?
 
-// 非阻断警告（DOCUMENT_ROLE_UNKNOWN / TARGET_AUDIENCE_UNKNOWN / ...）
+// 闈為樆鏂鍛婏紙DOCUMENT_ROLE_UNKNOWN / TARGET_AUDIENCE_UNKNOWN / ...锛?
 export interface DocumentContextWarning {
   code: string;
   message: string;
@@ -903,9 +903,9 @@ export interface DocumentContextProgress {
   model: string;
 }
 
-// ── Reference-Led Visual Direction（Reference Translation Profile）──
-// 离线确定性引擎：从参考项目视觉分析中提取可迁移机制，
-// 在不复制签名资产的前提下映射到当前项目。零模型调用。
+// 鈹€鈹€ Reference-Led Visual Direction锛圧eference Translation Profile锛夆攢鈹€
+// 绂荤嚎纭畾鎬у紩鎿庯細浠庡弬鑰冮」鐩瑙夊垎鏋愪腑鎻愬彇鍙縼绉绘満鍒讹紝
+// 鍦ㄤ笉澶嶅埗绛惧悕璧勪骇鐨勫墠鎻愪笅鏄犲皠鍒板綋鍓嶉」鐩€傞浂妯″瀷璋冪敤銆?
 
 export interface ReferenceTranslationRule {
   name: string;
@@ -1231,7 +1231,7 @@ export interface ProjectGraphicAnchor {
   supportingFactIds?: string[];
 }
 
-/** §4.3 Anchor 冲突校验结果。 */
+/** 搂4.3 Anchor 鍐茬獊鏍￠獙缁撴灉銆?*/
 export interface AnchorContradictionValidation {
   projectAnchorRoleConflict: boolean;
   closedOpenConflict: boolean;
@@ -1241,7 +1241,7 @@ export interface AnchorContradictionValidation {
   passed: boolean;
 }
 
-/** §4.1 Reference-First 单一来源 Anchor 模型。 */
+/** 搂4.1 Reference-First 鍗曚竴鏉ユ簮 Anchor 妯″瀷銆?*/
 export interface ReferenceFirstAnchorModel {
   systemAnchor: SystemAnchor;
   projectGraphicAnchor?: ProjectGraphicAnchor;
@@ -1423,7 +1423,7 @@ export interface ReferenceSignatureGraphic {
   semanticFingerprint?: string[];
 }
 
-/** §3.4 参考专属图形泄漏校验结果。 */
+/** 搂3.4 鍙傝€冧笓灞炲浘褰㈡硠婕忔牎楠岀粨鏋溿€?*/
 export interface SignatureGraphicLeakValidation {
   primaryStyleCarrierLeakIds: string[];
   secondaryStyleCarrierLeakIds: string[];
@@ -1536,19 +1536,19 @@ export interface ReferenceStyleReconstruction {
   visualReconstructionDirection: VisualReconstructionDirection;
   assetSelectionProtocol?: AssetSelectionProtocolResult;
   referenceFirstStrategy?: ReferenceFirstStrategy;
-  /** §14 生产链路 Generation Readiness 闭环结果，供桌面 UI 展示阻断原因。 */
+  /** 搂14 鐢熶骇閾捐矾 Generation Readiness 闂幆缁撴灉锛屼緵妗岄潰 UI 灞曠ず闃绘柇鍘熷洜銆?*/
   generationReadiness?: GenerationReadinessGate;
-  /** §ValidationIssue 聚合与 Readiness 单一事实源：所有报告/UI 共用的根因与派生症状。 */
+  /** 搂ValidationIssue 鑱氬悎涓?Readiness 鍗曚竴浜嬪疄婧愶細鎵€鏈夋姤鍛?UI 鍏辩敤鐨勬牴鍥犱笌娲剧敓鐥囩姸銆?*/
   generationReadinessResult?: GenerationReadinessResult;
-  /** §15 Resolved Project Facts 单一来源（审计报告 / Runtime Fact Validator / UI 项目摘要共用）。 */
+  /** 搂15 Resolved Project Facts 鍗曚竴鏉ユ簮锛堝璁℃姤鍛?/ Runtime Fact Validator / UI 椤圭洰鎽樿鍏辩敤锛夈€?*/
   resolvedProjectFacts?: ResolvedProjectFacts;
   validation: ReconstructionQualityValidation;
 }
 
 /**
- * §统一 ValidationIssue（参考优先 Readiness 域）。
- * 注意：与 model-schema/validation-issues.ts 的 schema 校验用 ValidationIssue 是不同概念，
- * 此处命名为 ReadinessValidationIssue 以避免跨模块同名冲突。
+ * 搂缁熶竴 ValidationIssue锛堝弬鑰冧紭鍏?Readiness 鍩燂級銆?
+ * 娉ㄦ剰锛氫笌 model-schema/validation-issues.ts 鐨?schema 鏍￠獙鐢?ValidationIssue 鏄笉鍚屾蹇碉紝
+ * 姝ゅ鍛藉悕涓?ReadinessValidationIssue 浠ラ伩鍏嶈法妯″潡鍚屽悕鍐茬獊銆?
  */
 export type ReadinessValidationIssueSeverity = 'warning' | 'error' | 'blocking';
 
@@ -1568,7 +1568,7 @@ export interface ReadinessValidationIssue {
   code: string;
   category: ReadinessValidationIssueCategory;
   severity: ReadinessValidationIssueSeverity;
-  /** 失败字段路径（JSON 路径或字段名）。 */
+  /** 澶辫触瀛楁璺緞锛圝SON 璺緞鎴栧瓧娈靛悕锛夈€?*/
   path: string;
   receivedValue?: unknown;
   message: string;
@@ -1587,7 +1587,7 @@ export interface ReadinessValidatorResult {
   issues: ReadinessValidationIssue[];
 }
 
-/** §3 Validator Registry：统一的 Validator 阶段枚举。 */
+/** 搂3 Validator Registry锛氱粺涓€鐨?Validator 闃舵鏋氫妇銆?*/
 export type ReferenceFirstValidatorStage =
   | 'reference_sanitization'
   | 'task_reference'
@@ -1599,7 +1599,7 @@ export type ReferenceFirstValidatorStage =
   | 'cross_artifact'
   | 'brief_compilation';
 
-/** §3.2 Validator Registry 执行编排产出的完整 ValidatorResult。 */
+/** 搂3.2 Validator Registry 鎵ц缂栨帓浜у嚭鐨勫畬鏁?ValidatorResult銆?*/
 export interface ReferenceFirstValidatorResult extends ReadinessValidatorResult {
   stage: ReferenceFirstValidatorStage;
   skipped: boolean;
@@ -1608,7 +1608,7 @@ export interface ReferenceFirstValidatorResult extends ReadinessValidatorResult 
   artifactPaths: string[];
 }
 
-/** §7 Validator 执行审计清单（runs/<job-id>/validation/validator-execution-manifest.json）。 */
+/** 搂7 Validator 鎵ц瀹¤娓呭崟锛坮uns/<job-id>/validation/validator-execution-manifest.json锛夈€?*/
 export interface ValidatorExecutionManifest {
   jobId: string;
   registeredValidatorIds: string[];
@@ -1620,7 +1620,7 @@ export interface ValidatorExecutionManifest {
   complete: boolean;
 }
 
-/** §15 Resolved Project Facts：单一来源的项目事实。 */
+/** 搂15 Resolved Project Facts锛氬崟涓€鏉ユ簮鐨勯」鐩簨瀹炪€?*/
 export type ResolvedFactSource =
   | 'user_input'
   | 'project_metadata'
@@ -1634,7 +1634,7 @@ export interface ResolvedFact<T> {
   status: ResolvedFactStatus;
 }
 
-/** §15 runs/<job-id>/runtime/resolved-project-facts.json —— 审计报告 / Runtime Fact Validator / Brief / UI 共用。 */
+/** 搂15 runs/<job-id>/runtime/resolved-project-facts.json 鈥斺€?瀹¤鎶ュ憡 / Runtime Fact Validator / Brief / UI 鍏辩敤銆?*/
 export interface ResolvedProjectFacts {
   brandName?: ResolvedFact<string>;
   industry?: ResolvedFact<string>;
@@ -1652,7 +1652,7 @@ export interface ReadinessValidationAggregation {
   status: 'ready' | 'needs_review' | 'blocked';
 }
 
-/** §9 Generation Readiness 单一事实源产物（runs/<job-id>/validation/generation-readiness-result.json）。 */
+/** 搂9 Generation Readiness 鍗曚竴浜嬪疄婧愪骇鐗╋紙runs/<job-id>/validation/generation-readiness-result.json锛夈€?*/
 export interface GenerationReadinessResult {
   jobId: string;
   outputType: GenerationOutputType;
@@ -1660,7 +1660,7 @@ export interface GenerationReadinessResult {
   rootIssues: ReadinessValidationIssue[];
   derivedIssues: ReadinessValidationIssue[];
   warnings: ReadinessValidationIssue[];
-  /** §11 Validator 执行完整性（单一事实源必须可见）。 */
+  /** 搂11 Validator 鎵ц瀹屾暣鎬э紙鍗曚竴浜嬪疄婧愬繀椤诲彲瑙侊級銆?*/
   validatorExecution: {
     expected: number;
     executed: number;
@@ -1672,9 +1672,9 @@ export interface GenerationReadinessResult {
 }
 
 
-// ── Phase 3：参考视觉转换 Anchor 工作流 ──
-// 参考风格胶囊 → Anchor Generation Brief → Anchor 人工确认。
-// 不再默认生成面向用户的长篇转译矩阵；旧 referenceTranslation 流程保留为开发者模式。
+// 鈹€鈹€ Phase 3锛氬弬鑰冭瑙夎浆鎹?Anchor 宸ヤ綔娴?鈹€鈹€
+// 鍙傝€冮鏍艰兌鍥?鈫?Anchor Generation Brief 鈫?Anchor 浜哄伐纭銆?
+// 涓嶅啀榛樿鐢熸垚闈㈠悜鐢ㄦ埛鐨勯暱绡囪浆璇戠煩闃碉紱鏃?referenceTranslation 娴佺▼淇濈暀涓哄紑鍙戣€呮ā寮忋€?
 
 export type AnchorDecision = 'pending' | 'approved' | 'retry' | 'rejected';
 
@@ -1697,12 +1697,12 @@ export type ReferenceAnchorStage =
   | '03-anchor-brief'
   | '04-anchor-decision';
 
-// AnchorAspectRatio / NormalizedProjectFacts 已迁移至 packages/project-contracts。
+// AnchorAspectRatio / NormalizedProjectFacts 宸茶縼绉昏嚦 packages/project-contracts銆?
 
-/** v5.3.1 §4/§5 参考元素三层转译模式。 */
+/** v5.3.1 搂4/搂5 鍙傝€冨厓绱犱笁灞傝浆璇戞ā寮忋€?*/
 export type ReferenceElementTransferMode = 'mechanism_only' | 'reinterpret' | 'prohibited';
 
-/** v5.3.1 §5 参考机制抽象中间结构：只保留运行方法，表层专属元素进入 prohibitedSurfaceElements。 */
+/** v5.3.1 搂5 鍙傝€冩満鍒舵娊璞′腑闂寸粨鏋勶細鍙繚鐣欒繍琛屾柟娉曪紝琛ㄥ眰涓撳睘鍏冪礌杩涘叆 prohibitedSurfaceElements銆?*/
 export interface ReferenceMechanismRule {
   id: string;
   category: 'color' | 'layout_typography' | 'graphic_organization' | 'material_photography' | 'extension';
@@ -1712,9 +1712,9 @@ export interface ReferenceMechanismRule {
   prohibitedSurfaceElements: string[];
 }
 
-// ReferenceStyleCapsule 已迁移至 packages/project-contracts。
+// ReferenceStyleCapsule 宸茶縼绉昏嚦 packages/project-contracts銆?
 
-/** §11 Reference Workflow 内部只读合并视图（文档上下文不得覆盖当前项目身份）。 */
+/** 搂11 Reference Workflow 鍐呴儴鍙鍚堝苟瑙嗗浘锛堟枃妗ｄ笂涓嬫枃涓嶅緱瑕嗙洊褰撳墠椤圭洰韬唤锛夈€?*/
 export interface ReferenceCurrentProjectContext {
   visual: ProjectVisualContext;
   document?: DocumentVisualContext;
@@ -1758,13 +1758,13 @@ export interface StartReferenceAnchorInput {
   currentProjectId: string;
   referenceAssetPaths: string[];
   apiProfileId?: string;
-  /** 可选：加载 Phase 2 文档上下文任务的输出。 */
+  /** 鍙€夛細鍔犺浇 Phase 2 鏂囨。涓婁笅鏂囦换鍔＄殑杈撳嚭銆?*/
   documentRunId?: string;
-  /** 用户希望继承的内容。 */
+  /** 鐢ㄦ埛甯屾湜缁ф壙鐨勫唴瀹广€?*/
   preference?: string;
-  /** 用户明确不要继承的内容。 */
+  /** 鐢ㄦ埛鏄庣‘涓嶈缁ф壙鐨勫唴瀹广€?*/
   avoidance?: string[];
-  /** v5.3.1 §10 输出比例（单值）；缺省时使用系统默认 16:9。 */
+  /** v5.3.1 搂10 杈撳嚭姣斾緥锛堝崟鍊硷級锛涚己鐪佹椂浣跨敤绯荤粺榛樿 16:9銆?*/
   aspectRatio?: AnchorAspectRatio;
 }
 
@@ -1775,11 +1775,11 @@ export interface ReferenceAnchorResult {
   briefMarkdown: string;
 }
 
-// ── Phase 4 三大功能轻量整合：Resolved Project Context ──
+// 鈹€鈹€ Phase 4 涓夊ぇ鍔熻兘杞婚噺鏁村悎锛歊esolved Project Context 鈹€鈹€
 
-// ContextConflict / ResolvedProjectContext 已迁移至 packages/project-contracts。
+// ContextConflict / ResolvedProjectContext 宸茶縼绉昏嚦 packages/project-contracts銆?
 
-/** §8 视觉项目与文档 Context 的本地关联记录（一个文档 Context 可被多个视觉项目引用）。 */
+/** 搂8 瑙嗚椤圭洰涓庢枃妗?Context 鐨勬湰鍦板叧鑱旇褰曪紙涓€涓枃妗?Context 鍙澶氫釜瑙嗚椤圭洰寮曠敤锛夈€?*/
 export interface ProjectDocumentContextLink {
   projectId: string;
   documentContextRunId: string;
@@ -1787,7 +1787,7 @@ export interface ProjectDocumentContextLink {
   lastResolvedAt?: string;
 }
 
-/** §9 冲突确认输入。 */
+/** 搂9 鍐茬獊纭杈撳叆銆?*/
 export interface ConflictResolutionInput {
   field: string;
   resolution: ContextConflict['resolution'];
@@ -1805,7 +1805,7 @@ export interface ReferenceAnchorProgress {
   model: string;
 }
 
-// ── 生图功能 V1：Desktop 专属输入 / 进度类型 ──
+// 鈹€鈹€ 鐢熷浘鍔熻兘 V1锛欴esktop 涓撳睘杈撳叆 / 杩涘害绫诲瀷 鈹€鈹€
 
 export interface LegacyStartImageGenerationInput {
   projectId: string;
@@ -1840,16 +1840,16 @@ export interface ImageGenerationSourcePreview {
   gate: ImageGenerationGateResult;
 }
 
-/** §13 重试输入。 */
+/** 搂13 閲嶈瘯杈撳叆銆?*/
 export interface RetryImageGenerationInput {
   runId: string;
   mode: ImageGenerationRetryMode;
-  /** edited_prompt 模式下的新 Prompt。 */
+  /** edited_prompt 妯″紡涓嬬殑鏂?Prompt銆?*/
   editedPrompt?: string;
   apiProfileId?: string;
 }
 
-/** §16.3 运行事件广播载荷（image-generation:run-updated）。 */
+/** 搂16.3 杩愯浜嬩欢骞挎挱杞借嵎锛坕mage-generation:run-updated锛夈€?*/
 export interface ImageGenerationProgress {
   runId: string;
   projectId: string;
@@ -1862,7 +1862,7 @@ export interface ImageGenerationProgress {
   providerTaskId?: string;
 }
 
-/** compile 返回：编译产物预览（不提交 Provider）。 */
+/** compile 杩斿洖锛氱紪璇戜骇鐗╅瑙堬紙涓嶆彁浜?Provider锛夈€?*/
 export interface ImageGenerationCompileResult {
   runId: string;
   compiledPrompt: string;
@@ -2076,11 +2076,11 @@ export interface DesktopApi {
     onProgress(callback: (progress: ReferenceAnchorProgress) => void): () => void;
   };
   imageGeneration: {
-    /** §16 获取 Provider 能力（用于 UI 展示与 Prompt 编译约束）。 */
+    /** 搂16 鑾峰彇 Provider 鑳藉姏锛堢敤浜?UI 灞曠ず涓?Prompt 缂栬瘧绾︽潫锛夈€?*/
     getCapabilities(apiProfileId?: string): Promise<ImageProviderCapabilities>;
     getPresetCapabilities(): Promise<ImageGenerationPresetCapability[]>;
     getSourcePreview(input: StartImageGenerationInput): Promise<ImageGenerationSourcePreview>;
-    /** §16 编译 Prompt 并执行三层 Gate（不提交 Provider）。 */
+    /** 搂16 缂栬瘧 Prompt 骞舵墽琛屼笁灞?Gate锛堜笉鎻愪氦 Provider锛夈€?*/
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
     compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
     getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
@@ -2102,18 +2102,18 @@ export interface DesktopApi {
     postCompositeVNextLogo(
       input: PostCompositeVNextLogoInput
     ): Promise<Record<string, unknown>>;
-    /** §16 编译 + Gate 通过后提交生图任务。 */
+    /** 搂16 缂栬瘧 + Gate 閫氳繃鍚庢彁浜ょ敓鍥句换鍔°€?*/
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
     getRun(runId: string): Promise<ImageGenerationRun>;
     listRuns(projectId?: string): Promise<ImageGenerationRunSummary[]>;
     cancel(runId: string): Promise<boolean>;
-    /** §13 手动重试，创建新 runId 并保留 parentRunId。 */
+    /** 搂13 鎵嬪姩閲嶈瘯锛屽垱寤烘柊 runId 骞朵繚鐣?parentRunId銆?*/
     retry(input: RetryImageGenerationInput): Promise<ImageGenerationRun>;
     saveReview(review: ImageGenerationReview): Promise<ImageGenerationRun>;
     openFolder(runId: string): Promise<void>;
-    /** 读取已生成图片的 data URL（主进程读盘，渲染层不直接接触本地文件）。 */
+    /** 璇诲彇宸茬敓鎴愬浘鐗囩殑 data URL锛堜富杩涚▼璇荤洏锛屾覆鏌撳眰涓嶇洿鎺ユ帴瑙︽湰鍦版枃浠讹級銆?*/
     getImageDataUrl(runId: string, imageId: string): Promise<{ mimeType: string; dataUrl: string } | null>;
-    /** §16.3 运行状态广播。 */
+    /** 搂16.3 杩愯鐘舵€佸箍鎾€?*/
     onRunUpdated(callback: (progress: ImageGenerationProgress) => void): () => void;
   };
   creativeSession: {
@@ -2338,7 +2338,7 @@ export interface DesktopApi {
     applyConflictResolution(projectId: string, resolutions: ConflictResolutionInput[]): Promise<ResolvedProjectContext>;
     migrate(projectId: string): Promise<{ visualContextStatus: string; resolvedGeneratedAt?: string | null }>;
     export(projectId: string): Promise<string | null>;
-    /** §8 删除被引用的文档 Context 前检查引用关系。 */
+    /** 搂8 鍒犻櫎琚紩鐢ㄧ殑鏂囨。 Context 鍓嶆鏌ュ紩鐢ㄥ叧绯汇€?*/
     isDocumentContextReferenced(runId: string): Promise<boolean>;
   };
 }
@@ -2411,7 +2411,7 @@ export interface StructurePolicy {
   requiresHumanConfirmation: boolean;
 }
 
-/** §8.4 结构策略校验结果。 */
+/** 搂8.4 缁撴瀯绛栫暐鏍￠獙缁撴灉銆?*/
 export interface StructurePolicyValidation {
   inferredStructureEnteredLockedInfo: boolean;
   inferredStructureEnteredIdentityPack: boolean;
@@ -2444,7 +2444,7 @@ export interface GenerationIdentityAsset {
   confidence?: number;
 }
 
-/** §9.2 派生身份资产（Logo 裁切 / 字标裁�� / 独立图形等）。 */
+/** 搂9.2 娲剧敓韬唤璧勪骇锛圠ogo 瑁佸垏 / 瀛楁爣瑁侊拷锟?/ 鐙珛鍥惧舰绛夛級銆?*/
 export interface DerivedIdentityAsset {
   id: string;
   sourceAssetId: string;
@@ -2455,7 +2455,7 @@ export interface DerivedIdentityAsset {
   confidence: number;
 }
 
-/** §9.4 Identity Pack 粒度校验结果。 */
+/** 搂9.4 Identity Pack 绮掑害鏍￠獙缁撴灉銆?*/
 export interface IdentityPackGranularityValidation {
   fullPageAssetIds: string[];
   broadLockedAssetIds: string[];
@@ -2488,9 +2488,9 @@ export interface GenerationTaskDefinition {
   primarySubjectTypes: string[];
   requiredObjects: string[];
   optionalObjects: string[];
-  /** §3 当前任务必需的 Style Rules（来自 Task-Scoped Primary，视觉规则，不是画面必需对象）。 */
+  /** 搂3 褰撳墠浠诲姟蹇呴渶鐨?Style Rules锛堟潵鑷?Task-Scoped Primary锛岃瑙夎鍒欙紝涓嶆槸鐢婚潰蹇呴渶瀵硅薄锛夈€?*/
   requiredStyleRules?: string[];
-  /** §3 当前任务的辅助 Style Rules（来自 Task-Scoped Secondary）。 */
+  /** 搂3 褰撳墠浠诲姟鐨勮緟鍔?Style Rules锛堟潵鑷?Task-Scoped Secondary锛夈€?*/
   supportingStyleRules?: string[];
   compositionRules: string[];
   typographyRules: string[];
@@ -2500,7 +2500,7 @@ export interface GenerationTaskDefinition {
   forbiddenOutputPatterns: string[];
 }
 
-/** §7 Generation Context Manifest：两份报告共用同一任务上下文。 */
+/** 搂7 Generation Context Manifest锛氫袱浠芥姤鍛婂叡鐢ㄥ悓涓€浠诲姟涓婁笅鏂囥€?*/
 export interface GenerationContextManifest {
   jobId: string;
   outputType: GenerationOutputType;
@@ -2515,7 +2515,7 @@ export interface GenerationContextManifest {
   validationStatus: 'ready' | 'needs_review' | 'blocked';
 }
 
-/** §12 跨报告一致性校验结果。 */
+/** 搂12 璺ㄦ姤鍛婁竴鑷存€ф牎楠岀粨鏋溿€?*/
 export interface CrossArtifactConsistencyValidation {
   outputTypeMatches: boolean;
   taskSubsetMatches: boolean;
@@ -2572,3 +2572,4 @@ export interface ProtocolHardcodeScanResult {
   concreteTouchpointTerms: string[];
   passed: boolean;
 }
+
