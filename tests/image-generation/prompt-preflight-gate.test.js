@@ -40,9 +40,14 @@ test('preflight detects other-project and Golden content leakage', () => {
 
 test('preflight exposes project specificity, legacy reuse, packaging evidence and Logo route codes', () => {
   const packet = phase1Packet();
+  // Pass an explicit minimal approvedCreativeDecision so the synthesiser
+  // does not populate enough categories to flip specificity to 'ready'.
+  // The test asserts that several blocker codes fire when the contract
+  // itself is not yet project-specific enough.
   const projectContract = compileProjectSpecificGenerationContract({
     visualDecisionPacket: packet,
     deliverable: 'packaging',
+    approvedCreativeDecision: { direction_id: 'pkt-fixture', version: '1' },
   });
   projectContract.mustTransform[0].targetExpression = ['写实羽毛照片'];
   const report = runPromptPreflightGate({
