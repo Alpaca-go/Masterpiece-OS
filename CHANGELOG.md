@@ -1,8 +1,8 @@
 # Changelog
 
-## 5.0.0 — 2026-07-31
+## 5.0.0-rc.1 — 2026-07-31
 
-> 仓库清理与版本对齐：合并 v5 引擎 / V6 Creative Production / V18 Creative Director / vnext 短链路 / Phase 1.5 Quality Recovery Loop 的工作，正式发布版本统一为 5.0.0。
+> 仓库清理与版本对齐：合并 v5 引擎 / V6 Creative Production / V18 Creative Director / vnext 短链路 / Phase 1.5 Quality Recovery Loop 的工作，正式发布版本统一为 5.0.0-rc.1；待真实 Provider smoke 通过与分支治理完成后 cut 为 5.0.0。
 
 ### v5 引擎：一次深度 Creative Director 推理
 
