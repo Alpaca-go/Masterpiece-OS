@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T13:38:14.384Z",
+  "phase": "9C",
+  "title": "Phase 9C 3-Brand Integration Summary",
+  "brands": {
+    "jiuzhou-aesthetics": {
+      "blockCount": 16,
+      "characterCount": 11633,
+      "moduleVersions": {
+        "brandDna": "v0.1.1",
+        "spatialIntent": "9A.2",
+        "architectureBridge": "9A.3",
+        "architectureAnchor": "8A",
+        "architectureFunctionBridge": "8B.1",
+        "spatialReality": "9B.1",
+        "architecturePreservation": "9B.2",
+        "promptCompiler": "1.0.0"
+      },
+      "experienceGoal": "创造低压力、高信任的专业医疗体验",
+      "blockOrder": [
+        "task",
+        "spatial_intent",
+        "architecture_language",
+        "spatial_reality_constraint",
+        "architecture_context",
+        "architecture_preservation",
+        "architecture_function_bridge",
+        "architectural_concept",
+        "architecture_dna",
+        "brand_translation",
+        "functional_requirement",
+        "material",
+        "lighting",
+        "composition",
+        "rendering",
+        "negative_constraints"
+      ]
+    },
+    "feng-tang-tang": {
+      "blockCount": 16,
+      "characterCount": 9376,
+      "moduleVersions": {
+        "brandDna": "v0.1",
+        "spatialIntent": "9A.2",
+        "architectureBridge": "9A.3",
+        "architectureAnchor": "8A",
+        "architectureFunctionBridge": "8B.1",
+        "spatialReality": "9B.1",
+        "architecturePreservation": "9B.2",
+        "promptCompiler": "1.0.0"
+      },
+      "experienceGoal": "创造可信赖的、围绕食物制作的日常餐饮体验",
+      "blockOrder": [
+        "task",
+        "spatial_intent",
+        "architecture_language",
+        "spatial_reality_constraint",
+        "architecture_context",
+        "architecture_preservation",
+        "architecture_function_bridge",
+        "architectural_concept",
+        "architecture_dna",
+        "brand_translation",
+        "functional_requirement",
+        "material",
+        "lighting",
+        "composition",
+        "rendering",
+        "negative_constraints"
+      ]
+    },
+    "yi-ji-liang-fang": {
+      "blockCount": 16,
+      "characterCount": 9811,
+      "moduleVersions": {
+        "brandDna": "v0.1",
+        "spatialIntent": "9A.2",
+        "architectureBridge": "9A.3",
+        "architectureAnchor": "8A",
+        "architectureFunctionBridge": "8B.1",
+        "spatialReality": "9B.1",
+        "architecturePreservation": "9B.2",
+        "promptCompiler": "1.0.0"
+      },
+      "experienceGoal": "创造慢节奏的、可被理解的中医调理体验",
+      "blockOrder": [
+        "task",
+        "spatial_intent",
+        "architecture_language",
+        "spatial_reality_constraint",
+        "architecture_context",
+        "architecture_preservation",
+        "architecture_function_bridge",
+        "architectural_concept",
+        "architecture_dna",
+        "brand_translation",
+        "functional_requirement",
+        "material",
+        "lighting",
+        "composition",
+        "rendering",
+        "negative_constraints"
+      ]
+    }
+  },
+  "summary": {
+    "totalBrands": 3,
+    "allBrands16Blocks": true,
+    "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+    "spatialIntelligenceVersion": "1.0.0"
+  },
+  "notes": [
+    "Phase 9C §11 Regression Test: 3 brand compileSpaceRuntime 全部成功",
+    "Phase 9C §13.4 No Regression: 相比 Phase 9B.2 没有明显下降",
+    "Phase 9C §13.3 Traceability: 每个 brand 都有完整 evaluation record",
+    "Provider not called. Real provider smoke 仍走 apps/desktop/scripts/phase-9b/ (smoke runner 已支持 Phase 9B / 9B.1 / 9B.2 三种模式)"
+  ]
+}

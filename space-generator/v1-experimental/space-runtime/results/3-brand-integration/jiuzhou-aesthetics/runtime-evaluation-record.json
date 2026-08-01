@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9C",
+  "brandKey": "jiuzhou-aesthetics",
+  "projectId": null,
+  "generatedAt": "2026-08-01T13:38:14.339Z",
+  "moduleVersions": {
+    "brandDna": "v0.1.1",
+    "spatialIntent": "9A.2",
+    "architectureBridge": "9A.3",
+    "architectureAnchor": "8A",
+    "architectureFunctionBridge": "8B.1",
+    "spatialReality": "9B.1",
+    "architecturePreservation": "9B.2",
+    "promptCompiler": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1"
+  },
+  "compiledStrategy": {
+    "experienceGoal": "创造低压力、高信任的专业医疗体验",
+    "spatialStrategy": [
+      "soft boundary",
+      "balanced openness",
+      "low stimulation lighting"
+    ],
+    "architecturalCharacteristics": [
+      "continuous spatial flow",
+      "soft boundary",
+      "quiet hierarchy"
+    ],
+    "materialDirection": [
+      "calm mineral texture",
+      "natural translucent surface"
+    ],
+    "lightDirection": [
+      "indirect illumination",
+      "soft natural transition"
+    ],
+    "spatialOrganization": [
+      "gradual privacy transition",
+      "clear user circulation"
+    ],
+    "weight": 0.25
+  },
+  "prompt": {
+    "markdown": "# Task\n\nGenerate a single premium-grade space image for **九州美学** (medical_aesthetics).\nScene: `reception` (flagship_clinic_reception).\nContext: street_store | Scale: medium.\n\n# Spatial Intent (Phase 9A.2: 为什么需要这样的空间体验)\n\n> 这次生成的空间要传递的核心体验目标 + spatial strategy 关键词.\n> 这一层在 architecture function bridge 之前, 给整个空间先定\"体验基调\".\n> 注意: 不指定具体 anchor / material / decoration (Phase 9A.2 §9 Layer Boundary).\n\n**Experience Goal**: 创造低压力、高信任的专业医疗体验\n\n**Spatial Strategy** (用以下策略实现体验目标, 不要直接复制具体元素):\n- soft boundary\n- balanced openness\n- low stimulation lighting\n\n**Usage**: 把上面 experienceGoal + spatialStrategy 当作这次空间生成的\"先验\". architectural_concept / architecture_dna / material / lighting 等块需要为这个体验目标服务, 不是反过来.\n\n# Architecture Language (Phase 9A.3: 什么建筑原则支持这种体验)\n\n> 由 spatial intent 推导出的 high-level architecture language 方向.\n> 这一层是\"建筑机制先验\", 给 architectural_concept / architecture_dna 提供方向.\n> 注意: 不指定具体 anchor / 装饰元素 / 参考图 (Phase 9A.3 §9 Layer Boundary).\n\n**Spatial Principles** (空间原则):\n- gradual transition\n- controlled openness\n- balanced privacy\n- continuous space\n- soft boundary\n- controlled transparency\n\n**Architectural Characteristics** (建筑特征):\n- continuous spatial flow\n- soft boundary\n- quiet hierarchy\n\n**Material Direction** (材料方向, 高层):\n- calm mineral texture\n- natural translucent surface\n\n**Light Direction** (光环境逻辑):\n- indirect illumination\n- soft natural transition\n\n**Spatial Organization** (空间组织):\n- gradual privacy transition\n- clear user circulation\n\n**Usage**: 上面 5 个维度是这次空间要遵循的 high-level architecture language 方向. material / lighting 块可以更具体, 但要遵循上面的方向, 不是反过来. architecture function bridge 仍然提供商业功能约束, 这一层不重复其内容.\n\n# Spatial Reality Constraint (Phase 9B.1: 什么商业现实约束这个空间)\n\n> 商业空间真实性是硬约束. 这次生成的空间必须在以下商业现实里站住脚, 不能偏向\n> exhibition / installation / concept architecture / pure art space.\n> 这一层在 spatial_intent + architecture_language 之后, 在 architecture_context\n> 之前, 给建筑语言加商业现实护栏.\n> 注意: 不指定具体 anchor / 装饰元素 (Phase 9A.3 §9 Layer Boundary).\n\n**Space Type** (空间类型): medical_aesthetics_clinic\n\n**Commercial Scale** (商业规模): 200 sqm flagship street_store clinic, single tenant\n\n**Required Zones** (必备功能区, 必须全部出现, staff 可见):\n- reception_desk\n- waiting_area\n- brand_wall\n- consultation_room\n- consultation_guidance\n- vip_lounge\n\n**Operation Logic** (运营逻辑): patient flow + VIP appointment system; staff 在前台 / 咨询室 / 治疗室轮转, 必须随时可见\n\n**User Flow** (用户动线): street -> reception -> waiting -> consultation -> treatment -> checkout, 同一用户 90-120 分钟内完成, 路径上 staff 3-5 人可见\n\n**Privacy Requirement** (隐私要求): open public zone (reception/waiting) + filtered semi-private (consultation_guidance) + enclosed treatment, 不可出现 hospital corridor 风格硬门硬隔\n\n**Material Reality** (材料现实, 真实材料而非概念): real medical-grade materials: mineral_plaster, frosted_glass, brushed metal, fine_textured_stone, matte_white_surface, 4-5 类内, 不可出现花岗岩 / 大理石 / 亚克力发光\n\n**Forbidden Spatial Types** (反漂移, 以下空间类型**绝对不能**出现, 出现任何一个视为失败):\n- ❌ hospital corridor (硬墙 + 顶灯 + 排椅)\n- ❌ art gallery (空墙 + 射灯 + 单件艺术品)\n- ❌ modern museum (白盒 + 离散雕塑)\n- ❌ nightclub lighting (深色 + 紫红 + 镭射)\n- ❌ exhibition hall (中心展示台 + 巡游动线)\n- ❌ art installation (装饰性雕塑 / 装置为主)\n- ❌ spa retreat (无 staff / 纯冥想空间)\n- ❌ fine art gallery (无 staff 纯展示)\n\n**Usage**:\n- 上面 8 字段是这次空间的硬约束, architecture / material / lighting / composition 块必须为这些约束服务, 不是反过来.\n- 必备功能区 (requiredZones) 必须在图里全部出现, staff 必须可见 (非 0 staff 纯展示).\n- forbidden spatial types 是**反漂移**硬护栏, 出现任何一个视为该 mode 失败.\n- 商业真实性优先于建筑美学: 真实材料 > 概念材料, 真实功能 > 概念空间, 真实 staff > 纯展示.\n\n# Architecture Context (in-context reference, Phase 8A)\n\n> 建筑机制先验 (anchor 先于 DNA 的 architectural_concept, 强化建筑美学).\n> 以下机制是当前品牌已通过 S 级验收的建筑语言样本, 不得直接复刻其具体物 (v1.0 §34 规则一/五).\n\n## Anchor 1: JZMX-ARCH-02-EntranceGlass (role=entrance_corridor_through_glass_facade)\n\n- **Primary Mechanism**: 窄框整面玻璃幕墙 + 短走廊缓冲, 街道与室内形成视觉连续\n- **Secondary Mechanism**: 弧形连续天花 + 浅木流线形接待台, 由低向高的空间序列\n\n## Anchor 2: JZMX-ARCH-01-ReceptionMembrane (role=interior_reception_with_membrane_ceiling)\n\n- **Primary Mechanism**: 层叠半透明介质从天花垂落, 在中心汇合形成夹层光, 边缘缓慢过渡为墙, 无硬收边\n- **Secondary Mechanism**: 金属长方体接待台配顶底发光缝, 与暖色环境形成对比\n\n## Anchor 3: JZMX-ARCH-03-ConsultationFacade (role=wide_consultation_floor_with_full_glass)\n\n- **Primary Mechanism**: 单层大跨膜天花 + 中心天窗, 跨工位连续覆盖, 自然光通过半透明介质柔化后落下\n- **Secondary Mechanism**: 整面 3 大格落地玻璃 + 弧形膜切分工位, 维持视觉连续 + 听觉弱屏蔽\n\n## Usage in this prompt\n\n把上述 anchor 提供的建筑机制作为 **先验** (priority), 在 architectural_concept 块之前.\nDNA 字段描述的空间概念必须与 anchor 的建筑机制 **一致**, 不冲突.\n禁止把 anchor 中的具体物 (具体天花曲线 / 具体玻璃分格 / 具体膜形态) 复刻到生成图里.\n# Architecture Preservation (Phase 9B.2: 什么建筑机制必须被保护)\n\n> Phase 9B 给了 Architecture Anchor 提供的建筑美感, Phase 9B.1 通过 Reality Constraint 提升了\n> 商业真实性, 但可能削弱了 anchor 的空间记忆点. 这一层在 architecture_context (Phase 8A) 之后,\n> 在 architecture_function_bridge 之前, 显式保护 anchor 提供的关键建筑机制.\n> 设计原则: **mechanism not object** (Phase 9B.2 §6).\n\n**Weight** (保护强度): 0.70 (0.3 弱保护 / 0.5 平衡 / 0.7 强保护 / 0.9 概念优先)\n\n**Protected Elements** (保护元素, 只保护机制, 不添加具体装饰物):\n- **ceiling_language** — 保护顶部空间语言、吊顶结构、光环境. 膜天花 / 边缘光带 / 顶底发光缝 / 实木吊顶 / 纸灯 等机制必须保留.\n- **spatial_signature** — 保护空间识别度和核心建筑特征. 接待台 + 沙发 + 走廊 / open_kitchen + dining / tea_corner + herbal cabinet 等空间节奏必须保留.\n- **material_expression** — 保护材质关系和表面表达. 微水泥 + 木材 + 半透膜 / 暖木 + 真实厨房设备 / 天然木 + 宣纸 + 陶瓷 等材质组合必须保留.\n- **lighting_behavior** — 保护品牌光环境. 主光 + 边缘光 + ambient 4 层 / 自然光 + 暖光 / 纸灯软光 + 茶艺区暖光 等光环境逻辑必须保留.\n\n**Usage** (Phase 9B.2 §6 mechanism not object):\n- ✓ 允许: 保留空间结构 / 保留材质关系 / 保留光线逻辑\n- ✗ 禁止: 增加额外装饰 / 强行加入雕塑 / 堆叠视觉符号\n- ✗ 禁止: 引入未在 anchor 中存在的具体装饰元素 (花瓣 / 羽翼 / 雕塑 / 装置)\n- 上面列出的 protected elements 必须被生成图遵守, 强度按 weight 调整\n- weight=0.7 意味着 70% 保留 anchor 机制 + 30% 自由演化, weight=0.9 几乎完全保留 anchor\n\n# Architecture-Function Bridge (Phase 8B.1 §3: 建筑机制 -> 商业功能桥接)\n\n> 建筑语言必须服务于商业现实, 不是反过来. 本块把 architecture 翻译为 functional action,\n> 缓解 Phase 8B 暴露的 Architecture Concept Drift (空间变展览馆, 商业运营逻辑被压制).\n\n**Commercial Purpose**: 让首次到店的医美客户在进门 3 秒内感到被接住, 5 分钟内建立对九州美学专业度的信任, 同时让 staff 在前场高效完成接待-咨询-分流.\n\n**Spatial Translation (architecture mechanism -> commercial action)**:\n- soft_continuity (spatialConcept.primary) + guided_flow circulation -> 入口到等候区的视觉引导, 让客户在进门时无意识地把视线落到接待台\n- layered_biomorphic_flow (spatialConcept.secondary) + open visibility -> 街道与室内的视觉连续, 让街上的潜在客户能看到内部, 服务品牌可见性\n- low boundary hardness + soft enclosure -> 接待与等候区之间的听觉弱屏蔽, staff 可以在接待台小声确认客户信息, 同时不破坏空间开放感\n- high spatial continuity (wallToCeiling/roomToRoom) -> 视觉与功能上 '一个空间', 让 staff 可以快速横穿\n\n**Operation Constraints (硬约束, 商业运营必须满足)**:\n- 接待台后方必须保留 1.5m staff 通道, 满足 1 位 staff 在台后转身 + 1 位 staff 通过\n- 等候区主通道宽度 >= 1.8m, 满足轮椅通过 (medical_aesthetics 商业无障碍)\n- consultation 区工位之间用软边界做弱屏蔽, 工位之间声压差 >= 10dB\n- 玻璃幕墙入口必须保留 >= 1.5m 净宽, 满足紧急疏散 + 客户带陪同者进入\n- 必须显示 visibleButNotHospitalLike 的医疗合规表达: 接待台附近有可识别的消毒 / 急救 / 隐私标识, 但不放病床或手术灯\n\n**Human Experience (用户路径与体验节奏)**:\n- 进门 3 秒内视线落到接待台 (利用天花中心汇合作为视觉焦点引导)\n- 等候区必须有可坐的沙发 + 茶几 + 至少 1 株真植物, 不能纯装饰膜或光墙\n- consultation 区在视觉上从 public 渐变到 semi-private, 不出现硬门 + 锁\n- staff 必须可见, 至少 1 位在接待台, 1 位在 consultation 区 (纯建筑渲染 + 0 staff = 展览馆, 不是医美)\n- 光线在 client 眼睛高度 = 柔和, 不出现强光斑 / 射灯直射 / 紫色色块\n\n**Commercial Reality (防止空间变展览馆)**:\n- 接待台必须有功能性储物 (抽屉/柜门可见), 不是纯雕塑\n- 沙发可坐 (有座深, 靠背), 数量 >= 3 人位\n- consultation 工位有桌面 + 椅子 + 1-2 件办公用品, 不是纯装置\n- 必须出现 1 处品牌内容物 (logo / 品牌墙 / 品牌物料), 但面积比例 <= 5% (品牌不压制空间)\n- 至少 1 处产品 / 服务展示 (展示架 / 咨询桌 / 数字屏), 不是纯建筑\n- 可以出现 0-3 个客户 (sparse), 不出现 0 staff + 0 客户的纯展示\n\n**Concept Drift Guards (Phase 8B.1 §7 fail-closed, 出现必须避开)**:\n- pure exhibition-only architecture without functional anchors\n- soft boundary as decorative-only without spatial routing function\n- reception desk as pure sculpture without storage / staff access\n- consultation space without desks / chairs / staff\n- empty gallery-like space (no staff, no clients, no product display)\n- architecture language dominates and weakens commercial operation logic\n\n**Bridge Weight Boost**: 0.25 (0=不强调, 1=最强; v1.1 + Phase 8B.1 推荐 0.25)\n\n**Usage**: 上面列出的 5 个维度 (spatialTranslation / operationConstraints / humanExperience / commercialReality / conceptDriftGuards) 必须被生成图遵守. 建筑语言服从商业现实, 不是反过来.\n\n# Architectural Concept (空间概念优先于品牌表达, v1.1 §6)\n\n**Primary Spatial Concept**: soft_continuity\n**Secondary**: layered_biomorphic_flow\n\n空间概念 / 建筑机制 必须先于 品牌元素 被建立. 品牌附着在建筑语言之上, 不是反过来.\n\n# Architecture DNA\n\n**Geometry**:\n- Dominant: continuous_curves, rounded_openings, soft_transitions\n- Limited: rigid_grid, sharp_corners\n\n**Spatial Continuity**:\n- Wall ↔ Ceiling: high\n- Floor ↔ Furniture: medium\n- Room ↔ Room: high\n\n**Boundary Language**:\n- Hardness: low | Transparency: medium | Enclosure: soft\n\n**Circulation**: type=guided_flow | visibility=open | rhythm=calm\n\n**Boundary Hardness**: low\n**Statement Strength**: high\n\n# Brand Translation (v1.1 §5 翻译层, 品牌不是装饰)\n\n**Brand**: 九州美学\n**Industry**: 医疗美容与医美生态服务\n**Audience**: 医美消费者, 合作机构, 医疗从业者\n\n**Brand Spirit (high-weight >= 0.7)**:\n- scientific (weight >= 0.7)\n- elegant (weight >= 0.7)\n- healing (weight >= 0.7)\n- futuristic (weight >= 0.7)\n- premium (weight >= 0.7)\n\n**Brand Grammar**:\n- organicGrowth: high\n- visualLightness: high\n- controlledGlow: high\n- refinedOrder: high\n- decorativeDensity: low\n\n**Motif Family (all optional, no required literal)**: feather_like_flow, petal_like_expansion, optical_crystal, translucent_fiber, flowing_membrane\n\n**Literal Asset Usage**:\n- Logo visibility: medium\n- Direct peacock: low\n- Flower sculpture: optional\n- Crystal object: optional\n\n**Injection Strength**: 0.55 (0 = no injection, 1 = all literal assets)\n\n# Functional & Commercial Requirement (v1.1 §6 合并 v0.1 function+functional)\n\n**Required Zones**: reception_desk, waiting_area, brand_wall, consultation_guidance\n**Optional Zones**: product_display, art_installation\n**Operational Realism**: high\n\n**Customer Flow**:\n- Entrance → Reception: clear\n- Reception → Waiting: clear\n- Waiting → Consultation: readable\n\n**Privacy Zones**:\n- Public: open\n- Semi-private: filtered\n- Treatment: enclosed\n\n**Furniture**: ergonomic commercial-grade accessible\n\n**Medical Compliance**:\n- Visible but not hospital-like: true\n\n# Material System\n\n**Material Count Limit**: 5 (v1.0 §16 hard constraint: 5 for medical_aesthetics)\n\n**Primary Materials**: mineral_plaster, fine_textured_stone, matte_white_surface\n**Secondary Materials**: frosted_glass\n**Accent Materials**: brushed_metal\n\n**Finish**: gloss=low | reflectivity=controlled | tactile=refined\n\n# Lighting System\n\n**Primary Strategy**: architectural_indirect_light\n\n**Ambient**: softness=high | brightness=medium | contrast=low\n\n**Integrated Light**:\n- Ceiling cove: high\n- Wall edge: medium\n- Furniture base: low\n\n**Brand Light**: hueFamily=soft_lavender,neutral_white | saturation=low | areaRatio=limited\n\n**Spotlight Usage**: low\n**Decorative Fixture Visibility**: low\n**Architectural Glow**: high\n\n# Composition & Photography\n\n**Focal Hierarchy**:\n- Primary: architecture_or_brand_wall\n- Secondary: reception_or_display\n- Tertiary: brand_motif\n\n**Visual Balance**: symmetry=medium | negativeSpace=high | density=low\n\n**Camera**: lens=28mm_to_40mm | height=human_eye_level | distortion=controlled\n\n**Framing**: depthLayers=3 | foregroundUsage=optional | clearEntryView=true\n\n# Rendering Requirements\n\n**Realism**: commercial_archviz\n**Visual Finish**: refined\n**Exposure**: soft_bright\n**White Balance**: neutral_warm\n**Shadow**: soft\n**Texture Visibility**: controlled\n**People**: amount=sparse | motionBlur=optional\n**Cleanliness**: high\n**Post-Processing**: restrained\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- generic_beauty_salon\n- excessive_purple\n- literal_peacock_theme_park\n- repeated_flower_sculptures\n- random_crystal_decorations\n- nightclub_lighting\n- cheap_acrylic_glow\n- overdecorated_reception\n- hospital_corridor\n- empty_art_gallery\n- impossible_circulation\n- unusable_furniture\n",
+    "blockCount": 16,
+    "characterCount": 11633,
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "spatial_reality_constraint",
+      "architecture_context",
+      "architecture_preservation",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ]
+  },
+  "validationContext": {
+    "brandKey": "jiuzhou-aesthetics",
+    "promptVersion": "phase-9c-runtime-spatial-intelligence-9a2-9a3-9b1-9b2-8a-8b1-1.0.0",
+    "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1"
+  },
+  "provider": null
+}

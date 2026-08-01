@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9C",
+  "brandKey": "yi-ji-liang-fang",
+  "projectId": null,
+  "generatedAt": "2026-08-01T13:38:14.365Z",
+  "moduleVersions": {
+    "brandDna": "v0.1",
+    "spatialIntent": "9A.2",
+    "architectureBridge": "9A.3",
+    "architectureAnchor": "8A",
+    "architectureFunctionBridge": "8B.1",
+    "spatialReality": "9B.1",
+    "architecturePreservation": "9B.2",
+    "promptCompiler": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1"
+  },
+  "compiledStrategy": {
+    "experienceGoal": "创造慢节奏的、可被理解的中医调理体验",
+    "spatialStrategy": [
+      "calm rhythm",
+      "soft boundary with traditional elements",
+      "natural diffused light"
+    ],
+    "architecturalCharacteristics": [
+      "layered privacy gradient",
+      "diffused natural light",
+      "quiet enclosure"
+    ],
+    "materialDirection": [
+      "natural wood surface",
+      "paper or fabric soft partition"
+    ],
+    "lightDirection": [
+      "soft natural transition",
+      "diffused light through paper"
+    ],
+    "spatialOrganization": [
+      "layered privacy transition",
+      "consultation circulation"
+    ],
+    "weight": 0.25
+  },
+  "prompt": {
+    "markdown": "# Task\n\nGenerate a single premium-grade space image for **一剂良方** (health_management).\nScene: `reception` (tcm_consultation_reception).\nContext: street_store | Scale: medium.\n\n# Spatial Intent (Phase 9A.2: 为什么需要这样的空间体验)\n\n> 这次生成的空间要传递的核心体验目标 + spatial strategy 关键词.\n> 这一层在 architecture function bridge 之前, 给整个空间先定\"体验基调\".\n> 注意: 不指定具体 anchor / material / decoration (Phase 9A.2 §9 Layer Boundary).\n\n**Experience Goal**: 创造慢节奏的、可被理解的中医调理体验\n\n**Spatial Strategy** (用以下策略实现体验目标, 不要直接复制具体元素):\n- calm rhythm\n- soft boundary with traditional elements\n- natural diffused light\n\n**Usage**: 把上面 experienceGoal + spatialStrategy 当作这次空间生成的\"先验\". architectural_concept / architecture_dna / material / lighting 等块需要为这个体验目标服务, 不是反过来.\n\n# Architecture Language (Phase 9A.3: 什么建筑原则支持这种体验)\n\n> 由 spatial intent 推导出的 high-level architecture language 方向.\n> 这一层是\"建筑机制先验\", 给 architectural_concept / architecture_dna 提供方向.\n> 注意: 不指定具体 anchor / 装饰元素 / 参考图 (Phase 9A.3 §9 Layer Boundary).\n\n**Spatial Principles** (空间原则):\n- layered privacy\n- natural material relationship\n- quiet circulation\n- natural materials\n- calm circulation\n\n**Architectural Characteristics** (建筑特征):\n- layered privacy gradient\n- diffused natural light\n- quiet enclosure\n\n**Material Direction** (材料方向, 高层):\n- natural wood surface\n- paper or fabric soft partition\n\n**Light Direction** (光环境逻辑):\n- soft natural transition\n- diffused light through paper\n\n**Spatial Organization** (空间组织):\n- layered privacy transition\n- consultation circulation\n\n**Usage**: 上面 5 个维度是这次空间要遵循的 high-level architecture language 方向. material / lighting 块可以更具体, 但要遵循上面的方向, 不是反过来. architecture function bridge 仍然提供商业功能约束, 这一层不重复其内容.\n\n# Spatial Reality Constraint (Phase 9B.1: 什么商业现实约束这个空间)\n\n> 商业空间真实性是硬约束. 这次生成的空间必须在以下商业现实里站住脚, 不能偏向\n> exhibition / installation / concept architecture / pure art space.\n> 这一层在 spatial_intent + architecture_language 之后, 在 architecture_context\n> 之前, 给建筑语言加商业现实护栏.\n> 注意: 不指定具体 anchor / 装饰元素 (Phase 9A.3 §9 Layer Boundary).\n\n**Space Type** (空间类型): tcm_wellness_clinic\n\n**Commercial Scale** (商业规模): 100-180 sqm TCM clinic + 调养空间, 5-8 个 consultation 床位 + 2-3 个 treatment_room\n\n**Required Zones** (必备功能区, 必须全部出现, staff 可见):\n- reception_desk\n- consultation_room\n- tea_corner\n- treatment_room\n- herbal_medicine_cabinet\n- waiting_area\n\n**Operation Logic** (运营逻辑): consultation + tea + slow treatment 节奏; staff 中医师 1-3 人 + 助手 2-3 人 + 茶艺师 1 人, 客户单次 60-90 分钟, 复诊率高\n\n**User Flow** (用户动线): street -> reception -> waiting -> consultation (中医师把脉问诊) -> tea_corner (调理方案讨论) -> treatment_room (针灸/推拿) -> checkout, 路径慢节奏可停顿\n\n**Privacy Requirement** (隐私要求): layered privacy: open reception, semi-open tea_corner, enclosed consultation, enclosed treatment; consultation 不可见听, treatment 完全封闭\n\n**Material Reality** (材料现实, 真实材料而非概念): natural wood (榆木/胡桃木), 宣纸或亚麻 fabric 软隔, herbal cabinet 实木, 茶具真实陶瓷, 不可出现 大理石 / 玻璃幕墙 / 亚克力 / 镜面金属 / LED 灯带\n\n**Forbidden Spatial Types** (反漂移, 以下空间类型**绝对不能**出现, 出现任何一个视为失败):\n- ❌ modern hospital (硬墙 + 顶灯 + 排椅 + 消毒水)\n- ❌ spa (纯白 + 流水 + 香薰 + 慢节奏冥想)\n- ❌ modern museum (白盒 + 雕塑 + 巡游)\n- ❌ art gallery (空墙 + 射灯 + 离散艺术品)\n- ❌ exhibition hall (中心展示台 + 巡游动线)\n- ❌ nightclub (深色 + 紫红 + 镭射)\n- ❌ modern office (玻璃隔断 + 工位)\n- ❌ fast food / 餐饮 (喧闹 + 塑料椅)\n\n**Usage**:\n- 上面 8 字段是这次空间的硬约束, architecture / material / lighting / composition 块必须为这些约束服务, 不是反过来.\n- 必备功能区 (requiredZones) 必须在图里全部出现, staff 必须可见 (非 0 staff 纯展示).\n- forbidden spatial types 是**反漂移**硬护栏, 出现任何一个视为该 mode 失败.\n- 商业真实性优先于建筑美学: 真实材料 > 概念材料, 真实功能 > 概念空间, 真实 staff > 纯展示.\n\n# Architecture Context (in-context reference, Phase 8A)\n\n> 建筑机制先验 (anchor 先于 DNA 的 architectural_concept, 强化建筑美学).\n> 以下机制是当前品牌已通过 S 级验收的建筑语言样本, 不得直接复刻其具体物 (v1.0 §34 规则一/五).\n\n## Anchor 1: YJLF-ARCH-03-TeaCorner (role=tea_corner_with_consultation)\n\n- **Primary Mechanism**: 茶几 + 椅 + 中医咨询桌, herbal_display_wall, 软边界 (纸屏风)\n- **Secondary Mechanism**: 不用 medical_compliance (JZMX 标志), 不用 kitchen_pass (FTT 标志)\n\n## Anchor 2: YJLF-ARCH-01-WoodenGrid (role=warm_wood_grid_with_paper_screen)\n\n- **Primary Mechanism**: 木格 + 浅木色 + matte_clay_wall + linen_fabric, 暖色中等硬度\n- **Secondary Mechanism**: 自然光 + warm_amber 暖色筒灯, 不用紫色 / 不用嵌入光带 (JZMX 标志)\n\n## Anchor 3: YJLF-ARCH-02-PaperScreen (role=paper_screen_diffused_light)\n\n- **Primary Mechanism**: 宣纸 / 棉纸窗户 + 自然光通过纸柔化, 安静氛围\n- **Secondary Mechanism**: 纸屏风替代硬隔断, 不用玻璃幕墙 / 膜天花 (JZMX 标志)\n\n## Usage in this prompt\n\n把上述 anchor 提供的建筑机制作为 **先验** (priority), 在 architectural_concept 块之前.\nDNA 字段描述的空间概念必须与 anchor 的建筑机制 **一致**, 不冲突.\n禁止把 anchor 中的具体物 (具体天花曲线 / 具体玻璃分格 / 具体膜形态) 复刻到生成图里.\n# Architecture Preservation (Phase 9B.2: 什么建筑机制必须被保护)\n\n> Phase 9B 给了 Architecture Anchor 提供的建筑美感, Phase 9B.1 通过 Reality Constraint 提升了\n> 商业真实性, 但可能削弱了 anchor 的空间记忆点. 这一层在 architecture_context (Phase 8A) 之后,\n> 在 architecture_function_bridge 之前, 显式保护 anchor 提供的关键建筑机制.\n> 设计原则: **mechanism not object** (Phase 9B.2 §6).\n\n**Weight** (保护强度): 0.50 (0.3 弱保护 / 0.5 平衡 / 0.7 强保护 / 0.9 概念优先)\n\n**Protected Elements** (保护元素, 只保护机制, 不添加具体装饰物):\n- **ceiling_language** — 保护顶部空间语言、吊顶结构、光环境. 膜天花 / 边缘光带 / 顶底发光缝 / 实木吊顶 / 纸灯 等机制必须保留.\n- **spatial_signature** — 保护空间识别度和核心建筑特征. 接待台 + 沙发 + 走廊 / open_kitchen + dining / tea_corner + herbal cabinet 等空间节奏必须保留.\n- **material_expression** — 保护材质关系和表面表达. 微水泥 + 木材 + 半透膜 / 暖木 + 真实厨房设备 / 天然木 + 宣纸 + 陶瓷 等材质组合必须保留.\n- **lighting_behavior** — 保护品牌光环境. 主光 + 边缘光 + ambient 4 层 / 自然光 + 暖光 / 纸灯软光 + 茶艺区暖光 等光环境逻辑必须保留.\n\n**Usage** (Phase 9B.2 §6 mechanism not object):\n- ✓ 允许: 保留空间结构 / 保留材质关系 / 保留光线逻辑\n- ✗ 禁止: 增加额外装饰 / 强行加入雕塑 / 堆叠视觉符号\n- ✗ 禁止: 引入未在 anchor 中存在的具体装饰元素 (花瓣 / 羽翼 / 雕塑 / 装置)\n- 上面列出的 protected elements 必须被生成图遵守, 强度按 weight 调整\n- weight=0.7 意味着 70% 保留 anchor 机制 + 30% 自由演化, weight=0.9 几乎完全保留 anchor\n\n# Architecture-Function Bridge (Phase 8B.1 §3: 建筑机制 -> 商业功能桥接)\n\n> 建筑语言必须服务于商业现实, 不是反过来. 本块把 architecture 翻译为 functional action,\n> 缓解 Phase 8B 暴露的 Architecture Concept Drift (空间变展览馆, 商业运营逻辑被压制).\n\n**Fallback Mode (no explicit architectureFunctionBridge field, Phase 8B.1 §3 fallback)**:\n\n**Operational Realism**: high\n**Required Zones (must appear in image)**: consultation_desk, waiting_area, tea_corner, herbal_display\n**Customer Flow**: entrance->reception=clear | reception->waiting=clear | waiting->consultation=readable\n**Medical Compliance**: visibleButNotHospitalLike=true\n\n**Usage**: 商业功能约束从 functionalDna + sceneDefinition 推导, 缺省时按 v0.1 baseline 处理. 推荐补充 architectureFunctionBridge 字段以获得 Phase 8B.1 完整桥接效果.\n\n# Architectural Concept (空间概念优先于品牌表达, v1.1 §6)\n\n**Primary Spatial Concept**: warm_grid_with_wood_accents\n**Secondary**: subtle_traditional_layers\n\n空间概念 / 建筑机制 必须先于 品牌元素 被建立. 品牌附着在建筑语言之上, 不是反过来.\n\n# Architecture DNA\n\n**Geometry**:\n- Dominant: wooden_grid, warm_panels, paper_screens\n- Limited: extreme_curves, industrial_steel\n\n**Spatial Continuity**:\n- Wall ↔ Ceiling: medium\n- Floor ↔ Furniture: high\n- Room ↔ Room: medium\n\n**Boundary Language**:\n- Hardness: medium | Transparency: low | Enclosure: soft\n\n**Circulation**: type=guided_flow | visibility=filtered | rhythm=calm\n\n**Boundary Hardness**: medium\n**Statement Strength**: medium\n\n# Brand Translation (v1.1 §5 翻译层, 品牌不是装饰)\n\n**Brand**: 一剂良方\n**Industry**: 中医养生与健康管理\n**Audience**: 养生消费者, 亚健康人群, 中老年客户\n\n**Brand Spirit (high-weight >= 0.7)**:\n- healing (weight >= 0.7)\n- premium (weight >= 0.7)\n\n**Brand Grammar**:\n- organicGrowth: medium\n- visualLightness: medium\n- controlledGlow: low\n- refinedOrder: high\n- decorativeDensity: medium\n\n**Motif Family (all optional, no required literal)**: translucent_fiber, flowing_membrane\n\n**Literal Asset Usage**:\n- Logo visibility: medium\n- Direct peacock: low\n- Flower sculpture: optional\n- Crystal object: avoid\n\n**Injection Strength**: 0.45 (0 = no injection, 1 = all literal assets)\n\n# Functional & Commercial Requirement (v1.1 §6 合并 v0.1 function+functional)\n\n**Required Zones**: consultation_desk, waiting_area, tea_corner, herbal_display\n**Optional Zones**: diagnostic_room_signage, art_installation\n**Operational Realism**: high\n\n**Customer Flow**:\n- Entrance → Reception: clear\n- Reception → Waiting: clear\n- Waiting → Consultation: readable\n\n**Privacy Zones**:\n- Public: open\n- Semi-private: filtered\n- Treatment: filtered\n\n**Furniture**: ergonomic commercial-grade accessible\n\n**Medical Compliance**:\n- Visible but not hospital-like: true\n\n# Material System\n\n**Material Count Limit**: 5 (v1.0 §16 hard constraint: 5 for medical_aesthetics)\n\n**Primary Materials**: light_wood, matte_clay_wall, linen_fabric\n**Secondary Materials**: rice_paper\n**Accent Materials**: brass_fitting\n\n**Finish**: gloss=low | reflectivity=matte | tactile=natural\n\n# Lighting System\n\n**Primary Strategy**: natural_lighting\n\n**Ambient**: softness=high | brightness=medium | contrast=low\n\n**Integrated Light**:\n- Ceiling cove: low\n- Wall edge: low\n- Furniture base: low\n\n**Brand Light**: hueFamily=warm_amber,neutral_white | saturation=low | areaRatio=limited\n\n**Spotlight Usage**: low\n**Decorative Fixture Visibility**: low\n**Architectural Glow**: medium\n\n# Composition & Photography\n\n**Focal Hierarchy**:\n- Primary: consultation_desk_with_tea\n- Secondary: herbal_display_wall\n- Tertiary: wooden_partition\n\n**Visual Balance**: symmetry=medium | negativeSpace=medium | density=medium\n\n**Camera**: lens=28mm_to_40mm | height=human_eye_level | distortion=controlled\n\n**Framing**: depthLayers=3 | foregroundUsage=optional | clearEntryView=true\n\n# Rendering Requirements\n\n**Realism**: commercial_archviz\n**Visual Finish**: natural\n**Exposure**: soft_bright\n**White Balance**: warm\n**Shadow**: soft\n**Texture Visibility**: controlled\n**People**: amount=sparse | motionBlur=optional\n**Cleanliness**: high\n**Post-Processing**: restrained\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- generic_spa\n- excessive_purple\n- lobby_hotel_look\n- industrial_clinic_look\n- western_pharmacy\n- fast_food_lighting\n- neon_signage\n- abstract_modern_art_museum\n- unusable_consultation_chair\n- empty_tcm_museum\n",
+    "blockCount": 16,
+    "characterCount": 9811,
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "spatial_reality_constraint",
+      "architecture_context",
+      "architecture_preservation",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ]
+  },
+  "validationContext": {
+    "brandKey": "yi-ji-liang-fang",
+    "promptVersion": "phase-9c-runtime-spatial-intelligence-9a2-9a3-9b1-9b2-8a-8b1-1.0.0",
+    "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1"
+  },
+  "provider": null
+}

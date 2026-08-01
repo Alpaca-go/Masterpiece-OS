@@ -1,0 +1,35 @@
+{
+  "brandKey": "jiuzhou-aesthetics",
+  "blockCount": 16,
+  "characterCount": 11633,
+  "blockOrder": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "spatial_reality_constraint",
+    "architecture_context",
+    "architecture_preservation",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "moduleVersions": {
+    "brandDna": "v0.1.1",
+    "spatialIntent": "9A.2",
+    "architectureBridge": "9A.3",
+    "architectureAnchor": "8A",
+    "architectureFunctionBridge": "8B.1",
+    "spatialReality": "9B.1",
+    "architecturePreservation": "9B.2",
+    "promptCompiler": "1.0.0"
+  },
+  "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+  "mode": "B-architecture-preservation"
+}
