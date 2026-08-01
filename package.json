@@ -48,7 +48,8 @@
     "test:space-dna-variation": "node space-generator/v1-experimental/prompt-compiler/variation/tests/derive-variants.test.mjs",
     "test:space-dna-regression": "node space-generator/v1-experimental/test-cases/regression/tests/regression.test.mjs",
     "test:space-architecture-function-bridge": "node space-generator/v1-experimental/prompt-compiler/field-enriched/tests/architecture-function-bridge.test.mjs",
-    "test:space-function-calibrations": "node space-generator/v1-experimental/function-calibrations/tests/function-calibrations.test.mjs"
+    "test:space-function-calibrations": "node space-generator/v1-experimental/function-calibrations/tests/function-calibrations.test.mjs",
+    "test:space-architecture-bridge": "node space-generator/v1-experimental/architecture-bridge/tests/compile-architecture-bridge.test.mjs"
   },
   "engines": {
     "node": ">=20.9.0"

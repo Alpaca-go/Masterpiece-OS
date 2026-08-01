@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Phase 9A.3 §8 Intent -> Architecture Rules. architecture-principles: experienceGoal + 3 brand expected (§10 Multi-brand Validation) 关键词 -> 高层 architecture principles. 规则只提供方向, 不直接生成视觉.",
+  "phase": "9A.3",
+  "rules": [
+    {
+      "id": "principles-jzmx-medical-aesthetics",
+      "matchKeywords": ["创造低压力、高信任的专业医疗体验", "低压力", "高信任", "专业医疗", "医疗", "美学", "美"],
+      "spatialPrinciples": [
+        "continuous space",
+        "soft boundary",
+        "controlled transparency"
+      ],
+      "architecturalCharacteristics": [
+        "gradual medical-grade privacy",
+        "calm spatial rhythm"
+      ],
+      "note": "Phase 9A.3 §10 JZMX expected: continuous space / soft boundary / controlled transparency"
+    },
+    {
+      "id": "principles-ftt-restaurant",
+      "matchKeywords": ["创造可信赖的、围绕食物制作的日常餐饮体验", "可信赖", "日常", "食物制作", "餐饮", "餐厅", "烟火", "年轻"],
+      "spatialPrinciples": [
+        "human scale",
+        "visible process",
+        "warm interaction"
+      ],
+      "architecturalCharacteristics": [
+        "process-as-anchor layout",
+        "social enclosure"
+      ],
+      "note": "Phase 9A.3 §10 FTT expected: human scale / visible process / warm interaction"
+    },
+    {
+      "id": "principles-yjlf-health-management",
+      "matchKeywords": ["创造慢节奏的、可被理解的中医调理体验", "慢节奏", "可被理解", "中医调理", "调养", "平衡", "东方信任", "东方"],
+      "spatialPrinciples": [
+        "layered privacy",
+        "natural materials",
+        "calm circulation"
+      ],
+      "architecturalCharacteristics": [
+        "diffused natural light",
+        "tea-corner informal transition"
+      ],
+      "note": "Phase 9A.3 §10 YJLF expected: layered privacy / natural materials / calm circulation"
+    },
+    {
+      "id": "principles-default-fallback",
+      "matchKeywords": [],
+      "matchAny": true,
+      "spatialPrinciples": [
+        "balanced spatial flow"
+      ],
+      "note": "fallback rule, matchAny=true"
+    }
+  ]
+}

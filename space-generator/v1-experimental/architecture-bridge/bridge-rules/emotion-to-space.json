@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Phase 9A.3 §8 Intent -> Architecture Rules. emotion-to-space: primaryEmotion / experienceGoal 关键词 -> spatialPrinciples. 规则只提供方向, 不直接生成视觉 (Phase 9A.3 §2).",
+  "phase": "9A.3",
+  "rules": [
+    {
+      "id": "emotion-trust-calm",
+      "matchKeywords": ["安心", "信任", "平静", "从容"],
+      "spatialPrinciples": [
+        "gradual transition",
+        "controlled openness",
+        "balanced privacy"
+      ],
+      "note": "Phase 9A.3 §8 Example 1"
+    },
+    {
+      "id": "emotion-honest-warm",
+      "matchKeywords": ["实在", "饱满", "烟火", "暖色", "地道", "热气腾腾"],
+      "spatialPrinciples": [
+        "human scale",
+        "visible process",
+        "warm spatial interaction"
+      ],
+      "note": "Phase 9A.3 §8 Example 2"
+    },
+    {
+      "id": "emotion-traditional-care",
+      "matchKeywords": ["东方调养", "中医", "调理", "沉静", "慢", "整体观", "望闻问切"],
+      "spatialPrinciples": [
+        "layered privacy",
+        "natural material relationship",
+        "quiet circulation"
+      ],
+      "note": "Phase 9A.3 §8 Example 3"
+    },
+    {
+      "id": "emotion-default-fallback",
+      "matchKeywords": [],
+      "matchAny": true,
+      "spatialPrinciples": [
+        "clear spatial flow",
+        "balanced visibility"
+      ],
+      "note": "fallback rule, matchAny=true"
+    }
+  ]
+}
