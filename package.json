@@ -41,7 +41,8 @@
     "test:space-dna-trace": "node space-generator/v1-experimental/prompt-compiler/trace/tests/compile-trace.test.mjs",
     "test:space-dna-vertical": "node space-generator/v1-experimental/test-cases/jiuzhou-aesthetics/tests/vertical.test.mjs",
     "space-dna-vertical:run": "node space-generator/v1-experimental/test-cases/jiuzhou-aesthetics/run.mjs",
-    "test:space-dna-prompt": "node space-generator/v1-experimental/prompt-compiler/field-enriched/tests/compile-prompt.test.mjs"
+    "test:space-dna-prompt": "node space-generator/v1-experimental/prompt-compiler/field-enriched/tests/compile-prompt.test.mjs",
+    "test:space-dna-variation": "node space-generator/v1-experimental/prompt-compiler/variation/tests/derive-variants.test.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
