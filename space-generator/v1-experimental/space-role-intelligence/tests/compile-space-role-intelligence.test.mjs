@@ -375,6 +375,25 @@ test('compileSpaceRuntime 3 brand: space_type assignment is correct (sceneDefini
   }
 });
 
+test('compileSpaceRuntime WAYE (post-9C.0.5 DNA correction): compiles with 9C.1 space_role_context', () => {
+  // 蛙耶 DNA 在 9C.0.5 被修正 (industry=casual_dining, sceneType=reception — 餐饮入口点单概念).
+  // 9B.2 baseline 15 blocks (无 architecture_context, 因 wa-ye 没有 anchor registry),
+  // 9C.1 default 16 blocks (15 + 1 space_role_context).
+  const r = compileSpaceRuntime('wa-ye');
+  assert(r.includeSpaceRoleContext === true, 'WAYE should include space role context by default');
+  assert(r.blockCount === 16, `WAYE 9C.1 should be 16 blocks (15 baseline + 1 space_role_context), got ${r.blockCount}`);
+  assert(r.compiledSpaceRole, 'compiledSpaceRole should be populated');
+  assert(r.compiledSpaceRole.blockId === 'space_role_context', 'blockId should be space_role_context');
+  assert(r.compiledSpaceRole.spaceRole.space_type === 'reception', `WAYE sceneType should be 'reception', got '${r.compiledSpaceRole.spaceRole.space_type}'`);
+  // architecture_dna / brand_translation byte-equal with/without 9C.1
+  const rWithout = compileSpaceRuntime('wa-ye', { includeSpaceRoleContext: false });
+  for (const layer of ['architecture_dna', 'brand_translation']) {
+    const a = r.blocks.find((b) => b.id === layer)?.text;
+    const b = rWithout.blocks.find((b) => b.id === layer)?.text;
+    assert(a === b, `${layer} must be byte-equal with/without 9C.1 (WAYE)`);
+  }
+});
+
 // ---------- Validation: throws on invalid input ----------
 console.log('\nInput validation:');
 

@@ -1,172 +1,182 @@
 {
   "schemaVersion": "1.0",
-  "dnaVersion": "v0.1",
+  "dnaVersion": "v0.3-waye-casual-dining",
   "project": {
     "brandName": "蛙耶",
-    "industry": "体育用品零售 / 运动品牌",
-    "category": "retail",
+    "industry": "餐饮 / 炭烧牛蛙 / 潮流快餐",
+    "category": "casual_dining_chain",
     "projectIdLocal": "waye-regression-sample",
     "audience": [
-      "运动爱好者",
-      "年轻消费者",
-      "装备升级需求"
+      "18-30 岁年轻食客",
+      "打卡 / 拍照 / 尝鲜 / 性价比",
+      "朋友聚餐 / 情侣约会"
     ],
     "brandPositioning": [
-      "活力",
-      "街头",
-      "功能",
-      "社群"
+      "潮流",
+      "Y2K",
+      "高性价比",
+      "打卡"
     ]
   },
   "sceneDefinition": {
-    "sceneType": "product_display",
-    "sceneSubtype": "sporting_goods_floor",
-    "commercialContext": "mall_store",
-    "scale": "medium",
-    "areaSqm": 150,
+    "sceneType": "reception",
+    "sceneSubtype": "charcoal_grill_specialty",
+    "commercialContext": "mall_dining_zone",
+    "scale": "small_to_medium",
+    "areaSqm": 120,
     "operatingState": "open",
-    "occupancy": "low",
+    "occupancy": "medium",
     "requiredZones": [
-      "product_wall",
-      "trial_zone",
-      "fitting_room",
-      "checkout_counter"
+      "点单_counter",
+      "堂食_seating_area",
+      "出餐_pass",
+      "招牌菜灯箱_menu_lightbox",
+      "蛙_IP_形象墙_logo_wall",
+      "拍照打卡位_photo_spot",
+      "洗手间_access"
     ],
     "optionalZones": [
-      "community_gathering_area",
-      "service_desk"
+      "semi_private_booth_4_6_seat",
+      "外带_pickup_window"
     ]
   },
   "architectureDna": {
     "spatialConcept": {
-      "primary": "raw_industrial_grid",
-      "secondary": "open_flex_with_brand_mural"
+      "primary": "y2k_street_market",
+      "secondary": "pop_casual_dining"
     },
     "geometry": {
       "dominant": [
-        "exposed_concrete",
-        "metal_grid",
-        "open_floor"
+        "lacquered_panel",
+        "acrylic_lighting",
+        "stainless_steel_display"
       ],
       "limited": [
-        "soft_curves",
+        "raw_exposed_concrete",
         "wood_panel",
-        "dome_or_ceiling_arch"
+        "soft_curves"
       ]
     },
     "spatialContinuity": {
-      "wallToCeiling": "low",
-      "floorToFurniture": "medium",
-      "roomToRoom": "high"
+      "wallToCeiling": "medium",
+      "floorToFurniture": "high",
+      "roomToRoom": "low"
     },
     "boundaryLanguage": {
-      "hardness": "high",
-      "transparency": "medium",
-      "enclosure": "hard"
+      "hardness": "medium",
+      "transparency": "high",
+      "enclosure": "soft_to_medium"
     },
     "circulation": {
-      "type": "open_plan",
+      "type": "visible_open_kitchen",
       "visibility": "open",
       "rhythm": "active"
     },
-    "boundaryHardness": "high",
-    "statementStrength": "medium"
+    "boundaryHardness": "medium",
+    "statementStrength": "high"
   },
   "functionalDna": {
     "operationalRealism": "high",
     "customerFlow": {
-      "entranceToReception": "unclear",
-      "receptionToWaiting": "unclear",
-      "waitingToConsultation": "unreadable"
+      "entranceToReception": "mall_atrium -> lightbox_attraction -> 门口点单 counter",
+      "receptionToWaiting": "点单后 -> 堂食 seating 区等待上菜",
+      "waitingToConsultation": "上炭烧牛蛙 -> 拍照 -> 用餐 -> 离开 (可外带)"
     },
     "furnitureRequirements": {
       "ergonomic": true,
       "commercialGrade": true,
-      "accessible": true
+      "accessible": true,
+      "highChairs": true,
+      "sharedTables": true
     },
     "privacy": {
       "publicZone": "open",
-      "semiPrivateZone": "open",
-      "treatmentZone": "open"
+      "semiPrivateZone": "semi_open_booth",
+      "treatmentZone": "n_a"
     }
   },
   "brandSpaceDna": {
     "brandSpirit": {
-      "scientific": 0.4,
-      "elegant": 0.3,
-      "healing": 0.2,
-      "futuristic": 0.5,
-      "premium": 0.5
+      "playful": 0.7,
+      "youthful": 0.7,
+      "energetic": 0.8,
+      "cool": 0.6
     },
     "brandGrammar": {
-      "organicGrowth": "low",
-      "visualLightness": "medium",
-      "controlledGlow": "low",
-      "refinedOrder": "medium",
-      "decorativeDensity": "low"
+      "highSaturationCollision": "high",
+      "ipRepetitionDensity": "high",
+      "controlledGlow": "high",
+      "cartoonGestureEcho": "high",
+      "decorativeDensity": "high"
     },
     "motifFamily": [
-      "feather_like_flow"
+      "cartoon_frog_gesture"
     ],
     "literalAssetUsage": {
       "logoVisibility": "high",
-      "directPeacockUsage": "low",
-      "flowerSculptureUsage": "avoid",
-      "crystalObjectUsage": "avoid"
+      "frogIPUsage": "high",
+      "wowYeahHandPoseUsage": "high",
+      "marketingSloganUsage": "high",
+      "tableNumberUsage": "high"
     },
-    "injectionStrength": 0.5
+    "injectionStrength": 0.8
   },
   "materialDna": {
     "primaryMaterials": [
-      "exposed_concrete",
-      "metal_grid",
-      "rubber_floor"
+      "lacquered_panel",
+      "acrylic_lightbox",
+      "stainless_steel",
+      "printed_graphics"
     ],
     "secondaryMaterials": [
-      "brand_mural_paint"
+      "led_strip",
+      "rgb_color_light",
+      "printed_poster"
     ],
     "accentMaterials": [
-      "neon_signage_tube"
+      "neon_signage_tube",
+      "ip_merchandise_display"
     ],
     "finish": {
-      "glossLevel": "low",
-      "reflectivity": "matte",
-      "tactileQuality": "industrial"
+      "glossLevel": "high",
+      "reflectivity": "semi_gloss",
+      "tactileQuality": "lacquered"
     },
-    "materialCountLimit": 5
+    "materialCountLimit": 7
   },
   "lightingDna": {
-    "primaryStrategy": "direct_lighting",
+    "primaryStrategy": "direct_color_lighting",
     "ambient": {
       "softness": "low",
       "brightness": "high",
-      "contrast": "medium"
+      "contrast": "high"
     },
     "integratedLight": {
-      "ceilingCove": "low",
-      "wallEdge": "low",
-      "furnitureBase": "low"
+      "ceilingCove": "medium",
+      "wallEdge": "high",
+      "furnitureBase": "medium"
     },
     "brandLight": {
       "hueFamily": [
-        "neon_brand_color",
-        "neutral_white"
+        "brand_purple_#4116B7",
+        "brand_green_#56CE00",
+        "brand_yellow_#FFC000"
       ],
       "saturation": "high",
-      "areaRatio": "moderate"
+      "areaRatio": "large"
     },
-    "spotlightUsage": "medium",
+    "spotlightUsage": "high",
     "decorativeFixtureVisibility": "high",
-    "architecturalGlow": "low"
+    "architecturalGlow": "medium"
   },
   "compositionDna": {
     "focalHierarchy": {
-      "primary": "product_wall_with_brand_mural",
-      "secondary": "trial_zone",
-      "tertiary": "neon_signage"
+      "primary": "brand_logo_wall_with_frog_ip_and_signature_dish_lightbox",
+      "secondary": "点单_counter_with_neon_signage",
+      "tertiary": "seating_area_with_photo_spot"
     },
     "visualBalance": {
-      "symmetry": "low",
+      "symmetry": "medium",
       "negativeSpace": "low",
       "density": "high"
     },
@@ -183,9 +193,9 @@
   },
   "renderingDna": {
     "realism": "photo_realistic",
-    "visualFinish": "raw",
+    "visualFinish": "polished_printed",
     "exposure": "balanced",
-    "whiteBalance": "neutral_warm",
+    "whiteBalance": "neutral_cool",
     "shadow": "controlled",
     "textureVisibility": "pronounced",
     "people": {
@@ -193,49 +203,51 @@
       "motionBlur": "optional"
     },
     "cleanliness": "high",
-    "postProcessing": "restrained"
+    "postProcessing": "color_grade_saturated"
   },
   "variationControl": {
     "preserve": [
-      "raw_industrial_grid",
-      "open_flex_layout",
-      "brand_mural_visible",
-      "trial_zone_presence"
+      "y2k_street_market",
+      "high_saturation_collision_purple_green_yellow",
+      "frog_ip_repetition",
+      "lacquered_acrylic_material_family"
     ],
     "vary": [
-      "neon_signage_color",
-      "trial_zone_size",
-      "checkout_position",
-      "community_area_density"
+      "neon_signage_color_mix",
+      "seating_layout_density",
+      "menu_lightbox_promotion",
+      "photo_spot_pose"
     ],
     "motifRepetitionLimit": {
-      "sameLiteralMotifPerImage": 1,
-      "sameMotifAcrossBatchRatio": 0.5
+      "sameLiteralMotifPerImage": 3,
+      "sameMotifAcrossBatchRatio": 0.7
     },
     "requireNovelSpatialSolution": true
   },
   "negativeConstraints": {
     "prohibit": [
-      "white_curved_walls",
-      "high_end_clinic_lighting",
-      "feather_like_flow_overuse",
-      "translucent_fiber_decoration",
-      "optical_crystal_centerpiece",
-      "petal_sculpture_motif",
-      "purple_lavender_glow",
-      "elegant_lobby_seating",
-      "spa_atmosphere",
-      "hospital_corridor",
-      "silent_meditation_room",
-      "fine_dining_dinnerware"
+      "传统中式中餐包间",
+      "中式红木屏风",
+      "怀旧国风",
+      "民俗装饰",
+      "婚礼主题",
+      "高端日式枯山水",
+      "原木格栅禅意",
+      "fine_dining_pretension",
+      "hospital_pretension",
+      "spa_pretension",
+      "white_curved_medical_walls",
+      "elegant_lobby_seating"
     ]
   },
   "metadata": {
-    "frozenAt": "2026-08-01T00:00:00.000Z",
-    "frozenFromCommit": "6701ac1",
+    "frozenAt": "2026-08-02T00:00:00.000Z",
+    "frozenFromCommit": "0058f1c",
+    "correctedFromAnalysis": "validation-results/phase-9C-v0.1-brands/wa-ye/brand-analysis.md §7",
+    "correctionNote": "Original DNA wrongly classified 蛙耶 as 体育用品零售 / retail; corrected to 餐饮 / 炭烧牛蛙 / 潮流快餐 per 9 reference images (logo / slogan / dish / real store signage).",
     "sourceBenchmarkIds": [],
     "promotedFromVersion": "v0.1-initial",
-    "promotedBy": "Mavis (Phase 7, 2026-08-01)",
+    "promotedBy": "Mavis (Phase 9C.0.5 + 9C.1, 2026-08-02 — manual DNA correction)",
     "regressionProject": true
   }
 }

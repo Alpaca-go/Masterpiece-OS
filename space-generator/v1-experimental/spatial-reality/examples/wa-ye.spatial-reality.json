@@ -1,0 +1,42 @@
+{
+  "schemaRef": "https://masterpiece-os.local/spatial-reality-dna.schema.v9b.1.json",
+  "brandKey": "wa-ye",
+  "category": "casual_dining",
+  "phase": "9B.1",
+  "spatialRealityDna": {
+    "spaceType": "casual_dining_chain_specialty",
+    "commercialScale": "80-150 sqm 商场餐饮店面, 30-50 seat, 翻台率 2-3 轮 / 晚, 主打炭烧牛蛙 1 个核心菜 + 6-8 个配菜",
+    "requiredZones": [
+      "点单 counter",
+      "堂食 seating_area (40-60 seat)",
+      "出餐 pass",
+      "招牌菜灯箱 menu_lightbox",
+      "蛙 IP 形象墙 logo_wall",
+      "拍照打卡位 photo_spot",
+      "洗手间 access"
+    ],
+    "operationLogic": "visible open kitchen (明档) + 黑色铸铁锅炭烧 + 高峰期 staff 6-10 人 + 商场中庭悬挂灯箱做高可见度 marketing",
+    "userFlow": "商场中庭 -> 灯箱吸引 -> 门口点单 counter -> 堂食 seating -> 上炭烧牛蛙 -> 拍照 -> 离开 (可外带)",
+    "privacyRequirement": "mostly open dining, 桌椅间距 ≥ 0.8m staff 通行, 无 enclosed private room, 偶有 1-2 个 semi-private booth 4-6 人",
+    "materialReality": "漆面金属板 (lacquered metal panel) + 亚克力灯箱 (acrylic lightbox) + LED 灯带 (LED strip) + 不锈钢台面 (stainless steel counter) + 防水布周边 (printed tote / T 恤). 不可出现: 传统红木 / 中式屏风 / 民俗装饰 / 婚礼主题 / 高端日式枯山水 / 怀旧风",
+    "forbiddenSpatialTypes": [
+      "fine dining (无桌布 / 无水晶灯)",
+      "传统中餐包间 (无红木屏风)",
+      "高端日式 (无枯山水 / 无原木格栅)",
+      "怀旧国风 (无 80 年代感)",
+      "婚礼主题 (无大红 / 无喜字)",
+      "spa / 医美 / 医院 (无白墙曲线 / 无 SPA 灯)",
+      "现代艺术馆 (白盒+雕塑)"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02",
+    "frozenBy": "Space Generator v1.1 Phase 9C.0.5 + 9C.1 manual DNA correction (per brand-analysis.md §8.2)",
+    "sourceArchitectureAnchors": [
+      "WAYE-LOG-01-FrogIPGesture",
+      "WAYE-CLR-01-PurpleGreenYellow",
+      "WAYE-SLO-01-SloganSplash"
+    ],
+    "notes": "Phase 9B.1 §3 8 字段. spaceType=casual_dining_chain_specialty 跟 industry=casual_dining 区分, commercialScale 量化 80-150 sqm + 30-50 seat 决定 staff 密度. forbiddenSpatialTypes 重点排 fine dining / 传统中餐 / 高端日式 / 婚礼主题 / 怀旧国风, 因为 Phase 9B 在这几个方向上 drift 风险最高."
+  }
+}

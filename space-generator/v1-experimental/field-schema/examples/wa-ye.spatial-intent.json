@@ -1,0 +1,28 @@
+{
+  "schemaRef": "https://masterpiece-os.local/spatial-intent.schema.v9a.1.json",
+  "brandKey": "wa-ye",
+  "category": "casual_dining",
+  "phase": "9A.1",
+  "spatialIntentDna": {
+    "primaryEmotion": "让 18-30 岁年轻食客在商场餐饮区被高饱和撞色 + 蛙 IP + WOW YEAH 视觉吸引, 在拍照打卡中进入, 在炭烧牛蛙大份量的满足感中结束, 留下可以发朋友圈的视觉记忆",
+    "userJourney": "商场路过被紫色/绿色/黄色撞色灯箱吸引 → 看到蛙 IP 手势和 '蛙够大 肉才多' slogan 确认品牌 → 看菜单灯箱确认招牌菜 → 进店点单 → 拍照打卡桌号 → 上菜时黑色铸铁锅炭烧牛蛙触发 '好吃到哇~耶~' 体验 → 离开时带走 T 恤/外卖袋/购物袋周边",
+    "spaceRole": "空间作为'高饱和潮流餐饮容器', 把炭烧牛蛙的食材能量 + 蛙 IP 街头气质 + 商场餐饮的高可见度三者结合, 让 '吃蛙' 这件事变得'酷'而不只是 '饱'",
+    "designLogic": "通过 紫色 50% + 绿色 35% + 黄色 15% 高饱和撞色 + 蛙 IP 反复出现 (logo / 墙绘 / 桌贴 / 周边) + LED 灯带勾边 + 大字粗黑体 slogan, 让 '炭烧牛蛙' 的烟火气被翻译为'潮酷打卡'而不是'传统中餐'",
+    "architecturalReason": "需要 漆面+亚克力+LED 灯带 + 高饱和色光 + 蛙 IP 形象墙 + 招牌菜灯箱 五者协同, 让 '炭烧牛蛙 + 潮流' 变成可被感知的空间语言, 而不是 '传统中餐 + 烟火气'"
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02T00:00:00.000Z",
+    "frozenBy": "Mavis (Space Generator v1.1 Phase 9C.0.5 + 9C.1, 2026-08-02 — manual DNA correction + new spatial-intent)",
+    "sourceArchitectureAnchors": [
+      "WAYE-LOG-01-FrogIPGesture",
+      "WAYE-CLR-01-PurpleGreenYellow",
+      "WAYE-SLO-01-SloganSplash"
+    ],
+    "notes": [
+      "Per brand-analysis.md §8.1 (Phase 9A.1 5 字段).",
+      "Category: casual_dining (was wrongly 'retail' in v0.1).",
+      "Layer Boundary (§5): 不描述 materials (lacquered panel / acrylic) / architecture (counter / signage wall) / anchor (具体物) / rendering.",
+      "architecturalReason 描述高层方向 (高饱和撞色 + IP 重复 + 灯箱可见度), 不是具体建筑形式."
+    ]
+  }
+}

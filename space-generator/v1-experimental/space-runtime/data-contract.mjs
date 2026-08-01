@@ -59,21 +59,25 @@ export function getBrandDnaPaths(brandKey) {
     'jiuzhou-aesthetics': 'field-schema/examples/jiuzhou-aesthetics.dna.json',
     'feng-tang-tang': 'test-cases/regression/projects/feng-tang-tang.dna.json',
     'yi-ji-liang-fang': 'test-cases/regression/projects/yi-jui-liang-fang.dna.json',
+    'wa-ye': 'test-cases/regression/projects/wa-ye.dna.json',
   };
   const spatialIntentMap = {
     'jiuzhou-aesthetics': 'field-schema/examples/jiuzhou-aesthetics.spatial-intent.json',
     'feng-tang-tang': 'field-schema/examples/feng-tang-tang.spatial-intent.json',
     'yi-ji-liang-fang': 'field-schema/examples/yi-ji-liang-fang.spatial-intent.json',
+    'wa-ye': 'field-schema/examples/wa-ye.spatial-intent.json',
   };
   const spatialRealityMap = {
     'jiuzhou-aesthetics': 'spatial-reality/examples/jiuzhou-aesthetics.spatial-reality.json',
     'feng-tang-tang': 'spatial-reality/examples/feng-tang-tang.spatial-reality.json',
     'yi-ji-liang-fang': 'spatial-reality/examples/yi-ji-liang-fang.spatial-reality.json',
+    'wa-ye': 'spatial-reality/examples/wa-ye.spatial-reality.json',
   };
   const architecturePreservationMap = {
     'jiuzhou-aesthetics': 'architecture-preservation/examples/jiuzhou-aesthetics.architecture-preservation.json',
     'feng-tang-tang': 'architecture-preservation/examples/feng-tang-tang.architecture-preservation.json',
     'yi-ji-liang-fang': 'architecture-preservation/examples/yi-ji-liang-fang.architecture-preservation.json',
+    'wa-ye': 'architecture-preservation/examples/wa-ye.architecture-preservation.json',
   };
 
   return {

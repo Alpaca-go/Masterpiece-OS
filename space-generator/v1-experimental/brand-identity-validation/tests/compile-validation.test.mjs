@@ -28,31 +28,21 @@ function loadDna(relPath) {
 
 // === §13.1 发现行业级错误 ===
 
-test('§13.1 Case 01: WAYE (sports_retail DNA) — should FAIL', () => {
+test('§13.1 Case 01: WAYE (casual_dining DNA, post-correction) — should PASS', () => {
+  // 蛙耶 DNA 在 9C.0.5 + 9C.1 阶段被修正 (v0.3-waye-casual-dining):
+  //  旧 (v0.1) 把蛙耶错标为 sports_retail / retail, gate 报 6 issues (FAIL)
+  //  新 (v0.3) 改回 餐饮 / 炭烧牛蛙 / 潮流快餐 / casual_dining, gate 应 PASS
+  //  gate catch 能力由 §13.4 internal-consistency / corrupted-DNA / unrecognized-industry 3 个
+  //  反向 case 继续覆盖, 不依赖 WAYE 这一个 case.
   const dna = loadDna('test-cases/regression/projects/wa-ye.dna.json');
   const report = synthesizeAnalysisReport(dna);
   const result = validateBrandIdentity({ brandDNA: dna, analysisReport: report });
 
-  assert.equal(result.industry.matchedIndustry, 'sports_retail', 'industry should match sports_retail');
-  assert.equal(result.status, 'fail', `WAYE should fail (got ${result.status})`);
-  assert.ok(['high', 'critical'].includes(result.riskLevel), `risk should be high or critical (got ${result.riskLevel})`);
-  assert.ok(result.issues.length >= 3, `should have multiple issues (got ${result.issues.length})`);
-
-  // Verify specific issues: medical_aesthetics concerns in sports_retail DNA
-  const fields = result.issues.map((i) => i.field);
-  const messages = result.issues.map((i) => i.message);
-
-  // negativeConstraints: spa_atmosphere / hospital_corridor / high_end_clinic_lighting should be flagged
-  const hasSpaIssue = messages.some((m) => m.includes('spa_atmosphere'));
-  const hasHospitalIssue = messages.some((m) => m.includes('hospital_corridor'));
-  const hasClinicLightingIssue = messages.some((m) => m.includes('high_end_clinic_lighting'));
-  assert.ok(hasSpaIssue, 'should flag spa_atmosphere contamination');
-  assert.ok(hasHospitalIssue, 'should flag hospital_corridor contamination');
-  assert.ok(hasClinicLightingIssue, 'should flag high_end_clinic_lighting contamination');
-
-  // motifFamily: feather_like_flow (medical_aesthetics) in sports_retail should be flagged
-  const hasMotifIssue = fields.includes('motifFamily');
-  assert.ok(hasMotifIssue, 'should flag motifFamily contamination');
+  assert.equal(result.industry.matchedIndustry, 'casual_dining', `industry should match casual_dining, got ${result.industry.matchedIndustry}`);
+  assert.equal(result.status, 'pass', `WAYE (corrected) should pass (got ${result.status})`);
+  assert.equal(result.riskLevel, 'low', `WAYE (corrected) risk should be low (got ${result.riskLevel})`);
+  assert.equal(result.issues.length, 0, `WAYE (corrected) should have no issues (got ${result.issues.length})`);
+  assert.ok(result.overallConfidence >= 0.85, `WAYE (corrected) confidence should be >= 0.85, got ${result.overallConfidence}`);
 });
 
 // === §13.2 正常 brand 不误判 ===

@@ -1,0 +1,25 @@
+{
+  "schemaRef": "https://masterpiece-os.local/architecture-preservation-dna.schema.v9b.2.json",
+  "brandKey": "wa-ye",
+  "category": "casual_dining",
+  "phase": "9B.2",
+  "architecturePreservation": {
+    "enabled": true,
+    "weight": 0.6,
+    "protectedElements": [
+      "spatial_signature",
+      "material_expression",
+      "lighting_behavior"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02",
+    "frozenBy": "Space Generator v1.1 Phase 9C.0.5 + 9C.1 manual DNA correction (per brand-analysis.md §8.3)",
+    "sourceArchitectureAnchors": [
+      "WAYE-LOG-01-FrogIPGesture",
+      "WAYE-CLR-01-PurpleGreenYellow",
+      "WAYE-SLO-01-SloganSplash"
+    ],
+    "notes": "Phase 9B.2 §4 WAYE 建议 weight=0.6 (中保护). 3 protected elements (没有 ceiling_language, 因为 WAYE 没有 membrane 天花这类语言; 强调 spatial_signature + material_expression + lighting_behavior). spatial_signature 重点: 商场中庭灯箱可见度 + 蛙 IP 形象墙 + 招牌菜灯箱. material_expression 重点: 漆面金属板 + 亚克力灯箱 + LED 灯带 + 不锈钢台面 4 类 (不要原木/石材/水磨石). lighting_behavior 重点: 直射 + 高饱和彩色光 紫绿黄, 不要 warm_ambient_soft."
+  }
+}
