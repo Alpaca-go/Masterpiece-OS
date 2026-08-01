@@ -1,8 +1,12 @@
-// Phase 9C.0.5 3-Brand Validation Runner (text-level, no Provider)
+// Phase 9C.0.5 4-Brand Validation Runner (text-level, no Provider)
+// 跟 Updated doc 对齐: status "pass"|"blocked" 二态, recommendation 字段,
+// 6 fields (industry / category / spaceType / audience / materialDirection /
+// functionalRelationship).
+//
 // 用法: node brand-identity-validation/bin/run-3-brand-validation.mjs
 //
-// 对 3 brand 跑 validateBrandIdentity, 产出 results/3-brand-validation/.
-// 不调真实 Provider, 不污染生产代码, 不动 v1-baseline.
+// 对 4 brand (JZMX / FTT / YJLF / WAYE-corrected) 跑 validateBrandIdentity,
+// 产出 results/3-brand-validation/. 不调真实 Provider, 不污染生产代码, 不动 v1-baseline.
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -41,16 +45,17 @@ for (const b of brands) {
   mkdirSync(brandDir, { recursive: true });
   writeFileSync(join(brandDir, 'validation-result.json'), JSON.stringify(result, null, 2), 'utf8');
 
-  // human-readable summary
+  // human-readable summary (Updated schema)
   let md = `# Phase 9C.0.5 Validation — ${b.key}\n\n`;
   md += `- **Status**: ${result.status}\n`;
-  md += `- **Overall confidence**: ${result.overallConfidence}\n`;
   md += `- **Risk level**: ${result.riskLevel}\n`;
+  md += `- **Recommendation**: ${result.recommendation}\n`;
+  md += `- **Overall confidence**: ${result.overallConfidence}\n`;
   md += `- **Issues**: ${result.issues.length}\n\n`;
-  md += `## Field checks\n\n`;
+  md += `## Field checks (Phase 9C.0.5 Updated §6, 6 fields)\n\n`;
   md += `| Field | Value | Matched industry | Confidence |\n`;
   md += `| --- | --- | --- | --- |\n`;
-  for (const f of ['industry', 'category', 'spaceType', 'audience']) {
+  for (const f of ['industry', 'category', 'spaceType', 'audience', 'materialDirection', 'functionalRelationship']) {
     const c = result[f];
     const val = typeof c.value === 'string' ? c.value : JSON.stringify(c.value);
     md += `| ${f} | ${val ?? 'null'} | ${c.matchedIndustry ?? 'null'} | ${c.confidence} |\n`;
@@ -72,50 +77,61 @@ for (const b of brands) {
     brand: b.key,
     status: result.status,
     riskLevel: result.riskLevel,
+    recommendation: result.recommendation,
     confidence: result.overallConfidence,
     issueCount: result.issues.length,
     industryMatched: result.industry.matchedIndustry,
   });
 }
 
-let md = '# Phase 9C.0.5 — 3-Brand Validation Summary\n\n';
+let md = '# Phase 9C.0.5 — 4-Brand Validation Summary (Updated doc schema)\n\n';
 md += `- **Generated**: ${new Date().toISOString()}\n`;
-md += `- **Phase**: 9C.0.5 (Brand Identity Validation Gate)\n`;
-md += `- **Status**: text-level 3-brand validation complete; no Provider called.\n\n`;
+md += `- **Phase**: 9C.0.5 (Brand Identity Validation Gate — Updated doc schema v2.0.0)\n`;
+md += `- **Status**: text-level 4-brand validation complete; no Provider called.\n`;
+md += `- **Schema**: status "pass" | "blocked" 二态, recommendation "continue" | "review_brand_DNA" | "ask_user", 6 validation fields (industry / category / spaceType / audience / materialDirection / functionalRelationship).\n\n`;
 md += '## 1. Per-Brand Result\n\n';
-md += '| Brand | Status | Risk | Confidence | Issues | Matched industry |\n';
-md += '| --- | --- | --- | --- | --- | --- |\n';
+md += '| Brand | Status | Risk | Recommendation | Confidence | Issues | Matched industry |\n';
+md += '| --- | --- | --- | --- | --- | --- | --- |\n';
 for (const r of summaryRows) {
-  md += `| ${r.brand} | ${r.status} | ${r.riskLevel} | ${r.confidence} | ${r.issueCount} | ${r.industryMatched ?? 'null'} |\n`;
+  md += `| ${r.brand} | ${r.status} | ${r.riskLevel} | ${r.recommendation} | ${r.confidence} | ${r.issueCount} | ${r.industryMatched ?? 'null'} |\n`;
 }
 
-md += '\n## 2. Test Cases (per §12)\n\n';
-md += '### Case 01: 蛙耶 (wa-ye)\n';
+md += '\n## 2. Test Cases (per §9 Updated doc)\n\n';
+md += '### Case 01: 蛙耶 (wa-ye, post-9C.0.5 DNA 修正)\n';
 const waye = allBrandResults['wa-ye'];
-md += `- **Expected**: fail (sports retail DNA is wrong; reference images show 炭烧牛蛙 restaurant)\n`;
-md += `- **Actual**: ${waye.status} (risk: ${waye.riskLevel}, confidence: ${waye.confidence})\n\n`;
+md += `- **Expected**: pass + continue (DNA 修正后 industry=casual_dining, 6 fields 全一致)\n`;
+md += `- **Actual**: ${waye.status} + ${waye.recommendation} (risk: ${waye.riskLevel}, confidence: ${waye.confidence}, issues: ${waye.issueCount})\n`;
+md += `- **Note**: 蛙耶 v0.1 frozen test case 在 gate 9C.0.5 commit f7c97df 阶段报 blocked + review_brand_DNA (5 cross-industry contamination issues). 9C.0.5 (post-correction) commit 65252fd 已修 DNA, 现在 4 brand 全 pass + continue.\n\n`;
 
 md += '### Case 02: 九州美学 (jiuzhou-aesthetics)\n';
 const jzmx = allBrandResults['jiuzhou-aesthetics'];
-md += `- **Expected**: pass\n`;
-md += `- **Actual**: ${jzmx.status} (risk: ${jzmx.riskLevel}, confidence: ${jzmx.confidence})\n\n`;
+md += `- **Expected**: pass + continue (medical_aesthetics, 6 fields 全一致)\n`;
+md += `- **Actual**: ${jzmx.status} + ${jzmx.recommendation} (risk: ${jzmx.riskLevel}, confidence: ${jzmx.confidence})\n\n`;
 
 md += '### Case 03: 冯烫烫 (feng-tang-tang)\n';
 const ftt = allBrandResults['feng-tang-tang'];
-md += `- **Expected**: pass\n`;
-md += `- **Actual**: ${ftt.status} (risk: ${ftt.riskLevel}, confidence: ${ftt.confidence})\n\n`;
+md += `- **Expected**: pass + continue (restaurant, 6 fields 全一致)\n`;
+md += `- **Actual**: ${ftt.status} + ${ftt.recommendation} (risk: ${ftt.riskLevel}, confidence: ${ftt.confidence})\n\n`;
 
-md += '## 3. Validation Rules Summary\n\n';
-md += '- **Industries covered**: restaurant, tcm_wellness, medical_aesthetics, sports_retail, fashion_retail, casual_dining\n';
-md += '- **Fields validated**: industry, category, spaceType, audience, plus internal DNA consistency (motifFamily / negativeConstraints / materialDna / brandSpirit)\n';
-md += '- **Thresholds**: pass >= 0.85 / review 0.65-0.85 / fail < 0.65\n';
-md += '- **Risk levels**: critical (industry 完全错) / high (space type vs industry 冲突) / medium (motif / material 错位) / low (全部一致)\n';
+md += '### Case 04: 一剂良方 (yi-ji-liang-fang)\n';
+const yjlf = allBrandResults['yi-ji-liang-fang'];
+md += `- **Expected**: pass + continue (tcm_wellness, 6 fields 全一致)\n`;
+md += `- **Actual**: ${yjlf.status} + ${yjlf.recommendation} (risk: ${yjlf.riskLevel}, confidence: ${yjlf.confidence})\n\n`;
+
+md += '## 3. Updated doc Validation Rules Summary\n\n';
+md += '- **Phase 9C.0.5 Updated §2**: 跟 Structured Analysis Self-Healing 关系 — Self-healing 修 contract drift, 9C.0.5 修 cross-industry contamination (品牌语义), 二者不合并\n';
+md += '- **Phase 9C.0.5 Updated §5**: 检测范围只 Cross Industry Contamination, 不处理创意质量 / 风格优劣 / 美学判断\n';
+md += '- **Phase 9C.0.5 Updated §6**: 6 validation fields (industry / category / spaceType / audience / materialDirection / functionalRelationship)\n';
+md += '- **Phase 9C.0.5 Updated §7**: Pass/Block 二态 status, recommendation 字段 (continue / review_brand_DNA / ask_user)\n';
+md += '- **Phase 9C.0.5 Updated §8**: critical (行业完全冲突) / high (空间功能冲突) / medium (人工确认)\n';
+md += '- **Phase 9C.0.5 Updated §10**: 不增加生图成本 / 不影响正常流程 / 不替代 Creative Decision\n';
+md += '- **Phase 9C.0.5 Updated §11**: Phase 10 升级为完整 Decision Consistency Validator (Industry/Brand Personality/Visual DNA/Spatial Translation/Constraint Contradiction)\n';
 md += '- **No image gen, no Provider API, no LLM call**: pure text-based rule engine over DNA JSON\n';
 
 writeFileSync(join(resultsRoot, 'integration-summary.md'), md, 'utf8');
 
-console.log('\n3-Brand Validation complete:');
+console.log('\n4-Brand Validation complete (Updated doc schema):');
 for (const r of summaryRows) {
-  console.log(`  ${r.brand}: ${r.status} (risk: ${r.riskLevel}, confidence: ${r.confidence}, issues: ${r.issueCount})`);
+  console.log(`  ${r.brand}: ${r.status} + ${r.recommendation} (risk: ${r.riskLevel}, confidence: ${r.confidence}, issues: ${r.issueCount})`);
 }
 console.log(`\nReport: ${join(resultsRoot, 'integration-summary.md')}`);

@@ -1,36 +1,45 @@
-# Phase 9C.0.5 — 3-Brand Validation Summary
+# Phase 9C.0.5 — 4-Brand Validation Summary (Updated doc schema)
 
-- **Generated**: 2026-08-01T15:10:03.591Z
-- **Phase**: 9C.0.5 (Brand Identity Validation Gate)
-- **Status**: text-level 3-brand validation complete; no Provider called.
+- **Generated**: 2026-08-01T16:18:22.934Z
+- **Phase**: 9C.0.5 (Brand Identity Validation Gate — Updated doc schema v2.0.0)
+- **Status**: text-level 4-brand validation complete; no Provider called.
+- **Schema**: status "pass" | "blocked" 二态, recommendation "continue" | "review_brand_DNA" | "ask_user", 6 validation fields (industry / category / spaceType / audience / materialDirection / functionalRelationship).
 
 ## 1. Per-Brand Result
 
-| Brand | Status | Risk | Confidence | Issues | Matched industry |
-| --- | --- | --- | --- | --- | --- |
-| jiuzhou-aesthetics | pass | low | 0.918 | 0 | medical_aesthetics |
-| feng-tang-tang | pass | low | 0.927 | 0 | restaurant |
-| yi-ji-liang-fang | pass | low | 0.927 | 0 | tcm_wellness |
-| wa-ye | fail | high | 0.918 | 6 | sports_retail |
+| Brand | Status | Risk | Recommendation | Confidence | Issues | Matched industry |
+| --- | --- | --- | --- | --- | --- | --- |
+| jiuzhou-aesthetics | pass | low | continue | 0.92 | 0 | medical_aesthetics |
+| feng-tang-tang | pass | low | continue | 0.935 | 0 | restaurant |
+| yi-ji-liang-fang | pass | low | continue | 0.935 | 0 | tcm_wellness |
+| wa-ye | pass | low | continue | 0.935 | 0 | casual_dining |
 
-## 2. Test Cases (per §12)
+## 2. Test Cases (per §9 Updated doc)
 
-### Case 01: 蛙耶 (wa-ye)
-- **Expected**: fail (sports retail DNA is wrong; reference images show 炭烧牛蛙 restaurant)
-- **Actual**: fail (risk: high, confidence: undefined)
+### Case 01: 蛙耶 (wa-ye, post-9C.0.5 DNA 修正)
+- **Expected**: pass + continue (DNA 修正后 industry=casual_dining, 6 fields 全一致)
+- **Actual**: pass + continue (risk: low, confidence: undefined, issues: undefined)
+- **Note**: 蛙耶 v0.1 frozen test case 在 gate 9C.0.5 commit f7c97df 阶段报 blocked + review_brand_DNA (5 cross-industry contamination issues). 9C.0.5 (post-correction) commit 65252fd 已修 DNA, 现在 4 brand 全 pass + continue.
 
 ### Case 02: 九州美学 (jiuzhou-aesthetics)
-- **Expected**: pass
-- **Actual**: pass (risk: low, confidence: undefined)
+- **Expected**: pass + continue (medical_aesthetics, 6 fields 全一致)
+- **Actual**: pass + continue (risk: low, confidence: undefined)
 
 ### Case 03: 冯烫烫 (feng-tang-tang)
-- **Expected**: pass
-- **Actual**: pass (risk: low, confidence: undefined)
+- **Expected**: pass + continue (restaurant, 6 fields 全一致)
+- **Actual**: pass + continue (risk: low, confidence: undefined)
 
-## 3. Validation Rules Summary
+### Case 04: 一剂良方 (yi-ji-liang-fang)
+- **Expected**: pass + continue (tcm_wellness, 6 fields 全一致)
+- **Actual**: pass + continue (risk: low, confidence: undefined)
 
-- **Industries covered**: restaurant, tcm_wellness, medical_aesthetics, sports_retail, fashion_retail, casual_dining
-- **Fields validated**: industry, category, spaceType, audience, plus internal DNA consistency (motifFamily / negativeConstraints / materialDna / brandSpirit)
-- **Thresholds**: pass >= 0.85 / review 0.65-0.85 / fail < 0.65
-- **Risk levels**: critical (industry 完全错) / high (space type vs industry 冲突) / medium (motif / material 错位) / low (全部一致)
+## 3. Updated doc Validation Rules Summary
+
+- **Phase 9C.0.5 Updated §2**: 跟 Structured Analysis Self-Healing 关系 — Self-healing 修 contract drift, 9C.0.5 修 cross-industry contamination (品牌语义), 二者不合并
+- **Phase 9C.0.5 Updated §5**: 检测范围只 Cross Industry Contamination, 不处理创意质量 / 风格优劣 / 美学判断
+- **Phase 9C.0.5 Updated §6**: 6 validation fields (industry / category / spaceType / audience / materialDirection / functionalRelationship)
+- **Phase 9C.0.5 Updated §7**: Pass/Block 二态 status, recommendation 字段 (continue / review_brand_DNA / ask_user)
+- **Phase 9C.0.5 Updated §8**: critical (行业完全冲突) / high (空间功能冲突) / medium (人工确认)
+- **Phase 9C.0.5 Updated §10**: 不增加生图成本 / 不影响正常流程 / 不替代 Creative Decision
+- **Phase 9C.0.5 Updated §11**: Phase 10 升级为完整 Decision Consistency Validator (Industry/Brand Personality/Visual DNA/Spatial Translation/Constraint Contradiction)
 - **No image gen, no Provider API, no LLM call**: pure text-based rule engine over DNA JSON

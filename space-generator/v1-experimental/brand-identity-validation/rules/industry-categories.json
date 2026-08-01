@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0",
-  "version": "1.0.0",
-  "phase": "9C.0.5",
-  "description": "Industry -> allowed categories / spaceTypes / audiences / motifs / materials / lighting / negativeConstraints. Each industry is a coherent set of design assumptions. Cross-checking a brand DNA against the expected set reveals internal contradictions or external mismatches (e.g. sports_retail DNA with medical_aesthetics negativeConstraints).",
+  "version": "2.0.0",
+  "phase": "9C.0.5-updated",
+  "description": "Industry -> allowed categories / spaceTypes / audiences / motifs / materials / lighting / negativeConstraints. Each industry is a coherent set of design assumptions. Cross-checking a brand DNA against the expected set reveals internal contradictions or external mismatches (e.g. sports_retail DNA with medical_aesthetics negativeConstraints). Phase 9C.0.5 Updated: 加 materialDirection + functionalRelationship 2 维 (per §6).",
   "industries": {
     "restaurant": {
       "label": "餐厅 / 餐饮",
@@ -15,6 +15,14 @@
       "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "spa_wave", "lily_pad", "medical_light", "high_end_clinic"],
       "materialsAllowed": ["warm_wood", "natural_texture", "stainless_steel", "real_kitchen_equipment", "exposed_brick", "concrete", "leather", "ceramic", "lacquered_panel"],
       "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "feather_like_flow_overuse", "white_curved_wall_overuse", "spa_aroma"],
+      "materialDirection": {
+        "expectedMaterials": ["warm_wood", "natural_texture", "ceramic", "stainless_steel", "lacquered_panel", "red_brick", "terracotta", "bamboo", "brass_fixture"],
+        "forbiddenMaterials": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "spa_aroma"]
+      },
+      "functionalRelationship": {
+        "expectedZones": ["dining_area", "open_kitchen", "counter", "waiting_area", "reception", "menu_board", "booth", "kitchen_pass"],
+        "forbiddenZones": ["fitting_room", "treatment_bed", "consultation_room"]
+      },
       "lightingAllowed": ["natural_daylight", "warm_ambient", "lantern", "track_lighting", "open_fire_visible", "warm_pendant", "low_contrast"],
       "lightingForbidden": ["high_end_clinic_lighting", "spa_lighting", "neon_club_flash", "museum_spotlight"],
       "negativeConstraintsExpected": ["fine_dining_pretension", "fast_food_chain_plastic", "buffet_cafeteria"],
@@ -38,6 +46,14 @@
       "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "neon_club", "sports_dynamic"],
       "materialsAllowed": ["natural_wood", "linen", "bamboo", "natural_stone", "mineral_paint", "tea_ware_ceramic", "warm_fabric"],
       "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "neon_club", "metal_grid", "rubber_floor"],
+      "materialDirection": {
+        "expectedMaterials": ["natural_wood", "linen", "bamboo", "natural_stone", "tea_ware_ceramic", "light_wood", "matte_clay", "rice_paper", "brass_fitting"],
+        "forbiddenMaterials": ["optical_crystal_centerpiece", "neon_club", "metal_grid", "rubber_floor"]
+      },
+      "functionalRelationship": {
+        "expectedZones": ["tcm_consultation", "consultation", "treatment", "waiting_area", "tea_corner", "herbal_display"],
+        "forbiddenZones": ["fitting_room", "open_kitchen", "checkout_counter"]
+      },
       "lightingAllowed": ["natural_daylight", "warm_ambient", "paper_lantern", "soft_diffused", "low_brightness_warm"],
       "lightingForbidden": ["high_end_clinic_lighting", "neon_club_flash", "direct_sports_lighting", "track_spotlight_hard"],
       "negativeConstraintsExpected": ["modern_clinic_pretension", "spa_pretension"],
@@ -61,6 +77,14 @@
       "motifFamiliesForbidden": ["sports_dynamic", "neon_club", "raw_industrial", "rubber_floor", "graffiti", "y2k_pop"],
       "materialsAllowed": ["calm_mineral", "translucent_surface", "soft_lacquer", "high_end_lacquer", "natural_stone", "linen", "velvet"],
       "materialsForbidden": ["rubber_floor", "exposed_concrete", "metal_grid", "raw_industrial_concrete", "neon_signage_tube"],
+      "materialDirection": {
+        "expectedMaterials": ["mineral_surface", "translucent_surface", "soft_lacquer", "high_end_lacquer", "linen", "velvet", "frosted_glass", "brushed_metal", "natural_stone", "matte_white_surface"],
+        "forbiddenMaterials": ["rubber_floor", "exposed_concrete", "metal_grid", "raw_industrial_concrete"]
+      },
+      "functionalRelationship": {
+        "expectedZones": ["reception", "consultation", "treatment", "vip_lounge", "lobby", "corridor", "reception_desk", "consultation_guidance"],
+        "forbiddenZones": ["open_kitchen", "checkout_counter", "trial_zone", "dining_area"]
+      },
       "lightingAllowed": ["indirect_illumination", "soft_natural", "warm_wash", "soft_diffused", "low_brightness_warm"],
       "lightingForbidden": ["direct_sports_lighting", "neon_club_flash", "high_end_clinic_overly_bright"],
       "negativeConstraintsExpected": ["hospital_pretension", "spa_pretension", "nightclub_lighting"],
@@ -85,6 +109,14 @@
       "motifFamiliesForbidden": ["feather_like_flow", "petal_sculpture", "crystal_object", "peacock", "spa_wave", "lily_pad"],
       "materialsAllowed": ["sports_mesh", "rubber_floor", "concrete", "metal_grid", "performance_fabric", "tribal_pattern_print", "exposed_concrete"],
       "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "feather_like_flow_overuse", "spa_aroma"],
+      "materialDirection": {
+        "expectedMaterials": ["sports_mesh", "rubber_floor", "metal_grid", "performance_fabric", "exposed_concrete"],
+        "forbiddenMaterials": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "spa_aroma"]
+      },
+      "functionalRelationship": {
+        "expectedZones": ["product_display", "fitting_room", "trial_zone", "checkout_counter", "service_desk", "community_gathering_area"],
+        "forbiddenZones": ["treatment_bed", "consultation_room", "open_kitchen", "dining_area"]
+      },
       "lightingAllowed": ["direct_lighting", "track_spotlight_hard", "high_brightness", "rgb_sport", "stadium_inspired"],
       "lightingForbidden": ["high_end_clinic_lighting", "spa_lighting", "neon_club_flash", "low_brightness_warm"],
       "negativeConstraintsExpected": ["vintage_retro", "fine_dining"],
@@ -107,6 +139,14 @@
       "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "spa_wave", "lily_pad", "neon_club"],
       "materialsAllowed": ["natural_wood", "lacquered_panel", "metal_finish", "velvet", "linen", "leather"],
       "materialsForbidden": ["rubber_floor", "exposed_concrete", "metal_grid", "neon_signage_tube"],
+      "materialDirection": {
+        "expectedMaterials": ["natural_wood", "lacquered_panel", "metal_finish", "velvet", "linen"],
+        "forbiddenMaterials": ["rubber_floor", "exposed_concrete", "metal_grid", "neon_signage_tube"]
+      },
+      "functionalRelationship": {
+        "expectedZones": ["product_display", "fitting_room", "vip_room", "checkout_counter", "lobby"],
+        "forbiddenZones": ["treatment_bed", "open_kitchen", "dining_area"]
+      },
       "lightingAllowed": ["track_spotlight", "warm_wash", "soft_diffused", "editorial_studio"],
       "lightingForbidden": ["high_end_clinic_lighting", "neon_club_flash", "stadium_inspired"],
       "negativeConstraintsExpected": ["warehouse_discount"],
@@ -129,6 +169,14 @@
       "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "spa_wave", "lily_pad", "fine_dining_chandelier"],
       "materialsAllowed": ["lacquered_panel", "acrylic_lightbox", "led_strip", "stainless_steel", "printed_graphics", "rubber_floor"],
       "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "feather_like_flow_overuse", "white_curved_wall_overuse", "fine_dining_linen"],
+      "materialDirection": {
+        "expectedMaterials": ["lacquered_panel", "acrylic_lightbox", "led_strip", "stainless_steel", "printed_graphics"],
+        "forbiddenMaterials": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "white_curved_wall_overuse", "fine_dining_linen"]
+      },
+      "functionalRelationship": {
+        "expectedZones": ["casual_dining", "dining_area", "open_kitchen", "counter", "photo_spot", "logo_wall", "reception"],
+        "forbiddenZones": ["treatment_bed", "consultation_room", "fitting_room", "vip_lounge"]
+      },
       "lightingAllowed": ["direct_lighting", "led_strip", "high_saturation_color_light", "neon_signage", "rgb_color"],
       "lightingForbidden": ["high_end_clinic_lighting", "spa_lighting", "soft_diffused_only", "candlelight"],
       "negativeConstraintsExpected": ["fine_dining_pretension", "hospital_pretension", "spa_pretension"],
@@ -160,6 +208,13 @@
     { "constraint": "high_end_clinic_lighting", "expectedIndustries": ["medical_aesthetics"], "severity": "high", "rule": "high_end_clinic_lighting is a specifically medical_aesthetics concern; not a sports_retail concern. Sports retail would not specifically prohibit clinic lighting." },
     { "constraint": "silent_meditation_room", "expectedIndustries": ["tcm_wellness"], "severity": "medium", "rule": "silent_meditation_room concern is tcm_wellness; not a sports_retail concern." },
     { "constraint": "fine_dining_dinnerware", "expectedIndustries": ["restaurant"], "severity": "medium", "rule": "fine_dining_dinnerware concern is restaurant; not a medical_aesthetics concern." }
+  ],
+  "crossIndustryZoneContamination": [
+    { "zone": "fitting_room", "expectedIndustries": ["medical_aesthetics", "sports_retail", "fashion_retail"], "severity": "high", "rule": "fitting_room is medical/retail trying-on space; not expected in restaurant/casual_dining/tcm" },
+    { "zone": "trial_zone", "expectedIndustries": ["sports_retail"], "severity": "high", "rule": "trial_zone is sports trying-on; not expected in restaurant/casual_dining/tcm/medical" },
+    { "zone": "open_kitchen", "expectedIndustries": ["restaurant", "casual_dining"], "severity": "medium", "rule": "open_kitchen is dining; not expected in retail/tcm/medical" },
+    { "zone": "treatment_bed", "expectedIndustries": ["medical_aesthetics", "tcm_wellness"], "severity": "high", "rule": "treatment_bed is medical/tcm; not expected in retail/restaurant" },
+    { "zone": "consultation_room", "expectedIndustries": ["medical_aesthetics", "tcm_wellness"], "severity": "medium", "rule": "consultation_room is medical/tcm; not expected in retail/restaurant" }
   ],
   "confidenceThresholds": {
     "pass": 0.85,

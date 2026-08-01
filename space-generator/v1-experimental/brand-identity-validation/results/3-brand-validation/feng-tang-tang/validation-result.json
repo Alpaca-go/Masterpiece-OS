@@ -1,5 +1,7 @@
 {
   "status": "pass",
+  "riskLevel": "low",
+  "recommendation": "continue",
   "industry": {
     "value": "餐饮 / 川菜 / 跷脚牛肉",
     "matchedIndustry": "restaurant",
@@ -36,15 +38,43 @@
       "keyword matches: 消费者, 川菜, 午餐, 居民, 客流"
     ]
   },
-  "riskLevel": "low",
-  "overallConfidence": 0.927,
+  "materialDirection": {
+    "value": [
+      "warm_wood_booth",
+      "red_brick_wall",
+      "terracotta_tile",
+      "bamboo_screen",
+      "brass_kitchen_fixture"
+    ],
+    "matchedIndustry": "restaurant",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: warm_wood_booth, red_brick_wall, terracotta_tile, bamboo_screen, brass_kitchen_fixture"
+    ]
+  },
+  "functionalRelationship": {
+    "value": [
+      "reception_counter",
+      "waiting_bench",
+      "menu_board",
+      "kitchen_pass_visible",
+      "spice_display",
+      "beverage_cooler"
+    ],
+    "matchedIndustry": "restaurant",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: reception_counter, menu_board, kitchen_pass_visible"
+    ]
+  },
+  "overallConfidence": 0.935,
   "issues": [],
   "metadata": {
     "phase": "9C.0.5",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "gate": "brand-identity-validation-gate",
     "brandKey": "冯烫烫",
     "projectIdLocal": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
-    "generatedAt": "2026-08-01T15:10:03.585Z"
+    "generatedAt": "2026-08-01T16:18:22.923Z"
   }
 }

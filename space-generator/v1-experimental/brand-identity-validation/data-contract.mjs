@@ -1,23 +1,31 @@
-// Brand Identity Validation Gate Data Contract v1 (Phase 9C.0.5)
-// 用途: Phase 9C.0.5 §5/§7 data contract. Validation gate 输入字段 (brandDNA +
-//       analysisReport + referenceEvidence) 和输出字段 (status / industry / category /
-//       spaceType / audience / riskLevel / issues).
+// Brand Identity Validation Gate Data Contract v2 (Phase 9C.0.5 Updated)
+// 用途: Phase 9C.0.5 §6/§7 data contract (跟 Updated doc 对齐).
+//       Validation gate 输入字段 (brandDNA + analysisReport + referenceEvidence)
+//       和输出字段 (status / riskLevel / recommendation / industry / category /
+//       spaceType / audience / materialDirection / functionalRelationship / issues).
 //
-// Phase 9C.0.5 §3 核心设计原则:
-//   - Principle 01: 验证 brand identity before spatial generation
-//   - Principle 02: 只阻断, 不重新设计 (no auto-correction)
-//   - Principle 03: 低成本验证 (text-only, no image gen)
+// Phase 9C.0.5 Updated §2 跟 Structured Analysis Self-Healing 的关系:
+//   - Self-healing 修 schema / 字段缺失 / 默认值 / 缓存 / contract drift
+//   - 9C.0.5 修 cross-industry contamination (品牌语义是否正确)
+//   - 二者不合并.
 //
-// Phase 9C.0.5 §9 confidence thresholds:
-//   - pass:    overallConfidence >= 0.85
-//   - review:  0.65 <= overallConfidence < 0.85
-//   - fail:    overallConfidence < 0.65
+// Phase 9C.0.5 Updated §7 输出 schema (Pass/Block 二态):
+//   Pass:  { status: "pass", riskLevel: "low", recommendation: "continue" }
+//   Block: { status: "blocked", riskLevel: "critical"|"high"|"medium",
+//            recommendation: "review_brand_DNA" | "ask_user" }
 //
-// Phase 9C.0.5 §8 risk levels:
-//   - critical: 行业完全错 (e.g. restaurant DNA claims sports_retail)
-//   - high:     空间类型与行业冲突 (e.g. restaurant + fitting_room)
-//   - medium:   品牌气质偏差
-//   - low:      全部一致
+// Phase 9C.0.5 Updated §8 Blocking Rules:
+//   - Critical: 行业完全冲突 (e.g. restaurant DNA claims sports retail)
+//   - High Risk: 空间功能冲突 (e.g. restaurant + fitting room)
+//   - Medium: 进入人工确认
+//
+// Phase 9C.0.5 Updated §6 Validation Fields (6 个):
+//   - Industry
+//   - Category
+//   - Space Type
+//   - Audience
+//   - Material Direction
+//   - Functional Relationship
 //
 // 不调真实 Provider, 不修改 baseline 行为, 不污染生产代码.
 
@@ -30,24 +38,22 @@ const __dirname = dirname(__filename);
 const repoRoot = join(__dirname, '..', '..', '..');
 
 export const PHASE = '9C.0.5';
-export const VERSION = '1.0.0';
+export const VERSION = '2.0.0'; // Bumped: schema 跟 Updated doc 对齐
 export const GATE_NAME = 'brand-identity-validation-gate';
 
 /**
- * Phase 9C.0.5 §5 Validation Input Schema.
- *
- * @typedef {Object} ValidationInput
- * @property {Object} brandDNA - The brand DNA instance (v0.1 / v0.1.1 / v0.3)
- * @property {Object} analysisReport - Synthesized from DNA: { industry, category, audience, brandPositioning, sceneType, ... }
- * @property {Object} referenceEvidence - { referencePath, fileCount, notes }
+ * Phase 9C.0.5 Updated §7 Validation Output Schema.
  *
  * @typedef {Object} ValidationOutput
- * @property {'pass' | 'review' | 'fail'} status
+ * @property {'pass' | 'blocked'} status
+ * @property {'low' | 'medium' | 'high' | 'critical'} riskLevel
+ * @property {'continue' | 'review_brand_DNA' | 'ask_user'} recommendation
  * @property {FieldCheck} industry
  * @property {FieldCheck} category
  * @property {FieldCheck} spaceType
  * @property {FieldCheck} audience
- * @property {'low' | 'medium' | 'high' | 'critical'} riskLevel
+ * @property {FieldCheck} materialDirection
+ * @property {FieldCheck} functionalRelationship
  * @property {number} overallConfidence
  * @property {Issue[]} issues
  * @property {Object} metadata
@@ -71,24 +77,30 @@ export const DATA_CONTRACT = {
   gate: GATE_NAME,
   input: {
     brandDNA: 'Space DNA instance (v0.1 / v0.1.1 / v0.3) — required',
-    analysisReport: 'Synthesized from DNA: industry / category / audience / brandPositioning / sceneType — derived by validateBrandIdentity() if not provided',
+    analysisReport: 'Synthesized from DNA: industry / category / audience / brandPositioning / sceneType / requiredZones / materials — derived by validateBrandIdentity() if not provided',
     referenceEvidence: 'Optional: { referencePath, fileCount, notes } for cross-validation',
   },
   output: {
-    status: '"pass" (>= 0.85) | "review" (0.65-0.85) | "fail" (< 0.65)',
+    status: '"pass" (0 issues + confidence >= pass threshold) | "blocked" (任何 issue)',
+    riskLevel: '"low" (无 issues) | "medium" (有 medium issues) | "high" (有 high issues) | "critical" (有 critical issues)',
+    recommendation: '"continue" (status=pass) | "review_brand_DNA" (critical/high risk) | "ask_user" (medium risk)',
     industry: '{ value, matchedIndustry, confidence, evidence }',
     category: '{ value, matchedIndustry, confidence, evidence }',
     spaceType: '{ value, matchedIndustry, confidence, evidence }',
     audience: '{ value, matchedIndustry, confidence, evidence }',
-    riskLevel: '"low" | "medium" | "high" | "critical"',
+    materialDirection: '{ value, matchedIndustry, confidence, evidence }',
+    functionalRelationship: '{ value, matchedIndustry, confidence, evidence }',
     overallConfidence: 'number 0-1',
     issues: 'array of { field, severity, message, evidence }',
     metadata: '{ phase, version, gate, generatedAt }',
   },
+  blockingRules: {
+    critical: '行业完全冲突 (industry key 不在 known industries / industry 完全 unmatched / content 完全是另一个行业的 concerns)',
+    high: '空间功能冲突 (sceneType 在 industry.forbiddenSpaceTypes / material / motif / negativeConstraint 严重 cross-industry contamination)',
+    medium: '需要人工确认 (content 跨行业但不完全冲突 / audience 关键词未匹配 / brandSpirit 部分偏离 / field 缺失)',
+  },
   thresholds: {
-    pass: 0.85,
-    review: 0.65,
-    fail: 0.0,
+    pass: 0.85, // status=pass 需要的 overallConfidence 最低
   },
 };
 
@@ -106,8 +118,7 @@ export function loadRules() {
 
 /**
  * Synthesize analysisReport from a brand DNA instance.
- * Extracts industry, category, audience, sceneType, brandSpirit, motifFamily,
- * materialDna, lightingDna, negativeConstraints for cross-validation.
+ * Phase 9C.0.5 Updated §6: 6 fields extracted for validation.
  *
  * @param {Object} dna - The brand DNA instance.
  * @returns {Object} analysisReport.
@@ -126,11 +137,14 @@ export function synthesizeAnalysisReport(dna) {
     scale: dna.sceneDefinition?.scale ?? null,
     areaSqm: dna.sceneDefinition?.areaSqm ?? null,
     requiredZones: dna.sceneDefinition?.requiredZones ?? [],
+    optionalZones: dna.sceneDefinition?.optionalZones ?? [],
+    customerFlow: dna.functionalDna?.customerFlow ?? {},
     brandSpirit: dna.brandSpaceDna?.brandSpirit ?? {},
     motifFamily: dna.brandSpaceDna?.motifFamily ?? [],
     literalAssetUsage: dna.brandSpaceDna?.literalAssetUsage ?? {},
     primaryMaterials: dna.materialDna?.primaryMaterials ?? [],
     accentMaterials: dna.materialDna?.accentMaterials ?? [],
+    secondaryMaterials: dna.materialDna?.secondaryMaterials ?? [],
     lightingStrategy: dna.lightingDna?.primaryStrategy ?? null,
     brandLightHueFamily: dna.lightingDna?.brandLight?.hueFamily ?? [],
     negativeConstraints: dna.negativeConstraints?.prohibit ?? [],

@@ -1,5 +1,7 @@
 {
   "status": "pass",
+  "riskLevel": "low",
+  "recommendation": "continue",
   "industry": {
     "value": "医疗美容与医美生态服务",
     "matchedIndustry": "medical_aesthetics",
@@ -36,15 +38,43 @@
       "keyword matches: 医美, 消费者, 医疗"
     ]
   },
-  "riskLevel": "low",
-  "overallConfidence": 0.918,
+  "materialDirection": {
+    "value": [
+      "mineral_plaster",
+      "fine_textured_stone",
+      "matte_white_surface",
+      "frosted_glass",
+      "brushed_metal"
+    ],
+    "matchedIndustry": "medical_aesthetics",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: mineral_plaster, fine_textured_stone, matte_white_surface, frosted_glass, brushed_metal"
+    ]
+  },
+  "functionalRelationship": {
+    "value": [
+      "reception_desk",
+      "waiting_area",
+      "brand_wall",
+      "consultation_guidance",
+      "product_display",
+      "art_installation"
+    ],
+    "matchedIndustry": "medical_aesthetics",
+    "confidence": 0.8999999999999999,
+    "evidence": [
+      "expected matches: reception_desk, consultation_guidance"
+    ]
+  },
+  "overallConfidence": 0.92,
   "issues": [],
   "metadata": {
     "phase": "9C.0.5",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "gate": "brand-identity-validation-gate",
     "brandKey": "九州美学",
     "projectIdLocal": "a7a56ed7-849f-4671-b47a-466394d7298d",
-    "generatedAt": "2026-08-01T15:10:03.564Z"
+    "generatedAt": "2026-08-01T16:18:22.920Z"
   }
 }

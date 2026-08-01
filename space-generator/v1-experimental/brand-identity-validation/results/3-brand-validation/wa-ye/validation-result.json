@@ -1,111 +1,87 @@
 {
-  "status": "fail",
+  "status": "pass",
+  "riskLevel": "low",
+  "recommendation": "continue",
   "industry": {
-    "value": "体育用品零售 / 运动品牌",
-    "matchedIndustry": "sports_retail",
+    "value": "餐饮 / 炭烧牛蛙 / 潮流快餐",
+    "matchedIndustry": "casual_dining",
     "confidence": 0.95,
     "evidence": [
-      "matched to sports_retail (体育用品零售)"
+      "matched to casual_dining (休闲餐饮 / 潮流餐饮)"
     ]
   },
   "category": {
-    "value": "retail",
-    "matchedIndustry": "sports_retail",
+    "value": "casual_dining_chain",
+    "matchedIndustry": "casual_dining",
     "confidence": 0.9,
     "evidence": [
-      "category in industry.allowedCategories: sports_retail, athletic_apparel, sportswear_store, mall_store, retail"
+      "category in industry.allowedCategories: casual_dining, fast_casual, casual_dining_chain, trendy_food, y2k_dining, charcoal_grill"
     ]
   },
   "spaceType": {
-    "value": "product_display",
-    "matchedIndustry": "sports_retail",
+    "value": "reception",
+    "matchedIndustry": "casual_dining",
     "confidence": 0.9,
     "evidence": [
-      "sceneType in industry.allowedSpaceTypes: product_display, fitting_room, trial_zone, checkout_counter, service_desk, community_gathering_area"
+      "sceneType in industry.allowedSpaceTypes: reception, casual_dining, dining_area, open_kitchen, counter, photo_spot, logo_wall"
     ]
   },
   "audience": {
     "value": [
-      "运动爱好者",
-      "年轻消费者",
-      "装备升级需求"
+      "18-30 岁年轻食客",
+      "打卡 / 拍照 / 尝鲜 / 性价比",
+      "朋友聚餐 / 情侣约会"
     ],
-    "matchedIndustry": "sports_retail",
-    "confidence": 0.9,
+    "matchedIndustry": "casual_dining",
+    "confidence": 0.95,
     "evidence": [
-      "keyword matches: 运动爱好者, 装备升级, 年轻"
+      "keyword matches: 年轻食客, 打卡, 年轻, 性价比"
     ]
   },
-  "riskLevel": "high",
-  "overallConfidence": 0.918,
-  "issues": [
-    {
-      "field": "motifFamily",
-      "severity": "high",
-      "message": "motifFamily \"feather_like_flow\" is expected in medical_aesthetics / restaurant / casual_dining / fashion_retail DNA, but DNA is industry \"sports_retail\". feather_like_flow is a light/flow motif; expected in medical_aesthetics / restaurant / casual_dining / fashion_retail. NOT expected in sports_retail / tcm_wellness.",
-      "evidence": [
-        "[\"feather_like_flow\"]",
-        "industry=sports_retail",
-        "expected=medical_aesthetics, restaurant, casual_dining, fashion_retail"
-      ]
-    },
-    {
-      "field": "negativeConstraints",
-      "severity": "high",
-      "message": "negativeConstraints \"high_end_clinic_lighting\" is a concern of medical_aesthetics DNA, but DNA is industry \"sports_retail\". high_end_clinic_lighting is a specifically medical_aesthetics concern; not a sports_retail concern. Sports retail would not specifically prohibit clinic lighting.",
-      "evidence": [
-        "[\"white_curved_walls\",\"high_end_clinic_lighting\",\"feather_like_flow_overuse\",\"translucent_fiber_decoration\",\"optical_crystal_centerpiece\",\"petal_sculpture_motif\",\"purple_lavender_glow\",\"elegant_lobby_seating\",\"spa_atmosphere\",\"hospital_corridor\",\"silent_meditation_room\",\"fine_dining_dinnerware\"]",
-        "industry=sports_retail",
-        "expected=medical_aesthetics"
-      ]
-    },
-    {
-      "field": "negativeConstraints",
-      "severity": "high",
-      "message": "negativeConstraints \"spa_atmosphere\" is a concern of tcm_wellness / medical_aesthetics DNA, but DNA is industry \"sports_retail\". spa_atmosphere concern is specifically tcm_wellness / medical_aesthetics; not a sports_retail concern. Sports retail would not specifically prohibit spa.",
-      "evidence": [
-        "[\"white_curved_walls\",\"high_end_clinic_lighting\",\"feather_like_flow_overuse\",\"translucent_fiber_decoration\",\"optical_crystal_centerpiece\",\"petal_sculpture_motif\",\"purple_lavender_glow\",\"elegant_lobby_seating\",\"spa_atmosphere\",\"hospital_corridor\",\"silent_meditation_room\",\"fine_dining_dinnerware\"]",
-        "industry=sports_retail",
-        "expected=tcm_wellness, medical_aesthetics"
-      ]
-    },
-    {
-      "field": "negativeConstraints",
-      "severity": "high",
-      "message": "negativeConstraints \"hospital_corridor\" is a concern of medical_aesthetics DNA, but DNA is industry \"sports_retail\". hospital_corridor concern is specifically medical_aesthetics; not a sports_retail concern. Sports retail would not specifically prohibit hospital corridor.",
-      "evidence": [
-        "[\"white_curved_walls\",\"high_end_clinic_lighting\",\"feather_like_flow_overuse\",\"translucent_fiber_decoration\",\"optical_crystal_centerpiece\",\"petal_sculpture_motif\",\"purple_lavender_glow\",\"elegant_lobby_seating\",\"spa_atmosphere\",\"hospital_corridor\",\"silent_meditation_room\",\"fine_dining_dinnerware\"]",
-        "industry=sports_retail",
-        "expected=medical_aesthetics"
-      ]
-    },
-    {
-      "field": "negativeConstraints",
-      "severity": "medium",
-      "message": "negativeConstraints \"silent_meditation_room\" is a concern of tcm_wellness DNA, but DNA is industry \"sports_retail\". silent_meditation_room concern is tcm_wellness; not a sports_retail concern.",
-      "evidence": [
-        "[\"white_curved_walls\",\"high_end_clinic_lighting\",\"feather_like_flow_overuse\",\"translucent_fiber_decoration\",\"optical_crystal_centerpiece\",\"petal_sculpture_motif\",\"purple_lavender_glow\",\"elegant_lobby_seating\",\"spa_atmosphere\",\"hospital_corridor\",\"silent_meditation_room\",\"fine_dining_dinnerware\"]",
-        "industry=sports_retail",
-        "expected=tcm_wellness"
-      ]
-    },
-    {
-      "field": "negativeConstraints",
-      "severity": "medium",
-      "message": "negativeConstraints \"fine_dining_dinnerware\" is a concern of restaurant DNA, but DNA is industry \"sports_retail\". fine_dining_dinnerware concern is restaurant; not a medical_aesthetics concern.",
-      "evidence": [
-        "[\"white_curved_walls\",\"high_end_clinic_lighting\",\"feather_like_flow_overuse\",\"translucent_fiber_decoration\",\"optical_crystal_centerpiece\",\"petal_sculpture_motif\",\"purple_lavender_glow\",\"elegant_lobby_seating\",\"spa_atmosphere\",\"hospital_corridor\",\"silent_meditation_room\",\"fine_dining_dinnerware\"]",
-        "industry=sports_retail",
-        "expected=restaurant"
-      ]
-    }
-  ],
+  "materialDirection": {
+    "value": [
+      "lacquered_panel",
+      "acrylic_lightbox",
+      "stainless_steel",
+      "printed_graphics",
+      "led_strip",
+      "rgb_color_light",
+      "printed_poster",
+      "neon_signage_tube",
+      "ip_merchandise_display"
+    ],
+    "matchedIndustry": "casual_dining",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: lacquered_panel, acrylic_lightbox, stainless_steel, printed_graphics, led_strip, printed_poster"
+    ]
+  },
+  "functionalRelationship": {
+    "value": [
+      "点单_counter",
+      "堂食_seating_area",
+      "出餐_pass",
+      "招牌菜灯箱_menu_lightbox",
+      "蛙_IP_形象墙_logo_wall",
+      "拍照打卡位_photo_spot",
+      "洗手间_access",
+      "semi_private_booth_4_6_seat",
+      "外带_pickup_window"
+    ],
+    "matchedIndustry": "casual_dining",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: 点单_counter, 蛙_ip_形象墙_logo_wall, 拍照打卡位_photo_spot"
+    ]
+  },
+  "overallConfidence": 0.935,
+  "issues": [],
   "metadata": {
     "phase": "9C.0.5",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "gate": "brand-identity-validation-gate",
     "brandKey": "蛙耶",
     "projectIdLocal": "waye-regression-sample",
-    "generatedAt": "2026-08-01T15:10:03.590Z"
+    "generatedAt": "2026-08-01T16:18:22.932Z"
   }
 }

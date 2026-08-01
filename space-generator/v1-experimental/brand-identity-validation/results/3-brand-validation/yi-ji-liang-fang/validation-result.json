@@ -1,5 +1,7 @@
 {
   "status": "pass",
+  "riskLevel": "low",
+  "recommendation": "continue",
   "industry": {
     "value": "中医养生与健康管理",
     "matchedIndustry": "tcm_wellness",
@@ -36,15 +38,43 @@
       "keyword matches: 养生, 亚健康, 客户, 消费者, 人群"
     ]
   },
-  "riskLevel": "low",
-  "overallConfidence": 0.927,
+  "materialDirection": {
+    "value": [
+      "light_wood",
+      "matte_clay_wall",
+      "linen_fabric",
+      "rice_paper",
+      "brass_fitting"
+    ],
+    "matchedIndustry": "tcm_wellness",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: light_wood, matte_clay_wall, linen_fabric, rice_paper, brass_fitting"
+    ]
+  },
+  "functionalRelationship": {
+    "value": [
+      "consultation_desk",
+      "waiting_area",
+      "tea_corner",
+      "herbal_display",
+      "diagnostic_room_signage",
+      "art_installation"
+    ],
+    "matchedIndustry": "tcm_wellness",
+    "confidence": 0.95,
+    "evidence": [
+      "expected matches: consultation_desk, waiting_area, tea_corner, herbal_display"
+    ]
+  },
+  "overallConfidence": 0.935,
   "issues": [],
   "metadata": {
     "phase": "9C.0.5",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "gate": "brand-identity-validation-gate",
     "brandKey": "一剂良方",
     "projectIdLocal": "yjlifang-regression-sample",
-    "generatedAt": "2026-08-01T15:10:03.588Z"
+    "generatedAt": "2026-08-01T16:18:22.925Z"
   }
 }
