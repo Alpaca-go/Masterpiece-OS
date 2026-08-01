@@ -43,7 +43,7 @@ await fs.writeFile(path.join(appRoot, 'package.json'), `${JSON.stringify({
 
 const child = spawn(electron, [appRoot], {
   cwd: desktopRoot,
-  env: process.env,
+  env: { ...process.env, MASTERPIECE_SMOKE_REPO_ROOT: path.resolve(desktopRoot, '..', '..') },
   stdio: 'inherit',
   windowsHide: true,
 });

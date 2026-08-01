@@ -61,7 +61,8 @@ if (!projectId || !textProfileId || !imageProfileId || !brandKey || !dnaPath || 
   );
 }
 
-const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
+const REPO_ROOT = process.env.MASTERPIECE_SMOKE_REPO_ROOT?.trim()
+  || path.resolve(process.cwd(), '..', '..');
 const SPATIAL_INTELLIGENCE_DIR = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'spatial-intelligence-pipeline');
 const VALIDATION_RESULTS = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'validation-results', 'phase-9B', brandKey);
 

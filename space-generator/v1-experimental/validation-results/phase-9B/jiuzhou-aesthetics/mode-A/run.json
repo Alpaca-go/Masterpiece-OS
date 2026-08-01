@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9B",
+  "mode": "A",
+  "brandKey": "jiuzhou-aesthetics",
+  "projectId": "a7a56ed7-849f-4671-b47a-466394d7298d",
+  "promptVersion": "phase-9b-mode-a-1.0.0",
+  "provider": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "1024*1024",
+  "referenceAssetId": "abba5eaa-21c2-4a01-9fb9-c330ed8aff29",
+  "runId": "11b96f10-ae40-4b68-bb74-525fd2785f14",
+  "status": "succeeded",
+  "terminalAt": null,
+  "modelCallCount": null,
+  "imageBytes": 451840,
+  "createdAt": "2026-08-01T11:30:04.108Z",
+  "durationMs": 96480
+}

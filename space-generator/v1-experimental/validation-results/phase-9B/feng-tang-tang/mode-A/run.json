@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9B",
+  "mode": "A",
+  "brandKey": "feng-tang-tang",
+  "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+  "promptVersion": "phase-9b-mode-a-1.0.0",
+  "provider": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "1024*1024",
+  "referenceAssetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+  "runId": "30e82f9f-51be-4059-99c8-650d28dda93e",
+  "status": "succeeded",
+  "terminalAt": null,
+  "modelCallCount": null,
+  "imageBytes": 822025,
+  "createdAt": "2026-08-01T12:00:09.494Z",
+  "durationMs": 90549
+}
