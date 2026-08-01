@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "v0.1-base",
+  "brandKey": "wa-ye",
+  "projectId": "8d73845c-1477-485a-b6bb-40aed16c06b1",
+  "assetId": "0ac035c9-74a9-40a7-b640-d0a0b5d5b32b",
+  "brandName": "蛙耶 v0.1 reference",
+  "brandPositioning": "wa-ye",
+  "promptVersion": "phase-v0.1-base-wa-ye-1.0.0",
+  "provider": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "1024*576",
+  "referenceAssetId": "0ac035c9-74a9-40a7-b640-d0a0b5d5b32b",
+  "runId": "e9f90499-947a-4e13-9bab-55a1287207d4",
+  "status": "succeeded",
+  "terminalAt": null,
+  "modelCallCount": null,
+  "blockCount": 11,
+  "characterCount": 4293,
+  "mode": "v0.1-base",
+  "runtimePath": "field_enriched_v0.1",
+  "moduleVersions": {
+    "brandDna": "v0.1",
+    "promptCompiler": "field-enriched-1.0.0"
+  },
+  "imageBytes": 1026564,
+  "createdAt": "2026-08-01T14:43:47.659Z",
+  "durationMs": 101190
+}

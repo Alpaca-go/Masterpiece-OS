@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9C",
+  "brandKey": "feng-tang-tang",
+  "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+  "assetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+  "promptVersion": "phase-9C-v0.1-feng-tang-tang-1.0.0",
+  "provider": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "1024*576",
+  "referenceAssetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+  "runId": "d3210147-005e-49fe-8968-07d37421e22c",
+  "status": "succeeded",
+  "terminalAt": null,
+  "modelCallCount": null,
+  "blockCount": 16,
+  "characterCount": 9376,
+  "mode": "B-architecture-preservation",
+  "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+  "moduleVersions": {
+    "brandDna": "v0.1",
+    "spatialIntent": "9A.2",
+    "architectureBridge": "9A.3",
+    "architectureAnchor": "8A",
+    "architectureFunctionBridge": "8B.1",
+    "spatialReality": "9B.1",
+    "architecturePreservation": "9B.2",
+    "promptCompiler": "1.0.0"
+  },
+  "imageBytes": 843859,
+  "createdAt": "2026-08-01T14:35:12.391Z",
+  "durationMs": 85602
+}
