@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "description": "Architecture Anchor Registry. Phase 8A + Phase 8C Runtime Integration. 不修改 production code, 仅在 v1-experimental 范围内提供 in-context reference 加载入口. Anchor 的 source-of-truth 仍是各 brand 子目录的 metadata.yaml + architecture-dna-analysis.yaml; registry 是面向 prompt compiler 的 manifest. Phase 8C 在原 Phase 8A 基础上加 category + strength 字段, 供 selectAnchors 自动选择使用.",
+  "description": "Architecture Anchor Registry. Phase 8A + Phase 8C Runtime Integration + Phase 8D Multi-brand Validation. 不修改 production code, 仅在 v1-experimental 范围内提供 in-context reference 加载入口. Anchor 的 source-of-truth 仍是各 brand 子目录的 metadata.yaml + architecture-dna-analysis.yaml; registry 是面向 prompt compiler 的 manifest. Phase 8C 在原 Phase 8A 基础上加 category + strength 字段, 供 selectAnchors 自动选择使用. Phase 8D 扩到 3 brand: JZMX (medical_aesthetics) + FTT (restaurant) + YJLF (health_management), 跨 brand 验证防 overfit.",
   "brands": {
     "jiuzhou-aesthetics": {
       "brandDisplayName": "九州美学",
@@ -19,7 +19,7 @@
             "function": 0.75
           },
           "applicability": {
-            "industries": ["medical_aesthetics", "health_management"],
+            "industries": ["medical_aesthetics"],
             "sceneTypes": ["reception", "consultation", "vip_lounge"],
             "commercialContexts": ["street_store", "mall_store", "flagship"]
           }
@@ -37,7 +37,7 @@
             "function": 0.85
           },
           "applicability": {
-            "industries": ["medical_aesthetics", "health_management", "retail", "restaurant"],
+            "industries": ["medical_aesthetics"],
             "sceneTypes": ["exterior", "reception", "corridor"],
             "commercialContexts": ["street_store", "mall_store", "flagship", "popup"]
           }
@@ -55,9 +55,135 @@
             "function": 0.80
           },
           "applicability": {
-            "industries": ["medical_aesthetics", "health_management"],
+            "industries": ["medical_aesthetics"],
             "sceneTypes": ["consultation", "treatment", "lobby"],
             "commercialContexts": ["street_store", "flagship", "office_floor"]
+          }
+        }
+      ]
+    },
+    "feng-tang-tang": {
+      "brandDisplayName": "冯烫烫",
+      "anchorsDir": "v1-experimental/architecture-anchors/feng-tang-tang",
+      "anchors": [
+        {
+          "id": "FTT-ARCH-01-KitchenAnchor",
+          "role": "open_kitchen_as_visual_anchor",
+          "category": "kitchen_as_anchor",
+          "primaryMechanism": "开放厨房窗口 + 厨师动作可见, 客人面朝厨房, warm_amber 灯光暖色",
+          "secondaryMechanism": "餐桌围绕厨房排布, 主通道 1.5m+, 商业客流循环",
+          "imagePath": null,
+          "imageStatus": "concept_only",
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.85,
+            "function": 0.92
+          },
+          "applicability": {
+            "industries": ["restaurant"],
+            "sceneTypes": ["reception", "lobby", "other"],
+            "commercialContexts": ["street_store", "mall_store"]
+          }
+        },
+        {
+          "id": "FTT-ARCH-02-WarmCommercialGrid",
+          "role": "warm_material_commercial_grid",
+          "category": "warm_commercial_grid",
+          "primaryMechanism": "红砖墙 + 暖色木 + 赤陶瓦 三元组, 自然光 + warm_amber 暖色筒灯",
+          "secondaryMechanism": "网格状 booth 布局, 人尺度, 不用紫色 / 不用冷光",
+          "imagePath": null,
+          "imageStatus": "concept_only",
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.80,
+            "function": 0.88
+          },
+          "applicability": {
+            "industries": ["restaurant"],
+            "sceneTypes": ["reception", "lobby", "other"],
+            "commercialContexts": ["street_store", "mall_store"]
+          }
+        },
+        {
+          "id": "FTT-ARCH-03-HumanScaleBooth",
+          "role": "wooden_booth_with_human_proportion",
+          "category": "human_scale_booth",
+          "primaryMechanism": "木 booth + 人尺度 (座高 45cm, 桌高 75cm), booth 之间 1.2m 间距",
+          "secondaryMechanism": "菜单板可见 + 实物感 + 烟火气, 不用 medical 标志",
+          "imagePath": null,
+          "imageStatus": "concept_only",
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.75,
+            "function": 0.90
+          },
+          "applicability": {
+            "industries": ["restaurant", "retail"],
+            "sceneTypes": ["reception", "lobby", "other"],
+            "commercialContexts": ["street_store", "mall_store"]
+          }
+        }
+      ]
+    },
+    "yi-ji-liang-fang": {
+      "brandDisplayName": "一剂良方",
+      "anchorsDir": "v1-experimental/architecture-anchors/yi-ji-liang-fang",
+      "anchors": [
+        {
+          "id": "YJLF-ARCH-01-WoodenGrid",
+          "role": "warm_wood_grid_with_paper_screen",
+          "category": "wooden_grid_partition",
+          "primaryMechanism": "木格 + 浅木色 + matte_clay_wall + linen_fabric, 暖色中等硬度",
+          "secondaryMechanism": "自然光 + warm_amber 暖色筒灯, 不用紫色 / 不用嵌入光带 (JZMX 标志)",
+          "imagePath": null,
+          "imageStatus": "concept_only",
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.88,
+            "function": 0.82
+          },
+          "applicability": {
+            "industries": ["health_management"],
+            "sceneTypes": ["reception", "consultation", "vip_lounge"],
+            "commercialContexts": ["street_store", "mall_store", "office_floor"]
+          }
+        },
+        {
+          "id": "YJLF-ARCH-02-PaperScreen",
+          "role": "paper_screen_diffused_light",
+          "category": "paper_screen_partition",
+          "primaryMechanism": "宣纸 / 棉纸窗户 + 自然光通过纸柔化, 安静氛围",
+          "secondaryMechanism": "纸屏风替代硬隔断, 不用玻璃幕墙 / 膜天花 (JZMX 标志)",
+          "imagePath": null,
+          "imageStatus": "concept_only",
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.90,
+            "function": 0.78
+          },
+          "applicability": {
+            "industries": ["health_management"],
+            "sceneTypes": ["reception", "consultation", "vip_lounge"],
+            "commercialContexts": ["street_store", "office_floor"]
+          }
+        },
+        {
+          "id": "YJLF-ARCH-03-TeaCorner",
+          "role": "tea_corner_with_consultation",
+          "category": "tea_corner_consultation",
+          "primaryMechanism": "茶几 + 椅 + 中医咨询桌, herbal_display_wall, 软边界 (纸屏风)",
+          "secondaryMechanism": "不用 medical_compliance (JZMX 标志), 不用 kitchen_pass (FTT 标志)",
+          "imagePath": null,
+          "imageStatus": "concept_only",
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.78,
+            "function": 0.88
+          },
+          "applicability": {
+            "industries": ["health_management"],
+            "sceneTypes": ["reception", "consultation", "vip_lounge"],
+            "commercialContexts": ["street_store", "mall_store"]
           }
         }
       ]
@@ -77,7 +203,8 @@
       "weight": 0.10
     },
     "minScore": 0.0,
-    "defaultMaxCount": 3
+    "defaultMaxCount": 3,
+    "phase8DMultibrandGuard": "Phase 8D §3 Risk 1: selectAnchors industry match 防护 JZMX overfit. JZMX anchors.applicability.industries 收紧到 ['medical_aesthetics'] 不再 cross-industry. FTT / YJLF 各自独立. industry match 权重 0.35 是 phase 8D 防 overfit 的主防线."
   },
   "inContextPolicy": {
     "maxReferencesPerPrompt": 3,

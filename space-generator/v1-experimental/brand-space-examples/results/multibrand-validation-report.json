@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T09:12:14.968Z",
+  "phase": "8D",
+  "brands": [
+    "jiuzhou-aesthetics",
+    "feng-tang-tang",
+    "yi-ji-liang-fang"
+  ],
+  "results": {
+    "jzmx": {
+      "modeA": {
+        "blockCount": 12,
+        "characterCount": 7680,
+        "runtimePath": "anchor_aware_8a_8b1"
+      },
+      "modeB": {
+        "blockCount": 11,
+        "characterCount": 6680
+      }
+    },
+    "ftt": {
+      "modeA": {
+        "blockCount": 12,
+        "characterCount": 5281,
+        "runtimePath": "anchor_aware_8a_8b1"
+      },
+      "modeB": {
+        "blockCount": 11,
+        "characterCount": 4289
+      }
+    },
+    "yjlf": {
+      "modeA": {
+        "blockCount": 12,
+        "characterCount": 5401,
+        "runtimePath": "anchor_aware_8a_8b1"
+      },
+      "modeB": {
+        "blockCount": 11,
+        "characterCount": 4392
+      }
+    }
+  },
+  "multiBrandEvaluation": {
+    "jzmx": {
+      "architectureGeneralization": {
+        "score": 0.5,
+        "max": 1,
+        "reason": "crossIndustryRatio=0.00 (anchor 不跨 industry 防 overfit) + mechanismCategoryCoverage=0.00 (mechanism 属于 0/4 architecture-language 类别)"
+      },
+      "brandAdaptation": {
+        "score": 1,
+        "max": 1,
+        "breakdown": [
+          "brandSpirit 5/5 维有值: +0.250",
+          "brandGrammar 5/5 维有值: +0.200",
+          "motifFamily 有 5 candidates: +0.15",
+          "brandTranslationRules.spiritToSpaceMechanism 5/5: +0.200",
+          "brandTranslationRules.motifToSpaceMechanism 5 rules: +0.20"
+        ]
+      },
+      "anchorDecoupling": {
+        "score": 1,
+        "max": 1,
+        "reason": "3 anchors, 0 brand-specific marker leakage (reusable)"
+      },
+      "conceptDrift": {
+        "score": 1,
+        "max": 1,
+        "reason": "conceptDriftGuards has 6 items (>= 5, full Phase 8B.1 §7 protection)"
+      }
+    },
+    "ftt": {
+      "architectureGeneralization": {
+        "score": 0.45833333333333337,
+        "max": 1,
+        "reason": "crossIndustryRatio=0.33 (anchor 不跨 industry 防 overfit) + mechanismCategoryCoverage=0.25 (mechanism 属于 1/4 architecture-language 类别)"
+      },
+      "brandAdaptation": {
+        "score": 0.6,
+        "max": 1,
+        "breakdown": [
+          "brandSpirit 5/5 维有值: +0.250",
+          "brandGrammar 5/5 维有值: +0.200",
+          "motifFamily 有 1 candidates: +0.15",
+          "brandTranslationRules missing (v0.1 baseline): +0"
+        ]
+      },
+      "anchorDecoupling": {
+        "score": 1,
+        "max": 1,
+        "reason": "3 anchors, 0 brand-specific marker leakage (reusable)"
+      },
+      "conceptDrift": {
+        "score": 0,
+        "max": 1,
+        "reason": "no conceptDriftGuards (Concept Drift unprotected)"
+      }
+    },
+    "yjlf": {
+      "architectureGeneralization": {
+        "score": 0.625,
+        "max": 1,
+        "reason": "crossIndustryRatio=0.00 (anchor 不跨 industry 防 overfit) + mechanismCategoryCoverage=0.25 (mechanism 属于 1/4 architecture-language 类别)"
+      },
+      "brandAdaptation": {
+        "score": 0.6,
+        "max": 1,
+        "breakdown": [
+          "brandSpirit 5/5 维有值: +0.250",
+          "brandGrammar 5/5 维有值: +0.200",
+          "motifFamily 有 2 candidates: +0.15",
+          "brandTranslationRules missing (v0.1 baseline): +0"
+        ]
+      },
+      "anchorDecoupling": {
+        "score": 0.7333333333333334,
+        "max": 1,
+        "reason": "4 leakage(s): YJLF-ARCH-01-WoodenGrid contains own-brand marker \"matte_clay_wall\"; YJLF-ARCH-01-WoodenGrid contains own-brand marker \"linen_fabric\"; YJLF-ARCH-03-TeaCorner contains own-brand marker \"herbal_display_wall\"..."
+      },
+      "conceptDrift": {
+        "score": 0,
+        "max": 1,
+        "reason": "no conceptDriftGuards (Concept Drift unprotected)"
+      }
+    }
+  },
+  "phase8dAcceptance": {
+    "1_JZMX_no_regression": "PASS (Phase 8C byte-equal preserved in Mode A vs Mode B)",
+    "2_FTT_not_medical_style": "PASS (no JZMX markers in FTT active content)",
+    "3_YJLF_health_industry": "PASS (no FTT/JZMX markers in YJLF active content)",
+    "4_anchor_cross_industry": "PASS (selectAnchors industry match 防护)",
+    "5_brand_translation_independent": "PASS (3 brand brand_translation distinct)"
+  }
+}

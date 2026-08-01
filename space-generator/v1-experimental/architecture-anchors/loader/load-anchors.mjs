@@ -138,8 +138,18 @@ export function selectAnchors(brandKey, criteria = {}, maxCount) {
     const breakdown = scoreAnchor(anchor, criteria, weights);
     // Phase 8C §4: score > 0 要求 industry / sceneType / commercialContext 至少一个匹配.
     // (weight 维度单独贡献不能成为 score > 0 的理由, 否则不相关 anchor 也会进 list.)
-    const hasAnyMatch = breakdown.industry > 0 || breakdown.sceneType > 0 || breakdown.commercialContext > 0;
-    const score = breakdown.total;
+    let hasAnyMatch = breakdown.industry > 0 || breakdown.sceneType > 0 || breakdown.commercialContext > 0;
+    let score = breakdown.total;
+    // Phase 8D §3 Risk 1 防 overfit: 当 criteria.industry 显式给出但 anchor.applicability.industries 不包含时,
+    // 强制 score = 0 (即使其他维度匹配). 这是多 brand 防 overfit 的关键防线.
+    if (criteria.industry != null) {
+      const appl = anchor.applicability ?? {};
+      const industryMatch = Array.isArray(appl.industries) && appl.industries.includes(criteria.industry);
+      if (!industryMatch) {
+        hasAnyMatch = false;
+        score = 0;
+      }
+    }
     // 应用 requireFunctionStrength 阈值
     const minFunction = criteria.requireFunctionStrength ?? 0;
     if (anchor.strength?.function != null && anchor.strength.function < minFunction) {

@@ -103,6 +103,7 @@ function inferBrandKey(dna) {
     return dna.metadata.brandKey;
   }
   // 2. brandName slug fallback (e.g. '九州美学' -> 'jiuzhou-aesthetics')
+  //    Phase 8D: 保持 brandName 白名单, 未知 brandName throw 让调用方显式提供 brandKey.
   if (dna.project?.brandName) {
     const name = dna.project.brandName;
     if (name === '九州美学') return 'jiuzhou-aesthetics';

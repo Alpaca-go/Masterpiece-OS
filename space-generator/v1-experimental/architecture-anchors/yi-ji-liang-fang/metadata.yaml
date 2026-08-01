@@ -1,0 +1,114 @@
+# YJLF Architecture Anchor v1 — Metadata
+# 来源文档: Space Generator v1.1 Phase 8D Multi-brand Space Validation §4 (Test C)
+# 创建时间: 2026-08-01
+# 触发版本: 5.0.0-rc.1
+#
+# Phase 8D 目标: 验证 Space Generator 不 overfit 到九州美学.
+# 一剂良方 (YJLF) 是 Health / Traditional Medicine industry, 与九州美学和冯烫烫都不同.
+# YJLF anchors 必须避免:
+#   - medical_aesthetics 风格 (JZMX overfitting)
+#   - restaurant 风格 (FTT 行业冲突)
+# YJLF anchors 必须强调:
+#   - natural materials (light_wood / matte_clay_wall / linen_fabric)
+#   - calm atmosphere (中医养生, 不是 FTT 的烟火气)
+#   - eastern order (木格 + 纸窗 + 暖色, 不是 medical grand)
+#   - consultation privacy (中医问诊, 但不是 medical 工位)
+#   - professional service environment (温和专业, 不是 JZMX 的 旗舰高端)
+
+reference_id:
+  - YJLF-ARCH-01-WoodenGrid
+  - YJLF-ARCH-02-PaperScreen
+  - YJLF-ARCH-03-TeaCorner
+
+project:
+  name: 一剂良方
+  category: health_management
+  industry: 中医养生与健康管理
+  project_id_local: yjlifang-regression-sample
+  source_data_root: 'C:\Users\Administrator\Documents\Masterpiece OS Data\projects\一剂良方-yjlifang'
+
+# Anchor 职责: 提供 health_management 行业建筑空间语言
+anchor_role:
+  ARCH-01-WoodenGrid:
+    type: warm_wood_grid_with_paper_screen
+    purpose:
+      - wooden_grid_partition
+      - warm_panel_layout
+      - subtle_traditional_layers
+  ARCH-02-PaperScreen:
+    type: paper_screen_diffused_light
+    purpose:
+      - rice_paper_window
+      - natural_light_diffused_through_paper
+      - calm_atmosphere
+  ARCH-03-TeaCorner:
+    type: tea_corner_with_consultation
+    purpose:
+      - tea_corner_consultation_space
+      - herbal_display_wall
+      - privacy_without_lock_door
+
+# 接受程度
+quality_level:
+  architectural_translation: A
+  brand_translation: A
+  commercial_realism: S
+
+# 不可复刻项
+do_not_copy:
+  - exact_grid_count
+  - exact_wood_pattern
+  - exact_screen_density
+  - exact_tea_set
+  - exact_herbal_display_count
+  - exact_chair_type
+  - exact_plant_choice
+
+# status: concept_only
+status: concept_only
+image_status_note: |
+  Phase 8D 不调真实 Provider, 没有真实 S 级图可作 anchor 锚点.
+
+# 空间不重复原则
+motif_constraints:
+  same_literal_scene_per_image_max: 1
+  same_scene_across_batch_ratio_max: 0.5
+  forbid_as_required:
+    - exact_grid_count
+    - exact_tea_set
+    - exact_herbal_layout
+
+# 与 JZMX / FTT 的关键区别 (Phase 8D Risk 1 防 overfitting)
+distinct_from_jzmx:
+  - "no translucent membrane ceiling (YJLF 用 wooden_grid + paper_screen, 不用膜结构)"
+  - "no purple lighting (YJLF 用 warm_amber + neutral_white, 不用 lavender)"
+  - "no reception_desk_as_anchor (YJLF 用 tea_corner_consultation, 不是接待台)"
+  - "no medical compliance expression (YJLF 是中医咨询, 不是西医医美)"
+distinct_from_ftt:
+  - "no kitchen_pass_visible (YJLF 没有厨房, 用 herbal_display_wall)"
+  - "no active_dining_circulation (YJLF 是 calm_consultation, 不是 active_dining)"
+  - "no high_density_booth (YJLF 是 sparse_consultation, 不是 booth 密集)"
+
+# 锚点与现有字段的关系
+relationship_to_existing:
+  vs_jzmx_anchors: |
+    JZMX-ARCH (medical_aesthetics) 不被 YJLF 选中.
+    YJLF-ARCH (health_management) 强调 calm_consultation + warm_wood.
+  vs_ftt_anchors: |
+    FTT-ARCH (restaurant) 不被 YJLF 选中.
+    YJLF-ARCH 强调 consultation_privacy + herbal_display, 不是 dining_circulation.
+  vs_brand_translation: |
+    YJLF brand_translation 是 "传统 / 可信 / 调理 / 温和" 翻译为空间机制:
+      传统 -> wooden_grid + paper_screen
+      可信 -> calm_atmosphere (无浮夸)
+      调理 -> tea_corner_consultation (饮茶 + 问诊)
+      温和 -> warm_amber + soft_light
+
+# 冻结记录
+frozen_at: '2026-08-01'
+frozen_by: Space Generator v1.1 Phase 8D Multi-brand Space Validation
+related_doc: 'Space Generator v1.1 Phase 8D Multi-brand Space Validation 开发文档'
+directory_decision: |
+  按 Phase 8D §4 Test C 设计, YJLF anchors 独立于 JZMX / FTT anchors.
+  目录为 space-generator/v1-experimental/architecture-anchors/yi-ji-liang-fang/.
+  不创建 PNG, 仅 metadata + manifest 概念描述.

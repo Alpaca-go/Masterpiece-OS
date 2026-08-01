@@ -1,0 +1,124 @@
+# FTT Architecture Anchor v1 — Metadata
+# 来源文档: Space Generator v1.1 Phase 8D Multi-brand Space Validation §4 (Test B)
+# 创建时间: 2026-08-01
+# 触发版本: 5.0.0-rc.1
+#
+# Phase 8D 目标: 验证 Space Generator 不 overfit 到九州美学.
+# 冯烫烫 (FTT) 是 Modern Chinese Restaurant industry, 与九州美学 (medical_aesthetics) 完全不同.
+# FTT anchors 必须避免 medical_aesthetics 风格, 强调:
+#   - human scale (人尺度, 不是 medical grand scale)
+#   - warm materials (warm_wood_booth / red_brick_wall / terracotta_tile)
+#   - kitchen-as-anchor (厨房作为视觉中心, 不是 membrane ceiling)
+#   - commercial dining circulation (客流循环, 不是 consultation 工位)
+#
+# 关键设计 (Phase 8D):
+#   - 不调真实 Provider, status=concept_only (与 JZMX Phase 8A 一致, 不创建 PNG)
+#   - 未来真实跑批后, 参照 Phase 8A 方式从用户项目数据目录复制 PNG
+#   - 评分维度 strength.architecture/function 反映 restaurant 行业特点
+#   - applicability 排除 medical_aesthetics (与 JZMX 不冲突)
+
+reference_id:
+  - FTT-ARCH-01-KitchenAnchor
+  - FTT-ARCH-02-WarmCommercialGrid
+  - FTT-ARCH-03-HumanScaleBooth
+
+project:
+  name: 冯烫烫
+  category: restaurant
+  industry: 餐饮 / 川菜 / 跷脚牛肉
+  project_id_local: dca9b7d4-f233-46ff-b4df-44a890f13c4f
+  source_data_root: 'C:\Users\Administrator\Documents\Masterpiece OS Data\projects\冯烫烫-dca9b7d4'
+
+# Anchor 职责: 提供 restaurant 行业建筑空间语言
+# 区别于 JZMX-ARCH (medical_aesthetics 行业)
+anchor_role:
+  ARCH-01-KitchenAnchor:
+    type: open_kitchen_as_visual_anchor
+    purpose:
+      - open_kitchen_window_with_chef_visible
+      - dining_faces_cooking_action
+      - warm_lighting_on_cooking_surface
+  ARCH-02-WarmCommercialGrid:
+    type: warm_material_commercial_grid
+    purpose:
+      - red_brick_wall + terracotta_tile
+      - warm_wood_booth_pattern
+      - human_scale_grid_layout
+  ARCH-03-HumanScaleBooth:
+    type: wooden_booth_with_human_proportion
+    purpose:
+      - wooden_booth_seating
+      - human_proportion_clearance
+      - acoustic_buffer_between_booths
+
+# 接受程度: 商业功能 S 级, 建筑转译 A 级 (与 JZMX-ARCH 镜像)
+quality_level:
+  architectural_translation: A
+  brand_translation: A
+  commercial_realism: S
+
+# 不可复刻项 (与 JZMX-ARCH 同标准, 防止 anchor 退化为模板)
+do_not_copy:
+  - exact_booth_count
+  - exact_chair_arrangement
+  - exact_tile_pattern
+  - exact_brick_layout
+  - exact_chef_position
+  - exact_menu_board_size
+  - exact_bamboo_screen_density
+
+# 字段对应 (与 DNA architectureFunctionBridge / brandSpaceDna 字段对齐)
+extract:
+  - architecture_dna
+  - spatial_concept
+  - material_logic
+  - circulation_pattern
+  - lighting_strategy
+
+# status: concept_only, 真实 PNG 待 Phase 8D 后续真实跑批后补
+status: concept_only
+image_status_note: |
+  Phase 8D 不调真实 Provider, 没有真实 S 级图可作 anchor 锚点.
+  真实 PNG 待后续 phase 跑批后从用户项目数据目录复制并 commit.
+
+# 空间不重复原则 (v1.0 §13 + §34 规则三)
+motif_constraints:
+  same_literal_scene_per_image_max: 1
+  same_scene_across_batch_ratio_max: 0.5
+  forbid_as_required:
+    - exact_booth_count
+    - exact_menu_board_size
+    - exact_chef_uniform
+
+# 与 JZMX-ARCH 的关键区别 (Phase 8D Risk 1 防 overfitting)
+# FTT anchor 必须排除以下 JZMX 标志:
+distinct_from_jzmx:
+  - "no translucent membrane ceiling (FTT 用 warm_wood_booth + red_brick_wall, 不用膜结构)"
+  - "no purple lighting (FTT 用 warm_amber + red_glow, 不用 lavender)"
+  - "no consultation stations (FTT 是 dining circulation, 不用 medical 工位)"
+  - "no medical compliance expression (FTT 是 kitchen_pass_visible, 不是 visibleButNotHospitalLike)"
+
+# 锚点与现有字段的关系
+relationship_to_existing:
+  vs_jzmx_anchors: |
+    JZMX-ARCH (medical_aesthetics) 提供 "医美旗舰" 建筑样本.
+    FTT-ARCH (restaurant) 提供 "川菜餐馆" 建筑样本.
+    两者平行, 互不污染. JZMX 的 translucent_membrane / soft_light 不出现在 FTT.
+  vs_function_calibrations: |
+    FTT 不需要 JZMX 的 function-calibration (reception_realism / consultation_flow).
+    FTT 的 function 应该是 kitchen_pass / dining_circulation, 待 Phase 8D 后续添加.
+  vs_brand_translation: |
+    FTT brand_translation 是 "地道 / 实惠 / 现做 / 烟火气" 翻译为空间机制:
+      地道 -> warm_material (red_brick / wood / terracotta)
+      实惠 -> human_scale (不大不大不小)
+      现做 -> kitchen_as_anchor (open kitchen, 客人看得到厨师)
+      烟火气 -> warm_amber 灯光 + 油烟感 (不洁净到 medical 那种, 但有生活气)
+
+# 冻结记录
+frozen_at: '2026-08-01'
+frozen_by: Space Generator v1.1 Phase 8D Multi-brand Space Validation
+related_doc: 'Space Generator v1.1 Phase 8D Multi-brand Space Validation 开发文档'
+directory_decision: |
+  按 Phase 8D §4 Test B 设计, FTT anchors 独立于 JZMX anchors.
+  目录为 space-generator/v1-experimental/architecture-anchors/feng-tang-tang/.
+  不创建 PNG, 仅 metadata + manifest 概念描述.

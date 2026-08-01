@@ -223,12 +223,34 @@ test('medical_aesthetics returns >= 1 anchor (JZMX brand has 3)', () => {
   assert(result.length >= 1, `medical_aesthetics should return >= 1 anchor, got ${result.length}`);
 });
 
-test('health_management returns >= 1 anchor (cross-industry applicability)', () => {
+test('health_management returns 0 JZMX anchors (Phase 8D §3 Risk 1 防 overfit, JZMX applicability 收紧到 medical_aesthetics)', () => {
+  // Phase 8D §3 Risk 1: selectAnchors industry match 防护 JZMX overfit.
+  // Phase 8A/8C 时 JZMX 包含 health_management cross-industry applicability, 但 Phase 8D 收紧.
+  // 这是 Phase 8D 多 brand 验证的关键防线: JZMX 自己的 anchor 不应被 health_management 行业选中.
   const result = selectAnchors('jiuzhou-aesthetics', {
     industry: 'health_management',
     sceneType: 'reception',
   });
-  assert(result.length >= 1, `health_management should return >= 1 anchor (cross-industry), got ${result.length}`);
+  assert(result.length === 0,
+    `JZMX (medical) for health_management should be 0 (Phase 8D 防 overfit), got ${result.length}`);
+});
+
+test('YJLF (health_management) returns 3 anchors (own industry)', () => {
+  // Phase 8D 新增 YJLF anchors, 应对应 health_management 行业
+  const result = selectAnchors('yi-ji-liang-fang', {
+    industry: 'health_management',
+    sceneType: 'reception',
+  });
+  assert(result.length === 3, `YJLF health_management should return 3 anchors, got ${result.length}`);
+});
+
+test('FTT (restaurant) returns 3 anchors (own industry)', () => {
+  // Phase 8D 新增 FTT anchors, 应对应 restaurant 行业
+  const result = selectAnchors('feng-tang-tang', {
+    industry: 'restaurant',
+    sceneType: 'reception',
+  });
+  assert(result.length === 3, `FTT restaurant should return 3 anchors, got ${result.length}`);
 });
 
 test('restaurant returns >= 0 anchors (cross-industry applicability via ARCH-02)', () => {
