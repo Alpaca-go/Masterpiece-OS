@@ -1,0 +1,75 @@
+# Space Generator 工程目录
+
+> Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程
+> 依据 `Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程开发文档 v1.0`
+> 创建时间：2026-08-01 / 触发版本：5.0.0-rc.1 / HEAD `7394bd0`
+
+## Space Generator v1 是什么
+
+`v1` 代表 **当前 Masterpiece 空间生图模块的一个稳定版本**。它由以下 v1 资产共同构成：
+
+- `apps/cli/prompts/v5/` — 4 个 prompt 模板
+- `apps/cli/src/v5/creative-director/` — Creative Director 编译引擎
+- `packages/creative-production-runtime/` — 创意生产运行时（18 个模块）
+- `packages/image-generation-runtime/` — 图像生成运行时（vnext/ + gates/ + prompt/）
+- `packages/image-generation-adapter/` — 适配 volcengine / wan 等 provider
+
+**Phase 1 不重写 v1**，只冻结现状、登记 Space Benchmark 图像、记录元数据。
+
+## 目录结构
+
+```
+space-generator/
+├── v1-baseline/                  ← 冻结的 v1 现状
+│   ├── system-prompt.md          ← 拷贝自 apps/cli/prompts/v5/deep-creative-director.md
+│   ├── execution-core-template.md
+│   ├── report-schema.md
+│   ├── benchmark-instructions.md
+│   ├── prompt-template.yaml      ← v1 编译顺序冻结
+│   ├── model-config.json         ← 实际模型 / 参数冻结
+│   ├── brand-analysis/
+│   │   └── jiuzhou-aesthetics/   ← 引用 JZMX v1 输入（不复制）
+│   ├── benchmarks/               ← 空间生成验收基准（原 golden-references/, 2026-08-01 改）
+│   │   └── jiuzhou-aesthetics/
+│   │       ├── JZMX-SGR-01-Exterior.png
+│   │       ├── JZMX-SGR-02-Reception.png
+│   │       ├── metadata.yaml
+│   │       ├── space-dna-analysis.yaml
+│   │       └── evaluation-report.md
+│   └── regression-samples/       ← 引用 v1 历史样本（不复制）
+└── v1-experimental/              ← 所有新开发进这里
+    ├── field-schema/             ← Phase 2
+    ├── prompt-compiler/          ← Phase 3/5
+    ├── test-cases/               ← Phase 4/6
+    └── reports/                  ← Phase 7
+```
+
+## 命名变化说明
+
+`benchmarks/` 是原 v1.0 文档 §3 建议的 `golden-references/` 的同义改名。改名原因：
+
+1. v1.0 文档建议目录 `space-generator/v1-baseline/golden-references/` 与 Masterpiece-OS 仓库治理硬规则（栅格图只允许 `examples/` `tests/` `templates/`）冲突
+2. 用户决定（2026-08-01）：Golden Reference 作为 baseline 的 validation assets 处理，改用 `benchmarks/` 名称
+3. 仓库治理白名单同步扩展，详见 `tests/repository-policy.test.js`
+
+文件语义保持不变：仍是 S 级空间生成验收基准、Space DNA 提取样本、Regression Test 基准。
+
+## 三条硬性规则
+
+1. **v1-baseline 永远只读**。任何对 v1 prompt / config / metadata 的修改必须走 v1-experimental/，并在阶段末 review 后才能进入 v1-baseline 下一个 minor 版本（v1.1）。
+2. **不在仓库内复制用户数据**。项目数据根在 `%USERPROFILE%\Documents\Masterpiece OS Data\projects\`，用引用 + metadata 描述，不直接 commit 大图（空间图例外，按白名单）。
+3. **不污染生产代码**。v1 编译路径在 `apps/cli/prompts/v5/` + `apps/cli/src/v5/creative-director/` + `packages/creative-production-runtime/` + `packages/image-generation-runtime/`，这些是 v1-baseline 冻结的源，**严禁在 v1-experimental 阶段修改**。所有新逻辑通过 `@masterpiece/space-dna-runtime` 之类的独立包承载（Phase 2 决定包名）。
+
+## Phase 进度
+
+| Phase | 内容 | 状态 |
+|---|---|---|
+| 1 | Baseline Freeze | 进行中 |
+| 2 | Space DNA Schema v0.1 | 待启动 |
+| 3 | Prompt Trace | 待启动 |
+| 4 | JZMX 第一轮垂直测试（48 张） | 待启动 |
+| 5 | Field-Enriched Prompt | 待启动 |
+| 6 | Variation Controller | 待启动 |
+| 7 | 跨项目回归测试 | 待启动 |
+
+详见 `v1-baseline/benchmarks/jiuzhou-aesthetics/evaluation-report.md` 和 v1.0 文档 §30 / §37。

@@ -34,6 +34,6 @@ test('仓库不包含项目源文件或项目交付物', { skip: gitAvailable ? 
 test('仓库内栅格图片只能用于脱敏示例、测试或模板', { skip: gitAvailable ? false : '当前副本不含 .git 元数据' }, () => {
   const raster = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp']);
   const violations = repositoryFiles().filter((file) => raster.has(path.posix.extname(file).toLowerCase()))
-    .filter((file) => !/^(examples|tests|templates)\//.test(file));
+    .filter((file) => !/^(examples|tests|templates|space-generator\/v1-baseline\/benchmarks)\//.test(file));
   assert.deepEqual(violations, [], `栅格图片位置不合规：\n${violations.join('\n')}`);
 });

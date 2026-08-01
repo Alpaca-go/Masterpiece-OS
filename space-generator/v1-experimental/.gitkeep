@@ -1,0 +1,20 @@
+# v1-experimental/
+
+所有空间生成相关的新开发进这里。
+
+按 v1.0 §30 阶段划分：
+
+| Phase | 子目录 | 状态 |
+|---|---|---|
+| 2 Space DNA Schema v0.1 | `field-schema/` | 待启动 |
+| 3 Prompt Trace | `prompt-compiler/trace/` | 待启动 |
+| 5 Field-Enriched Prompt | `prompt-compiler/field-enriched/` | 待启动 |
+| 6 Variation Controller | `prompt-compiler/variation/` | 待启动 |
+| 4/6 垂直测试用例 | `test-cases/` | 待启动 |
+| 7 跨项目回归 | `reports/regression/` | 待启动 |
+
+## 三条边界
+
+- 不动 v1-baseline 任何文件
+- 不动 v1 编译路径（apps/cli/prompts/v5/、apps/cli/src/v5/、packages/creative-production-runtime/、packages/image-generation-runtime/）
+- 所有新逻辑通过独立包 `@masterpiece/space-dna-runtime`（待定名，Phase 2 决定）承载，遵守 workspace 边界规则
