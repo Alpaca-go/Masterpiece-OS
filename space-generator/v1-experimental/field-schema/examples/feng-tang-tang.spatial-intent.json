@@ -1,0 +1,28 @@
+{
+  "schemaRef": "https://masterpiece-os.local/spatial-intent.schema.v9a.1.json",
+  "brandKey": "feng-tang-tang",
+  "category": "restaurant",
+  "phase": "9A.1",
+  "spatialIntentDna": {
+    "primaryEmotion": "让路过的饥饿客人看到厨房热气腾腾的瞬间就决定推门进来, 在等位和用餐中持续感受实在与饱满",
+    "userJourney": "街边路过被烟火气和红砖墙面吸引 -> 推门进来看见开放厨房 -> 等位时看见厨师操作产生预期 -> 落座后通过木桌和暖光感到与社区的归属感",
+    "spaceRole": "空间作为食物生产过程的透明容器, 让 '做' 与 '吃' 在同一时空内连续发生, 把街边餐饮升级为可信赖的日常仪式",
+    "designLogic": "通过开放厨房 + 烟火气灯光 + 人尺度木 booth, 让食物的制作过程成为空间的第一视觉, 客人不需要菜单就能感知今天的菜",
+    "architecturalReason": "需要厨房作为视觉中心 (替代任何装饰) + 自然光主导 (替代嵌入光) + 暖色材料 (红砖/木/赤陶) 三者协同, 让 '食物现做' 变成可被感知的空间语言"
+  },
+  "metadata": {
+    "frozenAt": "2026-08-01T00:00:00.000Z",
+    "frozenBy": "Mavis (Space Generator v1.1 Phase 9A.1, 2026-08-01)",
+    "sourceArchitectureAnchors": [
+      "FTT-ARCH-01-KitchenAnchor",
+      "FTT-ARCH-02-WarmCommercialGrid",
+      "FTT-ARCH-03-HumanScaleBooth"
+    ],
+    "notes": [
+      "Phase 9A.1 §6 + 9A.1 §7 brand differentiation, 与 JZMX 明显不同.",
+      "Layer Boundary (§5): 不描述 materials (warm_wood_booth / red_brick_wall / terracotta_tile) / architecture (booth / kitchen_pass) / anchor (具体物) / rendering.",
+      "architecturalReason 描述高层方向 (厨房为中心 / 自然光 / 暖色材料), 不是具体建筑形式.",
+      "与 JZMX 对比: primaryEmotion 是 '实在与饱满' (不是 JZMX '安心与信任'); spaceRole 是 '透明食物生产容器' (不是 JZMX '信任媒介')."
+    ]
+  }
+}

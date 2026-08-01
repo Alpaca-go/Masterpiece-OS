@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/spatial-intent.schema.v9a.1.json",
+  "title": "Spatial Intent DNA v9A.1",
+  "description": "Masterpiece OS Space Generator Phase 9A.1 Spatial Intent Schema. v9A.1 是 Phase 9A Spatial Intent Reasoning 的 foundation, 只定义 schema, 不实现 compiler (Phase 9A.2). 5 个 string 字段描述: 情感响应 / 用户旅程 / 空间角色 / 设计逻辑 / 建筑理由. 不描述 materials / architecture / anchor / rendering (Phase 9A.1 §5 Layer Boundary Rules).",
+  "type": "object",
+  "required": [
+    "primaryEmotion",
+    "userJourney",
+    "spaceRole",
+    "designLogic",
+    "architecturalReason"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "primaryEmotion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 9A.1 §4.1: 空间应产生的情感响应. 例如 '进入空间后产生安心、专业与信任感'. Do not describe materials or architecture (Phase 9A.1 §5 boundary)."
+    },
+    "userJourney": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 9A.1 §4.2: 用户心理过渡. Format: 'Before entering -> During experience -> After experience'. 例如 '陌生进入 -> 了解专业 -> 建立长期信赖'."
+    },
+    "spaceRole": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 9A.1 §4.3: 空间为品牌做什么. Medical: reduce anxiety and build trust. Restaurant: display process and enhance food value. Health: create calm and relationship-based experience."
+    },
+    "designLogic": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 9A.1 §4.4: 为什么这样设计. 例如 '通过柔和秩序、透明关系和低刺激环境降低心理压力'."
+    },
+    "architecturalReason": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 9A.1 §4.5: 桥接 intent 到 architecture 层. 例如 '需要连续空间、柔性边界和自然光环境支持信任建立'. 注意: 仍描述 architectural reason (桥接目的), 不是 architectural description (具体建筑形式). Layer boundary 由 validateSpatialIntent() 检查."
+    }
+  },
+  "phase": "9A.1",
+  "frozen_at": "2026-08-01",
+  "frozen_by": "Space Generator v1.1 Phase 9A.1 Spatial Intent Schema",
+  "layerBoundaryRules": {
+    "CAN": [
+      "explain emotion",
+      "explain user psychology",
+      "explain spatial purpose",
+      "explain design reasoning",
+      "explain architectural reason (high-level direction, not specific forms)"
+    ],
+    "CANNOT": [
+      "select anchors (由 runtime/compile-runtime.mjs selectAnchors 负责)",
+      "define materials (由 DNA.materialDna 负责)",
+      "copy references (由 anchor / calibration 负责)",
+      "decide rendering style (由 DNA.renderingDna 负责)"
+    ]
+  }
+}
