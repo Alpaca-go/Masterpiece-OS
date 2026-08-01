@@ -2,7 +2,9 @@
 
 > Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程
 > 依据 `Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程开发文档 v1.0`
-> 创建时间：2026-08-01 / 触发版本：5.0.0-rc.1 / HEAD `7394bd0`
+> 创建时间：2026-08-01 / 触发版本：5.0.0-rc.1 / HEAD `b1e3d77` (Phase 7 完成)
+> 累计测试：97/97 PASS (Phase 2-7 单元 + 集成测试)
+> 5 verify gates + npm test 301/301 + tsc clean
 
 ## Space Generator v1 是什么
 
@@ -38,10 +40,15 @@ space-generator/
 │   │       └── evaluation-report.md
 │   └── regression-samples/       ← 引用 v1 历史样本（不复制）
 └── v1-experimental/              ← 所有新开发进这里
-    ├── field-schema/             ← Phase 2
-    ├── prompt-compiler/          ← Phase 3/5
-    ├── test-cases/               ← Phase 4/6
-    └── reports/                  ← Phase 7
+    ├── field-schema/             ← Phase 2 (Space DNA Schema v0.1, 10 fields)
+    ├── prompt-compiler/
+    │   ├── trace/                ← Phase 3 (Prompt Trace v0.1, 18 TRACED_FIELDS)
+    │   ├── field-enriched/       ← Phase 5 (Field-Enriched Prompt Compiler, 12 blocks)
+    │   └── variation/            ← Phase 6 (Variation Controller, 6 variants)
+    ├── test-cases/
+    │   ├── jiuzhou-aesthetics/   ← Phase 4 (48 trace slots: 8 scenes × 3 versions × 2 slots)
+    │   └── regression/           ← Phase 7 (4-project regression: JZMX/YJLF/FTT/WY)
+    └── ... (后续 phase 在此新增)
 ```
 
 ## 命名变化说明
@@ -62,14 +69,14 @@ space-generator/
 
 ## Phase 进度
 
-| Phase | 内容 | 状态 |
-|---|---|---|
-| 1 | Baseline Freeze | 进行中 |
-| 2 | Space DNA Schema v0.1 | 待启动 |
-| 3 | Prompt Trace | 待启动 |
-| 4 | JZMX 第一轮垂直测试（48 张） | 待启动 |
-| 5 | Field-Enriched Prompt | 待启动 |
-| 6 | Variation Controller | 待启动 |
-| 7 | 跨项目回归测试 | 待启动 |
+| Phase | 内容 | 状态 | Commit | Tests |
+|---|---|---|---|---|
+| 1 | Baseline Freeze + JZMX Space Benchmark v1 | done | `2147ff3` (+`1fdd7eb` PNG) | n/a |
+| 2 | Space DNA Schema v0.1 (10 fields) | done | `ef8985f` | 20/20 |
+| 3 | Prompt Trace v0.1 (18 TRACED_FIELDS) | done | `e226084` | 13/13 |
+| 4 | JZMX 8×3×2=48 trace slots | done | `dab1473` | 10/10 |
+| 5 | Field-Enriched Prompt Compiler (12 blocks) | done | `e9a48c8` | 16/16 |
+| 6 | Variation Controller (6 variants / base) | done | `6701ac1` | 17/17 |
+| 7 | 4-Project Regression Test (JZMX/YJLF/FTT/WY) | done | `b1e3d77` | 21/21 |
 
 详见 `v1-baseline/benchmarks/jiuzhou-aesthetics/evaluation-report.md` 和 v1.0 文档 §30 / §37。
