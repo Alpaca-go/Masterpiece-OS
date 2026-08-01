@@ -1,0 +1,253 @@
+{
+  "schemaVersion": "1.0",
+  "dnaVersion": "v0.1",
+  "project": {
+    "brandName": "九州美学",
+    "industry": "医疗美容与医美生态服务",
+    "category": "medical_aesthetics",
+    "projectIdLocal": "a7a56ed7-849f-4671-b47a-466394d7298d",
+    "audience": [
+      "医美消费者",
+      "合作机构",
+      "医疗从业者"
+    ],
+    "brandPositioning": [
+      "专业",
+      "高端",
+      "科学",
+      "审美",
+      "安心"
+    ]
+  },
+  "sceneDefinition": {
+    "sceneType": "reception",
+    "sceneSubtype": "flagship_clinic_reception",
+    "commercialContext": "street_store",
+    "scale": "medium",
+    "areaSqm": 200,
+    "operatingState": "open",
+    "occupancy": "low",
+    "requiredZones": [
+      "reception_desk",
+      "waiting_area",
+      "brand_wall",
+      "consultation_guidance"
+    ],
+    "optionalZones": [
+      "product_display",
+      "art_installation"
+    ]
+  },
+  "architectureDna": {
+    "spatialConcept": {
+      "primary": "soft_continuity",
+      "secondary": "layered_biomorphic_flow"
+    },
+    "geometry": {
+      "dominant": [
+        "continuous_curves",
+        "rounded_openings",
+        "soft_transitions"
+      ],
+      "limited": [
+        "rigid_grid",
+        "sharp_corners"
+      ]
+    },
+    "spatialContinuity": {
+      "wallToCeiling": "high",
+      "floorToFurniture": "medium",
+      "roomToRoom": "high"
+    },
+    "boundaryLanguage": {
+      "hardness": "low",
+      "transparency": "medium",
+      "enclosure": "soft"
+    },
+    "circulation": {
+      "type": "guided_flow",
+      "visibility": "open",
+      "rhythm": "calm"
+    },
+    "boundaryHardness": "low",
+    "statementStrength": "high"
+  },
+  "functionalDna": {
+    "operationalRealism": "high",
+    "customerFlow": {
+      "entranceToReception": "clear",
+      "receptionToWaiting": "clear",
+      "waitingToConsultation": "readable"
+    },
+    "furnitureRequirements": {
+      "ergonomic": true,
+      "commercialGrade": true,
+      "accessible": true
+    },
+    "privacy": {
+      "publicZone": "open",
+      "semiPrivateZone": "filtered",
+      "treatmentZone": "enclosed"
+    },
+    "medicalComplianceExpression": {
+      "visibleButNotHospitalLike": true
+    }
+  },
+  "brandSpaceDna": {
+    "brandSpirit": {
+      "scientific": 0.92,
+      "elegant": 0.88,
+      "healing": 0.82,
+      "futuristic": 0.76,
+      "premium": 0.84
+    },
+    "brandGrammar": {
+      "organicGrowth": "high",
+      "visualLightness": "high",
+      "controlledGlow": "high",
+      "refinedOrder": "high",
+      "decorativeDensity": "low"
+    },
+    "motifFamily": [
+      "feather_like_flow",
+      "petal_like_expansion",
+      "optical_crystal",
+      "translucent_fiber",
+      "flowing_membrane"
+    ],
+    "literalAssetUsage": {
+      "logoVisibility": "medium",
+      "directPeacockUsage": "low",
+      "flowerSculptureUsage": "optional",
+      "crystalObjectUsage": "optional"
+    },
+    "injectionStrength": 0.55
+  },
+  "materialDna": {
+    "primaryMaterials": [
+      "mineral_plaster",
+      "fine_textured_stone",
+      "matte_white_surface"
+    ],
+    "secondaryMaterials": [
+      "frosted_glass"
+    ],
+    "accentMaterials": [
+      "brushed_metal"
+    ],
+    "finish": {
+      "glossLevel": "low",
+      "reflectivity": "controlled",
+      "tactileQuality": "refined"
+    },
+    "materialCountLimit": 5
+  },
+  "lightingDna": {
+    "primaryStrategy": "architectural_indirect_light",
+    "ambient": {
+      "softness": "high",
+      "brightness": "medium",
+      "contrast": "low"
+    },
+    "integratedLight": {
+      "ceilingCove": "high",
+      "wallEdge": "medium",
+      "furnitureBase": "low"
+    },
+    "brandLight": {
+      "hueFamily": [
+        "soft_lavender",
+        "neutral_white"
+      ],
+      "saturation": "low",
+      "areaRatio": "limited"
+    },
+    "spotlightUsage": "low",
+    "decorativeFixtureVisibility": "low",
+    "architecturalGlow": "high"
+  },
+  "compositionDna": {
+    "focalHierarchy": {
+      "primary": "architecture_or_brand_wall",
+      "secondary": "reception_or_display",
+      "tertiary": "brand_motif"
+    },
+    "visualBalance": {
+      "symmetry": "medium",
+      "negativeSpace": "high",
+      "density": "low"
+    },
+    "camera": {
+      "lens": "28mm_to_40mm",
+      "height": "human_eye_level",
+      "distortion": "controlled"
+    },
+    "framing": {
+      "depthLayers": 3,
+      "foregroundUsage": "optional",
+      "clearEntryView": true
+    }
+  },
+  "renderingDna": {
+    "realism": "commercial_archviz",
+    "visualFinish": "refined",
+    "exposure": "soft_bright",
+    "whiteBalance": "neutral_warm",
+    "shadow": "soft",
+    "textureVisibility": "controlled",
+    "people": {
+      "amount": "sparse",
+      "motionBlur": "optional"
+    },
+    "cleanliness": "high",
+    "postProcessing": "restrained"
+  },
+  "variationControl": {
+    "preserve": [
+      "brand_spirit",
+      "soft_boundary",
+      "architectural_glow",
+      "restrained_material_palette"
+    ],
+    "vary": [
+      "room_layout",
+      "focal_object",
+      "motif_expression",
+      "transparency_level",
+      "curve_scale",
+      "camera_position",
+      "material_ratio"
+    ],
+    "motifRepetitionLimit": {
+      "sameLiteralMotifPerImage": 1,
+      "sameMotifAcrossBatchRatio": 0.5
+    },
+    "requireNovelSpatialSolution": true
+  },
+  "negativeConstraints": {
+    "prohibit": [
+      "generic_beauty_salon",
+      "excessive_purple",
+      "literal_peacock_theme_park",
+      "repeated_flower_sculptures",
+      "random_crystal_decorations",
+      "nightclub_lighting",
+      "cheap_acrylic_glow",
+      "overdecorated_reception",
+      "hospital_corridor",
+      "empty_art_gallery",
+      "impossible_circulation",
+      "unusable_furniture"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-01T00:00:00.000Z",
+    "frozenFromCommit": "1fdd7eb",
+    "sourceBenchmarkIds": [
+      "JZMX-SGR-01-Exterior",
+      "JZMX-SGR-02-Reception"
+    ],
+    "promotedFromVersion": "v0.1-initial",
+    "promotedBy": "Mavis (Phase 2, 2026-08-01)"
+  }
+}

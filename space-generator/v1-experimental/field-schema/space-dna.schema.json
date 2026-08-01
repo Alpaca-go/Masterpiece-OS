@@ -1,0 +1,418 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/space-dna.schema.v0.1.json",
+  "title": "Space DNA",
+  "description": "Masterpiece OS Space Generator v1-experimental Space DNA 字段体系. v0.1 起步, 按 v1.0 §30 Phase 2 / §28 字段晋升规则迭代. 不动 v1-baseline 任何代码.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "dnaVersion",
+    "project",
+    "sceneDefinition",
+    "architectureDna",
+    "functionalDna",
+    "brandSpaceDna",
+    "materialDna",
+    "lightingDna",
+    "compositionDna",
+    "renderingDna",
+    "variationControl",
+    "negativeConstraints"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Space DNA 字段体系 schema 版本. 当前固定 1.0."
+    },
+    "dnaVersion": {
+      "type": "string",
+      "pattern": "^v0\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "本实例的 DNA 版本, v0.1 起步. 升级必须满足 v1.0 §28 晋升规则."
+    },
+    "project": {
+      "type": "object",
+      "description": "项目身份 (v1.0 §11). 不直接描述画面.",
+      "required": ["brandName", "industry", "category"],
+      "additionalProperties": true,
+      "properties": {
+        "brandName": { "type": "string", "minLength": 1 },
+        "industry": { "type": "string", "minLength": 1 },
+        "category": {
+          "type": "string",
+          "enum": ["medical_aesthetics", "health_management", "restaurant", "retail", "other"]
+        },
+        "projectIdLocal": { "type": "string" },
+        "audience": { "type": "array", "items": { "type": "string" } },
+        "brandPositioning": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "sceneDefinition": {
+      "type": "object",
+      "description": "v1.0 §12 Scene Definition. 必须明确此次生成什么空间.",
+      "required": ["sceneType", "commercialContext", "scale", "operatingState", "occupancy", "requiredZones"],
+      "additionalProperties": false,
+      "properties": {
+        "sceneType": {
+          "type": "string",
+          "enum": ["exterior", "reception", "consultation", "treatment", "vip_lounge", "corridor", "product_display", "other"]
+        },
+        "sceneSubtype": { "type": "string" },
+        "commercialContext": {
+          "type": "string",
+          "enum": ["street_store", "mall_store", "office_floor", "popup", "flagship", "other"]
+        },
+        "scale": {
+          "type": "string",
+          "enum": ["small", "medium", "large", "xlarge"]
+        },
+        "areaSqm": { "type": "number", "minimum": 0 },
+        "operatingState": {
+          "type": "string",
+          "enum": ["open", "closed", "pre_open", "private_event"]
+        },
+        "occupancy": {
+          "type": "string",
+          "enum": ["empty", "low", "medium", "high"]
+        },
+        "requiredZones": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "optionalZones": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "architectureDna": {
+      "type": "object",
+      "description": "v1.0 §13. 空间结构与建筑机制, 不描述具体花纹.",
+      "required": ["spatialConcept", "boundaryHardness", "statementStrength"],
+      "additionalProperties": false,
+      "properties": {
+        "spatialConcept": {
+          "type": "object",
+          "required": ["primary"],
+          "properties": {
+            "primary": { "type": "string", "minLength": 1 },
+            "secondary": { "type": "string" }
+          }
+        },
+        "geometry": {
+          "type": "object",
+          "properties": {
+            "dominant": { "type": "array", "items": { "type": "string" } },
+            "limited": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "spatialContinuity": {
+          "type": "object",
+          "properties": {
+            "wallToCeiling": { "type": "string", "enum": ["low", "medium", "high"] },
+            "floorToFurniture": { "type": "string", "enum": ["low", "medium", "high"] },
+            "roomToRoom": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "boundaryLanguage": {
+          "type": "object",
+          "properties": {
+            "hardness": { "type": "string", "enum": ["low", "medium", "high"] },
+            "transparency": { "type": "string", "enum": ["low", "medium", "high"] },
+            "enclosure": { "type": "string", "enum": ["hard", "soft", "transparent"] }
+          }
+        },
+        "circulation": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["guided_flow", "open_plan", "loop", "spine"] },
+            "visibility": { "type": "string", "enum": ["open", "filtered", "closed"] },
+            "rhythm": { "type": "string", "enum": ["calm", "active", "varied"] }
+          }
+        },
+        "boundaryHardness": { "type": "string", "enum": ["low", "medium", "high"] },
+        "statementStrength": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "functionalDna": {
+      "type": "object",
+      "description": "v1.0 §14. 保证图片不是纯艺术装置.",
+      "required": ["operationalRealism"],
+      "additionalProperties": false,
+      "properties": {
+        "operationalRealism": { "type": "string", "enum": ["low", "medium", "high"] },
+        "customerFlow": {
+          "type": "object",
+          "properties": {
+            "entranceToReception": { "type": "string", "enum": ["unclear", "clear"] },
+            "receptionToWaiting": { "type": "string", "enum": ["unclear", "clear"] },
+            "waitingToConsultation": { "type": "string", "enum": ["unreadable", "readable"] }
+          }
+        },
+        "furnitureRequirements": {
+          "type": "object",
+          "properties": {
+            "ergonomic": { "type": "boolean" },
+            "commercialGrade": { "type": "boolean" },
+            "accessible": { "type": "boolean" }
+          }
+        },
+        "privacy": {
+          "type": "object",
+          "properties": {
+            "publicZone": { "type": "string", "enum": ["open", "filtered", "enclosed"] },
+            "semiPrivateZone": { "type": "string", "enum": ["open", "filtered", "enclosed"] },
+            "treatmentZone": { "type": "string", "enum": ["open", "filtered", "enclosed"] }
+          }
+        },
+        "medicalComplianceExpression": {
+          "type": "object",
+          "properties": {
+            "visibleButNotHospitalLike": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "brandSpaceDna": {
+      "type": "object",
+      "description": "v1.0 §15. 品牌注入层, 必须拆为抽象层 (spirit) + 抽象语法 (grammar) + 候选资产 (motif_family) + 字面资产使用 (literal_asset_usage) + 强度 (injection_strength).",
+      "required": ["brandSpirit", "brandGrammar", "motifFamily", "literalAssetUsage", "injectionStrength"],
+      "additionalProperties": false,
+      "properties": {
+        "brandSpirit": {
+          "type": "object",
+          "description": "5 个固定维度, 0-1 数值, 仅作权重不强制 1.0.",
+          "required": ["scientific", "elegant", "healing", "futuristic", "premium"],
+          "properties": {
+            "scientific": { "type": "number", "minimum": 0, "maximum": 1 },
+            "elegant": { "type": "number", "minimum": 0, "maximum": 1 },
+            "healing": { "type": "number", "minimum": 0, "maximum": 1 },
+            "futuristic": { "type": "number", "minimum": 0, "maximum": 1 },
+            "premium": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "brandGrammar": {
+          "type": "object",
+          "required": ["decorativeDensity"],
+          "properties": {
+            "organicGrowth": { "type": "string", "enum": ["low", "medium", "high"] },
+            "visualLightness": { "type": "string", "enum": ["low", "medium", "high"] },
+            "controlledGlow": { "type": "string", "enum": ["low", "medium", "high"] },
+            "refinedOrder": { "type": "string", "enum": ["low", "medium", "high"] },
+            "decorativeDensity": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "motifFamily": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "type": "string",
+            "enum": [
+              "feather_like_flow",
+              "petal_like_expansion",
+              "optical_crystal",
+              "translucent_fiber",
+              "flowing_membrane"
+            ]
+          },
+          "description": "候选品牌母题池. 默认全部 optional, 不允许晋升 required (v1.0 §34 规则二)."
+        },
+        "literalAssetUsage": {
+          "type": "object",
+          "required": ["logoVisibility"],
+          "properties": {
+            "logoVisibility": { "type": "string", "enum": ["low", "medium", "high"] },
+            "directPeacockUsage": { "type": "string", "enum": ["low", "medium", "high"] },
+            "flowerSculptureUsage": { "type": "string", "enum": ["optional", "preferred", "avoid"] },
+            "crystalObjectUsage": { "type": "string", "enum": ["optional", "preferred", "avoid"] }
+          }
+        },
+        "injectionStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "0 = 几乎不注入, 1 = 全部资产必现. 默认 0.55."
+        }
+      }
+    },
+    "materialDna": {
+      "type": "object",
+      "description": "v1.0 §16. materialCountLimit 关键约束.",
+      "required": ["primaryMaterials", "finish", "materialCountLimit"],
+      "additionalProperties": false,
+      "properties": {
+        "primaryMaterials": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        },
+        "secondaryMaterials": { "type": "array", "items": { "type": "string" } },
+        "accentMaterials": { "type": "array", "items": { "type": "string" } },
+        "finish": {
+          "type": "object",
+          "properties": {
+            "glossLevel": { "type": "string", "enum": ["low", "medium", "high"] },
+            "reflectivity": { "type": "string", "enum": ["matte", "controlled", "high"] },
+            "tactileQuality": { "type": "string", "enum": ["refined", "natural", "industrial"] }
+          }
+        },
+        "materialCountLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12,
+          "description": "v1.0 §16 强约束: 5 是九州美学初版默认."
+        }
+      }
+    },
+    "lightingDna": {
+      "type": "object",
+      "description": "v1.0 §17. 核心是 建筑发光, 不是 到处安装紫色灯带.",
+      "required": ["primaryStrategy", "ambient", "architecturalGlow"],
+      "additionalProperties": false,
+      "properties": {
+        "primaryStrategy": {
+          "type": "string",
+          "enum": ["architectural_indirect_light", "direct_lighting", "mixed", "natural_lighting"]
+        },
+        "ambient": {
+          "type": "object",
+          "properties": {
+            "softness": { "type": "string", "enum": ["low", "medium", "high"] },
+            "brightness": { "type": "string", "enum": ["low", "medium", "high"] },
+            "contrast": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "integratedLight": {
+          "type": "object",
+          "properties": {
+            "ceilingCove": { "type": "string", "enum": ["low", "medium", "high"] },
+            "wallEdge": { "type": "string", "enum": ["low", "medium", "high"] },
+            "furnitureBase": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "brandLight": {
+          "type": "object",
+          "properties": {
+            "hueFamily": { "type": "array", "items": { "type": "string" } },
+            "saturation": { "type": "string", "enum": ["low", "medium", "high"] },
+            "areaRatio": { "type": "string", "enum": ["limited", "moderate", "dominant"] }
+          }
+        },
+        "spotlightUsage": { "type": "string", "enum": ["low", "medium", "high"] },
+        "decorativeFixtureVisibility": { "type": "string", "enum": ["low", "medium", "high"] },
+        "architecturalGlow": { "type": "string", "enum": ["low", "medium", "high"] }
+      }
+    },
+    "compositionDna": {
+      "type": "object",
+      "description": "v1.0 §18. focal_hierarchy 与 camera 必填.",
+      "required": ["focalHierarchy", "camera", "framing"],
+      "additionalProperties": false,
+      "properties": {
+        "focalHierarchy": {
+          "type": "object",
+          "required": ["primary", "secondary", "tertiary"],
+          "properties": {
+            "primary": { "type": "string", "minLength": 1 },
+            "secondary": { "type": "string", "minLength": 1 },
+            "tertiary": { "type": "string", "minLength": 1 }
+          }
+        },
+        "visualBalance": {
+          "type": "object",
+          "properties": {
+            "symmetry": { "type": "string", "enum": ["low", "medium", "high"] },
+            "negativeSpace": { "type": "string", "enum": ["low", "medium", "high"] },
+            "density": { "type": "string", "enum": ["low", "medium", "high"] }
+          }
+        },
+        "camera": {
+          "type": "object",
+          "required": ["lens", "height"],
+          "properties": {
+            "lens": { "type": "string", "enum": ["ultra_wide", "wide", "28mm_to_40mm", "normal", "telephoto"] },
+            "height": { "type": "string", "enum": ["low_angle", "human_eye_level", "elevated", "overhead"] },
+            "distortion": { "type": "string", "enum": ["controlled", "minimal", "acceptable"] }
+          }
+        },
+        "framing": {
+          "type": "object",
+          "required": ["depthLayers", "clearEntryView"],
+          "properties": {
+            "depthLayers": { "type": "integer", "minimum": 1, "maximum": 5 },
+            "foregroundUsage": { "type": "string", "enum": ["optional", "required", "avoid"] },
+            "clearEntryView": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "renderingDna": {
+      "type": "object",
+      "description": "v1.0 §19. realism 与 visual_finish 必填.",
+      "required": ["realism", "visualFinish", "exposure", "whiteBalance", "shadow", "cleanliness", "postProcessing"],
+      "additionalProperties": false,
+      "properties": {
+        "realism": {
+          "type": "string",
+          "enum": ["commercial_archviz", "concept_render", "photo_realistic", "stylized"]
+        },
+        "visualFinish": {
+          "type": "string",
+          "enum": ["refined", "natural", "raw"]
+        },
+        "exposure": { "type": "string", "enum": ["soft_bright", "balanced", "moody", "high_key"] },
+        "whiteBalance": { "type": "string", "enum": ["neutral_warm", "neutral_cool", "warm", "cool"] },
+        "shadow": { "type": "string", "enum": ["soft", "controlled", "dramatic"] },
+        "textureVisibility": { "type": "string", "enum": ["controlled", "pronounced", "flat"] },
+        "people": {
+          "type": "object",
+          "properties": {
+            "amount": { "type": "string", "enum": ["none", "sparse", "moderate", "crowded"] },
+            "motionBlur": { "type": "string", "enum": ["optional", "preferred", "avoid"] }
+          }
+        },
+        "cleanliness": { "type": "string", "enum": ["low", "medium", "high"] },
+        "postProcessing": { "type": "string", "enum": ["restrained", "moderate", "heavy"] }
+      }
+    },
+    "variationControl": {
+      "type": "object",
+      "description": "v1.0 §20. 防同质化. motif_repetition_limit 与 require_novel_spatial_solution 关键.",
+      "required": ["preserve", "vary", "motifRepetitionLimit", "requireNovelSpatialSolution"],
+      "additionalProperties": false,
+      "properties": {
+        "preserve": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "vary": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "motifRepetitionLimit": {
+          "type": "object",
+          "required": ["sameLiteralMotifPerImage", "sameMotifAcrossBatchRatio"],
+          "properties": {
+            "sameLiteralMotifPerImage": { "type": "integer", "minimum": 0, "maximum": 5 },
+            "sameMotifAcrossBatchRatio": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "requireNovelSpatialSolution": { "type": "boolean" }
+      }
+    },
+    "negativeConstraints": {
+      "type": "object",
+      "description": "v1.0 §21. 禁止项. prohibit 是 fail-closed 列表, 出现在 prompt 必须明确避开.",
+      "required": ["prohibit"],
+      "additionalProperties": false,
+      "properties": {
+        "prohibit": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "DNA 实例元数据. 可选, 但推荐填.",
+      "additionalProperties": true,
+      "properties": {
+        "frozenAt": { "type": "string", "format": "date-time" },
+        "frozenFromCommit": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+        "sourceBenchmarkIds": { "type": "array", "items": { "type": "string" } },
+        "promotedFromVersion": { "type": "string" },
+        "promotedBy": { "type": "string" }
+      }
+    }
+  }
+}
