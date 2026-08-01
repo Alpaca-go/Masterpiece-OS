@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Phase 7 4-project regression test set. v1.0 §30 Phase 7 验证 JZMX 新增字段不污染其他项目.",
+  "projects": [
+    {
+      "id": "JZMX",
+      "name": "九州美学",
+      "category": "medical_aesthetics",
+      "dnaPath": "../../../field-schema/examples/jiuzhou-aesthetics.dna.json",
+      "baselineCheck": "九州美学质量不下降 (JZXM 自身 baseline 仍包含 12 negative constraints)",
+      "pollutionMarkers": [
+        "mineral_plaster",
+        "low_saturation_lavender_glow",
+        "soft_continuity"
+      ]
+    },
+    {
+      "id": "YJLF",
+      "name": "一剂良方",
+      "category": "health_management",
+      "dnaPath": "yi-jui-liang-fang.dna.json",
+      "baselineCheck": "一剂良方不被改造成九州美学 (中医/养生 wood_grid, 不是 medical_aesthetics)",
+      "pollutionMarkers": [
+        "mineral_plaster",
+        "low_saturation_lavender_glow",
+        "feather_like_flow",
+        "translucent_fiber",
+        "soft_continuity",
+        "petal_like_expansion"
+      ]
+    },
+    {
+      "id": "FTT",
+      "name": "冯烫烫",
+      "category": "restaurant",
+      "dnaPath": "feng-tang-tang.dna.json",
+      "baselineCheck": "冯烫烫不出现紫色晶体与医美曲面 (川菜/跷脚牛肉, 不是 medical_aesthetics)",
+      "pollutionMarkers": [
+        "purple_lavender_glow",
+        "low_saturation_lavender_glow",
+        "feather_like_flow_motif",
+        "translucent_fiber",
+        "soft_continuity",
+        "petal_like_expansion",
+        "optical_crystal",
+        "white_curved_walls"
+      ]
+    },
+    {
+      "id": "WY",
+      "name": "蛙耶",
+      "category": "retail",
+      "dnaPath": "wa-ye.dna.json",
+      "baselineCheck": "蛙耶的问题没有被错误地用 高端白色空间 掩盖 (raw_industrial, 不是 medical_aesthetics)",
+      "pollutionMarkers": [
+        "white_curved_walls",
+        "high_end_clinic_lighting",
+        "feather_like_flow_overuse",
+        "translucent_fiber_decoration",
+        "optical_crystal",
+        "petal_sculpture",
+        "purple_lavender_glow",
+        "elegant_lobby",
+        "spa_atmosphere"
+      ]
+    }
+  ]
+}

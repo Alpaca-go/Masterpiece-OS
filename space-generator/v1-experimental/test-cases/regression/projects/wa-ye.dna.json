@@ -1,0 +1,241 @@
+{
+  "schemaVersion": "1.0",
+  "dnaVersion": "v0.1",
+  "project": {
+    "brandName": "蛙耶",
+    "industry": "体育用品零售 / 运动品牌",
+    "category": "retail",
+    "projectIdLocal": "waye-regression-sample",
+    "audience": [
+      "运动爱好者",
+      "年轻消费者",
+      "装备升级需求"
+    ],
+    "brandPositioning": [
+      "活力",
+      "街头",
+      "功能",
+      "社群"
+    ]
+  },
+  "sceneDefinition": {
+    "sceneType": "product_display",
+    "sceneSubtype": "sporting_goods_floor",
+    "commercialContext": "mall_store",
+    "scale": "medium",
+    "areaSqm": 150,
+    "operatingState": "open",
+    "occupancy": "low",
+    "requiredZones": [
+      "product_wall",
+      "trial_zone",
+      "fitting_room",
+      "checkout_counter"
+    ],
+    "optionalZones": [
+      "community_gathering_area",
+      "service_desk"
+    ]
+  },
+  "architectureDna": {
+    "spatialConcept": {
+      "primary": "raw_industrial_grid",
+      "secondary": "open_flex_with_brand_mural"
+    },
+    "geometry": {
+      "dominant": [
+        "exposed_concrete",
+        "metal_grid",
+        "open_floor"
+      ],
+      "limited": [
+        "soft_curves",
+        "wood_panel",
+        "dome_or_ceiling_arch"
+      ]
+    },
+    "spatialContinuity": {
+      "wallToCeiling": "low",
+      "floorToFurniture": "medium",
+      "roomToRoom": "high"
+    },
+    "boundaryLanguage": {
+      "hardness": "high",
+      "transparency": "medium",
+      "enclosure": "hard"
+    },
+    "circulation": {
+      "type": "open_plan",
+      "visibility": "open",
+      "rhythm": "active"
+    },
+    "boundaryHardness": "high",
+    "statementStrength": "medium"
+  },
+  "functionalDna": {
+    "operationalRealism": "high",
+    "customerFlow": {
+      "entranceToReception": "unclear",
+      "receptionToWaiting": "unclear",
+      "waitingToConsultation": "unreadable"
+    },
+    "furnitureRequirements": {
+      "ergonomic": true,
+      "commercialGrade": true,
+      "accessible": true
+    },
+    "privacy": {
+      "publicZone": "open",
+      "semiPrivateZone": "open",
+      "treatmentZone": "open"
+    }
+  },
+  "brandSpaceDna": {
+    "brandSpirit": {
+      "scientific": 0.4,
+      "elegant": 0.3,
+      "healing": 0.2,
+      "futuristic": 0.5,
+      "premium": 0.5
+    },
+    "brandGrammar": {
+      "organicGrowth": "low",
+      "visualLightness": "medium",
+      "controlledGlow": "low",
+      "refinedOrder": "medium",
+      "decorativeDensity": "low"
+    },
+    "motifFamily": [
+      "feather_like_flow"
+    ],
+    "literalAssetUsage": {
+      "logoVisibility": "high",
+      "directPeacockUsage": "low",
+      "flowerSculptureUsage": "avoid",
+      "crystalObjectUsage": "avoid"
+    },
+    "injectionStrength": 0.5
+  },
+  "materialDna": {
+    "primaryMaterials": [
+      "exposed_concrete",
+      "metal_grid",
+      "rubber_floor"
+    ],
+    "secondaryMaterials": [
+      "brand_mural_paint"
+    ],
+    "accentMaterials": [
+      "neon_signage_tube"
+    ],
+    "finish": {
+      "glossLevel": "low",
+      "reflectivity": "matte",
+      "tactileQuality": "industrial"
+    },
+    "materialCountLimit": 5
+  },
+  "lightingDna": {
+    "primaryStrategy": "direct_lighting",
+    "ambient": {
+      "softness": "low",
+      "brightness": "high",
+      "contrast": "medium"
+    },
+    "integratedLight": {
+      "ceilingCove": "low",
+      "wallEdge": "low",
+      "furnitureBase": "low"
+    },
+    "brandLight": {
+      "hueFamily": [
+        "neon_brand_color",
+        "neutral_white"
+      ],
+      "saturation": "high",
+      "areaRatio": "moderate"
+    },
+    "spotlightUsage": "medium",
+    "decorativeFixtureVisibility": "high",
+    "architecturalGlow": "low"
+  },
+  "compositionDna": {
+    "focalHierarchy": {
+      "primary": "product_wall_with_brand_mural",
+      "secondary": "trial_zone",
+      "tertiary": "neon_signage"
+    },
+    "visualBalance": {
+      "symmetry": "low",
+      "negativeSpace": "low",
+      "density": "high"
+    },
+    "camera": {
+      "lens": "wide",
+      "height": "human_eye_level",
+      "distortion": "controlled"
+    },
+    "framing": {
+      "depthLayers": 3,
+      "foregroundUsage": "required",
+      "clearEntryView": true
+    }
+  },
+  "renderingDna": {
+    "realism": "photo_realistic",
+    "visualFinish": "raw",
+    "exposure": "balanced",
+    "whiteBalance": "neutral_warm",
+    "shadow": "controlled",
+    "textureVisibility": "pronounced",
+    "people": {
+      "amount": "sparse",
+      "motionBlur": "optional"
+    },
+    "cleanliness": "high",
+    "postProcessing": "restrained"
+  },
+  "variationControl": {
+    "preserve": [
+      "raw_industrial_grid",
+      "open_flex_layout",
+      "brand_mural_visible",
+      "trial_zone_presence"
+    ],
+    "vary": [
+      "neon_signage_color",
+      "trial_zone_size",
+      "checkout_position",
+      "community_area_density"
+    ],
+    "motifRepetitionLimit": {
+      "sameLiteralMotifPerImage": 1,
+      "sameMotifAcrossBatchRatio": 0.5
+    },
+    "requireNovelSpatialSolution": true
+  },
+  "negativeConstraints": {
+    "prohibit": [
+      "white_curved_walls",
+      "high_end_clinic_lighting",
+      "feather_like_flow_overuse",
+      "translucent_fiber_decoration",
+      "optical_crystal_centerpiece",
+      "petal_sculpture_motif",
+      "purple_lavender_glow",
+      "elegant_lobby_seating",
+      "spa_atmosphere",
+      "hospital_corridor",
+      "silent_meditation_room",
+      "fine_dining_dinnerware"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-01T00:00:00.000Z",
+    "frozenFromCommit": "6701ac1",
+    "sourceBenchmarkIds": [],
+    "promotedFromVersion": "v0.1-initial",
+    "promotedBy": "Mavis (Phase 7, 2026-08-01)",
+    "regressionProject": true
+  }
+}
