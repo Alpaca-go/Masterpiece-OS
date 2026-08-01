@@ -96,7 +96,7 @@ for (const project of index.projects) {
   test(`${project.id} compileFieldEnrichedPrompt() produces valid output`, () => {
     const prompt = compileFieldEnrichedPrompt(projectDnas[project.id]);
     projectPrompts[project.id] = prompt;
-    assert(prompt.blockCount === 12, `blockCount ${prompt.blockCount} != 12`);
+    assert(prompt.blockCount === 10, `blockCount ${prompt.blockCount} != 10 (v1.1 §6 10 块)`);
     assert(prompt.characterCount > 1000, `characterCount ${prompt.characterCount} too short`);
     assert(prompt.characterCount <= 8000, `characterCount ${prompt.characterCount} exceeds v1.0 \u00a710 maxReportCharacters=8000`);
   });

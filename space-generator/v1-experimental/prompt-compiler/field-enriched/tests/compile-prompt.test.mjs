@@ -65,22 +65,33 @@ assert(dnaValid, 'JZMX DNA must validate against schema');
 console.log('Compile:');
 let result;
 
-test('compileFieldEnrichedPrompt() returns 12 blocks (Phase 5 excludes variation_control)', () => {
+test('compileFieldEnrichedPrompt() returns 10 blocks (v1.1 §6 refactor)', () => {
   result = compileFieldEnrichedPrompt(dna);
-  // v1.0 §22 has 13 steps. v0.1 (Phase 5) omits step 12 variation_control -> 12 blocks
-  assert(result.blockCount === 12, `blockCount ${result.blockCount} != 12 (v1.0 \u00a722 13 - 1 variation_control)`);
+  // v1.1 §6 adjusts to 10 blocks: task / architectural_concept / architecture_dna /
+  // brand_translation / functional_requirement / material / lighting /
+  // composition / rendering / negative_constraints
+  assert(result.blockCount === 10, `blockCount ${result.blockCount} != 10 (v1.1 §6 10 blocks)`);
 });
 
-test('all 12 block IDs match v1.0 \u00a722 compile order minus variation_control', () => {
+test('all 10 block IDs match v1.1 §6 compile order (architectural concept before brand)', () => {
   const expectedOrder = [
-    'task', 'brand', 'function', 'concept', 'architecture',
-    'material', 'lighting', 'brandTranslation', 'functional',
-    'composition', 'rendering', 'negative',
+    'task', 'architectural_concept', 'architecture_dna', 'brand_translation',
+    'functional_requirement', 'material', 'lighting', 'composition',
+    'rendering', 'negative_constraints',
   ];
   for (let i = 0; i < expectedOrder.length; i++) {
     assert(result.blocks[i].id === expectedOrder[i],
       `block[${i}].id = ${result.blocks[i].id}, expected ${expectedOrder[i]}`);
   }
+});
+
+test('block[1] is architectural_concept (architecture before brand, v1.1 §6 end)', () => {
+  // v1.1 §6 end: "空间概念必须优先于品牌表达" (space concept must precede brand expression)
+  assert(result.blocks[1].id === 'architectural_concept', `block[1] should be architectural_concept, got ${result.blocks[1].id}`);
+  // Verify architectural_concept comes before brand_translation
+  const archIdx = result.blocks.findIndex((b) => b.id === 'architectural_concept');
+  const brandIdx = result.blocks.findIndex((b) => b.id === 'brand_translation');
+  assert(archIdx < brandIdx, `architectural_concept (${archIdx}) should come before brand_translation (${brandIdx})`);
 });
 
 test('markdown length > 0 and has reasonable character count', () => {

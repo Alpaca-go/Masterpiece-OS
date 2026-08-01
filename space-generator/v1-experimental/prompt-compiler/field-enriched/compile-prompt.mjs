@@ -1,86 +1,79 @@
-// Field-Enriched Prompt Compiler v0.1
-// v1.0 §22 13 步编译顺序, v0.1 暂做 11 块 (Phase 5 不接 variation control)
-// v0.1 输出 markdown, 不真调 Provider; v1-baseline prompt 作对照组.
-import { readFileSync, writeFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// ---------- 11 字段块 (v1.0 §22 不含 variation_control) ----------
+// Field-Enriched Prompt Compiler v1.1
+// 重构按 Space Generator v1.1 Architecture-Brand Fusion §6: 10 块编译顺序.
+// "空间概念必须优先于品牌表达" (v1.1 §6 末尾).
+//
+// 块顺序 (v1.1 §6):
+//   task
+//   ↓
+//   architectural_concept   (v1.1 新增, 优先于 brand)
+//   ↓
+//   architecture_dna
+//   ↓
+//   brand_translation      (v1.1 翻译层, 替代 v0.1 brand+brandTranslation)
+//   ↓
+//   functional_requirement (v1.1 合并 v0.1 function+functional)
+//   ↓
+//   material
+//   ↓
+//   lighting
+//   ↓
+//   composition
+//   ↓
+//   rendering
+//   ↓
+//   negative_constraints
+//
+// v0.1 DNA 向后兼容:
+//   - 没有 brandTranslationRules -> brand block 走 brandSpaceDna fallback
+//   - 没有 ceilingMechanism / facadeMechanism 等 -> architectural_concept 只显示 spatialConcept
+//
+// 对比约束: v1.0 §10 maxReportCharacters=8000 (creative-production-runtime 硬约束).
 
 function compileTaskDeclaration(dna) {
-  const { sceneDefinition, project } = dna;
+  const { project, sceneDefinition } = dna;
   return `# Task
 
 Generate a single premium-grade space image for **${project.brandName}** (${project.category}).
-Scene: \`${sceneDefinition.sceneType}\` (${sceneDefinition.sceneSubtype ?? 'generic'}).
-Context: ${sceneDefinition.commercialContext ?? 'unspecified'} | Scale: ${sceneDefinition.scale ?? 'unspecified'}.
+Scene: \`${sceneDefinition.sceneType}\` (${sceneDefinition.sceneSubtype ?? 'unspecified subtype'}).
+Context: ${sceneDefinition.commercialContext} | Scale: ${sceneDefinition.scale}.
 `;
 }
 
-function compileBrandPositioning(dna) {
-  const { project, brandSpaceDna } = dna;
-  const spirit = brandSpaceDna.brandSpirit;
-  const posLines = (project.brandPositioning ?? []).map((p) => `- ${p}`).join('\n') || '- (no explicit positioning; defaulting to high-end)';
-  const spiritLines = Object.entries(spirit)
-    .filter(([, v]) => typeof v === 'number' && v >= 0.7)
-    .map(([k]) => `- ${k} (weight >= 0.7)`)
-    .join('\n');
-  return `# Brand & Industry Positioning
-
-**Brand**: ${project.brandName}
-**Industry**: ${project.industry}
-**Audience**: ${(project.audience ?? []).join(', ') || 'not specified'}
-
-**Brand Positioning**:
-${posLines}
-
-**Brand Spirit (high-weight >= 0.7)**:
-${spiritLines || '- (no spirit weight above 0.7)'}
-`;
-}
-
-function compileSpaceFunction(dna) {
-  const { sceneDefinition, functionalDna } = dna;
-  return `# Space Function
-
-**Required Zones**: ${(sceneDefinition.requiredZones ?? []).join(', ')}
-**Optional Zones**: ${(sceneDefinition.optionalZones ?? []).join(', ') || 'none'}
-**Operational Realism**: ${functionalDna.operationalRealism}
-**Customer Flow**:
-- Entrance \u2192 Reception: ${functionalDna.customerFlow?.entranceToReception ?? 'n/a'}
-- Reception \u2192 Waiting: ${functionalDna.customerFlow?.receptionToWaiting ?? 'n/a'}
-- Waiting \u2192 Consultation: ${functionalDna.customerFlow?.waitingToConsultation ?? 'n/a'}
-
-**Privacy Zones**:
-- Public: ${functionalDna.privacy?.publicZone ?? 'n/a'}
-- Semi-private: ${functionalDna.privacy?.semiPrivateZone ?? 'n/a'}
-- Treatment: ${functionalDna.privacy?.treatmentZone ?? 'n/a'}
-
-**Furniture**: ${(functionalDna.furnitureRequirements?.ergonomic ? 'ergonomic ' : '')}${(functionalDna.furnitureRequirements?.commercialGrade ? 'commercial-grade ' : '')}${(functionalDna.furnitureRequirements?.accessible ? 'accessible' : '')}
-`;
-}
-
-function compileCoreConcept(dna) {
+function compileArchitecturalConcept(dna) {
+  // v1.1 §6 新增. "空间概念必须优先于品牌表达".
+  // 用 architectureDna 的 spatialConcept + 4 个 v1.1 mechanism 字段 (如果有).
   const { architectureDna } = dna;
-  return `# Core Spatial Concept
-
-**Primary**: ${architectureDna.spatialConcept?.primary}
-**Secondary**: ${architectureDna.spatialConcept?.secondary ?? '(none)'}
-
-**Boundary Hardness**: ${architectureDna.boundaryHardness}
-**Statement Strength**: ${architectureDna.statementStrength}
-`;
+  const lines = [
+    '# Architectural Concept (空间概念优先于品牌表达, v1.1 §6)',
+    '',
+    `**Primary Spatial Concept**: ${architectureDna.spatialConcept?.primary ?? 'n/a'}`,
+  ];
+  if (architectureDna.spatialConcept?.secondary) {
+    lines.push(`**Secondary**: ${architectureDna.spatialConcept.secondary}`);
+  }
+  // v1.1 新字段: 4 个 mechanism, 缺则不显示
+  if (architectureDna.ceilingMechanism) {
+    lines.push('', `**Ceiling Mechanism**: ${architectureDna.ceilingMechanism}`);
+  }
+  if (architectureDna.facadeMechanism) {
+    lines.push(`**Facade Mechanism**: ${architectureDna.facadeMechanism}`);
+  }
+  if (architectureDna.partitionMechanism) {
+    lines.push(`**Partition Mechanism**: ${architectureDna.partitionMechanism}`);
+  }
+  if (architectureDna.furnitureFormGrammar) {
+    lines.push(`**Furniture Form Grammar**: ${architectureDna.furnitureFormGrammar}`);
+  }
+  lines.push('', '空间概念 / 建筑机制 必须先于 品牌元素 被建立. 品牌附着在建筑语言之上, 不是反过来.');
+  return lines.join('\n') + '\n';
 }
 
-function compileArchitectureLanguage(dna) {
+function compileArchitectureDna(dna) {
   const { architectureDna } = dna;
   const cont = architectureDna.spatialContinuity;
   const bl = architectureDna.boundaryLanguage;
   const circ = architectureDna.circulation;
-  return `# Architecture Language
+  return `# Architecture DNA
 
 **Geometry**:
 - Dominant: ${(architectureDna.geometry?.dominant ?? []).join(', ') || 'n/a'}
@@ -95,7 +88,119 @@ function compileArchitectureLanguage(dna) {
 - Hardness: ${bl?.hardness ?? 'n/a'} | Transparency: ${bl?.transparency ?? 'n/a'} | Enclosure: ${bl?.enclosure ?? 'n/a'}
 
 **Circulation**: type=${circ?.type ?? 'n/a'} | visibility=${circ?.visibility ?? 'n/a'} | rhythm=${circ?.rhythm ?? 'n/a'}
+
+**Boundary Hardness**: ${architectureDna.boundaryHardness}
+**Statement Strength**: ${architectureDna.statementStrength}
 `;
+}
+
+function compileBrandTranslation(dna) {
+  // v1.1 §5 翻译层. 优先 brandTranslationRules, fallback 到 v0.1 brandSpaceDna.
+  const { project, brandSpaceDna, brandTranslationRules } = dna;
+  const lines = ['# Brand Translation (v1.1 §5 翻译层, 品牌不是装饰)'];
+  lines.push('');
+  lines.push(`**Brand**: ${project.brandName}`);
+  lines.push(`**Industry**: ${project.industry}`);
+  lines.push(`**Audience**: ${(project.audience ?? []).join(', ') || 'not specified'}`);
+
+  if (brandTranslationRules) {
+    // v1.1 翻译层
+    lines.push('', '**Brand Spirit → Space Mechanism** (v1.1 §5 默认对应):');
+    const spirit = brandTranslationRules.spiritToSpaceMechanism ?? {};
+    for (const k of ['scientific', 'elegant', 'healing', 'futuristic', 'premium']) {
+      if (spirit[k]) {
+        lines.push(`- ${k}: ${spirit[k]}`);
+      }
+    }
+    const grammar = brandTranslationRules.grammarToSpaceMechanism ?? {};
+    const grammarKeys = ['organicGrowth', 'visualLightness', 'controlledGlow', 'refinedOrder', 'decorativeDensity'];
+    if (grammarKeys.some((k) => grammar[k])) {
+      lines.push('', '**Brand Grammar → Space Language**:');
+      for (const k of grammarKeys) {
+        if (grammar[k]) {
+          lines.push(`- ${k}: ${grammar[k]}`);
+        }
+      }
+    }
+    const motifRules = brandTranslationRules.motifToSpaceMechanism ?? [];
+    if (motifRules.length > 0) {
+      lines.push('', '**Motif → Space Mechanism** (v1.0 §34 规则一/五: motif 表达为机制, 不放字面物):');
+      for (const r of motifRules) {
+        const forb = r.literalAssetForbidden ? ' [字面资产禁止]' : '';
+        lines.push(`- ${r.motif}: ${r.mechanism}${forb}`);
+      }
+    }
+    if (typeof brandTranslationRules.translationStrength === 'number') {
+      lines.push('', `**Translation Strength**: ${brandTranslationRules.translationStrength} (0=不应用, 1=严格执行, v1.1 推荐 0.7)`);
+    }
+  } else if (brandSpaceDna) {
+    // v0.1 fallback: brand spirit 5 维 + grammar + motif family + literal asset
+    lines.push('', '**Brand Spirit (high-weight >= 0.7)**:');
+    const highSpirit = Object.entries(brandSpaceDna.brandSpirit ?? {})
+      .filter(([, v]) => typeof v === 'number' && v >= 0.7)
+      .map(([k]) => `- ${k} (weight >= 0.7)`)
+      .join('\n');
+    lines.push(highSpirit || '- (no spirit weight above 0.7)');
+
+    lines.push('', '**Brand Grammar**:');
+    for (const [k, v] of Object.entries(brandSpaceDna.brandGrammar ?? {})) {
+      lines.push(`- ${k}: ${v}`);
+    }
+    lines.push('', `**Motif Family (all optional, no required literal)**: ${(brandSpaceDna.motifFamily ?? []).join(', ')}`);
+    lines.push('', '**Literal Asset Usage**:');
+    const lau = brandSpaceDna.literalAssetUsage ?? {};
+    lines.push(`- Logo visibility: ${lau.logoVisibility}`);
+    lines.push(`- Direct peacock: ${lau.directPeacockUsage}`);
+    lines.push(`- Flower sculpture: ${lau.flowerSculptureUsage}`);
+    lines.push(`- Crystal object: ${lau.crystalObjectUsage}`);
+    if (typeof brandSpaceDna.injectionStrength === 'number') {
+      lines.push('', `**Injection Strength**: ${brandSpaceDna.injectionStrength} (0 = no injection, 1 = all literal assets)`);
+    }
+  }
+  return lines.join('\n') + '\n';
+}
+
+function compileFunctionalRequirement(dna) {
+  // v1.1 §6 合并 v0.1 function + functional.
+  const { sceneDefinition, functionalDna } = dna;
+  const comp = functionalDna.medicalComplianceExpression;
+  const lines = [
+    '# Functional & Commercial Requirement (v1.1 §6 合并 v0.1 function+functional)',
+    '',
+    '**Required Zones**: ' + ((sceneDefinition.requiredZones ?? []).join(', ') || 'n/a'),
+    '**Optional Zones**: ' + ((sceneDefinition.optionalZones ?? []).join(', ') || 'none'),
+    '**Operational Realism**: ' + (functionalDna.operationalRealism ?? 'n/a'),
+  ];
+  if (functionalDna.customerFlow) {
+    lines.push('');
+    lines.push('**Customer Flow**:');
+    lines.push(`- Entrance \u2192 Reception: ${functionalDna.customerFlow.entranceToReception ?? 'n/a'}`);
+    lines.push(`- Reception \u2192 Waiting: ${functionalDna.customerFlow.receptionToWaiting ?? 'n/a'}`);
+    lines.push(`- Waiting \u2192 Consultation: ${functionalDna.customerFlow.waitingToConsultation ?? 'n/a'}`);
+  }
+  if (functionalDna.privacy) {
+    lines.push('');
+    lines.push('**Privacy Zones**:');
+    lines.push(`- Public: ${functionalDna.privacy.publicZone ?? 'n/a'}`);
+    lines.push(`- Semi-private: ${functionalDna.privacy.semiPrivateZone ?? 'n/a'}`);
+    lines.push(`- Treatment: ${functionalDna.privacy.treatmentZone ?? 'n/a'}`);
+  }
+  if (functionalDna.furnitureRequirements) {
+    const fr = functionalDna.furnitureRequirements;
+    const flags = [
+      fr.ergonomic ? 'ergonomic' : null,
+      fr.commercialGrade ? 'commercial-grade' : null,
+      fr.accessible ? 'accessible' : null,
+    ].filter(Boolean);
+    lines.push('');
+    lines.push('**Furniture**: ' + (flags.join(' ') || 'n/a'));
+  }
+  if (comp) {
+    lines.push('');
+    lines.push('**Medical Compliance**:');
+    lines.push(`- Visible but not hospital-like: ${comp.visibleButNotHospitalLike ?? 'n/a'}`);
+  }
+  return lines.join('\n') + '\n';
 }
 
 function compileMaterialSystem(dna) {
@@ -130,50 +235,6 @@ function compileLightingSystem(dna) {
 **Spotlight Usage**: ${lightingDna.spotlightUsage}
 **Decorative Fixture Visibility**: ${lightingDna.decorativeFixtureVisibility}
 **Architectural Glow**: ${lightingDna.architecturalGlow}
-`;
-}
-
-function compileBrandTranslation(dna) {
-  const { brandSpaceDna } = dna;
-  return `# Brand Translation
-
-**Brand Spirit**:
-${Object.entries(brandSpaceDna.brandSpirit)
-    .filter(([, v]) => typeof v === 'number')
-    .map(([k, v]) => `- ${k}: ${v}`)
-    .join('\n')}
-
-**Brand Grammar**:
-${Object.entries(brandSpaceDna.brandGrammar ?? {})
-    .map(([k, v]) => `- ${k}: ${v}`)
-    .join('\n')}
-
-**Motif Family (all optional, no required literal)**: ${(brandSpaceDna.motifFamily ?? []).join(', ')}
-
-**Literal Asset Usage**:
-- Logo visibility: ${brandSpaceDna.literalAssetUsage?.logoVisibility}
-- Direct peacock: ${brandSpaceDna.literalAssetUsage?.directPeacockUsage}
-- Flower sculpture: ${brandSpaceDna.literalAssetUsage?.flowerSculptureUsage}
-- Crystal object: ${brandSpaceDna.literalAssetUsage?.crystalObjectUsage}
-
-**Injection Strength**: ${brandSpaceDna.injectionStrength} (0 = no injection, 1 = all literal assets)
-`;
-}
-
-function compileFunctionalRealism(dna) {
-  const { functionalDna } = dna;
-  const comp = functionalDna.medicalComplianceExpression;
-  return `# Functional & Commercial Realism
-
-**Operational Realism**: ${functionalDna.operationalRealism}
-
-**Medical Compliance**:
-- Visible but not hospital-like: ${comp?.visibleButNotHospitalLike ?? 'n/a'}
-
-**Furniture**:
-- Ergonomic: ${functionalDna.furnitureRequirements?.ergonomic}
-- Commercial-grade: ${functionalDna.furnitureRequirements?.commercialGrade}
-- Accessible: ${functionalDna.furnitureRequirements?.accessible}
 `;
 }
 
@@ -219,24 +280,23 @@ ${(negativeConstraints.prohibit ?? []).map((p) => `- ${p}`).join('\n')}
 `;
 }
 
+// v1.1 §6: 10 块编译顺序. 空间概念优先于品牌表达.
 const BLOCK_FUNCS = [
   ['task', compileTaskDeclaration],
-  ['brand', compileBrandPositioning],
-  ['function', compileSpaceFunction],
-  ['concept', compileCoreConcept],
-  ['architecture', compileArchitectureLanguage],
+  ['architectural_concept', compileArchitecturalConcept],
+  ['architecture_dna', compileArchitectureDna],
+  ['brand_translation', compileBrandTranslation],
+  ['functional_requirement', compileFunctionalRequirement],
   ['material', compileMaterialSystem],
   ['lighting', compileLightingSystem],
-  ['brandTranslation', compileBrandTranslation],
-  ['functional', compileFunctionalRealism],
   ['composition', compileComposition],
   ['rendering', compileRendering],
-  ['negative', compileNegativeConstraints],
+  ['negative_constraints', compileNegativeConstraints],
 ];
 
 /**
  * Compile a Field-Enriched prompt from a DNA instance.
- * @param dna  Space DNA instance (Phase 2 schema)
+ * @param dna  Space DNA instance (Phase 2 schema, v0.1 or v1.1)
  * @returns   { markdown, blockCount, characterCount, blocks }
  */
 export function compileFieldEnrichedPrompt(dna) {
@@ -251,19 +311,4 @@ export function compileFieldEnrichedPrompt(dna) {
     characterCount: markdown.length,
     blocks,
   };
-}
-
-// ---------- CLI ----------
-if (process.argv[1] && import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
-  const args = process.argv.slice(2);
-  if (args.length !== 2) {
-    console.error('Usage: node compile-prompt.mjs <dna.json> <output.md>');
-    process.exit(1);
-  }
-  const [dnaPath, outPath] = args;
-  const dna = JSON.parse(readFileSync(dnaPath, 'utf8'));
-  const result = compileFieldEnrichedPrompt(dna);
-  writeFileSync(outPath, result.markdown);
-  console.log(`prompt written to ${outPath}`);
-  console.log(`blocks: ${result.blockCount}, characters: ${result.characterCount}`);
 }
