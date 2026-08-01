@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/compiled-spatial-intent.schema.v9a.2.json",
+  "title": "Compiled Spatial Intent v9A.2",
+  "description": "Masterpiece OS Space Generator Phase 9A.2 Spatial Intent Compiler Output. v9A.2 是 Spatial Intent Reasoning 的 compiler 层, 输入 spatialIntentDna (5 字段) 编译为 compiledSpatialIntent (5 字段). 规则只提供方向, 不直接生成视觉 (Phase 9A.2 §8). 不污染 Prompt Runtime (Phase 9A.2 §11).",
+  "type": "object",
+  "required": [
+    "experienceGoal",
+    "spatialStrategy",
+    "architecturalImplications",
+    "functionRelationship",
+    "constraints"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "experienceGoal": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Phase 9A.2 §7.1: 描述最终空间体验目标. 例如 '创造低压力、高信任的专业医疗体验'."
+    },
+    "spatialStrategy": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string" },
+      "description": "Phase 9A.2 §7.2: 将情绪转换为空间策略. 例如 'controlled visibility / soft transition / calm circulation'."
+    },
+    "architecturalImplications": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string" },
+      "description": "Phase 9A.2 §7.3: 提供建筑方向. 不是固定形式. 正确 '需要连续边界和柔性空间关系'; 错误 '必须使用膜结构'."
+    },
+    "functionRelationship": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string" },
+      "description": "Phase 9A.2 §7.4: 连接功能需求. 例如 '咨询区域: 需要私密性 / 可见性平衡 / 信任建立'."
+    },
+    "constraints": {
+      "type": "array",
+      "minItems": 0,
+      "items": { "type": "string" },
+      "description": "Phase 9A.2 §7.5: 记录禁止方向. 例如 'avoid excessive decoration / avoid entertainment atmosphere / avoid unrelated visual symbols'."
+    },
+    "weight": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.25,
+      "description": "Optional. Phase 9A.3 集成时, compiledSpatialIntent 对 prompt 编译时的强调强度. 0=不强调, 1=最强. Phase 9A.2 推荐 0.25 (与 architectureFunctionBridge.weightBoost 对齐)."
+    }
+  },
+  "phase": "9A.2",
+  "frozen_at": "2026-08-01",
+  "frozen_by": "Space Generator v1.1 Phase 9A.2 Spatial Intent Compiler",
+  "layerBoundaryRules": {
+    "CAN": [
+      "transform brand experience goal to spatial direction",
+      "output spatial strategy (controlled visibility, soft transition, etc.)",
+      "output architectural implications (high-level, not specific forms)",
+      "output function relationship"
+    ],
+    "CANNOT": [
+      "select specific architecture anchor (由 runtime/selectAnchors 负责)",
+      "specify material combinations (由 DNA.materialDna 负责)",
+      "copy reference images (由 anchor / calibration 负责)",
+      "generate prompt (由 prompt-compiler 负责)"
+    ]
+  }
+}

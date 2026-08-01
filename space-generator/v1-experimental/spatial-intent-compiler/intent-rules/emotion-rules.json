@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "description": "Phase 9A.2 §8 Rule Engine. emotion-rules: primaryEmotion 关键词 -> spatialStrategy / architecturalImplications / constraints. 规则只提供方向, 不直接生成视觉.",
+  "phase": "9A.2",
+  "rules": [
+    {
+      "id": "emotion-trust-calm",
+      "matchKeywords": ["安心", "信任", "从容", "平静", "安心与信任"],
+      "spatialStrategy": [
+        "soft boundary",
+        "balanced openness",
+        "low stimulation lighting"
+      ],
+      "architecturalImplications": [
+        "需要连续边界和柔性空间关系",
+        "视觉连续优先于硬隔断",
+        "声压差弱屏蔽替代完全封闭"
+      ],
+      "constraints": [
+        "avoid excessive decoration",
+        "avoid entertainment atmosphere"
+      ]
+    },
+    {
+      "id": "emotion-trust-professional",
+      "matchKeywords": ["专业", "信赖", "长期信赖", "建立信任"],
+      "spatialStrategy": [
+        "transparent relationship",
+        "professional order",
+        "clear circulation"
+      ],
+      "architecturalImplications": [
+        "需要透明材质或低界面",
+        "公共区域与专业区域之间有渐进式过渡",
+        "动线主轴清晰可读"
+      ],
+      "constraints": [
+        "avoid unrelated visual symbols",
+        "avoid entertainment atmosphere"
+      ]
+    },
+    {
+      "id": "emotion-honest-warm",
+      "matchKeywords": ["实在", "饱满", "烟火气", "暖色", "地道", "热气腾腾", "实在与饱满"],
+      "spatialStrategy": [
+        "visible process",
+        "warm material",
+        "social interaction"
+      ],
+      "architecturalImplications": [
+        "需要 production 区域作为视觉中心",
+        "客人能看见生产过程, 不需要菜单就能感知今天的菜",
+        "自然光主导, 不用嵌入光带"
+      ],
+      "constraints": [
+        "avoid sterile high-end atmosphere",
+        "avoid entertainment atmosphere",
+        "avoid abstract art museum feeling"
+      ]
+    },
+    {
+      "id": "emotion-traditional-calm",
+      "matchKeywords": ["沉静", "慢", "调理", "传统", "整体观", "望闻问切", "亚健康"],
+      "spatialStrategy": [
+        "calm rhythm",
+        "soft boundary with traditional elements",
+        "natural diffused light"
+      ],
+      "architecturalImplications": [
+        "需要软边界替代硬隔断",
+        "纸窗或木格分区, 不用玻璃幕墙",
+        "客人和 staff 之间有非正式接触空间 (茶角)"
+      ],
+      "constraints": [
+        "avoid medical clinical feeling",
+        "avoid restaurant density",
+        "avoid excessive decoration",
+        "avoid modern minimal cold"
+      ]
+    },
+    {
+      "id": "emotion-default-fallback",
+      "matchKeywords": [],
+      "matchAny": true,
+      "spatialStrategy": [
+        "balanced visibility",
+        "calm circulation"
+      ],
+      "architecturalImplications": [
+        "空间应该有清晰的主轴",
+        "软边界优先于硬隔断"
+      ],
+      "constraints": [
+        "avoid unrelated visual symbols"
+      ]
+    }
+  ]
+}
