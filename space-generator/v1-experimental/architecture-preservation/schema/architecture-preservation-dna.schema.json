@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/architecture-preservation-dna.schema.v9b.2.json",
+  "title": "Architecture Preservation DNA v9B.2",
+  "description": "Masterpiece OS Space Generator Phase 9B.2 Architecture-Preservation Calibration Input. v9B.2 是 Phase 9B.1 Reality Constraint layer 之后的 Architecture Preservation layer, 防止 Phase 9B.1 削弱 Architecture Anchor 提供的空间记忆点. 4 protected elements (ceiling_language / spatial_signature / material_expression / lighting_behavior) 都是机制级 (mechanism not object), 不添加具体装饰物. 不调真实 Provider, 不修改 Prompt Runtime (Phase 9B.2 §10 验收).",
+  "type": "object",
+  "required": [
+    "schemaRef",
+    "brandKey",
+    "category",
+    "phase",
+    "architecturePreservation"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaRef": {
+      "type": "string",
+      "description": "固定 https://masterpiece-os.local/architecture-preservation-dna.schema.v9b.2.json"
+    },
+    "brandKey": {
+      "type": "string",
+      "description": "品牌标识"
+    },
+    "category": {
+      "type": "string",
+      "description": "行业类型"
+    },
+    "phase": {
+      "type": "string",
+      "const": "9B.2"
+    },
+    "architecturePreservation": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "weight",
+        "protectedElements"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Phase 9B.2 §4 字段 1: 是否启用建筑保护层, 默认 true"
+        },
+        "weight": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Phase 9B.2 §4 字段 2: 建筑语言保护权重. 0.3 弱保护 / 0.5 平衡 / 0.7 强保护 / 0.9 概念优先. JZMX 建议 0.7."
+        },
+        "protectedElements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "enum": [
+              "ceiling_language",
+              "spatial_signature",
+              "material_expression",
+              "lighting_behavior"
+            ]
+          },
+          "description": "Phase 9B.2 §4 字段 3: 保护元素, 只保护机制不添加具体物体. 4 个合法值: ceiling_language / spatial_signature / material_expression / lighting_behavior"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "frozen metadata"
+    }
+  },
+  "phase": "9B.2",
+  "frozen_at": "2026-08-01",
+  "frozen_by": "Space Generator v1.1 Phase 9B.2 Architecture-Preservation Calibration",
+  "layerBoundaryRules": {
+    "SpatialIntentLayer_answer": "为什么需要这样的空间体验",
+    "ArchitectureBridgeLayer_answer": "什么建筑原则支持这种体验",
+    "SpatialRealityLayer_answer": "什么商业现实约束这个空间",
+    "ArchitecturePreservationLayer_answer": "什么建筑机制必须被保护 (mechanism not object)",
+    "ArchitecturePreservation_CAN": [
+      "protect 4 mechanism types (ceiling_language / spatial_signature / material_expression / lighting_behavior)",
+      "preserve spatial structure / material relations / lighting logic from Architecture Anchor",
+      "weight (0.3-0.9) 控制保护强度"
+    ],
+    "ArchitecturePreservation_CANNOT": [
+      "add specific decoration elements (装饰 / 雕塑 / 视觉符号)",
+      "force-insert sculptures or visual symbols",
+      "copy specific reference image (e.g. 特定空间图片元素)",
+      "modify Architecture Anchor (Phase 8A) or architecture_context (Phase 8A) content",
+      "lower commercial realism (Phase 9B.1 不下降)"
+    ]
+  }
+}

@@ -48,6 +48,12 @@ const imageProfileId = process.env.MASTERPIECE_SMOKE_IMAGE_PROFILE_ID?.trim() ||
 const brandKey = process.env.MASTERPIECE_SMOKE_BRAND_KEY?.trim() || '';
 const dnaPath = process.env.MASTERPIECE_SMOKE_DNA_PATH?.trim() || '';
 const spatialIntentPath = process.env.MASTERPIECE_SMOKE_SPATIAL_INTENT_PATH?.trim() || '';
+// Phase 9B.1: optional spatial-reality path. If set, smoke runs Phase 9B.1 Mode B
+// (15 blocks with spatial_reality_constraint) instead of Phase 9B Mode B (14 blocks).
+const spatialRealityPath = process.env.MASTERPIECE_SMOKE_SPATIAL_REALITY_PATH?.trim() || '';
+// Phase 9B.2: optional architecture-preservation path. If set, smoke runs Phase 9B.2 Mode B
+// (16 blocks with architecture_preservation) instead of Phase 9B.1 Mode B (15 blocks).
+const architecturePreservationPath = process.env.MASTERPIECE_SMOKE_ARCHITECTURE_PRESERVATION_PATH?.trim() || '';
 const imageSize = process.env.MASTERPIECE_SMOKE_SIZE?.trim() || '1024*1024';
 
 const desktopUserData = process.env.MASTERPIECE_SMOKE_USER_DATA?.trim()
@@ -64,7 +70,11 @@ if (!projectId || !textProfileId || !imageProfileId || !brandKey || !dnaPath || 
 const REPO_ROOT = process.env.MASTERPIECE_SMOKE_REPO_ROOT?.trim()
   || path.resolve(process.cwd(), '..', '..');
 const SPATIAL_INTELLIGENCE_DIR = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'spatial-intelligence-pipeline');
-const VALIDATION_RESULTS = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'validation-results', 'phase-9B', brandKey);
+const SPATIAL_REALITY_DIR = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'spatial-reality');
+const ARCHITECTURE_PRESERVATION_DIR = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'architecture-preservation');
+// Output dir: phase-9B.2 if architecture-preservation provided, else phase-9B.1 if spatial-reality, else phase-9B
+const PHASE_DIR = architecturePreservationPath ? 'phase-9B.2' : (spatialRealityPath ? 'phase-9B.1' : 'phase-9B');
+const VALIDATION_RESULTS = path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'validation-results', PHASE_DIR, brandKey);
 
 function summary(value) {
   process.stdout.write(`SMOKE_RESULT ${JSON.stringify(value)}\n`);
@@ -99,15 +109,43 @@ async function main() {
   const dna = JSON.parse(await fs.readFile(dnaPath, 'utf8'));
   const siFile = JSON.parse(await fs.readFile(spatialIntentPath, 'utf8'));
 
-  // Dynamic import: spatial-intelligence-pipeline uses .mjs ESM modules
+  // Dynamic import: spatial-intelligence-pipeline + spatial-reality + architecture-preservation use .mjs ESM modules
   const { compileRuntimePromptModeA, compileRuntimePromptWithSpatialIntelligence } = await import(
     `file://${SPATIAL_INTELLIGENCE_DIR.replace(/\\/g, '/')}/compile-spatial-intelligence-prompt.mjs`
   );
+  let spatialRealityModule = null;
+  if (spatialRealityPath || architecturePreservationPath) {
+    spatialRealityModule = await import(
+      `file://${SPATIAL_REALITY_DIR.replace(/\\/g, '/')}/compile-spatial-reality-prompt.mjs`
+    );
+  }
+  let architecturePreservationModule = null;
+  if (architecturePreservationPath) {
+    architecturePreservationModule = await import(
+      `file://${ARCHITECTURE_PRESERVATION_DIR.replace(/\\/g, '/')}/compile-architecture-preservation-prompt.mjs`
+    );
+  }
 
-  const modeA = compileRuntimePromptModeA(dna, { brandKey });
-  const modeB = compileRuntimePromptWithSpatialIntelligence(dna, siFile.spatialIntentDna, { brandKey });
+  let modeA, modeB;
+  if (architecturePreservationPath) {
+    // Phase 9B.2: Mode A = Phase 9B.1 Mode B baseline (15 块), Mode B = +architecture_preservation (16 块)
+    const srFile = JSON.parse(await fs.readFile(spatialRealityPath, 'utf8'));
+    const apFile = JSON.parse(await fs.readFile(architecturePreservationPath, 'utf8'));
+    modeA = spatialRealityModule.compileRuntimePromptModeASpatialReality(dna, siFile.spatialIntentDna, { brandKey });
+    modeB = architecturePreservationModule.compileRuntimePromptWithArchitecturePreservation(dna, siFile.spatialIntentDna, srFile.spatialRealityDna, apFile.architecturePreservation, { brandKey });
+  } else if (spatialRealityPath) {
+    // Phase 9B.1: Mode A = Phase 9B Mode B baseline (14 块), Mode B = +spatial_reality_constraint (15 块)
+    const srFile = JSON.parse(await fs.readFile(spatialRealityPath, 'utf8'));
+    modeA = spatialRealityModule.compileRuntimePromptModeASpatialReality(dna, siFile.spatialIntentDna, { brandKey });
+    modeB = spatialRealityModule.compileRuntimePromptWithSpatialReality(dna, siFile.spatialIntentDna, srFile.spatialRealityDna, { brandKey });
+  } else {
+    // Phase 9B: Mode A = compileRuntimePrompt (12 块), Mode B = +spatial_intent +architecture_language (14 块)
+    modeA = compileRuntimePromptModeA(dna, { brandKey });
+    modeB = compileRuntimePromptWithSpatialIntelligence(dna, siFile.spatialIntentDna, { brandKey });
+  }
 
   logProgress('compiled', {
+    phase: PHASE_DIR,
     modeABlocks: modeA.blockCount,
     modeAChars: modeA.characterCount,
     modeBBlocks: modeB.blockCount,
@@ -139,7 +177,7 @@ async function main() {
     const imageRun = await imageGeneration.startCompiledCreativeTask({
       projectId,
       compiledPrompt: prompt,
-      promptVersion: `phase-9b-mode-${mode.toLowerCase()}-1.0.0`,
+      promptVersion: `${PHASE_DIR}-mode-${mode.toLowerCase()}-1.0.0`,
       snapshot: {
         schemaVersion: '1.0',
         kind: 'phase-9b-spatial-intelligence-smoke',
@@ -183,11 +221,11 @@ async function main() {
     // 写 run.json (redacted)
     const runRecord = {
       schemaVersion: '1.0',
-      phase: '9B',
+      phase: PHASE_DIR,
       mode,
       brandKey,
       projectId,
-      promptVersion: `phase-9b-mode-${mode.toLowerCase()}-1.0.0`,
+      promptVersion: `${PHASE_DIR}-mode-${mode.toLowerCase()}-1.0.0`,
       provider: imageProfileId,
       size: imageSize,
       referenceAssetId: referenceAsset.id,

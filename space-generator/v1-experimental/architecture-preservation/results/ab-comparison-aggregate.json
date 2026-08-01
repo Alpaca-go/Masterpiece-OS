@@ -1,0 +1,219 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T13:07:51.382Z",
+  "phase": "9B.2",
+  "title": "Phase 9B.2 Architecture-Preservation Pipeline A/B Comparison (text-level)",
+  "brands": {
+    "jiuzhou-aesthetics": {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-08-01T13:07:51.371Z",
+      "phase": "9B.2",
+      "brandKey": "jiuzhou-aesthetics",
+      "modeA": {
+        "blockCount": 15,
+        "characterCount": 10515,
+        "runtimePath": "spatial_intelligence_9a2_9a3_9b1_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "spatial_reality_constraint",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ]
+      },
+      "modeB": {
+        "blockCount": 16,
+        "characterCount": 11633,
+        "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "spatial_reality_constraint",
+          "architecture_context",
+          "architecture_preservation",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ],
+        "architecturePreservation": {
+          "enabled": true,
+          "weight": 0.7,
+          "protectedElements": [
+            "ceiling_language",
+            "spatial_signature",
+            "material_expression",
+            "lighting_behavior"
+          ]
+        }
+      },
+      "diff": {
+        "blockDiff": 1,
+        "charDiff": 1118,
+        "charDiffRatio": 10.6
+      }
+    },
+    "feng-tang-tang": {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-08-01T13:07:51.378Z",
+      "phase": "9B.2",
+      "brandKey": "feng-tang-tang",
+      "modeA": {
+        "blockCount": 15,
+        "characterCount": 8342,
+        "runtimePath": "spatial_intelligence_9a2_9a3_9b1_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "spatial_reality_constraint",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ]
+      },
+      "modeB": {
+        "blockCount": 16,
+        "characterCount": 9376,
+        "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "spatial_reality_constraint",
+          "architecture_context",
+          "architecture_preservation",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ],
+        "architecturePreservation": {
+          "enabled": true,
+          "weight": 0.5,
+          "protectedElements": [
+            "spatial_signature",
+            "material_expression",
+            "lighting_behavior"
+          ]
+        }
+      },
+      "diff": {
+        "blockDiff": 1,
+        "charDiff": 1034,
+        "charDiffRatio": 12.4
+      }
+    },
+    "yi-ji-liang-fang": {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-08-01T13:07:51.382Z",
+      "phase": "9B.2",
+      "brandKey": "yi-ji-liang-fang",
+      "modeA": {
+        "blockCount": 15,
+        "characterCount": 8693,
+        "runtimePath": "spatial_intelligence_9a2_9a3_9b1_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "spatial_reality_constraint",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ]
+      },
+      "modeB": {
+        "blockCount": 16,
+        "characterCount": 9811,
+        "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "spatial_reality_constraint",
+          "architecture_context",
+          "architecture_preservation",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ],
+        "architecturePreservation": {
+          "enabled": true,
+          "weight": 0.5,
+          "protectedElements": [
+            "ceiling_language",
+            "spatial_signature",
+            "material_expression",
+            "lighting_behavior"
+          ]
+        }
+      },
+      "diff": {
+        "blockDiff": 1,
+        "charDiff": 1118,
+        "charDiffRatio": 12.9
+      }
+    }
+  },
+  "summary": {
+    "totalBrands": 3,
+    "modeAPath": "spatial_intelligence_9a2_9a3_9b1_8a_8b1 (Phase 9B.1 Mode B, 15 块 baseline)",
+    "modeBPath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1 (Phase 9B.2 Mode B, 15 + architecture_preservation = 16 块)",
+    "modeAAdapter": "compileRuntimePromptModeAArchitecturePreservation",
+    "modeBAdapter": "compileRuntimePromptWithArchitecturePreservation"
+  },
+  "notes": [
+    "Mode A = Phase 9B.1 Mode B baseline (15 块, 含 spatial_reality_constraint, 不含 architecture_preservation)",
+    "Mode B = Phase 9B.1 Mode B + architecture_preservation 块 (16 块, 保护 mechanism 不增加 decoration)",
+    "Mode B 新增 1 块 (architecture_preservation), 插在 architecture_context 之后, architecture_function_bridge 之前",
+    "Phase 9B.2 §6 mechanism not object: 只保护机制, 不添加具体装饰",
+    "Provider not called. Image-level A/B requires real-provider smoke (separate user-authorized step)."
+  ]
+}

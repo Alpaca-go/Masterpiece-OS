@@ -1,0 +1,16 @@
+# Phase 9B.1 real-provider smoke desensitization
+# Per 5.0 release gate pattern: no raw provider output, no generated images,
+# no session/trace logs in commit. Only desensitized run.json + prompt.md +
+# evaluation-report.md are tracked.
+
+# Generated images (raw provider output, can be 100s of KB - 1MB+)
+**/image.png
+
+# Smoke run logs (can contain trace/session data)
+smoke-run.log
+smoke-run.log.err
+
+# Allow these to be tracked
+!*.md
+!run.json
+!prompt.md

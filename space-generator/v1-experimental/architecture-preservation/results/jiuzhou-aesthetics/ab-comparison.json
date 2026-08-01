@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T13:07:51.371Z",
+  "phase": "9B.2",
+  "brandKey": "jiuzhou-aesthetics",
+  "modeA": {
+    "blockCount": 15,
+    "characterCount": 10515,
+    "runtimePath": "spatial_intelligence_9a2_9a3_9b1_8a_8b1",
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "spatial_reality_constraint",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ]
+  },
+  "modeB": {
+    "blockCount": 16,
+    "characterCount": 11633,
+    "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1",
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "spatial_reality_constraint",
+      "architecture_context",
+      "architecture_preservation",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "architecturePreservation": {
+      "enabled": true,
+      "weight": 0.7,
+      "protectedElements": [
+        "ceiling_language",
+        "spatial_signature",
+        "material_expression",
+        "lighting_behavior"
+      ]
+    }
+  },
+  "diff": {
+    "blockDiff": 1,
+    "charDiff": 1118,
+    "charDiffRatio": 10.6
+  }
+}

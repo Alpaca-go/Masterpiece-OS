@@ -1,0 +1,21 @@
+{
+  "schemaRef": "https://masterpiece-os.local/architecture-preservation-dna.schema.v9b.2.json",
+  "brandKey": "feng-tang-tang",
+  "category": "restaurant",
+  "phase": "9B.2",
+  "architecturePreservation": {
+    "enabled": true,
+    "weight": 0.5,
+    "protectedElements": [
+      "spatial_signature",
+      "material_expression",
+      "lighting_behavior"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-01",
+    "frozenBy": "Space Generator v1.1 Phase 9B.2 Architecture-Preservation Calibration",
+    "sourceArchitectureAnchors": [],
+    "notes": "Phase 9B.2 §4 FTT weight=0.5 (平衡). 3 protected elements, 跳过 ceiling_language (FTT 是 casual dining, ceiling 不需要 architectural expression, 排烟 / 暖光更重要). spatial_signature 重点: open_kitchen + dining 路径节奏, dining 桌椅 ≥0.8m staff 通行. material_expression 重点: warm wood + 真实厨房设备 + 餐桌可擦洗. lighting_behavior 重点: natural daylight primary + warm ambient secondary, 不可纯射灯."
+  }
+}
