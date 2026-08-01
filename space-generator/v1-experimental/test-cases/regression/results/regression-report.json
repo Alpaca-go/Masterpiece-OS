@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T06:02:18.376Z",
+  "projects": [
+    {
+      "id": "JZMX",
+      "name": "九州美学",
+      "category": "medical_aesthetics",
+      "blockCount": 12,
+      "characterCount": 4072,
+      "lightingPrimaryStrategy": "architectural_indirect_light",
+      "spatialConceptPrimary": "soft_continuity",
+      "materialCount": 5,
+      "negativeConstraintsCount": 12,
+      "brandSpiritHighCount": 5
+    },
+    {
+      "id": "YJLF",
+      "name": "一剂良方",
+      "category": "health_management",
+      "blockCount": 12,
+      "characterCount": 3831,
+      "lightingPrimaryStrategy": "natural_lighting",
+      "spatialConceptPrimary": "warm_grid_with_wood_accents",
+      "materialCount": 5,
+      "negativeConstraintsCount": 10,
+      "brandSpiritHighCount": 2
+    },
+    {
+      "id": "FTT",
+      "name": "冯烫烫",
+      "category": "restaurant",
+      "blockCount": 12,
+      "characterCount": 3837,
+      "lightingPrimaryStrategy": "natural_lighting",
+      "spatialConceptPrimary": "warm_commercial_grid",
+      "materialCount": 5,
+      "negativeConstraintsCount": 12,
+      "brandSpiritHighCount": 0
+    },
+    {
+      "id": "WY",
+      "name": "蛙耶",
+      "category": "retail",
+      "blockCount": 12,
+      "characterCount": 3846,
+      "lightingPrimaryStrategy": "direct_lighting",
+      "spatialConceptPrimary": "raw_industrial_grid",
+      "materialCount": 5,
+      "negativeConstraintsCount": 12,
+      "brandSpiritHighCount": 0
+    }
+  ],
+  "pollutionCheck": "PASS (v1.0 §30 Phase 7 验收 4 项)"
+}
