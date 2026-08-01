@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "lobby",
+  "label": "大堂 / Lobby",
+  "role": {
+    "primary": "spatial_transition_hub",
+    "secondary": "brand_atmosphere_dissemination"
+  },
+  "priority": {
+    "privacy": 0.2,
+    "comfort": 0.5,
+    "brand_display": 0.7,
+    "circulation": 0.85
+  },
+  "visual_rules": {
+    "lighting": "natural_indirect",
+    "material": "open_architectural",
+    "density": "low"
+  },
+  "functional_constraints": {
+    "must_include": ["open_lounge", "circulation_path", "subtle_brand_signage"],
+    "must_exclude": ["treatment_bed", "consultation_desk", "enclosed_capsule"],
+    "key_equipment": ["开敞休息区", "通行动线", "品牌软装", "可选茶水吧"],
+    "human_traffic": "high_mixed_traffic"
+  },
+  "narrative_focus": "空间枢纽. 引导客户从街边到目标空间. 大面积留白 + 自然光 + 低密度, 让品牌气质自然渗透, 不强制销售."
+}

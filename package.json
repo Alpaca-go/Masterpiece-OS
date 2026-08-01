@@ -54,6 +54,7 @@
     "test:space-spatial-reality": "node space-generator/v1-experimental/spatial-reality/tests/compile-spatial-reality-prompt.test.mjs",
     "test:space-architecture-preservation": "node space-generator/v1-experimental/architecture-preservation/tests/compile-architecture-preservation-prompt.test.mjs",
     "test:space-space-runtime": "node space-generator/v1-experimental/space-runtime/tests/compile-space-runtime.test.mjs",
+    "test:space-space-role-intelligence": "node space-generator/v1-experimental/space-role-intelligence/tests/compile-space-role-intelligence.test.mjs",
     "test:space-brand-identity-validation": "node space-generator/v1-experimental/brand-identity-validation/tests/compile-validation.test.mjs"
   },
   "engines": {

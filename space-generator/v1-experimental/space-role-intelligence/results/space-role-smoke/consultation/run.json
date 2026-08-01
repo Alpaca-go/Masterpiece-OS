@@ -1,0 +1,39 @@
+{
+  "spaceType": "consultation",
+  "blockCount": 17,
+  "characterCount": 12685,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 1005,
+    "role": {
+      "primary": "trust_building_zone",
+      "secondary": "information_exchange_dialogue"
+    },
+    "priority": {
+      "privacy": 0.8,
+      "comfort": 0.7,
+      "brand_display": 0.4,
+      "circulation": 0.2
+    },
+    "visualRules": {
+      "lighting": "focused_warm",
+      "material": "professional_neutral",
+      "density": "low"
+    },
+    "mustInclude": [
+      "consultation_seating",
+      "display_screen",
+      "sample_table"
+    ],
+    "mustExclude": [
+      "treatment_bed",
+      "open_public_traffic",
+      "checkout_counter"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}

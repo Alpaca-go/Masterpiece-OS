@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "consultation",
+  "label": "咨询区 / Consultation",
+  "role": {
+    "primary": "trust_building_zone",
+    "secondary": "information_exchange_dialogue"
+  },
+  "priority": {
+    "privacy": 0.8,
+    "comfort": 0.7,
+    "brand_display": 0.4,
+    "circulation": 0.2
+  },
+  "visual_rules": {
+    "lighting": "focused_warm",
+    "material": "professional_neutral",
+    "density": "low"
+  },
+  "functional_constraints": {
+    "must_include": ["consultation_seating", "display_screen", "sample_table"],
+    "must_exclude": ["treatment_bed", "open_public_traffic", "checkout_counter"],
+    "key_equipment": ["咨询桌椅", "信息屏", "样品台", "可选品牌物料"],
+    "human_traffic": "low_dyadic_flow"
+  },
+  "narrative_focus": "专业可信空间. 客户跟咨询师一对一深度对话. 中性专业材质 + 聚焦光, 让信息交换主导空间. 品牌表达克制, 通过'专业感'传递品牌信任度."
+}

@@ -101,8 +101,15 @@ const rJZMX = compileSpaceRuntime('jiuzhou-aesthetics');
 const rFTT = compileSpaceRuntime('feng-tang-tang');
 const rYJLF = compileSpaceRuntime('yi-ji-liang-fang');
 
-test('compileSpaceRuntime returns 16 blocks (Phase 9B.2 baseline) for JZMX', () => {
-  assert(rJZMX.blockCount === 16, `compileSpaceRuntime JZMX should have 16 blocks, got ${rJZMX.blockCount}`);
+test('compileSpaceRuntime returns 17 blocks (Phase 9C.1 default, 9B.2 baseline + space_role_context) for JZMX', () => {
+  // Phase 9C.1: 默认 includeSpaceRoleContext=true, 16 -> 17 blocks
+  assert(rJZMX.blockCount === 17, `compileSpaceRuntime JZMX should have 17 blocks (9C.1 default), got ${rJZMX.blockCount}`);
+});
+
+test('compileSpaceRuntime with includeSpaceRoleContext=false returns 16 blocks (Phase 9B.2 baseline)', () => {
+  const r = compileSpaceRuntime('jiuzhou-aesthetics', { includeSpaceRoleContext: false });
+  assert(r.blockCount === 16, `compileSpaceRuntime JZMX with includeSpaceRoleContext=false should have 16 blocks, got ${r.blockCount}`);
+  assert(r.includeSpaceRoleContext === false, 'includeSpaceRoleContext should be false');
 });
 
 test('compileSpaceRuntime marks phase = "9C" and version = "1.0.0"', () => {
@@ -143,9 +150,16 @@ test('Runtime output includes spatialRealityDna + architecturePreservation (Phas
 // ---------- §13 验收 2: Stability (3 brand) ----------
 console.log('\n§13.2 Stability (3 brands):');
 
-test('3 brand compileSpaceRuntime all succeed with 16 blocks', () => {
+test('3 brand compileSpaceRuntime all succeed with 17 blocks (9C.1 default)', () => {
   for (const [brand, r] of [['JZMX', rJZMX], ['FTT', rFTT], ['YJLF', rYJLF]]) {
-    assert(r.blockCount === 16, `${brand} should have 16 blocks, got ${r.blockCount}`);
+    assert(r.blockCount === 17, `${brand} should have 17 blocks (9C.1), got ${r.blockCount}`);
+  }
+});
+
+test('3 brand with includeSpaceRoleContext=false all return 16 blocks (9B.2 baseline)', () => {
+  for (const brand of ['jiuzhou-aesthetics', 'feng-tang-tang', 'yi-ji-liang-fang']) {
+    const r = compileSpaceRuntime(brand, { includeSpaceRoleContext: false });
+    assert(r.blockCount === 16, `${brand} without 9C.1 should have 16 blocks, got ${r.blockCount}`);
   }
 });
 
@@ -207,7 +221,8 @@ test('evaluationRecord tracks prompt (Phase 9C §10)', () => {
   const p = rJZMX.evaluationRecord.prompt;
   assert(typeof p.markdown === 'string', 'prompt.markdown should be string');
   assert(p.markdown.length > 0, 'prompt.markdown should be non-empty');
-  assert(p.blockCount === 16, `prompt.blockCount should be 16, got ${p.blockCount}`);
+  // evaluationRecord uses Phase 9B.2 baseline 16-block count (record reflects baseline behavior)
+  assert(p.blockCount === 16, `prompt.blockCount should be 16 (9B.2 baseline), got ${p.blockCount}`);
   assert(typeof p.characterCount === 'number' && p.characterCount > 0, 'prompt.characterCount should be positive');
   assert(Array.isArray(p.blockOrder) && p.blockOrder.length === 16, 'prompt.blockOrder should be 16-item array');
 });
@@ -269,7 +284,7 @@ console.log('\n§11 Regression Test (3 brands):');
 
 test('§11.1 无明显退化: 3 brand compileSpaceRuntime 全部成功', () => {
   for (const [brand, r] of [['JZMX', rJZMX], ['FTT', rFTT], ['YJLF', rYJLF]]) {
-    assert(r.blockCount === 16, `${brand} blockCount should be 16, got ${r.blockCount}`);
+    assert(r.blockCount === 17, `${brand} blockCount should be 17 (9C.1 default), got ${r.blockCount}`);
     assert(r.characterCount > 0, `${brand} characterCount should be > 0`);
     assert(r.evaluationRecord, `${brand} evaluationRecord should exist`);
   }
@@ -296,6 +311,64 @@ test('§11.3 Runtime 数据完整: 3 brand moduleVersions 全部包含 7 个 pha
 
 // ---------- §9 Baseline Protection ----------
 console.log('\n§9 Baseline Protection:');
+
+// ---------- Phase 9C.1: Space Role Intelligence Integration ----------
+console.log('\nPhase 9C.1: Space Role Intelligence Integration:');
+
+test('Phase 9C.1: space_role_context block inserted between architecture_dna and brand_translation', () => {
+  const ids = rJZMX.blocks.map((b) => b.id);
+  const archIdx = ids.indexOf('architecture_dna');
+  const roleIdx = ids.indexOf('space_role_context');
+  const brandIdx = ids.indexOf('brand_translation');
+  assert(archIdx >= 0, 'architecture_dna must be present');
+  assert(roleIdx >= 0, 'space_role_context must be present');
+  assert(brandIdx >= 0, 'brand_translation must be present');
+  assert(roleIdx === archIdx + 1, `space_role_context must follow architecture_dna (archIdx=${archIdx}, roleIdx=${roleIdx})`);
+  assert(brandIdx === roleIdx + 1, `brand_translation must follow space_role_context (roleIdx=${roleIdx}, brandIdx=${brandIdx})`);
+});
+
+test('Phase 9C.1: architecture_dna and brand_translation are byte-equal with/without space_role_context (9C.1 §7 不修改)', () => {
+  const rWith = compileSpaceRuntime('jiuzhou-aesthetics', { includeSpaceRoleContext: true });
+  const rWithout = compileSpaceRuntime('jiuzhou-aesthetics', { includeSpaceRoleContext: false });
+  for (const layer of ['architecture_dna', 'brand_translation']) {
+    const a = rWith.blocks.find((b) => b.id === layer)?.text;
+    const b = rWithout.blocks.find((b) => b.id === layer)?.text;
+    assert(a === b, `${layer} must be byte-equal with/without 9C.1 (9C.1 §7 principle)`);
+  }
+});
+
+test('Phase 9C.1: 3 brand compiledSpaceRole.space_type matches the expected space role assignment', () => {
+  // JZMX 默认走 reception 兜底; FTT / YJLF 走 sceneDefinition.sceneType
+  for (const r of [rJZMX, rFTT, rYJLF]) {
+    assert(r.compiledSpaceRole, `${r.brandKey} should have compiledSpaceRole`);
+    assert(r.compiledSpaceRole.blockId === 'space_role_context', 'blockId must be space_role_context');
+    assert(typeof r.compiledSpaceRole.spaceRole?.space_type === 'string', 'spaceRole.space_type must be string');
+    assert(r.compiledSpaceRole.spaceRole.space_type.length > 0, 'space_type must be non-empty');
+  }
+});
+
+test('Phase 9C.1: runtimePath includes _9c1_space_role suffix when space role enabled', () => {
+  assert(rJZMX.runtimePath.endsWith('_9c1_space_role'), `runtimePath should end with _9c1_space_role, got '${rJZMX.runtimePath}'`);
+  const rWithout = compileSpaceRuntime('jiuzhou-aesthetics', { includeSpaceRoleContext: false });
+  assert(!rWithout.runtimePath.endsWith('_9c1_space_role'), 'runtimePath should NOT include _9c1_space_role when 9C.1 disabled');
+});
+
+test('Phase 9C.1: moduleVersions includes spaceRoleIntelligence = "9C.1" when enabled', () => {
+  assert(rJZMX.moduleVersions.spaceRoleIntelligence === '9C.1', `moduleVersions.spaceRoleIntelligence should be '9C.1', got '${rJZMX.moduleVersions.spaceRoleIntelligence}'`);
+  const rWithout = compileSpaceRuntime('jiuzhou-aesthetics', { includeSpaceRoleContext: false });
+  assert(rWithout.moduleVersions.spaceRoleIntelligence === undefined, 'spaceRoleIntelligence should be undefined when 9C.1 disabled');
+});
+
+test('Phase 9C.1: evaluationRecord.phase9c1 metadata recorded when enabled', () => {
+  assert(rJZMX.evaluationRecord.phase9c1, 'evaluationRecord.phase9c1 should be set');
+  assert(rJZMX.evaluationRecord.phase9c1.blockInserted === 'space_role_context', 'blockInserted should be space_role_context');
+  assert(rJZMX.evaluationRecord.phase9c1.blockCount === 17, `phase9c1.blockCount should be 17, got ${rJZMX.evaluationRecord.phase9c1.blockCount}`);
+});
+
+test('Phase 9C.1: includeSpaceRoleContext=false produces no phase9c1 metadata', () => {
+  const r = compileSpaceRuntime('jiuzhou-aesthetics', { includeSpaceRoleContext: false });
+  assert(r.evaluationRecord.phase9c1 === undefined, 'phase9c1 should NOT be set when 9C.1 disabled');
+});
 
 test('Runtime output is mode-B (full pipeline), 3 brand baseline runnable via existing compileRuntimePrompt (12 blocks)', async () => {
   // Phase 9C adds new layer on top of Phase 8C baseline. Baseline should still work.

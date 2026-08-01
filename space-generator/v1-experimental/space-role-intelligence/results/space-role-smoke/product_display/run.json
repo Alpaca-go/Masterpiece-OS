@@ -1,0 +1,38 @@
+{
+  "spaceType": "product_display",
+  "blockCount": 17,
+  "characterCount": 12663,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 978,
+    "role": {
+      "primary": "brand_catalog_zone",
+      "secondary": "visual_merchandising"
+    },
+    "priority": {
+      "privacy": 0.2,
+      "comfort": 0.4,
+      "brand_display": 0.85,
+      "circulation": 0.5
+    },
+    "visualRules": {
+      "lighting": "focused_spotlight",
+      "material": "display_neutral",
+      "density": "medium"
+    },
+    "mustInclude": [
+      "product_wall",
+      "counter",
+      "trial_zone_or_fitting_room"
+    ],
+    "mustExclude": [
+      "treatment_bed",
+      "private_consultation_room"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}

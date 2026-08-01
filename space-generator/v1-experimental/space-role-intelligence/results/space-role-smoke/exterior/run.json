@@ -1,0 +1,38 @@
+{
+  "spaceType": "exterior",
+  "blockCount": 17,
+  "characterCount": 12646,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 970,
+    "role": {
+      "primary": "street_brand_signal",
+      "secondary": "first_brand_impression"
+    },
+    "priority": {
+      "privacy": 0.1,
+      "comfort": 0.2,
+      "brand_display": 0.95,
+      "circulation": 0.7
+    },
+    "visualRules": {
+      "lighting": "day_natural_lit",
+      "material": "architectural_facade",
+      "density": "medium"
+    },
+    "mustInclude": [
+      "facade",
+      "entrance",
+      "signage_area"
+    ],
+    "mustExclude": [
+      "interior_furniture",
+      "treatment_equipment"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}

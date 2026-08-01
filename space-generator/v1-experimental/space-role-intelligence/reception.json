@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "reception",
+  "label": "接待区 / Reception",
+  "role": {
+    "primary": "first_impression_zone",
+    "secondary": "brand_disclosure"
+  },
+  "priority": {
+    "privacy": 0.3,
+    "comfort": 0.6,
+    "brand_display": 0.85,
+    "circulation": 0.5
+  },
+  "visual_rules": {
+    "lighting": "bright_welcoming",
+    "material": "signature_brand_surface",
+    "density": "medium"
+  },
+  "functional_constraints": {
+    "must_include": ["reception_desk", "brand_wall", "waiting_area"],
+    "must_exclude": ["treatment_bed", "private_consultation_room", "enclosed_capsule"],
+    "key_equipment": ["接待台", "品牌展示墙", "等候座椅", "引导动线"],
+    "human_traffic": "high_reception_flow"
+  },
+  "narrative_focus": "客户第一接触点. 5 秒内理解品牌身份 + 接待节奏. 信息密度中等, 强调品牌空间表达 + 高效接待."
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "treatment",
+  "label": "治疗区 / Treatment",
+  "role": {
+    "primary": "functional_precision_zone",
+    "secondary": "healing_restoration"
+  },
+  "priority": {
+    "privacy": 0.95,
+    "comfort": 0.7,
+    "brand_display": 0.2,
+    "circulation": 0.1
+  },
+  "visual_rules": {
+    "lighting": "soft_controlled",
+    "material": "clinical_premium",
+    "density": "low"
+  },
+  "functional_constraints": {
+    "must_include": ["treatment_bed", "medical_or_professional_equipment", "wash_station"],
+    "must_exclude": ["open_public_traffic", "product_wall", "brand_wall", "reception_desk"],
+    "key_equipment": ["治疗床", "专业设备", "洗手台", "医疗级软装", "隔音"],
+    "human_traffic": "low_dyadic_flow"
+  },
+  "narrative_focus": "功能核心区. 客户在最高隐私 + 设备精度 + 治愈氛围中接受服务. 品牌表达退到最弱, 通过'专业感+治愈感'建立深层品牌信任. 设备 / 卫生 / 隐私是硬约束."
+}

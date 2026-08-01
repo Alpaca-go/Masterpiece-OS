@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "corridor",
+  "label": "走廊 / Corridor",
+  "role": {
+    "primary": "circulation_path",
+    "secondary": "spatial_narrative_pacing"
+  },
+  "priority": {
+    "privacy": 0.3,
+    "comfort": 0.4,
+    "brand_display": 0.5,
+    "circulation": 0.95
+  },
+  "visual_rules": {
+    "lighting": "rhythmic_guided",
+    "material": "narrative_progression",
+    "density": "low"
+  },
+  "functional_constraints": {
+    "must_include": ["circulation_path", "rhythmic_lighting"],
+    "must_exclude": ["destination_seating", "treatment_bed", "open_lounge"],
+    "key_equipment": ["节律引导灯", "可选墙艺", "门廊过渡", "可选自然光井"],
+    "human_traffic": "transit_flow"
+  },
+  "narrative_focus": "空间叙事节奏. 引导客户从公共到私密 (或反之). 走廊是'呼吸空间', 客户在走动中潜意识准备进入下一个空间. 光线节律 + 材质过渡 + 视觉收口."
+}

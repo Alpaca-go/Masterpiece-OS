@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "product_display",
+  "label": "产品陈列区 / Product Display",
+  "role": {
+    "primary": "brand_catalog_zone",
+    "secondary": "visual_merchandising"
+  },
+  "priority": {
+    "privacy": 0.2,
+    "comfort": 0.4,
+    "brand_display": 0.85,
+    "circulation": 0.5
+  },
+  "visual_rules": {
+    "lighting": "focused_spotlight",
+    "material": "display_neutral",
+    "density": "medium"
+  },
+  "functional_constraints": {
+    "must_include": ["product_wall", "counter", "trial_zone_or_fitting_room"],
+    "must_exclude": ["treatment_bed", "private_consultation_room"],
+    "key_equipment": ["陈列墙", "柜台", "试用/试衣区", "聚焦射灯"],
+    "human_traffic": "medium_browse_flow"
+  },
+  "narrative_focus": "品牌商品化. 客户浏览 + 选择 + 试用. 商品是绝对主角, 空间是衬托. 强品牌展示 + 中等密度 + 商品可触达性."
+}

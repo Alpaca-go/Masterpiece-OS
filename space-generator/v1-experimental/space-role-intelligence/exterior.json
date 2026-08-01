@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.1",
+  "space_type": "exterior",
+  "label": "外立面 / Exterior",
+  "role": {
+    "primary": "street_brand_signal",
+    "secondary": "first_brand_impression"
+  },
+  "priority": {
+    "privacy": 0.1,
+    "comfort": 0.2,
+    "brand_display": 0.95,
+    "circulation": 0.7
+  },
+  "visual_rules": {
+    "lighting": "day_natural_lit",
+    "material": "architectural_facade",
+    "density": "medium"
+  },
+  "functional_constraints": {
+    "must_include": ["facade", "entrance", "signage_area"],
+    "must_exclude": ["interior_furniture", "treatment_equipment"],
+    "key_equipment": ["建筑立面", "入口", "品牌招牌", "可选橱窗", "可选外摆"],
+    "human_traffic": "street_passby"
+  },
+  "narrative_focus": "品牌第一街边信号. 路人 3-5 秒内识别品牌身份 + 入口位置. 强品牌立面 + 自然光主导 + 视觉穿透性. 内部隐私完全屏蔽."
+}

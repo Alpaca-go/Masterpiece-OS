@@ -1,0 +1,39 @@
+{
+  "spaceType": "lobby",
+  "blockCount": 17,
+  "characterCount": 12673,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 1001,
+    "role": {
+      "primary": "spatial_transition_hub",
+      "secondary": "brand_atmosphere_dissemination"
+    },
+    "priority": {
+      "privacy": 0.2,
+      "comfort": 0.5,
+      "brand_display": 0.7,
+      "circulation": 0.85
+    },
+    "visualRules": {
+      "lighting": "natural_indirect",
+      "material": "open_architectural",
+      "density": "low"
+    },
+    "mustInclude": [
+      "open_lounge",
+      "circulation_path",
+      "subtle_brand_signage"
+    ],
+    "mustExclude": [
+      "treatment_bed",
+      "consultation_desk",
+      "enclosed_capsule"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}

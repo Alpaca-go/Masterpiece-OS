@@ -1,0 +1,38 @@
+{
+  "spaceType": "corridor",
+  "blockCount": 17,
+  "characterCount": 12662,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 987,
+    "role": {
+      "primary": "circulation_path",
+      "secondary": "spatial_narrative_pacing"
+    },
+    "priority": {
+      "privacy": 0.3,
+      "comfort": 0.4,
+      "brand_display": 0.5,
+      "circulation": 0.95
+    },
+    "visualRules": {
+      "lighting": "rhythmic_guided",
+      "material": "narrative_progression",
+      "density": "low"
+    },
+    "mustInclude": [
+      "circulation_path",
+      "rhythmic_lighting"
+    ],
+    "mustExclude": [
+      "destination_seating",
+      "treatment_bed",
+      "open_lounge"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}

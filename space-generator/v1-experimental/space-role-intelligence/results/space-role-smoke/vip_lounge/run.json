@@ -1,0 +1,40 @@
+{
+  "spaceType": "vip_lounge",
+  "blockCount": 17,
+  "characterCount": 12717,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 1035,
+    "role": {
+      "primary": "premium_trust_zone",
+      "secondary": "emotional_comfort_recovery"
+    },
+    "priority": {
+      "privacy": 0.9,
+      "comfort": 0.85,
+      "brand_display": 0.5,
+      "circulation": 0.2
+    },
+    "visualRules": {
+      "lighting": "soft_warm",
+      "material": "premium_soft_surface",
+      "density": "low"
+    },
+    "mustInclude": [
+      "lounge_seating",
+      "tea_table",
+      "natural_lighting_or_warm_pendant"
+    ],
+    "mustExclude": [
+      "open_public_traffic",
+      "fitting_room",
+      "product_wall",
+      "checkout_counter"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}

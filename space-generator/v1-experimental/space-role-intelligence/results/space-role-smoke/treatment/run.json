@@ -1,0 +1,40 @@
+{
+  "spaceType": "treatment",
+  "blockCount": 17,
+  "characterCount": 12715,
+  "spaceRoleContext": {
+    "blockId": "space_role_context",
+    "characterCount": 1038,
+    "role": {
+      "primary": "functional_precision_zone",
+      "secondary": "healing_restoration"
+    },
+    "priority": {
+      "privacy": 0.95,
+      "comfort": 0.7,
+      "brand_display": 0.2,
+      "circulation": 0.1
+    },
+    "visualRules": {
+      "lighting": "soft_controlled",
+      "material": "clinical_premium",
+      "density": "low"
+    },
+    "mustInclude": [
+      "treatment_bed",
+      "medical_or_professional_equipment",
+      "wash_station"
+    ],
+    "mustExclude": [
+      "open_public_traffic",
+      "product_wall",
+      "brand_wall",
+      "reception_desk"
+    ]
+  },
+  "validation": {
+    "brandTranslationByteEqual": true,
+    "architectureDnaByteEqual": true,
+    "spaceRoleContextInCorrectPosition": true
+  }
+}
