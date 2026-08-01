@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://masterpiece-os.local/space-dna.schema.v0.1.json",
-  "title": "Space DNA",
-  "description": "Masterpiece OS Space Generator v1-experimental Space DNA 字段体系. v0.1 起步, 按 v1.0 §30 Phase 2 / §28 字段晋升规则迭代. 不动 v1-baseline 任何代码.",
+  "$id": "https://masterpiece-os.local/space-dna.schema.v1.1.json",
+  "title": "Space DNA v1.1",
+  "description": "Masterpiece OS Space Generator v1-experimental Space DNA 字段体系. v0.1 起步, v1.1 扩展. 按 v1.0 §30 Phase 2 / §28 字段晋升规则迭代 + v1.1 Architecture-Brand Fusion §5 字段调整. 不动 v1-baseline 任何代码. v1.1 新增: architectureDna 子结构 (ceilingMechanism/facadeMechanism/partitionMechanism/furnitureFormGrammar), brandTranslationRules, weightAllocation. v0.1 brandSpaceDna 保留向后兼容.",
   "type": "object",
   "required": [
     "schemaVersion",
@@ -126,7 +126,23 @@
           }
         },
         "boundaryHardness": { "type": "string", "enum": ["low", "medium", "high"] },
-        "statementStrength": { "type": "string", "enum": ["low", "medium", "high"] }
+        "statementStrength": { "type": "string", "enum": ["low", "medium", "high"] },
+        "ceilingMechanism": {
+          "type": "string",
+          "description": "v1.1 Architecture Anchor 抽取. 天花作为空间组织器的工作机制, e.g. '层叠半透明介质 + 上下层夹光'. 不要直接绑死具体物 (v1.0 §34 规则一)."
+        },
+        "facadeMechanism": {
+          "type": "string",
+          "description": "v1.1 Architecture Anchor 抽取. 建筑外立面作为街道-室内边界的工作机制, e.g. '窄框整面玻璃 + 短走廊缓冲'."
+        },
+        "partitionMechanism": {
+          "type": "string",
+          "description": "v1.1 Architecture Anchor 抽取. 内部柔性分区的工作机制, e.g. '从天花垂落的弧形膜切分工位'."
+        },
+        "furnitureFormGrammar": {
+          "type": "string",
+          "description": "v1.1 Architecture Anchor 抽取. 家具形式的语法 (不是具体物), e.g. '金属长方体 + 顶底发光缝'."
+        }
       }
     },
     "functionalDna": {
@@ -168,9 +184,70 @@
         }
       }
     },
+    "brandTranslationRules": {
+      "type": "object",
+      "description": "v1.1 §5 字段调整. 品牌转译规则: 品牌不是装饰, 必须翻译为空间机制. v0.1 brandSpaceDna 保留做向后兼容; v1.1+ DNA 推荐使用本字段, 不再直接列 motif 字面资产.",
+      "additionalProperties": false,
+      "properties": {
+        "spiritToSpaceMechanism": {
+          "type": "object",
+          "description": "5 个 brand_spirit 维度各自对应的空间机制. v1.1 §5 默认对应: scientific→精准结构, elegant→流动曲线, healing→..., futuristic→..., premium→留白与秩序.",
+          "additionalProperties": false,
+          "properties": {
+            "scientific": { "type": "string", "description": "scientific → 精准结构 (precise structure, modular geometry, controlled tolerance)" },
+            "elegant": { "type": "string", "description": "elegant → 流动曲线 (flowing curves, organic geometry)" },
+            "healing": { "type": "string", "description": "healing → 软边界 / 半透明 (soft boundary, translucent material, natural light)" },
+            "futuristic": { "type": "string", "description": "futuristic → 系统发光 / 嵌入光 (architectural glow, integrated light, no direct fixture)" },
+            "premium": { "type": "string", "description": "premium → 留白与秩序 (negative space, refined order, restrained palette)" }
+          }
+        },
+        "grammarToSpaceMechanism": {
+          "type": "object",
+          "description": "brand_grammar 5 维度各自对应的空间语言. v1.1 翻译层, 不直接绑死 grammar 数值.",
+          "additionalProperties": false,
+          "properties": {
+            "organicGrowth": { "type": "string" },
+            "visualLightness": { "type": "string" },
+            "controlledGlow": { "type": "string" },
+            "refinedOrder": { "type": "string" },
+            "decorativeDensity": { "type": "string" }
+          }
+        },
+        "motifToSpaceMechanism": {
+          "type": "array",
+          "description": "motif 不再是字面资产, 而是空间机制. 每条规则: 哪个 motif, 表达为什么空间机制, 是否禁止字面化. v1.0 §34 规则一/二/五 强制.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "motif": { "type": "string" },
+              "mechanism": { "type": "string", "description": "motif 在空间中的工作机制, 不是字面物" },
+              "literalAssetForbidden": { "type": "boolean", "default": true, "description": "true=禁止出现该 motif 的字面资产 (雕塑/挂画/装置)" }
+            }
+          }
+        },
+        "translationStrength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.7,
+          "description": "转译规则应用的强度. 0=不应用, 1=严格执行. v1.1 推荐 0.7."
+        }
+      }
+    },
+    "weightAllocation": {
+      "type": "object",
+      "description": "v1.1 §4 三层权重. 默认 0.5/0.3/0.2 = 建筑/品牌/功能. 禁止功能反向决定空间风格 (v1.1 §4 末尾).",
+      "additionalProperties": false,
+      "properties": {
+        "architecture": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.5 },
+        "brand": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.3 },
+        "functional": { "type": "number", "minimum": 0, "maximum": 1, "default": 0.2 }
+      }
+    },
     "brandSpaceDna": {
       "type": "object",
-      "description": "v1.0 §15. 品牌注入层, 必须拆为抽象层 (spirit) + 抽象语法 (grammar) + 候选资产 (motif_family) + 字面资产使用 (literal_asset_usage) + 强度 (injection_strength).",
+      "description": "v1.0 §15 品牌注入层, v1.1 起由 brandTranslationRules 替代. 保留以做 v0.1/v1.0 DNA 向后兼容; v1.1+ DNA 推荐使用 brandTranslationRules. 字段拆解: 抽象层 (spirit) + 抽象语法 (grammar) + 候选资产 (motif_family) + 字面资产使用 (literal_asset_usage) + 强度 (injection_strength).",
       "required": ["brandSpirit", "brandGrammar", "motifFamily", "literalAssetUsage", "injectionStrength"],
       "additionalProperties": false,
       "properties": {
