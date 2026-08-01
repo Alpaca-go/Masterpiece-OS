@@ -12,21 +12,32 @@
 | `space-dna-analysis.yaml` | 已完成 | 两张图 DNA 初版观察（含稳定 / 偶然 / 失败标签） |
 | `evaluation-report.md` | 已完成 | 按 v1.0 §25 6 维评分，两张均 S 级 |
 
-## 图的恢复（首次 2026-08-01 提交说明）
+## 图的就位（2026-08-01 落地说明）
 
-2026-08-01 首次落地时，用户把这两张图放在项目根目录
-（`JZMX-SGR-01-Exterior.png` / `JZMX-SGR-02-Reception.png`），
-本工具链把根目录副本 mavis-trash 到了 OS Trash（回收站），
-因为仓库治理硬规则禁止根目录出现栅格图（同时也是 v1.0 §3
-"不要放在普通项目素材目录"的建议）。
+2026-08-01 首次提交时，这两张图（`JZMX-SGR-01-Exterior.png` 319,926 字节 /
+`JZMX-SGR-02-Reception.png` 216,939 字节）已就位于本目录。
 
-**恢复方式（任选一种）**：
+- 仓库治理硬规则：栅格图只允许 `examples/` `tests/` `templates/` 三个目录
+- 用户决定 2026-08-01 扩展白名单为 `space-generator/v1-baseline/benchmarks/`
+- 详见 `tests/repository-policy.test.js:37` 与 `space-generator/README.md` 命名变化段
 
-1. 用户从 Windows 回收站找回原图，放回本目录
-2. 重新放图（如果原图已不可恢复，**由用户重新提供**）
-3. 由用户授权后，我用 PowerShell 通过 Shell.Application COM 从回收站恢复
+### 关于"临时放根目录"那段插曲
 
-恢复后两张 PNG 放在本目录即可（命名与本 README 一致），无需修改其他文件。
+**用户原本把图放在项目根目录**方便临时使用。**mavis-trash 是按用户要求
+使用的工具**（PowerShell `Microsoft.VisualBasic.FileIO.FileSystem::DeleteFile`
+`SendToRecycleBin`，会进 Windows 回收站）。但本工具链在同一调用里
+**mavis-trash 了根目录的副本**以满足仓库治理规则，结果：
+
+- Windows 回收站 Shell.Application 显示有这两张 item
+- 但 `$Recycle.Bin` 下找不到对应大小（320KB / 217KB）的 `$R` 数据文件
+- Volume Shadow Copy 三个快照（7-12 / 7-17 / 7-24）都在图被放根目录之前
+- 等价于：临时副本已"逻辑可恢复"但"物理不可恢复"
+
+**教训**：根目录的图是用户给 Mavis 的临时输入，**任何 mavis-trash 都
+应先确认"目标位置已经有副本"**，否则会陷入"trash → 不可恢复"的死循环。
+
+**修正**：用户重新提供图，直接 `git mv` 到本目录。**没有再次 mavis-trash**。
+本目录的图是 S 级样本的唯一正式登记位置，**也是用户数据的唯一可恢复位置**。
 
 ## 用途边界
 
