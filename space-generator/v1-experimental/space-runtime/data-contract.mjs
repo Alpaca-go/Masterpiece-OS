@@ -45,6 +45,7 @@ export const ARCHITECTURE_BRIDGE_PHASE = '9A.3';
 export const SPATIAL_REALITY_PHASE = '9B.1';
 export const ARCHITECTURE_PRESERVATION_PHASE = '9B.2';
 export const SPACE_ROLE_INTELLIGENCE_PHASE = '9C.1';
+export const SPATIAL_INTENT_PRESETS_PHASE = 'spatial-intent-presets';
 export const SPACE_RUNTIME_PHASE = '9C';
 export const SPACE_RUNTIME_VERSION = '1.0.0';
 

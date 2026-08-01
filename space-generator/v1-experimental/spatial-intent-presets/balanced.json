@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "spatial-intent-presets",
+  "preset": "balanced",
+  "label": "均衡模式 / Balanced",
+  "applicability": ["大部分商业空间项目"],
+  "designGoal": "平衡 Brand / Industry / Architecture / Material",
+  "isDefault": true,
+  "runtimeTendency": {
+    "balance": [
+      "Brand",
+      "Industry",
+      "Architecture",
+      "Material"
+    ]
+  },
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "balanced",
+    "referenceInfluence": "balanced",
+    "industryConstraint": "maintain"
+  },
+  "exampleBrands": ["feng-tang-tang", "yi-ji-liang-fang"],
+  "notes": [
+    "Doc §4 Mode 04 — 默认模式, 适用于大部分商业空间项目.",
+    "不强调任何单一 dim, 保持 4 维均衡. industryConstraint=maintain 永远不 drop 行业逻辑."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "spatial-intent-presets",
+  "preset": "architecture_driven",
+  "label": "建筑驱动 / Architecture Driven",
+  "applicability": ["医美", "酒店", "高端商业", "展厅"],
+  "designGoal": "让空间设计本身成为核心",
+  "runtimeTendency": {
+    "enhance": [
+      "Architecture Language",
+      "Spatial Structure",
+      "Material Expression",
+      "Lighting Behavior"
+    ],
+    "maintain": [
+      "Brand Identity",
+      "Functional Reality"
+    ]
+  },
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "dominant",
+    "referenceInfluence": "low",
+    "industryConstraint": "maintain"
+  },
+  "exampleBrands": ["jiuzhou-aesthetics"],
+  "notes": [
+    "Doc §4 Mode 02 — 强化建筑秩序 / 材质高级感 / 空间仪式感.",
+    "Prompt 层加 'Prioritize architectural composition, material hierarchy, spatial proportion, lighting structure, while maintaining brand identity and functional realism.' (per doc §7 example).",
+    "九州美学 强化膜天花 / 半透膜 / 微水泥 / 边缘光带, brand identity (九州美学 logo / purple ambient) 保持 balanced."
+  ]
+}

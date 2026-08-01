@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "spatial-intent-presets",
+  "preset": "brand_driven",
+  "label": "品牌驱动 / Brand Driven",
+  "applicability": ["潮流餐饮", "零售品牌", "IP空间", "快闪店"],
+  "designGoal": "让空间成为品牌体验的一部分",
+  "runtimeTendency": {
+    "enhance": [
+      "Brand Identity",
+      "Visual Signature",
+      "Brand Story Translation"
+    ],
+    "maintain": [
+      "Industry Logic",
+      "Spatial Reality",
+      "Basic Architecture Quality"
+    ]
+  },
+  "intent": {
+    "brandExpression": "dominant",
+    "architectureExpression": "balanced",
+    "referenceInfluence": "low",
+    "industryConstraint": "maintain"
+  },
+  "exampleBrands": ["wa-ye"],
+  "notes": [
+    "Doc §4 Mode 01 — 强化 IP / 品牌色 / 年轻气质 / 视觉识别, 避免普通餐饮模板化.",
+    "WayE 强化蛙 IP + 紫绿黄撞色 + 商场灯箱可见度, 不强化建筑/材质细节."
+  ]
+}

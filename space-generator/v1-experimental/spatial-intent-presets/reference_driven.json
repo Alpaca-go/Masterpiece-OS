@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "spatial-intent-presets",
+  "preset": "reference_driven",
+  "label": "参考驱动 / Reference Driven",
+  "applicability": ["用户拥有明确空间参考"],
+  "designGoal": "将参考图中的空间语言转译到当前品牌",
+  "runtimeTendency": {
+    "learn": [
+      "Composition",
+      "Spatial Grammar",
+      "Lighting Language",
+      "Material Language"
+    ],
+    "forbiddenCopy": [
+      "Logo",
+      "文案",
+      "原品牌资产",
+      "行业属性"
+    ]
+  },
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "balanced",
+    "referenceInfluence": "dominant",
+    "industryConstraint": "maintain"
+  },
+  "corePrinciple": "Reference = Design Mechanism (不是 Object Copy)",
+  "notes": [
+    "Doc §4 Mode 03 — 学参考图的 composition / spatial grammar / lighting / material 4 维机制.",
+    "禁止复刻: logo / 文案 / 原品牌资产 / 行业属性 (per doc §4 禁止复制).",
+    "Phase 9C.0.5 §3 跟 §10 不替代 Creative Decision 原则保持: reference 仍是 design mechanism, 不强迫用户暴露权重."
+  ]
+}
