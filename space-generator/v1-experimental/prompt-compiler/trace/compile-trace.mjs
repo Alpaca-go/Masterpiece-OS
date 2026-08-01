@@ -28,8 +28,21 @@ const validateTrace = ajv.compile(JSON.parse(readFileSync(SCHEMA_PATH, 'utf8')))
 export function dnaFingerprint(dna) {
   const { dnaVersion, metadata, ...rest } = dna;
   const stable = { ...rest, dnaVersion: rest.dnaVersion };
-  const json = JSON.stringify(stable, Object.keys(stable).sort());
+  const json = stableStringify(stable);
   return crypto.createHash('sha256').update(json).digest('hex').slice(0, 32);
+}
+
+/**
+ * 稳定 JSON 序列化: 递归按 key 排序, 但不做 JSON.stringify replacer array 的过滤
+ * (后者会递归过滤嵌套 keys, 导致 dnaFingerprint 永远一样).
+ */
+function stableStringify(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) {
+    return '[' + value.map(stableStringify).join(',') + ']';
+  }
+  const keys = Object.keys(value).sort();
+  return '{' + keys.map((k) => JSON.stringify(k) + ':' + stableStringify(value[k])).join(',') + '}';
 }
 
 /**
@@ -186,7 +199,7 @@ export function compileTrace(input) {
 // ---------- CLI ----------
 // 直接运行: node compile-trace.mjs <dna.json> <sources.json> <output.json>
 
-if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
+if (process.argv[1] && import.meta.url === `file:///${process.argv[1].replace(/\\/g, '/')}`) {
   const args = process.argv.slice(2);
   if (args.length !== 3) {
     console.error('Usage: node compile-trace.mjs <dna.json> <sources.json> <output.json>');

@@ -1,0 +1,153 @@
+{
+  "schemaVersion": "1.0",
+  "projectIdLocal": "a7a56ed7-849f-4671-b47a-466394d7298d",
+  "scenes": [
+    {
+      "id": "JZMX-EXTERIOR",
+      "name": "门店外立面",
+      "sceneType": "exterior",
+      "sceneSubtype": "flagship_storefront",
+      "commercialContext": "street_store",
+      "scale": "medium",
+      "areaSqm": null,
+      "requiredZones": [
+        "facade",
+        "entrance",
+        "signage_area"
+      ],
+      "optionalZones": [
+        "window_display",
+        "outdoor_lighting"
+      ],
+      "notes": "JZMX-SGR-01 Exterior 已登记为 S 级 baseline. 8 空间里第 1 个, 是建筑语言第一观察点."
+    },
+    {
+      "id": "JZMX-RECEPTION",
+      "name": "前台接待区",
+      "sceneType": "reception",
+      "sceneSubtype": "flagship_clinic_reception",
+      "commercialContext": "street_store",
+      "scale": "medium",
+      "areaSqm": 60,
+      "requiredZones": [
+        "reception_desk",
+        "waiting_area",
+        "brand_wall",
+        "consultation_guidance"
+      ],
+      "optionalZones": [
+        "product_display",
+        "art_installation"
+      ],
+      "notes": "JZMX-SGR-02 Reception 已登记为 S 级 baseline. v1.0 §11-§21 字段初版都基于此."
+    },
+    {
+      "id": "JZMX-LOBBY",
+      "name": "品牌形象大厅",
+      "sceneType": "other",
+      "sceneSubtype": "brand_lobby",
+      "commercialContext": "flagship",
+      "scale": "large",
+      "areaSqm": 200,
+      "requiredZones": [
+        "brand_wall",
+        "open_lounge",
+        "consultation_pods"
+      ],
+      "optionalZones": [
+        "art_installation",
+        "tea_bar"
+      ],
+      "notes": "DNA schema enum 暂无 'lobby', 用 'other' + subtype. v0.2 加 lobby enum."
+    },
+    {
+      "id": "JZMX-PRODUCT-DISPLAY",
+      "name": "产品陈列区",
+      "sceneType": "product_display",
+      "sceneSubtype": "retail_pharmacy",
+      "commercialContext": "street_store",
+      "scale": "small",
+      "areaSqm": 30,
+      "requiredZones": [
+        "display_wall",
+        "counter",
+        "consultation_corner"
+      ],
+      "optionalZones": [
+        "consultation_pods"
+      ],
+      "notes": "v1.0 §21 禁止 'overdecorated_reception' 同样适用 product_display. 材质克制."
+    },
+    {
+      "id": "JZMX-CONSULTATION",
+      "name": "咨询区",
+      "sceneType": "consultation",
+      "sceneSubtype": "private_consultation_room",
+      "commercialContext": "street_store",
+      "scale": "small",
+      "areaSqm": 20,
+      "requiredZones": [
+        "consultation_seating",
+        "display_screen",
+        "sample_table"
+      ],
+      "optionalZones": [
+        "natural_lighting"
+      ],
+      "notes": "v1.0 §14 privacy.treatmentZone = enclosed 适用. 安静/信任/专业."
+    },
+    {
+      "id": "JZMX-VIP-LOUNGE",
+      "name": "VIP休息区",
+      "sceneType": "vip_lounge",
+      "sceneSubtype": "private_vip_lounge",
+      "commercialContext": "flagship",
+      "scale": "medium",
+      "areaSqm": 50,
+      "requiredZones": [
+        "lounge_seating",
+        "tea_table",
+        "natural_lighting"
+      ],
+      "optionalZones": [
+        "art_installation"
+      ],
+      "notes": "v1.0 §13 boundaryLanguage.enclosure = soft. 高度商业转化空间."
+    },
+    {
+      "id": "JZMX-CORRIDOR",
+      "name": "走廊与过渡空间",
+      "sceneType": "corridor",
+      "sceneSubtype": "transition_corridor",
+      "commercialContext": "street_store",
+      "scale": "small",
+      "areaSqm": 15,
+      "requiredZones": [
+        "circulation_path"
+      ],
+      "optionalZones": [
+        "wall_art",
+        "lighting_feature"
+      ],
+      "notes": "v1.0 §20 vary.room_layout 重要. 6 张图必须避免 6 张同构."
+    },
+    {
+      "id": "JZMX-TREATMENT",
+      "name": "诊疗室",
+      "sceneType": "treatment",
+      "sceneSubtype": "treatment_room",
+      "commercialContext": "flagship",
+      "scale": "small",
+      "areaSqm": 25,
+      "requiredZones": [
+        "treatment_bed",
+        "medical_equipment",
+        "wash_station"
+      ],
+      "optionalZones": [
+        "natural_lighting"
+      ],
+      "notes": "v1.0 §14 medical_compliance_expression.visible_but_not_hospital_like = true. 医疗感但不医院化."
+    }
+  ]
+}
