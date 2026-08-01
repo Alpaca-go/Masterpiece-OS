@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T10:48:30.232Z",
+  "phase": "9B",
+  "brandKey": "feng-tang-tang",
+  "modeA": {
+    "blockCount": 12,
+    "characterCount": 5281,
+    "runtimePath": "anchor_aware_8a_8b1",
+    "blockOrder": [
+      "task",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ]
+  },
+  "modeB": {
+    "blockCount": 14,
+    "characterCount": 6634,
+    "runtimePath": "spatial_intelligence_9a2_9a3_8a_8b1",
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "compiledSpatialIntent": {
+      "experienceGoal": "创造可信赖的、围绕食物制作的日常餐饮体验",
+      "spatialStrategy": [
+        "visible process",
+        "warm material",
+        "social interaction"
+      ],
+      "architecturalImplications": [
+        "需要 production 区域作为视觉中心",
+        "客人能看见生产过程, 不需要菜单就能感知今天的菜",
+        "自然光主导, 不用嵌入光带"
+      ],
+      "functionRelationship": [
+        "production 区域: 客人能直接看到生产过程",
+        "dining 区域: 围绕 production 排布, 不是隔开",
+        "menu: 不需要菜单也能感知今天的菜",
+        "门口: 客人能直接看到 production 区域 (开放厨房)",
+        "等位: 客人能看到菜单或菜, 不是空的",
+        "落座: 客人与 staff 之间有自然接触"
+      ],
+      "constraints": [
+        "avoid sterile high-end atmosphere",
+        "avoid entertainment atmosphere",
+        "avoid abstract art museum feeling",
+        "avoid hidden kitchen",
+        "avoid menu-only ordering without visual food",
+        "avoid sterile dining",
+        "avoid high-end fine dining"
+      ],
+      "weight": 0.25
+    },
+    "architectureLanguage": {
+      "spatialPrinciples": [
+        "human scale",
+        "visible process",
+        "warm interaction"
+      ],
+      "architecturalCharacteristics": [
+        "human scale",
+        "process visibility",
+        "warm enclosure"
+      ],
+      "materialDirection": [
+        "warm surface",
+        "natural texture"
+      ],
+      "lightDirection": [
+        "natural daylight primary",
+        "warm ambient secondary"
+      ],
+      "spatialOrganization": [
+        "process-as-anchor layout",
+        "dining circulation around production"
+      ],
+      "weight": 0.25
+    }
+  },
+  "diff": {
+    "blockDiff": 2,
+    "charDiff": 1353,
+    "charDiffRatio": 25.6
+  }
+}

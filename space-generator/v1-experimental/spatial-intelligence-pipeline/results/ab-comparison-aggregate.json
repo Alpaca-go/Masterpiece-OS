@@ -1,0 +1,349 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T10:48:30.236Z",
+  "phase": "9B",
+  "title": "Phase 9B Spatial Intelligence Pipeline A/B Comparison (text-level)",
+  "brands": {
+    "jiuzhou-aesthetics": {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-08-01T10:48:30.226Z",
+      "phase": "9B",
+      "brandKey": "jiuzhou-aesthetics",
+      "modeA": {
+        "blockCount": 12,
+        "characterCount": 7255,
+        "runtimePath": "anchor_aware_8a_8b1",
+        "blockOrder": [
+          "task",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ]
+      },
+      "modeB": {
+        "blockCount": 14,
+        "characterCount": 8698,
+        "runtimePath": "spatial_intelligence_9a2_9a3_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ],
+        "compiledSpatialIntent": {
+          "experienceGoal": "创造低压力、高信任的专业医疗体验",
+          "spatialStrategy": [
+            "soft boundary",
+            "balanced openness",
+            "low stimulation lighting"
+          ],
+          "architecturalImplications": [
+            "需要连续边界和柔性空间关系",
+            "视觉连续优先于硬隔断",
+            "声压差弱屏蔽替代完全封闭"
+          ],
+          "functionRelationship": [
+            "咨询区域: 需要私密性 + 可见性平衡 + 信任建立",
+            "等候区域: 客人感到被接住, 不是冷漠",
+            "专业区域: 渐进式私密, 不出现硬门",
+            "入口区域: 需要可见性但不侵入 (透明边界)",
+            "接待区域: 需要 staff 立即可见但不打扰",
+            "专业区域: 需要渐进式私密性, 不出现硬门"
+          ],
+          "constraints": [
+            "avoid excessive decoration",
+            "avoid entertainment atmosphere",
+            "avoid lock-and-key doors",
+            "avoid exhibition-only spaces",
+            "avoid hospital corridor",
+            "avoid cold clinical feeling"
+          ],
+          "weight": 0.25
+        },
+        "architectureLanguage": {
+          "spatialPrinciples": [
+            "gradual transition",
+            "controlled openness",
+            "balanced privacy",
+            "continuous space",
+            "soft boundary",
+            "controlled transparency"
+          ],
+          "architecturalCharacteristics": [
+            "continuous spatial flow",
+            "soft boundary",
+            "quiet hierarchy"
+          ],
+          "materialDirection": [
+            "calm mineral texture",
+            "natural translucent surface"
+          ],
+          "lightDirection": [
+            "indirect illumination",
+            "soft natural transition"
+          ],
+          "spatialOrganization": [
+            "gradual privacy transition",
+            "clear user circulation"
+          ],
+          "weight": 0.25
+        }
+      },
+      "diff": {
+        "blockDiff": 2,
+        "charDiff": 1443,
+        "charDiffRatio": 19.9
+      }
+    },
+    "feng-tang-tang": {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-08-01T10:48:30.232Z",
+      "phase": "9B",
+      "brandKey": "feng-tang-tang",
+      "modeA": {
+        "blockCount": 12,
+        "characterCount": 5281,
+        "runtimePath": "anchor_aware_8a_8b1",
+        "blockOrder": [
+          "task",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ]
+      },
+      "modeB": {
+        "blockCount": 14,
+        "characterCount": 6634,
+        "runtimePath": "spatial_intelligence_9a2_9a3_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ],
+        "compiledSpatialIntent": {
+          "experienceGoal": "创造可信赖的、围绕食物制作的日常餐饮体验",
+          "spatialStrategy": [
+            "visible process",
+            "warm material",
+            "social interaction"
+          ],
+          "architecturalImplications": [
+            "需要 production 区域作为视觉中心",
+            "客人能看见生产过程, 不需要菜单就能感知今天的菜",
+            "自然光主导, 不用嵌入光带"
+          ],
+          "functionRelationship": [
+            "production 区域: 客人能直接看到生产过程",
+            "dining 区域: 围绕 production 排布, 不是隔开",
+            "menu: 不需要菜单也能感知今天的菜",
+            "门口: 客人能直接看到 production 区域 (开放厨房)",
+            "等位: 客人能看到菜单或菜, 不是空的",
+            "落座: 客人与 staff 之间有自然接触"
+          ],
+          "constraints": [
+            "avoid sterile high-end atmosphere",
+            "avoid entertainment atmosphere",
+            "avoid abstract art museum feeling",
+            "avoid hidden kitchen",
+            "avoid menu-only ordering without visual food",
+            "avoid sterile dining",
+            "avoid high-end fine dining"
+          ],
+          "weight": 0.25
+        },
+        "architectureLanguage": {
+          "spatialPrinciples": [
+            "human scale",
+            "visible process",
+            "warm interaction"
+          ],
+          "architecturalCharacteristics": [
+            "human scale",
+            "process visibility",
+            "warm enclosure"
+          ],
+          "materialDirection": [
+            "warm surface",
+            "natural texture"
+          ],
+          "lightDirection": [
+            "natural daylight primary",
+            "warm ambient secondary"
+          ],
+          "spatialOrganization": [
+            "process-as-anchor layout",
+            "dining circulation around production"
+          ],
+          "weight": 0.25
+        }
+      },
+      "diff": {
+        "blockDiff": 2,
+        "charDiff": 1353,
+        "charDiffRatio": 25.6
+      }
+    },
+    "yi-ji-liang-fang": {
+      "schemaVersion": "1.0",
+      "generatedAt": "2026-08-01T10:48:30.235Z",
+      "phase": "9B",
+      "brandKey": "yi-ji-liang-fang",
+      "modeA": {
+        "blockCount": 12,
+        "characterCount": 5401,
+        "runtimePath": "anchor_aware_8a_8b1",
+        "blockOrder": [
+          "task",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ]
+      },
+      "modeB": {
+        "blockCount": 14,
+        "characterCount": 6872,
+        "runtimePath": "spatial_intelligence_9a2_9a3_8a_8b1",
+        "blockOrder": [
+          "task",
+          "spatial_intent",
+          "architecture_language",
+          "architecture_context",
+          "architecture_function_bridge",
+          "architectural_concept",
+          "architecture_dna",
+          "brand_translation",
+          "functional_requirement",
+          "material",
+          "lighting",
+          "composition",
+          "rendering",
+          "negative_constraints"
+        ],
+        "compiledSpatialIntent": {
+          "experienceGoal": "创造慢节奏的、可被理解的中医调理体验",
+          "spatialStrategy": [
+            "calm rhythm",
+            "soft boundary with traditional elements",
+            "natural diffused light"
+          ],
+          "architecturalImplications": [
+            "需要软边界替代硬隔断",
+            "纸窗或木格分区, 不用玻璃幕墙",
+            "客人和 staff 之间有非正式接触空间 (茶角)"
+          ],
+          "functionRelationship": [
+            "茶角: 客人与 staff 之间有非正式接触空间",
+            "herbal display: 不是装饰, 是品牌内容物",
+            "consultation: 中医桌 + 中草药 + 茶水, 不是医疗桌",
+            "入口: 慢节奏过渡, 眼睛先慢下来",
+            "等候: 有 herbal display 或茶, 不是空的",
+            "咨询: 桌 + 椅 + 1-2 件办公用品, 不是纯装置"
+          ],
+          "constraints": [
+            "avoid medical clinical feeling",
+            "avoid restaurant density",
+            "avoid excessive decoration",
+            "avoid modern minimal cold",
+            "avoid medical clinical",
+            "avoid spa atmosphere",
+            "avoid modern museum cold",
+            "avoid medical compliance symbol",
+            "avoid spa luxury",
+            "avoid entertainment atmosphere"
+          ],
+          "weight": 0.25
+        },
+        "architectureLanguage": {
+          "spatialPrinciples": [
+            "layered privacy",
+            "natural material relationship",
+            "quiet circulation",
+            "natural materials",
+            "calm circulation"
+          ],
+          "architecturalCharacteristics": [
+            "layered privacy gradient",
+            "diffused natural light",
+            "quiet enclosure"
+          ],
+          "materialDirection": [
+            "natural wood surface",
+            "paper or fabric soft partition"
+          ],
+          "lightDirection": [
+            "soft natural transition",
+            "diffused light through paper"
+          ],
+          "spatialOrganization": [
+            "layered privacy transition",
+            "consultation circulation"
+          ],
+          "weight": 0.25
+        }
+      },
+      "diff": {
+        "blockDiff": 2,
+        "charDiff": 1471,
+        "charDiffRatio": 27.2
+      }
+    }
+  },
+  "summary": {
+    "totalBrands": 3,
+    "modeAPath": "anchor_aware_8a_8b1 (Phase 8A + 8B.1)",
+    "modeBPath": "spatial_intelligence_9a2_9a3_8a_8b1 (Phase 9A.2 + 9A.3 + 8A + 8B.1)",
+    "modeAAdapter": "compileRuntimePromptModeA",
+    "modeBAdapter": "compileRuntimePromptWithSpatialIntelligence"
+  },
+  "notes": [
+    "Mode A = Previous Pipeline (Phase 8C compileRuntimePrompt, 12 块 anchor-aware)",
+    "Mode B = Spatial Intelligence Pipeline (Phase 9A.2 spatial intent + 9A.3 architecture language + Mode A)",
+    "Mode B adds 2 blocks: spatial_intent, architecture_language (inserted after task, before architecture_context)",
+    "Provider not called. Image-level A/B requires real-provider smoke (separate user-authorized step)."
+  ]
+}
