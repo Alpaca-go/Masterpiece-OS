@@ -44,6 +44,7 @@
     "test:space-dna-prompt": "node space-generator/v1-experimental/prompt-compiler/field-enriched/tests/compile-prompt.test.mjs",
     "test:space-dna-prompt-v11": "node space-generator/v1-experimental/prompt-compiler/field-enriched/tests/compile-prompt-v1.1.test.mjs",
     "test:space-evaluation": "node space-generator/v1-experimental/evaluation/tests/evaluate-space.test.mjs",
+    "test:space-anchor-aware": "node space-generator/v1-experimental/prompt-compiler/anchor-aware/tests/compile-with-anchor.test.mjs",
     "test:space-dna-variation": "node space-generator/v1-experimental/prompt-compiler/variation/tests/derive-variants.test.mjs",
     "test:space-dna-regression": "node space-generator/v1-experimental/test-cases/regression/tests/regression.test.mjs"
   },
