@@ -17,6 +17,7 @@
     "smoke:visual-upgrade": "node scripts/run-real-provider-v18-1-smoke.mjs",
     "smoke:visual-decision": "node scripts/run-real-provider-visual-decision-smoke.mjs",
     "space-gen:test-real": "node scripts/run-space-generator-real-test.mjs",
+    "space-gen:ab-test": "node scripts/run-space-generator-ab-test.mjs",
     "smoke:golden-control": "node scripts/run-real-provider-golden-control-smoke.mjs",
     "smoke:production-stability": "node scripts/run-real-provider-production-stability-smoke.mjs",
     "smoke:logo-post-composite": "node scripts/run-real-provider-logo-post-composite-smoke.mjs",
