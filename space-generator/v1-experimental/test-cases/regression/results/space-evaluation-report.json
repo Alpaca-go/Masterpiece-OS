@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T08:46:36.262Z",
+  "evaluator": "v1.1 Space Evaluation Layer (v1.0 §25 6-dim scoring)",
+  "results": [
+    {
+      "key": "jzmx_v01",
+      "brandName": "九州美学",
+      "dnaVersion": "v0.1.1",
+      "total": 76,
+      "max": 100,
+      "level": "A",
+      "dimensions": [
+        {
+          "name": "architecture_quality",
+          "score": 6,
+          "max": 25
+        },
+        {
+          "name": "brand_translation",
+          "score": 15,
+          "max": 20
+        },
+        {
+          "name": "functional_realism",
+          "score": 20,
+          "max": 20
+        },
+        {
+          "name": "material_lighting",
+          "score": 15,
+          "max": 15
+        },
+        {
+          "name": "composition_delivery",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "name": "diversity_consistency",
+          "score": 10,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "key": "jzmx_v02_v11",
+      "brandName": "九州美学",
+      "dnaVersion": "v0.3",
+      "total": 100,
+      "max": 100,
+      "level": "S",
+      "dimensions": [
+        {
+          "name": "architecture_quality",
+          "score": 25,
+          "max": 25
+        },
+        {
+          "name": "brand_translation",
+          "score": 20,
+          "max": 20
+        },
+        {
+          "name": "functional_realism",
+          "score": 20,
+          "max": 20
+        },
+        {
+          "name": "material_lighting",
+          "score": 15,
+          "max": 15
+        },
+        {
+          "name": "composition_delivery",
+          "score": 10,
+          "max": 10
+        },
+        {
+          "name": "diversity_consistency",
+          "score": 10,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "key": "yjlf",
+      "brandName": "一剂良方",
+      "dnaVersion": "v0.1",
+      "total": 62,
+      "max": 100,
+      "level": "B",
+      "dimensions": [
+        {
+          "name": "architecture_quality",
+          "score": 3,
+          "max": 25
+        },
+        {
+          "name": "brand_translation",
+          "score": 9,
+          "max": 20
+        },
+        {
+          "name": "functional_realism",
+          "score": 20,
+          "max": 20
+        },
+        {
+          "name": "material_lighting",
+          "score": 13,
+          "max": 15
+        },
+        {
+          "name": "composition_delivery",
+          "score": 7,
+          "max": 10
+        },
+        {
+          "name": "diversity_consistency",
+          "score": 10,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "key": "ftt",
+      "brandName": "冯烫烫",
+      "dnaVersion": "v0.1",
+      "total": 56,
+      "max": 100,
+      "level": "B",
+      "dimensions": [
+        {
+          "name": "architecture_quality",
+          "score": 3,
+          "max": 25
+        },
+        {
+          "name": "brand_translation",
+          "score": 6,
+          "max": 20
+        },
+        {
+          "name": "functional_realism",
+          "score": 17,
+          "max": 20
+        },
+        {
+          "name": "material_lighting",
+          "score": 13,
+          "max": 15
+        },
+        {
+          "name": "composition_delivery",
+          "score": 7,
+          "max": 10
+        },
+        {
+          "name": "diversity_consistency",
+          "score": 10,
+          "max": 10
+        }
+      ]
+    },
+    {
+      "key": "wy",
+      "brandName": "蛙耶",
+      "dnaVersion": "v0.1",
+      "total": 53,
+      "max": 100,
+      "level": "C",
+      "dimensions": [
+        {
+          "name": "architecture_quality",
+          "score": 3,
+          "max": 25
+        },
+        {
+          "name": "brand_translation",
+          "score": 6,
+          "max": 20
+        },
+        {
+          "name": "functional_realism",
+          "score": 17,
+          "max": 20
+        },
+        {
+          "name": "material_lighting",
+          "score": 10,
+          "max": 15
+        },
+        {
+          "name": "composition_delivery",
+          "score": 7,
+          "max": 10
+        },
+        {
+          "name": "diversity_consistency",
+          "score": 10,
+          "max": 10
+        }
+      ]
+    }
+  ],
+  "acceptanceCriteria": {
+    "excellent": "S level (>= 85): 建筑事务所设计的九州美学旗舰空间 (v1.1 §8)",
+    "failed": "C level (< 55): 普通医美空间 + 九州美学 Logo (v1.1 §8)"
+  }
+}

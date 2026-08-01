@@ -55,7 +55,7 @@ function loadJson(p) {
   return JSON.parse(readFileSync(p, 'utf8'));
 }
 
-console.log('Field-Enriched Prompt Compiler v0.1 \u2014 validation suite\n');
+console.log('Field-Enriched Prompt Compiler v1.1 + Phase 8B.1 \u2014 validation suite\n');
 
 const dna = loadJson(dnaPath);
 const dnaValid = validateDna(dna);
@@ -65,19 +65,19 @@ assert(dnaValid, 'JZMX DNA must validate against schema');
 console.log('Compile:');
 let result;
 
-test('compileFieldEnrichedPrompt() returns 10 blocks (v1.1 §6 refactor)', () => {
+test('compileFieldEnrichedPrompt() returns 11 blocks (Phase 8B.1 §4 + v1.1 §6 refactor)', () => {
   result = compileFieldEnrichedPrompt(dna);
-  // v1.1 §6 adjusts to 10 blocks: task / architectural_concept / architecture_dna /
-  // brand_translation / functional_requirement / material / lighting /
+  // Phase 8B.1 §4 调整为 11 块: task / architecture_function_bridge / architectural_concept /
+  // architecture_dna / brand_translation / functional_requirement / material / lighting /
   // composition / rendering / negative_constraints
-  assert(result.blockCount === 10, `blockCount ${result.blockCount} != 10 (v1.1 §6 10 blocks)`);
+  assert(result.blockCount === 11, `blockCount ${result.blockCount} != 11 (Phase 8B.1 §4 11 blocks)`);
 });
 
-test('all 10 block IDs match v1.1 §6 compile order (architectural concept before brand)', () => {
+test('all 11 block IDs match Phase 8B.1 §4 compile order (bridge before architecture before brand)', () => {
   const expectedOrder = [
-    'task', 'architectural_concept', 'architecture_dna', 'brand_translation',
-    'functional_requirement', 'material', 'lighting', 'composition',
-    'rendering', 'negative_constraints',
+    'task', 'architecture_function_bridge', 'architectural_concept', 'architecture_dna',
+    'brand_translation', 'functional_requirement', 'material', 'lighting',
+    'composition', 'rendering', 'negative_constraints',
   ];
   for (let i = 0; i < expectedOrder.length; i++) {
     assert(result.blocks[i].id === expectedOrder[i],
@@ -85,13 +85,19 @@ test('all 10 block IDs match v1.1 §6 compile order (architectural concept befor
   }
 });
 
-test('block[1] is architectural_concept (architecture before brand, v1.1 §6 end)', () => {
-  // v1.1 §6 end: "空间概念必须优先于品牌表达" (space concept must precede brand expression)
-  assert(result.blocks[1].id === 'architectural_concept', `block[1] should be architectural_concept, got ${result.blocks[1].id}`);
-  // Verify architectural_concept comes before brand_translation
+test('block[1] is architecture_function_bridge (Phase 8B.1 §4) and bridge precedes architectural_concept', () => {
+  // Phase 8B.1 §4: bridge 在 architecture 概念之前, 桥接建筑机制与商业功能.
+  assert(result.blocks[1].id === 'architecture_function_bridge',
+    `block[1] should be architecture_function_bridge, got ${result.blocks[1].id}`);
+  // bridge 必须在 architectural_concept 之前 (Phase 8B.1 §4)
+  const bridgeIdx = result.blocks.findIndex((b) => b.id === 'architecture_function_bridge');
   const archIdx = result.blocks.findIndex((b) => b.id === 'architectural_concept');
+  assert(bridgeIdx < archIdx,
+    `architecture_function_bridge (${bridgeIdx}) should come before architectural_concept (${archIdx})`);
+  // v1.1 §6 末尾: architectural_concept 必须在 brand_translation 之前
   const brandIdx = result.blocks.findIndex((b) => b.id === 'brand_translation');
-  assert(archIdx < brandIdx, `architectural_concept (${archIdx}) should come before brand_translation (${brandIdx})`);
+  assert(archIdx < brandIdx,
+    `architectural_concept (${archIdx}) should come before brand_translation (${brandIdx}) (v1.1 §6 end)`);
 });
 
 test('markdown length > 0 and has reasonable character count', () => {

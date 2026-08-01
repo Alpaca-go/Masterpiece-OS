@@ -131,6 +131,18 @@ test('v1.1 schema adds weightAllocation (50/30/20 default)', () => {
   assert(f.default === 0.2, 'functional default should be 0.2');
 });
 
+test('Phase 8B.1 schema adds architectureFunctionBridge (optional, 5 arrays + weightBoost)', () => {
+  const afb = schema.properties.architectureFunctionBridge;
+  assert(afb, 'architectureFunctionBridge missing');
+  assert(afb.type === 'object', 'architectureFunctionBridge must be object');
+  for (const k of ['purpose', 'spatialTranslation', 'operationConstraints', 'humanExperience', 'commercialReality', 'conceptDriftGuards', 'weightBoost']) {
+    assert(afb.properties[k], `architectureFunctionBridge.${k} missing`);
+  }
+  assert(afb.properties.weightBoost.maximum === 1, 'weightBoost max should be 1');
+  assert(afb.properties.weightBoost.minimum === 0, 'weightBoost min should be 0');
+  assert(afb.properties.weightBoost.default === 0.25, 'weightBoost default should be 0.25');
+});
+
 test('v1.1 schema extends architectureDna with 4 mechanism sub-fields', () => {
   const ad = schema.properties.architectureDna;
   for (const k of ['ceilingMechanism', 'facadeMechanism', 'partitionMechanism', 'furnitureFormGrammar']) {
@@ -216,13 +228,31 @@ for (const ex of examples) {
       }
     });
 
-    test(`${ex.name} has weightAllocation 0.5/0.3/0.2 (v1.1 §4)`, () => {
+    test(`${ex.name} has weightAllocation 0.45/0.3/0.25 (Phase 8B.1 §5 calibration)`, () => {
       const data = loadJson(ex.path);
       const wa = data.weightAllocation;
       assert(wa, 'weightAllocation missing');
-      assert(wa.architecture === 0.5, `architecture should be 0.5, got ${wa.architecture}`);
+      assert(wa.architecture === 0.45, `architecture should be 0.45 (Phase 8B.1), got ${wa.architecture}`);
       assert(wa.brand === 0.3, `brand should be 0.3, got ${wa.brand}`);
-      assert(wa.functional === 0.2, `functional should be 0.2, got ${wa.functional}`);
+      assert(wa.functional === 0.25, `functional should be 0.25 (Phase 8B.1), got ${wa.functional}`);
+    });
+
+    test(`${ex.name} has architectureFunctionBridge (Phase 8B.1 §3)`, () => {
+      const data = loadJson(ex.path);
+      const afb = data.architectureFunctionBridge;
+      assert(afb, 'architectureFunctionBridge missing on Phase 8B.1 instance');
+      assert(typeof afb.purpose === 'string' && afb.purpose.length > 0, 'purpose missing or empty');
+      assert(Array.isArray(afb.spatialTranslation) && afb.spatialTranslation.length >= 1,
+        'spatialTranslation should be non-empty array');
+      assert(Array.isArray(afb.operationConstraints) && afb.operationConstraints.length >= 1,
+        'operationConstraints should be non-empty array');
+      assert(Array.isArray(afb.humanExperience) && afb.humanExperience.length >= 1,
+        'humanExperience should be non-empty array');
+      assert(Array.isArray(afb.commercialReality) && afb.commercialReality.length >= 1,
+        'commercialReality should be non-empty array');
+      assert(Array.isArray(afb.conceptDriftGuards) && afb.conceptDriftGuards.length >= 1,
+        'conceptDriftGuards should be non-empty array');
+      assert(afb.weightBoost === 0.25, `weightBoost should be 0.25, got ${afb.weightBoost}`);
     });
 
     test(`${ex.name} has 4 architectureDna mechanism sub-fields`, () => {

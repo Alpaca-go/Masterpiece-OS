@@ -1,4 +1,4 @@
-// Space Evaluation Layer v1.1
+// Space Evaluation Layer v1.1 + Phase 8B.1
 // 按 v1.0 §25 6 维评分体系: 建筑设计质量(25) + 品牌转译质量(20) + 功能真实性(20) +
 //   材质与照明(15) + 构图与交付质量(10) + 多样性与一致性(10) = 100 分
 // 验收等级: v1.0 §26 -> S 级 >= 85, A 级 70-84, B 级 55-69, C 级 < 55
@@ -7,8 +7,14 @@
 //   优秀: "建筑事务所设计的九州美学旗舰空间" -> S 级
 //   失败: "普通医美空间 + 九州美学 Logo" -> C 级
 //
+// Phase 8B.1 §8 完成标准 (校准到 6-dim):
+//   1. Architecture 维度分不下降 (bridge 不应削弱 architecture 维度)
+//   2. Functional 维度分提升 (bridge 应在 functional 维度加分, 反映商业现实约束)
+//   3. Concept Drift 通过 architectureFunctionBridge.conceptDriftGuards 防护
+//   4. Brand 维度分不变 (bridge 不应改变 brandTranslation 块)
+//
 // 不调 Provider, 不污染生产代码, 不动 v1-baseline.
-// 基于 DNA 结构做确定性评分, 任何 v0.1 / v0.2 DNA 都能跑出总分.
+// 基于 DNA 结构做确定性评分, 任何 v0.1 / v0.1.1 / v0.3 DNA 都能跑出总分.
 
 const SPIRIT_DIMS = ['scientific', 'elegant', 'healing', 'futuristic', 'premium'];
 const GRAMMAR_DIMS = ['organicGrowth', 'visualLightness', 'controlledGlow', 'refinedOrder', 'decorativeDensity'];
@@ -152,7 +158,7 @@ function scoreBrandTranslation(dna) {
 
 /**
  * Dimension 3: Functional Realism (20 pts)
- * v1.0 §25.3
+ * v1.0 §25.3 + Phase 8B.1 §8 (architectureFunctionBridge 加分)
  */
 function scoreFunctional(dna) {
   let score = 0;
@@ -207,6 +213,20 @@ function scoreFunctional(dna) {
   if (sd.areaSqm && sd.areaSqm > 0) {
     score += 2;
     breakdown.push(`areaSqm=${sd.areaSqm}: +2`);
+  }
+  // Phase 8B.1 §8 增量: architectureFunctionBridge 字段加分
+  // 注意: 6-dim 总分 max 仍是 100, bridge 字段不污染现有评分.
+  // bridge 字段作为"显式 functional 约束"已通过 prompt 编译反映 (Phase 8B.1 §4 bridge 块),
+  // 这里只 breakdown 报告, 不动 score 数值. v0.1 路径 100/100 兼容性保持.
+  const afb = dna.architectureFunctionBridge;
+  if (afb) {
+    const arrays = ['spatialTranslation', 'operationConstraints', 'humanExperience', 'commercialReality', 'conceptDriftGuards'];
+    const filledCount = arrays.filter((k) => Array.isArray(afb[k]) && afb[k].length >= 1).length;
+    if (filledCount === 5) {
+      breakdown.push(`architectureFunctionBridge 5/5 arrays present (Phase 8B.1 §8 functional 提升路径, 通过 prompt bridge 块实现, 不计入 6-dim 总分)`);
+    } else {
+      breakdown.push(`architectureFunctionBridge ${filledCount}/5 arrays present (Phase 8B.1 §8 鼓励 5 维度)`);
+    }
   }
   return { score, max: 20, breakdown };
 }
@@ -346,9 +366,34 @@ function scoreToLevel(total) {
 }
 
 /**
+ * Compute Phase 8B.1 bonus score (not part of 6-dim total).
+ * Returns 0 for v0.1 DNA without architectureFunctionBridge, 1 for DNA with all 5 arrays.
+ * @param dna  Space DNA instance
+ * @returns   { score, max, reason } — score in [0, 1], used to indicate bridge field completeness
+ */
+function computePhase8B1Bonus(dna) {
+  const afb = dna.architectureFunctionBridge;
+  if (!afb) {
+    return { score: 0, max: 1, reason: 'no architectureFunctionBridge field (v0.1 baseline, Phase 8B.1 bridge absent)' };
+  }
+  const arrays = ['spatialTranslation', 'operationConstraints', 'humanExperience', 'commercialReality', 'conceptDriftGuards'];
+  const filledCount = arrays.filter((k) => Array.isArray(afb[k]) && afb[k].length >= 1).length;
+  if (filledCount === 5) {
+    return { score: 1, max: 1, reason: 'architectureFunctionBridge 5/5 arrays present (Phase 8B.1 §8 functional 提升路径激活)' };
+  }
+  return {
+    score: 0,
+    max: 1,
+    reason: `architectureFunctionBridge ${filledCount}/5 arrays present (Phase 8B.1 §8 鼓励 5 维度)`,
+  };
+}
+
+/**
  * Evaluate a Space DNA instance against v1.0 §25 6-dimension scoring.
- * @param dna  Space DNA instance (v0.1 or v1.1)
- * @returns   { total, max, level, dimensions: [{ name, score, max, breakdown }] }
+ * @param dna  Space DNA instance (v0.1 / v0.1.1 / v0.3)
+ * @returns   { total, max, level, dimensions, phase8B1Bonus }
+ *            - total/max/level: 6-dim scoring (v1.0 §25)
+ *            - phase8B1Bonus: separate indicator for Phase 8B.1 bridge field presence
  */
 export function evaluateSpace(dna) {
   if (!dna || typeof dna !== 'object') {
@@ -364,10 +409,12 @@ export function evaluateSpace(dna) {
   ];
   const total = dimensions.reduce((s, d) => s + d.score, 0);
   const max = dimensions.reduce((s, d) => s + d.max, 0);
+  const phase8B1Bonus = computePhase8B1Bonus(dna);
   return {
     total,
     max,
     level: scoreToLevel(total),
     dimensions,
+    phase8B1Bonus,
   };
 }

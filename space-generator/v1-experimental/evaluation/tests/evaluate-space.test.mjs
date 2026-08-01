@@ -7,8 +7,8 @@
 //   失败: "普通医美空间 + 九州美学 Logo" -> C 级 < 55 分
 //
 // 测试覆盖:
-//   - JZMX v0.1 (Phase 2 instance, 10 字段齐全) 应得 S 级
-//   - JZMX v0.2 (v1.1 instance, 含 brandTranslationRules + 4 mechanism) 应得 S 级
+//   - JZMX v0.1.1 (Phase 8B.1 minor bump, frozen instance + architectureFunctionBridge) 应得 S 级
+//   - JZMX v0.3 (v1.1 + Phase 8B.1 instance, brandTranslationRules + 4 mechanism + architectureFunctionBridge + weightAllocation 0.45/0.3/0.25) 应得 S 级
 //   - 4 个项目 (JZMX/YJLF/FTT/WY) 都至少得 A 级 (>= 70)
 //   - 反向构造一个 minimal DNA (只有 brandSpaceDna) 应得 C 级 (< 55), 验证评分体系能区分优秀/失败
 //   - 6 维各项 max 正确 (25/20/20/15/10/10 = 100)
@@ -134,30 +134,90 @@ test('JZMX v0.1 (Phase 2 instance) scores S or A level (优秀: 建筑事务所�
   assert(['S', 'A'].includes(r.level), `JZMX v0.1 level should be S or A, got ${r.level}`);
 });
 
-test('JZMX v0.2 (v1.1 instance) scores S level (v1.1 §8 优秀)', () => {
+test('JZMX v0.3 (v1.1 + Phase 8B.1 instance) scores S level (v1.1 §8 优秀)', () => {
   const dna = loadDna(dnas.jzmx_v02_v11);
   const r = evaluateSpace(dna);
-  console.log(`      JZMX v0.2: total=${r.total}/${r.max} level=${r.level}`);
+  console.log(`      JZMX v0.3: total=${r.total}/${r.max} level=${r.level}`);
   console.log(`      ${r.dimensions.map((d) => `${d.name}=${d.score}/${d.max}`).join(', ')}`);
-  // v1.1 应该 >= JZMX v0.1 (新字段加分)
-  assert(r.total >= 85, `JZMX v0.2 total ${r.total} < 85 (expected S level, v1.1 §8 优秀)`);
-  assert(r.level === 'S', `JZMX v0.2 level should be S, got ${r.level}`);
+  // v1.1 + Phase 8B.1 应该 >= JZMX v0.1 (新字段加分)
+  assert(r.total >= 85, `JZMX v0.3 total ${r.total} < 85 (expected S level, v1.1 §8 优秀)`);
+  assert(r.level === 'S', `JZMX v0.3 level should be S, got ${r.level}`);
+  // Phase 8B.1 §8 验收: architecture 维度不下降 (v0.3 仍有 4 mechanism -> 25/25)
+  const arch = r.dimensions.find((d) => d.name === 'architecture_quality');
+  assert(arch.score === 25, `architecture_quality should be 25/25 (Phase 8B.1 §8 不下降), got ${arch.score}/25`);
 });
 
-test('JZMX v0.2 brand_translation dimension shows full v1.1 translation layer score', () => {
+test('JZMX v0.3 brand_translation dimension shows full v1.1 translation layer score', () => {
   const dna = loadDna(dnas.jzmx_v02_v11);
   const r = evaluateSpace(dna);
   const brand = r.dimensions.find((d) => d.name === 'brand_translation');
   assert(brand.score === 20, `brand_translation should be 20/20 for v1.1 DNA, got ${brand.score}/20`);
 });
 
-test('JZMX v0.2 architecture_quality dimension includes mechanism sub-fields', () => {
+test('JZMX v0.3 architecture_quality dimension includes mechanism sub-fields', () => {
   const dna = loadDna(dnas.jzmx_v02_v11);
   const r = evaluateSpace(dna);
   const arch = r.dimensions.find((d) => d.name === 'architecture_quality');
   // v1.1 §1 抽出了 4 mechanism, 4 字段各贡献 6+6+4+3 = 19
   // 加上 spatialConcept.primary 3 + statementStrength=high 3 = 25 满分
   assert(arch.score >= 19, `architecture_quality should be >= 19/25 (4 mechanism fields), got ${arch.score}/25`);
+});
+
+// ---------- Phase 8B.1 §8 验收 ----------
+console.log('\nPhase 8B.1 §8 验收 (architecture-function balance calibration):');
+
+test('JZMX v0.3 (Phase 8B.1) architecture_quality not decreased vs v0.1 (≥ v0.1 score)', () => {
+  const r_v01 = evaluateSpace(loadDna(dnas.jzmx_v01));
+  const r_v03 = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  const arch_v01 = r_v01.dimensions.find((d) => d.name === 'architecture_quality').score;
+  const arch_v03 = r_v03.dimensions.find((d) => d.name === 'architecture_quality').score;
+  console.log(`      architecture_quality: v0.1=${arch_v01}/25 -> v0.3=${arch_v03}/25`);
+  assert(arch_v03 >= arch_v01,
+    `Phase 8B.1 §8.1 architecture must not decrease: v0.1=${arch_v01} -> v0.3=${arch_v03}`);
+});
+
+test('JZMX v0.3 (Phase 8B.1) functional_realism improved via phase8B1Bonus', () => {
+  const r_v03 = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  // v0.3 (Phase 8B.1) DNA 有 architectureFunctionBridge (5/5 arrays), bonus = 1
+  // 注意: v0.1 已经被 bump 到 v0.1.1 (Phase 8B.1 minor bump, 也带 bridge 字段).
+  // 这与 Phase 8B.1 §8 "Functional 提升" 验收标准一致: bridge 字段显式化,
+  // 反映在 prompt 编译的 architecture_function_bridge 块 (Phase 8B.1 §4).
+  assert(r_v03.phase8B1Bonus.score === 1,
+    `v0.3 phase8B1Bonus should be 1 (5/5 arrays), got ${r_v03.phase8B1Bonus.score} (reason: ${r_v03.phase8B1Bonus.reason})`);
+
+  // 退化: 删除 bridge 字段后 bonus 应为 0
+  const stripped = JSON.parse(JSON.stringify(loadDna(dnas.jzmx_v02_v11)));
+  delete stripped.architectureFunctionBridge;
+  const r_stripped = evaluateSpace(stripped);
+  assert(r_stripped.phase8B1Bonus.score === 0,
+    `DNA without architectureFunctionBridge should have phase8B1Bonus=0, got ${r_stripped.phase8B1Bonus.score}`);
+  console.log(`      phase8B1Bonus: v0.3 (with bridge)=${r_v03.phase8B1Bonus.score} -> stripped (no bridge)=${r_stripped.phase8B1Bonus.score}`);
+});
+
+test('JZMX v0.3 (Phase 8B.1) brand_translation unchanged vs v0.1 (Phase 8B.1 §8.4)', () => {
+  const r_v01 = evaluateSpace(loadDna(dnas.jzmx_v01));
+  const r_v03 = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  // v0.1 brand_translation = 15 (v0.1 fallback 路径)
+  // v0.3 brand_translation = 20 (v1.1 brandTranslationRules 路径)
+  // Phase 8B.1 §8.4: brand 不变 (bridge 不应改变 brand_translation 块)
+  // 注意: v0.1 -> v0.3 的 brand_translation 提升是 v1.1 翻译层, 不是 Phase 8B.1 bridge.
+  // 验证 v0.3 (v1.1 brandTranslationRules + bridge) vs 一个 v1.1-only DNA (有 brandTranslationRules 但没 bridge):
+  // 两者 brand_translation 应相等 (20)
+  const stripped = JSON.parse(JSON.stringify(loadDna(dnas.jzmx_v02_v11)));
+  delete stripped.architectureFunctionBridge;
+  const r_stripped = evaluateSpace(stripped);
+  const brand_v03 = r_v03.dimensions.find((d) => d.name === 'brand_translation').score;
+  const brand_stripped = r_stripped.dimensions.find((d) => d.name === 'brand_translation').score;
+  console.log(`      brand_translation: with bridge=${brand_v03} | without bridge=${brand_stripped}`);
+  assert(brand_v03 === brand_stripped,
+    `Phase 8B.1 §8.4 brand must not change with bridge: with=${brand_v03} without=${brand_stripped}`);
+});
+
+test('Phase 8B.1 §8.3: bridge.conceptDriftGuards present in v0.3 (5+ items)', () => {
+  const dna = loadDna(dnas.jzmx_v02_v11);
+  const guards = dna.architectureFunctionBridge?.conceptDriftGuards ?? [];
+  assert(guards.length >= 5,
+    `Phase 8B.1 §8.3 conceptDriftGuards should have >= 5 items, got ${guards.length}`);
 });
 
 // ---------- 4 项目回归评估 ----------

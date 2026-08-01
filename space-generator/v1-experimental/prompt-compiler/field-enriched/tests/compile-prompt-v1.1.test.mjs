@@ -81,7 +81,7 @@ test('JZMX v1.1 DNA exists and validates', () => {
     const errs = (validateDna.errors || []).slice(0, 3).map((e) => `${e.instancePath} ${e.message}`).join('; ');
     throw new Error(`schema validation failed: ${errs}`);
   }
-  assert(dna.dnaVersion === 'v0.2', `dnaVersion should be v0.2, got ${dna.dnaVersion}`);
+  assert(dna.dnaVersion === 'v0.3', `dnaVersion should be v0.3 (Phase 8B.1 promoted from v0.2), got ${dna.dnaVersion}`);
 });
 
 test('architecture-anchor analysis exists (v1.1 §1)', () => {
@@ -106,12 +106,20 @@ test('architectural_concept block contains all 4 mechanism sub-fields from ancho
     'facadeMechanism should reflect v1.1 Architecture Anchor data');
 });
 
-test('block[1] (architectural_concept) is BEFORE block[3] (brand_translation) — v1.1 §6 end', () => {
+test('block[2] (architectural_concept) is BEFORE block[4] (brand_translation) — v1.1 §6 end (Phase 8B.1 bridge 在前)', () => {
   const archIdx = result.blocks.findIndex((b) => b.id === 'architectural_concept');
   const brandIdx = result.blocks.findIndex((b) => b.id === 'brand_translation');
-  assert(archIdx === 1, `architectural_concept should be at index 1, got ${archIdx}`);
-  assert(brandIdx === 3, `brand_translation should be at index 3, got ${brandIdx}`);
+  // Phase 8B.1 §4: architecture_function_bridge 在 block[1], architectural_concept 在 block[2], brand_translation 在 block[4]
+  assert(archIdx === 2, `architectural_concept should be at index 2 (Phase 8B.1), got ${archIdx}`);
+  assert(brandIdx === 4, `brand_translation should be at index 4 (Phase 8B.1), got ${brandIdx}`);
   assert(archIdx < brandIdx, 'architecture must precede brand (v1.1 §6)');
+});
+
+test('block[1] is architecture_function_bridge (Phase 8B.1 §4 bridge precedes architectural_concept)', () => {
+  const bridgeIdx = result.blocks.findIndex((b) => b.id === 'architecture_function_bridge');
+  const archIdx = result.blocks.findIndex((b) => b.id === 'architectural_concept');
+  assert(bridgeIdx === 1, `architecture_function_bridge should be at index 1 (Phase 8B.1 §4), got ${bridgeIdx}`);
+  assert(bridgeIdx < archIdx, 'bridge must precede architectural_concept (Phase 8B.1 §4)');
 });
 
 // ---------- Step 5.2 注入 Brand Translation ----------
@@ -159,10 +167,10 @@ test('functional_requirement block has space function + functional realism (v1.1
 });
 
 // ---------- Step 5.4 整体生成空间 ----------
-console.log('\nStep 5.4 \u2014 Space generation (10 blocks total):');
+console.log('\nStep 5.4 \u2014 Space generation (11 blocks total, Phase 8B.1):');
 
-test('10 blocks total (v1.1 §6 refactor)', () => {
-  assert(result.blockCount === 10, `blockCount ${result.blockCount} != 10`);
+test('11 blocks total (Phase 8B.1 §4 refactor)', () => {
+  assert(result.blockCount === 11, `blockCount ${result.blockCount} != 11 (Phase 8B.1 §4 11 blocks)`);
   assert(result.characterCount > 1000, `characterCount ${result.characterCount} too short`);
   assert(result.characterCount <= 8000, `characterCount ${result.characterCount} exceeds v1.0 §10 maxReportCharacters=8000`);
 });
@@ -193,18 +201,20 @@ const scenes = [
   { id: 'JZMX-TREATMENT', type: 'treatment', subtype: 'private_treatment' },
 ];
 
-test('all 8 JZMX space types compile without breaking the v1.1 block order', () => {
+test('all 8 JZMX space types compile without breaking the Phase 8B.1 block order', () => {
   for (const scene of scenes) {
     const variantDna = JSON.parse(JSON.stringify(dna));
     variantDna.sceneDefinition.sceneType = scene.type;
     variantDna.sceneDefinition.sceneSubtype = scene.subtype;
     const r = compileFieldEnrichedPrompt(variantDna);
-    assert(r.blockCount === 10, `${scene.id}: blockCount ${r.blockCount} != 10`);
-    // architectural_concept must still be index 1 across all scene types
+    assert(r.blockCount === 11, `${scene.id}: blockCount ${r.blockCount} != 11 (Phase 8B.1)`);
+    // Phase 8B.1 §4: architecture_function_bridge 必须在 block[1], architectural_concept 必须在 block[2], brand_translation 必须在 block[4]
+    const bridgeIdx = r.blocks.findIndex((b) => b.id === 'architecture_function_bridge');
+    assert(bridgeIdx === 1, `${scene.id}: architecture_function_bridge at index ${bridgeIdx}, expected 1`);
     const archIdx = r.blocks.findIndex((b) => b.id === 'architectural_concept');
-    assert(archIdx === 1, `${scene.id}: architectural_concept at index ${archIdx}, expected 1`);
+    assert(archIdx === 2, `${scene.id}: architectural_concept at index ${archIdx}, expected 2 (Phase 8B.1)`);
     const brandIdx = r.blocks.findIndex((b) => b.id === 'brand_translation');
-    assert(brandIdx === 3, `${scene.id}: brand_translation at index ${brandIdx}, expected 3`);
+    assert(brandIdx === 4, `${scene.id}: brand_translation at index ${brandIdx}, expected 4 (Phase 8B.1)`);
   }
 });
 
@@ -226,13 +236,9 @@ test('v1.1 architectural_concept is substantial (>= 300 chars)', () => {
   const archIdx1 = result.blocks.findIndex((b) => b.id === 'architectural_concept');
   const archLen = result.blocks[archIdx1].text.length;
   assert(archLen >= 300, `architectural_concept length ${archLen} too short (should reflect all 4 mechanism fields, v1.1 §1 Anchor data)`);
-  // 同时 sanity check architectural_concept 比 brand_translation 短 (品牌翻译层有 5 维 spirit+grammar+motif+strength, 必然更长)
-  const brandIdx = result.blocks.findIndex((b) => b.id === 'brand_translation');
-  const brandLen = result.blocks[brandIdx].text.length;
-  // architectural_concept 不必比 brand_translation 长, 因为 brand_translation 包含 5 维翻译规则.
-  // 但 architectural_concept 应该是 index 1 (第二个块), 这是 v1.1 §6 关键约束.
+  // 同时 sanity check architectural_concept 在 index 2 (Phase 8B.1), 这是 v1.1 §6 + Phase 8B.1 §4 关键约束.
   const archIdx = result.blocks.findIndex((b) => b.id === 'architectural_concept');
-  assert(archIdx === 1, `architectural_concept must be at index 1 (v1.1 §6 architecture-first order)`);
+  assert(archIdx === 2, `architectural_concept must be at index 2 (Phase 8B.1 §4, bridge 在前)`);
 });
 
 // ---------- summary ----------

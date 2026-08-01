@@ -1,17 +1,21 @@
-// Field-Enriched Prompt Compiler v1.1
-// 重构按 Space Generator v1.1 Architecture-Brand Fusion §6: 10 块编译顺序.
+// Field-Enriched Prompt Compiler v1.1 + Phase 8B.1
+// v1.1 重构按 Space Generator v1.1 Architecture-Brand Fusion §6: 10 块编译顺序.
+// Phase 8B.1 扩展: 11 块编译顺序, 新增 architecture_function_bridge.
+//
 // "空间概念必须优先于品牌表达" (v1.1 §6 末尾).
 //
-// 块顺序 (v1.1 §6):
+// 块顺序 (v1.1 §6 + Phase 8B.1 §4):
 //   task
 //   ↓
-//   architectural_concept   (v1.1 新增, 优先于 brand)
+//   architecture_function_bridge   (Phase 8B.1 新增, 桥接建筑机制与商业功能)
+//   ↓
+//   architectural_concept          (v1.1 新增, 优先于 brand)
 //   ↓
 //   architecture_dna
 //   ↓
-//   brand_translation      (v1.1 翻译层, 替代 v0.1 brand+brandTranslation)
+//   brand_translation              (v1.1 翻译层, 替代 v0.1 brand+brandTranslation)
 //   ↓
-//   functional_requirement (v1.1 合并 v0.1 function+functional)
+//   functional_requirement         (v1.1 合并 v0.1 function+functional)
 //   ↓
 //   material
 //   ↓
@@ -23,11 +27,26 @@
 //   ↓
 //   negative_constraints
 //
+// Phase 8A 路径 (anchor-aware) 进一步插入 architecture_context 在 task 之后:
+//   task
+//   ↓
+//   architecture_context           (Phase 8A anchor in-context reference)
+//   ↓
+//   architecture_function_bridge   (Phase 8B.1 bridge)
+//   ↓
+//   architectural_concept
+//   ↓
+//   ...
+//   (12 块总计)
+//
 // v0.1 DNA 向后兼容:
 //   - 没有 brandTranslationRules -> brand block 走 brandSpaceDna fallback
 //   - 没有 ceilingMechanism / facadeMechanism 等 -> architectural_concept 只显示 spatialConcept
+//   - 没有 architectureFunctionBridge -> bridge block 走 functionalDna + sceneDefinition fallback
 //
 // 对比约束: v1.0 §10 maxReportCharacters=8000 (creative-production-runtime 硬约束).
+//   Phase 8A: anchor-aware 路径扩展到 12000.
+//   Phase 8B.1: baseline 11 块仍 8000 约束 (5019 + bridge ~700 = ~5720, 远低于 8000).
 
 function compileTaskDeclaration(dna) {
   const { project, sceneDefinition } = dna;
@@ -65,6 +84,89 @@ function compileArchitecturalConcept(dna) {
     lines.push(`**Furniture Form Grammar**: ${architectureDna.furnitureFormGrammar}`);
   }
   lines.push('', '空间概念 / 建筑机制 必须先于 品牌元素 被建立. 品牌附着在建筑语言之上, 不是反过来.');
+  return lines.join('\n') + '\n';
+}
+
+function compileArchitectureFunctionBridge(dna) {
+  // Phase 8B.1 §3 新增. 在 architecture 机制与 functional 现实之间建立桥接.
+  // 优先 dna.architectureFunctionBridge 字段, fallback 到 functionalDna + sceneDefinition.
+  const afb = dna.architectureFunctionBridge;
+  const lines = [
+    '# Architecture-Function Bridge (Phase 8B.1 §3: 建筑机制 -> 商业功能桥接)',
+    '',
+    '> 建筑语言必须服务于商业现实, 不是反过来. 本块把 architecture 翻译为 functional action,',
+    '> 缓解 Phase 8B 暴露的 Architecture Concept Drift (空间变展览馆, 商业运营逻辑被压制).',
+    '',
+  ];
+  if (afb) {
+    // Phase 8B.1 路径: 显式 bridge 字段
+    if (afb.purpose) {
+      lines.push(`**Commercial Purpose**: ${afb.purpose}`);
+      lines.push('');
+    }
+    const spatialTrans = afb.spatialTranslation ?? [];
+    if (spatialTrans.length > 0) {
+      lines.push('**Spatial Translation (architecture mechanism -> commercial action)**:');
+      for (const t of spatialTrans) {
+        lines.push(`- ${t}`);
+      }
+      lines.push('');
+    }
+    const opCons = afb.operationConstraints ?? [];
+    if (opCons.length > 0) {
+      lines.push('**Operation Constraints (硬约束, 商业运营必须满足)**:');
+      for (const c of opCons) {
+        lines.push(`- ${c}`);
+      }
+      lines.push('');
+    }
+    const humExp = afb.humanExperience ?? [];
+    if (humExp.length > 0) {
+      lines.push('**Human Experience (用户路径与体验节奏)**:');
+      for (const e of humExp) {
+        lines.push(`- ${e}`);
+      }
+      lines.push('');
+    }
+    const comReal = afb.commercialReality ?? [];
+    if (comReal.length > 0) {
+      lines.push('**Commercial Reality (防止空间变展览馆)**:');
+      for (const r of comReal) {
+        lines.push(`- ${r}`);
+      }
+      lines.push('');
+    }
+    const driftGuards = afb.conceptDriftGuards ?? [];
+    if (driftGuards.length > 0) {
+      lines.push('**Concept Drift Guards (Phase 8B.1 §7 fail-closed, 出现必须避开)**:');
+      for (const g of driftGuards) {
+        lines.push(`- ${g}`);
+      }
+      lines.push('');
+    }
+    const boost = typeof afb.weightBoost === 'number' ? afb.weightBoost : 0.25;
+    lines.push(`**Bridge Weight Boost**: ${boost} (0=不强调, 1=最强; v1.1 + Phase 8B.1 推荐 0.25)`);
+    lines.push('');
+    lines.push('**Usage**: 上面列出的 5 个维度 (spatialTranslation / operationConstraints / humanExperience / commercialReality / conceptDriftGuards) 必须被生成图遵守. 建筑语言服从商业现实, 不是反过来.');
+  } else {
+    // fallback 路径: 没有显式 architectureFunctionBridge, 用 functionalDna + sceneDefinition 推导
+    const { functionalDna, sceneDefinition } = dna;
+    lines.push('**Fallback Mode (no explicit architectureFunctionBridge field, Phase 8B.1 §3 fallback)**:');
+    lines.push('');
+    lines.push(`**Operational Realism**: ${functionalDna?.operationalRealism ?? 'n/a'}`);
+    if (sceneDefinition?.requiredZones?.length > 0) {
+      lines.push(`**Required Zones (must appear in image)**: ${sceneDefinition.requiredZones.join(', ')}`);
+    }
+    if (functionalDna?.customerFlow) {
+      const cf = functionalDna.customerFlow;
+      lines.push(`**Customer Flow**: entrance->reception=${cf.entranceToReception ?? 'n/a'} | reception->waiting=${cf.receptionToWaiting ?? 'n/a'} | waiting->consultation=${cf.waitingToConsultation ?? 'n/a'}`);
+    }
+    if (functionalDna?.medicalComplianceExpression) {
+      lines.push(`**Medical Compliance**: visibleButNotHospitalLike=${functionalDna.medicalComplianceExpression.visibleButNotHospitalLike ?? 'n/a'}`);
+    }
+    lines.push('');
+    lines.push('**Usage**: 商业功能约束从 functionalDna + sceneDefinition 推导, 缺省时按 v0.1 baseline 处理. 推荐补充 architectureFunctionBridge 字段以获得 Phase 8B.1 完整桥接效果.');
+  }
   return lines.join('\n') + '\n';
 }
 
@@ -280,9 +382,11 @@ ${(negativeConstraints.prohibit ?? []).map((p) => `- ${p}`).join('\n')}
 `;
 }
 
-// v1.1 §6: 10 块编译顺序. 空间概念优先于品牌表达.
+// v1.1 §6 + Phase 8B.1 §4: 11 块编译顺序. architecture_function_bridge 在 architecture 概念之前,
+// 作为"先验"约束建筑机制, 让建筑语言必须服务于商业现实.
 const BLOCK_FUNCS = [
   ['task', compileTaskDeclaration],
+  ['architecture_function_bridge', compileArchitectureFunctionBridge],
   ['architectural_concept', compileArchitecturalConcept],
   ['architecture_dna', compileArchitectureDna],
   ['brand_translation', compileBrandTranslation],

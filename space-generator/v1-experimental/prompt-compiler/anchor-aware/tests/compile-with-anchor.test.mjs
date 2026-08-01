@@ -78,8 +78,9 @@ console.log('Anchor-Aware Prompt Compiler v1 (Phase 8A) \u2014 A/B test\n');
 // ---------- Preconditions ----------
 console.log('Preconditions:');
 
-test('JZMX v0.2 (v1.1) DNA validates', () => {
-  assert(validateDna(v11Dna), 'JZMX v0.2 DNA must validate');
+test('JZMX v0.3 (v1.1 + Phase 8B.1) DNA validates', () => {
+  assert(validateDna(v11Dna), 'JZMX v0.3 DNA must validate');
+  assert(v11Dna.dnaVersion === 'v0.3', `expected v0.3 (Phase 8B.1), got ${v11Dna.dnaVersion}`);
 });
 
 test('Anchor loader returns 3 JZMX-ARCH anchors', () => {
@@ -107,19 +108,20 @@ test('Anchor loader returns [] for unknown brand (graceful degradation)', () => 
   assert(anchors.length === 0, 'unknown brand should return empty array');
 });
 
-// ---------- A/B Test: A = baseline (v1.1 10 blocks) ----------
-console.log('\nA. Baseline (v1.1 10-block prompt, no anchor):');
+// ---------- A/B Test: A = baseline (v1.1 + Phase 8B.1 11 blocks) ----------
+console.log('\nA. Baseline (v1.1 + Phase 8B.1 11-block prompt, no anchor):');
 
 const baselineV11 = compileFieldEnrichedPrompt(v11Dna);
 
-test('A: 10 blocks (unchanged from v1.1 Step 4)', () => {
-  assert(baselineV11.blockCount === 10, `blockCount ${baselineV11.blockCount} != 10 (baseline must not regress)`);
+test('A: 11 blocks (Phase 8B.1 §4 baseline, v1.1 Step 4 was 10 blocks, +1 for bridge)', () => {
+  assert(baselineV11.blockCount === 11, `blockCount ${baselineV11.blockCount} != 11 (Phase 8B.1 baseline must be 11 blocks)`);
 });
 
-test('A: characterCount matches v0.2 (v1.1) DNA baseline', () => {
-  // v0.2 (v1.1) DNA 多了 brandTranslationRules + 4 mechanism, baseline 比 v0.1 (3907) 大.
-  // 这里只 sanity check A 是 10 块, characterCount 是固定值 (5019) 防止未来无意修改.
-  assert(baselineV11.characterCount === 5019, `v0.2 baseline characterCount ${baselineV11.characterCount} != 5019 (v0.1 was 3907, v0.2 has more brandTranslationRules + 4 mechanism)`);
+test('A: characterCount within v1.0 §10 maxReportCharacters=8000 (Phase 8B.1 baseline)', () => {
+  // v0.3 (v1.1 + Phase 8B.1) DNA 多了 brandTranslationRules + 4 mechanism + architectureFunctionBridge.
+  // baseline characterCount 是固定值 (6680) 防止未来无意修改.
+  assert(baselineV11.characterCount === 6680, `v0.3 baseline characterCount ${baselineV11.characterCount} != 6680 (v0.2 was 5019, v0.3 has architectureFunctionBridge block)`);
+  assert(baselineV11.characterCount <= 8000, `baseline ${baselineV11.characterCount} exceeds v1.0 §10 maxReportCharacters=8000`);
 });
 
 test('A: no architecture_context block in baseline', () => {
@@ -127,27 +129,36 @@ test('A: no architecture_context block in baseline', () => {
   assert(!archCtx, 'baseline should not have architecture_context block');
 });
 
-// ---------- A/B Test: B = anchor-aware (11 blocks) ----------
-console.log('\nB. Anchor-aware (11 blocks with architecture_context):');
+test('A: architecture_function_bridge is at block[1] (Phase 8B.1 §4)', () => {
+  assert(baselineV11.blocks[1].id === 'architecture_function_bridge',
+    `block[1] should be architecture_function_bridge (Phase 8B.1), got ${baselineV11.blocks[1].id}`);
+  assert(baselineV11.blocks[2].id === 'architectural_concept',
+    `block[2] should be architectural_concept (Phase 8B.1), got ${baselineV11.blocks[2].id}`);
+});
+
+// ---------- A/B Test: B = anchor-aware (12 blocks) ----------
+console.log('\nB. Anchor-aware (12 blocks with architecture_context + bridge):');
 
 const anchors = getAnchorsAsInContextReference('jiuzhou-aesthetics', 3);
 const anchorV11 = compileFieldEnrichedPromptWithAnchorContext(v11Dna, anchors);
 
-test('B: 11 blocks (10 baseline + 1 architecture_context)', () => {
-  assert(anchorV11.blockCount === 11, `blockCount ${anchorV11.blockCount} != 11 (should be baseline 10 + architecture_context 1)`);
+test('B: 12 blocks (11 baseline + 1 architecture_context, Phase 8B.1)', () => {
+  assert(anchorV11.blockCount === 12, `blockCount ${anchorV11.blockCount} != 12 (should be baseline 11 + architecture_context 1, Phase 8B.1)`);
 });
 
 test('B: anchorContextIncluded=true', () => {
   assert(anchorV11.anchorContextIncluded === true, 'anchorContextIncluded should be true');
 });
 
-test('B: block[0] is still task (architecture_context inserted as block[1])', () => {
+test('B: block[0]=task, block[1]=architecture_context, block[2]=architecture_function_bridge, block[3]=architectural_concept (Phase 8B.1 §4)', () => {
   assert(anchorV11.blocks[0].id === 'task', `block[0] should be task, got ${anchorV11.blocks[0].id}`);
   assert(anchorV11.blocks[1].id === 'architecture_context',
     `block[1] should be architecture_context, got ${anchorV11.blocks[1].id}`);
-  // architectural_concept 现在应该是 block[2] (从 baseline 的 block[1] 移到 block[2])
-  assert(anchorV11.blocks[2].id === 'architectural_concept',
-    `block[2] should be architectural_concept (was block[1] in baseline), got ${anchorV11.blocks[2].id}`);
+  assert(anchorV11.blocks[2].id === 'architecture_function_bridge',
+    `block[2] should be architecture_function_bridge (Phase 8B.1 §4), got ${anchorV11.blocks[2].id}`);
+  // architectural_concept 从 baseline block[2] 移到 block[3] (anchor 注入到 block[1] + bridge 已在 block[2])
+  assert(anchorV11.blocks[3].id === 'architectural_concept',
+    `block[3] should be architectural_concept (was block[2] in baseline), got ${anchorV11.blocks[3].id}`);
 });
 
 test('B: architecture_context contains all 3 JZMX-ARCH anchor IDs and mechanisms', () => {
@@ -162,11 +173,16 @@ test('B: architecture_context contains all 3 JZMX-ARCH anchor IDs and mechanisms
   }
 });
 
-test('B: architecture_context 是 anchor 先验, 在 architectural_concept 之前', () => {
+test('B: architecture_context 是 anchor 先验, 在 architecture_function_bridge 之前 (Phase 8B.1 §4)', () => {
   const archCtxIdx = anchorV11.blocks.findIndex((b) => b.id === 'architecture_context');
+  const bridgeIdx = anchorV11.blocks.findIndex((b) => b.id === 'architecture_function_bridge');
   const archConceptIdx = anchorV11.blocks.findIndex((b) => b.id === 'architectural_concept');
+  assert(archCtxIdx < bridgeIdx,
+    `architecture_context (${archCtxIdx}) must come before architecture_function_bridge (${bridgeIdx}, Phase 8B.1 §4)`);
   assert(archCtxIdx < archConceptIdx,
     `architecture_context (${archCtxIdx}) must come before architectural_concept (${archConceptIdx})`);
+  assert(bridgeIdx < archConceptIdx,
+    `architecture_function_bridge (${bridgeIdx}) must come before architectural_concept (${archConceptIdx}, Phase 8B.1 §4)`);
 });
 
 test('B: architecture_context 不含禁止复刻的具体物 (v1.0 §34 规则一/五)', () => {
@@ -192,17 +208,17 @@ test('B: total characterCount within 12000 (extended limit for in-context)', () 
 // ---------- A/B Test: B 在 v0.1 DNA 上也能跑 (向后兼容) ----------
 console.log('\nB (v0.1 DNA compatibility):');
 
-test('B: anchor-aware works on v0.1 JZMX DNA too (backward compat)', () => {
+test('B: anchor-aware works on v0.1.1 JZMX DNA too (backward compat, Phase 8B.1)', () => {
   const r = compileFieldEnrichedPromptWithAnchorContext(v01Dna, anchors);
-  assert(r.blockCount === 11, `v0.1 DNA anchor-aware blockCount ${r.blockCount} != 11`);
-  assert(r.anchorContextIncluded, 'v0.1 DNA anchor-aware should include context');
+  assert(r.blockCount === 12, `v0.1.1 DNA anchor-aware blockCount ${r.blockCount} != 12 (Phase 8B.1)`);
+  assert(r.anchorContextIncluded, 'v0.1.1 DNA anchor-aware should include context');
 });
 
-test('B: empty anchors -> degrades to baseline (10 blocks)', () => {
+test('B: empty anchors -> degrades to baseline (11 blocks, Phase 8B.1)', () => {
   const r = compileFieldEnrichedPromptWithAnchorContext(v11Dna, []);
-  assert(r.blockCount === 10, `empty anchors should fall back to 10 blocks, got ${r.blockCount}`);
+  assert(r.blockCount === 11, `empty anchors should fall back to 11 blocks (Phase 8B.1), got ${r.blockCount}`);
   assert(r.anchorContextIncluded === false, 'empty anchors should not set anchorContextIncluded');
-  assert(r.characterCount === 5019, `empty anchors should match v0.2 baseline characterCount (5019), got ${r.characterCount}`);
+  assert(r.characterCount === 6680, `empty anchors should match v0.3 baseline characterCount (6680), got ${r.characterCount}`);
 });
 
 // ---------- A/B Test: 评估对比 ----------
@@ -223,11 +239,11 @@ test('A == B: same DNA => same 6-dim score (sanity check)', () => {
   }
 });
 
-test('prompt 字符差 (anchor 注入) < baseline 字符的 80% (i.e. < 4015)', () => {
+test('prompt 字符差 (anchor 注入) < baseline 字符的 80% (i.e. < 5344)', () => {
   // 验证 anchor block 是适度大小, 没有把整个 prompt 撑爆
-  // v0.2 baseline = 5019, 80% = 4015
+  // v0.3 (Phase 8B.1) baseline = 6680, 80% = 5344
   const diff = anchorV11.characterCount - baselineV11.characterCount;
-  assert(diff < 4015, `anchor injection added ${diff} chars, should be < 4015 (i.e. < 80% of 5019 v0.2 baseline)`);
+  assert(diff < 5344, `anchor injection added ${diff} chars, should be < 5344 (i.e. < 80% of 6680 v0.3 baseline)`);
 });
 
 // ---------- 写产物 (不 commit) ----------

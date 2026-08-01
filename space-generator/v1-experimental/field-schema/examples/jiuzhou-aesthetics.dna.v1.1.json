@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "dnaVersion": "v0.2",
+  "dnaVersion": "v0.3",
   "project": {
     "brandName": "九州美学",
     "industry": "医疗美容与医美生态服务",
@@ -142,9 +142,49 @@
     "translationStrength": 0.7
   },
   "weightAllocation": {
-    "architecture": 0.5,
+    "architecture": 0.45,
     "brand": 0.3,
-    "functional": 0.2
+    "functional": 0.25
+  },
+  "architectureFunctionBridge": {
+    "purpose": "让首次到店的医美客户在 3 秒内被接住, 5 分钟内建立专业信任; staff 在前场高效完成接待-咨询-分流.",
+    "spatialTranslation": [
+      "膜天花 -> 入口到等候区的视觉引导, 进门时视线自然落到接待台",
+      "玻璃幕墙 -> 街道与室内视觉连续, 服务品牌可见性",
+      "弧形膜切片 -> 接待与等候区听觉弱屏蔽, staff 可小声确认信息",
+      "金属长方体接待台 + 顶底发光缝 -> 视觉区分 '功能性前台' 与 '展示装置'"
+    ],
+    "operationConstraints": [
+      "接待台后方 1.5m staff 通道",
+      "等候区主通道 >= 1.8m (无障碍)",
+      "consultation 工位之间声压差 >= 10dB",
+      "玻璃幕墙入口净宽 >= 1.5m (紧急疏散)",
+      "visibleButNotHospitalLike: 消毒/急救/隐私标识可见, 不放病床或手术灯"
+    ],
+    "humanExperience": [
+      "进门 3 秒内视线落到接待台",
+      "等候区必须有可坐沙发 + 茶几 + 至少 1 株真植物",
+      "consultation 区视觉上从 public 渐变到 semi-private, 无硬门 + 锁",
+      "staff 必须可见, 至少 1 位接待 + 1 位 consultation",
+      "client 眼睛高度光线柔和, 无强光斑 / 射灯直射 / 紫色色块"
+    ],
+    "commercialReality": [
+      "接待台必须有功能性储物 (抽屉/柜门可见)",
+      "沙发可坐, >= 3 人位",
+      "consultation 工位有桌面 + 椅子 + 1-2 件办公用品",
+      "1 处品牌内容物, 面积 <= 5%",
+      "至少 1 处产品/服务展示",
+      "可以 0-3 个客户 (sparse), 不出现 0 staff + 0 客户的纯展示"
+    ],
+    "conceptDriftGuards": [
+      "exhibition-only architecture without functional anchors",
+      "membrane ceiling as decorative-only",
+      "reception desk as pure sculpture",
+      "consultation without desks/chairs/staff",
+      "empty gallery-like space",
+      "architecture language dominates, commercial operation weakens"
+    ],
+    "weightBoost": 0.25
   },
   "brandSpaceDna": {
     "brandSpirit": {
@@ -298,7 +338,7 @@
     "frozenAt": "2026-08-01T00:00:00.000Z",
     "frozenFromCommit": "272e36d",
     "schemaVersion": "v1.1",
-    "schemaTitle": "Space DNA v1.1 (Architecture-Brand Fusion)",
+    "schemaTitle": "Space DNA v1.1 (Architecture-Brand Fusion) + Phase 8B.1 architectureFunctionBridge",
     "sourceBenchmarkIds": [
       "JZMX-SGR-01-Exterior",
       "JZMX-SGR-02-Reception"
@@ -308,13 +348,23 @@
       "JZMX-ARCH-02-EntranceGlass",
       "JZMX-ARCH-03-ConsultationFacade"
     ],
+    "sourceFunctionCalibrationIds": [
+      "JZMX-FUNC-01-reception-realism",
+      "JZMX-FUNC-02-consultation-flow"
+    ],
     "promotedFromVersion": "v0.1-initial",
     "promotedBy": "Mavis (Space Generator v1.1, 2026-08-01)",
+    "phasePromotions": [
+      "v0.1 -> v0.2 (v1.1, 2026-08-01): brandTranslationRules + weightAllocation + 4 architectureDna sub-fields",
+      "v0.2 -> v0.3 (Phase 8B.1, 2026-08-01): architectureFunctionBridge (5 arrays + weightBoost) + weightAllocation 0.5/0.3/0.2 -> 0.45/0.3/0.25 (Architecture Concept Drift 缓解)"
+    ],
     "regressionProject": true,
     "notes": [
       "v0.1 -> v0.2 promotion adds brandTranslationRules + weightAllocation + 4 new architectureDna sub-fields (ceilingMechanism / facadeMechanism / partitionMechanism / furnitureFormGrammar).",
+      "v0.2 -> v0.3 promotion adds architectureFunctionBridge field to bridge architectureDna 4 mechanism with functionalDna 商业现实, mitigating Phase 8B Architecture Concept Drift.",
       "brandSpaceDna 保留以做 v0.1 向后兼容; v1.1+ 字段重音移到 brandTranslationRules.",
-      "Architecture Anchor 数据从 v1-experimental/architecture-anchors/jiuzhou-aesthetics/architecture-dna-analysis.yaml 反向抽取."
+      "Architecture Anchor 数据从 v1-experimental/architecture-anchors/jiuzhou-aesthetics/architecture-dna-analysis.yaml 反向抽取.",
+      "Function Calibration 数据从 v1-experimental/function-calibrations/jiuzhou-aesthetics/function-dna-analysis.yaml 反向抽取 (Phase 8B.1 新增)."
     ]
   }
 }
