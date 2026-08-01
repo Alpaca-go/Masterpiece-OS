@@ -220,6 +220,70 @@ test('Phase 8B.1 §8.3: bridge.conceptDriftGuards present in v0.3 (5+ items)', (
     `Phase 8B.1 §8.3 conceptDriftGuards should have >= 5 items, got ${guards.length}`);
 });
 
+// ---------- Phase 8C §6.3 4 summary 指标 ----------
+console.log('\nPhase 8C §6.3 Runtime 4 summary metrics:');
+
+test('runtimeSummary has all 4 metrics (Phase 8C §6.3)', () => {
+  const dna = loadDna(dnas.jzmx_v02_v11);
+  const r = evaluateSpace(dna);
+  assert(r.runtimeSummary, 'runtimeSummary missing');
+  for (const k of ['architectureBeauty', 'functionalAdaptation', 'brandIntegration', 'conceptDriftPenalty']) {
+    assert(r.runtimeSummary[k], `runtimeSummary.${k} missing`);
+    assert(typeof r.runtimeSummary[k].score === 'number', `${k}.score not number`);
+    assert(typeof r.runtimeSummary[k].max === 'number', `${k}.max not number`);
+    assert(r.runtimeSummary[k].reason, `${k}.reason missing`);
+  }
+});
+
+test('Architecture Beauty Score mirrors architecture_quality (25/25 for v0.3)', () => {
+  const r = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  const ab = r.runtimeSummary.architectureBeauty;
+  assert(ab.score === 25, `architectureBeauty should be 25, got ${ab.score}`);
+  assert(ab.max === 25, `architectureBeauty max should be 25, got ${ab.max}`);
+});
+
+test('Functional Adaptation Score = functional_realism + phase8B1Bonus (v0.3: 20+1=21/21)', () => {
+  const r = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  const fa = r.runtimeSummary.functionalAdaptation;
+  assert(fa.score === 21, `functionalAdaptation should be 20+1=21, got ${fa.score}`);
+  assert(fa.max === 21, `functionalAdaptation max should be 20+1=21, got ${fa.max}`);
+});
+
+test('Brand Integration Score mirrors brand_translation (20/20 for v0.3)', () => {
+  const r = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  const bi = r.runtimeSummary.brandIntegration;
+  assert(bi.score === 20, `brandIntegration should be 20, got ${bi.score}`);
+  assert(bi.max === 20, `brandIntegration max should be 20, got ${bi.max}`);
+});
+
+test('Concept Drift Penalty = 1 (full protection, 5+ guards in v0.3)', () => {
+  const r = evaluateSpace(loadDna(dnas.jzmx_v02_v11));
+  const cdp = r.runtimeSummary.conceptDriftPenalty;
+  assert(cdp.score === 1, `conceptDriftPenalty should be 1 (5+ guards), got ${cdp.score}`);
+  assert(cdp.max === 1, `conceptDriftPenalty max should be 1, got ${cdp.max}`);
+});
+
+test('Concept Drift Penalty = 0 for DNA without conceptDriftGuards (regression projects)', () => {
+  // YJLF / FTT / WY 没有 architectureFunctionBridge.conceptDriftGuards
+  for (const id of ['yjlf', 'ftt', 'wy']) {
+    const r = evaluateSpace(loadDna(dnas[id]));
+    const cdp = r.runtimeSummary.conceptDriftPenalty;
+    assert(cdp.score === 0,
+      `${id.toUpperCase()} conceptDriftPenalty should be 0 (no bridge), got ${cdp.score}`);
+  }
+});
+
+test('Phase 8C §8.4: runtime summary 4 metrics do not change 6-dim total (decoupled)', () => {
+  // 验证 runtimeSummary 是独立 metrics, 不影响 6-dim total
+  const dna = loadDna(dnas.jzmx_v02_v11);
+  const r1 = evaluateSpace(dna);
+  const r2 = evaluateSpace(dna);
+  assert(r1.total === r2.total,
+    `total should be deterministic, got ${r1.total} vs ${r2.total}`);
+  assert(r1.runtimeSummary.architectureBeauty.score === r2.runtimeSummary.architectureBeauty.score,
+    'architectureBeauty should be deterministic');
+});
+
 // ---------- 4 项目回归评估 ----------
 console.log('\n4-project regression (v1.1 §8 优秀不污染其他项目):');
 

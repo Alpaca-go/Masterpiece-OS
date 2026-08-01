@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "description": "Architecture Anchor Registry. Phase 8A. 不修改 production code, 仅在 v1-experimental 范围内提供 in-context reference 加载入口. Anchor 的 source-of-truth 仍是各 brand 子目录的 metadata.yaml + architecture-dna-analysis.yaml; registry 是面向 prompt compiler 的 manifest.",
+  "description": "Architecture Anchor Registry. Phase 8A + Phase 8C Runtime Integration. 不修改 production code, 仅在 v1-experimental 范围内提供 in-context reference 加载入口. Anchor 的 source-of-truth 仍是各 brand 子目录的 metadata.yaml + architecture-dna-analysis.yaml; registry 是面向 prompt compiler 的 manifest. Phase 8C 在原 Phase 8A 基础上加 category + strength 字段, 供 selectAnchors 自动选择使用.",
   "brands": {
     "jiuzhou-aesthetics": {
       "brandDisplayName": "九州美学",
@@ -9,37 +9,80 @@
         {
           "id": "JZMX-ARCH-01-ReceptionMembrane",
           "role": "interior_reception_with_membrane_ceiling",
+          "category": "organic_translucent_structure",
           "primaryMechanism": "层叠半透明介质从天花垂落, 在中心汇合形成夹层光, 边缘缓慢过渡为墙, 无硬收边",
           "secondaryMechanism": "金属长方体接待台配顶底发光缝, 与暖色环境形成对比",
           "imagePath": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
-          "weight": 1.0
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.95,
+            "function": 0.75
+          },
+          "applicability": {
+            "industries": ["medical_aesthetics", "health_management"],
+            "sceneTypes": ["reception", "consultation", "vip_lounge"],
+            "commercialContexts": ["street_store", "mall_store", "flagship"]
+          }
         },
         {
           "id": "JZMX-ARCH-02-EntranceGlass",
           "role": "entrance_corridor_through_glass_facade",
+          "category": "soft_light_circulation",
           "primaryMechanism": "窄框整面玻璃幕墙 + 短走廊缓冲, 街道与室内形成视觉连续",
           "secondaryMechanism": "弧形连续天花 + 浅木流线形接待台, 由低向高的空间序列",
           "imagePath": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
-          "weight": 1.0
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.90,
+            "function": 0.85
+          },
+          "applicability": {
+            "industries": ["medical_aesthetics", "health_management", "retail", "restaurant"],
+            "sceneTypes": ["exterior", "reception", "corridor"],
+            "commercialContexts": ["street_store", "mall_store", "flagship", "popup"]
+          }
         },
         {
           "id": "JZMX-ARCH-03-ConsultationFacade",
           "role": "wide_consultation_floor_with_full_glass",
+          "category": "continuous_spatial_membrane",
           "primaryMechanism": "单层大跨膜天花 + 中心天窗, 跨工位连续覆盖, 自然光通过半透明介质柔化后落下",
           "secondaryMechanism": "整面 3 大格落地玻璃 + 弧形膜切分工位, 维持视觉连续 + 听觉弱屏蔽",
           "imagePath": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png",
-          "weight": 1.0
+          "weight": 1.0,
+          "strength": {
+            "architecture": 0.88,
+            "function": 0.80
+          },
+          "applicability": {
+            "industries": ["medical_aesthetics", "health_management"],
+            "sceneTypes": ["consultation", "treatment", "lobby"],
+            "commercialContexts": ["street_store", "flagship", "office_floor"]
+          }
         }
       ]
     }
   },
   "loaders": {
     "fieldMechanismsOnly": "loader/load-anchors.mjs :: loadArchitectureAnchors(brandKey) returns mechanism strings, no image bytes",
-    "inContextReference": "loader/load-anchors.mjs :: loadAnchorsAsInContextReference(brandKey) returns compact list with image path (for runtime use, not for prompt text)"
+    "inContextReference": "loader/load-anchors.mjs :: loadAnchorsAsInContextReference(brandKey) returns compact list with image path (for runtime use, not for prompt text)",
+    "automaticSelection": "loader/load-anchors.mjs :: selectAnchors(brandKey, criteria) Phase 8C: scores anchors by industry / sceneType / commercialContext / functional realism, returns top-K"
+  },
+  "selectionPolicy": {
+    "scoringWeights": {
+      "industryMatch": 0.35,
+      "sceneTypeMatch": 0.30,
+      "commercialContextMatch": 0.15,
+      "functionalAlignment": 0.10,
+      "weight": 0.10
+    },
+    "minScore": 0.0,
+    "defaultMaxCount": 3
   },
   "inContextPolicy": {
     "maxReferencesPerPrompt": 3,
     "preferredOrder": "by role coverage: exterior -> interior_reception -> consultation_floor -> corridor -> vip_lounge -> product_display -> treatment -> lobby",
-    "fallbackBehavior": "if a brand has no anchors, return empty list; prompt compiler degrades to v1.1 baseline (10 blocks, no architecture_context block)"
+    "fallbackBehavior": "if a brand has no anchors, return empty list; prompt compiler degrades to v1.1 + Phase 8B.1 baseline (11 blocks, no architecture_context block)"
   }
 }
+

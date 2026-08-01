@@ -1,4 +1,4 @@
-// Space Evaluation Layer v1.1 + Phase 8B.1
+// Space Evaluation Layer v1.1 + Phase 8B.1 + Phase 8C Runtime Integration
 // 按 v1.0 §25 6 维评分体系: 建筑设计质量(25) + 品牌转译质量(20) + 功能真实性(20) +
 //   材质与照明(15) + 构图与交付质量(10) + 多样性与一致性(10) = 100 分
 // 验收等级: v1.0 §26 -> S 级 >= 85, A 级 70-84, B 级 55-69, C 级 < 55
@@ -12,6 +12,12 @@
 //   2. Functional 维度分提升 (bridge 应在 functional 维度加分, 反映商业现实约束)
 //   3. Concept Drift 通过 architectureFunctionBridge.conceptDriftGuards 防护
 //   4. Brand 维度分不变 (bridge 不应改变 brandTranslation 块)
+//
+// Phase 8C §6.3 Runtime 跟踪 4 个 summary 指标 (不计入 6-dim 总分):
+//   - Architecture Beauty Score: 反映 architecture_quality 维度 (0-25)
+//   - Functional Adaptation Score: 反映 functional_realism 维度 + phase8B1Bonus (0-20 + 0-1)
+//   - Brand Integration Score: 反映 brand_translation 维度 (0-20)
+//   - Concept Drift Penalty: conceptDriftGuards 完整度 (0 if absent, 1 if 5+)
 //
 // 不调 Provider, 不污染生产代码, 不动 v1-baseline.
 // 基于 DNA 结构做确定性评分, 任何 v0.1 / v0.1.1 / v0.3 DNA 都能跑出总分.
@@ -389,11 +395,79 @@ function computePhase8B1Bonus(dna) {
 }
 
 /**
+ * Phase 8C §6.3: compute 4 summary metrics for runtime tracking.
+ * These don't change 6-dim total (max 100 fixed). They are runtime monitoring signals.
+ *
+ * @param dna           Space DNA instance
+ * @param dimensions    result of 6-dim evaluation (used to derive scores)
+ * @returns { architectureBeauty, functionalAdaptation, brandIntegration, conceptDriftPenalty }
+ *          Each: { score, max, reason }
+ */
+function computeRuntimeSummary(dna, dimensions) {
+  const dimByName = (name) => dimensions.find((d) => d.name === name);
+
+  // 1. Architecture Beauty Score (0-25, mirrors architecture_quality)
+  const archDim = dimByName('architecture_quality');
+  const architectureBeauty = {
+    score: archDim?.score ?? 0,
+    max: archDim?.max ?? 25,
+    reason: 'mirrors architecture_quality dimension (Phase 8C §6.3)',
+  };
+
+  // 2. Functional Adaptation Score (0-20 + 0-1 bridge bonus, mirrors functional_realism + phase8B1Bonus)
+  const funcDim = dimByName('functional_realism');
+  const bridgeBonus = computePhase8B1Bonus(dna);
+  const functionalAdaptation = {
+    score: (funcDim?.score ?? 0) + bridgeBonus.score,
+    max: (funcDim?.max ?? 20) + bridgeBonus.max,
+    reason: 'mirrors functional_realism + phase8B1Bonus (Phase 8C §6.3)',
+  };
+
+  // 3. Brand Integration Score (0-20, mirrors brand_translation)
+  const brandDim = dimByName('brand_translation');
+  const brandIntegration = {
+    score: brandDim?.score ?? 0,
+    max: brandDim?.max ?? 20,
+    reason: 'mirrors brand_translation dimension (Phase 8C §6.3)',
+  };
+
+  // 4. Concept Drift Penalty (0-1, reflect conceptDriftGuards presence)
+  // 0 if absent, 0.5 if 1-4 guards, 1 if 5+ guards
+  const afb = dna.architectureFunctionBridge;
+  const guardCount = afb?.conceptDriftGuards?.length ?? 0;
+  let penalty;
+  let reason;
+  if (guardCount === 0) {
+    penalty = 0;
+    reason = 'no architectureFunctionBridge.conceptDriftGuards (Concept Drift unprotected)';
+  } else if (guardCount < 5) {
+    penalty = 0.5;
+    reason = `conceptDriftGuards has ${guardCount} items (< 5, partial protection)`;
+  } else {
+    penalty = 1;
+    reason = `conceptDriftGuards has ${guardCount} items (>= 5, full Phase 8B.1 §7 protection)`;
+  }
+  const conceptDriftPenalty = {
+    score: penalty,
+    max: 1,
+    reason,
+  };
+
+  return {
+    architectureBeauty,
+    functionalAdaptation,
+    brandIntegration,
+    conceptDriftPenalty,
+  };
+}
+
+/**
  * Evaluate a Space DNA instance against v1.0 §25 6-dimension scoring.
  * @param dna  Space DNA instance (v0.1 / v0.1.1 / v0.3)
- * @returns   { total, max, level, dimensions, phase8B1Bonus }
+ * @returns   { total, max, level, dimensions, phase8B1Bonus, runtimeSummary }
  *            - total/max/level: 6-dim scoring (v1.0 §25)
  *            - phase8B1Bonus: separate indicator for Phase 8B.1 bridge field presence
+ *            - runtimeSummary: Phase 8C §6.3 4 summary metrics
  */
 export function evaluateSpace(dna) {
   if (!dna || typeof dna !== 'object') {
@@ -410,11 +484,13 @@ export function evaluateSpace(dna) {
   const total = dimensions.reduce((s, d) => s + d.score, 0);
   const max = dimensions.reduce((s, d) => s + d.max, 0);
   const phase8B1Bonus = computePhase8B1Bonus(dna);
+  const runtimeSummary = computeRuntimeSummary(dna, dimensions);
   return {
     total,
     max,
     level: scoreToLevel(total),
     dimensions,
     phase8B1Bonus,
+    runtimeSummary,
   };
 }
