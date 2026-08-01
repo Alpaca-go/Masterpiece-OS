@@ -1,0 +1,169 @@
+{
+  "schemaVersion": "1.0",
+  "version": "1.0.0",
+  "phase": "9C.0.5",
+  "description": "Industry -> allowed categories / spaceTypes / audiences / motifs / materials / lighting / negativeConstraints. Each industry is a coherent set of design assumptions. Cross-checking a brand DNA against the expected set reveals internal contradictions or external mismatches (e.g. sports_retail DNA with medical_aesthetics negativeConstraints).",
+  "industries": {
+    "restaurant": {
+      "label": "餐厅 / 餐饮",
+      "synonyms": ["food", "dining", "f&b", "餐饮"],
+      "categories": ["restaurant", "casual_dining", "fast_casual", "fine_dining", "food_store"],
+      "spaceTypes": ["reception", "casual_dining", "dining_area", "food_store", "open_kitchen", "vip_room", "waiting_area"],
+      "audienceKeywords": ["食客", "客人", "diner", "guest", "顾客", "consumer", "消费者", "dining", "聚餐", "约会", "社交", "餐厅", "吃货", "川菜", "午餐", "居民", "客流", "街坊"],
+      "audienceAntiKeywords": ["运动员", "装备升级", "athlete", "equipment", "fitness"],
+      "motifFamiliesAllowed": ["warm_wood", "open_kitchen", "food_centric", "social_gathering", "lantern_warm", "industrial_chic"],
+      "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "spa_wave", "lily_pad", "medical_light", "high_end_clinic"],
+      "materialsAllowed": ["warm_wood", "natural_texture", "stainless_steel", "real_kitchen_equipment", "exposed_brick", "concrete", "leather", "ceramic", "lacquered_panel"],
+      "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "feather_like_flow_overuse", "white_curved_wall_overuse", "spa_aroma"],
+      "lightingAllowed": ["natural_daylight", "warm_ambient", "lantern", "track_lighting", "open_fire_visible", "warm_pendant", "low_contrast"],
+      "lightingForbidden": ["high_end_clinic_lighting", "spa_lighting", "neon_club_flash", "museum_spotlight"],
+      "negativeConstraintsExpected": ["fine_dining_pretension", "fast_food_chain_plastic", "buffet_cafeteria"],
+      "negativeConstraintsForbidden": [],
+      "brandSpiritExpected": {
+        "playful": [0.3, 1.0],
+        "social": [0.4, 1.0],
+        "warm": [0.4, 1.0],
+        "premium": [0.0, 0.7]
+      },
+      "brandSpiritForbidden": ["scientific", "healing", "spa_calm"]
+    },
+    "tcm_wellness": {
+      "label": "中医养生 / 健康管理",
+      "synonyms": ["tcm", "wellness", "中医", "养生", "健康管理"],
+      "categories": ["tcm_clinic", "wellness_center", "tcm_consultation", "tea_house_wellness", "tcm_wellness", "health_management"],
+      "spaceTypes": ["reception", "tcm_consultation", "consultation", "treatment", "waiting_area", "tea_corner", "herbal_display"],
+      "audienceKeywords": ["养生", "调理", "wellness", "health_conscious", "tcm", "亚健康", "长期调理", "中医", "健康管理", "客户", "consumer", "消费者", "人群", "顾客"],
+      "audienceAntiKeywords": ["运动员", "装备升级", "athlete", "equipment"],
+      "motifFamiliesAllowed": ["natural_herb", "tea_ceremony", "bamboo_quiet", "wood_grain_calm", "mineral_warm"],
+      "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "neon_club", "sports_dynamic"],
+      "materialsAllowed": ["natural_wood", "linen", "bamboo", "natural_stone", "mineral_paint", "tea_ware_ceramic", "warm_fabric"],
+      "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "neon_club", "metal_grid", "rubber_floor"],
+      "lightingAllowed": ["natural_daylight", "warm_ambient", "paper_lantern", "soft_diffused", "low_brightness_warm"],
+      "lightingForbidden": ["high_end_clinic_lighting", "neon_club_flash", "direct_sports_lighting", "track_spotlight_hard"],
+      "negativeConstraintsExpected": ["modern_clinic_pretension", "spa_pretension"],
+      "negativeConstraintsForbidden": [],
+      "brandSpiritExpected": {
+        "calm": [0.4, 1.0],
+        "healing": [0.3, 1.0],
+        "natural": [0.4, 1.0],
+        "playful": [0.0, 0.4]
+      },
+      "brandSpiritForbidden": ["futuristic", "neon_club"]
+    },
+    "medical_aesthetics": {
+      "label": "医疗美容 / 医美",
+      "synonyms": ["aesthetic_clinic", "medical_beauty", "医美", "aesthetic medicine", "医疗美容"],
+      "categories": ["aesthetic_clinic", "medical_beauty", "skin_care_clinic", "wellness_aesthetic", "medical_aesthetics"],
+      "spaceTypes": ["reception", "consultation", "treatment", "vip_lounge", "lobby", "corridor", "product_display", "fitting_room"],
+      "audienceKeywords": ["求美者", "patient", "client", "高净值", "隐私", "信任", "专业", "aesthetic_improvement", "医美", "消费者", "客户", "医疗"],
+      "audienceAntiKeywords": ["运动员", "装备升级", "athlete", "equipment", "fitness_gear"],
+      "motifFamiliesAllowed": ["feather_like_flow", "petal_sculpture", "lily_pad", "crystal_object", "calm_mineral", "soft_curve", "translucent_fiber", "high_end_peacock"],
+      "motifFamiliesForbidden": ["sports_dynamic", "neon_club", "raw_industrial", "rubber_floor", "graffiti", "y2k_pop"],
+      "materialsAllowed": ["calm_mineral", "translucent_surface", "soft_lacquer", "high_end_lacquer", "natural_stone", "linen", "velvet"],
+      "materialsForbidden": ["rubber_floor", "exposed_concrete", "metal_grid", "raw_industrial_concrete", "neon_signage_tube"],
+      "lightingAllowed": ["indirect_illumination", "soft_natural", "warm_wash", "soft_diffused", "low_brightness_warm"],
+      "lightingForbidden": ["direct_sports_lighting", "neon_club_flash", "high_end_clinic_overly_bright"],
+      "negativeConstraintsExpected": ["hospital_pretension", "spa_pretension", "nightclub_lighting"],
+      "negativeConstraintsForbidden": [],
+      "brandSpiritExpected": {
+        "premium": [0.4, 1.0],
+        "calm": [0.3, 1.0],
+        "healing": [0.2, 1.0],
+        "elegant": [0.3, 1.0],
+        "scientific": [0.2, 1.0]
+      },
+      "brandSpiritForbidden": ["playful_over_0.7", "y2k_neon"]
+    },
+    "sports_retail": {
+      "label": "体育用品零售",
+      "synonyms": ["sports_goods_retail", "athletic_retail", "运动品牌", "运动零售", "体育用品"],
+      "categories": ["sports_retail", "athletic_apparel", "sportswear_store", "mall_store", "retail"],
+      "spaceTypes": ["product_display", "fitting_room", "trial_zone", "checkout_counter", "service_desk", "community_gathering_area"],
+      "audienceKeywords": ["运动爱好者", "运动员", "athlete", "fitness", "装备升级", "跑者", "训练", "健身", "年轻"],
+      "audienceAntiKeywords": ["patient", "求美者", "养生", "wellness", "hospital"],
+      "motifFamiliesAllowed": ["dynamic_line", "sports_grid", "athlete_pose", "energy_motion", "tribal_pattern"],
+      "motifFamiliesForbidden": ["feather_like_flow", "petal_sculpture", "crystal_object", "peacock", "spa_wave", "lily_pad"],
+      "materialsAllowed": ["sports_mesh", "rubber_floor", "concrete", "metal_grid", "performance_fabric", "tribal_pattern_print", "exposed_concrete"],
+      "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "feather_like_flow_overuse", "spa_aroma"],
+      "lightingAllowed": ["direct_lighting", "track_spotlight_hard", "high_brightness", "rgb_sport", "stadium_inspired"],
+      "lightingForbidden": ["high_end_clinic_lighting", "spa_lighting", "neon_club_flash", "low_brightness_warm"],
+      "negativeConstraintsExpected": ["vintage_retro", "fine_dining"],
+      "negativeConstraintsForbidden": [],
+      "brandSpiritExpected": {
+        "playful": [0.3, 0.9],
+        "energetic": [0.4, 1.0],
+        "premium": [0.0, 0.6]
+      },
+      "brandSpiritForbidden": ["healing", "scientific", "spa_calm", "elegant_lobby"]
+    },
+    "fashion_retail": {
+      "label": "时尚零售 / 服装零售",
+      "synonyms": ["fashion", "apparel", "服装零售"],
+      "categories": ["fashion_retail", "apparel_store", "mall_store", "retail"],
+      "spaceTypes": ["product_display", "fitting_room", "vip_room", "checkout_counter", "lobby"],
+      "audienceKeywords": ["时尚", "潮人", "fashion", "trendy", "年轻", "穿搭"],
+      "audienceAntiKeywords": ["运动员", "patient", "养生"],
+      "motifFamiliesAllowed": ["seasonal_trend", "minimalist", "editorial", "street_style"],
+      "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "spa_wave", "lily_pad", "neon_club"],
+      "materialsAllowed": ["natural_wood", "lacquered_panel", "metal_finish", "velvet", "linen", "leather"],
+      "materialsForbidden": ["rubber_floor", "exposed_concrete", "metal_grid", "neon_signage_tube"],
+      "lightingAllowed": ["track_spotlight", "warm_wash", "soft_diffused", "editorial_studio"],
+      "lightingForbidden": ["high_end_clinic_lighting", "neon_club_flash", "stadium_inspired"],
+      "negativeConstraintsExpected": ["warehouse_discount"],
+      "negativeConstraintsForbidden": [],
+      "brandSpiritExpected": {
+        "playful": [0.2, 0.8],
+        "elegant": [0.2, 0.9],
+        "social": [0.3, 0.8]
+      },
+      "brandSpiritForbidden": ["healing", "scientific", "spa_calm"]
+    },
+    "casual_dining": {
+      "label": "休闲餐饮 / 潮流餐饮",
+      "synonyms": ["casual_food", "trendy_dining", "街头餐饮", "潮流快餐", "炭烧", "炭锅", "火锅", "干锅", "烤鱼", "牛蛙"],
+      "categories": ["casual_dining", "fast_casual", "casual_dining_chain", "trendy_food", "y2k_dining", "charcoal_grill"],
+      "spaceTypes": ["reception", "casual_dining", "dining_area", "open_kitchen", "counter", "photo_spot", "logo_wall"],
+      "audienceKeywords": ["年轻食客", "打卡", "年轻", "y2k", "潮", "性价比", "diner", "young"],
+      "audienceAntiKeywords": ["运动员", "装备升级", "patient", "养生"],
+      "motifFamiliesAllowed": ["cartoon_ip", "y2k_pop", "neon_signage", "street_art", "bold_typography", "high_saturation_color", "led_strip"],
+      "motifFamiliesForbidden": ["feather_like_flow", "peacock", "petal_sculpture", "crystal_object", "spa_wave", "lily_pad", "fine_dining_chandelier"],
+      "materialsAllowed": ["lacquered_panel", "acrylic_lightbox", "led_strip", "stainless_steel", "printed_graphics", "rubber_floor"],
+      "materialsForbidden": ["optical_crystal_centerpiece", "translucent_fiber_decoration", "feather_like_flow_overuse", "white_curved_wall_overuse", "fine_dining_linen"],
+      "lightingAllowed": ["direct_lighting", "led_strip", "high_saturation_color_light", "neon_signage", "rgb_color"],
+      "lightingForbidden": ["high_end_clinic_lighting", "spa_lighting", "soft_diffused_only", "candlelight"],
+      "negativeConstraintsExpected": ["fine_dining_pretension", "hospital_pretension", "spa_pretension"],
+      "negativeConstraintsForbidden": [],
+      "brandSpiritExpected": {
+        "playful": [0.4, 1.0],
+        "energetic": [0.3, 1.0],
+        "youthful": [0.4, 1.0]
+      },
+      "brandSpiritForbidden": ["healing", "scientific", "spa_calm", "elegant_lobby", "fine_dining_pretension"]
+    }
+  },
+  "crossIndustryMotifContamination": [
+    { "motif": "feather_like_flow", "expectedIndustries": ["medical_aesthetics", "restaurant", "casual_dining", "fashion_retail"], "severity": "high", "rule": "feather_like_flow is a light/flow motif; expected in medical_aesthetics / restaurant / casual_dining / fashion_retail. NOT expected in sports_retail / tcm_wellness." },
+    { "motif": "peacock", "expectedIndustries": ["medical_aesthetics", "fashion_retail"], "severity": "high", "rule": "peacock motif is medical_aesthetics/fashion-luxury, not casual_dining/sports/tcm" },
+    { "motif": "petal_sculpture", "expectedIndustries": ["medical_aesthetics", "fashion_retail"], "severity": "high", "rule": "petal_sculpture is medical_aesthetics, not casual_dining/sports/tcm" },
+    { "motif": "crystal_object", "expectedIndustries": ["medical_aesthetics", "fashion_retail"], "severity": "high", "rule": "crystal_object is medical_aesthetics/fashion-luxury, not casual_dining/sports/tcm" },
+    { "motif": "spa_wave", "expectedIndustries": ["tcm_wellness"], "severity": "medium", "rule": "spa_wave is tcm_wellness adjacent, but more spa than tcm; not expected in restaurant/sports" },
+    { "motif": "lily_pad", "expectedIndustries": ["medical_aesthetics"], "severity": "medium", "rule": "lily_pad is medical_aesthetics, not casual_dining/sports" }
+  ],
+  "crossIndustryMaterialContamination": [
+    { "material": "rubber_floor", "expectedIndustries": ["sports_retail", "casual_dining"], "severity": "high", "rule": "rubber_floor is sports/gym material (and casual_dining street floor); not primary material for restaurant/tcm/medical" },
+    { "material": "exposed_concrete", "expectedIndustries": ["sports_retail", "casual_dining"], "severity": "medium", "rule": "exposed_concrete is industrial/sports/loft/street, not typical for medical_aesthetics/restaurant/tcm" },
+    { "material": "metal_grid", "expectedIndustries": ["sports_retail", "casual_dining"], "severity": "medium", "rule": "metal_grid is industrial/sports/street, not typical for medical_aesthetics/tcm/restaurant" }
+  ],
+  "crossIndustryNegativeConstraintContamination": [
+    { "constraint": "spa_atmosphere", "expectedIndustries": ["tcm_wellness", "medical_aesthetics"], "severity": "high", "rule": "spa_atmosphere concern is specifically tcm_wellness / medical_aesthetics; not a sports_retail concern. Sports retail would not specifically prohibit spa." },
+    { "constraint": "hospital_corridor", "expectedIndustries": ["medical_aesthetics"], "severity": "high", "rule": "hospital_corridor concern is specifically medical_aesthetics; not a sports_retail concern. Sports retail would not specifically prohibit hospital corridor." },
+    { "constraint": "high_end_clinic_lighting", "expectedIndustries": ["medical_aesthetics"], "severity": "high", "rule": "high_end_clinic_lighting is a specifically medical_aesthetics concern; not a sports_retail concern. Sports retail would not specifically prohibit clinic lighting." },
+    { "constraint": "silent_meditation_room", "expectedIndustries": ["tcm_wellness"], "severity": "medium", "rule": "silent_meditation_room concern is tcm_wellness; not a sports_retail concern." },
+    { "constraint": "fine_dining_dinnerware", "expectedIndustries": ["restaurant"], "severity": "medium", "rule": "fine_dining_dinnerware concern is restaurant; not a medical_aesthetics concern." }
+  ],
+  "confidenceThresholds": {
+    "pass": 0.85,
+    "review": 0.65,
+    "fail": 0.0
+  }
+}

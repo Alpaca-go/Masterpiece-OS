@@ -1,0 +1,50 @@
+{
+  "status": "pass",
+  "industry": {
+    "value": "餐饮 / 川菜 / 跷脚牛肉",
+    "matchedIndustry": "restaurant",
+    "confidence": 0.95,
+    "evidence": [
+      "matched to restaurant (餐厅 / 餐饮)"
+    ]
+  },
+  "category": {
+    "value": "restaurant",
+    "matchedIndustry": "restaurant",
+    "confidence": 0.9,
+    "evidence": [
+      "category matches industry key (restaurant)"
+    ]
+  },
+  "spaceType": {
+    "value": "reception",
+    "matchedIndustry": "restaurant",
+    "confidence": 0.9,
+    "evidence": [
+      "sceneType in industry.allowedSpaceTypes: reception, casual_dining, dining_area, food_store, open_kitchen, vip_room, waiting_area"
+    ]
+  },
+  "audience": {
+    "value": [
+      "川菜消费者",
+      "周边居民",
+      "午餐客流"
+    ],
+    "matchedIndustry": "restaurant",
+    "confidence": 0.95,
+    "evidence": [
+      "keyword matches: 消费者, 川菜, 午餐, 居民, 客流"
+    ]
+  },
+  "riskLevel": "low",
+  "overallConfidence": 0.927,
+  "issues": [],
+  "metadata": {
+    "phase": "9C.0.5",
+    "version": "1.0.0",
+    "gate": "brand-identity-validation-gate",
+    "brandKey": "冯烫烫",
+    "projectIdLocal": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+    "generatedAt": "2026-08-01T15:10:03.585Z"
+  }
+}

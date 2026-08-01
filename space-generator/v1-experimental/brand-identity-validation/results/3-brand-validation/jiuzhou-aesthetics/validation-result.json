@@ -1,0 +1,50 @@
+{
+  "status": "pass",
+  "industry": {
+    "value": "医疗美容与医美生态服务",
+    "matchedIndustry": "medical_aesthetics",
+    "confidence": 0.95,
+    "evidence": [
+      "matched to medical_aesthetics (医疗美容 / 医美)"
+    ]
+  },
+  "category": {
+    "value": "medical_aesthetics",
+    "matchedIndustry": "medical_aesthetics",
+    "confidence": 0.9,
+    "evidence": [
+      "category matches industry key (medical_aesthetics)"
+    ]
+  },
+  "spaceType": {
+    "value": "reception",
+    "matchedIndustry": "medical_aesthetics",
+    "confidence": 0.9,
+    "evidence": [
+      "sceneType in industry.allowedSpaceTypes: reception, consultation, treatment, vip_lounge, lobby, corridor, product_display, fitting_room"
+    ]
+  },
+  "audience": {
+    "value": [
+      "医美消费者",
+      "合作机构",
+      "医疗从业者"
+    ],
+    "matchedIndustry": "medical_aesthetics",
+    "confidence": 0.9,
+    "evidence": [
+      "keyword matches: 医美, 消费者, 医疗"
+    ]
+  },
+  "riskLevel": "low",
+  "overallConfidence": 0.918,
+  "issues": [],
+  "metadata": {
+    "phase": "9C.0.5",
+    "version": "1.0.0",
+    "gate": "brand-identity-validation-gate",
+    "brandKey": "九州美学",
+    "projectIdLocal": "a7a56ed7-849f-4671-b47a-466394d7298d",
+    "generatedAt": "2026-08-01T15:10:03.564Z"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "status": "pass",
+  "industry": {
+    "value": "中医养生与健康管理",
+    "matchedIndustry": "tcm_wellness",
+    "confidence": 0.95,
+    "evidence": [
+      "matched to tcm_wellness (中医养生 / 健康管理)"
+    ]
+  },
+  "category": {
+    "value": "health_management",
+    "matchedIndustry": "tcm_wellness",
+    "confidence": 0.9,
+    "evidence": [
+      "category in industry.allowedCategories: tcm_clinic, wellness_center, tcm_consultation, tea_house_wellness, tcm_wellness, health_management"
+    ]
+  },
+  "spaceType": {
+    "value": "reception",
+    "matchedIndustry": "tcm_wellness",
+    "confidence": 0.9,
+    "evidence": [
+      "sceneType in industry.allowedSpaceTypes: reception, tcm_consultation, consultation, treatment, waiting_area, tea_corner, herbal_display"
+    ]
+  },
+  "audience": {
+    "value": [
+      "养生消费者",
+      "亚健康人群",
+      "中老年客户"
+    ],
+    "matchedIndustry": "tcm_wellness",
+    "confidence": 0.95,
+    "evidence": [
+      "keyword matches: 养生, 亚健康, 客户, 消费者, 人群"
+    ]
+  },
+  "riskLevel": "low",
+  "overallConfidence": 0.927,
+  "issues": [],
+  "metadata": {
+    "phase": "9C.0.5",
+    "version": "1.0.0",
+    "gate": "brand-identity-validation-gate",
+    "brandKey": "一剂良方",
+    "projectIdLocal": "yjlifang-regression-sample",
+    "generatedAt": "2026-08-01T15:10:03.588Z"
+  }
+}
