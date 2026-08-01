@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T12:17:54.574Z",
+  "phase": "9B.1",
+  "brandKey": "feng-tang-tang",
+  "modeA": {
+    "blockCount": 14,
+    "characterCount": 6634,
+    "runtimePath": "spatial_intelligence_9a2_9a3_8a_8b1",
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ]
+  },
+  "modeB": {
+    "blockCount": 15,
+    "characterCount": 8342,
+    "runtimePath": "spatial_intelligence_9a2_9a3_9b1_8a_8b1",
+    "blockOrder": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "spatial_reality_constraint",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "spatialRealityDna": {
+      "spaceType": "casual_dining_restaurant",
+      "commercialScale": "80-150 sqm casual restaurant, 30-50 seat, 翻台率 2-3 轮 / 晚",
+      "requiredZones": [
+        "open_kitchen",
+        "dining_area",
+        "counter",
+        "waiting_corner",
+        "restroom_access"
+      ],
+      "operationLogic": "visible food prep + social dining; 厨房/前厅 staff 始终可见, 食材制作过程是体验核心, 高峰期 staff 8-12 人",
+      "userFlow": "street -> counter (点单) -> dining (15-30 分钟等餐) -> dining (30-60 分钟用餐) -> counter (结账), 周末高峰 staff 与食客互动",
+      "privacyRequirement": "mostly open dining; 2-3 个 semi-private booth (4-6 人), 无 enclosed private room; 桌椅间距 ≥ 0.8m 让 staff 通行",
+      "materialReality": "warm wood, natural texture, 真实厨房设备 (蒸笼/锅/明火/排烟), 餐椅耐磨, 桌面可擦洗, 不可出现 大理石 / 亚克力 / 镜面金属 / 雕塑装置",
+      "forbiddenSpatialTypes": [
+        "fine dining (无桌布 / 无水晶灯 / 无 5 道菜礼仪)",
+        "modern art museum (白盒 + 离散雕塑 + 静音)",
+        "art gallery (空墙 + 射灯)",
+        "exhibition hall (中心展示台 + 巡游动线)",
+        "fast food chain (塑料椅 + 荧光灯 + 自助点餐)",
+        "buffet / cafeteria (长条桌 + 自助台)",
+        "modern museum (高顶 + 雕塑 + 巡游)",
+        "art installation (装饰性雕塑 / 装置为主)"
+      ]
+    }
+  },
+  "diff": {
+    "blockDiff": 1,
+    "charDiff": 1708,
+    "charDiffRatio": 25.7
+  }
+}

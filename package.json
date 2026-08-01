@@ -50,7 +50,8 @@
     "test:space-architecture-function-bridge": "node space-generator/v1-experimental/prompt-compiler/field-enriched/tests/architecture-function-bridge.test.mjs",
     "test:space-function-calibrations": "node space-generator/v1-experimental/function-calibrations/tests/function-calibrations.test.mjs",
     "test:space-architecture-bridge": "node space-generator/v1-experimental/architecture-bridge/tests/compile-architecture-bridge.test.mjs",
-    "test:space-spatial-intelligence-pipeline": "node space-generator/v1-experimental/spatial-intelligence-pipeline/tests/compile-spatial-intelligence-prompt.test.mjs"
+    "test:space-spatial-intelligence-pipeline": "node space-generator/v1-experimental/spatial-intelligence-pipeline/tests/compile-spatial-intelligence-prompt.test.mjs",
+    "test:space-spatial-reality": "node space-generator/v1-experimental/spatial-reality/tests/compile-spatial-reality-prompt.test.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
