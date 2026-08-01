@@ -1,9 +1,11 @@
 # Space Generator 工程目录
 
 > Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程
-> 依据 `Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程开发文档 v1.0`
-> 创建时间：2026-08-01 / 触发版本：5.0.0-rc.1 / HEAD `b1e3d77` (Phase 7 完成)
-> 累计测试：97/97 PASS (Phase 2-7 单元 + 集成测试)
+> 依据两份文档:
+>   - v1.0 `Masterpiece OS 空间效果图垂直测试与 Space DNA 字段工程开发文档 v1.0`
+>   - v1.1 `Masterpiece OS Space Generator v1.1 Architecture-Brand Fusion 开发文档`
+> 创建时间：2026-08-01 / 触发版本：5.0.0-rc.1 / HEAD `eec4fee` (v1.1 Step 6 完成)
+> 累计测试：127/127 PASS (Phase 2-7 + v1.1 Step 1-6)
 > 5 verify gates + npm test 301/301 + tsc clean
 
 ## Space Generator v1 是什么
@@ -69,6 +71,8 @@ space-generator/
 
 ## Phase 进度
 
+### v1.0 §30 Phase 1-7 (v0.1 实例)
+
 | Phase | 内容 | 状态 | Commit | Tests |
 |---|---|---|---|---|
 | 1 | Baseline Freeze + JZMX Space Benchmark v1 | done | `2147ff3` (+`1fdd7eb` PNG) | n/a |
@@ -78,5 +82,15 @@ space-generator/
 | 5 | Field-Enriched Prompt Compiler (12 blocks) | done | `e9a48c8` | 16/16 |
 | 6 | Variation Controller (6 variants / base) | done | `6701ac1` | 17/17 |
 | 7 | 4-Project Regression Test (JZMX/YJLF/FTT/WY) | done | `b1e3d77` | 21/21 |
+
+### v1.1 Architecture-Brand Fusion Step 1-6 (v0.2 实例)
+
+| Step | 内容 | 状态 | Commit | Tests |
+|---|---|---|---|---|
+| 1+2 | Architecture Anchor (3 张 JZMX-ARCH 图 + DNA analysis) | done | `272e36d` | n/a (assets) |
+| 3 | Field Schema 扩展 (brandTranslationRules + weightAllocation + 4 mechanism) | done | `88c5204` | 38/38 |
+| 4 | Prompt Compiler 重构 (10 blocks, 空间概念优先于品牌表达) | done | `9ba65e6` | 17/17 (v0.1) + 17/17 (v1.1) |
+| 5 | JZMX 多空间测试 (8 空间类型 × v1.1 compiler) | done | `ed02b76` | 13/13 |
+| 6 | Space Evaluation Layer (v1.0 §25 6-dim scoring) | done | `eec4fee` | 11/11 |
 
 详见 `v1-baseline/benchmarks/jiuzhou-aesthetics/evaluation-report.md` 和 v1.0 文档 §30 / §37。
