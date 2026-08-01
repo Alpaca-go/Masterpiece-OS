@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece-os.local/prompt-trace.schema.v0.1.json",
+  "title": "Prompt Trace",
+  "description": "Space Generator v1-experimental Prompt Trace (v1.0 §30 Phase 3). 记录每个 DNA 字段的来源 / 信心 / 规则. v0.1 起步, 不影响最终 prompt (Phase 5 才接).",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "traceVersion",
+    "dnaVersion",
+    "dnaFingerprint",
+    "generatedAt",
+    "sources",
+    "fieldProvenance"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "traceVersion": { "type": "string", "pattern": "^v0\\.[0-9]+(\\.[0-9]+)?$" },
+    "dnaVersion": { "type": "string", "description": "关联的 DNA 版本, e.g. v0.1" },
+    "dnaFingerprint": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{16,128}$",
+      "description": "DNA 实例的稳定指纹 (排除时间戳 / 临时 ID)"
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "sources": {
+      "type": "object",
+      "description": "v1.0 §30 Phase 3 6 个来源类别, 每个类别记录实际用到的 source 条目.",
+      "required": [
+        "brandAnalysis",
+        "sceneRequirement",
+        "goldenReference",
+        "genericArchitecture",
+        "modelAdapter",
+        "negativeConstraints"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "brandAnalysis": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceEntry" }
+        },
+        "sceneRequirement": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceEntry" }
+        },
+        "goldenReference": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceEntry" }
+        },
+        "genericArchitecture": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceEntry" }
+        },
+        "modelAdapter": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceEntry" }
+        },
+        "negativeConstraints": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sourceEntry" }
+        }
+      }
+    },
+    "fieldProvenance": {
+      "type": "object",
+      "description": "每个 DNA 字段的来源溯源. 至少覆盖所有必填字段.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["origin", "evidenceRefs", "confidence", "rule"],
+        "additionalProperties": false,
+        "properties": {
+          "origin": {
+            "type": "string",
+            "enum": [
+              "brand_analysis",
+              "scene_requirement",
+              "golden_reference",
+              "generic_architecture",
+              "model_adapter",
+              "negative_constraint",
+              "derived"
+            ]
+          },
+          "evidenceRefs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1
+          },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "rule": { "type": "string", "minLength": 1, "description": "人类可读的 之所以这样选 解释" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sourceEntry": {
+      "type": "object",
+      "required": ["id", "type", "content", "evidenceRefs", "confidence", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": [
+            "brand_analysis",
+            "scene_requirement",
+            "golden_reference",
+            "generic_architecture",
+            "model_adapter",
+            "negative_constraint"
+          ]
+        },
+        "content": { "description": "source 提供的实际内容 (任意 JSON)" },
+        "evidenceRefs": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}
