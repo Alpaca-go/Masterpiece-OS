@@ -13,7 +13,7 @@ test('project generation contract compiles grounded identity, upgrade and proven
   });
   assert.equal(contract.validation.status, 'ready');
   assert.equal(contract.projectIdentity.brandRole, '高端医美全链生态平台');
-  assert.equal(contract.provenance.compilerVersion, '1.3.0');
+  assert.equal(contract.provenance.compilerVersion, '1.3.1');
   assert.ok(contract.mustTransform[0].targetExpression.includes('半透明套封'));
 });
 
@@ -102,6 +102,20 @@ test('contract synthesises a project-specific decision from the packet when none
   );
   assert.ok(contract.projectSpecificDecisions.specificity.populatedCategories >= 4);
   assert.match(contract.projectSpecificDecisions.decisionId, /^packet-derived:/u);
+});
+
+test('contract keeps forbidden color and lighting rules out of approved positive behavior', () => {
+  const packet = phase1Packet();
+  packet.colorSystem.forbidden = ['do not introduce a new color'];
+  packet.lightingSystem.forbidden = ['do not lower contrast'];
+  const contract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'space',
+  });
+
+  assert.equal(contract.projectSpecificDecisions.colorSystem.includes(packet.colorSystem.forbidden[0]), false);
+  assert.equal(contract.sharedVisualRules.colorBehavior.includes(packet.colorSystem.forbidden[0]), false);
+  assert.equal(contract.sharedVisualRules.lightingBehavior.includes(packet.lightingSystem.forbidden[0]), false);
 });
 
 test('contract forwards a real approvedCreativeDecision unchanged', () => {

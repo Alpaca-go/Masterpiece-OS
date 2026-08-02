@@ -9,7 +9,7 @@ import { compilePackagingPromptContract } from '../prompt-contracts/packaging-co
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
-export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.3.0';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.3.1';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -426,6 +426,10 @@ export function compileShortChainPrompt({
   const negativeConstraints = cleanList(
     taskContract.mustAvoid,
     packetSource ? applicableConfirmedRisks(packetSource, taskContract) : [],
+    packetSource?.colorBehavior?.forbidden,
+    packetSource?.lightingBehavior?.forbidden,
+    packetSource?.creativeDecision?.strategicNegatives,
+    packetSource?.creativeDecision?.toneBoundaries?.flatMap((item) => item?.avoid || []),
     packetSource ? [] : source?.negativeRules?.project,
     packetSource ? [] : projectContext.styleBoundaries.mustAvoid,
     promptAsset?.negativeConstraints,
@@ -437,7 +441,6 @@ export function compileShortChainPrompt({
       formatColorUsage(packetSource.colorBehavior?.primary, '主色'),
       formatColorUsage(packetSource.colorBehavior?.secondary, '辅助色'),
       formatColorUsage(packetSource.colorBehavior?.accent, '点缀色'),
-      packetSource.colorBehavior?.forbidden?.map((item) => `色彩禁用：${item}`),
       packetSource.lockedAssets
         ?.filter((item) => item.type === 'color')
         .map((item) => `已确认品牌色：${item.value}`),

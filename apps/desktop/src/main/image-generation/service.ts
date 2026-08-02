@@ -184,6 +184,14 @@ export interface CompiledCreativeTaskStartOptions {
   dryRun?: boolean;
 }
 
+export function mapCreativeReferenceRole(
+  role: 'identity_reference' | 'structure_reference' | 'core_reference',
+): 'current_project_logo' | 'current_project_product' | 'current_project_identity' {
+  if (role === 'identity_reference') return 'current_project_logo';
+  if (role === 'structure_reference') return 'current_project_product';
+  return 'current_project_identity';
+}
+
 export interface ImageGenerationServiceDeps {
   /** 保留以兼容 Desktop 装配；服务内部凭据解析走 readCredentials + 环境变量。 */
   readSettings?: () => Promise<PublicSettings> | PublicSettings;
@@ -690,11 +698,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       }
       return {
         assetId: reference.id,
-        role: reference.role === 'identity_reference'
-          ? 'current_project_logo'
-          : reference.role === 'structure_reference'
-            ? 'current_project_product'
-            : 'reference_style',
+        role: mapCreativeReferenceRole(reference.role),
         localPath,
         sha256: crypto.createHash('sha256').update(content).digest('hex'),
         source: 'user_selected',
@@ -779,11 +783,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       }
       const content = await fs.readFile(localPath).catch(() => null);
       if (!content) throw blockingError('REFERENCE_ASSET_NOT_FOUND', `最终参考图不存在：${reference.id}`);
-      const role = reference.role === 'identity_reference'
-        ? 'current_project_logo'
-        : reference.role === 'structure_reference'
-          ? 'current_project_product'
-          : 'reference_style';
+      const role = mapCreativeReferenceRole(reference.role);
       return {
         assetId: reference.id,
         role,

@@ -115,6 +115,8 @@ const api: DesktopApi = {
       ipcRenderer.invoke('image-generation:short-chain-save-prompt-asset', input),
     postCompositeShortChainLogo: (input) =>
       ipcRenderer.invoke('image-generation:short-chain-post-composite-logo', input),
+    postCompositeShortChainLockedAssets: (input) =>
+      ipcRenderer.invoke('image-generation:short-chain-post-composite-locked-assets', input),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
     listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),

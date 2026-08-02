@@ -25,6 +25,7 @@ export const WEB_RPC_CHANNEL_OVERRIDES: Readonly<Record<string, string>> = Objec
   'imageGeneration.continueShortChainSameType': 'image-generation:short-chain-continue-same-type',
   'imageGeneration.saveShortChainProjectPromptAsset': 'image-generation:short-chain-save-prompt-asset',
   'imageGeneration.postCompositeShortChainLogo': 'image-generation:short-chain-post-composite-logo',
+  'imageGeneration.postCompositeShortChainLockedAssets': 'image-generation:short-chain-post-composite-locked-assets',
   'projectContext.getShortChain': 'project-context:get-short-chain',
   'projectContext.rebuildShortChain': 'project-context:rebuild-short-chain'
 });

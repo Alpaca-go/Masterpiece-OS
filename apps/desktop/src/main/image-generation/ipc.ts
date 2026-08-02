@@ -13,6 +13,7 @@ import type { ImageGenerationService } from './service';
 import type {
   CompileShortChainGenerationInput,
   PostCompositeShortChainLogoInput,
+  PostCompositeShortChainLockedAssetsInput,
   SaveShortChainProjectPromptAssetInput,
   StartShortChainGenerationInput,
   StartValidatedShortChainGenerationInput,
@@ -96,6 +97,11 @@ export function registerImageGenerationIpc(
       'image-generation:short-chain-post-composite-logo',
       async (_event, input: PostCompositeShortChainLogoInput) =>
         shortChainService.postCompositeLogo(input),
+    );
+    ipcMain.handle(
+      'image-generation:short-chain-post-composite-locked-assets',
+      async (_event, input: PostCompositeShortChainLockedAssetsInput) =>
+        shortChainService.postCompositeLockedAssets(input),
     );
   }
 }

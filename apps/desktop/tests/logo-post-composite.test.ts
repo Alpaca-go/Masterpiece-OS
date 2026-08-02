@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import sharp from 'sharp';
-import { postCompositeConfirmedLogo } from '../src/main/image-generation/logo-post-composite.ts';
+import { postCompositeConfirmedLogo, postCompositeLockedAssets } from '../src/main/image-generation/logo-post-composite.ts';
 
 test('confirmed Logo post-composite preserves source pixels and records deterministic hashes', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-logo-composite-'));
@@ -71,4 +71,27 @@ test('Logo post-composite rejects out-of-bounds crop and placement', async () =>
     (error: unknown) => (error as { code?: string }).code
       === 'LOGO_POST_COMPOSITE_CROP_OUT_OF_BOUNDS',
   );
+});
+
+test('locked asset post-composite places multiple source-bound layers in one audited output', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-locked-assets-'));
+  const scenePath = path.join(root, 'scene.png');
+  const logoPath = path.join(root, 'logo.png');
+  const iconsPath = path.join(root, 'icons.png');
+  const outputPath = path.join(root, 'output.png');
+  await sharp({ create: { width: 500, height: 300, channels: 3, background: '#ffffff' } }).png().toFile(scenePath);
+  await sharp({ create: { width: 100, height: 50, channels: 3, background: '#663399' } }).png().toFile(logoPath);
+  await sharp({ create: { width: 160, height: 40, channels: 3, background: '#91c83e' } }).png().toFile(iconsPath);
+  const result = await postCompositeLockedAssets({
+    scenePath,
+    outputPath,
+    layers: [
+      { layerId: 'logo', assetPath: logoPath, sourceCrop: { left: 0, top: 0, width: 100, height: 50 }, placement: { x: 0.1, y: 0.1, width: 0.2 } },
+      { layerId: 'icons', assetPath: iconsPath, sourceCrop: { left: 0, top: 0, width: 160, height: 40 }, placement: { x: 0.5, y: 0.6, width: 0.32 } },
+    ],
+  });
+  assert.deepEqual(result.layers.map((layer) => layer.layerId), ['logo', 'icons']);
+  assert.equal(result.sourceSceneSha256, crypto.createHash('sha256').update(await fs.readFile(scenePath)).digest('hex'));
+  assert.equal(result.outputSha256, crypto.createHash('sha256').update(await fs.readFile(outputPath)).digest('hex'));
+  assert.notEqual(result.outputSha256, result.sourceSceneSha256);
 });

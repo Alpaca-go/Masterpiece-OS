@@ -261,7 +261,7 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     /Target worldview: 东方生命美学/u,
   );
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.1');
   const blockIds = result.compiledPrompt.blocks.map((block) => block.id);
   assert.ok(blockIds.indexOf('brand_translation') < blockIds.indexOf('professional_contract'));
   assert.ok(blockIds.indexOf('lighting_system') < blockIds.indexOf('professional_contract'));
@@ -273,6 +273,23 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     colorMaterialLighting: 1,
     taskContract: 1,
   });
+});
+
+test('compiler routes Packet color and lighting prohibitions only to strict negatives', () => {
+  const packetValue = packet();
+  const result = compile({ packet: packetValue });
+  const colorBlock = result.compiledPrompt.blocks.find((block) => block.id === 'color_system');
+  const lightingBlock = result.compiledPrompt.blocks.find((block) => block.id === 'lighting_system');
+  const forbidden = [
+    ...packetValue.colorSystem.forbidden,
+    ...packetValue.lightingSystem.forbidden,
+  ];
+
+  for (const item of forbidden) {
+    assert.equal(result.compiledPrompt.negativeConstraints.includes(item), true, item);
+    assert.equal(colorBlock.items.some((line) => line.includes(item)), false, item);
+    assert.equal(lightingBlock.items.some((line) => line.includes(item)), false, item);
+  }
 });
 
 test('formal Packet does not invent tone boundaries when no approved decision supplies them', () => {

@@ -151,6 +151,7 @@ export function createShortChainDeliverableValidatorService(
               }),
               'For a space result, complete means one continuous enterable scene with floor, walls, ceiling, usable function, circulation, foreground, middle ground, background, and credible scale.',
               'In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.',
+              'In post_composite Logo mode, the model image must leave every Logo, brand name, slogan, signage word, letter, pseudo-text, and exact brand icon system absent and provide clean placement areas. Do not report an absent identity, icon system, or blank signage area as missing; deterministic post-compositing is validated separately. If visibleEvidence mentions any model-rendered text or lettering, logoTextStatus must be incorrect, never absent.',
               'Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.',
               'Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain.',
             ].join('\n'),

@@ -25,6 +25,7 @@ import type { ShortChainDeliverableValidatorService } from './short-chain-delive
 import { LEGACY_SHORT_CHAIN_GENERATION_DIRECTORY } from '../legacy-stage-name-migration.ts';
 import {
   postCompositeConfirmedLogo,
+  postCompositeLockedAssets as compositeLockedAssets,
   type NormalizedPlacement,
   type PixelRect,
 } from './logo-post-composite.ts';
@@ -68,6 +69,23 @@ export interface PostCompositeShortChainLogoInput {
     enabled: boolean;
     tolerance?: number;
   };
+}
+
+export type LockedAssetUsage = 'logo' | 'icon_system' | 'brand_text' | 'other';
+
+export interface PostCompositeShortChainLockedAssetsInput {
+  projectId: string;
+  runId: string;
+  imageId: string;
+  confirmedByUser: true;
+  layers: Array<{
+    layerId: string;
+    assetId: string;
+    usage: LockedAssetUsage;
+    sourceCrop: PixelRect;
+    placement: NormalizedPlacement;
+    removeBackground?: { enabled: boolean; tolerance?: number };
+  }>;
 }
 
 export interface SaveShortChainProjectPromptAssetInput {
@@ -604,6 +622,7 @@ export function createShortChainImageGenerationService(
       originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,
       taskContract: compilation.taskContract,
       validation: initialValidation,
+      maxPromptCharacters: compilation.compiledPrompt.trace.maxPromptCharacters,
     });
     const correctionRun = await start({
       ...input,
@@ -793,6 +812,100 @@ export function createShortChainImageGenerationService(
     return audit;
   }
 
+  async function postCompositeLockedAssets(input: PostCompositeShortChainLockedAssetsInput) {
+    if (input.confirmedByUser !== true) {
+      throw Object.assign(new Error('Locked asset post-composite requires explicit user confirmation'), {
+        code: 'LOCKED_ASSET_POST_COMPOSITE_CONFIRMATION_REQUIRED',
+      });
+    }
+    if (!input.layers.length || input.layers.length > 16) {
+      throw Object.assign(new Error('Locked asset post-composite requires 1 to 16 layers'), {
+        code: 'LOCKED_ASSET_POST_COMPOSITE_LAYER_COUNT_INVALID',
+      });
+    }
+    const [run, project, paths] = await Promise.all([
+      getImageGeneration().getRun(input.runId),
+      projects.get(input.projectId),
+      projects.paths(input.projectId),
+    ]);
+    if (!run || run.projectId !== input.projectId || run.status !== 'succeeded') {
+      throw Object.assign(new Error('Locked asset post-composite requires a succeeded project run'), {
+        code: 'LOCKED_ASSET_POST_COMPOSITE_RUN_INVALID',
+      });
+    }
+    const image = run.images.find((item) => item.imageId === input.imageId);
+    if (!image) throw Object.assign(new Error('Generated image does not exist'), {
+      code: 'LOCKED_ASSET_POST_COMPOSITE_IMAGE_MISSING',
+    });
+    const runRoot = await getImageGeneration().runRoot(input.runId);
+    if (!runRoot) throw new Error('Image generation run root is unavailable');
+    const snapshot = await fs.readFile(path.join(runRoot, 'source-context-snapshot.json'), 'utf8')
+      .then((value) => JSON.parse(value) as { taskContract?: { logoUsageMode?: string } })
+      .catch(() => null);
+    if (snapshot?.taskContract?.logoUsageMode !== 'post_composite') {
+      throw Object.assign(new Error('Selected run did not reserve post-composite identity areas'), {
+        code: 'LOCKED_ASSET_POST_COMPOSITE_MODE_REQUIRED',
+      });
+    }
+    const resolvedLayers = await Promise.all(input.layers.map(async (layer) => {
+      const asset = project.assets.find((item) => item.id === layer.assetId);
+      if (!asset || asset.status !== 'ready') {
+        throw Object.assign(new Error(`Confirmed project asset is unavailable: ${layer.assetId}`), {
+          code: 'LOCKED_ASSET_POST_COMPOSITE_ASSET_MISSING',
+        });
+      }
+      const assetPath = path.resolve(paths.input, asset.relativePath);
+      const actualSha256 = crypto.createHash('sha256').update(await fs.readFile(assetPath)).digest('hex');
+      if (actualSha256 !== asset.sha256) {
+        throw Object.assign(new Error(`A locked source asset changed after project ingestion: ${layer.assetId}`), {
+          code: 'LOCKED_ASSET_POST_COMPOSITE_SOURCE_HASH_MISMATCH',
+        });
+      }
+      return { layer, asset, assetPath };
+    }));
+    const scenePath = path.resolve(runRoot, image.relativePath);
+    const outputPath = path.join(
+      runRoot,
+      'images',
+      `${path.parse(image.relativePath).name}.locked-assets-composite.png`,
+    );
+    const composite = await compositeLockedAssets({
+      scenePath,
+      outputPath,
+      layers: resolvedLayers.map(({ layer, assetPath }) => ({ ...layer, assetPath })),
+    });
+    const audit = {
+      schemaVersion: '1.0',
+      status: 'completed',
+      projectId: input.projectId,
+      runId: input.runId,
+      sourceImageId: input.imageId,
+      sourceImagePath: scenePath,
+      confirmationSource: 'user_confirmed',
+      ...composite,
+      layers: composite.layers.map((result) => {
+        const resolved = resolvedLayers.find(({ layer }) => layer.layerId === result.layerId)!;
+        return {
+          ...result,
+          assetId: resolved.asset.id,
+          usage: resolved.layer.usage,
+          assetOriginalName: resolved.asset.originalName,
+          assetProjectRelativePath: `input/${resolved.asset.relativePath}`,
+          expectedProjectAssetSha256: resolved.asset.sha256,
+          sourceHashMatchesProjectAsset: result.sourceAssetSha256 === resolved.asset.sha256,
+        };
+      }),
+      completedAt: new Date().toISOString(),
+    };
+    // A second comparison covers any mutation between the preflight read and composite read.
+    if (audit.layers.some((layer) => !layer.sourceHashMatchesProjectAsset)) throw Object.assign(
+      new Error('A locked source asset changed during post-composite'),
+      { code: 'LOCKED_ASSET_POST_COMPOSITE_SOURCE_HASH_MISMATCH' },
+    );
+    await writeJson(path.join(runRoot, 'locked-assets-post-composite.json'), audit);
+    return audit;
+  }
+
   return {
     compile,
     start,
@@ -801,6 +914,7 @@ export function createShortChainImageGenerationService(
     confirmDirection,
     continueSameType,
     postCompositeLogo,
+    postCompositeLockedAssets,
     saveProjectPromptAsset,
     listOptions: listShortChainTemplateOptions,
   };

@@ -61,6 +61,84 @@ test('Deliverable validation refuses to self-certify an output without visible i
   assert.equal(validation.retryRecommended, false);
 });
 
+test('post-composite mode defers absent Logo and brand text to the composition stage', () => {
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract: { ...taskContract, logoUsageMode: 'post_composite' },
+    runId: 'run-1',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['continuous reception scene', 'clean blank signage area'],
+      missingRequiredItems: ['Brand Name', 'Original Logo asset'],
+      lockedAssetViolations: ['The blank signage does not display the required logo or brand name text'],
+      forbiddenItemsFound: [],
+      brandMatch: 'mismatched',
+      brandToneMatch: 'matched',
+      sceneCompleteness: 'complete',
+      logoTextStatus: 'absent',
+    },
+  });
+
+  assert.equal(validation.status, 'passed');
+  assert.deepEqual(validation.missingRequiredItems, []);
+  assert.deepEqual(validation.lockedAssetViolations, []);
+  assert.equal(validation.brandMatch, 'uncertain');
+  assert.deepEqual(validation.mismatchTypes, []);
+});
+
+test('post-composite mode rejects visible text evidence that contradicts an absent status', () => {
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract: { ...taskContract, logoUsageMode: 'post_composite' },
+    runId: 'run-1',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['Vertical white 3D Chinese text on the right wall', 'clean blank logo panel'],
+      missingRequiredItems: [],
+      lockedAssetViolations: [],
+      forbiddenItemsFound: [],
+      brandMatch: 'matched',
+      brandToneMatch: 'matched',
+      sceneCompleteness: 'complete',
+      logoTextStatus: 'absent',
+    },
+  });
+
+  assert.equal(validation.status, 'failed');
+  assert.equal(validation.logoTextStatus, 'incorrect');
+  assert.equal(validation.mismatchTypes.includes('logo_text_error'), true);
+  assert.equal(validation.retryRecommended, true);
+});
+
+test('post-composite mode defers the exact brand icon system to deterministic composition', () => {
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract: { ...taskContract, logoUsageMode: 'post_composite' },
+    runId: 'run-1',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: taskContract.subtype,
+      visibleEvidence: ['complete enterable brand retail space with clean identity areas'],
+      missingRequiredItems: ['four brand icon system is absent'],
+      lockedAssetViolations: ['exact brand icons are not visible'],
+      forbiddenItemsFound: [],
+      brandMatch: 'matched',
+      brandToneMatch: 'matched',
+      sceneCompleteness: 'complete',
+      logoTextStatus: 'absent',
+      qualityIssues: [],
+    },
+  });
+  assert.equal(validation.status, 'passed');
+  assert.deepEqual(validation.missingRequiredItems, []);
+  assert.deepEqual(validation.lockedAssetViolations, []);
+});
+
 test('Correction prompt preserves original prompt and adds one explicit repair block', () => {
   const validation = validateShortChainDeliverableEvidence({
     projectId: 'project-1',
@@ -86,5 +164,39 @@ test('Correction prompt preserves original prompt and adds one explicit repair b
   assert.match(correction, /must be space/u);
   assert.match(correction, /reception desk/u);
   assert.match(correction, /Do not show: VI display board/u);
+  assert.equal((correction.match(/一次性对题纠偏/gu) ?? []).length, 1);
+});
+
+test('Correction prompt compacts duplicate negative guidance to the active adapter budget', () => {
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract,
+    runId: 'run-1',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['incomplete room'],
+      missingRequiredItems: ['continuous circulation'],
+      sceneCompleteness: 'incomplete',
+    },
+  });
+  const originalPrompt = [
+    '【02 Current Task — Highest Priority】',
+    `- ESSENTIAL TASK ${'x'.repeat(5_800)}`,
+    '【05 Positive Spatial Mechanism — Must Drive the Image】',
+    '- reception connects entrance, waiting and service',
+    ...Array.from({ length: 20 }, (_, index) => `- Strict negative: duplicate guidance ${index} ${'y'.repeat(80)}`),
+  ].join('\n');
+  const correction = compileShortChainCorrectionPrompt({
+    originalPrompt,
+    taskContract,
+    validation,
+    maxPromptCharacters: 7_500,
+  });
+
+  assert.equal([...correction].length <= 7_500, true);
+  assert.match(correction, /ESSENTIAL TASK/u);
+  assert.match(correction, /continuous circulation/u);
   assert.equal((correction.match(/一次性对题纠偏/gu) ?? []).length, 1);
 });

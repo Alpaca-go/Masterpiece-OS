@@ -1,5 +1,5 @@
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
-export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '2.0.0';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '2.1.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -8,6 +8,24 @@ function list(value) {
     .filter((item) => typeof item === 'string')
     .map((item) => item.trim())
     .filter(Boolean))];
+}
+
+function isDeferredIdentityTextIssue(value) {
+  return /logo|brand\s*name|brand\s*text|brand\s*icon|icon\s*system|icons?|word|letter|signage|slogan|品牌名|品牌名称|标志|标识|文字|字样|标语|招牌|标牌|图标系统|图标/iu
+    .test(String(value ?? ''));
+}
+
+function isVisibleIdentityTextEvidence(value) {
+  const text = String(value ?? '');
+  const mentionsText = /logo|brand\s*name|brand\s*text|word|letter|signage|slogan|Chinese text|品牌名|品牌名称|标志|标识|文字|字样|标语|招牌|标牌/iu
+    .test(text);
+  const explicitlyAbsent = /blank|absent|clean (?:placement )?area|reserved|留白|空白|未显示|无文字/iu
+    .test(text);
+  return mentionsText && !explicitlyAbsent;
+}
+
+function characters(value) {
+  return [...String(value ?? '')].length;
 }
 
 export function validateShortChainDeliverableEvidence({
@@ -26,10 +44,17 @@ export function validateShortChainDeliverableEvidence({
     ? evidence.detectedSubtype.trim()
     : 'unknown';
   const visibleEvidence = list(evidence?.visibleEvidence);
-  const missingRequiredItems = list(evidence?.missingRequiredItems);
+  const reportedMissingRequiredItems = list(evidence?.missingRequiredItems);
   const forbiddenItemsFound = list(evidence?.forbiddenItemsFound);
-  const lockedAssetViolations = list(evidence?.lockedAssetViolations);
-  const brandMatch = ['matched', 'mismatched', 'uncertain'].includes(evidence?.brandMatch)
+  const reportedLockedAssetViolations = list(evidence?.lockedAssetViolations);
+  const deferredIdentityText = taskContract.logoUsageMode === 'post_composite';
+  const missingRequiredItems = deferredIdentityText
+    ? reportedMissingRequiredItems.filter((item) => !isDeferredIdentityTextIssue(item))
+    : reportedMissingRequiredItems;
+  const lockedAssetViolations = deferredIdentityText
+    ? reportedLockedAssetViolations.filter((item) => !isDeferredIdentityTextIssue(item))
+    : reportedLockedAssetViolations;
+  let brandMatch = ['matched', 'mismatched', 'uncertain'].includes(evidence?.brandMatch)
     ? evidence.brandMatch
     : 'uncertain';
   const brandToneMatch = ['matched', 'mismatched', 'uncertain'].includes(evidence?.brandToneMatch)
@@ -38,11 +63,24 @@ export function validateShortChainDeliverableEvidence({
   const sceneCompleteness = ['complete', 'incomplete', 'uncertain'].includes(evidence?.sceneCompleteness)
     ? evidence.sceneCompleteness
     : 'uncertain';
-  const logoTextStatus = ['correct', 'incorrect', 'absent', 'uncertain', 'not_required']
+  let logoTextStatus = ['correct', 'incorrect', 'absent', 'uncertain', 'not_required']
     .includes(evidence?.logoTextStatus)
     ? evidence.logoTextStatus
     : 'uncertain';
   const qualityIssues = list(evidence?.qualityIssues);
+  const visibleIdentityText = deferredIdentityText
+    && visibleEvidence.some(isVisibleIdentityTextEvidence);
+  if (visibleIdentityText && ['absent', 'not_required', 'uncertain'].includes(logoTextStatus)) {
+    logoTextStatus = 'incorrect';
+  }
+  const onlyDeferredIdentityTextIssues = deferredIdentityText
+    && reportedMissingRequiredItems.length + reportedLockedAssetViolations.length > 0
+    && missingRequiredItems.length === 0
+    && lockedAssetViolations.length === 0
+    && forbiddenItemsFound.length === 0
+    && brandToneMatch === 'matched'
+    && !visibleIdentityText;
+  if (brandMatch === 'mismatched' && onlyDeferredIdentityTextIssues) brandMatch = 'uncertain';
   const mismatchTypes = [];
   if (detectedFamily !== 'unknown' && detectedFamily !== taskContract.deliverableFamily) {
     mismatchTypes.push('wrong_family');
@@ -103,6 +141,7 @@ export function compileShortChainCorrectionPrompt({
   originalPrompt,
   taskContract,
   validation,
+  maxPromptCharacters = 7_500,
 }) {
   if (validation.status !== 'failed') {
     throw new Error('A correction prompt requires a failed deliverable validation');
@@ -130,13 +169,46 @@ export function compileShortChainCorrectionPrompt({
       : '',
     ...list(validation.qualityIssues).map((item) => `Repair visible quality issue: ${item}.`),
   ].filter(Boolean);
-  return [
-    originalPrompt.trim(),
-    '',
+  const correctionBlock = [
     '【一次性对题纠偏】',
     `Regenerate exactly one ${taskContract.deliverableFamily} / ${taskContract.subtype} result.`,
     ...mismatch.map((item) => `- ${item}`),
     `- Preserve the requested shot/composition: ${taskContract.shot}.`,
     '- Produce a formal finished deliverable, not an analysis board, moodboard, or collection of unrelated mockups.',
   ].join('\n');
+  const maximum = Number(maxPromptCharacters);
+  const sourceLines = originalPrompt.trim().split(/\r?\n/u);
+  if (Number.isFinite(maximum) && maximum > 0) {
+    const baseBudget = maximum - characters(correctionBlock) - 2;
+    const removablePatterns = [
+      /^- (?:Strict negative|User prohibition):/iu,
+      /^- (?:Approved project prohibition|Approved tone prohibition):/iu,
+      /^- (?:Target worldview|Approved generation goal):/iu,
+      /^- Strict non-literal prohibition:/iu,
+    ];
+    for (const pattern of removablePatterns) {
+      for (let index = sourceLines.length - 1;
+        index >= 0 && characters(sourceLines.join('\n')) > baseBudget;
+        index -= 1) {
+        if (pattern.test(sourceLines[index])) sourceLines.splice(index, 1);
+      }
+    }
+    while (characters(sourceLines.join('\n')) > baseBudget) {
+      const candidates = sourceLines
+        .map((line, index) => ({ line, index, length: characters(line) }))
+        .filter((item) => item.line.startsWith('- ') && item.length > 120)
+        .sort((a, b) => b.length - a.length);
+      const target = candidates[0];
+      if (!target) break;
+      const excess = characters(sourceLines.join('\n')) - baseBudget;
+      const nextLength = Math.max(120, target.length - excess - 1);
+      sourceLines[target.index] = `${[...target.line].slice(0, nextLength).join('').trimEnd()}…`;
+    }
+    if (baseBudget <= 0 || characters(sourceLines.join('\n')) > baseBudget) {
+      throw Object.assign(new Error('Correction instructions cannot fit the active prompt budget'), {
+        code: 'CORRECTION_PROMPT_BUDGET_INSUFFICIENT',
+      });
+    }
+  }
+  return [sourceLines.join('\n').trim(), '', correctionBlock].join('\n');
 }

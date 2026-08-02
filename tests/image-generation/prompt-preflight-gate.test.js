@@ -172,3 +172,49 @@ test('spatial preflight exposes all positive mechanism gate codes', () => {
     'NEGATIVE_RULES_OUTWEIGH_POSITIVE_MECHANISM',
   ]) assert.equal(codes.has(code), true, code);
 });
+
+test('spatial preflight accepts rich brand constraints when positive mechanisms remain dominant', () => {
+  const packet = phase1Packet();
+  const projectContract = compileProjectSpecificGenerationContract({
+    visualDecisionPacket: packet,
+    deliverable: 'space',
+  });
+  const spatialTranslation = {
+    functionalRelationships: ['entrance to reception', 'reception to waiting', 'waiting to service'],
+    sceneProgram: ['arrival identity', 'guided reception', 'social waiting'],
+    brandRoleManifestation: ['social arrival atmosphere', 'recognizable service ritual', 'welcoming pause'],
+    signatureSpatialMechanism: ['layered identity threshold', 'continuous color-guided circulation'],
+    functionalNetwork: ['entrance node', 'reception node', 'waiting node'],
+    positiveDifferentiators: ['brand-led threshold', 'distinctive circulation rhythm'],
+    mustBeVisible: ['identity threshold', 'reception relationship', 'material depth'],
+  };
+  Object.assign(projectContract, spatialTranslation);
+  projectContract.mustTransform = [{
+    sourceAsset: 'confirmed source',
+    semanticMeaning: ['identity'],
+    targetExpression: ['layered threshold'],
+    forbiddenLiteralUse: Array.from({ length: 8 }, (_, index) => `legacy prohibition ${index}`),
+    evidenceRefs: ['asset:confirmed'],
+  }];
+  const report = runPromptPreflightGate({
+    finalPrompt: [
+      `Approved upgrade thesis: avoid generic decoration while preserving ${projectContract.projectIdentity.brandRole}.`,
+      'Positive Spatial Mechanism — Must Drive the Image',
+      ...Object.values(spatialTranslation).flat(),
+      'Tone Boundaries',
+      'Strict negative: generic decoration',
+    ].join('\n'),
+    taskContract: {
+      deliverableFamily: 'space',
+      logoUsageMode: 'post_composite',
+      mustAvoid: ['unrelated logo', 'moodboard', 'collage'],
+    },
+    projectContract,
+    spatialTranslation,
+  });
+
+  assert.equal(
+    report.findings.some((item) => item.code === 'NEGATIVE_RULES_OUTWEIGH_POSITIVE_MECHANISM'),
+    false,
+  );
+});

@@ -1926,6 +1926,21 @@ export interface PostCompositeShortChainLogoInput {
   };
 }
 
+export interface PostCompositeShortChainLockedAssetsInput {
+  projectId: string;
+  runId: string;
+  imageId: string;
+  confirmedByUser: true;
+  layers: Array<{
+    layerId: string;
+    assetId: string;
+    usage: 'logo' | 'icon_system' | 'brand_text' | 'other';
+    sourceCrop: { left: number; top: number; width: number; height: number };
+    placement: { x: number; y: number; width: number };
+    removeBackground?: { enabled: boolean; tolerance?: number };
+  }>;
+}
+
 export interface SaveShortChainProjectPromptAssetInput {
   projectId: string;
   deliverableFamily: ShortChainTaskContract['deliverableFamily'];
@@ -2100,6 +2115,9 @@ export interface DesktopApi {
     ): Promise<ShortChainProjectPromptAsset>;
     postCompositeShortChainLogo(
       input: PostCompositeShortChainLogoInput
+    ): Promise<Record<string, unknown>>;
+    postCompositeShortChainLockedAssets(
+      input: PostCompositeShortChainLockedAssetsInput
     ): Promise<Record<string, unknown>>;
     /** 搂16 缂栬瘧 + Gate 閫氳繃鍚庢彁浜ょ敓鍥句换鍔°€?*/
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;

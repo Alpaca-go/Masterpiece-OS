@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-export const PROJECT_GENERATION_CONTRACT_COMPILER_VERSION = '1.3.0';
+export const PROJECT_GENERATION_CONTRACT_COMPILER_VERSION = '1.3.1';
 
 function list(...values) {
   const result = [];
@@ -36,7 +36,6 @@ function colorRules(packet) {
     ['primary', 'secondary', 'accent'].flatMap((group) =>
       (Array.isArray(colors[group]) ? colors[group] : []).map((item) =>
         [item?.name, item?.role].filter(Boolean).join(': '))),
-    colors.forbidden,
   );
 }
 
@@ -135,7 +134,6 @@ function synthesiseApprovedDecision(supplied, packet) {
     (packet?.colorSystem?.primary || []).map((item) => item?.name).filter(Boolean),
     (packet?.colorSystem?.secondary || []).map((item) => item?.name).filter(Boolean),
     (packet?.colorSystem?.accent || []).map((item) => item?.name).filter(Boolean),
-    packet?.colorSystem?.forbidden,
   );
   const materialSystem = list(
     (packet?.materialSystem || []).flatMap((item) => [
@@ -326,7 +324,6 @@ export function compileProjectSpecificGenerationContract(input = {}) {
           packet.lightingSystem?.source,
           packet.lightingSystem?.contrast,
           packet.lightingSystem?.interactionWithMaterials,
-          packet.lightingSystem?.forbidden,
         )
         : list(
           packet.lightingSystem?.source,

@@ -217,9 +217,11 @@ export function runPromptPreflightGate({
     const positiveCharacters = positiveItems.join('').length;
     const negativeCharacters = negativeItems.join('').length;
     const positiveStart = prompt.indexOf('Positive Spatial Mechanism');
-    const firstNegative = prompt.search(/prohibition|Strict negative|严格禁止|不得|禁止/iu);
+    const firstNegative = prompt.search(
+      /Tone Boundaries|Logo, Text and Strict Negatives|User prohibition:|Strict (?:non-literal )?prohibition:|Strict negative:/iu,
+    );
     if (!positiveCharacters
-      || negativeCharacters > positiveCharacters
+      || negativeCharacters > positiveCharacters * 1.5
       || positiveStart < 0
       || (firstNegative >= 0 && positiveStart > firstNegative)) {
       add(

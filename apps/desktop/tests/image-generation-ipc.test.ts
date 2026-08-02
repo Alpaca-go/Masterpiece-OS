@@ -103,6 +103,7 @@ const EXPECTED_SHORT_CHAIN_CHANNELS = [
   'image-generation:short-chain-continue-same-type',
   'image-generation:short-chain-save-prompt-asset',
   'image-generation:short-chain-post-composite-logo',
+  'image-generation:short-chain-post-composite-locked-assets',
 ];
 
 test('registerImageGenerationIpc 注册全部 §16.1 handler', () => {
@@ -248,6 +249,7 @@ test('registerImageGenerationIpc registers the complete Short-Chain channel fami
     continueSameType: async () => ({}),
     saveProjectPromptAsset: async () => ({}),
     postCompositeLogo: async () => ({}),
+    postCompositeLockedAssets: async () => ({}),
   };
 
   registerImageGenerationIpc(svc, ipcMain, shortChainService as any);
