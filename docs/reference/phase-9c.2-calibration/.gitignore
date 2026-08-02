@@ -1,0 +1,14 @@
+# 5.0 release gate pattern: per-phase smoke output gitignore.
+# Desensitize: no absolute user-data paths, no API keys, no raw provider responses, no generated images.
+
+# Image artifacts are gitignored (preserved locally for review only)
+*.jpg
+*.jpeg
+*.png
+
+# Smoke run log
+smoke-run.log
+
+# OS / editor
+.DS_Store
+Thumbs.db

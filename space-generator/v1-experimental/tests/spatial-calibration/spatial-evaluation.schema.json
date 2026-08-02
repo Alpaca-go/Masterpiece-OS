@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://masterpiece-os.local/spatial-evaluation.schema.v9c.2.json",
+  "title": "Spatial Calibration Evaluation",
+  "description": "Phase 9C.2 §6 Evaluation Schema. 5 维评分, 1-5 整数.",
+  "type": "object",
+  "required": ["schemaVersion", "phase", "brandKey", "industry", "spaceType", "preset", "imageRef", "scores", "evaluator", "evaluatedAt"],
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "1.0" },
+    "phase": { "type": "string", "const": "9C.2" },
+    "brandKey": { "type": "string", "enum": ["jiuzhou-aesthetics", "wa-ye", "feng-tang-tang"] },
+    "industry": { "type": "string" },
+    "spaceType": { "type": "string" },
+    "preset": { "type": "string", "enum": ["brand_driven", "architecture_driven", "reference_driven", "balanced"] },
+    "imageRef": {
+      "type": "object",
+      "required": ["path", "bytes"],
+      "properties": {
+        "path": { "type": "string" },
+        "bytes": { "type": "number" },
+        "aspectRatio": { "type": "string", "const": "16:9" },
+        "providerTaskId": { "type": "string" }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "description": "5 维评分, 1-5 整数 (1=最差, 5=最佳)",
+      "required": ["brand_translation", "spatial_quality", "reference_fidelity", "industry_correctness", "commercial_usability"],
+      "properties": {
+        "brand_translation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "品牌 DNA 是否被转译为空间语言 (品牌气质 / 色彩 / 材质 / 符号 / 东方美学是否进入空间)"
+        },
+        "spatial_quality": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "建筑设计质量与空间高级感 (结构 / 比例 / 材质 / 光影 / 秩序)"
+        },
+        "reference_fidelity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "参考图结构、气质、摄影语言继承度 (构图 / 视角 / 空间语言 / 摄影质感)"
+        },
+        "industry_correctness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "行业逻辑正确性 (医美 / 餐饮 / 疗愈 等行业属性不被跨行业污染)"
+        },
+        "commercial_usability": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "description": "商业可交付性 (能否直接用于品牌落地 / 不会过于空泛 / 不会过于花哨)"
+        }
+      }
+    },
+    "presetFocus": {
+      "type": "string",
+      "description": "本 preset 重点观察维度 (per §7 Preset 评价标准)",
+      "enum": [
+        "brand_driven: focus on brand_translation",
+        "architecture_driven: focus on spatial_quality",
+        "reference_driven: focus on reference_fidelity",
+        "balanced: focus on commercial_usability"
+      ]
+    },
+    "comments": {
+      "type": "string",
+      "description": "自由文本评论: 优缺点 / 跟预期差距 / 调整建议"
+    },
+    "evaluator": { "type": "string", "description": "评分人 (人或 Mavis)" },
+    "evaluatedAt": { "type": "string", "format": "date-time" }
+  }
+}

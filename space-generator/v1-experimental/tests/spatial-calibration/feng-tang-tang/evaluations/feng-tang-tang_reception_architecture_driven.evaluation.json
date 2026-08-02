@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9C.2",
+  "brandKey": "feng-tang-tang",
+  "industry": "餐饮 / 川菜 / 跷脚牛肉",
+  "spaceType": "reception",
+  "preset": "architecture_driven",
+  "imageRef": {
+    "path": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-calibration\\feng-tang-tang\\feng-tang-tang_reception_architecture_driven_v1.jpg",
+    "bytes": 790718,
+    "aspectRatio": "16:9",
+    "providerTaskId": null
+  },
+  "scores": {
+    "brand_translation": null,
+    "spatial_quality": null,
+    "reference_fidelity": null,
+    "industry_correctness": null,
+    "commercial_usability": null
+  },
+  "presetFocus": "architecture_driven: focus on spatial_quality",
+  "comments": "",
+  "evaluator": "PENDING",
+  "evaluatedAt": null
+}

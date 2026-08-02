@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "9C.2",
+  "brandKey": "jiuzhou-aesthetics",
+  "industry": "待确认（基于现有素材推断）",
+  "spaceType": "reception",
+  "preset": "balanced",
+  "imageRef": {
+    "path": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-calibration\\jiuzhou-aesthetics\\jiuzhou-aesthetics_reception_balanced_v1.jpg",
+    "bytes": 453952,
+    "aspectRatio": "16:9",
+    "providerTaskId": null
+  },
+  "scores": {
+    "brand_translation": null,
+    "spatial_quality": null,
+    "reference_fidelity": null,
+    "industry_correctness": null,
+    "commercial_usability": null
+  },
+  "presetFocus": "balanced: focus on commercial_usability",
+  "comments": "",
+  "evaluator": "PENDING",
+  "evaluatedAt": null
+}
