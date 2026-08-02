@@ -58,7 +58,10 @@
     "test:space-spatial-intent-presets": "node space-generator/v1-experimental/spatial-intent-presets/tests/compile-spatial-intent-preset.test.mjs",
     "test:space-brand-identity-validation": "node space-generator/v1-experimental/brand-identity-validation/tests/compile-validation.test.mjs",
     "test:space-spatial-regression-score": "node space-generator/v1-experimental/evaluation/regression/tests/spatial-regression-score.test.mjs",
-    "smoke:space-regression": "node space-generator/v1-experimental/evaluation/regression/bin/run-regression-smoke.mjs"
+    "test:space-brand-identity-confidence": "node space-generator/v1-experimental/brand-identity-confidence/tests/brand-identity-confidence.test.mjs",
+    "test:space-spatial-strategy-selector": "node space-generator/v1-experimental/spatial-strategy-selector/tests/spatial-strategy-selector.test.mjs",
+    "smoke:space-regression": "node space-generator/v1-experimental/evaluation/regression/bin/run-regression-smoke.mjs",
+    "dev:spatial-intent-presets-playground": "node space-generator/v1-experimental/spatial-intent-presets/playground/server.mjs"
   },
   "engines": {
     "node": ">=20.9.0"
