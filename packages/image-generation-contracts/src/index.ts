@@ -879,6 +879,7 @@ export interface ShortChainCompiledPrompt {
     projectPromptAssetId?: string;
     projectPromptAssetVersion?: number;
     promptCharacters?: number;
+    maxPromptCharacters?: number;
     compileDurationMs?: number;
   };
 }

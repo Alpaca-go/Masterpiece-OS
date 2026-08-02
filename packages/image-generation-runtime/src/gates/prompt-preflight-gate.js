@@ -6,6 +6,30 @@ const DOMAIN_STYLE_PATTERNS = [
   /(?:industry|行业).{0,30}(?:therefore|所以|必须|自动).{0,50}(?:颜色|材质|构图|气质|color|material|composition|style)/iu,
 ];
 
+const PREFLIGHT_REMEDIATION = Object.freeze({
+  PROJECT_GENERATION_CONTRACT_INSUFFICIENT: 'rerun_structured_analysis',
+  PROJECT_SPECIFICITY_TOO_LOW: 'rerun_structured_analysis',
+  GENERIC_INDUSTRY_FALLBACK: 'rerun_structured_analysis',
+  UNIQUE_UPGRADE_THESIS_MISSING: 'rerun_structured_analysis',
+  BRAND_ROLE_UNDEREXPRESSED: 'rerun_structured_analysis',
+  POSITIVE_SPATIAL_MECHANISM_MISSING: 'rerun_structured_analysis',
+  BRAND_ROLE_NOT_SPATIALLY_MANIFESTED: 'rerun_structured_analysis',
+  FLAGSHIP_PROGRAM_TOO_GENERIC: 'rerun_structured_analysis',
+  PACKAGING_STRUCTURE_EVIDENCE_MISSING: 'upload_or_confirm_source_data',
+  PACKAGING_PRODUCT_ROLE_MISSING: 'upload_or_confirm_source_data',
+  LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: 'upload_or_confirm_source_data',
+  PROMPT_CHARACTER_BUDGET_EXCEEDED: 'restore_or_shorten_edited_prompt',
+  CROSS_MEDIA_LANGUAGE_LEAK: 'edit_current_task',
+  LITERAL_LEGACY_ASSET_REUSE: 'edit_current_task',
+  OTHER_PROJECT_SEMANTIC_LEAK: 'engineering_boundary_failure',
+  GOLDEN_CONTENT_LEAK: 'engineering_boundary_failure',
+  DOMAIN_STYLE_TEMPLATE_LEAK: 'engineering_boundary_failure',
+});
+
+function remediationFor(code) {
+  return PREFLIGHT_REMEDIATION[code] || 'review_prompt_contract';
+}
+
 export const SPACE_PROMPT_PREFLIGHT_FIELD_REQUIREMENTS = Object.freeze([
   Object.freeze({ path: 'mediaTranslations.spatial.brandRoleManifestation', minimumItems: 1 }),
   Object.freeze({ path: 'mediaTranslations.spatial.signatureSpatialMechanism', minimumItems: 1 }),
@@ -37,11 +61,27 @@ export function runPromptPreflightGate({
   otherProjectTerms = [],
   goldenFragments = [],
   requireProjectContract = true,
+  maxPromptCharacters,
 }) {
   const prompt = String(finalPrompt ?? '');
   const findings = [];
-  const add = (code, severity, detail) => findings.push({ code, severity, detail });
+  const add = (code, severity, detail) => findings.push({
+    code,
+    severity,
+    detail,
+    remediation: remediationFor(code),
+  });
   if (!prompt.trim()) add('PROMPT_EMPTY', 'block', 'Final prompt is empty.');
+  const promptCharacters = [...prompt].length;
+  if (Number.isFinite(maxPromptCharacters)
+    && maxPromptCharacters > 0
+    && promptCharacters > maxPromptCharacters) {
+    add(
+      'PROMPT_CHARACTER_BUDGET_EXCEEDED',
+      'block',
+      `Final prompt contains ${promptCharacters} characters; the active adapter allows ${maxPromptCharacters}.`,
+    );
+  }
   if (requireProjectContract && (!projectContract || projectContract.validation?.status !== 'ready')) {
     add('PROJECT_GENERATION_CONTRACT_INSUFFICIENT', 'block', 'Project contract is not ready.');
   }
@@ -247,6 +287,8 @@ export function runPromptPreflightGate({
     schemaVersion: '1.0',
     status: findings.some((item) => item.severity === 'block') ? 'blocked' : 'pass',
     findings,
+    promptCharacters,
+    maxPromptCharacters: Number.isFinite(maxPromptCharacters) ? maxPromptCharacters : null,
     checkedAt: new Date().toISOString(),
   };
 }

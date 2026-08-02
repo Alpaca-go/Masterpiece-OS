@@ -15,6 +15,7 @@ import {
   compileShortChainCorrectionPrompt,
   compileShortChainImageGeneration,
   listShortChainTemplateOptions,
+  validateShortChainEffectivePrompt,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
@@ -201,6 +202,21 @@ export function createShortChainImageGenerationService(
     const referenceAssetIds = logoUsageMode === 'reference'
       ? [...new Set([preferredLogoAssetId!, ...requestedReferenceIds])]
       : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId));
+    if (referenceAssetIds.length > 2) {
+      throw Object.assign(new Error('Short-Chain accepts at most two explicit identity or structure references.'), {
+        code: 'SHORT_CHAIN_REFERENCE_LIMIT_EXCEEDED',
+      });
+    }
+    const invalidReferenceIds = referenceAssetIds.filter((assetId) => {
+      const asset = context.sourceAssetRefs.find((item) => item.assetId === assetId);
+      return !asset || asset.relativePath.toLowerCase().endsWith('.pdf');
+    });
+    if (invalidReferenceIds.length) {
+      throw Object.assign(new Error(`Invalid project reference assets: ${invalidReferenceIds.join(', ')}`), {
+        code: 'SHORT_CHAIN_REFERENCE_ASSET_INVALID',
+        assetIds: invalidReferenceIds,
+      });
+    }
     const paths = await projects.paths(input.projectId);
     const approvedCreativeDecision = await fs.readFile(
       path.join(paths.root, 'outputs', 'creative_decision.json'),
@@ -423,10 +439,35 @@ export function createShortChainImageGenerationService(
       }] : []),
     ].slice(0, 2);
     const prompt = input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt;
+    const effectivePrompt = validateShortChainEffectivePrompt({
+      compiledPrompt: compilation.compiledPrompt,
+      effectivePrompt: prompt,
+    });
+    if (effectivePrompt.report.status !== 'pass') {
+      throw Object.assign(new Error(
+        `EFFECTIVE_PROMPT_PREFLIGHT_BLOCKED: ${effectivePrompt.report.findings
+          .map((item: { code?: string }) => item.code)
+          .filter(Boolean)
+          .join(', ')}`,
+      ), {
+        code: effectivePrompt.report.findings[0]?.code || 'EFFECTIVE_PROMPT_PREFLIGHT_BLOCKED',
+        findings: effectivePrompt.report.findings,
+      });
+    }
+    await writeJson(path.join(compilation.artifactDirectory, 'effective-prompt.json'), {
+      schemaVersion: '1.0',
+      projectId: input.projectId,
+      taskId: compilation.taskContract.taskId,
+      promptFingerprint: effectivePrompt.promptFingerprint,
+      promptCharacters: effectivePrompt.promptCharacters,
+      preflightReport: effectivePrompt.report,
+      prompt: effectivePrompt.prompt,
+      validatedAt: new Date().toISOString(),
+    });
     const run = await getImageGeneration().startCompiledCreativeTask({
       projectId: input.projectId,
-      compiledPrompt: prompt,
-      promptVersion: compilation.compiledPrompt.trace.sourceFingerprint,
+      compiledPrompt: effectivePrompt.prompt,
+      promptVersion: effectivePrompt.promptFingerprint,
       snapshot: {
         schemaVersion: 'short-chain-1.0',
         projectContextVersion: compilation.compiledPrompt.projectContextVersion,
@@ -439,6 +480,7 @@ export function createShortChainImageGenerationService(
         pipelineMode: 'short-chain',
         taskId: compilation.taskContract.taskId,
         contextFingerprint: currentContext.provenance.sourceFingerprint,
+        effectivePromptFingerprint: effectivePrompt.promptFingerprint,
         templateVersions: compilation.compiledPrompt.route.templateVersions,
         implicitAnchorRunId: implicitAnchor?.runId,
       },
@@ -461,7 +503,7 @@ export function createShortChainImageGenerationService(
         deliverableFamily: compilation.taskContract.deliverableFamily,
         subtype: compilation.taskContract.subtype,
         shot: compilation.taskContract.shot,
-        promptFingerprint: compilation.compiledPrompt.trace.sourceFingerprint,
+        promptFingerprint: effectivePrompt.promptFingerprint,
         runId: run.runId,
         imageId: run.images[0]?.imageId,
         createdAt: run.createdAt,
@@ -480,6 +522,16 @@ export function createShortChainImageGenerationService(
     if (!run || run.projectId !== projectId || run.status !== 'succeeded') {
       throw Object.assign(new Error('Only a succeeded result can become an implicit anchor'), {
         code: 'SHORT_CHAIN_ANCHOR_RESULT_INVALID',
+      });
+    }
+    const eligibility = await readShortChainArtifact(
+      projectId,
+      'validations',
+      `${runId}.direction-eligibility.json`,
+    ).then((value) => JSON.parse(value) as { status?: string }).catch(() => null);
+    if (eligibility?.status !== 'passed') {
+      throw Object.assign(new Error('Only a multimodal-validated result can become an implicit anchor'), {
+        code: 'SHORT_CHAIN_DIRECTION_VALIDATION_REQUIRED',
       });
     }
     const image = run.images.find((candidate) => candidate.imageId === imageId);
@@ -542,6 +594,10 @@ export function createShortChainImageGenerationService(
         path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
         result,
       );
+      await writeJson(
+        path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
+        { schemaVersion: '1.0', status: initialValidation.status, taskId: input.taskId },
+      );
       return result;
     }
     const correctionPrompt = compileShortChainCorrectionPrompt({
@@ -584,6 +640,10 @@ export function createShortChainImageGenerationService(
     await writeJson(
       path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
       result,
+    );
+    await writeJson(
+      path.join(await shortChainRoot(input.projectId), 'validations', `${correctionRun.runId}.direction-eligibility.json`),
+      { schemaVersion: '1.0', status: correctionValidation.status, taskId: input.taskId },
     );
     return result;
   }

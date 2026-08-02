@@ -24,6 +24,7 @@ export function buildUnifiedVisualUnderstandingPrompt(
 - industry: ${project.industry || project.detectedIndustry || 'unknown'}
 - logoLocked: ${project.logoLocked !== false}
 - userLockedFacts: ${JSON.stringify(project.lockedFacts || [])}
+- userConfirmedAnalysisAnswers: ${JSON.stringify(project.analysisConfirmation?.responses || {})}
 - attachedAssetIds: ${JSON.stringify(assetIds)}
 
 跨项目深度标准（具体答案只能来自当前项目证据）：

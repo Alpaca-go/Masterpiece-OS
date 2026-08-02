@@ -177,6 +177,35 @@ test('unknown brand role or missing locked Logo blocks formal upgrade', () => {
   assert.match(result.validation.message ?? '', /仅为视觉方向探索/u);
 });
 
+test('a saved user confirmation overrides an unknown inferred brand role', () => {
+  const result = buildVisualUnderstandingCore({
+    project: project({
+      status: 'ready',
+      analysisConfirmation: {
+        runId: 'repair-run-confirmation',
+        sourceFingerprint: 'sha256:source',
+        questions: [{
+          code: 'BRAND_ROLE_FACT_MISSING',
+          fieldPaths: ['projectFacts.brandRole.value'],
+          question: 'Confirm the brand role.',
+        }],
+        responses: {
+          BRAND_ROLE_FACT_MISSING: '面向年轻家庭的社区餐饮会客厅',
+        },
+        createdAt: '2026-08-02T00:00:00.000Z',
+        updatedAt: '2026-08-02T00:01:00.000Z',
+      },
+    }),
+    extracted: { ...extracted, projectFacts: { ...extracted.projectFacts, brandRole: {} } },
+  });
+  assert.equal(result.projectFacts.brandRole.value, '面向年轻家庭的社区餐饮会客厅');
+  assert.equal(result.projectFacts.brandRole.status, 'confirmed');
+  assert.deepEqual(
+    result.projectFacts.brandRole.evidenceRefs,
+    ['user_confirmation:projectFacts.brandRole.value'],
+  );
+});
+
 test('diagnosis and unique creative thesis retain project-specific judgments', () => {
   const result = buildVisualUnderstandingCore({ project: project(), extracted });
   assert.equal(result.diagnosis.valuableAssets[0]?.target, '孔雀羽毛的深层语义');

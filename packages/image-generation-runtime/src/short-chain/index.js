@@ -20,7 +20,10 @@ export {
   SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION,
   createSeedreamShortChainAdapter,
 } from './seedream-adapter.js';
-export { compileShortChainImageGeneration } from './compile.js';
+export {
+  compileShortChainImageGeneration,
+  validateShortChainEffectivePrompt,
+} from './compile.js';
 export {
   generateGoldenBacktraceAudit,
   renderGoldenBacktraceAuditMarkdown,

@@ -615,7 +615,14 @@ export function createPipelineService(
             .join('\n');
           throw Object.assign(
             new Error(questions || '当前项目还缺少必须由你确认的真实信息。'),
-            { code: 'ANALYSIS_CONFIRMATION_REQUIRED' },
+            {
+              code: 'ANALYSIS_CONFIRMATION_REQUIRED',
+              confirmation: {
+                runId: completion.runId,
+                sourceFingerprint: completion.audit.sourceFingerprint,
+                questions: completion.clarificationQuestions.slice(0, 3),
+              },
+            },
           );
         }
         if (completion.status === 'failed') {
@@ -687,6 +694,7 @@ export function createPipelineService(
         lastDurationMs: durationMs,
         lastReportFilename: reportFilename,
         lastError: null,
+        analysisConfirmation: null,
         assetCount: summary.totalFiles,
         imageCount: summary.imageCount
       });
@@ -802,8 +810,38 @@ export function createPipelineService(
     } catch (error) {
       const cancelled = controller.signal.aborted || (error as Error).name === 'AbortError';
       const message = cancelled ? '用户已取消分析' : friendlyPipelineError(error as Error, credentials.apiKey);
-      await projects.update(projectId, { status: cancelled ? 'cancelled' : 'failed', lastError: message });
+      const pendingConfirmation = (error as {
+        code?: string;
+        confirmation?: {
+          runId: string;
+          sourceFingerprint: string;
+          questions: NonNullable<ProjectRecord['analysisConfirmation']>['questions'];
+        };
+      }).code === 'ANALYSIS_CONFIRMATION_REQUIRED'
+        ? (error as {
+          confirmation?: {
+            runId: string;
+            sourceFingerprint: string;
+            questions: NonNullable<ProjectRecord['analysisConfirmation']>['questions'];
+          };
+        }).confirmation
+        : undefined;
+      const confirmationTime = new Date().toISOString();
+      await projects.update(projectId, pendingConfirmation ? {
+        status: 'awaiting_confirmation',
+        lastError: null,
+        analysisConfirmation: {
+          ...pendingConfirmation,
+          responses: {},
+          createdAt: confirmationTime,
+          updatedAt: confirmationTime,
+        },
+      } : { status: cancelled ? 'cancelled' : 'failed', lastError: message });
       await fs.rm(configPath, { force: true }).catch(() => {});
+      if (pendingConfirmation) {
+        progress('awaiting-confirmation', '需要确认项目事实后继续分析');
+        throw new Error(message);
+      }
       progress(cancelled ? 'cancelled' : 'failed', cancelled ? '分析已取消' : `分析失败：${message}`, {
         failedAtStage: currentStage as Exclude<AnalysisProgress['stage'], 'failed' | 'cancelled' | 'completed'>
       });
@@ -1264,6 +1302,52 @@ export function createPipelineService(
     });
   }
 
+  async function confirm(projectId: string, responses: Record<string, string>): Promise<ProjectRecord> {
+    const project = await projects.get(projectId);
+    const confirmation = project.analysisConfirmation;
+    if (!confirmation || project.status !== 'awaiting_confirmation') {
+      throw Object.assign(new Error('Project is not awaiting analysis confirmation.'), {
+        code: 'ANALYSIS_CONFIRMATION_NOT_PENDING',
+      });
+    }
+    const normalized = Object.fromEntries(confirmation.questions.map((question) => {
+      const value = String(responses[question.code] ?? '').trim();
+      if (!value) {
+        throw Object.assign(new Error(`A response is required for ${question.code}.`), {
+          code: 'ANALYSIS_CONFIRMATION_RESPONSE_MISSING',
+          questionCode: question.code,
+        });
+      }
+      return [question.code, value];
+    }));
+    const changes: Partial<ProjectRecord> = {
+      status: 'ready',
+      lastError: null,
+      analysisConfirmation: {
+        ...confirmation,
+        responses: normalized,
+        updatedAt: new Date().toISOString(),
+      },
+    };
+    for (const question of confirmation.questions) {
+      const answer = normalized[question.code];
+      if (question.fieldPaths.includes('projectFacts.brandName.value')) {
+        changes.brandName = answer;
+        changes.detectedBrandName = answer;
+        changes.factConfidence = { ...project.factConfidence, brandName: 1 };
+      }
+      if (question.fieldPaths.includes('projectFacts.industry.value')) {
+        changes.industry = answer;
+        changes.detectedIndustry = answer;
+        changes.factConfidence = {
+          ...(changes.factConfidence ?? project.factConfidence),
+          industry: 1,
+        };
+      }
+    }
+    return projects.update(projectId, changes);
+  }
+
   function cancel(projectId: string): boolean {
     const run = active.get(projectId);
     if (!run) return false;
@@ -1294,6 +1378,7 @@ export function createPipelineService(
 
   return {
     start,
+    confirm,
     selectCurrentProjectAssets,
     selectReferenceAssets,
     analyzeCurrentProjectProfile,

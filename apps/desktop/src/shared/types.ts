@@ -53,7 +53,7 @@ export interface ModelRegistryEntry {
 }
 export type OutputLanguage = 'zh-CN' | 'en';
 export type AnalysisProfile = 'fusion-enhanced';
-export type ProjectStatus = 'draft' | 'ready' | 'running' | 'completed' | 'failed' | 'cancelled';
+export type ProjectStatus = 'draft' | 'ready' | 'running' | 'awaiting_confirmation' | 'completed' | 'failed' | 'cancelled';
 export type ProjectNameSource =
   | 'visual-content'
   | 'logo-or-guideline'
@@ -72,6 +72,7 @@ export type AnalysisStage =
   | 'generating-report'
   | 'validating-output'
   | 'repairing-decisions'
+  | 'awaiting-confirmation'
   | 'completed'
   | 'failed'
   | 'cancelled';
@@ -565,6 +566,19 @@ export interface ProjectRecord {
   logoFiles: string[];
   briefFiles: string[];
   assets: ProjectAsset[];
+  analysisConfirmation?: {
+    runId: string;
+    sourceFingerprint: string;
+    questions: Array<{
+      code: string;
+      fieldPaths: string[];
+      question: string;
+      options?: Array<{ id: string; label: string; description?: string }>;
+    }>;
+    responses: Record<string, string>;
+    createdAt: string;
+    updatedAt: string;
+  } | null;
   visualContextFilename?: string | null;
   visualContextStatus?: 'missing' | 'ready' | 'failed';
   visualContextSchemaVersion?: string | null;
@@ -2013,6 +2027,7 @@ export interface DesktopApi {
   };
   analysis: {
     start(projectId: string, forceReasoning: boolean, apiProfileId?: string): Promise<AnalysisResult>;
+    confirm(projectId: string, responses: Record<string, string>): Promise<ProjectRecord>;
     cancel(projectId: string): Promise<boolean>;
     onProgress(callback: (progress: AnalysisProgress) => void): () => void;
   };

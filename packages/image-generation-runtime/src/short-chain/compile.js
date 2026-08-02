@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { createShortChainTaskContract } from './task-contract.js';
 import { routeShortChainTemplates } from './template-router.js';
 import { compileShortChainPrompt } from './prompt-compiler.js';
@@ -55,9 +56,30 @@ export function compileShortChainImageGeneration(input) {
     packagingTranslation: compiledPrompt.packagingTranslation,
     spatialTranslation: compiledPrompt.spatialTranslation,
     requireProjectContract: Boolean(input.projectContext?.visualDecisionPacket),
+    maxPromptCharacters: adapter.maxPromptCharacters,
   });
   const payload = adapter.compile(compiledPrompt);
   compiledPrompt.trace.promptCharacters = [...compiledPrompt.finalPrompt].length;
+  compiledPrompt.trace.maxPromptCharacters = adapter.maxPromptCharacters;
   compiledPrompt.trace.compileDurationMs = Number((performance.now() - started).toFixed(3));
   return { taskContract, route, compiledPrompt, payload };
+}
+
+export function validateShortChainEffectivePrompt({ compiledPrompt, effectivePrompt }) {
+  const prompt = String(effectivePrompt ?? '').trim();
+  const report = runPromptPreflightGate({
+    finalPrompt: prompt,
+    taskContract: compiledPrompt.taskContract,
+    projectContract: compiledPrompt.projectGenerationContract,
+    packagingTranslation: compiledPrompt.packagingTranslation,
+    spatialTranslation: compiledPrompt.spatialTranslation,
+    requireProjectContract: Boolean(compiledPrompt.effectiveVisualDecisionPacket),
+    maxPromptCharacters: compiledPrompt.trace?.maxPromptCharacters,
+  });
+  return {
+    prompt,
+    promptFingerprint: crypto.createHash('sha256').update(prompt).digest('hex'),
+    promptCharacters: [...prompt].length,
+    report,
+  };
 }

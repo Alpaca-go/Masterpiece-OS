@@ -4,6 +4,7 @@ import type {
   CompileShortChainGenerationResult,
   ImageGenerationRun,
   ProjectRecord,
+  ProjectVisualContextShortChain,
   ShortChainCreativeSession,
   ShortChainDeliverableValidation,
   ShortChainLogoUsageMode,
@@ -55,6 +56,8 @@ export function ShortChainGenerationWorkspace({
   const [mustIncludeText, setMustIncludeText] = useState('');
   const [mustAvoidText, setMustAvoidText] = useState('');
   const [logoUsageMode, setLogoUsageMode] = useState<ShortChainLogoUsageMode>('blank_area');
+  const [sourceAssets, setSourceAssets] = useState<ProjectVisualContextShortChain['sourceAssetRefs']>([]);
+  const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
   const [compiled, setCompiled] = useState<CompileShortChainGenerationResult | null>(null);
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
@@ -80,9 +83,10 @@ export function ShortChainGenerationWorkspace({
       || task.aspectRatio !== aspectRatio
       || task.currentInstruction !== instruction.trim()
       || task.logoUsageMode !== logoUsageMode
+      || task.referenceAssetIds.join('\n') !== referenceAssetIds.join('\n')
       || task.mustInclude.join('\n') !== splitRules(mustIncludeText).join('\n')
       || task.mustAvoid.join('\n') !== splitRules(mustAvoidText).join('\n');
-  }, [compiled, family, subtype, shot, aspectRatio, instruction, logoUsageMode, mustIncludeText, mustAvoidText]);
+  }, [compiled, family, subtype, shot, aspectRatio, instruction, logoUsageMode, referenceAssetIds, mustIncludeText, mustAvoidText]);
 
   async function refreshSession() {
     const next = await window.masterpiece.imageGeneration.getShortChainSession(project.id);
@@ -98,6 +102,7 @@ export function ShortChainGenerationWorkspace({
       refreshSession(),
     ]).then(([nextOptions, context]) => {
       setOptions(nextOptions as TemplateOptions);
+      setSourceAssets(context.sourceAssetRefs);
       // A project with a confirmed logo is always subject to the v5
       // "logo locked" contract. The backend therefore refuses any
       // `logoUsageMode` other than `post_composite` for those projects
@@ -155,6 +160,15 @@ export function ShortChainGenerationWorkspace({
     setLastValidation(null);
   }
 
+  function toggleReferenceAsset(assetId: string) {
+    setReferenceAssetIds((current) => {
+      if (current.includes(assetId)) return current.filter((item) => item !== assetId);
+      if (current.length >= 2) return current;
+      return [...current, assetId];
+    });
+    setCompiled(null);
+  }
+
   async function compilePrompt() {
     if (!canCompile) return;
     setBusy(true);
@@ -171,7 +185,7 @@ export function ShortChainGenerationWorkspace({
           currentInstruction: instruction.trim(),
           mustInclude: splitRules(mustIncludeText),
           mustAvoid: splitRules(mustAvoidText),
-          referenceAssetIds: [],
+          referenceAssetIds,
           logoUsageMode,
         },
       });
@@ -342,6 +356,22 @@ export function ShortChainGenerationWorkspace({
           />
         </label>
         {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
+        <fieldset className="reference-asset-selector">
+          <legend>锁定身份 / 结构参考（最多2项）</legend>
+          <p className="muted">Logo 不交给模型重绘；这里请选择需要保持形态的 IP、产品或包装结构素材。</p>
+          {sourceAssets.filter((asset) => asset.role !== 'logo').length
+            ? sourceAssets.filter((asset) => asset.role !== 'logo').map((asset) => <label key={asset.assetId} className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={referenceAssetIds.includes(asset.assetId)}
+                disabled={!referenceAssetIds.includes(asset.assetId) && referenceAssetIds.length >= 2}
+                onChange={() => toggleReferenceAsset(asset.assetId)}
+              />
+              <span>{asset.name}</span>
+              <small>{asset.role}</small>
+            </label>)
+            : <small>当前项目没有可选择的非 Logo 图片资产。</small>}
+        </fieldset>
         <label>Logo 处理方式
           <select value={logoUsageMode} onChange={(event) =>
             setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
@@ -416,7 +446,7 @@ export function ShortChainGenerationWorkspace({
               : '未发现可见结构性偏差'}</p>
           </div>}
           <div className="button-row">
-            <button className="button primary" disabled={busy} onClick={() => void confirmDirection()}>沿用此方向</button>
+            <button className="button primary" disabled={busy || lastValidation?.status !== 'passed'} onClick={() => void confirmDirection()}>沿用此方向</button>
             <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
           </div>
           <div className="button-row result-feedback">

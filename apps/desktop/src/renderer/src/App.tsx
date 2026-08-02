@@ -35,7 +35,7 @@ function WorkspaceFallback() {
 type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
-  const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
+  const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', awaiting_confirmation: '等待确认', completed: '已完成', failed: '失败', cancelled: '已取消' };
   return <span className={`badge ${status}`}>{labels[status]}</span>;
 }
 
@@ -176,7 +176,9 @@ export function App() {
       || enabledProfiles.find((item) => item.isDefault)
       || enabledProfiles[0];
     setSelectedApiProfileId(profile?.id || '');
-    setScreen(project.status === 'completed' && project.lastReportFilename ? 'report' : 'project');
+    setScreen(project.status === 'awaiting_confirmation'
+      ? 'analysis'
+      : project.status === 'completed' && project.lastReportFilename ? 'report' : 'project');
     try { setAssets(await window.masterpiece.projects.scanAssets(project.id)); }
     catch (reason) { setError(cleanError(reason)); }
   }
@@ -226,6 +228,18 @@ export function App() {
         model: selectedProfile?.modelId || project.model
       });
       setScreen('analysis');
+    }
+  }
+
+  async function confirmAnalysis(responses: Record<string, string>) {
+    if (!selected) return;
+    setError('');
+    try {
+      const confirmed = await window.masterpiece.analysis.confirm(selected.id, responses);
+      setSelected(confirmed);
+      await run(confirmed, false, selectedApiProfileId);
+    } catch (reason) {
+      setRunFailure(cleanError(reason));
     }
   }
 
@@ -362,6 +376,7 @@ export function App() {
     progress={progress}
     error={runFailure}
     onCancel={() => window.masterpiece.analysis.cancel(selected.id)}
+    onConfirm={(responses) => confirmAnalysis(responses)}
     onRetry={() => void run(selected, true, selectedApiProfileId)}
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;

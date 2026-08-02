@@ -32,6 +32,7 @@ const api: DesktopApi = {
   },
   analysis: {
     start: (projectId, forceReasoning, apiProfileId) => ipcRenderer.invoke('analysis:start', projectId, forceReasoning, apiProfileId),
+    confirm: (projectId, responses) => ipcRenderer.invoke('analysis:confirm', projectId, responses),
     cancel: (projectId) => ipcRenderer.invoke('analysis:cancel', projectId),
     onProgress(callback) {
       const listener = (_event: Electron.IpcRendererEvent, progress: AnalysisProgress) => callback(progress);

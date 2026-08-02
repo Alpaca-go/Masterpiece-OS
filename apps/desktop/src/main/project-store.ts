@@ -52,6 +52,7 @@ function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
     outputLanguage: 'zh-CN',
     analysisProfile: 'fusion-enhanced',
     assets: Array.isArray(record.assets) ? record.assets : [],
+    analysisConfirmation: record.analysisConfirmation ?? null,
     visualContextShortChainFilename: record.visualContextShortChainFilename || legacyShortChain.filename,
     visualContextShortChainStatus: record.visualContextShortChainStatus || legacyShortChain.status,
     visualContextShortChainVersion: record.visualContextShortChainVersion || legacyShortChain.version,

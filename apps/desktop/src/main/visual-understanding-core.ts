@@ -129,6 +129,13 @@ function authoritativeFact(
   };
 }
 
+function confirmedAnalysisAnswer(project: ProjectRecord, fieldPath: string): string {
+  const confirmation = project.analysisConfirmation;
+  if (!confirmation) return '';
+  const question = confirmation.questions.find((item) => item.fieldPaths.includes(fieldPath));
+  return question ? text(confirmation.responses[question.code]) : '';
+}
+
 function normalizeInventoryAsset(
   value: unknown,
   fallbackKind: VisualInventoryAssetKind,
@@ -375,7 +382,12 @@ export function buildVisualUnderstandingCore(input: {
     project.factConfidence?.industry,
     'project_record:industry',
   ) ?? normalizeFact(extractedFacts.industry) ?? unknownFact();
-  const brandRole = normalizeFact(extractedFacts.brandRole);
+  const confirmedBrandRole = confirmedAnalysisAnswer(project, 'projectFacts.brandRole.value');
+  const brandRole = authoritativeFact(
+    confirmedBrandRole,
+    confirmedBrandRole ? 1 : undefined,
+    'user_confirmation:projectFacts.brandRole.value',
+  ) ?? normalizeFact(extractedFacts.brandRole);
   const assetInventory = normalizeInventory(extracted.assetInventory, project);
   const lockedAssets = buildLocks(project, assetInventory);
   const projectFacts = { brandName, industry, brandRole };

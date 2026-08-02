@@ -38,6 +38,20 @@ test('preflight detects other-project and Golden content leakage', () => {
   assert.ok(report.findings.some((item) => item.code === 'GOLDEN_CONTENT_LEAK'));
 });
 
+test('preflight enforces the active adapter budget and returns actionable remediation', () => {
+  const report = runPromptPreflightGate({
+    finalPrompt: 'x'.repeat(101),
+    taskContract: { deliverableFamily: 'poster' },
+    requireProjectContract: false,
+    maxPromptCharacters: 100,
+  });
+  const finding = report.findings.find((item) => item.code === 'PROMPT_CHARACTER_BUDGET_EXCEEDED');
+  assert.equal(report.status, 'blocked');
+  assert.equal(report.promptCharacters, 101);
+  assert.equal(report.maxPromptCharacters, 100);
+  assert.equal(finding?.remediation, 'restore_or_shorten_edited_prompt');
+});
+
 test('preflight exposes project specificity, legacy reuse, packaging evidence and Logo route codes', () => {
   const packet = phase1Packet();
   // Pass an explicit minimal approvedCreativeDecision so the synthesiser

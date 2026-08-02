@@ -298,6 +298,7 @@ function registerIpc(): void {
   ) => projects.importFiles(projectId, paths, kind));
 
   registerHandler('analysis:start', (_event, projectId: string, forceReasoning: boolean, apiProfileId?: string) => pipeline.start(projectId, forceReasoning, apiProfileId));
+  registerHandler('analysis:confirm', (_event, projectId: string, responses: Record<string, string>) => pipeline.confirm(projectId, responses));
   registerHandler('analysis:cancel', (_event, projectId: string) => pipeline.cancel(projectId));
 
   registerHandler('report:read', async (_event, projectId: string) => {

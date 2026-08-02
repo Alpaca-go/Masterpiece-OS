@@ -154,11 +154,12 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
       referenceAssetIds: [],
     },
   });
-  const firstRun = await service.start({
+  const firstValidated = await service.startValidated({
     projectId,
     taskId: compiled.taskContract.taskId,
     apiProfileId: 'seedream-profile',
   });
+  const firstRun = firstValidated.correctionRun ?? firstValidated.initialRun;
   assert.equal(latestModelId, undefined);
   assert.equal(latestApiProfileId, 'seedream-profile');
   assert.deepEqual(latestReferences, []);
@@ -177,6 +178,13 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
     'Continue with the same space direction and show a quieter variant.',
   );
   assert.equal(nextRun.status, 'succeeded');
+  await assert.rejects(() => service.confirmDirection(
+    projectId,
+    nextRun.runId,
+    nextRun.images[0]!.imageId,
+  ), (error: unknown) => (
+    (error as { code?: string }).code === 'SHORT_CHAIN_DIRECTION_VALIDATION_REQUIRED'
+  ));
   const nextSession = await service.getSession(projectId);
   assert.equal(nextSession.currentTask?.deliverableFamily, 'space');
   assert.equal(nextSession.history.some((entry) => entry.type === 'direction_confirmed'), true);
@@ -207,6 +215,23 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
     },
   }), (error: unknown) =>
     (error as { code?: string }).code === 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED');
+
+  await assert.rejects(() => service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Use a missing identity reference.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['missing-ip-asset'],
+      logoUsageMode: 'post_composite',
+    },
+  }), (error: unknown) =>
+    (error as { code?: string }).code === 'SHORT_CHAIN_REFERENCE_ASSET_INVALID');
 
   // Regression: when a project confirms a logo, `logoUsageMode: 'reference'`
   // must also be rejected. The renderer workspace used to default to this
@@ -276,9 +301,9 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
     projectId,
     taskId: poster.taskContract.taskId,
   });
-  assert.equal(validated.automaticRetryCount, 1);
+  assert.equal(validated.automaticRetryCount, 0);
   assert.equal(validated.terminalStatus, 'passed');
-  assert.equal(validationCalls, 2);
+  assert.equal(validationCalls, 3);
   assert.equal(counter, 4);
 });
 
@@ -395,4 +420,60 @@ test('Short-Chain start recompiles when the cached preflight is stale and would 
   // need to recompile.
   const refreshed = JSON.parse(await fs.readFile(compiledPromptPath, 'utf8'));
   assert.equal(refreshed.preflightReport?.status, 'pass');
+});
+
+test('Short-Chain validates the effective edited prompt before calling the provider', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-short-chain-effective-prompt-'));
+  let providerCalls = 0;
+  const service = createShortChainImageGenerationService(
+    {
+      async paths() {
+        return {
+          root,
+          input: path.join(root, 'input'),
+          prepared: path.join(root, 'prepared'),
+          outputs: path.join(root, 'outputs'),
+          runtime: path.join(root, 'runtime'),
+        };
+      },
+      async get() { return { apiProfileId: 'image-profile' }; },
+    } as never,
+    {
+      getShortChain: async () => context,
+      rebuildShortChain: async () => context,
+    } as never,
+    () => ({
+      async startCompiledCreativeTask() {
+        providerCalls += 1;
+        throw new Error('provider must not be called');
+      },
+    }) as never,
+  );
+  const compiled = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'poster',
+      subtype: 'brand_key_visual',
+      shot: 'subject_centered',
+      count: 1,
+      aspectRatio: '3:4',
+      currentInstruction: 'Create one formal brand poster.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: [],
+    },
+  });
+  await assert.rejects(() => service.start({
+    projectId,
+    taskId: compiled.taskContract.taskId,
+    editedPrompt: 'x'.repeat(7_501),
+  }), (error: unknown) => (
+    (error as { code?: string }).code === 'PROMPT_CHARACTER_BUDGET_EXCEEDED'
+  ));
+  assert.equal(providerCalls, 0);
+  const artifact = await fs.stat(path.join(
+    compiled.artifactDirectory,
+    'effective-prompt.json',
+  )).then(() => true).catch(() => false);
+  assert.equal(artifact, false);
 });
