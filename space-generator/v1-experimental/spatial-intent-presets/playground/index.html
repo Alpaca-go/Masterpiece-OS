@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spatial Intent Presets Playground</title>
+  <link rel="stylesheet" href="/playground/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="title">
+      <h1>Spatial Intent Presets Playground</h1>
+      <p class="sub">Phase v1.0 Design Intent Controller — 4 个 user-facing preset × 5 brand DNA,text-level,no Provider.</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="panel sidebar">
+      <section>
+        <h2>1. Brand</h2>
+        <select id="brand-select" size="5"></select>
+      </section>
+
+      <section>
+        <h2>2. Spatial Intent Preset</h2>
+        <div id="preset-buttons" class="preset-buttons"></div>
+      </section>
+
+      <section>
+        <h2>3. Intent (4 维)</h2>
+        <table id="intent-table" class="intent-table">
+          <tbody>
+            <tr><th>brandExpression</th><td id="intent-brand"></td></tr>
+            <tr><th>architectureExpression</th><td id="intent-arch"></td></tr>
+            <tr><th>referenceInfluence</th><td id="intent-ref"></td></tr>
+            <tr><th>industryConstraint</th><td id="intent-industry"></td></tr>
+          </tbody>
+        </table>
+        <p class="hint">industryConstraint 永远 maintain (Phase v1.0 §3).</p>
+      </section>
+
+      <section>
+        <h2>4. Runtime Tendency</h2>
+        <div id="runtime-tendency"></div>
+      </section>
+    </aside>
+
+    <section class="panel main">
+      <h2>Preset Emphasis Block <small id="emphasis-meta"></small></h2>
+      <pre id="emphasis-output" class="block-output">加载中…</pre>
+
+      <h2>Full compileSpaceRuntime Prompt <small id="compile-meta"></small></h2>
+      <p class="hint">点击 block id 展开/折叠 prompt 文本;切换 preset 不会改变 architecture_dna / brand_translation / space_role_context (Phase v1.0 §principles)。</p>
+      <div id="blocks-list"></div>
+    </section>
+
+    <aside class="panel comparison">
+      <h2>4-Preset 对比 (同 brand)</h2>
+      <p class="hint">展示同一 brand 4 preset emphasis block 的差异,以及 vs balanced preset 的 byte-equal 检查。</p>
+      <div id="comparison-list"></div>
+    </aside>
+  </main>
+
+  <script type="module" src="/playground/main.mjs"></script>
+</body>
+</html>

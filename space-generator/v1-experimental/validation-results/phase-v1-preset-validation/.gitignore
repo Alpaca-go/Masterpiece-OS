@@ -1,0 +1,16 @@
+# 5.0 release gate pattern: per-phase smoke output gitignore.
+# Desensitize: no absolute user-data paths, no API keys, no raw provider responses.
+
+# Image artifacts are gitignored (preserved locally for review only)
+image.png
+*.jpg
+*.jpeg
+*.png
+!docs/reference/JZMX-ARCH-01.png
+
+# Smoke run log
+smoke-run.log
+
+# OS / editor
+.DS_Store
+Thumbs.db

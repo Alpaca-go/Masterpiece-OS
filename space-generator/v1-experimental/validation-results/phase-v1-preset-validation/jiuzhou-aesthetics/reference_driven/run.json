@@ -1,0 +1,29 @@
+{
+  "preset": "reference_driven",
+  "status": "succeeded",
+  "durationMs": 94254,
+  "imageBytes": 400155,
+  "blockCount": 18,
+  "characterCount": 14262,
+  "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1_sip_9c1_space_role",
+  "moduleVersions": {
+    "brandDna": "v0.1.1",
+    "spatialIntent": "9A.2",
+    "architectureBridge": "9A.3",
+    "architectureAnchor": "8A",
+    "architectureFunctionBridge": "8B.1",
+    "spatialReality": "9B.1",
+    "architecturePreservation": "9B.2",
+    "promptCompiler": "1.0.0",
+    "spatialIntentPresets": "spatial-intent-presets",
+    "spaceRoleIntelligence": "9C.1"
+  },
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "balanced",
+    "referenceInfluence": "dominant",
+    "industryConstraint": "maintain"
+  },
+  "referenceUsed": true,
+  "imagePath": "D:\\Masterpiece-OS\\docs\\reference\\jiuzhou_exterior_reference_driven_v1.jpg"
+}
