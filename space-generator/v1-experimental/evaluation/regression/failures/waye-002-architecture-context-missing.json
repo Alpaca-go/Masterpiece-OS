@@ -1,0 +1,14 @@
+{
+  "caseId": "waye-002-architecture-context-missing",
+  "type": "architecture_anchor_drift",
+  "severity": "medium",
+  "project": "wa-ye (regression test case)",
+  "input": {
+    "hasAnchors": false,
+    "note": "wa-ye 没有 architecture-anchors registry entry (3 行业 anchor 都没有 wa-ye/)"
+  },
+  "output": "compileSpaceRuntime baseline 16 → 15 blocks (无 architecture_context block) — 不同 brand 跟 industry 不一致",
+  "reason": "Phase 8A architecture anchors 只覆盖 JZMX / FTT / YJLF 3 行业, 缺 wa-ye + jin-xiu",
+  "fixModule": "Phase 8A.1 architecture anchor expansion (out of Phase 9D scope; per Phase 9D §4 不增加 anchor)",
+  "status": "documented"
+}

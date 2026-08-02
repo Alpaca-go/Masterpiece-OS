@@ -1,0 +1,245 @@
+{
+  "schemaVersion": "1.0",
+  "dnaVersion": "v0.1-jinxiu-fashion",
+  "project": {
+    "brandName": "锦绣",
+    "industry": "时尚零售 / 服装零售 / 轻奢",
+    "category": "fashion_retail",
+    "projectIdLocal": "jinxiu-regression-sample",
+    "audience": [
+      "25-40 岁都市女性",
+      "时尚 / 穿搭",
+      "轻奢 / designer brand",
+      "高客单"
+    ],
+    "brandPositioning": [
+      "现代",
+      "精致",
+      "高级",
+      "极简"
+    ]
+  },
+  "sceneDefinition": {
+    "sceneType": "product_display",
+    "sceneSubtype": "luxury_fashion_floor",
+    "commercialContext": "mall_store",
+    "scale": "medium",
+    "areaSqm": 200,
+    "operatingState": "open",
+    "occupancy": "low",
+    "requiredZones": [
+      "product_display",
+      "fitting_room",
+      "vip_room",
+      "checkout_counter",
+      "lobby"
+    ],
+    "optionalZones": [
+      "styling_consultation",
+      "vip_lounge"
+    ]
+  },
+  "architectureDna": {
+    "spatialConcept": {
+      "primary": "minimal_editorial_retail",
+      "secondary": "luxury_open_plan"
+    },
+    "geometry": {
+      "dominant": [
+        "natural_wood",
+        "lacquered_panel",
+        "metal_finish",
+        "velvet"
+      ],
+      "limited": [
+        "rubber_floor",
+        "exposed_concrete",
+        "raw_industrial_concrete",
+        "metal_grid"
+      ]
+    },
+    "spatialContinuity": {
+      "wallToCeiling": "high",
+      "floorToFurniture": "high",
+      "roomToRoom": "high"
+    },
+    "boundaryLanguage": {
+      "hardness": "medium",
+      "transparency": "high",
+      "enclosure": "soft_to_medium"
+    },
+    "circulation": {
+      "type": "open_plan",
+      "visibility": "open",
+      "rhythm": "slow"
+    },
+    "boundaryHardness": "medium",
+    "statementStrength": "high"
+  },
+  "functionalDna": {
+    "operationalRealism": "high",
+    "customerFlow": {
+      "entranceToReception": "entrance -> lobby -> product_display",
+      "receptionToWaiting": "vip_room -> styling_consultation",
+      "waitingToConsultation": "product_display -> fitting_room -> vip_room -> checkout_counter"
+    },
+    "furnitureRequirements": {
+      "ergonomic": true,
+      "commercialGrade": true,
+      "accessible": true
+    },
+    "privacy": {
+      "publicZone": "open",
+      "semiPrivateZone": "fitting_room",
+      "treatmentZone": "vip_room"
+    }
+  },
+  "brandSpaceDna": {
+    "brandSpirit": {
+      "elegant": 0.8,
+      "social": 0.6,
+      "playful": 0.2,
+      "premium": 0.7
+    },
+    "brandGrammar": {
+      "minimalEditorialLayout": "high",
+      "controlledGlow": "high",
+      "refinedOrder": "high",
+      "decorativeDensity": "low",
+      "seasonalRefresh": "high"
+    },
+    "motifFamily": [
+      "seasonal_trend",
+      "minimalist",
+      "editorial"
+    ],
+    "literalAssetUsage": {
+      "logoVisibility": "minimal",
+      "seasonalCampaignRefresh": "high",
+      "fabricTextureShowcase": "high",
+      "monochromeSpotlight": "high"
+    },
+    "injectionStrength": 0.4
+  },
+  "materialDna": {
+    "primaryMaterials": [
+      "natural_wood",
+      "lacquered_panel",
+      "velvet",
+      "linen"
+    ],
+    "secondaryMaterials": [
+      "metal_finish",
+      "leather"
+    ],
+    "accentMaterials": [
+      "warm_pendant",
+      "brass_fitting"
+    ],
+    "finish": {
+      "glossLevel": "medium",
+      "reflectivity": "controlled",
+      "tactileQuality": "refined"
+    },
+    "materialCountLimit": 5
+  },
+  "lightingDna": {
+    "primaryStrategy": "track_spotlight",
+    "ambient": {
+      "softness": "medium",
+      "brightness": "medium",
+      "contrast": "high"
+    },
+    "integratedLight": {
+      "ceilingCove": "medium",
+      "wallEdge": "low",
+      "furnitureBase": "low"
+    },
+    "brandLight": {
+      "hueFamily": [
+        "warm_neutral_white",
+        "soft_amber"
+      ],
+      "saturation": "low",
+      "areaRatio": "moderate"
+    },
+    "spotlightUsage": "high",
+    "decorativeFixtureVisibility": "low",
+    "architecturalGlow": "low"
+  },
+  "compositionDna": {
+    "focalHierarchy": {
+      "primary": "product_display_with_editorial_lighting",
+      "secondary": "fitting_room_entrance",
+      "tertiary": "vip_room_glimpse"
+    },
+    "visualBalance": {
+      "symmetry": "high",
+      "negativeSpace": "high",
+      "density": "low"
+    },
+    "camera": {
+      "lens": "wide",
+      "height": "human_eye_level",
+      "distortion": "controlled"
+    },
+    "framing": {
+      "depthLayers": 3,
+      "foregroundUsage": "minimal",
+      "clearEntryView": true
+    }
+  },
+  "renderingDna": {
+    "realism": "photo_realistic",
+    "visualFinish": "editorial_polished",
+    "exposure": "balanced",
+    "whiteBalance": "neutral_warm",
+    "shadow": "controlled",
+    "textureVisibility": "pronounced",
+    "people": {
+      "amount": "sparse",
+      "motionBlur": "optional"
+    },
+    "cleanliness": "high",
+    "postProcessing": "editorial_color_grade"
+  },
+  "variationControl": {
+    "preserve": [
+      "minimal_editorial_retail",
+      "natural_wood_lacquered_panel",
+      "track_spotlight_editorial"
+    ],
+    "vary": [
+      "seasonal_campaign",
+      "fabric_texture",
+      "monochrome_ambience"
+    ],
+    "motifRepetitionLimit": {
+      "sameLiteralMotifPerImage": 1,
+      "sameMotifAcrossBatchRatio": 0.3
+    },
+    "requireNovelSpatialSolution": true
+  },
+  "negativeConstraints": {
+    "prohibit": [
+      "warehouse_discount",
+      "exposed_concrete",
+      "raw_industrial_grid",
+      "rubber_floor",
+      "metal_grid",
+      "neon_club_flash",
+      "sports_dynamic_motif",
+      "vintage_retro",
+      "stadium_inspired_lighting"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02T00:00:00.000Z",
+    "frozenFromCommit": "e6d4e6a",
+    "sourceBenchmarkIds": ["Phase_9D_Multi_brand_Multi_industry_Spatial_Regression_Validation"],
+    "promotedFromVersion": "v0.1-initial",
+    "promotedBy": "Mavis (Phase 9D, 2026-08-02 — fashion_retail 行业第 5 brand)",
+    "regressionProject": true,
+    "industryCoverage": "fashion_retail (Phase 9D §6 5 行业: medical_aesthetics / restaurant / tcm_wellness / casual_dining / fashion_retail)"
+  }
+}

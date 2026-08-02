@@ -1,0 +1,24 @@
+{
+  "schemaRef": "https://masterpiece-os.local/architecture-preservation-dna.schema.v9b.2.json",
+  "brandKey": "jin-xiu",
+  "category": "fashion_retail",
+  "phase": "9B.2",
+  "architecturePreservation": {
+    "enabled": true,
+    "weight": 0.65,
+    "protectedElements": [
+      "spatial_signature",
+      "material_expression",
+      "lighting_behavior"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02",
+    "frozenBy": "Space Generator v1.1 Phase 9D Multi-brand/Multi-industry Regression Validation",
+    "sourceArchitectureAnchors": [
+      "JX-LAY-01-MinimalEditorial",
+      "JX-LAY-02-TrackSpotlight"
+    ],
+    "notes": "Phase 9B.2 §4 锦绣 (jin-xiu) 建议 weight=0.65 (中等偏强保护). 3 protected elements (没有 ceiling_language, 因为 fashion_retail 没有 membrane 天花这类语言; 强调 spatial_signature + material_expression + lighting_behavior). spatial_signature 重点: 极简立面 + 大量 negative space + editorial 灯光. material_expression 重点: natural_wood + lacquered_panel + velvet + linen + metal_finish 5 类. lighting_behavior 重点: track_spotlight + warm_neutral_white + soft_amber + editorial 色彩."
+  }
+}

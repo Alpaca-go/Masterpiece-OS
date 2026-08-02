@@ -1,0 +1,11 @@
+{
+  "caseId": "phase-9d-002-jin-xiu-new-industry",
+  "type": "new_brand_coverage",
+  "severity": "low",
+  "project": "jin-xiu (fashion_retail, Phase 9D 新增)",
+  "input": "Phase 9D §6 第 5 行业 fashion_retail — 之前 v0.1 baseline 只有 4 brand DNA, 9C.0.5 6 行业 rules 已经有 fashion_retail 但没有配套 DNA",
+  "output": "Phase 9D 新增 jin-xiu brand DNA + spatial-intent + spatial-reality + architecture-preservation (4 JSON 配套)",
+  "reason": "9C.0.5 rules 已经有 fashion_retail 行业 keywords / materials / motifs, 但缺 5 行业第 5 brand DNA sample",
+  "fixModule": "Phase 9D (this commit) 加 jin-xiu 5 行业第 5 brand 配套",
+  "status": "fixed"
+}

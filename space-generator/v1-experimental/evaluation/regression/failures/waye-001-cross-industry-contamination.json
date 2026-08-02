@@ -1,0 +1,22 @@
+{
+  "caseId": "waye-001-cross-industry-contamination",
+  "type": "cross_industry_contamination",
+  "severity": "high",
+  "project": "wa-ye (pre-correction v0.1 DNA)",
+  "input": {
+    "industry": "体育用品零售 / 运动品牌",
+    "motifFamily": [
+      "feather_like_flow"
+    ],
+    "negativeConstraints": [
+      "spa_atmosphere",
+      "hospital_corridor",
+      "silent_meditation_room",
+      "fine_dining_dinnerware"
+    ]
+  },
+  "output": "5 issues: 1 motifFamily (medical concern) + 4 negativeConstraints (medical/tcm/restaurant concerns in sports_retail DNA)",
+  "reason": "Phase 9C.0.5 brand identity validation gate 正确捕获 cross-industry contamination; v0.1 DNA 错把炭烧牛蛙餐饮标成体育用品零售 + 用 medical/tcm concerns",
+  "fixModule": "Phase 9C.0.5 Brand Identity Validation Gate (阻断) + 9C.0.5 (commit 65252fd 手动 DNA 修正) + 9C.1 WAYE real-provider smoke (commit 9fb35e9 验证)",
+  "status": "fixed"
+}

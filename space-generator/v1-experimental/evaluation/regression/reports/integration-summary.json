@@ -1,0 +1,411 @@
+{
+  "generatedAt": "2026-08-01T23:56:38.534Z",
+  "phase": "9D",
+  "totalCases": 20,
+  "brands": [
+    "jiuzhou-aesthetics",
+    "feng-tang-tang",
+    "yi-ji-liang-fang",
+    "wa-ye",
+    "jin-xiu"
+  ],
+  "presets": [
+    "brand_driven",
+    "architecture_driven",
+    "reference_driven",
+    "balanced"
+  ],
+  "industryCoverage": "jiuzhou-aesthetics=medical_aesthetics, feng-tang-tang=restaurant, yi-ji-liang-fang=tcm_wellness, wa-ye=casual_dining, jin-xiu=fashion_retail",
+  "industryCount": 5,
+  "presetCount": 4,
+  "perCaseSummary": [
+    {
+      "brandKey": "jiuzhou-aesthetics",
+      "preset": "brand_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "jiuzhou-aesthetics",
+      "preset": "architecture_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "jiuzhou-aesthetics",
+      "preset": "reference_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "jiuzhou-aesthetics",
+      "preset": "balanced",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "feng-tang-tang",
+      "preset": "brand_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "feng-tang-tang",
+      "preset": "architecture_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "feng-tang-tang",
+      "preset": "reference_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "feng-tang-tang",
+      "preset": "balanced",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "yi-ji-liang-fang",
+      "preset": "brand_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "yi-ji-liang-fang",
+      "preset": "architecture_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "yi-ji-liang-fang",
+      "preset": "reference_driven",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "yi-ji-liang-fang",
+      "preset": "balanced",
+      "totalScore": 75,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 30,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 18
+    },
+    {
+      "brandKey": "wa-ye",
+      "preset": "brand_driven",
+      "totalScore": 87,
+      "industryAccuracy": 100,
+      "brandTranslation": 100,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "wa-ye",
+      "preset": "architecture_driven",
+      "totalScore": 87,
+      "industryAccuracy": 100,
+      "brandTranslation": 100,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "wa-ye",
+      "preset": "reference_driven",
+      "totalScore": 87,
+      "industryAccuracy": 100,
+      "brandTranslation": 100,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "wa-ye",
+      "preset": "balanced",
+      "totalScore": 87,
+      "industryAccuracy": 100,
+      "brandTranslation": 100,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "jin-xiu",
+      "preset": "brand_driven",
+      "totalScore": 82,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "jin-xiu",
+      "preset": "architecture_driven",
+      "totalScore": 82,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "jin-xiu",
+      "preset": "reference_driven",
+      "totalScore": 82,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    },
+    {
+      "brandKey": "jin-xiu",
+      "preset": "balanced",
+      "totalScore": 82,
+      "industryAccuracy": 100,
+      "brandTranslation": 70,
+      "architectureQuality": 70,
+      "functionalReality": 50,
+      "intentAlignment": 100,
+      "crossSpaceConsistency": 100,
+      "gateStatus": "pass",
+      "gateRiskLevel": "low",
+      "blockCount": 17
+    }
+  ],
+  "brandSummary": [
+    {
+      "brandKey": "jiuzhou-aesthetics",
+      "industry": "medical_aesthetics",
+      "recommendedPreset": "architecture_driven",
+      "averageScore": 75,
+      "scoreByPreset": {
+        "brand_driven": 75,
+        "architecture_driven": 75,
+        "reference_driven": 75,
+        "balanced": 75
+      },
+      "blockCountConsistent": true,
+      "crossSpaceConsistent": true
+    },
+    {
+      "brandKey": "feng-tang-tang",
+      "industry": "restaurant",
+      "recommendedPreset": "balanced",
+      "averageScore": 75,
+      "scoreByPreset": {
+        "brand_driven": 75,
+        "architecture_driven": 75,
+        "reference_driven": 75,
+        "balanced": 75
+      },
+      "blockCountConsistent": true,
+      "crossSpaceConsistent": true
+    },
+    {
+      "brandKey": "yi-ji-liang-fang",
+      "industry": "tcm_wellness",
+      "recommendedPreset": "balanced",
+      "averageScore": 75,
+      "scoreByPreset": {
+        "brand_driven": 75,
+        "architecture_driven": 75,
+        "reference_driven": 75,
+        "balanced": 75
+      },
+      "blockCountConsistent": true,
+      "crossSpaceConsistent": true
+    },
+    {
+      "brandKey": "wa-ye",
+      "industry": "casual_dining",
+      "recommendedPreset": "brand_driven",
+      "averageScore": 87,
+      "scoreByPreset": {
+        "brand_driven": 87,
+        "architecture_driven": 87,
+        "reference_driven": 87,
+        "balanced": 87
+      },
+      "blockCountConsistent": true,
+      "crossSpaceConsistent": true
+    },
+    {
+      "brandKey": "jin-xiu",
+      "industry": "fashion_retail",
+      "recommendedPreset": "architecture_driven",
+      "averageScore": 82,
+      "scoreByPreset": {
+        "brand_driven": 82,
+        "architecture_driven": 82,
+        "reference_driven": 82,
+        "balanced": 82
+      },
+      "blockCountConsistent": true,
+      "crossSpaceConsistent": true
+    }
+  ],
+  "presetSummary": [
+    {
+      "preset": "brand_driven",
+      "averageScore": 79,
+      "distinctBrandCount": 5
+    },
+    {
+      "preset": "architecture_driven",
+      "averageScore": 79,
+      "distinctBrandCount": 5
+    },
+    {
+      "preset": "reference_driven",
+      "averageScore": 79,
+      "distinctBrandCount": 5
+    },
+    {
+      "preset": "balanced",
+      "averageScore": 79,
+      "distinctBrandCount": 5
+    }
+  ],
+  "failureCaseCount": 5,
+  "failureCaseStatusSummary": {
+    "fixed": 2,
+    "documented": 3,
+    "open": 0
+  },
+  "phase9dAcceptanceCriteria": {
+    "atLeast5IndustriesCovered": true,
+    "all4PresetsTested": true,
+    "crossIndustryGateEffective": true,
+    "noMajorBrandContamination": true,
+    "brandsKeepDistinct": true,
+    "sameBrandSpaceConsistent": true
+  }
+}

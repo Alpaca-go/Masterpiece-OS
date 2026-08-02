@@ -1,0 +1,40 @@
+{
+  "schemaRef": "https://masterpiece-os.local/spatial-reality-dna.schema.v9b.1.json",
+  "brandKey": "jin-xiu",
+  "category": "fashion_retail",
+  "phase": "9B.1",
+  "spatialRealityDna": {
+    "spaceType": "luxury_fashion_floor",
+    "commercialScale": "150-250 sqm mall flagship retail, single tenant, 200 sqm sample",
+    "requiredZones": [
+      "lobby",
+      "product_display",
+      "fitting_room",
+      "vip_room",
+      "checkout_counter"
+    ],
+    "operationLogic": "mall 入口 + editorial 视觉引导 + fitting_room 高峰期排队管理 + staff 4-6 人 轮转 + seasonal campaign 4-6 周换新",
+    "userFlow": "mall -> 立面吸引 -> lobby -> product_display -> fitting_room -> vip_room -> checkout_counter -> 离开",
+    "privacyRequirement": "open public zone (lobby / product_display) + semi-private (fitting_room) + enclosed vip_room, 不可出现 warehouse_discount 风格硬墙硬隔",
+    "materialReality": "real retail-grade materials: natural_wood, lacquered_panel, metal_finish, velvet, linen, brass_fitting, 4-5 类内, 不可出现 rubber_floor / exposed_concrete / metal_grid / raw_industrial",
+    "forbiddenSpatialTypes": [
+      "warehouse_discount (硬墙 + 钢架 + 堆叠)",
+      "stadium_inspired (直射 + 高饱和 + 大空间)",
+      "vintage_retro (老木 + 复古铜器)",
+      "exhibition_hall (中心展示台 + 巡游动线)",
+      "spa_retreat (无 staff / 纯冥想空间)",
+      "fine_dining (无桌布 / 无水晶灯)",
+      "warehouse_style (堆叠感 + 工业感)",
+      "discount_outlet (黄牌 + 拥挤动线)"
+    ]
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02",
+    "frozenBy": "Space Generator v1.1 Phase 9D Multi-brand/Multi-industry Regression Validation",
+    "sourceArchitectureAnchors": [
+      "JX-LAY-01-MinimalEditorial",
+      "JX-LAY-02-TrackSpotlight"
+    ],
+    "notes": "Phase 9B.1 §3 8 字段. spaceType=luxury_fashion_floor 跟 industry=fashion_retail 区分, commercialScale 量化 150-250 sqm + 200 sqm sample 决定 staff 密度. forbiddenSpatialTypes 重点排 warehouse_discount / stadium / vintage_retro, 因为 Phase 9B 在这几个方向上 drift 风险最高."
+  }
+}

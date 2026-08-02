@@ -1,0 +1,39 @@
+{
+  "brandKey": "wa-ye",
+  "preset": "balanced",
+  "industryMatched": "casual_dining",
+  "gateStatus": "pass",
+  "gateRiskLevel": "low",
+  "gateRecommendation": "continue",
+  "gateConfidence": 0.935,
+  "gateIssueCount": 0,
+  "blockCount": 17,
+  "characterCount": 11349,
+  "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1_sip_9c1_space_role",
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "balanced",
+    "referenceInfluence": "balanced",
+    "industryConstraint": "maintain"
+  },
+  "scores": {
+    "industryAccuracy": 100,
+    "brandTranslation": 100,
+    "architectureQuality": 70,
+    "functionalReality": 50,
+    "intentAlignment": 100,
+    "crossSpaceConsistency": 100
+  },
+  "totalScore": 87,
+  "evidence": {
+    "hasBrandNameInTransBlock": true,
+    "hasAudienceInTransBlock": true,
+    "hasBrandPosInTransBlock": true,
+    "hasMaterialsInArchDnaBlock": true,
+    "hasLightingInArchDnaBlock": false,
+    "hasBoundaryInArchDnaBlock": true,
+    "hasZonesInRealityBlock": true,
+    "hasScaleInRealityBlock": false,
+    "intentAlignmentNotes": "industryConstraint=maintain ✓; casual_dining + balanced: not the §11 recommended pairing, but not invalid"
+  }
+}

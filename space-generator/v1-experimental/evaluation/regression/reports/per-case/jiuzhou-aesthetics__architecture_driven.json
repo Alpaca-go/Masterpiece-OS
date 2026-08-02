@@ -1,0 +1,39 @@
+{
+  "brandKey": "jiuzhou-aesthetics",
+  "preset": "architecture_driven",
+  "industryMatched": "medical_aesthetics",
+  "gateStatus": "pass",
+  "gateRiskLevel": "low",
+  "gateRecommendation": "continue",
+  "gateConfidence": 0.92,
+  "gateIssueCount": 0,
+  "blockCount": 18,
+  "characterCount": 14360,
+  "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1_sip_9c1_space_role",
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "dominant",
+    "referenceInfluence": "low",
+    "industryConstraint": "maintain"
+  },
+  "scores": {
+    "industryAccuracy": 100,
+    "brandTranslation": 70,
+    "architectureQuality": 30,
+    "functionalReality": 50,
+    "intentAlignment": 100,
+    "crossSpaceConsistency": 100
+  },
+  "totalScore": 75,
+  "evidence": {
+    "hasBrandNameInTransBlock": true,
+    "hasAudienceInTransBlock": true,
+    "hasBrandPosInTransBlock": false,
+    "hasMaterialsInArchDnaBlock": false,
+    "hasLightingInArchDnaBlock": false,
+    "hasBoundaryInArchDnaBlock": true,
+    "hasZonesInRealityBlock": true,
+    "hasScaleInRealityBlock": false,
+    "intentAlignmentNotes": "industryConstraint=maintain ✓; medical_aesthetics + architecture_driven: matches §11 recommended pairing"
+  }
+}

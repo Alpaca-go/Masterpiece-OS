@@ -1,0 +1,39 @@
+{
+  "brandKey": "jin-xiu",
+  "preset": "reference_driven",
+  "industryMatched": "fashion_retail",
+  "gateStatus": "pass",
+  "gateRiskLevel": "low",
+  "gateRecommendation": "continue",
+  "gateConfidence": 0.912,
+  "gateIssueCount": 0,
+  "blockCount": 17,
+  "characterCount": 11423,
+  "runtimePath": "spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1_sip_9c1_space_role",
+  "intent": {
+    "brandExpression": "balanced",
+    "architectureExpression": "balanced",
+    "referenceInfluence": "dominant",
+    "industryConstraint": "maintain"
+  },
+  "scores": {
+    "industryAccuracy": 100,
+    "brandTranslation": 70,
+    "architectureQuality": 70,
+    "functionalReality": 50,
+    "intentAlignment": 100,
+    "crossSpaceConsistency": 100
+  },
+  "totalScore": 82,
+  "evidence": {
+    "hasBrandNameInTransBlock": true,
+    "hasAudienceInTransBlock": true,
+    "hasBrandPosInTransBlock": false,
+    "hasMaterialsInArchDnaBlock": true,
+    "hasLightingInArchDnaBlock": false,
+    "hasBoundaryInArchDnaBlock": true,
+    "hasZonesInRealityBlock": true,
+    "hasScaleInRealityBlock": false,
+    "intentAlignmentNotes": "industryConstraint=maintain ✓; reference_driven: applicable to any strong-reference project"
+  }
+}

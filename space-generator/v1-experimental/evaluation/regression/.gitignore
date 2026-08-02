@@ -1,0 +1,12 @@
+# 5.0 release gate pattern: per-phase smoke output gitignore.
+# Desensitize: no absolute user-data paths, no API keys, no raw provider responses.
+
+# No image files (Phase 9D is text-level, no Provider called; placeholder for future Level 1/2)
+image.png
+
+# Smoke run log (created by bin scripts)
+smoke-run.log
+
+# OS / editor
+.DS_Store
+Thumbs.db

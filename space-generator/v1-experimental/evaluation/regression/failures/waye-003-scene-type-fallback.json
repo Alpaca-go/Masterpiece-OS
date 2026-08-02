@@ -1,0 +1,15 @@
+{
+  "caseId": "waye-003-scene-type-fallback",
+  "type": "space_role_fallback",
+  "severity": "low",
+  "project": "wa-ye (casual_dining industry)",
+  "input": {
+    "sceneType": "reception",
+    "industry": "casual_dining",
+    "note": "9C.1 §4 8 space_type 覆盖 medical/retail 行业 (reception / lobby / vip_lounge / consultation / treatment / corridor / product_display / exterior); casual_dining 没专门 space_type, 用 reception 兜底"
+  },
+  "output": "9C.1 compileSpaceRuntime(wa-ye) default space_type=reception (餐饮入口点单+品牌表达 跟 medical/retail reception 概念重叠)",
+  "reason": "Phase 9C.1 §11 \"更多 Anchor\" 暂不开发, 跨行业 space_type 复用 reception 兜底",
+  "fixModule": "Phase 10 Decision Consistency Validator 跨行业 space_type 扩展 (per Phase 9C.0.5 Updated §11 后续路线)",
+  "status": "documented"
+}

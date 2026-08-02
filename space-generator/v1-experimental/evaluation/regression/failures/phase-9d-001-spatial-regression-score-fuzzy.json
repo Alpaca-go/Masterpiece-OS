@@ -1,0 +1,11 @@
+{
+  "caseId": "phase-9d-001-spatial-regression-score-fuzzy",
+  "type": "text_level_score_fuzzy",
+  "severity": "low",
+  "project": "all 5 brand × 4 preset = 20 cases",
+  "input": "computeSpatialRegressionScore 用 text-level fuzzy match (substring + token intersection)",
+  "output": "5 brand 总分 75-87 (JZMX/FTT/YJLF 75, WA-ye 87, JIN-XIU 82) — evidence 命中不 100%, 留有 ~15-25 分 fuzzy margin",
+  "reason": "text-level 评估无法 100% 准确匹配 DNA 字段名 vs block 实际生成文本 (e.g. JZMX arch_dna block 没显式列 \"mineral_plaster\" material, 用 \"Geometry\" 表达)",
+  "fixModule": "Phase 9E Spatial Intelligence Knowledge Layer (per Phase 9D §12 后续路线) 加 structure-aware 评分",
+  "status": "documented"
+}

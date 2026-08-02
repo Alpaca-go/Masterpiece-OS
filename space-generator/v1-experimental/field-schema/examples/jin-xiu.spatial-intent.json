@@ -1,0 +1,28 @@
+{
+  "schemaRef": "https://masterpiece-os.local/spatial-intent.schema.v9a.1.json",
+  "brandKey": "jin-xiu",
+  "category": "fashion_retail",
+  "phase": "9A.1",
+  "spatialIntentDna": {
+    "primaryEmotion": "让 25-40 岁都市女性在轻奢 retail 空间里, 看到 fabric texture + 极简 layout + 高级 lighting, 在 seasonal campaign refresh 中找到 style 认同, 离开时带走在高客单上花的从容感",
+    "userJourney": "mall 路过被极简立面 + 暖色 spotlight 吸引 -> 进店 lobby 看 product display -> 选品 -> fitting_room 试穿 -> vip_room 私密 styling_consultation -> checkout_counter 离开",
+    "spaceRole": "空间作为 '轻奢时尚编辑容器', 把 fabric 触感 + 极简秩序 + seasonal campaign 高频刷新 转化为 style 体验, 让 '购物' 变成 'editorial 行为'",
+    "designLogic": "通过 natural_wood + lacquered_panel + metal_finish 3 类材质 + track_spotlight + warm_neutral_white 灯光 + 高 negative space, 让 fashion 商品成为绝对主角, 空间语言让位于品牌 seasonal refresh",
+    "architecturalReason": "需要 极简立面 (lacquered_panel + 暖色 spotlight) + 大量 negative space + natural_wood 触感 + editorial 灯光 + fitting_room 私密 5 者协同, 让 '轻奢时尚零售' 变成可被感知的空间语言, 而不是 '普通 mall 服装店'"
+  },
+  "metadata": {
+    "frozenAt": "2026-08-02T00:00:00.000Z",
+    "frozenBy": "Mavis (Phase 9D, 2026-08-02 — fashion_retail 行业第 5 brand)",
+    "sourceArchitectureAnchors": [
+      "JX-LAY-01-MinimalEditorial",
+      "JX-LAY-02-TrackSpotlight"
+    ],
+    "notes": [
+      "Phase 9D §6 第 5 行业 fashion_retail 配套 spatial-intent.",
+      "5 字段按 Phase 9A.1 §4 定义.",
+      "Category: fashion_retail (Phase 9C.0.5 §6 6 行业之一).",
+      "Layer Boundary (§5): 不描述 materials (natural_wood / lacquered_panel) / architecture (lacquered 立面) / anchor (具体物) / rendering.",
+      "architecturalReason 描述高层方向 (极简立面 / 大量 negative space / 暖色 spotlight), 不是具体建筑形式."
+    ]
+  }
+}
