@@ -87,6 +87,10 @@ export interface AnalysisProgress {
   model?: string;
   failedAtStage?: Exclude<AnalysisStage, 'failed' | 'cancelled' | 'completed'>;
   cacheStatus?: 'checking' | 'hit' | 'miss' | 'forced';
+  recoveryStatus?: 'retrying' | 'recovered' | 'retry_available' | 'needs_user' | 'not_retryable';
+  retryAttempt?: number;
+  maxRetryAttempts?: number;
+  suggestedAction?: 'wait' | 'retry' | 'check_credentials' | 'provide_information';
 }
 
 export interface ApiProfile {
@@ -754,6 +758,7 @@ export interface AnalysisResult {
   assetCount: number;
   imageCount: number;
   reasoningCacheHit: boolean;
+  warnings?: string[];
 }
 
 export interface ConnectionTestResult {

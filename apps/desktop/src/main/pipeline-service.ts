@@ -96,6 +96,10 @@ import {
   throwForValidationIssues,
   type ValidationIssue
 } from './model-schema/validation-issues.ts';
+import {
+  classifyAnalysisFailure,
+  shouldDegradeStructuredSubstep,
+} from './analysis-failure-policy.ts';
 
 // Bundled from the repository core. Desktop remains the consumer, never the dependency.
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
@@ -458,10 +462,35 @@ export function createPipelineService(
       configurePromptRoot();
       progress('building-contact-sheet', '正在生成视觉总览');
 
+      let providerRetryCount = 0;
+      let providerRecoveryCount = 0;
       const baseReasoner = createQwenReasoner({
         apiKey: credentials.apiKey,
         model: credentials.model,
-        baseUrl: credentials.baseUrl
+        baseUrl: credentials.baseUrl,
+        onDiagnostic: (diagnostic: {
+          type?: string;
+          nextAttempt?: number;
+          attempt?: number;
+          maxAttempts?: number;
+        }) => {
+          if (diagnostic.type === 'request-retry') {
+            providerRetryCount += 1;
+            progress(currentStage, `模型服务暂时繁忙，正在自动重试（${diagnostic.nextAttempt}/${diagnostic.maxAttempts}）`, {
+              recoveryStatus: 'retrying',
+              retryAttempt: diagnostic.nextAttempt,
+              maxRetryAttempts: diagnostic.maxAttempts,
+              suggestedAction: 'wait',
+            });
+          } else if (diagnostic.type === 'request-recovered') {
+            providerRecoveryCount += 1;
+            progress(currentStage, '模型服务已恢复，继续分析', {
+              recoveryStatus: 'recovered',
+              retryAttempt: diagnostic.attempt,
+              maxRetryAttempts: diagnostic.maxAttempts,
+            });
+          }
+        },
       });
       const reasoner = async (context: Record<string, unknown> & { signal: AbortSignal }) => {
         progress('building-prompt', '正在构建分析任务');
@@ -519,6 +548,7 @@ export function createPipelineService(
       let analysisRepairRunId: string | undefined;
       let analysisRepairAttempts = 0;
       let analysisRepairStatus: AnalysisRepairResult['status'] | undefined;
+      const analysisWarnings: string[] = [];
       const promptSourceProject: ProjectRecord = {
         ...project,
         projectName: finalProjectName,
@@ -528,6 +558,7 @@ export function createPipelineService(
         .filter((asset) => asset.status === 'ready' && /^image\//iu.test(asset.mimeType))
         .slice(0, 30);
       if (promptSourceAssets.length) {
+        try {
         const prompt = buildUnifiedVisualUnderstandingPrompt(
           promptSourceProject,
           promptSourceAssets.map((asset) => asset.id),
@@ -626,25 +657,35 @@ export function createPipelineService(
           );
         }
         if (completion.status === 'failed') {
-          throw Object.assign(
-            new Error('项目决策完善失败，请检查当前资料后重试。'),
-            { code: 'ANALYSIS_REPAIR_FAILED' },
+          analysisWarnings.push('空间生图所需的部分结构字段尚未补齐；分析报告已保留，空间生图将在资料补齐前保持阻止。');
+        } else {
+          visualDecisionPacket = completion.packet as unknown as VisualDecisionPacket;
+          visualDecisionPacket.validation.executionDataStatus = 'ready';
+          visualDecisionPacket.validation.missingExecutionFields = [];
+          promptSourceObject = visualDecisionPacketToPromptSourceObject(visualDecisionPacket);
+          promptSourceObject.provenance.structuredAnalysisRunId = response.runId || undefined;
+          report = compileVisualDecisionReport(visualDecisionPacket, {
+            title: `${finalProjectName}视觉方案升级报告`,
+          });
+        }
+        } catch (structuredError) {
+          if (!shouldDegradeStructuredSubstep(structuredError)
+            || controller.signal.aborted
+            || (structuredError as Error).name === 'AbortError') {
+            throw structuredError;
+          }
+          const failure = classifyAnalysisFailure(structuredError);
+          analysisWarnings.push(
+            failure.category === 'transient_provider'
+              ? '生图语义提取服务暂时不可用；主分析报告已保留，可稍后重新分析以解锁生图。'
+              : '生图项目语义尚未达到执行标准；主分析报告已保留，受影响的生图类型将在资料补齐前保持阻止。',
           );
         }
-        visualDecisionPacket = completion.packet as unknown as VisualDecisionPacket;
-        visualDecisionPacket.validation.executionDataStatus = 'ready';
-        visualDecisionPacket.validation.missingExecutionFields = [];
-        promptSourceObject = visualDecisionPacketToPromptSourceObject(visualDecisionPacket);
-        promptSourceObject.provenance.structuredAnalysisRunId = response.runId || undefined;
-        report = compileVisualDecisionReport(visualDecisionPacket, {
-          title: `${finalProjectName}视觉方案升级报告`,
-        });
       }
       if (promptSourceAssets.length && (!promptSourceObject || !visualDecisionPacket)) {
-        throw Object.assign(
-          new Error('PROMPT_SOURCE_INSUFFICIENT: unified visual understanding failed after repair'),
-          { code: 'PROMPT_SOURCE_INSUFFICIENT' },
-        );
+        if (!analysisWarnings.length) {
+          analysisWarnings.push('生图项目语义尚未达到执行标准；分析报告已保留，受影响的生图类型将在资料补齐前保持阻止。');
+        }
       }
       await fs.writeFile(reportPath, report, 'utf8');
       if (path.resolve(coreReportPath) !== path.resolve(reportPath)) await fs.rm(coreReportPath, { force: true });
@@ -670,6 +711,9 @@ export function createPipelineService(
         analysisRepairRunId,
         analysisRepairAttempts,
         analysisRepairStatus,
+        analysisWarnings,
+        providerRetryCount,
+        providerRecoveryCount,
         modelCallsThisRun: Number(execution.result.runReport.modelCallsThisRun || 0)
           + promptSourceModelCallCount
       };
@@ -788,7 +832,7 @@ export function createPipelineService(
         }).catch(() => undefined);
       }
 
-      progress('completed', '分析完成', {
+      progress('completed', analysisWarnings.length ? '分析完成，部分生图能力等待资料补齐' : '分析完成', {
         cacheStatus: execution.result.runReport.reasoningCacheHit ? 'hit' : 'miss'
       });
       return {
@@ -805,11 +849,18 @@ export function createPipelineService(
         durationMs,
         assetCount: summary.totalFiles,
         imageCount: summary.imageCount,
-        reasoningCacheHit: execution.result.runReport.reasoningCacheHit
+        reasoningCacheHit: execution.result.runReport.reasoningCacheHit,
+        warnings: analysisWarnings,
       };
     } catch (error) {
       const cancelled = controller.signal.aborted || (error as Error).name === 'AbortError';
-      const message = cancelled ? '用户已取消分析' : friendlyPipelineError(error as Error, credentials.apiKey);
+      const sanitized = cancelled
+        ? Object.assign(new Error('用户已取消分析'), { code: 'CANCELLED' })
+        : Object.assign(new Error(friendlyPipelineError(error as Error, credentials.apiKey)), {
+          code: (error as { code?: string }).code,
+        });
+      const failure = classifyAnalysisFailure(sanitized);
+      const message = failure.userMessage;
       const pendingConfirmation = (error as {
         code?: string;
         confirmation?: {
@@ -843,7 +894,11 @@ export function createPipelineService(
         throw new Error(message);
       }
       progress(cancelled ? 'cancelled' : 'failed', cancelled ? '分析已取消' : `分析失败：${message}`, {
-        failedAtStage: currentStage as Exclude<AnalysisProgress['stage'], 'failed' | 'cancelled' | 'completed'>
+        failedAtStage: currentStage as Exclude<AnalysisProgress['stage'], 'failed' | 'cancelled' | 'completed'>,
+        recoveryStatus: failure.category === 'needs_user'
+          ? 'needs_user'
+          : failure.retryable ? 'retry_available' : 'not_retryable',
+        suggestedAction: failure.suggestedAction,
       });
       throw new Error(message);
     } finally {

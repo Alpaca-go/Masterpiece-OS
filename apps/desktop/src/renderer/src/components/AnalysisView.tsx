@@ -43,6 +43,7 @@ export function AnalysisView({ project, progress, error, onCancel, onConfirm, on
   const failedStage = stages.find(([stage]) => stage === progress?.failedAtStage)?.[1];
   const started = progress?.startedAt ? Date.parse(progress.startedAt) : mountedAt.current;
   const elapsed = terminal ? (progress?.elapsedMs ?? now - started) : now - started;
+  const checkingCredentials = progress?.suggestedAction === 'check_credentials';
 
   async function cancel() {
     if (!window.confirm('确定要取消当前分析吗？\n已经产生的临时文件将被清理。')) return;
@@ -63,7 +64,13 @@ export function AnalysisView({ project, progress, error, onCancel, onConfirm, on
     </div>
     <p className="eyebrow">FUSION ENHANCED</p>
     <h1>{progress?.message || '正在准备分析'}</h1>
-    <p className="analysis-subtitle">{awaitingConfirmation ? '分析检查点已保存。请确认下列真实项目信息。' : terminal ? `${failedStage ? `结束阶段：${failedStage} · ` : ''}${error || project.lastError || ''}` : '隐藏推理过程不会显示；这里只呈现可理解的 Pipeline 阶段。'}</p>
+    <p className="analysis-subtitle">{awaitingConfirmation
+      ? '分析检查点已保存。请确认下列真实项目信息。'
+      : terminal
+        ? `${failedStage ? `结束阶段：${failedStage} · ` : ''}${error || project.lastError || ''}`
+        : progress?.recoveryStatus === 'retrying'
+          ? '外部模型服务正在自动恢复，请保持页面打开；无需手动重新提交。'
+          : '隐藏推理过程不会显示；这里只呈现可理解的 Pipeline 阶段。'}</p>
     <div className="run-metrics">
       <div><small>任务状态</small><strong>{awaitingConfirmation ? '等待确认' : progress?.stage === 'failed' ? '分析失败' : progress?.stage === 'cancelled' ? '已取消' : '运行中'}</strong></div>
       <div><small>当前模型</small><strong>{progress?.model || project.model || '正在读取'}</strong></div>
@@ -89,7 +96,7 @@ export function AnalysisView({ project, progress, error, onCancel, onConfirm, on
       </div>
     </section>}
     {terminal
-      ? awaitingConfirmation ? null : <div className="button-row"><button className="button primary" onClick={onRetry}>重新分析</button><button className="button ghost" onClick={onBack}>返回素材页</button></div>
+      ? awaitingConfirmation ? null : <div className="button-row"><button className="button primary" onClick={checkingCredentials ? onBack : onRetry}>{checkingCredentials ? '返回检查 API 配置' : '从检查点安全重试'}</button><button className="button ghost" onClick={onBack}>返回素材页</button></div>
       : <button className="button ghost" disabled={cancelling} onClick={() => void cancel()}>{cancelling ? '正在取消…' : '取消分析'}</button>}
   </div>;
 }

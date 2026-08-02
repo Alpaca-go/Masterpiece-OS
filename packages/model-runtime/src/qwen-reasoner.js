@@ -17,6 +17,8 @@ const IMAGE_MIME_TYPES = Object.freeze({
 const MAX_DOCUMENT_CHARACTERS = 250_000;
 const MAX_IMAGE_EDGE = 1600;
 const IMAGE_JPEG_QUALITY = 82;
+const DEFAULT_MAX_REQUEST_ATTEMPTS = 3;
+const DEFAULT_RETRY_BASE_DELAY_MS = 750;
 
 export class QwenReasonerError extends Error {
   constructor(code, message) {
@@ -58,10 +60,48 @@ async function defaultClient(request) {
   try { value = raw ? JSON.parse(raw) : null; } catch { /* handled as a bounded provider error below */ }
   if (!response.ok) {
     const detail = value?.error?.message || value?.message || response.statusText || 'unknown error';
-    throw new QwenReasonerError('QWEN_API_ERROR', `Qwen API 请求失败（HTTP ${response.status}）：${detail}`);
+    const error = new QwenReasonerError(
+      response.status === 408 || response.status === 429 || response.status >= 500
+        ? 'QWEN_API_TRANSIENT'
+        : response.status === 401 || response.status === 403
+          ? 'QWEN_AUTH_FAILED'
+          : 'QWEN_API_ERROR',
+      `Qwen API 请求失败（HTTP ${response.status}）：${detail}`,
+    );
+    error.httpStatus = response.status;
+    error.retryAfter = response.headers.get('retry-after') || undefined;
+    throw error;
   }
   if (!value) throw new QwenReasonerError('QWEN_RESPONSE_INVALID', 'Qwen API 返回了无效 JSON');
   return value;
+}
+
+function isAbort(error, signal) {
+  return signal?.aborted || error?.name === 'AbortError' || error?.code === 'ABORT_ERR';
+}
+
+function isTransient(error) {
+  if (error?.code === 'QWEN_API_TRANSIENT' || error?.code === 'QWEN_REQUEST_FAILED') return true;
+  return /\b408\b|\b429\b|\b5\d\d\b|timeout|timed out|ECONNRESET|ECONNREFUSED|EAI_AGAIN|ENETUNREACH|fetch failed|network/iu
+    .test(String(error?.message || ''));
+}
+
+function retryDelay(error, attempt, baseDelayMs) {
+  const retryAfter = Number(error?.retryAfter);
+  if (Number.isFinite(retryAfter) && retryAfter >= 0) return Math.min(30_000, retryAfter * 1_000);
+  return Math.min(8_000, baseDelayMs * (2 ** Math.max(0, attempt - 1)));
+}
+
+async function defaultSleep(delayMs, signal) {
+  await new Promise((resolve, reject) => {
+    const timer = setTimeout(resolve, delayMs);
+    const abort = () => {
+      clearTimeout(timer);
+      reject(new DOMException('Request aborted', 'AbortError'));
+    };
+    if (signal?.aborted) abort();
+    else signal?.addEventListener('abort', abort, { once: true });
+  });
 }
 
 function responseText(response) {
@@ -136,6 +176,9 @@ export function createQwenReasoner(options = {}) {
   const baseUrl = String(options.baseUrl || environment.QWEN_BASE_URL || DEFAULT_BASE_URL).trim();
   const client = options.client || defaultClient;
   const onDiagnostic = typeof options.onDiagnostic === 'function' ? options.onDiagnostic : () => {};
+  const maxRequestAttempts = Math.max(1, Math.min(5, Number(options.maxRequestAttempts) || DEFAULT_MAX_REQUEST_ATTEMPTS));
+  const retryBaseDelayMs = Math.max(0, Number(options.retryBaseDelayMs) || DEFAULT_RETRY_BASE_DELAY_MS);
+  const sleep = options.sleep || defaultSleep;
 
   if (!apiKey) {
     throw new QwenReasonerError('QWEN_API_KEY_MISSING', '未检测到 QWEN_API_KEY，无法运行真实 Qwen Deep Creative Director 分析');
@@ -171,20 +214,37 @@ export function createQwenReasoner(options = {}) {
       };
     }
     let response;
-    try {
-      response = await client({
-        url,
-        headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-        body,
-        signal: context.signal,
-        maximumDurationMs: context.maximumDurationMs
-      });
-    } catch (error) {
-      if (error instanceof QwenReasonerError) {
-        error.message = redact(error.message, apiKey);
-        throw error;
+    for (let attempt = 1; attempt <= maxRequestAttempts; attempt += 1) {
+      try {
+        response = await client({
+          url,
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          body,
+          signal: context.signal,
+          maximumDurationMs: context.maximumDurationMs
+        });
+        if (attempt > 1) onDiagnostic(Object.freeze({
+          type: 'request-recovered', attempt, maxAttempts: maxRequestAttempts,
+        }));
+        break;
+      } catch (error) {
+        if (isAbort(error, context.signal)) throw error;
+        const retryable = isTransient(error);
+        if (!retryable || attempt >= maxRequestAttempts) {
+          if (error instanceof QwenReasonerError) {
+            error.message = redact(error.message, apiKey);
+            throw error;
+          }
+          throw new QwenReasonerError('QWEN_REQUEST_FAILED', `Qwen 请求失败：${redact(error.message, apiKey)}`);
+        }
+        const delayMs = retryDelay(error, attempt, retryBaseDelayMs);
+        onDiagnostic(Object.freeze({
+          type: 'request-retry', attempt, nextAttempt: attempt + 1,
+          maxAttempts: maxRequestAttempts, delayMs,
+          code: String(error?.code || 'QWEN_REQUEST_FAILED'),
+        }));
+        await sleep(delayMs, context.signal);
       }
-      throw new QwenReasonerError('QWEN_REQUEST_FAILED', `Qwen 请求失败：${redact(error.message, apiKey)}`);
     }
     const reportMarkdown = responseText(response);
     if (!reportMarkdown) throw new QwenReasonerError('QWEN_EMPTY_REPORT', 'Qwen 返回了空报告，分析失败');
