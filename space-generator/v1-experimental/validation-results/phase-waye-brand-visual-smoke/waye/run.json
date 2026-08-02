@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "phase-waye-brand-visual-smoke",
+  "projectId": "8d73845c-1477-485a-b6bb-40aed16c06b1",
+  "brandKey": "wa-ye",
+  "brandName": "蛙耶 / WOW YEAH!",
+  "industry": "casual_dining",
+  "analysis": {
+    "provider": "qwen",
+    "model": "qwen3.6-plus",
+    "status": "completed",
+    "durationMs": 494123,
+    "reportPath": "蛙耶 v0.1 reference-视觉方案升级报告-qwen3.6-plus.md",
+    "runtimeReportPath": "run-report.json",
+    "packetPath": "project-context/visual-decision-packet.json",
+    "packetValidation": {
+      "valid": true,
+      "errors": []
+    },
+    "hardFactStatus": "pass",
+    "executionDataStatus": "ready",
+    "abstractionCount": 2
+  },
+  "brandVisualAssets": [
+    {
+      "id": "waye-logo-deconstruction",
+      "assetRole": "logo",
+      "size": 160358
+    },
+    {
+      "id": "waye-icon-set",
+      "assetRole": "icon",
+      "size": 121474
+    },
+    {
+      "id": "waye-merchandise-detail",
+      "assetRole": "merchandise",
+      "size": 1097318
+    }
+  ],
+  "prompt": {
+    "taskId": "vnext-task-d20d7f93-9717-4b7f-a6b0-c0c79bfa730e",
+    "promptCharacters": 7105,
+    "missingSignals": [],
+    "referenceAssetIds": [
+      "waye-icon-set",
+      "waye-merchandise-detail"
+    ],
+    "logoUsageMode": "post_composite"
+  },
+  "image": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "status": "succeeded",
+    "durationMs": 50047,
+    "runId": "5b50cf76-3c62-41a6-92e4-7b4274c1bdc8",
+    "imageCount": 1,
+    "imagePaths": [
+      "5b50cf76-3c62-41a6-92e4-7b4274c1bdc8\\images\\image-01.png"
+    ]
+  },
+  "output": {
+    "image": "D:\\Masterpiece-OS\\docs\\reference\\phase-waye-brand-visual\\waye.jpg",
+    "validationArtifact": "D:\\Masterpiece-OS\\space-generator\\v1-experimental\\validation-results\\phase-waye-brand-visual-smoke\\waye\\image.png"
+  },
+  "createdAt": "2026-08-02T10:32:09.448Z"
+}
