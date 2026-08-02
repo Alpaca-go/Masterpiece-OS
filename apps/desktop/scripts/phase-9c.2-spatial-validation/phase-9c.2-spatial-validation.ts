@@ -5,6 +5,13 @@
 //   自动选 strategy, 跟 9C.2 v1 (4 preset × 1 image = 12 张) 不同, 本次只对 1 个 auto-selected
 //   strategy 跑 1 张.
 //
+// V5 Production Parity (Phase 9C.2 v2 §6/§8 + user review 2026-08-02):
+//   - Logo / locked asset detection (跟 createFileContextLoader / vnext-service 一致)
+//   - Reference role mapping: logo → identity_reference, structure anchor → structure_reference
+//   - vnext-style snapshot + sourceMap (schemaVersion: 'space-runtime-1.0', pipelineMode: 'space-runtime')
+//   - DNA constraints (literalAssetUsage + negativeConstraints) → lockedAssetIds + lockedFacts
+//   用 space-runtime-asset-contract/ 模块统一处理.
+//
 // Per doc §9: "第一阶段: 测试 WAYE / 九州美学 / 冯烫烫".
 //   WAYE 必须恢复: 青蛙IP / 紫绿黄体系 / 餐饮属性 / 潮流品牌语言
 //   九州美学 保持: 建筑高级感 / 东方气质 / 医美属性
@@ -27,8 +34,9 @@
 //
 // 输出:
 //   {OUTPUT_DIR}/{brand}.jpg                                            (3 image deliverables, gitignored)
-//   {OUTPUT_DIR}/report.md                                              (integrated report)
+//   {OUTPUT_DIR}/report.md                                              (integrated report + asset contract table)
 //   {VALIDATION_DIR}/{brand}/prompt.md + run.json + report.md + image.png
+//     - report.md 包含 assetContract (references / lockedAssetIds / lockedFacts / detection)
 
 import { app } from 'electron';
 import path from 'node:path';
@@ -96,6 +104,13 @@ interface BrandRunResult {
   characterCount: number;
   reason: string;
   imagePath: string | null;
+  // Phase 9C.2 v2 V5 production-parity fields:
+  assetContract: {
+    references: Array<{ id: string; role: string; projectRelativePath: string; includeReason?: string }>;
+    lockedAssetIds: { logoAssetIds: string[]; structuralAssetIds: string[]; dnaTokens: string[]; all: string[] };
+    lockedFacts: string[];
+    detection: { logoSource: string; structureSource: string; logoCount: number; structureCount: number; literalAssetTokenCount: number; prohibitionCount: number };
+  } | null;
   errorMessage?: string;
 }
 
@@ -142,8 +157,22 @@ async function runOneBrand(
   if (existsSync(deliverable)) {
     const stat = await fs.stat(deliverable);
     logProgress('brand_skipped', { brandKey, deliverable, imageBytes: stat.size });
+    // Try to load the previous run.json for the assetContract summary + real durationMs
     const brandDir = path.join(VALIDATION_ROOT, brandKey);
-    const validationImage = path.join(brandDir, 'image.png');
+    const prevRunJsonPath = path.join(brandDir, 'run.json');
+    let prevAssetContract: BrandRunResult['assetContract'] = null;
+    let prevDurationMs = 0;
+    let prevBlockCount = 0;
+    let prevCharacterCount = 0;
+    if (existsSync(prevRunJsonPath)) {
+      try {
+        const prev = JSON.parse(readFileSync(prevRunJsonPath, 'utf8'));
+        prevAssetContract = prev.assetContract ?? null;
+        prevDurationMs = prev.durationMs ?? 0;
+        prevBlockCount = prev.blockCount ?? 0;
+        prevCharacterCount = prev.characterCount ?? 0;
+      } catch { /* ignore */ }
+    }
     return {
       brandKey,
       industry: dnaIndustry,
@@ -155,12 +184,13 @@ async function runOneBrand(
       gateRiskLevel,
       spaceType: 'reception',
       status: 'succeeded',
-      durationMs: 0,
+      durationMs: prevDurationMs,  // carry forward from previous real run
       imageBytes: stat.size,
-      blockCount: 0,
-      characterCount: 0,
+      blockCount: prevBlockCount,
+      characterCount: prevCharacterCount,
       reason: strategy.reason,
       imagePath: deliverable,
+      assetContract: prevAssetContract,  // carry forward from previous run
     };
   }
 
@@ -184,44 +214,50 @@ async function runOneBrand(
   await fs.mkdir(brandDir, { recursive: true });
   await fs.writeFile(path.join(brandDir, 'prompt.md'), compiled.markdown, 'utf8');
 
-  // Build references: JZMX uses staged JZMX-ARCH-01 (file in input/assets/, not in project.json),
-  // others none. The image gen service resolves projectRelativePath against the project root
-  // (no project.json asset lookup required).
-  let references: Array<{ id: string; role: string; projectRelativePath: string }> = [];
-  if (hasReferenceImage) {
-    // JZMX-ARCH-01 was staged for Phase v1.0 preset validation smoke; re-use for 9C.2 v2.
-    references = [{
-      id: 'jzmx-arch-01-staged',
-      role: 'core_reference',
-      projectRelativePath: 'input/assets/JZMX-ARCH-01-reference.png',
-    }];
-  }
+  // Build asset contract (Phase 9C.2 v2 V5 production parity):
+  // Detects logo / structure anchor / DNA constraints and produces
+  // vnext-style snapshot + sourceMap + references with correct roles.
+  // Per vnext-service line 396-400:
+  //   - logo asset → identity_reference
+  //   - structure anchor → structure_reference
+  //   - staged reference → core_reference (or per staged role)
+  const assetContractMod = await import(`file://${path.join(REPO_ROOT, 'space-generator', 'v1-experimental', 'space-runtime-asset-contract', 'space-runtime-asset-contract.mjs').replace(/\\/g, '/')}`);
+  const { buildAssetContract } = assetContractMod as any;
+  const stagedReference = hasReferenceImage
+    ? {
+        id: 'jzmx-arch-01-staged',
+        role: 'structure_reference',  // JZMX-ARCH-01 是 architecture anchor, 不是 core reference
+        projectRelativePath: 'input/assets/JZMX-ARCH-01-reference.png',
+        includeReason: 'JZMX-ARCH-01 建筑结构 reference (staged outside project.json)',
+      }
+    : null;
+  const assetContract = buildAssetContract({
+    projectJson: project as any,
+    brandDna: dnaLoaded?.dna,
+    compiled,
+    strategy,
+    hasStagedReference: hasReferenceImage,
+    stagedReference,
+    dataPath,
+  });
+  logProgress('asset_contract', {
+    brandKey,
+    referenceCount: assetContract.references.length,
+    referenceRoles: assetContract.references.map((r: any) => r.role),
+    lockedAssetIds: assetContract.lockedAssetIds,
+    lockedFactsCount: assetContract.lockedFacts.length,
+    detection: assetContract.detection,
+  });
+  const references = assetContract.references;
 
   const imageStartedAt = Date.now();
-  const promptVersion = `phase-9c.2-spatial-validation-${brandKey}-${strategy.selectedStrategy}-1.0.0`;
+  const promptVersion = assetContract.snapshot.taskContract.taskId;  // use vnext-style taskId
   const imageRun = await imageGeneration.startCompiledCreativeTask({
     projectId,
     compiledPrompt: compiled.markdown,
     promptVersion,
-    snapshot: {
-      schemaVersion: '1.0',
-      kind: 'phase-9c.2-spatial-validation',
-      brandKey,
-      selectedStrategy: strategy.selectedStrategy,
-      spaceType: 'reception',
-      projectId,
-      userAuthorized: true,
-      createdAt: new Date().toISOString(),
-    },
-    sourceMap: {
-      projectId,
-      spatialIntelligenceMode: compiled.mode,
-      spaceRoleIntelligence: compiled.compiledSpaceRole?.spaceRole?.space_type ?? null,
-      spatialIntentPreset: strategy.selectedStrategy,
-      brandIdentityConfidence: strategy.confidence.total,
-      spatialStrategy: strategy.weights,
-      outputResponsibility: 'complete_interior_scene',
-    },
+    snapshot: assetContract.snapshot,  // vnext-style with lockedAssetIds/lockedFacts
+    sourceMap: assetContract.sourceMap,  // vnext-style with pipelineMode: 'space-runtime'
     references,
     event: `PHASE_9C_2_SPATIAL_VALIDATION_${brandKey.toUpperCase()}_${strategy.selectedStrategy.toUpperCase()}_STARTED`,
     apiProfileId: imageProfileId,
@@ -266,6 +302,12 @@ async function runOneBrand(
     characterCount: compiled.characterCount,
     reason: strategy.reason,
     imagePath: copiedImagePath,
+    assetContract: {
+      references: assetContract.references,
+      lockedAssetIds: assetContract.lockedAssetIds,
+      lockedFacts: assetContract.lockedFacts,
+      detection: assetContract.detection,
+    },
   };
   if (runJson.status !== 'succeeded' && runJson.errorMessage) {
     result.errorMessage = runJson.errorMessage;
@@ -321,6 +363,7 @@ async function main() {
         characterCount: 0,
         reason: '',
         imagePath: null,
+        assetContract: null,
         errorMessage: (err as Error).message,
       };
       allResults.push(failed);
@@ -368,6 +411,29 @@ async function main() {
     md += `\n## Image Output\n\n`;
     md += `- **Output**: \`${r.imagePath}\`\n`;
     md += `- **Validation artifact**: \`${path.join(brandDir, 'image.png')}\`\n`;
+    if (r.assetContract) {
+      const ac = r.assetContract;
+      md += `\n## Asset Contract (V5 production parity)\n\n`;
+      md += `- **Reference count**: ${ac.references.length}\n`;
+      if (ac.references.length > 0) {
+        md += `- **References**:\n`;
+        for (const ref of ac.references) {
+          md += `  - \`${ref.id}\` → role=\`${ref.role}\` path=\`${ref.projectRelativePath}\`\n`;
+        }
+      }
+      md += `- **Locked asset ids**: ${ac.lockedAssetIds.all.length} total (logo=${ac.lockedAssetIds.logoAssetIds.length} / structure=${ac.lockedAssetIds.structuralAssetIds.length} / dna=${ac.lockedAssetIds.dnaTokens.length})\n`;
+      md += `  ${ac.lockedAssetIds.all.length > 0 ? '`' + ac.lockedAssetIds.all.join('`, `') + '`' : '(none)'}\n`;
+      md += `- **Locked facts**: ${ac.lockedFacts.length} total\n`;
+      if (ac.lockedFacts.length > 0) {
+        for (const f of ac.lockedFacts) md += `  - ${f}\n`;
+      }
+      md += `- **Detection**:\n`;
+      md += `  - logoSource: ${ac.detection.logoSource} (${ac.detection.logoCount} logos)\n`;
+      md += `  - structureSource: ${ac.detection.structureSource} (${ac.detection.structureCount} anchors)\n`;
+      md += `  - dnaTokens: ${ac.detection.literalAssetTokenCount}, prohibitions: ${ac.detection.prohibitionCount}\n`;
+    } else {
+      md += `\n## Asset Contract\n\n- (no assetContract in skip path; see previous run.json)\n`;
+    }
     if (r.errorMessage) md += `\n## Error\n\n\`${r.errorMessage}\`\n`;
     await fs.writeFile(path.join(brandDir, 'report.md'), md, 'utf8');
   }
@@ -406,6 +472,22 @@ async function main() {
   lines.push(`- [${allResults.find((r) => r.brandKey === 'jiuzhou-aesthetics')?.status === 'succeeded' ? 'x' : ' '}] **九州美学** image generated (auto reference_driven with JZMX-ARCH-01 ref)`);
   lines.push(`- [${allResults.find((r) => r.brandKey === 'feng-tang-tang')?.status === 'succeeded' ? 'x' : ' '}] **冯烫烫** image generated (auto balanced)`);
   lines.push(``);
+  lines.push(`## V5 Production Asset Contract Parity\n`);
+  lines.push(`| Brand | Logo refs | Structure refs | Total refs | DNA tokens | Locked facts |\n`);
+  lines.push(`| --- | --- | --- | --- | --- | --- |\n`);
+  for (const r of allResults) {
+    if (r.assetContract) {
+      const ac = r.assetContract;
+      // Count references by role for clarity
+      const logoRefs = ac.references.filter((ref) => ref.role === 'identity_reference').length;
+      const structRefs = ac.references.filter((ref) => ref.role === 'structure_reference').length;
+      const totalRefs = ac.references.length;
+      lines.push(`| ${r.brandKey} | ${logoRefs} | ${structRefs} | ${totalRefs} | ${ac.lockedAssetIds.dnaTokens.length} | ${ac.lockedFacts.length} |`);
+    } else {
+      lines.push(`| ${r.brandKey} | - | - | - | - | - |`);
+    }
+  }
+  lines.push('');
   lines.push(`## Per-Brand Manual Verification\n`);
   lines.push(`Per doc §9 acceptance:\n`);
   lines.push(`- **WAYE**: 必须恢复 青蛙IP / 紫绿黄体系 / 餐饮属性 / 潮流品牌语言. 禁止 体育零售空间.`);

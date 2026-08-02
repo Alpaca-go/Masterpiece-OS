@@ -25,10 +25,47 @@
   "gateRiskLevel": "low",
   "spaceType": "reception",
   "status": "succeeded",
-  "durationMs": 90457,
-  "imageBytes": 715727,
-  "blockCount": 18,
-  "characterCount": 11855,
+  "durationMs": 0,
+  "imageBytes": 795349,
+  "blockCount": 0,
+  "characterCount": 0,
   "reason": "no dominant axis (brand=0.53, arch=0.54, ref=0.00) → balanced",
-  "imagePath": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-spatial-validation\\feng-tang-tang.jpg"
+  "imagePath": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-spatial-validation\\feng-tang-tang.jpg",
+  "assetContract": {
+    "references": [],
+    "lockedAssetIds": {
+      "logoAssetIds": [],
+      "structuralAssetIds": [],
+      "dnaTokens": [
+        "dna:logoVisibility"
+      ],
+      "all": [
+        "dna:logoVisibility"
+      ]
+    },
+    "lockedFacts": [
+      "原始 Logo Locked: 不得修改、重绘、拆解、替换、删减或改变内部字形。",
+      "输出语言固定为简体中文。",
+      "fine_dining",
+      "crystal_chandelier",
+      "purple_lavender_glow",
+      "white_curved_walls",
+      "optical_fiber_installation",
+      "translucent_fiber_decoration",
+      "feather_like_flow_motif",
+      "petal_like_expansion",
+      "silent_atmosphere",
+      "luxury_lounge",
+      "high_end_clinic",
+      "fashion_boutique"
+    ],
+    "detection": {
+      "logoSource": "none",
+      "structureSource": "none",
+      "logoCount": 0,
+      "structureCount": 0,
+      "literalAssetTokenCount": 1,
+      "prohibitionCount": 12
+    }
+  }
 }

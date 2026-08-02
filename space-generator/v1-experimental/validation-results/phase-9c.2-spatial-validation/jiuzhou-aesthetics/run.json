@@ -25,10 +25,54 @@
   "gateRiskLevel": "low",
   "spaceType": "reception",
   "status": "succeeded",
-  "durationMs": 116929,
-  "imageBytes": 375382,
-  "blockCount": 18,
-  "characterCount": 14279,
+  "durationMs": 0,
+  "imageBytes": 388571,
+  "blockCount": 0,
+  "characterCount": 0,
   "reason": "reference image + decent brand/arch → reference_driven",
-  "imagePath": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-spatial-validation\\jiuzhou-aesthetics.jpg"
+  "imagePath": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-spatial-validation\\jiuzhou-aesthetics.jpg",
+  "assetContract": {
+    "references": [
+      {
+        "id": "jzmx-arch-01-staged",
+        "role": "structure_reference",
+        "projectRelativePath": "input/assets/JZMX-ARCH-01-reference.png",
+        "includeReason": "JZMX-ARCH-01 建筑结构 reference (staged outside project.json)"
+      }
+    ],
+    "lockedAssetIds": {
+      "logoAssetIds": [],
+      "structuralAssetIds": [],
+      "dnaTokens": [
+        "dna:logoVisibility"
+      ],
+      "all": [
+        "dna:logoVisibility"
+      ]
+    },
+    "lockedFacts": [
+      "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "输出语言固定为简体中文。",
+      "generic_beauty_salon",
+      "excessive_purple",
+      "literal_peacock_theme_park",
+      "repeated_flower_sculptures",
+      "random_crystal_decorations",
+      "nightclub_lighting",
+      "cheap_acrylic_glow",
+      "overdecorated_reception",
+      "hospital_corridor",
+      "empty_art_gallery",
+      "impossible_circulation",
+      "unusable_furniture"
+    ],
+    "detection": {
+      "logoSource": "none",
+      "structureSource": "none",
+      "logoCount": 0,
+      "structureCount": 0,
+      "literalAssetTokenCount": 1,
+      "prohibitionCount": 12
+    }
+  }
 }
