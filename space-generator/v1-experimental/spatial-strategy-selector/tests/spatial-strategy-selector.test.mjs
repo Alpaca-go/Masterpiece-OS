@@ -47,6 +47,14 @@ await test('selectSpatialStrategy returns 4-strategy one of', async () => {
   }
 });
 
+await test('selectSpatialStrategy includes 9C.0.5 gate status and risk level', async () => {
+  const r = await selectSpatialStrategy('wa-ye');
+  assert(typeof r.gateStatus === 'string', 'gateStatus should be a string');
+  assert(typeof r.gateRiskLevel === 'string', 'gateRiskLevel should be a string');
+  // After 9C.0.5 DNA correction (commit 65252fd), WA-ye gate should be pass
+  assert(r.gateStatus === 'pass', `WA-ye gate should be pass post-correction, got ${r.gateStatus}`);
+});
+
 await test('WA-ye (post-correction DNA, strong cartoon frog IP) -> brand_driven (per doc §7 example)', async () => {
   const r = await selectSpatialStrategy('wa-ye');
   console.log(`  WA-ye selected: ${r.selectedStrategy} (reason: ${r.reason})`);

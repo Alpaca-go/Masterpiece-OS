@@ -130,6 +130,8 @@ export async function selectSpatialStrategy(brandKey, options = {}) {
       narrative: confidence.scores.narrative,
       total: confidence.total,
     },
+    gateStatus: confidence.gateStatus,
+    gateRiskLevel: confidence.gateRiskLevel,
     axisScores,
     weights,
     reason,

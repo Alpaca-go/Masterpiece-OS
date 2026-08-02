@@ -1,0 +1,34 @@
+{
+  "brandKey": "jiuzhou-aesthetics",
+  "industry": "医疗美容与医美生态服务",
+  "selectedStrategy": "reference_driven",
+  "axisScores": {
+    "brand": 1,
+    "architecture": 1,
+    "reference": 1
+  },
+  "weights": {
+    "brand": 0.3,
+    "architecture": 0.3,
+    "reference": 0.35,
+    "industry": 0.05
+  },
+  "confidence": {
+    "industry": 1,
+    "asset": 1,
+    "color": 0.7,
+    "motif": 0.2,
+    "narrative": 1,
+    "total": 84
+  },
+  "gateStatus": "pass",
+  "gateRiskLevel": "low",
+  "spaceType": "reception",
+  "status": "succeeded",
+  "durationMs": 116929,
+  "imageBytes": 375382,
+  "blockCount": 18,
+  "characterCount": 14279,
+  "reason": "reference image + decent brand/arch → reference_driven",
+  "imagePath": "D:\\Masterpiece-OS\\docs\\reference\\phase-9c.2-spatial-validation\\jiuzhou-aesthetics.jpg"
+}
