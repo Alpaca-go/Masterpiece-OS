@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "generatedAt": "2026-08-01T13:38:36.111Z",
+  "phase": "8A",
+  "dna": {
+    "key": "jiuzhou-aesthetics",
+    "version": "v0.3"
+  },
+  "baseline": {
+    "blockCount": 11,
+    "characterCount": 6680,
+    "blockOrder": [
+      "task",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ]
+  },
+  "anchorAware": {
+    "blockCount": 12,
+    "characterCount": 7680,
+    "blockOrder": [
+      "task",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "anchorIds": [
+      "JZMX-ARCH-01-ReceptionMembrane",
+      "JZMX-ARCH-02-EntranceGlass",
+      "JZMX-ARCH-03-ConsultationFacade"
+    ],
+    "characterDiff": 1000
+  },
+  "evaluation": {
+    "A": {
+      "total": 100,
+      "level": "S"
+    },
+    "B": {
+      "total": 100,
+      "level": "S",
+      "note": "same DNA => same 6-dim score; prompt-level difference is runtime architectural emphasis"
+    }
+  }
+}
