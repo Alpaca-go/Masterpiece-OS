@@ -207,7 +207,7 @@ export function createProjectStore(readSettings: SettingsReader) {
       try { return await readProject(path.join(root, entry.name)); } catch { return null; }
     }));
     return records.filter((item): item is ProjectRecord => Boolean(item))
-      .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
   }
 
   async function get(projectId: string): Promise<ProjectRecord> {

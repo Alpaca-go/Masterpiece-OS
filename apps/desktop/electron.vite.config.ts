@@ -25,6 +25,8 @@ export default defineConfig({
     root: resolve('src/renderer'),
     plugins: [react()],
     server: {
+      port: 5273,
+      strictPort: true,
       proxy: {
         '/_masterpiece': {
           target: process.env.MASTERPIECE_WEB_RPC_URL ?? 'http://127.0.0.1:4317',

@@ -68,7 +68,15 @@ async function invoke(channel: string, args: unknown[]): Promise<unknown> {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ args })
   });
-  const body = await response.json() as { result?: unknown; error?: string };
+  const rawText = await response.text();
+  let body: { result?: unknown; error?: string } = {};
+  if (rawText) {
+    try {
+      body = JSON.parse(rawText) as { result?: unknown; error?: string };
+    } catch {
+      throw new Error(`网页后台返回了非 JSON 内容（HTTP ${response.status}）: ${rawText.slice(0, 120)}`);
+    }
+  }
   if (!response.ok) throw new Error(body.error || `网页后台请求失败（HTTP ${response.status}）`);
   return body.result;
 }
