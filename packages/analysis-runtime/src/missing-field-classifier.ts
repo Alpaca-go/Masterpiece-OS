@@ -26,8 +26,18 @@ export function classifyMissingFields(input: {
       };
     }
     const relevant = policy.appliesTo.includes(input.deliverable);
-    const severity = relevant ? policy.severity : 'optional';
-    const repairStrategy = relevant
+    const availableEvidenceRefs = issue.availableEvidenceRefs
+      ?? collectEvidenceRefs(input.packet, policy.requiredEvidencePaths);
+    const evidenceRequiredButUnavailable = relevant
+      && policy.severity === 'repairable'
+      && policy.repairStrategy === 'ai_from_evidence'
+      && availableEvidenceRefs.length === 0;
+    const severity = evidenceRequiredButUnavailable
+      ? 'requires_confirmation'
+      : relevant ? policy.severity : 'optional';
+    const repairStrategy = evidenceRequiredButUnavailable
+      ? 'ask_user'
+      : relevant
       ? policy.repairStrategy
       : 'ignore_for_current_task';
     return {
@@ -37,9 +47,10 @@ export function classifyMissingFields(input: {
       repairStrategy,
       appliesTo: [...policy.appliesTo],
       requiredEvidencePaths: [...policy.requiredEvidencePaths],
-      availableEvidenceRefs: issue.availableEvidenceRefs
-        ?? collectEvidenceRefs(input.packet, policy.requiredEvidencePaths),
-      message: issue.message,
+      availableEvidenceRefs,
+      message: evidenceRequiredButUnavailable
+        ? `${issue.message} Current project evidence is insufficient for automatic repair.`
+        : issue.message,
     };
   });
 }

@@ -121,3 +121,37 @@ test('completion orchestrator asks about real packaging facts without calling AI
     /包装内实际放置的产品/u.test(question.question)
   )));
 });
+
+test('completion orchestrator asks the user immediately when an inferred field has no evidence', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.mustBeVisible = [];
+  packet.lockedAssets = [];
+  packet.assetInventory = {
+    logoAssets: [], colorAssets: [], typographyAssets: [], graphicMotifs: [],
+    imageryAssets: [], layoutPatterns: [], materialCues: [],
+    packagingStructures: [], spatialCues: [], copyAssets: [],
+  };
+  packet.projectFacts.brandRole.evidenceRefs = [];
+  packet.mediaTranslations.spatial.brandIntegration = [];
+  let calls = 0;
+
+  const result = await completeStructuredAnalysis({
+    packet,
+    deliverable: 'space',
+    execution,
+    model: async () => {
+      calls += 1;
+      return {};
+    },
+    runId: 'repair-run-44444444-4444-4444-8444-444444444444',
+    now: () => '2026-02-01T00:00:00.000Z',
+  });
+
+  assert.equal(result.status, 'requires_confirmation');
+  assert.equal(result.attempts, 0);
+  assert.equal(result.modelCallCount, 0);
+  assert.equal(calls, 0);
+  assert.ok(result.clarificationQuestions.some((question) => (
+    question.fieldPaths.includes('mediaTranslations.spatial.mustBeVisible')
+  )));
+});

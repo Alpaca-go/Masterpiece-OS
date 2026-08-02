@@ -19,7 +19,7 @@ test('classifier maps repairable fields to current-project evidence only', () =>
   assert.equal(issue?.severity, 'repairable');
   assert.equal(issue?.repairStrategy, 'ai_from_evidence');
   assert.ok(issue?.requiredEvidencePaths.includes('diagnosis.brandMisreadRisks'));
-  assert.deepEqual(issue?.availableEvidenceRefs, ['diagnosis:risk-1']);
+  assert.deepEqual(issue?.availableEvidenceRefs, ['document:brand-role', 'diagnosis:risk-1']);
 });
 
 test('classifier marks another deliverable field optional for the current task', () => {

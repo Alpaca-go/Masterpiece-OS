@@ -42,3 +42,34 @@ test('clarification builder limits normal user interruptions to at most three qu
 
   assert.equal(buildClarificationQuestions(result.issues, 20).length, 3);
 });
+
+test('repairable fields without current-project evidence become user clarification instead of AI guessing', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.mustBeVisible = [];
+  packet.lockedAssets = [];
+  packet.assetInventory = {
+    logoAssets: [], colorAssets: [], typographyAssets: [], graphicMotifs: [],
+    imageryAssets: [], layoutPatterns: [], materialCues: [],
+    packagingStructures: [], spatialCues: [], copyAssets: [],
+  };
+  packet.projectFacts.brandRole.evidenceRefs = [];
+  packet.mediaTranslations.spatial.brandIntegration = [];
+
+  const result = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution: {
+      camera: { focalLength: '24-28mm' },
+      outputLanguage: 'zh-CN',
+      aspectRatio: '16:9',
+    },
+  });
+  const issue = result.issues.find((candidate) => (
+    candidate.path === 'mediaTranslations.spatial.mustBeVisible'
+  ));
+
+  assert.equal(result.status, 'requires_confirmation');
+  assert.equal(issue?.repairStrategy, 'ask_user');
+  assert.deepEqual(issue?.availableEvidenceRefs, []);
+  assert.match(buildClarificationQuestions(result.issues)[0]?.question ?? '', /补充或确认/u);
+});

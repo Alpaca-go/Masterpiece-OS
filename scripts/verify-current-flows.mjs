@@ -36,6 +36,7 @@ const tscBin = resolveHoisted(
   'apps/desktop/node_modules/typescript/bin/tsc',
 );
 run('Desktop document parsing and delivery paths', process.execPath, [tsxCli, '--test', 'apps/desktop/tests/visual-translation-document-processing.test.ts', 'apps/desktop/tests/document-context-service.test.ts']);
+run('Structured Analysis Self-Healing contract coverage', process.execPath, [tsxCli, '--test', 'apps/desktop/tests/self-healing-contract.test.ts']);
 
 // Desktop TypeScript contracts:
 // Pre-existing on c47f3d6 — the tsc check used to silently fail

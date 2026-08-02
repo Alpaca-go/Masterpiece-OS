@@ -13,14 +13,14 @@ import {
 } from './path-utils.ts';
 import { validateAnalysisPacketSchema } from './schema-validator.ts';
 
-interface RequiredFieldRule {
+export interface RequiredFieldRule {
   path: string;
   code: string;
   kind?: 'text' | 'array' | 'object';
   minimumItems?: number;
 }
 
-const SHARED_RULES: RequiredFieldRule[] = [
+export const SHARED_REQUIRED_FIELD_RULES: readonly RequiredFieldRule[] = Object.freeze([
   {
     path: 'diagnosis.valuableAssets',
     code: 'VALUABLE_ASSETS_MISSING',
@@ -41,9 +41,9 @@ const SHARED_RULES: RequiredFieldRule[] = [
     kind: 'array',
     minimumItems: 1,
   },
-];
+]);
 
-const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
+export const DELIVERABLE_REQUIRED_FIELD_RULES: Readonly<Record<AnalysisDeliverable, readonly RequiredFieldRule[]>> = Object.freeze({
   space: [
     { path: 'abstractions', code: 'VISUAL_ABSTRACTIONS_MISSING', kind: 'array', minimumItems: 1 },
     { path: 'mediaTranslations.spatial.spatialConcept', code: 'SPATIAL_TRANSLATION_INCOMPLETE' },
@@ -108,6 +108,12 @@ const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
       minimumItems: 1,
     },
     {
+      path: 'mediaTranslations.spatial.mustBeVisible',
+      code: 'MUST_BE_VISIBLE_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
       path: 'mediaTranslations.spatial.sceneProgram',
       code: 'SCENE_PROGRAM_INCOMPLETE',
       kind: 'array',
@@ -148,7 +154,13 @@ const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
   ],
   poster: [],
   vi: [],
-};
+});
+
+export function requiredFieldRulesForDeliverable(
+  deliverable: AnalysisDeliverable,
+): readonly RequiredFieldRule[] {
+  return [...SHARED_REQUIRED_FIELD_RULES, ...DELIVERABLE_REQUIRED_FIELD_RULES[deliverable]];
+}
 
 function satisfies(value: unknown, rule: RequiredFieldRule): boolean {
   if (rule.kind === 'array') {
@@ -199,7 +211,7 @@ export function evaluateDeliverableSufficiency(input: {
   execution?: DeliverableExecutionContext;
 }): DeliverableSufficiencyResult {
   const schemaIssues = validateAnalysisPacketSchema(input.packet);
-  const rules = [...SHARED_RULES, ...DELIVERABLE_RULES[input.deliverable]];
+  const rules = requiredFieldRulesForDeliverable(input.deliverable);
   const scopedIssues = rules
     .filter((rule) => !satisfies(valueAtPath(input.packet, rule.path), rule))
     .map(issueForRule);

@@ -121,6 +121,18 @@ test('space requires the same brand-role and flagship-program detail as generati
   ]);
 });
 
+test('space requires visible project evidence before Self-Healing can declare readiness', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.mustBeVisible = [];
+
+  const result = evaluateDeliverableSufficiency({ packet, deliverable: 'space', execution });
+
+  assert.equal(result.status, 'repairable');
+  assert.deepEqual(result.issues.map((issue) => issue.code), ['MUST_BE_VISIBLE_MISSING']);
+  assert.equal(result.issues[0]?.repairStrategy, 'ai_from_evidence');
+  assert.ok((result.issues[0]?.requiredEvidencePaths.length ?? 0) > 0);
+});
+
 test('unknown brand facts require confirmation instead of AI invention', () => {
   const packet = structuredAnalysisPacketFixture();
   packet.projectFacts.brandRole.value = 'unknown';

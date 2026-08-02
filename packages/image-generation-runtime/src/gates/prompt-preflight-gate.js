@@ -6,6 +6,21 @@ const DOMAIN_STYLE_PATTERNS = [
   /(?:industry|行业).{0,30}(?:therefore|所以|必须|自动).{0,50}(?:颜色|材质|构图|气质|color|material|composition|style)/iu,
 ];
 
+export const SPACE_PROMPT_PREFLIGHT_FIELD_REQUIREMENTS = Object.freeze([
+  Object.freeze({ path: 'mediaTranslations.spatial.brandRoleManifestation', minimumItems: 1 }),
+  Object.freeze({ path: 'mediaTranslations.spatial.signatureSpatialMechanism', minimumItems: 1 }),
+  Object.freeze({ path: 'mediaTranslations.spatial.functionalNetwork', minimumItems: 3 }),
+  Object.freeze({ path: 'mediaTranslations.spatial.positiveDifferentiators', minimumItems: 1 }),
+  Object.freeze({ path: 'mediaTranslations.spatial.mustBeVisible', minimumItems: 1 }),
+  Object.freeze({ path: 'mediaTranslations.spatial.functionalRelationships', minimumItems: 1 }),
+  Object.freeze({ path: 'mediaTranslations.spatial.sceneProgram', minimumItems: 3 }),
+]);
+
+function minimumSpaceItems(field) {
+  return SPACE_PROMPT_PREFLIGHT_FIELD_REQUIREMENTS
+    .find((requirement) => requirement.path.endsWith(`.${field}`))?.minimumItems ?? 1;
+}
+
 function list(value) {
   return [...new Set((Array.isArray(value) ? value : [])
     .filter((item) => typeof item === 'string')
@@ -92,7 +107,10 @@ export function runPromptPreflightGate({
     const functionalNetwork = list(spatialTranslation?.functionalNetwork);
     const differentiators = list(spatialTranslation?.positiveDifferentiators);
     const mustBeVisible = list(spatialTranslation?.mustBeVisible);
-    if (!brandRole || !prompt.includes(brandRole) || relationships.length < 1 || scenes.length < 1) {
+    if (!brandRole
+      || !prompt.includes(brandRole)
+      || relationships.length < minimumSpaceItems('functionalRelationships')
+      || scenes.length < 1) {
       add(
         'BRAND_ROLE_UNDEREXPRESSED',
         'block',
@@ -103,7 +121,7 @@ export function runPromptPreflightGate({
       list(projectContract?.projectSpecificDecisions?.generationGoals).length < 2
       || !Array.isArray(projectContract?.mustTransform)
       || projectContract.mustTransform.length < 1
-      || relationships.length < 1
+      || relationships.length < minimumSpaceItems('functionalRelationships')
     )) {
       add(
         'PROJECT_SPECIFICITY_TOO_LOW',
@@ -116,23 +134,26 @@ export function runPromptPreflightGate({
         'The remaining instructions could be satisfied by a generic industry scene.',
       );
     }
-    if (!signatureMechanism.length || !differentiators.length || !mustBeVisible.length) {
+    if (signatureMechanism.length < minimumSpaceItems('signatureSpatialMechanism')
+      || differentiators.length < minimumSpaceItems('positiveDifferentiators')
+      || mustBeVisible.length < minimumSpaceItems('mustBeVisible')) {
       add(
         'POSITIVE_SPATIAL_MECHANISM_MISSING',
         'block',
         'Formal space generation requires a drawable signature mechanism, positive differentiators, and visible evidence.',
       );
     }
-    if (!roleManifestation.length
+    if (roleManifestation.length < minimumSpaceItems('brandRoleManifestation')
       || !roleManifestation.some((item) => prompt.includes(item))
-      || !functionalNetwork.length) {
+      || functionalNetwork.length < minimumSpaceItems('functionalNetwork')) {
       add(
         'BRAND_ROLE_NOT_SPATIALLY_MANIFESTED',
         'block',
         'The confirmed brand role is not manifested through visible spatial relationships.',
       );
     }
-    if (scenes.length < 3 || functionalNetwork.length < 3) {
+    if (scenes.length < minimumSpaceItems('sceneProgram')
+      || functionalNetwork.length < minimumSpaceItems('functionalNetwork')) {
       add(
         'FLAGSHIP_PROGRAM_TOO_GENERIC',
         'block',

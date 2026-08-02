@@ -102,6 +102,7 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     severity: 'repairable',
     repairStrategy: 'ai_from_evidence',
     requiredEvidencePaths: [
+      'projectFacts.brandRole',
       'creativeDecision.uniqueUpgradeThesis',
       'creativeDecision.targetWorldview',
       'creativeDecision.strategicNegatives',
@@ -114,6 +115,8 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     severity: 'repairable',
     repairStrategy: 'ai_from_evidence',
     requiredEvidencePaths: [
+      'projectFacts.brandRole',
+      'diagnosis.valuableAssets',
       'diagnosis.overusedExpressions',
       'diagnosis.outdatedExpressions',
       'diagnosis.categoryCliches',
@@ -206,6 +209,8 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     repairStrategy: 'ai_from_evidence',
     appliesTo: ['space'],
     requiredEvidencePaths: [
+      'projectFacts.brandRole',
+      'diagnosis.valuableAssets',
       'diagnosis.categoryCliches',
       'diagnosis.brandMisreadRisks',
       'creativeDecision.upgradeTo',
@@ -221,6 +226,19 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
       'projectFacts.brandRole',
       'creativeDecision.brandRoleStatement',
       'creativeDecision.uniqueUpgradeThesis',
+    ],
+  }),
+  policy({
+    path: 'mediaTranslations.spatial.mustBeVisible',
+    code: 'MUST_BE_VISIBLE_MISSING',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'lockedAssets',
+      'assetInventory',
+      'projectFacts.brandRole',
+      'mediaTranslations.spatial.brandIntegration',
     ],
   }),
   policy({
