@@ -11,7 +11,6 @@ const documentSource = fs.readFileSync(path.join(rendererRoot, 'components', 'Do
 const reportSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ReportView.tsx'), 'utf8');
 const mainSource = fs.readFileSync(path.join(rendererRoot, 'main.tsx'), 'utf8');
 const errorBoundarySource = fs.readFileSync(path.join(rendererRoot, 'components', 'AppErrorBoundary.tsx'), 'utf8');
-const creativeSessionSource = fs.readFileSync(path.join(rendererRoot, 'components', 'CreativeSessionWorkspace.tsx'), 'utf8');
 const settingsSource = fs.readFileSync(path.join(rendererRoot, 'components', 'SettingsPanel.tsx'), 'utf8');
 
 test('renderer keeps specialist legacy presets but routes analysis reports into Creative Session', () => {
@@ -28,87 +27,6 @@ test('renderer keeps specialist legacy presets but routes analysis reports into 
   assert.match(referenceSource, /quickExtractStyle/);
 });
 
-test('Creative Session workspace separates Visual Analysis from the creative workbench', () => {
-  assert.match(creativeSessionSource, /creativeSession\.getWorkspace/);
-  assert.match(creativeSessionSource, /creativeSession\.read\(project\.id\)/);
-  assert.match(creativeSessionSource, /建立 Creative Foundation/);
-  assert.match(creativeSessionSource, /creativeSession\.generate/);
-  assert.match(creativeSessionSource, /Creative Foundation/);
-  assert.match(creativeSessionSource, /Creative Command/);
-  assert.match(creativeSessionSource, /Generation History/);
-  assert.match(creativeSessionSource, /Visual System/);
-  assert.match(creativeSessionSource, /品牌升级海报/);
-  assert.match(creativeSessionSource, /包装效果图/);
-  assert.match(creativeSessionSource, /店内空间效果图/);
-  assert.match(creativeSessionSource, /VI 应用展示/);
-  assert.match(creativeSessionSource, /outputType: selectedCommand\?\.outputType/);
-  assert.match(creativeSessionSource, /Prompt Compiler/);
-  assert.match(creativeSessionSource, /Image Generation Adapter/);
-  assert.match(creativeSessionSource, /generateAnchorSet/);
-  assert.match(creativeSessionSource, /Visual Exploration/);
-  assert.match(creativeSessionSource, /generateVisualExploration/);
-  assert.match(creativeSessionSource, /Space、Packaging、Product Scene、Graphic 与 Material Concept/);
-  assert.match(creativeSessionSource, /\[4, 5, 6\]/);
-  assert.match(creativeSessionSource, /Designer Selection/);
-  assert.match(creativeSessionSource, /selectVisualConcept/);
-  assert.match(creativeSessionSource, /选择此视觉方向/);
-  assert.match(creativeSessionSource, /buildVisualCanonFromExploration/);
-  assert.match(creativeSessionSource, /从所选方向建立 Visual Canon/);
-  assert.match(creativeSessionSource, /Spatial System/);
-  assert.match(creativeSessionSource, /Anchor Candidates/);
-  assert.match(creativeSessionSource, /anchor-comparison-grid/);
-  assert.match(creativeSessionSource, /多候选比较与人工 Primary 选择/);
-  for (const ruleGroup of ['色彩', '材质', '光线', '构图', '字体', '空间', '禁止项']) {
-    assert.match(creativeSessionSource, new RegExp(`label: '${ruleGroup}'`));
-  }
-  assert.match(creativeSessionSource, /getRunMetadata/);
-  assert.match(creativeSessionSource, /Evaluation Score/);
-  assert.match(creativeSessionSource, /Brand Alignment/);
-  assert.match(creativeSessionSource, /Visual Consistency/);
-  assert.match(creativeSessionSource, /Asset Usability/);
-  assert.match(creativeSessionSource, /Deviation Detection/);
-  assert.match(creativeSessionSource, /creativeSession\.evaluate/);
-  assert.match(creativeSessionSource, /regenerateFromEvaluation/);
-  assert.match(creativeSessionSource, /按评价重新生成/);
-  assert.match(creativeSessionSource, /修改内容/);
-  assert.match(creativeSessionSource, /返回 Visual Analysis/);
-  assert.match(creativeSessionSource, /例如：生成一张升级后的店内装修效果图/);
-  assert.match(creativeSessionSource, /开始创作/);
-  assert.match(creativeSessionSource, /Creative Direction/);
-  assert.match(creativeSessionSource, /当前创作方向/);
-  assert.match(creativeSessionSource, /设计重点/);
-  assert.doesNotMatch(creativeSessionSource, /GenerationSourcePreset|Reference Role|deliverable-card/);
-});
-
-test('V6 workspace exposes production gates instead of bypassing confirmation', () => {
-  assert.match(creativeSessionSource, /建立 Style Profile 与 Locked Assets/);
-  assert.match(creativeSessionSource, /确认 Style Profile/);
-  assert.match(creativeSessionSource, /生成 \$\{anchorCandidateCount\} 个候选/);
-  assert.match(creativeSessionSource, /接受为 Primary Canon/);
-  assert.match(creativeSessionSource, /从 Primary Anchor 建立 Visual Canon/);
-  assert.match(creativeSessionSource, /确认 Visual Canon/);
-  assert.match(creativeSessionSource, /conflicts\.some\(\(item\) => item\.severity === 'blocking'\)/);
-  assert.match(appSource, /imageApiProfileId=/);
-  assert.match(creativeSessionSource, /apiProfileId: imageApiProfileId/);
-});
-
-test('V6 generation workspace exposes Series controls, output versions and Prompt drawer', () => {
-  assert.match(creativeSessionSource, /创建基础系列/);
-  assert.match(creativeSessionSource, /执行未完成任务/);
-  assert.match(creativeSessionSource, /pauseSeries/);
-  assert.match(creativeSessionSource, /resumeSeries/);
-  assert.match(creativeSessionSource, /确认为正式资产/);
-  assert.match(creativeSessionSource, /提升 Supporting Canon/);
-  assert.match(creativeSessionSource, /getRunPrompt/);
-  assert.match(creativeSessionSource, /Prompt Snapshot/);
-  assert.match(creativeSessionSource, /createRevision/);
-  assert.match(creativeSessionSource, /创建修正版或变体/);
-  assert.match(creativeSessionSource, /version-compare-grid/);
-  assert.match(creativeSessionSource, /retryAnchor/);
-  assert.match(creativeSessionSource, /regenerateContext/);
-  assert.match(creativeSessionSource, /根据变化方向重新生成上下文/);
-  assert.match(creativeSessionSource, /styleProfileVersion === workspace\?\.styleProfile\?\.version/);
-});
 
 test('generation workspace uses source bundles, displays source usage and offers registered image models', () => {
   assert.match(generationSource, /sourceBundle: ImageGenerationSourceBundle/);

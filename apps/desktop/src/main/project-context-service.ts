@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ProjectVisualContext, ProjectVisualContextVNext } from '../shared/types';
+import type { ProjectVisualContext, ProjectVisualContextShortChain } from '../shared/types';
 import type { ProjectStore } from './project-store';
 import {
   compileProjectVisualContext,
@@ -10,14 +10,15 @@ import {
   PROJECT_VISUAL_CONTEXT_SCHEMA_VERSION
 } from './project-visual-context-compiler';
 import {
-  buildProjectVisualContextVNext,
-  migrateProjectVisualContextVNext,
-  validateProjectVisualContextVNext,
-  writeProjectVisualContextVNext,
-} from './project-context-vnext-builder.ts';
+  buildProjectVisualContextShortChain,
+  migrateProjectVisualContextShortChain,
+  validateProjectVisualContextShortChain,
+  writeProjectVisualContextShortChain,
+} from './project-context-short-chain-builder.ts';
+import { LEGACY_SHORT_CHAIN_CONTEXT_FILENAME } from './legacy-stage-name-migration.ts';
 
 export const PROJECT_VISUAL_CONTEXT_FILENAME = 'project-visual-context.json';
-export const PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME = 'project-visual-context.vnext.json';
+export const PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_FILENAME = 'project-visual-context.short-chain.json';
 
 export interface SaveDialogResult {
   canceled: boolean;
@@ -44,8 +45,8 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return path.join(outputsDir, PROJECT_VISUAL_CONTEXT_FILENAME);
   }
 
-  function contextVNextTarget(projectRoot: string): string {
-    return path.join(projectRoot, 'project-context', PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME);
+  function contextShortChainTarget(projectRoot: string): string {
+    return path.join(projectRoot, 'project-context', PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_FILENAME);
   }
 
   async function get(projectId: string): Promise<ProjectVisualContext> {
@@ -137,43 +138,46 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return context;
   }
 
-  async function getVNext(projectId: string): Promise<ProjectVisualContextVNext> {
+  async function getShortChain(projectId: string): Promise<ProjectVisualContextShortChain> {
     const project = await projects.get(projectId);
-    if (project.visualContextVNextStatus !== 'ready' || !project.visualContextVNextFilename) {
-      throw new ProjectContextNotReadyError('Project Visual Context vNext is not ready');
+    if (project.visualContextShortChainStatus !== 'ready' || !project.visualContextShortChainFilename) {
+      throw new ProjectContextNotReadyError('Project Visual Context Short-Chain is not ready');
     }
     const paths = await projects.paths(projectId);
-    const filename = path.basename(project.visualContextVNextFilename);
+    const requestedFilename = path.basename(project.visualContextShortChainFilename);
+    const filename = requestedFilename === LEGACY_SHORT_CHAIN_CONTEXT_FILENAME
+      ? LEGACY_SHORT_CHAIN_CONTEXT_FILENAME
+      : requestedFilename;
     const value = JSON.parse(
       await fs.readFile(path.join(paths.root, 'project-context', filename), 'utf8'),
-    ) as ProjectVisualContextVNext;
-    const validation = validateProjectVisualContextVNext(value);
+    ) as ProjectVisualContextShortChain;
+    const validation = validateProjectVisualContextShortChain(value);
     if (!validation.valid) {
-      throw new ProjectContextNotReadyError(`Project Visual Context vNext is invalid: ${validation.errors.join('; ')}`);
+      throw new ProjectContextNotReadyError(`Project Visual Context Short-Chain is invalid: ${validation.errors.join('; ')}`);
     }
-    return migrateProjectVisualContextVNext(value);
+    return migrateProjectVisualContextShortChain(value);
   }
 
-  async function rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext> {
+  async function rebuildShortChain(projectId: string): Promise<ProjectVisualContextShortChain> {
     const project = await projects.get(projectId);
     const paths = await projects.paths(projectId);
-    const previousContext = await getVNext(projectId).catch(() => null);
-    const context = buildProjectVisualContextVNext({
+    const previousContext = await getShortChain(projectId).catch(() => null);
+    const context = buildProjectVisualContextShortChain({
       project,
       previousContext,
     });
     try {
-      await writeProjectVisualContextVNext(contextVNextTarget(paths.root), context);
+      await writeProjectVisualContextShortChain(contextShortChainTarget(paths.root), context);
       await projects.update(projectId, {
-        visualContextVNextFilename: PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME,
-        visualContextVNextStatus: 'ready',
-        visualContextVNextVersion: context.version,
-        visualContextVNextLastBuiltAt: context.generatedAt,
+        visualContextShortChainFilename: PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_FILENAME,
+        visualContextShortChainStatus: 'ready',
+        visualContextShortChainVersion: context.version,
+        visualContextShortChainLastBuiltAt: context.generatedAt,
       });
     } catch (error) {
       await projects.update(projectId, {
-        visualContextVNextStatus: 'failed',
-        visualContextVNextLastBuiltAt: new Date().toISOString(),
+        visualContextShortChainStatus: 'failed',
+        visualContextShortChainLastBuiltAt: new Date().toISOString(),
       }).catch(() => undefined);
       throw error;
     }
@@ -192,7 +196,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return result.filePath;
   }
 
-  return { get, rebuild, export: exportContext, getVNext, rebuildVNext };
+  return { get, rebuild, export: exportContext, getShortChain, rebuildShortChain };
 }
 
 export type ProjectContextService = ReturnType<typeof createProjectContextService>;

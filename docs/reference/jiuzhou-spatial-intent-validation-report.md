@@ -51,7 +51,7 @@ Validation artifacts at `D:\Masterpiece-OS\space-generator\v1-experimental\valid
 - **不接入 production UI**: production 生图 UI 的 SourceBundle preset (visual_extension / document_concept / reference_preview / integrated_anchor) 跟 Spatial Intent Presets 是两套独立抽象,本次验证不改动 production UI
 - **不修改现有 production preset**: SourceBundle preset 一字未改
 - **直接调**: compileSpaceRuntime(brand, { preset, spaceTypeOverride }) → 17-18 块 markdown prompt → image gen service → real Provider (Seedream 5.0 Pro)
-- **Reference (Mode 3)**: JZMX-ARCH-01.png (`D:\Masterpiece-OS\docs\reference\JZMX-ARCH-01.png`) 复制到 `C:\Users\Administrator\Documents\Masterpiece OS Data\projects\九州美学-a7a56ed7\input\assets\JZMX-ARCH-01-reference.png`,role=`structure_reference`
+- **Reference (Mode 3)**: JZMX-ARCH-01.png（来自受控实验架构锚点目录），运行时复制到项目输入目录并标记为 `structure_reference`。
 - **Provider model**: `doubao-seedream-5-0-pro-260628` (image_profile_id=profile-e871b4c5-7499-4749-b838-02410ad19cb1)
 - **Image size**: `1024*576` (16:9 horizontal, EXTERIOR 店面/门头效果图)
 

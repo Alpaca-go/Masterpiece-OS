@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 // sync-product-version.mjs
 // Single source of truth: /VERSION
-// Synchronises product version into root package.json, apps/desktop/package.json,
-// and src/runtime-trace.js (DEFAULT_APP_VERSION constant).
-//
-// Apps/cli/package.json is updated once Stage 4 (CLI migration) is complete.
+// Synchronises product version into every product-facing manifest and the CLI
+// runtime fallback. Internal packages keep their independent 0.0.0 versions.
 //
 // Idempotent — safe to run repeatedly.
 
@@ -45,25 +43,26 @@ function updatePackageJson(relPath, expectedName, version) {
 }
 
 function updateRuntimeTrace(version) {
-  const full = path.join(root, 'src', 'runtime-trace.js');
+  const relative = path.join('apps', 'cli', 'src', 'runtime-trace.js');
+  const full = path.join(root, relative);
   if (!existsSync(full)) {
-    throw new Error('src/runtime-trace.js missing');
+    throw new Error(`${relative} missing`);
   }
   const text = readFileSync(full, 'utf8');
   const re = /export const DEFAULT_APP_VERSION = '([^']+)';/;
   if (!re.test(text)) {
     throw new Error(
-      'src/runtime-trace.js: DEFAULT_APP_VERSION constant not found or not in expected format',
+      `${relative}: DEFAULT_APP_VERSION constant not found or not in expected format`,
     );
   }
   const current = re.exec(text)[1];
   if (current === version) {
-    console.log(`  [ok]   src/runtime-trace.js DEFAULT_APP_VERSION already at ${version}`);
+    console.log(`  [ok]   ${relative} DEFAULT_APP_VERSION already at ${version}`);
     return false;
   }
   const next = text.replace(re, `export const DEFAULT_APP_VERSION = '${version}';`);
   writeFileSync(full, next, 'utf8');
-  console.log(`  [set]  src/runtime-trace.js DEFAULT_APP_VERSION → ${version}`);
+  console.log(`  [set]  ${relative} DEFAULT_APP_VERSION → ${version}`);
   return true;
 }
 
@@ -73,6 +72,8 @@ console.log(`VERSION file declares: ${version}`);
 let changed = 0;
 changed += updatePackageJson('package.json', 'masterpiece-os', version) ? 1 : 0;
 changed += updatePackageJson('apps/desktop/package.json', 'masterpiece-os-desktop', version) ? 1 : 0;
+changed += updatePackageJson('apps/cli/package.json', '@masterpiece/cli', version) ? 1 : 0;
+changed += updatePackageJson('apps/cli/templates/masterpiece-os-v5.json', null, version) ? 1 : 0;
 changed += updateRuntimeTrace(version) ? 1 : 0;
 
 if (changed === 0) {

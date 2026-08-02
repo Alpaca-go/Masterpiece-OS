@@ -337,7 +337,7 @@ export function validateVisualDecisionPacket(
 }
 
 /**
- * Transitional adapter for existing persisted vNext contexts. The compiler
+ * Transitional adapter for existing persisted Short-Chain contexts. The compiler
  * switches to VisualDecisionPacket directly in the next phase; this adapter
  * keeps rollback compatibility without reading a human report.
  */
@@ -363,7 +363,7 @@ export function visualDecisionPacketToPromptSourceObject(
       // logo must route image generation through `post_composite` (so the
       // model never draws the logo and a sharp-based post-compositor
       // paints the real one on top). The backend enforces this in
-      // `vnext-service.ts` and raises `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED`
+      // `short-chain-service.ts` and raises `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED`
       // for any other mode, so the default value emitted into the
       // prompt-source object must already be `post_composite` whenever a
       // logo is present — otherwise every fresh compile call from a

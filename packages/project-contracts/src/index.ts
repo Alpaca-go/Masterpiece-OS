@@ -130,7 +130,7 @@ export interface CreativeUnderstanding {
 }
 
 /**
- * v18.1 Creative Director 的持久化决策实体。
+ * Creative Director 的持久化决策实体。
  * 原始视觉仅负责 Reading；本实体只由 Creative Understanding 与视觉分析报告生成。
  */
 export interface CreativeDirection {
@@ -352,7 +352,7 @@ export interface CreativeSessionMessage {
   createdAt: string;
 }
 
-/** V6 Creative Session 仅保存持续上下文和实体引用，禁止持有最终 Prompt。 */
+/** Creative Session 仅保存持续上下文和实体引用，禁止持有最终 Prompt。 */
 export interface CreativeSession {
   schemaVersion: '6.0';
   id: string;
@@ -898,14 +898,14 @@ export interface ProjectVisualContext {
 }
 
 /**
- * Execution-only project context for the vNext image-generation pipeline.
+ * Execution-only project context for the Short-Chain image-generation pipeline.
  *
  * This is intentionally a sibling of the human-readable analysis report. It
  * may only contain facts from the project record, original assets, structured
  * analysis output, or explicit user decisions. Report markdown is not a valid
  * source.
  */
-export interface ProjectVisualContextVNext {
+export interface ProjectVisualContextShortChain {
   schemaVersion: '2.0';
   projectId: string;
   version: number;

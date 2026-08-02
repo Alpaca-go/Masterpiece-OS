@@ -5,10 +5,7 @@ import { app, safeStorage } from 'electron';
 import type {
   ApiProfile,
   ApiProtocol,
-  AnalysisPipelineMode,
   ConnectionTestResult,
-  DirectionGenerationMode,
-  ImageGenerationPipelineMode,
   ModelType,
   ProviderKind,
   PublicSettings,
@@ -30,14 +27,7 @@ interface StoredSettings {
   defaultDataPath: string;
   cacheEnabled: boolean;
   logLevel: 'error' | 'info' | 'debug';
-  directionGenerationMode: DirectionGenerationMode;
-  analysisPipelineMode: AnalysisPipelineMode;
-  imageGenerationPipelineMode: ImageGenerationPipelineMode;
 }
-
-const DIRECTION_GENERATION_MODES = Object.freeze(['conceptual_v1', 'execution_oriented_v2']);
-const ANALYSIS_PIPELINE_MODES = Object.freeze(['retrieval_first', 'visual_fact_first_legacy', 'deep_analysis_legacy', 'legacy_deep_analysis', 'visual_fact_first']);
-const IMAGE_GENERATION_PIPELINE_MODES = Object.freeze(['legacy', 'vnext']);
 
 interface LegacySettings {
   provider?: ProviderKind;
@@ -111,10 +101,7 @@ function defaults(): StoredSettings {
     // 导致客户端启动 splash 永久卡死且无报错）。用户可在设置里另行指定数据目录。
     defaultDataPath: path.join(app.getPath('userData'), 'Masterpiece OS Data'),
     cacheEnabled: true,
-    logLevel: 'info',
-    directionGenerationMode: 'execution_oriented_v2',
-    analysisPipelineMode: 'retrieval_first',
-    imageGenerationPipelineMode: 'vnext'
+    logLevel: 'info'
   };
 }
 
@@ -179,12 +166,13 @@ async function readStored(): Promise<StoredSettings> {
   try {
     const parsed = JSON.parse(await fs.readFile(settingsPath(), 'utf8')) as StoredSettings | LegacySettings;
     if (!Array.isArray((parsed as StoredSettings).profiles)) return migrateLegacy(parsed as LegacySettings);
-    const stored = { ...defaults(), ...(parsed as StoredSettings) };
-    if (!DIRECTION_GENERATION_MODES.includes(stored.directionGenerationMode)) stored.directionGenerationMode = 'execution_oriented_v2';
-    if (!ANALYSIS_PIPELINE_MODES.includes(stored.analysisPipelineMode)) stored.analysisPipelineMode = 'retrieval_first';
-    if (!IMAGE_GENERATION_PIPELINE_MODES.includes(stored.imageGenerationPipelineMode)) {
-      stored.imageGenerationPipelineMode = 'vnext';
-    }
+    const {
+      directionGenerationMode: _retiredDirectionMode,
+      analysisPipelineMode: _retiredAnalysisMode,
+      imageGenerationPipelineMode: _retiredGenerationMode,
+      ...current
+    } = parsed as StoredSettings & Record<string, unknown>;
+    const stored = { ...defaults(), ...current } as StoredSettings;
     stored.profiles = stored.profiles.map((profile) => ({
       ...profile,
       provider: String(profile.provider || 'openai-compatible').trim(),
@@ -233,9 +221,6 @@ async function publicSettings(settings: StoredSettings): Promise<PublicSettings>
     defaultDataPath: settings.defaultDataPath,
     cacheEnabled: settings.cacheEnabled,
     logLevel: settings.logLevel,
-    directionGenerationMode: settings.directionGenerationMode,
-    analysisPipelineMode: settings.analysisPipelineMode,
-    imageGenerationPipelineMode: settings.imageGenerationPipelineMode,
     connectionStatus: defaultProfile ? profileStatus(defaultProfile) : 'untested'
   };
 }
@@ -269,16 +254,6 @@ export async function saveSettings(input: SaveSettingsInput): Promise<PublicSett
   settings.defaultDataPath = path.resolve(input.defaultDataPath);
   settings.cacheEnabled = input.cacheEnabled;
   settings.logLevel = input.logLevel;
-  if (input.directionGenerationMode && DIRECTION_GENERATION_MODES.includes(input.directionGenerationMode)) {
-    settings.directionGenerationMode = input.directionGenerationMode;
-  }
-  if (input.analysisPipelineMode && ANALYSIS_PIPELINE_MODES.includes(input.analysisPipelineMode)) {
-    settings.analysisPipelineMode = input.analysisPipelineMode;
-  }
-  if (input.imageGenerationPipelineMode
-    && IMAGE_GENERATION_PIPELINE_MODES.includes(input.imageGenerationPipelineMode)) {
-    settings.imageGenerationPipelineMode = input.imageGenerationPipelineMode;
-  }
   await writeStored(settings);
   return publicSettings(settings);
 }

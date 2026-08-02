@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 6：ImageGenerationService 直测（不依赖 Electron / 不触达真实网络）。
+// 生图功能：ImageGenerationService 直测（不依赖 Electron / 不触达真实网络）。
 // 直接装配 createImageGenerationService，注入 mock loadContext + 可注入 fetchImpl 模拟 Provider 全流程，
 // 验证 compile / start / retry / cancel / saveReview / getRun / listRuns / onRunUpdated。
 // 运行：node --test tests/image-generation/service.test.js

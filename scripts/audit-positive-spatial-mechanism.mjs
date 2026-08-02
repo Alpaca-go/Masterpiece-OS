@@ -52,7 +52,7 @@ function mechanismSnapshot(spatial, contract) {
 async function exportCompilation(label, compilationId) {
   const root = path.join(
     config.projectRoot,
-    'image-generation-vnext',
+    'image-generation-short-chain',
     'compilations',
     compilationId,
   );

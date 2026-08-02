@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 6：恢复路径测试（resume / recoverAll）。
+// 生图功能：恢复路径测试（resume / recoverAll）。
 // 离线构造执行中运行（含 task.json），注入 mock fetch 模拟 Provider 恢复，
 // 验证 §12.3：submitting 无 providerTaskId → failed；executing 有 taskId → resume 成功。
 // 运行：node --test tests/image-generation/recovery.test.js

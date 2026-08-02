@@ -1,5 +1,5 @@
 /**
- * 生图功能 V1：上游上下文加载（§7）。
+ * 生图功能：上游上下文加载（§7）。
  *
  * 从已批准的 Reference Anchor 运行 + 当前项目 Resolved Context 组装 GenerationContext：
  *   - resolvedContext：projects/<projectId>/outputs/resolved-project-context.json

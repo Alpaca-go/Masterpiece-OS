@@ -1,9 +1,9 @@
 {
   "name": "@masterpiece/cli",
-  "version": "0.0.0",
+  "version": "5.0.0-rc.1",
   "private": true,
   "type": "module",
-  "description": "Masterpiece OS 5 headless CLI — Deep Creative Director analyser. One source of project visual understanding, one-shot `visual plan upgrade report`.",
+  "description": "Masterpiece OS headless CLI — Deep Creative Director analyser. One source of project visual understanding, one-shot `visual plan upgrade report`.",
   "bin": {
     "masterpiece-os": "./bin/masterpiece-os.js"
   },

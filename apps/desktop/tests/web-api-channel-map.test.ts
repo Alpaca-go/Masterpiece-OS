@@ -5,23 +5,23 @@ import {
   WEB_RPC_CHANNEL_OVERRIDES
 } from '../src/renderer/src/web-api.ts';
 
-const EXPECTED_VNEXT_CHANNELS = Object.freeze({
-  'imageGeneration.compileVNext': 'image-generation:vnext-compile',
-  'imageGeneration.getVNextOptions': 'image-generation:vnext-options',
-  'imageGeneration.startVNext': 'image-generation:vnext-start',
-  'imageGeneration.startValidatedVNext': 'image-generation:vnext-start-validated',
-  'imageGeneration.getVNextSession': 'image-generation:vnext-session',
-  'imageGeneration.confirmVNextDirection': 'image-generation:vnext-confirm-direction',
-  'imageGeneration.continueVNextSameType': 'image-generation:vnext-continue-same-type',
-  'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
-  'imageGeneration.postCompositeVNextLogo': 'image-generation:vnext-post-composite-logo',
-  'projectContext.getVNext': 'project-context:get-vnext',
-  'projectContext.rebuildVNext': 'project-context:rebuild-vnext'
+const EXPECTED_SHORT_CHAIN_CHANNELS = Object.freeze({
+  'imageGeneration.compileShortChain': 'image-generation:short-chain-compile',
+  'imageGeneration.getShortChainOptions': 'image-generation:short-chain-options',
+  'imageGeneration.startShortChain': 'image-generation:short-chain-start',
+  'imageGeneration.startValidatedShortChain': 'image-generation:short-chain-start-validated',
+  'imageGeneration.getShortChainSession': 'image-generation:short-chain-session',
+  'imageGeneration.confirmShortChainDirection': 'image-generation:short-chain-confirm-direction',
+  'imageGeneration.continueShortChainSameType': 'image-generation:short-chain-continue-same-type',
+  'imageGeneration.saveShortChainProjectPromptAsset': 'image-generation:short-chain-save-prompt-asset',
+  'imageGeneration.postCompositeShortChainLogo': 'image-generation:short-chain-post-composite-logo',
+  'projectContext.getShortChain': 'project-context:get-short-chain',
+  'projectContext.rebuildShortChain': 'project-context:rebuild-short-chain'
 });
 
-test('Web API maps the complete vNext method family to the registered Desktop IPC channels', () => {
-  assert.deepEqual(WEB_RPC_CHANNEL_OVERRIDES, EXPECTED_VNEXT_CHANNELS);
-  for (const [key, channel] of Object.entries(EXPECTED_VNEXT_CHANNELS)) {
+test('Web API maps the complete Short-Chain method family to the registered Desktop IPC channels', () => {
+  assert.deepEqual(WEB_RPC_CHANNEL_OVERRIDES, EXPECTED_SHORT_CHAIN_CHANNELS);
+  for (const [key, channel] of Object.entries(EXPECTED_SHORT_CHAIN_CHANNELS)) {
     const [namespace, method] = key.split('.');
     assert.equal(resolveWebRpcChannel(namespace!, method!), channel);
   }

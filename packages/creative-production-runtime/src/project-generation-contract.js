@@ -98,7 +98,7 @@ function approvedUpgradeStatement(decisions, fallback, deliverable) {
 }
 
 // Build a minimum-viable approved creative decision from the upstream
-// `visualDecisionPacket` so the vNext compile pipeline can satisfy the
+// `visualDecisionPacket` so the Short-Chain compile pipeline can satisfy the
 // preflight gate's `specificity.status === 'ready'` requirement without
 // needing a separate `creative_decision.json` artifact. The downstream
 // `compileProjectSpecificGenerationContract` already pulls `mustPreserve`,
@@ -196,12 +196,12 @@ export function compileProjectSpecificGenerationContract(input = {}) {
   const decision = packet.creativeDecision || {};
   // The pipeline historically required an explicit, separately persisted
   // `approvedCreativeDecision` (a `creative_decision.json` file) for the
-  // downstream preflight gate to pass. In the current v18 surface that
+  // downstream preflight gate to pass. In the current production surface that
   // separate file has no production path — the reference-first pipeline is
   // pure functions, the `creative-direction-service` is never exposed over
   // IPC, and `user-confirmed-visual-decision.json` has no writer anywhere
   // in the repository. Without a fallback the preflight gate would block
-  // every vNext compile call with `PROJECT_SPECIFICITY_TOO_LOW` even when
+  // every Short-Chain compile call with `PROJECT_SPECIFICITY_TOO_LOW` even when
   // the upstream `visual-decision-packet` already contains everything
   // needed. Synthesise a minimum-viable stub from the packet itself so
   // the contract stays `ready` as soon as the v5 fusion-enhanced packet

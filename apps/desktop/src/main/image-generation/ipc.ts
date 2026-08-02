@@ -1,5 +1,5 @@
 /**
- * 生图功能 V1：Desktop IPC 注册（§16.1）。
+ * 生图功能：Desktop IPC 注册（§16.1）。
  *
  * 把原本内联在 main/index.ts 的 image-generation:* handler 抽离为独立函数，
  * 便于在测试中用假 ipcMain 注入并断言参数转发（不依赖 Electron 运行时）。
@@ -11,21 +11,21 @@
 import type { IpcMain } from 'electron';
 import type { ImageGenerationService } from './service';
 import type {
-  CompileVNextGenerationInput,
-  PostCompositeVNextLogoInput,
-  SaveVNextProjectPromptAssetInput,
-  StartVNextGenerationInput,
-  StartValidatedVNextGenerationInput,
+  CompileShortChainGenerationInput,
+  PostCompositeShortChainLogoInput,
+  SaveShortChainProjectPromptAssetInput,
+  StartShortChainGenerationInput,
+  StartValidatedShortChainGenerationInput,
   StartImageGenerationInput,
   RetryImageGenerationInput,
   ImageGenerationReview,
 } from '../../shared/types';
-import type { VNextImageGenerationService } from './vnext-service.ts';
+import type { ShortChainImageGenerationService } from './short-chain-service.ts';
 
 export function registerImageGenerationIpc(
   service: ImageGenerationService,
   ipcMain: IpcMain,
-  vnextService?: VNextImageGenerationService,
+  shortChainService?: ShortChainImageGenerationService,
 ): void {
   ipcMain.handle('image-generation:get-capabilities', async () => service.getCapabilities());
   ipcMain.handle('image-generation:get-preset-capabilities', async () => service.getPresetCapabilities());
@@ -59,43 +59,43 @@ export function registerImageGenerationIpc(
 
   ipcMain.handle('image-generation:get-image-data-url', async (_event, runId: string, imageId: string) =>
     service.readImageDataUrl(runId, imageId));
-  if (vnextService) {
-    ipcMain.handle('image-generation:vnext-options', async () => vnextService.listOptions());
-    ipcMain.handle('image-generation:vnext-compile', async (_event, input: CompileVNextGenerationInput) =>
-      vnextService.compile(input));
-    ipcMain.handle('image-generation:vnext-start', async (_event, input: StartVNextGenerationInput) =>
-      vnextService.start(input));
+  if (shortChainService) {
+    ipcMain.handle('image-generation:short-chain-options', async () => shortChainService.listOptions());
+    ipcMain.handle('image-generation:short-chain-compile', async (_event, input: CompileShortChainGenerationInput) =>
+      shortChainService.compile(input));
+    ipcMain.handle('image-generation:short-chain-start', async (_event, input: StartShortChainGenerationInput) =>
+      shortChainService.start(input));
     ipcMain.handle(
-      'image-generation:vnext-start-validated',
-      async (_event, input: StartValidatedVNextGenerationInput) =>
-        vnextService.startValidated(input),
+      'image-generation:short-chain-start-validated',
+      async (_event, input: StartValidatedShortChainGenerationInput) =>
+        shortChainService.startValidated(input),
     );
-    ipcMain.handle('image-generation:vnext-session', async (_event, projectId: string) =>
-      vnextService.getSession(projectId));
+    ipcMain.handle('image-generation:short-chain-session', async (_event, projectId: string) =>
+      shortChainService.getSession(projectId));
     ipcMain.handle(
-      'image-generation:vnext-confirm-direction',
+      'image-generation:short-chain-confirm-direction',
       async (_event, projectId: string, runId: string, imageId: string) =>
-        vnextService.confirmDirection(projectId, runId, imageId),
+        shortChainService.confirmDirection(projectId, runId, imageId),
     );
     ipcMain.handle(
-      'image-generation:vnext-continue-same-type',
+      'image-generation:short-chain-continue-same-type',
       async (
         _event,
         projectId: string,
         currentInstruction: string,
         apiProfileId?: string,
         dryRun?: boolean,
-      ) => vnextService.continueSameType(projectId, currentInstruction, apiProfileId, dryRun),
+      ) => shortChainService.continueSameType(projectId, currentInstruction, apiProfileId, dryRun),
     );
     ipcMain.handle(
-      'image-generation:vnext-save-prompt-asset',
-      async (_event, input: SaveVNextProjectPromptAssetInput) =>
-        vnextService.saveProjectPromptAsset(input),
+      'image-generation:short-chain-save-prompt-asset',
+      async (_event, input: SaveShortChainProjectPromptAssetInput) =>
+        shortChainService.saveProjectPromptAsset(input),
     );
     ipcMain.handle(
-      'image-generation:vnext-post-composite-logo',
-      async (_event, input: PostCompositeVNextLogoInput) =>
-        vnextService.postCompositeLogo(input),
+      'image-generation:short-chain-post-composite-logo',
+      async (_event, input: PostCompositeShortChainLogoInput) =>
+        shortChainService.postCompositeLogo(input),
     );
   }
 }

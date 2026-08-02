@@ -41,8 +41,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   const [localForm, setLocalForm] = useState<SaveSettingsInput>({
     defaultDataPath: settings.defaultDataPath,
     cacheEnabled: settings.cacheEnabled,
-    logLevel: settings.logLevel,
-    imageGenerationPipelineMode: settings.imageGenerationPipelineMode ?? 'vnext'
+    logLevel: settings.logLevel
   });
   const [editor, setEditor] = useState<SaveApiProfileInput | null>(null);
   const [showKey, setShowKey] = useState(false);
@@ -238,7 +237,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
         <label>日志级别<select value={localForm.logLevel} onChange={(event) => updateLocal('logLevel', event.target.value as SaveSettingsInput['logLevel'])}><option value="error">仅错误</option><option value="info">标准</option><option value="debug">调试</option></select></label>
         <div className="security-card">
           <strong>生图主链路</strong>
-          <p>短链路（生成工作台）— Masterpiece OS 5 的唯一生图路径。历史 Legacy 数据仍可读取，但不再创建新的 Legacy 生图任务。</p>
+          <p>生成工作台是当前唯一生图路径。历史项目数据仍可读取，但不再创建旧链路任务。</p>
         </div>
         <button className="button primary full" disabled={Boolean(busy)} onClick={() => void saveLocal()}>{busy === 'local' ? '保存中…' : '保存本地设置'}</button>
         <div className="security-card"><strong>Windows 安全存储</strong><p>每个 API Key 使用 Electron safeStorage 加密后独立保存，仅在主进程发起请求时短暂解密。删除 Profile 会同步删除对应凭据。</p></div>

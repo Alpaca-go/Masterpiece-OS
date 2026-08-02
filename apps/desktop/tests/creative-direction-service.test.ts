@@ -122,7 +122,7 @@ test('Creative Director service calls a text-only model, retries invalid JSON an
   }
 });
 
-test('Creative Director service reads persisted v18.1 directions through an in-memory v1 migration', async () => {
+test('Creative Director service reads persisted legacy directions through an in-memory migration', async () => {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-direction-legacy-'));
   const root = path.join(temp, 'project');
   const directionRoot = path.join(root, 'creative-session', 'direction');

@@ -54,9 +54,9 @@ import {
   PROJECT_VISUAL_CONTEXT_SCHEMA_VERSION
 } from './project-visual-context-compiler';
 import {
-  buildProjectVisualContextVNext,
-  writeProjectVisualContextVNext,
-} from './project-context-vnext-builder.ts';
+  buildProjectVisualContextShortChain,
+  writeProjectVisualContextShortChain,
+} from './project-context-short-chain-builder.ts';
 import {
   buildUnifiedVisualUnderstandingPrompt,
   normalizeUnifiedVisualUnderstanding,
@@ -426,7 +426,6 @@ export function createPipelineService(
       });
       progress('extracting-project-facts', '正在识别项目与品牌信息');
       const config = {
-        version: '5.0',
         projectName: project.projectName,
         userTask: buildFusionEnhancedTask(project.description, project.projectName),
         brandFacts: {
@@ -724,33 +723,33 @@ export function createPipelineService(
           .catch(() => undefined);
       }
 
-      // vNext context is a sibling of the report. It is compiled only from the
+      // Short-Chain context is a sibling of the report. It is compiled only from the
       // project record and original asset inventory; report markdown is never
       // accepted by the builder.
       try {
-        const previousVNext = updated.visualContextVNextStatus === 'ready'
+        const previousShortChain = updated.visualContextShortChainStatus === 'ready'
           ? await fs.readFile(
-            path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
+            path.join(projectPaths.root, 'project-context', 'project-visual-context.short-chain.json'),
             'utf8',
           ).then((value) => JSON.parse(value)).catch(() => null)
           : null;
-        const vnextContext = buildProjectVisualContextVNext({
+        const shortChainContext = buildProjectVisualContextShortChain({
           project: updated,
-          previousContext: previousVNext,
+          previousContext: previousShortChain,
           structuredAnalysis: promptSourceObject
             ? { promptSourceObject, visualDecisionPacket }
-            : previousVNext?.promptSourceObject
+            : previousShortChain?.promptSourceObject
               ? {
-                promptSourceObject: previousVNext.promptSourceObject,
-                visualDecisionPacket: previousVNext.visualDecisionPacket,
+                promptSourceObject: previousShortChain.promptSourceObject,
+                visualDecisionPacket: previousShortChain.visualDecisionPacket,
               }
               : undefined,
           structuredAnalysisRunId: promptSourceRunId
             || execution.result.runReport.reasoningRunId,
         });
-        await writeProjectVisualContextVNext(
-          path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
-          vnextContext,
+        await writeProjectVisualContextShortChain(
+          path.join(projectPaths.root, 'project-context', 'project-visual-context.short-chain.json'),
+          shortChainContext,
         );
         if (visualDecisionPacket) {
           await fs.writeFile(
@@ -760,21 +759,21 @@ export function createPipelineService(
           );
         }
         await projects.update(projectId, {
-          visualContextVNextFilename: 'project-visual-context.vnext.json',
-          visualContextVNextStatus: 'ready',
-          visualContextVNextVersion: vnextContext.version,
-          visualContextVNextLastBuiltAt: vnextContext.generatedAt,
+          visualContextShortChainFilename: 'project-visual-context.short-chain.json',
+          visualContextShortChainStatus: 'ready',
+          visualContextShortChainVersion: shortChainContext.version,
+          visualContextShortChainLastBuiltAt: shortChainContext.generatedAt,
         });
       } catch (contextError) {
         const message = contextError instanceof Error ? contextError.message : String(contextError);
         console.warn(JSON.stringify({
-          event: 'PROJECT_VISUAL_CONTEXT_VNEXT_COMPILE_FAILED',
+          event: 'PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_COMPILE_FAILED',
           projectId,
           message,
         }));
         await projects.update(projectId, {
-          visualContextVNextStatus: 'failed',
-          visualContextVNextLastBuiltAt: new Date().toISOString(),
+          visualContextShortChainStatus: 'failed',
+          visualContextShortChainLastBuiltAt: new Date().toISOString(),
         }).catch(() => undefined);
       }
 

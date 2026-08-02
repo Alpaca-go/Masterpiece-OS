@@ -6,7 +6,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { createImageGenerationService } from '../../apps/desktop/src/main/image-generation/service.ts';
 
-test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bound prompt/reference set', async () => {
+test('Creative Production Provider Bridge reuses Run Store and persists the exact direction-bound prompt/reference set', async () => {
   const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-provider-bridge-'));
   const projectId = '22222222-3333-4444-5555-777777777777';
   const projectRoot = path.join(dataPath, 'projects', 'bridge-project');
@@ -54,7 +54,7 @@ test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bo
       materialAndLighting: '',
       typographyAndGraphicUse: '',
       referenceAssetIds: ['logo'],
-      finalPrompt: 'EXACT v18.1 DIRECTION-BOUND FINAL PROMPT',
+      finalPrompt: 'EXACT DIRECTION-BOUND FINAL PROMPT',
       generatedAt: '2026-07-28T00:00:00.000Z',
     },
     negativePrompt: '拼贴',
@@ -77,7 +77,7 @@ test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bo
     const root = path.join(projectRoot, 'image-generation', run.runId);
     const task = JSON.parse(await fs.readFile(path.join(root, 'task.json'), 'utf8'));
     const storedSnapshot = JSON.parse(await fs.readFile(path.join(root, 'source-context-snapshot.json'), 'utf8'));
-    assert.equal(task.compiledPrompt, 'EXACT v18.1 DIRECTION-BOUND FINAL PROMPT');
+    assert.equal(task.compiledPrompt, 'EXACT DIRECTION-BOUND FINAL PROMPT');
     assert.equal(task.references.length, 1);
     assert.equal(storedSnapshot.id, 'snapshot-1');
     assert.equal(
@@ -98,7 +98,7 @@ test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bo
     );
     assert.equal(
       await fs.readFile(path.join(root, 'compiled-prompt.md'), 'utf8'),
-      'EXACT v18.1 DIRECTION-BOUND FINAL PROMPT',
+      'EXACT DIRECTION-BOUND FINAL PROMPT',
     );
   } finally {
     await fs.rm(dataPath, { recursive: true, force: true });

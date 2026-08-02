@@ -13,11 +13,6 @@ export {
 export { TEXT_SAFETY_RULES, compilePrompt } from './prompt-compiler.js';
 export { composePrompt, DEFAULT_INTENTS } from './prompt/index.js';
 export {
-  IMAGE_GENERATION_PIPELINE_MODES,
-  resolveImageGenerationPipelineMode,
-} from './pipeline-mode.js';
-
-export {
   evaluateIdentityGate,
   evaluateTaskGate,
   evaluateArtifactGate,
@@ -71,4 +66,4 @@ export {
   runPromptPreflightGate,
   assertPromptPreflight,
 } from './gates/prompt-preflight-gate.js';
-export * from './vnext/index.js';
+export * from './short-chain/index.js';

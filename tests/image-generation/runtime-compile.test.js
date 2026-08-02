@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 2：Prompt Compiler / Reference Selector / 三层 Gate 单元测试。
+// 生图功能：Prompt Compiler / Reference Selector / 三层 Gate 单元测试。
 // 全部为确定性纯逻辑，无网络、无文件 IO。
 // 运行：node --test tests/image-generation/runtime-compile.test.js
 

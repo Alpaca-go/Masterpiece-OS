@@ -4,7 +4,7 @@ import path from 'node:path';
 import type { VisualDecisionPacket } from '@masterpiece/project-contracts/index.ts';
 import { createFileContextLoader } from '../src/main/image-generation/context-loader.ts';
 import { createImageGenerationService } from '../src/main/image-generation/service.ts';
-import { createVNextImageGenerationService } from '../src/main/image-generation/vnext-service.ts';
+import { createShortChainImageGenerationService } from '../src/main/image-generation/short-chain-service.ts';
 import { createPipelineService } from '../src/main/pipeline-service.ts';
 import { createProjectContextService } from '../src/main/project-context-service.ts';
 import { createProjectStore } from '../src/main/project-store.ts';
@@ -99,7 +99,7 @@ async function main(): Promise<void> {
       })}\n`);
     },
   });
-  const vnext = createVNextImageGenerationService(
+  const short-chain = createShortChainImageGenerationService(
     projects,
     projectContext,
     () => imageGeneration,
@@ -110,7 +110,7 @@ async function main(): Promise<void> {
     : packet.projectFacts.brandRole.value;
   const packaging = packet.mediaTranslations.packaging;
   const primaryPackagingStructure = packaging.structureStrategy[0]?.structure || '';
-  const compilation = await vnext.compile({
+  const compilation = await short-chain.compile({
     projectId,
     model: 'seedream-5.0-pro',
     task: deliverableFamily === 'packaging'
@@ -263,7 +263,7 @@ async function main(): Promise<void> {
   }
 
   const imageStartedAt = Date.now();
-  const imageRun = await vnext.start({
+  const imageRun = await short-chain.start({
     projectId,
     taskId: compilation.taskContract.taskId,
     apiProfileId: imageProfileId,

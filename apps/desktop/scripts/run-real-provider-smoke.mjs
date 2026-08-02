@@ -7,11 +7,11 @@ import { build } from 'esbuild';
 const desktopRoot = path.resolve(import.meta.dirname, '..');
 const outputRoot = path.join(desktopRoot, 'out');
 const appRoot = path.join(outputRoot, 'real-provider-smoke-app');
-const bundlePath = path.join(outputRoot, 'real-provider-v6-smoke.mjs');
+const bundlePath = path.join(outputRoot, 'real-provider-document-to-image-smoke.mjs');
 
 await fs.mkdir(appRoot, { recursive: true });
 await build({
-  entryPoints: [path.join(desktopRoot, 'scripts', 'real-provider-v6-smoke.ts')],
+  entryPoints: [path.join(desktopRoot, 'scripts', 'real-provider-document-to-image-smoke.ts')],
   bundle: true,
   platform: 'node',
   format: 'esm',
@@ -23,7 +23,7 @@ await fs.writeFile(path.join(appRoot, 'package.json'), `${JSON.stringify({
   name: 'masterpiece-real-provider-smoke',
   private: true,
   type: 'module',
-  main: '../real-provider-v6-smoke.mjs',
+  main: '../real-provider-document-to-image-smoke.mjs',
 }, null, 2)}\n`, 'utf8');
 
 const child = spawn(electron, [appRoot], {

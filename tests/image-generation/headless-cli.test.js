@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 4：Headless CLI 验收测试（§15.3）。
+// 生图功能：Headless CLI 验收测试（§15.3）。
 // 用真实 fixture + 子进程运行 scripts/image-generation/generate-image.ts --dry-run，
 // 验证：生成 task.json / compiled-prompt.md / 正确阻断（anchor 未批准）/ 输出运行摘要。
 // 全程离线，dry-run 不调用模型。

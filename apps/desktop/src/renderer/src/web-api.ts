@@ -13,20 +13,20 @@ function kebab(value: string): string {
 /**
  * Desktop preload methods normally map to IPC channels by kebab-casing the
  * namespace and method. Keep the exceptions explicit here instead of trying to
- * infer semantic channel aliases such as `compileVNext -> vnext-compile`.
+ * infer semantic channel aliases such as `compileShortChain -> short-chain-compile`.
  */
 export const WEB_RPC_CHANNEL_OVERRIDES: Readonly<Record<string, string>> = Object.freeze({
-  'imageGeneration.compileVNext': 'image-generation:vnext-compile',
-  'imageGeneration.getVNextOptions': 'image-generation:vnext-options',
-  'imageGeneration.startVNext': 'image-generation:vnext-start',
-  'imageGeneration.startValidatedVNext': 'image-generation:vnext-start-validated',
-  'imageGeneration.getVNextSession': 'image-generation:vnext-session',
-  'imageGeneration.confirmVNextDirection': 'image-generation:vnext-confirm-direction',
-  'imageGeneration.continueVNextSameType': 'image-generation:vnext-continue-same-type',
-  'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
-  'imageGeneration.postCompositeVNextLogo': 'image-generation:vnext-post-composite-logo',
-  'projectContext.getVNext': 'project-context:get-vnext',
-  'projectContext.rebuildVNext': 'project-context:rebuild-vnext'
+  'imageGeneration.compileShortChain': 'image-generation:short-chain-compile',
+  'imageGeneration.getShortChainOptions': 'image-generation:short-chain-options',
+  'imageGeneration.startShortChain': 'image-generation:short-chain-start',
+  'imageGeneration.startValidatedShortChain': 'image-generation:short-chain-start-validated',
+  'imageGeneration.getShortChainSession': 'image-generation:short-chain-session',
+  'imageGeneration.confirmShortChainDirection': 'image-generation:short-chain-confirm-direction',
+  'imageGeneration.continueShortChainSameType': 'image-generation:short-chain-continue-same-type',
+  'imageGeneration.saveShortChainProjectPromptAsset': 'image-generation:short-chain-save-prompt-asset',
+  'imageGeneration.postCompositeShortChainLogo': 'image-generation:short-chain-post-composite-logo',
+  'projectContext.getShortChain': 'project-context:get-short-chain',
+  'projectContext.rebuildShortChain': 'project-context:rebuild-short-chain'
 });
 
 export function resolveWebRpcChannel(namespace: string, method: string): string {

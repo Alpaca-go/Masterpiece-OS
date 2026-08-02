@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 3：DashScope Provider 适配器 + 下载校验 + 脱敏 的契约测试。
+// 生图功能：DashScope Provider 适配器、下载校验与脱敏契约测试。
 // 全部经可注入的 fetchImpl / fileReader 模拟，不触达真实网络或文件系统（下载校验除外，落临时目录）。
 // 运行：node --test tests/image-generation/provider-dashscope.test.js
 

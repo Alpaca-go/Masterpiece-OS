@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import path from 'node:path';
 import { createImageGenerationService } from '../src/main/image-generation/service.ts';
-import { createVNextImageGenerationService } from '../src/main/image-generation/vnext-service.ts';
+import { createShortChainImageGenerationService } from '../src/main/image-generation/short-chain-service.ts';
 import { createProjectContextService } from '../src/main/project-context-service.ts';
 import { createProjectStore } from '../src/main/project-store.ts';
 import { getProviderCredentials, getSettings } from '../src/main/settings-store.ts';
@@ -43,12 +43,12 @@ async function main(): Promise<void> {
     },
     dataPath: path.resolve(settings.defaultDataPath),
   });
-  const vnext = createVNextImageGenerationService(
+  const short-chain = createShortChainImageGenerationService(
     projects,
     createProjectContextService({ projects }),
     () => imageGeneration,
   );
-  const result = await vnext.postCompositeLogo({
+  const result = await short-chain.postCompositeLogo({
     projectId,
     runId,
     imageId,

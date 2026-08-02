@@ -109,7 +109,7 @@ export function resolveCanonImagesForTask(canon, outputType) {
 }
 
 /**
- * V18 默认小参考集：最多一张身份、一张必要结构、一张核心 Canon。
+ * 默认小参考集：最多一张身份、一张必要结构、一张核心 Canon。
  * reading_only / exclude 资产从不由此函数接收，因此不会误发给 Image Provider。
  */
 export function selectGenerationReferences(lockedAssets, outputType) {
@@ -446,7 +446,7 @@ export function validateGenerationPromptSnapshot(snapshot) {
     }
   }
   if (!Array.isArray(snapshot.selectedReferences) || snapshot.selectedReferences.length > 2) {
-    throw Object.assign(new Error('Generation Reference 超过 v18.1 小参考集上限。'), {
+    throw Object.assign(new Error('Generation Reference 超过创意生产小参考集上限。'), {
       code: 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
     });
   }

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createFileContextLoader } from '../src/main/image-generation/context-loader.ts';
 import { createImageGenerationService } from '../src/main/image-generation/service.ts';
-import { createVNextImageGenerationService } from '../src/main/image-generation/vnext-service.ts';
+import { createShortChainImageGenerationService } from '../src/main/image-generation/short-chain-service.ts';
 import { createProjectContextService } from '../src/main/project-context-service.ts';
 import { createProjectStore } from '../src/main/project-store.ts';
 import { getProviderCredentials, getSettings } from '../src/main/settings-store.ts';
@@ -38,12 +38,12 @@ async function main(): Promise<void> {
       })}\n`);
     },
   });
-  const vnext = createVNextImageGenerationService(
+  const short-chain = createShortChainImageGenerationService(
     projects,
     projectContext,
     () => imageGeneration,
   );
-  const compilation = await vnext.compile({
+  const compilation = await short-chain.compile({
     projectId,
     model: 'seedream-5.0-pro',
     task: {
@@ -93,7 +93,7 @@ async function main(): Promise<void> {
   const results = [];
   for (let index = 0; index < 3; index += 1) {
     const startedAt = Date.now();
-    const run = await vnext.start({
+    const run = await short-chain.start({
       projectId,
       taskId: compilation.taskContract.taskId,
       apiProfileId: imageProfileId,

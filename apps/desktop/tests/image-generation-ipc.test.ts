@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 6：Desktop IPC 注册测试（§16.1）。
+// 生图功能：Desktop IPC 注册测试（§16.1）。
 // 用 fake ipcMain + fake service 验证 registerImageGenerationIpc 注册了全部 handler，
 // 且每个 handler 正确解析入参并转发到 service 对应方法。不依赖 Electron 运行时。
 // 运行：npm --prefix apps/desktop test（tsx --test）
@@ -93,16 +93,16 @@ const EXPECTED_CHANNELS = [
   'image-generation:get-image-data-url',
 ];
 
-const EXPECTED_VNEXT_CHANNELS = [
-  'image-generation:vnext-options',
-  'image-generation:vnext-compile',
-  'image-generation:vnext-start',
-  'image-generation:vnext-start-validated',
-  'image-generation:vnext-session',
-  'image-generation:vnext-confirm-direction',
-  'image-generation:vnext-continue-same-type',
-  'image-generation:vnext-save-prompt-asset',
-  'image-generation:vnext-post-composite-logo',
+const EXPECTED_SHORT_CHAIN_CHANNELS = [
+  'image-generation:short-chain-options',
+  'image-generation:short-chain-compile',
+  'image-generation:short-chain-start',
+  'image-generation:short-chain-start-validated',
+  'image-generation:short-chain-session',
+  'image-generation:short-chain-confirm-direction',
+  'image-generation:short-chain-continue-same-type',
+  'image-generation:short-chain-save-prompt-asset',
+  'image-generation:short-chain-post-composite-logo',
 ];
 
 test('registerImageGenerationIpc 注册全部 §16.1 handler', () => {
@@ -235,10 +235,10 @@ test('save-review / open-folder / get-image-data-url 转发参数', async () => 
   assert.equal(calls.getImageDataUrl[1], 'image-01');
 });
 
-test('registerImageGenerationIpc registers the complete vNext channel family', () => {
+test('registerImageGenerationIpc registers the complete Short-Chain channel family', () => {
   const { ipcMain, handlers } = makeFakeIpcMain() as any;
   const { svc } = makeFakeService();
-  const vnextService = {
+  const shortChainService = {
     listOptions: async () => ({}),
     compile: async () => ({}),
     start: async () => ({}),
@@ -250,9 +250,9 @@ test('registerImageGenerationIpc registers the complete vNext channel family', (
     postCompositeLogo: async () => ({}),
   };
 
-  registerImageGenerationIpc(svc, ipcMain, vnextService as any);
+  registerImageGenerationIpc(svc, ipcMain, shortChainService as any);
 
-  for (const channel of EXPECTED_VNEXT_CHANNELS) {
-    assert.ok(handlers[channel], `expected vNext IPC registration for ${channel}`);
+  for (const channel of EXPECTED_SHORT_CHAIN_CHANNELS) {
+    assert.ok(handlers[channel], `expected Short-Chain IPC registration for ${channel}`);
   }
 });

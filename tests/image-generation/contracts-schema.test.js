@@ -1,4 +1,4 @@
-// 生图功能 V1 Phase 1：Contracts 与 Schema 结构回归测试。
+// 生图功能：Contracts 与 Schema 结构回归测试。
 // 目的：锁定 JSON Schema 与文档 §6 / §9 的枚举一致性，无需 ajv 依赖。
 // 运行：node --test tests/image-generation/contracts-schema.test.js
 

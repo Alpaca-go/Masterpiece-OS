@@ -3,8 +3,9 @@ import path from 'node:path';
 import { runV5Pipeline } from '../src/v5/bootstrap.js';
 import { inventoryProject } from '../src/inventory.js';
 import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
+import { DEFAULT_APP_VERSION } from '../src/runtime-trace.js';
 
-const HELP = `Masterpiece-OS v5.0 — Deep Creative Director Preparation System
+const HELP = `Masterpiece-OS ${DEFAULT_APP_VERSION} — Deep Creative Director Preparation System
 
 用法：
   masterpiece-os analyze <素材目录> [--output <目录>] [--config <v5配置>]
@@ -90,7 +91,7 @@ async function main(args) {
         createReasonerFromEnvironment({ provider: selectedProvider });
     }
     const { result, output } = await runV5Pipeline(positional[0], pipelineOptions);
-    console.log('Masterpiece OS v5.0 — Deep Creative Director Mode');
+    console.log(`Masterpiece OS ${DEFAULT_APP_VERSION} — Deep Creative Director Mode`);
     console.log(`素材 ${result.inventory.totalFiles} 个，其中图片 ${result.inventory.imageCount} 张`);
     console.log(`Creative Authority：${result.creativeAuthority}`);
     console.log(`Locked Visual Assets：${result.lockedVisualAssets.join('、') || '无（已显式授权 Logo 重设计）'}`);

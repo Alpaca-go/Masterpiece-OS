@@ -52,7 +52,6 @@ export interface ModelRegistryEntry {
   legacyCompatible?: boolean;
 }
 export type OutputLanguage = 'zh-CN' | 'en';
-export type ImageGenerationPipelineMode = 'legacy' | 'vnext';
 export type AnalysisProfile = 'fusion-enhanced';
 export type ProjectStatus = 'draft' | 'ready' | 'running' | 'completed' | 'failed' | 'cancelled';
 export type ProjectNameSource =
@@ -135,9 +134,6 @@ export interface PublicSettings {
   defaultDataPath: string;
   cacheEnabled: boolean;
   logLevel: 'error' | 'info' | 'debug';
-  directionGenerationMode?: DirectionGenerationMode;
-  analysisPipelineMode?: AnalysisPipelineMode;
-  imageGenerationPipelineMode?: ImageGenerationPipelineMode;
   connectionStatus: 'untested' | 'connected' | 'failed';
 }
 
@@ -145,9 +141,6 @@ export interface SaveSettingsInput {
   defaultDataPath: string;
   cacheEnabled: boolean;
   logLevel: 'error' | 'info' | 'debug';
-  directionGenerationMode?: DirectionGenerationMode;
-  analysisPipelineMode?: AnalysisPipelineMode;
-  imageGenerationPipelineMode?: ImageGenerationPipelineMode;
 }
 
 export interface ProjectAsset {
@@ -576,10 +569,10 @@ export interface ProjectRecord {
   visualContextStatus?: 'missing' | 'ready' | 'failed';
   visualContextSchemaVersion?: string | null;
   visualContextLastBuiltAt?: string | null;
-  visualContextVNextFilename?: string | null;
-  visualContextVNextStatus?: 'missing' | 'ready' | 'failed';
-  visualContextVNextVersion?: number | null;
-  visualContextVNextLastBuiltAt?: string | null;
+  visualContextShortChainFilename?: string | null;
+  visualContextShortChainStatus?: 'missing' | 'ready' | 'failed';
+  visualContextShortChainVersion?: number | null;
+  visualContextShortChainLastBuiltAt?: string | null;
 }
 
 // 鈹€鈹€ 鍏变韩濂戠害绫诲瀷宸茶縼绉昏嚦 packages/project-contracts锛坮epository-slimming-v2 Phase 1锛夆攢鈹€
@@ -587,7 +580,7 @@ export type {
   PackagingStructureStatus,
   ProjectVisualContextStatus,
   ProjectVisualContext,
-  ProjectVisualContextVNext,
+  ProjectVisualContextShortChain,
   DocumentVisualContextEvidence,
   DocumentVisualContext,
   ReferenceAssetSelectionItem,
@@ -600,7 +593,7 @@ export type {
 } from '@masterpiece/project-contracts/index.ts';
 import type {
   ProjectVisualContext,
-  ProjectVisualContextVNext,
+  ProjectVisualContextShortChain,
   DocumentVisualContext,
   DocumentVisualContextEvidence,
   ReferenceAssetSelection,
@@ -659,25 +652,25 @@ export type {
   ImageGenerationMetrics,
   ImageGenerationRun,
   ImageGenerationRunSummary,
-  VNextTaskContract,
-  VNextLogoUsageMode,
-  VNextCompiledPrompt,
-  VNextModelPromptPayload,
-  VNextCreativeSession,
-  VNextProjectPromptAsset,
-  VNextDeliverableValidation,
-  VNextValidatedGenerationResult
+  ShortChainTaskContract,
+  ShortChainLogoUsageMode,
+  ShortChainCompiledPrompt,
+  ShortChainModelPromptPayload,
+  ShortChainCreativeSession,
+  ShortChainProjectPromptAsset,
+  ShortChainDeliverableValidation,
+  ShortChainValidatedGenerationResult
 } from '@masterpiece/image-generation-contracts/index.ts';
 import type {
   ImageGenerationRun,
   ImageGenerationRunSummary,
-  VNextTaskContract,
-  VNextCompiledPrompt,
-  VNextModelPromptPayload,
-  VNextCreativeSession,
-  VNextProjectPromptAsset,
-  VNextDeliverableValidation,
-  VNextValidatedGenerationResult,
+  ShortChainTaskContract,
+  ShortChainCompiledPrompt,
+  ShortChainModelPromptPayload,
+  ShortChainCreativeSession,
+  ShortChainProjectPromptAsset,
+  ShortChainDeliverableValidation,
+  ShortChainValidatedGenerationResult,
   ImageGenerationRunStatus,
   ImageGenerationGateResult,
   ImageGenerationReview,
@@ -807,15 +800,6 @@ export interface VisualStrategyCorpus {
   mergedText: string;
   warnings: string[];
 }
-
-export type DirectionGenerationMode = 'execution_oriented_v2' | 'conceptual_v1';
-export type AnalysisPipelineMode =
-  | 'retrieval_first'
-  | 'visual_fact_first_legacy'
-  | 'deep_analysis_legacy'
-  | 'visual_fact_first'
-  | 'legacy_deep_analysis';
-
 
 export interface VisualTranslationDocumentSummary {
   path: string;
@@ -1878,22 +1862,22 @@ export interface ImageGenerationCompileResult {
   compileFingerprint?: ImageGenerationCompileFingerprint;
 }
 
-export interface CompileVNextGenerationInput {
+export interface CompileShortChainGenerationInput {
   projectId: string;
   model?: string;
-  task: Omit<VNextTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
+  task: Omit<ShortChainTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
     taskId?: string;
   };
 }
 
-export interface CompileVNextGenerationResult {
-  taskContract: VNextTaskContract;
-  compiledPrompt: VNextCompiledPrompt;
-  payload: VNextModelPromptPayload;
+export interface CompileShortChainGenerationResult {
+  taskContract: ShortChainTaskContract;
+  compiledPrompt: ShortChainCompiledPrompt;
+  payload: ShortChainModelPromptPayload;
   artifactDirectory: string;
 }
 
-export interface StartVNextGenerationInput {
+export interface StartShortChainGenerationInput {
   projectId: string;
   taskId: string;
   apiProfileId?: string;
@@ -1901,11 +1885,11 @@ export interface StartVNextGenerationInput {
   dryRun?: boolean;
 }
 
-export interface StartValidatedVNextGenerationInput extends StartVNextGenerationInput {
+export interface StartValidatedShortChainGenerationInput extends StartShortChainGenerationInput {
   validatorProfileId?: string;
 }
 
-export interface PostCompositeVNextLogoInput {
+export interface PostCompositeShortChainLogoInput {
   projectId: string;
   runId: string;
   imageId: string;
@@ -1928,9 +1912,9 @@ export interface PostCompositeVNextLogoInput {
   };
 }
 
-export interface SaveVNextProjectPromptAssetInput {
+export interface SaveShortChainProjectPromptAssetInput {
   projectId: string;
-  deliverableFamily: VNextTaskContract['deliverableFamily'];
+  deliverableFamily: ShortChainTaskContract['deliverableFamily'];
   name: string;
   promptFragments: string[];
   negativeConstraints?: string[];
@@ -2082,25 +2066,25 @@ export interface DesktopApi {
     getSourcePreview(input: StartImageGenerationInput): Promise<ImageGenerationSourcePreview>;
     /** 搂16 缂栬瘧 Prompt 骞舵墽琛屼笁灞?Gate锛堜笉鎻愪氦 Provider锛夈€?*/
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
-    compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
-    getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
-    startVNext(input: StartVNextGenerationInput): Promise<ImageGenerationRun>;
-    startValidatedVNext(
-      input: StartValidatedVNextGenerationInput
-    ): Promise<VNextValidatedGenerationResult>;
-    getVNextSession(projectId: string): Promise<VNextCreativeSession>;
-    confirmVNextDirection(projectId: string, runId: string, imageId: string): Promise<VNextCreativeSession>;
-    continueVNextSameType(
+    compileShortChain(input: CompileShortChainGenerationInput): Promise<CompileShortChainGenerationResult>;
+    getShortChainOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
+    startShortChain(input: StartShortChainGenerationInput): Promise<ImageGenerationRun>;
+    startValidatedShortChain(
+      input: StartValidatedShortChainGenerationInput
+    ): Promise<ShortChainValidatedGenerationResult>;
+    getShortChainSession(projectId: string): Promise<ShortChainCreativeSession>;
+    confirmShortChainDirection(projectId: string, runId: string, imageId: string): Promise<ShortChainCreativeSession>;
+    continueShortChainSameType(
       projectId: string,
       currentInstruction: string,
       apiProfileId?: string,
       dryRun?: boolean
     ): Promise<ImageGenerationRun>;
-    saveVNextProjectPromptAsset(
-      input: SaveVNextProjectPromptAssetInput
-    ): Promise<VNextProjectPromptAsset>;
-    postCompositeVNextLogo(
-      input: PostCompositeVNextLogoInput
+    saveShortChainProjectPromptAsset(
+      input: SaveShortChainProjectPromptAssetInput
+    ): Promise<ShortChainProjectPromptAsset>;
+    postCompositeShortChainLogo(
+      input: PostCompositeShortChainLogoInput
     ): Promise<Record<string, unknown>>;
     /** 搂16 缂栬瘧 + Gate 閫氳繃鍚庢彁浜ょ敓鍥句换鍔°€?*/
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
@@ -2318,8 +2302,8 @@ export interface DesktopApi {
     get(projectId: string): Promise<ProjectVisualContext>;
     rebuild(projectId: string): Promise<ProjectVisualContext>;
     export(projectId: string): Promise<string | null>;
-    getVNext(projectId: string): Promise<ProjectVisualContextVNext>;
-    rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext>;
+    getShortChain(projectId: string): Promise<ProjectVisualContextShortChain>;
+    rebuildShortChain(projectId: string): Promise<ProjectVisualContextShortChain>;
   };
   visualMemory: {
     get(projectId: string): Promise<VisualMemory | null>;

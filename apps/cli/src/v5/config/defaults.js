@@ -1,4 +1,6 @@
-export const V5_VERSION = '5.0.0';
+import { DEFAULT_APP_VERSION } from '../../runtime-trace.js';
+
+export const V5_VERSION = DEFAULT_APP_VERSION;
 export const V5_PIPELINE_ID = 'masterpiece-os-v5-deep-creative-director';
 export const V5_OFFICIAL_OUTPUT_FILES = Object.freeze({
   'zh-CN': '视觉方案升级报告.md',

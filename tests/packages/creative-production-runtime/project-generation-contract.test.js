@@ -78,7 +78,7 @@ test('contract validation never fills missing fields with industry defaults', ()
   assert.equal(validateProjectSpecificGenerationContract(contract).status, 'insufficient');
 });
 
-// Regression: the v18 desktop pipeline used to block every vNext compile
+// Regression: the retired desktop pipeline used to block every Short-Chain compile
 // call with `PROJECT_SPECIFICITY_TOO_LOW` whenever the project had not
 // gone through the separate `creative_decision.json` step. That step
 // has no production path in the current surface (the reference-first

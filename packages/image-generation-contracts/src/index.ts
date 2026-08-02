@@ -1,5 +1,5 @@
 // @masterpiece/image-generation-contracts
-// 生图功能 V1 共享契约类型（单一事实来源）。
+// 生图功能共享契约类型（单一事实来源）。
 //
 // 职责（文档 §5.1）：任务类型 / 运行状态 / Provider 能力 / 参考图片角色 /
 // 运行结果 / 错误与 Warning / 人工评价 / JSON Schema 对应的 TS 类型。
@@ -787,36 +787,36 @@ export const DEFAULT_IMAGE_OUTPUT_TYPE: ImageGenerationOutputType = 'master_anch
 export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 
 // ---------------------------------------------------------------------------
-// vNext short-pipeline contracts
+// Short-Chain short-pipeline contracts
 // ---------------------------------------------------------------------------
 
-export type VNextDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
-export type VNextAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
-export type VNextLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
+export type ShortChainDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
+export type ShortChainAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
+export type ShortChainLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
 
-export interface VNextTaskContract {
+export interface ShortChainTaskContract {
   schemaVersion: '1.0';
   taskId: string;
   projectId: string;
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   subtype: string;
   scene?: string;
   shot: string;
   count: 1 | 2;
-  aspectRatio: VNextAspectRatio;
+  aspectRatio: ShortChainAspectRatio;
   currentInstruction: string;
   mustInclude: string[];
   mustAvoid: string[];
   referenceAssetIds: string[];
-  logoUsageMode?: VNextLogoUsageMode;
+  logoUsageMode?: ShortChainLogoUsageMode;
   createdAt: string;
 }
 
-export interface VNextPromptTemplate {
+export interface ShortChainPromptTemplate {
   id: string;
   version: string;
   kind: 'family' | 'subtype' | 'shot';
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   appliesTo: {
     subtypes?: string[];
     shots?: string[];
@@ -833,18 +833,18 @@ export interface VNextPromptTemplate {
   };
 }
 
-export interface VNextTemplateRoute {
+export interface ShortChainTemplateRoute {
   familyTemplateId: string;
   subtypeTemplateId: string;
   shotTemplateId: string;
   templateVersions: Record<string, string>;
 }
 
-export interface VNextCompiledPrompt {
+export interface ShortChainCompiledPrompt {
   schemaVersion: '1.0';
-  taskContract: VNextTaskContract;
+  taskContract: ShortChainTaskContract;
   projectContextVersion: number;
-  route: VNextTemplateRoute;
+  route: ShortChainTemplateRoute;
   blocks: Array<{
     id: string;
     title: string;
@@ -868,7 +868,7 @@ export interface VNextCompiledPrompt {
   editablePrompt: string;
   negativeConstraints: string[];
   referenceAssetIds: string[];
-  logoUsageMode: VNextLogoUsageMode;
+  logoUsageMode: ShortChainLogoUsageMode;
   compiledAt: string;
   trace: {
     compilerId: string;
@@ -883,22 +883,22 @@ export interface VNextCompiledPrompt {
   };
 }
 
-export interface VNextModelPromptPayload {
+export interface ShortChainModelPromptPayload {
   adapterId: string;
   adapterVersion: string;
   model: string;
   prompt: string;
   size: '2K';
-  aspectRatio: VNextAspectRatio;
+  aspectRatio: ShortChainAspectRatio;
   count: 1 | 2;
   referenceAssetIds: string[];
 }
 
-export interface VNextProjectPromptAsset {
+export interface ShortChainProjectPromptAsset {
   schemaVersion: '1.0';
   id: string;
   projectId: string;
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   name: string;
   version: number;
   promptFragments: string[];
@@ -908,8 +908,8 @@ export interface VNextProjectPromptAsset {
   updatedAt: string;
 }
 
-export interface VNextImplicitAnchor {
-  deliverableFamily: VNextDeliverableFamily;
+export interface ShortChainImplicitAnchor {
+  deliverableFamily: ShortChainDeliverableFamily;
   runId: string;
   imageId: string;
   projectRelativePath: string;
@@ -917,11 +917,11 @@ export interface VNextImplicitAnchor {
   confirmedAt: string;
 }
 
-export interface VNextSessionHistoryEntry {
+export interface ShortChainSessionHistoryEntry {
   id: string;
   type: 'compiled' | 'generated' | 'direction_confirmed' | 'prompt_asset_saved';
   taskId: string;
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   subtype: string;
   shot: string;
   promptFingerprint: string;
@@ -930,18 +930,18 @@ export interface VNextSessionHistoryEntry {
   createdAt: string;
 }
 
-export interface VNextCreativeSession {
+export interface ShortChainCreativeSession {
   schemaVersion: '1.0';
   projectId: string;
-  currentTask: VNextTaskContract | null;
-  history: VNextSessionHistoryEntry[];
-  implicitAnchors: Partial<Record<VNextDeliverableFamily, VNextImplicitAnchor>>;
-  projectPromptAssets: Partial<Record<VNextDeliverableFamily, string>>;
+  currentTask: ShortChainTaskContract | null;
+  history: ShortChainSessionHistoryEntry[];
+  implicitAnchors: Partial<Record<ShortChainDeliverableFamily, ShortChainImplicitAnchor>>;
+  projectPromptAssets: Partial<Record<ShortChainDeliverableFamily, string>>;
   createdAt: string;
   updatedAt: string;
 }
 
-export type VNextDeliverableMismatchType =
+export type ShortChainDeliverableMismatchType =
   | 'wrong_family'
   | 'wrong_subtype'
   | 'missing_required_structure'
@@ -953,14 +953,14 @@ export type VNextDeliverableMismatchType =
   | 'logo_text_error'
   | 'quality_issue';
 
-export interface VNextDeliverableValidation {
+export interface ShortChainDeliverableValidation {
   schemaVersion: '1.0';
   projectId: string;
   taskId: string;
   runId: string;
   imageId: string;
   status: 'passed' | 'failed' | 'unverified';
-  detectedFamily: VNextDeliverableFamily | 'unknown';
+  detectedFamily: ShortChainDeliverableFamily | 'unknown';
   detectedSubtype: string | 'unknown';
   visibleEvidence: string[];
   missingRequiredItems: string[];
@@ -971,18 +971,18 @@ export interface VNextDeliverableValidation {
   sceneCompleteness: 'complete' | 'incomplete' | 'uncertain';
   logoTextStatus: 'correct' | 'incorrect' | 'absent' | 'uncertain' | 'not_required';
   qualityIssues: string[];
-  mismatchTypes: VNextDeliverableMismatchType[];
+  mismatchTypes: ShortChainDeliverableMismatchType[];
   retryRecommended: boolean;
   validatorId: string;
   validatorVersion: string;
   validatedAt: string;
 }
 
-export interface VNextValidatedGenerationResult {
+export interface ShortChainValidatedGenerationResult {
   initialRun: ImageGenerationRun;
-  initialValidation: VNextDeliverableValidation;
+  initialValidation: ShortChainDeliverableValidation;
   correctionRun?: ImageGenerationRun;
-  correctionValidation?: VNextDeliverableValidation;
+  correctionValidation?: ShortChainDeliverableValidation;
   terminalStatus: 'passed' | 'failed' | 'unverified';
   automaticRetryCount: 0 | 1;
 }

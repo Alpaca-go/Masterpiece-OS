@@ -1,5 +1,5 @@
 /**
- * 生图功能 V1：运行目录路径解析（§11.2）。
+ * 生图功能：运行目录路径解析（§11.2）。
  *
  * 项目根目录命名为 <sanitizedName>-<id8>（与 project-store 一致），
  * 需扫描 project.json 的 id 字段定位；不能直接用 projectId 作目录名。

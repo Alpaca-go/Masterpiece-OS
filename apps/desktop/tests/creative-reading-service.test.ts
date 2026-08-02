@@ -5,7 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createCreativeReadingService } from '../src/main/creative-reading-service.ts';
 
-test('Creative Reading performs multimodal understanding only and persists all four V18 artifacts', async () => {
+test('Creative Reading performs multimodal understanding only and persists all four artifacts', async () => {
   const temp = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-reading-'));
   const projectRoot = path.join(temp, 'project');
   await fs.mkdir(path.join(projectRoot, 'outputs'), { recursive: true });

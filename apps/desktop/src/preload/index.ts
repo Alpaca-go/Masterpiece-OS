@@ -95,25 +95,25 @@ const api: DesktopApi = {
     getPresetCapabilities: () => ipcRenderer.invoke('image-generation:get-preset-capabilities'),
     getSourcePreview: (input) => ipcRenderer.invoke('image-generation:get-source-preview', input),
     compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
-    compileVNext: (input) => ipcRenderer.invoke('image-generation:vnext-compile', input),
-    getVNextOptions: () => ipcRenderer.invoke('image-generation:vnext-options'),
-    startVNext: (input) => ipcRenderer.invoke('image-generation:vnext-start', input),
-    startValidatedVNext: (input) => ipcRenderer.invoke('image-generation:vnext-start-validated', input),
-    getVNextSession: (projectId) => ipcRenderer.invoke('image-generation:vnext-session', projectId),
-    confirmVNextDirection: (projectId, runId, imageId) =>
-      ipcRenderer.invoke('image-generation:vnext-confirm-direction', projectId, runId, imageId),
-    continueVNextSameType: (projectId, currentInstruction, apiProfileId, dryRun) =>
+    compileShortChain: (input) => ipcRenderer.invoke('image-generation:short-chain-compile', input),
+    getShortChainOptions: () => ipcRenderer.invoke('image-generation:short-chain-options'),
+    startShortChain: (input) => ipcRenderer.invoke('image-generation:short-chain-start', input),
+    startValidatedShortChain: (input) => ipcRenderer.invoke('image-generation:short-chain-start-validated', input),
+    getShortChainSession: (projectId) => ipcRenderer.invoke('image-generation:short-chain-session', projectId),
+    confirmShortChainDirection: (projectId, runId, imageId) =>
+      ipcRenderer.invoke('image-generation:short-chain-confirm-direction', projectId, runId, imageId),
+    continueShortChainSameType: (projectId, currentInstruction, apiProfileId, dryRun) =>
       ipcRenderer.invoke(
-        'image-generation:vnext-continue-same-type',
+        'image-generation:short-chain-continue-same-type',
         projectId,
         currentInstruction,
         apiProfileId,
         dryRun,
       ),
-    saveVNextProjectPromptAsset: (input) =>
-      ipcRenderer.invoke('image-generation:vnext-save-prompt-asset', input),
-    postCompositeVNextLogo: (input) =>
-      ipcRenderer.invoke('image-generation:vnext-post-composite-logo', input),
+    saveShortChainProjectPromptAsset: (input) =>
+      ipcRenderer.invoke('image-generation:short-chain-save-prompt-asset', input),
+    postCompositeShortChainLogo: (input) =>
+      ipcRenderer.invoke('image-generation:short-chain-post-composite-logo', input),
     start: (input) => ipcRenderer.invoke('image-generation:start', input),
     getRun: (runId) => ipcRenderer.invoke('image-generation:get-run', runId),
     listRuns: (projectId) => ipcRenderer.invoke('image-generation:list-runs', projectId),
@@ -240,8 +240,8 @@ const api: DesktopApi = {
     get: (projectId) => ipcRenderer.invoke('project-context:get', projectId),
     rebuild: (projectId) => ipcRenderer.invoke('project-context:rebuild', projectId),
     export: (projectId) => ipcRenderer.invoke('project-context:export', projectId),
-    getVNext: (projectId) => ipcRenderer.invoke('project-context:get-vnext', projectId),
-    rebuildVNext: (projectId) => ipcRenderer.invoke('project-context:rebuild-vnext', projectId)
+    getShortChain: (projectId) => ipcRenderer.invoke('project-context:get-short-chain', projectId),
+    rebuildShortChain: (projectId) => ipcRenderer.invoke('project-context:rebuild-short-chain', projectId)
   },
   visualMemory: {
     get: (projectId) => ipcRenderer.invoke('visual-memory:get', projectId),

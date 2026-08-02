@@ -149,7 +149,7 @@ for (const project of Object.values(projects)) {
   }
 }
 
-test('offline A/B baseline exposes the legacy spatial mismatch that v18.1 blocks', () => {
+test('offline A/B baseline exposes the legacy spatial mismatch that the current preflight blocks', () => {
   const legacyInteriorPrompt = '品牌 VI 系统展示，包含菜单、工牌、包装、墙面和导视的多格物料合集';
   const candidate = compileGenerationPromptSnapshot({
     projectId: 'project-feng',

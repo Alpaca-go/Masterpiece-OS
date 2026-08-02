@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import type {
   AnalysisProgress,
   AssetSummary,
@@ -12,14 +12,25 @@ import type {
 import { AnalysisModeTabs, type AnalysisMode } from './components/AnalysisModeTabs';
 import { AnalysisView } from './components/AnalysisView';
 import { ProjectWizard } from './components/ProjectWizard';
-import { ReportView } from './components/ReportView';
-import { SettingsPanel } from './components/SettingsPanel';
-import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
-import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
-import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
-import { VNextGenerationWorkspace } from './components/VNextGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
+
+const ImageGenerationWorkspace = lazy(() => import('./components/ImageGenerationWorkspace')
+  .then((module) => ({ default: module.ImageGenerationWorkspace })));
+const ShortChainGenerationWorkspace = lazy(() => import('./components/ShortChainGenerationWorkspace')
+  .then((module) => ({ default: module.ShortChainGenerationWorkspace })));
+const ReportView = lazy(() => import('./components/ReportView')
+  .then((module) => ({ default: module.ReportView })));
+const SettingsPanel = lazy(() => import('./components/SettingsPanel')
+  .then((module) => ({ default: module.SettingsPanel })));
+const ReferenceAnchorWorkspace = lazy(() => import('./components/ReferenceAnchorWorkspace')
+  .then((module) => ({ default: module.ReferenceAnchorWorkspace })));
+const DocumentContextWorkspace = lazy(() => import('./components/DocumentContextWorkspace')
+  .then((module) => ({ default: module.DocumentContextWorkspace })));
+
+function WorkspaceFallback() {
+  return <div className="page"><section className="panel"><p>正在加载生成工作台…</p></section></div>;
+}
 
 type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session';
 
@@ -325,8 +336,8 @@ export function App() {
   if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
   if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
 
-  if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
-  if (screen === 'create') return <div className="analysis-workspace-shell">
+  if (screen === 'settings') return <Suspense fallback={<WorkspaceFallback />}><SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} /></Suspense>;
+  if (screen === 'create') return <Suspense fallback={<WorkspaceFallback />}><div className="analysis-workspace-shell">
     <AnalysisModeTabs value={analysisMode} onChange={(mode) => {
       setAnalysisMode(mode);
       if (mode !== 'document-context') setRequestedDocumentContextRunId('');
@@ -345,7 +356,7 @@ export function App() {
       }
     }} /></div>
     <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
-  </div>;
+  </div></Suspense>;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
     progress={progress}
@@ -354,7 +365,7 @@ export function App() {
     onRetry={() => void run(selected, true, selectedApiProfileId)}
     onBack={() => { setError(runFailure); setRunFailure(''); setScreen('project'); }}
   />;
-  if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
+  if (screen === 'report' && selected) return <Suspense fallback={<WorkspaceFallback />}><ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} /></Suspense>;
 
   if (screen === 'creative-session' && selected) {
     const imageProfiles = settings.profiles.filter((profile) =>
@@ -365,24 +376,24 @@ export function App() {
     const imageApiProfileId = (imageProfiles.some((profile) => profile.id === selectedApiProfileId)
       ? selectedApiProfileId
       : (imageProfiles.find((profile) => profile.isDefault) || imageProfiles[0])?.id) || '';
-    return <VNextGenerationWorkspace
+    return <Suspense fallback={<WorkspaceFallback />}><ShortChainGenerationWorkspace
       project={selected}
       imageProfiles={imageProfiles}
       imageApiProfileId={imageApiProfileId}
       onImageApiProfileChange={setSelectedApiProfileId}
       onBack={() => setScreen('report')}
       onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
-    />;
+    /></Suspense>;
   }
 
-  if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
+  if (screen === 'image-generation' && requestedImageGen) return <Suspense fallback={<WorkspaceFallback />}><ImageGenerationWorkspace
     sourceBundle={requestedImageGen}
     settings={settings}
     apiProfileId={selectedApiProfileId}
     onApiProfileChange={setSelectedApiProfileId}
     onBack={() => { setRequestedImageGen(null); setScreen('home'); void refresh(); }}
     onOpenSettings={() => { setSettingsReturnScreen('image-generation'); setScreen('settings'); }}
-  />;
+  /></Suspense>;
 
   if (screen === 'project' && selected) {
     const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);

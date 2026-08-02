@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compileVNextImageGeneration } from '../packages/image-generation-runtime/src/vnext/index.js';
+import { compileShortChainImageGeneration } from '../packages/image-generation-runtime/src/short-chain/index.js';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const auditRoot = path.join(
@@ -91,7 +91,7 @@ function promptDiff(before, after, family) {
   ].join('\n');
 }
 
-const context = await readJson(path.join(projectRoot, 'project-context', 'project-visual-context.vnext.json'));
+const context = await readJson(path.join(projectRoot, 'project-context', 'project-visual-context.short-chain.json'));
 const packet = await readJson(path.join(projectRoot, 'project-context', 'visual-decision-packet.json'));
 context.visualDecisionPacket = packet;
 const approvedDecision = await readJson(path.join(projectRoot, 'outputs', 'creative_decision.json'));
@@ -125,13 +125,13 @@ for (const family of ['space', 'packaging']) {
   const entry = config[family];
   const oldCompilationRoot = path.join(
     projectRoot,
-    'image-generation-vnext',
+    'image-generation-short-chain',
     'compilations',
     entry.failedCompilationId,
   );
   const oldCompiled = await readJson(path.join(oldCompilationRoot, 'compiled-prompt.json'));
   const oldTask = await readJson(path.join(oldCompilationRoot, 'task-contract.json'));
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainImageGeneration({
     projectContext: context,
     approvedCreativeDecision: approvedDecision,
     userConfirmedVisualDecision,

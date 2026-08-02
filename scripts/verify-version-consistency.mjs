@@ -6,14 +6,15 @@
 //   1. /VERSION contains a semver string.
 //   2. /package.json "version" matches /VERSION.
 //   3. /apps/desktop/package.json "version" matches /VERSION.
-//   4. /package-lock.json root package version matches /VERSION.
-//   5. No sub-directory contains a package-lock.json (single-lockfile policy).
-//   6. /src/runtime-trace.js DEFAULT_APP_VERSION constant matches /VERSION.
-//   7. /apps/desktop/package-lock.json must NOT exist.
-//   8. /packages/*/package.json (internal shared packages) all carry
+//   4. /apps/cli/package.json "version" matches /VERSION.
+//   5. /package-lock.json root and product workspace versions match /VERSION.
+//   6. No sub-directory contains a package-lock.json (single-lockfile policy).
+//   7. /apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches /VERSION.
+//   8. /apps/desktop/package-lock.json must NOT exist.
+//   9. /packages/*/package.json (internal shared packages) all carry
 //      "private": true and "version": "0.0.0" — they must not impersonate
 //      the product version.
-//   9. /labs/*/package.json (lab packages) all carry "private": true.
+//  10. /labs/*/package.json (lab packages) all carry "private": true.
 //
 // Exits non-zero on the first failure (or collects all failures and exits
 // non-zero at the end — current behaviour: collect-then-fail).
@@ -87,7 +88,21 @@ check(
   `found "${desktopPkg.version}"`,
 );
 
-// 4. root lockfile
+// 4. apps/cli/package.json
+const cliPkg = readJson('apps/cli/package.json');
+check(
+  'apps/cli/package.json version matches VERSION',
+  cliPkg.version === version,
+  `found "${cliPkg.version}"`,
+);
+const cliTemplate = readJson('apps/cli/templates/masterpiece-os-v5.json');
+check(
+  'apps/cli template version matches VERSION',
+  cliTemplate.version === version,
+  `found "${cliTemplate.version}"`,
+);
+
+// 5. root lockfile
 const lockPath = path.join(root, 'package-lock.json');
 if (existsSync(lockPath)) {
   const lock = readJson('package-lock.json');
@@ -96,6 +111,16 @@ if (existsSync(lockPath)) {
     'package-lock.json root version matches VERSION',
     lockRootVer === version,
     `found "${lockRootVer}"`,
+  );
+  check(
+    'package-lock.json apps/desktop version matches VERSION',
+    lock.packages?.['apps/desktop']?.version === version,
+    `found "${lock.packages?.['apps/desktop']?.version}"`,
+  );
+  check(
+    'package-lock.json apps/cli version matches VERSION',
+    lock.packages?.['apps/cli']?.version === version,
+    `found "${lock.packages?.['apps/cli']?.version}"`,
   );
 } else {
   check('package-lock.json exists', false, 'missing — run `npm install` first');
@@ -128,12 +153,12 @@ if (existsSync(rtPath)) {
   const rt = readFileSync(rtPath, 'utf8');
   const m = /export const DEFAULT_APP_VERSION = '([^']+)'/.exec(rt);
   check(
-    'src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION',
+    'apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION',
     !!m && m[1] === version,
     m ? `found "${m[1]}"` : 'constant not found',
   );
 } else {
-  check('src/runtime-trace.js exists', false);
+  check('apps/cli/src/runtime-trace.js exists', false);
 }
 
 // 7. apps/desktop/package-lock.json must NOT exist

@@ -15,6 +15,7 @@ import type {
 } from '../shared/types';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract.ts';
 import { detectIntakeIdentity, type IntakeSource } from './project-intake.ts';
+import { readLegacyShortChainProjectFields } from './legacy-stage-name-migration.ts';
 
 const SUPPORTED_DIRECT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.zip']);
 const SUPPORTED_ASSET = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf']);
@@ -34,6 +35,7 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
+  const legacyShortChain = readLegacyShortChainProjectFields(record);
   return {
     ...record,
     detectedProjectName: record.detectedProjectName || record.projectName,
@@ -50,10 +52,10 @@ function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
     outputLanguage: 'zh-CN',
     analysisProfile: 'fusion-enhanced',
     assets: Array.isArray(record.assets) ? record.assets : [],
-    visualContextVNextFilename: record.visualContextVNextFilename || null,
-    visualContextVNextStatus: record.visualContextVNextStatus || 'missing',
-    visualContextVNextVersion: record.visualContextVNextVersion || null,
-    visualContextVNextLastBuiltAt: record.visualContextVNextLastBuiltAt || null
+    visualContextShortChainFilename: record.visualContextShortChainFilename || legacyShortChain.filename,
+    visualContextShortChainStatus: record.visualContextShortChainStatus || legacyShortChain.status,
+    visualContextShortChainVersion: record.visualContextShortChainVersion || legacyShortChain.version,
+    visualContextShortChainLastBuiltAt: record.visualContextShortChainLastBuiltAt || legacyShortChain.lastBuiltAt
   };
 }
 

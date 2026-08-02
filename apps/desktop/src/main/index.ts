@@ -28,8 +28,8 @@ import { createPipelineService } from './pipeline-service';
 import { createReferenceAnchorService } from './reference-anchor-service';
 import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
 import { registerImageGenerationIpc } from './image-generation/ipc';
-import { createVNextImageGenerationService } from './image-generation/vnext-service.ts';
-import { createVNextDeliverableValidatorService } from './image-generation/vnext-deliverable-validator-service.ts';
+import { createShortChainImageGenerationService } from './image-generation/short-chain-service.ts';
+import { createShortChainDeliverableValidatorService } from './image-generation/short-chain-deliverable-validator-service.ts';
 import { createFileContextLoader } from './image-generation/context-loader';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
@@ -101,7 +101,7 @@ if (!gotTheLock) {
 }
 
 const projects = createProjectStore(getSettings);
-/** 生图功能 V1 主进程服务（在 app ready 后构造，以便安全解析数据目录）。 */
+/** 生图主进程服务（在 app ready 后构造，以便安全解析数据目录）。 */
 let imageGeneration: ImageGenerationService;
 let creativeGeneration: CreativeGenerationService;
 let anchorGeneration: AnchorGenerationService;
@@ -126,18 +126,18 @@ const projectContext = createProjectContextService({
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
 });
-const vnextDeliverableValidator = createVNextDeliverableValidatorService(
+const shortChainDeliverableValidator = createShortChainDeliverableValidatorService(
   projects,
   () => imageGeneration,
   getSettings,
   getProviderCredentials,
   projectContext,
 );
-const vnextImageGeneration = createVNextImageGenerationService(
+const shortChainImageGeneration = createShortChainImageGenerationService(
   projects,
   projectContext,
   () => imageGeneration,
-  () => vnextDeliverableValidator,
+  () => shortChainDeliverableValidator,
 );
 const contextIntegration = createContextIntegrationService({
   readSettings: getSettings,
@@ -342,8 +342,8 @@ function registerIpc(): void {
   registerHandler('project-context:get', (_event, projectId: string) => projectContext.get(projectId));
   registerHandler('project-context:rebuild', (_event, projectId: string) => projectContext.rebuild(projectId));
   registerHandler('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
-  registerHandler('project-context:get-vnext', (_event, projectId: string) => projectContext.getVNext(projectId));
-  registerHandler('project-context:rebuild-vnext', (_event, projectId: string) => projectContext.rebuildVNext(projectId));
+  registerHandler('project-context:get-short-chain', (_event, projectId: string) => projectContext.getShortChain(projectId));
+  registerHandler('project-context:rebuild-short-chain', (_event, projectId: string) => projectContext.rebuildShortChain(projectId));
   registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
   registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
   registerHandler('visual-memory:get-reference-pack', (_event, projectId: string) => referencePacks.get(projectId));
@@ -457,10 +457,10 @@ function registerIpc(): void {
     if (result) throw new Error(result);
   });
 
-  // ---- 生图功能 V1（§16 Desktop IPC）----
+  // ---- 生图功能（§16 Desktop IPC）----
   registerImageGenerationIpc(imageGeneration, {
     handle: registerHandler
-  } as unknown as IpcMain, vnextImageGeneration);
+  } as unknown as IpcMain, shortChainImageGeneration);
   registerHandler('creative-session:get', (_event, projectId: string) =>
     creativeSessions.get(projectId));
   registerHandler('creative-session:create', (_event, projectId: string) =>

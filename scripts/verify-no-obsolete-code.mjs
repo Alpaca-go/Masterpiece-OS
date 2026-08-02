@@ -41,6 +41,27 @@ const FILE_WHITELIST = new Set([
   path.join('scripts', 'verify-production-boundaries.mjs')
 ]);
 
+const STAGE_NAME_MIGRATION_FILE = path.join(
+  'apps',
+  'desktop',
+  'src',
+  'main',
+  'legacy-stage-name-migration.ts',
+);
+const CURRENT_PRODUCTION_PREFIXES = [
+  path.join('apps', 'cli', 'bin'),
+  path.join('apps', 'cli', 'src'),
+  path.join('apps', 'desktop', 'src'),
+  'packages',
+  path.join('scripts', 'image-generation'),
+];
+const OBSOLETE_STAGE_LABELS = [
+  { label: 'retired next-stage label', pattern: /\bvnext\b/iu },
+  { label: 'retired creative-director stage label', pattern: /\bv18(?:\.1)?\b/iu },
+  { label: 'retired creative-session stage label', pattern: /\bv6\b/iu },
+  { label: 'retired image-generation stage label', pattern: /生图功能\s*v1/iu },
+];
+
 const SCAN_ROOTS = ['src', 'apps/desktop/src', 'apps/desktop/tests', 'apps/desktop/scripts', 'packages', 'scripts', 'tests', 'bin'];
 const SCAN_FILES = ['package.json', 'apps/desktop/package.json', 'apps/desktop/electron-builder.yml', 'AGENTS.md', 'README.md'];
 const TEXT_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx', '.json', '.md', '.yml', '.yaml', '.html', '.css']);
@@ -73,6 +94,12 @@ for (const file of targets) {
     if (!content.includes(keyword)) continue;
     if (PROTOCOL_EXEMPT_KEYWORDS.has(keyword) && relative.startsWith(PROTOCOL_EXEMPT_PREFIX)) continue;
     violations.push(`${relative} -> "${keyword}"`);
+  }
+  if (relative !== STAGE_NAME_MIGRATION_FILE
+    && CURRENT_PRODUCTION_PREFIXES.some((prefix) => relative === prefix || relative.startsWith(`${prefix}${path.sep}`))) {
+    for (const { label, pattern } of OBSOLETE_STAGE_LABELS) {
+      if (pattern.test(`${relative}\n${content}`)) violations.push(`${relative} -> ${label}`);
+    }
   }
 }
 

@@ -89,7 +89,7 @@ test('Creative Session allows the evaluation and regeneration loop without openi
   );
 });
 
-test('V18 migration removes Final Generation Instruction and preserves decisions/references', () => {
+test('Creative Session migration removes Final Generation Instruction and preserves decisions/references', () => {
   const migrated = migrateLegacyCreativeSession({
     id: 'legacy-session',
     projectId: 'project-1',

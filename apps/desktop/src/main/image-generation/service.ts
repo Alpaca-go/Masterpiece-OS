@@ -1,5 +1,5 @@
 /**
- * 生图功能 V1：编排服务（§15 / §16）。
+ * 生图功能：编排服务（§15 / §16）。
  *
  * 职责：
  * - compile：Prompt 编译 + 三层 Gate（不提交 Provider），持久化编译产物（§15.2 dry-run 核心）
@@ -664,7 +664,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   }
 
   /**
-   * V18 Provider Bridge：复用现有 Run Store / Provider / 下载与恢复链路，
+   * Creative Production Provider Bridge：复用现有 Run Store / Provider / 下载与恢复链路，
    * 但直接使用已验证的 Generation Prompt Snapshot，不再经过 legacy Preset 编译器。
    */
   async function startCompiledCreativeTask(

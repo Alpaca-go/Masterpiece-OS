@@ -105,7 +105,7 @@ test('v2 routes product and IP scene intents to independent templates without ex
   assert.equal(resolveGenerationTemplateType('brand_poster', '生成品牌海报'), 'brand_poster');
 });
 
-test('v18.1 prompt snapshot keeps finalPrompt in Run snapshot and selects at most two references', () => {
+test('Creative Production prompt snapshot keeps finalPrompt in Run snapshot and selects at most two references', () => {
   const snapshot = compileGenerationPromptSnapshot({
     projectId: 'project-1',
     sessionId: 'session-1',
