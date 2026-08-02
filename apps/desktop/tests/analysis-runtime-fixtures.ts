@@ -102,7 +102,11 @@ export function structuredAnalysisPacketFixture(): VisualDecisionPacket {
         spatialConcept: 'A clear sequence of service zones',
         brandRoleManifestation: ['Visible service steps'],
         signatureSpatialMechanism: ['Layered open frames guide movement'],
-        functionalNetwork: ['arrival to consultation to completion'],
+        functionalNetwork: [
+          'arrival connects directly to the service point',
+          'service point guides guests into consultation',
+          'consultation completes through a visible handoff zone',
+        ],
         positiveDifferentiators: ['Service logic is visible'],
         mustBeVisible: ['arrival point', 'service point'],
         structureLanguage: ['open frame'],

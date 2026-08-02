@@ -212,6 +212,31 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     ],
   }),
   policy({
+    path: 'mediaTranslations.spatial.brandRoleManifestation',
+    code: 'BRAND_ROLE_MANIFESTATION_MISSING',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'projectFacts.brandRole',
+      'creativeDecision.brandRoleStatement',
+      'creativeDecision.uniqueUpgradeThesis',
+    ],
+  }),
+  policy({
+    path: 'mediaTranslations.spatial.functionalNetwork',
+    code: 'FUNCTIONAL_NETWORK_INCOMPLETE',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    requiredEvidencePaths: [
+      'projectFacts.brandRole',
+      'creativeDecision.uniqueUpgradeThesis',
+      'mediaTranslations.spatial.sceneProgram',
+      'mediaTranslations.spatial.functionalRelationships',
+    ],
+  }),
+  policy({
     path: 'mediaTranslations.spatial.sceneProgram',
     code: 'SCENE_PROGRAM_INCOMPLETE',
     severity: 'repairable',

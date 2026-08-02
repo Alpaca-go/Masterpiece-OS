@@ -242,6 +242,55 @@ function renderBlock(block) {
   return `【${block.title}】\n${block.items.map((item) => `- ${item}`).join('\n')}`;
 }
 
+const PROMPT_COMPACTION_ORDER = Object.freeze([
+  'camera_composition',
+  'professional_contract',
+  'upgrade_thesis',
+  'material_system',
+  'lighting_system',
+  'tone_boundary',
+  'brand_translation',
+  'color_system',
+]);
+
+function fitBlocksToAdapterBudget(blocks, adapter) {
+  const maximum = Number(adapter?.maxPromptCharacters);
+  const cloned = blocks.map((block) => ({ ...block, items: [...block.items] }));
+  const render = () => adapter.orderSections(cloned.map(renderBlock)).join('\n\n');
+  let prompt = render();
+  if (!Number.isFinite(maximum) || maximum <= 0 || [...prompt].length <= maximum) {
+    return { blocks: cloned, finalPrompt: prompt, removedItemCount: 0, truncatedItemCount: 0 };
+  }
+  let removedItemCount = 0;
+  let truncatedItemCount = 0;
+  while ([...prompt].length > maximum) {
+    const removable = PROMPT_COMPACTION_ORDER
+      .map((id) => cloned.find((block) => block.id === id))
+      .find((block) => block && block.items.length > 1);
+    if (!removable) break;
+    removable.items.pop();
+    removedItemCount += 1;
+    prompt = render();
+  }
+  while ([...prompt].length > maximum) {
+    const excess = [...prompt].length - maximum;
+    const candidates = PROMPT_COMPACTION_ORDER
+      .map((id) => cloned.find((block) => block.id === id))
+      .filter(Boolean)
+      .flatMap((block) => block.items.map((item, index) => ({ block, item, index })))
+      .filter((candidate) => [...candidate.item].length > 80)
+      .sort((a, b) => [...b.item].length - [...a.item].length);
+    const target = candidates[0];
+    if (!target) break;
+    const characters = [...target.item];
+    const nextLength = Math.max(80, characters.length - excess - 1);
+    target.block.items[target.index] = `${characters.slice(0, nextLength).join('').trimEnd()}…`;
+    truncatedItemCount += 1;
+    prompt = render();
+  }
+  return { blocks: cloned, finalPrompt: prompt, removedItemCount, truncatedItemCount };
+}
+
 function formatColorUsage(group, label) {
   return cleanList(group?.map((item) => {
     const ratio = Number.isFinite(item?.ratio) ? `，建议占比 ${item.ratio}%` : '';
@@ -446,8 +495,9 @@ export function compileShortChainPrompt({
       logoUsageMode,
       templateSections,
     });
-    const blocks = packagingContract.blocks;
-    const finalPrompt = adapter.orderSections(blocks.map(renderBlock)).join('\n\n');
+    const fitted = fitBlocksToAdapterBudget(packagingContract.blocks, adapter);
+    const blocks = fitted.blocks;
+    const finalPrompt = fitted.finalPrompt;
     const traceValue = {
       projectContextFingerprint: projectContext.provenance.sourceFingerprint,
       promptSourceFingerprint: packetSource.fingerprint,
@@ -508,6 +558,10 @@ export function compileShortChainPrompt({
         adapterId: adapter.id,
         adapterVersion: adapter.version,
         sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify(traceValue)).digest('hex'),
+        promptCompaction: {
+          removedItemCount: fitted.removedItemCount,
+          truncatedItemCount: fitted.truncatedItemCount,
+        },
       },
     };
   }
@@ -817,9 +871,10 @@ export function compileShortChainPrompt({
     }
   }
 
-  const renderedBlocks = blocks.map(renderBlock);
-  const finalPrompt = adapter.orderSections(renderedBlocks).join('\n\n');
-  const sourceMap = Object.fromEntries(blocks.map((block) => [block.id, [...block.sources]]));
+  const fitted = fitBlocksToAdapterBudget(blocks, adapter);
+  const fittedBlocks = fitted.blocks;
+  const finalPrompt = fitted.finalPrompt;
+  const sourceMap = Object.fromEntries(fittedBlocks.map((block) => [block.id, [...block.sources]]));
   if (confirmedDecision.confirmation) {
     for (const blockId of ['project_identity', 'upgrade_thesis', 'tone_boundary', 'brand_translation',
       'positive_spatial_mechanism', 'color_system', 'material_system', 'lighting_system']) {
@@ -843,7 +898,7 @@ export function compileShortChainPrompt({
     projectPromptAsset: promptAsset
       ? { id: promptAsset.id, version: promptAsset.version }
       : null,
-    blocks,
+    blocks: fittedBlocks,
     finalPrompt,
   };
 
@@ -857,7 +912,7 @@ export function compileShortChainPrompt({
       shotTemplateId: route.shotTemplateId,
       templateVersions: route.templateVersions,
     },
-    blocks,
+    blocks: fittedBlocks,
     sourceMap,
     projectGenerationContract,
     spatialTranslation: packetSource?.spatial || null,
@@ -889,6 +944,10 @@ export function compileShortChainPrompt({
       adapterId: adapter.id,
       adapterVersion: adapter.version,
       sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify(traceValue)).digest('hex'),
+      promptCompaction: {
+        removedItemCount: fitted.removedItemCount,
+        truncatedItemCount: fitted.truncatedItemCount,
+      },
       ...(promptAsset ? {
         projectPromptAssetId: promptAsset.id,
         projectPromptAssetVersion: promptAsset.version,

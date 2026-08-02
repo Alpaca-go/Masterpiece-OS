@@ -45,6 +45,7 @@ import {
   desktopFactualConstraints,
   extractProjectNameFromReport,
   normalizeReportTitle,
+  repairBlankVisualAssetDecisions,
   redactSecret,
   validateDesktopReport
 } from './analysis-contract';
@@ -499,7 +500,9 @@ export function createPipelineService(
         || extractProjectNameFromReport(rawReport)
         || project.brandName
         || '未命名项目';
-      const legacyReport = normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage);
+      const legacyReport = repairBlankVisualAssetDecisions(
+        normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage),
+      );
       if (validationMode === 'visual_upgrade') validateDesktopReport(legacyReport);
       else if (!legacyReport.trim()) throw new Error('参考视觉分析结果为空');
       const reportFilename = buildReportFilename(finalProjectName, credentials.model, project.outputLanguage);

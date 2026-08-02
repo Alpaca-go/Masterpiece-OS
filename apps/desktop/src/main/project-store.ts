@@ -515,12 +515,20 @@ export function createProjectStore(readSettings: SettingsReader) {
     const detectedBriefFiles = items
       .filter((item) => /brief|说明|规范|手册|guideline|brandbook/i.test(item.name))
       .map((item) => item.relativePath);
+    const confirmedLogoFiles = (project.logoFiles || []).filter((filename) => project.assets.some((asset) =>
+      asset.status === 'ready'
+      && (asset.relativePath === filename || asset.originalName === filename || asset.relativePath.endsWith(filename))));
+    const confirmedBriefFiles = (project.briefFiles || []).filter((filename) => project.assets.some((asset) =>
+      asset.status === 'ready'
+      && (asset.relativePath === filename || asset.originalName === filename || asset.relativePath.endsWith(filename))));
+    const logoFiles = [...new Set([...confirmedLogoFiles, ...detectedLogoFiles])];
+    const briefFiles = [...new Set([...confirmedBriefFiles, ...detectedBriefFiles])];
     const summary: AssetSummary = {
       totalFiles: items.length,
       totalBytes: items.reduce((sum, item) => sum + item.bytes, 0),
       imageCount: items.filter((item) => item.kind === 'image').length,
       pdfCount: items.filter((item) => item.kind === 'pdf').length,
-      logoDetected: detectedLogoFiles.length > 0,
+      logoDetected: logoFiles.length > 0,
       unreadableFiles,
       items
     };
@@ -529,8 +537,8 @@ export function createProjectStore(readSettings: SettingsReader) {
       assets: project.assets.filter((asset) => items.some((item) => item.id === asset.id)),
       assetCount: summary.totalFiles,
       imageCount: summary.imageCount,
-      logoFiles: detectedLogoFiles,
-      briefFiles: detectedBriefFiles,
+      logoFiles,
+      briefFiles,
       status: summary.totalFiles ? (project.status === 'draft' ? 'ready' : project.status) : 'draft'
     });
     return summary;

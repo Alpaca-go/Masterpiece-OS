@@ -224,6 +224,33 @@ test('public compiler does not leak Jiuzhou answers into another project', () =>
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /九州美学|医美|孔雀|羽翼|矿物紫/u);
 });
 
+test('compiler fits evidence-heavy prompts to the active adapter budget without dropping task identity', () => {
+  const source = promptSource({
+    projectId: 'budget-heavy',
+    brand: 'Budget Heavy Brand',
+    industry: 'hospitality',
+    color: 'signal green',
+    motif: 'confirmed identity motif',
+    material: 'brushed metal',
+    worldview: 'a highly specific social hospitality experience',
+    toneAvoid: Array.from({ length: 80 }, (_, index) => `generic tone prohibition ${index} ${'x'.repeat(80)}`),
+    abstractProperties: Array.from({ length: 50 }, (_, index) => `abstract property ${index} ${'y'.repeat(60)}`),
+    newExpression: Array.from({ length: 50 }, (_, index) => `new expression ${index} ${'z'.repeat(60)}`),
+  });
+  const result = compileSpace(context({
+    projectId: 'budget-heavy',
+    brand: 'Budget Heavy Brand',
+    industry: 'hospitality',
+    promptSourceObject: source,
+  }));
+
+  assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true);
+  assert.match(result.compiledPrompt.finalPrompt, /Budget Heavy Brand/u);
+  assert.match(result.compiledPrompt.finalPrompt, /生成旗舰店入口接待空间/u);
+  assert.ok(result.compiledPrompt.trace.promptCompaction.removedItemCount > 0
+    || result.compiledPrompt.trace.promptCompaction.truncatedItemCount > 0);
+});
+
 test('compiler fails closed on contradictory task include and avoid rules', () => {
   const source = promptSource({
     projectId: 'conflict',

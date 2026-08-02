@@ -1,6 +1,6 @@
 export const SEEDREAM_SHORT_CHAIN_ADAPTER_ID = 'seedream-5.0-pro';
 export const SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION = '1.0.0';
-const MAX_PROMPT_CHARACTERS = 7_500;
+export const SEEDREAM_SHORT_CHAIN_MAX_PROMPT_CHARACTERS = 7_500;
 
 export function createSeedreamShortChainAdapter(options = {}) {
   const model = options.model || 'doubao-seedream-5-0-pro-260628';
@@ -8,6 +8,7 @@ export function createSeedreamShortChainAdapter(options = {}) {
     id: SEEDREAM_SHORT_CHAIN_ADAPTER_ID,
     version: SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION,
     model,
+    maxPromptCharacters: SEEDREAM_SHORT_CHAIN_MAX_PROMPT_CHARACTERS,
     orderSections(sections) {
       return sections;
     },
@@ -15,9 +16,9 @@ export function createSeedreamShortChainAdapter(options = {}) {
       const prompt = String(compiledPrompt.editablePrompt || compiledPrompt.finalPrompt).trim();
       if (!prompt) throw new Error('Seedream prompt cannot be empty');
       const promptCharacters = [...prompt].length;
-      if (promptCharacters > MAX_PROMPT_CHARACTERS) {
+      if (promptCharacters > SEEDREAM_SHORT_CHAIN_MAX_PROMPT_CHARACTERS) {
         throw new Error(
-          `Seedream prompt exceeds ${MAX_PROMPT_CHARACTERS} characters (${promptCharacters})`,
+          `Seedream prompt exceeds ${SEEDREAM_SHORT_CHAIN_MAX_PROMPT_CHARACTERS} characters (${promptCharacters})`,
         );
       }
       return {

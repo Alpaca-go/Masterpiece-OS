@@ -105,6 +105,22 @@ test('space retains the pre-existing structure, material, lighting, and color ga
   );
 });
 
+test('space requires the same brand-role and flagship-program detail as generation preflight', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.brandRoleManifestation = [];
+  packet.mediaTranslations.spatial.functionalNetwork = [];
+  packet.mediaTranslations.spatial.sceneProgram = ['入口'];
+
+  const result = evaluateDeliverableSufficiency({ packet, deliverable: 'space', execution });
+
+  assert.equal(result.status, 'repairable');
+  assert.deepEqual(result.issues.map((issue) => issue.code).sort(), [
+    'BRAND_ROLE_MANIFESTATION_MISSING',
+    'FUNCTIONAL_NETWORK_INCOMPLETE',
+    'SCENE_PROGRAM_INCOMPLETE',
+  ]);
+});
+
 test('unknown brand facts require confirmation instead of AI invention', () => {
   const packet = structuredAnalysisPacketFixture();
   packet.projectFacts.brandRole.value = 'unknown';

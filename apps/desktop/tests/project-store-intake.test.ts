@@ -117,3 +117,37 @@ test('ZIP intake persists only extracted valid assets, deduplicates by SHA-256, 
     await fs.rm(temporary, { recursive: true, force: true });
   }
 });
+
+test('scan preserves user-confirmed Logo files whose names do not contain Logo keywords', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-desktop-confirmed-logo-'));
+  try {
+    const source = path.join(temporary, '蛙耶原视觉方案');
+    const data = path.join(temporary, 'data');
+    await fs.mkdir(source, { recursive: true });
+    await fs.writeFile(path.join(source, '未标题-1-27.png'), ONE_PIXEL_PNG);
+    const settings = {
+      profiles: [{
+        id: 'profile-test', displayName: 'Test Qwen', provider: 'qwen' as const,
+        baseUrl: 'https://example.invalid/v1', modelId: 'qwen3.6-plus',
+        credentialKey: 'masterpiece-os/profile-test', hasApiKey: true,
+        isDefault: true, isEnabled: true,
+        createdAt: '2026-07-16T00:00:00.000Z', updatedAt: '2026-07-16T00:00:00.000Z',
+      }],
+      defaultProfileId: 'profile-test', provider: 'qwen' as const,
+      baseUrl: 'https://example.invalid/v1', model: 'qwen3.6-plus', hasApiKey: true,
+      defaultDataPath: data, cacheEnabled: true, logLevel: 'info' as const,
+      connectionStatus: 'untested' as const,
+    } satisfies PublicSettings;
+    const store = createProjectStore(async () => settings);
+    const project = await store.create({ sourcePaths: [source], apiProfileId: 'profile-test' });
+    await store.update(project.id, { logoFiles: ['未标题-1-27.png'] });
+
+    const summary = await store.scan(project.id);
+    const rescanned = await store.get(project.id);
+
+    assert.equal(summary.logoDetected, true);
+    assert.deepEqual(rescanned.logoFiles, ['未标题-1-27.png']);
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true });
+  }
+});

@@ -70,6 +70,24 @@ export function normalizeReportTitle(markdown: string, projectName: string, lang
   return /^#\s+.+$/m.test(value) ? value.replace(/^#\s+.+$/m, title) + '\n' : `${title}\n\n${value}\n`;
 }
 
+export function repairBlankVisualAssetDecisions(markdown: string): string {
+  return String(markdown || '').replace(
+    /(## 3\.\s*视觉资产决策[\s\S]*?)(?=\n## 4\.|$)/u,
+    (section) => section.split(/\r?\n/u).map((line) => {
+      if (!/^\s*\|.*\|\s*$/u.test(line) || /^\s*\|[\s:|-]+\|\s*$/u.test(line)) return line;
+      const cells = line.split('|');
+      if (cells.length < 6) return line;
+      const asset = cells[1]?.replace(/\*\*/gu, '').trim() || '';
+      const decision = cells[2]?.replace(/\*\*/gu, '').trim() || '';
+      const currentProblem = cells[3]?.replace(/\*\*/gu, '').trim() || '';
+      const nextAction = cells[4]?.replace(/\*\*/gu, '').trim() || '';
+      if (!asset || asset === '视觉资产' || decision || !currentProblem || !nextAction) return line;
+      cells[2] = ' 升级 ';
+      return cells.join('|');
+    }).join('\n'),
+  );
+}
+
 export function validateVisualUpgradeMarkdown(markdown: string): void {
   const required = Array.from({ length: 11 }, (_, index) => `## ${index}.`);
   const missing = required.filter((heading) => !markdown.includes(heading));

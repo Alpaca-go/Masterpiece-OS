@@ -7,6 +7,7 @@ import {
   desktopFactualConstraints,
   extractProjectNameFromReport,
   normalizeReportTitle,
+  repairBlankVisualAssetDecisions,
   redactSecret,
   sanitizeFilenamePart,
   validateDesktopReport
@@ -58,6 +59,20 @@ test('report title is project-specific and final decision check fails closed', (
   assert.equal(extractProjectNameFromReport('# 九州美学视觉方案升级报告\n\n正文'), '九州美学');
   assert.equal(extractProjectNameFromReport('# input视觉方案升级报告\n\n正文'), null);
   assert.equal(extractProjectNameFromReport('# 站酷作品集视觉方案升级报告\n\n正文'), null);
+});
+
+test('repairs only blank visual asset decisions with complete evidence columns', () => {
+  const report = [
+    '## 3. 视觉资产决策',
+    '| 视觉资产 | 决策 | 当前问题 | 新动作 |',
+    '|---|---|---|---|',
+    '| **空间材质** | | 原方案空间材质普通。 | 引入不锈钢与炭化木。 |',
+    '| 辅助图形 | 观察 | 语言混乱 | 建立统一图形语言 |',
+    '## 4. Benchmark 与可迁移启示',
+  ].join('\n');
+  const repaired = repairBlankVisualAssetDecisions(report);
+  assert.match(repaired, /\| \*\*空间材质\*\* \| 升级 \| 原方案空间材质普通。 \|/u);
+  assert.match(repaired, /\| 辅助图形 \| 观察 \|/u);
 });
 
 test('path boundary and secret redaction fail safely', () => {

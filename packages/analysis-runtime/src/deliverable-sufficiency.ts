@@ -90,6 +90,18 @@ const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
       minimumItems: 1,
     },
     {
+      path: 'mediaTranslations.spatial.brandRoleManifestation',
+      code: 'BRAND_ROLE_MANIFESTATION_MISSING',
+      kind: 'array',
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.functionalNetwork',
+      code: 'FUNCTIONAL_NETWORK_INCOMPLETE',
+      kind: 'array',
+      minimumItems: 3,
+    },
+    {
       path: 'mediaTranslations.spatial.positiveDifferentiators',
       code: 'POSITIVE_DIFFERENTIATORS_MISSING',
       kind: 'array',
@@ -99,7 +111,7 @@ const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
       path: 'mediaTranslations.spatial.sceneProgram',
       code: 'SCENE_PROGRAM_INCOMPLETE',
       kind: 'array',
-      minimumItems: 1,
+      minimumItems: 3,
     },
     {
       path: 'mediaTranslations.spatial.functionalRelationships',
