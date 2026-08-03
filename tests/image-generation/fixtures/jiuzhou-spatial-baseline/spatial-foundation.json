@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "spaceType": "large_lobby",
+  "architectureAesthetic": {
+    "mode": "modern_monolithic"
+  },
+  "spatialScale": {
+    "class": "large",
+    "ceilingHeight": "generous",
+    "depthExpression": "strong",
+    "breathingRoom": "high",
+    "foregroundMidgroundBackground": true
+  },
+  "functionalZoning": {
+    "required": ["entrance", "reception", "waiting", "circulation"]
+  },
+  "cameraIntent": {
+    "role": "entrance_three_quarter_wide"
+  },
+  "legacyNote": "The pre-change runtime expressed these values as prompt evidence and had no field-level preservation contract."
+}

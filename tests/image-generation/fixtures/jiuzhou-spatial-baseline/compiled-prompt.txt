@@ -1,0 +1,15 @@
+[DELIVERABLE]
+Create one formal, photorealistic large-lobby rendering for the current project.
+
+[CURRENT SPATIAL EVIDENCE]
+Preserve a large spatial class, generous ceiling height, strong depth expression,
+clear entrance/reception/waiting/circulation relationships, and an entrance
+three-quarter wide camera role.
+
+[CURRENT PROJECT EVIDENCE]
+Translate the current project's restrained, serene, professional and warm identity
+into architectural proportion, material junctions, light, rhythm and signage.
+
+[LEGACY LIMITATION]
+Before the Golden integration, the runtime had no explicit DO NOT OVERRIDE section,
+no dimensional Anchor influence cap, and no field-level conflict provenance.

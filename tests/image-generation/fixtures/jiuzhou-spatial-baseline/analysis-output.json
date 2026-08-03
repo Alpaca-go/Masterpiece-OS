@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "jiuzhou-aesthetics",
+  "industry": "medical aesthetics",
+  "signals": {
+    "tone": ["restrained", "serene", "professional", "warm"],
+    "materialBehavior": ["light mineral base", "controlled translucency", "low reflectivity"],
+    "lightingBehavior": ["soft indirect light", "low glare", "subtle accent light"],
+    "brandIntegration": ["architecturally integrated", "controlled signage"]
+  },
+  "projectSpecificSignalsExcludedFromGenericAnalysis": [
+    "brand name",
+    "exact palette",
+    "peacock feather motif",
+    "nine-petal motif",
+    "lavender crystal prop"
+  ]
+}
