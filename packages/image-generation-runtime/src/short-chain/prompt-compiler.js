@@ -68,6 +68,10 @@ function selectedReferenceDirectives(projectContext, taskContract) {
     const creativeInterpretation = taskContract.brandMarkRenderMode === 'creative_logo_interpretation';
     const roleRule = creativeInterpretation && (role === 'logo' || role === 'identity')
       ? 'Use this selected identity as the recognizable source for an explicitly experimental spatial interpretation. Decomposition and extension are allowed, but its origin must remain visibly attributable to the supplied asset.'
+      : role === 'structure_reference'
+      ? 'Use this desaturated structural reference only for room envelope, spatial scale, ceiling height, depth, openings, circulation, camera view and major fixture positions. Ignore and replace every material, colour, ceiling treatment, lighting style, logo, brand wall, decoration and clinical/futuristic tone visible in it.'
+      : role === 'style_anchor'
+      ? 'Use this Golden style anchor only for brand atmosphere, integrated brand expression, material-light behaviour, restrained colour ratio, architectural skin and decorative density. Do not copy its room size, ceiling height, depth, functional layout, circulation, exact fixture positions or camera composition.'
       : role === 'logo'
       ? 'Reproduce the selected project Logo as a clearly visible, recognizable identity element. Preserve its outline, internal geometry, proportions and color relationships without redesign.'
       : role === 'identity'
@@ -77,7 +81,11 @@ function selectedReferenceDirectives(projectContext, taskContract) {
         : role === 'product'
           ? 'Apply the selected product as a clearly visible, recognizable physical element. Preserve its silhouette, proportions and defining details.'
           : 'Apply the principal visual asset shown in this selected image as a clearly visible, recognizable branded element. Preserve its subject, shape and defining graphic relationships.';
-    const applicationRule = taskContract.deliverableFamily === 'space'
+    const applicationRule = role === 'structure_reference'
+      ? 'Preserve the large-space volume and functional skeleton, then completely reskin it with the project canon and Golden style anchor.'
+      : role === 'style_anchor'
+        ? 'Transfer its visual skin and atmosphere across the source structure without reproducing the anchor scene as a layout template.'
+      : taskContract.deliverableFamily === 'space'
       ? index === 0
         ? 'Physically integrate it into the space at a prominent, camera-visible brand touchpoint such as the entrance sign, reception backdrop, focal wall, environmental graphic, wayfinding element or built installation, choosing the carrier that fits the asset.'
         : 'Physically integrate it into a second camera-visible spatial carrier such as a wall graphic, IP installation, icon/wayfinding system, counter graphic or branded surface, choosing the carrier that fits the asset.'
@@ -91,9 +99,15 @@ function selectedReferenceDirectives(projectContext, taskContract) {
       features.length ? `Visible features to retain from reference image ${index + 1}: ${features.join('; ')}.` : '',
     ].filter(Boolean).join(' ');
   });
+  const hasCalibrationReferences = selected.some((assetId) => {
+    const role = projectContext.sourceAssetRefs.find((item) => item.assetId === assetId)?.role;
+    return role === 'structure_reference' || role === 'style_anchor';
+  });
   return selected.length ? [
     ...assetDirectives,
-    'Every selected visual asset must be immediately recognizable; palette, lighting, line rhythm, geometry or mood alone does not count as using it. Apply the principal asset naturally to the finished design, never as an uploaded sheet, screenshot, mockup or floating board.',
+    hasCalibrationReferences
+      ? 'Structure and style calibration references are responsibility-bounded inputs, not literal objects to reproduce. Never render either reference as an uploaded sheet, screenshot, mockup or floating board.'
+      : 'Every selected visual asset must be immediately recognizable; palette, lighting, line rhythm, geometry or mood alone does not count as using it. Apply the principal asset naturally to the finished design, never as an uploaded sheet, screenshot, mockup or floating board.',
     'User-selected hard inclusion overrides any upstream abstraction-only, non-literal-use, removal or blank-identity instruction for those selected assets.',
   ] : [];
 }

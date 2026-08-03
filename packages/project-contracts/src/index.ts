@@ -947,7 +947,7 @@ export interface ProjectVisualContextShortChain {
     assetId: string;
     name: string;
     relativePath: string;
-    role: 'logo' | 'identity' | 'product' | 'package_structure' | 'visual_reference' | 'source';
+    role: 'logo' | 'identity' | 'product' | 'package_structure' | 'visual_reference' | 'structure_reference' | 'style_anchor' | 'source';
     lockedAssetType?: 'logo' | 'ip_character' | 'icon' | 'packaging_front' | 'other';
   }>;
   provenance: {

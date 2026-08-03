@@ -106,3 +106,22 @@ test('compiled context records only the selected versioned Anchor metadata', () 
   assert.deepEqual(compiled.selectedAnchors.map((anchor) => anchor.id), ['JZMX-SGR-02-Reception']);
   assert.equal(compiled.selectedAnchors[0].deniedRoles.includes('spatial_scale'), true);
 });
+
+test('source-space structure references have zero visual-skin authority', () => {
+  const compiled = compileSpatialContext({
+    task: { subtype: 'large_lobby' },
+    spatialFoundation: foundation,
+    structureReferences: [{
+      assetId: 'structure-reference-source-1',
+      sourceAssetId: 'source-1',
+      projectRelativePath: 'input/structure-references/structure-reference-source-1.png',
+      sha256: 'a'.repeat(64),
+      preprocessing: ['colour_authority_removed', 'fine_texture_suppressed'],
+    }],
+  });
+  const section = compiled.promptSections.find((item) =>
+    item.startsWith('[SOURCE SPACE STRUCTURE REFERENCE]'));
+  assert.match(section, /preserves only room envelope, spatial scale, ceiling height/u);
+  assert.match(section, /zero authority over material palette, ceiling design, lighting style/u);
+  assert.equal(compiled.structureReferences[0].responsibility, 'structure_only');
+});

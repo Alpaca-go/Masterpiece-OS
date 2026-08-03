@@ -159,6 +159,42 @@ function compileSpace(projectContext, overrides = {}, compileOptions = {}) {
   });
 }
 
+test('structure and Golden style references receive non-overlapping responsibilities', () => {
+  const source = promptSource({
+    projectId: 'jiuzhou-reference-split',
+    brand: 'Jiuzhou Aesthetics',
+    industry: 'medical aesthetics',
+    color: 'mineral lavender',
+    motif: 'abstract feather growth rhythm',
+    material: 'pearl mineral surface',
+    worldview: 'warm contemporary eastern precision',
+  });
+  const projectContext = context({
+    projectId: 'jiuzhou-reference-split',
+    brand: 'Jiuzhou Aesthetics',
+    industry: 'medical aesthetics',
+    promptSourceObject: source,
+  });
+  projectContext.sourceAssetRefs = [{
+    assetId: 'structure-1', name: 'Structure only', relativePath: 'structure.png',
+    role: 'structure_reference', lockedAssetType: 'other',
+  }, {
+    assetId: 'style-1', name: 'Golden style', relativePath: 'style.png',
+    role: 'style_anchor', lockedAssetType: 'other',
+  }];
+  const compiled = compileSpace(projectContext, {
+    referenceAssetIds: ['structure-1', 'style-1'],
+  });
+  assert.match(compiled.compiledPrompt.finalPrompt,
+    /structural reference only for room envelope, spatial scale, ceiling height/u);
+  assert.match(compiled.compiledPrompt.finalPrompt,
+    /Golden style anchor only for brand atmosphere, integrated brand expression/u);
+  assert.match(compiled.compiledPrompt.finalPrompt,
+    /Do not copy its room size, ceiling height, depth, functional layout/u);
+  assert.doesNotMatch(compiled.compiledPrompt.finalPrompt,
+    /Every selected visual asset must be immediately recognizable/u);
+});
+
 test('Golden calibration compiles thirteen traceable blocks from Jiuzhou project evidence', () => {
   const source = promptSource({
     projectId: 'jiuzhou',

@@ -48,6 +48,7 @@ import {
   isLogoOnlyRepairCandidate,
   repairSingleLogoInPlace,
 } from './locked-asset-render-mvp.ts';
+import { preprocessSpatialStructureReference } from './spatial-structure-reference.ts';
 
 export interface CompileShortChainGenerationInput {
   projectId: string;
@@ -257,22 +258,6 @@ export function createShortChainImageGenerationService(
         });
       }));
     }
-    const effectiveContext = spatialAnchorSelection?.anchors.length
-      ? {
-        ...context,
-        sourceAssetRefs: [
-          ...context.sourceAssetRefs,
-          ...spatialAnchorSelection.anchors.map((anchor) => ({
-            assetId: anchor.assetId,
-            name: `Golden Anchor ${anchor.id}`,
-            role: 'reference' as const,
-            relativePath: `golden-anchors/${anchor.id}.png`,
-            mimeType: 'image/png',
-            sha256: anchor.sha256,
-          })),
-        ],
-      }
-      : context;
     const packetLogoAssetIds = context.visualDecisionPacket?.lockedAssets
       .filter((item) => item.type === 'logo')
       .map((item) => item.assetId)
@@ -284,6 +269,51 @@ export function createShortChainImageGenerationService(
         : context.lockedAssets.logoAssetIds;
     const requestedReferenceIds = input.task.referenceAssetIds ?? [];
     const selectedLogoAssetId = logoAssetIds.find((assetId) => requestedReferenceIds.includes(assetId));
+    const structureCandidates = spatialProjectBundle
+      ? requestedReferenceIds
+        .map((assetId) => context.sourceAssetRefs.find((asset) => asset.assetId === assetId))
+        .filter((asset): asset is NonNullable<typeof asset> => Boolean(
+          asset && !logoAssetIds.includes(asset.assetId)
+          && (asset.role === 'visual_reference' || asset.role === 'source'),
+        ))
+        .slice(0, 1)
+      : [];
+    const spatialStructureReferences = await Promise.all(structureCandidates.map(async (asset) => {
+      const processed = await preprocessSpatialStructureReference({
+        sourceAssetId: asset.assetId,
+        sourcePath: path.resolve(paths.input, asset.relativePath),
+        outputDirectory: path.join(paths.input, 'structure-references'),
+      });
+      return {
+        ...processed,
+        projectRelativePath: `input/${processed.relativePath}`,
+      };
+    }));
+    const structureAssetIdBySource = new Map(
+      spatialStructureReferences.map((item) => [item.sourceAssetId, item.assetId]),
+    );
+    const effectiveContext = spatialAnchorSelection?.anchors.length || spatialStructureReferences.length
+      ? {
+        ...context,
+        sourceAssetRefs: [
+          ...context.sourceAssetRefs,
+          ...spatialStructureReferences.map((item) => ({
+            assetId: item.assetId,
+            name: `Structure-only reference derived from ${item.sourceAssetId}`,
+            role: 'structure_reference' as const,
+            relativePath: item.relativePath,
+            lockedAssetType: 'other' as const,
+          })),
+          ...(spatialAnchorSelection?.anchors ?? []).map((anchor) => ({
+            assetId: anchor.assetId,
+            name: `Golden Style Anchor ${anchor.id}`,
+            role: 'style_anchor' as const,
+            relativePath: `golden-anchors/${anchor.id}.png`,
+            lockedAssetType: 'other' as const,
+          })),
+        ],
+      }
+      : context;
     const legacyLogoUsageMode = input.task.logoUsageMode;
     const brandMarkRenderMode = input.task.brandMarkRenderMode
       ?? context.promptSourceObject?.lockedAssets.brandMarkRenderMode
@@ -294,13 +324,19 @@ export function createShortChainImageGenerationService(
     const brandIntensity = input.task.brandIntensity
       ?? context.promptSourceObject?.lockedAssets.brandIntensity
       ?? 'balanced';
+    const calibrationNeedsBothSlots = Boolean(
+      spatialStructureReferences.length && spatialAnchorSelection?.anchors.length,
+    );
     const logoUsageMode = brandMarkRenderMode === 'no_logo_preview'
       ? 'blank_area'
-      : selectedLogoAssetId ? 'reference' : 'blank_area';
+      : selectedLogoAssetId && calibrationNeedsBothSlots
+        ? 'post_composite'
+        : selectedLogoAssetId ? 'reference' : 'blank_area';
     const logoAssetIdSet = new Set(logoAssetIds);
-    const explicitReferenceAssetIds = logoUsageMode === 'reference'
+    const explicitReferenceAssetIds = (logoUsageMode === 'reference'
       ? [...new Set(requestedReferenceIds)]
-      : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId));
+      : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId)))
+      .map((assetId) => structureAssetIdBySource.get(assetId) ?? assetId);
     const referenceAssetIds = [...explicitReferenceAssetIds];
     for (const anchor of spatialAnchorSelection?.anchors ?? []) {
       if (referenceAssetIds.length >= 2) break;
@@ -370,6 +406,8 @@ export function createShortChainImageGenerationService(
         })
         : undefined,
       spatialAnchorSelection,
+      spatialStructureReferences,
+      forcePostCompositeLogo: Boolean(selectedLogoAssetId && calibrationNeedsBothSlots),
       task: {
         ...input.task,
         projectId: input.projectId,
@@ -557,17 +595,33 @@ export function createShortChainImageGenerationService(
     const implicitAnchor = session.implicitAnchors[compilation.taskContract.deliverableFamily];
     const explicitIds = compilation.taskContract.referenceAssetIds;
     const goldenAnchors = new Map(((compilation.compiledPrompt as ShortChainCompiledPrompt & {
-      spatialCompiledContext?: { selectedAnchors?: Array<{ assetId?: string; projectRelativePath?: string }> };
+      spatialCompiledContext?: {
+        selectedAnchors?: Array<{ assetId?: string; projectRelativePath?: string }>;
+        structureReferences?: Array<{ assetId?: string; projectRelativePath?: string }>;
+      };
     }).spatialCompiledContext?.selectedAnchors ?? [])
       .filter((anchor) => anchor.assetId && anchor.projectRelativePath)
       .map((anchor) => [anchor.assetId!, anchor.projectRelativePath!]));
+    const structureReferences = new Map(((compilation.compiledPrompt as ShortChainCompiledPrompt & {
+      spatialCompiledContext?: {
+        structureReferences?: Array<{ assetId?: string; projectRelativePath?: string }>;
+      };
+    }).spatialCompiledContext?.structureReferences ?? [])
+      .filter((item) => item.assetId && item.projectRelativePath)
+      .map((item) => [item.assetId!, item.projectRelativePath!]));
     const explicitReferences = explicitIds.flatMap((assetId) => {
       const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
       const goldenProjectRelativePath = goldenAnchors.get(assetId);
+      const structureProjectRelativePath = structureReferences.get(assetId);
       if (!asset && goldenProjectRelativePath) return [{
         id: assetId,
         role: 'core_reference' as const,
         projectRelativePath: goldenProjectRelativePath,
+      }];
+      if (!asset && structureProjectRelativePath) return [{
+        id: assetId,
+        role: 'structure_reference' as const,
+        projectRelativePath: structureProjectRelativePath,
       }];
       if (!asset || asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
       return [{

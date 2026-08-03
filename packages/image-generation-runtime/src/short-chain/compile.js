@@ -45,7 +45,9 @@ export function compileShortChainImageGeneration(input) {
     || input.projectContext?.promptSourceObject?.lockedAssets?.brandIntensity;
   const logoUsageMode = brandMarkRenderMode === 'no_logo_preview'
     ? 'blank_area'
-    : selectedLogoAssetId ? 'reference' : 'blank_area';
+    : input.forcePostCompositeLogo === true
+      ? 'post_composite'
+      : selectedLogoAssetId ? 'reference' : 'blank_area';
   const referenceAssetIds = logoUsageMode === 'reference'
     ? [...new Set(requestedReferenceIds)]
     : requestedReferenceIds.filter((assetId) => !logoAssetIds.includes(assetId));
@@ -76,6 +78,7 @@ export function compileShortChainImageGeneration(input) {
       anchorManifest: input.spatialProjectBundle?.anchorManifest,
       anchorSignals: input.anchorSignals || anchorSignalsFromSelection(input.spatialAnchorSelection),
       selectedAnchors: input.spatialAnchorSelection,
+      structureReferences: input.spatialStructureReferences,
       projectExclusions: input.spatialProjectBundle?.projectExclusions,
     })
     : null;

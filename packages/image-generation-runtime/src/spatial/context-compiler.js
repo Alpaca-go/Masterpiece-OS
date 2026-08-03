@@ -153,6 +153,8 @@ export function compileSpatialContext(input = {}) {
   }
 
   const promptSections = cleanList(
+    input.structureReferences?.length && `[SOURCE SPACE STRUCTURE REFERENCE]\n${input.structureReferences.map((item, index) =>
+      `Reference ${index + 1} preserves only room envelope, spatial scale, ceiling height, depth, apertures, functional zoning, circulation, camera view and major fixture positions from ${item.assetId}. It has zero authority over material palette, ceiling design, lighting style, brand wall, decorative language or medical tone.`).join('\n')}`,
     foundationSummary.length && `[SPATIAL FOUNDATION — DO NOT OVERRIDE]\n${foundationSummary.join('\n')}`,
     projectCanon?.lockedAssets && `[LOCKED BRAND ASSETS]\n${summarizeObject(projectCanon.lockedAssets)}`,
     canonSummary.length && `[PROJECT VISUAL CANON]\n${canonSummary.join('\n')}`,
@@ -180,6 +182,14 @@ export function compileSpatialContext(input = {}) {
       allowedRoles: item.allowedRoles,
       deniedRoles: item.deniedRoles,
       projectRelativePath: item.projectRelativePath,
+    })),
+    structureReferences: (input.structureReferences || []).map((item) => ({
+      assetId: item.assetId,
+      sourceAssetId: item.sourceAssetId,
+      projectRelativePath: item.projectRelativePath,
+      sha256: item.sha256,
+      preprocessing: item.preprocessing,
+      responsibility: 'structure_only',
     })),
     conflicts: anchor.conflicts,
     provenance,
