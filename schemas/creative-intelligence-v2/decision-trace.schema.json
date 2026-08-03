@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/decision-trace.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "decisionId", "stages", "complete"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" }, "projectId": { "type": "string", "minLength": 1 },
+    "decisionId": { "type": "string", "minLength": 1 }, "complete": { "type": "boolean" },
+    "stages": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence", "opportunities", "direction", "userDecision", "creativeDecision"],
+      "properties": {
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "exists"],
+            "properties": {
+              "ref": { "type": "string" },
+              "exists": { "type": "boolean" }
+            }
+          }
+        },
+        "opportunities": { "type": "array", "items": { "type": "string" } },
+        "direction": { "enum": ["D01", "D02", "D03"] },
+        "userDecision": { "type": "object" },
+        "creativeDecision": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

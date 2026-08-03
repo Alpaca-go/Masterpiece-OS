@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/creative-direction-set.schema.json",
+  "title": "Creative Direction Set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "directionMode", "hypothesisStatus", "inputFingerprint", "directions"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "directionMode": { "enum": ["greenfield", "existing_system_upgrade", "reference_translation", "brief_execution"] },
+    "hypothesisStatus": { "const": "awaiting_user_decision" },
+    "inputFingerprint": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "directions": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "prefixItems": [
+        { "allOf": [{ "$ref": "#/$defs/direction" }, { "properties": { "id": { "const": "D01" } } }] },
+        { "allOf": [{ "$ref": "#/$defs/direction" }, { "properties": { "id": { "const": "D02" } } }] },
+        { "allOf": [{ "$ref": "#/$defs/direction" }, { "properties": { "id": { "const": "D03" } } }] }
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "strings": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } },
+    "sourceMechanism": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "mechanism", "evidenceRefs"],
+      "properties": {
+        "type": { "enum": ["product_form", "core_function", "ingredient_or_material", "user_action", "use_outcome", "brand_name", "origin_or_culture", "brand_story", "competitive_opposition", "packaging_structure", "service_process", "data_or_technology"] },
+        "mechanism": { "type": "string", "minLength": 1 },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    },
+    "direction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "strategicProposition", "coreMetaphor", "sourceMechanisms", "languageNail", "visualHammer", "visualGenerationMechanism", "compositionLogic", "colorLogic", "typographyLogic", "imageMaterialLogic", "perceptionOutcome", "crossTouchpointLogic", "touchpointPotential", "advantages", "risks", "evidenceRefs"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string", "minLength": 1 },
+        "strategicProposition": { "type": "string", "minLength": 1 },
+        "coreMetaphor": { "type": "string", "minLength": 1 },
+        "sourceMechanisms": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/sourceMechanism" } },
+        "languageNail": { "type": "string", "minLength": 1 },
+        "visualHammer": { "type": "string", "minLength": 1 },
+        "visualGenerationMechanism": { "type": "string", "minLength": 1 },
+        "compositionLogic": { "type": "string", "minLength": 1 },
+        "colorLogic": { "type": "string", "minLength": 1 },
+        "typographyLogic": { "type": "string", "minLength": 1 },
+        "imageMaterialLogic": { "type": "string", "minLength": 1 },
+        "perceptionOutcome": { "type": "string", "minLength": 1 },
+        "crossTouchpointLogic": { "type": "string", "minLength": 1 },
+        "touchpointPotential": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "advantages": { "$ref": "#/$defs/strings" },
+        "risks": { "$ref": "#/$defs/strings" },
+        "evidenceRefs": { "$ref": "#/$defs/evidenceRefs" }
+      }
+    }
+  }
+}

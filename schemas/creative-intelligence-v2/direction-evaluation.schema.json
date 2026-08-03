@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/direction-evaluation.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "evaluationType", "anchorValidationRequired", "scores", "recommendation", "recommendationReasons", "largestRisk"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" }, "projectId": { "type": "string", "minLength": 1 },
+    "evaluationType": { "const": "concept_pre_evaluation" }, "anchorValidationRequired": { "const": true },
+    "scores": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["directionId", "strategyFit", "differentiation", "memoryPotential", "categoryTrust", "extensionPotential", "total", "evidenceRefs"],
+        "properties": {
+          "directionId": { "enum": ["D01", "D02", "D03"] },
+          "strategyFit": { "type": "number", "minimum": 0, "maximum": 10 },
+          "differentiation": { "type": "number", "minimum": 0, "maximum": 10 },
+          "memoryPotential": { "type": "number", "minimum": 0, "maximum": 10 },
+          "categoryTrust": { "type": "number", "minimum": 0, "maximum": 10 },
+          "extensionPotential": { "type": "number", "minimum": 0, "maximum": 10 },
+          "total": { "type": "number", "minimum": 0, "maximum": 10 },
+          "evidenceRefs": { "type": "array", "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } }
+        }
+      }
+    },
+    "recommendation": { "type": "string" },
+    "recommendationReasons": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "largestRisk": { "type": "string" }
+  }
+}

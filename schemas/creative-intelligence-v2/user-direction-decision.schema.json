@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/user-direction-decision.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "selectedDirectionId", "acceptedElements", "rejectedElements", "mergedElements", "userRationale", "status", "confirmedAt"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" }, "projectId": { "type": "string", "minLength": 1 },
+    "selectedDirectionId": { "type": ["string", "null"], "enum": ["D01", "D02", "D03", null] },
+    "acceptedElements": { "$ref": "#/$defs/strings" }, "rejectedElements": { "$ref": "#/$defs/strings" },
+    "mergedElements": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false, "required": ["fromDirectionId", "elementType", "content"],
+        "properties": {
+          "fromDirectionId": { "enum": ["D01", "D02", "D03"] },
+          "elementType": { "enum": ["strategicProposition", "coreMetaphor", "languageNail", "visualHammer", "visualGenerationMechanism", "compositionLogic", "colorLogic", "typographyLogic", "imageMaterialLogic", "perceptionOutcome", "crossTouchpointLogic"] },
+          "content": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "userRationale": { "type": "string" }, "status": { "enum": ["draft", "confirmed"] },
+    "confirmedAt": { "type": ["string", "null"], "format": "date-time" }
+  },
+  "$defs": { "strings": { "type": "array", "items": { "type": "string", "minLength": 1 } } }
+}

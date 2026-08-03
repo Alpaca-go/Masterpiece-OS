@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/direction-validation.schema.json",
+  "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "status", "pairComparisons", "errors"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" }, "projectId": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["passed", "failed"] },
+    "pairComparisons": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["a", "b", "differences", "variationOnly"],
+        "properties": {
+          "a": { "enum": ["D01", "D02", "D03"] }, "b": { "enum": ["D01", "D02", "D03"] },
+          "differences": {
+            "type": "object", "additionalProperties": false,
+            "required": ["strategicProposition", "coreMetaphor", "visualMechanism", "compositionLogic", "materialLogic", "perceptionOutcome"],
+            "properties": {
+              "strategicProposition": { "type": "boolean" }, "coreMetaphor": { "type": "boolean" },
+              "visualMechanism": { "type": "boolean" }, "compositionLogic": { "type": "boolean" },
+              "materialLogic": { "type": "boolean" }, "perceptionOutcome": { "type": "boolean" }
+            }
+          },
+          "variationOnly": { "type": "boolean" }
+        }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["code", "directions"],
+        "properties": { "code": { "const": "DIRECTION_VARIATION_ONLY" }, "directions": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "enum": ["D01", "D02", "D03"] } } }
+      }
+    }
+  }
+}
