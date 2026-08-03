@@ -75,6 +75,9 @@ export async function repairSingleLogoInPlace(input: {
       placement: placement.normalizedBounds,
       removeBackground: { enabled: metadata.hasAlpha !== true, tolerance: 24 },
       ...(materialMode ? { materialMode } : {}),
+      ...(placement.surfaceMode && placement.surfaceMode !== 'partial_occlusion'
+        ? { surfaceMode: placement.surfaceMode }
+        : {}),
     });
     await fs.rename(temporaryPath, scenePath);
     const output = await fs.readFile(scenePath);

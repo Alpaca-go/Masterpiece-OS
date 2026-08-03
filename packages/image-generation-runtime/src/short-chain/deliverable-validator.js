@@ -65,6 +65,9 @@ function lockedAssetQaResults(evidence, taskContract) {
         && (visibleWidthPx === undefined || visibleWidthPx >= 96)) errors.push('wrong_text');
       if (item.materialMatch === false) errors.push('material_failure');
       if (item.placementMatch === false) errors.push('wrong_placement');
+      if (item.surfaceMatch === false) errors.push('surface_integration_error');
+      if (item.occlusionMatch === false) errors.push('occlusion_error');
+      if (item.seriesConsistencyMatch === false) errors.push('series_consistency_error');
       const unexpectedLogoCount = Math.max(0, Math.round(Number(item.unexpectedLogoCount) || 0));
       if (unexpectedLogoCount > 0) errors.push('unexpected_logo');
       const uniqueErrors = [...new Set(errors)];
@@ -86,6 +89,7 @@ function lockedAssetQaResults(evidence, taskContract) {
           'wrong_text', 'contour_deformation', 'aspect_ratio_error', 'duplicate_asset',
           'unexpected_logo', 'material_failure', 'low_legibility', 'wrong_placement',
           'identity_deformation', 'character_proportion_error', 'primary_color_error',
+          'surface_integration_error', 'occlusion_error', 'series_consistency_error',
         ].includes(error)),
         fallbackRecommended: uniqueErrors.some((error) => [
           'wrong_text', 'contour_deformation', 'aspect_ratio_error', 'missing_asset',

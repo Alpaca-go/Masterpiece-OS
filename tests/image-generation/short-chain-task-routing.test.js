@@ -167,6 +167,33 @@ test('Phase 4 planner gives Logo and IP distinct roles, surfaces and density lim
   }), /not multiple Logos/u);
 });
 
+test('Phase 5 planner routes glass, curved, occluded and distant surfaces explicitly', () => {
+  const baseTask = {
+    projectId: projectContext.projectId,
+    deliverableFamily: 'space',
+    subtype: 'reception',
+    shot: 'three_quarter_wide',
+    count: 1,
+    aspectRatio: '16:9',
+    referenceAssetIds: ['logo-1'],
+    brandMarkRenderMode: 'locked_asset_render',
+    materialMode: 'metal_dimensional',
+    brandIntensity: 'balanced',
+  };
+  const plan = (instruction) => planLockedAssetPlacements({
+    taskContract: createShortChainTaskContract({ ...baseTask, currentInstruction: instruction }),
+    selectedAssets: [{ assetId: 'logo-1', type: 'logo' }],
+  });
+  assert.equal(plan('Apply the Logo to a glass entrance panel.').placements[0].projectionStrategy, 'alpha_glass_projection');
+  assert.equal(plan('Apply the Logo continuously across a curved wall.').placements[0].projectionStrategy, 'segmented_curve_projection');
+  const occluded = plan('Place the Logo behind a partially occluding foreground column.');
+  assert.equal(occluded.placements[0].occlusionPolicy, 'preserve_foreground_occluders');
+  assert.equal(occluded.mvpEligible, false);
+  const distant = plan('Use the same Logo on distant wayfinding.');
+  assert.equal(distant.placements[0].projectionStrategy, 'distant_deterministic_composite');
+  assert.equal(distant.placements[0].seriesConsistencyKey, `${projectContext.projectId}:logo-1:space`);
+});
+
 test('Task routing sends reception space only through space templates', () => {
   const result = compileShortChainImageGeneration({
     projectContext,

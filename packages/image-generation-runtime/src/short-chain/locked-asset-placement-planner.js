@@ -14,6 +14,39 @@ function primaryLocation(shot) {
   return { zone: 'central_feature_wall', normalizedBounds: { x: 0.37, y: 0.2, width: 0.28 } };
 }
 
+function surfaceContract(taskContract, bounds, assetId) {
+  const text = `${taskContract.subtype} ${taskContract.shot} ${taskContract.currentInstruction}`;
+  const surfaceMode = /(?:弧形|曲面|curved|curve)/iu.test(text) ? 'curved_wall'
+    : /(?:玻璃|glass)/iu.test(text) ? 'glass'
+      : /(?:金属反射|镜面金属|reflective metal|metal reflection)/iu.test(text) ? 'reflective_metal'
+        : /(?:遮挡|occlusion|occluded|occluding)/iu.test(text) ? 'partial_occlusion'
+          : /(?:远景|远处|导视|distant|wayfinding)/iu.test(text) ? 'distant_wayfinding'
+            : /(?:门头|storefront|entrance)/iu.test(text) ? 'storefront'
+              : 'planar_wall';
+  const projectionStrategy = {
+    curved_wall: 'segmented_curve_projection',
+    glass: 'alpha_glass_projection',
+    reflective_metal: 'reflective_surface_projection',
+    partial_occlusion: 'occlusion_aware_render',
+    distant_wayfinding: 'distant_deterministic_composite',
+  }[surfaceMode] || 'planar_homography';
+  const perspective = surfaceMode === 'storefront' ? 0.035 : 0.015;
+  return {
+    surfaceMode,
+    projectionStrategy,
+    targetQuad: [
+      { x: bounds.x + perspective, y: bounds.y },
+      { x: bounds.x + bounds.width, y: bounds.y + perspective },
+      { x: bounds.x + bounds.width - perspective, y: bounds.y + bounds.width * 0.35 },
+      { x: bounds.x, y: bounds.y + bounds.width * 0.35 - perspective },
+    ],
+    occlusionPolicy: surfaceMode === 'partial_occlusion'
+      ? 'preserve_foreground_occluders'
+      : 'none',
+    seriesConsistencyKey: `${taskContract.projectId}:${assetId}:${taskContract.deliverableFamily}`,
+  };
+}
+
 function normalizeSelected(selectedAssets, selectedLogoAssetIds) {
   if (Array.isArray(selectedAssets)) {
     return [...new Map(selectedAssets
@@ -71,6 +104,11 @@ export function planLockedAssetPlacements({ taskContract, selectedAssets, select
   if (primary.type === 'logo' && !MVP_LOGO_MATERIALS.has(logoMaterial)) {
     limitations.push(`logo_material_requires_strict_qa:${logoMaterial}`);
   }
+  const primarySurface = surfaceContract(taskContract, location.normalizedBounds, primary.assetId);
+  if (primarySurface.surfaceMode === 'partial_occlusion') {
+    limitations.push('deterministic_fallback_requires_occlusion_mask');
+  }
+  const primaryBounds = location.normalizedBounds;
   const placements = [{
     assetId: primary.assetId,
     assetType: primary.type,
@@ -81,10 +119,14 @@ export function planLockedAssetPlacements({ taskContract, selectedAssets, select
     targetSize: 'large',
     mustBeLegible: primary.type === 'logo',
     maxOccurrences: 1,
-    normalizedBounds: location.normalizedBounds,
+    normalizedBounds: primaryBounds,
+    ...primarySurface,
   }];
   if (supporting) {
     const isIp = supporting.type === 'ip_character';
+    const supportingBounds = isIp
+      ? { x: 0.72, y: 0.42, width: 0.16 }
+      : { x: 0.1, y: 0.38, width: 0.18 };
     placements.push({
       assetId: supporting.assetId,
       assetType: supporting.type,
@@ -95,9 +137,8 @@ export function planLockedAssetPlacements({ taskContract, selectedAssets, select
       targetSize: isIp ? 'medium' : 'small',
       mustBeLegible: false,
       maxOccurrences: 1,
-      normalizedBounds: isIp
-        ? { x: 0.72, y: 0.42, width: 0.16 }
-        : { x: 0.1, y: 0.38, width: 0.18 },
+      normalizedBounds: supportingBounds,
+      ...surfaceContract(taskContract, supportingBounds, supporting.assetId),
     });
   }
   return guardBrandAssetDensity({
@@ -118,13 +159,16 @@ export function planSingleLogoPlacement(input) {
 export function compileSingleLogoPlacementDirectives(plan) {
   if (!plan?.placements?.length) return [];
   const includesIp = plan.placements.some((placement) => placement.assetType === 'ip_character');
+  const includesComplexSurface = plan.placements.some((placement) =>
+    !['planar_wall', 'storefront'].includes(placement.surfaceMode));
   const placementLines = plan.placements.map((placement, index) => (
-    `Locked asset ${index + 1}: ${placement.assetId}; type ${placement.assetType}; role ${placement.role}; zone ${placement.zone}; target size ${placement.targetSize}; material ${placement.material}; maximum occurrences ${placement.maxOccurrences}.`
+    `Locked asset ${index + 1}: ${placement.assetId}; type ${placement.assetType}; role ${placement.role}; zone ${placement.zone}; surface ${placement.surfaceMode}; projection ${placement.projectionStrategy}; target size ${placement.targetSize}; material ${placement.material}; maximum occurrences ${placement.maxOccurrences}; series consistency key ${placement.seriesConsistencyKey}.`
   ));
   return [
     `Locked Asset Placement Plan: use exactly ${plan.placements.length} selected asset(s) with one primary asset and no competing focal points.`,
     ...placementLines,
     'Use front-facing or lightly perspective architectural carriers. Keep each selected asset complete, camera-visible and on its assigned distinct surface.',
+    ...(includesComplexSurface ? ['For glass, preserve transparency and environmental reflection; for reflective metal, preserve readable contour against highlights; for curved walls, use a segmented continuous projection; for partial occlusion, preserve foreground architecture while keeping enough identity visible; for distant wayfinding, simplify material and prioritize silhouette over tiny OCR.'] : []),
     ...(includesIp ? ['For an IP character, lock identity, head-to-body proportion range, facial feature positions, primary colors, signature clothing and accessories; pose, expression, view, 3D material and environmental light may adapt.'] : []),
     'Do not invent additional logos, pseudo text, duplicate signage, unrelated mascot variants, random typography, or logo-like marks outside planned placement zones.',
     'Preserve Logo outer contour, internal negative shapes, every letterform, symbol-to-wordmark arrangement and original proportions. Only perspective, physical scale, material, thickness, mounting, light, shadow, glow and environmental reflection may change.',

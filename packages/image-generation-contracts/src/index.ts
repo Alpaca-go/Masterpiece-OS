@@ -878,6 +878,23 @@ export type LockedAssetPlacementMaterial = LockedAssetMaterialMode
   | 'vinyl_graphics'
   | 'painted_mural';
 
+export type LockedAssetSurfaceMode =
+  | 'planar_wall'
+  | 'glass'
+  | 'storefront'
+  | 'reflective_metal'
+  | 'curved_wall'
+  | 'partial_occlusion'
+  | 'distant_wayfinding';
+
+export type LockedAssetProjectionStrategy =
+  | 'planar_homography'
+  | 'alpha_glass_projection'
+  | 'segmented_curve_projection'
+  | 'reflective_surface_projection'
+  | 'occlusion_aware_render'
+  | 'distant_deterministic_composite';
+
 export interface LockedAssetPlacementPlan {
   schemaVersion: '1.0';
   sceneId: string;
@@ -895,6 +912,16 @@ export interface LockedAssetPlacementPlan {
     mustBeLegible: boolean;
     maxOccurrences: 1;
     normalizedBounds: { x: number; y: number; width: number };
+    surfaceMode?: LockedAssetSurfaceMode;
+    projectionStrategy?: LockedAssetProjectionStrategy;
+    targetQuad?: [
+      { x: number; y: number },
+      { x: number; y: number },
+      { x: number; y: number },
+      { x: number; y: number },
+    ];
+    occlusionPolicy?: 'none' | 'preserve_foreground_occluders' | 'fallback_not_safe';
+    seriesConsistencyKey?: string;
   }>;
   styleInheritance: {
     palette: true;
@@ -1081,7 +1108,10 @@ export type LockedAssetQAError =
   | 'wrong_placement'
   | 'identity_deformation'
   | 'character_proportion_error'
-  | 'primary_color_error';
+  | 'primary_color_error'
+  | 'surface_integration_error'
+  | 'occlusion_error'
+  | 'series_consistency_error';
 
 export interface LockedAssetQAResult {
   assetId: string;

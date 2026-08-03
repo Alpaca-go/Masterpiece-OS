@@ -32,6 +32,7 @@ export interface LogoPostCompositeInput {
     | 'acrylic_dimensional'
     | 'pvc_dimensional'
     | 'metal_dimensional';
+  surfaceMode?: 'planar_wall' | 'glass' | 'storefront' | 'reflective_metal' | 'curved_wall' | 'distant_wayfinding';
 }
 
 export interface LogoPostCompositeResult {
@@ -40,6 +41,7 @@ export interface LogoPostCompositeResult {
   outputSha256: string;
   sourceCrop: PixelRect;
   materialMode?: LogoPostCompositeInput['materialMode'];
+  surfaceMode?: LogoPostCompositeInput['surfaceMode'];
   placement: NormalizedPlacement & {
     outputLeft: number;
     outputTop: number;
@@ -165,6 +167,14 @@ async function transparentLogo(
   }).png().toBuffer();
 }
 
+async function withAlphaOpacity(source: Buffer, opacity: number): Promise<Buffer> {
+  const { data, info } = await sharp(source).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  for (let offset = 3; offset < data.length; offset += info.channels) {
+    data[offset] = Math.round((data[offset] ?? 0) * opacity);
+  }
+  return sharp(data, { raw: { width: info.width, height: info.height, channels: 4 } }).png().toBuffer();
+}
+
 export async function postCompositeConfirmedLogo(
   input: LogoPostCompositeInput,
 ): Promise<LogoPostCompositeResult> {
@@ -198,10 +208,17 @@ export async function postCompositeConfirmedLogo(
     });
   }
   const outputWidth = Math.max(1, Math.round(sceneWidth * placement.width));
-  const resized = await sharp(logoLayer)
+  let resized: Buffer<ArrayBufferLike> = await sharp(logoLayer)
     .resize({ width: outputWidth, withoutEnlargement: false })
     .png()
     .toBuffer();
+  if (input.surfaceMode === 'glass') resized = await withAlphaOpacity(resized, 0.78);
+  if (input.surfaceMode === 'reflective_metal') {
+    resized = await sharp(resized).modulate({ saturation: 0.28, brightness: 1.08 }).png().toBuffer();
+  }
+  if (input.surfaceMode === 'distant_wayfinding') {
+    resized = await sharp(resized).blur(0.35).png().toBuffer();
+  }
   const resizedMetadata = await sharp(resized).metadata();
   const outputHeight = resizedMetadata.height || 0;
   const outputLeft = Math.round(sceneWidth * placement.x);
@@ -237,8 +254,27 @@ export async function postCompositeConfirmedLogo(
       });
     }
   }
+  const identityLayers: Array<{ input: Buffer; left: number; top: number }> = [];
+  if (input.surfaceMode === 'curved_wall') {
+    const slices = 8;
+    let cursor = outputLeft;
+    for (let index = 0; index < slices; index += 1) {
+      const left = Math.round((outputWidth * index) / slices);
+      const right = Math.round((outputWidth * (index + 1)) / slices);
+      const width = Math.max(1, right - left);
+      const curveScale = 0.9 + 0.1 * Math.cos(((index + 0.5) / slices - 0.5) * Math.PI);
+      const slice = await sharp(resized).extract({ left, top: 0, width, height: outputHeight })
+        .resize({ width, height: Math.max(1, Math.round(outputHeight * curveScale)) })
+        .png().toBuffer();
+      const sliceHeight = (await sharp(slice).metadata()).height || outputHeight;
+      identityLayers.push({ input: slice, left: cursor, top: outputTop + Math.round((outputHeight - sliceHeight) / 2) });
+      cursor += width;
+    }
+  } else {
+    identityLayers.push({ input: resized, left: outputLeft, top: outputTop });
+  }
   const output = await sharp(input.scenePath)
-    .composite([...materialLayers, { input: resized, left: outputLeft, top: outputTop }])
+    .composite([...materialLayers, ...identityLayers])
     .png()
     .toBuffer();
   await fs.writeFile(input.outputPath, output);
@@ -248,6 +284,7 @@ export async function postCompositeConfirmedLogo(
     outputSha256: crypto.createHash('sha256').update(output).digest('hex'),
     sourceCrop: crop,
     ...(input.materialMode ? { materialMode: input.materialMode } : {}),
+    ...(input.surfaceMode ? { surfaceMode: input.surfaceMode } : {}),
     placement: {
       ...placement,
       outputLeft,

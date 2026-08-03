@@ -95,3 +95,33 @@ test('locked asset post-composite places multiple source-bound layers in one aud
   assert.equal(result.outputSha256, crypto.createHash('sha256').update(await fs.readFile(outputPath)).digest('hex'));
   assert.notEqual(result.outputSha256, result.sourceSceneSha256);
 });
+
+test('complex-surface compositor supports curved segmentation and translucent glass', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-logo-complex-surface-'));
+  const scenePath = path.join(root, 'scene.png');
+  const logoPath = path.join(root, 'logo.png');
+  await sharp({ create: { width: 720, height: 420, channels: 3, background: '#b9c3c9' } }).png().toFile(scenePath);
+  await sharp(Buffer.from('<svg width="240" height="80"><rect width="240" height="80" rx="10" fill="#5829a5"/><circle cx="45" cy="40" r="24" fill="#54c531"/><rect x="90" y="24" width="120" height="32" fill="white"/></svg>'))
+    .png().toFile(logoPath);
+  const curved = await postCompositeConfirmedLogo({
+    scenePath,
+    logoPath,
+    outputPath: path.join(root, 'curved.png'),
+    sourceCrop: { left: 0, top: 0, width: 240, height: 80 },
+    placement: { x: 0.3, y: 0.25, width: 0.38 },
+    surfaceMode: 'curved_wall',
+    materialMode: 'metal_dimensional',
+  });
+  const glass = await postCompositeConfirmedLogo({
+    scenePath,
+    logoPath,
+    outputPath: path.join(root, 'glass.png'),
+    sourceCrop: { left: 0, top: 0, width: 240, height: 80 },
+    placement: { x: 0.3, y: 0.25, width: 0.38 },
+    surfaceMode: 'glass',
+  });
+  assert.equal(curved.surfaceMode, 'curved_wall');
+  assert.equal(glass.surfaceMode, 'glass');
+  assert.notEqual(curved.outputSha256, glass.outputSha256);
+  assert.equal((await sharp(curved.outputPath).metadata()).width, 720);
+});
