@@ -1,0 +1,20 @@
+{
+  "variant": "B",
+  "label": "Source Space Only",
+  "status": "succeeded",
+  "runId": "7ad96015-90b6-416c-84be-1b46aa945b94",
+  "modelId": "doubao-seedream-5-0-pro-260628",
+  "providerId": "volcengine",
+  "size": "2560*1440",
+  "seed": null,
+  "seedSupported": false,
+  "durationMs": 84767,
+  "referenceOrder": [
+    "12c8d0b4-714e-443b-8c16-dbd0366fa755.png"
+  ],
+  "persistedReferenceOrder": [
+    "12c8d0b4-714e-443b-8c16-dbd0366fa755.png"
+  ],
+  "imageBytes": 617781,
+  "errorMessage": null
+}

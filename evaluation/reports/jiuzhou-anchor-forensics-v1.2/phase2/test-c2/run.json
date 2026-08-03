@@ -1,0 +1,22 @@
+{
+  "variant": "C2",
+  "label": "Golden Anchor First + Source Second",
+  "status": "succeeded",
+  "runId": "c6c8809e-8015-4e38-96ad-b563976b91a1",
+  "modelId": "doubao-seedream-5-0-pro-260628",
+  "providerId": "volcengine",
+  "size": "2560*1440",
+  "seed": null,
+  "seedSupported": false,
+  "durationMs": 79601,
+  "referenceOrder": [
+    "JZMX-SGR-02-Reception.png",
+    "12c8d0b4-714e-443b-8c16-dbd0366fa755.png"
+  ],
+  "persistedReferenceOrder": [
+    "JZMX-SGR-02-Reception.png",
+    "12c8d0b4-714e-443b-8c16-dbd0366fa755.png"
+  ],
+  "imageBytes": 395471,
+  "errorMessage": null
+}
