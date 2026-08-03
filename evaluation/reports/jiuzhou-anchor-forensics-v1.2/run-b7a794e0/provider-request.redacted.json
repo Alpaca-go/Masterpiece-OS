@@ -1,0 +1,9 @@
+{
+  "adapterId": "seedream-5.0-pro",
+  "adapterVersion": "2.0.0",
+  "method": "POST",
+  "url": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+  "bodyKind": "json",
+  "modelId": "doubao-seedream-5-0-pro-260628",
+  "referenceCount": 1
+}

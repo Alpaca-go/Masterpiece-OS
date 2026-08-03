@@ -1,0 +1,112 @@
+{
+  "projectId": "80b80c56-e470-40e1-9e15-05eb3c787eca",
+  "taskId": "short-chain-task-20f989c8-f4dc-4e0b-bc16-19c2982d30ed",
+  "contextVersion": 1,
+  "contextFingerprint": "01f66dc974f089c2cdf9a744085da24170391c1cd8d87b4bc475f62c4802ecb6",
+  "route": {
+    "familyTemplateId": "family.space",
+    "subtypeTemplateId": "subtype.space.reception",
+    "shotTemplateId": "shot.space.entrance_view",
+    "templateVersions": {
+      "family.space": "1.0.0",
+      "subtype.space.reception": "1.0.0",
+      "shot.space.entrance_view": "1.0.0"
+    }
+  },
+  "trace": {
+    "compilerId": "short-chain-prompt-compiler",
+    "compilerVersion": "4.7.0",
+    "adapterId": "seedream-5.0-pro",
+    "adapterVersion": "1.0.0",
+    "sourceFingerprint": "688e1aff48f5345aaed6dc348ab8308e787562603d0efbd4c00e2c73b5291c2a",
+    "promptCompaction": {
+      "removedItemCount": 0,
+      "truncatedItemCount": 0
+    },
+    "promptCharacters": 5663,
+    "maxPromptCharacters": 7500,
+    "compileDurationMs": 16.422
+  },
+  "spatialBrandOrchestration": {
+    "schemaVersion": "1.0",
+    "sceneRole": "reception",
+    "sceneRoleSource": "task_subtype",
+    "cameraDistance": "medium",
+    "brandIntensity": "balanced",
+    "intensityReason": [
+      "user_override"
+    ],
+    "assetBudget": {
+      "sceneRole": "reception",
+      "brandIntensity": "balanced",
+      "primaryAsset": {
+        "assetId": "12c8d0b4-714e-443b-8c16-dbd0366fa755",
+        "assetType": "other",
+        "targetZone": "reception_back_wall",
+        "maxOccurrences": 1
+      },
+      "secondaryAssets": [],
+      "textBudget": {
+        "lockedLogoGroups": 0,
+        "headlineGroups": 1,
+        "supportingTextGroups": 0,
+        "smallTextAllowed": false,
+        "microTextAllowed": false
+      },
+      "styleInheritance": {
+        "palette": true,
+        "shapeLanguage": true,
+        "patternRhythm": true,
+        "typographyMood": true,
+        "spatialOrder": true
+      },
+      "prohibitedAssetIds": [],
+      "prohibitedContent": [
+        "additional logos",
+        "invented brand names",
+        "pseudo typography",
+        "micro text"
+      ]
+    },
+    "textSafetyZones": [
+      {
+        "zoneId": "reception_back_wall",
+        "zoneDescription": "Primary approved brand asset carrier",
+        "policy": "locked_text_only",
+        "allowedAssetIds": [
+          "12c8d0b4-714e-443b-8c16-dbd0366fa755"
+        ],
+        "allowedText": [],
+        "maxTextGroups": 1,
+        "minimumReadableWidthPx": 96
+      },
+      {
+        "zoneId": "all_unplanned_surfaces",
+        "zoneDescription": "Every wall, floor, ceiling, furnishing and distant surface not explicitly listed above",
+        "policy": "no_text",
+        "maxTextGroups": 0
+      }
+    ],
+    "densityIssues": [],
+    "compiledRules": {
+      "positive": [
+        "SCENE ROLE: reception.",
+        "BRAND INTENSITY: balanced. Intensity controls hierarchy and scale, not repeated Logo count.",
+        "APPROVED ASSET BUDGET: 12c8d0b4-714e-443b-8c16-dbd0366fa755; use each at most once in the placement plan.",
+        "STYLE INHERITANCE: use palette, shapeLanguage, patternRhythm, typographyMood, spatialOrder to carry brand identity into materials, proportions, pattern rhythm and environmental details without repeating the Logo.",
+        "TEXT BUDGET: locked Logo groups 0; headline groups 1; supporting text groups 0; small text forbidden; micro text forbidden.",
+        "TEXT SAFETY ZONES: reception_back_wall=locked_text_only; all_unplanned_surfaces=no_text. Unlisted surfaces inherit no_text.",
+        "Use approved locked assets only in their assigned zones. Preserve their identity and geometry."
+      ],
+      "negative": [
+        "Do not generate additional logos or duplicate the brand name.",
+        "Do not invent Chinese text, English text, slogans, captions or pseudo typography.",
+        "Do not create illegible small text or micro text.",
+        "Do not place logo-like symbols outside approved zones.",
+        "Do not decorate every surface with brand graphics.",
+        "Do not turn the space into a poster wall."
+      ]
+    }
+  },
+  "compiledAt": "2026-08-03T14:27:59.064Z"
+}

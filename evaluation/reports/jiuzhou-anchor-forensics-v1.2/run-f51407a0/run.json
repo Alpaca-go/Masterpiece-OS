@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "f51407a0-ef5b-4fc4-9d44-4776c1529587",
+  "projectId": "80b80c56-e470-40e1-9e15-05eb3c787eca",
+  "taskId": "igt-8fae7096-fd59-4f0d-9318-ccfb84ab7232",
+  "status": "succeeded",
+  "outputType": "concept_image",
+  "providerId": "volcengine",
+  "modelId": "doubao-seedream-5-0-pro-260628",
+  "region": "beijing",
+  "apiProfileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "createdAt": "2026-08-03T14:28:02.168Z",
+  "updatedAt": "2026-08-03T14:29:33.324Z",
+  "gate": {
+    "blocked": false,
+    "errors": [],
+    "warnings": []
+  },
+  "images": [
+    {
+      "imageId": "image-01",
+      "relativePath": "images/image-01.png",
+      "thumbnailRelativePath": "thumbnails/image-01.webp",
+      "mimeType": "image/png",
+      "sizeBytes": 530546,
+      "width": 2816,
+      "height": 1584,
+      "sha256": "7af2eb137a61c750d93ce1c9550006fde1ea4230325bcff4e9f246c087273304",
+      "downloadedAt": "2026-08-03T14:29:33.324Z"
+    }
+  ],
+  "startedAt": "2026-08-03T14:28:02.182Z",
+  "providerExecutionMode": "synchronous",
+  "providerTaskId": "sync-f51407a0-ef5b-4fc4-9d44-4776c1529587",
+  "completedAt": "2026-08-03T14:29:33.324Z"
+}

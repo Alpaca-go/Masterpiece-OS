@@ -1,0 +1,33 @@
+{
+  "projectId": "jiuzhou-aesthetics",
+  "version": 2,
+  "verticalSpatialArchetype": {
+    "enabled": false,
+    "reason": "disabled_until_jiuzhou_three_scene_calibration_passes"
+  },
+  "featureFlags": [
+    "SPATIAL_PROJECT_VISUAL_CANON_V2",
+    "SPATIAL_STRUCTURE_STYLE_SPLIT_V1",
+    "SPATIAL_ANCHOR_DIMENSIONAL_INFLUENCE_V1_1",
+    "SPATIAL_LOGO_SCALE_CONTRACT_V1"
+  ],
+  "paletteRatios": {
+    "neutralBaseMinimum": 0.72,
+    "neutralBaseMaximum": 0.9,
+    "purpleAccentMinimum": 0.04,
+    "purpleAccentMaximum": 0.12,
+    "iridescenceMaximum": 0.05
+  },
+  "anchorCalibrationDimensions": [
+    "brand_atmosphere",
+    "brand_integration",
+    "material_and_lighting",
+    "color_relationship",
+    "architectural_skin",
+    "decorative_density"
+  ],
+  "runtimeSourcePolicy": {
+    "loadGoldenMarkdown": false,
+    "loadAcceptanceAsGenerationPrompt": false
+  }
+}

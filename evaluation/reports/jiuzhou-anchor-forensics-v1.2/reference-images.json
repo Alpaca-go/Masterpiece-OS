@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "forensics": "jiuzhou-anchor-forensics-v1.2",
+  "frozenAt": "2026-08-03",
+  "branch": "fix/jiuzhou-spatial-anchor-forensics-v1.2",
+  "baselineTag": "pre-jiuzhou-spatial-calibration-v1.2",
+  "note": "以下为两次真实 run 中模型实际收到的参考图数组（provider 请求 content 中的 {image} 项，按提交顺序）。两次 run 的参考图数组完全一致。",
+  "runs": [
+    {
+      "runId": "f51407a0-ef5b-4fc4-9d44-4776c1529587",
+      "createdAt": "2026-08-03T14:28:02.168Z",
+      "providerId": "volcengine",
+      "modelId": "doubao-seedream-5-0-pro-260628",
+      "endpoint": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+      "referenceImages": [
+        {
+          "position": 1,
+          "assetId": "12c8d0b4-714e-443b-8c16-dbd0366fa755",
+          "fileName": "九州美学视觉方案-11.png",
+          "role": "current_project_identity",
+          "source": "user_selected",
+          "includeReason": "Creative Production core_reference",
+          "sha256": "cdf8f6087c6ffbe7bdc3458374bcb1f45d9e2f005f6fb0af8c1a76b20603d270",
+          "encoding": "base64 data URI 内联（未结构化预处理）"
+        }
+      ]
+    },
+    {
+      "runId": "b7a794e0-8402-48bc-b23f-0042c211d265",
+      "createdAt": "2026-08-03T14:32:02.632Z",
+      "providerId": "volcengine",
+      "modelId": "doubao-seedream-5-0-pro-260628",
+      "endpoint": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+      "referenceImages": [
+        {
+          "position": 1,
+          "assetId": "12c8d0b4-714e-443b-8c16-dbd0366fa755",
+          "fileName": "九州美学视觉方案-11.png",
+          "role": "current_project_identity",
+          "source": "user_selected",
+          "includeReason": "Creative Production core_reference",
+          "sha256": "cdf8f6087c6ffbe7bdc3458374bcb1f45d9e2f005f6fb0af8c1a76b20603d270",
+          "encoding": "base64 data URI 内联（未结构化预处理）"
+        }
+      ]
+    }
+  ],
+  "expectedButAbsent": [
+    {
+      "assetId": "JZMX-SGR-02-Reception",
+      "expectedRole": "interior_style_anchor (reception/lobby/large_lobby)",
+      "status": "NEVER_ENTERED_ANY_REAL_RUN",
+      "evidence": "全部历史 run 的 task.json 中 grep golden-anchor 命中数为 0"
+    },
+    {
+      "assetId": "structure-reference (派生自原空间参考图)",
+      "expectedRole": "structure_only reference（灰度化+纹理抑制预处理产物）",
+      "status": "NOT_PRESENT",
+      "evidence": "run 目录无 input/structure-references 产物；references 数组中无 structure_reference 角色"
+    }
+  ]
+}
