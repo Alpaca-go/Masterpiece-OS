@@ -14,6 +14,11 @@ import {
   resolveLockedAssetSelfHealing,
   validateLockedAssetSelfHealingCoverage,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
+import {
+  PACKAGING_REPAIR_POLICIES,
+  resolvePackagingSelfHealing,
+  validatePackagingRepairPolicyCoverage,
+} from '@masterpiece/image-generation-runtime/task-families/packaging';
 
 test('every formal analysis requirement has an actionable Self-Healing policy', () => {
   assert.deepEqual(validateSelfHealingContractCoverage(), []);
@@ -85,4 +90,25 @@ test('Locked Asset Self-Healing routes identity and material failures to local r
     mismatchTypes: ['locked_asset_violation'],
     lockedAssetViolations: ['logo-1:material_failure'],
   }).action, 'local_material_repair');
+});
+
+test('every Packaging evaluation failure has an actionable incremental repair policy', () => {
+  const codes = PACKAGING_REPAIR_POLICIES.map(([code]) => code);
+  assert.deepEqual(validatePackagingRepairPolicyCoverage(), []);
+  assert.equal(new Set(codes).size, codes.length);
+});
+
+test('Packaging Self-Healing separates visible regeneration from missing-fact confirmation', () => {
+  const visible = resolvePackagingSelfHealing({
+    packagingEvaluation: { failures: ['PACKAGING_MATERIAL_FAILED'] },
+  });
+  assert.equal(visible.action, 'regenerate_with_correction_prompt');
+  assert.equal(visible.maxAutomaticRetries, 1);
+  assert.match(visible.correctionDirectives[0], /packaging substrate/u);
+
+  const missingFact = resolvePackagingSelfHealing({
+    analysisValidation: { errors: ['PACKAGING_STRUCTURE_EVIDENCE_MISSING'] },
+  });
+  assert.equal(missingFact.action, 'ask_user');
+  assert.equal(missingFact.maxAutomaticRetries, 0);
 });

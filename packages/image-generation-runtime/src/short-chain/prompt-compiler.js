@@ -11,6 +11,10 @@ import {
 } from '../../../creative-production-runtime/src/packaging-analysis.js';
 import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
 import { getPackagingShotDefinition } from '../task-families/packaging/shot-library.js';
+import {
+  bindPackagingLockedAssets,
+  validatePackagingAnalysisForShot,
+} from '../task-families/packaging/index.js';
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 import { compileSingleLogoPlacementDirectives } from './locked-asset-placement-planner.js';
 
@@ -591,6 +595,30 @@ export function compileShortChainPrompt({
       taskContract,
       shotDefinition: getPackagingShotDefinition(taskContract.shot),
     }));
+    const selectedPackagingAssets = taskContract.referenceAssetIds.map((assetId) => {
+      const sourceAsset = projectContext.sourceAssetRefs.find((item) => item.assetId === assetId);
+      const type = sourceAsset?.lockedAssetType
+        || (sourceAsset?.role === 'logo' ? 'logo'
+          : sourceAsset?.role === 'package_structure' ? 'packaging_structure'
+            : sourceAsset?.role === 'product' ? 'product_category'
+              : sourceAsset?.role === 'identity' ? 'packaging_artwork' : 'packaging_front');
+      return { id: assetId, type, evidenceRefs: [assetId] };
+    });
+    const packagingLockedAssetBindings = bindPackagingLockedAssets([
+      ...packet.lockedAssets,
+      ...selectedPackagingAssets,
+    ]);
+    const packagingAnalysisValidation = validatePackagingAnalysisForShot({
+      analysis: packagingStructuredAnalysis,
+      taskContract,
+      lockedAssetBindings: packagingLockedAssetBindings,
+    });
+    if (!packagingAnalysisValidation.valid) {
+      throw Object.assign(new Error(`PACKAGING_ANALYSIS_VALIDATION_FAILED: ${packagingAnalysisValidation.errors.join(', ')}`), {
+        code: packagingAnalysisValidation.errors[0],
+        issues: packagingAnalysisValidation.errors,
+      });
+    }
     const packagingTranslation = buildPackagingTranslation({
       visualDecisionPacket: packet,
       packagingAnalysis: packagingStructuredAnalysis,
@@ -635,6 +663,8 @@ export function compileShortChainPrompt({
       sourceMap: packagingContract.sourceMap,
       projectGenerationContract,
       packagingStructuredAnalysis,
+      packagingLockedAssetBindings,
+      packagingAnalysisValidation,
       packagingTranslation,
       effectiveVisualDecisionPacket: packet,
       userConfirmedVisualDecision: confirmedDecision.confirmation,

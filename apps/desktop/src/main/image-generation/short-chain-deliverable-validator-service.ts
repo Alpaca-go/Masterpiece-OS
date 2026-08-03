@@ -172,6 +172,8 @@ export function createShortChainDeliverableValidatorService(
                   textExactMatch: true,
                   ocrConfidence: 0.0,
                   materialMatch: true,
+                  craftMatch: true,
+                  assetOwnershipMatch: true,
                   materialConfidence: 0.0,
                   visibleWidthPx: 0,
                   placementMatch: true,

@@ -1,4 +1,5 @@
 import { evaluatePackagingEvidence } from '../task-families/packaging/evaluation.js';
+import { resolvePackagingSelfHealing } from '../task-families/packaging/self-healing.js';
 
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.1.0';
@@ -249,6 +250,9 @@ export function compileShortChainCorrectionPrompt({
   if (validation.status !== 'failed') {
     throw new Error('A correction prompt requires a failed deliverable validation');
   }
+  const packagingSelfHealing = resolvePackagingSelfHealing({
+    packagingEvaluation: validation.packagingEvaluation,
+  });
   const mismatch = [
     validation.mismatchTypes.includes('wrong_family')
       ? `The previous image was detected as ${validation.detectedFamily}; it must be ${taskContract.deliverableFamily}.`
@@ -273,6 +277,7 @@ export function compileShortChainCorrectionPrompt({
         : 'Remove every logo, letter, word and pseudo-text; keep only a clean placement area.'
       : '',
     ...list(validation.qualityIssues).map((item) => `Repair visible quality issue: ${item}.`),
+    ...packagingSelfHealing.correctionDirectives,
   ].filter(Boolean);
   const correctionBlock = [
     '【一次性对题纠偏】',

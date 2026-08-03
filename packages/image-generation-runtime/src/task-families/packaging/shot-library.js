@@ -10,12 +10,12 @@ const SHOTS = Object.freeze({
   'PKG-HERO-SINGLE': Object.freeze({
     id: 'PKG-HERO-SINGLE',
     purpose: 'single_packaging_hero',
-    compatibleSubtypes: ['lid_and_base_box', 'drawer_box', 'paper_bag', 'small_carton', 'single_product_display'],
+    compatibleSubtypes: ['lid_and_base_box', 'drawer_box', 'paper_bag', 'small_carton', 'gift_set', 'single_product_display'],
     defaultAspectRatio: '4:3',
     minimumProducts: 1,
     maximumProducts: 1,
     requiresOpeningState: false,
-    evaluationCriteria: ['logo_fidelity', 'structure', 'material', 'commercial_photography'],
+    evaluationCriteria: ['logo_fidelity', 'structure', 'material', 'craft', 'asset_ownership', 'commercial_photography'],
   }),
   'PKG-SERIES-GROUP': Object.freeze({
     id: 'PKG-SERIES-GROUP',
@@ -25,7 +25,10 @@ const SHOTS = Object.freeze({
     minimumProducts: 2,
     maximumProducts: 8,
     requiresOpeningState: false,
-    evaluationCriteria: ['product_hierarchy', 'group_relationship', 'series_consistency'],
+    evaluationCriteria: [
+      'logo_fidelity', 'structure', 'material', 'craft', 'asset_ownership',
+      'product_hierarchy', 'group_relationship', 'series_consistency',
+    ],
   }),
   'PKG-GIFT-OPEN': Object.freeze({
     id: 'PKG-GIFT-OPEN',
@@ -35,7 +38,10 @@ const SHOTS = Object.freeze({
     minimumProducts: 1,
     maximumProducts: 12,
     requiresOpeningState: true,
-    evaluationCriteria: ['box_structure', 'insert_structure', 'product_arrangement', 'structural_realism'],
+    evaluationCriteria: [
+      'logo_fidelity', 'structure', 'material', 'craft', 'asset_ownership',
+      'box_structure', 'insert_structure', 'product_arrangement', 'structural_realism',
+    ],
   }),
 });
 

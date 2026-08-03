@@ -840,6 +840,15 @@ export interface PackagingEvaluationResult {
   criteria: Array<{ id: string; passed: boolean; score?: number; reason: string }>;
   failures: string[];
 }
+
+export interface PackagingSelfHealingDecision {
+  schemaVersion: '1.0';
+  action: 'none' | 'regenerate_with_correction_prompt' | 'ask_user' | 'fail_closed';
+  failures: string[];
+  policies: Array<{ code: string; strategy: string }>;
+  correctionDirectives: string[];
+  maxAutomaticRetries: 0 | 1;
+}
 export type ShortChainAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
 /** @deprecated Persisted v1 compatibility only. New tasks use brandMarkRenderMode. */
 export type ShortChainLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
@@ -1046,6 +1055,12 @@ export interface ShortChainCompiledPrompt {
   sourceMap: Record<string, string[]>;
   effectiveVisualDecisionPacket?: unknown;
   packagingStructuredAnalysis?: PackagingStructuredAnalysis;
+  packagingLockedAssetBindings?: {
+    schemaVersion: '1.0';
+    bindings: PackagingLockedAssetBinding[];
+    errors: Array<{ assetId: string; code: string }>;
+  };
+  packagingAnalysisValidation?: { valid: boolean; errors: string[] };
   lockedAssetPlacementPlan?: LockedAssetPlacementPlan | null;
   userConfirmedVisualDecision?: {
     id: string;
@@ -1208,6 +1223,20 @@ export interface LockedAssetRenderDebug {
     fallback: 'none' | 'deterministic_composite' | 'fail_closed';
   } | null;
   finalStatus: 'passed_first_render' | 'passed_after_repair' | 'passed_with_fallback' | 'failed';
+  createdAt: string;
+}
+
+export interface PackagingGenerationDebug {
+  schemaVersion: '1.0';
+  taskId: string;
+  shotId: string;
+  analysisStatus: 'ready' | 'insufficient' | 'unavailable';
+  lockedAssetIds: string[];
+  passes: LockedAssetRenderDebug['passes'];
+  initialEvaluation?: PackagingEvaluationResult;
+  correctionEvaluation?: PackagingEvaluationResult;
+  selfHealingDecision: PackagingSelfHealingDecision;
+  finalStatus: 'passed_first_render' | 'passed_after_repair' | 'failed' | 'unverified';
   createdAt: string;
 }
 

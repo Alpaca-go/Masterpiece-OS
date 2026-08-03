@@ -3,6 +3,13 @@ const TYPE_TO_ROLE = Object.freeze({
   logo: 'package_surface_identity',
   packaging_artwork: 'package_surface_graphic',
   core_symbol: 'package_surface_graphic',
+  color: 'package_surface_graphic',
+  packaging_front: 'package_surface_graphic',
+  icon: 'package_surface_graphic',
+  pattern: 'package_surface_graphic',
+  illustration: 'package_surface_graphic',
+  ip_character: 'package_surface_graphic',
+  other: 'package_surface_graphic',
   packaging_structure: 'package_structure',
   product_category: 'product_identity',
   product_color: 'product_identity',
@@ -21,6 +28,7 @@ function cleanList(value) {
 export function bindPackagingLockedAssets(assets = []) {
   const bindings = [];
   const errors = [];
+  const seen = new Set();
   for (const asset of Array.isArray(assets) ? assets : []) {
     const assetId = String(asset?.id ?? asset?.assetId ?? '').trim();
     const type = String(asset?.type ?? '').trim();
@@ -29,6 +37,8 @@ export function bindPackagingLockedAssets(assets = []) {
       errors.push({ assetId: assetId || '(missing)', code: 'PACKAGING_LOCKED_ASSET_UNSUPPORTED' });
       continue;
     }
+    if (seen.has(assetId)) continue;
+    seen.add(assetId);
     const evidenceRefs = cleanList(asset?.evidenceRefs);
     const sourceAssetId = String(asset?.sourceAssetId ?? '').trim();
     if (sourceAssetId) evidenceRefs.push(sourceAssetId);

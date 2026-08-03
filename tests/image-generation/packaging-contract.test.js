@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   compileShortChainImageGeneration,
+  compileShortChainCorrectionPrompt,
   validateShortChainDeliverableEvidence,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 import { phase1Context } from '../fixtures/phase1.js';
@@ -47,6 +48,8 @@ test('Phase 1 routes PKG-HERO-SINGLE through analysis, translation, contract and
   });
   assert.equal(result.compiledPrompt.packagingStructuredAnalysis.status, 'ready');
   assert.equal(result.compiledPrompt.packagingTranslation.status, 'ready');
+  assert.equal(result.compiledPrompt.packagingLockedAssetBindings.bindings
+    .filter((item) => item.assetId === 'logo-1').length, 1);
   assert.equal(result.compiledPrompt.blocks.length, 14);
   assert.equal(result.compiledPrompt.preflightReport.status, 'pass');
   assert.equal(result.payload.adapterId, 'seedream-5.0-pro');
@@ -62,17 +65,21 @@ test('Phase 1 evaluates PKG-HERO-SINGLE with Packaging-specific visible criteria
       logoFidelity: 0.96,
       structureMatch: true,
       materialMatch: true,
+      craftMatch: true,
+      assetOwnershipMatch: true,
       commercialPhotography: true,
     } },
   });
   assert.equal(result.status, 'passed');
-  assert.equal(result.criteria.length, 4);
+  assert.equal(result.criteria.length, 6);
   assert.equal(evaluatePackagingEvidence({
     shotId: 'PKG-HERO-SINGLE',
     evidence: { packagingQa: {
       logoFidelity: 0.7,
       structureMatch: true,
       materialMatch: false,
+      craftMatch: true,
+      assetOwnershipMatch: true,
       commercialPhotography: true,
     } },
   }).status, 'failed');
@@ -100,6 +107,8 @@ test('Phase 1 evaluates PKG-HERO-SINGLE with Packaging-specific visible criteria
         logoFidelity: 0.96,
         structureMatch: true,
         materialMatch: true,
+        craftMatch: true,
+        assetOwnershipMatch: true,
         commercialPhotography: true,
       },
     },
@@ -189,18 +198,29 @@ test('Phase 2 evaluates hierarchy, group relationship and series consistency', (
     shotId: 'PKG-SERIES-GROUP',
     evidence: { packagingQa: {
       productHierarchyMatch: true,
+      logoFidelity: 0.96,
+      structureMatch: true,
+      materialMatch: true,
+      craftMatch: true,
+      assetOwnershipMatch: true,
       groupRelationshipMatch: true,
       seriesConsistencyMatch: true,
     } },
   });
   assert.equal(passed.status, 'passed');
   assert.deepEqual(passed.criteria.map((item) => item.id), [
+    'logo_fidelity', 'structure', 'material', 'craft', 'asset_ownership',
     'product_hierarchy', 'group_relationship', 'series_consistency',
   ]);
   const failed = evaluatePackagingEvidence({
     shotId: 'PKG-SERIES-GROUP',
     evidence: { packagingQa: {
       productHierarchyMatch: true,
+      logoFidelity: 0.96,
+      structureMatch: true,
+      materialMatch: true,
+      craftMatch: true,
+      assetOwnershipMatch: true,
       groupRelationshipMatch: true,
       seriesConsistencyMatch: false,
     } },
@@ -248,6 +268,11 @@ test('Phase 3 evaluates box, insert, product arrangement and structural realism 
     shotId: 'PKG-GIFT-OPEN',
     evidence: { packagingQa: {
       boxStructureMatch: true,
+      logoFidelity: 0.96,
+      structureMatch: true,
+      materialMatch: true,
+      craftMatch: true,
+      assetOwnershipMatch: true,
       insertStructureMatch: true,
       productArrangementMatch: true,
       structuralRealism: false,
@@ -255,7 +280,37 @@ test('Phase 3 evaluates box, insert, product arrangement and structural realism 
   });
   assert.equal(result.status, 'failed');
   assert.deepEqual(result.criteria.map((item) => item.id), [
+    'logo_fidelity', 'structure', 'material', 'craft', 'asset_ownership',
     'box_structure', 'insert_structure', 'product_arrangement', 'structural_realism',
   ]);
   assert.deepEqual(result.failures, ['PACKAGING_STRUCTURAL_REALISM_FAILED']);
+});
+
+test('Phase 4 adds Packaging Self-Healing directives to the shared correction prompt', () => {
+  const prompt = compileShortChainCorrectionPrompt({
+    originalPrompt: 'Generate one PKG-HERO-SINGLE result.',
+    taskContract: {
+      deliverableFamily: 'packaging',
+      subtype: 'lid_and_base_box',
+      shot: 'PKG-HERO-SINGLE',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: [],
+    },
+    validation: {
+      status: 'failed',
+      mismatchTypes: ['packaging_quality_failure'],
+      detectedFamily: 'packaging',
+      detectedSubtype: 'lid_and_base_box',
+      missingRequiredItems: [],
+      lockedAssetViolations: [],
+      forbiddenItemsFound: [],
+      qualityIssues: [],
+      packagingEvaluation: {
+        failures: ['PACKAGING_MATERIAL_FAILED', 'PACKAGING_COMMERCIAL_PHOTOGRAPHY_FAILED'],
+      },
+    },
+  });
+  assert.match(prompt, /Restore the specified packaging substrate/u);
+  assert.match(prompt, /finished commercial product photograph/u);
 });

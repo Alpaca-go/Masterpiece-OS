@@ -12,6 +12,8 @@ import type {
   ShortChainProjectPromptAsset,
   ShortChainValidatedGenerationResult,
   LockedAssetRenderDebug,
+  PackagingGenerationDebug,
+  PackagingSelfHealingDecision,
 } from '@masterpiece/image-generation-contracts/index.ts';
 import {
   compileShortChainCorrectionPrompt,
@@ -20,6 +22,10 @@ import {
   resolveLockedAssetSelfHealing,
   validateShortChainEffectivePrompt,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
+import {
+  createPackagingGenerationDebug,
+  resolvePackagingSelfHealing,
+} from '@masterpiece/image-generation-runtime/task-families/packaging';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
@@ -605,6 +611,7 @@ export function createShortChainImageGenerationService(
   ): Promise<ShortChainValidatedGenerationResult> {
     const passRecords: LockedAssetRenderDebug['passes'] = [];
     let selfHealingDecision: LockedAssetRenderDebug['selfHealingDecision'] = null;
+    let packagingSelfHealingDecision: PackagingSelfHealingDecision | null = null;
     const validator = getValidator?.();
     if (!validator) throw new Error('Short-Chain deliverable validator is not configured');
     const compilation = await readCompilation(input.projectId, input.taskId);
@@ -627,6 +634,11 @@ export function createShortChainImageGenerationService(
       runId: initialRun.runId,
       validatorProfileId: input.validatorProfileId,
     });
+    if (compilation.taskContract.deliverableFamily === 'packaging') {
+      packagingSelfHealingDecision = resolvePackagingSelfHealing({
+        packagingEvaluation: initialValidation.packagingEvaluation,
+      }) as PackagingSelfHealingDecision;
+    }
     async function finalizeDebug(result: ShortChainValidatedGenerationResult): Promise<void> {
       const finalRun = result.correctionRun ?? result.initialRun;
       const qaResults = [
@@ -662,6 +674,25 @@ export function createShortChainImageGenerationService(
         path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.locked-assets-debug.json`),
         debug,
       );
+      if (compilation.taskContract.deliverableFamily === 'packaging' && packagingSelfHealingDecision) {
+        const packagingDebug = createPackagingGenerationDebug({
+          taskId: compilation.taskContract.taskId,
+          shotId: compilation.taskContract.shot,
+          analysisStatus: compilation.compiledPrompt.packagingStructuredAnalysis?.status ?? 'unavailable',
+          lockedAssetIds: compilation.compiledPrompt.packagingLockedAssetBindings?.bindings
+            .map((item) => item.assetId) ?? [],
+          passes: passRecords,
+          initialEvaluation: result.initialValidation.packagingEvaluation,
+          correctionEvaluation: result.correctionValidation?.packagingEvaluation,
+          selfHealingDecision: packagingSelfHealingDecision,
+          terminalStatus: result.terminalStatus,
+          automaticRetryCount: result.automaticRetryCount,
+        }) as PackagingGenerationDebug;
+        await writeJson(
+          path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.packaging-debug.json`),
+          packagingDebug,
+        );
+      }
     }
     if (initialValidation.status !== 'failed' || !initialValidation.retryRecommended) {
       const result: ShortChainValidatedGenerationResult = {
