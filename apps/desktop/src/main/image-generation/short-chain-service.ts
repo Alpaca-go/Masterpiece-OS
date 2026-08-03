@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import sharp from 'sharp';
 import type {
   ImageGenerationRun,
   ShortChainCompiledPrompt,
@@ -63,7 +64,7 @@ export interface PostCompositeShortChainLogoInput {
   imageId: string;
   logoAssetId: string;
   confirmedByUser: true;
-  sourceCrop: PixelRect;
+  sourceCrop?: PixelRect;
   placement: NormalizedPlacement;
   removeBackground?: {
     enabled: boolean;
@@ -785,12 +786,19 @@ export function createShortChainImageGenerationService(
     }
     const scenePath = path.resolve(runRoot, image.relativePath);
     const logoPath = path.resolve(paths.input, logoAsset.relativePath);
+    const logoMetadata = await sharp(logoPath).rotate().metadata();
+    const sourceCrop = input.sourceCrop ?? {
+      left: 0,
+      top: 0,
+      width: logoMetadata.width || 0,
+      height: logoMetadata.height || 0,
+    };
     const outputPath = path.join(runRoot, 'images', `${path.parse(image.relativePath).name}.post-composite.png`);
     const composite = await postCompositeConfirmedLogo({
       scenePath,
       logoPath,
       outputPath,
-      sourceCrop: input.sourceCrop,
+      sourceCrop,
       placement: input.placement,
       removeBackground: input.removeBackground,
     });
@@ -809,7 +817,10 @@ export function createShortChainImageGenerationService(
       completedAt: new Date().toISOString(),
     };
     await writeJson(path.join(runRoot, 'logo-post-composite.json'), audit);
-    return audit;
+    return {
+      ...audit,
+      dataUrl: `data:image/png;base64,${(await fs.readFile(outputPath)).toString('base64')}`,
+    };
   }
 
   async function postCompositeLockedAssets(input: PostCompositeShortChainLockedAssetsInput) {

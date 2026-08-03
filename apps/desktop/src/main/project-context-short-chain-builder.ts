@@ -11,7 +11,7 @@ import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 
 export const PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_SCHEMA_VERSION = '2.0';
 export const PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_ID = 'project-context-builder';
-export const PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_VERSION = '1.1.0';
+export const PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_VERSION = '1.2.0';
 
 export interface BuildProjectVisualContextShortChainInput {
   project: ProjectRecord;
@@ -152,9 +152,47 @@ export function migrateProjectVisualContextShortChain(
   context: ProjectVisualContextShortChain,
 ): ProjectVisualContextShortChain & { promptSourceObject: PromptSourceObject } {
   if (context.visualDecisionPacket) {
+    const packet = migrateVisualDecisionPacketShape(context.visualDecisionPacket);
+    const locks = Array.isArray(packet.lockedAssets) ? packet.lockedAssets : [];
+    const inventory = record(packet.assetInventory);
+    const inventoryIds = (key: string) => new Set(
+      (Array.isArray(inventory[key]) ? inventory[key] as UnknownRecord[] : [])
+        .map((item) => String(item.assetId || ''))
+        .filter(Boolean),
+    );
+    const logoIds = new Set([
+      ...context.lockedAssets.logoAssetIds,
+      ...locks.filter((item) => item.type === 'logo').map((item) => item.assetId),
+      ...inventoryIds('logoAssets'),
+    ]);
+    const structureIds = new Set([
+      ...locks.filter((item) => item.type === 'packaging_structure').map((item) => item.assetId),
+      ...inventoryIds('packagingStructures'),
+    ]);
+    const identityIds = new Set(
+      (Array.isArray(inventory.graphicMotifs) ? inventory.graphicMotifs as UnknownRecord[] : [])
+        .filter((item) => item.contextRole === 'brand_asset'
+          && (item.userConfirmed === true || item.editable === false))
+        .map((item) => String(item.assetId || ''))
+        .filter(Boolean),
+    );
     context = {
       ...context,
-      visualDecisionPacket: migrateVisualDecisionPacketShape(context.visualDecisionPacket),
+      lockedAssets: {
+        ...context.lockedAssets,
+        logoAssetIds: [...logoIds],
+      },
+      sourceAssetRefs: context.sourceAssetRefs.map((asset) => ({
+        ...asset,
+        role: logoIds.has(asset.assetId)
+          ? 'logo'
+          : structureIds.has(asset.assetId)
+            ? 'package_structure'
+            : identityIds.has(asset.assetId)
+              ? 'identity'
+              : asset.role,
+      })),
+      visualDecisionPacket: packet,
     };
   }
   if (context.promptSourceObject?.schemaVersion === '1.0') {
@@ -256,12 +294,31 @@ function assetRole(
   asset: ProjectRecord['assets'][number],
   project: ProjectRecord,
   structured: UnknownRecord,
+  packet: Partial<VisualDecisionPacket>,
 ): ProjectVisualContextShortChain['sourceAssetRefs'][number]['role'] {
+  const packetLocks = Array.isArray(packet.lockedAssets) ? packet.lockedAssets : [];
+  const inventory = record(packet.assetInventory);
+  const inventoryAssets = (key: string): UnknownRecord[] => (
+    Array.isArray(inventory[key]) ? inventory[key] as UnknownRecord[] : []
+  );
+  const inventoryContains = (key: string) => inventoryAssets(key)
+    .some((item) => item.assetId === asset.id);
   if (
     project.logoFiles.includes(asset.relativePath)
     || project.logoFiles.includes(asset.originalName)
+    || packetLocks.some((item) => item?.type === 'logo' && item.assetId === asset.id)
+    || inventoryContains('logoAssets')
     || /(?:^|[-_.\s])(logo|标志|标识)(?:[-_.\s]|$)/iu.test(asset.originalName)
   ) return 'logo';
+  if (
+    packetLocks.some((item) => item?.type === 'packaging_structure' && item.assetId === asset.id)
+    || inventoryContains('packagingStructures')
+  ) return 'package_structure';
+  if (inventoryAssets('graphicMotifs').some((item) => (
+    item.assetId === asset.id
+    && item.contextRole === 'brand_asset'
+    && (item.userConfirmed === true || item.editable === false)
+  ))) return 'identity';
   const packageIds = strings(record(structured.lockedAssets).packageStructureAssetIds);
   if (packageIds.includes(asset.id)) return 'package_structure';
   const productIds = strings(record(structured.lockedAssets).productAssetIds);
@@ -293,11 +350,14 @@ export function buildProjectVisualContextShortChain(
     assetId: asset.id,
     name: asset.originalName,
     relativePath: asset.relativePath,
-    role: assetRole(asset, project, structured),
+    role: assetRole(asset, project, structured, suppliedPacket),
   }));
   const persistedLocks = input.lockedAssets ?? [];
   const logoAssetIds = strings(
     persistedLocks.filter((asset) => asset.type === 'logo').map((asset) => asset.sourceAssetId),
+    Array.isArray(suppliedPacket.lockedAssets)
+      ? suppliedPacket.lockedAssets.filter((asset) => asset.type === 'logo').map((asset) => asset.assetId)
+      : [],
     sourceAssetRefs.filter((asset) => asset.role === 'logo').map((asset) => asset.assetId),
   );
   const lockedAssetIds = strings(

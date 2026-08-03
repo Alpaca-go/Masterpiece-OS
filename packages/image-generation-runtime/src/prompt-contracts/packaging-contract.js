@@ -1,4 +1,4 @@
-export const PACKAGING_PROMPT_CONTRACT_VERSION = '1.1.0';
+export const PACKAGING_PROMPT_CONTRACT_VERSION = '1.2.0';
 
 export const PACKAGING_PROMPT_BLOCKS = Object.freeze([
   ['output_task', 'A. Single Output Task'],
@@ -39,6 +39,7 @@ export function compilePackagingPromptContract({
   taskContract,
   logoUsageMode,
   templateSections = () => [],
+  referenceDirectives = [],
 }) {
   if (projectContract?.validation?.status !== 'ready') {
     throw Object.assign(new Error('PROJECT_GENERATION_CONTRACT_INSUFFICIENT'), {
@@ -67,6 +68,7 @@ export function compilePackagingPromptContract({
   const blocks = [
     block('output_task', PACKAGING_PROMPT_BLOCKS[0][1], [
       taskContract.currentInstruction,
+      referenceDirectives,
       'Generate exactly one finished packaging deliverable, never a collage, comparison board, or multi-panel proposal.',
     ], ['task_contract.currentInstruction', 'family.packaging']),
     block('brand_product_identity', PACKAGING_PROMPT_BLOCKS[1][1], [

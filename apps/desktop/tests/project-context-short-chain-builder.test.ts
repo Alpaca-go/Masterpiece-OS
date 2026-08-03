@@ -229,6 +229,33 @@ test('validated Visual Decision Packet is persisted beside the compatibility Pro
   assert.deepEqual(validateProjectVisualContextShortChain(context), { valid: true, errors: [] });
 });
 
+test('Visual Decision Packet roles are reconciled into Short-Chain source assets and locked logo ids', () => {
+  const inputProject = project();
+  inputProject.logoFiles = [];
+  inputProject.assets[0]!.originalName = 'brand-sheet-01.png';
+  const context = buildProjectVisualContextShortChain({
+    project: inputProject,
+    structuredAnalysis: {
+      visualDecisionPacket: {
+        schemaVersion: '1.0',
+        projectId: inputProject.id,
+        lockedAssets: [{
+          assetId: 'asset-logo',
+          type: 'logo',
+          value: 'Approved brand mark',
+          lockSource: 'source_fact',
+          evidenceRefs: ['asset-logo'],
+        }],
+        assetInventory: {
+          logoAssets: [{ assetId: 'asset-logo' }],
+        },
+      },
+    },
+  });
+  assert.equal(context.sourceAssetRefs[0]?.role, 'logo');
+  assert.deepEqual(context.lockedAssets.logoAssetIds, ['asset-logo']);
+});
+
 test('persisted Short-Chain context migrates a legacy Packet even when Prompt Source already exists', () => {
   const context = buildProjectVisualContextShortChain({
     project: project(),

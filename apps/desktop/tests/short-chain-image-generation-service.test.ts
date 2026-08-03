@@ -40,6 +40,11 @@ const context: ProjectVisualContextShortChain = {
     name: 'Confirmed Logo',
     relativePath: 'brand/logo.png',
     role: 'source',
+  }, {
+    assetId: 'identity-asset',
+    name: 'Locked Mascot',
+    relativePath: 'brand/mascot.png',
+    role: 'identity',
   }],
   provenance: {
     builderId: 'test',
@@ -282,6 +287,24 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
     )).then(() => true),
     true,
   );
+
+  const identityBound = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create a reception that visibly integrates the locked mascot.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['identity-asset'],
+      logoUsageMode: 'post_composite',
+    },
+  });
+  assert.match(identityBound.compiledPrompt.finalPrompt, /Provider reference image 1: Locked Mascot/u);
+  assert.match(identityBound.compiledPrompt.finalPrompt, /locked identity\/IP evidence/u);
 
   const poster = await service.compile({
     projectId,

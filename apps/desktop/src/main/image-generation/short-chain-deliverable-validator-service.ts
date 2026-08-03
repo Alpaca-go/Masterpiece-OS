@@ -95,6 +95,19 @@ export function createShortChainDeliverableValidatorService(
     if (!runRoot) throw new Error('Image run directory is missing');
     const imagePath = path.join(runRoot, image.relativePath);
     const context = await projectContext?.getShortChain(input.projectId).catch(() => undefined);
+    const projectPaths = await projects.paths(input.projectId);
+    const selectedReferences = (context?.sourceAssetRefs ?? [])
+      .filter((asset) => input.taskContract.referenceAssetIds.includes(asset.assetId));
+    const referenceAttachments = await Promise.all(selectedReferences.map(async (asset) => {
+      const assetPath = path.resolve(projectPaths.input, asset.relativePath);
+      return fs.access(assetPath).then(() => ({
+        assetId: asset.assetId,
+        path: assetPath,
+        mediaType: 'image' as const,
+        format: path.extname(assetPath).slice(1),
+        readable: true,
+      })).catch(() => null);
+    }));
     const promptSource = context?.promptSourceObject;
     const targetTone = promptSource?.upgradeTranslation.toneBoundaries
       .map((item) => item.target)
@@ -134,6 +147,8 @@ export function createShortChainDeliverableValidatorService(
               `Confirmed brand tone: ${targetTone}`,
               `Tone boundaries to avoid: ${toneAvoid}`,
               `Locked visible requirements: ${lockedRequirements.join('; ') || '(none)'}`,
+              `Selected locked references: ${selectedReferences.map((asset, index) =>
+                `reference image ${index + 1}=${asset.name} (${asset.role})`).join('; ') || '(none)'}`,
               '',
               'Return exactly:',
               JSON.stringify({
@@ -153,6 +168,7 @@ export function createShortChainDeliverableValidatorService(
               'In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.',
               'In post_composite Logo mode, the model image must leave every Logo, brand name, slogan, signage word, letter, pseudo-text, and exact brand icon system absent and provide clean placement areas. Do not report an absent identity, icon system, or blank signage area as missing; deterministic post-compositing is validated separately. If visibleEvidence mentions any model-rendered text or lettering, logoTextStatus must be incorrect, never absent.',
               'Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.',
+              'Compare the generated image (first attachment) against every selected locked reference attachment in order. A selected identity/IP must retain its recognizable silhouette, proportions and defining features; a selected product or structure must retain its defining geometry. Report omissions or material shape changes in lockedAssetViolations.',
               'Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain.',
             ].join('\n'),
           },
@@ -163,7 +179,7 @@ export function createShortChainDeliverableValidatorService(
           mediaType: 'image',
           format: path.extname(imagePath).slice(1),
           readable: true,
-        }],
+        }, ...referenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item))],
       },
       signal: new AbortController().signal,
       maximumDurationMs: 120_000,

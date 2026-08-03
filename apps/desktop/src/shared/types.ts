@@ -1914,7 +1914,7 @@ export interface PostCompositeShortChainLogoInput {
   imageId: string;
   logoAssetId: string;
   confirmedByUser: true;
-  sourceCrop: {
+  sourceCrop?: {
     left: number;
     top: number;
     width: number;

@@ -9,7 +9,7 @@ import { compilePackagingPromptContract } from '../prompt-contracts/packaging-co
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
-export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.3.1';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.4.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -44,6 +44,31 @@ function cleanList(...values) {
   };
   values.forEach(visit);
   return result;
+}
+
+function selectedReferenceDirectives(projectContext, taskContract) {
+  const selected = cleanList(taskContract.referenceAssetIds);
+  const inventory = projectContext.visualDecisionPacket?.assetInventory || {};
+  const inventoryItems = Object.values(inventory).flatMap((items) => Array.isArray(items) ? items : []);
+  return selected.map((assetId, index) => {
+    const source = projectContext.sourceAssetRefs.find((item) => item.assetId === assetId);
+    const evidence = inventoryItems.filter((item) => item?.assetId === assetId);
+    const features = cleanList(evidence.flatMap((item) => item?.visualFeatures || [])).slice(0, 6);
+    const role = source?.role || 'visual_reference';
+    const roleRule = role === 'identity'
+      ? 'This is locked identity/IP evidence. Preserve its recognizable silhouette, proportions, signature features and internal relationships.'
+      : role === 'package_structure'
+        ? 'This is a locked structure reference. Preserve its geometry, proportions, opening and construction relationships.'
+        : role === 'product'
+          ? 'This is a locked product reference. Preserve the product silhouette, proportions and defining physical details.'
+          : 'This was explicitly selected as an identity or structure constraint. Preserve its recognizable subject, shape and defining graphic relationships; do not reduce it to mood or color inspiration.';
+    return [
+      `Provider reference image ${index + 1}: ${source?.name || assetId}; role: ${role}.`,
+      roleRule,
+      features.length ? `Visible features to retain from reference image ${index + 1}: ${features.join('; ')}.` : '',
+      `The final image must contain visible evidence that reference image ${index + 1} was used.`,
+    ].filter(Boolean).join(' ');
+  });
 }
 
 function comparable(value) {
@@ -417,6 +442,7 @@ export function compileShortChainPrompt({
     throw new Error('Visual Decision Packet and Task Contract belong to different projects');
   }
   const packetSource = packetExecutionSource(packet, taskContract.deliverableFamily);
+  const referenceDirectives = selectedReferenceDirectives(projectContext, taskContract);
   const strictPacket = Boolean(packetSource);
   const conflicts = exactConflicts(taskContract.mustInclude, taskContract.mustAvoid);
   if (conflicts.length) {
@@ -497,6 +523,7 @@ export function compileShortChainPrompt({
       taskContract,
       logoUsageMode,
       templateSections,
+      referenceDirectives,
     });
     const fitted = fitBlocksToAdapterBudget(packagingContract.blocks, adapter);
     const blocks = fitted.blocks;
@@ -588,6 +615,7 @@ export function compileShortChainPrompt({
       [
         taskContract.currentInstruction,
         taskContract.mustInclude.map((item) => `Must include: ${item}`),
+        referenceDirectives,
         taskContract.scene ? `Scene: ${taskContract.scene}` : '',
         `Aspect ratio: ${taskContract.aspectRatio}`,
       ],

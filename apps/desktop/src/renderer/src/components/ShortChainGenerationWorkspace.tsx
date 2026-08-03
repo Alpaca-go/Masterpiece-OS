@@ -58,6 +58,8 @@ export function ShortChainGenerationWorkspace({
   const [logoUsageMode, setLogoUsageMode] = useState<ShortChainLogoUsageMode>('blank_area');
   const [sourceAssets, setSourceAssets] = useState<ProjectVisualContextShortChain['sourceAssetRefs']>([]);
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+  const [logoPlacement, setLogoPlacement] = useState({ x: 0.36, y: 0.05, width: 0.28 });
+  const [removeLogoBackground, setRemoveLogoBackground] = useState(true);
   const [compiled, setCompiled] = useState<CompileShortChainGenerationResult | null>(null);
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
@@ -262,6 +264,31 @@ export function ShortChainGenerationWorkspace({
     }
   }
 
+  async function compositeLogo() {
+    const image = activeRun?.images[0];
+    const logo = sourceAssets.find((asset) => asset.role === 'logo');
+    if (!activeRun || !image || !logo) return;
+    setBusy(true);
+    setError('');
+    try {
+      const result = await window.masterpiece.imageGeneration.postCompositeShortChainLogo({
+        projectId: project.id,
+        runId: activeRun.runId,
+        imageId: image.imageId,
+        logoAssetId: logo.assetId,
+        confirmedByUser: true,
+        placement: logoPlacement,
+        removeBackground: { enabled: removeLogoBackground, tolerance: 24 },
+      }) as { dataUrl?: string };
+      if (result.dataUrl) setImageDataUrl(result.dataUrl);
+      setNotice('已使用锁定的原始 Logo 像素完成后期合成。');
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function savePromptAsset() {
     if (!editedPrompt.trim()) return;
     setBusy(true);
@@ -449,6 +476,17 @@ export function ShortChainGenerationWorkspace({
             <button className="button primary" disabled={busy || lastValidation?.status !== 'passed'} onClick={() => void confirmDirection()}>沿用此方向</button>
             <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
           </div>
+          {logoUsageMode === 'post_composite' && sourceAssets.some((asset) => asset.role === 'logo') && <fieldset>
+            <legend>合成锁定 Logo</legend>
+            <p className="muted">调整归一化位置并确认后，使用原始 Logo 像素覆盖到留白区域；模型不会重绘 Logo。</p>
+            <div className="button-row">
+              <label>X <input type="number" min="0" max="1" step="0.01" value={logoPlacement.x} onChange={(event) => setLogoPlacement((value) => ({ ...value, x: Number(event.target.value) }))} /></label>
+              <label>Y <input type="number" min="0" max="1" step="0.01" value={logoPlacement.y} onChange={(event) => setLogoPlacement((value) => ({ ...value, y: Number(event.target.value) }))} /></label>
+              <label>宽度 <input type="number" min="0.01" max="1" step="0.01" value={logoPlacement.width} onChange={(event) => setLogoPlacement((value) => ({ ...value, width: Number(event.target.value) }))} /></label>
+            </div>
+            <label className="checkbox-row"><input type="checkbox" checked={removeLogoBackground} onChange={(event) => setRemoveLogoBackground(event.target.checked)} />移除 Logo 图片背景</label>
+            <button className="button secondary" disabled={busy} onClick={() => void compositeLogo()}>确认位置并合成 Logo</button>
+          </fieldset>}
           <div className="button-row result-feedback">
             <button className="button ghost" onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
             <button className="button ghost" onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>
