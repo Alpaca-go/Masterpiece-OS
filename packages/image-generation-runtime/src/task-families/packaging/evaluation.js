@@ -36,6 +36,14 @@ export function evaluatePackagingEvidence(input = {}) {
       'products_must_form_one_coherent_family'),
     criterion('series_consistency', evidence.seriesConsistencyMatch === true, null,
       'locked_identity_grid_material_and_camera_must_remain_consistent'),
+    criterion('box_structure', evidence.boxStructureMatch === true, null,
+      'outer_box_opening_relationship_must_match'),
+    criterion('insert_structure', evidence.insertStructureMatch === true, null,
+      'insert_must_support_products_with_credible_clearance'),
+    criterion('product_arrangement', evidence.productArrangementMatch === true, null,
+      'contained_products_must_match_confirmed_count_and_layout'),
+    criterion('structural_realism', evidence.structuralRealism === true, null,
+      'open_package_must_be_manufacturable_and_physically_connected'),
   ].filter((item) => shot.evaluationCriteria.includes(item.id));
   const failures = criteria.filter((item) => !item.passed).map((item) => `PACKAGING_${item.id.toUpperCase()}_FAILED`);
   return {

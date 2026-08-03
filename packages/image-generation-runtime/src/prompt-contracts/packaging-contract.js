@@ -86,6 +86,9 @@ export function compilePackagingPromptContract({
         `${item.locked ? 'Locked' : 'Exploratory'} structure: ${item.structure}; purpose: ${item.purpose}`),
       ['packaging_translation.structureStrategy']),
     block('opening_arrangement', PACKAGING_PROMPT_BLOCKS[4][1], [
+      taskContract.shot === 'PKG-GIFT-OPEN'
+        ? 'Required opening state: fully open and structurally connected; show the real opening relationship, insert and contained products in one image.'
+        : '',
       packagingTranslation.openingExperience.map((item) => `Opening: ${item}`),
       packagingTranslation.productArrangement.map((item) => `Arrangement: ${item}`),
     ], ['packaging_translation.openingExperience', 'packaging_translation.productArrangement']),
@@ -171,6 +174,9 @@ export function compilePackagingPromptContract({
       `Shot: ${taskContract.shot}`,
       taskContract.shot === 'PKG-SERIES-GROUP'
         ? `Series product count: ${taskContract.packagingProductCount || 'at least 2 and no more than 8'}`
+        : '',
+      taskContract.shot === 'PKG-GIFT-OPEN'
+        ? `Opening state: ${taskContract.packagingOpeningState || 'open'}`
         : '',
       'Show credible proportions, construction, opening logic, product placement, contact shadows, and manufacturable detail.',
       'Output one clear commercial packaging image.',

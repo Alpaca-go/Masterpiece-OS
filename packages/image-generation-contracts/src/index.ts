@@ -815,6 +815,7 @@ export interface PackagingStructuredAnalysis {
   shotId: string;
   packageStructure: Array<{ structure: string; purpose: string; locked: boolean; evidenceRefs: string[] }>;
   productArrangement: string[];
+  openingExperience: string[];
   material: string[];
   craft: Array<{ craft: string; purpose: string; forbiddenUse: string[] }>;
   logoTreatment: string[];

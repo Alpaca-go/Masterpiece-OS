@@ -207,3 +207,55 @@ test('Phase 2 evaluates hierarchy, group relationship and series consistency', (
   });
   assert.deepEqual(failed.failures, ['PACKAGING_SERIES_CONSISTENCY_FAILED']);
 });
+
+test('Phase 3 compiles PKG-GIFT-OPEN with explicit opening, insert and arrangement rules', () => {
+  const context = phase1Context();
+  const result = compileShortChainImageGeneration({
+    projectContext: context,
+    task: {
+      projectId: context.projectId,
+      deliverableFamily: 'packaging',
+      subtype: 'gift_set',
+      shot: 'PKG-GIFT-OPEN',
+      packagingProductCount: 3,
+      count: 1,
+      aspectRatio: '4:3',
+      currentInstruction: 'Show the confirmed gift set open with its insert and products.',
+    },
+  });
+  assert.equal(result.taskContract.packagingOpeningState, 'open');
+  assert.equal(result.compiledPrompt.packagingStructuredAnalysis.openingExperience.length > 0, true);
+  assert.match(result.compiledPrompt.finalPrompt, /Required opening state: fully open/u);
+  assert.match(result.compiledPrompt.finalPrompt, /insert thickness|product fit/u);
+  assert.match(result.compiledPrompt.finalPrompt, /without an exploded-view diagram/u);
+
+  assert.throws(() => compileShortChainImageGeneration({
+    projectContext: context,
+    task: {
+      projectId: context.projectId,
+      deliverableFamily: 'packaging',
+      subtype: 'gift_set',
+      shot: 'PKG-GIFT-OPEN',
+      packagingOpeningState: 'closed',
+      aspectRatio: '4:3',
+      currentInstruction: 'Show the gift package closed.',
+    },
+  }), (error) => error.code === 'PACKAGING_SHOT_OPENING_STATE_REQUIRED');
+});
+
+test('Phase 3 evaluates box, insert, product arrangement and structural realism separately', () => {
+  const result = evaluatePackagingEvidence({
+    shotId: 'PKG-GIFT-OPEN',
+    evidence: { packagingQa: {
+      boxStructureMatch: true,
+      insertStructureMatch: true,
+      productArrangementMatch: true,
+      structuralRealism: false,
+    } },
+  });
+  assert.equal(result.status, 'failed');
+  assert.deepEqual(result.criteria.map((item) => item.id), [
+    'box_structure', 'insert_structure', 'product_arrangement', 'structural_realism',
+  ]);
+  assert.deepEqual(result.failures, ['PACKAGING_STRUCTURAL_REALISM_FAILED']);
+});

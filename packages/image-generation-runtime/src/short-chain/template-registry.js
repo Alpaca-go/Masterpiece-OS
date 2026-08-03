@@ -159,6 +159,12 @@ const SHOTS = {
       'Keep Logo geometry, core grid, substrate family, craft logic and camera language consistent; vary only confirmed series variables such as color band, flavor, size or product code.',
       'Use controlled overlap without hiding identity, category, package silhouette or the differences between series members.',
     ],
+    'PKG-GIFT-OPEN': [
+      'Show the confirmed gift package in an unmistakably open state that explains lid, base, hinge, sleeve or drawer relationships without an exploded-view diagram.',
+      'Keep the outer box, insert and every contained product physically connected, correctly scaled and supported by manufacturable clearances.',
+      'Reveal the opening sequence and product hierarchy in one finished commercial photograph; do not duplicate products merely to fill the composition.',
+      'Use a controlled three-quarter or elevated view that proves cavity depth, insert thickness, edge construction and product fit.',
+    ],
     three_quarter_hero: ['Use a three-quarter hero angle that clearly explains front, side, depth, and construction.'],
     top_down: ['Use a true top-down composition that preserves package geometry and opening relationships.'],
     open_box: ['Show the package open with a physically credible lid, drawer, insert, hinge, or closure state.'],

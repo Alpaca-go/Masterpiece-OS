@@ -23,6 +23,9 @@ export function validatePackagingStructuredAnalysis(analysis) {
   if (!analysis?.packageStructure?.length) missing.push('packageStructure');
   if (!evidence(analysis?.packageStructure).length) missing.push('packageStructureEvidence');
   if (!analysis?.productArrangement?.length) missing.push('productArrangement');
+  if (analysis?.shotId === 'PKG-GIFT-OPEN' && !analysis?.openingExperience?.length) {
+    missing.push('openingExperience');
+  }
   if (!analysis?.material?.length) missing.push('material');
   if (!analysis?.craft?.length) missing.push('craft');
   if (!analysis?.logoTreatment?.length) missing.push('logoTreatment');
@@ -67,6 +70,7 @@ export function buildPackagingStructuredAnalysis(input = {}) {
     shotId,
     packageStructure: structures,
     productArrangement: list(source.productArrangement),
+    openingExperience: list(source.openingExperience),
     material: list(source.substrateLanguage),
     craft: crafts,
     logoTreatment: list(source.logoPolicy),

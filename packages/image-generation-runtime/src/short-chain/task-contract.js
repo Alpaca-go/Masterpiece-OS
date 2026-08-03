@@ -50,6 +50,8 @@ export function createShortChainTaskContract(input, options = {}) {
   const materialMode = String(input?.materialMode ?? 'auto');
   const brandIntensity = String(input?.brandIntensity ?? 'balanced');
   const referenceAssetIds = cleanList(input.referenceAssetIds);
+  const packagingOpeningState = input.packagingOpeningState
+    || (family === 'packaging' && shot === 'PKG-GIFT-OPEN' ? 'open' : undefined);
   const logoUsageMode = legacyLogoUsageMode || (brandMarkRenderMode === 'no_logo_preview'
     ? 'blank_area'
     : referenceAssetIds.length ? 'reference' : 'blank_area');
@@ -80,7 +82,7 @@ export function createShortChainTaskContract(input, options = {}) {
       shotId: shot,
       subtype,
       productCount: input.packagingProductCount,
-      openingState: input.packagingOpeningState,
+      openingState: packagingOpeningState,
     });
     if (!shotValidation.valid) {
       throw Object.assign(new Error(shotValidation.errors.join(', ')), {
@@ -109,8 +111,8 @@ export function createShortChainTaskContract(input, options = {}) {
     logoUsageMode,
     ...(family === 'packaging' && Number.isInteger(input.packagingProductCount)
       ? { packagingProductCount: input.packagingProductCount } : {}),
-    ...(family === 'packaging' && ['open', 'closed', 'partially_open'].includes(input.packagingOpeningState)
-      ? { packagingOpeningState: input.packagingOpeningState } : {}),
+    ...(family === 'packaging' && ['open', 'closed', 'partially_open'].includes(packagingOpeningState)
+      ? { packagingOpeningState } : {}),
     createdAt: options.now || new Date().toISOString(),
   };
 }
