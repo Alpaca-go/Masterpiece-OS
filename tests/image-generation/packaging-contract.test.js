@@ -148,3 +148,62 @@ test('formal packaging compilation blocks when package structure is unconfirmed'
     },
   }), (error) => error.code === 'PACKAGING_STRUCTURE_EVIDENCE_MISSING');
 });
+
+test('Phase 2 compiles PKG-SERIES-GROUP with explicit series hierarchy and consistency', () => {
+  const context = phase1Context();
+  const result = compileShortChainImageGeneration({
+    projectContext: context,
+    task: {
+      projectId: context.projectId,
+      deliverableFamily: 'packaging',
+      subtype: 'gift_set',
+      shot: 'PKG-SERIES-GROUP',
+      packagingProductCount: 4,
+      count: 1,
+      aspectRatio: '4:3',
+      currentInstruction: 'Show the confirmed packaging family as one commercial group image.',
+    },
+  });
+  assert.equal(result.compiledPrompt.packagingStructuredAnalysis.seriesArchitecture.length > 0, true);
+  assert.match(result.compiledPrompt.finalPrompt, /Series architecture:/u);
+  assert.match(result.compiledPrompt.finalPrompt, /Series product count: 4/u);
+  assert.match(result.compiledPrompt.finalPrompt, /primary-to-secondary product hierarchy/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /VI display board|architectural space/iu);
+
+  assert.throws(() => compileShortChainImageGeneration({
+    projectContext: context,
+    task: {
+      projectId: context.projectId,
+      deliverableFamily: 'packaging',
+      subtype: 'gift_set',
+      shot: 'PKG-SERIES-GROUP',
+      packagingProductCount: 1,
+      aspectRatio: '4:3',
+      currentInstruction: 'Show a packaging series.',
+    },
+  }), (error) => error.code === 'PACKAGING_SHOT_PRODUCT_COUNT_INVALID');
+});
+
+test('Phase 2 evaluates hierarchy, group relationship and series consistency', () => {
+  const passed = evaluatePackagingEvidence({
+    shotId: 'PKG-SERIES-GROUP',
+    evidence: { packagingQa: {
+      productHierarchyMatch: true,
+      groupRelationshipMatch: true,
+      seriesConsistencyMatch: true,
+    } },
+  });
+  assert.equal(passed.status, 'passed');
+  assert.deepEqual(passed.criteria.map((item) => item.id), [
+    'product_hierarchy', 'group_relationship', 'series_consistency',
+  ]);
+  const failed = evaluatePackagingEvidence({
+    shotId: 'PKG-SERIES-GROUP',
+    evidence: { packagingQa: {
+      productHierarchyMatch: true,
+      groupRelationshipMatch: true,
+      seriesConsistencyMatch: false,
+    } },
+  });
+  assert.deepEqual(failed.failures, ['PACKAGING_SERIES_CONSISTENCY_FAILED']);
+});

@@ -153,6 +153,12 @@ const SHOTS = {
       'Use a commercial three-quarter product view that clearly proves the primary face, side depth, structure, substrate and finish.',
       'Keep the object fully visible with controlled contact shadow, purposeful negative space and no cropped structural edge.',
     ],
+    'PKG-SERIES-GROUP': [
+      'Show one coherent packaging family with at least two and at most eight clearly related products; this is one group photograph, not a comparison board.',
+      'Establish a primary-to-secondary product hierarchy through scale, depth and spacing while keeping every package structurally legible.',
+      'Keep Logo geometry, core grid, substrate family, craft logic and camera language consistent; vary only confirmed series variables such as color band, flavor, size or product code.',
+      'Use controlled overlap without hiding identity, category, package silhouette or the differences between series members.',
+    ],
     three_quarter_hero: ['Use a three-quarter hero angle that clearly explains front, side, depth, and construction.'],
     top_down: ['Use a true top-down composition that preserves package geometry and opening relationships.'],
     open_box: ['Show the package open with a physically credible lid, drawer, insert, hinge, or closure state.'],

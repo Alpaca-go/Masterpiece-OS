@@ -53,8 +53,9 @@ test('Template routing exposes the complete MVP family, subtype, and shot matrix
   assert.equal(options.space.subtypes.length, 6);
   assert.equal(options.space.shots.length >= 4, true);
   assert.equal(options.packaging.subtypes.length, 6);
-  assert.equal(options.packaging.shots.length, 5);
+  assert.equal(options.packaging.shots.length, 6);
   assert.ok(options.packaging.shots.includes('PKG-HERO-SINGLE'));
+  assert.ok(options.packaging.shots.includes('PKG-SERIES-GROUP'));
   assert.equal(options.vi.subtypes.length, 8);
   assert.equal(options.poster.subtypes.length, 5);
   assert.equal(options.poster.shots.length >= 3, true);

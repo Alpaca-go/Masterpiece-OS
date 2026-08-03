@@ -27,6 +27,9 @@ export function validatePackagingStructuredAnalysis(analysis) {
   if (!analysis?.craft?.length) missing.push('craft');
   if (!analysis?.logoTreatment?.length) missing.push('logoTreatment');
   if (!analysis?.graphicSystem?.length) missing.push('graphicSystem');
+  if (analysis?.shotId === 'PKG-SERIES-GROUP' && !analysis?.seriesArchitecture?.length) {
+    missing.push('seriesArchitecture');
+  }
   if (!list(analysis?.camera, analysis?.composition, analysis?.lighting).length) missing.push('photography');
   if (SPATIAL_LANGUAGE.test(JSON.stringify(analysis ?? {}))) missing.push('crossMediaLanguage');
   return { status: missing.length ? 'insufficient' : 'ready', missingRequiredFields: [...new Set(missing)] };
@@ -68,6 +71,7 @@ export function buildPackagingStructuredAnalysis(input = {}) {
     craft: crafts,
     logoTreatment: list(source.logoPolicy),
     graphicSystem: graphics,
+    seriesArchitecture: list(source.seriesArchitecture),
     informationHierarchy: list(source.informationHierarchy),
     colorBehavior: {
       base: list(source.colorBehavior?.base),

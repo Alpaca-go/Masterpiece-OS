@@ -109,8 +109,13 @@ export function compilePackagingPromptContract({
       'project_generation_contract.projectSpecificDecisions',
     ]),
     block('graphic_information', PACKAGING_PROMPT_BLOCKS[6][1],
-      packagingTranslation.informationHierarchy,
-      ['packaging_translation.informationHierarchy']),
+      [
+        packagingTranslation.informationHierarchy,
+        taskContract.shot === 'PKG-SERIES-GROUP'
+          ? packagingTranslation.seriesArchitecture.map((item) => `Series architecture: ${item}`)
+          : [],
+      ],
+      ['packaging_translation.informationHierarchy', 'packaging_translation.seriesArchitecture']),
     block('color_behavior', PACKAGING_PROMPT_BLOCKS[7][1], [
       projectContract.projectSpecificDecisions?.colorSystem
         ?.map((item) => `Approved project color system: ${item}`),
@@ -164,6 +169,9 @@ export function compilePackagingPromptContract({
     block('output_specification', PACKAGING_PROMPT_BLOCKS[13][1], [
       `Aspect ratio: ${taskContract.aspectRatio}`,
       `Shot: ${taskContract.shot}`,
+      taskContract.shot === 'PKG-SERIES-GROUP'
+        ? `Series product count: ${taskContract.packagingProductCount || 'at least 2 and no more than 8'}`
+        : '',
       'Show credible proportions, construction, opening logic, product placement, contact shadows, and manufacturable detail.',
       'Output one clear commercial packaging image.',
     ], ['task_contract.aspectRatio', 'task_contract.shot', 'family.packaging']),

@@ -819,6 +819,7 @@ export interface PackagingStructuredAnalysis {
   craft: Array<{ craft: string; purpose: string; forbiddenUse: string[] }>;
   logoTreatment: string[];
   graphicSystem: Array<{ sourceMeaning: string; expression: string; forbiddenLiteralUse: string[] }>;
+  seriesArchitecture: string[];
   informationHierarchy: string[];
   colorBehavior: { base: string[]; identity: string[]; accent: string[]; forbidden: string[] };
   camera: string[];
