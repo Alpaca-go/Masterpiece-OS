@@ -402,3 +402,48 @@ test('split spatial evaluators merge global quality and project Golden failures'
   assert.equal(validation.spatialEvaluation.finalDecision, 'fail');
   assert.ok(validation.spatialEvaluation.failureTags.includes('logo_drift'));
 });
+
+test('Logo ratio contract hard-fails an otherwise high-scoring project result', () => {
+  const global = loadGlobalSpaceEvaluationProfile();
+  const project = loadProjectSpaceEvaluationProfile('jiuzhou-aesthetics');
+  const score = (profile, value) => Object.fromEntries(
+    profile.dimensions.map((dimension) => [dimension.id, value]),
+  );
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'jiuzhou-aesthetics',
+    taskContract: { ...taskContract, projectId: 'jiuzhou-aesthetics' },
+    runId: 'run-logo-scale-contract',
+    imageId: 'image-logo-scale-contract',
+    spatialCompiledContext: {
+      foundationSnapshot: { spaceType: 'reception', spatialScale: { preservation: 'lock' } },
+      projectCanon: {
+        brandSignageContract: {
+          logoSymbol: { wallHeightRatio: { max: 0.15 } },
+          fullLockup: { wallWidthRatio: { max: 0.28 } },
+        },
+      },
+    },
+    spatialEvaluationProfiles: { global, project },
+    evidence: {
+      detectedFamily: 'space', detectedSubtype: 'reception',
+      visibleEvidence: ['complete reception with an oversized wall mark'],
+      brandMatch: 'matched', brandToneMatch: 'matched', sceneCompleteness: 'complete',
+      logoTextStatus: 'correct',
+      foundationPreservation: {
+        architectureAestheticPreserved: true, spatialScalePreserved: true,
+        largeSpaceIntentPreserved: true, functionalZoningPreserved: true,
+        cameraRolePreserved: true,
+      },
+      globalSpaceScores: score(global, 96), projectGoldenScores: score(project, 96),
+      logoScale: {
+        symbolWallHeightRatio: 0.32,
+        fullLockupWallWidthRatio: 0.41,
+        signageDominatesFirstRead: true,
+      },
+    },
+  });
+  assert.equal(validation.status, 'failed');
+  assert.equal(validation.spatialEvaluation.finalDecision, 'fail');
+  assert.ok(validation.spatialEvaluation.failureTags.includes('logo_oversized'));
+  assert.match(validation.spatialEvaluation.revisionActions.join('\n'), /below 15%/u);
+});

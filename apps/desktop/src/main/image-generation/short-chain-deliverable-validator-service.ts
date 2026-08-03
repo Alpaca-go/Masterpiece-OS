@@ -32,7 +32,17 @@ interface ValidateInput {
   spatialBrandOrchestration?: SpatialBrandOrchestration | null;
   spatialCompiledContext?: {
     foundationSnapshot?: Record<string, unknown>;
+    projectCanon?: {
+      brandSignageContract?: {
+        logoSymbol?: { wallHeightRatio?: { max?: number } };
+        fullLockup?: { wallWidthRatio?: { max?: number } };
+      };
+    };
     selectedAnchors?: Array<{
+      assetId?: string;
+      projectRelativePath?: string;
+    }>;
+    structureReferences?: Array<{
       assetId?: string;
       projectRelativePath?: string;
     }>;
@@ -150,6 +160,19 @@ export function createShortChainDeliverableValidatorService(
         })).catch(() => null);
       }),
     );
+    const structureReferenceAttachments = await Promise.all(
+      (input.spatialCompiledContext?.structureReferences ?? []).map(async (reference) => {
+        if (!reference.assetId || !reference.projectRelativePath) return null;
+        const assetPath = path.resolve(projectPaths.root, reference.projectRelativePath);
+        return fs.access(assetPath).then(() => ({
+          assetId: reference.assetId,
+          path: assetPath,
+          mediaType: 'image' as const,
+          format: path.extname(assetPath).slice(1),
+          readable: true,
+        })).catch(() => null);
+      }),
+    );
     const promptSource = context?.promptSourceObject;
     const targetTone = promptSource?.upgradeTranslation.toneBoundaries
       .map((item) => item.target)
@@ -201,6 +224,11 @@ export function createShortChainDeliverableValidatorService(
               `Locked Spatial Foundation snapshot: ${JSON.stringify(input.spatialCompiledContext?.foundationSnapshot ?? null)}`,
               `Global space evaluator dimensions: ${spatialEvaluationProfiles?.global.dimensions.map((item: { id: string }) => item.id).join(', ') || '(not enabled)'}`,
               `Project Golden evaluator dimensions: ${spatialEvaluationProfiles?.project?.dimensions.map((item: { id: string }) => item.id).join(', ') || '(not enabled)'}`,
+              `Project Golden gate dimensions: ${JSON.stringify(spatialEvaluationProfiles?.project?.gateDimensions ?? null)}`,
+              `Allowed project fatal failure tags: ${spatialEvaluationProfiles?.project?.fatalFailureTags.join(', ') || '(not enabled)'}`,
+              `Logo scale contract: ${JSON.stringify(input.spatialCompiledContext?.projectCanon?.brandSignageContract ?? null)}`,
+              `Golden style anchors: ${(input.spatialCompiledContext?.selectedAnchors ?? []).map((item) => item.assetId).filter(Boolean).join(', ') || '(none)'}`,
+              `Structure-only references: ${(input.spatialCompiledContext?.structureReferences ?? []).map((item) => item.assetId).filter(Boolean).join(', ') || '(none)'}`,
               '',
               'Return exactly:',
               JSON.stringify({
@@ -237,6 +265,20 @@ export function createShortChainDeliverableValidatorService(
                     .map((item: { id: string }) => [item.id, 0]),
                 ),
                 projectFailureTags: ['visible project failure tags only'],
+                projectCalibrationChecks: {
+                  anchorStyleAligned: true,
+                  genericFuturisticClinicPresent: false,
+                  architectureSkinReplaced: true,
+                  purpleSurfaceOveruse: false,
+                  technologyShowroomLightingPresent: false,
+                  brandArchitecturallyIntegrated: true,
+                  largeSpaceIntentPreserved: true,
+                },
+                logoScale: {
+                  symbolWallHeightRatio: 0.0,
+                  fullLockupWallWidthRatio: 0.0,
+                  signageDominatesFirstRead: false,
+                },
                 lockedAssetQa: [{
                   assetId: 'exact selected assetId',
                   assetType: 'logo|ip_character|icon|packaging_front|other',
@@ -280,6 +322,10 @@ export function createShortChainDeliverableValidatorService(
                 : 'In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.',
               'In post_composite Logo mode, the model image must leave every Logo, brand name, slogan, signage word, letter, pseudo-text, and exact brand icon system absent and provide clean placement areas. Do not report an absent identity, icon system, or blank signage area as missing; deterministic post-compositing is validated separately. If visibleEvidence mentions any model-rendered text or lettering, logoTextStatus must be incorrect, never absent.',
               'Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.',
+              'For Golden style anchors, compare only material behaviour, lighting behaviour, architectural skin, integrated brand expression, decorative density and refined feminine medical-aesthetic tone. Never require the generated room to copy Anchor scale, layout, circulation or exact composition.',
+              'For structure-only references, compare only room envelope, scale, ceiling height, depth, apertures, zoning, circulation, camera view and major fixture positions. Treat every source material, colour, ceiling design, light style, brand wall, decoration, Logo and generic clinical/futuristic tone as visual skin that must be replaced.',
+              'Estimate Logo symbol height divided by its carrier wall height and full-lockup width divided by its carrier wall width. Report the numeric ratios and whether signage dominates the first read. A symbol ratio above 0.15, lockup ratio above 0.28, or first-read domination is logo_oversized.',
+              'Use anchor_style_drift, generic_futuristic_clinic, architecture_skin_not_replaced, purple_surface_overuse, technology_showroom_lighting, brand_integration_applied_not_integrated and large_space_intent_lost only when directly supported by visible evidence. These are hard failures.',
               'Compare the generated image (first attachment) against every selected locked reference attachment in order. Every selected reference is a mandatory visible asset, regardless of its automatically detected role. It must be immediately recognizable as a concrete Logo, Icon, IP character, graphic, product or structure applied to the finished design. Matching only palette, lighting, line rhythm, geometry, mood or general style does not count. Report each omitted, unrecognizable, materially altered or merely abstracted selected asset separately in lockedAssetViolations.',
               'For each selected reference, return one lockedAssetQa item using the exact assetId. Count visible occurrences, estimate contour similarity and aspect-ratio deviation against the reference, check exact readable text at 96px or larger, check requested material and planned primary placement, and count unrelated or duplicate logo-like marks. Do not omit a selected asset from lockedAssetQa.',
               'Apply asset-specific rules: Logo locks contour, negative space, typography, arrangement and proportions; IP character locks identity, head-to-body proportion range, facial feature positions, primary colors, signature clothing and accessories while allowing pose/expression/view/material/light; icon locks its graphic unit but has no OCR requirement. Set assetType and the matching QA fields accordingly.',
@@ -299,6 +345,7 @@ export function createShortChainDeliverableValidatorService(
         },
         ...referenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item)),
         ...goldenReferenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item)),
+        ...structureReferenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item)),
         ],
       },
       signal: new AbortController().signal,

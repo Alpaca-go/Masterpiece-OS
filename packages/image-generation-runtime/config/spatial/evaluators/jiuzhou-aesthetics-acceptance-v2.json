@@ -1,0 +1,78 @@
+{
+  "id": "jiuzhou-aesthetics-acceptance",
+  "version": 2,
+  "scope": "project",
+  "projectId": "jiuzhou-aesthetics",
+  "sourceStandard": "docs/golden/spatial/jiuzhou-aesthetics/calibration-development-v1.1.md",
+  "dimensions": [
+    { "id": "brand_asset_accuracy", "weight": 20 },
+    { "id": "spatial_realism", "weight": 20 },
+    { "id": "medical_aesthetic_fit", "weight": 15 },
+    { "id": "visual_system_consistency", "weight": 15 },
+    { "id": "material_and_craft", "weight": 10 },
+    { "id": "lighting_and_mood", "weight": 8 },
+    { "id": "composition_and_focus", "weight": 7 },
+    { "id": "commercial_readiness", "weight": 5 }
+  ],
+  "gateDimensions": {
+    "golden_anchor_alignment": {
+      "maxScore": 15,
+      "checks": [
+        "material_behavior_alignment",
+        "lighting_behavior_alignment",
+        "brand_integration_alignment",
+        "decorative_density_alignment",
+        "refined_feminine_medical_tone"
+      ]
+    },
+    "logo_scale_and_brand_restraint": {
+      "maxScore": 5,
+      "checks": [
+        "logo_ratio_within_contract",
+        "signage_does_not_dominate_space",
+        "brand_is_integrated"
+      ]
+    }
+  },
+  "fatalFailureTags": [
+    "brand_name_wrong",
+    "logo_drift",
+    "space_not_realistic",
+    "perspective_broken",
+    "nightclub_feel",
+    "too_fantasy",
+    "material_too_cheap",
+    "spatial_foundation_overridden",
+    "anchor_style_drift",
+    "logo_oversized",
+    "generic_futuristic_clinic",
+    "architecture_skin_not_replaced",
+    "purple_surface_overuse",
+    "technology_showroom_lighting",
+    "brand_integration_applied_not_integrated",
+    "large_space_intent_lost"
+  ],
+  "revisionActions": {
+    "brand_name_wrong": "Lock the confirmed bilingual brand name and approved Logo asset.",
+    "logo_drift": "Use the confirmed Logo reference without free variation.",
+    "space_not_realistic": "Restore buildable walls, floor, openings, reception and circulation relationships.",
+    "perspective_broken": "Use a stable commercial-space camera and physically credible perspective.",
+    "nightclub_feel": "Remove neon and colored wash; restore warm-neutral indirect lighting.",
+    "too_fantasy": "Remove literal fantasy subjects and keep only restrained abstract identity expression.",
+    "material_too_cheap": "Restore credible pearl-white mineral, pale stone and matte surface behavior.",
+    "spatial_foundation_overridden": "Restore the locked architecture, scale, zoning, circulation and camera role.",
+    "anchor_style_drift": "Restore Golden-anchor material, lighting, integrated-brand and restrained decorative behaviour.",
+    "logo_oversized": "Reduce the symbol below 15% of wall height and the full lockup below 28% of wall width.",
+    "generic_futuristic_clinic": "Remove the generic futuristic clinic template and restore the warm, quiet Jiuzhou architectural skin.",
+    "architecture_skin_not_replaced": "Replace the source ceiling, materials, lighting and brand-wall skin with Project Visual Canon v2.",
+    "purple_surface_overuse": "Return purple to a subtle low-saturation accent and restore pearl-white dominance.",
+    "technology_showroom_lighting": "Remove neon curves and technology-showroom ceiling lighting; use quiet warm-neutral indirect light.",
+    "brand_integration_applied_not_integrated": "Integrate identity into architecture instead of applying a giant sign or graphic layer.",
+    "large_space_intent_lost": "Restore the source large-space scale, ceiling height, depth and foreground-middle-background relationship."
+  },
+  "thresholds": {
+    "pass": 90,
+    "passWithMinorRevision": 80,
+    "revise": 70
+  }
+}

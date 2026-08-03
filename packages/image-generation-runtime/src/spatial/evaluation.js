@@ -9,6 +9,29 @@ function unique(values) {
   return [...new Set((values || []).filter((value) => typeof value === 'string' && value.trim()))];
 }
 
+export function deriveProjectCalibrationFailureTags({ evidence = {}, projectCanon = null } = {}) {
+  const checks = evidence.projectCalibrationChecks || {};
+  const logoScale = evidence.logoScale || {};
+  const signage = projectCanon?.brandSignageContract;
+  const symbolMaximum = Number(signage?.logoSymbol?.wallHeightRatio?.max);
+  const lockupMaximum = Number(signage?.fullLockup?.wallWidthRatio?.max);
+  const tags = unique(evidence.projectFailureTags);
+  const add = (condition, tag) => { if (condition) tags.push(tag); };
+  add(checks.anchorStyleAligned === false, 'anchor_style_drift');
+  add(checks.genericFuturisticClinicPresent === true, 'generic_futuristic_clinic');
+  add(checks.architectureSkinReplaced === false, 'architecture_skin_not_replaced');
+  add(checks.purpleSurfaceOveruse === true, 'purple_surface_overuse');
+  add(checks.technologyShowroomLightingPresent === true, 'technology_showroom_lighting');
+  add(checks.brandArchitecturallyIntegrated === false, 'brand_integration_applied_not_integrated');
+  add(checks.largeSpaceIntentPreserved === false, 'large_space_intent_lost');
+  add(logoScale.signageDominatesFirstRead === true, 'logo_oversized');
+  add(Number.isFinite(symbolMaximum)
+    && Number(logoScale.symbolWallHeightRatio) > symbolMaximum, 'logo_oversized');
+  add(Number.isFinite(lockupMaximum)
+    && Number(logoScale.fullLockupWallWidthRatio) > lockupMaximum, 'logo_oversized');
+  return unique(tags);
+}
+
 function decision(score, thresholds) {
   if (score >= thresholds.pass) return 'pass';
   if (score >= thresholds.passWithMinorRevision) return 'pass_with_minor_revision';

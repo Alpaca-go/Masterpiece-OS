@@ -4,6 +4,7 @@ import {
   evaluateFoundationPreservationChecks,
   evaluateGlobalSpaceQuality,
   evaluateProjectGolden,
+  deriveProjectCalibrationFailureTags,
   mergeSpatialEvaluations,
 } from '../spatial/evaluation.js';
 
@@ -220,7 +221,10 @@ export function validateShortChainDeliverableEvidence({
           profile: spatialEvaluationProfiles.project,
           currentProjectId: projectId,
           scores: evidence?.projectGoldenScores,
-          failureTags: evidence?.projectFailureTags,
+          failureTags: deriveProjectCalibrationFailureTags({
+            evidence,
+            projectCanon: spatialCompiledContext?.projectCanon,
+          }),
         })
         : null,
       foundation: foundationPreservation,

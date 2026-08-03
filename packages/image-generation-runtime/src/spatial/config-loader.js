@@ -81,10 +81,20 @@ export function loadGlobalSpaceEvaluationProfile(options = {}) {
 
 export function loadProjectSpaceEvaluationProfile(projectId, options = {}) {
   assertSafeId(projectId, 'projectId');
-  const profile = readJson(new URL(
-    `evaluators/${projectId}-acceptance-v1.json`,
-    asDirectoryUrl(options.configRoot),
-  ));
+  let profile;
+  for (const version of [2, 1]) {
+    const url = new URL(
+      `evaluators/${projectId}-acceptance-v${version}.json`,
+      asDirectoryUrl(options.configRoot),
+    );
+    if (fs.existsSync(fileURLToPath(url))) {
+      profile = readJson(url);
+      break;
+    }
+  }
+  if (!profile) throw Object.assign(new Error(`Missing project evaluator: ${projectId}`), {
+    code: 'ENOENT',
+  });
   const validated = assertSpatialSchema(validateSpatialEvaluationProfile(profile));
   if (validated.projectId !== projectId) {
     throw Object.assign(new Error('Project evaluation profile belongs to another project.'), {
