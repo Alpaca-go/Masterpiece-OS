@@ -359,16 +359,12 @@ export function visualDecisionPacketToPromptSourceObject(
     lockedAssets: {
       logoAssetIds: packet.lockedAssets.filter((item) => item.type === 'logo').map((item) => item.assetId),
       preferredLogoAssetId: packet.lockedAssets.find((item) => item.type === 'logo')?.assetId ?? null,
-      // The v5 "logo locked" contract means any project that confirms a
-      // logo must route image generation through `post_composite` (so the
-      // model never draws the logo and a sharp-based post-compositor
-      // paints the real one on top). The backend enforces this in
-      // `short-chain-service.ts` and raises `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED`
-      // for any other mode, so the default value emitted into the
-      // prompt-source object must already be `post_composite` whenever a
-      // logo is present — otherwise every fresh compile call from a
-      // logo-locked project opens in an illegal state.
-      logoUsageMode: packet.lockedAssets.some((item) => item.type === 'logo') ? 'post_composite' : 'blank_area',
+      brandMarkRenderMode: packet.lockedAssets.some((item) => item.type === 'logo')
+        ? 'locked_asset_render'
+        : 'no_logo_preview',
+      materialMode: 'auto',
+      brandIntensity: 'balanced',
+      logoUsageMode: packet.lockedAssets.some((item) => item.type === 'logo') ? 'reference' : 'blank_area',
       confirmedColors: packet.lockedAssets.filter((item) => item.type === 'color').map((item) => item.value),
       mustPreserve: packet.creativeDecision.preserveCore,
       immutableStructures: packet.lockedAssets

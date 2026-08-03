@@ -17,7 +17,6 @@ const PREFLIGHT_REMEDIATION = Object.freeze({
   FLAGSHIP_PROGRAM_TOO_GENERIC: 'rerun_structured_analysis',
   PACKAGING_STRUCTURE_EVIDENCE_MISSING: 'upload_or_confirm_source_data',
   PACKAGING_PRODUCT_ROLE_MISSING: 'upload_or_confirm_source_data',
-  LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: 'upload_or_confirm_source_data',
   PROMPT_CHARACTER_BUDGET_EXCEEDED: 'restore_or_shorten_edited_prompt',
   CROSS_MEDIA_LANGUAGE_LEAK: 'edit_current_task',
   LITERAL_LEGACY_ASSET_REUSE: 'edit_current_task',

@@ -966,6 +966,24 @@ export interface ProjectVisualContextShortChain {
 }
 
 export type PromptSourceLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
+export type PromptSourceBrandMarkRenderMode =
+  | 'locked_asset_render'
+  | 'no_logo_preview'
+  | 'creative_logo_interpretation';
+export type PromptSourceLockedAssetMaterialMode =
+  | 'auto'
+  | 'front_lit_acrylic'
+  | 'halo_lit_metal'
+  | 'acrylic_dimensional'
+  | 'pvc_dimensional'
+  | 'metal_dimensional'
+  | 'neon'
+  | 'wall_engraving'
+  | 'lightbox'
+  | 'screen_print'
+  | 'frosted_glass'
+  | 'flat_print';
+export type PromptSourceBrandIntensity = 'subtle' | 'balanced' | 'expressive';
 
 export interface PromptSourceToneBoundary {
   target: string;
@@ -1026,6 +1044,10 @@ export interface PromptSourceObject {
   lockedAssets: {
     logoAssetIds: string[];
     preferredLogoAssetId: string | null;
+    brandMarkRenderMode?: PromptSourceBrandMarkRenderMode;
+    materialMode?: PromptSourceLockedAssetMaterialMode;
+    brandIntensity?: PromptSourceBrandIntensity;
+    /** @deprecated Persisted v1 compatibility only. */
     logoUsageMode: PromptSourceLogoUsageMode;
     confirmedColors: string[];
     mustPreserve: string[];

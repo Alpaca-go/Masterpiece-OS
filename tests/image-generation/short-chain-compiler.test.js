@@ -196,11 +196,10 @@ test('Golden calibration compiles thirteen traceable blocks from Jiuzhou project
     '连续弧形界面',
     'foreground, middle ground, and background',
     'VI display board',
-    'controlled post-compositing',
   ]) {
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   }
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.1');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.5.0');
   assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true);
 });
 

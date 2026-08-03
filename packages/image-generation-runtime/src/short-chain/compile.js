@@ -25,10 +25,19 @@ export function compileShortChainImageGeneration(input) {
     ? input.task.referenceAssetIds
     : [];
   const selectedLogoAssetId = logoAssetIds.find((assetId) => requestedReferenceIds.includes(assetId));
-  const inferredLogoUsageMode = selectedLogoAssetId ? 'reference' : 'blank_area';
-  const logoUsageMode = input.task?.logoUsageMode === 'post_composite'
-    ? 'post_composite'
-    : inferredLogoUsageMode;
+  const legacyLogoUsageMode = input.task?.logoUsageMode;
+  const brandMarkRenderMode = input.task?.brandMarkRenderMode
+    || input.projectContext?.promptSourceObject?.lockedAssets?.brandMarkRenderMode
+    || (legacyLogoUsageMode === 'blank_area' ? 'no_logo_preview' : 'locked_asset_render');
+  const materialMode = input.task?.materialMode
+    || input.projectContext?.promptSourceObject?.lockedAssets?.materialMode
+    || 'auto';
+  const brandIntensity = input.task?.brandIntensity
+    || input.projectContext?.promptSourceObject?.lockedAssets?.brandIntensity
+    || 'balanced';
+  const logoUsageMode = brandMarkRenderMode === 'no_logo_preview'
+    ? 'blank_area'
+    : selectedLogoAssetId ? 'reference' : 'blank_area';
   const referenceAssetIds = logoUsageMode === 'reference'
     ? [...new Set(requestedReferenceIds)]
     : requestedReferenceIds.filter((assetId) => !logoAssetIds.includes(assetId));
@@ -39,6 +48,9 @@ export function compileShortChainImageGeneration(input) {
   }
   const taskContract = createShortChainTaskContract({
     ...input.task,
+    brandMarkRenderMode,
+    materialMode,
+    brandIntensity,
     logoUsageMode,
     referenceAssetIds,
   }, { now: input.now });

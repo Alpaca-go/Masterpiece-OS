@@ -672,6 +672,13 @@ export type {
   ImageGenerationRunSummary,
   ShortChainTaskContract,
   ShortChainLogoUsageMode,
+  LockedAssetRenderMode,
+  LockedAssetMaterialMode,
+  LockedAssetBrandIntensity,
+  LockedAssetLockLevel,
+  LockedAssetFallbackMode,
+  SpatialLockedAssetType,
+  SpatialLockedAssetRenderPolicy,
   ShortChainCompiledPrompt,
   ShortChainModelPromptPayload,
   ShortChainCreativeSession,
@@ -1884,8 +1891,18 @@ export interface ImageGenerationCompileResult {
 export interface CompileShortChainGenerationInput {
   projectId: string;
   model?: string;
-  task: Omit<ShortChainTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
+  task: Omit<ShortChainTaskContract,
+    | 'schemaVersion'
+    | 'taskId'
+    | 'projectId'
+    | 'createdAt'
+    | 'brandMarkRenderMode'
+    | 'materialMode'
+    | 'brandIntensity'> & {
     taskId?: string;
+    brandMarkRenderMode?: ShortChainTaskContract['brandMarkRenderMode'];
+    materialMode?: ShortChainTaskContract['materialMode'];
+    brandIntensity?: ShortChainTaskContract['brandIntensity'];
   };
 }
 

@@ -792,7 +792,79 @@ export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 
 export type ShortChainDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
 export type ShortChainAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
+/** @deprecated Persisted v1 compatibility only. New tasks use brandMarkRenderMode. */
 export type ShortChainLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
+export type LockedAssetRenderMode =
+  | 'locked_asset_render'
+  | 'no_logo_preview'
+  | 'creative_logo_interpretation';
+export type LockedAssetMaterialMode =
+  | 'auto'
+  | 'front_lit_acrylic'
+  | 'halo_lit_metal'
+  | 'acrylic_dimensional'
+  | 'pvc_dimensional'
+  | 'metal_dimensional'
+  | 'neon'
+  | 'wall_engraving'
+  | 'lightbox'
+  | 'screen_print'
+  | 'frosted_glass'
+  | 'flat_print';
+export type LockedAssetBrandIntensity = 'subtle' | 'balanced' | 'expressive';
+export type LockedAssetLockLevel = 'hard' | 'structural' | 'style';
+export type LockedAssetFallbackMode = 'none' | 'perspective_composite' | 'flat_overlay';
+export type SpatialLockedAssetType =
+  | 'logo'
+  | 'brand_wordmark'
+  | 'ip_character'
+  | 'icon'
+  | 'pattern'
+  | 'packaging_front'
+  | 'illustration'
+  | 'other';
+
+export interface SpatialLockedAssetRenderPolicy {
+  schemaVersion: '1.0';
+  assetId: string;
+  projectId: string;
+  type: SpatialLockedAssetType;
+  name: string;
+  canonicalVariantId: string;
+  lockLevel: LockedAssetLockLevel;
+  immutable: {
+    geometry: boolean;
+    textContent: boolean;
+    aspectRatio: boolean;
+    composition: boolean;
+    primaryColors: boolean;
+  };
+  allowedTransforms: {
+    perspective: boolean;
+    scale: boolean;
+    crop: boolean;
+    monochrome: boolean;
+    reverseWhite: boolean;
+    materialization: boolean;
+    extrusion: boolean;
+    glow: boolean;
+    partialOcclusion: boolean;
+    decomposition: boolean;
+  };
+  usageRules: {
+    minVisibleSizePx: number;
+    maxOccurrencesPerImage: number;
+    preferredZones: string[];
+    forbiddenZones: string[];
+    priority: number;
+  };
+  validation: {
+    ocrExpectedText?: string[];
+    contourThreshold?: number;
+    aspectRatioTolerance?: number;
+    colorToleranceDeltaE?: number;
+  };
+}
 
 export interface ShortChainTaskContract {
   schemaVersion: '1.0';
@@ -808,6 +880,10 @@ export interface ShortChainTaskContract {
   mustInclude: string[];
   mustAvoid: string[];
   referenceAssetIds: string[];
+  brandMarkRenderMode?: LockedAssetRenderMode;
+  materialMode?: LockedAssetMaterialMode;
+  brandIntensity?: LockedAssetBrandIntensity;
+  /** @deprecated Persisted v1 compatibility only. */
   logoUsageMode?: ShortChainLogoUsageMode;
   createdAt: string;
 }

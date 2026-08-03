@@ -186,7 +186,10 @@ test('structured Prompt Source enriches context while ProjectRecord keeps identi
   assert.equal(context.promptSourceObject?.projectFacts.brandName, 'Brand One');
   assert.equal(context.promptSourceObject?.projectFacts.industry, 'hospitality');
   assert.equal(context.promptSourceObject?.lockedAssets.preferredLogoAssetId, 'asset-logo');
-  assert.equal(context.promptSourceObject?.lockedAssets.logoUsageMode, 'post_composite');
+  assert.equal(context.promptSourceObject?.lockedAssets.brandMarkRenderMode, 'locked_asset_render');
+  assert.equal(context.promptSourceObject?.lockedAssets.materialMode, 'auto');
+  assert.equal(context.promptSourceObject?.lockedAssets.brandIntensity, 'balanced');
+  assert.equal(context.promptSourceObject?.lockedAssets.logoUsageMode, 'reference');
   assert.deepEqual(context.promptSourceObject?.sourceVisualState.brandMisreadRisks, ['tea room']);
 });
 

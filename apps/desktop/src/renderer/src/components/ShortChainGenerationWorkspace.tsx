@@ -3,6 +3,9 @@ import type {
   ApiProfile,
   CompileShortChainGenerationResult,
   ImageGenerationRun,
+  LockedAssetBrandIntensity,
+  LockedAssetMaterialMode,
+  LockedAssetRenderMode,
   ProjectRecord,
   ProjectVisualContextShortChain,
   ShortChainCreativeSession,
@@ -57,6 +60,9 @@ export function ShortChainGenerationWorkspace({
   const [sourceAssets, setSourceAssets] = useState<ProjectVisualContextShortChain['sourceAssetRefs']>([]);
   const [assetThumbnails, setAssetThumbnails] = useState<Record<string, string>>({});
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+  const [brandMarkRenderMode, setBrandMarkRenderMode] = useState<LockedAssetRenderMode>('locked_asset_render');
+  const [materialMode, setMaterialMode] = useState<LockedAssetMaterialMode>('auto');
+  const [brandIntensity, setBrandIntensity] = useState<LockedAssetBrandIntensity>('balanced');
   const [compiled, setCompiled] = useState<CompileShortChainGenerationResult | null>(null);
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
@@ -72,7 +78,9 @@ export function ShortChainGenerationWorkspace({
   const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
   const selectedLogoAsset = sourceAssets.find((asset) =>
     asset.role === 'logo' && referenceAssetIds.includes(asset.assetId));
-  const effectiveLogoUsageMode = selectedLogoAsset ? 'reference' : 'blank_area';
+  const effectiveLogoUsageMode = brandMarkRenderMode === 'no_logo_preview'
+    ? 'blank_area'
+    : selectedLogoAsset ? 'reference' : 'blank_area';
   function splitRules(value: string): string[] {
     return [...new Set(value.split(/\r?\n|；|;/u).map((item) => item.trim()).filter(Boolean))];
   }
@@ -84,11 +92,14 @@ export function ShortChainGenerationWorkspace({
       || task.shot !== shot
       || task.aspectRatio !== aspectRatio
       || task.currentInstruction !== instruction.trim()
+      || task.brandMarkRenderMode !== brandMarkRenderMode
+      || task.materialMode !== materialMode
+      || task.brandIntensity !== brandIntensity
       || task.logoUsageMode !== effectiveLogoUsageMode
       || task.referenceAssetIds.join('\n') !== referenceAssetIds.join('\n')
       || task.mustInclude.join('\n') !== splitRules(mustIncludeText).join('\n')
       || task.mustAvoid.join('\n') !== splitRules(mustAvoidText).join('\n');
-  }, [compiled, family, subtype, shot, aspectRatio, instruction, effectiveLogoUsageMode, referenceAssetIds, mustIncludeText, mustAvoidText]);
+  }, [compiled, family, subtype, shot, aspectRatio, instruction, brandMarkRenderMode, materialMode, brandIntensity, effectiveLogoUsageMode, referenceAssetIds, mustIncludeText, mustAvoidText]);
 
   async function refreshSession() {
     const next = await window.masterpiece.imageGeneration.getShortChainSession(project.id);
@@ -115,6 +126,10 @@ export function ShortChainGenerationWorkspace({
       setOptions(nextOptions as TemplateOptions);
       setSourceAssets(context.sourceAssetRefs);
       setAssetThumbnails(thumbnailMap);
+      setBrandMarkRenderMode(context.promptSourceObject?.lockedAssets.brandMarkRenderMode
+        ?? (context.lockedAssets.logoAssetIds.length ? 'locked_asset_render' : 'no_logo_preview'));
+      setMaterialMode(context.promptSourceObject?.lockedAssets.materialMode ?? 'auto');
+      setBrandIntensity(context.promptSourceObject?.lockedAssets.brandIntensity ?? 'balanced');
     })
       .catch((reason) => setError(cleanError(reason)));
   }, [project.id]);
@@ -176,6 +191,9 @@ export function ShortChainGenerationWorkspace({
           mustInclude: splitRules(mustIncludeText),
           mustAvoid: splitRules(mustAvoidText),
           referenceAssetIds,
+          brandMarkRenderMode,
+          materialMode,
+          brandIntensity,
           logoUsageMode: effectiveLogoUsageMode,
         },
       });
@@ -346,6 +364,53 @@ export function ShortChainGenerationWorkspace({
           />
         </label>
         {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
+        <details className="advanced-settings">
+          <summary>品牌标识渲染设置</summary>
+          <label>渲染方式
+            <select value={brandMarkRenderMode} onChange={(event) => {
+              setBrandMarkRenderMode(event.target.value as LockedAssetRenderMode);
+              setCompiled(null);
+            }}>
+              <option value="locked_asset_render">锁定 Logo 智能渲染（推荐）</option>
+              <option value="no_logo_preview">不显示 Logo（空间预览）</option>
+              <option value="creative_logo_interpretation">Logo 创意演绎（实验）</option>
+            </select>
+          </label>
+          <p className="muted">默认保持 Logo 图形、文字和组合结构，由模型完成透视、材质、厚度、安装方式和环境光融合。</p>
+          <label>标识材质
+            <select
+              value={materialMode}
+              disabled={brandMarkRenderMode !== 'locked_asset_render'}
+              onChange={(event) => {
+                setMaterialMode(event.target.value as LockedAssetMaterialMode);
+                setCompiled(null);
+              }}
+            >
+              <option value="auto">自动判断</option>
+              <option value="front_lit_acrylic">正面发光字</option>
+              <option value="halo_lit_metal">背发光金属字</option>
+              <option value="acrylic_dimensional">亚克力立体字</option>
+              <option value="pvc_dimensional">PVC 立体字</option>
+              <option value="metal_dimensional">金属字</option>
+              <option value="neon">霓虹灯</option>
+              <option value="wall_engraving">墙面雕刻</option>
+              <option value="lightbox">灯箱</option>
+              <option value="screen_print">丝印 / 喷绘</option>
+              <option value="frosted_glass">磨砂玻璃贴</option>
+              <option value="flat_print">平面印刷</option>
+            </select>
+          </label>
+          <label>品牌强度
+            <select value={brandIntensity} onChange={(event) => {
+              setBrandIntensity(event.target.value as LockedAssetBrandIntensity);
+              setCompiled(null);
+            }}>
+              <option value="subtle">克制空间</option>
+              <option value="balanced">平衡品牌（默认）</option>
+              <option value="expressive">强品牌体验</option>
+            </select>
+          </label>
+        </details>
         <fieldset className="reference-asset-selector">
           <legend>锁定身份 / 结构参考（最多2项）</legend>
           <p className="muted">勾选后会直接作为本次生图参考；可选择 Logo、icon、IP、产品或包装结构素材。</p>
@@ -392,9 +457,11 @@ export function ShortChainGenerationWorkspace({
           <div className="prompt-source-summary">
             <div>
               <small>Logo 策略</small>
-              <strong>{compiled.compiledPrompt.logoUsageMode === 'reference'
-                ? '真实 Logo 参考'
-                : '无文字 · 预留干净区域'}</strong>
+              <strong>{compiled.taskContract.referenceAssetIds.length
+                ? `已选 ${compiled.taskContract.referenceAssetIds.length} 项视觉资产 · 强制空间应用`
+                : compiled.compiledPrompt.logoUsageMode === 'reference'
+                  ? '真实 Logo 参考'
+                  : '无文字 · 预留干净区域'}</strong>
             </div>
             <div>
               <small>必须包含</small>

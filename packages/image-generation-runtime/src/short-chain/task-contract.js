@@ -3,6 +3,26 @@ import crypto from 'node:crypto';
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 const RATIOS = new Set(['1:1', '4:3', '3:4', '16:9', '9:16']);
 const LOGO_USAGE_MODES = new Set(['reference', 'blank_area', 'post_composite']);
+const BRAND_MARK_RENDER_MODES = new Set([
+  'locked_asset_render',
+  'no_logo_preview',
+  'creative_logo_interpretation',
+]);
+const MATERIAL_MODES = new Set([
+  'auto',
+  'front_lit_acrylic',
+  'halo_lit_metal',
+  'acrylic_dimensional',
+  'pvc_dimensional',
+  'metal_dimensional',
+  'neon',
+  'wall_engraving',
+  'lightbox',
+  'screen_print',
+  'frosted_glass',
+  'flat_print',
+]);
+const BRAND_INTENSITIES = new Set(['subtle', 'balanced', 'expressive']);
 
 function cleanList(value) {
   return [...new Set((Array.isArray(value) ? value : [])
@@ -19,7 +39,19 @@ export function createShortChainTaskContract(input, options = {}) {
   const currentInstruction = String(input?.currentInstruction ?? '').trim();
   const count = Number(input?.count ?? 1);
   const aspectRatio = String(input?.aspectRatio ?? '16:9');
-  const logoUsageMode = String(input?.logoUsageMode ?? 'blank_area');
+  const legacyLogoUsageMode = String(input?.logoUsageMode ?? '');
+  const brandMarkRenderMode = String(input?.brandMarkRenderMode
+    ?? (legacyLogoUsageMode === 'blank_area'
+      ? 'no_logo_preview'
+      : legacyLogoUsageMode === 'reference' || legacyLogoUsageMode === 'post_composite'
+        ? 'locked_asset_render'
+        : 'locked_asset_render'));
+  const materialMode = String(input?.materialMode ?? 'auto');
+  const brandIntensity = String(input?.brandIntensity ?? 'balanced');
+  const referenceAssetIds = cleanList(input.referenceAssetIds);
+  const logoUsageMode = legacyLogoUsageMode || (brandMarkRenderMode === 'no_logo_preview'
+    ? 'blank_area'
+    : referenceAssetIds.length ? 'reference' : 'blank_area');
   if (!input?.projectId) throw new Error('projectId is required');
   if (!FAMILIES.has(family)) throw new Error(`Unsupported deliverable family: ${family || '(empty)'}`);
   if (!subtype) throw new Error('subtype is required');
@@ -29,6 +61,15 @@ export function createShortChainTaskContract(input, options = {}) {
   if (!RATIOS.has(aspectRatio)) throw new Error(`Unsupported aspect ratio: ${aspectRatio}`);
   if (!LOGO_USAGE_MODES.has(logoUsageMode)) {
     throw new Error(`Unsupported logo usage mode: ${logoUsageMode}`);
+  }
+  if (!BRAND_MARK_RENDER_MODES.has(brandMarkRenderMode)) {
+    throw new Error(`Unsupported brand mark render mode: ${brandMarkRenderMode}`);
+  }
+  if (!MATERIAL_MODES.has(materialMode)) {
+    throw new Error(`Unsupported locked asset material mode: ${materialMode}`);
+  }
+  if (!BRAND_INTENSITIES.has(brandIntensity)) {
+    throw new Error(`Unsupported brand intensity: ${brandIntensity}`);
   }
   if (family === 'vi' && subtype === 'unspecified') {
     throw new Error('VI generation requires a concrete material subtype');
@@ -46,7 +87,10 @@ export function createShortChainTaskContract(input, options = {}) {
     currentInstruction,
     mustInclude: cleanList(input.mustInclude),
     mustAvoid: cleanList(input.mustAvoid),
-    referenceAssetIds: cleanList(input.referenceAssetIds),
+    referenceAssetIds,
+    brandMarkRenderMode,
+    materialMode,
+    brandIntensity,
     logoUsageMode,
     createdAt: options.now || new Date().toISOString(),
   };

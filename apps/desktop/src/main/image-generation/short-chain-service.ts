@@ -34,8 +34,18 @@ import {
 export interface CompileShortChainGenerationInput {
   projectId: string;
   model?: string;
-  task: Omit<ShortChainTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
+  task: Omit<ShortChainTaskContract,
+    | 'schemaVersion'
+    | 'taskId'
+    | 'projectId'
+    | 'createdAt'
+    | 'brandMarkRenderMode'
+    | 'materialMode'
+    | 'brandIntensity'> & {
     taskId?: string;
+    brandMarkRenderMode?: ShortChainTaskContract['brandMarkRenderMode'];
+    materialMode?: ShortChainTaskContract['materialMode'];
+    brandIntensity?: ShortChainTaskContract['brandIntensity'];
   };
 }
 
@@ -198,21 +208,21 @@ export function createShortChainImageGenerationService(
       : context.promptSourceObject?.lockedAssets.logoAssetIds.length
         ? context.promptSourceObject.lockedAssets.logoAssetIds
         : context.lockedAssets.logoAssetIds;
-    const preferredLogoAssetId = packetLogoAssetIds[0]
-      || context.promptSourceObject?.lockedAssets.preferredLogoAssetId
-      || logoAssetIds[0]
-      || null;
     const requestedReferenceIds = input.task.referenceAssetIds ?? [];
     const selectedLogoAssetId = logoAssetIds.find((assetId) => requestedReferenceIds.includes(assetId));
-    const logoUsageMode = input.task.logoUsageMode === 'post_composite'
-      ? 'post_composite'
+    const legacyLogoUsageMode = input.task.logoUsageMode;
+    const brandMarkRenderMode = input.task.brandMarkRenderMode
+      ?? context.promptSourceObject?.lockedAssets.brandMarkRenderMode
+      ?? (legacyLogoUsageMode === 'blank_area' ? 'no_logo_preview' : 'locked_asset_render');
+    const materialMode = input.task.materialMode
+      ?? context.promptSourceObject?.lockedAssets.materialMode
+      ?? 'auto';
+    const brandIntensity = input.task.brandIntensity
+      ?? context.promptSourceObject?.lockedAssets.brandIntensity
+      ?? 'balanced';
+    const logoUsageMode = brandMarkRenderMode === 'no_logo_preview'
+      ? 'blank_area'
       : selectedLogoAssetId ? 'reference' : 'blank_area';
-    if (logoUsageMode === 'post_composite' && !preferredLogoAssetId) {
-      throw Object.assign(
-        new Error(`${logoUsageMode} Logo mode requires a confirmed Logo asset`),
-        { code: 'SHORT_CHAIN_LOGO_REFERENCE_MISSING' },
-      );
-    }
     const logoAssetIdSet = new Set(logoAssetIds);
     const referenceAssetIds = logoUsageMode === 'reference'
       ? [...new Set(requestedReferenceIds)]
@@ -260,6 +270,9 @@ export function createShortChainImageGenerationService(
       task: {
         ...input.task,
         projectId: input.projectId,
+        brandMarkRenderMode,
+        materialMode,
+        brandIntensity,
         logoUsageMode,
         referenceAssetIds,
       },
@@ -293,19 +306,6 @@ export function createShortChainImageGenerationService(
         trace: result.compiledPrompt.trace,
         compiledAt: result.compiledPrompt.compiledAt,
       }),
-      ...(logoUsageMode === 'post_composite' ? [
-        writeJson(path.join(artifactDirectory, 'logo-post-composite-plan.json'), {
-          schemaVersion: '1.0',
-          projectId: input.projectId,
-          taskId: result.taskContract.taskId,
-          logoAssetId: preferredLogoAssetId,
-          status: 'awaiting_generation_and_placement',
-          source: packetLogoAssetIds.includes(preferredLogoAssetId || '')
-            ? 'visual_decision_packet.lockedAssets'
-            : 'project_context.lockedAssets',
-          createdAt: result.compiledPrompt.compiledAt,
-        }),
-      ] : []),
       fs.writeFile(
         path.join(artifactDirectory, 'compiled-prompt.md'),
         `${result.compiledPrompt.editablePrompt}\n`,
@@ -386,6 +386,9 @@ export function createShortChainImageGenerationService(
             mustInclude: [...task.mustInclude],
             mustAvoid: [...task.mustAvoid],
             referenceAssetIds: [...task.referenceAssetIds],
+            brandMarkRenderMode: task.brandMarkRenderMode,
+            materialMode: task.materialMode,
+            brandIntensity: task.brandIntensity,
             logoUsageMode: task.logoUsageMode,
           },
           ...(apiProfileId ? { apiProfileId } : {}),

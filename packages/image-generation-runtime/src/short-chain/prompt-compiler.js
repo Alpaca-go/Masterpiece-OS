@@ -9,7 +9,7 @@ import { compilePackagingPromptContract } from '../prompt-contracts/packaging-co
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
-export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.4.0';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.5.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -55,22 +55,71 @@ function selectedReferenceDirectives(projectContext, taskContract) {
     const evidence = inventoryItems.filter((item) => item?.assetId === assetId);
     const features = cleanList(evidence.flatMap((item) => item?.visualFeatures || [])).slice(0, 6);
     const role = source?.role || 'visual_reference';
-    const roleRule = role === 'logo'
-      ? 'This is the selected project Logo. Use it as the authoritative identity reference and preserve its recognizable outline, internal geometry, proportions and color relationships without invention.'
+    const creativeInterpretation = taskContract.brandMarkRenderMode === 'creative_logo_interpretation';
+    const roleRule = creativeInterpretation && (role === 'logo' || role === 'identity')
+      ? 'Use this selected identity as the recognizable source for an explicitly experimental spatial interpretation. Decomposition and extension are allowed, but its origin must remain visibly attributable to the supplied asset.'
+      : role === 'logo'
+      ? 'Reproduce the selected project Logo as a clearly visible, recognizable identity element. Preserve its outline, internal geometry, proportions and color relationships without redesign.'
       : role === 'identity'
-      ? 'This is locked identity/IP evidence. Preserve its recognizable silhouette, proportions, signature features and internal relationships.'
+      ? 'Reproduce the selected identity/IP character as a clearly visible, recognizable branded element. Preserve its silhouette, proportions, signature features and internal relationships.'
       : role === 'package_structure'
-        ? 'This is a locked structure reference. Preserve its geometry, proportions, opening and construction relationships.'
+        ? 'Apply the selected structure as a clearly visible, recognizable physical element. Preserve its geometry, proportions, opening and construction relationships.'
         : role === 'product'
-          ? 'This is a locked product reference. Preserve the product silhouette, proportions and defining physical details.'
-          : 'This was explicitly selected as an identity or structure constraint. Preserve its recognizable subject, shape and defining graphic relationships; do not reduce it to mood or color inspiration.';
+          ? 'Apply the selected product as a clearly visible, recognizable physical element. Preserve its silhouette, proportions and defining details.'
+          : 'Apply the principal visual asset shown in this selected image as a clearly visible, recognizable branded element. Preserve its subject, shape and defining graphic relationships.';
+    const applicationRule = taskContract.deliverableFamily === 'space'
+      ? index === 0
+        ? 'Physically integrate it into the space at a prominent, camera-visible brand touchpoint such as the entrance sign, reception backdrop, focal wall, environmental graphic, wayfinding element or built installation, choosing the carrier that fits the asset.'
+        : 'Physically integrate it into a second camera-visible spatial carrier such as a wall graphic, IP installation, icon/wayfinding system, counter graphic or branded surface, choosing the carrier that fits the asset.'
+      : taskContract.deliverableFamily === 'packaging'
+        ? 'Apply it visibly on the primary packaging face or another functionally appropriate packaging surface.'
+        : 'Apply it visibly as a primary or secondary branded element in the finished deliverable.';
     return [
-      `Provider reference image ${index + 1}: ${source?.name || assetId}; role: ${role}.`,
+      `MANDATORY SELECTED VISUAL ASSET ${index + 1}: Provider reference image ${index + 1}: ${source?.name || assetId}; detected role: ${role}.`,
       roleRule,
+      applicationRule,
       features.length ? `Visible features to retain from reference image ${index + 1}: ${features.join('; ')}.` : '',
-      `The final image must contain visible evidence that reference image ${index + 1} was used.`,
+      `The final image must make selected visual asset ${index + 1} immediately recognizable; palette, lighting, line rhythm, geometry or mood alone does not count as using it.`,
+      'Do not show the uploaded reference sheet, screenshot or mockup as a floating board; apply its principal asset naturally to the finished design.',
+      'This user-selected hard inclusion overrides any upstream abstraction-only, non-literal-use, removal or blank-identity instruction for this asset.',
     ].filter(Boolean).join(' ');
   });
+}
+
+const MATERIAL_MODE_PROMPTS = Object.freeze({
+  auto: 'Choose a physically credible locked-asset material from the actual carrier surface, viewing distance and environmental light.',
+  front_lit_acrylic: 'Render the locked mark as front-lit acrylic channel letters with realistic thickness, frontal illumination, wall spill and contact shadow.',
+  halo_lit_metal: 'Render the locked mark as dimensional metal with halo backlighting, standoffs, edge thickness and wall reflection.',
+  acrylic_dimensional: 'Render the locked mark as non-glowing dimensional acrylic with realistic polished edges and mounting depth.',
+  pvc_dimensional: 'Render the locked mark as dimensional PVC with believable edge thickness, matte surface and mounting shadow.',
+  metal_dimensional: 'Render the locked mark as dimensional metal with physically plausible reflection, edge thickness and fixings.',
+  neon: 'Render the locked mark as a fabricated neon installation while preserving every locked contour and letterform.',
+  wall_engraving: 'Render the locked mark as wall engraving with believable recess depth, edge shadow and material continuity.',
+  lightbox: 'Render the locked mark as an architectural lightbox with controlled face illumination, frame depth and mounting detail.',
+  screen_print: 'Render the locked mark as screen print or sprayed graphics conforming to the carrier surface.',
+  frosted_glass: 'Render the locked mark as a frosted glass film application with correct translucency and edge definition.',
+  flat_print: 'Render the locked mark as a precise flat print integrated with the selected surface.',
+});
+
+function lockedAssetRenderSettingDirectives(taskContract) {
+  const mode = taskContract.brandMarkRenderMode || 'locked_asset_render';
+  const intensity = taskContract.brandIntensity || 'balanced';
+  const intensityRule = intensity === 'subtle'
+    ? 'Brand intensity: subtle. Use one restrained primary brand placement and keep architecture, material and circulation dominant.'
+    : intensity === 'expressive'
+      ? 'Brand intensity: expressive. Allow one dominant brand placement plus limited supporting graphics, while preserving hierarchy and avoiding repetition.'
+      : 'Brand intensity: balanced. Use one primary brand placement and at most one subordinate supporting placement; keep the space and brand expression in balance.';
+  if (mode === 'no_logo_preview') {
+    return ['Brand mark render mode: no-logo preview. Do not display a Logo or wordmark; preserve only an appropriate installation surface when needed.', intensityRule];
+  }
+  if (mode === 'creative_logo_interpretation') {
+    return ['Brand mark render mode: creative interpretation. The user explicitly allows decomposition, extension and spatial transformation of the selected Logo for concept exploration.', intensityRule];
+  }
+  return [
+    'Brand mark render mode: locked asset render. Lock identity geometry and semantics while allowing perspective, scale, material, thickness, mounting, light, shadow, glow and environmental reflection.',
+    MATERIAL_MODE_PROMPTS[taskContract.materialMode] || MATERIAL_MODE_PROMPTS.auto,
+    intensityRule,
+  ];
 }
 
 function comparable(value) {
@@ -166,10 +215,14 @@ function packetExecutionSource(packet, family) {
   };
 }
 
-function packetTransformationItems(abstractions, spatial) {
+function packetTransformationItems(abstractions, spatial, selectedAssetIds = []) {
+  const selected = new Set(cleanList(selectedAssetIds));
   return cleanList(
     spatial?.spatialConcept ? `空间核心：${spatial.spatialConcept}` : '',
-    abstractions?.flatMap((item) => [
+    abstractions?.flatMap((item) => {
+    const selectedEvidence = selected.has(item?.sourceAsset)
+      || cleanList(item?.evidenceRefs).some((assetId) => selected.has(assetId));
+    return [
     item?.sourceAsset
       ? `从“${item.sourceAsset}”保留语义：${cleanList(item.semanticMeaning).join('、')}`
       : '',
@@ -182,7 +235,7 @@ function packetTransformationItems(abstractions, spatial) {
     cleanList(item?.lightingPotential).length
       ? `光线转译潜力：${cleanList(item.lightingPotential).join('、')}`
       : '',
-    cleanList(item?.forbiddenLiteralUse).length
+    cleanList(item?.forbiddenLiteralUse).length && !selectedEvidence
       ? [
         `Strict non-literal prohibition: ${cleanList(item.forbiddenLiteralUse).join('、')}.`,
         spatial
@@ -190,7 +243,8 @@ function packetTransformationItems(abstractions, spatial) {
           : 'No dominant object or repeated surface may visually resolve into those legacy source objects.',
       ].join(' ')
       : '',
-    ]),
+    ];
+    }),
     spatial?.structureLanguage?.map((item) => `空间结构转译：${item}`),
   );
 }
@@ -355,6 +409,15 @@ function approvedProhibitionsForDeliverable(items, deliverableFamily) {
     ? /包装|盒|袋|开盒|名片|标签|海报|排版|slogan|12\s*列|packag|box|bag|poster|typograph/iu
     : /空间|建筑|动线|space|interior|architecture/iu;
   return cleanList(items).filter((item) => current.test(item) || !other.test(item));
+}
+
+function professionalRequirementsForSelectedAssets(items, hasSelectedAssets) {
+  if (!hasSelectedAssets) return items;
+  return cleanList(items).filter((item) => !(
+    /brand motifs? as abstract spatial behavior/iu.test(item)
+    || /never as a literal oversized icon/iu.test(item)
+    || /(?:仅|只).{0,8}抽象|禁止.{0,8}(?:原样|直接).{0,8}(?:呈现|使用|复制)/u.test(item)
+  ));
 }
 
 function packetToneItems(creativeDecision) {
@@ -617,6 +680,7 @@ export function compileShortChainPrompt({
       [
         taskContract.currentInstruction,
         taskContract.mustInclude.map((item) => `Must include: ${item}`),
+        lockedAssetRenderSettingDirectives(taskContract),
         referenceDirectives,
         taskContract.scene ? `Scene: ${taskContract.scene}` : '',
         `Aspect ratio: ${taskContract.aspectRatio}`,
@@ -748,7 +812,13 @@ export function compileShortChainPrompt({
       '07 Brand Translation',
       [
         packetSource?.lockedAssets?.map((item) => `Locked — preserve ${item.type}: ${item.value}`),
-        packetSource ? packetTransformationItems(packetSource.abstractions, packetSource.spatial) : [],
+        packetSource
+          ? packetTransformationItems(
+            packetSource.abstractions,
+            packetSource.spatial,
+            taskContract.referenceAssetIds,
+          )
+          : [],
         packetSource?.spatial?.brandIntegration?.map((item) => `Brand integration: ${item}`),
         packetSource?.spatial?.peopleBehavior?.map((item) => `People behavior: ${item}`),
         approvedProhibitionsForDeliverable(
@@ -772,7 +842,9 @@ export function compileShortChainPrompt({
           : ['prompt_source.upgradeTranslation.transformations']),
         'project_context.visualIdentity',
       ],
-      'Translate identity into form, rhythm, detail and spatial or object behavior; do not paste symbols as decoration.',
+      referenceDirectives.length
+        ? 'Integrate every selected visual asset as a recognizable, physically credible part of the finished design.'
+        : 'Translate identity into form, rhythm, detail and spatial or object behavior; do not paste symbols as decoration.',
       strictPacket,
     ),
     createBlock(
@@ -849,7 +921,15 @@ export function compileShortChainPrompt({
     createBlock(
       'professional_contract',
       taskContract.deliverableFamily === 'space' ? '12 Spatial Production Contract' : '12 Professional Production Contract',
-      templateSections('professionalRequirements'),
+      [
+        professionalRequirementsForSelectedAssets(
+          templateSections('professionalRequirements'),
+          referenceDirectives.length > 0,
+        ),
+        referenceDirectives.length && taskContract.deliverableFamily === 'space'
+          ? 'Every user-selected visual asset is a mandatory design input: integrate its recognizable principal graphic, Logo, Icon or IP character into a physically credible, camera-visible spatial carrier. Do not reduce selected assets to palette, mood, linework or abstract geometry.'
+          : '',
+      ],
       templates.map((item) => item.id),
       'Make the requested result physically credible, usable and professionally resolved.',
     ),
@@ -857,9 +937,15 @@ export function compileShortChainPrompt({
       'logo_text_and_negatives',
       '13 Logo, Text and Strict Negatives',
       [
-        logoUsageMode === 'reference'
-          ? 'Use the selected project Logo as the authoritative logo reference; preserve its structure and do not redesign it. Keep every other explicitly selected icon, IP, product or structure reference in its assigned role.'
-          : logoUsageMode === 'post_composite'
+        taskContract.brandMarkRenderMode === 'no_logo_preview'
+          ? 'Do not render any Logo, brand wordmark, letters, words or signage copy. Reserve a clean identity installation area when signage is needed.'
+          : taskContract.brandMarkRenderMode === 'creative_logo_interpretation'
+            ? 'The selected Logo may be decomposed or extended only because the user explicitly selected experimental interpretation mode. Do not invent unrelated brand names, slogans or pseudo-text.'
+            : referenceDirectives.length
+          ? 'Every explicitly selected visual asset is allowed and required to appear in its assigned design role, including any Logo, Icon, lettering or IP character visible in that selected asset. Do not suppress selected content under a blank-identity or no-text rule. Do not invent unrelated logos, names, slogans, letters or pseudo-text.'
+          : logoUsageMode === 'reference'
+            ? 'Use the selected project Logo as the authoritative logo reference; preserve its structure and do not redesign it.'
+            : logoUsageMode === 'post_composite'
             ? 'Do not render any logo or brand text. Reserve a clean, front-facing signage area for controlled post-compositing.'
             : 'Do not render any logo, letters, words, or signage copy. Reserve a clean identity placement area when signage is needed.',
         taskContract.mustAvoid.map((item) => `User prohibition: ${item}`),

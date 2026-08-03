@@ -146,7 +146,7 @@ const scenes = [
   },
 ];
 
-test('three Jiuzhou space scenes preserve task overrides and Logo mode boundaries', () => {
+test('three Jiuzhou space scenes migrate legacy Logo modes to locked reference rendering', () => {
   for (const scene of scenes) {
     const result = compileShortChainImageGeneration({
       projectContext,
@@ -160,17 +160,18 @@ test('three Jiuzhou space scenes preserve task overrides and Logo mode boundarie
         currentInstruction: scene.instruction,
         mustInclude: scene.mustInclude,
         mustAvoid: scene.mustAvoid,
-        referenceAssetIds: [],
+        referenceAssetIds: ['real-logo'],
         logoUsageMode: scene.mode,
       },
     });
     assert.equal(result.compiledPrompt.blocks.length, 13, scene.name);
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(scene.mustInclude[0], 'u'), scene.name);
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(scene.mustAvoid[0], 'u'), scene.name);
-    assert.equal(result.compiledPrompt.logoUsageMode, scene.mode, scene.name);
+    assert.equal(result.taskContract.brandMarkRenderMode, 'locked_asset_render', scene.name);
+    assert.equal(result.compiledPrompt.logoUsageMode, 'reference', scene.name);
     assert.deepEqual(
       result.payload.referenceAssetIds,
-      [],
+      ['real-logo'],
       scene.name,
     );
     assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true, scene.name);

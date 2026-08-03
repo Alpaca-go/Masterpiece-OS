@@ -52,7 +52,7 @@ test('preflight enforces the active adapter budget and returns actionable remedi
   assert.equal(finding?.remediation, 'restore_or_shorten_edited_prompt');
 });
 
-test('preflight exposes project specificity, legacy reuse, packaging evidence and Logo route codes', () => {
+test('preflight exposes project specificity, legacy reuse and packaging evidence codes', () => {
   const packet = phase1Packet();
   // Pass an explicit minimal approvedCreativeDecision so the synthesiser
   // does not populate enough categories to flip specificity to 'ready'.
@@ -86,7 +86,6 @@ test('preflight exposes project specificity, legacy reuse, packaging evidence an
     'PACKAGING_STRUCTURE_EVIDENCE_MISSING',
     'PACKAGING_PRODUCT_ROLE_MISSING',
     'UNSUPPORTED_PRODUCT_INVENTION',
-    'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED',
   ]) assert.equal(codes.has(code), true, code);
 });
 

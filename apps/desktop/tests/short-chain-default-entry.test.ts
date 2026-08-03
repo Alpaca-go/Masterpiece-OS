@@ -23,7 +23,7 @@ test('Short-Chain is the only production path and the retired workspace is absen
   assert.match(settingsUiSource, /生成工作台是当前唯一生图路径/u);
 });
 
-test('Short-Chain sends selected Logo, icon and IP assets directly without a Logo mode selector', async () => {
+test('Short-Chain defaults selected Logo, icon and IP assets to locked rendering with advanced overrides', async () => {
   const source = await fs.readFile(
     new URL('../src/renderer/src/components/ShortChainGenerationWorkspace.tsx', import.meta.url),
     'utf8',
@@ -31,6 +31,10 @@ test('Short-Chain sends selected Logo, icon and IP assets directly without a Log
   assert.doesNotMatch(source, /Logo 处理方式/u);
   assert.doesNotMatch(source, /setLogoUsageMode/u);
   assert.match(source, /sourceAssets\.map\(\(asset\)/u);
-  assert.match(source, /selectedLogoAsset \? 'reference' : 'blank_area'/u);
+  assert.match(source, /useState<LockedAssetRenderMode>\('locked_asset_render'\)/u);
+  assert.match(source, /brandMarkRenderMode,/u);
+  assert.match(source, /materialMode,/u);
+  assert.match(source, /brandIntensity,/u);
+  assert.match(source, /advanced-settings/u);
   assert.match(source, /可选择 Logo、icon、IP、产品或包装结构素材/u);
 });

@@ -216,12 +216,21 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
       mustInclude: [],
       mustAvoid: [],
       referenceAssetIds: ['logo-asset'],
+      brandMarkRenderMode: 'locked_asset_render',
+      materialMode: 'front_lit_acrylic',
+      brandIntensity: 'balanced',
       logoUsageMode: 'blank_area',
     },
   });
   assert.equal(selectedLogo.compiledPrompt.logoUsageMode, 'reference');
+  assert.equal(selectedLogo.taskContract.brandMarkRenderMode, 'locked_asset_render');
+  assert.equal(selectedLogo.taskContract.materialMode, 'front_lit_acrylic');
+  assert.equal(selectedLogo.taskContract.brandIntensity, 'balanced');
   assert.deepEqual(selectedLogo.payload.referenceAssetIds, ['logo-asset']);
-  assert.match(selectedLogo.compiledPrompt.finalPrompt, /Provider reference image 1: Confirmed Logo/u);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1: Provider reference image 1: Confirmed Logo/u);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /prominent, camera-visible brand touchpoint/u);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /palette, lighting, line rhythm, geometry or mood alone does not count/u);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /front-lit acrylic/u);
 
   await assert.rejects(() => service.compile({
     projectId,
@@ -240,7 +249,7 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
   }), (error: unknown) =>
     (error as { code?: string }).code === 'SHORT_CHAIN_REFERENCE_ASSET_INVALID');
 
-  const postComposite = await service.compile({
+  const migratedPostComposite = await service.compile({
     projectId,
     task: {
       deliverableFamily: 'space',
@@ -255,16 +264,11 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
       logoUsageMode: 'post_composite',
     },
   });
-  assert.deepEqual(postComposite.payload.referenceAssetIds, []);
-  assert.equal(postComposite.compiledPrompt.logoUsageMode, 'post_composite');
-  assert.match(postComposite.compiledPrompt.finalPrompt, /controlled post-compositing/u);
-  assert.equal(
-    await fs.stat(path.join(
-      postComposite.artifactDirectory,
-      'logo-post-composite-plan.json',
-    )).then(() => true),
-    true,
-  );
+  assert.deepEqual(migratedPostComposite.payload.referenceAssetIds, ['logo-asset']);
+  assert.equal(migratedPostComposite.taskContract.brandMarkRenderMode, 'locked_asset_render');
+  assert.equal(migratedPostComposite.compiledPrompt.logoUsageMode, 'reference');
+  assert.match(migratedPostComposite.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1/u);
+  assert.doesNotMatch(migratedPostComposite.compiledPrompt.finalPrompt, /controlled post-compositing/u);
 
   const identityBound = await service.compile({
     projectId,
@@ -281,8 +285,9 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
       logoUsageMode: 'post_composite',
     },
   });
-  assert.match(identityBound.compiledPrompt.finalPrompt, /Provider reference image 1: Locked Mascot/u);
-  assert.match(identityBound.compiledPrompt.finalPrompt, /locked identity\/IP evidence/u);
+  assert.match(identityBound.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1: Provider reference image 1: Locked Mascot/u);
+  assert.match(identityBound.compiledPrompt.finalPrompt, /selected identity\/IP character/u);
+  assert.doesNotMatch(identityBound.compiledPrompt.finalPrompt, /Do not render any logo, letters, words, or signage copy/u);
 
   const poster = await service.compile({
     projectId,

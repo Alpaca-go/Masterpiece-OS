@@ -225,6 +225,7 @@ function context(packetValue = packet()) {
 
 function compile(overrides = {}) {
   const projectContext = context(overrides.packet || packet());
+  if (overrides.sourceAssetRefs) projectContext.sourceAssetRefs = overrides.sourceAssetRefs;
   return compileShortChainImageGeneration({
     projectContext,
     task: {
@@ -254,14 +255,13 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     'Approved project color system: 珍珠白与暖灰',
     '柔和自然侧光',
     '茶空间',
-    'controlled post-compositing',
   ]) assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   assert.match(
     result.compiledPrompt.finalPrompt,
     /Target worldview: 东方生命美学/u,
   );
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.3.1');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.5.0');
   const blockIds = result.compiledPrompt.blocks.map((block) => block.id);
   assert.ok(blockIds.indexOf('brand_translation') < blockIds.indexOf('professional_contract'));
   assert.ok(blockIds.indexOf('lighting_system') < blockIds.indexOf('professional_contract'));
@@ -290,6 +290,41 @@ test('compiler routes Packet color and lighting prohibitions only to strict nega
     assert.equal(colorBlock.items.some((line) => line.includes(item)), false, item);
     assert.equal(lightingBlock.items.some((line) => line.includes(item)), false, item);
   }
+});
+
+test('user-selected visual assets override abstraction-only rules and require visible spatial application', () => {
+  const packetValue = packet();
+  packetValue.abstractions[0].evidenceRefs = ['selected-visual-sheet'];
+  packetValue.abstractions[0].forbiddenLiteralUse = ['DO_NOT_COPY_SELECTED_ASSET'];
+  packetValue.assetInventory.graphicMotifs = [{
+    assetId: 'selected-visual-sheet',
+    visualFeatures: ['recognizable mascot silhouette', 'signature hand gesture'],
+  }];
+  const result = compile({
+    packet: packetValue,
+    sourceAssetRefs: [{
+      assetId: 'selected-visual-sheet',
+      name: 'Selected Logo and IP Sheet',
+      relativePath: 'assets/selected.png',
+      role: 'visual_reference',
+    }],
+    task: {
+      referenceAssetIds: ['selected-visual-sheet'],
+      brandMarkRenderMode: 'locked_asset_render',
+      materialMode: 'auto',
+      brandIntensity: 'balanced',
+      logoUsageMode: 'blank_area',
+    },
+  });
+
+  assert.match(result.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1/u);
+  assert.match(result.compiledPrompt.finalPrompt, /prominent, camera-visible brand touchpoint/u);
+  assert.match(result.compiledPrompt.finalPrompt, /immediately recognizable/u);
+  assert.match(result.compiledPrompt.finalPrompt, /palette, lighting, line rhythm, geometry or mood alone does not count/u);
+  assert.match(result.compiledPrompt.finalPrompt, /including any Logo, Icon, lettering or IP character/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /DO_NOT_COPY_SELECTED_ASSET/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Do not render any logo, letters, words, or signage copy/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Use brand motifs as abstract spatial behavior/u);
 });
 
 test('formal Packet does not invent tone boundaries when no approved decision supplies them', () => {
@@ -381,9 +416,9 @@ test('Jiuzhou automatic Prompt meets all 22 Golden backtrace atoms', () => {
   assert.equal(audit.summary.conflictCount, 0);
 });
 
-test('Logo preservation rule routes a confirmed Logo to post-composite', () => {
+test('Logo preservation rule remains a strict negative without forcing post-composite', () => {
   const result = compile({ task: { mustAvoid: ['禁止将 Logo 变形或拆解'] } });
-  assert.equal(result.taskContract.logoUsageMode, 'post_composite');
+  assert.equal(result.taskContract.logoUsageMode, 'blank_area');
   assert.match(result.compiledPrompt.finalPrompt, /禁止将 Logo 变形或拆解/u);
   assert.equal(result.compiledPrompt.completeness.conflictCount, 0);
 });

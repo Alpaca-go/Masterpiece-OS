@@ -60,11 +60,47 @@ test('Task routing locks the requested deliverable in a short Task Contract', ()
   }, { now: '2026-07-29T00:00:00.000Z' });
   assert.equal(task.deliverableFamily, 'space');
   assert.equal(task.count, 1);
+  assert.equal(task.brandMarkRenderMode, 'locked_asset_render');
+  assert.equal(task.materialMode, 'auto');
+  assert.equal(task.brandIntensity, 'balanced');
   assert.throws(() => createShortChainTaskContract({
     ...task,
     deliverableFamily: 'vi',
     subtype: 'unspecified',
   }), /concrete material subtype/u);
+});
+
+test('Task routing migrates legacy Logo modes and lets the new locked-asset policy win', () => {
+  const migrated = createShortChainTaskContract({
+    projectId: projectContext.projectId,
+    deliverableFamily: 'space',
+    subtype: 'reception',
+    shot: 'front',
+    count: 1,
+    aspectRatio: '16:9',
+    currentInstruction: 'Render the selected brand asset in the space.',
+    referenceAssetIds: ['logo-1'],
+    logoUsageMode: 'post_composite',
+  });
+  assert.equal(migrated.brandMarkRenderMode, 'locked_asset_render');
+  assert.equal(migrated.materialMode, 'auto');
+  assert.equal(migrated.brandIntensity, 'balanced');
+
+  const explicit = createShortChainTaskContract({
+    ...migrated,
+    brandMarkRenderMode: 'creative_logo_interpretation',
+    materialMode: 'metal_dimensional',
+    brandIntensity: 'expressive',
+    logoUsageMode: 'blank_area',
+  });
+  assert.equal(explicit.brandMarkRenderMode, 'creative_logo_interpretation');
+  assert.equal(explicit.materialMode, 'metal_dimensional');
+  assert.equal(explicit.brandIntensity, 'expressive');
+
+  assert.throws(() => createShortChainTaskContract({
+    ...migrated,
+    materialMode: 'painted_cloud',
+  }), /material mode/u);
 });
 
 test('Task routing sends reception space only through space templates', () => {
