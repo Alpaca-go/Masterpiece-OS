@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/creative-decision-v2.schema.json",
+  "title": "Creative Decision V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "decisionId",
+    "version",
+    "strategicDirection",
+    "brandPerceptionGoal",
+    "coreVisualMechanism",
+    "visualPriorities",
+    "lockedAssetDecisions",
+    "allowedVariations",
+    "prohibitedExpressions",
+    "touchpointPriorities",
+    "knownRisks",
+    "decisionSource",
+    "decisionStatus",
+    "evidenceRefs",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "2.0" },
+    "projectId": { "$ref": "#/$defs/nonEmptyString" },
+    "decisionId": { "$ref": "#/$defs/nonEmptyString" },
+    "version": { "$ref": "#/$defs/nonEmptyString" },
+    "strategicDirection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposition", "rationale", "brandRole"],
+      "properties": {
+        "proposition": { "$ref": "#/$defs/nonEmptyString" },
+        "rationale": { "$ref": "#/$defs/nonEmptyString" },
+        "brandRole": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "brandPerceptionGoal": { "$ref": "#/$defs/nonEmptyStrings" },
+    "coreVisualMechanism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["concept", "sourceMechanisms", "languageNail", "visualHammer", "generationLogic", "validationStatus"],
+      "properties": {
+        "concept": { "$ref": "#/$defs/nonEmptyString" },
+        "sourceMechanisms": { "$ref": "#/$defs/nonEmptyStrings" },
+        "languageNail": { "$ref": "#/$defs/nonEmptyString" },
+        "visualHammer": { "$ref": "#/$defs/nonEmptyString" },
+        "generationLogic": { "$ref": "#/$defs/nonEmptyString" },
+        "validationStatus": { "enum": ["direction_confirmed_anchor_pending", "anchor_confirmed"] }
+      }
+    },
+    "visualPriorities": { "$ref": "#/$defs/nonEmptyStrings" },
+    "lockedAssetDecisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["assetId", "decision", "rationale", "evidenceRefs"],
+        "properties": {
+          "assetId": { "$ref": "#/$defs/nonEmptyString" },
+          "decision": { "enum": ["locked", "controlled_edit", "reconstructable", "excluded"] },
+          "rationale": { "$ref": "#/$defs/nonEmptyString" },
+          "evidenceRefs": { "$ref": "#/$defs/nonEmptyStrings" }
+        }
+      }
+    },
+    "allowedVariations": { "$ref": "#/$defs/nonEmptyStrings" },
+    "prohibitedExpressions": { "$ref": "#/$defs/nonEmptyStrings" },
+    "touchpointPriorities": { "$ref": "#/$defs/nonEmptyStrings" },
+    "knownRisks": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "decisionSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "traceAvailability"],
+      "properties": {
+        "mode": { "enum": ["fast_analysis", "guided_direction", "legacy_adapter"] },
+        "selectedDirectionId": { "$ref": "#/$defs/nonEmptyString" },
+        "userDecisionRef": { "$ref": "#/$defs/nonEmptyString" },
+        "traceAvailability": { "enum": ["complete", "legacy_unavailable"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "guided_direction" } }, "required": ["mode"] },
+          "then": { "required": ["selectedDirectionId", "userDecisionRef"] }
+        }
+      ]
+    },
+    "decisionStatus": { "enum": ["confirmed", "superseded"] },
+    "evidenceRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "generatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    }
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "1.0",
+  "source": "Masterpiece Creative Intelligence 2.0 development baseline",
+  "classifications": [
+    "existing",
+    "strengthen",
+    "add",
+    "not_applicable",
+    "ui_copy_only"
+  ],
+  "rules": [
+    {
+      "id": "NICE-EVIDENCE-SEPARATION",
+      "rule": "Separate facts, observations, user intent, assumptions and recommendations.",
+      "classification": "strengthen",
+      "currentEvidence": ["DocumentVisualContextEvidence", "VisualDecisionPacket.repairMetadata", "analysis-runtime evidence-safe merge"],
+      "v2Target": "Evidence Ledger typed entries and deterministic promotion rules"
+    },
+    {
+      "id": "NICE-FOUR-WAY-OPPORTUNITY",
+      "rule": "Classify category opportunity as must keep, can reconstruct, should avoid and can own.",
+      "classification": "add",
+      "currentEvidence": ["Creative Direction keep/remove/transform fields"],
+      "v2Target": "Category Opportunity Map"
+    },
+    {
+      "id": "NICE-THREE-DIRECTIONS",
+      "rule": "Guided mode produces exactly three directions with different core mechanisms.",
+      "classification": "strengthen",
+      "currentEvidence": ["CreativeDirection.visualDirections supports 1-3 options"],
+      "v2Target": "Creative Direction Set plus hard diversity validation"
+    },
+    {
+      "id": "NICE-NO-SURFACE-VARIANTS",
+      "rule": "Colour, font, background, decoration, material or render-style swaps are not distinct directions.",
+      "classification": "add",
+      "currentEvidence": ["Prompt-only anti-copy wording"],
+      "v2Target": "DIRECTION_VARIATION_ONLY deterministic failure"
+    },
+    {
+      "id": "NICE-SOURCE-MECHANISMS",
+      "rule": "Each direction records traceable creative source mechanisms.",
+      "classification": "add",
+      "currentEvidence": [],
+      "v2Target": "CreativeDirectionV2.sourceMechanisms with Evidence refs"
+    },
+    {
+      "id": "NICE-LANGUAGE-VISUAL-HYPOTHESIS",
+      "rule": "Language Nail and Visual Hammer remain hypotheses until user and Anchor validation.",
+      "classification": "add",
+      "currentEvidence": ["Anchor Candidate and Confirmed Anchor lifecycle"],
+      "v2Target": "Hypothesis status in direction and decision trace; never copied directly into Canon"
+    },
+    {
+      "id": "NICE-USER-DECISION-GATE",
+      "rule": "The user may retain, refine, combine or reject directions and must confirm one primary direction.",
+      "classification": "add",
+      "currentEvidence": ["Generic Creative Session decision log"],
+      "v2Target": "User Direction Decision and immutable confirmation gate"
+    },
+    {
+      "id": "NICE-NO-AUTO-FORMAL-DECISION",
+      "rule": "Guided mode cannot produce a formal Creative Decision without user confirmation.",
+      "classification": "strengthen",
+      "currentEvidence": ["Current service immediately compiles a model-recommended direction"],
+      "v2Target": "Separate direction generation from confirmed decision compilation"
+    },
+    {
+      "id": "NICE-REAL-TOUCHPOINTS",
+      "rule": "Use real business touchpoints rather than generic mockups.",
+      "classification": "strengthen",
+      "currentEvidence": ["Project Visual Context businessTouchpoints", "Short-Chain task router"],
+      "v2Target": "Shared Touchpoint Registry used by opportunity and generation routing"
+    },
+    {
+      "id": "NICE-CONCEPT-PRE-EVALUATION",
+      "rule": "Direction scoring is explicitly conceptual and cannot replace visual validation.",
+      "classification": "add",
+      "currentEvidence": ["Anchor and deliverable evaluators"],
+      "v2Target": "Concept Pre-Evaluation artifact with evaluationType marker"
+    },
+    {
+      "id": "NICE-DUAL-ADAPTERS",
+      "rule": "Documents and visual schemes use different parsers and merge only through Project Truth.",
+      "classification": "strengthen",
+      "currentEvidence": ["Document Context", "Unified Visual Understanding"],
+      "v2Target": "Document Adapter and Visual Scheme Adapter implementing one claim contract"
+    },
+    {
+      "id": "NICE-INTENT-VISUAL-GAP",
+      "rule": "Joint input identifies aligned, under-expressed, over-expressed, misaligned and missing intent.",
+      "classification": "add",
+      "currentEvidence": ["Context resolver conflict handling"],
+      "v2Target": "Intent-Visual Gap artifact and validator"
+    },
+    {
+      "id": "NICE-FAST-MODE",
+      "rule": "Complete and explicit projects may use a fast decision path.",
+      "classification": "existing",
+      "currentEvidence": ["Document Context flow", "legacy Creative Direction to Decision"],
+      "v2Target": "Legacy-compatible Fast Analysis router"
+    },
+    {
+      "id": "NICE-SELF-HEALING-BOUNDARY",
+      "rule": "Self-Healing repairs structure but never meaning or confirmed decisions.",
+      "classification": "existing",
+      "currentEvidence": ["analysis-runtime repair policies and evidence-safe merge"],
+      "v2Target": "Keep frozen; add V2 coverage tests"
+    },
+    {
+      "id": "NICE-AS-PRODUCTION-PROMPT",
+      "rule": "Inject NICE method text directly into image-generation prompts.",
+      "classification": "not_applicable",
+      "currentEvidence": ["Production Prompt consumes project contracts, not analysis reports"],
+      "v2Target": "Forbidden by production boundary"
+    },
+    {
+      "id": "NICE-SCORE-LABEL",
+      "rule": "Show that direction scores are concept-stage guidance, not final visual quality.",
+      "classification": "ui_copy_only",
+      "currentEvidence": [],
+      "v2Target": "Decision workbench explanatory label"
+    }
+  ]
+}
