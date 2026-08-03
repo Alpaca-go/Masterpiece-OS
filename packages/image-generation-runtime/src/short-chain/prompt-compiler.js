@@ -19,7 +19,7 @@ import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decisi
 import { compileSingleLogoPlacementDirectives } from './locked-asset-placement-planner.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
-export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.7.0';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.8.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -360,6 +360,8 @@ const PROMPT_COMPACTION_ORDER = Object.freeze([
   'color_system',
 ]);
 
+const BOUNDED_SPATIAL_SECTION = /^\[(?:CURRENT TASK|STRUCTURE FOUNDATION — PRESERVE|VISUAL SKIN — REPLACE|LOCKED BRAND ASSETS|PROJECT VISUAL CANON V\d+|[^\]]+ PROJECT VISUAL CANON V\d+|GOLDEN ANCHOR CALIBRATION|LOGO SCALE CONTRACT|PROJECT NEGATIVE GUARDS|OUTPUT CONTRACT)\]/u;
+
 function fitBlocksToAdapterBudget(blocks, adapter) {
   const maximum = Number(adapter?.maxPromptCharacters);
   const cloned = blocks.map((block) => ({ ...block, items: [...block.items] }));
@@ -387,6 +389,7 @@ function fitBlocksToAdapterBudget(blocks, adapter) {
       .flatMap((block) => block.items.map((item, index) => ({ block, item, index })))
       .filter((candidate) => candidate.block.id !== 'task_contract'
         || (candidate.index > 0 && !/^MANDATORY SELECTED VISUAL ASSET/iu.test(candidate.item)))
+      .filter((candidate) => !BOUNDED_SPATIAL_SECTION.test(candidate.item))
       .filter((candidate) => [...candidate.item].length > 1)
       .sort((a, b) => [...b.item].length - [...a.item].length);
     const target = candidates[0];
@@ -539,6 +542,10 @@ export function compileShortChainPrompt({
   }
   const packetSource = packetExecutionSource(packet, taskContract.deliverableFamily);
   const referenceDirectives = selectedReferenceDirectives(projectContext, taskContract);
+  const hasBoundedCalibrationReferences = taskContract.referenceAssetIds.some((assetId) => {
+    const role = projectContext.sourceAssetRefs.find((item) => item.assetId === assetId)?.role;
+    return role === 'structure_reference' || role === 'style_anchor';
+  });
   const strictPacket = Boolean(packetSource);
   const conflicts = exactConflicts(taskContract.mustInclude, taskContract.mustAvoid);
   if (conflicts.length) {
@@ -911,9 +918,11 @@ export function compileShortChainPrompt({
           : ['prompt_source.upgradeTranslation.transformations']),
         'project_context.visualIdentity',
       ],
-      referenceDirectives.length
+      referenceDirectives.length && !hasBoundedCalibrationReferences
         ? 'Integrate every selected visual asset as a recognizable, physically credible part of the finished design.'
-        : 'Translate identity into form, rhythm, detail and spatial or object behavior; do not paste symbols as decoration.',
+        : hasBoundedCalibrationReferences
+          ? 'Honor each calibration reference only within its declared structure-only or style-only responsibility.'
+          : 'Translate identity into form, rhythm, detail and spatial or object behavior; do not paste symbols as decoration.',
       strictPacket,
     ),
     createBlock(
@@ -995,9 +1004,11 @@ export function compileShortChainPrompt({
           templateSections('professionalRequirements'),
           referenceDirectives.length > 0,
         ),
-        referenceDirectives.length && taskContract.deliverableFamily === 'space'
+        referenceDirectives.length && taskContract.deliverableFamily === 'space' && !hasBoundedCalibrationReferences
           ? 'Every user-selected visual asset is a mandatory design input: integrate its recognizable principal graphic, Logo, Icon or IP character into a physically credible, camera-visible spatial carrier. Do not reduce selected assets to palette, mood, linework or abstract geometry.'
-          : '',
+          : hasBoundedCalibrationReferences
+            ? 'Treat structure and Golden style references as bounded calibration inputs, never as literal objects or layouts to reproduce.'
+            : '',
       ],
       templates.map((item) => item.id),
       'Make the requested result physically credible, usable and professionally resolved.',
@@ -1010,7 +1021,7 @@ export function compileShortChainPrompt({
           ? 'Do not render any Logo, brand wordmark, letters, words or signage copy. Reserve a clean identity installation area when signage is needed.'
           : taskContract.brandMarkRenderMode === 'creative_logo_interpretation'
             ? 'The selected Logo may be decomposed or extended only because the user explicitly selected experimental interpretation mode. Do not invent unrelated brand names, slogans or pseudo-text.'
-            : referenceDirectives.length
+            : referenceDirectives.length && !hasBoundedCalibrationReferences
           ? 'Every explicitly selected visual asset is allowed and required to appear in its assigned design role, including any Logo, Icon, lettering or IP character visible in that selected asset. Do not suppress selected content under a blank-identity or no-text rule. Do not invent unrelated logos, names, slogans, letters or pseudo-text.'
           : logoUsageMode === 'reference'
             ? 'Use the selected project Logo as the authoritative logo reference; preserve its structure and do not redesign it.'
@@ -1018,7 +1029,9 @@ export function compileShortChainPrompt({
             ? 'Do not render any logo or brand text. Reserve a clean, front-facing signage area for controlled post-compositing.'
             : 'Do not render any logo, letters, words, or signage copy. Reserve a clean identity placement area when signage is needed.',
         taskContract.mustAvoid.map((item) => `User prohibition: ${item}`),
-        negativeConstraints.map((item) => `Strict negative: ${item}`),
+        negativeConstraints
+          .filter((item) => !(spatialCompiledContext?.negativeRules || []).includes(item))
+          .map((item) => `Strict negative: ${item}`),
       ],
       [
         'task_contract.mustAvoid',

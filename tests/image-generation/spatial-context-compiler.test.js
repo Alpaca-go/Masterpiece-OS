@@ -3,7 +3,6 @@ import test from 'node:test';
 import {
   assertProtectedFieldsUnchanged,
   compileSpatialContext,
-  loadPremiumMedicalAestheticsArchetype,
   loadSpatialProjectBundle,
   selectProjectAnchors,
 } from '@masterpiece/image-generation-runtime';
@@ -27,7 +26,6 @@ test('Anchor attempt to shrink a large lobby is rejected with conflict provenanc
     task: { subtype: 'large_lobby' },
     spatialFoundation: foundation,
     projectCanon: bundle.projectCanon,
-    verticalArchetype: loadPremiumMedicalAestheticsArchetype(),
     anchorManifest: bundle.anchorManifest,
     anchorSignals: {
       spatialScale: { class: 'compact', ceilingHeight: 'standard' },
@@ -52,25 +50,29 @@ test('compiled prompt sections preserve fixed layer order and explicit Anchor de
   const compiled = compileSpatialContext({
     task: { subtype: 'large_lobby' }, spatialFoundation: foundation,
     projectCanon: bundle.projectCanon,
-    verticalArchetype: loadPremiumMedicalAestheticsArchetype(),
     anchorManifest: bundle.anchorManifest,
     anchorSignals: { materialAndLighting: ['soft indirect light'] },
     projectExclusions: bundle.projectExclusions,
   });
   const prompt = compiled.promptSections.join('\n');
   const ordered = [
-    '[SPATIAL FOUNDATION — DO NOT OVERRIDE]',
+    '[CURRENT TASK]',
+    '[STRUCTURE FOUNDATION — PRESERVE]',
+    '[VISUAL SKIN — REPLACE]',
     '[LOCKED BRAND ASSETS]',
-    '[PROJECT VISUAL CANON]',
-    '[VERTICAL ARCHETYPE BIAS]',
-    '[ANCHOR CALIBRATION]',
-    '[NEGATIVE / RISK GUARDS]',
+    '[JIUZHOU PROJECT VISUAL CANON V2]',
+    '[GOLDEN ANCHOR CALIBRATION]',
+    '[LOGO SCALE CONTRACT]',
+    '[PROJECT NEGATIVE GUARDS]',
     '[OUTPUT CONTRACT]',
   ];
   for (let index = 1; index < ordered.length; index += 1) {
     assert.ok(prompt.indexOf(ordered[index - 1]) < prompt.indexOf(ordered[index]));
   }
   assert.match(prompt, /Do not inherit room size, ceiling height, spatial depth/u);
+  assert.match(prompt, /hard maximum 0\.15/u);
+  assert.match(prompt, /hard maximum 0\.28/u);
+  assert.doesNotMatch(prompt, /VERTICAL ARCHETYPE BIAS/u);
   assert.doesNotMatch(prompt, /Golden Acceptance Standard|八大评分维度/u);
 });
 
@@ -120,8 +122,13 @@ test('source-space structure references have zero visual-skin authority', () => 
     }],
   });
   const section = compiled.promptSections.find((item) =>
-    item.startsWith('[SOURCE SPACE STRUCTURE REFERENCE]'));
-  assert.match(section, /preserves only room envelope, spatial scale, ceiling height/u);
-  assert.match(section, /zero authority over material palette, ceiling design, lighting style/u);
+    item.startsWith('[STRUCTURE FOUNDATION — PRESERVE]'));
+  assert.match(section, /Preserve only room envelope, spatial scale, ceiling height/u);
+  assert.match(compiled.promptSections.join('\n'), /source image has zero visual-skin authority/u);
   assert.equal(compiled.structureReferences[0].responsibility, 'structure_only');
+  assert.equal(compiled.conflicts.filter((item) =>
+    item.reason === 'structure_reference_has_zero_visual_skin_authority').length, 6);
+  assert.ok(compiled.conflicts.every((item) =>
+    item.reason !== 'structure_reference_has_zero_visual_skin_authority'
+      || item.overriddenBy === 'project_visual_canon'));
 });

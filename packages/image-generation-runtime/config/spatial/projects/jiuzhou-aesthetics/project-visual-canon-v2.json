@@ -1,6 +1,7 @@
 {
   "projectId": "jiuzhou-aesthetics",
   "version": 2,
+  "promptSectionLabel": "JIUZHOU PROJECT VISUAL CANON V2",
   "sourceStandard": "docs/golden/spatial/jiuzhou-aesthetics/calibration-development-v1.1.md",
   "lockedAssets": {
     "brandNameZh": "九州美学",

@@ -2,7 +2,6 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { compileShortChainImageGeneration } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 import {
-  loadPremiumMedicalAestheticsArchetype,
   loadSpatialProjectBundle,
 } from '@masterpiece/image-generation-runtime';
 
@@ -240,7 +239,7 @@ test('Golden calibration compiles thirteen traceable blocks from Jiuzhou project
   ]) {
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   }
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.7.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.8.0');
   assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true);
 });
 
@@ -337,12 +336,16 @@ test('compiler places structured spatial layers in the active prompt without Acc
       spatialScale: { class: 'large', ceilingHeight: 'generous', depthExpression: 'strong' },
       cameraIntent: { role: 'entrance_three_quarter_wide' },
     },
-    verticalArchetype: loadPremiumMedicalAestheticsArchetype(),
     anchorSignals: { materialAndLighting: ['soft indirect light'] },
   });
-  assert.match(result.compiledPrompt.finalPrompt, /SPATIAL FOUNDATION — DO NOT OVERRIDE/u);
-  assert.match(result.compiledPrompt.finalPrompt, /ANCHOR CALIBRATION/u);
+  assert.match(result.compiledPrompt.finalPrompt, /STRUCTURE FOUNDATION — PRESERVE/u);
+  assert.match(result.compiledPrompt.finalPrompt, /VISUAL SKIN — REPLACE/u);
+  assert.match(result.compiledPrompt.finalPrompt, /JIUZHOU PROJECT VISUAL CANON V2/u);
+  assert.match(result.compiledPrompt.finalPrompt, /GOLDEN ANCHOR CALIBRATION/u);
+  assert.match(result.compiledPrompt.finalPrompt, /LOGO SCALE CONTRACT/u);
+  assert.match(result.compiledPrompt.finalPrompt, /PROJECT NEGATIVE GUARDS/u);
   assert.match(result.compiledPrompt.finalPrompt, /Do not inherit room size, ceiling height/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /VERTICAL ARCHETYPE BIAS/u);
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Golden Acceptance Standard|八大评分维度/u);
   assert.equal(result.compiledPrompt.spatialCompiledContext.foundation.spatialScale.class, 'large');
   assert.ok(result.compiledPrompt.trace.promptCharacters <= 7_500);

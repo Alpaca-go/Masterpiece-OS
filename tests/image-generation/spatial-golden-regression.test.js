@@ -31,7 +31,7 @@ test('Case A: large lobby inherits calibration while preserving scale and depth'
   });
   const compiled = compileSpatialContext({
     task: { subtype: 'reception' }, spatialFoundation: foundation,
-    projectCanon: bundle.projectCanon, verticalArchetype: archetype,
+    projectCanon: bundle.projectCanon,
     anchorManifest: bundle.anchorManifest,
     selectedAnchors: anchors,
     anchorSignals: {
@@ -129,7 +129,7 @@ test('Prompt snapshot keeps protected layer ordering and excludes Acceptance con
   });
   const compiled = compileSpatialContext({
     task: { subtype: 'reception' }, spatialFoundation: foundation,
-    projectCanon: bundle.projectCanon, verticalArchetype: archetype,
+    projectCanon: bundle.projectCanon,
     anchorManifest: bundle.anchorManifest, selectedAnchors: anchors,
     anchorSignals: { materialAndLighting: ['soft indirect light'] },
     projectExclusions: bundle.projectExclusions,

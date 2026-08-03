@@ -126,6 +126,21 @@ export function compileSpatialContext(input = {}) {
   recordObjectProvenance(provenance, projectCanon, 'project_visual_canon', 'constrain', 'projectCanon');
   recordObjectProvenance(provenance, verticalArchetype, `vertical_archetype:${verticalArchetype?.id || 'none'}`, 'bias', 'verticalArchetype');
   provenance.push(...anchor.provenance);
+  const replacedSourceSkinConflicts = (input.structureReferences || []).flatMap((item) => [
+    'materialPalette',
+    'ceilingDesignLanguage',
+    'lightingStyle',
+    'brandWallStyle',
+    'decorativeStyle',
+    'medicalAestheticTone',
+  ].map((field) => ({
+    field: `sourceSpaceVisualSkin.${field}`,
+    attemptedValue: `inherited_from:${item.sourceAssetId || item.assetId}`,
+    attemptedSource: 'source_space_reference',
+    result: 'replaced',
+    reason: 'structure_reference_has_zero_visual_skin_authority',
+    overriddenBy: 'project_visual_canon',
+  })));
 
   const foundationSummary = cleanList(
     foundation.architectureAesthetic && `architecture ${summarizeObject(foundation.architectureAesthetic)}`,
@@ -135,6 +150,13 @@ export function compileSpatialContext(input = {}) {
     foundation.cameraIntent && `camera ${summarizeObject(foundation.cameraIntent)}`,
   );
   const canonSummary = projectCanon ? cleanList(
+    `core atmosphere ${(projectCanon.coreAtmosphere || []).join(', ')}`,
+    `dominant surfaces ${(projectCanon.dominantSurfaces || []).join(', ')}`,
+    `architectural skin ${summarizeObject(projectCanon.architecturalSkin)}`,
+    `lighting language ${summarizeObject(projectCanon.lightingLanguage)}`,
+    `brand integration ${summarizeObject(projectCanon.brandIntegration)}`,
+    `decorative system ${summarizeObject(projectCanon.decorativeSystem)}`,
+    `reception expression ${summarizeObject(projectCanon.receptionExpression)}`,
     `palette ${summarizeObject(projectCanon.projectPalette)}`,
     `signature motifs ${(projectCanon.signatureMotifs || []).join(', ')}`,
     `material accents ${(projectCanon.projectMaterialAccents || []).join(', ')}`,
@@ -152,16 +174,26 @@ export function compileSpatialContext(input = {}) {
     anchorSummary.push('The reference calibrates only authorized material, lighting, brand integration and decorative restraint. Do not inherit room size, ceiling height, spatial depth, functional layout, compact reception scale or composition. Preserve the locked large-space intention.');
   }
 
+  const signage = projectCanon?.brandSignageContract;
+  const logoScaleSummary = signage ? cleanList(
+    `Logo symbol wall-height ratio: minimum ${signage.logoSymbol?.wallHeightRatio?.min}, preferred ${signage.logoSymbol?.wallHeightRatio?.preferred}, hard maximum ${signage.logoSymbol?.wallHeightRatio?.max}.`,
+    `Full lockup wall-width ratio: minimum ${signage.fullLockup?.wallWidthRatio?.min}, preferred ${signage.fullLockup?.wallWidthRatio?.preferred}, hard maximum ${signage.fullLockup?.wallWidthRatio?.max}.`,
+    `Signage prominence ${signage.prominence}; relief ${signage.reliefDepth?.mode}; halo intensity ${signage.lighting?.haloIntensity}; overexposed edge allowed ${signage.lighting?.allowOverexposedEdge}.`,
+    `Forbidden signage behaviours: ${(signage.forbidden || []).join(', ')}.`,
+    'The viewer must read spatial quality first and recognize the brand second; the Logo must never become the primary sculpture or dominate the first read.',
+  ) : [];
+
   const promptSections = cleanList(
-    input.structureReferences?.length && `[SOURCE SPACE STRUCTURE REFERENCE]\n${input.structureReferences.map((item, index) =>
-      `Reference ${index + 1} preserves only room envelope, spatial scale, ceiling height, depth, apertures, functional zoning, circulation, camera view and major fixture positions from ${item.assetId}. It has zero authority over material palette, ceiling design, lighting style, brand wall, decorative language or medical tone.`).join('\n')}`,
-    foundationSummary.length && `[SPATIAL FOUNDATION — DO NOT OVERRIDE]\n${foundationSummary.join('\n')}`,
+    `[CURRENT TASK]\nSpace type ${input.task?.sceneRole || input.task?.subtype || foundation.spaceType}; shot ${input.task?.shot || foundation.cameraIntent?.role || 'task_defined'}; aspect ratio ${input.task?.aspectRatio || 'task_defined'}; deliver a formal project rendering.`,
+    foundationSummary.length && `[STRUCTURE FOUNDATION — PRESERVE]\n${foundationSummary.join('\n')}${input.structureReferences?.length ? `\nPreserve only room envelope, spatial scale, ceiling height, depth, apertures, functional zoning, circulation, camera view and major fixture positions from: ${input.structureReferences.map((item) => item.assetId).join(', ')}.` : ''}`,
+    `[VISUAL SKIN — REPLACE]\nReplace all source-space materials, colours, ceiling expression, lighting style, brand wall, decorative language, logos and generic medical/futuristic tone.${input.structureReferences?.length ? ' The source image has zero visual-skin authority.' : ''}`,
     projectCanon?.lockedAssets && `[LOCKED BRAND ASSETS]\n${summarizeObject(projectCanon.lockedAssets)}`,
-    canonSummary.length && `[PROJECT VISUAL CANON]\n${canonSummary.join('\n')}`,
+    canonSummary.length && `[${projectCanon.promptSectionLabel || `PROJECT VISUAL CANON V${projectCanon.version || 1}`}]\n${canonSummary.join('\n')}`,
     archetypeSummary.length && `[VERTICAL ARCHETYPE BIAS]\n${archetypeSummary.join('\n')}`,
-    anchorSummary.length && `[ANCHOR CALIBRATION]\n${anchorSummary.join('\n')}`,
+    anchorSummary.length && `[GOLDEN ANCHOR CALIBRATION]\n${anchorSummary.join('\n')}`,
+    logoScaleSummary.length && `[LOGO SCALE CONTRACT]\n${logoScaleSummary.join('\n')}`,
     input.projectExclusions?.generationExclusions?.length
-      && `[NEGATIVE / RISK GUARDS]\n${input.projectExclusions.generationExclusions.join('; ')}`,
+      && `[PROJECT NEGATIVE GUARDS]\n${input.projectExclusions.generationExclusions.join('; ')}`,
     '[OUTPUT CONTRACT]\nPhotorealistic, buildable, proposal-ready spatial rendering.',
   );
   assertProtectedFieldsUnchanged(originalFoundation, foundation);
@@ -191,7 +223,7 @@ export function compileSpatialContext(input = {}) {
       preprocessing: item.preprocessing,
       responsibility: 'structure_only',
     })),
-    conflicts: anchor.conflicts,
+    conflicts: [...anchor.conflicts, ...replacedSourceSkinConflicts],
     provenance,
     promptSections,
     negativeRules: cleanList(input.projectExclusions?.generationExclusions),
