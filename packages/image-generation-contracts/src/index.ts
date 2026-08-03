@@ -989,6 +989,85 @@ export interface LockedAssetPlacementPlan {
   };
 }
 
+export type SpatialSceneRole =
+  | 'storefront' | 'entrance' | 'reception' | 'lobby' | 'brand_wall'
+  | 'dining_area' | 'retail_area' | 'private_room' | 'consultation_room'
+  | 'corridor' | 'wayfinding' | 'display_area' | 'waiting_area'
+  | 'material_closeup' | 'overview';
+
+export type SpatialBrandIntensity = 'subtle' | 'balanced' | 'expressive';
+
+export type TextZonePolicy =
+  | 'locked_text_only' | 'symbol_only' | 'index_only'
+  | 'decorative_pattern_only' | 'no_text';
+
+export interface TextSafetyZone {
+  zoneId: string;
+  zoneDescription: string;
+  policy: TextZonePolicy;
+  allowedAssetIds?: string[];
+  allowedText?: string[];
+  maxTextGroups?: number;
+  minimumReadableWidthPx?: number;
+}
+
+export interface BrandAssetBudget {
+  sceneRole: SpatialSceneRole;
+  brandIntensity: SpatialBrandIntensity;
+  primaryAsset?: {
+    assetId: string;
+    assetType: SpatialLockedAssetType | 'brand_installation';
+    targetZone: string;
+    maxOccurrences: 1;
+  };
+  secondaryAssets: Array<{
+    assetId: string;
+    assetType: string;
+    allowedZones: string[];
+    maxOccurrences: number;
+    renderMode: 'literal' | 'materialized' | 'symbol_only' | 'style_inheritance';
+  }>;
+  textBudget: {
+    lockedLogoGroups: number;
+    headlineGroups: number;
+    supportingTextGroups: number;
+    smallTextAllowed: boolean;
+    microTextAllowed: false;
+  };
+  styleInheritance: {
+    palette: boolean;
+    shapeLanguage: boolean;
+    patternRhythm: boolean;
+    typographyMood: boolean;
+    spatialOrder: boolean;
+  };
+  prohibitedAssetIds: string[];
+  prohibitedContent: string[];
+}
+
+export interface BrandDensityIssue {
+  code:
+    | 'MULTIPLE_PRIMARY_ASSETS' | 'DUPLICATE_LOGO' | 'TOO_MANY_TEXT_GROUPS'
+    | 'SMALL_TEXT_NOT_ALLOWED' | 'ASSET_ZONE_CONFLICT'
+    | 'BRAND_DENSITY_OVERFLOW' | 'BRAND_EXPRESSION_TOO_WEAK';
+  severity: 'warning' | 'error';
+  message: string;
+  suggestedFix: string;
+}
+
+export interface SpatialBrandOrchestration {
+  schemaVersion: '1.0';
+  sceneRole: SpatialSceneRole;
+  sceneRoleSource: 'user' | 'task_subtype' | 'auto_resolved';
+  cameraDistance: 'close' | 'medium' | 'wide';
+  brandIntensity: SpatialBrandIntensity;
+  intensityReason: string[];
+  assetBudget: BrandAssetBudget;
+  textSafetyZones: TextSafetyZone[];
+  densityIssues: BrandDensityIssue[];
+  compiledRules: { positive: string[]; negative: string[] };
+}
+
 export interface ShortChainTaskContract {
   schemaVersion: '1.0';
   taskId: string;
@@ -1062,6 +1141,7 @@ export interface ShortChainCompiledPrompt {
   };
   packagingAnalysisValidation?: { valid: boolean; errors: string[] };
   lockedAssetPlacementPlan?: LockedAssetPlacementPlan | null;
+  spatialBrandOrchestration?: SpatialBrandOrchestration | null;
   userConfirmedVisualDecision?: {
     id: string;
     sourceDocument?: string;

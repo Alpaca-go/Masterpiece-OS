@@ -15,6 +15,15 @@ export {
   guardBrandAssetDensity,
   compileSingleLogoPlacementDirectives,
 } from './locked-asset-placement-planner.js';
+export {
+  SCENE_ROLE_DEFAULTS,
+  resolveSpatialSceneRole,
+  inferCameraDistance,
+  resolveBrandIntensity,
+  buildBrandAssetBudget,
+  buildTextSafetyZones,
+  buildSpatialBrandOrchestration,
+} from './spatial-brand-orchestration.js';
 export { SHORT_CHAIN_TEMPLATE_ROUTER_VERSION, routeShortChainTemplates } from './template-router.js';
 export {
   SHORT_CHAIN_PROMPT_COMPILER_ID,
