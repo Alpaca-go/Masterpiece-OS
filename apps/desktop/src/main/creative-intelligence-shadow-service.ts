@@ -68,11 +68,19 @@ export function createCreativeIntelligenceShadowService(deps: CreativeIntelligen
     }
   }
 
-  async function build(projectId: string) {
+  async function build(projectId: string, options: { sourceMode?: 'visual' | 'document' | 'joint' } = {}) {
     await deps.projects.get(projectId);
-    const visualContext = await readVisualContext(projectId);
+    const availableVisualContext = await readVisualContext(projectId);
     const document = await readDocumentContext(projectId);
-    if (!visualContext && !document.context) {
+    const visualContext = options.sourceMode === 'document' ? null : availableVisualContext;
+    const documentContext = options.sourceMode === 'visual' ? null : document.context;
+    if (options.sourceMode === 'joint' && (!visualContext || !documentContext)) {
+      throw new CreativeIntelligenceShadowError(
+        'CREATIVE_INTELLIGENCE_JOINT_SOURCE_INCOMPLETE',
+        'Joint analysis requires both Project Visual Context and a linked Document Context'
+      );
+    }
+    if (!visualContext && !documentContext) {
       throw new CreativeIntelligenceShadowError(
         'CREATIVE_INTELLIGENCE_SOURCE_MISSING',
         'Creative Intelligence Shadow Mode requires Project Visual Context or a linked Document Context'
@@ -81,7 +89,7 @@ export function createCreativeIntelligenceShadowService(deps: CreativeIntelligen
     const output = buildCreativeIntelligenceOpportunityAnalysis({
       projectId,
       visualContext,
-      documentContext: document.context,
+      documentContext,
       documentConfirmed: document.confirmed
     });
     const directory = await outputDirectory(projectId);

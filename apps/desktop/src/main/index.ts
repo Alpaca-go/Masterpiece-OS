@@ -34,6 +34,8 @@ import { createFileContextLoader } from './image-generation/context-loader';
 import { createProjectContextService } from './project-context-service';
 import { createDocumentContextService } from './document-context-service';
 import { createContextIntegrationService } from './context-integration-service';
+import { createCreativeIntelligenceShadowService } from './creative-intelligence-shadow-service.ts';
+import { createCreativeIntelligenceDirectionService } from './creative-intelligence-direction-service.ts';
 import { createCreativeSessionService } from './creative-session-service';
 import { createCreativeReadingService } from './creative-reading-service';
 import { createCreativeDirectionService } from './creative-direction-service';
@@ -149,6 +151,17 @@ const contextIntegration = createContextIntegrationService({
       defaultPath,
       filters: [{ name: 'JSON', extensions: ['json'] }]
     })
+});
+const creativeIntelligenceShadow = createCreativeIntelligenceShadowService({
+  projects,
+  projectContext,
+  documentContext,
+  getDocumentContextLink: (projectId) => contextIntegration.getLink(projectId)
+});
+const creativeIntelligenceDirections = createCreativeIntelligenceDirectionService({
+  projects,
+  shadow: creativeIntelligenceShadow,
+  readCredentials: getProviderCredentials
 });
 const referenceAnchor = createReferenceAnchorService(getSettings, {
   projects,
@@ -365,6 +378,13 @@ function registerIpc(): void {
     return source;
   });
   registerHandler('context-integration:is-doc-referenced', (_event, runId: string) => contextIntegration.isDocumentContextReferenced(runId));
+  registerHandler('creative-intelligence:build-analysis', (_event, projectId: string, options?: { sourceMode?: 'visual' | 'document' | 'joint' }) => creativeIntelligenceShadow.build(projectId, options));
+  registerHandler('creative-intelligence:get-analysis', (_event, projectId: string) => creativeIntelligenceShadow.get(projectId));
+  registerHandler('creative-intelligence:generate-directions', (_event, projectId: string, input?: { apiProfileId?: string; requestedMode?: string }) => creativeIntelligenceDirections.generate(projectId, input));
+  registerHandler('creative-intelligence:get-directions', (_event, projectId: string) => creativeIntelligenceDirections.getDirectionArtifacts(projectId));
+  registerHandler('creative-intelligence:save-draft', (_event, projectId: string, input: Record<string, unknown>) => creativeIntelligenceDirections.saveDraft(projectId, input));
+  registerHandler('creative-intelligence:confirm', (_event, projectId: string, input: Record<string, unknown>) => creativeIntelligenceDirections.confirm(projectId, input));
+  registerHandler('creative-intelligence:get-decision', (_event, projectId: string) => creativeIntelligenceDirections.getDecision(projectId));
 
   registerHandler('document-context:choose-documents', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {

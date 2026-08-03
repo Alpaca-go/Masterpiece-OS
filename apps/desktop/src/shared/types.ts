@@ -2044,6 +2044,113 @@ export interface SaveModelBenchmarkEvaluationInput {
   notes?: string;
 }
 
+export interface CreativeIntelligenceEvidenceSource {
+  sourceType: 'document' | 'image' | 'system' | 'user';
+  sourceId: string;
+  location?: string;
+  label?: string;
+}
+
+export interface CreativeIntelligenceEvidence {
+  id: string;
+  evidenceType: 'document_fact' | 'visual_observation' | 'user_intent' | 'system_assumption' | 'system_recommendation' | 'source_conflict';
+  subjectPath: string;
+  content: string;
+  confidence: number;
+  status: 'confirmed' | 'observed' | 'unconfirmed' | 'conflicted' | 'rejected';
+  sources: CreativeIntelligenceEvidenceSource[];
+}
+
+export interface CreativeIntelligenceClaim {
+  content: string;
+  evidenceRefs: string[];
+  confidence: number;
+  status: string;
+  subjectPath: string;
+}
+
+export interface CreativeIntelligenceOpportunity {
+  id: string;
+  content: string;
+  rationale: string;
+  evidenceRefs: string[];
+}
+
+export interface CreativeIntelligenceTouchpoint {
+  id: string;
+  label: string;
+  routeStatus: 'routable' | 'unmapped';
+  evidenceRefs: string[];
+  taskRoute: { deliverableFamily: 'space' | 'packaging' | 'vi' | 'poster'; subtype: string; shot: string } | null;
+}
+
+export interface CreativeIntelligenceAnalysisOutput {
+  schemaVersion: '1.0';
+  mode: 'document' | 'visual' | 'joint';
+  status: 'shadow_only';
+  projectId: string;
+  artifacts: {
+    evidenceLedger: { evidence: CreativeIntelligenceEvidence[] };
+    projectTruthModel: Record<string, unknown> & { confidence: { overall: number } };
+    categoryOpportunityMap: {
+      mustKeep: CreativeIntelligenceOpportunity[];
+      canReconstruct: CreativeIntelligenceOpportunity[];
+      shouldAvoid: CreativeIntelligenceOpportunity[];
+      canOwn: CreativeIntelligenceOpportunity[];
+      primaryTouchpoints: CreativeIntelligenceTouchpoint[];
+      confidence: number;
+    };
+    intentVisualGapAnalysis: Record<'aligned' | 'underExpressed' | 'overExpressed' | 'misaligned' | 'missing', Array<{ rationale: string; evidenceRefs: string[] }>> & { requiresHumanReview: boolean };
+    existingVisualSystemAudit: { summary: Record<string, number | boolean> };
+  };
+}
+
+export interface CreativeIntelligenceDirection {
+  id: 'D01' | 'D02' | 'D03';
+  name: string;
+  strategicProposition: string;
+  coreMetaphor: string;
+  sourceMechanisms: Array<{ type: string; mechanism: string; evidenceRefs: string[] }>;
+  languageNail: string;
+  visualHammer: string;
+  visualGenerationMechanism: string;
+  compositionLogic: string;
+  colorLogic: string;
+  typographyLogic: string;
+  imageMaterialLogic: string;
+  perceptionOutcome: string;
+  crossTouchpointLogic: string;
+  touchpointPotential: string[];
+  advantages: string[];
+  risks: string[];
+  evidenceRefs: string[];
+}
+
+export interface CreativeIntelligenceDirectionArtifacts {
+  directionSet: { projectId: string; directionMode: string; hypothesisStatus: string; directions: CreativeIntelligenceDirection[] };
+  directionValidation: { status: 'passed' | 'failed'; errors: Array<{ code: string; directions: string[] }> };
+  directionEvaluation: {
+    evaluationType: 'concept_pre_evaluation';
+    anchorValidationRequired: true;
+    recommendation: string;
+    scores: Array<{ directionId: string; strategyFit: number; differentiation: number; memoryPotential: number; categoryTrust: number; extensionPotential: number; total: number }>;
+  };
+}
+
+export interface UserDirectionDecisionInput {
+  selectedDirectionId?: string;
+  acceptedElements?: string[];
+  rejectedElements?: string[];
+  mergedElements?: Array<{ fromDirectionId: string; elementType: string; content: string }>;
+  userRationale?: string;
+}
+
+export interface CreativeIntelligenceDecisionBundle {
+  userDecision: Record<string, unknown> | null;
+  creativeDecision: (Record<string, unknown> & { decisionStatus: 'confirmed' | 'superseded' }) | null;
+  decisionTrace: Record<string, unknown> | null;
+}
+
 export interface DesktopApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -2384,6 +2491,15 @@ export interface DesktopApi {
     export(projectId: string): Promise<string | null>;
     /** 搂8 鍒犻櫎琚紩鐢ㄧ殑鏂囨。 Context 鍓嶆鏌ュ紩鐢ㄥ叧绯汇€?*/
     isDocumentContextReferenced(runId: string): Promise<boolean>;
+  };
+  creativeIntelligence: {
+    buildAnalysis(projectId: string, options?: { sourceMode?: 'visual' | 'document' | 'joint' }): Promise<CreativeIntelligenceAnalysisOutput>;
+    getAnalysis(projectId: string): Promise<CreativeIntelligenceAnalysisOutput>;
+    generateDirections(projectId: string, input?: { apiProfileId?: string; requestedMode?: string }): Promise<CreativeIntelligenceDirectionArtifacts & { modelCallCount: number }>;
+    getDirections(projectId: string): Promise<CreativeIntelligenceDirectionArtifacts>;
+    saveDraft(projectId: string, input: UserDirectionDecisionInput): Promise<Record<string, unknown>>;
+    confirm(projectId: string, input: UserDirectionDecisionInput): Promise<CreativeIntelligenceDecisionBundle>;
+    getDecision(projectId: string): Promise<CreativeIntelligenceDecisionBundle>;
   };
 }
 

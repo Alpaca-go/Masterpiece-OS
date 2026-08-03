@@ -27,12 +27,14 @@ const ReferenceAnchorWorkspace = lazy(() => import('./components/ReferenceAnchor
   .then((module) => ({ default: module.ReferenceAnchorWorkspace })));
 const DocumentContextWorkspace = lazy(() => import('./components/DocumentContextWorkspace')
   .then((module) => ({ default: module.DocumentContextWorkspace })));
+const CreativeIntelligenceWorkbench = lazy(() => import('./components/CreativeIntelligenceWorkbench.tsx')
+  .then((module) => ({ default: module.CreativeIntelligenceWorkbench })));
 
 function WorkspaceFallback() {
   return <div className="page"><section className="panel"><p>正在加载生成工作台…</p></section></div>;
 }
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-intelligence' | 'creative-session';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', awaiting_confirmation: '等待确认', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -382,6 +384,15 @@ export function App() {
   />;
   if (screen === 'report' && selected) return <Suspense fallback={<WorkspaceFallback />}><ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} /></Suspense>;
 
+  if (screen === 'creative-intelligence' && selected) return <Suspense fallback={<WorkspaceFallback />}><CreativeIntelligenceWorkbench
+    project={selected}
+    profiles={settings.profiles}
+    selectedApiProfileId={selectedApiProfileId}
+    onApiProfileChange={setSelectedApiProfileId}
+    onBack={() => setScreen('project')}
+    onContinueProduction={() => setScreen('creative-session')}
+  /></Suspense>;
+
   if (screen === 'creative-session' && selected) {
     const imageProfiles = settings.profiles.filter((profile) =>
       profile.isEnabled
@@ -413,7 +424,7 @@ export function App() {
   if (screen === 'project' && selected) {
     const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
     return <div className="page project-page">
-      <header className="page-header"><div><p className="eyebrow">PROJECT WORKSPACE</p><div className="title-line"><h1>{selected.projectName}</h1><StatusBadge status={selected.status} /></div><p>{selected.brandName} · {selected.industry}</p></div><div className="button-row"><button className="button ghost" onClick={() => { setScreen('home'); void refresh(); }}>返回首页</button>{selected.lastReportFilename && <button className="button secondary" onClick={() => setScreen('report')}>查看报告</button>}</div></header>
+      <header className="page-header"><div><p className="eyebrow">PROJECT WORKSPACE</p><div className="title-line"><h1>{selected.projectName}</h1><StatusBadge status={selected.status} /></div><p>{selected.brandName} · {selected.industry}</p></div><div className="button-row"><button className="button ghost" onClick={() => { setScreen('home'); void refresh(); }}>返回首页</button>{selected.lastReportFilename && <button className="button secondary" onClick={() => setScreen('report')}>查看报告</button>}<button className="button primary" onClick={() => setScreen('creative-intelligence')}>创意决策工作台</button></div></header>
       {error && <div className={`notice ${/忽略/.test(error) ? 'ok' : 'error'} top-notice`}>{error}</div>}
       <div className="project-grid">
         <section className="panel assets-panel">

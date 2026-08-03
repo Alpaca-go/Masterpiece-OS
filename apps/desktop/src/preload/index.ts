@@ -264,6 +264,15 @@ const api: DesktopApi = {
     migrate: (projectId) => ipcRenderer.invoke('context-integration:migrate', projectId),
     export: (projectId) => ipcRenderer.invoke('context-integration:export', projectId),
     isDocumentContextReferenced: (runId) => ipcRenderer.invoke('context-integration:is-doc-referenced', runId)
+  },
+  creativeIntelligence: {
+    buildAnalysis: (projectId, options) => ipcRenderer.invoke('creative-intelligence:build-analysis', projectId, options),
+    getAnalysis: (projectId) => ipcRenderer.invoke('creative-intelligence:get-analysis', projectId),
+    generateDirections: (projectId, input) => ipcRenderer.invoke('creative-intelligence:generate-directions', projectId, input),
+    getDirections: (projectId) => ipcRenderer.invoke('creative-intelligence:get-directions', projectId),
+    saveDraft: (projectId, input) => ipcRenderer.invoke('creative-intelligence:save-draft', projectId, input),
+    confirm: (projectId, input) => ipcRenderer.invoke('creative-intelligence:confirm', projectId, input),
+    getDecision: (projectId) => ipcRenderer.invoke('creative-intelligence:get-decision', projectId)
   }
 };
 
