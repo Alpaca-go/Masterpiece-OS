@@ -1,0 +1,38 @@
+{
+  "projectId": "jiuzhou-aesthetics",
+  "version": 1,
+  "sourceStandard": "docs/golden/spatial/jiuzhou-aesthetics/golden-prompt-v1.0.md",
+  "lockedAssets": {
+    "brandNameZh": "九州美学",
+    "brandNameEn": "Jointown Aesthetics",
+    "logoAssetId": "jiuzhou-primary-logo",
+    "lockedCopy": ["科学与美学相遇", "因美而生"]
+  },
+  "projectPalette": {
+    "base": ["pearl_white", "warm_white", "light_gray"],
+    "accent": ["mineral_lavender", "mist_purple"],
+    "text": ["graphite_black"],
+    "metal": ["silver_gray"],
+    "iridescence": "controlled"
+  },
+  "signatureMotifs": [
+    "peacock_feather_flow",
+    "nine_petals_radial",
+    "translucent_iridescent_petals",
+    "feather_eye_ellipse"
+  ],
+  "projectMaterialAccents": [
+    "pearl_surface",
+    "translucent_acrylic",
+    "controlled_iridescence",
+    "pale_lavender_crystal"
+  ],
+  "projectRules": {
+    "whiteIsDominant": true,
+    "purpleIsAccent": true,
+    "fullRealisticPeacock": "forbidden",
+    "fantasyEnvironment": "forbidden",
+    "architectureFirst": true,
+    "brandIsIntegratedNotApplied": true
+  }
+}

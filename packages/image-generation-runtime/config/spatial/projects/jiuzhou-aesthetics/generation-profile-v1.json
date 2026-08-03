@@ -1,0 +1,28 @@
+{
+  "projectId": "jiuzhou-aesthetics",
+  "version": 1,
+  "verticalArchetypeId": "premium-medical-aesthetics",
+  "featureFlags": [
+    "SPATIAL_VERTICAL_ARCHETYPE_V1",
+    "SPATIAL_PROJECT_GOLDEN_CANON_V1",
+    "SPATIAL_ANCHOR_DIMENSIONAL_INFLUENCE_V1",
+    "SPATIAL_SPLIT_EVALUATOR_V1"
+  ],
+  "paletteRatios": {
+    "neutralBaseMinimum": 0.65,
+    "neutralBaseMaximum": 0.8,
+    "purpleAccentMinimum": 0.1,
+    "purpleAccentMaximum": 0.2,
+    "iridescenceMaximum": 0.05
+  },
+  "anchorCalibrationDimensions": [
+    "brand_atmosphere",
+    "brand_integration",
+    "material_and_lighting",
+    "decorative_density"
+  ],
+  "runtimeSourcePolicy": {
+    "loadGoldenMarkdown": false,
+    "loadAcceptanceAsGenerationPrompt": false
+  }
+}

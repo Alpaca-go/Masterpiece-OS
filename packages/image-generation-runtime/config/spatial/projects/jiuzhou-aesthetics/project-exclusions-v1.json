@@ -1,0 +1,18 @@
+{
+  "projectId": "jiuzhou-aesthetics",
+  "version": 1,
+  "generationExclusions": [
+    "nightclub atmosphere",
+    "bar or karaoke atmosphere",
+    "wedding showroom",
+    "high-saturation neon purple",
+    "purple-black-gold ostentation",
+    "generic beauty salon",
+    "European palace decoration",
+    "complete realistic peacock",
+    "fantasy forest or magical environment",
+    "cheap plastic material",
+    "broken perspective",
+    "incorrect brand name or Logo"
+  ]
+}
