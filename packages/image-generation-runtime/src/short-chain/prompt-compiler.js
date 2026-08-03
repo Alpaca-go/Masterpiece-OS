@@ -369,12 +369,12 @@ function fitBlocksToAdapterBudget(blocks, adapter) {
       .map((id) => cloned.find((block) => block.id === id))
       .filter(Boolean)
       .flatMap((block) => block.items.map((item, index) => ({ block, item, index })))
-      .filter((candidate) => [...candidate.item].length > 32)
+      .filter((candidate) => [...candidate.item].length > 1)
       .sort((a, b) => [...b.item].length - [...a.item].length);
     const target = candidates[0];
     if (!target) break;
     const characters = [...target.item];
-    const nextLength = Math.max(32, Math.min(characters.length - 1, characters.length - excess - 1));
+    const nextLength = Math.max(0, characters.length - Math.max(1, excess) - 1);
     target.block.items[target.index] = `${characters.slice(0, nextLength).join('').trimEnd()}…`;
     truncatedItemCount += 1;
     prompt = render();
