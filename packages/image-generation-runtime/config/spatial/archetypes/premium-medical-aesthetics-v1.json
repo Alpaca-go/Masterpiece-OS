@@ -1,0 +1,107 @@
+{
+  "id": "premium-medical-aesthetics",
+  "version": 1,
+  "applicableThemes": [
+    "female_aesthetics",
+    "minimally_invasive_medical_aesthetics",
+    "premium_wellbeing",
+    "private_club_hospitality",
+    "female_health"
+  ],
+  "feminineExpression": {
+    "mode": "restrained_refinement",
+    "softness": 0.68,
+    "sensuality": 0.12,
+    "sweetness": 0.08,
+    "maturity": 0.82,
+    "professionalism": 0.86
+  },
+  "medicalHospitalityBalance": {
+    "medicalCredibility": 0.78,
+    "hospitalityWarmth": 0.64,
+    "clinicalColdness": 0.12,
+    "retailCommerciality": 0.2,
+    "privateClubFeeling": 0.58
+  },
+  "atmosphereAxes": {
+    "serenity": 0.9,
+    "trust": 0.88,
+    "warmth": 0.62,
+    "luxury": 0.72,
+    "openness": 0.78,
+    "visualNoise": 0.16,
+    "futurism": 0.3,
+    "classicism": 0.08
+  },
+  "architecturalFormBias": {
+    "geometry": "soft_monolithic",
+    "curvilinearBias": 0.72,
+    "orthogonalBias": 0.28,
+    "surfaceContinuity": 0.84,
+    "jointVisibility": 0.18,
+    "ornamentDensity": 0.12,
+    "thresholdCeremony": 0.7
+  },
+  "materialBehavior": {
+    "base": "light_mineral_matte",
+    "surfaceReflectivity": "low",
+    "translucency": "controlled_accent",
+    "metalTemperature": "cool_neutral",
+    "textureScale": "fine",
+    "materialContrast": "subtle"
+  },
+  "lightingBehavior": {
+    "ambientMode": "soft_indirect",
+    "baseTemperature": "warm_neutral",
+    "accentSaturation": "low",
+    "edgeLighting": "subtle",
+    "contrast": "low_to_medium",
+    "glareTolerance": "very_low",
+    "shadowSoftness": "high"
+  },
+  "brandIntegrationStrategy": {
+    "mode": "architecturally_integrated",
+    "signageProminence": "controlled",
+    "graphicSurfaceCoverage": "low",
+    "identityTouchpoints": [
+      "primary_brand_wall",
+      "wayfinding",
+      "integrated_lightbox",
+      "curated_display"
+    ],
+    "avoidAppliedMockupFeeling": true
+  },
+  "paletteRelation": {
+    "neutralBase": "dominant",
+    "brandAccent": "controlled",
+    "chromaticSaturation": "low"
+  },
+  "riskExclusions": [
+    "nightlife_luxury",
+    "ceremonial_wedding",
+    "generic_beauty_salon",
+    "fantasy_installation",
+    "over_saturated_brand_color",
+    "cheap_material_render"
+  ],
+  "activation": {
+    "minimumConfidence": 0.72,
+    "requiredSignals": 2,
+    "requireProjectConfirmation": false,
+    "blockWhen": [
+      "pediatric_healthcare",
+      "mass_market_beauty_retail",
+      "nightlife_entertainment",
+      "traditional_hospital"
+    ]
+  },
+  "antiClonePolicy": {
+    "inheritSemanticsNotSignatures": true,
+    "exactPaletteInheritance": false,
+    "exactMotifInheritance": false,
+    "exactLayoutInheritance": false,
+    "exactPropInheritance": false,
+    "requireProjectSpecificSignature": true,
+    "minimumDistinctDimensions": 3
+  }
+}
