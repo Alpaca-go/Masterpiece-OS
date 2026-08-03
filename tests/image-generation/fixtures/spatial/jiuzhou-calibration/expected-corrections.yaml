@@ -1,0 +1,47 @@
+schema_version: 1
+fixture: failed-large-lobby-v1.png
+sha256: ed561bb38c81b753d036ad1f5b874977838770e0994d5c9381419d38fc70236d
+dimensions:
+  width: 2816
+  height: 1584
+
+failure_tags:
+  - anchor_style_drift
+  - logo_oversized
+  - generic_futuristic_clinic
+  - architecture_skin_not_replaced
+  - purple_surface_overuse
+  - technology_showroom_lighting
+  - brand_integration_applied_not_integrated
+
+structure_to_preserve:
+  - room_envelope
+  - spatial_scale
+  - ceiling_height
+  - depth_expression
+  - aperture_positions
+  - functional_zoning
+  - circulation
+  - major_fixture_positions
+  - camera_role
+
+visual_skin_to_replace:
+  - ceiling_language
+  - wall_finish_language
+  - lighting_language
+  - metal_glass_ratio
+  - brand_wall_expression
+  - decorative_system
+  - atmosphere_rendering
+  - logo_scale
+
+expected_guards:
+  - giant_wall_logo
+  - monumental_logo_sculpture
+  - generic_futuristic_clinic
+  - technology_showroom_ceiling
+  - neon_curve_light_trails
+  - dominant_black_frame_glass
+  - dense_vertical_metal_fins
+  - large_saturated_purple_wall
+  - mirror_stainless_reception
