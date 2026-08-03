@@ -1,0 +1,106 @@
+{
+  "projectId": "jiuzhou-aesthetics",
+  "version": 2,
+  "sourceStandard": "docs/golden/spatial/jiuzhou-aesthetics/calibration-development-v1.1.md",
+  "lockedAssets": {
+    "brandNameZh": "九州美学",
+    "brandNameEn": "Jointown Aesthetics",
+    "logoAssetId": "jiuzhou-primary-logo",
+    "lockedCopy": ["科学与美学相遇", "因美而生"]
+  },
+  "coreAtmosphere": [
+    "serene",
+    "warm_professional",
+    "refined_feminine",
+    "low_noise",
+    "trustworthy",
+    "restrained_luxury"
+  ],
+  "dominantSurfaces": [
+    "pearl_white_continuous_walls",
+    "warm_white_mineral_surfaces",
+    "light_microcement",
+    "low_reflective_pale_stone"
+  ],
+  "architecturalSkin": {
+    "surfaceContinuity": "high",
+    "curvature": "soft_and_integrated",
+    "visualJoints": "low",
+    "ornamentDensity": "low",
+    "hardMetalLines": "minimal",
+    "glassPartitionDominance": "forbidden"
+  },
+  "lightingLanguage": {
+    "ambient": "soft_indirect_warm_neutral",
+    "accent": "very_subtle_low_saturation_lavender",
+    "ceilingExpression": "quiet_and_integrated",
+    "glare": "very_low",
+    "neonTrails": "forbidden",
+    "technologyShowcaseLighting": "forbidden"
+  },
+  "brandIntegration": {
+    "mode": "architecturally_integrated",
+    "logoProminence": "controlled",
+    "logoAsMonument": "forbidden",
+    "signageRelief": "subtle",
+    "lightboxUse": "restrained",
+    "graphicSurfaceCoverage": "low"
+  },
+  "decorativeSystem": {
+    "featherPetals": "small_scale_or_background",
+    "crystals": "optional_and_sparse",
+    "iridescence": "controlled",
+    "heroInstallationOccupancy": "low",
+    "decorationMustNotDominateSpace": true
+  },
+  "receptionExpression": {
+    "serviceInterface": "soft_continuous",
+    "frontDeskMaterial": "pale_mineral_matte",
+    "mirrorMetalFrontDesk": "forbidden",
+    "hospitality": "warm_but_not_hotel_like"
+  },
+  "projectPalette": {
+    "base": ["pearl_white", "warm_white", "light_gray"],
+    "accent": ["mineral_lavender", "mist_purple"],
+    "text": ["graphite_black"],
+    "metal": ["silver_gray"],
+    "iridescence": "controlled"
+  },
+  "signatureMotifs": [
+    "peacock_feather_flow",
+    "nine_petals_radial",
+    "translucent_iridescent_petals",
+    "feather_eye_ellipse"
+  ],
+  "projectMaterialAccents": [
+    "pearl_surface",
+    "translucent_acrylic",
+    "controlled_iridescence",
+    "pale_lavender_crystal"
+  ],
+  "brandSignageContract": {
+    "prominence": "controlled",
+    "logoSymbol": {
+      "wallHeightRatio": { "min": 0.06, "preferred": 0.1, "max": 0.15 }
+    },
+    "fullLockup": {
+      "wallWidthRatio": { "min": 0.16, "preferred": 0.22, "max": 0.28 }
+    },
+    "reliefDepth": { "mode": "subtle" },
+    "lighting": { "haloIntensity": "low", "allowOverexposedEdge": false },
+    "forbidden": [
+      "monumental_logo",
+      "logo_as_primary_sculpture",
+      "logo_larger_than_reception_focal_zone",
+      "logo_dominates_first_read"
+    ]
+  },
+  "projectRules": {
+    "whiteIsDominant": true,
+    "purpleIsAccent": true,
+    "fullRealisticPeacock": "forbidden",
+    "fantasyEnvironment": "forbidden",
+    "architectureFirst": true,
+    "brandIsIntegratedNotApplied": true
+  }
+}

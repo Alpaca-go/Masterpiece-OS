@@ -30,6 +30,16 @@ function readJson(url) {
   return JSON.parse(fs.readFileSync(fileURLToPath(url), 'utf8'));
 }
 
+function readLatestProjectJson(projectId, basename, options = {}) {
+  for (const version of [2, 1]) {
+    const url = projectConfigUrl(projectId, `${basename}-v${version}.json`, options);
+    if (fs.existsSync(fileURLToPath(url))) return readJson(url);
+  }
+  throw Object.assign(new Error(`Missing spatial project config: ${basename}`), {
+    code: 'ENOENT',
+  });
+}
+
 function projectConfigUrl(projectId, file, options = {}) {
   assertSafeId(projectId, 'projectId');
   return new URL(`projects/${projectId}/${file}`, asDirectoryUrl(options.configRoot));
@@ -37,7 +47,7 @@ function projectConfigUrl(projectId, file, options = {}) {
 
 export function loadProjectVisualCanon(projectId, options = {}) {
   return assertSpatialSchema(validateProjectVisualCanon(
-    readJson(projectConfigUrl(projectId, 'project-visual-canon-v1.json', options)),
+    readLatestProjectJson(projectId, 'project-visual-canon', options),
   ));
 }
 
@@ -48,11 +58,17 @@ export function loadProjectAnchorManifest(projectId, options = {}) {
 }
 
 export function loadProjectGenerationProfile(projectId, options = {}) {
-  return readJson(projectConfigUrl(projectId, 'generation-profile-v1.json', options));
+  return readLatestProjectJson(projectId, 'generation-profile', options);
 }
 
 export function loadProjectExclusions(projectId, options = {}) {
-  return readJson(projectConfigUrl(projectId, 'project-exclusions-v1.json', options));
+  return readLatestProjectJson(projectId, 'project-exclusions', options);
+}
+
+export function isVerticalSpatialArchetypeEnabled(bundle) {
+  const explicit = bundle?.generationProfile?.verticalSpatialArchetype?.enabled;
+  if (typeof explicit === 'boolean') return explicit;
+  return Boolean(bundle?.generationProfile?.verticalArchetypeId);
 }
 
 export function loadGlobalSpaceEvaluationProfile(options = {}) {

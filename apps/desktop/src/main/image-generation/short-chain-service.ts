@@ -25,6 +25,7 @@ import {
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 import {
   loadPremiumMedicalAestheticsArchetype,
+  isVerticalSpatialArchetypeEnabled,
   loadProjectAnchors,
   loadSpatialProjectBundle,
 } from '@masterpiece/image-generation-runtime';
@@ -393,7 +394,7 @@ export function createShortChainImageGenerationService(
         cameraIntent: { role: input.task.shot },
         ...input.spatialFoundation,
       } : undefined,
-      verticalArchetype: spatialProjectBundle
+      verticalArchetype: spatialProjectBundle && isVerticalSpatialArchetypeEnabled(spatialProjectBundle)
         ? loadPremiumMedicalAestheticsArchetype({
           projectSignatureTerms: spatialProjectBundle.projectSignatureTerms,
           ...(configRoot ? {

@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   assertArchetypeHasNoProjectSignature,
   loadPremiumMedicalAestheticsArchetype,
+  isVerticalSpatialArchetypeEnabled,
   loadSpatialProjectBundle,
 } from '@masterpiece/image-generation-runtime';
 
@@ -10,10 +11,17 @@ test('structured project bundle describes the project without reading Golden Mar
   const bundle = loadSpatialProjectBundle('jiuzhou-aesthetics');
   assert.equal(bundle.projectCanon.lockedAssets.brandNameZh, '九州美学');
   assert.equal(bundle.projectCanon.projectRules.architectureFirst, true);
+  assert.equal(bundle.projectCanon.version, 2);
+  assert.equal(bundle.generationProfile.version, 2);
+  assert.equal(bundle.projectExclusions.version, 2);
+  assert.equal(bundle.projectCanon.brandSignageContract.logoSymbol.wallHeightRatio.max, 0.15);
+  assert.equal(bundle.projectCanon.brandSignageContract.fullLockup.wallWidthRatio.max, 0.28);
+  assert.equal(isVerticalSpatialArchetypeEnabled(bundle), false);
   assert.equal(bundle.anchorManifest.influenceCaps.spatialScale, 0);
   assert.equal(bundle.generationProfile.runtimeSourcePolicy.loadGoldenMarkdown, false);
   assert.equal(bundle.generationProfile.runtimeSourcePolicy.loadAcceptanceAsGenerationPrompt, false);
   assert.ok(bundle.projectExclusions.generationExclusions.includes('generic beauty salon'));
+  assert.ok(bundle.projectExclusions.generationExclusions.includes('generic futuristic clinic'));
 });
 
 test('project-specific signatures stay out of the reusable archetype', () => {
