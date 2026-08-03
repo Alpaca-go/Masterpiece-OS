@@ -28,6 +28,9 @@ cross-industry-freeze-test/
 evaluation/known-cases/jiuzhou-aesthetic/垂直测试/
 evaluation/known-cases/yi-ji-liang-fang/垂直测试/
 evaluation/known-cases/feng-tang-tang/垂直测试/
+docs/一剂良方垂直测试/
+docs/九州美学垂直测试/
+docs/冯烫烫垂直测试/
 
 # 保留 projects 目录本身，忽略其中所有真实项目
 projects/*
