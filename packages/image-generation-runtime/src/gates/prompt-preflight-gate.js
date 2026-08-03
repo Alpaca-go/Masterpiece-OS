@@ -231,15 +231,6 @@ export function runPromptPreflightGate({
       );
     }
   }
-  const hasLockedLogo = projectContract?.mustPreserve?.some((item) =>
-    /logo|标志|标识/iu.test(String(item?.value ?? '')));
-  if (hasLockedLogo && taskContract?.logoUsageMode !== 'post_composite') {
-    add(
-      'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED',
-      'block',
-      'Confirmed Logo assets must be excluded from model references and routed to post-composite.',
-    );
-  }
   if (taskContract?.deliverableFamily === 'packaging') {
     if (!packagingTranslation?.structureStrategy?.some((item) => list(item?.evidenceRefs).length)) {
       add('PACKAGING_STRUCTURE_EVIDENCE_MISSING', 'block', 'Packaging structure evidence is missing.');

@@ -55,7 +55,9 @@ function selectedReferenceDirectives(projectContext, taskContract) {
     const evidence = inventoryItems.filter((item) => item?.assetId === assetId);
     const features = cleanList(evidence.flatMap((item) => item?.visualFeatures || [])).slice(0, 6);
     const role = source?.role || 'visual_reference';
-    const roleRule = role === 'identity'
+    const roleRule = role === 'logo'
+      ? 'This is the selected project Logo. Use it as the authoritative identity reference and preserve its recognizable outline, internal geometry, proportions and color relationships without invention.'
+      : role === 'identity'
       ? 'This is locked identity/IP evidence. Preserve its recognizable silhouette, proportions, signature features and internal relationships.'
       : role === 'package_structure'
         ? 'This is a locked structure reference. Preserve its geometry, proportions, opening and construction relationships.'
@@ -856,7 +858,7 @@ export function compileShortChainPrompt({
       '13 Logo, Text and Strict Negatives',
       [
         logoUsageMode === 'reference'
-          ? `Use the supplied logo asset as the only identity reference; preserve its structure and do not redesign it.`
+          ? 'Use the selected project Logo as the authoritative logo reference; preserve its structure and do not redesign it. Keep every other explicitly selected icon, IP, product or structure reference in its assigned role.'
           : logoUsageMode === 'post_composite'
             ? 'Do not render any logo or brand text. Reserve a clean, front-facing signage area for controlled post-compositing.'
             : 'Do not render any logo, letters, words, or signage copy. Reserve a clean identity placement area when signage is needed.',

@@ -169,7 +169,7 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
   assert.equal(latestApiProfileId, 'seedream-profile');
   assert.deepEqual(latestReferences, []);
   assert.deepEqual(compiled.payload.referenceAssetIds, []);
-  assert.equal(compiled.compiledPrompt.logoUsageMode, 'post_composite');
+  assert.equal(compiled.compiledPrompt.logoUsageMode, 'blank_area');
   const confirmed = await service.confirmDirection(
     projectId,
     firstRun.runId,
@@ -204,7 +204,7 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
   assert.equal(asset.version, 1);
   assert.equal((await service.getSession(projectId)).projectPromptAssets.space, asset.id);
 
-  await assert.rejects(() => service.compile({
+  const selectedLogo = await service.compile({
     projectId,
     task: {
       deliverableFamily: 'space',
@@ -218,8 +218,10 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
       referenceAssetIds: ['logo-asset'],
       logoUsageMode: 'blank_area',
     },
-  }), (error: unknown) =>
-    (error as { code?: string }).code === 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED');
+  });
+  assert.equal(selectedLogo.compiledPrompt.logoUsageMode, 'reference');
+  assert.deepEqual(selectedLogo.payload.referenceAssetIds, ['logo-asset']);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /Provider reference image 1: Confirmed Logo/u);
 
   await assert.rejects(() => service.compile({
     projectId,
@@ -237,30 +239,6 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
     },
   }), (error: unknown) =>
     (error as { code?: string }).code === 'SHORT_CHAIN_REFERENCE_ASSET_INVALID');
-
-  // Regression: when a project confirms a logo, `logoUsageMode: 'reference'`
-  // must also be rejected. The renderer workspace used to default to this
-  // value for every logo-locked project, which made every compile call fail
-  // with `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED`. The default has since
-  // been flipped to `post_composite`, but the backend must keep enforcing
-  // the contract in case a stale or programmatic caller still sends
-  // `reference`.
-  await assert.rejects(() => service.compile({
-    projectId,
-    task: {
-      deliverableFamily: 'space',
-      subtype: 'reception',
-      shot: 'front',
-      count: 1,
-      aspectRatio: '16:9',
-      currentInstruction: 'Try to use the real logo as a model reference.',
-      mustInclude: [],
-      mustAvoid: [],
-      referenceAssetIds: ['logo-asset'],
-      logoUsageMode: 'reference',
-    },
-  }), (error: unknown) =>
-    (error as { code?: string }).code === 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED');
 
   const postComposite = await service.compile({
     projectId,

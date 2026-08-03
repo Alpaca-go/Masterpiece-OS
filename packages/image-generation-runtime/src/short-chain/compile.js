@@ -21,19 +21,22 @@ export function compileShortChainImageGeneration(input) {
     || input.projectContext?.promptSourceObject?.lockedAssets?.preferredLogoAssetId
     || logoAssetIds[0]
     || null;
-  const inferredLogoUsageMode = preferredLogoAssetId ? 'post_composite' : 'blank_area';
-  const logoUsageMode = input.task?.logoUsageMode || inferredLogoUsageMode;
-  if (preferredLogoAssetId && logoUsageMode !== 'post_composite') {
-    throw Object.assign(new Error(
-      'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: confirmed Logo must use post-composite mode.',
-    ), { code: 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED' });
-  }
   const requestedReferenceIds = Array.isArray(input.task?.referenceAssetIds)
     ? input.task.referenceAssetIds
     : [];
-  const referenceAssetIds = logoUsageMode === 'reference' && preferredLogoAssetId
-    ? [...new Set([preferredLogoAssetId, ...requestedReferenceIds])]
+  const selectedLogoAssetId = logoAssetIds.find((assetId) => requestedReferenceIds.includes(assetId));
+  const inferredLogoUsageMode = selectedLogoAssetId ? 'reference' : 'blank_area';
+  const logoUsageMode = input.task?.logoUsageMode === 'post_composite'
+    ? 'post_composite'
+    : inferredLogoUsageMode;
+  const referenceAssetIds = logoUsageMode === 'reference'
+    ? [...new Set(requestedReferenceIds)]
     : requestedReferenceIds.filter((assetId) => !logoAssetIds.includes(assetId));
+  if (logoUsageMode === 'reference' && !referenceAssetIds.some((assetId) => logoAssetIds.includes(assetId))) {
+    throw Object.assign(new Error(
+      'Logo reference mode requires the confirmed Logo to be selected.',
+    ), { code: 'SHORT_CHAIN_LOGO_REFERENCE_MISSING' });
+  }
   const taskContract = createShortChainTaskContract({
     ...input.task,
     logoUsageMode,

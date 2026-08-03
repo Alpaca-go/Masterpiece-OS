@@ -7,7 +7,6 @@ import type {
   ProjectVisualContextShortChain,
   ShortChainCreativeSession,
   ShortChainDeliverableValidation,
-  ShortChainLogoUsageMode,
   ShortChainTaskContract,
 } from '../../../shared/types';
 import { cleanError } from '../utils';
@@ -55,12 +54,9 @@ export function ShortChainGenerationWorkspace({
   const [instruction, setInstruction] = useState('');
   const [mustIncludeText, setMustIncludeText] = useState('');
   const [mustAvoidText, setMustAvoidText] = useState('');
-  const [logoUsageMode, setLogoUsageMode] = useState<ShortChainLogoUsageMode>('blank_area');
   const [sourceAssets, setSourceAssets] = useState<ProjectVisualContextShortChain['sourceAssetRefs']>([]);
   const [assetThumbnails, setAssetThumbnails] = useState<Record<string, string>>({});
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
-  const [logoPlacement, setLogoPlacement] = useState({ x: 0.36, y: 0.05, width: 0.28 });
-  const [removeLogoBackground, setRemoveLogoBackground] = useState(true);
   const [compiled, setCompiled] = useState<CompileShortChainGenerationResult | null>(null);
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
@@ -74,6 +70,9 @@ export function ShortChainGenerationWorkspace({
   const familyOptions = options?.[family];
   const canCompile = Boolean(instruction.trim() && subtype && shot);
   const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
+  const selectedLogoAsset = sourceAssets.find((asset) =>
+    asset.role === 'logo' && referenceAssetIds.includes(asset.assetId));
+  const effectiveLogoUsageMode = selectedLogoAsset ? 'reference' : 'blank_area';
   function splitRules(value: string): string[] {
     return [...new Set(value.split(/\r?\n|；|;/u).map((item) => item.trim()).filter(Boolean))];
   }
@@ -85,11 +84,11 @@ export function ShortChainGenerationWorkspace({
       || task.shot !== shot
       || task.aspectRatio !== aspectRatio
       || task.currentInstruction !== instruction.trim()
-      || task.logoUsageMode !== logoUsageMode
+      || task.logoUsageMode !== effectiveLogoUsageMode
       || task.referenceAssetIds.join('\n') !== referenceAssetIds.join('\n')
       || task.mustInclude.join('\n') !== splitRules(mustIncludeText).join('\n')
       || task.mustAvoid.join('\n') !== splitRules(mustAvoidText).join('\n');
-  }, [compiled, family, subtype, shot, aspectRatio, instruction, logoUsageMode, referenceAssetIds, mustIncludeText, mustAvoidText]);
+  }, [compiled, family, subtype, shot, aspectRatio, instruction, effectiveLogoUsageMode, referenceAssetIds, mustIncludeText, mustAvoidText]);
 
   async function refreshSession() {
     const next = await window.masterpiece.imageGeneration.getShortChainSession(project.id);
@@ -116,28 +115,6 @@ export function ShortChainGenerationWorkspace({
       setOptions(nextOptions as TemplateOptions);
       setSourceAssets(context.sourceAssetRefs);
       setAssetThumbnails(thumbnailMap);
-      // A project with a confirmed logo is always subject to the v5
-      // "logo locked" contract. The backend therefore refuses any
-      // `logoUsageMode` other than `post_composite` for those projects
-      // (see `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED` in
-      // `apps/desktop/src/main/image-generation/short-chain-service.ts`). The
-      // previous default of `reference` here forced every logo-locked
-      // project into a guaranteed compile failure; the new default flips
-      // straight to `post_composite` so the workspace never opens in an
-      // illegal state. Projects without a confirmed logo still default
-      // to `blank_area`, which remains valid.
-      //
-      // Belt-and-braces: the upstream `promptSourceObject` was emitting
-      // `'reference'` for logo-locked projects up to this fix, and any
-      // project on disk with that stale value would still re-trigger the
-      // backend error. The conditional below coerces those leftovers
-      // into `post_composite` on first load, so legacy project data
-      // heals automatically.
-      const hasLogo = context.lockedAssets.logoAssetIds.length > 0;
-      const upstream = context.promptSourceObject?.lockedAssets.logoUsageMode;
-      const initialMode: ShortChainLogoUsageMode =
-        hasLogo ? 'post_composite' : (upstream === 'reference' ? 'blank_area' : (upstream || 'blank_area'));
-      setLogoUsageMode(initialMode);
     })
       .catch((reason) => setError(cleanError(reason)));
   }, [project.id]);
@@ -199,7 +176,7 @@ export function ShortChainGenerationWorkspace({
           mustInclude: splitRules(mustIncludeText),
           mustAvoid: splitRules(mustAvoidText),
           referenceAssetIds,
-          logoUsageMode,
+          logoUsageMode: effectiveLogoUsageMode,
         },
       });
       setCompiled(result);
@@ -275,31 +252,6 @@ export function ShortChainGenerationWorkspace({
     }
   }
 
-  async function compositeLogo() {
-    const image = activeRun?.images[0];
-    const logo = sourceAssets.find((asset) => asset.role === 'logo');
-    if (!activeRun || !image || !logo) return;
-    setBusy(true);
-    setError('');
-    try {
-      const result = await window.masterpiece.imageGeneration.postCompositeShortChainLogo({
-        projectId: project.id,
-        runId: activeRun.runId,
-        imageId: image.imageId,
-        logoAssetId: logo.assetId,
-        confirmedByUser: true,
-        placement: logoPlacement,
-        removeBackground: { enabled: removeLogoBackground, tolerance: 24 },
-      }) as { dataUrl?: string };
-      if (result.dataUrl) setImageDataUrl(result.dataUrl);
-      setNotice('已使用锁定的原始 Logo 像素完成后期合成。');
-    } catch (reason) {
-      setError(cleanError(reason));
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function savePromptAsset() {
     if (!editedPrompt.trim()) return;
     setBusy(true);
@@ -325,7 +277,7 @@ export function ShortChainGenerationWorkspace({
     const instructionByKind = {
       deliverable: '纠偏：必须生成完整、连续、功能清晰的当前成果物，不能变成展板、拼贴或局部装饰。',
       tone: '纠偏：品牌气质不正确，请恢复已确认的色彩、材质、光线与形态边界，去除模板化行业风格。',
-      logo_text: logoUsageMode === 'reference'
+      logo_text: effectiveLogoUsageMode === 'reference'
         ? '纠偏：Logo/文字不正确，只能使用真实 Logo 参考，不得改形、重复或杜撰文字。'
         : '纠偏：移除所有 Logo、文字、字母与伪文字，只保留干净的标识安装区域。',
     }[kind];
@@ -396,9 +348,9 @@ export function ShortChainGenerationWorkspace({
         {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
         <fieldset className="reference-asset-selector">
           <legend>锁定身份 / 结构参考（最多2项）</legend>
-          <p className="muted">Logo 不交给模型重绘；这里请选择需要保持形态的 IP、产品或包装结构素材。</p>
-          {sourceAssets.filter((asset) => asset.role !== 'logo').length
-            ? sourceAssets.filter((asset) => asset.role !== 'logo').map((asset) => <label key={asset.assetId} className="checkbox-row reference-asset-row">
+          <p className="muted">勾选后会直接作为本次生图参考；可选择 Logo、icon、IP、产品或包装结构素材。</p>
+          {sourceAssets.length
+            ? sourceAssets.map((asset) => <label key={asset.assetId} className="checkbox-row reference-asset-row">
               <input
                 type="checkbox"
                 checked={referenceAssetIds.includes(asset.assetId)}
@@ -411,16 +363,8 @@ export function ShortChainGenerationWorkspace({
               <span>{asset.name}</span>
               <small>{asset.role}</small>
             </label>)
-            : <small>当前项目没有可选择的非 Logo 图片资产。</small>}
+            : <small>当前项目没有可选择的图片资产。</small>}
         </fieldset>
-        <label>Logo 处理方式
-          <select value={logoUsageMode} onChange={(event) =>
-            setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
-            <option value="post_composite">后期合成 Logo 到结果图（v5 Logo Locked 项目必须）</option>
-            <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
-            <option value="reference" disabled>把真实 Logo 作为模型参考（仅无 logo 项目可用）</option>
-          </select>
-        </label>
         <label>必须包含（每行一项）
           <textarea
             rows={3}
@@ -490,17 +434,6 @@ export function ShortChainGenerationWorkspace({
             <button className="button primary" disabled={busy || lastValidation?.status !== 'passed'} onClick={() => void confirmDirection()}>沿用此方向</button>
             <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
           </div>
-          {logoUsageMode === 'post_composite' && sourceAssets.some((asset) => asset.role === 'logo') && <fieldset>
-            <legend>合成锁定 Logo</legend>
-            <p className="muted">调整归一化位置并确认后，使用原始 Logo 像素覆盖到留白区域；模型不会重绘 Logo。</p>
-            <div className="button-row">
-              <label>X <input type="number" min="0" max="1" step="0.01" value={logoPlacement.x} onChange={(event) => setLogoPlacement((value) => ({ ...value, x: Number(event.target.value) }))} /></label>
-              <label>Y <input type="number" min="0" max="1" step="0.01" value={logoPlacement.y} onChange={(event) => setLogoPlacement((value) => ({ ...value, y: Number(event.target.value) }))} /></label>
-              <label>宽度 <input type="number" min="0.01" max="1" step="0.01" value={logoPlacement.width} onChange={(event) => setLogoPlacement((value) => ({ ...value, width: Number(event.target.value) }))} /></label>
-            </div>
-            <label className="checkbox-row"><input type="checkbox" checked={removeLogoBackground} onChange={(event) => setRemoveLogoBackground(event.target.checked)} />移除 Logo 图片背景</label>
-            <button className="button secondary" disabled={busy} onClick={() => void compositeLogo()}>确认位置并合成 Logo</button>
-          </fieldset>}
           <div className="button-row result-feedback">
             <button className="button ghost" onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
             <button className="button ghost" onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>

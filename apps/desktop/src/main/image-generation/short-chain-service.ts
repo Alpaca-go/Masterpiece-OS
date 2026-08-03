@@ -202,14 +202,11 @@ export function createShortChainImageGenerationService(
       || context.promptSourceObject?.lockedAssets.preferredLogoAssetId
       || logoAssetIds[0]
       || null;
-    const logoUsageMode = input.task.logoUsageMode
-      || (preferredLogoAssetId ? 'post_composite' : 'blank_area');
-    if (preferredLogoAssetId && logoUsageMode !== 'post_composite') {
-      throw Object.assign(
-        new Error('LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED: confirmed Logo must use post-composite mode.'),
-        { code: 'LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED' },
-      );
-    }
+    const requestedReferenceIds = input.task.referenceAssetIds ?? [];
+    const selectedLogoAssetId = logoAssetIds.find((assetId) => requestedReferenceIds.includes(assetId));
+    const logoUsageMode = input.task.logoUsageMode === 'post_composite'
+      ? 'post_composite'
+      : selectedLogoAssetId ? 'reference' : 'blank_area';
     if (logoUsageMode === 'post_composite' && !preferredLogoAssetId) {
       throw Object.assign(
         new Error(`${logoUsageMode} Logo mode requires a confirmed Logo asset`),
@@ -217,10 +214,14 @@ export function createShortChainImageGenerationService(
       );
     }
     const logoAssetIdSet = new Set(logoAssetIds);
-    const requestedReferenceIds = input.task.referenceAssetIds ?? [];
     const referenceAssetIds = logoUsageMode === 'reference'
-      ? [...new Set([preferredLogoAssetId!, ...requestedReferenceIds])]
+      ? [...new Set(requestedReferenceIds)]
       : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId));
+    if (logoUsageMode === 'reference' && !referenceAssetIds.some((assetId) => logoAssetIdSet.has(assetId))) {
+      throw Object.assign(new Error('Logo reference mode requires the confirmed Logo to be selected'), {
+        code: 'SHORT_CHAIN_LOGO_REFERENCE_MISSING',
+      });
+    }
     if (referenceAssetIds.length > 2) {
       throw Object.assign(new Error('Short-Chain accepts at most two explicit identity or structure references.'), {
         code: 'SHORT_CHAIN_REFERENCE_LIMIT_EXCEEDED',
