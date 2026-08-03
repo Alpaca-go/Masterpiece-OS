@@ -2152,6 +2152,7 @@ export interface CreativeIntelligenceDecisionBundle {
   productionBridge?: Record<string, unknown> | null;
   styleProfile?: Record<string, unknown> | null;
   confirmedLockedAssets?: Record<string, unknown>[];
+  legacyMigration?: Record<string, unknown>;
 }
 
 export interface DesktopApi {

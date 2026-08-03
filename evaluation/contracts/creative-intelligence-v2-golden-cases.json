@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "1.0",
+  "cases": [
+    { "id": "greenfield-document", "inputMode": "document", "expectedDirectionMode": "greenfield", "requiresVisualReread": false },
+    { "id": "existing-visual-upgrade", "inputMode": "visual", "expectedDirectionMode": "existing_system_upgrade", "requiresVisualReread": false },
+    { "id": "joint-intent-visual", "inputMode": "joint", "expectsGapAnalysis": true, "requiresVisualReread": false },
+    { "id": "reference-first-transfer", "inputMode": "visual", "expectsAnchorDecisionInheritance": true, "requiresVisualReread": false },
+    { "id": "legacy-project", "inputMode": "legacy", "expectedMigrationStatus": "legacy_passthrough", "fabricateTrace": false },
+    { "id": "incomplete-evidence", "inputMode": "document", "expectsFailClosed": true, "requiresVisualReread": false }
+  ]
+}

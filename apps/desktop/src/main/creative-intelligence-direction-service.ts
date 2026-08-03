@@ -10,6 +10,7 @@ import {
   evaluateCreativeDirections,
   normalizeCreativeDirectionSet,
   lockedAssetOverridesFromProductionBridge,
+  migrateCreativeDecisionForV2,
   parseCreativeDirectionResponseV2,
   validateDirectionDiversity
 } from '@masterpiece/creative-intelligence-runtime';
@@ -215,7 +216,16 @@ export function createCreativeIntelligenceDirectionService(deps: CreativeIntelli
       readJson<any>(path.join(root, DECISION_TRACE_FILENAME)).catch(() => null),
       readJson<any>(path.join(root, PRODUCTION_BRIDGE_FILENAME)).catch(() => null)
     ]);
-    return { userDecision, creativeDecision, decisionTrace, productionBridge };
+    if (creativeDecision) return { userDecision, creativeDecision, decisionTrace, productionBridge };
+    const projectPaths = await deps.projects.paths(projectId);
+    const legacyDecision = await readJson<any>(path.join(projectPaths.root, 'outputs', 'creative_decision.json')).catch(() => null);
+    return {
+      userDecision: null,
+      creativeDecision: null,
+      decisionTrace: null,
+      productionBridge: null,
+      legacyMigration: migrateCreativeDecisionForV2(legacyDecision, { projectId })
+    };
   }
 
   return { generate, getDirectionArtifacts, saveDraft, confirm, getDecision };
