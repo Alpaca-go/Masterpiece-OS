@@ -4,8 +4,12 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import {
+  CATEGORY_OPPORTUNITY_MAP_FILENAME,
   CREATIVE_INTELLIGENCE_SHADOW_FILENAME,
   EVIDENCE_LEDGER_FILENAME,
+  EXISTING_VISUAL_SYSTEM_AUDIT_FILENAME,
+  INTENT_VISUAL_GAP_ANALYSIS_FILENAME,
+  PRIMARY_TOUCHPOINT_REGISTRY_FILENAME,
   PROJECT_TRUTH_MODEL_FILENAME,
   createCreativeIntelligenceShadowService
 } from '../src/main/creative-intelligence-shadow-service.ts';
@@ -41,9 +45,14 @@ test('shadow service persists evidence and truth before its read-only manifest',
   const directory = path.join(root, 'creative-intelligence-v2');
   assert.equal(output.status, 'shadow_only');
   assert.equal(output.downstreamWritePolicy, 'disabled');
+  assert.equal(output.artifacts.primaryTouchpointRegistry.sourcePolicy, 'no_default');
   await Promise.all([
     fs.access(path.join(directory, EVIDENCE_LEDGER_FILENAME)),
     fs.access(path.join(directory, PROJECT_TRUTH_MODEL_FILENAME)),
+    fs.access(path.join(directory, EXISTING_VISUAL_SYSTEM_AUDIT_FILENAME)),
+    fs.access(path.join(directory, INTENT_VISUAL_GAP_ANALYSIS_FILENAME)),
+    fs.access(path.join(directory, PRIMARY_TOUCHPOINT_REGISTRY_FILENAME)),
+    fs.access(path.join(directory, CATEGORY_OPPORTUNITY_MAP_FILENAME)),
     fs.access(path.join(directory, CREATIVE_INTELLIGENCE_SHADOW_FILENAME))
   ]);
   assert.equal((await service.get(projectId)).projectId, projectId);

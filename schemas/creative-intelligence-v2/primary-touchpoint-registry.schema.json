@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/primary-touchpoint-registry.schema.json",
+  "title": "Primary Touchpoint Registry Resolution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "registryVersion", "matchedIndustryRegistryId", "sourcePolicy", "touchpoints", "unresolved"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "registryVersion": { "type": "string", "minLength": 1 },
+    "matchedIndustryRegistryId": { "type": ["string", "null"] },
+    "sourcePolicy": { "enum": ["explicit_project_touchpoints", "industry_registry", "no_default"] },
+    "touchpoints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "selectionSource", "industryRegistryId", "taskRoute", "routeStatus", "evidenceRefs"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "label": { "type": "string", "minLength": 1 },
+          "selectionSource": { "enum": ["explicit", "industry_registry"] },
+          "industryRegistryId": { "type": ["string", "null"] },
+          "taskRoute": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["deliverableFamily", "subtype", "shot"],
+                "properties": {
+                  "deliverableFamily": { "enum": ["space", "packaging", "vi", "poster"] },
+                  "subtype": { "type": "string", "minLength": 1 },
+                  "shot": { "type": "string", "minLength": 1 }
+                }
+              }
+            ]
+          },
+          "routeStatus": { "enum": ["routable", "unmapped"] },
+          "evidenceRefs": { "type": "array", "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } }
+        }
+      }
+    },
+    "unresolved": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/intent-visual-gap-analysis.schema.json",
+  "title": "Intent Visual Gap Analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "aligned", "underExpressed", "overExpressed", "misaligned", "missing", "requiresHumanReview"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "aligned": { "$ref": "#/$defs/items" },
+    "underExpressed": { "$ref": "#/$defs/items" },
+    "overExpressed": { "$ref": "#/$defs/items" },
+    "misaligned": { "$ref": "#/$defs/items" },
+    "missing": { "$ref": "#/$defs/items" },
+    "requiresHumanReview": { "type": "boolean" }
+  },
+  "$defs": {
+    "items": { "type": "array", "items": { "$ref": "#/$defs/item" } },
+    "item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "intent", "currentExpression", "rationale", "evidenceRefs", "source"],
+      "properties": {
+        "classification": { "enum": ["aligned", "underExpressed", "overExpressed", "misaligned", "missing"] },
+        "intent": { "type": ["string", "null"] },
+        "currentExpression": { "type": ["string", "null"] },
+        "rationale": { "type": "string", "minLength": 1 },
+        "evidenceRefs": { "type": "array", "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } },
+        "source": { "enum": ["deterministic", "explicit_judgment"] }
+      }
+    }
+  }
+}

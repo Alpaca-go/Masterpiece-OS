@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/category-opportunity-map.schema.json",
+  "title": "Category Opportunity Map",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "categoryContext", "mustKeep", "canReconstruct", "shouldAvoid", "canOwn", "primaryTouchpoints", "evidenceRefs", "confidence", "visualAuditSummary", "negativeRuleCandidates"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "categoryContext": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["content", "evidenceRefs", "confidence"],
+        "properties": {
+          "content": { "type": "string", "minLength": 1 },
+          "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "mustKeep": { "$ref": "#/$defs/opportunities" },
+    "canReconstruct": { "$ref": "#/$defs/opportunities" },
+    "shouldAvoid": { "$ref": "#/$defs/opportunities" },
+    "canOwn": { "$ref": "#/$defs/opportunities" },
+    "primaryTouchpoints": { "type": "array" },
+    "evidenceRefs": { "type": "array", "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "visualAuditSummary": { "type": "object" },
+    "negativeRuleCandidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["content", "evidenceRefs"],
+        "properties": {
+          "content": { "type": "string", "minLength": 1 },
+          "evidenceRefs": { "type": "array", "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "opportunities": { "type": "array", "items": { "$ref": "#/$defs/opportunity" } },
+    "opportunity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "content", "rationale", "evidenceRefs"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^OP-[a-f0-9]{14}$" },
+        "content": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } }
+      }
+    }
+  }
+}

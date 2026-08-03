@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/existing-visual-system-audit.schema.json",
+  "title": "Existing Visual System Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "dimensions", "summary"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "dimensions": {
+      "type": "array",
+      "minItems": 11,
+      "maxItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension", "status", "observations", "effectiveItems", "problems", "missing", "retention", "evidenceRefs", "confidence"],
+        "properties": {
+          "dimension": { "enum": ["identity", "color", "typography", "graphic", "packaging", "material", "photography", "composition", "lighting", "spatial", "seriesConsistency"] },
+          "status": { "enum": ["observed", "effective", "problem", "missing", "mixed"] },
+          "observations": { "type": "array", "items": { "type": "string" } },
+          "effectiveItems": { "type": "array", "items": { "type": "string" } },
+          "problems": { "type": "array", "items": { "type": "string" } },
+          "missing": { "type": "array", "items": { "type": "string" } },
+          "retention": { "enum": ["must_keep", "controlled_edit", "reconstructable", "excluded", "unresolved", "not_applicable"] },
+          "evidenceRefs": { "type": "array", "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed", "effective", "problem", "missing", "humanJudgmentRequired"],
+      "properties": {
+        "observed": { "type": "integer", "minimum": 0 },
+        "effective": { "type": "integer", "minimum": 0 },
+        "problem": { "type": "integer", "minimum": 0 },
+        "missing": { "type": "integer", "minimum": 0 },
+        "humanJudgmentRequired": { "type": "boolean" }
+      }
+    }
+  }
+}

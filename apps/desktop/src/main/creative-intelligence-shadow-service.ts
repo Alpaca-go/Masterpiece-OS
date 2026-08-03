@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { buildCreativeIntelligenceShadow } from '@masterpiece/creative-intelligence-runtime';
+import { buildCreativeIntelligenceOpportunityAnalysis } from '@masterpiece/creative-intelligence-runtime';
 import type { DocumentVisualContext, ProjectVisualContext, ProjectVisualContextShortChain } from '../shared/types.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
@@ -11,6 +11,10 @@ export const CREATIVE_INTELLIGENCE_V2_DIRECTORY = 'creative-intelligence-v2';
 export const CREATIVE_INTELLIGENCE_SHADOW_FILENAME = 'shadow-output.json';
 export const EVIDENCE_LEDGER_FILENAME = 'evidence-ledger.json';
 export const PROJECT_TRUTH_MODEL_FILENAME = 'project-truth-model.json';
+export const EXISTING_VISUAL_SYSTEM_AUDIT_FILENAME = 'existing-visual-system-audit.json';
+export const INTENT_VISUAL_GAP_ANALYSIS_FILENAME = 'intent-visual-gap-analysis.json';
+export const PRIMARY_TOUCHPOINT_REGISTRY_FILENAME = 'primary-touchpoint-registry.json';
+export const CATEGORY_OPPORTUNITY_MAP_FILENAME = 'category-opportunity-map.json';
 
 export interface CreativeIntelligenceShadowServiceDeps {
   projects: ProjectStore;
@@ -74,7 +78,7 @@ export function createCreativeIntelligenceShadowService(deps: CreativeIntelligen
         'Creative Intelligence Shadow Mode requires Project Visual Context or a linked Document Context'
       );
     }
-    const output = buildCreativeIntelligenceShadow({
+    const output = buildCreativeIntelligenceOpportunityAnalysis({
       projectId,
       visualContext,
       documentContext: document.context,
@@ -83,6 +87,10 @@ export function createCreativeIntelligenceShadowService(deps: CreativeIntelligen
     const directory = await outputDirectory(projectId);
     await writeArtifact(path.join(directory, EVIDENCE_LEDGER_FILENAME), output.artifacts.evidenceLedger);
     await writeArtifact(path.join(directory, PROJECT_TRUTH_MODEL_FILENAME), output.artifacts.projectTruthModel);
+    await writeArtifact(path.join(directory, EXISTING_VISUAL_SYSTEM_AUDIT_FILENAME), output.artifacts.existingVisualSystemAudit);
+    await writeArtifact(path.join(directory, INTENT_VISUAL_GAP_ANALYSIS_FILENAME), output.artifacts.intentVisualGapAnalysis);
+    await writeArtifact(path.join(directory, PRIMARY_TOUCHPOINT_REGISTRY_FILENAME), output.artifacts.primaryTouchpointRegistry);
+    await writeArtifact(path.join(directory, CATEGORY_OPPORTUNITY_MAP_FILENAME), output.artifacts.categoryOpportunityMap);
     // Manifest is committed last, so readers never observe a manifest for partially-written artifacts.
     await writeArtifact(path.join(directory, CREATIVE_INTELLIGENCE_SHADOW_FILENAME), output);
     return output;

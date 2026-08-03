@@ -18,7 +18,11 @@
       "required": ["evidenceLedger", "projectTruthModel"],
       "properties": {
         "evidenceLedger": { "$ref": "./evidence-ledger.schema.json" },
-        "projectTruthModel": { "$ref": "./project-truth-model.schema.json" }
+        "projectTruthModel": { "$ref": "./project-truth-model.schema.json" },
+        "existingVisualSystemAudit": { "$ref": "./existing-visual-system-audit.schema.json" },
+        "intentVisualGapAnalysis": { "$ref": "./intent-visual-gap-analysis.schema.json" },
+        "primaryTouchpointRegistry": { "$ref": "./primary-touchpoint-registry.schema.json" },
+        "categoryOpportunityMap": { "$ref": "./category-opportunity-map.schema.json" }
       }
     },
     "downstreamWritePolicy": { "const": "disabled" }

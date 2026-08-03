@@ -173,11 +173,18 @@ test('Joint Shadow Mode is read-only toward downstream production artifacts', ()
 test('Phase 1 artifacts satisfy their published JSON Schemas', async () => {
   const evidenceSchema = await loadSchema('evidence-ledger.schema.json');
   const truthSchema = await loadSchema('project-truth-model.schema.json');
+  const optionalPhase2Schemas = await Promise.all([
+    'existing-visual-system-audit.schema.json',
+    'intent-visual-gap-analysis.schema.json',
+    'primary-touchpoint-registry.schema.json',
+    'category-opportunity-map.schema.json'
+  ].map(loadSchema));
   const shadowSchema = await loadSchema('shadow-output.schema.json');
   const ajv = new Ajv2020({ allErrors: true, strict: false });
   addFormats(ajv);
   ajv.addSchema(evidenceSchema);
   ajv.addSchema(truthSchema);
+  optionalPhase2Schemas.forEach((schema) => ajv.addSchema(schema));
   const validateShadow = ajv.compile(shadowSchema);
   const shadow = buildCreativeIntelligenceShadow({
     projectId: 'project-01', documentContext, documentConfirmed: true, visualContext, generatedAt
