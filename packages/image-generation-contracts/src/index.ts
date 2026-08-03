@@ -1242,7 +1242,13 @@ export type ShortChainDeliverableMismatchType =
   | 'scene_incomplete'
   | 'logo_text_error'
   | 'quality_issue'
-  | 'packaging_quality_failure';
+  | 'packaging_quality_failure'
+  | 'brand_density_overflow'
+  | 'unexpected_brand_text'
+  | 'duplicate_logo'
+  | 'small_text_violation'
+  | 'asset_zone_conflict'
+  | 'scene_role_mismatch';
 
 export type LockedAssetQAError =
   | 'missing_asset'
@@ -1340,6 +1346,21 @@ export interface ShortChainDeliverableValidation {
   qualityIssues: string[];
   lockedAssetQaResults?: LockedAssetQAResult[];
   packagingEvaluation?: PackagingEvaluationResult;
+  spatialOrchestrationQa?: {
+    passed: boolean;
+    sceneRole: SpatialSceneRole;
+    brandIntensity: SpatialBrandIntensity;
+    observedLogoCount: number;
+    maximumLogoCount: number;
+    observedApprovedAssetCount: number;
+    maximumApprovedAssetCount: number;
+    unexpectedTextBlocks: string[];
+    assetZoneViolations: string[];
+    violations: Array<
+      | 'brand_density_overflow' | 'unexpected_brand_text' | 'duplicate_logo'
+      | 'small_text_violation' | 'asset_zone_conflict' | 'scene_role_mismatch'
+    >;
+  };
   mismatchTypes: ShortChainDeliverableMismatchType[];
   retryRecommended: boolean;
   validatorId: string;

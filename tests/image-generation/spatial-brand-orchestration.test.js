@@ -3,8 +3,10 @@ import test from 'node:test';
 import {
   buildSpatialBrandOrchestration,
   compileShortChainImageGeneration,
+  compileShortChainCorrectionPrompt,
   guardSpatialBrandDensity,
   resolveSpatialSceneRole,
+  validateShortChainDeliverableEvidence,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
 test('Phase 1 resolves scene roles without a model call and preserves explicit precedence', () => {
@@ -17,6 +19,44 @@ test('Phase 1 resolves scene roles without a model call and preserves explicit p
   assert.deepEqual(resolveSpatialSceneRole({ subtype: 'space', shot: 'entrance_wide' }), {
     sceneRole: 'entrance', source: 'auto_resolved',
   });
+});
+
+test('Phase 5 light QA detects orchestration budget, text, zone and Scene Role violations', () => {
+  let orchestration = buildSpatialBrandOrchestration({
+    task: { sceneRole: 'lobby', subtype: 'lobby', shot: 'wide' }, projectContext: {},
+    selectedAssets: [{ assetId: 'logo', type: 'logo' }, { assetId: 'seal', type: 'icon' }],
+  });
+  orchestration = guardSpatialBrandDensity(orchestration);
+  const taskContract = {
+    taskId: 'qa-task', deliverableFamily: 'space', subtype: 'lobby', shot: 'wide',
+    logoUsageMode: 'reference', referenceAssetIds: ['logo', 'seal'], mustInclude: [], mustAvoid: [],
+  };
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'qa-project', taskContract, runId: 'qa-run', imageId: 'qa-image',
+    spatialBrandOrchestration: orchestration,
+    evidence: {
+      detectedFamily: 'space', detectedSubtype: 'lobby', visibleEvidence: ['continuous lobby'],
+      brandMatch: 'matched', brandToneMatch: 'matched', sceneCompleteness: 'complete', logoTextStatus: 'correct',
+      lockedAssetQa: [
+        { assetId: 'logo', assetType: 'logo', occurrenceCount: 1, textExactMatch: true },
+        { assetId: 'seal', assetType: 'icon', occurrenceCount: 1 },
+      ],
+      observedLogoCount: 2, observedApprovedAssetCount: 3,
+      unexpectedTextBlocks: ['pseudo English on left wall'], smallTextViolation: true,
+      assetZoneViolations: ['seal outside left_supporting_wall'], sceneRoleMatch: false,
+    },
+  });
+  assert.equal(validation.status, 'failed');
+  for (const code of [
+    'duplicate_logo', 'brand_density_overflow', 'unexpected_brand_text',
+    'small_text_violation', 'asset_zone_conflict', 'scene_role_mismatch',
+  ]) assert.ok(validation.mismatchTypes.includes(code), code);
+  const correction = compileShortChainCorrectionPrompt({
+    originalPrompt: 'Generate the approved lobby.', taskContract, validation,
+  });
+  assert.match(correction, /Remove every duplicate Logo/u);
+  assert.match(correction, /Remove all unapproved text/u);
+  assert.match(correction, /Restore the requested Scene Role/u);
 });
 
 test('Phase 3 density guard removes duplicate Logo and text overflow by priority', () => {

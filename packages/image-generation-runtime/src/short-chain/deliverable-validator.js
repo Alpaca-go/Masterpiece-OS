@@ -2,7 +2,7 @@ import { evaluatePackagingEvidence } from '../task-families/packaging/evaluation
 import { resolvePackagingSelfHealing } from '../task-families/packaging/self-healing.js';
 
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
-export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.1.0';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.2.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -117,12 +117,43 @@ function lockedAssetQaResults(evidence, taskContract) {
   return results;
 }
 
+function evaluateSpatialOrchestrationEvidence(evidence, orchestration) {
+  if (!orchestration) return null;
+  const violations = [];
+  const maximumLogos = orchestration.assetBudget.textBudget.lockedLogoGroups;
+  const observedLogoCount = Math.max(0, Math.round(Number(evidence?.observedLogoCount) || 0));
+  if (observedLogoCount > maximumLogos) violations.push('duplicate_logo');
+  const unexpectedTextBlocks = list(evidence?.unexpectedTextBlocks);
+  if (unexpectedTextBlocks.length) violations.push('unexpected_brand_text');
+  if (evidence?.smallTextViolation === true) violations.push('small_text_violation');
+  const assetZoneViolations = list(evidence?.assetZoneViolations);
+  if (assetZoneViolations.length) violations.push('asset_zone_conflict');
+  const maximumAssets = (orchestration.assetBudget.primaryAsset ? 1 : 0)
+    + orchestration.assetBudget.secondaryAssets.length;
+  const observedAssetCount = Math.max(0, Math.round(Number(evidence?.observedApprovedAssetCount) || 0));
+  if (observedAssetCount > maximumAssets) violations.push('brand_density_overflow');
+  if (evidence?.sceneRoleMatch === false) violations.push('scene_role_mismatch');
+  return {
+    passed: violations.length === 0,
+    sceneRole: orchestration.sceneRole,
+    brandIntensity: orchestration.brandIntensity,
+    observedLogoCount,
+    maximumLogoCount: maximumLogos,
+    observedApprovedAssetCount: observedAssetCount,
+    maximumApprovedAssetCount: maximumAssets,
+    unexpectedTextBlocks,
+    assetZoneViolations,
+    violations: [...new Set(violations)],
+  };
+}
+
 export function validateShortChainDeliverableEvidence({
   projectId,
   taskContract,
   runId,
   imageId,
   evidence,
+  spatialBrandOrchestration,
   validatedAt = new Date().toISOString(),
 }) {
   const detectedFamily = FAMILIES.has(evidence?.detectedFamily)
@@ -161,6 +192,9 @@ export function validateShortChainDeliverableEvidence({
     ? evaluatePackagingEvidence({ shotId: taskContract.shot, evidence })
     : null;
   const assetQa = lockedAssetQaResults(evidence, taskContract);
+  const spatialOrchestrationQa = taskContract.deliverableFamily === 'space'
+    ? evaluateSpatialOrchestrationEvidence(evidence, spatialBrandOrchestration)
+    : null;
   for (const result of assetQa) {
     for (const error of result.errors) {
       lockedAssetViolations.push(`${result.assetId}:${error}`);
@@ -198,6 +232,9 @@ export function validateShortChainDeliverableEvidence({
   if (logoTextStatus === 'incorrect') mismatchTypes.push('logo_text_error');
   if (qualityIssues.length) mismatchTypes.push('quality_issue');
   if (packagingEvaluation?.status === 'failed') mismatchTypes.push('packaging_quality_failure');
+  if (spatialOrchestrationQa?.violations.length) {
+    mismatchTypes.push(...spatialOrchestrationQa.violations);
+  }
 
   const unverified = detectedFamily === 'unknown' || visibleEvidence.length === 0
     || packagingEvaluation?.status === 'unverified';
@@ -222,7 +259,8 @@ export function validateShortChainDeliverableEvidence({
     qualityIssues,
     lockedAssetQaResults: assetQa,
     ...(packagingEvaluation ? { packagingEvaluation } : {}),
-    mismatchTypes,
+    ...(spatialOrchestrationQa ? { spatialOrchestrationQa } : {}),
+    mismatchTypes: [...new Set(mismatchTypes)],
     retryRecommended: status === 'failed' && mismatchTypes.some((type) => [
       'wrong_family',
       'wrong_subtype',
@@ -234,6 +272,12 @@ export function validateShortChainDeliverableEvidence({
       'logo_text_error',
       'quality_issue',
       'packaging_quality_failure',
+      'brand_density_overflow',
+      'unexpected_brand_text',
+      'duplicate_logo',
+      'small_text_violation',
+      'asset_zone_conflict',
+      'scene_role_mismatch',
     ].includes(type)),
     validatorId: SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID,
     validatorVersion: SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION,
@@ -278,6 +322,18 @@ export function compileShortChainCorrectionPrompt({
       : '',
     ...list(validation.qualityIssues).map((item) => `Repair visible quality issue: ${item}.`),
     ...packagingSelfHealing.correctionDirectives,
+    validation.mismatchTypes.includes('duplicate_logo')
+      ? 'Remove every duplicate Logo and keep only the one approved primary Logo occurrence.' : '',
+    validation.mismatchTypes.includes('unexpected_brand_text')
+      ? 'Remove all unapproved text and pseudo typography from unplanned surfaces.' : '',
+    validation.mismatchTypes.includes('small_text_violation')
+      ? 'Remove small and micro text; use blank labels, approved symbols or simple indexing only.' : '',
+    validation.mismatchTypes.includes('asset_zone_conflict')
+      ? 'Restore each approved asset to its assigned distinct architectural zone.' : '',
+    validation.mismatchTypes.includes('brand_density_overflow')
+      ? 'Reduce literal brand assets to the approved primary and supporting asset budget.' : '',
+    validation.mismatchTypes.includes('scene_role_mismatch')
+      ? 'Restore the requested Scene Role and its corresponding brand hierarchy.' : '',
   ].filter(Boolean);
   const correctionBlock = [
     '【一次性对题纠偏】',

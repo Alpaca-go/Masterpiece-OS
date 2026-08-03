@@ -640,6 +640,7 @@ export function createShortChainImageGenerationService(
       taskContract: compilation.taskContract,
       runId: initialRun.runId,
       validatorProfileId: input.validatorProfileId,
+      spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
     });
     if (compilation.taskContract.deliverableFamily === 'packaging') {
       packagingSelfHealingDecision = resolvePackagingSelfHealing({
@@ -766,6 +767,7 @@ export function createShortChainImageGenerationService(
           taskContract: compilation.taskContract,
           runId: initialRun.runId,
           validatorProfileId: input.validatorProfileId,
+          spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
         });
         if (repairValidation.status !== 'failed') {
           const result: ShortChainValidatedGenerationResult = {
@@ -811,6 +813,7 @@ export function createShortChainImageGenerationService(
           taskContract: compilation.taskContract,
           runId: initialRun.runId,
           validatorProfileId: input.validatorProfileId,
+          spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
         });
         if (secondRepairValidation.status !== 'failed') {
           const result: ShortChainValidatedGenerationResult = {
@@ -855,6 +858,7 @@ export function createShortChainImageGenerationService(
           taskContract: compilation.taskContract,
           runId: initialRun.runId,
           validatorProfileId: input.validatorProfileId,
+          spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
         });
         const result: ShortChainValidatedGenerationResult = {
           initialRun,
@@ -918,6 +922,7 @@ export function createShortChainImageGenerationService(
       taskContract: compilation.taskContract,
       runId: correctionRun.runId,
       validatorProfileId: input.validatorProfileId,
+      spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
     });
     const result: ShortChainValidatedGenerationResult = {
       initialRun,

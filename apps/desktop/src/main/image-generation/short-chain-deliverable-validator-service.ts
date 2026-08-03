@@ -4,6 +4,7 @@ import type {
   PublicSettings,
   ShortChainDeliverableValidation,
   ShortChainTaskContract,
+  SpatialBrandOrchestration,
 } from '../../shared/types.ts';
 import { validateShortChainDeliverableEvidence } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
@@ -24,6 +25,7 @@ interface ValidateInput {
   taskContract: ShortChainTaskContract;
   runId: string;
   validatorProfileId?: string;
+  spatialBrandOrchestration?: SpatialBrandOrchestration | null;
 }
 
 function parseJson(value: string): Record<string, unknown> {
@@ -81,6 +83,7 @@ export function createShortChainDeliverableValidatorService(
         runId: run.runId,
         imageId: image.imageId,
         evidence: {},
+        spatialBrandOrchestration: input.spatialBrandOrchestration,
       }) as ShortChainDeliverableValidation;
       await persist(input.projectId, run.runId, validation);
       return validation;
@@ -149,6 +152,13 @@ export function createShortChainDeliverableValidatorService(
               `Locked visible requirements: ${lockedRequirements.join('; ') || '(none)'}`,
               `Selected locked references: ${selectedReferences.map((asset, index) =>
                 `reference image ${index + 1}=${asset.name} (${asset.role})`).join('; ') || '(none)'}`,
+              `Scene Role: ${input.spatialBrandOrchestration?.sceneRole || '(not scheduled)'}`,
+              `Brand Intensity: ${input.spatialBrandOrchestration?.brandIntensity || '(not scheduled)'}`,
+              `Approved maximum Logo occurrences: ${input.spatialBrandOrchestration?.assetBudget.textBudget.lockedLogoGroups ?? '(not scheduled)'}`,
+              `Approved maximum visible assets: ${input.spatialBrandOrchestration
+                ? Number(Boolean(input.spatialBrandOrchestration.assetBudget.primaryAsset)) + input.spatialBrandOrchestration.assetBudget.secondaryAssets.length
+                : '(not scheduled)'}`,
+              `Text safety zones: ${input.spatialBrandOrchestration?.textSafetyZones.map((zone) => `${zone.zoneId}=${zone.policy}`).join('; ') || '(not scheduled)'}`,
               '',
               'Return exactly:',
               JSON.stringify({
@@ -163,6 +173,12 @@ export function createShortChainDeliverableValidatorService(
                 sceneCompleteness: 'complete|incomplete|uncertain',
                 logoTextStatus: 'correct|incorrect|absent|uncertain|not_required',
                 qualityIssues: ['visible rendering or composition defects'],
+                observedLogoCount: 0,
+                observedApprovedAssetCount: 0,
+                unexpectedTextBlocks: ['unapproved visible text block and location'],
+                smallTextViolation: false,
+                assetZoneViolations: ['asset and wrong visible zone'],
+                sceneRoleMatch: true,
                 lockedAssetQa: [{
                   assetId: 'exact selected assetId',
                   assetType: 'logo|ip_character|icon|packaging_front|other',
@@ -210,6 +226,7 @@ export function createShortChainDeliverableValidatorService(
               'For each selected reference, return one lockedAssetQa item using the exact assetId. Count visible occurrences, estimate contour similarity and aspect-ratio deviation against the reference, check exact readable text at 96px or larger, check requested material and planned primary placement, and count unrelated or duplicate logo-like marks. Do not omit a selected asset from lockedAssetQa.',
               'Apply asset-specific rules: Logo locks contour, negative space, typography, arrangement and proportions; IP character locks identity, head-to-body proportion range, facial feature positions, primary colors, signature clothing and accessories while allowing pose/expression/view/material/light; icon locks its graphic unit but has no OCR requirement. Set assetType and the matching QA fields accordingly.',
               'For glass, storefront, reflective metal, curved wall, partial occlusion and distant wayfinding requests, separately judge surface integration and preservation of credible transparency/reflection/curvature/foreground occlusion. When a prior-view reference is attached, judge cross-angle identity, material and scale consistency through seriesConsistencyMatch.',
+              'For a scheduled spatial orchestration, count complete visible Logos and approved literal assets, list only unapproved text blocks, flag unreadable small text, report assets outside their assigned zones, and judge whether the visible hierarchy matches the requested Scene Role. Do not count palette, pattern rhythm or abstract style inheritance as extra literal assets.',
               'For a canonical Packaging shot (PKG-*), always return packagingQa from visible evidence. Logo fidelity compares the visible mark with the selected identity reference; structure, material and photography fields judge the manufactured package rather than the background set.',
               'Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain.',
             ].join('\n'),
@@ -232,6 +249,7 @@ export function createShortChainDeliverableValidatorService(
       runId: run.runId,
       imageId: image.imageId,
       evidence: parseJson(response.reportMarkdown),
+      spatialBrandOrchestration: input.spatialBrandOrchestration,
     }) as ShortChainDeliverableValidation;
     await persist(input.projectId, run.runId, {
       ...validation,
