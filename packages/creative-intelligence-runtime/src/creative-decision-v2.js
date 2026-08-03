@@ -67,10 +67,10 @@ export function compileCreativeDecisionV2({
       validationStatus: 'direction_confirmed_anchor_pending'
     },
     visualPriorities: unique([
-      merged.get('compositionLogic') || selected.compositionLogic,
-      merged.get('colorLogic') || selected.colorLogic,
-      merged.get('typographyLogic') || selected.typographyLogic,
-      merged.get('imageMaterialLogic') || selected.imageMaterialLogic
+      `composition: ${merged.get('compositionLogic') || selected.compositionLogic}`,
+      `color: ${merged.get('colorLogic') || selected.colorLogic}`,
+      `typography: ${merged.get('typographyLogic') || selected.typographyLogic}`,
+      `image_material: ${merged.get('imageMaterialLogic') || selected.imageMaterialLogic}`
     ]),
     lockedAssetDecisions: categoryOpportunityMap.mustKeep.map((item) => ({
       assetId: item.id, decision: 'locked', rationale: item.content, evidenceRefs: item.evidenceRefs

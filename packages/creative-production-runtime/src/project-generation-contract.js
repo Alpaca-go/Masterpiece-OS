@@ -45,25 +45,38 @@ function toneBoundaries(decision, approvedDecision) {
       ? [{ target: String(item.target).trim(), avoid: list(item.avoid) }]
       : []);
   if (explicit.length) return explicit;
-  const approvedTarget = String(approvedDecision?.visual_direction?.recommended ?? '').trim();
+  const approvedTarget = String(
+    approvedDecision?.schemaVersion === '2.0'
+      ? approvedDecision.brandPerceptionGoal?.[0] || approvedDecision.strategicDirection?.proposition
+      : approvedDecision?.visual_direction?.recommended ?? '',
+  ).trim();
   return approvedTarget
-    ? [{ target: approvedTarget, avoid: [] }]
+    ? [{ target: approvedTarget, avoid: list(approvedDecision?.prohibitedExpressions) }]
     : [];
 }
 
 function approvedProjectDecisions(value) {
   const decision = value && typeof value === 'object' ? value : {};
+  const isV2 = decision.schemaVersion === '2.0' && decision.decisionId;
+  const priorities = (prefix) => list(decision.visualPriorities)
+    .filter((item) => item.toLowerCase().startsWith(`${prefix}:`))
+    .map((item) => item.slice(prefix.length + 1).trim());
   const result = {
-    decisionId: String(decision.direction_id ?? decision.id ?? '').trim() || null,
+    decisionId: String(decision.decisionId ?? decision.direction_id ?? decision.id ?? '').trim() || null,
     decisionVersion: String(decision.direction_version ?? decision.version ?? '').trim() || null,
-    recommendedDirection: String(decision.visual_direction?.recommended ?? '').trim(),
-    rationale: String(decision.visual_direction?.rationale ?? '').trim(),
-    brandStrategy: String(decision.brand_strategy ?? '').trim(),
-    colorSystem: list(decision.color_system),
-    materialSystem: list(decision.material_system),
-    compositionRules: list(decision.composition_rule),
-    generationGoals: list(decision.generation_goal),
-    prohibitedExpressions: list(decision.avoid_assets),
+    recommendedDirection: String(isV2 ? decision.coreVisualMechanism?.concept : decision.visual_direction?.recommended ?? '').trim(),
+    rationale: String(isV2 ? decision.strategicDirection?.rationale : decision.visual_direction?.rationale ?? '').trim(),
+    brandStrategy: String(isV2 ? decision.strategicDirection?.proposition : decision.brand_strategy ?? '').trim(),
+    colorSystem: isV2 ? priorities('color') : list(decision.color_system),
+    materialSystem: isV2 ? priorities('image_material') : list(decision.material_system),
+    compositionRules: isV2 ? priorities('composition') : list(decision.composition_rule),
+    generationGoals: isV2 ? list(
+      decision.brandPerceptionGoal,
+      decision.coreVisualMechanism?.generationLogic,
+      decision.coreVisualMechanism?.visualHammer,
+      decision.touchpointPriorities,
+    ) : list(decision.generation_goal),
+    prohibitedExpressions: isV2 ? list(decision.prohibitedExpressions) : list(decision.avoid_assets),
   };
   const populatedCategories = [
     result.recommendedDirection,
@@ -117,6 +130,9 @@ function approvedUpgradeStatement(decisions, fallback, deliverable) {
 function synthesiseApprovedDecision(supplied, packet) {
   const explicit = supplied && typeof supplied === 'object' ? supplied : {};
   const hasAnyExplicitContent = [
+    explicit.decisionId,
+    explicit.strategicDirection,
+    explicit.coreVisualMechanism,
     explicit.direction_id,
     explicit.id,
     explicit.visual_direction,
@@ -222,7 +238,11 @@ export function compileProjectSpecificGenerationContract(input = {}) {
       source: asset?.lockSource === 'user_confirmed' ? 'user_confirmation' : 'locked_asset',
       evidenceRefs: evidence(asset),
     })),
-    ...list(hasApprovedDecision ? approvedDecision.keep_assets : decision.preserveCore).map((value) => ({
+    ...list(hasApprovedDecision
+      ? approvedDecision.schemaVersion === '2.0'
+        ? approvedDecision.lockedAssetDecisions?.filter((item) => item.decision === 'locked').map((item) => item.rationale)
+        : approvedDecision.keep_assets
+      : decision.preserveCore).map((value) => ({
       value,
       source: hasApprovedDecision ? 'approved_creative_decision' : 'confirmed_fact',
       evidenceRefs: list(packet.provenance?.createdFrom),
@@ -317,7 +337,7 @@ export function compileProjectSpecificGenerationContract(input = {}) {
         ? projectSpecificDecisions.generationGoals
         : list(packet.mediaTranslations?.sharedBrandCore),
       compositionBehavior: hasApprovedDecision
-        ? projectSpecificDecisions.generationGoals
+        ? projectSpecificDecisions.compositionRules
         : list(packet.mediaTranslations?.spatial?.structureLanguage),
       lightingBehavior: hasApprovedDecision
         ? list(

@@ -84,6 +84,13 @@ const MAX_REFERENCE_ASSETS = 8;
 const CAPSULE_FILENAME = 'reference-style-capsule.json';
 const CAPSULE_MD_FILENAME = '参考风格胶囊.md';
 const BRIEF_FILENAME = 'Anchor-Generation-Brief.md';
+const CREATIVE_DECISION_INHERITANCE_FILENAME = 'anchor-decision-inheritance.json';
+
+interface CreativeDecisionAnchorInheritance {
+  decisionId: string;
+  acceptedMechanisms: string[];
+  rejectedMechanisms: string[];
+}
 
 // 应用运行期间才可能处于这些状态；重启后发现它们即为僵尸任务
 const EXECUTING_STATUSES: ReadonlySet<ReferenceAnchorRunStatus> = new Set([
@@ -294,6 +301,17 @@ export function createReferenceAnchorService(
     return { visual, document, merged, warnings };
   }
 
+  async function loadCreativeDecisionInheritance(projectId: string): Promise<CreativeDecisionAnchorInheritance | null> {
+    // Lightweight test/legacy adapters may implement only the ProjectStore
+    // methods required by the original Anchor workflow.
+    if (typeof (dependencies.projects as ProjectStore & { paths?: unknown }).paths !== 'function') return null;
+    const projectRoot = (await dependencies.projects.paths(projectId)).root;
+    const filename = path.join(projectRoot, 'creative-intelligence-v2', CREATIVE_DECISION_INHERITANCE_FILENAME);
+    const value = await readJson<CreativeDecisionAnchorInheritance>(filename).catch(() => null);
+    if (!value?.decisionId || !Array.isArray(value.acceptedMechanisms) || !Array.isArray(value.rejectedMechanisms)) return null;
+    return value;
+  }
+
   // ── 编译 + 校验 + 落盘（02/03 阶段共用；重试路径零模型调用）──
 
   interface CompileParams {
@@ -311,6 +329,15 @@ export function createReferenceAnchorService(
 
   async function compileAndPersist(params: CompileParams): Promise<ReferenceAnchorResult> {
     const { record, visual, referenceStyle } = params;
+    const decisionInheritance = await loadCreativeDecisionInheritance(record.projectId);
+    const inheritedPreference = decisionInheritance?.acceptedMechanisms
+      .map((item) => String(item || '').trim()).filter(Boolean).slice(0, 8).join('; ') || '';
+    const effectivePreference = [inheritedPreference, params.preference]
+      .map((item) => String(item || '').trim()).filter(Boolean).join('; ').slice(0, 1500) || null;
+    const effectiveAvoidance = [...new Set([
+      ...(decisionInheritance?.rejectedMechanisms || []),
+      ...params.avoidance
+    ].map((item) => String(item || '').trim()).filter(Boolean))].slice(0, 24);
     // v5.3.1 §3：兜底重建事实分类（旧缓存 merged 可能缺 facts）。
     const merged: MergedCurrentProject = { ...params.merged, facts: ensureProjectFacts(params.merged) };
     const root = await runRoot(record.id);
@@ -323,8 +350,8 @@ export function createReferenceAnchorService(
       projectId: record.projectId,
       merged,
       referenceStyle,
-      userPreference: params.preference,
-      userAvoidance: params.avoidance,
+      userPreference: effectivePreference,
+      userAvoidance: effectiveAvoidance,
       aspectRatio: params.aspectRatio
     });
     const capsule = compiled.capsule;
@@ -425,8 +452,8 @@ export function createReferenceAnchorService(
       status: 'awaiting_decision',
       decision: 'pending',
       currentStage: '04-anchor-decision',
-      preference: params.preference,
-      avoidance: params.avoidance,
+      preference: effectivePreference,
+      avoidance: effectiveAvoidance,
       warnings,
       briefFilename: BRIEF_FILENAME,
       errorCode: null,
@@ -436,7 +463,8 @@ export function createReferenceAnchorService(
     emit(saved, '04-anchor-decision', params.startedAt, params.startedTick);
     await appendRuntimeEvent(path.join(root, 'runtime'), record.id, 'CAPSULE_AND_BRIEF_COMPILED', {
       warnings: warnings.length,
-      brief_chars: briefValidation.lengthChars
+      brief_chars: briefValidation.lengthChars,
+      creative_decision_id: decisionInheritance?.decisionId || null
     }).catch(() => undefined);
     return { run: saved, capsule, capsuleMarkdown, briefMarkdown };
   }

@@ -60,7 +60,10 @@ test('direction service persists three hypotheses and waits for user confirmatio
     build: async () => analysis
   };
   const service = createCreativeIntelligenceDirectionService({
-    projects: { get: async () => ({ id: projectId, apiProfileId: 'profile-1' }) } as never,
+    projects: {
+      get: async () => ({ id: projectId, apiProfileId: 'profile-1' }),
+      paths: async () => ({ root })
+    } as never,
     shadow: shadow as never,
     readCredentials: async () => ({ provider: 'qwen', model: 'mock-direction-model', apiKey: 'test-key', baseUrl: 'https://example.invalid' }) as never,
     reasonerFactory: (() => async () => ({ reportMarkdown: JSON.stringify(raw) })) as never
@@ -78,4 +81,6 @@ test('direction service persists three hypotheses and waits for user confirmatio
   assert.equal(confirmed.userDecision.status, 'confirmed');
   assert.equal(confirmed.creativeDecision.decisionStatus, 'confirmed');
   assert.equal(confirmed.decisionTrace.complete, true);
+  assert.equal(confirmed.productionBridge.runtime.generationRuntime, 'short-chain');
+  assert.equal(JSON.parse(await fs.readFile(path.join(root, 'outputs', 'creative_decision.json'), 'utf8')).decisionId, confirmed.creativeDecision.decisionId);
 });

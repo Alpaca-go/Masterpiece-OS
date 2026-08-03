@@ -158,11 +158,6 @@ const creativeIntelligenceShadow = createCreativeIntelligenceShadowService({
   documentContext,
   getDocumentContextLink: (projectId) => contextIntegration.getLink(projectId)
 });
-const creativeIntelligenceDirections = createCreativeIntelligenceDirectionService({
-  projects,
-  shadow: creativeIntelligenceShadow,
-  readCredentials: getProviderCredentials
-});
 const referenceAnchor = createReferenceAnchorService(getSettings, {
   projects,
   pipeline,
@@ -184,6 +179,14 @@ const generationBlueprints = createGenerationBlueprintService(
 );
 const styleProfiles = createStyleProfileService(projects, creativeSessions);
 const lockedAssets = createLockedAssetsService(projects, creativeSessions);
+const creativeIntelligenceDirections = createCreativeIntelligenceDirectionService({
+  projects,
+  shadow: creativeIntelligenceShadow,
+  readCredentials: getProviderCredentials,
+  styleProfiles,
+  lockedAssets,
+  projectContext
+});
 const visualMemory = createVisualMemoryService(
   projects,
   creativeSessions,

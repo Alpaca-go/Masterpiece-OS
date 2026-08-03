@@ -12,5 +12,6 @@ export * from './direction-diversity.js';
 export * from './direction-evaluation.js';
 export * from './user-direction-decision.js';
 export * from './creative-decision-v2.js';
+export * from './production-bridge.js';
 export * from './adapters/document-adapter.js';
 export * from './adapters/visual-scheme-adapter.js';

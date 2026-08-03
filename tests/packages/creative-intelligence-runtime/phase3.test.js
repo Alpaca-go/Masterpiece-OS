@@ -184,7 +184,7 @@ test('Confirmed user choice compiles one traceable Creative Decision V2 with hyp
   assert.equal(creativeDecision.decisionStatus, 'confirmed');
   assert.equal(creativeDecision.decisionSource.selectedDirectionId, 'D01');
   assert.equal(creativeDecision.coreVisualMechanism.validationStatus, 'direction_confirmed_anchor_pending');
-  assert.equal(creativeDecision.visualPriorities.includes('Honest substrate with close directional light.'), true);
+  assert.equal(creativeDecision.visualPriorities.includes('image_material: Honest substrate with close directional light.'), true);
   const trace = buildDecisionTrace({
     evidenceLedger: { evidence: evidenceRefs.map((id) => ({ id })) }, categoryOpportunityMap,
     directionSet: set, userDecision: decision, creativeDecision

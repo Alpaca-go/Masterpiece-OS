@@ -27,6 +27,56 @@ export function nextStyleProfileVersion(current, level = 'minor') {
 
 export function normalizeCreativeDecision(input) {
   if (input?.schemaVersion === '6.0' && input?.primaryDirection) return input;
+  if (input?.schemaVersion === '2.0' && input?.decisionId) {
+    const priority = (prefix) => unique(input.visualPriorities)
+      .filter((item) => item.toLowerCase().startsWith(`${prefix}:`))
+      .map((item) => item.slice(prefix.length + 1).trim())
+      .filter(Boolean);
+    return {
+      schemaVersion: '6.0',
+      id: input.decisionId,
+      projectId: input.projectId,
+      version: input.version || '2.0.0',
+      brandCoreJudgment: unique([input.strategicDirection?.brandRole]),
+      currentVisualProblems: unique(input.prohibitedExpressions),
+      retainedAssets: unique((input.lockedAssetDecisions || [])
+        .filter((item) => item.decision === 'locked')
+        .map((item) => item.rationale)),
+      reconstructableAssets: unique((input.lockedAssetDecisions || [])
+        .filter((item) => item.decision === 'reconstructable' || item.decision === 'controlled_edit')
+        .map((item) => item.rationale)),
+      inheritedReferenceMechanisms: unique(input.coreVisualMechanism?.sourceMechanisms),
+      prohibitedReferenceContent: unique(input.prohibitedExpressions),
+      visualUpgradeThesis: text(input.strategicDirection?.proposition),
+      primaryDirection: {
+        name: text(input.coreVisualMechanism?.concept, 'Confirmed Direction'),
+        summary: text(input.coreVisualMechanism?.generationLogic, input.strategicDirection?.proposition),
+        keywords: unique([
+          input.coreVisualMechanism?.visualHammer,
+          input.coreVisualMechanism?.languageNail,
+          ...unique(input.coreVisualMechanism?.sourceMechanisms),
+        ]).slice(0, 8),
+        mood: unique(input.brandPerceptionGoal),
+      },
+      styleBoundaries: {
+        allowed: unique(input.allowedVariations),
+        forbidden: unique(input.prohibitedExpressions),
+      },
+      outputPriorities: unique(input.touchpointPriorities),
+      risks: unique(input.knownRisks),
+      createdAt: input.generatedAt || new Date().toISOString(),
+      _compat: {
+        direction: {
+          compositionStrategy: priority('composition'),
+          colorRelationship: priority('color'),
+          typographyRelationship: priority('typography'),
+          materialAndLighting: priority('image_material'),
+          sceneMechanism: [text(input.coreVisualMechanism?.generationLogic)].filter(Boolean),
+        },
+        mustChange: {},
+      },
+    };
+  }
   const direction = input?.newDirection ?? {};
   const mustChange = input?.mustChange ?? {};
   const preserve = input?.preserve ?? {};

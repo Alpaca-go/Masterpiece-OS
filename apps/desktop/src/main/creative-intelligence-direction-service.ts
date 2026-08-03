@@ -3,11 +3,13 @@ import path from 'node:path';
 import {
   buildCreativeDirectionGenerationRequest,
   buildDecisionTrace,
+  compileCreativeDecisionProductionBridge,
   compileCreativeDecisionV2,
   confirmUserDirectionDecision,
   createUserDirectionDecision,
   evaluateCreativeDirections,
   normalizeCreativeDirectionSet,
+  lockedAssetOverridesFromProductionBridge,
   parseCreativeDirectionResponseV2,
   validateDirectionDiversity
 } from '@masterpiece/creative-intelligence-runtime';
@@ -16,6 +18,9 @@ import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { ProviderCredentials } from './settings-store.ts';
 import type { CreativeIntelligenceShadowService } from './creative-intelligence-shadow-service.ts';
+import type { StyleProfileService } from './style-profile-service.ts';
+import type { LockedAssetsService } from './locked-assets-service.ts';
+import type { ProjectContextService } from './project-context-service.ts';
 
 export const CREATIVE_DIRECTION_SET_FILENAME = 'creative-direction-set.json';
 export const DIRECTION_VALIDATION_FILENAME = 'direction-validation.json';
@@ -24,6 +29,11 @@ export const USER_DIRECTION_DECISION_FILENAME = 'user-direction-decision.json';
 export const CREATIVE_DECISION_V2_FILENAME = 'creative-decision-v2.json';
 export const DECISION_TRACE_FILENAME = 'decision-trace.json';
 export const DIRECTION_GENERATION_MANIFEST_FILENAME = 'direction-generation.json';
+export const PRODUCTION_BRIDGE_FILENAME = 'production-bridge.json';
+export const TARGET_STYLE_PROFILE_FILENAME = 'target-style-profile.json';
+export const LOCKED_ASSET_CANDIDATES_FILENAME = 'locked-asset-candidates.json';
+export const CONFIRMED_LOCKED_ASSETS_FILENAME = 'confirmed-locked-assets.json';
+export const ANCHOR_DECISION_INHERITANCE_FILENAME = 'anchor-decision-inheritance.json';
 
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
 type ReasonerFactory = typeof createQwenReasoner;
@@ -33,6 +43,9 @@ export interface CreativeIntelligenceDirectionServiceDeps {
   shadow: CreativeIntelligenceShadowService;
   readCredentials: CredentialsReader;
   reasonerFactory?: ReasonerFactory;
+  styleProfiles?: StyleProfileService;
+  lockedAssets?: LockedAssetsService;
+  projectContext?: ProjectContextService;
 }
 
 async function readJson<T>(filename: string): Promise<T> {
@@ -155,21 +168,54 @@ export function createCreativeIntelligenceDirectionService(deps: CreativeIntelli
       userDecision,
       creativeDecision
     });
+    const productionBridge = compileCreativeDecisionProductionBridge({
+      creativeDecision,
+      userDecision,
+      evidenceLedger: analysis.artifacts.evidenceLedger
+    });
     const root = await directory(projectId);
     await writeJson(path.join(root, USER_DIRECTION_DECISION_FILENAME), userDecision);
     await writeJson(path.join(root, CREATIVE_DECISION_V2_FILENAME), creativeDecision);
     await writeJson(path.join(root, DECISION_TRACE_FILENAME), decisionTrace);
-    return { userDecision, creativeDecision, decisionTrace };
+    await writeJson(path.join(root, TARGET_STYLE_PROFILE_FILENAME), productionBridge.targetStyleProfile);
+    await writeJson(path.join(root, LOCKED_ASSET_CANDIDATES_FILENAME), productionBridge.lockedAssets.candidates);
+    await writeJson(path.join(root, CONFIRMED_LOCKED_ASSETS_FILENAME), productionBridge.lockedAssets.confirmed);
+    await writeJson(path.join(root, ANCHOR_DECISION_INHERITANCE_FILENAME), productionBridge.anchorBriefInheritance);
+
+    let styleProfile: unknown = null;
+    let confirmedLockedAssets: unknown[] = [];
+    if (deps.styleProfiles && deps.lockedAssets && deps.projectContext) {
+      const visualContext = await deps.projectContext.get(projectId);
+      styleProfile = await deps.styleProfiles.compile(projectId, creativeDecision);
+      confirmedLockedAssets = await deps.lockedAssets.compile(projectId, {
+        visualContext,
+        explicitAssets: lockedAssetOverridesFromProductionBridge(productionBridge)
+      });
+    }
+    const projectPaths = await deps.projects.paths(projectId);
+    await writeJson(path.join(root, PRODUCTION_BRIDGE_FILENAME), {
+      ...productionBridge,
+      promotedStyleProfile: styleProfile && typeof styleProfile === 'object'
+        ? { id: (styleProfile as any).id, version: (styleProfile as any).version, status: (styleProfile as any).status }
+        : null,
+      promotedLockedAssetIds: confirmedLockedAssets.map((item: any) => item.id)
+    });
+    // This is the single production decision path already consumed by Short-Chain.
+    // It is committed last so the generation runtime never observes a partially
+    // promoted V2 decision.
+    await writeJson(path.join(projectPaths.root, 'outputs', 'creative_decision.json'), creativeDecision);
+    return { userDecision, creativeDecision, decisionTrace, productionBridge, styleProfile, confirmedLockedAssets };
   }
 
   async function getDecision(projectId: string) {
     const root = await directory(projectId);
-    const [userDecision, creativeDecision, decisionTrace] = await Promise.all([
+    const [userDecision, creativeDecision, decisionTrace, productionBridge] = await Promise.all([
       readJson<any>(path.join(root, USER_DIRECTION_DECISION_FILENAME)).catch(() => null),
       readJson<any>(path.join(root, CREATIVE_DECISION_V2_FILENAME)).catch(() => null),
-      readJson<any>(path.join(root, DECISION_TRACE_FILENAME)).catch(() => null)
+      readJson<any>(path.join(root, DECISION_TRACE_FILENAME)).catch(() => null),
+      readJson<any>(path.join(root, PRODUCTION_BRIDGE_FILENAME)).catch(() => null)
     ]);
-    return { userDecision, creativeDecision, decisionTrace };
+    return { userDecision, creativeDecision, decisionTrace, productionBridge };
   }
 
   return { generate, getDirectionArtifacts, saveDraft, confirm, getDecision };

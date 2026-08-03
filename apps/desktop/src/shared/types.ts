@@ -2149,6 +2149,9 @@ export interface CreativeIntelligenceDecisionBundle {
   userDecision: Record<string, unknown> | null;
   creativeDecision: (Record<string, unknown> & { decisionStatus: 'confirmed' | 'superseded' }) | null;
   decisionTrace: Record<string, unknown> | null;
+  productionBridge?: Record<string, unknown> | null;
+  styleProfile?: Record<string, unknown> | null;
+  confirmedLockedAssets?: Record<string, unknown>[];
 }
 
 export interface DesktopApi {

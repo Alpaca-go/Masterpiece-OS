@@ -20,6 +20,10 @@ test('Creative Intelligence IPC never routes a draft save through formal confirm
   const preload = await readFile(new URL('../src/preload/index.ts', import.meta.url), 'utf8');
   assert.match(preload, /saveDraft:.*creative-intelligence:save-draft/);
   assert.match(preload, /confirm:.*creative-intelligence:confirm/);
+  const anchorService = await readFile(new URL('../src/main/reference-anchor-service.ts', import.meta.url), 'utf8');
+  assert.match(anchorService, /anchor-decision-inheritance\.json/);
+  assert.match(anchorService, /acceptedMechanisms/);
+  assert.match(anchorService, /rejectedMechanisms/);
   assert.notEqual(
     preload.match(/saveDraft:[^\n]+/)?.[0],
     preload.match(/confirm:[^\n]+/)?.[0]
