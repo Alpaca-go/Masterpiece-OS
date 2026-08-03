@@ -14,17 +14,18 @@ const gitAvailable = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { 
 function repositoryFiles() {
   const result = spawnSync('git', ['-c', 'core.quotepath=false', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
-  return result.stdout.split('\0').filter(Boolean).map((file) => file.replaceAll('\\', '/'));
+  return result.stdout.split('\0').filter(Boolean).map((file) => file.replaceAll('\\', '/'))
+    .filter((file) => fs.existsSync(file));
 }
 
 function isVersionedGoldenRaster(file) {
-  const match = file.match(/^assets\/golden\/spatial\/([a-z0-9-]+)\/anchors\/([a-z0-9-]+-v\d+\.(?:png|jpg|jpeg|webp))$/u);
+  const match = file.match(/^assets\/golden-references\/spatial\/([a-z0-9-]+)\/(JZMX-SGR-\d{2}-[A-Za-z]+\.(?:png|jpg|jpeg|webp))$/u);
   if (!match) return false;
-  const manifestPath = `assets/golden/spatial/${match[1]}/anchors/anchor-manifest-v1.yaml`;
+  const manifestPath = `assets/golden-references/spatial/${match[1]}/metadata.yaml`;
   if (!repositoryFiles().includes(manifestPath) || !fs.existsSync(manifestPath)) return false;
   const manifest = fs.readFileSync(manifestPath, 'utf8').toLowerCase();
   const sha256 = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
-  return manifest.includes(match[2])
+  return manifest.includes(match[2].toLowerCase())
     && manifest.includes(sha256)
     && /spatial_scale:\s*0(?:\.0+)?/u.test(manifest);
 }

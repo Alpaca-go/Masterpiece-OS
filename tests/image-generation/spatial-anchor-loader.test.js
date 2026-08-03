@@ -21,8 +21,8 @@ test('storefront and reception tasks select their corresponding project Anchor',
     spaceType: 'reception',
     manifest: bundle.anchorManifest,
   });
-  assert.deepEqual(storefront.anchors.map((anchor) => anchor.id), ['storefront-anchor-v1']);
-  assert.deepEqual(reception.anchors.map((anchor) => anchor.id), ['reception-anchor-v1']);
+  assert.deepEqual(storefront.anchors.map((anchor) => anchor.id), ['JZMX-SGR-01-Exterior']);
+  assert.deepEqual(reception.anchors.map((anchor) => anchor.id), ['JZMX-SGR-02-Reception']);
 });
 
 test('large lobby uses reception Anchor only for authorized calibration roles', () => {
@@ -32,12 +32,12 @@ test('large lobby uses reception Anchor only for authorized calibration roles', 
     manifest: bundle.anchorManifest,
   });
   const [anchor] = result.anchors;
-  assert.equal(anchor.id, 'reception-anchor-v1');
+  assert.equal(anchor.id, 'JZMX-SGR-02-Reception');
   assert.equal(anchor.influenceCaps.spatialScale, 0);
   assert.equal(anchor.influenceCaps.functionalLayout, 0);
   assert.equal(anchor.influenceCaps.composition, 0);
   assert.deepEqual(anchor.allowedRoles, [
-    'brand_atmosphere', 'brand_integration', 'material_and_lighting',
+    'brand_atmosphere', 'brand_integration', 'material_and_lighting', 'decorative_density',
   ]);
   assert.ok(anchor.deniedRoles.includes('reception_expression'));
 });
@@ -58,7 +58,7 @@ test('cross-project Anchor access requires an explicit matching reference projec
     spaceType: 'reception',
     manifest: bundle.anchorManifest,
   });
-  assert.equal(result.anchors[0].id, 'reception-anchor-v1');
+  assert.equal(result.anchors[0].id, 'JZMX-SGR-02-Reception');
 });
 
 test('Anchor loader verifies the versioned image checksum', () => {
@@ -78,8 +78,8 @@ test('selected Anchor roles become dimension-scoped compiler signals', () => {
     manifest: bundle.anchorManifest,
   });
   const signals = anchorSignalsFromSelection(selection);
-  assert.ok(signals.brandAtmosphere[0].includes('reception-anchor-v1'));
-  assert.ok(signals.materialAndLighting[0].includes('reception-anchor-v1'));
+  assert.ok(signals.brandAtmosphere[0].includes('JZMX-SGR-02-Reception'));
+  assert.ok(signals.materialAndLighting[0].includes('JZMX-SGR-02-Reception'));
   assert.equal(signals.receptionExpression, undefined);
   assert.equal(signals.spatialScale, undefined);
 });

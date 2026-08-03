@@ -29,11 +29,11 @@ test('runtime Anchor Manifest has stable project ownership and versions', () => 
   const { anchorManifest } = loadSpatialProjectBundle('jiuzhou-aesthetics');
   assert.equal(anchorManifest.projectId, 'jiuzhou-aesthetics');
   assert.deepEqual(anchorManifest.anchors.map((anchor) => anchor.id), [
-    'storefront-anchor-v1',
-    'reception-anchor-v1',
+    'JZMX-SGR-01-Exterior',
+    'JZMX-SGR-02-Reception',
   ]);
   assert.ok(anchorManifest.anchors.every((anchor) => anchor.projectId === anchorManifest.projectId));
-  assert.ok(anchorManifest.anchors.every((anchor) => anchor.version === 1));
+  assert.ok(anchorManifest.anchors.every((anchor) => anchor.version === 1.1));
 });
 
 test('project config loader blocks path traversal', () => {

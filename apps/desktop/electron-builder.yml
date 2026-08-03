@@ -21,7 +21,7 @@ extraResources:
   - from: ../../assets
     to: assets
     filter:
-      - golden/spatial/**/*
+      - golden-references/spatial/**/*
 win:
   target:
     - portable

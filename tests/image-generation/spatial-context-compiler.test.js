@@ -103,6 +103,6 @@ test('compiled context records only the selected versioned Anchor metadata', () 
     anchorManifest: bundle.anchorManifest,
     selectedAnchors: selection,
   });
-  assert.deepEqual(compiled.selectedAnchors.map((anchor) => anchor.id), ['reception-anchor-v1']);
+  assert.deepEqual(compiled.selectedAnchors.map((anchor) => anchor.id), ['JZMX-SGR-02-Reception']);
   assert.equal(compiled.selectedAnchors[0].deniedRoles.includes('spatial_scale'), true);
 });

@@ -1,35 +1,39 @@
 {
   "projectId": "jiuzhou-aesthetics",
-  "version": 1,
+  "version": 2,
+  "assetFamilyVersion": "1.1",
   "anchors": [
     {
-      "id": "storefront-anchor-v1",
+      "id": "JZMX-SGR-01-Exterior",
       "projectId": "jiuzhou-aesthetics",
-      "version": 1,
-      "file": "assets/golden/spatial/jiuzhou-aesthetics/anchors/storefront-anchor-v1.png",
+      "version": 1.1,
+      "role": "exterior_style_anchor",
+      "file": "assets/golden-references/spatial/jiuzhou-aesthetics/JZMX-SGR-01-Exterior.png",
       "sha256": "ef124d2aa23835eb1d64eb28fd18548c451181894b77a017e205374e80d093b6",
       "applicableSpaceTypes": ["storefront", "entrance"],
-      "roles": ["brand_atmosphere", "brand_integration", "material_and_lighting", "decorative_density"]
+      "roles": ["brand_atmosphere", "brand_integration", "material_and_lighting", "color_relationship", "architectural_skin", "decorative_density"]
     },
     {
-      "id": "reception-anchor-v1",
+      "id": "JZMX-SGR-02-Reception",
       "projectId": "jiuzhou-aesthetics",
-      "version": 1,
-      "file": "assets/golden/spatial/jiuzhou-aesthetics/anchors/reception-anchor-v1.png",
+      "version": 1.1,
+      "role": "interior_style_anchor",
+      "file": "assets/golden-references/spatial/jiuzhou-aesthetics/JZMX-SGR-02-Reception.png",
       "sha256": "7cf89a3edc69f87487c0123f3238091137e5ec98ca848364e6f96eb45ec4ba51",
-      "applicableSpaceTypes": ["reception", "lobby", "large_lobby"],
-      "roles": ["brand_atmosphere", "brand_integration", "material_and_lighting", "reception_expression"]
+      "applicableSpaceTypes": ["reception", "lobby", "large_lobby", "consultation_entry"],
+      "roles": ["brand_atmosphere", "brand_integration", "material_and_lighting", "color_relationship", "architectural_skin", "decorative_density", "reception_expression"]
     }
   ],
   "influenceCaps": {
-    "brandAtmosphere": 0.85,
-    "brandIntegration": 0.85,
-    "materialAndLighting": 0.75,
-    "colorRelationship": 0.75,
-    "decorativeDensity": 0.65,
-    "architecturalLanguage": 0.3,
-    "composition": 0.2,
-    "functionalLayout": 0.1,
+    "brandAtmosphere": 0.95,
+    "brandIntegration": 0.95,
+    "materialAndLighting": 0.9,
+    "colorRelationship": 0.85,
+    "architecturalSkin": 0.75,
+    "architecturalLanguage": 0.75,
+    "decorativeDensity": 0.8,
+    "composition": 0.3,
+    "functionalLayout": 0.05,
     "spatialScale": 0
   },
   "forbiddenOverrides": [

@@ -61,9 +61,9 @@ export function verifyAnchorAsset(anchor, options = {}) {
 }
 
 function candidateIds(spaceType) {
-  if (spaceType === 'storefront' || spaceType === 'entrance') return ['storefront-anchor-v1'];
+  if (spaceType === 'storefront' || spaceType === 'entrance') return ['JZMX-SGR-01-Exterior'];
   if (spaceType === 'reception' || spaceType === 'lobby' || spaceType === 'large_lobby') {
-    return ['reception-anchor-v1'];
+    return ['JZMX-SGR-02-Reception'];
   }
   return [];
 }
@@ -132,6 +132,8 @@ export function anchorSignalsFromSelection(selection) {
     brand_atmosphere: 'brandAtmosphere',
     brand_integration: 'brandIntegration',
     material_and_lighting: 'materialAndLighting',
+    color_relationship: 'colorRelationship',
+    architectural_skin: 'architecturalSkin',
     decorative_density: 'decorativeDensity',
     reception_expression: 'receptionExpression',
   };

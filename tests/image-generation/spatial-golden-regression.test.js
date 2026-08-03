@@ -43,7 +43,8 @@ test('Case A: large lobby inherits calibration while preserving scale and depth'
   });
   assert.equal(compiled.foundation.spatialScale.class, 'large');
   assert.equal(compiled.foundation.spatialScale.depthExpression, 'strong');
-  assert.equal(compiled.anchorCalibration.materialAndLighting.influenceCap, 0.75);
+  assert.equal(compiled.anchorCalibration.materialAndLighting.influenceCap, 0.9);
+  assert.equal(bundle.anchorManifest.influenceCaps.architecturalLanguage, 0.75);
   assert.equal(compiled.anchorCalibration.spatialScale, undefined);
   assert.equal(compiled.anchorCalibration.composition, undefined);
 });
@@ -53,7 +54,7 @@ test('Case B: storefront uses only the storefront Anchor with restrained scale a
     currentProjectId: 'jiuzhou-aesthetics', spaceType: 'storefront',
     manifest: bundle.anchorManifest,
   });
-  assert.deepEqual(result.anchors.map((anchor) => anchor.id), ['storefront-anchor-v1']);
+  assert.deepEqual(result.anchors.map((anchor) => anchor.id), ['JZMX-SGR-01-Exterior']);
   assert.equal(result.anchors[0].influenceCaps.spatialScale, 0);
   assert.ok(result.anchors[0].allowedRoles.includes('brand_integration'));
 });
