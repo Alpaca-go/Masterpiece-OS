@@ -37,7 +37,7 @@ test('large lobby uses reception Anchor only for authorized calibration roles', 
   assert.equal(anchor.influenceCaps.functionalLayout, 0);
   assert.equal(anchor.influenceCaps.composition, 0);
   assert.deepEqual(anchor.allowedRoles, [
-    'brand_atmosphere', 'brand_integration', 'material_and_lighting', 'decorative_density',
+    'brand_integration', 'material_and_lighting', 'architectural_skin', 'decorative_density',
   ]);
   assert.ok(anchor.deniedRoles.includes('reception_expression'));
 });
@@ -78,7 +78,7 @@ test('selected Anchor roles become dimension-scoped compiler signals', () => {
     manifest: bundle.anchorManifest,
   });
   const signals = anchorSignalsFromSelection(selection);
-  assert.ok(signals.brandAtmosphere[0].includes('JZMX-SGR-02-Reception'));
+  assert.ok(signals.architecturalSkin[0].includes('JZMX-SGR-02-Reception'));
   assert.ok(signals.materialAndLighting[0].includes('JZMX-SGR-02-Reception'));
   assert.equal(signals.receptionExpression, undefined);
   assert.equal(signals.spatialScale, undefined);

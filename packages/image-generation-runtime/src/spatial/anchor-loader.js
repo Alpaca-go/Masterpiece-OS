@@ -5,9 +5,9 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const DEFAULT_ASSET_ROOT_URL = new URL('../../../../', import.meta.url);
 const LARGE_SPACE_ALLOWED_ROLES = new Set([
-  'brand_atmosphere',
   'brand_integration',
   'material_and_lighting',
+  'architectural_skin',
   'decorative_density',
 ]);
 
