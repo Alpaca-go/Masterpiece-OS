@@ -1,8 +1,14 @@
 import { evaluatePackagingEvidence } from '../task-families/packaging/evaluation.js';
 import { resolvePackagingSelfHealing } from '../task-families/packaging/self-healing.js';
+import {
+  evaluateFoundationPreservationChecks,
+  evaluateGlobalSpaceQuality,
+  evaluateProjectGolden,
+  mergeSpatialEvaluations,
+} from '../spatial/evaluation.js';
 
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
-export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.2.0';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.3.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -154,6 +160,8 @@ export function validateShortChainDeliverableEvidence({
   imageId,
   evidence,
   spatialBrandOrchestration,
+  spatialCompiledContext,
+  spatialEvaluationProfiles,
   validatedAt = new Date().toISOString(),
 }) {
   const detectedFamily = FAMILIES.has(evidence?.detectedFamily)
@@ -195,6 +203,29 @@ export function validateShortChainDeliverableEvidence({
   const spatialOrchestrationQa = taskContract.deliverableFamily === 'space'
     ? evaluateSpatialOrchestrationEvidence(evidence, spatialBrandOrchestration)
     : null;
+  const foundationPreservation = taskContract.deliverableFamily === 'space'
+    ? evaluateFoundationPreservationChecks({
+      foundationSnapshot: spatialCompiledContext?.foundationSnapshot,
+      checks: evidence?.foundationPreservation,
+    })
+    : null;
+  const spatialEvaluation = spatialEvaluationProfiles?.global && spatialCompiledContext
+    ? mergeSpatialEvaluations({
+      global: evaluateGlobalSpaceQuality({
+        profile: spatialEvaluationProfiles.global,
+        scores: evidence?.globalSpaceScores,
+      }),
+      project: spatialEvaluationProfiles.project
+        ? evaluateProjectGolden({
+          profile: spatialEvaluationProfiles.project,
+          currentProjectId: projectId,
+          scores: evidence?.projectGoldenScores,
+          failureTags: evidence?.projectFailureTags,
+        })
+        : null,
+      foundation: foundationPreservation,
+    })
+    : null;
   for (const result of assetQa) {
     for (const error of result.errors) {
       lockedAssetViolations.push(`${result.assetId}:${error}`);
@@ -235,6 +266,13 @@ export function validateShortChainDeliverableEvidence({
   if (spatialOrchestrationQa?.violations.length) {
     mismatchTypes.push(...spatialOrchestrationQa.violations);
   }
+  if (foundationPreservation?.preserved === false) {
+    mismatchTypes.push('spatial_foundation_overridden');
+  }
+  if (spatialEvaluation?.finalDecision === 'fail'
+    && foundationPreservation?.preserved !== false) {
+    mismatchTypes.push('spatial_golden_failure');
+  }
 
   const unverified = detectedFamily === 'unknown' || visibleEvidence.length === 0
     || packagingEvaluation?.status === 'unverified';
@@ -260,6 +298,8 @@ export function validateShortChainDeliverableEvidence({
     lockedAssetQaResults: assetQa,
     ...(packagingEvaluation ? { packagingEvaluation } : {}),
     ...(spatialOrchestrationQa ? { spatialOrchestrationQa } : {}),
+    ...(foundationPreservation ? { foundationPreservation } : {}),
+    ...(spatialEvaluation ? { spatialEvaluation } : {}),
     mismatchTypes: [...new Set(mismatchTypes)],
     retryRecommended: status === 'failed' && mismatchTypes.some((type) => [
       'wrong_family',
@@ -278,6 +318,8 @@ export function validateShortChainDeliverableEvidence({
       'small_text_violation',
       'asset_zone_conflict',
       'scene_role_mismatch',
+      'spatial_foundation_overridden',
+      'spatial_golden_failure',
     ].includes(type)),
     validatorId: SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID,
     validatorVersion: SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION,
@@ -334,6 +376,9 @@ export function compileShortChainCorrectionPrompt({
       ? 'Reduce literal brand assets to the approved primary and supporting asset budget.' : '',
     validation.mismatchTypes.includes('scene_role_mismatch')
       ? 'Restore the requested Scene Role and its corresponding brand hierarchy.' : '',
+    validation.mismatchTypes.includes('spatial_foundation_overridden')
+      ? 'Restore the locked architecture, large-space scale, ceiling height, depth, functional zoning, circulation and camera role. The Anchor may calibrate only authorized material, lighting and brand-expression dimensions.' : '',
+    ...(validation.spatialEvaluation?.revisionActions || []).map((item) => `Spatial evaluation: ${item}`),
   ].filter(Boolean);
   const correctionBlock = [
     '【一次性对题纠偏】',

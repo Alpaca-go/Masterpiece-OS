@@ -5,6 +5,7 @@ import {
   assertSpatialSchema,
   validateAnchorManifest,
   validateProjectVisualCanon,
+  validateSpatialEvaluationProfile,
 } from './schemas.js';
 
 const DEFAULT_CONFIG_ROOT_URL = new URL('../../config/spatial/', import.meta.url);
@@ -52,6 +53,29 @@ export function loadProjectGenerationProfile(projectId, options = {}) {
 
 export function loadProjectExclusions(projectId, options = {}) {
   return readJson(projectConfigUrl(projectId, 'project-exclusions-v1.json', options));
+}
+
+export function loadGlobalSpaceEvaluationProfile(options = {}) {
+  const profile = readJson(new URL(
+    'evaluators/global-space-quality-v1.json',
+    asDirectoryUrl(options.configRoot),
+  ));
+  return assertSpatialSchema(validateSpatialEvaluationProfile(profile));
+}
+
+export function loadProjectSpaceEvaluationProfile(projectId, options = {}) {
+  assertSafeId(projectId, 'projectId');
+  const profile = readJson(new URL(
+    `evaluators/${projectId}-acceptance-v1.json`,
+    asDirectoryUrl(options.configRoot),
+  ));
+  const validated = assertSpatialSchema(validateSpatialEvaluationProfile(profile));
+  if (validated.projectId !== projectId) {
+    throw Object.assign(new Error('Project evaluation profile belongs to another project.'), {
+      code: 'CROSS_PROJECT_EVALUATION_PROFILE',
+    });
+  }
+  return validated;
 }
 
 export function collectProjectSignatureTerms(canon) {

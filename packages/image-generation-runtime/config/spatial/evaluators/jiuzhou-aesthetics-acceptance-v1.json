@@ -1,0 +1,44 @@
+{
+  "id": "jiuzhou-aesthetics-acceptance",
+  "version": 1,
+  "scope": "project",
+  "projectId": "jiuzhou-aesthetics",
+  "sourceStandard": "docs/golden/spatial/jiuzhou-aesthetics/golden-acceptance-standard-v1.0.md",
+  "dimensions": [
+    { "id": "brand_asset_accuracy", "weight": 20 },
+    { "id": "spatial_realism", "weight": 20 },
+    { "id": "medical_aesthetic_fit", "weight": 15 },
+    { "id": "visual_system_consistency", "weight": 15 },
+    { "id": "material_and_craft", "weight": 10 },
+    { "id": "lighting_and_mood", "weight": 8 },
+    { "id": "composition_and_focus", "weight": 7 },
+    { "id": "commercial_readiness", "weight": 5 }
+  ],
+  "fatalFailureTags": [
+    "brand_name_wrong",
+    "logo_drift",
+    "space_not_realistic",
+    "perspective_broken",
+    "nightclub_feel",
+    "too_fantasy",
+    "material_too_cheap",
+    "spatial_foundation_overridden"
+  ],
+  "revisionActions": {
+    "brand_name_wrong": "Lock the confirmed bilingual brand name and approved Logo asset.",
+    "logo_drift": "Use the confirmed Logo reference without free variation.",
+    "space_not_realistic": "Restore buildable walls, floor, openings, reception and circulation relationships.",
+    "perspective_broken": "Use a stable commercial-space camera and physically credible perspective.",
+    "too_much_purple": "Restore the dominant neutral base and reduce saturated accent light.",
+    "nightclub_feel": "Remove neon and colored wash; restore warm-neutral indirect lighting.",
+    "beauty_salon_generic": "Restore premium medical credibility and reduce generic salon styling.",
+    "material_too_cheap": "Restore credible mineral, glass, matte metal and wall material behavior.",
+    "too_fantasy": "Remove literal fantasy subjects and keep only restrained abstract identity expression.",
+    "spatial_foundation_overridden": "Restore the locked architecture, scale, zoning, circulation and camera role."
+  },
+  "thresholds": {
+    "pass": 90,
+    "passWithMinorRevision": 80,
+    "revise": 70
+  }
+}

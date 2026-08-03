@@ -743,6 +743,9 @@ export function createShortChainImageGenerationService(
       runId: initialRun.runId,
       validatorProfileId: input.validatorProfileId,
       spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
+      spatialCompiledContext: compilation.compiledPrompt.spatialCompiledContext as {
+        foundationSnapshot?: Record<string, unknown>;
+      } | null,
     });
     if (compilation.taskContract.deliverableFamily === 'packaging') {
       packagingSelfHealingDecision = resolvePackagingSelfHealing({
@@ -870,6 +873,9 @@ export function createShortChainImageGenerationService(
           runId: initialRun.runId,
           validatorProfileId: input.validatorProfileId,
           spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
+          spatialCompiledContext: compilation.compiledPrompt.spatialCompiledContext as {
+            foundationSnapshot?: Record<string, unknown>;
+          } | null,
         });
         if (repairValidation.status !== 'failed') {
           const result: ShortChainValidatedGenerationResult = {
@@ -916,6 +922,9 @@ export function createShortChainImageGenerationService(
           runId: initialRun.runId,
           validatorProfileId: input.validatorProfileId,
           spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
+          spatialCompiledContext: compilation.compiledPrompt.spatialCompiledContext as {
+            foundationSnapshot?: Record<string, unknown>;
+          } | null,
         });
         if (secondRepairValidation.status !== 'failed') {
           const result: ShortChainValidatedGenerationResult = {
@@ -961,6 +970,9 @@ export function createShortChainImageGenerationService(
           runId: initialRun.runId,
           validatorProfileId: input.validatorProfileId,
           spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
+          spatialCompiledContext: compilation.compiledPrompt.spatialCompiledContext as {
+            foundationSnapshot?: Record<string, unknown>;
+          } | null,
         });
         const result: ShortChainValidatedGenerationResult = {
           initialRun,
@@ -1025,6 +1037,9 @@ export function createShortChainImageGenerationService(
       runId: correctionRun.runId,
       validatorProfileId: input.validatorProfileId,
       spatialBrandOrchestration: compilation.compiledPrompt.spatialBrandOrchestration,
+      spatialCompiledContext: compilation.compiledPrompt.spatialCompiledContext as {
+        foundationSnapshot?: Record<string, unknown>;
+      } | null,
     });
     const result: ShortChainValidatedGenerationResult = {
       initialRun,

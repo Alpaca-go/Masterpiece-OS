@@ -4,6 +4,10 @@ import {
   compileShortChainCorrectionPrompt,
   validateShortChainDeliverableEvidence,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
+import {
+  loadGlobalSpaceEvaluationProfile,
+  loadProjectSpaceEvaluationProfile,
+} from '@masterpiece/image-generation-runtime';
 
 const taskContract = {
   schemaVersion: '1.0',
@@ -321,4 +325,80 @@ test('Correction prompt compacts duplicate negative guidance to the active adapt
   assert.match(correction, /ESSENTIAL TASK/u);
   assert.match(correction, /continuous circulation/u);
   assert.equal((correction.match(/一次性对题纠偏/gu) ?? []).length, 1);
+});
+
+test('Foundation Preservation hard-fails a visually compressed large-space result', () => {
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract,
+    runId: 'run-foundation',
+    imageId: 'image-foundation',
+    spatialCompiledContext: {
+      foundationSnapshot: {
+        spaceType: 'large_lobby',
+        spatialScale: { class: 'large', preservation: 'lock' },
+      },
+    },
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['compact low-ceiling reception room'],
+      brandMatch: 'matched',
+      brandToneMatch: 'matched',
+      sceneCompleteness: 'complete',
+      logoTextStatus: 'correct',
+      foundationPreservation: {
+        architectureAestheticPreserved: true,
+        spatialScalePreserved: false,
+        largeSpaceIntentPreserved: false,
+        functionalZoningPreserved: true,
+        cameraRolePreserved: true,
+      },
+    },
+  });
+  assert.equal(validation.status, 'failed');
+  assert.ok(validation.mismatchTypes.includes('spatial_foundation_overridden'));
+  const correction = compileShortChainCorrectionPrompt({
+    originalPrompt: 'ORIGINAL PROMPT',
+    taskContract,
+    validation,
+  });
+  assert.match(correction, /Restore the locked architecture, large-space scale/u);
+});
+
+test('split spatial evaluators merge global quality and project Golden failures', () => {
+  const global = loadGlobalSpaceEvaluationProfile();
+  const project = loadProjectSpaceEvaluationProfile('jiuzhou-aesthetics');
+  const score = (profile, value) => Object.fromEntries(
+    profile.dimensions.map((dimension) => [dimension.id, value]),
+  );
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'jiuzhou-aesthetics',
+    taskContract: { ...taskContract, projectId: 'jiuzhou-aesthetics' },
+    runId: 'run-split-evaluation',
+    imageId: 'image-split-evaluation',
+    spatialCompiledContext: {
+      foundationSnapshot: { spaceType: 'reception', spatialScale: { preservation: 'lock' } },
+    },
+    spatialEvaluationProfiles: { global, project },
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['real reception interior with project identity'],
+      brandMatch: 'matched', brandToneMatch: 'matched',
+      sceneCompleteness: 'complete', logoTextStatus: 'correct',
+      foundationPreservation: {
+        architectureAestheticPreserved: true, spatialScalePreserved: true,
+        largeSpaceIntentPreserved: true, functionalZoningPreserved: true,
+        cameraRolePreserved: true,
+      },
+      globalSpaceScores: score(global, 94),
+      projectGoldenScores: score(project, 94),
+      projectFailureTags: ['logo_drift'],
+    },
+  });
+  assert.equal(validation.status, 'failed');
+  assert.ok(validation.mismatchTypes.includes('spatial_golden_failure'));
+  assert.equal(validation.spatialEvaluation.finalDecision, 'fail');
+  assert.ok(validation.spatialEvaluation.failureTags.includes('logo_drift'));
 });

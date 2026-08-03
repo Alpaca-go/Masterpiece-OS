@@ -7,6 +7,10 @@ import type {
   SpatialBrandOrchestration,
 } from '../../shared/types.ts';
 import { validateShortChainDeliverableEvidence } from '@masterpiece/image-generation-runtime/short-chain/index.js';
+import {
+  loadGlobalSpaceEvaluationProfile,
+  loadProjectSpaceEvaluationProfile,
+} from '@masterpiece/image-generation-runtime';
 import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 import type { ProjectStore } from '../project-store.ts';
 import type { ProjectContextService } from '../project-context-service.ts';
@@ -26,6 +30,13 @@ interface ValidateInput {
   runId: string;
   validatorProfileId?: string;
   spatialBrandOrchestration?: SpatialBrandOrchestration | null;
+  spatialCompiledContext?: {
+    foundationSnapshot?: Record<string, unknown>;
+    selectedAnchors?: Array<{
+      assetId?: string;
+      projectRelativePath?: string;
+    }>;
+  } | null;
 }
 
 function parseJson(value: string): Record<string, unknown> {
@@ -69,6 +80,19 @@ export function createShortChainDeliverableValidatorService(
       });
     }
     const image = run.images[0];
+    const runtimeResourcesPath = typeof process.resourcesPath === 'string'
+      ? process.resourcesPath
+      : process.cwd();
+    const packagedConfigRoot = path.join(runtimeResourcesPath, 'config', 'spatial');
+    const configRoot = await fs.access(packagedConfigRoot).then(() => packagedConfigRoot).catch(() => undefined);
+    const spatialEvaluationProfiles = input.spatialCompiledContext
+      ? {
+        global: loadGlobalSpaceEvaluationProfile({ configRoot }),
+        project: await Promise.resolve()
+          .then(() => loadProjectSpaceEvaluationProfile(input.projectId, { configRoot }))
+          .catch((error: NodeJS.ErrnoException) => error.code === 'ENOENT' ? null : Promise.reject(error)),
+      }
+      : null;
     const settings = await readSettings();
     const validatorProfileId = input.validatorProfileId
       || settings.profiles.find((profile) =>
@@ -84,6 +108,8 @@ export function createShortChainDeliverableValidatorService(
         imageId: image.imageId,
         evidence: {},
         spatialBrandOrchestration: input.spatialBrandOrchestration,
+        spatialCompiledContext: input.spatialCompiledContext,
+        spatialEvaluationProfiles,
       }) as ShortChainDeliverableValidation;
       await persist(input.projectId, run.runId, validation);
       return validation;
@@ -111,6 +137,19 @@ export function createShortChainDeliverableValidatorService(
         readable: true,
       })).catch(() => null);
     }));
+    const goldenReferenceAttachments = await Promise.all(
+      (input.spatialCompiledContext?.selectedAnchors ?? []).map(async (anchor) => {
+        if (!anchor.assetId || !anchor.projectRelativePath) return null;
+        const assetPath = path.resolve(projectPaths.root, anchor.projectRelativePath);
+        return fs.access(assetPath).then(() => ({
+          assetId: anchor.assetId,
+          path: assetPath,
+          mediaType: 'image' as const,
+          format: path.extname(assetPath).slice(1),
+          readable: true,
+        })).catch(() => null);
+      }),
+    );
     const promptSource = context?.promptSourceObject;
     const targetTone = promptSource?.upgradeTranslation.toneBoundaries
       .map((item) => item.target)
@@ -159,6 +198,9 @@ export function createShortChainDeliverableValidatorService(
                 ? Number(Boolean(input.spatialBrandOrchestration.assetBudget.primaryAsset)) + input.spatialBrandOrchestration.assetBudget.secondaryAssets.length
                 : '(not scheduled)'}`,
               `Text safety zones: ${input.spatialBrandOrchestration?.textSafetyZones.map((zone) => `${zone.zoneId}=${zone.policy}`).join('; ') || '(not scheduled)'}`,
+              `Locked Spatial Foundation snapshot: ${JSON.stringify(input.spatialCompiledContext?.foundationSnapshot ?? null)}`,
+              `Global space evaluator dimensions: ${spatialEvaluationProfiles?.global.dimensions.map((item: { id: string }) => item.id).join(', ') || '(not enabled)'}`,
+              `Project Golden evaluator dimensions: ${spatialEvaluationProfiles?.project?.dimensions.map((item: { id: string }) => item.id).join(', ') || '(not enabled)'}`,
               '',
               'Return exactly:',
               JSON.stringify({
@@ -179,6 +221,22 @@ export function createShortChainDeliverableValidatorService(
                 smallTextViolation: false,
                 assetZoneViolations: ['asset and wrong visible zone'],
                 sceneRoleMatch: true,
+                foundationPreservation: {
+                  architectureAestheticPreserved: true,
+                  spatialScalePreserved: true,
+                  largeSpaceIntentPreserved: true,
+                  functionalZoningPreserved: true,
+                  cameraRolePreserved: true,
+                },
+                globalSpaceScores: Object.fromEntries(
+                  (spatialEvaluationProfiles?.global.dimensions ?? [])
+                    .map((item: { id: string }) => [item.id, 0]),
+                ),
+                projectGoldenScores: Object.fromEntries(
+                  (spatialEvaluationProfiles?.project?.dimensions ?? [])
+                    .map((item: { id: string }) => [item.id, 0]),
+                ),
+                projectFailureTags: ['visible project failure tags only'],
                 lockedAssetQa: [{
                   assetId: 'exact selected assetId',
                   assetType: 'logo|ip_character|icon|packaging_front|other',
@@ -238,7 +296,10 @@ export function createShortChainDeliverableValidatorService(
           mediaType: 'image',
           format: path.extname(imagePath).slice(1),
           readable: true,
-        }, ...referenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item))],
+        },
+        ...referenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item)),
+        ...goldenReferenceAttachments.filter((item): item is NonNullable<typeof item> => Boolean(item)),
+        ],
       },
       signal: new AbortController().signal,
       maximumDurationMs: 120_000,
@@ -250,6 +311,8 @@ export function createShortChainDeliverableValidatorService(
       imageId: image.imageId,
       evidence: parseJson(response.reportMarkdown),
       spatialBrandOrchestration: input.spatialBrandOrchestration,
+      spatialCompiledContext: input.spatialCompiledContext,
+      spatialEvaluationProfiles,
     }) as ShortChainDeliverableValidation;
     await persist(input.projectId, run.runId, {
       ...validation,

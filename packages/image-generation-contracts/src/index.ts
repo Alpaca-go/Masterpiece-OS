@@ -1249,7 +1249,9 @@ export type ShortChainDeliverableMismatchType =
   | 'duplicate_logo'
   | 'small_text_violation'
   | 'asset_zone_conflict'
-  | 'scene_role_mismatch';
+  | 'scene_role_mismatch'
+  | 'spatial_foundation_overridden'
+  | 'spatial_golden_failure';
 
 export type LockedAssetQAError =
   | 'missing_asset'
@@ -1361,6 +1363,21 @@ export interface ShortChainDeliverableValidation {
       | 'brand_density_overflow' | 'unexpected_brand_text' | 'duplicate_logo'
       | 'small_text_violation' | 'asset_zone_conflict' | 'scene_role_mismatch'
     >;
+  };
+  foundationPreservation?: {
+    status: 'not_applicable' | 'unverified' | 'passed' | 'failed';
+    preserved: boolean | null;
+    changedFields?: string[];
+    failureTags: string[];
+  };
+  spatialEvaluation?: {
+    schemaVersion: '1.0';
+    failureTags: string[];
+    revisionActions: string[];
+    finalDecision: 'pass' | 'pass_with_minor_revision' | 'revise' | 'fail';
+    global: unknown;
+    project: unknown;
+    foundation: unknown;
   };
   mismatchTypes: ShortChainDeliverableMismatchType[];
   retryRecommended: boolean;

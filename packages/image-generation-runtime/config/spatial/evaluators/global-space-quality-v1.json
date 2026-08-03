@@ -1,0 +1,20 @@
+{
+  "id": "global-space-quality",
+  "version": 1,
+  "scope": "global",
+  "dimensions": [
+    { "id": "spatial_realism", "weight": 20 },
+    { "id": "buildability", "weight": 15 },
+    { "id": "perspective", "weight": 15 },
+    { "id": "functional_legibility", "weight": 15 },
+    { "id": "material_credibility", "weight": 10 },
+    { "id": "lighting_quality", "weight": 10 },
+    { "id": "composition", "weight": 10 },
+    { "id": "commercial_readiness", "weight": 5 }
+  ],
+  "thresholds": {
+    "pass": 90,
+    "passWithMinorRevision": 80,
+    "revise": 70
+  }
+}
