@@ -11,6 +11,7 @@ import {
   guardSpatialBrandDensity,
 } from './spatial-brand-orchestration.js';
 import { compileSpatialContext } from '../spatial/context-compiler.js';
+import { anchorSignalsFromSelection } from '../spatial/anchor-loader.js';
 
 export function compileShortChainImageGeneration(input) {
   const started = performance.now();
@@ -73,7 +74,8 @@ export function compileShortChainImageGeneration(input) {
       projectCanon: input.spatialProjectBundle?.projectCanon,
       verticalArchetype: input.verticalArchetype,
       anchorManifest: input.spatialProjectBundle?.anchorManifest,
-      anchorSignals: input.anchorSignals,
+      anchorSignals: input.anchorSignals || anchorSignalsFromSelection(input.spatialAnchorSelection),
+      selectedAnchors: input.spatialAnchorSelection,
       projectExclusions: input.spatialProjectBundle?.projectExclusions,
     })
     : null;

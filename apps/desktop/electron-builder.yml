@@ -16,6 +16,12 @@ extraResources:
     to: prompts
     filter:
       - v5/**/*
+  - from: ../../packages/image-generation-runtime/config/spatial
+    to: config/spatial
+  - from: ../../assets
+    to: assets
+    filter:
+      - golden/spatial/**/*
 win:
   target:
     - portable

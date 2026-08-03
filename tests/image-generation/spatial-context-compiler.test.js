@@ -5,6 +5,7 @@ import {
   compileSpatialContext,
   loadPremiumMedicalAestheticsArchetype,
   loadSpatialProjectBundle,
+  selectProjectAnchors,
 } from '@masterpiece/image-generation-runtime';
 
 const foundation = {
@@ -86,4 +87,22 @@ test('legacy space compilation remains opt-in when no spatial bundle or foundati
   assert.equal(compiled.foundation.spatialScale.preservation, 'lock');
   assert.equal(compiled.projectCanon, null);
   assert.equal(compiled.verticalArchetype, null);
+});
+
+test('compiled context records only the selected versioned Anchor metadata', () => {
+  const bundle = loadSpatialProjectBundle('jiuzhou-aesthetics');
+  const selection = selectProjectAnchors({
+    currentProjectId: 'jiuzhou-aesthetics',
+    spaceType: 'large_lobby',
+    manifest: bundle.anchorManifest,
+  });
+  const compiled = compileSpatialContext({
+    task: { subtype: 'reception' },
+    spatialFoundation: foundation,
+    projectCanon: bundle.projectCanon,
+    anchorManifest: bundle.anchorManifest,
+    selectedAnchors: selection,
+  });
+  assert.deepEqual(compiled.selectedAnchors.map((anchor) => anchor.id), ['reception-anchor-v1']);
+  assert.equal(compiled.selectedAnchors[0].deniedRoles.includes('spatial_scale'), true);
 });

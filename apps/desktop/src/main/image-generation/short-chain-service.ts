@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import sharp from 'sharp';
 import type {
   ImageGenerationRun,
@@ -22,6 +23,11 @@ import {
   resolveLockedAssetSelfHealing,
   validateShortChainEffectivePrompt,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
+import {
+  loadPremiumMedicalAestheticsArchetype,
+  loadProjectAnchors,
+  loadSpatialProjectBundle,
+} from '@masterpiece/image-generation-runtime';
 import {
   createPackagingGenerationDebug,
   resolvePackagingSelfHealing,
@@ -46,6 +52,7 @@ import {
 export interface CompileShortChainGenerationInput {
   projectId: string;
   model?: string;
+  spatialFoundation?: Record<string, unknown>;
   task: Omit<ShortChainTaskContract,
     | 'schemaVersion'
     | 'taskId'
@@ -55,6 +62,7 @@ export interface CompileShortChainGenerationInput {
     | 'materialMode'
     | 'brandIntensity'> & {
     taskId?: string;
+    sceneRole?: string;
     brandMarkRenderMode?: ShortChainTaskContract['brandMarkRenderMode'];
     materialMode?: ShortChainTaskContract['materialMode'];
     brandIntensity?: ShortChainTaskContract['brandIntensity'];
@@ -211,6 +219,60 @@ export function createShortChainImageGenerationService(
   async function compile(input: CompileShortChainGenerationInput): Promise<CompileShortChainGenerationResult> {
     const context = await projectContext.getShortChain(input.projectId)
       .catch(() => projectContext.rebuildShortChain(input.projectId));
+    const paths = await projects.paths(input.projectId);
+    const runtimeResourcesPath = typeof process.resourcesPath === 'string'
+      ? process.resourcesPath
+      : process.cwd();
+    const packagedConfigRoot = path.join(runtimeResourcesPath, 'config', 'spatial');
+    const packagedAssetRoot = runtimeResourcesPath;
+    const configRoot = await fs.access(packagedConfigRoot).then(() => packagedConfigRoot).catch(() => undefined);
+    const spatialProjectBundle = input.task.deliverableFamily === 'space'
+      ? await Promise.resolve().then(() => loadSpatialProjectBundle(input.projectId, { configRoot }))
+        .catch((error: NodeJS.ErrnoException) => {
+          if (error.code === 'ENOENT') return null;
+          throw error;
+        })
+      : null;
+    const instructionText = `${input.task.currentInstruction ?? ''} ${input.task.scene ?? ''} ${input.task.shot ?? ''}`;
+    const resolvedSpaceType = /large[_\s-]?lobby|large space|grand lobby|大空间|大堂|挑高/iu.test(instructionText)
+      ? 'large_lobby'
+      : input.task.sceneRole ?? input.task.subtype;
+    const spatialAnchorSelection = spatialProjectBundle
+      ? loadProjectAnchors({
+        currentProjectId: input.projectId,
+        spaceType: resolvedSpaceType,
+        manifest: spatialProjectBundle.anchorManifest,
+        ...(configRoot ? { assetRoot: packagedAssetRoot } : {}),
+      })
+      : null;
+    if (spatialAnchorSelection?.anchors.length) {
+      const anchorDirectory = path.join(paths.input, 'golden-anchors');
+      await fs.mkdir(anchorDirectory, { recursive: true });
+      await Promise.all(spatialAnchorSelection.anchors.map(async (anchor) => {
+        const filename = `${anchor.id}.png`;
+        await fs.copyFile(anchor.asset.file, path.join(anchorDirectory, filename));
+        Object.assign(anchor, {
+          assetId: `golden-anchor-${anchor.id}`,
+          projectRelativePath: `input/golden-anchors/${filename}`,
+        });
+      }));
+    }
+    const effectiveContext = spatialAnchorSelection?.anchors.length
+      ? {
+        ...context,
+        sourceAssetRefs: [
+          ...context.sourceAssetRefs,
+          ...spatialAnchorSelection.anchors.map((anchor) => ({
+            assetId: anchor.assetId,
+            name: `Golden Anchor ${anchor.id}`,
+            role: 'reference' as const,
+            relativePath: `golden-anchors/${anchor.id}.png`,
+            mimeType: 'image/png',
+            sha256: anchor.sha256,
+          })),
+        ],
+      }
+      : context;
     const packetLogoAssetIds = context.visualDecisionPacket?.lockedAssets
       .filter((item) => item.type === 'logo')
       .map((item) => item.assetId)
@@ -236,9 +298,14 @@ export function createShortChainImageGenerationService(
       ? 'blank_area'
       : selectedLogoAssetId ? 'reference' : 'blank_area';
     const logoAssetIdSet = new Set(logoAssetIds);
-    const referenceAssetIds = logoUsageMode === 'reference'
+    const explicitReferenceAssetIds = logoUsageMode === 'reference'
       ? [...new Set(requestedReferenceIds)]
       : requestedReferenceIds.filter((assetId) => !logoAssetIdSet.has(assetId));
+    const referenceAssetIds = [...explicitReferenceAssetIds];
+    for (const anchor of spatialAnchorSelection?.anchors ?? []) {
+      if (referenceAssetIds.length >= 2) break;
+      if (!referenceAssetIds.includes(anchor.assetId)) referenceAssetIds.push(anchor.assetId);
+    }
     if (logoUsageMode === 'reference' && !referenceAssetIds.some((assetId) => logoAssetIdSet.has(assetId))) {
       throw Object.assign(new Error('Logo reference mode requires the confirmed Logo to be selected'), {
         code: 'SHORT_CHAIN_LOGO_REFERENCE_MISSING',
@@ -250,7 +317,7 @@ export function createShortChainImageGenerationService(
       });
     }
     const invalidReferenceIds = referenceAssetIds.filter((assetId) => {
-      const asset = context.sourceAssetRefs.find((item) => item.assetId === assetId);
+      const asset = effectiveContext.sourceAssetRefs.find((item) => item.assetId === assetId);
       return !asset || asset.relativePath.toLowerCase().endsWith('.pdf');
     });
     if (invalidReferenceIds.length) {
@@ -259,7 +326,6 @@ export function createShortChainImageGenerationService(
         assetIds: invalidReferenceIds,
       });
     }
-    const paths = await projects.paths(input.projectId);
     const approvedCreativeDecision = await fs.readFile(
       path.join(paths.root, 'outputs', 'creative_decision.json'),
       'utf8',
@@ -274,11 +340,36 @@ export function createShortChainImageGenerationService(
       `${input.task.deliverableFamily}.json`,
     ).then((value) => JSON.parse(value) as ShortChainProjectPromptAsset).catch(() => undefined);
     const result = compileShortChainImageGeneration({
-      projectContext: context,
+      projectContext: effectiveContext,
       model: input.model,
       projectPromptAsset,
       approvedCreativeDecision,
       userConfirmedVisualDecision,
+      spatialProjectBundle,
+      spatialFoundation: spatialProjectBundle ? {
+        spaceType: resolvedSpaceType,
+        spatialScale: {
+          class: resolvedSpaceType === 'large_lobby' ? 'large' : 'task_defined',
+          ...(resolvedSpaceType === 'large_lobby'
+            ? { ceilingHeight: 'generous', depthExpression: 'strong', breathingRoom: 'high' }
+            : {}),
+        },
+        cameraIntent: { role: input.task.shot },
+        ...input.spatialFoundation,
+      } : undefined,
+      verticalArchetype: spatialProjectBundle
+        ? loadPremiumMedicalAestheticsArchetype({
+          projectSignatureTerms: spatialProjectBundle.projectSignatureTerms,
+          ...(configRoot ? {
+            url: pathToFileURL(path.join(
+              configRoot,
+              'archetypes',
+              'premium-medical-aesthetics-v1.json',
+            )),
+          } : {}),
+        })
+        : undefined,
+      spatialAnchorSelection,
       task: {
         ...input.task,
         projectId: input.projectId,
@@ -465,8 +556,19 @@ export function createShortChainImageGenerationService(
     const session = await readSession(input.projectId);
     const implicitAnchor = session.implicitAnchors[compilation.taskContract.deliverableFamily];
     const explicitIds = compilation.taskContract.referenceAssetIds;
+    const goldenAnchors = new Map(((compilation.compiledPrompt as ShortChainCompiledPrompt & {
+      spatialCompiledContext?: { selectedAnchors?: Array<{ assetId?: string; projectRelativePath?: string }> };
+    }).spatialCompiledContext?.selectedAnchors ?? [])
+      .filter((anchor) => anchor.assetId && anchor.projectRelativePath)
+      .map((anchor) => [anchor.assetId!, anchor.projectRelativePath!]));
     const explicitReferences = explicitIds.flatMap((assetId) => {
       const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
+      const goldenProjectRelativePath = goldenAnchors.get(assetId);
+      if (!asset && goldenProjectRelativePath) return [{
+        id: assetId,
+        role: 'core_reference' as const,
+        projectRelativePath: goldenProjectRelativePath,
+      }];
       if (!asset || asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
       return [{
         id: asset.assetId,

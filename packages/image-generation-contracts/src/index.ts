@@ -1142,6 +1142,7 @@ export interface ShortChainCompiledPrompt {
   packagingAnalysisValidation?: { valid: boolean; errors: string[] };
   lockedAssetPlacementPlan?: LockedAssetPlacementPlan | null;
   spatialBrandOrchestration?: SpatialBrandOrchestration | null;
+  spatialCompiledContext?: unknown;
   userConfirmedVisualDecision?: {
     id: string;
     sourceDocument?: string;
