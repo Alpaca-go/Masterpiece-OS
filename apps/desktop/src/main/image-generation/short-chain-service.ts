@@ -30,6 +30,10 @@ import {
   type NormalizedPlacement,
   type PixelRect,
 } from './logo-post-composite.ts';
+import {
+  isLogoOnlyRepairCandidate,
+  repairSingleLogoInPlace,
+} from './locked-asset-render-mvp.ts';
 
 export interface CompileShortChainGenerationInput {
   projectId: string;
@@ -295,6 +299,12 @@ export function createShortChainImageGenerationService(
         writeJson(
           path.join(artifactDirectory, 'effective-visual-decision-packet.json'),
           result.compiledPrompt.effectiveVisualDecisionPacket,
+        ),
+      ] : []),
+      ...(result.compiledPrompt.lockedAssetPlacementPlan ? [
+        writeJson(
+          path.join(artifactDirectory, 'locked-asset-placement-plan.json'),
+          result.compiledPrompt.lockedAssetPlacementPlan,
         ),
       ] : []),
       writeJson(path.join(artifactDirectory, 'trace.json'), {
@@ -622,6 +632,101 @@ export function createShortChainImageGenerationService(
         { schemaVersion: '1.0', status: initialValidation.status, taskId: input.taskId },
       );
       return result;
+    }
+    const placementPlan = compilation.compiledPrompt.lockedAssetPlacementPlan;
+    if (placementPlan && isLogoOnlyRepairCandidate(initialValidation)) {
+      const context = await projectContext.getShortChain(input.projectId);
+      const placement = placementPlan.placements[0];
+      const asset = placement
+        ? context.sourceAssetRefs.find((item) => item.assetId === placement.assetId)
+        : null;
+      const projectPaths = await projects.paths(input.projectId);
+      const logoPath = asset ? path.resolve(projectPaths.input, asset.relativePath) : '';
+      const inputRoot = path.resolve(projectPaths.input);
+      if (!asset || (logoPath !== inputRoot && !logoPath.startsWith(`${inputRoot}${path.sep}`))) {
+        throw Object.assign(new Error('Locked Logo source asset is unavailable for local repair'), {
+          code: 'LOCKED_ASSET_REPAIR_SOURCE_INVALID',
+        });
+      }
+      const runRoot = await getImageGeneration().runRoot(initialRun.runId);
+      if (!runRoot) throw Object.assign(new Error('Image generation run root is unavailable for local repair'), {
+        code: 'LOCKED_ASSET_REPAIR_RUN_ROOT_MISSING',
+      });
+      const image = initialRun.images[0]!;
+      const scenePath = path.resolve(runRoot, image.relativePath);
+      const backupPath = path.join(path.dirname(scenePath), `.locked-asset-source-${crypto.randomUUID()}.png`);
+      await fs.copyFile(scenePath, backupPath);
+      try {
+        const repair = await repairSingleLogoInPlace({
+          run: initialRun,
+          runRoot,
+          logoPath,
+          placementPlan,
+          mode: 'local_repair',
+        });
+        const repairValidation = await validator.validate({
+          projectId: input.projectId,
+          taskContract: compilation.taskContract,
+          runId: initialRun.runId,
+          validatorProfileId: input.validatorProfileId,
+        });
+        if (repairValidation.status !== 'failed') {
+          const result: ShortChainValidatedGenerationResult = {
+            initialRun,
+            initialValidation,
+            correctionRun: repair.run,
+            correctionValidation: repairValidation,
+            terminalStatus: repairValidation.status,
+            automaticRetryCount: 1,
+            localRepairApplied: true,
+          };
+          await writeJson(
+            path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
+            result,
+          );
+          await writeJson(
+            path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
+            { schemaVersion: '1.0', status: repairValidation.status, taskId: input.taskId },
+          );
+          return result;
+        }
+
+        await fs.copyFile(backupPath, scenePath);
+        const fallback = await repairSingleLogoInPlace({
+          run: initialRun,
+          runRoot,
+          logoPath,
+          placementPlan,
+          mode: 'fallback_composite',
+        });
+        const fallbackValidation = await validator.validate({
+          projectId: input.projectId,
+          taskContract: compilation.taskContract,
+          runId: initialRun.runId,
+          validatorProfileId: input.validatorProfileId,
+        });
+        const result: ShortChainValidatedGenerationResult = {
+          initialRun,
+          initialValidation,
+          correctionRun: fallback.run,
+          correctionValidation: fallbackValidation,
+          terminalStatus: fallbackValidation.status,
+          automaticRetryCount: 1,
+          localRepairApplied: true,
+          fallbackApplied: true,
+        };
+        await writeJson(
+          path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
+          result,
+        );
+        await writeJson(
+          path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
+          { schemaVersion: '1.0', status: fallbackValidation.status, taskId: input.taskId },
+        );
+        return result;
+      } finally {
+        await fs.rm(backupPath, { force: true }).catch(() => undefined);
+      }
     }
     const correctionPrompt = compileShortChainCorrectionPrompt({
       originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,

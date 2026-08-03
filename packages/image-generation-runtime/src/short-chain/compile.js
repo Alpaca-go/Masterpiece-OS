@@ -4,6 +4,7 @@ import { routeShortChainTemplates } from './template-router.js';
 import { compileShortChainPrompt } from './prompt-compiler.js';
 import { createSeedreamShortChainAdapter } from './seedream-adapter.js';
 import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
+import { planSingleLogoPlacement } from './locked-asset-placement-planner.js';
 
 export function compileShortChainImageGeneration(input) {
   const started = performance.now();
@@ -24,7 +25,8 @@ export function compileShortChainImageGeneration(input) {
   const requestedReferenceIds = Array.isArray(input.task?.referenceAssetIds)
     ? input.task.referenceAssetIds
     : [];
-  const selectedLogoAssetId = logoAssetIds.find((assetId) => requestedReferenceIds.includes(assetId));
+  const selectedLogoAssetIds = logoAssetIds.filter((assetId) => requestedReferenceIds.includes(assetId));
+  const selectedLogoAssetId = selectedLogoAssetIds[0];
   const legacyLogoUsageMode = input.task?.logoUsageMode;
   const brandMarkRenderMode = input.task?.brandMarkRenderMode
     || input.projectContext?.promptSourceObject?.lockedAssets?.brandMarkRenderMode
@@ -55,6 +57,10 @@ export function compileShortChainImageGeneration(input) {
     referenceAssetIds,
   }, { now: input.now });
   const route = routeShortChainTemplates(taskContract, { model: adapter.id });
+  const lockedAssetPlacementPlan = planSingleLogoPlacement({
+    taskContract,
+    selectedLogoAssetIds,
+  });
   const compiledPrompt = compileShortChainPrompt({
     projectContext: input.projectContext,
     taskContract,
@@ -63,6 +69,7 @@ export function compileShortChainImageGeneration(input) {
     projectPromptAsset: input.projectPromptAsset,
     approvedCreativeDecision: input.approvedCreativeDecision,
     userConfirmedVisualDecision: input.userConfirmedVisualDecision,
+    lockedAssetPlacementPlan,
   });
   compiledPrompt.preflightReport = runPromptPreflightGate({
     finalPrompt: compiledPrompt.finalPrompt,

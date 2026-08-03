@@ -232,9 +232,13 @@ export function ShortChainGenerationWorkspace({
           .getImageDataUrl(run.runId, run.images[0].imageId);
         setImageDataUrl(image?.dataUrl ?? '');
         if (validated.terminalStatus === 'passed') {
-          setNotice(validated.automaticRetryCount
-            ? '首次结果对题失败，系统已完成一次纠偏；纠偏结果通过验证。'
-            : '正式成果已生成并通过对题验证。确认后可沿用为本类型参考。');
+          setNotice(validated.fallbackApplied
+            ? 'Logo 智能渲染未通过局部修复，已使用准确合成兜底并通过验证。'
+            : validated.localRepairApplied
+              ? 'Logo 首次渲染未通过验证，系统仅修复了 Logo 局部区域，空间主体保持不变。'
+              : validated.automaticRetryCount
+                ? '首次结果对题失败，系统已完成一次纠偏；纠偏结果通过验证。'
+                : '正式成果已生成并通过对题验证。确认后可沿用为本类型参考。');
         } else if (validated.terminalStatus === 'unverified') {
           setNotice('正式成果已生成，但没有可用的多模态分析配置，结果尚未自动验证。');
         } else {

@@ -26,6 +26,12 @@ export interface LogoPostCompositeInput {
     enabled: boolean;
     tolerance?: number;
   };
+  materialMode?:
+    | 'front_lit_acrylic'
+    | 'halo_lit_metal'
+    | 'acrylic_dimensional'
+    | 'pvc_dimensional'
+    | 'metal_dimensional';
 }
 
 export interface LogoPostCompositeResult {
@@ -33,6 +39,7 @@ export interface LogoPostCompositeResult {
   sourceLogoSha256: string;
   outputSha256: string;
   sourceCrop: PixelRect;
+  materialMode?: LogoPostCompositeInput['materialMode'];
   placement: NormalizedPlacement & {
     outputLeft: number;
     outputTop: number;
@@ -209,8 +216,29 @@ export async function postCompositeConfirmedLogo(
   }
 
   await fs.mkdir(path.dirname(input.outputPath), { recursive: true });
+  const materialLayers: Array<{ input: Buffer; left: number; top: number }> = [];
+  if (input.materialMode) {
+    const luminous = input.materialMode === 'front_lit_acrylic'
+      || input.materialMode === 'halo_lit_metal';
+    if (luminous) {
+      materialLayers.push({
+        input: await sharp(resized).blur(input.materialMode === 'halo_lit_metal' ? 7 : 4)
+          .modulate({ brightness: 1.2, saturation: 0.85 }).png().toBuffer(),
+        left: outputLeft,
+        top: outputTop,
+      });
+    }
+    const depth = input.materialMode === 'pvc_dimensional' ? 5 : 3;
+    if (outputLeft + outputWidth + depth <= sceneWidth && outputTop + outputHeight + depth <= sceneHeight) {
+      materialLayers.push({
+        input: await sharp(resized).modulate({ brightness: 0.35, saturation: 0.45 }).png().toBuffer(),
+        left: outputLeft + depth,
+        top: outputTop + depth,
+      });
+    }
+  }
   const output = await sharp(input.scenePath)
-    .composite([{ input: resized, left: outputLeft, top: outputTop }])
+    .composite([...materialLayers, { input: resized, left: outputLeft, top: outputTop }])
     .png()
     .toBuffer();
   await fs.writeFile(input.outputPath, output);
@@ -219,6 +247,7 @@ export async function postCompositeConfirmedLogo(
     sourceLogoSha256: crypto.createHash('sha256').update(logoSource).digest('hex'),
     outputSha256: crypto.createHash('sha256').update(output).digest('hex'),
     sourceCrop: crop,
+    ...(input.materialMode ? { materialMode: input.materialMode } : {}),
     placement: {
       ...placement,
       outputLeft,

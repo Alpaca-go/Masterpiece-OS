@@ -679,6 +679,7 @@ export type {
   LockedAssetFallbackMode,
   SpatialLockedAssetType,
   SpatialLockedAssetRenderPolicy,
+  LockedAssetPlacementPlan,
   ShortChainCompiledPrompt,
   ShortChainModelPromptPayload,
   ShortChainCreativeSession,

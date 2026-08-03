@@ -4,6 +4,7 @@ import {
   compileShortChainImageGeneration,
   createShortChainTaskContract,
   listShortChainTemplates,
+  planSingleLogoPlacement,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
 const projectContext = {
@@ -101,6 +102,33 @@ test('Task routing migrates legacy Logo modes and lets the new locked-asset poli
     ...migrated,
     materialMode: 'painted_cloud',
   }), /material mode/u);
+});
+
+test('Phase 2 planner creates one large planar primary Logo placement', () => {
+  const task = createShortChainTaskContract({
+    projectId: projectContext.projectId,
+    deliverableFamily: 'space',
+    subtype: 'reception',
+    shot: 'front',
+    count: 1,
+    aspectRatio: '16:9',
+    currentInstruction: 'Create a large reception brand wall.',
+    referenceAssetIds: ['logo-1'],
+    brandMarkRenderMode: 'locked_asset_render',
+    materialMode: 'halo_lit_metal',
+    brandIntensity: 'balanced',
+  });
+  const plan = planSingleLogoPlacement({ taskContract: task, selectedLogoAssetIds: ['logo-1'] });
+  assert.equal(plan.placements.length, 1);
+  assert.equal(plan.placements[0].role, 'primary_signage');
+  assert.equal(plan.placements[0].zone, 'reception_back_wall');
+  assert.equal(plan.placements[0].material, 'halo_lit_metal');
+  assert.equal(plan.placements[0].maxOccurrences, 1);
+  assert.equal(plan.mvpEligible, true);
+  assert.throws(
+    () => planSingleLogoPlacement({ taskContract: task, selectedLogoAssetIds: ['logo-1', 'logo-2'] }),
+    /exactly one selected primary Logo/u,
+  );
 });
 
 test('Task routing sends reception space only through space templates', () => {

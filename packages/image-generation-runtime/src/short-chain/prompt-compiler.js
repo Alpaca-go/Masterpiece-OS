@@ -7,6 +7,7 @@ import {
 import { buildPackagingTranslation } from '../../../creative-production-runtime/src/packaging-translation.js';
 import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
+import { compileSingleLogoPlacementDirectives } from './locked-asset-placement-planner.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
 export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.5.0';
@@ -476,6 +477,7 @@ export function compileShortChainPrompt({
   projectPromptAsset,
   approvedCreativeDecision,
   userConfirmedVisualDecision,
+  lockedAssetPlacementPlan,
 }) {
   if (projectContext.schemaVersion !== '2.0') {
     throw new Error('Short-Chain prompt compiler requires Project Visual Context 2.0');
@@ -681,6 +683,7 @@ export function compileShortChainPrompt({
         taskContract.currentInstruction,
         taskContract.mustInclude.map((item) => `Must include: ${item}`),
         lockedAssetRenderSettingDirectives(taskContract),
+        compileSingleLogoPlacementDirectives(lockedAssetPlacementPlan),
         referenceDirectives,
         taskContract.scene ? `Scene: ${taskContract.scene}` : '',
         `Aspect ratio: ${taskContract.aspectRatio}`,
@@ -1036,6 +1039,7 @@ export function compileShortChainPrompt({
     projectGenerationContract,
     spatialTranslation: packetSource?.spatial || null,
     effectiveVisualDecisionPacket: packet,
+    lockedAssetPlacementPlan: lockedAssetPlacementPlan || null,
     userConfirmedVisualDecision: confirmedDecision.confirmation,
     completeness: {
       complete: true,

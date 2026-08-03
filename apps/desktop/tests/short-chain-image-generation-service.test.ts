@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import sharp from 'sharp';
 import type {
   ImageGenerationRun,
   ProjectVisualContextShortChain,
@@ -226,11 +227,18 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
   assert.equal(selectedLogo.taskContract.brandMarkRenderMode, 'locked_asset_render');
   assert.equal(selectedLogo.taskContract.materialMode, 'front_lit_acrylic');
   assert.equal(selectedLogo.taskContract.brandIntensity, 'balanced');
+  assert.equal(selectedLogo.compiledPrompt.lockedAssetPlacementPlan?.placements.length, 1);
+  assert.equal(selectedLogo.compiledPrompt.lockedAssetPlacementPlan?.placements[0]?.zone, 'reception_back_wall');
   assert.deepEqual(selectedLogo.payload.referenceAssetIds, ['logo-asset']);
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1: Provider reference image 1: Confirmed Logo/u);
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /prominent, camera-visible brand touchpoint/u);
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /palette, lighting, line rhythm, geometry or mood alone does not count/u);
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /front-lit acrylic/u);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /render exactly one primary Logo/u);
+  assert.equal(await fs.stat(path.join(
+    selectedLogo.artifactDirectory,
+    'locked-asset-placement-plan.json',
+  )).then(() => true), true);
 
   await assert.rejects(() => service.compile({
     projectId,
@@ -482,4 +490,128 @@ test('Short-Chain validates the effective edited prompt before calling the provi
     'effective-prompt.json',
   )).then(() => true).catch(() => false);
   assert.equal(artifact, false);
+});
+
+test('Short-Chain repairs then falls back for a locked Logo without regenerating the space', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-short-chain-logo-repair-'));
+  const inputRoot = path.join(root, 'input');
+  const runRoot = path.join(root, 'image-generation', 'run-logo');
+  const scenePath = path.join(runRoot, 'images', 'image-01.png');
+  const logoPath = path.join(inputRoot, 'brand', 'logo.png');
+  await fs.mkdir(path.dirname(scenePath), { recursive: true });
+  await fs.mkdir(path.dirname(logoPath), { recursive: true });
+  await sharp({ create: { width: 960, height: 540, channels: 3, background: '#cbc6bc' } })
+    .png().toFile(scenePath);
+  await sharp(Buffer.from('<svg width="260" height="90" xmlns="http://www.w3.org/2000/svg"><rect width="260" height="90" rx="12" fill="#54239c"/><circle cx="48" cy="45" r="28" fill="#4fc52b"/><rect x="95" y="25" width="135" height="40" fill="white"/></svg>'))
+    .png().toFile(logoPath);
+  const originalPixels = await fs.readFile(scenePath);
+  let providerCalls = 0;
+  let validationCalls = 0;
+  const run: ImageGenerationRun = {
+    schemaVersion: '1.0',
+    runId: 'run-logo',
+    projectId,
+    taskId: 'provider-task-logo',
+    status: 'succeeded',
+    outputType: 'concept_image',
+    providerId: 'dashscope',
+    modelId: 'test-image-model',
+    region: 'beijing',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    gate: { blocked: false, errors: [], warnings: [] },
+    images: [{
+      imageId: 'image-01',
+      relativePath: 'images/image-01.png',
+      mimeType: 'image/png',
+      sizeBytes: originalPixels.byteLength,
+      sha256: 'original-scene',
+      downloadedAt: new Date().toISOString(),
+    }],
+  };
+  const repairContext: ProjectVisualContextShortChain = {
+    ...context,
+    sourceAssetRefs: [{
+      assetId: 'logo-asset',
+      name: 'Confirmed Logo',
+      relativePath: 'brand/logo.png',
+      role: 'logo',
+    }],
+  };
+  const service = createShortChainImageGenerationService(
+    { paths: async () => ({
+      root,
+      input: inputRoot,
+      prepared: path.join(root, 'prepared'),
+      outputs: path.join(root, 'outputs'),
+      runtime: path.join(root, 'runtime'),
+    }) } as never,
+    {
+      getShortChain: async () => repairContext,
+      rebuildShortChain: async () => repairContext,
+    } as never,
+    () => ({
+      async startCompiledCreativeTask() {
+        providerCalls += 1;
+        return run;
+      },
+      async getRun() { return run; },
+      async runRoot() { return runRoot; },
+    }) as never,
+    () => ({
+      async validate() {
+        validationCalls += 1;
+        if (validationCalls === 2) assert.notDeepEqual(await fs.readFile(scenePath), originalPixels);
+        return {
+          schemaVersion: '1.0',
+          projectId,
+          taskId: 'short-chain-logo-task',
+          runId: run.runId,
+          imageId: 'image-01',
+          status: validationCalls < 3 ? 'failed' : 'passed',
+          detectedFamily: 'space',
+          detectedSubtype: 'reception',
+          visibleEvidence: [],
+          missingRequiredItems: [],
+          forbiddenItemsFound: [],
+          lockedAssetViolations: validationCalls < 3 ? ['Logo contour was altered'] : [],
+          brandMatch: 'matched',
+          brandToneMatch: 'matched',
+          sceneCompleteness: 'complete',
+          logoTextStatus: validationCalls < 3 ? 'incorrect' : 'correct',
+          qualityIssues: [],
+          mismatchTypes: validationCalls < 3 ? ['locked_asset_violation', 'logo_text_error'] : [],
+          retryRecommended: validationCalls === 1,
+          validatorId: 'test-validator',
+          validatorVersion: '1',
+          validatedAt: new Date().toISOString(),
+        };
+      },
+    }) as never,
+  );
+  const compiled = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create a reception with one large locked Logo on the back wall.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['logo-asset'],
+      brandMarkRenderMode: 'locked_asset_render',
+      materialMode: 'front_lit_acrylic',
+      brandIntensity: 'balanced',
+      logoUsageMode: 'reference',
+    },
+  });
+  const result = await service.startValidated({ projectId, taskId: compiled.taskContract.taskId });
+  assert.equal(providerCalls, 1);
+  assert.equal(validationCalls, 3);
+  assert.equal(result.localRepairApplied, true);
+  assert.equal(result.fallbackApplied, true);
+  assert.equal(result.terminalStatus, 'passed');
+  assert.equal(result.correctionRun?.runId, run.runId);
 });

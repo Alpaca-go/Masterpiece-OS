@@ -866,6 +866,36 @@ export interface SpatialLockedAssetRenderPolicy {
   };
 }
 
+export type LockedAssetPlacementZone =
+  | 'central_feature_wall'
+  | 'reception_back_wall'
+  | 'entrance_brand_wall';
+
+export interface LockedAssetPlacementPlan {
+  schemaVersion: '1.0';
+  sceneId: string;
+  brandIntensity: LockedAssetBrandIntensity;
+  mvpEligible: boolean;
+  limitations: string[];
+  placements: Array<{
+    assetId: string;
+    role: 'primary_signage';
+    zone: LockedAssetPlacementZone;
+    material: LockedAssetMaterialMode;
+    importance: 1;
+    targetSize: 'large';
+    mustBeLegible: true;
+    maxOccurrences: 1;
+    normalizedBounds: { x: number; y: number; width: number };
+  }>;
+  styleInheritance: {
+    palette: true;
+    shapeLanguage: true;
+    patternRhythm: true;
+    logoRepetition: false;
+  };
+}
+
 export interface ShortChainTaskContract {
   schemaVersion: '1.0';
   taskId: string;
@@ -929,6 +959,7 @@ export interface ShortChainCompiledPrompt {
   }>;
   sourceMap: Record<string, string[]>;
   effectiveVisualDecisionPacket?: unknown;
+  lockedAssetPlacementPlan?: LockedAssetPlacementPlan | null;
   userConfirmedVisualDecision?: {
     id: string;
     sourceDocument?: string;
@@ -1062,4 +1093,6 @@ export interface ShortChainValidatedGenerationResult {
   correctionValidation?: ShortChainDeliverableValidation;
   terminalStatus: 'passed' | 'failed' | 'unverified';
   automaticRetryCount: 0 | 1;
+  localRepairApplied?: boolean;
+  fallbackApplied?: boolean;
 }

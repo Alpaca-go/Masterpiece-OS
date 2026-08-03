@@ -9,6 +9,10 @@ export {
   validateShortChainProjectPromptAsset,
 } from './project-prompt-asset.js';
 export { createShortChainTaskContract, validateShortChainTaskContract } from './task-contract.js';
+export {
+  planSingleLogoPlacement,
+  compileSingleLogoPlacementDirectives,
+} from './locked-asset-placement-planner.js';
 export { SHORT_CHAIN_TEMPLATE_ROUTER_VERSION, routeShortChainTemplates } from './template-router.js';
 export {
   SHORT_CHAIN_PROMPT_COMPILER_ID,
