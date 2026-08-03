@@ -67,3 +67,4 @@ export {
   assertPromptPreflight,
 } from './gates/prompt-preflight-gate.js';
 export * from './short-chain/index.js';
+export * from './task-families/packaging/index.js';

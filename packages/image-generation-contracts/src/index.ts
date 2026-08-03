@@ -791,6 +791,23 @@ export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 // ---------------------------------------------------------------------------
 
 export type ShortChainDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
+export type PackagingShotId = 'PKG-HERO-SINGLE' | 'PKG-SERIES-GROUP' | 'PKG-GIFT-OPEN';
+export type PackagingLockedAssetRole =
+  | 'package_surface_identity'
+  | 'package_surface_graphic'
+  | 'package_structure'
+  | 'product_identity'
+  | 'product_arrangement'
+  | 'exclusion';
+
+export interface PackagingLockedAssetBinding {
+  assetId: string;
+  type: string;
+  role: PackagingLockedAssetRole;
+  lockLevel: 'hard' | 'structural';
+  evidenceRefs: string[];
+  mayAffectScene: false;
+}
 export type ShortChainAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
 /** @deprecated Persisted v1 compatibility only. New tasks use brandMarkRenderMode. */
 export type ShortChainLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';

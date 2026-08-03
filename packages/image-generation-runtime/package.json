@@ -17,6 +17,7 @@
     "./prompt-templates": "./src/prompt-templates/deliverable-template-system.js",
     "./prompt-template-compiler": "./src/prompt-templates/prompt-template-compiler.js",
     "./creative-director": "./src/creative-director/index.js",
-    "./reference-plan": "./src/reference-plan/index.js"
+    "./reference-plan": "./src/reference-plan/index.js",
+    "./task-families/packaging": "./src/task-families/packaging/index.js"
   }
 }
