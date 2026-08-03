@@ -11,6 +11,7 @@ import {
   postCompositeConfirmedLogo,
   type LogoPostCompositeInput,
 } from './logo-post-composite.ts';
+import { resolveLockedAssetSelfHealing } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
 const REPAIR_MATERIALS = new Set<LockedAssetMaterialMode>([
   'front_lit_acrylic',
@@ -32,11 +33,11 @@ export interface SingleLogoRepairResult {
 export function isLogoOnlyRepairCandidate(input: {
   mismatchTypes: string[];
   lockedAssetViolations: string[];
+  lockedAssetQaResults?: Array<{ errors?: string[] }>;
 }): boolean {
-  const types = new Set(input.mismatchTypes);
-  return input.lockedAssetViolations.length > 0
-    || types.has('locked_asset_violation')
-    || types.has('logo_text_error');
+  const decision = resolveLockedAssetSelfHealing(input);
+  return decision.action === 'local_asset_projection'
+    || decision.action === 'local_material_repair';
 }
 
 export async function repairSingleLogoInPlace(input: {

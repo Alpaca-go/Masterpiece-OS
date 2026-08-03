@@ -659,4 +659,6 @@ test('Short-Chain repairs then falls back for a locked Logo without regenerating
   ]);
   assert.equal(debug.finalStatus, 'passed_with_fallback');
   assert.deepEqual(debug.selectedAssets, ['logo-asset']);
+  assert.equal(debug.selfHealingDecision.action, 'local_asset_projection');
+  assert.deepEqual(debug.selfHealingDecision.coveredErrors, ['wrong_text', 'contour_deformation']);
 });

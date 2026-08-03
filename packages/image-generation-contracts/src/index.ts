@@ -1145,6 +1145,15 @@ export interface LockedAssetRenderDebug {
     outputFile: string;
   }>;
   qaResults: LockedAssetQAResult[];
+  selfHealingDecision?: {
+    schemaVersion: '1.0';
+    errors: string[];
+    coveredErrors: string[];
+    action: 'none' | 'local_asset_projection' | 'local_material_repair' | 'regenerate_scene';
+    reason: string;
+    maxRepairAttempts: 2;
+    fallback: 'none' | 'deterministic_composite' | 'fail_closed';
+  } | null;
   finalStatus: 'passed_first_render' | 'passed_after_repair' | 'passed_with_fallback' | 'failed';
   createdAt: string;
 }

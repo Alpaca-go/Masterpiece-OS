@@ -17,6 +17,7 @@ import {
   compileShortChainCorrectionPrompt,
   compileShortChainImageGeneration,
   listShortChainTemplateOptions,
+  resolveLockedAssetSelfHealing,
   validateShortChainEffectivePrompt,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 import type { ProjectContextService } from '../project-context-service.ts';
@@ -603,6 +604,7 @@ export function createShortChainImageGenerationService(
     input: StartValidatedShortChainGenerationInput,
   ): Promise<ShortChainValidatedGenerationResult> {
     const passRecords: LockedAssetRenderDebug['passes'] = [];
+    let selfHealingDecision: LockedAssetRenderDebug['selfHealingDecision'] = null;
     const validator = getValidator?.();
     if (!validator) throw new Error('Short-Chain deliverable validator is not configured');
     const compilation = await readCompilation(input.projectId, input.taskId);
@@ -652,6 +654,7 @@ export function createShortChainImageGenerationService(
         ],
         passes: passRecords,
         qaResults,
+        selfHealingDecision,
         finalStatus,
         createdAt: new Date().toISOString(),
       };
@@ -679,6 +682,8 @@ export function createShortChainImageGenerationService(
       return result;
     }
     const placementPlan = compilation.compiledPrompt.lockedAssetPlacementPlan;
+    selfHealingDecision = resolveLockedAssetSelfHealing(initialValidation) as
+      NonNullable<LockedAssetRenderDebug['selfHealingDecision']>;
     if (placementPlan?.placements.some((item) =>
       item.role === 'primary_signage' && item.surfaceMode !== 'partial_occlusion')
       && isLogoOnlyRepairCandidate(initialValidation)) {

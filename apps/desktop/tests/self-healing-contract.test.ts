@@ -8,6 +8,12 @@ import {
 import {
   SPACE_PROMPT_PREFLIGHT_FIELD_REQUIREMENTS,
 } from '@masterpiece/image-generation-runtime/gates/prompt-preflight-gate.js';
+import {
+  LOCKED_ASSET_SELF_HEALING_ERROR_CODES,
+  LOCKED_ASSET_SELF_HEALING_POLICIES,
+  resolveLockedAssetSelfHealing,
+  validateLockedAssetSelfHealingCoverage,
+} from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
 test('every formal analysis requirement has an actionable Self-Healing policy', () => {
   assert.deepEqual(validateSelfHealingContractCoverage(), []);
@@ -46,4 +52,37 @@ test('coverage validator fails when a future required field has no repair policy
     code: 'FUTURE_REQUIRED_FIELD_MISSING',
     reason: 'missing_policy',
   }]);
+});
+
+test('every required Locked Asset render failure has an actionable Self-Healing policy', () => {
+  assert.deepEqual(validateLockedAssetSelfHealingCoverage(), []);
+  assert.deepEqual(LOCKED_ASSET_SELF_HEALING_ERROR_CODES, [
+    'wrong_text',
+    'contour_deformation',
+    'duplicate_asset',
+    'material_failure',
+    'wrong_placement',
+  ]);
+  assert.equal(LOCKED_ASSET_SELF_HEALING_POLICIES.length, 5);
+});
+
+test('Locked Asset Self-Healing keeps duplicate cleanup out of local projection', () => {
+  const decision = resolveLockedAssetSelfHealing({
+    mismatchTypes: ['locked_asset_violation'],
+    lockedAssetViolations: ['logo-1:duplicate_asset'],
+    lockedAssetQaResults: [{ assetId: 'logo-1', errors: ['duplicate_asset'] }],
+  });
+  assert.equal(decision.action, 'regenerate_scene');
+  assert.equal(decision.fallback, 'fail_closed');
+});
+
+test('Locked Asset Self-Healing routes identity and material failures to local repair', () => {
+  assert.equal(resolveLockedAssetSelfHealing({
+    mismatchTypes: ['logo_text_error'],
+    lockedAssetViolations: ['logo-1:wrong_text'],
+  }).action, 'local_asset_projection');
+  assert.equal(resolveLockedAssetSelfHealing({
+    mismatchTypes: ['locked_asset_violation'],
+    lockedAssetViolations: ['logo-1:material_failure'],
+  }).action, 'local_material_repair');
 });

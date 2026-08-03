@@ -41,3 +41,9 @@ export {
   compileShortChainCorrectionPrompt,
   validateShortChainDeliverableEvidence,
 } from './deliverable-validator.js';
+export {
+  LOCKED_ASSET_SELF_HEALING_ERROR_CODES,
+  LOCKED_ASSET_SELF_HEALING_POLICIES,
+  resolveLockedAssetSelfHealing,
+  validateLockedAssetSelfHealingCoverage,
+} from './locked-asset-self-healing.js';

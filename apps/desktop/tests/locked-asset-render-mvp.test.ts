@@ -86,5 +86,10 @@ test('single Logo MVP repairs only the planned region and preserves the scene di
   assert.equal(repaired.run.images[0]?.width, 800);
   assert.equal(repaired.run.images[0]?.height, 500);
   assert.equal(isLogoOnlyRepairCandidate({ mismatchTypes: ['logo_text_error'], lockedAssetViolations: [] }), true);
+  assert.equal(isLogoOnlyRepairCandidate({
+    mismatchTypes: ['locked_asset_violation'],
+    lockedAssetViolations: ['logo-1:duplicate_asset'],
+    lockedAssetQaResults: [{ errors: ['duplicate_asset'] }],
+  }), false);
   assert.equal(isLogoOnlyRepairCandidate({ mismatchTypes: ['wrong_family'], lockedAssetViolations: [] }), false);
 });
