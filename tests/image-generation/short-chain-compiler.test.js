@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { compileShortChainImageGeneration } from '@masterpiece/image-generation-runtime/short-chain/index.js';
+import {
+  loadPremiumMedicalAestheticsArchetype,
+  loadSpatialProjectBundle,
+} from '@masterpiece/image-generation-runtime';
 
 function context({ projectId, brand, industry, promptSourceObject }) {
   return {
@@ -138,9 +142,10 @@ function promptSource({
   };
 }
 
-function compileSpace(projectContext, overrides = {}) {
+function compileSpace(projectContext, overrides = {}, compileOptions = {}) {
   return compileShortChainImageGeneration({
     projectContext,
+    ...compileOptions,
     task: {
       projectId: projectContext.projectId,
       deliverableFamily: 'space',
@@ -199,7 +204,7 @@ test('Golden calibration compiles thirteen traceable blocks from Jiuzhou project
   ]) {
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   }
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.6.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.7.0');
   assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true);
 });
 
@@ -270,4 +275,39 @@ test('compiler fails closed on contradictory task include and avoid rules', () =
     mustInclude: ['central display island'],
     mustAvoid: ['central display island'],
   }), /same requirement/u);
+});
+
+test('compiler places structured spatial layers in the active prompt without Acceptance text', () => {
+  const source = promptSource({
+    projectId: 'jiuzhou-aesthetics',
+    brand: '九州美学',
+    industry: 'medical aesthetics',
+    logoAssetIds: ['real-logo'],
+    color: 'controlled project accent',
+    motif: 'confirmed project motif',
+    material: 'light mineral surface',
+    worldview: 'serene professional medical hospitality',
+  });
+  const bundle = loadSpatialProjectBundle('jiuzhou-aesthetics');
+  const result = compileSpace(context({
+    projectId: 'jiuzhou-aesthetics',
+    brand: '九州美学',
+    industry: 'medical aesthetics',
+    promptSourceObject: source,
+  }), {}, {
+    spatialProjectBundle: bundle,
+    spatialFoundation: {
+      spaceType: 'large_lobby',
+      spatialScale: { class: 'large', ceilingHeight: 'generous', depthExpression: 'strong' },
+      cameraIntent: { role: 'entrance_three_quarter_wide' },
+    },
+    verticalArchetype: loadPremiumMedicalAestheticsArchetype(),
+    anchorSignals: { materialAndLighting: ['soft indirect light'] },
+  });
+  assert.match(result.compiledPrompt.finalPrompt, /SPATIAL FOUNDATION — DO NOT OVERRIDE/u);
+  assert.match(result.compiledPrompt.finalPrompt, /ANCHOR CALIBRATION/u);
+  assert.match(result.compiledPrompt.finalPrompt, /Do not inherit room size, ceiling height/u);
+  assert.doesNotMatch(result.compiledPrompt.finalPrompt, /Golden Acceptance Standard|八大评分维度/u);
+  assert.equal(result.compiledPrompt.spatialCompiledContext.foundation.spatialScale.class, 'large');
+  assert.ok(result.compiledPrompt.trace.promptCharacters <= 7_500);
 });

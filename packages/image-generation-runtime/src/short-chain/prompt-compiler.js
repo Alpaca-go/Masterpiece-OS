@@ -19,7 +19,7 @@ import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decisi
 import { compileSingleLogoPlacementDirectives } from './locked-asset-placement-planner.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
-export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.6.0';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.7.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -492,6 +492,7 @@ export function compileShortChainPrompt({
   userConfirmedVisualDecision,
   lockedAssetPlacementPlan,
   spatialBrandOrchestration,
+  spatialCompiledContext,
 }) {
   if (projectContext.schemaVersion !== '2.0') {
     throw new Error('Short-Chain prompt compiler requires Project Visual Context 2.0');
@@ -543,6 +544,7 @@ export function compileShortChainPrompt({
     packetSource ? ['随机中文', '错误英文品牌名', '自行生成 slogan', '模糊文字'] : source?.negativeRules?.model,
     templateSections('negative'),
     spatialBrandOrchestration?.compiledRules?.negative,
+    spatialCompiledContext?.negativeRules,
   );
   const colorItems = packetSource
     ? cleanList(
@@ -733,6 +735,7 @@ export function compileShortChainPrompt({
         lockedAssetRenderSettingDirectives(taskContract),
         compileSingleLogoPlacementDirectives(lockedAssetPlacementPlan),
         spatialBrandOrchestration?.compiledRules?.positive,
+        spatialCompiledContext?.promptSections,
         referenceDirectives,
         taskContract.scene ? `Scene: ${taskContract.scene}` : '',
         `Aspect ratio: ${taskContract.aspectRatio}`,
@@ -1090,6 +1093,7 @@ export function compileShortChainPrompt({
     effectiveVisualDecisionPacket: packet,
     lockedAssetPlacementPlan: lockedAssetPlacementPlan || null,
     spatialBrandOrchestration: spatialBrandOrchestration || null,
+    spatialCompiledContext: spatialCompiledContext || null,
     userConfirmedVisualDecision: confirmedDecision.confirmation,
     completeness: {
       complete: true,

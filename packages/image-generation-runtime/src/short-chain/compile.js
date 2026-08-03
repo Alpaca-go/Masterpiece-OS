@@ -10,6 +10,7 @@ import {
   compileSpatialBrandOrchestrationRules,
   guardSpatialBrandDensity,
 } from './spatial-brand-orchestration.js';
+import { compileSpatialContext } from '../spatial/context-compiler.js';
 
 export function compileShortChainImageGeneration(input) {
   const started = performance.now();
@@ -64,6 +65,18 @@ export function compileShortChainImageGeneration(input) {
               : asset?.role === 'icon' ? 'icon' : 'other'),
     };
   });
+  const spatialCompiledContext = input.task?.deliverableFamily === 'space'
+    && (input.spatialFoundation || input.spatialProjectBundle)
+    ? compileSpatialContext({
+      task: input.task,
+      spatialFoundation: input.spatialFoundation,
+      projectCanon: input.spatialProjectBundle?.projectCanon,
+      verticalArchetype: input.verticalArchetype,
+      anchorManifest: input.spatialProjectBundle?.anchorManifest,
+      anchorSignals: input.anchorSignals,
+      projectExclusions: input.spatialProjectBundle?.projectExclusions,
+    })
+    : null;
   let spatialBrandOrchestration = input.task?.deliverableFamily === 'space'
     ? guardSpatialBrandDensity(buildSpatialBrandOrchestration({
       task: input.task,
@@ -99,6 +112,7 @@ export function compileShortChainImageGeneration(input) {
     userConfirmedVisualDecision: input.userConfirmedVisualDecision,
     lockedAssetPlacementPlan,
     spatialBrandOrchestration,
+    spatialCompiledContext,
   });
   compiledPrompt.preflightReport = runPromptPreflightGate({
     finalPrompt: compiledPrompt.finalPrompt,

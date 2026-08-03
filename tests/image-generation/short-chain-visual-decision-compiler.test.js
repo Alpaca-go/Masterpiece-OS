@@ -261,7 +261,7 @@ test('compiler reads Visual Decision Packet directly and covers all project bloc
     /Target worldview: 东方生命美学/u,
   );
   assert.doesNotMatch(result.compiledPrompt.finalPrompt, /WRONG|POISONED LEGACY/u);
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.6.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.7.0');
   const blockIds = result.compiledPrompt.blocks.map((block) => block.id);
   assert.ok(blockIds.indexOf('brand_translation') < blockIds.indexOf('professional_contract'));
   assert.ok(blockIds.indexOf('lighting_system') < blockIds.indexOf('professional_contract'));
