@@ -869,7 +869,14 @@ export interface SpatialLockedAssetRenderPolicy {
 export type LockedAssetPlacementZone =
   | 'central_feature_wall'
   | 'reception_back_wall'
-  | 'entrance_brand_wall';
+  | 'entrance_brand_wall'
+  | 'left_supporting_wall'
+  | 'right_supporting_zone';
+
+export type LockedAssetPlacementMaterial = LockedAssetMaterialMode
+  | 'fiberglass_sculpture'
+  | 'vinyl_graphics'
+  | 'painted_mural';
 
 export interface LockedAssetPlacementPlan {
   schemaVersion: '1.0';
@@ -879,12 +886,13 @@ export interface LockedAssetPlacementPlan {
   limitations: string[];
   placements: Array<{
     assetId: string;
-    role: 'primary_signage';
+    assetType: SpatialLockedAssetType;
+    role: 'primary_signage' | 'hero_installation' | 'secondary_wayfinding' | 'supporting_graphic';
     zone: LockedAssetPlacementZone;
-    material: LockedAssetMaterialMode;
-    importance: 1;
-    targetSize: 'large';
-    mustBeLegible: true;
+    material: LockedAssetPlacementMaterial;
+    importance: number;
+    targetSize: 'large' | 'medium' | 'small';
+    mustBeLegible: boolean;
     maxOccurrences: 1;
     normalizedBounds: { x: number; y: number; width: number };
   }>;
@@ -1070,10 +1078,14 @@ export type LockedAssetQAError =
   | 'unexpected_logo'
   | 'material_failure'
   | 'low_legibility'
-  | 'wrong_placement';
+  | 'wrong_placement'
+  | 'identity_deformation'
+  | 'character_proportion_error'
+  | 'primary_color_error';
 
 export interface LockedAssetQAResult {
   assetId: string;
+  assetType?: SpatialLockedAssetType;
   passed: boolean;
   occurrenceCount: number;
   scores: {
@@ -1082,6 +1094,7 @@ export interface LockedAssetQAResult {
     ocrConfidence?: number;
     materialConfidence?: number;
     visibleWidthPx?: number;
+    identitySimilarity?: number;
   };
   errors: LockedAssetQAError[];
   repairRecommended: boolean;

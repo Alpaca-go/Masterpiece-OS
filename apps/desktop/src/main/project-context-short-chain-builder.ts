@@ -327,6 +327,24 @@ function assetRole(
   return 'source';
 }
 
+function spatialLockedAssetType(
+  assetId: string,
+  role: ProjectVisualContextShortChain['sourceAssetRefs'][number]['role'],
+  packet: Partial<VisualDecisionPacket>,
+): NonNullable<ProjectVisualContextShortChain['sourceAssetRefs'][number]['lockedAssetType']> {
+  if (role === 'logo') return 'logo';
+  if (role === 'package_structure' || role === 'product') return 'packaging_front';
+  if (role !== 'identity') return 'other';
+  const graphicMotifs = Array.isArray(packet.assetInventory?.graphicMotifs)
+    ? packet.assetInventory.graphicMotifs
+    : [];
+  const motif = graphicMotifs.find((item) => item.assetId === assetId);
+  const evidence = [...(motif?.visualFeatures ?? []), ...(motif?.possibleBrandMeaning ?? [])].join(' ');
+  return /(?:IP|mascot|character|角色|吉祥物|人物|形象)/iu.test(evidence)
+    ? 'ip_character'
+    : 'icon';
+}
+
 function migrateVisualDecisionPacketShape(packet: VisualDecisionPacket): VisualDecisionPacket {
   return migrateAnalysisPacket(packet).packet as unknown as VisualDecisionPacket;
 }
@@ -346,12 +364,16 @@ export function buildProjectVisualContextShortChain(
   const visualIdentity = record(structured.visualIdentity);
   const boundaries = record(structured.styleBoundaries);
   const activeAssets = project.assets.filter((asset) => asset.status === 'ready');
-  const sourceAssetRefs = activeAssets.map((asset) => ({
-    assetId: asset.id,
-    name: asset.originalName,
-    relativePath: asset.relativePath,
-    role: assetRole(asset, project, structured, suppliedPacket),
-  }));
+  const sourceAssetRefs = activeAssets.map((asset) => {
+    const role = assetRole(asset, project, structured, suppliedPacket);
+    return {
+      assetId: asset.id,
+      name: asset.originalName,
+      relativePath: asset.relativePath,
+      role,
+      lockedAssetType: spatialLockedAssetType(asset.id, role, suppliedPacket),
+    };
+  });
   const persistedLocks = input.lockedAssets ?? [];
   const logoAssetIds = strings(
     persistedLocks.filter((asset) => asset.type === 'logo').map((asset) => asset.sourceAssetId),

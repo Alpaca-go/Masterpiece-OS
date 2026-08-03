@@ -5,6 +5,7 @@ import {
   createShortChainTaskContract,
   listShortChainTemplates,
   planSingleLogoPlacement,
+  planLockedAssetPlacements,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
 const projectContext = {
@@ -127,8 +128,43 @@ test('Phase 2 planner creates one large planar primary Logo placement', () => {
   assert.equal(plan.mvpEligible, true);
   assert.throws(
     () => planSingleLogoPlacement({ taskContract: task, selectedLogoAssetIds: ['logo-1', 'logo-2'] }),
-    /exactly one selected primary Logo/u,
+    /not multiple Logos/u,
   );
+});
+
+test('Phase 4 planner gives Logo and IP distinct roles, surfaces and density limits', () => {
+  const task = createShortChainTaskContract({
+    projectId: projectContext.projectId,
+    deliverableFamily: 'space',
+    subtype: 'reception',
+    shot: 'front',
+    count: 1,
+    aspectRatio: '16:9',
+    currentInstruction: 'Use the selected Logo and IP character in one balanced reception.',
+    referenceAssetIds: ['logo-1', 'ip-1'],
+    brandMarkRenderMode: 'locked_asset_render',
+    materialMode: 'metal_dimensional',
+    brandIntensity: 'balanced',
+  });
+  const plan = planLockedAssetPlacements({
+    taskContract: task,
+    selectedAssets: [
+      { assetId: 'logo-1', type: 'logo' },
+      { assetId: 'ip-1', type: 'ip_character' },
+    ],
+  });
+  assert.equal(plan.placements.length, 2);
+  assert.deepEqual(plan.placements.map((item) => item.role), ['primary_signage', 'hero_installation']);
+  assert.deepEqual(plan.placements.map((item) => item.maxOccurrences), [1, 1]);
+  assert.equal(new Set(plan.placements.map((item) => item.zone)).size, 2);
+  assert.equal(plan.placements.filter((item) => item.importance === 1).length, 1);
+  assert.throws(() => planLockedAssetPlacements({
+    taskContract: task,
+    selectedAssets: [
+      { assetId: 'logo-1', type: 'logo' },
+      { assetId: 'logo-2', type: 'logo' },
+    ],
+  }), /not multiple Logos/u);
 });
 
 test('Task routing sends reception space only through space templates', () => {

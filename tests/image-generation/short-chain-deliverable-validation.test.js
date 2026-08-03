@@ -189,6 +189,7 @@ test('Locked Asset QA applies contour, aspect, OCR, occurrence and legibility th
       logoTextStatus: 'incorrect',
       lockedAssetQa: [{
         assetId: 'logo-primary',
+        assetType: 'logo',
         occurrenceCount: 2,
         contourSimilarity: 0.81,
         aspectRatioDeviation: 0.08,
@@ -215,6 +216,47 @@ test('Locked Asset QA applies contour, aspect, OCR, occurrence and legibility th
   assert.equal(validation.lockedAssetQaResults[0].repairRecommended, true);
   assert.equal(validation.lockedAssetQaResults[0].fallbackRecommended, true);
   assert.equal(validation.lockedAssetViolations.includes('logo-primary:wrong_text'), true);
+});
+
+test('IP QA locks character identity but does not apply Logo OCR rules', () => {
+  const ipTask = {
+    ...taskContract,
+    referenceAssetIds: ['ip-main'],
+    brandMarkRenderMode: 'locked_asset_render',
+  };
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract: ipTask,
+    runId: 'run-ip-qa',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['one mascot sculpture in a supporting zone'],
+      brandMatch: 'matched',
+      brandToneMatch: 'matched',
+      sceneCompleteness: 'complete',
+      logoTextStatus: 'not_required',
+      lockedAssetQa: [{
+        assetId: 'ip-main',
+        assetType: 'ip_character',
+        occurrenceCount: 1,
+        identitySimilarity: 0.86,
+        proportionMatch: false,
+        signatureFeaturesMatch: true,
+        primaryColorMatch: false,
+        textExactMatch: false,
+        visibleWidthPx: 220,
+        placementMatch: true,
+      }],
+    },
+  });
+  assert.deepEqual(validation.lockedAssetQaResults[0].errors, [
+    'identity_deformation',
+    'character_proportion_error',
+    'primary_color_error',
+  ]);
+  assert.equal(validation.lockedAssetQaResults[0].errors.includes('wrong_text'), false);
 });
 
 test('Correction prompt restores selected visual assets instead of removing them under blank-area mode', () => {

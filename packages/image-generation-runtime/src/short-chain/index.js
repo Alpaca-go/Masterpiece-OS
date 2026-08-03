@@ -11,6 +11,8 @@ export {
 export { createShortChainTaskContract, validateShortChainTaskContract } from './task-contract.js';
 export {
   planSingleLogoPlacement,
+  planLockedAssetPlacements,
+  guardBrandAssetDensity,
   compileSingleLogoPlacementDirectives,
 } from './locked-asset-placement-planner.js';
 export { SHORT_CHAIN_TEMPLATE_ROUTER_VERSION, routeShortChainTemplates } from './template-router.js';

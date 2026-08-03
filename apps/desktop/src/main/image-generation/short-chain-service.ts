@@ -679,9 +679,10 @@ export function createShortChainImageGenerationService(
       return result;
     }
     const placementPlan = compilation.compiledPrompt.lockedAssetPlacementPlan;
-    if (placementPlan && isLogoOnlyRepairCandidate(initialValidation)) {
+    if (placementPlan?.placements.some((item) => item.role === 'primary_signage')
+      && isLogoOnlyRepairCandidate(initialValidation)) {
       const context = await projectContext.getShortChain(input.projectId);
-      const placement = placementPlan.placements[0];
+      const placement = placementPlan.placements.find((item) => item.role === 'primary_signage');
       const asset = placement
         ? context.sourceAssetRefs.find((item) => item.assetId === placement.assetId)
         : null;

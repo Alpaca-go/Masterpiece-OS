@@ -4,7 +4,7 @@ import { routeShortChainTemplates } from './template-router.js';
 import { compileShortChainPrompt } from './prompt-compiler.js';
 import { createSeedreamShortChainAdapter } from './seedream-adapter.js';
 import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
-import { planSingleLogoPlacement } from './locked-asset-placement-planner.js';
+import { planLockedAssetPlacements } from './locked-asset-placement-planner.js';
 
 export function compileShortChainImageGeneration(input) {
   const started = performance.now();
@@ -57,9 +57,21 @@ export function compileShortChainImageGeneration(input) {
     referenceAssetIds,
   }, { now: input.now });
   const route = routeShortChainTemplates(taskContract, { model: adapter.id });
-  const lockedAssetPlacementPlan = planSingleLogoPlacement({
+  const selectedAssets = referenceAssetIds.map((assetId) => {
+    const asset = input.projectContext?.sourceAssetRefs?.find((item) => item.assetId === assetId);
+    return {
+      assetId,
+      type: logoAssetIds.includes(assetId)
+        ? 'logo'
+        : asset?.lockedAssetType
+          || (asset?.role === 'identity' ? 'ip_character'
+            : asset?.role === 'product' || asset?.role === 'package_structure' ? 'packaging_front'
+              : 'other'),
+    };
+  });
+  const lockedAssetPlacementPlan = planLockedAssetPlacements({
     taskContract,
-    selectedLogoAssetIds,
+    selectedAssets,
   });
   const compiledPrompt = compileShortChainPrompt({
     projectContext: input.projectContext,

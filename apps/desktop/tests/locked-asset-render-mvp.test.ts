@@ -57,6 +57,7 @@ test('single Logo MVP repairs only the planned region and preserves the scene di
     limitations: [],
     placements: [{
       assetId: 'logo-1',
+      assetType: 'logo',
       role: 'primary_signage',
       zone: 'central_feature_wall',
       material: 'front_lit_acrylic',

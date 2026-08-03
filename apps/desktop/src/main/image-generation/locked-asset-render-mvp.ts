@@ -48,7 +48,7 @@ export async function repairSingleLogoInPlace(input: {
   simplifyMaterial?: boolean;
 }): Promise<SingleLogoRepairResult> {
   const image = input.run.images[0];
-  const placement = input.placementPlan.placements[0];
+  const placement = input.placementPlan.placements.find((item) => item.role === 'primary_signage');
   if (!image || !placement) throw new Error('Single Logo repair requires one generated image and one placement');
   const resolvedRunRoot = path.resolve(input.runRoot);
   const scenePath = path.resolve(resolvedRunRoot, image.relativePath);
@@ -61,7 +61,7 @@ export async function repairSingleLogoInPlace(input: {
   if (!metadata.width || !metadata.height) throw new Error('Locked Logo has no readable pixel dimensions');
   const temporaryPath = path.join(path.dirname(scenePath), `.locked-asset-${crypto.randomUUID()}.png`);
   const materialMode: LogoPostCompositeInput['materialMode'] = input.mode === 'local_repair'
-    && REPAIR_MATERIALS.has(placement.material)
+    && REPAIR_MATERIALS.has(placement.material as LockedAssetMaterialMode)
     ? input.simplifyMaterial
       ? 'pvc_dimensional'
       : placement.material as LogoPostCompositeInput['materialMode']

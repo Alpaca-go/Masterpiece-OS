@@ -234,11 +234,38 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /prominent, camera-visible brand touchpoint/u);
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /palette, lighting, line rhythm, geometry or mood alone does not count/u);
   assert.match(selectedLogo.compiledPrompt.finalPrompt, /front-lit acrylic/u);
-  assert.match(selectedLogo.compiledPrompt.finalPrompt, /render exactly one primary Logo/u);
+  assert.match(selectedLogo.compiledPrompt.finalPrompt, /one primary asset and no competing focal points/u);
   assert.equal(await fs.stat(path.join(
     selectedLogo.artifactDirectory,
     'locked-asset-placement-plan.json',
   )).then(() => true), true);
+
+  const logoAndIp = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'front',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create a reception with the selected Logo and IP in a clear hierarchy.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: ['logo-asset', 'identity-asset'],
+      brandMarkRenderMode: 'locked_asset_render',
+      materialMode: 'metal_dimensional',
+      brandIntensity: 'balanced',
+      logoUsageMode: 'reference',
+    },
+  });
+  assert.deepEqual(
+    logoAndIp.compiledPrompt.lockedAssetPlacementPlan?.placements.map((item) => item.role),
+    ['primary_signage', 'hero_installation'],
+  );
+  assert.equal(new Set(
+    logoAndIp.compiledPrompt.lockedAssetPlacementPlan?.placements.map((item) => item.zone),
+  ).size, 2);
+  assert.match(logoAndIp.compiledPrompt.finalPrompt, /one primary asset and no competing focal points/u);
 
   await assert.rejects(() => service.compile({
     projectId,
@@ -295,6 +322,9 @@ test('Short-Chain session promotes a formal result to a family-scoped implicit a
   });
   assert.match(identityBound.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1: Provider reference image 1: Locked Mascot/u);
   assert.match(identityBound.compiledPrompt.finalPrompt, /selected identity\/IP character/u);
+  assert.equal(identityBound.compiledPrompt.lockedAssetPlacementPlan?.placements[0]?.assetType, 'ip_character');
+  assert.equal(identityBound.compiledPrompt.lockedAssetPlacementPlan?.placements[0]?.role, 'hero_installation');
+  assert.match(identityBound.compiledPrompt.finalPrompt, /head-to-body proportion range/u);
   assert.doesNotMatch(identityBound.compiledPrompt.finalPrompt, /Do not render any logo, letters, words, or signage copy/u);
 
   const poster = await service.compile({

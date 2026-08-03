@@ -44,13 +44,25 @@ function lockedAssetQaResults(evidence, taskContract) {
       const ocrConfidence = boundedNumber(item.ocrConfidence, 0, 1);
       const materialConfidence = boundedNumber(item.materialConfidence, 0, 1);
       const visibleWidthPx = boundedNumber(item.visibleWidthPx, 0, 100_000);
+      const identitySimilarity = boundedNumber(item.identitySimilarity, 0, 1);
+      const assetType = typeof item.assetType === 'string' ? item.assetType : 'other';
       const errors = [];
       if (occurrenceCount === 0) errors.push('missing_asset');
       if (occurrenceCount > 1) errors.push('duplicate_asset');
-      if (contourSimilarity !== undefined && contourSimilarity < 0.92) errors.push('contour_deformation');
-      if (aspectRatioDeviation !== undefined && aspectRatioDeviation > 0.03) errors.push('aspect_ratio_error');
+      if (assetType === 'ip_character') {
+        if (identitySimilarity !== undefined && identitySimilarity < 0.9) errors.push('identity_deformation');
+        if (item.proportionMatch === false) errors.push('character_proportion_error');
+        if (item.signatureFeaturesMatch === false) errors.push('identity_deformation');
+        if (item.primaryColorMatch === false) errors.push('primary_color_error');
+      } else {
+        const contourMinimum = assetType === 'icon' ? 0.9 : 0.92;
+        const aspectMaximum = assetType === 'icon' ? 0.05 : 0.03;
+        if (contourSimilarity !== undefined && contourSimilarity < contourMinimum) errors.push('contour_deformation');
+        if (aspectRatioDeviation !== undefined && aspectRatioDeviation > aspectMaximum) errors.push('aspect_ratio_error');
+      }
       if (visibleWidthPx !== undefined && visibleWidthPx < 96) errors.push('low_legibility');
-      if (item.textExactMatch === false && (visibleWidthPx === undefined || visibleWidthPx >= 96)) errors.push('wrong_text');
+      if (assetType === 'logo' && item.textExactMatch === false
+        && (visibleWidthPx === undefined || visibleWidthPx >= 96)) errors.push('wrong_text');
       if (item.materialMatch === false) errors.push('material_failure');
       if (item.placementMatch === false) errors.push('wrong_placement');
       const unexpectedLogoCount = Math.max(0, Math.round(Number(item.unexpectedLogoCount) || 0));
@@ -58,6 +70,7 @@ function lockedAssetQaResults(evidence, taskContract) {
       const uniqueErrors = [...new Set(errors)];
       return {
         assetId: item.assetId,
+        assetType,
         passed: uniqueErrors.length === 0,
         occurrenceCount,
         scores: {
@@ -66,14 +79,17 @@ function lockedAssetQaResults(evidence, taskContract) {
           ...(ocrConfidence !== undefined ? { ocrConfidence } : {}),
           ...(materialConfidence !== undefined ? { materialConfidence } : {}),
           ...(visibleWidthPx !== undefined ? { visibleWidthPx } : {}),
+          ...(identitySimilarity !== undefined ? { identitySimilarity } : {}),
         },
         errors: uniqueErrors,
         repairRecommended: uniqueErrors.some((error) => [
           'wrong_text', 'contour_deformation', 'aspect_ratio_error', 'duplicate_asset',
           'unexpected_logo', 'material_failure', 'low_legibility', 'wrong_placement',
+          'identity_deformation', 'character_proportion_error', 'primary_color_error',
         ].includes(error)),
         fallbackRecommended: uniqueErrors.some((error) => [
           'wrong_text', 'contour_deformation', 'aspect_ratio_error', 'missing_asset',
+          'identity_deformation', 'character_proportion_error',
         ].includes(error)),
       };
     });
@@ -82,6 +98,7 @@ function lockedAssetQaResults(evidence, taskContract) {
     if (reported.has(assetId)) continue;
     results.push({
       assetId,
+      assetType: 'other',
       passed: false,
       occurrenceCount: 0,
       scores: {},

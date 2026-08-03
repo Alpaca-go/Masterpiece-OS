@@ -256,6 +256,7 @@ test('Visual Decision Packet roles are reconciled into Short-Chain source assets
     },
   });
   assert.equal(context.sourceAssetRefs[0]?.role, 'logo');
+  assert.equal(context.sourceAssetRefs[0]?.lockedAssetType, 'logo');
   assert.deepEqual(context.lockedAssets.logoAssetIds, ['asset-logo']);
 });
 
