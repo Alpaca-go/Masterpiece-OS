@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import { validatePackagingShotSelection } from '../task-families/packaging/shot-library.js';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 const RATIOS = new Set(['1:1', '4:3', '3:4', '16:9', '9:16']);
@@ -74,6 +75,20 @@ export function createShortChainTaskContract(input, options = {}) {
   if (family === 'vi' && subtype === 'unspecified') {
     throw new Error('VI generation requires a concrete material subtype');
   }
+  if (family === 'packaging' && String(shot).startsWith('PKG-')) {
+    const shotValidation = validatePackagingShotSelection({
+      shotId: shot,
+      subtype,
+      productCount: input.packagingProductCount,
+      openingState: input.packagingOpeningState,
+    });
+    if (!shotValidation.valid) {
+      throw Object.assign(new Error(shotValidation.errors.join(', ')), {
+        code: shotValidation.errors[0],
+        issues: shotValidation.errors,
+      });
+    }
+  }
   return {
     schemaVersion: '1.0',
     taskId: input.taskId || `short-chain-task-${crypto.randomUUID()}`,
@@ -92,6 +107,10 @@ export function createShortChainTaskContract(input, options = {}) {
     materialMode,
     brandIntensity,
     logoUsageMode,
+    ...(family === 'packaging' && Number.isInteger(input.packagingProductCount)
+      ? { packagingProductCount: input.packagingProductCount } : {}),
+    ...(family === 'packaging' && ['open', 'closed', 'partially_open'].includes(input.packagingOpeningState)
+      ? { packagingOpeningState: input.packagingOpeningState } : {}),
     createdAt: options.now || new Date().toISOString(),
   };
 }

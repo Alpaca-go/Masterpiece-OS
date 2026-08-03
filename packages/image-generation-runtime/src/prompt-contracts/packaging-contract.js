@@ -139,7 +139,9 @@ export function compilePackagingPromptContract({
       packagingTranslation.logoPolicy,
       logoUsageMode === 'post_composite'
         ? 'Do not render any logo, brand name, letters, or slogan. Reserve one clean, front-facing, production-credible identity area for controlled post-compositing.'
-        : 'Do not render any logo, letters, words, or slogan. Reserve one clean identity area.',
+        : logoUsageMode === 'reference'
+          ? 'Faithfully apply the selected locked identity reference on the primary packaging surface. Preserve exact contour, proportions, internal geometry and supplied lettering; do not redesign, duplicate or invent text.'
+          : 'Do not render any logo, letters, words, or slogan. Reserve one clean identity area.',
     ], ['packaging_translation.logoPolicy', 'task_contract.logoUsageMode']),
     block('photography_view', PACKAGING_PROMPT_BLOCKS[10][1], [
       packagingTranslation.photographyDirection,

@@ -5,7 +5,12 @@ import {
   compileProjectSpecificGenerationContract,
 } from '../../../creative-production-runtime/src/project-generation-contract.js';
 import { buildPackagingTranslation } from '../../../creative-production-runtime/src/packaging-translation.js';
+import {
+  assertPackagingStructuredAnalysis,
+  buildPackagingStructuredAnalysis,
+} from '../../../creative-production-runtime/src/packaging-analysis.js';
 import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
+import { getPackagingShotDefinition } from '../task-families/packaging/shot-library.js';
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 import { compileSingleLogoPlacementDirectives } from './locked-asset-placement-planner.js';
 
@@ -581,8 +586,14 @@ export function compileShortChainPrompt({
   const projectDecisions = projectGenerationContract?.projectSpecificDecisions || {};
 
   if (packet && taskContract.deliverableFamily === 'packaging') {
+    const packagingStructuredAnalysis = assertPackagingStructuredAnalysis(buildPackagingStructuredAnalysis({
+      visualDecisionPacket: packet,
+      taskContract,
+      shotDefinition: getPackagingShotDefinition(taskContract.shot),
+    }));
     const packagingTranslation = buildPackagingTranslation({
       visualDecisionPacket: packet,
+      packagingAnalysis: packagingStructuredAnalysis,
     });
     const packagingContract = compilePackagingPromptContract({
       projectContract: projectGenerationContract,
@@ -623,6 +634,7 @@ export function compileShortChainPrompt({
       blocks,
       sourceMap: packagingContract.sourceMap,
       projectGenerationContract,
+      packagingStructuredAnalysis,
       packagingTranslation,
       effectiveVisualDecisionPacket: packet,
       userConfirmedVisualDecision: confirmedDecision.confirmation,

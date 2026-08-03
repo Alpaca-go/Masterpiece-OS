@@ -148,6 +148,11 @@ const SHOTS = {
     entrance_three_quarter_wide: ['View from near the entrance in a three-quarter wide angle, showing the main function, boundaries, foreground/background, and circulation.'],
   },
   packaging: {
+    'PKG-HERO-SINGLE': [
+      'Compose exactly one complete packaged product as the hero object; do not turn supporting props into additional products.',
+      'Use a commercial three-quarter product view that clearly proves the primary face, side depth, structure, substrate and finish.',
+      'Keep the object fully visible with controlled contact shadow, purposeful negative space and no cropped structural edge.',
+    ],
     three_quarter_hero: ['Use a three-quarter hero angle that clearly explains front, side, depth, and construction.'],
     top_down: ['Use a true top-down composition that preserves package geometry and opening relationships.'],
     open_box: ['Show the package open with a physically credible lid, drawer, insert, hinge, or closure state.'],

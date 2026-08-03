@@ -51,6 +51,7 @@ export function validatePackagingTranslation(translation) {
 }
 
 export function buildPackagingTranslation(input = {}) {
+  const analysis = input.packagingAnalysis;
   const source = input.packagingTranslation
     || input.visualDecisionPacket?.mediaTranslations?.packaging
     || {};
@@ -105,29 +106,29 @@ export function buildPackagingTranslation(input = {}) {
         forbiddenUse: list(item?.forbiddenUse),
       }] : [];
     });
-  const clean = (value) => list(value).filter((item) => !spatialLeaks(item));
+  const clean = (...values) => list(...values).filter((item) => !spatialLeaks(item));
   const translation = {
     status: 'insufficient',
     packagingConcept: spatialLeaks(source.packagingConcept)
-      ? '' : String(source.packagingConcept ?? '').trim(),
+      ? '' : String(source.packagingConcept ?? analysis?.brandExpression?.[0] ?? '').trim(),
     productAndCategoryRole: clean(source.productAndCategoryRole),
     productRoleEvidenceRefs: list(source.productRoleEvidenceRefs),
-    structureStrategy,
+    structureStrategy: structureStrategy.length ? structureStrategy : (analysis?.packageStructure ?? []),
     openingExperience: clean(source.openingExperience),
-    productArrangement: clean(source.productArrangement),
+    productArrangement: clean(source.productArrangement, analysis?.productArrangement),
     graphicTranslation,
-    informationHierarchy: clean(source.informationHierarchy),
-    substrateLanguage: clean(source.substrateLanguage),
-    craftLanguage,
+    informationHierarchy: clean(source.informationHierarchy, analysis?.informationHierarchy),
+    substrateLanguage: clean(source.substrateLanguage, analysis?.material),
+    craftLanguage: craftLanguage.length ? craftLanguage : (analysis?.craft ?? []),
     colorBehavior: {
       base: clean(source.colorBehavior?.base),
       identity: clean(source.colorBehavior?.identity),
       accent: clean(source.colorBehavior?.accent),
       forbidden: clean(source.colorBehavior?.forbidden),
     },
-    logoPolicy: clean(source.logoPolicy),
+    logoPolicy: clean(source.logoPolicy, analysis?.logoTreatment),
     seriesArchitecture: clean(source.seriesArchitecture),
-    photographyDirection: clean(source.photographyDirection),
+    photographyDirection: clean(source.photographyDirection, analysis?.camera, analysis?.composition),
     packagingMisreadRisks: clean(source.packagingMisreadRisks),
     missingRequiredFields: [],
   };

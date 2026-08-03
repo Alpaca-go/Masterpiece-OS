@@ -808,6 +808,36 @@ export interface PackagingLockedAssetBinding {
   evidenceRefs: string[];
   mayAffectScene: false;
 }
+
+export interface PackagingStructuredAnalysis {
+  schemaVersion: '1.0';
+  status: 'ready' | 'insufficient';
+  shotId: string;
+  packageStructure: Array<{ structure: string; purpose: string; locked: boolean; evidenceRefs: string[] }>;
+  productArrangement: string[];
+  material: string[];
+  craft: Array<{ craft: string; purpose: string; forbiddenUse: string[] }>;
+  logoTreatment: string[];
+  graphicSystem: Array<{ sourceMeaning: string; expression: string; forbiddenLiteralUse: string[] }>;
+  informationHierarchy: string[];
+  colorBehavior: { base: string[]; identity: string[]; accent: string[]; forbidden: string[] };
+  camera: string[];
+  composition: string[];
+  lighting: string[];
+  scene: string[];
+  props: string[];
+  brandExpression: string[];
+  confidence: { structure: number; product: number; visualTranslation: number; overall: number };
+  missingRequiredFields: string[];
+}
+
+export interface PackagingEvaluationResult {
+  schemaVersion: '1.0';
+  shotId: PackagingShotId;
+  status: 'passed' | 'failed' | 'unverified';
+  criteria: Array<{ id: string; passed: boolean; score?: number; reason: string }>;
+  failures: string[];
+}
 export type ShortChainAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
 /** @deprecated Persisted v1 compatibility only. New tasks use brandMarkRenderMode. */
 export type ShortChainLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
@@ -967,6 +997,8 @@ export interface ShortChainTaskContract {
   brandIntensity?: LockedAssetBrandIntensity;
   /** @deprecated Persisted v1 compatibility only. */
   logoUsageMode?: ShortChainLogoUsageMode;
+  packagingProductCount?: number;
+  packagingOpeningState?: 'open' | 'closed' | 'partially_open';
   createdAt: string;
 }
 
@@ -1011,6 +1043,7 @@ export interface ShortChainCompiledPrompt {
   }>;
   sourceMap: Record<string, string[]>;
   effectiveVisualDecisionPacket?: unknown;
+  packagingStructuredAnalysis?: PackagingStructuredAnalysis;
   lockedAssetPlacementPlan?: LockedAssetPlacementPlan | null;
   userConfirmedVisualDecision?: {
     id: string;
@@ -1111,7 +1144,8 @@ export type ShortChainDeliverableMismatchType =
   | 'brand_tone_mismatch'
   | 'scene_incomplete'
   | 'logo_text_error'
-  | 'quality_issue';
+  | 'quality_issue'
+  | 'packaging_quality_failure';
 
 export type LockedAssetQAError =
   | 'missing_asset'
@@ -1194,6 +1228,7 @@ export interface ShortChainDeliverableValidation {
   logoTextStatus: 'correct' | 'incorrect' | 'absent' | 'uncertain' | 'not_required';
   qualityIssues: string[];
   lockedAssetQaResults?: LockedAssetQAResult[];
+  packagingEvaluation?: PackagingEvaluationResult;
   mismatchTypes: ShortChainDeliverableMismatchType[];
   retryRecommended: boolean;
   validatorId: string;

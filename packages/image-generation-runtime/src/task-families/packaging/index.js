@@ -9,3 +9,4 @@ export {
   bindPackagingLockedAssets,
   validatePackagingLockedAssetBindings,
 } from './locked-assets.js';
+export { evaluatePackagingEvidence } from './evaluation.js';

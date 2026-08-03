@@ -1,5 +1,7 @@
+import { evaluatePackagingEvidence } from '../task-families/packaging/evaluation.js';
+
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
-export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.0.0';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.1.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -154,6 +156,9 @@ export function validateShortChainDeliverableEvidence({
     ? evidence.logoTextStatus
     : 'uncertain';
   const qualityIssues = list(evidence?.qualityIssues);
+  const packagingEvaluation = taskContract.deliverableFamily === 'packaging'
+    ? evaluatePackagingEvidence({ shotId: taskContract.shot, evidence })
+    : null;
   const assetQa = lockedAssetQaResults(evidence, taskContract);
   for (const result of assetQa) {
     for (const error of result.errors) {
@@ -191,8 +196,10 @@ export function validateShortChainDeliverableEvidence({
   if (sceneCompleteness === 'incomplete') mismatchTypes.push('scene_incomplete');
   if (logoTextStatus === 'incorrect') mismatchTypes.push('logo_text_error');
   if (qualityIssues.length) mismatchTypes.push('quality_issue');
+  if (packagingEvaluation?.status === 'failed') mismatchTypes.push('packaging_quality_failure');
 
-  const unverified = detectedFamily === 'unknown' || visibleEvidence.length === 0;
+  const unverified = detectedFamily === 'unknown' || visibleEvidence.length === 0
+    || packagingEvaluation?.status === 'unverified';
   const status = unverified ? 'unverified' : mismatchTypes.length ? 'failed' : 'passed';
   return {
     schemaVersion: '1.0',
@@ -213,6 +220,7 @@ export function validateShortChainDeliverableEvidence({
     logoTextStatus,
     qualityIssues,
     lockedAssetQaResults: assetQa,
+    ...(packagingEvaluation ? { packagingEvaluation } : {}),
     mismatchTypes,
     retryRecommended: status === 'failed' && mismatchTypes.some((type) => [
       'wrong_family',
@@ -224,6 +232,7 @@ export function validateShortChainDeliverableEvidence({
       'scene_incomplete',
       'logo_text_error',
       'quality_issue',
+      'packaging_quality_failure',
     ].includes(type)),
     validatorId: SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID,
     validatorVersion: SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION,

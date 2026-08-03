@@ -130,3 +130,8 @@ export {
   validatePackagingTranslation,
   assertPackagingTranslation,
 } from './packaging-translation.js';
+export {
+  buildPackagingStructuredAnalysis,
+  validatePackagingStructuredAnalysis,
+  assertPackagingStructuredAnalysis,
+} from './packaging-analysis.js';
