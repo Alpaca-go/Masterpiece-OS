@@ -1,0 +1,17 @@
+{
+  "name": "@masterpiece/creative-intelligence-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-led analysis and creative decision orchestration for Masterpiece OS.",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./*": "./src/*",
+    "./adapters/document-adapter": "./src/adapters/document-adapter.js",
+    "./adapters/visual-scheme-adapter": "./src/adapters/visual-scheme-adapter.js",
+    "./evidence-ledger": "./src/evidence-ledger.js",
+    "./project-truth-model": "./src/project-truth-model.js",
+    "./shadow-mode": "./src/shadow-mode.js"
+  }
+}

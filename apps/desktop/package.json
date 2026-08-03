@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@masterpiece/analysis-runtime": "file:../packages/analysis-runtime",
+    "@masterpiece/creative-intelligence-runtime": "file:../packages/creative-intelligence-runtime",
     "@masterpiece/creative-production-runtime": "file:../packages/creative-production-runtime",
     "@masterpiece/document-ingestion": "file:../packages/document-ingestion",
     "@masterpiece/image-generation-adapter": "file:../packages/image-generation-adapter",

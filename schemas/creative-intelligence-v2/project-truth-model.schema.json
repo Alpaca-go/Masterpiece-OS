@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/project-truth-model.schema.json",
+  "title": "Project Truth Model V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "projectId", "generatedAt", "evidenceLedgerFingerprint", "truthFingerprint",
+    "brandFacts", "productFacts", "audienceFacts", "businessGoals", "confirmedUserIntent",
+    "observedVisualAssets", "currentVisualPatterns", "constraints", "conflicts", "assumptions",
+    "openQuestions", "confidence"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "2.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "evidenceLedgerFingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "truthFingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "brandFacts": { "$ref": "#/$defs/claims" },
+    "productFacts": { "$ref": "#/$defs/claims" },
+    "audienceFacts": { "$ref": "#/$defs/claims" },
+    "businessGoals": { "$ref": "#/$defs/claims" },
+    "confirmedUserIntent": { "$ref": "#/$defs/claims" },
+    "observedVisualAssets": { "$ref": "#/$defs/claims" },
+    "currentVisualPatterns": { "$ref": "#/$defs/claims" },
+    "constraints": { "$ref": "#/$defs/claims" },
+    "conflicts": { "$ref": "#/$defs/claims" },
+    "assumptions": { "$ref": "#/$defs/claims" },
+    "openQuestions": { "$ref": "#/$defs/claims" },
+    "confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall", "bySection"],
+      "properties": {
+        "overall": { "type": "number", "minimum": 0, "maximum": 1 },
+        "bySection": {
+          "type": "object",
+          "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "claims": { "type": "array", "items": { "$ref": "#/$defs/claim" } },
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content", "evidenceRefs", "confidence", "status", "subjectPath"],
+      "properties": {
+        "content": { "type": "string", "minLength": 1 },
+        "evidenceRefs": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" } },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "status": { "enum": ["confirmed", "observed", "unconfirmed", "conflicted", "rejected"] },
+        "subjectPath": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

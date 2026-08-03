@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/evidence-ledger.schema.json",
+  "title": "Evidence Ledger V2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "projectId", "generatedAt", "sourceFingerprint", "evidence"],
+  "properties": {
+    "schemaVersion": { "const": "2.0" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "sourceFingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/evidence" }
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceType", "sourceId"],
+      "properties": {
+        "sourceType": { "enum": ["document", "image", "system", "user"] },
+        "sourceId": { "type": "string", "minLength": 1 },
+        "location": { "type": "string", "minLength": 1 },
+        "label": { "type": "string", "minLength": 1 }
+      }
+    },
+    "statusHistory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "sourceType", "sourceId"],
+      "properties": {
+        "status": { "enum": ["confirmed", "observed", "unconfirmed", "conflicted", "rejected"] },
+        "sourceType": { "enum": ["document", "image", "system", "user"] },
+        "sourceId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "evidenceType", "subjectPath", "claimMode", "content", "confidence", "status", "sources", "statusHistory"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^EV-[a-f0-9]{16}$" },
+        "evidenceType": { "enum": ["document_fact", "visual_observation", "user_intent", "system_assumption", "system_recommendation", "source_conflict"] },
+        "subjectPath": { "type": "string", "minLength": 1 },
+        "claimMode": { "enum": ["one", "many"] },
+        "content": { "type": "string", "minLength": 1 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "status": { "enum": ["confirmed", "observed", "unconfirmed", "conflicted", "rejected"] },
+        "sources": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/source" } },
+        "statusHistory": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/statusHistory" } }
+      }
+    }
+  }
+}

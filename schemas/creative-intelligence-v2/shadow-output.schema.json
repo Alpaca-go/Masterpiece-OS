@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://masterpiece.local/schemas/creative-intelligence-v2/shadow-output.schema.json",
+  "title": "Creative Intelligence Shadow Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "mode", "status", "projectId", "generatedAt", "sourceFingerprint", "artifacts", "downstreamWritePolicy"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "mode": { "enum": ["document", "visual", "joint"] },
+    "status": { "const": "shadow_only" },
+    "projectId": { "type": "string", "minLength": 1 },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "sourceFingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidenceLedger", "projectTruthModel"],
+      "properties": {
+        "evidenceLedger": { "$ref": "./evidence-ledger.schema.json" },
+        "projectTruthModel": { "$ref": "./project-truth-model.schema.json" }
+      }
+    },
+    "downstreamWritePolicy": { "const": "disabled" }
+  }
+}
