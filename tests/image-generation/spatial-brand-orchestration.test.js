@@ -3,6 +3,7 @@ import test from 'node:test';
 import {
   buildSpatialBrandOrchestration,
   compileShortChainImageGeneration,
+  guardSpatialBrandDensity,
   resolveSpatialSceneRole,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
@@ -16,6 +17,41 @@ test('Phase 1 resolves scene roles without a model call and preserves explicit p
   assert.deepEqual(resolveSpatialSceneRole({ subtype: 'space', shot: 'entrance_wide' }), {
     sceneRole: 'entrance', source: 'auto_resolved',
   });
+});
+
+test('Phase 3 density guard removes duplicate Logo and text overflow by priority', () => {
+  const orchestration = buildSpatialBrandOrchestration({
+    task: { subtype: 'reception', shot: 'front' }, projectContext: {},
+    selectedAssets: [
+      { assetId: 'logo-primary', type: 'logo' },
+      { assetId: 'logo-secondary', type: 'logo' },
+      { assetId: 'icon', type: 'icon' },
+    ],
+    userBrandIntensity: 'balanced',
+  });
+  orchestration.assetBudget.textBudget.headlineGroups = 2;
+  orchestration.assetBudget.textBudget.supportingTextGroups = 2;
+  orchestration.assetBudget.textBudget.smallTextAllowed = true;
+  const guarded = guardSpatialBrandDensity(orchestration);
+  assert.equal(guarded.assetBudget.secondaryAssets.some((asset) => asset.assetType === 'logo'), false);
+  assert.equal(guarded.assetBudget.textBudget.supportingTextGroups, 0);
+  assert.equal(guarded.assetBudget.textBudget.smallTextAllowed, false);
+  assert.ok(guarded.densityIssues.some((issue) => issue.code === 'DUPLICATE_LOGO'));
+  assert.ok(guarded.densityIssues.some((issue) => issue.code === 'TOO_MANY_TEXT_GROUPS'));
+  assert.ok(guarded.densityIssues.some((issue) => issue.code === 'SMALL_TEXT_NOT_ALLOWED'));
+});
+
+test('Phase 3 strengthens a weak subtle scene through style inheritance, never a second Logo', () => {
+  const orchestration = buildSpatialBrandOrchestration({
+    task: { subtype: 'lobby', shot: 'wide' }, projectContext: {},
+    selectedAssets: [{ assetId: 'logo', type: 'logo' }],
+  });
+  Object.keys(orchestration.assetBudget.styleInheritance)
+    .forEach((key) => { orchestration.assetBudget.styleInheritance[key] = false; });
+  const guarded = guardSpatialBrandDensity(orchestration);
+  assert.equal(guarded.assetBudget.styleInheritance.spatialOrder, true);
+  assert.equal(guarded.assetBudget.secondaryAssets.length, 0);
+  assert.ok(guarded.densityIssues.some((issue) => issue.code === 'BRAND_EXPRESSION_TOO_WEAK'));
 });
 
 test('Phase 1 gives an expressive entrance one IP hero and one non-repeating Logo', () => {

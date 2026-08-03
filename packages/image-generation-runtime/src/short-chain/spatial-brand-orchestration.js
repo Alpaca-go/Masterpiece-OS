@@ -249,4 +249,120 @@ export function compileSpatialBrandOrchestrationRules(orchestration) {
   };
 }
 
+function densityIssue(code, severity, message, suggestedFix) {
+  return { code, severity, message, suggestedFix };
+}
+
+export function guardSpatialBrandDensity(orchestration) {
+  if (!orchestration) return null;
+  const budget = structuredClone(orchestration.assetBudget);
+  const issues = [];
+  const originalAssets = [budget.primaryAsset, ...budget.secondaryAssets].filter(Boolean);
+  const logos = originalAssets.filter((asset) => asset.assetType === 'logo');
+  if (logos.length > 1) {
+    const retainedLogoId = budget.primaryAsset?.assetType === 'logo'
+      ? budget.primaryAsset.assetId : logos[0].assetId;
+    const removed = budget.secondaryAssets.filter((asset) =>
+      asset.assetType === 'logo' && asset.assetId !== retainedLogoId);
+    budget.secondaryAssets = budget.secondaryAssets.filter((asset) => !removed.includes(asset));
+    budget.prohibitedAssetIds.push(...removed.map((asset) => asset.assetId));
+    issues.push(densityIssue(
+      'DUPLICATE_LOGO', 'error',
+      'More than one complete Logo was scheduled for the same image.',
+      `Retained ${retainedLogoId} once and prohibited the remaining complete Logo assets.`,
+    ));
+  }
+  if (budget.secondaryAssets.length > 1) {
+    const priority = { ip_character: 4, brand_installation: 4, icon: 2, logo: 5, other: 1 };
+    const retained = [...budget.secondaryAssets]
+      .sort((a, b) => (priority[b.assetType] || 0) - (priority[a.assetType] || 0))[0];
+    const removed = budget.secondaryAssets.filter((asset) => asset.assetId !== retained.assetId);
+    budget.secondaryAssets = [retained];
+    budget.prohibitedAssetIds.push(...removed.map((asset) => asset.assetId));
+    issues.push(densityIssue(
+      'BRAND_DENSITY_OVERFLOW', 'error',
+      'The explicit brand asset schedule exceeded one primary plus one supporting asset.',
+      `Retained ${retained.assetId} as the only supporting asset; inherit other identity through style rather than literal repetition.`,
+    ));
+  }
+  const totalTextGroups = budget.textBudget.lockedLogoGroups
+    + budget.textBudget.headlineGroups + budget.textBudget.supportingTextGroups;
+  const maximumTextGroups = budget.brandIntensity === 'subtle' ? 1 : 2;
+  if (totalTextGroups > maximumTextGroups) {
+    budget.textBudget.supportingTextGroups = 0;
+    budget.textBudget.headlineGroups = Math.min(
+      budget.textBudget.headlineGroups,
+      Math.max(0, maximumTextGroups - budget.textBudget.lockedLogoGroups),
+    );
+    issues.push(densityIssue(
+      'TOO_MANY_TEXT_GROUPS', 'error',
+      `Scheduled text groups ${totalTextGroups} exceeded the ${maximumTextGroups}-group budget.`,
+      'Removed supporting copy first and limited the image to one approved headline after the locked Logo.',
+    ));
+  }
+  if (budget.textBudget.smallTextAllowed || budget.textBudget.microTextAllowed) {
+    budget.textBudget.smallTextAllowed = false;
+    budget.textBudget.microTextAllowed = false;
+    issues.push(densityIssue(
+      'SMALL_TEXT_NOT_ALLOWED', 'error',
+      'Small or micro text was enabled for a generated spatial image.',
+      'Disabled small and micro text; use blank labels, symbols or simple indexing instead.',
+    ));
+  }
+  const occupiedZones = new Set();
+  if (budget.primaryAsset) occupiedZones.add(budget.primaryAsset.targetZone);
+  budget.secondaryAssets = budget.secondaryAssets.filter((asset) => {
+    const zones = asset.allowedZones.filter((zone) => !occupiedZones.has(zone));
+    if (!zones.length) {
+      budget.prohibitedAssetIds.push(asset.assetId);
+      issues.push(densityIssue(
+        'ASSET_ZONE_CONFLICT', 'error',
+        `${asset.assetId} competed with the primary asset on the same architectural carrier.`,
+        'Removed the lower-priority placement instead of stacking brand assets on one surface.',
+      ));
+      return false;
+    }
+    asset.allowedZones = zones;
+    zones.forEach((zone) => occupiedZones.add(zone));
+    return true;
+  });
+  const inheritsSpatialIdentity = budget.styleInheritance.palette
+    && budget.styleInheritance.shapeLanguage
+    && budget.styleInheritance.patternRhythm
+    && budget.styleInheritance.spatialOrder;
+  if (budget.brandIntensity === 'subtle' && !inheritsSpatialIdentity) {
+    Object.assign(budget.styleInheritance, {
+      palette: true, shapeLanguage: true, patternRhythm: true, spatialOrder: true,
+    });
+    issues.push(densityIssue(
+      'BRAND_EXPRESSION_TOO_WEAK', 'warning',
+      'The subtle scene relied on a mark without enough inherited brand order.',
+      'Enabled palette, shape language, pattern rhythm and spatial order; no additional Logo was added.',
+    ));
+  }
+  const textSafetyZones = orchestration.textSafetyZones.map((zone) => ({ ...zone }));
+  if (!textSafetyZones.some((zone) => zone.zoneId === 'all_unplanned_surfaces' && zone.policy === 'no_text')) {
+    textSafetyZones.push({
+      zoneId: 'all_unplanned_surfaces',
+      zoneDescription: 'Every unplanned architectural and furnishing surface',
+      policy: 'no_text',
+      maxTextGroups: 0,
+    });
+    issues.push(densityIssue(
+      'BRAND_DENSITY_OVERFLOW', 'warning',
+      'Unplanned surfaces did not have a fail-closed text policy.',
+      'Added a no-text policy for every unplanned surface.',
+    ));
+  }
+  return {
+    ...orchestration,
+    assetBudget: {
+      ...budget,
+      prohibitedAssetIds: [...new Set(budget.prohibitedAssetIds)],
+    },
+    textSafetyZones,
+    densityIssues: [...orchestration.densityIssues, ...issues],
+  };
+}
+
 export { SCENE_ROLE_DEFAULTS };

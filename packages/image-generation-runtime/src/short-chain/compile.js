@@ -8,6 +8,7 @@ import { planLockedAssetPlacements } from './locked-asset-placement-planner.js';
 import {
   buildSpatialBrandOrchestration,
   compileSpatialBrandOrchestrationRules,
+  guardSpatialBrandDensity,
 } from './spatial-brand-orchestration.js';
 
 export function compileShortChainImageGeneration(input) {
@@ -63,13 +64,13 @@ export function compileShortChainImageGeneration(input) {
               : asset?.role === 'icon' ? 'icon' : 'other'),
     };
   });
-  const spatialBrandOrchestration = input.task?.deliverableFamily === 'space'
-    ? buildSpatialBrandOrchestration({
+  let spatialBrandOrchestration = input.task?.deliverableFamily === 'space'
+    ? guardSpatialBrandDensity(buildSpatialBrandOrchestration({
       task: input.task,
       projectContext: input.projectContext,
       selectedAssets,
       userBrandIntensity: requestedBrandIntensity,
-    })
+    }))
     : null;
   if (spatialBrandOrchestration) {
     spatialBrandOrchestration.compiledRules = compileSpatialBrandOrchestrationRules(spatialBrandOrchestration);
