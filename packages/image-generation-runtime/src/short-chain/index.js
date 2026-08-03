@@ -23,6 +23,7 @@ export {
   buildBrandAssetBudget,
   buildTextSafetyZones,
   buildSpatialBrandOrchestration,
+  compileSpatialBrandOrchestrationRules,
 } from './spatial-brand-orchestration.js';
 export { SHORT_CHAIN_TEMPLATE_ROUTER_VERSION, routeShortChainTemplates } from './template-router.js';
 export {

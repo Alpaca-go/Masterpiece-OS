@@ -5,6 +5,10 @@ import { compileShortChainPrompt } from './prompt-compiler.js';
 import { createSeedreamShortChainAdapter } from './seedream-adapter.js';
 import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 import { planLockedAssetPlacements } from './locked-asset-placement-planner.js';
+import {
+  buildSpatialBrandOrchestration,
+  compileSpatialBrandOrchestrationRules,
+} from './spatial-brand-orchestration.js';
 
 export function compileShortChainImageGeneration(input) {
   const started = performance.now();
@@ -34,9 +38,8 @@ export function compileShortChainImageGeneration(input) {
   const materialMode = input.task?.materialMode
     || input.projectContext?.promptSourceObject?.lockedAssets?.materialMode
     || 'auto';
-  const brandIntensity = input.task?.brandIntensity
-    || input.projectContext?.promptSourceObject?.lockedAssets?.brandIntensity
-    || 'balanced';
+  const requestedBrandIntensity = input.task?.brandIntensity
+    || input.projectContext?.promptSourceObject?.lockedAssets?.brandIntensity;
   const logoUsageMode = brandMarkRenderMode === 'no_logo_preview'
     ? 'blank_area'
     : selectedLogoAssetId ? 'reference' : 'blank_area';
@@ -48,15 +51,6 @@ export function compileShortChainImageGeneration(input) {
       'Logo reference mode requires the confirmed Logo to be selected.',
     ), { code: 'SHORT_CHAIN_LOGO_REFERENCE_MISSING' });
   }
-  const taskContract = createShortChainTaskContract({
-    ...input.task,
-    brandMarkRenderMode,
-    materialMode,
-    brandIntensity,
-    logoUsageMode,
-    referenceAssetIds,
-  }, { now: input.now });
-  const route = routeShortChainTemplates(taskContract, { model: adapter.id });
   const selectedAssets = referenceAssetIds.map((assetId) => {
     const asset = input.projectContext?.sourceAssetRefs?.find((item) => item.assetId === assetId);
     return {
@@ -66,12 +60,33 @@ export function compileShortChainImageGeneration(input) {
         : asset?.lockedAssetType
           || (asset?.role === 'identity' ? 'ip_character'
             : asset?.role === 'product' || asset?.role === 'package_structure' ? 'packaging_front'
-              : 'other'),
+              : asset?.role === 'icon' ? 'icon' : 'other'),
     };
   });
+  const spatialBrandOrchestration = input.task?.deliverableFamily === 'space'
+    ? buildSpatialBrandOrchestration({
+      task: input.task,
+      projectContext: input.projectContext,
+      selectedAssets,
+      userBrandIntensity: requestedBrandIntensity,
+    })
+    : null;
+  if (spatialBrandOrchestration) {
+    spatialBrandOrchestration.compiledRules = compileSpatialBrandOrchestrationRules(spatialBrandOrchestration);
+  }
+  const taskContract = createShortChainTaskContract({
+    ...input.task,
+    brandMarkRenderMode,
+    materialMode,
+    brandIntensity: spatialBrandOrchestration?.brandIntensity || requestedBrandIntensity || 'balanced',
+    logoUsageMode,
+    referenceAssetIds,
+  }, { now: input.now });
+  const route = routeShortChainTemplates(taskContract, { model: adapter.id });
   const lockedAssetPlacementPlan = planLockedAssetPlacements({
     taskContract,
     selectedAssets,
+    assetBudget: spatialBrandOrchestration?.assetBudget,
   });
   const compiledPrompt = compileShortChainPrompt({
     projectContext: input.projectContext,
@@ -82,6 +97,7 @@ export function compileShortChainImageGeneration(input) {
     approvedCreativeDecision: input.approvedCreativeDecision,
     userConfirmedVisualDecision: input.userConfirmedVisualDecision,
     lockedAssetPlacementPlan,
+    spatialBrandOrchestration,
   });
   compiledPrompt.preflightReport = runPromptPreflightGate({
     finalPrompt: compiledPrompt.finalPrompt,

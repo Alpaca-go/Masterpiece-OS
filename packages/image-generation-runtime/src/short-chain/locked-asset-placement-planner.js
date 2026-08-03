@@ -81,7 +81,7 @@ export function guardBrandAssetDensity(plan) {
   return plan;
 }
 
-export function planLockedAssetPlacements({ taskContract, selectedAssets, selectedLogoAssetIds }) {
+export function planLockedAssetPlacements({ taskContract, selectedAssets, selectedLogoAssetIds, assetBudget }) {
   const selected = normalizeSelected(selectedAssets, selectedLogoAssetIds);
   if (taskContract.deliverableFamily !== 'space'
     || taskContract.brandMarkRenderMode !== 'locked_asset_render'
@@ -93,13 +93,17 @@ export function planLockedAssetPlacements({ taskContract, selectedAssets, select
   if (logoCount > 1) throw Object.assign(new Error('Phase 4 supports Logo + IP or Logo + icon, not multiple Logos.'), {
     code: 'LOCKED_ASSET_DUPLICATE_LOGO_PLAN',
   });
-  const primary = selected.find((item) => item.type === 'logo')
+  const primary = selected.find((item) => item.assetId === assetBudget?.primaryAsset?.assetId)
+    || selected.find((item) => item.type === 'logo')
     || selected.find((item) => item.type === 'ip_character')
     || selected[0];
   const supporting = selected.find((item) => item.assetId !== primary.assetId);
   const requestedMaterial = taskContract.materialMode || 'auto';
   const logoMaterial = requestedMaterial === 'auto' ? 'front_lit_acrylic' : requestedMaterial;
-  const location = primaryLocation(taskContract.shot);
+  const inferredLocation = primaryLocation(taskContract.shot);
+  const location = assetBudget?.primaryAsset?.targetZone
+    ? { ...inferredLocation, zone: assetBudget.primaryAsset.targetZone }
+    : inferredLocation;
   const limitations = [];
   if (primary.type === 'logo' && !MVP_LOGO_MATERIALS.has(logoMaterial)) {
     limitations.push(`logo_material_requires_strict_qa:${logoMaterial}`);

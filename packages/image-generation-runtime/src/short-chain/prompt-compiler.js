@@ -19,7 +19,7 @@ import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decisi
 import { compileSingleLogoPlacementDirectives } from './locked-asset-placement-planner.js';
 
 export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
-export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.5.0';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = '4.6.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -369,12 +369,12 @@ function fitBlocksToAdapterBudget(blocks, adapter) {
       .map((id) => cloned.find((block) => block.id === id))
       .filter(Boolean)
       .flatMap((block) => block.items.map((item, index) => ({ block, item, index })))
-      .filter((candidate) => [...candidate.item].length > 80)
+      .filter((candidate) => [...candidate.item].length > 32)
       .sort((a, b) => [...b.item].length - [...a.item].length);
     const target = candidates[0];
     if (!target) break;
     const characters = [...target.item];
-    const nextLength = Math.max(80, characters.length - excess - 1);
+    const nextLength = Math.max(32, Math.min(characters.length - 1, characters.length - excess - 1));
     target.block.items[target.index] = `${characters.slice(0, nextLength).join('').trimEnd()}…`;
     truncatedItemCount += 1;
     prompt = render();
@@ -487,6 +487,7 @@ export function compileShortChainPrompt({
   approvedCreativeDecision,
   userConfirmedVisualDecision,
   lockedAssetPlacementPlan,
+  spatialBrandOrchestration,
 }) {
   if (projectContext.schemaVersion !== '2.0') {
     throw new Error('Short-Chain prompt compiler requires Project Visual Context 2.0');
@@ -537,6 +538,7 @@ export function compileShortChainPrompt({
     promptAsset?.negativeConstraints,
     packetSource ? ['随机中文', '错误英文品牌名', '自行生成 slogan', '模糊文字'] : source?.negativeRules?.model,
     templateSections('negative'),
+    spatialBrandOrchestration?.compiledRules?.negative,
   );
   const colorItems = packetSource
     ? cleanList(
@@ -726,6 +728,7 @@ export function compileShortChainPrompt({
         taskContract.mustInclude.map((item) => `Must include: ${item}`),
         lockedAssetRenderSettingDirectives(taskContract),
         compileSingleLogoPlacementDirectives(lockedAssetPlacementPlan),
+        spatialBrandOrchestration?.compiledRules?.positive,
         referenceDirectives,
         taskContract.scene ? `Scene: ${taskContract.scene}` : '',
         `Aspect ratio: ${taskContract.aspectRatio}`,
@@ -1082,6 +1085,7 @@ export function compileShortChainPrompt({
     spatialTranslation: packetSource?.spatial || null,
     effectiveVisualDecisionPacket: packet,
     lockedAssetPlacementPlan: lockedAssetPlacementPlan || null,
+    spatialBrandOrchestration: spatialBrandOrchestration || null,
     userConfirmedVisualDecision: confirmedDecision.confirmation,
     completeness: {
       complete: true,

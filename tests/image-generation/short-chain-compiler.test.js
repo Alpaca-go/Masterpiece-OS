@@ -199,7 +199,7 @@ test('Golden calibration compiles thirteen traceable blocks from Jiuzhou project
   ]) {
     assert.match(result.compiledPrompt.finalPrompt, new RegExp(signal, 'u'));
   }
-  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.5.0');
+  assert.equal(result.compiledPrompt.trace.compilerVersion, '4.6.0');
   assert.equal(result.compiledPrompt.trace.promptCharacters <= 7_500, true);
 });
 

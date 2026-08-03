@@ -219,4 +219,34 @@ export function buildSpatialBrandOrchestration(input) {
   };
 }
 
+export function compileSpatialBrandOrchestrationRules(orchestration) {
+  if (!orchestration) return { positive: [], negative: [] };
+  const { assetBudget } = orchestration;
+  const enabledInheritance = Object.entries(assetBudget.styleInheritance)
+    .filter(([, enabled]) => enabled)
+    .map(([name]) => name);
+  return {
+    positive: [
+      `SCENE ROLE: ${orchestration.sceneRole}.`,
+      `BRAND INTENSITY: ${orchestration.brandIntensity}. Intensity controls hierarchy and scale, not repeated Logo count.`,
+      assetBudget.primaryAsset
+        ? `PRIMARY BRAND ASSET: ${assetBudget.primaryAsset.assetId}; type ${assetBudget.primaryAsset.assetType}; assigned zone ${assetBudget.primaryAsset.targetZone}; maximum occurrences 1.`
+        : 'PRIMARY BRAND ASSET: none. Do not invent a brand mark.',
+      ...assetBudget.secondaryAssets.map((asset) => `APPROVED SECONDARY ASSET: ${asset.assetId}; type ${asset.assetType}; zones ${asset.allowedZones.join(', ')}; render mode ${asset.renderMode}; maximum occurrences ${asset.maxOccurrences}.`),
+      `STYLE INHERITANCE: use ${enabledInheritance.join(', ')} to carry brand identity into materials, proportions, pattern rhythm and environmental details without repeating the Logo.`,
+      `TEXT BUDGET: locked Logo groups ${assetBudget.textBudget.lockedLogoGroups}; headline groups ${assetBudget.textBudget.headlineGroups}; supporting text groups ${assetBudget.textBudget.supportingTextGroups}; small text forbidden; micro text forbidden.`,
+      ...orchestration.textSafetyZones.map((zone) => `TEXT ZONE ${zone.zoneId}: ${zone.policy}; ${zone.zoneDescription}; maximum text groups ${zone.maxTextGroups ?? 0}${zone.allowedAssetIds?.length ? `; approved assets ${zone.allowedAssetIds.join(', ')}` : ''}.`),
+      'Use approved locked assets only in their assigned zones. Preserve their identity and geometry.',
+    ],
+    negative: [
+      'Do not generate additional logos or duplicate the brand name.',
+      'Do not invent Chinese text, English text, slogans, captions or pseudo typography.',
+      'Do not create illegible small text or micro text.',
+      'Do not place logo-like symbols outside approved zones.',
+      'Do not decorate every surface with brand graphics.',
+      ...(orchestration.sceneRole === 'brand_wall' ? [] : ['Do not turn the space into a poster wall.']),
+    ],
+  };
+}
+
 export { SCENE_ROLE_DEFAULTS };

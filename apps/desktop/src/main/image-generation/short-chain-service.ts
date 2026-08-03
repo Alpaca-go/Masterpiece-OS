@@ -315,6 +315,12 @@ export function createShortChainImageGenerationService(
           result.compiledPrompt.lockedAssetPlacementPlan,
         ),
       ] : []),
+      ...(result.compiledPrompt.spatialBrandOrchestration ? [
+        writeJson(
+          path.join(artifactDirectory, 'spatial-brand-orchestration.json'),
+          result.compiledPrompt.spatialBrandOrchestration,
+        ),
+      ] : []),
       writeJson(path.join(artifactDirectory, 'trace.json'), {
         projectId: input.projectId,
         taskId: result.taskContract.taskId,
@@ -322,6 +328,7 @@ export function createShortChainImageGenerationService(
         contextFingerprint: context.provenance.sourceFingerprint,
         route: result.compiledPrompt.route,
         trace: result.compiledPrompt.trace,
+        spatialBrandOrchestration: result.compiledPrompt.spatialBrandOrchestration ?? null,
         compiledAt: result.compiledPrompt.compiledAt,
       }),
       fs.writeFile(

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   buildSpatialBrandOrchestration,
+  compileShortChainImageGeneration,
   resolveSpatialSceneRole,
 } from '@masterpiece/image-generation-runtime/short-chain/index.js';
 
@@ -63,4 +64,33 @@ test('Phase 1 keeps old projects operational when no Locked Assets exist', () =>
     policy: 'no_text',
     maxTextGroups: 0,
   }]);
+});
+
+test('Phase 2 compiles orchestration rules without changing selected Provider references', () => {
+  const projectContext = {
+    schemaVersion: '2.0', projectId: 'orchestration-compile', version: 2,
+    brandCore: { name: 'Example', industry: 'restaurant', brandRole: null, audience: [] },
+    lockedAssets: { logoAssetIds: ['logo'], confirmedColors: [], mustPreserve: [], lockedAssetIds: ['logo'] },
+    visualIdentity: { tone: ['playful'], colorBehavior: [], graphicBehavior: [], materialBehavior: [], compositionBehavior: [], lightingBehavior: [] },
+    styleBoundaries: { mustAvoid: [], uncertainItems: [] }, confirmedDecisions: [],
+    sourceAssetRefs: [
+      { assetId: 'logo', name: 'Logo', role: 'logo' },
+      { assetId: 'ip', name: 'IP', role: 'identity' },
+    ],
+    provenance: { sourceFingerprint: 'orchestration-compile-context' },
+  };
+  const result = compileShortChainImageGeneration({
+    projectContext,
+    task: {
+      projectId: projectContext.projectId, deliverableFamily: 'space', subtype: 'reception', sceneRole: 'entrance',
+      shot: 'entrance_three_quarter_wide', count: 1, aspectRatio: '16:9',
+      currentInstruction: 'Create a branded entrance.', referenceAssetIds: ['logo', 'ip'],
+    },
+  });
+  assert.deepEqual(result.payload.referenceAssetIds, ['logo', 'ip']);
+  assert.equal(result.compiledPrompt.spatialBrandOrchestration.sceneRole, 'entrance');
+  assert.equal(result.compiledPrompt.lockedAssetPlacementPlan.placements[0].assetId, 'ip');
+  assert.match(result.compiledPrompt.finalPrompt, /SCENE ROLE: entrance/u);
+  assert.match(result.compiledPrompt.finalPrompt, /TEXT ZONE all_unplanned_surfaces: no_text/u);
+  assert.match(result.compiledPrompt.finalPrompt, /Do not invent Chinese text, English text/u);
 });
