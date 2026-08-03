@@ -1061,6 +1061,51 @@ export type ShortChainDeliverableMismatchType =
   | 'logo_text_error'
   | 'quality_issue';
 
+export type LockedAssetQAError =
+  | 'missing_asset'
+  | 'wrong_text'
+  | 'contour_deformation'
+  | 'aspect_ratio_error'
+  | 'duplicate_asset'
+  | 'unexpected_logo'
+  | 'material_failure'
+  | 'low_legibility'
+  | 'wrong_placement';
+
+export interface LockedAssetQAResult {
+  assetId: string;
+  passed: boolean;
+  occurrenceCount: number;
+  scores: {
+    contourSimilarity?: number;
+    aspectRatioDeviation?: number;
+    ocrConfidence?: number;
+    materialConfidence?: number;
+    visibleWidthPx?: number;
+  };
+  errors: LockedAssetQAError[];
+  repairRecommended: boolean;
+  fallbackRecommended: boolean;
+}
+
+export interface LockedAssetRenderDebug {
+  schemaVersion: '1.0';
+  sceneId: string;
+  selectedAssets: string[];
+  placementPlan: LockedAssetPlacementPlan | null;
+  modelAdapter: string;
+  modelCapabilities: string[];
+  passes: Array<{
+    type: 'base_scene' | 'asset_projection' | 'material_render' | 'local_repair' | 'fallback_composite';
+    durationMs: number;
+    inputFiles: string[];
+    outputFile: string;
+  }>;
+  qaResults: LockedAssetQAResult[];
+  finalStatus: 'passed_first_render' | 'passed_after_repair' | 'passed_with_fallback' | 'failed';
+  createdAt: string;
+}
+
 export interface ShortChainDeliverableValidation {
   schemaVersion: '1.0';
   projectId: string;
@@ -1079,6 +1124,7 @@ export interface ShortChainDeliverableValidation {
   sceneCompleteness: 'complete' | 'incomplete' | 'uncertain';
   logoTextStatus: 'correct' | 'incorrect' | 'absent' | 'uncertain' | 'not_required';
   qualityIssues: string[];
+  lockedAssetQaResults?: LockedAssetQAResult[];
   mismatchTypes: ShortChainDeliverableMismatchType[];
   retryRecommended: boolean;
   validatorId: string;
@@ -1094,5 +1140,6 @@ export interface ShortChainValidatedGenerationResult {
   terminalStatus: 'passed' | 'failed' | 'unverified';
   automaticRetryCount: 0 | 1;
   localRepairApplied?: boolean;
+  localRepairAttempts?: 1 | 2;
   fallbackApplied?: boolean;
 }

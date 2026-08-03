@@ -45,6 +45,7 @@ export async function repairSingleLogoInPlace(input: {
   logoPath: string;
   placementPlan: LockedAssetPlacementPlan;
   mode: 'local_repair' | 'fallback_composite';
+  simplifyMaterial?: boolean;
 }): Promise<SingleLogoRepairResult> {
   const image = input.run.images[0];
   const placement = input.placementPlan.placements[0];
@@ -61,7 +62,9 @@ export async function repairSingleLogoInPlace(input: {
   const temporaryPath = path.join(path.dirname(scenePath), `.locked-asset-${crypto.randomUUID()}.png`);
   const materialMode: LogoPostCompositeInput['materialMode'] = input.mode === 'local_repair'
     && REPAIR_MATERIALS.has(placement.material)
-    ? placement.material as LogoPostCompositeInput['materialMode']
+    ? input.simplifyMaterial
+      ? 'pvc_dimensional'
+      : placement.material as LogoPostCompositeInput['materialMode']
     : undefined;
   try {
     const composed = await postCompositeConfirmedLogo({

@@ -11,6 +11,7 @@ import type {
   ShortChainTaskContract,
   ShortChainProjectPromptAsset,
   ShortChainValidatedGenerationResult,
+  LockedAssetRenderDebug,
 } from '@masterpiece/image-generation-contracts/index.ts';
 import {
   compileShortChainCorrectionPrompt,
@@ -601,10 +602,18 @@ export function createShortChainImageGenerationService(
   async function startValidated(
     input: StartValidatedShortChainGenerationInput,
   ): Promise<ShortChainValidatedGenerationResult> {
+    const passRecords: LockedAssetRenderDebug['passes'] = [];
     const validator = getValidator?.();
     if (!validator) throw new Error('Short-Chain deliverable validator is not configured');
     const compilation = await readCompilation(input.projectId, input.taskId);
+    const baseStarted = performance.now();
     const initialRun = await start(input);
+    passRecords.push({
+      type: 'base_scene',
+      durationMs: Number((performance.now() - baseStarted).toFixed(3)),
+      inputFiles: compilation.taskContract.referenceAssetIds,
+      outputFile: initialRun.images[0]?.relativePath || '',
+    });
     if (initialRun.status !== 'succeeded' || !initialRun.images[0]) {
       throw Object.assign(new Error(initialRun.errorMessage || 'Initial image generation failed'), {
         code: initialRun.errorCode || 'SHORT_CHAIN_INITIAL_GENERATION_FAILED',
@@ -616,6 +625,41 @@ export function createShortChainImageGenerationService(
       runId: initialRun.runId,
       validatorProfileId: input.validatorProfileId,
     });
+    async function finalizeDebug(result: ShortChainValidatedGenerationResult): Promise<void> {
+      const finalRun = result.correctionRun ?? result.initialRun;
+      const qaResults = [
+        ...(result.initialValidation.lockedAssetQaResults ?? []),
+        ...(result.correctionValidation?.lockedAssetQaResults ?? []),
+      ];
+      const finalStatus: LockedAssetRenderDebug['finalStatus'] = result.terminalStatus !== 'passed'
+        ? 'failed'
+        : result.fallbackApplied
+          ? 'passed_with_fallback'
+          : result.localRepairApplied || result.automaticRetryCount
+            ? 'passed_after_repair'
+            : 'passed_first_render';
+      const debug: LockedAssetRenderDebug = {
+        schemaVersion: '1.0',
+        sceneId: compilation.compiledPrompt.lockedAssetPlacementPlan?.sceneId
+          || `${compilation.taskContract.taskId}:scene`,
+        selectedAssets: [...compilation.taskContract.referenceAssetIds],
+        placementPlan: compilation.compiledPrompt.lockedAssetPlacementPlan ?? null,
+        modelAdapter: finalRun.modelId,
+        modelCapabilities: [
+          ...(compilation.taskContract.referenceAssetIds.length ? ['image_reference'] : []),
+          ...(result.localRepairApplied ? ['regional_deterministic_repair'] : []),
+          ...(result.fallbackApplied ? ['deterministic_composite'] : []),
+        ],
+        passes: passRecords,
+        qaResults,
+        finalStatus,
+        createdAt: new Date().toISOString(),
+      };
+      await writeJson(
+        path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.locked-assets-debug.json`),
+        debug,
+      );
+    }
     if (initialValidation.status !== 'failed' || !initialValidation.retryRecommended) {
       const result: ShortChainValidatedGenerationResult = {
         initialRun,
@@ -631,6 +675,7 @@ export function createShortChainImageGenerationService(
         path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
         { schemaVersion: '1.0', status: initialValidation.status, taskId: input.taskId },
       );
+      await finalizeDebug(result);
       return result;
     }
     const placementPlan = compilation.compiledPrompt.lockedAssetPlacementPlan;
@@ -657,12 +702,19 @@ export function createShortChainImageGenerationService(
       const backupPath = path.join(path.dirname(scenePath), `.locked-asset-source-${crypto.randomUUID()}.png`);
       await fs.copyFile(scenePath, backupPath);
       try {
+        const repairStarted = performance.now();
         const repair = await repairSingleLogoInPlace({
           run: initialRun,
           runRoot,
           logoPath,
           placementPlan,
           mode: 'local_repair',
+        });
+        passRecords.push({
+          type: 'local_repair',
+          durationMs: Number((performance.now() - repairStarted).toFixed(3)),
+          inputFiles: [logoPath, scenePath],
+          outputFile: repair.outputPath,
         });
         const repairValidation = await validator.validate({
           projectId: input.projectId,
@@ -679,6 +731,7 @@ export function createShortChainImageGenerationService(
             terminalStatus: repairValidation.status,
             automaticRetryCount: 1,
             localRepairApplied: true,
+            localRepairAttempts: 1,
           };
           await writeJson(
             path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
@@ -688,16 +741,69 @@ export function createShortChainImageGenerationService(
             path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
             { schemaVersion: '1.0', status: repairValidation.status, taskId: input.taskId },
           );
+          await finalizeDebug(result);
           return result;
         }
 
         await fs.copyFile(backupPath, scenePath);
+        const secondRepairStarted = performance.now();
+        const secondRepair = await repairSingleLogoInPlace({
+          run: initialRun,
+          runRoot,
+          logoPath,
+          placementPlan,
+          mode: 'local_repair',
+          simplifyMaterial: true,
+        });
+        passRecords.push({
+          type: 'local_repair',
+          durationMs: Number((performance.now() - secondRepairStarted).toFixed(3)),
+          inputFiles: [logoPath, scenePath],
+          outputFile: secondRepair.outputPath,
+        });
+        const secondRepairValidation = await validator.validate({
+          projectId: input.projectId,
+          taskContract: compilation.taskContract,
+          runId: initialRun.runId,
+          validatorProfileId: input.validatorProfileId,
+        });
+        if (secondRepairValidation.status !== 'failed') {
+          const result: ShortChainValidatedGenerationResult = {
+            initialRun,
+            initialValidation,
+            correctionRun: secondRepair.run,
+            correctionValidation: secondRepairValidation,
+            terminalStatus: secondRepairValidation.status,
+            automaticRetryCount: 1,
+            localRepairApplied: true,
+            localRepairAttempts: 2,
+          };
+          await writeJson(
+            path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
+            result,
+          );
+          await writeJson(
+            path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
+            { schemaVersion: '1.0', status: secondRepairValidation.status, taskId: input.taskId },
+          );
+          await finalizeDebug(result);
+          return result;
+        }
+
+        await fs.copyFile(backupPath, scenePath);
+        const fallbackStarted = performance.now();
         const fallback = await repairSingleLogoInPlace({
           run: initialRun,
           runRoot,
           logoPath,
           placementPlan,
           mode: 'fallback_composite',
+        });
+        passRecords.push({
+          type: 'fallback_composite',
+          durationMs: Number((performance.now() - fallbackStarted).toFixed(3)),
+          inputFiles: [logoPath, scenePath],
+          outputFile: fallback.outputPath,
         });
         const fallbackValidation = await validator.validate({
           projectId: input.projectId,
@@ -713,6 +819,7 @@ export function createShortChainImageGenerationService(
           terminalStatus: fallbackValidation.status,
           automaticRetryCount: 1,
           localRepairApplied: true,
+          localRepairAttempts: 2,
           fallbackApplied: true,
         };
         await writeJson(
@@ -723,6 +830,7 @@ export function createShortChainImageGenerationService(
           path.join(await shortChainRoot(input.projectId), 'validations', `${initialRun.runId}.direction-eligibility.json`),
           { schemaVersion: '1.0', status: fallbackValidation.status, taskId: input.taskId },
         );
+        await finalizeDebug(result);
         return result;
       } finally {
         await fs.rm(backupPath, { force: true }).catch(() => undefined);
@@ -734,9 +842,16 @@ export function createShortChainImageGenerationService(
       validation: initialValidation,
       maxPromptCharacters: compilation.compiledPrompt.trace.maxPromptCharacters,
     });
+    const correctionStarted = performance.now();
     const correctionRun = await start({
       ...input,
       editedPrompt: correctionPrompt,
+    });
+    passRecords.push({
+      type: 'material_render',
+      durationMs: Number((performance.now() - correctionStarted).toFixed(3)),
+      inputFiles: compilation.taskContract.referenceAssetIds,
+      outputFile: correctionRun.images[0]?.relativePath || '',
     });
     if (correctionRun.status !== 'succeeded' || !correctionRun.images[0]) {
       const result: ShortChainValidatedGenerationResult = {
@@ -750,6 +865,7 @@ export function createShortChainImageGenerationService(
         path.join(await shortChainRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
         result,
       );
+      await finalizeDebug(result);
       return result;
     }
     const correctionValidation = await validator.validate({
@@ -774,6 +890,7 @@ export function createShortChainImageGenerationService(
       path.join(await shortChainRoot(input.projectId), 'validations', `${correctionRun.runId}.direction-eligibility.json`),
       { schemaVersion: '1.0', status: correctionValidation.status, taskId: input.taskId },
     );
+    await finalizeDebug(result);
     return result;
   }
 

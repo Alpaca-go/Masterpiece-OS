@@ -685,6 +685,8 @@ export type {
   ShortChainCreativeSession,
   ShortChainProjectPromptAsset,
   ShortChainDeliverableValidation,
+  LockedAssetQAResult,
+  LockedAssetRenderDebug,
   ShortChainValidatedGenerationResult
 } from '@masterpiece/image-generation-contracts/index.ts';
 import type {

@@ -568,19 +568,19 @@ test('Short-Chain repairs then falls back for a locked Logo without regenerating
           taskId: 'short-chain-logo-task',
           runId: run.runId,
           imageId: 'image-01',
-          status: validationCalls < 3 ? 'failed' : 'passed',
+          status: validationCalls < 4 ? 'failed' : 'passed',
           detectedFamily: 'space',
           detectedSubtype: 'reception',
           visibleEvidence: [],
           missingRequiredItems: [],
           forbiddenItemsFound: [],
-          lockedAssetViolations: validationCalls < 3 ? ['Logo contour was altered'] : [],
+          lockedAssetViolations: validationCalls < 4 ? ['Logo contour was altered'] : [],
           brandMatch: 'matched',
           brandToneMatch: 'matched',
           sceneCompleteness: 'complete',
-          logoTextStatus: validationCalls < 3 ? 'incorrect' : 'correct',
+          logoTextStatus: validationCalls < 4 ? 'incorrect' : 'correct',
           qualityIssues: [],
-          mismatchTypes: validationCalls < 3 ? ['locked_asset_violation', 'logo_text_error'] : [],
+          mismatchTypes: validationCalls < 4 ? ['locked_asset_violation', 'logo_text_error'] : [],
           retryRecommended: validationCalls === 1,
           validatorId: 'test-validator',
           validatorVersion: '1',
@@ -609,9 +609,24 @@ test('Short-Chain repairs then falls back for a locked Logo without regenerating
   });
   const result = await service.startValidated({ projectId, taskId: compiled.taskContract.taskId });
   assert.equal(providerCalls, 1);
-  assert.equal(validationCalls, 3);
+  assert.equal(validationCalls, 4);
   assert.equal(result.localRepairApplied, true);
+  assert.equal(result.localRepairAttempts, 2);
   assert.equal(result.fallbackApplied, true);
   assert.equal(result.terminalStatus, 'passed');
   assert.equal(result.correctionRun?.runId, run.runId);
+  const debug = JSON.parse(await fs.readFile(path.join(
+    root,
+    'image-generation-short-chain',
+    'validations',
+    'run-logo.locked-assets-debug.json',
+  ), 'utf8'));
+  assert.deepEqual(debug.passes.map((item: { type: string }) => item.type), [
+    'base_scene',
+    'local_repair',
+    'local_repair',
+    'fallback_composite',
+  ]);
+  assert.equal(debug.finalStatus, 'passed_with_fallback');
+  assert.deepEqual(debug.selectedAssets, ['logo-asset']);
 });

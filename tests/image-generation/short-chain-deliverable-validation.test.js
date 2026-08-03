@@ -167,6 +167,86 @@ test('Correction prompt preserves original prompt and adds one explicit repair b
   assert.equal((correction.match(/一次性对题纠偏/gu) ?? []).length, 1);
 });
 
+test('Locked Asset QA applies contour, aspect, OCR, occurrence and legibility thresholds', () => {
+  const selectedTask = {
+    ...taskContract,
+    referenceAssetIds: ['logo-primary'],
+    brandMarkRenderMode: 'locked_asset_render',
+    logoUsageMode: 'reference',
+  };
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract: selectedTask,
+    runId: 'run-logo-qa',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['one large brand wall with a distorted mark'],
+      brandMatch: 'matched',
+      brandToneMatch: 'matched',
+      sceneCompleteness: 'complete',
+      logoTextStatus: 'incorrect',
+      lockedAssetQa: [{
+        assetId: 'logo-primary',
+        occurrenceCount: 2,
+        contourSimilarity: 0.81,
+        aspectRatioDeviation: 0.08,
+        textExactMatch: false,
+        ocrConfidence: 0.62,
+        materialMatch: false,
+        materialConfidence: 0.3,
+        visibleWidthPx: 180,
+        placementMatch: false,
+        unexpectedLogoCount: 1,
+      }],
+    },
+  });
+  assert.equal(validation.status, 'failed');
+  assert.deepEqual(validation.lockedAssetQaResults[0].errors, [
+    'duplicate_asset',
+    'contour_deformation',
+    'aspect_ratio_error',
+    'wrong_text',
+    'material_failure',
+    'wrong_placement',
+    'unexpected_logo',
+  ]);
+  assert.equal(validation.lockedAssetQaResults[0].repairRecommended, true);
+  assert.equal(validation.lockedAssetQaResults[0].fallbackRecommended, true);
+  assert.equal(validation.lockedAssetViolations.includes('logo-primary:wrong_text'), true);
+});
+
+test('Correction prompt restores selected visual assets instead of removing them under blank-area mode', () => {
+  const selectedTask = {
+    ...taskContract,
+    logoUsageMode: 'blank_area',
+    referenceAssetIds: ['selected-logo-ip-sheet'],
+  };
+  const validation = validateShortChainDeliverableEvidence({
+    projectId: 'project-1',
+    taskContract: selectedTask,
+    runId: 'run-1',
+    imageId: 'image-1',
+    evidence: {
+      detectedFamily: 'space',
+      detectedSubtype: 'reception',
+      visibleEvidence: ['complete reception without the selected identity'],
+      lockedAssetViolations: ['selected Logo and IP character are absent'],
+      brandMatch: 'mismatched',
+      logoTextStatus: 'incorrect',
+    },
+  });
+  const correction = compileShortChainCorrectionPrompt({
+    originalPrompt: 'ORIGINAL PROMPT',
+    taskContract: selectedTask,
+    validation,
+  });
+
+  assert.match(correction, /restore every supplied selected visual asset/u);
+  assert.doesNotMatch(correction, /Remove every logo, letter, word/u);
+});
+
 test('Correction prompt compacts duplicate negative guidance to the active adapter budget', () => {
   const validation = validateShortChainDeliverableEvidence({
     projectId: 'project-1',

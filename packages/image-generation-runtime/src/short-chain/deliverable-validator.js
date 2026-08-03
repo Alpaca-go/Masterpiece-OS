@@ -1,5 +1,5 @@
 export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
-export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '2.1.0';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = '3.0.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -26,6 +26,71 @@ function isVisibleIdentityTextEvidence(value) {
 
 function characters(value) {
   return [...String(value ?? '')].length;
+}
+
+function boundedNumber(value, minimum, maximum) {
+  const number = Number(value);
+  return Number.isFinite(number) ? Math.min(maximum, Math.max(minimum, number)) : undefined;
+}
+
+function lockedAssetQaResults(evidence, taskContract) {
+  const selected = new Set(taskContract.referenceAssetIds || []);
+  const results = (Array.isArray(evidence?.lockedAssetQa) ? evidence.lockedAssetQa : [])
+    .filter((item) => item && typeof item === 'object' && selected.has(item.assetId))
+    .map((item) => {
+      const occurrenceCount = Math.max(0, Math.round(Number(item.occurrenceCount) || 0));
+      const contourSimilarity = boundedNumber(item.contourSimilarity, 0, 1);
+      const aspectRatioDeviation = boundedNumber(item.aspectRatioDeviation, 0, 1);
+      const ocrConfidence = boundedNumber(item.ocrConfidence, 0, 1);
+      const materialConfidence = boundedNumber(item.materialConfidence, 0, 1);
+      const visibleWidthPx = boundedNumber(item.visibleWidthPx, 0, 100_000);
+      const errors = [];
+      if (occurrenceCount === 0) errors.push('missing_asset');
+      if (occurrenceCount > 1) errors.push('duplicate_asset');
+      if (contourSimilarity !== undefined && contourSimilarity < 0.92) errors.push('contour_deformation');
+      if (aspectRatioDeviation !== undefined && aspectRatioDeviation > 0.03) errors.push('aspect_ratio_error');
+      if (visibleWidthPx !== undefined && visibleWidthPx < 96) errors.push('low_legibility');
+      if (item.textExactMatch === false && (visibleWidthPx === undefined || visibleWidthPx >= 96)) errors.push('wrong_text');
+      if (item.materialMatch === false) errors.push('material_failure');
+      if (item.placementMatch === false) errors.push('wrong_placement');
+      const unexpectedLogoCount = Math.max(0, Math.round(Number(item.unexpectedLogoCount) || 0));
+      if (unexpectedLogoCount > 0) errors.push('unexpected_logo');
+      const uniqueErrors = [...new Set(errors)];
+      return {
+        assetId: item.assetId,
+        passed: uniqueErrors.length === 0,
+        occurrenceCount,
+        scores: {
+          ...(contourSimilarity !== undefined ? { contourSimilarity } : {}),
+          ...(aspectRatioDeviation !== undefined ? { aspectRatioDeviation } : {}),
+          ...(ocrConfidence !== undefined ? { ocrConfidence } : {}),
+          ...(materialConfidence !== undefined ? { materialConfidence } : {}),
+          ...(visibleWidthPx !== undefined ? { visibleWidthPx } : {}),
+        },
+        errors: uniqueErrors,
+        repairRecommended: uniqueErrors.some((error) => [
+          'wrong_text', 'contour_deformation', 'aspect_ratio_error', 'duplicate_asset',
+          'unexpected_logo', 'material_failure', 'low_legibility', 'wrong_placement',
+        ].includes(error)),
+        fallbackRecommended: uniqueErrors.some((error) => [
+          'wrong_text', 'contour_deformation', 'aspect_ratio_error', 'missing_asset',
+        ].includes(error)),
+      };
+    });
+  const reported = new Set(results.map((item) => item.assetId));
+  for (const assetId of selected) {
+    if (reported.has(assetId)) continue;
+    results.push({
+      assetId,
+      passed: false,
+      occurrenceCount: 0,
+      scores: {},
+      errors: ['missing_asset'],
+      repairRecommended: false,
+      fallbackRecommended: true,
+    });
+  }
+  return results;
 }
 
 export function validateShortChainDeliverableEvidence({
@@ -68,6 +133,13 @@ export function validateShortChainDeliverableEvidence({
     ? evidence.logoTextStatus
     : 'uncertain';
   const qualityIssues = list(evidence?.qualityIssues);
+  const assetQa = lockedAssetQaResults(evidence, taskContract);
+  for (const result of assetQa) {
+    for (const error of result.errors) {
+      lockedAssetViolations.push(`${result.assetId}:${error}`);
+    }
+  }
+  const uniqueLockedAssetViolations = [...new Set(lockedAssetViolations)];
   const visibleIdentityText = deferredIdentityText
     && visibleEvidence.some(isVisibleIdentityTextEvidence);
   if (visibleIdentityText && ['absent', 'not_required', 'uncertain'].includes(logoTextStatus)) {
@@ -91,7 +163,7 @@ export function validateShortChainDeliverableEvidence({
     mismatchTypes.push('wrong_subtype');
   }
   if (missingRequiredItems.length) mismatchTypes.push('missing_required_structure');
-  if (lockedAssetViolations.length) mismatchTypes.push('locked_asset_violation');
+  if (uniqueLockedAssetViolations.length) mismatchTypes.push('locked_asset_violation');
   if (forbiddenItemsFound.length) mismatchTypes.push('forbidden_content');
   if (brandMatch === 'mismatched') mismatchTypes.push('brand_mismatch');
   if (brandToneMatch === 'mismatched') mismatchTypes.push('brand_tone_mismatch');
@@ -113,12 +185,13 @@ export function validateShortChainDeliverableEvidence({
     visibleEvidence,
     missingRequiredItems,
     forbiddenItemsFound,
-    lockedAssetViolations,
+    lockedAssetViolations: uniqueLockedAssetViolations,
     brandMatch,
     brandToneMatch,
     sceneCompleteness,
     logoTextStatus,
     qualityIssues,
+    lockedAssetQaResults: assetQa,
     mismatchTypes,
     retryRecommended: status === 'failed' && mismatchTypes.some((type) => [
       'wrong_family',
@@ -163,7 +236,9 @@ export function compileShortChainCorrectionPrompt({
       ? 'Rebuild a complete, continuous and functionally legible scene.'
       : '',
     validation.mismatchTypes.includes('logo_text_error')
-      ? taskContract.logoUsageMode === 'reference'
+      ? taskContract.referenceAssetIds?.length
+        ? 'Faithfully restore every supplied selected visual asset in a clearly visible, recognizable design role; do not invent or repeat unrelated logos or text.'
+        : taskContract.logoUsageMode === 'reference'
         ? 'Use only the supplied identity reference; do not invent or repeat logos or text.'
         : 'Remove every logo, letter, word and pseudo-text; keep only a clean placement area.'
       : '',
