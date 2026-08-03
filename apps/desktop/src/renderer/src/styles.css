@@ -553,3 +553,27 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
   .generation-task-grid, .generation-output-list { grid-template-columns: 1fr; }
   .visual-rule-library { grid-template-columns: 1fr; }
 }
+
+/* Locked reference asset row — adds a small thumbnail next to each checkbox */
+.reference-asset-row {
+  display: grid;
+  grid-template-columns: auto 56px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.reference-asset-row:hover { background: #efeaf4; }
+.reference-asset-row input[type="checkbox"] { margin: 0; }
+.reference-asset-thumb {
+  width: 56px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 5px;
+  background: #ece8ef;
+  display: block;
+}
+.reference-asset-thumb-placeholder {
+  border: 1px dashed #cfc9d4;
+}

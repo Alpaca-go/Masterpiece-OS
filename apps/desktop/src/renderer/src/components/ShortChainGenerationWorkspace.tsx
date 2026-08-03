@@ -57,6 +57,7 @@ export function ShortChainGenerationWorkspace({
   const [mustAvoidText, setMustAvoidText] = useState('');
   const [logoUsageMode, setLogoUsageMode] = useState<ShortChainLogoUsageMode>('blank_area');
   const [sourceAssets, setSourceAssets] = useState<ProjectVisualContextShortChain['sourceAssetRefs']>([]);
+  const [assetThumbnails, setAssetThumbnails] = useState<Record<string, string>>({});
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
   const [logoPlacement, setLogoPlacement] = useState({ x: 0.36, y: 0.05, width: 0.28 });
   const [removeLogoBackground, setRemoveLogoBackground] = useState(true);
@@ -102,9 +103,19 @@ export function ShortChainGenerationWorkspace({
       window.masterpiece.projectContext.getShortChain(project.id)
         .catch(() => window.masterpiece.projectContext.rebuildShortChain(project.id)),
       refreshSession(),
-    ]).then(([nextOptions, context]) => {
+      window.masterpiece.projects.scanAssets(project.id)
+        .then((summary) => {
+          const map: Record<string, string> = {};
+          for (const item of summary.items) {
+            if (item.thumbnailDataUrl) map[item.id] = item.thumbnailDataUrl;
+          }
+          return map;
+        })
+        .catch(() => ({} as Record<string, string>)),
+    ]).then(([nextOptions, context, , thumbnailMap]) => {
       setOptions(nextOptions as TemplateOptions);
       setSourceAssets(context.sourceAssetRefs);
+      setAssetThumbnails(thumbnailMap);
       // A project with a confirmed logo is always subject to the v5
       // "logo locked" contract. The backend therefore refuses any
       // `logoUsageMode` other than `post_composite` for those projects
@@ -387,13 +398,16 @@ export function ShortChainGenerationWorkspace({
           <legend>锁定身份 / 结构参考（最多2项）</legend>
           <p className="muted">Logo 不交给模型重绘；这里请选择需要保持形态的 IP、产品或包装结构素材。</p>
           {sourceAssets.filter((asset) => asset.role !== 'logo').length
-            ? sourceAssets.filter((asset) => asset.role !== 'logo').map((asset) => <label key={asset.assetId} className="checkbox-row">
+            ? sourceAssets.filter((asset) => asset.role !== 'logo').map((asset) => <label key={asset.assetId} className="checkbox-row reference-asset-row">
               <input
                 type="checkbox"
                 checked={referenceAssetIds.includes(asset.assetId)}
                 disabled={!referenceAssetIds.includes(asset.assetId) && referenceAssetIds.length >= 2}
                 onChange={() => toggleReferenceAsset(asset.assetId)}
               />
+              {assetThumbnails[asset.assetId]
+                ? <img className="reference-asset-thumb" src={assetThumbnails[asset.assetId]} alt="" />
+                : <div className="reference-asset-thumb reference-asset-thumb-placeholder" aria-hidden="true" />}
               <span>{asset.name}</span>
               <small>{asset.role}</small>
             </label>)
