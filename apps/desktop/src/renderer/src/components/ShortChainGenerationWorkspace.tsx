@@ -94,7 +94,7 @@ export function ShortChainGenerationWorkspace({
       || task.currentInstruction !== instruction.trim()
       || task.brandMarkRenderMode !== brandMarkRenderMode
       || task.materialMode !== materialMode
-      || task.brandIntensity !== brandIntensity
+      || (referenceAssetIds.length > 0 && task.brandIntensity !== brandIntensity)
       || task.logoUsageMode !== effectiveLogoUsageMode
       || task.referenceAssetIds.join('\n') !== referenceAssetIds.join('\n')
       || task.mustInclude.join('\n') !== splitRules(mustIncludeText).join('\n')

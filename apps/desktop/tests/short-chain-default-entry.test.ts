@@ -36,5 +36,6 @@ test('Short-Chain defaults selected Logo, icon and IP assets to locked rendering
   assert.match(source, /materialMode,/u);
   assert.match(source, /brandIntensity,/u);
   assert.match(source, /advanced-settings/u);
+  assert.match(source, /referenceAssetIds\.length > 0 && task\.brandIntensity !== brandIntensity/u);
   assert.match(source, /可选择 Logo、icon、IP、产品或包装结构素材/u);
 });

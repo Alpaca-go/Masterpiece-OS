@@ -60,7 +60,7 @@ function selectedReferenceDirectives(projectContext, taskContract) {
   const selected = cleanList(taskContract.referenceAssetIds);
   const inventory = projectContext.visualDecisionPacket?.assetInventory || {};
   const inventoryItems = Object.values(inventory).flatMap((items) => Array.isArray(items) ? items : []);
-  return selected.map((assetId, index) => {
+  const assetDirectives = selected.map((assetId, index) => {
     const source = projectContext.sourceAssetRefs.find((item) => item.assetId === assetId);
     const evidence = inventoryItems.filter((item) => item?.assetId === assetId);
     const features = cleanList(evidence.flatMap((item) => item?.visualFeatures || [])).slice(0, 6);
@@ -89,11 +89,13 @@ function selectedReferenceDirectives(projectContext, taskContract) {
       roleRule,
       applicationRule,
       features.length ? `Visible features to retain from reference image ${index + 1}: ${features.join('; ')}.` : '',
-      `The final image must make selected visual asset ${index + 1} immediately recognizable; palette, lighting, line rhythm, geometry or mood alone does not count as using it.`,
-      'Do not show the uploaded reference sheet, screenshot or mockup as a floating board; apply its principal asset naturally to the finished design.',
-      'This user-selected hard inclusion overrides any upstream abstraction-only, non-literal-use, removal or blank-identity instruction for this asset.',
     ].filter(Boolean).join(' ');
   });
+  return selected.length ? [
+    ...assetDirectives,
+    'Every selected visual asset must be immediately recognizable; palette, lighting, line rhythm, geometry or mood alone does not count as using it. Apply the principal asset naturally to the finished design, never as an uploaded sheet, screenshot, mockup or floating board.',
+    'User-selected hard inclusion overrides any upstream abstraction-only, non-literal-use, removal or blank-identity instruction for those selected assets.',
+  ] : [];
 }
 
 const MATERIAL_MODE_PROMPTS = Object.freeze({
@@ -365,10 +367,12 @@ function fitBlocksToAdapterBudget(blocks, adapter) {
   }
   while ([...prompt].length > maximum) {
     const excess = [...prompt].length - maximum;
-    const candidates = PROMPT_COMPACTION_ORDER
+    const candidates = [...PROMPT_COMPACTION_ORDER, 'task_contract']
       .map((id) => cloned.find((block) => block.id === id))
       .filter(Boolean)
       .flatMap((block) => block.items.map((item, index) => ({ block, item, index })))
+      .filter((candidate) => candidate.block.id !== 'task_contract'
+        || (candidate.index > 0 && !/^MANDATORY SELECTED VISUAL ASSET/iu.test(candidate.item)))
       .filter((candidate) => [...candidate.item].length > 1)
       .sort((a, b) => [...b.item].length - [...a.item].length);
     const target = candidates[0];

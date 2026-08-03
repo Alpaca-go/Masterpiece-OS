@@ -164,9 +164,12 @@ test('Phase 2 compiles orchestration rules without changing selected Provider re
     },
   });
   assert.deepEqual(result.payload.referenceAssetIds, ['logo', 'ip']);
+  assert.match(result.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 1/u);
+  assert.match(result.compiledPrompt.finalPrompt, /MANDATORY SELECTED VISUAL ASSET 2/u);
   assert.equal(result.compiledPrompt.spatialBrandOrchestration.sceneRole, 'entrance');
   assert.equal(result.compiledPrompt.lockedAssetPlacementPlan.placements[0].assetId, 'ip');
   assert.match(result.compiledPrompt.finalPrompt, /SCENE ROLE: entrance/u);
-  assert.match(result.compiledPrompt.finalPrompt, /TEXT ZONE all_unplanned_surfaces: no_text/u);
+  assert.match(result.compiledPrompt.finalPrompt, /all_unplanned_surfaces=no_text/u);
   assert.match(result.compiledPrompt.finalPrompt, /Do not invent Chinese text, English text/u);
+  assert.ok(result.compiledPrompt.finalPrompt.length <= 7_500);
 });

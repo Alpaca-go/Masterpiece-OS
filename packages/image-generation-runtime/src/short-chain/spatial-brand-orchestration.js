@@ -225,17 +225,22 @@ export function compileSpatialBrandOrchestrationRules(orchestration) {
   const enabledInheritance = Object.entries(assetBudget.styleInheritance)
     .filter(([, enabled]) => enabled)
     .map(([name]) => name);
+  const scheduledAssets = [assetBudget.primaryAsset, ...assetBudget.secondaryAssets]
+    .filter(Boolean)
+    .map((asset) => asset.assetId);
+  const zonePolicies = orchestration.textSafetyZones
+    .map((zone) => `${zone.zoneId}=${zone.policy}`)
+    .join('; ');
   return {
     positive: [
       `SCENE ROLE: ${orchestration.sceneRole}.`,
       `BRAND INTENSITY: ${orchestration.brandIntensity}. Intensity controls hierarchy and scale, not repeated Logo count.`,
-      assetBudget.primaryAsset
-        ? `PRIMARY BRAND ASSET: ${assetBudget.primaryAsset.assetId}; type ${assetBudget.primaryAsset.assetType}; assigned zone ${assetBudget.primaryAsset.targetZone}; maximum occurrences 1.`
-        : 'PRIMARY BRAND ASSET: none. Do not invent a brand mark.',
-      ...assetBudget.secondaryAssets.map((asset) => `APPROVED SECONDARY ASSET: ${asset.assetId}; type ${asset.assetType}; zones ${asset.allowedZones.join(', ')}; render mode ${asset.renderMode}; maximum occurrences ${asset.maxOccurrences}.`),
+      scheduledAssets.length
+        ? `APPROVED ASSET BUDGET: ${scheduledAssets.join(', ')}; use each at most once in the placement plan.`
+        : 'APPROVED ASSET BUDGET: none. Do not invent a brand mark.',
       `STYLE INHERITANCE: use ${enabledInheritance.join(', ')} to carry brand identity into materials, proportions, pattern rhythm and environmental details without repeating the Logo.`,
       `TEXT BUDGET: locked Logo groups ${assetBudget.textBudget.lockedLogoGroups}; headline groups ${assetBudget.textBudget.headlineGroups}; supporting text groups ${assetBudget.textBudget.supportingTextGroups}; small text forbidden; micro text forbidden.`,
-      ...orchestration.textSafetyZones.map((zone) => `TEXT ZONE ${zone.zoneId}: ${zone.policy}; ${zone.zoneDescription}; maximum text groups ${zone.maxTextGroups ?? 0}${zone.allowedAssetIds?.length ? `; approved assets ${zone.allowedAssetIds.join(', ')}` : ''}.`),
+      `TEXT SAFETY ZONES: ${zonePolicies}. Unlisted surfaces inherit no_text.`,
       'Use approved locked assets only in their assigned zones. Preserve their identity and geometry.',
     ],
     negative: [
