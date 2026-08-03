@@ -51,5 +51,6 @@ test('matcher does not turn a premium club into a medical reception by itself', 
   });
   assert.equal(match.matched, true);
   assert.equal(match.signals.includes('medical_or_wellbeing_industry'), false);
-  assert.equal(match.archetype.medicalHospitalityBalance.medicalCredibility, 0.78);
+  assert.equal(match.archetype.medicalHospitalityBalance.medicalCredibility, 0.28);
+  assert.equal(match.archetype.medicalHospitalityBalance.hospitalityWarmth, 0.78);
 });

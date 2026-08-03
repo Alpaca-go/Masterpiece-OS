@@ -61,9 +61,17 @@ export function matchVerticalSpatialArchetype(input = {}, archetype = loadPremiu
   const confidence = Number(Math.min(0.94, 0.42 + distinctSignals.length * 0.14).toFixed(2));
   const matched = distinctSignals.length >= archetype.activation.requiredSignals
     && confidence >= archetype.activation.minimumConfidence;
+  const matchedArchetype = matched ? structuredClone(archetype) : null;
+  const privateClubWithoutMedicalSignal = matched
+    && themes.includes('private_club_hospitality')
+    && !distinctSignals.includes('medical_or_wellbeing_industry');
+  if (privateClubWithoutMedicalSignal) {
+    matchedArchetype.medicalHospitalityBalance.medicalCredibility = 0.28;
+    matchedArchetype.medicalHospitalityBalance.hospitalityWarmth = 0.78;
+  }
   return {
     matched,
-    archetype: matched ? archetype : null,
+    archetype: matchedArchetype,
     confidence,
     signals: distinctSignals,
     blockedBy: [],

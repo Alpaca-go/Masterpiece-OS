@@ -73,4 +73,5 @@ export * from './spatial/config-loader.js';
 export * from './spatial/context-compiler.js';
 export * from './spatial/anchor-loader.js';
 export * from './spatial/evaluation.js';
+export * from './spatial/project-signature.js';
 export * from './task-families/packaging/index.js';

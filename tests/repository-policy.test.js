@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
 import path from 'node:path';
 
 const forbiddenExtensions = new Set(['.psd', '.ai', '.cdr', '.pdf', '.zip', '.rar', '.7z']);
@@ -13,6 +15,18 @@ function repositoryFiles() {
   const result = spawnSync('git', ['-c', 'core.quotepath=false', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
   return result.stdout.split('\0').filter(Boolean).map((file) => file.replaceAll('\\', '/'));
+}
+
+function isVersionedGoldenRaster(file) {
+  const match = file.match(/^assets\/golden\/spatial\/([a-z0-9-]+)\/anchors\/([a-z0-9-]+-v\d+\.(?:png|jpg|jpeg|webp))$/u);
+  if (!match) return false;
+  const manifestPath = `assets/golden/spatial/${match[1]}/anchors/anchor-manifest-v1.yaml`;
+  if (!repositoryFiles().includes(manifestPath) || !fs.existsSync(manifestPath)) return false;
+  const manifest = fs.readFileSync(manifestPath, 'utf8').toLowerCase();
+  const sha256 = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+  return manifest.includes(match[2])
+    && manifest.includes(sha256)
+    && /spatial_scale:\s*0(?:\.0+)?/u.test(manifest);
 }
 
 test('仓库不包含项目源文件或项目交付物', { skip: gitAvailable ? false : '当前副本不含 .git 元数据' }, () => {
@@ -34,6 +48,7 @@ test('仓库不包含项目源文件或项目交付物', { skip: gitAvailable ? 
 test('仓库内栅格图片只能用于脱敏示例、测试或模板', { skip: gitAvailable ? false : '当前副本不含 .git 元数据' }, () => {
   const raster = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp']);
   const violations = repositoryFiles().filter((file) => raster.has(path.posix.extname(file).toLowerCase()))
-    .filter((file) => !/^(examples|tests|templates|space-generator\/v1-baseline\/benchmarks|space-generator\/v1-experimental\/architecture-anchors)\//.test(file));
+    .filter((file) => !/^(examples|tests|templates|space-generator\/v1-baseline\/benchmarks|space-generator\/v1-experimental\/architecture-anchors)\//.test(file))
+    .filter((file) => !isVersionedGoldenRaster(file));
   assert.deepEqual(violations, [], `栅格图片位置不合规：\n${violations.join('\n')}`);
 });
