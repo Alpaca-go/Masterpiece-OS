@@ -312,6 +312,7 @@ export function createShortChainImageGenerationService(
         currentProjectId: input.projectId,
         spaceType: resolvedSpaceType,
         manifest: spatialProjectBundle.anchorManifest,
+        lenientAssetLoad: true,
         ...(spatialRuntimeRoots ? { assetRoot: spatialRuntimeRoots.assetRoot } : {}),
       })
       : null;
@@ -319,6 +320,16 @@ export function createShortChainImageGenerationService(
       const anchorDirectory = path.join(paths.input, 'golden-anchors');
       await fs.mkdir(anchorDirectory, { recursive: true });
       await Promise.all(spatialAnchorSelection.anchors.map(async (anchor) => {
+        if (anchor.fileMissing || !anchor.asset) {
+          // Anchor file is missing but metadata is available; assign an ID
+          // and mark as canon-derived for downstream processing
+          Object.assign(anchor, {
+            assetId: `golden-anchor-${anchor.id}`,
+            projectRelativePath: null,
+            assetSource: 'canon_dna_fallback',
+          });
+          return;
+        }
         const filename = `${anchor.id}.png`;
         await fs.copyFile(anchor.asset.file, path.join(anchorDirectory, filename));
         Object.assign(anchor, {
@@ -375,9 +386,9 @@ export function createShortChainImageGenerationService(
           })),
           ...(spatialAnchorSelection?.anchors ?? []).map((anchor) => ({
             assetId: anchor.assetId,
-            name: `Golden Style Anchor ${anchor.id}`,
+            name: `Golden Style Anchor ${anchor.id}${anchor.fileMissing ? ' (canon DNA fallback)' : ''}`,
             role: 'style_anchor' as const,
-            relativePath: `golden-anchors/${anchor.id}.png`,
+            relativePath: anchor.fileMissing ? '' : `golden-anchors/${anchor.id}.png`,
             lockedAssetType: 'other' as const,
           })),
         ],
@@ -409,6 +420,9 @@ export function createShortChainImageGenerationService(
     const referenceAssetIds = [...explicitReferenceAssetIds];
     for (const anchor of spatialAnchorSelection?.anchors ?? []) {
       if (referenceAssetIds.length >= 2) break;
+      // Skip anchors with missing physical files - they are used for calibration
+      // via canon DNA fallback, not as image references
+      if (anchor.fileMissing) continue;
       if (!referenceAssetIds.includes(anchor.assetId)) referenceAssetIds.push(anchor.assetId);
     }
     if (logoUsageMode === 'reference' && !referenceAssetIds.some((assetId) => logoAssetIdSet.has(assetId))) {

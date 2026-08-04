@@ -1,0 +1,22 @@
+# Phase v1.0 Preset Validation — balanced
+
+- **Generated**: 2026-08-04T05:09:55.788Z
+- **Brand**: jiuzhou-aesthetics (九州美学 — 医疗美容)
+- **Project**: ed3c1d39-b841-4466-920c-b53d7996cb6c (undefined)
+- **Provider**: profile-0d48c72e-1288-436f-a450-c84c5b8298ca (image, volcengine / Seedream 5.0 Pro)
+- **Size requested**: 1024x576 (16:9 horizontal)
+- **Space type**: reception (override DNA sceneType=reception)
+- **Reference used**: no
+- **Mode**: B-architecture-preservation
+- **Runtime path**: spatial_intelligence_9a2_9a3_9b1_9b2_8a_8b1_sip_9c1_space_role
+- **Block count**: 18
+- **Char count**: 14113
+- **Spatial Intent intent (4 维)**:
+  - brandExpression: balanced
+  - architectureExpression: balanced
+  - referenceInfluence: balanced
+  - industryConstraint: maintain
+- **Status**: succeeded
+- **Duration**: 80640ms
+- **Image bytes**: 474435
+- **Module versions**: {"brandDna":"v0.1.1","spatialIntent":"9A.2","architectureBridge":"9A.3","architectureAnchor":"8A","architectureFunctionBridge":"8B.1","spatialReality":"9B.1","architecturePreservation":"9B.2","promptCompiler":"1.0.0","spatialIntentPresets":"spatial-intent-presets","spaceRoleIntelligence":"9C.1"}

@@ -76,7 +76,10 @@ export function compileShortChainImageGeneration(input) {
       projectCanon: input.spatialProjectBundle?.projectCanon,
       verticalArchetype: input.verticalArchetype,
       anchorManifest: input.spatialProjectBundle?.anchorManifest,
-      anchorSignals: input.anchorSignals || anchorSignalsFromSelection(input.spatialAnchorSelection),
+      anchorSignals: input.anchorSignals || anchorSignalsFromSelection(
+        input.spatialAnchorSelection,
+        input.spatialProjectBundle?.projectCanon,
+      ),
       selectedAnchors: input.spatialAnchorSelection,
       structureReferences: input.spatialStructureReferences,
       projectExclusions: input.spatialProjectBundle?.projectExclusions,

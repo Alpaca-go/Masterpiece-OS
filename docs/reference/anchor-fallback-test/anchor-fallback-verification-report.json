@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-08-04T06:22:03.128Z",
+  "productionChain": true,
+  "anchorFallback": {
+    "physicalFileMissing": true,
+    "source": "canon_dna_fallback",
+    "dimensions": [
+      "brandAtmosphere",
+      "brandIntegration",
+      "materialAndLighting",
+      "colorRelationship",
+      "architecturalSkin",
+      "decorativeDensity",
+      "receptionExpression"
+    ]
+  },
+  "promptCompilation": {
+    "provider": "compileSpatialContext",
+    "hasFallbackProvenance": true,
+    "promptLength": 4931,
+    "sectionCount": 8
+  },
+  "tests": [
+    {
+      "name": "anchor-fallback-only",
+      "status": "succeeded",
+      "fileSize": 330487
+    },
+    {
+      "name": "anchor-fallback-with-reference",
+      "status": "succeeded",
+      "fileSize": 366793
+    }
+  ]
+}

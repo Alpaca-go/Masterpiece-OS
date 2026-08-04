@@ -78,7 +78,15 @@ export function resolveAnchorInfluence({ anchorSignals = {}, manifest, foundatio
     ...(manifest?.forbiddenOverrides || []).map((path) =>
       path.replace(/^spatialFoundation\./u, '')),
   ]);
+
+  // Extract metadata if present
+  const metadata = anchorSignals.__metadata || {};
+  const signalSource = metadata.source || 'golden_anchor';
+
   for (const [dimension, value] of Object.entries(anchorSignals || {})) {
+    // Skip metadata field
+    if (dimension === '__metadata') continue;
+
     const cap = manifest?.influenceCaps?.[dimension] ?? 0;
     const targetPath = ANCHOR_DIMENSION_PATHS[dimension] || `anchorCalibration.${dimension}`;
     const protectedByLock = [...protectedPaths].some((path) =>
@@ -87,7 +95,7 @@ export function resolveAnchorInfluence({ anchorSignals = {}, manifest, foundatio
       conflicts.push({
         field: targetPath,
         attemptedValue: value,
-        attemptedSource: 'golden_anchor',
+        attemptedSource: signalSource,
         result: 'rejected',
         reason: cap <= 0 ? 'influence_cap_zero' : 'protected_by_lock',
       });
@@ -97,13 +105,43 @@ export function resolveAnchorInfluence({ anchorSignals = {}, manifest, foundatio
     provenance.push({
       field: `anchorCalibration.${dimension}`,
       value,
-      source: 'golden_anchor',
+      source: signalSource,
       mergeMode: 'suggest',
       influenceCap: cap,
       overriddenBy: null,
     });
   }
   return { accepted, conflicts, provenance };
+}
+
+/**
+ * Convert canon's anchorDerivedSignals into anchor signal format
+ * compatible with resolveAnchorInfluence().
+ */
+function buildAnchorSignalsFromCanonSignals(anchorDerivedSignals) {
+  const signals = {};
+  if (!anchorDerivedSignals) return signals;
+
+  const dimensionMap = {
+    brand_atmosphere: 'brandAtmosphere',
+    brand_integration: 'brandIntegration',
+    material_and_lighting: 'materialAndLighting',
+    color_relationship: 'colorRelationship',
+    architectural_skin: 'architecturalSkin',
+    decorative_density: 'decorativeDensity',
+    reception_expression: 'receptionExpression',
+  };
+
+  for (const [key, derivedSignals] of Object.entries(anchorDerivedSignals)) {
+    const canonicalKey = dimensionMap[key] || key;
+    if (!Array.isArray(derivedSignals) || derivedSignals.length === 0) continue;
+    const primarySignal = derivedSignals[0];
+    if (!primarySignal?.value) continue;
+    // Include the actual aesthetic value in the signal
+    signals[canonicalKey] = [`calibrate ${key} = ${primarySignal.value} (source: canon_DNA, originally extracted from anchor)`];
+  }
+
+  return signals;
 }
 
 export function compileSpatialContext(input = {}) {
@@ -114,11 +152,32 @@ export function compileSpatialContext(input = {}) {
   const originalFoundation = structuredClone(foundation);
   const projectCanon = input.projectCanon || null;
   const verticalArchetype = input.verticalArchetype || null;
-  const anchor = resolveAnchorInfluence({
+
+  // Resolve anchor influence from physical anchor signals
+  let anchor = resolveAnchorInfluence({
     anchorSignals: input.anchorSignals,
     manifest: input.anchorManifest,
     foundation,
   });
+
+  // Fallback: if no physical anchor signals were accepted but canon has
+  // anchorDerivedSignals, use those as a secondary signal source
+  if (Object.keys(anchor.accepted).length === 0 && projectCanon?.anchorDerivedSignals) {
+    const canonSignals = buildAnchorSignalsFromCanonSignals(projectCanon.anchorDerivedSignals);
+    const canonAnchor = resolveAnchorInfluence({
+      anchorSignals: canonSignals,
+      manifest: input.anchorManifest,
+      foundation,
+    });
+    if (Object.keys(canonAnchor.accepted).length > 0) {
+      anchor = canonAnchor;
+      // Mark provenance as canon-derived
+      for (const entry of anchor.provenance) {
+        entry.source = 'canon_dna_fallback';
+      }
+    }
+  }
+
   const provenance = [];
   recordObjectProvenance(provenance, input.task || {}, 'current_task', 'lock', 'task');
   recordObjectProvenance(provenance, foundation, 'spatial_foundation', 'lock', 'spatialFoundation');

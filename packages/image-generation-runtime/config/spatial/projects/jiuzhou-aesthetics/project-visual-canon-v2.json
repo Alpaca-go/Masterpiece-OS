@@ -48,17 +48,19 @@
     "graphicSurfaceCoverage": "low"
   },
   "decorativeSystem": {
-    "featherPetals": "small_scale_or_background",
-    "crystals": "optional_and_sparse",
-    "iridescence": "controlled",
+    "featherPetals": "very_subtle_background_texture",
+    "crystals": "rare_and_minimal",
+    "iridescence": "very_controlled",
     "heroInstallationOccupancy": "low",
-    "decorationMustNotDominateSpace": true
+    "decorationMustNotDominateSpace": true,
+    "principle": "architecture_first_decor_second"
   },
   "receptionExpression": {
-    "serviceInterface": "soft_continuous",
-    "frontDeskMaterial": "pale_mineral_matte",
-    "mirrorMetalFrontDesk": "forbidden",
-    "hospitality": "warm_but_not_hotel_like"
+    "serviceInterface": "large_circular_reception_desk",
+    "frontDeskMaterial": "polished_metal_or_stone_combo",
+    "mirrorMetalFrontDesk": "allowed_for_accent",
+    "hospitality": "warm_but_not_hotel_like",
+    "keyFeatures": "circular_desk, multi-layer_arches, open_hall, soft_seating_zone"
   },
   "projectPalette": {
     "base": ["pearl_white", "warm_white", "light_gray"],
@@ -68,10 +70,10 @@
     "iridescence": "controlled"
   },
   "signatureMotifs": [
-    "peacock_feather_flow",
-    "nine_petals_radial",
-    "translucent_iridescent_petals",
-    "feather_eye_ellipse"
+    "subtle_feather_texture",
+    "nine_petals_background",
+    "soft_iridescent_glow",
+    "feather_eye_ellipse_very_subtle"
   ],
   "projectMaterialAccents": [
     "pearl_surface",
@@ -103,5 +105,63 @@
     "fantasyEnvironment": "forbidden",
     "architectureFirst": true,
     "brandIsIntegratedNotApplied": true
+  },
+  "anchorDerivedSignals": {
+    "brand_atmosphere": [
+      {
+        "value": "serene warm_professional refined_feminine low_noise large_open_space",
+        "influenceCap": 0.95,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-01-Exterior", "JZMX-SGR-02-Reception"]
+      }
+    ],
+    "brand_integration": [
+      {
+        "value": "architecturally_integrated controlled_logo wall_mounted_subtle_relief brand_on_feature_wall",
+        "influenceCap": 0.95,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-01-Exterior", "JZMX-SGR-02-Reception"]
+      }
+    ],
+    "material_and_lighting": [
+      {
+        "value": "pearl_white_continuous_walls soft_indirect_warm_neutral gentle_accent_lavender metal_front_desk",
+        "influenceCap": 0.9,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-01-Exterior", "JZMX-SGR-02-Reception"]
+      }
+    ],
+    "color_relationship": [
+      {
+        "value": "pearl_white_dominant mineral_lavender_accent graphite_text silver_metal_warm",
+        "influenceCap": 0.85,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-01-Exterior", "JZMX-SGR-02-Reception"]
+      }
+    ],
+    "architectural_skin": [
+      {
+        "value": "soft_and_integrated_curvature large_arches low_visual_joints minimal_metal_lines_depth",
+        "influenceCap": 0.75,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-01-Exterior", "JZMX-SGR-02-Reception"]
+      }
+    ],
+    "decorative_density": [
+      {
+        "value": "architecture_first minimal_decoration very_subtle_background_texture rare_crystals",
+        "influenceCap": 0.8,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-01-Exterior", "JZMX-SGR-02-Reception"]
+      }
+    ],
+    "reception_expression": [
+      {
+        "value": "large_circular_metal_front_desk multi-layer_arches open_hall soft_seating warm_light",
+        "influenceCap": 0.85,
+        "source": "anchor_extracted",
+        "anchorIds": ["JZMX-SGR-02-Reception"]
+      }
+    ]
   }
 }
