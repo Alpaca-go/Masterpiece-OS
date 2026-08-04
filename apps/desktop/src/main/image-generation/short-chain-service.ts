@@ -218,22 +218,90 @@ export function createShortChainImageGenerationService(
     };
   }
 
+  interface SpatialRuntimeRoots {
+    configRoot: string;
+    assetRoot: string;
+  }
+
+  // Resolve the spatial config/asset roots without relying on the runtime
+  // package's DEFAULT_CONFIG_ROOT_URL: inside the bundled desktop main process
+  // `import.meta.url` no longer points at the real package directory, so the
+  // package-internal default silently fails there. Probe, in order:
+  //   1. Packaged resources (electron-builder `extraResources`: config/spatial
+  //      plus the golden-reference assets live next to each other under
+  //      process.resourcesPath).
+  //   2. A repository checkout derived from the current working directory
+  //      (dev runs from apps/desktop, tests run from apps/desktop or the repo
+  //      root), so the dev flow resolves the real on-disk config and assets.
+  async function resolveSpatialRuntimeRoots(): Promise<SpatialRuntimeRoots | null> {
+    const candidates: SpatialRuntimeRoots[] = [];
+    if (typeof process.resourcesPath === 'string') {
+      candidates.push({
+        configRoot: path.join(process.resourcesPath, 'config', 'spatial'),
+        assetRoot: process.resourcesPath,
+      });
+    }
+    const cwd = process.cwd();
+    for (const base of [cwd, path.resolve(cwd, '..'), path.resolve(cwd, '..', '..')]) {
+      candidates.push({
+        configRoot: path.join(base, 'packages', 'image-generation-runtime', 'config', 'spatial'),
+        assetRoot: base,
+      });
+    }
+    for (const candidate of candidates) {
+      const exists = await fs.access(candidate.configRoot).then(() => true).catch(() => false);
+      if (exists) return candidate;
+    }
+    return null;
+  }
+
+  // Red line: when a space deliverable's spatial bundle cannot be loaded even
+  // though the project has spatial config (or the spatial resources are
+  // missing from the deployment entirely), generation MUST abort loudly
+  // instead of silently degrading into a run without the Golden Anchor.
+  // A missing bundle is only acceptable when the project genuinely has no
+  // spatial config at all.
+  async function loadSpatialBundleOrAbort(
+    projectId: string,
+    roots: SpatialRuntimeRoots | null,
+  ) {
+    try {
+      return await Promise.resolve().then(() => loadSpatialProjectBundle(
+        projectId,
+        roots ? { configRoot: roots.configRoot } : {},
+      ));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException)?.code !== 'ENOENT') throw error;
+      if (!roots) {
+        throw Object.assign(new Error(
+          'Spatial config resources are missing (config/spatial was found neither in packaged '
+          + 'resources nor in a repository checkout). Aborting space generation instead of '
+          + 'silently degrading without the Golden Anchor. Rebuild the package so the '
+          + 'electron-builder extraResources entries for config/spatial and assets are shipped.',
+        ), { code: 'SPATIAL_CONFIG_ROOT_MISSING', cause: error });
+      }
+      const projectConfigDirectory = path.join(roots.configRoot, 'projects', projectId);
+      const hasProjectConfig = await fs.access(projectConfigDirectory)
+        .then(() => true)
+        .catch(() => false);
+      if (!hasProjectConfig) return null;
+      throw Object.assign(new Error(
+        `Spatial config for project ${projectId} exists at ${projectConfigDirectory} but failed `
+        + 'to load. Aborting space generation instead of silently degrading without the '
+        + 'Golden Anchor.',
+      ), { code: 'SPATIAL_CONFIG_BUNDLE_UNAVAILABLE', cause: error });
+    }
+  }
+
   async function compile(input: CompileShortChainGenerationInput): Promise<CompileShortChainGenerationResult> {
     const context = await projectContext.getShortChain(input.projectId)
       .catch(() => projectContext.rebuildShortChain(input.projectId));
     const paths = await projects.paths(input.projectId);
-    const runtimeResourcesPath = typeof process.resourcesPath === 'string'
-      ? process.resourcesPath
-      : process.cwd();
-    const packagedConfigRoot = path.join(runtimeResourcesPath, 'config', 'spatial');
-    const packagedAssetRoot = runtimeResourcesPath;
-    const configRoot = await fs.access(packagedConfigRoot).then(() => packagedConfigRoot).catch(() => undefined);
+    const spatialRuntimeRoots = input.task.deliverableFamily === 'space'
+      ? await resolveSpatialRuntimeRoots()
+      : null;
     const spatialProjectBundle = input.task.deliverableFamily === 'space'
-      ? await Promise.resolve().then(() => loadSpatialProjectBundle(input.projectId, { configRoot }))
-        .catch((error: NodeJS.ErrnoException) => {
-          if (error.code === 'ENOENT') return null;
-          throw error;
-        })
+      ? await loadSpatialBundleOrAbort(input.projectId, spatialRuntimeRoots)
       : null;
     const instructionText = `${input.task.currentInstruction ?? ''} ${input.task.scene ?? ''} ${input.task.shot ?? ''}`;
     const resolvedSpaceType = /large[_\s-]?lobby|large space|grand lobby|大空间|大堂|挑高/iu.test(instructionText)
@@ -244,7 +312,7 @@ export function createShortChainImageGenerationService(
         currentProjectId: input.projectId,
         spaceType: resolvedSpaceType,
         manifest: spatialProjectBundle.anchorManifest,
-        ...(configRoot ? { assetRoot: packagedAssetRoot } : {}),
+        ...(spatialRuntimeRoots ? { assetRoot: spatialRuntimeRoots.assetRoot } : {}),
       })
       : null;
     if (spatialAnchorSelection?.anchors.length) {
@@ -397,9 +465,9 @@ export function createShortChainImageGenerationService(
       verticalArchetype: spatialProjectBundle && isVerticalSpatialArchetypeEnabled(spatialProjectBundle)
         ? loadPremiumMedicalAestheticsArchetype({
           projectSignatureTerms: spatialProjectBundle.projectSignatureTerms,
-          ...(configRoot ? {
+          ...(spatialRuntimeRoots ? {
             url: pathToFileURL(path.join(
-              configRoot,
+              spatialRuntimeRoots.configRoot,
               'archetypes',
               'premium-medical-aesthetics-v1.json',
             )),
@@ -552,6 +620,13 @@ export function createShortChainImageGenerationService(
           preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
         }).preflightReport;
       } catch (recompileError) {
+        // Spatial aborts are red-line failures: never fall back to a stale
+        // cached compilation that was produced without the Golden Anchor.
+        const recompileCode = (recompileError as { code?: string })?.code;
+        if (recompileCode === 'SPATIAL_CONFIG_ROOT_MISSING'
+          || recompileCode === 'SPATIAL_CONFIG_BUNDLE_UNAVAILABLE') {
+          throw recompileError;
+        }
         // Re-compile failed for some other reason; fall through to the
         // original blocked report so the user still sees the underlying
         // finding codes.

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import sharp from 'sharp';
 import type {
@@ -661,4 +662,119 @@ test('Short-Chain repairs then falls back for a locked Logo without regenerating
   assert.deepEqual(debug.selectedAssets, ['logo-asset']);
   assert.equal(debug.selfHealingDecision.action, 'local_asset_projection');
   assert.deepEqual(debug.selfHealingDecision.coveredErrors, ['wrong_text', 'contour_deformation']);
+});
+
+function repoRootFromTests(): string {
+  // This file lives at apps/desktop/tests/, so the repo root is three levels up.
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+}
+
+test('Short-Chain space compile aborts when spatial resources are missing from the deployment', async () => {
+  // Red line: no silent degradation. When neither packaged resources nor a
+  // repository checkout provide config/spatial, a space deliverable must
+  // abort instead of generating without the spatial chain.
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-short-chain-no-spatial-'));
+  const emptyDeployment = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-empty-deployment-'));
+  const service = createShortChainImageGenerationService(
+    { paths: async () => ({
+      root,
+      input: path.join(root, 'input'),
+      prepared: path.join(root, 'prepared'),
+      outputs: path.join(root, 'outputs'),
+      runtime: path.join(root, 'runtime'),
+    }) } as never,
+    {
+      getShortChain: async () => context,
+      rebuildShortChain: async () => context,
+    } as never,
+    () => ({}) as never,
+  );
+  const previousCwd = process.cwd();
+  process.chdir(emptyDeployment);
+  try {
+    await assert.rejects(
+      () => service.compile({
+        projectId,
+        task: {
+          deliverableFamily: 'space',
+          subtype: 'reception',
+          shot: 'entrance_view',
+          count: 1,
+          aspectRatio: '16:9',
+          currentInstruction: 'Create the first formal reception result.',
+          mustInclude: [],
+          mustAvoid: [],
+          referenceAssetIds: [],
+          logoUsageMode: 'reference',
+        },
+      }),
+      (error: unknown) => (error as { code?: string })?.code === 'SPATIAL_CONFIG_ROOT_MISSING',
+    );
+  } finally {
+    process.chdir(previousCwd);
+  }
+});
+
+test('Short-Chain space compile aborts when project spatial config exists but fails to load', async () => {
+  // Red line: the project HAS spatial config (projects/jiuzhou-aesthetics/
+  // directory exists) but the bundle cannot be loaded (canon missing), so
+  // generation must abort rather than silently degrade without the Anchor.
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-short-chain-broken-spatial-'));
+  const brokenRepo = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-broken-repo-'));
+  const brokenProjectConfig = path.join(
+    brokenRepo,
+    'packages',
+    'image-generation-runtime',
+    'config',
+    'spatial',
+    'projects',
+    'jiuzhou-aesthetics',
+  );
+  await fs.mkdir(brokenProjectConfig, { recursive: true });
+  await fs.copyFile(
+    path.join(
+      repoRootFromTests(),
+      'packages', 'image-generation-runtime', 'config', 'spatial',
+      'projects', 'jiuzhou-aesthetics', 'anchor-manifest-v1.json',
+    ),
+    path.join(brokenProjectConfig, 'anchor-manifest-v1.json'),
+  );
+  const service = createShortChainImageGenerationService(
+    { paths: async () => ({
+      root,
+      input: path.join(root, 'input'),
+      prepared: path.join(root, 'prepared'),
+      outputs: path.join(root, 'outputs'),
+      runtime: path.join(root, 'runtime'),
+    }) } as never,
+    {
+      getShortChain: async () => context,
+      rebuildShortChain: async () => context,
+    } as never,
+    () => ({}) as never,
+  );
+  const previousCwd = process.cwd();
+  process.chdir(brokenRepo);
+  try {
+    await assert.rejects(
+      () => service.compile({
+        projectId: 'jiuzhou-aesthetics',
+        task: {
+          deliverableFamily: 'space',
+          subtype: 'reception',
+          shot: 'entrance_view',
+          count: 1,
+          aspectRatio: '16:9',
+          currentInstruction: 'Create the first formal reception result.',
+          mustInclude: [],
+          mustAvoid: [],
+          referenceAssetIds: [],
+          logoUsageMode: 'reference',
+        },
+      }),
+      (error: unknown) => (error as { code?: string })?.code === 'SPATIAL_CONFIG_BUNDLE_UNAVAILABLE',
+    );
+  } finally {
+    process.chdir(previousCwd);
+  }
 });
