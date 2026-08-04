@@ -52,7 +52,6 @@ influence:
   brand_integration: 0.95
   material_and_lighting: 0.90
   color_relationship: 0.85
-  architectural_language: 0.75
   decorative_density: 0.80
   composition: 0.30
   functional_layout: 0.05

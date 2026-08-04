@@ -30,7 +30,6 @@
     "materialAndLighting": 0.9,
     "colorRelationship": 0.85,
     "architecturalSkin": 0.75,
-    "architecturalLanguage": 0.75,
     "decorativeDensity": 0.8,
     "composition": 0.3,
     "functionalLayout": 0.05,

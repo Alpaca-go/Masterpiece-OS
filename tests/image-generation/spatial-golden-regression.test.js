@@ -44,7 +44,10 @@ test('Case A: large lobby inherits calibration while preserving scale and depth'
   assert.equal(compiled.foundation.spatialScale.class, 'large');
   assert.equal(compiled.foundation.spatialScale.depthExpression, 'strong');
   assert.equal(compiled.anchorCalibration.materialAndLighting.influenceCap, 0.9);
-  assert.equal(bundle.anchorManifest.influenceCaps.architecturalLanguage, 0.75);
+  // architecturalLanguage was removed from the manifest: forensics v1.2 proved
+  // it had no runtime consumer (anchorSignalsFromSelection role mapping never
+  // emits it), i.e. it was a fake weight with zero execution behavior.
+  assert.equal(bundle.anchorManifest.influenceCaps.architecturalLanguage, undefined);
   assert.equal(compiled.anchorCalibration.spatialScale, undefined);
   assert.equal(compiled.anchorCalibration.composition, undefined);
 });
