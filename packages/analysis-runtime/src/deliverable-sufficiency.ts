@@ -107,6 +107,36 @@ const DELIVERABLE_RULES: Record<AnalysisDeliverable, RequiredFieldRule[]> = {
       kind: 'array',
       minimumItems: 1,
     },
+    {
+      path: 'mediaTranslations.spatial.functionalNetwork',
+      code: 'FUNCTIONAL_NETWORK_INCOMPLETE',
+      kind: 'array',
+      // The desktop preflight gate requires `functionalNetwork.length >= 3`
+      // (FLAGSHIP_PROGRAM_TOO_GENERIC) for space deliverable. Match the
+      // bar here so the sufficiency check and the preflight gate stay in
+      // sync. The JZMX 2026-08-07 packet shipped with `functionalNetwork: []`
+      // and `sceneProgram: [4 items]` — the model had enough material to
+      // populate the network but no policy told it to. The AI repair path
+      // (see field-repair-policy.ts FUNCTIONAL_NETWORK_INCOMPLETE) now
+      // generates this field with 3+ items per brandRole + sceneProgram.
+      minimumItems: 3,
+    },
+    {
+      path: 'mediaTranslations.spatial.brandRoleManifestation',
+      code: 'BRAND_ROLE_MANIFESTATION_MISSING',
+      kind: 'array',
+      // The preflight gate requires `roleManifestation.length > 0` for
+      // `BRAND_ROLE_NOT_SPATIALLY_MANIFESTED` to pass. Match the bar.
+      minimumItems: 1,
+    },
+    {
+      path: 'mediaTranslations.spatial.mustBeVisible',
+      code: 'MUST_BE_VISIBLE_MISSING',
+      kind: 'array',
+      // The preflight gate requires `mustBeVisible.length > 0` for
+      // `POSITIVE_SPATIAL_MECHANISM_MISSING` to pass. Match the bar.
+      minimumItems: 1,
+    },
   ],
   packaging: [
     {

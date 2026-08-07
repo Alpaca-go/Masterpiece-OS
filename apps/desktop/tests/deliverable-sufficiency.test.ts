@@ -121,3 +121,64 @@ test('unknown brand facts require confirmation instead of AI invention', () => {
     && issue.repairStrategy === 'ask_user'
   )));
 });
+
+// v2-space-generator 2026-08-08: covers the JZMX bug where
+// `mediaTranslations.spatial.functionalNetwork` shipped empty (0 items)
+// while sceneProgram had 4 items, and the desktop preflight gate blocked
+// image generation with `BRAND_ROLE_NOT_SPATIALLY_MANIFESTED` and
+// `FLAGSHIP_PROGRAM_TOO_GENERIC`. The sufficiency check now flags this
+// gap at 3+ items to match the preflight gate's `>= 3` requirement, and
+// the field-repair-policy registers FUNCTIONAL_NETWORK_INCOMPLETE so the
+// AI repair path populates the field on the next V5 analysis run.
+test('empty functional network is flagged with FUNCTIONAL_NETWORK_INCOMPLETE (3+ items required)', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.functionalNetwork = [];
+
+  const result = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution,
+  });
+
+  assert.ok(result.issues.some((issue) => (
+    issue.code === 'FUNCTIONAL_NETWORK_INCOMPLETE'
+    && issue.severity === 'repairable'
+    && issue.repairStrategy === 'ai_from_evidence'
+  )));
+});
+
+test('short functional network (<3 items) is also flagged for repair', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.functionalNetwork = [
+    'arrival to consultation',
+  ];
+
+  const result = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution,
+  });
+
+  assert.ok(result.issues.some((issue) => (
+    issue.code === 'FUNCTIONAL_NETWORK_INCOMPLETE'
+  )));
+});
+
+test('missing brandRoleManifestation and mustBeVisible are flagged for the preflight gate sync', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.brandRoleManifestation = [];
+  packet.mediaTranslations.spatial.mustBeVisible = [];
+
+  const result = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution,
+  });
+
+  assert.ok(result.issues.some((issue) => (
+    issue.code === 'BRAND_ROLE_MANIFESTATION_MISSING'
+  )));
+  assert.ok(result.issues.some((issue) => (
+    issue.code === 'MUST_BE_VISIBLE_MISSING'
+  )));
+});

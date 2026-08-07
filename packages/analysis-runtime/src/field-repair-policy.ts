@@ -245,6 +245,37 @@ export const FIELD_REPAIR_POLICIES: readonly FieldRepairPolicy[] = Object.freeze
     ],
   }),
   policy({
+    path: 'mediaTranslations.spatial.functionalNetwork',
+    code: 'FUNCTIONAL_NETWORK_INCOMPLETE',
+    severity: 'repairable',
+    repairStrategy: 'ai_from_evidence',
+    appliesTo: ['space'],
+    // Same evidence-anchor pattern as functionalRelationships above:
+    // upstream projectFacts.brandRole carries `evidenceRefs` and is
+    // always present at this stage, while sceneProgram + abstractions +
+    // upgrade thesis are semantic guidance the model can cite as the
+    // service-flow context. Sibling fields (functionalRelationships,
+    // sceneProgram) are excluded because they are themselves new
+    // creative output without evidenceRefs, which made the original
+    // `requiredEvidencePaths` for sibling fields impossible to satisfy
+    // (see FUNCTIONAL_RELATIONSHIPS_INCOMPLETE comment for the same fix).
+    //
+    // The JZMX 2026-08-07 packet reached `ready` status but shipped with
+    // `functionalNetwork: []` (4 items in sceneProgram, 0 in
+    // functionalNetwork). The desktop preflight gate then blocked image
+    // generation with `BRAND_ROLE_NOT_SPATIALLY_MANIFESTED` and
+    // `FLAGSHIP_PROGRAM_TOO_GENERIC` because the gate requires
+    // `functionalNetwork.length >= 3`. This policy closes the gap: the
+    // next V5 analysis will see `FUNCTIONAL_NETWORK_INCOMPLETE` and
+    // run the AI repair with the brandRole + sceneProgram context.
+    requiredEvidencePaths: [
+      'projectFacts.brandRole',
+      'creativeDecision.uniqueUpgradeThesis',
+      'abstractions',
+      'mediaTranslations.spatial.sceneProgram',
+    ],
+  }),
+  policy({
     path: 'mediaTranslations.packaging.productAndCategoryRole',
     code: 'PACKAGING_PRODUCT_ROLE_MISSING',
     severity: 'requires_confirmation',

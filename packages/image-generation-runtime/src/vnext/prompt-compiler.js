@@ -110,6 +110,16 @@ function packetExecutionSource(packet, family) {
     !(Array.isArray(spatial.materialLanguage) && spatial.materialLanguage.length)
       && 'mediaTranslations.spatial.materialLanguage',
     !cleanList(spatial.lightingLanguage?.source).length && 'mediaTranslations.spatial.lightingLanguage',
+    // Synchronised with packages/image-generation-runtime/src/gates/prompt-preflight-gate.js
+    // (BRAND_ROLE_NOT_SPATIALLY_MANIFESTED, FLAGSHIP_PROGRAM_TOO_GENERIC,
+    // POSITIVE_SPATIAL_MECHANISM_MISSING). The desktop preflight gate
+    // requires functionalNetwork.length >= 3, brandRoleManifestation.length
+    // >= 1, mustBeVisible.length >= 1 for the prompt to ship. Catching the
+    // gap at compile time (here) gives a clearer error than the preflight
+    // gate's `PROMPT_PREFLIGHT_BLOCKED` aggregate message.
+    !cleanList(spatial.functionalNetwork).length && 'mediaTranslations.spatial.functionalNetwork',
+    !cleanList(spatial.brandRoleManifestation).length && 'mediaTranslations.spatial.brandRoleManifestation',
+    !cleanList(spatial.mustBeVisible).length && 'mediaTranslations.spatial.mustBeVisible',
   ].filter(Boolean);
   if (missingStructuredFields.length) {
     throw Object.assign(

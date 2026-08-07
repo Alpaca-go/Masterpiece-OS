@@ -116,6 +116,25 @@ function packet(overrides = {}) {
           '羽毛抽象分散进入半透明隔断、曲面墙体与天花层次',
           'Logo 小面积位于后方内部服务节点或保留干净识别位',
         ],
+        brandRoleManifestation: [
+          '医美平台角色通过连续半透明结构与多个服务节点在单一画面内被读出',
+        ],
+        signatureSpatialMechanism: [
+          '连续半透明结构贯穿前景到达、中景咨询与背景接待',
+        ],
+        functionalNetwork: [
+          '入口连接前台登记与等候',
+          '前台连接咨询与后方服务',
+          '咨询连接治疗室与半透明分区',
+          '治疗室连接 VIP 休息区与离开',
+        ],
+        positiveDifferentiators: [
+          '同一连续结构在四个节点发生可见变化',
+        ],
+        mustBeVisible: [
+          '前景到达、中景咨询与背景接待在同一画面内可追踪',
+          '连续半透明结构与三个及以上功能节点',
+        ],
         functionalRelationships: ['接待连接等候、咨询与后方服务'],
         sceneProgram: ['前景到达、中景咨询、背景接待与后场'],
         peopleBehavior: ['访客自然等候，工作人员处理接待'],
@@ -457,6 +476,15 @@ function alternatePacket({
     },
     colorBehavior,
     brandIntegration: ['小面积真实 Logo'],
+    brandRoleManifestation: [`${worldview[0]}角色通过${structure}在空间中可见`],
+    signatureSpatialMechanism: [`${structure}贯穿所有节点`],
+    functionalNetwork: [
+      '入口连接主要体验区',
+      '主要体验区连接次级服务',
+      '次级服务连接离开路径',
+    ],
+    positiveDifferentiators: [`${worldview[0]}一致贯穿所有节点`],
+    mustBeVisible: [`${structure}与至少三个功能节点`],
     functionalRelationships: [],
     sceneProgram: ['当前项目证据确认的品牌体验程序'],
     peopleBehavior: [],
@@ -659,7 +687,11 @@ test('education and food platform words compile only explicit structured scene d
 
 test('confirmed scoped risk and structured scene behavior compile only for their matching task', () => {
   const result = compile();
-  assert.match(result.compiledPrompt.finalPrompt, /Functional network: 接待连接等候、咨询与后方服务/u);
+  // v2-space-generator 2026-08-08: spatial fixture now carries an explicit
+  // functionalNetwork (was empty, falling back to functionalRelationships
+  // through packages/creative-production-runtime/src/project-generation-contract.js).
+  // Match the first item from the fixture's functionalNetwork.
+  assert.match(result.compiledPrompt.finalPrompt, /Functional network: 入口连接前台登记与等候/u);
   assert.match(result.compiledPrompt.finalPrompt, /People behavior: 访客自然等候/u);
   assert.match(result.compiledPrompt.finalPrompt, /Strict negative: 不要呈现传统医院诊室、注射操作、护理床或护理场景/u);
 });

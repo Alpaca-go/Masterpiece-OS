@@ -124,3 +124,46 @@ test('repair planner attaches current-project evidence to the spatial functional
     'expected the brand-role evidence ref to anchor the batch',
   );
 });
+
+// v2-space-generator 2026-08-08: regression for the JZMX 2026-08-07 packet
+// which shipped with `functionalNetwork: []` (4 items in sceneProgram).
+// Without this policy, the next V5 analysis would never call the model to
+// populate the network, and the desktop preflight gate would keep blocking
+// image generation with `FLAGSHIP_PROGRAM_TOO_GENERIC`. The batch must
+// carry the brand-role evidence ref so the structured-repair runner
+// actually invokes the AI repair (same pattern as the
+// functional-relationships test above).
+test('repair planner attaches current-project evidence to the spatial functional-network batch', () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.functionalNetwork = [];
+  const sufficiency = evaluateDeliverableSufficiency({
+    packet,
+    deliverable: 'space',
+    execution,
+  });
+  const issues = sufficiency.issues.filter(
+    (issue) => issue.path === 'mediaTranslations.spatial.functionalNetwork',
+  );
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0]?.code, 'FUNCTIONAL_NETWORK_INCOMPLETE');
+  assert.equal(issues[0]?.repairStrategy, 'ai_from_evidence');
+
+  const plan = createRepairPlan({
+    deliverable: 'space',
+    attempt: 1,
+    issues,
+  });
+  assert.equal(plan.aiBatches.length, 1);
+  const batch = plan.aiBatches[0];
+  assert.deepEqual(batch?.fieldPaths, [
+    'mediaTranslations.spatial.functionalNetwork',
+  ]);
+  assert.ok(
+    (batch?.evidenceRefs?.length ?? 0) > 0,
+    'functional-network AI batch must carry at least one evidence ref',
+  );
+  assert.ok(
+    (batch?.evidenceRefs ?? []).some((ref) => ref === 'document:brand-role'),
+    'expected the brand-role evidence ref to anchor the functional-network batch',
+  );
+});
