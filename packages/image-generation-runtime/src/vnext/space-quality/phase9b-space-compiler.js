@@ -27,6 +27,7 @@ import {
   selectArchitectureAnchors,
   renderArchitectureContextBlock,
   resolveArchitectureAnchorImagePath,
+  normalizeAnchorIndustry,
 } from './architecture-context.js';
 import { measurePromptBudget } from './prompt-budget.js';
 import { buildTrace } from './trace.js';
@@ -363,7 +364,7 @@ export function compilePhase9bSpacePrompt(input) {
 // doesn't have to restate industry/scene. Industry maps from projectFacts,
 // sceneType from the task subtype, commercialContext is left to the caller.
 function deriveAnchorCriteria(layers, taskContract) {
-  const industry = layers.projectIdentity.industry || undefined;
+  const industry = normalizeAnchorIndustry(layers.projectIdentity.industry);
   const sceneType = taskContract?.subtype || undefined;
   return { industry, sceneType };
 }

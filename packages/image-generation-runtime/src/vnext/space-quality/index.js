@@ -22,6 +22,7 @@ export {
   renderArchitectureContextBlock,
   resolveArchitectureAnchorImagePath,
   loadArchitectureAnchorRegistry,
+  normalizeAnchorIndustry,
   ARCHITECTURE_CONTEXT_VERSION,
 } from './architecture-context.js';
 

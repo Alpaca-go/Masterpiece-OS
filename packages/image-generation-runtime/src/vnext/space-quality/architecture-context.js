@@ -32,6 +32,33 @@ const REGISTRY_PATH = join(
 
 let registryCache = null;
 
+/**
+ * Normalize a projectFacts.industry value into the slug vocabulary used by
+ * the architecture-anchor registry (medical_aesthetics, restaurant, ...).
+ * The registry is the source of truth for valid slugs; this map only
+ * bridges localized labels recorded by V5 analysis. It is intentionally
+ * generic and does NOT hardcode any brand or project name.
+ */
+const INDUSTRY_NORMALIZATIONS = [
+  [/medical[\s_-]?aesthetics?|医疗美容|医美/iu, 'medical_aesthetics'],
+  [/restaurant|餐饮|餐厅/iu, 'restaurant'],
+  [/beauty[\s_-]?salon|美容(?:院|会所)?/iu, 'beauty_salon'],
+  [/tea[\s_-]?space|茶空间/iu, 'tea_space'],
+  [/sales[\s_-]?office|售楼处/iu, 'sales_office'],
+];
+
+export function normalizeAnchorIndustry(value) {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  for (const [pattern, slug] of INDUSTRY_NORMALIZATIONS) {
+    if (pattern.test(trimmed)) return slug;
+  }
+  // Already a slug-like value (lowercase, ascii, underscores/hyphens).
+  if (/^[a-z][a-z0-9_-]+$/u.test(trimmed)) return trimmed;
+  return undefined;
+}
+
 export function loadArchitectureAnchorRegistry() {
   if (registryCache) return registryCache;
   if (!existsSync(REGISTRY_PATH)) {
