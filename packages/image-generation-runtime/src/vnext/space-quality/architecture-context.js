@@ -41,7 +41,7 @@ export function loadArchitectureAnchorRegistry() {
   return registryCache;
 }
 
-// Test-only injection point.
+// Test-only registry override (not exported via the package index).
 export function __setArchitectureAnchorRegistryForTest(registry) {
   registryCache = registry;
 }

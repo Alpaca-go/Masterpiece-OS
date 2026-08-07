@@ -16,6 +16,11 @@ import {
   compileVNextImageGeneration,
   listVNextTemplateOptions,
 } from '@masterpiece/image-generation-runtime/vnext/index.js';
+import {
+  resolveSpaceReferences,
+  assertSpaceReferenceAvailable,
+  runSpaceQualityGate,
+} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
@@ -388,27 +393,125 @@ export function createVNextImageGenerationService(
     const session = await readSession(input.projectId);
     const implicitAnchor = session.implicitAnchors[compilation.taskContract.deliverableFamily];
     const explicitIds = compilation.taskContract.referenceAssetIds;
-    const explicitReferences = explicitIds.flatMap((assetId) => {
-      const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
-      if (!asset || asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
-      return [{
-        id: asset.assetId,
-        role: lockedLogoAssetIds.has(asset.assetId) || asset.role === 'logo'
-          ? 'identity_reference' as const
-          : asset.role === 'package_structure'
-            ? 'structure_reference' as const
-            : 'core_reference' as const,
-        projectRelativePath: `input/${asset.relativePath}`,
-      }];
-    });
-    const references = [
-      ...explicitReferences,
-      ...(implicitAnchor ? [{
-        id: implicitAnchor.imageId,
-        role: 'core_reference' as const,
-        projectRelativePath: implicitAnchor.projectRelativePath,
-      }] : []),
-    ].slice(0, 2);
+    const isSpace = compilation.taskContract.deliverableFamily === 'space';
+    const phase9b = (compilation.compiledPrompt as unknown as {
+      phase9b?: {
+        compilerId?: string;
+        referenceImages?: Array<{ anchorId: string; imagePath: string | null }>;
+      };
+    }).phase9b;
+    // R4/R5 reference + quality gates apply ONLY to the Phase 9B-quality space
+    // route. Legacy vNext space generations (MASTERPIECE_SPACE_COMPILER_MODE
+    // unset or `vnext_legacy`) keep their previous reference semantics.
+    const isPhase9bSpace = isSpace && Boolean(phase9b?.compilerId);
+
+    let references: Array<{
+      id: string;
+      role: 'core_reference' | 'identity_reference' | 'structure_reference';
+      projectRelativePath: string;
+      source?: string;
+    }>;
+    let referenceTrace: Record<string, unknown> | null = null;
+    let spaceQualityGate: Record<string, unknown> | null = null;
+
+    if (isPhase9bSpace) {
+      // Recovery R4: first formal space generation must carry a non-logo core
+      // reference. Priority: user explicit > implicit anchor > architecture
+      // anchor image. Logo/packaging assets are filtered out by the policy.
+      const explicitAssets = explicitIds.flatMap((assetId) => {
+        const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
+        if (!asset) return [];
+        return [{
+          assetId: asset.assetId,
+          role: asset.role,
+          relativePath: asset.relativePath,
+        }];
+      });
+      const architectureAnchorImages = (phase9b?.referenceImages ?? [])
+        .filter((img) => img.imagePath)
+        .map((img) => ({ anchorId: img.anchorId, imagePath: img.imagePath as string }));
+
+      const resolved = resolveSpaceReferences({
+        explicitAssets,
+        implicitAnchor: implicitAnchor
+          ? { imageId: implicitAnchor.imageId, projectRelativePath: implicitAnchor.projectRelativePath }
+          : null,
+        architectureAnchorImages,
+        maxReferences: 2,
+      }) as {
+        references: Array<{
+          id: string;
+          role: 'core_reference' | 'identity_reference' | 'structure_reference';
+          projectRelativePath: string;
+          source: string;
+        }>;
+        trace: Record<string, unknown>;
+      };
+      references = resolved.references.map((ref) => ({
+        id: ref.id,
+        role: ref.role,
+        projectRelativePath: ref.projectRelativePath,
+        source: ref.source,
+      }));
+      referenceTrace = resolved.trace;
+
+      // Fail closed when no reference is available (unless the task explicitly
+      // carries a reference-first bypass, e.g. a deliberate text-only debug).
+      const bypass = Boolean((compilation.taskContract as unknown as { allowTextOnlySpace?: boolean }).allowTextOnlySpace);
+      assertSpaceReferenceAvailable(references, { bypass });
+
+      // R5: re-run the space quality gate with the resolved reference count so
+      // SPACE_REFERENCE_MISSING is reflected in preflight findings too (even
+      // though assertSpaceReferenceAvailable already fails closed above).
+      const phase9bBlocks = (compilation.compiledPrompt as unknown as {
+        blocks?: Array<{ id: string; text?: string }>;
+      }).blocks ?? [];
+      const blocksById: Record<string, { id: string; text?: string }> = Object.fromEntries(
+        phase9bBlocks.map((b) => [b.id, b]),
+      );
+      const blockIds: string[] = phase9bBlocks.map((b) => b.id);
+      const resolvedQualityGate = runSpaceQualityGate({
+        finalPrompt: compilation.compiledPrompt.finalPrompt,
+        blockIds,
+        blocksById,
+        referenceCount: references.length,
+        hasExplicitReferenceBypass: bypass,
+      } as Parameters<typeof runSpaceQualityGate>[0]);
+      if (resolvedQualityGate.status !== 'pass') {
+        const blocked = resolvedQualityGate.findings.filter((f) => f.severity === 'block');
+        if (blocked.length) {
+          throw Object.assign(new Error(
+            `SPACE_QUALITY_GATE_BLOCKED: ${blocked.map((f) => f.code).join(', ')}`,
+          ), {
+            code: blocked[0]?.code || 'SPACE_QUALITY_GATE_BLOCKED',
+            findings: resolvedQualityGate.findings,
+          });
+        }
+      }
+      spaceQualityGate = resolvedQualityGate;
+    } else {
+      const explicitReferences = explicitIds.flatMap((assetId) => {
+        const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
+        if (!asset || asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
+        return [{
+          id: asset.assetId,
+          role: lockedLogoAssetIds.has(asset.assetId) || asset.role === 'logo'
+            ? 'identity_reference' as const
+            : asset.role === 'package_structure'
+              ? 'structure_reference' as const
+              : 'core_reference' as const,
+          projectRelativePath: `input/${asset.relativePath}`,
+        }];
+      });
+      references = [
+        ...explicitReferences,
+        ...(implicitAnchor ? [{
+          id: implicitAnchor.imageId,
+          role: 'core_reference' as const,
+          projectRelativePath: implicitAnchor.projectRelativePath,
+        }] : []),
+      ].slice(0, 2);
+    }
     const prompt = input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt;
     const run = await getImageGeneration().startCompiledCreativeTask({
       projectId: input.projectId,
@@ -421,6 +524,8 @@ export function createVNextImageGenerationService(
         route: compilation.compiledPrompt.route,
         trace: compilation.compiledPrompt.trace,
         implicitAnchor,
+        ...(referenceTrace ? { referenceTrace } : {}),
+        ...(spaceQualityGate ? { spaceQualityGate } : {}),
       },
       sourceMap: {
         pipelineMode: 'vnext',

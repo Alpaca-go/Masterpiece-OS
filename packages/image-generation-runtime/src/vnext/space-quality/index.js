@@ -33,3 +33,4 @@ export {
 
 export { measurePromptBudget, assertPromptBudget } from './prompt-budget.js';
 export { buildTrace, fingerprint } from './trace.js';
+export { runSpaceQualityGate } from './space-quality-gate.js';
