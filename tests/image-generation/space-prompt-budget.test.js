@@ -1,7 +1,7 @@
 // Space prompt budget tests (Recovery R5).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { measurePromptBudget, assertPromptBudget } from '../../packages/image-generation-runtime/src/vnext/space-quality/index.js';
+import { measurePromptBudget, assertPromptBudget } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 
 test('budget passes for a target-length prompt with positive majority', () => {
   const blocks = {

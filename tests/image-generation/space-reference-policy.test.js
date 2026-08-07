@@ -5,7 +5,7 @@ import {
   resolveSpaceReferences,
   assertSpaceReferenceAvailable,
   SPACE_REFERENCE_POLICY_VERSION,
-} from '../../packages/image-generation-runtime/src/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 
 test('priority 1: user explicit reference wins and is core_reference', () => {
   const { references, trace } = resolveSpaceReferences({

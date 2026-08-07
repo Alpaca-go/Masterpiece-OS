@@ -15,7 +15,7 @@ import {
   compilePhase9bSpacePrompt,
   adaptPhase9bSource,
   isSpacePhase9bInsufficient,
-} from '../../packages/image-generation-runtime/src/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 
 function makePacket(overrides = {}) {
   const spatial = {
