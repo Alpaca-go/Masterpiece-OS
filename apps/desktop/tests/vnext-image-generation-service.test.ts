@@ -3,6 +3,10 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+// These tests exercise the legacy vNext space service path with a V2 context
+// (no V5 VisualDecisionPacket); after R7 phase9b_quality is the default, so pin
+// the legacy compiler to keep testing that route's service behavior.
+process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
 import type {
   ImageGenerationRun,
   ProjectVisualContextVNext,

@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+// These tests assert the legacy vNext space routing; pin it because R7 made
+// phase9b_quality the default.
+process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
 import {
   compileVNextImageGeneration,
   createVNextTaskContract,

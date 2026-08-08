@@ -11,8 +11,9 @@ import { measurePromptBudget } from './space-quality/prompt-budget.js';
 
 // Feature flag (recovery doc §10.1):
 //   MASTERPIECE_SPACE_COMPILER_MODE=phase9b_quality | vnext_legacy
-// Default stays vnext_legacy until the real-provider A/B (R6) passes; R7 flips
-// the default. Packaging always uses the existing compiler.
+// Default is phase9b_quality (R7, flipped after the R6 real-provider A/B was
+// judged in favor of Phase 9B). Set vnext_legacy to force the old path.
+// Packaging always uses the existing compiler.
 export const SPACE_COMPILER_MODES = Object.freeze({
   PHASE9B_QUALITY: 'phase9b_quality',
   VNEXT_LEGACY: 'vnext_legacy',
@@ -20,8 +21,8 @@ export const SPACE_COMPILER_MODES = Object.freeze({
 
 export function resolveSpaceCompilerMode(env = process.env) {
   const raw = (env.MASTERPIECE_SPACE_COMPILER_MODE || '').trim();
-  if (raw === SPACE_COMPILER_MODES.PHASE9B_QUALITY) return SPACE_COMPILER_MODES.PHASE9B_QUALITY;
-  return SPACE_COMPILER_MODES.VNEXT_LEGACY;
+  if (raw === SPACE_COMPILER_MODES.VNEXT_LEGACY) return SPACE_COMPILER_MODES.VNEXT_LEGACY;
+  return SPACE_COMPILER_MODES.PHASE9B_QUALITY;
 }
 
 export function compileVNextImageGeneration(input) {
