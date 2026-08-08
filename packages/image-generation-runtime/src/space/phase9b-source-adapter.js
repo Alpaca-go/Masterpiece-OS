@@ -40,6 +40,7 @@ import {
   sanitizeLighting,
   sanitizeDifferentiators,
   SEMANTIC_CLASS,
+  MECHANISM_PROVENANCE_VERSION,
 } from './semantic/index.js';
 
 function cleanList(...values) {
@@ -336,7 +337,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       provenance: {
         records: semantic.provenance.records,
         summary: semantic.provenance.summary,
-        version: semantic.provenance.provenanceVersion,
+        version: MECHANISM_PROVENANCE_VERSION,
       },
     },
     // Raw pass-through for trace / audit and for blocks that legitimately

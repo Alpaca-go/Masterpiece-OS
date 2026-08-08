@@ -8,21 +8,37 @@ import {
   runSpaceQualityGate,
 } from '../space/index.js';
 import { measurePromptBudget } from '../space/prompt-budget.js';
+import crypto from 'node:crypto';
 
-// Feature flag (recovery doc §10.1):
-//   MASTERPIECE_SPACE_COMPILER_MODE=phase9b_quality | vnext_legacy
-// Default is phase9b_quality (R7, flipped after the R6 real-provider A/B was
-// judged in favor of Phase 9B). Set vnext_legacy to force the old path.
-// Packaging always uses the existing compiler.
+// Feature flag (R9 Productionization):
+//   MASTERPIECE_SPACE_COMPILER_MODE=r8_6_golden | phase9b_quality | vnext_legacy
+// r8_6_golden is the canonical R9 production mode; phase9b_quality is kept as
+// a compatibility alias for the same frozen R8.6-equivalent compiler so
+// existing scripts/env keep working. vnext_legacy forces the old vNext
+// compiler (debugging/fallback only). Packaging always uses the existing
+// packaging compiler (deliverable-family router, R9 §17).
 export const SPACE_COMPILER_MODES = Object.freeze({
+  R8_6_GOLDEN: 'r8_6_golden',
   PHASE9B_QUALITY: 'phase9b_quality',
   VNEXT_LEGACY: 'vnext_legacy',
 });
 
+// Every non-legacy mode resolves to the same frozen R8.6-equivalent compiler
+// module (src/space). Default is phase9b_quality until the real-provider
+// parity run (R9.9) PASSES, at which point R9.10 flips it to r8_6_golden.
+// phase9b_quality stays a valid alias afterwards.
 export function resolveSpaceCompilerMode(env = process.env) {
   const raw = (env.MASTERPIECE_SPACE_COMPILER_MODE || '').trim();
   if (raw === SPACE_COMPILER_MODES.VNEXT_LEGACY) return SPACE_COMPILER_MODES.VNEXT_LEGACY;
+  if (raw === SPACE_COMPILER_MODES.R8_6_GOLDEN) return SPACE_COMPILER_MODES.R8_6_GOLDEN;
   return SPACE_COMPILER_MODES.PHASE9B_QUALITY;
+}
+
+// True when the resolved space mode uses the frozen R8.6 production compiler
+// (both r8_6_golden and the phase9b_quality alias).
+export function isProductionSpaceMode(mode) {
+  return mode === SPACE_COMPILER_MODES.R8_6_GOLDEN
+    || mode === SPACE_COMPILER_MODES.PHASE9B_QUALITY;
 }
 
 export function compileVNextImageGeneration(input) {
@@ -66,7 +82,9 @@ export function compileVNextImageGeneration(input) {
     : null;
 
   let compiledPrompt;
-  if (spaceMode === SPACE_COMPILER_MODES.PHASE9B_QUALITY) {
+  if (spaceMode !== null && isProductionSpaceMode(spaceMode)) {
+    // R9 deliverable-family router: space -> production Space Compiler
+    // (src/space, frozen R8.6-equivalent).
     compiledPrompt = compilePhase9bSpaceGeneration({
       input,
       taskContract,
@@ -74,8 +92,11 @@ export function compileVNextImageGeneration(input) {
       referenceAssetIds,
       preferredLogoAssetId,
       started,
+      compilerMode: spaceMode,
     });
   } else {
+    // Non-space (packaging / vi / poster) -> existing vNext compiler
+    // (packaging keeps its own compiler; legacy space debug uses this path).
     compiledPrompt = compileVNextPrompt({
       projectContext: input.projectContext,
       taskContract,
@@ -105,7 +126,7 @@ export function compileVNextImageGeneration(input) {
 // compiler. Returns a compiledPrompt shaped compatibly with the vNext compiler
 // (finalPrompt/editablePrompt/blocks/trace/referenceAssetIds/logoUsageMode) so
 // downstream service code and the adapter don't need a separate branch.
-function compilePhase9bSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started }) {
+function compilePhase9bSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN }) {
   const packet = input.projectContext?.visualDecisionPacket;
   if (!packet) {
     throw Object.assign(
@@ -120,7 +141,7 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
     brandKey: input.brandKey || input.projectContext?.brandKey || null,
     anchorCriteria: input.anchorCriteria,
     adapter,
-    referencePolicy: { mode: SPACE_COMPILER_MODES.PHASE9B_QUALITY },
+    referencePolicy: { mode: compilerMode },
   });
 
   // The Phase 9B golden prompt runs ~9.5k chars for JZMX; assert the budget
@@ -215,6 +236,51 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
       compileDurationMs: Number((performance.now() - started).toFixed(3)),
       phase9b: true,
       anchorIds: result.trace.anchorIds,
+      // R9 §20 trace schema: every space run records a structured
+      // spaceGeneration block for image-level regression tracing.
+      spaceGeneration: {
+        compilerId: result.trace.compilerId,
+        compilerVersion: result.trace.compilerVersion,
+        sourceAdapterVersion: result.sourceAdapterVersion,
+        semanticSeparationVersion: result.layers?.semantic?.provenance?.version ?? null,
+        architectureAnchorIds: result.anchors.map((a) => a.id),
+        referenceMode: referenceAssetIds.length ? 'reference_assisted' : 'text_only',
+        referenceIds: referenceAssetIds,
+        referenceSources: [],
+        promptCharacters: budget.chars,
+        architectureCharacters: countCharsForBlocks(result.blocks, ARCHITECTURE_BLOCK_IDS),
+        brandCharacters: countCharsForBlocks(result.blocks, BRAND_BLOCK_IDS),
+        negativeCharacters: countCharsForBlocks(result.blocks, NEGATIVE_BLOCK_IDS),
+        promptHash: sha256Hex(result.finalPrompt),
+        provider: 'seedream',
+        model: input.model ?? null,
+      },
     },
   };
+}
+
+// R9 §20 trace helpers: substantive character counts per block group.
+const ARCHITECTURE_BLOCK_IDS = Object.freeze([
+  'spatial_intent',
+  'architecture_language',
+  'architecture_context',
+  'architecture_function_bridge',
+  'architectural_concept',
+  'architecture_dna',
+]);
+const BRAND_BLOCK_IDS = Object.freeze(['brand_translation']);
+const NEGATIVE_BLOCK_IDS = Object.freeze(['negative_constraints']);
+
+function sha256Hex(text) {
+  return crypto.createHash('sha256').update(Buffer.from(String(text ?? ''), 'utf8')).digest('hex');
+}
+
+function countCharsForBlocks(blocks, ids) {
+  let count = 0;
+  for (const b of blocks) {
+    if (!ids.includes(b.id)) continue;
+    const text = String(b.text ?? '');
+    count += [...text.replace(/^#.*$/gmu, '')].length;
+  }
+  return count;
 }
