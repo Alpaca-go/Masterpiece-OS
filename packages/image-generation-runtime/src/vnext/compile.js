@@ -6,8 +6,8 @@ import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 import {
   compilePhase9bSpacePrompt,
   runSpaceQualityGate,
-} from './space-quality/index.js';
-import { measurePromptBudget } from './space-quality/prompt-budget.js';
+} from '../space/index.js';
+import { measurePromptBudget } from '../space/prompt-budget.js';
 
 // Feature flag (recovery doc §10.1):
 //   MASTERPIECE_SPACE_COMPILER_MODE=phase9b_quality | vnext_legacy

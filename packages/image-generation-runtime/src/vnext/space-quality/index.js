@@ -1,75 +1,10 @@
-// Phase 9B-quality space generation compiler (production).
+// Compatibility re-export shim (R9 Productionization).
 //
-// Recovery doc §5. This package re-establishes a building-led generation
-// pipeline for space deliverables, equivalent to the Phase 9B Mode B golden
-// baseline, while staying on top of the current V5 Analysis Intelligence
-// (VisualDecisionPacket, self-healing, ProjectGenerationContract).
-
-export {
-  compilePhase9bSpacePrompt,
-  SPACE_PROMPT_COMPILER_ID,
-  SPACE_PROMPT_COMPILER_VERSION,
-} from './phase9b-space-compiler.js';
-
-export {
-  adaptPhase9bSource,
-  isSpacePhase9bInsufficient,
-  SPACE_QUALITY_SOURCE_ADAPTER_VERSION,
-} from './phase9b-source-adapter.js';
-
-export {
-  selectArchitectureAnchors,
-  renderArchitectureContextBlock,
-  resolveArchitectureAnchorImagePath,
-  loadArchitectureAnchorRegistry,
-  normalizeAnchorIndustry,
-  ARCHITECTURE_CONTEXT_VERSION,
-} from './architecture-context.js';
-
-export {
-  resolveSpaceReferences,
-  assertSpaceReferenceAvailable,
-  SPACE_REFERENCE_POLICY_VERSION,
-} from './space-reference-policy.js';
-
-export { measurePromptBudget, assertPromptBudget } from './prompt-budget.js';
-export { buildTrace, fingerprint } from './trace.js';
-export { runSpaceQualityGate } from './space-quality-gate.js';
-
-// R8.5.1 — semantic separation (architecture vs brand motif, color-geometry
-// coupling guard, mechanism provenance). Production module, no LLM.
-export {
-  SEMANTIC_CLASS,
-  classifyPhrase,
-  separateSpaceSemantics,
-  normalizeArchitectureSemantics,
-  traceMechanism,
-  auditMechanismSources,
-  compileSpatialMechanisms,
-  compileRawPhrases,
-  MECHANISM_PROVENANCE_VERSION,
-  COMPILE_SPATIAL_MECHANISMS_VERSION,
-} from './semantic/index.js';
-
-// R8.5 redirected — action-verb architecture IR rewrite (P9B-B register).
-export {
-  detectSignals,
-  signalsToActions,
-  textToActions,
-  rewriteArchitectureItems,
-  ACTION_VERB_RULE_COUNT,
-} from './semantic/action-verbs.js';
-export {
-  rewriteArchitectureSemantics,
-  rewriteArchitectureItem,
-  REWRITE_ARCHITECTURE_SEMANTICS_VERSION,
-} from './semantic/rewrite-architecture-semantics.js';
-export {
-  sanitizeBrandItem,
-  sanitizeBrandManifestation,
-  sanitizeMaterials,
-  sanitizeMaterial,
-  sanitizeLighting,
-  sanitizeDifferentiators,
-  BRAND_EXPRESSION_SANITIZER_VERSION,
-} from './semantic/sanitize-brand-expression.js';
+// The production Space Generator module now lives at
+// packages/image-generation-runtime/src/space/ (R9 formalization of the
+// Phase 9B-quality compiler). This shim preserves the historical
+// `vnext/space-quality` import path so existing tests, scripts and the
+// desktop service keep working unchanged. New code should import from
+// `@masterpiece/image-generation-runtime/space/index.js` (or the package
+// index) instead.
+export * from '../../space/index.js';

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // Phase 9B Space Quality — offline A/B parity runner (Recovery R6).
 //
 // This script compiles BOTH:
@@ -109,10 +109,10 @@ function compareSequences(aIds, bIds) {
 
 async function compileModeB(packet, taskContract, brandKey) {
   const { compilePhase9bSpacePrompt } = await import(
-    pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/vnext/space-quality/phase9b-space-compiler.js')).href
+    pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/space/phase9b-space-compiler.js')).href
   );
   const { runSpaceQualityGate } = await import(
-    pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/vnext/space-quality/space-quality-gate.js')).href
+    pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/space/space-quality-gate.js')).href
   );
   const result = compilePhase9bSpacePrompt({
     packet,

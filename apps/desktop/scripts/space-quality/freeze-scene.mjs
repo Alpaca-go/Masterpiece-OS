@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // One-off helper (R8 bootstrap): compile a scene from a snapshot packet and
 // write the frozen prompt + a manifest skeleton + provider-payload +
 // reference-trace into the baseline scene dir. The manifest still needs the
@@ -57,7 +57,7 @@ async function main() {
   const packet = JSON.parse(fs.readFileSync(packetPath, 'utf8'));
 
   const { compilePhase9bSpacePrompt } = await import(pathToFileURL(path.join(
-    REPO_ROOT, 'packages/image-generation-runtime/src/vnext/space-quality/phase9b-space-compiler.js',
+    REPO_ROOT, 'packages/image-generation-runtime/src/space/phase9b-space-compiler.js',
   )).href);
 
   const taskContract = {

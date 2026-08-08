@@ -19,9 +19,9 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// packages/image-generation-runtime/src/vnext/space-quality/
-//   -> ../../../../../ = repo root
-const REPO_ROOT = resolve(__dirname, '..', '..', '..', '..', '..');
+// packages/image-generation-runtime/src/space/
+//   -> ../../../../ = repo root
+const REPO_ROOT = resolve(__dirname, '..', '..', '..', '..');
 const REGISTRY_PATH = join(
   REPO_ROOT,
   'space-generator',

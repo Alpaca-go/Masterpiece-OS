@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // Space Generator Golden Regression Runner (Phase R8).
 //
 // Offline mode (default): for every frozen golden scene under
@@ -76,11 +76,11 @@ async function loadCompiler() {
   const [compilerMod, gateMod] = await Promise.all([
     import(pathToFileURL(path.join(
       REPO_ROOT,
-      'packages/image-generation-runtime/src/vnext/space-quality/phase9b-space-compiler.js',
+      'packages/image-generation-runtime/src/space/phase9b-space-compiler.js',
     )).href),
     import(pathToFileURL(path.join(
       REPO_ROOT,
-      'packages/image-generation-runtime/src/vnext/space-quality/space-quality-gate.js',
+      'packages/image-generation-runtime/src/space/space-quality-gate.js',
     )).href),
   ]);
   return {

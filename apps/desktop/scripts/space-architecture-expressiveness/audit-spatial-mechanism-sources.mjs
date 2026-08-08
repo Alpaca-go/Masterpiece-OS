@@ -20,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PACKAGES_ROOT = resolve(__dirname, '..', '..', '..', '..', 'packages');
 const SEMANTIC_PATH = pathToFileURL(
-  resolve(PACKAGES_ROOT, 'image-generation-runtime', 'src', 'vnext', 'space-quality', 'semantic', 'index.js'),
+  resolve(PACKAGES_ROOT, 'image-generation-runtime', 'src', 'space', 'semantic', 'index.js'),
 ).href;
 
 function fail(msg) {

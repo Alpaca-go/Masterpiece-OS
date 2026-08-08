@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 // R8.5 §7 / §23 — Read-only prompt audit for Phase 9B Mode B frozen prompts.
 //
 // For each frozen scene in quality-baselines/phase9b-recovered/<brand>/<scene>:
@@ -70,7 +70,7 @@ function discoverScenes(brandFilter) {
 async function loadCompiler() {
   const mod = await import(pathToFileURL(path.join(
     REPO_ROOT,
-    'packages/image-generation-runtime/src/vnext/space-quality/phase9b-space-compiler.js',
+    'packages/image-generation-runtime/src/space/phase9b-space-compiler.js',
   )).href);
   return { compilePhase9bSpacePrompt: mod.compilePhase9bSpacePrompt };
 }
