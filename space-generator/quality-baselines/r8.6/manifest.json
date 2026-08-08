@@ -1,0 +1,24 @@
+{
+  "baselineId": "space-r8.6-golden",
+  "status": "release_candidate",
+  "compilerCommit": "fd785a9115f2a7917f4faafff4cb7a03b497cee4",
+  "spaceCompilerVersion": "1.1.0",
+  "spaceCompilerId": "phase9b-quality-compiler",
+  "sourceAdapterVersion": "1.4.0",
+  "semanticSeparationVersion": "rewrite=1.0.0;mechanisms=1.1.0;provenance=1.0.0;normalize=1.0.0",
+  "spatialMechanismVersion": "1.1.0",
+  "architectureAnchorRegistryVersion": "1.0",
+  "referencePolicyVersion": "phase9b-recovery-1.0",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "imageSize": "2K",
+  "aspectRatio": "16:9",
+  "referencePolicy": "text-only=standard;reference-assisted=high-fidelity;refs=0 not blocked",
+  "createdAt": "",
+  "r9Unlocked": false,
+  "brands": [
+    "jiuzhou-aesthetics",
+    "feng-tang-tang",
+    "yi-ji-liang-fang"
+  ]
+}
