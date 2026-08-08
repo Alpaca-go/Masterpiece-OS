@@ -23,15 +23,23 @@ const RUN_COUNT = Number(process.env.R85_RUN_COUNT?.trim() || '3');
 const dataRoot = process.env.R85_DATA_ROOT?.trim()
   || path.join(process.env.USERPROFILE || '', 'Documents', 'Masterpiece OS Data');
 
-const BRAND_KEY = 'jiuzhou-aesthetics';
-const BRAND_DISPLAY = '九州美学';
-const ASPECT = '16:9';
-const SIZE = '2K';
+// Brand/scene are parameterizable via env so the same runner can drive the
+// FTT / YJLF generalization smokes from frozen V5 packets. JZMX reception
+// remains the default stability-gate configuration.
+const BRAND_KEY = process.env.R85_BRAND_KEY?.trim() || 'jiuzhou-aesthetics';
+const BRAND_DISPLAY = process.env.R85_BRAND_DISPLAY?.trim() || '九州美学';
+const SCENE_PREFIX = process.env.R85_SCENE_PREFIX?.trim() || 'reception-stab';
+const PACKET_PATH = process.env.R85_PACKET_PATH?.trim() || '';
+const CONTEXT_PATH = process.env.R85_CONTEXT_PATH?.trim() || '';
+const ASPECT = process.env.R85_ASPECT?.trim() || '16:9';
+const SIZE = process.env.R85_SIZE?.trim() || '2K';
+const TASK_INSTRUCTION = process.env.R85_TASK_INSTRUCTION?.trim()
+  || '生成九州美学医疗美容机构的接待与挂号空间效果图。以视平线高度单一广角透视呈现到达、接待台与后方品牌墙的层次关系，品牌识别由项目资产抽象转译，Logo 后期合成。';
+const SUBTYPE = process.env.R85_SUBTYPE?.trim() || 'reception';
+const SHOT = process.env.R85_SHOT?.trim() || 'entrance_view';
 const MODEL = 'doubao-seedream-5-0-pro-260628';
 const BASE_URL = 'https://ark.cn-beijing.volces.com/api/v3';
 const COMPILER_MODE = 'phase9b_quality';
-
-const TASK_INSTRUCTION = '生成九州美学医疗美容机构的接待与挂号空间效果图。以视平线高度单一广角透视呈现到达、接待台与后方品牌墙的层次关系，品牌识别由项目资产抽象转译，Logo 后期合成。';
 
 app.setPath('userData', path.join(process.env.APPDATA || '', 'masterpiece-os-desktop'));
 app.setAppPath(REPO_ROOT);
@@ -41,6 +49,10 @@ function emit(event: string, payload: unknown): void {
 }
 
 function findProjectDir(): string {
+  // When an explicit frozen-packet path is supplied (generalization smokes
+  // for FTT / YJLF), the packet directory is the source of truth and there
+  // is no live project folder.
+  if (PACKET_PATH) return path.dirname(path.dirname(PACKET_PATH));
   const projectsRoot = path.join(dataRoot, 'projects');
   for (const entry of readdirSync(projectsRoot)) {
     if (entry.endsWith(`-${projectSuffix}`)) return path.join(projectsRoot, entry);
@@ -56,6 +68,23 @@ async function decryptApiKey(): Promise<string> {
 }
 
 function loadPacketContext(projectDir: string) {
+  // Frozen-packet mode: the caller points R85_PACKET_PATH at a V5 packet and
+  // (optionally) R85_CONTEXT_PATH at a vnext context. If no context file is
+  // given we synthesize the minimal shape compilePhase9bSpaceGeneration needs
+  // ({ projectId, visualDecisionPacket }); the Phase 9B compiler reads the
+  // packet directly and projectContext only for projectId/brandKey passthrough.
+  if (PACKET_PATH) {
+    if (!existsSync(PACKET_PATH)) throw new Error(`packet not found: ${PACKET_PATH}`);
+    const packet = JSON.parse(readFileSync(PACKET_PATH, 'utf8'));
+    let context: any;
+    if (CONTEXT_PATH && existsSync(CONTEXT_PATH)) {
+      context = JSON.parse(readFileSync(CONTEXT_PATH, 'utf8'));
+    } else {
+      context = { projectId: packet.projectId || BRAND_KEY };
+    }
+    context.visualDecisionPacket = packet;
+    return { packet, context };
+  }
   const packetPath = path.join(projectDir, 'project-context', 'visual-decision-packet.json');
   const ctxPath = path.join(projectDir, 'project-context', 'project-visual-context.vnext.json');
   if (!existsSync(packetPath)) throw new Error(`packet not found: ${packetPath}`);
@@ -69,11 +98,11 @@ function loadPacketContext(projectDir: string) {
 function makeTask(runIndex: number, projectId: string) {
   return {
     schemaVersion: '1.0' as const,
-    taskId: `r85-stab-jz-reception-${runIndex + 1}-${Date.now()}`,
+    taskId: `r85-stab-${BRAND_KEY}-${SUBTYPE}-${runIndex + 1}-${Date.now()}`,
     projectId,
     deliverableFamily: 'space' as const,
-    subtype: 'reception' as const,
-    shot: 'entrance_view' as const,
+    subtype: SUBTYPE,
+    shot: SHOT,
     count: 1 as const,
     aspectRatio: ASPECT as const,
     currentInstruction: `R8.5 redirected stability run ${runIndex + 1}/${RUN_COUNT} (text-only, refs=0).`,
@@ -188,7 +217,7 @@ async function main(): Promise<void> {
   const results: Array<{ runIndex: number; dir: string; sha: string; bytes: number; elapsedMs: number; requestId?: string }> = [];
 
   for (let i = 0; i < RUN_COUNT; i += 1) {
-    const scene = `reception-stab-${i + 1}`;
+    const scene = `${SCENE_PREFIX}-${i + 1}`;
     const dir = path.join(brandRoot, scene);
     mkdirSync(dir, { recursive: true });
     emit('GENERATE_START', { runIndex: i + 1, scene });
@@ -196,7 +225,7 @@ async function main(): Promise<void> {
     const providerPreamble = providerPrompt(finalPrompt);
     const gen = await callSeedream(apiKey, providerPreamble);
 
-    const runId = `r85-redirect-jz-reception-${i + 1}-${Date.now()}`;
+    const runId = `r85-redirect-${BRAND_KEY}-${SUBTYPE}-${i + 1}-${Date.now()}`;
     const completedAt = new Date().toISOString();
     writeFileSync(path.join(dir, 'output.png'), gen.buffer);
     writeFileSync(path.join(dir, 'prompt.md'), finalPrompt, 'utf8');
@@ -250,7 +279,9 @@ async function main(): Promise<void> {
       project: {
         projectId: context.projectId,
         projectDir,
-        note: 'Live JZMX packet; same compiler input across all 3 runs, references emptied.',
+        note: PACKET_PATH
+          ? `Frozen ${BRAND_KEY} packet at ${PACKET_PATH}; same compiler input across all runs, references emptied.`
+          : 'Live JZMX packet; same compiler input across all 3 runs, references emptied.',
       },
       compiler: {
         id: 'phase9b-quality-compiler',
