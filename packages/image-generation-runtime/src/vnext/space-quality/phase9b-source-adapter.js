@@ -36,6 +36,9 @@ import {
   compileSpatialMechanisms,
   classifyPhrase,
   sanitizeBrandManifestation,
+  sanitizeMaterials,
+  sanitizeLighting,
+  sanitizeDifferentiators,
   SEMANTIC_CLASS,
 } from './semantic/index.js';
 
@@ -159,18 +162,18 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   // spatialOrganization = organization phrases (circulation / privacy)
   const spatialPrinciples = semantic.architectureStrategy.slice(0, 8);
   const architecturalCharacteristics = semantic.architectureForm.slice(0, 10);
-  const materialDirection = materialSystem.map((m) => ({
+  const materialDirection = sanitizeMaterials(materialSystem.map((m) => ({
     material: m.material,
     behavior: cleanList(m.behavior),
     brandRole: m.brandRole,
     forbidden: cleanList(m.forbidden),
-  })).filter((m) => m.material && m.behavior.length);
-  const lightDirection = {
+  })).filter((m) => m.material && m.behavior.length));
+  const lightDirection = sanitizeLighting({
     source: cleanList(lightingSystem.source),
     contrast: lightingSystem.contrast,
     interactionWithMaterials: cleanList(lightingSystem.interactionWithMaterials),
     forbidden: cleanList(lightingSystem.forbidden),
-  };
+  });
   const spatialOrganization = semantic.architectureOrganization.slice(0, 8);
   if (spatialPrinciples.length < 1) missing.push('semantic.architectureStrategy');
   if (architecturalCharacteristics.length < 1) missing.push('semantic.architectureForm');
@@ -246,7 +249,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     aspectRatio: taskContract?.aspectRatio,
     scene: taskContract?.scene,
     mustBeVisible: compositionMustBeVisible,
-    positiveDifferentiators: cleanList(spatial.positiveDifferentiators),
+    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
   };
 
   // ---- Negatives ----
@@ -352,7 +355,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       brandRoleManifestation: brandSanitized.lines,
       signatureSpatialMechanism: cleanList(spatial.signatureSpatialMechanism),
       mustBeVisible: rawMustBeVisible,
-      positiveDifferentiators: cleanList(spatial.positiveDifferentiators),
+      positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
     },
     // Sanitization audit for trace (which brand items were kept/normalized/
     // dropped and why).
@@ -442,4 +445,4 @@ function normalizeConceptPrimary(s) {
   return t;
 }
 
-export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.3.0';
+export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.4.0';

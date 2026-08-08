@@ -9,6 +9,10 @@ import assert from 'node:assert/strict';
 import {
   sanitizeBrandItem,
   sanitizeBrandManifestation,
+  sanitizeMaterial,
+  sanitizeMaterials,
+  sanitizeLighting,
+  sanitizeDifferentiators,
 } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 
 const MOTIF_TOKEN = /feather|peacock|plume|petal|lotus|\u7fbd\u6bdb|\u5b54\u96c0|\u7fce\u7fbd|\u82b1\u74e3|\u83b2/iu;
@@ -80,4 +84,62 @@ test('sanitizeBrandManifestation dedupes and reports stats', () => {
   assert.equal(out.stats.kept, 1);
   assert.equal(out.stats.dropped, 2);
   for (const line of out.lines) assert.ok(!MOTIF_TOKEN.test(line), line);
+});
+
+// ---- Material / lighting color-role demotion (R8.5 redirected) ----------
+// A chromatic brand-color material listed as "brand color carrier / visual
+// focal point" must be demoted to an accent-only role; neutral base materials
+// (white concrete, stainless steel) must be left untouched.
+
+test('chromatic brand-color material is demoted to accent-only role', () => {
+  const r = sanitizeMaterial({
+    material: '\u7d2b\u8272\u4e9a\u514b\u529b/\u73bb\u7483',
+    behavior: ['\u900f\u5149', '\u5149\u6ed1', '\u8272\u5f69\u9971\u548c'],
+    brandRole: '\u54c1\u724c\u8272\u8f7d\u4f53\uff0c\u89c6\u89c9\u7126\u70b9',
+  });
+  assert.equal(r.colorAccent, true);
+  assert.ok(/\u5c40\u90e8\u70b9\u7f00/u.test(r.brandRole), `brandRole not demoted: ${r.brandRole}`);
+  assert.ok(/\u4e0d\u5f97\u7528\u4e8e\u5929\u82b1|\u5899\u9762|\u9694\u65ad/u.test(r.brandRole));
+  assert.ok(r.behavior.some((b) => /\u5c40\u90e8\u70b9\u7f00/u.test(b)));
+});
+
+test('neutral base materials are NOT demoted', () => {
+  for (const name of ['\u767d\u8272/\u7070\u8272\u6df7\u51dd\u571f\u6216\u5fae\u6c34\u6ce5', '\u91d1\u5c5e\uff08\u4e0d\u9508\u94a2/\u9ec4\u94dc\uff09', '\u539f\u6728']) {
+    const r = sanitizeMaterial({ material: name, behavior: ['x'], brandRole: 'base' });
+    assert.equal(r.colorAccent, undefined, `wrongly demoted neutral: ${name}`);
+    assert.equal(r.brandRole, 'base');
+  }
+});
+
+test('sanitizeMaterials maps a list and preserves forbidden arrays', () => {
+  const out = sanitizeMaterials([
+    { material: '\u7d2b\u8272\u4e9a\u514b\u529b', behavior: ['\u900f\u5149'], forbidden: ['\u5ec9\u4ef7\u5851\u6599\u611f'] },
+    { material: '\u5fae\u6c34\u6ce5', behavior: ['\u7ec6\u817b'] },
+  ]);
+  assert.equal(out.length, 2);
+  assert.equal(out[0].colorAccent, true);
+  assert.deepEqual(out[0].forbidden, ['\u5ec9\u4ef7\u5851\u6599\u611f']);
+  assert.equal(out[1].colorAccent, undefined);
+});
+
+test('lighting drops in-scene identity and demotes colored-light interaction', () => {
+  const r = sanitizeLighting({
+    source: ['\u9690\u85cf\u5f0f\u706f\u5e26', '\u80cc\u5149\u53d1\u5149\u5b57'],
+    contrast: 'soft',
+    interactionWithMaterials: ['\u5149\u7ebf\u900f\u8fc7\u4e9a\u514b\u529b\u5c55\u73b0\u7d2b\u8272\u901a\u900f\u611f'],
+    forbidden: ['\u9891\u95ea'],
+  });
+  assert.ok(!r.source.some((s) => /\u53d1\u5149\u5b57/u.test(s)), 'identity lighting not removed');
+  assert.ok(/\u5c40\u90e8\u70b9\u7f00/u.test(r.interactionWithMaterials[0]));
+  assert.deepEqual(r.forbidden, ['\u9891\u95ea']);
+});
+
+test('differentiators demote a color-only claim to a local accent', () => {
+  const out = sanitizeDifferentiators([
+    '\u72ec\u7279\u7684\u7d2b\u8272\u54c1\u724c\u8c03\u6027\u8bc6\u522b',
+    '\u7cbe\u81f4\u7684\u6750\u8d28\u89e6\u611f',
+  ]);
+  assert.ok(/\u4e0d\u4f5c\u7a7a\u95f4\u4e3b\u8272\u8c03/u.test(out[0]));
+  // A material/finish statement without a color-as-geometry claim is kept.
+  assert.equal(out[1], '\u7cbe\u81f4\u7684\u6750\u8d28\u89e6\u611f');
 });

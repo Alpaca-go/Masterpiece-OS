@@ -226,9 +226,8 @@ async function main(): Promise<void> {
     };
     writeFileSync(path.join(dir, 'run.json'), `${JSON.stringify(runRecord, null, 2)}\n`, 'utf8');
 
-    writeFileSync(path.join(
-      dir,
-      'provider-payload.redacted.json',
+    writeFileSync(
+      path.join(dir, 'provider-payload.redacted.json'),
       `${JSON.stringify(redactPayload({
         model: MODEL,
         size: SIZE,
@@ -238,7 +237,7 @@ async function main(): Promise<void> {
         promptChars: [...providerPreamble].length,
       }), null, 2)}\n`,
       'utf8',
-    ));
+    );
     writeFileSync(path.join(dir, 'reference-trace.json'), `${JSON.stringify({ referenceCount: 0, references: [] }, null, 2)}\n`, 'utf8');
 
     const manifest = {

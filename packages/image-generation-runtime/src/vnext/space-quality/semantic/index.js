@@ -20,5 +20,9 @@ export {
 export {
   sanitizeBrandItem,
   sanitizeBrandManifestation,
+  sanitizeMaterials,
+  sanitizeMaterial,
+  sanitizeLighting,
+  sanitizeDifferentiators,
   BRAND_EXPRESSION_SANITIZER_VERSION,
 } from './sanitize-brand-expression.js';

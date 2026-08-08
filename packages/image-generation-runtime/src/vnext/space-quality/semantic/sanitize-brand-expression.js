@@ -20,7 +20,6 @@
 
 import {
   BRAND_MOTIF_TERMS,
-  COLOR_TERMS,
   ARCHITECTURE_TERMS,
 } from './lexicons.js';
 import { classifyPhrase, SEMANTIC_CLASS } from './separate-space-semantics.js';
@@ -70,7 +69,6 @@ function hasTerm(text, terms) {
 }
 
 function hasMotif(text) { return hasTerm(text, BRAND_MOTIF_TERMS); }
-function hasColor(text) { return hasTerm(text, COLOR_TERMS); }
 function hasArch(text) { return hasTerm(text, ARCHITECTURE_TERMS); }
 
 // A color-gradient / color-transition phrase couples color to spatial form
@@ -143,7 +141,7 @@ export function sanitizeBrandItem(rawItem) {
   //    geometry coupling is a legitimate brand finish ("purple accent breaks
   //    the dullness") — keep it concise. If color is coupled to a geometry
   //    word but escaped the gradient regex, demote it too.
-  if (hasColor(raw) && hasArch(raw) && analysis.classification !== SEMANTIC_CLASS.COLOR_ACCENT) {
+  if (containsChromaticColor(raw) && hasArch(raw) && analysis.classification !== SEMANTIC_CLASS.COLOR_ACCENT) {
     const normalized = `${raw}\uff08\u54c1\u724c\u8272\u4ec5\u4f5c\u5c40\u90e8\u70b9\u7f00\uff09`;
     return { text: normalized, raw, disposition: 'normalized', reason: 'color_demoted_to_accent', normalized };
   }
@@ -186,4 +184,101 @@ export function sanitizeBrandManifestation(items) {
   };
 }
 
-export const BRAND_EXPRESSION_SANITIZER_VERSION = '1.0.0';
+export const BRAND_EXPRESSION_SANITIZER_VERSION = '1.1.0';
+
+// ---- Material / lighting color-role demotion -----------------------------
+//
+// V5 material data often lists the brand color itself as a build material
+// ("brand-color acrylic/glass", role "brand color carrier / visual focal
+// point"), and lighting may add "light through acrylic shows the brand color".
+// Rendered straight, the model paints large architectural surfaces (ceiling
+// membrane, glass partitions) in the brand color. We keep the material but
+// demote a color-bearing material's role to a SMALL accent/finish only, never
+// a ceiling/wall/partition/primary structure. This is brand-generic: it
+// applies to any brand color, not a specific hue.
+
+const PRIMARY_SURFACE_RE = /ceiling|soffit|wall|partition|facade|membrane|canopy|enclosure|primary|main|dominant|\u5929\u82b1|\u540a\u9876|\u9876\u9762|\u5899|\u5899\u9762|\u9694\u65ad|\u7acb\u9762|\u4e3b\u8981|\u4e3b\u8c03|\u4e3b\u5bfc|\u5927\u9762|\u89c6\u89c9\u7126\u70b9/iu;
+const ACCENT_ONLY_ROLE = '\u54c1\u724c\u8272\u4ec5\u4f5c\u5c40\u90e8\u70b9\u7f00/\u6536\u8fb9/\u5c0f\u4ef6\u9970\u9762\uff0c\u4e0d\u5f97\u7528\u4e8e\u5929\u82b1\u3001\u5899\u9762\u3001\u9694\u65ad\u6216\u4e3b\u4f53\u7ed3\u6784';
+
+// Neutral base colors/finishes are allowed to dominate (white, grey, black,
+// cream, wood/metal/stone). Only a genuine chromatic brand color (purple,
+// blue, red, green, etc.) must be demoted to an accent.
+const NEUTRAL_FINISH_RE = /\b(white|off[\s-]?white|grey|gray|black|cream|beige|brown|silver|bronze|brass|gold|metal|wood|stone|concrete|plaster|micro[\s-]?cement|steel)\b|\u767d|\u7070|\u9ed1|\u7c73|\u6728|\u77f3|\u91d1\u5c5e|\u4e0d\u9508\u94a2|\u9ec4\u94dc|\u6df7\u51dd\u571f|\u5fae\u6c34\u6ce5|\u900f\u660e|\u73bb\u7483/iu;
+// Chromatic color terms that indicate a real brand color when present.
+const CHROMATIC_COLOR_RE = /\b(purple|violet|lavender|lilac|plum|magenta|amethyst|blue|teal|green|red|orange|pink|rose|indigo|crimson)\b|\u7d2b|\u6d45\u7d2b|\u6df1\u7d2b|\u7d2b\u8272|\u84dd|\u9752|\u7eff|\u7ea2|\u6a59|\u7c89|\u73ab\u7ea2/iu;
+
+// True only when the text names a chromatic brand color (not a neutral base
+// like white concrete or stainless steel), so we don't warn on legitimate
+// neutral structural materials.
+function containsChromaticColor(text) {
+  const t = String(text || '');
+  if (CHROMATIC_COLOR_RE.test(t)) return true;
+  // "colored acrylic/glass" with no explicit hue still follows V5 brand color.
+  return /\u54c1\u724c\u8272|colored\s+(?:acrylic|glass|resin)/iu.test(t);
+}
+
+/**
+ * Sanitize one material descriptor. If the material name carries a brand
+ * color term, demote its role to accent-only and strip any primary-surface
+ * language from behavior.
+ * @param {{material:string, behavior:string[], brandRole?:string, forbidden?:string[]}} m
+ */
+export function sanitizeMaterial(m) {
+  if (!m || typeof m.material !== 'string' || !m.material) return m;
+  // Demote only a chromatic brand-color material (e.g. "purple acrylic/glass"),
+  // not neutral base materials like white concrete or stainless steel.
+  const colorInMaterial = containsChromaticColor(m.material);
+  if (!colorInMaterial) return m;
+
+  const behavior = Array.isArray(m.behavior) ? m.behavior : [];
+  const sanitized = {
+    ...m,
+    behavior: behavior.map((b) => (PRIMARY_SURFACE_RE.test(b) ? ACCENT_ONLY_ROLE : b)),
+    brandRole: ACCENT_ONLY_ROLE,
+    colorAccent: true,
+  };
+  if (!sanitized.behavior.includes(ACCENT_ONLY_ROLE)) sanitized.behavior.push(ACCENT_ONLY_ROLE);
+  return sanitized;
+}
+
+export function sanitizeMaterials(items) {
+  return (Array.isArray(items) ? items : []).map(sanitizeMaterial);
+}
+
+// In-scene illuminated identity in lighting ("backlit illuminated letters")
+// is post-composite and must be removed from the lighting source list.
+const LIGHT_IDENTITY_RE = /\u80cc\u5149\u53d1\u5149\u5b57|\u53d1\u5149\u5b57|illuminated\s+letters|backlit\s+sign/iu;
+
+/**
+ * Sanitize the lighting descriptor: drop in-scene identity lighting and
+ * demote any "light through colored acrylic shows the brand color" behavior
+ * to an accent note.
+ * @param {{source?:string[], contrast?:string, interactionWithMaterials?:string[], forbidden?:string[]}} l
+ */
+export function sanitizeLighting(l) {
+  if (!l) return l;
+  const source = (Array.isArray(l.source) ? l.source : []).filter((s) => !LIGHT_IDENTITY_RE.test(s));
+  const interaction = (Array.isArray(l.interactionWithMaterials) ? l.interactionWithMaterials : [])
+    .map((s) => (containsChromaticColor(s)
+      ? `${s}\uff08\u54c1\u724c\u8272\u5149\u4ec5\u4f5c\u5c40\u90e8\u70b9\u7f00\uff0c\u4e0d\u67d3\u8272\u5929\u82b1/\u5927\u9762\u8868\u9762\uff09`
+      : s));
+  return { ...l, source, interactionWithMaterials: interaction };
+}
+
+/**
+ * Sanitize a list of positive differentiator strings. A statement that only
+ * asserts the brand color ("unique purple-tone identity") becomes a local
+ * accent note, so it does not re-introduce color as the dominant feature.
+ * @param {string[]} items
+ * @returns {string[]}
+ */
+export function sanitizeDifferentiators(items) {
+  return (Array.isArray(items) ? items : []).map((raw) => {
+    const t = String(raw || '').trim();
+    if (!t) return t;
+    if (containsChromaticColor(t) && !/surface|texture|\u6750\u8d28|\u89e6\u611f/u.test(t)) {
+      return `${t}\uff08\u4ec5\u4f5c\u5c40\u90e8\u914d\u8272\u70b9\u7f00\uff0c\u4e0d\u4f5c\u7a7a\u95f4\u4e3b\u8272\u8c03\uff09`;
+    }
+    return t;
+  }).filter(Boolean);
+}

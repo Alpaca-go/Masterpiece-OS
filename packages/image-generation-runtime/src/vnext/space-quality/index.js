@@ -67,5 +67,9 @@ export {
 export {
   sanitizeBrandItem,
   sanitizeBrandManifestation,
+  sanitizeMaterials,
+  sanitizeMaterial,
+  sanitizeLighting,
+  sanitizeDifferentiators,
   BRAND_EXPRESSION_SANITIZER_VERSION,
 } from './semantic/sanitize-brand-expression.js';
