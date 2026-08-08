@@ -1,0 +1,26 @@
+{
+  "baseline": "space-r8.6-golden",
+  "brandKey": "yi-ji-liang-fang",
+  "brandDisplayName": "一剂良方",
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "phase9b_quality",
+    "version": "1.1.0"
+  },
+  "source": "quality-baselines/r85-redirect-text-only-smokes",
+  "golds": [
+    {
+      "type": "commercial",
+      "runId": "r85-redirect-yi-ji-liang-fang-reception-1-1786200368373",
+      "scene": "reception-gen-1",
+      "promptHash": "0e9f790d92593a11bdeac23e70a09cbf4e3f3cc97537e13e07a78ce4289fe645",
+      "imageSha256": "902dcbb5e1747b85a95332e61e95f6f612f24a29469484864223831196265916",
+      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 3, "Color": 5, "Mat": 5, "Comm": 5 },
+      "reason": "GATE-REPORT rubric：药柜背景 + 半透明屏风分区 + 接待/等候/咨询功能成立；Brand 3/5 因屏风上有细微圆形印记（in-scene identity variance，非 compiler 回归）。"
+    }
+  ],
+  "pending": {
+    "architecture": "consultation 场景待 R8.6.5 Final Smoke 出图后评选为 Architecture Golden（wood framework / semi-private boundary / cabinet system / calm circulation）。"
+  },
+  "notes": "phase9b-recovered consultation/waiting（compiler 1.0.0）作为 R8 参考保留，不作为 R8.5.2-rc1 golden。"
+}

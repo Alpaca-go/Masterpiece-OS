@@ -1,0 +1,26 @@
+{
+  "baseline": "space-r8.6-golden",
+  "brandKey": "feng-tang-tang",
+  "brandDisplayName": "冯烫烫",
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "phase9b_quality",
+    "version": "1.1.0"
+  },
+  "source": "quality-baselines/r85-redirect-text-only-smokes",
+  "golds": [
+    {
+      "type": "commercial",
+      "runId": "r85-redirect-feng-tang-tang-lobby-1-1786200242910",
+      "scene": "lobby-gen-1",
+      "promptHash": "9b8ee5ac1f18d1f073c75e3a1c7a474e37b10c1ad85b4a6e8b7a879c705fe77c",
+      "imageSha256": "920cadf292164afd6c2c2cc048bbf0dfa713eb7ac6bcd41078c5c5294817b16a",
+      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 5, "Color": 4, "Mat": 5, "Comm": 5 },
+      "reason": "GATE-REPORT rubric：明档点餐/取餐/就餐动线真实，中央半透明开放厨房 pavilion，无 literal 牛/胡椒雕塑，烟火感与运营关系成立。"
+    }
+  ],
+  "pending": {
+    "architecture": "open-kitchen 场景待 R8.6.4 Final Smoke 出图后评选为 Architecture Golden（中央厨房/周边就餐/木构/明档组织）。"
+  },
+  "notes": "phase9b-recovered open-kitchen（compiler 1.0.0）作为 R8 参考保留，不作为 R8.5.2-rc1 golden。"
+}

@@ -1,0 +1,32 @@
+{
+  "baseline": "space-r8.6-golden",
+  "brandKey": "jiuzhou-aesthetics",
+  "brandDisplayName": "九州美学",
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "phase9b_quality",
+    "version": "1.1.0"
+  },
+  "source": "quality-baselines/r85-redirect-text-only-smokes",
+  "golds": [
+    {
+      "type": "architecture",
+      "runId": "r85-redirect-jz-reception-1-1786199554687",
+      "scene": "reception-stab-1",
+      "promptHash": "cb46cd97c4caa1413557686351275c86b8eea30437e65382441c043c9999627f",
+      "imageSha256": "84ea5c6ac49c43b7224091ce900e1f30973b67e3200957b658b824e45442bde3",
+      "rubric": { "Arch": 5, "Motif": 5, "Func": 5, "Brand": 5, "Color": 5, "Mat": 5, "Comm": 5 },
+      "reason": "GATE-REPORT rubric 全 5/5。ceiling→boundary→circulation→function 连续机制最清楚，半透明/软边界/空间连续性完整，无 literal motif。"
+    },
+    {
+      "type": "commercial",
+      "runId": "r85-redirect-jz-reception-2-1786199628452",
+      "scene": "reception-stab-2",
+      "promptHash": "cb46cd97c4caa1413557686351275c86b8eea30437e65382441c043c9999627f",
+      "imageSha256": "a899fd67910ad2a3d7162353ba76b8527ad1c9c97b87f1b3c8f0a5dbfe7e7393",
+      "rubric": { "Arch": 5, "Motif": 5, "Func": 5, "Brand": 5, "Color": 5, "Mat": 5, "Comm": 5 },
+      "reason": "GATE-REPORT rubric 全 5/5。reception/waiting 功能最真实，动线清晰，商业功能成立。"
+    }
+  ],
+  "notes": "与 reception-stab-3（Motif 2/5, wavy wall-relief variance）区分；stab-3 保留为 Soft Variance 记录，不作为 Golden。"
+}
