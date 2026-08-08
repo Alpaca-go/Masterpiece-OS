@@ -1,0 +1,28 @@
+{
+  "brandKey": "jiuzhou-aesthetics",
+  "anchorIds": [
+    "JZMX-ARCH-01-ReceptionMembrane",
+    "JZMX-ARCH-03-ConsultationFacade",
+    "JZMX-ARCH-02-EntranceGlass"
+  ],
+  "references": [
+    {
+      "anchorId": "JZMX-ARCH-01-ReceptionMembrane",
+      "imagePath": "D:/Masterpiece-OS/space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
+      "role": "architecture_reference"
+    },
+    {
+      "anchorId": "JZMX-ARCH-03-ConsultationFacade",
+      "imagePath": "D:/Masterpiece-OS/space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png",
+      "role": "architecture_reference"
+    },
+    {
+      "anchorId": "JZMX-ARCH-02-EntranceGlass",
+      "imagePath": "D:/Masterpiece-OS/space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
+      "role": "architecture_reference"
+    }
+  ],
+  "referencePolicy": {
+    "mode": "phase9b_quality"
+  }
+}

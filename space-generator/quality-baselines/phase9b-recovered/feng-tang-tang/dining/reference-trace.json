@@ -1,0 +1,12 @@
+{
+  "brandKey": "feng-tang-tang",
+  "anchorIds": [
+    "FTT-ARCH-01-KitchenAnchor",
+    "FTT-ARCH-02-WarmCommercialGrid",
+    "FTT-ARCH-03-HumanScaleBooth"
+  ],
+  "references": [],
+  "referencePolicy": {
+    "mode": "phase9b_quality"
+  }
+}

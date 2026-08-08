@@ -1,0 +1,5 @@
+# Golden baseline output images can be large. They stay on disk and are
+# traced via manifest.output.imageSha256 + runId, so do not commit PNGs by
+# default. Re-pin a baseline image with the golden regression runner if needed.
+**/output.png
+**/image-*.png

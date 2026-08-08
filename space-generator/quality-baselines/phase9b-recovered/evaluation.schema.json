@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://masterpiece-os.local/schemas/space-golden-evaluation.json",
+  "title": "Space Golden Baseline Evaluation",
+  "description": "Human image-level quality score for a frozen golden space scene. Unit tests prove code did not break; this proves the product did not get uglier.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "brandKey",
+    "scene",
+    "runId",
+    "dimensions",
+    "diagnostics",
+    "total",
+    "verdict",
+    "scoredBy",
+    "scoredAt"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "brandKey": { "type": "string" },
+    "scene": { "type": "string" },
+    "runId": { "type": "string", "description": "The run whose output image was scored." },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "architectureQuality",
+        "brandTranslation",
+        "functionalRealism",
+        "materialAndLighting",
+        "composition",
+        "rendering"
+      ],
+      "properties": {
+        "architectureQuality":    { "$ref": "#/definitions/weightedDimension" },
+        "brandTranslation":       { "$ref": "#/definitions/weightedDimension" },
+        "functionalRealism":      { "$ref": "#/definitions/weightedDimension" },
+        "materialAndLighting":    { "$ref": "#/definitions/weightedDimension" },
+        "composition":            { "$ref": "#/definitions/weightedDimension" },
+        "rendering":              { "$ref": "#/definitions/weightedDimension" }
+      }
+    },
+    "diagnostics": {
+      "type": "object",
+      "required": ["genericAiSpaceRisk", "referenceAlignment"],
+      "properties": {
+        "genericAiSpaceRisk": {
+          "type": "integer", "minimum": 1, "maximum": 5,
+          "description": "1 = strongly specific designed space, 5 = obvious generic AI space. Target <= 2."
+        },
+        "referenceAlignment": {
+          "type": "integer", "minimum": 1, "maximum": 5,
+          "description": "How well the output follows the supplied references/anchors. Target >= 4."
+        }
+      }
+    },
+    "brandSpecificChecks": {
+      "type": "array",
+      "description": "Optional per-brand regression criteria (e.g. JZMX purple/peacock). These are evaluation-only and MUST NOT enter production code.",
+      "items": {
+        "type": "object",
+        "required": ["check", "pass"],
+        "properties": {
+          "check": { "type": "string" },
+          "pass": { "type": "boolean" },
+          "note": { "type": "string" }
+        }
+      }
+    },
+    "total": { "type": "number", "minimum": 0, "maximum": 100 },
+    "verdict": {
+      "type": "string",
+      "enum": ["golden", "pass", "fail"],
+      "description": "golden = accepted as frozen baseline; pass = acceptable but not replacing golden; fail = regression."
+    },
+    "scoredBy": { "type": "string" },
+    "scoredAt": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "definitions": {
+    "weightedDimension": {
+      "type": "object",
+      "required": ["rawScore", "weight", "weightedScore"],
+      "properties": {
+        "rawScore": { "type": "number", "minimum": 0, "maximum": 100, "description": "0-100 quality for this dimension." },
+        "weight": { "type": "number", "minimum": 0, "maximum": 1 },
+        "weightedScore": { "type": "number", "minimum": 0, "description": "rawScore * weight." },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

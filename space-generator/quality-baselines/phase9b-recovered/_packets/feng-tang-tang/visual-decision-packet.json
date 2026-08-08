@@ -1,0 +1,1372 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+  "projectFacts": {
+    "brandName": {
+      "value": "冯烫烫",
+      "source": "project_record",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    "industry": {
+      "value": "餐饮/川菜小吃/跷脚牛肉专门店",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+      ],
+      "confidence": 0.95,
+      "status": "confirmed"
+    },
+    "brandRole": {
+      "value": "提供高性价比、地道川味（以跷脚牛肉为主）的快餐与小吃服务，强调“巧搭配”与“小碗实惠”",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "55f1501c-890e-4b18-9f43-388d275e9d62",
+        "f5596e13-b481-4311-8862-bb88c5265f07"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    }
+  },
+  "lockedAssets": [
+    {
+      "assetId": "brand-name-17daa5040b77",
+      "type": "brand_name",
+      "value": "冯烫烫",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ]
+    },
+    {
+      "assetId": "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+      "type": "logo",
+      "value": "冯烫烫主品牌标识组合",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+      ]
+    },
+    {
+      "assetId": "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+      "type": "logo",
+      "value": "红色圆形“冯”字图形标",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "1a905140-7935-4a43-88cc-8ab3739bf97a",
+        "a2faa750-adab-4f99-bb99-e21c12af145e"
+      ]
+    },
+    {
+      "assetId": "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+      "type": "logo",
+      "value": "QIAOJIAO BEEF 英文标识",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+      ]
+    },
+    {
+      "assetId": "user-lock-1",
+      "type": "other",
+      "value": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[0]"
+      ]
+    },
+    {
+      "assetId": "user-lock-2",
+      "type": "other",
+      "value": "输出语言固定为简体中文。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[1]"
+      ]
+    }
+  ],
+  "assetInventory": {
+    "logoAssets": [
+      {
+        "assetId": "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "name": "冯烫烫主品牌标识组合",
+        "kind": "logo",
+        "occurrenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "frequency": 10,
+        "visualFeatures": [
+          "黑色粗犷书法字体“冯烫烫”",
+          "上方弧形英文“FENG TANG TANG”",
+          "中间圆圈排列的“跷脚牛肉”字样",
+          "右侧红色印章“川菜小馆”",
+          "左侧红色小印章“非遗”"
+        ],
+        "possibleBrandMeaning": [
+          "品牌名称",
+          "核心品类",
+          "地域属性",
+          "文化背书"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": false,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      },
+      {
+        "assetId": "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "name": "红色圆形“冯”字图形标",
+        "kind": "logo",
+        "occurrenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "1a905140-7935-4a43-88cc-8ab3739bf97a",
+          "a2faa750-adab-4f99-bb99-e21c12af145e"
+        ],
+        "frequency": 8,
+        "visualFeatures": [
+          "红色圆形背景",
+          "白色书法体“冯”字",
+          "类似印章或徽章的形态"
+        ],
+        "possibleBrandMeaning": [
+          "品牌超级符号",
+          "姓氏背书",
+          "视觉焦点"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": false,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      },
+      {
+        "assetId": "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "name": "QIAOJIAO BEEF 英文标识",
+        "kind": "logo",
+        "occurrenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "frequency": 6,
+        "visualFeatures": [
+          "粗体无衬线/粗衬线英文",
+          "黑色或白色",
+          "常与中文标组合使用"
+        ],
+        "possibleBrandMeaning": [
+          "品类国际化表达",
+          "年轻化尝试"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "colorAssets": [
+      {
+        "assetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "name": "品牌红",
+        "kind": "color",
+        "occurrenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "55f1501c-890e-4b18-9f43-388d275e9d62",
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "frequency": 10,
+        "visualFeatures": [
+          "高饱和度红色",
+          "用于背景、Logo、印章"
+        ],
+        "possibleBrandMeaning": [
+          "川菜的热烈",
+          "食欲",
+          "喜庆",
+          "品牌主色"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      },
+      {
+        "assetId": "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "name": "品牌黑",
+        "kind": "color",
+        "occurrenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "f5596e13-b481-4311-8862-bb88c5265f07",
+          "a2faa750-adab-4f99-bb99-e21c12af145e"
+        ],
+        "frequency": 8,
+        "visualFeatures": [
+          "深黑色",
+          "用于主标题文字、部分包装背景"
+        ],
+        "possibleBrandMeaning": [
+          "稳重",
+          "对比度",
+          "质感"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.95
+      }
+    ],
+    "typographyAssets": [
+      {
+        "assetId": "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "name": "冯烫烫定制书法体",
+        "kind": "typography",
+        "occurrenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "frequency": 10,
+        "visualFeatures": [
+          "笔触粗犷",
+          "有力道",
+          "具有传统书法韵味但经过现代设计处理"
+        ],
+        "possibleBrandMeaning": [
+          "手工感",
+          "地道",
+          "力量"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "graphicMotifs": [
+      {
+        "assetId": "1a905140-7935-4a43-88cc-8ab3739bf97a",
+        "name": "牛剪影",
+        "kind": "graphic_motif",
+        "occurrenceRefs": [
+          "1a905140-7935-4a43-88cc-8ab3739bf97a",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "黑色牛侧面剪影",
+          "强壮的体态"
+        ],
+        "possibleBrandMeaning": [
+          "食材来源",
+          "真材实料"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      },
+      {
+        "assetId": "1a905140-7935-4a43-88cc-8ab3739bf97a",
+        "name": "川剧脸谱",
+        "kind": "graphic_motif",
+        "occurrenceRefs": [
+          "1a905140-7935-4a43-88cc-8ab3739bf97a"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "黑白红配色的脸谱图形",
+          "具有四川地域文化特征"
+        ],
+        "possibleBrandMeaning": [
+          "四川文化",
+          "变脸/多样"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.8
+      },
+      {
+        "assetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "name": "圆圈文字排版",
+        "kind": "graphic_motif",
+        "occurrenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "1a905140-7935-4a43-88cc-8ab3739bf97a"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "文字排列成圆形",
+          "类似印章或徽章"
+        ],
+        "possibleBrandMeaning": [
+          "传统",
+          "聚集",
+          "完整"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "imageryAssets": [
+      {
+        "assetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "name": "砂锅跷脚牛肉特写",
+        "kind": "imagery",
+        "occurrenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "f5596e13-b481-4311-8862-bb88c5265f07",
+          "a549dba5-c333-46da-8471-a6ee14e7aed9"
+        ],
+        "frequency": 6,
+        "visualFeatures": [
+          "深褐色砂锅",
+          "热气腾腾",
+          "木勺舀起牛肉",
+          "肉质纹理清晰",
+          "配菜（蔬菜）"
+        ],
+        "possibleBrandMeaning": [
+          "核心产品",
+          "热气/温度",
+          "食欲",
+          "慢炖"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      },
+      {
+        "assetId": "55f1501c-890e-4b18-9f43-388d275e9d62",
+        "name": "碗装牛肉特写",
+        "kind": "imagery",
+        "occurrenceRefs": [
+          "55f1501c-890e-4b18-9f43-388d275e9d62",
+          "f5596e13-b481-4311-8862-bb88c5265f07"
+        ],
+        "frequency": 4,
+        "visualFeatures": [
+          "深色碗",
+          "牛肉片",
+          "撒有葱花/香菜",
+          "汤汁"
+        ],
+        "possibleBrandMeaning": [
+          "小碗菜",
+          "精致",
+          "即食"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.95
+      }
+    ],
+    "layoutPatterns": [
+      {
+        "assetId": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "name": "上下分割海报布局",
+        "kind": "layout_pattern",
+        "occurrenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "55f1501c-890e-4b18-9f43-388d275e9d62"
+        ],
+        "frequency": 4,
+        "visualFeatures": [
+          "上部为大图或大标题",
+          "下部为红色色块承载Logo和Slogan",
+          "或者左图右文/上图下文"
+        ],
+        "possibleBrandMeaning": [
+          "信息层级清晰",
+          "强调产品",
+          "强调品牌"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "materialCues": [
+      {
+        "assetId": "a2faa750-adab-4f99-bb99-e21c12af145e",
+        "name": "纸质餐巾",
+        "kind": "material_cue",
+        "occurrenceRefs": [
+          "a2faa750-adab-4f99-bb99-e21c12af145e"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "白色压纹纸",
+          "印红色Logo"
+        ],
+        "possibleBrandMeaning": [
+          "清洁",
+          "触感"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      },
+      {
+        "assetId": "f41b09bd-6715-497f-9bf2-0a061ab9c220",
+        "name": "木质店面装饰",
+        "kind": "material_cue",
+        "occurrenceRefs": [
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "浅色木纹",
+          "柜台",
+          "格栅"
+        ],
+        "possibleBrandMeaning": [
+          "自然",
+          "温暖",
+          "传统"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "unknown",
+        "confidence": 0.9
+      }
+    ],
+    "packagingStructures": [
+      {
+        "assetId": "a2faa750-adab-4f99-bb99-e21c12af145e",
+        "name": "手提塑料袋",
+        "kind": "packaging_structure",
+        "occurrenceRefs": [
+          "a2faa750-adab-4f99-bb99-e21c12af145e",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "frequency": 4,
+        "visualFeatures": [
+          "白色/红色/黑色",
+          "背心袋结构",
+          "大面积Logo印刷"
+        ],
+        "possibleBrandMeaning": [
+          "外带",
+          "流动广告"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      },
+      {
+        "assetId": "a2faa750-adab-4f99-bb99-e21c12af145e",
+        "name": "筷子套",
+        "kind": "packaging_structure",
+        "occurrenceRefs": [
+          "a2faa750-adab-4f99-bb99-e21c12af145e"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "长条形纸套",
+          "黑/红配色",
+          "竖排文字"
+        ],
+        "possibleBrandMeaning": [
+          "用餐仪式感",
+          "品牌触点"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "spatialCues": [
+      {
+        "assetId": "f41b09bd-6715-497f-9bf2-0a061ab9c220",
+        "name": "门头招牌",
+        "kind": "spatial_cue",
+        "occurrenceRefs": [
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "黑色底板",
+          "发光字",
+          "Logo居中",
+          "两侧辅助信息"
+        ],
+        "possibleBrandMeaning": [
+          "品牌识别",
+          "指引"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "unknown",
+        "confidence": 1
+      },
+      {
+        "assetId": "f41b09bd-6715-497f-9bf2-0a061ab9c220",
+        "name": "明档厨房",
+        "kind": "spatial_cue",
+        "occurrenceRefs": [
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "透明玻璃",
+          "内部可见",
+          "铜锅/砂锅陈列"
+        ],
+        "possibleBrandMeaning": [
+          "新鲜",
+          "透明",
+          "现做"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "unknown",
+        "confidence": 0.95
+      },
+      {
+        "assetId": "a549dba5-c333-46da-8471-a6ee14e7aed9",
+        "name": "灯笼装饰",
+        "kind": "spatial_cue",
+        "occurrenceRefs": [
+          "a549dba5-c333-46da-8471-a6ee14e7aed9"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "红色/黑色圆柱形灯笼",
+          "印Logo",
+          "悬挂"
+        ],
+        "possibleBrandMeaning": [
+          "传统氛围",
+          "热闹",
+          "夜间识别"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "unknown",
+        "confidence": 0.9
+      }
+    ],
+    "copyAssets": [
+      {
+        "assetId": "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+        "name": "Slogan: 川菜小吃巧搭配·小碗牛肉更实惠",
+        "kind": "copy",
+        "occurrenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "55f1501c-890e-4b18-9f43-388d275e9d62"
+        ],
+        "frequency": 8,
+        "visualFeatures": [
+          "黑色或白色宋体/黑体",
+          "位于Logo下方或海报底部"
+        ],
+        "possibleBrandMeaning": [
+          "核心价值：搭配、小碗、实惠"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      },
+      {
+        "assetId": "55f1501c-890e-4b18-9f43-388d275e9d62",
+        "name": "Slogan: 食在四川 味在乐山",
+        "kind": "copy",
+        "occurrenceRefs": [
+          "1a905140-7935-4a43-88cc-8ab3739bf97a",
+          "55f1501c-890e-4b18-9f43-388d275e9d62"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "白色或红色字体",
+          "强调地域正宗"
+        ],
+        "possibleBrandMeaning": [
+          "地域背书",
+          "正宗口味"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.95
+      },
+      {
+        "assetId": "f5596e13-b481-4311-8862-bb88c5265f07",
+        "name": "Slogan: 汤要喝好，饭要吃饱，跷脚牛肉少不了",
+        "kind": "copy",
+        "occurrenceRefs": [
+          "f5596e13-b481-4311-8862-bb88c5265f07",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "竖排或横排",
+          "口语化"
+        ],
+        "possibleBrandMeaning": [
+          "功能性利益点",
+          "亲切感"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ]
+  },
+  "diagnosis": {
+    "valuableAssets": [
+      {
+        "target": "红色圆形“冯”字标",
+        "observation": "高频出现，形态简洁，具有印章感，易于记忆和应用。",
+        "whyItMatters": "作为超级符号，能在各种尺寸和媒介上保持识别度，是品牌资产的核心。",
+        "evidenceRefs": [
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "1a905140-7935-4a43-88cc-8ab3739bf97a"
+        ],
+        "confidence": 1
+      },
+      {
+        "target": "“跷脚牛肉”品类词",
+        "observation": "在Logo中以圆圈字形式强调，在Slogan中反复出现。",
+        "whyItMatters": "直接锁定核心品类，降低认知成本，建立品类=品牌的联想。",
+        "evidenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "b3e273c2-fc19-4c56-8577-e39510ee616b"
+        ],
+        "confidence": 0.95
+      },
+      {
+        "target": "砂锅牛肉产品图",
+        "observation": "热气腾腾，食欲感强，作为主视觉反复使用。",
+        "whyItMatters": "直观展示产品卖点（热、鲜、肉），是驱动进店和转化的关键视觉。",
+        "evidenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "f5596e13-b481-4311-8862-bb88c5265f07"
+        ],
+        "confidence": 0.95
+      }
+    ],
+    "overusedExpressions": [
+      {
+        "target": "川剧脸谱图形",
+        "observation": "作为辅助图形出现，是四川文化的常见符号。",
+        "whyItMatters": "虽然点题，但缺乏独特性，容易陷入地域刻板印象，与其他川菜品牌同质化。",
+        "evidenceRefs": [
+          "1a905140-7935-4a43-88cc-8ab3739bf97a"
+        ],
+        "confidence": 0.8
+      },
+      {
+        "target": "牛剪影",
+        "observation": "通用的牛形象，缺乏品种或烹饪方式的特异性。",
+        "whyItMatters": "无法区分“跷脚牛肉”与其他牛肉料理，视觉冲击力较弱。",
+        "evidenceRefs": [
+          "1a905140-7935-4a43-88cc-8ab3739bf97a"
+        ],
+        "confidence": 0.75
+      }
+    ],
+    "outdatedExpressions": [],
+    "weakSystemAreas": [
+      {
+        "target": "英文标识层级",
+        "observation": "QIAOJIAO BEEF 有时过大，有时过小，与中文主次关系不稳定。",
+        "whyItMatters": "可能导致品牌名称认知混乱，削弱“冯烫烫”的主品牌地位。",
+        "evidenceRefs": [
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "categoryCliches": [
+      {
+        "target": "红黑配色",
+        "observation": "川菜品牌常用的配色方案。",
+        "whyItMatters": "虽然有效传达辣味和热情，但缺乏差异化，需在材质或图形上寻找突破。",
+        "evidenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "brandMisreadRisks": [
+      {
+        "target": "品牌定位认知",
+        "observation": "视觉元素中包含传统印章和书法，容易联想到老字号。",
+        "whyItMatters": "与“小碗实惠”、“巧搭配”的快餐定位冲突，可能阻碍追求快捷实惠的客群。",
+        "evidenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "confidence": 0.85,
+        "code": "RISK_HEAVY_TRADITION",
+        "description": "因“非遗”印章和“川菜小馆”字样，可能被误读为传统、厚重、高客单价的正餐酒楼，而非轻快餐。",
+        "appliesTo": {
+          "taskFamilies": [
+            "spatial_design",
+            "packaging_design"
+          ],
+          "subtypes": [
+            "storefront",
+            "menu"
+          ],
+          "scenes": [
+            "mall_location",
+            "street_side"
+          ]
+        },
+        "status": "probable"
+      },
+      {
+        "target": "品牌名称识别",
+        "observation": "部分海报和包装上英文字号接近或大于中文。",
+        "whyItMatters": "稀释“冯烫烫”品牌名，导致顾客记不住品牌，只记得卖牛肉。",
+        "evidenceRefs": [
+          "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+          "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+        ],
+        "confidence": 0.7,
+        "code": "RISK_ENGLISH_DOMINANCE",
+        "description": "英文“QIAOJIAO BEEF”在某些物料中过于突出，可能喧宾夺主。",
+        "appliesTo": {
+          "taskFamilies": [
+            "vi_design",
+            "packaging_design"
+          ],
+          "subtypes": [
+            "poster",
+            "bag"
+          ],
+          "scenes": [
+            "takeaway",
+            "delivery"
+          ]
+        },
+        "status": "probable"
+      }
+    ],
+    "crossMediaGaps": [
+      {
+        "target": "摄影色调与空间灯光",
+        "observation": "海报摄影偏暗调、高对比、强调质感；空间效果图偏明亮、暖黄光、强调温馨。",
+        "whyItMatters": "可能导致顾客进店后感觉落差，海报的“高级感”与店面的“亲民感”不完全一致。需统一光影逻辑。",
+        "evidenceRefs": [
+          "b3e273c2-fc19-4c56-8577-e39510ee616b",
+          "f41b09bd-6715-497f-9bf2-0a061ab9c220"
+        ],
+        "confidence": 0.8
+      }
+    ]
+  },
+  "creativeDecision": {
+    "brandRoleStatement": "冯烫烫是一个主打跷脚牛肉和川菜小吃的品牌，致力于提供地道、热气腾腾且高性价比的川味体验，通过“小碗”和“巧搭配”满足现代人的快餐需求。",
+    "upgradeFrom": [
+      "过于沉重的传统酒楼感",
+      "模糊的品类认知（仅强调牛肉）",
+      "不稳定的中英文层级"
+    ],
+    "preserveCore": [
+      "冯烫烫品牌名",
+      "红色圆形“冯”字标",
+      "跷脚牛肉核心品类",
+      "红黑主色调",
+      "“小碗实惠”的价值主张"
+    ],
+    "upgradeTo": [
+      "更轻盈、现代的快餐视觉",
+      "强化“热气/温度”的感官体验",
+      "更清晰的“小吃/搭配”属性",
+      "统一且聚焦的品牌符号系统"
+    ],
+    "uniqueUpgradeThesis": "从“传统川菜馆”升级为“现代川味小吃快餐”。保留“冯”字标和红色基因，但通过放大“小碗”、“巧搭配”、“热气”等元素，削弱“非遗/老字号”带来的厚重感。避免过度使用脸谱等刻板符号，聚焦于食物本身的诱惑力和品牌的亲和力。",
+    "targetWorldview": [
+      "地道",
+      "实惠",
+      "热气腾腾",
+      "日常",
+      "满足"
+    ],
+    "toneBoundaries": [
+      {
+        "target": "热闹、烟火气、食欲感",
+        "avoid": [
+          "冷淡",
+          "极简",
+          "Fine Dining",
+          "距离感"
+        ]
+      },
+      {
+        "target": "亲切、快捷、实惠",
+        "avoid": [
+          "沉重",
+          "老旧",
+          "昂贵",
+          "复杂"
+        ]
+      }
+    ],
+    "strategicNegatives": [
+      "避免过度强调“非遗”导致显得老旧",
+      "避免英文过大喧宾夺主",
+      "避免使用通用牛剪影替代产品实拍",
+      "避免空间设计过于暗调压抑"
+    ]
+  },
+  "abstractions": [
+    {
+      "sourceAsset": "b3e273c2-fc19-4c56-8577-e39510ee616b",
+      "semanticMeaning": [
+        "热气",
+        "温度",
+        "团聚",
+        "满足",
+        "新鲜"
+      ],
+      "formalProperties": [
+        "上升的曲线（蒸汽）",
+        "圆形（锅/碗）",
+        "丰富的纹理（肉/菜）"
+      ],
+      "rhythmProperties": [
+        "慢炖的时间感",
+        "沸腾的动态感"
+      ],
+      "materialPotential": [
+        "陶土/砂锅的粗粝感",
+        "汤汁的流动感",
+        "蒸汽的朦胧感"
+      ],
+      "lightingPotential": [
+        "暖光",
+        "顶光（突出食物）",
+        "逆光（勾勒蒸汽轮廓）"
+      ],
+      "forbiddenLiteralUse": [
+        "直接复制砂锅图片作为背景纹理",
+        "使用低分辨率的食物图"
+      ],
+      "evidenceRefs": [
+        "b3e273c2-fc19-4c56-8577-e39510ee616b",
+        "f5596e13-b481-4311-8862-bb88c5265f07"
+      ],
+      "confidence": 0.95
+    },
+    {
+      "sourceAsset": "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+      "semanticMeaning": [
+        "印章",
+        "承诺",
+        "聚焦",
+        "品牌印记"
+      ],
+      "formalProperties": [
+        "圆形",
+        "红白对比",
+        "书法笔触"
+      ],
+      "rhythmProperties": [
+        "稳重",
+        "中心对称"
+      ],
+      "materialPotential": [
+        "印泥的质感",
+        "纸张的渗透感"
+      ],
+      "lightingPotential": [
+        "平面光",
+        "高对比"
+      ],
+      "forbiddenLiteralUse": [
+        "将Logo拆解后重新组合",
+        "改变“冯”字字形"
+      ],
+      "evidenceRefs": [
+        "7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+        "1a905140-7935-4a43-88cc-8ab3739bf97a"
+      ],
+      "confidence": 1
+    }
+  ],
+  "mediaTranslations": {
+    "sharedBrandCore": [
+      "红色圆形“冯”字标",
+      "“冯烫烫”品牌名",
+      "“跷脚牛肉”品类",
+      "红黑主色",
+      "“小碗实惠”Slogan"
+    ],
+    "spatial": {
+      "status": "ready",
+      "spatialConcept": "热气腾腾的川味小馆：明亮、温暖、开放、强调食物制作过程。",
+      "brandRoleManifestation": [
+        "明档厨房展示“现做”",
+        "小碗菜陈列台强调“巧搭配”",
+        "红色Logo和灯笼营造“热闹”氛围"
+      ],
+      "signatureSpatialMechanism": [
+        "入口即见的明档厨房（视觉焦点，传递热气）",
+        "环绕式点餐/取餐台（促进流转）",
+        "顶部暖色灯光阵列（聚焦食物）"
+      ],
+      "functionalNetwork": [
+        "点餐区 -> 明档制作区 -> 取餐区 -> 就餐区",
+        "外带包装区独立设置"
+      ],
+      "positiveDifferentiators": [
+        "明档展示（区别于封闭厨房）",
+        "暖光环境（区别于冷光快餐）",
+        "红色视觉冲击（区别于普通面馆）"
+      ],
+      "mustBeVisible": [
+        "红色圆形“冯”字标",
+        "“跷脚牛肉”大字",
+        "明档内的砂锅/热气",
+        "Slogan“川菜小吃巧搭配”"
+      ],
+      "structureLanguage": [
+        "开放式布局",
+        "木质格栅（半通透）",
+        "直线与圆（灯笼/锅）的结合"
+      ],
+      "materialLanguage": [
+        {
+          "material": "浅色木材",
+          "behavior": [
+            "温暖触感",
+            "自然纹理"
+          ],
+          "brandRole": "营造亲切、自然的就餐氛围，平衡红色的热烈",
+          "forbidden": [
+            "深色沉重木材",
+            "高光烤漆木"
+          ]
+        },
+        {
+          "material": "红色金属/塑料",
+          "behavior": [
+            "高反射（金属）",
+            "哑光（塑料）"
+          ],
+          "brandRole": "品牌色载体，用于招牌、装饰件、灯笼",
+          "forbidden": [
+            "暗红色",
+            "粉紅色"
+          ]
+        },
+        {
+          "material": "浅色石材/瓷砖",
+          "behavior": [
+            "耐用",
+            "易清洁",
+            "漫反射"
+          ],
+          "brandRole": "地面和墙面基础，提供明亮背景",
+          "forbidden": [
+            "深色大理石",
+            "复杂花纹砖"
+          ]
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "暖黄光（3000K-3500K）",
+          "重点照明（射灯）"
+        ],
+        "contrast": "整体明亮，食物区域高亮，形成视觉焦点。",
+        "interactionWithMaterials": [
+          "暖光打在木材上显温馨",
+          "射灯照亮砂锅食物，强调热气和色泽"
+        ],
+        "forbidden": [
+          "冷白光",
+          "昏暗灯光",
+          "彩色霓虹灯（除Logo外）"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "品牌红",
+            "role": "视觉焦点，品牌识别，激发食欲"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "品牌黑",
+            "role": "文字信息，稳重视觉，对比红色"
+          }
+        ],
+        "accent": [
+          {
+            "name": "木色",
+            "role": "空间基调，温暖自然"
+          },
+          {
+            "name": "白色",
+            "role": "背景，清洁感，衬托食物"
+          }
+        ],
+        "forbidden": [
+          "大面积冷色调（蓝/绿）",
+          "杂乱色彩"
+        ]
+      },
+      "brandIntegration": [
+        "门头大字招牌",
+        "悬挂灯笼",
+        "墙面海报",
+        "明档玻璃贴字",
+        "餐具/包装统一视觉"
+      ],
+      "functionalRelationships": [
+        "点餐区与明档展示及取餐口相邻，形成高效服务动线；外带包装与堂食视觉统一，支持多场景消费"
+      ],
+      "sceneProgram": [
+        "点餐",
+        "取餐",
+        "堂食",
+        "外带",
+        "明档展示"
+      ],
+      "peopleBehavior": [],
+      "functionalExperience": [
+        "进店闻到香味/看到热气",
+        "清晰看到菜单和价格",
+        "快速点餐取餐",
+        "舒适进食"
+      ],
+      "sceneMisreadRisks": []
+    },
+    "packaging": {
+      "status": "ready",
+      "packagingConcept": "带得走的川味：轻便、醒目、强调品牌和核心品类。",
+      "productAndCategoryRole": [
+        "外带主食（碗装）",
+        "外带小吃",
+        "调料/湿巾"
+      ],
+      "structureStrategy": [
+        {
+          "structure": "手提塑料袋",
+          "purpose": "多件商品打包，流动广告",
+          "locked": false,
+          "evidenceRefs": [
+            "a2faa750-adab-4f99-bb99-e21c12af145e",
+            "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+          ]
+        },
+        {
+          "structure": "碗盖/封口贴",
+          "purpose": "防洒漏，品牌展示",
+          "locked": false,
+          "evidenceRefs": [
+            "a2faa750-adab-4f99-bb99-e21c12af145e"
+          ]
+        },
+        {
+          "structure": "筷子套/调料包",
+          "purpose": "用餐必需品，品牌触点",
+          "locked": false,
+          "evidenceRefs": [
+            "a2faa750-adab-4f99-bb99-e21c12af145e",
+            "2eb79bbe-d285-4451-ba6e-50cb2c02b78c"
+          ]
+        }
+      ],
+      "openingExperience": [
+        "撕开封口贴",
+        "打开碗盖（热气溢出）",
+        "取出筷子"
+      ],
+      "productArrangement": [
+        "主菜居中",
+        "小菜/调料环绕",
+        "餐具置于一侧"
+      ],
+      "graphicTranslation": [
+        {
+          "sourceMeaning": "品牌识别",
+          "packagingExpression": [
+            "Logo居中或顶置",
+            "红色为主色"
+          ],
+          "forbiddenLiteralUse": [
+            "Logo变形",
+            "颜色偏差"
+          ]
+        },
+        {
+          "sourceMeaning": "品类说明",
+          "packagingExpression": [
+            "“跷脚牛肉”大字",
+            "产品简笔画或摄影图"
+          ],
+          "forbiddenLiteralUse": [
+            "使用非本产品图片"
+          ]
+        }
+      ],
+      "informationHierarchy": [
+        "Logo/品牌名",
+        "品类名",
+        "Slogan",
+        "联系方式/二维码"
+      ],
+      "substrateLanguage": [
+        "食品级塑料（袋/碗）",
+        "纸（套/包）",
+        "可回收材质倾向"
+      ],
+      "craftLanguage": [
+        {
+          "craft": "印刷",
+          "purpose": "色彩还原，信息传递",
+          "forbiddenUse": [
+            "模糊印刷",
+            "掉色"
+          ]
+        },
+        {
+          "craft": "压纹（餐巾）",
+          "purpose": "增加质感",
+          "forbiddenUse": [
+            "过度压纹影响使用"
+          ]
+        }
+      ],
+      "colorBehavior": {
+        "base": [
+          "白色（清洁背景）",
+          "黑色（酷感/对比）"
+        ],
+        "identity": [
+          "红色（品牌色，Logo，主标题）"
+        ],
+        "accent": [
+          "黑色/白色（辅助文字）"
+        ],
+        "forbidden": [
+          "杂乱配色",
+          "低饱和度色彩"
+        ]
+      },
+      "logoPolicy": [
+        "Logo必须完整，不可拆分",
+        "红色“冯”字标可独立使用",
+        "最小尺寸限制"
+      ],
+      "seriesArchitecture": [
+        "统一版式",
+        "通过颜色（红/黑）或产品图区分不同产品",
+        "Slogan统一位置"
+      ],
+      "photographyDirection": [
+        "高食欲感",
+        "暖光",
+        "特写",
+        "强调热气/汤汁"
+      ],
+      "packagingMisreadRisks": [],
+      "missingRequiredFields": []
+    },
+    "poster": {
+      "status": "interface_only",
+      "concept": "食欲诱导与信息传达：大图、大字、强对比。",
+      "expressionLanguage": [
+        "产品特写（砂锅/碗）",
+        "大标题（Slogan）",
+        "红/黑/白配色",
+        "Logo醒目"
+      ],
+      "misreadRisks": []
+    },
+    "vi": {
+      "status": "interface_only",
+      "concept": "统一的川味符号系统：规范、灵活、强识别。",
+      "expressionLanguage": [
+        "Logo规范",
+        "色彩规范",
+        "字体规范",
+        "辅助图形（慎用脸谱/牛剪影，多用“冯”字标/蒸汽/圆圈）",
+        "应用规范"
+      ],
+      "misreadRisks": []
+    }
+  },
+  "colorSystem": {
+    "primary": [
+      {
+        "name": "品牌红",
+        "role": "视觉焦点，品牌识别，激发食欲"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "品牌黑",
+        "role": "文字信息，稳重视觉，对比红色"
+      }
+    ],
+    "accent": [
+      {
+        "name": "木色",
+        "role": "空间基调，温暖自然"
+      },
+      {
+        "name": "白色",
+        "role": "背景，清洁感，衬托食物"
+      }
+    ],
+    "forbidden": [
+      "大面积冷色调（蓝/绿）",
+      "杂乱色彩"
+    ]
+  },
+  "materialSystem": [
+    {
+      "material": "浅色木材",
+      "behavior": [
+        "温暖触感",
+        "自然纹理"
+      ],
+      "brandRole": "营造亲切、自然的就餐氛围，平衡红色的热烈",
+      "forbidden": [
+        "深色沉重木材",
+        "高光烤漆木"
+      ]
+    },
+    {
+      "material": "红色金属/塑料",
+      "behavior": [
+        "高反射（金属）",
+        "哑光（塑料）"
+      ],
+      "brandRole": "品牌色载体，用于招牌、装饰件、灯笼",
+      "forbidden": [
+        "暗红色",
+        "粉紅色"
+      ]
+    },
+    {
+      "material": "浅色石材/瓷砖",
+      "behavior": [
+        "耐用",
+        "易清洁",
+        "漫反射"
+      ],
+      "brandRole": "地面和墙面基础，提供明亮背景",
+      "forbidden": [
+        "深色大理石",
+        "复杂花纹砖"
+      ]
+    }
+  ],
+  "lightingSystem": {
+    "source": [
+      "暖黄光（3000K-3500K）",
+      "重点照明（射灯）"
+    ],
+    "contrast": "整体明亮，食物区域高亮，形成视觉焦点。",
+    "interactionWithMaterials": [
+      "暖光打在木材上显温馨",
+      "射灯照亮砂锅食物，强调热气和色泽"
+    ],
+    "forbidden": [
+      "冷白光",
+      "昏暗灯光",
+      "彩色霓虹灯（除Logo外）"
+    ]
+  },
+  "provenance": {
+    "createdFrom": [
+      "asset:b3e273c2-fc19-4c56-8577-e39510ee616b",
+      "asset:a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+      "asset:7e83aa91-ab22-44dc-9fa7-b127c62d3661",
+      "asset:1a905140-7935-4a43-88cc-8ab3739bf97a",
+      "asset:55f1501c-890e-4b18-9f43-388d275e9d62",
+      "asset:f5596e13-b481-4311-8862-bb88c5265f07",
+      "asset:a2faa750-adab-4f99-bb99-e21c12af145e",
+      "asset:2eb79bbe-d285-4451-ba6e-50cb2c02b78c",
+      "asset:a549dba5-c333-46da-8471-a6ee14e7aed9",
+      "asset:f41b09bd-6715-497f-9bf2-0a061ab9c220"
+    ],
+    "generatedAt": "2026-08-01T11:59:37.598Z",
+    "modelId": "qwen3.6-plus",
+    "sourceFingerprint": "b81ee0fbcaf90c8c071cff51d94d756f2c18ddbea51a30ed8439b57f25036176"
+  },
+  "validation": {
+    "hardFactStatus": "pass",
+    "mode": "formal_upgrade",
+    "missingRequiredFacts": [],
+    "conflicts": [],
+    "executionDataStatus": "ready",
+    "missingExecutionFields": []
+  },
+  "repairMetadata": {
+    "schemaVersion": "1.0",
+    "fields": {
+      "mediaTranslations.spatial.functionalRelationships": {
+        "status": "inferred",
+        "confidence": 0.8,
+        "evidenceRefs": [
+          "a77fbf0c-d208-424e-8fe5-b58c562cbe2e",
+          "55f1501c-890e-4b18-9f43-388d275e9d62",
+          "f5596e13-b481-4311-8862-bb88c5265f07"
+        ],
+        "generatedBy": "repair_model",
+        "sourceFingerprint": "b81ee0fbcaf90c8c071cff51d94d756f2c18ddbea51a30ed8439b57f25036176",
+        "schemaVersion": "1.0",
+        "repairVersion": "1.0",
+        "repairedAt": "2026-08-01T12:00:09.262Z"
+      }
+    }
+  }
+}

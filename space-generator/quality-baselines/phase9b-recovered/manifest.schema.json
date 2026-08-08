@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://masterpiece-os.local/schemas/space-golden-baseline-manifest.json",
+  "title": "Space Generator Golden Baseline Manifest",
+  "description": "Per-scene golden baseline for the Phase 9B recovered Space Generator. One manifest file lives next to each golden scene. The manifest captures every fixed input needed to reproduce an image exactly (provider, model, references, anchors, compiler) plus a pointer to the human-scored evaluation. PNGs may be gitignored, but their hash + runId must stay so the output is traceable.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "baseline",
+    "brandKey",
+    "brandDisplayName",
+    "scene",
+    "project",
+    "compiler",
+    "provider",
+    "referenceIds",
+    "architectureAnchorIds",
+    "promptHash",
+    "output",
+    "evaluation"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "baseline": {
+      "type": "string",
+      "description": "Baseline series id, e.g. phase9b-recovered.",
+      "const": "phase9b-recovered"
+    },
+    "brandKey": {
+      "type": "string",
+      "description": "Machine-stable brand slug matching the architecture anchor registry key, e.g. jiuzhou-aesthetics. Not a display name."
+    },
+    "brandDisplayName": { "type": "string" },
+    "scene": {
+      "type": "string",
+      "description": "Stable scene id from the fixed regression scene set, e.g. reception / entrance / consultation."
+    },
+    "label": { "type": "string", "description": "Optional human label for the scene." },
+    "project": {
+      "type": "object",
+      "description": "Pointer to the source project whose V5 VisualDecisionPacket produced this baseline.",
+      "required": ["projectId", "packetFile"],
+      "properties": {
+        "projectId": { "type": "string" },
+        "packetFile": { "type": "string", "description": "Path relative to the quality-baselines series root, e.g. _packets/<brandKey>/visual-decision-packet.json." }
+      }
+    },
+    "compiler": {
+      "type": "object",
+      "required": ["id", "mode", "version"],
+      "properties": {
+        "id": { "type": "string", "description": "Compiler id reported in the compiled trace, e.g. phase9b-quality-compiler." },
+        "mode": { "enum": ["phase9b_quality", "vnext_legacy"] },
+        "version": { "type": "string", "description": "Compiler version string." }
+      }
+    },
+    "provider": {
+      "type": "object",
+      "required": ["provider", "model", "size", "aspectRatio"],
+      "properties": {
+        "provider": { "type": "string", "description": "Provider id, e.g. volcengine / dashscope. No API key is ever recorded." },
+        "model": { "type": "string" },
+        "profileId": { "type": "string", "description": "Desktop API profile id that generated the image. Credentials are not stored." },
+        "size": { "type": "string", "description": "Provider image size token, e.g. 1792x1024." },
+        "aspectRatio": { "type": "string", "description": "Logical aspect ratio, e.g. 16:9." }
+      }
+    },
+    "referenceIds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Asset ids of images passed as references to the provider (core/architecture). Empty when no references were used."
+    },
+    "architectureAnchorIds": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Architecture anchor ids selected for this scene, e.g. JZMX-ARCH-01-ReceptionMembrane."
+    },
+    "taskInstruction": {
+      "type": "string",
+      "description": "The user-facing instruction/currentInstruction compiled into the prompt."
+    },
+    "promptHash": {
+      "type": "string",
+      "description": "SHA-256 hex of the exact compiled prompt text that produced the golden image."
+    },
+    "output": {
+      "type": "object",
+      "required": ["runId", "promptFile", "providerPayloadFile", "runFile"],
+      "properties": {
+        "runId": { "type": "string" },
+        "imageFile": { "type": "string", "description": "Path relative to this manifest. May be gitignored; hash + runId must remain." },
+        "imageSha256": { "type": "string" },
+        "promptFile": { "type": "string" },
+        "providerPayloadFile": { "type": "string", "description": "Redacted provider request payload (no credentials)." },
+        "referenceTraceFile": { "type": "string" },
+        "runFile": { "type": "string" }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "description": "Pointer to the human-scored evaluation for this golden scene.",
+      "required": ["file", "status"],
+      "properties": {
+        "file": { "type": "string" },
+        "status": { "enum": ["pending", "scored", "recertified"] },
+        "totalScore": { "type": "number", "minimum": 0, "maximum": 100 },
+        "scoredBy": { "type": "string" },
+        "scoredAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  }
+}

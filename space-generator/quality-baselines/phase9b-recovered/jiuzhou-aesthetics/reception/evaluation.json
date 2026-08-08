@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "reception",
+  "runId": "pending",
+  "dimensions": {
+    "architectureQuality": {
+      "rawScore": null,
+      "weight": 0.25,
+      "weightedScore": null,
+      "note": ""
+    },
+    "brandTranslation": {
+      "rawScore": null,
+      "weight": 0.2,
+      "weightedScore": null,
+      "note": ""
+    },
+    "functionalRealism": {
+      "rawScore": null,
+      "weight": 0.2,
+      "weightedScore": null,
+      "note": ""
+    },
+    "materialAndLighting": {
+      "rawScore": null,
+      "weight": 0.15,
+      "weightedScore": null,
+      "note": ""
+    },
+    "composition": {
+      "rawScore": null,
+      "weight": 0.1,
+      "weightedScore": null,
+      "note": ""
+    },
+    "rendering": {
+      "rawScore": null,
+      "weight": 0.1,
+      "weightedScore": null,
+      "note": ""
+    }
+  },
+  "diagnostics": {
+    "genericAiSpaceRisk": null,
+    "referenceAlignment": null
+  },
+  "brandSpecificChecks": [],
+  "total": null,
+  "verdict": null,
+  "scoredBy": null,
+  "scoredAt": null,
+  "notes": "Fill rawScore 0-100 per dimension. weightedScore = rawScore * weight. total = sum of weightedScores. Set genericAiSpaceRisk 1-5 (<=2) and referenceAlignment 1-5 (>=4). verdict: golden/pass/fail."
+}
