@@ -17,3 +17,8 @@ export {
   textToActions,
   ACTION_VERB_RULE_COUNT,
 } from './action-verbs.js';
+export {
+  sanitizeBrandItem,
+  sanitizeBrandManifestation,
+  BRAND_EXPRESSION_SANITIZER_VERSION,
+} from './sanitize-brand-expression.js';

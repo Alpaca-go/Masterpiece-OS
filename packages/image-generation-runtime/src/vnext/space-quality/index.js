@@ -64,3 +64,8 @@ export {
   rewriteArchitectureItem,
   REWRITE_ARCHITECTURE_SEMANTICS_VERSION,
 } from './semantic/rewrite-architecture-semantics.js';
+export {
+  sanitizeBrandItem,
+  sanitizeBrandManifestation,
+  BRAND_EXPRESSION_SANITIZER_VERSION,
+} from './semantic/sanitize-brand-expression.js';

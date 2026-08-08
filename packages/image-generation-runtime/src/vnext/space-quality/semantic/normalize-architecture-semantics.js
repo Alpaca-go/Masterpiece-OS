@@ -132,8 +132,14 @@ export function normalizeArchitectureSemantics(rawPhrase, sourceField = '') {
   // Drop parenthetical motif titles (e.g. "(Realm of Feathers)").
   text = text.replace(PAREN_MOTIF, (m) => { stripped.push(`parenthetical:${m.trim()}`); return ''; });
 
+  // Run metaphor/motif substitution whenever the phrase actually carries a
+  // motif token, regardless of its class. A phrase like "the lighting/ceiling
+  // echoes the auxiliary graphic" classifies as ARCHITECTURAL (it names a
+  // ceiling/light) but still binds the form to a graphic motif, so the
+  // metaphor/motif must be stripped too.
   if (analysis.classification === SEMANTIC_CLASS.AMBIGUOUS
-      || analysis.classification === SEMANTIC_CLASS.BRAND_MOTIF) {
+      || analysis.classification === SEMANTIC_CLASS.BRAND_MOTIF
+      || analysis.motifHits.length > 0) {
     for (const re of METAPHOR_STRIP) {
       text = text.replace(re, (m) => { stripped.push(`metaphor:${m.trim()}`); return ''; });
     }

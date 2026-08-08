@@ -32,7 +32,12 @@
 
 const SPACE_PHASE9B_SOURCE_INSUFFICIENT = 'SPACE_PHASE9B_SOURCE_INSUFFICIENT';
 
-import { compileSpatialMechanisms, classifyPhrase, SEMANTIC_CLASS } from './semantic/index.js';
+import {
+  compileSpatialMechanisms,
+  classifyPhrase,
+  sanitizeBrandManifestation,
+  SEMANTIC_CLASS,
+} from './semantic/index.js';
 
 function cleanList(...values) {
   const out = [];
@@ -259,6 +264,16 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     colorSystem.forbidden,
   );
 
+  // Brand Translation block sources are sanitized together (R8.5 redirected):
+  // in-scene identity, long creative prose, people/ops items, and
+  // color-as-geometry are dropped/demoted; motif literals normalize to surface
+  // behavior. Done before the fail-closed return so its audit is always built.
+  const brandSanitized = sanitizeBrandManifestation([
+    ...semantic.brandMotifSemantics.map((m) => m.text),
+    ...brandMustBeVisible,
+    ...cleanList(spatial.brandRoleManifestation),
+  ]);
+
   if (missing.length) {
     throw Object.assign(
       new Error(`${SPACE_PHASE9B_SOURCE_INSUFFICIENT}: ${missing.join('; ')}`),
@@ -324,33 +339,28 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     // Raw pass-through for trace / audit and for blocks that legitimately
     // render functional/program content (functional_requirement, brand).
     // Architecture block rendering no longer reads these lists.
+    //
+    // Brand translation block: motif-bearing items + identity items extracted
+    // from mustBeVisible + raw brand-role sentences are SANITIZED first (R8.5
+    // redirected): in-scene identity (post-composite), long creative prose,
+    // people/ops items, and color-as-geometry are dropped or demoted; motif
+    // literals are normalized into surface behavior. The model must not receive
+    // raw motif nouns / colored-geometry instructions in the positive prompt.
     _raw: {
       functionalNetwork: rawFunctionalNetwork.filter(keepFunctionalItem),
       sceneProgram: rawSceneProgram.filter(keepFunctionalItem),
-      // Brand translation block: motif-bearing items + identity items
-      // extracted from mustBeVisible + raw brand-role sentences. Deduped.
-      brandRoleManifestation: dedupeStrings([
-        ...semantic.brandMotifSemantics.map((m) => m.text),
-        ...brandMustBeVisible,
-        ...cleanList(spatial.brandRoleManifestation),
-      ]),
+      brandRoleManifestation: brandSanitized.lines,
       signatureSpatialMechanism: cleanList(spatial.signatureSpatialMechanism),
       mustBeVisible: rawMustBeVisible,
       positiveDifferentiators: cleanList(spatial.positiveDifferentiators),
     },
+    // Sanitization audit for trace (which brand items were kept/normalized/
+    // dropped and why).
+    brandSanitization: {
+      stats: brandSanitized.stats,
+      records: brandSanitized.records,
+    },
   };
-}
-
-function dedupeStrings(list) {
-  const seen = new Set();
-  const out = [];
-  for (const t of list) {
-    const k = String(t || '').toLocaleLowerCase();
-    if (!k || seen.has(k)) continue;
-    seen.add(k);
-    out.push(t);
-  }
-  return out;
 }
 
 // splitMustBeVisible: separate genuine spatial focal requirements (reception
@@ -432,4 +442,4 @@ function normalizeConceptPrimary(s) {
   return t;
 }
 
-export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.2.1';
+export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.3.0';
