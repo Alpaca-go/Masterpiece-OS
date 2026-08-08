@@ -41,6 +41,18 @@ const MODEL = 'doubao-seedream-5-0-pro-260628';
 const BASE_URL = 'https://ark.cn-beijing.volces.com/api/v3';
 const COMPILER_MODE = 'phase9b_quality';
 
+// R8.6 reuse: the same runner drives the final smokes. Defaults keep the R8.5
+// redirected gate labels so existing behavior is unchanged; override via env
+// to emit R8.6 golden-baseline-labeled records.
+const BASELINE_LABEL = process.env.R85_BASELINE_LABEL?.trim() || 'r85-redirect-text-only-smoke';
+const REDIRECT_LABEL = process.env.R85_REDIRECT_LABEL?.trim() || 'r8.5-action-verb-ir';
+const RUNID_PREFIX = process.env.R85_RUNID_PREFIX?.trim() || 'r85-redirect';
+const TASKID_PREFIX = process.env.R85_TASKID_PREFIX?.trim() || 'r85-stab';
+const EPOCH_LABEL = process.env.R85_EPOCH_LABEL?.trim()
+  || 'Epoch: R8.5 redirected (action-verb architecture IR, P9B-B register forward-port).';
+const RUN_INSTRUCTION = process.env.R85_RUN_INSTRUCTION?.trim()
+  || 'R8.5 redirected stability run';
+
 app.setPath('userData', path.join(process.env.APPDATA || '', 'masterpiece-os-desktop'));
 app.setAppPath(REPO_ROOT);
 
@@ -98,14 +110,14 @@ function loadPacketContext(projectDir: string) {
 function makeTask(runIndex: number, projectId: string) {
   return {
     schemaVersion: '1.0' as const,
-    taskId: `r85-stab-${BRAND_KEY}-${SUBTYPE}-${runIndex + 1}-${Date.now()}`,
+    taskId: `${TASKID_PREFIX}-${BRAND_KEY}-${SUBTYPE}-${runIndex + 1}-${Date.now()}`,
     projectId,
     deliverableFamily: 'space' as const,
     subtype: SUBTYPE,
     shot: SHOT,
     count: 1 as const,
     aspectRatio: ASPECT as const,
-    currentInstruction: `R8.5 redirected stability run ${runIndex + 1}/${RUN_COUNT} (text-only, refs=0).`,
+    currentInstruction: `${RUN_INSTRUCTION} ${runIndex + 1}/${RUN_COUNT} (text-only, refs=0).`,
     mustInclude: [] as string[],
     mustAvoid: [] as string[],
     referenceAssetIds: [] as string[],
@@ -119,7 +131,7 @@ function providerPrompt(finalPrompt: string): string {
     '生成一张完整、可商用的商业空间视觉效果图。',
     '准确执行已确认的品牌规则、中文商业设计语境与交付物职责。',
     `Output aspect ratio: ${ASPECT}. Generate exactly one image.`,
-    'Epoch: R8.5 redirected (action-verb architecture IR, P9B-B register forward-port).',
+    EPOCH_LABEL,
     finalPrompt,
   ].join('\n');
 }
@@ -225,14 +237,14 @@ async function main(): Promise<void> {
     const providerPreamble = providerPrompt(finalPrompt);
     const gen = await callSeedream(apiKey, providerPreamble);
 
-    const runId = `r85-redirect-${BRAND_KEY}-${SUBTYPE}-${i + 1}-${Date.now()}`;
+    const runId = `${RUNID_PREFIX}-${BRAND_KEY}-${SUBTYPE}-${i + 1}-${Date.now()}`;
     const completedAt = new Date().toISOString();
     writeFileSync(path.join(dir, 'output.png'), gen.buffer);
     writeFileSync(path.join(dir, 'prompt.md'), finalPrompt, 'utf8');
 
     const runRecord = {
       runId,
-      baseline: 'r85-redirect-text-only-smoke',
+      baseline: BASELINE_LABEL,
       brandKey: BRAND_KEY,
       scene,
       startedAt,
@@ -271,7 +283,7 @@ async function main(): Promise<void> {
 
     const manifest = {
       schemaVersion: '1.0',
-      baseline: 'r85-redirect-text-only-smoke',
+      baseline: BASELINE_LABEL,
       brandKey: BRAND_KEY,
       brandDisplayName: BRAND_DISPLAY,
       scene,
@@ -288,7 +300,7 @@ async function main(): Promise<void> {
         mode: COMPILER_MODE,
         // The redirect lives in the source-adapter / semantic layer; this
         // string is the gate label, not a runtime version probe.
-        redirect: 'r8.5-action-verb-ir',
+        redirect: REDIRECT_LABEL,
       },
       provider: { provider: 'volcengine', model: MODEL, profileId, size: SIZE, aspectRatio: ASPECT },
       referenceIds: [],
