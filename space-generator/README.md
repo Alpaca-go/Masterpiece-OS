@@ -101,16 +101,25 @@ space-generator/
 | R8.5.1 | Semantic source audit + architecture/brand IR 分离 | done | `a5f98b2` | — |
 | R8.5 | action-verb IR + motif sanitize + color demotion + 3 品牌泛化 gate | done | `342ee2c`→`0f582ad` | 395/395 |
 | R8.5.2 | 参数化 smoke runner + gate report | done | `0f582ad` | — |
-| **R8.6** | **Baseline Freeze & R9 Unlock** | **done** | tag `space-generator-r8.6-golden-baseline` (`88f332d`) | 409/409 + desktop 265/265 + cli 38/38 + current-flows |
+| **R8.6** | **Baseline Freeze & R9 Unlock** | **done** | tag `space-generator-r8.6-golden-baseline` | 409/409 + desktop 265/265 + cli 38/38 + current-flows |
+| **R9** | **Productionization（src/space 生产化 + parity）** | **done** | tag `space-generator-r9-production-baseline` | 438/438 + desktop 265/265 + current-flows |
 
 R8.6 关键事实：
 - RC tag `space-generator-r8.5.2-rc1`（`fd785a9`）；compiler v1.1.0、source-adapter v1.4.0
-- Final Smoke 4/4 text-only refs=0（volcengine doubao-seedream-5-0-pro-260628 2K 16:9）：
-  JZMX reception 82.95 / entrance 82.55、FTT dining 82.8、YJLF reception 82.35
-- evaluation 为 `auto-r8.6-final-smoke-pending-human-review`（**需人工打开 output.png 复核覆盖**）
+- Final Smoke 4/4 text-only refs=0（volcengine doubao-seedream-5-0-pro-260628 2K 16:9）
+- **人眼验收 v1.0（`human-r8.6-acceptance`）覆盖 auto 分**：JZMX Architecture 91 / Commercial 89、FTT Commercial 86、YJLF Commercial 86
 - baseline status=frozen、`R9-UNLOCK.json`（unlocked，仅等价 Productionization）
 - anti-regression samples 已索引（R8.5.1 literal-motif 失败样本）
 - 门禁：`npm run verify:space-r8.6-golden-boundary`
+
+R9 关键事实：
+- 生产模块 `packages/image-generation-runtime/src/space/`（R8.6 core 等价迁移，git mv 保留历史）
+- Feature flag 默认 `r8_6_golden`（`phase9b_quality` alias、`vnext_legacy` fallback）
+- Deliverable router：space → src/space；packaging/vi/poster → vNext
+- Trace schema `spaceGeneration`（R9 §20）
+- Text-level parity 字节级一致（`space-r9-parity/run-parity.mjs` 4/4 MATCH）
+- 真实 Provider parity 5/5（`quality-baselines/r9-parity/`，含 High Fidelity refs=1）
+- 详见 `quality-baselines/r9-production/`
 
 详见 `quality-baselines/r8.6/`（manifest / GATE-REPORT / per-brand golden-selection）。
 

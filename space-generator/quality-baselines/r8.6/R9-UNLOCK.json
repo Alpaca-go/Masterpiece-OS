@@ -22,5 +22,14 @@
     "architectureExpressiveness": ">= R8.6",
     "literalMotifRisk": "<= R8.6",
     "crossBrandIsolation": ">= R8.6"
+  },
+  "r9Status": {
+    "productionized": true,
+    "completedAt": "2026-08-09",
+    "productionModule": "packages/image-generation-runtime/src/space/",
+    "productionBaselineTag": "space-generator-r9-production-baseline",
+    "textLevelParity": "byte-exact (run-parity.mjs 4/4 MATCH)",
+    "realProviderParity": "PASS 5/5 (see quality-baselines/r9-parity/GATE-REPORT.md)",
+    "defaultMode": "r8_6_golden"
   }
 }

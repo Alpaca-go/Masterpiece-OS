@@ -1,0 +1,47 @@
+{
+  "baselineId": "space-r9-production",
+  "status": "frozen",
+  "sourceBaseline": "space-r8.6-golden",
+  "completedAt": "2026-08-09",
+  "productionModule": "packages/image-generation-runtime/src/space/",
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "version": "1.1.0",
+    "mode": "r8_6_golden",
+    "aliases": ["phase9b_quality"]
+  },
+  "sourceAdapterVersion": "1.4.0",
+  "featureFlag": "MASTERPIECE_SPACE_COMPILER_MODE=r8_6_golden|phase9b_quality|vnext_legacy (default r8_6_golden)",
+  "deliverableRouter": "space -> src/space (production Space Compiler); packaging/vi/poster -> vNext compiler",
+  "traceSchema": "spaceGeneration (compilerId/version, sourceAdapterVersion, semanticSeparationVersion, anchorIds, referenceMode/Ids, char counts, promptHash, provider, model)",
+  "textLevelParity": {
+    "runner": "apps/desktop/scripts/space-r9-parity/run-parity.mjs",
+    "result": "byte-exact 4/4 MATCH (hash 6b93a42f etc. identical to R8.6)"
+  },
+  "realProviderParity": {
+    "report": "quality-baselines/r9-parity/GATE-REPORT.md",
+    "result": "PASS 5/5 (JZMX x2 text-only, FTT, YJLF, JZMX High Fidelity refs=1)",
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "tests": [
+    "space-r9-block-order",
+    "space-r9-source-adapter",
+    "space-r9-semantic-separation",
+    "space-r9-reference-policy",
+    "space-r9-trace",
+    "space-r9-packaging-isolation",
+    "space-r9-golden-parity"
+  ],
+  "requiredParityHeld": [
+    "architecture_quality",
+    "architecture_expressiveness",
+    "brand_translation",
+    "functional_realism",
+    "literal_motif_control",
+    "cross_brand_isolation"
+  ],
+  "r10Next": "Reference-First Productization"
+}
