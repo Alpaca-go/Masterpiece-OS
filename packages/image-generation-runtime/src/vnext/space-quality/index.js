@@ -50,3 +50,17 @@ export {
   MECHANISM_PROVENANCE_VERSION,
   COMPILE_SPATIAL_MECHANISMS_VERSION,
 } from './semantic/index.js';
+
+// R8.5 redirected — action-verb architecture IR rewrite (P9B-B register).
+export {
+  detectSignals,
+  signalsToActions,
+  textToActions,
+  rewriteArchitectureItems,
+  ACTION_VERB_RULE_COUNT,
+} from './semantic/action-verbs.js';
+export {
+  rewriteArchitectureSemantics,
+  rewriteArchitectureItem,
+  REWRITE_ARCHITECTURE_SEMANTICS_VERSION,
+} from './semantic/rewrite-architecture-semantics.js';

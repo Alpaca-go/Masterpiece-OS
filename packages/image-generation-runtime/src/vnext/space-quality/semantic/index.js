@@ -6,3 +6,14 @@ export { SEMANTIC_CLASS, classifyPhrase, separateSpaceSemantics } from './separa
 export { normalizeArchitectureSemantics } from './normalize-architecture-semantics.js';
 export { traceMechanism, auditMechanismSources, MECHANISM_PROVENANCE_VERSION } from './mechanism-provenance.js';
 export { compileSpatialMechanisms, compileRawPhrases, COMPILE_SPATIAL_MECHANISMS_VERSION } from './compile-spatial-mechanisms.js';
+export {
+  rewriteArchitectureSemantics,
+  rewriteArchitectureItem,
+  REWRITE_ARCHITECTURE_SEMANTICS_VERSION,
+} from './rewrite-architecture-semantics.js';
+export {
+  detectSignals,
+  signalsToActions,
+  textToActions,
+  ACTION_VERB_RULE_COUNT,
+} from './action-verbs.js';

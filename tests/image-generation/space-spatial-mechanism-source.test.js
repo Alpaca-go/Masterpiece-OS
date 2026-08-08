@@ -4,7 +4,8 @@
 // brand-motif architecture pollution) must compile to a prompt where:
 //   - architecture blocks contain no motif literal (羽毛/孔雀/feather/...)
 //   - the brand translation block contains the motif side
-//   - the prompt length is within +5% of the failed R8.5 smoke
+//   - the prompt length is within +10% of the failed R8.5 smoke
+//     (R8.5 redirected budget; was +5% under R8.5.1)
 //   - the spatial_concept identity in architecture is normalized
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -74,7 +75,7 @@ test('source: brand-motif stream captures the motif side', () => {
   assert.ok(motifs.length >= 1, 'expects brand-motif stream to be populated');
 });
 
-test('source: prompt length is within +5% of the failed R8.5 smoke', () => {
+test('source: prompt length is within +10% of the failed R8.5 smoke', () => {
   const packet = loadJZMX();
   const out = compilePhase9bSpacePrompt({
     packet,
@@ -88,7 +89,10 @@ test('source: prompt length is within +5% of the failed R8.5 smoke', () => {
   const newLen = out.finalPrompt.length;
   const oldLen = failed.length;
   const ratio = newLen / oldLen;
-  assert.ok(ratio <= 1.05, `prompt grew more than 5%: new=${newLen} old=${oldLen} ratio=${ratio.toFixed(3)}`);
+  // R8.5 redirected allows +10% max over the R8 baseline. The new prompt
+  // replaces Chinese prose with English action-verb sentences, which may be
+  // slightly longer per phrase but produces far better architecture.
+  assert.ok(ratio <= 1.10, `prompt grew more than 10%: new=${newLen} old=${oldLen} ratio=${ratio.toFixed(3)}`);
 });
 
 test('source: COMPILER still emits a complete block set', () => {

@@ -6,8 +6,10 @@
 //     → separate-space-semantics
 //     → normalize-architecture-semantics (strip motif, preserve spatial property)
 //     → derive-spatial-mechanisms  (this module: assemble architecture IR + brand IR)
-//     → phase9b-space-compiler consumes `architectureSemantics` as the
-//       sole architecture mechanism input; brand motifs go to Brand Translation
+//     → rewrite-architecture-semantics (R8.5 redirected: prop → English action verbs)
+//     → phase9b-space-compiler consumes `architectureActions` as the
+//       sole architecture mechanism input rendered as action-verb bullets;
+//       brand motifs go to Brand Translation
 //
 // This module is the integration point. It does not call the model, does not
 // read a V5 schema, and does not write any persisted IR. Its output is the
@@ -16,12 +18,15 @@
 import { auditMechanismSources } from './mechanism-provenance.js';
 import { SEMANTIC_CLASS } from './separate-space-semantics.js';
 import { normalizeArchitectureSemantics } from './normalize-architecture-semantics.js';
+import { rewriteArchitectureSemantics } from './rewrite-architecture-semantics.js';
 
 /**
  * Build the architecture / brand split IR from a V5 packet.
  * @param {object} packet V5 VisualDecisionPacket
  * @returns {{
  *   architectureSemantics: object[],
+ *   architectureActions: string[],
+ *   architectureRewrite: object,
  *   brandMotifSemantics: object[],
  *   colorAccentSemantics: object[],
  *   functionalSemantics: object[],
@@ -113,8 +118,24 @@ export function compileSpatialMechanisms(packet) {
     deduped.push(m);
   }
 
+  // R8.5 redirected: rewrite each surviving architecture semantic (already
+  // motif-stripped) into short English construction language partitioned
+  // into three registers (strategy / form / organization), matching the
+  // P9B-B high-water-mark prompt structure. Global dedupe happens inside
+  // the rewriter so one V5 sentence cannot produce the same phrase more
+  // than once, regardless of how many blocks render it.
+  const rewrite = rewriteArchitectureSemantics(deduped);
+
   return {
     architectureSemantics: deduped,
+    architectureActions: rewrite.actions,
+    architectureStrategy: rewrite.strategy,
+    architectureForm: rewrite.form,
+    architectureOrganization: rewrite.organization,
+    architectureRewrite: {
+      items: rewrite.items,
+      stats: rewrite.stats,
+    },
     brandMotifSemantics,
     colorAccentSemantics,
     functionalSemantics,
@@ -142,8 +163,9 @@ export function compileRawPhrases(items) {
   const out = compileSpatialMechanisms(fakePacket);
   return {
     architectural: out.architectureSemantics,
+    actions: out.architectureActions,
     brand: out.brandMotifSemantics,
   };
 }
 
-export const COMPILE_SPATIAL_MECHANISMS_VERSION = '1.0.0';
+export const COMPILE_SPATIAL_MECHANISMS_VERSION = '1.1.0';

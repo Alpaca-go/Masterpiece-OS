@@ -64,3 +64,5 @@ Creative-Upgrade-Brief.md
 # 一次性 JZMX smoke 脚本（intentionally uncommitted，V5 decision-compact
 # 探索期遗留；2026-08-07 回退后失去上下文，保留为本地 scratch）
 apps/cli/scripts/jzmx-*.mjs
+
+.packet/

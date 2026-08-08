@@ -33,7 +33,7 @@ import { measurePromptBudget } from './prompt-budget.js';
 import { buildTrace } from './trace.js';
 
 export const SPACE_PROMPT_COMPILER_ID = 'phase9b-quality-compiler';
-export const SPACE_PROMPT_COMPILER_VERSION = '1.0.0';
+export const SPACE_PROMPT_COMPILER_VERSION = '1.1.0';
 
 const PHASE9B_BLOCK_IDS = Object.freeze([
   'task',
@@ -149,11 +149,13 @@ function renderArchitecturalConcept(layers) {
 
 function renderArchitectureDna(layers) {
   const org = layers.architectureLanguage.spatialOrganization;
+  const form = layers.architectureLanguage.architecturalCharacteristics;
+  const strategy = layers.architectureLanguage.spatialPrinciples;
   const body = [
     '**Building DNA**:',
-    `- Spatial organization: ${org.slice(0, 5).join('；') || 'n/a'}`,
-    `- Functional network nodes: ${layers._raw.functionalNetwork.slice(0, 6).join('；') || 'n/a'}`,
-    `- Program nodes: ${layers._raw.sceneProgram.slice(0, 6).join('；') || 'n/a'}`,
+    `- Spatial strategy: ${strategy.slice(0, 4).join('; ') || 'n/a'}`,
+    `- Form mechanisms: ${form.slice(0, 4).join('; ') || 'n/a'}`,
+    `- Spatial organization: ${org.slice(0, 4).join('; ') || 'n/a'}`,
     '',
     'Maintain continuous wall↔ceiling↔floor relationships and a legible circulation hierarchy.',
   ].join('\n');
@@ -185,8 +187,8 @@ function renderFunctionalRequirement(layers) {
     '**Functional Network**:',
     bullet(raw.functionalNetwork),
     '',
-    '**Must Be Visible**:',
-    bullet(raw.mustBeVisible),
+    '**Must Be Visible (spatial focal hierarchy; brand identity is post-composited)**:',
+    bullet(layers.composition.mustBeVisible, '- (none)'),
     '',
     '**Positive Differentiators**:',
     bullet(raw.positiveDifferentiators, '- (none)'),
@@ -248,19 +250,20 @@ function renderRendering() {
 }
 
 // Universal negatives applied to every Phase 9B space prompt. These are
-// generic (no brand/project names) and enforce three production invariants:
+// generic (no brand/project names) and enforce two production invariants:
 //   1. No in-scene brand identity — confirmed logo/wordmark is composited
 //      post-generation (logo post-composite route), never drawn by the model.
 //   2. No generic "AI clinic" fallback look.
-//   3. (R8.5.1) Do not convert brand symbols or graphic motifs into literal
-//      architectural structures (motif-shaped focal wall, motif-as-geometry
-//      ceiling, animal/ornament sculpture as building form, etc.). Brand is
-//      translated into mechanism, not pasted.
+//
+// R8.5 redirected: trimmed from 4 lines back to 2 core guards (~250 chars,
+// under the P9B-B ~366 char baseline). The R8.5.1 motif-as-architecture
+// guard line was removed because R8.4 proved it does not structurally fix
+// motif pollution — the fix is the action-verb rewrite IR at the source,
+// not negative bloat. The brand-translation block already instructs the
+// model to translate motifs into mechanism, not literal form.
 const BASE_NEGATIVES = Object.freeze([
   'no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene',
-  'no literal brand mascot or logo drawn on walls, glass, desk or floor',
   'no generic AI clinic look, no stock-photo medical aesthetic template',
-  'do not convert brand symbols, brand mascots, graphic motifs, or any animal/ornament/floral decoration into literal architectural structures (no motif-shaped focal wall, ceiling, or sculpture)',
 ]);
 
 function renderNegatives(layers) {
@@ -398,23 +401,24 @@ function deriveAnchorCriteria(layers, taskContract) {
 
 function blockSource(id) {
   // Declares which V5 fields feed each block (for trace/debugging).
-  // R8.5.1: architecture blocks now read semantic.architectureSemantics (a
-  // post-separation list that has been motif-stripped), not the raw V5 lists.
+  // R8.5 redirected: architecture blocks now read the action-verb IR
+  // (architectureStrategy / architectureForm / architectureOrganization),
+  // not raw V5 Chinese prose lists.
   const map = {
     task: ['taskContract', 'projectFacts.brandName', 'projectFacts.industry'],
-    spatial_intent: ['spatial.spatialConcept', 'creativeDecision.targetWorldview', 'semantic.architectureSemantics'],
-    architecture_language: ['spatial.structureLanguage', 'semantic.architectureSemantics', 'spatial.functionalNetwork'],
+    spatial_intent: ['spatial.spatialConcept (normalized)', 'semantic.architectureStrategy'],
+    architecture_language: ['semantic.architectureStrategy', 'semantic.architectureForm', 'semantic.architectureOrganization', 'materialSystem', 'lightingSystem'],
     architecture_context: ['architecture-anchors/registry.json'],
-    architecture_function_bridge: ['projectFacts.brandRole', 'spatial.functionalRelationships', 'spatial.sceneProgram', 'diagnosis.brandMisreadRisks'],
-    architectural_concept: ['spatial.spatialConcept (normalized)', 'semantic.architectureSemantics', 'spatial.structureLanguage'],
-    architecture_dna: ['spatial.functionalNetwork', 'spatial.sceneProgram'],
-    brand_translation: ['projectFacts', 'semantic.brandMotifSemantics', 'semantic.decorativeIdentitySemantics', 'semantic.colorAccentSemantics', 'spatial.brandRoleManifestation (non-motif only)'],
-    functional_requirement: ['spatial.sceneProgram', 'spatial.functionalNetwork', 'spatial.mustBeVisible', 'spatial.positiveDifferentiators'],
+    architecture_function_bridge: ['projectFacts.brandRole', 'spatial.functionalRelationships', 'spatial.sceneProgram', 'spatial.brandRoleManifestation', 'diagnosis.brandMisreadRisks'],
+    architectural_concept: ['spatial.spatialConcept (normalized)', 'semantic.architectureForm', 'semantic.architectureStrategy'],
+    architecture_dna: ['semantic.architectureStrategy', 'semantic.architectureForm', 'semantic.architectureOrganization'],
+    brand_translation: ['projectFacts', 'semantic.brandMotifSemantics', 'semantic.decorativeIdentitySemantics', 'semantic.colorAccentSemantics', 'spatial.brandRoleManifestation', '_raw.mustBeVisible (identity items only)'],
+    functional_requirement: ['spatial.sceneProgram', 'spatial.functionalNetwork', 'composition.mustBeVisible (spatial items only)', 'spatial.positiveDifferentiators'],
     material: ['materialSystem[].material|behavior|forbidden'],
     lighting: ['lightingSystem.source|contrast|interactionWithMaterials|forbidden'],
-    composition: ['taskContract.aspectRatio|scene', 'spatial.mustBeVisible', 'spatial.positiveDifferentiators'],
+    composition: ['taskContract.aspectRatio|scene', 'composition.mustBeVisible (spatial items only)', 'spatial.positiveDifferentiators'],
     rendering: ['(deterministic rendering standard)'],
-    negative_constraints: ['taskContract.mustAvoid', 'diagnosis.brandMisreadRisks', 'materialSystem[].forbidden', 'lightingSystem.forbidden', 'colorSystem.forbidden', 'BASE_NEGATIVES (incl. R8.5.1 motif-as-architecture guard)'],
+    negative_constraints: ['taskContract.mustAvoid', 'diagnosis.brandMisreadRisks', 'materialSystem[].forbidden', 'lightingSystem.forbidden', 'colorSystem.forbidden', 'BASE_NEGATIVES (2 universal guards)'],
   };
   return map[id] || [];
 }

@@ -5,19 +5,25 @@
 // prompt (Generation Intelligence). The adapter NEVER re-creates facts: it only
 // reads structured V5 fields and shapes them into Phase 9B block inputs.
 //
+// R8.5 redirected (post-R8.4 archaeology): architecture blocks now consume
+// the action-verb IR (strategy / form / organization) produced by the
+// semantic rewrite pass, NOT raw V5 Chinese prose. This restores the
+// P9B-B register that reached 5/5 Expressiveness:
+//   - Spatial Strategy          -> short English direction keywords
+//   - Architectural Characteristics -> English construction sentences
+//   - Spatial Organization      -> English circulation / privacy phrases
+//
 // Mapping (recovery doc §6):
 //   spatialConcept + targetWorldview + uniqueUpgradeThesis + brandRoleManifestation
 //     -> spatialIntent { experienceGoal, spatialStrategy[] }
-//   structureLanguage + signatureSpatialMechanism + materialLanguage direction
-//   + lightingLanguage + functionalNetwork
+//   semantic.architectureStrategy / architectureForm / architectureOrganization
 //     -> architectureLanguage { spatialPrinciples, architecturalCharacteristics,
 //        materialDirection, lightDirection, spatialOrganization }
 //   brandRoleManifestation + functionalRelationships + functionalNetwork
 //   + sceneProgram + peopleBehavior + mustBeVisible + positiveDifferentiators
 //     -> architectureFunctionBridge { commercialPurpose, spatialTranslation,
 //        operationConstraints, humanExperience, commercialReality, conceptDriftGuards }
-//   spatialConcept + signatureSpatialMechanism + structureLanguage
-//   + functionalNetwork + sceneProgram
+//   spatialConcept + semantic.architectureForm
 //     -> architecturalConcept / architectureDna
 //
 // It is fail-closed: if a required layer cannot be built from real V5 fields,
@@ -26,7 +32,7 @@
 
 const SPACE_PHASE9B_SOURCE_INSUFFICIENT = 'SPACE_PHASE9B_SOURCE_INSUFFICIENT';
 
-import { compileSpatialMechanisms, SEMANTIC_CLASS } from './semantic/index.js';
+import { compileSpatialMechanisms, classifyPhrase, SEMANTIC_CLASS } from './semantic/index.js';
 
 function cleanList(...values) {
   const out = [];
@@ -56,12 +62,6 @@ export function isSpacePhase9bInsufficient(err) {
 /**
  * Adapt a V5 VisualDecisionPacket (+ task contract + project facts) into the
  * Phase 9B spatial layers.
- *
- * @param {object} input
- * @param {object} input.packet            V5 VisualDecisionPacket (schema 1.0)
- * @param {object} input.taskContract      vNext task contract
- * @param {object} [input.projectContext]  Project Visual Context 2.0 (fallback facts)
- * @returns {object} layers consumed by phase9b-space-compiler
  */
 export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   if (!packet || packet.schemaVersion !== '1.0') {
@@ -85,20 +85,12 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   const materialSystem = Array.isArray(packet.materialSystem) ? packet.materialSystem : [];
   const lightingSystem = packet.lightingSystem || {};
 
-  // ---- R8.5.1 Semantic Separation (compiler-time IR only) ----
-  // The architecture-side lists below are derived from the spatial compiler,
-  // which strips literal brand motifs and color-geometry coupling while
-  // preserving the abstract spatial property. Brand motifs and color terms
-  // route separately to brandMotifSemantics / colorAccentSemantics. The
-  // original raw V5 fields remain in `_raw` for trace/audit only and are no
-  // longer used to render architecture blocks.
+  // ---- R8.5.1 + R8.5 redirected semantic pipeline ----
+  // classify -> motif-strip -> action-verb rewrite (strategy/form/organization).
   const semantic = compileSpatialMechanisms(packet);
 
   // Field-level exclusion: a few V5 fields are always brand expression and
-  // must never enter architectureMechanisms regardless of their internal
-  // shape. uniqueUpgradeThesis is a long brand-narrative paragraph; the
-  // spatial compiler can mistake its architectural vocabulary for
-  // architectural content.
+  // must never enter architectureMechanisms regardless of their internal shape.
   const MECHANIC_EXCLUDED_FIELDS = new Set([
     'uniqueUpgradeThesis',
     'targetWorldview',
@@ -117,32 +109,51 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     (m) => !MECHANIC_EXCLUDED_FIELDS.has(m.sourceField),
   );
 
+  // ---- Build clean functional / program lists (R8.5: no motif leakage) ----
+  // functionalNetwork and sceneProgram are FUNCTIONAL content — they describe
+  // zones and flow, not building form. They must NEVER be rendered into
+  // architecture blocks. We keep them for the functional blocks only, and
+  // strip any items that carry brand-motif / identity / color-geometry content.
+  const rawFunctionalNetwork = cleanList(spatial.functionalNetwork);
+  const rawSceneProgram = cleanList(spatial.sceneProgram);
+
+  // mustBeVisible is a composition/focal-hierarchy field. In R8.4 it leaked
+  // motif sentences (abstract motif-textured wall) and in-scene identity
+  // (illuminated logo) directly into the prompt. We split it:
+  //   - identity-bearing items (logo / wordmark / slogan) -> BRAND translation
+  //     only (they are composited post-generation, never drawn by the model)
+  //   - motif-bearing items -> brand translation only
+  //   - genuine spatial focal items (reception desk relationship, glass entry
+  //     visual penetration) -> composition mustBeVisible
+  const rawMustBeVisible = cleanList(spatial.mustBeVisible);
+  const { safe: compositionMustBeVisible, brand: brandMustBeVisible } = splitMustBeVisible(rawMustBeVisible);
+
   const missing = [];
 
   // ---- Spatial Intent ----
-  // Experience goal is the spatial concept, but the motif prefix is stripped
-  // (R8.5.1) so the experience direction does not re-introduce the literal
-  // brand symbol. The strategy is now architecture-side mechanisms only.
+  // Experience goal: spatial concept with motif prefix stripped.
+  // Spatial Strategy: English direction keywords from the action-verb IR,
+  // NOT raw V5 Chinese prose. targetWorldview items are brand expression and
+  // are routed to brand, not strategy.
   const rawExperienceGoal = firstString(
     spatial.spatialConcept,
     creativeDecision.uniqueUpgradeThesis,
     ...cleanList(creativeDecision.targetWorldview),
   );
   const experienceGoal = normalizeConceptPrimary(rawExperienceGoal) || rawExperienceGoal;
-  const spatialStrategy = [
-    ...semantic.architectureSemantics.map((m) => m.text),
-    ...cleanList(creativeDecision.targetWorldview),
-  ];
+  const spatialStrategy = semantic.architectureStrategy.slice(0, 6);
   if (!experienceGoal) missing.push('spatial.spatialConcept | creativeDecision.uniqueUpgradeThesis');
   if (spatialStrategy.length < 1) {
-    missing.push('semantic.architectureSemantics | creativeDecision.targetWorldview');
+    missing.push('semantic.architectureStrategy (no spatial signal detected in V5 spatial fields)');
   }
 
   // ---- Architecture Language ----
-  // spatialPrinciples: still derived from structureLanguage (always
-  // architectural), but with a brand-motif filter as a safety net.
-  const spatialPrinciples = cleanList(spatial.structureLanguage);
-  const architecturalCharacteristics = semantic.architectureSemantics.map((m) => m.text);
+  // All three lists come from the action-verb IR, not raw V5 fields.
+  // spatialPrinciples = strategy keywords (high-level direction)
+  // architecturalCharacteristics = form sentences (construction language)
+  // spatialOrganization = organization phrases (circulation / privacy)
+  const spatialPrinciples = semantic.architectureStrategy.slice(0, 8);
+  const architecturalCharacteristics = semantic.architectureForm.slice(0, 10);
   const materialDirection = materialSystem.map((m) => ({
     material: m.material,
     behavior: cleanList(m.behavior),
@@ -155,11 +166,15 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     interactionWithMaterials: cleanList(lightingSystem.interactionWithMaterials),
     forbidden: cleanList(lightingSystem.forbidden),
   };
-  const spatialOrganization = cleanList(spatial.functionalNetwork, spatial.sceneProgram);
-  if (spatialPrinciples.length < 1) missing.push('spatial.structureLanguage');
-  if (spatialOrganization.length < 3) missing.push('spatial.functionalNetwork (>=3) | spatial.sceneProgram');
+  const spatialOrganization = semantic.architectureOrganization.slice(0, 8);
+  if (spatialPrinciples.length < 1) missing.push('semantic.architectureStrategy');
+  if (architecturalCharacteristics.length < 1) missing.push('semantic.architectureForm');
 
   // ---- Architecture Function Bridge ----
+  // This block translates architecture -> commercial action. We filter every
+  // list through keepFunctionalItem() so that motif sentences, in-scene
+  // identity (logo/slogan), and color-geometry coupling do not leak into
+  // functional blocks. Those items route to brand translation instead.
   const commercialPurpose = firstString(
     projectFacts.brandRole?.value,
     projectFacts.brandRole,
@@ -167,20 +182,20 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   );
   const spatialTranslation = cleanList(
     spatial.brandRoleManifestation,
-    spatial.functionalNetwork,
-  );
+    rawFunctionalNetwork,
+  ).filter(keepFunctionalItem);
   const operationConstraints = cleanList(
     spatial.functionalRelationships,
-    spatial.sceneProgram,
-  );
+    rawSceneProgram,
+  ).filter(keepFunctionalItem);
   const humanExperience = cleanList(
     spatial.peopleBehavior,
     spatial.brandIntegration,
-  );
+  ).filter(keepFunctionalItem);
   const commercialReality = cleanList(
-    spatial.sceneProgram,
-    spatial.mustBeVisible,
-  );
+    rawSceneProgram,
+    spatial.positiveDifferentiators,
+  ).filter(keepFunctionalItem);
   const conceptDriftGuards = cleanList(
     (packet.diagnosis?.brandMisreadRisks || [])
       .filter((r) => r.status === 'confirmed')
@@ -191,16 +206,15 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   if (spatialTranslation.length < 1) missing.push('spatial.brandRoleManifestation | functionalNetwork');
 
   // ---- Architectural Concept / DNA ----
-  // primary: still the spatial concept (stripped to its non-motif essence via
-  //   the normalizer so a brand-symbol title like "\u7fce\u7fbd\u4e4b\u5883" doesn't become the
-  //   architecture concept's identity). signatureMechanisms: ONLY architecture
-  //   mechanisms from the semantic compiler.
+  // primary: normalized spatial concept (motif title stripped).
+  // signatureMechanisms: English form sentences (NOT raw V5 lists).
+  // structureLanguage: strategy keywords.
   const conceptPrimary = firstString(spatial.spatialConcept, creativeDecision.uniqueUpgradeThesis);
   const conceptPrimaryNormalized = normalizeConceptPrimary(conceptPrimary);
   const architecturalConcept = {
     primary: conceptPrimaryNormalized || conceptPrimary,
-    signatureMechanisms: semantic.architectureSemantics.map((m) => m.text),
-    structureLanguage: cleanList(spatial.structureLanguage),
+    signatureMechanisms: semantic.architectureForm.slice(0, 8),
+    structureLanguage: semantic.architectureStrategy.slice(0, 6),
   };
   if (!architecturalConcept.primary) missing.push('spatial.spatialConcept');
 
@@ -214,15 +228,21 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     forbidden: cleanList(colorSystem.forbidden),
   };
 
-  // ---- Composition / rendering guidance (task contract + locked behavior) ----
+  // ---- Composition / rendering guidance ----
+  // mustBeVisible is now split: only genuine spatial focal items survive;
+  // logo/wordmark/motif items are routed to brand translation (post-composite).
   const composition = {
     aspectRatio: taskContract?.aspectRatio,
     scene: taskContract?.scene,
-    mustBeVisible: cleanList(spatial.mustBeVisible),
+    mustBeVisible: compositionMustBeVisible,
     positiveDifferentiators: cleanList(spatial.positiveDifferentiators),
   };
 
   // ---- Negatives ----
+  // R8.5 redirected: trim the negative block. We keep only V5-sourced
+  // negatives (material/lighting/color forbidden + confirmed misread risks +
+  // task mustAvoid). The universal BASE_NEGATIVES in the compiler handle
+  // brand-identity-in-scene and motif-as-architecture guards.
   const negatives = cleanList(
     taskContract?.mustAvoid,
     (packet.diagnosis?.brandMisreadRisks || [])
@@ -276,9 +296,14 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     color,
     composition,
     negatives,
-    // ---- R8.5.1 semantic IR (architecture / brand split) ----
+    // ---- R8.5 semantic IR (architecture / brand split + action verbs) ----
     semantic: {
       architectureSemantics: semantic.architectureSemantics,
+      architectureActions: semantic.architectureActions,
+      architectureStrategy: semantic.architectureStrategy,
+      architectureForm: semantic.architectureForm,
+      architectureOrganization: semantic.architectureOrganization,
+      architectureRewrite: semantic.architectureRewrite,
       brandMotifSemantics: semantic.brandMotifSemantics,
       colorAccentSemantics: semantic.colorAccentSemantics,
       functionalSemantics: semantic.functionalSemantics,
@@ -290,20 +315,21 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
         version: semantic.provenance.provenanceVersion,
       },
     },
-    // Raw pass-through for trace / audit. Architecture block rendering no
-    // longer reads these lists directly — they are kept for the brand block
-    // and for human-facing evaluation only.
+    // Raw pass-through for trace / audit and for blocks that legitimately
+    // render functional/program content (functional_requirement, brand).
+    // Architecture block rendering no longer reads these lists.
     _raw: {
-      functionalNetwork: cleanList(spatial.functionalNetwork),
-      sceneProgram: cleanList(spatial.sceneProgram),
-      // Brand translation block: motif-bearing items plus raw brand-role
-      // sentences. We dedupe (case-insensitive) to avoid double-rendering.
+      functionalNetwork: rawFunctionalNetwork.filter(keepFunctionalItem),
+      sceneProgram: rawSceneProgram.filter(keepFunctionalItem),
+      // Brand translation block: motif-bearing items + identity items
+      // extracted from mustBeVisible + raw brand-role sentences. Deduped.
       brandRoleManifestation: dedupeStrings([
         ...semantic.brandMotifSemantics.map((m) => m.text),
+        ...brandMustBeVisible,
         ...cleanList(spatial.brandRoleManifestation),
       ]),
       signatureSpatialMechanism: cleanList(spatial.signatureSpatialMechanism),
-      mustBeVisible: cleanList(spatial.mustBeVisible),
+      mustBeVisible: rawMustBeVisible,
       positiveDifferentiators: cleanList(spatial.positiveDifferentiators),
     },
   };
@@ -321,6 +347,65 @@ function dedupeStrings(list) {
   return out;
 }
 
+// splitMustBeVisible: separate genuine spatial focal requirements (reception
+// desk, glass entry visual penetration) from brand-identity / motif items
+// (illuminated logo, slogan text, motif wall). Identity/motif items route to
+// brand translation only — they are composited post-generation or expressed as
+// mechanism, never drawn in-scene by the model.
+function splitMustBeVisible(items) {
+  const safe = [];
+  const brand = [];
+  const identityRe = /logo|wordmark|logotype|slogan|发光字|标识|标志|徽章|吉祥物|艺术字|\blogo\b/iu;
+  for (const item of items) {
+    const text = String(item || '').trim();
+    if (!text) continue;
+    const analysis = classifyPhrase(text, 'mustBeVisible');
+    // mustBeVisible is a composition/focal-hierarchy field. Any item that
+    // carries brand identity, a motif literal, a color-geometry coupling,
+    // or is AMBIGUOUS (motif + architecture mixed) must route to brand
+    // translation only — it is a brand-visibility requirement, not a
+    // building mechanism the model should construct. The motif-to-mechanism
+    // translation happens in the Brand Translation block.
+    if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY
+        || analysis.classification === SEMANTIC_CLASS.BRAND_MOTIF
+        || analysis.classification === SEMANTIC_CLASS.COLOR_GEOMETRY
+        || analysis.classification === SEMANTIC_CLASS.COLOR_ACCENT
+        || analysis.classification === SEMANTIC_CLASS.AMBIGUOUS
+        || analysis.motifHits.length > 0
+        || identityRe.test(text)) {
+      brand.push(text);
+    } else {
+      safe.push(text);
+    }
+  }
+  return { safe, brand };
+}
+
+// keepFunctionalItem: filter for functional / commercial-reality blocks
+// (spatialTranslation, operationConstraints, humanExperience, commercialReality,
+// functional_requirement). Returns true for items that describe operational,
+// program, or human-experience content; false for motif literals, in-scene
+// identity, color-geometry coupling, or ambiguous motif+architecture phrases
+// (those belong in brand translation, not functional blocks).
+function keepFunctionalItem(item) {
+  const text = String(item || '').trim();
+  if (!text) return false;
+  const analysis = classifyPhrase(text, 'functionalNetwork');
+  // Functional blocks describe operations, program, and human experience.
+  // They must NOT contain motif literals, in-scene identity, color-geometry
+  // coupling, ambiguous motif+architecture phrases, or standalone color
+  // accents (those are brand-decoration content, not operational reality).
+  if (analysis.classification === SEMANTIC_CLASS.BRAND_MOTIF
+      || analysis.classification === SEMANTIC_CLASS.DECORATIVE_IDENTITY
+      || analysis.classification === SEMANTIC_CLASS.COLOR_GEOMETRY
+      || analysis.classification === SEMANTIC_CLASS.COLOR_ACCENT
+      || analysis.classification === SEMANTIC_CLASS.AMBIGUOUS) {
+    return false;
+  }
+  if (analysis.motifHits && analysis.motifHits.length > 0) return false;
+  return true;
+}
+
 // normalizeConceptPrimary: the V5 `spatialConcept` is often a brand-poetic
 // title (e.g. "<motif-title> (Realm of <motif>) - 沉浸式美学空间"). When used
 // as the architecture concept's PRIMARY identity, it would re-introduce the
@@ -330,11 +415,7 @@ function dedupeStrings(list) {
 function normalizeConceptPrimary(s) {
   if (typeof s !== 'string') return '';
   let t = s.trim();
-  // Drop parentheticals anywhere in the lead (e.g. "(Realm of Feathers)").
   t = t.replace(/[（(][^）)]*[）)]/gu, '').trim();
-  // If the first segment (before " - " / " — " / " ： " / " : ") is itself
-  // a brand-poetic title (contains motif chars, ≤16 chars), prefer the
-  // longer architectural/experiential tail.
   const sep = t.search(/\s*(?:-{1,2}|—|：|:)\s*/u);
   if (sep > 0) {
     const head = t.slice(0, sep).trim();
@@ -345,4 +426,4 @@ function normalizeConceptPrimary(s) {
   return t;
 }
 
-export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.1.0';
+export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.2.0';

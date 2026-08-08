@@ -98,16 +98,30 @@ test('adaptPhase9bSource maps a ready V5 packet into Phase 9B layers', () => {
   assert.ok(layers.spatialIntent.experienceGoal);
   assert.ok(layers.spatialIntent.spatialStrategy.length >= 1);
   assert.ok(layers.architectureLanguage.spatialPrinciples.length >= 1);
-  assert.ok(layers.architectureLanguage.spatialOrganization.length >= 3);
+  assert.ok(layers.architectureLanguage.architecturalCharacteristics.length >= 1);
   assert.ok(layers.architectureFunctionBridge.commercialPurpose);
   assert.ok(layers.architecturalConcept.primary);
   assert.equal(layers.materials.length, 2);
 });
 
-test('adaptPhase9bSource fails closed on insufficient V5 fields', () => {
+test('adaptPhase9bSource fails closed when no spatial signal survives', () => {
+  // R8.5 redirected: architecture blocks now come from the action-verb IR,
+  // which requires spatial keywords (curve/layer/translucent/etc.) in the
+  // V5 spatial fields. Emptying all spatial fields leaves no signal, so
+  // the adapter must fail closed.
   const packet = makePacket();
+  packet.mediaTranslations.spatial.spatialConcept = '';
+  packet.mediaTranslations.spatial.signatureSpatialMechanism = [];
+  packet.mediaTranslations.spatial.brandRoleManifestation = [];
+  packet.mediaTranslations.spatial.structureLanguage = [];
   packet.mediaTranslations.spatial.functionalNetwork = [];
+  packet.mediaTranslations.spatial.functionalRelationships = [];
   packet.mediaTranslations.spatial.sceneProgram = [];
+  packet.mediaTranslations.spatial.peopleBehavior = [];
+  packet.mediaTranslations.spatial.mustBeVisible = [];
+  packet.mediaTranslations.spatial.positiveDifferentiators = [];
+  packet.creativeDecision.uniqueUpgradeThesis = '';
+  packet.creativeDecision.targetWorldview = [];
   let threw = false;
   try {
     adaptPhase9bSource({ packet, taskContract });
