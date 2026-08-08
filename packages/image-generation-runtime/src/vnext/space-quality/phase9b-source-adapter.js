@@ -184,16 +184,20 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     spatial.brandRoleManifestation,
     rawFunctionalNetwork,
   ).filter(keepFunctionalItem);
+  // Operation constraints are HARD spatial/operational relationships
+  // (functionalRelationships), NOT the scene-program node list — program
+  // nodes already render once under functional_requirement. Copying short
+  // node labels ("迎宾", "美学咨询") here duplicated them across blocks.
   const operationConstraints = cleanList(
     spatial.functionalRelationships,
-    rawSceneProgram,
   ).filter(keepFunctionalItem);
   const humanExperience = cleanList(
     spatial.peopleBehavior,
     spatial.brandIntegration,
   ).filter(keepFunctionalItem);
+  // Commercial reality is the differentiator/atmosphere statements, not the
+  // program node list (same dedup rationale as operationConstraints).
   const commercialReality = cleanList(
-    rawSceneProgram,
     spatial.positiveDifferentiators,
   ).filter(keepFunctionalItem);
   const conceptDriftGuards = cleanList(
@@ -207,14 +211,16 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
 
   // ---- Architectural Concept / DNA ----
   // primary: normalized spatial concept (motif title stripped).
-  // signatureMechanisms: English form sentences (NOT raw V5 lists).
-  // structureLanguage: strategy keywords.
+  // R8.5 redirected: each architecture block uses a DISTINCT register so the
+  // same action-verb IR is not copied across blocks (R8.4 found one sentence
+  // rendered up to 4x). The Architecture Language block owns the full
+  // strategy/form/organization lists; the Concept block is the short
+  // headline + strategy-tag distillation; DNA is the 4-line summary.
   const conceptPrimary = firstString(spatial.spatialConcept, creativeDecision.uniqueUpgradeThesis);
   const conceptPrimaryNormalized = normalizeConceptPrimary(conceptPrimary);
   const architecturalConcept = {
     primary: conceptPrimaryNormalized || conceptPrimary,
-    signatureMechanisms: semantic.architectureForm.slice(0, 8),
-    structureLanguage: semantic.architectureStrategy.slice(0, 6),
+    structureLanguage: semantic.architectureStrategy.slice(0, 4),
   };
   if (!architecturalConcept.primary) missing.push('spatial.spatialConcept');
 
@@ -426,4 +432,4 @@ function normalizeConceptPrimary(s) {
   return t;
 }
 
-export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.2.0';
+export const SPACE_QUALITY_SOURCE_ADAPTER_VERSION = '1.2.1';

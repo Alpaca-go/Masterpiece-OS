@@ -138,9 +138,6 @@ function renderArchitecturalConcept(layers) {
     '',
     `**Primary Spatial Concept**: ${c.primary}`,
     '',
-    '**Signature Mechanisms**:',
-    bullet(c.signatureMechanisms),
-    '',
     '**Structure Language**:',
     bullet(c.structureLanguage),
   ].join('\n');
