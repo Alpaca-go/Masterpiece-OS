@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "architecture-expressiveness",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "reception-membrane",
+  "type": "historical-golden-benchmark",
+  "historicalScore": {
+    "architectureExpressiveness": 5,
+    "architectureQuality": 5,
+    "brandTranslation": 5,
+    "functionalRealism": 4,
+    "materialLighting": 5,
+    "composition": 4,
+    "rendering": 4,
+    "genericAiSpaceRisk": 1,
+    "source": "manual-review-2026-08-08 (旧链路 S 级评估)"
+  },
+  "useAsReleaseGate": true,
+  "notes": "historicalScore 是评估新版本的对照基准。R8.5.6 评估新 candidate 时，将新分与 historicalScore 同维度比较。historicalScore 字段不在新 candidate 的 evaluation.json 中出现。"
+}

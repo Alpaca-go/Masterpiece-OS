@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "entrance-glass",
+  "anchorId": "JZMX-ARCH-02-EntranceGlass",
+  "source": {
+    "type": "repo-frozen-PNG",
+    "path": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
+    "bytes": 1333211,
+    "sha256": "2ca12471e458"
+  },
+  "frozenAt": "2026-08-08T00:00:00.000Z",
+  "frozenBy": "R8.5.1",
+  "branch": "v2-space-generator",
+  "commit": "(pending-freeze)",
+  "history": "原为旧链路产出的 S 级空间效果图，由 2026-08-08 之前的人工评审标记为 5/5 Architecture Expressiveness。"
+}

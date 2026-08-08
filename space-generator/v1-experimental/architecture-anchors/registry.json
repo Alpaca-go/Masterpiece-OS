@@ -13,15 +13,33 @@
           "primaryMechanism": "层叠半透明介质从天花垂落, 在中心汇合形成夹层光, 边缘缓慢过渡为墙, 无硬收边",
           "secondaryMechanism": "金属长方体接待台配顶底发光缝, 与暖色环境形成对比",
           "imagePath": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
             "architecture": 0.95,
             "function": 0.75
           },
           "applicability": {
-            "industries": ["medical_aesthetics"],
-            "sceneTypes": ["reception", "consultation", "vip_lounge"],
-            "commercialContexts": ["street_store", "mall_store", "flagship"]
+            "industries": [
+              "medical_aesthetics"
+            ],
+            "sceneTypes": [
+              "reception",
+              "consultation",
+              "vip_lounge"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store",
+              "flagship"
+            ]
+          },
+          "imageStatus": "available",
+          "provenance": {
+            "sha256": "7cee8097c6b5da43950f9cb44e474a855df8cb3a41c25de69b2089b31d8444f5",
+            "bytes": 1647728,
+            "source": "repo-frozen-PNG",
+            "frozenAt": "2026-08-08T00:00:00.000Z",
+            "note": "JZM-EXR-01/02/03 原始 S 级参考图，作为 R8.5 Architecture Expressiveness Golden 与评估基准；不挂回 Reference 选择路径，Production 编译器不变。"
           }
         },
         {
@@ -31,15 +49,34 @@
           "primaryMechanism": "窄框整面玻璃幕墙 + 短走廊缓冲, 街道与室内形成视觉连续",
           "secondaryMechanism": "弧形连续天花 + 浅木流线形接待台, 由低向高的空间序列",
           "imagePath": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
-            "architecture": 0.90,
+            "architecture": 0.9,
             "function": 0.85
           },
           "applicability": {
-            "industries": ["medical_aesthetics"],
-            "sceneTypes": ["exterior", "reception", "corridor"],
-            "commercialContexts": ["street_store", "mall_store", "flagship", "popup"]
+            "industries": [
+              "medical_aesthetics"
+            ],
+            "sceneTypes": [
+              "exterior",
+              "reception",
+              "corridor"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store",
+              "flagship",
+              "popup"
+            ]
+          },
+          "imageStatus": "available",
+          "provenance": {
+            "sha256": "2ca12471e4585b4f207139b16d30040953a2996275d0d92a80308153e1b48e2d",
+            "bytes": 1333211,
+            "source": "repo-frozen-PNG",
+            "frozenAt": "2026-08-08T00:00:00.000Z",
+            "note": "JZM-EXR-01/02/03 原始 S 级参考图，作为 R8.5 Architecture Expressiveness Golden 与评估基准；不挂回 Reference 选择路径，Production 编译器不变。"
           }
         },
         {
@@ -49,15 +86,33 @@
           "primaryMechanism": "单层大跨膜天花 + 中心天窗, 跨工位连续覆盖, 自然光通过半透明介质柔化后落下",
           "secondaryMechanism": "整面 3 大格落地玻璃 + 弧形膜切分工位, 维持视觉连续 + 听觉弱屏蔽",
           "imagePath": "v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
             "architecture": 0.88,
-            "function": 0.80
+            "function": 0.8
           },
           "applicability": {
-            "industries": ["medical_aesthetics"],
-            "sceneTypes": ["consultation", "treatment", "lobby"],
-            "commercialContexts": ["street_store", "flagship", "office_floor"]
+            "industries": [
+              "medical_aesthetics"
+            ],
+            "sceneTypes": [
+              "consultation",
+              "treatment",
+              "lobby"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "flagship",
+              "office_floor"
+            ]
+          },
+          "imageStatus": "available",
+          "provenance": {
+            "sha256": "835df456879158356dad757c9d41501b41f7986a0a9e9d2a4554e4534bb143e7",
+            "bytes": 1310917,
+            "source": "repo-frozen-PNG",
+            "frozenAt": "2026-08-08T00:00:00.000Z",
+            "note": "JZM-EXR-01/02/03 原始 S 级参考图，作为 R8.5 Architecture Expressiveness Golden 与评估基准；不挂回 Reference 选择路径，Production 编译器不变。"
           }
         }
       ]
@@ -74,15 +129,24 @@
           "secondaryMechanism": "餐桌围绕厨房排布, 主通道 1.5m+, 商业客流循环",
           "imagePath": null,
           "imageStatus": "concept_only",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
             "architecture": 0.85,
             "function": 0.92
           },
           "applicability": {
-            "industries": ["restaurant"],
-            "sceneTypes": ["reception", "lobby", "other"],
-            "commercialContexts": ["street_store", "mall_store"]
+            "industries": [
+              "restaurant"
+            ],
+            "sceneTypes": [
+              "reception",
+              "lobby",
+              "other"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store"
+            ]
           }
         },
         {
@@ -93,15 +157,24 @@
           "secondaryMechanism": "网格状 booth 布局, 人尺度, 不用紫色 / 不用冷光",
           "imagePath": null,
           "imageStatus": "concept_only",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
-            "architecture": 0.80,
+            "architecture": 0.8,
             "function": 0.88
           },
           "applicability": {
-            "industries": ["restaurant"],
-            "sceneTypes": ["reception", "lobby", "other"],
-            "commercialContexts": ["street_store", "mall_store"]
+            "industries": [
+              "restaurant"
+            ],
+            "sceneTypes": [
+              "reception",
+              "lobby",
+              "other"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store"
+            ]
           }
         },
         {
@@ -112,15 +185,25 @@
           "secondaryMechanism": "菜单板可见 + 实物感 + 烟火气, 不用 medical 标志",
           "imagePath": null,
           "imageStatus": "concept_only",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
             "architecture": 0.75,
-            "function": 0.90
+            "function": 0.9
           },
           "applicability": {
-            "industries": ["restaurant", "retail"],
-            "sceneTypes": ["reception", "lobby", "other"],
-            "commercialContexts": ["street_store", "mall_store"]
+            "industries": [
+              "restaurant",
+              "retail"
+            ],
+            "sceneTypes": [
+              "reception",
+              "lobby",
+              "other"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store"
+            ]
           }
         }
       ]
@@ -137,15 +220,25 @@
           "secondaryMechanism": "自然光 + warm_amber 暖色筒灯, 不用紫色 / 不用嵌入光带 (JZMX 标志)",
           "imagePath": null,
           "imageStatus": "concept_only",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
             "architecture": 0.88,
             "function": 0.82
           },
           "applicability": {
-            "industries": ["health_management"],
-            "sceneTypes": ["reception", "consultation", "vip_lounge"],
-            "commercialContexts": ["street_store", "mall_store", "office_floor"]
+            "industries": [
+              "health_management"
+            ],
+            "sceneTypes": [
+              "reception",
+              "consultation",
+              "vip_lounge"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store",
+              "office_floor"
+            ]
           }
         },
         {
@@ -156,15 +249,24 @@
           "secondaryMechanism": "纸屏风替代硬隔断, 不用玻璃幕墙 / 膜天花 (JZMX 标志)",
           "imagePath": null,
           "imageStatus": "concept_only",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
-            "architecture": 0.90,
+            "architecture": 0.9,
             "function": 0.78
           },
           "applicability": {
-            "industries": ["health_management"],
-            "sceneTypes": ["reception", "consultation", "vip_lounge"],
-            "commercialContexts": ["street_store", "office_floor"]
+            "industries": [
+              "health_management"
+            ],
+            "sceneTypes": [
+              "reception",
+              "consultation",
+              "vip_lounge"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "office_floor"
+            ]
           }
         },
         {
@@ -175,15 +277,24 @@
           "secondaryMechanism": "不用 medical_compliance (JZMX 标志), 不用 kitchen_pass (FTT 标志)",
           "imagePath": null,
           "imageStatus": "concept_only",
-          "weight": 1.0,
+          "weight": 1,
           "strength": {
             "architecture": 0.78,
             "function": 0.88
           },
           "applicability": {
-            "industries": ["health_management"],
-            "sceneTypes": ["reception", "consultation", "vip_lounge"],
-            "commercialContexts": ["street_store", "mall_store"]
+            "industries": [
+              "health_management"
+            ],
+            "sceneTypes": [
+              "reception",
+              "consultation",
+              "vip_lounge"
+            ],
+            "commercialContexts": [
+              "street_store",
+              "mall_store"
+            ]
           }
         }
       ]
@@ -197,12 +308,12 @@
   "selectionPolicy": {
     "scoringWeights": {
       "industryMatch": 0.35,
-      "sceneTypeMatch": 0.30,
+      "sceneTypeMatch": 0.3,
       "commercialContextMatch": 0.15,
-      "functionalAlignment": 0.10,
-      "weight": 0.10
+      "functionalAlignment": 0.1,
+      "weight": 0.1
     },
-    "minScore": 0.0,
+    "minScore": 0,
     "defaultMaxCount": 3,
     "phase8DMultibrandGuard": "Phase 8D §3 Risk 1: selectAnchors industry match 防护 JZMX overfit. JZMX anchors.applicability.industries 收紧到 ['medical_aesthetics'] 不再 cross-industry. FTT / YJLF 各自独立. industry match 权重 0.35 是 phase 8D 防 overfit 的主防线."
   },
@@ -212,4 +323,3 @@
     "fallbackBehavior": "if a brand has no anchors, return empty list; prompt compiler degrades to v1.1 + Phase 8B.1 baseline (11 blocks, no architecture_context block)"
   }
 }
-
