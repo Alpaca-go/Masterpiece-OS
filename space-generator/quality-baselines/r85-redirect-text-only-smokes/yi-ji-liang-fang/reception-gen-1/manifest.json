@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r85-redirect-text-only-smoke",
+  "brandKey": "yi-ji-liang-fang",
+  "brandDisplayName": "一剂良方",
+  "scene": "reception-gen-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "acc7d590-ac08-4612-8aa7-06464a6ec789",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen yi-ji-liang-fang packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\yi-ji-liang-fang\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "phase9b_quality",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [],
+  "taskInstruction": "生成一剂良方中医馆的接待与等候空间效果图。以视平线高度广角透视呈现药柜背景、接待台与等候区的层次关系，品牌识别后期合成，不在场景内渲染文字或Logo。",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "0e9f790d92593a11bdeac23e70a09cbf4e3f3cc97537e13e07a78ce4289fe645",
+  "output": {
+    "runId": "r85-redirect-yi-ji-liang-fang-reception-1-1786200368373",
+    "imageFile": "output.png",
+    "imageSha256": "902dcbb5e1747b85a95332e61e95f6f612f24a29469484864223831196265916",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-08T14:46:08.373Z"
+}
