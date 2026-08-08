@@ -35,3 +35,18 @@ export {
 export { measurePromptBudget, assertPromptBudget } from './prompt-budget.js';
 export { buildTrace, fingerprint } from './trace.js';
 export { runSpaceQualityGate } from './space-quality-gate.js';
+
+// R8.5.1 — semantic separation (architecture vs brand motif, color-geometry
+// coupling guard, mechanism provenance). Production module, no LLM.
+export {
+  SEMANTIC_CLASS,
+  classifyPhrase,
+  separateSpaceSemantics,
+  normalizeArchitectureSemantics,
+  traceMechanism,
+  auditMechanismSources,
+  compileSpatialMechanisms,
+  compileRawPhrases,
+  MECHANISM_PROVENANCE_VERSION,
+  COMPILE_SPATIAL_MECHANISMS_VERSION,
+} from './semantic/index.js';

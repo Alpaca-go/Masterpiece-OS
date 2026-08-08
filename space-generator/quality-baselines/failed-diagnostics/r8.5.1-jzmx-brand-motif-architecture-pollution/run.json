@@ -1,0 +1,24 @@
+{
+  "runId": "r85-smoke-jz-reception-v1-1786183915715",
+  "baseline": "r85-text-only-smoke",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "reception-v1",
+  "startedAt": "2026-08-08T10:11:55.732Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 5956,
+  "promptHash": "03aab37e8c4e89fc876b0cd6e44bf36374800a69a82c938f5e3a7c123129f946",
+  "architectureAnchorIds": [
+    "JZMX-ARCH-01-ReceptionMembrane",
+    "JZMX-ARCH-02-EntranceGlass",
+    "JZMX-ARCH-03-ConsultationFacade"
+  ],
+  "referenceCount": 0,
+  "elapsedMs": 83081,
+  "imageFile": "output.png",
+  "imageSha256": "fa8dc88c6f2d445f82cfab19dee5f1a70609af4146e4ef24d7526b8466b0aaf4",
+  "imageBytes": 517959
+}

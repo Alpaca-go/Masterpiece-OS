@@ -248,14 +248,19 @@ function renderRendering() {
 }
 
 // Universal negatives applied to every Phase 9B space prompt. These are
-// generic (no brand/project names) and enforce two production invariants:
+// generic (no brand/project names) and enforce three production invariants:
 //   1. No in-scene brand identity — confirmed logo/wordmark is composited
 //      post-generation (logo post-composite route), never drawn by the model.
 //   2. No generic "AI clinic" fallback look.
+//   3. (R8.5.1) Do not convert brand symbols or graphic motifs into literal
+//      architectural structures (motif-shaped focal wall, motif-as-geometry
+//      ceiling, animal/ornament sculpture as building form, etc.). Brand is
+//      translated into mechanism, not pasted.
 const BASE_NEGATIVES = Object.freeze([
   'no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene',
   'no literal brand mascot or logo drawn on walls, glass, desk or floor',
   'no generic AI clinic look, no stock-photo medical aesthetic template',
+  'do not convert brand symbols, brand mascots, graphic motifs, or any animal/ornament/floral decoration into literal architectural structures (no motif-shaped focal wall, ceiling, or sculpture)',
 ]);
 
 function renderNegatives(layers) {
@@ -350,6 +355,17 @@ export function compilePhase9bSpacePrompt(input) {
       architectureContextIncluded: Boolean(contextBlock),
       blockIds: presentIds,
       budget: { chars: budget.chars, positiveRatio: budget.positiveRatio, negativeRatio: budget.negativeRatio },
+      semantic: layers.semantic
+        ? {
+            architectureSemanticsCount: layers.semantic.architectureSemantics.length,
+            brandMotifSemanticsCount: layers.semantic.brandMotifSemantics.length,
+            colorAccentSemanticsCount: layers.semantic.colorAccentSemantics.length,
+            functionalSemanticsCount: layers.semantic.functionalSemantics.length,
+            decorativeIdentitySemanticsCount: layers.semantic.decorativeIdentitySemantics.length,
+            colorGeometryCouplingRisk: layers.semantic.colorGeometryCouplingRisk,
+            sourceAdapterVersion: layers.sourceAdapterVersion,
+          }
+        : null,
     },
   });
 
@@ -382,21 +398,23 @@ function deriveAnchorCriteria(layers, taskContract) {
 
 function blockSource(id) {
   // Declares which V5 fields feed each block (for trace/debugging).
+  // R8.5.1: architecture blocks now read semantic.architectureSemantics (a
+  // post-separation list that has been motif-stripped), not the raw V5 lists.
   const map = {
     task: ['taskContract', 'projectFacts.brandName', 'projectFacts.industry'],
-    spatial_intent: ['spatial.spatialConcept', 'creativeDecision.targetWorldview', 'spatial.brandRoleManifestation'],
-    architecture_language: ['spatial.structureLanguage', 'spatial.signatureSpatialMechanism', 'spatial.functionalNetwork'],
+    spatial_intent: ['spatial.spatialConcept', 'creativeDecision.targetWorldview', 'semantic.architectureSemantics'],
+    architecture_language: ['spatial.structureLanguage', 'semantic.architectureSemantics', 'spatial.functionalNetwork'],
     architecture_context: ['architecture-anchors/registry.json'],
     architecture_function_bridge: ['projectFacts.brandRole', 'spatial.functionalRelationships', 'spatial.sceneProgram', 'diagnosis.brandMisreadRisks'],
-    architectural_concept: ['spatial.spatialConcept', 'spatial.signatureSpatialMechanism', 'spatial.structureLanguage'],
+    architectural_concept: ['spatial.spatialConcept (normalized)', 'semantic.architectureSemantics', 'spatial.structureLanguage'],
     architecture_dna: ['spatial.functionalNetwork', 'spatial.sceneProgram'],
-    brand_translation: ['projectFacts', 'spatial.brandRoleManifestation'],
+    brand_translation: ['projectFacts', 'semantic.brandMotifSemantics', 'semantic.decorativeIdentitySemantics', 'semantic.colorAccentSemantics', 'spatial.brandRoleManifestation (non-motif only)'],
     functional_requirement: ['spatial.sceneProgram', 'spatial.functionalNetwork', 'spatial.mustBeVisible', 'spatial.positiveDifferentiators'],
     material: ['materialSystem[].material|behavior|forbidden'],
     lighting: ['lightingSystem.source|contrast|interactionWithMaterials|forbidden'],
     composition: ['taskContract.aspectRatio|scene', 'spatial.mustBeVisible', 'spatial.positiveDifferentiators'],
     rendering: ['(deterministic rendering standard)'],
-    negative_constraints: ['taskContract.mustAvoid', 'diagnosis.brandMisreadRisks', 'materialSystem[].forbidden', 'lightingSystem.forbidden', 'colorSystem.forbidden'],
+    negative_constraints: ['taskContract.mustAvoid', 'diagnosis.brandMisreadRisks', 'materialSystem[].forbidden', 'lightingSystem.forbidden', 'colorSystem.forbidden', 'BASE_NEGATIVES (incl. R8.5.1 motif-as-architecture guard)'],
   };
   return map[id] || [];
 }

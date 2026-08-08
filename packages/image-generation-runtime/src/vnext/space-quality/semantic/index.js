@@ -1,0 +1,8 @@
+// R8.5.1 semantic-separation layer for Phase 9B space compilation.
+// Production module (not experimental). All functions are deterministic and
+// free of model calls.
+
+export { SEMANTIC_CLASS, classifyPhrase, separateSpaceSemantics } from './separate-space-semantics.js';
+export { normalizeArchitectureSemantics } from './normalize-architecture-semantics.js';
+export { traceMechanism, auditMechanismSources, MECHANISM_PROVENANCE_VERSION } from './mechanism-provenance.js';
+export { compileSpatialMechanisms, compileRawPhrases, COMPILE_SPATIAL_MECHANISMS_VERSION } from './compile-spatial-mechanisms.js';

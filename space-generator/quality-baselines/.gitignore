@@ -1,0 +1,7 @@
+# Space-generator quality baseline output images: large binaries stay on disk
+# and are traced via manifest.output.imageSha256 + runId, so do not commit
+# the PNGs by default. Re-pin a baseline image with the regression runner if
+# the bytes are needed in git history.
+**/output.png
+**/output-no-ref.png
+**/image-*.png
