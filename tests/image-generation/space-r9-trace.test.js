@@ -81,7 +81,7 @@ test('R9 compile emits the spaceGeneration trace schema (space route)', async ()
 
 test('R9 deliverable router: r8_6_golden resolves and phase9b alias both hit production', async () => {
   const { SPACE_COMPILER_MODES, resolveSpaceCompilerMode, isProductionSpaceMode } = await loadCompile();
-  assert.equal(resolveSpaceCompilerMode({}), SPACE_COMPILER_MODES.PHASE9B_QUALITY, 'default pre-switch');
+  assert.equal(resolveSpaceCompilerMode({}), SPACE_COMPILER_MODES.R8_6_GOLDEN, 'default is r8_6_golden after R9.10');
   assert.equal(resolveSpaceCompilerMode({ MASTERPIECE_SPACE_COMPILER_MODE: 'r8_6_golden' }), SPACE_COMPILER_MODES.R8_6_GOLDEN);
   assert.equal(resolveSpaceCompilerMode({ MASTERPIECE_SPACE_COMPILER_MODE: 'vnext_legacy' }), SPACE_COMPILER_MODES.VNEXT_LEGACY);
   assert.equal(isProductionSpaceMode(SPACE_COMPILER_MODES.R8_6_GOLDEN), true);

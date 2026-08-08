@@ -24,14 +24,14 @@ export const SPACE_COMPILER_MODES = Object.freeze({
 });
 
 // Every non-legacy mode resolves to the same frozen R8.6-equivalent compiler
-// module (src/space). Default is phase9b_quality until the real-provider
-// parity run (R9.9) PASSES, at which point R9.10 flips it to r8_6_golden.
-// phase9b_quality stays a valid alias afterwards.
+// module (src/space). Default is r8_6_golden (R9.10, after real-provider
+// parity PASS); phase9b_quality stays a valid alias for backward compat and
+// vnext_legacy is the debugging fallback.
 export function resolveSpaceCompilerMode(env = process.env) {
   const raw = (env.MASTERPIECE_SPACE_COMPILER_MODE || '').trim();
   if (raw === SPACE_COMPILER_MODES.VNEXT_LEGACY) return SPACE_COMPILER_MODES.VNEXT_LEGACY;
-  if (raw === SPACE_COMPILER_MODES.R8_6_GOLDEN) return SPACE_COMPILER_MODES.R8_6_GOLDEN;
-  return SPACE_COMPILER_MODES.PHASE9B_QUALITY;
+  if (raw === SPACE_COMPILER_MODES.PHASE9B_QUALITY) return SPACE_COMPILER_MODES.PHASE9B_QUALITY;
+  return SPACE_COMPILER_MODES.R8_6_GOLDEN;
 }
 
 // True when the resolved space mode uses the frozen R8.6 production compiler
