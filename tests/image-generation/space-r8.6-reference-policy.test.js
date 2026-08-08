@@ -1,0 +1,70 @@
+// R8.6 Reference Policy freeze test.
+//
+// R8.6 freezes: Text-only = Standard Generation, Reference-assisted =
+// High Fidelity Generation; refs = 0 must NOT be blocked. This test proves
+// the frozen final-smoke records honor that policy (refCount 0, no
+// SPACE_REFERENCE_REQUIRED), and that the policy module still resolves
+// explicit references when provided (high-fidelity path stays available).
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import {
+  resolveSpaceReferences,
+  assertSpaceReferenceAvailable,
+  SPACE_REFERENCE_POLICY_VERSION,
+} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const base = 'space-generator/quality-baselines/r8.6';
+
+const SMOKE_SCENES = [
+  'jiuzhou-aesthetics/final-reception-1',
+  'jiuzhou-aesthetics/final-entrance-1',
+  'feng-tang-tang/final-dining-1',
+  'yi-ji-liang-fang/final-reception-1',
+];
+
+test('R8.6 final smokes are text-only with refs=0 and reference policy version recorded', () => {
+  for (const scene of SMOKE_SCENES) {
+    const m = JSON.parse(fs.readFileSync(path.join(repoRoot, base, scene, 'manifest.json'), 'utf8'));
+    const ref = JSON.parse(fs.readFileSync(path.join(repoRoot, base, scene, 'reference-trace.json'), 'utf8'));
+    assert.equal(ref.referenceCount, 0, `${scene}: refs=0`);
+    assert.deepEqual(m.referenceIds, [], `${scene}: manifest referenceIds empty`);
+    // Frozen policy version is the phase9b-recovery-1.0 contract.
+    assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'phase9b-recovery-1.0');
+  }
+});
+
+test('R8.6 text-only refs=0 is the standard path via the frozen bypass (fail-closed guard intact)', () => {
+  // Frozen policy (phase9b-recovery-1.0) keeps its fail-closed safety net:
+  // a formal first space generation with NO reference and NO bypass still
+  // throws SPACE_REFERENCE_REQUIRED (so an accidental refs=0 is never silent).
+  const { references } = resolveSpaceReferences({
+    explicitAssets: [],
+    implicitAnchor: null,
+    architectureAnchorImages: [],
+  });
+  assert.equal(references.length, 0);
+  assert.throws(() => assertSpaceReferenceAvailable(references), /SPACE_REFERENCE_REQUIRED/, 'guard stays fail-closed');
+
+  // R8.6 freezes Text-only = Standard Generation: the production path routes
+  // deliberate text-only runs through the explicit bypass (allowTextOnlySpace),
+  // matching the smoke runs whose reference-trace records referenceCount=0.
+  assert.doesNotThrow(
+    () => assertSpaceReferenceAvailable(references, { bypass: true }),
+    'text-only standard generation bypass must not block',
+  );
+});
+
+test('R8.6 reference-assisted path (high fidelity) still resolves explicit references', () => {
+  const { references } = resolveSpaceReferences({
+    explicitAssets: [{ assetId: 'sketch-a', role: 'reference', relativePath: 'ref/sketch.jpg' }],
+    implicitAnchor: null,
+    architectureAnchorImages: [],
+  });
+  assert.equal(references.length, 1);
+  assert.equal(references[0].id, 'sketch-a');
+  assert.doesNotThrow(() => assertSpaceReferenceAvailable(references));
+});

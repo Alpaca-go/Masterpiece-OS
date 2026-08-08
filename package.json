@@ -27,6 +27,7 @@
     "verify:production-boundaries": "node ./scripts/verify-production-boundaries.mjs",
     "verify:no-obsolete-code": "node ./scripts/verify-no-obsolete-code.mjs",
     "verify:phase9b-baseline": "node ./scripts/verify-phase9b-space-baseline.mjs",
+    "verify:space-r8.6-golden-boundary": "node ./scripts/verify-space-r8.6-golden-boundary.mjs",
     "test:evaluation": "node ./scripts/run-golden-evaluation.mjs",
     "test:hidden-cases": "node ./scripts/run-hidden-cases.mjs",
     "lab:document-directions": "node ./labs/document-visual-directions/bin/run.mjs",

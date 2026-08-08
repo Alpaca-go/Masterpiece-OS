@@ -4,8 +4,8 @@
 // brand-motif architecture pollution) must compile to a prompt where:
 //   - architecture blocks contain no motif literal (羽毛/孔雀/feather/...)
 //   - the brand translation block contains the motif side
-//   - the prompt length is within +10% of the failed R8.5 smoke
-//     (R8.5 redirected budget; was +5% under R8.5.1)
+//   - the prompt length is within +10% of the frozen R8.6 baseline smoke
+//     (which replaced the deleted R8.5.1 untracked smoke directory)
 //   - the spatial_concept identity in architecture is normalized
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -14,8 +14,8 @@ import {
 } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 import { readFileSync } from 'node:fs';
 
-const PACKET_PATH = 'space-generator/quality-baselines/r85-text-only-smokes/_packets/jiuzhou-aesthetics/visual-decision-packet.json';
-const FAILED_PROMPT_PATH = 'space-generator/quality-baselines/r85-text-only-smokes/jiuzhou-aesthetics/reception-v1/prompt.md';
+const PACKET_PATH = 'space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json';
+const BASELINE_PROMPT_PATH = 'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-reception-1/prompt.md';
 
 function loadJZMX() {
   return JSON.parse(readFileSync(PACKET_PATH, 'utf8'));
@@ -75,7 +75,7 @@ test('source: brand-motif stream captures the motif side', () => {
   assert.ok(motifs.length >= 1, 'expects brand-motif stream to be populated');
 });
 
-test('source: prompt length is within +10% of the failed R8.5 smoke', () => {
+test('source: prompt length is within +10% of the frozen R8.6 baseline smoke', () => {
   const packet = loadJZMX();
   const out = compilePhase9bSpacePrompt({
     packet,
@@ -83,15 +83,15 @@ test('source: prompt length is within +10% of the failed R8.5 smoke', () => {
     brandKey: 'jiuzhou-aesthetics',
     anchorMaxCount: 0,
   });
-  const failed = readFileSync(FAILED_PROMPT_PATH, 'utf8');
-  // strip leading '# ' headers of failed prompt? Failed prompt is the full
+  const baseline = readFileSync(BASELINE_PROMPT_PATH, 'utf8');
+  // strip leading '# ' headers of baseline prompt? Baseline is the full
   // finalPrompt body, so just compare lengths.
   const newLen = out.finalPrompt.length;
-  const oldLen = failed.length;
+  const oldLen = baseline.length;
   const ratio = newLen / oldLen;
-  // R8.5 redirected allows +10% max over the R8 baseline. The new prompt
-  // replaces Chinese prose with English action-verb sentences, which may be
-  // slightly longer per phrase but produces far better architecture.
+  // R8.5 redirected allows +10% max over the frozen R8.6 baseline. The new
+  // prompt replaces Chinese prose with English action-verb sentences, which
+  // may be slightly longer per phrase but produces far better architecture.
   assert.ok(ratio <= 1.10, `prompt grew more than 10%: new=${newLen} old=${oldLen} ratio=${ratio.toFixed(3)}`);
 });
 
