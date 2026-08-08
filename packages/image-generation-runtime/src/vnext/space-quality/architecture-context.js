@@ -172,7 +172,9 @@ export function selectArchitectureAnchors(brandKey, criteria = {}, maxCount) {
  */
 export function resolveArchitectureAnchorImagePath(anchor) {
   if (!anchor || !anchor.imagePath) return null;
-  return resolve(REPO_ROOT, anchor.imagePath);
+  // Registry imagePath values are relative to space-generator/
+  // (e.g. "v1-experimental/architecture-anchors/.../JZMX-ARCH-01.png").
+  return resolve(REPO_ROOT, 'space-generator', anchor.imagePath);
 }
 
 /**
