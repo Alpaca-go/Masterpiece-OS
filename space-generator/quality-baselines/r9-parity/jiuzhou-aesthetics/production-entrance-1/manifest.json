@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r9-parity",
+  "brandKey": "jiuzhou-aesthetics",
+  "brandDisplayName": "九州美学",
+  "scene": "production-entrance-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "13c636af-53ee-4910-b8cf-f75b321d8b6f",
+    "projectDir": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-13c636af",
+    "note": "Live JZMX packet; same compiler input across all 3 runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [],
+  "taskInstruction": "生成九州美学医疗美容机构旗舰店入口外立面与玻璃门廊，呈现街道到室内的视觉连续性，半透明品牌媒介抽象转译，Logo 后期合成。",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "e59adf62ed0eaa9e2e56d85f97f52e1fd8a53ef7f0e4826d3da7a530c8c697b4",
+  "output": {
+    "runId": "r9-parity-jiuzhou-aesthetics-storefront-1-1786206784949",
+    "imageFile": "output.png",
+    "imageSha256": "4935ddcbf69adf07044556ce49c8fe4f7c873b637d39c4770142f31653c35f3f",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-08T16:33:04.949Z"
+}

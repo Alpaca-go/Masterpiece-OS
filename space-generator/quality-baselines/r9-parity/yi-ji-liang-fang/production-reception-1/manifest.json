@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r9-parity",
+  "brandKey": "yi-ji-liang-fang",
+  "brandDisplayName": "一剂良方",
+  "scene": "production-reception-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "acc7d590-ac08-4612-8aa7-06464a6ec789",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen yi-ji-liang-fang packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\yi-ji-liang-fang\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [],
+  "taskInstruction": "生成一剂良方中医体验馆的接待与挂号空间效果图。以视平线高度单一广角透视呈现到达、接待台与后方品牌墙的层次关系，品牌识别由项目资产抽象转译，Logo 后期合成。",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "2c3cad10e6722bc93ba3328b08972456c7b013038c0d9c673c6249b069862f7c",
+  "output": {
+    "runId": "r9-parity-yi-ji-liang-fang-reception-1-1786206997555",
+    "imageFile": "output.png",
+    "imageSha256": "41b7a5c01553df9852b83d28f492e6ff357d10df372edcbe2c366b4fdd35f338",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-08T16:36:37.555Z"
+}

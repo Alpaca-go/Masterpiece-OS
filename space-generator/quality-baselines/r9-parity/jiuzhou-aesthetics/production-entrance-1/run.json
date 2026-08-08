@@ -1,0 +1,22 @@
+{
+  "runId": "r9-parity-jiuzhou-aesthetics-storefront-1-1786206784949",
+  "baseline": "r9-parity",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "production-entrance-1",
+  "startedAt": "2026-08-08T16:31:33.762Z",
+  "completedAt": "2026-08-08T16:33:04.949Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "modelUsed": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "compilerMode": "r8_6_golden",
+  "promptChars": 6816,
+  "promptHash": "e59adf62ed0eaa9e2e56d85f97f52e1fd8a53ef7f0e4826d3da7a530c8c697b4",
+  "referenceCount": 0,
+  "elapsedMs": 91016,
+  "imageFile": "output.png",
+  "imageSha256": "4935ddcbf69adf07044556ce49c8fe4f7c873b637d39c4770142f31653c35f3f",
+  "imageBytes": 376869
+}

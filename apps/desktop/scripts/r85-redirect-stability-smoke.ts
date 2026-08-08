@@ -39,7 +39,7 @@ const SUBTYPE = process.env.R85_SUBTYPE?.trim() || 'reception';
 const SHOT = process.env.R85_SHOT?.trim() || 'entrance_view';
 const MODEL = 'doubao-seedream-5-0-pro-260628';
 const BASE_URL = 'https://ark.cn-beijing.volces.com/api/v3';
-const COMPILER_MODE = 'phase9b_quality';
+const COMPILER_MODE = process.env.R85_COMPILER_MODE?.trim() || 'phase9b_quality';
 
 // R8.6 reuse: the same runner drives the final smokes. Defaults keep the R8.5
 // redirected gate labels so existing behavior is unchanged; override via env
@@ -153,15 +153,26 @@ async function compilePhase9B(context: any, task: any) {
   });
 }
 
+// Optional High-Fidelity reference image (R9 parity): when R85_REFERENCE_IMAGE
+// points at a PNG, it is base64-encoded into the Seedream `image` reference
+// array so the reference-assisted (High Fidelity) route is exercised end to end.
+const REFERENCE_IMAGE = process.env.R85_REFERENCE_IMAGE?.trim() || '';
+
 async function callSeedream(apiKey: string, prompt: string) {
   const t0 = Date.now();
-  const body = {
+  const imageRefs: string[] = [];
+  if (REFERENCE_IMAGE) {
+    const buf = readFileSync(REFERENCE_IMAGE);
+    imageRefs.push(`data:image/png;base64,${buf.toString('base64')}`);
+  }
+  const body: Record<string, unknown> = {
     model: MODEL,
     prompt,
     size: SIZE,
     response_format: 'b64_json',
     watermark: false,
   };
+  if (imageRefs.length) body.image = imageRefs;
   const resp = await fetch(`${BASE_URL}/images/generations`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
@@ -259,7 +270,7 @@ async function main(): Promise<void> {
       compilerMode: COMPILER_MODE,
       promptChars,
       promptHash,
-      referenceCount: 0,
+      referenceCount: REFERENCE_IMAGE ? 1 : 0,
       elapsedMs: gen.elapsedMs,
       imageFile: 'output.png',
       imageSha256: gen.sha256,
@@ -274,12 +285,20 @@ async function main(): Promise<void> {
         size: SIZE,
         response_format: 'b64_json',
         watermark: false,
+        image: REFERENCE_IMAGE ? ['data:image/png;base64,<redacted>'] : undefined,
         prompt: providerPreamble,
         promptChars: [...providerPreamble].length,
       }), null, 2)}\n`,
       'utf8',
     );
-    writeFileSync(path.join(dir, 'reference-trace.json'), `${JSON.stringify({ referenceCount: 0, references: [] }, null, 2)}\n`, 'utf8');
+    writeFileSync(
+      path.join(dir, 'reference-trace.json'),
+      `${JSON.stringify({
+        referenceCount: REFERENCE_IMAGE ? 1 : 0,
+        references: REFERENCE_IMAGE ? [{ id: 'r9-hf-reference', role: 'core_reference', source: 'user_explicit', projectRelativePath: REFERENCE_IMAGE }] : [],
+      }, null, 2)}\n`,
+      'utf8',
+    );
 
     const manifest = {
       schemaVersion: '1.0',
@@ -303,7 +322,7 @@ async function main(): Promise<void> {
         redirect: REDIRECT_LABEL,
       },
       provider: { provider: 'volcengine', model: MODEL, profileId, size: SIZE, aspectRatio: ASPECT },
-      referenceIds: [],
+      referenceIds: REFERENCE_IMAGE ? ['r9-hf-reference'] : [],
       taskInstruction: TASK_INSTRUCTION,
       blockIds,
       promptHash,
