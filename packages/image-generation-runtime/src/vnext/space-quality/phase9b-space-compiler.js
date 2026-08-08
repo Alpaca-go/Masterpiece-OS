@@ -164,6 +164,7 @@ function renderBrandTranslation(layers) {
   const p = layers.projectIdentity;
   const body = [
     '> Brand is translated into mechanism, rhythm and surface behavior — never pasted as decoration.',
+    '> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.',
     '',
     `**Brand**: ${p.brandName} | **Industry**: ${p.industry}`,
     `**Brand Role**: ${p.brandRole || 'n/a'}`,
@@ -246,12 +247,22 @@ function renderRendering() {
   return block('rendering', 'Rendering Requirements', body);
 }
 
+// Universal negatives applied to every Phase 9B space prompt. These are
+// generic (no brand/project names) and enforce two production invariants:
+//   1. No in-scene brand identity — confirmed logo/wordmark is composited
+//      post-generation (logo post-composite route), never drawn by the model.
+//   2. No generic "AI clinic" fallback look.
+const BASE_NEGATIVES = Object.freeze([
+  'no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene',
+  'no literal brand mascot or logo drawn on walls, glass, desk or floor',
+  'no generic AI clinic look, no stock-photo medical aesthetic template',
+]);
+
 function renderNegatives(layers) {
+  const merged = [...BASE_NEGATIVES, ...layers.negatives];
   const body = [
     'The following MUST NOT appear in the generated image:',
-    bullet(layers.negatives.length
-      ? layers.negatives
-      : ['generic AI clinic look', 'literal brand mascots or logos rendered in-scene']),
+    bullet(merged),
   ].join('\n');
   return block('negative_constraints', 'Prohibited (fail-closed)', body);
 }
