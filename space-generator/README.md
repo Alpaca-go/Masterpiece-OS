@@ -93,4 +93,25 @@ space-generator/
 | 5 | JZMX 多空间测试 (8 空间类型 × v1.1 compiler) | done | `ed02b76` | 13/13 |
 | 6 | Space Evaluation Layer (v1.0 §25 6-dim scoring) | done | `eec4fee` | 11/11 |
 
+## R8.5 / R8.6 质量恢复与 Baseline 冻结
+
+| Phase | 内容 | 状态 | Commit / Tag | Tests |
+|---|---|---|---|---|
+| R8 | Phase 9B 质量恢复 + 9 golden baselines (Mode B) | done | `a61740c` / `5f3eac3` | 见 quality-baselines/phase9b-recovered |
+| R8.5.1 | Semantic source audit + architecture/brand IR 分离 | done | `a5f98b2` | — |
+| R8.5 | action-verb IR + motif sanitize + color demotion + 3 品牌泛化 gate | done | `342ee2c`→`0f582ad` | 395/395 |
+| R8.5.2 | 参数化 smoke runner + gate report | done | `0f582ad` | — |
+| **R8.6** | **Baseline Freeze & R9 Unlock** | **done** | tag `space-generator-r8.6-golden-baseline` (`88f332d`) | 409/409 + desktop 265/265 + cli 38/38 + current-flows |
+
+R8.6 关键事实：
+- RC tag `space-generator-r8.5.2-rc1`（`fd785a9`）；compiler v1.1.0、source-adapter v1.4.0
+- Final Smoke 4/4 text-only refs=0（volcengine doubao-seedream-5-0-pro-260628 2K 16:9）：
+  JZMX reception 82.95 / entrance 82.55、FTT dining 82.8、YJLF reception 82.35
+- evaluation 为 `auto-r8.6-final-smoke-pending-human-review`（**需人工打开 output.png 复核覆盖**）
+- baseline status=frozen、`R9-UNLOCK.json`（unlocked，仅等价 Productionization）
+- anti-regression samples 已索引（R8.5.1 literal-motif 失败样本）
+- 门禁：`npm run verify:space-r8.6-golden-boundary`
+
+详见 `quality-baselines/r8.6/`（manifest / GATE-REPORT / per-brand golden-selection）。
+
 详见 `v1-baseline/benchmarks/jiuzhou-aesthetics/evaluation-report.md` 和 v1.0 文档 §30 / §37。
