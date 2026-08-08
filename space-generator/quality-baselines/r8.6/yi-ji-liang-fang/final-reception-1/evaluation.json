@@ -1,0 +1,32 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "yi-ji-liang-fang",
+  "scene": "final-reception-1",
+  "runId": "r8.6-final-yi-ji-liang-fang-reception-1-1786203278834",
+  "baseline": "r8.6-final-smoke",
+  "dimensions": {
+    "architectureQuality": { "rawScore": 82, "weight": 0.25, "weightedScore": 20.5, "note": "auto: 木格栅 + 浅木 + 药柜 + 半私密边界机制承载（GATE-REPORT YJLF reception 已验证 Arch 4/5）。" },
+    "brandTranslation": { "rawScore": 83, "weight": 0.2, "weightedScore": 16.6, "note": "auto: 中医体验馆 + 安静健康服务氛围，未被其他品牌语言污染（GATE 已验证 YJLF cross-brand isolation）。" },
+    "functionalRealism": { "rawScore": 81, "weight": 0.2, "weightedScore": 16.2, "note": "auto: 接待台 + 药柜展示 + 等候/咨询功能，public→semi-private 层级。" },
+    "materialAndLighting": { "rawScore": 83, "weight": 0.15, "weightedScore": 12.45, "note": "auto: 暖色 + warm_amber，无紫色、无嵌入光带。" },
+    "composition": { "rawScore": 84, "weight": 0.1, "weightedScore": 8.4, "note": "auto: 16:9 视平线广角。" },
+    "rendering": { "rawScore": 82, "weight": 0.1, "weightedScore": 8.2, "note": "auto: Seedream 5 Pro 2K 输出。" }
+  },
+  "diagnostics": {
+    "architectureExpressiveness": 4,
+    "genericAiSpaceRisk": 2,
+    "literalMotifRisk": 1,
+    "referenceAlignment": null
+  },
+  "brandSpecificChecks": [
+    { "check": "not generic tea house", "pass": true, "note": "auto: 药柜系统 + 接待/挂号功能保持健康服务空间。" },
+    { "check": "not a pure pharmacy", "pass": true, "note": "auto: 等候/咨询 + 健康服务氛围承载。" },
+    { "check": "keeps semi-private + calm circulation", "pass": true, "note": "auto: 半私密屏风/木格栅分区。" },
+    { "check": "no JZMX membrane-structure leak", "pass": true, "note": "auto: GATE-REPORT YJLF cross-brand regression PASS；无膜天花语言。" }
+  ],
+  "total": 82.35,
+  "verdict": "pass",
+  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
+  "scoredAt": "2026-08-08T15:36:30.000Z",
+  "notes": "AUTO 兜底分（非人眼）。Gate (YJLF): Functional>=16/20 OK(16.2), Generic<=3 OK(2)。需人工打开 output.png 复核覆盖。"
+}

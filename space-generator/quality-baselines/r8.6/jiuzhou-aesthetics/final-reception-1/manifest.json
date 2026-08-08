@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r8.6-final-smoke",
+  "brandKey": "jiuzhou-aesthetics",
+  "brandDisplayName": "九州美学",
+  "scene": "final-reception-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "13c636af-53ee-4910-b8cf-f75b321d8b6f",
+    "projectDir": "C:\\Users\\Administrator\\Documents\\Masterpiece OS Data\\projects\\九州美学-13c636af",
+    "note": "Live JZMX packet; same compiler input across all 3 runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "phase9b_quality",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [],
+  "taskInstruction": "生成九州美学医疗美容机构的接待与挂号空间效果图。以视平线高度单一广角透视呈现到达、接待台与后方品牌墙的层次关系，品牌识别由项目资产抽象转译，Logo 后期合成。",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "6b93a42f6b6b76fe180db99730d63a965a983cf9ec1e5bbb2112a2f3b16810ac",
+  "output": {
+    "runId": "r8.6-final-jiuzhou-aesthetics-reception-1-1786202980997",
+    "imageFile": "output.png",
+    "imageSha256": "2fc3e3536b1ab7151bb8ae88622ef97796ff7f453ec5c98f5f534a451c19f2a2",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "scored",
+    "totalScore": 82.95,
+    "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
+    "scoredAt": "2026-08-08T15:35:00.000Z"
+  },
+  "createdAt": "2026-08-08T15:29:40.997Z"
+}

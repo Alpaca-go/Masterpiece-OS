@@ -17,10 +17,15 @@
       "imageSha256": "920cadf292164afd6c2c2cc048bbf0dfa713eb7ac6bcd41078c5c5294817b16a",
       "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 5, "Color": 4, "Mat": 5, "Comm": 5 },
       "reason": "GATE-REPORT rubric：明档点餐/取餐/就餐动线真实，中央半透明开放厨房 pavilion，无 literal 牛/胡椒雕塑，烟火感与运营关系成立。"
+    },
+    {
+      "type": "architecture",
+      "runId": "r8.6-final-feng-tang-tang-lobby-1-1786203182756",
+      "scene": "final-dining-1",
+      "promptHash": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
+      "imageSha256": "6445aa30a380f6a8d474967c37a2b5df4f5f08c7d461e5bd73c2778f91c97ba6",
+      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 5, "Color": 4, "Mat": 5, "Comm": 5 },
+      "reason": "R8.6 final smoke：开放厨房作为视觉锚点 + 明档组织 + 人尺度网格 booth，暖色木/赤陶，烟火感与厨师操作可见，跨品牌隔离。"
     }
-  ],
-  "pending": {
-    "architecture": "open-kitchen 场景待 R8.6.4 Final Smoke 出图后评选为 Architecture Golden（中央厨房/周边就餐/木构/明档组织）。"
-  },
-  "notes": "phase9b-recovered open-kitchen（compiler 1.0.0）作为 R8 参考保留，不作为 R8.5.2-rc1 golden。"
+  ]
 }

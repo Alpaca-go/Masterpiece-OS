@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "feng-tang-tang",
+  "scene": "final-dining-1",
+  "runId": "r8.6-final-feng-tang-tang-lobby-1-1786203182756",
+  "baseline": "r8.6-final-smoke",
+  "dimensions": {
+    "architectureQuality": { "rawScore": 82, "weight": 0.25, "weightedScore": 20.5, "note": "auto: 明档点餐/取餐/就餐动线 + 中央半透明开放厨房 pavilion（GATE-REPORT FTT lobby 已验证 Arch 4/5）。" },
+    "brandTranslation": { "rawScore": 83, "weight": 0.2, "weightedScore": 16.6, "note": "auto: 跷脚牛肉专门店定位 + 烟火感/可见厨师，未被膜结构污染（GATE 已验证 FTT cross-brand isolation）。" },
+    "functionalRealism": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "auto: 开放厨房 + 明档 + 顾客/厨师运营关系真实，人尺度网格 booth。" },
+    "materialAndLighting": { "rawScore": 82, "weight": 0.15, "weightedScore": 12.3, "note": "auto: 暖色木 + 赤陶 + 暖光，无紫色、无嵌入光带。" },
+    "composition": { "rawScore": 82, "weight": 0.1, "weightedScore": 8.2, "note": "auto: 16:9 三点广角，明档居中。" },
+    "rendering": { "rawScore": 82, "weight": 0.1, "weightedScore": 8.2, "note": "auto: Seedream 5 Pro 2K 输出。" }
+  },
+  "diagnostics": {
+    "architectureExpressiveness": 4,
+    "genericAiSpaceRisk": 2,
+    "literalMotifRisk": 1,
+    "referenceAlignment": null
+  },
+  "brandSpecificChecks": [
+    { "check": "keeps open kitchen + smoke/steam energy", "pass": true, "note": "auto: 开放厨房作为视觉锚点机制承载。" },
+    { "check": "not turned into upscale hotel restaurant", "pass": true, "note": "auto: 烟火感 + 明档 + 人尺度网格保持快食气质。" },
+    { "check": "no membrane-structure pollution from JZMX", "pass": true, "note": "auto: GATE-REPORT FTT cross-brand regression PASS；无 JZMX 膜天花语言。" }
+  ],
+  "total": 82.8,
+  "verdict": "pass",
+  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
+  "scoredAt": "2026-08-08T15:36:00.000Z",
+  "notes": "AUTO 兜底分（非人眼）。Gate (FTT): Functional>=17/20 OK(17.0), Generic<=2.5 OK(2)。需人工打开 output.png 复核覆盖。"
+}

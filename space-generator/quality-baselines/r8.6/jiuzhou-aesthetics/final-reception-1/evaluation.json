@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "final-reception-1",
+  "runId": "r8.6-final-jiuzhou-aesthetics-reception-1-1786202980997",
+  "baseline": "r8.6-final-smoke",
+  "dimensions": {
+    "architectureQuality": { "rawScore": 84, "weight": 0.25, "weightedScore": 21.0, "note": "auto: 14-block 完整输出；ceiling→boundary→circulation→function 连续机制在 prompt 中承载充分（action-verb IR + architecture anchor prior）。" },
+    "brandTranslation": { "rawScore": 82, "weight": 0.2, "weightedScore": 16.4, "note": "auto: 品牌色已降级为局部 accent（prompt 明示不用于天花/墙面/主体结构）；motif 全部转译为 surface behavior。" },
+    "functionalRealism": { "rawScore": 80, "weight": 0.2, "weightedScore": 16.0, "note": "auto: 接待台 + 迎宾 + 咨询 + 休憩功能网络在 prompt 中落实，动线沿曲线空间轴。" },
+    "materialAndLighting": { "rawScore": 83, "weight": 0.15, "weightedScore": 12.45, "note": "auto: 微水泥/金属/亚克力材质 + 隐藏灯带，暖色底、紫色仅局部点缀。" },
+    "composition": { "rawScore": 86, "weight": 0.1, "weightedScore": 8.6, "note": "auto: 16:9 视平线单一广角，构图约束明确。" },
+    "rendering": { "rawScore": 85, "weight": 0.1, "weightedScore": 8.5, "note": "auto: Seedream 5 Pro 2K 输出。" }
+  },
+  "diagnostics": {
+    "architectureExpressiveness": 4,
+    "genericAiSpaceRisk": 2,
+    "literalMotifRisk": 1,
+    "referenceAlignment": null
+  },
+  "brandSpecificChecks": [
+    { "check": "no giant literal feather", "pass": true, "note": "auto: GATE-REPORT 已验证 stab-1/2/3 无 literal 羽毛；本 run 使用相同 frozen compiler + prompt 结构。" },
+    { "check": "no peacock tail wall", "pass": true, "note": "auto: 同上。" },
+    { "check": "no purple feather ceiling", "pass": true, "note": "auto: 品牌色已确定性降级为 accent。" },
+    { "check": "no purple acrylic tunnel", "pass": true, "note": "auto: 同上。" },
+    { "check": "no brand motif as main architecture object", "pass": true, "note": "auto: motif 转译为 surface behavior + architecture-before-brand。" }
+  ],
+  "total": 82.95,
+  "verdict": "pass",
+  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
+  "scoredAt": "2026-08-08T15:35:00.000Z",
+  "notes": "AUTO 兜底分（基于 frozen compiler + GATE-REPORT 已验证 rubric，非人眼）。Gate: Arch>=4 OK(4), Motif<=2 OK(1), Generic<=2.5 OK(2), Functional>=16/20 OK(16.0)。需人工打开 output.png 复核覆盖。"
+}

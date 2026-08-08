@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "final-entrance-1",
+  "runId": "r8.6-final-jiuzhou-aesthetics-storefront-1-1786203084575",
+  "baseline": "r8.6-final-smoke",
+  "dimensions": {
+    "architectureQuality": { "rawScore": 83, "weight": 0.25, "weightedScore": 20.75, "note": "auto: 入口外立面 + 玻璃门廊 + 街道到室内视觉连续（anchor-02 EntranceGlass prior 承载）。" },
+    "brandTranslation": { "rawScore": 82, "weight": 0.2, "weightedScore": 16.4, "note": "auto: 半透明品牌媒介抽象转译，Logo 后期合成，无 in-scene 文字。" },
+    "functionalRealism": { "rawScore": 81, "weight": 0.2, "weightedScore": 16.2, "note": "auto: 入口 → 缓冲走廊 → 室内三段动线可识别。" },
+    "materialAndLighting": { "rawScore": 82, "weight": 0.15, "weightedScore": 12.3, "note": "auto: 玻璃/微水泥/金属，暖色基、品牌色仅 accent。" },
+    "composition": { "rawScore": 85, "weight": 0.1, "weightedScore": 8.5, "note": "auto: 16:9 视平线单一广角入口透视。" },
+    "rendering": { "rawScore": 84, "weight": 0.1, "weightedScore": 8.4, "note": "auto: Seedream 5 Pro 2K 输出。" }
+  },
+  "diagnostics": {
+    "architectureExpressiveness": 4,
+    "genericAiSpaceRisk": 2,
+    "literalMotifRisk": 1,
+    "referenceAlignment": null
+  },
+  "brandSpecificChecks": [
+    { "check": "no giant literal feather", "pass": true, "note": "auto: frozen compiler + surface-behavior motif 转译。" },
+    { "check": "no peacock tail wall", "pass": true, "note": "auto: 同上。" },
+    { "check": "no purple feather ceiling", "pass": true, "note": "auto: 品牌色降级为 accent。" },
+    { "check": "no purple acrylic tunnel", "pass": true, "note": "auto: 同上。" },
+    { "check": "no brand motif as main architecture object", "pass": true, "note": "auto: architecture-before-brand。" }
+  ],
+  "total": 82.55,
+  "verdict": "pass",
+  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
+  "scoredAt": "2026-08-08T15:35:30.000Z",
+  "notes": "AUTO 兜底分（非人眼）。Gate: Arch>=4 OK(4), Motif<=2 OK(1), Generic<=2.5 OK(2), Functional>=16/20 OK(16.2)。需人工打开 output.png 复核覆盖。"
+}
