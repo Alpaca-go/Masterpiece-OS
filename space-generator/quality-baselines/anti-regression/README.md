@@ -21,11 +21,18 @@ Future Space Generator change（尤其是 R9 Productionization 迁移）必须�
 | jzmx-purple-feather-space | R8.5.1 Mode T reception smoke | `r85-smoke-jz-reception-v1-1786183915715` | `03aab37e…9f46` | `fa8dc88c…0aaf4` | `failed-diagnostics/r8.5.1-jzmx-brand-motif-architecture-pollution/` |
 | jzmx-giant-feather-wall | 同上（giant feather / peacock focal wall） | 同上 | 同上 | 同上 | 同上 |
 | jzmx-literal-brand-sculpture | 同上（品牌母题作为大型雕塑形体） | 同上 | 同上 | 同上 | 同上 |
+| brand-motif-architecture-pollution | 同上（品牌母题污染 architecture IR） | 同上 | 同上 | 同上 | 同上 |
+| generic-luxury-clinic | R8.5 早期 generic luxury clinic 形态（R8 baseline 已知风险） | 待补充 | 待补充 | 待补充 | 待补充 |
+| cross-brand-style-leak | R8 诊断（JZMX 膜语言污染 FTT / YJLF 类风险） | 待补充 | 待补充 | 待补充 | 待补充 |
 
 ### 说明
 
-R8.5.1 的唯一失败诊断样本同时呈现三种失败形态（feather 墙面 / purple 天花 /
-motif 雕塑），因此三个类别共用同一 run 资产。随着后续 R8 诊断累积，应在此
-追加 `cross-brand-style-leak` 与 `generic-commercial-interior` 类别的独立样本。
+R8.5.1 的唯一失败诊断样本同时呈现多种失败形态（feather 墙面 / purple 天花 /
+motif 雕塑 / 品牌母题污染 architecture IR），因此多个类别共用同一 run 资产。
+`generic-luxury-clinic` 与 `cross-brand-style-leak` 为 R8 已知风险类别的占位，
+随后续诊断累积应补齐独立样本。
+
+**Anti-regression 资产绝不删除**：它们是 R9 Productionization 与任何未来
+Compiler 改动最重要的回归反例。
 
 完整失败诊断见 `failed-diagnostics/r8.5.1-jzmx-brand-motif-architecture-pollution/diagnosis.md`。

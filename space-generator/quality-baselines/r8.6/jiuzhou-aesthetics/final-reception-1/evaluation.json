@@ -4,30 +4,32 @@
   "scene": "final-reception-1",
   "runId": "r8.6-final-jiuzhou-aesthetics-reception-1-1786202980997",
   "baseline": "r8.6-final-smoke",
+  "goldenRole": "commercial",
+  "goldenName": "JZMX_COMMERCIAL_GOLDEN_R8.6",
   "dimensions": {
-    "architectureQuality": { "rawScore": 84, "weight": 0.25, "weightedScore": 21.0, "note": "auto: 14-block 完整输出；ceiling→boundary→circulation→function 连续机制在 prompt 中承载充分（action-verb IR + architecture anchor prior）。" },
-    "brandTranslation": { "rawScore": 82, "weight": 0.2, "weightedScore": 16.4, "note": "auto: 品牌色已降级为局部 accent（prompt 明示不用于天花/墙面/主体结构）；motif 全部转译为 surface behavior。" },
-    "functionalRealism": { "rawScore": 80, "weight": 0.2, "weightedScore": 16.0, "note": "auto: 接待台 + 迎宾 + 咨询 + 休憩功能网络在 prompt 中落实，动线沿曲线空间轴。" },
-    "materialAndLighting": { "rawScore": 83, "weight": 0.15, "weightedScore": 12.45, "note": "auto: 微水泥/金属/亚克力材质 + 隐藏灯带，暖色底、紫色仅局部点缀。" },
-    "composition": { "rawScore": 86, "weight": 0.1, "weightedScore": 8.6, "note": "auto: 16:9 视平线单一广角，构图约束明确。" },
-    "rendering": { "rawScore": 85, "weight": 0.1, "weightedScore": 8.5, "note": "auto: Seedream 5 Pro 2K 输出。" }
+    "architectureQuality": { "rawScore": 88, "weight": 0.25, "weightedScore": 22.0, "note": "人工验收：比 JZMX-01 更克制，适合商业稳定性基准；reception 清晰、waiting relation 清楚、treatment room/equipment 可见。" },
+    "brandTranslation": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "人工验收：紫色只存在于局部 accent；Literal Motif 风险很低（1/5）。" },
+    "functionalRealism": { "rawScore": 90, "weight": 0.2, "weightedScore": 18.0, "note": "人工验收：接待清晰、等候关系清楚、治疗室设备可见，医美商业属性真实。" },
+    "materialAndLighting": { "rawScore": 93, "weight": 0.15, "weightedScore": 13.95, "note": "人工验收：材质体系稳定，外部玻璃与内部空间连续。" },
+    "composition": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：16:9 视平线广角。" },
+    "rendering": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：Seedream 5 Pro 2K。" }
   },
   "diagnostics": {
-    "architectureExpressiveness": 4,
+    "architectureExpressiveness": 4.2,
     "genericAiSpaceRisk": 2,
     "literalMotifRisk": 1,
     "referenceAlignment": null
   },
   "brandSpecificChecks": [
-    { "check": "no giant literal feather", "pass": true, "note": "auto: GATE-REPORT 已验证 stab-1/2/3 无 literal 羽毛；本 run 使用相同 frozen compiler + prompt 结构。" },
-    { "check": "no peacock tail wall", "pass": true, "note": "auto: 同上。" },
-    { "check": "no purple feather ceiling", "pass": true, "note": "auto: 品牌色已确定性降级为 accent。" },
-    { "check": "no purple acrylic tunnel", "pass": true, "note": "auto: 同上。" },
-    { "check": "no brand motif as main architecture object", "pass": true, "note": "auto: motif 转译为 surface behavior + architecture-before-brand。" }
+    { "check": "no giant literal feather", "pass": true, "note": "人工验收：通过。" },
+    { "check": "no peacock tail wall", "pass": true, "note": "人工验收：通过。" },
+    { "check": "no purple feather ceiling", "pass": true, "note": "人工验收：紫色仅局部 accent。" },
+    { "check": "no purple acrylic tunnel", "pass": true, "note": "人工验收：通过。" },
+    { "check": "no brand motif as main architecture object", "pass": true, "note": "人工验收：通过。" }
   ],
-  "total": 82.95,
-  "verdict": "pass",
-  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
-  "scoredAt": "2026-08-08T15:35:00.000Z",
-  "notes": "AUTO 兜底分（基于 frozen compiler + GATE-REPORT 已验证 rubric，非人眼）。Gate: Arch>=4 OK(4), Motif<=2 OK(1), Generic<=2.5 OK(2), Functional>=16/20 OK(16.0)。需人工打开 output.png 复核覆盖。"
+  "total": 89,
+  "verdict": "golden",
+  "scoredBy": "human-r8.6-acceptance",
+  "scoredAt": "2026-08-08T16:00:30.000Z",
+  "notes": "人工验收覆盖 auto 分（原 auto 82.95 → 89）。JZMX Commercial Golden。用途：检查未来版本是否因追求 Architecture Expressiveness 而牺牲真实医美空间属性。"
 }

@@ -83,6 +83,7 @@ if (manifest) {
 console.log('\n[2] Per-brand golden selection...');
 const brands = ['jiuzhou-aesthetics', 'feng-tang-tang', 'yi-ji-liang-fang'];
 const brandDir = (b) => path.join(root, base, b);
+const goldenTypes = new Set();
 for (const b of brands) {
   if (!existsSync(brandDir(b))) {
     failures.push(`R86_BRAND_DIR_MISSING: ${b}`);
@@ -91,13 +92,26 @@ for (const b of brands) {
   const gs = parseJson(`${base}/${b}/golden-selection.json`, `${b} golden selection`);
   if (!gs) { fail(`${b}: golden-selection missing/invalid`); continue; }
   const golds = gs.golds ?? [];
-  const types = golds.map((g) => g.type);
-  if (!types.includes('commercial') || !types.includes('architecture')) {
-    failures.push(`R86_GOLDEN_TYPES_INCOMPLETE: ${b} needs commercial + architecture (got ${types.join(',')})`);
-    fail(`${b}: golden types incomplete (${types.join(',')})`);
-  } else {
-    ok(`${b}: golds=${types.join('+')}`);
+  if (golds.length === 0) {
+    failures.push(`R86_GOLDEN_NONE: ${b} has no golden`);
+    fail(`${b}: no golden recorded`);
+    continue;
   }
+  const types = golds.map((g) => g.type);
+  for (const t of types) goldenTypes.add(t);
+  ok(`${b}: golds=${types.join('+')}`);
+}
+// The acceptance doc (v1.0) freezes FTT/YJLF with Commercial Golden only and
+// defers their Architecture Golden to a later pass (does not block R9). So we
+// require: each brand >= 1 golden, and the BASELINE as a whole covers both
+// commercial and architecture roles.
+if (!goldenTypes.has('commercial')) {
+  failures.push(`R86_GOLDEN_COMMERCIAL_MISSING: baseline needs at least one commercial golden`);
+  fail('baseline needs at least one commercial golden');
+}
+if (!goldenTypes.has('architecture')) {
+  failures.push(`R86_GOLDEN_ARCHITECTURE_MISSING: baseline needs at least one architecture golden`);
+  fail('baseline needs at least one architecture golden');
 }
 
 // [3] Final smoke records (traceability)

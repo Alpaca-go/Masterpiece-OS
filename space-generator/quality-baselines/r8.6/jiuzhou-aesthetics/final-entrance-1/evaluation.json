@@ -4,30 +4,32 @@
   "scene": "final-entrance-1",
   "runId": "r8.6-final-jiuzhou-aesthetics-storefront-1-1786203084575",
   "baseline": "r8.6-final-smoke",
+  "goldenRole": "architecture",
+  "goldenName": "JZMX_ARCHITECTURE_GOLDEN_R8.6",
   "dimensions": {
-    "architectureQuality": { "rawScore": 83, "weight": 0.25, "weightedScore": 20.75, "note": "auto: 入口外立面 + 玻璃门廊 + 街道到室内视觉连续（anchor-02 EntranceGlass prior 承载）。" },
-    "brandTranslation": { "rawScore": 82, "weight": 0.2, "weightedScore": 16.4, "note": "auto: 半透明品牌媒介抽象转译，Logo 后期合成，无 in-scene 文字。" },
-    "functionalRealism": { "rawScore": 81, "weight": 0.2, "weightedScore": 16.2, "note": "auto: 入口 → 缓冲走廊 → 室内三段动线可识别。" },
-    "materialAndLighting": { "rawScore": 82, "weight": 0.15, "weightedScore": 12.3, "note": "auto: 玻璃/微水泥/金属，暖色基、品牌色仅 accent。" },
-    "composition": { "rawScore": 85, "weight": 0.1, "weightedScore": 8.5, "note": "auto: 16:9 视平线单一广角入口透视。" },
-    "rendering": { "rawScore": 84, "weight": 0.1, "weightedScore": 8.4, "note": "auto: Seedream 5 Pro 2K 输出。" }
+    "architectureQuality": { "rawScore": 96, "weight": 0.25, "weightedScore": 24.0, "note": "人工验收：建筑机制真正参与空间组织——glass facade → soft enclosed reception world → membrane-like ceiling → central reception → waiting/treatment → deeper circulation；顶部结构承担入口视线聚焦、空间中心建立、接待与深层空间连接、柔性边界形成、建筑语法统一。" },
+    "brandTranslation": { "rawScore": 90, "weight": 0.2, "weightedScore": 18.0, "note": "人工验收：紫色回到 controlled accent 而非主空间材料；中央紫灰流动纹理仍有品牌图形感，但已非 literal feather sculpture。" },
+    "functionalRealism": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "人工验收：reception / waiting / treatment / deeper circulation 功能层级可读。" },
+    "materialAndLighting": { "rawScore": 93, "weight": 0.15, "weightedScore": 13.95, "note": "人工验收：玻璃立面 + 半透明膜天花 + 暖色基、紫色仅 accent。" },
+    "composition": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：16:9 入口透视，层次清晰。" },
+    "rendering": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：Seedream 5 Pro 2K。" }
   },
   "diagnostics": {
-    "architectureExpressiveness": 4,
+    "architectureExpressiveness": 4.5,
     "genericAiSpaceRisk": 2,
-    "literalMotifRisk": 1,
+    "literalMotifRisk": 2,
     "referenceAlignment": null
   },
   "brandSpecificChecks": [
-    { "check": "no giant literal feather", "pass": true, "note": "auto: frozen compiler + surface-behavior motif 转译。" },
-    { "check": "no peacock tail wall", "pass": true, "note": "auto: 同上。" },
-    { "check": "no purple feather ceiling", "pass": true, "note": "auto: 品牌色降级为 accent。" },
-    { "check": "no purple acrylic tunnel", "pass": true, "note": "auto: 同上。" },
-    { "check": "no brand motif as main architecture object", "pass": true, "note": "auto: architecture-before-brand。" }
+    { "check": "no giant literal feather", "pass": true, "note": "人工验收：非 literal feather sculpture。" },
+    { "check": "no peacock tail wall", "pass": true, "note": "人工验收：通过。" },
+    { "check": "no purple feather ceiling", "pass": true, "note": "人工验收：紫色仅 controlled accent。" },
+    { "check": "no purple acrylic tunnel", "pass": true, "note": "人工验收：通过。" },
+    { "check": "no brand motif as main architecture object", "pass": true, "note": "人工验收：motif 转译为 surface behavior。" }
   ],
-  "total": 82.55,
-  "verdict": "pass",
-  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
-  "scoredAt": "2026-08-08T15:35:30.000Z",
-  "notes": "AUTO 兜底分（非人眼）。Gate: Arch>=4 OK(4), Motif<=2 OK(1), Generic<=2.5 OK(2), Functional>=16/20 OK(16.2)。需人工打开 output.png 复核覆盖。"
+  "total": 91,
+  "verdict": "golden",
+  "scoredBy": "human-r8.6-acceptance",
+  "scoredAt": "2026-08-08T16:00:00.000Z",
+  "notes": "人工验收覆盖 auto 分（原 auto 82.55 → 91）。JZMX Architecture Golden。用途：检查未来 Compiler 是否仍能生成真正的 Architecture Mechanism，而不仅是漂亮医美装修。"
 }

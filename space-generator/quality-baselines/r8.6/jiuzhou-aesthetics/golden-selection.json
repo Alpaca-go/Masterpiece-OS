@@ -7,26 +7,29 @@
     "mode": "phase9b_quality",
     "version": "1.1.0"
   },
-  "source": "quality-baselines/r85-redirect-text-only-smokes",
+  "source": "quality-baselines/r8.6",
+  "acceptedBy": "human-r8.6-acceptance",
   "golds": [
     {
       "type": "architecture",
-      "runId": "r85-redirect-jz-reception-1-1786199554687",
-      "scene": "reception-stab-1",
-      "promptHash": "cb46cd97c4caa1413557686351275c86b8eea30437e65382441c043c9999627f",
-      "imageSha256": "84ea5c6ac49c43b7224091ce900e1f30973b67e3200957b658b824e45442bde3",
-      "rubric": { "Arch": 5, "Motif": 5, "Func": 5, "Brand": 5, "Color": 5, "Mat": 5, "Comm": 5 },
-      "reason": "GATE-REPORT rubric 全 5/5。ceiling→boundary→circulation→function 连续机制最清楚，半透明/软边界/空间连续性完整，无 literal motif。"
+      "goldenName": "JZMX_ARCHITECTURE_GOLDEN_R8.6",
+      "runId": "r8.6-final-jiuzhou-aesthetics-storefront-1-1786203084575",
+      "scene": "final-entrance-1",
+      "promptHash": "b0bf57ca1eb12649bc8e37ad5fef2e53d385110d1f924953c75ec67098f0e31e",
+      "imageSha256": "10d711bb77293cc66937547d2eae80f2bb0a6cdf47b5f80d211f01f361ea36a3",
+      "total": 91,
+      "reason": "人工验收 PASS（91/100）。glass facade → soft enclosed reception world → membrane-like ceiling → central reception → waiting/treatment → deeper circulation；顶部结构承担入口视线聚焦/空间中心/接待与深层连接/柔性边界/建筑语法统一；紫色回到 controlled accent。用途：检查未来 Compiler 是否仍能生成真正的 Architecture Mechanism。"
     },
     {
       "type": "commercial",
-      "runId": "r85-redirect-jz-reception-2-1786199628452",
-      "scene": "reception-stab-2",
-      "promptHash": "cb46cd97c4caa1413557686351275c86b8eea30437e65382441c043c9999627f",
-      "imageSha256": "a899fd67910ad2a3d7162353ba76b8527ad1c9c97b87f1b3c8f0a5dbfe7e7393",
-      "rubric": { "Arch": 5, "Motif": 5, "Func": 5, "Brand": 5, "Color": 5, "Mat": 5, "Comm": 5 },
-      "reason": "GATE-REPORT rubric 全 5/5。reception/waiting 功能最真实，动线清晰，商业功能成立。"
+      "goldenName": "JZMX_COMMERCIAL_GOLDEN_R8.6",
+      "runId": "r8.6-final-jiuzhou-aesthetics-reception-1-1786202980997",
+      "scene": "final-reception-1",
+      "promptHash": "6b93a42f6b6b76fe180db99730d63a965a983cf9ec1e5bbb2112a2f3b16810ac",
+      "imageSha256": "2fc3e3536b1ab7151bb8ae88622ef97796ff7f453ec5c98f5f534a451c19f2a2",
+      "total": 89,
+      "reason": "人工验收 PASS（89/100）。比 architecture golden 更克制，作为商业稳定性基准：reception 清晰、waiting relation 清楚、treatment room/equipment 可见、外部玻璃与内部空间连续、材质体系稳定、紫色仅局部 accent、Literal Motif 很低。用途：检查未来版本是否因追求 Architecture Expressiveness 而牺牲真实医美空间属性。"
     }
   ],
-  "notes": "与 reception-stab-3（Motif 2/5, wavy wall-relief variance）区分；stab-3 保留为 Soft Variance 记录，不作为 Golden。"
+  "notes": "R8.6 人工验收（v1.0）覆盖之前 auto 兜底分。JZMX 两张 final smoke 均入选 golden。"
 }

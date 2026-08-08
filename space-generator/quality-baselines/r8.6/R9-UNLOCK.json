@@ -2,14 +2,15 @@
   "phase": "R9",
   "unlocked": true,
   "sourceBaseline": "space-r8.6-golden",
-  "reason": "Cross-brand real-provider final smoke passed (4 text-only refs=0 runs: JZMX x2, FTT x1, YJLF x1). Evaluations auto-scored; human image review pending before final executable delivery.",
-  "unlockedAt": "2026-08-08T15:40:00.000Z",
+  "reason": "R8.6 Final Smoke 4/4 PASS (human acceptance v1.0): JZMX x2 (91/89), FTT x1 (86), YJLF x1 (86), all text-only refs=0.",
+  "unlockedAt": "2026-08-08T16:01:30.000Z",
   "requiredParity": [
     "architecture_quality",
     "architecture_expressiveness",
     "brand_translation",
     "functional_realism",
-    "literal_motif_control"
+    "literal_motif_control",
+    "cross_brand_isolation"
   ],
   "constraints": {
     "allowProductionization": true,

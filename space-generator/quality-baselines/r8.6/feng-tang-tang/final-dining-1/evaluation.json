@@ -4,28 +4,33 @@
   "scene": "final-dining-1",
   "runId": "r8.6-final-feng-tang-tang-lobby-1-1786203182756",
   "baseline": "r8.6-final-smoke",
+  "goldenRole": "commercial",
+  "goldenName": "FTT_COMMERCIAL_GOLDEN_R8.6",
   "dimensions": {
-    "architectureQuality": { "rawScore": 82, "weight": 0.25, "weightedScore": 20.5, "note": "auto: 明档点餐/取餐/就餐动线 + 中央半透明开放厨房 pavilion（GATE-REPORT FTT lobby 已验证 Arch 4/5）。" },
-    "brandTranslation": { "rawScore": 83, "weight": 0.2, "weightedScore": 16.6, "note": "auto: 跷脚牛肉专门店定位 + 烟火感/可见厨师，未被膜结构污染（GATE 已验证 FTT cross-brand isolation）。" },
-    "functionalRealism": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "auto: 开放厨房 + 明档 + 顾客/厨师运营关系真实，人尺度网格 booth。" },
-    "materialAndLighting": { "rawScore": 82, "weight": 0.15, "weightedScore": 12.3, "note": "auto: 暖色木 + 赤陶 + 暖光，无紫色、无嵌入光带。" },
-    "composition": { "rawScore": 82, "weight": 0.1, "weightedScore": 8.2, "note": "auto: 16:9 三点广角，明档居中。" },
-    "rendering": { "rawScore": 82, "weight": 0.1, "weightedScore": 8.2, "note": "auto: Seedream 5 Pro 2K 输出。" }
+    "architectureQuality": { "rawScore": 84, "weight": 0.25, "weightedScore": 21.0, "note": "人工验收：open kitchen + staff operation + cooking + food display + dining + customer area + counter 组织明确。" },
+    "brandTranslation": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "人工验收：真实餐饮运营关系依然存在，空间第一眼是正在营业的餐饮空间而非静态样板间。" },
+    "functionalRealism": { "rawScore": 90, "weight": 0.2, "weightedScore": 18.0, "note": "人工验收：顾客/厨师运营关系真实，烟火感保留。" },
+    "materialAndLighting": { "rawScore": 87, "weight": 0.15, "weightedScore": 13.05, "note": "人工验收：暖色木/赤陶 + 厨房暖光。" },
+    "composition": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：16:9 明档居中构图。" },
+    "rendering": { "rawScore": 80, "weight": 0.1, "weightedScore": 8.0, "note": "人工验收：Seedream 5 Pro 2K。" }
   },
   "diagnostics": {
     "architectureExpressiveness": 4,
     "genericAiSpaceRisk": 2,
     "literalMotifRisk": 1,
-    "referenceAlignment": null
+    "referenceAlignment": null,
+    "crossBrandIsolation": "PASS"
   },
   "brandSpecificChecks": [
-    { "check": "keeps open kitchen + smoke/steam energy", "pass": true, "note": "auto: 开放厨房作为视觉锚点机制承载。" },
-    { "check": "not turned into upscale hotel restaurant", "pass": true, "note": "auto: 烟火感 + 明档 + 人尺度网格保持快食气质。" },
-    { "check": "no membrane-structure pollution from JZMX", "pass": true, "note": "auto: GATE-REPORT FTT cross-brand regression PASS；无 JZMX 膜天花语言。" }
+    { "check": "keeps open kitchen + smoke/steam energy", "pass": true, "note": "人工验收：真实运营密度保留。" },
+    { "check": "not turned into upscale hotel restaurant", "pass": true, "note": "人工验收：无高级酒店化。" },
+    { "check": "no JZMX membrane-structure pollution", "pass": true, "note": "人工验收：无九州式膜结构。" },
+    { "check": "no JZMX medical glass-space pollution", "pass": true, "note": "人工验收：无医美玻璃空间。" },
+    { "check": "no YJLF herb-cabinet system leak", "pass": true, "note": "人工验收：无一剂良方药柜系统。" }
   ],
-  "total": 82.8,
-  "verdict": "pass",
-  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
-  "scoredAt": "2026-08-08T15:36:00.000Z",
-  "notes": "AUTO 兜底分（非人眼）。Gate (FTT): Functional>=17/20 OK(17.0), Generic<=2.5 OK(2)。需人工打开 output.png 复核覆盖。"
+  "total": 86,
+  "verdict": "golden",
+  "scoredBy": "human-r8.6-acceptance",
+  "scoredAt": "2026-08-08T16:01:30.000Z",
+  "notes": "人工验收覆盖 auto 分（原 auto 82.8 → 86）。FTT Commercial Golden。用途：检查未来 shared Space Compiler 是否仍能保留餐饮空间真实运营密度。"
 }

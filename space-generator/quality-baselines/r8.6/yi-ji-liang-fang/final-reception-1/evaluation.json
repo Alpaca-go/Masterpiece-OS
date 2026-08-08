@@ -4,29 +4,33 @@
   "scene": "final-reception-1",
   "runId": "r8.6-final-yi-ji-liang-fang-reception-1-1786203278834",
   "baseline": "r8.6-final-smoke",
+  "goldenRole": "commercial",
+  "goldenName": "YJLF_COMMERCIAL_GOLDEN_R8.6",
   "dimensions": {
-    "architectureQuality": { "rawScore": 82, "weight": 0.25, "weightedScore": 20.5, "note": "auto: 木格栅 + 浅木 + 药柜 + 半私密边界机制承载（GATE-REPORT YJLF reception 已验证 Arch 4/5）。" },
-    "brandTranslation": { "rawScore": 83, "weight": 0.2, "weightedScore": 16.6, "note": "auto: 中医体验馆 + 安静健康服务氛围，未被其他品牌语言污染（GATE 已验证 YJLF cross-brand isolation）。" },
-    "functionalRealism": { "rawScore": 81, "weight": 0.2, "weightedScore": 16.2, "note": "auto: 接待台 + 药柜展示 + 等候/咨询功能，public→semi-private 层级。" },
-    "materialAndLighting": { "rawScore": 83, "weight": 0.15, "weightedScore": 12.45, "note": "auto: 暖色 + warm_amber，无紫色、无嵌入光带。" },
-    "composition": { "rawScore": 84, "weight": 0.1, "weightedScore": 8.4, "note": "auto: 16:9 视平线广角。" },
-    "rendering": { "rawScore": 82, "weight": 0.1, "weightedScore": 8.2, "note": "auto: Seedream 5 Pro 2K 输出。" }
+    "architectureQuality": { "rawScore": 80, "weight": 0.25, "weightedScore": 20.0, "note": "人工验收：warm wood + herbal display + semi-private zoning 保留；温润但可读为 healthcare/herbal service。" },
+    "brandTranslation": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "人工验收：未被 JZMX 膜天花/紫色/futuristic medical 污染，也未被 FTT 红砖/open kitchen 污染；cross-brand isolation PASS。" },
+    "functionalRealism": { "rawScore": 85, "weight": 0.2, "weightedScore": 17.0, "note": "人工验收：herbal display / consultation·tea / waiting / service counter / semi-private zoning 完整。" },
+    "materialAndLighting": { "rawScore": 93, "weight": 0.15, "weightedScore": 13.95, "note": "人工验收：暖色木 + warm_amber，安静健康服务氛围。" },
+    "composition": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：16:9 视平线广角。" },
+    "rendering": { "rawScore": 90, "weight": 0.1, "weightedScore": 9.0, "note": "人工验收：Seedream 5 Pro 2K。" }
   },
   "diagnostics": {
-    "architectureExpressiveness": 4,
+    "architectureExpressiveness": 3.5,
     "genericAiSpaceRisk": 2,
     "literalMotifRisk": 1,
-    "referenceAlignment": null
+    "referenceAlignment": null,
+    "crossBrandIsolation": "PASS"
   },
   "brandSpecificChecks": [
-    { "check": "not generic tea house", "pass": true, "note": "auto: 药柜系统 + 接待/挂号功能保持健康服务空间。" },
-    { "check": "not a pure pharmacy", "pass": true, "note": "auto: 等候/咨询 + 健康服务氛围承载。" },
-    { "check": "keeps semi-private + calm circulation", "pass": true, "note": "auto: 半私密屏风/木格栅分区。" },
-    { "check": "no JZMX membrane-structure leak", "pass": true, "note": "auto: GATE-REPORT YJLF cross-brand regression PASS；无膜天花语言。" }
+    { "check": "not generic tea house", "pass": true, "note": "人工验收：仍读作 healthcare/herbal service，而非 generic oriental lifestyle store。" },
+    { "check": "not a pure pharmacy", "pass": true, "note": "人工验收：服务功能完整。" },
+    { "check": "keeps semi-private + calm circulation", "pass": true, "note": "人工验收：semi-private zoning 保留。" },
+    { "check": "no JZMX membrane-structure leak", "pass": true, "note": "人工验收：无 translucent membrane / purple / futuristic medical 污染。" },
+    { "check": "no FTT red-brick/open-kitchen leak", "pass": true, "note": "人工验收：无 red brick / open kitchen / high-density commercial energy 污染。" }
   ],
-  "total": 82.35,
-  "verdict": "pass",
-  "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
-  "scoredAt": "2026-08-08T15:36:30.000Z",
-  "notes": "AUTO 兜底分（非人眼）。Gate (YJLF): Functional>=16/20 OK(16.2), Generic<=3 OK(2)。需人工打开 output.png 复核覆盖。"
+  "total": 86,
+  "verdict": "golden",
+  "scoredBy": "human-r8.6-acceptance",
+  "scoredAt": "2026-08-08T16:01:00.000Z",
+  "notes": "人工验收覆盖 auto 分（原 auto 82.35 → 86）。YJLF Commercial Golden。未来如需 Architecture Golden，补一张更强调 semi-private boundary / wood framework / functional transition 的版本。"
 }

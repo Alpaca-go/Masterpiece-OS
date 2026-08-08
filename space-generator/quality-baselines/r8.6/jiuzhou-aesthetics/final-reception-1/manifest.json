@@ -53,9 +53,10 @@
   "evaluation": {
     "file": "evaluation.json",
     "status": "scored",
-    "totalScore": 82.95,
-    "scoredBy": "auto-r8.6-final-smoke-pending-human-review",
-    "scoredAt": "2026-08-08T15:35:00.000Z"
+    "verdict": "golden",
+    "totalScore": 89,
+    "scoredBy": "human-r8.6-acceptance",
+    "scoredAt": "2026-08-08T16:00:30.000Z"
   },
   "createdAt": "2026-08-08T15:29:40.997Z"
 }

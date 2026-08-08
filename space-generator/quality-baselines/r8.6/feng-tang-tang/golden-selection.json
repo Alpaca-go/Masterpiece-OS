@@ -7,25 +7,19 @@
     "mode": "phase9b_quality",
     "version": "1.1.0"
   },
-  "source": "quality-baselines/r85-redirect-text-only-smokes",
+  "source": "quality-baselines/r8.6",
+  "acceptedBy": "human-r8.6-acceptance",
   "golds": [
     {
       "type": "commercial",
-      "runId": "r85-redirect-feng-tang-tang-lobby-1-1786200242910",
-      "scene": "lobby-gen-1",
-      "promptHash": "9b8ee5ac1f18d1f073c75e3a1c7a474e37b10c1ad85b4a6e8b7a879c705fe77c",
-      "imageSha256": "920cadf292164afd6c2c2cc048bbf0dfa713eb7ac6bcd41078c5c5294817b16a",
-      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 5, "Color": 4, "Mat": 5, "Comm": 5 },
-      "reason": "GATE-REPORT rubric：明档点餐/取餐/就餐动线真实，中央半透明开放厨房 pavilion，无 literal 牛/胡椒雕塑，烟火感与运营关系成立。"
-    },
-    {
-      "type": "architecture",
+      "goldenName": "FTT_COMMERCIAL_GOLDEN_R8.6",
       "runId": "r8.6-final-feng-tang-tang-lobby-1-1786203182756",
       "scene": "final-dining-1",
       "promptHash": "d1877d17fc6dcdfcc6cb9f736c7e384b3b0a8a459a43e9ff3542d9eed71bfd9f",
       "imageSha256": "6445aa30a380f6a8d474967c37a2b5df4f5f08c7d461e5bd73c2778f91c97ba6",
-      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 5, "Color": 4, "Mat": 5, "Comm": 5 },
-      "reason": "R8.6 final smoke：开放厨房作为视觉锚点 + 明档组织 + 人尺度网格 booth，暖色木/赤陶，烟火感与厨师操作可见，跨品牌隔离。"
+      "total": 86,
+      "reason": "人工验收 PASS（86/100）。真实餐饮运营关系依然存在：open kitchen / staff operation / cooking / food display / dining / customer area / counter；空间第一眼是正在营业的餐饮空间而非静态样板间。Cross-brand isolation PASS（无 JZMX 膜结构/医美玻璃、无 YJLF 药柜、无高级酒店化）。用途：检查未来 shared Space Compiler 是否仍能保留餐饮空间真实运营密度。"
     }
-  ]
+  ],
+  "notes": "R8.6 人工验收（v1.0）。FTT 本轮 1 张 final smoke 入选 Commercial Golden；Architecture Golden 不阻塞 R9，后续可补（open-kitchen 组织）。"
 }

@@ -7,25 +7,19 @@
     "mode": "phase9b_quality",
     "version": "1.1.0"
   },
-  "source": "quality-baselines/r85-redirect-text-only-smokes",
+  "source": "quality-baselines/r8.6",
+  "acceptedBy": "human-r8.6-acceptance",
   "golds": [
     {
       "type": "commercial",
-      "runId": "r85-redirect-yi-ji-liang-fang-reception-1-1786200368373",
-      "scene": "reception-gen-1",
-      "promptHash": "0e9f790d92593a11bdeac23e70a09cbf4e3f3cc97537e13e07a78ce4289fe645",
-      "imageSha256": "902dcbb5e1747b85a95332e61e95f6f612f24a29469484864223831196265916",
-      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 3, "Color": 5, "Mat": 5, "Comm": 5 },
-      "reason": "GATE-REPORT rubric：药柜背景 + 半透明屏风分区 + 接待/等候/咨询功能成立；Brand 3/5 因屏风上有细微圆形印记（in-scene identity variance，非 compiler 回归）。"
-    },
-    {
-      "type": "architecture",
+      "goldenName": "YJLF_COMMERCIAL_GOLDEN_R8.6",
       "runId": "r8.6-final-yi-ji-liang-fang-reception-1-1786203278834",
       "scene": "final-reception-1",
       "promptHash": "6f5fc75bc47d7c2bac20174a291ea334dd48ce2119535319985dda62e618eeb6",
       "imageSha256": "00df1cdd54e9318370fdf497aab5b524ea24159f86475ee0c28ab33b4ab9318a",
-      "rubric": { "Arch": 4, "Motif": 5, "Func": 5, "Brand": 4, "Color": 5, "Mat": 5, "Comm": 5 },
-      "reason": "R8.6 final smoke：木格栅 + 浅木 + 药柜 + 半私密边界 + 平静动线，安静健康服务氛围，跨品牌隔离。"
+      "total": 86,
+      "reason": "人工验收 PASS（86/100）。保留 warm wood / herbal display / consultation·tea / waiting / service counter / semi-private zoning；未被 JZMX（translucent membrane / purple / futuristic medical）与 FTT（red brick / open kitchen / high-density commercial energy）污染；仍读作 healthcare/herbal service 而非 generic oriental lifestyle store。"
     }
-  ]
+  ],
+  "notes": "R8.6 人工验收（v1.0）。YJLF 本轮 1 张 final smoke 入选 Commercial Golden；Architecture Golden 不阻塞 R9，后续可补（semi-private boundary / wood framework / functional transition）。"
 }

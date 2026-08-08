@@ -37,18 +37,24 @@ test('R8.6 baseline manifest is frozen with provider/model/compiler recorded', (
   assert.ok(Array.isArray(m.brands) && m.brands.length === 3, 'brands listed');
 });
 
-test('R8.6 every brand has commercial + architecture golden selection', () => {
+test('R8.6 baseline covers commercial + architecture golden roles with every brand having >= 1', () => {
+  const allTypes = new Set();
   for (const brand of BRANDS) {
     const gs = readJson(`${base}/${brand}/golden-selection.json`);
     const types = (gs.golds ?? []).map((g) => g.type);
-    assert.ok(types.includes('commercial'), `${brand} commercial golden`);
-    assert.ok(types.includes('architecture'), `${brand} architecture golden`);
+    assert.ok(types.length >= 1, `${brand} has at least one golden`);
+    for (const t of types) allTypes.add(t);
     for (const g of gs.golds) {
       assert.ok(g.runId, `${brand} golden runId`);
       assert.ok(g.promptHash, `${brand} golden promptHash`);
       assert.ok(g.imageSha256, `${brand} golden imageSha256`);
     }
   }
+  // Acceptance doc v1.0: FTT/YJLF freeze Commercial Golden only (Architecture
+  // Golden deferred, not blocking R9). The baseline as a whole must still cover
+  // both roles.
+  assert.ok(allTypes.has('commercial'), 'baseline has commercial golden');
+  assert.ok(allTypes.has('architecture'), 'baseline has architecture golden');
 });
 
 test('R8.6 final smoke scenes exist with prompt hash, image sha256 and evaluation', () => {
