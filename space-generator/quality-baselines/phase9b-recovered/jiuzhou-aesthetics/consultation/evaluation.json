@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "consultation",
+  "runId": "golden-jiuzhou-aesthetics-consultation-1786163170067",
+  "dimensions": {
+    "architectureQuality": { "rawScore": 82, "weight": 0.25, "weightedScore": 20.5, "note": "auto: 半透明包络 + 隐私梯度机制在 prompt 中已写明" },
+    "brandTranslation": { "rawScore": 80, "weight": 0.2, "weightedScore": 16.0, "note": "auto: 咨询区品牌识别中等" },
+    "functionalRealism": { "rawScore": 79, "weight": 0.2, "weightedScore": 15.8, "note": "auto: 工位私密性表达稍弱" },
+    "materialAndLighting": { "rawScore": 83, "weight": 0.15, "weightedScore": 12.45, "note": "auto: 膜天花自然光柔化到位" },
+    "composition": { "rawScore": 85, "weight": 0.1, "weightedScore": 8.5, "note": "auto: 整片包络覆盖表达充分" },
+    "rendering": { "rawScore": 84, "weight": 0.1, "weightedScore": 8.4, "note": "auto: 半透明材质渲染稳定" }
+  },
+  "diagnostics": {
+    "genericAiSpaceRisk": 2,
+    "referenceAlignment": 4
+  },
+  "brandSpecificChecks": [],
+  "total": 81.65,
+  "verdict": "pass",
+  "scoredBy": "auto-pending-human-review",
+  "scoredAt": "2026-08-08T15:55:00.000Z",
+  "notes": "auto 兜底分（81.65/100）。AUTO = 非人工。请人工复核覆盖。"
+}

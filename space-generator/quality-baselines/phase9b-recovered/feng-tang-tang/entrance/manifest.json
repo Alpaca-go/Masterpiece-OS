@@ -16,7 +16,7 @@
   "provider": {
     "provider": "volcengine",
     "model": "doubao-seedream-5-0-pro-260628",
-    "profileId": null,
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
     "size": "2K",
     "aspectRatio": "16:9"
   },
@@ -45,9 +45,9 @@
   ],
   "promptHash": "9fa48427356cf22d72d0940d447028b7a999378e51a43a25be2fc8efe14207be",
   "output": {
-    "runId": null,
-    "imageFile": null,
-    "imageSha256": null,
+    "runId": "golden-feng-tang-tang-entrance-1786162784881",
+    "imageFile": "output.png",
+    "imageSha256": "7c32ed477426e631fd28024c0d9738ffa939360ac2c194c81b9a9a33e9144b36",
     "promptFile": "prompt.md",
     "providerPayloadFile": "provider-payload.redacted.json",
     "referenceTraceFile": "reference-trace.json",

@@ -16,7 +16,7 @@
   "provider": {
     "provider": "volcengine",
     "model": "doubao-seedream-5-0-pro-260628",
-    "profileId": null,
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
     "size": "2K",
     "aspectRatio": "16:9"
   },
@@ -49,9 +49,9 @@
   ],
   "promptHash": "d23707709329d37db5a921d25fbc6dd14adcf1c5e197d46be087988788045b2b",
   "output": {
-    "runId": null,
-    "imageFile": null,
-    "imageSha256": null,
+    "runId": "golden-jiuzhou-aesthetics-consultation-1786163000666",
+    "imageFile": "output.png",
+    "imageSha256": "c4b3ddd9e6433ab5a4e30f836d4472b53eb1989ec1e163bedc13e47a2a2bca61",
     "promptFile": "prompt.md",
     "providerPayloadFile": "provider-payload.redacted.json",
     "referenceTraceFile": "reference-trace.json",

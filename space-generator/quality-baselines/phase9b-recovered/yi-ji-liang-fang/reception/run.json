@@ -1,0 +1,23 @@
+{
+  "runId": "golden-yi-ji-liang-fang-reception-1786165534772",
+  "brandKey": "yi-ji-liang-fang",
+  "scene": "reception",
+  "startedAt": "2026-08-08T05:05:34.772Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 6534,
+  "promptHash": "d9bcf85d94b387f43a8a315c9915d7835acd7080cddcfce58f7a35569eccca02",
+  "architectureAnchorIds": [
+    "YJLF-ARCH-01-WoodenGrid",
+    "YJLF-ARCH-02-PaperScreen",
+    "YJLF-ARCH-03-TeaCorner"
+  ],
+  "referenceCount": 0,
+  "elapsedMs": 81672,
+  "imageFile": "output.png",
+  "imageSha256": "37c535268940a37f3c97e6039453ff74dc2e88a4f7fcbb24e759ae373665e567",
+  "imageBytes": 514488
+}

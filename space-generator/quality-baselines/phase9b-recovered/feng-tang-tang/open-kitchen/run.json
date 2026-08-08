@@ -1,0 +1,23 @@
+{
+  "runId": "golden-feng-tang-tang-open-kitchen-1786162901489",
+  "brandKey": "feng-tang-tang",
+  "scene": "open-kitchen",
+  "startedAt": "2026-08-08T04:21:41.490Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 5644,
+  "promptHash": "ba62fc44e4c7eb1d6f11606327a4f8cd652fd77bff8ef2ad8c8c2f94bcf158e3",
+  "architectureAnchorIds": [
+    "FTT-ARCH-01-KitchenAnchor",
+    "FTT-ARCH-02-WarmCommercialGrid",
+    "FTT-ARCH-03-HumanScaleBooth"
+  ],
+  "referenceCount": 0,
+  "elapsedMs": 116498,
+  "imageFile": "output.png",
+  "imageSha256": "4f62d2a23be1b4c6fc797fc4b5ddc337e5ed6cb6d183c6e08daeeaa20962d46c",
+  "imageBytes": 797237
+}

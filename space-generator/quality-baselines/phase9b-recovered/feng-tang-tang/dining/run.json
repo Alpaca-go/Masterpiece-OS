@@ -1,0 +1,23 @@
+{
+  "runId": "golden-feng-tang-tang-dining-1786162688558",
+  "brandKey": "feng-tang-tang",
+  "scene": "dining",
+  "startedAt": "2026-08-08T04:18:08.558Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 5641,
+  "promptHash": "1b9b8c362625b4cd02f0f1bb23d0c9f799cec88bb863c13fbbd26286a7db0f2a",
+  "architectureAnchorIds": [
+    "FTT-ARCH-01-KitchenAnchor",
+    "FTT-ARCH-02-WarmCommercialGrid",
+    "FTT-ARCH-03-HumanScaleBooth"
+  ],
+  "referenceCount": 0,
+  "elapsedMs": 96169,
+  "imageFile": "output.png",
+  "imageSha256": "1175824017cc7476d229d5b929b24493bb3ba41f9cf266c8780e558899b92ef4",
+  "imageBytes": 816719
+}

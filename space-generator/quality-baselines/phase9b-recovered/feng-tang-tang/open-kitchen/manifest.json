@@ -16,7 +16,7 @@
   "provider": {
     "provider": "volcengine",
     "model": "doubao-seedream-5-0-pro-260628",
-    "profileId": null,
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
     "size": "2K",
     "aspectRatio": "16:9"
   },
@@ -45,9 +45,9 @@
   ],
   "promptHash": "ba62fc44e4c7eb1d6f11606327a4f8cd652fd77bff8ef2ad8c8c2f94bcf158e3",
   "output": {
-    "runId": null,
-    "imageFile": null,
-    "imageSha256": null,
+    "runId": "golden-feng-tang-tang-open-kitchen-1786162901489",
+    "imageFile": "output.png",
+    "imageSha256": "4f62d2a23be1b4c6fc797fc4b5ddc337e5ed6cb6d183c6e08daeeaa20962d46c",
     "promptFile": "prompt.md",
     "providerPayloadFile": "provider-payload.redacted.json",
     "referenceTraceFile": "reference-trace.json",

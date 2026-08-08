@@ -1,0 +1,23 @@
+{
+  "runId": "golden-feng-tang-tang-entrance-1786162784881",
+  "brandKey": "feng-tang-tang",
+  "scene": "entrance",
+  "startedAt": "2026-08-08T04:19:44.881Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 5638,
+  "promptHash": "9fa48427356cf22d72d0940d447028b7a999378e51a43a25be2fc8efe14207be",
+  "architectureAnchorIds": [
+    "FTT-ARCH-01-KitchenAnchor",
+    "FTT-ARCH-02-WarmCommercialGrid",
+    "FTT-ARCH-03-HumanScaleBooth"
+  ],
+  "referenceCount": 0,
+  "elapsedMs": 96210,
+  "imageFile": "output.png",
+  "imageSha256": "7c32ed477426e631fd28024c0d9738ffa939360ac2c194c81b9a9a33e9144b36",
+  "imageBytes": 769966
+}

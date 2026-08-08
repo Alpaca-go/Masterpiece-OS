@@ -1,0 +1,1000 @@
+{
+  "schemaVersion": "1.0",
+  "projectId": "acc7d590-ac08-4612-8aa7-06464a6ec789",
+  "projectFacts": {
+    "brandName": {
+      "value": "一剂良方",
+      "source": "project_record",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    "industry": {
+      "value": "中医诊疗与健康管理",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "7cc134e3-4eeb-445a-9b11-d98f94e8825b",
+        "83eff4f8-ebcc-4324-906b-bf074b5b4d11",
+        "3cce696f-40e0-4b0a-b2d2-f5405e82a27f",
+        "cd13be2d-ddfa-4d45-8555-9867a11f784d"
+      ],
+      "confidence": 0.95,
+      "status": "probable"
+    },
+    "brandRole": {
+      "value": "中医体验馆及智能健康管理平台",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "ce714ec6-7730-46fb-bf56-398122fc275b",
+        "38f34468-4308-4901-b436-932538e5aee5"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    }
+  },
+  "lockedAssets": [
+    {
+      "assetId": "brand-name-a29bc2c550f3",
+      "type": "brand_name",
+      "value": "一剂良方",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "project_record:brandName"
+      ]
+    },
+    {
+      "assetId": "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+      "type": "logo",
+      "value": "一剂良方标准组合（竖版/横版）",
+      "lockSource": "source_fact",
+      "evidenceRefs": [
+        "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+        "fb3163d8-7692-4ad7-b627-8c7e08d84632",
+        "8dc53cdb-ae24-44b8-8401-cc9dd5187861"
+      ]
+    },
+    {
+      "assetId": "user-lock-1",
+      "type": "other",
+      "value": "原始 Logo Locked：不得修改、重绘、拆解、替换、仿造或改变内部字形。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[0]"
+      ]
+    },
+    {
+      "assetId": "user-lock-2",
+      "type": "other",
+      "value": "输出语言固定为简体中文。",
+      "lockSource": "user_confirmed",
+      "evidenceRefs": [
+        "project_record:lockedFacts[1]"
+      ]
+    }
+  ],
+  "assetInventory": {
+    "logoAssets": [
+      {
+        "assetId": "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+        "name": "一剂良方标准组合（竖版/横版）",
+        "kind": "logo",
+        "occurrenceRefs": [
+          "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+          "fb3163d8-7692-4ad7-b627-8c7e08d84632",
+          "8dc53cdb-ae24-44b8-8401-cc9dd5187861"
+        ],
+        "frequency": 10,
+        "visualFeatures": [
+          "红色圆形图标（内含'良'字变形）",
+          "黑色'一剂良方'宋体字",
+          "金色拼音'yi ji liang fang'",
+          "红色'素问'印章"
+        ],
+        "possibleBrandMeaning": [
+          "传统与现代结合",
+          "良方（好的药方/方案）",
+          "素问（中医经典，代表专业源头）"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "colorAssets": [
+      {
+        "assetId": "10b3da7d-74e8-4d81-bab8-a076fcc7aac7",
+        "name": "品牌色盘",
+        "kind": "color",
+        "occurrenceRefs": [
+          "32da88b7-02e1-4a0b-9731-b40780d11fd5",
+          "10b3da7d-74e8-4d81-bab8-a076fcc7aac7"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "#B59A6B (主色/药柜木色)",
+          "#B00000 (品牌红)",
+          "#E8E5E0 (浅米灰)",
+          "#000000 (黑色)"
+        ],
+        "possibleBrandMeaning": [
+          "自然/草本 (木色)",
+          "活力/印章/传统 (红色)",
+          "洁净/现代 (米灰)"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "typographyAssets": [
+      {
+        "assetId": "a784e540-b65f-4f6d-bab2-fb0a8534a2b3",
+        "name": "标准字体-思源宋体",
+        "kind": "typography",
+        "occurrenceRefs": [
+          "a784e540-b65f-4f6d-bab2-fb0a8534a2b3",
+          "ce714ec6-7730-46fb-bf56-398122fc275b"
+        ],
+        "frequency": 8,
+        "visualFeatures": [
+          "思源宋体 (Light/Regular/Medium/SemiBold/Bold/Heavy)",
+          "Alimama Agile VF (辅助字体，用于名片电话等小字)"
+        ],
+        "possibleBrandMeaning": [
+          "人文/传统/可读性"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "graphicMotifs": [
+      {
+        "assetId": "8086f487-96f0-4f2b-8dba-f1f2cf880c7e",
+        "name": "辅助图形（云纹/回纹）",
+        "kind": "graphic_motif",
+        "occurrenceRefs": [
+          "8086f487-96f0-4f2b-8dba-f1f2cf880c7e",
+          "7bf8610c-afed-4140-af99-d536f81c7615",
+          "3289ad67-c608-47af-895c-0a3a3a911ea5"
+        ],
+        "frequency": 6,
+        "visualFeatures": [
+          "由Logo图标演化而来的连续圆弧线条",
+          "类似云纹或回纹的几何图案",
+          "浅金色/浅灰色线条"
+        ],
+        "possibleBrandMeaning": [
+          "循环/生生不息",
+          "传统纹样现代化",
+          "品牌识别的延伸"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "imageryAssets": [
+      {
+        "assetId": "32da88b7-02e1-4a0b-9731-b40780d11fd5",
+        "name": "药柜与药材 imagery",
+        "kind": "imagery",
+        "occurrenceRefs": [
+          "32da88b7-02e1-4a0b-9731-b40780d11fd5",
+          "9cc069b4-293f-4627-875b-a28bdaadb3dd",
+          "c9a90454-5144-4a2e-a323-7467070b4124"
+        ],
+        "frequency": 4,
+        "visualFeatures": [
+          "木质中药柜",
+          "药材（当归、枸杞等）",
+          "捣药罐",
+          "把脉的手部特写"
+        ],
+        "possibleBrandMeaning": [
+          "专业中药",
+          "传统诊疗",
+          "天然/草本"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "layoutPatterns": [
+      {
+        "assetId": "e2d99236-ae2e-40b1-b365-ad20ab9ce59b",
+        "name": "网格与比例规范",
+        "kind": "layout_pattern",
+        "occurrenceRefs": [
+          "e2d99236-ae2e-40b1-b365-ad20ab9ce59b",
+          "baf97aa2-2b4a-4070-981c-c3d655bfe647"
+        ],
+        "frequency": 2,
+        "visualFeatures": [
+          "基于X单位的网格系统",
+          "严格的安全空间（2.6x等）",
+          "横竖版组合规范"
+        ],
+        "possibleBrandMeaning": [
+          "严谨",
+          "专业",
+          "秩序感"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "materialCues": [
+      {
+        "assetId": "a0cac33b-c340-4d28-ad7b-5a64b6806308",
+        "name": "纸张与凸印质感",
+        "kind": "material_cue",
+        "occurrenceRefs": [
+          "a0cac33b-c340-4d28-ad7b-5a64b6806308",
+          "f8253251-818b-4137-9dee-8a6fe1f3617b"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "名片背面的Logo凸印",
+          "木质笔杆",
+          "特种纸纹理（推测）"
+        ],
+        "possibleBrandMeaning": [
+          "触感/品质",
+          "自然材质",
+          "匠心"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.9
+      }
+    ],
+    "packagingStructures": [
+      {
+        "assetId": "cd13be2d-ddfa-4d45-8555-9867a11f784d",
+        "name": "药柜标签样式",
+        "kind": "packaging_structure",
+        "occurrenceRefs": [
+          "cd13be2d-ddfa-4d45-8555-9867a11f784d"
+        ],
+        "frequency": 1,
+        "visualFeatures": [
+          "矩形标签",
+          "宋体大字",
+          "拼音小字",
+          "辅助图形底纹"
+        ],
+        "possibleBrandMeaning": [
+          "分类/秩序",
+          "传统药房元素",
+          "信息清晰"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ],
+    "spatialCues": [
+      {
+        "assetId": "7fae9f0d-a83d-4142-89e7-dce6e03ac82c",
+        "name": "门头与导视系统",
+        "kind": "spatial_cue",
+        "occurrenceRefs": [
+          "7fae9f0d-a83d-4142-89e7-dce6e03ac82c",
+          "e24d4098-4ffc-4434-99fa-bc7fe3d48abf",
+          "cd24c5e6-f582-4af0-a8ed-22c970ee9c21"
+        ],
+        "frequency": 3,
+        "visualFeatures": [
+          "现代建筑门头（含大型橙色充气猫装置）",
+          "室内导视牌（等候室、诊疗室、取药室）",
+          "科室铭牌（内科、外科、疼痛科、养生科）",
+          "品牌色块分割"
+        ],
+        "possibleBrandMeaning": [
+          "功能分区明确",
+          "现代与传统结合的空间",
+          "注意：充气猫可能是临时装置，非品牌核心"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 0.8
+      }
+    ],
+    "copyAssets": [
+      {
+        "assetId": "ce714ec6-7730-46fb-bf56-398122fc275b",
+        "name": "品牌Slogan与文案",
+        "kind": "copy",
+        "occurrenceRefs": [
+          "ce714ec6-7730-46fb-bf56-398122fc275b",
+          "79c9ed91-960d-45a2-b7ae-ef53de9b9161",
+          "38f34468-4308-4901-b436-932538e5aee5"
+        ],
+        "frequency": 5,
+        "visualFeatures": [
+          "素问一脉承 良方开新境",
+          "传承千年 启幕未来",
+          "中医智造 未来健康",
+          "新中医智能健康管理"
+        ],
+        "possibleBrandMeaning": [
+          "传承与创新",
+          "智能化/现代化",
+          "健康管理"
+        ],
+        "isOriginalAsset": true,
+        "userConfirmed": false,
+        "editable": null,
+        "contextRole": "brand_asset",
+        "confidence": 1
+      }
+    ]
+  },
+  "diagnosis": {
+    "valuableAssets": [
+      {
+        "target": "Logo图标（良字变形）",
+        "observation": "独特的图形化汉字，兼具传统印章感与现代几何感。",
+        "whyItMatters": "核心识别符号，具有高度的独特性和文化隐喻。",
+        "evidenceRefs": [
+          "7b3c1540-8bc2-41f1-afe9-de9980505c4b"
+        ],
+        "confidence": 1
+      },
+      {
+        "target": "药柜木色 (#B59A6B)",
+        "observation": "从真实的药柜中提取的颜色，具有强烈的行业属性和温暖感。",
+        "whyItMatters": "建立了品牌与自然、传统、专业的视觉联系。",
+        "evidenceRefs": [
+          "32da88b7-02e1-4a0b-9731-b40780d11fd5"
+        ],
+        "confidence": 1
+      }
+    ],
+    "overusedExpressions": [],
+    "outdatedExpressions": [],
+    "weakSystemAreas": [
+      {
+        "target": "门头大型充气猫装置",
+        "observation": "在门头渲染图中出现巨大的橙色充气猫，与品牌核心的中医/专业医疗形象反差巨大。",
+        "whyItMatters": "可能导致严重的品牌误读（如宠物店、游乐场），且在其他VI系统中未出现，缺乏系统性支持。",
+        "evidenceRefs": [
+          "7fae9f0d-a83d-4142-89e7-dce6e03ac82c"
+        ],
+        "confidence": 0.9
+      }
+    ],
+    "categoryCliches": [
+      {
+        "target": "药材与捣药罐 imagery",
+        "observation": "海报和折页中大量使用传统的药材、捣药罐、古籍图片。",
+        "whyItMatters": "虽然符合行业属性，但属于中医行业通用视觉语言，需依靠排版和辅助图形来提升现代感。",
+        "evidenceRefs": [
+          "3cce696f-40e0-4b0a-b2d2-f5405e82a27f",
+          "c9a90454-5144-4a2e-a323-7467070b4124"
+        ],
+        "confidence": 0.8
+      }
+    ],
+    "brandMisreadRisks": [
+      {
+        "target": "空间外观/门头",
+        "observation": "门头渲染图中，充气猫占据了视觉中心，且颜色鲜艳，远超品牌Logo的视觉权重。",
+        "whyItMatters": "严重干扰品牌的核心业务（中医诊疗）传达，造成目标客群流失。",
+        "evidenceRefs": [
+          "7fae9f0d-a83d-4142-89e7-dce6e03ac82c"
+        ],
+        "confidence": 0.95,
+        "code": "RISK_PET_CLINIC",
+        "description": "门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。",
+        "appliesTo": {
+          "taskFamilies": [
+            "spatial_design"
+          ],
+          "subtypes": [
+            "facade_design",
+            "entrance_display"
+          ],
+          "scenes": [
+            "street_view",
+            "opening_event"
+          ]
+        },
+        "status": "confirmed"
+      },
+      {
+        "target": "整体视觉风格",
+        "observation": "尽管有现代排版，但核心素材非常传统。文案中强调的'智能健康管理'在视觉上体现不足。",
+        "whyItMatters": "难以吸引追求现代、高效健康管理的年轻或中产客群。",
+        "evidenceRefs": [
+          "3cce696f-40e0-4b0a-b2d2-f5405e82a27f",
+          "ce714ec6-7730-46fb-bf56-398122fc275b"
+        ],
+        "confidence": 0.8,
+        "code": "RISK_OLD_FASHIONED",
+        "description": "过度依赖传统元素（印章、药柜、宋体、药材图）可能导致品牌显得陈旧，缺乏'智能/现代'感。",
+        "appliesTo": {
+          "taskFamilies": [
+            "visual_identity",
+            "marketing_materials"
+          ],
+          "subtypes": [
+            "poster_design",
+            "digital_media"
+          ],
+          "scenes": [
+            "social_media",
+            "event_promotion"
+          ]
+        },
+        "status": "probable"
+      }
+    ],
+    "crossMediaGaps": [
+      {
+        "target": "数字化媒体表现",
+        "observation": "现有资产主要集中在印刷品（名片、信封、折页）和静态海报，缺乏动态或交互式媒体资产的展示。",
+        "whyItMatters": "作为'智能健康管理'平台，数字化体验（App界面、小程序、动态导视）是重要触点，目前缺失。",
+        "evidenceRefs": [],
+        "confidence": 0.7
+      }
+    ]
+  },
+  "creativeDecision": {
+    "brandRoleStatement": "一剂良方是一个融合传统中医智慧与现代智能技术的健康管理平台，提供专业、可信赖的中医诊疗与养生服务。",
+    "upgradeFrom": [
+      "传统老旧的中药铺形象",
+      "单一的药材销售",
+      "缺乏现代感的视觉表达"
+    ],
+    "preserveCore": [
+      "Logo图标（良字变形）与'素问'印章",
+      "思源宋体字体系统",
+      "药柜木色 (#B59A6B) 与品牌红 (#B00000)",
+      "辅助云纹/回纹图形"
+    ],
+    "upgradeTo": [
+      "现代、洁净、专业的医疗空间感",
+      "智能化的服务体验暗示",
+      "系统化的导视与包装规范"
+    ],
+    "uniqueUpgradeThesis": "原有资产虽然具有浓厚的传统文化底蕴，但面临'陈旧'和'误读（如宠物店）'的风险。本次升级将保留核心的'良'字图标、宋体字和药柜色彩，通过引入更现代的网格系统、辅助图形和空间材质（如金属、玻璃、洁净的白色），将品牌从'传统药房'升级为'现代中医体验馆'。同时，在空间设计中明确排除非品牌核心的干扰元素（如大型充气装置），确保专业医疗属性的传达。",
+    "targetWorldview": [
+      "传统智慧与现代科技共生",
+      "自然疗愈与专业秩序并重",
+      "身心平衡的健康生活"
+    ],
+    "toneBoundaries": [
+      {
+        "target": "专业且温暖的医疗感",
+        "avoid": [
+          "冰冷的纯医院感",
+          "陈旧的迷信感",
+          "杂乱的市集感"
+        ]
+      },
+      {
+        "target": "现代中式美学",
+        "avoid": [
+          "繁复的宫廷风",
+          "廉价的旅游纪念品风",
+          "与宠物/娱乐相关的可爱风"
+        ]
+      }
+    ],
+    "strategicNegatives": [
+      "不得在空间中使用大型卡通/充气装置（除非是明确的短期营销活动且与主品牌隔离）",
+      "不得使用非品牌色盘的鲜艳色彩",
+      "不得修改Logo的比例和字形"
+    ]
+  },
+  "abstractions": [
+    {
+      "sourceAsset": "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+      "semanticMeaning": [
+        "包容",
+        "循环",
+        "良方（解决方案）",
+        "中心聚焦"
+      ],
+      "formalProperties": [
+        "圆弧线条",
+        "半封闭空间",
+        "中心对称",
+        "线条粗细均匀"
+      ],
+      "rhythmProperties": [
+        "流畅的转折",
+        "重复的圆弧（在辅助图形中）"
+      ],
+      "materialPotential": [
+        "金属拉丝（现代感）",
+        "木质镂空（传统感）",
+        "亚克力发光（科技感）"
+      ],
+      "lightingPotential": [
+        "内透光（Logo发光）",
+        "柔和的洗墙灯（突出圆弧墙面）"
+      ],
+      "forbiddenLiteralUse": [
+        "不得直接将Logo放大作为空间隔断，需提取其'圆弧/包围'的形态逻辑",
+        "不得在空间中使用红色的'良'字涂鸦"
+      ],
+      "evidenceRefs": [
+        "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+        "8086f487-96f0-4f2b-8dba-f1f2cf880c7e"
+      ],
+      "confidence": 0.9
+    },
+    {
+      "sourceAsset": "32da88b7-02e1-4a0b-9731-b40780d11fd5",
+      "semanticMeaning": [
+        "秩序",
+        "分类",
+        "储藏",
+        "天然"
+      ],
+      "formalProperties": [
+        "网格矩阵",
+        "矩形模块",
+        "小标签/大柜体对比"
+      ],
+      "rhythmProperties": [
+        "重复的矩形",
+        "整齐的排列"
+      ],
+      "materialPotential": [
+        "原木色层板",
+        "黄铜把手/铭牌",
+        "磨砂玻璃门"
+      ],
+      "lightingPotential": [
+        "层板灯带（突出药材/产品）",
+        "聚焦照明（每个格子）"
+      ],
+      "forbiddenLiteralUse": [
+        "不得直接搬运旧式药柜作为主要家具，需进行现代化设计转译",
+        "不得在空间中使用杂乱堆放的药材"
+      ],
+      "evidenceRefs": [
+        "32da88b7-02e1-4a0b-9731-b40780d11fd5",
+        "cd13be2d-ddfa-4d45-8555-9867a11f784d"
+      ],
+      "confidence": 0.9
+    }
+  ],
+  "mediaTranslations": {
+    "sharedBrandCore": [
+      "一剂良方 Logo (Locked)",
+      "思源宋体",
+      "药柜木色 #B59A6B",
+      "品牌红 #B00000",
+      "辅助云纹图形"
+    ],
+    "spatial": {
+      "status": "ready",
+      "spatialConcept": "现代中医疗愈所——以'药柜'为原型的模块化秩序空间",
+      "brandRoleManifestation": [
+        "通过木质与白色的结合，体现'自然'与'专业'的平衡",
+        "通过清晰的导视系统，体现'智能/高效'的管理",
+        "通过'素问'印章元素的文化墙，体现'传承'"
+      ],
+      "signatureSpatialMechanism": [
+        "模块化陈列墙：提取药柜的'格子'概念，用于产品展示、药材陈列或书籍收纳，形成空间背景的节奏感",
+        "圆弧隔断：提取Logo的圆弧线条，用于候诊区与诊疗区的软性分隔，营造'包容/私密'感"
+      ],
+      "functionalNetwork": [
+        "基于'圆弧/包围'形态逻辑（源自Logo）的半封闭候诊/阅读空间",
+        "提取Logo辅助图形的网格矩阵式药材展示墙",
+        "现代化转译的药柜系统（木质层板、黄铜把手、磨砂玻璃门）",
+        "以'良'字图标为核心的视觉焦点区（如接待台、导视牌）",
+        "融合金属、玻璃、洁净白色与现代中医元素的诊疗室"
+      ],
+      "positiveDifferentiators": [
+        "区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质",
+        "区别于纯西医诊所的冰冷，大量使用原木色和暖光"
+      ],
+      "mustBeVisible": [
+        "入口处清晰的品牌Logo组合（无干扰物）",
+        "药柜木纹色的模块化陈列墙",
+        "宋体字的导视系统"
+      ],
+      "structureLanguage": [
+        "矩形网格（药柜转译）",
+        "圆弧倒角（Logo转译）",
+        "通透与半通透隔断"
+      ],
+      "materialLanguage": [
+        {
+          "material": "原木色饰面/层板",
+          "behavior": [
+            "温暖触感",
+            "自然纹理"
+          ],
+          "brandRole": "呼应品牌主色，建立与传统、自然的联系",
+          "forbidden": [
+            "不得做旧/仿古",
+            "不得使用深色红木"
+          ]
+        },
+        {
+          "material": "米白色/浅灰色涂料或石材",
+          "behavior": [
+            "洁净",
+            "漫反射"
+          ],
+          "brandRole": "提供现代、专业的背景，衬托木色和红色",
+          "forbidden": [
+            "不得使用纯冷白"
+          ]
+        },
+        {
+          "material": "黄铜/金色金属",
+          "behavior": [
+            "光泽",
+            "精致"
+          ],
+          "brandRole": "用于铭牌、把手等细节，提升品质感，呼应辅助图形颜色",
+          "forbidden": [
+            "不得大面积使用"
+          ]
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "暖色调重点照明",
+          "层板隐藏灯带"
+        ],
+        "contrast": "整体柔和明亮，局部（如陈列格、Logo墙）高亮",
+        "interactionWithMaterials": [
+          "光线洗亮木饰面纹理",
+          "金属件产生点睛高光"
+        ],
+        "forbidden": [
+          "不得使用时下流行的霓虹灯",
+          "不得使用冷白光"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "药柜木色 (#B59A6B)",
+            "role": "空间主色调（墙面/大型家具），奠定温暖基调"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "米白色 (#E8E5E0)",
+            "role": "背景色（天花/地面/部分墙面），提供洁净感"
+          }
+        ],
+        "accent": [
+          {
+            "name": "品牌红 (#B00000)",
+            "role": "点缀色（Logo、导视箭头、紧急按钮、软装靠垫），引导视线"
+          }
+        ],
+        "forbidden": [
+          "不得使用绿色（避免与西药/生菜混淆）",
+          "不得使用蓝色（避免与科技/西药混淆）",
+          "不得使用门头渲染图中的橙色（除非特定活动）"
+        ]
+      },
+      "brandIntegration": [
+        "前台背景墙：大型Logo浮雕或发光字",
+        "导视牌：沿用VI规范，使用品牌色块和宋体字",
+        "玻璃贴膜：使用辅助云纹图形"
+      ],
+      "functionalRelationships": [
+        "候诊区与诊疗区需保持视觉通透但听觉私密",
+        "取药区需与诊疗区相邻，方便流转"
+      ],
+      "sceneProgram": [
+        "接待/挂号",
+        "候诊/阅读",
+        "诊疗/把脉",
+        "取药/治疗",
+        "药材/产品展示"
+      ],
+      "peopleBehavior": [],
+      "functionalExperience": [
+        "进入：看到清晰的Logo和温暖木色，感到安心",
+        "等候：在圆弧围合的舒适区休息，阅读品牌折页",
+        "诊疗：在私密、光线柔和的房间接受服务",
+        "离开：在取药区看到整齐的'现代药柜'，带走包装精美的产品"
+      ],
+      "sceneMisreadRisks": [
+        "避免将'药柜'设计得过于像古董架，应强调其'收纳/展示'的现代功能",
+        "避免空间过于像'茶馆'，需通过医疗设备和导视强化'诊疗'属性"
+      ]
+    },
+    "packaging": {
+      "status": "ready",
+      "packagingConcept": "现代药方——将传统药包/药盒进行标准化、精致化设计",
+      "productAndCategoryRole": [
+        "中药饮片",
+        "养生茶包",
+        "理疗产品"
+      ],
+      "structureStrategy": [
+        {
+          "structure": "方形纸盒/纸袋",
+          "purpose": "通用包装，易于堆叠和陈列",
+          "locked": false,
+          "evidenceRefs": []
+        },
+        {
+          "structure": "小型标签贴纸",
+          "purpose": "用于区分不同药材/产品，沿用'药柜标签'样式",
+          "locked": true,
+          "evidenceRefs": [
+            "cd13be2d-ddfa-4d45-8555-9867a11f784d"
+          ]
+        }
+      ],
+      "openingExperience": [
+        "撕拉条或磁吸开合，体现品质",
+        "内衬印有辅助云纹图形"
+      ],
+      "productArrangement": [
+        "独立小包装（如茶包）装入大盒",
+        "药柜标签式的外贴标"
+      ],
+      "graphicTranslation": [
+        {
+          "sourceMeaning": "药柜标签的秩序感",
+          "packagingExpression": [
+            "包装正面大面积留白",
+            "中央使用大号宋体字（产品名）",
+            "下方使用拼音小字",
+            "背景使用极淡的云纹底纹"
+          ],
+          "forbiddenLiteralUse": [
+            "不得直接在包装上印满药材照片"
+          ]
+        }
+      ],
+      "informationHierarchy": [
+        "产品名（最大） > 品牌Logo > 功效/成分 > 拼音/英文",
+        "保持与VI系统一致的字体层级"
+      ],
+      "substrateLanguage": [
+        "触感纸/特种纸",
+        "环保牛皮纸（用于内袋）"
+      ],
+      "craftLanguage": [
+        {
+          "craft": "烫金/烫红",
+          "purpose": "用于Logo或'素问'印章，提升精致感",
+          "forbiddenUse": []
+        },
+        {
+          "craft": "击凸",
+          "purpose": "用于辅助图形，增加触感",
+          "forbiddenUse": []
+        }
+      ],
+      "colorBehavior": {
+        "base": [
+          "米白色/浅灰色 (主包装底色)"
+        ],
+        "identity": [
+          "药柜木色 (腰封/标签底色)",
+          "品牌红 (Logo/印章)"
+        ],
+        "accent": [
+          "黑色 (文字)"
+        ],
+        "forbidden": [
+          "不得使用高饱和度荧光色"
+        ]
+      },
+      "logoPolicy": [
+        "Logo必须位于包装正面右上角或中央上方",
+        "不得变形或变色"
+      ],
+      "seriesArchitecture": [
+        "通过标签颜色或边框区分不同系列（如：内科、养生科）",
+        "沿用科室铭牌的色彩逻辑（白底黑字 vs 棕底白字）"
+      ],
+      "photographyDirection": [
+        "产品静物照：简洁背景，强调包装质感",
+        "成分照：高质量的药材特写，光线柔和",
+        "场景照：包装置于现代家居或办公环境，而非传统药铺"
+      ],
+      "packagingMisreadRisks": [
+        "避免包装看起来像'食品零食'，需通过标签排版强化'药方/健康'属性"
+      ],
+      "missingRequiredFields": []
+    },
+    "poster": {
+      "status": "interface_only",
+      "concept": "传承与未来的对话",
+      "expressionLanguage": [
+        "使用倒计时海报的金色立体数字风格",
+        "结合传统元素（药材、古籍）与现代排版",
+        "大量留白，突出文案（如'素问一脉承'）"
+      ],
+      "misreadRisks": [
+        "避免图片过于陈旧，需通过后期调色或合成增加现代感"
+      ]
+    },
+    "vi": {
+      "status": "interface_only",
+      "concept": "规范、统一、可信赖",
+      "expressionLanguage": [
+        "严格执行网格系统",
+        "字体层级分明",
+        "色彩使用克制"
+      ],
+      "misreadRisks": [
+        "避免在应用系统中随意更改Logo组合方式"
+      ]
+    }
+  },
+  "colorSystem": {
+    "primary": [
+      {
+        "name": "药柜木色 (#B59A6B)",
+        "role": "空间主色调（墙面/大型家具），奠定温暖基调"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "米白色 (#E8E5E0)",
+        "role": "背景色（天花/地面/部分墙面），提供洁净感"
+      }
+    ],
+    "accent": [
+      {
+        "name": "品牌红 (#B00000)",
+        "role": "点缀色（Logo、导视箭头、紧急按钮、软装靠垫），引导视线"
+      }
+    ],
+    "forbidden": [
+      "不得使用绿色（避免与西药/生菜混淆）",
+      "不得使用蓝色（避免与科技/西药混淆）",
+      "不得使用门头渲染图中的橙色（除非特定活动）"
+    ]
+  },
+  "materialSystem": [
+    {
+      "material": "原木色饰面/层板",
+      "behavior": [
+        "温暖触感",
+        "自然纹理"
+      ],
+      "brandRole": "呼应品牌主色，建立与传统、自然的联系",
+      "forbidden": [
+        "不得做旧/仿古",
+        "不得使用深色红木"
+      ]
+    },
+    {
+      "material": "米白色/浅灰色涂料或石材",
+      "behavior": [
+        "洁净",
+        "漫反射"
+      ],
+      "brandRole": "提供现代、专业的背景，衬托木色和红色",
+      "forbidden": [
+        "不得使用纯冷白"
+      ]
+    },
+    {
+      "material": "黄铜/金色金属",
+      "behavior": [
+        "光泽",
+        "精致"
+      ],
+      "brandRole": "用于铭牌、把手等细节，提升品质感，呼应辅助图形颜色",
+      "forbidden": [
+        "不得大面积使用"
+      ]
+    }
+  ],
+  "lightingSystem": {
+    "source": [
+      "暖色调重点照明",
+      "层板隐藏灯带"
+    ],
+    "contrast": "整体柔和明亮，局部（如陈列格、Logo墙）高亮",
+    "interactionWithMaterials": [
+      "光线洗亮木饰面纹理",
+      "金属件产生点睛高光"
+    ],
+    "forbidden": [
+      "不得使用时下流行的霓虹灯",
+      "不得使用冷白光"
+    ]
+  },
+  "provenance": {
+    "createdFrom": [
+      "asset:7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+      "asset:71cfb978-0163-4c1b-bb71-828be4421c60",
+      "asset:3a68520b-a215-421a-bb14-8b865933751a",
+      "asset:ccd6d05a-deab-492b-87c8-cf90109fb05f",
+      "asset:fb3163d8-7692-4ad7-b627-8c7e08d84632",
+      "asset:e2d99236-ae2e-40b1-b365-ad20ab9ce59b",
+      "asset:baf97aa2-2b4a-4070-981c-c3d655bfe647",
+      "asset:8dc53cdb-ae24-44b8-8401-cc9dd5187861",
+      "asset:32da88b7-02e1-4a0b-9731-b40780d11fd5",
+      "asset:10b3da7d-74e8-4d81-bab8-a076fcc7aac7",
+      "asset:9cc069b4-293f-4627-875b-a28bdaadb3dd",
+      "asset:a784e540-b65f-4f6d-bab2-fb0a8534a2b3",
+      "asset:ce714ec6-7730-46fb-bf56-398122fc275b",
+      "asset:8086f487-96f0-4f2b-8dba-f1f2cf880c7e",
+      "asset:7bf8610c-afed-4140-af99-d536f81c7615",
+      "asset:a0cac33b-c340-4d28-ad7b-5a64b6806308",
+      "asset:3289ad67-c608-47af-895c-0a3a3a911ea5",
+      "asset:d30010f1-f508-40dc-8481-6b70acacfb25",
+      "asset:f8253251-818b-4137-9dee-8a6fe1f3617b",
+      "asset:7cc134e3-4eeb-445a-9b11-d98f94e8825b",
+      "asset:83eff4f8-ebcc-4324-906b-bf074b5b4d11",
+      "asset:cd13be2d-ddfa-4d45-8555-9867a11f784d",
+      "asset:7fae9f0d-a83d-4142-89e7-dce6e03ac82c",
+      "asset:e24d4098-4ffc-4434-99fa-bc7fe3d48abf",
+      "asset:0251aa22-86b2-4ebc-9a71-4c663d9cf4e1",
+      "asset:cd24c5e6-f582-4af0-a8ed-22c970ee9c21",
+      "asset:3cce696f-40e0-4b0a-b2d2-f5405e82a27f",
+      "asset:79c9ed91-960d-45a2-b7ae-ef53de9b9161",
+      "asset:38f34468-4308-4901-b436-932538e5aee5",
+      "asset:c9a90454-5144-4a2e-a323-7467070b4124"
+    ],
+    "generatedAt": "2026-08-08T04:55:10.372Z",
+    "modelId": "qwen3.6-plus",
+    "sourceFingerprint": "ceed4742a4d04109b60901237e3c6220933b00e001988d667cbab9feb59ad4eb"
+  },
+  "validation": {
+    "hardFactStatus": "pass",
+    "mode": "formal_upgrade",
+    "missingRequiredFacts": [],
+    "conflicts": [],
+    "executionDataStatus": "ready",
+    "missingExecutionFields": []
+  },
+  "repairMetadata": {
+    "schemaVersion": "1.0",
+    "fields": {
+      "mediaTranslations.spatial.functionalNetwork": {
+        "status": "inferred",
+        "confidence": 0.9,
+        "evidenceRefs": [
+          "7b3c1540-8bc2-41f1-afe9-de9980505c4b",
+          "32da88b7-02e1-4a0b-9731-b40780d11fd5",
+          "ce714ec6-7730-46fb-bf56-398122fc275b",
+          "cd13be2d-ddfa-4d45-8555-9867a11f784d",
+          "8086f487-96f0-4f2b-8dba-f1f2cf880c7e"
+        ],
+        "generatedBy": "repair_model",
+        "sourceFingerprint": "ceed4742a4d04109b60901237e3c6220933b00e001988d667cbab9feb59ad4eb",
+        "schemaVersion": "1.0",
+        "repairVersion": "1.0",
+        "repairedAt": "2026-08-08T04:57:50.645Z"
+      }
+    }
+  }
+}

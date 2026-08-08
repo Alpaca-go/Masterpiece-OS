@@ -1,0 +1,23 @@
+{
+  "runId": "golden-jiuzhou-aesthetics-entrance-1786163096305",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "entrance",
+  "startedAt": "2026-08-08T04:24:56.305Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 5904,
+  "promptHash": "c811e6f09f2d38bc9c4f7524e84a9be299ae2b1b812c3bc1e3a3b5bc12cf06e8",
+  "architectureAnchorIds": [
+    "JZMX-ARCH-01-ReceptionMembrane",
+    "JZMX-ARCH-02-EntranceGlass",
+    "JZMX-ARCH-03-ConsultationFacade"
+  ],
+  "referenceCount": 3,
+  "elapsedMs": 95530,
+  "imageFile": "output.png",
+  "imageSha256": "a3f0ea470dc2ee36fae0ca887e9817a3eab85c43167bcef8f5c09f04b4e6e4e0",
+  "imageBytes": 469111
+}

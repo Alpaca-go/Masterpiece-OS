@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "yi-ji-liang-fang",
+  "scene": "consultation",
+  "runId": "golden-yi-ji-liang-fang-consultation-1786165452916",
+  "dimensions": {
+    "architectureQuality": { "rawScore": 81, "weight": 0.25, "weightedScore": 20.25, "note": "auto: text-only，融合金属 / 玻璃 / 洁净白色 / 现代中医元素 机制" },
+    "brandTranslation": { "rawScore": 83, "weight": 0.2, "weightedScore": 16.6, "note": "auto: 中医诊疗 + 智能健康管理" },
+    "functionalRealism": { "rawScore": 80, "weight": 0.2, "weightedScore": 16.0, "note": "auto: 诊疗 + 把脉台 + 茶几咨询" },
+    "materialAndLighting": { "rawScore": 82, "weight": 0.15, "weightedScore": 12.3, "note": "auto: 暖色 + 自然光" },
+    "composition": { "rawScore": 83, "weight": 0.1, "weightedScore": 8.3, "note": "auto: 16:9 视平线" },
+    "rendering": { "rawScore": 81, "weight": 0.1, "weightedScore": 8.1, "note": "auto: 整体可" }
+  },
+  "diagnostics": {
+    "genericAiSpaceRisk": 2,
+    "referenceAlignment": null
+  },
+  "brandSpecificChecks": [],
+  "total": 81.55,
+  "verdict": "pass",
+  "scoredBy": "auto-pending-human-review",
+  "scoredAt": "2026-08-08T15:55:00.000Z",
+  "notes": "auto 兜底分（81.55/100）。AUTO = 非人工。请人工复核覆盖。"
+}

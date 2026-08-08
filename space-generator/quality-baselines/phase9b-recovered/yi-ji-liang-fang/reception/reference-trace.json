@@ -1,0 +1,12 @@
+{
+  "brandKey": "yi-ji-liang-fang",
+  "anchorIds": [
+    "YJLF-ARCH-01-WoodenGrid",
+    "YJLF-ARCH-02-PaperScreen",
+    "YJLF-ARCH-03-TeaCorner"
+  ],
+  "references": [],
+  "referencePolicy": {
+    "mode": "phase9b_quality"
+  }
+}

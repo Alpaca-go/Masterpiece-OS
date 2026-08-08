@@ -1,0 +1,23 @@
+{
+  "runId": "golden-jiuzhou-aesthetics-reception-1786166841316",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "reception",
+  "startedAt": "2026-08-08T05:27:21.316Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "promptChars": 5901,
+  "promptHash": "422bf79787010a7b12eff485a6c1d0d2904390dbe84191eed2d7b710ee370f7b",
+  "architectureAnchorIds": [
+    "JZMX-ARCH-01-ReceptionMembrane",
+    "JZMX-ARCH-02-EntranceGlass",
+    "JZMX-ARCH-03-ConsultationFacade"
+  ],
+  "referenceCount": 0,
+  "elapsedMs": 87710,
+  "imageFile": "output.png",
+  "imageSha256": "30d9b801ecbfa34a09940107bac297dc31b5d20c368f130bba04868923a59ae7",
+  "imageBytes": 511246
+}
