@@ -1,18 +1,30 @@
 {
   "schemaVersion": "1.0",
-  "baseline": "r10-final",
   "sampleId": "JZMX-HF-01",
   "brandKey": "jiuzhou-aesthetics",
   "role": "reference-first",
+  "runId": "r10-ref-jiuzhou-aesthetics-reception-1-1786237460259",
+  "imageSha256": "2188be7cfbddffc20dacce9e85e4204fd59796360cc65bc28f8c7eb598a82213",
+  "promptHash": "d51569c9688055f213d4094584b55814ebe3bdac69067396d64ed60ccebbc232",
+  "compilerId": "phase9b-quality-compiler",
+  "baselineId": "r10-reference-first",
+  "generatedAt": "2026-08-09T01:04:20.259Z",
+  "evaluatedAt": "2026-08-09T10:00:00.000Z",
   "result": "pass",
-  "architectureExpressiveness": 4.5,
-  "functionalRealism": 4.3,
-  "brandSpecificity": 4.4,
-  "literalMotifRisk": 1,
-  "crossBrandIsolation": 5,
+  "humanEvaluation": true,
+  "carriedForwardEvidence": true,
+  "referenceMode": "reference_assisted",
+  "referenceCount": 1,
+  "scores": {
+    "architectureExpressiveness": 4.5,
+    "functionalRealism": 4.3,
+    "brandSpecificity": 4.4,
+    "literalMotifRisk": 1,
+    "crossBrandIsolation": 5
+  },
   "notes": [
-    "Reference-First：半透明边界层次更丰富，品牌识别高于 Standard"
+    "Reference-First：半透明边界层次更丰富，品牌识别高于 Standard",
+    "carriedForwardEvidence=true：R10.4.1 未修改 Reference Runtime，保留原 run/hash/baseline，不作为 fresh sample"
   ],
-  "scoredBy": "human-r10.4-acceptance",
-  "scoredAt": "2026-08-09T00:00:00.000Z"
+  "scoredBy": "human-r10.4-acceptance"
 }

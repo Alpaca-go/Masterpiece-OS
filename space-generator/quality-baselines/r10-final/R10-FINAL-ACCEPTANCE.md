@@ -1,11 +1,14 @@
 # R10 Final Acceptance Report
 
-- Date: 2026-08-09
-- Phase: R10.4 Final Acceptance & R11 Unlock
+- Date: 2026-08-09 (R10.4.1 Final Sign-off)
+- Phase: R10.4.1 Decorative Object Semantic Gate & Final Acceptance Artifact Integrity → R11 Unlock
 - Production Compiler: `r8_6_golden` (src/space, `phase9b-quality-compiler` v1.1.0,
   source-adapter v1.4.0) — frozen
 - Provider / Model: volcengine / `doubao-seedream-5-0-pro-260628`, 2K, 16:9
+- Repair baseline: `r10.4.1-post-repair` (commit `de5b0f8`)
 - Artifacts: `space-generator/quality-baselines/r10-final/`
+- Visual acceptance: **PASS** (human, 2026-08-09) — 3/3 fresh Standard + carried-forward HF
+- Artifact integrity: **PASS** (fail-closed, all binding checks green)
 
 ---
 
@@ -111,6 +114,45 @@ See `route-baseline.json` for the machine-readable freeze.
 **Phase R11.1 — Confirmed Generated Image & Continuation Contract** (explicit
 user confirm -> confirmed_generated_output -> referenceAssetIds -> new scene ->
 same frozen compiler -> continuation output). No R11.2/R11.3 in this pass.
+
+## 8a. R10.4.1 Final Sign-off (2026-08-09)
+
+### Decorative Object Semantic Gate — Visual Acceptance PASS
+
+Three fresh post-repair Standard smokes were human-reviewed (R10.4.1):
+
+| Sample | Result | Core risk checked |
+|---|---|---|
+| jzmx-standard-r10.4.1 | PASS | Decorative centerpiece (architecture still dominant) |
+| ftt-standard-r10.4.1 | PASS | Semantic over-filtering (open kitchen / food display intact) |
+| yjlf-standard-r10.4.1 | PASS | Semantic over-filtering (herbal cabinet / wood grid intact) |
+
+The JZMX prompt now demotes "接待台正对入口，视线引导至艺术装置" into
+"接待台正对入口，建立清晰入口视觉焦点和空间导向" — the decorative object is no
+longer a functional hard requirement. Small artistic objects remain as
+subordinate accent (Decorative Centerpiece Risk = 2, an appropriate ceiling,
+not a fail). FTT / YJLF real operational objects were NOT mis-demoted.
+
+Cross-brand isolation confirmed (JZMX medical-aesthetics / FTT commercial
+dining / YJLF wellness-herbal, no style leakage).
+
+### Final Acceptance Artifact Integrity — PASS (fail-closed)
+
+For each fresh Standard sample (baseline `r10.4.1-post-repair`, repair commit
+`de5b0f8`, refs=0, r8_6_golden, 2K, 16:9), the integrity gate re-computed and
+matched all bindings:
+
+| Sample | runId | imageSha256 | promptHash | compiler | commit | baseline | fresh |
+|---|---|---:|---:|---|---|---|---|
+| jzmx-standard-r10.4.1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| ftt-standard-r10.4.1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| yjlf-standard-r10.4.1 | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+
+JZMX Reference-First (`JZMX-HF-01`) is **carriedForwardEvidence=true**: its
+original run/hash/baseline (`r10-reference-first`) are preserved; it is NOT
+counted as a fresh sample.
+
+See `final-acceptance-manifest.json` (3 fresh Standard + 1 carried-forward HF).
 
 ## 9. Final Decision
 

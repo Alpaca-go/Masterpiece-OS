@@ -44,6 +44,8 @@ test('R10 final status marks complete + r11Ready with pass flags', () => {
   assert.equal(status.regressionHold, false);
   assert.equal(status.routeIntegrity, 'pass');
   assert.equal(status.spatialSemanticGate, 'pass');
+  assert.equal(status.decorativeObjectSemanticGate, 'pass');
+  assert.equal(status.artifactIntegrity, 'pass');
   assert.equal(status.standardGeneration, 'pass');
   assert.equal(status.referenceFirst, 'pass');
   assert.equal(status.crossBrandIsolation, 'pass');
@@ -51,6 +53,25 @@ test('R10 final status marks complete + r11Ready with pass flags', () => {
   assert.equal(status.providerAspectRatioIntegrity, 'pass');
   assert.equal(status.r11Ready, true);
   assert.equal(status.productionCompiler, 'r8_6_golden');
+});
+
+test('R10 final acceptance manifest binds 3 fresh + 1 carried-forward sample', () => {
+  const manifest = readJson(`${base}/final-acceptance-manifest.json`);
+  assert.equal(manifest.visualAcceptance, 'pass');
+  assert.equal(manifest.artifactIntegrity, 'pass');
+  const fresh = manifest.samples.filter((s) => s.fresh === true);
+  const carried = manifest.samples.filter((s) => s.carriedForwardEvidence === true);
+  assert.equal(fresh.length, 3, '3 fresh Standard samples');
+  assert.equal(carried.length, 1, '1 carried-forward HF sample');
+  for (const s of fresh) {
+    assert.equal(s.result, 'pass');
+    assert.ok(s.imageSha256 && s.imageSha256.length === 64, `${s.sampleId}: bound imageSha256`);
+    assert.ok(s.runId, `${s.sampleId}: bound runId`);
+  }
+  for (const s of carried) {
+    assert.equal(s.result, 'pass');
+    assert.ok(s.sourceBaseline, 'carried-forward keeps source baseline');
+  }
 });
 
 test('R10 final archive keeps the 9-file artifact set for all 4 smokes', () => {
@@ -69,7 +90,14 @@ test('R10 final archive keeps the 9-file artifact set for all 4 smokes', () => {
     assert.equal(ref.referenceCount, sample.refs, `${sample.id}: refs`);
     assert.equal(trace.referenceCount, sample.refs, `${sample.id}: trace refs`);
     assert.equal(ev.result, 'pass', `${sample.id}: human pass`);
-    assert.equal(ev.baseline, 'r10-final', `${sample.id}: baseline label`);
+    if (sample.id === 'JZMX-HF-01') {
+      // Carried-forward Reference-First evidence: keeps its original baseline
+      // (r10-reference-first) and is explicitly marked carriedForwardEvidence.
+      assert.equal(ev.carriedForwardEvidence, true, `${sample.id}: carried forward`);
+      assert.equal(ev.baselineId, 'r10-reference-first', `${sample.id}: original baseline preserved`);
+    } else {
+      assert.equal(ev.baseline, 'r10-final', `${sample.id}: baseline label`);
+    }
   }
 });
 

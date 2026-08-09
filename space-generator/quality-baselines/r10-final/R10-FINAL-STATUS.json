@@ -5,31 +5,41 @@
   "productionCompiler": "r8_6_golden",
   "routeIntegrity": "pass",
   "spatialSemanticGate": "pass",
+  "decorativeObjectSemanticGate": "pass",
+  "artifactIntegrity": "pass",
   "standardGeneration": "pass",
   "referenceFirst": "pass",
   "crossBrandIsolation": "pass",
   "literalMotifControl": "pass",
   "providerAspectRatioIntegrity": "pass",
   "r11Ready": true,
-  "frozenAt": "2026-08-09",
+  "signedOffAt": "2026-08-09",
+  "repairBaseline": "r10.4.1-post-repair",
+  "repairCommitSha": "de5b0f804371d16968f9209b649ae21f29c7775b",
   "finalAcceptance": {
     "report": "space-generator/quality-baselines/r10-final/R10-FINAL-ACCEPTANCE.md",
     "artifacts": "space-generator/quality-baselines/r10-final/",
-    "samples": [
-      { "id": "JZMX-STD-01", "brand": "jiuzhou-aesthetics", "role": "standard", "result": "pass" },
-      { "id": "JZMX-HF-01", "brand": "jiuzhou-aesthetics", "role": "reference_first", "result": "pass" },
-      { "id": "FTT-STD-01", "brand": "feng-tang-tang", "role": "standard", "result": "pass" },
-      { "id": "YJLF-STD-01", "brand": "yi-ji-liang-fang", "role": "standard", "result": "pass" }
+    "manifest": "space-generator/quality-baselines/r10-final/final-acceptance-manifest.json",
+    "freshSamples": [
+      { "sampleId": "jzmx-standard-r10.4.1", "brand": "jiuzhou-aesthetics", "role": "standard", "result": "pass", "integrity": "pass", "fresh": true },
+      { "sampleId": "ftt-standard-r10.4.1", "brand": "feng-tang-tang", "role": "standard", "result": "pass", "integrity": "pass", "fresh": true },
+      { "sampleId": "yjlf-standard-r10.4.1", "brand": "yi-ji-liang-fang", "role": "standard", "result": "pass", "integrity": "pass", "fresh": true }
     ],
-    "imageGate": "4/4 pass"
+    "carriedForwardEvidence": [
+      { "sampleId": "JZMX-HF-01", "brand": "jiuzhou-aesthetics", "role": "reference_first", "result": "pass", "carriedForwardEvidence": true, "sourceBaseline": "r10-reference-first" }
+    ],
+    "counts": { "freshStandardPass": 3, "carriedForwardEvidencePass": 1 },
+    "imageGate": "3/3 fresh standard PASS + 1 carried-forward HF PASS"
   },
   "frozenSafetyBoundaries": [
     "r8_6_golden compiler route",
     "generation route integrity gate",
     "spatial semantic gate",
+    "decorative object semantic gate",
     "color role freeze",
     "standard / reference-first reference policy",
     "provider aspect ratio integrity",
-    "reference provenance trace"
+    "reference provenance trace",
+    "final acceptance artifact integrity gate"
   ]
 }

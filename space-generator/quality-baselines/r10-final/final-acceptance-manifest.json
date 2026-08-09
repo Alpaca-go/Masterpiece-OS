@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0",
+  "baselineId": "r10-final",
+  "sourceBaseline": "r10.4.1-post-repair",
+  "visualAcceptance": "pass",
+  "artifactIntegrity": "pass",
+  "humanVisualAcceptanceDate": "2026-08-09",
+  "repairCommitSha": "de5b0f804371d16968f9209b649ae21f29c7775b",
+  "samples": [
+    {
+      "sampleId": "jzmx-standard-r10.4.1",
+      "brand": "jiuzhou-aesthetics",
+      "role": "standard",
+      "fresh": true,
+      "carriedForwardEvidence": false,
+      "result": "pass",
+      "imageSha256": "6e6351a1665598496a44ce29f3953c233045385166aada48d0bc901ce5873eb0",
+      "runId": "r10-4-1-jzmx-jiuzhou-aesthetics-reception-1-1786268695399"
+    },
+    {
+      "sampleId": "ftt-standard-r10.4.1",
+      "brand": "feng-tang-tang",
+      "role": "standard",
+      "fresh": true,
+      "carriedForwardEvidence": false,
+      "result": "pass",
+      "imageSha256": "6b1b48d2a686a5d9411830733281295d5c85bd5edf3954256b549c7737ae27e5",
+      "runId": "r10-4-1-ftt-feng-tang-tang-lobby-1-1786268808665"
+    },
+    {
+      "sampleId": "yjlf-standard-r10.4.1",
+      "brand": "yi-ji-liang-fang",
+      "role": "standard",
+      "fresh": true,
+      "carriedForwardEvidence": false,
+      "result": "pass",
+      "imageSha256": "0db1a2761a3f267419a4300c27a9c71692b42765ca03b0ccfde3d04714c316ff",
+      "runId": "r10-4-1-yjlf-yi-ji-liang-fang-reception-1-1786268908783"
+    },
+    {
+      "sampleId": "JZMX-HF-01",
+      "brand": "jiuzhou-aesthetics",
+      "role": "reference_first",
+      "fresh": false,
+      "carriedForwardEvidence": true,
+      "result": "pass",
+      "imageSha256": "2188be7cfbddffc20dacce9e85e4204fd59796360cc65bc28f8c7eb598a82213",
+      "runId": "r10-ref-jiuzhou-aesthetics-reception-1-1786237460259",
+      "sourceBaseline": "r10-reference-first"
+    }
+  ],
+  "counts": {
+    "freshStandard": 3,
+    "carriedForwardEvidence": 1,
+    "freshStandardPass": 3
+  }
+}
