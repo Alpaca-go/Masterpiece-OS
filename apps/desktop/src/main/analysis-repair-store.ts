@@ -13,6 +13,8 @@ const RUNTIME_FILENAMES = new Set([
   'repair-response.redacted.json',
   'merge-report.json',
   'final-validation.json',
+  'spatial-semantic-validation.initial.json',
+  'spatial-semantic-validation.repaired.json',
 ]);
 
 function assertInside(root: string, target: string): string {

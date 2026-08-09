@@ -14,6 +14,14 @@ test('repair store separates formal packet history from temporary runtime artifa
     const dataRoot = path.join(temp, 'data');
     const runId = 'repair-run-44444444-4444-4444-8444-444444444444';
     const store = createAnalysisRepairStore({ projectRoot, dataRoot, runId });
+    await store.saveRuntimeArtifact('spatial-semantic-validation.initial.json', {
+      status: 'block',
+      findings: [],
+    });
+    await store.saveRuntimeArtifact('spatial-semantic-validation.repaired.json', {
+      status: 'pass',
+      findings: [],
+    });
     const packet = structuredAnalysisPacketFixture();
     packet.creativeDecision.toneBoundaries = [];
 
