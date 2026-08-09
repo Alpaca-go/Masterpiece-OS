@@ -77,6 +77,7 @@ async function main(): Promise<void> {
       };
     })
     : await pipeline.start(projectId, true, textProfileId);
+  const analysisDurationMs = Date.now() - analysisStartedAt;
   const packetPath = path.join(projectPaths.root, 'project-context', 'visual-decision-packet.json');
   const packet = JSON.parse(await fs.readFile(packetPath, 'utf8')) as VisualDecisionPacket;
   const packetValidation = validateVisualDecisionPacket(packet);
@@ -184,11 +185,7 @@ async function main(): Promise<void> {
   });
 
   const prompt = compilation.compiledPrompt.finalPrompt;
-  const projectContract = compilation.compiledPrompt.projectGenerationContract;
   const effectivePacket = compilation.compiledPrompt.effectiveVisualDecisionPacket || packet;
-  const approvedSpecificityReady =
-    projectContract?.projectSpecificDecisions?.specificity?.status === 'ready';
-  const firstAbstraction = effectivePacket.abstractions[0];
   const sharedSignalGroups = [
     { id: 'brand', alternatives: [brandName] },
     { id: 'industry', alternatives: [packet.projectFacts.industry.value] },
@@ -213,38 +210,11 @@ async function main(): Promise<void> {
       { id: 'packaging-photography', alternatives: packaging.photographyDirection },
     ]
     : [
-      {
-        id: 'upgrade-thesis',
-        alternatives: approvedSpecificityReady
-          ? [projectContract.upgradeThesis.statement]
-          : [packet.creativeDecision.uniqueUpgradeThesis],
-      },
-      { id: 'target-worldview', alternatives: effectivePacket.creativeDecision.targetWorldview },
-      { id: 'nonliteral-translation', alternatives: firstAbstraction?.forbiddenLiteralUse || [] },
+      // The frozen Space compiler deliberately rewrites strategy and motif
+      // source text into architecture-safe semantics. Do not require those raw
+      // phrases to survive verbatim; route integrity verifies the corresponding
+      // architecture-first and brand-translation blocks structurally.
       { id: 'spatial-concept', alternatives: [effectivePacket.mediaTranslations.spatial.spatialConcept] },
-      { id: 'structure-language', alternatives: effectivePacket.mediaTranslations.spatial.structureLanguage },
-      {
-        id: 'color-system',
-        alternatives: approvedSpecificityReady
-          ? projectContract.sharedVisualRules.colorBehavior
-          : [
-            ...packet.colorSystem.primary.map((item) => item.name),
-            ...packet.colorSystem.secondary.map((item) => item.name),
-            ...packet.colorSystem.accent.map((item) => item.name),
-          ],
-      },
-      {
-        id: 'material-system',
-        alternatives: approvedSpecificityReady
-          ? projectContract.sharedVisualRules.materialBehavior
-          : packet.materialSystem.map((item) => item.material),
-      },
-      {
-        id: 'lighting-system',
-        alternatives: approvedSpecificityReady
-          ? projectContract.sharedVisualRules.lightingBehavior
-          : packet.lightingSystem.source,
-      },
     ];
   const requiredPromptSignalGroups = [...sharedSignalGroups, ...deliverableSignalGroups]
     .filter((group) => group.alternatives.some((value) => Boolean(value?.trim())));
@@ -293,6 +263,9 @@ async function main(): Promise<void> {
     await fs.readFile(analysis.runtimeReportPath, 'utf8'),
   ) as { modelCallsThisRun?: number; modelCallCount?: number; modelCalls?: unknown[] };
   const report = await fs.readFile(analysis.reportPath, 'utf8');
+  const persistedTrace = JSON.parse(
+    await fs.readFile(path.join(compilation.artifactDirectory, 'trace.json'), 'utf8'),
+  ) as { spaceGeneration?: Record<string, unknown> };
 
   result({
     userAuthorized: true,
@@ -306,7 +279,7 @@ async function main(): Promise<void> {
       modelCallCount: runtimeReport.modelCallsThisRun
         ?? runtimeReport.modelCallCount
         ?? (Array.isArray(runtimeReport.modelCalls) ? runtimeReport.modelCalls.length : 1),
-      durationMs: Date.now() - analysisStartedAt,
+      durationMs: analysisDurationMs,
       reportPath: analysis.reportPath,
       runtimeReportPath: analysis.runtimeReportPath,
       packetPath,
@@ -331,9 +304,7 @@ async function main(): Promise<void> {
       logoUsageMode: compilation.taskContract.logoUsageMode,
       referenceAssetIds: compilation.taskContract.referenceAssetIds,
       generationBasis: compilation.taskContract.generationBasis,
-      spaceGeneration: (compilation.compiledPrompt.trace as unknown as {
-        spaceGeneration?: Record<string, unknown>;
-      }).spaceGeneration,
+      spaceGeneration: persistedTrace.spaceGeneration,
     },
     image: {
       provider: imageRun.providerId,
@@ -364,7 +335,7 @@ app.whenReady().then(async () => {
     app.exit(0);
   } catch (error) {
     const safe = error instanceof Error
-      ? { name: error.name, message: error.message }
+      ? { name: error.name, message: error.message, ...Object.fromEntries(Object.entries(error)) }
       : { message: String(error) };
     process.stderr.write(`VISUAL_DECISION_SMOKE_ERROR ${JSON.stringify(safe)}\n`);
     app.exit(1);
