@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "r10-final-jiuzhou-aesthetics-1786266283967",
+  "projectId": "jiuzhou-aesthetics-r10-final",
+  "deliverableFamily": "space",
+  "subtype": "reception",
+  "shot": "entrance_view",
+  "count": 1,
+  "aspectRatio": "16:9",
+  "currentInstruction": "R10.4 final acceptance smoke (r8_6_golden).",
+  "generationBasis": "reference_first",
+  "mustInclude": [],
+  "mustAvoid": [],
+  "referenceAssetIds": [
+    "r10-hf-reference"
+  ],
+  "logoUsageMode": "post_composite",
+  "createdAt": "2026-08-09T09:04:43.967Z"
+}

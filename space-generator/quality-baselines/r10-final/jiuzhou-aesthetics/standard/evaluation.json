@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r10-final",
+  "sampleId": "JZMX-STD-01",
+  "brandKey": "jiuzhou-aesthetics",
+  "role": "standard",
+  "result": "pass",
+  "architectureExpressiveness": 4.2,
+  "functionalRealism": 4.4,
+  "brandSpecificity": 3.7,
+  "literalMotifRisk": 0.5,
+  "crossBrandIsolation": 5,
+  "notes": [
+    "略偏 generic upscale clinic —— 品牌表达上限，不构成 R10.4 regression fail"
+  ],
+  "scoredBy": "human-r10.4-acceptance",
+  "scoredAt": "2026-08-09T00:00:00.000Z"
+}

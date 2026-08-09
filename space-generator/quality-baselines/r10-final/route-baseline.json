@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r10-final-production",
+  "frozenAt": "2026-08-09",
+  "compilerMode": "r8_6_golden",
+  "compilerIds": ["phase9b-quality-compiler"],
+  "sourceAdapterVersion": "1.4.0",
+  "requiredBlockIds": [
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "negative_constraints"
+  ],
+  "requiredBlockOrder": [
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "negative_constraints"
+  ],
+  "architectureBeforeBrand": true,
+  "promptBudget": { "minChars": 5800, "maxChars": 7500 },
+  "architectureBudget": { "minChars": 2500 },
+  "referencePolicyVersion": "space-reference-policy@2.0.0",
+  "semanticGateVersion": "space-spatial-semantic-gate@1.0.0",
+  "generationRouteIntegrityGate": {
+    "checks": [
+      "deliverableFamily == space",
+      "canonicalCompilerMode == r8_6_golden",
+      "compilerId in expected set",
+      "required architecture blocks present",
+      "prompt budget valid",
+      "semantic gate pass",
+      "reference policy pass",
+      "aspect ratio valid"
+    ],
+    "failBehavior": "provider must not run"
+  },
+  "semanticBoundaryFreeze": {
+    "functionalLayer": "zones / circulation / privacy / operation / sequence / service relationship",
+    "functionalRelationships": "space A -> transition -> space B -> consequence",
+    "mustBeVisible": "real operational functional entities only",
+    "excludedFromFunctionalLayer": [
+      "logo",
+      "wordmark",
+      "brand icon",
+      "peacock",
+      "feather",
+      "pattern",
+      "color gradient",
+      "decorative totem"
+    ]
+  },
+  "colorRoleFreeze": {
+    "brandPrimaryColor": "local accent",
+    "spatialDominantColor": "semantic role + spatial usage (e.g. warm white dominant field)",
+    "example": { "brandPurple": "local accent", "warmWhite": "dominant spatial field" }
+  },
+  "referencePolicyFreeze": {
+    "standard": { "generationBasis": "standard", "refs": 0, "providerReferenceCount": 0, "noAutoAttach": ["implicit anchor", "architecture anchor image", "historical generated output"] },
+    "referenceFirst": { "generationBasis": "reference_first", "explicitRefsMin": 1, "mustRecord": ["reference id", "reference source", "reference count"] }
+  },
+  "architectureAnchorFreeze": {
+    "role": "prompt-level architecture context / mechanism prior only",
+    "standardAutoReference": false,
+    "referenceFirstReference": "only when user explicitly selects"
+  }
+}

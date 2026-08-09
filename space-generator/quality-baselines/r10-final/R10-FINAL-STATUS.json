@@ -1,0 +1,35 @@
+{
+  "phase": "R10",
+  "status": "complete",
+  "regressionHold": false,
+  "productionCompiler": "r8_6_golden",
+  "routeIntegrity": "pass",
+  "spatialSemanticGate": "pass",
+  "standardGeneration": "pass",
+  "referenceFirst": "pass",
+  "crossBrandIsolation": "pass",
+  "literalMotifControl": "pass",
+  "providerAspectRatioIntegrity": "pass",
+  "r11Ready": true,
+  "frozenAt": "2026-08-09",
+  "finalAcceptance": {
+    "report": "space-generator/quality-baselines/r10-final/R10-FINAL-ACCEPTANCE.md",
+    "artifacts": "space-generator/quality-baselines/r10-final/",
+    "samples": [
+      { "id": "JZMX-STD-01", "brand": "jiuzhou-aesthetics", "role": "standard", "result": "pass" },
+      { "id": "JZMX-HF-01", "brand": "jiuzhou-aesthetics", "role": "reference_first", "result": "pass" },
+      { "id": "FTT-STD-01", "brand": "feng-tang-tang", "role": "standard", "result": "pass" },
+      { "id": "YJLF-STD-01", "brand": "yi-ji-liang-fang", "role": "standard", "result": "pass" }
+    ],
+    "imageGate": "4/4 pass"
+  },
+  "frozenSafetyBoundaries": [
+    "r8_6_golden compiler route",
+    "generation route integrity gate",
+    "spatial semantic gate",
+    "color role freeze",
+    "standard / reference-first reference policy",
+    "provider aspect ratio integrity",
+    "reference provenance trace"
+  ]
+}

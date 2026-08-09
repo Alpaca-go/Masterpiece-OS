@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "1.0",
+  "finalPrompt": "# Task\n\nGenerate a single premium-grade space image for **一剂良方** (中医诊疗与健康管理).\nScene: `reception` / entrance_view.\nTask: R10.4 final acceptance smoke (r8_6_golden).\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: 现代中医疗愈所——以'药柜'为原型的模块化秩序空间\n\n**Spatial Strategy**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n- indirect illumination\n\n# Architecture Language\n\n> Building language: how space is organized before brand is applied.\n\n**Spatial Principles**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n- indirect illumination\n\n**Architectural Characteristics**:\n- materials carry refined, physically credible textures\n- membranes filter light through translucent planes\n- boundaries blur between zones instead of hard walls\n- semi-private zones separate through filtered boundaries\n- indirect light washes surfaces evenly\n\n**Spatial Organization (functional network + program)**:\n- surface finishes read as buildable and precise\n- partitions diffuse vision without hard closure\n- screens partition without breaking visual continuity\n- privacy increases gradually without locked doors\n- light coves trace the edge of ceiling planes\n\n# Architecture Context (in-context reference, Phase 8A / Phase 9B)\n\n> Building-mechanism prior: the following are architecture-language samples accepted for this brand.\n> Use them as a mechanism PRIOR, not as a literal object to copy.\n\n## Anchor 1: YJLF-ARCH-01-WoodenGrid (role=warm_wood_grid_with_paper_screen)\n\n- **Primary Mechanism**: 木格 + 浅木色 + matte_clay_wall + linen_fabric, 暖色中等硬度\n- **Secondary Mechanism**: 自然光 + warm_amber 暖色筒灯, 不用紫色 / 不用嵌入光带 (JZMX 标志)\n\n## Anchor 2: YJLF-ARCH-02-PaperScreen (role=paper_screen_diffused_light)\n\n- **Primary Mechanism**: 宣纸 / 棉纸窗户 + 自然光通过纸柔化, 安静氛围\n- **Secondary Mechanism**: 纸屏风替代硬隔断, 不用玻璃幕墙 / 膜天花 (JZMX 标志)\n\n## Anchor 3: YJLF-ARCH-03-TeaCorner (role=tea_corner_with_consultation)\n\n- **Primary Mechanism**: 茶几 + 椅 + 中医咨询桌, herbal_display_wall, 软边界 (纸屏风)\n- **Secondary Mechanism**: 不用 medical_compliance (JZMX 标志), 不用 kitchen_pass (FTT 标志)\n\n## Usage in this prompt\n\nTreat the anchor mechanisms as a prior, placed before the architectural concept.\nThe spatial concept must be consistent with these mechanisms, never conflicting.\nDo not reproduce literal concrete objects (specific ceiling curves, glass grids, membrane shapes).\n\n# Architecture-Function Bridge\n\n> Building language serves commercial reality. Translate architecture into functional action (Phase 8B.1).\n\n**Commercial Purpose**: 中医体验馆及智能健康管理平台\n\n**Spatial Translation (architecture → commercial action)**:\n- 通过清晰的导视系统，体现'智能/高效'的管理\n- 通过'素问'印章元素的文化墙，体现'传承'\n\n**Operation Constraints (hard, must hold)**:\n- 候诊区与诊疗区需保持视觉通透但听觉私密\n- 取药区需与诊疗区相邻，方便流转\n\n**Human Experience (path + rhythm)**:\n- 导视牌：沿用VI规范，使用品牌色块和宋体字\n\n**Commercial Reality (do not turn the space into a gallery)**:\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\n\n**Concept Drift Guards (must avoid)**:\n- 门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。\n- 不得在空间中使用大型卡通/充气装置（除非是明确的短期营销活动且与主品牌隔离）\n- 不得使用非品牌色盘的鲜艳色彩\n- 不得修改Logo的比例和字形\n\n# Architectural Concept\n\n空间概念 / 建筑机制必须先于品牌元素被建立。品牌附着于建筑语言之上，而不是反过来。\n\n**Primary Spatial Concept**: 现代中医疗愈所——以'药柜'为原型的模块化秩序空间\n\n**Structure Language**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n\n# Architecture DNA\n\n**Building DNA**:\n- Spatial strategy: refined materiality; filtered transparency; blurred boundary; balanced privacy\n- Form mechanisms: materials carry refined, physically credible textures; membranes filter light through translucent planes; boundaries blur between zones instead of hard walls; semi-private zones separate through filtered boundaries\n- Spatial organization: surface finishes read as buildable and precise; partitions diffuse vision without hard closure; screens partition without breaking visual continuity; privacy increases gradually without locked doors\n\nMaintain continuous wall↔ceiling↔floor relationships and a legible circulation hierarchy.\n\n# Brand Translation\n\n> Brand is translated into mechanism, rhythm and surface behavior — never pasted as decoration.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: 一剂良方 | **Industry**: 中医诊疗与健康管理\n**Brand Role**: 中医体验馆及智能健康管理平台\n**Brand Role Manifestation in Space**:\n- 表面/肌理行为：玻璃贴膜：使用辅助云纹图形\n- 通过木质与白色的结合，体现'自然'与'专业'的平衡\n- 通过'素问'印章元素的文化墙，体现'传承'\n\n# Functional & Commercial Requirement\n\n**Required Program Nodes (must be legible in one image)**:\n- 接待/挂号\n- 候诊/阅读\n- 诊疗/把脉\n- 取药/治疗\n- 药材/产品展示\n\n**Functional Network**:\n\n\n**Must Be Visible (spatial focal hierarchy; brand identity is post-composited)**:\n- 药柜木纹色的模块化陈列墙\n\n**Positive Differentiators**:\n- 区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\n\n# Material System\n\n- **原木色饰面/层板**: 温暖触感；自然纹理\n  brand role: 呼应品牌主色，建立与传统、自然的联系\n  avoid: 不得做旧/仿古；不得使用深色红木\n- **米白色/浅灰色涂料或石材**: 洁净；漫反射\n  brand role: 提供现代、专业的背景，衬托木色和红色\n  avoid: 不得使用纯冷白\n- **黄铜/金色金属**: 光泽；精致\n  brand role: 用于铭牌、把手等细节，提升品质感，呼应辅助图形颜色\n  avoid: 不得大面积使用\n\n# Lighting System\n\n**Primary Strategy**: 暖色调重点照明、层板隐藏灯带\n**Contrast**: 整体柔和明亮，局部（如陈列格、Logo墙）高亮\n**Light / Material Behavior**:\n- 光线洗亮木饰面纹理\n- 金属件产生点睛高光\n**Lighting Prohibitions**:\n- 不得使用时下流行的霓虹灯\n- 不得使用冷白光\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Must Be Visible (focal hierarchy)**:\n- 药柜木纹色的模块化陈列墙\n**Positive Differentiators**:\n- 区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- 门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。\n- 不得做旧/仿古\n- 不得使用深色红木\n- 不得使用纯冷白\n- 不得大面积使用\n- 不得使用时下流行的霓虹灯\n- 不得使用冷白光\n- 不得使用绿色（避免与西药/生菜混淆）\n- 不得使用蓝色（避免与科技/西药混淆）\n- 不得使用门头渲染图中的橙色（除非特定活动）",
+  "editablePrompt": "# Task\n\nGenerate a single premium-grade space image for **一剂良方** (中医诊疗与健康管理).\nScene: `reception` / entrance_view.\nTask: R10.4 final acceptance smoke (r8_6_golden).\nAspect ratio: 16:9.\n\n# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: 现代中医疗愈所——以'药柜'为原型的模块化秩序空间\n\n**Spatial Strategy**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n- indirect illumination\n\n# Architecture Language\n\n> Building language: how space is organized before brand is applied.\n\n**Spatial Principles**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n- indirect illumination\n\n**Architectural Characteristics**:\n- materials carry refined, physically credible textures\n- membranes filter light through translucent planes\n- boundaries blur between zones instead of hard walls\n- semi-private zones separate through filtered boundaries\n- indirect light washes surfaces evenly\n\n**Spatial Organization (functional network + program)**:\n- surface finishes read as buildable and precise\n- partitions diffuse vision without hard closure\n- screens partition without breaking visual continuity\n- privacy increases gradually without locked doors\n- light coves trace the edge of ceiling planes\n\n# Architecture Context (in-context reference, Phase 8A / Phase 9B)\n\n> Building-mechanism prior: the following are architecture-language samples accepted for this brand.\n> Use them as a mechanism PRIOR, not as a literal object to copy.\n\n## Anchor 1: YJLF-ARCH-01-WoodenGrid (role=warm_wood_grid_with_paper_screen)\n\n- **Primary Mechanism**: 木格 + 浅木色 + matte_clay_wall + linen_fabric, 暖色中等硬度\n- **Secondary Mechanism**: 自然光 + warm_amber 暖色筒灯, 不用紫色 / 不用嵌入光带 (JZMX 标志)\n\n## Anchor 2: YJLF-ARCH-02-PaperScreen (role=paper_screen_diffused_light)\n\n- **Primary Mechanism**: 宣纸 / 棉纸窗户 + 自然光通过纸柔化, 安静氛围\n- **Secondary Mechanism**: 纸屏风替代硬隔断, 不用玻璃幕墙 / 膜天花 (JZMX 标志)\n\n## Anchor 3: YJLF-ARCH-03-TeaCorner (role=tea_corner_with_consultation)\n\n- **Primary Mechanism**: 茶几 + 椅 + 中医咨询桌, herbal_display_wall, 软边界 (纸屏风)\n- **Secondary Mechanism**: 不用 medical_compliance (JZMX 标志), 不用 kitchen_pass (FTT 标志)\n\n## Usage in this prompt\n\nTreat the anchor mechanisms as a prior, placed before the architectural concept.\nThe spatial concept must be consistent with these mechanisms, never conflicting.\nDo not reproduce literal concrete objects (specific ceiling curves, glass grids, membrane shapes).\n\n# Architecture-Function Bridge\n\n> Building language serves commercial reality. Translate architecture into functional action (Phase 8B.1).\n\n**Commercial Purpose**: 中医体验馆及智能健康管理平台\n\n**Spatial Translation (architecture → commercial action)**:\n- 通过清晰的导视系统，体现'智能/高效'的管理\n- 通过'素问'印章元素的文化墙，体现'传承'\n\n**Operation Constraints (hard, must hold)**:\n- 候诊区与诊疗区需保持视觉通透但听觉私密\n- 取药区需与诊疗区相邻，方便流转\n\n**Human Experience (path + rhythm)**:\n- 导视牌：沿用VI规范，使用品牌色块和宋体字\n\n**Commercial Reality (do not turn the space into a gallery)**:\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\n\n**Concept Drift Guards (must avoid)**:\n- 门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。\n- 不得在空间中使用大型卡通/充气装置（除非是明确的短期营销活动且与主品牌隔离）\n- 不得使用非品牌色盘的鲜艳色彩\n- 不得修改Logo的比例和字形\n\n# Architectural Concept\n\n空间概念 / 建筑机制必须先于品牌元素被建立。品牌附着于建筑语言之上，而不是反过来。\n\n**Primary Spatial Concept**: 现代中医疗愈所——以'药柜'为原型的模块化秩序空间\n\n**Structure Language**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n\n# Architecture DNA\n\n**Building DNA**:\n- Spatial strategy: refined materiality; filtered transparency; blurred boundary; balanced privacy\n- Form mechanisms: materials carry refined, physically credible textures; membranes filter light through translucent planes; boundaries blur between zones instead of hard walls; semi-private zones separate through filtered boundaries\n- Spatial organization: surface finishes read as buildable and precise; partitions diffuse vision without hard closure; screens partition without breaking visual continuity; privacy increases gradually without locked doors\n\nMaintain continuous wall↔ceiling↔floor relationships and a legible circulation hierarchy.\n\n# Brand Translation\n\n> Brand is translated into mechanism, rhythm and surface behavior — never pasted as decoration.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: 一剂良方 | **Industry**: 中医诊疗与健康管理\n**Brand Role**: 中医体验馆及智能健康管理平台\n**Brand Role Manifestation in Space**:\n- 表面/肌理行为：玻璃贴膜：使用辅助云纹图形\n- 通过木质与白色的结合，体现'自然'与'专业'的平衡\n- 通过'素问'印章元素的文化墙，体现'传承'\n\n# Functional & Commercial Requirement\n\n**Required Program Nodes (must be legible in one image)**:\n- 接待/挂号\n- 候诊/阅读\n- 诊疗/把脉\n- 取药/治疗\n- 药材/产品展示\n\n**Functional Network**:\n\n\n**Must Be Visible (spatial focal hierarchy; brand identity is post-composited)**:\n- 药柜木纹色的模块化陈列墙\n\n**Positive Differentiators**:\n- 区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\n\n# Material System\n\n- **原木色饰面/层板**: 温暖触感；自然纹理\n  brand role: 呼应品牌主色，建立与传统、自然的联系\n  avoid: 不得做旧/仿古；不得使用深色红木\n- **米白色/浅灰色涂料或石材**: 洁净；漫反射\n  brand role: 提供现代、专业的背景，衬托木色和红色\n  avoid: 不得使用纯冷白\n- **黄铜/金色金属**: 光泽；精致\n  brand role: 用于铭牌、把手等细节，提升品质感，呼应辅助图形颜色\n  avoid: 不得大面积使用\n\n# Lighting System\n\n**Primary Strategy**: 暖色调重点照明、层板隐藏灯带\n**Contrast**: 整体柔和明亮，局部（如陈列格、Logo墙）高亮\n**Light / Material Behavior**:\n- 光线洗亮木饰面纹理\n- 金属件产生点睛高光\n**Lighting Prohibitions**:\n- 不得使用时下流行的霓虹灯\n- 不得使用冷白光\n\n# Composition & Photography\n\n**Output Ratio**: 16:9\n**Must Be Visible (focal hierarchy)**:\n- 药柜木纹色的模块化陈列墙\n**Positive Differentiators**:\n- 区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.\n\n# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished.\n\n# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- 门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。\n- 不得做旧/仿古\n- 不得使用深色红木\n- 不得使用纯冷白\n- 不得大面积使用\n- 不得使用时下流行的霓虹灯\n- 不得使用冷白光\n- 不得使用绿色（避免与西药/生菜混淆）\n- 不得使用蓝色（避免与科技/西药混淆）\n- 不得使用门头渲染图中的橙色（除非特定活动）",
+  "blocks": [
+    {
+      "id": "task",
+      "title": "Task",
+      "text": "# Task\n\nGenerate a single premium-grade space image for **一剂良方** (中医诊疗与健康管理).\nScene: `reception` / entrance_view.\nTask: R10.4 final acceptance smoke (r8_6_golden).\nAspect ratio: 16:9."
+    },
+    {
+      "id": "spatial_intent",
+      "title": "Spatial Intent",
+      "text": "# Spatial Intent\n\n> The experience goal and spatial strategy set the tone before any building mechanism.\n\n**Experience Goal**: 现代中医疗愈所——以'药柜'为原型的模块化秩序空间\n\n**Spatial Strategy**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n- indirect illumination"
+    },
+    {
+      "id": "architecture_language",
+      "title": "Architecture Language",
+      "text": "# Architecture Language\n\n> Building language: how space is organized before brand is applied.\n\n**Spatial Principles**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy\n- indirect illumination\n\n**Architectural Characteristics**:\n- materials carry refined, physically credible textures\n- membranes filter light through translucent planes\n- boundaries blur between zones instead of hard walls\n- semi-private zones separate through filtered boundaries\n- indirect light washes surfaces evenly\n\n**Spatial Organization (functional network + program)**:\n- surface finishes read as buildable and precise\n- partitions diffuse vision without hard closure\n- screens partition without breaking visual continuity\n- privacy increases gradually without locked doors\n- light coves trace the edge of ceiling planes"
+    },
+    {
+      "id": "architecture_context",
+      "title": "Architecture Context",
+      "text": "# Architecture Context (in-context reference, Phase 8A / Phase 9B)\n\n> Building-mechanism prior: the following are architecture-language samples accepted for this brand.\n> Use them as a mechanism PRIOR, not as a literal object to copy.\n\n## Anchor 1: YJLF-ARCH-01-WoodenGrid (role=warm_wood_grid_with_paper_screen)\n\n- **Primary Mechanism**: 木格 + 浅木色 + matte_clay_wall + linen_fabric, 暖色中等硬度\n- **Secondary Mechanism**: 自然光 + warm_amber 暖色筒灯, 不用紫色 / 不用嵌入光带 (JZMX 标志)\n\n## Anchor 2: YJLF-ARCH-02-PaperScreen (role=paper_screen_diffused_light)\n\n- **Primary Mechanism**: 宣纸 / 棉纸窗户 + 自然光通过纸柔化, 安静氛围\n- **Secondary Mechanism**: 纸屏风替代硬隔断, 不用玻璃幕墙 / 膜天花 (JZMX 标志)\n\n## Anchor 3: YJLF-ARCH-03-TeaCorner (role=tea_corner_with_consultation)\n\n- **Primary Mechanism**: 茶几 + 椅 + 中医咨询桌, herbal_display_wall, 软边界 (纸屏风)\n- **Secondary Mechanism**: 不用 medical_compliance (JZMX 标志), 不用 kitchen_pass (FTT 标志)\n\n## Usage in this prompt\n\nTreat the anchor mechanisms as a prior, placed before the architectural concept.\nThe spatial concept must be consistent with these mechanisms, never conflicting.\nDo not reproduce literal concrete objects (specific ceiling curves, glass grids, membrane shapes)."
+    },
+    {
+      "id": "architecture_function_bridge",
+      "title": "Architecture-Function Bridge",
+      "text": "# Architecture-Function Bridge\n\n> Building language serves commercial reality. Translate architecture into functional action (Phase 8B.1).\n\n**Commercial Purpose**: 中医体验馆及智能健康管理平台\n\n**Spatial Translation (architecture → commercial action)**:\n- 通过清晰的导视系统，体现'智能/高效'的管理\n- 通过'素问'印章元素的文化墙，体现'传承'\n\n**Operation Constraints (hard, must hold)**:\n- 候诊区与诊疗区需保持视觉通透但听觉私密\n- 取药区需与诊疗区相邻，方便流转\n\n**Human Experience (path + rhythm)**:\n- 导视牌：沿用VI规范，使用品牌色块和宋体字\n\n**Commercial Reality (do not turn the space into a gallery)**:\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\n\n**Concept Drift Guards (must avoid)**:\n- 门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。\n- 不得在空间中使用大型卡通/充气装置（除非是明确的短期营销活动且与主品牌隔离）\n- 不得使用非品牌色盘的鲜艳色彩\n- 不得修改Logo的比例和字形"
+    },
+    {
+      "id": "architectural_concept",
+      "title": "Architectural Concept",
+      "text": "# Architectural Concept\n\n空间概念 / 建筑机制必须先于品牌元素被建立。品牌附着于建筑语言之上，而不是反过来。\n\n**Primary Spatial Concept**: 现代中医疗愈所——以'药柜'为原型的模块化秩序空间\n\n**Structure Language**:\n- refined materiality\n- filtered transparency\n- blurred boundary\n- balanced privacy"
+    },
+    {
+      "id": "architecture_dna",
+      "title": "Architecture DNA",
+      "text": "# Architecture DNA\n\n**Building DNA**:\n- Spatial strategy: refined materiality; filtered transparency; blurred boundary; balanced privacy\n- Form mechanisms: materials carry refined, physically credible textures; membranes filter light through translucent planes; boundaries blur between zones instead of hard walls; semi-private zones separate through filtered boundaries\n- Spatial organization: surface finishes read as buildable and precise; partitions diffuse vision without hard closure; screens partition without breaking visual continuity; privacy increases gradually without locked doors\n\nMaintain continuous wall↔ceiling↔floor relationships and a legible circulation hierarchy."
+    },
+    {
+      "id": "brand_translation",
+      "title": "Brand Translation",
+      "text": "# Brand Translation\n\n> Brand is translated into mechanism, rhythm and surface behavior — never pasted as decoration.\n> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.\n**Brand**: 一剂良方 | **Industry**: 中医诊疗与健康管理\n**Brand Role**: 中医体验馆及智能健康管理平台\n**Brand Role Manifestation in Space**:\n- 表面/肌理行为：玻璃贴膜：使用辅助云纹图形\n- 通过木质与白色的结合，体现'自然'与'专业'的平衡\n- 通过'素问'印章元素的文化墙，体现'传承'"
+    },
+    {
+      "id": "functional_requirement",
+      "title": "Functional & Commercial Requirement",
+      "text": "# Functional & Commercial Requirement\n\n**Required Program Nodes (must be legible in one image)**:\n- 接待/挂号\n- 候诊/阅读\n- 诊疗/把脉\n- 取药/治疗\n- 药材/产品展示\n\n**Functional Network**:\n\n\n**Must Be Visible (spatial focal hierarchy; brand identity is post-composited)**:\n- 药柜木纹色的模块化陈列墙\n\n**Positive Differentiators**:\n- 区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光"
+    },
+    {
+      "id": "material",
+      "title": "Material System",
+      "text": "# Material System\n\n- **原木色饰面/层板**: 温暖触感；自然纹理\n  brand role: 呼应品牌主色，建立与传统、自然的联系\n  avoid: 不得做旧/仿古；不得使用深色红木\n- **米白色/浅灰色涂料或石材**: 洁净；漫反射\n  brand role: 提供现代、专业的背景，衬托木色和红色\n  avoid: 不得使用纯冷白\n- **黄铜/金色金属**: 光泽；精致\n  brand role: 用于铭牌、把手等细节，提升品质感，呼应辅助图形颜色\n  avoid: 不得大面积使用"
+    },
+    {
+      "id": "lighting",
+      "title": "Lighting System",
+      "text": "# Lighting System\n\n**Primary Strategy**: 暖色调重点照明、层板隐藏灯带\n**Contrast**: 整体柔和明亮，局部（如陈列格、Logo墙）高亮\n**Light / Material Behavior**:\n- 光线洗亮木饰面纹理\n- 金属件产生点睛高光\n**Lighting Prohibitions**:\n- 不得使用时下流行的霓虹灯\n- 不得使用冷白光"
+    },
+    {
+      "id": "composition",
+      "title": "Composition & Photography",
+      "text": "# Composition & Photography\n\n**Output Ratio**: 16:9\n**Must Be Visible (focal hierarchy)**:\n- 药柜木纹色的模块化陈列墙\n**Positive Differentiators**:\n- 区别于传统中医馆的昏暗和杂乱，采用明亮的米白色调和现代材质\n- 区别于纯西医诊所的冰冷，大量使用原木色和暖光\nUse a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale."
+    },
+    {
+      "id": "rendering",
+      "title": "Rendering Requirements",
+      "text": "# Rendering Requirements\n\n- High-end architectural visualization, photoreal, physically based materials.\n- Balanced exposure, accurate white balance, readable texture and shadow detail.\n- No blown highlights; clean, resolved, professionally finished."
+    },
+    {
+      "id": "negative_constraints",
+      "title": "Prohibited (fail-closed)",
+      "text": "# Prohibited (fail-closed)\n\nThe following MUST NOT appear in the generated image:\n- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene\n- no generic AI clinic look, no stock-photo medical aesthetic template\n- 门头的大型充气猫装置可能导致路人误认为这是宠物医院或宠物相关场所。\n- 不得做旧/仿古\n- 不得使用深色红木\n- 不得使用纯冷白\n- 不得大面积使用\n- 不得使用时下流行的霓虹灯\n- 不得使用冷白光\n- 不得使用绿色（避免与西药/生菜混淆）\n- 不得使用蓝色（避免与科技/西药混淆）\n- 不得使用门头渲染图中的橙色（除非特定活动）"
+    }
+  ],
+  "sourceMap": {
+    "task": [],
+    "spatial_intent": [],
+    "architecture_language": [],
+    "architecture_context": [],
+    "architecture_function_bridge": [],
+    "architectural_concept": [],
+    "architecture_dna": [],
+    "brand_translation": [],
+    "functional_requirement": [],
+    "material": [],
+    "lighting": [],
+    "composition": [],
+    "rendering": [],
+    "negative_constraints": []
+  },
+  "trace": {
+    "compilerId": "phase9b-quality-compiler",
+    "compilerVersion": "1.1.0",
+    "adapterId": "seedream-5.0-pro",
+    "adapterVersion": "seedream-short-chain-adapter@1.1.0",
+    "sourceFingerprint": "312f988b13963b1ea87f046ce8597545e6c6c4e8000be1240cb50828968f9ffb",
+    "blockIds": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "promptCharacters": 6267,
+    "compileDurationMs": 12.103,
+    "phase9b": true,
+    "anchorIds": [
+      "YJLF-ARCH-01-WoodenGrid",
+      "YJLF-ARCH-02-PaperScreen",
+      "YJLF-ARCH-03-TeaCorner"
+    ],
+    "spaceGeneration": {
+      "compilerId": "phase9b-quality-compiler",
+      "compilerVersion": "1.1.0",
+      "sourceAdapterVersion": "1.4.0",
+      "semanticSeparationVersion": "1.0.0",
+      "architectureAnchorIds": [
+        "YJLF-ARCH-01-WoodenGrid",
+        "YJLF-ARCH-02-PaperScreen",
+        "YJLF-ARCH-03-TeaCorner"
+      ],
+      "generationBasis": "standard",
+      "referenceMode": "text_only",
+      "referenceIds": [],
+      "referenceSources": [],
+      "promptCharacters": 6267,
+      "architectureCharacters": 3456,
+      "brandCharacters": 392,
+      "negativeCharacters": 390,
+      "promptHash": "d4a5a9068580fb70ec0f4bcf8db8eeee496cda4da6bc466d595087d8c4ad282a",
+      "provider": "seedream",
+      "model": "doubao-seedream-5-0-pro-260628",
+      "canonicalCompilerMode": "r8_6_golden",
+      "blockIds": [
+        "task",
+        "spatial_intent",
+        "architecture_language",
+        "architecture_context",
+        "architecture_function_bridge",
+        "architectural_concept",
+        "architecture_dna",
+        "brand_translation",
+        "functional_requirement",
+        "material",
+        "lighting",
+        "composition",
+        "rendering",
+        "negative_constraints"
+      ],
+      "spatialSemanticReport": {
+        "status": "pass",
+        "findings": [],
+        "skipped": "legacy_contract_without_generation_basis"
+      },
+      "routeIntegrity": {
+        "schemaVersion": "1.0",
+        "version": "space-route-integrity-gate@1.0.0",
+        "status": "pass",
+        "canonicalCompilerMode": "r8_6_golden",
+        "compilerMatched": true,
+        "requiredBlocksPresent": true,
+        "blockOrderMatched": true,
+        "promptBudgetMatched": true,
+        "referencePolicyMatched": true,
+        "spatialSemanticGatePassed": true,
+        "aspectRatioMatched": true
+      }
+    }
+  },
+  "referenceAssetIds": [],
+  "logoUsageMode": "post_composite"
+}

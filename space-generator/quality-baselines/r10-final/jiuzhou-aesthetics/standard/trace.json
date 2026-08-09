@@ -1,0 +1,15 @@
+{
+  "compilerId": "phase9b-quality-compiler",
+  "compilerVersion": "1.1.0",
+  "sourceAdapterVersion": "1.4.0",
+  "generationBasis": "standard",
+  "referenceMode": "text_only",
+  "referenceAssetIds": [],
+  "referenceCount": 0,
+  "referenceSources": [],
+  "compilerIdFull": "phase9b-quality-compiler",
+  "promptCharacters": 6820,
+  "promptHash": "5ca24ee3dcb954873928dad3418315f109f353ca6f6cf0909158e3ec8a22a3c2",
+  "provider": "seedream",
+  "model": "doubao-seedream-5-0-pro-260628"
+}

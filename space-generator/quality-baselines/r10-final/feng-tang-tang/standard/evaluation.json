@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r10-final",
+  "sampleId": "FTT-STD-01",
+  "brandKey": "feng-tang-tang",
+  "role": "standard",
+  "result": "pass",
+  "functionalRealism": 4.6,
+  "brandSpecificity": 3.9,
+  "literalMotifRisk": 1,
+  "crossBrandIsolation": 5,
+  "notes": [
+    "open kitchen / operation / customer flow 成立；木作/红砖/暖光稳定"
+  ],
+  "scoredBy": "human-r10.4-acceptance",
+  "scoredAt": "2026-08-09T00:00:00.000Z"
+}

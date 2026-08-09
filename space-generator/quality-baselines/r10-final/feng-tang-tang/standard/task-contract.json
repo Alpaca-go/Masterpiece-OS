@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "r10-final-feng-tang-tang-1786266284071",
+  "projectId": "feng-tang-tang-r10-final",
+  "deliverableFamily": "space",
+  "subtype": "lobby",
+  "shot": "entrance_view",
+  "count": 1,
+  "aspectRatio": "16:9",
+  "currentInstruction": "R10.4 final acceptance smoke (r8_6_golden).",
+  "generationBasis": "standard",
+  "mustInclude": [],
+  "mustAvoid": [],
+  "referenceAssetIds": [],
+  "logoUsageMode": "post_composite",
+  "createdAt": "2026-08-09T09:04:44.072Z"
+}

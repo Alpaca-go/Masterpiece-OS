@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r10-final",
+  "sampleId": "YJLF-STD-01",
+  "brandKey": "yi-ji-liang-fang",
+  "role": "standard",
+  "result": "pass",
+  "atmosphere": 4.6,
+  "functionalRealism": 4.1,
+  "brandSpecificity": 4.3,
+  "literalMotifRisk": 1,
+  "crossBrandIsolation": 5,
+  "notes": [
+    "温润/克制/东方；无餐饮污染、无医美膜结构污染"
+  ],
+  "scoredBy": "human-r10.4-acceptance",
+  "scoredAt": "2026-08-09T00:00:00.000Z"
+}
