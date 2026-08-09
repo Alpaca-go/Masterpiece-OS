@@ -44,6 +44,8 @@ import {
   demoteDecorativeObjectFromFunctionalLayer,
   resolveSpatialColorRole,
 } from './semantic/index.js';
+import { applyContinuationProgramOverride } from './continuation/apply-continuation-program-override.js';
+import { viewStrategyForScene } from './continuation/target-functional-programs.js';
 
 function cleanList(...values) {
   const out = [];
@@ -297,6 +299,64 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     );
   }
 
+  // ---- R11.1 v1.2 Continuation Program Override ----
+  // In continuation mode the target scene's functional program OVERRIDES the
+  // project-wide / source functional layers so the high-weight blocks
+  // (Architecture-Function Bridge, Functional Requirement, Composition / View
+  // Strategy) do not leak the source scene program back in. The reference is
+  // world-consistency only. This is runtime IR — the frozen compiler still
+  // renders it.
+  let continuationOverride = null;
+  let bridgeLayers = {
+    commercialPurpose,
+    spatialTranslation,
+    operationConstraints,
+    humanExperience,
+    commercialReality,
+    conceptDriftGuards,
+  };
+  let compositionLayers = composition;
+  let functionalRaw = {
+    sceneProgram: demoteFunctionalList(rawSceneProgram, 'functionalNetwork'),
+    functionalNetwork: demoteFunctionalList(rawFunctionalNetwork, 'functionalNetwork'),
+    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
+  };
+  const continuationIntent = taskContract?.continuation;
+  const targetProgram = continuationIntent?.targetFunctionalProgram;
+  if (taskContract?.generationBasis === 'continuation' && targetProgram) {
+    const override = applyContinuationProgramOverride({
+      targetProgram,
+      sourceBridge: {
+        commercialPurpose,
+        spatialTranslation,
+        operationConstraints,
+        humanExperience,
+        commercialReality,
+      },
+      sourceScene: continuationIntent.sourceScene || taskContract?.scene || '',
+    });
+    bridgeLayers = override.architectureFunctionBridge;
+    compositionLayers = {
+      ...composition,
+      viewStrategy: targetProgram.viewStrategy || viewStrategyForScene(targetProgram.sceneId),
+      scene: targetProgram.sceneLabel || targetProgram.sceneId,
+      mustBeVisible: override.functionalRequirement.mustBeVisible,
+      positiveDifferentiators: override.functionalRequirement.positiveDifferentiators,
+    };
+    functionalRaw = {
+      sceneProgram: override.functionalRequirement.sceneProgram,
+      functionalNetwork: override.functionalRequirement.functionalNetwork,
+      positiveDifferentiators: override.functionalRequirement.positiveDifferentiators,
+    };
+    continuationOverride = {
+      referenceRole: 'world_consistency',
+      targetScene: continuationIntent.targetScene,
+      targetViewStrategy: targetProgram.viewStrategy || viewStrategyForScene(targetProgram.sceneId),
+      sourceProgramDropTags: targetProgram.sourceProgramDropTags ?? [],
+      sourceProgramElementsToDrop: targetProgram.sourceProgramElementsToDrop ?? [],
+    };
+  }
+
   return {
     projectIdentity: {
       brandName: projectFacts.brandName?.value || projectContext?.brandCore?.name || '',
@@ -319,19 +379,12 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       lightDirection,
       spatialOrganization,
     },
-    architectureFunctionBridge: {
-      commercialPurpose,
-      spatialTranslation,
-      operationConstraints,
-      humanExperience,
-      commercialReality,
-      conceptDriftGuards,
-    },
+    architectureFunctionBridge: bridgeLayers,
     architecturalConcept,
     materials,
     lighting,
     color,
-    composition,
+    composition: compositionLayers,
     negatives,
     // ---- R8.5 semantic IR (architecture / brand split + action verbs) ----
     semantic: {
@@ -363,12 +416,12 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     // literals are normalized into surface behavior. The model must not receive
     // raw motif nouns / colored-geometry instructions in the positive prompt.
     _raw: {
-      functionalNetwork: demoteFunctionalList(rawFunctionalNetwork, 'functionalNetwork'),
-      sceneProgram: demoteFunctionalList(rawSceneProgram, 'functionalNetwork'),
+      functionalNetwork: functionalRaw.functionalNetwork,
+      sceneProgram: functionalRaw.sceneProgram,
       brandRoleManifestation: brandSanitized.lines,
       signatureSpatialMechanism: cleanList(spatial.signatureSpatialMechanism),
       mustBeVisible: rawMustBeVisible,
-      positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
+      positiveDifferentiators: functionalRaw.positiveDifferentiators,
     },
     // Sanitization audit for trace (which brand items were kept/normalized/
     // dropped and why).
@@ -376,6 +429,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       stats: brandSanitized.stats,
       records: brandSanitized.records,
     },
+    ...(continuationOverride ? { continuationOverride } : {}),
   };
 }
 

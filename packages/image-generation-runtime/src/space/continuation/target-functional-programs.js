@@ -22,6 +22,9 @@ export const TARGET_FUNCTIONAL_PROGRAMS = Object.freeze({
   consultation: Object.freeze({
     sceneId: 'consultation',
     sceneLabel: '咨询室',
+    // R11.1 v1.2: view strategy is a semantic composition role, not a fixed
+    // lens. consultation must NOT use entrance_view / lobby overview.
+    viewStrategy: 'human_scale_consultation_view',
     requiredFunctions: [
       '1 对 1 / 1 对 2 专业咨询',
       '产品 / 服务信息展示与说明',
@@ -57,10 +60,18 @@ export const TARGET_FUNCTIONAL_PROGRAMS = Object.freeze({
       '大面积公共等候区',
       '前厅式迎宾轴线',
     ],
+    // R11.1 v1.2 semantic tags (scene-program semantics, not brand hardcode).
+    sourceProgramDropTags: [
+      'PUBLIC_RECEPTION',
+      'PUBLIC_ARRIVAL_AXIS',
+      'LOBBY_WAITING',
+      'PUBLIC_FRONT_DESK_HIERARCHY',
+    ],
   }),
   entrance: Object.freeze({
     sceneId: 'entrance',
     sceneLabel: '门店入口',
+    viewStrategy: 'threshold_arrival_view',
     requiredFunctions: [
       '门店到达、识别与欢迎',
       '进入堂食 / 内部空间的引导',
@@ -92,6 +103,12 @@ export const TARGET_FUNCTIONAL_PROGRAMS = Object.freeze({
       '完整堂食大厅布局',
       '大面积餐桌卡座',
       '以出餐区为中心的内部运营构图',
+    ],
+    sourceProgramDropTags: [
+      'OPEN_KITCHEN_CORE_AS_MAIN_COMPOSITION',
+      'DINING_HALL_AS_MAIN_PROGRAM',
+      'FULL_SEATING_LAYOUT',
+      'INTERNAL_OPERATION_CENTERED_VIEW',
     ],
   }),
   lobby: Object.freeze({
@@ -340,3 +357,28 @@ export function resolveTargetFunctionalProgram(scene, customSceneDescription) {
     code: 'SPACE_CONTINUATION_TARGET_SCENE_UNKNOWN',
   });
 }
+
+// R11.1 v1.2 view strategy registry (semantic composition role, not a fixed lens).
+// The target scene overrides the source view; continuation never inherits the
+// source entrance/lobby overview framing.
+export const TARGET_VIEW_STRATEGIES = Object.freeze({
+  entrance: 'threshold_arrival_view',
+  lobby: 'public_overview_view',
+  reception: 'reception_arrival_view',
+  consultation: 'human_scale_consultation_view',
+  treatment_room: 'private_treatment_view',
+  private_room: 'intimate_private_view',
+  display: 'exhibit_browse_view',
+  retail: 'retail_aisle_view',
+  dining: 'operational_dining_view',
+  custom: 'custom_scene_view',
+});
+
+/**
+ * Resolve the semantic view strategy for a target scene id.
+ */
+export function viewStrategyForScene(scene) {
+  const id = String(scene ?? '').trim().toLowerCase();
+  return TARGET_VIEW_STRATEGIES[id] ?? 'human_scale_consultation_view';
+}
+

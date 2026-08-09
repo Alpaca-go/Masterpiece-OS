@@ -104,7 +104,7 @@ test('v1.1 continuation intent carries target program + drop, never via negative
   const block = renderContinuationIntentBlock(contract);
   assert.ok(block, 'block');
   assert.ok(/REGENERATE/iu.test(block), 'regenerate directive');
-  assert.ok(/Do not carry over from source/.test(block), 'source drop directive');
+  assert.ok(/Do not carry over/.test(block), 'source drop directive');
   assert.ok(/咨询/.test(block), 'target program in block');
   // No negative-prompt-style bans (no "no reception desk").
   assert.doesNotMatch(block, /\bno\s+(reception desk|kitchen|lobby)\b/iu, 'no negative-prompt bans');

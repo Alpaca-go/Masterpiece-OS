@@ -97,25 +97,18 @@ export function renderContinuationIntentBlock(contract = {}) {
   const drop = Array.isArray(program.sourceProgramElementsToDrop) ? program.sourceProgramElementsToDrop : [];
 
   const lines = [
-    '# Continuation Intent',
-    '',
+    `# Continuation Intent`,
     `Continue the confirmed ${sourceScene} world into a **${targetLabel || targetScene}** scene.`,
-    'Reference is WORLD-CONSISTENCY only: preserve architecture language, materials, light, boundaries, rhythm, color roles, brand.',
-    'REGENERATE for the new scene: program, layout, circulation, privacy, scale, furniture, composition. Do not keep the source layout/plan.',
+    'Reference = WORLD-CONSISTENCY only (keep architecture language, materials, light, boundaries, rhythm, color, brand).',
+    'REGENERATE for the new scene: program, layout, circulation, privacy, scale, furniture, composition.',
   ];
-  if (program.requiredFunctions?.length || program.requiredSpatialElements?.length) {
-    const req = [
-      ...(program.requiredFunctions ?? []),
-      ...(program.requiredSpatialElements ?? []),
-      ...(program.privacyRequirements ?? []),
-    ];
-    lines.push(`Target program (must override source): ${req.slice(0, 6).join('；')}`);
+  if (program.requiredFunctions?.length) {
+    lines.push(`Target program: ${program.requiredFunctions.slice(0, 4).join('；')}`);
   }
   if (drop.length) {
-    lines.push(`Do not carry over from source: ${drop.slice(0, 4).join('；')}`);
+    lines.push(`Do not carry over: ${drop.slice(0, 4).join('；')}`);
   }
   if (contract.userRequirement) lines.push(`Requirement: ${contract.userRequirement}`);
-  if (contract.customSceneDescription) lines.push(`Custom scene: ${contract.customSceneDescription}`);
   return lines.join('\n');
 }
 

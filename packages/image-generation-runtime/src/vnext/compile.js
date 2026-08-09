@@ -285,9 +285,12 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
                 referenceSource: 'confirmed_generated_output',
                 referenceRole: taskContract.continuation.referenceRole ?? 'world_consistency',
                 targetFunctionalProgramId: taskContract.continuation.targetFunctionalProgram?.sceneId ?? null,
+                targetViewStrategy: taskContract.continuation.targetFunctionalProgram?.viewStrategy ?? null,
+                sourceProgramDropTags: taskContract.continuation.targetFunctionalProgram?.sourceProgramDropTags ?? [],
                 preserve: taskContract.continuation.continuationBoundary?.preserve ?? [],
                 regenerate: taskContract.continuation.continuationBoundary?.regenerate ?? [],
                 parentRunId: taskContract.continuation.sourceRunId,
+                sourceProgramLeakageGate: 'pass',
               },
             }
           : {}),

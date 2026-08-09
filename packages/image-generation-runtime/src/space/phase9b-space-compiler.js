@@ -33,6 +33,7 @@ import { measurePromptBudget } from './prompt-budget.js';
 import { buildTrace } from './trace.js';
 import { validateSpatialSemantics } from './semantic/validate-spatial-semantics.js';
 import { renderContinuationIntentBlock } from './continuation/build-continuation-context.js';
+import { enforceNoSourceProgramLeakage } from './continuation/source-program-leakage-gate.js';
 
 export const SPACE_PROMPT_COMPILER_ID = 'phase9b-quality-compiler';
 export const SPACE_PROMPT_COMPILER_VERSION = '1.1.0';
@@ -72,7 +73,13 @@ function renderTask(layers) {
   const lines = [
     `Generate a single premium-grade space image for **${p.brandName}** (${p.industry}).`,
   ];
-  if (t.subtype) lines.push(`Scene: \`${t.subtype}\`${t.shot ? ` / ${t.shot}` : ''}.`);
+  if (t.subtype) {
+    // R11.1 v1.2: in continuation mode the target view strategy overrides the
+    // source shot (e.g. consultation uses human_scale_consultation_view, not
+    // entrance_view).
+    const view = layers.continuationOverride?.targetViewStrategy || t.shot;
+    lines.push(`Scene: \`${t.subtype}\`${view ? ` / ${view}` : ''}.`);
+  }
   if (t.currentInstruction) lines.push(`Task: ${t.currentInstruction}`);
   if (t.aspectRatio) lines.push(`Aspect ratio: ${t.aspectRatio}.`);
   return block('task', 'Task', lines.join('\n'));
@@ -366,6 +373,16 @@ export function compilePhase9bSpacePrompt(input) {
       new Error(`SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: ${codes}`),
       { code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK', findings: functionalGate.findings },
     );
+  }
+
+  // R11.1 v1.2 Source Program Leakage Gate: in continuation mode the final
+  // prompt must not re-introduce the dropped source program elements / tags /
+  // view. Fail closed BEFORE the provider.
+  if (input.taskContract?.generationBasis === 'continuation' && input.taskContract?.continuation) {
+    enforceNoSourceProgramLeakage({
+      contract: input.taskContract.continuation,
+      finalPrompt,
+    });
   }
 
   const trace = buildTrace({

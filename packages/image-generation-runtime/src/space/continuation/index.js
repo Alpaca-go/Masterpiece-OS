@@ -34,8 +34,20 @@ export {
   resolveTargetFunctionalProgram,
   TARGET_FUNCTIONAL_PROGRAMS,
   TARGET_FUNCTIONAL_PROGRAM_VERSION,
+  TARGET_VIEW_STRATEGIES,
+  viewStrategyForScene,
 } from './target-functional-programs.js';
 export {
   evaluateContinuationSceneGate,
   SCENE_DIFFERENTIATION_GATE_VERSION,
 } from './scene-differentiation-gate.js';
+export {
+  applyContinuationProgramOverride,
+  filterSourceSceneConstraintsForContinuation,
+  CONTINUATION_OVERRIDE_VERSION,
+} from './apply-continuation-program-override.js';
+export {
+  assertNoSourceProgramLeakage,
+  enforceNoSourceProgramLeakage,
+  SOURCE_PROGRAM_LEAKAGE_GATE_VERSION,
+} from './source-program-leakage-gate.js';
