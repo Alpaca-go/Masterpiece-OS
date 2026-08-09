@@ -163,7 +163,13 @@ async function callSeedream(apiKey: string, prompt: string) {
   const imageRefs: string[] = [];
   if (REFERENCE_IMAGE) {
     const buf = readFileSync(REFERENCE_IMAGE);
-    imageRefs.push(`data:image/png;base64,${buf.toString('base64')}`);
+    // Detect mime by magic bytes so JPEG-backed references (Seedream output
+    // files are often named .png but contain JPEG) upload correctly.
+    const magic = buf.subarray(0, 4).toString('hex');
+    const mime = magic === '89504e47' ? 'image/png'
+      : magic.startsWith('ffd8ff') ? 'image/jpeg'
+        : 'image/png';
+    imageRefs.push(`data:${mime};base64,${buf.toString('base64')}`);
   }
   const body: Record<string, unknown> = {
     model: MODEL,
@@ -285,7 +291,7 @@ async function main(): Promise<void> {
         size: SIZE,
         response_format: 'b64_json',
         watermark: false,
-        image: REFERENCE_IMAGE ? ['data:image/png;base64,<redacted>'] : undefined,
+        image: REFERENCE_IMAGE ? ['data:<detected-mime>;base64,<redacted>'] : undefined,
         prompt: providerPreamble,
         promptChars: [...providerPreamble].length,
       }), null, 2)}\n`,
