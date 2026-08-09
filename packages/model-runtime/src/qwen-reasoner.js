@@ -74,6 +74,57 @@ function responseText(response) {
   return '';
 }
 
+function requestTimeoutError(maximumDurationMs) {
+  const seconds = Math.max(1, Math.ceil(maximumDurationMs / 1000));
+  return new QwenReasonerError(
+    'QWEN_REQUEST_TIMEOUT',
+    `Qwen 请求超过 ${seconds} 秒上限`,
+  );
+}
+
+async function runClientWithDeadline(client, request, options = {}) {
+  const parentSignal = options.signal;
+  const maximumDurationMs = Number(options.maximumDurationMs);
+  const hasDeadline = Number.isFinite(maximumDurationMs) && maximumDurationMs > 0;
+  const controller = new AbortController();
+  const abortFromParent = () => controller.abort(
+    parentSignal.reason instanceof QwenReasonerError
+      ? parentSignal.reason
+      : new QwenReasonerError('QWEN_REQUEST_ABORTED', 'Qwen 请求已取消'),
+  );
+  if (parentSignal?.aborted) abortFromParent();
+  else parentSignal?.addEventListener('abort', abortFromParent, { once: true });
+
+  let timeout = null;
+  if (hasDeadline) {
+    timeout = setTimeout(
+      () => controller.abort(requestTimeoutError(maximumDurationMs)),
+      maximumDurationMs,
+    );
+  }
+
+  const aborted = new Promise((_, reject) => {
+    const rejectFromSignal = () => reject(
+      controller.signal.reason instanceof Error
+        ? controller.signal.reason
+        : new QwenReasonerError('QWEN_REQUEST_ABORTED', 'Qwen 请求已取消'),
+    );
+    if (controller.signal.aborted) rejectFromSignal();
+    else controller.signal.addEventListener('abort', rejectFromSignal, { once: true });
+  });
+  const clientRequest = Promise.resolve().then(() => client({
+    ...request,
+    signal: controller.signal,
+  }));
+
+  try {
+    return await Promise.race([clientRequest, aborted]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+    parentSignal?.removeEventListener('abort', abortFromParent);
+  }
+}
+
 async function buildMultimodalUserContent(prompt, diagnostics) {
   const userMessage = prompt.messages.find((message) => message.role === 'user');
   const content = [{ type: 'text', text: String(userMessage?.content || '') }];
@@ -172,12 +223,13 @@ export function createQwenReasoner(options = {}) {
     }
     let response;
     try {
-      response = await client({
+      response = await runClientWithDeadline(client, {
         url,
         headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body,
+      }, {
         signal: context.signal,
-        maximumDurationMs: context.maximumDurationMs
+        maximumDurationMs: context.maximumDurationMs,
       });
     } catch (error) {
       if (error instanceof QwenReasonerError) {

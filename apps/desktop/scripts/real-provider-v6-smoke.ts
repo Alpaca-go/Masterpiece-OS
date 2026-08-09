@@ -45,6 +45,7 @@ async function main(): Promise<void> {
   );
   const analysisStartedAt = Date.now();
   const analysis = await pipeline.start(projectId, true, textProfileId);
+  const analysisDurationMs = Date.now() - analysisStartedAt;
   const project = await projects.get(projectId);
   const referenceAsset = project.assets.find((asset) => /^image\//u.test(asset.mimeType))
     ?? project.assets.find((asset) => /\.(?:png|jpe?g|webp)$/iu.test(asset.relativePath));
@@ -106,7 +107,11 @@ async function main(): Promise<void> {
   const runRoot = await imageGeneration.runRoot(imageRun.runId);
   const runtimeReport = await import('node:fs/promises')
     .then((fs) => fs.readFile(analysis.runtimeReportPath, 'utf8'))
-    .then((value) => JSON.parse(value) as { modelCallCount?: number; modelCalls?: unknown[] });
+    .then((value) => JSON.parse(value) as {
+      modelCallCount?: number;
+      modelCalls?: unknown[];
+      modelCallsThisRun?: number;
+    });
   summary({
     projectId,
     projectName: analysis.project.projectName,
@@ -114,9 +119,10 @@ async function main(): Promise<void> {
       provider: analysis.provider,
       model: analysis.model,
       status: analysis.project.status,
-      modelCallCount: runtimeReport.modelCallCount
+      modelCallCount: runtimeReport.modelCallsThisRun
+        ?? runtimeReport.modelCallCount
         ?? (Array.isArray(runtimeReport.modelCalls) ? runtimeReport.modelCalls.length : 1),
-      durationMs: Date.now() - analysisStartedAt,
+      durationMs: analysisDurationMs,
       reportPath: analysis.reportPath,
       runtimeReportPath: analysis.runtimeReportPath,
     },

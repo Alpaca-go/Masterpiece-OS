@@ -94,3 +94,40 @@ test('Qwen Reasoner rejects empty reports and redacts secrets from client errors
     return true;
   });
 });
+
+test('Qwen Reasoner enforces maximumDurationMs even when the client ignores AbortSignal', async () => {
+  const context = await contextFixture();
+  context.maximumDurationMs = 25;
+  let requestSignal;
+  const reasoner = createQwenReasoner({
+    apiKey: 'timeout-key',
+    model: 'qwen-vl',
+    client: async (request) => {
+      requestSignal = request.signal;
+      return new Promise(() => {});
+    },
+  });
+  const startedAt = Date.now();
+  await assert.rejects(reasoner(context), (error) => {
+    assert.equal(error.code, 'QWEN_REQUEST_TIMEOUT');
+    assert.match(error.message, /Qwen 请求超过 1 秒上限/u);
+    return true;
+  });
+  assert.equal(requestSignal.aborted, true);
+  assert.ok(Date.now() - startedAt < 1_000);
+});
+
+test('Qwen Reasoner honors caller cancellation even when the client ignores AbortSignal', async () => {
+  const context = await contextFixture();
+  const controller = new AbortController();
+  context.signal = controller.signal;
+  context.maximumDurationMs = 5_000;
+  const reasoner = createQwenReasoner({
+    apiKey: 'cancel-key',
+    model: 'qwen-vl',
+    client: async () => new Promise(() => {}),
+  });
+  const pending = reasoner(context);
+  setTimeout(() => controller.abort(), 25);
+  await assert.rejects(pending, { code: 'QWEN_REQUEST_ABORTED' });
+});
