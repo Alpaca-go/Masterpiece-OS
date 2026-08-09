@@ -27,7 +27,7 @@ function isUsableSpaceReference(asset) {
  * Resolve the reference(s) to attach to a first space generation.
  *
  * @param {object} args
- * @param {'standard'|'reference_first'} [args.generationBasis='standard']
+ * @param {'standard'|'reference_first'|'continuation'} [args.generationBasis='standard']
  * @param {Array<{assetId:string, role?:string, relativePath:string}>} args.explicitAssets
  *        Assets for the user's explicit referenceAssetIds (already looked up
  *        from sourceAssetRefs by the service).
@@ -36,6 +36,8 @@ function isUsableSpaceReference(asset) {
  * @param {Array<{anchorId:string, imagePath:string|null}>} args.architectureAnchorImages
  *        Reference images produced by the Phase 9B compiler for selected
  *        anchors (only those with a real on-disk image).
+ * @param {string} [args.continuationReferenceSource='confirmed_generated_output']
+ *        Reference source label used for continuation references (R11.1).
  * @param {number} [args.maxReferences=2]
  * @returns {{ references: Array<object>, trace: object }}
  */
@@ -44,12 +46,14 @@ export function resolveSpaceReferences({
   explicitAssets = [],
   implicitAnchor = null,
   architectureAnchorImages = [],
+  continuationReferenceSource = 'confirmed_generated_output',
   maxReferences = 2,
 } = {}) {
+  const referenceAssisted = generationBasis === 'reference_first' || generationBasis === 'continuation';
   const trace = {
     referencePolicyVersion: SPACE_REFERENCE_POLICY_VERSION,
     generationBasis,
-    referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+    referenceMode: referenceAssisted ? 'reference_assisted' : 'text_only',
     explicitAssetIds: explicitAssets.map((a) => a.assetId),
     implicitAnchorId: implicitAnchor?.imageId ?? null,
     architectureAnchorIds: architectureAnchorImages.map((a) => a.anchorId),
@@ -74,14 +78,16 @@ export function resolveSpaceReferences({
     return { references, trace };
   }
 
-  // Reference-First accepts only user-selected references.
+  // Reference-First / Continuation accept only the explicitly bound reference
+  // (user-selected, or the confirmed generated output in continuation). R11.1:
+  // implicit anchors and architecture anchor images are never auto-attached.
   for (const asset of explicitAssets) {
     if (!isUsableSpaceReference(asset)) continue;
     add({
       id: asset.assetId,
       role: 'core_reference',
       projectRelativePath: `input/${asset.relativePath}`,
-    }, 'user_explicit');
+    }, generationBasis === 'continuation' ? continuationReferenceSource : 'user_explicit');
   }
 
   trace.providerReferenceCount = references.length;
@@ -101,10 +107,13 @@ export function assertSpaceReferenceAvailable(references, { generationBasis = 's
     }
     return;
   }
-  if (generationBasis === 'reference_first' && (!references || references.length === 0)) {
+  if ((generationBasis === 'reference_first' || generationBasis === 'continuation')
+    && (!references || references.length === 0)) {
     throw Object.assign(
-      new Error('SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED: Reference-First requires an explicit user-selected reference.'),
-      { code: 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED' },
+      new Error(generationBasis === 'continuation'
+        ? 'SPACE_CONTINUATION_REFERENCE_REQUIRED: Continuation requires a confirmed generated output reference.'
+        : 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED: Reference-First requires an explicit user-selected reference.'),
+      { code: generationBasis === 'continuation' ? 'SPACE_CONTINUATION_REFERENCE_REQUIRED' : 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED' },
     );
   }
 }

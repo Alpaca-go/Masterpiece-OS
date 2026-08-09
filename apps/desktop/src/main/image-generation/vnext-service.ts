@@ -1,9 +1,10 @@
-import crypto from 'node:crypto';
+﻿import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type {
   ImageGenerationRun,
   VNextCompiledPrompt,
+  VNextConfirmedGeneratedOutput,
   VNextCreativeSession,
   VNextDeliverableFamily,
   VNextModelPromptPayload,
@@ -526,7 +527,7 @@ export function createVNextImageGenerationService(
         },
         blockIds: promptBlockIds(prompt, compiledBlocks),
         providerReferenceCount: references.length,
-        referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+        referenceMode: (generationBasis === 'reference_first' || generationBasis === 'continuation') ? 'reference_assisted' : 'text_only',
         referenceSources: references.map((reference) => reference.source),
         spatialSemanticReport,
         requestedAspectRatio: compilation.taskContract.aspectRatio,
@@ -540,7 +541,7 @@ export function createVNextImageGenerationService(
       }
       Object.assign(spaceTrace, {
         generationBasis,
-        referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+        referenceMode: (generationBasis === 'reference_first' || generationBasis === 'continuation') ? 'reference_assisted' : 'text_only',
         referenceIds: references.map((reference) => reference.id),
         referenceSources: references.map((reference) => reference.source),
         routeIntegrity: integrity.routeIntegrity,
@@ -549,7 +550,7 @@ export function createVNextImageGenerationService(
       await Promise.all([
         writeJson(path.join(compilation.artifactDirectory, 'reference-trace.json'), {
           schemaVersion: '1.0',
-          referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+          referenceMode: (generationBasis === 'reference_first' || generationBasis === 'continuation') ? 'reference_assisted' : 'text_only',
           providerReferenceCount: references.length,
           references: references.map((reference) => ({
             id: reference.id,
@@ -698,6 +699,101 @@ export function createVNextImageGenerationService(
       }],
       updatedAt: now,
     });
+  }
+
+  // ---- R11.1 Confirmed Generated Output (Continuation source) ------------
+  // Append-only metadata on the session. Never modifies the image / run /
+  // evaluation. confirmationSource is always user_explicit. A generated space
+  // output moves unconfirmed -> confirmed -> revoked; only 'confirmed' is a
+  // valid continuation source. Confirmation is idempotent.
+  async function confirmGeneratedOutput(
+    projectId: string,
+    runId: string,
+    imageId: string,
+  ): Promise<VNextConfirmedGeneratedOutput> {
+    const run = await getImageGeneration().getRun(runId);
+    if (!run || run.projectId !== projectId || run.status !== 'succeeded') {
+      throw Object.assign(new Error('Only a succeeded result can be confirmed for continuation'), {
+        code: 'SPACE_CONTINUATION_SOURCE_INVALID',
+      });
+    }
+    if (run.deliverable !== 'interior_scene' && run.deliverable !== 'storefront_scene') {
+      throw Object.assign(new Error('Continuation source must be a space generated output'), {
+        code: 'SPACE_CONTINUATION_SOURCE_INVALID',
+      });
+    }
+    const image = run.images.find((candidate) => candidate.imageId === imageId);
+    if (!image) throw new Error('Generated image does not exist');
+    const session = await readSession(projectId);
+    const now = new Date().toISOString();
+    const assetId = `asset-${runId}-${imageId}`;
+    const existing = session.confirmedGeneratedOutputs?.[assetId];
+    // Idempotent: re-confirming an already-confirmed asset is a no-op update.
+    const entry: VNextConfirmedGeneratedOutput = {
+      assetId,
+      projectId,
+      sourceRunId: runId,
+      sourceTaskId: run.taskId,
+      sourceScene: 'space',
+      confirmationState: 'confirmed',
+      confirmedAt: existing?.confirmedAt ?? now,
+      confirmationSource: 'user_explicit',
+      imageSha256: image.sha256,
+      compilerId: 'phase9b-quality-compiler',
+      baselineId: 'r10.4.1-post-repair',
+    };
+    await saveSession({
+      ...session,
+      confirmedGeneratedOutputs: {
+        ...(session.confirmedGeneratedOutputs ?? {}),
+        [assetId]: entry,
+      },
+      history: [...session.history, {
+        id: crypto.randomUUID(),
+        type: 'direction_confirmed',
+        taskId: run.taskId,
+        deliverableFamily: 'space',
+        subtype: run.deliverable ?? 'space',
+        shot: 'entrance_view',
+        promptFingerprint: assetId,
+        runId,
+        imageId,
+        createdAt: now,
+      }],
+      updatedAt: now,
+    });
+    return entry;
+  }
+
+  // Revoke a previously confirmed continuation source. Historical completed
+  // continuation runs are untouched. The entry stays in the session with
+  // state=revoked so lineage is not lost.
+  async function revokeGeneratedOutput(
+    projectId: string,
+    assetId: string,
+  ): Promise<VNextConfirmedGeneratedOutput> {
+    const session = await readSession(projectId);
+    const existing = session.confirmedGeneratedOutputs?.[assetId];
+    if (!existing || existing.projectId !== projectId) {
+      throw Object.assign(new Error('Confirmed continuation source does not exist'), {
+        code: 'SPACE_CONTINUATION_SOURCE_INVALID',
+      });
+    }
+    const revoked = { ...existing, confirmationState: 'revoked' as const };
+    await saveSession({
+      ...session,
+      confirmedGeneratedOutputs: {
+        ...(session.confirmedGeneratedOutputs ?? {}),
+        [assetId]: revoked,
+      },
+      updatedAt: new Date().toISOString(),
+    });
+    return revoked;
+  }
+
+  async function getConfirmedGeneratedOutputs(projectId: string): Promise<Record<string, VNextConfirmedGeneratedOutput>> {
+    const session = await readSession(projectId);
+    return session.confirmedGeneratedOutputs ?? {};
   }
 
   async function startValidated(
@@ -926,6 +1022,9 @@ export function createVNextImageGenerationService(
     getSession: readSession,
     confirmDirection,
     continueSameType,
+    confirmGeneratedOutput,
+    revokeGeneratedOutput,
+    getConfirmedGeneratedOutputs,
     postCompositeLogo,
     saveProjectPromptAsset,
     listOptions: listVNextTemplateOptions,

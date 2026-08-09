@@ -56,11 +56,18 @@ export function assertSpaceGenerationRouteIntegrity(input, baseline = ACTIVE_SPA
   const referencePolicyMatched = generationBasis === 'standard'
     ? referenceCount === 0 && referenceMode === 'text_only'
     : generationBasis === 'reference_first'
-      && referenceCount >= 1
-      && referenceMode === 'reference_assisted'
-      && (input.referenceSources ?? []).every((source) => [
-        'user_explicit', 'project_asset_explicit', 'confirmed_output_explicit',
-      ].includes(source));
+      ? referenceCount >= 1
+        && referenceMode === 'reference_assisted'
+        && (input.referenceSources ?? []).every((source) => [
+          'user_explicit', 'project_asset_explicit', 'confirmed_output_explicit',
+        ].includes(source))
+      : generationBasis === 'continuation'
+        ? referenceCount === 1
+          && referenceMode === 'reference_assisted'
+          && (input.referenceSources ?? []).length === 1
+          && (input.referenceSources ?? [])[0] === 'confirmed_generated_output'
+          && Boolean(input.taskContract?.continuation)
+        : false;
   const spatialSemanticGatePassed = input.spatialSemanticReport?.status === 'pass';
   const aspectRatioMatched = input.requestedAspectRatio && input.providerAspectRatio
     ? input.requestedAspectRatio === input.providerAspectRatio
@@ -104,7 +111,9 @@ export function assertSpaceGenerationRouteIntegrity(input, baseline = ACTIVE_SPA
   if (!referencePolicyMatched) {
     fail(details, generationBasis === 'reference_first' && referenceCount === 0
       ? 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED'
-      : 'SPACE_GENERATION_ROUTE_INTEGRITY_FAILED');
+      : generationBasis === 'continuation' && referenceCount === 0
+        ? 'SPACE_CONTINUATION_REFERENCE_REQUIRED'
+        : 'SPACE_GENERATION_ROUTE_INTEGRITY_FAILED');
   }
   if (!spatialSemanticGatePassed) fail(details, 'ANALYSIS_SPATIAL_SEMANTICS_INVALID');
   if (!aspectRatioMatched) fail(details, 'SPACE_PROVIDER_ASPECT_RATIO_MISMATCH');

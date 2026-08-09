@@ -78,6 +78,21 @@ export function registerImageGenerationIpc(
         vnextService.confirmDirection(projectId, runId, imageId),
     );
     ipcMain.handle(
+      'image-generation:vnext-confirm-generated-output',
+      async (_event, projectId: string, runId: string, imageId: string) =>
+        vnextService.confirmGeneratedOutput(projectId, runId, imageId),
+    );
+    ipcMain.handle(
+      'image-generation:vnext-revoke-generated-output',
+      async (_event, projectId: string, assetId: string) =>
+        vnextService.revokeGeneratedOutput(projectId, assetId),
+    );
+    ipcMain.handle(
+      'image-generation:vnext-confirmed-generated-outputs',
+      async (_event, projectId: string) =>
+        vnextService.getConfirmedGeneratedOutputs(projectId),
+    );
+    ipcMain.handle(
       'image-generation:vnext-continue-same-type',
       async (
         _event,

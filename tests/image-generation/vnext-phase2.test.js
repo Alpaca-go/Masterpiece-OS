@@ -53,7 +53,7 @@ const representativeTasks = [
 test('Phase 2 exposes the complete MVP family, subtype, and shot matrix', () => {
   const options = listVNextTemplateOptions();
   assert.deepEqual(Object.keys(options), ['space', 'packaging', 'vi', 'poster']);
-  assert.equal(options.space.subtypes.length, 6);
+  assert.equal(options.space.subtypes.length, 10);
   assert.equal(options.space.shots.length >= 4, true);
   assert.equal(options.packaging.subtypes.length, 6);
   assert.equal(options.packaging.shots.length, 4);

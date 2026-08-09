@@ -255,10 +255,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         semanticSeparationVersion: result.layers?.semantic?.provenance?.version ?? null,
         architectureAnchorIds: result.anchors.map((a) => a.id),
         // R10.2 §27: generationBasis is the UI-facing route; referenceMode is
-        // its runtime equivalent (standard <-> text_only, reference_first <->
-        // reference_assisted). Both are recorded for traceability.
+        // its runtime equivalent (standard <-> text_only, reference_first /
+        // continuation <-> reference_assisted). Both are recorded for trace.
         generationBasis: taskContract.generationBasis,
-        referenceMode: taskContract.generationBasis === 'reference_first'
+        referenceMode: (taskContract.generationBasis === 'reference_first' || taskContract.generationBasis === 'continuation')
           ? 'reference_assisted'
           : 'text_only',
         referenceIds: referenceAssetIds,
@@ -270,6 +270,23 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         promptHash: sha256Hex(result.finalPrompt),
         provider: 'seedream',
         model: input.model ?? null,
+        // R11.1 lineage: for a continuation task, record the confirmed source
+        // binding and parent run so a run can answer "which image did this
+        // continue from, in which scene, confirmed by whom, when".
+        ...(taskContract.generationBasis === 'continuation' && taskContract.continuation
+          ? {
+              continuation: {
+                sourceAssetId: taskContract.continuation.sourceAssetId,
+                sourceRunId: taskContract.continuation.sourceRunId,
+                sourceScene: taskContract.continuation.sourceScene,
+                targetScene: taskContract.continuation.targetScene,
+                confirmedAt: taskContract.continuation.confirmedAt,
+                confirmationSource: taskContract.continuation.confirmationSource,
+                referenceSource: 'confirmed_generated_output',
+                parentRunId: taskContract.continuation.sourceRunId,
+              },
+            }
+          : {}),
       },
     },
   };
@@ -280,7 +297,11 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
     blockIds: result.blockIds,
     providerReferenceCount: referenceAssetIds.length,
     referenceMode: compiledPrompt.trace.spaceGeneration.referenceMode,
-    referenceSources: referenceAssetIds.map(() => 'user_explicit'),
+    // R11.1: a continuation task's reference source is the confirmed generated
+    // output, not a user_explicit upload. Standard stays text-only.
+    referenceSources: taskContract.generationBasis === 'continuation'
+      ? referenceAssetIds.map(() => 'confirmed_generated_output')
+      : referenceAssetIds.map(() => 'user_explicit'),
     spatialSemanticReport,
   });
   compiledPrompt.trace.spaceGeneration.canonicalCompilerMode = integrity.canonicalCompilerMode;

@@ -87,3 +87,8 @@ export {
   sanitizeDifferentiators,
   BRAND_EXPRESSION_SANITIZER_VERSION,
 } from './semantic/sanitize-brand-expression.js';
+
+// R11.1 Space Continuation (contract / source / reference / context).
+// Continuation reuses the frozen r8_6_golden compiler; it is NOT a new compiler.
+export * from './continuation/index.js';
+

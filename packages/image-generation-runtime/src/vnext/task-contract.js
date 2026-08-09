@@ -18,13 +18,17 @@ export function createVNextTaskContract(input, options = {}) {
   const shot = String(input?.shot ?? '').trim();
   const currentInstruction = String(input?.currentInstruction ?? '').trim();
   const requestedReferenceAssetIds = cleanList(input?.referenceAssetIds);
-  const generationBasis = input?.generationBasis === 'reference_first'
-    ? 'reference_first'
-    : input?.generationBasis === 'standard'
-      ? 'standard'
-      : requestedReferenceAssetIds.length
-        ? 'reference_first'
-        : 'standard';
+  const rawBasis = input?.generationBasis;
+  const generationBasis = rawBasis === 'continuation'
+    ? 'continuation'
+    : rawBasis === 'reference_first'
+      ? 'reference_first'
+      : rawBasis === 'standard'
+        ? 'standard'
+        : requestedReferenceAssetIds.length
+          ? 'reference_first'
+          : 'standard';
+  const continuation = input?.continuation ?? null;
   const count = Number(input?.count ?? 1);
   const aspectRatio = String(input?.aspectRatio ?? '16:9');
   const logoUsageMode = String(input?.logoUsageMode ?? 'blank_area');
@@ -52,6 +56,20 @@ export function createVNextTaskContract(input, options = {}) {
       code: 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED',
     });
   }
+  // R11.1: continuation must carry exactly one confirmed generated output as
+  // its source reference and a continuation intent.
+  if (family === 'space' && generationBasis === 'continuation') {
+    if (!continuation) {
+      throw Object.assign(new Error('Continuation space generation requires a continuation intent.'), {
+        code: 'SPACE_CONTINUATION_INTENT_REQUIRED',
+      });
+    }
+    if (referenceAssetIds.length !== 1) {
+      throw Object.assign(new Error('Continuation requires exactly one confirmed generated output reference.'), {
+        code: 'SPACE_CONTINUATION_REFERENCE_REQUIRED',
+      });
+    }
+  }
   return {
     schemaVersion: '1.0',
     taskId: input.taskId || `vnext-task-${crypto.randomUUID()}`,
@@ -68,6 +86,7 @@ export function createVNextTaskContract(input, options = {}) {
     mustAvoid: cleanList(input.mustAvoid),
     referenceAssetIds,
     logoUsageMode,
+    ...(continuation ? { continuation } : {}),
     createdAt: options.now || new Date().toISOString(),
   };
 }

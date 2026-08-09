@@ -102,6 +102,12 @@ const api: DesktopApi = {
     getVNextSession: (projectId) => ipcRenderer.invoke('image-generation:vnext-session', projectId),
     confirmVNextDirection: (projectId, runId, imageId) =>
       ipcRenderer.invoke('image-generation:vnext-confirm-direction', projectId, runId, imageId),
+    confirmVNextGeneratedOutput: (projectId, runId, imageId) =>
+      ipcRenderer.invoke('image-generation:vnext-confirm-generated-output', projectId, runId, imageId),
+    revokeVNextGeneratedOutput: (projectId, assetId) =>
+      ipcRenderer.invoke('image-generation:vnext-revoke-generated-output', projectId, assetId),
+    getVNextConfirmedGeneratedOutputs: (projectId) =>
+      ipcRenderer.invoke('image-generation:vnext-confirmed-generated-outputs', projectId),
     continueVNextSameType: (projectId, currentInstruction, apiProfileId, dryRun) =>
       ipcRenderer.invoke(
         'image-generation:vnext-continue-same-type',

@@ -675,6 +675,7 @@ import type {
   VNextCompiledPrompt,
   VNextModelPromptPayload,
   VNextCreativeSession,
+  VNextConfirmedGeneratedOutput,
   VNextProjectPromptAsset,
   VNextDeliverableValidation,
   VNextValidatedGenerationResult,
@@ -2090,6 +2091,18 @@ export interface DesktopApi {
     ): Promise<VNextValidatedGenerationResult>;
     getVNextSession(projectId: string): Promise<VNextCreativeSession>;
     confirmVNextDirection(projectId: string, runId: string, imageId: string): Promise<VNextCreativeSession>;
+    confirmVNextGeneratedOutput(
+      projectId: string,
+      runId: string,
+      imageId: string
+    ): Promise<VNextConfirmedGeneratedOutput>;
+    revokeVNextGeneratedOutput(
+      projectId: string,
+      assetId: string
+    ): Promise<VNextConfirmedGeneratedOutput>;
+    getVNextConfirmedGeneratedOutputs(
+      projectId: string
+    ): Promise<Record<string, VNextConfirmedGeneratedOutput>>;
     continueVNextSameType(
       projectId: string,
       currentInstruction: string,

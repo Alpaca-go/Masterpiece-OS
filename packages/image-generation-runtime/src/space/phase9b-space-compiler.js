@@ -32,6 +32,7 @@ import {
 import { measurePromptBudget } from './prompt-budget.js';
 import { buildTrace } from './trace.js';
 import { validateSpatialSemantics } from './semantic/validate-spatial-semantics.js';
+import { renderContinuationIntentBlock } from './continuation/build-continuation-context.js';
 
 export const SPACE_PROMPT_COMPILER_ID = 'phase9b-quality-compiler';
 export const SPACE_PROMPT_COMPILER_VERSION = '1.1.0';
@@ -312,8 +313,17 @@ export function compilePhase9bSpacePrompt(input) {
     .map((a) => ({ anchorId: a.id, imagePath: resolveArchitectureAnchorImagePath(a) }))
     .filter((r) => r.imagePath);
 
+  // R11.1: optional small Continuation Intent block, placed right after Task
+  // (before Spatial Intent). It only expresses source/target scene, preserve
+  // grammar, change functional program — never a new brand analysis.
+  const continuationIntentText = renderContinuationIntentBlock(input.taskContract?.continuation);
+  const continuationBlock = continuationIntentText
+    ? { id: 'continuation_intent', title: 'Continuation Intent', text: continuationIntentText }
+    : null;
+
   const ordered = [
     renderTask(layers),
+    ...(continuationBlock ? [continuationBlock] : []),
     renderSpatialIntent(layers),
     renderArchitectureLanguage(layers),
     ...(contextBlock ? [contextBlock] : []),
@@ -433,6 +443,7 @@ function blockSource(id) {
     composition: ['taskContract.aspectRatio|scene', 'composition.mustBeVisible (spatial items only)', 'spatial.positiveDifferentiators'],
     rendering: ['(deterministic rendering standard)'],
     negative_constraints: ['taskContract.mustAvoid', 'diagnosis.brandMisreadRisks', 'materialSystem[].forbidden', 'lightingSystem.forbidden', 'colorSystem.forbidden', 'BASE_NEGATIVES (2 universal guards)'],
+    continuation_intent: ['taskContract.continuation (source/target scene, preserve grammar, change program) — R11.1, no brand re-analysis'],
   };
   return map[id] || [];
 }

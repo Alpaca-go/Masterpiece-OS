@@ -793,7 +793,26 @@ export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 export type VNextDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
 export type VNextAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
 export type VNextLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
-export type VNextGenerationBasis = 'standard' | 'reference_first';
+// R11.1: continuation is a product-level basis — the SAME frozen r8_6_golden
+// compiler runs reference_assisted with a confirmed generated output as the
+// single source reference. It is NOT a new compiler.
+export type VNextGenerationBasis = 'standard' | 'reference_first' | 'continuation';
+
+// R11.1 continuation confirmation state for a generated space output.
+// append-only metadata; never changes the image / run / evaluation.
+export type ContinuationConfirmationState = 'unconfirmed' | 'confirmed' | 'revoked';
+
+export interface VNextContinuationIntent {
+  sourceAssetId: string;
+  sourceRunId: string;
+  sourceScene: string;
+  targetScene: string;
+  targetSceneLabel?: string;
+  userRequirement?: string;
+  confirmedAt: string;
+  confirmationSource: 'user_explicit';
+  referenceSource: 'confirmed_generated_output';
+}
 
 export interface VNextTaskContract {
   schemaVersion: '1.0';
@@ -812,6 +831,8 @@ export interface VNextTaskContract {
   referenceAssetIds: string[];
   logoUsageMode?: VNextLogoUsageMode;
   createdAt: string;
+  /** R11.1: present only when generationBasis === 'continuation'. */
+  continuation?: VNextContinuationIntent;
 }
 
 export interface VNextPromptTemplate {
@@ -919,6 +940,24 @@ export interface VNextImplicitAnchor {
   confirmedAt: string;
 }
 
+// R11.1 confirmed generated output — the continuation source. Append-only
+// metadata; never modifies the image / run / evaluation. confirmationSource is
+// always user_explicit; confirmationState is one of unconfirmed/confirmed/
+// revoked. An asset in 'confirmed' state is the only valid continuation source.
+export interface VNextConfirmedGeneratedOutput {
+  assetId: string;
+  projectId: string;
+  sourceRunId: string;
+  sourceTaskId?: string;
+  sourceScene: string;
+  confirmationState: 'unconfirmed' | 'confirmed' | 'revoked';
+  confirmedAt: string;
+  confirmationSource: 'user_explicit';
+  imageSha256?: string;
+  compilerId?: string;
+  baselineId?: string;
+}
+
 export interface VNextSessionHistoryEntry {
   id: string;
   type: 'compiled' | 'generated' | 'direction_confirmed' | 'prompt_asset_saved';
@@ -939,6 +978,8 @@ export interface VNextCreativeSession {
   history: VNextSessionHistoryEntry[];
   implicitAnchors: Partial<Record<VNextDeliverableFamily, VNextImplicitAnchor>>;
   projectPromptAssets: Partial<Record<VNextDeliverableFamily, string>>;
+  /** R11.1: confirmed generated outputs (continuation sources), keyed by assetId. */
+  confirmedGeneratedOutputs?: Record<string, VNextConfirmedGeneratedOutput>;
   createdAt: string;
   updatedAt: string;
 }

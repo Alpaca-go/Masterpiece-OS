@@ -111,6 +111,12 @@ const SUBTYPES = {
     storefront: ['Show a complete exterior entrance, facade boundary, signage position, threshold, and street relationship.'],
     interior_panorama: ['Show a coherent interior overview connecting multiple functional zones without collapsing scale.'],
     counter: ['Show a usable service or cashier counter, queuing logic, equipment zones, and staff/customer sides.'],
+    // R11.1 continuation scene subtypes: same world, different functional
+    // program. These are generic space scenes, not brand/project hardcode.
+    consultation: ['Show a usable consultation room with a consultation desk, guest seating, privacy boundary, and circulation.'],
+    entrance: ['Show a complete entrance space with threshold, arrival sequence, and legible transition into the interior.'],
+    dining: ['Show a functioning dining space with tables, seating, service circulation, and a clear customer/staff relationship.'],
+    treatment_room: ['Show a usable treatment/service room with equipment zones, privacy, and clean circulation.'],
   },
   packaging: {
     lid_and_base_box: ['Show a true two-piece lid-and-base box with credible overlap, wall thickness, and opening relationship.'],
