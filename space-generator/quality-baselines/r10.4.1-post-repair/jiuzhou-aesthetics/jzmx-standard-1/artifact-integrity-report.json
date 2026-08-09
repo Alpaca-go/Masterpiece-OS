@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "version": "final-acceptance-artifact-integrity@1.0.0",
+  "status": "pass",
+  "checks": {
+    "runIdMatched": true,
+    "imageHashMatched": true,
+    "promptHashMatched": true,
+    "compilerMatched": true,
+    "commitMatched": true,
+    "baselineMatched": true,
+    "sampleIsFresh": true
+  },
+  "staleSample": false,
+  "sampleIsFresh": true,
+  "historicalOnly": false,
+  "findings": [],
+  "sampleId": "jzmx-standard-r10.4.1",
+  "commitSha": "de5b0f804371d16968f9209b649ae21f29c7775b",
+  "repairCommitTime": "2026-08-09T17:41:56+08:00"
+}

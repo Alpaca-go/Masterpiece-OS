@@ -1,0 +1,22 @@
+{
+  "runId": "r10-4-1-yjlf-yi-ji-liang-fang-reception-1-1786268908783",
+  "baseline": "r10.4.1-post-repair",
+  "brandKey": "yi-ji-liang-fang",
+  "scene": "yjlf-standard-1",
+  "startedAt": "2026-08-09T09:47:05.285Z",
+  "completedAt": "2026-08-09T09:48:28.783Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "modelUsed": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "compilerMode": "r8_6_golden",
+  "promptChars": 6448,
+  "promptHash": "fabeb5bac6807f28a4ea837d1e6d6ca3032b55d4485375938546422e77b6d26a",
+  "referenceCount": 0,
+  "elapsedMs": 83286,
+  "imageFile": "output.png",
+  "imageSha256": "0db1a2761a3f267419a4300c27a9c71692b42765ca03b0ccfde3d04714c316ff",
+  "imageBytes": 507550
+}

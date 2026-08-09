@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "sampleId": "ftt-standard-r10.4.1",
+  "runId": "r10-4-1-ftt-feng-tang-tang-lobby-1-1786268808665",
+  "imageSha256": "6b1b48d2a686a5d9411830733281295d5c85bd5edf3954256b549c7737ae27e5",
+  "promptHash": "e9a82a42ee277d6c953316034458828df6ee9cd6e91bbc4c7fca2b5f0783fbdf",
+  "compilerId": "phase9b-quality-compiler",
+  "commitSha": "de5b0f804371d16968f9209b649ae21f29c7775b",
+  "baselineId": "r10.4.1-post-repair",
+  "generatedAt": "2026-08-09T09:46:48.665Z",
+  "evaluatedAt": "2026-08-09T09:49:09.095Z",
+  "result": "pass",
+  "humanEvaluation": true,
+  "scores": {}
+}

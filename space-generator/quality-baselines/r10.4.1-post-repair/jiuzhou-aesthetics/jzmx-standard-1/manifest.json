@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r10.4.1-post-repair",
+  "brandKey": "jiuzhou-aesthetics",
+  "brandDisplayName": "九州美学",
+  "scene": "jzmx-standard-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "13c636af-53ee-4910-b8cf-f75b321d8b6f",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen jiuzhou-aesthetics packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\jiuzhou-aesthetics\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [],
+  "taskInstruction": "生成九州美学医疗美容机构的接待与挂号空间效果图。以视平线高度单一广角透视呈现到达、接待台与后方品牌墙的层次关系，品牌识别由项目资产抽象转译，Logo 后期合成。",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "6b6b4e69e312915285078eda0c9571d7b2aa0247ab010b71fdd213471d79a78b",
+  "output": {
+    "runId": "r10-4-1-jzmx-jiuzhou-aesthetics-reception-1-1786268695399",
+    "imageFile": "output.png",
+    "imageSha256": "6e6351a1665598496a44ce29f3953c233045385166aada48d0bc901ce5873eb0",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-09T09:44:55.399Z"
+}

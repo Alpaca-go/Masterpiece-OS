@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "1.0",
+  "sampleId": "jzmx-standard-r10.4.1",
+  "runId": "r10-4-1-jzmx-jiuzhou-aesthetics-reception-1-1786268695399",
+  "imageSha256": "6e6351a1665598496a44ce29f3953c233045385166aada48d0bc901ce5873eb0",
+  "promptHash": "6b6b4e69e312915285078eda0c9571d7b2aa0247ab010b71fdd213471d79a78b",
+  "compilerId": "phase9b-quality-compiler",
+  "commitSha": "de5b0f804371d16968f9209b649ae21f29c7775b",
+  "baselineId": "r10.4.1-post-repair",
+  "generatedAt": "2026-08-09T09:44:55.399Z",
+  "evaluatedAt": "2026-08-09T09:49:09.089Z",
+  "result": "pass",
+  "humanEvaluation": true,
+  "scores": {}
+}

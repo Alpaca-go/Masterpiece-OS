@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r10.4.1-post-repair",
+  "brandKey": "feng-tang-tang",
+  "brandDisplayName": "冯烫烫",
+  "scene": "ftt-standard-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen feng-tang-tang packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\feng-tang-tang\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [],
+  "taskInstruction": "生成冯烫烫跷脚牛肉专门店的用餐与明档公共空间效果图。暖色木与赤陶，网格 booth 人尺度布局，开放厨房烟火气与厨师操作可见，品牌识别后期合成，不在场景内渲染文字或Logo。",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "e9a82a42ee277d6c953316034458828df6ee9cd6e91bbc4c7fca2b5f0783fbdf",
+  "output": {
+    "runId": "r10-4-1-ftt-feng-tang-tang-lobby-1-1786268808665",
+    "imageFile": "output.png",
+    "imageSha256": "6b1b48d2a686a5d9411830733281295d5c85bd5edf3954256b549c7737ae27e5",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-09T09:46:48.665Z"
+}

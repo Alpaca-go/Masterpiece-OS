@@ -1,0 +1,22 @@
+{
+  "runId": "r10-4-1-jzmx-jiuzhou-aesthetics-reception-1-1786268695399",
+  "baseline": "r10.4.1-post-repair",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "jzmx-standard-1",
+  "startedAt": "2026-08-09T09:43:37.935Z",
+  "completedAt": "2026-08-09T09:44:55.399Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "modelUsed": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "compilerMode": "r8_6_golden",
+  "promptChars": 6866,
+  "promptHash": "6b6b4e69e312915285078eda0c9571d7b2aa0247ab010b71fdd213471d79a78b",
+  "referenceCount": 0,
+  "elapsedMs": 77048,
+  "imageFile": "output.png",
+  "imageSha256": "6e6351a1665598496a44ce29f3953c233045385166aada48d0bc901ce5873eb0",
+  "imageBytes": 385841
+}
