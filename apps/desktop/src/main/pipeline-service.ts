@@ -29,7 +29,10 @@ import {
   type AnalysisRepairResult,
   type StructuredRepairModelRequest,
 } from '@masterpiece/analysis-runtime/index.ts';
-import { validateSpatialSemantics } from '@masterpiece/image-generation-runtime/space/index.js';
+import {
+  normalizeSpatialFunctionalValue,
+  validateSpatialSemantics,
+} from '@masterpiece/image-generation-runtime/space/index.js';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
@@ -599,14 +602,22 @@ export function createPipelineService(
             });
             const repaired = parseModelStructuredResponse(repairResponse.reportMarkdown);
             const next = structuredClone(packet) as unknown as VisualDecisionPacket;
+            const normalizeItems = (value: unknown, field: string): string[] => (
+              Array.isArray(value)
+                ? value
+                  .filter((item): item is string => typeof item === 'string')
+                  .map((item) => normalizeSpatialFunctionalValue(item, field))
+                  .filter((item): item is string => typeof item === 'string' && Boolean(item))
+                : []
+            );
             next.mediaTranslations.spatial.functionalNetwork = Array.isArray(repaired.functionalNetwork)
-              ? repaired.functionalNetwork.filter((item): item is string => typeof item === 'string')
+              ? normalizeItems(repaired.functionalNetwork, 'functionalNetwork')
               : [];
             next.mediaTranslations.spatial.functionalRelationships = Array.isArray(repaired.functionalRelationships)
-              ? repaired.functionalRelationships.filter((item): item is string => typeof item === 'string')
+              ? normalizeItems(repaired.functionalRelationships, 'functionalRelationships')
               : [];
             next.mediaTranslations.spatial.mustBeVisible = Array.isArray(repaired.mustBeVisible)
-              ? repaired.mustBeVisible.filter((item): item is string => typeof item === 'string')
+              ? normalizeItems(repaired.mustBeVisible, 'mustBeVisible')
               : [];
             return next as unknown as Record<string, unknown>;
           },

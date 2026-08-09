@@ -6,6 +6,7 @@ import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 import {
   assertSpaceGenerationRouteIntegrity,
   compilePhase9bSpacePrompt,
+  resolveArchitectureAnchorBrandKey,
   runSpaceQualityGate,
   validateSpatialSemantics,
 } from '../space/index.js';
@@ -141,7 +142,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
     packet,
     taskContract,
     projectContext: input.projectContext,
-    brandKey: input.brandKey || input.projectContext?.brandKey || null,
+    brandKey: input.brandKey
+      || input.projectContext?.brandKey
+      || resolveArchitectureAnchorBrandKey(packet.projectFacts?.brandName?.value)
+      || null,
     anchorCriteria: input.anchorCriteria,
     adapter,
     referencePolicy: { mode: compilerMode },

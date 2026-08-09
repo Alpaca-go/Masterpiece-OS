@@ -47,10 +47,10 @@ const MOTIF_SUBSTITUTIONS = Object.freeze([
   { pattern: /\u7fce\u7fbd\u4e4b\u5883/g, replacement: '\u5c42\u53e0\u3001\u8212\u5c55\u7684\u66f2\u9762' },
   { pattern: /\u7fce\u7fbd/g, replacement: '\u5c42\u53e0\u3001\u8212\u5c55\u7684\u66f2\u9762' },
   { pattern: /\u7fbd\u6bdb/g, replacement: '\u5c42\u53e0\u3001\u8212\u5c55\u7684\u66f2\u9762' },
-  { pattern: /\u96c0\u96c1/g, replacement: '\u653e\u5c04\u72b6\u5c42\u53e0' },
+  { pattern: /\u5b54\u96c0/g, replacement: '\u653e\u5c04\u72b6\u5c42\u53e0' },
   // floral
   { pattern: /\bflower\b|\bfloral\b|\bpetal\b|\bbloom\b|\bblossom\b|\blotus\b/giu, replacement: 'soft layered surface relief' },
-  { pattern: /\u82b1\u74f7|\u82b1\u5349|\u83ca\u82b1|\u83b2\u74f7|\u83b2\u74f7|\u82b1\u6735/g, replacement: '\u67d4\u548c\u5c42\u53e0\u7684\u66f2\u9762\u808c\u7406' },
+  { pattern: /\u82b1\u74e3|\u82b1\u5349|\u83ca\u82b1|\u83b2\u82b1|\u82b1\u6735/g, replacement: '\u67d4\u548c\u5c42\u53e0\u7684\u66f2\u9762\u808c\u7406' },
   // generic graphic motif -> abstract surface pattern (allowed as surface,
   // never as structure)
   { pattern: /graphic motif|\bmotif\b/giu, replacement: 'abstract surface pattern' },
@@ -159,7 +159,13 @@ export function normalizeArchitectureSemantics(rawPhrase, sourceField = '') {
 
   // If motif is gone but NO spatial property remains, this was pure decoration:
   // do not let it into architecture.
-  const included = Boolean(text) && hasSpatialContent(text);
+  // A pure motif must not gain architectural meaning merely because its
+  // replacement vocabulary contains words such as "layered" or "radial".
+  // Only ambiguous/color-geometry input that already carried a spatial
+  // property may survive as normalized architecture/surface behavior.
+  const included = analysis.classification !== SEMANTIC_CLASS.BRAND_MOTIF
+    && Boolean(text)
+    && hasSpatialContent(text);
 
   return {
     raw,

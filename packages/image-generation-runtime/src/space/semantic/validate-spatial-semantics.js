@@ -39,7 +39,14 @@ export function validateSpatialSemantics(spatial = {}) {
   const findings = [];
   for (const field of FUNCTIONAL_FIELDS) {
     for (const [index, value] of list(spatial?.[field]).entries()) {
-      const analysis = classifyPhrase(value, field);
+      // `mustBeVisible` is a required scene-fixture list at this gate. Treat
+      // an otherwise neutral fixture as functional while still allowing the
+      // classifier to catch explicit motifs, identity marks, and color-driven
+      // geometry. The compiler's broader brand provenance remains unchanged.
+      const semanticSourceField = field === 'mustBeVisible'
+        ? 'functionalNetwork'
+        : field;
+      const analysis = classifyPhrase(value, semanticSourceField);
       const decorativeObject = DECORATIVE_OBJECT.test(value);
       const graphicIdentity = GRAPHIC_IDENTITY.test(value);
       if (!decorativeObject && !graphicIdentity && !BLOCKED_CLASSES.has(analysis.classification)) continue;
@@ -69,6 +76,24 @@ export function normalizeSpatialFunctionalValue(value, field) {
   const text = String(value ?? '').trim();
   if (!text) return null;
   if (validateSpatialSemantics({ [field]: [text] }).status === 'pass') return text;
+
+  // Remove an identity label only when the remaining sentence still carries
+  // a valid zone, fixture, circulation or boundary statement. Literal motifs
+  // and decorative objects are not normalized because stripping them would
+  // invent an unsupported spatial instruction.
+  const withoutIdentity = text
+    .replace(/(?:简洁|清晰|统一|品牌|门店|导向)?(?:logo|wordmark|logotype|slogan|标识|标志|字标|品牌文字)(?:系统)?(?:与|、)?/giu, '')
+    .replace(/\s+/gu, ' ')
+    .replace(/[，,]{2,}/gu, '，')
+    .trim();
+  if (
+    withoutIdentity
+    && withoutIdentity !== text
+    && validateSpatialSemantics({ [field]: [withoutIdentity] }).status === 'pass'
+  ) {
+    return withoutIdentity;
+  }
+
   if (field !== 'functionalRelationships') return null;
   const safe = text.split(/[，,；;。]/u)
     .map((segment) => segment.trim())

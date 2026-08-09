@@ -68,6 +68,25 @@ export function loadArchitectureAnchorRegistry() {
   return registryCache;
 }
 
+/**
+ * Resolve a registry key from the exact brand display name stored in project
+ * facts. The registry remains the only brand source of truth; callers do not
+ * need project-specific name switches in production code.
+ */
+export function resolveArchitectureAnchorBrandKey(brandName) {
+  if (typeof brandName !== 'string') return null;
+  const normalizedName = brandName.normalize('NFKC').trim().toLocaleLowerCase();
+  if (!normalizedName) return null;
+  const registry = loadArchitectureAnchorRegistry();
+  for (const [brandKey, entry] of Object.entries(registry.brands ?? {})) {
+    const displayName = typeof entry?.brandDisplayName === 'string'
+      ? entry.brandDisplayName.normalize('NFKC').trim().toLocaleLowerCase()
+      : '';
+    if (displayName === normalizedName) return brandKey;
+  }
+  return null;
+}
+
 // Test-only registry override (not exported via the package index).
 export function __setArchitectureAnchorRegistryForTest(registry) {
   registryCache = registry;

@@ -6,6 +6,7 @@ import {
 } from '@masterpiece/image-generation-runtime/space/gates/generation-route-integrity-gate.js';
 import { ACTIVE_SPACE_ROUTE_BASELINE } from '@masterpiece/image-generation-runtime/space/quality-baselines/active-space-route-baseline.js';
 import { resolveSpaceReferences } from '@masterpiece/image-generation-runtime/space/space-reference-policy.js';
+import { resolveArchitectureAnchorBrandKey } from '@masterpiece/image-generation-runtime/space/architecture-context.js';
 
 const requiredBlocks = [
   'task', 'spatial_intent', 'architecture_language', 'architecture_context',
@@ -13,6 +14,12 @@ const requiredBlocks = [
   'brand_translation', 'functional_requirement', 'material', 'lighting',
   'composition', 'rendering', 'negative_constraints',
 ];
+
+test('architecture anchor brand key resolves from registry display name without project rules', () => {
+  assert.equal(resolveArchitectureAnchorBrandKey('九州美学'), 'jiuzhou-aesthetics');
+  assert.equal(resolveArchitectureAnchorBrandKey('  冯烫烫  '), 'feng-tang-tang');
+  assert.equal(resolveArchitectureAnchorBrandKey('未登记品牌'), null);
+});
 
 function input(overrides = {}) {
   const generationBasis = overrides.generationBasis ?? 'standard';

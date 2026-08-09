@@ -272,6 +272,9 @@ export function sanitizeDifferentiators(items) {
   return (Array.isArray(items) ? items : []).map((raw) => {
     const t = String(raw || '').trim();
     if (!t) return t;
+    if (hasMotif(t)) {
+      return sanitizeBrandItem(t).text;
+    }
     if (containsChromaticColor(t) && !/surface|texture|\u6750\u8d28|\u89e6\u611f/u.test(t)) {
       return `${t}\uff08\u4ec5\u4f5c\u5c40\u90e8\u914d\u8272\u70b9\u7f00\uff0c\u4e0d\u4f5c\u7a7a\u95f4\u4e3b\u8272\u8c03\uff09`;
     }

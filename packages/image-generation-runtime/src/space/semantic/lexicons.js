@@ -38,10 +38,10 @@
 export const BRAND_MOTIF_TERMS = Object.freeze([
   // avian / animal symbolism
   'fe\u0061ther', 'plum\u0065', 'pe\u0061cock', 'av\u0069an', 'quill',
-  '\u7fce\u7fbd', '\u7fbd\u6bdb', '\u96c0\u96c1', '\u96c0\u7fbd', '\u98de\u9e1f', '\u96c0\u7fbd',
+  '\u7fce\u7fbd', '\u7fbd\u6bdb', '\u5b54\u96c0', '\u96c0\u7fbd', '\u98de\u9e1f',
   // floral (multi-char compounds only)
   'flow\u0065r', 'flor\u0061l', 'pet\u0061l', 'bloom', 'blos\u0073om', 'lotu\u0073',
-  '\u82b1\u74f7', '\u82b1\u5349', '\u83ca\u82b1', '\u83b2\u74f7', '\u83b2\u74f7', '\u82b1\u6735',
+  '\u82b1\u74e3', '\u82b1\u5349', '\u83ca\u82b1', '\u83b2\u82b1', '\u82b1\u6735',
   // graphic / brand marks
   'logo', 'wordm\u0061rk', 'logotype', 'mascot', 'emblem',
   'monogr\u0061m', 'gr\u0061phic motif', 'br\u0061nd icon', 'br\u0061nd m\u0061rk',
