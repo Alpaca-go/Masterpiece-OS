@@ -67,6 +67,7 @@ test('R10 Reference-First: referenceAssetIds flow to taskContract + reference_as
   assert.deepEqual(out.compiledPrompt.referenceAssetIds, ['asset-ref-1'], 'compiled prompt keeps reference');
   const sg = out.compiledPrompt.trace.spaceGeneration;
   assert.equal(sg.referenceMode, 'reference_assisted', 'High Fidelity route');
+  assert.equal(sg.generationBasis, 'reference_first', 'R10.2 §27 generationBasis');
   assert.deepEqual(sg.referenceIds, ['asset-ref-1'], 'trace records reference');
   // 14-block architecture-before-brand hierarchy is unchanged.
   assert.equal(out.compiledPrompt.blocks.length, 14);
@@ -88,6 +89,7 @@ test('R10 Standard route: refs=0 stays text-only and is not blocked', async () =
   assert.deepEqual(out.taskContract.referenceAssetIds, [], 'refs=0');
   const sg = out.compiledPrompt.trace.spaceGeneration;
   assert.equal(sg.referenceMode, 'text_only', 'Standard route');
+  assert.equal(sg.generationBasis, 'standard', 'R10.2 §27 generationBasis');
   assert.deepEqual(sg.referenceIds, [], 'no references');
 });
 
