@@ -33,6 +33,10 @@ function confirmedOutput(overrides = {}) {
   return {
     assetId: 'asset-1',
     projectId: 'proj-1',
+    // R11.2.1 asset identity: generated space output, continuation source.
+    assetOrigin: 'generated_output',
+    deliverableFamily: 'space',
+    generationRole: 'continuation_source',
     sourceRunId: 'run-1',
     sourceScene: 'reception',
     confirmationState: 'confirmed',

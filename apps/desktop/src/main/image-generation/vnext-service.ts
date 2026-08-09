@@ -717,14 +717,21 @@ export function createVNextImageGenerationService(
         code: 'SPACE_CONTINUATION_SOURCE_INVALID',
       });
     }
-    if (run.deliverable !== 'interior_scene' && run.deliverable !== 'storefront_scene') {
+    const session = await readSession(projectId);
+    // R11.2.1 Bug A: the vNext run record has no `deliverable` field (legacy
+    // sources.deliverable is only set on the non-vNext path), so we resolve the
+    // deliverable family from the session history entry the run wrote, which is
+    // authoritative for vNext runs.
+    const generatedEntry = [...session.history].reverse().find((entry) =>
+      entry.type === 'generated' && entry.runId === runId);
+    const isSpaceRun = generatedEntry?.deliverableFamily === 'space';
+    if (!isSpaceRun) {
       throw Object.assign(new Error('Continuation source must be a space generated output'), {
         code: 'SPACE_CONTINUATION_SOURCE_INVALID',
       });
     }
     const image = run.images.find((candidate) => candidate.imageId === imageId);
     if (!image) throw new Error('Generated image does not exist');
-    const session = await readSession(projectId);
     const now = new Date().toISOString();
     const assetId = `asset-${runId}-${imageId}`;
     const existing = session.confirmedGeneratedOutputs?.[assetId];
@@ -732,9 +739,13 @@ export function createVNextImageGenerationService(
     const entry: VNextConfirmedGeneratedOutput = {
       assetId,
       projectId,
+      // R11.2.1 asset identity: generated space output, continuation source.
+      assetOrigin: 'generated_output',
+      deliverableFamily: 'space',
+      generationRole: 'continuation_source',
       sourceRunId: runId,
       sourceTaskId: run.taskId,
-      sourceScene: 'space',
+      sourceScene: generatedEntry?.subtype || 'space',
       confirmationState: 'confirmed',
       confirmedAt: existing?.confirmedAt ?? now,
       confirmationSource: 'user_explicit',

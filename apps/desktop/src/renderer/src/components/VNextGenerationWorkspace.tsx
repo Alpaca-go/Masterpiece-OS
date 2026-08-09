@@ -66,6 +66,15 @@ function referenceSourceLabel(asset: AssetItem): string {
   return '项目素材';
 }
 
+// R11.2.1 §43: precise provenance label for an explicit reference. The
+// selection state owns the authoritative source (user_upload vs
+// project_visual_asset); fall back to the heuristic label.
+function referenceSourceLabelFor(asset: AssetItem, provenance?: 'user_upload' | 'project_visual_asset'): string {
+  if (provenance === 'user_upload') return '用户上传';
+  if (provenance === 'project_visual_asset') return '项目素材';
+  return referenceSourceLabel(asset);
+}
+
 export function VNextGenerationWorkspace({
   project,
   imageProfiles,
@@ -108,6 +117,9 @@ export function VNextGenerationWorkspace({
   const [generationBasis, setGenerationBasis] = useState<'standard' | 'reference'>('standard');
   const [projectAssets, setProjectAssets] = useState<AssetItem[]>([]);
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+  // R11.2.1 provenance: which explicit reference each asset came from
+  // (user_upload vs project_visual_asset). Project assets never auto-enter.
+  const [referenceSources, setReferenceSources] = useState<Record<string, 'user_upload' | 'project_visual_asset'>>({});
   const [assetsLoading, setAssetsLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -374,6 +386,11 @@ export function VNextGenerationWorkspace({
   function toggleReferenceAsset(assetId: string) {
     setReferenceAssetIds((current) => {
       const next = toggleReferenceId(current, assetId);
+      // R11.2.1: selecting from the project picker is project_visual_asset
+      // provenance (explicit user selection). Only mark when newly added.
+      if (next.includes(assetId) && !current.includes(assetId)) {
+        setReferenceSources((sources) => ({ ...sources, [assetId]: 'project_visual_asset' }));
+      }
       setCompiled(null);
       setEditedPrompt('');
       setLastValidation(null);
@@ -390,15 +407,27 @@ export function VNextGenerationWorkspace({
       if (!chosen || chosen.length === 0) return;
       setUploading(true);
       setError('');
+      // R11.2.1 Bug B: importFiles returns the WHOLE project asset library in
+      // summary.items, so we must only add the NEWLY imported asset ids to the
+      // explicit reference selection — never the pre-existing project assets.
+      const beforeIds = new Set((await window.masterpiece.projects.scanAssets(project.id)).items.map((i) => i.id));
       const imported = await window.masterpiece.projects.importFiles(project.id, chosen, 'assets');
-      const newIds = (imported.summary.items ?? []).map((item) => item.id);
-      // Re-scan to get thumbnails/mime for the newly imported assets.
-      const summary = await window.masterpiece.projects.scanAssets(project.id);
-      const images = summary.items.filter((item) => item.kind === 'image');
+      const after = await window.masterpiece.projects.scanAssets(project.id);
+      const images = after.items.filter((item) => item.kind === 'image');
       setProjectAssets(images);
+      // Only assets that did NOT exist before the import are the user upload.
+      const uploadedIds = images
+        .map((item) => item.id)
+        .filter((id) => !beforeIds.has(id));
       setReferenceAssetIds((current) => {
-        const fresh = newIds.filter((id) => !current.includes(id));
+        const fresh = uploadedIds.filter((id) => !current.includes(id));
         return [...current, ...fresh].slice(0, MAX_SPACE_REFERENCE_IMAGES);
+      });
+      // R11.2.1: uploaded assets are user_upload provenance.
+      setReferenceSources((current) => {
+        const next = { ...current };
+        for (const id of uploadedIds) next[id] = 'user_upload';
+        return next;
       });
       setCompiled(null);
       setEditedPrompt('');
@@ -634,7 +663,7 @@ export function VNextGenerationWorkspace({
                     : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
                   <div className="reference-card-meta">
                     <strong>{asset.name}</strong>
-                    <span>{referenceSourceLabel(asset)}</span>
+                    <span>{referenceSourceLabelFor(asset, referenceSources[asset.id])}</span>
                   </div>
                   <div className="reference-card-actions">
                     <button

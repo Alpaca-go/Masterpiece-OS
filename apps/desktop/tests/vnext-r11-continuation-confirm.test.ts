@@ -40,6 +40,36 @@ async function setup() {
     () => imageGeneration as never,
     undefined,
   );
+  // Simulate a completed space generation (vnext start() writes a "generated"
+  // history entry that confirm uses to verify the run is a space output).
+  const sessionDir = path.join(root, 'image-generation-vnext');
+  await fs.mkdir(sessionDir, { recursive: true });
+  await fs.writeFile(
+    path.join(sessionDir, 'creative-session.json'),
+    JSON.stringify({
+      schemaVersion: '1.0',
+      projectId,
+      currentTask: null,
+      history: [{
+        id: 'h-confirm',
+        type: 'generated',
+        taskId: 'task-confirm-1',
+        deliverableFamily: 'space',
+        subtype: 'reception',
+        shot: 'entrance_view',
+        promptFingerprint: 'fp',
+        runId: 'run-confirm-1',
+        imageId: 'img-1',
+        createdAt: '2026-08-09T10:00:00.000Z',
+      }],
+      implicitAnchors: {},
+      projectPromptAssets: {},
+      confirmedGeneratedOutputs: {},
+      createdAt: '2026-08-09T10:00:00.000Z',
+      updatedAt: '2026-08-09T10:00:00.000Z',
+    }),
+    'utf8',
+  );
   return { root, runs, service };
 }
 
@@ -54,6 +84,10 @@ test('R11.1 confirm generated output persists, is idempotent, and revoke blocks 
   assert.equal(confirmed.sourceRunId, 'run-confirm-1');
   assert.equal(confirmed.projectId, projectId);
   assert.equal(confirmed.assetId, 'asset-run-confirm-1-img-1');
+  // R11.2.1 Test A: generated output asset identity + provenance.
+  assert.equal(confirmed.assetOrigin, 'generated_output');
+  assert.equal(confirmed.deliverableFamily, 'space');
+  assert.equal(confirmed.generationRole, 'continuation_source');
 
   // Persisted: survives a fresh session read.
   const persisted = await service.getConfirmedGeneratedOutputs(projectId);

@@ -947,6 +947,11 @@ export interface VNextImplicitAnchor {
 export interface VNextConfirmedGeneratedOutput {
   assetId: string;
   projectId: string;
+  // R11.2.1 asset identity: this is a generated space output, never a generic
+  // project asset / uploaded image. confirmation is a STATE, not a file origin.
+  assetOrigin: 'generated_output';
+  deliverableFamily: 'space';
+  generationRole: 'continuation_source' | 'none';
   sourceRunId: string;
   sourceTaskId?: string;
   sourceScene: string;

@@ -32,6 +32,17 @@ export function validateContinuationSource({ confirmed, asset, projectId, run } 
   if (!confirmed.sourceRunId) {
     throw err('SPACE_CONTINUATION_SOURCE_INVALID', 'sourceRunId is required');
   }
+  // R11.2.1: the source must be a registered GENERATED space output, not a
+  // generic project asset / uploaded image / preview object. Confirmation is a
+  // state, never a new file origin.
+  if (confirmed.assetOrigin !== 'generated_output') {
+    throw err('SPACE_CONTINUATION_SOURCE_NOT_GENERATED_OUTPUT',
+      `continuation source must be a generated output (assetOrigin=${confirmed.assetOrigin})`);
+  }
+  if (confirmed.deliverableFamily !== 'space') {
+    throw err('SPACE_CONTINUATION_SOURCE_INVALID',
+      `continuation source must be a space deliverable (deliverableFamily=${confirmed.deliverableFamily})`);
+  }
   if (asset) {
     if (asset.projectId && asset.projectId !== projectId) {
       throw err('SPACE_CONTINUATION_PROJECT_MISMATCH', 'confirmed asset does not belong to the current project');

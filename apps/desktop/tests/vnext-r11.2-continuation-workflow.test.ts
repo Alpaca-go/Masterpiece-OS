@@ -37,6 +37,37 @@ async function setup() {
     () => imageGeneration as never,
     undefined,
   );
+  // Simulate a completed space generation: the vNext start() writes a
+  // "generated" history entry (deliverableFamily=space) which confirm uses to
+  // verify the run is a space output (vnext runs carry no `deliverable` field).
+  const sessionDir = path.join(root, 'image-generation-vnext');
+  await fs.mkdir(sessionDir, { recursive: true });
+  await fs.writeFile(
+    path.join(sessionDir, 'creative-session.json'),
+    JSON.stringify({
+      schemaVersion: '1.0',
+      projectId,
+      currentTask: null,
+      history: [{
+        id: 'h-1',
+        type: 'generated',
+        taskId: 'task-space-1',
+        deliverableFamily: 'space',
+        subtype: 'reception',
+        shot: 'entrance_view',
+        promptFingerprint: 'fp',
+        runId: 'run-space-1',
+        imageId: 'img-1',
+        createdAt: '2026-08-09T10:00:00.000Z',
+      }],
+      implicitAnchors: {},
+      projectPromptAssets: {},
+      confirmedGeneratedOutputs: {},
+      createdAt: '2026-08-09T10:00:00.000Z',
+      updatedAt: '2026-08-09T10:00:00.000Z',
+    }),
+    'utf8',
+  );
   return { root, runs, service };
 }
 
