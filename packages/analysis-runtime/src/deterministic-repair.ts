@@ -5,9 +5,7 @@ import type {
   SystemDefaultResult,
 } from './contracts.ts';
 import {
-  isRecord,
   setValueAtPath,
-  valueAtPath,
 } from './path-utils.ts';
 import { migrateAnalysisPacket } from './schema-migrations.ts';
 import { computeSourceFingerprint } from './source-fingerprint.ts';

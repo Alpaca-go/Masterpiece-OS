@@ -48,10 +48,6 @@ function strArray(v: unknown): string[] {
   return v.filter((x) => x !== null && x !== undefined).map((x) => String(x));
 }
 
-function pickString(target: string | null | undefined, fallback: string): string {
-  return typeof target === 'string' && target.trim() ? target : fallback;
-}
-
 function pickStringOrNull(target: unknown): string | null {
   if (typeof target === 'string') return target;
   return null;

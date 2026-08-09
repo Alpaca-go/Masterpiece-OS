@@ -7,11 +7,9 @@ import type {
   AnalysisResult,
   CurrentProjectAssetDecision,
   CurrentProjectProfile,
-  CurrentProjectVisualSources,
   FlexibleColorSystem,
   FlexibleCompositionSystem,
   ProjectRecord,
-  ProjectTouchpointInventory,
   ProjectRuntimeContext,
   PublicSettings,
   ReferenceAssetDecision,
@@ -280,30 +278,6 @@ function styleRuleArray(value: unknown): ReferenceStyleRule[] {
 
 const recordValue = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-
-function visualSourcesValue(value: unknown): CurrentProjectVisualSources {
-  const source = recordValue(value);
-  return {
-    productForms: valueArray(source.productForms),
-    cookingActions: valueArray(source.cookingActions),
-    sensorySignals: valueArray(source.sensorySignals),
-    consumptionActions: valueArray(source.consumptionActions),
-    brandNameSemantics: valueArray(source.brandNameSemantics),
-    spatialObjects: valueArray(source.spatialObjects)
-  };
-}
-
-function touchpointInventoryValue(value: unknown): ProjectTouchpointInventory {
-  const source = recordValue(value);
-  return {
-    primaryPackaging: valueArray(source.primaryPackaging),
-    secondaryPackaging: valueArray(source.secondaryPackaging),
-    serviceMaterials: valueArray(source.serviceMaterials),
-    viApplications: valueArray(source.viApplications),
-    spatialTouchpoints: valueArray(source.spatialTouchpoints),
-    digitalTouchpoints: valueArray(source.digitalTouchpoints)
-  };
-}
 
 function visualAnchorValue(value: unknown): VisualAnchor {
   const source = recordValue(value);

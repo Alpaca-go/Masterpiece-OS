@@ -15,8 +15,6 @@ const WARN = 10_000;
 const HARD_BLOCK = 12_000;
 const ADAPTER_LIMIT = 7_500;
 
-const NEGATIVE_LINE = /prohibit|must not|do not|don't|不得|禁止|避免|不要|不做|不形成|而非|no (?:large|logo|text)|strict negative/iu;
-
 export function measurePromptBudget(finalPrompt, blockTextsByName = {}) {
   const chars = [...String(finalPrompt ?? '')].length;
 

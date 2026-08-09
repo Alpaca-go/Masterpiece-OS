@@ -7,7 +7,6 @@ import {
   compilePhase9bSpacePrompt,
   runSpaceQualityGate,
 } from '../space/index.js';
-import { measurePromptBudget } from '../space/prompt-budget.js';
 import crypto from 'node:crypto';
 
 // Feature flag (R9 Productionization):

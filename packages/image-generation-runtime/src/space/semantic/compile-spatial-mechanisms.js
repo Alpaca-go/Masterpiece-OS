@@ -17,7 +17,6 @@
 
 import { auditMechanismSources } from './mechanism-provenance.js';
 import { SEMANTIC_CLASS } from './separate-space-semantics.js';
-import { normalizeArchitectureSemantics } from './normalize-architecture-semantics.js';
 import { rewriteArchitectureSemantics } from './rewrite-architecture-semantics.js';
 
 /**

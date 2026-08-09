@@ -144,19 +144,6 @@ function responsibility(outputType) {
   return map[outputType];
 }
 
-function directionStrategy(direction, outputType) {
-  if (['interior_scene', 'storefront_scene'].includes(outputType)) {
-    return direction.spaceStrategy || direction.designStrategy;
-  }
-  if (outputType === 'packaging_render') {
-    return direction.packagingStrategy || direction.designStrategy;
-  }
-  if (outputType === 'brand_poster') {
-    return direction.posterStrategy || direction.designStrategy;
-  }
-  return direction.designStrategy;
-}
-
 export function compileGenerationPromptSnapshot(input, now = new Date().toISOString()) {
   const userRequest = text(input?.userRequest);
   if (!userRequest) throw Object.assign(new Error('生成任务不能为空。'), { code: 'GENERATION_TASK_EMPTY' });

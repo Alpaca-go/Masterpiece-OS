@@ -17,7 +17,6 @@ import {
   validateReferenceSoft,
   canUseGenerationBasis,
   toggleReferenceId,
-  removeReferenceId,
   replaceReferenceIds,
 } from '../reference-first/state.js';
 

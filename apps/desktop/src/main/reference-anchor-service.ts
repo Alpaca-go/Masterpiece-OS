@@ -49,7 +49,6 @@ import {
   detectReferenceIdentityLeaks,
   detectReferenceSignatureReentry,
   ensureProjectFacts,
-  filterStyleCapsuleForTask,
   mergeCurrentProjectContext,
   resolvedToMerged,
   validateAnchorBrief,

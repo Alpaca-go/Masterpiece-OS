@@ -77,12 +77,6 @@ function hasTermAsWord(text, term) {
   }
 }
 
-function countHitsAsWord(text, terms) {
-  let n = 0;
-  for (const t of terms) if (hasTermAsWord(text, t)) n += 1;
-  return n;
-}
-
 // Source fields that are, by provenance, primarily about brand/decor rather
 // than building form. Phrases from these fields start with a brand-leaning
 // prior (field provenance is a signal, per recovery doc §10).

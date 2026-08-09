@@ -13,7 +13,6 @@
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import crypto from 'node:crypto';
 import type {
   ConflictResolutionInput,
   ContextConflict,
@@ -21,7 +20,7 @@ import type {
   PublicSettings,
   ResolvedProjectContext
 } from '../shared/types';
-import { applyUserOverride, hasBlockingConflict, resolveProjectContext } from './context-resolver';
+import { applyUserOverride, resolveProjectContext } from './context-resolver';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write';
 import type { ProjectStore } from './project-store';
 import type { ProjectContextService } from './project-context-service';

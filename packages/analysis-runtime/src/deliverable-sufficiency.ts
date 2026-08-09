@@ -7,7 +7,6 @@ import type {
 import { classifyMissingFields } from './missing-field-classifier.ts';
 import {
   isRecord,
-  nonEmptyArray,
   nonEmptyText,
   valueAtPath,
 } from './path-utils.ts';

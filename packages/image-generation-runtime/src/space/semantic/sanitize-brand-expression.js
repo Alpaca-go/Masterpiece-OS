@@ -200,10 +200,6 @@ export const BRAND_EXPRESSION_SANITIZER_VERSION = '1.1.0';
 const PRIMARY_SURFACE_RE = /ceiling|soffit|wall|partition|facade|membrane|canopy|enclosure|primary|main|dominant|\u5929\u82b1|\u540a\u9876|\u9876\u9762|\u5899|\u5899\u9762|\u9694\u65ad|\u7acb\u9762|\u4e3b\u8981|\u4e3b\u8c03|\u4e3b\u5bfc|\u5927\u9762|\u89c6\u89c9\u7126\u70b9/iu;
 const ACCENT_ONLY_ROLE = '\u54c1\u724c\u8272\u4ec5\u4f5c\u5c40\u90e8\u70b9\u7f00/\u6536\u8fb9/\u5c0f\u4ef6\u9970\u9762\uff0c\u4e0d\u5f97\u7528\u4e8e\u5929\u82b1\u3001\u5899\u9762\u3001\u9694\u65ad\u6216\u4e3b\u4f53\u7ed3\u6784';
 
-// Neutral base colors/finishes are allowed to dominate (white, grey, black,
-// cream, wood/metal/stone). Only a genuine chromatic brand color (purple,
-// blue, red, green, etc.) must be demoted to an accent.
-const NEUTRAL_FINISH_RE = /\b(white|off[\s-]?white|grey|gray|black|cream|beige|brown|silver|bronze|brass|gold|metal|wood|stone|concrete|plaster|micro[\s-]?cement|steel)\b|\u767d|\u7070|\u9ed1|\u7c73|\u6728|\u77f3|\u91d1\u5c5e|\u4e0d\u9508\u94a2|\u9ec4\u94dc|\u6df7\u51dd\u571f|\u5fae\u6c34\u6ce5|\u900f\u660e|\u73bb\u7483/iu;
 // Chromatic color terms that indicate a real brand color when present.
 const CHROMATIC_COLOR_RE = /\b(purple|violet|lavender|lilac|plum|magenta|amethyst|blue|teal|green|red|orange|pink|rose|indigo|crimson)\b|\u7d2b|\u6d45\u7d2b|\u6df1\u7d2b|\u7d2b\u8272|\u84dd|\u9752|\u7eff|\u7ea2|\u6a59|\u7c89|\u73ab\u7ea2/iu;
 

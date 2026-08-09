@@ -1,5 +1,3 @@
-const ARRAY_FIELDS = ['identity', 'visualAssets', 'structures', 'composition', 'graphicLanguage', 'hierarchy', 'material', 'photography', 'applicationStrategy', 'compositionStrategy', 'colorRelationship', 'materialAndLighting', 'typographyRelationship', 'informationHierarchy', 'prohibitedCarryover', 'warnings'];
-
 function array(value) { return Array.isArray(value) ? value.filter(Boolean).map(String) : value ? [String(value)] : []; }
 
 export function repairCreativeDirectorBrief(brief, input) {

@@ -25,8 +25,6 @@
 // matching.
 
 import {
-  METAPHOR_MARKERS,
-  COLOR_TERMS,
   SPATIAL_PROPERTY_TERMS,
   ARCHITECTURE_TERMS,
 } from './lexicons.js';
