@@ -29,6 +29,7 @@ import {
   type AnalysisRepairResult,
   type StructuredRepairModelRequest,
 } from '@masterpiece/analysis-runtime/index.ts';
+import { validateSpatialSemantics } from '@masterpiece/image-generation-runtime/space/index.js';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
@@ -556,6 +557,58 @@ export function createPipelineService(
           runId: analysisRepairRunId,
           onProgress: () => {
             progress('repairing-decisions', '正在完善项目决策');
+          },
+          validateFinalPacket: (packet) => {
+            const result = validateSpatialSemantics(
+              (packet as unknown as VisualDecisionPacket).mediaTranslations?.spatial ?? {},
+            );
+            return {
+              status: result.status === 'pass' ? 'pass' as const : 'block' as const,
+              findings: result.findings,
+            };
+          },
+          repairInvalidFinalPacket: async ({ packet, findings }) => {
+            const current = packet as unknown as VisualDecisionPacket;
+            const repairResponse = await baseReasoner({
+              prompt: {
+                messages: [
+                  {
+                    role: 'system',
+                    content: '你是空间功能语义修复器。只能修复指定的三个空间功能字段，不得修改项目事实、品牌策略或其他字段。只返回严格 JSON。',
+                  },
+                  {
+                    role: 'user',
+                    content: `修复以下空间功能字段，使其只描述空间区域、运营功能、用户路径、边界、动线与功能结果。\n\nfunctionalNetwork 不得包含品牌符号、Logo、图形、纹样、色彩渐变、装饰母题或艺术装置。\nfunctionalRelationships 必须描述空间 A、过渡/边界/动线机制、空间 B 及功能结果。\nmustBeVisible 只能列出真实运营中必须可见的空间、设备或功能区域，不得包含 Logo、品牌符号、图案或字标。\n\n不得编造证据；无法安全修复的条目应删除。\n\n校验发现：${JSON.stringify(findings)}\n\n当前项目事实：${JSON.stringify(current.projectFacts)}\n\n当前空间字段：${JSON.stringify(current.mediaTranslations?.spatial)}`,
+                  },
+                ],
+                attachments,
+              },
+              responseSchema: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['functionalNetwork', 'functionalRelationships', 'mustBeVisible'],
+                properties: {
+                  functionalNetwork: { type: 'array', items: { type: 'string' } },
+                  functionalRelationships: { type: 'array', items: { type: 'string' } },
+                  mustBeVisible: { type: 'array', items: { type: 'string' } },
+                },
+              },
+              responseSchemaName: 'spatial_semantic_repair',
+              signal: controller.signal,
+              maximumDurationMs: 15 * 60_000,
+            });
+            const repaired = parseModelStructuredResponse(repairResponse.reportMarkdown);
+            const next = structuredClone(packet) as unknown as VisualDecisionPacket;
+            next.mediaTranslations.spatial.functionalNetwork = Array.isArray(repaired.functionalNetwork)
+              ? repaired.functionalNetwork.filter((item): item is string => typeof item === 'string')
+              : [];
+            next.mediaTranslations.spatial.functionalRelationships = Array.isArray(repaired.functionalRelationships)
+              ? repaired.functionalRelationships.filter((item): item is string => typeof item === 'string')
+              : [];
+            next.mediaTranslations.spatial.mustBeVisible = Array.isArray(repaired.mustBeVisible)
+              ? repaired.mustBeVisible.filter((item): item is string => typeof item === 'string')
+              : [];
+            return next as unknown as Record<string, unknown>;
           },
           model: async (request: StructuredRepairModelRequest) => {
             const repairResponse = await baseReasoner({

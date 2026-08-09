@@ -121,3 +121,44 @@ test('completion orchestrator asks about real packaging facts without calling AI
     /包装内实际放置的产品/u.test(question.question)
   )));
 });
+
+test('completion orchestrator validates and repairs polluted spatial semantics once', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.mustBeVisible = ['Logo作为主要视觉焦点'];
+  let semanticRepairCalls = 0;
+  const validateFinalPacket = (candidate: Record<string, unknown>) => {
+    const current = candidate as unknown as typeof packet;
+    const invalid = current.mediaTranslations.spatial.mustBeVisible.some((item) => /logo/iu.test(item));
+    return { status: invalid ? 'block' as const : 'pass' as const, findings: invalid ? ['logo'] : [] };
+  };
+  const result = await completeStructuredAnalysis({
+    packet,
+    deliverable: 'space',
+    execution,
+    model: async () => ({}),
+    validateFinalPacket,
+    repairInvalidFinalPacket: async ({ packet: candidate }) => {
+      semanticRepairCalls += 1;
+      const repaired = structuredClone(candidate) as unknown as typeof packet;
+      repaired.mediaTranslations.spatial.mustBeVisible = ['接待台与等候区边界'];
+      return repaired as unknown as Record<string, unknown>;
+    },
+  });
+  assert.equal(result.status, 'ready');
+  assert.equal(result.modelCallCount, 1);
+  assert.equal(semanticRepairCalls, 1);
+});
+
+test('completion orchestrator fails closed when spatial repair remains invalid', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  const result = await completeStructuredAnalysis({
+    packet,
+    deliverable: 'space',
+    execution,
+    model: async () => ({}),
+    validateFinalPacket: () => ({ status: 'block', findings: ['motif'] }),
+    repairInvalidFinalPacket: async ({ packet: candidate }) => candidate,
+  });
+  assert.equal(result.status, 'failed');
+  assert.ok(result.audit.errors.some((error) => error.code === 'ANALYSIS_SPATIAL_SEMANTICS_INVALID'));
+});

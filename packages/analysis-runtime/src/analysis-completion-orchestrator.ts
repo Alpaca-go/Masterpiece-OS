@@ -102,6 +102,14 @@ export async function completeStructuredAnalysis(input: {
     | 'merging'
     | 'revalidation'
   ) => void;
+  validateFinalPacket?: (packet: Record<string, unknown>) => {
+    status: 'pass' | 'block';
+    findings: unknown[];
+  };
+  repairInvalidFinalPacket?: (input: {
+    packet: Record<string, unknown>;
+    findings: unknown[];
+  }) => Promise<Record<string, unknown>>;
 }): Promise<AnalysisCompletionOutcome> {
   const now = input.now ?? (() => new Date().toISOString());
   const startedAt = now();
@@ -276,6 +284,46 @@ export async function completeStructuredAnalysis(input: {
     if (!attemptApplied && attempt === MAX_REPAIR_ATTEMPTS) {
       finalStatus = confirmationIssues.length ? 'requires_confirmation' : 'failed';
       break;
+    }
+  }
+
+  if (
+    input.deliverable === 'space'
+    && (finalStatus === 'ready' || finalStatus === 'ready_with_warnings')
+    && input.validateFinalPacket
+  ) {
+    let semanticValidation = input.validateFinalPacket(packet);
+    await persist(input.persistence, (store) => store.saveRuntimeArtifact(
+      'spatial-semantic-validation.initial.json',
+      semanticValidation,
+    ));
+    if (semanticValidation.status === 'block' && input.repairInvalidFinalPacket) {
+      input.onProgress?.('repairing');
+      try {
+        modelCallCount += 1;
+        packet = await input.repairInvalidFinalPacket({
+          packet,
+          findings: semanticValidation.findings,
+        });
+        semanticValidation = input.validateFinalPacket(packet);
+        await persist(input.persistence, (store) => store.saveRuntimeArtifact(
+          'spatial-semantic-validation.repaired.json',
+          semanticValidation,
+        ));
+      } catch (error) {
+        accumulator.errors.push(safeError(Object.assign(
+          error instanceof Error ? error : new Error(String(error)),
+          { code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID' },
+        )));
+        semanticValidation = { status: 'block', findings: semanticValidation.findings };
+      }
+    }
+    if (semanticValidation.status === 'block') {
+      finalStatus = 'failed';
+      accumulator.errors.push({
+        code: 'ANALYSIS_SPATIAL_SEMANTICS_INVALID',
+        message: 'Spatial functional semantics remained invalid after targeted repair.',
+      });
     }
   }
 
