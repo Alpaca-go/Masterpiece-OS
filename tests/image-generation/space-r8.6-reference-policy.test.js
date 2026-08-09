@@ -33,38 +33,31 @@ test('R8.6 final smokes are text-only with refs=0 and reference policy version r
     assert.equal(ref.referenceCount, 0, `${scene}: refs=0`);
     assert.deepEqual(m.referenceIds, [], `${scene}: manifest referenceIds empty`);
     // Frozen policy version uses the component-version namespace.
-    assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'space-reference-policy@1.0.0');
+    assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'space-reference-policy@2.0.0');
   }
 });
 
-test('R8.6 text-only refs=0 is the standard path via the frozen bypass (fail-closed guard intact)', () => {
-  // The frozen policy keeps its fail-closed safety net:
-  // a formal first space generation with NO reference and NO bypass still
-  // throws SPACE_REFERENCE_REQUIRED (so an accidental refs=0 is never silent).
+test('R8.6 text-only refs=0 remains the formal Standard path', () => {
   const { references } = resolveSpaceReferences({
     explicitAssets: [],
     implicitAnchor: null,
     architectureAnchorImages: [],
   });
   assert.equal(references.length, 0);
-  assert.throws(() => assertSpaceReferenceAvailable(references), /SPACE_REFERENCE_REQUIRED/, 'guard stays fail-closed');
-
-  // R8.6 freezes Text-only = Standard Generation: the production path routes
-  // deliberate text-only runs through the explicit bypass (allowTextOnlySpace),
-  // matching the smoke runs whose reference-trace records referenceCount=0.
   assert.doesNotThrow(
-    () => assertSpaceReferenceAvailable(references, { bypass: true }),
-    'text-only standard generation bypass must not block',
+    () => assertSpaceReferenceAvailable(references, { generationBasis: 'standard' }),
+    'text-only Standard must not block',
   );
 });
 
 test('R8.6 reference-assisted path (high fidelity) still resolves explicit references', () => {
   const { references } = resolveSpaceReferences({
+    generationBasis: 'reference_first',
     explicitAssets: [{ assetId: 'sketch-a', role: 'reference', relativePath: 'ref/sketch.jpg' }],
     implicitAnchor: null,
     architectureAnchorImages: [],
   });
   assert.equal(references.length, 1);
   assert.equal(references[0].id, 'sketch-a');
-  assert.doesNotThrow(() => assertSpaceReferenceAvailable(references));
+  assert.doesNotThrow(() => assertSpaceReferenceAvailable(references, { generationBasis: 'reference_first' }));
 });

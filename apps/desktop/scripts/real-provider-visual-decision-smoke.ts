@@ -11,11 +11,15 @@ import { createProjectStore } from '../src/main/project-store.ts';
 import { getProviderCredentials, getSettings } from '../src/main/settings-store.ts';
 import { validateVisualDecisionPacket } from '../src/main/visual-decision-packet.ts';
 
-const projectId = process.env.MASTERPIECE_SMOKE_PROJECT_ID?.trim() || '';
+const configuredProjectId = process.env.MASTERPIECE_SMOKE_PROJECT_ID?.trim() || '';
+const sourcePath = process.env.MASTERPIECE_SMOKE_SOURCE_PATH?.trim() || '';
 const textProfileId = process.env.MASTERPIECE_SMOKE_TEXT_PROFILE_ID?.trim() || '';
 const imageProfileId = process.env.MASTERPIECE_SMOKE_IMAGE_PROFILE_ID?.trim() || '';
 const reuseAnalysis = process.env.MASTERPIECE_SMOKE_REUSE_ANALYSIS === '1';
 const dryRun = process.env.MASTERPIECE_SMOKE_DRY_RUN === '1';
+const generationBasis = process.env.MASTERPIECE_SMOKE_GENERATION_BASIS === 'reference_first'
+  ? 'reference_first'
+  : 'standard';
 const deliverableFamily = process.env.MASTERPIECE_SMOKE_DELIVERABLE === 'packaging'
   ? 'packaging'
   : 'space';
@@ -30,7 +34,7 @@ function result(value: unknown): void {
 }
 
 async function main(): Promise<void> {
-  if (!projectId || !textProfileId || (!dryRun && !imageProfileId)) {
+  if ((!configuredProjectId && !sourcePath) || !textProfileId || (!dryRun && !imageProfileId)) {
     throw new Error(
       '缺少 MASTERPIECE_SMOKE_PROJECT_ID / MASTERPIECE_SMOKE_TEXT_PROFILE_ID / MASTERPIECE_SMOKE_IMAGE_PROFILE_ID。',
     );
@@ -39,6 +43,10 @@ async function main(): Promise<void> {
   const settings = await getSettings();
   const dataPath = path.resolve(settings.defaultDataPath);
   const projects = createProjectStore(getSettings);
+  const projectId = configuredProjectId || (await projects.create({
+    sourcePaths: [sourcePath],
+    apiProfileId: textProfileId,
+  })).id;
   const pipeline = createPipelineService(
     projects,
     getProviderCredentials,
@@ -110,6 +118,13 @@ async function main(): Promise<void> {
     : packet.projectFacts.brandRole.value;
   const packaging = packet.mediaTranslations.packaging;
   const primaryPackagingStructure = packaging.structureStrategy[0]?.structure || '';
+  const explicitReferenceAsset = generationBasis === 'reference_first'
+    ? analysis.project.assets.find((asset) => /^image\//u.test(asset.mimeType))
+      ?? analysis.project.assets.find((asset) => /\.(?:png|jpe?g|webp)$/iu.test(asset.relativePath))
+    : null;
+  if (generationBasis === 'reference_first' && !explicitReferenceAsset) {
+    throw new Error('Reference-First smoke requires one explicit project image asset.');
+  }
   const compilation = await vnext.compile({
     projectId,
     model: 'seedream-5.0-pro',
@@ -143,6 +158,7 @@ async function main(): Promise<void> {
       }
       : {
         deliverableFamily: 'space',
+        generationBasis,
         subtype: 'reception',
         shot: 'entrance_three_quarter_wide',
         count: 1,
@@ -163,7 +179,7 @@ async function main(): Promise<void> {
           '脱离项目证据的行业模板',
           '随机构造的 Logo、品牌文字或 slogan',
         ],
-        referenceAssetIds: [],
+        referenceAssetIds: explicitReferenceAsset ? [explicitReferenceAsset.id] : [],
       },
   });
 
@@ -258,6 +274,10 @@ async function main(): Promise<void> {
       preflightReport: compilation.compiledPrompt.preflightReport,
       logoUsageMode: compilation.taskContract.logoUsageMode,
       referenceAssetIds: compilation.taskContract.referenceAssetIds,
+      generationBasis: compilation.taskContract.generationBasis,
+      spaceGeneration: (compilation.compiledPrompt.trace as unknown as {
+        spaceGeneration?: Record<string, unknown>;
+      }).spaceGeneration,
     });
     return;
   }
@@ -310,6 +330,10 @@ async function main(): Promise<void> {
       preflightReport: compilation.compiledPrompt.preflightReport,
       logoUsageMode: compilation.taskContract.logoUsageMode,
       referenceAssetIds: compilation.taskContract.referenceAssetIds,
+      generationBasis: compilation.taskContract.generationBasis,
+      spaceGeneration: (compilation.compiledPrompt.trace as unknown as {
+        spaceGeneration?: Record<string, unknown>;
+      }).spaceGeneration,
     },
     image: {
       provider: imageRun.providerId,

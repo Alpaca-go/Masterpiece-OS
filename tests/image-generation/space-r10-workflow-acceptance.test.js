@@ -36,10 +36,18 @@ async function loadCompile() {
 }
 
 function loadPacket(brand) {
-  return JSON.parse(fs.readFileSync(
+  const packet = JSON.parse(fs.readFileSync(
     path.join(repoRoot, `space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`),
     'utf8',
   ));
+  packet.mediaTranslations.spatial.functionalNetwork = [
+    '入口连接接待与等候区', '咨询区通过半私密边界后撤', '治疗区与服务路径分离',
+  ];
+  packet.mediaTranslations.spatial.functionalRelationships = [
+    '入口通过开放视线连接接待台，使到达路径清晰',
+  ];
+  packet.mediaTranslations.spatial.mustBeVisible = ['接待台', '等候区', '咨询入口'];
+  return packet;
 }
 
 function buildTask(referenceAssetIds) {
@@ -53,6 +61,7 @@ function buildTask(referenceAssetIds) {
     count: 1,
     aspectRatio: '16:9',
     currentInstruction: 'R10.3 workflow acceptance.',
+    generationBasis: referenceAssetIds.length ? 'reference_first' : 'standard',
     mustInclude: [],
     mustAvoid: [],
     referenceAssetIds,

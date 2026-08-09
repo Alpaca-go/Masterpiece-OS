@@ -20,6 +20,8 @@
     "verify:workspace-boundaries": "node ./scripts/verify-workspace-boundaries.mjs",
     "test": "node --test tests/*.test.js tests/packages/*/*.test.js tests/image-generation/*.test.js",
     "test:image-generation": "node --test tests/image-generation/*.test.js",
+    "test:space-route-integrity": "node --test tests/image-generation/space-route-integrity.test.js",
+    "test:space-semantic-gate": "node --test tests/image-generation/space-spatial-semantic-gate.test.js",
     "test:packages": "node --test tests/packages/*/*.test.js",
     "verify:current-flows": "node ./scripts/verify-current-flows.mjs",
     "verify:no-project-specific-production-rules": "node ./scripts/verify-no-project-specific-production-rules.mjs",

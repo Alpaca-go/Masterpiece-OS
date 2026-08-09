@@ -48,6 +48,7 @@ async function main(): Promise<void> {
     model: 'seedream-5.0-pro',
     task: {
       deliverableFamily: 'space',
+      generationBasis: 'standard',
       subtype: 'reception',
       shot: 'entrance_three_quarter_wide',
       count: 1,
