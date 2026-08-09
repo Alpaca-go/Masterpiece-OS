@@ -553,3 +553,5 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
   .generation-task-grid, .generation-output-list { grid-template-columns: 1fr; }
   .visual-rule-library { grid-template-columns: 1fr; }
 }
+
+/* R10 Reference-First: reference asset selection in the generation workspace. */.reference-asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }.asset-tile { display: grid; gap: 6px; padding: 8px; border: 1px solid #e0dcd6; border-radius: 8px; background: #fff; cursor: pointer; }.asset-tile.selected { border-color: #6c42d8; box-shadow: 0 0 0 1px #6c42d8; }.asset-tile img, .asset-tile .asset-fallback { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 5px; background: #ece8ef; }.asset-tile .asset-fallback { display: grid; place-items: center; color: #756c7e; font-size: 10px; font-weight: 700; }.asset-tile input { display: none; }.asset-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: #4a4450; }.muted { color: #8b858e; font-size: 11px; }

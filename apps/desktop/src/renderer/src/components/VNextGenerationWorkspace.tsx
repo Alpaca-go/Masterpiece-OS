@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type {
   ApiProfile,
+  AssetItem,
   CompileVNextGenerationResult,
   ImageGenerationRun,
   ProjectRecord,
@@ -63,10 +64,19 @@ export function VNextGenerationWorkspace({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  // R10 Reference-First: Generation Basis switches between Standard
+  // (analysis-led, text-only) and Reference (reference-assisted, High
+  // Fidelity). When a reference image is chosen its assetId flows through
+  // the frozen R9 High Fidelity runtime (referenceAssetIds -> resolveSpaceReferences).
+  const [generationBasis, setGenerationBasis] = useState<'standard' | 'reference'>('standard');
+  const [projectAssets, setProjectAssets] = useState<AssetItem[]>([]);
+  const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+  const [assetsLoading, setAssetsLoading] = useState(false);
 
   const activeAnchor = session?.implicitAnchors[family];
   const familyOptions = options?.[family];
-  const canCompile = Boolean(instruction.trim() && subtype && shot);
+  const canCompile = Boolean(instruction.trim() && subtype && shot)
+    && (generationBasis === 'standard' || referenceAssetIds.length > 0);
   const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
   function splitRules(value: string): string[] {
     return [...new Set(value.split(/\r?\n|；|;/u).map((item) => item.trim()).filter(Boolean))];
@@ -81,8 +91,10 @@ export function VNextGenerationWorkspace({
       || task.currentInstruction !== instruction.trim()
       || task.logoUsageMode !== logoUsageMode
       || task.mustInclude.join('\n') !== splitRules(mustIncludeText).join('\n')
-      || task.mustAvoid.join('\n') !== splitRules(mustAvoidText).join('\n');
-  }, [compiled, family, subtype, shot, aspectRatio, instruction, logoUsageMode, mustIncludeText, mustAvoidText]);
+      || task.mustAvoid.join('\n') !== splitRules(mustAvoidText).join('\n')
+      || (generationBasis === 'reference'
+        && JSON.stringify(task.referenceAssetIds) !== JSON.stringify(referenceAssetIds));
+  }, [compiled, family, subtype, shot, aspectRatio, instruction, logoUsageMode, mustIncludeText, mustAvoidText, generationBasis, referenceAssetIds]);
 
   async function refreshSession() {
     const next = await window.masterpiece.imageGeneration.getVNextSession(project.id);
@@ -155,6 +167,42 @@ export function VNextGenerationWorkspace({
     setLastValidation(null);
   }
 
+  async function loadProjectAssets() {
+    setAssetsLoading(true);
+    try {
+      const summary = await window.masterpiece.projects.scanAssets(project.id);
+      setProjectAssets(summary.items.filter((item) => item.kind === 'image'));
+    } catch (reason) {
+      // Asset list is best-effort for Reference-First; failure must not block
+      // the standard text-only path.
+      setProjectAssets([]);
+    } finally {
+      setAssetsLoading(false);
+    }
+  }
+
+  function changeBasis(next: 'standard' | 'reference') {
+    setGenerationBasis(next);
+    setCompiled(null);
+    setEditedPrompt('');
+    setActiveRun(null);
+    setImageDataUrl('');
+    setLastValidation(null);
+    if (next === 'reference') void loadProjectAssets();
+  }
+
+  function toggleReferenceAsset(assetId: string) {
+    setReferenceAssetIds((current) => {
+      const next = current.includes(assetId)
+        ? current.filter((id) => id !== assetId)
+        : [...current, assetId];
+      setCompiled(null);
+      setEditedPrompt('');
+      setLastValidation(null);
+      return next;
+    });
+  }
+
   async function compilePrompt() {
     if (!canCompile) return;
     setBusy(true);
@@ -171,7 +219,7 @@ export function VNextGenerationWorkspace({
           currentInstruction: instruction.trim(),
           mustInclude: splitRules(mustIncludeText),
           mustAvoid: splitRules(mustAvoidText),
-          referenceAssetIds: [],
+          referenceAssetIds: generationBasis === 'reference' ? referenceAssetIds : [],
           logoUsageMode,
         },
       });
@@ -310,6 +358,42 @@ export function VNextGenerationWorkspace({
               onClick={() => changeFamily(item)}
             ><strong>{FAMILY_LABELS[item]}</strong></button>)}
         </div>
+        <label>生成基准（Generation Basis）
+          <select value={generationBasis} onChange={(event) => changeBasis(event.target.value as 'standard' | 'reference')}>
+            <option value="standard">Standard · 分析驱动（文本，无参考图）</option>
+            <option value="reference">Reference-First · 参考图（High Fidelity）</option>
+          </select>
+        </label>
+        {generationBasis === 'reference' && <div className="facts-box">
+          <small>Reference-First（R10）</small>
+          <p>选 1 张空间参考图 + 输入场景要求，直接走 High Fidelity 生成，无需重新做视觉分析。</p>
+        </div>}
+        {generationBasis === 'reference' && <>
+          <label>参考图（可多选，将作为核心参考传入生成）
+            {assetsLoading
+              ? <span className="muted">正在加载项目图片资产…</span>
+              : <div className="reference-asset-grid">
+                {projectAssets.length === 0
+                  ? <span className="muted">当前项目没有可用图片资产。请先到「素材」导入空间参考图。</span>
+                  : projectAssets.map((asset) => (
+                    <label key={asset.id} className={referenceAssetIds.includes(asset.id) ? 'asset-tile selected' : 'asset-tile'}>
+                      <input
+                        type="checkbox"
+                        checked={referenceAssetIds.includes(asset.id)}
+                        onChange={() => toggleReferenceAsset(asset.id)}
+                      />
+                      {asset.thumbnailDataUrl
+                        ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                        : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
+                      <span>{asset.name}</span>
+                    </label>
+                  ))}
+              </div>}
+          </label>
+          {referenceAssetIds.length > 0 && <button className="button ghost" onClick={() => { setReferenceAssetIds([]); setCompiled(null); setEditedPrompt(''); setLastValidation(null); }}>
+            清除参考图
+          </button>}
+        </>}
         <label>子类型
           <select value={subtype} onChange={(event) => setSubtype(event.target.value)}>
             {(familyOptions?.subtypes ?? []).map((item) => <option key={item}>{item}</option>)}
