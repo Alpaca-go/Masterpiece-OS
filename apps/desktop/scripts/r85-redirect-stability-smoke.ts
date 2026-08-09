@@ -119,22 +119,7 @@ function makeTask(runIndex: number, projectId: string) {
     ? [confirmedAssetId()]
     : [];
   const continuation = CONTINUATION_MODE
-    ? {
-        schemaVersion: '1.0',
-        mode: 'continuation',
-        projectId,
-        sourceReferenceAssetIds: referenceAssetIds,
-        confirmedSourceAssetId: referenceAssetIds[0] ?? '',
-        sourceRunId: `source-run-${SOURCE_SCENE}-${Date.now()}`,
-        sourceScene: SOURCE_SCENE,
-        targetScene: TARGET_SCENE,
-        generationBasis: 'continuation',
-        referenceMode: 'reference_assisted',
-        referenceSource: 'confirmed_generated_output',
-        referenceCount: referenceAssetIds.length,
-        confirmationSource: 'user_explicit',
-        confirmedAt: new Date().toISOString(),
-      }
+    ? buildContinuationIntent(projectId, referenceAssetIds[0] ?? '')
     : undefined;
   return {
     schemaVersion: '1.0' as const,
@@ -159,6 +144,72 @@ function makeTask(runIndex: number, projectId: string) {
 // trace record the same confirmed source across runs.
 function confirmedAssetId(): string {
   return `asset-confirmed-${crypto.createHash('sha256').update(REFERENCE_IMAGE).digest('hex').slice(0, 12)}`;
+}
+
+// R11.1 v1.1 continuation intent: world-consistency reference + a compiled
+// target functional program (from the registry) that overrides the source
+// program, plus the preserve/regenerate boundary. Kept compact.
+function buildContinuationIntent(projectId: string, sourceAssetId: string): Record<string, unknown> {
+  const program = targetFunctionalProgramFor(TARGET_SCENE);
+  return {
+    schemaVersion: '1.0',
+    mode: 'continuation',
+    projectId,
+    sourceReferenceAssetIds: [sourceAssetId],
+    confirmedSourceAssetId: sourceAssetId,
+    sourceRunId: `source-run-${SOURCE_SCENE}-${Date.now()}`,
+    sourceScene: SOURCE_SCENE,
+    targetScene: TARGET_SCENE,
+    generationBasis: 'continuation',
+    referenceMode: 'reference_assisted',
+    referenceRole: 'world_consistency',
+    referenceSource: 'confirmed_generated_output',
+    referenceCount: 1,
+    targetFunctionalProgram: program,
+    continuationBoundary: {
+      preserve: ['brand world', 'architecture language', 'material palette', 'lighting temperament', 'boundary language', 'spatial rhythm', 'color roles'],
+      regenerate: ['functional program', 'floor plan', 'furniture layout', 'circulation', 'privacy level', 'equipment', 'room scale', 'composition'],
+    },
+    confirmationSource: 'user_explicit',
+    confirmedAt: new Date().toISOString(),
+  };
+}
+
+// Deterministic target functional program for a scene id (mirrors the registry).
+function targetFunctionalProgramFor(scene: string): Record<string, unknown> {
+  const id = String(scene ?? '').trim().toLowerCase();
+  const registry: Record<string, Record<string, unknown>> = {
+    consultation: {
+      sceneId: 'consultation', sceneLabel: '咨询室',
+      requiredFunctions: ['1 对 1 / 1 对 2 专业咨询', '产品 / 服务信息展示与说明'],
+      requiredSpatialElements: ['咨询桌或低桌', '2–3 人咨询座位', '半私密或私密边界', '医疗 / 产品信息展示面'],
+      circulationRequirements: ['从公共等候区明确进入咨询单元的过渡'],
+      privacyRequirements: ['半私密到私密边界', '与公共接待 / 等候区明确区分'],
+      scaleRequirements: ['较小尺度、人尺度咨询单元'],
+      operationalRequirements: ['咨询过程所需的桌面与座位关系'],
+      sourceProgramElementsToDrop: ['大型公共接待台', '大尺度 Lobby 构图', '大面积公共等候区', '前厅式迎宾轴线'],
+    },
+    entrance: {
+      sceneId: 'entrance', sceneLabel: '门店入口',
+      requiredFunctions: ['门店到达、识别与欢迎', '进入堂食 / 内部空间的引导'],
+      requiredSpatialElements: ['storefront / threshold 门槛', 'arrival sequence 到达序列', 'welcome / host 迎宾点', '入口与内部空间的局部可见关系'],
+      circulationRequirements: ['从街道 / 室外到内部的清晰进入路径'],
+      privacyRequirements: ['入口开敞、欢迎、透明'],
+      scaleRequirements: ['人尺度入口宽度与净高', '街面尺度而非堂食大厅尺度'],
+      operationalRequirements: ['迎宾 / 引导可达'],
+      sourceProgramElementsToDrop: ['中央开放厨房作为画面主体', '完整堂食大厅布局', '大面积餐桌卡座', '以出餐区为中心的内部运营构图'],
+    },
+  };
+  return registry[id] ?? {
+    sceneId: id, sceneLabel: id,
+    requiredFunctions: [`生成${id}空间`],
+    requiredSpatialElements: [],
+    circulationRequirements: [],
+    privacyRequirements: [],
+    scaleRequirements: ['人尺度'],
+    operationalRequirements: [],
+    sourceProgramElementsToDrop: ['原场景的大型公共接待台', '原场景的大堂级布局'],
+  };
 }
 
 function providerPrompt(finalPrompt: string): string {
