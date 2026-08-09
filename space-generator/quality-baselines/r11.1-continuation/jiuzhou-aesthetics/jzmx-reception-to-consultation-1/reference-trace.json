@@ -1,0 +1,14 @@
+{
+  "referenceCount": 1,
+  "referenceMode": "reference_assisted",
+  "references": [
+    {
+      "id": "asset-confirmed-bdcea5e5dbb8",
+      "role": "core_reference",
+      "source": "confirmed_generated_output",
+      "sourceScene": "reception",
+      "targetScene": "consultation",
+      "projectRelativePath": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\r10.4.1-post-repair\\jiuzhou-aesthetics\\jzmx-standard-1\\output.png"
+    }
+  ]
+}

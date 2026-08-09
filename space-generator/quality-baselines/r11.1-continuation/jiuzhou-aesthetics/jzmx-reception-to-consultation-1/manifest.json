@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r11.1-continuation",
+  "brandKey": "jiuzhou-aesthetics",
+  "brandDisplayName": "九州美学",
+  "scene": "jzmx-reception-to-consultation-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "13c636af-53ee-4910-b8cf-f75b321d8b6f",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen jiuzhou-aesthetics packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\jiuzhou-aesthetics\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [
+    "asset-confirmed-bdcea5e5dbb8"
+  ],
+  "taskInstruction": "延续已确认的接待空间方向，生成咨询区。保持同一空间语言与材料系统，转换功能程序。",
+  "blockIds": [
+    "task",
+    "continuation_intent",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "8fbf39fb2efc9d0932d987b7e6c8975f75a4dfd8a8870560ef53ee0eec334145",
+  "output": {
+    "runId": "r11-cont-jiuzhou-aesthetics-consultation-1-1786274579100",
+    "imageFile": "output.png",
+    "imageSha256": "42d29d9ff741416f14cb0771770960b682ab122f4e20ddfe602143dd1a18bf25",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-09T11:22:59.100Z"
+}

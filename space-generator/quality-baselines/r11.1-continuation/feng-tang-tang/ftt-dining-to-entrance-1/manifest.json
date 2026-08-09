@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r11.1-continuation",
+  "brandKey": "feng-tang-tang",
+  "brandDisplayName": "冯烫烫",
+  "scene": "ftt-dining-to-entrance-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen feng-tang-tang packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\feng-tang-tang\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [
+    "asset-confirmed-94dce7d4414c"
+  ],
+  "taskInstruction": "延续已确认的用餐空间方向，生成门店入口。保持同一空间语言与材料系统，转换功能程序。",
+  "blockIds": [
+    "task",
+    "continuation_intent",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "20c7004fad18e478533c774f758c4bc2950d353cc0d095b8902a3df9766163bf",
+  "output": {
+    "runId": "r11-cont-feng-tang-tang-entrance-1-1786274697895",
+    "imageFile": "output.png",
+    "imageSha256": "995d92f77ce9ad86edb2937f1fbedfdcfc64343af1af6a877f4eeffb9f44a65f",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-09T11:24:57.895Z"
+}

@@ -41,6 +41,13 @@ const MODEL = 'doubao-seedream-5-0-pro-260628';
 const BASE_URL = 'https://ark.cn-beijing.volces.com/api/v3';
 const COMPILER_MODE = process.env.R85_COMPILER_MODE?.trim() || 'phase9b_quality';
 
+// R11.1 continuation smoke: when R85_CONTINUATION=1, the runner emits a
+// continuation task (generationBasis=continuation) with the confirmed source
+// image as the single reference and source/target scene from env.
+const CONTINUATION_MODE = process.env.R85_CONTINUATION?.trim() === '1';
+const SOURCE_SCENE = process.env.R85_SOURCE_SCENE?.trim() || '';
+const TARGET_SCENE = process.env.R85_TARGET_SCENE?.trim() || '';
+
 // R8.6 reuse: the same runner drives the final smokes. Defaults keep the R8.5
 // redirected gate labels so existing behavior is unchanged; override via env
 // to emit R8.6 golden-baseline-labeled records.
@@ -108,6 +115,27 @@ function loadPacketContext(projectDir: string) {
 }
 
 function makeTask(runIndex: number, projectId: string) {
+  const referenceAssetIds = CONTINUATION_MODE && REFERENCE_IMAGE
+    ? [confirmedAssetId()]
+    : [];
+  const continuation = CONTINUATION_MODE
+    ? {
+        schemaVersion: '1.0',
+        mode: 'continuation',
+        projectId,
+        sourceReferenceAssetIds: referenceAssetIds,
+        confirmedSourceAssetId: referenceAssetIds[0] ?? '',
+        sourceRunId: `source-run-${SOURCE_SCENE}-${Date.now()}`,
+        sourceScene: SOURCE_SCENE,
+        targetScene: TARGET_SCENE,
+        generationBasis: 'continuation',
+        referenceMode: 'reference_assisted',
+        referenceSource: 'confirmed_generated_output',
+        referenceCount: referenceAssetIds.length,
+        confirmationSource: 'user_explicit',
+        confirmedAt: new Date().toISOString(),
+      }
+    : undefined;
   return {
     schemaVersion: '1.0' as const,
     taskId: `${TASKID_PREFIX}-${BRAND_KEY}-${SUBTYPE}-${runIndex + 1}-${Date.now()}`,
@@ -117,13 +145,20 @@ function makeTask(runIndex: number, projectId: string) {
     shot: SHOT,
     count: 1 as const,
     aspectRatio: ASPECT as const,
-    currentInstruction: `${RUN_INSTRUCTION} ${runIndex + 1}/${RUN_COUNT} (text-only, refs=0).`,
+    currentInstruction: `${RUN_INSTRUCTION} ${runIndex + 1}/${RUN_COUNT} (${CONTINUATION_MODE ? 'continuation, refs=1' : 'text-only, refs=0'}).`,
     mustInclude: [] as string[],
     mustAvoid: [] as string[],
-    referenceAssetIds: [] as string[],
+    referenceAssetIds,
+    ...(CONTINUATION_MODE ? { generationBasis: 'continuation' as const, continuation } : {}),
     logoUsageMode: 'post_composite' as const,
     createdAt: new Date().toISOString(),
   };
+}
+
+// Stable asset id derived from the reference image path so the manifest /
+// trace record the same confirmed source across runs.
+function confirmedAssetId(): string {
+  return `asset-confirmed-${crypto.createHash('sha256').update(REFERENCE_IMAGE).digest('hex').slice(0, 12)}`;
 }
 
 function providerPrompt(finalPrompt: string): string {
@@ -301,7 +336,16 @@ async function main(): Promise<void> {
       path.join(dir, 'reference-trace.json'),
       `${JSON.stringify({
         referenceCount: REFERENCE_IMAGE ? 1 : 0,
-        references: REFERENCE_IMAGE ? [{ id: 'r9-hf-reference', role: 'core_reference', source: 'user_explicit', projectRelativePath: REFERENCE_IMAGE }] : [],
+        referenceMode: CONTINUATION_MODE ? 'reference_assisted' : (REFERENCE_IMAGE ? 'reference_assisted' : 'text_only'),
+        references: REFERENCE_IMAGE
+          ? [{
+              id: confirmedAssetId(),
+              role: 'core_reference',
+              source: CONTINUATION_MODE ? 'confirmed_generated_output' : 'user_explicit',
+              ...(CONTINUATION_MODE ? { sourceScene: SOURCE_SCENE, targetScene: TARGET_SCENE } : {}),
+              projectRelativePath: REFERENCE_IMAGE,
+            }]
+          : [],
       }, null, 2)}\n`,
       'utf8',
     );
@@ -328,7 +372,7 @@ async function main(): Promise<void> {
         redirect: REDIRECT_LABEL,
       },
       provider: { provider: 'volcengine', model: MODEL, profileId, size: SIZE, aspectRatio: ASPECT },
-      referenceIds: REFERENCE_IMAGE ? ['r9-hf-reference'] : [],
+      referenceIds: REFERENCE_IMAGE ? [confirmedAssetId()] : [],
       taskInstruction: TASK_INSTRUCTION,
       blockIds,
       promptHash,
