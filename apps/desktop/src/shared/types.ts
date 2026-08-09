@@ -665,6 +665,7 @@ export type {
   VNextModelPromptPayload,
   VNextCreativeSession,
   VNextProjectPromptAsset,
+  VNextConfirmedGeneratedOutput,
   VNextDeliverableValidation,
   VNextValidatedGenerationResult
 } from '@masterpiece/image-generation-contracts/index.ts';

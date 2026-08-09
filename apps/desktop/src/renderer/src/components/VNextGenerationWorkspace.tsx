@@ -5,6 +5,7 @@ import type {
   CompileVNextGenerationResult,
   ImageGenerationRun,
   ProjectRecord,
+  VNextConfirmedGeneratedOutput,
   VNextCreativeSession,
   VNextDeliverableValidation,
   VNextLogoUsageMode,
@@ -19,6 +20,15 @@ import {
   toggleReferenceId,
   replaceReferenceIds,
 } from '../reference-first/state.js';
+import {
+  CONTINUATION_SCENE_CARDS,
+  CONTINUATION_PRESERVE_COPY,
+  CONTINUATION_REDESIGN_COPY,
+  isTargetSceneDisabled,
+  isCustomSceneValid,
+  canSubmitContinuation,
+  continuationLineageLabel,
+} from '../continuation/ui-state.js';
 
 interface Props {
   project: ProjectRecord;
@@ -82,6 +92,15 @@ export function VNextGenerationWorkspace({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  // R11.2 Continuation UI: a generated space output the user explicitly
+  // confirmed as the continuation source. Persisted via the session.
+  const [confirmedOutputs, setConfirmedOutputs] = useState<Record<string, VNextConfirmedGeneratedOutput>>({});
+  const [continuationPanelOpen, setContinuationPanelOpen] = useState(false);
+  const [continuationSource, setContinuationSource] = useState<VNextConfirmedGeneratedOutput | null>(null);
+  const [continuationTargetScene, setContinuationTargetScene] = useState<string | null>(null);
+  const [continuationCustomDescription, setContinuationCustomDescription] = useState('');
+  const [continuationRequirement, setContinuationRequirement] = useState('');
+  const [continuationBusy, setContinuationBusy] = useState(false);
   // R10.2 Reference-First: Generation Basis switches between Standard
   // (analysis-led, text-only) and Reference-First (reference-assisted, High
   // Fidelity). When a reference image is chosen its assetId flows through
@@ -128,12 +147,147 @@ export function VNextGenerationWorkspace({
     return next;
   }
 
+  // ---- R11.2 Continuation UI ----------------------------------------------
+  // The generated-output card offers [以此方向继续]. Clicking it validates the
+  // asset, marks it confirmed_for_continuation (persisted), then opens the
+  // Continuation Panel. It never generates immediately.
+  async function openContinuation(runId: string, imageId: string) {
+    try {
+      setError('');
+      const confirmed = await window.masterpiece.imageGeneration.confirmVNextGeneratedOutput(
+        project.id,
+        runId,
+        imageId,
+      );
+      await refreshConfirmedOutputs();
+      setContinuationSource(confirmed);
+      setContinuationTargetScene(null);
+      setContinuationCustomDescription('');
+      setContinuationRequirement('');
+      setContinuationPanelOpen(true);
+      setNotice('已将这张图确认为空间延展方向。');
+    } catch (reason) {
+      setError(cleanError(reason));
+    }
+  }
+
+  async function refreshConfirmedOutputs() {
+    const outputs = await window.masterpiece.imageGeneration.getVNextConfirmedGeneratedOutputs(project.id);
+    setConfirmedOutputs(outputs);
+    return outputs;
+  }
+
+  async function revokeContinuation(assetId: string) {
+    try {
+      setError('');
+      await window.masterpiece.imageGeneration.revokeVNextGeneratedOutput(project.id, assetId);
+      await refreshConfirmedOutputs();
+      if (continuationSource?.assetId === assetId) {
+        setContinuationPanelOpen(false);
+        setContinuationSource(null);
+        setContinuationTargetScene(null);
+      }
+      setNotice('已取消该方向的延展确认。');
+    } catch (reason) {
+      setError(cleanError(reason));
+    }
+  }
+
+  // R11.2 §21-§22: the UI only builds a structured continuation intent; the
+  // runtime assembles the task through the R11.1 contract and compiles it.
+  async function submitContinuation() {
+    const source = continuationSource;
+    const target = continuationTargetScene;
+    if (!source || !target) return;
+    if (!imageApiProfileId) {
+      onOpenSettings();
+      return;
+    }
+    const targetScene = target === 'custom' ? 'custom' : target;
+    const customDescription = target === 'custom' ? continuationCustomDescription.trim() : '';
+    if (target === 'custom' && !customDescription) {
+      setError('请填写目标空间说明。');
+      return;
+    }
+    setContinuationBusy(true);
+    setError('');
+    setNotice('正在延展空间方向…');
+    try {
+      // Structured continuation task; the frozen r8_6_golden compiler + R11.1
+      // contract build the prompt. We do not assemble a prompt here.
+      const task: VNextTaskContract = {
+        schemaVersion: '1.0',
+        taskId: `r11-cont-${Date.now()}`,
+        projectId: project.id,
+        deliverableFamily: 'space',
+        subtype: targetScene,
+        shot: 'entrance_view',
+        count: 1,
+        aspectRatio: '16:9',
+        currentInstruction: `延续已确认方向，生成${targetScene}空间。${continuationRequirement.trim() ? ` ${continuationRequirement.trim()}` : ''}`,
+        generationBasis: 'continuation',
+        mustInclude: [],
+        mustAvoid: [],
+        referenceAssetIds: [source.assetId],
+        logoUsageMode: 'post_composite',
+        continuation: {
+          sourceAssetId: source.assetId,
+          sourceRunId: source.sourceRunId,
+          sourceScene: source.sourceScene || 'space',
+          targetScene,
+          confirmedAt: source.confirmedAt,
+          confirmationSource: 'user_explicit',
+          referenceSource: 'confirmed_generated_output',
+          ...(customDescription ? { customSceneDescription: customDescription } : {}),
+          ...(continuationRequirement.trim() ? { userRequirement: continuationRequirement.trim() } : {}),
+        },
+        createdAt: new Date().toISOString(),
+      };
+      const result = await window.masterpiece.imageGeneration.compileVNext({
+        projectId: project.id,
+        task,
+      });
+      setCompiled(result);
+      setEditedPrompt(result.compiledPrompt.editablePrompt);
+      setNotice('延展空间方向已编译，正在生成…');
+      const validated = await window.masterpiece.imageGeneration.startValidatedVNext({
+        projectId: project.id,
+        taskId: result.taskContract.taskId,
+        apiProfileId: imageApiProfileId,
+        editedPrompt: result.compiledPrompt.editablePrompt,
+      });
+      const run = validated.correctionRun ?? validated.initialRun;
+      setActiveRun(run);
+      if (run.status === 'succeeded' && run.images[0]) {
+        const image = await window.masterpiece.imageGeneration
+          .getImageDataUrl(run.runId, run.images[0].imageId);
+        setImageDataUrl(image?.dataUrl ?? '');
+        setLastValidation(validated.correctionValidation ?? validated.initialValidation);
+        setNotice(`空间延展生成完成：${source.sourceScene} → ${targetScene}`);
+      } else if (run.status === 'failed' || run.status === 'blocked') {
+        setError(run.errorMessage || '延展任务校验失败，请重新选择目标空间或稍后重试。');
+      }
+      await refreshSession();
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setContinuationBusy(false);
+    }
+  }
+
+  function isConfirmedSource(runId: string, imageId: string): boolean {
+    return Object.values(confirmedOutputs).some(
+      (o) => o.sourceRunId === runId && o.confirmationState === 'confirmed',
+    );
+  }
+
   useEffect(() => {
     void Promise.all([
       window.masterpiece.imageGeneration.getVNextOptions(),
       window.masterpiece.projectContext.getVNext(project.id)
         .catch(() => window.masterpiece.projectContext.rebuildVNext(project.id)),
       refreshSession(),
+      refreshConfirmedOutputs(),
     ]).then(([nextOptions, context]) => {
       setOptions(nextOptions as TemplateOptions);
       // A project with a confirmed logo is always subject to the v5
@@ -637,9 +791,36 @@ export function VNextGenerationWorkspace({
               ? lastValidation.mismatchTypes.join(' · ')
               : '未发现可见结构性偏差'}</p>
           </div>}
+          {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '') && (
+            <div className="confirmation-badge">已确认方向</div>
+          )}
           <div className="button-row">
             <button className="button primary" disabled={busy} onClick={() => void confirmDirection()}>沿用此方向</button>
             <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
+          </div>
+          <div className="button-row">
+            {activeRun && activeRun.images?.[0] && (() => {
+              const firstImage = activeRun.images![0];
+              return (
+                <button
+                  className="button secondary"
+                  disabled={busy || continuationBusy}
+                  onClick={() => void openContinuation(activeRun.runId, firstImage.imageId)}
+                >以此方向继续</button>
+              );
+            })()}
+            {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '')
+              ? (() => {
+                  const confirmed = Object.values(confirmedOutputs).find(
+                    (o) => o.sourceRunId === activeRun.runId && o.confirmationState === 'confirmed',
+                  );
+                  return confirmed ? (
+                    <button className="button ghost danger" disabled={busy || continuationBusy} onClick={() => void revokeContinuation(confirmed.assetId)}>
+                      取消确认
+                    </button>
+                  ) : null;
+                })()
+              : null}
           </div>
           <div className="button-row result-feedback">
             <button className="button ghost" onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
@@ -647,6 +828,101 @@ export function VNextGenerationWorkspace({
             <button className="button ghost" onClick={() => applyResultFeedback('logo_text')}>Logo/文字不对</button>
           </div>
         </div>}
+        {continuationPanelOpen && continuationSource && (
+          <div className="continuation-panel">
+            <div className="section-heading"><span>＋</span><div><h2>空间延展</h2><p>在同一设计世界下继续设计另一个空间</p></div></div>
+            {/* Source preview (R11.2 §10): 已确认方向, not a generic reference card */}
+            <div className="confirmed-source-card">
+              {imageDataUrl
+                ? <img src={imageDataUrl} alt="已确认方向" />
+                : <span className="asset-fallback">已确认方向</span>}
+              <div className="confirmed-source-meta">
+                <strong>已确认方向</strong>
+                <span>源场景：{continuationSource.sourceScene || 'space'}</span>
+                <small>以此图作为后续空间延展的设计依据</small>
+              </div>
+              <button className="button ghost danger" disabled={continuationBusy} onClick={() => void revokeContinuation(continuationSource.assetId)}>
+                取消确认
+              </button>
+            </div>
+
+            {/* Target scene selector (R11.2 §12-§15) */}
+            <label>选择目标空间
+              <div className="continuation-scene-grid">
+                {CONTINUATION_SCENE_CARDS.map((card) => {
+                  const isSource = isTargetSceneDisabled(card.id, continuationSource.sourceScene);
+                  const disabled = isSource || (card.id === 'custom' && !continuationCustomDescription.trim() && continuationTargetScene !== 'custom');
+                  return (
+                    <button
+                      key={card.id}
+                      type="button"
+                      className={continuationTargetScene === card.id ? 'scene-card selected' : 'scene-card'}
+                      disabled={isSource || continuationBusy}
+                      onClick={() => {
+                        setContinuationTargetScene(card.id);
+                        setContinuationCustomDescription('');
+                      }}
+                    >
+                      <strong>{card.label}</strong>
+                      <span>{isSource ? '当前场景' : card.hint}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              {continuationTargetScene === 'custom' && (
+                <textarea
+                  rows={3}
+                  value={continuationCustomDescription}
+                  onChange={(event) => setContinuationCustomDescription(event.target.value)}
+                  placeholder="例如：一个更私密的小型 VIP 咨询室，供 1 对 1 深度沟通使用。"
+                />
+              )}
+            </label>
+
+            {/* Additional requirement (R11.2 §16) */}
+            <label>补充要求（可选）
+              <textarea
+                rows={3}
+                value={continuationRequirement}
+                onChange={(event) => setContinuationRequirement(event.target.value)}
+                placeholder="例如：更私密；更开放；增加展示；更温暖"
+              />
+            </label>
+
+            {/* Preserve / redesign summary (R11.2 §17) */}
+            <div className="continuation-boundary-grid">
+              <div className="continuation-boundary-block">
+                <strong>将保留</strong>
+                <ul>{CONTINUATION_PRESERVE_COPY.map((item) => <li key={item}>{item}</li>)}</ul>
+              </div>
+              <div className="continuation-boundary-block redesign">
+                <strong>将重新设计</strong>
+                <ul>{CONTINUATION_REDESIGN_COPY.map((item) => <li key={item}>{item}</li>)}</ul>
+              </div>
+            </div>
+
+            {/* Generation summary + CTA (R11.2 §18-§20) */}
+            <div className="facts-box">
+              <small>生成模式　空间延展</small>
+              <p>当前方向　{continuationSource.sourceScene || 'space'}</p>
+              <p>目标空间　{continuationTargetScene || '（请选择）'}</p>
+              {continuationRequirement.trim() && <p>补充要求　{continuationRequirement.trim()}</p>}
+            </div>
+            <button
+              className="button primary full"
+              disabled={continuationBusy
+                || !canSubmitContinuation({
+                  sourceConfirmed: Boolean(continuationSource),
+                  sourceScene: continuationSource?.sourceScene,
+                  targetScene: continuationTargetScene,
+                  customDescription: continuationCustomDescription,
+                })}
+              onClick={() => void submitContinuation()}
+            >
+              {continuationBusy ? '正在生成延展空间…' : '生成延展空间'}
+            </button>
+          </div>
+        )}
         {session?.history.length ? <div className="facts-box">
           <small>结果与 Prompt 历史</small>
           <p>{session.history.length} 条记录 · 空间、包装、VI、海报分别保存参考</p>
