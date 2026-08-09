@@ -71,13 +71,27 @@ async function recompile(brand, scene, subtype, shot, projectId) {
   return out.compiledPrompt;
 }
 
-test('R8.6 recorded prompt hash matches an offline re-compile (deterministic)', async () => {
+test('R8.6 offline recompile stays deterministic and structurally equivalent (R10.4.1)', async () => {
+  // R10.4.1 deliberately rewrites decorative-object functional phrases, so the
+  // post-repair hash differs from the R8.6 record by design. Assert instead:
+  //   - recompile is deterministic (same input -> same hash)
+  //   - block order is unchanged vs the frozen record
+  //   - budget stays near the R8.6 record
+  //   - no decorative object remains as a functional hard requirement
+  const decorative = /艺术装置|雕塑|装饰装置|中心装置|艺术品|sculpture|art installation/i;
   for (const { brand, scene, subtype, shot, rel } of SCENES) {
     const manifest = load(`${base}/${rel}/manifest.json`);
-    const compiled = await recompile(brand, scene, subtype, shot, manifest.project.projectId);
-    const finalPrompt = compiled.finalPrompt;
-    const hash = crypto.createHash('sha256').update(Buffer.from(finalPrompt, 'utf8')).digest('hex');
-    assert.equal(hash, manifest.promptHash, `${rel}: offline recompile hash matches recorded promptHash`);
+    const run = load(`${base}/${rel}/run.json`);
+    const a = await recompile(brand, scene, subtype, shot, manifest.project.projectId);
+    const b = await recompile(brand, scene, subtype, shot, manifest.project.projectId);
+    const hashA = crypto.createHash('sha256').update(Buffer.from(a.finalPrompt, 'utf8')).digest('hex');
+    const hashB = crypto.createHash('sha256').update(Buffer.from(b.finalPrompt, 'utf8')).digest('hex');
+    assert.equal(hashA, hashB, `${rel}: deterministic recompile`);
+    assert.deepEqual(a.blocks.map((blk) => blk.id), manifest.blockIds, `${rel}: block order unchanged`);
+    assert.ok(Math.abs(a.trace.promptCharacters - run.promptChars) < 400, `${rel}: budget near R8.6`);
+    const functionBridge = a.blocks.find((blk) => blk.id === 'architecture_function_bridge')?.text ?? '';
+    const functional = functionBridge.split('**Concept Drift Guards')[0];
+    assert.doesNotMatch(functional, decorative, `${rel}: no decorative-object functional hard requirement`);
   }
 });
 

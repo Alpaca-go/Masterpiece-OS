@@ -58,6 +58,8 @@ export {
   COMPILE_SPATIAL_MECHANISMS_VERSION,
   validateSpatialSemantics,
   normalizeSpatialFunctionalValue,
+  demoteDecorativeObjectFromFunctionalLayer,
+  normalizeFunctionalHardConstraint,
   SPATIAL_SEMANTIC_GATE_VERSION,
   resolveSpatialColorRole,
   SPATIAL_COLOR_ROLE_VERSION,

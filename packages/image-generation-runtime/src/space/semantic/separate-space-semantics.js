@@ -31,6 +31,7 @@ import {
   ARCHITECTURE_TERMS,
   SPATIAL_PROPERTY_TERMS,
   COLOR_AS_ACCENT_MARKERS,
+  DECORATIVE_OBJECT_TERMS,
 } from './lexicons.js';
 
 export const SEMANTIC_CLASS = Object.freeze({
@@ -41,6 +42,10 @@ export const SEMANTIC_CLASS = Object.freeze({
   COLOR_GEOMETRY: 'color_geometry',
   FUNCTIONAL: 'functional',
   DECORATIVE_IDENTITY: 'decorative_identity',
+  // R10.4.1: a decorative / artistic centerpiece or feature object. Allowed in
+  // Brand Translation / optional styling as a subordinate element; NEVER as a
+  // functional / operational / architectural hard requirement.
+  DECORATIVE_OBJECT: 'decorative_object',
 });
 
 // Lowercase, collapse whitespace. CJK stays as-is; substring matching handles
@@ -114,10 +119,13 @@ export function classifyPhrase(rawPhrase, sourceField = '') {
   const metaphor = hasAny(text, METAPHOR_MARKERS);
   const accent = hasAny(text, COLOR_AS_ACCENT_MARKERS);
   const geometryAction = hasAny(text, GEOMETRY_ACTION_TERMS);
+  // R10.4.1: decorative object / centerpiece / feature object vocabulary.
+  const decorativeObjectHits = [...DECORATIVE_OBJECT_TERMS].filter((t) => hasTermAsWord(text, t));
 
   const hasMotif = motifHits.length > 0;
   const hasColor = colorHits.length > 0;
   const hasArch = archHits > 0 || propertyHits > 0;
+  const hasDecorativeObject = decorativeObjectHits.length > 0;
   const brandProvenance = BRAND_PROVENANCE_FIELDS.has(field);
   const functionalProvenance = FUNCTIONAL_PROVENANCE_FIELDS.has(field);
 
@@ -132,6 +140,16 @@ export function classifyPhrase(rawPhrase, sourceField = '') {
     || /\blogo\b/u.test(text);
   if (hasIdentity) {
     classification = SEMANTIC_CLASS.DECORATIVE_IDENTITY;
+  }
+  // 1b) R10.4.1: a decorative object / centerpiece is its own semantic class.
+  //     It is NOT a functional/operational hard requirement. Even when it
+  //     carries spatial phrasing ("视线引导至艺术装置"), it must not drive the
+  //     functional layer; it belongs to Brand Translation / optional styling.
+  else if (hasDecorativeObject && functionalProvenance) {
+    classification = SEMANTIC_CLASS.DECORATIVE_OBJECT;
+  }
+  else if (hasDecorativeObject) {
+    classification = SEMANTIC_CLASS.DECORATIVE_OBJECT;
   }
   // 2) Color as the form generator → coupling risk.
   else if (hasColor && geometryAction && !accent) {
@@ -223,11 +241,12 @@ export function separateSpaceSemantics(items) {
         break;
       case SEMANTIC_CLASS.DECORATIVE_IDENTITY:
       case SEMANTIC_CLASS.COLOR_GEOMETRY:
+      case SEMANTIC_CLASS.DECORATIVE_OBJECT:
       default:
-        // color_geometry + decorative_identity both route out of architecture
-        // into the brand/decor bucket (decorative identity) so they never
-        // generate a geometry action; their spatial residue is recovered by the
-        // normalizer and appended to architectureSemantics there.
+        // color_geometry + decorative_identity + decorative_object all route out
+        // of architecture into the brand/decor bucket so they never generate a
+        // geometry action; their spatial residue is recovered by the normalizer
+        // and appended to architectureSemantics there.
         buckets.decorativeIdentitySemantics.push(record);
         break;
     }

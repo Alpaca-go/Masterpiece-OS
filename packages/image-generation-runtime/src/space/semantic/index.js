@@ -29,6 +29,8 @@ export {
 export {
   validateSpatialSemantics,
   normalizeSpatialFunctionalValue,
+  demoteDecorativeObjectFromFunctionalLayer,
+  normalizeFunctionalHardConstraint,
   SPATIAL_SEMANTIC_GATE_VERSION,
 } from './validate-spatial-semantics.js';
 export {

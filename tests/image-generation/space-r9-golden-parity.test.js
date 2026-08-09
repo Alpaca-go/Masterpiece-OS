@@ -1,14 +1,15 @@
 // R9 golden text-level parity test.
 //
 // The production compiler (src/space) is the frozen R8.6 core migrated
-// equivalently. The strongest offline parity signal is that compiling each
-// frozen final-smoke packet through the production compiler reproduces the
-// EXACT recorded R8.6 prompt hash (which produced the accepted golden images).
-// This is Mode A ≈ Mode B at text level; real image parity (R9.9) is a
-// separate user-authorized provider run.
+// equivalently. R10.4.1 added a deliberate functional-layer sanitization
+// (decorative-object demotion) that rewrites e.g. "视线引导至艺术装置" into
+// "建立清晰入口视觉焦点和空间导向", so the post-repair prompt hash differs from
+// the R8.6 record by design. Parity here therefore asserts STRUCTURAL
+// equivalence (block order, budget, architecture-before-brand) plus the
+// R10.4.1 functional hygiene (no decorative object as a hard functional
+// requirement), not byte-identical hashes.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,10 +27,6 @@ const SCENES = [
 
 function load(rel) {
   return JSON.parse(fs.readFileSync(path.join(repoRoot, rel), 'utf8'));
-}
-
-function sha256(text) {
-  return crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 }
 
 function buildTask(manifest, subtype, shot) {
@@ -51,7 +48,8 @@ function buildTask(manifest, subtype, shot) {
   };
 }
 
-test('R9 production compiler reproduces the exact R8.6 golden prompt hashes', () => {
+test('R9/R10.4.1 production compiler keeps R8.6 block structure and functional hygiene', () => {
+  const decorative = /艺术装置|雕塑|装饰装置|中心装置|艺术品|sculpture|art installation/i;
   for (const { brand, scene, subtype, shot } of SCENES) {
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
     const run = load(`${base}/${brand}/${scene}/run.json`);
@@ -63,10 +61,14 @@ test('R9 production compiler reproduces the exact R8.6 golden prompt hashes', ()
       brandKey: brand,
       anchorMaxCount: 3,
     });
-    const hash = sha256(out.finalPrompt);
-    assert.equal(hash, run.promptHash, `${brand}/${scene}: production hash matches frozen R8.6 hash`);
-    assert.equal(out.budget.chars, run.promptChars, `${brand}/${scene}: character budget identical`);
+    // Structural parity: block order is unchanged; budget stays near R8.6.
     assert.deepEqual(out.blockIds, manifest.blockIds, `${brand}/${scene}: block order identical`);
+    assert.ok(Math.abs(out.budget.chars - run.promptChars) < 400, `${brand}/${scene}: budget near R8.6 (${out.budget.chars} vs ${run.promptChars})`);
+    // R10.4.1 functional hygiene: no decorative object as a hard requirement
+    // in the positive functional sections of any brand.
+    const functional = out.blocksById.architecture_function_bridge.text.split('**Concept Drift Guards')[0]
+      + out.blocksById.functional_requirement.text;
+    assert.doesNotMatch(functional, decorative, `${brand}/${scene}: no decorative-object functional hard requirement`);
   }
 });
 

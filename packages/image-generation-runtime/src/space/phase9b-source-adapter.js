@@ -39,9 +39,10 @@ import {
   sanitizeMaterials,
   sanitizeLighting,
   sanitizeDifferentiators,
-  resolveSpatialColorRole,
   SEMANTIC_CLASS,
   MECHANISM_PROVENANCE_VERSION,
+  demoteDecorativeObjectFromFunctionalLayer,
+  resolveSpatialColorRole,
 } from './semantic/index.js';
 
 function cleanList(...values) {
@@ -190,26 +191,28 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     projectFacts.brandRole,
     creativeDecision.uniqueUpgradeThesis,
   );
-  const spatialTranslation = cleanList(
-    spatial.brandRoleManifestation,
-    rawFunctionalNetwork,
-  ).filter(keepFunctionalItem);
+  const spatialTranslation = demoteFunctionalList(
+    cleanList(spatial.brandRoleManifestation, rawFunctionalNetwork),
+    'functionalRelationships',
+  );
   // Operation constraints are HARD spatial/operational relationships
   // (functionalRelationships), NOT the scene-program node list — program
   // nodes already render once under functional_requirement. Copying short
   // node labels ("迎宾", "美学咨询") here duplicated them across blocks.
-  const operationConstraints = cleanList(
-    spatial.functionalRelationships,
-  ).filter(keepFunctionalItem);
-  const humanExperience = cleanList(
-    spatial.peopleBehavior,
-    spatial.brandIntegration,
-  ).filter(keepFunctionalItem);
+  const operationConstraints = demoteFunctionalList(
+    cleanList(spatial.functionalRelationships),
+    'functionalRelationships',
+  );
+  const humanExperience = demoteFunctionalList(
+    cleanList(spatial.peopleBehavior, spatial.brandIntegration),
+    'functionalRelationships',
+  );
   // Commercial reality is the differentiator/atmosphere statements, not the
   // program node list (same dedup rationale as operationConstraints).
-  const commercialReality = cleanList(
-    spatial.positiveDifferentiators,
-  ).filter(keepFunctionalItem);
+  const commercialReality = demoteFunctionalList(
+    cleanList(spatial.positiveDifferentiators),
+    'functionalRelationships',
+  );
   const conceptDriftGuards = cleanList(
     (packet.diagnosis?.brandMisreadRisks || [])
       .filter((r) => r.status === 'confirmed')
@@ -360,8 +363,8 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     // literals are normalized into surface behavior. The model must not receive
     // raw motif nouns / colored-geometry instructions in the positive prompt.
     _raw: {
-      functionalNetwork: rawFunctionalNetwork.filter(keepFunctionalItem),
-      sceneProgram: rawSceneProgram.filter(keepFunctionalItem),
+      functionalNetwork: demoteFunctionalList(rawFunctionalNetwork, 'functionalNetwork'),
+      sceneProgram: demoteFunctionalList(rawSceneProgram, 'functionalNetwork'),
       brandRoleManifestation: brandSanitized.lines,
       signatureSpatialMechanism: cleanList(spatial.signatureSpatialMechanism),
       mustBeVisible: rawMustBeVisible,
@@ -433,6 +436,23 @@ function keepFunctionalItem(item) {
   }
   if (analysis.motifHits && analysis.motifHits.length > 0) return false;
   return true;
+}
+
+// R10.4.1: decorative-object demotion for a functional list. Unlike the pure
+// filter above (which drops a decorative-bearing phrase outright), this first
+// tries a deterministic demotion that preserves the spatial/functional intent
+// (e.g. "视线引导至艺术装置" -> "建立清晰入口视觉焦点和空间导向"). Only items
+// that cannot be safely demoted are dropped. This is the Compiler Guard for
+// DECORATIVE_OBJECT_IN_FUNCTIONAL_LAYER: the returned list never carries a
+// decorative object as a functional hard requirement.
+function demoteFunctionalList(items, field) {
+  const out = [];
+  for (const item of cleanList(items)) {
+    const demoted = demoteDecorativeObjectFromFunctionalLayer(item, field);
+    if (demoted === null) continue;
+    if (!out.includes(demoted)) out.push(demoted);
+  }
+  return out;
 }
 
 // normalizeConceptPrimary: the V5 `spatialConcept` is often a brand-poetic

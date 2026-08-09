@@ -137,3 +137,16 @@ export const COLOR_AS_ACCENT_MARKERS = Object.freeze([
   '\u70b9\u7f1c', '\u7ec6\u8282', '\u8f6f\u88c5', '\u7ec7\u7269', '\u5bfc\u89c6', '\u6807\u8bc6',
   '\u706f\u5e26', '\u91cd\u70b9\u7167\u660e', '\u5c40\u90e8', '\u6536\u8fb9', '\u6536\u53e3',
 ]);
+
+// R10.4.1 �?Decorative object vocabulary. These name a decorative / artistic
+// centerpiece or feature object. The word itself is NOT illegal: it may appear
+// in Brand Translation / optional styling. What is illegal is a decorative
+// object masquerading as a functional / operational / architectural HARD
+// requirement (functionalNetwork / functionalRelationships / operationConstraints
+// / mustBeVisible / requiredSpatialElements). Kept generic (no brand hardcode).
+export const DECORATIVE_OBJECT_TERMS = Object.freeze([
+  'sculpture', 'art installation', 'decorative centerpiece', 'feature object',
+  'art object', 'installation',
+  '\u827a\u672f\u88c5\u7f6e', '\u96d5\u5851', '\u827a\u672f\u54c1', '\u54c1\u724c\u827a\u672f\u54c1',
+  '\u4e2d\u5fc3\u88c5\u7f6e', '\u89c6\u89c9\u88c5\u7f6e', '\u88c5\u9970\u88c5\u7f6e', '\u827a\u672f\u9648\u8bbe',
+]);

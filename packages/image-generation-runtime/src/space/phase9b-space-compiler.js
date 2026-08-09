@@ -31,6 +31,7 @@ import {
 } from './architecture-context.js';
 import { measurePromptBudget } from './prompt-budget.js';
 import { buildTrace } from './trace.js';
+import { validateSpatialSemantics } from './semantic/validate-spatial-semantics.js';
 
 export const SPACE_PROMPT_COMPILER_ID = 'phase9b-quality-compiler';
 export const SPACE_PROMPT_COMPILER_VERSION = '1.1.0';
@@ -339,6 +340,22 @@ export function compilePhase9bSpacePrompt(input) {
   const missing = required.filter((id) => !presentIds.includes(id));
   if (missing.length) {
     throw new Error(`PHASE9B_COMPILER_INCOMPLETE: missing blocks ${missing.join(', ')}`);
+  }
+
+  // R10.4.1 Compiler Guard: fail BEFORE the provider if a decorative object
+  // still slipped into a functional hard field. This is a belt-and-braces check
+  // on top of the source-adapter demotion — the two must never disagree.
+  const functionalGate = validateSpatialSemantics({
+    functionalNetwork: layers._raw?.functionalNetwork ?? [],
+    functionalRelationships: layers.architectureFunctionBridge?.operationConstraints ?? [],
+    mustBeVisible: layers.composition?.mustBeVisible ?? [],
+  });
+  if (functionalGate.status === 'block') {
+    const codes = [...new Set(functionalGate.findings.map((f) => f.code))].join(', ');
+    throw Object.assign(
+      new Error(`SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK: ${codes}`),
+      { code: 'SPACE_DECORATIVE_OBJECT_SEMANTIC_LEAK', findings: functionalGate.findings },
+    );
   }
 
   const trace = buildTrace({
