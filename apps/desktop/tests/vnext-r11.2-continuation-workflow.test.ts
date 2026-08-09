@@ -68,7 +68,7 @@ test('R11.2 UI task assembly routes through the R11.1 continuation contract', as
     path.join(repoRoot, '../../space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json'),
     'utf8',
   ));
-  const ctx = { projectId };
+  const ctx: Record<string, unknown> = { projectId };
   ctx.visualDecisionPacket = packet;
 
   const assetId = 'asset-confirmed-wf';
