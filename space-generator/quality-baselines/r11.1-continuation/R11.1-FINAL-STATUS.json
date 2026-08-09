@@ -1,0 +1,32 @@
+{
+  "phase": "R11.1",
+  "status": "complete",
+  "productionCompiler": "r8_6_golden",
+  "confirmationContract": "pass",
+  "persistence": "pass",
+  "referenceBinding": "pass",
+  "worldConsistency": "pass",
+  "sceneTransformation": "pass",
+  "functionalOverride": "pass",
+  "sourceProgramLeakage": "pass",
+  "copyControl": "pass",
+  "r11_2Ready": true,
+  "closeoutAt": "2026-08-09T14:31:56.680Z",
+  "smokes": [
+    {
+      "brand": "jiuzhou-aesthetics",
+      "sourceScene": "reception",
+      "targetScene": "consultation"
+    },
+    {
+      "brand": "feng-tang-tang",
+      "sourceScene": "dining",
+      "targetScene": "entrance"
+    },
+    {
+      "brand": "jiuzhou-aesthetics",
+      "sourceScene": "reception",
+      "targetScene": "consultation"
+    }
+  ]
+}

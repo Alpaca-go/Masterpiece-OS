@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "brandKey": "feng-tang-tang",
+  "sourceScene": "dining",
+  "targetScene": "entrance",
+  "generationBasis": "continuation",
+  "referenceRole": "world_consistency",
+  "runId": "r11-cont-feng-tang-tang-entrance-1-1786274697895",
+  "imageSha256": "995d92f77ce9ad86edb2937f1fbedfdcfc64343af1af6a877f4eeffb9f44a65f",
+  "promptHash": "20c7004fad18e478533c774f758c4bc2950d353cc0d095b8902a3df9766163bf",
+  "result": "pass",
+  "scoredBy": "auto-r11.1-closeout-pending-human-review",
+  "scoredAt": "2026-08-09T14:31:56.677Z",
+  "metrics": {
+    "worldConsistency": 4,
+    "sceneDifferentiation": 4,
+    "functionalRealism": 4,
+    "referenceAlignment": 4,
+    "copyRisk": 2
+  },
+  "notes": [
+    "v1.2 continuation contract: source program overridden, leakage gate pass"
+  ]
+}

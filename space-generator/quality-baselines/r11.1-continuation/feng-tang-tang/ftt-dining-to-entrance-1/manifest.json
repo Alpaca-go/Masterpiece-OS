@@ -4,7 +4,7 @@
   "brandKey": "feng-tang-tang",
   "brandDisplayName": "冯烫烫",
   "scene": "ftt-dining-to-entrance-1",
-  "type": "text-only-stability-smoke",
+  "type": "continuation-smoke",
   "project": {
     "projectId": "dca9b7d4-f233-46ff-b4df-44a890f13c4f",
     "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
@@ -57,5 +57,13 @@
     "file": "evaluation.json",
     "status": "pending"
   },
-  "createdAt": "2026-08-09T11:24:57.895Z"
+  "createdAt": "2026-08-09T11:24:57.895Z",
+  "generationBasis": "continuation",
+  "referenceMode": "reference_assisted",
+  "referenceRole": "world_consistency",
+  "referenceSource": "confirmed_generated_output",
+  "referenceCount": 1,
+  "sourceScene": "dining",
+  "targetScene": "entrance",
+  "targetSceneLabel": "门店入口"
 }

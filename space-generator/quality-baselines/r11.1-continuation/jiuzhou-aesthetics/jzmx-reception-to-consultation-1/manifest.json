@@ -4,7 +4,7 @@
   "brandKey": "jiuzhou-aesthetics",
   "brandDisplayName": "九州美学",
   "scene": "jzmx-reception-to-consultation-1",
-  "type": "text-only-stability-smoke",
+  "type": "continuation-smoke",
   "project": {
     "projectId": "13c636af-53ee-4910-b8cf-f75b321d8b6f",
     "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
@@ -57,5 +57,13 @@
     "file": "evaluation.json",
     "status": "pending"
   },
-  "createdAt": "2026-08-09T11:22:59.100Z"
+  "createdAt": "2026-08-09T11:22:59.100Z",
+  "generationBasis": "continuation",
+  "referenceMode": "reference_assisted",
+  "referenceRole": "world_consistency",
+  "referenceSource": "confirmed_generated_output",
+  "referenceCount": 1,
+  "sourceScene": "reception",
+  "targetScene": "consultation",
+  "targetSceneLabel": "咨询室"
 }
