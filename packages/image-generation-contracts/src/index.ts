@@ -793,6 +793,7 @@ export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 export type VNextDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
 export type VNextAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
 export type VNextLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
+export type VNextGenerationBasis = 'standard' | 'reference_first';
 
 export interface VNextTaskContract {
   schemaVersion: '1.0';
@@ -805,6 +806,7 @@ export interface VNextTaskContract {
   count: 1 | 2;
   aspectRatio: VNextAspectRatio;
   currentInstruction: string;
+  generationBasis?: VNextGenerationBasis;
   mustInclude: string[];
   mustAvoid: string[];
   referenceAssetIds: string[];

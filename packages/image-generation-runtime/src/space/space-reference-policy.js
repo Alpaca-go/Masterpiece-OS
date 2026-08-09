@@ -1,10 +1,8 @@
 // Space Reference Policy (recovery doc §8, §9).
 //
-// First formal space generation MUST carry at least one non-logo core
-// reference. Resolution priority:
-//   1. User explicit reference (uploaded/selected in the workbench)
-//   2. Implicit anchor / project anchor image (a previously confirmed result)
-//   3. Selected architecture anchor image from the built-in registry
+// Standard generation is text-only. Reference-First carries only references
+// explicitly selected by the user. Implicit and architecture anchors remain
+// prompt/session context and never become provider images automatically.
 //
 // A logo NEVER becomes a core_reference (it stays post_composite). Packaging
 // assets never become space references. If nothing is available we fail closed
@@ -14,7 +12,7 @@
 // asset metadata and resolved file paths. It returns the resolved references
 // plus a trace object that must be written into the run snapshot.
 
-export const SPACE_REFERENCE_POLICY_VERSION = 'space-reference-policy@1.0.0';
+export const SPACE_REFERENCE_POLICY_VERSION = 'space-reference-policy@2.0.0';
 
 const NON_REFERENCE_ROLES = new Set(['logo', 'package_structure', 'dieline', 'icon']);
 
@@ -29,6 +27,7 @@ function isUsableSpaceReference(asset) {
  * Resolve the reference(s) to attach to a first space generation.
  *
  * @param {object} args
+ * @param {'standard'|'reference_first'} [args.generationBasis='standard']
  * @param {Array<{assetId:string, role?:string, relativePath:string}>} args.explicitAssets
  *        Assets for the user's explicit referenceAssetIds (already looked up
  *        from sourceAssetRefs by the service).
@@ -41,6 +40,7 @@ function isUsableSpaceReference(asset) {
  * @returns {{ references: Array<object>, trace: object }}
  */
 export function resolveSpaceReferences({
+  generationBasis = 'standard',
   explicitAssets = [],
   implicitAnchor = null,
   architectureAnchorImages = [],
@@ -48,6 +48,8 @@ export function resolveSpaceReferences({
 } = {}) {
   const trace = {
     referencePolicyVersion: SPACE_REFERENCE_POLICY_VERSION,
+    generationBasis,
+    referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
     explicitAssetIds: explicitAssets.map((a) => a.assetId),
     implicitAnchorId: implicitAnchor?.imageId ?? null,
     architectureAnchorIds: architectureAnchorImages.map((a) => a.anchorId),
@@ -67,7 +69,12 @@ export function resolveSpaceReferences({
     });
   };
 
-  // Priority 1: user explicit references.
+  if (generationBasis === 'standard') {
+    trace.providerReferenceCount = 0;
+    return { references, trace };
+  }
+
+  // Reference-First accepts only user-selected references.
   for (const asset of explicitAssets) {
     if (!isUsableSpaceReference(asset)) continue;
     add({
@@ -75,25 +82,6 @@ export function resolveSpaceReferences({
       role: 'core_reference',
       projectRelativePath: `input/${asset.relativePath}`,
     }, 'user_explicit');
-  }
-
-  // Priority 2: implicit anchor (previously confirmed result).
-  if (implicitAnchor && references.length < maxReferences) {
-    add({
-      id: implicitAnchor.imageId,
-      role: 'core_reference',
-      projectRelativePath: implicitAnchor.projectRelativePath,
-    }, 'implicit_anchor');
-  }
-
-  // Priority 3: built-in architecture anchor images.
-  for (const img of architectureAnchorImages) {
-    if (!img.imagePath || references.length >= maxReferences) break;
-    add({
-      id: img.anchorId,
-      role: 'core_reference',
-      projectRelativePath: img.imagePath,
-    }, 'architecture_anchor');
   }
 
   trace.providerReferenceCount = references.length;
@@ -104,12 +92,19 @@ export function resolveSpaceReferences({
  * Enforce that a formal first space generation has at least one reference.
  * Throws SPACE_REFERENCE_REQUIRED when none could be resolved.
  */
-export function assertSpaceReferenceAvailable(references, { bypass = false } = {}) {
-  if (bypass) return;
-  if (!references || references.length === 0) {
+export function assertSpaceReferenceAvailable(references, { generationBasis = 'standard' } = {}) {
+  if (generationBasis === 'standard') {
+    if (references?.length) {
+      throw Object.assign(new Error('Standard space generation must remain text-only.'), {
+        code: 'SPACE_STANDARD_REFERENCE_NOT_ALLOWED',
+      });
+    }
+    return;
+  }
+  if (generationBasis === 'reference_first' && (!references || references.length === 0)) {
     throw Object.assign(
-      new Error('SPACE_REFERENCE_REQUIRED: first formal space generation requires a core reference (user reference, implicit anchor, or architecture anchor).'),
-      { code: 'SPACE_REFERENCE_REQUIRED' },
+      new Error('SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED: Reference-First requires an explicit user-selected reference.'),
+      { code: 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED' },
     );
   }
 }

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "compilerMode": "r8_6_golden",
+  "compilerIds": [
+    "phase9b-quality-compiler"
+  ],
+  "requiredBlockIds": [
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "negative_constraints"
+  ],
+  "requiredBlockOrder": [
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "negative_constraints"
+  ],
+  "promptBudget": {
+    "minChars": 5800,
+    "maxChars": 7500
+  },
+  "architectureBudget": {
+    "minChars": 2500
+  },
+  "referencePolicyVersion": "space-reference-policy@2.0.0",
+  "semanticGateVersion": "space-spatial-semantic-gate@1.0.0"
+}

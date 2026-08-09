@@ -35,6 +35,12 @@ export {
 export { measurePromptBudget, assertPromptBudget } from './prompt-budget.js';
 export { buildTrace, fingerprint } from './trace.js';
 export { runSpaceQualityGate } from './space-quality-gate.js';
+export {
+  assertSpaceGenerationRouteIntegrity,
+  SPACE_ROUTE_INTEGRITY_GATE_VERSION,
+  CANONICAL_SPACE_COMPILER_MODE,
+} from './gates/generation-route-integrity-gate.js';
+export { ACTIVE_SPACE_ROUTE_BASELINE } from './quality-baselines/active-space-route-baseline.js';
 
 // R8.5.1 — semantic separation (architecture vs brand motif, color-geometry
 // coupling guard, mechanism provenance). Production module, no LLM.
@@ -49,6 +55,11 @@ export {
   compileRawPhrases,
   MECHANISM_PROVENANCE_VERSION,
   COMPILE_SPATIAL_MECHANISMS_VERSION,
+  validateSpatialSemantics,
+  normalizeSpatialFunctionalValue,
+  SPATIAL_SEMANTIC_GATE_VERSION,
+  resolveSpatialColorRole,
+  SPATIAL_COLOR_ROLE_VERSION,
 } from './semantic/index.js';
 
 // R8.5 redirected — action-verb architecture IR rewrite (P9B-B register).

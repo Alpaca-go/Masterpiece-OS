@@ -4,8 +4,10 @@ import { compileVNextPrompt } from './prompt-compiler.js';
 import { createSeedreamVNextAdapter } from './seedream-adapter.js';
 import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 import {
+  assertSpaceGenerationRouteIntegrity,
   compilePhase9bSpacePrompt,
   runSpaceQualityGate,
+  validateSpatialSemantics,
 } from '../space/index.js';
 import crypto from 'node:crypto';
 
@@ -92,6 +94,8 @@ export function compileVNextImageGeneration(input) {
       preferredLogoAssetId,
       started,
       compilerMode: spaceMode,
+      enforceSpatialSemantics: input.task?.generationBasis === 'standard'
+        || input.task?.generationBasis === 'reference_first',
     });
   } else {
     // Non-space (packaging / vi / poster) -> existing vNext compiler
@@ -125,7 +129,7 @@ export function compileVNextImageGeneration(input) {
 // compiler. Returns a compiledPrompt shaped compatibly with the vNext compiler
 // (finalPrompt/editablePrompt/blocks/trace/referenceAssetIds/logoUsageMode) so
 // downstream service code and the adapter don't need a separate branch.
-function compilePhase9bSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN }) {
+function compilePhase9bSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
   const packet = input.projectContext?.visualDecisionPacket;
   if (!packet) {
     throw Object.assign(
@@ -177,7 +181,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
 
   const logoUsageMode = preferredLogoAssetId ? 'post_composite' : 'blank_area';
 
-  return {
+  const spatialSemanticReport = enforceSpatialSemantics
+    ? validateSpatialSemantics(packet.mediaTranslations?.spatial ?? {})
+    : { status: 'pass', findings: [], skipped: 'legacy_contract_without_generation_basis' };
+  const compiledPrompt = {
     schemaVersion: '1.0',
     taskContract,
     // Phase 9B path does not use the vNext template router.
@@ -246,8 +253,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         // R10.2 §27: generationBasis is the UI-facing route; referenceMode is
         // its runtime equivalent (standard <-> text_only, reference_first <->
         // reference_assisted). Both are recorded for traceability.
-        generationBasis: referenceAssetIds.length ? 'reference_first' : 'standard',
-        referenceMode: referenceAssetIds.length ? 'reference_assisted' : 'text_only',
+        generationBasis: taskContract.generationBasis,
+        referenceMode: taskContract.generationBasis === 'reference_first'
+          ? 'reference_assisted'
+          : 'text_only',
         referenceIds: referenceAssetIds,
         referenceSources: [],
         promptCharacters: budget.chars,
@@ -260,6 +269,21 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
       },
     },
   };
+  const integrity = assertSpaceGenerationRouteIntegrity({
+    taskContract,
+    compilerMode,
+    trace: compiledPrompt.trace,
+    blockIds: result.blockIds,
+    providerReferenceCount: referenceAssetIds.length,
+    referenceMode: compiledPrompt.trace.spaceGeneration.referenceMode,
+    referenceSources: referenceAssetIds.map(() => 'user_explicit'),
+    spatialSemanticReport,
+  });
+  compiledPrompt.trace.spaceGeneration.canonicalCompilerMode = integrity.canonicalCompilerMode;
+  compiledPrompt.trace.spaceGeneration.blockIds = result.blockIds;
+  compiledPrompt.trace.spaceGeneration.spatialSemanticReport = spatialSemanticReport;
+  compiledPrompt.trace.spaceGeneration.routeIntegrity = integrity.routeIntegrity;
+  return compiledPrompt;
 }
 
 // R9 §20 trace helpers: substantive character counts per block group.

@@ -26,3 +26,12 @@ export {
   sanitizeDifferentiators,
   BRAND_EXPRESSION_SANITIZER_VERSION,
 } from './sanitize-brand-expression.js';
+export {
+  validateSpatialSemantics,
+  normalizeSpatialFunctionalValue,
+  SPATIAL_SEMANTIC_GATE_VERSION,
+} from './validate-spatial-semantics.js';
+export {
+  resolveSpatialColorRole,
+  SPATIAL_COLOR_ROLE_VERSION,
+} from './resolve-spatial-color-role.js';

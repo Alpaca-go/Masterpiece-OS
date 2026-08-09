@@ -17,6 +17,14 @@ export function createVNextTaskContract(input, options = {}) {
   const scene = String(input?.scene ?? '').trim();
   const shot = String(input?.shot ?? '').trim();
   const currentInstruction = String(input?.currentInstruction ?? '').trim();
+  const requestedReferenceAssetIds = cleanList(input?.referenceAssetIds);
+  const generationBasis = input?.generationBasis === 'reference_first'
+    ? 'reference_first'
+    : input?.generationBasis === 'standard'
+      ? 'standard'
+      : requestedReferenceAssetIds.length
+        ? 'reference_first'
+        : 'standard';
   const count = Number(input?.count ?? 1);
   const aspectRatio = String(input?.aspectRatio ?? '16:9');
   const logoUsageMode = String(input?.logoUsageMode ?? 'blank_area');
@@ -33,6 +41,17 @@ export function createVNextTaskContract(input, options = {}) {
   if (family === 'vi' && subtype === 'unspecified') {
     throw new Error('VI generation requires a concrete material subtype');
   }
+  const referenceAssetIds = requestedReferenceAssetIds;
+  if (family === 'space' && generationBasis === 'standard' && referenceAssetIds.length) {
+    throw Object.assign(new Error('Standard space generation cannot include provider references.'), {
+      code: 'SPACE_STANDARD_REFERENCE_NOT_ALLOWED',
+    });
+  }
+  if (family === 'space' && generationBasis === 'reference_first' && !referenceAssetIds.length) {
+    throw Object.assign(new Error('Reference-First space generation requires an explicit reference.'), {
+      code: 'SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED',
+    });
+  }
   return {
     schemaVersion: '1.0',
     taskId: input.taskId || `vnext-task-${crypto.randomUUID()}`,
@@ -44,9 +63,10 @@ export function createVNextTaskContract(input, options = {}) {
     count,
     aspectRatio,
     currentInstruction,
+    generationBasis,
     mustInclude: cleanList(input.mustInclude),
     mustAvoid: cleanList(input.mustAvoid),
-    referenceAssetIds: cleanList(input.referenceAssetIds),
+    referenceAssetIds,
     logoUsageMode,
     createdAt: options.now || new Date().toISOString(),
   };

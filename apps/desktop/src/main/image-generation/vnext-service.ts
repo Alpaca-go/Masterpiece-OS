@@ -17,9 +17,11 @@ import {
   listVNextTemplateOptions,
 } from '@masterpiece/image-generation-runtime/vnext/index.js';
 import {
+  assertSpaceGenerationRouteIntegrity,
   resolveSpaceReferences,
   assertSpaceReferenceAvailable,
   runSpaceQualityGate,
+  validateSpatialSemantics,
 } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
@@ -91,6 +93,12 @@ function aspectSize(aspectRatio: VNextTaskContract['aspectRatio']): string {
     '16:9': '2560*1440',
     '9:16': '1440*2560',
   }[aspectRatio];
+}
+
+function promptBlockIds(prompt: string, blocks: Array<{ id: string; title?: string }>): string[] {
+  return blocks
+    .filter((block) => block.title && prompt.includes(`# ${block.title}`))
+    .map((block) => block.id);
 }
 
 async function writeJson(filename: string, value: unknown): Promise<void> {
@@ -247,6 +255,9 @@ export function createVNextImageGenerationService(
         contextFingerprint: context.provenance.sourceFingerprint,
         route: result.compiledPrompt.route,
         trace: result.compiledPrompt.trace,
+        spaceGeneration: (result.compiledPrompt.trace as unknown as {
+          spaceGeneration?: Record<string, unknown>;
+        }).spaceGeneration,
         compiledAt: result.compiledPrompt.compiledAt,
       }),
       ...(logoUsageMode === 'post_composite' ? [
@@ -339,6 +350,7 @@ export function createVNextImageGenerationService(
             count: task.count,
             aspectRatio: task.aspectRatio,
             currentInstruction: task.currentInstruction,
+            generationBasis: task.generationBasis,
             mustInclude: [...task.mustInclude],
             mustAvoid: [...task.mustAvoid],
             referenceAssetIds: [...task.referenceAssetIds],
@@ -393,6 +405,8 @@ export function createVNextImageGenerationService(
     const session = await readSession(input.projectId);
     const implicitAnchor = session.implicitAnchors[compilation.taskContract.deliverableFamily];
     const explicitIds = compilation.taskContract.referenceAssetIds;
+    const generationBasis = compilation.taskContract.generationBasis
+      ?? (explicitIds.length ? 'reference_first' : 'standard');
     const isSpace = compilation.taskContract.deliverableFamily === 'space';
     const phase9b = (compilation.compiledPrompt as unknown as {
       phase9b?: {
@@ -432,6 +446,7 @@ export function createVNextImageGenerationService(
         .map((img) => ({ anchorId: img.anchorId, imagePath: img.imagePath as string }));
 
       const resolved = resolveSpaceReferences({
+        generationBasis,
         explicitAssets,
         implicitAnchor: implicitAnchor
           ? { imageId: implicitAnchor.imageId, projectRelativePath: implicitAnchor.projectRelativePath }
@@ -457,8 +472,7 @@ export function createVNextImageGenerationService(
 
       // Fail closed when no reference is available (unless the task explicitly
       // carries a reference-first bypass, e.g. a deliberate text-only debug).
-      const bypass = Boolean((compilation.taskContract as unknown as { allowTextOnlySpace?: boolean }).allowTextOnlySpace);
-      assertSpaceReferenceAvailable(references, { bypass });
+      assertSpaceReferenceAvailable(references, { generationBasis });
 
       // R5: re-run the space quality gate with the resolved reference count so
       // SPACE_REFERENCE_MISSING is reflected in preflight findings too (even
@@ -475,7 +489,7 @@ export function createVNextImageGenerationService(
         blockIds,
         blocksById,
         referenceCount: references.length,
-        hasExplicitReferenceBypass: bypass,
+        hasExplicitReferenceBypass: generationBasis === 'standard',
       } as Parameters<typeof runSpaceQualityGate>[0]);
       if (resolvedQualityGate.status !== 'pass') {
         const blocked = resolvedQualityGate.findings.filter((f) => f.severity === 'block');
@@ -489,6 +503,76 @@ export function createVNextImageGenerationService(
         }
       }
       spaceQualityGate = resolvedQualityGate;
+
+      const prompt = input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt;
+      const compiledBlocks = (compilation.compiledPrompt as unknown as {
+        blocks?: Array<{ id: string; title?: string }>;
+      }).blocks ?? [];
+      const spaceTrace = (compilation.compiledPrompt.trace as unknown as {
+        spaceGeneration?: Record<string, unknown>;
+      }).spaceGeneration ?? {};
+      const spatialSemanticReport = (spaceTrace.spatialSemanticReport ?? {
+        status: 'block',
+        findings: [{ code: 'SPACE_SPATIAL_SEMANTIC_REPORT_MISSING' }],
+      }) as ReturnType<typeof validateSpatialSemantics>;
+      const integrity = assertSpaceGenerationRouteIntegrity({
+        taskContract: compilation.taskContract,
+        compilerMode: spaceTrace.canonicalCompilerMode ?? 'r8_6_golden',
+        trace: {
+          spaceGeneration: {
+            ...spaceTrace,
+            promptCharacters: [...prompt].length,
+          },
+        },
+        blockIds: promptBlockIds(prompt, compiledBlocks),
+        providerReferenceCount: references.length,
+        referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+        referenceSources: references.map((reference) => reference.source),
+        spatialSemanticReport,
+        requestedAspectRatio: compilation.taskContract.aspectRatio,
+        providerAspectRatio: compilation.payload.aspectRatio,
+        providerSize: aspectSize(compilation.taskContract.aspectRatio),
+      });
+      if (!integrity) {
+        throw Object.assign(new Error('Space route integrity gate was not applied.'), {
+          code: 'SPACE_GENERATION_ROUTE_INTEGRITY_FAILED',
+        });
+      }
+      Object.assign(spaceTrace, {
+        generationBasis,
+        referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+        referenceIds: references.map((reference) => reference.id),
+        referenceSources: references.map((reference) => reference.source),
+        routeIntegrity: integrity.routeIntegrity,
+        spatialSemanticReport,
+      });
+      await Promise.all([
+        writeJson(path.join(compilation.artifactDirectory, 'reference-trace.json'), {
+          schemaVersion: '1.0',
+          referenceMode: generationBasis === 'reference_first' ? 'reference_assisted' : 'text_only',
+          providerReferenceCount: references.length,
+          references: references.map((reference) => ({
+            id: reference.id,
+            source: reference.source,
+          })),
+        }),
+        writeJson(path.join(compilation.artifactDirectory, 'provider-payload.redacted.json'), {
+          model: compilation.payload.model,
+          prompt,
+          size: aspectSize(compilation.taskContract.aspectRatio),
+          aspectRatio: compilation.taskContract.aspectRatio,
+          references: references.map((reference) => ({ id: reference.id, source: reference.source })),
+        }),
+        writeJson(path.join(compilation.artifactDirectory, 'trace.json'), {
+          projectId: input.projectId,
+          taskId: compilation.taskContract.taskId,
+          contextFingerprint: currentContext.provenance.sourceFingerprint,
+          route: compilation.compiledPrompt.route,
+          trace: compilation.compiledPrompt.trace,
+          spaceGeneration: spaceTrace,
+          compiledAt: compilation.compiledPrompt.compiledAt,
+        }),
+      ]);
     } else {
       const explicitReferences = explicitIds.flatMap((assetId) => {
         const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
@@ -543,6 +627,17 @@ export function createVNextImageGenerationService(
       size: aspectSize(compilation.taskContract.aspectRatio),
       dryRun: input.dryRun,
     });
+    if (isPhase9bSpace) {
+      await writeJson(path.join(compilation.artifactDirectory, 'run.json'), run);
+      const generatedRoot = await getImageGeneration().runRoot(run.runId);
+      const firstImage = run.images[0];
+      if (run.status === 'succeeded' && generatedRoot && firstImage) {
+        await fs.copyFile(
+          path.join(generatedRoot, firstImage.relativePath),
+          path.join(compilation.artifactDirectory, 'output.png'),
+        );
+      }
+    }
     await saveSession({
       ...session,
       currentTask: compilation.taskContract,

@@ -292,6 +292,7 @@ export function VNextGenerationWorkspace({
           count: 1,
           aspectRatio,
           currentInstruction: instruction.trim(),
+          generationBasis: generationBasis === 'reference' ? 'reference_first' : 'standard',
           mustInclude: splitRules(mustIncludeText),
           mustAvoid: splitRules(mustAvoidText),
           referenceAssetIds: generationBasis === 'reference' ? referenceAssetIds : [],

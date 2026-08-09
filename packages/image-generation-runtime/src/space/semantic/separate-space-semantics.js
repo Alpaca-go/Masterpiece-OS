@@ -125,10 +125,10 @@ export function classifyPhrase(rawPhrase, sourceField = '') {
 
   // 1) In-scene identity (logo / wordmark / slogan text / mascot) — never
   //    generated in-scene (post-composite route).
-  const identityRe = /logo|wordmark|logotype|slogan|mascot|emblem|发光字|标识|标志|徽章|吉祥物|slogan艺术字|艺术字/u;
+  const identityRe = /logo|wordmark|logotype|slogan|mascot|emblem|发光字|标识|标志|徽章|吉祥物|slogan艺术字|艺术字/iu;
   // "X logo" / "发光Logo" even when split by Chinese adjective.
   const hasIdentity = identityRe.test(text)
-    || (hasMotif && /logo|标识|标志|发光字/u.test(text))
+    || (hasMotif && /logo|标识|标志|发光字/iu.test(text))
     || /\blogo\b/u.test(text);
   if (hasIdentity) {
     classification = SEMANTIC_CLASS.DECORATIVE_IDENTITY;

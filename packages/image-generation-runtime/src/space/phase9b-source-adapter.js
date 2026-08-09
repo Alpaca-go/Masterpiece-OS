@@ -39,6 +39,7 @@ import {
   sanitizeMaterials,
   sanitizeLighting,
   sanitizeDifferentiators,
+  resolveSpatialColorRole,
   SEMANTIC_CLASS,
   MECHANISM_PROVENANCE_VERSION,
 } from './semantic/index.js';
@@ -236,10 +237,18 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   // ---- Material / Lighting / Color (V5 systems) ----
   const materials = materialDirection;
   const lighting = lightDirection;
+  const withSpatialRole = (items, sourceRole) => (Array.isArray(items) ? items : []).map((item) => ({
+    ...(typeof item === 'object' && item ? item : { name: String(item) }),
+    sourceRole,
+    spatialUsage: resolveSpatialColorRole({
+      ...(typeof item === 'object' && item ? item : { name: String(item) }),
+      role: typeof item === 'object' && item ? item.role : sourceRole,
+    }),
+  }));
   const color = {
-    primary: Array.isArray(colorSystem.primary) ? colorSystem.primary : [],
-    secondary: Array.isArray(colorSystem.secondary) ? colorSystem.secondary : [],
-    accent: Array.isArray(colorSystem.accent) ? colorSystem.accent : [],
+    primary: withSpatialRole(colorSystem.primary, 'primary'),
+    secondary: withSpatialRole(colorSystem.secondary, 'secondary'),
+    accent: withSpatialRole(colorSystem.accent, 'accent'),
     forbidden: cleanList(colorSystem.forbidden),
   };
 
