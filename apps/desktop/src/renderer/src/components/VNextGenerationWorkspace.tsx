@@ -771,7 +771,9 @@ export function VNextGenerationWorkspace({
             <div className="prompt-block-list">
               {compiled.compiledPrompt.blocks.map((block) => <div key={block.id}>
                 <strong>{block.title}</strong>
-                <small>{block.sources.join(' · ')}</small>
+                <small>{(block as { sources?: string[] }).sources
+                  ? (block as { sources: string[] }).sources.join(' · ')
+                  : ((compiled.compiledPrompt.sourceMap as Record<string, string[]> | undefined)?.[block.id] ?? []).join(' · ') || '—'}</small>
               </div>)}
             </div>
           </details>
