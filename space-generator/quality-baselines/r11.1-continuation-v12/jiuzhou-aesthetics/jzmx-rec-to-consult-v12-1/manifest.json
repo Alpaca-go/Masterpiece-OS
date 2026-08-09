@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "r11.1-continuation-v12",
+  "brandKey": "jiuzhou-aesthetics",
+  "brandDisplayName": "九州美学",
+  "scene": "jzmx-rec-to-consult-v12-1",
+  "type": "text-only-stability-smoke",
+  "project": {
+    "projectId": "13c636af-53ee-4910-b8cf-f75b321d8b6f",
+    "projectDir": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets",
+    "note": "Frozen jiuzhou-aesthetics packet at D:\\Masterpiece-OS\\space-generator\\quality-baselines\\phase9b-recovered\\_packets\\jiuzhou-aesthetics\\visual-decision-packet.json; same compiler input across all runs, references emptied."
+  },
+  "compiler": {
+    "id": "phase9b-quality-compiler",
+    "mode": "r8_6_golden",
+    "redirect": "r8.5-action-verb-ir"
+  },
+  "provider": {
+    "provider": "volcengine",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+    "size": "2K",
+    "aspectRatio": "16:9"
+  },
+  "referenceIds": [
+    "asset-confirmed-bdcea5e5dbb8"
+  ],
+  "taskInstruction": "延续已确认的接待空间世界，生成更小尺度、更私密的咨询空间。保持同一空间语言与材料系统，但重建功能程序为咨询场景。",
+  "blockIds": [
+    "task",
+    "continuation_intent",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptHash": "7953a9b2179ac4181bd923839dea215f697e09e691b8413197d17bb532b533c0",
+  "output": {
+    "runId": "r11-v12-jiuzhou-aesthetics-consultation-1-1786284411055",
+    "imageFile": "output.png",
+    "imageSha256": "3d4690bd477908203f319c48e51992e4ef3b32618de97cb4129982554a389a2a",
+    "promptFile": "prompt.md",
+    "providerPayloadFile": "provider-payload.redacted.json",
+    "referenceTraceFile": "reference-trace.json",
+    "runFile": "run.json"
+  },
+  "evaluation": {
+    "file": "evaluation.json",
+    "status": "pending"
+  },
+  "createdAt": "2026-08-09T14:06:51.055Z"
+}

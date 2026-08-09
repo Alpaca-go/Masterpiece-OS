@@ -1,0 +1,22 @@
+{
+  "runId": "r11-v12-jiuzhou-aesthetics-consultation-1-1786284411055",
+  "baseline": "r11.1-continuation-v12",
+  "brandKey": "jiuzhou-aesthetics",
+  "scene": "jzmx-rec-to-consult-v12-1",
+  "startedAt": "2026-08-09T14:05:04.350Z",
+  "completedAt": "2026-08-09T14:06:51.055Z",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "modelUsed": "doubao-seedream-5-0-pro-260628",
+  "profileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "compilerMode": "r8_6_golden",
+  "promptChars": 7230,
+  "promptHash": "7953a9b2179ac4181bd923839dea215f697e09e691b8413197d17bb532b533c0",
+  "referenceCount": 1,
+  "elapsedMs": 106518,
+  "imageFile": "output.png",
+  "imageSha256": "3d4690bd477908203f319c48e51992e4ef3b32618de97cb4129982554a389a2a",
+  "imageBytes": 394108
+}

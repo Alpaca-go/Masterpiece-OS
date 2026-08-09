@@ -181,6 +181,7 @@ function targetFunctionalProgramFor(scene: string): Record<string, unknown> {
   const registry: Record<string, Record<string, unknown>> = {
     consultation: {
       sceneId: 'consultation', sceneLabel: '咨询室',
+      viewStrategy: 'human_scale_consultation_view',
       requiredFunctions: ['1 对 1 / 1 对 2 专业咨询', '产品 / 服务信息展示与说明'],
       requiredSpatialElements: ['咨询桌或低桌', '2–3 人咨询座位', '半私密或私密边界', '医疗 / 产品信息展示面'],
       circulationRequirements: ['从公共等候区明确进入咨询单元的过渡'],
@@ -188,9 +189,11 @@ function targetFunctionalProgramFor(scene: string): Record<string, unknown> {
       scaleRequirements: ['较小尺度、人尺度咨询单元'],
       operationalRequirements: ['咨询过程所需的桌面与座位关系'],
       sourceProgramElementsToDrop: ['大型公共接待台', '大尺度 Lobby 构图', '大面积公共等候区', '前厅式迎宾轴线'],
+      sourceProgramDropTags: ['PUBLIC_RECEPTION', 'PUBLIC_ARRIVAL_AXIS', 'LOBBY_WAITING'],
     },
     entrance: {
       sceneId: 'entrance', sceneLabel: '门店入口',
+      viewStrategy: 'threshold_arrival_view',
       requiredFunctions: ['门店到达、识别与欢迎', '进入堂食 / 内部空间的引导'],
       requiredSpatialElements: ['storefront / threshold 门槛', 'arrival sequence 到达序列', 'welcome / host 迎宾点', '入口与内部空间的局部可见关系'],
       circulationRequirements: ['从街道 / 室外到内部的清晰进入路径'],
@@ -198,6 +201,7 @@ function targetFunctionalProgramFor(scene: string): Record<string, unknown> {
       scaleRequirements: ['人尺度入口宽度与净高', '街面尺度而非堂食大厅尺度'],
       operationalRequirements: ['迎宾 / 引导可达'],
       sourceProgramElementsToDrop: ['中央开放厨房作为画面主体', '完整堂食大厅布局', '大面积餐桌卡座', '以出餐区为中心的内部运营构图'],
+      sourceProgramDropTags: ['OPEN_KITCHEN_CORE_AS_MAIN_COMPOSITION', 'DINING_HALL_AS_MAIN_PROGRAM', 'FULL_SEATING_LAYOUT'],
     },
   };
   return registry[id] ?? {
@@ -393,7 +397,13 @@ async function main(): Promise<void> {
               id: confirmedAssetId(),
               role: 'core_reference',
               source: CONTINUATION_MODE ? 'confirmed_generated_output' : 'user_explicit',
-              ...(CONTINUATION_MODE ? { sourceScene: SOURCE_SCENE, targetScene: TARGET_SCENE } : {}),
+              // R11.1 v1.2: continuation references are world-consistency only.
+              ...(CONTINUATION_MODE ? {
+                semanticRole: 'world_consistency',
+                referenceRole: 'world_consistency',
+                sourceScene: SOURCE_SCENE,
+                targetScene: TARGET_SCENE,
+              } : {}),
               projectRelativePath: REFERENCE_IMAGE,
             }]
           : [],

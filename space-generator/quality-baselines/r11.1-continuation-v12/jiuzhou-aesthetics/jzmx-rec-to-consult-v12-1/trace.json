@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "1.0",
+  "runId": "r11-v12-jiuzhou-aesthetics-consultation-1-1786284411055",
+  "compilerId": "phase9b-quality-compiler",
+  "compilerVersion": "1.1.0",
+  "canonicalCompilerMode": "r8_6_golden",
+  "generationBasis": "continuation",
+  "referenceMode": "reference_assisted",
+  "referenceRole": "world_consistency",
+  "referenceSource": "confirmed_generated_output",
+  "referenceCount": 1,
+  "sourceScene": "reception",
+  "targetScene": "consultation",
+  "targetViewStrategy": "human_scale_consultation_view",
+  "sourceProgramDropTags": [
+    "PUBLIC_RECEPTION",
+    "PUBLIC_ARRIVAL_AXIS",
+    "LOBBY_WAITING"
+  ],
+  "sourceProgramLeakageGate": "pass",
+  "promptCharacters": 7230,
+  "promptHash": "7953a9b2179ac4181bd923839dea215f697e09e691b8413197d17bb532b533c0",
+  "imageSha256": "3d4690bd477908203f319c48e51992e4ef3b32618de97cb4129982554a389a2a"
+}

@@ -1,0 +1,35 @@
+{
+  "sceneId": "consultation",
+  "sceneLabel": "咨询室",
+  "viewStrategy": "human_scale_consultation_view",
+  "requiredFunctions": [
+    "1 对 1 / 1 对 2 专业咨询",
+    "产品 / 服务信息展示与说明",
+    "轻量专业咨询操作"
+  ],
+  "requiredSpatialElements": [
+    "咨询桌或低桌",
+    "2–3 人咨询座位",
+    "半私密或私密边界",
+    "医疗 / 产品信息展示面"
+  ],
+  "privacyRequirements": [
+    "半私密到私密边界",
+    "与公共接待 / 等候区明确区分"
+  ],
+  "scaleRequirements": [
+    "较小尺度、人尺度咨询单元",
+    "非大堂级尺度"
+  ],
+  "sourceProgramElementsToDrop": [
+    "大型公共接待台",
+    "大尺度 Lobby 构图",
+    "大面积公共等候区",
+    "前厅式迎宾轴线"
+  ],
+  "sourceProgramDropTags": [
+    "PUBLIC_RECEPTION",
+    "PUBLIC_ARRIVAL_AXIS",
+    "LOBBY_WAITING"
+  ]
+}
