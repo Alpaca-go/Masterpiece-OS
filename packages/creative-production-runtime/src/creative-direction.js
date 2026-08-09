@@ -1,4 +1,4 @@
-export const CREATIVE_DIRECTION_RUNTIME_VERSION = '18.1.0';
+export const CREATIVE_DIRECTION_COMPONENT_VERSION = 'creative-direction@1.1.0';
 
 const REQUIRED_ARRAY_FIELDS = [
   'oldVisualProblems',
@@ -178,7 +178,7 @@ export function normalizeCreativeDirection(value, metadata, now = new Date().toI
     source: {
       understandingGeneratedAt: text(metadata.understandingGeneratedAt),
       reportPath: text(metadata.reportPath),
-      runtimeVersion: CREATIVE_DIRECTION_RUNTIME_VERSION,
+      runtimeVersion: CREATIVE_DIRECTION_COMPONENT_VERSION,
     },
     generatedAt: now,
   };

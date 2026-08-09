@@ -1,4 +1,4 @@
-export const CREATIVE_READING_PROMPT_VERSION = '18.0.0';
+export const CREATIVE_READING_PROMPT_REVISION = 'creative-reading@1.0.0';
 
 function text(value) { return String(value ?? '').trim(); }
 function strings(value) {

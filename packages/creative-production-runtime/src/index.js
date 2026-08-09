@@ -52,7 +52,7 @@ export {
   validateGenerationPromptSnapshot,
 } from './generation-prompt.js';
 export {
-  CREATIVE_READING_PROMPT_VERSION,
+  CREATIVE_READING_PROMPT_REVISION,
   ANALYSIS_POOL_TARGET_MIN,
   ANALYSIS_POOL_TARGET_MAX,
   selectAnalysisPool,
@@ -63,7 +63,7 @@ export {
   compileCreativeUnderstandingMarkdown,
 } from './creative-reading.js';
 export {
-  CREATIVE_DIRECTION_RUNTIME_VERSION,
+  CREATIVE_DIRECTION_COMPONENT_VERSION,
   buildCreativeDirectionPrompt,
   parseCreativeDirectionResponse,
   normalizeCreativeDirection,

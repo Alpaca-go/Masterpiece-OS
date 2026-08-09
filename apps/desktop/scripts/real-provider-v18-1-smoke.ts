@@ -247,7 +247,7 @@ async function main(): Promise<void> {
     || anchorResult.run.status !== 'succeeded'
     || !anchorResult.run.images.length) {
     throw new Error(
-      `v18.1 真实 Provider 验收未完成：direction=${directionResult.direction.status}, image=${anchorResult.run.status}`,
+      `Creative Direction 真实 Provider 验收未完成：direction=${directionResult.direction.status}, image=${anchorResult.run.status}`,
     );
   }
 }

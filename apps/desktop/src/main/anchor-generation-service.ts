@@ -163,7 +163,7 @@ export function createAnchorGenerationService(
     const run = await imageGeneration.startCompiledCreativeTask({
       projectId,
       compiledPrompt,
-      promptVersion: 'anchor-candidate-18.1.0',
+      promptVersion: 'anchor-candidate@1.1.0',
       snapshot,
       sourceMap: {
         candidateId: candidate.id,

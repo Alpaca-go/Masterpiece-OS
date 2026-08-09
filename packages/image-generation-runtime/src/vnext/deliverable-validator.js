@@ -1,5 +1,5 @@
-export const VNEXT_DELIVERABLE_VALIDATOR_ID = 'vnext-deliverable-validator';
-export const VNEXT_DELIVERABLE_VALIDATOR_VERSION = '2.0.0';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID = 'short-chain-deliverable-validator';
+export const SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION = 'short-chain-deliverable-validator@2.0.0';
 
 const FAMILIES = new Set(['space', 'packaging', 'vi', 'poster']);
 
@@ -93,8 +93,8 @@ export function validateVNextDeliverableEvidence({
       'logo_text_error',
       'quality_issue',
     ].includes(type)),
-    validatorId: VNEXT_DELIVERABLE_VALIDATOR_ID,
-    validatorVersion: VNEXT_DELIVERABLE_VALIDATOR_VERSION,
+    validatorId: SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID,
+    validatorVersion: SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION,
     validatedAt,
   };
 }

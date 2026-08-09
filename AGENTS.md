@@ -21,6 +21,9 @@
   `apps/desktop/package.json`、`apps/cli/src/runtime-trace.js` 的
   `DEFAULT_APP_VERSION`）。
 - 校验：`npm run verify:version-consistency`。
+- 版本域与命名规则：`docs/development/versioning-policy.md`；活跃代码不得新增
+  `V5` / `V6` / `V18` / `vnext` 阶段式版本常量，校验命令为
+  `npm run verify:version-naming`。
 
 ## 包边界
 
@@ -49,6 +52,7 @@
 ```bash
 # 离线闸门（不调用真实 Provider）
 npm run verify:version-consistency
+npm run verify:version-naming
 npm run verify:workspace-boundaries
 npm run verify:no-obsolete-code
 npm run verify:production-boundaries

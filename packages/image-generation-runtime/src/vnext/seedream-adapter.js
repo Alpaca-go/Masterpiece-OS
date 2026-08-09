@@ -1,5 +1,5 @@
-export const SEEDREAM_VNEXT_ADAPTER_ID = 'seedream-5.0-pro';
-export const SEEDREAM_VNEXT_ADAPTER_VERSION = '1.1.0';
+export const SEEDREAM_SHORT_CHAIN_ADAPTER_ID = 'seedream-5.0-pro';
+export const SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION = 'seedream-short-chain-adapter@1.1.0';
 // Phase 9B recovery: the golden Mode B space prompt runs ~9.5k chars (JZMX).
 // The legacy 7500 cap rejected it at compile time. The real provider ceiling
 // is enforced by the space-quality prompt budget (block > 12000); packaging
@@ -10,8 +10,8 @@ const MAX_PROMPT_CHARACTERS = 12_000;
 export function createSeedreamVNextAdapter(options = {}) {
   const model = options.model || 'doubao-seedream-5-0-pro-260628';
   return Object.freeze({
-    id: SEEDREAM_VNEXT_ADAPTER_ID,
-    version: SEEDREAM_VNEXT_ADAPTER_VERSION,
+    id: SEEDREAM_SHORT_CHAIN_ADAPTER_ID,
+    version: SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION,
     model,
     orderSections(sections) {
       return sections;
@@ -26,8 +26,8 @@ export function createSeedreamVNextAdapter(options = {}) {
         );
       }
       return {
-        adapterId: SEEDREAM_VNEXT_ADAPTER_ID,
-        adapterVersion: SEEDREAM_VNEXT_ADAPTER_VERSION,
+        adapterId: SEEDREAM_SHORT_CHAIN_ADAPTER_ID,
+        adapterVersion: SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION,
         model,
         prompt,
         size: '2K',

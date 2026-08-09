@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ensureDir, writeText } from '../../utils.js';
-import { V5_DEFAULTS } from '../config/defaults.js';
+import { CLI_DEFAULTS } from '../config/defaults.js';
 
 const CACHE_VERSION = 1;
 const REPOSITORY_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
@@ -16,9 +16,9 @@ function clean(values, maximum) {
 }
 
 function bounded(value) {
-  const maxTotal = V5_DEFAULTS.benchmark.maxTotal;
-  const category = clean(value?.category, V5_DEFAULTS.benchmark.categoryTarget + 1);
-  const creativeExcellence = clean(value?.creativeExcellence, V5_DEFAULTS.benchmark.creativeExcellenceTarget + 1)
+  const maxTotal = CLI_DEFAULTS.benchmark.maxTotal;
+  const category = clean(value?.category, CLI_DEFAULTS.benchmark.categoryTarget + 1);
+  const creativeExcellence = clean(value?.creativeExcellence, CLI_DEFAULTS.benchmark.creativeExcellenceTarget + 1)
     .slice(0, Math.max(0, maxTotal - category.length));
   return Object.freeze({ category: Object.freeze(category), creativeExcellence: Object.freeze(creativeExcellence) });
 }
@@ -58,9 +58,9 @@ export async function prepareBenchmarks(config, options = {}) {
     resolverCalls = 1;
     benchmarks = bounded(await options.resolver(Object.freeze({
       industry,
-      categoryTarget: V5_DEFAULTS.benchmark.categoryTarget,
-      creativeExcellenceTarget: V5_DEFAULTS.benchmark.creativeExcellenceTarget,
-      maxTotal: V5_DEFAULTS.benchmark.maxTotal
+      categoryTarget: CLI_DEFAULTS.benchmark.categoryTarget,
+      creativeExcellenceTarget: CLI_DEFAULTS.benchmark.creativeExcellenceTarget,
+      maxTotal: CLI_DEFAULTS.benchmark.maxTotal
     })));
     source = 'resolver';
   }

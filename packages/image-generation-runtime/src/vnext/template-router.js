@@ -1,6 +1,6 @@
 import { getVNextTemplate } from './template-registry.js';
 
-export const VNEXT_TEMPLATE_ROUTER_VERSION = '1.0.0';
+export const SHORT_CHAIN_TEMPLATE_ROUTER_VERSION = 'short-chain-template-router@1.0.0';
 
 export function routeVNextTemplates(task, options = {}) {
   const model = options.model || 'seedream-5.0-pro';

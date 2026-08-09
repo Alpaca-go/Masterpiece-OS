@@ -4,7 +4,7 @@ import { performance } from 'node:perf_hooks';
 import { inventoryProject } from '../inventory.js';
 import { readJson } from '../utils.js';
 import { createV5ProjectConfig } from './config/schema.js';
-import { V5_PIPELINE_ID, V5_VERSION } from './config/defaults.js';
+import { CLI_ENGINE_VERSION, CLI_PIPELINE_ID } from './config/defaults.js';
 import { runDeepCreativeDirector } from './creative-director/deep-creative-director.js';
 import { buildDeepCreativeDirectorPrompt } from './creative-director/prompt-builder.js';
 import { publishCreativeUpgradeReport } from './creative-director/output-writer.js';
@@ -149,8 +149,8 @@ export async function runV5Pipeline(input, options = {}) {
   const reportCharacters = [...creativeDirector.reportMarkdown].length;
   const endedAt = new Date().toISOString();
   const runReport = {
-    version: V5_VERSION,
-    pipelineId: V5_PIPELINE_ID,
+    version: CLI_ENGINE_VERSION,
+    pipelineId: CLI_PIPELINE_ID,
     analysisMode: 'deep',
     assetCount: inventory.totalFiles,
     imageCount: inventory.imageCount,
@@ -198,8 +198,8 @@ export async function runV5Pipeline(input, options = {}) {
 
   return {
     result: Object.freeze({
-      version: V5_VERSION,
-      pipelineId: V5_PIPELINE_ID,
+      version: CLI_ENGINE_VERSION,
+      pipelineId: CLI_PIPELINE_ID,
       analysisMode: 'deep',
       creativeAuthority: config.runtime.creativeAuthority,
       lockedVisualAssets: config.runtime.lockedVisualAssets,
@@ -222,8 +222,8 @@ export async function runV5Pipeline(input, options = {}) {
     const targetTimeMs = targetBudgetTimeMs;
     const maximumTimeMs = maximumBudgetTimeMs;
     await writeV5RunReport(projectRoot, {
-      version: V5_VERSION,
-      pipelineId: V5_PIPELINE_ID,
+      version: CLI_ENGINE_VERSION,
+      pipelineId: CLI_PIPELINE_ID,
       analysisMode: 'deep',
       status: 'failed',
       failureStage,

@@ -113,7 +113,7 @@ export function createCreativeProductionBootstrapService(
     await sessions.recordDecision(projectId, {
       type: 'creative_direction',
       summary: creativeDecision.visualUpgradeThesis || 'Creative Reading 生产方向已建立。',
-      rationale: `由 Creative Direction ${direction.version} 转换为 V6 Creative Decision。`,
+      rationale: `由 Creative Direction ${direction.version} 转换为 Creative Decision。`,
       outcome: 'confirmed',
       source: 'analysis',
     });

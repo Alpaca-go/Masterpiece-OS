@@ -46,7 +46,7 @@ test('Creative Direction runtime builds a text-only decision prompt and validate
     reportPath: 'outputs/report.md',
   }, '2026-07-28T01:00:00.000Z');
   assert.equal(direction.status, 'ready');
-  assert.equal(direction.source.runtimeVersion, '18.1.0');
+  assert.equal(direction.source.runtimeVersion, 'creative-direction@1.1.0');
   assert.equal(direction.brandReposition, validDirection().projectTransformation);
   assert.equal(direction.creativeConcept, validDirection().primaryConcept);
   assert.ok(direction.transformAssets.length > 0);

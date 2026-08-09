@@ -196,7 +196,7 @@ export function compileProjectSpecificGenerationContract(input = {}) {
   const decision = packet.creativeDecision || {};
   // The pipeline historically required an explicit, separately persisted
   // `approvedCreativeDecision` (a `creative_decision.json` file) for the
-  // downstream preflight gate to pass. In the current v18 surface that
+  // downstream preflight gate to pass. In the current Creative Production surface that
   // separate file has no production path — the reference-first pipeline is
   // pure functions, the `creative-direction-service` is never exposed over
   // IPC, and `user-confirmed-visual-decision.json` has no writer anywhere

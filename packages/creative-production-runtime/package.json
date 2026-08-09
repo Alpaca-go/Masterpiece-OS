@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "V6 deterministic Creative Session, Style Profile, Visual Canon and Generation Series domain runtime.",
+  "description": "Deterministic Creative Production runtime for sessions, style profiles, visual canons, and generation series.",
   "main": "src/index.js",
   "exports": {
     ".": "./src/index.js",

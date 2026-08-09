@@ -1,11 +1,11 @@
-export const V5_VERSION = '5.0.0';
-export const V5_PIPELINE_ID = 'masterpiece-os-v5-deep-creative-director';
-export const V5_OFFICIAL_OUTPUT_FILES = Object.freeze({
+export const CLI_ENGINE_VERSION = 'cli-engine@5.0.0';
+export const CLI_PIPELINE_ID = 'deep-creative-director';
+export const CLI_OFFICIAL_OUTPUT_FILES = Object.freeze({
   'zh-CN': '视觉方案升级报告.md',
   en: 'Creative-Upgrade-Brief.md'
 });
 
-export const V5_DEFAULTS = Object.freeze({
+export const CLI_DEFAULTS = Object.freeze({
   analysisMode: 'deep',
   creativeAuthority: 'maximum',
   lockedVisualAssets: Object.freeze(['logo']),

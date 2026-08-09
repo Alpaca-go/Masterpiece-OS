@@ -14,7 +14,7 @@
 // asset metadata and resolved file paths. It returns the resolved references
 // plus a trace object that must be written into the run snapshot.
 
-export const SPACE_REFERENCE_POLICY_VERSION = 'phase9b-recovery-1.0';
+export const SPACE_REFERENCE_POLICY_VERSION = 'space-reference-policy@1.0.0';
 
 const NON_REFERENCE_ROLES = new Set(['logo', 'package_structure', 'dieline', 'icon']);
 

@@ -1,5 +1,5 @@
 export {
-  VNEXT_TEMPLATE_REGISTRY_VERSION,
+  SHORT_CHAIN_TEMPLATE_REGISTRY_VERSION,
   getVNextTemplate,
   listVNextTemplates,
   listVNextTemplateOptions,
@@ -9,15 +9,15 @@ export {
   validateVNextProjectPromptAsset,
 } from './project-prompt-asset.js';
 export { createVNextTaskContract, validateVNextTaskContract } from './task-contract.js';
-export { VNEXT_TEMPLATE_ROUTER_VERSION, routeVNextTemplates } from './template-router.js';
+export { SHORT_CHAIN_TEMPLATE_ROUTER_VERSION, routeVNextTemplates } from './template-router.js';
 export {
-  VNEXT_PROMPT_COMPILER_ID,
-  VNEXT_PROMPT_COMPILER_VERSION,
+  SHORT_CHAIN_PROMPT_COMPILER_ID,
+  SHORT_CHAIN_PROMPT_COMPILER_VERSION,
   compileVNextPrompt,
 } from './prompt-compiler.js';
 export {
-  SEEDREAM_VNEXT_ADAPTER_ID,
-  SEEDREAM_VNEXT_ADAPTER_VERSION,
+  SEEDREAM_SHORT_CHAIN_ADAPTER_ID,
+  SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION,
   createSeedreamVNextAdapter,
 } from './seedream-adapter.js';
 export { compileVNextImageGeneration } from './compile.js';
@@ -27,8 +27,8 @@ export {
 } from './golden-backtrace-audit.js';
 export { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 export {
-  VNEXT_DELIVERABLE_VALIDATOR_ID,
-  VNEXT_DELIVERABLE_VALIDATOR_VERSION,
+  SHORT_CHAIN_DELIVERABLE_VALIDATOR_ID,
+  SHORT_CHAIN_DELIVERABLE_VALIDATOR_VERSION,
   compileVNextCorrectionPrompt,
   validateVNextDeliverableEvidence,
 } from './deliverable-validator.js';

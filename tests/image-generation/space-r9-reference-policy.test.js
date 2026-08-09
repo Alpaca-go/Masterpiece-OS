@@ -75,6 +75,6 @@ test('R9 logo never becomes a core reference', () => {
   assert.equal(references[0].id, 'ref1');
 });
 
-test('R9 policy version is the frozen phase9b-recovery-1.0 contract', () => {
-  assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'phase9b-recovery-1.0');
+test('space policy exposes a namespaced component version', () => {
+  assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'space-reference-policy@1.0.0');
 });

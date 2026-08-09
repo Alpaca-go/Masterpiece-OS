@@ -1,4 +1,4 @@
-export const VNEXT_TEMPLATE_REGISTRY_VERSION = '2.1.0';
+export const SHORT_CHAIN_TEMPLATE_REGISTRY_VERSION = 'short-chain-template-registry@2.1.0';
 const MODELS = ['seedream-5.0-pro'];
 
 function template(value) {

@@ -8,8 +8,8 @@ import { buildPackagingTranslation } from '../../../creative-production-runtime/
 import { compilePackagingPromptContract } from '../prompt-contracts/packaging-contract.js';
 import { applyUserConfirmedVisualDecision } from './user-confirmed-visual-decision.js';
 
-export const VNEXT_PROMPT_COMPILER_ID = 'vnext-prompt-compiler';
-export const VNEXT_PROMPT_COMPILER_VERSION = '4.3.0';
+export const SHORT_CHAIN_PROMPT_COMPILER_ID = 'short-chain-prompt-compiler';
+export const SHORT_CHAIN_PROMPT_COMPILER_VERSION = 'short-chain-prompt-compiler@4.3.0';
 
 const REQUIRED_BLOCK_IDS = Object.freeze([
   'deliverable_identity',
@@ -513,8 +513,8 @@ export function compileVNextPrompt({
       logoUsageMode,
       compiledAt: new Date().toISOString(),
       trace: {
-        compilerId: VNEXT_PROMPT_COMPILER_ID,
-        compilerVersion: VNEXT_PROMPT_COMPILER_VERSION,
+        compilerId: SHORT_CHAIN_PROMPT_COMPILER_ID,
+        compilerVersion: SHORT_CHAIN_PROMPT_COMPILER_VERSION,
         adapterId: adapter.id,
         adapterVersion: adapter.version,
         sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify(traceValue)).digest('hex'),
@@ -894,8 +894,8 @@ export function compileVNextPrompt({
     logoUsageMode,
     compiledAt: new Date().toISOString(),
     trace: {
-      compilerId: VNEXT_PROMPT_COMPILER_ID,
-      compilerVersion: VNEXT_PROMPT_COMPILER_VERSION,
+      compilerId: SHORT_CHAIN_PROMPT_COMPILER_ID,
+      compilerVersion: SHORT_CHAIN_PROMPT_COMPILER_VERSION,
       adapterId: adapter.id,
       adapterVersion: adapter.version,
       sourceFingerprint: crypto.createHash('sha256').update(JSON.stringify(traceValue)).digest('hex'),

@@ -32,13 +32,13 @@ test('R8.6 final smokes are text-only with refs=0 and reference policy version r
     const ref = JSON.parse(fs.readFileSync(path.join(repoRoot, base, scene, 'reference-trace.json'), 'utf8'));
     assert.equal(ref.referenceCount, 0, `${scene}: refs=0`);
     assert.deepEqual(m.referenceIds, [], `${scene}: manifest referenceIds empty`);
-    // Frozen policy version is the phase9b-recovery-1.0 contract.
-    assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'phase9b-recovery-1.0');
+    // Frozen policy version uses the component-version namespace.
+    assert.equal(SPACE_REFERENCE_POLICY_VERSION, 'space-reference-policy@1.0.0');
   }
 });
 
 test('R8.6 text-only refs=0 is the standard path via the frozen bypass (fail-closed guard intact)', () => {
-  // Frozen policy (phase9b-recovery-1.0) keeps its fail-closed safety net:
+  // The frozen policy keeps its fail-closed safety net:
   // a formal first space generation with NO reference and NO bypass still
   // throws SPACE_REFERENCE_REQUIRED (so an accidental refs=0 is never silent).
   const { references } = resolveSpaceReferences({

@@ -138,7 +138,7 @@ test('Creative Director service reads persisted v18.1 directions through an in-m
     source: {
       understandingGeneratedAt: '2026-07-28T00:00:00.000Z',
       reportPath: 'outputs/report.md',
-      runtimeVersion: '18.1.0',
+      runtimeVersion: 'creative-direction@1.1.0',
     },
     generatedAt: '2026-07-28T01:00:00.000Z',
   };

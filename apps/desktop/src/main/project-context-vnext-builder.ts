@@ -9,9 +9,9 @@ import type { ProjectRecord } from '../shared/types.ts';
 import { migrateAnalysisPacket } from '@masterpiece/analysis-runtime/index.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 
-export const PROJECT_VISUAL_CONTEXT_VNEXT_SCHEMA_VERSION = '2.0';
-export const PROJECT_CONTEXT_VNEXT_BUILDER_ID = 'project-context-builder';
-export const PROJECT_CONTEXT_VNEXT_BUILDER_VERSION = '1.1.0';
+export const PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_SCHEMA_VERSION = '2.0';
+export const PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_ID = 'project-context-builder';
+export const PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_VERSION = 'project-context-builder@1.1.0';
 
 export interface BuildProjectVisualContextVNextInput {
   project: ProjectRecord;
@@ -393,8 +393,8 @@ export function buildProjectVisualContextVNext(
     confirmedDecisions,
     sourceAssetRefs,
     provenance: {
-      builderId: PROJECT_CONTEXT_VNEXT_BUILDER_ID,
-      builderVersion: PROJECT_CONTEXT_VNEXT_BUILDER_VERSION,
+      builderId: PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_ID,
+      builderVersion: PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_VERSION,
       sourceKinds: [
         'project_record',
         'original_asset',

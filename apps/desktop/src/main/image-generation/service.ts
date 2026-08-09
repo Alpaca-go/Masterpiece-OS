@@ -664,7 +664,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   }
 
   /**
-   * V18 Provider Bridge：复用现有 Run Store / Provider / 下载与恢复链路，
+   * Creative Production Provider Bridge：复用现有 Run Store / Provider / 下载与恢复链路，
    * 但直接使用已验证的 Generation Prompt Snapshot，不再经过 legacy Preset 编译器。
    */
   async function startCompiledCreativeTask(

@@ -1,4 +1,4 @@
-import { V5_DEFAULTS, V5_OFFICIAL_OUTPUT_FILES, V5_VERSION } from './defaults.js';
+import { CLI_DEFAULTS, CLI_ENGINE_VERSION, CLI_OFFICIAL_OUTPUT_FILES } from './defaults.js';
 
 export class V5ConfigError extends Error {
   constructor(code, message) {
@@ -36,7 +36,7 @@ export function createV5ProjectConfig(raw = {}, options = {}) {
   }
   const suppliedOverrides = raw.overrides || {};
   const outputLanguage = suppliedOverrides.outputLanguage || raw.outputLanguage || 'zh-CN';
-  if (!Object.hasOwn(V5_OFFICIAL_OUTPUT_FILES, outputLanguage)) {
+  if (!Object.hasOwn(CLI_OFFICIAL_OUTPUT_FILES, outputLanguage)) {
     throw new V5ConfigError('CONFIG_INVALID', 'outputLanguage 只允许 zh-CN 或 en');
   }
   const allowLogoRedesign = suppliedOverrides.allowLogoRedesign ?? false;
@@ -58,10 +58,10 @@ export function createV5ProjectConfig(raw = {}, options = {}) {
   if (performance.enablePreparationCache !== undefined && typeof performance.enablePreparationCache !== 'boolean') {
     throw new V5ConfigError('CONFIG_INVALID', 'performance.enablePreparationCache 必须是布尔值');
   }
-  const targetMinutes = positiveNumber(performance.targetMinutes, 'performance.targetMinutes', V5_DEFAULTS.performance.targetMinutes);
-  const maximumMinutes = positiveNumber(performance.maximumMinutes, 'performance.maximumMinutes', V5_DEFAULTS.performance.maximumMinutes);
-  const maxDetailAssets = Math.trunc(positiveNumber(performance.maxDetailAssets, 'performance.maxDetailAssets', V5_DEFAULTS.performance.maxDetailAssets));
-  const maxReportCharacters = Math.trunc(positiveNumber(performance.maxReportCharacters, 'performance.maxReportCharacters', V5_DEFAULTS.performance.maxReportCharacters));
+  const targetMinutes = positiveNumber(performance.targetMinutes, 'performance.targetMinutes', CLI_DEFAULTS.performance.targetMinutes);
+  const maximumMinutes = positiveNumber(performance.maximumMinutes, 'performance.maximumMinutes', CLI_DEFAULTS.performance.maximumMinutes);
+  const maxDetailAssets = Math.trunc(positiveNumber(performance.maxDetailAssets, 'performance.maxDetailAssets', CLI_DEFAULTS.performance.maxDetailAssets));
+  const maxReportCharacters = Math.trunc(positiveNumber(performance.maxReportCharacters, 'performance.maxReportCharacters', CLI_DEFAULTS.performance.maxReportCharacters));
   if (maximumMinutes < targetMinutes) {
     throw new V5ConfigError('CONFIG_INVALID', 'performance.maximumMinutes 不得小于 targetMinutes');
   }
@@ -71,7 +71,7 @@ export function createV5ProjectConfig(raw = {}, options = {}) {
   }
 
   return Object.freeze({
-    version: V5_VERSION,
+    version: CLI_ENGINE_VERSION,
     projectName,
     userTask: optionalString(raw.userTask, 'userTask'),
     brandFacts: Object.freeze({
@@ -89,7 +89,7 @@ export function createV5ProjectConfig(raw = {}, options = {}) {
       maximumMinutes,
       maxDetailAssets,
       maxReportCharacters,
-      enablePreparationCache: performance.enablePreparationCache ?? V5_DEFAULTS.performance.enablePreparationCache
+      enablePreparationCache: performance.enablePreparationCache ?? CLI_DEFAULTS.performance.enablePreparationCache
     }),
     overrides: Object.freeze({
       additionalLockedAssets: Object.freeze(additionalLockedAssets),
@@ -99,13 +99,13 @@ export function createV5ProjectConfig(raw = {}, options = {}) {
       outputLanguage
     }),
     runtime: Object.freeze({
-      analysisMode: V5_DEFAULTS.analysisMode,
-      creativeAuthority: V5_DEFAULTS.creativeAuthority,
+      analysisMode: CLI_DEFAULTS.analysisMode,
+      creativeAuthority: CLI_DEFAULTS.creativeAuthority,
       lockedVisualAssets: Object.freeze([
-        ...(allowLogoRedesign ? [] : V5_DEFAULTS.lockedVisualAssets),
+        ...(allowLogoRedesign ? [] : CLI_DEFAULTS.lockedVisualAssets),
         ...additionalLockedAssets
       ]),
-      officialOutputFile: V5_OFFICIAL_OUTPUT_FILES[outputLanguage],
+      officialOutputFile: CLI_OFFICIAL_OUTPUT_FILES[outputLanguage],
       useCompilerPipeline: false,
       useCreativeFreedomRecommendation: false,
       useModeRecommendation: false,
