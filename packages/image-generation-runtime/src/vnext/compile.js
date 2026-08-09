@@ -270,9 +270,9 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         promptHash: sha256Hex(result.finalPrompt),
         provider: 'seedream',
         model: input.model ?? null,
-        // R11.1 lineage: for a continuation task, record the confirmed source
-        // binding and parent run so a run can answer "which image did this
-        // continue from, in which scene, confirmed by whom, when".
+        // R11.1 v1.1 lineage: record the confirmed source binding, the
+        // world-consistency reference role, the preserve/regenerate boundary,
+        // and the target functional program id so a run can be audited.
         ...(taskContract.generationBasis === 'continuation' && taskContract.continuation
           ? {
               continuation: {
@@ -283,6 +283,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
                 confirmedAt: taskContract.continuation.confirmedAt,
                 confirmationSource: taskContract.continuation.confirmationSource,
                 referenceSource: 'confirmed_generated_output',
+                referenceRole: taskContract.continuation.referenceRole ?? 'world_consistency',
+                targetFunctionalProgramId: taskContract.continuation.targetFunctionalProgram?.sceneId ?? null,
+                preserve: taskContract.continuation.continuationBoundary?.preserve ?? [],
+                regenerate: taskContract.continuation.continuationBoundary?.regenerate ?? [],
                 parentRunId: taskContract.continuation.sourceRunId,
               },
             }

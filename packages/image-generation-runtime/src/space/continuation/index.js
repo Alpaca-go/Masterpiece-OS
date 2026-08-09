@@ -1,8 +1,10 @@
-// R11.1 Space Continuation — contract / source / reference / context.
+// R11.1 v1.1 Space Continuation — contract / target program / reference / context.
 //
 // Continuation is NOT a new compiler. It reuses the frozen r8_6_golden Space
 // Compiler with a different input contract: one confirmed generated output as
-// the reference, a new target scene, and the same project world.
+// a WORLD-CONSISTENCY reference, a target scene compiled into a Target
+// Functional Program (which overrides the source program), and the same
+// project world.
 
 export {
   createSpaceContinuationContract,
@@ -22,7 +24,18 @@ export {
 export {
   buildContinuationContext,
   renderContinuationIntentBlock,
+  isForbiddenContinuationReferenceRole,
   CONTINUATION_CONTEXT_VERSION,
   CONTINUATION_PRESERVE,
-  CONTINUATION_CHANGE,
+  CONTINUATION_REGENERATE,
+  CONTINUATION_REFERENCE_ROLE,
 } from './build-continuation-context.js';
+export {
+  resolveTargetFunctionalProgram,
+  TARGET_FUNCTIONAL_PROGRAMS,
+  TARGET_FUNCTIONAL_PROGRAM_VERSION,
+} from './target-functional-programs.js';
+export {
+  evaluateContinuationSceneGate,
+  SCENE_DIFFERENTIATION_GATE_VERSION,
+} from './scene-differentiation-gate.js';

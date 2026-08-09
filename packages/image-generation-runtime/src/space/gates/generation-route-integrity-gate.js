@@ -67,6 +67,9 @@ export function assertSpaceGenerationRouteIntegrity(input, baseline = ACTIVE_SPA
           && (input.referenceSources ?? []).length === 1
           && (input.referenceSources ?? [])[0] === 'confirmed_generated_output'
           && Boolean(input.taskContract?.continuation)
+          && input.taskContract?.continuation?.referenceRole === 'world_consistency'
+          && Boolean(input.taskContract?.continuation?.targetFunctionalProgram)
+          && Boolean(input.taskContract?.continuation?.continuationBoundary)
         : false;
   const spatialSemanticGatePassed = input.spatialSemanticReport?.status === 'pass';
   const aspectRatioMatched = input.requestedAspectRatio && input.providerAspectRatio

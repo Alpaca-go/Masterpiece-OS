@@ -149,19 +149,25 @@ test('R11.1 reference binding: single confirmed_generated_output, reference_assi
   assert.equal(trace.implicitAnchorId, null, 'no implicit anchor auto-attach');
 });
 
-test('R11.1 continuation context is ephemeral IR and renders a compact intent block', () => {
+test('R11.1 v1.1 continuation context carries reference role + boundary + target program', () => {
   const contract = validContract({ targetScene: 'consultation', userRequirement: '更强调咨询私密性' });
   const ctx = buildContinuationContext(contract);
   assert.equal(ctx.continuation.targetScene, 'consultation');
   assert.equal(ctx.continuation.referenceSource, 'confirmed_generated_output');
+  assert.equal(ctx.continuation.referenceRole, 'world_consistency', 'v1.1 reference role');
   assert.ok(Array.isArray(ctx.continuation.preserve) && ctx.continuation.preserve.length > 0);
-  assert.ok(Array.isArray(ctx.continuation.change) && ctx.continuation.change.length > 0);
+  assert.ok(Array.isArray(ctx.continuation.regenerate) && ctx.continuation.regenerate.length > 0);
+  assert.equal(ctx.continuation.targetFunctionalProgramId, 'consultation', 'target program compiled');
+  assert.ok(ctx.continuationBoundary.preserve.length > 0 && ctx.continuationBoundary.regenerate.length > 0);
 
   const block = renderContinuationIntentBlock(contract);
   assert.ok(block, 'block rendered');
   assert.ok(block.includes('Continuation Intent'));
   assert.ok(block.includes('consultation'), 'target scene in block');
-  assert.ok(block.length < 600, 'compact block (budget-safe)');
+  assert.ok(/WORLD-CONSISTENCY|world/iu.test(block), 'reference role in block');
+  assert.ok(/REGENERATE/iu.test(block), 'regenerate instruction in block');
+  assert.ok(block.includes('咨询'), 'target program in block');
+  assert.ok(block.length < 900, 'compact block (budget-safe)');
   // No brand re-analysis vocabulary.
   assert.doesNotMatch(block, /重新分析|品牌定位|V5|视觉分析/iu);
 });
