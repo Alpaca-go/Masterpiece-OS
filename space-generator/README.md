@@ -103,7 +103,7 @@ space-generator/
 | R8.5.2 | 参数化 smoke runner + gate report | done | `0f582ad` | — |
 | **R8.6** | **Baseline Freeze & R9 Unlock** | **done** | tag `space-generator-r8.6-golden-baseline` | 409/409 + desktop 265/265 + cli 38/38 + current-flows |
 | **R9** | **Productionization（src/space 生产化 + parity）** | **done** | tag `space-generator-r9-production-baseline` | 438/438 + desktop 265/265 + current-flows |
-| **R10** | **Reference-First Productization（首阶段）** | **in-progress** | — | 441/441 + desktop 265/265 + current-flows |
+| **R10** | **Reference-First Productization（UI + Validation + Workflow + Smoke）** | **done** | — | 457/457 + desktop 265/265 + current-flows |
 
 R8.6 关键事实：
 - RC tag `space-generator-r8.5.2-rc1`（`fd785a9`）；compiler v1.1.0、source-adapter v1.4.0
@@ -122,13 +122,21 @@ R9 关键事实：
 - 真实 Provider parity 5/5（`quality-baselines/r9-parity/`，含 High Fidelity refs=1）
 - 详见 `quality-baselines/r9-production/`
 
-R10 关键事实（首阶段）：
-- Reference-First：VNextGenerationWorkspace 增加 **Generation Basis** 切换
-  （Standard=分析驱动 text-only / Reference=参考图 High Fidelity）
-- 参考图选择 → `referenceAssetIds` → 冻结 R9 production compiler
-  （`r8_6_golden`）→ `referenceMode=reference_assisted`，不重走完整 V5
-- 契约测试 `space-r10-reference-first.test.js`（3 项，refs 流转 + Standard 保底 + 编译器默认）
-- 后续：Reference Upload 交互打磨、Reference Validation、模式卡片、Screenshot 驱动的 UI 布局确认
+R10 关键事实：
+- **R10.2 UI & Validation**：Generation Basis 双模式卡（Standard /
+  Reference-First）+ 参考图上传/项目资产选择 + Reference Cards
+  （remove/replace，不删项目原文件）+ Light Validation（hard fail-closed /
+  soft warning，无 AI）+ CTA（refs=0 禁 Generate，禁静默降级）
+- 纯逻辑共享模块 `apps/desktop/src/renderer/src/reference-first/state.js`
+  （`MAX_SPACE_REFERENCE_IMAGES=4` 单一事实源）
+- **R10.3 Workflow Acceptance**：4 条链路契约测试（Standard refs=0 /
+  upload 1 / project asset / remove all→Block）4/4 PASS
+- **R10.4 Real Provider Smoke**：JZMX/FTT/YJLF 各 1 张 Reference-First
+  （refs=1, reference_assisted）3/3 PASS，
+  记录于 `quality-baselines/r10-reference-first/`
+- Trace：`spaceGeneration` 记录 `generationBasis` + `referenceMode`（§27）
+- R9 编译器零改动；Reference-First 复用 `r8_6_golden` + 不同 reference input
+- 测试：`space-r10-reference-first[.-state/-workflow-acceptance].test.js`
 
 详见 `quality-baselines/r8.6/`（manifest / GATE-REPORT / per-brand golden-selection）。
 
