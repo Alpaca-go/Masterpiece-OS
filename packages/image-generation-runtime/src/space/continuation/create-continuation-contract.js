@@ -84,6 +84,10 @@ export function createSpaceContinuationContract(input = {}) {
     referenceMode: 'reference_assisted',
     referenceSource: 'confirmed_generated_output',
     referenceCount: 1,
+    // R11 §7: confirmationSource is always user_explicit (auto-confirmation is
+    // forbidden); the confirmed output itself carries it, and the contract
+    // mirrors it for trace.
+    confirmationSource: 'user_explicit',
     confirmedAt: confirmedAt || new Date().toISOString(),
   };
 }
