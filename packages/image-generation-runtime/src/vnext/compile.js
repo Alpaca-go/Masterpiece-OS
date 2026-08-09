@@ -244,6 +244,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         sourceAdapterVersion: result.sourceAdapterVersion,
         semanticSeparationVersion: result.layers?.semantic?.provenance?.version ?? null,
         architectureAnchorIds: result.anchors.map((a) => a.id),
+        // R10.2 §27: generationBasis is the UI-facing route; referenceMode is
+        // its runtime equivalent (standard <-> text_only, reference_first <->
+        // reference_assisted). Both are recorded for traceability.
+        generationBasis: referenceAssetIds.length ? 'reference_first' : 'standard',
         referenceMode: referenceAssetIds.length ? 'reference_assisted' : 'text_only',
         referenceIds: referenceAssetIds,
         referenceSources: [],

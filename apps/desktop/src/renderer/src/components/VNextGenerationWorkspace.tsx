@@ -11,6 +11,15 @@ import type {
   VNextTaskContract,
 } from '../../../shared/types';
 import { cleanError } from '../utils';
+import {
+  MAX_SPACE_REFERENCE_IMAGES,
+  validateReferenceHard,
+  validateReferenceSoft,
+  canUseGenerationBasis,
+  toggleReferenceId,
+  removeReferenceId,
+  replaceReferenceIds,
+} from '../reference-first/state.js';
 
 interface Props {
   project: ProjectRecord;
@@ -38,6 +47,16 @@ const DEFAULTS: Record<Family, { subtype: string; shot: string; ratio: VNextTask
   poster: { subtype: 'brand_key_visual', shot: 'subject_centered', ratio: '3:4' },
 };
 
+// R10.2 §15: light-weight source label for the reference card. The full
+// trace keeps the real source; this label is display-only and derived from
+// the asset kind/name, not a second source-of-truth.
+function referenceSourceLabel(asset: AssetItem): string {
+  if (asset.sourceType === 'archive-extracted') return '项目素材';
+  if (/^outputs?|generated|result/i.test(asset.name) || asset.relativePath.includes('outputs')) return '生成结果';
+  if (/anchor/i.test(asset.name) || asset.relativePath.includes('anchor')) return '锚点';
+  return '项目素材';
+}
+
 export function VNextGenerationWorkspace({
   project,
   imageProfiles,
@@ -64,19 +83,27 @@ export function VNextGenerationWorkspace({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  // R10 Reference-First: Generation Basis switches between Standard
-  // (analysis-led, text-only) and Reference (reference-assisted, High
+  // R10.2 Reference-First: Generation Basis switches between Standard
+  // (analysis-led, text-only) and Reference-First (reference-assisted, High
   // Fidelity). When a reference image is chosen its assetId flows through
   // the frozen R9 High Fidelity runtime (referenceAssetIds -> resolveSpaceReferences).
   const [generationBasis, setGenerationBasis] = useState<'standard' | 'reference'>('standard');
   const [projectAssets, setProjectAssets] = useState<AssetItem[]>([]);
   const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
   const [assetsLoading, setAssetsLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [referenceWarnings, setReferenceWarnings] = useState<Record<string, string[]>>({});
 
   const activeAnchor = session?.implicitAnchors[family];
   const familyOptions = options?.[family];
-  const canCompile = Boolean(instruction.trim() && subtype && shot)
-    && (generationBasis === 'standard' || referenceAssetIds.length > 0);
+  // R10.2 §21: Standard enables with a valid scene; Reference-First requires
+  // refs >= 1. Hard validation is fail-closed (missing/unsupported -> Block).
+  // Computed per render (small dataset) — no memo on a local helper needed.
+  const referenceValidation = generationBasis === 'reference'
+    ? validateReferenceSelection(projectAssets)
+    : { hard: [], soft: [] as string[] };
+  const canCompile = canUseGenerationBasis(generationBasis, referenceAssetIds, Boolean(instruction.trim() && subtype && shot));
   const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
   function splitRules(value: string): string[] {
     return [...new Set(value.split(/\r?\n|；|;/u).map((item) => item.trim()).filter(Boolean))];
@@ -193,14 +220,63 @@ export function VNextGenerationWorkspace({
 
   function toggleReferenceAsset(assetId: string) {
     setReferenceAssetIds((current) => {
-      const next = current.includes(assetId)
-        ? current.filter((id) => id !== assetId)
-        : [...current, assetId];
+      const next = toggleReferenceId(current, assetId);
       setCompiled(null);
       setEditedPrompt('');
       setLastValidation(null);
       return next;
     });
+  }
+
+  // R10.2 §9: upload a reference image. The file goes through the Project
+  // Asset system (choose -> import -> scan) so it is tracked/reusable by
+  // current/history tasks and R11 Continuation, not a temporary blob.
+  async function uploadReferenceImage() {
+    try {
+      const chosen = await window.masterpiece.projects.chooseFiles('assets');
+      if (!chosen || chosen.length === 0) return;
+      setUploading(true);
+      setError('');
+      const imported = await window.masterpiece.projects.importFiles(project.id, chosen, 'assets');
+      const newIds = (imported.summary.items ?? []).map((item) => item.id);
+      // Re-scan to get thumbnails/mime for the newly imported assets.
+      const summary = await window.masterpiece.projects.scanAssets(project.id);
+      const images = summary.items.filter((item) => item.kind === 'image');
+      setProjectAssets(images);
+      setReferenceAssetIds((current) => {
+        const fresh = newIds.filter((id) => !current.includes(id));
+        return [...current, ...fresh].slice(0, MAX_SPACE_REFERENCE_IMAGES);
+      });
+      setCompiled(null);
+      setEditedPrompt('');
+      setLastValidation(null);
+    } catch (reason) {
+      setError('参考图上传失败，请重试。');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  // R10.2 §14: replace removes the old selection for this task and swaps in
+  // a new upload/asset; the project asset file itself is never deleted.
+  async function replaceReferenceAsset(assetId: string) {
+    setReferenceAssetIds((current) => replaceReferenceIds(current, assetId, []));
+    setCompiled(null);
+    setEditedPrompt('');
+    setLastValidation(null);
+    await uploadReferenceImage();
+  }
+
+  // R10.2 §13/§19: hard validation is fail-closed (missing/unreadable/unsupported
+  // -> Error blocks generation); soft validation only warns (R10.2 §20, no AI).
+  function validateReferenceSelection(assets: AssetItem[]): {
+    hard: string[];
+    soft: string[];
+  } {
+    return {
+      hard: validateReferenceHard(assets, referenceAssetIds),
+      soft: validateReferenceSoft(assets, referenceAssetIds),
+    };
   }
 
   async function compilePrompt() {
@@ -358,27 +434,81 @@ export function VNextGenerationWorkspace({
               onClick={() => changeFamily(item)}
             ><strong>{FAMILY_LABELS[item]}</strong></button>)}
         </div>
-        <label>生成基准（Generation Basis）
-          <select value={generationBasis} onChange={(event) => changeBasis(event.target.value as 'standard' | 'reference')}>
-            <option value="standard">Standard · 分析驱动（文本，无参考图）</option>
-            <option value="reference">Reference-First · 参考图（High Fidelity）</option>
-          </select>
-        </label>
+        <div className="basis-grid">
+          <button
+            type="button"
+            className={generationBasis === 'standard' ? 'basis-card selected' : 'basis-card'}
+            onClick={() => changeBasis('standard')}
+          >
+            <strong>标准生成 / Standard</strong>
+            <span>基于当前项目分析结果生成空间方案</span>
+          </button>
+          <button
+            type="button"
+            className={generationBasis === 'reference' ? 'basis-card selected' : 'basis-card'}
+            onClick={() => changeBasis('reference')}
+          >
+            <strong>参考图生成 / Reference-First</strong>
+            <span>根据已有空间参考图进行高保真生成</span>
+          </button>
+        </div>
+
         {generationBasis === 'reference' && <div className="facts-box">
           <small>Reference-First（R10）</small>
-          <p>选 1 张空间参考图 + 输入场景要求，直接走 High Fidelity 生成，无需重新做视觉分析。</p>
+          <p>参考图生成不会重新运行完整视觉分析。妙作会在当前项目语境下，基于参考图生成高保真空间方案。</p>
         </div>}
-        {generationBasis === 'reference' && <>
-          <label>参考图（可多选，将作为核心参考传入生成）
+
+        {generationBasis === 'reference' && <div className="reference-first-module">
+          <label>参考图（1–{MAX_SPACE_REFERENCE_IMAGES} 张）
+            <div className="button-row">
+              <button className="button secondary" disabled={uploading} onClick={() => void uploadReferenceImage()}>
+                {uploading ? '正在上传参考图…' : '上传参考图'}
+              </button>
+              <button className="button ghost" onClick={() => setPickerOpen((value) => !value)}>
+                {pickerOpen ? '收起素材选择' : '从项目素材选择'}
+              </button>
+            </div>
+          </label>
+
+          {referenceAssetIds.length > 0 && <div className="reference-cards">
+            {projectAssets
+              .filter((asset) => referenceAssetIds.includes(asset.id))
+              .map((asset) => (
+                <div key={asset.id} className="reference-card">
+                  {asset.thumbnailDataUrl
+                    ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                    : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
+                  <div className="reference-card-meta">
+                    <strong>{asset.name}</strong>
+                    <span>{referenceSourceLabel(asset)}</span>
+                  </div>
+                  <div className="reference-card-actions">
+                    <button
+                      className="button ghost"
+                      title="替换（仅更新本次任务的参考选择，不删除项目原文件）"
+                      onClick={() => void replaceReferenceAsset(asset.id)}
+                    >替换</button>
+                    <button
+                      className="button ghost danger"
+                      title="移除（仅取消本次任务的参考引用，不删除项目原文件）"
+                      onClick={() => toggleReferenceAsset(asset.id)}
+                    >移除</button>
+                  </div>
+                </div>
+              ))}
+          </div>}
+
+          {pickerOpen && <div className="asset-picker">
             {assetsLoading
               ? <span className="muted">正在加载项目图片资产…</span>
               : <div className="reference-asset-grid">
                 {projectAssets.length === 0
-                  ? <span className="muted">当前项目没有可用图片资产。请先到「素材」导入空间参考图。</span>
+                  ? <span className="muted">当前项目没有可用图片资产。请先上传参考图。</span>
                   : projectAssets.map((asset) => (
                     <label key={asset.id} className={referenceAssetIds.includes(asset.id) ? 'asset-tile selected' : 'asset-tile'}>
                       <input
                         type="checkbox"
+                        disabled={!referenceAssetIds.includes(asset.id) && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES}
                         checked={referenceAssetIds.includes(asset.id)}
                         onChange={() => toggleReferenceAsset(asset.id)}
                       />
@@ -389,11 +519,19 @@ export function VNextGenerationWorkspace({
                     </label>
                   ))}
               </div>}
-          </label>
-          {referenceAssetIds.length > 0 && <button className="button ghost" onClick={() => { setReferenceAssetIds([]); setCompiled(null); setEditedPrompt(''); setLastValidation(null); }}>
-            清除参考图
-          </button>}
-        </>}
+          </div>}
+
+          {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
+            <span className="muted">最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。</span>
+          )}
+
+          {generationBasis === 'reference' && referenceValidation.hard.length > 0 && (
+            <div className="notice error">{referenceValidation.hard.join('；')}</div>
+          )}
+          {generationBasis === 'reference' && referenceValidation.hard.length === 0 && referenceValidation.soft.length > 0 && (
+            <div className="notice warn">{referenceValidation.soft.join('；')}</div>
+          )}
+        </div>}
         <label>子类型
           <select value={subtype} onChange={(event) => setSubtype(event.target.value)}>
             {(familyOptions?.subtypes ?? []).map((item) => <option key={item}>{item}</option>)}
