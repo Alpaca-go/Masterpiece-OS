@@ -32,3 +32,10 @@ export {
   compileVNextCorrectionPrompt,
   validateVNextDeliverableEvidence,
 } from './deliverable-validator.js';
+// r2.0 §4.13 / Phase E: re-export the 5-state derivation so the desktop
+// service can call it without reaching into the contracts package for
+// runtime helpers. The runtime helpers (function values) are
+// re-exported via .js-compatible syntax; the type-only exports are
+// declared separately for .js callers (Node would reject `type`
+// keywords in plain .js files).
+export { deriveGenerationFlowState } from '@masterpiece/image-generation-contracts/index.ts';

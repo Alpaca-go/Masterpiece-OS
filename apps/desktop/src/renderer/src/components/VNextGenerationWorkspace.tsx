@@ -9,10 +9,12 @@ import type {
   VNextConfirmedGeneratedOutput,
   VNextCreativeSession,
   VNextDeliverableValidation,
+  VNextGenerationFlowState,
   VNextLogoUsageMode,
   VNextReferenceSceneRelation,
   VNextShotSource,
   VNextTaskContract,
+  VNextValidatedGenerationImageRef,
 } from '../../../shared/types';
 import { cleanError } from '../utils';
 import {
@@ -110,6 +112,17 @@ export function VNextGenerationWorkspace({
   const [editedPrompt, setEditedPrompt] = useState('');
   const [activeRun, setActiveRun] = useState<ImageGenerationRun | null>(null);
   const [imageDataUrl, setImageDataUrl] = useState('');
+  // r2.0 §4.13 / Phase E: first-image preservation. When the initial
+  // Provider call produced an image but a later validation / correction
+  // step failed, the UI keeps the first image visible. The state
+  // here is the FIRST image reference, NOT the current run's image;
+  // the `imageDataUrl` is loaded from this reference (or from the
+  // active run when the active run is the first run with no
+  // correction).
+  const [firstImage, setFirstImage] = useState<VNextValidatedGenerationImageRef | null>(null);
+  // r2.0 §4.13 / Phase E: the 5-state flow state. Drives the banner
+  // copy and the "first-image preservation" UI behavior.
+  const [flowState, setFlowState] = useState<VNextGenerationFlowState | null>(null);
   const [lastValidation, setLastValidation] = useState<VNextDeliverableValidation | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -336,10 +349,17 @@ export function VNextGenerationWorkspace({
       });
       const run = validated.correctionRun ?? validated.initialRun;
       setActiveRun(run);
-      if (run.status === 'succeeded' && run.images[0]) {
+      setFlowState(validated.flowState);
+      // r2.0 §4.13 / Phase E: first-image preservation. Always load
+      // the FIRST image (not the current run's image). This way a
+      // correction that fails keeps the original visible.
+      if (validated.firstImage) {
+        setFirstImage(validated.firstImage);
         const image = await window.masterpiece.imageGeneration
-          .getImageDataUrl(run.runId, run.images[0].imageId);
+          .getImageDataUrl(validated.firstImage.runId, validated.firstImage.imageId);
         setImageDataUrl(image?.dataUrl ?? '');
+      }
+      if (run.status === 'succeeded' && run.images[0]) {
         setLastValidation(validated.correctionValidation ?? validated.initialValidation);
         setNotice(`空间延展生成完成：${source.sourceScene} → ${targetScene}`);
       } else if (run.status === 'failed' || run.status === 'blocked') {
@@ -631,10 +651,17 @@ export function VNextGenerationWorkspace({
       const run = validated.correctionRun ?? validated.initialRun;
       setLastValidation(validated.correctionValidation ?? validated.initialValidation);
       setActiveRun(run);
-      if (run.status === 'succeeded' && run.images[0]) {
+      setFlowState(validated.flowState);
+      // r2.0 §4.13 / Phase E: first-image preservation. Always load
+      // the FIRST image (not the current run's image). This way a
+      // correction that fails keeps the original visible.
+      if (validated.firstImage) {
+        setFirstImage(validated.firstImage);
         const image = await window.masterpiece.imageGeneration
-          .getImageDataUrl(run.runId, run.images[0].imageId);
+          .getImageDataUrl(validated.firstImage.runId, validated.firstImage.imageId);
         setImageDataUrl(image?.dataUrl ?? '');
+      }
+      if (run.status === 'succeeded' && run.images[0]) {
         if (validated.terminalStatus === 'passed') {
           setNotice(validated.automaticRetryCount
             ? '首次结果对题失败，系统已完成一次纠偏；纠偏结果通过验证。'
@@ -1002,6 +1029,12 @@ export function VNextGenerationWorkspace({
         </> : <div className="empty-state"><strong>先明确成果物，再查看最终 Prompt</strong><p>默认只生成 1 张，避免错误批量放大。</p></div>}
 
         {imageDataUrl && <div className="result-card">
+          {/* r2.0 §4.13 / Phase E: 5-state banner. Driven by flowState
+              (from VNextValidatedGenerationResult). When the first
+              image is preserved across a correction failure, the
+              banner explains which step the flow is in so the user
+              always knows what they're looking at. */}
+          {flowState && <FlowStateBanner state={flowState} hasFirstImage={Boolean(firstImage)} />}
           <img src={imageDataUrl} alt="已生成的图片" />
           {(activeModeBadge || activeLineage) && <div className="result-mode-badges">
             {activeModeBadge && <span className="mode-badge">{activeModeBadge}</span>}
@@ -1152,4 +1185,56 @@ export function VNextGenerationWorkspace({
       </section>
     </div>
   </div>;
+}
+
+// r2.0 §4.13 / Phase E: the 5-state banner shown above the result
+// image. Each state has a distinct copy so the user always knows
+// which step the flow is in. The component is intentionally small
+// (no logic, just a label + a one-liner) so the parent re-renders
+// are cheap.
+const FLOW_STATE_COPY: Record<VNextGenerationFlowState, { tone: string; title: string; detail: string }> = {
+  initial_failed: {
+    tone: 'fail',
+    title: '首次生成失败',
+    detail: 'Provider 没有产出可用的图片。可以调整指令后重做，或更换 Provider 配置文件。',
+  },
+  awaiting_validation: {
+    tone: 'info',
+    title: '首次生成完成，等待自动对题',
+    detail: '首张图已生成，多模态分析正在跑。图被保留；下一步会根据对题结果决定是否自动纠偏。',
+  },
+  correcting: {
+    tone: 'info',
+    title: '首次结果未对题，正在自动纠偏',
+    detail: '首张图已保留（见下）。系统已发出一次纠偏 Prompt，Provider 正在跑修正版。',
+  },
+  correction_start_failed: {
+    tone: 'warn',
+    title: '自动纠偏启动失败',
+    detail: '首张图已保留（见下）。Provider 在跑纠偏版时出错；可以调整指令后重做，或更换 Provider 配置文件。',
+  },
+  correction_still_failed: {
+    tone: 'fail',
+    title: '纠偏结果仍未通过',
+    detail: '首张图已保留（见下）。纠偏版的多模态分析也未通过；系统已停止自动扩展，请调整要求后重做。',
+  },
+  passed: {
+    tone: 'ok',
+    title: '结果通过对题验证',
+    detail: '可以沿用此方向作为同类型参考；当前 direction 未确认。',
+  },
+};
+
+function FlowStateBanner({ state, hasFirstImage }: { state: VNextGenerationFlowState; hasFirstImage: boolean }) {
+  const copy = FLOW_STATE_COPY[state] ?? FLOW_STATE_COPY.passed;
+  const firstImageNote = hasFirstImage
+    ? '下方展示的是首张图（first image），即使后续步骤失败也会保留。'
+    : '';
+  return (
+    <div className={`flow-state-banner flow-state-${copy.tone}`}>
+      <strong>{copy.title}</strong>
+      <p>{copy.detail}</p>
+      {firstImageNote && <small>{firstImageNote}</small>}
+    </div>
+  );
 }

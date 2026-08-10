@@ -11,11 +11,14 @@ import type {
   VNextTaskContract,
   VNextProjectPromptAsset,
   VNextValidatedGenerationResult,
+  VNextGenerationFlowState,
+  VNextValidatedGenerationImageRef,
 } from '@masterpiece/image-generation-contracts/index.ts';
 import {
   compileVNextCorrectionPrompt,
   compileVNextImageGeneration,
   listVNextTemplateOptions,
+  deriveGenerationFlowState,
 } from '@masterpiece/image-generation-runtime/vnext/index.js';
 import {
   assertSpaceGenerationRouteGateA,
@@ -1056,24 +1059,42 @@ export function createVNextImageGenerationService(
     const validator = getValidator?.();
     if (!validator) throw new Error('vNext deliverable validator is not configured');
     const compilation = await readCompilation(input.projectId, input.taskId);
-    const initialRun = await start(input);
-    if (initialRun.status !== 'succeeded' || !initialRun.images[0]) {
-      throw Object.assign(new Error(initialRun.errorMessage || 'Initial image generation failed'), {
-        code: initialRun.errorCode || 'VNEXT_INITIAL_GENERATION_FAILED',
+    // r2.0 §4.13 / Phase E: the first-image reference is captured the
+    // moment the initial Provider call succeeds. Subsequent correction
+    // or validation failures cannot erase it — the UI keeps it
+    // visible alongside whatever the flow state currently is.
+    const initial = await start(input);
+    if (initial.status !== 'succeeded' || !initial.images[0]) {
+      throw Object.assign(new Error(initial.errorMessage || 'Initial image generation failed'), {
+        code: initial.errorCode || 'VNEXT_INITIAL_GENERATION_FAILED',
       });
     }
+    const first = initial.images[0];
+    const firstImage: VNextValidatedGenerationImageRef = {
+      runId: initial.runId,
+      imageId: first.imageId,
+      relativePath: first.relativePath,
+      mimeType: first.mimeType,
+      sha256: first.sha256,
+      sizeBytes: first.sizeBytes,
+    };
     const initialValidation = await validator.validate({
       projectId: input.projectId,
       taskContract: compilation.taskContract,
-      runId: initialRun.runId,
+      runId: initial.runId,
       validatorProfileId: input.validatorProfileId,
     });
     if (initialValidation.status !== 'failed' || !initialValidation.retryRecommended) {
       const result: VNextValidatedGenerationResult = {
-        initialRun,
+        initialRun: initial,
         initialValidation,
         terminalStatus: initialValidation.status,
         automaticRetryCount: 0,
+        flowState: deriveGenerationFlowState({
+          initialRun: initial,
+          initialValidation,
+        }),
+        firstImage,
       };
       await writeJson(
         path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
@@ -1091,18 +1112,24 @@ export function createVNextImageGenerationService(
       editedPrompt: correctionPrompt,
     });
     if (correctionRun.status !== 'succeeded' || !correctionRun.images[0]) {
-      const result: VNextValidatedGenerationResult = {
-        initialRun,
+      const partial: VNextValidatedGenerationResult = {
+        initialRun: initial,
         initialValidation,
         correctionRun,
         terminalStatus: 'failed',
         automaticRetryCount: 1,
+        flowState: deriveGenerationFlowState({
+          initialRun: initial,
+          initialValidation,
+          correctionRun,
+        }),
+        firstImage,
       };
       await writeJson(
         path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
-        result,
+        partial,
       );
-      return result;
+      return partial;
     }
     const correctionValidation = await validator.validate({
       projectId: input.projectId,
@@ -1111,12 +1138,19 @@ export function createVNextImageGenerationService(
       validatorProfileId: input.validatorProfileId,
     });
     const result: VNextValidatedGenerationResult = {
-      initialRun,
+      initialRun: initial,
       initialValidation,
       correctionRun,
       correctionValidation,
       terminalStatus: correctionValidation.status,
       automaticRetryCount: 1,
+      flowState: deriveGenerationFlowState({
+        initialRun: initial,
+        initialValidation,
+        correctionRun,
+        correctionValidation,
+      }),
+      firstImage,
     };
     await writeJson(
       path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),

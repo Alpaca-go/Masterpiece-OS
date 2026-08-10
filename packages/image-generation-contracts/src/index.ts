@@ -1115,4 +1115,88 @@ export interface VNextValidatedGenerationResult {
   correctionValidation?: VNextDeliverableValidation;
   terminalStatus: 'passed' | 'failed' | 'unverified';
   automaticRetryCount: 0 | 1;
+  // r2.0 §4.13 / Phase E: the 5-state UI model. Derived from the
+  // initial + optional correction pair; the renderer surfaces it
+  // verbatim so the user always knows which step the flow is in.
+  flowState: VNextGenerationFlowState;
+  // r2.0 §4.13: first-image preservation. When the initial Provider
+  // call succeeded, this is the FIRST image that reached the model.
+  // The UI keeps it visible across correction retries and validation
+  // failures so the user always has the "first attempt" to look at.
+  // Undefined when the initial run never produced an image.
+  firstImage?: VNextValidatedGenerationImageRef;
+}
+
+// r2.0 §4.13 / Phase E: image reference with the minimal metadata the
+// UI needs to display the first image without re-querying the run.
+export interface VNextValidatedGenerationImageRef {
+  runId: string;
+  imageId: string;
+  relativePath: string;
+  mimeType: string;
+  sha256: string;
+  sizeBytes: number;
+}
+
+// r2.0 §4.13 / Phase E: the 5-state machine. The UI uses this single
+// enum to drive its banner + first-image preservation behavior. The
+// `terminalStatus` on VNextValidatedGenerationResult is the LEGACY
+// three-state (passed/failed/unverified) summary; the new `flowState`
+// is a strictly richer encoding that distinguishes every step the
+// user actually sees.
+export type VNextGenerationFlowState =
+  | 'initial_failed'              // state 1: initial Provider call never produced an image
+  | 'awaiting_validation'         // state 2: initial Provider succeeded, waiting for / receiving validation
+  | 'correcting'                  // state 3: initial validation failed, correction prompt issued
+  | 'correction_start_failed'     // state 4: correction Provider call itself failed
+  | 'correction_still_failed'     // state 5: correction Provider succeeded but validation still failed
+  | 'passed';                     // terminal: validation passed (initial or correction)
+
+// r2.0 §4.13 / Phase E: input shape for the 5-state derivation. The
+// helper takes the COMPONENTS of a result (not the full result, which
+// is what we're computing flowState for) so the caller can build the
+// full result without a circular type.
+export interface VNextGenerationFlowInput {
+  initialRun: ImageGenerationRun;
+  initialValidation?: VNextDeliverableValidation;
+  correctionRun?: ImageGenerationRun;
+  correctionValidation?: VNextDeliverableValidation;
+}
+
+/**
+ * r2.0 §4.13 / Phase E: derive the 5-state flow state from the
+ * initial / optional correction pair. The result's firstImage /
+ * terminalStatus / automaticRetryCount fields are NOT inspected here
+ * (terminalStatus is the legacy three-state summary; firstImage is
+ * present iff initialRun.status === 'succeeded' and is not the
+ * deciding factor for any of the 5 states). The check priority:
+ *
+ *   1. initialRun.status !== 'succeeded'                 → 'initial_failed'
+ *   2. !initialValidation (still pending)               → 'awaiting_validation'
+ *   3. initialValidation.status !== 'failed'             → 'passed'
+ *   4. initialValidation.retryRecommended !== true      → 'passed'
+ *      (validator said "do not retry", so we stop here)
+ *   5. !correctionRun (no correction was issued)         → 'correcting'
+ *      (in practice the caller chose not to retry; the UI treats
+ *      this as "correction skipped")
+ *   6. correctionRun.status !== 'succeeded'             → 'correction_start_failed'
+ *   7. !correctionValidation (still pending)             → 'correcting'
+ *   8. correctionValidation.status === 'failed'          → 'correction_still_failed'
+ *   9. otherwise                                          → 'passed'
+ *
+ * @param {VNextGenerationFlowInput} input
+ * @returns {VNextGenerationFlowState}
+ */
+export function deriveGenerationFlowState(
+  input: VNextGenerationFlowInput,
+): VNextGenerationFlowState {
+  if (input.initialRun.status !== 'succeeded') return 'initial_failed';
+  if (!input.initialValidation) return 'awaiting_validation';
+  if (input.initialValidation.status !== 'failed') return 'passed';
+  if (input.initialValidation.retryRecommended !== true) return 'passed';
+  if (!input.correctionRun) return 'correcting';
+  if (input.correctionRun.status !== 'succeeded') return 'correction_start_failed';
+  if (!input.correctionValidation) return 'correcting';
+  if (input.correctionValidation.status === 'failed') return 'correction_still_failed';
+  return 'passed';
 }

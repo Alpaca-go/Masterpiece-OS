@@ -672,6 +672,8 @@ export type {
   VNextProjectPromptAsset,
   VNextConfirmedGeneratedOutput,
   VNextDeliverableValidation,
+  VNextGenerationFlowState,
+  VNextValidatedGenerationImageRef,
   VNextValidatedGenerationResult
 } from '@masterpiece/image-generation-contracts/index.ts';
 import type {
