@@ -267,6 +267,8 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         chars: budget.chars,
         positiveRatio: budget.positiveRatio,
         negativeRatio: budget.negativeRatio,
+        providerLimit: budget.providerLimit,
+        qualityBudgetExceeded: budget.qualityBudgetExceeded,
       },
     },
     trace: {
@@ -298,6 +300,10 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
         referenceIds: referenceAssetIds,
         referenceSources: [],
         promptCharacters: budget.chars,
+        // r10.4 regression repair: quality-budget overflow is recorded on the
+        // trace (monitoring) while the Provider hard limit stays fail-closed.
+        providerLimit: budget.providerLimit,
+        qualityBudgetExceeded: budget.qualityBudgetExceeded,
         architectureCharacters: countCharsForBlocks(result.blocks, ARCHITECTURE_BLOCK_IDS),
         brandCharacters: countCharsForBlocks(result.blocks, BRAND_BLOCK_IDS),
         negativeCharacters: countCharsForBlocks(result.blocks, NEGATIVE_BLOCK_IDS),

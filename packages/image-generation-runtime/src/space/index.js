@@ -33,7 +33,7 @@ export {
   SPACE_REFERENCE_POLICY_VERSION,
 } from './space-reference-policy.js';
 
-export { measurePromptBudget, assertPromptBudget } from './prompt-budget.js';
+export { measurePromptBudget, assertPromptBudget, resolveProviderPromptLimit } from './prompt-budget.js';
 export { buildTrace, fingerprint } from './trace.js';
 export { runSpaceQualityGate } from './space-quality-gate.js';
 export {

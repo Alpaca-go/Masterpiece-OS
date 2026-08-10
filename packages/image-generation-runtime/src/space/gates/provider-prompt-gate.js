@@ -28,6 +28,7 @@
 // the brand sanitizer; Gate B is a Provider-side final sanity check.
 
 import { REFERENCE_BOUNDARY_VERSION } from '../reference-boundary.js';
+import { SEEDREAM_MAX_PROMPT_CHARACTERS } from '../../vnext/seedream-adapter.js';
 
 export const SPACE_PROVIDER_PROMPT_GATE_VERSION = 'space-provider-prompt-gate@1.0.0';
 
@@ -86,9 +87,13 @@ export function assertProviderPromptGateB(input) {
   };
   const actualPrompt = typeof input?.actualPrompt === 'string' ? input.actualPrompt : '';
   const compiledPrompt = typeof input?.compiledPrompt === 'string' ? input.compiledPrompt : '';
+  // Provider cap is read from the adapter capability (single source of
+  // truth). Falling back to the Seedream capability constant when the
+  // caller does not thread a capability through keeps the gate fail-closed
+  // even for legacy / non-threaded callers without re-declaring 12000 here.
   const providerCap = Math.max(
     1,
-    Number(input?.providerCapability?.prompt?.maxCharacters ?? 12000),
+    Number(input?.providerCapability?.prompt?.maxCharacters ?? SEEDREAM_MAX_PROMPT_CHARACTERS),
   );
   const generationBasis = input?.generationBasis
     ?? input?.taskContract?.generationBasis

@@ -714,17 +714,18 @@ export function createVNextImageGenerationService(
       // (could be the compiled prompt OR the user-edited / correction
       // prompt). A failure here does NOT invalidate the compile trace —
       // it just blocks the Provider call.
+      //
+      // The Provider capability is read straight from the Seedream
+      // adapter (single source of truth: `prompt.maxCharacters` on
+      // SEEDREAM_ADAPTER_CAPABILITY). Do NOT re-declare the cap here —
+      // the runtime prompt gate falls back to the Seedream constant
+      // when the capability field is absent, so a missing field still
+      // fails closed against the real provider ceiling.
       const gateBAdapter = createSeedreamVNextAdapter({ model: compilation.payload.model });
-      const providerCapability = gateBAdapter.capability;
       const gateB = assertProviderPromptGateB({
         actualPrompt,
         compiledPrompt,
-        providerCapability: {
-          ...providerCapability,
-          prompt: {
-            maxCharacters: 12000,
-          },
-        },
+        providerCapability: gateBAdapter.capability,
         generationBasis,
         targetScene: compilation.taskContract.subtype,
         targetSceneLabel: compilation.taskContract.subtype,

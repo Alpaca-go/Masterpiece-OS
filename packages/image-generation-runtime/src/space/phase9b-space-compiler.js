@@ -356,7 +356,12 @@ export function compilePhase9bSpacePrompt(input) {
   const blocksById = Object.fromEntries(ordered.map((b) => [b.id, b]));
   const finalPrompt = ordered.map((b) => b.text).join('\n\n');
   const blockTextsByName = Object.fromEntries(ordered.map((b) => [b.id, b.text]));
-  const budget = measurePromptBudget(finalPrompt, blockTextsByName);
+  // r10.4 regression repair: the Provider hard limit is read from the adapter
+  // capability (single source); the 7500 quality budget only warns + flags
+  // qualityBudgetExceeded on the trace below.
+  const budget = measurePromptBudget(finalPrompt, blockTextsByName, {
+    providerCapability: input.adapter?.capability,
+  });
 
   const presentIds = ordered.map((b) => b.id);
   // architecture_context is optional (only when anchors exist).
@@ -426,7 +431,13 @@ export function compilePhase9bSpacePrompt(input) {
       anchorCriteria: input.anchorCriteria || null,
       architectureContextIncluded: Boolean(contextBlock),
       blockIds: presentIds,
-      budget: { chars: budget.chars, positiveRatio: budget.positiveRatio, negativeRatio: budget.negativeRatio },
+      budget: {
+        chars: budget.chars,
+        positiveRatio: budget.positiveRatio,
+        negativeRatio: budget.negativeRatio,
+        providerLimit: budget.providerLimit,
+        qualityBudgetExceeded: budget.qualityBudgetExceeded,
+      },
       semantic: layers.semantic
         ? {
             architectureSemanticsCount: layers.semantic.architectureSemantics.length,

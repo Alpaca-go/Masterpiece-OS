@@ -1,25 +1,51 @@
 // Prompt budget guard for the Phase 9B-quality space compiler.
 //
-// Recovery doc §12:
-//   target 8000–9500 chars, hard warn > 10000, block > 12000.
-// The Seedream adapter caps at 7500, so we treat > 7500 as a hard block too
-// (the provider would reject it). The doc's 9500 target is the design center;
-// the adapter enforces the real ceiling. We report both.
+// r10.4 regression repair — the budget is SPLIT into two distinct layers:
+//
+//   1. Compiler / Quality Prompt Budget (monitoring, never fail-closed).
+//      The historical 7500-char figure is kept here as a quality / bloat
+//      signal: exceeding it emits a warn finding
+//      (SPACE_PROMPT_ABOVE_QUALITY_BUDGET) and sets
+//      `qualityBudgetExceeded: true` on the budget + trace, but it does NOT
+//      block generation. Recovery doc §12 design centers stay as warn tiers:
+//        target 8000–9500, warn > 10000.
+//
+//   2. Provider Hard Limit (fail-closed).
+//      The only length that blocks is the real Provider capability, read from
+//      the Seedream Adapter Capability (`prompt.maxCharacters`, currently
+//      12000). It is resolved through resolveProviderPromptLimit() so this
+//      module never re-declares the number; the adapter capability is the
+//      single source of truth. Exceeding it emits the block finding
+//      SPACE_PROMPT_EXCEEDS_ADAPTER_LIMIT.
 //
 // Also computes positive/negative character ratio (§12.1): positive
 // architecture/material/lighting/function content should be >= 70% and
 // negatives <= 30%.
 
+import { SEEDREAM_ADAPTER_CAPABILITY } from '../vnext/seedream-adapter.js';
+
+const QUALITY_BUDGET = 7_500;
 const TARGET_MAX = 9500;
 const WARN = 10_000;
-const HARD_BLOCK = 12_000;
-const ADAPTER_LIMIT = 7_500;
 
-export function measurePromptBudget(finalPrompt, blockTextsByName = {}) {
+// Resolve the Provider hard limit from an Adapter Capability, falling back to
+// the Seedream capability (the single source of truth) when the caller does
+// not thread one through. Never hard-codes the number here.
+export function resolveProviderPromptLimit(providerCapability) {
+  const declared = Number(providerCapability?.prompt?.maxCharacters);
+  if (Number.isFinite(declared) && declared > 0) return declared;
+  return SEEDREAM_ADAPTER_CAPABILITY.prompt.maxCharacters;
+}
+
+export function measurePromptBudget(finalPrompt, blockTextsByName = {}, options = {}) {
   const chars = [...String(finalPrompt ?? '')].length;
+  const providerLimit = Number.isFinite(Number(options.providerLimit)) && Number(options.providerLimit) > 0
+    ? Number(options.providerLimit)
+    : resolveProviderPromptLimit(options.providerCapability);
 
   const blockChars = Object.values(blockTextsByName).reduce(
-    (sum, text) => sum + [...String(text ?? '')].length, 0,
+    (sum, text) => sum + [...String(text ?? '')].length,
+    0,
   );
 
   // Positive architecture blocks are the building-led content; the negative
@@ -42,14 +68,19 @@ export function measurePromptBudget(finalPrompt, blockTextsByName = {}) {
   const positiveRatio = classified > 0 ? positiveChars / classified : null;
   const negativeRatio = classified > 0 ? negativeChars / classified : null;
 
+  const qualityBudgetExceeded = chars > QUALITY_BUDGET;
+
   const findings = [];
-  if (chars > HARD_BLOCK) {
-    findings.push({ code: 'SPACE_PROMPT_TOO_LONG', severity: 'block', detail: `${chars} > ${HARD_BLOCK}` });
-  } else if (chars > WARN) {
-    findings.push({ code: 'SPACE_PROMPT_LONG', severity: 'warn', detail: `${chars} > ${WARN}` });
+  // Provider Hard Limit — the ONLY length that blocks.
+  if (chars > providerLimit) {
+    findings.push({ code: 'SPACE_PROMPT_EXCEEDS_ADAPTER_LIMIT', severity: 'block', detail: `${chars} > provider ${providerLimit}` });
   }
-  if (chars > ADAPTER_LIMIT) {
-    findings.push({ code: 'SPACE_PROMPT_EXCEEDS_ADAPTER_LIMIT', severity: 'block', detail: `${chars} > adapter ${ADAPTER_LIMIT}` });
+  // Quality / bloat monitoring — warn only, never fail-closed.
+  if (qualityBudgetExceeded) {
+    findings.push({ code: 'SPACE_PROMPT_ABOVE_QUALITY_BUDGET', severity: 'warn', detail: `${chars} > quality budget ${QUALITY_BUDGET}` });
+  }
+  if (chars > WARN) {
+    findings.push({ code: 'SPACE_PROMPT_LONG', severity: 'warn', detail: `${chars} > ${WARN}` });
   }
   if (chars > TARGET_MAX && chars <= WARN) {
     findings.push({ code: 'SPACE_PROMPT_ABOVE_TARGET', severity: 'warn', detail: `${chars} > target ${TARGET_MAX}` });
@@ -60,10 +91,13 @@ export function measurePromptBudget(finalPrompt, blockTextsByName = {}) {
 
   return {
     chars,
+    qualityBudget: QUALITY_BUDGET,
     targetMax: TARGET_MAX,
     warnAt: WARN,
-    blockAt: HARD_BLOCK,
-    adapterLimit: ADAPTER_LIMIT,
+    providerLimit,
+    // Back-compat alias: the hard limit used to be called adapterLimit.
+    adapterLimit: providerLimit,
+    qualityBudgetExceeded,
     positiveChars,
     negativeChars,
     positiveRatio,

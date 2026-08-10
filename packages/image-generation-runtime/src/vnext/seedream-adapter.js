@@ -1,11 +1,13 @@
 export const SEEDREAM_SHORT_CHAIN_ADAPTER_ID = 'seedream-5.0-pro';
 export const SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION = 'seedream-short-chain-adapter@1.1.0';
-// Phase 9B recovery: the golden Mode B space prompt runs ~9.5k chars (JZMX).
-// The legacy 7500 cap rejected it at compile time. The real provider ceiling
-// is enforced by the space-quality prompt budget (block > 12000); packaging
-// and vnext_legacy prompts stay well under this. Keep the adapter as a
-// last-resort guard aligned with the budget hard block.
-const MAX_PROMPT_CHARACTERS = 12_000;
+// Phase 9B recovery: the golden Mode B space prompt runs ~9.5k chars (JZMX),
+// so the legacy 7500 compile-time cap was retired. This is the REAL provider
+// hard ceiling and the SINGLE source of truth for it: the space-quality
+// prompt budget, Gate A (compile integrity) and Gate B (provider prompt) all
+// read it through the adapter capability below instead of re-declaring the
+// number. The 7500 figure survives only as a quality / bloat monitoring
+// budget (warn + trace flag), never as a fail-closed gate.
+export const SEEDREAM_MAX_PROMPT_CHARACTERS = 12_000;
 
 // r2.0 §4.10 / B-2: honest capability declaration. Until the adapter
 // author verifies ref_strength / ref_mode on the live Seedream 5.0 Pro
@@ -27,9 +29,19 @@ const SEEDREAM_REFERENCE_CAPABILITY = Object.freeze({
   }),
 });
 
-const SEEDREAM_ADAPTER_CAPABILITY = Object.freeze({
+// r10.4 regression repair: the prompt hard limit is part of the adapter
+// capability so the space-quality budget and the route gates read ONE source
+// instead of each hard-coding a ceiling. maxCharacters is the provider-side
+// fail-closed cap; exceeding it blocks, exceeding the (smaller) quality budget
+// only warns.
+const SEEDREAM_PROMPT_CAPABILITY = Object.freeze({
+  maxCharacters: SEEDREAM_MAX_PROMPT_CHARACTERS,
+});
+
+export const SEEDREAM_ADAPTER_CAPABILITY = Object.freeze({
   adapterId: SEEDREAM_SHORT_CHAIN_ADAPTER_ID,
   adapterVersion: SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION,
+  prompt: SEEDREAM_PROMPT_CAPABILITY,
   reference: SEEDREAM_REFERENCE_CAPABILITY,
 });
 
@@ -74,9 +86,9 @@ export function createSeedreamVNextAdapter(options = {}) {
         : compiledText;
 
       const promptCharacters = [...prompt].length;
-      if (promptCharacters > MAX_PROMPT_CHARACTERS) {
+      if (promptCharacters > SEEDREAM_MAX_PROMPT_CHARACTERS) {
         throw new Error(
-          `Seedream prompt exceeds ${MAX_PROMPT_CHARACTERS} characters (${promptCharacters})`,
+          `Seedream prompt exceeds ${SEEDREAM_MAX_PROMPT_CHARACTERS} characters (${promptCharacters})`,
         );
       }
       return {
