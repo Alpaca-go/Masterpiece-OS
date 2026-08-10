@@ -1125,6 +1125,18 @@ export interface VNextValidatedGenerationResult {
   // failures so the user always has the "first attempt" to look at.
   // Undefined when the initial run never produced an image.
   firstImage?: VNextValidatedGenerationImageRef;
+  // r2.0 §6.7 / Phase F-3: the multimodal similarity audit result.
+  // - `null`  : audit not triggered (standard, continuation, or
+  //             reference_first + same_scene / unknown / no audit
+  //             service configured). Final Acceptance is allowed.
+  // - object  : audit ran to completion; `pass.overall` tells the
+  //             UI whether to show a green/red badge.
+  // - 'unavailable' : audit was triggered but failed (network /
+  //             reasoner / profile / write). The Provider output
+  //             is NOT reclassified as a generation failure, but
+  //             Final Acceptance is BLOCKED (the user must retry
+  //             the audit or mark it skipped manually).
+  similarityAudit: VNextSimilarityAuditResult | 'unavailable' | null;
 }
 
 // r2.0 §4.13 / Phase E: image reference with the minimal metadata the

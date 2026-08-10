@@ -13,6 +13,8 @@ import type {
   VNextValidatedGenerationResult,
   VNextGenerationFlowState,
   VNextValidatedGenerationImageRef,
+  VNextSimilarityAuditResult,
+  VNextReferenceSceneRelation,
 } from '@masterpiece/image-generation-contracts/index.ts';
 import {
   compileVNextCorrectionPrompt,
@@ -41,6 +43,7 @@ import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import type { ImageGenerationService } from './service.ts';
 import type { VNextDeliverableValidatorService } from './vnext-deliverable-validator-service.ts';
+import type { VNextSimilarityAuditService } from './vnext-similarity-audit-service.ts';
 import {
   postCompositeConfirmedLogo,
   type NormalizedPlacement,
@@ -197,6 +200,13 @@ export function createVNextImageGenerationService(
   projectContext: ProjectContextService,
   getImageGeneration: () => ImageGenerationService,
   getValidator?: () => VNextDeliverableValidatorService,
+  // r2.0 §6.7 / Phase F-3: optional similarity audit service. When
+  // provided, `startValidated` runs the audit for `reference_first` +
+  // `cross_scene` runs only. The result is attached to
+  // VNextValidatedGenerationResult.similarityAudit. The audit is
+  // ADVISORY: failures do not change flowState; they set
+  // similarityAudit = 'unavailable' and block Final Acceptance.
+  getSimilarityAudit?: () => VNextSimilarityAuditService,
 ) {
   async function vnextRoot(projectId: string): Promise<string> {
     return path.join((await projects.paths(projectId)).root, 'image-generation-vnext');
@@ -1053,6 +1063,74 @@ export function createVNextImageGenerationService(
     return session.confirmedGeneratedOutputs ?? {};
   }
 
+  // r2.0 §6.7 / Phase F-3: similarity audit trigger logic.
+  //
+  // The audit is triggered ONLY when ALL of the following hold:
+  //   - the audit service is configured (caller provided it)
+  //   - generationBasis === 'reference_first'  (standard / continuation
+  //     are not audited)
+  //   - referenceSceneRelation === 'cross_scene'  (same_scene / unknown
+  //     are not audited; the design intent is the cross-scene case
+  //     where Near-copy is the most likely failure mode)
+  //   - the initial Provider run produced at least one image
+  //     (we always audit the FIRST image, Phase E invariant)
+  //   - at least one reference is present in the task contract
+  //
+  // Returns:
+  //   - null                 → audit not triggered (any precondition failed)
+  //   - VNextSimilarityAuditResult → audit ran and produced a result
+  //   - 'unavailable'        → audit was triggered but threw (network,
+  //                            reasoner, profile, write). The Provider
+  //                            output is NOT reclassified as a generation
+  //                            failure; Final Acceptance is BLOCKED.
+  async function runSimilarityAuditIfTriggered(
+    result: VNextValidatedGenerationResult,
+    compilation: CompileVNextGenerationResult,
+  ): Promise<VNextSimilarityAuditResult | 'unavailable' | null> {
+    const auditService = getSimilarityAudit?.();
+    if (!auditService) return null;
+    const taskContract = compilation.taskContract;
+    if (taskContract.generationBasis !== 'reference_first') return null;
+    const relation: VNextReferenceSceneRelation = taskContract.referenceSceneRelation ?? 'unknown';
+    if (relation !== 'cross_scene') return null;
+    if (!result.firstImage) return null;
+    const references = (taskContract.referenceAssetIds ?? [])
+      .filter((id): id is string => Boolean(id))
+      .map((assetId) => ({ assetId, projectRelativePath: `assets/${assetId}` }));
+    if (references.length === 0) return null;
+    try {
+      return await auditService.audit({
+        projectId: result.initialRun.projectId,
+        runId: result.initialRun.runId,
+        // imageId intentionally omitted; the audit service reads
+        // run.images[0] itself (Phase E invariant).
+        references,
+        targetScene: {
+          family: taskContract.deliverableFamily,
+          subtype: taskContract.subtype,
+          ...(taskContract.shot ? { shot: taskContract.shot } : {}),
+          mustInclude: taskContract.mustInclude,
+          mustAvoid: taskContract.mustAvoid,
+        },
+        referenceSceneRelation: relation,
+      });
+    } catch (error) {
+      // F-3 fail-soft: do NOT propagate. Record the audit as
+      // 'unavailable' so the UI / smoke can surface a banner that
+      // blocks Final Acceptance. The Provider output is preserved
+      // and flowState / terminalStatus are unchanged.
+      console.warn(JSON.stringify({
+        event: 'VNEXT_SIMILARITY_AUDIT_UNAVAILABLE',
+        projectId: result.initialRun.projectId,
+        runId: result.initialRun.runId,
+        taskId: taskContract.taskId,
+        error: error instanceof Error ? error.message : String(error),
+        errorCode: (error as { code?: string })?.code,
+      }));
+      return 'unavailable';
+    }
+  }
+
   async function startValidated(
     input: StartValidatedVNextGenerationInput,
   ): Promise<VNextValidatedGenerationResult> {
@@ -1084,8 +1162,14 @@ export function createVNextImageGenerationService(
       runId: initial.runId,
       validatorProfileId: input.validatorProfileId,
     });
+    // r2.0 §6.7 / Phase F-3: build the result WITHOUT similarityAudit
+    // first, then attach audit + write summary.json once. The audit
+    // applies to all 3 result branches (terminal-passed,
+    // correction_start_failed, terminal-after-correction) when its
+    // trigger conditions hold.
+    let result: VNextValidatedGenerationResult;
     if (initialValidation.status !== 'failed' || !initialValidation.retryRecommended) {
-      const result: VNextValidatedGenerationResult = {
+      result = {
         initialRun: initial,
         initialValidation,
         terminalStatus: initialValidation.status,
@@ -1095,68 +1179,72 @@ export function createVNextImageGenerationService(
           initialValidation,
         }),
         firstImage,
+        // Filled by the tail below; default null so the type is complete
+        // during the build step.
+        similarityAudit: null,
       };
-      await writeJson(
-        path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
-        result,
-      );
-      return result;
-    }
-    const correctionPrompt = compileVNextCorrectionPrompt({
-      originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,
-      taskContract: compilation.taskContract,
-      validation: initialValidation,
-    });
-    const correctionRun = await start({
-      ...input,
-      editedPrompt: correctionPrompt,
-    });
-    if (correctionRun.status !== 'succeeded' || !correctionRun.images[0]) {
-      const partial: VNextValidatedGenerationResult = {
-        initialRun: initial,
-        initialValidation,
-        correctionRun,
-        terminalStatus: 'failed',
-        automaticRetryCount: 1,
-        flowState: deriveGenerationFlowState({
+    } else {
+      const correctionPrompt = compileVNextCorrectionPrompt({
+        originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,
+        taskContract: compilation.taskContract,
+        validation: initialValidation,
+      });
+      const correctionRun = await start({
+        ...input,
+        editedPrompt: correctionPrompt,
+      });
+      if (correctionRun.status !== 'succeeded' || !correctionRun.images[0]) {
+        result = {
           initialRun: initial,
           initialValidation,
           correctionRun,
-        }),
-        firstImage,
-      };
-      await writeJson(
-        path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
-        partial,
-      );
-      return partial;
+          terminalStatus: 'failed',
+          automaticRetryCount: 1,
+          flowState: deriveGenerationFlowState({
+            initialRun: initial,
+            initialValidation,
+            correctionRun,
+          }),
+          firstImage,
+          similarityAudit: null,
+        };
+      } else {
+        const correctionValidation = await validator.validate({
+          projectId: input.projectId,
+          taskContract: compilation.taskContract,
+          runId: correctionRun.runId,
+          validatorProfileId: input.validatorProfileId,
+        });
+        result = {
+          initialRun: initial,
+          initialValidation,
+          correctionRun,
+          correctionValidation,
+          terminalStatus: correctionValidation.status,
+          automaticRetryCount: 1,
+          flowState: deriveGenerationFlowState({
+            initialRun: initial,
+            initialValidation,
+            correctionRun,
+            correctionValidation,
+          }),
+          firstImage,
+          similarityAudit: null,
+        };
+      }
     }
-    const correctionValidation = await validator.validate({
-      projectId: input.projectId,
-      taskContract: compilation.taskContract,
-      runId: correctionRun.runId,
-      validatorProfileId: input.validatorProfileId,
-    });
-    const result: VNextValidatedGenerationResult = {
-      initialRun: initial,
-      initialValidation,
-      correctionRun,
-      correctionValidation,
-      terminalStatus: correctionValidation.status,
-      automaticRetryCount: 1,
-      flowState: deriveGenerationFlowState({
-        initialRun: initial,
-        initialValidation,
-        correctionRun,
-        correctionValidation,
-      }),
-      firstImage,
+    // F-3 tail: attach the similarity audit (advisory; never touches
+    // flowState). Triggers only for reference_first + cross_scene.
+    const audit = await runSimilarityAuditIfTriggered(result, compilation);
+    const finalResult: VNextValidatedGenerationResult = {
+      ...result,
+      similarityAudit: audit,
     };
     await writeJson(
       path.join(await vnextRoot(input.projectId), 'validations', `${input.taskId}.summary.json`),
-      result,
+      finalResult,
     );
-    return result;
+    return finalResult;
   }
 
   async function continueSameType(

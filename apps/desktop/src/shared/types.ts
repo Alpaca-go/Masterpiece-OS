@@ -674,7 +674,10 @@ export type {
   VNextDeliverableValidation,
   VNextGenerationFlowState,
   VNextValidatedGenerationImageRef,
-  VNextValidatedGenerationResult
+  VNextValidatedGenerationResult,
+  VNextSimilarityAuditResult,
+  VNextSimilarityAuditScores,
+  VNextSimilarityAuditPassFlags
 } from '@masterpiece/image-generation-contracts/index.ts';
 import type {
   ImageGenerationRun,
@@ -692,6 +695,9 @@ import type {
   VNextProjectPromptAsset,
   VNextDeliverableValidation,
   VNextValidatedGenerationResult,
+  VNextSimilarityAuditResult,
+  VNextSimilarityAuditScores,
+  VNextSimilarityAuditPassFlags,
   ImageGenerationRunStatus,
   ImageGenerationGateResult,
   ImageGenerationReview,
