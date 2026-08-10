@@ -34,6 +34,10 @@ import { buildTrace } from './trace.js';
 import { validateSpatialSemantics } from './semantic/validate-spatial-semantics.js';
 import { renderContinuationIntentBlock } from './continuation/build-continuation-context.js';
 import { enforceNoSourceProgramLeakage } from './continuation/source-program-leakage-gate.js';
+import {
+  validateTargetSceneAuthority,
+  TARGET_SCENE_AUTHORITY_GATE_VERSION,
+} from './scene-projection/target-scene-projection.js';
 
 export const SPACE_PROMPT_COMPILER_ID = 'phase9b-quality-compiler';
 export const SPACE_PROMPT_COMPILER_VERSION = '1.1.0';
@@ -76,8 +80,11 @@ function renderTask(layers) {
   if (t.subtype) {
     // R11.1 v1.2: in continuation mode the target view strategy overrides the
     // source shot (e.g. consultation uses human_scale_consultation_view, not
-    // entrance_view).
-    const view = layers.continuationOverride?.targetViewStrategy || t.shot;
+    // entrance_view). R11.2.3: the target scene owns the view for Standard /
+    // Reference-First too, unless the user explicitly chose the shot.
+    const view = layers.viewStrategy
+      || layers.continuationOverride?.targetViewStrategy
+      || t.shot;
     lines.push(`Scene: \`${t.subtype}\`${view ? ` / ${view}` : ''}.`);
   }
   if (t.currentInstruction) lines.push(`Task: ${t.currentInstruction}`);
@@ -385,6 +392,27 @@ export function compilePhase9bSpacePrompt(input) {
     });
   }
 
+  // R11.2.3 Target Scene Authority Gate: when a concrete target scene owns the
+  // functional blocks (target_scene_projection), the final blocks must not carry
+  // project-wide program hard requirements the scene does not own. Standard
+  // (project_wide, frozen baseline) is intentionally not gated.
+  const authorityGate = (layers.targetSceneProjection?.functionalBlockSource === 'target_scene_projection')
+    ? validateTargetSceneAuthority({
+        targetScene: input.taskContract?.subtype,
+        targetProgram: input.taskContract?.continuation?.targetFunctionalProgram
+          ?? { sceneId: input.taskContract?.subtype },
+        blocksById,
+        userRequirement: input.taskContract?.continuation?.userRequirement
+          ?? input.taskContract?.currentInstruction,
+      })
+    : { status: 'pass', findings: [] };
+  if (authorityGate.status !== 'pass') {
+    throw Object.assign(
+      new Error(`SPACE_TARGET_SCENE_AUTHORITY_VIOLATION: ${authorityGate.findings.map((f) => `${f.blockId}:${f.marker}`).join(', ')}`),
+      { code: 'SPACE_TARGET_SCENE_AUTHORITY_VIOLATION', findings: authorityGate.findings },
+    );
+  }
+
   const trace = buildTrace({
     compilerId: SPACE_PROMPT_COMPILER_ID,
     compilerVersion: SPACE_PROMPT_COMPILER_VERSION,
@@ -408,6 +436,16 @@ export function compilePhase9bSpacePrompt(input) {
             decorativeIdentitySemanticsCount: layers.semantic.decorativeIdentitySemantics.length,
             colorGeometryCouplingRisk: layers.semantic.colorGeometryCouplingRisk,
             sourceAdapterVersion: layers.sourceAdapterVersion,
+          }
+        : null,
+      // R11.2.3 Target Scene Authority preflight + block provenance.
+      targetSceneAuthority: layers.targetSceneProjection
+        ? {
+            ...layers.targetSceneProjection,
+            viewStrategy: layers.viewStrategy ?? null,
+            shotSource: layers.shotSource ?? 'legacy_project_default',
+            gate: authorityGate.status,
+            gateVersion: TARGET_SCENE_AUTHORITY_GATE_VERSION,
           }
         : null,
     },
