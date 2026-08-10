@@ -1163,6 +1163,118 @@ export interface VNextGenerationFlowInput {
   correctionValidation?: VNextDeliverableValidation;
 }
 
+// r2.0 §6.7 / Phase F: the multimodal similarity audit. The audit
+// must use a real multimodal LLM to look at the generated image
+// (and any reference images) and score 6 dimensions. File-hash /
+// perceptual-hash only is explicitly disallowed by the r2.0 plan:
+// "不**仅**使用文件哈希 / 感知哈希判断复制。**必须**结合多模态 LLM 看图审计".
+//
+// Each dimension is an integer 1..5. The first 5 must be >= 4 to
+// pass; Near-copy Risk is INVERTED (lower is better) and must be
+// <= 2.5 to pass. The overall pass requires all 6 dimensions to
+// pass individually.
+export interface VNextSimilarityAuditScores {
+  /** Visual World Fidelity — does the image carry the reference image's design language (material / light / color / surface / form rhythm)? */
+  visualWorldFidelity: number;
+  /** Scene Accuracy — does the image's functional program / spatial type match the requested target scene? */
+  sceneAccuracy: number;
+  /** Functional Realism — is the spatial program credible / human-scale / usable? */
+  functionalRealism: number;
+  /** Target Scene Authority — does the image treat the target scene as the function layer authority (not a re-cast of the reference's scene)? */
+  targetSceneAuthority: number;
+  /** Reference Alignment — does the image retain enough reference identity to be recognizably related, without being 1:1 copied? */
+  referenceAlignment: number;
+  /** Near-copy Risk — INVERTED: 1 = clearly different from reference, 5 = essentially a 1:1 copy. Must be <= 2.5. */
+  nearCopyRisk: number;
+}
+
+// r2.0 §6.7 / Phase F: the v2.0 thresholds. Centralized here so the
+// helper, the audit runner, the UI badge, and the smoke runner all
+// agree on the same numbers.
+export const VNEXT_SIMILARITY_AUDIT_THRESHOLDS = Object.freeze({
+  /** The first 5 dimensions must meet this minimum. */
+  minScore: 4,
+  /** The near-copy risk must stay at or below this maximum (lower is better). */
+  maxNearCopyRisk: 2.5,
+  /** Auditor version, for trace compatibility. */
+  auditorVersion: 'space-similarity-audit@1.0.0',
+});
+
+// r2.0 §6.7 / Phase F: per-dimension pass flags. Computed from the
+// scores + the v2.0 thresholds.
+export interface VNextSimilarityAuditPassFlags {
+  visualWorldFidelity: boolean;
+  sceneAccuracy: boolean;
+  functionalRealism: boolean;
+  targetSceneAuthority: boolean;
+  referenceAlignment: boolean;
+  nearCopyRisk: boolean;
+  overall: boolean;
+}
+
+// r2.0 §6.7 / Phase F: the audit result. The shape is JSON-serialisable
+// so it can be persisted as a run-evidence file (`similarity-audit.json`).
+export interface VNextSimilarityAuditResult {
+  scores: VNextSimilarityAuditScores;
+  pass: VNextSimilarityAuditPassFlags;
+  // Free-form rationale from the multimodal LLM. Stored as opaque
+  // text so the contracts package does not depend on a specific
+  // reasoner shape.
+  rationale: string;
+  metadata: {
+    auditId: string;
+    projectId: string;
+    runId: string;
+    modelUsed: string;
+    auditedAt: string;
+  };
+  // Total cost: the number of multimodal-LLM calls made. The audit
+  // is a single round-trip; if the runner retries, the count grows.
+  // UI / smoke can use this to budget.
+  llmCallCount: number;
+}
+
+// r2.0 §6.7 / Phase F: input shape for the helper. Pure function —
+// given 6 raw scores (1..5 each), returns the pass flags + the
+// per-dimension verdict text. Throws on invalid scores (out of
+// range / non-integer) so the contracts layer never silently
+// produces a result the UI cannot trust.
+export function assertVNextSimilarityAudit(
+  scores: VNextSimilarityAuditScores,
+  thresholds: {
+    minScore: number;
+    maxNearCopyRisk: number;
+  } = VNEXT_SIMILARITY_AUDIT_THRESHOLDS,
+): VNextSimilarityAuditPassFlags {
+  const min = thresholds.minScore;
+  const maxRisk = thresholds.maxNearCopyRisk;
+  for (const [key, value] of Object.entries(scores) as [keyof VNextSimilarityAuditScores, number][]) {
+    if (!Number.isFinite(value) || !Number.isInteger(value) || value < 1 || value > 5) {
+      throw new Error(`VNextSimilarityAudit: dimension "${key}" must be an integer in 1..5, got ${value}`);
+    }
+  }
+  const visualWorldFidelity = scores.visualWorldFidelity >= min;
+  const sceneAccuracy = scores.sceneAccuracy >= min;
+  const functionalRealism = scores.functionalRealism >= min;
+  const targetSceneAuthority = scores.targetSceneAuthority >= min;
+  const referenceAlignment = scores.referenceAlignment >= min;
+  const nearCopyRisk = scores.nearCopyRisk <= maxRisk;
+  return {
+    visualWorldFidelity,
+    sceneAccuracy,
+    functionalRealism,
+    targetSceneAuthority,
+    referenceAlignment,
+    nearCopyRisk,
+    overall: visualWorldFidelity
+      && sceneAccuracy
+      && functionalRealism
+      && targetSceneAuthority
+      && referenceAlignment
+      && nearCopyRisk,
+  };
+}
+
 /**
  * r2.0 §4.13 / Phase E: derive the 5-state flow state from the
  * initial / optional correction pair. The result's firstImage /
@@ -1199,4 +1311,56 @@ export function deriveGenerationFlowState(
   if (!input.correctionValidation) return 'correcting';
   if (input.correctionValidation.status === 'failed') return 'correction_still_failed';
   return 'passed';
+}
+
+// r2.0 §8 / Phase F-1: the run evidence checkpoint. The vNext
+// compile + start + validate pipeline is expected to persist a
+// defined set of evidence files under the compile artifact
+// directory + the run directory. The checkpoint enumerates the
+// REQUIRED files, runs a cheap existence + shape check on each, and
+// returns a single pass/fail verdict. The smoke runner and the
+// desktop UI use this as the run-evidence hard gate.
+//
+// Required evidence (per r2.0 §8):
+//   - task-contract.json
+//   - target-scene-projection.json  (Phase A1, optional for non-space)
+//   - prompt-source-map.json       (Phase A1, optional for non-space)
+//   - reference-trace.json
+//   - provider-payload.redacted.json
+//   - trace.json
+//   - run.json
+//   - output.png (the first image, the "preserved first" from Phase E)
+//   - validations/<taskId>.summary.json (when the validated flow ran)
+export type VNextEvidenceFileName =
+  | 'task-contract.json'
+  | 'target-scene-projection.json'
+  | 'prompt-source-map.json'
+  | 'reference-trace.json'
+  | 'provider-payload.redacted.json'
+  | 'trace.json'
+  | 'run.json'
+  | 'output.png'
+  | 'validations/summary.json';
+
+export interface VNextEvidenceFileStatus {
+  path: string;
+  exists: boolean;
+  sizeBytes: number;
+  // For JSON files, the parsed top-level type. For output.png this
+  // is 'image' so the UI can render it. Null when the file is
+  // missing or unreadable.
+  kind: 'json-object' | 'json-array' | 'image' | 'text' | null;
+}
+
+export interface VNextEvidenceCheckpoint {
+  projectId: string;
+  taskId: string;
+  // Per-file status. Required files missing a record here mean
+  // the checkpoint never even tried them (caller passed a partial
+  // list).
+  files: VNextEvidenceFileStatus[];
+  // Set of required files that are missing OR unreadable.
+  missingRequired: VNextEvidenceFileName[];
+  pass: boolean;
+  checkedAt: string;
 }
