@@ -160,6 +160,49 @@ interface StructuredStepAttempt {
   };
 }
 
+/**
+ * Deterministic fallback for the spatial semantic repair. When every model
+ * attempt fails, drop the flagged ambiguous / decorative items from the
+ * spatial functional fields instead of hard-failing the whole analysis. This
+ * is the same fail-safe the R10.4.1 demotion path uses: an ambiguous or
+ * decorative must-be-visible item is better removed than allowed to block.
+ */
+function sanitizeSpatialSemanticsDeterministically(
+  packet: VisualDecisionPacket,
+  findings: unknown[],
+): { packet: VisualDecisionPacket; pass: boolean; findings: Array<{ code: string }> } {
+  const spatial = packet.mediaTranslations?.spatial ?? {};
+  const next = structuredClone(packet);
+  const fieldIndices = (field: string): Set<number> => {
+    const set = new Set<number>();
+    for (const finding of findings ?? []) {
+      const path = typeof finding === 'object' && finding !== null
+        ? (finding as { path?: unknown }).path
+        : undefined;
+      const match = String(path ?? '').match(new RegExp(`${field}\\[(\\d+)\\]`, 'u'));
+      if (match) set.add(Number(match[1]));
+    }
+    return set;
+  };
+  const filterField = (field: string, values: string[]): string[] => {
+    const drop = fieldIndices(field);
+    return values
+      .map((item, index) => (drop.has(index) ? null : item))
+      .filter((item): item is string => typeof item === 'string' && Boolean(item.trim()))
+      .map((item) => normalizeSpatialFunctionalValue(item.trim(), field))
+      .filter((item): item is string => typeof item === 'string' && Boolean(item));
+  };
+  next.mediaTranslations.spatial.functionalNetwork = filterField('functionalNetwork', spatial.functionalNetwork ?? []);
+  next.mediaTranslations.spatial.functionalRelationships = filterField('functionalRelationships', spatial.functionalRelationships ?? []);
+  next.mediaTranslations.spatial.mustBeVisible = filterField('mustBeVisible', spatial.mustBeVisible ?? []);
+  const result = validateSpatialSemantics(next.mediaTranslations.spatial);
+  return {
+    packet: next,
+    pass: result.status === 'pass',
+    findings: result.findings ?? [],
+  };
+}
+
 function parseModelStructuredResponse(rawResponse: string): Record<string, unknown> {
   // 模型经常返回用 ```json ... ``` 包装的 JSON（忽略 prompt 中的裸 JSON 要求）。
   // 先剥离 Markdown code fence，再交给引擎层的 parseStructuredResponse 解析（其
@@ -600,54 +643,86 @@ export function createPipelineService(
           },
           repairInvalidFinalPacket: async ({ packet, findings }) => {
             const current = packet as unknown as VisualDecisionPacket;
-            const repairResponse = await baseReasoner({
-              prompt: {
-                messages: [
-                  {
-                    role: 'system',
-                    content: '你是空间功能语义修复器。只能修复指定的三个空间功能字段，不得修改项目事实、品牌策略或其他字段。只返回严格 JSON。',
-                  },
-                  {
-                    role: 'user',
-                    content: `修复以下空间功能字段，使其只描述空间区域、运营功能、用户路径、边界、动线与功能结果。\n\nfunctionalNetwork 不得包含品牌符号、Logo、图形、纹样、色彩渐变、装饰母题或艺术装置。\nfunctionalRelationships 必须描述空间 A、过渡/边界/动线机制、空间 B 及功能结果。\nmustBeVisible 只能列出真实运营中必须可见的空间、设备或功能区域，不得包含 Logo、品牌符号、图案或字标。\n\n不得编造证据；无法安全修复的条目应删除。\n\n校验发现：${JSON.stringify(findings)}\n\n当前项目事实：${JSON.stringify(current.projectFacts)}\n\n当前空间字段：${JSON.stringify(current.mediaTranslations?.spatial)}`,
-                  },
-                ],
-                attachments,
-              },
-              responseSchema: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['functionalNetwork', 'functionalRelationships', 'mustBeVisible'],
-                properties: {
-                  functionalNetwork: { type: 'array', items: { type: 'string' } },
-                  functionalRelationships: { type: 'array', items: { type: 'string' } },
-                  mustBeVisible: { type: 'array', items: { type: 'string' } },
+            const spatialRepairMaxAttempts = 3;
+            let repaired: Record<string, unknown> | undefined;
+            let spatialRepairError: Error | undefined;
+            let spatialRepairHint = '';
+            for (let attempt = 1; attempt <= spatialRepairMaxAttempts; attempt += 1) {
+              const repairResponse = await baseReasoner({
+                prompt: {
+                  messages: [
+                    {
+                      role: 'system',
+                      content: '你是空间功能语义修复器。只能修复指定的三个空间功能字段，不得修改项目事实、品牌策略或其他字段。只返回严格 JSON。',
+                    },
+                    {
+                      role: 'user',
+                      content: `修复以下空间功能字段，使其只描述空间区域、运营功能、用户路径、边界、动线与功能结果。\n\nfunctionalNetwork 不得包含品牌符号、Logo、图形、纹样、色彩渐变、装饰母题或艺术装置。\nfunctionalRelationships 必须描述空间 A、过渡/边界/动线机制、空间 B 及功能结果。\nmustBeVisible 只能列出真实运营中必须可见的空间、设备或功能区域，不得包含 Logo、品牌符号、图案或字标。\n\n不得编造证据；无法安全修复的条目应删除。\n\n校验发现：${JSON.stringify(findings)}\n\n当前项目事实：${JSON.stringify(current.projectFacts)}\n\n当前空间字段：${JSON.stringify(current.mediaTranslations?.spatial)}${spatialRepairHint}`,
+                    },
+                  ],
+                  attachments,
                 },
-              },
-              responseSchemaName: 'spatial_semantic_repair',
-              signal: controller.signal,
-              maximumDurationMs: 15 * 60_000,
-            });
-            const repaired = parseModelStructuredResponse(repairResponse.reportMarkdown);
-            const next = structuredClone(packet) as unknown as VisualDecisionPacket;
-            const normalizeItems = (value: unknown, field: string): string[] => (
-              Array.isArray(value)
-                ? value
-                  .filter((item): item is string => typeof item === 'string')
-                  .map((item) => normalizeSpatialFunctionalValue(item, field))
-                  .filter((item): item is string => typeof item === 'string' && Boolean(item))
-                : []
-            );
-            next.mediaTranslations.spatial.functionalNetwork = Array.isArray(repaired.functionalNetwork)
-              ? normalizeItems(repaired.functionalNetwork, 'functionalNetwork')
-              : [];
-            next.mediaTranslations.spatial.functionalRelationships = Array.isArray(repaired.functionalRelationships)
-              ? normalizeItems(repaired.functionalRelationships, 'functionalRelationships')
-              : [];
-            next.mediaTranslations.spatial.mustBeVisible = Array.isArray(repaired.mustBeVisible)
-              ? normalizeItems(repaired.mustBeVisible, 'mustBeVisible')
-              : [];
-            return next as unknown as Record<string, unknown>;
+                responseSchema: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['functionalNetwork', 'functionalRelationships', 'mustBeVisible'],
+                  properties: {
+                    functionalNetwork: { type: 'array', items: { type: 'string' } },
+                    functionalRelationships: { type: 'array', items: { type: 'string' } },
+                    mustBeVisible: { type: 'array', items: { type: 'string' } },
+                  },
+                },
+                responseSchemaName: 'spatial_semantic_repair',
+                signal: controller.signal,
+                maximumDurationMs: 15 * 60_000,
+              });
+              try {
+                repaired = parseModelStructuredResponse(repairResponse.reportMarkdown);
+                break;
+              } catch (error) {
+                spatialRepairError = error as Error;
+                const failureRoot = path.join(projectPaths.runtime, 'uvu-failures');
+                await fs.mkdir(failureRoot, { recursive: true }).catch(() => undefined);
+                await fs.writeFile(
+                  path.join(failureRoot, `spatial-repair-attempt-${attempt}-${Date.now()}.json`),
+                  `${JSON.stringify({
+                    runId: repairResponse.runId,
+                    model: credentials.model,
+                    error: spatialRepairError.message,
+                    raw: repairResponse.reportMarkdown,
+                  }, null, 2)}\n`,
+                  'utf8',
+                ).catch(() => undefined);
+                if (attempt >= spatialRepairMaxAttempts) break;
+                spatialRepairHint = `\n\n上一次输出不是可解析的 JSON：${spatialRepairError.message}。请重新输出完整、符合 schema 的裸 JSON，不要省略字段、不要用 Markdown 或代码围栏。`;
+              }
+            }
+            if (repaired) {
+              const next = structuredClone(packet) as unknown as VisualDecisionPacket;
+              const normalizeItems = (value: unknown, field: string): string[] => (
+                Array.isArray(value)
+                  ? value
+                    .filter((item): item is string => typeof item === 'string')
+                    .map((item) => normalizeSpatialFunctionalValue(item, field))
+                    .filter((item): item is string => typeof item === 'string' && Boolean(item))
+                  : []
+              );
+              next.mediaTranslations.spatial.functionalNetwork = Array.isArray(repaired.functionalNetwork)
+                ? normalizeItems(repaired.functionalNetwork, 'functionalNetwork')
+                : [];
+              next.mediaTranslations.spatial.functionalRelationships = Array.isArray(repaired.functionalRelationships)
+                ? normalizeItems(repaired.functionalRelationships, 'functionalRelationships')
+                : [];
+              next.mediaTranslations.spatial.mustBeVisible = Array.isArray(repaired.mustBeVisible)
+                ? normalizeItems(repaired.mustBeVisible, 'mustBeVisible')
+                : [];
+              return next as unknown as Record<string, unknown>;
+            }
+            // Deterministic fallback: if every model attempt failed, drop the
+            // flagged ambiguous / decorative items instead of hard-failing the
+            // whole analysis on a flaky model response.
+            const fallback = sanitizeSpatialSemanticsDeterministically(current, findings);
+            return fallback.packet as unknown as Record<string, unknown>;
           },
           model: async (request: StructuredRepairModelRequest) => {
             const repairResponse = await baseReasoner({
