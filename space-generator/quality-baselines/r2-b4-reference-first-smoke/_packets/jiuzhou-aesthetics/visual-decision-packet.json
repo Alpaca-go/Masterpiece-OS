@@ -1,0 +1,187 @@
+{
+  "schemaVersion": "1.0",
+  "validation": {
+    "hardFactStatus": "pass",
+    "mode": "formal_upgrade",
+    "missingRequiredFacts": [],
+    "conflicts": [],
+    "executionDataStatus": "ready",
+    "missingExecutionFields": []
+  },
+  "projectFacts": {
+    "brandName": {
+      "value": "九州美学",
+      "source": "project_record",
+      "evidenceRefs": ["project_record:brandName"],
+      "confidence": 0.8,
+      "status": "confirmed"
+    },
+    "industry": {
+      "value": "医疗美容",
+      "source": "visual_asset",
+      "evidenceRefs": ["5563b2dd-97e3-49c8-bbfa-0b7c843d14bc"],
+      "confidence": 0.9,
+      "status": "confirmed"
+    },
+    "brandRole": {
+      "value": "提供兼具科学严谨与艺术美学的精细化医美服务，强调定制与信任",
+      "source": "visual_asset",
+      "evidenceRefs": [
+        "5563b2dd-97e3-49c8-bbfa-0b7c843d14bc",
+        "05ab5168-0f73-4d38-a596-c5a6625c8e9d"
+      ],
+      "confidence": 0.9,
+      "status": "confirmed"
+    }
+  },
+  "creativeDecision": {
+    "brandRoleStatement": "九州美学是一个将医疗美容视为艺术创作的品牌，致力于通过科学手段和精湛技艺（精琢），为客户带来独一无二的美学体验，重建客户对医美的信任与安心。",
+    "upgradeFrom": [
+      "传统医美冰冷、纯医疗导向的形象",
+      "过度营销、缺乏美感的促销式宣传",
+      "同质化的蓝白色调医疗风格"
+    ],
+    "preserveCore": [
+      "精琢的工匠精神理念",
+      "定制字体的柔和与锐利并存"
+    ],
+    "upgradeTo": [
+      "具有艺术画廊氛围的医美空间",
+      "如奢侈品般的包装与服务体验",
+      "强调温度与信任的情感连接",
+      "抽象化、现代化的视觉表达"
+    ],
+    "uniqueUpgradeThesis": "原来的医美形象过于医疗化和冷冰冰，缺乏情感连接和美学高度。我们保留精琢的核心理念，但将其从手术操作升级为艺术创作。结合艺术装置感的空间设计，将品牌升级为科学与美学相遇的高端生活美学品牌，避免陷入传统医美的廉价感或纯医疗机构的冰冷感。",
+    "targetWorldview": [
+      "美是科学与艺术的结晶",
+      "每个人都值得被精琢",
+      "医美是重塑自信的过程"
+    ],
+    "toneBoundaries": [
+      {
+        "target": "精致、艺术、温暖",
+        "avoid": ["医疗冰冷感", "血腥/手术场景", "过度商业化促销"]
+      },
+      {
+        "target": "高端、定制、可信赖",
+        "avoid": ["廉价塑料感", "杂乱无章的排版", "杂乱色彩"]
+      }
+    ],
+    "strategicNegatives": [
+      "禁止在视觉中出现明显的医疗器械特写（除非经过艺术化处理）",
+      "禁止将Logo变形或改变比例"
+    ]
+  },
+  "colorSystem": {
+    "primary": [
+      {
+        "name": "Peacock Violet (#5837BD)",
+        "role": "视觉焦点，品牌识别，用于Logo、导视、软装点缀"
+      }
+    ],
+    "secondary": [
+      {
+        "name": "Light Purple (#A971E7)",
+        "role": "过渡色，用于渐变、次要图形"
+      },
+      {
+        "name": "White/Off-White",
+        "role": "空间基调，提供洁净感"
+      }
+    ],
+    "accent": [
+      {
+        "name": "Gold/Brass",
+        "role": "提升奢华感，用于细节装饰"
+      }
+    ],
+    "forbidden": ["高饱和度荧光色", "杂乱的多色混搭"]
+  },
+  "materialSystem": [
+    {
+      "material": "白色/灰色混凝土或微水泥",
+      "behavior": ["提供纯净、现代的基调", "质感细腻，无瑕疵"],
+      "brandRole": "画布，衬托紫色和艺术装置",
+      "forbidden": ["粗糙、未处理的水泥表面"]
+    },
+    {
+      "material": "紫色亚克力/玻璃",
+      "behavior": ["透光", "光滑", "色彩饱和"],
+      "brandRole": "品牌色载体，视觉焦点",
+      "forbidden": ["廉价塑料感", "褪色"]
+    },
+    {
+      "material": "金属（不锈钢/黄铜）",
+      "behavior": ["反光", "坚硬", "精致收口"],
+      "brandRole": "体现科学与精琢的细节",
+      "forbidden": ["生锈", "粗糙焊接"]
+    }
+  ],
+  "lightingSystem": {
+    "source": ["隐藏式灯带", "重点射灯", "背光发光字"],
+    "contrast": "柔和漫反射为主，局部高对比突出艺术品",
+    "interactionWithMaterials": [
+      "光线透过亚克力展现紫色通透感",
+      "金属表面反射光线增加空间层次",
+      "微水泥墙面吸收多余光线，营造宁静感"
+    ],
+    "forbidden": ["刺眼的白光", "频闪", "色温不统一"]
+  },
+  "mediaTranslations": {
+    "spatial": {
+      "spatialConcept": "建立以咨询质量与客户专注度为核心的咨询空间",
+      "sceneProgram": [
+        "1 对 1 / 1 对 2 专业咨询",
+        "产品 / 服务信息展示与说明",
+        "轻量专业咨询操作"
+      ],
+      "functionalNetwork": [
+        "接待区到咨询单元的明确过渡",
+        "咨询单元内部简洁动线",
+        "半私密到私密边界",
+        "与公共接待等候区明确区分"
+      ],
+      "functionalRelationships": [
+        "主入口到咨询单元的明确导引",
+        "咨询单元不穿越公共大厅",
+        "半私密边界与公共区域的视线管理"
+      ],
+      "mustBeVisible": [
+        "咨询桌或低桌",
+        "2-3 人咨询座位",
+        "半私密边界",
+        "医疗产品信息展示面",
+        "清晰入口与落座关系"
+      ],
+      "peopleBehavior": [
+        "咨询师引导客户入座并提供饮品",
+        "客户在咨询桌旁查看产品信息",
+        "私密话题在低声环境下进行"
+      ],
+      "brandRoleManifestation": [
+        "通过材质与灯光体现精琢与艺术氛围",
+        "通过空间序列与私密边界传递信任感"
+      ],
+      "brandIntegration": [
+        "灯光与材质组合体现艺术画廊般的氛围",
+        "空间比例与光线层次传递高端定制感"
+      ],
+      "positiveDifferentiators": [
+        "艺术画廊氛围的医美空间",
+        "奢侈品级别的服务仪式感",
+        "温度与信任并重的情感连接"
+      ],
+      "signatureSpatialMechanism": [
+        "半私密边界通过层叠透明膜与灯光组合实现"
+      ],
+      "operationConstraints": [
+        "咨询室入口通过推拉门实现隔音切换",
+        "走廊与咨询室之间设声学缓冲"
+      ],
+      "requiredSpatialElements": [
+        "隔音墙体",
+        "可调节照明系统"
+      ]
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "compilerId": "phase9b-quality-compiler",
+  "compilerVersion": "1.1.0",
+  "adapterId": "seedream-5.0-pro",
+  "adapterVersion": "seedream-short-chain-adapter@1.1.0",
+  "sourceFingerprint": "457a0365ba2b73b727cba8096d84dab06d886feb3b48326e31b876d103382e01",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptCharacters": 6826,
+  "compileDurationMs": 65.761,
+  "phase9b": true,
+  "anchorIds": [
+    "JZMX-ARCH-01-ReceptionMembrane",
+    "JZMX-ARCH-03-ConsultationFacade",
+    "JZMX-ARCH-02-EntranceGlass"
+  ],
+  "spaceGeneration": {
+    "compilerId": "phase9b-quality-compiler",
+    "compilerVersion": "1.1.0",
+    "sourceAdapterVersion": "1.4.0",
+    "semanticSeparationVersion": "1.0.0",
+    "architectureAnchorIds": [
+      "JZMX-ARCH-01-ReceptionMembrane",
+      "JZMX-ARCH-03-ConsultationFacade",
+      "JZMX-ARCH-02-EntranceGlass"
+    ],
+    "generationBasis": "reference_first",
+    "referenceMode": "reference_assisted",
+    "referenceIds": [
+      "357df67c-bbaa-4f79-8cf3-4f90cd81719d"
+    ],
+    "referenceSources": [],
+    "promptCharacters": 6826,
+    "architectureCharacters": 3671,
+    "brandCharacters": 399,
+    "negativeCharacters": 302,
+    "promptHash": "eb391ddf2022e47b6edfbbe5f9a728f2d0460cd5400e8ef9235c90c34bdaef7d",
+    "provider": "seedream",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "canonicalCompilerMode": "r8_6_golden",
+    "blockIds": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "spatialSemanticReport": {
+      "schemaVersion": "1.0",
+      "version": "space-spatial-semantic-gate@1.1.0",
+      "status": "pass",
+      "findings": []
+    },
+    "routeIntegrity": {
+      "schemaVersion": "1.0",
+      "version": "space-route-integrity-gate@1.0.0",
+      "status": "pass",
+      "canonicalCompilerMode": "r8_6_golden",
+      "compilerMatched": true,
+      "requiredBlocksPresent": true,
+      "blockOrderMatched": true,
+      "promptBudgetMatched": true,
+      "referencePolicyMatched": true,
+      "spatialSemanticGatePassed": true,
+      "aspectRatioMatched": true
+    }
+  }
+}

@@ -41,6 +41,23 @@ const projectSuffix = process.env.R2B4_PROJECT_SUFFIX?.trim() || '590eadf2';
 const dataRoot = process.env.R2B4_DATA_ROOT?.trim()
   || path.join(process.env.USERPROFILE || '', 'Documents', 'Masterpiece OS Data');
 
+// Frozen-packet mode (default for v2.0): the V5 JZMX packet's
+// mediaTranslations.spatial was authored before the v11+ spatial semantic gate
+// and contains brand motifs / identity / color-geometry in the functional
+// layers — the gate blocks on ANALYSIS_SPATIAL_SEMANTICS_INVALID before the
+// phase9b adapter can demote them. The v2.0 B-4 smoke therefore points at a
+// hand-authored v11+ compliant packet under
+// space-generator/quality-baselines/r2-b4-reference-first-smoke/_packets/.
+// This is a smoke fixture (not a product change) and matches the r85
+// frozen-packet pattern. The live V5 packet is unchanged and the gate
+// itself is unchanged.
+const FROZEN_PACKET_PATH = process.env.R2B4_PACKET_PATH?.trim()
+  || path.join(
+    REPO_ROOT,
+    'space-generator/quality-baselines/r2-b4-reference-first-smoke/_packets/jiuzhou-aesthetics/visual-decision-packet.json',
+  );
+const FROZEN_CONTEXT_PATH = process.env.R2B4_CONTEXT_PATH?.trim() || '';
+
 // Reference asset: a JZMX brand image the user uploaded. The originalName
 // is "九州美学视觉提案-XX.png" — there is no scene label yet (Phase F adds
 // asset metadata). We treat the image as "reception-class" by convention
@@ -95,6 +112,15 @@ function sha256OfFile(filePath: string): string {
   return crypto.createHash('sha256').update(data).digest('hex');
 }
 
+// R2B4_API_PROFILE_ID overrides the project.json apiProfileId. The user's
+// JZMX project (suffix 590eadf2) currently binds to profile-397281cc whose
+// stored key is in a different platform's format (sk-ws-... 117 chars) and is
+// rejected by Seedream as 401 "API key format is incorrect". The r85 smoke
+// worked because it pinned profile-e871b4c5 (ark-... 46 chars, valid ARK).
+// Set this env var to one of the user's valid profiles to run the smoke
+// without touching the project's project.json.
+const R2B4_API_PROFILE_ID = process.env.R2B4_API_PROFILE_ID?.trim() || '';
+
 function readProject(): {
   projectId: string;
   projectName: string;
@@ -111,7 +137,7 @@ function readProject(): {
   return {
     projectId: pj.id,
     projectName: pj.projectName,
-    apiProfileId: pj.apiProfileId,
+    apiProfileId: R2B4_API_PROFILE_ID || pj.apiProfileId,
     visualContextVNextPath: vnextContextPath,
   };
 }
@@ -171,15 +197,21 @@ async function compileTaskContract(projectId: string, profileId: string): Promis
     'packages/image-generation-runtime/src/vnext/compile.js',
   )).href;
   const compileMod = await import(compileUrl);
-  const packetPath = path.join(
-    REPO_ROOT,
-    `space-generator/quality-baselines/phase9b-recovered/_packets/${BRAND_KEY}/visual-decision-packet.json`,
-  );
-  if (!existsSync(packetPath)) {
-    throw new Error(`brand packet not found at ${packetPath}`);
+  if (!existsSync(FROZEN_PACKET_PATH)) {
+    throw new Error(`frozen v11+ packet not found at ${FROZEN_PACKET_PATH}; set R2B4_PACKET_PATH to override`);
   }
-  const packet = JSON.parse(readFileSync(packetPath, 'utf8'));
-  const projectContext = { projectId, visualDecisionPacket: packet };
+  const packet = JSON.parse(readFileSync(FROZEN_PACKET_PATH, 'utf8'));
+  // When an explicit context file is supplied, merge it on top of the
+  // synthesized projectContext so the compile is reproducible across runs.
+  let projectContext: { projectId: string; visualDecisionPacket: object };
+  if (FROZEN_CONTEXT_PATH && existsSync(FROZEN_CONTEXT_PATH)) {
+    const ctx = JSON.parse(readFileSync(FROZEN_CONTEXT_PATH, 'utf8'));
+    ctx.projectId = projectId;
+    ctx.visualDecisionPacket = packet;
+    projectContext = ctx;
+  } else {
+    projectContext = { projectId, visualDecisionPacket: packet };
+  }
   const compiled = await compileMod.compileVNextImageGeneration({
     projectContext,
     model: MODEL,
@@ -253,7 +285,6 @@ async function sendToSeedream(
     image: [referenceDataUrl],
     size: seedreamSize,
     response_format: 'url',
-    sequential_image_generation: 'auto',
   };
   const res = await fetch(`${BASE_URL}/images/generations`, {
     method: 'POST',
@@ -320,6 +351,7 @@ async function main(): Promise<void> {
     shot: SHOT,
     referenceSceneRelation: REFERENCE_SCENE_RELATION,
     model: MODEL,
+    frozenPacketPath: FROZEN_PACKET_PATH,
   });
 
   const project = readProject();
@@ -327,6 +359,7 @@ async function main(): Promise<void> {
     projectId: project.projectId,
     projectName: project.projectName,
     apiProfileId: project.apiProfileId,
+    apiProfileIdOverridden: Boolean(R2B4_API_PROFILE_ID),
   });
 
   const credentials = await readApiKey(project.apiProfileId);
@@ -441,7 +474,7 @@ async function main(): Promise<void> {
     }, null, 2)}\n`, 'utf8');
 
   emit('done', {
-    outputDir,
+    outputDir: outDir,
     outputPath,
     referenceSha256,
     outputSha256,

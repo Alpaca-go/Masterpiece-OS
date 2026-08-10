@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "r2b4-1786361816021",
+  "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+  "deliverableFamily": "space",
+  "subtype": "consultation",
+  "shot": "three_quarter_wide",
+  "count": 1,
+  "aspectRatio": "16:9",
+  "currentInstruction": "延续参考图的设计语言与材质气质，生成咨询师与客户一对一的咨询空间。",
+  "generationBasis": "reference_first",
+  "mustInclude": [],
+  "mustAvoid": [],
+  "referenceAssetIds": [
+    "357df67c-bbaa-4f79-8cf3-4f90cd81719d"
+  ],
+  "logoUsageMode": "post_composite",
+  "shotSource": "legacy_project_default",
+  "referenceSceneRelation": "cross_scene",
+  "createdAt": "2026-08-10T11:36:56.026Z"
+}

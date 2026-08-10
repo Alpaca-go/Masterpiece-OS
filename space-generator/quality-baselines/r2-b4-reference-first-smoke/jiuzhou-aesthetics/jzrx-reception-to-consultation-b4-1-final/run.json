@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "vnext-1.0",
+  "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+  "apiProfileId": "profile-e871b4c5-7499-4749-b838-02410ad19cb1",
+  "brandKey": "jiuzhou-aesthetics",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "referenceAssetId": "357df67c-bbaa-4f79-8cf3-4f90cd81719d",
+  "referenceSha256": "54ad33b510b91c324cbfd95aef069303c3c22251dd80919c3bec5da145de6571",
+  "outputSha256": "b156142d1e6d4202dcf2acbdc8a8e4e1d64bfd518f51b663abfdb8e9f4ec807b",
+  "outputPath": "D:\\Masterpiece-OS\\space-generator\\quality-baselines\\r2-b4-reference-first-smoke\\jiuzhou-aesthetics\\jzrx-reception-to-consultation-b4-1-final\\output.png",
+  "referenceSceneRelation": "cross_scene",
+  "targetSubtype": "consultation",
+  "targetShot": "three_quarter_wide",
+  "referenceBoundary": {
+    "applied": true,
+    "version": "space-reference-boundary@1.0.0",
+    "providerStrengthControl": "unsupported",
+    "promptCharacters": 7544
+  },
+  "targetSceneAuthority": null,
+  "completedAt": "2026-08-10T11:38:10.470Z"
+}
