@@ -45,7 +45,15 @@ import {
   resolveSpatialColorRole,
 } from './semantic/index.js';
 import { applyContinuationProgramOverride } from './continuation/apply-continuation-program-override.js';
-import { viewStrategyForScene } from './continuation/target-functional-programs.js';
+import {
+  resolveTargetFunctionalProgram,
+  viewStrategyForScene,
+} from './continuation/target-functional-programs.js';
+import {
+  buildTargetSceneProjection,
+  isKnownTargetScene,
+  resolveTargetViewStrategy,
+} from './scene-projection/target-scene-projection.js';
 
 function cleanList(...values) {
   const out = [];
@@ -241,7 +249,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
 
   // ---- Material / Lighting / Color (V5 systems) ----
   const materials = materialDirection;
-  const lighting = lightDirection;
+  let lighting = lightDirection;
   const withSpatialRole = (items, sourceRole) => (Array.isArray(items) ? items : []).map((item) => ({
     ...(typeof item === 'object' && item ? item : { name: String(item) }),
     sourceRole,
@@ -307,6 +315,9 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   // world-consistency only. This is runtime IR — the frozen compiler still
   // renders it.
   let continuationOverride = null;
+  let targetSceneProjection = null;
+  let targetViewStrategy = null;
+  let shotSource = 'legacy_project_default';
   let bridgeLayers = {
     commercialPurpose,
     spatialTranslation,
@@ -323,6 +334,11 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
   };
   const continuationIntent = taskContract?.continuation;
   const targetProgram = continuationIntent?.targetFunctionalProgram;
+
+  // R11.2.3 Target Scene Authority: a known target scene (subtype) owns the
+  // functional blocks for Standard / Reference-First too. The project-wide
+  // program must NOT be "must be legible in one image" for a single scene.
+  const knownTarget = isKnownTargetScene(taskContract?.subtype);
   if (taskContract?.generationBasis === 'continuation' && targetProgram) {
     const override = applyContinuationProgramOverride({
       targetProgram,
@@ -348,12 +364,94 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       functionalNetwork: override.functionalRequirement.functionalNetwork,
       positiveDifferentiators: override.functionalRequirement.positiveDifferentiators,
     };
+    targetViewStrategy = targetProgram.viewStrategy || viewStrategyForScene(targetProgram.sceneId);
+    shotSource = 'target_scene_default';
     continuationOverride = {
       referenceRole: 'world_consistency',
       targetScene: continuationIntent.targetScene,
-      targetViewStrategy: targetProgram.viewStrategy || viewStrategyForScene(targetProgram.sceneId),
+      targetViewStrategy,
       sourceProgramDropTags: targetProgram.sourceProgramDropTags ?? [],
       sourceProgramElementsToDrop: targetProgram.sourceProgramElementsToDrop ?? [],
+    };
+    targetSceneProjection = {
+      targetScene: targetProgram.sceneId,
+      targetProgramId: targetProgram.sceneId,
+      functionalBlockSource: 'target_scene_projection',
+      architectureBridgeSource: 'target_scene_projection',
+      viewStrategySource: shotSource,
+    };
+  } else if (taskContract?.generationBasis === 'reference_first' && knownTarget) {
+    // R11.2.3 Reference-First: high-fidelity VISUAL reference + TARGET scene
+    // functional authority. The reference never overrides the target program.
+    const sceneProgram = resolveTargetFunctionalProgram(taskContract.subtype);
+    const view = resolveTargetViewStrategy({
+      scene: taskContract.subtype,
+      shot: taskContract.shot,
+      shotSource: taskContract.shotSource,
+    });
+    shotSource = view.shotSource;
+    targetViewStrategy = view.viewStrategy || sceneProgram.viewStrategy;
+    const projection = buildTargetSceneProjection({
+      targetProgram: sceneProgram,
+      projectBridge: {
+        commercialPurpose,
+        spatialTranslation,
+        operationConstraints,
+        humanExperience,
+        commercialReality,
+      },
+      projectConstraints: operationConstraints,
+    });
+    bridgeLayers = projection.architectureFunctionBridge;
+    compositionLayers = {
+      ...composition,
+      viewStrategy: targetViewStrategy,
+      scene: projection.composition.scene,
+      mustBeVisible: projection.functionalRequirement.mustBeVisible,
+      positiveDifferentiators: projection.functionalRequirement.positiveDifferentiators,
+    };
+    functionalRaw = {
+      sceneProgram: projection.functionalRequirement.sceneProgram,
+      functionalNetwork: projection.functionalRequirement.functionalNetwork,
+      positiveDifferentiators: projection.functionalRequirement.positiveDifferentiators,
+    };
+    // Lighting functional intent: the scene owns the functional light target,
+    // while the material / brand light style keeps inheriting the project.
+    if (projection.lightingFunctionalIntent.length) {
+      lighting = {
+        ...lighting,
+        source: [
+          ...projection.lightingFunctionalIntent,
+          ...(lighting.source ?? []).filter((item) => !/底部发光|前台|接待区.*治疗区/iu.test(item)),
+        ],
+      };
+      if (projection.lightingContrast) lighting = { ...lighting, contrast: projection.lightingContrast };
+    }
+    targetSceneProjection = {
+      targetScene: sceneProgram.sceneId,
+      targetProgramId: sceneProgram.sceneId,
+      functionalBlockSource: 'target_scene_projection',
+      architectureBridgeSource: 'target_scene_projection',
+      viewStrategySource: shotSource,
+    };
+  } else if (knownTarget) {
+    // Standard: the project-wide functional program stays (frozen baseline).
+    // R11.2.3 §18-§21 still gives the target scene the VIEW unless the user
+    // explicitly chose a shot (legacy entrance_view must not override it).
+    const sceneProgram = resolveTargetFunctionalProgram(taskContract.subtype);
+    const view = resolveTargetViewStrategy({
+      scene: taskContract.subtype,
+      shot: taskContract.shot,
+      shotSource: taskContract.shotSource,
+    });
+    shotSource = view.shotSource;
+    targetViewStrategy = view.viewStrategy || sceneProgram.viewStrategy;
+    targetSceneProjection = {
+      targetScene: sceneProgram.sceneId,
+      targetProgramId: sceneProgram.sceneId,
+      functionalBlockSource: 'project_wide',
+      architectureBridgeSource: 'project_wide',
+      viewStrategySource: shotSource,
     };
   }
 
@@ -429,6 +527,12 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       stats: brandSanitized.stats,
       records: brandSanitized.records,
     },
+    // R11.2.3 Target Scene Authority: the resolved view strategy (the scene
+    // owns the view unless the user explicitly chose the shot), the shot
+    // source, and the target-scene block provenance.
+    viewStrategy: targetViewStrategy,
+    shotSource,
+    ...(targetSceneProjection ? { targetSceneProjection } : {}),
     ...(continuationOverride ? { continuationOverride } : {}),
   };
 }
