@@ -6,12 +6,13 @@
 // Functional Requirement, Composition / View Strategy). The reference image is
 // world-consistency only; it never dictates layout / composition / program.
 //
-// This is NOT a new compiler — it prepares runtime IR that the frozen
-// r8_6_golden compiler then renders. It is pure / deterministic / offline.
-//
-// Priorities (R11.1 §31-§32):
-//   functional:  Target Program > Project Context > Source Program
-//   aesthetics:  Source Visual Grammar > Project Visual Context > Generic Style
+// R11.2.3: the target-scene projection is now the SHARED Space scene layer
+// (scene-projection/target-scene-projection.js). This module keeps the
+// continuation-specific concerns (source scene constraint filtering + drop
+// tags) on top of that shared projection. It is pure / deterministic / offline
+// and never rewrites the frozen r8_6_golden compiler.
+
+import { buildTargetSceneProjection } from '../scene-projection/target-scene-projection.js';
 
 export const CONTINUATION_OVERRIDE_VERSION = 'space-continuation-program-override@1.2.0';
 
@@ -20,31 +21,15 @@ export const CONTINUATION_OVERRIDE_VERSION = 'space-continuation-program-overrid
  * scene. A hard must-hold from the source (e.g. "接待台正对入口") must NOT
  * remain a hard constraint when the target scene is consultation.
  *
- * @param {string[]} sourceConstraints  e.g. operationConstraints
- * @param {string} sourceScene
- * @param {object} targetProgram
+ * @param {object} input
+ * @param {string[]} [input.sourceConstraints]  e.g. operationConstraints
+ * @param {string} input.sourceScene
+ * @param {object} input.targetProgram
  * @returns {string[]} target-compatible constraints
  */
-export function filterSourceSceneConstraintsForContinuation({
-  sourceConstraints = [],
-  sourceScene,
-  targetProgram = {},
-} = {}) {
-  const drop = (targetProgram.sourceProgramElementsToDrop ?? []).map((d) => d.trim());
-  const out = [];
-  for (const raw of sourceConstraints) {
-    const item = String(raw ?? '').trim();
-    if (!item) continue;
-    // A constraint that re-mentions a source element to drop is removed.
-    if (drop.some((d) => item.includes(d) || d.includes(item))) continue;
-    // Reception-specific hard constraints (source scene) are incompatible with
-    // a consultation target.
-    const sourceLeak = /接待台正对入口|前厅式迎宾|大型公共接待台|大型公共前台/iu.test(item);
-    if (sourceLeak && targetProgram.sceneId !== 'reception') continue;
-    out.push(item);
-  }
-  return out;
-}
+export {
+  filterProjectWideConstraintsForTargetScene as filterSourceSceneConstraintsForContinuation,
+} from '../scene-projection/target-scene-projection.js';
 
 /**
  * Build the continuation-overridden functional layers to feed the frozen
@@ -61,58 +46,15 @@ export function applyContinuationProgramOverride({
   sourceBridge = {},
   sourceScene = '',
 } = {}) {
-  const requiredProgram = [
-    ...(targetProgram.requiredFunctions ?? []),
-    ...(targetProgram.requiredSpatialElements ?? []),
-  ];
-  const privacy = targetProgram.privacyRequirements ?? [];
-  const scale = targetProgram.scaleRequirements ?? [];
-
-  // 1) Architecture-Function Bridge: target-aware. Drop source-only hard
-  //    constraints; keep generic spatial translation + target program items.
-  const filteredConstraints = filterSourceSceneConstraintsForContinuation({
-    sourceConstraints: sourceBridge.operationConstraints ?? [],
-    sourceScene,
+  const projection = buildTargetSceneProjection({
     targetProgram,
+    projectBridge: sourceBridge,
+    projectConstraints: sourceBridge.operationConstraints ?? [],
+    sourceScene,
   });
-  const bridge = {
-    commercialPurpose: sourceBridge.commercialPurpose ?? '',
-    spatialTranslation: requiredProgram.slice(0, 6),
-    operationConstraints: [
-      ...filteredConstraints.slice(0, 4),
-      ...(targetProgram.circulationRequirements ?? []).slice(0, 2),
-    ],
-    humanExperience: (targetProgram.privacyRequirements ?? []).slice(0, 3),
-    commercialReality: scale.slice(0, 3),
-    // R11.1 v1.2: concept drift guards must express TARGET positive
-    // requirements (what the scene should become), never re-list the dropped
-    // source elements — those already live in the Continuation Intent block.
-    conceptDriftGuards: [
-      ...(targetProgram.operationalRequirements ?? []).slice(0, 3),
-      ...(targetProgram.privacyRequirements ?? []).slice(0, 2),
-    ],
+  return {
+    architectureFunctionBridge: projection.architectureFunctionBridge,
+    functionalRequirement: projection.functionalRequirement,
+    composition: projection.composition,
   };
-
-  // 2) Functional Requirement: FULLY replaced by the target program. Project-
-  //    wide program nodes must not be "must be legible in one image".
-  const functionalRequirement = {
-    sceneProgram: targetProgram.requiredFunctions ?? [],
-    functionalNetwork: [
-      ...(targetProgram.circulationRequirements ?? []),
-      ...privacy,
-    ],
-    mustBeVisible: targetProgram.requiredSpatialElements ?? [],
-    positiveDifferentiators: [
-      ...(targetProgram.scaleRequirements ?? []),
-      ...(targetProgram.operationalRequirements ?? []),
-    ],
-  };
-
-  // 3) Composition / View Strategy: target view overrides source view.
-  const composition = {
-    viewStrategy: targetProgram.viewStrategy ?? 'human_scale_consultation_view',
-    scene: targetProgram.sceneLabel ?? targetProgram.sceneId ?? '',
-  };
-
-  return { architectureFunctionBridge: bridge, functionalRequirement, composition };
 }

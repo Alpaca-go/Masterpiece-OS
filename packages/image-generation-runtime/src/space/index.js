@@ -57,6 +57,18 @@ export {
   validateSpaceGenerationModeSemantics,
 } from './mode-boundary/mode-boundary-semantics.js';
 
+// R11.2.3 target scene projection — the shared Space scene layer that gives
+// Standard / Reference-First / Continuation target-scene functional authority.
+export {
+  TARGET_SCENE_PROJECTION_VERSION,
+  TARGET_SCENE_AUTHORITY_GATE_VERSION,
+  isKnownTargetScene,
+  filterProjectWideConstraintsForTargetScene,
+  buildTargetSceneProjection,
+  resolveTargetViewStrategy,
+  validateTargetSceneAuthority,
+} from './scene-projection/target-scene-projection.js';
+
 // R8.5.1 — semantic separation (architecture vs brand motif, color-geometry
 // coupling guard, mechanism provenance). Production module, no LLM.
 export {
