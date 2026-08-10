@@ -2410,6 +2410,17 @@ export interface DesktopApi {
     export(projectId: string): Promise<string | null>;
     getVNext(projectId: string): Promise<ProjectVisualContextVNext>;
     rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext>;
+    /**
+     * r2.0 / r10.4 UX: unified predicate that decides whether the
+     * *persisted* project state has the minimum data needed to start
+     * a vnext image generation. The full LLM analysis report is no
+     * longer a hard product gate for entering image generation; the
+     * Project Context is. `reasons` is empty when ready; when not
+     * ready, it lists every missing field so the UI can surface a
+     * precise "what's blocking" message instead of forcing a fresh
+     * analysis blind.
+     */
+    getGenerationReadiness(projectId: string): Promise<GenerationContextReadiness>;
   };
   visualMemory: {
     get(projectId: string): Promise<VisualMemory | null>;
@@ -2431,6 +2442,24 @@ export interface DesktopApi {
     /** 搂8 鍒犻櫎琚紩鐢ㄧ殑鏂囨。 Context 鍓嶆鏌ュ紩鐢ㄥ叧绯汇€?*/
     isDocumentContextReferenced(runId: string): Promise<boolean>;
   };
+}
+
+// r2.0 / r10.4 UX: shape returned by `projectContext.getGenerationReadiness`.
+// The renderer asks this on the project page to decide whether to show
+// the "继续创作 / 直接创作" entry that bypasses the analysis report
+// page. `ready=true` means the persisted Project + Visual Context
+// satisfy every precondition `vnext-service.compile` checks on the
+// way in (legacy visual context ready + schema present + vnext context
+// ready + filename recorded + on-disk file readable + passes the
+// `validateProjectVisualContextVNext` shape check). `reasons` is empty
+// when ready; when not ready, every entry names one missing condition
+// in human-readable form so the UI can show a precise "what's
+// blocking" message.
+export interface GenerationContextReadiness {
+  ready: boolean;
+  reasons: string[];
+  vnextSchemaVersion: number | null;
+  vnextBuiltAt: string | null;
 }
 
 export type EvidenceSourceType =

@@ -112,3 +112,154 @@ test('rebuild 源缺失时：标记 Context 失败，但项目（与报告）仍
     await fs.rm(tmp, { recursive: true, force: true });
   }
 });
+
+// r2.0 / r10.4 UX: getGenerationContextReadiness — the unified
+// predicate that decides whether the persisted Project + Visual
+// Context already has the minimum data needed to start a vnext
+// image generation, without going through the full LLM analysis
+// report. This test pins the contract for the project page
+// "继续创作 / 直接创作" entry: a project where every precondition
+// is satisfied MUST report ready=true with an empty reasons array;
+// a project missing any precondition MUST report ready=false with
+// the offending condition named in the reasons array.
+function minimalValidVNextContext(projectId: string): Record<string, unknown> {
+  return {
+    schemaVersion: '2.0',
+    projectId,
+    version: 1,
+    brandCore: { name: '测试品牌' },
+    lockedAssets: { mustPreserve: [] },
+    sourceAssetRefs: [],
+    provenance: { sourceFingerprint: 'fp-fixture' },
+  };
+}
+
+async function seedProjectWithVNext(root: string, vnextBody: Record<string, unknown> | null) {
+  const seeded = await seedProject(root);
+  const projects = createProjectStore(async () => ({ defaultDataPath: root } as never));
+  const updates: Record<string, unknown> = {
+    visualContextStatus: 'ready',
+    visualContextSchemaVersion: '1.0',
+    visualContextFilename: 'project-visual-context.json',
+  };
+  if (vnextBody !== null) {
+    updates.visualContextVNextStatus = 'ready';
+    updates.visualContextVNextFilename = 'project-visual-context.vnext.json';
+    updates.visualContextVNextVersion = (vnextBody as { version?: number }).version ?? 1;
+    updates.visualContextVNextLastBuiltAt = new Date().toISOString();
+    const dir = path.join(root, 'projects', `${seeded.id.slice(0, 8)}-${seeded.id}`);
+    await fs.mkdir(path.join(dir, 'project-context'), { recursive: true });
+    await fs.writeFile(
+      path.join(dir, 'project-context', 'project-visual-context.vnext.json'),
+      `${JSON.stringify(vnextBody, null, 2)}\n`,
+      'utf8'
+    );
+  }
+  await projects.update(seeded.id, updates);
+  return { id: seeded.id };
+}
+
+test('getGenerationContextReadiness: project with valid vnext context + legacy visual context returns ready=true', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-ready-'));
+  try {
+    const { id } = await seedProjectWithVNext(tmp, minimalValidVNextContext('project-id'));
+    const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
+    const service = createProjectContextService({ projects });
+    const readiness = await service.getGenerationContextReadiness(id);
+    assert.equal(readiness.ready, true);
+    assert.deepEqual(readiness.reasons, []);
+    assert.equal(readiness.vnextSchemaVersion, 1);
+    assert.ok(readiness.vnextBuiltAt, 'vnextBuiltAt must be set when ready');
+  } finally {
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+test('getGenerationContextReadiness: legacy visual context status != ready surfaces a precise reason', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-legacy-'));
+  try {
+    const seeded = await seedProject(tmp);
+    const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
+    const service = createProjectContextService({ projects });
+    // No visualContextStatus update; project.visualContextStatus stays
+    // 'missing' (undefined-coerced), so the predicate must surface
+    // the legacy reason.
+    const readiness = await service.getGenerationContextReadiness(seeded.id);
+    assert.equal(readiness.ready, false);
+    assert.ok(
+      readiness.reasons.some((r) => r.includes('视觉上下文')),
+      `expected a legacy-context reason, got: ${JSON.stringify(readiness.reasons)}`,
+    );
+  } finally {
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+test('getGenerationContextReadiness: missing vnext context surfaces a precise reason and returns ready=false', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-vnext-missing-'));
+  try {
+    // vnextBody=null => do NOT seed the vnext file or status.
+    const { id } = await seedProjectWithVNext(tmp, null);
+    const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
+    const service = createProjectContextService({ projects });
+    const readiness = await service.getGenerationContextReadiness(id);
+    assert.equal(readiness.ready, false);
+    assert.ok(
+      readiness.reasons.some((r) => r.includes('vNext')),
+      `expected a vnext-related reason, got: ${JSON.stringify(readiness.reasons)}`,
+    );
+  } finally {
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+test('getGenerationContextReadiness: malformed vnext file surfaces the validation errors', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-vnext-invalid-'));
+  try {
+    // Seed the vnext status/filename but write a file that fails
+    // validateProjectVisualContextVNext (schemaVersion !== '2.0').
+    const seeded = await seedProject(tmp);
+    const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
+    const dir = path.join(tmp, 'projects', `${seeded.id.slice(0, 8)}-${seeded.id}`);
+    await fs.mkdir(path.join(dir, 'project-context'), { recursive: true });
+    await fs.writeFile(
+      path.join(dir, 'project-context', 'project-visual-context.vnext.json'),
+      `${JSON.stringify({ schemaVersion: '9.9', projectId: seeded.id, version: 1 }, null, 2)}\n`,
+      'utf8'
+    );
+    await projects.update(seeded.id, {
+      visualContextStatus: 'ready',
+      visualContextSchemaVersion: '1.0',
+      visualContextFilename: 'project-visual-context.json',
+      visualContextVNextStatus: 'ready',
+      visualContextVNextFilename: 'project-visual-context.vnext.json',
+      visualContextVNextVersion: 1,
+      visualContextVNextLastBuiltAt: new Date().toISOString(),
+    });
+    const service = createProjectContextService({ projects });
+    const readiness = await service.getGenerationContextReadiness(seeded.id);
+    assert.equal(readiness.ready, false);
+    assert.ok(
+      readiness.reasons.some((r) => r.includes('文件校验失败') || r.includes('不可读')),
+      `expected a file-validation reason, got: ${JSON.stringify(readiness.reasons)}`,
+    );
+  } finally {
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});
+
+test('getGenerationContextReadiness: nonexistent project returns ready=false with project-not-found reason', async () => {
+  const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-missing-'));
+  try {
+    const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
+    const service = createProjectContextService({ projects });
+    const readiness = await service.getGenerationContextReadiness('00000000-0000-0000-0000-000000000000');
+    assert.equal(readiness.ready, false);
+    assert.ok(
+      readiness.reasons.some((r) => r.includes('不存在')),
+      `expected a not-found reason, got: ${JSON.stringify(readiness.reasons)}`,
+    );
+  } finally {
+    await fs.rm(tmp, { recursive: true, force: true });
+  }
+});

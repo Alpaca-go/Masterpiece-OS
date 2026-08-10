@@ -3,6 +3,7 @@ import type {
   AnalysisProgress,
   AssetSummary,
   DocumentContextRun,
+  GenerationContextReadiness,
   ImageGenerationSourceBundle,
   ImageGenerationRunSummary,
   ProjectRecord,
@@ -87,6 +88,12 @@ export function App() {
   const [progress, setProgress] = useState<AnalysisProgress | null>(null);
   const [error, setError] = useState('');
   const [runFailure, setRunFailure] = useState('');
+  // r2.0 / r10.4 UX: project-page entry decoupling. When the persisted
+  // Project + Visual Context already has the minimum data needed for a
+  // vnext generation, the project page can show a "继续创作 / 直接创作"
+  // entry that bypasses the analysis report page. The full LLM report
+  // is no longer a hard product gate; the Project Context is.
+  const [generationReadiness, setGenerationReadiness] = useState<GenerationContextReadiness | null>(null);
   const [deletingProjectId, setDeletingProjectId] = useState('');
   const [deletingDocumentContextRunId, setDeletingDocumentContextRunId] = useState('');
   const [deletingReferenceAnchorRunId, setDeletingReferenceAnchorRunId] = useState('');
@@ -168,6 +175,19 @@ export function App() {
     setScreen(project.status === 'completed' && project.lastReportFilename ? 'report' : 'project');
     try { setAssets(await window.masterpiece.projects.scanAssets(project.id)); }
     catch (reason) { setError(cleanError(reason)); }
+    // r2.0 / r10.4 UX: ask the backend whether the persisted Project
+    // + Visual Context already has the minimum data needed to enter
+    // creative-session. The project page uses this to surface a
+    // "继续创作 / 直接创作" entry that bypasses the analysis report
+    // page when ready. Best-effort: if the IPC is unavailable, we
+    // simply do not show the entry — the existing "开始分析" path
+    // stays the only visible affordance.
+    try {
+      const readiness = await window.masterpiece.projectContext.getGenerationReadiness(project.id);
+      setGenerationReadiness(readiness);
+    } catch {
+      setGenerationReadiness(null);
+    }
   }
 
   async function refreshSelected(projectId: string, nextAssets?: AssetSummary) {
@@ -403,6 +423,26 @@ export function App() {
           <div className="profile-card"><small>默认分析模式</small><strong>融合增强</strong><p>一次多模态调用，强化事实判断、真实触点、材料与工艺。</p></div>
           <button className="button primary full" disabled={!canAnalyze} onClick={() => void run(selected, true, selectedProfile?.id)}>开始分析</button>
           <button className="button ghost full" disabled={!selected.lastReportFilename || !canAnalyze} onClick={() => void run(selected, false, selectedProfile?.id)}>使用精确缓存</button>
+          {/* r2.0 / r10.4 UX: when the persisted Project + Visual Context
+              already has the minimum data needed for a vnext generation,
+              surface a "直接创作" entry that bypasses the analysis
+              report page entirely. The full LLM report is no longer a
+              hard product gate; the Project Context is. When not ready
+              (legacy status != ready, schema missing, vnext file
+              unreadable, etc.), the entry stays hidden — the user
+              still has the "开始分析" path as the explicit way to
+              produce the missing data. */}
+          {generationReadiness?.ready && (
+            <button
+              className="button secondary full"
+              onClick={() => setScreen('creative-session')}
+              title={generationReadiness.vnextSchemaVersion
+                ? `Project Visual Context vNext ${generationReadiness.vnextSchemaVersion} 已就绪`
+                : 'Project Context 已就绪'}
+            >
+              继续创作 / 直接创作
+            </button>
+          )}
         </aside>
       </div>
       <ContextIntegrationPanel projectId={selected.id} projectName={selected.projectName} onOpenReference={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }} />

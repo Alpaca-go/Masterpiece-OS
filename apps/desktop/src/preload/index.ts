@@ -252,7 +252,8 @@ const api: DesktopApi = {
     rebuild: (projectId) => ipcRenderer.invoke('project-context:rebuild', projectId),
     export: (projectId) => ipcRenderer.invoke('project-context:export', projectId),
     getVNext: (projectId) => ipcRenderer.invoke('project-context:get-vnext', projectId),
-    rebuildVNext: (projectId) => ipcRenderer.invoke('project-context:rebuild-vnext', projectId)
+    rebuildVNext: (projectId) => ipcRenderer.invoke('project-context:rebuild-vnext', projectId),
+    getGenerationReadiness: (projectId) => ipcRenderer.invoke('project-context:generation-readiness', projectId)
   },
   visualMemory: {
     get: (projectId) => ipcRenderer.invoke('visual-memory:get', projectId),

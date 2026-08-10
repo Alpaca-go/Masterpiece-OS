@@ -344,6 +344,7 @@ function registerIpc(): void {
   registerHandler('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
   registerHandler('project-context:get-vnext', (_event, projectId: string) => projectContext.getVNext(projectId));
   registerHandler('project-context:rebuild-vnext', (_event, projectId: string) => projectContext.rebuildVNext(projectId));
+  registerHandler('project-context:generation-readiness', (_event, projectId: string) => projectContext.getGenerationContextReadiness(projectId));
   registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
   registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
   registerHandler('visual-memory:get-reference-pack', (_event, projectId: string) => referencePacks.get(projectId));

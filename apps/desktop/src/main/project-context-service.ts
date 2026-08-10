@@ -154,6 +154,88 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return migrateProjectVisualContextVNext(value);
   }
 
+  // r2.0 / r10.4 UX: unified predicate that decides whether the
+  // *persisted* project state has the minimum data needed to start a
+  // vnext image generation, without going through the full LLM
+  // analysis report page. Mirrors the failure conditions of
+  // `getVNext` (which is what `vnext-service.compile` calls), plus
+  // the legacy visual context sanity check that the vnext context
+  // is built on top of. The predicate is the single source of
+  // truth for "can the user click 直接创作 / 继续创作 on the project
+  // page?" — the renderer asks this question and only shows the
+  // entry when ready.
+  //
+  // IMPORTANT: this is about data readiness, not about whether the
+  // analysis report exists. The full LLM report is no longer a
+  // hard product gate for entering image generation; the
+  // Project Context is. `reasons` lists every missing field so
+  // the UI can surface a precise "what's blocking" message instead
+  // of forcing the user to start a fresh analysis blind.
+  async function getGenerationContextReadiness(projectId: string): Promise<{
+    ready: boolean;
+    reasons: string[];
+    vnextSchemaVersion: number | null;
+    vnextBuiltAt: string | null;
+  }> {
+    const reasons: string[] = [];
+    const project = await projects.get(projectId).catch(() => null);
+    if (!project) {
+      return { ready: false, reasons: ['项目记录不存在'], vnextSchemaVersion: null, vnextBuiltAt: null };
+    }
+    // Legacy visual context is the source the vnext context is
+    // built from. If it never reached `ready`, the vnext context
+    // also cannot exist.
+    if (project.visualContextStatus !== 'ready') {
+      reasons.push('视觉上下文尚未生成或已失败');
+    }
+    if (!project.visualContextSchemaVersion) {
+      reasons.push('视觉上下文 schema 版本缺失');
+    }
+    // vNext context — the actual data shape the vnext service
+    // consumes. All three conditions must hold:
+    //   1) status is `ready`
+    //   2) filename is recorded
+    //   3) the file exists, is parseable, and passes
+    //      `validateProjectVisualContextVNext` (this is the same
+    //      check `getVNext` performs before handing the context to
+    //      the compiler; mirroring it here means "if this returns
+    //      ready=true, then `vnext-service.compile` will not throw
+    //      ProjectContextNotReadyError on the way in").
+    if (project.visualContextVNextStatus !== 'ready') {
+      reasons.push('Project Visual Context vNext 尚未生成或已失败');
+    }
+    if (!project.visualContextVNextFilename) {
+      reasons.push('Project Visual Context vNext 文件名缺失');
+    }
+    if (project.visualContextVNextStatus === 'ready' && project.visualContextVNextFilename) {
+      const paths = await projects.paths(projectId).catch(() => null);
+      if (!paths) {
+        reasons.push('项目目录不可访问');
+      } else {
+        const filename = path.basename(project.visualContextVNextFilename);
+        const target = path.join(paths.root, 'project-context', filename);
+        try {
+          const raw = await fs.readFile(target, 'utf8');
+          const value = JSON.parse(raw) as unknown;
+          const validation = validateProjectVisualContextVNext(value);
+          if (!validation.valid) {
+            reasons.push(`Project Visual Context vNext 文件校验失败：${validation.errors.join('; ')}`);
+          }
+        } catch (error) {
+          reasons.push(
+            `Project Visual Context vNext 文件不可读：${(error as Error).message || '未知错误'}`,
+          );
+        }
+      }
+    }
+    return {
+      ready: reasons.length === 0,
+      reasons,
+      vnextSchemaVersion: project.visualContextVNextVersion ?? null,
+      vnextBuiltAt: project.visualContextVNextLastBuiltAt ?? null,
+    };
+  }
+
   async function rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext> {
     const project = await projects.get(projectId);
     const paths = await projects.paths(projectId);
@@ -192,7 +274,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return result.filePath;
   }
 
-  return { get, rebuild, export: exportContext, getVNext, rebuildVNext };
+  return { get, rebuild, export: exportContext, getVNext, rebuildVNext, getGenerationContextReadiness };
 }
 
 export type ProjectContextService = ReturnType<typeof createProjectContextService>;
