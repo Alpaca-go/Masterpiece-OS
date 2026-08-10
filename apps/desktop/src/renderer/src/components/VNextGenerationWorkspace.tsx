@@ -13,6 +13,7 @@ import type {
   VNextLogoUsageMode,
   VNextReferenceSceneRelation,
   VNextShotSource,
+  VNextSimilarityAuditResult,
   VNextTaskContract,
   VNextValidatedGenerationImageRef,
 } from '../../../shared/types';
@@ -123,6 +124,15 @@ export function VNextGenerationWorkspace({
   // r2.0 §4.13 / Phase E: the 5-state flow state. Drives the banner
   // copy and the "first-image preservation" UI behavior.
   const [flowState, setFlowState] = useState<VNextGenerationFlowState | null>(null);
+  // r2.0 §6.7 / Phase F-3 + Phase E UI extension: similarity audit
+  // marker. null = audit not triggered (standard / continuation /
+  // reference_first + same_scene / unknown / no audit service);
+  // 'unavailable' = audit was triggered but failed (network /
+  // reasoner / write); object = audit ran to completion.
+  // The audit is ADVISORY: it never changes flowState / terminalStatus.
+  // When 'unavailable', a separate Final Acceptance banner appears;
+  // the generation result is preserved as-is.
+  const [similarityAudit, setSimilarityAudit] = useState<VNextSimilarityAuditResult | 'unavailable' | null>(null);
   const [lastValidation, setLastValidation] = useState<VNextDeliverableValidation | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -350,6 +360,11 @@ export function VNextGenerationWorkspace({
       const run = validated.correctionRun ?? validated.initialRun;
       setActiveRun(run);
       setFlowState(validated.flowState);
+      // r2.0 §6.7 / Phase F-3: similarity audit is ADVISORY. When
+      // 'unavailable', a separate Final Acceptance block banner
+      // appears; the generation result is preserved as-is and the
+      // flowState is unchanged.
+      setSimilarityAudit(validated.similarityAudit);
       // r2.0 §4.13 / Phase E: first-image preservation. Always load
       // the FIRST image (not the current run's image). This way a
       // correction that fails keeps the original visible.
@@ -652,6 +667,10 @@ export function VNextGenerationWorkspace({
       setLastValidation(validated.correctionValidation ?? validated.initialValidation);
       setActiveRun(run);
       setFlowState(validated.flowState);
+      // r2.0 §6.7 / Phase F-3: similarity audit marker (advisory).
+      // The audit is fail-soft; 'unavailable' only triggers the
+      // Final Acceptance block banner. flowState is unchanged.
+      setSimilarityAudit(validated.similarityAudit);
       // r2.0 §4.13 / Phase E: first-image preservation. Always load
       // the FIRST image (not the current run's image). This way a
       // correction that fails keeps the original visible.
@@ -1035,6 +1054,19 @@ export function VNextGenerationWorkspace({
               banner explains which step the flow is in so the user
               always knows what they're looking at. */}
           {flowState && <FlowStateBanner state={flowState} hasFirstImage={Boolean(firstImage)} />}
+          {/* r2.0 §6.7 / Phase E UI extension: minimal Final
+              Acceptance block banner. Renders when the similarity
+              audit was triggered but failed. The generation result
+              (the image below) is preserved as-is; flowState is
+              unchanged. We do NOT add a new acceptance dashboard —
+              this is just a banner that explains the audit-evidence
+              gap and how the user can recover. */}
+          {similarityAudit === 'unavailable' && (
+            <FinalAcceptanceBlockBanner reason="audit_unavailable" />
+          )}
+          {similarityAudit && similarityAudit !== 'unavailable' && similarityAudit.pass.overall === false && (
+            <FinalAcceptanceBlockBanner reason="audit_failed" />
+          )}
           <img src={imageDataUrl} alt="已生成的图片" />
           {(activeModeBadge || activeLineage) && <div className="result-mode-badges">
             {activeModeBadge && <span className="mode-badge">{activeModeBadge}</span>}
@@ -1235,6 +1267,44 @@ function FlowStateBanner({ state, hasFirstImage }: { state: VNextGenerationFlowS
       <strong>{copy.title}</strong>
       <p>{copy.detail}</p>
       {firstImageNote && <small>{firstImageNote}</small>}
+    </div>
+  );
+}
+
+// r2.0 §6.7 / Phase E UI extension: minimal Final Acceptance block
+// banner. Renders ONLY when the similarity audit was triggered but
+// failed (similarityAudit === 'unavailable'). The generation result
+// is preserved as-is: the image below is the successful first image,
+// flowState is unchanged. This banner is orthogonal to the
+// FlowStateBanner (which is about generation) — it is about
+// Final Acceptance, the user-facing step that says "this result
+// can be confirmed as the project's direction".
+//
+// We intentionally do NOT add a new acceptance dashboard, new
+// tab, or new state machine. Just a banner copy that explains:
+//   1) generation succeeded
+//   2) the audit evidence is incomplete
+//   3) Final Acceptance is therefore blocked
+//   4) how the user can recover (re-run, or manually override)
+function FinalAcceptanceBlockBanner({ reason }: { reason: 'audit_unavailable' | 'audit_failed' }) {
+  const copy = reason === 'audit_unavailable'
+    ? {
+      tone: 'block',
+      title: '终验收阻塞：审计证据不完整',
+      detail: '生成已成功（下方图片就是结果）。相似度审计在多模态调用 / 凭据 / 写盘时失败，结果被标记为 unavailable。',
+      action: '请重跑一次以补齐审计证据，或在人工核验后手动确认方向。',
+    }
+    : {
+      tone: 'block',
+      title: '终验收阻塞：相似度审计未通过',
+      detail: '生成已成功（下方图片就是结果）。多模态审计在 6 维评分上未达标，Final Acceptance 暂时阻塞。',
+      action: '请参考审计报告调整 Prompt，或人工复核后确认方向。',
+    };
+  return (
+    <div className={`flow-state-banner flow-state-${copy.tone}`}>
+      <strong>{copy.title}</strong>
+      <p>{copy.detail}</p>
+      <small>{copy.action}</small>
     </div>
   );
 }
