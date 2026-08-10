@@ -1,5 +1,68 @@
 # Changelog
 
+## 5.0.0-rc.1 — Reference-First 跨场景生图修复 (r2.0 supplement) — 2026-08-10
+
+> 在 5.0.0-rc.1 之上补齐 Reference-First 跨场景生图链路上的 3 类问题：后分析上传静默丢失、Reference-First 退化为 1:1 复制、验证 / 纠偏 UI 把首图替换掉。设计文档位于 `docs/development/r2.0-reference-first.md`（§-章节号为代码注释 / commit message / 测试文件单一事实源）。
+
+### 5 invariants kept（全程未触碰）
+
+1. `Reference-First = high_fidelity_visual_reference`
+2. `Continuation = world_consistency`
+3. `referenceSceneRelation` 是辅助元数据，不替代 Target Scene Functional Authority
+4. Standard 路径输出完全不变
+5. Continuation 路径输出完全不变
+
+### 4 constraints（全程未触碰）
+
+- `maxReferences` 不硬编码 2：由 `min(ProductPolicy, AdapterCapability)` 决定；adapter 缺能力时 fail-closed (0)
+- A0 只抛 `REFERENCE_ASSET_NOT_FOUND`；完整校验在 C-2 Resolver
+- 三条 Provider 路径（capability / smoke / 复制降级）按需走
+- `r8_6_golden` 编译器未修改
+
+### Phases（13 commits on `codex/r10-4-regression-repair`）
+
+| Phase | 主题 | 章节 | Commit |
+|---|---|---|---|
+| A0 | post-analysis upload 不再静默丢失 | §4.11 | `aacc09f` |
+| B-1 | `referenceSceneRelation` 辅助元数据 | §4.9 | `fe93e2c` |
+| B-2 | Adapter Capability + Product Policy 联合算 `maxReferences` | §4.10 | `3690cf3` |
+| B-3 | Reference Boundary 文本块（v2.0 正向表达） | §4.10 | `35f95f5` |
+| B-4 | Reference-First 跨场景 smoke runner | §4.11 | `d753431` + `47a0f6d` (unblock) |
+| C-1 | Reference Asset Resolver (MIME-by-signature, 6 类 code) | §4.11 | `2c81402` |
+| C-2 | Resolver 接入 `vnext-service.start` | §4.11 | `0afac9a` |
+| C-3 | UI preflight (per-asset ✓ / ✕ code / · pending) | §4.11 | `b37c6fc` |
+| D | 门禁拆分为 Gate A (compile) + Gate B (provider prompt) | §4.13 / §9 | `70ae270` |
+| E | 5 状态 UI + first-image preservation | §4.13 | `6fbd17c` |
+| F-1 | 合约层 SimilarityAudit + EvidenceCheckpoint 类型 | §6.7 / §8 | `8682c6c` |
+| F-2 | Similarity Audit Service (desktop, multimodal LLM) | §6.7 | `f7e128c` |
+| F-3 | Audit 接入 `vnext-service.startValidated` (advisory, fail-soft) | §6.7 | `a729f1e` |
+| F-4 | Evidence Checkpoint 两层 (desktop scanner + runtime validator) | §8 | `943fdb5` |
+| tsc | F-4 测试 tsc strict mode 隐式 widening 修复 | — | `cb2fcac` |
+| docs | r2.0 设计文档 `docs/development/r2.0-reference-first.md` | — | `317c666` |
+| UI | 最小 Final Acceptance block banner (`similarityAudit=unavailable`) | — | `e3b01ba` |
+
+### B-4 smoke 实际跑通
+
+`b4-1-final`：2K 16:9 consultation room，prompt 7544 chars，远低于 12 000 Seedream cap；全部 14 个 PHASE9B block 完整；Reference Boundary 已追加；双门禁 ALL PASS。视觉上 cross-scene Reference-First 正确表达——目标场景拥有功能 / 家具 / 隐私 / 比例 / 流线；reference 图只贡献设计语言；无字面 motif；无 in-scene 身份；紫色降为 accent（R8.5 材质 sanitizer 仍生效）。
+
+### F-4 两层架构（r2.0 §8 单一事实源）
+
+- **Layer 1 (desktop scanner)**：`apps/desktop/src/main/image-generation/vnext-evidence-scanner.ts` —— 知道 fs 路径、读 9 文件、算 sha256、抽 bindings，**不**执行任何 binding 检查。
+- **Layer 2 (runtime validator)**：`packages/image-generation-runtime/src/space/gates/evidence-integrity-gate.js` —— 纯函数、收 bundle + context、产 checkpoint、**不**碰 fs。
+
+边界由 `tests/image-generation/architecture-boundaries.test.js` 硬性卡死：`packages/*` 内任何源码提到 `apps/desktop` 或 `labs/` 就 fail。
+
+### 累计验证
+
+- **测试**：root 649 → 694（+45）；desktop 310 → 342（+32）；desktop 总过 384
+- **gate**：`verify:version-consistency` / `verify:version-naming` / `verify:workspace-boundaries` / `verify:no-obsolete-code` / `verify:production-boundaries` / `verify:no-project-specific-production-rules` / `verify:golden-boundary` / `verify:current-flows` 全部 PASS
+- **architecture-boundaries**（pre-existing）：PASS
+- **tsc**：`npx tsc --noEmit --project apps/desktop/tsconfig.json` 0 errors
+
+### B-5
+
+**保持关闭**。B-4 视觉被用户审阅为 cross-scene 正确表达；不触发 Near-copy 降级路径。重新触发条件：人工视觉验收明确判定为 Near-copy。
+
 ## 5.0.0-rc.1 — 2026-07-31
 
 > 仓库清理与版本对齐：合并 v5 引擎 / V6 Creative Production / V18 Creative Director / vnext 短链路 / Phase 1.5 Quality Recovery Loop 的工作，正式发布版本统一为 5.0.0-rc.1；待真实 Provider smoke 通过与分支治理完成后 cut 为 5.0.0。
