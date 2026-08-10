@@ -27,6 +27,9 @@ import {
   resolveEffectiveMaxReferences,
 } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
 import { createSeedreamVNextAdapter } from '@masterpiece/image-generation-runtime/vnext/seedream-adapter.js';
+import {
+  resolveReferenceAssets,
+} from '../reference-asset-resolver.ts';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
@@ -81,6 +84,45 @@ export function assertReferenceAssetsResolvable(
     projectId,
   });
   throw err;
+}
+
+// r2.0 §4.11 / Phase C-2: wrap the Reference Asset Resolver so the
+// vnext-service.start() path can fail closed with a single typed Error
+// per call site. The wrapper is intentionally Main-process only — it
+// touches projects (ProjectStore), so it does NOT belong in the pure
+// resolver module.
+async function resolveExplicitReferencesOrThrow(
+  explicitIds: string[],
+  projectId: string,
+  projects: ProjectStore,
+): Promise<
+  Array<{ assetId: string; role: string; relativePath: string }>
+> {
+  if (!explicitIds || explicitIds.length === 0) return [];
+  const [projectPaths, project] = await Promise.all([
+    projects.paths(projectId),
+    projects.get(projectId),
+  ]);
+  // Skip the SHA recompute: the project store records the SHA at import
+  // time, and post-import tampering is a separate concern (the resolver
+  // exposes REFERENCE_ASSET_SHA_MISMATCH when verifySha256 is true).
+  const { resolved, failures } = await resolveReferenceAssets(
+    explicitIds,
+    { projectRoot: projectPaths.root, verifySha256: false },
+    project.assets,
+  );
+  if (failures.length > 0) {
+    const first = failures[0]!;
+    throw Object.assign(
+      new Error(`${first.code}: ${first.message}`),
+      { code: first.code, referenceAssetId: first.assetId, failures },
+    );
+  }
+  return resolved.map((record) => ({
+    assetId: record.assetId,
+    role: record.role,
+    relativePath: record.relativePath,
+  }));
 }
 
 export interface StartVNextGenerationInput {
@@ -508,21 +550,17 @@ export function createVNextImageGenerationService(
         // Recovery R4: first formal space generation must carry a non-logo core
         // reference. Priority: user explicit > implicit anchor > architecture
         // anchor image. Logo/packaging assets are filtered out by the policy.
-        // R11.A0: throw REFERENCE_ASSET_NOT_FOUND for any explicit ID that is
-        // not present in the static sourceAssetRefs (post-analysis upload path).
-        assertReferenceAssetsResolvable(
+        // r2.0 §4.11 / Phase C: resolve via the live project store (project.assets),
+        // not the static sourceAssetRefs. This is the A0 + Phase C fix for
+        // "post-analysis upload": a fresh upload is reachable as long as the
+        // project store has it, even when the vnext visual context is stale.
+        // The resolver also enforces MIME-by-signature (PNG / JPEG / WebP),
+        // replacing the A0-era silent .pdf filter.
+        const explicitAssets = await resolveExplicitReferencesOrThrow(
           explicitIds,
-          currentContext.sourceAssetRefs,
           input.projectId,
+          projects,
         );
-        const explicitAssets = explicitIds.map((assetId) => {
-          const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId)!;
-          return {
-            assetId: asset.assetId,
-            role: asset.role,
-            relativePath: asset.relativePath,
-          };
-        });
         const architectureAnchorImages = (phase9b?.referenceImages ?? [])
           .filter((img) => img.imagePath)
           .map((img) => ({ anchorId: img.anchorId, imagePath: img.imagePath as string }));
@@ -667,22 +705,20 @@ export function createVNextImageGenerationService(
         }),
       ]);
     } else {
-      // R11.A0: throw REFERENCE_ASSET_NOT_FOUND for any explicit ID that is not
-      // present in the static sourceAssetRefs (post-analysis upload path).
-      // The PDF filter below stays: PDF is a format problem, not a not-found
-      // problem. Phase C's full Asset Resolver will replace it with
-      // REFERENCE_ASSET_FORMAT_UNSUPPORTED.
-      assertReferenceAssetsResolvable(
+      // r2.0 §4.11 / Phase C: resolve via the live project store (project.assets),
+      // not the static sourceAssetRefs. The PDF filter is removed: the
+      // resolver rejects non-image formats with REFERENCE_ASSET_FORMAT_UNSUPPORTED
+      // before we ever reach this code path.
+      const explicitResolved = await resolveExplicitReferencesOrThrow(
         explicitIds,
-        currentContext.sourceAssetRefs,
         input.projectId,
+        projects,
       );
-      const explicitReferences = explicitIds.flatMap((assetId) => {
-        const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId)!;
-        if (asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
+      const explicitReferences = explicitResolved.flatMap((asset) => {
+        const id = asset.assetId;
         return [{
-          id: asset.assetId,
-          role: lockedLogoAssetIds.has(asset.assetId) || asset.role === 'logo'
+          id,
+          role: lockedLogoAssetIds.has(id) || asset.role === 'logo'
             ? 'identity_reference' as const
             : asset.role === 'package_structure'
               ? 'structure_reference' as const
