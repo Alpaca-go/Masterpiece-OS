@@ -37,6 +37,18 @@ export function createVNextTaskContract(input, options = {}) {
     : input?.shotSource === 'target_scene_default'
       ? 'target_scene_default'
       : 'legacy_project_default';
+  // r2.0 §4.9: referenceSceneRelation is auxiliary metadata that only makes
+  // sense for reference_first. Whitelist to the three documented values;
+  // anything else (including absent) falls back to 'unknown' for reference_first
+  // and is omitted for standard / continuation. We never throw on this field
+  // — it is advisory, not a route-integrity input.
+  const referenceSceneRelation = generationBasis === 'reference_first'
+    ? (input?.referenceSceneRelation === 'same_scene'
+      ? 'same_scene'
+      : input?.referenceSceneRelation === 'cross_scene'
+        ? 'cross_scene'
+        : 'unknown')
+    : undefined;
   if (!input?.projectId) throw new Error('projectId is required');
   if (!FAMILIES.has(family)) throw new Error(`Unsupported deliverable family: ${family || '(empty)'}`);
   if (!subtype) throw new Error('subtype is required');
@@ -93,6 +105,7 @@ export function createVNextTaskContract(input, options = {}) {
     logoUsageMode,
     ...(continuation ? { continuation } : {}),
     shotSource,
+    ...(referenceSceneRelation ? { referenceSceneRelation } : {}),
     createdAt: options.now || new Date().toISOString(),
   };
 }

@@ -9,6 +9,7 @@ import type {
   VNextCreativeSession,
   VNextDeliverableValidation,
   VNextLogoUsageMode,
+  VNextReferenceSceneRelation,
   VNextShotSource,
   VNextTaskContract,
 } from '../../../shared/types';
@@ -94,6 +95,11 @@ export function VNextGenerationWorkspace({
   const [subtype, setSubtype] = useState(DEFAULTS.space.subtype);
   const [shot, setShot] = useState(DEFAULTS.space.shot);
   const [shotSource, setShotSource] = useState<VNextShotSource>('target_scene_default');
+  // r2.0 §4.9: auxiliary metadata. Default 'unknown' (we do not auto-detect
+  // reference asset scene labels in this commit; Phase F will add asset
+  // metadata + auto-compute). Visible only in Reference-First mode.
+  const [referenceSceneRelation, setReferenceSceneRelation] =
+    useState<VNextReferenceSceneRelation>('unknown');
   const [aspectRatio, setAspectRatio] = useState<VNextTaskContract['aspectRatio']>('16:9');
   const [instruction, setInstruction] = useState('');
   const [mustIncludeText, setMustIncludeText] = useState('');
@@ -403,6 +409,7 @@ export function VNextGenerationWorkspace({
     setSubtype(defaults.subtype);
     setShot(defaults.shot);
     setShotSource('target_scene_default');
+    setReferenceSceneRelation('unknown');
     setAspectRatio(defaults.ratio);
     setCompiled(null);
     setEditedPrompt('');
@@ -428,6 +435,7 @@ export function VNextGenerationWorkspace({
   function changeBasis(next: 'standard' | 'reference') {
     setGenerationBasis(next);
     setShotSource('target_scene_default');
+    setReferenceSceneRelation('unknown');
     setCompiled(null);
     setEditedPrompt('');
     setActiveRun(null);
@@ -545,6 +553,7 @@ export function VNextGenerationWorkspace({
           referenceAssetIds: generationBasis === 'reference' ? referenceAssetIds : [],
           logoUsageMode,
           shotSource,
+          ...(generationBasis === 'reference' ? { referenceSceneRelation } : {}),
         },
       });
       setCompiled(result);
@@ -807,6 +816,18 @@ export function VNextGenerationWorkspace({
             {(familyOptions?.shots ?? []).map((item) => <option key={item}>{item}</option>)}
           </select>
         </label>
+        {generationBasis === 'reference' && (
+          <label>参考图场景关系
+            <select
+              value={referenceSceneRelation}
+              onChange={(event) => setReferenceSceneRelation(event.target.value as VNextReferenceSceneRelation)}
+              title="参考图的场景与目标场景的关系（同场景 / 跨场景 / 未知）。仅作为 Trace 与 Reference Boundary 强度提示，不影响功能程序权威。">
+              <option value="unknown">未知（待人工或自动判定）</option>
+              <option value="same_scene">同场景（目标 = 参考图场景）</option>
+              <option value="cross_scene">跨场景（目标 ≠ 参考图场景）</option>
+            </select>
+          </label>
+        )}
         <label>比例
           <select value={aspectRatio} onChange={(event) =>
             setAspectRatio(event.target.value as VNextTaskContract['aspectRatio'])}>

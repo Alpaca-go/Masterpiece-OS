@@ -803,6 +803,14 @@ export type VNextGenerationBasis = 'standard' | 'reference_first' | 'continuatio
 // > legacy_project_default).
 export type VNextShotSource = 'user_explicit' | 'target_scene_default' | 'legacy_project_default';
 
+// r2.0 §4.9: auxiliary metadata describing how the reference image's scene
+// relates to the target scene. NEVER replaces Target Scene Functional
+// Authority. Used for UI advisory, Reference boundary strength, Trace,
+// and Provider prompt nuance. Default 'unknown' when the relation cannot
+// be determined from the available asset metadata. Not applicable when
+// generationBasis is 'standard' or 'continuation'.
+export type VNextReferenceSceneRelation = 'same_scene' | 'cross_scene' | 'unknown';
+
 // R11.1 continuation confirmation state for a generated space output.
 // append-only metadata; never changes the image / run / evaluation.
 export type ContinuationConfirmationState = 'unconfirmed' | 'confirmed' | 'revoked';
@@ -852,6 +860,8 @@ export interface VNextTaskContract {
   logoUsageMode?: VNextLogoUsageMode;
   /** R11.2.3: provenance of the shot value (target scene owns the view unless the user explicitly chose it). */
   shotSource?: VNextShotSource;
+  /** r2.0 §4.9: auxiliary metadata — reference scene vs target scene relation. */
+  referenceSceneRelation?: VNextReferenceSceneRelation;
   createdAt: string;
   /** R11.1: present only when generationBasis === 'continuation'. */
   continuation?: VNextContinuationIntent;
