@@ -811,6 +811,48 @@ export type VNextShotSource = 'user_explicit' | 'target_scene_default' | 'legacy
 // generationBasis is 'standard' or 'continuation'.
 export type VNextReferenceSceneRelation = 'same_scene' | 'cross_scene' | 'unknown';
 
+// r2.0 §4.10 Path A: the adapter declares its reference-image capability
+// honestly. Any strength / role / type control MUST be reported as
+// unsupported until the adapter author has verified it end to end. The
+// compiler / Reference Boundary (B-3) reads this; Path A can only run if
+// referenceStrengthControl.supported or referenceRoleControl.supported is
+// true. Otherwise the trace MUST mark providerStrengthControl = "unsupported"
+// and the text block alone is sent (B-3), or Paths B / C are explored.
+export interface VNextAdapterStrengthControlCapability {
+  /** Whether the adapter actually supports an official strength / weight parameter for references. */
+  supported: boolean;
+  /** The provider-side parameter name, e.g. "ref_strength" or "image_strength". Null when unsupported. */
+  controlParameter: string | null;
+  /**
+   * Free-form honest note. When supported=false this MUST explain what was
+   * checked and why it is being reported as unsupported. When supported=true
+   * it SHOULD cite the range / default the adapter author verified.
+   */
+  note: string;
+}
+
+export interface VNextAdapterReferenceCapability {
+  /**
+   * Maximum number of reference images the adapter can accept in a single
+   * call. Combined with Product Policy via min(...) at runtime. The current
+   * production value for Seedream 5.0 Pro is 2; bumping it requires
+   * updating this declaration AND verifying the model actually accepts the
+   * higher count end to end.
+   */
+  maxReferenceImages: number;
+  referenceStrengthControl: VNextAdapterStrengthControlCapability;
+  referenceRoleControl: VNextAdapterStrengthControlCapability;
+}
+
+export interface VNextAdapterCapability {
+  /** The adapter id (matches VNextCompiledPrompt.trace.adapterId). */
+  adapterId: string;
+  /** The adapter version (matches VNextCompiledPrompt.trace.adapterVersion). */
+  adapterVersion: string;
+  /** Reference-image capability. */
+  reference: VNextAdapterReferenceCapability;
+}
+
 // R11.1 continuation confirmation state for a generated space output.
 // append-only metadata; never changes the image / run / evaluation.
 export type ContinuationConfirmationState = 'unconfirmed' | 'confirmed' | 'revoked';

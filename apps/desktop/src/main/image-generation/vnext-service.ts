@@ -24,7 +24,9 @@ import {
   resolveContinuationReference,
   runSpaceQualityGate,
   validateSpatialSemantics,
+  resolveEffectiveMaxReferences,
 } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+import { createSeedreamVNextAdapter } from '@masterpiece/image-generation-runtime/vnext/seedream-adapter.js';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
@@ -525,6 +527,18 @@ export function createVNextImageGenerationService(
           .filter((img) => img.imagePath)
           .map((img) => ({ anchorId: img.anchorId, imagePath: img.imagePath as string }));
 
+        // r2.0 §4.10 / B-2: the max reference count is the intersection of
+        // Product Policy and the live Adapter Capability. The current Seedream
+        // adapter declares maxReferenceImages: 2 with reference strength /
+        // role controls unsupported (not verified end to end), so today the
+        // effective bound matches the previous 2. Bumping the policy or the
+        // adapter capability no longer requires editing vnext-service.
+        const adapter = createSeedreamVNextAdapter({ model: compilation.payload.model });
+        const effectiveMax = resolveEffectiveMaxReferences({
+          generationBasis,
+          adapterCapability: adapter.capability,
+        }).effectiveMax;
+
         resolved = resolveSpaceReferences({
           generationBasis,
           explicitAssets,
@@ -532,7 +546,7 @@ export function createVNextImageGenerationService(
             ? { imageId: implicitAnchor.imageId, projectRelativePath: implicitAnchor.projectRelativePath }
             : null,
           architectureAnchorImages,
-          maxReferences: 2,
+          maxReferences: effectiveMax,
         }) as typeof resolved;
       }
       references = resolved.references.map((ref) => ({

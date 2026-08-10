@@ -43,6 +43,17 @@ export {
 } from './gates/generation-route-integrity-gate.js';
 export { ACTIVE_SPACE_ROUTE_BASELINE } from './quality-baselines/active-space-route-baseline.js';
 
+// r2.0 §4.10 / B-2: Product Policy + Adapter Capability. The Product Policy
+// is the BUSINESS rule for "how many references per basis"; the Adapter
+// Capability is what the model can accept. The effective max is the min
+// of the two. See product-policy.js for the seam.
+export {
+  PRODUCT_POLICY_VERSION,
+  PRODUCT_POLICY_DEFAULT_MAX_REFERENCES,
+  resolveProductPolicyMaxReferences,
+  resolveEffectiveMaxReferences,
+} from './product-policy.js';
+
 // R11.2.2 mode boundary — the frozen product semantics and the route semantic
 // gate that keeps Reference-First (high fidelity) and Continuation
 // (world consistency + program transformation) apart.
