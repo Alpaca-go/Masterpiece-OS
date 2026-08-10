@@ -1899,6 +1899,54 @@ export interface CompileVNextGenerationInput {
   };
 }
 
+// r2.0 §4.11 / Phase C-3: UI preflight types. The renderer passes a project
+// + a set of asset IDs the user is considering as references; the main
+// process runs the resolver and returns a per-ID status. The renderer
+// surfaces failures as a badge + disables the "use as reference" action.
+//
+// The status union mirrors ReferenceResolutionResult but is plain
+// serialisable JSON (no class instances / functions) so it can pass
+// through ipcRenderer.invoke / structured-clone without loss.
+export type ReferenceResolutionFailureCode =
+  | 'REFERENCE_ASSET_NOT_FOUND'
+  | 'REFERENCE_ASSET_NOT_READY'
+  | 'REFERENCE_ASSET_FORMAT_UNSUPPORTED'
+  | 'REFERENCE_ASSET_PATH_INVALID'
+  | 'REFERENCE_ASSET_FILE_UNREADABLE'
+  | 'REFERENCE_ASSET_FILE_TOO_LARGE'
+  | 'REFERENCE_ASSET_SHA_MISMATCH';
+
+export interface PreflightResolvedRecord {
+  assetId: string;
+  role: string;
+  relativePath: string;
+  absolutePath: string;
+  mime: string;
+  sizeBytes: number;
+  sha256: string;
+}
+
+export interface PreflightFailureRecord {
+  assetId: string;
+  code: ReferenceResolutionFailureCode;
+  message: string;
+  relativePath?: string;
+  declaredMime?: string;
+  mime?: string;
+  sizeBytes?: number;
+  declaredSha256?: string;
+  actualSha256?: string;
+}
+
+export type PreflightReferenceAssetsResultEntry =
+  | { status: 'resolved'; assetId: string; record: PreflightResolvedRecord }
+  | { status: 'failed'; assetId: string; failure: PreflightFailureRecord };
+
+export interface PreflightReferenceAssetsInput {
+  projectId: string;
+  assetIds: string[];
+}
+
 export interface CompileVNextGenerationResult {
   taskContract: VNextTaskContract;
   compiledPrompt: VNextCompiledPrompt;
@@ -2096,6 +2144,15 @@ export interface DesktopApi {
     /** 搂16 缂栬瘧 Prompt 骞舵墽琛屼笁灞?Gate锛堜笉鎻愪氦 Provider锛夈€?*/
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
     compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
+    /**
+     * r2.0 §4.11 / Phase C-3: UI preflight for reference assets. Runs the
+     * same resolver as start(), but in a fail-soft mode that returns a
+     * per-ID result map. The renderer uses this to badge assets and to
+     * disable the "use as reference" action for failed ones.
+     */
+    preflightReferenceAssets(
+      input: PreflightReferenceAssetsInput
+    ): Promise<{ projectId: string; results: PreflightReferenceAssetsResultEntry[] }>;
     getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
     startVNext(input: StartVNextGenerationInput): Promise<ImageGenerationRun>;
     startValidatedVNext(

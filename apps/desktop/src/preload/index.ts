@@ -96,6 +96,11 @@ const api: DesktopApi = {
     getSourcePreview: (input) => ipcRenderer.invoke('image-generation:get-source-preview', input),
     compile: (input) => ipcRenderer.invoke('image-generation:compile', input),
     compileVNext: (input) => ipcRenderer.invoke('image-generation:vnext-compile', input),
+    // r2.0 §4.11 / Phase C-3: UI preflight. Renderer calls after loading
+    // project assets; result drives the per-asset status badge and the
+    // "use as reference" enable rule.
+    preflightReferenceAssets: (input) =>
+      ipcRenderer.invoke('image-generation:preflight-reference-assets', input),
     getVNextOptions: () => ipcRenderer.invoke('image-generation:vnext-options'),
     startVNext: (input) => ipcRenderer.invoke('image-generation:vnext-start', input),
     startValidatedVNext: (input) => ipcRenderer.invoke('image-generation:vnext-start-validated', input),

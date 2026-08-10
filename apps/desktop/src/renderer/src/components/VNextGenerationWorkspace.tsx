@@ -4,6 +4,7 @@ import type {
   AssetItem,
   CompileVNextGenerationResult,
   ImageGenerationRun,
+  PreflightReferenceAssetsResultEntry,
   ProjectRecord,
   VNextConfirmedGeneratedOutput,
   VNextCreativeSession,
@@ -136,6 +137,14 @@ export function VNextGenerationWorkspace({
   const [uploading, setUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [referenceWarnings, setReferenceWarnings] = useState<Record<string, string[]>>({});
+  // r2.0 §4.11 / Phase C-3: per-asset preflight result. Populated by
+  // runPreflight() after the asset list loads and after importFiles. The
+  // map is keyed by assetId and drives the status badge on each asset
+  // tile. A failed preflight (REFERENCE_ASSET_NOT_FOUND /
+  // FORMAT_UNSUPPORTED / NOT_READY / etc.) disables the "use as reference"
+  // checkbox because vnext-service.start() will reject the same ID at
+  // submit time — better to block it here.
+  const [referencePreflight, setReferencePreflight] = useState<Record<string, PreflightReferenceAssetsResultEntry>>({});
   // R11.2.2: the cross-scene advisory is dismissible per user intent
   // ("仍使用参考优先"). Dismissing never changes the mode.
   const [crossSceneAdvisoryDismissed, setCrossSceneAdvisoryDismissed] = useState(false);
@@ -422,13 +431,45 @@ export function VNextGenerationWorkspace({
     setAssetsLoading(true);
     try {
       const summary = await window.masterpiece.projects.scanAssets(project.id);
-      setProjectAssets(summary.items.filter((item) => item.kind === 'image'));
+      const images = summary.items.filter((item) => item.kind === 'image');
+      setProjectAssets(images);
+      // r2.0 §4.11 / Phase C-3: preflight the assets so the user can see
+      // which ones are reference-eligible BEFORE clicking. Best-effort:
+      // if the IPC or the resolver fails, leave the map empty (the user
+      // gets a "checking…" indicator but the picker stays usable).
+      void runPreflight(images.map((a) => a.id));
     } catch (reason) {
       // Asset list is best-effort for Reference-First; failure must not block
       // the standard text-only path.
       setProjectAssets([]);
     } finally {
       setAssetsLoading(false);
+    }
+  }
+
+  // r2.0 §4.11 / Phase C-3: run preflight over a list of asset IDs. The
+  // IPC handler is fail-soft (returns per-ID results, never throws), so
+  // a bad asset or an unavailable handler does not block the picker —
+  // the user sees a "checking…" badge until we know otherwise.
+  async function runPreflight(assetIds: string[]) {
+    if (assetIds.length === 0) return;
+    if (!window.masterpiece.imageGeneration.preflightReferenceAssets) {
+      // Backward-compat: an older renderer / older preload. Skip silently.
+      return;
+    }
+    try {
+      const out = await window.masterpiece.imageGeneration.preflightReferenceAssets({
+        projectId: project.id,
+        assetIds,
+      });
+      setReferencePreflight((current) => {
+        const next = { ...current };
+        for (const entry of out.results) next[entry.assetId] = entry;
+        return next;
+      });
+    } catch (reason) {
+      // Fail-soft: do not surface as an error, do not block the picker.
+      // The next runPreflight (e.g. on re-import) will retry.
     }
   }
 
@@ -488,6 +529,10 @@ export function VNextGenerationWorkspace({
         .map((dup) => dup.id)
         .filter((id) => images.some((item) => item.id === id));
       setReferenceAssetIds((current) => mergeUploadedReferenceIds(current, uploadedIds, duplicateIds));
+      // r2.0 §4.11 / Phase C-3: preflight the freshly imported assets so
+      // the user sees a status badge immediately. Best-effort: skip on
+      // IPC failure.
+      void runPreflight([...uploadedIds, ...duplicateIds]);
       // R11.2.1: uploaded assets are user_upload provenance; a re-uploaded
       // duplicate is the pre-existing project asset, so it is project_visual_asset.
       setReferenceSources((current) => {
@@ -762,20 +807,59 @@ export function VNextGenerationWorkspace({
               : <div className="reference-asset-grid">
                 {projectAssets.length === 0
                   ? <span className="muted">当前项目没有可用图片资产。请先上传参考图。</span>
-                  : projectAssets.map((asset) => (
-                    <label key={asset.id} className={referenceAssetIds.includes(asset.id) ? 'asset-tile selected' : 'asset-tile'}>
-                      <input
-                        type="checkbox"
-                        disabled={!referenceAssetIds.includes(asset.id) && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES}
-                        checked={referenceAssetIds.includes(asset.id)}
-                        onChange={() => toggleReferenceAsset(asset.id)}
-                      />
-                      {asset.thumbnailDataUrl
-                        ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
-                        : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
-                      <span>{asset.name}</span>
-                    </label>
-                  ))}
+                  : projectAssets.map((asset) => {
+                    const preflight = referencePreflight[asset.id];
+                    const preflightFailed = preflight?.status === 'failed';
+                    // r2.0 §4.11 / Phase C-3: a failed preflight means
+                    // vnext-service.start() will throw the same code at
+                    // submit time. Disable the checkbox so the user is
+                    // not tempted to select an unusable asset.
+                    const checkboxDisabled = preflightFailed
+                      || (!referenceAssetIds.includes(asset.id)
+                        && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES);
+                    return (
+                      <label
+                        key={asset.id}
+                        className={
+                          referenceAssetIds.includes(asset.id)
+                            ? 'asset-tile selected'
+                            : preflightFailed
+                              ? 'asset-tile disabled-preflight'
+                              : 'asset-tile'
+                        }
+                        title={preflightFailed && preflight.status === 'failed' ? preflight.failure.message : undefined}
+                      >
+                        <input
+                          type="checkbox"
+                          disabled={checkboxDisabled}
+                          checked={referenceAssetIds.includes(asset.id)}
+                          onChange={() => toggleReferenceAsset(asset.id)}
+                        />
+                        {asset.thumbnailDataUrl
+                          ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                          : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
+                        <span>{asset.name}</span>
+                        {/* r2.0 §4.11 / Phase C-3: per-asset preflight badge.
+                            resolved = green check, failed = red X + code, no
+                            preflight yet = "…" hint. Helps the user
+                            understand WHY a checkbox is disabled. */}
+                        <span
+                          className={
+                            preflight?.status === 'resolved'
+                              ? 'preflight-badge preflight-ok'
+                              : preflight?.status === 'failed'
+                                ? 'preflight-badge preflight-fail'
+                                : 'preflight-badge preflight-pending'
+                          }
+                          aria-label={preflight?.status === 'failed' ? `preflight failed: ${preflight.failure.code}` : undefined}
+                        >
+                          {preflight?.status === 'resolved' ? '✓'
+                            : preflight?.status === 'failed' ? `✕ ${preflight.failure.code}`
+                              : '…'}
+                        </span>
+                      </label>
+                    );
+                  })}
               </div>}
           </div>}
 

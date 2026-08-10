@@ -29,6 +29,8 @@ import {
 import { createSeedreamVNextAdapter } from '@masterpiece/image-generation-runtime/vnext/seedream-adapter.js';
 import {
   resolveReferenceAssets,
+  type ResolvedReferenceAsset,
+  type ReferenceResolutionFailure,
 } from '../reference-asset-resolver.ts';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
@@ -1178,6 +1180,62 @@ export function createVNextImageGenerationService(
     return audit;
   }
 
+  // r2.0 §4.11 / Phase C-3: preflight resolver. The renderer calls this with
+  // a set of asset IDs the user is considering as references; the result is
+  // a per-ID status (resolved / failed with code) that drives the UI badge
+  // and the "use as reference" enable rule. Does NOT fail closed: the
+  // caller (UI) gets the full { resolved, failures } map and decides.
+  // The resolver is the same one vnext-service.start() calls, so a preflight
+  // pass guarantees start() will not throw REFERENCE_ASSET_* at submit time.
+  async function preflightReferenceAssets(input: {
+    projectId: string;
+    assetIds: string[];
+  }): Promise<{
+    projectId: string;
+    results: Array<
+      | { status: 'resolved'; assetId: string; record: ResolvedReferenceAsset }
+      | { status: 'failed'; assetId: string; failure: ReferenceResolutionFailure }
+    >;
+  }> {
+    const { projectId, assetIds } = input;
+    const uniqueIds = Array.from(new Set(assetIds));
+    if (uniqueIds.length === 0) {
+      return { projectId, results: [] };
+    }
+    const [projectPaths, project] = await Promise.all([
+      projects.paths(projectId),
+      projects.get(projectId),
+    ]);
+    const { resolved, failures } = await resolveReferenceAssets(
+      uniqueIds,
+      // Same options as resolveExplicitReferencesOrThrow: SHA verification
+      // off (the project store records SHA at import time; the resolver
+      // exposes REFERENCE_ASSET_SHA_MISMATCH only when verifySha256 is true).
+      { projectRoot: projectPaths.root, verifySha256: false },
+      project.assets,
+    );
+    const byId = new Map<string,
+      | { status: 'resolved'; assetId: string; record: ResolvedReferenceAsset }
+      | { status: 'failed'; assetId: string; failure: ReferenceResolutionFailure }
+    >();
+    for (const r of resolved) byId.set(r.assetId, { status: 'resolved', assetId: r.assetId, record: r });
+    for (const f of failures) byId.set(f.assetId, { status: 'failed', assetId: f.assetId, failure: f });
+    return {
+      projectId,
+      results: uniqueIds.map((id) =>
+        byId.get(id) ?? {
+          status: 'failed',
+          assetId: id,
+          failure: {
+            assetId: id,
+            code: 'REFERENCE_ASSET_NOT_FOUND',
+            message: `asset ${id} did not return a result from the resolver`,
+          },
+        },
+      ),
+    };
+  }
+
   return {
     compile,
     start,
@@ -1191,6 +1249,12 @@ export function createVNextImageGenerationService(
     postCompositeLogo,
     saveProjectPromptAsset,
     listOptions: listVNextTemplateOptions,
+    // r2.0 §4.11 / Phase C-3: UI preflight. The renderer calls this after
+    // loadProjectAssets and on importFiles, so the user can see per-asset
+    // resolution status (resolved / failed with code) BEFORE clicking
+    // "use as reference". The same resolver vnext-service.start() uses, so
+    // preflight pass = generation will not fail on REFERENCE_ASSET_* codes.
+    preflightReferenceAssets,
   };
 }
 

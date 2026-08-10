@@ -63,6 +63,20 @@ export function registerImageGenerationIpc(
     ipcMain.handle('image-generation:vnext-options', async () => vnextService.listOptions());
     ipcMain.handle('image-generation:vnext-compile', async (_event, input: CompileVNextGenerationInput) =>
       vnextService.compile(input));
+    // r2.0 §4.11 / Phase C-3: UI preflight. Renderer calls after loading
+    // project assets / importing new files; result drives the per-asset
+    // status badge and the "use as reference" enable rule. The handler is
+    // fail-soft: it returns the per-ID result map; the renderer surfaces
+    // failures and disables the failed assets from being selected.
+    if (vnextService.preflightReferenceAssets) {
+      ipcMain.handle(
+        'image-generation:preflight-reference-assets',
+        async (
+          _event,
+          input: { projectId: string; assetIds: string[] },
+        ) => vnextService.preflightReferenceAssets!(input),
+      );
+    }
     ipcMain.handle('image-generation:vnext-start', async (_event, input: StartVNextGenerationInput) =>
       vnextService.start(input));
     ipcMain.handle(
