@@ -51,6 +51,36 @@ export interface CompileVNextGenerationResult {
   artifactDirectory: string;
 }
 
+// R11.A0 / Phase A0 (r2.0 §4.11): the previous `flatMap` returned `[]` for any
+// reference asset ID that the static `sourceAssetRefs` did not know, which made
+// post-analysis uploads fail silently with `SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED`.
+// A0 is the smallest possible fix: surface the missing IDs immediately at
+// generation time. The full resolver + UI preflight lives in Phase C; this
+// helper only guarantees we never silently drop a user-selected reference.
+//
+// Exported for unit testing; not part of the public IPC surface.
+export function assertReferenceAssetsResolvable(
+  explicitIds: readonly string[],
+  sourceAssetRefs: ReadonlyArray<{ assetId: string }>,
+  projectId: string,
+): void {
+  if (!explicitIds || explicitIds.length === 0) return;
+  const known = new Set(sourceAssetRefs.map((ref) => ref.assetId));
+  const missing = explicitIds.filter((id) => !known.has(id));
+  if (missing.length === 0) return;
+  const err = new Error(
+    `REFERENCE_ASSET_NOT_FOUND: ${missing.length} reference asset(s) not found in project ${projectId}: `
+      + `${missing.join(', ')}. `
+      + 'Re-upload the asset(s) or rebuild the project analysis context.',
+  );
+  Object.assign(err, {
+    code: 'REFERENCE_ASSET_NOT_FOUND',
+    missingAssetIds: [...missing],
+    projectId,
+  });
+  throw err;
+}
+
 export interface StartVNextGenerationInput {
   projectId: string;
   taskId: string;
@@ -476,14 +506,20 @@ export function createVNextImageGenerationService(
         // Recovery R4: first formal space generation must carry a non-logo core
         // reference. Priority: user explicit > implicit anchor > architecture
         // anchor image. Logo/packaging assets are filtered out by the policy.
-        const explicitAssets = explicitIds.flatMap((assetId) => {
-          const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
-          if (!asset) return [];
-          return [{
+        // R11.A0: throw REFERENCE_ASSET_NOT_FOUND for any explicit ID that is
+        // not present in the static sourceAssetRefs (post-analysis upload path).
+        assertReferenceAssetsResolvable(
+          explicitIds,
+          currentContext.sourceAssetRefs,
+          input.projectId,
+        );
+        const explicitAssets = explicitIds.map((assetId) => {
+          const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId)!;
+          return {
             assetId: asset.assetId,
             role: asset.role,
             relativePath: asset.relativePath,
-          }];
+          };
         });
         const architectureAnchorImages = (phase9b?.referenceImages ?? [])
           .filter((img) => img.imagePath)
@@ -558,10 +594,16 @@ export function createVNextImageGenerationService(
         trace: {
           spaceGeneration: {
             ...spaceTrace,
-            promptCharacters: [...prompt].length,
+            // R11.2.3: the frozen budget is a COMPILER constraint. The compiler
+            // already hard-blocks its own output (>7500) at compile time, and a
+            // user-edited / validator-correction prompt is a legitimate override
+            // that must not re-trigger the compiler's internal budget gate.
+            // Validate the route against the compiled prompt (authoritative).
+            promptCharacters: Number(spaceTrace.promptCharacters)
+              || [...compilation.compiledPrompt.finalPrompt].length,
           },
         },
-        blockIds: promptBlockIds(prompt, compiledBlocks),
+        blockIds: promptBlockIds(compilation.compiledPrompt.finalPrompt, compiledBlocks),
         providerReferenceCount: references.length,
         referenceMode: (generationBasis === 'reference_first' || generationBasis === 'continuation') ? 'reference_assisted' : 'text_only',
         referenceSources: references.map((reference) => reference.source),
@@ -611,9 +653,19 @@ export function createVNextImageGenerationService(
         }),
       ]);
     } else {
+      // R11.A0: throw REFERENCE_ASSET_NOT_FOUND for any explicit ID that is not
+      // present in the static sourceAssetRefs (post-analysis upload path).
+      // The PDF filter below stays: PDF is a format problem, not a not-found
+      // problem. Phase C's full Asset Resolver will replace it with
+      // REFERENCE_ASSET_FORMAT_UNSUPPORTED.
+      assertReferenceAssetsResolvable(
+        explicitIds,
+        currentContext.sourceAssetRefs,
+        input.projectId,
+      );
       const explicitReferences = explicitIds.flatMap((assetId) => {
-        const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
-        if (!asset || asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
+        const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId)!;
+        if (asset.relativePath.toLowerCase().endsWith('.pdf')) return [];
         return [{
           id: asset.assetId,
           role: lockedLogoAssetIds.has(asset.assetId) || asset.role === 'logo'
