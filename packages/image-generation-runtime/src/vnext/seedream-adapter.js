@@ -33,6 +33,11 @@ const SEEDREAM_ADAPTER_CAPABILITY = Object.freeze({
   reference: SEEDREAM_REFERENCE_CAPABILITY,
 });
 
+// r2.0 §4.10 / B-3: Reference Boundary text block. Imported here so the
+// adapter can append it for Reference-First. Continuation's world_consistency
+// role is more specific and is used as-is; Standard emits no block.
+import { renderReferenceBoundary, resolveProviderStrengthControlLabel } from '../space/reference-boundary.js';
+
 export function createSeedreamVNextAdapter(options = {}) {
   const model = options.model || 'doubao-seedream-5-0-pro-260628';
   return Object.freeze({
@@ -44,8 +49,30 @@ export function createSeedreamVNextAdapter(options = {}) {
       return sections;
     },
     compile(compiledPrompt) {
-      const prompt = String(compiledPrompt.editablePrompt || compiledPrompt.finalPrompt).trim();
-      if (!prompt) throw new Error('Seedream prompt cannot be empty');
+      const compiledText = String(compiledPrompt.editablePrompt || compiledPrompt.finalPrompt).trim();
+      if (!compiledText) throw new Error('Seedream prompt cannot be empty');
+      const taskContract = compiledPrompt.taskContract ?? {};
+      const generationBasis = taskContract.generationBasis ?? 'standard';
+      const referenceSceneRelation = taskContract.referenceSceneRelation ?? 'unknown';
+      const targetSceneLabel = taskContract.subtype ?? '';
+
+      // r2.0 §4.10 / B-3: append the Reference Boundary block when the
+      // generation has a reference image AND the block is meaningful for
+      // the basis. The block is appended (not prepended) so the existing
+      // r8_6_golden output order is preserved; the boundary labels itself
+      // as "high-priority instruction" so the model reads it as a top
+      // directive regardless of position.
+      const boundary = renderReferenceBoundary({
+        generationBasis,
+        referenceSceneRelation,
+        targetSceneLabel,
+        adapterCapability: SEEDREAM_ADAPTER_CAPABILITY,
+      });
+
+      const prompt = boundary
+        ? `${compiledText}\n\n${boundary}`
+        : compiledText;
+
       const promptCharacters = [...prompt].length;
       if (promptCharacters > MAX_PROMPT_CHARACTERS) {
         throw new Error(
@@ -58,9 +85,15 @@ export function createSeedreamVNextAdapter(options = {}) {
         model,
         prompt,
         size: '2K',
-        aspectRatio: compiledPrompt.taskContract.aspectRatio,
-        count: compiledPrompt.taskContract.count,
-        referenceAssetIds: [...compiledPrompt.referenceAssetIds],
+        aspectRatio: taskContract.aspectRatio,
+        count: taskContract.count,
+        referenceAssetIds: [...(taskContract.referenceAssetIds ?? [])],
+        referenceBoundary: {
+          applied: Boolean(boundary),
+          version: boundary ? 'space-reference-boundary@1.0.0' : null,
+          providerStrengthControl: resolveProviderStrengthControlLabel(SEEDREAM_ADAPTER_CAPABILITY),
+          promptCharacters,
+        },
       };
     },
   });

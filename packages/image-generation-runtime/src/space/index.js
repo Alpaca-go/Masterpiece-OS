@@ -54,6 +54,16 @@ export {
   resolveEffectiveMaxReferences,
 } from './product-policy.js';
 
+// r2.0 §4.10 / B-3: Reference Boundary text block (v2.0-style positive
+// expression). Injected by the Seedream adapter at compile time when
+// generationBasis === 'reference_first'. Continuation uses world_consistency
+// instead. Standard emits no block. See reference-boundary.js.
+export {
+  REFERENCE_BOUNDARY_VERSION,
+  renderReferenceBoundary,
+  resolveProviderStrengthControlLabel,
+} from './reference-boundary.js';
+
 // R11.2.2 mode boundary — the frozen product semantics and the route semantic
 // gate that keeps Reference-First (high fidelity) and Continuation
 // (world consistency + program transformation) apart.
