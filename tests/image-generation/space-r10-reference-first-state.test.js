@@ -24,6 +24,7 @@ const {
   toggleReferenceId,
   removeReferenceId,
   replaceReferenceIds,
+  mergeUploadedReferenceIds,
   isSupportedReferenceFile,
 } = await import(stateUrl);
 
@@ -107,4 +108,27 @@ test('R10.2 supported reference file check', () => {
   assert.equal(isSupportedReferenceFile('ref.webp'), true);
   assert.equal(isSupportedReferenceFile('ref.tiff'), false);
   assert.equal(isSupportedReferenceFile('ref.pdf'), false);
+});
+
+test('R11.2.1 upload merge adds newly imported ids and dedupes against current selection', () => {
+  const next = mergeUploadedReferenceIds([], ['new1'], []);
+  assert.deepEqual(next, ['new1']);
+  // A duplicate existing asset is added too, and already-selected ids never repeat.
+  const mixed = mergeUploadedReferenceIds(['new1'], ['new2'], ['existing1']);
+  assert.deepEqual(mixed, ['new1', 'new2', 'existing1']);
+  const noRepeat = mergeUploadedReferenceIds(['a'], ['b', 'a'], ['c']);
+  assert.deepEqual(noRepeat, ['a', 'b', 'c']);
+});
+
+test('R11.2.1 upload merge is capped at MAX_SPACE_REFERENCE_IMAGES', () => {
+  const next = mergeUploadedReferenceIds(
+    ['a1', 'a2', 'a3'],
+    ['new1', 'new2', 'new3'],
+    ['dup1', 'dup2'],
+  );
+  assert.ok(next.length <= MAX_SPACE_REFERENCE_IMAGES);
+});
+
+test('R11.2.1 upload merge ignores empty ids and non-array current', () => {
+  assert.deepEqual(mergeUploadedReferenceIds(undefined, [null, '', 'ok'], []), ['ok']);
 });

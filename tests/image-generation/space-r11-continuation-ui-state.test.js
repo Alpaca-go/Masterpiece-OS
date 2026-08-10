@@ -25,6 +25,10 @@ const {
   isCustomSceneValid,
   canSubmitContinuation,
   continuationLineageLabel,
+  CROSS_SCENE_ADVISORY_CODE,
+  generationModeLabel,
+  referenceFirstCrossSceneAdvisory,
+  findCrossSceneReference,
 } = await import(stateUrl);
 
 test('R11.2 scene cards are user-facing (no engineering terms)', () => {
@@ -65,4 +69,47 @@ test('R11.2 lineage label renders source → target', () => {
   assert.equal(continuationLineageLabel('reception', 'consultation'), 'reception → consultation');
   assert.equal(continuationLineageLabel('dining', 'entrance'), 'dining → entrance');
   assert.equal(continuationLineageLabel('', 'consultation'), '');
+});
+
+// ---- R11.2.2 mode boundary UI rules ---------------------------------------
+
+test('R11.2.2 mode badges are user-facing labels', () => {
+  assert.equal(generationModeLabel('standard'), '标准生成');
+  assert.equal(generationModeLabel('reference_first'), '参考优先');
+  assert.equal(generationModeLabel('continuation'), '空间延展');
+  assert.equal(generationModeLabel('unknown'), '');
+});
+
+test('R11.2.2 cross-scene advisory requires provable generated-output provenance', () => {
+  assert.equal(
+    referenceFirstCrossSceneAdvisory({ sourceAssetOrigin: 'generated_output', sourceScene: 'reception', targetScene: 'consultation' })?.code,
+    CROSS_SCENE_ADVISORY_CODE,
+  );
+  // Same scene: no advisory.
+  assert.equal(referenceFirstCrossSceneAdvisory({ sourceAssetOrigin: 'generated_output', sourceScene: 'reception', targetScene: 'reception' }), null);
+  // user_upload copy: provenance unknown -> never advise.
+  assert.equal(referenceFirstCrossSceneAdvisory({ sourceAssetOrigin: 'user_upload', sourceScene: undefined, targetScene: 'consultation' }), null);
+  // project asset: no scene identity -> never advise.
+  assert.equal(referenceFirstCrossSceneAdvisory({ sourceAssetOrigin: 'project_visual_asset', sourceScene: undefined, targetScene: 'consultation' }), null);
+});
+
+test('R11.2.2 findCrossSceneReference only matches confirmed generated outputs', () => {
+  const confirmedOutputs = {
+    'a1': { assetId: 'a1', assetOrigin: 'generated_output', deliverableFamily: 'space', sourceScene: 'reception', confirmationState: 'confirmed' },
+    'a2': { assetId: 'a2', assetOrigin: 'generated_output', deliverableFamily: 'space', sourceScene: 'reception', confirmationState: 'revoked' },
+    'b1': { assetId: 'b1', assetOrigin: 'user_upload', sourceScene: undefined, confirmationState: 'confirmed' },
+  };
+  // Cross-scene confirmed generated output found.
+  const hit = findCrossSceneReference({ referenceAssetIds: ['a1'], confirmedOutputs, targetScene: 'consultation' });
+  assert.equal(hit?.assetId, 'a1');
+  assert.equal(hit?.advisory?.code, CROSS_SCENE_ADVISORY_CODE);
+  // Revoked output never matches.
+  assert.equal(findCrossSceneReference({ referenceAssetIds: ['a2'], confirmedOutputs, targetScene: 'consultation' }), null);
+  // user_upload copy never matches.
+  assert.equal(findCrossSceneReference({ referenceAssetIds: ['b1'], confirmedOutputs, targetScene: 'consultation' }), null);
+  // Same scene never matches.
+  assert.equal(findCrossSceneReference({ referenceAssetIds: ['a1'], confirmedOutputs, targetScene: 'reception' }), null);
+  // Multiple refs: first cross-scene match wins.
+  const mixed = findCrossSceneReference({ referenceAssetIds: ['b1', 'a1'], confirmedOutputs, targetScene: 'consultation' });
+  assert.equal(mixed?.assetId, 'a1');
 });

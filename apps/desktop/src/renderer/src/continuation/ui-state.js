@@ -71,3 +71,60 @@ export function continuationLineageLabel(sourceScene, targetScene) {
   if (!s || !t) return '';
   return `${s} → ${t}`;
 }
+
+// ---- R11.2.2 Mode boundary (product layer) --------------------------------
+
+export const CROSS_SCENE_ADVISORY_CODE = 'SPACE_REFERENCE_FIRST_CROSS_SCENE_ADVISORY';
+
+export const GENERATION_MODE_LABELS = Object.freeze({
+  standard: '标准生成',
+  reference_first: '参考优先',
+  continuation: '空间延展',
+});
+
+export function generationModeLabel(generationBasis) {
+  return GENERATION_MODE_LABELS[generationBasis] || '';
+}
+
+/**
+ * A cross-scene advisory is shown only when the reference PROVENANCE proves the
+ * asset is a generated space output of a different scene. user_upload copies
+ * (even of a saved generated image) never trigger it (R11.2.2 §13, §47).
+ */
+export function referenceFirstCrossSceneAdvisory({
+  sourceAssetOrigin,
+  sourceScene,
+  targetScene,
+}) {
+  const sourceKnown = Boolean(sourceAssetOrigin)
+    && sourceAssetOrigin === 'generated_output'
+    && Boolean(sourceScene);
+  const targetKnown = Boolean(targetScene);
+  const crossSceneKnown = sourceKnown && targetKnown && normalizeSceneId(sourceScene) !== normalizeSceneId(targetScene);
+  if (!crossSceneKnown) return null;
+  return {
+    code: CROSS_SCENE_ADVISORY_CODE,
+    severity: 'info',
+    recommendedMode: 'continuation',
+  };
+}
+
+/**
+ * Find the first selected reference that is a confirmed generated space output
+ * of a different scene than the current target. Only confirmed (not revoked)
+ * outputs count, and only when provenance is known.
+ */
+export function findCrossSceneReference({ referenceAssetIds, confirmedOutputs, targetScene }) {
+  const ids = Array.isArray(referenceAssetIds) ? referenceAssetIds : [];
+  for (const id of ids) {
+    const confirmed = confirmedOutputs?.[id];
+    if (!confirmed || confirmed.confirmationState !== 'confirmed') continue;
+    const advisory = referenceFirstCrossSceneAdvisory({
+      sourceAssetOrigin: confirmed.assetOrigin,
+      sourceScene: confirmed.sourceScene,
+      targetScene,
+    });
+    if (advisory) return { assetId: id, confirmed, advisory };
+  }
+  return null;
+}

@@ -112,3 +112,16 @@ export function replaceReferenceIds(current, oldAssetId, newAssetIds) {
   }
   return base.slice(0, MAX_SPACE_REFERENCE_IMAGES);
 }
+
+/**
+ * Merge an upload result into the current explicit selection. A chosen file
+ * that already exists in the project library is skipped by the import (its
+ * asset id is reported as a duplicate); both the newly imported ids and the
+ * matching existing ids belong in the reference selection.
+ * @returns {string[]} next selection, capped at MAX_SPACE_REFERENCE_IMAGES.
+ */
+export function mergeUploadedReferenceIds(current, uploadedIds, duplicateIds) {
+  const base = Array.isArray(current) ? current : [];
+  const fresh = [...uploadedIds, ...duplicateIds].filter((id) => id && !base.includes(id));
+  return [...base, ...fresh].slice(0, MAX_SPACE_REFERENCE_IMAGES);
+}

@@ -812,6 +812,21 @@ export interface VNextContinuationIntent {
   confirmedAt: string;
   confirmationSource: 'user_explicit';
   referenceSource: 'confirmed_generated_output';
+  /** R11.1: the target functional program overriding the source program. */
+  targetFunctionalProgram?: {
+    sceneId: string;
+    sceneLabel?: string;
+    viewStrategy?: string;
+    requiredFunctions?: string[];
+    requiredSpatialElements?: string[];
+    sourceProgramElementsToDrop?: string[];
+  };
+  /** R11.1: what the continuation preserves vs regenerates. */
+  continuationBoundary?: {
+    preserve?: string[];
+    regenerate?: string[];
+  };
+  referenceRole?: 'world_consistency';
 }
 
 export interface VNextTaskContract {
@@ -974,6 +989,14 @@ export interface VNextSessionHistoryEntry {
   runId?: string;
   imageId?: string;
   createdAt: string;
+  /** R11.2.2: the generation mode that produced this entry. */
+  generationBasis?: VNextGenerationBasis;
+  /** R11.2.2: continuation lineage (source scene -> target scene). */
+  continuationLineage?: {
+    sourceScene: string;
+    targetScene: string;
+    sourceRunId: string;
+  };
 }
 
 export interface VNextCreativeSession {

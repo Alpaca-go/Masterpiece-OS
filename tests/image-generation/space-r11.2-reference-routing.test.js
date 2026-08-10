@@ -40,6 +40,33 @@ test('Test B: reference-first explicit upload resolves exactly the uploaded asse
   assert.ok(!references.some((r) => r.id === 'img-implicit' || r.id === 'JZMX-ARCH-01'), 'no implicit/anchor in resolved refs');
 });
 
+// R11.2.2 §27: Reference-First is HIGH FIDELITY. The legacy role stays
+// core_reference for wire compatibility, but the authoritative semanticRole is
+// high_fidelity_visual_reference.
+test('R11.2.2 reference-first references carry the high-fidelity semantic role', () => {
+  const { references, trace } = resolveSpaceReferences({
+    generationBasis: 'reference_first',
+    explicitAssets: [{ assetId: 'asset-ref', role: 'reference', relativePath: 'ref.png' }],
+    maxReferences: 4,
+  });
+  assert.equal(references[0].role, 'core_reference', 'legacy wire role preserved');
+  assert.equal(references[0].semanticRole, 'high_fidelity_visual_reference');
+  assert.equal(references[0].referenceRole, 'high_fidelity_visual_reference');
+  assert.equal(trace.providerReferences[0]?.semanticRole, 'high_fidelity_visual_reference');
+});
+
+test('R11.2.2 continuation references carry the world-consistency semantic role', () => {
+  const { references, trace } = resolveSpaceReferences({
+    generationBasis: 'continuation',
+    explicitAssets: [{ assetId: 'asset-cont', role: 'reference', relativePath: 'confirmed.png' }],
+    maxReferences: 4,
+  });
+  assert.equal(references[0].semanticRole, 'world_consistency');
+  assert.equal(references[0].referenceRole, 'world_consistency');
+  assert.equal(references[0].source, 'confirmed_generated_output');
+  assert.equal(trace.providerReferences[0]?.semanticRole, 'world_consistency');
+});
+
 test('Test C: project asset explicit selection resolves exactly the selected asset', () => {
   const { references } = resolveSpaceReferences({
     generationBasis: 'reference_first',

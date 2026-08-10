@@ -117,3 +117,52 @@ test('ZIP intake persists only extracted valid assets, deduplicates by SHA-256, 
     await fs.rm(temporary, { recursive: true, force: true });
   }
 });
+
+test('re-importing an existing file is skipped and reported as a duplicate asset id', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-desktop-dup-'));
+  try {
+    const source = path.join(temporary, 'project-input');
+    const data = path.join(temporary, 'data');
+    await fs.mkdir(source, { recursive: true });
+    await fs.writeFile(path.join(source, '素材-01.png'), ONE_PIXEL_PNG);
+    const settings: PublicSettings = {
+      profiles: [{
+        id: 'profile-test',
+        displayName: 'Test Qwen',
+        provider: 'qwen',
+        baseUrl: 'https://example.invalid/compatible-mode/v1',
+        modelId: 'qwen3-vl-plus',
+        credentialKey: 'masterpiece-os/profile-test',
+        hasApiKey: true,
+        isDefault: true,
+        isEnabled: true,
+        createdAt: '2026-07-16T00:00:00.000Z',
+        updatedAt: '2026-07-16T00:00:00.000Z'
+      }],
+      defaultProfileId: 'profile-test',
+      provider: 'qwen',
+      baseUrl: 'https://example.invalid/compatible-mode/v1',
+      model: 'qwen3-vl-plus',
+      hasApiKey: true,
+      defaultDataPath: data,
+      cacheEnabled: true,
+      logLevel: 'info',
+      connectionStatus: 'untested'
+    };
+    const store = createProjectStore(async () => settings);
+    const project = await store.create({ sourcePaths: [source], apiProfileId: 'profile-test' });
+    const existing = (await store.scan(project.id)).items[0]!;
+
+    const sameBytes = path.join(temporary, 'another-name.png');
+    await fs.writeFile(sameBytes, ONE_PIXEL_PNG);
+    const result = await store.importFiles(project.id, [sameBytes], 'assets');
+
+    assert.equal(result.imported.length, 0);
+    assert.ok(result.skipped.some((item) => /重复/.test(item)));
+    assert.equal(result.duplicates.length, 1);
+    assert.equal(result.duplicates[0]?.id, existing.id);
+    assert.equal(result.summary.totalFiles, 1, 'no duplicate asset was added');
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true });
+  }
+});

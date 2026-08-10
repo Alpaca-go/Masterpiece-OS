@@ -68,6 +68,7 @@ export function resolveSpaceReferences({
     trace.providerReferences.push({
       id: ref.id,
       role: ref.role,
+      semanticRole: ref.semanticRole ?? null,
       source,
       projectRelativePath: ref.projectRelativePath,
     });
@@ -83,11 +84,17 @@ export function resolveSpaceReferences({
   // implicit anchors and architecture anchor images are never auto-attached.
   for (const asset of explicitAssets) {
     if (!isUsableSpaceReference(asset)) continue;
+    // R11.2.2 §3/§27: Reference-First is HIGH FIDELITY. The legacy `role`
+    // (core_reference) stays for wire compatibility; the authoritative
+    // semanticRole is high_fidelity_visual_reference.
+    const isContinuation = generationBasis === 'continuation';
     add({
       id: asset.assetId,
       role: 'core_reference',
+      semanticRole: isContinuation ? 'world_consistency' : 'high_fidelity_visual_reference',
+      referenceRole: isContinuation ? 'world_consistency' : 'high_fidelity_visual_reference',
       projectRelativePath: `input/${asset.relativePath}`,
-    }, generationBasis === 'continuation' ? continuationReferenceSource : 'user_explicit');
+    }, isContinuation ? continuationReferenceSource : 'user_explicit');
   }
 
   trace.providerReferenceCount = references.length;

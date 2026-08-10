@@ -21,6 +21,7 @@ import {
   assertSpaceGenerationRouteIntegrity,
   resolveSpaceReferences,
   assertSpaceReferenceAvailable,
+  resolveContinuationReference,
   runSpaceQualityGate,
   validateSpatialSemantics,
 } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
@@ -430,31 +431,10 @@ export function createVNextImageGenerationService(
     let spaceQualityGate: Record<string, unknown> | null = null;
 
     if (isPhase9bSpace) {
-      // Recovery R4: first formal space generation must carry a non-logo core
-      // reference. Priority: user explicit > implicit anchor > architecture
-      // anchor image. Logo/packaging assets are filtered out by the policy.
-      const explicitAssets = explicitIds.flatMap((assetId) => {
-        const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
-        if (!asset) return [];
-        return [{
-          assetId: asset.assetId,
-          role: asset.role,
-          relativePath: asset.relativePath,
-        }];
-      });
-      const architectureAnchorImages = (phase9b?.referenceImages ?? [])
-        .filter((img) => img.imagePath)
-        .map((img) => ({ anchorId: img.anchorId, imagePath: img.imagePath as string }));
-
-      const resolved = resolveSpaceReferences({
-        generationBasis,
-        explicitAssets,
-        implicitAnchor: implicitAnchor
-          ? { imageId: implicitAnchor.imageId, projectRelativePath: implicitAnchor.projectRelativePath }
-          : null,
-        architectureAnchorImages,
-        maxReferences: 2,
-      }) as {
+      // R11.2.2 §17-§18: Continuation binds the ORIGINAL confirmed generated
+      // output (provenance, not a user-upload copy). Resolve its on-disk image
+      // from the source run so the provider receives the actual generated file.
+      let resolved: {
         references: Array<{
           id: string;
           role: 'core_reference' | 'identity_reference' | 'structure_reference';
@@ -463,6 +443,62 @@ export function createVNextImageGenerationService(
         }>;
         trace: Record<string, unknown>;
       };
+      if (generationBasis === 'continuation') {
+        const continuationAssetId = explicitIds[0];
+        const confirmed = continuationAssetId
+          ? session.confirmedGeneratedOutputs?.[continuationAssetId]
+          : null;
+        const sourceRun = confirmed
+          ? await getImageGeneration().getRun(confirmed.sourceRunId)
+          : null;
+        const sourceImage = continuationAssetId
+          ? sourceRun?.images?.find((img) => img.imageId === continuationAssetId.split('-').pop())
+            ?? sourceRun?.images?.[0]
+          : null;
+        if (!continuationAssetId
+          || !confirmed
+          || confirmed.confirmationState !== 'confirmed'
+          || confirmed.projectId !== input.projectId
+          || !sourceRun
+          || !sourceImage) {
+          throw Object.assign(
+            new Error('SPACE_CONTINUATION_REFERENCE_REQUIRED: Continuation requires the original confirmed generated output.'),
+            { code: 'SPACE_CONTINUATION_REFERENCE_REQUIRED' },
+          );
+        }
+        resolved = resolveContinuationReference({
+          confirmed,
+          projectRelativePath: `image-generation/${sourceRun.runId}/${sourceImage.relativePath}`,
+          targetScene: compilation.taskContract.continuation?.targetScene,
+          viewStrategy: compilation.taskContract.continuation?.targetFunctionalProgram?.viewStrategy,
+        }) as typeof resolved;
+      } else {
+        // Recovery R4: first formal space generation must carry a non-logo core
+        // reference. Priority: user explicit > implicit anchor > architecture
+        // anchor image. Logo/packaging assets are filtered out by the policy.
+        const explicitAssets = explicitIds.flatMap((assetId) => {
+          const asset = currentContext.sourceAssetRefs.find((item) => item.assetId === assetId);
+          if (!asset) return [];
+          return [{
+            assetId: asset.assetId,
+            role: asset.role,
+            relativePath: asset.relativePath,
+          }];
+        });
+        const architectureAnchorImages = (phase9b?.referenceImages ?? [])
+          .filter((img) => img.imagePath)
+          .map((img) => ({ anchorId: img.anchorId, imagePath: img.imagePath as string }));
+
+        resolved = resolveSpaceReferences({
+          generationBasis,
+          explicitAssets,
+          implicitAnchor: implicitAnchor
+            ? { imageId: implicitAnchor.imageId, projectRelativePath: implicitAnchor.projectRelativePath }
+            : null,
+          architectureAnchorImages,
+          maxReferences: 2,
+        }) as typeof resolved;
+      }
       references = resolved.references.map((ref) => ({
         id: ref.id,
         role: ref.role,
@@ -653,6 +689,20 @@ export function createVNextImageGenerationService(
         runId: run.runId,
         imageId: run.images[0]?.imageId,
         createdAt: run.createdAt,
+        // R11.2.2 §33-§36: record the generation mode and the continuation
+        // lineage so the UI can show "参考优先 / 空间延展" badges and
+        // "Reception → Consultation" on outputs.
+        generationBasis: compilation.taskContract.generationBasis,
+        ...(compilation.taskContract.generationBasis === 'continuation'
+          && compilation.taskContract.continuation
+          ? {
+              continuationLineage: {
+                sourceScene: compilation.taskContract.continuation.sourceScene,
+                targetScene: compilation.taskContract.continuation.targetScene,
+                sourceRunId: compilation.taskContract.continuation.sourceRunId,
+              },
+            }
+          : {}),
       }],
       updatedAt: new Date().toISOString(),
     });

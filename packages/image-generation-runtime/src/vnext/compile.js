@@ -6,8 +6,10 @@ import { runPromptPreflightGate } from '../gates/prompt-preflight-gate.js';
 import {
   assertSpaceGenerationRouteIntegrity,
   compilePhase9bSpacePrompt,
+  createSpaceContinuationContract,
   resolveArchitectureAnchorBrandKey,
   runSpaceQualityGate,
+  validateSpaceGenerationModeSemantics,
   validateSpatialSemantics,
 } from '../space/index.js';
 import crypto from 'node:crypto';
@@ -77,6 +79,38 @@ export function compileVNextImageGeneration(input) {
     logoUsageMode,
     referenceAssetIds,
   }, { now: input.now });
+
+  // R11.2.2 §19-§21: a continuation task from the UI carries only user intent.
+  // The runtime contract computes the Target Functional Program and the
+  // preserve/regenerate boundary from the target scene; without it the frozen
+  // compiler would not re-design the new space and the route-integrity gate
+  // would fail closed. Enrich only when the intent lacks them (a fully built
+  // runtime contract already carries them). Never modifies the frozen compiler.
+  let continuation = taskContract.continuation;
+  if (
+    taskContract.generationBasis === 'continuation'
+    && continuation
+    && (!continuation.targetFunctionalProgram || !continuation.continuationBoundary)
+  ) {
+    const enriched = createSpaceContinuationContract({
+      projectId: taskContract.projectId,
+      confirmedSourceAssetId: continuation.confirmedSourceAssetId ?? continuation.sourceAssetId,
+      sourceRunId: continuation.sourceRunId,
+      sourceScene: continuation.sourceScene,
+      targetScene: continuation.targetScene,
+      targetSceneLabel: continuation.targetSceneLabel,
+      userRequirement: continuation.userRequirement,
+      confirmedAt: continuation.confirmedAt,
+      customSceneDescription: continuation.customSceneDescription,
+    });
+    continuation = {
+      ...continuation,
+      referenceRole: 'world_consistency',
+      targetFunctionalProgram: enriched.targetFunctionalProgram,
+      continuationBoundary: enriched.continuationBoundary,
+    };
+    taskContract.continuation = continuation;
+  }
   const route = routeVNextTemplates(taskContract, { model: adapter.id });
 
   const spaceMode = taskContract.deliverableFamily === 'space'
@@ -310,6 +344,24 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
       ? referenceAssetIds.map(() => 'confirmed_generated_output')
       : referenceAssetIds.map(() => 'user_explicit'),
     spatialSemanticReport,
+  });
+
+  // R11.2.2 Route Semantic Gate: Continuation must carry world_consistency
+  // semantics and must NOT preserve the source shot/composition; Reference-First
+  // cross-scene usage is advisory-only (never blocks here). Fails closed BEFORE
+  // the provider for continuation violations.
+  validateSpaceGenerationModeSemantics({
+    generationBasis: taskContract.generationBasis,
+    referenceRole: taskContract.generationBasis === 'continuation'
+      ? (taskContract.continuation?.referenceRole ?? 'world_consistency')
+      : 'high_fidelity_visual_reference',
+    referenceSources: taskContract.generationBasis === 'continuation'
+      ? ['confirmed_generated_output']
+      : ['user_explicit'],
+    referenceCount: referenceAssetIds.length,
+    finalPrompt: result.finalPrompt,
+    sourceScene: taskContract.continuation?.sourceScene,
+    targetScene: taskContract.continuation?.targetScene,
   });
   compiledPrompt.trace.spaceGeneration.canonicalCompilerMode = integrity.canonicalCompilerMode;
   compiledPrompt.trace.spaceGeneration.blockIds = result.blockIds;

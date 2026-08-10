@@ -32,6 +32,7 @@ test('report schema requires the five action decisions and forbids v4 three-stat
   assert.match(schema, /\| 视觉资产 \| 决策 \| 当前问题 \| 新动作 \|/);
   assert.match(schema, /决策值只允许：保留、升级、替换、删除、新增/);
   assert.match(schema, /不得使用 Locked \/ Evolve \/ Flexible 作为主要资产决策结构/);
+  assert.match(schema, /"保留\/升级"/);
   assert.match(schema, /不得附加 Creative Brief、Design Decisions、Design Review 或 Runtime Protocol/);
 });
 

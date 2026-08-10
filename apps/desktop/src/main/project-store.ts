@@ -244,6 +244,7 @@ export function createProjectStore(readSettings: SettingsReader) {
     const imported: string[] = [];
     const extracted: string[] = [];
     const skipped: string[] = [];
+    const duplicates: Array<{ id: string; name: string }> = [];
     const createdFiles: string[] = [];
 
     async function persistAsset(options: {
@@ -261,6 +262,8 @@ export function createProjectStore(readSettings: SettingsReader) {
       }
       const sha256 = options.buffer ? hashBuffer(options.buffer) : await hashFile(options.sourcePath!);
       if (knownHashes.has(sha256)) {
+        const existing = assets.find((asset) => asset.sha256 === sha256);
+        if (existing) duplicates.push({ id: existing.id, name: existing.originalName });
         skipped.push(`${options.originalName}（重复）`);
         return false;
       }
@@ -386,7 +389,7 @@ export function createProjectStore(readSettings: SettingsReader) {
     });
     await invalidatePrepared(root);
     await reidentifyProject(projectId);
-    return { imported, extracted, skipped, summary: await scan(projectId) };
+    return { imported, extracted, skipped, duplicates, summary: await scan(projectId) };
   }
 
   async function migrateLegacyAssets(projectId: string, root: string, project: ProjectRecord): Promise<ProjectRecord> {

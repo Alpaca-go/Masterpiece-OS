@@ -43,6 +43,20 @@ export {
 } from './gates/generation-route-integrity-gate.js';
 export { ACTIVE_SPACE_ROUTE_BASELINE } from './quality-baselines/active-space-route-baseline.js';
 
+// R11.2.2 mode boundary — the frozen product semantics and the route semantic
+// gate that keeps Reference-First (high fidelity) and Continuation
+// (world consistency + program transformation) apart.
+export {
+  SPACE_MODE_BOUNDARY_VERSION,
+  SPACE_GENERATION_MODES,
+  LEGACY_CORE_REFERENCE_ROLE,
+  CONTINUATION_COMPOSITION_PRESERVATION_PATTERNS,
+  evaluateSpaceModeBoundary,
+  isHighFidelityReferenceRole,
+  detectCompositionPreservationLeak,
+  validateSpaceGenerationModeSemantics,
+} from './mode-boundary/mode-boundary-semantics.js';
+
 // R8.5.1 — semantic separation (architecture vs brand motif, color-geometry
 // coupling guard, mechanism provenance). Production module, no LLM.
 export {

@@ -50,8 +50,21 @@ test('report title is project-specific and final decision check fails closed', (
   assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 删除 |')));
   assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留/升级 |')));
   assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留／升级 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助色 (黑/白) | 保留并升级 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留 并 升级 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留且升级 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 升级+替换 |')));
+  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 删除、替换 |')));
   assert.throws(
     () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 观察 |')),
+    /资产决策值无效/
+  );
+  assert.throws(
+    () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 保留并适度升级 |')),
+    /资产决策值无效/
+  );
+  assert.throws(
+    () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 保留并观察 |')),
     /资产决策值无效/
   );
   assert.throws(() => validateDesktopReport('# incomplete'), /缺少章节/);

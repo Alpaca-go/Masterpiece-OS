@@ -516,30 +516,58 @@ export function createPipelineService(
           readable: true,
         }));
         progress('validating-output', '正在提取生图项目语义');
-        promptSourceModelCallCount += 1;
-        const response = await baseReasoner({
-          prompt: {
-            messages: [
-              {
-                role: 'system',
-                content: '你是 Unified Visual Understanding 引擎。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
-              },
-              { role: 'user', content: prompt },
-            ],
-            attachments,
-          },
-          signal: controller.signal,
-          maximumDurationMs: 15 * 60_000,
-        });
+        const uvuMaxAttempts = 3;
+        let uvuResponse: Awaited<ReturnType<typeof baseReasoner>> | null = null;
+        let uvuExtracted: Record<string, unknown> | undefined;
+        let uvuParseError: Error | undefined;
+        let uvuRepairHint = '';
+        for (let attempt = 1; attempt <= uvuMaxAttempts; attempt += 1) {
+          promptSourceModelCallCount += 1;
+          uvuResponse = await baseReasoner({
+            prompt: {
+              messages: [
+                {
+                  role: 'system',
+                  content: '你是 Unified Visual Understanding 引擎。只基于 ProjectRecord 与原始视觉附件返回严格 JSON，不读取或复述分析报告。',
+                },
+                { role: 'user', content: `${prompt}${uvuRepairHint}` },
+              ],
+              attachments,
+            },
+            signal: controller.signal,
+            maximumDurationMs: 15 * 60_000,
+          });
+          try {
+            uvuExtracted = parseModelStructuredResponse(uvuResponse.reportMarkdown);
+            break;
+          } catch (error) {
+            uvuParseError = error as Error;
+            const failureRoot = path.join(projectPaths.runtime, 'uvu-failures');
+            await fs.mkdir(failureRoot, { recursive: true }).catch(() => undefined);
+            await fs.writeFile(
+              path.join(failureRoot, `uvu-attempt-${attempt}-${Date.now()}.json`),
+              `${JSON.stringify({
+                runId: uvuResponse.runId,
+                model: credentials.model,
+                error: uvuParseError.message,
+                raw: uvuResponse.reportMarkdown,
+              }, null, 2)}\n`,
+              'utf8',
+            ).catch(() => undefined);
+            if (attempt >= uvuMaxAttempts) break;
+            uvuRepairHint = `\n\n上一次输出不是可解析的 JSON：${uvuParseError.message}。请重新输出完整、闭合、语法正确的裸 JSON 对象，不要省略字段，不要使用 Markdown 或代码围栏，不要附加任何解释。`;
+          }
+        }
+        if (!uvuExtracted || !uvuResponse) throw uvuParseError ?? new Error('Unified Visual Understanding 输出无法解析为 JSON');
         const normalized = normalizeUnifiedVisualUnderstanding({
           project: promptSourceProject,
-          extracted: parseModelStructuredResponse(response.reportMarkdown),
+          extracted: uvuExtracted,
           generatedAt: new Date().toISOString(),
           modelId: credentials.model,
           sourceRefs: promptSourceAssets.map((asset) => `asset:${asset.id}`),
           enforceExecutionSufficiency: false,
         });
-        promptSourceRunId = response.runId || undefined;
+        promptSourceRunId = uvuResponse.runId || undefined;
         analysisRepairRunId = `repair-run-${crypto.randomUUID()}`;
         const repairStore = createAnalysisRepairStore({
           projectRoot: projectPaths.root,
@@ -664,7 +692,7 @@ export function createPipelineService(
         visualDecisionPacket.validation.executionDataStatus = 'ready';
         visualDecisionPacket.validation.missingExecutionFields = [];
         promptSourceObject = visualDecisionPacketToPromptSourceObject(visualDecisionPacket);
-        promptSourceObject.provenance.structuredAnalysisRunId = response.runId || undefined;
+        promptSourceObject.provenance.structuredAnalysisRunId = uvuResponse.runId || undefined;
         report = compileVisualDecisionReport(visualDecisionPacket, {
           title: `${finalProjectName}视觉方案升级报告`,
         });

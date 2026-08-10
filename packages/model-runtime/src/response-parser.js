@@ -47,17 +47,21 @@ function closeJsonContainersAtEof(text, maxClosers = 8) {
  * especially in very long JSON (~20 k tokens) where the model may forget
  * commas between array / object elements.
  *
- * Fixes applied (only outside of string literals):
- *   1. `}\s*{`   → `}, {`   (missing comma between objects)
- *   2. `]\s*[`   → `], [`   (missing comma between arrays)
- *   3. value `"`  → value, `"` (missing comma before next string: property
- *      name, array string element, or next property value after a string)
+ * Fixes applied (only outside of string literals): when a value is complete
+ * (number, true/false/null, closing quote, `}` or `]`) and the next token
+ * starts a new value (string, number, `-`, `{`, `[`, true/false/null), the
+ * model almost certainly forgot the separating comma, so one is inserted.
  */
 function repairJsonSyntax(text) {
   let result = '';
   let inString = false;
   let escape = false;
   let lastSignificantChar = null; // last non-whitespace char outside strings
+
+  // A value may end with a digit, letter (true/false/null), quote or closer.
+  const isValueEnd = (c) => Boolean(c) && /[0-9a-z"\}\]]/i.test(c);
+  const isValueStart = (c) => Boolean(c)
+    && (/[0-9-]/u.test(c) || c === '"' || c === '{' || c === '[' || /[tfn]/iu.test(c));
 
   for (let i = 0; i < text.length; i++) {
     const char = text[i];
@@ -75,15 +79,14 @@ function repairJsonSyntax(text) {
       continue;
     }
 
-    if (char === '"') {
-      // A new string literal starts. If the previous significant character
-      // looks like the end of a value (number, true/false/null literal,
-      // closing quote, `}` or `]`), the model probably forgot a comma.
-      if (lastSignificantChar && /[0-9a-z"\}\]]/i.test(lastSignificantChar)) {
-        result += ',';
-      }
+    if (isValueStart(char)) {
+      // A new value starts. If the previous significant character is the end
+      // of a value (number, true/false/null, closing quote, `}` or `]`), the
+      // model probably forgot a comma.
+      if (isValueEnd(lastSignificantChar)) result += ',';
       result += char;
-      inString = true;
+      lastSignificantChar = char;
+      if (char === '"') inString = true;
       continue;
     }
 
@@ -91,15 +94,6 @@ function repairJsonSyntax(text) {
 
     if (!/\s/.test(char)) {
       lastSignificantChar = char;
-    }
-
-    if (char === '}' || char === ']') {
-      // `}` or `]` immediately followed by `{` or `[` → missing comma
-      let j = i + 1;
-      while (j < text.length && /\s/.test(text[j])) j++;
-      if (j < text.length && (text[j] === '{' || text[j] === '[')) {
-        result += ',';
-      }
     }
   }
 

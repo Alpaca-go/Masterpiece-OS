@@ -734,6 +734,7 @@ export interface ImportResult {
   imported: string[];
   extracted: string[];
   skipped: string[];
+  duplicates: Array<{ id: string; name: string }>;
   summary: AssetSummary;
 }
 

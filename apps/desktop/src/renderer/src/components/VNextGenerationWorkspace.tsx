@@ -19,6 +19,7 @@ import {
   canUseGenerationBasis,
   toggleReferenceId,
   replaceReferenceIds,
+  mergeUploadedReferenceIds,
 } from '../reference-first/state.js';
 import {
   CONTINUATION_SCENE_CARDS,
@@ -28,6 +29,9 @@ import {
   isCustomSceneValid,
   canSubmitContinuation,
   continuationLineageLabel,
+  normalizeSceneId,
+  generationModeLabel,
+  findCrossSceneReference,
 } from '../continuation/ui-state.js';
 
 interface Props {
@@ -124,6 +128,9 @@ export function VNextGenerationWorkspace({
   const [uploading, setUploading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [referenceWarnings, setReferenceWarnings] = useState<Record<string, string[]>>({});
+  // R11.2.2: the cross-scene advisory is dismissible per user intent
+  // ("仍使用参考优先"). Dismissing never changes the mode.
+  const [crossSceneAdvisoryDismissed, setCrossSceneAdvisoryDismissed] = useState(false);
 
   const activeAnchor = session?.implicitAnchors[family];
   const familyOptions = options?.[family];
@@ -135,6 +142,24 @@ export function VNextGenerationWorkspace({
     : { hard: [], soft: [] as string[] };
   const canCompile = canUseGenerationBasis(generationBasis, referenceAssetIds, Boolean(instruction.trim() && subtype && shot));
   const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
+  // R11.2.2 §9-§12: cross-scene advisory fires only when a selected reference
+  // is a confirmed generated SPACE output of a different scene than the target.
+  const crossSceneReference = generationBasis === 'reference' && family === 'space'
+    ? findCrossSceneReference({
+        referenceAssetIds,
+        confirmedOutputs,
+        targetScene: subtype,
+      })
+    : null;
+  const showCrossSceneAdvisory = Boolean(crossSceneReference) && !crossSceneAdvisoryDismissed;
+  // R11.2.2 §33-§36: mode badge + lineage on the current result.
+  const activeModeBadge = generationModeLabel(compiled?.taskContract.generationBasis);
+  const activeLineage = compiled?.taskContract.generationBasis === 'continuation'
+    ? continuationLineageLabel(
+      compiled.taskContract.continuation?.sourceScene,
+      compiled.taskContract.continuation?.targetScene,
+    )
+    : '';
   function splitRules(value: string): string[] {
     return [...new Set(value.split(/\r?\n|；|;/u).map((item) => item.trim()).filter(Boolean))];
   }
@@ -203,6 +228,30 @@ export function VNextGenerationWorkspace({
     } catch (reason) {
       setError(cleanError(reason));
     }
+  }
+
+  // R11.2.2 §17: "改为以此方向继续" routes OUT of the Reference-First task draft
+  // and into the Continuation Panel using the ORIGINAL confirmed generated
+  // output (provenance kept — never a user-upload copy). Target scene is
+  // prefilled from the current draft subtype.
+  function routeCrossSceneReferenceToContinuation() {
+    if (!crossSceneReference || !crossSceneReference.confirmed) return;
+    const confirmed = crossSceneReference.confirmed;
+    const prefilled = subtype && normalizeSceneId(subtype) !== normalizeSceneId(confirmed.sourceScene)
+      ? subtype
+      : null;
+    setContinuationSource(confirmed);
+    setContinuationTargetScene(prefilled);
+    setContinuationCustomDescription('');
+    setContinuationRequirement('');
+    setContinuationPanelOpen(true);
+    setCrossSceneAdvisoryDismissed(true);
+    setReferenceAssetIds([]);
+    setReferenceSources({});
+    setCompiled(null);
+    setEditedPrompt('');
+    setLastValidation(null);
+    setNotice('已切换到空间延展，保留原生成方向的 provenance。');
   }
 
   // R11.2 §21-§22: the UI only builds a structured continuation intent; the
@@ -419,16 +468,27 @@ export function VNextGenerationWorkspace({
       const uploadedIds = images
         .map((item) => item.id)
         .filter((id) => !beforeIds.has(id));
-      setReferenceAssetIds((current) => {
-        const fresh = uploadedIds.filter((id) => !current.includes(id));
-        return [...current, ...fresh].slice(0, MAX_SPACE_REFERENCE_IMAGES);
-      });
-      // R11.2.1: uploaded assets are user_upload provenance.
+      // R11.2.1: a chosen file that already exists in the project library is
+      // skipped by the import and reported as a duplicate. Its existing asset
+      // still belongs in the explicit reference selection — otherwise the
+      // upload appears to do nothing and the task stays blocked.
+      const duplicateIds = (imported.duplicates ?? [])
+        .map((dup) => dup.id)
+        .filter((id) => images.some((item) => item.id === id));
+      setReferenceAssetIds((current) => mergeUploadedReferenceIds(current, uploadedIds, duplicateIds));
+      // R11.2.1: uploaded assets are user_upload provenance; a re-uploaded
+      // duplicate is the pre-existing project asset, so it is project_visual_asset.
       setReferenceSources((current) => {
         const next = { ...current };
         for (const id of uploadedIds) next[id] = 'user_upload';
+        for (const id of duplicateIds) next[id] = 'project_visual_asset';
         return next;
       });
+      if (uploadedIds.length === 0 && duplicateIds.length === 0) {
+        setNotice('所选文件已是项目素材或不是支持的图片，未新增参考图。');
+      } else if (duplicateIds.length > 0 && uploadedIds.length === 0) {
+        setNotice('所选图片已在项目素材中，已直接加入参考选择。');
+      }
       setCompiled(null);
       setEditedPrompt('');
       setLastValidation(null);
@@ -631,14 +691,15 @@ export function VNextGenerationWorkspace({
             className={generationBasis === 'reference' ? 'basis-card selected' : 'basis-card'}
             onClick={() => changeBasis('reference')}
           >
-            <strong>参考图生成 / Reference-First</strong>
-            <span>根据已有空间参考图进行高保真生成</span>
+            <strong>参考优先 / Reference-First</strong>
+            <span>高保真继承所选参考图的视觉与空间表达</span>
           </button>
         </div>
 
         {generationBasis === 'reference' && <div className="facts-box">
-          <small>Reference-First（R10）</small>
-          <p>参考图生成不会重新运行完整视觉分析。妙作会在当前项目语境下，基于参考图生成高保真空间方案。</p>
+          <small>参考优先 / Reference-First（R11.2.2）</small>
+          <p>高保真继承所选参考图的视觉与空间表达，更适合参考图与目标空间类型一致的生成任务。</p>
+          <p>如果希望保留当前设计方向，但生成另一个功能空间，请使用「以此方向继续」进行空间延展。</p>
         </div>}
 
         {generationBasis === 'reference' && <div className="reference-first-module">
@@ -706,6 +767,22 @@ export function VNextGenerationWorkspace({
 
           {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
             <span className="muted">最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。</span>
+          )}
+
+          {referenceAssetIds.length > 0 && (
+            <div className="notice info">参考优先会较强地保留参考图的空间结构与构图，生成前请确认这正是你想要的效果。</div>
+          )}
+
+          {showCrossSceneAdvisory && crossSceneReference && (
+            <div className="notice warn advisory">
+              <strong>跨场景建议（空间延展）</strong>
+              <p>这张参考图来自妙作生成的「{crossSceneReference.confirmed.sourceScene || '已确认空间'}」空间，当前目标为「{subtype}」。</p>
+              <p>参考优先会尽量保留原图的构图与空间结构。如果希望保持设计方向，但重新设计新的功能空间，建议使用「空间延展」。</p>
+              <div className="button-row">
+                <button className="button secondary" onClick={() => setCrossSceneAdvisoryDismissed(true)}>仍使用参考优先</button>
+                <button className="button primary" onClick={() => routeCrossSceneReferenceToContinuation()}>改为以此方向继续</button>
+              </div>
+            </div>
           )}
 
           {generationBasis === 'reference' && referenceValidation.hard.length > 0 && (
@@ -816,6 +893,10 @@ export function VNextGenerationWorkspace({
 
         {imageDataUrl && <div className="result-card">
           <img src={imageDataUrl} alt="已生成的图片" />
+          {(activeModeBadge || activeLineage) && <div className="result-mode-badges">
+            {activeModeBadge && <span className="mode-badge">{activeModeBadge}</span>}
+            {activeLineage && <span className="lineage-badge">{activeLineage}</span>}
+          </div>}
           {lastValidation && <div className="validation-summary">
             <strong>结果校验：{lastValidation.status}</strong>
             <p>{lastValidation.mismatchTypes.length
