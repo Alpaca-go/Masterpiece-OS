@@ -1364,15 +1364,145 @@ export interface VNextEvidenceFileStatus {
   kind: 'json-object' | 'json-array' | 'image' | 'text' | null;
 }
 
+// r2.0 §8 / Phase F-4: binding snapshot extracted from the evidence
+// files by the desktop scanner. The runtime validator never reads
+// files; it cross-checks the bundle's extracted bindings against
+// the caller's expected values (VNextEvidenceValidationContext).
+//
+// Each field is `null` when the corresponding file was missing or
+// unreadable, so the validator can distinguish "binding absent"
+// from "binding explicitly empty".
+export interface VNextEvidenceBindings {
+  // From run.json (runId) and trace.json (taskId).
+  runId: string | null;
+  taskId: string | null;
+  // From trace.json (sourceFingerprint) and provider-payload.redacted.json.
+  promptHash: string | null;
+  // From run.json's images[0].sha256. The desktop scanner separately
+  // computes the actual sha256 of output.png; the validator checks
+  // the two match (proving the file on disk is the file run.json
+  // claims it is).
+  imageHash: string | null;
+  // From reference-trace.json (preferred) or task-contract.json.
+  referenceIds: string[];
+  // From task-contract.json.
+  targetScene: string | null;
+  // From task-contract.json.
+  generationBasis: 'standard' | 'reference_first' | 'continuation' | null;
+}
+
+// r2.0 §8 / Phase F-4: per-file issue raised by the runtime
+// validator. `severity: 'block'` means the checkpoint cannot pass;
+// `severity: 'warn'` means the file has a problem but the checkpoint
+// can still pass (e.g. an optional file is unreadable).
+export interface VNextEvidenceIssue {
+  severity: 'block' | 'warn';
+  code:
+    | 'EVIDENCE_FILE_MISSING'                // file is missing from bundle.files
+    | 'EVIDENCE_FILE_UNREADABLE'             // file exists but JSON parse / read failed
+    | 'EVIDENCE_FILE_SIZE_SUSPICIOUS'        // 0 bytes or unreasonably small
+    | 'EVIDENCE_REQUIRED_FILE_MISSING'       // a required file is missing/unreadable
+    | 'EVIDENCE_PROJECT_MISMATCH'            // projectId in evidence != expected
+    | 'EVIDENCE_TASK_MISMATCH'               // taskId in evidence != expected
+    | 'EVIDENCE_RUN_MISMATCH'                // runId in evidence != expected
+    | 'EVIDENCE_PROMPT_HASH_MISMATCH'        // prompt hash in evidence != expected
+    | 'EVIDENCE_IMAGE_HASH_MISMATCH'         // output.png actual sha256 != run.json's claim
+    | 'EVIDENCE_REFERENCE_ID_MISMATCH'       // referenceIds in evidence != expected
+    | 'EVIDENCE_TARGET_SCENE_MISMATCH'       // targetScene in evidence != expected
+    | 'EVIDENCE_GENERATION_BASIS_MISMATCH'   // generationBasis in evidence != expected
+    | 'EVIDENCE_VALIDATIONS_SUMMARY_MISSING' // validated flow expected but summary absent
+    | 'EVIDENCE_REFERENCE_TRACE_MISSING';    // reference_first / continuation expected but trace absent
+  message: string;
+  file: VNextEvidenceFileName | null;
+}
+
+// r2.0 §8 / Phase F-4: optional context the caller (vnext-service
+// or smoke) passes to the runtime validator. Each field is a
+// caller's expected value; the validator checks the bundle's
+// extracted bindings against these and produces mismatches as
+// `block`-severity issues.
+export interface VNextEvidenceValidationContext {
+  expectedProjectId?: string;
+  expectedTaskId?: string;
+  expectedRunId?: string;
+  expectedPromptHash?: string;
+  expectedReferenceIds?: ReadonlyArray<string>;
+  expectedTargetScene?: string;
+  expectedGenerationBasis?: 'standard' | 'reference_first' | 'continuation';
+  // Set true when the vnext validated flow ran (i.e. validations/summary.json
+  // is REQUIRED). The validator then blocks on its absence.
+  expectedValidated?: boolean;
+}
+
+// r2.0 §8 / Phase F-1 + F-4: the run evidence checkpoint. F-1
+// pinned the surface (files[] + missingRequired[] + pass). F-4
+// extends it with `bindings` (the extracted snapshot) and `issues[]`
+// (per-issue severity + code). The runtime validator produces
+// this; the desktop scanner + vnext-service + smoke runner consume
+// it.
+//
+// The two-layer split keeps filesystem knowledge in the desktop
+// scanner (which knows paths and reads files) and binding
+// consistency logic in the runtime validator (pure, no fs).
 export interface VNextEvidenceCheckpoint {
+  schemaVersion: '1.0';
   projectId: string;
   taskId: string;
-  // Per-file status. Required files missing a record here mean
-  // the checkpoint never even tried them (caller passed a partial
-  // list).
+  // F-4: the runtime validator's version, for trace / smoke compatibility.
+  version: string;
+  // F-1: per-file status (path, exists, sizeBytes, kind).
   files: VNextEvidenceFileStatus[];
-  // Set of required files that are missing OR unreadable.
+  // F-1: required files that are missing OR unreadable.
   missingRequired: VNextEvidenceFileName[];
+  // F-4: extracted binding snapshot. Null when the scanner was not
+  // run (e.g. a synthetic checkpoint built only from the file list).
+  bindings: VNextEvidenceBindings;
+  // F-4: per-issue diagnostics. Empty when the checkpoint is fully clean.
+  issues: VNextEvidenceIssue[];
+  // F-1: true iff no `block`-severity issues AND no required files missing.
   pass: boolean;
   checkedAt: string;
+}
+
+// r2.0 §8 / Phase F-4: the data shape the desktop scanner produces.
+// It is a pure-data view of the evidence files; the runtime
+// validator consumes it without ever reading the filesystem.
+//
+// `EvidenceBundle` is intentionally NOT exported through the
+// desktop types surface — only the desktop scanner module and the
+// runtime validator should see this shape. The desktop UI / IPC
+// see only the resulting `VNextEvidenceCheckpoint`.
+export interface VNextEvidenceFileRecord {
+  name: VNextEvidenceFileName;
+  path: string;
+  exists: boolean;
+  sizeBytes: number;
+  // sha256 of the file contents; null when missing or unreadable.
+  sha256: string | null;
+  // 'json-object' | 'json-array' | 'image' | 'text' | null
+  // (null when the file is missing or unreadable).
+  kind: 'json-object' | 'json-array' | 'image' | 'text' | null;
+  // Parsed payload when the file is a JSON file. Null for non-JSON
+  // files or when the file is missing / unreadable.
+  payload: unknown | null;
+  // Error string when the file failed to read / parse; null on success.
+  error: string | null;
+}
+
+export interface EvidenceBundle {
+  schemaVersion: '1.0';
+  projectId: string;
+  taskId: string;
+  compileArtifactDir: string;
+  runDir: string | null;
+  validationsDir: string | null;
+  // Per-file records, one for each of the 9 evidence file names.
+  // The desktop scanner always produces records for all 9; the
+  // runtime validator decides which are required.
+  files: VNextEvidenceFileRecord[];
+  // Binding snapshot extracted from the files. The scanner does
+  // the extraction; the validator compares against the caller's
+  // context. This keeps the validator pure (no fs).
+  bindings: VNextEvidenceBindings;
+  capturedAt: string;
 }

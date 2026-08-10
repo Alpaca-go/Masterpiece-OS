@@ -49,6 +49,20 @@ export {
 } from './gates/provider-prompt-gate.js';
 export { ACTIVE_SPACE_ROUTE_BASELINE } from './quality-baselines/active-space-route-baseline.js';
 
+// r2.0 §8 / Phase F-4: run evidence integrity gate (RUNTIME layer).
+// Pure validator that consumes an EvidenceBundle (produced by the
+// desktop scanner) and a VNextEvidenceValidationContext (caller
+// expectations) and produces a VNextEvidenceCheckpoint with
+// per-file health + per-binding mismatch + missingRequired list.
+// The runtime never reads the filesystem; the desktop scanner is
+// the only layer that touches disk.
+export {
+  validateVNextEvidenceIntegrity,
+  extractEvidenceBindings,
+  VNEXT_EVIDENCE_FILE_NAMES,
+  VNEXT_EVIDENCE_INTEGRITY_GATE_VERSION,
+} from './gates/evidence-integrity-gate.js';
+
 // r2.0 §4.10 / B-2: Product Policy + Adapter Capability. The Product Policy
 // is the BUSINESS rule for "how many references per basis"; the Adapter
 // Capability is what the model can accept. The effective max is the min
