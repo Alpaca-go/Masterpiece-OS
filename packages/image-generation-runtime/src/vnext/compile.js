@@ -299,6 +299,17 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
           : 'text_only',
         referenceIds: referenceAssetIds,
         referenceSources: [],
+        // r2.0 §4.10 / B-3: Reference Boundary text block status. The v1
+        // seedream-adapter path appends the block; the Phase 9B path now
+        // also appends it (without disturbing the frozen R8.6 block order).
+        // Either way the trace must record what was applied so the F-4
+        // evidence scanner + audit pipeline can reason about it consistently.
+        referenceBoundary: {
+          applied: Boolean(result.trace?.referenceBoundary?.applied),
+          version: result.trace?.referenceBoundary?.version ?? null,
+          providerStrengthControl: result.trace?.referenceBoundary?.providerStrengthControl ?? 'unsupported',
+          promptCharacters: result.trace?.referenceBoundary?.promptCharacters ?? 0,
+        },
         promptCharacters: budget.chars,
         // r10.4 regression repair: quality-budget overflow is recorded on the
         // trace (monitoring) while the Provider hard limit stays fail-closed.

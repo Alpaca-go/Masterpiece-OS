@@ -37,15 +37,13 @@
 // audit trigger then fires as expected without invoking the spatial
 // semantic gate's stricter mode.
 //
-// Gate B workaround: Gate B requires the Reference Boundary label to
-// be present in the actual prompt for `reference_first` runs. The
-// Phase 9B compile path does NOT go through seedream-adapter.compile
-// (which is the B-3 boundary injector); it produces a prompt that
-// lacks the label. In real production this is a known interaction
-// gap between the two compile paths. For F-3 test purposes we pass
-// `editedPrompt` containing the boundary label so Gate B accepts the
-// run; the F-3 audit trigger fires regardless of the boundary's
-// presence (it depends on the contract, not the prompt).
+// Gate B reference boundary: for `reference_first` runs, the compiled
+// prompt now carries the Reference Boundary text block (Phase 9B compile
+// appends it to finalPrompt without disturbing the frozen R8.6 block
+// order — see r2.0 §4.10 / B-3). Gate B's marker check therefore
+// passes against the COMPILED prompt directly; no editedPrompt injection
+// is needed for these tests. The audit trigger is independent of the
+// boundary (it depends on the contract, not the prompt content).
 
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -350,27 +348,26 @@ function makeThrowingAuditService(): VNextSimilarityAuditService {
 // Gate B (provider-prompt-gate) requires the actual prompt to carry
 // (1) the Reference Boundary label AND (2) the target scene marker
 // (the subtype / scene label) for `reference_first` runs. The Phase
-// 9B compile path does not inject either; the test injects both via
-// editedPrompt. See the long comment block at the top of the file
-// for the full rationale. This boundary text satisfies Gate B's
-// checks; the audit trigger fires regardless of the boundary (it
-// depends on the contract, not the prompt).
+// 9B compile path now appends the boundary to finalPrompt at compile
+// time (see r2.0 §4.10 / B-3), so Gate B accepts the compiled prompt
+// directly. This file no longer needs an editedPrompt workaround.
 //
-// We hard-code "reception" because that is the test's `subtype`.
-// The marker is intentionally fuzzy (subtype OR human label).
-const REFERENCE_BOUNDARY_LABEL = '# REFERENCE BOUNDARY (high-priority instruction)\nPreserve from the reference image: design language only.\nTarget scene is authoritative for: function, spatial program, scene type.\nTarget scene: reception.\n';
+// The audit trigger is independent of the boundary (it depends on the
+// contract, not the prompt content).
+//
+// `targetScene` is the test's `subtype` ("reception"). The marker is
+// intentionally fuzzy (subtype OR human label).
 
 /**
- * Build a startValidated options object for a given basis. For
- * `reference_first` runs we pass editedPrompt with the boundary so
- * Gate B accepts; standard / continuation pass no editedPrompt.
+ * Build a startValidated options object for a given basis. No
+ * editedPrompt is passed — the compiled prompt already carries the
+ * Reference Boundary for `reference_first` runs (r2.0 §4.10 / B-3).
  */
-function startOpts(taskId: string, basis: CompileTaskOpts['basis']): { projectId: string; taskId: string; apiProfileId: string; editedPrompt?: string } {
+function startOpts(taskId: string, basis: CompileTaskOpts['basis']): { projectId: string; taskId: string; apiProfileId: string } {
   return {
     projectId,
     taskId,
     apiProfileId: 'seedream-profile',
-    ...(basis === 'reference_first' ? { editedPrompt: REFERENCE_BOUNDARY_LABEL } : {}),
   };
 }
 

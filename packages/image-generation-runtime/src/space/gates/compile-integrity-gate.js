@@ -105,8 +105,23 @@ export function assertSpaceGenerationRouteGateA(input, baseline = ACTIVE_SPACE_R
     && baseline.compilerIds.includes(trace.compilerId);
   const requiredBlocksPresent = missingBlockIds.length === 0;
   const blockOrderMatched = orderedSubset(blockIds, baseline.requiredBlockOrder);
+  // r2.0 §4.10 / B-3: the Reference Boundary text block is REQUIRED for
+  // `reference_first` runs. It is appended to the compiled prompt by the
+  // Phase 9B compiler (and by the v1 seedream-adapter path), adding ~700-1100
+  // chars on top of the R8.6 7500 design target. The block is structural,
+  // not bloat — it carries the cross-scene intent + the v2.0 preserve list.
+  // Treat the boundary's character count as exempt from the upper bound so
+  // the budget check stays meaningful (still measures whether the BODY of
+  // the prompt is in range) without spuriously blocking Reference-First
+  // runs that Gate B is about to validate anyway. The lower bound and the
+  // architecture-character minimum are unchanged.
+  const referenceBoundaryChars = Math.max(0, Number(trace.referenceBoundary?.promptCharacters) || 0);
+  const referenceBoundaryApplied = Boolean(trace.referenceBoundary?.applied);
+  const effectiveMaxChars = referenceBoundaryApplied
+    ? baseline.promptBudget.maxChars + referenceBoundaryChars
+    : baseline.promptBudget.maxChars;
   const promptBudgetMatched = promptCharacters >= baseline.promptBudget.minChars
-    && promptCharacters <= baseline.promptBudget.maxChars
+    && promptCharacters <= effectiveMaxChars
     && architectureCharacters >= baseline.architectureBudget.minChars;
   const referencePolicyMatched = generationBasis === 'standard'
     ? referenceCount === 0 && referenceMode === 'text_only'

@@ -38,6 +38,20 @@ import {
   validateTargetSceneAuthority,
   TARGET_SCENE_AUTHORITY_GATE_VERSION,
 } from './scene-projection/target-scene-projection.js';
+// r2.0 §4.10 / B-3: Reference Boundary text block. The v1 seedream-adapter
+// path appends this when basis === 'reference_first'. Phase 9B compile used
+// to skip it, so any Reference-First run through the vnext space flow would
+// fail closed at Gate B (Provider prompt gate) with no actionable signal to
+// the user. The boundary is now appended to finalPrompt here too — without
+// adding a new entry to `ordered` so the frozen R8.6 block order stays
+// intact, and without breaking Gate A's "last block === negative_constraints"
+// invariant. The text is also recorded in blockTextsByName so the budget's
+// positive/negative ratio accounting includes the new characters.
+import {
+  renderReferenceBoundary,
+  REFERENCE_BOUNDARY_VERSION,
+  resolveProviderStrengthControlLabel,
+} from './reference-boundary.js';
 
 export const SPACE_PROMPT_COMPILER_ID = 'phase9b-quality-compiler';
 export const SPACE_PROMPT_COMPILER_VERSION = '1.1.0';
@@ -354,11 +368,32 @@ export function compilePhase9bSpacePrompt(input) {
   ];
 
   const blocksById = Object.fromEntries(ordered.map((b) => [b.id, b]));
-  const finalPrompt = ordered.map((b) => b.text).join('\n\n');
-  const blockTextsByName = Object.fromEntries(ordered.map((b) => [b.id, b.text]));
+  // r2.0 §4.10 / B-3: append the Reference Boundary text block when the
+  // basis is `reference_first`. The block is appended to finalPrompt and
+  // recorded in blockTextsByName (so the budget's positive/negative ratio
+  // accounts for it), but it is NOT added to `ordered` — the frozen R8.6
+  // block order (and the r8.6 manifest's "last block === negative_constraints"
+  // invariant) must stay intact. Gate B's marker check then sees the
+  // boundary in the actual prompt and lets the run through.
+  const referenceBoundaryText = renderReferenceBoundary({
+    generationBasis: input.taskContract?.generationBasis,
+    referenceSceneRelation: input.taskContract?.referenceSceneRelation ?? 'unknown',
+    targetSceneLabel: input.taskContract?.subtype ?? '',
+    adapterCapability: input.adapter?.capability,
+  });
+  const baseFinalPrompt = ordered.map((b) => b.text).join('\n\n');
+  const finalPrompt = referenceBoundaryText
+    ? `${baseFinalPrompt}\n\n${referenceBoundaryText}`
+    : baseFinalPrompt;
+  const baseBlockTextsByName = Object.fromEntries(ordered.map((b) => [b.id, b.text]));
+  const blockTextsByName = referenceBoundaryText
+    ? { ...baseBlockTextsByName, reference_boundary: referenceBoundaryText }
+    : baseBlockTextsByName;
   // r10.4 regression repair: the Provider hard limit is read from the adapter
   // capability (single source); the 7500 quality budget only warns + flags
-  // qualityBudgetExceeded on the trace below.
+  // qualityBudgetExceeded on the trace below. The Reference Boundary text is
+  // included in finalPrompt + blockTextsByName, so the budget check is
+  // computed on the exact string the Provider will see.
   const budget = measurePromptBudget(finalPrompt, blockTextsByName, {
     providerCapability: input.adapter?.capability,
   });
@@ -431,6 +466,16 @@ export function compilePhase9bSpacePrompt(input) {
       anchorCriteria: input.anchorCriteria || null,
       architectureContextIncluded: Boolean(contextBlock),
       blockIds: presentIds,
+      // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
+      // was appended to the prompt. Mirrors the v1 seedream-adapter
+      // referenceBoundary trace shape so downstream consumers (audit,
+      // evidence, F-4) read one shape regardless of compile path.
+      referenceBoundary: {
+        applied: Boolean(referenceBoundaryText),
+        version: referenceBoundaryText ? REFERENCE_BOUNDARY_VERSION : null,
+        providerStrengthControl: resolveProviderStrengthControlLabel(input.adapter?.capability),
+        promptCharacters: referenceBoundaryText ? [...referenceBoundaryText].length : 0,
+      },
       budget: {
         chars: budget.chars,
         positiveRatio: budget.positiveRatio,
