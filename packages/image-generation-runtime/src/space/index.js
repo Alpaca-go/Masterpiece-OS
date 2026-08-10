@@ -38,9 +38,15 @@ export { buildTrace, fingerprint } from './trace.js';
 export { runSpaceQualityGate } from './space-quality-gate.js';
 export {
   assertSpaceGenerationRouteIntegrity,
+  assertSpaceGenerationRouteGateA,
   SPACE_ROUTE_INTEGRITY_GATE_VERSION,
   CANONICAL_SPACE_COMPILER_MODE,
 } from './gates/generation-route-integrity-gate.js';
+export { SPACE_COMPILE_INTEGRITY_GATE_VERSION } from './gates/compile-integrity-gate.js';
+export {
+  assertProviderPromptGateB,
+  SPACE_PROVIDER_PROMPT_GATE_VERSION,
+} from './gates/provider-prompt-gate.js';
 export { ACTIVE_SPACE_ROUTE_BASELINE } from './quality-baselines/active-space-route-baseline.js';
 
 // r2.0 §4.10 / B-2: Product Policy + Adapter Capability. The Product Policy

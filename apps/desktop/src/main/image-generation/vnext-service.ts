@@ -18,7 +18,8 @@ import {
   listVNextTemplateOptions,
 } from '@masterpiece/image-generation-runtime/vnext/index.js';
 import {
-  assertSpaceGenerationRouteIntegrity,
+  assertSpaceGenerationRouteGateA,
+  assertProviderPromptGateB,
   resolveSpaceReferences,
   assertSpaceReferenceAvailable,
   resolveContinuationReference,
@@ -505,6 +506,13 @@ export function createVNextImageGenerationService(
     }>;
     let referenceTrace: Record<string, unknown> | null = null;
     let spaceQualityGate: Record<string, unknown> | null = null;
+    // r2.0 §4.13 / Phase D: actualPrompt / isEditedPrompt are hoisted
+    // to the outer scope so the post-Gate-B block (and the corrected
+    // prompt path) can re-use them without re-derivation. Default value
+    // is the compiled prompt; the Phase 9B space branch may override
+    // with `input.editedPrompt` after passing it through Gate A + Gate B.
+    let actualPrompt: string = compilation.compiledPrompt.finalPrompt;
+    let isEditedPrompt = false;
 
     if (isPhase9bSpace) {
       // R11.2.2 §17-§18: Continuation binds the ORIGINAL confirmed generated
@@ -631,33 +639,51 @@ export function createVNextImageGenerationService(
       }
       spaceQualityGate = resolvedQualityGate;
 
-      const prompt = input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt;
+      // r2.0 §4.13 / Phase D: split the integrity check into two gates.
+      //
+      //   Gate A (compile-time): read-only on the FROZEN compile artifacts.
+      //     Never reads `input.editedPrompt` — a user edit must NOT trigger
+      //     SPACE_COMPILER_ROUTE_MISMATCH; that would wrongly block the
+      //     validator-correction retry path.
+      //   Gate B (provider prompt): validates the ACTUAL prompt string the
+      //     Provider will receive. This is where an edited / correction
+      //     prompt that strips the Reference Boundary or exceeds the
+      //     Provider char cap is caught. Failure is
+      //     SPACE_PROVIDER_PROMPT_INVALID (NOT
+      //     SPACE_COMPILER_ROUTE_MISMATCH).
+      const compiledPrompt = compilation.compiledPrompt.finalPrompt;
+      const editedPromptRaw = input.editedPrompt?.trim();
+      // r2.0 §4.13 / Phase D: actualPrompt and isEditedPrompt are
+      // declared in the outer scope. Reassign here (not redeclare)
+      // so the post-block code can use them.
+      actualPrompt = editedPromptRaw || compiledPrompt;
+      isEditedPrompt = Boolean(editedPromptRaw);
       const compiledBlocks = (compilation.compiledPrompt as unknown as {
         blocks?: Array<{ id: string; title?: string }>;
       }).blocks ?? [];
-      const spaceTrace = (compilation.compiledPrompt.trace as unknown as {
+      const compileSpaceTrace = (compilation.compiledPrompt.trace as unknown as {
         spaceGeneration?: Record<string, unknown>;
       }).spaceGeneration ?? {};
-      const spatialSemanticReport = (spaceTrace.spatialSemanticReport ?? {
+      const spatialSemanticReport = (compileSpaceTrace.spatialSemanticReport ?? {
         status: 'block',
         findings: [{ code: 'SPACE_SPATIAL_SEMANTIC_REPORT_MISSING' }],
       }) as ReturnType<typeof validateSpatialSemantics>;
-      const integrity = assertSpaceGenerationRouteIntegrity({
+      // Gate A: compile-time integrity. Read-only on the compile artifacts.
+      // The `vnext-service.ts:561-568` minimum fix is preserved as the
+      // budget fallback: when the compile trace lacks promptCharacters,
+      // fall back to the literal length of the COMPILED prompt (never
+      // the edited one).
+      const gateA = assertSpaceGenerationRouteGateA({
         taskContract: compilation.taskContract,
-        compilerMode: spaceTrace.canonicalCompilerMode ?? 'r8_6_golden',
+        compilerMode: compileSpaceTrace.canonicalCompilerMode ?? 'r8_6_golden',
         trace: {
           spaceGeneration: {
-            ...spaceTrace,
-            // R11.2.3: the frozen budget is a COMPILER constraint. The compiler
-            // already hard-blocks its own output (>7500) at compile time, and a
-            // user-edited / validator-correction prompt is a legitimate override
-            // that must not re-trigger the compiler's internal budget gate.
-            // Validate the route against the compiled prompt (authoritative).
-            promptCharacters: Number(spaceTrace.promptCharacters)
-              || [...compilation.compiledPrompt.finalPrompt].length,
+            ...compileSpaceTrace,
+            promptCharacters: Number(compileSpaceTrace.promptCharacters)
+              || [...compiledPrompt].length,
           },
         },
-        blockIds: promptBlockIds(compilation.compiledPrompt.finalPrompt, compiledBlocks),
+        blockIds: promptBlockIds(compiledPrompt, compiledBlocks),
         providerReferenceCount: references.length,
         referenceMode: (generationBasis === 'reference_first' || generationBasis === 'continuation') ? 'reference_assisted' : 'text_only',
         referenceSources: references.map((reference) => reference.source),
@@ -666,19 +692,50 @@ export function createVNextImageGenerationService(
         providerAspectRatio: compilation.payload.aspectRatio,
         providerSize: aspectSize(compilation.taskContract.aspectRatio),
       });
-      if (!integrity) {
-        throw Object.assign(new Error('Space route integrity gate was not applied.'), {
-          code: 'SPACE_GENERATION_ROUTE_INTEGRITY_FAILED',
+      if (!gateA) {
+        throw Object.assign(new Error('Space compile integrity gate A was not applied.'), {
+          code: 'SPACE_COMPILER_ROUTE_MISMATCH',
         });
       }
-      Object.assign(spaceTrace, {
+      // Gate B: provider prompt validation. Runs on the ACTUAL prompt
+      // (could be the compiled prompt OR the user-edited / correction
+      // prompt). A failure here does NOT invalidate the compile trace —
+      // it just blocks the Provider call.
+      const gateBAdapter = createSeedreamVNextAdapter({ model: compilation.payload.model });
+      const providerCapability = gateBAdapter.capability;
+      const gateB = assertProviderPromptGateB({
+        actualPrompt,
+        compiledPrompt,
+        providerCapability: {
+          ...providerCapability,
+          prompt: {
+            maxCharacters: 12000,
+          },
+        },
+        generationBasis,
+        targetScene: compilation.taskContract.subtype,
+        targetSceneLabel: compilation.taskContract.subtype,
+        isEdited: isEditedPrompt,
+      });
+      // r2.0 §4.13: trace immutability. The compile-time spaceTrace
+      // (compileSpaceTrace) is FROZEN. Run-level metadata goes into a
+      // SEPARATE runSpaceTrace object that is written alongside the
+      // run, not back into compilations/<taskId>/. This way a
+      // correction retry does not pollute the original compile's
+      // trace.json.
+      const runSpaceTrace = {
+        ...compileSpaceTrace,
         generationBasis,
         referenceMode: (generationBasis === 'reference_first' || generationBasis === 'continuation') ? 'reference_assisted' : 'text_only',
         referenceIds: references.map((reference) => reference.id),
         referenceSources: references.map((reference) => reference.source),
-        routeIntegrity: integrity.routeIntegrity,
+        routeIntegrity: gateA.routeIntegrity,
         spatialSemanticReport,
-      });
+        // Phase D: separate run-time gate trace. Gate A is the compile
+        // time check, Gate B is the actual-prompt check.
+        providerPromptGate: gateB,
+        isEditedPrompt,
+      };
       await Promise.all([
         writeJson(path.join(compilation.artifactDirectory, 'reference-trace.json'), {
           schemaVersion: '1.0',
@@ -691,19 +748,49 @@ export function createVNextImageGenerationService(
         }),
         writeJson(path.join(compilation.artifactDirectory, 'provider-payload.redacted.json'), {
           model: compilation.payload.model,
-          prompt,
+          prompt: actualPrompt,
           size: aspectSize(compilation.taskContract.aspectRatio),
           aspectRatio: compilation.taskContract.aspectRatio,
           references: references.map((reference) => ({ id: reference.id, source: reference.source })),
+          // r2.0 §4.13: record which gate passed and whether the prompt
+          // was edited. The redacte d payload is the audit trail; the
+          // gate result is sufficient to know it was checked.
+          gates: {
+            compileIntegrity: { status: gateA.routeIntegrity.status, version: gateA.routeIntegrity.version },
+            providerPrompt: { status: 'pass', version: gateB.version, isEdited: isEditedPrompt },
+          },
         }),
+        // The compile trace.json is FROZEN at compile time. The
+        // run-time spaceGeneration goes into a separate file. This
+        // matches §9 (回滚): "纠偏是运行时叠加", and keeps the
+        // compile artifact directory as the immutable "facts of
+        // that compile".
         writeJson(path.join(compilation.artifactDirectory, 'trace.json'), {
           projectId: input.projectId,
           taskId: compilation.taskContract.taskId,
           contextFingerprint: currentContext.provenance.sourceFingerprint,
           route: compilation.compiledPrompt.route,
           trace: compilation.compiledPrompt.trace,
-          spaceGeneration: spaceTrace,
+          spaceGeneration: compileSpaceTrace,
           compiledAt: compilation.compiledPrompt.compiledAt,
+        }),
+        // r2.0 §4.13: run-level trace lives next to run.json, NOT in
+        // the compile artifact directory. A correction retry appends
+        // a new run-trace file rather than mutating the original.
+        writeJson(path.join(compilation.artifactDirectory, 'run-trace.json'), {
+          schemaVersion: '1.0',
+          runSpaceTrace,
+          gateA: {
+            status: gateA.routeIntegrity.status,
+            version: gateA.routeIntegrity.version,
+          },
+          gateB: {
+            status: 'pass',
+            version: gateB.version,
+            isEdited: isEditedPrompt,
+            characterCount: gateB.characterCount,
+            checks: gateB.checks,
+          },
         }),
       ]);
     } else {
@@ -737,10 +824,12 @@ export function createVNextImageGenerationService(
         }] : []),
       ].slice(0, 2);
     }
-    const prompt = input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt;
+    // r2.0 §4.13 / Phase D: actualPrompt was already chosen above and
+    // passed through Gate A + Gate B. No re-derivation here — that would
+    // bypass Gate B for the edited-prompt / correction-retry case.
     const run = await getImageGeneration().startCompiledCreativeTask({
       projectId: input.projectId,
-      compiledPrompt: prompt,
+      compiledPrompt: actualPrompt,
       promptVersion: compilation.compiledPrompt.trace.sourceFingerprint,
       snapshot: {
         schemaVersion: 'vnext-1.0',
