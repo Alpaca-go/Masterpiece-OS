@@ -798,6 +798,11 @@ export type VNextLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
 // single source reference. It is NOT a new compiler.
 export type VNextGenerationBasis = 'standard' | 'reference_first' | 'continuation';
 
+// R11.2.3: where the task's shot came from. The target scene owns the view
+// unless the user explicitly chose a shot (user_explicit > target_scene_default
+// > legacy_project_default).
+export type VNextShotSource = 'user_explicit' | 'target_scene_default' | 'legacy_project_default';
+
 // R11.1 continuation confirmation state for a generated space output.
 // append-only metadata; never changes the image / run / evaluation.
 export type ContinuationConfirmationState = 'unconfirmed' | 'confirmed' | 'revoked';
@@ -845,6 +850,8 @@ export interface VNextTaskContract {
   mustAvoid: string[];
   referenceAssetIds: string[];
   logoUsageMode?: VNextLogoUsageMode;
+  /** R11.2.3: provenance of the shot value (target scene owns the view unless the user explicitly chose it). */
+  shotSource?: VNextShotSource;
   createdAt: string;
   /** R11.1: present only when generationBasis === 'continuation'. */
   continuation?: VNextContinuationIntent;

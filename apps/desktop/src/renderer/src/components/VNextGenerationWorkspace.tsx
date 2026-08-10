@@ -9,6 +9,7 @@ import type {
   VNextCreativeSession,
   VNextDeliverableValidation,
   VNextLogoUsageMode,
+  VNextShotSource,
   VNextTaskContract,
 } from '../../../shared/types';
 import { cleanError } from '../utils';
@@ -92,6 +93,7 @@ export function VNextGenerationWorkspace({
   const [family, setFamily] = useState<Family>('space');
   const [subtype, setSubtype] = useState(DEFAULTS.space.subtype);
   const [shot, setShot] = useState(DEFAULTS.space.shot);
+  const [shotSource, setShotSource] = useState<VNextShotSource>('target_scene_default');
   const [aspectRatio, setAspectRatio] = useState<VNextTaskContract['aspectRatio']>('16:9');
   const [instruction, setInstruction] = useState('');
   const [mustIncludeText, setMustIncludeText] = useState('');
@@ -400,6 +402,7 @@ export function VNextGenerationWorkspace({
     setFamily(next);
     setSubtype(defaults.subtype);
     setShot(defaults.shot);
+    setShotSource('target_scene_default');
     setAspectRatio(defaults.ratio);
     setCompiled(null);
     setEditedPrompt('');
@@ -424,6 +427,7 @@ export function VNextGenerationWorkspace({
 
   function changeBasis(next: 'standard' | 'reference') {
     setGenerationBasis(next);
+    setShotSource('target_scene_default');
     setCompiled(null);
     setEditedPrompt('');
     setActiveRun(null);
@@ -540,6 +544,7 @@ export function VNextGenerationWorkspace({
           mustAvoid: splitRules(mustAvoidText),
           referenceAssetIds: generationBasis === 'reference' ? referenceAssetIds : [],
           logoUsageMode,
+          shotSource,
         },
       });
       setCompiled(result);
@@ -798,7 +803,7 @@ export function VNextGenerationWorkspace({
           </select>
         </label>
         <label>镜头 / 构图
-          <select value={shot} onChange={(event) => setShot(event.target.value)}>
+          <select value={shot} onChange={(event) => { setShot(event.target.value); setShotSource('user_explicit'); }}>
             {(familyOptions?.shots ?? []).map((item) => <option key={item}>{item}</option>)}
           </select>
         </label>

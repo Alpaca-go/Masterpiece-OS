@@ -32,6 +32,11 @@ export function createVNextTaskContract(input, options = {}) {
   const count = Number(input?.count ?? 1);
   const aspectRatio = String(input?.aspectRatio ?? '16:9');
   const logoUsageMode = String(input?.logoUsageMode ?? 'blank_area');
+  const shotSource = input?.shotSource === 'user_explicit'
+    ? 'user_explicit'
+    : input?.shotSource === 'target_scene_default'
+      ? 'target_scene_default'
+      : 'legacy_project_default';
   if (!input?.projectId) throw new Error('projectId is required');
   if (!FAMILIES.has(family)) throw new Error(`Unsupported deliverable family: ${family || '(empty)'}`);
   if (!subtype) throw new Error('subtype is required');
@@ -87,6 +92,7 @@ export function createVNextTaskContract(input, options = {}) {
     referenceAssetIds,
     logoUsageMode,
     ...(continuation ? { continuation } : {}),
+    shotSource,
     createdAt: options.now || new Date().toISOString(),
   };
 }
