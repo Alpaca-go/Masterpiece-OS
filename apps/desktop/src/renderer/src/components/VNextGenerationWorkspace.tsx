@@ -17,7 +17,7 @@ import type {
   VNextTaskContract,
   VNextValidatedGenerationImageRef,
 } from '../../../shared/types';
-import { cleanError } from '../utils';
+import { cleanError, autoRecoverableHint } from '../utils';
 import {
   MAX_SPACE_REFERENCE_IMAGES,
   validateReferenceHard,
@@ -763,12 +763,26 @@ export function VNextGenerationWorkspace({
         <p>{project.brandName} · 首图直接交付，无需先选 Anchor</p>
       </div>
       <div className="button-row">
-        <button className="button ghost" onClick={onBack}>返回报告</button>
+        {/* r2.0 / r10.4 UX: make it explicit that going back does NOT
+            require re-analysis and does not lose the user's current
+            settings. Without this label, users interpreted "返回报告"
+            as a "start over" affordance and reached for the heavy
+            "强制重新分析" button on the report page. */}
+        <button className="button ghost" onClick={onBack}>返回报告（不丢失当前设置）</button>
         <button className="button secondary" onClick={onOpenSettings}>模型设置</button>
       </div>
     </header>
 
-    {error && <div className="notice error top-notice">{error}</div>}
+    {error && (
+      <div className="notice error top-notice">
+        <div>{error}</div>
+        {autoRecoverableHint(error) && (
+          <div style={{ marginTop: 6, fontWeight: 500 }}>
+            {autoRecoverableHint(error)}
+          </div>
+        )}
+      </div>
+    )}
     {notice && !error && <div className="notice ok top-notice">{notice}</div>}
 
     <div className="project-grid image-generation-grid">

@@ -400,3 +400,139 @@ test('vNext start recompiles when the cached preflight is stale and would otherw
   const refreshed = JSON.parse(await fs.readFile(compiledPromptPath, 'utf8'));
   assert.equal(refreshed.preflightReport?.status, 'pass');
 });
+
+// r2.0 / r10.4 UX regression: previously `vnext-service.start` failed
+// closed with `VNEXT_COMPILE_INPUT_STALE` whenever the project context
+// fingerprint drifted (e.g. the user added a reference image, re-ran
+// analysis, or any other operation that rebuilds the context). The only
+// recovery path for the user was "回到报告页 → 强制重新分析", which
+// burned the analysis cache for no good reason — the compile contract
+// itself is intact, only the cached compile is stale. The service now
+// transparently re-compiles using the cached task contract + the
+// current context, reusing the same `taskId` so the artifact directory
+// is overwritten in place. Only when the *fresh* compile still fails
+// to pick up the current context do we surface VNEXT_COMPILE_INPUT_STALE.
+test('vNext start recompiles when the project context fingerprint has drifted', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-vnext-stale-fingerprint-'));
+  const runs = new Map<string, ImageGenerationRun>();
+  const localImageGeneration = {
+    async startCompiledCreativeTask(options: { compiledPrompt: string }) {
+      const run: ImageGenerationRun = {
+        schemaVersion: '1.0',
+        runId: `run-${runs.size + 1}`,
+        projectId,
+        taskId: options.compiledPrompt.slice(0, 4),
+        status: 'succeeded',
+        outputType: 'concept_image',
+        providerId: 'dashscope',
+        modelId: 'seedream-5',
+        region: 'beijing',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        completedAt: new Date().toISOString(),
+        gate: { blocked: false, errors: [], warnings: [] },
+        images: [{
+          imageId: 'image-1',
+          relativePath: 'image-1.png',
+          mimeType: 'image/png',
+          sizeBytes: 1024,
+          width: 1024,
+          height: 576,
+          sha256: 'image-1-sha256',
+          downloadedAt: new Date().toISOString(),
+        }],
+      };
+      runs.set(run.runId, run);
+      return run;
+    },
+    async getRun(runId: string) { return runs.get(runId) ?? null; },
+    async runRoot() { return path.join(root, 'image-generation'); },
+  };
+  const localProjects = {
+    async paths(_id: string) {
+      return {
+        root,
+        input: path.join(root, 'input'),
+        prepared: path.join(root, 'prepared'),
+        outputs: path.join(root, 'outputs'),
+        runtime: path.join(root, 'runtime'),
+      };
+    },
+    async get() { return { apiProfileId: 'fingerprint-profile' }; },
+  } as never;
+  // The project context will return a NEW fingerprint on the second
+  // call. We use a mutable wrapper so the second start() invocation
+  // (the one being tested) sees the new fingerprint, while the first
+  // compile() invocation saw the original.
+  const fingerprintHolder = { value: 'fp-original' };
+  const localContext = {
+    getVNext: async () => ({
+      ...context,
+      provenance: { ...context.provenance, sourceFingerprint: fingerprintHolder.value },
+    }),
+    rebuildVNext: async () => ({
+      ...context,
+      provenance: { ...context.provenance, sourceFingerprint: fingerprintHolder.value },
+    }),
+  } as never;
+  const service = createVNextImageGenerationService(
+    localProjects,
+    localContext,
+    () => localImageGeneration as never,
+  );
+
+  // Compile once. The cached trace.json now carries the ORIGINAL
+  // fingerprint.
+  const initialCompile = await service.compile({
+    projectId,
+    task: {
+      deliverableFamily: 'space',
+      subtype: 'reception',
+      shot: 'entrance_view',
+      count: 1,
+      aspectRatio: '16:9',
+      currentInstruction: 'Create the first formal reception result.',
+      mustInclude: [],
+      mustAvoid: [],
+      referenceAssetIds: [],
+    },
+  });
+  const compiledPromptPath = path.join(
+    initialCompile.artifactDirectory,
+    'compiled-prompt.json',
+  );
+  const tracePath = path.join(
+    initialCompile.artifactDirectory,
+    'trace.json',
+  );
+  // Sanity: the cached trace.json carries the original fingerprint.
+  const cachedTrace = JSON.parse(await fs.readFile(tracePath, 'utf8'));
+  assert.equal(cachedTrace.contextFingerprint, 'fp-original');
+
+  // Simulate the project context being rebuilt (e.g. user added a
+  // reference image, re-ran analysis). The cached trace.json still
+  // holds the OLD fingerprint, so without the regression fix the next
+  // start() would throw VNEXT_COMPILE_INPUT_STALE.
+  fingerprintHolder.value = 'fp-after-context-rebuild';
+
+  // With the fix this call must transparently re-compile using the
+  // current context (which now carries the new fingerprint), overwrite
+  // the same artifact directory, and proceed without surfacing the
+  // stale-fingerprint error to the user.
+  const run = await service.start({
+    projectId,
+    taskId: initialCompile.taskContract.taskId,
+    apiProfileId: 'fingerprint-profile',
+  });
+  assert.equal(run.status, 'succeeded');
+  // The recompile must have replaced the on-disk cached trace.json
+  // with one that carries the NEW fingerprint. Otherwise the next
+  // start would still need to recompile.
+  const refreshedTrace = JSON.parse(await fs.readFile(tracePath, 'utf8'));
+  assert.equal(refreshedTrace.contextFingerprint, 'fp-after-context-rebuild');
+  // The compiled-prompt.json also has to reflect the new context
+  // (so any preflight / continuity check that reads from it sees
+  // consistent state).
+  const refreshed = JSON.parse(await fs.readFile(compiledPromptPath, 'utf8'));
+  assert.equal(refreshed.preflightReport?.status, 'pass');
+});

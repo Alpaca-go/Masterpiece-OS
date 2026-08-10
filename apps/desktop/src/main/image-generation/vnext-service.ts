@@ -410,21 +410,35 @@ export function createVNextImageGenerationService(
 
   async function start(input: StartVNextGenerationInput): Promise<ImageGenerationRun> {
     let compilation = await readCompilation(input.projectId, input.taskId);
+    // Load the current project context once, up front. The fingerprint
+    // comparison below is what decides whether the cached compilation
+    // is still in sync with the project state; doing the read at the
+    // top means the auto-recompile path can pick up the current
+    // context without an extra round-trip.
+    const currentContext = await projectContext.getVNext(input.projectId);
     let preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
       preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
     }).preflightReport;
-    if (preflight?.status !== 'pass') {
-      // The cached `preflightReport` was produced at compile time. When
-      // the vNext preflight rules are tightened or relaxed (or when a
-      // stale build is loaded after a Desktop upgrade), a previously
-      // passing compile can suddenly appear blocked, or a previously
-      // blocked compile can become passing. Trusting the cached value
-      // blindly would force every user to re-click "查看最终 Prompt"
-      // after every code change. Instead, transparently re-compile the
-      // task using the stored `task-contract.json` + any user-edited
-      // prompt, then re-check the preflight against the current code.
-      // Only when the *fresh* compile still blocks do we surface the
-      // error to the user.
+    const cachedTraceFile = JSON.parse(
+      await fs.readFile(path.join(compilation.artifactDirectory, 'trace.json'), 'utf8'),
+    ) as { contextFingerprint?: string };
+    const preflightBlocked = preflight?.status !== 'pass';
+    const contextFingerprintStale = cachedTraceFile.contextFingerprint
+      !== currentContext.provenance.sourceFingerprint;
+    if (preflightBlocked || contextFingerprintStale) {
+      // r2.0 / r10.4 UX: a previously-passing compile can become blocked
+      // (preflight rules tightened, Desktop upgrade, etc.) and a
+      // previously-in-sync compile can become stale (the user added a
+      // reference image, re-ran analysis, or the project context was
+      // rebuilt for any other reason). Both are recoverable by
+      // re-running `compile()` with the cached task contract; the new
+      // compile overwrites the same artifact directory (we reuse the
+      // `taskId` below) and the Provider call lands on the new prompt.
+      // Only when the *fresh* compile still blocks OR the new compile
+      // still does not pick up the current context do we surface the
+      // error to the user. This eliminates the heavy-handed recovery
+      // path that previously forced the user to re-analyze just to
+      // retry a generation.
       try {
         const task = compilation.taskContract;
         const apiProfileId = (await projects.get(input.projectId)).apiProfileId;
@@ -432,7 +446,7 @@ export function createVNextImageGenerationService(
         // exact same compile artifact directory; otherwise the new run
         // would land next to the old one and `start` would keep reading
         // the stale `compiled-prompt.json` on the next attempt.
-        compilation = await compile({
+        const recompiled = await compile({
           projectId: input.projectId,
           task: {
             taskId: task.taskId,
@@ -450,13 +464,25 @@ export function createVNextImageGenerationService(
           },
           ...(apiProfileId ? { apiProfileId } : {}),
         });
-        preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
-          preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
-        }).preflightReport;
+        // Verify the recompile actually picked up the current context.
+        // If the new trace.json still has a stale fingerprint, this is
+        // a real drift state — fall through to the original errors so
+        // the user sees an actionable finding code.
+        const recompiledTraceFile = JSON.parse(
+          await fs.readFile(path.join(recompiled.artifactDirectory, 'trace.json'), 'utf8'),
+        ) as { contextFingerprint?: string };
+        if (recompiledTraceFile.contextFingerprint === currentContext.provenance.sourceFingerprint) {
+          compilation = recompiled;
+          preflight = (recompiled.compiledPrompt as VNextCompiledPrompt & {
+            preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
+          }).preflightReport;
+        }
       } catch (recompileError) {
         // Re-compile failed for some other reason; fall through to the
-        // original blocked report so the user still sees the underlying
-        // finding codes.
+        // original preflight report so the user still sees the
+        // underlying finding codes. The fingerprint check below will
+        // also surface VNEXT_COMPILE_INPUT_STALE if the recompile
+        // failure was a context drift that we couldn't recover from.
         preflight = (compilation.compiledPrompt as VNextCompiledPrompt & {
           preflightReport?: { status?: string; findings?: Array<{ code?: string }> };
         }).preflightReport;
@@ -478,7 +504,6 @@ export function createVNextImageGenerationService(
         code: 'VNEXT_FORMAL_FIRST_COUNT_INVALID',
       });
     }
-    const currentContext = await projectContext.getVNext(input.projectId);
     const lockedLogoAssetIds = new Set([
       ...(currentContext.visualDecisionPacket?.lockedAssets
         .filter((item) => item.type === 'logo')
@@ -486,6 +511,11 @@ export function createVNextImageGenerationService(
       ...(currentContext.promptSourceObject?.lockedAssets.logoAssetIds ?? []),
       ...currentContext.lockedAssets.logoAssetIds,
     ]);
+    // Re-read trace.json from the current compilation (which is either
+    // the original cached one or the freshly recompiled one above).
+    // The auto-recompile path already verified the fingerprint matches
+    // currentContext, so this is a sanity check on a path that is
+    // expected to be in sync.
     const traceFile = JSON.parse(
       await fs.readFile(path.join(compilation.artifactDirectory, 'trace.json'), 'utf8'),
     ) as { contextFingerprint?: string };
