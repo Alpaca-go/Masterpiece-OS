@@ -293,7 +293,7 @@ test('F-4: scanner reads 9 evidence files and extracts bindings (standard basis)
     'run.json',
     'output.png',
     'validations/summary.json',
-  ]) {
+  ] as const) {
     assert.ok(names.has(expected), `bundle.files must include ${expected}`);
   }
   // Bindings
