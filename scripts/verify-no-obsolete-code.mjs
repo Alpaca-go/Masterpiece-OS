@@ -1,8 +1,8 @@
 // verify:no-obsolete-code — repository-slimming-v2 Phase 6 gate.
 // Scans production code for forbidden legacy names. Labs are exempt
 // (allowed lab roots per the slimming spec); two protocol filenames are
-// exempt inside apps/desktop/src/main/reference-first because production
-// still imports them (documented deviation).
+// exempt inside the active Shared Runtime reference-first protocol (and its
+// Desktop compatibility path) because production still imports them.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,7 +32,10 @@ const FORBIDDEN = [
 
 // Keywords still legitimately used by retained production protocol files.
 const PROTOCOL_EXEMPT_KEYWORDS = new Set(['style-carrier-ranking', 'task-reference-selection']);
-const PROTOCOL_EXEMPT_PREFIX = path.join('apps', 'desktop', 'src', 'main', 'reference-first');
+const PROTOCOL_EXEMPT_PREFIXES = [
+  path.join('apps', 'desktop', 'src', 'main', 'reference-first'),
+  path.join('packages', 'runtime-core', 'src', 'application', 'reference-first'),
+];
 
 // Files allowed to mention legacy names (negative assertions / this gate itself).
 const FILE_WHITELIST = new Set([
@@ -71,7 +74,10 @@ for (const file of targets) {
   const content = fs.readFileSync(file, 'utf8');
   for (const keyword of FORBIDDEN) {
     if (!content.includes(keyword)) continue;
-    if (PROTOCOL_EXEMPT_KEYWORDS.has(keyword) && relative.startsWith(PROTOCOL_EXEMPT_PREFIX)) continue;
+    if (
+      PROTOCOL_EXEMPT_KEYWORDS.has(keyword)
+      && PROTOCOL_EXEMPT_PREFIXES.some((prefix) => relative.startsWith(prefix))
+    ) continue;
     violations.push(`${relative} -> "${keyword}"`);
   }
 }
