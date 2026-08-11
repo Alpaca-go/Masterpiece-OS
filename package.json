@@ -24,7 +24,8 @@
     "test:space-route-integrity": "node --test tests/image-generation/space-route-integrity.test.js",
     "test:space-semantic-gate": "node --test tests/image-generation/space-spatial-semantic-gate.test.js",
     "test:packages": "node --test tests/packages/*/*.test.js",
-    "runtime:test": "node --test tests/packages/runtime-core/*.test.js",
+    "runtime-application:test": "tsx --test tests/runtime-application/*.test.ts",
+    "runtime:test": "node --test tests/packages/runtime-core/*.test.js && npm run runtime-application:test",
     "web-runtime:test": "tsx --test apps/web-runtime/tests/*.test.ts",
     "web-runtime:typecheck": "tsc --noEmit -p apps/web-runtime/tsconfig.json",
     "web:typecheck": "npm --prefix apps/web run typecheck",
@@ -81,6 +82,7 @@
   },
   "devDependencies": {
     "ajv": "^8.20.0",
-    "ajv-formats": "^3.0.1"
+    "ajv-formats": "^3.0.1",
+    "tsx": "^4.21.0"
   }
 }
