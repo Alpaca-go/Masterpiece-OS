@@ -3,12 +3,12 @@
 //   project-contracts / image-generation-contracts / model-runtime / runtime-core
 //     ← image-generation-runtime
 //     ← image-provider-dashscope
-//     ← apps/desktop/src/main/image-generation
+//     ← @masterpiece/runtime-core/application/image-generation
 //     ← renderer IPC client
 // 禁止：
 //   image-generation-runtime → Electron
-//   packages → apps/desktop
-//   apps/desktop → labs
+//   packages → removed host implementations
+//   current production → labs
 //   image-provider-dashscope → renderer
 //   renderer → 云模型 API
 import test from 'node:test';

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const roots = ['src', 'packages', 'apps/desktop/src'];
+const roots = ['src', 'packages', 'apps/cli/src', 'apps/web/src', 'apps/web-runtime/src'];
 const extensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx', '.json', '.yml', '.yaml']);
 const forbiddenPath = /(?:evaluation[/\\](?:golden-cases|anti-cases|hidden-cases)|tests[/\\](?:fixtures|evaluation)|fixtures[/\\]|manual-smoke[/\\])/iu;
 const runtimeImport = /(?:from\s+|import\s*\(|require\s*\()\s*['"]([^'"]+)['"]/gu;

@@ -1,8 +1,8 @@
 // verify:no-obsolete-code — repository-slimming-v2 Phase 6 gate.
 // Scans production code for forbidden legacy names. Labs are exempt
 // (allowed lab roots per the slimming spec); two protocol filenames are
-// exempt inside the active Shared Runtime reference-first protocol (and its
-// Desktop compatibility path) because production still imports them.
+// exempt inside the active Shared Runtime reference-first protocol because
+// production still imports them.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -33,19 +33,18 @@ const FORBIDDEN = [
 // Keywords still legitimately used by retained production protocol files.
 const PROTOCOL_EXEMPT_KEYWORDS = new Set(['style-carrier-ranking', 'task-reference-selection']);
 const PROTOCOL_EXEMPT_PREFIXES = [
-  path.join('apps', 'desktop', 'src', 'main', 'reference-first'),
   path.join('packages', 'runtime-core', 'src', 'application', 'reference-first'),
 ];
 
 // Files allowed to mention legacy names (negative assertions / this gate itself).
 const FILE_WHITELIST = new Set([
-  path.join('apps', 'desktop', 'tests', 'architecture-boundary.test.ts'),
+  path.join('tests', 'runtime-application', 'architecture-boundary.test.ts'),
   path.join('scripts', 'verify-no-obsolete-code.mjs'),
   path.join('scripts', 'verify-production-boundaries.mjs')
 ]);
 
-const SCAN_ROOTS = ['src', 'apps/desktop/src', 'apps/desktop/tests', 'apps/desktop/scripts', 'packages', 'scripts', 'tests', 'bin'];
-const SCAN_FILES = ['package.json', 'apps/desktop/package.json', 'apps/desktop/electron-builder.yml', 'AGENTS.md', 'README.md'];
+const SCAN_ROOTS = ['src', 'apps/cli/src', 'apps/web/src', 'apps/web-runtime/src', 'packages', 'scripts', 'tests', 'bin'];
+const SCAN_FILES = ['package.json', 'AGENTS.md', 'README.md'];
 const TEXT_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx', '.json', '.md', '.yml', '.yaml', '.html', '.css']);
 
 function* walk(directory) {

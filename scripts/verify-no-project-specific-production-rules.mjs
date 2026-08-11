@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const productionRoots = ['src', 'packages', 'apps/desktop/src'];
+const productionRoots = ['src', 'packages', 'apps/cli/src', 'apps/web/src', 'apps/web-runtime/src'];
 const sourceExtensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx']);
 const promptLikeFile = /(?:prompt|template|compiler|adapter|generation|unified-visual-understanding)/iu;
 const projectSpecificTerms = [

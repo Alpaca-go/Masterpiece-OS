@@ -241,7 +241,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
           <p>短链路（生成工作台）— Masterpiece OS 5 的唯一生图路径。历史 Legacy 数据仍可读取，但不再创建新的 Legacy 生图任务。</p>
         </div>
         <button className="button primary full" disabled={Boolean(busy)} onClick={() => void saveLocal()}>{busy === 'local' ? '保存中…' : '保存本地设置'}</button>
-        <div className="security-card"><strong>Windows 安全存储</strong><p>每个 API Key 使用 Electron safeStorage 加密后独立保存，仅在主进程发起请求时短暂解密。删除 Profile 会同步删除对应凭据。</p></div>
+        <div className="security-card"><strong>本地加密存储</strong><p>每个 API Key 使用 Node Host 的 AES-256-GCM 凭据存储独立加密，仅在发起 Provider 请求时短暂读取。删除 Profile 会同步删除对应凭据。</p></div>
       </aside>
     </div>
   </div>;

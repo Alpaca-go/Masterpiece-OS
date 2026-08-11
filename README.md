@@ -1,120 +1,60 @@
-# Masterpiece-OS
+# Masterpiece OS
 
-Masterpiece-OS 是一个 **AI Creative Director Preparation System**，目标是把项目级素材转化为可受控、可复核、可交付的视觉决策。仓库由三部分组成：
+Masterpiece OS 5 是以 Web Renderer + Node Web Host 为唯一生产运行时的视觉
+分析、文档上下文、Reference Anchor 与受控生图系统。
 
-```text
-1. v5 引擎（apps/cli/）       一次 Deep Creative Director 推理 → 视觉方案升级报告.md
-2. Desktop 客户端（apps/desktop/）   视觉分析、文档上下文、Reference Anchor 三项生产功能
-3. 实验 Labs（labs/）          两个独立实验管线，不进入 Desktop UI、IPC、构建与打包
-```
-
-## 环境
-
-- Node.js 20 或更高版本
-- 根 `package.json` 是 workspaces 容器；`apps/cli`、`apps/desktop` 与 `packages/*` 各自维护自己的 `package.json`
-
-## 快速开始（v5 引擎 CLI）
-
-把素材放入项目目录，填写 `masterpiece-os-v5.json`：
-
-```bash
-npm run analyze -- <素材目录>
-```
-
-配置模板见 `apps/cli/templates/masterpiece-os-v5.json`。宿主可注入单一 `deepCreativeDirectorReasoner`，或从配置读取一份已完成的 `deepCreativeDirectorResult`。
-
-### Reasoner Provider
-
-```powershell
-$env:MASTERPIECE_PROVIDER="qwen"
-$env:QWEN_API_KEY="你的 API Key"
-$env:QWEN_MODEL="控制台实际开放的多模态模型 ID"
-$env:QWEN_BASE_URL="你的百炼 OpenAI-compatible base URL"
-npm run analyze -- <素材目录> --provider qwen --force-reasoning
-```
-
-`--force-reasoning` 会跳过精确推理缓存。未使用该选项且 Prompt 完全一致时，CLI 不会创建 Adapter 或发起模型请求。API Key 只从环境变量读取，不进入项目配置、输出或运行日志。
-
-v5 只声明一份正式输出：
+## Repository topology
 
 ```text
-视觉方案升级报告.md
+apps/web           React product UI
+apps/web-runtime   Node lifecycle, local RPC, credentials and native operations
+apps/cli           Visual Analysis engine and prompt templates
+packages/*         Shared Runtime/Core, contracts, compilers and providers
+labs/*             isolated experiments
+evaluation/*       isolated evaluation and Golden assets
 ```
 
-性能与会话边界记录保存在 `.runtime/run-report.json`，不属于正式输出。
+Legacy Desktop/Electron workspace, IPC/preload, lifecycle, packaging and
+runtime dependencies were removed in Phase S5. Historical reports retain the
+old paths as repository history.
 
-## v5 Deep Creative Director Prompt
+## Requirements
 
-```text
-System Prompt
-+ Project Input
-+ Asset Manifest / Attachments
-+ Explicit Constraints
-+ Category & Creative Excellence Benchmark
-+ GPT Execution Core
-+ Fixed Report Schema
-→ One Deep Creative Director Call
-→ 视觉方案升级报告.md
-```
-
-模板位于 `apps/cli/prompts/v5/`。报告使用固定 0–10 章节，资产决策值只允许“保留、升级、替换、删除、新增”。
-
-## v5 性能预算
-
-默认目标为 10 分钟，可接受上限为 15 分钟。超过 5 张图片时，运行时会在 `.runtime/cache/` 生成一张 Contact Sheet，并只附加最多 5 张优先细节图；Logo 素材优先。视觉准备与行业 Benchmark 按素材指纹和行业缓存；完全相同的 Prompt 可以复用上一份完整推理结果。
-
-## Desktop 客户端
+- Node.js 20.9 or newer
+- npm with the single root `package-lock.json`
 
 ```bash
-npm run desktop:dev        # 开发
-npm run desktop:build      # 构建（含 typecheck）
-npm run desktop:test       # 测试
-npm run desktop:package    # portable 打包（先跑 verify:current-flows 门禁）
+npm ci
+npm run web:dev
 ```
 
-Desktop 只包含三项生产功能：视觉分析、文档上下文、Reference Anchor，运行时使用唯一一条 Short-Chain 生图路径。
+The development command starts the Node Web Host and independent Vite Web
+Renderer. It does not start Electron.
 
-## 实验 Labs
+## Main commands
 
 ```bash
-npm run lab:document-directions        # 文档驱动视觉方向实验
-npm run lab:document-directions:test
-npm run lab:reference-conversion       # 参考风格转换实验
-npm run lab:reference-conversion:test
+npm run web:dev
+npm run web:smoke
+npm run web:typecheck
+npm run web:build
+npm run runtime:test
+npm run cli:test
+npm test
+npm run golden:test
+npm run verify:current-flows
 ```
 
-Labs 通过独立 CLI 运行，不进入 Electron UI、IPC、构建和打包。
+`web:smoke` is offline: it verifies Node Host boot, a real browser-rendered UI,
+the 147-operation graph, provider/config resolution, and zero Electron/Desktop
+Main processes without calling a real Provider or writing business data.
 
-## 评估资产
+## Release gates
 
-`evaluation/` 目录与生产代码严格隔离：
+Run the offline boundary and behavior gates documented in `AGENTS.md`. Changes
+to document ingestion, analysis, checkpoints or report delivery must pass
+`npm run verify:current-flows`. Real-provider runs require explicit user
+authorization and credentials supplied only through environment variables.
 
-```text
-evaluation/known-cases/        已知样例（带脱敏输入摘要与结构化预期）
-evaluation/anti-cases/         反例与边界场景
-evaluation/hidden-cases/       隐藏评分用例
-evaluation/contracts/          评分协议（golden-case.schema.json）
-evaluation/reports/            真实 Provider 验收报告与回归报告
-```
-
-所有验证门禁不读取上述目录中的任何图像或 Provider 原始响应，资产与生产 Runtime 隔离由 `verify:golden-boundary` 硬门禁守护。
-
-## 开发验证
-
-```bash
-npm test                              # 根引擎 + Desktop 公共契约测试
-npm run cli:test                      # v5 CLI 自身测试
-npm run desktop:test                  # Desktop 单元测试
-npm run verify:current-flows          # 文档流离线门禁（不调用真实模型 API）
-npm run verify:version-consistency    # 版本号与产品 lockfile 一致性
-npm run verify:workspace-boundaries   # 内部包边界 + 防止深层 src/* 导入
-npm run verify:no-obsolete-code       # 零旧代码门禁
-npm run verify:production-boundaries  # Desktop 与 Labs 边界门禁
-npm run verify:golden-boundary        # Golden / Hidden 与生产 Runtime 隔离门禁
-```
-
-## GPT 协作边界
-
-GPT 的输入是已核验视觉方案与运行时高密度 Brief。GPT 自主完成创意、图片规划和图片生成；Masterpiece 不生成图片数量、比例、任务卡、执行队列或 Prompt。
-
-更多说明见 [User Guide](docs/product/user-guide.md) 与 [System Architecture](docs/architecture/system-architecture.md)。
+Current architecture: `CURRENT_ARCHITECTURE.md` and
+`docs/core/RUNTIME_OWNERSHIP.md`.

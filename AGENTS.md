@@ -10,19 +10,18 @@
   `CURRENT_BASELINE.md` 与 `BASELINE_LOCK.md`。
 
 - Node.js 20 或更高；`package.json` 是 workspaces 容器。
-- 工作区：`apps/cli`（v5 引擎 + Prompt 模板）、`apps/desktop`（Electron +
-  React 19 + TypeScript 7）、`packages/*`（14 个内部包，命名空间统一为
-  `@masterpiece/*`）、`labs/*`（两个独立实验，**不**进入 Desktop UI/IPC/
-  构建/打包）、`evaluation/*`（评估资产，与生产 Runtime 隔离）。
-- 单一 Lockfile：根 `package-lock.json`；`apps/desktop/package-lock.json`
-  不应存在。
+- 工作区：`apps/cli`（v5 引擎 + Prompt 模板）、`apps/web`（React 19 Web
+  Renderer）、`apps/web-runtime`（Node Web Host）、`packages/*`（14 个内部包，
+  命名空间统一为 `@masterpiece/*`）、`labs/*`（两个独立实验，**不**进入
+  Web UI/Runtime/构建）、`evaluation/*`（评估资产，与生产 Runtime 隔离）。
+- Desktop/Electron workspace 已在 S5 删除；不得重新引入。
+- 单一 Lockfile：根 `package-lock.json`。
 
 ## 版本与发布门禁
 
 - 唯一产品版本源：`/VERSION`（当前 `5.0.0-rc.1`）。
-- 同步脚本：`scripts/sync-product-version.mjs`（写入根 `package.json`、
-  `apps/desktop/package.json`、`apps/cli/src/runtime-trace.js` 的
-  `DEFAULT_APP_VERSION`）。
+- 同步脚本：`scripts/sync-product-version.mjs`（写入根 `package.json` 与
+  `apps/cli/src/runtime-trace.js` 的 `DEFAULT_APP_VERSION`）。
 - 校验：`npm run verify:version-consistency`。
 - 版本域与命名规则：`docs/development/versioning-policy.md`；活跃代码不得新增
   `V5` / `V6` / `V18` / `vnext` 阶段式版本常量，校验命令为
@@ -39,7 +38,7 @@
 
 ## 产品路径
 
-- Desktop 正式 UI 唯一保留 **Short-Chain** 视觉生成路径。
+- Web 正式 UI 唯一保留 **Short-Chain** 视觉生成路径。
 - 不再分支到 Legacy `CreativeSessionWorkspace` / vNext 选项卡。
 - `vnext` / `V18` / `V6` 名称在用户可见文案中已全部清理。
 
@@ -61,32 +60,34 @@ npm run verify:no-obsolete-code
 npm run verify:production-boundaries
 npm run verify:no-project-specific-production-rules
 npm run verify:golden-boundary
-npm run verify:current-flows    # 含 apps/desktop typecheck
+npm run verify:current-flows    # 含 Runtime + Node Host + Web typecheck
 
 # 测试
-npm test                         # 根 + Desktop 公共契约（node --test）
+npm test                         # 根公共契约（node --test）
 npm run cli:test                 # apps/cli 自身测试
-npm run desktop:test             # apps/desktop 单元测试
-npm run desktop:build            # typecheck + electron-vite build
+npm run runtime:test             # Shared Runtime 应用测试
+npm run web-runtime:test         # Node Web Host 测试
+npm run web:smoke                # 实际 Node Host + 浏览器 smoke
+npm run web:build                # Web typecheck + Vite build
 ```
 
 ## Document-related release gate
 
 After changing document ingestion, structured analysis, checkpoint,
-report compiler, or Desktop document-delivery code, run
+report compiler, or Web document-delivery code, run
 `npm run verify:current-flows` before declaring the work complete.
 
-Do not package or deliver a Desktop executable when this gate fails.
+Do not publish a Web release when this gate fails.
 The gate must remain offline and must never call a real model API.
 
-Before delivering a new Desktop executable after changing analysis
+Before publishing a release after changing analysis
 prompts, provider request shapes, schema validation, retries,
 checkpoints, or report generation, also run one user-authorized
 real-provider end-to-end smoke test with a representative local
 document. A launch-only smoke test or mocked response is not
 sufficient. Record the provider/model, terminal status, model-call
 count, duration, report path, and composition result without exposing
-credentials. Do not commit or deliver the executable unless the real
+credentials. Do not publish the release unless the real
 run reaches the final report successfully.
 
 ## Real-Provider smoke procedure
@@ -128,5 +129,5 @@ no secret committed). Procedure lives in
 ## Shared Core boundaries
 
 - New production code must use Shared Core boundaries.
-- Do not add new business logic to Desktop adapters.
+- Do not reintroduce Desktop/Electron adapters.
 - Do not add new direct imports to historical versioned implementations outside the owning Core module.

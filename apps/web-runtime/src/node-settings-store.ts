@@ -161,7 +161,8 @@ async function migrateLegacy(value: LegacySettings): Promise<StoredSettings> {
     };
     migrated.profiles.push(profile);
     migrated.defaultProfileId = id;
-    // Electron safeStorage payloads are intentionally not copied or decrypted.
+    // Historical credential payloads use a different store and are intentionally
+    // not copied or decrypted during settings migration.
   }
   await writeStored(migrated);
   return migrated;

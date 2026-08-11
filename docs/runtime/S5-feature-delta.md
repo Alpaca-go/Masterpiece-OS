@@ -1,6 +1,6 @@
 # S5 Feature Delta
 
-Status: `IN_PROGRESS`
+Status: `COMPLETE`
 
 | Current product capability | Before | Required after | Evidence |
 |---|---|---|---|
@@ -15,6 +15,11 @@ Status: `IN_PROGRESS`
 | Settings/credentials | Node adapters | unchanged | Node adapter tests |
 | File selection/export/open | Node native operations | unchanged local-Web equivalent | Node native/RPC registration |
 
-Legacy-only features to remove: Electron window lifecycle, IPC/preload bridge, Desktop packaging/portable executable, safeStorage adapter code, and Desktop-only smoke/build commands.
+Removed legacy-only features: Electron window lifecycle, IPC/preload bridge,
+Desktop packaging/portable executable, `safeStorage` adapter code, and
+Desktop-only smoke/build commands.
 
-Current product features lost target: `0`. User data and credential data touched: `NO`.
+Current product features lost: `0`. User data and credential data touched:
+`NO`. Credential behavior remains available through the Node encrypted store;
+file selection/export/open operations remain available through 11 Node-native
+operations.

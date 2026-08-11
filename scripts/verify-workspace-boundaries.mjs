@@ -76,7 +76,7 @@ function readText(rel) {
 // ---- 1. No @masterpiece-os/ residuals ----
 console.log('\n[1] Checking for @masterpiece-os/ namespace residuals...');
 let foundResiduals = 0;
-const allJson = walkFiles('.', [], ['node_modules', '.git', 'out', 'release', 'dist', '.vite', 'apps/desktop/.codex*']);
+const allJson = walkFiles('.', [], ['node_modules', '.git', 'out', 'release', 'dist', '.vite', '.codex-smoke']);
 for (const f of allJson) {
   if (!f.endsWith('package.json')) continue;
   let text;

@@ -5,15 +5,14 @@
 // Checks (all must pass):
 //   1. /VERSION contains a semver string.
 //   2. /package.json "version" matches /VERSION.
-//   3. /apps/desktop/package.json "version" matches /VERSION.
-//   4. /package-lock.json root package version matches /VERSION.
-//   5. No sub-directory contains a package-lock.json (single-lockfile policy).
-//   6. /src/runtime-trace.js DEFAULT_APP_VERSION constant matches /VERSION.
-//   7. /apps/desktop/package-lock.json must NOT exist.
-//   8. /packages/*/package.json (internal shared packages) all carry
+//   3. /package-lock.json root package version matches /VERSION.
+//   4. No sub-directory contains a package-lock.json (single-lockfile policy).
+//   5. /apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches /VERSION.
+//   6. The removed Desktop workspace is absent from the lockfile.
+//   7. /packages/*/package.json (internal shared packages) all carry
 //      "private": true and "version": "0.0.0" — they must not impersonate
 //      the product version.
-//   9. /labs/*/package.json (lab packages) all carry "private": true.
+//   8. /labs/*/package.json (lab packages) all carry "private": true.
 //
 // Exits non-zero on the first failure (or collects all failures and exits
 // non-zero at the end — current behaviour: collect-then-fail).
@@ -79,15 +78,7 @@ check(
   `found "${rootPkg.version}"`,
 );
 
-// 3. apps/desktop/package.json
-const desktopPkg = readJson('apps/desktop/package.json');
-check(
-  'apps/desktop/package.json version matches VERSION',
-  desktopPkg.version === version,
-  `found "${desktopPkg.version}"`,
-);
-
-// 4. root lockfile
+// 3. root lockfile
 const lockPath = path.join(root, 'package-lock.json');
 if (existsSync(lockPath)) {
   const lock = readJson('package-lock.json');
@@ -101,7 +92,7 @@ if (existsSync(lockPath)) {
   check('package-lock.json exists', false, 'missing — run `npm install` first');
 }
 
-// 5. no sub-directory lockfiles
+// 4. no sub-directory lockfiles
 const extraLockfiles = [];
 function findLockfiles(dir) {
   for (const entry of readdirSync(dir)) {
@@ -122,29 +113,25 @@ check(
   extraLockfiles.length ? `found: ${extraLockfiles.join(', ')}` : '',
 );
 
-// 6. apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION
+// 5. apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION
 const rtPath = path.join(root, 'apps', 'cli', 'src', 'runtime-trace.js');
 if (existsSync(rtPath)) {
   const rt = readFileSync(rtPath, 'utf8');
   const m = /export const DEFAULT_APP_VERSION = '([^']+)'/.exec(rt);
   check(
-    'src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION',
+    'apps/cli/src/runtime-trace.js DEFAULT_APP_VERSION matches VERSION',
     !!m && m[1] === version,
     m ? `found "${m[1]}"` : 'constant not found',
   );
 } else {
-  check('src/runtime-trace.js exists', false);
+  check('apps/cli/src/runtime-trace.js exists', false);
 }
 
-// 7. apps/desktop/package-lock.json must NOT exist
-const desktopLock = path.join(root, 'apps', 'desktop', 'package-lock.json');
-check(
-  'apps/desktop/package-lock.json does NOT exist',
-  !existsSync(desktopLock),
-  existsSync(desktopLock) ? 'still present' : '',
-);
+// 6. removed Desktop workspace must not remain in the lockfile
+const lock = readJson('package-lock.json');
+check('removed Desktop workspace is absent from package-lock.json', !lock.packages?.['apps/desktop']);
 
-// 8. internal packages are 0.0.0 + private
+// 7. internal packages are 0.0.0 + private
 console.log('\nInternal packages (packages/*):');
 for (const entry of readdirSync(path.join(root, 'packages'))) {
   const pkgPath = path.join(root, 'packages', entry, 'package.json');
@@ -157,7 +144,7 @@ for (const entry of readdirSync(path.join(root, 'packages'))) {
   );
 }
 
-// 9. labs are private
+// 8. labs are private
 console.log('\nLab packages (labs/*):');
 for (const entry of readdirSync(path.join(root, 'labs'))) {
   const pkgPath = path.join(root, 'labs', entry, 'package.json');

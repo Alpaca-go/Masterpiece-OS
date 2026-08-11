@@ -1,46 +1,42 @@
 # Current Architecture
 
-Status: Phase S4.2 Shared Runtime extraction complete. S4.1R is ready; S5 is not ready.
+Status: Phase S5 Legacy Desktop Removal complete.
 
-## Current runtime
-
-Web is the primary product interface, but its current development/smoke launch still starts the Electron main process. Electron now owns lifecycle, IPC/RPC binding, settings/credential adapters, native dialogs/shell and event bridging. Host-neutral `@masterpiece/runtime-core` owns service composition, application orchestration and the Shared Operation Registry. Desktop remains present until S4.1R supplies a Node host and passes Desktop-off Web smoke.
+## Primary runtime
 
 ```text
-Web Renderer
-  -> Electron Host (temporary)
-  -> Shared Operation Registry
-  -> Shared Runtime
-  -> Shared Core
+Web Renderer (apps/web)
+  -> local RPC
+Node Web Host (apps/web-runtime)
+  -> Shared Operation Registry (136 business + 11 Node-native operations)
+  -> Shared Runtime (@masterpiece/runtime-core/application)
+  -> Shared Core capability packages
+  -> provider adapters
 ```
+
+Electron, Electron Main, preload/IPC, Desktop packaging and the Desktop
+workspace are not part of current production topology.
 
 ## Core ownership
 
-Current production consumers use four explicit Shared Core boundaries:
-
 - Visual Analysis: `@masterpiece/analysis-runtime/core/visual-analysis-core.ts`
-- Reference Engine: `@masterpiece/image-generation-runtime/reference-engine/reference-asset-resolver.ts`
+- Reference Engine: `@masterpiece/image-generation-runtime/reference-engine/*`
 - Space Generation: `@masterpiece/image-generation-runtime/core/space-generation-core.js`
 - Packaging Generation: `@masterpiece/image-generation-runtime/core/packaging-generation-core.js`
+- Application orchestration and persistence: `@masterpiece/runtime-core/application/*`
+- Credentials, native paths and local transport: `apps/web-runtime`
+- Product UI: `apps/web`
 
-These boundaries preserve the existing implementation objects and behavior. Historical names can remain behind a facade until S6; they are not public consumer topology.
+Historical internal implementation names may remain behind owning Core
+facades; S5 does not perform naming normalization.
 
-## Adapters and providers
+## Hard boundaries
 
-Desktop owns Electron lifecycle, windows, IPC, native filesystem UI and Electron-specific path/credential integration. The analysis prompt-root adapter translates Electron paths into a Shared Runtime contract. Provider implementations remain in the existing model/image provider packages and are injected into `createRuntimeServices(...)`.
+- Current production must not import Desktop/Electron or `archive/`.
+- Web Renderer must not import host implementation modules.
+- Shared Runtime and operation registry must remain host-neutral.
+- Evaluation/golden assets must not enter production Runtime.
+- Labs remain isolated from production Runtime and UI.
 
-## Compatibility layers
-
-CLI v5 and `prompts/v5` remain active for Visual Analysis. Space historical layers remain active behind the Space Core facade. Old Desktop business-module paths are `COMPATIBILITY_ONLY` re-exports to Shared Runtime. See `docs/core/S4-compatibility-adapters.md` and `docs/runtime/S4.2-migration-ledger.md`.
-
-## Forbidden directions
-
-- Shared packages must not import `apps/desktop`.
-- Shared Runtime and Shared Operation Registry must not import Electron.
-- Web renderer code must not import Desktop main business services.
-- Production code must not import archive artifacts.
-- New current consumers must not directly import historical generation namespaces outside the owning Core facade.
-
-## Next architectural gate
-
-S4.1R may now bind a Node/local-RPC host to the same Shared Operation Registry and Shared Runtime. Until that host resolves configuration, credentials and paths and Desktop-off Web smoke passes, status remains `S5_NOT_READY`.
+The detailed ownership map is `docs/core/RUNTIME_OWNERSHIP.md`; S5 evidence is
+under `docs/runtime/`.

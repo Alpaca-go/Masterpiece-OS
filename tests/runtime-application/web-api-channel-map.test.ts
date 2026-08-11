@@ -23,7 +23,7 @@ const EXPECTED_VNEXT_CHANNELS = Object.freeze({
   'projectContext.getGenerationReadiness': 'project-context:generation-readiness'
 });
 
-test('Web API maps the complete vNext method family to the registered Desktop IPC channels', () => {
+test('Web API maps the complete vNext method family to registered operation channels', () => {
   assert.deepEqual(WEB_RPC_CHANNEL_OVERRIDES, EXPECTED_VNEXT_CHANNELS);
   for (const [key, channel] of Object.entries(EXPECTED_VNEXT_CHANNELS)) {
     const [namespace, method] = key.split('.');
@@ -31,7 +31,7 @@ test('Web API maps the complete vNext method family to the registered Desktop IP
   }
 });
 
-test('Web API retains convention-based mapping for ordinary Desktop methods', () => {
+test('Web API retains convention-based mapping for ordinary operation methods', () => {
   assert.equal(resolveWebRpcChannel('settings', 'saveProfile'), 'settings:save-profile');
   assert.equal(resolveWebRpcChannel('imageGeneration', 'getCapabilities'), 'image-generation:get-capabilities');
   assert.equal(resolveWebRpcChannel('creativeSession', 'getWorkspace'), 'creative-session:get-workspace');

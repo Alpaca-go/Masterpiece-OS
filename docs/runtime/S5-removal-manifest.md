@@ -2,6 +2,8 @@
 
 Every S5 deletion is covered by this manifest. No user-data location is in scope.
 
+Status: `COMPLETE`. Tracked files under `apps/desktop`: `0`.
+
 | Path / Dependency | Current Role | Runtime Consumer | Action | Reason / replacement |
 |---|---|---|---|---|
 | `apps/desktop/tests/*.test.ts` (75 current-behavior cases) | Business/Web regression tests | Test only | DELETE original after MOVE | retained under `tests/runtime-application`; imports point to Shared Runtime/Web |

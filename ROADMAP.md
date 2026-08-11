@@ -10,12 +10,13 @@ Masterpiece-OS 5.0 的目标是把仓库重整、产品入口单一化与评估�
 
 - [x] 产品版本统一为 `5.0.0-rc.1`，来源 `/VERSION`，由
       `scripts/sync-product-version.mjs` 同步到 `package.json`、
-      `apps/desktop/package.json`、`apps/cli/package.json`、CHANGELOG
-      与 Electron artifactName。
+      `apps/cli/src/runtime-trace.js`。
 - [x] 启用 npm Workspaces，统一内部包命名空间为 `@masterpiece/*`。
 - [x] 替换 175 处深层 `packages/*/src/*` 相对导入为 `@masterpiece/*`。
-- [x] Desktop 正式 UI 唯一保留 Short-Chain 生图路径，移除
+- [x] Web 正式 UI 唯一保留 Short-Chain 生图路径，移除
       `vNext / Legacy` 模式切换。
+- [x] S5 删除 Desktop/Electron workspace、IPC/preload、构建打包与 runtime
+      dependency；Web Renderer + Node Web Host 成为唯一生产拓扑。
 - [x] CLI 从根目录迁出到 `apps/cli/`，根 `npm run analyze` 直接调用
       `node ./apps/cli/bin/masterpiece-os.js analyze`。
 - [x] 文档目录收敛到 `docs/{product,architecture,development,releases,archive}/`。
@@ -33,10 +34,11 @@ Masterpiece-OS 5.0 的目标是把仓库重整、产品入口单一化与评估�
 - [ ] `npm run verify:production-boundaries`  PASS
 - [ ] `npm run verify:no-project-specific-production-rules`  PASS
 - [ ] `npm run verify:golden-boundary`        PASS
-- [ ] `npm test`                              PASS（根 + Desktop 公共契约）
+- [ ] `npm test`                              PASS（根公共契约）
 - [ ] `npm run cli:test`                      PASS
-- [ ] `npm run desktop:test`                  PASS
-- [ ] `npm run desktop:build`                 PASS（含 typecheck）
+- [ ] `npm run runtime:test`                  PASS
+- [ ] `npm run web:smoke`                     PASS（Electron/Desktop Main = 0）
+- [ ] `npm run web:build`                     PASS（含 typecheck）
 - [ ] 1 次真实 Provider 视觉分析（端到端到正式报告）
 - [ ] 1 次真实 Provider 空间生图 + 1 次真实 Provider 非医疗项目生图
 - [ ] `chore/repository-consolidation-5.0` 已合并 `main`
@@ -59,9 +61,9 @@ Masterpiece-OS 5.0 的目标是把仓库重整、产品入口单一化与评估�
 - [x] D — 双门禁（Gate A compile + Gate B provider prompt）拆分
 - [x] E — 5 状态 validation / correction UI + first-image preservation（r2.0 §4.13）
 - [x] F-1 — 合约层 `VNextSimilarityAudit` + `VNextEvidenceCheckpoint` 类型
-- [x] F-2 — Similarity Audit Service（desktop，multimodal LLM，10 类 typed error code）
+- [x] F-2 — Similarity Audit Service（Shared Runtime，multimodal LLM，10 类 typed error code）
 - [x] F-3 — Audit 接入 `vnext-service.startValidated`（advisory / fail-soft / `similarityAudit=unavailable` marker）
-- [x] F-4 — Evidence Checkpoint 两层（desktop scanner + runtime validator，r2.0 §8）
+- [x] F-4 — Evidence Checkpoint 两层（Runtime scanner + validator，r2.0 §8）
 - [x] UI — 终验收阻塞 banner（`similarityAudit=unavailable` 时只标记 incomplete，不改判生成失败）
 - [x] B-5 — 保持关闭：B-4 视觉已被人工审阅为 cross-scene 正确表达，未触发 Near-copy 降级路径
 
