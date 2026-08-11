@@ -12,7 +12,7 @@ import type {
   ProjectAsset,
   ProjectRecord,
   PublicSettings
-} from '../shared/types';
+} from '../shared/types.ts';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract.ts';
 import { detectIntakeIdentity, type IntakeSource } from './project-intake.ts';
 

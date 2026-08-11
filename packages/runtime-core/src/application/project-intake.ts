@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { ProjectNameSource } from '../shared/types';
+import type { ProjectNameSource } from '../shared/types.ts';
 
 export interface IntakeSource {
   sourcePath: string;

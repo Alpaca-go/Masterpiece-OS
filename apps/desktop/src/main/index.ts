@@ -62,7 +62,7 @@ import {
 } from './generation-series-execution-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 import { startWebRpcServer, type WebRpcServer } from './web-rpc-server';
-import { createProjectOperations, createSharedRuntime } from '@masterpiece/runtime-core';
+import { createAnalysisOperations, createProjectOperations, createSharedRuntime } from '@masterpiece/runtime-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow: BrowserWindow | null = null;
@@ -286,8 +286,7 @@ function registerIpc(): void {
     });
     return result.canceled ? [] : result.filePaths;
   });
-  registerHandler('analysis:start', (_event, projectId: string, forceReasoning: boolean, apiProfileId?: string) => pipeline.start(projectId, forceReasoning, apiProfileId));
-  registerHandler('analysis:cancel', (_event, projectId: string) => pipeline.cancel(projectId));
+  registerRuntimeOperations(createAnalysisOperations({ pipeline }));
 
   registerHandler('report:read', async (_event, projectId: string) => {
     const project = await projects.get(projectId);

@@ -40,6 +40,15 @@ export type ApiProtocol =
   | 'seedream-image'
   | 'openai-video-generation';
 export type ModelType = 'analysis' | 'image_generation' | 'video_generation';
+export interface ProviderCredentials {
+  profileId: string;
+  provider: ProviderKind;
+  protocol?: ApiProtocol;
+  modelType?: ModelType;
+  baseUrl: string;
+  model: string;
+  apiKey: string;
+}
 export interface ModelRegistryEntry {
   id: string;
   name: string;

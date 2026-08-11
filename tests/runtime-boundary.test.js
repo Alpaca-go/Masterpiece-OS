@@ -68,9 +68,12 @@ test('Current Desktop consumers use Core facades instead of historical generatio
 });
 
 test('Visual Analysis pipeline receives host paths through an adapter', () => {
-  const pipeline = fs.readFileSync(path.join(repoRoot, 'apps/desktop/src/main/pipeline-service.ts'), 'utf8');
+  const pipeline = fs.readFileSync(path.join(repoRoot, 'packages/runtime-core/src/application/pipeline-service.ts'), 'utf8');
+  const desktopCompatibility = fs.readFileSync(path.join(repoRoot, 'apps/desktop/src/main/pipeline-service.ts'), 'utf8');
   assert.doesNotMatch(pipeline, /from\s+['"]electron['"]/u);
   assert.match(pipeline, /VisualAnalysisRuntimeAdapter/u);
+  assert.match(desktopCompatibility, /COMPATIBILITY_ONLY/u);
+  assert.match(desktopCompatibility, /@masterpiece\/runtime-core\/application\/pipeline-service\.ts/u);
 });
 
 test('Reference resolver old Desktop path remains compatibility-only', () => {
