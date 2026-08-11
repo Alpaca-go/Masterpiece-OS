@@ -3,7 +3,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-const baselineCommit = '322ae676c546340fd7a9d467bca66ebe3fd023f7';
+const baselineCommit = 'deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2';
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDir, '..', '..');
 const manifestPath = path.join(root, 'docs', 'baseline', 'baseline-files-manifest.md');

@@ -1,6 +1,6 @@
 # Baseline Files Manifest
 
-Baseline commit: `322ae676c546340fd7a9d467bca66ebe3fd023f7`. Paths are repository-relative. The manifest freezes sensitivity, not ownership or future immutability.
+Baseline content commit: `deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2`. Formal recovery anchor: `masterpiece-reference-first-stable-2026-08`. Paths are repository-relative. The manifest freezes sensitivity, not ownership or future immutability.
 
 | Path | Domain | Role | Criticality | Why |
 |---|---|---|---|---|

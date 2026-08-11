@@ -1,11 +1,12 @@
 # Masterpiece OS Current Baseline
 
 Baseline Record Status: ACTIVE  
-Freeze Status: DOCUMENTED_NOT_FROZEN  
+Freeze Status: FROZEN  
 Baseline Date: 2026-08-11  
-Git Commit: `322ae676c546340fd7a9d467bca66ebe3fd023f7`  
+Baseline Content Commit: `deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2`  
 Git Branch: `codex/r10-4-regression-repair`  
-Git Tag: NOT_CREATED — worktree was dirty at S1 start  
+Baseline Tag: `masterpiece-reference-first-stable-2026-08`  
+Recovery Anchor: `masterpiece-reference-first-stable-2026-08`  
 Product Version: `5.0.0-rc.1`  
 Primary Runtime: Web  
 Legacy Runtime: Desktop  
@@ -163,4 +164,4 @@ Manual Product Acceptance — Reference First: PASS (existing accepted JZMX Rece
 
 Paths in `docs/baseline/baseline-files-manifest.md` are baseline-sensitive. Prompt ordering, constraints, reference injection, Locked Assets, payload construction, parsing, schemas and fallback selection are `BEHAVIOR_SENSITIVE_BASELINE`.
 
-Run `node scripts/audit/check-baseline-drift.mjs` before changing or reviewing core paths. S1 documents commit `322ae67`, but it is not formally tagged because the worktree was already dirty with S0 documentation.
+Run `node scripts/audit/check-baseline-drift.mjs` before changing or reviewing core paths. The annotated engineering tag `masterpiece-reference-first-stable-2026-08` is the formal comparison and recovery reference. It is not an automatic reset target; any destructive recovery operation still requires an explicit decision.
