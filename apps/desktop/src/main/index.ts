@@ -4,14 +4,11 @@ import fs from 'node:fs/promises';
 import { app, BrowserWindow, dialog, ipcMain, shell, type IpcMain, type IpcMainInvokeEvent } from 'electron';
 import type {
   AnalysisProgress,
-  ConflictResolutionInput,
   CreateProjectInput,
   SaveApiProfileInput,
   SaveSettingsInput,
   SaveModelBenchmarkEvaluationInput,
   StartModelBenchmarkInput,
-  AnchorDecision,
-  StartReferenceAnchorInput
 } from '../shared/types';
 import { createProjectStore } from './project-store';
 import {
@@ -62,7 +59,15 @@ import {
 } from './generation-series-execution-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 import { startWebRpcServer, type WebRpcServer } from './web-rpc-server';
-import { createAnalysisOperations, createProjectOperations, createSharedRuntime } from '@masterpiece/runtime-core';
+import {
+  createAnalysisOperations,
+  createContextIntegrationOperations,
+  createDocumentOperations,
+  createProjectContextOperations,
+  createProjectOperations,
+  createReferenceOperations,
+  createSharedRuntime,
+} from '@masterpiece/runtime-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow: BrowserWindow | null = null;
@@ -327,32 +332,14 @@ function registerIpc(): void {
     if (result) throw new Error(result);
   });
 
-  registerHandler('project-context:get', (_event, projectId: string) => projectContext.get(projectId));
-  registerHandler('project-context:rebuild', (_event, projectId: string) => projectContext.rebuild(projectId));
-  registerHandler('project-context:export', (_event, projectId: string) => projectContext.export(projectId));
-  registerHandler('project-context:get-vnext', (_event, projectId: string) => projectContext.getVNext(projectId));
-  registerHandler('project-context:rebuild-vnext', (_event, projectId: string) => projectContext.rebuildVNext(projectId));
-  registerHandler('project-context:generation-readiness', (_event, projectId: string) => projectContext.getGenerationContextReadiness(projectId));
+  registerRuntimeOperations(createProjectContextOperations({ projectContext }));
   registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
   registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
   registerHandler('visual-memory:get-reference-pack', (_event, projectId: string) => referencePacks.get(projectId));
   registerHandler('visual-memory:build-reference-pack', (_event, projectId: string) => referencePacks.build(projectId));
 
   // ── Phase 4：三大功能轻量整合（Context Integration）──
-  registerHandler('context-integration:link', (_event, projectId: string, runId: string) => contextIntegration.linkDocumentContext(projectId, runId));
-  registerHandler('context-integration:unlink', (_event, projectId: string) => contextIntegration.unlinkDocumentContext(projectId));
-  registerHandler('context-integration:get-link', (_event, projectId: string) => contextIntegration.getLink(projectId));
-  registerHandler('context-integration:get-visual-status', (_event, projectId: string) => contextIntegration.getVisualStatus(projectId));
-  registerHandler('context-integration:get-resolved', (_event, projectId: string) => contextIntegration.getResolved(projectId));
-  registerHandler('context-integration:resolve', (_event, projectId: string, userOverrides?: Record<string, unknown>) => contextIntegration.resolve(projectId, userOverrides));
-  registerHandler('context-integration:list-conflicts', (_event, projectId: string) => contextIntegration.listConflicts(projectId));
-  registerHandler('context-integration:apply-conflict-resolution', (_event, projectId: string, resolutions: ConflictResolutionInput[]) => contextIntegration.applyConflictResolution(projectId, resolutions));
-  registerHandler('context-integration:migrate', (_event, projectId: string) => contextIntegration.migrate(projectId));
-  registerHandler('context-integration:export', async (_event, projectId: string) => {
-    const source = await contextIntegration.export(projectId);
-    return source;
-  });
-  registerHandler('context-integration:is-doc-referenced', (_event, runId: string) => contextIntegration.isDocumentContextReferenced(runId));
+  registerRuntimeOperations(createContextIntegrationOperations({ contextIntegration }));
 
   registerHandler('document-context:choose-documents', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {
@@ -361,21 +348,10 @@ function registerIpc(): void {
     });
     return result.canceled ? [] : result.filePaths;
   });
-  registerHandler('document-context:inspect-documents', (_event, paths: string[]) => documentContext.inspectDocuments(paths));
-  registerHandler('document-context:list-runs', () => documentContext.listRuns());
-  registerHandler('document-context:get-run', (_event, runId: string) => documentContext.getRun(runId));
-  registerHandler('document-context:start', (_event, paths: string[], profileId: string) => documentContext.start(paths, profileId));
-  registerHandler('document-context:get-extracted', (_event, runId: string) => documentContext.getExtracted(runId));
-  registerHandler('document-context:confirm', (_event, runId: string, context) => documentContext.confirm(runId, context));
-  registerHandler('document-context:compile', (_event, runId: string) => documentContext.compile(runId));
-  registerHandler('document-context:resume', (_event, runId: string, apiProfileId?: string) => documentContext.resume(runId, apiProfileId));
-  registerHandler('document-context:cancel', (_event, runId: string) => documentContext.cancel(runId));
-  registerHandler('document-context:remove', async (_event, runId: string) => {
-    const record = await documentContext.getRun(runId).catch(() => null);
-    if (record && ['parsing', 'extracting', 'repairing'].includes(record.status)) throw new Error('正在分析的任务不能删除，请先取消分析');
-    await documentContext.remove(runId);
-  });
-  registerHandler('document-context:read-brief', async (_event, runId: string) => fs.readFile(await documentContext.briefPath(runId), 'utf8'));
+  registerRuntimeOperations(createDocumentOperations({
+    documentContext,
+    readTextFile: (source: string) => fs.readFile(source, 'utf8'),
+  }));
   registerHandler('document-context:export', async (_event, runId: string) => {
     const source = await documentContext.briefPath(runId);
     const result = await dialog.showSaveDialog(mainWindow!, {
@@ -386,7 +362,6 @@ function registerIpc(): void {
     await fs.copyFile(source, result.filePath);
     return result.filePath;
   });
-  registerHandler('document-context:adapt-legacy-run', (_event, runId: string) => documentContext.adaptLegacyRun(runId));
   registerHandler('document-context:open-folder', async (_event, runId: string) => {
     const root = await documentContext.runRoot(runId);
     const result = await shell.openPath(path.join(root, 'outputs'));
@@ -401,35 +376,7 @@ function registerIpc(): void {
     });
     return result.canceled ? [] : result.filePaths;
   });
-  registerHandler('reference-anchor:inspect-assets', (_event, paths: string[]) => referenceAnchor.inspectAssets(paths));
-  registerHandler('reference-anchor:list-runs', () => referenceAnchor.listRuns());
-  registerHandler('reference-anchor:get-run', (_event, runId: string) => referenceAnchor.getRun(runId));
-  registerHandler('reference-anchor:start', (_event, input: StartReferenceAnchorInput) => referenceAnchor.start(input));
-  registerHandler('reference-anchor:get-capsule', (_event, runId: string) => referenceAnchor.getCapsule(runId));
-  registerHandler('reference-anchor:get-capsule-markdown', (_event, runId: string) => referenceAnchor.getCapsuleMarkdown(runId));
-  registerHandler('reference-anchor:get-brief', (_event, runId: string) => referenceAnchor.getBrief(runId));
-  registerHandler('reference-anchor:update-preference', (
-    _event,
-    runId: string,
-    preference: string,
-    avoidance: string[]
-  ) => referenceAnchor.updatePreference(runId, preference, avoidance));
-  registerHandler('reference-anchor:retry-brief', (_event, runId: string, editedBrief?: string) => referenceAnchor.retryBrief(runId, editedBrief));
-  registerHandler('reference-anchor:set-decision', (
-    _event,
-    runId: string,
-    decision: AnchorDecision,
-    note?: string
-  ) => referenceAnchor.setDecision(runId, decision, note));
-  registerHandler('reference-anchor:adapt-legacy-run', (_event, runId: string) => referenceAnchor.adaptLegacyRun(runId));
-  registerHandler('reference-anchor:cancel', (_event, runId: string) => referenceAnchor.cancel(runId));
-  registerHandler('reference-anchor:remove', async (_event, runId: string) => {
-    const record = await referenceAnchor.getRun(runId).catch(() => null);
-    if (record && ['preparing', 'analyzing_reference', 'compiling_capsule', 'compiling_brief'].includes(record.status)) {
-      throw new Error('正在分析的 Anchor 任务不能删除，请先取消分析');
-    }
-    await referenceAnchor.remove(runId);
-  });
+  registerRuntimeOperations(createReferenceOperations({ referenceAnchor }));
   registerHandler('reference-anchor:export', async (_event, runId: string) => {
     const source = await referenceAnchor.briefPath(runId);
     const result = await dialog.showSaveDialog(mainWindow!, {
