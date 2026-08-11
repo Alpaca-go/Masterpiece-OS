@@ -25,6 +25,8 @@
     "test:space-semantic-gate": "node --test tests/image-generation/space-spatial-semantic-gate.test.js",
     "test:packages": "node --test tests/packages/*/*.test.js",
     "runtime:test": "node --test tests/packages/runtime-core/*.test.js",
+    "web-runtime:test": "tsx --test apps/web-runtime/tests/*.test.ts",
+    "web-runtime:typecheck": "tsc --noEmit -p apps/web-runtime/tsconfig.json",
     "verify:current-flows": "node ./scripts/verify-current-flows.mjs",
     "verify:no-project-specific-production-rules": "node ./scripts/verify-no-project-specific-production-rules.mjs",
     "verify:no-project-rules": "node ./scripts/verify-no-project-specific-production-rules.mjs",
