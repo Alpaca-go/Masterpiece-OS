@@ -272,8 +272,8 @@ function registerIpc(): void {
   registerHandler('projects:remove-asset', (_event, projectId: string, assetId: string) => projects.removeAsset(projectId, assetId));
   registerHandler('projects:remove-batch', (_event, projectId: string, batchId: string) => projects.removeBatch(projectId, batchId));
   registerHandler('projects:clear-assets', (_event, projectId: string) => projects.clearAssets(projectId));
-  registerHandler('projects:choose-files', async (_event, kind: 'assets' | 'logo' | 'brief') => {
-    const filters = kind === 'logo'
+  registerHandler('projects:choose-files', async (_event, kind: 'assets' | 'logo' | 'brief' | 'reference') => {
+    const filters = kind === 'logo' || kind === 'reference'
       ? [{ name: 'Logo 图片', extensions: ['jpg', 'jpeg', 'png', 'webp'] }]
       : kind === 'brief'
         ? [{ name: '项目说明', extensions: ['md', 'txt', 'json', 'pdf'] }]
@@ -294,7 +294,7 @@ function registerIpc(): void {
     _event,
     projectId: string,
     paths: string[],
-    kind: 'assets' | 'logo' | 'brief'
+    kind: 'assets' | 'logo' | 'brief' | 'reference'
   ) => projects.importFiles(projectId, paths, kind));
 
   registerHandler('analysis:start', (_event, projectId: string, forceReasoning: boolean, apiProfileId?: string) => pipeline.start(projectId, forceReasoning, apiProfileId));
@@ -788,7 +788,9 @@ if (gotTheLock) app.whenReady().then(async () => {
       rendererUrl,
       rpcUrl: webRpcServer.url
     }));
-    await shell.openExternal(rendererUrl);
+    if (process.env.MASTERPIECE_WEB_OPEN_BROWSER !== '0') {
+      await shell.openExternal(rendererUrl);
+    }
   } else {
     createWindow();
   }

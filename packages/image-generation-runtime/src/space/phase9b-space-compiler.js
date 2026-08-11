@@ -36,6 +36,7 @@ import { renderContinuationIntentBlock } from './continuation/build-continuation
 import { enforceNoSourceProgramLeakage } from './continuation/source-program-leakage-gate.js';
 import {
   validateTargetSceneAuthority,
+  TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS,
   TARGET_SCENE_AUTHORITY_GATE_VERSION,
 } from './scene-projection/target-scene-projection.js';
 // r2.0 §4.10 / B-3: Reference Boundary text block. The v1 seedream-adapter
@@ -442,6 +443,9 @@ export function compilePhase9bSpacePrompt(input) {
         targetProgram: input.taskContract?.continuation?.targetFunctionalProgram
           ?? { sceneId: input.taskContract?.subtype },
         blocksById,
+        operationConstraints: layers.architectureFunctionBridge?.operationConstraints,
+        mustBeVisible: layers.composition?.mustBeVisible,
+        brandRoleManifestation: layers._raw?.brandRoleManifestation,
         userRequirement: input.taskContract?.continuation?.userRequirement
           ?? input.taskContract?.currentInstruction,
       })
@@ -502,6 +506,10 @@ export function compilePhase9bSpacePrompt(input) {
             shotSource: layers.shotSource ?? 'legacy_project_default',
             gate: authorityGate.status,
             gateVersion: TARGET_SCENE_AUTHORITY_GATE_VERSION,
+            authorityGate: {
+              status: authorityGate.status,
+              checkedBlocks: TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS,
+            },
           }
         : null,
     },

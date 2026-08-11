@@ -10,6 +10,7 @@ import {
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 interface CompileLockedAssetsInput {
   visualContext?: ProjectVisualContext;
@@ -123,7 +124,8 @@ export function createLockedAssetsService(projects: ProjectStore, sessions: Crea
       list(projectId),
     ]);
     const target = await locations(projectId);
-    const logoAssetIds = project.assets
+    const analysisAssets = project.assets.filter(isAnalysisSourceAsset);
+    const logoAssetIds = analysisAssets
       .filter((asset) => project.logoFiles.includes(asset.relativePath)
         || /logo|标志|标识|标准字/iu.test(asset.originalName))
       .map((asset) => asset.id);
@@ -141,7 +143,7 @@ export function createLockedAssetsService(projects: ProjectStore, sessions: Crea
     const identityReferenceIds = (input.understanding?.assetReadingSummary ?? [])
       .filter((item) => item.recommendedUsage === 'identity_reference')
       .map((item) => item.assetId)
-      .filter((id) => project.assets.some((asset) => asset.id === id));
+      .filter((id) => analysisAssets.some((asset) => asset.id === id));
     const visualContext = {
       ...baseVisualContext,
       lockedAssets: {
@@ -157,7 +159,7 @@ export function createLockedAssetsService(projects: ProjectStore, sessions: Crea
       visualContext,
       understanding: input.understanding,
       explicitAssets: input.explicitAssets,
-      sourceAssets: project.assets.map((asset) => ({
+      sourceAssets: analysisAssets.map((asset) => ({
         id: asset.id,
         name: asset.originalName,
         sourceFile: asset.relativePath,

@@ -69,6 +69,7 @@ import {
 import { compileVisualDecisionReport } from './visual-decision-report-compiler.ts';
 import { createAnalysisRepairStore } from './analysis-repair-store.ts';
 import type { ProjectStore } from './project-store';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 import {
   incompleteProjectIdentity,
   resolveAnalyzedProjectIdentity
@@ -401,8 +402,11 @@ export function createPipelineService(
     if (active.has(projectId)) throw new Error('该项目正在分析中');
     const summary = await projects.scan(projectId);
     const project = await projects.get(projectId);
-    if (!summary.totalFiles) throw new Error('项目素材为空，请先上传视觉方案');
-    if (summary.imageCount + summary.pdfCount === 0) throw new Error('项目中没有可分析的图片或 PDF');
+    const analysisItems = summary.items.filter((item) => item.usage === 'analysis_source');
+    const analysisImageCount = analysisItems.filter((item) => item.kind === 'image').length;
+    const analysisPdfCount = analysisItems.filter((item) => item.kind === 'pdf').length;
+    if (!analysisItems.length) throw new Error('项目素材为空，请先上传视觉方案');
+    if (analysisImageCount + analysisPdfCount === 0) throw new Error('项目中没有可分析的图片或 PDF');
     if (!project.logoLocked) throw new Error('Desktop 极简模式要求原始 Logo 默认锁定');
     if (project.outputLanguage !== 'zh-CN') throw new Error('Desktop 极简模式固定输出简体中文');
     const credentials = await readCredentials(apiProfileId || project.apiProfileId || undefined);
@@ -426,7 +430,7 @@ export function createPipelineService(
         message,
         startedAt,
         elapsedMs: Math.round(performance.now() - started),
-        assetCount: summary.totalFiles,
+        assetCount: analysisItems.length,
         model: credentials.model,
         ...extra
       });
@@ -544,7 +548,7 @@ export function createPipelineService(
         brandName: project.brandName || finalProjectName,
       };
       const promptSourceAssets = (project.assets || [])
-        .filter((asset) => asset.status === 'ready' && /^image\//iu.test(asset.mimeType))
+        .filter((asset) => isAnalysisSourceAsset(asset) && asset.status === 'ready' && /^image\//iu.test(asset.mimeType))
         .slice(0, 30);
       if (promptSourceAssets.length) {
         const prompt = buildUnifiedVisualUnderstandingPrompt(
@@ -826,8 +830,8 @@ export function createPipelineService(
         lastDurationMs: durationMs,
         lastReportFilename: reportFilename,
         lastError: null,
-        assetCount: summary.totalFiles,
-        imageCount: summary.imageCount
+        assetCount: analysisItems.length,
+        imageCount: analysisImageCount
       });
 
       // Phase 1 视觉分析接口稳定化：报告成功保存后，本地确定性编译 Project Visual Context。
@@ -839,8 +843,8 @@ export function createPipelineService(
           reportMarkdown: report,
           reportPath,
           runtimeReportPath,
-          assetCount: summary.totalFiles,
-          imageCount: summary.imageCount,
+          assetCount: analysisItems.length,
+          imageCount: analysisImageCount,
           provider: credentials.provider,
           model: credentials.model
         });
@@ -934,8 +938,8 @@ export function createPipelineService(
         provider: execution.result.runReport.provider,
         model: execution.result.runReport.model,
         durationMs,
-        assetCount: summary.totalFiles,
-        imageCount: summary.imageCount,
+        assetCount: analysisItems.length,
+        imageCount: analysisImageCount,
         reasoningCacheHit: execution.result.runReport.reasoningCacheHit
       };
     } catch (error) {
@@ -998,7 +1002,9 @@ export function createPipelineService(
     const allowedAssetIds = options.assetIds ? new Set(options.assetIds) : null;
     const visualAssets = options.includeVisualAssets
       ? (project.assets || []).filter((asset) =>
-        /^image\//iu.test(asset.mimeType) && (!allowedAssetIds || allowedAssetIds.has(asset.id)))
+        isAnalysisSourceAsset(asset)
+        && /^image\//iu.test(asset.mimeType)
+        && (!allowedAssetIds || allowedAssetIds.has(asset.id)))
         .slice(0, options.maxVisualAssets || 12)
       : [];
     const attachments = visualAssets.map((asset, index) => ({
@@ -1158,7 +1164,7 @@ export function createPipelineService(
   ) {
     const project = await projects.get(projectId);
     const assets = (project.assets || []).filter((asset) =>
-      asset.status !== 'deleted' && /^image\//iu.test(asset.mimeType));
+      isAnalysisSourceAsset(asset) && asset.status !== 'deleted' && /^image\//iu.test(asset.mimeType));
     if (!assets.length) {
       return {
         value: [] as CurrentProjectAssetDecision[],
@@ -1207,7 +1213,7 @@ export function createPipelineService(
   async function selectReferenceAssets(projectId: string, apiProfileId?: string) {
     const project = await projects.get(projectId);
     const assets = (project.assets || []).filter((asset) =>
-      asset.status !== 'deleted' && /^image\//iu.test(asset.mimeType));
+      isAnalysisSourceAsset(asset) && asset.status !== 'deleted' && /^image\//iu.test(asset.mimeType));
     const results: Awaited<ReturnType<typeof runStructuredReferenceStep<ReferenceAssetDecision[]>>>[] = [];
     for (let offset = 0; offset < assets.length; offset += 30) {
       const batch = assets.slice(offset, offset + 30);
@@ -1291,7 +1297,7 @@ export function createPipelineService(
           ])],
           confirmedFacts: parsedFacts.confirmedFacts,
           sourceArtifactIds: [`project:${project.id}`, ...assetIds],
-          currentVisualAssets: (project.assets || []).map((asset) => asset.originalName)
+          currentVisualAssets: (project.assets || []).filter(isAnalysisSourceAsset).map((asset) => asset.originalName)
         };
       },
       validate: (value) => assertCurrentProjectProfile(value)

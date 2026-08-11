@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "smoke:real-provider": "node scripts/run-real-provider-smoke.mjs",
+    "smoke:web": "node scripts/run-web-primary-smoke.mjs",
     "smoke:creative-direction": "node scripts/run-real-provider-v18-1-smoke.mjs",
     "smoke:visual-upgrade": "node scripts/run-real-provider-v18-1-smoke.mjs",
     "smoke:visual-decision": "node scripts/run-real-provider-visual-decision-smoke.mjs",

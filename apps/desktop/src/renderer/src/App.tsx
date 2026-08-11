@@ -179,14 +179,15 @@ export function App() {
     // + Visual Context already has the minimum data needed to enter
     // creative-session. The project page uses this to surface a
     // "继续创作 / 直接创作" entry that bypasses the analysis report
-    // page when ready. Best-effort: if the IPC is unavailable, we
-    // simply do not show the entry — the existing "开始分析" path
-    // stays the only visible affordance.
+    // page when ready. A transport failure is surfaced instead of silently
+    // collapsing back to the misleading "开始分析"-only state.
+    setGenerationReadiness(null);
     try {
       const readiness = await window.masterpiece.projectContext.getGenerationReadiness(project.id);
       setGenerationReadiness(readiness);
-    } catch {
+    } catch (reason) {
       setGenerationReadiness(null);
+      setError(`无法读取生成就绪状态：${cleanError(reason)}`);
     }
   }
 

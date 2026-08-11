@@ -19,7 +19,8 @@ const EXPECTED_VNEXT_CHANNELS = Object.freeze({
   'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
   'imageGeneration.postCompositeVNextLogo': 'image-generation:vnext-post-composite-logo',
   'projectContext.getVNext': 'project-context:get-vnext',
-  'projectContext.rebuildVNext': 'project-context:rebuild-vnext'
+  'projectContext.rebuildVNext': 'project-context:rebuild-vnext',
+  'projectContext.getGenerationReadiness': 'project-context:generation-readiness'
 });
 
 test('Web API maps the complete vNext method family to the registered Desktop IPC channels', () => {

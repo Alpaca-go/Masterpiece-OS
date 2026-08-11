@@ -19,6 +19,7 @@ import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
 type ReasonerFactory = typeof createQwenReasoner;
@@ -80,7 +81,7 @@ export function createCreativeReadingService(
       fs.readFile(visualContextPath, 'utf8').then((value) => JSON.parse(value) as ProjectVisualContext),
     ]);
     const imageAssets = project.assets.filter((asset) =>
-      asset.status === 'ready' && /^image\//iu.test(asset.mimeType));
+      isAnalysisSourceAsset(asset) && asset.status === 'ready' && /^image\//iu.test(asset.mimeType));
     if (!imageAssets.length) {
       throw Object.assign(new Error('Creative Reading 至少需要一张原始视觉图片。'), {
         code: 'READING_ASSETS_MISSING',

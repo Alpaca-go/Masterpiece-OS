@@ -49,7 +49,9 @@ function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
     logoLocked: record.logoLocked !== false,
     outputLanguage: 'zh-CN',
     analysisProfile: 'fusion-enhanced',
-    assets: Array.isArray(record.assets) ? record.assets : [],
+    assets: Array.isArray(record.assets)
+      ? record.assets.map((asset) => ({ ...asset, usage: asset.usage ?? 'analysis_source' }))
+      : [],
     visualContextVNextFilename: record.visualContextVNextFilename || null,
     visualContextVNextStatus: record.visualContextVNextStatus || 'missing',
     visualContextVNextVersion: record.visualContextVNextVersion || null,
@@ -233,14 +235,32 @@ export function createProjectStore(readSettings: SettingsReader) {
     await fs.rm(report, { force: true });
   }
 
-  async function importFiles(projectId: string, paths: string[], _kind: 'assets' | 'logo' | 'brief'): Promise<ImportResult> {
+  function assetAbsolutePath(projectRoot: string, asset: ProjectAsset): string {
+    if (asset.usage === 'generation_reference') {
+      return assertInside(projectRoot, path.join(projectRoot, asset.relativePath));
+    }
+    const inputRoot = path.join(projectRoot, 'input');
+    return assertInside(inputRoot, path.join(inputRoot, asset.relativePath));
+  }
+
+  async function importFiles(
+    projectId: string,
+    paths: string[],
+    kind: 'assets' | 'logo' | 'brief' | 'reference'
+  ): Promise<ImportResult> {
     const root = await rootForId(projectId);
     const input = path.join(root, 'input');
-    const assetsRoot = path.join(input, 'assets');
+    const generationReference = kind === 'reference';
+    const assetsRoot = generationReference
+      ? path.join(root, 'generation-references')
+      : path.join(input, 'assets');
     await fs.mkdir(assetsRoot, { recursive: true });
     const project = await readProject(root);
     const assets = [...project.assets.filter((asset) => asset.status === 'ready')];
-    const knownHashes = new Set(assets.map((asset) => asset.sha256));
+    const duplicateCandidates = generationReference
+      ? assets
+      : assets.filter((asset) => asset.usage !== 'generation_reference');
+    const knownHashes = new Set(duplicateCandidates.map((asset) => asset.sha256));
     const imported: string[] = [];
     const extracted: string[] = [];
     const skipped: string[] = [];
@@ -262,14 +282,15 @@ export function createProjectStore(readSettings: SettingsReader) {
       }
       const sha256 = options.buffer ? hashBuffer(options.buffer) : await hashFile(options.sourcePath!);
       if (knownHashes.has(sha256)) {
-        const existing = assets.find((asset) => asset.sha256 === sha256);
+        const existing = assets.find((asset) =>
+          asset.sha256 === sha256 && (generationReference || asset.usage !== 'generation_reference'));
         if (existing) duplicates.push({ id: existing.id, name: existing.originalName });
         skipped.push(`${options.originalName}（重复）`);
         return false;
       }
       const id = crypto.randomUUID();
       const filename = `${id}${extension === '.jpeg' ? '.jpg' : extension}`;
-      const destination = assertInside(input, path.join(assetsRoot, filename));
+      const destination = assertInside(generationReference ? root : input, path.join(assetsRoot, filename));
       if (options.buffer) await fs.writeFile(destination, options.buffer);
       else await fs.copyFile(options.sourcePath!, destination);
       createdFiles.push(destination);
@@ -279,11 +300,12 @@ export function createProjectStore(readSettings: SettingsReader) {
         batchId: options.batchId,
         sourceType: options.sourceType,
         originalName: path.basename(options.originalName),
-        relativePath: path.relative(input, destination).replaceAll('\\', '/'),
+        relativePath: path.relative(generationReference ? root : input, destination).replaceAll('\\', '/'),
         mimeType: MIME_TYPES[extension] || 'application/octet-stream',
         sizeBytes: stat.size,
         sha256,
         status: 'ready',
+        usage: generationReference ? 'generation_reference' : 'analysis_source',
         archiveSourceName: options.archiveSourceName
       };
       assets.push(record);
@@ -379,16 +401,20 @@ export function createProjectStore(readSettings: SettingsReader) {
       throw error;
     }
 
-    await invalidateReport(root, project);
-    await writeProject(root, {
-      ...project,
-      assets,
-      status: assets.length ? 'ready' : 'draft',
-      lastReportFilename: null,
-      lastError: null
-    });
-    await invalidatePrepared(root);
-    await reidentifyProject(projectId);
+    if (generationReference) {
+      await writeProject(root, { ...project, assets });
+    } else {
+      await invalidateReport(root, project);
+      await writeProject(root, {
+        ...project,
+        assets,
+        status: assets.some((asset) => asset.usage !== 'generation_reference') ? 'ready' : 'draft',
+        lastReportFilename: null,
+        lastError: null
+      });
+      await invalidatePrepared(root);
+      await reidentifyProject(projectId);
+    }
     return { imported, extracted, skipped, duplicates, summary: await scan(projectId) };
   }
 
@@ -431,7 +457,8 @@ export function createProjectStore(readSettings: SettingsReader) {
           mimeType: MIME_TYPES[extension] || 'application/octet-stream',
           sizeBytes: stat.size,
           sha256,
-          status: 'ready'
+          status: 'ready',
+          usage: 'analysis_source'
         });
       }
     }
@@ -443,7 +470,7 @@ export function createProjectStore(readSettings: SettingsReader) {
     const root = await rootForId(projectId);
     const project = await readProject(root);
     const labels = project.assets
-      .filter((asset) => asset.status === 'ready')
+      .filter((asset) => asset.status === 'ready' && asset.usage !== 'generation_reference')
       .flatMap((asset) => [asset.originalName, asset.archiveSourceName || ''])
       .filter(Boolean);
     if (!labels.length) return project;
@@ -477,13 +504,12 @@ export function createProjectStore(readSettings: SettingsReader) {
 
   async function scan(projectId: string): Promise<AssetSummary> {
     const root = await rootForId(projectId);
-    const input = path.join(root, 'input');
     let project = await readProject(root);
     project = await migrateLegacyAssets(projectId, root, project);
     const items: AssetItem[] = [];
     const unreadableFiles: string[] = [];
     for (const asset of project.assets.filter((item) => item.status === 'ready')) {
-      const absolute = assertInside(input, path.join(input, asset.relativePath));
+      const absolute = assetAbsolutePath(root, asset);
       const stat = await fs.stat(absolute).catch(() => null);
       if (!stat?.isFile()) continue;
       const extension = path.extname(asset.originalName).toLowerCase();
@@ -497,6 +523,7 @@ export function createProjectStore(readSettings: SettingsReader) {
         bytes: stat.size,
         kind: IMAGE_EXTENSIONS.has(extension) ? 'image' : extension === '.pdf' ? 'pdf' : 'unsupported',
         sha256: asset.sha256,
+        usage: asset.usage ?? 'analysis_source',
         archiveSourceName: asset.archiveSourceName
       };
       if (item.kind === 'image' && items.filter((candidate) => candidate.thumbnailDataUrl).length < 36) {
@@ -510,10 +537,11 @@ export function createProjectStore(readSettings: SettingsReader) {
       }
       items.push(item);
     }
-    const detectedLogoFiles = items
+    const analysisItems = items.filter((item) => item.usage === 'analysis_source');
+    const detectedLogoFiles = analysisItems
       .filter((item) => /logo|标志|标识|品牌字|标准字/i.test(item.name))
       .map((item) => item.relativePath);
-    const detectedBriefFiles = items
+    const detectedBriefFiles = analysisItems
       .filter((item) => /brief|说明|规范|手册|guideline|brandbook/i.test(item.name))
       .map((item) => item.relativePath);
     const summary: AssetSummary = {
@@ -528,34 +556,39 @@ export function createProjectStore(readSettings: SettingsReader) {
     await writeProject(root, {
       ...project,
       assets: project.assets.filter((asset) => items.some((item) => item.id === asset.id)),
-      assetCount: summary.totalFiles,
-      imageCount: summary.imageCount,
+      assetCount: analysisItems.length,
+      imageCount: analysisItems.filter((item) => item.kind === 'image').length,
       logoFiles: detectedLogoFiles,
       briefFiles: detectedBriefFiles,
-      status: summary.totalFiles ? (project.status === 'draft' ? 'ready' : project.status) : 'draft'
+      status: analysisItems.length ? (project.status === 'draft' ? 'ready' : project.status) : 'draft'
     });
     return summary;
   }
 
   async function removeAssets(projectId: string, predicate: (asset: ProjectAsset) => boolean): Promise<AssetSummary> {
     const root = await rootForId(projectId);
-    const input = path.join(root, 'input');
     const project = await readProject(root);
     const removed = project.assets.filter(predicate);
     for (const asset of removed) {
-      const target = assertInside(input, path.join(input, asset.relativePath));
+      const target = assetAbsolutePath(root, asset);
       await fs.rm(target, { force: true });
     }
-    await invalidateReport(root, project);
-    await writeProject(root, {
-      ...project,
-      assets: project.assets.filter((asset) => !predicate(asset)),
-      status: project.assets.some((asset) => !predicate(asset)) ? 'ready' : 'draft',
-      lastReportFilename: null,
-      lastError: null
-    });
-    await invalidatePrepared(root);
-    await reidentifyProject(projectId);
+    const remaining = project.assets.filter((asset) => !predicate(asset));
+    const analysisChanged = removed.some((asset) => asset.usage !== 'generation_reference');
+    if (analysisChanged) {
+      await invalidateReport(root, project);
+      await writeProject(root, {
+        ...project,
+        assets: remaining,
+        status: remaining.some((asset) => asset.usage !== 'generation_reference') ? 'ready' : 'draft',
+        lastReportFilename: null,
+        lastError: null
+      });
+      await invalidatePrepared(root);
+      await reidentifyProject(projectId);
+    } else {
+      await writeProject(root, { ...project, assets: remaining });
+    }
     return scan(projectId);
   }
 

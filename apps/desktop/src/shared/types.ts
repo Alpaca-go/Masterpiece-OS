@@ -160,6 +160,7 @@ export interface ProjectAsset {
   sizeBytes: number;
   sha256: string;
   status: 'ready' | 'ignored' | 'deleted' | 'failed';
+  usage?: 'analysis_source' | 'generation_reference';
   archiveSourceName?: string;
 }
 
@@ -733,6 +734,7 @@ export interface AssetItem {
   bytes: number;
   kind: 'image' | 'pdf' | 'unsupported';
   sha256: string;
+  usage: NonNullable<ProjectAsset['usage']>;
   archiveSourceName?: string;
   thumbnailDataUrl?: string;
   warning?: string;
@@ -2088,9 +2090,9 @@ export interface DesktopApi {
     create(input: CreateProjectInput): Promise<ProjectRecord>;
     get(projectId: string): Promise<ProjectRecord>;
     remove(projectId: string): Promise<void>;
-    chooseFiles(kind: 'assets' | 'logo' | 'brief'): Promise<string[]>;
+    chooseFiles(kind: 'assets' | 'logo' | 'brief' | 'reference'): Promise<string[]>;
     chooseFolder(): Promise<string[]>;
-    importFiles(projectId: string, paths: string[], kind: 'assets' | 'logo' | 'brief'): Promise<ImportResult>;
+    importFiles(projectId: string, paths: string[], kind: 'assets' | 'logo' | 'brief' | 'reference'): Promise<ImportResult>;
     scanAssets(projectId: string): Promise<AssetSummary>;
     removeAsset(projectId: string, assetId: string): Promise<AssetSummary>;
     removeBatch(projectId: string, batchId: string): Promise<AssetSummary>;

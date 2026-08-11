@@ -417,6 +417,20 @@ async function main(): Promise<void> {
     `${JSON.stringify({ referenceAssetIds: [REFERENCE_ASSET_ID], referenceSceneRelation: REFERENCE_SCENE_RELATION, resolvedAssetId: REFERENCE_ASSET_ID, relativePath: refEntry.relativePath, sha256: referenceSha256 }, null, 2)}\n`, 'utf8');
   writeFileSync(path.join(outDir, 'target-scene-projection.json'),
     `${JSON.stringify(compiled.compiledPrompt?.trace?.spaceGeneration?.targetSceneAuthority ?? {}, null, 2)}\n`, 'utf8');
+  const targetSceneAuthority = compiled.compiledPrompt?.trace?.spaceGeneration?.targetSceneAuthority as {
+    targetScene?: string;
+    operationConstraintsSource?: string;
+    brandManifestationSource?: string;
+    preservedMechanisms?: string[];
+    replacedSceneObjects?: string[];
+  } | undefined;
+  writeFileSync(path.join(outDir, 'prompt-source-map.json'), `${JSON.stringify({
+    targetScene: targetSceneAuthority?.targetScene ?? SUBTYPE,
+    operationConstraintsSource: targetSceneAuthority?.operationConstraintsSource ?? null,
+    brandManifestationSource: targetSceneAuthority?.brandManifestationSource ?? null,
+    preservedMechanisms: targetSceneAuthority?.preservedMechanisms ?? [],
+    replacedSceneObjects: targetSceneAuthority?.replacedSceneObjects ?? [],
+  }, null, 2)}\n`, 'utf8');
   writeFileSync(path.join(outDir, 'prompt.md'),
     `${finalPrompt}\n`, 'utf8');
   writeFileSync(path.join(outDir, 'provider-payload.redacted.json'),

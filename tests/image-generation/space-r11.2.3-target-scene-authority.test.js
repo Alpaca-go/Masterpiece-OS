@@ -111,7 +111,8 @@ test('R11.2.3 buildTargetSceneProjection projects a consultation-only subset', (
     projectConstraints: ['大型公共接待台位于前部', '咨询室保持安静'],
   });
   assert.ok(!projection.architectureFunctionBridge.operationConstraints.some((c) => /大型公共接待台/.test(c)), 'project-wide reception constraint dropped');
-  assert.ok(projection.architectureFunctionBridge.operationConstraints.some((c) => /咨询室保持安静/.test(c)), 'target-compatible kept');
+  assert.ok(!projection.architectureFunctionBridge.operationConstraints.some((c) => /咨询室保持安静/.test(c)), 'project constraints are never promoted into target-owned hard constraints');
+  assert.equal(projection.provenance.operationConstraintsSource, 'target_scene_projection');
   assert.deepEqual(projection.functionalRequirement.sceneProgram, ['1 对 1 专业咨询']);
   assert.equal(projection.viewStrategy, 'human_scale_consultation_view');
   assert.equal(projection.requiredProgramNodes.length, 1, 'consultation-only subset');

@@ -21,6 +21,7 @@ import {
   buildReferenceFirstStrategy,
   enforceReferenceFirstDirection
 } from './reference-first-reconstruction.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 const INCOMPLETE_VALUE = /待确认|待补充|未知|未识别|未命名/iu;
 const MARKDOWN_FRAGMENT = /^(?:#{1,6}\s|\|.*\||```|\d+(?:\.\d+)*[.)、]\s)/u;
@@ -332,7 +333,7 @@ export function assertCurrentProjectProfile(
 /** Legacy/local fallback. Formal user flow uses the dedicated multimodal Current Project Facts step. */
 export function buildCurrentProjectProfile(project: ProjectRecord, analysisMarkdown: string): CurrentProjectProfile {
   const lines = reportLines(analysisMarkdown);
-  const assets = (project.assets || []).map((asset) => asset.originalName);
+  const assets = (project.assets || []).filter(isAnalysisSourceAsset).map((asset) => asset.originalName);
   const coreProducts = labeledValues(lines, '核心产品(?:或服务)?|产品与服务|主营产品|主营服务');
   const usageScenarios = labeledValues(lines, '消费场景|使用场景|业务场景');
   const businessTouchpoints = labeledValues(lines, '业务触点|品牌触点|应用触点').length

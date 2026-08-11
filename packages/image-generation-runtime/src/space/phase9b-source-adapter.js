@@ -52,6 +52,7 @@ import {
 import {
   buildTargetSceneProjection,
   isKnownTargetScene,
+  projectBrandManifestationToTargetScene,
   resolveTargetViewStrategy,
 } from './scene-projection/target-scene-projection.js';
 
@@ -378,6 +379,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       targetProgramId: targetProgram.sceneId,
       functionalBlockSource: 'target_scene_projection',
       architectureBridgeSource: 'target_scene_projection',
+      operationConstraintsSource: 'target_scene_projection',
       viewStrategySource: shotSource,
     };
   } else if (taskContract?.generationBasis === 'reference_first' && knownTarget) {
@@ -432,6 +434,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       targetProgramId: sceneProgram.sceneId,
       functionalBlockSource: 'target_scene_projection',
       architectureBridgeSource: 'target_scene_projection',
+      operationConstraintsSource: 'target_scene_projection',
       viewStrategySource: shotSource,
     };
   } else if (knownTarget) {
@@ -451,7 +454,38 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
       targetProgramId: sceneProgram.sceneId,
       functionalBlockSource: 'project_wide',
       architectureBridgeSource: 'project_wide',
+      operationConstraintsSource: 'project_wide',
       viewStrategySource: shotSource,
+    };
+  }
+
+  let projectedBrandManifestation = brandSanitized.lines;
+  if (knownTarget) {
+    const brandProjection = projectBrandManifestationToTargetScene({
+      brandManifestation: brandSanitized.lines,
+      mechanismEvidence: cleanList(
+        spatial.signatureSpatialMechanism,
+        spatial.structureLanguage,
+        materialSystem.flatMap((item) => (item && typeof item === 'object'
+          ? [item.material, item.brandRole, ...(Array.isArray(item.behavior) ? item.behavior : [])]
+          : [item])),
+        lightingSystem.source,
+        lightingSystem.interactionWithMaterials,
+      ),
+      targetScene: taskContract.subtype,
+    });
+    projectedBrandManifestation = brandProjection.sceneManifestations;
+    targetSceneProjection = {
+      ...targetSceneProjection,
+      brandManifestationSource: 'target_scene_projection',
+      preservedMechanisms: brandProjection.preservedMechanisms,
+      replacedSceneObjects: brandProjection.replacedSceneObjects,
+      operationConstraints: bridgeLayers.operationConstraints ?? [],
+      brandManifestation: {
+        mechanismsToPreserve: brandProjection.preservedMechanisms,
+        sceneManifestations: brandProjection.sceneManifestations,
+        sourceSceneObjectsDropped: brandProjection.sourceSceneObjectsDropped,
+      },
     };
   }
 
@@ -516,7 +550,7 @@ export function adaptPhase9bSource({ packet, taskContract, projectContext }) {
     _raw: {
       functionalNetwork: functionalRaw.functionalNetwork,
       sceneProgram: functionalRaw.sceneProgram,
-      brandRoleManifestation: brandSanitized.lines,
+      brandRoleManifestation: projectedBrandManifestation,
       signatureSpatialMechanism: cleanList(spatial.signatureSpatialMechanism),
       mustBeVisible: rawMustBeVisible,
       positiveDifferentiators: functionalRaw.positiveDifferentiators,

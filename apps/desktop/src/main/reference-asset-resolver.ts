@@ -199,7 +199,9 @@ export async function resolveReferenceAsset(
   try {
     absolutePath = assertInside(
       options.projectRoot,
-      path.join(options.projectRoot, 'input', asset.relativePath),
+      asset.usage === 'generation_reference'
+        ? path.join(options.projectRoot, asset.relativePath)
+        : path.join(options.projectRoot, 'input', asset.relativePath),
     );
   } catch (error) {
     return {

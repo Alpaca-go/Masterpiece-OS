@@ -310,6 +310,7 @@ function compilePhase9bSpaceGeneration({ input, taskContract, adapter, reference
           providerStrengthControl: result.trace?.referenceBoundary?.providerStrengthControl ?? 'unsupported',
           promptCharacters: result.trace?.referenceBoundary?.promptCharacters ?? 0,
         },
+        targetSceneAuthority: result.trace?.targetSceneAuthority ?? null,
         promptCharacters: budget.chars,
         // r10.4 regression repair: quality-budget overflow is recorded on the
         // trace (monitoring) while the Provider hard limit stays fail-closed.

@@ -103,9 +103,11 @@ export {
 export {
   TARGET_SCENE_PROJECTION_VERSION,
   TARGET_SCENE_AUTHORITY_GATE_VERSION,
+  TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS,
   isKnownTargetScene,
   filterProjectWideConstraintsForTargetScene,
   buildTargetSceneProjection,
+  projectBrandManifestationToTargetScene,
   resolveTargetViewStrategy,
   validateTargetSceneAuthority,
 } from './scene-projection/target-scene-projection.js';

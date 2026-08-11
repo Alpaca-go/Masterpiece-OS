@@ -540,7 +540,7 @@ export function VNextGenerationWorkspace({
   // current/history tasks and R11 Continuation, not a temporary blob.
   async function uploadReferenceImage() {
     try {
-      const chosen = await window.masterpiece.projects.chooseFiles('assets');
+      const chosen = await window.masterpiece.projects.chooseFiles('reference');
       if (!chosen || chosen.length === 0) return;
       setUploading(true);
       setError('');
@@ -548,7 +548,7 @@ export function VNextGenerationWorkspace({
       // summary.items, so we must only add the NEWLY imported asset ids to the
       // explicit reference selection — never the pre-existing project assets.
       const beforeIds = new Set((await window.masterpiece.projects.scanAssets(project.id)).items.map((i) => i.id));
-      const imported = await window.masterpiece.projects.importFiles(project.id, chosen, 'assets');
+      const imported = await window.masterpiece.projects.importFiles(project.id, chosen, 'reference');
       const after = await window.masterpiece.projects.scanAssets(project.id);
       const images = after.items.filter((item) => item.kind === 'image');
       setProjectAssets(images);

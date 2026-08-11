@@ -193,6 +193,28 @@ test('R11.2.2 true continuation start() binds the confirmed generated output ref
     },
   });
 
+  const targetProjection = JSON.parse(await fs.readFile(
+    path.join(compiled.artifactDirectory, 'target-scene-projection.json'),
+    'utf8',
+  )) as Record<string, unknown>;
+  const promptSourceMap = JSON.parse(await fs.readFile(
+    path.join(compiled.artifactDirectory, 'prompt-source-map.json'),
+    'utf8',
+  )) as {
+    operationConstraintsSource?: string;
+    brandManifestationSource?: string;
+    brand_role_manifestation?: {
+      preservedMechanisms?: string[];
+      replacedSceneObjects?: string[];
+    };
+  };
+  assert.equal(targetProjection.operationConstraintsSource, 'target_scene_projection');
+  assert.equal(targetProjection.brandManifestationSource, 'target_scene_projection');
+  assert.equal(promptSourceMap.operationConstraintsSource, 'target_scene_projection');
+  assert.equal(promptSourceMap.brandManifestationSource, 'target_scene_projection');
+  assert.ok(Array.isArray(promptSourceMap.brand_role_manifestation?.preservedMechanisms));
+  assert.ok(Array.isArray(promptSourceMap.brand_role_manifestation?.replacedSceneObjects));
+
   const run = await service.start({
     projectId,
     taskId: compiled.taskContract.taskId,

@@ -329,11 +329,38 @@ export function createVNextImageGenerationService(
       result.taskContract.taskId,
     );
     await fs.mkdir(artifactDirectory, { recursive: true });
+    const spaceGenerationTrace = (result.compiledPrompt.trace as unknown as {
+      spaceGeneration?: { targetSceneAuthority?: Record<string, unknown> | null };
+    }).spaceGeneration;
+    const targetSceneProjection = spaceGenerationTrace?.targetSceneAuthority ?? null;
+    const basePromptSourceMap = (result.compiledPrompt.sourceMap ?? {}) as Record<string, unknown>;
+    const promptSourceMap = targetSceneProjection
+      ? {
+          ...basePromptSourceMap,
+          operationConstraintsSource: targetSceneProjection.operationConstraintsSource,
+          brandManifestationSource: targetSceneProjection.brandManifestationSource,
+          architecture_function_bridge: {
+            fields: basePromptSourceMap.architecture_function_bridge ?? [],
+            operationConstraintsSource: targetSceneProjection.operationConstraintsSource,
+            targetScene: targetSceneProjection.targetScene,
+          },
+          brand_role_manifestation: {
+            source: targetSceneProjection.brandManifestationSource,
+            targetScene: targetSceneProjection.targetScene,
+            preservedMechanisms: targetSceneProjection.preservedMechanisms ?? [],
+            replacedSceneObjects: targetSceneProjection.replacedSceneObjects ?? [],
+          },
+        }
+      : basePromptSourceMap;
     await Promise.all([
       writeJson(path.join(artifactDirectory, 'task-contract.json'), result.taskContract),
       writeJson(path.join(artifactDirectory, 'compiled-prompt.json'), result.compiledPrompt),
       writeJson(path.join(artifactDirectory, 'model-payload.json'), result.payload),
       writeJson(path.join(artifactDirectory, 'provider-payload-preview.json'), result.payload),
+      writeJson(path.join(artifactDirectory, 'prompt-source-map.json'), promptSourceMap),
+      ...(targetSceneProjection ? [
+        writeJson(path.join(artifactDirectory, 'target-scene-projection.json'), targetSceneProjection),
+      ] : []),
       ...(result.compiledPrompt.effectiveVisualDecisionPacket ? [
         writeJson(
           path.join(artifactDirectory, 'effective-visual-decision-packet.json'),

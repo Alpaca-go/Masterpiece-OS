@@ -29,7 +29,8 @@ export const WEB_RPC_CHANNEL_OVERRIDES: Readonly<Record<string, string>> = Objec
   'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
   'imageGeneration.postCompositeVNextLogo': 'image-generation:vnext-post-composite-logo',
   'projectContext.getVNext': 'project-context:get-vnext',
-  'projectContext.rebuildVNext': 'project-context:rebuild-vnext'
+  'projectContext.rebuildVNext': 'project-context:rebuild-vnext',
+  'projectContext.getGenerationReadiness': 'project-context:generation-readiness'
 });
 
 export function resolveWebRpcChannel(namespace: string, method: string): string {

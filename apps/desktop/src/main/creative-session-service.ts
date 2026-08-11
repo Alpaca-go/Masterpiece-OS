@@ -18,6 +18,7 @@ import {
 } from '@masterpiece/creative-production-runtime/session.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProjectStore } from './project-store.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 const SESSION_FILENAME = 'session.json';
 
@@ -81,7 +82,7 @@ export function createCreativeSessionService(projects: ProjectStore) {
         constraints: project.lockedFacts,
       },
       inputs: {
-        originalAssetIds: project.assets.map((asset) => asset.id),
+        originalAssetIds: project.assets.filter(isAnalysisSourceAsset).map((asset) => asset.id),
         referenceAssetIds: [],
         documentIds: [],
       },

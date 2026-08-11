@@ -13,6 +13,7 @@ import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 import type { CreativeDirectionService } from './creative-direction-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 async function writeJson(filename: string, value: unknown): Promise<void> {
   const result = await atomicWriteJsonWithRetry(filename, value);
@@ -79,7 +80,7 @@ export function createVisualMemoryService(
       understanding: session.understanding,
       creativeDirection: direction,
       lockedAssets: locks,
-      assets: project.assets,
+      assets: project.assets.filter(isAnalysisSourceAsset),
     }) as VisualMemory;
     await fs.mkdir(target.root, { recursive: true });
     await writeJson(target.sourceSnapshot, {
@@ -90,7 +91,7 @@ export function createVisualMemoryService(
       creative_direction_id: direction.id,
       creative_direction_version: direction.version,
       locked_asset_ids: locks.map((item) => item.id),
-      asset_ids: project.assets.map((item) => item.id),
+      asset_ids: project.assets.filter(isAnalysisSourceAsset).map((item) => item.id),
       created_at: memory.generated_at,
     });
     await writeJson(target.memory, memory);

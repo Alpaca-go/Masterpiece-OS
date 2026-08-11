@@ -3,6 +3,7 @@ import path from 'node:path';
 import type { ProjectRecord, ProjectVisualContext } from '../shared/types';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write';
 import type { AtomicWriteOptions } from './runtime/atomic-write';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 /**
  * Project Visual Context Compiler
@@ -273,7 +274,7 @@ export function compileProjectVisualContext(input: CompileProjectVisualContextIn
   const logoAssetIds: string[] = [];
   const lockedAssetIds = new Set<string>();
   for (const logoFile of project.logoFiles || []) {
-    const asset = (project.assets || []).find(
+    const asset = (project.assets || []).filter(isAnalysisSourceAsset).find(
       (candidate) => candidate.originalName === logoFile || candidate.relativePath.endsWith(logoFile)
     );
     if (asset) {
@@ -295,7 +296,9 @@ export function compileProjectVisualContext(input: CompileProjectVisualContextIn
   );
 
   // 当前视觉系统
-  const existingVisualAssets = (project.assets || []).map((asset) => asset.relativePath || asset.originalName || asset.id);
+  const existingVisualAssets = (project.assets || [])
+    .filter(isAnalysisSourceAsset)
+    .map((asset) => asset.relativePath || asset.originalName || asset.id);
   const primaryColors = dedupe(collectTokens(allText, COLOR_TOKENS));
   const supportingColors: string[] = [];
   const graphicAssets = dedupe(collectTokens(allText, GRAPHIC_TOKENS));

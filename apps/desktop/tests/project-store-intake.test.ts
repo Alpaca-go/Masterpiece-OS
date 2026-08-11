@@ -4,7 +4,9 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import AdmZip from 'adm-zip';
+import sharp from 'sharp';
 import { createProjectStore } from '../src/main/project-store.ts';
+import { resolveReferenceAsset } from '../src/main/reference-asset-resolver.ts';
 import type { PublicSettings } from '../src/shared/types.ts';
 
 const ONE_PIXEL_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
@@ -162,6 +164,92 @@ test('re-importing an existing file is skipped and reported as a duplicate asset
     assert.equal(result.duplicates.length, 1);
     assert.equal(result.duplicates[0]?.id, existing.id);
     assert.equal(result.summary.totalFiles, 1, 'no duplicate asset was added');
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true });
+  }
+});
+
+test('generation reference import preserves completed analysis and stays outside analysis input', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-desktop-reference-'));
+  try {
+    const source = path.join(temporary, 'project-input');
+    const data = path.join(temporary, 'data');
+    await fs.mkdir(source, { recursive: true });
+    await fs.writeFile(path.join(source, 'source.png'), ONE_PIXEL_PNG);
+    const settings: PublicSettings = {
+      profiles: [{
+        id: 'profile-test',
+        displayName: 'Test Qwen',
+        provider: 'qwen',
+        baseUrl: 'https://example.invalid/v1',
+        modelId: 'qwen3-vl-plus',
+        credentialKey: 'masterpiece-os/profile-test',
+        hasApiKey: true,
+        isDefault: true,
+        isEnabled: true,
+        createdAt: '2026-08-11T00:00:00.000Z',
+        updatedAt: '2026-08-11T00:00:00.000Z'
+      }],
+      defaultProfileId: 'profile-test',
+      provider: 'qwen',
+      baseUrl: 'https://example.invalid/v1',
+      model: 'qwen3-vl-plus',
+      hasApiKey: false,
+      defaultDataPath: data,
+      cacheEnabled: true,
+      logLevel: 'info',
+      connectionStatus: 'untested'
+    };
+    const store = createProjectStore(async () => settings);
+    const project = await store.create({ sourcePaths: [source], apiProfileId: 'profile-test' });
+    const projectPaths = await store.paths(project.id);
+    const reportFilename = 'completed-report.md';
+    const reportPath = path.join(projectPaths.outputs, reportFilename);
+    const preparedMarker = path.join(projectPaths.prepared, 'analysis-marker.json');
+    await fs.writeFile(reportPath, '# completed');
+    await fs.writeFile(preparedMarker, '{}');
+    await store.update(project.id, {
+      status: 'completed',
+      lastReportFilename: reportFilename,
+      visualContextStatus: 'ready',
+      visualContextVNextStatus: 'ready'
+    });
+
+    const referencePath = path.join(temporary, 'reference.png');
+    await sharp({
+      create: { width: 2, height: 2, channels: 4, background: { r: 10, g: 20, b: 30, alpha: 1 } }
+    }).png().toFile(referencePath);
+    const imported = await store.importFiles(project.id, [referencePath], 'reference');
+    const reference = imported.summary.items.find((item) => item.usage === 'generation_reference');
+    const afterImport = await store.get(project.id);
+
+    assert.ok(reference, 'generation reference is included in the reusable project asset library');
+    assert.match(reference.relativePath, /^generation-references\//);
+    assert.equal(await fs.stat(path.join(projectPaths.root, reference.relativePath)).then(() => true), true);
+    assert.equal(await fs.stat(path.join(projectPaths.input, reference.relativePath)).then(() => true).catch(() => false), false);
+    assert.equal(afterImport.status, 'completed');
+    assert.equal(afterImport.lastReportFilename, reportFilename);
+    assert.equal(afterImport.visualContextStatus, 'ready');
+    assert.equal(afterImport.visualContextVNextStatus, 'ready');
+    assert.equal(afterImport.assetCount, 1, 'generation references do not change analysis asset counts');
+    assert.equal(await fs.readFile(reportPath, 'utf8'), '# completed');
+    assert.equal(await fs.readFile(preparedMarker, 'utf8'), '{}');
+    const resolution = await resolveReferenceAsset(
+      reference.id,
+      { projectRoot: projectPaths.root },
+      afterImport.assets,
+    );
+    assert.equal(resolution.status, 'resolved');
+    if (resolution.status === 'resolved') {
+      assert.equal(resolution.record.absolutePath, path.join(projectPaths.root, reference.relativePath));
+    }
+
+    await store.removeAsset(project.id, reference.id);
+    const afterRemoval = await store.get(project.id);
+    assert.equal(afterRemoval.status, 'completed');
+    assert.equal(afterRemoval.lastReportFilename, reportFilename);
+    assert.equal(await fs.readFile(reportPath, 'utf8'), '# completed');
+    assert.equal(await fs.readFile(preparedMarker, 'utf8'), '{}');
   } finally {
     await fs.rm(temporary, { recursive: true, force: true });
   }

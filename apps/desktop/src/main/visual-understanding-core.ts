@@ -14,6 +14,7 @@ import type {
   VisualUnderstandingCore,
 } from '@masterpiece/project-contracts/index.ts';
 import type { ProjectRecord } from '../shared/types.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -185,7 +186,7 @@ function normalizeInventory(value: unknown, project: ProjectRecord): VisualAsset
     inventory[field] = (Array.isArray(sourceInventory[field]) ? sourceInventory[field] : [])
       .flatMap((item, index) => normalizeInventoryAsset(item, kind, index) ?? []);
   }
-  for (const asset of project.assets.filter((item) => item.status === 'ready')) {
+  for (const asset of project.assets.filter((item) => isAnalysisSourceAsset(item) && item.status === 'ready')) {
     const isLogo = project.logoFiles.includes(asset.relativePath)
       || project.logoFiles.includes(asset.originalName)
       || /(?:^|[-_.\s])(logo|标志|标识)(?:[-_.\s]|$)/iu.test(asset.originalName);

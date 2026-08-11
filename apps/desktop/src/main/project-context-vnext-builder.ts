@@ -8,6 +8,7 @@ import type {
 import type { ProjectRecord } from '../shared/types.ts';
 import { migrateAnalysisPacket } from '@masterpiece/analysis-runtime/index.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
+import { isAnalysisSourceAsset } from './project-assets.ts';
 
 export const PROJECT_VISUAL_CONTEXT_SHORT_CHAIN_SCHEMA_VERSION = '2.0';
 export const PROJECT_CONTEXT_SHORT_CHAIN_BUILDER_ID = 'project-context-builder';
@@ -288,7 +289,7 @@ export function buildProjectVisualContextVNext(
   const structuredLocks = record(structured.lockedAssets);
   const visualIdentity = record(structured.visualIdentity);
   const boundaries = record(structured.styleBoundaries);
-  const activeAssets = project.assets.filter((asset) => asset.status === 'ready');
+  const activeAssets = project.assets.filter((asset) => isAnalysisSourceAsset(asset) && asset.status === 'ready');
   const sourceAssetRefs = activeAssets.map((asset) => ({
     assetId: asset.id,
     name: asset.originalName,
