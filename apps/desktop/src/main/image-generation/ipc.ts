@@ -1,25 +1,10 @@
-/**
- * 生图功能 V1：Desktop IPC 注册（§16.1）。
- *
- * 把原本内联在 main/index.ts 的 image-generation:* handler 抽离为独立函数，
- * 便于在测试中用假 ipcMain 注入并断言参数转发（不依赖 Electron 运行时）。
- *
- * 不在此文件 import `electron` 运行时（仅类型导入），以保证单测环境可加载。
- * 打开文件夹的能力下沉到 service.openFolder（由 index.ts 注入 openRunFolder，
- * 底层用 shell.openPath），本模块保持纯净。
- */
+/** Desktop-only IPC adapter for Shared Image Generation operations. */
 import type { IpcMain } from 'electron';
-import type { ImageGenerationService } from './service';
-import type {
-  CompileVNextGenerationInput,
-  PostCompositeVNextLogoInput,
-  SaveVNextProjectPromptAssetInput,
-  StartVNextGenerationInput,
-  StartValidatedVNextGenerationInput,
-  StartImageGenerationInput,
-  RetryImageGenerationInput,
-  ImageGenerationReview,
-} from '../../shared/types';
+import {
+  createImageGenerationOperations,
+  createOperationRegistry,
+} from '@masterpiece/runtime-core';
+import type { ImageGenerationService } from './service.ts';
 import type { VNextImageGenerationService } from './vnext-service.ts';
 
 export function registerImageGenerationIpc(
@@ -27,104 +12,11 @@ export function registerImageGenerationIpc(
   ipcMain: IpcMain,
   vnextService?: VNextImageGenerationService,
 ): void {
-  ipcMain.handle('image-generation:get-capabilities', async () => service.getCapabilities());
-  ipcMain.handle('image-generation:get-preset-capabilities', async () => service.getPresetCapabilities());
-  ipcMain.handle('image-generation:get-source-preview', async (_event, input: StartImageGenerationInput) =>
-    service.getSourcePreview(input));
-
-  ipcMain.handle('image-generation:compile', async (_event, input: StartImageGenerationInput) => {
-    const compiled = await service.compile(input);
-    return compiled.result;
-  });
-
-  ipcMain.handle('image-generation:start', async (_event, input: StartImageGenerationInput) =>
-    service.start(input));
-
-  ipcMain.handle('image-generation:get-run', async (_event, runId: string) => service.getRun(runId));
-  ipcMain.handle('image-generation:list-runs', async (_event, projectId?: string) => service.listRuns(projectId));
-  ipcMain.handle('image-generation:cancel', async (_event, runId: string) => service.cancel(runId));
-
-  ipcMain.handle('image-generation:retry', async (_event, input: RetryImageGenerationInput) =>
-    service.retry({
-      runId: input.runId,
-      mode: input.mode,
-      editedPrompt: input.editedPrompt,
-      apiProfileId: input.apiProfileId,
-    }));
-
-  ipcMain.handle('image-generation:save-review', async (_event, review: ImageGenerationReview) =>
-    service.saveReview(review));
-
-  ipcMain.handle('image-generation:open-folder', async (_event, runId: string) => service.openFolder(runId));
-
-  ipcMain.handle('image-generation:get-image-data-url', async (_event, runId: string, imageId: string) =>
-    service.readImageDataUrl(runId, imageId));
-  if (vnextService) {
-    ipcMain.handle('image-generation:vnext-options', async () => vnextService.listOptions());
-    ipcMain.handle('image-generation:vnext-compile', async (_event, input: CompileVNextGenerationInput) =>
-      vnextService.compile(input));
-    // r2.0 §4.11 / Phase C-3: UI preflight. Renderer calls after loading
-    // project assets / importing new files; result drives the per-asset
-    // status badge and the "use as reference" enable rule. The handler is
-    // fail-soft: it returns the per-ID result map; the renderer surfaces
-    // failures and disables the failed assets from being selected.
-    if (vnextService.preflightReferenceAssets) {
-      ipcMain.handle(
-        'image-generation:preflight-reference-assets',
-        async (
-          _event,
-          input: { projectId: string; assetIds: string[] },
-        ) => vnextService.preflightReferenceAssets!(input),
-      );
-    }
-    ipcMain.handle('image-generation:vnext-start', async (_event, input: StartVNextGenerationInput) =>
-      vnextService.start(input));
-    ipcMain.handle(
-      'image-generation:vnext-start-validated',
-      async (_event, input: StartValidatedVNextGenerationInput) =>
-        vnextService.startValidated(input),
-    );
-    ipcMain.handle('image-generation:vnext-session', async (_event, projectId: string) =>
-      vnextService.getSession(projectId));
-    ipcMain.handle(
-      'image-generation:vnext-confirm-direction',
-      async (_event, projectId: string, runId: string, imageId: string) =>
-        vnextService.confirmDirection(projectId, runId, imageId),
-    );
-    ipcMain.handle(
-      'image-generation:vnext-confirm-generated-output',
-      async (_event, projectId: string, runId: string, imageId: string) =>
-        vnextService.confirmGeneratedOutput(projectId, runId, imageId),
-    );
-    ipcMain.handle(
-      'image-generation:vnext-revoke-generated-output',
-      async (_event, projectId: string, assetId: string) =>
-        vnextService.revokeGeneratedOutput(projectId, assetId),
-    );
-    ipcMain.handle(
-      'image-generation:vnext-confirmed-generated-outputs',
-      async (_event, projectId: string) =>
-        vnextService.getConfirmedGeneratedOutputs(projectId),
-    );
-    ipcMain.handle(
-      'image-generation:vnext-continue-same-type',
-      async (
-        _event,
-        projectId: string,
-        currentInstruction: string,
-        apiProfileId?: string,
-        dryRun?: boolean,
-      ) => vnextService.continueSameType(projectId, currentInstruction, apiProfileId, dryRun),
-    );
-    ipcMain.handle(
-      'image-generation:vnext-save-prompt-asset',
-      async (_event, input: SaveVNextProjectPromptAssetInput) =>
-        vnextService.saveProjectPromptAsset(input),
-    );
-    ipcMain.handle(
-      'image-generation:vnext-post-composite-logo',
-      async (_event, input: PostCompositeVNextLogoInput) =>
-        vnextService.postCompositeLogo(input),
-    );
+  const registry = createOperationRegistry();
+  const operations = createImageGenerationOperations({ service, vnextService });
+  registry.registerAll(operations);
+  for (const operationId of Object.keys(operations)) {
+    ipcMain.handle(operationId, (_event, ...args) => registry.execute(operationId, args));
   }
+  ipcMain.handle('image-generation:open-folder', (_event, runId: string) => service.openFolder(runId));
 }

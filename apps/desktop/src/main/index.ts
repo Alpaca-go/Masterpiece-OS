@@ -2,15 +2,6 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { app, BrowserWindow, dialog, ipcMain, shell, type IpcMainInvokeEvent } from 'electron';
-import type {
-  AnalysisProgress,
-  CreateProjectInput,
-  SaveApiProfileInput,
-  SaveSettingsInput,
-  SaveModelBenchmarkEvaluationInput,
-  StartModelBenchmarkInput,
-} from '../shared/types';
-import { createProjectStore } from './project-store';
 import {
   deleteApiProfile,
   getProviderCredentials,
@@ -21,42 +12,8 @@ import {
   setDefaultApiProfile,
   testApiProfile
 } from './settings-store';
-import { createPipelineService } from './pipeline-service';
 import { createDesktopAnalysisRuntimeAdapter } from './analysis-runtime-adapter.ts';
-import { createReferenceAnchorService } from './reference-anchor-service';
-import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
-import { createVNextImageGenerationService } from './image-generation/vnext-service.ts';
-import { createVNextDeliverableValidatorService } from './image-generation/vnext-deliverable-validator-service.ts';
-import { createFileContextLoader } from './image-generation/context-loader';
-import { createProjectContextService } from './project-context-service';
-import { createDocumentContextService } from './document-context-service';
-import { createContextIntegrationService } from './context-integration-service';
-import { createCreativeSessionService } from './creative-session-service';
-import { createCreativeReadingService } from './creative-reading-service';
-import { createCreativeDirectionService } from './creative-direction-service';
-import { createStyleProfileService } from './style-profile-service';
-import { createLockedAssetsService } from './locked-assets-service';
-import { createAnchorCandidateService } from './anchor-candidate-service';
-import { createVisualCanonService } from './visual-canon-service';
-import { createGenerationPromptService } from './generation-prompt-service';
-import { createGenerationBlueprintService } from './generation-blueprint-service';
-import { createVisualMemoryService } from './visual-memory-service';
-import { createReferencePackService } from './reference-pack-service';
-import { createCreativeGenerationService, type CreativeGenerationService } from './creative-generation-service';
-import { createGenerationSeriesService } from './generation-series-service';
-import { createFormalAssetsService } from './formal-assets-service';
-import { createAnchorGenerationService, type AnchorGenerationService } from './anchor-generation-service';
-import {
-  createVisualExplorationService,
-  type VisualExplorationService
-} from './visual-exploration-service';
-import { createCreativeProductionBootstrapService } from './creative-production-bootstrap-service';
-import { createQuickStyleExtractionService } from './quick-style-extraction-service';
-import {
-  createGenerationSeriesExecutionService,
-  type GenerationSeriesExecutionService
-} from './generation-series-execution-service';
-import { assertInside, sanitizeFilenamePart } from './analysis-contract';
+import { assertInside } from './analysis-contract';
 import { startWebRpcServer, type WebRpcServer } from './web-rpc-server';
 import {
   createAnalysisOperations,
@@ -68,9 +25,15 @@ import {
   createProjectContextOperations,
   createProjectOperations,
   createReferenceOperations,
+  createReportOperations,
+  createSettingsOperations,
   createSharedRuntime,
   createVisualMemoryOperations,
 } from '@masterpiece/runtime-core';
+import {
+  createRuntimeServices,
+  type RuntimeServices,
+} from '@masterpiece/runtime-core/application/runtime-services.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow: BrowserWindow | null = null;
@@ -118,128 +81,7 @@ if (!gotTheLock) {
   });
 }
 
-const projects = createProjectStore(getSettings);
-/** 生图功能 V1 主进程服务（在 app ready 后构造，以便安全解析数据目录）。 */
-let imageGeneration: ImageGenerationService;
-let creativeGeneration: CreativeGenerationService;
-let anchorGeneration: AnchorGenerationService;
-let visualExplorations: VisualExplorationService;
-let generationSeriesExecution: GenerationSeriesExecutionService;
-const pipeline = createPipelineService(
-  projects,
-  getProviderCredentials,
-  getSettings,
-  (progress: AnalysisProgress) => emitClientEvent('analysis:progress', progress),
-  createDesktopAnalysisRuntimeAdapter(app),
-);
-const documentContext = createDocumentContextService(
-  getProviderCredentials,
-  getSettings,
-  (progress) => emitClientEvent('document-context:progress', progress)
-);
-const projectContext = createProjectContextService({
-  projects,
-  showSaveDialog: (defaultPath: string) =>
-    dialog.showSaveDialog(mainWindow!, {
-      defaultPath,
-      filters: [{ name: 'JSON', extensions: ['json'] }]
-    })
-});
-const vnextDeliverableValidator = createVNextDeliverableValidatorService(
-  projects,
-  () => imageGeneration,
-  getSettings,
-  getProviderCredentials,
-  projectContext,
-);
-const vnextImageGeneration = createVNextImageGenerationService(
-  projects,
-  projectContext,
-  () => imageGeneration,
-  () => vnextDeliverableValidator,
-);
-const contextIntegration = createContextIntegrationService({
-  readSettings: getSettings,
-  projects,
-  projectContext,
-  documentContext,
-  showSaveDialog: (defaultPath: string) =>
-    dialog.showSaveDialog(mainWindow!, {
-      defaultPath,
-      filters: [{ name: 'JSON', extensions: ['json'] }]
-    })
-});
-const referenceAnchor = createReferenceAnchorService(getSettings, {
-  projects,
-  pipeline,
-  projectContext,
-  documentContext,
-  contextIntegration,
-  emitProgress: (progress) => emitClientEvent('reference-anchor:progress', progress)
-});
-const creativeSessions = createCreativeSessionService(projects);
-const creativeDirections = createCreativeDirectionService(
-  projects,
-  creativeSessions,
-  getProviderCredentials
-);
-const generationBlueprints = createGenerationBlueprintService(
-  projects,
-  creativeSessions,
-  creativeDirections
-);
-const styleProfiles = createStyleProfileService(projects, creativeSessions);
-const lockedAssets = createLockedAssetsService(projects, creativeSessions);
-const visualMemory = createVisualMemoryService(
-  projects,
-  creativeSessions,
-  creativeDirections,
-  lockedAssets
-);
-const anchorCandidates = createAnchorCandidateService(projects, creativeSessions, styleProfiles, lockedAssets);
-const visualCanons = createVisualCanonService(projects, creativeSessions, styleProfiles, lockedAssets, anchorCandidates);
-const referencePacks = createReferencePackService(projects, visualMemory, visualCanons);
-const generationPrompts = createGenerationPromptService(
-  projects,
-  creativeSessions,
-  styleProfiles,
-  lockedAssets,
-  visualCanons,
-  creativeDirections,
-  generationBlueprints,
-  visualMemory,
-  referencePacks
-);
-const creativeReading = createCreativeReadingService(
-  projects,
-  creativeSessions,
-  lockedAssets,
-  getProviderCredentials,
-  creativeDirections
-);
-const generationSeries = createGenerationSeriesService(
-  projects,
-  creativeSessions,
-  styleProfiles,
-  lockedAssets,
-  visualCanons
-);
-const formalAssets = createFormalAssetsService(projects);
-const creativeProductionBootstrap = createCreativeProductionBootstrapService(
-  projects,
-  creativeSessions,
-  lockedAssets,
-  styleProfiles,
-  creativeDirections,
-  visualMemory,
-  referencePacks
-);
-const quickStyleExtraction = createQuickStyleExtractionService(
-  referenceAnchor,
-  creativeSessions,
-  lockedAssets,
-  styleProfiles
-);
+let runtimeServices: RuntimeServices;
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -267,13 +109,43 @@ function createWindow(): void {
 }
 
 function registerIpc(): void {
-  registerHandler('settings:get', () => getSettings());
-  registerHandler('settings:save', (_event, input: SaveSettingsInput) => saveSettings(input));
-  registerHandler('settings:save-profile', (_event, input: SaveApiProfileInput) => saveApiProfile(input));
-  registerHandler('settings:delete-profile', (_event, profileId: string) => deleteApiProfile(profileId));
-  registerHandler('settings:set-default-profile', (_event, profileId: string) => setDefaultApiProfile(profileId));
-  registerHandler('settings:set-profile-enabled', (_event, profileId: string, enabled: boolean) => setApiProfileEnabled(profileId, enabled));
-  registerHandler('settings:test-profile', (_event, input: SaveApiProfileInput) => testApiProfile(input));
+  const {
+    projects,
+    reports,
+    pipeline,
+    documentContext,
+    projectContext,
+    contextIntegration,
+    referenceAnchor,
+    imageGeneration,
+    vnextImageGeneration,
+    creativeSessions,
+    creativeDirections,
+    styleProfiles,
+    lockedAssets,
+    visualMemory,
+    anchorCandidates,
+    visualCanons,
+    referencePacks,
+    creativeReading,
+    creativeProductionBootstrap,
+    quickStyleExtraction,
+    creativeGeneration,
+    anchorGeneration,
+    visualExplorations,
+    generationSeries,
+    generationSeriesExecution,
+    formalAssets,
+  } = runtimeServices;
+  registerRuntimeOperations(createSettingsOperations({
+    get: getSettings,
+    save: saveSettings,
+    saveProfile: saveApiProfile,
+    deleteProfile: deleteApiProfile,
+    setDefaultProfile: setDefaultApiProfile,
+    setProfileEnabled: setApiProfileEnabled,
+    testProfile: testApiProfile,
+  }));
 
   registerRuntimeOperations(createProjectOperations({ projects, pipeline }));
   registerHandler('projects:choose-files', async (_event, kind: 'assets' | 'logo' | 'brief' | 'reference') => {
@@ -296,26 +168,7 @@ function registerIpc(): void {
   });
   registerRuntimeOperations(createAnalysisOperations({ pipeline }));
 
-  registerHandler('report:read', async (_event, projectId: string) => {
-    const project = await projects.get(projectId);
-    if (!project.lastReportFilename) throw new Error('项目尚未生成报告');
-    const paths = await projects.paths(projectId);
-    return fs.readFile(assertInside(paths.outputs, path.join(paths.outputs, project.lastReportFilename)), 'utf8');
-  });
-  registerHandler('report:rename', async (_event, projectId: string, requestedFilename: string) => {
-    const project = await projects.get(projectId);
-    if (!project.lastReportFilename) throw new Error('项目尚未生成报告');
-    const base = sanitizeFilenamePart(path.parse(String(requestedFilename || '')).name);
-    if (!base || base === '未命名') throw new Error('报告文件名不能为空');
-    const filename = `${base}.md`;
-    if (filename === project.lastReportFilename) return project;
-    const paths = await projects.paths(projectId);
-    const source = assertInside(paths.outputs, path.join(paths.outputs, project.lastReportFilename));
-    const destination = assertInside(paths.outputs, path.join(paths.outputs, filename));
-    if (await fs.stat(destination).then(() => true).catch(() => false)) throw new Error('输出目录中已存在同名报告');
-    await fs.rename(source, destination);
-    return projects.update(projectId, { lastReportFilename: filename });
-  });
+  registerRuntimeOperations(createReportOperations({ reports }));
   registerHandler('report:export', async (_event, projectId: string) => {
     const project = await projects.get(projectId);
     if (!project.lastReportFilename) throw new Error('项目尚未生成报告');
@@ -431,46 +284,25 @@ function registerIpc(): void {
 if (gotTheLock) app.whenReady().then(async () => {
   const settings = await getSettings();
   const dataPath = path.resolve(settings.defaultDataPath);
-  imageGeneration = createImageGenerationService({
-    readSettings: getSettings,
-    readCredentials: (profileId) => getProviderCredentials(profileId),
-    loadContext: createFileContextLoader(dataPath, projects).loadContext,
+  runtimeServices = createRuntimeServices({
     dataPath,
-    emitRunUpdated: (progress) => emitClientEvent('image-generation:run-updated', progress),
-    openRunFolder: async (runId) => {
-      const root = await imageGeneration.runRoot(runId);
-      if (!root) throw new Error('运行记录不存在。');
-      const result = await shell.openPath(root);
+    readSettings: getSettings,
+    readCredentials: getProviderCredentials,
+    analysisRuntime: createDesktopAnalysisRuntimeAdapter(app),
+    showSaveDialog: (defaultPath: string) =>
+      dialog.showSaveDialog(mainWindow!, {
+        defaultPath,
+        filters: [{ name: 'JSON', extensions: ['json'] }],
+      }),
+    openPath: async (targetPath: string) => {
+      const result = await shell.openPath(targetPath);
       if (result) throw new Error(result);
     },
+    emitAnalysisProgress: (progress) => emitClientEvent('analysis:progress', progress),
+    emitDocumentProgress: (progress) => emitClientEvent('document-context:progress', progress),
+    emitReferenceProgress: (progress) => emitClientEvent('reference-anchor:progress', progress),
+    emitImageRunUpdated: (progress) => emitClientEvent('image-generation:run-updated', progress),
   });
-  creativeGeneration = createCreativeGenerationService(
-    generationPrompts,
-    imageGeneration,
-    creativeSessions
-  );
-  anchorGeneration = createAnchorGenerationService(
-    styleProfiles,
-    lockedAssets,
-    anchorCandidates,
-    imageGeneration,
-    creativeDirections,
-    generationBlueprints,
-    visualMemory,
-    referencePacks
-  );
-  visualExplorations = createVisualExplorationService(
-    projects,
-    creativeSessions,
-    creativeDirections,
-    styleProfiles,
-    imageGeneration
-  );
-  generationSeriesExecution = createGenerationSeriesExecutionService(
-    generationSeries,
-    creativeGeneration,
-    formalAssets
-  );
   registerIpc();
   if (webMode) {
     const rendererUrl = process.env.ELECTRON_RENDERER_URL;

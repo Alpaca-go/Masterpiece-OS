@@ -9,3 +9,4 @@ export * from './operations/document-operations.js';
 export * from './operations/reference-operations.js';
 export * from './operations/image-generation-operations.js';
 export * from './operations/creative-operations.js';
+export * from './operations/remaining-operations.js';
