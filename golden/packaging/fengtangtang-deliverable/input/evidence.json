@@ -1,0 +1,5 @@
+{
+  "fixture": "tests/image-generation/fixtures/deliverable-golden/fengtangtang.json",
+  "migration": "packages/image-generation-runtime/src/task-builder.js",
+  "existingTests": "tests/image-generation/deliverable-golden-validation.test.js"
+}

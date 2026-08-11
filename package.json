@@ -19,6 +19,7 @@
     "verify:version-naming": "node ./scripts/verify-version-naming.mjs",
     "verify:workspace-boundaries": "node ./scripts/verify-workspace-boundaries.mjs",
     "test": "node --test tests/*.test.js tests/packages/*/*.test.js tests/image-generation/*.test.js",
+    "golden:test": "node ./scripts/golden/run-golden.mjs",
     "test:image-generation": "node --test tests/image-generation/*.test.js",
     "test:space-route-integrity": "node --test tests/image-generation/space-route-integrity.test.js",
     "test:space-semantic-gate": "node --test tests/image-generation/space-spatial-semantic-gate.test.js",

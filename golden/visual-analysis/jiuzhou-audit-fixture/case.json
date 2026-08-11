@@ -1,0 +1,9 @@
+{
+  "id": "G-04-01",
+  "family": "visual-analysis",
+  "baseline": "masterpiece-reference-first-stable-2026-08",
+  "status": "ACTIVE",
+  "input": { "project": "jiuzhou-aesthetics", "fixtureManifest": "evaluation/reports/jiuzhou-golden-audit/visual-fixture-manifest.json" },
+  "expected": { "provider": "dashscope", "model": "qwen3.6-plus", "reasoner": "qwen-compatible", "promptNamespace": "apps/cli/src/v5", "modelCalls": 1 },
+  "tolerance": { "analysisProse": "SEMANTIC", "schema": "STRUCTURAL", "exactProse": false }
+}

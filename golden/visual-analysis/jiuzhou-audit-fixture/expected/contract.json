@@ -1,0 +1,7 @@
+{
+  "requiredReportSections": ["## 0. GPT Execution Core", "## 1. 原始方案与品牌意图理解", "## 2. 当前视觉问题"],
+  "requiredSemantics": ["九州美学", "原始 Logo", "Locked", "核心视觉锚点", "新视觉关键词", "材质", "色彩"],
+  "requiredFixtureRoles": ["golden_prompt", "confirmed_logo", "golden_output", "bad_output"],
+  "provider": "dashscope",
+  "model": "qwen3.6-plus"
+}

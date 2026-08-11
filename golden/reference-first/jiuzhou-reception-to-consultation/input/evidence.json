@@ -1,0 +1,5 @@
+{
+  "packet": "space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json",
+  "taskContract": "space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/task-contract.json",
+  "referenceTrace": "space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/reference-trace.json"
+}

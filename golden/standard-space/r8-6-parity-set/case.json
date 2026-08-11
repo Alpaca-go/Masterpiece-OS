@@ -1,0 +1,9 @@
+{
+  "id": "G-02-01",
+  "family": "standard-space",
+  "baseline": "masterpiece-reference-first-stable-2026-08",
+  "status": "ACTIVE",
+  "input": { "projects": ["jiuzhou-aesthetics", "feng-tang-tang", "yi-ji-liang-fang"], "generationBasis": "standard" },
+  "expected": { "compilerId": "phase9b-quality-compiler", "compilerVersion": "1.1.0", "providerReferenceCount": 0, "acceptedRuns": 4, "visualStatus": "HUMAN_ACCEPTED" },
+  "tolerance": { "prompt": "STRUCTURAL_AND_SEMANTIC", "visual": "VISUAL_MANUAL", "pixelDiff": false }
+}

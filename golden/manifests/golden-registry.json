@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "baseline": "masterpiece-reference-first-stable-2026-08",
+  "runner": "scripts/golden/run-golden.mjs",
+  "autoUpdate": false,
+  "cases": [
+    { "id": "G-01-01", "family": "reference-first", "status": "ACTIVE", "priority": "P0", "comparisonLevels": ["EXACT", "STRUCTURAL", "SEMANTIC", "VISUAL_MANUAL"], "ownerModule": "@masterpiece/image-generation-runtime/space", "path": "golden/reference-first/jiuzhou-reception-to-consultation" },
+    { "id": "G-02-01", "family": "standard-space", "status": "ACTIVE", "priority": "P0", "comparisonLevels": ["EXACT", "STRUCTURAL", "SEMANTIC", "VISUAL_MANUAL"], "ownerModule": "@masterpiece/image-generation-runtime/space", "path": "golden/standard-space/r8-6-parity-set" },
+    { "id": "G-03-01", "family": "continuation", "status": "ACTIVE", "priority": "P0", "comparisonLevels": ["EXACT", "STRUCTURAL", "SEMANTIC", "VISUAL_MANUAL"], "ownerModule": "@masterpiece/image-generation-runtime/space", "path": "golden/continuation/jiuzhou-reception-to-consultation" },
+    { "id": "G-04-01", "family": "visual-analysis", "status": "ACTIVE", "priority": "P1", "comparisonLevels": ["EXACT", "STRUCTURAL", "SEMANTIC"], "ownerModule": "apps/cli/src/v5", "path": "golden/visual-analysis/jiuzhou-audit-fixture" },
+    { "id": "G-05-01", "family": "packaging", "status": "ACTIVE", "priority": "P2", "comparisonLevels": ["EXACT", "STRUCTURAL", "SEMANTIC"], "ownerModule": "@masterpiece/image-generation-runtime", "path": "golden/packaging/fengtangtang-deliverable" }
+  ]
+}

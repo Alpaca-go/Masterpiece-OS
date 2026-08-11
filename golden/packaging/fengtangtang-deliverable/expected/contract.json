@@ -1,0 +1,6 @@
+{
+  "schemaChain": ["1.0", "2.0", "3.0"],
+  "requiredSemantics": ["真实包装结构", "包装材质", "盒型", "开合关系", "真实比例"],
+  "exactFields": { "deliverable": "packaging_render", "providerId": "dashscope", "modelId": "wan2.7-image-pro", "structureReference": "packaging-box" },
+  "criticalFields": ["projectId", "purpose", "prompt", "aspectRatio"]
+}

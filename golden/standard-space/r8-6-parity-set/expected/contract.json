@@ -1,0 +1,6 @@
+{
+  "exactFields": { "status": "frozen", "compilerId": "phase9b-quality-compiler", "compilerVersion": "1.1.0", "referenceCount": 0, "acceptedRuns": 4 },
+  "orderedSections": ["task", "spatial_intent", "architecture_language", "architecture_context", "architecture_function_bridge", "architectural_concept", "architecture_dna", "brand_translation", "functional_requirement", "material", "lighting", "composition", "rendering", "negative_constraints"],
+  "requiredSemantics": ["Architecture", "Material", "Lighting", "Negative"],
+  "visualEvidenceRoot": "space-generator/quality-baselines/r8.6"
+}

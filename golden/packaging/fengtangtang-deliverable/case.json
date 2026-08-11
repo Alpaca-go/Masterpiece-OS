@@ -1,0 +1,9 @@
+{
+  "id": "G-05-01",
+  "family": "packaging",
+  "baseline": "masterpiece-reference-first-stable-2026-08",
+  "status": "ACTIVE",
+  "input": { "project": "fengtangtang-golden", "fixture": "tests/image-generation/fixtures/deliverable-golden/fengtangtang.json", "deliverable": "packaging_render" },
+  "expected": { "schema": "3.0", "provider": "dashscope", "model": "wan2.7-image-pro", "selectedStructureReference": "packaging-box", "visualStatus": "NOT_READY" },
+  "tolerance": { "prompt": "STRUCTURAL_AND_SEMANTIC", "visual": "NOT_READY" }
+}

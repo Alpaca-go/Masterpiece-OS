@@ -1,0 +1,9 @@
+{
+  "id": "G-01-01",
+  "family": "reference-first",
+  "baseline": "masterpiece-reference-first-stable-2026-08",
+  "status": "ACTIVE",
+  "input": { "project": "jiuzhou-aesthetics", "sourceScene": "reception", "targetScene": "consultation", "generationBasis": "reference_first", "referenceResolution": "explicit_only" },
+  "expected": { "referenceRole": "high_fidelity_visual_reference", "referenceCount": 1, "targetViewStrategy": "human_scale_consultation_view", "logoUsageMode": "post_composite", "visualStatus": "HUMAN_ACCEPTED" },
+  "tolerance": { "prompt": "STRUCTURAL_AND_SEMANTIC", "visual": "VISUAL_MANUAL", "pixelDiff": false }
+}

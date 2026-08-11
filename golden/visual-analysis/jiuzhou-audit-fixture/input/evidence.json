@@ -1,0 +1,5 @@
+{
+  "manifest": "evaluation/reports/jiuzhou-golden-audit/visual-fixture-manifest.json",
+  "analysisReport": "evaluation/reports/jiuzhou-golden-audit/current-analysis-report.md",
+  "registry": "packages/model-registry/src/index.js"
+}

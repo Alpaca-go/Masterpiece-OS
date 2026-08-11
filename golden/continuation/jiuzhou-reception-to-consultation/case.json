@@ -1,0 +1,9 @@
+{
+  "id": "G-03-01",
+  "family": "continuation",
+  "baseline": "masterpiece-reference-first-stable-2026-08",
+  "status": "ACTIVE",
+  "input": { "project": "jiuzhou-aesthetics", "sourceScene": "reception", "targetScene": "consultation", "source": "confirmed_generated_output" },
+  "expected": { "generationBasis": "continuation", "referenceRole": "world_consistency", "referenceCount": 1, "targetViewStrategy": "human_scale_consultation_view", "lineageComplete": true, "visualStatus": "HUMAN_ACCEPTED" },
+  "tolerance": { "prompt": "STRUCTURAL_AND_SEMANTIC", "visual": "VISUAL_MANUAL", "pixelDiff": false }
+}

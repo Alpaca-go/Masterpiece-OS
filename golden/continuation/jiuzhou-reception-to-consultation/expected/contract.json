@@ -1,0 +1,6 @@
+{
+  "exactFields": { "generationBasis": "continuation", "referenceMode": "reference_assisted", "referenceRole": "world_consistency", "referenceSource": "confirmed_generated_output", "referenceCount": 1, "sourceScene": "reception", "targetScene": "consultation", "sourceProgramLeakageGate": "pass" },
+  "requiredTraceFields": ["sourceRunId", "confirmedSourceAssetId", "sourceScene", "targetScene", "referenceSource", "confirmationSource"],
+  "forbiddenRegression": ["source scene equals target scene", "implicit reference fallback", "source program overrides target program"],
+  "visualEvidence": "space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1/output.png"
+}
