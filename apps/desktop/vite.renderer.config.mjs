@@ -1,15 +1,7 @@
 // vite.renderer.config.mjs
-// Renderer-only Vite dev server. The full electron.vite.config.ts
-// drives the main + preload + renderer pipeline; here we strip
-// down to just the renderer so the user can open the UI in a
-// browser even when the Electron binary is unavailable (e.g. the
-// postinstall download was blocked).
-//
-// The IPC bridge that the renderer normally talks to over Electron
-// preload is unreachable here, so API calls will fail. The UI shell
-// still loads so you can sanity-check styling, layout, and
-// navigation flows. Use this only as a fallback when the regular
-// `npm run web:dev` cannot start Electron.
+// Renderer-only Vite dev server for the primary Web entry. Runtime calls are
+// proxied to apps/web-runtime's Node HTTP host. Electron keeps its separate
+// electron.vite.config.ts pipeline and does not participate in this entry.
 
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
@@ -18,7 +10,7 @@ import react from '@vitejs/plugin-react';
 const repoRoot = resolve(__dirname, '..', '..');
 
 export default defineConfig({
-  root: resolve(__dirname, 'src/renderer'),
+  root: resolve(__dirname, '..', 'web'),
   plugins: [react()],
   resolve: {
     preserveSymlinks: false,

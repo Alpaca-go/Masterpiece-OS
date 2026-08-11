@@ -9,10 +9,8 @@
     "noUncheckedIndexedAccess": true,
     "allowJs": true,
     "checkJs": false,
-    "esModuleInterop": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "types": ["node", "electron-vite/node", "vite/client"]
+    "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "../web/src/**/*.ts", "../web/src/**/*.tsx", "tests/**/*.ts", "electron.vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

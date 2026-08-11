@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import type { AnalysisProgress, ProjectRecord } from '../../../shared/types';
+import type { AnalysisProgress, ProjectRecord } from '@masterpiece/runtime-core/application-contracts.ts';
 import { formatDuration } from '../utils';
 
 const stages: Array<[AnalysisProgress['stage'], string]> = [

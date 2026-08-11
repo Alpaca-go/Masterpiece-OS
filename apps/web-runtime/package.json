@@ -2,6 +2,10 @@
   "name": "masterpiece-os-web-runtime",
   "private": true,
   "type": "module",
+  "scripts": {
+    "dev": "node ./scripts/run-web-dev.mjs",
+    "smoke": "node ./scripts/run-web-primary-smoke.mjs"
+  },
   "dependencies": {
     "@masterpiece/model-registry": "file:../../packages/model-registry",
     "@masterpiece/runtime-core": "file:../../packages/runtime-core"
@@ -9,6 +13,7 @@
   "devDependencies": {
     "@types/node": "^24.10.0",
     "tsx": "^4.21.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "ws": "^8.18.0"
   }
 }

@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const stateUrl = pathToFileURL(path.join(
   repoRoot,
-  'apps/desktop/src/renderer/src/reference-first/state.js',
+  'apps/web/src/reference-first/state.js',
 )).href;
 
 const {

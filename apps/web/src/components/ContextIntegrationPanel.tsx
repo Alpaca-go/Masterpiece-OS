@@ -5,7 +5,7 @@ import type {
   DocumentContextRun,
   ProjectDocumentContextLink,
   ResolvedProjectContext
-} from '../../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 
 interface Props {
   projectId: string;

@@ -9,7 +9,7 @@ import type {
   ProjectRecord,
   PublicSettings,
   ReferenceAnchorRun
-} from '../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import { AnalysisModeTabs, type AnalysisMode } from './components/AnalysisModeTabs';
 import { AnalysisView } from './components/AnalysisView';
 import { ProjectWizard } from './components/ProjectWizard';

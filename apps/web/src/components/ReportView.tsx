@@ -1,7 +1,7 @@
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
 import { useEffect, useState } from 'react';
-import type { ProjectRecord, ProjectVisualContext } from '../../../shared/types';
+import type { ProjectRecord, ProjectVisualContext } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatDurationHuman } from '../utils';
 
 interface Props { project: ProjectRecord; onBack(): void; onRerun(force: boolean): void; onGenerateVisual(): void; }

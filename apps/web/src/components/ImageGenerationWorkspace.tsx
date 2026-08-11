@@ -14,7 +14,7 @@ import type {
   GenerationSourcePreset,
   PublicSettings,
   StartImageGenerationInput
-} from '../../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError } from '../utils';
 
 interface Props {

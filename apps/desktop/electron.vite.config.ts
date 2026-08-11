@@ -1,6 +1,9 @@
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'electron-vite';
 import react from '@vitejs/plugin-react';
+
+const configDir = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   main: {
@@ -22,8 +25,13 @@ export default defineConfig({
     }
   },
   renderer: {
-    root: resolve('src/renderer'),
+    root: resolve(configDir, '..', 'web'),
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        input: resolve(configDir, '..', 'web', 'index.html')
+      }
+    },
     server: {
       proxy: {
         '/_masterpiece': {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { AssetSummary, ProjectRecord, PublicSettings } from '../../../shared/types';
+import type { AssetSummary, ProjectRecord, PublicSettings } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatBytes } from '../utils';
 import { VisualAssetUploader } from './VisualAssetUploader';
 

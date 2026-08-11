@@ -3,7 +3,7 @@ import test from 'node:test';
 import {
   resolveWebRpcChannel,
   WEB_RPC_CHANNEL_OVERRIDES
-} from '../src/renderer/src/web-api.ts';
+} from '../../web/src/web-api.ts';
 
 const EXPECTED_VNEXT_CHANNELS = Object.freeze({
   'imageGeneration.compileVNext': 'image-generation:vnext-compile',

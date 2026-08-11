@@ -4,9 +4,9 @@ import test from 'node:test';
 
 test('Stage 4 makes short-chain the only production path; legacy removed from UI', async () => {
   const [appSource, settingsSource, settingsUiSource] = await Promise.all([
-    fs.readFile(new URL('../src/renderer/src/App.tsx', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../../web/src/App.tsx', import.meta.url), 'utf8'),
     fs.readFile(new URL('../src/main/settings-store.ts', import.meta.url), 'utf8'),
-    fs.readFile(new URL('../src/renderer/src/components/SettingsPanel.tsx', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../../web/src/components/SettingsPanel.tsx', import.meta.url), 'utf8'),
   ]);
   // Short chain is the default pipeline mode.
   assert.match(settingsSource, /imageGenerationPipelineMode:\s*'vnext'/u);

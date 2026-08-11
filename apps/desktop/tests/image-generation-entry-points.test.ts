@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const rendererRoot = path.resolve(import.meta.dirname, '../src/renderer/src');
+const rendererRoot = path.resolve(import.meta.dirname, '../../web/src');
 const appSource = fs.readFileSync(path.join(rendererRoot, 'App.tsx'), 'utf8');
 const generationSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ImageGenerationWorkspace.tsx'), 'utf8');
 const referenceSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ReferenceAnchorWorkspace.tsx'), 'utf8');

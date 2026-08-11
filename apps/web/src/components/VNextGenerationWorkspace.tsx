@@ -16,7 +16,7 @@ import type {
   VNextSimilarityAuditResult,
   VNextTaskContract,
   VNextValidatedGenerationImageRef,
-} from '../../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, autoRecoverableHint } from '../utils';
 import {
   MAX_SPACE_REFERENCE_IMAGES,
@@ -407,7 +407,7 @@ export function VNextGenerationWorkspace({
       // "logo locked" contract. The backend therefore refuses any
       // `logoUsageMode` other than `post_composite` for those projects
       // (see `LOGO_POST_COMPOSITE_ROUTE_NOT_ENFORCED` in
-      // `apps/desktop/src/main/image-generation/vnext-service.ts`). The
+      // `@masterpiece/runtime-core/application/image-generation/vnext-service.ts`). The
       // previous default of `reference` here forced every logo-locked
       // project into a guaranteed compile failure; the new default flips
       // straight to `post_composite` so the workspace never opens in an

@@ -25,7 +25,7 @@ const {
   MAX_SPACE_REFERENCE_IMAGES,
 } = await import(pathToFileURL(path.join(
   repoRoot,
-  'apps/desktop/src/renderer/src/reference-first/state.js',
+  'apps/web/src/reference-first/state.js',
 )).href);
 
 async function loadCompile() {

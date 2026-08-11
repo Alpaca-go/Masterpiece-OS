@@ -1,4 +1,4 @@
-import type { DesktopApi } from '../../shared/types';
+import type { DesktopApi } from '@masterpiece/runtime-core/application-contracts.ts';
 
 type ProgressCallback = (payload: unknown) => void;
 

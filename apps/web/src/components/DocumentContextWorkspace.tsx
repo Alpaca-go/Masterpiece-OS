@@ -8,7 +8,7 @@ import type {
   DocumentVisualContext,
   PublicSettings,
   VisualTranslationDocumentSummary
-} from '../../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatDurationHuman } from '../utils';
 
 interface Props {

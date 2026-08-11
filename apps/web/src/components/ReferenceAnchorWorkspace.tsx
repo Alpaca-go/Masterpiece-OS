@@ -14,7 +14,7 @@ import type {
   ReferenceAnchorStage,
   ReferenceAssetSelection,
   ResolvedProjectContext
-} from '../../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatBytes, formatDurationHuman } from '../utils';
 import { VisualAssetUploader } from './VisualAssetUploader';
 

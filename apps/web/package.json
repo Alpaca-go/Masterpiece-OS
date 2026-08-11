@@ -1,0 +1,24 @@
+{
+  "name": "masterpiece-os-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@masterpiece/runtime-core": "file:../../packages/runtime-core",
+    "dompurify": "^3.4.12",
+    "marked": "^18.0.6",
+    "pdfjs-dist": "^5.7.284",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.2.0",
+    "typescript": "^7.0.2",
+    "vite": "^7.3.6"
+  }
+}

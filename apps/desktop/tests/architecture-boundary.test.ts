@@ -4,6 +4,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const repositoryRoot = path.resolve(import.meta.dirname, '..', '..', '..');
+const webRoot = path.join(repositoryRoot, 'apps', 'web', 'src');
 
 async function filesUnder(root: string): Promise<string[]> {
   const result: string[] = [];
@@ -21,10 +22,12 @@ test('core v5 never depends on Desktop', async () => {
   assert.doesNotMatch(source, /apps[\\/]desktop|desktop[\\/](src|out)/i);
 });
 
-test('Desktop calls runV5Pipeline directly and does not build terminal commands', async () => {
-  const source = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'pipeline-service.ts'), 'utf8');
+test('Shared pipeline calls runV5Pipeline directly and Desktop only keeps a compatibility export', async () => {
+  const source = await fs.readFile(path.join(repositoryRoot, 'packages', 'runtime-core', 'src', 'application', 'pipeline-service.ts'), 'utf8');
+  const compatibility = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'pipeline-service.ts'), 'utf8');
   assert.match(source, /runV5Pipeline/);
   assert.doesNotMatch(source, /child_process|exec\s*\(|spawn\s*\(|npm run analyze/);
+  assert.match(compatibility, /@masterpiece\/runtime-core/);
 });
 
 test('sandboxed renderer loads the bundled CommonJS preload artifact', async () => {
@@ -46,8 +49,8 @@ test('default Windows artifact is portable and does not create an installer', as
 });
 
 test('new analysis UI contains intake actions and API Profile choice without metadata form', async () => {
-  const source = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'ProjectWizard.tsx'), 'utf8');
-  const uploader = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'VisualAssetUploader.tsx'), 'utf8');
+  const source = await fs.readFile(path.join(webRoot, 'components', 'ProjectWizard.tsx'), 'utf8');
+  const uploader = await fs.readFile(path.join(webRoot, 'components', 'VisualAssetUploader.tsx'), 'utf8');
   assert.doesNotMatch(source, /<input|<textarea/);
   assert.match(source, /分析模型/);
   assert.doesNotMatch(source, /choose\('logo'\)|choose\('brief'\)/);
@@ -59,8 +62,8 @@ test('new analysis UI contains intake actions and API Profile choice without met
 });
 
 test('API Profile provider is free-form and not restricted to Qwen choices', async () => {
-  const types = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'shared', 'types.ts'), 'utf8');
-  const settings = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'SettingsPanel.tsx'), 'utf8');
+  const types = await fs.readFile(path.join(repositoryRoot, 'packages', 'runtime-core', 'src', 'application-contracts.ts'), 'utf8');
+  const settings = await fs.readFile(path.join(webRoot, 'components', 'SettingsPanel.tsx'), 'utf8');
   assert.match(types, /type ProviderKind = string/);
   assert.match(settings, /Provider 标识/);
   assert.match(settings, /provider-suggestions/);
@@ -68,14 +71,14 @@ test('API Profile provider is free-form and not restricted to Qwen choices', asy
 });
 
 test('analysis API selection is controlled by App and survives settings navigation', async () => {
-  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
+  const app = await fs.readFile(path.join(webRoot, 'App.tsx'), 'utf8');
   assert.match(app, /selectedApiProfileId=\{selectedApiProfileId\}/);
   assert.match(app, /onApiProfileChange=\{setSelectedApiProfileId\}/);
   assert.match(app, /setSettingsReturnScreen\('create'\)/);
 });
 
 test('Desktop no longer wires the experimental visual-translation / reference-translation flows', async () => {
-  const componentsRoot = path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components');
+  const componentsRoot = path.join(webRoot, 'components');
   const componentFiles = await fs.readdir(componentsRoot);
   assert.ok(!componentFiles.includes('VisualTranslationWorkspace.tsx'), 'VisualTranslationWorkspace.tsx 应已删除');
   assert.ok(!componentFiles.includes('ReferenceTranslationWorkspace.tsx'), 'ReferenceTranslationWorkspace.tsx 应已删除');
@@ -85,15 +88,15 @@ test('Desktop no longer wires the experimental visual-translation / reference-tr
   assert.ok(!mainFiles.includes('reference-translation-service.ts'), 'reference-translation-service.ts 应已删除');
   const mainIndex = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'index.ts'), 'utf8');
   const preload = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'preload', 'index.ts'), 'utf8');
-  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
+  const app = await fs.readFile(path.join(webRoot, 'App.tsx'), 'utf8');
   assert.doesNotMatch(mainIndex, /visual-translation:|reference-translation:/);
   assert.doesNotMatch(preload, /visualTranslation|referenceTranslation/);
   assert.doesNotMatch(app, /visualTranslation\.|referenceTranslation\.|LegacyHistoryWorkspace/);
 });
 
 test('analysis intake shares tabs and home distinguishes the three production record types', async () => {
-  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
-  const tabs = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'AnalysisModeTabs.tsx'), 'utf8');
+  const app = await fs.readFile(path.join(webRoot, 'App.tsx'), 'utf8');
+  const tabs = await fs.readFile(path.join(webRoot, 'components', 'AnalysisModeTabs.tsx'), 'utf8');
   assert.match(app, /<AnalysisModeTabs/);
   assert.match(tabs, /视觉分析/);
   assert.match(tabs, /文档上下文提取/);
@@ -107,8 +110,8 @@ test('analysis intake shares tabs and home distinguishes the three production re
 });
 
 test('recent project rows expose a destructive local-folder delete action', async () => {
-  const app = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'App.tsx'), 'utf8');
-  const store = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'project-store.ts'), 'utf8');
+  const app = await fs.readFile(path.join(webRoot, 'App.tsx'), 'utf8');
+  const store = await fs.readFile(path.join(repositoryRoot, 'packages', 'runtime-core', 'src', 'application', 'project-store.ts'), 'utf8');
   assert.match(app, /project-delete/);
   assert.match(app, /永久删除该项目对应的本地文件夹/);
   assert.match(app, /projects\.remove\(project\.id\)/);
@@ -116,14 +119,14 @@ test('recent project rows expose a destructive local-folder delete action', asyn
 });
 
 test('reference reconstruction prompts stay isolated from upstream Markdown reports', async () => {
-  const prompts = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'main', 'reference-reconstruction-prompts.ts'), 'utf8');
+  const prompts = await fs.readFile(path.join(repositoryRoot, 'packages', 'runtime-core', 'src', 'application', 'reference-reconstruction-prompts.ts'), 'utf8');
   assert.match(prompts, /只能使用下面两个干净 JSON/);
   assert.match(prompts, /不得假设或引用任何上游 Markdown 报告/);
   assert.doesNotMatch(prompts, /CATEGORY_PREFIX|wrapAsStyleRule/);
 });
 
 test('Reference Anchor workspace supports uploading a new current project inline', async () => {
-  const workspace = await fs.readFile(path.join(repositoryRoot, 'apps', 'desktop', 'src', 'renderer', 'src', 'components', 'ReferenceAnchorWorkspace.tsx'), 'utf8');
+  const workspace = await fs.readFile(path.join(webRoot, 'components', 'ReferenceAnchorWorkspace.tsx'), 'utf8');
   // 当前项目来源切换：选择已有项目 / 上传新项目。
   assert.match(workspace, /projectSourceMode/);
   assert.match(workspace, /上传新项目/);

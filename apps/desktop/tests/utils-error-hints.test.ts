@@ -9,7 +9,7 @@
 //     errors don't get a misleading hint).
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { cleanError, errorIsAutoRecoverable, autoRecoverableHint } from '../src/renderer/src/utils.ts';
+import { cleanError, errorIsAutoRecoverable, autoRecoverableHint } from '../../web/src/utils.ts';
 
 const RECOVERABLE_SAMPLES = [
   'PROMPT_PREFLIGHT_BLOCKED: SPACE_PROVIDER_PROMPT_INVALID, SPACE_NEGATIVE_DENSITY_TOO_HIGH',

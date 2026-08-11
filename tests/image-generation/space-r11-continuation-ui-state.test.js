@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const stateUrl = pathToFileURL(path.join(
   repoRoot,
-  'apps/desktop/src/renderer/src/continuation/ui-state.js',
+  'apps/web/src/continuation/ui-state.js',
 )).href;
 
 const {

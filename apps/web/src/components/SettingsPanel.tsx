@@ -5,7 +5,7 @@ import type {
   PublicSettings,
   SaveApiProfileInput,
   SaveSettingsInput
-} from '../../../shared/types';
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError } from '../utils';
 
 interface Props {
