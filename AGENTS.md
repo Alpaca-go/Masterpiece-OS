@@ -6,6 +6,9 @@
 
 ## 工作区起点
 
+- 修改 Masterpiece 核心链路前，所有 Agent 必须先阅读根目录的
+  `CURRENT_BASELINE.md` 与 `BASELINE_LOCK.md`。
+
 - Node.js 20 或更高；`package.json` 是 workspaces 容器。
 - 工作区：`apps/cli`（v5 引擎 + Prompt 模板）、`apps/desktop`（Electron +
   React 19 + TypeScript 7）、`packages/*`（14 个内部包，命名空间统一为
