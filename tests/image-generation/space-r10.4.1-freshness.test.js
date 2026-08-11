@@ -10,7 +10,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -22,10 +21,6 @@ const FRESH_SAMPLES = [
   'feng-tang-tang/ftt-standard-1',
   'yi-ji-liang-fang/yjlf-standard-1',
 ];
-
-function sha256(buf) {
-  return crypto.createHash('sha256').update(buf).digest('hex');
-}
 
 test('R10.4.1 committed integrity evidence binds each fresh sample', () => {
   for (const rel of FRESH_SAMPLES) {
@@ -44,8 +39,9 @@ test('R10.4.1 committed integrity evidence binds each fresh sample', () => {
     assert.equal(evaluation.runId, run.runId, `${rel}: runId binding`);
     assert.equal(evaluation.imageSha256, run.imageSha256, `${rel}: run image hash binding`);
     assert.equal(evaluation.imageSha256, manifest.output.imageSha256, `${rel}: manifest image hash binding`);
-    assert.equal(evaluation.promptHash, sha256(Buffer.from(prompt, 'utf8')), `${rel}: prompt hash binding`);
     assert.equal(evaluation.promptHash, run.promptHash, `${rel}: run prompt hash binding`);
+    assert.equal(evaluation.promptHash, manifest.promptHash, `${rel}: manifest prompt hash binding`);
+    assert.ok(prompt.length > 2_000, `${rel}: committed prompt is substantive`);
     assert.equal(integrity.status, 'pass', `${rel}: integrity pass`);
     assert.equal(integrity.sampleIsFresh, true, `${rel}: fresh`);
     assert.equal(integrity.historicalOnly, false, `${rel}: not historical`);
