@@ -1,21 +1,16 @@
 import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import test from 'node:test';
 
 const fixtureUrl = new URL('../fixtures/prompts/jiuzhou-space-golden-prompt.md', import.meta.url);
-const sourceUrl = new URL(
-  '../../evaluation/known-cases/jiuzhou-aesthetic/垂直测试/jiuzhou-space-golden-prompt.md',
-  import.meta.url,
-);
+const CONFIRMED_NORMALIZED_SHA256 = 'f638357a6b9b7be7814ca59e3d74e0ac37e18a988190fd5408f2160470e7fdae';
 
-test('Golden Prompt fixture freezes the complete confirmed source text verbatim', async () => {
-  const [fixture, sourceDocument] = await Promise.all([
-    fs.readFile(fixtureUrl, 'utf8'),
-    fs.readFile(sourceUrl, 'utf8'),
-  ]);
-  const sourceBody = sourceDocument.slice(sourceDocument.indexOf('请生成一张'));
+test('Golden Prompt fixture freezes the complete confirmed source text by digest', async () => {
+  const fixture = await fs.readFile(fixtureUrl, 'utf8');
   const normalizeNewlines = (value) => value.replace(/\r\n?/gu, '\n').trim();
-  assert.equal(normalizeNewlines(fixture), normalizeNewlines(sourceBody));
+  const digest = crypto.createHash('sha256').update(normalizeNewlines(fixture)).digest('hex');
+  assert.equal(digest, CONFIRMED_NORMALIZED_SHA256);
 });
 
 test('Golden Prompt fixture retains every calibration evidence block', async () => {

@@ -2,9 +2,9 @@
 //
 // Guards the frozen R10.4 final baseline so it cannot be lost or silently
 // altered: R10-FINAL-STATUS.json must keep r11Ready=true and the pass flags;
-// the four archived smokes must keep their 9-file artifact set with the
-// correct refs and r8_6_golden compiler mode; route-baseline.json must keep
-// the frozen safety boundaries.
+// the four archived smokes must keep their complete tracked metadata set and
+// image hash bindings with the correct refs and r8_6_golden compiler mode;
+// provider output binaries intentionally remain untracked.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -15,7 +15,6 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 const base = 'space-generator/quality-baselines/r10-final';
 
 const REQUIRED_ARTIFACTS = [
-  'output.png',
   'run.json',
   'task-contract.json',
   'compiled-prompt.md',
@@ -74,7 +73,7 @@ test('R10 final acceptance manifest binds 3 fresh + 1 carried-forward sample', (
   }
 });
 
-test('R10 final archive keeps the 9-file artifact set for all 4 smokes', () => {
+test('R10 final archive keeps the 8 tracked artifacts for all 4 smokes', () => {
   for (const sample of SAMPLES) {
     const dir = path.join(repoRoot, base, sample.rel);
     for (const file of REQUIRED_ARTIFACTS) {
