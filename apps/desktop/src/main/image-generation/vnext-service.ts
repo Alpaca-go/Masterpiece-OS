@@ -37,7 +37,7 @@ import {
   resolveReferenceAssets,
   type ResolvedReferenceAsset,
   type ReferenceResolutionFailure,
-} from '../reference-asset-resolver.ts';
+} from '@masterpiece/image-generation-runtime/reference-engine/reference-asset-resolver.ts';
 import type { ProjectContextService } from '../project-context-service.ts';
 import type { ProjectStore } from '../project-store.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';

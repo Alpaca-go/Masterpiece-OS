@@ -6,7 +6,7 @@ import path from 'node:path';
 import AdmZip from 'adm-zip';
 import sharp from 'sharp';
 import { createProjectStore } from '../src/main/project-store.ts';
-import { resolveReferenceAsset } from '../src/main/reference-asset-resolver.ts';
+import { resolveReferenceAsset } from '@masterpiece/image-generation-runtime/reference-engine/reference-asset-resolver.ts';
 import type { PublicSettings } from '../src/shared/types.ts';
 
 const ONE_PIXEL_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');

@@ -17,7 +17,7 @@ import {
   resolveReferenceAsset,
   resolveReferenceAssets,
   sha256OfBuffer,
-} from '../src/main/reference-asset-resolver.ts';
+} from '@masterpiece/image-generation-runtime/reference-engine/reference-asset-resolver.ts';
 
 // Minimal valid signatures — only the first N bytes are needed to
 // trigger the signature detector. We do not need a fully decodable
