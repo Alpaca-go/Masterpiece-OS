@@ -66,3 +66,6 @@ Creative-Upgrade-Brief.md
 apps/cli/scripts/jzmx-*.mjs
 
 .packet/
+
+# Web build output
+apps/web/dist/
