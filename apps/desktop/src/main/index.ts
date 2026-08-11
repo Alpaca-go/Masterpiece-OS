@@ -25,6 +25,7 @@ import {
   testApiProfile
 } from './settings-store';
 import { createPipelineService } from './pipeline-service';
+import { createDesktopAnalysisRuntimeAdapter } from './analysis-runtime-adapter.ts';
 import { createReferenceAnchorService } from './reference-anchor-service';
 import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
 import { registerImageGenerationIpc } from './image-generation/ipc';
@@ -111,7 +112,8 @@ const pipeline = createPipelineService(
   projects,
   getProviderCredentials,
   getSettings,
-  (progress: AnalysisProgress) => emitClientEvent('analysis:progress', progress)
+  (progress: AnalysisProgress) => emitClientEvent('analysis:progress', progress),
+  createDesktopAnalysisRuntimeAdapter(app),
 );
 const documentContext = createDocumentContextService(
   getProviderCredentials,

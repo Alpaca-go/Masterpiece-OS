@@ -36,6 +36,7 @@ import fs from 'node:fs/promises';
 import { createFileContextLoader } from '../../src/main/image-generation/context-loader.ts';
 import { createImageGenerationService } from '../../src/main/image-generation/service.ts';
 import { createPipelineService } from '../../src/main/pipeline-service.ts';
+import { createDesktopAnalysisRuntimeAdapter } from '../../src/main/analysis-runtime-adapter.ts';
 import { createProjectStore } from '../../src/main/project-store.ts';
 import {
   getProviderCredentials,
@@ -93,6 +94,7 @@ async function main() {
     getProviderCredentials,
     getSettings,
     (progress) => logProgress('analysis', progress),
+    createDesktopAnalysisRuntimeAdapter(app),
   );
 
   logProgress('start', { projectId, brandKey, imageProfileId, imageSize });

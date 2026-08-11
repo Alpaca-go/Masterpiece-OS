@@ -3,6 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { createProjectStore } from '../../src/main/project-store.ts';
 import { createPipelineService } from '../../src/main/pipeline-service.ts';
+import { createDesktopAnalysisRuntimeAdapter } from '../../src/main/analysis-runtime-adapter.ts';
 import { getProviderCredentials, getSettings } from '../../src/main/settings-store.ts';
 
 const sourcePath = process.env.MASTERPIECE_PACKET_SOURCE?.trim();
@@ -36,6 +37,7 @@ async function main(): Promise<void> {
         assetCount: progress.assetCount,
       })}\n`);
     },
+    createDesktopAnalysisRuntimeAdapter(app),
   );
 
   const created = await projects.create({

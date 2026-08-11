@@ -3,6 +3,7 @@ import path from 'node:path';
 import { createFileContextLoader } from '../src/main/image-generation/context-loader.ts';
 import { createImageGenerationService } from '../src/main/image-generation/service.ts';
 import { createPipelineService } from '../src/main/pipeline-service.ts';
+import { createDesktopAnalysisRuntimeAdapter } from '../src/main/analysis-runtime-adapter.ts';
 import { createProjectStore } from '../src/main/project-store.ts';
 import {
   getProviderCredentials,
@@ -42,6 +43,7 @@ async function main(): Promise<void> {
         model: progress.model,
       })}\n`);
     },
+    createDesktopAnalysisRuntimeAdapter(app),
   );
   const analysisStartedAt = Date.now();
   const analysis = await pipeline.start(projectId, true, textProfileId);

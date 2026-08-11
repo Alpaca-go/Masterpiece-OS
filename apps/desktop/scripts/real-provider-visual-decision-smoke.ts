@@ -6,6 +6,7 @@ import { createFileContextLoader } from '../src/main/image-generation/context-lo
 import { createImageGenerationService } from '../src/main/image-generation/service.ts';
 import { createVNextImageGenerationService } from '../src/main/image-generation/vnext-service.ts';
 import { createPipelineService } from '../src/main/pipeline-service.ts';
+import { createDesktopAnalysisRuntimeAdapter } from '../src/main/analysis-runtime-adapter.ts';
 import { createProjectContextService } from '../src/main/project-context-service.ts';
 import { createProjectStore } from '../src/main/project-store.ts';
 import { getProviderCredentials, getSettings } from '../src/main/settings-store.ts';
@@ -59,6 +60,7 @@ async function main(): Promise<void> {
         model: progress.model,
       })}\n`);
     },
+    createDesktopAnalysisRuntimeAdapter(app),
   );
 
   const analysisStartedAt = Date.now();

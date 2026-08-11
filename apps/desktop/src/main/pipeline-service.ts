@@ -1,7 +1,6 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { app } from 'electron';
 import type {
   AnalysisProgress,
   AnalysisResult,
@@ -28,7 +27,8 @@ import {
   completeStructuredAnalysis,
   type AnalysisRepairResult,
   type StructuredRepairModelRequest,
-} from '@masterpiece/analysis-runtime/index.ts';
+  type VisualAnalysisRuntimeAdapter,
+} from '@masterpiece/analysis-runtime/core/visual-analysis-core.ts';
 import {
   normalizeSpatialFunctionalValue,
   validateSpatialSemantics,
@@ -114,16 +114,10 @@ interface ActiveRun {
   startedAt: string;
 }
 
-function configurePromptRoot(): void {
-  // Stage 5 moved the v5 prompt bundle from the repository root
-  // (./prompts/v5) into the CLI workspace (./apps/cli/prompts/v5).
-  // The desktop pipeline still reads from those files, so the
-  // dev path now resolves to apps/cli/prompts/v5. In a packaged
-  // build the CLI assets sit beside the desktop binary under
-  // process.resourcesPath/../cli/prompts/v5.
-  process.env.MASTERPIECE_PROMPT_ROOT = app.isPackaged
-    ? path.join(process.resourcesPath, '..', 'cli', 'prompts', 'v5')
-    : path.resolve(app.getAppPath(), '..', '..', 'apps', 'cli', 'prompts', 'v5');
+function configurePromptRoot(runtime: VisualAnalysisRuntimeAdapter): void {
+  const promptRoot = runtime.resolvePromptRoot().trim();
+  if (!promptRoot) throw new Error('Visual Analysis runtime adapter returned an empty prompt root');
+  process.env.MASTERPIECE_PROMPT_ROOT = promptRoot;
 }
 
 function providerLabel(provider: ProviderCredentials['provider']): string {
@@ -389,7 +383,8 @@ export function createPipelineService(
   projects: ProjectStore,
   readCredentials: CredentialsReader,
   readSettings: SettingsReader,
-  emitProgress: ProgressSink
+  emitProgress: ProgressSink,
+  runtime: VisualAnalysisRuntimeAdapter,
 ) {
   const active = new Map<string, ActiveRun>();
 
@@ -480,7 +475,7 @@ export function createPipelineService(
         }
       };
       await fs.writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, 'utf8');
-      configurePromptRoot();
+      configurePromptRoot(runtime);
       progress('building-contact-sheet', '正在生成视觉总览');
 
       const baseReasoner = createQwenReasoner({
