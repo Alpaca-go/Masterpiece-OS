@@ -30,7 +30,7 @@ import type {
   VNextEvidenceValidationContext,
   VNextEvidenceCheckpoint,
 } from '@masterpiece/image-generation-contracts/index.ts';
-import { validateVNextEvidenceIntegrity } from '@masterpiece/image-generation-runtime/space/index.js';
+import { validateVNextEvidenceIntegrity } from '@masterpiece/image-generation-runtime/core/space-generation-core.js';
 
 const EVIDENCE_BUNDLE_VERSION = '1.0';
 

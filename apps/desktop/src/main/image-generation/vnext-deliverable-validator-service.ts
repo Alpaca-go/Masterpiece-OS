@@ -4,7 +4,7 @@ import type {
   VNextDeliverableValidation,
   VNextTaskContract,
 } from '../../shared/types.ts';
-import { validateVNextDeliverableEvidence } from '@masterpiece/image-generation-runtime/vnext/index.js';
+import { validateVNextDeliverableEvidence } from '@masterpiece/image-generation-runtime/core/space-generation-core.js';
 import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 import type { ProjectStore } from '../project-store.ts';
 import type { ProjectContextService } from '../project-context-service.ts';

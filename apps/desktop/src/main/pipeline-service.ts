@@ -32,7 +32,7 @@ import {
 import {
   normalizeSpatialFunctionalValue,
   validateSpatialSemantics,
-} from '@masterpiece/image-generation-runtime/space/index.js';
+} from '@masterpiece/image-generation-runtime/core/space-generation-core.js';
 import {
   normalizeCurrentProjectDecisions,
   normalizeReferenceDecisions
