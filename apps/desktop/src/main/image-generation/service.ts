@@ -39,15 +39,17 @@ import { validateGenerationPromptSnapshot } from '@masterpiece/creative-producti
 import {
   compileImageGenerationTask,
   migrateImageGenerationSourcesV2,
-} from '@masterpiece/image-generation-runtime/task-builder.js';
-import {
   createCompileFingerprint,
   stableHash,
   verifyCompileFingerprint,
-} from '@masterpiece/image-generation-runtime/deliverables/compile-fingerprint.js';
-import { evaluateDeliverableGate } from '@masterpiece/image-generation-runtime/gates/deliverable-gate.js';
-import { downloadAndVerifyImage } from '@masterpiece/image-generation-runtime/download-verify.js';
-import { evaluateArtifactGate, evaluateIdentityGate } from '@masterpiece/image-generation-runtime/gates.js';
+  evaluateDeliverableGate,
+  downloadAndVerifyImage,
+  evaluateArtifactGate,
+  evaluateIdentityGate,
+  redactProviderRequest,
+  redactProviderResponse,
+  IMAGE_GENERATION_PRESET_CAPABILITIES,
+} from '@masterpiece/image-generation-runtime/core/packaging-generation-core.js';
 import {
   buildSubmitBody,
   DASHSCOPE_CAPABILITIES,
@@ -57,7 +59,6 @@ import {
   createWanImageGenerationAdapter,
   createMultiModelImageAdapter,
 } from '@masterpiece/image-generation-adapter/index.js';
-import { redactProviderRequest, redactProviderResponse } from '@masterpiece/image-generation-runtime/redact.js';
 import { createRunStore, RunStoreError } from './run-store.ts';
 import type { GenerationContext, FileContextLoader } from './context-loader.ts';
 import {
@@ -68,7 +69,6 @@ import {
 } from './context-loaders/index.ts';
 import { resolveProjectRoot, runRootUnder, standaloneImageGenRoot, imagesDir, thumbnailsDir, RUN_FILES } from './paths.ts';
 import { EXECUTING_IMAGE_RUN_STATUSES } from '@masterpiece/image-generation-contracts/index.ts';
-import { IMAGE_GENERATION_PRESET_CAPABILITIES } from '@masterpiece/image-generation-runtime/policies.js';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import {
   attachBenchmarkRuns,
