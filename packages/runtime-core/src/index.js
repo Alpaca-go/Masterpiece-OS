@@ -8,3 +8,4 @@ export * from './operations/context-operations.js';
 export * from './operations/document-operations.js';
 export * from './operations/reference-operations.js';
 export * from './operations/image-generation-operations.js';
+export * from './operations/creative-operations.js';

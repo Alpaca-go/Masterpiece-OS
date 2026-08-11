@@ -61,12 +61,15 @@ import { startWebRpcServer, type WebRpcServer } from './web-rpc-server';
 import {
   createAnalysisOperations,
   createContextIntegrationOperations,
+  createCreativeProductionOperations,
+  createCreativeSessionOperations,
   createDocumentOperations,
   createImageGenerationOperations,
   createProjectContextOperations,
   createProjectOperations,
   createReferenceOperations,
   createSharedRuntime,
+  createVisualMemoryOperations,
 } from '@masterpiece/runtime-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -333,10 +336,7 @@ function registerIpc(): void {
   });
 
   registerRuntimeOperations(createProjectContextOperations({ projectContext }));
-  registerHandler('visual-memory:get', (_event, projectId: string) => visualMemory.get(projectId));
-  registerHandler('visual-memory:compile', (_event, projectId: string) => visualMemory.compile(projectId));
-  registerHandler('visual-memory:get-reference-pack', (_event, projectId: string) => referencePacks.get(projectId));
-  registerHandler('visual-memory:build-reference-pack', (_event, projectId: string) => referencePacks.build(projectId));
+  registerRuntimeOperations(createVisualMemoryOperations({ visualMemory, referencePacks }));
 
   // ── Phase 4：三大功能轻量整合（Context Integration）──
   registerRuntimeOperations(createContextIntegrationOperations({ contextIntegration }));
@@ -399,257 +399,33 @@ function registerIpc(): void {
     vnextService: vnextImageGeneration,
   }));
   registerHandler('image-generation:open-folder', (_event, runId: string) => imageGeneration.openFolder(runId));
-  registerHandler('creative-session:get', (_event, projectId: string) =>
-    creativeSessions.get(projectId));
-  registerHandler('creative-session:create', (_event, projectId: string) =>
-    creativeSessions.create(projectId));
-  registerHandler('creative-session:get-workspace', async (_event, projectId: string) => {
-    const [session, creativeDirection, styleProfile, visualCanon, runs] = await Promise.all([
-      creativeSessions.create(projectId),
-      creativeDirections.getActive(projectId),
-      styleProfiles.getActive(projectId),
-      visualCanons.getActive(projectId),
-      imageGeneration.listRuns(projectId),
-    ]);
-    return { session, creativeDirection, styleProfile, visualCanon, runs };
-  });
-  registerHandler('creative-session:read', (_event, projectId: string, apiProfileId?: string) =>
-    creativeReading.run(projectId, apiProfileId));
-  registerHandler('creative-session:generate', (
-    _event,
-    projectId: string,
-    input: {
-      userRequest: string;
-      apiProfileId?: string;
-      size?: string;
-      dryRun?: boolean;
-      outputType?: 'interior_scene' | 'storefront_scene' | 'packaging_render'
-        | 'brand_poster' | 'vi_application' | 'illustration';
-    }
-  ) => creativeGeneration.generate(projectId, input));
-  registerHandler('creative-session:retry-same', (
-    _event,
-    projectId: string,
-    runId: string,
-    apiProfileId?: string
-  ) => creativeGeneration.retrySameInstruction(projectId, runId, apiProfileId));
-  registerHandler('creative-session:regenerate-instruction', (
-    _event,
-    projectId: string,
-    runId: string,
-    apiProfileId?: string
-  ) => creativeGeneration.regenerateInstruction(projectId, runId, apiProfileId));
-  registerHandler('creative-session:start-benchmark', (
-    _event,
-    projectId: string,
-    input: StartModelBenchmarkInput
-  ) => creativeGeneration.startBenchmark(projectId, input));
-  registerHandler('creative-session:list-benchmarks', (
-    _event,
-    projectId: string
-  ) => creativeGeneration.listBenchmarks(projectId));
-  registerHandler('creative-session:save-benchmark-evaluation', (
-    _event,
-    projectId: string,
-    benchmarkId: string,
-    input: SaveModelBenchmarkEvaluationInput
-  ) => creativeGeneration.saveBenchmarkEvaluation(projectId, benchmarkId, input));
-  registerHandler('creative-session:evaluate', (
-    _event,
-    projectId: string,
-    runId: string,
-    input: {
-      brandAlignment: { score: number; notes: string };
-      visualConsistency: { score: number; notes: string };
-      assetUsability: { score: number; notes: string };
-      deviationDetection: { severity: 'none' | 'minor' | 'major'; findings: string[] };
-    }
-  ) => creativeGeneration.evaluate(projectId, runId, input));
-  registerHandler('creative-session:regenerate-from-evaluation', (
-    _event,
-    projectId: string,
-    runId: string,
-    apiProfileId?: string
-  ) => creativeGeneration.regenerateFromEvaluation(projectId, runId, apiProfileId));
-  registerHandler('creative-session:append-feedback', (_event, projectId: string, content: string) =>
-    creativeSessions.appendMessage(projectId, {
-      role: 'user',
-      type: 'user_feedback',
-      content,
-    }));
-  registerHandler('creative-session:get-run', (_event, runId: string) =>
-    imageGeneration.getRun(runId));
-  registerHandler('creative-session:get-image-data-url', (_event, runId: string, imageId: string) =>
-    imageGeneration.readImageDataUrl(runId, imageId));
+  registerRuntimeOperations(createCreativeSessionOperations({
+    creativeSessions,
+    creativeDirections,
+    styleProfiles,
+    visualCanons,
+    imageGeneration,
+    creativeReading,
+    creativeGeneration,
+  }));
 
-  registerHandler('creative-production:list-locked-assets', (_event, projectId: string) =>
-    lockedAssets.list(projectId));
-  registerHandler('creative-production:prepare', (_event, projectId: string) =>
-    creativeProductionBootstrap.prepare(projectId));
-  registerHandler('creative-production:regenerate-context', (
-    _event,
-    projectId: string,
-    input: { directionBrief?: string }
-  ) => creativeProductionBootstrap.regenerate(projectId, input));
-  registerHandler('creative-production:quick-extract-style', (
-    _event,
-    projectId: string,
-    referenceAnchorRunId: string
-  ) => quickStyleExtraction.extract(projectId, referenceAnchorRunId));
-  registerHandler('creative-production:confirm-style-profile', (
-    _event,
-    projectId: string,
-    profileId: string
-  ) => styleProfiles.confirm(projectId, profileId));
-  registerHandler('creative-production:list-anchor-candidates', (_event, projectId: string) =>
-    anchorGeneration.list(projectId));
-  registerHandler('creative-production:list-visual-explorations', (_event, projectId: string) =>
-    visualExplorations.list(projectId));
-  registerHandler('creative-production:generate-visual-exploration', (
-    _event,
-    projectId: string,
-    input: {
-      conceptCount?: number;
-      apiProfileId?: string;
-      dryRun?: boolean;
-    }
-  ) => visualExplorations.generate(projectId, input));
-  registerHandler('creative-production:select-visual-concept', (
-    _event,
-    projectId: string,
-    explorationId: string,
-    conceptId: string,
-    rationale: string
-  ) => visualExplorations.select(projectId, explorationId, conceptId, rationale));
-  registerHandler('creative-production:generate-anchor', (
-    _event,
-    projectId: string,
-    input: {
-      purpose?: string;
-      aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
-      apiProfileId?: string;
-      dryRun?: boolean;
-    }
-  ) => anchorGeneration.generate(projectId, input));
-  registerHandler('creative-production:generate-anchor-set', (
-    _event,
-    projectId: string,
-    input: {
-      purpose?: string;
-      aspectRatio?: '16:9' | '4:5' | '3:4' | '1:1';
-      candidateCount?: number;
-      apiProfileId?: string;
-      dryRun?: boolean;
-    }
-  ) => anchorGeneration.generateSet(projectId, input));
-  registerHandler('creative-production:retry-anchor', (
-    _event,
-    projectId: string,
-    candidateId: string,
-    input: { apiProfileId?: string; dryRun?: boolean }
-  ) => anchorGeneration.retry(projectId, candidateId, input));
-  registerHandler('creative-production:review-anchor', (
-    _event,
-    projectId: string,
-    candidateId: string,
-    input: Parameters<typeof anchorCandidates.review>[2]
-  ) => anchorCandidates.review(projectId, candidateId, input));
-  registerHandler('creative-production:list-style-profiles', (_event, projectId: string) =>
-    styleProfiles.list(projectId));
-  registerHandler('creative-production:list-visual-canons', (_event, projectId: string) =>
-    visualCanons.list(projectId));
-  registerHandler('creative-production:build-visual-canon', (
-    _event,
-    projectId: string,
-    input: Parameters<typeof visualCanons.build>[1]
-  ) => visualCanons.build(projectId, input));
-  registerHandler('creative-production:build-visual-canon-from-exploration', async (
-    _event,
-    projectId: string,
-    explorationId: string,
-    input: {
-      sharedRules?: string[];
-      variationRules?: string[];
-    }
-  ) => {
-    const exploration = await visualExplorations.get(projectId, explorationId);
-    if (!exploration) {
-      throw Object.assign(new Error('Visual Exploration 不存在。'), {
-        code: 'VISUAL_EXPLORATION_MISSING'
-      });
-    }
-    return visualCanons.buildFromExploration(projectId, { exploration, ...input });
-  });
-  registerHandler('creative-production:confirm-visual-canon', (
-    _event,
-    projectId: string,
-    canonId: string
-  ) => visualCanons.confirm(projectId, canonId));
-  registerHandler('creative-production:get-series', (_event, projectId: string, seriesId: string) =>
-    generationSeries.get(projectId, seriesId));
-  registerHandler('creative-production:list-series', (_event, projectId: string) =>
-    generationSeries.list(projectId));
-  registerHandler('creative-production:create-series', (
-    _event,
-    projectId: string,
-    input: { name: string; tasks: unknown[] }
-  ) => generationSeries.create(projectId, input));
-  registerHandler('creative-production:create-revision', (
-    _event,
-    projectId: string,
-    seriesId: string,
-    input: unknown
-  ) => generationSeries.createRevision(projectId, seriesId, input));
-  registerHandler('creative-production:pause-series', (_event, projectId: string, seriesId: string) =>
-    generationSeries.pause(projectId, seriesId));
-  registerHandler('creative-production:resume-series', (_event, projectId: string, seriesId: string) =>
-    generationSeries.resume(projectId, seriesId));
-  registerHandler('creative-production:cancel-series', (_event, projectId: string, seriesId: string) =>
-    generationSeries.cancel(projectId, seriesId));
-  registerHandler('creative-production:run-series-task', (
-    _event,
-    projectId: string,
-    seriesId: string,
-    taskId: string,
-    apiProfileId?: string
-  ) => generationSeriesExecution.runTask(projectId, seriesId, taskId, apiProfileId));
-  registerHandler('creative-production:run-series', (
-    _event,
-    projectId: string,
-    seriesId: string,
-    apiProfileId?: string
-  ) => generationSeriesExecution.runAll(projectId, seriesId, apiProfileId));
-  registerHandler('creative-production:list-formal-assets', (
-    _event,
-    projectId: string,
-    seriesId: string
-  ) => formalAssets.list(projectId, seriesId));
-  registerHandler('creative-production:review-formal-asset', (
-    _event,
-    projectId: string,
-    seriesId: string,
-    outputId: string,
-    input: unknown
-  ) => formalAssets.review(projectId, seriesId, outputId, input));
-  registerHandler('creative-production:get-run-prompt', async (_event, runId: string) => {
-    const root = await imageGeneration.runRoot(runId);
-    if (!root) return null;
-    return fs.readFile(path.join(root, 'compiled-prompt.md'), 'utf8').catch(() => null);
-  });
-  registerHandler('creative-production:get-run-metadata', async (
-    _event,
-    projectId: string,
-    runId: string
-  ) => {
-    const snapshot = await imageGeneration.readPromptSnapshot(runId, projectId);
-    if (!snapshot) return null;
-    return {
-      outputType: snapshot.outputType,
-      promptVersion: snapshot.promptVersion || snapshot.compilerVersion,
-      templateId: snapshot.deliverableTemplateId,
-      templateVersion: snapshot.deliverableTemplateVersion
-    };
-  });
+  registerRuntimeOperations(createCreativeProductionOperations({
+    lockedAssets,
+    creativeProductionBootstrap,
+    quickStyleExtraction,
+    styleProfiles,
+    anchorGeneration,
+    visualExplorations,
+    anchorCandidates,
+    visualCanons,
+    generationSeries,
+    generationSeriesExecution,
+    formalAssets,
+    imageGeneration,
+    readTextFile: (source: string) => fs.readFile(source, 'utf8'),
+    joinPath: path.join,
+  }));
+
 }
 
 if (gotTheLock) app.whenReady().then(async () => {
