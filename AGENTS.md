@@ -124,3 +124,9 @@ no secret committed). Procedure lives in
   `experiment/*` 短期分支运作。
 - 分支治理决策表：`docs/development/repository/reference-branch-disposition.md`。
 - 完成报告：`docs/releases/5.0-repository-consolidation.md`。
+
+## Shared Core boundaries
+
+- New production code must use Shared Core boundaries.
+- Do not add new business logic to Desktop adapters.
+- Do not add new direct imports to historical versioned implementations outside the owning Core module.
