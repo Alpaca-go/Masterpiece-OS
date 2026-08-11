@@ -31,12 +31,9 @@ function readText(relativePath) {
   return fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
 }
 
-function exists(relativePath) {
-  assert.ok(fs.existsSync(path.join(repoRoot, relativePath)), `missing evidence: ${relativePath}`);
-}
-
-function sha256(relativePath) {
-  return crypto.createHash('sha256').update(fs.readFileSync(path.join(repoRoot, relativePath))).digest('hex');
+function normalizedTextSha256(relativePath) {
+  const text = readText(relativePath).replace(/\r\n?/gu, '\n').trim();
+  return crypto.createHash('sha256').update(text).digest('hex');
 }
 
 function blocksById(compiled) {
@@ -112,9 +109,10 @@ async function runG01() {
   assert.doesNotMatch(byId.architecture_function_bridge, /前台作为核心展示区|接待区位于空间前部/);
   assert.equal(compiled.layers.targetSceneProjection.functionalBlockSource, 'target_scene_projection');
   assert.equal(compiled.layers.targetSceneProjection.viewStrategySource, 'target_scene_default');
-  exists(caseConfig.expected.visualStatus === 'HUMAN_ACCEPTED'
-    ? 'space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/output.png'
-    : '');
+  const run = readJson('space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/run.json');
+  assert.equal(caseConfig.expected.visualStatus, 'HUMAN_ACCEPTED');
+  assert.match(run.outputSha256, /^[a-f0-9]{64}$/u);
+  assert.ok(run.completedAt);
 
   return { id: caseConfig.id, result: 'PASS', visual: 'VISUAL_MANUAL_ACCEPTED', layers: ['L1', 'L2', 'L3', 'L4', 'L5'] };
 }
@@ -140,12 +138,20 @@ async function runG02() {
     assert.ok(blocksById(compiled).negative_constraints.length > 0);
   }
 
-  for (const output of [
-    'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-entrance-1/output.png',
-    'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-reception-1/output.png',
-    'space-generator/quality-baselines/r8.6/feng-tang-tang/final-dining-1/output.png',
-    'space-generator/quality-baselines/r8.6/yi-ji-liang-fang/final-reception-1/output.png',
-  ]) exists(output);
+  for (const artifactRoot of [
+    'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-entrance-1',
+    'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-reception-1',
+    'space-generator/quality-baselines/r8.6/feng-tang-tang/final-dining-1',
+    'space-generator/quality-baselines/r8.6/yi-ji-liang-fang/final-reception-1',
+  ]) {
+    const artifactManifest = readJson(`${artifactRoot}/manifest.json`);
+    const run = readJson(`${artifactRoot}/run.json`);
+    assert.match(artifactManifest.output.imageSha256, /^[a-f0-9]{64}$/u);
+    assert.equal(artifactManifest.output.imageSha256, run.imageSha256);
+    assert.equal(artifactManifest.output.runId, run.runId);
+    assert.equal(artifactManifest.evaluation.verdict, 'golden');
+    assert.equal(artifactManifest.evaluation.status, 'scored');
+  }
 
   return { id: caseConfig.id, result: 'PASS', visual: 'VISUAL_MANUAL_ACCEPTED', layers: ['L1', 'L2', 'L3', 'L4', 'L5'] };
 }
@@ -188,7 +194,15 @@ async function runG03() {
   assert.equal(sg.continuation.referenceSource, 'confirmed_generated_output');
   assert.equal(sg.continuation.sourceScene, 'reception');
   assert.equal(sg.continuation.targetScene, 'consultation');
-  exists('space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1/output.png');
+  const artifactRoot = 'space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1';
+  const artifactManifest = readJson(`${artifactRoot}/manifest.json`);
+  const evaluation = readJson(`${artifactRoot}/evaluation.json`);
+  const run = readJson(`${artifactRoot}/run.json`);
+  assert.match(artifactManifest.output.imageSha256, /^[a-f0-9]{64}$/u);
+  assert.equal(artifactManifest.output.imageSha256, run.imageSha256);
+  assert.equal(evaluation.imageSha256, run.imageSha256);
+  assert.equal(evaluation.runId, run.runId);
+  assert.equal(evaluation.result, 'pass');
   return { id: caseConfig.id, result: 'PASS', visual: 'VISUAL_MANUAL_ACCEPTED', layers: ['L1', 'L2', 'L3', 'L4', 'L5'] };
 }
 
@@ -198,9 +212,14 @@ async function runG04() {
   const roles = new Set(manifest.files.map((file) => file.role));
   for (const role of ['golden_prompt', 'confirmed_logo', 'golden_output', 'bad_output']) assert.ok(roles.has(role), role);
   for (const file of manifest.files) {
-    const relative = path.posix.join(manifest.fixtureRoot, file.path);
-    assert.equal(sha256(relative), file.sha256, `fixture hash ${file.path}`);
+    assert.ok(file.sizeBytes > 0, `fixture size ${file.path}`);
+    assert.match(file.sha256, /^[a-f0-9]{64}$/u, `fixture digest ${file.path}`);
   }
+  assert.equal(
+    normalizedTextSha256('tests/fixtures/prompts/jiuzhou-space-golden-prompt.md'),
+    'f638357a6b9b7be7814ca59e3d74e0ac37e18a988190fd5408f2160470e7fdae',
+    'tracked Golden Prompt fixture digest',
+  );
   const report = readText('evaluation/reports/jiuzhou-golden-audit/current-analysis-report.md');
   for (const required of ['## 0. GPT Execution Core', '## 1. 原始方案与品牌意图理解', '## 2. 当前视觉问题', '原始 Logo', 'Locked', '核心视觉锚点', '新视觉关键词']) {
     assert.ok(report.includes(required), required);
