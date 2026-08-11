@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { app, BrowserWindow, dialog, ipcMain, shell, type IpcMain, type IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, shell, type IpcMainInvokeEvent } from 'electron';
 import type {
   AnalysisProgress,
   CreateProjectInput,
@@ -25,7 +25,6 @@ import { createPipelineService } from './pipeline-service';
 import { createDesktopAnalysisRuntimeAdapter } from './analysis-runtime-adapter.ts';
 import { createReferenceAnchorService } from './reference-anchor-service';
 import { createImageGenerationService, type ImageGenerationService } from './image-generation/service';
-import { registerImageGenerationIpc } from './image-generation/ipc';
 import { createVNextImageGenerationService } from './image-generation/vnext-service.ts';
 import { createVNextDeliverableValidatorService } from './image-generation/vnext-deliverable-validator-service.ts';
 import { createFileContextLoader } from './image-generation/context-loader';
@@ -63,6 +62,7 @@ import {
   createAnalysisOperations,
   createContextIntegrationOperations,
   createDocumentOperations,
+  createImageGenerationOperations,
   createProjectContextOperations,
   createProjectOperations,
   createReferenceOperations,
@@ -394,9 +394,11 @@ function registerIpc(): void {
   });
 
   // ---- 生图功能 V1（§16 Desktop IPC）----
-  registerImageGenerationIpc(imageGeneration, {
-    handle: registerHandler
-  } as unknown as IpcMain, vnextImageGeneration);
+  registerRuntimeOperations(createImageGenerationOperations({
+    service: imageGeneration,
+    vnextService: vnextImageGeneration,
+  }));
+  registerHandler('image-generation:open-folder', (_event, runId: string) => imageGeneration.openFolder(runId));
   registerHandler('creative-session:get', (_event, projectId: string) =>
     creativeSessions.get(projectId));
   registerHandler('creative-session:create', (_event, projectId: string) =>
