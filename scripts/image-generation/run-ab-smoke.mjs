@@ -20,7 +20,7 @@
 // prompt-level parity only and never calls a provider.
 //
 // Usage:
-//   node apps/desktop/scripts/space-quality-recovery/run-ab-smoke.mjs \
+//   node scripts/image-generation/run-ab-smoke.mjs \
 //     --project <projectId> --brand <brandKey> [--packet path.json] \
 //     [--out path/to/report.json] [--dry-run=false]
 
@@ -30,7 +30,7 @@ import process from 'node:process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
+const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
 function parseArgs(argv) {
   const out = { dryRun: true, out: null, packet: null, project: null, brand: null, subtype: 'reception', aspect: '16:9' };
@@ -243,7 +243,7 @@ async function main() {
           'Only when B ≈ A (within tolerance) may R7 flip the default to phase9b_quality.',
         ]
       : [
-          'Real-provider run not yet implemented in this offline script; see apps/desktop image-generation service for the call path.',
+          'Real-provider run not yet implemented in this offline script; use the Node Web Host image-generation operation path.',
           'Manual scoring required per recovery doc §18.',
         ],
   };

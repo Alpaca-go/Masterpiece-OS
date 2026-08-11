@@ -14,7 +14,7 @@
  *       --retry <runId> --mode same_prompt|edited_prompt
  *
  * 凭据解析：--api-key > 环境变量 MASTERPIECE_DASHSCOPE_API_KEY。
- * safeStorage 加密凭据只能在 Electron 内解密，因此 Headless 走环境变量。
+ * Headless tooling reads credentials only from explicit arguments or environment variables.
  */
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -22,9 +22,9 @@ import { fileURLToPath } from 'node:url';
 import {
   createImageGenerationService,
   type ImageGenerationServiceDeps,
-} from '../../apps/desktop/src/main/image-generation/service.ts';
-import { createFileContextLoader } from '../../apps/desktop/src/main/image-generation/context-loader.ts';
-import type { ImageGenerationRun } from '../../apps/desktop/src/shared/types.ts';
+} from '@masterpiece/runtime-core/application/image-generation/service.ts';
+import { createFileContextLoader } from '@masterpiece/runtime-core/application/image-generation/context-loader.ts';
+import type { ImageGenerationRun } from '@masterpiece/runtime-core/application-contracts.ts';
 
 interface CliArgs {
   project?: string;
@@ -176,7 +176,7 @@ async function main(): Promise<void> {
     emitRunUpdated: (progress) => {
       process.stdout.write(`  · [${progress.status}] ${progress.message}\n`);
     },
-    // Headless 只支持环境变量 / --api-key，safeStorage 凭据无法在 Electron 外解密
+    // Headless tooling intentionally accepts only environment variables / --api-key.
     ...(args.apiKey ? { readCredentials: async () => ({ apiKey: args.apiKey as string }) } : {}),
   };
   const service = createImageGenerationService(deps);

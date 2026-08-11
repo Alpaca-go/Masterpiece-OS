@@ -16,7 +16,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const SCRIPT = path.join(
   REPO_ROOT,
-  'apps/desktop/scripts/space-quality-recovery/run-ab-smoke.mjs',
+  'scripts/image-generation/run-ab-smoke.mjs',
 );
 
 function writePacket(dir) {

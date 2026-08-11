@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import sharp from 'sharp';
-import { createImageGenerationService } from '../../apps/desktop/src/main/image-generation/service.ts';
+import { createImageGenerationService } from '@masterpiece/runtime-core/application/image-generation/service.ts';
 
 test('v18.1 Provider Bridge reuses Run Store and persists the exact direction-bound prompt/reference set', async () => {
   const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-provider-bridge-'));

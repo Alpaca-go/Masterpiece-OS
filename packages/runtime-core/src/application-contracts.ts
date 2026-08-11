@@ -1925,7 +1925,7 @@ export interface CompileVNextGenerationInput {
 //
 // The status union mirrors ReferenceResolutionResult but is plain
 // serialisable JSON (no class instances / functions) so it can pass
-// through ipcRenderer.invoke / structured-clone without loss.
+// through the Web RPC structured-clone-compatible transport without loss.
 export type ReferenceResolutionFailureCode =
   | 'REFERENCE_ASSET_NOT_FOUND'
   | 'REFERENCE_ASSET_NOT_READY'

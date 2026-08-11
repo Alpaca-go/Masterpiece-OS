@@ -12,7 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
-import { createImageGenerationService } from '../../apps/desktop/src/main/image-generation/service.ts';
+import { createImageGenerationService } from '@masterpiece/runtime-core/application/image-generation/service.ts';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(here, '..', '..');

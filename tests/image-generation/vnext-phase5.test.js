@@ -97,7 +97,7 @@ test('Phase 5 vNext implementation has no analysis-report or execution-document 
     readFile(new URL('./vnext/compile.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
     readFile(new URL('./vnext/prompt-compiler.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
     readFile(new URL('./vnext/template-router.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
-    readFile(new URL('../../apps/desktop/src/main/image-generation/vnext-service.ts', import.meta.url), 'utf8'),
+    readFile(new URL('../../packages/runtime-core/src/application/image-generation/vnext-service.ts', import.meta.url), 'utf8'),
   ]);
   const joined = sources.join('\n');
   assert.doesNotMatch(joined, /reportMarkdown|lastReportFilename|execution document|执行文档/iu);

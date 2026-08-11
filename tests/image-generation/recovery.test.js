@@ -10,7 +10,7 @@ import fsSync from 'node:fs';
 import os from 'node:os';
 import path from 'path';
 
-import { createImageGenerationService } from '../../apps/desktop/src/main/image-generation/service.ts';
+import { createImageGenerationService } from '@masterpiece/runtime-core/application/image-generation/service.ts';
 
 const PROJECT_ID = '33333333-4444-5555-6666-777777777777';
 const REF_RUN_ID = 'ref-run-recovery-1';

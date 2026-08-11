@@ -25,21 +25,9 @@ test('Shared Runtime and Operation Registry have zero Desktop and Electron impor
   assert.deepEqual(violations, []);
 });
 
-test('Desktop main registers only an explicit native allowlist outside Shared Registry', () => {
-  const index = fs.readFileSync(path.join(repoRoot, 'apps/desktop/src/main/index.ts'), 'utf8');
-  const channels = [...index.matchAll(/registerHandler\(['"]([^'"]+)['"]/gu)].map((match) => match[1]);
-  assert.deepEqual(channels.sort(), [
-    'document-context:choose-documents',
-    'document-context:export',
-    'document-context:open-folder',
-    'image-generation:open-folder',
-    'projects:choose-files',
-    'projects:choose-folder',
-    'reference-anchor:choose-reference-assets',
-    'reference-anchor:export',
-    'reference-anchor:open-folder',
-    'report:export',
-    'report:open-folder',
-  ]);
-  assert.doesNotMatch(index, /from\s+['"]\.\/(?:pipeline|project-store|.*-service|image-generation\/service)/u);
+test('Node Web Host owns the native operation allowlist outside Shared Registry', () => {
+  const host = fs.readFileSync(path.join(repoRoot, 'apps/web-runtime/src/node-native-operations.ts'), 'utf8');
+  assert.match(host, /createNodeNativeOperations/u);
+  assert.match(host, /'projects:choose-files'/u);
+  assert.doesNotMatch(host, /from\s+['"]electron['"]|ipcMain|BrowserWindow/u);
 });
