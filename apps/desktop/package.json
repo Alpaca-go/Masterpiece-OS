@@ -40,6 +40,7 @@
     "@masterpiece/model-runtime": "file:../packages/model-runtime",
     "@masterpiece/project-contracts": "file:../packages/project-contracts",
     "@masterpiece/reference-asset-inspector": "file:../packages/reference-asset-inspector",
+    "@masterpiece/runtime-core": "file:../packages/runtime-core",
     "adm-zip": "^0.6.0",
     "dompurify": "^3.4.12",
     "marked": "^18.0.6",
