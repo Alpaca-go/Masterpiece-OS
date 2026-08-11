@@ -21,8 +21,6 @@ import {
   compileVNextImageGeneration,
   listVNextTemplateOptions,
   deriveGenerationFlowState,
-} from '@masterpiece/image-generation-runtime/vnext/index.js';
-import {
   assertSpaceGenerationRouteGateA,
   assertProviderPromptGateB,
   resolveSpaceReferences,
@@ -31,8 +29,8 @@ import {
   runSpaceQualityGate,
   validateSpatialSemantics,
   resolveEffectiveMaxReferences,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
-import { createSeedreamVNextAdapter } from '@masterpiece/image-generation-runtime/vnext/seedream-adapter.js';
+  createSeedreamVNextAdapter,
+} from '@masterpiece/image-generation-runtime/core/space-generation-core.js';
 import {
   resolveReferenceAssets,
   type ResolvedReferenceAsset,
