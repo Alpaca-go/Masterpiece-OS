@@ -62,6 +62,7 @@ import {
 } from './generation-series-execution-service';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract';
 import { startWebRpcServer, type WebRpcServer } from './web-rpc-server';
+import { createProjectOperations, createSharedRuntime } from '@masterpiece/runtime-core';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow: BrowserWindow | null = null;
@@ -69,10 +70,18 @@ let webRpcServer: WebRpcServer | null = null;
 const webMode = process.env.MASTERPIECE_WEB_MODE === '1';
 type InvokeHandler = Parameters<typeof ipcMain.handle>[1];
 const webRpcHandlers = new Map<string, InvokeHandler>();
+const sharedRuntime = createSharedRuntime();
 
 function registerHandler(channel: string, listener: InvokeHandler): void {
   webRpcHandlers.set(channel, listener);
   ipcMain.handle(channel, listener);
+}
+
+function registerRuntimeOperations(entries: Record<string, (...args: any[]) => unknown>): void {
+  sharedRuntime.registerOperations(entries);
+  for (const channel of Object.keys(entries)) {
+    registerHandler(channel, (_event, ...args) => sharedRuntime.registry.execute(channel, args));
+  }
 }
 
 async function invokeWebRpc(channel: string, args: unknown[]): Promise<unknown> {
@@ -258,22 +267,7 @@ function registerIpc(): void {
   registerHandler('settings:set-profile-enabled', (_event, profileId: string, enabled: boolean) => setApiProfileEnabled(profileId, enabled));
   registerHandler('settings:test-profile', (_event, input: SaveApiProfileInput) => testApiProfile(input));
 
-  registerHandler('projects:list', async () => {
-    const records = await projects.list();
-    return Promise.all(records.map((record) => pipeline.reconcileOrphanedProject(record)));
-  });
-  registerHandler('projects:create', (_event, input: CreateProjectInput) => projects.create(input));
-  registerHandler('projects:get', async (_event, projectId: string) => pipeline.reconcileOrphanedProject(await projects.get(projectId)));
-  registerHandler('projects:remove', async (_event, projectId: string) => {
-    // 以内存活跃表为准：僵尸 running 记录（应用异常退出遗留）会先被自动降级为 failed，随后放行删除
-    const project = await pipeline.reconcileOrphanedProject(await projects.get(projectId));
-    if (project.status === 'running' || pipeline.isActive(projectId)) throw new Error('正在分析的项目不能删除，请先取消分析');
-    await projects.remove(projectId);
-  });
-  registerHandler('projects:scan-assets', (_event, projectId: string) => projects.scan(projectId));
-  registerHandler('projects:remove-asset', (_event, projectId: string, assetId: string) => projects.removeAsset(projectId, assetId));
-  registerHandler('projects:remove-batch', (_event, projectId: string, batchId: string) => projects.removeBatch(projectId, batchId));
-  registerHandler('projects:clear-assets', (_event, projectId: string) => projects.clearAssets(projectId));
+  registerRuntimeOperations(createProjectOperations({ projects, pipeline }));
   registerHandler('projects:choose-files', async (_event, kind: 'assets' | 'logo' | 'brief' | 'reference') => {
     const filters = kind === 'logo' || kind === 'reference'
       ? [{ name: 'Logo 图片', extensions: ['jpg', 'jpeg', 'png', 'webp'] }]
@@ -292,13 +286,6 @@ function registerIpc(): void {
     });
     return result.canceled ? [] : result.filePaths;
   });
-  registerHandler('projects:import-files', (
-    _event,
-    projectId: string,
-    paths: string[],
-    kind: 'assets' | 'logo' | 'brief' | 'reference'
-  ) => projects.importFiles(projectId, paths, kind));
-
   registerHandler('analysis:start', (_event, projectId: string, forceReasoning: boolean, apiProfileId?: string) => pipeline.start(projectId, forceReasoning, apiProfileId));
   registerHandler('analysis:cancel', (_event, projectId: string) => pipeline.cancel(projectId));
 
