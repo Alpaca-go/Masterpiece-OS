@@ -1,10 +1,10 @@
-# P0-4 — Packaging Domain Schema
+# P0-4 �?Packaging Domain Schema
 
-**Phase:** Packaging V1 / P0 — Architecture & Reuse Audit
+**Phase:** Packaging V1 / P0 �?Architecture & Reuse Audit
 **Date:** 2026-08-12
 **Status:** `P0_DOMAIN_SCHEMA_FROZEN`
 **Spec:** Packaging V1 Revised Development Specification §P0 ("定义 Packaging domain contract")
-**Predecessor:** `P0-packaging-target-interface.md`
+**Predecessor:** `packaging-target-interface.md`
 
 ## 1. Purpose (per P0 spec)
 
@@ -49,7 +49,7 @@ const EXPECTED_BLOCKS = [
 | 2 | `spatial_intent` | S | Space target scene / spatial layout | Packaging 3D product / 6-face layout |
 | 3 | `architecture_language` | Sp | Space architecture | (n/a for Packaging) |
 | 4 | `architecture_context` | Sp | Space architectural surroundings | (n/a) |
-| 5 | `architecture_function_bridge` | Sp | Space architecture ↔ function | (n/a) |
+| 5 | `architecture_function_bridge` | Sp | Space architecture �?function | (n/a) |
 | 6 | `architectural_concept` | Sp | Space architectural concept | (n/a) |
 | 7 | `architecture_dna` | Sp | Space architecture DNA | (n/a) |
 | 8 | `brand_translation` | S | brand visual translation | brand visual translation |
@@ -86,14 +86,11 @@ type PackagingGoldenProject = {
     'peacock_feather_eye',     // 羽眼椭圆
     'nine_petal_radial',       // 九瓣放射
     'feather_streamline',      // 羽毛流线
-    'local_iridescence',       // 局部虹彩
-    'abstract_biological_rhythm'
+    'local_iridescence',       // 局部虹�?    'abstract_biological_rhythm'
   ]
   forbiddenMotifs: [
-    'large_area_purple',          // 大面积浓紫
-    'large_area_realistic_feather',
-    'club_iridescence'            // 夜店式虹彩
-  ]
+    'large_area_purple',          // 大面积浓�?    'large_area_realistic_feather',
+    'club_iridescence'            // 夜店式虹�?  ]
   referenceFirst:  true
   analysisLed:     true
   shotContracts: [

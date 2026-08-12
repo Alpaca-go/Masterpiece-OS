@@ -1,34 +1,25 @@
 # Masterpiece OS Â· Packaging Generator V1
 
-**Source spec:** `Masterpiece OS Â· Packaging Generator V1 â€” Revised Development Specification.md` (2026-08-12)
+**Source spec:** `Masterpiece OS Â· Packaging Generator V1 â€?Revised Development Specification.md` (2026-08-12)
 **Status at copy:** `Visual Analysis A4 âœ…` (commit `f94c51a`); Packaging V1 in P0 (Architecture & Reuse Audit)
-**Document role:** Reference copy of the high-level spec for traceability. Detailed per-phase tasks come from the user's P0â€“P4 message (see `P0-final-report.md` for the resolved P0 task list).
+**Document role:** Reference copy of the high-level spec for traceability. Detailed per-phase tasks come from the user's P0â€“P4 message (see `final-report.md` for the resolved P0 task list).
 
 ## 1. Roadmap
 
 ```text
-Visual Analysis A4 âœ…
-        â†“
-Naming Freeze Gate
-        â†“
-Packaging P0  â†  we are here
+Visual Analysis A4 âœ?        â†?Naming Freeze Gate
+        â†?Packaging P0  â†? we are here
 Architecture & Reuse Audit
-        â†“
-Packaging P1
+        â†?Packaging P1
 Golden Baseline & Contracts
-        â†“
-Packaging P2
+        â†?Packaging P2
 Translation & Compiler
-        â†“
-Packaging P3
+        â†?Packaging P3
 UI + Validation + Regression
-        â†“
-Packaging P4
+        â†?Packaging P4
 Production Freeze
-        â†“
-Repository Stabilization
-        â†“
-Creative Intelligence
+        â†?Repository Stabilization
+        â†?Creative Intelligence
 ```
 
 ## 2. Core Engineering Discipline
@@ -79,7 +70,7 @@ validatorVersion
 The two production targets are:
 
 - `space` (already shipping; Phase 9B-quality baseline; R9 productionization)
-- `packaging` (V1; P0 â†’ P1 â†’ P2 â†’ P3 â†’ P4; this spec)
+- `packaging` (V1; P0 â†?P1 â†?P2 â†?P3 â†?P4; this spec)
 
 Packaging V1 must **reuse** the Shared Generation Core. It must
 **not duplicate** the Space runtime. P0 freezes the boundary

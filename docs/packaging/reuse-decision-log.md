@@ -1,10 +1,10 @@
-# P0-5 — Reuse Decision Log
+# P0-5 �?Reuse Decision Log
 
-**Phase:** Packaging V1 / P0 — Architecture & Reuse Audit
+**Phase:** Packaging V1 / P0 �?Architecture & Reuse Audit
 **Date:** 2026-08-12
 **Status:** `P0_REUSE_DECISIONS_FROZEN`
 **Spec:** Packaging V1 Revised Development Specification §P0 ("确定 Locked Assets / reference asset / provider adapter / run store / Packaging Translation·Compiler·Validator 边界")
-**Predecessor:** `P0-domain-schema.md`
+**Predecessor:** `domain-schema.md`
 
 ## 1. Purpose (per P0 spec)
 
@@ -176,13 +176,13 @@ resolved in the named phase:
 
 | Decision | Phase | Reason |
 |---|---|---|
-| Packaging Translation (semantic → generation bridge) | P2 | Spec: P2 implements it |
-| Packaging Compiler (Translation + task → 14-block prompt) | P2 | Spec: P2 implements it |
+| Packaging Translation (semantic �?generation bridge) | P2 | Spec: P2 implements it |
+| Packaging Compiler (Translation + task �?14-block prompt) | P2 | Spec: P2 implements it |
 | Packaging Validator (12 PKG-F codes + 7-axis rubric) | P3 | Spec: P3 implements it |
 | Packaging generation metadata schema | P2 | Spec: P2 implements it |
 | component semantic versioning | P2 | Spec: P2 introduces it |
 | Golden Anchor / Prompt / Translation / Rubric for 九州美学 | P1 | Spec: P1 freezes the golden |
-| UI flow: Project → Mode → Shot → Locked → References → Generate → Validation → Save | P3 | Spec: P3 implements it |
+| UI flow: Project �?Mode �?Shot �?Locked �?References �?Generate �?Validation �?Save | P3 | Spec: P3 implements it |
 
 ## 5. Boundary risks at a glance
 

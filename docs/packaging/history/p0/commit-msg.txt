@@ -1,0 +1,63 @@
+docs(packaging): Packaging V1 P0 — Architecture & Reuse Audit (audit only, 0 code change)
+
+Packaging V1 / P0. Predecessor: A4 `VISUAL_ANALYSIS_PRODUCTION_BASELINE_FROZEN` at commit `f94c51a`. P0 is audit + documentation only; **0 production code change**.
+
+Scope (per Packaging V1 Revised Development Specification §P0):
+- Audit current Space / short-chain / generation runtime
+- List Shared Generation Core + Space-only assumptions
+- Inventory existing packaging schema / contracts / tests
+- Define GenerationTarget: space | packaging
+- Define Packaging domain contract boundary
+- Identify Locked Assets / reference asset / provider adapter / run store reuse points
+- Define Packaging Translation / Compiler / Validator boundary (shape only; modules come in P2/P3)
+- Build Space regression checklist
+- Confirm no phase / version namespace in production
+
+9 docs in docs/packaging/:
+
+1. P0-spec.md — high-level spec reference (the user's 1.2KB input) for traceability
+2. P0-architecture-map.md — current Space / short-chain / generation layout + existing packaging assets
+3. P0-shared-vs-target-matrix.md — 13 capabilities × 2 targets with isolation invariants
+4. P0-packaging-target-interface.md — frozen GenerationTarget type, dispatch field, error code, capability matrix
+5. P0-domain-schema.md — 14-block contract, block-by-block role matrix, schemaVersion / contractVersion discipline
+6. P0-reuse-decision-log.md — REUSE / ADAPT / NEW for 13 capabilities (zero parallel pipelines)
+7. P0-space-regression-checklist.md — hard gate (npm test ≥ 842, golden 5/5 + G-04, repo:verify 9/9) + Space test inventory + per-phase new tests
+8. P0-naming-compliance-check.md — forbidden patterns + required names + allowlist of historical R8.6/R9/.../VNEXT_*
+9. P0-final-report.md — P0 frozen, 6/6 P0 Exit PASS, 8/8 STOP-P0 NOT TRIGGERED, awaiting user approval before P1
+
+Key findings (P0):
+
+- Packaging is **already wired** in the Shared Core. `compileShortChainGeneration` (in `packages/image-generation-runtime/src/generation/index.js`) already accepts `deliverableFamily: 'packaging'`; the existing `tests/image-generation/packaging-contract.test.js` pins the 14-block packaging contract; `core/packaging-generation-core.js` is the Shared Packaging facade.
+- GenerationTarget type is frozen as `'space' | 'packaging'`. Dispatch field = `task.deliverableFamily`. Unknown target → `GENERATION_TARGET_UNSUPPORTED` error.
+- 13 cross-target capabilities (Locked Assets, reference, provider adapter, run store, download, redaction, fingerprint, deliverable gate, preflight, reference plan, contracts, short-chain service, provider capabilities) are all REUSE or REUSE+ADAPT. **Zero parallel pipelines.**
+- 6 cross-target isolation invariants frozen (see P0-shared-vs-target-matrix.md §4).
+- Space regression hard gate is `repo:verify` + `npm test` + `golden:test`. Required counts locked at current A4 levels. A decrease is a Space regression; the P1–P4 commit must fix it in the same change.
+- P0 manual scan: 0 forbidden namespace matches in production (`p\d-packaging-*` / `P\d_PACKAGING_*` / `packaging-vnext-*` / `packaging-p\d+` / `visual-analysis-v\d+` / `analysis-r\d+` / `provider-(final|new)`). Existing R8.6/R9/R10/R11/VNEXT_* identifiers are in the allowlist and out of P0 scope (per "A4 baseline 不做大规模 cleanup, 不主动改 V18 / vNext / R11").
+- P3 (not P0) will add `scripts/verify-packaging-naming.mjs` (G-PKG-NAMING-01) when the first Packaging production module lands.
+
+P0 Exit (per spec):
+- 不复制 Space runtime                              PASS
+- 不做无关重构                                       PASS
+- Shared / Packaging boundary 清晰                  PASS
+- Packaging 可以作为正式 target 接入                 PASS
+- Space regression 有明确测试路径                    PASS
+
+STOP-P0 gates precheck (post-P0):
+- STOP-P0-01 (Space runtime duplicated)             NOT TRIGGERED
+- STOP-P0-02 (Packaging target not wired)           NOT TRIGGERED
+- STOP-P0-03 (cross-target isolation violated)      NOT TRIGGERED
+- STOP-P0-04 (phase/version namespace leaked)       NOT TRIGGERED
+- STOP-P0-05 (Space regression count decreased)     NOT TRIGGERED
+- STOP-P0-06 (reuse decision deferred inappropriately) NOT TRIGGERED
+- STOP-P0-07 (Locked Asset precedence re-implemented) NOT TRIGGERED
+- STOP-P0-08 (GenerationTarget field placed wrong)   NOT TRIGGERED
+
+Verification (no code change in P0; A4 baseline preserved):
+- repo:verify 9/9 PASS (verify:a4 6/6 + repo:guard:test 7/7)
+- npm test 842/842 PASS (unchanged from A4)
+- cli:test 40/40 PASS
+- runtime:test 348/348 PASS
+- golden:test 5/5 + G-04 PASS
+- web:smoke PASS (unchanged)
+
+**P0 FROZEN. Awaiting user approval before P1 (Golden Baseline & Shot Contracts).**

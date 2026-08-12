@@ -1,10 +1,10 @@
-# P0-7 — Naming Compliance Check
+# P0-7 �?Naming Compliance Check
 
-**Phase:** Packaging V1 / P0 — Architecture & Reuse Audit
+**Phase:** Packaging V1 / P0 �?Architecture & Reuse Audit
 **Date:** 2026-08-12
 **Status:** `P0_NAMING_COMPLIANCE_FROZEN`
-**Spec:** Packaging V1 Revised Development Specification §P0 ("确认新增代码无 phase/version namespace"; "P0 / P1 / P2 / P3 / P4 只是开发阶段名称，不允许进入 production module / class / constant / runtime namespace")
-**Predecessor:** `P0-space-regression-checklist.md`
+**Spec:** Packaging V1 Revised Development Specification §P0 ("确认新增代码�?phase/version namespace"; "P0 / P1 / P2 / P3 / P4 只是开发阶段名称，不允许进�?production module / class / constant / runtime namespace")
+**Predecessor:** `space-regression-checklist.md`
 
 ## 1. Purpose (per P0 spec)
 
@@ -57,7 +57,7 @@ set. P0 does not duplicate that guard; P0 only extends the
 scanned pattern set to include the **Packaging-specific**
 phase-namespace forms (P3 will add a Packaging-naming guard
 that ties the two together; the guard is **out of P0 scope**
-per "P0 是 audit，不引入新 guard").
+per "P0 �?audit，不引入�?guard").
 
 ## 3. Required production naming
 
@@ -66,11 +66,11 @@ names MUST be one of:
 
 ```text
 # Production modules (P1–P4 introduce)
-packaging-contract              # P1 — Packaging Golden & Contracts
-packaging-translation           # P2 — Translation
-packaging-compiler              # P2 — Compiler
-packaging-validator             # P3 — Validator
-packaging-generation-service    # P3 — UI service wiring
+packaging-contract              # P1 �?Packaging Golden & Contracts
+packaging-translation           # P2 �?Translation
+packaging-compiler              # P2 �?Compiler
+packaging-validator             # P3 �?Validator
+packaging-generation-service    # P3 �?UI service wiring
 ```
 
 ```text
@@ -94,8 +94,8 @@ validatorVersion
 
 Some existing identifiers still carry phase / version tags. P0
 documents them as **allowlisted**; future cleanup is **out of
-A4 + P0 scope** (per "A4 baseline 不做大规模 repository cleanup,
-不主动改 V18 / vNext / R11 等历史兼容命名").
+A4 + P0 scope** (per "A4 baseline 不做大规�?repository cleanup,
+不主动改 V18 / vNext / R11 等历史兼容命�?).
 
 | Identifier | Where | Status |
 |---|---|---|

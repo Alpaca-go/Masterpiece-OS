@@ -1,10 +1,10 @@
-# P0-2 — Shared vs Target-Specific Matrix
+# P0-2 �?Shared vs Target-Specific Matrix
 
-**Phase:** Packaging V1 / P0 — Architecture & Reuse Audit
+**Phase:** Packaging V1 / P0 �?Architecture & Reuse Audit
 **Date:** 2026-08-12
 **Status:** `P0_SHARED_TARGET_MATRIX_FROZEN`
 **Spec:** Packaging V1 Revised Development Specification §P0
-**Predecessor:** `P0-architecture-map.md`
+**Predecessor:** `architecture-map.md`
 
 ## 1. Purpose (per P0 spec)
 
@@ -109,7 +109,7 @@ Legend:
   P1–P4 without modification.
 
 Example: `core/space-generation-core.js` exports
-`assertSpaceGenerationRouteGateA` etc. — Space-specific names,
+`assertSpaceGenerationRouteGateA` etc. �?Space-specific names,
 but the **shape** (gate functions returning pass/fail + version
 constant) is target-agnostic. Packaging will write a parallel
 gate in P3 (Packaging Validator) without copying
@@ -151,7 +151,7 @@ These are the invariants P0 freezes; P1–P4 must not violate:
    already pins this; P3 will add an explicit guard.
 3. **The 14-block contract is the shared contract.** Both `space`
    and `packaging` produce / consume the same 14-block schema
-   (the 14 blocks are listed in `P0-domain-schema.md`). Block
+   (the 14 blocks are listed in `domain-schema.md`). Block
    content differs (Space fills architecture_*; Packaging fills
    packaging_structure_*); the schema is shared.
 4. **Provider capabilities are a Shared preset.** `IMAGE_GENERATION_PRESET_CAPABILITIES` enumerates the cross-target

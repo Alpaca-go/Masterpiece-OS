@@ -1,10 +1,10 @@
-# P0-6 â€” Space Regression Checklist
+# P0-6 â€?Space Regression Checklist
 
-**Phase:** Packaging V1 / P0 â€” Architecture & Reuse Audit
+**Phase:** Packaging V1 / P0 â€?Architecture & Reuse Audit
 **Date:** 2026-08-12
 **Status:** `P0_SPACE_REGRESSION_CHECKLIST_FROZEN`
 **Spec:** Packaging V1 Revised Development Specification Â§P0 ("å»ºç«‹ Space regression checklist"; "Space Generator å¿…é¡»æŒç»­ä¿æŒ regression green")
-**Predecessor:** `P0-reuse-decision-log.md`
+**Predecessor:** `reuse-decision-log.md`
 
 ## 1. Purpose (per P0 spec)
 
@@ -44,9 +44,9 @@ land until Space regression is green.
 
 | Suite | Count at A4 | Required after P1â€“P4 (no decrease) |
 |---|---|---|
-| `npm test` | 842 / 842 PASS | â‰¥ 842 / 842 |
-| `cli:test` | 40 / 40 PASS | â‰¥ 40 / 40 |
-| `runtime:test` | 348 / 348 PASS | â‰¥ 348 / 348 |
+| `npm test` | 842 / 842 PASS | â‰?842 / 842 |
+| `cli:test` | 40 / 40 PASS | â‰?40 / 40 |
+| `runtime:test` | 348 / 348 PASS | â‰?348 / 348 |
 | `golden:test` | 5 / 5 + G-04 PASS | 5 / 5 + G-04 |
 | `web:smoke` | status=pass | status=pass |
 | `repo:verify` | 9 / 9 PASS | 9 / 9 |
@@ -73,7 +73,7 @@ tests/image-generation/space-r8.6-reference-policy.test.js
 tests/image-generation/space-r8.6-trace.test.js
 tests/image-generation/space-r9-block-order.test.js
 tests/image-generation/space-r9-golden-parity.test.js
-tests/image-generation/space-r9-packaging-isolation.test.js  â† also pins
+tests/image-generation/space-r9-packaging-isolation.test.js  â†?also pins
 tests/image-generation/space-r9-reference-policy.test.js
 tests/image-generation/space-r9-semantic-separation.test.js
 tests/image-generation/space-r9-source-adapter.test.js
@@ -126,10 +126,10 @@ tests/image-generation/space-semantic-separation.test.js
 ### 3.3 Packaging + shared
 
 ```text
-tests/image-generation/packaging-contract.test.js                    â† packaging
-tests/image-generation/packaging-generation-core-facade.test.js        â† packaging
-tests/image-generation/space-r9-packaging-isolation.test.js             â† packaging vs space
-tests/image-generation/prompt-preflight-gate.test.js                  â† shared
+tests/image-generation/packaging-contract.test.js                    â†?packaging
+tests/image-generation/packaging-generation-core-facade.test.js        â†?packaging
+tests/image-generation/space-r9-packaging-isolation.test.js             â†?packaging vs space
+tests/image-generation/prompt-preflight-gate.test.js                  â†?shared
 tests/image-generation/reference-plan.test.js
 tests/image-generation/provider-dashscope.test.js
 tests/image-generation/architecture-boundaries.test.js
@@ -200,8 +200,8 @@ they must add so the regression checklist grows coherently:
 ### 5.2 P2 must add (Translation & Compiler)
 
 ```text
-- packaging-translation.test.js               (semantic â†’ stable rep)
-- packaging-compiler.test.js                  (Translation + task â†’ 14-block)
+- packaging-translation.test.js               (semantic â†?stable rep)
+- packaging-compiler.test.js                  (Translation + task â†?14-block)
 - packaging-reference-roles.test.js           (Ref roles)
 - locked-asset-precedence.test.js             (cross-target precedence)
 - six-paths.test.js                           (3 modes Ã— 2 led types = 6 paths)

@@ -1,10 +1,10 @@
-# P0-3 — Packaging Target Interface
+# P0-3 �?Packaging Target Interface
 
-**Phase:** Packaging V1 / P0 — Architecture & Reuse Audit
+**Phase:** Packaging V1 / P0 �?Architecture & Reuse Audit
 **Date:** 2026-08-12
 **Status:** `P0_TARGET_INTERFACE_FROZEN`
 **Spec:** Packaging V1 Revised Development Specification §P0 ("定义 GenerationTarget: space | packaging")
-**Predecessor:** `P0-shared-vs-target-matrix.md`
+**Predecessor:** `shared-vs-target-matrix.md`
 
 ## 1. Purpose (per P0 spec)
 
@@ -38,14 +38,14 @@ functions in `task-builder.js` (re-exported by
 
 ## 3. Target dispatch surface (frozen at P0)
 
-The target is set in the **task contract** (see `P0-domain-schema.md`)
+The target is set in the **task contract** (see `domain-schema.md`)
 and is the single dispatch field. All other modules read this
 field; they MUST NOT independently infer the target from
 context.
 
 ```text
-task.deliverableFamily  ──┬──>  'space'     → Space-specific shape
-                          └──>  'packaging' → Packaging-specific shape
+task.deliverableFamily  ──┬──>  'space'     �?Space-specific shape
+                          └──>  'packaging' �?Packaging-specific shape
 ```
 
 ## 4. Capability matrix (cross-target)
@@ -67,7 +67,7 @@ Golden baseline          Space (phase9b-recovered) P1 (Packaging golden
 Visual direction         Space golden             P1 (Packaging golden
                                                     "东方秩序 × 生物光泽")
 Color ratio              Space golden             P1 (Packaging golden
-                                                    珍珠白/暖灰 65-70% etc.)
+                                                    珍珠�?暖灰 65-70% etc.)
 Provider capability      Shared preset            Shared preset
 ```
 
@@ -77,7 +77,7 @@ These are the cross-target invariants that P1–P4 must honor:
 
 1. **Same 14-block contract.** `task.compiledPrompt.blocks` is
    `Object.freeze([14 blocks])`. Block IDs are listed in
-   `P0-domain-schema.md §3`.
+   `domain-schema.md §3`.
 2. **Same canonical run contract.** A run is created via
    `runtime-core/application/image-generation/short-chain-service.ts`
    and persisted via `run-store.ts`. Both targets write to the
@@ -105,7 +105,7 @@ P0 the audit records the **shape** the interface must expose:
 // Proposed in P1 (subject to P1 freeze)
 type PackagingTargetInterface = {
   // Translation: from Visual Analysis + Reference + Locked Assets
-  //             → Packaging semantically-stable representation
+  //             �?Packaging semantically-stable representation
   translate(input: {
     visualDecisionPacket: VisualDecisionPacket
     referenceAssets: ReferenceAsset[]
@@ -115,7 +115,7 @@ type PackagingTargetInterface = {
   }): PackagingTranslation
 
   // Compiler: from PackagingTranslation + task contract
-  //           → 14-block compiled prompt + fingerprint
+  //           �?14-block compiled prompt + fingerprint
   compile(input: {
     translation: PackagingTranslation
     task: ImageGenerationTask
@@ -125,7 +125,7 @@ type PackagingTargetInterface = {
   }
 
   // Validator: from compiled output + golden + target
-  //            → validator verdict (used by P3)
+  //            �?validator verdict (used by P3)
   validate(input: {
     task: ImageGenerationTask
     output: GenerationOutput
