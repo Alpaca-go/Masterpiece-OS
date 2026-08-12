@@ -84,11 +84,11 @@ test('v5 reuses an exact prompt result without a second model call', async () =>
   assert.equal(second.result.runReport.fullReasoningRuns, 0);
 });
 
-test('v5 rejects retired mode selection before reasoning', async () => {
+test('Analysis rejects retired --mode selection before reasoning', async () => {
   const { projectRoot, input, output } = await fixture();
   await assert.rejects(
     runAnalysisPipeline(input, { projectRoot, output, mode: 'standard', deepCreativeDirectorReasoner: async () => result() }),
-    /--mode 已在 v5 废弃/
+    /--mode 已废弃/
   );
 });
 
