@@ -309,6 +309,379 @@ function checkPromptIntegrity() {
   // No-op in this script.
 }
 
+// ---------------------------------------------------------------------------
+// Check H — Runtime Dependency Declaration Coverage
+// (added 2026-08-12; spec section H of the user's directive)
+// ---------------------------------------------------------------------------
+// Scans production code for static filesystem calls
+// (readFile(Sync)? / existsSync / readdir(Sync)?) and extracts
+// any string literal arguments. For each literal, classifies
+// it against the manifest's allowlist (declaredDependencyCoverage
+// block). Any unclassifiable literal = RUNTIME_ASSET_UNDECLARED.
+//
+// This is the reverse direction of Checks A-G: instead of
+// checking that the manifest's declared assets exist + are
+// tracked, this checks that production's static reads are
+// declared (or correctly classified) in the manifest.
+
+const PRODUCTION_SCAN_ROOTS = [
+  'apps/web',
+  'apps/web-runtime',
+  'apps/cli/src/analysis-engine',
+  'packages/runtime-core',
+  'packages/image-generation-runtime',
+  'packages/analysis-runtime',
+  'packages/project-contracts',
+  'packages/image-generation-contracts',
+  'packages/image-generation-adapter',
+  'packages/image-provider-dashscope',
+  'packages/model-benchmark',
+  'packages/model-registry',
+  'packages/model-runtime',
+  'packages/reference-asset-inspector',
+  'packages/creative-production-runtime',
+  'packages/document-ingestion',
+  'packages/evaluation-loop-contracts',
+];
+
+const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
+  // smoke / dev runners, not production
+  'apps/web-runtime/scripts/run-web-primary-smoke.mjs',
+  'apps/web-runtime/scripts/run-web-dev.mjs',
+]);
+
+// Allow the test harness to extend the production scan roots
+// (e.g. add a temp directory containing a synthetic loader).
+// Production invocations do NOT set this env var; the scanner
+// defaults to the 17 fixed production roots only.
+const EXTRA_SCAN_ROOTS = (process.env.RUNTIME_ASSET_EXTRA_SCAN_ROOTS ?? '')
+  .split(/[;,]/)
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const SCAN_EXTS = /\.(ts|tsx|js|mjs|cjs)$/;
+
+function walkProductionFiles() {
+  const out = [];
+  const roots = [...PRODUCTION_SCAN_ROOTS, ...EXTRA_SCAN_ROOTS];
+  for (const root of roots) {
+    // Extra scan roots (from the env var) may be absolute paths
+    // or repo-relative paths; main roots are always repo-relative.
+    const absRoot = path.isAbsolute(root) ? root : path.join(REPO_ROOT, root);
+    if (!fs.existsSync(absRoot)) continue;
+    const stack = [absRoot];
+    while (stack.length > 0) {
+      const dir = stack.pop();
+      for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (ent.isDirectory()) {
+          if (ent.name === 'node_modules' || ent.name === 'dist' || ent.name === 'build' || ent.name === '.runtime' || ent.name === 'tests' || ent.name === '__tests__') continue;
+          stack.push(path.join(dir, ent.name));
+        } else if (SCAN_EXTS.test(ent.name) && !ent.name.endsWith('.test.ts') && !ent.name.endsWith('.test.js')) {
+          out.push(path.join(dir, ent.name));
+        }
+      }
+    }
+  }
+  return out;
+}
+
+// Balanced-arg extraction: returns the list of string-literal
+// values found between the matching parentheses starting at
+// `openIdx` (which must point right after the `(`). Honours
+// strings (', ", `), line + block comments, and nested parens.
+function extractCallArgs(text, openIdx) {
+  let depth = 1;
+  let i = openIdx;
+  let inStr = null;
+  let strStart = -1;
+  const stringLiterals = [];
+  while (i < text.length && depth > 0) {
+    const c = text[i];
+    if (inStr !== null) {
+      if (c === '\\') { i += 2; continue; }
+      if (c === inStr) {
+        stringLiterals.push({ value: text.slice(strStart + 1, i), start: strStart, end: i });
+        inStr = null;
+        strStart = -1;
+        i++;
+        continue;
+      }
+      i++;
+      continue;
+    }
+    if (c === "'" || c === '"' || c === '`') {
+      inStr = c; strStart = i; i++; continue;
+    }
+    if (c === '(') { depth++; i++; continue; }
+    if (c === ')') { depth--; if (depth === 0) { i++; break; } i++; continue; }
+    if (c === '/' && text[i + 1] === '/') {
+      while (i < text.length && text[i] !== '\n') i++;
+      continue;
+    }
+    if (c === '/' && text[i + 1] === '*') {
+      i += 2;
+      while (i < text.length - 1 && !(text[i] === '*' && text[i + 1] === '/')) i++;
+      i += 2;
+      continue;
+    }
+    i++;
+  }
+  return stringLiterals;
+}
+
+function lineOf(text, idx) {
+  return text.slice(0, idx).split(/\r?\n/).length;
+}
+
+// Match fs.readFile*(/readFile*/existsSync/readdir*) call positions
+// and bare `join(` / `resolve(` (used by code that imports { join }
+// from 'node:path').
+const FS_CALL_RE = /\b(?:fs\.)?(?:readFile|readFileSync|existsSync|readdir|readdirSync)\s*\(/g;
+const NEWURL_RE = /\bnew\s+URL\s*\(\s*([`'"]([^`'"\\]+)[`'"'])\s*,\s*import\.meta\.url\b/g;
+const PATHJOIN_RE = /\bpath\.(?:join|resolve)\s*\(/g;
+const BAREJOIN_RE = /\bjoin\s*\(/g;
+const RESOLVE_DIRNAME_RE = /\bresolve\s*\(\s*__dirname\b/g;
+
+// Per-file extraction: returns array of
+//   { kind, candidatePath, rawLiteral, line, fileRel }
+// where `candidatePath` is the path-like literal (or the
+// joined path for path.join / resolve calls) that should be
+// classified against the manifest.
+function extractStaticDependenciesFromFile(absFilePath) {
+  const rel = path.relative(REPO_ROOT, absFilePath).replaceAll('\\', '/');
+  const text = fs.readFileSync(absFilePath, 'utf8');
+  const out = [];
+  let m;
+  // Path-like literal filter: must contain '/' or '\', or end
+  // with a known file extension, or be a dot-segment ('.', '..').
+  // Skips pure punctuation, whitespace, escape-sequence content
+  // ('\n', '\t', '\\n', '\\n\\n', etc.), and template-string content.
+  function pathLikeOrNull(s) {
+    if (typeof s !== 'string') return null;
+    if (s.length < 1 || s.length > 200) return null;
+    // Skip escape-sequence-looking literals: any sequence of `\X`
+    // where X is one of nrt0'"`\\ and the literal is short
+    if (/^(\\[nrt0'"`\\]){1,4}$/.test(s)) return null;
+    // Skip literals containing newlines, tabs, or other
+    // non-path control characters (template / prompt body content)
+    if (/[\n\r\t\v\f]/.test(s)) return null;
+    // Skip pure punctuation / whitespace segments
+    if (/^[\s,;:.|\-_+=\\/'"`]*$/.test(s)) return null;
+    if (/[\\/]/.test(s)) return s; // contains a path separator
+    if (/\.(json|md|txt|png|jpg|jpeg|webp|gif|svg|yaml|yml|html|css|js|ts|mjs|cjs|tsx|jsx|bin|key|pem|env|log|dat|ndjson|lock|schema|redacted|jsonl)$/i.test(s)) return s;
+    if (s === '.' || s === '..') return s;
+    if (s.startsWith('.')) return s; // hidden file / dir
+    return null;
+  }
+
+  // For new URL(..., import.meta.url) calls, the literal is
+  // usually a relative path (e.g. '../../../') used to compute
+  // a base directory; it does not itself reference a static
+  // resource file. Only treat it as a candidate if it is
+  // absolute or ends with a file extension.
+  function newUrlLiteralIsCandidate(s) {
+    if (typeof s !== 'string') return false;
+    if (s.length < 1 || s.length > 200) return false;
+    if (pathLikeOrNull(s) === null) return false;
+    // Skip pure relative dot-segments (../../../) — those are
+    // base-path computations, not file reads.
+    if (/^(\.\.?(\/|\\|$))+$/.test(s)) return false;
+    return true;
+  }
+
+  function extractCallLiterals(text, openIdx) {
+    let depth = 1;
+    let i = openIdx;
+    let inStr = null;
+    let strStart = -1;
+    const stringLiterals = [];
+    while (i < text.length && depth > 0) {
+      const c = text[i];
+      if (inStr !== null) {
+        if (c === '\\') { i += 2; continue; }
+        if (c === inStr) {
+          stringLiterals.push({ value: text.slice(strStart + 1, i), quote: inStr });
+          inStr = null; strStart = -1; i++; continue;
+        }
+        i++; continue;
+      }
+      if (c === "'" || c === '"' || c === '`') {
+        inStr = c; strStart = i; i++; continue;
+      }
+      if (c === '(') { depth++; i++; continue; }
+      if (c === ')') { depth--; if (depth === 0) { i++; break; } i++; continue; }
+      if (c === '/' && text[i + 1] === '/') {
+        while (i < text.length && text[i] !== '\n') i++;
+        continue;
+      }
+      if (c === '/' && text[i + 1] === '*') {
+        i += 2;
+        while (i < text.length - 1 && !(text[i] === '*' && text[i + 1] === '/')) i++;
+        i += 2;
+        continue;
+      }
+      i++;
+    }
+    return stringLiterals;
+  }
+
+  // 1. fs.readFile*(literal, ...)  -- first-arg literal is the path
+  FS_CALL_RE.lastIndex = 0;
+  while ((m = FS_CALL_RE.exec(text)) !== null) {
+    const openIdx = m.index + m[0].length;
+    const args = extractCallLiterals(text, openIdx);
+    // For fs.readFile* we care about the FIRST literal that's path-like.
+    for (const a of args) {
+      const lit = pathLikeOrNull(a.value);
+      if (lit !== null && a.quote !== '`') {
+        out.push({ file: rel, line: lineOf(text, m.index), kind: 'fs-call', candidatePath: lit, rawLiteral: a.value });
+        break;
+      }
+    }
+  }
+
+  // 2. new URL('literal', import.meta.url)  -- the literal is the relative path
+  NEWURL_RE.lastIndex = 0;
+  while ((m = NEWURL_RE.exec(text)) !== null) {
+    if (newUrlLiteralIsCandidate(m[2])) {
+      out.push({ file: rel, line: lineOf(text, m.index), kind: 'new URL', candidatePath: m[2], rawLiteral: m[2] });
+    }
+  }
+
+  // 3. path.join(EXPR, 'literal', 'literal', ...)  -- join all literal segments
+  PATHJOIN_RE.lastIndex = 0;
+  while ((m = PATHJOIN_RE.exec(text)) !== null) {
+    const openIdx = m.index + m[0].length;
+    const args = extractCallLiterals(text, openIdx);
+    const literalSegs = args
+      .map((a) => ({ value: a.value, quote: a.quote }))
+      .filter((a) => a.quote !== '`' && pathLikeOrNull(a.value) !== null)
+      .map((a) => a.value);
+    if (literalSegs.length === 0) continue;
+    // Join: separator is implicit; we keep '/' between segments
+    // (real path.join uses platform separator; for guard purposes
+    // we just need to compose a comparable path string).
+    const candidate = literalSegs.join('/');
+    if (pathLikeOrNull(candidate) !== null) {
+      out.push({ file: rel, line: lineOf(text, m.index), kind: 'path-join', candidatePath: candidate, rawLiteral: literalSegs.join("', '") });
+    }
+  }
+
+  // 4. bare join('literal', 'literal', ...)  -- same as path.join but for code that does `import { join }`
+  BAREJOIN_RE.lastIndex = 0;
+  while ((m = BAREJOIN_RE.exec(text)) !== null) {
+    const preceding = text.slice(Math.max(0, m.index - 8), m.index);
+    // Skip `path.join` (already caught by PATHJOIN_RE) and
+    // method calls (e.g. `array.join(separator)`,
+    // `userSections.join('\n\n---\n\n')`).
+    if (/[.\s]path$/.test(preceding) || /\.path\.join$/.test(preceding)) continue;
+    if (/\.\s*$/.test(preceding)) continue; // method call: `something.join(`
+    const openIdx = m.index + m[0].length;
+    const args = extractCallLiterals(text, openIdx);
+    const literalSegs = args
+      .map((a) => ({ value: a.value, quote: a.quote }))
+      .filter((a) => a.quote !== '`' && pathLikeOrNull(a.value) !== null)
+      .map((a) => a.value);
+    if (literalSegs.length === 0) continue;
+    const candidate = literalSegs.join('/');
+    if (pathLikeOrNull(candidate) !== null) {
+      out.push({ file: rel, line: lineOf(text, m.index), kind: 'path-join', candidatePath: candidate, rawLiteral: literalSegs.join("', '") });
+    }
+  }
+
+  // 5. resolve(__dirname, 'literal', ...)  -- treat __dirname as REPO_ROOT-relative
+  RESOLVE_DIRNAME_RE.lastIndex = 0;
+  while ((m = RESOLVE_DIRNAME_RE.exec(text)) !== null) {
+    const openIdx = m.index + m[0].length;
+    const args = extractCallLiterals(text, openIdx);
+    const literalSegs = args
+      .map((a) => ({ value: a.value, quote: a.quote }))
+      .filter((a) => a.quote !== '`' && pathLikeOrNull(a.value) !== null)
+      .map((a) => a.value);
+    if (literalSegs.length === 0) continue;
+    const candidate = literalSegs.join('/');
+    if (pathLikeOrNull(candidate) !== null) {
+      out.push({ file: rel, line: lineOf(text, m.index), kind: 'resolve-dirname', candidatePath: candidate, rawLiteral: literalSegs.join("', '") });
+    }
+  }
+
+  return out;
+}
+
+// Classify a single literal against the manifest + allowlist.
+// Returns { classification, reason }. `reason` is included for
+// the audit report / for failing messages.
+function classifyLiteral(candidatePath, manifest) {
+  const literal = candidatePath;
+  // 1. Encoding / option strings used in fs.readFile(..., 'utf8')
+  if (literal === 'utf8' || literal === 'utf-8' || literal === 'binary' || literal === 'hex' || literal === 'base64' || literal === 'ascii') {
+    return { classification: 'OPTION', reason: 'readFile encoding argument' };
+  }
+  // 2. Exact match against a TRACKED_RUNTIME_ASSET path
+  for (const a of manifest.assets ?? []) {
+    if (a.path === literal) {
+      return { classification: a.classification, reason: `manifest.assets path: ${a.path}` };
+    }
+  }
+  // 3. Sub-path match: if the literal starts with a TRACKED asset's
+  //    directory prefix, treat the literal as a sub-resource of the
+  //    TRACKED asset. (Example: 'apps/cli/prompts/analysis' prefixes
+  //    the 4 prompt files; resolved sub-resources are TRACKED.)
+  for (const a of manifest.assets ?? []) {
+    if (a.classification !== 'TRACKED_RUNTIME_ASSET') continue;
+    const dir = a.path.endsWith('/') ? a.path : a.path.replace(/\/[^/]+$/, '/');
+    if (dir && literal.startsWith(dir)) {
+      return { classification: 'TRACKED_RUNTIME_ASSET', reason: `sub-resource of manifest.assets path: ${a.path}` };
+    }
+  }
+  // 4. GENERATED: literal's basename matches the generatedFileBasenames list,
+  //    OR literal equals one of the directory names that the production
+  //    code uses to lay out per-run files.
+  const coverage = manifest.declaredDependencyCoverage ?? {};
+  for (const gen of coverage.generatedFileBasenames ?? []) {
+    if (literal === gen || literal.endsWith('/' + gen)) {
+      return { classification: 'GENERATED_RUNTIME_ASSET', reason: `matches generatedFileBasenames: ${gen}` };
+    }
+  }
+  // 5. USER_DATA: literal matches a known per-user / per-installation
+  //    path prefix.
+  for (const p of coverage.userDataPathPrefixes ?? []) {
+    if (literal === p || literal.startsWith(p) || literal.includes('/' + p)) {
+      return { classification: 'USER_DATA', reason: `matches userDataPathPrefixes: ${p}` };
+    }
+  }
+  // 6. SECRET: literal matches a known credential / key prefix.
+  for (const p of coverage.secretPathPrefixes ?? []) {
+    if (literal.toLowerCase().includes(p.toLowerCase())) {
+      return { classification: 'SECRET', reason: `matches secretPathPrefixes: ${p}` };
+    }
+  }
+  // 7. CACHE: literal matches a known transient cache prefix.
+  for (const p of coverage.cachePathPrefixes ?? []) {
+    if (literal.startsWith(p) || literal.includes('/' + p)) {
+      return { classification: 'CACHE', reason: `matches cachePathPrefixes: ${p}` };
+    }
+  }
+  return { classification: 'UNDECLARED', reason: 'no manifest match, no allowlist match' };
+}
+
+function checkDeclaredDependencyCoverage(manifest) {
+  const files = walkProductionFiles().filter((f) => !PRODUCTION_SCAN_EXCLUDE_FILES.has(path.relative(REPO_ROOT, f).replaceAll('\\', '/')));
+  for (const absFile of files) {
+    const deps = extractStaticDependenciesFromFile(absFile);
+    for (const d of deps) {
+      const { classification, reason } = classifyLiteral(d.candidatePath, manifest);
+      if (classification === 'UNDECLARED') {
+        fail(
+          'RUNTIME_ASSET_UNDECLARED',
+          `production reads undeclared static resource: candidatePath ${JSON.stringify(d.candidatePath)} at ${d.file}:${d.line} (${reason})`,
+          { file: d.file, line: d.line, kind: d.kind, candidatePath: d.candidatePath },
+        );
+      }
+    }
+  }
+}
+
 function main() {
   const manifest = readManifest();
   if (!manifest) {
@@ -320,6 +693,7 @@ function main() {
   checkExistenceAndTracking(manifest);
   checkRegistryClosure(manifest);
   checkPromptIntegrity();
+  checkDeclaredDependencyCoverage(manifest);
   printAndExit();
 }
 

@@ -172,8 +172,89 @@ Masterpiece-OS-Projects/
 | 2. Manifest written with initial inventory | `config/repository-contract/runtime-static-assets.json` |
 | 3. Guard script + npm command | `scripts/verify-tracked-runtime-assets.mjs` + `npm run verify:tracked-runtime-assets` |
 | 4. Guard wired into `repo:verify` | `package.json` script chain (after `verify:production-boundaries`, before `verify:no-project-specific-production-rules`) |
-| 5. Guard self-tests | `tests/tracked-runtime-assets-guard.test.js` (10 cases per spec §22) |
-| 6. Existing guards left green | A4 `verify-a4-secret-safety` (1742+ tracked files, 0 secret matches) + existing 9 verify gates + 6 A4 guards |
+| 5. Guard self-tests | `tests/tracked-runtime-assets-guard.test.js` (10 spec cases + 3 bonus + 3 Check H cases) |
+| 6. Existing guards left green | A4 `verify-a4-secret-safety` (1753+ tracked files, 0 secret matches) + existing 9 verify gates + 6 A4 guards |
+
+## 5.5 Declared Dependency Coverage (Check H, 2026-08-12)
+
+In addition to Checks A-G (which verify that the manifest's
+declared assets exist + are Git tracked), the guard now
+performs **Check H — Runtime Dependency Declaration Coverage**:
+for every static filesystem call in production code
+(`fs.readFile*` / `fs.existsSync` / `fs.readdir*` /
+`new URL(..., import.meta.url)` / `path.join(...)` /
+`resolve(__dirname, ...)`), it extracts any string literal
+arguments and classifies the resulting candidate path
+against:
+
+1. The manifest's `assets[]` (TRACKED_RUNTIME_ASSET
+   exact match, or sub-resource of a TRACKED asset's
+   directory prefix)
+2. `declaredDependencyCoverage.generatedFileBasenames` —
+   the basename allowlist of known per-run output files
+   (task-contract.json, run.json, trace.json, compiled-prompt.*,
+   provider-payload.redacted.json, Anchor-Generation-Brief.md,
+   visual-decision-packet.*.json, etc., 100+ entries; the
+   allowlist is in the manifest itself, not in the script,
+   so future maintainers can extend it without touching
+   code)
+3. `declaredDependencyCoverage.userDataPathPrefixes` —
+   known per-user / per-installation / per-project
+   paths (projects/, outputs/, userData/, .runtime/,
+   node-credentials/, master.key, settings.json, etc.)
+4. `declaredDependencyCoverage.secretPathPrefixes` —
+   known credential / key / token paths
+5. `declaredDependencyCoverage.cachePathPrefixes` —
+   known transient / cache paths (.runtime/, .codex-*/,
+   node_modules/, etc.)
+
+Anything that does not match one of the above is
+classified as `UNDECLARED` and fails the guard with
+`RUNTIME_ASSET_UNDECLARED`.
+
+The classifier is implemented in
+`scripts/verify-tracked-runtime-assets.mjs`
+(`classifyLiteral` + `checkDeclaredDependencyCoverage`).
+The 3 new self-tests (Cases A, B, C) in
+`tests/tracked-runtime-assets-guard.test.js` verify that:
+
+- **A** — a local-only untracked asset referenced from
+  production fails (`RUNTIME_ASSET_UNDECLARED`).
+- **B** — a tracked but undeclared asset referenced from
+  production fails (`RUNTIME_ASSET_UNDECLARED`; Git
+  tracked alone does not equal "declared as a runtime
+  dependency").
+- **C** — once the asset is declared in the manifest,
+  declaration coverage passes and the original
+  existence + tracking checks take over.
+
+### 5.5.1 Coverage status (current repository)
+
+| Layer | Count | Status |
+|---|---|---|
+| `assets[]` (TRACKED, manifest-declared) | 8 | verified (4 prompts + 1 registry + 3 anchor images) |
+| `generatedFileBasenames` (allowlist) | 100+ | covers every per-run / per-project output filename the production code currently emits |
+| `userDataPathPrefixes` (allowlist) | 31 | covers projects/, outputs/, userData/, .runtime/, settings.json, credentials, etc. |
+| `secretPathPrefixes` (allowlist) | 6 | covers master.key, credentials, .env, etc. |
+| `cachePathPrefixes` (allowlist) | 14 | covers .runtime/, .codex-*/, node_modules/, etc. |
+| `loaderClassifications` (explicit loader registry) | 4 | analysis-prompt-loader, analysis-prompt-loader-secondary, space-anchor-registry-loader, web-runtime-config-loader |
+| Current `verify:tracked-runtime-assets` status | PASS | 0 undeclared literals found in 17 production roots |
+
+### 5.5.2 What Check H does NOT prove
+
+- It does NOT catch dynamic filesystem reads (variable
+  paths, env-var-derived paths, paths from `path.join(EXPR,
+  var1, var2)` with no string literals). Such dynamic
+  reads are inherently un-provable by static analysis
+  and require either a manual audit (recorded in the
+  loaderClassifications block) or runtime instrumentation.
+- It does NOT auto-discover new production files that are
+  added to the codebase; the manifest's allowlists are
+  maintained by hand. A future P3 / D2 phase may add
+  AST-based discovery, but P1 ships with the manual
+  approach (per the spec's permission of "targeted static
+  literal detection + explicit loader classification
+  registry + allowlist" combination).
 
 ## 6. Unresolved risks (per spec §24)
 
