@@ -1,0 +1,15 @@
+{
+  "pathCases": [
+    { "name": "historical R11 evidence remains legal", "path": "evaluation/reports/R11/audit.md", "expectedCode": null },
+    { "name": "schema v1 remains legal", "path": "packages/example/src/schemas/v1", "expectedCode": null },
+    { "name": "API v2 remains legal", "path": "packages/example/src/api/v2", "expectedCode": null },
+    { "name": "current v13 implementation fails", "path": "packages/example/src/v13/compiler", "expectedCode": "RC001" },
+    { "name": "latest implementation fails", "path": "packages/example/src/latest/compiler", "expectedCode": "RC001" },
+    { "name": "final implementation fails", "path": "packages/example/src/final/compiler", "expectedCode": "RC001" }
+  ],
+  "referenceCases": [
+    { "name": "production archive import fails", "file": "packages/example/src/index.ts", "line": "import value from '../../../archive/value.js';", "expectedCode": "RC002" },
+    { "name": "production Electron import fails", "file": "apps/web/src/App.tsx", "line": "import { ipcRenderer } from 'electron';", "expectedCode": "RC002" },
+    { "name": "local smoke artifact input fails", "file": "tests/example.test.js", "line": "readFileSync('.codex-smoke/output.json');", "expectedCode": "RC007" }
+  ]
+}

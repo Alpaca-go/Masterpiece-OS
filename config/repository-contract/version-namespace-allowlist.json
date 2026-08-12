@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "1.0",
+  "entries": [
+    {
+      "path": "packages/image-generation-runtime/src/vnext",
+      "classification": "COMPATIBILITY",
+      "reason": "Package subpath compatibility forwards to the semantic generation implementation.",
+      "owner": "image-generation-runtime",
+      "removalCondition": "No supported consumer imports @masterpiece/image-generation-runtime/vnext."
+    }
+  ]
+}

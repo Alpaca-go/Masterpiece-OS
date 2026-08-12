@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "1.0",
+  "freezeCommit": "b0d83678a333cd270fe28136b632003244aa9f9c",
+  "authorities": [
+    { "capability": "project-runtime", "authority": "apps/web-runtime/src/node-runtime-host.ts", "ownerLayer": "node-host" },
+    { "capability": "web-ui", "authority": "apps/web/src/App.tsx", "ownerLayer": "web-renderer" },
+    { "capability": "visual-analysis", "authority": "apps/cli/src/analysis-engine/bootstrap.js", "ownerLayer": "analysis-runtime" },
+    { "capability": "document-context", "authority": "packages/runtime-core/src/application/document-context-service.ts", "ownerLayer": "shared-runtime" },
+    { "capability": "reference-first", "authority": "packages/runtime-core/src/application/reference-first-reconstruction.ts", "ownerLayer": "shared-runtime" },
+    { "capability": "space-generation", "authority": "packages/image-generation-runtime/src/space/compiler.js", "ownerLayer": "shared-core" },
+    { "capability": "continuation", "authority": "packages/image-generation-runtime/src/space/continuation/index.js", "ownerLayer": "shared-core" },
+    { "capability": "packaging", "authority": "packages/image-generation-runtime/src/prompt-contracts/packaging-contract.js", "ownerLayer": "shared-core" },
+    { "capability": "prompt-compilation", "authority": "packages/image-generation-runtime/src/generation/prompt-compiler.js", "ownerLayer": "shared-core" },
+    { "capability": "creative-production", "authority": "packages/runtime-core/src/application/creative-production-bootstrap-service.ts", "ownerLayer": "shared-runtime" },
+    { "capability": "provider-selection", "authority": "packages/model-registry/src/index.js", "ownerLayer": "shared-core" },
+    { "capability": "runtime-configuration", "authority": "apps/web-runtime/src/node-settings-store.ts", "ownerLayer": "node-host" },
+    { "capability": "credentials", "authority": "apps/web-runtime/src/node-credential-store.ts", "ownerLayer": "node-host" },
+    { "capability": "operation-dispatch", "authority": "apps/web-runtime/src/current-operation-graph.ts", "ownerLayer": "operation-registry" },
+    { "capability": "cli", "authority": "apps/cli/bin/masterpiece-os.js", "ownerLayer": "cli" }
+  ]
+}

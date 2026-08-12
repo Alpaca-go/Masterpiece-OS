@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "1.0",
+  "algorithm": "sha256",
+  "entries": [
+    { "path": "apps/cli/prompts/analysis/benchmark-instructions.md", "sha256": "DF937BBC81BF1C7335933952EEF5DB654C73B485BFF52A67ABED2618ECEE71CB", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
+    { "path": "apps/cli/prompts/analysis/deep-creative-director.md", "sha256": "4D258CCE657F023D054C86EE54C661FAB9382387847904A4B386E5A674B46142", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
+    { "path": "apps/cli/prompts/analysis/execution-core-template.md", "sha256": "D20DEF82F1D881A276007FB408FE62C92634F80BB346DA0A52AA2FDFB8C3D54C", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
+    { "path": "apps/cli/prompts/analysis/report-schema.md", "sha256": "CAE74A0AB49CA33827E09194005DF0D35BC979AD0E8F7165BD80524A20D637AF", "classification": "FROZEN", "reason": "Production-critical analysis report contract included in the S7 behavior baseline." }
+  ]
+}

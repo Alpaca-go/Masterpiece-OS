@@ -1,5 +1,9 @@
 # Masterpiece-OS development rules
 
+> Repository Contract 入口：修改 Current Production 前，先阅读
+> `docs/repository/AGENT_REPOSITORY_RULES.md` 与
+> `docs/repository/REPOSITORY_CONTRACT.md`。
+
 > 给 AI coding agent 和开发者阅读的工程现实说明。
 > 文档结构与产品定位以 `5.0.0-rc.1` 为准；`3.3` / `V18` / `vnext` /
 > `V6` 阶段名称在用户可见文案中已不再使用。
