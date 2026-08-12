@@ -22,17 +22,20 @@ const configuration = {
   baseUrl: 'https://ark.cn-beijing.volces.com/api/plan/v3',
 };
 
-test('Volcengine adapter resolves the configured Profile and stays out of the default registry', () => {
+test('Volcengine adapter is the default Analysis Provider in A2-H (and Qwen remains as alternative)', () => {
+  // A2-H: Volcengine is now the DEFAULT Visual Analysis provider
+  // (A2-G CHANGE_DEFAULT_TO_VOLCENGINE). Qwen is preserved as
+  // ALTERNATIVE / FALLBACK / REGRESSION_BASELINE (A2-H §11).
+  // The default registry contains BOTH providers; DEFAULT first,
+  // ALTERNATIVE second. The actual dispatch is `supports(configuration)`-
+  // driven, not array-position-driven.
   const defaultRegistry = createDefaultAnalysisProviderRegistry();
-  assert.equal(defaultRegistry.list().length, 1);
-  assert.equal(defaultRegistry.list()[0].id, 'qwen');
-
-  const a2Registry = createDefaultAnalysisProviderRegistry({
-    additionalProviders: [createVolcengineAnalysisProvider()],
-  });
-  const ids = a2Registry.list().map((entry) => entry.id);
-  assert.deepEqual(ids, ['qwen', 'volcengine']);
-  assert.equal(a2Registry.resolve(configuration).id, baseline.providerId);
+  const defaultIds = defaultRegistry.list().map((entry) => entry.id);
+  assert.equal(defaultIds.length, 2);
+  assert.equal(defaultIds[0], 'volcengine');
+  assert.equal(defaultIds[1], 'qwen');
+  // A Volcengine configuration resolves to Volcengine.
+  assert.equal(defaultRegistry.resolve(configuration).id, baseline.providerId);
 });
 
 for (const matcher of baseline.supportsMatchers) {
@@ -111,8 +114,11 @@ test('Volcengine adapter rejects unsupported profiles explicitly', () => {
   const provider = createVolcengineAnalysisProvider();
   assert.equal(provider.supports({ provider: 'volcengine', model: 'doubao-seed-2.1-turbo', protocol: 'seedream-image' }), false);
   assert.equal(provider.supports({ provider: 'qwen', model: 'qwen3.6-plus', protocol: 'openai-chat-multimodal' }), false);
+  // A2-H: Volcengine is now in the default registry (no `additionalProviders`
+  // injection needed). An unknown provider must still fail explicitly —
+  // no silent fallback to the new default.
   assert.throws(
-    () => createDefaultAnalysisProviderRegistry({ additionalProviders: [provider] }).resolve({ provider: 'unknown', protocol: 'openai-chat-multimodal', model: 'unknown' }),
+    () => createDefaultAnalysisProviderRegistry().resolve({ provider: 'unknown', protocol: 'openai-chat-multimodal', model: 'unknown' }),
     (error) => error instanceof AnalysisProviderError && error.code === 'MODEL_UNAVAILABLE',
   );
 });
@@ -129,8 +135,11 @@ for (const [source, expected] of [
   });
 }
 
-test('Qwen baseline registry is preserved when Volcengine is added via additionalProviders', () => {
-  // Same-Profile resolution must still pick Qwen for qwen credentials.
+test('Qwen baseline is preserved alongside the new Volcengine default (A2-H §11)', () => {
+  // A2-H: Volcengine is the new DEFAULT; Qwen is preserved as
+  // ALTERNATIVE / FALLBACK / REGRESSION_BASELINE. The default registry
+  // contains both. Explicit Qwen selection must still resolve to Qwen;
+  // a default Volcengine configuration must still resolve to Volcengine.
   const qwenConfiguration = {
     provider: 'qwen',
     protocol: 'openai-chat-multimodal',
@@ -138,9 +147,7 @@ test('Qwen baseline registry is preserved when Volcengine is added via additiona
     apiKey: 'fixture-secret',
     baseUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1',
   };
-  const a2Registry = createDefaultAnalysisProviderRegistry({
-    additionalProviders: [createVolcengineAnalysisProvider()],
-  });
+  const a2Registry = createDefaultAnalysisProviderRegistry();
   assert.equal(a2Registry.resolve(qwenConfiguration).id, 'qwen');
   assert.equal(a2Registry.resolve(configuration).id, 'volcengine');
 });

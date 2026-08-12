@@ -22,8 +22,37 @@ const configuration = {
 
 test('default registry resolves the Qwen production baseline independently from model identity', () => {
   const registry = createDefaultAnalysisProviderRegistry();
+  // A2-H: explicit Qwen (provider='dashscope', model='qwen3.6-plus') still
+  // resolves to the Qwen baseline fixture. The default registry now
+  // contains BOTH Volcengine (DEFAULT per A2-G) and Qwen (ALTERNATIVE /
+  // FALLBACK per A2-H §11); explicit Qwen selection remains Qwen.
   assert.equal(registry.resolve(configuration).id, baseline.providerId);
-  assert.equal(registry.list().length, 1);
+  // A2-H: the default registry now lists 2 providers (Volcengine + Qwen).
+  // The array order encodes the role priority: DEFAULT first, ALTERNATIVE
+  // second. The actual dispatch is `supports(configuration)`-driven, not
+  // array-position-driven, so the order is informational.
+  const ids = registry.list().map((entry) => entry.id);
+  assert.equal(ids.length, 2);
+  assert.equal(ids[0], 'volcengine');
+  assert.equal(ids[1], 'qwen');
+});
+
+test('default registry first provider is Volcengine (A2-G default)', () => {
+  // A2-H: the default Visual Analysis provider is now Volcengine
+  // (A2-G CHANGE_DEFAULT_TO_VOLCENGINE). The first entry in the default
+  // registry's list is the canonical default.
+  const registry = createDefaultAnalysisProviderRegistry();
+  const ids = registry.list().map((entry) => entry.id);
+  assert.equal(ids[0], 'volcengine');
+});
+
+test('default registry still includes Qwen as alternative (A2-H §11 preservation)', () => {
+  // A2-H §11: Qwen must NOT be deleted or disabled. The default registry
+  // must continue to include Qwen so explicit Qwen selection keeps
+  // working (A2-H §13).
+  const registry = createDefaultAnalysisProviderRegistry();
+  const ids = registry.list().map((entry) => entry.id);
+  assert.ok(ids.includes('qwen'), 'Qwen must remain in the default registry (A2-H §11)');
 });
 
 test('Qwen adapter preserves the request envelope baseline', async () => {
