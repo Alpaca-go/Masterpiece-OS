@@ -1506,3 +1506,23 @@ export interface EvidenceBundle {
   bindings: ShortChainEvidenceBindings;
   capturedAt: string;
 }
+
+// ---------------------------------------------------------------------------
+// §6 Packaging V1 contract (frozen at Packaging P1)
+// ---------------------------------------------------------------------------
+
+export type {
+  PackagingShotContract,
+  PackagingFailureCode,
+} from './packaging-shot-contract.js';
+
+export {
+  PACKAGING_SHOT_CONTRACT_VERSION,
+  PACKAGING_SHOT_CONTRACTS,
+  PACKAGING_SHOT_CONTRACT_LABELS,
+  isPackagingShotContract,
+  PACKAGING_FAILURE_CODES_VERSION,
+  PACKAGING_FAILURE_CODES,
+  PACKAGING_AUTO_FAIL_CODES,
+  isPackagingFailureCode,
+} from './packaging-shot-contract.js';
