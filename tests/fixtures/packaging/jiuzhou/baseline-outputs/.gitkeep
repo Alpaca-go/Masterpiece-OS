@@ -1,0 +1,23 @@
+# Keep this directory in git even when empty.
+#
+# baseline-outputs/ holds the Golden Baseline Outputs for the
+# three V1 Packaging Shot Contracts. Each output is a
+# human-approved run record: prompt, provider/model, output
+# file path, rubric result, human-approval status, known
+# limitations. The directory is intentionally empty at P1
+# freeze time because the real provider runs are pending
+# the user opt-in (see docs/packaging/p1-final-report.md
+# §P1-D2 and the comparison protocol in
+# tests/fixtures/packaging/jiuzhou/prompts/_PROVENANCE.md).
+#
+# The schema + run helper are in P1 / D2 (see
+# scripts/run-packaging-golden-baseline.mjs). The first
+# approved runs will populate:
+#   baseline-outputs/hero/jiuzhou.hero.rf.v1/run-1/...
+#   baseline-outputs/series/jiuzhou.series.rf.v1/run-1/...
+#   baseline-outputs/open/jiuzhou.open.rf.v1/run-1/...
+#
+# Each run-* subdir is keyed by the goldenPromptId and a
+# monotonic run number; the directory is keyed by the shot
+# contract. Naming + manifest is frozen; only run-* content
+# is added by real provider calls.
