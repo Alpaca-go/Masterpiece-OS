@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "builtAt": "2026-08-12T10:04:25.477Z",
+  "a2dRunBatch": "2026-08-12T09-30-05-859Z",
+  "a2cManifestHash": "f57da490dcb31f99f07142aaa3b3fc9a2bd2be0d3a5b849e872adb117100cdaa",
+  "rubricFrozenAt": "2026-08-12T17:14:44+08:00",
+  "mappingFileSha256": "cb08760e44730816f3cb4573d5cd02a5e1b33c251c328d5367349d6831df50d0",
+  "assignments": [
+    {
+      "caseId": "C01",
+      "resultA": "qwen",
+      "resultB": "volcengine"
+    },
+    {
+      "caseId": "C02",
+      "resultA": "volcengine",
+      "resultB": "qwen"
+    },
+    {
+      "caseId": "C03",
+      "resultA": "qwen",
+      "resultB": "volcengine"
+    },
+    {
+      "caseId": "C04",
+      "resultA": "volcengine",
+      "resultB": "qwen"
+    },
+    {
+      "caseId": "C05",
+      "resultA": "qwen",
+      "resultB": "volcengine"
+    },
+    {
+      "caseId": "C06",
+      "resultA": "volcengine",
+      "resultB": "qwen"
+    },
+    {
+      "caseId": "C07",
+      "resultA": "qwen",
+      "resultB": "volcengine"
+    }
+  ]
+}
