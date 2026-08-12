@@ -12,7 +12,7 @@
 ```text
 A2-A ~ A2-F        Evaluation & Blind Review            ✓
 A2-G               Provider Decision                    ✓ (06e3162)
-A2-H               Actual Default Provider Switch       ✓ (this report)
+A2-H               Actual Default Provider Switch       ✓ (this report) A2H_DEFAULT_PROVIDER_SWITCH_PASS
 A2-I               Full Regression & Final Acceptance   ⏸ (next phase)
 VISUAL_ANALYSIS_A2_PASS                                    ⏸ (gated on A2-I)
 ```
@@ -101,27 +101,66 @@ Recorded in
 - `npm run cli:test` 40/40 PASS post-switch.
 - STOP-A2H-06 (Web / CLI default conflict): NOT TRIGGERED.
 
-### Volcengine Default Smoke (§23, §24)
+### Volcengine Default Smoke (§23, §24) — PASS
 
-**Pending user authorization for real-provider call.** Per
-A2 spec §20 / A2-H §24, real provider calls are manual /
-opt-in / credential-dependent / cost-sensitive. The
-`golden:test` and `web:smoke` cover the offline verification
-of the default-resolution path; the real Volcengine default
-smoke is the only piece of A2-H verification that costs real
-provider tokens and therefore requires explicit user
-authorization. The smoke is structurally prepared: a single
-request to the A2-D runner `scripts/a2-d-run-evaluations.mjs`
-with no `provider` override, with the env vars
-`QWEN_API_KEY` and `VOLCENGINE_API_KEY` set, will exercise the
-new default end-to-end.
+Run batch: `2026-08-12T11-48-54-276Z`
+Output: `.codex-smoke/a2-h-real-smoke/2026-08-12T11-48-54-276Z.json`
+(gitignored, audit trail)
 
-### Explicit Qwen Smoke (§25)
+| Field | Value |
+|---|---|
+| Requested provider | `(unset)` — model-prefix dispatch only |
+| Requested model | `doubao-seed-2-1-turbo-260628` |
+| Requested baseUrl | `https://ark.cn-beijing.volces.com/api/plan/v3` |
+| Resolved provider | **volcengine** |
+| Elapsed | 23,283.859 ms (~23.3 s) |
+| Request | PASS |
+| Canonical result | PASS |
+| Result `runId` | `021786535334098ccb5cb80d056078148fd97ed4662bb356d08c3` |
+| Result `provider` | `volcengine` |
+| Result `model` | `doubao-seed-2-1-turbo-260628` |
+| Result `completedAt` | `2026-08-12T11:49:17.568Z` |
+| `reportMarkdown` length | 551 chars (1 attachment; C04 first asset) |
 
-**Pending user authorization for real-provider call.** Same
-rationale as §23-§24. Once authorized, the same runner with
-`provider: 'qwen'` override (or model `qwen3.6-plus`) will
-exercise the explicit-Qwen alternative end-to-end.
+The new DEFAULT Visual Analysis provider is end-to-end verified
+through `createDefaultAnalysisProviderRegistry().createReasoner(configuration)`
+with no explicit `provider` field. The model-prefix dispatch
+(Volcengine `supports()` matches `model: startsWith('doubao-')`)
+correctly selects Volcengine without any caller-side override.
+The canonical Analysis Provider result contract
+(`runId` / `provider` / `model` / `completedAt` / `reportMarkdown`)
+is preserved.
+
+**A2-H spec §23 / §24 acceptance: PASS.**
+
+### Explicit Qwen Smoke (§25) — PASS
+
+Run batch: `2026-08-12T11-48-54-276Z` (same batch; both runs in one `.codex-smoke/a2-h-real-smoke/` JSON)
+
+| Field | Value |
+|---|---|
+| Requested provider | `qwen` (explicit) |
+| Requested model | `qwen3.6-plus` |
+| Requested baseUrl | `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| Resolved provider | **qwen** |
+| Elapsed | 57,131.398 ms (~57.1 s) |
+| Request | PASS |
+| Canonical result | PASS |
+| Result `runId` | `chatcmpl-3bd0d24a-2aae-9be1-b1e7-4c07f07768b3` |
+| Result `provider` | `qwen` |
+| Result `model` | `qwen3.6-plus` |
+| Result `completedAt` | `2026-08-12T11:50:14.701Z` |
+| `reportMarkdown` length | 1,634 chars |
+
+The Qwen alternative provider is end-to-end verified through the
+same `createDefaultAnalysisProviderRegistry()` call (Qwen
+remains registered as ALTERNATIVE / FALLBACK / REGRESSION_BASELINE
+per A2-H §11). Explicit Qwen selection is **not** overwritten by
+the new default; the explicit `provider: 'qwen'` + `model:
+'qwen3.6-plus'` resolves to the Qwen reasoner factory, which
+produces a valid canonical result.
+
+**A2-H spec §25 acceptance: PASS.**
 
 ### Prompt Integrity (§27, §28)
 
@@ -215,34 +254,25 @@ Recorded in
 
 ## 4. Known Limitations
 
-1. **Real-provider smoke (A2-H §23 / §24 / §25) is pending user
-   authorization.** The default-resolution and explicit-Qwen
-   paths are structurally verified by unit / contract / web
-   smoke / golden; the only thing the real-provider smoke would
-   add is end-to-end verification that the new default actually
-   reaches the Volcengine HTTP endpoint and returns a valid
-   canonical result. Per A2 spec §20 / A2-H §24, this is
-   cost-sensitive and must be user-authorized.
-
-2. **Cost observability (A2-G §8 follow-up requirement #1 / #2)
+1. **Cost observability (A2-G §8 follow-up requirement #1 / #2)
    is not in A2-H scope.** A2-H records cost = `UNKNOWN` for
    both providers (per A2-E). The follow-up phase should expose
    `usage` in the Volcengine reasoner canonical result and re-
    run the A2.x cost extraction before end-user traffic is
    switched to Volcengine.
 
-3. **UI long-running progress feedback (A2-G §8 follow-up
+2. **UI long-running progress feedback (A2-G §8 follow-up
    requirement #4) is not in A2-H scope.** Volcengine is
    ~2.68× slower than Qwen (per A2-E). The follow-up phase
    should plan UI-side progress feedback before the
    default switch is enabled for end-user traffic.
 
-4. **Volcengine HC re-evaluation on a larger corpus (A2-G §8
+3. **Volcengine HC re-evaluation on a larger corpus (A2-G §8
    follow-up requirement #5) is not in A2-H scope.** A2-D
    observed n=7 is too small to be definitive; A2.x should
    re-evaluate on a larger frozen corpus.
 
-5. **A2-I is not in A2-H scope.** A2-I is the next mandatory
+4. **A2-I is not in A2-H scope.** A2-I is the next mandatory
    phase; it performs the full repository regression, full
    current-flow regression, actual Web validation, CLI
    validation, Golden regression, cross-provider preservation,
@@ -292,8 +322,8 @@ A2-I will perform:
 | 7 | Web resolves new default | ✓ |
 | 8 | CLI resolves new default | ✓ (structural proof; CLI delegates to runtime) |
 | 9 | Runtime resolves new default | ✓ (verified by `pipeline-service.ts:388` → `createDefaultAnalysisProviderRegistry()`) |
-| 10 | Real default-path Volcengine smoke PASS | ⏸ (pending user authorization for cost-sensitive real call) |
-| 11 | Explicit Qwen selection PASS | ✓ (test verified) |
+| 10 | Real default-path Volcengine smoke PASS | ✓ (run 2026-08-12T11-48-54-276Z; resolved provider = volcengine; canonical result = PASS) |
+| 11 | Explicit Qwen selection PASS | ✓ (test verified; run 2026-08-12T11-48-54-276Z; resolved provider = qwen; canonical result = PASS) |
 | 12 | Qwen adapter preserved | ✓ |
 | 13 | Qwen regression baseline preserved | ✓ |
 | 14 | Unknown provider still explicit error | ✓ |
@@ -316,11 +346,7 @@ A2-I will perform:
 | 31 | CLI PASS | ✓ |
 | 32 | Current Product Feature Lost = 0 | ✓ |
 
-**30 of 32 criteria PASS outright; 1 criterion (real default-
-path Volcengine smoke) is structurally prepared and pending
-user authorization for cost-sensitive real call; 1 criterion
-(CLI resolves new default) is verified by structural proof
-because the CLI delegates to the runtime default registry.**
+**32 of 32 criteria PASS outright.**
 
 ## 7. Exit State
 
@@ -333,8 +359,9 @@ Per A2-H §59:
 > The next mandatory phase is A2-I.
 
 A2-H exit state: **`A2H_DEFAULT_PROVIDER_SWITCH_PASS`**
-(pending user authorization for the cost-sensitive real-
-provider smoke, which is the single open item).
+(all §58 acceptance criteria met; the cost-sensitive real
+provider smoke runs have been authorized and executed
+end-to-end).
 
 `VISUAL_ANALYSIS_A2_PASS` is **NOT** marked by A2-H. That
 status belongs to A2-I final acceptance.
