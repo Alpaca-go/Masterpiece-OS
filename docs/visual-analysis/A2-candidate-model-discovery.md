@@ -3,7 +3,7 @@
 **Phase:** Visual Analysis A2 — Provider Candidate Integration & Model Evaluation Matrix
 **Batch:** A2-A
 **Date:** 2026-08-12
-**Status:** AWAITING_USER_CONFIRMATION
+**Status:** `A2_A_PASS` (user-confirmed 2026-08-12)
 **A1 Status:** `VISUAL_ANALYSIS_A1_PASS` (baseline contract established)
 **A2 Entry Gate:** PASS (unit / CLI / runtime / web:smoke / golden / actual web all green; see A2 regression report)
 
@@ -191,10 +191,12 @@ default CI.
 - [x] Candidate classification assigned
       (`ELIGIBLE` for Qwen and Seed 2.1 Turbo; all
       image-generation models `REJECTED` with reason).
-- [ ] User confirmation of the candidate set and Candidate count
-      target. **PENDING — see §6.**
-- [ ] User confirmation of the UNKNOWN capability probe plan.
-      **PENDING — see Q3.**
+- [x] User confirmation of the candidate set and Candidate count
+      target. **CONFIRMED 2026-08-12 — keep current set
+      (Qwen + doubao-seed-2.1-turbo only).**
+- [x] User confirmation of the UNKNOWN capability probe plan.
+      **CONFIRMED 2026-08-12 — manual / opt-in 4-class probe
+      (vision / multi-image / structured / context) accepted.**
 
-Once §6 is answered, A2-A closes and A2-B may begin with the
-agreed candidate set.
+A2-A closes. A2-B may begin with the agreed candidate set
+(Qwen baseline + Volcengine / doubao-seed-2.1-turbo).

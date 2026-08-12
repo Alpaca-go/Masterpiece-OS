@@ -4,6 +4,7 @@
 **Purpose:** Candidate Model Discovery — enumerate real Provider /
 model candidates for Visual Analysis evaluation, with verified
 access status and UNKNOWN capability flags.
+**Status:** `A2_A_PASS` (2026-08-12)
 
 ## Files
 
@@ -62,7 +63,9 @@ rollback.
 
 ## Result
 
-`A2_A_PENDING_USER_CONFIRMATION` — the A2-A exit gate is blocked
-on user answers to the three open questions. No code is held back
-by this; the gate exists to prevent A2-B from starting on a
-candidate list the user has not signed off.
+`A2_A_PASS` — user confirmed (2026-08-12):
+- candidate set = current (Qwen + doubao-seed-2.1-turbo only);
+- count target = Option A (1 candidate, smallest Evaluation budget);
+- capability probe plan = accepted (manual / opt-in 4-class probe).
+
+A2-B may begin with the agreed candidate set.
