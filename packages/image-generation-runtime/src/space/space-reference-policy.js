@@ -8,7 +8,7 @@
 // assets never become space references. If nothing is available we fail closed
 // with SPACE_REFERENCE_REQUIRED instead of silently generating text-only.
 //
-// This module is pure (no filesystem/IPC): the caller (vnext-service) supplies
+// This module is pure (no filesystem/IPC): the Short-Chain service supplies
 // asset metadata and resolved file paths. It returns the resolved references
 // plus a trace object that must be written into the run snapshot.
 

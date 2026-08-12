@@ -4,10 +4,10 @@ import test from 'node:test';
 // phase9b_quality the default.
 process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
 import {
-  compileVNextImageGeneration,
-  listVNextTemplateOptions,
-  listVNextTemplates,
-} from '@masterpiece/image-generation-runtime/vnext/index.js';
+  compileShortChainGeneration,
+  listShortChainTemplateOptions,
+  listShortChainTemplates,
+} from '@masterpiece/image-generation-runtime/generation/index.js';
 
 const context = (projectId) => ({
   schemaVersion: '2.0',
@@ -51,7 +51,7 @@ const representativeTasks = [
 ];
 
 test('Phase 2 exposes the complete MVP family, subtype, and shot matrix', () => {
-  const options = listVNextTemplateOptions();
+  const options = listShortChainTemplateOptions();
   assert.deepEqual(Object.keys(options), ['space', 'packaging', 'vi', 'poster']);
   assert.equal(options.space.subtypes.length, 10);
   assert.equal(options.space.shots.length >= 4, true);
@@ -64,7 +64,7 @@ test('Phase 2 exposes the complete MVP family, subtype, and shot matrix', () => 
 
 test('Phase 2 independently routes all four deliverable families', () => {
   for (const [family, subtype, shot] of representativeTasks) {
-    const result = compileVNextImageGeneration({
+    const result = compileShortChainGeneration({
       projectContext: context(`project-${family}`),
       task: {
         projectId: `project-${family}`,
@@ -87,7 +87,7 @@ test('Phase 2 independently routes all four deliverable families', () => {
 });
 
 test('Phase 2 rejects unknown subtype/shot combinations instead of drifting families', () => {
-  assert.throws(() => compileVNextImageGeneration({
+  assert.throws(() => compileShortChainGeneration({
     projectContext: context('project-space'),
     task: {
       projectId: 'project-space',
@@ -115,7 +115,7 @@ test('Phase 2 isolates the benchmark aesthetic as a project prompt asset', () =>
     createdAt: '2026-07-29T00:00:00.000Z',
     updatedAt: '2026-07-29T00:00:00.000Z',
   };
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainGeneration({
     projectContext: context('project-aesthetic'),
     projectPromptAsset,
     task: {
@@ -130,7 +130,7 @@ test('Phase 2 isolates the benchmark aesthetic as a project prompt asset', () =>
   });
   assert.match(result.compiledPrompt.finalPrompt, /restrained but not cold/u);
   assert.equal(result.compiledPrompt.trace.projectPromptAssetId, projectPromptAsset.id);
-  assert.throws(() => compileVNextImageGeneration({
+  assert.throws(() => compileShortChainGeneration({
     projectContext: context('project-other'),
     projectPromptAsset,
     task: {
@@ -146,6 +146,6 @@ test('Phase 2 isolates the benchmark aesthetic as a project prompt asset', () =>
 });
 
 test('Phase 2 common templates contain no benchmark-specific visual answers', () => {
-  const publicTemplates = JSON.stringify(listVNextTemplates());
+  const publicTemplates = JSON.stringify(listShortChainTemplates());
   assert.doesNotMatch(publicTemplates, /九州|冯烫烫|深紫|陶红|羽翼|restrained but not cold/iu);
 });

@@ -30,7 +30,7 @@ const {
 
 async function loadCompile() {
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
+  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const mod = await import(url);
   return mod;
 }
@@ -71,11 +71,11 @@ function buildTask(referenceAssetIds) {
 }
 
 async function compileWith(refs) {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'r10-workflow' };
   ctx.visualDecisionPacket = packet;
-  return compileVNextImageGeneration({
+  return compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task: buildTask(refs),

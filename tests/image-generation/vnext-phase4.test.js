@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  compileVNextCorrectionPrompt,
-  validateVNextDeliverableEvidence,
-} from '@masterpiece/image-generation-runtime/vnext/index.js';
+  compileShortChainCorrectionPrompt,
+  validateShortChainDeliverableEvidence,
+} from '@masterpiece/image-generation-runtime/generation/index.js';
 
 const taskContract = {
   schemaVersion: '1.0',
@@ -22,7 +22,7 @@ const taskContract = {
 };
 
 test('Phase 4 classifies a VI board returned for a space task as a hard mismatch', () => {
-  const validation = validateVNextDeliverableEvidence({
+  const validation = validateShortChainDeliverableEvidence({
     projectId: 'project-1',
     taskContract,
     runId: 'run-1',
@@ -47,7 +47,7 @@ test('Phase 4 classifies a VI board returned for a space task as a hard mismatch
 });
 
 test('Phase 4 refuses to self-certify an output without visible image evidence', () => {
-  const validation = validateVNextDeliverableEvidence({
+  const validation = validateShortChainDeliverableEvidence({
     projectId: 'project-1',
     taskContract,
     runId: 'run-1',
@@ -62,7 +62,7 @@ test('Phase 4 refuses to self-certify an output without visible image evidence',
 });
 
 test('Phase 4 correction prompt preserves original prompt and adds one explicit repair block', () => {
-  const validation = validateVNextDeliverableEvidence({
+  const validation = validateShortChainDeliverableEvidence({
     projectId: 'project-1',
     taskContract,
     runId: 'run-1',
@@ -77,7 +77,7 @@ test('Phase 4 correction prompt preserves original prompt and adds one explicit 
       brandMatch: 'matched',
     },
   });
-  const correction = compileVNextCorrectionPrompt({
+  const correction = compileShortChainCorrectionPrompt({
     originalPrompt: 'ORIGINAL PROMPT',
     taskContract,
     validation,

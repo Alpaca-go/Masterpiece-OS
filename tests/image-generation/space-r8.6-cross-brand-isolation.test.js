@@ -47,9 +47,9 @@ async function compileBrand(brand) {
     createdAt: '2026-08-08T00:00:00.000Z',
   };
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'phase9b_quality';
-  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
+  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const mod = await import(url);
-  const out = mod.compileVNextImageGeneration({ projectContext: context, model: 'doubao-seedream-5-0-pro-260628', task, brandKey: brand.key });
+  const out = mod.compileShortChainGeneration({ projectContext: context, model: 'doubao-seedream-5-0-pro-260628', task, brandKey: brand.key });
   return out.compiledPrompt.finalPrompt;
 }
 

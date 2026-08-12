@@ -10,8 +10,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  compilePhase9bSpacePrompt,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+  compileSpacePrompt,
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 import { readFileSync } from 'node:fs';
 
 const PACKET_PATH = 'space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json';
@@ -23,7 +23,7 @@ function loadJZMX() {
 
 test('source: rendered architecture blocks contain no motif literal', () => {
   const packet = loadJZMX();
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: {
       deliverableFamily: 'space',
@@ -49,7 +49,7 @@ test('source: rendered architecture blocks contain no motif literal', () => {
 
 test('source: experience goal / concept primary has no motif title', () => {
   const packet = loadJZMX();
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: { deliverableFamily: 'space', subtype: 'reception', aspectRatio: '16:9', mustAvoid: [] },
     brandKey: 'jiuzhou-aesthetics',
@@ -65,7 +65,7 @@ test('source: experience goal / concept primary has no motif title', () => {
 
 test('source: brand-motif stream captures the motif side', () => {
   const packet = loadJZMX();
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: { deliverableFamily: 'space', subtype: 'reception', aspectRatio: '16:9', mustAvoid: [] },
     brandKey: 'jiuzhou-aesthetics',
@@ -77,7 +77,7 @@ test('source: brand-motif stream captures the motif side', () => {
 
 test('source: prompt length is within +10% of the frozen R8.6 baseline smoke', () => {
   const packet = loadJZMX();
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: { deliverableFamily: 'space', subtype: 'reception', aspectRatio: '16:9', mustAvoid: [] },
     brandKey: 'jiuzhou-aesthetics',
@@ -97,7 +97,7 @@ test('source: prompt length is within +10% of the frozen R8.6 baseline smoke', (
 
 test('source: COMPILER still emits a complete block set', () => {
   const packet = loadJZMX();
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: { deliverableFamily: 'space', subtype: 'reception', aspectRatio: '16:9', mustAvoid: [] },
     brandKey: 'jiuzhou-aesthetics',
@@ -111,7 +111,7 @@ test('source: COMPILER still emits a complete block set', () => {
 
 test('source: brand translation block still mentions the brand explicitly', () => {
   const packet = loadJZMX();
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: { deliverableFamily: 'space', subtype: 'reception', aspectRatio: '16:9', mustAvoid: [] },
     brandKey: 'jiuzhou-aesthetics',

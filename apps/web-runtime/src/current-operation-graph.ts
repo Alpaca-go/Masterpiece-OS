@@ -30,7 +30,7 @@ export interface NodeSettingsAdapter {
 export function createCurrentBusinessOperations(services: RuntimeServices, settings: NodeSettingsAdapter) {
   const {
     projects, reports, pipeline, documentContext, projectContext, contextIntegration,
-    referenceAnchor, imageGeneration, vnextImageGeneration, creativeSessions,
+    referenceAnchor, imageGeneration, shortChainGeneration, creativeSessions,
     creativeDirections, styleProfiles, lockedAssets, visualMemory, anchorCandidates,
     visualCanons, referencePacks, creativeReading, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
@@ -47,7 +47,7 @@ export function createCurrentBusinessOperations(services: RuntimeServices, setti
     createContextIntegrationOperations({ contextIntegration }),
     createDocumentOperations({ documentContext, readTextFile: (source: string) => fs.readFile(source, 'utf8') }),
     createReferenceOperations({ referenceAnchor }),
-    createImageGenerationOperations({ service: imageGeneration, vnextService: vnextImageGeneration }),
+    createImageGenerationOperations({ service: imageGeneration, shortChainService: shortChainGeneration }),
     createCreativeSessionOperations({
       creativeSessions, creativeDirections, styleProfiles, visualCanons,
       imageGeneration, creativeReading, creativeGeneration,

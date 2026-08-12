@@ -13,7 +13,7 @@ import {
   sanitizeMaterials,
   sanitizeLighting,
   sanitizeDifferentiators,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 const MOTIF_TOKEN = /feather|peacock|plume|petal|lotus|\u7fbd\u6bdb|\u5b54\u96c0|\u7fce\u7fbd|\u82b1\u74e3|\u83b2/iu;
 

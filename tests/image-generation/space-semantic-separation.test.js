@@ -8,7 +8,7 @@ import {
   classifyPhrase,
   separateSpaceSemantics,
   SEMANTIC_CLASS,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 test('classifier: motif+spatial language is ambiguous (will be normalized)', () => {
   const r = classifyPhrase('peacock feather inspired spatial language', 'x');

@@ -16,7 +16,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 
 async function loadCompile() {
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
+  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const mod = await import(url);
   return mod;
 }
@@ -48,11 +48,11 @@ function buildTask(referenceAssetIds, generationBasis = referenceAssetIds.length
 }
 
 test('R10 Standard refs=0: no auto-attached reference, providerReferenceCount stays 0', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'r10-final-policy' };
   ctx.visualDecisionPacket = packet;
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task: buildTask([], 'standard'),
@@ -70,11 +70,11 @@ test('R10 Standard refs=0: no auto-attached reference, providerReferenceCount st
 });
 
 test('R10 Reference-First explicit refs>=1 records id/source/count', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'r10-final-policy' };
   ctx.visualDecisionPacket = packet;
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task: buildTask(['explicit-ref-1'], 'reference_first'),

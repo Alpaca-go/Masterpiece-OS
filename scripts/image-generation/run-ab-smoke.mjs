@@ -1,11 +1,11 @@
-﻿#!/usr/bin/env node
+#!/usr/bin/env node
 // Phase 9B Space Quality — offline A/B parity runner (Recovery R6).
 //
 // This script compiles BOTH:
 //   Mode A  — frozen Phase 9B Mode B experimental pipeline
 //             (space-generator/v1-experimental/spatial-intelligence-pipeline)
 //   Mode B  — repaired production compiler
-//             (@masterpiece/image-generation-runtime/vnext/space-quality)
+//             (@masterpiece/image-generation-runtime/generation/space-quality)
 //
 // using the SAME V5 VisualDecisionPacket, task contract, brand key, anchors
 // and reference set. It emits:
@@ -108,13 +108,13 @@ function compareSequences(aIds, bIds) {
 }
 
 async function compileModeB(packet, taskContract, brandKey) {
-  const { compilePhase9bSpacePrompt } = await import(
-    pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/space/phase9b-space-compiler.js')).href
+  const { compileSpacePrompt } = await import(
+    pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/space/compiler.js')).href
   );
   const { runSpaceQualityGate } = await import(
     pathToFileURL(path.join(REPO_ROOT, 'packages/image-generation-runtime/src/space/space-quality-gate.js')).href
   );
-  const result = compilePhase9bSpacePrompt({
+  const result = compileSpacePrompt({
     packet,
     taskContract,
     brandKey,

@@ -22,7 +22,7 @@
 // architecture/material/lighting/function content should be >= 70% and
 // negatives <= 30%.
 
-import { SEEDREAM_ADAPTER_CAPABILITY } from '../vnext/seedream-adapter.js';
+import { SEEDREAM_ADAPTER_CAPABILITY } from '../generation/seedream-adapter.js';
 
 const QUALITY_BUDGET = 7_500;
 const TARGET_MAX = 9500;

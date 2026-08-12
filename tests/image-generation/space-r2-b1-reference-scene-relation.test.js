@@ -1,4 +1,4 @@
-// r2.0 §4.9: VNextReferenceSceneRelation is auxiliary metadata that describes
+// r2.0 §4.9: ShortChainReferenceSceneRelation is auxiliary metadata that describes
 // how the reference image's scene relates to the target scene. It must NEVER
 // replace Target Scene Functional Authority, and it is only meaningful for
 // reference_first generations. For standard / continuation the field is
@@ -12,9 +12,9 @@ import test from 'node:test';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const taskContractUrl = pathToFileURL(
-  path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/task-contract.js'),
+  path.join(repoRoot, 'packages/image-generation-runtime/src/generation/task-contract.js'),
 ).href;
-const { createVNextTaskContract } = await import(taskContractUrl);
+const { createShortChainTaskContract } = await import(taskContractUrl);
 
 function baseInput(overrides = {}) {
   return {
@@ -34,14 +34,14 @@ function baseInput(overrides = {}) {
 }
 
 test('r2.0 B-1: reference_first + no referenceSceneRelation defaults to "unknown"', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'reference_first',
   }));
   assert.equal(contract.referenceSceneRelation, 'unknown');
 });
 
 test('r2.0 B-1: reference_first + cross_scene is preserved', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'reference_first',
     referenceSceneRelation: 'cross_scene',
   }));
@@ -49,7 +49,7 @@ test('r2.0 B-1: reference_first + cross_scene is preserved', () => {
 });
 
 test('r2.0 B-1: reference_first + same_scene is preserved', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'reference_first',
     referenceSceneRelation: 'same_scene',
   }));
@@ -57,7 +57,7 @@ test('r2.0 B-1: reference_first + same_scene is preserved', () => {
 });
 
 test('r2.0 B-1: reference_first + invalid value falls back to "unknown" (never throws)', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'reference_first',
     referenceSceneRelation: 'made_up_value',
   }));
@@ -65,7 +65,7 @@ test('r2.0 B-1: reference_first + invalid value falls back to "unknown" (never t
 });
 
 test('r2.0 B-1: reference_first + null falls back to "unknown"', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'reference_first',
     referenceSceneRelation: null,
   }));
@@ -73,7 +73,7 @@ test('r2.0 B-1: reference_first + null falls back to "unknown"', () => {
 });
 
 test('r2.0 B-1: standard omits referenceSceneRelation (not applicable)', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'standard',
     referenceAssetIds: [],
     referenceSceneRelation: 'cross_scene',
@@ -82,7 +82,7 @@ test('r2.0 B-1: standard omits referenceSceneRelation (not applicable)', () => {
 });
 
 test('r2.0 B-1: continuation omits referenceSceneRelation (world_consistency already expresses this)', () => {
-  const contract = createVNextTaskContract(baseInput({
+  const contract = createShortChainTaskContract(baseInput({
     generationBasis: 'continuation',
     referenceSceneRelation: 'cross_scene',
     continuation: {
@@ -102,7 +102,7 @@ test('r2.0 B-1: referenceSceneRelation never throws, even with totally bogus inp
   // Sanity: the field is auxiliary. The contract must remain valid for any
   // value. This is the guarantee Reference Boundary (B-3) and Provider
   // capability detection (B-2) rely on — they read the field, they must
-  // not have to wrap createVNextTaskContract in try / catch.
+  // not have to wrap createShortChainTaskContract in try / catch.
   const variants = [
     undefined,
     null,
@@ -117,7 +117,7 @@ test('r2.0 B-1: referenceSceneRelation never throws, even with totally bogus inp
     'SAME_SCENE',
   ];
   for (const value of variants) {
-    const contract = createVNextTaskContract(baseInput({
+    const contract = createShortChainTaskContract(baseInput({
       generationBasis: 'reference_first',
       referenceSceneRelation: value,
     }));

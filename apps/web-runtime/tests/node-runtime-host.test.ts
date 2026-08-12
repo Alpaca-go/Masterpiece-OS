@@ -43,7 +43,7 @@ test('Node Runtime Host binds all 147 channels to the Shared Registry without El
   assert.ok(Array.isArray((await rpc(host.url, 'reference-anchor:list-runs', [])).result));
   assert.equal((await rpc(host.url, 'analysis:cancel', ['__no_active_project__'])).result, false);
   assert.ok((await rpc(host.url, 'image-generation:get-capabilities', [])).result.modelId);
-  assert.ok((await rpc(host.url, 'image-generation:vnext-options', [])).result);
-  const invalidCompile = await rpc(host.url, 'image-generation:vnext-compile', [{ projectId: '__missing__' }], 500);
+  assert.ok((await rpc(host.url, 'image-generation:short-chain-options', [])).result);
+  const invalidCompile = await rpc(host.url, 'image-generation:short-chain-compile', [{ projectId: '__missing__' }], 500);
   assert.ok(invalidCompile.error);
 });

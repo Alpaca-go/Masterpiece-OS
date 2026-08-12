@@ -18,7 +18,7 @@ test('Image, continuation and packaging operations dispatch without Electron', a
     saveReview: async () => ({}),
     readImageDataUrl: async () => 'data:image/png;base64,test',
   };
-  const vnextService = {
+  const shortChainService = {
     listOptions: async () => ['standard-space', 'packaging'],
     compile: async (input) => ({ kind: 'vnext-compiled', input }),
     start: async (input) => ({ kind: 'vnext-started', input }),
@@ -33,16 +33,16 @@ test('Image, continuation and packaging operations dispatch without Electron', a
     postCompositeLogo: async () => ({}),
   };
   const registry = createOperationRegistry();
-  registry.registerAll(createImageGenerationOperations({ service, vnextService }));
+  registry.registerAll(createImageGenerationOperations({ service, shortChainService }));
 
   assert.deepEqual(await registry.execute('image-generation:compile', [{ projectId: 'p1' }]), {
     kind: 'compiled',
     input: { projectId: 'p1' },
   });
-  assert.deepEqual(await registry.execute('image-generation:vnext-compile', [{ outputType: 'packaging_render' }]), {
+  assert.deepEqual(await registry.execute('image-generation:short-chain-compile', [{ outputType: 'packaging_render' }]), {
     kind: 'vnext-compiled',
     input: { outputType: 'packaging_render' },
   });
-  await registry.execute('image-generation:vnext-continue-same-type', ['p1', 'continue', 'profile', true]);
+  await registry.execute('image-generation:short-chain-continue-same-type', ['p1', 'continue', 'profile', true]);
   assert.deepEqual(calls, [['p1', 'continue', 'profile', true]]);
 });

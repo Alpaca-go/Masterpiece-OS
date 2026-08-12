@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 async function loadCompile() {
-  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
+  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const mod = await import(url);
   return mod;
 }
@@ -51,12 +51,12 @@ function buildTask(family, subtype, shot) {
 }
 
 test('R9 compile emits the spaceGeneration trace schema (space route)', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'r9-trace' };
   ctx.visualDecisionPacket = packet;
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task: buildTask('space', 'reception', 'entrance_view'),
@@ -94,17 +94,17 @@ test('R9 packaging route stays on the packaging compiler (no space trace)', asyn
   // which is beyond this offline unit test. Instead we verify the router in
   // compile.js: only deliverableFamily === 'space' may enter the production
   // Space Compiler (which is the only path that emits the spaceGeneration
-  // trace); packaging/vi/poster fall through to compileVNextPrompt and never
+  // trace); packaging/vi/poster fall through to compileShortChainPrompt and never
   // get a spaceGeneration trace injected.
   const compileSrc = fs.readFileSync(
-    path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js'),
+    path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js'),
     'utf8',
   );
   assert.match(compileSrc, /deliverableFamily === 'space'/, 'router guards on space family');
   assert.match(compileSrc, /isProductionSpaceMode\(spaceMode\)/, 'production space gate');
   // The spaceGeneration trace is only assembled inside the space compile path.
   assert.match(compileSrc, /spaceGeneration:/, 'spaceGeneration emitted only in space path');
-  // compileVNextPrompt (packaging) path does not reference spaceGeneration.
-  const legacyBlock = compileSrc.split('compileVNextPrompt({')[1]?.slice(0, 400) ?? '';
+  // compileShortChainPrompt (packaging) path does not reference spaceGeneration.
+  const legacyBlock = compileSrc.split('compileShortChainPrompt({')[1]?.slice(0, 400) ?? '';
   assert.ok(!/spaceGeneration/.test(legacyBlock), 'packaging path has no spaceGeneration');
 });

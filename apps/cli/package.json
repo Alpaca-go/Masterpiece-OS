@@ -11,7 +11,7 @@
   "scripts": {
     "analyze": "node ./bin/masterpiece-os.js analyze",
     "inventory": "node ./bin/masterpiece-os.js inventory",
-    "test": "node --test tests/*.test.js tests/v5/*.test.js"
+    "test": "node --test tests/*.test.js tests/analysis-engine/*.test.js"
   },
   "dependencies": {
     "@masterpiece/document-ingestion": "file:../../packages/document-ingestion",

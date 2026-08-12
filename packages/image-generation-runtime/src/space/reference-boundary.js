@@ -51,7 +51,7 @@ const TARGET_SCENE_AUTHORITATIVE = [
  *        'same_scene' | 'cross_scene' | 'unknown' — auxiliary metadata only.
  * @param {string} [input.targetSceneLabel]     human-readable scene name (e.g. 'consultation')
  * @param {object|null|undefined} [input.adapterCapability]
- *        VNextAdapterCapability shape. When referenceStrengthControl.supported
+ *        ShortChainAdapterCapability shape. When referenceStrengthControl.supported
  *        is true the block mentions the official weight parameter. When
  *        false the block is honest about it (does not pretend to control).
  * @returns {string|null} the boundary block text, or null when the block

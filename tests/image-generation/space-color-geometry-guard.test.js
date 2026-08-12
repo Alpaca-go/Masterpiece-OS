@@ -10,7 +10,7 @@ import {
   normalizeArchitectureSemantics,
   compileSpatialMechanisms,
   SEMANTIC_CLASS,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 test('color+geometry coupling is flagged color_geometry', () => {
   const r = classifyPhrase('purple feather membrane descends and forms ceiling structure', 'signatureSpatialMechanism');

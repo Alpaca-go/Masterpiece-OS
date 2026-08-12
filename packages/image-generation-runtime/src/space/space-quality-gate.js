@@ -7,7 +7,7 @@
 //   - SPACE_POSITIVE_ARCHITECTURE_TOO_WEAK : architecture blocks empty/thin
 //   - SPACE_NEGATIVE_DENSITY_TOO_HIGH      : negatives outweigh positive (warn only)
 //
-// The reference count is supplied by the caller (vnext-service) after it
+// The reference count is supplied by the Short-Chain service after it
 // resolves references; this module stays pure and offline.
 
 /**

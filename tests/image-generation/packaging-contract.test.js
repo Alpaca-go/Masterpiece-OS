@@ -1,10 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { compileVNextImageGeneration } from '@masterpiece/image-generation-runtime/vnext/index.js';
+import { compileShortChainGeneration } from '@masterpiece/image-generation-runtime/generation/index.js';
 import { phase1Context } from '../fixtures/phase1.js';
 
 test('Jiuzhou spatial decisions compile into a fourteen-block packaging contract', () => {
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainGeneration({
     projectContext: phase1Context(),
     task: {
       projectId: 'phase1-project',
@@ -31,7 +31,7 @@ test('formal packaging compilation blocks when package structure is unconfirmed'
   context.visualDecisionPacket.lockedAssets = context.visualDecisionPacket.lockedAssets
     .filter((item) => item.type !== 'packaging_structure');
   context.visualDecisionPacket.mediaTranslations.packaging.structureStrategy = [];
-  assert.throws(() => compileVNextImageGeneration({
+  assert.throws(() => compileShortChainGeneration({
     projectContext: context,
     task: {
       projectId: 'phase1-project',

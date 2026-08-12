@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { runV5Pipeline } from '../src/v5/bootstrap.js';
+import { runAnalysisPipeline } from '../src/analysis-engine/bootstrap.js';
 import { inventoryProject } from '../src/inventory.js';
 import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
 
@@ -89,7 +89,7 @@ async function main(args) {
       pipelineOptions.deepCreativeDirectorReasonerFactory = () =>
         createReasonerFromEnvironment({ provider: selectedProvider });
     }
-    const { result, output } = await runV5Pipeline(positional[0], pipelineOptions);
+    const { result, output } = await runAnalysisPipeline(positional[0], pipelineOptions);
     console.log('Masterpiece OS v5.0 — Deep Creative Director Mode');
     console.log(`素材 ${result.inventory.totalFiles} 个，其中图片 ${result.inventory.imageCount} 张`);
     console.log(`Creative Authority：${result.creativeAuthority}`);

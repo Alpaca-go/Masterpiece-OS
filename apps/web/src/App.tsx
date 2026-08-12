@@ -18,7 +18,7 @@ import { SettingsPanel } from './components/SettingsPanel';
 import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
-import { VNextGenerationWorkspace } from './components/VNextGenerationWorkspace';
+import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
@@ -386,7 +386,7 @@ export function App() {
     const imageApiProfileId = (imageProfiles.some((profile) => profile.id === selectedApiProfileId)
       ? selectedApiProfileId
       : (imageProfiles.find((profile) => profile.isDefault) || imageProfiles[0])?.id) || '';
-    return <VNextGenerationWorkspace
+    return <ShortChainGenerationWorkspace
       project={selected}
       imageProfiles={imageProfiles}
       imageApiProfileId={imageApiProfileId}

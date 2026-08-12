@@ -58,3 +58,8 @@ authorization and credentials supplied only through environment variables.
 
 Current architecture: `CURRENT_ARCHITECTURE.md` and
 `docs/core/RUNTIME_OWNERSHIP.md`.
+
+Current capability navigation and compatibility exceptions are documented in
+`docs/repository/CURRENT_REPOSITORY_MAP.md` and
+`docs/repository/CURRENT_NAMESPACE_DICTIONARY.md`. Current development does
+not require knowing historical vNext, Phase9B, R-series, or CLI v5 names.

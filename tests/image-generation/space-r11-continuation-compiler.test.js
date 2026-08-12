@@ -20,7 +20,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 
 async function loadCompile() {
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
+  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const mod = await import(url);
   return mod;
 }
@@ -63,12 +63,12 @@ function continuationTask(brand, sourceScene, targetScene, subtype) {
 }
 
 test('R11.1 continuation compiles with frozen blocks + continuation_intent and passes route gate', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'proj-r11' };
   ctx.visualDecisionPacket = packet;
   const task = continuationTask('jiuzhou-aesthetics', 'reception', 'consultation', 'consultation');
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task,
@@ -99,14 +99,14 @@ test('R11.1 continuation compiles with frozen blocks + continuation_intent and p
 });
 
 test('R11.1 continuation stays within frozen +10% budget', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
-  const { compilePhase9bSpacePrompt } = await import('@masterpiece/image-generation-runtime/space/index.js');
+  const { compileShortChainGeneration } = await loadCompile();
+  const { compileSpacePrompt } = await import('@masterpiece/image-generation-runtime/space/index.js');
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'proj-r11' };
   ctx.visualDecisionPacket = packet;
   // Standard frozen reception prompt as the budget baseline (compiler-level,
   // avoiding the vnext enforceSpatialSemantics difference on standard tasks).
-  const stdOut = compilePhase9bSpacePrompt({
+  const stdOut = compileSpacePrompt({
     packet,
     taskContract: {
       schemaVersion: '1.0', taskId: 'std', projectId: 'proj-r11',
@@ -122,7 +122,7 @@ test('R11.1 continuation stays within frozen +10% budget', async () => {
   const stdChars = stdOut.budget.chars;
 
   const task = continuationTask('jiuzhou-aesthetics', 'reception', 'consultation', 'consultation');
-  const cont = compileVNextImageGeneration({ projectContext: ctx, model: 'doubao-seedream-5-0-pro-260628', task, brandKey: 'jiuzhou-aesthetics' });
+  const cont = compileShortChainGeneration({ projectContext: ctx, model: 'doubao-seedream-5-0-pro-260628', task, brandKey: 'jiuzhou-aesthetics' });
   const contChars = cont.compiledPrompt.trace.spaceGeneration.promptCharacters;
   assert.ok(contChars <= stdChars * 1.10, `continuation ${contChars} <= standard ${stdChars} +10%`);
 });

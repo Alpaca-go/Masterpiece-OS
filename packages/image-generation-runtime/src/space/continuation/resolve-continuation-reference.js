@@ -11,7 +11,7 @@ export const CONTINUATION_REFERENCE_VERSION = 'space-continuation-reference@1.2.
 
 /**
  * @param {object} input
- * @param {object} input.confirmed     VNextConfirmedGeneratedOutput
+ * @param {object} input.confirmed     ShortChainConfirmedGeneratedOutput
  * @param {string} input.projectRelativePath  path of the source image on disk
  * @param {string} [input.targetScene] target scene id (for trace)
  * @param {string} [input.viewStrategy] target view strategy (for trace)

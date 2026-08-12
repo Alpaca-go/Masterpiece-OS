@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ProjectVisualContext, ProjectVisualContextVNext } from '../shared/types.ts';
+import type { ProjectVisualContext, ProjectVisualContextShortChain } from '../shared/types.ts';
 import type { ProjectStore } from './project-store.ts';
 import {
   compileProjectVisualContext,
@@ -10,11 +10,11 @@ import {
   PROJECT_VISUAL_CONTEXT_SCHEMA_VERSION
 } from './project-visual-context-compiler.ts';
 import {
-  buildProjectVisualContextVNext,
-  migrateProjectVisualContextVNext,
-  validateProjectVisualContextVNext,
-  writeProjectVisualContextVNext,
-} from './project-context-vnext-builder.ts';
+  buildProjectVisualContext,
+  migrateProjectVisualContext,
+  validateProjectVisualContext,
+  writeProjectVisualContext as writeStructuredProjectVisualContext,
+} from './project-visual-context-builder.ts';
 
 export const PROJECT_VISUAL_CONTEXT_FILENAME = 'project-visual-context.json';
 export const PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME = 'project-visual-context.vnext.json';
@@ -44,7 +44,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return path.join(outputsDir, PROJECT_VISUAL_CONTEXT_FILENAME);
   }
 
-  function contextVNextTarget(projectRoot: string): string {
+  function contextShortChainTarget(projectRoot: string): string {
     return path.join(projectRoot, 'project-context', PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME);
   }
 
@@ -137,7 +137,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return context;
   }
 
-  async function getVNext(projectId: string): Promise<ProjectVisualContextVNext> {
+  async function getShortChain(projectId: string): Promise<ProjectVisualContextShortChain> {
     const project = await projects.get(projectId);
     if (project.visualContextVNextStatus !== 'ready' || !project.visualContextVNextFilename) {
       throw new ProjectContextNotReadyError('Project Visual Context vNext is not ready');
@@ -146,19 +146,19 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     const filename = path.basename(project.visualContextVNextFilename);
     const value = JSON.parse(
       await fs.readFile(path.join(paths.root, 'project-context', filename), 'utf8'),
-    ) as ProjectVisualContextVNext;
-    const validation = validateProjectVisualContextVNext(value);
+    ) as ProjectVisualContextShortChain;
+    const validation = validateProjectVisualContext(value);
     if (!validation.valid) {
       throw new ProjectContextNotReadyError(`Project Visual Context vNext is invalid: ${validation.errors.join('; ')}`);
     }
-    return migrateProjectVisualContextVNext(value);
+    return migrateProjectVisualContext(value);
   }
 
   // r2.0 / r10.4 UX: unified predicate that decides whether the
   // *persisted* project state has the minimum data needed to start a
   // vnext image generation, without going through the full LLM
   // analysis report page. Mirrors the failure conditions of
-  // `getVNext` (which is what `vnext-service.compile` calls), plus
+  // `getShortChain` (which is what `vnext-service.compile` calls), plus
   // the legacy visual context sanity check that the vnext context
   // is built on top of. The predicate is the single source of
   // truth for "can the user click 直接创作 / 继续创作 on the project
@@ -196,8 +196,8 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     //   1) status is `ready`
     //   2) filename is recorded
     //   3) the file exists, is parseable, and passes
-    //      `validateProjectVisualContextVNext` (this is the same
-    //      check `getVNext` performs before handing the context to
+    //      `validateProjectVisualContext` (this is the same
+    //      check `getShortChain` performs before handing the context to
     //      the compiler; mirroring it here means "if this returns
     //      ready=true, then `vnext-service.compile` will not throw
     //      ProjectContextNotReadyError on the way in").
@@ -217,7 +217,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
         try {
           const raw = await fs.readFile(target, 'utf8');
           const value = JSON.parse(raw) as unknown;
-          const validation = validateProjectVisualContextVNext(value);
+          const validation = validateProjectVisualContext(value);
           if (!validation.valid) {
             reasons.push(`Project Visual Context vNext 文件校验失败：${validation.errors.join('; ')}`);
           }
@@ -236,16 +236,16 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     };
   }
 
-  async function rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext> {
+  async function rebuildShortChain(projectId: string): Promise<ProjectVisualContextShortChain> {
     const project = await projects.get(projectId);
     const paths = await projects.paths(projectId);
-    const previousContext = await getVNext(projectId).catch(() => null);
-    const context = buildProjectVisualContextVNext({
+    const previousContext = await getShortChain(projectId).catch(() => null);
+    const context = buildProjectVisualContext({
       project,
       previousContext,
     });
     try {
-      await writeProjectVisualContextVNext(contextVNextTarget(paths.root), context);
+      await writeStructuredProjectVisualContext(contextShortChainTarget(paths.root), context);
       await projects.update(projectId, {
         visualContextVNextFilename: PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME,
         visualContextVNextStatus: 'ready',
@@ -274,7 +274,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return result.filePath;
   }
 
-  return { get, rebuild, export: exportContext, getVNext, rebuildVNext, getGenerationContextReadiness };
+  return { get, rebuild, export: exportContext, getShortChain, rebuildShortChain, getGenerationContextReadiness };
 }
 
 export type ProjectContextService = ReturnType<typeof createProjectContextService>;

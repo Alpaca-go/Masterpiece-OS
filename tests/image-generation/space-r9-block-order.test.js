@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compilePhase9bSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
+import { compileSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -68,7 +68,7 @@ function buildTask(brand, subtype, shot) {
 
 test('R9 production compiler keeps the frozen R8.6 block order', () => {
   for (const { key, subtype, shot } of BRANDS) {
-    const out = compilePhase9bSpacePrompt({
+    const out = compileSpacePrompt({
       packet: loadPacket(key),
       taskContract: buildTask(key, subtype, shot),
       projectContext: { projectId: `${key}-r9` },
@@ -89,7 +89,7 @@ test('R9 production compiler keeps the frozen R8.6 block order', () => {
 
 test('R9 production compiler budget stays under the Seedream 7500 cap', () => {
   for (const { key, subtype, shot } of BRANDS) {
-    const out = compilePhase9bSpacePrompt({
+    const out = compileSpacePrompt({
       packet: loadPacket(key),
       taskContract: buildTask(key, subtype, shot),
       projectContext: { projectId: `${key}-r9` },
@@ -102,7 +102,7 @@ test('R9 production compiler budget stays under the Seedream 7500 cap', () => {
 });
 
 test('R9 production compiler emits all 14 frozen blocks', () => {
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet: loadPacket('jiuzhou-aesthetics'),
     taskContract: buildTask('jiuzhou-aesthetics', 'reception', 'entrance_view'),
     projectContext: { projectId: 'jiuzhou-aesthetics-r9' },

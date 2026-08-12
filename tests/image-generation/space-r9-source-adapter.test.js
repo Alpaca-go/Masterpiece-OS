@@ -1,6 +1,6 @@
 // R9 production source adapter test.
 //
-// The production source adapter (src/space/phase9b-source-adapter.js) must
+// The production source adapter (src/space/source-adapter.js) must
 // map V5 VisualDecisionPacket + ProjectGenerationContract + TaskContract into
 // Space Generation Source with structural fidelity: spatial behavior, boundary
 // behavior, circulation relations, functional relationships, architecture
@@ -16,8 +16,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  adaptPhase9bSource,
-  isSpacePhase9bInsufficient,
+  adaptSpaceSource,
+  isSpaceSourceInsufficient,
   SPACE_QUALITY_SOURCE_ADAPTER_VERSION,
 } from '@masterpiece/image-generation-runtime/space/index.js';
 
@@ -56,7 +56,7 @@ const GENERIC_WORDS = /\b(premium|soft|organic|elegant|modern)\b/iu;
 test('R9 source adapter preserves spatial structure for all three brands', () => {
   for (const brand of BRANDS) {
     const packet = loadPacket(brand);
-    const layers = adaptPhase9bSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
+    const layers = adaptSpaceSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
     assert.ok(layers.spatialIntent.experienceGoal.length > 0, `${brand}: experienceGoal`);
     assert.ok(layers.spatialIntent.spatialStrategy.length >= 1, `${brand}: spatialStrategy`);
     assert.ok(layers.architectureLanguage.spatialPrinciples.length >= 1, `${brand}: spatialPrinciples`);
@@ -70,7 +70,7 @@ test('R9 source adapter preserves spatial structure for all three brands', () =>
 test('R9 source adapter keeps paintable spatial behavior (not generic adjectives)', () => {
   for (const brand of BRANDS) {
     const packet = loadPacket(brand);
-    const layers = adaptPhase9bSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
+    const layers = adaptSpaceSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
     const architectureText = [
       layers.spatialIntent.spatialStrategy,
       layers.architectureLanguage.spatialPrinciples,
@@ -90,7 +90,7 @@ test('R9 source adapter keeps paintable spatial behavior (not generic adjectives
 test('R9 source adapter routes motif/identity/color into brand, not architecture', () => {
   for (const brand of BRANDS) {
     const packet = loadPacket(brand);
-    const layers = adaptPhase9bSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
+    const layers = adaptSpaceSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
     const archText = layers.semantic.architectureSemantics.map((m) => m.text).join(' ');
     // No literal motif nouns in architecture IR (feather / peacock / 羽毛 / 孔雀).
     assert.doesNotMatch(archText, /\b(feather|peacock)\b|羽毛|孔雀/iu, `${brand}: no literal motif in architecture`);
@@ -99,7 +99,7 @@ test('R9 source adapter routes motif/identity/color into brand, not architecture
 });
 
 test('R9 source adapter fails closed on a missing packet', () => {
-  assert.throws(() => adaptPhase9bSource({}), /SPACE_PHASE9B_SOURCE_INSUFFICIENT/);
+  assert.throws(() => adaptSpaceSource({}), /SPACE_PHASE9B_SOURCE_INSUFFICIENT/);
 });
 
 test('R9 source adapter version is recorded', () => {
@@ -107,19 +107,19 @@ test('R9 source adapter version is recorded', () => {
   assert.ok(SPACE_QUALITY_SOURCE_ADAPTER_VERSION.length > 0);
 });
 
-test('R9 isSpacePhase9bInsufficient detects the fail-closed code', () => {
+test('R9 isSpaceSourceInsufficient detects the fail-closed code', () => {
   try {
-    adaptPhase9bSource({});
+    adaptSpaceSource({});
     assert.fail('should have thrown');
   } catch (err) {
-    assert.ok(isSpacePhase9bInsufficient(err), 'code detected');
+    assert.ok(isSpaceSourceInsufficient(err), 'code detected');
   }
 });
 
 test('R9 source adapter is deterministic (same input → same layers)', () => {
   const packet = loadPacket('jiuzhou-aesthetics');
-  const a = adaptPhase9bSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
-  const b = adaptPhase9bSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
+  const a = adaptSpaceSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
+  const b = adaptSpaceSource({ packet, taskContract: buildTask('reception', 'entrance_view') });
   assert.deepEqual(a.spatialIntent, b.spatialIntent);
   assert.deepEqual(a.architectureLanguage.spatialPrinciples, b.architectureLanguage.spatialPrinciples);
   assert.deepEqual(a.negatives, b.negatives);

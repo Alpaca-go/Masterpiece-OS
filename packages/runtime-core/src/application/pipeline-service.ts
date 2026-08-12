@@ -57,9 +57,9 @@ import {
   PROJECT_VISUAL_CONTEXT_SCHEMA_VERSION
 } from './project-visual-context-compiler.ts';
 import {
-  buildProjectVisualContextVNext,
-  writeProjectVisualContextVNext,
-} from './project-context-vnext-builder.ts';
+  buildProjectVisualContext,
+  writeProjectVisualContext as writeStructuredProjectVisualContext,
+} from './project-visual-context-builder.ts';
 import {
   buildUnifiedVisualUnderstandingPrompt,
   normalizeUnifiedVisualUnderstanding,
@@ -499,8 +499,8 @@ export function createPipelineService(
 
       // Dynamic import ensures the packaged prompt resource path is configured first.
       // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-      const { runV5Pipeline } = await import('../../../../apps/cli/src/v5/bootstrap.js');
-      const execution = await runV5Pipeline(projectPaths.input, {
+      const { runAnalysisPipeline } = await import('../../../../apps/cli/src/analysis-engine/bootstrap.js');
+      const execution = await runAnalysisPipeline(projectPaths.input, {
         projectRoot: projectPaths.root,
         output: projectPaths.outputs,
         config: configPath,
@@ -868,27 +868,27 @@ export function createPipelineService(
       // project record and original asset inventory; report markdown is never
       // accepted by the builder.
       try {
-        const previousVNext = updated.visualContextVNextStatus === 'ready'
+        const previousShortChain = updated.visualContextVNextStatus === 'ready'
           ? await fs.readFile(
             path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
             'utf8',
           ).then((value) => JSON.parse(value)).catch(() => null)
           : null;
-        const vnextContext = buildProjectVisualContextVNext({
+        const vnextContext = buildProjectVisualContext({
           project: updated,
-          previousContext: previousVNext,
+          previousContext: previousShortChain,
           structuredAnalysis: promptSourceObject
             ? { promptSourceObject, visualDecisionPacket }
-            : previousVNext?.promptSourceObject
+            : previousShortChain?.promptSourceObject
               ? {
-                promptSourceObject: previousVNext.promptSourceObject,
-                visualDecisionPacket: previousVNext.visualDecisionPacket,
+                promptSourceObject: previousShortChain.promptSourceObject,
+                visualDecisionPacket: previousShortChain.visualDecisionPacket,
               }
               : undefined,
           structuredAnalysisRunId: promptSourceRunId
             || execution.result.runReport.reasoningRunId,
         });
-        await writeProjectVisualContextVNext(
+        await writeStructuredProjectVisualContext(
           path.join(projectPaths.root, 'project-context', 'project-visual-context.vnext.json'),
           vnextContext,
         );

@@ -14,8 +14,8 @@ import {
   measurePromptBudget,
   assertPromptBudget,
   resolveProviderPromptLimit,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
-import { SEEDREAM_ADAPTER_CAPABILITY } from '@masterpiece/image-generation-runtime/vnext/seedream-adapter.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
+import { SEEDREAM_ADAPTER_CAPABILITY } from '@masterpiece/image-generation-runtime/generation/seedream-adapter.js';
 
 const QUALITY_BUDGET = 7_500;
 const PROVIDER_LIMIT = resolveProviderPromptLimit();

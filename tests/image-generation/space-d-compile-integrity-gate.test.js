@@ -6,7 +6,7 @@
 //   - the gate fails closed on missing required blocks, wrong block
 //     order, prompt budget violation, wrong compiler id, missing
 //     reference, wrong aspect ratio, and bad spatial semantic
-//   - the gate keeps the vnext-service.ts:561-568 minimum fix: when
+//   - the gate keeps the short-chain-service.ts:561-568 minimum fix: when
 //     trace.promptCharacters is missing/NaN, fall back to the literal
 //     length of the COMPILED prompt
 //
@@ -187,7 +187,7 @@ test('D-1: aspect ratio mismatch fails closed with SPACE_PROVIDER_ASPECT_RATIO_M
   assert.equal(caught.code, 'SPACE_PROVIDER_ASPECT_RATIO_MISMATCH');
 });
 
-test('D-1: budget fallback (vnext-service.ts:561-568 minimum fix) — missing promptCharacters uses compiled prompt length', () => {
+test('D-1: budget fallback (short-chain-service.ts:561-568 minimum fix) — missing promptCharacters uses compiled prompt length', () => {
   // trace.promptCharacters is undefined; Gate A must fall back to the
   // literal length of the COMPILED prompt (input.promptCharacters).
   const input = compileInput();
@@ -198,7 +198,7 @@ test('D-1: budget fallback (vnext-service.ts:561-568 minimum fix) — missing pr
   assert.equal(result.promptCharacters, 6500);
 });
 
-test('D-1: budget fallback (vnext-service.ts:561-568 minimum fix) — NaN promptCharacters also uses fallback', () => {
+test('D-1: budget fallback (short-chain-service.ts:561-568 minimum fix) — NaN promptCharacters also uses fallback', () => {
   const input = compileInput();
   input.trace.spaceGeneration.promptCharacters = Number.NaN;
   input.promptCharacters = 6500;

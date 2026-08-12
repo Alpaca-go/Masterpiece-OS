@@ -4,9 +4,9 @@ import test from 'node:test';
 // after R7 the production default is phase9b_quality, so pin the legacy path.
 process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
 import {
-  compileVNextImageGeneration,
+  compileShortChainGeneration,
   generateGoldenBacktraceAudit,
-} from '@masterpiece/image-generation-runtime/vnext/index.js';
+} from '@masterpiece/image-generation-runtime/generation/index.js';
 
 function packet(overrides = {}) {
   return {
@@ -247,7 +247,7 @@ function context(packetValue = packet()) {
 
 function compile(overrides = {}) {
   const projectContext = context(overrides.packet || packet());
-  return compileVNextImageGeneration({
+  return compileShortChainGeneration({
     projectContext,
     task: {
       projectId: projectContext.projectId,
@@ -334,7 +334,7 @@ test('compiler enforces post-composite Logo, text and saturation conflicts', () 
 test('interface-only media translation cannot enter formal generation', () => {
   const projectContext = context();
   assert.throws(
-    () => compileVNextImageGeneration({
+    () => compileShortChainGeneration({
       projectContext,
       task: {
         projectId: projectContext.projectId,
@@ -532,7 +532,7 @@ test('restaurant and Mid-Autumn consumer projects do not inherit Jiuzhou answers
   ];
   for (const packetValue of cases) {
     const projectContext = context(packetValue);
-    const result = compileVNextImageGeneration({
+    const result = compileShortChainGeneration({
       projectContext,
       task: {
         projectId: packetValue.projectId,
@@ -589,7 +589,7 @@ test('technology platform keywords do not create people, collaboration or medica
   };
   packetValue.lightingSystem = packetValue.mediaTranslations.spatial.lightingLanguage;
 
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainGeneration({
     projectContext: context(packetValue),
     task: {
       projectId: packetValue.projectId,
@@ -636,7 +636,7 @@ test('non-platform medical brand does not receive platform collaboration behavio
     material: '浅色石材与细纹饰面',
     risks: ['无关零售陈列', '夸张广告人像'],
   });
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainGeneration({
     projectContext: context(packetValue),
     task: {
       projectId: packetValue.projectId,
@@ -671,7 +671,7 @@ test('education and food platform words compile only explicit structured scene d
     });
     packetValue.mediaTranslations.spatial.functionalRelationships = [];
     packetValue.mediaTranslations.spatial.peopleBehavior = [];
-    const result = compileVNextImageGeneration({
+    const result = compileShortChainGeneration({
       projectContext: context(packetValue),
       task: {
         projectId,

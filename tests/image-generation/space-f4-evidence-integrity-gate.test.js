@@ -2,8 +2,8 @@
 //
 // The runtime validator is PURE: it consumes an EvidenceBundle (data
 // only, produced by the desktop scanner) and a
-// VNextEvidenceValidationContext (caller expectations) and produces
-// a VNextEvidenceCheckpoint. The tests below construct synthetic
+// ShortChainEvidenceValidationContext (caller expectations) and produces
+// a ShortChainEvidenceCheckpoint. The tests below construct synthetic
 // bundles and contexts and assert every binding check + severity
 // rule. No filesystem, no I/O.
 //
@@ -12,14 +12,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  validateVNextEvidenceIntegrity,
+  validateShortChainEvidenceIntegrity,
   extractEvidenceBindings,
   VNEXT_EVIDENCE_INTEGRITY_GATE_VERSION,
   VNEXT_EVIDENCE_FILE_NAMES,
 } from '@masterpiece/image-generation-runtime/space/index.js';
 
 // Builder helpers. The scanner produces per-file records; the
-// validator consumes them. The shape mirrors VNextEvidenceFileRecord
+// validator consumes them. The shape mirrors ShortChainEvidenceFileRecord
 // (the runtime module only sees the data, not the type).
 
 function record(name, {
@@ -185,7 +185,7 @@ test('F-4: VNEXT_EVIDENCE_FILE_NAMES has exactly 9 entries', () => {
 
 test('F-4: happy path — all required files present, all bindings match, pass = true', () => {
   const bundle = happyBundle();
-  const result = validateVNextEvidenceIntegrity(bundle, {
+  const result = validateShortChainEvidenceIntegrity(bundle, {
     expectedProjectId: 'project-1',
     expectedTaskId: 'task-1',
     expectedRunId: 'run-1',
@@ -208,7 +208,7 @@ test('F-4: happy path with reference_first + 2 references + expectedValidated', 
     referenceIds: ['ref-1', 'ref-2'],
     validated: true,
   });
-  const result = validateVNextEvidenceIntegrity(bundle, {
+  const result = validateShortChainEvidenceIntegrity(bundle, {
     expectedGenerationBasis: 'reference_first',
     expectedReferenceIds: ['ref-1', 'ref-2'],
     expectedValidated: true,
@@ -229,7 +229,7 @@ test('F-4: required file missing → block + missingRequired', () => {
   out.exists = false;
   out.sha256 = null;
   out.sizeBytes = 0;
-  const result = validateVNextEvidenceIntegrity(bundle);
+  const result = validateShortChainEvidenceIntegrity(bundle);
   assert.equal(result.pass, false);
   assert.ok(result.missingRequired.includes('output.png'));
   const issues = result.issues.filter((i) => i.file === 'output.png');
@@ -243,7 +243,7 @@ test('F-4: required file unreadable (JSON parse error) → block + readable code
   const trace = bundle.files.find((r) => r.name === 'trace.json');
   trace.error = 'Unexpected token } in JSON at position 0';
   trace.payload = null;
-  const result = validateVNextEvidenceIntegrity(bundle);
+  const result = validateShortChainEvidenceIntegrity(bundle);
   assert.equal(result.pass, false);
   const issues = result.issues.filter((i) => i.file === 'trace.json');
   assert.ok(issues.length > 0);
@@ -257,7 +257,7 @@ test('F-4: reference_first basis + reference-trace.json missing → EVIDENCE_REF
   refTrace.exists = false;
   refTrace.payload = null;
   refTrace.sizeBytes = 0;
-  const result = validateVNextEvidenceIntegrity(bundle, {
+  const result = validateShortChainEvidenceIntegrity(bundle, {
     expectedGenerationBasis: 'reference_first',
   });
   assert.equal(result.pass, false);
@@ -268,7 +268,7 @@ test('F-4: reference_first basis + reference-trace.json missing → EVIDENCE_REF
 
 test('F-4: expectedValidated=true + summary missing → EVIDENCE_VALIDATIONS_SUMMARY_MISSING', () => {
   const bundle = happyBundle({ validated: false });
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedValidated: true });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedValidated: true });
   assert.equal(result.pass, false);
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_VALIDATIONS_SUMMARY_MISSING');
   assert.equal(issues.length, 1);
@@ -282,7 +282,7 @@ test('F-4: expectedValidated=true + summary missing → EVIDENCE_VALIDATIONS_SUM
 
 test('F-4: projectId mismatch → block EVIDENCE_PROJECT_MISMATCH', () => {
   const bundle = happyBundle();
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedProjectId: 'OTHER' });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedProjectId: 'OTHER' });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_PROJECT_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].severity, 'block');
@@ -291,7 +291,7 @@ test('F-4: projectId mismatch → block EVIDENCE_PROJECT_MISMATCH', () => {
 
 test('F-4: taskId mismatch → block EVIDENCE_TASK_MISMATCH', () => {
   const bundle = happyBundle();
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedTaskId: 'OTHER' });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedTaskId: 'OTHER' });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_TASK_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].file, 'task-contract.json');
@@ -300,7 +300,7 @@ test('F-4: taskId mismatch → block EVIDENCE_TASK_MISMATCH', () => {
 
 test('F-4: runId mismatch → block EVIDENCE_RUN_MISMATCH', () => {
   const bundle = happyBundle();
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedRunId: 'OTHER' });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedRunId: 'OTHER' });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_RUN_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].file, 'run.json');
@@ -309,7 +309,7 @@ test('F-4: runId mismatch → block EVIDENCE_RUN_MISMATCH', () => {
 
 test('F-4: promptHash mismatch → block EVIDENCE_PROMPT_HASH_MISMATCH', () => {
   const bundle = happyBundle();
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedPromptHash: 'OTHER' });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedPromptHash: 'OTHER' });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_PROMPT_HASH_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].file, 'trace.json');
@@ -318,7 +318,7 @@ test('F-4: promptHash mismatch → block EVIDENCE_PROMPT_HASH_MISMATCH', () => {
 
 test('F-4: imageHash mismatch (output.png actual sha256 != run.json claim) → block', () => {
   const bundle = happyBundle({ imageHash: 'claimed-hash', outputSha: 'actual-on-disk-hash' });
-  const result = validateVNextEvidenceIntegrity(bundle);
+  const result = validateShortChainEvidenceIntegrity(bundle);
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_IMAGE_HASH_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].severity, 'block');
@@ -330,7 +330,7 @@ test('F-4: imageHash mismatch (output.png actual sha256 != run.json claim) → b
 
 test('F-4: referenceIds mismatch (different set) → block EVIDENCE_REFERENCE_ID_MISMATCH', () => {
   const bundle = happyBundle({ generationBasis: 'reference_first', referenceIds: ['ref-1', 'ref-2'] });
-  const result = validateVNextEvidenceIntegrity(bundle, {
+  const result = validateShortChainEvidenceIntegrity(bundle, {
     expectedReferenceIds: ['ref-1', 'ref-3'],
   });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_REFERENCE_ID_MISMATCH');
@@ -341,7 +341,7 @@ test('F-4: referenceIds mismatch (different set) → block EVIDENCE_REFERENCE_ID
 
 test('F-4: referenceIds mismatch (different order) → still mismatch (set semantics)', () => {
   const bundle = happyBundle({ generationBasis: 'reference_first', referenceIds: ['ref-1', 'ref-2'] });
-  const result = validateVNextEvidenceIntegrity(bundle, {
+  const result = validateShortChainEvidenceIntegrity(bundle, {
     expectedReferenceIds: ['ref-2', 'ref-1'],
   });
   // Order does not matter for binding; both are the same set.
@@ -350,7 +350,7 @@ test('F-4: referenceIds mismatch (different order) → still mismatch (set seman
 
 test('F-4: targetScene mismatch → block', () => {
   const bundle = happyBundle({ targetScene: 'reception' });
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedTargetScene: 'consultation' });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedTargetScene: 'consultation' });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_TARGET_SCENE_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].file, 'task-contract.json');
@@ -359,7 +359,7 @@ test('F-4: targetScene mismatch → block', () => {
 
 test('F-4: generationBasis mismatch → block', () => {
   const bundle = happyBundle({ generationBasis: 'standard' });
-  const result = validateVNextEvidenceIntegrity(bundle, { expectedGenerationBasis: 'reference_first' });
+  const result = validateShortChainEvidenceIntegrity(bundle, { expectedGenerationBasis: 'reference_first' });
   const issues = result.issues.filter((i) => i.code === 'EVIDENCE_GENERATION_BASIS_MISMATCH');
   assert.equal(issues.length, 1);
   assert.equal(result.pass, false);
@@ -377,7 +377,7 @@ test('F-4: optional file unreadable (target-scene-projection.json) → warn only
   optional.sizeBytes = 50;
   optional.kind = 'json-object';
   optional.payload = null;
-  const result = validateVNextEvidenceIntegrity(bundle);
+  const result = validateShortChainEvidenceIntegrity(bundle);
   const issues = result.issues.filter((i) => i.file === 'target-scene-projection.json');
   assert.ok(issues.length > 0);
   assert.equal(issues[0].severity, 'warn');
@@ -391,7 +391,7 @@ test('F-4: 0-byte optional file → warn only, pass still true', () => {
   optional.exists = true;
   optional.kind = 'text';
   optional.payload = null;
-  const result = validateVNextEvidenceIntegrity(bundle);
+  const result = validateShortChainEvidenceIntegrity(bundle);
   const issues = result.issues.filter((i) => i.file === 'prompt-source-map.json');
   assert.equal(issues.length, 1);
   assert.equal(issues[0].severity, 'warn');
@@ -432,13 +432,13 @@ test('F-4: validator does not throw when bundle.bindings is absent (re-derives f
   // the per-file records.
   bundle.bindings = undefined;
   // Should NOT throw; should re-derive from the files.
-  const result = validateVNextEvidenceIntegrity(bundle);
+  const result = validateShortChainEvidenceIntegrity(bundle);
   assert.equal(result.bindings.runId, 'run-1');
   assert.equal(result.bindings.taskId, 'task-1');
   assert.equal(result.bindings.generationBasis, 'standard');
 });
 
 test('F-4: validator rejects malformed bundle', () => {
-  assert.throws(() => validateVNextEvidenceIntegrity(null), /bundle is required/);
-  assert.throws(() => validateVNextEvidenceIntegrity({}), /bundle\.files must be an array/);
+  assert.throws(() => validateShortChainEvidenceIntegrity(null), /bundle is required/);
+  assert.throws(() => validateShortChainEvidenceIntegrity({}), /bundle\.files must be an array/);
 });

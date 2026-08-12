@@ -1,4 +1,4 @@
-﻿// Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
+// Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
 // multimodal endpoint instead of restricting profiles to a vendor allow-list.
 import type {
   AnchorCandidate,
@@ -597,7 +597,7 @@ export type {
   PackagingStructureStatus,
   ProjectVisualContextStatus,
   ProjectVisualContext,
-  ProjectVisualContextVNext,
+  ProjectVisualContextShortChain,
   DocumentVisualContextEvidence,
   DocumentVisualContext,
   ReferenceAssetSelectionItem,
@@ -610,7 +610,7 @@ export type {
 } from '@masterpiece/project-contracts/index.ts';
 import type {
   ProjectVisualContext,
-  ProjectVisualContextVNext,
+  ProjectVisualContextShortChain,
   DocumentVisualContext,
   DocumentVisualContextEvidence,
   ReferenceAssetSelection,
@@ -669,45 +669,45 @@ export type {
   ImageGenerationMetrics,
   ImageGenerationRun,
   ImageGenerationRunSummary,
-  VNextTaskContract,
-  VNextLogoUsageMode,
-  VNextShotSource,
-  VNextReferenceSceneRelation,
-  VNextAdapterCapability,
-  VNextAdapterReferenceCapability,
-  VNextAdapterStrengthControlCapability,
-  VNextCompiledPrompt,
-  VNextModelPromptPayload,
-  VNextCreativeSession,
-  VNextProjectPromptAsset,
-  VNextConfirmedGeneratedOutput,
-  VNextDeliverableValidation,
-  VNextGenerationFlowState,
-  VNextValidatedGenerationImageRef,
-  VNextValidatedGenerationResult,
-  VNextSimilarityAuditResult,
-  VNextSimilarityAuditScores,
-  VNextSimilarityAuditPassFlags
+  ShortChainTaskContract,
+  ShortChainLogoUsageMode,
+  ShortChainShotSource,
+  ShortChainReferenceSceneRelation,
+  ShortChainAdapterCapability,
+  ShortChainAdapterReferenceCapability,
+  ShortChainAdapterStrengthControlCapability,
+  ShortChainCompiledPrompt,
+  ShortChainModelPromptPayload,
+  ShortChainCreativeSession,
+  ShortChainProjectPromptAsset,
+  ShortChainConfirmedGeneratedOutput,
+  ShortChainDeliverableValidation,
+  ShortChainGenerationFlowState,
+  ShortChainValidatedGenerationImageRef,
+  ShortChainValidatedGenerationResult,
+  ShortChainSimilarityAuditResult,
+  ShortChainSimilarityAuditScores,
+  ShortChainSimilarityAuditPassFlags
 } from '@masterpiece/image-generation-contracts/index.ts';
 import type {
   ImageGenerationRun,
   ImageGenerationRunSummary,
-  VNextTaskContract,
-  VNextCompiledPrompt,
-  VNextShotSource,
-  VNextReferenceSceneRelation,
-  VNextAdapterCapability,
-  VNextAdapterReferenceCapability,
-  VNextAdapterStrengthControlCapability,
-  VNextModelPromptPayload,
-  VNextCreativeSession,
-  VNextConfirmedGeneratedOutput,
-  VNextProjectPromptAsset,
-  VNextDeliverableValidation,
-  VNextValidatedGenerationResult,
-  VNextSimilarityAuditResult,
-  VNextSimilarityAuditScores,
-  VNextSimilarityAuditPassFlags,
+  ShortChainTaskContract,
+  ShortChainCompiledPrompt,
+  ShortChainShotSource,
+  ShortChainReferenceSceneRelation,
+  ShortChainAdapterCapability,
+  ShortChainAdapterReferenceCapability,
+  ShortChainAdapterStrengthControlCapability,
+  ShortChainModelPromptPayload,
+  ShortChainCreativeSession,
+  ShortChainConfirmedGeneratedOutput,
+  ShortChainProjectPromptAsset,
+  ShortChainDeliverableValidation,
+  ShortChainValidatedGenerationResult,
+  ShortChainSimilarityAuditResult,
+  ShortChainSimilarityAuditScores,
+  ShortChainSimilarityAuditPassFlags,
   ImageGenerationRunStatus,
   ImageGenerationGateResult,
   ImageGenerationReview,
@@ -1910,10 +1910,10 @@ export interface ImageGenerationCompileResult {
   compileFingerprint?: ImageGenerationCompileFingerprint;
 }
 
-export interface CompileVNextGenerationInput {
+export interface CompileShortChainGenerationInput {
   projectId: string;
   model?: string;
-  task: Omit<VNextTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
+  task: Omit<ShortChainTaskContract, 'schemaVersion' | 'taskId' | 'projectId' | 'createdAt'> & {
     taskId?: string;
   };
 }
@@ -1966,14 +1966,14 @@ export interface PreflightReferenceAssetsInput {
   assetIds: string[];
 }
 
-export interface CompileVNextGenerationResult {
-  taskContract: VNextTaskContract;
-  compiledPrompt: VNextCompiledPrompt;
-  payload: VNextModelPromptPayload;
+export interface CompileShortChainGenerationResult {
+  taskContract: ShortChainTaskContract;
+  compiledPrompt: ShortChainCompiledPrompt;
+  payload: ShortChainModelPromptPayload;
   artifactDirectory: string;
 }
 
-export interface StartVNextGenerationInput {
+export interface StartShortChainGenerationInput {
   projectId: string;
   taskId: string;
   apiProfileId?: string;
@@ -1981,11 +1981,11 @@ export interface StartVNextGenerationInput {
   dryRun?: boolean;
 }
 
-export interface StartValidatedVNextGenerationInput extends StartVNextGenerationInput {
+export interface StartValidatedShortChainGenerationInput extends StartShortChainGenerationInput {
   validatorProfileId?: string;
 }
 
-export interface PostCompositeVNextLogoInput {
+export interface PostCompositeShortChainLogoInput {
   projectId: string;
   runId: string;
   imageId: string;
@@ -2008,9 +2008,9 @@ export interface PostCompositeVNextLogoInput {
   };
 }
 
-export interface SaveVNextProjectPromptAssetInput {
+export interface SaveShortChainProjectPromptAssetInput {
   projectId: string;
-  deliverableFamily: VNextTaskContract['deliverableFamily'];
+  deliverableFamily: ShortChainTaskContract['deliverableFamily'];
   name: string;
   promptFragments: string[];
   negativeConstraints?: string[];
@@ -2162,7 +2162,7 @@ export interface DesktopApi {
     getSourcePreview(input: StartImageGenerationInput): Promise<ImageGenerationSourcePreview>;
     /** 搂16 缂栬瘧 Prompt 骞舵墽琛屼笁灞?Gate锛堜笉鎻愪氦 Provider锛夈€?*/
     compile(input: StartImageGenerationInput): Promise<ImageGenerationCompileResult>;
-    compileVNext(input: CompileVNextGenerationInput): Promise<CompileVNextGenerationResult>;
+    compileShortChain(input: CompileShortChainGenerationInput): Promise<CompileShortChainGenerationResult>;
     /**
      * r2.0 §4.11 / Phase C-3: UI preflight for reference assets. Runs the
      * same resolver as start(), but in a fail-soft mode that returns a
@@ -2172,36 +2172,36 @@ export interface DesktopApi {
     preflightReferenceAssets(
       input: PreflightReferenceAssetsInput
     ): Promise<{ projectId: string; results: PreflightReferenceAssetsResultEntry[] }>;
-    getVNextOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
-    startVNext(input: StartVNextGenerationInput): Promise<ImageGenerationRun>;
-    startValidatedVNext(
-      input: StartValidatedVNextGenerationInput
-    ): Promise<VNextValidatedGenerationResult>;
-    getVNextSession(projectId: string): Promise<VNextCreativeSession>;
-    confirmVNextDirection(projectId: string, runId: string, imageId: string): Promise<VNextCreativeSession>;
-    confirmVNextGeneratedOutput(
+    getShortChainOptions(): Promise<Record<string, { subtypes: string[]; shots: string[] }>>;
+    startShortChain(input: StartShortChainGenerationInput): Promise<ImageGenerationRun>;
+    startValidatedShortChain(
+      input: StartValidatedShortChainGenerationInput
+    ): Promise<ShortChainValidatedGenerationResult>;
+    getShortChainSession(projectId: string): Promise<ShortChainCreativeSession>;
+    confirmShortChainDirection(projectId: string, runId: string, imageId: string): Promise<ShortChainCreativeSession>;
+    confirmShortChainGeneratedOutput(
       projectId: string,
       runId: string,
       imageId: string
-    ): Promise<VNextConfirmedGeneratedOutput>;
-    revokeVNextGeneratedOutput(
+    ): Promise<ShortChainConfirmedGeneratedOutput>;
+    revokeShortChainGeneratedOutput(
       projectId: string,
       assetId: string
-    ): Promise<VNextConfirmedGeneratedOutput>;
-    getVNextConfirmedGeneratedOutputs(
+    ): Promise<ShortChainConfirmedGeneratedOutput>;
+    getShortChainConfirmedGeneratedOutputs(
       projectId: string
-    ): Promise<Record<string, VNextConfirmedGeneratedOutput>>;
-    continueVNextSameType(
+    ): Promise<Record<string, ShortChainConfirmedGeneratedOutput>>;
+    continueShortChainSameType(
       projectId: string,
       currentInstruction: string,
       apiProfileId?: string,
       dryRun?: boolean
     ): Promise<ImageGenerationRun>;
-    saveVNextProjectPromptAsset(
-      input: SaveVNextProjectPromptAssetInput
-    ): Promise<VNextProjectPromptAsset>;
-    postCompositeVNextLogo(
-      input: PostCompositeVNextLogoInput
+    saveShortChainProjectPromptAsset(
+      input: SaveShortChainProjectPromptAssetInput
+    ): Promise<ShortChainProjectPromptAsset>;
+    postCompositeShortChainLogo(
+      input: PostCompositeShortChainLogoInput
     ): Promise<Record<string, unknown>>;
     /** 搂16 缂栬瘧 + Gate 閫氳繃鍚庢彁浜ょ敓鍥句换鍔°€?*/
     start(input: StartImageGenerationInput): Promise<ImageGenerationRun>;
@@ -2419,8 +2419,8 @@ export interface DesktopApi {
     get(projectId: string): Promise<ProjectVisualContext>;
     rebuild(projectId: string): Promise<ProjectVisualContext>;
     export(projectId: string): Promise<string | null>;
-    getVNext(projectId: string): Promise<ProjectVisualContextVNext>;
-    rebuildVNext(projectId: string): Promise<ProjectVisualContextVNext>;
+    getShortChain(projectId: string): Promise<ProjectVisualContextShortChain>;
+    rebuildShortChain(projectId: string): Promise<ProjectVisualContextShortChain>;
     /**
      * r2.0 / r10.4 UX: unified predicate that decides whether the
      * *persisted* project state has the minimum data needed to start
@@ -2462,7 +2462,7 @@ export interface DesktopApi {
 // satisfy every precondition `vnext-service.compile` checks on the
 // way in (legacy visual context ready + schema present + vnext context
 // ready + filename recorded + on-disk file readable + passes the
-// `validateProjectVisualContextVNext` shape check). `reasons` is empty
+// `validateProjectVisualContext` shape check). `reasons` is empty
 // when ready; when not ready, every entry names one missing condition
 // in human-readable form so the UI can show a precise "what's
 // blocking" message.

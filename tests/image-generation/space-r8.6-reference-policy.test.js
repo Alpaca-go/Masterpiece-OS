@@ -14,7 +14,7 @@ import {
   resolveSpaceReferences,
   assertSpaceReferenceAvailable,
   SPACE_REFERENCE_POLICY_VERSION,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const base = 'space-generator/quality-baselines/r8.6';

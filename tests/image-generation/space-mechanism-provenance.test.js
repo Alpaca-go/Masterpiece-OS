@@ -9,7 +9,7 @@ import {
   traceMechanism,
   auditMechanismSources,
   MECHANISM_PROVENANCE_VERSION,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 test('traceMechanism: basic fields populated', () => {
   const r = traceMechanism({

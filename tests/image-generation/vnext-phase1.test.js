@@ -4,10 +4,10 @@ import test from 'node:test';
 // phase9b_quality the default.
 process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
 import {
-  compileVNextImageGeneration,
-  createVNextTaskContract,
-  listVNextTemplates,
-} from '@masterpiece/image-generation-runtime/vnext/index.js';
+  compileShortChainGeneration,
+  createShortChainTaskContract,
+  listShortChainTemplates,
+} from '@masterpiece/image-generation-runtime/generation/index.js';
 
 const projectContext = {
   schemaVersion: '2.0',
@@ -52,7 +52,7 @@ const projectContext = {
 };
 
 test('Phase 1 locks the requested deliverable in a short Task Contract', () => {
-  const task = createVNextTaskContract({
+  const task = createShortChainTaskContract({
     projectId: projectContext.projectId,
     deliverableFamily: 'space',
     subtype: 'reception',
@@ -63,7 +63,7 @@ test('Phase 1 locks the requested deliverable in a short Task Contract', () => {
   }, { now: '2026-07-29T00:00:00.000Z' });
   assert.equal(task.deliverableFamily, 'space');
   assert.equal(task.count, 1);
-  assert.throws(() => createVNextTaskContract({
+  assert.throws(() => createShortChainTaskContract({
     ...task,
     deliverableFamily: 'vi',
     subtype: 'unspecified',
@@ -71,7 +71,7 @@ test('Phase 1 locks the requested deliverable in a short Task Contract', () => {
 });
 
 test('Phase 1 routes reception space only through space templates', () => {
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainGeneration({
     projectContext,
     now: '2026-07-29T00:00:00.000Z',
     task: {
@@ -105,6 +105,6 @@ test('Phase 1 routes reception space only through space templates', () => {
 });
 
 test('Phase 1 public templates contain no project-specific aesthetic answer', () => {
-  const serialized = JSON.stringify(listVNextTemplates());
+  const serialized = JSON.stringify(listShortChainTemplates());
   assert.doesNotMatch(serialized, /九州|冯烫烫|深紫|陶红|羽翼/u);
 });

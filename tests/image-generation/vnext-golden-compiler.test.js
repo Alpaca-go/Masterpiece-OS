@@ -3,7 +3,7 @@ import test from 'node:test';
 // These tests assert the exact output of the legacy vNext space compiler;
 // after R7 the production default is phase9b_quality, so pin the legacy path.
 process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
-import { compileVNextImageGeneration } from '@masterpiece/image-generation-runtime/vnext/index.js';
+import { compileShortChainGeneration } from '@masterpiece/image-generation-runtime/generation/index.js';
 
 function context({ projectId, brand, industry, promptSourceObject }) {
   return {
@@ -142,7 +142,7 @@ function promptSource({
 }
 
 function compileSpace(projectContext, overrides = {}) {
-  return compileVNextImageGeneration({
+  return compileShortChainGeneration({
     projectContext,
     task: {
       projectId: projectContext.projectId,

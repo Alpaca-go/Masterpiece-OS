@@ -13,23 +13,23 @@ function kebab(value: string): string {
 /**
  * Desktop preload methods normally map to IPC channels by kebab-casing the
  * namespace and method. Keep the exceptions explicit here instead of trying to
- * infer semantic channel aliases such as `compileVNext -> vnext-compile`.
+ * infer semantic channel aliases for the Short-Chain operation family.
  */
 export const WEB_RPC_CHANNEL_OVERRIDES: Readonly<Record<string, string>> = Object.freeze({
-  'imageGeneration.compileVNext': 'image-generation:vnext-compile',
-  'imageGeneration.getVNextOptions': 'image-generation:vnext-options',
-  'imageGeneration.startVNext': 'image-generation:vnext-start',
-  'imageGeneration.startValidatedVNext': 'image-generation:vnext-start-validated',
-  'imageGeneration.getVNextSession': 'image-generation:vnext-session',
-  'imageGeneration.confirmVNextDirection': 'image-generation:vnext-confirm-direction',
-  'imageGeneration.confirmVNextGeneratedOutput': 'image-generation:vnext-confirm-generated-output',
-  'imageGeneration.revokeVNextGeneratedOutput': 'image-generation:vnext-revoke-generated-output',
-  'imageGeneration.getVNextConfirmedGeneratedOutputs': 'image-generation:vnext-confirmed-generated-outputs',
-  'imageGeneration.continueVNextSameType': 'image-generation:vnext-continue-same-type',
-  'imageGeneration.saveVNextProjectPromptAsset': 'image-generation:vnext-save-prompt-asset',
-  'imageGeneration.postCompositeVNextLogo': 'image-generation:vnext-post-composite-logo',
-  'projectContext.getVNext': 'project-context:get-vnext',
-  'projectContext.rebuildVNext': 'project-context:rebuild-vnext',
+  'imageGeneration.compileShortChain': 'image-generation:short-chain-compile',
+  'imageGeneration.getShortChainOptions': 'image-generation:short-chain-options',
+  'imageGeneration.startShortChain': 'image-generation:short-chain-start',
+  'imageGeneration.startValidatedShortChain': 'image-generation:short-chain-start-validated',
+  'imageGeneration.getShortChainSession': 'image-generation:short-chain-session',
+  'imageGeneration.confirmShortChainDirection': 'image-generation:short-chain-confirm-direction',
+  'imageGeneration.confirmShortChainGeneratedOutput': 'image-generation:short-chain-confirm-generated-output',
+  'imageGeneration.revokeShortChainGeneratedOutput': 'image-generation:short-chain-revoke-generated-output',
+  'imageGeneration.getShortChainConfirmedGeneratedOutputs': 'image-generation:short-chain-confirmed-generated-outputs',
+  'imageGeneration.continueShortChainSameType': 'image-generation:short-chain-continue-same-type',
+  'imageGeneration.saveShortChainProjectPromptAsset': 'image-generation:short-chain-save-prompt-asset',
+  'imageGeneration.postCompositeShortChainLogo': 'image-generation:short-chain-post-composite-logo',
+  'projectContext.getShortChain': 'project-context:get-generation',
+  'projectContext.rebuildShortChain': 'project-context:rebuild-generation',
   'projectContext.getGenerationReadiness': 'project-context:generation-readiness'
 });
 

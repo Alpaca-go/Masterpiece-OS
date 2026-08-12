@@ -33,6 +33,6 @@ export function createNodeRuntimePaths(
     settingsFile: path.join(userData, 'settings.json'),
     credentials: path.join(userData, 'node-credentials'),
     defaultDataPath: path.join(userData, 'Masterpiece OS Data'),
-    promptRoot: path.resolve(environment.MASTERPIECE_PROMPT_ROOT || path.join(repoRoot, 'apps', 'cli', 'prompts', 'v5')),
+    promptRoot: path.resolve(environment.MASTERPIECE_PROMPT_ROOT || path.join(repoRoot, 'apps', 'cli', 'prompts', 'analysis')),
   });
 }

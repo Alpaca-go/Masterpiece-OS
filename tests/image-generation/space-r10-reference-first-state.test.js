@@ -1,7 +1,7 @@
 // R10.2 Reference-First UI state helper tests.
 //
 // These are pure-logic tests for the shared state module used by the
-// VNextGenerationWorkspace (Generation Basis, reference selection, remove /
+// ShortChainGenerationWorkspace (Generation Basis, reference selection, remove /
 // replace, light validation). No React, no Electron, no provider.
 import test from 'node:test';
 import assert from 'node:assert/strict';

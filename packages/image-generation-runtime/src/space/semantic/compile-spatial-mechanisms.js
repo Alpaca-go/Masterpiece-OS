@@ -7,7 +7,7 @@
 //     → normalize-architecture-semantics (strip motif, preserve spatial property)
 //     → derive-spatial-mechanisms  (this module: assemble architecture IR + brand IR)
 //     → rewrite-architecture-semantics (R8.5 redirected: prop → English action verbs)
-//     → phase9b-space-compiler consumes `architectureActions` as the
+//     → compiler consumes `architectureActions` as the
 //       sole architecture mechanism input rendered as action-verb bullets;
 //       brand motifs go to Brand Translation
 //

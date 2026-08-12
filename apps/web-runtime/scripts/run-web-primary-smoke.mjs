@@ -195,9 +195,9 @@ try {
   const settings = await rpc(rendererUrl, 'settings:get', []);
   const analysis = await rpc(rendererUrl, 'analysis:cancel', ['__web_smoke_no_active_project__']);
   const provider = await rpc(rendererUrl, 'image-generation:get-capabilities', []);
-  const referenceFirst = await rpc(rendererUrl, 'image-generation:vnext-options', []);
-  await rpc(rendererUrl, 'image-generation:vnext-compile', [{ projectId: '__web_smoke_missing_project__' }], false);
-  await rpc(rendererUrl, 'image-generation:vnext-start', [{ projectId: '__web_smoke_missing_project__', taskId: '__missing__' }], false);
+  const referenceFirst = await rpc(rendererUrl, 'image-generation:short-chain-options', []);
+  await rpc(rendererUrl, 'image-generation:short-chain-compile', [{ projectId: '__web_smoke_missing_project__' }], false);
+  await rpc(rendererUrl, 'image-generation:short-chain-start', [{ projectId: '__web_smoke_missing_project__', taskId: '__missing__' }], false);
   const processEvidence = assertNodeOnlyProcessTree(process.pid);
   const result = {
     schemaVersion: '1.1', status: 'pass', runtime: 'web', host: 'node', rendererUrl, rpcUrl,

@@ -8,9 +8,9 @@
 //
 // This file pins:
 //   - VNEXT_SIMILARITY_AUDIT_THRESHOLDS is frozen + carries the v2.0 numbers
-//   - assertVNextSimilarityAudit happy paths (5+1 dims, boundary at 4 and 2.5)
-//   - assertVNextSimilarityAudit invalid scores throw (no silent UI results)
-//   - assertVNextSimilarityAudit custom thresholds honor caller-supplied values
+//   - assertShortChainSimilarityAudit happy paths (5+1 dims, boundary at 4 and 2.5)
+//   - assertShortChainSimilarityAudit invalid scores throw (no silent UI results)
+//   - assertShortChainSimilarityAudit custom thresholds honor caller-supplied values
 //   - overall pass requires all 6 dims individually
 //   - the contracts module surface is consistent (F-1 types are exported)
 //
@@ -21,13 +21,13 @@ import assert from 'node:assert/strict';
 import * as contracts from '@masterpiece/image-generation-contracts/index.ts';
 
 // F-1 exports the THRESHOLDS constant + the assert helper. Type-level
-// shapes (VNextSimilarityAuditScores, VNextEvidenceCheckpoint, etc.) are
+// shapes (ShortChainSimilarityAuditScores, ShortChainEvidenceCheckpoint, etc.) are
 // pure TypeScript interfaces and have no runtime presence, so this test
 // file only exercises the runtime API surface + duck-type checks where
 // applicable.
 const {
   VNEXT_SIMILARITY_AUDIT_THRESHOLDS,
-  assertVNextSimilarityAudit,
+  assertShortChainSimilarityAudit,
 } = contracts;
 
 // A complete valid scores payload. Every test starts from a copy of
@@ -65,11 +65,11 @@ test('F-1: VNEXT_SIMILARITY_AUDIT_THRESHOLDS is frozen (cannot be mutated by cal
 });
 
 // ---------------------------------------------------------------------
-// 2. assertVNextSimilarityAudit happy path
+// 2. assertShortChainSimilarityAudit happy path
 // ---------------------------------------------------------------------
 
 test('F-1: all 6 dimensions at the minimum (4) passes every dimension + overall', () => {
-  const result = assertVNextSimilarityAudit(scores());
+  const result = assertShortChainSimilarityAudit(scores());
   assert.deepEqual(result, {
     visualWorldFidelity: true,
     sceneAccuracy: true,
@@ -82,7 +82,7 @@ test('F-1: all 6 dimensions at the minimum (4) passes every dimension + overall'
 });
 
 test('F-1: all 6 dimensions at 5 (max) passes every dimension + overall', () => {
-  const result = assertVNextSimilarityAudit(scores({
+  const result = assertShortChainSimilarityAudit(scores({
     visualWorldFidelity: 5,
     sceneAccuracy: 5,
     functionalRealism: 5,
@@ -96,7 +96,7 @@ test('F-1: all 6 dimensions at 5 (max) passes every dimension + overall', () => 
 });
 
 test('F-1: all 6 dimensions at 3 (below threshold) fails every dimension + overall', () => {
-  const result = assertVNextSimilarityAudit(scores({
+  const result = assertShortChainSimilarityAudit(scores({
     visualWorldFidelity: 3,
     sceneAccuracy: 3,
     functionalRealism: 3,
@@ -124,19 +124,19 @@ test('F-1: all 6 dimensions at 3 (below threshold) fails every dimension + overa
 // Tests below validate the integer-score boundary behavior:
 
 test('F-1: nearCopyRisk = 2 (last integer ≤ 2.5 cap) passes', () => {
-  const result = assertVNextSimilarityAudit(scores({ nearCopyRisk: 2 }));
+  const result = assertShortChainSimilarityAudit(scores({ nearCopyRisk: 2 }));
   assert.equal(result.nearCopyRisk, true, 'nearCopyRisk=2 is the last integer within the inclusive 2.5 cap');
   assert.equal(result.overall, true);
 });
 
 test('F-1: nearCopyRisk = 3 (first integer > 2.5 cap) fails', () => {
-  const result = assertVNextSimilarityAudit(scores({ nearCopyRisk: 3 }));
+  const result = assertShortChainSimilarityAudit(scores({ nearCopyRisk: 3 }));
   assert.equal(result.nearCopyRisk, false, 'nearCopyRisk=3 is the first integer above the inclusive 2.5 cap');
   assert.equal(result.overall, false, 'overall must fail when any one dimension fails');
 });
 
 test('F-1: nearCopyRisk = 1 (very low risk) passes', () => {
-  const result = assertVNextSimilarityAudit(scores({ nearCopyRisk: 1 }));
+  const result = assertShortChainSimilarityAudit(scores({ nearCopyRisk: 1 }));
   assert.equal(result.nearCopyRisk, true);
   assert.equal(result.overall, true);
 });
@@ -147,56 +147,56 @@ test('F-1: nearCopyRisk = 1 (very low risk) passes', () => {
 
 test('F-1: dimension = 0 throws (out of 1..5 range)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ visualWorldFidelity: 0 })),
+    () => assertShortChainSimilarityAudit(scores({ visualWorldFidelity: 0 })),
     /visualWorldFidelity/,
   );
 });
 
 test('F-1: dimension = 6 throws (out of 1..5 range)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ referenceAlignment: 6 })),
+    () => assertShortChainSimilarityAudit(scores({ referenceAlignment: 6 })),
     /referenceAlignment/,
   );
 });
 
 test('F-1: dimension = -1 throws (negative out of range)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ sceneAccuracy: -1 })),
+    () => assertShortChainSimilarityAudit(scores({ sceneAccuracy: -1 })),
     /sceneAccuracy/,
   );
 });
 
 test('F-1: dimension = 3.5 throws (non-integer)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ functionalRealism: 3.5 })),
+    () => assertShortChainSimilarityAudit(scores({ functionalRealism: 3.5 })),
     /functionalRealism/,
   );
 });
 
 test('F-1: dimension = NaN throws (not finite)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ targetSceneAuthority: Number.NaN })),
+    () => assertShortChainSimilarityAudit(scores({ targetSceneAuthority: Number.NaN })),
     /targetSceneAuthority/,
   );
 });
 
 test('F-1: dimension = Infinity throws (not finite)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ visualWorldFidelity: Number.POSITIVE_INFINITY })),
+    () => assertShortChainSimilarityAudit(scores({ visualWorldFidelity: Number.POSITIVE_INFINITY })),
     /visualWorldFidelity/,
   );
 });
 
 test('F-1: dimension = "4" (string) throws (must be number)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ sceneAccuracy: '4' })),
+    () => assertShortChainSimilarityAudit(scores({ sceneAccuracy: '4' })),
     /sceneAccuracy/,
   );
 });
 
 test('F-1: dimension = null throws (must be number)', () => {
   assert.throws(
-    () => assertVNextSimilarityAudit(scores({ nearCopyRisk: null })),
+    () => assertShortChainSimilarityAudit(scores({ nearCopyRisk: null })),
     /nearCopyRisk/,
   );
 });
@@ -206,7 +206,7 @@ test('F-1: dimension = null throws (must be number)', () => {
 // ---------------------------------------------------------------------
 
 test('F-1: custom minScore = 5 raises the bar — 4 is no longer enough', () => {
-  const result = assertVNextSimilarityAudit(
+  const result = assertShortChainSimilarityAudit(
     scores(),
     { minScore: 5, maxNearCopyRisk: 2.5 },
   );
@@ -222,7 +222,7 @@ test('F-1: custom minScore = 5 raises the bar — 4 is no longer enough', () => 
 });
 
 test('F-1: custom maxNearCopyRisk = 1 — nearCopyRisk = 2 must fail', () => {
-  const result = assertVNextSimilarityAudit(
+  const result = assertShortChainSimilarityAudit(
     scores({ nearCopyRisk: 2 }),
     { minScore: 4, maxNearCopyRisk: 1 },
   );
@@ -232,7 +232,7 @@ test('F-1: custom maxNearCopyRisk = 1 — nearCopyRisk = 2 must fail', () => {
 
 test('F-1: custom thresholds honor both — overall only true when BOTH constraints are met', () => {
   // All dims = 5 (passes minScore=5) + nearCopyRisk = 1 (passes maxRisk=1)
-  const result = assertVNextSimilarityAudit(
+  const result = assertShortChainSimilarityAudit(
     scores({
       visualWorldFidelity: 5,
       sceneAccuracy: 5,
@@ -251,7 +251,7 @@ test('F-1: custom thresholds honor both — overall only true when BOTH constrai
 // ---------------------------------------------------------------------
 
 test('F-1: 5 dimensions pass + 1 fails → overall false, the failing bool is false', () => {
-  const result = assertVNextSimilarityAudit(scores({ sceneAccuracy: 3 }));
+  const result = assertShortChainSimilarityAudit(scores({ sceneAccuracy: 3 }));
   assert.equal(result.visualWorldFidelity, true);
   assert.equal(result.functionalRealism, true);
   assert.equal(result.targetSceneAuthority, true);
@@ -262,7 +262,7 @@ test('F-1: 5 dimensions pass + 1 fails → overall false, the failing bool is fa
 });
 
 test('F-1: only nearCopyRisk fails → overall false, others all true', () => {
-  const result = assertVNextSimilarityAudit(scores({ nearCopyRisk: 5 }));
+  const result = assertShortChainSimilarityAudit(scores({ nearCopyRisk: 5 }));
   assert.equal(result.visualWorldFidelity, true);
   assert.equal(result.sceneAccuracy, true);
   assert.equal(result.functionalRealism, true);
@@ -277,7 +277,7 @@ test('F-1: only nearCopyRisk fails → overall false, others all true', () => {
 // ---------------------------------------------------------------------
 
 test('F-1: result has exactly 7 fields: 6 dimensions + overall, no extras', () => {
-  const result = assertVNextSimilarityAudit(scores());
+  const result = assertShortChainSimilarityAudit(scores());
   const keys = Object.keys(result).sort();
   assert.deepEqual(keys, [
     'functionalRealism',
@@ -296,7 +296,7 @@ test('F-1: result has exactly 7 fields: 6 dimensions + overall, no extras', () =
 
 test('F-1: when no thresholds arg is passed, the v2.0 thresholds are used', () => {
   // visualWorldFidelity = 3 with default minScore = 4 must fail
-  const result = assertVNextSimilarityAudit(scores({ visualWorldFidelity: 3 }));
+  const result = assertShortChainSimilarityAudit(scores({ visualWorldFidelity: 3 }));
   assert.equal(result.visualWorldFidelity, false, 'default minScore must be 4');
   // nearCopyRisk = 2 with default maxNearCopyRisk = 2.5 must pass
   assert.equal(result.nearCopyRisk, true, 'default maxNearCopyRisk must be 2.5');

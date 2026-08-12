@@ -14,10 +14,10 @@ import {
   rewriteArchitectureSemantics,
   compileRawPhrases,
   compileSpatialMechanisms,
-  adaptPhase9bSource,
-  compilePhase9bSpacePrompt,
+  adaptSpaceSource,
+  compileSpacePrompt,
   SEMANTIC_CLASS,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 // ---- detectSignals --------------------------------------------------------
 
@@ -215,7 +215,7 @@ test('mustBeVisible: logo/identity items route to brand, not composition', () =>
     colorSystem: {},
     diagnosis: { brandMisreadRisks: [] },
   };
-  const layers = adaptPhase9bSource({ packet, taskContract: { subtype: 'reception', aspectRatio: '16:9' } });
+  const layers = adaptSpaceSource({ packet, taskContract: { subtype: 'reception', aspectRatio: '16:9' } });
 
   // Composition mustBeVisible must NOT contain logo/slogan.
   const compText = layers.composition.mustBeVisible.join(' | ');
@@ -257,7 +257,7 @@ test('mustBeVisible: motif items route to brand, not composition', () => {
     colorSystem: {},
     diagnosis: { brandMisreadRisks: [] },
   };
-  const layers = adaptPhase9bSource({ packet, taskContract: { subtype: 'reception', aspectRatio: '16:9' } });
+  const layers = adaptSpaceSource({ packet, taskContract: { subtype: 'reception', aspectRatio: '16:9' } });
 
   // Composition mustBeVisible must NOT contain motif text.
   const compText = layers.composition.mustBeVisible.join(' | ');
@@ -314,7 +314,7 @@ test('architecture blocks contain English action verbs, not Chinese V5 prose', (
     colorSystem: { primary: [], secondary: [], accent: [], forbidden: ['高饱和紫'] },
     diagnosis: { brandMisreadRisks: [] },
   };
-  const result = compilePhase9bSpacePrompt({ packet, taskContract: { subtype: 'reception', aspectRatio: '16:9' }, brandKey: 'jiuzhou-aesthetics' });
+  const result = compileSpacePrompt({ packet, taskContract: { subtype: 'reception', aspectRatio: '16:9' }, brandKey: 'jiuzhou-aesthetics' });
 
   // Architecture-language block: must contain English action verbs.
   const archBlock = result.blocksById.architecture_language.text;

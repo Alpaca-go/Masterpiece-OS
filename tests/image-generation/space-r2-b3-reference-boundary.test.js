@@ -22,7 +22,7 @@ const refBoundaryUrl = pathToFileURL(
   path.join(repoRoot, 'packages/image-generation-runtime/src/space/reference-boundary.js'),
 ).href;
 const seedreamAdapterUrl = pathToFileURL(
-  path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/seedream-adapter.js'),
+  path.join(repoRoot, 'packages/image-generation-runtime/src/generation/seedream-adapter.js'),
 ).href;
 
 const {
@@ -30,9 +30,9 @@ const {
   renderReferenceBoundary,
   resolveProviderStrengthControlLabel,
 } = await import(refBoundaryUrl);
-const { createSeedreamVNextAdapter } = await import(seedreamAdapterUrl);
+const { createSeedreamShortChainAdapter } = await import(seedreamAdapterUrl);
 
-const SEEDREAM_CAPABILITY = createSeedreamVNextAdapter().capability;
+const SEEDREAM_CAPABILITY = createSeedreamShortChainAdapter().capability;
 
 test('r2.0 B-3: boundary module exposes a version constant', () => {
   assert.match(REFERENCE_BOUNDARY_VERSION, /^space-reference-boundary@/);
@@ -147,7 +147,7 @@ test('r2.0 B-3: resolveProviderStrengthControlLabel reports "unsupported" when c
 });
 
 test('r2.0 B-3: Seedream compile appends the boundary for reference_first + reports trace metadata', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = adapter.compile({
     editablePrompt: 'BASE COMPILED PROMPT',
     finalPrompt: 'BASE COMPILED PROMPT',
@@ -173,7 +173,7 @@ test('r2.0 B-3: Seedream compile appends the boundary for reference_first + repo
 });
 
 test('r2.0 B-3: Seedream compile does NOT append the boundary for standard', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = adapter.compile({
     editablePrompt: 'BASE COMPILED PROMPT',
     finalPrompt: 'BASE COMPILED PROMPT',
@@ -192,7 +192,7 @@ test('r2.0 B-3: Seedream compile does NOT append the boundary for standard', () 
 });
 
 test('r2.0 B-3: Seedream compile does NOT append the boundary for continuation', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = adapter.compile({
     editablePrompt: 'BASE COMPILED PROMPT',
     finalPrompt: 'BASE COMPILED PROMPT',
@@ -213,7 +213,7 @@ test('r2.0 B-3: Seedream compile with reference_first but no referenceAssetIds s
   // (the route integrity gate does that earlier). It only checks
   // generationBasis. So for reference_first with zero ids the boundary is
   // still appended — the gate is upstream of the adapter.
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = adapter.compile({
     editablePrompt: 'BASE',
     finalPrompt: 'BASE',
@@ -231,7 +231,7 @@ test('r2.0 B-3: Seedream compile with reference_first but no referenceAssetIds s
 });
 
 test('r2.0 B-3: boundary prompt + compiled prompt still under the Seedream char ceiling', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   // Pick a base size that, together with the boundary (~1100 chars), still
   // sits under the 12_000 ceiling. We do not want to assume the exact
   // boundary length — we only care that the ceiling still works after

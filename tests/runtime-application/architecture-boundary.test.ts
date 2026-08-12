@@ -17,14 +17,14 @@ async function filesUnder(root: string): Promise<string[]> {
 }
 
 test('core v5 never depends on Desktop', async () => {
-  const files = await filesUnder(path.join(repositoryRoot, 'apps', 'cli', 'src', 'v5'));
+  const files = await filesUnder(path.join(repositoryRoot, 'apps', 'cli', 'src', 'analysis-engine'));
   const source = (await Promise.all(files.filter((file) => file.endsWith('.js')).map((file) => fs.readFile(file, 'utf8')))).join('\n');
   assert.doesNotMatch(source, /apps[\\/]desktop|desktop[\\/](src|out)/i);
 });
 
-test('shared pipeline calls runV5Pipeline directly without a host subprocess', async () => {
+test('shared pipeline calls runAnalysisPipeline directly without a host subprocess', async () => {
   const source = await fs.readFile(path.join(repositoryRoot, 'packages', 'runtime-core', 'src', 'application', 'pipeline-service.ts'), 'utf8');
-  assert.match(source, /runV5Pipeline/);
+  assert.match(source, /runAnalysisPipeline/);
   assert.doesNotMatch(source, /child_process|exec\s*\(|spawn\s*\(|npm run analyze/);
 });
 

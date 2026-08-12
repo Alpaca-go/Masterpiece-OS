@@ -19,7 +19,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compilePhase9bSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
+import { compileSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -51,7 +51,7 @@ const REFERENCE_BOUNDARY_HEADER = 'REFERENCE BOUNDARY';
 
 test('r2.0 B-3: Phase 9B compile appends the Reference Boundary for reference_first (cross-scene)', () => {
   const packet = load('space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json');
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: baseTaskContract({
       generationBasis: 'reference_first',
@@ -73,7 +73,7 @@ test('r2.0 B-3: Phase 9B compile appends the Reference Boundary for reference_fi
 
 test('r2.0 B-3: Phase 9B compile keeps the frozen R8.6 block order intact after boundary injection', () => {
   const packet = load('space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json');
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: baseTaskContract({
       generationBasis: 'reference_first',
@@ -100,7 +100,7 @@ test('r2.0 B-3: Phase 9B compile keeps the frozen R8.6 block order intact after 
 
 test('r2.0 B-3: Phase 9B compile does NOT append the boundary for standard basis', () => {
   const packet = load('space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json');
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: baseTaskContract({ generationBasis: 'standard' }),
     projectContext: { projectId: 'phase9b-boundary' },
@@ -115,7 +115,7 @@ test('r2.0 B-3: Phase 9B compile does NOT append the boundary for standard basis
 
 test('r2.0 B-3: Phase 9B compile does NOT append the boundary for continuation basis', () => {
   const packet = load('space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json');
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: baseTaskContract({
       generationBasis: 'continuation',
@@ -145,7 +145,7 @@ test('r2.0 B-3: Phase 9B compile does NOT append the boundary for continuation b
 
 test('r2.0 B-3: Phase 9B compile records referenceBoundary metadata on the trace', () => {
   const packet = load('space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json');
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: baseTaskContract({
       generationBasis: 'reference_first',
@@ -168,7 +168,7 @@ test('r2.0 B-3: Phase 9B compile records referenceBoundary metadata on the trace
 
 test('r2.0 B-3: Phase 9B budget check sees the appended boundary characters', () => {
   const packet = load('space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json');
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet,
     taskContract: baseTaskContract({
       generationBasis: 'reference_first',

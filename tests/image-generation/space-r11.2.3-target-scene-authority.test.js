@@ -21,10 +21,10 @@ import {
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
 process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-const compileUrl = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
-const { compileVNextImageGeneration } = await import(compileUrl);
+const compileUrl = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
+const { compileShortChainGeneration } = await import(compileUrl);
 const spaceUrl = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/space/index.js')).href;
-const { compilePhase9bSpacePrompt, createSpaceContinuationContract } = await import(spaceUrl);
+const { compileSpacePrompt, createSpaceContinuationContract } = await import(spaceUrl);
 
 function loadPacket(brand) {
   return JSON.parse(fs.readFileSync(
@@ -37,7 +37,7 @@ function compilePrompt(taskContract) {
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'proj-r1123' };
   ctx.visualDecisionPacket = packet;
-  return compilePhase9bSpacePrompt({
+  return compileSpacePrompt({
     packet,
     taskContract,
     projectContext: ctx,
@@ -172,7 +172,7 @@ test('R11.2.3 continuation stays world-consistency with leakage gate pass', () =
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'proj-r1123' };
   ctx.visualDecisionPacket = packet;
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx, model: 'doubao-seedream-5-0-pro-260628',
     task: {
       schemaVersion: '1.0', taskId: 'cont', projectId: 'proj-r1123',

@@ -905,7 +905,7 @@ export interface ProjectVisualContext {
  * analysis output, or explicit user decisions. Report markdown is not a valid
  * source.
  */
-export interface ProjectVisualContextVNext {
+export interface ProjectVisualContextShortChain {
   schemaVersion: '2.0';
   projectId: string;
   version: number;

@@ -122,7 +122,7 @@ test('rebuild 源缺失时：标记 Context 失败，但项目（与报告）仍
 // is satisfied MUST report ready=true with an empty reasons array;
 // a project missing any precondition MUST report ready=false with
 // the offending condition named in the reasons array.
-function minimalValidVNextContext(projectId: string): Record<string, unknown> {
+function minimalValidShortChainContext(projectId: string): Record<string, unknown> {
   return {
     schemaVersion: '2.0',
     projectId,
@@ -134,7 +134,7 @@ function minimalValidVNextContext(projectId: string): Record<string, unknown> {
   };
 }
 
-async function seedProjectWithVNext(root: string, vnextBody: Record<string, unknown> | null) {
+async function seedProjectWithShortChain(root: string, vnextBody: Record<string, unknown> | null) {
   const seeded = await seedProject(root);
   const projects = createProjectStore(async () => ({ defaultDataPath: root } as never));
   const updates: Record<string, unknown> = {
@@ -162,7 +162,7 @@ async function seedProjectWithVNext(root: string, vnextBody: Record<string, unkn
 test('getGenerationContextReadiness: project with valid vnext context + legacy visual context returns ready=true', async () => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-ready-'));
   try {
-    const { id } = await seedProjectWithVNext(tmp, minimalValidVNextContext('project-id'));
+    const { id } = await seedProjectWithShortChain(tmp, minimalValidShortChainContext('project-id'));
     const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
     const service = createProjectContextService({ projects });
     const readiness = await service.getGenerationContextReadiness(id);
@@ -199,7 +199,7 @@ test('getGenerationContextReadiness: missing vnext context surfaces a precise re
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-vnext-missing-'));
   try {
     // vnextBody=null => do NOT seed the vnext file or status.
-    const { id } = await seedProjectWithVNext(tmp, null);
+    const { id } = await seedProjectWithShortChain(tmp, null);
     const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
     const service = createProjectContextService({ projects });
     const readiness = await service.getGenerationContextReadiness(id);
@@ -217,7 +217,7 @@ test('getGenerationContextReadiness: malformed vnext file surfaces the validatio
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-vnext-invalid-'));
   try {
     // Seed the vnext status/filename but write a file that fails
-    // validateProjectVisualContextVNext (schemaVersion !== '2.0').
+    // validateProjectVisualContext (schemaVersion !== '2.0').
     const seeded = await seedProject(tmp);
     const projects = createProjectStore(async () => ({ defaultDataPath: tmp } as never));
     const dir = path.join(tmp, 'projects', `${seeded.id.slice(0, 8)}-${seeded.id}`);

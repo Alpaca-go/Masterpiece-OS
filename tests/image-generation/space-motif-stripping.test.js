@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import {
   normalizeArchitectureSemantics,
   compileRawPhrases,
-} from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+} from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 test('strip: feather-like English -> layered curved abstraction', () => {
   const r = normalizeArchitectureSemantics('feather-like layered translucent boundary', 'x');

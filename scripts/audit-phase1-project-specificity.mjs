@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compileVNextImageGeneration } from '../packages/image-generation-runtime/src/vnext/index.js';
+import { compileShortChainGeneration } from '../packages/image-generation-runtime/src/generation/index.js';
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const auditRoot = path.join(
@@ -131,7 +131,7 @@ for (const family of ['space', 'packaging']) {
   );
   const oldCompiled = await readJson(path.join(oldCompilationRoot, 'compiled-prompt.json'));
   const oldTask = await readJson(path.join(oldCompilationRoot, 'task-contract.json'));
-  const result = compileVNextImageGeneration({
+  const result = compileShortChainGeneration({
     projectContext: context,
     approvedCreativeDecision: approvedDecision,
     userConfirmedVisualDecision,

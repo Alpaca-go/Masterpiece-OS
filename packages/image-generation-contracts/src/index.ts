@@ -790,18 +790,18 @@ export const DEFAULT_IMAGE_OUTPUT_COUNT = 1 as const;
 // vNext short-pipeline contracts
 // ---------------------------------------------------------------------------
 
-export type VNextDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
-export type VNextAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
-export type VNextLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
+export type ShortChainDeliverableFamily = 'space' | 'packaging' | 'vi' | 'poster';
+export type ShortChainAspectRatio = '1:1' | '4:3' | '3:4' | '16:9' | '9:16';
+export type ShortChainLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
 // R11.1: continuation is a product-level basis — the SAME frozen r8_6_golden
 // compiler runs reference_assisted with a confirmed generated output as the
 // single source reference. It is NOT a new compiler.
-export type VNextGenerationBasis = 'standard' | 'reference_first' | 'continuation';
+export type ShortChainGenerationBasis = 'standard' | 'reference_first' | 'continuation';
 
 // R11.2.3: where the task's shot came from. The target scene owns the view
 // unless the user explicitly chose a shot (user_explicit > target_scene_default
 // > legacy_project_default).
-export type VNextShotSource = 'user_explicit' | 'target_scene_default' | 'legacy_project_default';
+export type ShortChainShotSource = 'user_explicit' | 'target_scene_default' | 'legacy_project_default';
 
 // r2.0 §4.9: auxiliary metadata describing how the reference image's scene
 // relates to the target scene. NEVER replaces Target Scene Functional
@@ -809,7 +809,7 @@ export type VNextShotSource = 'user_explicit' | 'target_scene_default' | 'legacy
 // and Provider prompt nuance. Default 'unknown' when the relation cannot
 // be determined from the available asset metadata. Not applicable when
 // generationBasis is 'standard' or 'continuation'.
-export type VNextReferenceSceneRelation = 'same_scene' | 'cross_scene' | 'unknown';
+export type ShortChainReferenceSceneRelation = 'same_scene' | 'cross_scene' | 'unknown';
 
 // r2.0 §4.10 Path A: the adapter declares its reference-image capability
 // honestly. Any strength / role / type control MUST be reported as
@@ -818,7 +818,7 @@ export type VNextReferenceSceneRelation = 'same_scene' | 'cross_scene' | 'unknow
 // referenceStrengthControl.supported or referenceRoleControl.supported is
 // true. Otherwise the trace MUST mark providerStrengthControl = "unsupported"
 // and the text block alone is sent (B-3), or Paths B / C are explored.
-export interface VNextAdapterStrengthControlCapability {
+export interface ShortChainAdapterStrengthControlCapability {
   /** Whether the adapter actually supports an official strength / weight parameter for references. */
   supported: boolean;
   /** The provider-side parameter name, e.g. "ref_strength" or "image_strength". Null when unsupported. */
@@ -831,7 +831,7 @@ export interface VNextAdapterStrengthControlCapability {
   note: string;
 }
 
-export interface VNextAdapterReferenceCapability {
+export interface ShortChainAdapterReferenceCapability {
   /**
    * Maximum number of reference images the adapter can accept in a single
    * call. Combined with Product Policy via min(...) at runtime. The current
@@ -840,24 +840,24 @@ export interface VNextAdapterReferenceCapability {
    * higher count end to end.
    */
   maxReferenceImages: number;
-  referenceStrengthControl: VNextAdapterStrengthControlCapability;
-  referenceRoleControl: VNextAdapterStrengthControlCapability;
+  referenceStrengthControl: ShortChainAdapterStrengthControlCapability;
+  referenceRoleControl: ShortChainAdapterStrengthControlCapability;
 }
 
-export interface VNextAdapterCapability {
-  /** The adapter id (matches VNextCompiledPrompt.trace.adapterId). */
+export interface ShortChainAdapterCapability {
+  /** The adapter id (matches ShortChainCompiledPrompt.trace.adapterId). */
   adapterId: string;
-  /** The adapter version (matches VNextCompiledPrompt.trace.adapterVersion). */
+  /** The adapter version (matches ShortChainCompiledPrompt.trace.adapterVersion). */
   adapterVersion: string;
   /** Reference-image capability. */
-  reference: VNextAdapterReferenceCapability;
+  reference: ShortChainAdapterReferenceCapability;
 }
 
 // R11.1 continuation confirmation state for a generated space output.
 // append-only metadata; never changes the image / run / evaluation.
 export type ContinuationConfirmationState = 'unconfirmed' | 'confirmed' | 'revoked';
 
-export interface VNextContinuationIntent {
+export interface ShortChainContinuationIntent {
   sourceAssetId: string;
   sourceRunId: string;
   sourceScene: string;
@@ -884,36 +884,36 @@ export interface VNextContinuationIntent {
   referenceRole?: 'world_consistency';
 }
 
-export interface VNextTaskContract {
+export interface ShortChainTaskContract {
   schemaVersion: '1.0';
   taskId: string;
   projectId: string;
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   subtype: string;
   scene?: string;
   shot: string;
   count: 1 | 2;
-  aspectRatio: VNextAspectRatio;
+  aspectRatio: ShortChainAspectRatio;
   currentInstruction: string;
-  generationBasis?: VNextGenerationBasis;
+  generationBasis?: ShortChainGenerationBasis;
   mustInclude: string[];
   mustAvoid: string[];
   referenceAssetIds: string[];
-  logoUsageMode?: VNextLogoUsageMode;
+  logoUsageMode?: ShortChainLogoUsageMode;
   /** R11.2.3: provenance of the shot value (target scene owns the view unless the user explicitly chose it). */
-  shotSource?: VNextShotSource;
+  shotSource?: ShortChainShotSource;
   /** r2.0 §4.9: auxiliary metadata — reference scene vs target scene relation. */
-  referenceSceneRelation?: VNextReferenceSceneRelation;
+  referenceSceneRelation?: ShortChainReferenceSceneRelation;
   createdAt: string;
   /** R11.1: present only when generationBasis === 'continuation'. */
-  continuation?: VNextContinuationIntent;
+  continuation?: ShortChainContinuationIntent;
 }
 
-export interface VNextPromptTemplate {
+export interface ShortChainPromptTemplate {
   id: string;
   version: string;
   kind: 'family' | 'subtype' | 'shot';
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   appliesTo: {
     subtypes?: string[];
     shots?: string[];
@@ -930,18 +930,18 @@ export interface VNextPromptTemplate {
   };
 }
 
-export interface VNextTemplateRoute {
+export interface ShortChainTemplateRoute {
   familyTemplateId: string;
   subtypeTemplateId: string;
   shotTemplateId: string;
   templateVersions: Record<string, string>;
 }
 
-export interface VNextCompiledPrompt {
+export interface ShortChainCompiledPrompt {
   schemaVersion: '1.0';
-  taskContract: VNextTaskContract;
+  taskContract: ShortChainTaskContract;
   projectContextVersion: number;
-  route: VNextTemplateRoute;
+  route: ShortChainTemplateRoute;
   blocks: Array<{
     id: string;
     title: string;
@@ -965,7 +965,7 @@ export interface VNextCompiledPrompt {
   editablePrompt: string;
   negativeConstraints: string[];
   referenceAssetIds: string[];
-  logoUsageMode: VNextLogoUsageMode;
+  logoUsageMode: ShortChainLogoUsageMode;
   compiledAt: string;
   trace: {
     compilerId: string;
@@ -980,22 +980,22 @@ export interface VNextCompiledPrompt {
   };
 }
 
-export interface VNextModelPromptPayload {
+export interface ShortChainModelPromptPayload {
   adapterId: string;
   adapterVersion: string;
   model: string;
   prompt: string;
   size: '2K';
-  aspectRatio: VNextAspectRatio;
+  aspectRatio: ShortChainAspectRatio;
   count: 1 | 2;
   referenceAssetIds: string[];
 }
 
-export interface VNextProjectPromptAsset {
+export interface ShortChainProjectPromptAsset {
   schemaVersion: '1.0';
   id: string;
   projectId: string;
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   name: string;
   version: number;
   promptFragments: string[];
@@ -1005,8 +1005,8 @@ export interface VNextProjectPromptAsset {
   updatedAt: string;
 }
 
-export interface VNextImplicitAnchor {
-  deliverableFamily: VNextDeliverableFamily;
+export interface ShortChainImplicitAnchor {
+  deliverableFamily: ShortChainDeliverableFamily;
   runId: string;
   imageId: string;
   projectRelativePath: string;
@@ -1018,7 +1018,7 @@ export interface VNextImplicitAnchor {
 // metadata; never modifies the image / run / evaluation. confirmationSource is
 // always user_explicit; confirmationState is one of unconfirmed/confirmed/
 // revoked. An asset in 'confirmed' state is the only valid continuation source.
-export interface VNextConfirmedGeneratedOutput {
+export interface ShortChainConfirmedGeneratedOutput {
   assetId: string;
   projectId: string;
   // R11.2.1 asset identity: this is a generated space output, never a generic
@@ -1037,11 +1037,11 @@ export interface VNextConfirmedGeneratedOutput {
   baselineId?: string;
 }
 
-export interface VNextSessionHistoryEntry {
+export interface ShortChainSessionHistoryEntry {
   id: string;
   type: 'compiled' | 'generated' | 'direction_confirmed' | 'prompt_asset_saved';
   taskId: string;
-  deliverableFamily: VNextDeliverableFamily;
+  deliverableFamily: ShortChainDeliverableFamily;
   subtype: string;
   shot: string;
   promptFingerprint: string;
@@ -1049,7 +1049,7 @@ export interface VNextSessionHistoryEntry {
   imageId?: string;
   createdAt: string;
   /** R11.2.2: the generation mode that produced this entry. */
-  generationBasis?: VNextGenerationBasis;
+  generationBasis?: ShortChainGenerationBasis;
   /** R11.2.2: continuation lineage (source scene -> target scene). */
   continuationLineage?: {
     sourceScene: string;
@@ -1058,20 +1058,20 @@ export interface VNextSessionHistoryEntry {
   };
 }
 
-export interface VNextCreativeSession {
+export interface ShortChainCreativeSession {
   schemaVersion: '1.0';
   projectId: string;
-  currentTask: VNextTaskContract | null;
-  history: VNextSessionHistoryEntry[];
-  implicitAnchors: Partial<Record<VNextDeliverableFamily, VNextImplicitAnchor>>;
-  projectPromptAssets: Partial<Record<VNextDeliverableFamily, string>>;
+  currentTask: ShortChainTaskContract | null;
+  history: ShortChainSessionHistoryEntry[];
+  implicitAnchors: Partial<Record<ShortChainDeliverableFamily, ShortChainImplicitAnchor>>;
+  projectPromptAssets: Partial<Record<ShortChainDeliverableFamily, string>>;
   /** R11.1: confirmed generated outputs (continuation sources), keyed by assetId. */
-  confirmedGeneratedOutputs?: Record<string, VNextConfirmedGeneratedOutput>;
+  confirmedGeneratedOutputs?: Record<string, ShortChainConfirmedGeneratedOutput>;
   createdAt: string;
   updatedAt: string;
 }
 
-export type VNextDeliverableMismatchType =
+export type ShortChainDeliverableMismatchType =
   | 'wrong_family'
   | 'wrong_subtype'
   | 'missing_required_structure'
@@ -1083,14 +1083,14 @@ export type VNextDeliverableMismatchType =
   | 'logo_text_error'
   | 'quality_issue';
 
-export interface VNextDeliverableValidation {
+export interface ShortChainDeliverableValidation {
   schemaVersion: '1.0';
   projectId: string;
   taskId: string;
   runId: string;
   imageId: string;
   status: 'passed' | 'failed' | 'unverified';
-  detectedFamily: VNextDeliverableFamily | 'unknown';
+  detectedFamily: ShortChainDeliverableFamily | 'unknown';
   detectedSubtype: string | 'unknown';
   visibleEvidence: string[];
   missingRequiredItems: string[];
@@ -1101,30 +1101,30 @@ export interface VNextDeliverableValidation {
   sceneCompleteness: 'complete' | 'incomplete' | 'uncertain';
   logoTextStatus: 'correct' | 'incorrect' | 'absent' | 'uncertain' | 'not_required';
   qualityIssues: string[];
-  mismatchTypes: VNextDeliverableMismatchType[];
+  mismatchTypes: ShortChainDeliverableMismatchType[];
   retryRecommended: boolean;
   validatorId: string;
   validatorVersion: string;
   validatedAt: string;
 }
 
-export interface VNextValidatedGenerationResult {
+export interface ShortChainValidatedGenerationResult {
   initialRun: ImageGenerationRun;
-  initialValidation: VNextDeliverableValidation;
+  initialValidation: ShortChainDeliverableValidation;
   correctionRun?: ImageGenerationRun;
-  correctionValidation?: VNextDeliverableValidation;
+  correctionValidation?: ShortChainDeliverableValidation;
   terminalStatus: 'passed' | 'failed' | 'unverified';
   automaticRetryCount: 0 | 1;
   // r2.0 §4.13 / Phase E: the 5-state UI model. Derived from the
   // initial + optional correction pair; the renderer surfaces it
   // verbatim so the user always knows which step the flow is in.
-  flowState: VNextGenerationFlowState;
+  flowState: ShortChainGenerationFlowState;
   // r2.0 §4.13: first-image preservation. When the initial Provider
   // call succeeded, this is the FIRST image that reached the model.
   // The UI keeps it visible across correction retries and validation
   // failures so the user always has the "first attempt" to look at.
   // Undefined when the initial run never produced an image.
-  firstImage?: VNextValidatedGenerationImageRef;
+  firstImage?: ShortChainValidatedGenerationImageRef;
   // r2.0 §6.7 / Phase F-3: the multimodal similarity audit result.
   // - `null`  : audit not triggered (standard, continuation, or
   //             reference_first + same_scene / unknown / no audit
@@ -1136,12 +1136,12 @@ export interface VNextValidatedGenerationResult {
   //             is NOT reclassified as a generation failure, but
   //             Final Acceptance is BLOCKED (the user must retry
   //             the audit or mark it skipped manually).
-  similarityAudit: VNextSimilarityAuditResult | 'unavailable' | null;
+  similarityAudit: ShortChainSimilarityAuditResult | 'unavailable' | null;
 }
 
 // r2.0 §4.13 / Phase E: image reference with the minimal metadata the
 // UI needs to display the first image without re-querying the run.
-export interface VNextValidatedGenerationImageRef {
+export interface ShortChainValidatedGenerationImageRef {
   runId: string;
   imageId: string;
   relativePath: string;
@@ -1152,11 +1152,11 @@ export interface VNextValidatedGenerationImageRef {
 
 // r2.0 §4.13 / Phase E: the 5-state machine. The UI uses this single
 // enum to drive its banner + first-image preservation behavior. The
-// `terminalStatus` on VNextValidatedGenerationResult is the LEGACY
+// `terminalStatus` on ShortChainValidatedGenerationResult is the LEGACY
 // three-state (passed/failed/unverified) summary; the new `flowState`
 // is a strictly richer encoding that distinguishes every step the
 // user actually sees.
-export type VNextGenerationFlowState =
+export type ShortChainGenerationFlowState =
   | 'initial_failed'              // state 1: initial Provider call never produced an image
   | 'awaiting_validation'         // state 2: initial Provider succeeded, waiting for / receiving validation
   | 'correcting'                  // state 3: initial validation failed, correction prompt issued
@@ -1168,11 +1168,11 @@ export type VNextGenerationFlowState =
 // helper takes the COMPONENTS of a result (not the full result, which
 // is what we're computing flowState for) so the caller can build the
 // full result without a circular type.
-export interface VNextGenerationFlowInput {
+export interface ShortChainGenerationFlowInput {
   initialRun: ImageGenerationRun;
-  initialValidation?: VNextDeliverableValidation;
+  initialValidation?: ShortChainDeliverableValidation;
   correctionRun?: ImageGenerationRun;
-  correctionValidation?: VNextDeliverableValidation;
+  correctionValidation?: ShortChainDeliverableValidation;
 }
 
 // r2.0 §6.7 / Phase F: the multimodal similarity audit. The audit
@@ -1185,7 +1185,7 @@ export interface VNextGenerationFlowInput {
 // pass; Near-copy Risk is INVERTED (lower is better) and must be
 // <= 2.5 to pass. The overall pass requires all 6 dimensions to
 // pass individually.
-export interface VNextSimilarityAuditScores {
+export interface ShortChainSimilarityAuditScores {
   /** Visual World Fidelity — does the image carry the reference image's design language (material / light / color / surface / form rhythm)? */
   visualWorldFidelity: number;
   /** Scene Accuracy — does the image's functional program / spatial type match the requested target scene? */
@@ -1214,7 +1214,7 @@ export const VNEXT_SIMILARITY_AUDIT_THRESHOLDS = Object.freeze({
 
 // r2.0 §6.7 / Phase F: per-dimension pass flags. Computed from the
 // scores + the v2.0 thresholds.
-export interface VNextSimilarityAuditPassFlags {
+export interface ShortChainSimilarityAuditPassFlags {
   visualWorldFidelity: boolean;
   sceneAccuracy: boolean;
   functionalRealism: boolean;
@@ -1226,9 +1226,9 @@ export interface VNextSimilarityAuditPassFlags {
 
 // r2.0 §6.7 / Phase F: the audit result. The shape is JSON-serialisable
 // so it can be persisted as a run-evidence file (`similarity-audit.json`).
-export interface VNextSimilarityAuditResult {
-  scores: VNextSimilarityAuditScores;
-  pass: VNextSimilarityAuditPassFlags;
+export interface ShortChainSimilarityAuditResult {
+  scores: ShortChainSimilarityAuditScores;
+  pass: ShortChainSimilarityAuditPassFlags;
   // Free-form rationale from the multimodal LLM. Stored as opaque
   // text so the contracts package does not depend on a specific
   // reasoner shape.
@@ -1251,18 +1251,18 @@ export interface VNextSimilarityAuditResult {
 // per-dimension verdict text. Throws on invalid scores (out of
 // range / non-integer) so the contracts layer never silently
 // produces a result the UI cannot trust.
-export function assertVNextSimilarityAudit(
-  scores: VNextSimilarityAuditScores,
+export function assertShortChainSimilarityAudit(
+  scores: ShortChainSimilarityAuditScores,
   thresholds: {
     minScore: number;
     maxNearCopyRisk: number;
   } = VNEXT_SIMILARITY_AUDIT_THRESHOLDS,
-): VNextSimilarityAuditPassFlags {
+): ShortChainSimilarityAuditPassFlags {
   const min = thresholds.minScore;
   const maxRisk = thresholds.maxNearCopyRisk;
-  for (const [key, value] of Object.entries(scores) as [keyof VNextSimilarityAuditScores, number][]) {
+  for (const [key, value] of Object.entries(scores) as [keyof ShortChainSimilarityAuditScores, number][]) {
     if (!Number.isFinite(value) || !Number.isInteger(value) || value < 1 || value > 5) {
-      throw new Error(`VNextSimilarityAudit: dimension "${key}" must be an integer in 1..5, got ${value}`);
+      throw new Error(`ShortChainSimilarityAudit: dimension "${key}" must be an integer in 1..5, got ${value}`);
     }
   }
   const visualWorldFidelity = scores.visualWorldFidelity >= min;
@@ -1308,12 +1308,12 @@ export function assertVNextSimilarityAudit(
  *   8. correctionValidation.status === 'failed'          → 'correction_still_failed'
  *   9. otherwise                                          → 'passed'
  *
- * @param {VNextGenerationFlowInput} input
- * @returns {VNextGenerationFlowState}
+ * @param {ShortChainGenerationFlowInput} input
+ * @returns {ShortChainGenerationFlowState}
  */
 export function deriveGenerationFlowState(
-  input: VNextGenerationFlowInput,
-): VNextGenerationFlowState {
+  input: ShortChainGenerationFlowInput,
+): ShortChainGenerationFlowState {
   if (input.initialRun.status !== 'succeeded') return 'initial_failed';
   if (!input.initialValidation) return 'awaiting_validation';
   if (input.initialValidation.status !== 'failed') return 'passed';
@@ -1343,7 +1343,7 @@ export function deriveGenerationFlowState(
 //   - run.json
 //   - output.png (the first image, the "preserved first" from Phase E)
 //   - validations/<taskId>.summary.json (when the validated flow ran)
-export type VNextEvidenceFileName =
+export type ShortChainEvidenceFileName =
   | 'task-contract.json'
   | 'target-scene-projection.json'
   | 'prompt-source-map.json'
@@ -1354,7 +1354,7 @@ export type VNextEvidenceFileName =
   | 'output.png'
   | 'validations/summary.json';
 
-export interface VNextEvidenceFileStatus {
+export interface ShortChainEvidenceFileStatus {
   path: string;
   exists: boolean;
   sizeBytes: number;
@@ -1367,12 +1367,12 @@ export interface VNextEvidenceFileStatus {
 // r2.0 §8 / Phase F-4: binding snapshot extracted from the evidence
 // files by the desktop scanner. The runtime validator never reads
 // files; it cross-checks the bundle's extracted bindings against
-// the caller's expected values (VNextEvidenceValidationContext).
+// the caller's expected values (ShortChainEvidenceValidationContext).
 //
 // Each field is `null` when the corresponding file was missing or
 // unreadable, so the validator can distinguish "binding absent"
 // from "binding explicitly empty".
-export interface VNextEvidenceBindings {
+export interface ShortChainEvidenceBindings {
   // From run.json (runId) and trace.json (taskId).
   runId: string | null;
   taskId: string | null;
@@ -1395,7 +1395,7 @@ export interface VNextEvidenceBindings {
 // validator. `severity: 'block'` means the checkpoint cannot pass;
 // `severity: 'warn'` means the file has a problem but the checkpoint
 // can still pass (e.g. an optional file is unreadable).
-export interface VNextEvidenceIssue {
+export interface ShortChainEvidenceIssue {
   severity: 'block' | 'warn';
   code:
     | 'EVIDENCE_FILE_MISSING'                // file is missing from bundle.files
@@ -1413,7 +1413,7 @@ export interface VNextEvidenceIssue {
     | 'EVIDENCE_VALIDATIONS_SUMMARY_MISSING' // validated flow expected but summary absent
     | 'EVIDENCE_REFERENCE_TRACE_MISSING';    // reference_first / continuation expected but trace absent
   message: string;
-  file: VNextEvidenceFileName | null;
+  file: ShortChainEvidenceFileName | null;
 }
 
 // r2.0 §8 / Phase F-4: optional context the caller (vnext-service
@@ -1421,7 +1421,7 @@ export interface VNextEvidenceIssue {
 // caller's expected value; the validator checks the bundle's
 // extracted bindings against these and produces mismatches as
 // `block`-severity issues.
-export interface VNextEvidenceValidationContext {
+export interface ShortChainEvidenceValidationContext {
   expectedProjectId?: string;
   expectedTaskId?: string;
   expectedRunId?: string;
@@ -1444,21 +1444,21 @@ export interface VNextEvidenceValidationContext {
 // The two-layer split keeps filesystem knowledge in the desktop
 // scanner (which knows paths and reads files) and binding
 // consistency logic in the runtime validator (pure, no fs).
-export interface VNextEvidenceCheckpoint {
+export interface ShortChainEvidenceCheckpoint {
   schemaVersion: '1.0';
   projectId: string;
   taskId: string;
   // F-4: the runtime validator's version, for trace / smoke compatibility.
   version: string;
   // F-1: per-file status (path, exists, sizeBytes, kind).
-  files: VNextEvidenceFileStatus[];
+  files: ShortChainEvidenceFileStatus[];
   // F-1: required files that are missing OR unreadable.
-  missingRequired: VNextEvidenceFileName[];
+  missingRequired: ShortChainEvidenceFileName[];
   // F-4: extracted binding snapshot. Null when the scanner was not
   // run (e.g. a synthetic checkpoint built only from the file list).
-  bindings: VNextEvidenceBindings;
+  bindings: ShortChainEvidenceBindings;
   // F-4: per-issue diagnostics. Empty when the checkpoint is fully clean.
-  issues: VNextEvidenceIssue[];
+  issues: ShortChainEvidenceIssue[];
   // F-1: true iff no `block`-severity issues AND no required files missing.
   pass: boolean;
   checkedAt: string;
@@ -1471,9 +1471,9 @@ export interface VNextEvidenceCheckpoint {
 // `EvidenceBundle` is intentionally NOT exported through the
 // desktop types surface — only the desktop scanner module and the
 // runtime validator should see this shape. The desktop UI / IPC
-// see only the resulting `VNextEvidenceCheckpoint`.
-export interface VNextEvidenceFileRecord {
-  name: VNextEvidenceFileName;
+// see only the resulting `ShortChainEvidenceCheckpoint`.
+export interface ShortChainEvidenceFileRecord {
+  name: ShortChainEvidenceFileName;
   path: string;
   exists: boolean;
   sizeBytes: number;
@@ -1499,10 +1499,10 @@ export interface EvidenceBundle {
   // Per-file records, one for each of the 9 evidence file names.
   // The desktop scanner always produces records for all 9; the
   // runtime validator decides which are required.
-  files: VNextEvidenceFileRecord[];
+  files: ShortChainEvidenceFileRecord[];
   // Binding snapshot extracted from the files. The scanner does
   // the extraction; the validator compares against the caller's
   // context. This keeps the validator pure (no fs).
-  bindings: VNextEvidenceBindings;
+  bindings: ShortChainEvidenceBindings;
   capturedAt: string;
 }

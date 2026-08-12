@@ -27,7 +27,7 @@
 // stale / corrupt / never-compiled task fails closed with
 // SPACE_COMPILER_ROUTE_MISMATCH, regardless of what the user typed.
 //
-// The v2.0 minimum-fix at vnext-service.ts:561-568 (force
+// The v2.0 minimum-fix at short-chain-service.ts:561-568 (force
 // promptCharacters to the compiled prompt length) is preserved as
 // Gate A's budget fallback: the compiled prompt length is the only
 // authoritative length for the compile-time budget check.
@@ -75,7 +75,7 @@ function fail(details, causeCode = 'SPACE_COMPILER_ROUTE_MISMATCH') {
  * intentionally read-only on the compile artifacts; callers must NOT
  * pass `input.editedPrompt` (the field is ignored even if present).
  *
- * The minimum-fix semantics from vnext-service.ts:561-568 are kept:
+ * The minimum-fix semantics from short-chain-service.ts:561-568 are kept:
  * if `trace.promptCharacters` is missing or NaN, fall back to the
  * literal length of the COMPILED prompt (not the user-edited one).
  * This is the only "what length to budget" decision Gate A makes.

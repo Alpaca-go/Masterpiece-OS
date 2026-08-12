@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   buildTargetSceneProjection,
-  compilePhase9bSpacePrompt,
+  compileSpacePrompt,
   projectBrandManifestationToTargetScene,
   resolveTargetFunctionalProgram,
   validateTargetSceneAuthority,
@@ -117,7 +117,7 @@ test('R11.2.4 authority gate covers operation, must-visible and brand manifestat
 
 test('R11.2.4 JZMX reference-first final prompt is consultation-clean and traceable', () => {
   const packet = loadPacket();
-  const result = compilePhase9bSpacePrompt({
+  const result = compileSpacePrompt({
     packet,
     taskContract: consultationTask(),
     projectContext: { projectId: 'project-r1124', visualDecisionPacket: packet },
@@ -147,7 +147,7 @@ test('R11.2.4 JZMX reference-first final prompt is consultation-clean and tracea
 
 test('R11.2.4 standard stays text-only while brand manifestation remains target-aware', () => {
   const packet = loadPacket();
-  const result = compilePhase9bSpacePrompt({
+  const result = compileSpacePrompt({
     packet,
     taskContract: consultationTask('standard'),
     projectContext: { projectId: 'project-r1124', visualDecisionPacket: packet },

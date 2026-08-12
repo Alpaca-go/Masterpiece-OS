@@ -4,8 +4,8 @@
 // side scanner that knows the filesystem paths and reads the 9
 // evidence files into a pure-data EvidenceBundle. The runtime
 // validator here never reads the filesystem; it consumes the
-// bundle and the caller's VNextEvidenceValidationContext and
-// produces a VNextEvidenceCheckpoint.
+// bundle and the caller's ShortChainEvidenceValidationContext and
+// produces a ShortChainEvidenceCheckpoint.
 //
 // Design intent (r2.0 §8):
 //   - The validator checks TWO things:
@@ -75,7 +75,7 @@ function findFile(bundle, name) {
 }
 
 /**
- * Build a VNextEvidenceIssue with the given severity / code /
+ * Build a ShortChainEvidenceIssue with the given severity / code /
  * message / file.
  */
 function issue(severity, code, message, file) {
@@ -210,15 +210,15 @@ export function extractEvidenceBindings(bundle) {
  * Run the evidence integrity check.
  *
  * @param {object} bundle               the desktop scanner's EvidenceBundle
- * @param {object} [context]            optional VNextEvidenceValidationContext
- * @returns {object}                    VNextEvidenceCheckpoint
+ * @param {object} [context]            optional ShortChainEvidenceValidationContext
+ * @returns {object}                    ShortChainEvidenceCheckpoint
  */
-export function validateVNextEvidenceIntegrity(bundle, context = {}) {
+export function validateShortChainEvidenceIntegrity(bundle, context = {}) {
   if (!bundle || typeof bundle !== 'object') {
-    throw new Error('validateVNextEvidenceIntegrity: bundle is required');
+    throw new Error('validateShortChainEvidenceIntegrity: bundle is required');
   }
   if (!Array.isArray(bundle.files)) {
-    throw new Error('validateVNextEvidenceIntegrity: bundle.files must be an array');
+    throw new Error('validateShortChainEvidenceIntegrity: bundle.files must be an array');
   }
   const issues = [];
   const missingRequired = [];

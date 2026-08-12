@@ -15,8 +15,8 @@ import { createGenerationSeriesExecutionService } from './generation-series-exec
 import { createGenerationSeriesService } from './generation-series-service.ts';
 import { createFileContextLoader } from './image-generation/context-loader.ts';
 import { createImageGenerationService } from './image-generation/service.ts';
-import { createVNextDeliverableValidatorService } from './image-generation/vnext-deliverable-validator-service.ts';
-import { createVNextImageGenerationService } from './image-generation/vnext-service.ts';
+import { createDeliverableValidatorService } from './image-generation/deliverable-validator-service.ts';
+import { createShortChainGenerationService } from './image-generation/short-chain-service.ts';
 import { createLockedAssetsService } from './locked-assets-service.ts';
 import { createPipelineService } from './pipeline-service.ts';
 import { createProjectContextService, type SaveDialogResult } from './project-context-service.ts';
@@ -131,18 +131,18 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       await adapters.openPath(root);
     },
   });
-  const vnextDeliverableValidator = createVNextDeliverableValidatorService(
+  const deliverableValidator = createDeliverableValidatorService(
     projects,
     () => imageGeneration,
     adapters.readSettings,
     adapters.readCredentials,
     projectContext,
   );
-  const vnextImageGeneration = createVNextImageGenerationService(
+  const shortChainGeneration = createShortChainGenerationService(
     projects,
     projectContext,
     () => imageGeneration,
-    () => vnextDeliverableValidator,
+    () => deliverableValidator,
   );
   const creativeGeneration = createCreativeGenerationService(generationPrompts, imageGeneration, creativeSessions);
   const anchorGeneration = createAnchorGenerationService(
@@ -160,7 +160,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
 
   return Object.freeze({
     projects, reports: createReportService(projects), pipeline, documentContext, projectContext,
-    contextIntegration, referenceAnchor, imageGeneration, vnextImageGeneration,
+    contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
     creativeSessions, creativeDirections, generationBlueprints, styleProfiles, lockedAssets,
     visualMemory, anchorCandidates, visualCanons, referencePacks, generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,

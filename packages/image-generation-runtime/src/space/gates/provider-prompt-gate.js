@@ -28,7 +28,7 @@
 // the brand sanitizer; Gate B is a Provider-side final sanity check.
 
 import { REFERENCE_BOUNDARY_VERSION } from '../reference-boundary.js';
-import { SEEDREAM_MAX_PROMPT_CHARACTERS } from '../../vnext/seedream-adapter.js';
+import { SEEDREAM_MAX_PROMPT_CHARACTERS } from '../../generation/seedream-adapter.js';
 
 export const SPACE_PROVIDER_PROMPT_GATE_VERSION = 'space-provider-prompt-gate@1.0.0';
 
@@ -67,7 +67,7 @@ function fail(details, causeCode = 'SPACE_PROVIDER_PROMPT_INVALID') {
  * @param {string} input.actualPrompt          the prompt string about to be sent
  * @param {string} [input.compiledPrompt]      the original compiled prompt
  * @param {object} input.providerCapability
- *        VNextAdapterCapability shape. Used for the character cap.
+ *        ShortChainAdapterCapability shape. Used for the character cap.
  * @param {string} [input.generationBasis]     'standard' | 'reference_first' | 'continuation'
  * @param {string} [input.targetScene]         target scene (e.g. 'consultation')
  * @param {string} [input.targetSceneLabel]    human-readable label (e.g. 'consultation')

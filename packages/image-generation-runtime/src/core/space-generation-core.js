@@ -7,12 +7,12 @@
 export const SPACE_GENERATION_CORE_ID = 'space-generation-core@1.0.0';
 
 export {
-  compileVNextCorrectionPrompt,
-  compileVNextImageGeneration,
-  listVNextTemplateOptions,
+  compileShortChainCorrectionPrompt,
+  compileShortChainGeneration,
+  listShortChainTemplateOptions,
   deriveGenerationFlowState,
-  validateVNextDeliverableEvidence,
-} from '../vnext/index.js';
+  validateShortChainDeliverableEvidence,
+} from '../generation/index.js';
 
 export {
   assertSpaceGenerationRouteGateA,
@@ -23,11 +23,11 @@ export {
   runSpaceQualityGate,
   validateSpatialSemantics,
   resolveEffectiveMaxReferences,
-} from '../vnext/space-quality/index.js';
+} from '../generation/space-quality/index.js';
 
-export { createSeedreamVNextAdapter } from '../vnext/seedream-adapter.js';
+export { createSeedreamShortChainAdapter } from '../generation/seedream-adapter.js';
 
 export {
   normalizeSpatialFunctionalValue,
-  validateVNextEvidenceIntegrity,
+  validateShortChainEvidenceIntegrity,
 } from '../space/index.js';

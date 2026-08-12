@@ -10,7 +10,7 @@ export const CONTINUATION_SOURCE_VALIDATION_VERSION = 'space-continuation-source
  * Validate a confirmed generated output as a continuation source.
  *
  * @param {object} input
- * @param {object} input.confirmed        VNextConfirmedGeneratedOutput entry
+ * @param {object} input.confirmed        ShortChainConfirmedGeneratedOutput entry
  * @param {object} [input.asset]          Project asset { id, kind, projectId }
  * @param {string} input.projectId        current task project
  * @param {object} [input.run]            source run record (optional)

@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
-  compileVNextCorrectionPrompt,
-  validateVNextDeliverableEvidence,
-} from '@masterpiece/image-generation-runtime/vnext/index.js';
+  compileShortChainCorrectionPrompt,
+  validateShortChainDeliverableEvidence,
+} from '@masterpiece/image-generation-runtime/generation/index.js';
 
 const taskContract = {
   schemaVersion: '1.0',
@@ -23,7 +23,7 @@ const taskContract = {
 };
 
 test('result validator separates scene, brand tone, logo/text, locked asset, and quality failures', () => {
-  const validation = validateVNextDeliverableEvidence({
+  const validation = validateShortChainDeliverableEvidence({
     projectId: 'project-1',
     taskContract,
     runId: 'run-calibration',
@@ -51,7 +51,7 @@ test('result validator separates scene, brand tone, logo/text, locked asset, and
     'quality_issue',
   ]);
   assert.equal(validation.retryRecommended, true);
-  const correction = compileVNextCorrectionPrompt({
+  const correction = compileShortChainCorrectionPrompt({
     originalPrompt: 'ORIGINAL PROMPT',
     taskContract,
     validation,

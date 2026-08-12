@@ -18,7 +18,7 @@
 //     -> separate-space-semantics   (classify)
 //     -> normalize-architecture-semantics (strip motif, preserve spatial prop)
 //     -> rewrite-architecture-semantics  (THIS: prop -> English action verbs)
-//     -> phase9b-space-compiler renders the three action lists into blocks
+//     -> compiler renders the three action lists into blocks
 //
 // Principles:
 //   - Deterministic, no LLM, no network.

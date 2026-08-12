@@ -55,7 +55,7 @@ export function resolveProductPolicyMaxReferences(generationBasis) {
  * @param {object} input
  * @param {string} input.generationBasis
  * @param {object|null|undefined} input.adapterCapability
- *        VNextAdapterCapability shape, or null when the adapter did not
+ *        ShortChainAdapterCapability shape, or null when the adapter did not
  *        declare one. Unknown adapters get a 0 bound.
  * @returns {{
  *   effectiveMax: number,

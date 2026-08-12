@@ -71,4 +71,4 @@ export {
   runPromptPreflightGate,
   assertPromptPreflight,
 } from './gates/prompt-preflight-gate.js';
-export * from './vnext/index.js';
+export * from './generation/index.js';

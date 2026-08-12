@@ -3,8 +3,8 @@ export function createProjectContextOperations({ projectContext }) {
     'project-context:get': (_context, projectId) => projectContext.get(projectId),
     'project-context:rebuild': (_context, projectId) => projectContext.rebuild(projectId),
     'project-context:export': (_context, projectId) => projectContext.export(projectId),
-    'project-context:get-vnext': (_context, projectId) => projectContext.getVNext(projectId),
-    'project-context:rebuild-vnext': (_context, projectId) => projectContext.rebuildVNext(projectId),
+    'project-context:get-generation': (_context, projectId) => projectContext.getShortChain(projectId),
+    'project-context:rebuild-generation': (_context, projectId) => projectContext.rebuildShortChain(projectId),
     'project-context:generation-readiness': (_context, projectId) => projectContext.getGenerationContextReadiness(projectId),
   });
 }

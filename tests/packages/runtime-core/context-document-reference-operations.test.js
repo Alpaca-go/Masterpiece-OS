@@ -17,8 +17,8 @@ test('Context, Document and Reference operations dispatch without Electron', asy
       get: async (id) => ({ id }),
       rebuild: async () => ({}),
       export: async () => null,
-      getVNext: async () => ({}),
-      rebuildVNext: async () => ({}),
+      getShortChain: async () => ({}),
+      rebuildShortChain: async () => ({}),
       getGenerationContextReadiness: async () => ({ ready: true }),
     },
   }));

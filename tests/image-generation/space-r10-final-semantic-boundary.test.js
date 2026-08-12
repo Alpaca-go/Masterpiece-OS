@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  compilePhase9bSpacePrompt,
+  compileSpacePrompt,
   separateSpaceSemantics,
 } from '@masterpiece/image-generation-runtime/space/index.js';
 
@@ -54,7 +54,7 @@ test('R10 semantic boundary: no logo/icon/motif/gradient leaks into functional b
   // legitimately contain "Function".
   const motif = /\b(peacock|feather)\b|孔雀|羽毛|纹样|图腾/iu;
   for (const brand of BRANDS) {
-    const out = compilePhase9bSpacePrompt({
+    const out = compileSpacePrompt({
       packet: loadPacket(brand),
       taskContract: buildTask('reception', 'entrance_view'),
       projectContext: { projectId: 'r10-final-semantic' },

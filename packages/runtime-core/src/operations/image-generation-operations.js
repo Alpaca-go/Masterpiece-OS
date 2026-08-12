@@ -1,4 +1,4 @@
-export function createImageGenerationOperations({ service, vnextService }) {
+export function createImageGenerationOperations({ service, shortChainService }) {
   const operations = {
     'image-generation:get-capabilities': () => service.getCapabilities(),
     'image-generation:get-preset-capabilities': () => service.getPresetCapabilities(),
@@ -17,23 +17,25 @@ export function createImageGenerationOperations({ service, vnextService }) {
     'image-generation:save-review': (_context, review) => service.saveReview(review),
     'image-generation:get-image-data-url': (_context, runId, imageId) => service.readImageDataUrl(runId, imageId),
   };
-  if (vnextService) {
-    Object.assign(operations, {
-      'image-generation:vnext-options': () => vnextService.listOptions(),
-      'image-generation:vnext-compile': (_context, input) => vnextService.compile(input),
-      'image-generation:vnext-start': (_context, input) => vnextService.start(input),
-      'image-generation:vnext-start-validated': (_context, input) => vnextService.startValidated(input),
-      'image-generation:vnext-session': (_context, projectId) => vnextService.getSession(projectId),
-      'image-generation:vnext-confirm-direction': (_context, projectId, runId, imageId) => vnextService.confirmDirection(projectId, runId, imageId),
-      'image-generation:vnext-confirm-generated-output': (_context, projectId, runId, imageId) => vnextService.confirmGeneratedOutput(projectId, runId, imageId),
-      'image-generation:vnext-revoke-generated-output': (_context, projectId, assetId) => vnextService.revokeGeneratedOutput(projectId, assetId),
-      'image-generation:vnext-confirmed-generated-outputs': (_context, projectId) => vnextService.getConfirmedGeneratedOutputs(projectId),
-      'image-generation:vnext-continue-same-type': (_context, projectId, instruction, apiProfileId, dryRun) => vnextService.continueSameType(projectId, instruction, apiProfileId, dryRun),
-      'image-generation:vnext-save-prompt-asset': (_context, input) => vnextService.saveProjectPromptAsset(input),
-      'image-generation:vnext-post-composite-logo': (_context, input) => vnextService.postCompositeLogo(input),
-    });
-    if (vnextService.preflightReferenceAssets) {
-      operations['image-generation:preflight-reference-assets'] = (_context, input) => vnextService.preflightReferenceAssets(input);
+  if (shortChainService) {
+    const shortChainOperations = {
+      'image-generation:short-chain-options': () => shortChainService.listOptions(),
+      'image-generation:short-chain-compile': (_context, input) => shortChainService.compile(input),
+      'image-generation:short-chain-start': (_context, input) => shortChainService.start(input),
+      'image-generation:short-chain-start-validated': (_context, input) => shortChainService.startValidated(input),
+      'image-generation:short-chain-session': (_context, projectId) => shortChainService.getSession(projectId),
+      'image-generation:short-chain-confirm-direction': (_context, projectId, runId, imageId) => shortChainService.confirmDirection(projectId, runId, imageId),
+      'image-generation:short-chain-confirm-generated-output': (_context, projectId, runId, imageId) => shortChainService.confirmGeneratedOutput(projectId, runId, imageId),
+      'image-generation:short-chain-revoke-generated-output': (_context, projectId, assetId) => shortChainService.revokeGeneratedOutput(projectId, assetId),
+      'image-generation:short-chain-confirmed-generated-outputs': (_context, projectId) => shortChainService.getConfirmedGeneratedOutputs(projectId),
+      'image-generation:short-chain-continue-same-type': (_context, projectId, instruction, apiProfileId, dryRun) => shortChainService.continueSameType(projectId, instruction, apiProfileId, dryRun),
+      'image-generation:short-chain-save-prompt-asset': (_context, input) => shortChainService.saveProjectPromptAsset(input),
+      'image-generation:short-chain-post-composite-logo': (_context, input) => shortChainService.postCompositeLogo(input),
+    };
+    Object.assign(operations, shortChainOperations);
+
+    if (shortChainService.preflightReferenceAssets) {
+      operations['image-generation:preflight-reference-assets'] = (_context, input) => shortChainService.preflightReferenceAssets(input);
     }
   }
   return Object.freeze(operations);

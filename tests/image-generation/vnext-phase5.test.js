@@ -6,7 +6,7 @@ import test from 'node:test';
 process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'vnext_legacy';
 import {
   IMAGE_GENERATION_PIPELINE_MODES,
-  compileVNextImageGeneration,
+  compileShortChainGeneration,
   resolveImageGenerationPipelineMode,
 } from '@masterpiece/image-generation-runtime/index.js';
 
@@ -56,7 +56,7 @@ test('Phase 5 makes vNext default while retaining an explicit legacy rollback', 
 test('Phase 5 fixed-project regression keeps exact routing, project identity, prompt budget, and compile latency', async () => {
   const matrix = JSON.parse(await readFile(fixture('project-matrix.json'), 'utf8'));
   const reports = matrix.projects.map((item) => {
-    const result = compileVNextImageGeneration({
+    const result = compileShortChainGeneration({
       projectContext: context(item),
       task: {
         projectId: item.id,
@@ -94,10 +94,10 @@ test('Phase 5 vNext implementation has no analysis-report or execution-document 
   const { fileURLToPath } = await import('node:url');
   const pkgRoot = fileURLToPath(import.meta.resolve('@masterpiece/image-generation-runtime'));
   const sources = await Promise.all([
-    readFile(new URL('./vnext/compile.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
-    readFile(new URL('./vnext/prompt-compiler.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
-    readFile(new URL('./vnext/template-router.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
-    readFile(new URL('../../packages/runtime-core/src/application/image-generation/vnext-service.ts', import.meta.url), 'utf8'),
+    readFile(new URL('./generation/compile.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
+    readFile(new URL('./generation/prompt-compiler.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
+    readFile(new URL('./generation/template-router.js', `file:///${pkgRoot.replace(/\\/g, '/')}`), 'utf8'),
+    readFile(new URL('../../packages/runtime-core/src/application/image-generation/short-chain-service.ts', import.meta.url), 'utf8'),
   ]);
   const joined = sources.join('\n');
   assert.doesNotMatch(joined, /reportMarkdown|lastReportFilename|execution document|执行文档/iu);

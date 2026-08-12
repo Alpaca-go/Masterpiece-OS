@@ -6,16 +6,16 @@
 // (VisualDecisionPacket, self-healing, ProjectGenerationContract).
 
 export {
-  compilePhase9bSpacePrompt,
+  compileSpacePrompt,
   SPACE_PROMPT_COMPILER_ID,
   SPACE_PROMPT_COMPILER_VERSION,
-} from './phase9b-space-compiler.js';
+} from './compiler.js';
 
 export {
-  adaptPhase9bSource,
-  isSpacePhase9bInsufficient,
+  adaptSpaceSource,
+  isSpaceSourceInsufficient,
   SPACE_QUALITY_SOURCE_ADAPTER_VERSION,
-} from './phase9b-source-adapter.js';
+} from './source-adapter.js';
 
 export {
   selectArchitectureAnchors,
@@ -51,13 +51,13 @@ export { ACTIVE_SPACE_ROUTE_BASELINE } from './quality-baselines/active-space-ro
 
 // r2.0 §8 / Phase F-4: run evidence integrity gate (RUNTIME layer).
 // Pure validator that consumes an EvidenceBundle (produced by the
-// desktop scanner) and a VNextEvidenceValidationContext (caller
-// expectations) and produces a VNextEvidenceCheckpoint with
+// desktop scanner) and a ShortChainEvidenceValidationContext (caller
+// expectations) and produces a ShortChainEvidenceCheckpoint with
 // per-file health + per-binding mismatch + missingRequired list.
 // The runtime never reads the filesystem; the desktop scanner is
 // the only layer that touches disk.
 export {
-  validateVNextEvidenceIntegrity,
+  validateShortChainEvidenceIntegrity,
   extractEvidenceBindings,
   VNEXT_EVIDENCE_FILE_NAMES,
   VNEXT_EVIDENCE_INTEGRITY_GATE_VERSION,

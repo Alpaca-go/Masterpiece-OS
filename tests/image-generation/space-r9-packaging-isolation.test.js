@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compilePhase9bSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
+import { compileSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 
@@ -39,7 +39,7 @@ test('R9 production space compiler is packaging-agnostic (space-only)', () => {
       },
     },
   };
-  const out = compilePhase9bSpacePrompt({
+  const out = compileSpacePrompt({
     packet: polluted,
     taskContract: {
       schemaVersion: '1.0',
@@ -71,12 +71,12 @@ test('R9 deliverable-family router keeps packaging on the packaging compiler', a
   // compile.js routes by deliverableFamily: only 'space' may enter the
   // production Space Compiler; packaging/vi/poster go to the vNext compiler.
   const compileSrc = fs.readFileSync(
-    path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js'),
+    path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js'),
     'utf8',
   );
   // The router conditions on deliverableFamily === 'space' before production mode.
   assert.match(compileSrc, /deliverableFamily === 'space'/, 'space route guard present');
   assert.match(compileSrc, /isProductionSpaceMode\(spaceMode\)/, 'production mode gate on space only');
-  // Non-space families fall through to compileVNextPrompt.
-  assert.match(compileSrc, /compileVNextPrompt\(/, 'packaging/other families use the vNext compiler');
+  // Non-space families fall through to compileShortChainPrompt.
+  assert.match(compileSrc, /compileShortChainPrompt\(/, 'packaging/other families use the vNext compiler');
 });

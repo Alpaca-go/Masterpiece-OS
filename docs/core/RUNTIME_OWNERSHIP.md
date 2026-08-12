@@ -17,9 +17,11 @@
 
 | Capability | Owner | Host adapter |
 |---|---|---|
-| Visual Analysis | `@masterpiece/analysis-runtime` + CLI v5 prompts | Node Web Host path adapter |
+| Visual Analysis | `@masterpiece/analysis-runtime` + `apps/cli/src/analysis-engine` + `prompts/analysis` | Node Web Host path adapter |
 | Reference resolution | `@masterpiece/image-generation-runtime/reference-engine` | Shared Runtime |
-| Space/packaging generation | Image Generation Runtime Core facades | Shared Runtime + provider adapters |
+| Formal generation | `runtime-core` Short-Chain service + Image Generation Runtime `generation` namespace | Shared Runtime + provider adapters |
+| Space generation | `image-generation-runtime/src/space` (one compiler authority) | Short-Chain service |
+| Packaging generation | Generation prompt compiler + packaging contract | Short-Chain service |
 | Provider/model execution | model and image-provider packages | Node credential/settings stores |
 | Application services | `@masterpiece/runtime-core/application` | Node Web Host |
 | Business dispatch | Shared Operation Registry (136) | local RPC |

@@ -15,12 +15,12 @@ const productPolicyUrl = pathToFileURL(
   path.join(repoRoot, 'packages/image-generation-runtime/src/space/product-policy.js'),
 ).href;
 const seedreamAdapterUrl = pathToFileURL(
-  path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/seedream-adapter.js'),
+  path.join(repoRoot, 'packages/image-generation-runtime/src/generation/seedream-adapter.js'),
 ).href;
 
 const { resolveEffectiveMaxReferences, resolveProductPolicyMaxReferences, PRODUCT_POLICY_VERSION }
   = await import(productPolicyUrl);
-const { createSeedreamVNextAdapter, SEEDREAM_SHORT_CHAIN_ADAPTER_ID, SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION }
+const { createSeedreamShortChainAdapter, SEEDREAM_SHORT_CHAIN_ADAPTER_ID, SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION }
   = await import(seedreamAdapterUrl);
 
 test('r2.0 B-2: Product Policy module exposes a version constant', () => {
@@ -35,19 +35,19 @@ test('r2.0 B-2: Product Policy per-basis upper bound matches the documented base
 });
 
 test('r2.0 B-2: Seedream adapter declares a non-null capability with the documented id / version', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   assert.ok(adapter.capability, 'adapter must declare capability');
   assert.equal(adapter.capability.adapterId, SEEDREAM_SHORT_CHAIN_ADAPTER_ID);
   assert.equal(adapter.capability.adapterVersion, SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION);
 });
 
 test('r2.0 B-2: Seedream capability reports maxReferenceImages = 2 (current production value)', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   assert.equal(adapter.capability.reference.maxReferenceImages, 2);
 });
 
 test('r2.0 B-2: Seedream reports referenceStrengthControl as UNSUPPORTED with an honest note', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const ctl = adapter.capability.reference.referenceStrengthControl;
   assert.equal(ctl.supported, false);
   assert.equal(ctl.controlParameter, null);
@@ -57,7 +57,7 @@ test('r2.0 B-2: Seedream reports referenceStrengthControl as UNSUPPORTED with an
 });
 
 test('r2.0 B-2: Seedream reports referenceRoleControl as UNSUPPORTED with an honest note', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const ctl = adapter.capability.reference.referenceRoleControl;
   assert.equal(ctl.supported, false);
   assert.equal(ctl.controlParameter, null);
@@ -65,7 +65,7 @@ test('r2.0 B-2: Seedream reports referenceRoleControl as UNSUPPORTED with an hon
 });
 
 test('r2.0 B-2: effective max for reference_first is min(2, 2) = 2', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = resolveEffectiveMaxReferences({
     generationBasis: 'reference_first',
     adapterCapability: adapter.capability,
@@ -79,7 +79,7 @@ test('r2.0 B-2: effective max for reference_first is min(2, 2) = 2', () => {
 });
 
 test('r2.0 B-2: effective max for standard is 0 (no references)', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = resolveEffectiveMaxReferences({
     generationBasis: 'standard',
     adapterCapability: adapter.capability,
@@ -88,7 +88,7 @@ test('r2.0 B-2: effective max for standard is 0 (no references)', () => {
 });
 
 test('r2.0 B-2: effective max for continuation is 1', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   const out = resolveEffectiveMaxReferences({
     generationBasis: 'continuation',
     adapterCapability: adapter.capability,
@@ -151,7 +151,7 @@ test('r2.0 B-2: when capability is tighter than policy, capability wins', () => 
 });
 
 test('r2.0 B-2: the seedream adapter object is frozen and its capability is frozen', () => {
-  const adapter = createSeedreamVNextAdapter();
+  const adapter = createSeedreamShortChainAdapter();
   assert.ok(Object.isFrozen(adapter));
   assert.ok(Object.isFrozen(adapter.capability));
   assert.ok(Object.isFrozen(adapter.capability.reference));

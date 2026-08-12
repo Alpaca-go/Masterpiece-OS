@@ -1,7 +1,7 @@
 // Space quality gate tests (Recovery R5).
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { runSpaceQualityGate } from '@masterpiece/image-generation-runtime/vnext/space-quality/index.js';
+import { runSpaceQualityGate } from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 const REQUIRED_IDS = [
   'spatial_intent',

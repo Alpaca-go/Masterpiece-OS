@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { compilePhase9bSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
+import { compileSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const base = 'space-generator/quality-baselines/r8.6';
@@ -54,7 +54,7 @@ test('R9/R10.4.1 production compiler keeps R8.6 block structure and functional h
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
     const run = load(`${base}/${brand}/${scene}/run.json`);
     const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
-    const out = compilePhase9bSpacePrompt({
+    const out = compileSpacePrompt({
       packet,
       taskContract: buildTask(manifest, subtype, shot),
       projectContext: { projectId: manifest.project?.projectId },
@@ -76,7 +76,7 @@ test('R9 production compiler keeps architecture-before-brand and negatives last'
   for (const { brand, scene, subtype, shot } of SCENES) {
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
     const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
-    const out = compilePhase9bSpacePrompt({
+    const out = compileSpacePrompt({
       packet,
       taskContract: buildTask(manifest, subtype, shot),
       projectContext: { projectId: manifest.project?.projectId },
@@ -95,7 +95,7 @@ test('R9 production compiler does not inject project hardcode into prompts', () 
   for (const { brand, scene, subtype, shot } of SCENES) {
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
     const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
-    const out = compilePhase9bSpacePrompt({
+    const out = compileSpacePrompt({
       packet,
       taskContract: buildTask(manifest, subtype, shot),
       projectContext: { projectId: manifest.project?.projectId },

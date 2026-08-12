@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
-  compilePhase9bSpacePrompt,
+  compileSpacePrompt,
   createSpaceContinuationContract,
 } from '@masterpiece/image-generation-runtime/space/index.js';
 import {
@@ -50,7 +50,7 @@ function loadPacket(brand) {
 
 function compileSpace(brand, taskContract) {
   const packet = loadPacket(brand);
-  return compilePhase9bSpacePrompt({
+  return compileSpacePrompt({
     packet,
     taskContract,
     projectContext: { projectId: taskContract.projectId, visualDecisionPacket: packet },
@@ -170,15 +170,15 @@ async function runG03() {
   assert.equal(trace.targetViewStrategy, 'human_scale_consultation_view');
 
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-  const compileUrl = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
-  const { compileVNextImageGeneration } = await import(compileUrl);
+  const compileUrl = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
+  const { compileShortChainGeneration } = await import(compileUrl);
   const continuation = createSpaceContinuationContract({
     projectId: 'golden-project', confirmedSourceAssetId: 'asset-confirmed',
     sourceRunId: 'run-source', sourceScene: 'reception', targetScene: 'consultation',
     userRequirement: '保持同一设计语言，转换为咨询功能。', confirmedAt: '2026-08-11T00:00:00.000Z',
   });
   const packet = loadPacket('jiuzhou-aesthetics');
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: { projectId: 'golden-project', visualDecisionPacket: packet },
     model: 'doubao-seedream-5-0-pro-260628',
     brandKey: 'jiuzhou-aesthetics',

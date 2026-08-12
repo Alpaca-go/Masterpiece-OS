@@ -1,4 +1,4 @@
-// r2.0 / r10.4 UX: error helpers used by the VNextGenerationWorkspace
+// r2.0 / r10.4 UX: error helpers used by the ShortChainGenerationWorkspace
 // error banner. Pins:
 //   - errorIsAutoRecoverable recognises the vnext-service codes that
 //     are silently recovered on the next submit, so the renderer can

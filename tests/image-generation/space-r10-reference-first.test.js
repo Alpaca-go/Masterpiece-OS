@@ -21,7 +21,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 
 async function loadCompile() {
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/vnext/compile.js')).href;
+  const url = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const mod = await import(url);
   return mod;
 }
@@ -62,11 +62,11 @@ function buildTask(referenceAssetIds) {
 }
 
 test('R10 Reference-First: referenceAssetIds flow to taskContract + reference_assisted trace', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'r10-ref' };
   ctx.visualDecisionPacket = packet;
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task: buildTask(['asset-ref-1']),
@@ -85,11 +85,11 @@ test('R10 Reference-First: referenceAssetIds flow to taskContract + reference_as
 });
 
 test('R10 Standard route: refs=0 stays text-only and is not blocked', async () => {
-  const { compileVNextImageGeneration } = await loadCompile();
+  const { compileShortChainGeneration } = await loadCompile();
   const packet = loadPacket('jiuzhou-aesthetics');
   const ctx = { projectId: 'r10-ref' };
   ctx.visualDecisionPacket = packet;
-  const out = compileVNextImageGeneration({
+  const out = compileShortChainGeneration({
     projectContext: ctx,
     model: 'doubao-seedream-5-0-pro-260628',
     task: buildTask([]),
