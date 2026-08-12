@@ -37,8 +37,8 @@ test('P1 manifest.json schemaVersion + manifestVersion + goldenProjectId', () =>
   assert.equal(manifest.goldenProjectId, 'golden-jiuzhou');
 });
 
-test('P1 manifest.json has exactly 10 frozen files', () => {
-  assert.equal(Object.keys(manifest.files).length, 10);
+test('P1 manifest.json has exactly 14 frozen files (10 baseline + 4 Golden Prompts added at P1 / D1)', () => {
+  assert.equal(Object.keys(manifest.files).length, 14);
 });
 
 test('P1 every manifest file exists on disk', () => {

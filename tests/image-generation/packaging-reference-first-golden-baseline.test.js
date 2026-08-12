@@ -131,5 +131,5 @@ test('P1 Golden fixture manifest is the integrity source for Reference-First', (
   const manifest = readJson('tests/fixtures/packaging/jiuzhou/manifest.json');
   assert.equal(manifest.goldenProjectId, 'golden-jiuzhou');
   assert.ok(manifest.files);
-  assert.equal(Object.keys(manifest.files).length, 10);
+  assert.equal(Object.keys(manifest.files).length, 14);
 });
