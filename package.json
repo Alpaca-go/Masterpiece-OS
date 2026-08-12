@@ -50,6 +50,7 @@
     "lab:reference-conversion:test": "node --test labs/reference-style-conversion/tests/*.test.js",
     "visual-analysis:probe-volcengine": "node ./scripts/visual-analysis-probe-volcengine.mjs",
     "a2-d:run": "node ./scripts/a2-d-run-evaluations.mjs",
+    "a2-f:llm-judge": "node ./scripts/a2-f-llm-judge.mjs",
     "web:dev": "npm --prefix apps/web-runtime run dev",
     "web:smoke": "npm --prefix apps/web-runtime run smoke",
     "test:space-dna": "node space-generator/v1-experimental/field-schema/tests/validate.test.mjs",
