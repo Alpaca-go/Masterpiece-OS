@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { AnalysisProgress, ProjectRecord } from '@masterpiece/runtime-core/application-contracts.ts';
 import { formatDuration } from '../utils';
+import { ProviderBadge } from './ProviderBadge';
 
 const stages: Array<[AnalysisProgress['stage'], string]> = [
   ['preparing-assets', '素材准备'],
@@ -49,6 +50,15 @@ export function AnalysisView({ project, progress, error, onCancel, onRetry, onBa
       <div className="indeterminate-dots"><i /><i /><i /></div>
     </div>
     <p className="eyebrow">FUSION ENHANCED</p>
+    <ProviderBadge
+      project={project}
+      runStatus={
+        progress?.stage === 'completed' ? 'succeeded'
+        : progress?.stage === 'failed' ? 'failed'
+        : null
+      }
+      runErrorCode={progress?.stage === 'failed' ? (error || project.lastError || undefined) : null}
+    />
     <h1>{progress?.message || '正在准备分析'}</h1>
     <p className="analysis-subtitle">{terminal ? `${failedStage ? `结束阶段：${failedStage} · ` : ''}${error || project.lastError || ''}` : '隐藏推理过程不会显示；这里只呈现可理解的 Pipeline 阶段。'}</p>
     <div className="run-metrics">
