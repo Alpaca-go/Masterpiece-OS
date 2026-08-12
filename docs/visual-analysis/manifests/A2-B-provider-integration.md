@@ -104,3 +104,23 @@ production path.
   real Provider smoke is manual / opt-in / networked /
   cost-sensitive; it must be triggered by explicit user
   action and must never enter `repo:verify` or default CI.
+
+## A2-B.2 update (2026-08-12, user-authorized)
+
+The capability probe ran on the user's machine at
+`2026-08-12T08:53:35.052Z` against the configured Candidate A
+profile (`doubao-seed-2.1-turbo` → API-resolved
+`doubao-seed-2-1-turbo-260628`). All three real capability
+probes passed:
+
+- Vision (1 image): PASS, 14 449 ms
+- Multi-image (2 images): PASS, 23 242 ms
+- Structured output (JSON Schema): PASS, 9 266 ms
+- Context / usage: UNKNOWN (reasoner does not surface usage)
+
+Probe report: `docs/visual-analysis/A2-volcengine-probe-report.md`.
+A2-A candidate discovery table updated with PASS for the three
+verified capabilities; Context remains UNKNOWN.
+
+A2-B exit gate: CLOSED. A2-C (Evaluation Corpus Freeze) is the
+next batch.

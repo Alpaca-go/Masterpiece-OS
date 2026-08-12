@@ -57,7 +57,7 @@ configuration for are `DEFERRED`. Anything we cannot confirm is
 | # | Role | Provider | Model ID | Vision | Multi-image | Structured Output | Context | Access | Profile configured | Last test | Status |
 |---|------|----------|----------|--------|-------------|-------------------|---------|--------|--------------------|-----------|--------|
 | 1 | CONTROL | `qwen` | `qwen3.6-plus` | YES | YES | YES | 131k / 32k out | verified | YES | success 2026-07-29 | ELIGIBLE |
-| 2 | Candidate A | `volcengine` | `doubao-seed-2.1-turbo` | UNKNOWN | UNKNOWN | UNKNOWN | UNKNOWN | profile configured, last test success 2026-08-05 | YES | success 2026-08-05 | ELIGIBLE (capabilities UNKNOWN; verify in A2-B) |
+| 2 | Candidate A | `volcengine` | `doubao-seed-2.1-turbo` | YES (probe 2026-08-12) | YES (probe 2026-08-12) | YES (probe 2026-08-12) | UNKNOWN (reasoner does not surface usage) | profile configured, last test success 2026-08-05 | YES | success 2026-08-05 | ELIGIBLE (capabilities verified by A2-B.2 probe; Context remains UNKNOWN) |
 
 ### 4.1 Notes per candidate
 
@@ -89,6 +89,27 @@ configuration for are `DEFERRED`. Anything we cannot confirm is
 - Profile `displayName` contains a Chinese suffix ("体验") that
   is a per-user label, not part of the model ID. The model ID to use
   in Evaluation is `doubao-seed-2.1-turbo` exactly as stored.
+
+### 4.3 Probe-verified capability evidence (A2-B.2, 2026-08-12)
+
+The A2-B.2 capability probe (script:
+`scripts/visual-analysis-probe-volcengine.mjs`; report:
+`docs/visual-analysis/A2-volcengine-probe-report.md`) ran 3
+real Provider calls against the configured Candidate A
+profile and produced the following per-capability result:
+
+| Capability | Result | Latency | Evidence |
+|---|---|---|---|
+| Vision input (1 image) | PASS | 14 449 ms | model returned a coherent one-line Chinese description of a 256x256 red→blue gradient |
+| Multi-image (2 images) | PASS | 23 242 ms | model compared a red→blue and a green→yellow gradient and identified the hue difference |
+| Structured output (JSON Schema) | PASS | 9 266 ms | model returned `{"description": "..."}` matching the schema exactly |
+| Context / usage | UNKNOWN | — | the Volcengine reasoner does not surface usage blocks; resolving this is out of A2-B.2 scope |
+
+The returned model identity from all three probes is
+`doubao-seed-2-1-turbo-260628` (the dated alias the API
+resolves `doubao-seed-2.1-turbo` to). Per A2 spec §107
+("Model Version Drift"), this identity is recorded as the
+actual model that ran.
 
 ### 4.2 Models that are NOT A2 candidates
 

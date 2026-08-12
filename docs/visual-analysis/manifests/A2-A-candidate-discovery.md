@@ -10,6 +10,7 @@ access status and UNKNOWN capability flags.
 
 - Created: `docs/visual-analysis/A2-candidate-model-discovery.md`
 - This manifest.
+- Created (A2-B.2 evidence): `docs/visual-analysis/A2-volcengine-probe-report.md`
 
 No production code change. No Profile change. No Prompt change.
 No Golden change.
