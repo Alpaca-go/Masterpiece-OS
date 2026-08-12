@@ -31,7 +31,7 @@ import {
 } from './document-context-core.ts';
 import { deriveDocumentProjectName } from './document-project-name.ts';
 
-// Bundled from the repository core. Desktop owns persistence and user interaction only.
+// Bundled from the repository core. The Node Runtime Host owns persistence; Web owns interaction.
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.
 import { createOpenAICompatibleTextReasoner } from '@masterpiece/model-runtime/openai-compatible-text-reasoner.js';
 // @ts-ignore JavaScript core module intentionally has no TypeScript declaration file.

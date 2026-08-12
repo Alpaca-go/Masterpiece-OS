@@ -1,7 +1,7 @@
 /**
  * 生图功能 V1：运行记录持久化（§11 / §12）。
  *
- * 复用 desktop runtime 的原子写入 / 事件日志 / 运行写入协调器，
+ * 复用 Shared Runtime 的原子写入 / 事件日志 / 运行写入协调器，
  * 不重新实现第二套持久化系统（§12.1）。
  */
 import fs from 'node:fs/promises';

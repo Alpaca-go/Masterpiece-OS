@@ -103,8 +103,8 @@ function mergePromptSourceObject(
       logoAssetIds,
       preferredLogoAssetId: logoAssetIds[0] ?? null,
       // See the comment in `visual-decision-packet.ts`: a project that has
-      // a confirmed logo is bound by the v5 logo-locked contract, which
-      // only accepts `post_composite` on the vNext image pipeline.
+      // A confirmed logo is bound by the Logo Locked contract, which
+      // only accepts `post_composite` in Short-Chain Generation.
       logoUsageMode: hasLogo ? 'post_composite' : 'blank_area',
       confirmedColors: strings(
         context.lockedAssets.confirmedColors,
@@ -177,8 +177,8 @@ export function migrateProjectVisualContext(
       logoAssetIds: [...context.lockedAssets.logoAssetIds],
       preferredLogoAssetId: context.lockedAssets.logoAssetIds[0] ?? null,
       // See the comment in `visual-decision-packet.ts`: a project that has
-      // a confirmed logo is bound by the v5 logo-locked contract, which
-      // only accepts `post_composite` on the vNext image pipeline.
+      // A confirmed logo is bound by the Logo Locked contract, which
+      // only accepts `post_composite` in Short-Chain Generation.
       logoUsageMode: hasLogo ? 'post_composite' : 'blank_area',
       confirmedColors: [...context.lockedAssets.confirmedColors],
       mustPreserve: [...context.lockedAssets.mustPreserve],
@@ -454,13 +454,13 @@ export async function writeProjectVisualContext(
 ): Promise<void> {
   const validation = validateProjectVisualContext(context);
   if (!validation.valid) {
-    throw Object.assign(new Error(`Project Visual Context vNext invalid: ${validation.errors.join('; ')}`), {
+    throw Object.assign(new Error(`Project Visual Context invalid: ${validation.errors.join('; ')}`), {
       code: 'PROJECT_VISUAL_CONTEXT_VNEXT_INVALID',
     });
   }
   const result = await atomicWriteJsonWithRetry(filePath, context);
   if (!result.success) {
-    throw Object.assign(new Error(result.errorMessage ?? 'Project Visual Context vNext write failed'), {
+    throw Object.assign(new Error(result.errorMessage ?? 'Project Visual Context write failed'), {
       code: 'PROJECT_VISUAL_CONTEXT_VNEXT_WRITE_FAILED',
     });
   }

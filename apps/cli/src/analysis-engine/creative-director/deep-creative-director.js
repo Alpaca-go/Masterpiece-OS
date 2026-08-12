@@ -2,7 +2,7 @@ import { ReasoningSessionGuard } from './session-guard.js';
 import { buildDeepCreativeDirectorPrompt } from './prompt-builder.js';
 import { performance } from 'node:perf_hooks';
 
-export const DEEP_CREATIVE_DIRECTOR_PROVIDER_ID = 'deep-creative-director-provider-v5';
+export const DEEP_CREATIVE_DIRECTOR_PROVIDER_ID = 'deep-creative-director-provider';
 
 export class DeepCreativeDirectorError extends Error {
   constructor(code, message) {
@@ -34,10 +34,10 @@ function validateResult(value) {
   };
 }
 
-/** Execute the only full creative reasoning session permitted for a v5 project run. */
+/** Execute the only full creative reasoning session permitted for an analysis run. */
 export async function runDeepCreativeDirector(context, options = {}) {
   if (!context?.inventory || !context?.config) {
-    throw new DeepCreativeDirectorError('INPUT_INVALID', 'Deep Creative Director 缺少 Asset Inventory 或 v5 配置');
+    throw new DeepCreativeDirectorError('INPUT_INVALID', 'Deep Creative Director 缺少 Asset Inventory 或分析配置');
   }
   const guard = options.sessionGuard || new ReasoningSessionGuard();
   const prompt = options.prompt || await buildDeepCreativeDirectorPrompt(context);

@@ -245,7 +245,7 @@ export function createShortChainGenerationService(
       fs.readFile(path.join(directory, 'model-payload.json'), 'utf8').then(JSON.parse),
     ]) as [ShortChainTaskContract, ShortChainCompiledPrompt, ShortChainModelPromptPayload];
     if (taskContract.projectId !== projectId || taskContract.taskId !== taskId) {
-      throw Object.assign(new Error('vNext compilation does not belong to this project/task'), {
+      throw Object.assign(new Error('Short-Chain compilation does not belong to this project/task'), {
         code: 'VNEXT_COMPILE_ARTIFACT_INVALID',
       });
     }
@@ -452,7 +452,7 @@ export function createShortChainGenerationService(
       !== currentContext.provenance.sourceFingerprint;
     if (preflightBlocked || contextFingerprintStale) {
       // r2.0 / r10.4 UX: a previously-passing compile can become blocked
-      // (preflight rules tightened, Desktop upgrade, etc.) and a
+      // (preflight rules tightened, Runtime Host upgrade, etc.) and a
       // previously-in-sync compile can become stale (the user added a
       // reference image, re-ran analysis, or the project context was
       // rebuilt for any other reason). Both are recoverable by
@@ -525,7 +525,7 @@ export function createShortChainGenerationService(
       });
     }
     if (compilation.taskContract.count !== 1) {
-      throw Object.assign(new Error('vNext formal-first generation starts with exactly one image'), {
+      throw Object.assign(new Error('Short-Chain formal-first generation starts with exactly one image'), {
         code: 'VNEXT_FORMAL_FIRST_COUNT_INVALID',
       });
     }
@@ -987,7 +987,7 @@ export function createShortChainGenerationService(
     const session = await readSession(projectId);
     const generated = [...session.history].reverse().find((entry) =>
       entry.type === 'generated' && entry.runId === runId);
-    if (!generated) throw new Error('vNext generation history entry does not exist');
+    if (!generated) throw new Error('Short-Chain generation history entry does not exist');
     const now = new Date().toISOString();
     return saveSession({
       ...session,
@@ -1191,7 +1191,7 @@ export function createShortChainGenerationService(
     input: StartValidatedShortChainGenerationInput,
   ): Promise<ShortChainValidatedGenerationResult> {
     const validator = getValidator?.();
-    if (!validator) throw new Error('vNext deliverable validator is not configured');
+    if (!validator) throw new Error('Short-Chain deliverable validator is not configured');
     const compilation = await readCompilation(input.projectId, input.taskId);
     // r2.0 §4.13 / Phase E: the first-image reference is captured the
     // moment the initial Provider call succeeds. Subsequent correction
@@ -1310,7 +1310,7 @@ export function createShortChainGenerationService(
     dryRun?: boolean,
   ): Promise<ImageGenerationRun> {
     const session = await readSession(projectId);
-    if (!session.currentTask) throw new Error('No current vNext task to continue');
+    if (!session.currentTask) throw new Error('No current Short-Chain task to continue');
     const {
       schemaVersion: _schemaVersion,
       taskId: _taskId,

@@ -45,11 +45,11 @@ import {
 import {
   buildFusionEnhancedTask,
   buildReportFilename,
-  desktopFactualConstraints,
+  analysisFactualConstraints,
   extractProjectNameFromReport,
   normalizeReportTitle,
   redactSecret,
-  validateDesktopReport
+  validateVisualUpgradeMarkdown
 } from './analysis-contract.ts';
 import {
   compileProjectVisualContext,
@@ -99,7 +99,7 @@ import {
   type ValidationIssue
 } from './model-schema/validation-issues.ts';
 
-// Bundled from the repository core. Desktop remains the consumer, never the dependency.
+// Bundled from the repository core. The Node Runtime Host consumes this provider registry.
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
 import { createDefaultAnalysisProviderRegistry } from '@masterpiece/model-runtime/analysis-provider-registry.js';
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
@@ -403,8 +403,8 @@ export function createPipelineService(
     const analysisPdfCount = analysisItems.filter((item) => item.kind === 'pdf').length;
     if (!analysisItems.length) throw new Error('项目素材为空，请先上传视觉方案');
     if (analysisImageCount + analysisPdfCount === 0) throw new Error('项目中没有可分析的图片或 PDF');
-    if (!project.logoLocked) throw new Error('Desktop 极简模式要求原始 Logo 默认锁定');
-    if (project.outputLanguage !== 'zh-CN') throw new Error('Desktop 极简模式固定输出简体中文');
+    if (!project.logoLocked) throw new Error('当前分析模式要求原始 Logo 默认锁定');
+    if (project.outputLanguage !== 'zh-CN') throw new Error('当前分析模式固定输出简体中文');
     const credentials = await readCredentials(apiProfileId || project.apiProfileId || undefined);
     const settings = await readSettings();
     const projectPaths = await projects.paths(projectId);
@@ -456,7 +456,7 @@ export function createPipelineService(
           detectedBrandName: project.detectedBrandName,
           detectedIndustry: project.detectedIndustry,
           factConfidence: project.factConfidence,
-          factualConstraints: desktopFactualConstraints(project.industry, project.lockedFacts, project.factConfidence.industry),
+          factualConstraints: analysisFactualConstraints(project.industry, project.lockedFacts, project.factConfidence.industry),
           logoAssets: project.logoFiles
         },
         benchmarkContext: { category: [], creativeExcellence: [] },
@@ -518,7 +518,7 @@ export function createPipelineService(
         || project.brandName
         || '未命名项目';
       const legacyReport = normalizeReportTitle(rawReport, finalProjectName, project.outputLanguage);
-      if (validationMode === 'visual_upgrade') validateDesktopReport(legacyReport);
+      if (validationMode === 'visual_upgrade') validateVisualUpgradeMarkdown(legacyReport);
       else if (!legacyReport.trim()) throw new Error('参考视觉分析结果为空');
       const reportFilename = buildReportFilename(finalProjectName, credentials.model, project.outputLanguage);
       const reportPath = path.join(projectPaths.outputs, reportFilename);
@@ -786,7 +786,7 @@ export function createPipelineService(
         ...execution.result.runReport,
         outputFile: reportFilename,
         analysisProfile: 'fusion-enhanced',
-        desktopProjectId: projectId,
+        projectId,
         apiProfileId: credentials.profileId,
         provider: credentials.provider,
         model: credentials.model,
@@ -861,7 +861,7 @@ export function createPipelineService(
           .catch(() => undefined);
       }
 
-      // vNext context is a sibling of the report. It is compiled only from the
+      // Project Visual Context is a sibling of the report. It is compiled only from the
       // project record and original asset inventory; report markdown is never
       // accepted by the builder.
       try {

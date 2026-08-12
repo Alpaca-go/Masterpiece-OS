@@ -67,7 +67,7 @@ function validateGenerationInput(input) {
 
 /**
  * Wraps the current Wan/DashScope transport behind the provider-neutral adapter boundary.
- * The lifecycle methods remain exposed so Desktop can persist and resume long-running tasks.
+ * The lifecycle methods remain exposed so the Runtime Host can persist and resume long-running tasks.
  */
 export function createWanImageGenerationAdapter(config = {}) {
   const provider = createDashScopeProvider(config);

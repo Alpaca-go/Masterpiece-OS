@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { inventoryProject } from '../../src/inventory.js';
-import { createV5ProjectConfig } from '../../src/analysis-engine/config/schema.js';
+import { createAnalysisProjectConfig } from '../../src/analysis-engine/config/schema.js';
 import { prepareVisualAssets } from '../../src/analysis-engine/preparation/visual-preparation.js';
 import { prepareBenchmarks } from '../../src/analysis-engine/preparation/benchmark-preparation.js';
 import { runDeepCreativeDirector } from '../../src/analysis-engine/creative-director/deep-creative-director.js';
@@ -22,7 +22,7 @@ async function fixture(count = 7) {
     await fs.writeFile(path.join(input, `${String(index + 1).padStart(2, '0')}.png`), ONE_PIXEL_PNG);
   }
   const inventory = await inventoryProject(input);
-  const config = createV5ProjectConfig({
+  const config = createAnalysisProjectConfig({
     projectName: 'Preparation Demo',
     brandFacts: { brandName: 'Demo', industry: '医学美学', logoAssets: ['01.png'] }
   });
@@ -70,7 +70,7 @@ test('benchmark preparation bounds resolver output and reuses its industry cache
 
 test('explicit project Benchmark context takes precedence over an industry cache', async () => {
   const { projectRoot } = await fixture(1);
-  const config = createV5ProjectConfig({
+  const config = createAnalysisProjectConfig({
     projectName: 'Explicit Benchmark',
     brandFacts: { brandName: 'Demo', industry: '医学美学' },
     benchmarkContext: { category: ['Project-specific clinical benchmark'] }

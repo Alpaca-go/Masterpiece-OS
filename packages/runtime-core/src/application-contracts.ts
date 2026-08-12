@@ -1,4 +1,4 @@
-// Provider is user-defined metadata. Desktop accepts any OpenAI-compatible
+// Provider is user-defined metadata. The Runtime accepts any OpenAI-compatible
 // multimodal endpoint instead of restricting profiles to a vendor allow-list.
 import type {
   AnchorCandidate,
@@ -2084,7 +2084,7 @@ export interface SaveModelBenchmarkEvaluationInput {
   notes?: string;
 }
 
-export interface DesktopApi {
+export interface RuntimeApi {
   settings: {
     get(): Promise<PublicSettings>;
     save(input: SaveSettingsInput): Promise<PublicSettings>;

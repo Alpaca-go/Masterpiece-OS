@@ -28,7 +28,7 @@ export function cleanError(error: unknown): string {
     .replace(/^Error:\s*/, '');
 }
 
-// Error codes that the vnext-service auto-recovers from on the next
+// Compatibility error codes that Short-Chain Generation auto-recovers from on the next
 // submit. When the user sees one of these, the right next action is
 // "click 生成 again" — the system has already (or will) re-compile /
 // re-pick the current context under the hood. Surfacing this in the

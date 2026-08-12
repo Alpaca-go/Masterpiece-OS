@@ -15,7 +15,7 @@ export class ReasoningSessionGuard {
 
   begin(runId) {
     if (this.fullReasoningRuns !== 0) {
-      throw new ReasoningSessionError('MULTIPLE_REASONING_RUNS', 'v5 每个项目只允许一次完整 AI 创意推理');
+      throw new ReasoningSessionError('MULTIPLE_REASONING_RUNS', 'Visual Analysis 每个项目只允许一次完整 AI 创意推理');
     }
     if (typeof runId !== 'string' || !runId.trim()) {
       throw new ReasoningSessionError('RUN_ID_REQUIRED', 'Deep Creative Director 必须提供 runId');

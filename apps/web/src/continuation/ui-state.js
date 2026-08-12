@@ -24,6 +24,10 @@ export const CONTINUATION_SCENE_CARDS = Object.freeze([
 export const CONTINUATION_PRESERVE_COPY = ['空间语言', '材质体系', '光线气质', '品牌世界', '色彩关系'];
 export const CONTINUATION_REDESIGN_COPY = ['功能布局', '动线', '尺度', '隐私关系', '家具与设备', '构图'];
 
+export function createContinuationTaskId(now = Date.now()) {
+  return `continuation-${now}`;
+}
+
 export function normalizeSceneId(scene) {
   return String(scene ?? '').trim().toLowerCase();
 }

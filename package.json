@@ -37,7 +37,7 @@
     "verify:production-boundaries": "node ./scripts/verify-production-boundaries.mjs",
     "verify:no-obsolete-code": "node ./scripts/verify-no-obsolete-code.mjs",
     "verify:repository-contract": "node ./scripts/verify-repository-contract.mjs",
-    "repo:guard:test": "node --test tests/repository-contract-guard.test.js tests/archive-boundary.test.js tests/runtime-boundary.test.js tests/web-runtime-host-boundary.test.js tests/packages/runtime-core/operation-registry.test.js",
+    "repo:guard:test": "node --test tests/repository-contract-guard.test.js tests/version-naming-guard.test.js tests/archive-boundary.test.js tests/runtime-boundary.test.js tests/web-runtime-host-boundary.test.js tests/packages/runtime-core/operation-registry.test.js",
     "repo:verify": "npm run verify:repository-contract && npm run verify:version-consistency && npm run verify:version-naming && npm run verify:workspace-boundaries && npm run verify:no-obsolete-code && npm run verify:production-boundaries && npm run verify:no-project-specific-production-rules && npm run verify:golden-boundary && npm run verify:current-flows && npm run repo:guard:test",
     "repo:check": "npm run repo:verify && npm test && npm run cli:test && npm run runtime:test && npm run web:smoke && npm run golden:test",
     "verify:space-compiler-baseline": "node ./scripts/verify-space-compiler-baseline.mjs",

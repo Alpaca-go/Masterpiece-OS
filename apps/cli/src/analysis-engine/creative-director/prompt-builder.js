@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Stage 5 already keeps the v5 prompt bundle inside the CLI
+// The current analysis prompt bundle lives inside the CLI.
 // workspace at apps/cli/prompts/analysis. From
 // apps/cli/src/analysis-engine/creative-director/prompt-builder.js, three
 // `..` segments land at apps/cli/, which is the correct parent.
@@ -121,7 +121,7 @@ ${json({
 
 /** Build one model request from maintainable prompt modules without performing reasoning. */
 export async function buildDeepCreativeDirectorPrompt(context) {
-  if (!context?.inventory || !context?.config) throw new Error('Prompt Builder 缺少 inventory 或 v5 config');
+  if (!context?.inventory || !context?.config) throw new Error('Prompt Builder 缺少 inventory 或 analysis config');
   const templates = await loadTemplates();
   const manifest = renderManifest(context.inventory, context.visualPreparation);
   const userSections = [

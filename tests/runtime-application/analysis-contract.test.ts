@@ -4,12 +4,12 @@ import {
   assertInside,
   buildFusionEnhancedTask,
   buildReportFilename,
-  desktopFactualConstraints,
+  analysisFactualConstraints,
   extractProjectNameFromReport,
   normalizeReportTitle,
   redactSecret,
   sanitizeFilenamePart,
-  validateDesktopReport
+  validateVisualUpgradeMarkdown
 } from '@masterpiece/runtime-core/application/analysis-contract.ts';
 
 test('Windows-safe report filename includes project and model', () => {
@@ -25,11 +25,11 @@ test('Fusion Enhanced is a single-call prompt profile and preserves confidence b
   assert.match(task, /只调用一次模型/);
   assert.match(task, /材质、微结构、负形/);
   assert.match(task, /不得先生成多份报告再融合/);
-  assert.deepEqual(desktopFactualConstraints('医学美学', ['品牌名不得修改']), [
+  assert.deepEqual(analysisFactualConstraints('医学美学', ['品牌名不得修改']), [
     '行业线索“医学美学”来自现有素材自动识别（置信度 1.00），分析不得擅自改写，并须说明识别来源。',
     '品牌名不得修改'
   ]);
-  assert.match(desktopFactualConstraints('待确认', [], 0)[0]!, /不得将行业猜测写成确定事实/);
+  assert.match(analysisFactualConstraints('待确认', [], 0)[0]!, /不得将行业猜测写成确定事实/);
 });
 
 test('report title is project-specific and final decision check fails closed', () => {
@@ -46,28 +46,28 @@ test('report title is project-specific and final decision check fails closed', (
   const body = ['# 项目视觉方案升级报告', ...sections].join('\n\n');
   const normalized = normalizeReportTitle(body, '九州美学');
   assert.match(normalized, /^# 九州美学视觉方案升级报告/);
-  assert.doesNotThrow(() => validateDesktopReport(normalized));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 删除 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留/升级 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留／升级 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助色 (黑/白) | 保留并升级 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留 并 升级 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留且升级 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 升级+替换 |')));
-  assert.doesNotThrow(() => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 删除、替换 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 删除 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留/升级 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留／升级 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 辅助色 (黑/白) | 保留并升级 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留 并 升级 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 保留且升级 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 升级+替换 |')));
+  assert.doesNotThrow(() => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 食物摄影 | 删除、替换 |')));
   assert.throws(
-    () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 观察 |')),
+    () => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 观察 |')),
     /资产决策值无效/
   );
   assert.throws(
-    () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 保留并适度升级 |')),
+    () => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 保留并适度升级 |')),
     /资产决策值无效/
   );
   assert.throws(
-    () => validateDesktopReport(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 保留并观察 |')),
+    () => validateVisualUpgradeMarkdown(normalized.replace('| 辅助图形 | 替换 |', '| 辅助图形 | 保留并观察 |')),
     /资产决策值无效/
   );
-  assert.throws(() => validateDesktopReport('# incomplete'), /缺少章节/);
+  assert.throws(() => validateVisualUpgradeMarkdown('# incomplete'), /缺少章节/);
   assert.equal(extractProjectNameFromReport('# 九州美学视觉方案升级报告\n\n正文'), '九州美学');
   assert.equal(extractProjectNameFromReport('# input视觉方案升级报告\n\n正文'), null);
   assert.equal(extractProjectNameFromReport('# 站酷作品集视觉方案升级报告\n\n正文'), null);

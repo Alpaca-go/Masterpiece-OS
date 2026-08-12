@@ -73,7 +73,7 @@ async function writeContactSheetPng(inventory, index, contactSheetPath) {
   const composites = [];
   composites.push({
     input: Buffer.from(`<svg width="${width}" height="${headerHeight}">
-      <text x="20" y="30" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="700">Masterpiece OS v5 · Batch Visual Contact Sheet</text>
+      <text x="20" y="30" fill="#ffffff" font-family="Arial, sans-serif" font-size="20" font-weight="700">Masterpiece OS · Visual Analysis Contact Sheet</text>
       <text x="20" y="54" fill="#a8a8a8" font-family="Arial, sans-serif" font-size="13">${images.length} images · overview first, priority details only when necessary</text>
     </svg>`),
     top: 0,

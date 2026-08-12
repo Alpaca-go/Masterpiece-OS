@@ -1,4 +1,4 @@
-import type { DesktopApi } from '@masterpiece/runtime-core/application-contracts.ts';
+import type { RuntimeApi } from '@masterpiece/runtime-core/application-contracts.ts';
 
 type ProgressCallback = (payload: unknown) => void;
 
@@ -11,7 +11,7 @@ function kebab(value: string): string {
 }
 
 /**
- * Desktop preload methods normally map to IPC channels by kebab-casing the
+ * Runtime API methods normally map to operation channels by kebab-casing the
  * namespace and method. Keep the exceptions explicit here instead of trying to
  * infer semantic channel aliases for the Short-Chain operation family.
  */
@@ -106,10 +106,10 @@ function namespaceProxy(namespace: string): unknown {
   return proxy;
 }
 
-export function createWebDesktopApi(): DesktopApi {
+export function createWebRuntimeApi(): RuntimeApi {
   return new Proxy({}, {
     get(_target, property) {
       return namespaceProxy(String(property));
     }
-  }) as DesktopApi;
+  }) as RuntimeApi;
 }

@@ -23,7 +23,7 @@ const RECOVERABLE_SAMPLES = [
 const NON_RECOVERABLE_SAMPLES = [
   'Failed to fetch',
   'Connection refused',
-  'VNEXT_FORMAL_FIRST_COUNT_INVALID: vNext formal-first generation starts with exactly one image',
+  'VNEXT_FORMAL_FIRST_COUNT_INVALID: Short-Chain formal-first generation starts with exactly one image',
   'SPACE_COMPILER_ROUTE_MISMATCH: ...',
   'Unknown error',
   '',

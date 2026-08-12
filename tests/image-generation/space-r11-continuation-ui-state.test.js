@@ -29,7 +29,13 @@ const {
   generationModeLabel,
   referenceFirstCrossSceneAdvisory,
   findCrossSceneReference,
+  createContinuationTaskId,
 } = await import(stateUrl);
+
+test('new continuation task IDs use semantic naming', () => {
+  assert.equal(createContinuationTaskId(1723456789000), 'continuation-1723456789000');
+  assert.doesNotMatch(createContinuationTaskId(1723456789000), /r11|vnext|phase/iu);
+});
 
 test('R11.2 scene cards are user-facing (no engineering terms)', () => {
   assert.equal(CONTINUATION_SCENE_CARDS.length, 10);

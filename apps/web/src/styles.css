@@ -33,7 +33,7 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .splash { min-height: 100vh; display: grid; place-items: center; align-content: center; gap: 16px; color: #77717c; }.splash .brand-mark { width: 58px; height: 58px; font-size: 32px; }
 @media (max-width: 1180px) { .settings-grid, .wizard-grid, .project-grid { grid-template-columns: 1fr; }.project-row-open { grid-template-columns: 40px minmax(180px, 1fr) 80px 140px 30px; }.project-time { display: none; }.run-metrics { grid-template-columns: repeat(3, 1fr); }.home-header { display: grid; } }
 
-/* Desktop optimization: API profiles, removable assets and indeterminate run feedback. */
+/* Web product: API profiles, removable assets and indeterminate run feedback. */
 .profile-list { display: grid; gap: 12px; }
 .api-profile-card { padding: 17px; border: 1px solid #ddd7e2; border-radius: 10px; background: #fff; }
 .api-profile-card.disabled { opacity: .62; }

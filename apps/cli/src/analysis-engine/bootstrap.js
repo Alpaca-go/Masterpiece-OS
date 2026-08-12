@@ -3,7 +3,7 @@ import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { inventoryProject } from '../inventory.js';
 import { readJson } from '../utils.js';
-import { createV5ProjectConfig } from './config/schema.js';
+import { createAnalysisProjectConfig } from './config/schema.js';
 import { CLI_ENGINE_VERSION, CLI_PIPELINE_ID } from './config/defaults.js';
 import { runDeepCreativeDirector } from './creative-director/deep-creative-director.js';
 import { buildDeepCreativeDirectorPrompt } from './creative-director/prompt-builder.js';
@@ -11,7 +11,7 @@ import { publishCreativeUpgradeReport } from './creative-director/output-writer.
 import { prepareVisualAssets } from './preparation/visual-preparation.js';
 import { prepareBenchmarks } from './preparation/benchmark-preparation.js';
 import { readReasoningCache, writeReasoningCache } from './preparation/reasoning-cache.js';
-import { writeV5RunReport } from './telemetry/run-logger.js';
+import { writeAnalysisRunReport } from './telemetry/run-logger.js';
 
 function inferProjectRoot(input, options) {
   if (options.projectRoot) return path.resolve(options.projectRoot);
@@ -19,7 +19,7 @@ function inferProjectRoot(input, options) {
   return path.basename(root).toLowerCase() === 'input' ? path.dirname(root) : root;
 }
 
-async function readV5Config(configPath, projectName, options) {
+async function readAnalysisConfig(configPath, projectName, options) {
   const raw = await readJson(configPath, { projectName });
   const overrides = {
     ...(raw.overrides || {}),
@@ -32,19 +32,19 @@ async function readV5Config(configPath, projectName, options) {
       ? { requiredApplications: options.requiredApplications }
       : {})
   };
-  return createV5ProjectConfig({ ...raw, overrides }, { projectName });
+  return createAnalysisProjectConfig({ ...raw, overrides }, { projectName });
 }
 
 function rejectRetiredOptions(options) {
   if (options.mode !== undefined) {
-    throw new Error('--mode 已在 v5 废弃；所有项目统一使用 Deep Creative Director Mode。历史项目请使用 v4 analyze。');
+    throw new Error('--mode 已废弃；所有当前项目统一使用 Deep Creative Director Mode。历史项目请使用旧版 CLI。');
   }
   if (options.creativeFreedom !== undefined) {
-    throw new Error('--creative-freedom 已在 v5 废弃；默认使用 Maximum Creative Authority。');
+    throw new Error('--creative-freedom 已废弃；默认使用 Maximum Creative Authority。');
   }
 }
 
-/** Run the isolated v5 intake → one reasoning session → one document pipeline. */
+/** Run the isolated visual-analysis intake → reasoning → report pipeline. */
 export async function runAnalysisPipeline(input, options = {}) {
   rejectRetiredOptions(options);
   const startedAt = new Date().toISOString();
@@ -67,7 +67,7 @@ export async function runAnalysisPipeline(input, options = {}) {
     ignorePaths: [output, path.join(projectRoot, '.runtime')]
   });
   const assetReadTimeMs = performance.now() - intakeStarted;
-  const config = await readV5Config(configPath, projectName, options);
+  const config = await readAnalysisConfig(configPath, projectName, options);
   targetBudgetTimeMs = config.performance.targetMinutes * 60_000;
   maximumBudgetTimeMs = config.performance.maximumMinutes * 60_000;
 
@@ -110,7 +110,7 @@ export async function runAnalysisPipeline(input, options = {}) {
   const reasoningStarted = performance.now();
   const maximumDurationMs = config.performance.maximumMinutes * 60_000 - (performance.now() - started);
   if (maximumDurationMs <= 0) {
-    const error = new Error(`v5 Pipeline 已超过 ${config.performance.maximumMinutes} 分钟上限，停止模型调用`);
+    const error = new Error(`Visual Analysis Pipeline 已超过 ${config.performance.maximumMinutes} 分钟上限，停止模型调用`);
     error.code = 'TIME_BUDGET_EXCEEDED';
     throw error;
   }
@@ -194,7 +194,7 @@ export async function runAnalysisPipeline(input, options = {}) {
     startedAt,
     endedAt
   };
-  const runtimeReportPath = await writeV5RunReport(projectRoot, runReport);
+  const runtimeReportPath = await writeAnalysisRunReport(projectRoot, runReport);
 
   return {
     result: Object.freeze({
@@ -221,7 +221,7 @@ export async function runAnalysisPipeline(input, options = {}) {
     const totalWallClockTimeMs = performance.now() - started;
     const targetTimeMs = targetBudgetTimeMs;
     const maximumTimeMs = maximumBudgetTimeMs;
-    await writeV5RunReport(projectRoot, {
+    await writeAnalysisRunReport(projectRoot, {
       version: CLI_ENGINE_VERSION,
       pipelineId: CLI_PIPELINE_ID,
       analysisMode: 'deep',
@@ -238,7 +238,7 @@ export async function runAnalysisPipeline(input, options = {}) {
         : totalWallClockTimeMs <= maximumTimeMs ? 'within-maximum' : 'exceeded',
       error: {
         name: error.name,
-        code: error.code || 'V5_PIPELINE_FAILED',
+        code: error.code || 'ANALYSIS_PIPELINE_FAILED',
         message: error.message
       },
       startedAt,
@@ -248,7 +248,7 @@ export async function runAnalysisPipeline(input, options = {}) {
   }
 }
 
-export async function v5ConfigExists(projectRoot) {
+export async function analysisConfigExists(projectRoot) {
   try {
     await fs.access(path.join(projectRoot, 'masterpiece-os-v5.json'));
     return true;

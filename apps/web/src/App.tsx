@@ -90,7 +90,7 @@ export function App() {
   const [runFailure, setRunFailure] = useState('');
   // r2.0 / r10.4 UX: project-page entry decoupling. When the persisted
   // Project + Visual Context already has the minimum data needed for a
-  // vnext generation, the project page can show a "继续创作 / 直接创作"
+  // Short-Chain Generation lets the project page show a "继续创作 / 直接创作"
   // entry that bypasses the analysis report page. The full LLM report
   // is no longer a hard product gate; the Project Context is.
   const [generationReadiness, setGenerationReadiness] = useState<GenerationContextReadiness | null>(null);
@@ -430,12 +430,12 @@ export function App() {
           <div className="profile-card"><small>默认分析模式</small><strong>融合增强</strong><p>一次多模态调用，强化事实判断、真实触点、材料与工艺。</p></div>
           <button className="button primary full" disabled={!canAnalyze} onClick={() => void run(selected, true, selectedProfile?.id)}>开始分析</button>
           <button className="button ghost full" disabled={!selected.lastReportFilename || !canAnalyze} onClick={() => void run(selected, false, selectedProfile?.id)}>使用精确缓存</button>
-          {/* r2.0 / r10.4 UX: when the persisted Project + Visual Context
-              already has the minimum data needed for a vnext generation,
+          {/* When the persisted Project + Visual Context already has the
+              minimum data needed for Short-Chain Generation,
               surface a "直接创作" entry that bypasses the analysis
               report page entirely. The full LLM report is no longer a
               hard product gate; the Project Context is. When not ready
-              (legacy status != ready, schema missing, vnext file
+              (compatibility status != ready, schema missing, context file
               unreadable, etc.), the entry stays hidden — the user
               still has the "开始分析" path as the explicit way to
               produce the missing data. */}
@@ -444,7 +444,7 @@ export function App() {
               className="button secondary full"
               onClick={() => setScreen('creative-session')}
               title={generationReadiness.vnextSchemaVersion
-                ? `Project Visual Context vNext ${generationReadiness.vnextSchemaVersion} 已就绪`
+                ? `Project Visual Context ${generationReadiness.vnextSchemaVersion} 已就绪`
                 : 'Project Context 已就绪'}
             >
               继续创作 / 直接创作
@@ -465,7 +465,7 @@ export function App() {
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   return <div className="app-shell">
-    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>{document.documentElement.dataset.runtime === 'web' ? 'Web / v5' : 'Desktop / v5'}</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
+    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Web</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
     <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
       {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
       {error && <div className="notice error">{error}</div>}

@@ -195,7 +195,7 @@ test('getGenerationContextReadiness: legacy visual context status != ready surfa
   }
 });
 
-test('getGenerationContextReadiness: missing vnext context surfaces a precise reason and returns ready=false', async () => {
+test('getGenerationContextReadiness: missing Project Visual Context surfaces a precise reason and returns ready=false', async () => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'pvc-readiness-vnext-missing-'));
   try {
     // vnextBody=null => do NOT seed the vnext file or status.
@@ -205,8 +205,8 @@ test('getGenerationContextReadiness: missing vnext context surfaces a precise re
     const readiness = await service.getGenerationContextReadiness(id);
     assert.equal(readiness.ready, false);
     assert.ok(
-      readiness.reasons.some((r) => r.includes('vNext')),
-      `expected a vnext-related reason, got: ${JSON.stringify(readiness.reasons)}`,
+      readiness.reasons.some((r) => r.includes('Project Visual Context')),
+      `expected a Project Visual Context reason, got: ${JSON.stringify(readiness.reasons)}`,
     );
   } finally {
     await fs.rm(tmp, { recursive: true, force: true });

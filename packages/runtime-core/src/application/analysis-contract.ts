@@ -53,7 +53,7 @@ export function extractProjectNameFromReport(markdown: string): string | null {
   return isUsableProjectName(candidate) ? candidate : null;
 }
 
-export function desktopFactualConstraints(industry: string, lockedFacts: string[], industryConfidence = 1): string[] {
+export function analysisFactualConstraints(industry: string, lockedFacts: string[], industryConfidence = 1): string[] {
   const industryConstraint = industryConfidence >= 0.75
     ? `行业线索“${industry.trim()}”来自现有素材自动识别（置信度 ${industryConfidence.toFixed(2)}），分析不得擅自改写，并须说明识别来源。`
     : '现有素材不足以可靠确认行业属性；报告必须使用“基于现有素材推断”或“待确认”，不得将行业猜测写成确定事实。';
@@ -95,8 +95,6 @@ export function validateVisualUpgradeMarkdown(markdown: string): void {
   }
 }
 
-// Backward-compatible visual-upgrade entry point.
-export const validateDesktopReport = validateVisualUpgradeMarkdown;
 
 export function assertInside(parent: string, target: string): string {
   const resolvedParent = path.resolve(parent);

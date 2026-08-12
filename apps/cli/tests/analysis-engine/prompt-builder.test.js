@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { createV5ProjectConfig } from '../../src/analysis-engine/config/schema.js';
+import { createAnalysisProjectConfig } from '../../src/analysis-engine/config/schema.js';
 import { buildDeepCreativeDirectorPrompt } from '../../src/analysis-engine/creative-director/prompt-builder.js';
 
 function context() {
   return {
     projectName: 'Prompt Demo',
-    config: createV5ProjectConfig({
+    config: createAnalysisProjectConfig({
       projectName: 'Prompt Demo',
       userTask: '升级医学美学视觉系统',
       brandFacts: {

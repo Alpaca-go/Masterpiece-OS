@@ -1,4 +1,4 @@
-// r2.0 §8 / Phase F-4: run evidence scanner (DESKTOP).
+// Run evidence scanner for the Shared Runtime.
 //
 // This is the FIRST of two layers. It knows the filesystem paths
 // and reads the 9 evidence files into a pure-data EvidenceBundle.
@@ -255,7 +255,7 @@ function extractBindingsFromBundle(bundle: EvidenceBundle): EvidenceBundle['bind
 /**
  * Scan the 9 evidence files for a given (project, task, run) and
  * return a pure-data EvidenceBundle. The bundle is the data
- * contract between the desktop scanner and the runtime validator.
+ * contract between the evidence scanner and the runtime validator.
  *
  * The scanner:
  *   - never THROWS on missing / unreadable files; each file is
@@ -347,7 +347,7 @@ export async function scanShortChainEvidence(input: ShortChainEvidenceScannerInp
 
 /**
  * High-level orchestrator: scan + validate in one call. The
- * desktop service / smoke runner / UI all use this.
+ * runtime service / smoke runner / UI all use this.
  */
 export async function runShortChainEvidenceCheckpoint(
   input: ShortChainEvidenceScannerInput,

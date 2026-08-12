@@ -140,7 +140,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
   async function getShortChain(projectId: string): Promise<ProjectVisualContextShortChain> {
     const project = await projects.get(projectId);
     if (project.visualContextVNextStatus !== 'ready' || !project.visualContextVNextFilename) {
-      throw new ProjectContextNotReadyError('Project Visual Context vNext is not ready');
+      throw new ProjectContextNotReadyError('Project Visual Context is not ready');
     }
     const paths = await projects.paths(projectId);
     const filename = path.basename(project.visualContextVNextFilename);
@@ -149,7 +149,7 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     ) as ProjectVisualContextShortChain;
     const validation = validateProjectVisualContext(value);
     if (!validation.valid) {
-      throw new ProjectContextNotReadyError(`Project Visual Context vNext is invalid: ${validation.errors.join('; ')}`);
+      throw new ProjectContextNotReadyError(`Project Visual Context is invalid: ${validation.errors.join('; ')}`);
     }
     return migrateProjectVisualContext(value);
   }
@@ -202,10 +202,10 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     //      ready=true, then `vnext-service.compile` will not throw
     //      ProjectContextNotReadyError on the way in").
     if (project.visualContextVNextStatus !== 'ready') {
-      reasons.push('Project Visual Context vNext 尚未生成或已失败');
+      reasons.push('Project Visual Context 尚未生成或已失败');
     }
     if (!project.visualContextVNextFilename) {
-      reasons.push('Project Visual Context vNext 文件名缺失');
+      reasons.push('Project Visual Context 文件名缺失');
     }
     if (project.visualContextVNextStatus === 'ready' && project.visualContextVNextFilename) {
       const paths = await projects.paths(projectId).catch(() => null);
@@ -219,11 +219,11 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
           const value = JSON.parse(raw) as unknown;
           const validation = validateProjectVisualContext(value);
           if (!validation.valid) {
-            reasons.push(`Project Visual Context vNext 文件校验失败：${validation.errors.join('; ')}`);
+            reasons.push(`Project Visual Context 文件校验失败：${validation.errors.join('; ')}`);
           }
         } catch (error) {
           reasons.push(
-            `Project Visual Context vNext 文件不可读：${(error as Error).message || '未知错误'}`,
+            `Project Visual Context 文件不可读：${(error as Error).message || '未知错误'}`,
           );
         }
       }

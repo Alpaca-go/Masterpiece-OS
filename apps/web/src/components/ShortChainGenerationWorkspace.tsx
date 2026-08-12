@@ -38,6 +38,7 @@ import {
   normalizeSceneId,
   generationModeLabel,
   findCrossSceneReference,
+  createContinuationTaskId,
 } from '../continuation/ui-state.js';
 
 interface Props {
@@ -318,7 +319,7 @@ export function ShortChainGenerationWorkspace({
       // contract build the prompt. We do not assemble a prompt here.
       const task: ShortChainTaskContract = {
         schemaVersion: '1.0',
-        taskId: `r11-cont-${Date.now()}`,
+        taskId: createContinuationTaskId(),
         projectId: project.id,
         deliverableFamily: 'space',
         subtype: targetScene,
@@ -816,7 +817,7 @@ export function ShortChainGenerationWorkspace({
         </div>
 
         {generationBasis === 'reference' && <div className="facts-box">
-          <small>参考优先 / Reference-First（R11.2.2）</small>
+          <small>参考优先 / Reference First</small>
           <p>高保真继承所选参考图的视觉与空间表达，更适合参考图与目标空间类型一致的生成任务。</p>
           <p>如果希望保留当前设计方向，但生成另一个功能空间，请使用「以此方向继续」进行空间延展。</p>
         </div>}
@@ -997,7 +998,7 @@ export function ShortChainGenerationWorkspace({
         <label>Logo 处理方式
           <select value={logoUsageMode} onChange={(event) =>
             setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
-            <option value="post_composite">后期合成 Logo 到结果图（v5 Logo Locked 项目必须）</option>
+            <option value="post_composite">后期合成 Logo 到结果图（Logo Locked 项目必须）</option>
             <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
             <option value="reference" disabled>把真实 Logo 作为模型参考（仅无 logo 项目可用）</option>
           </select>

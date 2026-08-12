@@ -1,10 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createV5ProjectConfig } from '../../src/analysis-engine/config/schema.js';
+import { createAnalysisProjectConfig } from '../../src/analysis-engine/config/schema.js';
 import { ReasoningSessionGuard } from '../../src/analysis-engine/creative-director/session-guard.js';
 
 test('v5 defaults to Deep Mode, Maximum authority, one output and Logo lock', () => {
-  const config = createV5ProjectConfig({ projectName: 'Demo', industry: '食品' });
+  const config = createAnalysisProjectConfig({ projectName: 'Demo', industry: '食品' });
   assert.equal(config.runtime.analysisMode, 'deep');
   assert.equal(config.runtime.creativeAuthority, 'maximum');
   assert.deepEqual(config.runtime.lockedVisualAssets, ['logo']);
@@ -19,24 +19,24 @@ test('v5 defaults to Deep Mode, Maximum authority, one output and Logo lock', ()
 });
 
 test('v5 rejects a performance maximum below the target', () => {
-  assert.throws(() => createV5ProjectConfig({
+  assert.throws(() => createAnalysisProjectConfig({
     projectName: 'Demo',
     performance: { targetMinutes: 10, maximumMinutes: 9 }
   }), { code: 'CONFIG_INVALID' });
-  assert.throws(() => createV5ProjectConfig({
+  assert.throws(() => createAnalysisProjectConfig({
     projectName: 'Demo',
     performance: { maxReportCharacters: 5999 }
   }), { code: 'CONFIG_INVALID' });
 });
 
 test('v5 only changes the Logo lock through an explicit project override', () => {
-  const locked = createV5ProjectConfig({
+  const locked = createAnalysisProjectConfig({
     projectName: 'Demo',
     overrides: { additionalLockedAssets: ['mascot'] }
   });
   assert.deepEqual(locked.runtime.lockedVisualAssets, ['logo', 'mascot']);
 
-  const redesign = createV5ProjectConfig({
+  const redesign = createAnalysisProjectConfig({
     projectName: 'Demo',
     overrides: { allowLogoRedesign: true }
   });
