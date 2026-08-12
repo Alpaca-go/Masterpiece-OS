@@ -53,6 +53,8 @@ export function createVolcengineAnalysisProvider(options = {}) {
         apiKey: configuration.apiKey,
         model: configuration.model,
         baseUrl: configuration.baseUrl,
+        environment: configuration.environment,
+        client: configuration.client,
       });
     },
   });
