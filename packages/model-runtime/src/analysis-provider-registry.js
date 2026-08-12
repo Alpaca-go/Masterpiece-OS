@@ -12,6 +12,16 @@ export function createDefaultAnalysisProviderRegistry(options = {}) {
     // filtering on `provider` field and `model` prefix. The default
     // resolution is therefore driven by the caller's `configuration`,
     // not by the array position.
+    //
+    // A3-A: The default `provider` / `model` selection now lives in
+    // `packages/runtime-core/src/application/provider-policy.js`
+    // (single source of truth). The registry factory below is
+    // unchanged in behavior — the canonical Volcengine default still
+    // resolves via model-prefix dispatch when the caller passes
+    // `getCurrentProviderPolicy().default` (provider='volcengine',
+    // model='doubao-seed-2.1-turbo'). The registry exposes
+    // `getCurrentProviderPolicy()` to all callers via
+    // `@masterpiece/runtime-core/application/provider-policy.js`.
     createVolcengineAnalysisProvider(options.volcengine),
     createQwenAnalysisProvider(options.qwen),
     ...(options.additionalProviders || []),

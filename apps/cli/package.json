@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@masterpiece/document-ingestion": "file:../../packages/document-ingestion",
-    "@masterpiece/model-runtime": "file:../../packages/model-runtime"
+    "@masterpiece/model-runtime": "file:../../packages/model-runtime",
+    "@masterpiece/runtime-core": "file:../../packages/runtime-core"
   }
 }

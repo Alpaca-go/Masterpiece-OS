@@ -2,7 +2,8 @@
 import path from 'node:path';
 import { runAnalysisPipeline } from '../src/analysis-engine/bootstrap.js';
 import { inventoryProject } from '../src/inventory.js';
-import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
+import { createDefaultAnalysisProviderRegistry } from '@masterpiece/model-runtime/analysis-provider-registry.js';
+import { getCurrentProviderPolicy } from '@masterpiece/runtime-core/application/provider-policy.js';
 
 const HELP = `Masterpiece OS — Visual Analysis
 
@@ -20,7 +21,8 @@ const HELP = `Masterpiece OS — Visual Analysis
   --lock             项目级额外锁定资产；可重复或用逗号分隔
   --allow-logo-redesign  显式授权 Logo 重设计；默认关闭
   --required-app     必须覆盖的应用；可重复或用逗号分隔
-  --provider         Reasoner Provider：qwen（或 MASTERPIECE_PROVIDER）
+  --provider         显式 Reasoner Provider：qwen / volcengine (或 MASTERPIECE_PROVIDER)
+                     未指定时使用运行时 Provider Policy 的 default（当前 = volcengine）
   --force-reasoning  跳过精确推理缓存并执行一次新推理
   -o, --output       输出目录；默认 <项目根>/outputs
   -c, --config       分析配置文件；默认 masterpiece-os-v5.json（兼容文件名）
@@ -54,17 +56,69 @@ function parseArgs(args) {
   return { positional, options };
 }
 
-function createReasonerFromEnvironment({ provider, environment = process.env } = {}) {
-  const selected = String(provider || environment.MASTERPIECE_PROVIDER || '').trim().toLowerCase();
-  if (!selected) {
-    const error = new Error('未配置 Reasoner Provider；请使用 --provider 或 MASTERPIECE_PROVIDER');
-    error.code = 'REASONER_PROVIDER_MISSING';
-    throw error;
+// A3-G: CLI Resolver. Resolves the Analysis Provider reasoner through
+// the SAME registry the Web Runtime uses. There is no `if selected
+// === 'qwen' { ... }` / `if selected === 'volcengine' { ... }`
+// branch in this CLI; the registry's `supports()` predicate (driven
+// by `provider` field + `model` prefix) is the single dispatch
+// point. The default falls back to `getCurrentProviderPolicy().default`
+// (currently `volcengine / doubao-seed-2.1-turbo`).
+//
+// Returns `{ reasoner, source }` where `source` is one of:
+//   - 'injected'        : caller supplied a ready-to-use reasoner
+//   - 'injected-factory': caller supplied a reasoner factory
+//   - 'explicit-override': CLI --provider / MASTERPIECE_PROVIDER used
+//   - 'policy-default'  : no override; policy default used
+function resolveReasoner(options) {
+  if (typeof options.deepCreativeDirectorReasoner === 'function') {
+    return { reasoner: options.deepCreativeDirectorReasoner, source: 'injected' };
   }
-  if (selected === 'qwen') return createQwenReasoner({ environment });
-  const error = new Error(`不支持的 Reasoner Provider：${selected}`);
-  error.code = 'REASONER_PROVIDER_UNSUPPORTED';
-  throw error;
+  if (typeof options.deepCreativeDirectorReasonerFactory === 'function') {
+    return { reasoner: options.deepCreativeDirectorReasonerFactory(), source: 'injected-factory' };
+  }
+
+  const policy = getCurrentProviderPolicy();
+  const registry = createDefaultAnalysisProviderRegistry();
+
+  // Resolve the override (if any) and the default through the SAME
+  // registry. The configuration is forwarded as-is; the registry
+  // only inspects `provider` and `model` (plus optional apiKey /
+  // baseUrl passthrough to the adapter factory).
+  const selectedProvider = String(
+    options.provider || process.env.MASTERPIECE_PROVIDER || '',
+  ).trim().toLowerCase();
+
+  if (selectedProvider) {
+    // Manual override: explicit-run wins over policy default
+    // (per A3 spec §8: explicit-run > user-profile > system-default).
+    try {
+      const provider = registry.resolve({
+        provider: selectedProvider,
+        model: options.model || undefined,
+      });
+      return {
+        reasoner: provider.createReasoner({
+          provider: selectedProvider,
+          model: options.model || undefined,
+        }),
+        source: 'explicit-override',
+      };
+    } catch (error) {
+      const wrapped = new Error(`不支持的 Reasoner Provider：${selectedProvider}（${error.message}）`);
+      wrapped.code = 'REASONER_PROVIDER_UNSUPPORTED';
+      throw wrapped;
+    }
+  }
+
+  // No override — use the policy default. Pass the canonical
+  // policy.default to the registry; the registry's `supports()`
+  // predicate (model-prefix dispatch) routes to the right adapter.
+  const { provider, model } = policy.default;
+  const defaultAdapter = registry.resolve({ provider, model });
+  return {
+    reasoner: defaultAdapter.createReasoner({ provider, model }),
+    source: 'policy-default',
+  };
 }
 
 async function main(args) {
@@ -84,10 +138,10 @@ async function main(args) {
   if (command === 'analyze') {
     if (positional.length !== 1) throw new Error('analyze 需要一个素材目录');
     const pipelineOptions = { ...options };
-    const selectedProvider = pipelineOptions.provider || process.env.MASTERPIECE_PROVIDER;
-    if (selectedProvider && !pipelineOptions.deepCreativeDirectorReasoner) {
-      pipelineOptions.deepCreativeDirectorReasonerFactory = () =>
-        createReasonerFromEnvironment({ provider: selectedProvider });
+    if (!pipelineOptions.deepCreativeDirectorReasoner
+        && !pipelineOptions.deepCreativeDirectorReasonerFactory) {
+      const { reasoner } = resolveReasoner(pipelineOptions);
+      pipelineOptions.deepCreativeDirectorReasoner = reasoner;
     }
     const { result, output } = await runAnalysisPipeline(positional[0], pipelineOptions);
     console.log('Masterpiece OS — Visual Analysis');

@@ -221,7 +221,11 @@ export function createQwenReasoner(options = {}) {
         }
       };
     }
+    // A3-C / A3-D: capture timing for provenance
+    const startedAtIso = new Date().toISOString();
+    const startedAtMs = Date.now();
     let response;
+    let usage = null;
     try {
       response = await runClientWithDeadline(client, {
         url,
@@ -238,6 +242,22 @@ export function createQwenReasoner(options = {}) {
       }
       throw new QwenReasonerError('QWEN_REQUEST_FAILED', `Qwen 请求失败：${redact(error.message, apiKey)}`);
     }
+    const latencyMs = Date.now() - startedAtMs;
+    // A3-E: read usage block if the upstream response carries one.
+    // Per A2 spec Section 56: if not present, record UNKNOWN (do not estimate).
+    if (response && response.usage && typeof response.usage === 'object') {
+      const u = response.usage;
+      usage = {
+        inputTokens: typeof u.prompt_tokens === 'number' ? u.prompt_tokens : null,
+        outputTokens: typeof u.completion_tokens === 'number' ? u.completion_tokens : null,
+        totalTokens: typeof u.total_tokens === 'number' ? u.total_tokens
+          : (typeof u.prompt_tokens === 'number' && typeof u.completion_tokens === 'number'
+              ? u.prompt_tokens + u.completion_tokens
+              : null),
+        raw: Object.freeze({ ...u }),
+        cost: 'UNKNOWN',
+      };
+    }
     const reportMarkdown = responseText(response);
     if (!reportMarkdown) throw new QwenReasonerError('QWEN_EMPTY_REPORT', 'Qwen 返回了空报告，分析失败');
     return {
@@ -247,7 +267,18 @@ export function createQwenReasoner(options = {}) {
       completedAt: new Date().toISOString(),
       reportMarkdown,
       benchmarkSources: [],
-      inspectedAssetIds: prepared.inspectedAssetIds
+      inspectedAssetIds: prepared.inspectedAssetIds,
+      // A3-C / A3-D / A3-E: provenance (additive; not asserted by
+      // assertCanonicalAnalysisResult which still requires only
+      // runId / provider / model / completedAt / reportMarkdown).
+      provenance: Object.freeze({
+        startedAt: startedAtIso,
+        latencyMs,
+        status: 'ok',
+        retryCount: 0,
+        fallback: null,
+        usage: usage ? Object.freeze(usage) : null,
+      }),
     };
   };
 }
