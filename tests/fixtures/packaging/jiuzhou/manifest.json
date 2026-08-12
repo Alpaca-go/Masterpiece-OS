@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0",
+  "manifestVersion": "1.0.0",
+  "goldenProjectId": "golden-jiuzhou",
+  "frozen": "2026-08-12",
+  "schemaUrl": "docs/packaging/jiuzhou-golden-baseline.md",
+  "boundaryUrl": "docs/packaging/golden-vs-production-boundary.md",
+  "rubricUrl": "docs/packaging/acceptance-rubric.md",
+  "taxonomyUrl": "docs/packaging/failure-taxonomy.md",
+  "shotContractsUrl": "docs/packaging/shot-contracts.md",
+  "files": {
+    "tests/fixtures/packaging/jiuzhou/_PROVENANCE.md":           "54b915543ee638c3f993325389d48416ae50b9c2fb49714a9b44b2afe41cd132",
+    "tests/fixtures/packaging/jiuzhou/visual-direction.md":      "1248e0454c7a021b4e60f1f2955e928ccb609c8be8c2589adb38cd6be86fa7a5",
+    "tests/fixtures/packaging/jiuzhou/color-baseline.md":        "c3ad61c5ab8edfd8eb83fd0c724fc18e93679284d0f6318127bd2e2f94c4dff8",
+    "tests/fixtures/packaging/jiuzhou/motif-language.md":        "b38f106e9066602f61730bc3271e7fc38a6e53288a0e8ad00fe8c929d8540623",
+    "tests/fixtures/packaging/jiuzhou/forbidden-motifs.md":      "40e939769e8b56b0d779072134a438c81b4828b5175d981952b4741891ee9404",
+    "tests/fixtures/packaging/jiuzhou/shot-contracts/hero.md":   "9ac80bb10fd0900a9149205f1786c5b138e3b72c09ec5bfdad5b31ab3f33e924",
+    "tests/fixtures/packaging/jiuzhou/shot-contracts/series.md": "1a429a700462495a2480c5198032bdedc788a49caa0d48386addfdaff56a77ce",
+    "tests/fixtures/packaging/jiuzhou/shot-contracts/open.md":   "af7e9d3669f760775cf5d5c21a892565e48add8a03c2815f9b669d067dba7880",
+    "tests/fixtures/packaging/jiuzhou/acceptance-rubric.json":   "6d7a2ed2569f67eff75d55aeda39767b93d6620651c79529fcd0bdcc71c87979",
+    "tests/fixtures/packaging/jiuzhou/failure-taxonomy.json":   "391976efbb0062621aebaf6a6513e82c768050d8c986012c8f84ab6436fee035"
+  }
+}

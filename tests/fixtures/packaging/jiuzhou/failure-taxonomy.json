@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0",
+  "taxonomyVersion": "1.0.0",
+  "appliesTo": "golden-jiuzhou",
+  "frozen": "2026-08-12",
+  "codes": [
+    { "code": "PKG-F01", "name": "brand identity drift",          "autoFail": true,  "axis": "brandFidelity" },
+    { "code": "PKG-F02", "name": "package structure drift",       "autoFail": true,  "axis": "structureFidelity" },
+    { "code": "PKG-F03", "name": "reference fidelity failure",    "autoFail": false, "axis": "referenceFidelity" },
+    { "code": "PKG-F04", "name": "visual direction drift",        "autoFail": false, "axis": "visualDirectionFidelity" },
+    { "code": "PKG-F05", "name": "color ratio failure",           "autoFail": false, "axis": "visualDirectionFidelity" },
+    { "code": "PKG-F06", "name": "motif over-literalization",     "autoFail": false, "axis": "visualDirectionFidelity" },
+    { "code": "PKG-F07", "name": "material / texture failure",    "autoFail": false, "axis": "materialQuality" },
+    { "code": "PKG-F08", "name": "composition failure",           "autoFail": false, "axis": "compositionQuality" },
+    { "code": "PKG-F09", "name": "series consistency failure",    "autoFail": false, "axis": "seriesConsistency",     "appliesTo": "PKG-SERIES-GROUP" },
+    { "code": "PKG-F10", "name": "open-box physical logic failure","autoFail": false, "axis": "compositionQuality",     "appliesTo": "PKG-GIFT-OPEN" },
+    { "code": "PKG-F11", "name": "generic advertising look",     "autoFail": true,  "axis": "brandFidelity" },
+    { "code": "PKG-F12", "name": "provider / runtime failure",    "autoFail": false, "axis": null }
+  ]
+}

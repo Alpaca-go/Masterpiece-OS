@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0",
+  "rubricVersion": "1.0.0",
+  "appliesTo": "golden-jiuzhou",
+  "frozen": "2026-08-12",
+  "axes": {
+    "brandFidelity":           { "threshold": 0.90, "weight": 0.20, "axis": "primary" },
+    "structureFidelity":       { "threshold": 0.85, "weight": 0.15, "axis": "primary" },
+    "visualDirectionFidelity": { "threshold": 0.85, "weight": 0.15, "axis": "primary" },
+    "compositionQuality":      { "threshold": 0.80, "weight": 0.10, "axis": "primary" },
+    "materialQuality":         { "threshold": 0.80, "weight": 0.10, "axis": "primary" },
+    "referenceFidelity":       { "threshold": 0.85, "weight": 0.15, "axis": "primary" },
+    "seriesConsistency":       { "threshold": 0.80, "weight": 0.15, "axis": "series-only", "appliesTo": "PKG-SERIES-GROUP" }
+  },
+  "overall": { "threshold": 0.85, "composite": "weightedAverage" },
+  "autoFail": [
+    "brand_identity_drift",
+    "confirmed_package_structure_error",
+    "product_substitution",
+    "severe_reference_drift",
+    "locked_asset_critical_violation"
+  ]
+}
