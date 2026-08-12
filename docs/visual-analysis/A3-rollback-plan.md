@@ -20,26 +20,31 @@ default → qwen / qwen3.6-plus
 ## 2. Rollback Mechanism (Phase 2 implementation)
 
 The A3 policy is versioned and lives in a single
-`packages/runtime-core/src/application/provider-policy.ts`
-file. The rollback is a **single line change** in that file:
+`packages/runtime-core/src/application/provider-policy.js`
+file. (Phase 2 ships the file as plain JavaScript with JSDoc
+typings so both the Web Runtime Host via `tsx` and the headless
+CLI via raw Node can import it without a build step. Earlier
+prose in this design referred to `.ts`; the substantive contract
+is unchanged.) The rollback is a **single line change** in that
+file:
 
-```ts
+```js
 // pre-A3 (A2-H baseline)
-default: { provider: 'qwen', model: 'qwen3.6-plus' }
+default: Object.freeze({ provider: 'qwen', model: 'qwen3.6-plus' })
 ```
 
 becomes
 
-```ts
+```js
 // post-A2-H (A3-A current)
-default: { provider: 'volcengine', model: 'doubao-seed-2.1-turbo' }
+default: Object.freeze({ provider: 'volcengine', model: 'doubao-seed-2.1-turbo' })
 ```
 
 The rollback is the **reverse** change:
 
-```ts
+```js
 // A3 rollback (one-step)
-default: { provider: 'qwen', model: 'qwen3.6-plus' }
+default: Object.freeze({ provider: 'qwen', model: 'qwen3.6-plus' })
 ```
 
 The Volcengine provider remains registered as the
