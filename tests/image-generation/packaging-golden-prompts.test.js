@@ -78,7 +78,11 @@ function readPrompt(shot) {
     return { file, raw: null, meta: null, body: null };
   }
   const raw = fs.readFileSync(file, 'utf8');
-  const fm = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  // Front-matter: Git tracks these files as LF, but Windows checkout with
+  // core.autocrlf=true produces CRLF in the working tree. The regex is
+  // CRLF-tolerant so the test runs on both Windows and POSIX without
+  // being sensitive to checkout line-ending conversion.
+  const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!fm) return { file, raw, meta: null, body: null };
   const meta = {};
   for (const line of fm[1].split(/\r?\n/)) {
@@ -93,7 +97,8 @@ function readPrompt(shot) {
 
 function extractPromptBody(raw) {
   if (!raw) return null;
-  const m = raw.match(/```text\n([\s\S]*?)\n```/);
+  // CRLF-tolerant (see readPrompt comment for the Windows checkout context).
+  const m = raw.match(/```text\r?\n([\s\S]*?)\r?\n```/);
   return m ? m[1].trim() : null;
 }
 

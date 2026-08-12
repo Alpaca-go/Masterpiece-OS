@@ -28,7 +28,13 @@ const manifest = JSON.parse(
 );
 
 function sha256(buffer) {
-  return createHash('sha256').update(buffer).digest('hex').toLowerCase();
+  // Normalize CRLF → LF before hashing so the digest is stable across
+  // Windows (core.autocrlf=true) and POSIX checkouts. The recorded digest
+  // was computed from the canonical LF content that Git stores; if we
+  // did NOT normalize, Windows checkouts would re-compute a different
+  // digest even when the file content is byte-identical in Git.
+  const text = buffer.toString('utf8').replace(/\r\n/g, '\n');
+  return createHash('sha256').update(text, 'utf8').digest('hex').toLowerCase();
 }
 
 test('P1 manifest.json schemaVersion + manifestVersion + goldenProjectId', () => {

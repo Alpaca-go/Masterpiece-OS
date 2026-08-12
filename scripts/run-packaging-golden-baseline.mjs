@@ -151,7 +151,10 @@ function readPromptFile(shot) {
     throw new Error(`Golden Prompt file not found: ${promptFile}`);
   }
   const raw = fs.readFileSync(promptFile, 'utf8');
-  const fmMatch = raw.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
+  // CRLF-tolerant front-matter match. Git stores the canonical LF
+  // content but Windows checkout with core.autocrlf=true produces
+  // CRLF in the working tree. The regex is platform-independent.
+  const fmMatch = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/);
   if (!fmMatch) {
     throw new Error(`Golden Prompt ${shot}.md has no YAML front-matter`);
   }
@@ -168,7 +171,8 @@ function readPromptFile(shot) {
   if (!meta.goldenPromptId || !meta.shotContract || !meta.generationMode) {
     throw new Error(`Golden Prompt ${shot}.md missing required front-matter fields (goldenPromptId, shotContract, generationMode)`);
   }
-  const codeMatch = body.match(/```text\n([\s\S]*?)\n```/);
+  // CRLF-tolerant fenced block match (see front-matter regex above).
+  const codeMatch = body.match(/```text\r?\n([\s\S]*?)\r?\n```/);
   if (!codeMatch) {
     throw new Error(`Golden Prompt ${shot}.md has no \`\`\`text fenced prompt body`);
   }
