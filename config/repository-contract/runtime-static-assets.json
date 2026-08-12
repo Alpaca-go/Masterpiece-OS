@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "1.0",
+  "manifestVersion": "1.0.0",
+  "frozenAt": "2026-08-12",
+  "specSection": "Tracked Runtime Assets Guard spec \u00a79-\u00a717",
+  "purpose": "Initial inventory of production-critical static runtime assets (per Tracked Runtime Assets Guard spec \u00a76 + \u00a725). Every entry below is either Git tracked (TRACKED_RUNTIME_ASSET) or deterministically generated before first runtime use (GENERATED_RUNTIME_ASSET). The companion guard scripts/verify-tracked-runtime-assets.mjs verifies (a) manifest validity, (b) file existence, (c) Git tracking, (d) ignore-conflict, (e) static asset location boundary, (f) known critical prompt integrity (delegated to the existing A4 frozen-prompt guard), and (g) anchor registry closure.",
+  "boundaryRule": "Golden Project Rules != Packaging Production Rules. The 8 entries below are not Golden assets and are not part of the Packaging / Jiuzhou / evaluation boundary. They are production inputs. Their SHA-256 digests are recorded for integrity verification at release time.",
+  "assetClassifications": {
+    "TRACKED_RUNTIME_ASSET": "Must exist on disk AND be returned by `git ls-files`. SHA-256 verified.",
+    "GENERATED_RUNTIME_ASSET": "Must be created deterministically before first runtime use. V1 declares 0 of these (none of the audited production reads are generation-only); a future P3 / P4 phase may add (e.g. a generated cache).",
+    "USER_DATA": "Per-user; not in this inventory. Never required in a fresh install.",
+    "SECRET": "Credentials / tokens; never committed. Not in this inventory.",
+    "CACHE": "Never source-of-truth. Not in this inventory.",
+    "OPTIONAL_RESOURCE": "Production must have an explicit safe fallback if the resource is missing. Not in the current inventory; the smoke runner in apps/web-runtime/scripts/ is the only OPTIONAL candidate and is not production code.",
+    "INVALID_PRODUCTION_DEPENDENCY": "Production should not depend on it. Not in the current inventory."
+  },
+  "assets": [
+    {
+      "path": "apps/cli/prompts/analysis/deep-creative-director.md",
+      "owner": "visual-analysis",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Production Visual Analysis system prompt (read by apps/cli/src/analysis-engine/creative-director/prompt-builder.js at line 29; PROMPT_ROOT defaults to apps/cli/prompts/analysis/).",
+      "sha256": "4d258cce657f023d054c86ee54c661fab9382387847904a4b386e5a674b46142",
+      "frozenBy": "A2"
+    },
+    {
+      "path": "apps/cli/prompts/analysis/benchmark-instructions.md",
+      "owner": "visual-analysis",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Production Visual Analysis benchmark instructions (read by prompt-builder.js).",
+      "sha256": "df937bbc81bf1c7335933952eef5db654c73b485bff52a67abed2618ecee71cb",
+      "frozenBy": "A2"
+    },
+    {
+      "path": "apps/cli/prompts/analysis/execution-core-template.md",
+      "owner": "visual-analysis",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Production Visual Analysis execution-core template (read by prompt-builder.js).",
+      "sha256": "d20def82f1d881a276007fb408fe62c92634f80bb346da0a52aa2fdfb8c3d54c",
+      "frozenBy": "A2"
+    },
+    {
+      "path": "apps/cli/prompts/analysis/report-schema.md",
+      "owner": "visual-analysis",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Production Visual Analysis report schema (read by prompt-builder.js).",
+      "sha256": "cae74a0ab49ca33827e09194005df0d35bc979ad0e8f7165bd80524a20d637af",
+      "frozenBy": "A2"
+    },
+    {
+      "path": "space-generator/v1-experimental/architecture-anchors/registry.json",
+      "owner": "space",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Production Space architecture-anchor registry (read by packages/image-generation-runtime/src/space/architecture-context.js at line 67). Single source of truth for 3 brands (JZMX / FTT / YJLF) and 9 anchors.",
+      "sha256": "f5ebf4431ed377e34857288040b7707ab4351ddd5f30e12b6e5e4b9d2168922d",
+      "frozenBy": "A4",
+      "knownRisks": [
+        "Located under space-generator/v1-experimental/ (a non-production path). Per Tracked Runtime Assets Guard spec \u00a72 non-goal, this phase does NOT move the file; the registry stays at its current path and the production code resolves it via REPO_ROOT.",
+        "Defer to Repository Stabilization for any future path migration (resolves Tracked Runtime Assets Guard spec \u00a726 STOP-05)."
+      ]
+    },
+    {
+      "path": "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
+      "owner": "space",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Architecture anchor image referenced by registry.json brand jiuzhou-aesthetics / anchor JZMX-ARCH-01 (imagePath field; resolved by architecture-context.js:197 resolveArchitectureAnchorImagePath).",
+      "sha256": "7cee8097c6b5da43950f9cb44e474a855df8cb3a41c25de69b2089b31d8444f5",
+      "frozenBy": "A4",
+      "registryReference": "registry.json -> brands.jiuzhou-aesthetics.anchors[0].imagePath"
+    },
+    {
+      "path": "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
+      "owner": "space",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Architecture anchor image referenced by registry.json brand jiuzhou-aesthetics / anchor JZMX-ARCH-02.",
+      "sha256": "2ca12471e4585b4f207139b16d30040953a2996275d0d92a80308153e1b48e2d",
+      "frozenBy": "A4",
+      "registryReference": "registry.json -> brands.jiuzhou-aesthetics.anchors[1].imagePath"
+    },
+    {
+      "path": "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png",
+      "owner": "space",
+      "classification": "TRACKED_RUNTIME_ASSET",
+      "required": true,
+      "releaseRequired": true,
+      "reason": "Architecture anchor image referenced by registry.json brand jiuzhou-aesthetics / anchor JZMX-ARCH-03.",
+      "sha256": "835df456879158356dad757c9d41501b41f7986a0a9e9d2a4554e4534bb143e7",
+      "frozenBy": "A4",
+      "registryReference": "registry.json -> brands.jiuzhou-aesthetics.anchors[2].imagePath"
+    }
+  ],
+  "registryClosure": {
+    "specSection": "Tracked Runtime Assets Guard spec \u00a717",
+    "checkedRegistries": [
+      {
+        "registryPath": "space-generator/v1-experimental/architecture-anchors/registry.json",
+        "referencedImagePaths": [
+          "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
+          "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
+          "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png"
+        ],
+        "conceptOnlyCount": 6,
+        "conceptOnlyBrands": ["feng-tang-tang", "yi-ji-liang-fang"],
+        "brokenReferences": 0
+      }
+    ]
+  },
+  "excludedByDesign": {
+    "experimentalLoader": {
+      "path": "space-generator/v1-experimental/architecture-anchors/loader/load-anchors.mjs",
+      "reason": "Not in the production path. The production code at packages/image-generation-runtime/src/space/architecture-context.js re-implements the registry read + selection scoring; it does NOT import the experimental loader. The experimental loader and its tests are tracked but not declared as production runtime assets. The workspace-boundary guard already prevents production from deep-importing the experimental tree."
+    },
+    "experimentalMetadata": {
+      "files": [
+        "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/architecture-dna-analysis.yaml",
+        "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/metadata.yaml",
+        "space-generator/v1-experimental/architecture-anchors/feng-tang-tang/architecture-dna-analysis.yaml",
+        "space-generator/v1-experimental/architecture-anchors/feng-tang-tang/metadata.yaml",
+        "space-generator/v1-experimental/architecture-anchors/yi-ji-liang-fang/architecture-dna-analysis.yaml",
+        "space-generator/v1-experimental/architecture-anchors/yi-ji-liang-fang/metadata.yaml"
+      ],
+      "reason": "Read only by the experimental loader (not in production). They are tracked (Git knows them) but they are not TRACKED_RUNTIME_ASSET per the production-rule definition."
+    }
+  }
+}
