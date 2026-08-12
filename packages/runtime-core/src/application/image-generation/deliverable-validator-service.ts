@@ -5,13 +5,14 @@ import type {
   ShortChainTaskContract,
 } from '../../shared/types.ts';
 import { validateShortChainDeliverableEvidence } from '@masterpiece/image-generation-runtime/core/space-generation-core.js';
-import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
+import { createDefaultAnalysisReasoner } from '@masterpiece/model-runtime/analysis-provider-registry.js';
 import type { ProjectStore } from '../project-store.ts';
 import type { ProjectContextService } from '../project-context-service.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import type { ImageGenerationService } from './service.ts';
 
 interface Credentials {
+  provider?: string;
   apiKey: string;
   baseUrl: string;
   model: string;
@@ -109,11 +110,7 @@ export function createDeliverableValidatorService(
       ...(context?.lockedAssets.mustPreserve ?? []),
       ...(promptSource?.lockedAssets.mustPreserve ?? []),
     ];
-    const reasoner = createQwenReasoner({
-      apiKey: credentials.apiKey,
-      model: credentials.model,
-      baseUrl: credentials.baseUrl,
-    });
+    const reasoner = createDefaultAnalysisReasoner(credentials);
     const response = await reasoner({
       prompt: {
         messages: [

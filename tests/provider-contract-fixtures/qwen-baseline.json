@@ -1,0 +1,14 @@
+{
+  "providerId": "qwen",
+  "profileProvider": "dashscope",
+  "modelId": "qwen3.6-plus",
+  "protocol": "openai-chat-multimodal",
+  "request": {
+    "pathSuffix": "/chat/completions",
+    "method": "POST",
+    "messageRoles": ["system", "user"],
+    "stream": false,
+    "imageEncoding": "data:image/jpeg;base64",
+    "structuredOutputType": "json_schema"
+  }
+}

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@masterpiece/image-generation-contracts": "0.0.0",
+    "@masterpiece/model-runtime": "0.0.0",
     "@masterpiece/project-contracts": "0.0.0",
     "adm-zip": "^0.6.0",
     "sharp": "^0.35.3"

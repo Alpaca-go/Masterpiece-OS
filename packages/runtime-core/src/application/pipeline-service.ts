@@ -101,7 +101,7 @@ import {
 
 // Bundled from the repository core. Desktop remains the consumer, never the dependency.
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
-import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
+import { createDefaultAnalysisProviderRegistry } from '@masterpiece/model-runtime/analysis-provider-registry.js';
 // @ts-ignore — JavaScript core module intentionally has no TypeScript declaration file.
 import { parseStructuredResponse } from '@masterpiece/model-runtime/response-parser.js';
 
@@ -385,6 +385,7 @@ export function createPipelineService(
   readSettings: SettingsReader,
   emitProgress: ProgressSink,
   runtime: VisualAnalysisRuntimeAdapter,
+  analysisProviders = createDefaultAnalysisProviderRegistry(),
 ) {
   const active = new Map<string, ActiveRun>();
 
@@ -478,11 +479,7 @@ export function createPipelineService(
       configurePromptRoot(runtime);
       progress('building-contact-sheet', '正在生成视觉总览');
 
-      const baseReasoner = createQwenReasoner({
-        apiKey: credentials.apiKey,
-        model: credentials.model,
-        baseUrl: credentials.baseUrl
-      });
+      const baseReasoner = analysisProviders.createReasoner(credentials);
       const reasoner = async (context: Record<string, unknown> & { signal: AbortSignal }) => {
         progress('building-prompt', '正在构建分析任务');
         await Promise.resolve();
@@ -1013,11 +1010,7 @@ export function createPipelineService(
       active.delete(options.projectId);
       throw new Error('当前模型分析步骤需要至少一张可读取图片');
     }
-    const reasoner = createQwenReasoner({
-      apiKey: credentials.apiKey,
-      model: credentials.model,
-      baseUrl: credentials.baseUrl
-    });
+    const reasoner = analysisProviders.createReasoner(credentials);
     let modelCallCount = 0;
     let lastError: unknown;
     let repairContext = '';

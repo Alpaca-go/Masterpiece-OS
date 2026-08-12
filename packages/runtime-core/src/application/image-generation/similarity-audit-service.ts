@@ -6,7 +6,7 @@ import type {
   ShortChainSimilarityAuditScores,
 } from '@masterpiece/image-generation-contracts/index.ts';
 import { assertShortChainSimilarityAudit } from '@masterpiece/image-generation-contracts/index.ts';
-import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
+import { createDefaultAnalysisReasoner } from '@masterpiece/model-runtime/analysis-provider-registry.js';
 import type { ProjectStore } from '../project-store.ts';
 import type { ProjectContextService } from '../project-context-service.ts';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
@@ -40,6 +40,7 @@ import type { ImageGenerationService } from './service.ts';
 // can swap a deterministic mock without touching the network.
 
 interface Credentials {
+  provider?: string;
   apiKey: string;
   baseUrl: string;
   model: string;
@@ -215,12 +216,8 @@ function selectAuditProfile(
 }
 
 function defaultCreateReasoner(credentials: Credentials): ShortChainSimilarityAuditReasoner {
-  const reasoner = createQwenReasoner({
-    apiKey: credentials.apiKey,
-    model: credentials.model,
-    baseUrl: credentials.baseUrl,
-  });
-  // The qwen-reasoner factory has a flexible signature. We narrow it
+  const reasoner = createDefaultAnalysisReasoner(credentials);
+  // The provider-neutral factory has a flexible signature. We narrow it
   // to ShortChainSimilarityAuditReasoner so callers (and tests) get a
   // stable shape.
   return (async (input) => {

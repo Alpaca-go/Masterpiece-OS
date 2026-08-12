@@ -99,9 +99,11 @@ export function App() {
   const [deletingReferenceAnchorRunId, setDeletingReferenceAnchorRunId] = useState('');
   const [loading, setLoading] = useState(true);
   const enabledProfiles = settings?.profiles.filter((profile) => profile.isEnabled) || [];
-  const selectedProfile = enabledProfiles.find((profile) => profile.id === selectedApiProfileId)
-    || enabledProfiles.find((profile) => profile.isDefault)
-    || enabledProfiles[0];
+  const analysisProfiles = enabledProfiles.filter((profile) =>
+    profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal');
+  const selectedProfile = analysisProfiles.find((profile) => profile.id === selectedApiProfileId)
+    || analysisProfiles.find((profile) => profile.isDefault)
+    || analysisProfiles[0];
   const batches = useMemo(() => {
     const result = new Map<string, { label: string; count: number }>();
     for (const item of assets?.items || []) {
@@ -149,8 +151,10 @@ export function App() {
         if (settled) return;
         settled = true;
         clearTimeout(startupTimer);
-        const initial = loaded.profiles.find((profile) => profile.isDefault && profile.isEnabled)
-          || loaded.profiles.find((profile) => profile.isEnabled);
+        const initial = loaded.profiles.find((profile) => profile.isDefault && profile.isEnabled
+          && profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal')
+          || loaded.profiles.find((profile) => profile.isEnabled
+            && profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal');
         setSelectedApiProfileId(initial?.id || '');
         if (!loaded.profiles.length && existing.length === 0) setScreen('settings');
       })
@@ -168,9 +172,9 @@ export function App() {
     setSelected(project);
     setError('');
     setRunFailure('');
-    const profile = enabledProfiles.find((item) => item.id === project.apiProfileId)
-      || enabledProfiles.find((item) => item.isDefault)
-      || enabledProfiles[0];
+    const profile = analysisProfiles.find((item) => item.id === project.apiProfileId)
+      || analysisProfiles.find((item) => item.isDefault)
+      || analysisProfiles[0];
     setSelectedApiProfileId(profile?.id || '');
     setScreen(project.status === 'completed' && project.lastReportFilename ? 'report' : 'project');
     try { setAssets(await window.masterpiece.projects.scanAssets(project.id)); }
@@ -329,8 +333,10 @@ export function App() {
     setSettings(next);
     const currentStillEnabled = next.profiles.some((profile) => profile.id === selectedApiProfileId && profile.isEnabled);
     if (!currentStillEnabled) {
-      const fallback = next.profiles.find((profile) => profile.isDefault && profile.isEnabled)
-        || next.profiles.find((profile) => profile.isEnabled);
+      const fallback = next.profiles.find((profile) => profile.isDefault && profile.isEnabled
+        && profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal')
+        || next.profiles.find((profile) => profile.isEnabled
+          && profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal');
       setSelectedApiProfileId(fallback?.id || '');
     }
   }
@@ -418,7 +424,7 @@ export function App() {
         </section>
         <aside className="panel project-sidebar">
           <div className="section-heading"><span>02</span><div><h2>运行前检查</h2><p>选择本次分析使用的配置</p></div></div>
-          <label>分析模型<select value={selectedProfile?.id || ''} onChange={(event) => setSelectedApiProfileId(event.target.value)}>{!enabledProfiles.length && <option value="">尚无可用配置</option>}{enabledProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}</select></label>
+          <label>分析模型<select value={selectedProfile?.id || ''} onChange={(event) => setSelectedApiProfileId(event.target.value)}>{!analysisProfiles.length && <option value="">尚无可用分析配置</option>}{analysisProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.provider} / {profile.modelId}</option>)}</select></label>
           <ul className="check-list"><li className={assets?.totalFiles ? 'pass' : ''}><span>{assets?.totalFiles ? '✓' : '!'}</span>项目素材不为空</li><li className="pass"><span>✓</span>真实项目名将在同次视觉分析中确认</li><li className="pass"><span>✓</span>原始 Logo 默认锁定</li><li className="pass"><span>✓</span>固定输出简体中文</li><li className={selectedProfile?.hasApiKey ? 'pass' : ''}><span>{selectedProfile?.hasApiKey ? '✓' : '!'}</span>API Key 已安全保存</li><li className={selectedProfile?.baseUrl && selectedProfile.modelId ? 'pass' : ''}><span>{selectedProfile?.baseUrl && selectedProfile.modelId ? '✓' : '!'}</span>{selectedProfile?.modelId || '模型未配置'}</li></ul>
           <div className="facts-box"><small>当前导入线索</small><p>项目：{selected.detectedProjectName}（{Math.round(selected.projectNameConfidence * 100)}%）</p><p>行业：{selected.detectedIndustry}（{Math.round(selected.factConfidence.industry * 100)}%）</p><p>通用文件名不会成为最终报告名称。</p></div>
           <div className="profile-card"><small>默认分析模式</small><strong>融合增强</strong><p>一次多模态调用，强化事实判断、真实触点、材料与工艺。</p></div>
@@ -452,7 +458,7 @@ export function App() {
 
   const defaultProfile = settings.profiles.find((profile) => profile.isDefault)
     || settings.profiles.find((profile) => profile.isEnabled);
-  const hasUsableProfile = enabledProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
+  const hasUsableProfile = analysisProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
   const recentRecords = [
     ...projects.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
     ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),

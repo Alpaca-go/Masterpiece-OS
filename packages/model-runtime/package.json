@@ -9,6 +9,9 @@
     ".": "./src/index.js",
     "./*": "./src/*",
     "./qwen-reasoner": "./src/qwen-reasoner.js",
+    "./analysis-provider": "./src/analysis-provider.js",
+    "./analysis-provider-registry": "./src/analysis-provider-registry.js",
+    "./qwen-analysis-provider": "./src/qwen-analysis-provider.js",
     "./openai-compatible-text-reasoner": "./src/openai-compatible-text-reasoner.js",
     "./model-capabilities": "./src/model-capabilities.js",
     "./response-parser": "./src/response-parser.js"

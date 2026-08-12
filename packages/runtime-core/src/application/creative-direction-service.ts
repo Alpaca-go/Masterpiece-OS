@@ -20,14 +20,14 @@ import {
   validateCreativeDecision,
 } from '@masterpiece/creative-production-runtime/creative-decision.js';
 import { parseCreativeDirectionResponse } from '@masterpiece/creative-production-runtime/creative-direction.js';
-import { createQwenReasoner } from '@masterpiece/model-runtime/qwen-reasoner.js';
+import { createDefaultAnalysisReasoner } from '@masterpiece/model-runtime/analysis-provider-registry.js';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProviderCredentials } from '../shared/types.ts';
 import type { ProjectStore } from './project-store.ts';
 import type { CreativeSessionService } from './creative-session-service.ts';
 
 type CredentialsReader = (profileId?: string) => Promise<ProviderCredentials>;
-type ReasonerFactory = typeof createQwenReasoner;
+type ReasonerFactory = typeof createDefaultAnalysisReasoner;
 
 async function writeJson(filename: string, value: unknown): Promise<void> {
   const result = await atomicWriteJsonWithRetry(filename, value);
@@ -79,7 +79,7 @@ export function createCreativeDirectionService(
   projects: ProjectStore,
   sessions: CreativeSessionService,
   readCredentials: CredentialsReader,
-  reasonerFactory: ReasonerFactory = createQwenReasoner,
+  reasonerFactory: ReasonerFactory = createDefaultAnalysisReasoner,
 ) {
   async function locations(projectId: string) {
     const projectPaths = await projects.paths(projectId);
@@ -199,6 +199,8 @@ export function createCreativeDirectionService(
     });
     const credentials = await readCredentials(input?.apiProfileId || project.apiProfileId || undefined);
     const reasoner = reasonerFactory({
+      provider: credentials.provider,
+      protocol: credentials.protocol,
       apiKey: credentials.apiKey,
       model: credentials.model,
       baseUrl: credentials.baseUrl,
