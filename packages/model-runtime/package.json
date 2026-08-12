@@ -12,6 +12,8 @@
     "./analysis-provider": "./src/analysis-provider.js",
     "./analysis-provider-registry": "./src/analysis-provider-registry.js",
     "./qwen-analysis-provider": "./src/qwen-analysis-provider.js",
+    "./volcengine-reasoner": "./src/volcengine-reasoner.js",
+    "./volcengine-analysis-provider": "./src/volcengine-analysis-provider.js",
     "./openai-compatible-text-reasoner": "./src/openai-compatible-text-reasoner.js",
     "./model-capabilities": "./src/model-capabilities.js",
     "./response-parser": "./src/response-parser.js"

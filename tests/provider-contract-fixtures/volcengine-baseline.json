@@ -1,0 +1,27 @@
+{
+  "providerId": "volcengine",
+  "profileProvider": "volcengine",
+  "modelId": "doubao-seed-2.1-turbo",
+  "protocol": "openai-chat-multimodal",
+  "endpoint": {
+    "defaultBaseUrl": "https://ark.cn-beijing.volces.com/api/plan/v3",
+    "requestPathSuffix": "/chat/completions"
+  },
+  "request": {
+    "pathSuffix": "/chat/completions",
+    "method": "POST",
+    "messageRoles": ["system", "user"],
+    "stream": false,
+    "imageEncoding": "data:image/jpeg;base64",
+    "structuredOutputType": "json_schema"
+  },
+  "supportsMatchers": [
+    { "provider": "volcengine", "model": "doubao-seed-2.1-turbo", "protocol": "openai-chat-multimodal", "expected": true },
+    { "provider": "ark", "model": "doubao-seed-2.1-turbo", "protocol": "openai-chat-multimodal", "expected": true },
+    { "provider": "openai-compatible", "model": "doubao-seed-2.1-turbo", "protocol": "openai-chat-multimodal", "expected": true },
+    { "provider": "openai-compatible", "model": "doubao-1.5-vision-pro", "protocol": "openai-chat-multimodal", "expected": true },
+    { "provider": "openai-compatible", "model": "gpt-image-2", "protocol": "openai-chat-multimodal", "expected": false },
+    { "provider": "qwen", "model": "qwen3.6-plus", "protocol": "openai-chat-multimodal", "expected": false },
+    { "provider": "volcengine", "model": "doubao-seedream-5-0-pro-260628", "protocol": "seedream-image", "expected": false }
+  ]
+}
