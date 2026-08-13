@@ -56,11 +56,47 @@ const { PACKAGING_PROMPT_BLOCKS } = require(join(repoRoot, 'packages/image-gener
 const { PACKAGING_SHOT_CONTRACT_IDS } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/contracts.js'));
 
 // -----------------------------------------------------------------------
-// Frozen 14-block order (P2 spec §19). This is the single source of
-// truth; we do NOT redefine it here, we re-export PACKAGING_PROMPT_BLOCKS
-// as the test-side witness.
+// Frozen 14-block order (P2 spec §19).
+//
+// Per P2-H Finalization Delta item 1, this is an INDEPENDENT
+// test-side literal. We do NOT derive it from
+// `PACKAGING_PROMPT_BLOCKS.map(...)` — that would be a
+// self-referential witness (a test that derives its expected value
+// from the production constant cannot catch a drift where both
+// the production and the test agree on the wrong value).
+//
+// Instead the test asserts BOTH:
+//   1. The independent test-side literal deepEquals the
+//      production `PACKAGING_PROMPT_BLOCKS` (so any future
+//      reordering of the production constant is caught here).
+//   2. The independent test-side literal deepEquals the compiled
+//      `blockOrder` of every route (so any per-route drift is
+//      also caught).
 // -----------------------------------------------------------------------
-const FROZEN_BLOCK_ORDER = Object.freeze(PACKAGING_PROMPT_BLOCKS.map(([id]) => id));
+const FROZEN_BLOCK_ORDER = Object.freeze([
+  'task',
+  'product_package_identity',
+  'shot_contract',
+  'structural_requirements',
+  'locked_assets',
+  'visual_direction',
+  'color_system',
+  'motif_graphic_language',
+  'material_system',
+  'reference_boundary',
+  'composition_camera',
+  'lighting',
+  'rendering_requirements',
+  'negative_constraints',
+]);
+
+// P2-H Finalization Delta item 1: pin the production constant to
+// the independent literal so a future drift surfaces here.
+assert.deepEqual(
+  PACKAGING_PROMPT_BLOCKS.map(([id]) => id),
+  FROZEN_BLOCK_ORDER,
+  'production PACKAGING_PROMPT_BLOCKS must match the independent P2 spec §19 14-block order',
+);
 
 // -----------------------------------------------------------------------
 // Target-neutral inline fixture. Acme Botanicals is a synthetic
@@ -315,25 +351,57 @@ test('P2-H reference_first × 3 — explicit Reference identity preserved end-to
 // Reference, no Golden / project asset / Anchor pick-up.
 // -----------------------------------------------------------------------
 
-test('P2-H reference_first + references=[] fails closed (REFERENCE_REQUIRED, no fallback)', () => {
+test('P2-H reference_first + referencePolicy MISSING fails closed (Case A: REFERENCE_REQUIRED, no fallback)', () => {
+  // Per P2-H Finalization Delta item 2 Case A: the upstream input
+  // does not declare a `referencePolicy` block at all. The
+  // Translation layer must still reject the route, proving the
+  // P2-C / P2-E fail-closed invariant is NOT bypassed by leaving
+  // referencePolicy absent.
   for (const shotId of SHOT_IDS) {
     const input = makeRouteInput({ mode: 'reference_first', shotId, includeReference: false });
-    // input.referencePolicy is undefined here (analysis_led-style
-    // input). The Translation layer must still reject — proving the
-    // P2-C / P2-E fail-closed invariant is NOT bypassed by leaving
-    // referencePolicy absent.
-    assert.equal(input.referencePolicy, undefined);
+    assert.equal(input.referencePolicy, undefined, `${shotId}: precondition — referencePolicy must be absent on the input`);
     let caught = null;
     try {
       prepareOnce(input);
     } catch (err) {
       caught = err;
     }
-    assert.ok(caught, `${shotId}: prepare must throw when reference_first has no references`);
+    assert.ok(caught, `${shotId}: prepare must throw when reference_first has no referencePolicy block`);
     assert.equal(caught.code, 'REFERENCE_REQUIRED', `${shotId}: must throw REFERENCE_REQUIRED; got ${caught.code}`);
-    // Defense in depth: the error is NOT a generic provider or
-    // capability error, and it does NOT silently fall back to
-    // analysis_led. The error message names the failure mode.
+    assert.match(caught.message, /REFERENCE_REQUIRED/u);
+    // The compiled / payload / metadata surface was never built.
+    assert.ok(!('translation' in (caught || {})), `${shotId}: translation must not be exposed on the error`);
+  }
+});
+
+test('P2-H reference_first + references=[] fails closed (Case B: REFERENCE_REQUIRED, no fallback)', () => {
+  // Per P2-H Finalization Delta item 2 Case B: the upstream input
+  // declares an explicit `referencePolicy` block with the
+  // canonical Reference-First shape but leaves `references: []`.
+  // The Translation layer must still reject the route — the
+  // Reference Policy authority is the single source of truth and
+  // it does not invent a Reference from a Golden Anchor / project
+  // image / role guess.
+  for (const shotId of SHOT_IDS) {
+    const input = makeRouteInput({ mode: 'reference_first', shotId, includeReference: false });
+    // Inject the explicit empty referencePolicy block on top of
+    // the base input (Case A leaves it undefined; Case B makes it
+    // present but empty).
+    input.referencePolicy = {
+      enabled: true,
+      required: true,
+      references: [],
+    };
+    assert.ok(input.referencePolicy, `${shotId}: precondition — referencePolicy must be present`);
+    assert.equal(input.referencePolicy.references.length, 0, `${shotId}: precondition — references must be empty`);
+    let caught = null;
+    try {
+      prepareOnce(input);
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught, `${shotId}: prepare must throw when reference_first has empty references array`);
+    assert.equal(caught.code, 'REFERENCE_REQUIRED', `${shotId}: must throw REFERENCE_REQUIRED; got ${caught.code}`);
     assert.match(caught.message, /REFERENCE_REQUIRED/u);
     // The compiled / payload / metadata surface was never built.
     assert.ok(!('translation' in (caught || {})), `${shotId}: translation must not be exposed on the error`);
@@ -524,6 +592,15 @@ test('P2-H Provider Adapter Payload — 6/6 routes pass Adapter integrity', () =
       const includeReference = mode === 'reference_first';
       const prepared = prepareOnce(makeRouteInput({ mode, shotId, includeReference }));
       const p = prepared.payload;
+      // P2-H Finalization Delta item 5: payload.target is
+      // 'packaging' for every canonical route. The Adapter
+      // Payload is the Provider-side surface; surfacing the
+      // target here means a downstream Provider that reads
+      // `payload.target` (rather than re-deriving it from the
+      // compiled / metadata surfaces) gets the same canonical
+      // identity the rest of the matrix already exposes on
+      // compiled.target / metadata.target.
+      assert.equal(p.target, 'packaging', `${mode} × ${shotId}: payload.target must be 'packaging'`);
       // payload.modelId / provider / protocol mirror the capability
       // (P2-F consistency gate).
       assert.equal(p.modelId, prepared.capability.modelId, `${mode} × ${shotId}: payload.modelId must mirror capability.modelId`);
@@ -611,12 +688,31 @@ test('P2-H Metadata integrity — 6/6 routes expose canonical fields and no secr
       // Secret-safety scan: no apiKey / Authorization / Bearer /
       // absolute local path / temporary path. JSON.stringify must
       // not surface any of these.
+      //
+      // Per P2-H Finalization Delta item 4, the path-shape
+      // checks must be whole-string (anywhere), not just at the
+      // start, so that an absolute path embedded in a longer
+      // string (e.g. as a sub-component of a larger value) is
+      // still caught.
       const serialized = JSON.stringify(m);
       assert.doesNotMatch(serialized, /api[-_]?key/iu, `${mode} × ${shotId}: serialized metadata must not contain apiKey`);
       assert.doesNotMatch(serialized, /Authorization/iu, `${mode} × ${shotId}: serialized metadata must not contain Authorization`);
       assert.doesNotMatch(serialized, /Bearer\s/iu, `${mode} × ${shotId}: serialized metadata must not contain Bearer`);
-      assert.doesNotMatch(serialized, /C:\\/u, `${mode} × ${shotId}: serialized metadata must not contain absolute Windows path`);
-      assert.doesNotMatch(serialized, /^\/tmp\//u, `${mode} × ${shotId}: serialized metadata must not contain /tmp/ prefix`);
+      // Windows drive-letter absolute path: e.g. `C:\Users\...`,
+      // `D:\foo\bar`, `E:/Users/...` (mixed slashes tolerated).
+      // The check is whole-string so an absolute path embedded
+      // mid-value is still caught.
+      assert.doesNotMatch(serialized, /[A-Za-z]:[\\/]/u, `${mode} × ${shotId}: serialized metadata must not contain absolute Windows path (drive letter)`);
+      // POSIX /tmp path: anywhere in the serialized form, not
+      // only at the beginning. P2-H Finalization Delta item 4
+      // replaced the leading-anchor `^/tmp/` with a whole-string
+      // check.
+      assert.doesNotMatch(serialized, /\/tmp\//u, `${mode} × ${shotId}: serialized metadata must not contain /tmp/ path`);
+      // POSIX root-anchored absolute path: a leading `/` followed
+      // by a non-slash character (so the literal `/tmp` is
+      // covered by the previous check; this catches `/var/...`,
+      // `/home/...`, `/etc/...`, etc.).
+      assert.doesNotMatch(serialized, /\/(?:var|home|etc|opt|usr)\//u, `${mode} × ${shotId}: serialized metadata must not contain absolute POSIX system path`);
     }
   }
 });
@@ -741,20 +837,43 @@ test('P2-H Route distinctness matrix — 6 unique route keys, 3 shot IDs, 2 mode
 // -----------------------------------------------------------------------
 
 test('P2-H Cross-target / Golden boundary — no Space / Golden runtime import', () => {
-  // We assert via static observation: the test file's import
-  // surface, scanned for forbidden substrings, must be clean. We
-  // deliberately narrow the scan to the first 60 lines of the
-  // file (where imports / requires live) so doc-comment prose
-  // later in the file that mentions a forbidden module name (e.g.
-  // a "do not import" warning) does not produce a false positive.
+  // Per P2-H Finalization Delta item 3: scan the ENTIRE test
+  // file, but extract only the string-literal module specifiers
+  // from:
+  //   - static `import` statements
+  //   - dynamic `import(...)` expressions
+  //   - CommonJS `require(...)` calls
+  // Comments and prose are intentionally not part of the scan
+  // surface — a doc-comment that mentions a forbidden module name
+  // (e.g. a "do not import" warning) is exactly the kind of
+  // false-positive this hardening prevents.
   const fs = require('node:fs');
   const testSource = fs.readFileSync(fileURLToPath(import.meta.url), 'utf8');
-  const importRegion = testSource.split(/\r?\n/u).slice(0, 60).join('\n');
-  assert.ok(importRegion.length > 0, 'expected to read the import region of the test file');
-  assert.doesNotMatch(importRegion, /space[\\/]+compiler/u, 'P2-H imports must not pull in Space compiler');
-  assert.doesNotMatch(importRegion, /evaluation[\\/]+/u, 'P2-H imports must not pull in evaluation assets');
-  assert.doesNotMatch(importRegion, /golden[-_]?(?:cases|fixtures|project|anchors?|evaluation)/iu, 'P2-H imports must not pull in Golden fixtures');
-  assert.doesNotMatch(importRegion, /九[州]|jiuzhou/iu, 'P2-H imports must not pull in Jiuzhou / 九州 fixtures');
+  // Capture the literal that follows `from` (static import),
+  // `import(` (dynamic import), or `require(` (CJS). All three
+  // forms take a single string-literal specifier; we deliberately
+  // do NOT match the `assert { ... }` clause of import
+  // attributes (the attribute keys are not module specifiers).
+  const moduleSpecifierPattern = /(?:^|\n)\s*(?:import[^`"']*?from\s*|import\(\s*|require\(\s*)['"]([^'"]+)['"]/gu;
+  const specifiers = [];
+  for (const m of testSource.matchAll(moduleSpecifierPattern)) {
+    specifiers.push(m[1]);
+  }
+  assert.ok(specifiers.length > 0, 'expected the test file to declare at least one module specifier');
+  const specifierBlob = specifiers.join('\n');
+  // Forbidden module-specifier patterns. Each pattern is the
+  // substring that must NOT appear in any extracted module
+  // specifier. Case-insensitive; path separators are
+  // Windows- and POSIX-tolerant.
+  const forbiddenPatterns = [
+    { pattern: /space[\\/]+compiler/u, label: 'Space compiler' },
+    { pattern: /evaluation[\\/]+/u, label: 'evaluation assets' },
+    { pattern: /golden[-_]?(?:cases|fixtures|project|anchors?|evaluation)/iu, label: 'Golden fixtures' },
+    { pattern: /九[州]|jiuzhou/iu, label: 'Jiuzhou / 九州' },
+  ];
+  for (const { pattern, label } of forbiddenPatterns) {
+    assert.doesNotMatch(specifierBlob, pattern, `P2-H module specifiers must not pull in ${label}; offending specifiers: ${specifierBlob}`);
+  }
 });
 
 // -----------------------------------------------------------------------
