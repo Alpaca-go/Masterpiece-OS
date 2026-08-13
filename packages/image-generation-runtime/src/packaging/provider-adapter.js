@@ -57,7 +57,17 @@ import {
   REFERENCE_UNSUPPORTED,
 } from './provider-capability.js';
 
-export const PACKAGING_PROVIDER_ADAPTER_VERSION = '1.0.0';
+// P2-H Final Security Closure (provider-adapter.js):
+//   payload.target is 'packaging'. This module is the
+//   Packaging-specific provider serialization authority, so the
+//   target is a literal on the payload object (not derived from
+//   caller input, not generic). It is the Provider-side
+//   counterpart of compiled.target / metadata.target — same
+//   canonical identity, surfaced on the Adapter Payload so a
+//   downstream Provider that reads payload.target gets the same
+//   value without re-deriving it from other surfaces.
+
+export const PACKAGING_PROVIDER_ADAPTER_VERSION = '1.0.1';
 
 function isPlainObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
@@ -219,6 +229,16 @@ export function buildPackagingProviderPayload(input = {}) {
   const payload = {
     schemaVersion: '1.0',
     adapterVersion: PACKAGING_PROVIDER_ADAPTER_VERSION,
+    // P2-H Final Security Closure: this module is the
+    // Packaging-specific provider serialization authority, so
+    // the target is a literal on the payload. It is the
+    // Provider-side counterpart of compiled.target /
+    // metadata.target — same canonical identity, surfaced on
+    // the Adapter Payload so a downstream Provider that reads
+    // payload.target gets the same value without re-deriving
+    // it from other surfaces. NOT derived from caller input;
+    // NOT generic.
+    target: 'packaging',
     modelId: asString(capability.modelId),
     provider: asString(capability.provider),
     protocol: asString(capability.protocol),

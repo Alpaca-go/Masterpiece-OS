@@ -422,6 +422,105 @@ test('P2-E-Final-1c the adapter does not infer references from the compiled prom
 });
 
 // ---------------------------------------------------------------------------
+// P2-H Final Security Closure (P2-E side):
+//   payload.target is the literal 'packaging' on the Adapter
+//   surface. This module is the Packaging-specific provider
+//   serialization authority, so the target is a literal — NOT
+//   derived from caller input, NOT generic. The Adapter Payload
+//   surface now matches compiled.target / metadata.target
+//   ('packaging') so a downstream Provider that reads
+//   payload.target gets the same canonical identity without
+//   re-deriving it from other surfaces.
+//
+//   P2-H Final Security Closure also bumped
+//   PACKAGING_PROVIDER_ADAPTER_VERSION 1.0.0 -> 1.0.1; the
+//   payload.adapterVersion field reflects the new version on
+//   the same surface.
+// ---------------------------------------------------------------------------
+
+test('P2-H-FSC-E-1 payload.target is the literal "packaging" (Provider Payload target contract)', () => {
+  const translation = createPackagingTranslation(makeBaseInput());
+  const compiled = compilePackagingPrompt(translation);
+  const capability = resolvePackagingProviderCapability({
+    modelId: 'seedream-5.0-pro',
+    generationMode: translation.generationMode,
+    referencePolicy: translation.referencePolicy,
+  });
+  const payload = buildPackagingProviderPayload({ compiled, capability, translation });
+  // The Adapter Payload surface carries the canonical target as
+  // a literal. The shape change is what P2-H Final Security
+  // Closure exposes on top of P2-E.
+  assert.equal(payload.target, 'packaging', 'payload.target must be the literal "packaging"');
+  // The Adapter version is now 1.0.1 (P2-H Final Security
+  // Closure bump — the Adapter payload public shape changed by
+  // adding the `target` field).
+  assert.equal(payload.adapterVersion, '1.0.1', 'payload.adapterVersion must reflect the bumped Adapter version');
+  // Cross-surface consistency: payload.target agrees with
+  // compiled.target and translation.target. The Adapter
+  // Authority is the canonical surface for Provider-side
+  // target identity; compiled / translation carry the same
+  // value for non-Provider consumers.
+  assert.equal(payload.target, compiled.target, 'payload.target must agree with compiled.target');
+  assert.equal(payload.target, translation.target, 'payload.target must agree with translation.target');
+});
+
+test('P2-H-FSC-E-2 payload.target is "packaging" for both analysis_led and reference_first', () => {
+  // The target is a literal on the Adapter surface; it does
+  // not change with generationMode. The target is a property
+  // of the Provider Adapter module, not a property of the
+  // mode.
+  for (const generationMode of ['analysis_led', 'reference_first']) {
+    const overrides = { generationMode };
+    if (generationMode === 'reference_first') {
+      overrides.referencePolicy = {
+        enabled: true,
+        required: true,
+        references: [
+          { assetId: 'asset-style-1', role: 'style_reference', source: 'user' },
+        ],
+      };
+    }
+    const translation = createPackagingTranslation(makeBaseInput(overrides));
+    const compiled = compilePackagingPrompt(translation);
+    const capability = resolvePackagingProviderCapability({
+      modelId: 'seedream-5.0-pro',
+      generationMode: translation.generationMode,
+      referencePolicy: translation.referencePolicy,
+    });
+    const payload = buildPackagingProviderPayload({ compiled, capability, translation });
+    assert.equal(payload.target, 'packaging', `${generationMode}: payload.target must be "packaging"`);
+  }
+});
+
+test('P2-H-FSC-E-3 payload remains deterministic, frozen, and contracts preserved after target addition', () => {
+  // The new `target` field is a literal on the Adapter
+  // surface. The existing contracts must remain unchanged:
+  //   - payload remains Object.freeze'd
+  //   - payload remains deterministic for the same input
+  //   - reference / hints / prompt contracts unchanged
+  //   - schemaVersion / adapterVersion surface preserved
+  const translation = createPackagingTranslation(makeBaseInput());
+  const compiled = compilePackagingPrompt(translation);
+  const capability = resolvePackagingProviderCapability({
+    modelId: 'seedream-5.0-pro',
+    generationMode: translation.generationMode,
+    referencePolicy: translation.referencePolicy,
+  });
+  const a = buildPackagingProviderPayload({ compiled, capability, translation });
+  const b = buildPackagingProviderPayload({ compiled, capability, translation });
+  assert.equal(Object.isFrozen(a), true, 'payload must remain frozen');
+  assert.equal(a.prompt, b.prompt, 'payload.prompt must remain byte-identical');
+  assert.deepEqual(a.hints, b.hints, 'payload.hints must deepEqual across two calls');
+  assert.deepEqual(a.references, b.references, 'payload.references must deepEqual across two calls');
+  assert.deepEqual(a.promptBlockOrder, b.promptBlockOrder, 'payload.promptBlockOrder must deepEqual across two calls');
+  assert.equal(a.schemaVersion, '1.0', 'payload.schemaVersion unchanged');
+  assert.equal(a.adapterVersion, '1.0.1', 'payload.adapterVersion reflects the bump');
+  // Sanity: target is the new field; it is identical across
+  // two calls (deterministic).
+  assert.equal(a.target, b.target, 'payload.target must be deterministic across two calls');
+});
+
+// ---------------------------------------------------------------------------
 // P2-E Finalization Delta item 2: payload.promptSourceMap is the
 // compiled.sourceMap object preserved verbatim.
 // ---------------------------------------------------------------------------
@@ -771,7 +870,13 @@ test('P2-E Compiler remains provider-agnostic (smoke)', () => {
 
 test('P2-E version constants are exposed', () => {
   assert.equal(PACKAGING_PROVIDER_CAPABILITY_VERSION, '1.0.0');
-  assert.equal(PACKAGING_PROVIDER_ADAPTER_VERSION, '1.0.0');
+  // P2-H Final Security Closure bumped the Adapter version
+  // 1.0.0 -> 1.0.1 (Provider Payload public shape change:
+  // added `target` field). The Adapter fingerprint exposes
+  // the same version on its `schemaVersion` field, so a
+  // downstream consumer reading `fingerprint.schemaVersion`
+  // gets the current Adapter version directly.
+  assert.equal(PACKAGING_PROVIDER_ADAPTER_VERSION, '1.0.1');
   const fp = getPackagingProviderAdapterFingerprint();
-  assert.equal(fp.schemaVersion, '1.0.0');
+  assert.equal(fp.schemaVersion, '1.0.1');
 });
