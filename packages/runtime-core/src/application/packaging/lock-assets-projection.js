@@ -157,3 +157,29 @@ export function getPackagingWorkspaceLockedAssetsProjectionFingerprint() {
     strippedKeys: STRIPPED_KEYS.slice(),
   });
 }
+
+/**
+ * Public surface accessor (P3-A6 hardening of the
+ * canonical-keys allowlist pattern, mirroring P3-A4's
+ * view-model keys accessors).
+ *
+ * Returns the top-level keys of the locked-assets
+ * projection that the future P3-B UI may consume.
+ * Future fields cannot accidentally leak into the UI
+ * surface unless they are added to this allowlist.
+ */
+export function getPackagingLockedAssetsProjectionKeys() {
+  return Object.freeze(['schemaVersion', 'fields', 'allLocked']);
+}
+
+/**
+ * Public surface accessor: the redaction key list
+ * (absolute paths, credentials, raw locator keys) that
+ * `projectLockedAssetsForView` defensively strips from
+ * non-canonical fields. The 7 canonical fields are
+ * always projected under explicit shape rules; this
+ * list is the *defense in depth* strip list.
+ */
+export function getPackagingLockedAssetsRedactedKeys() {
+  return STRIPPED_KEYS.slice();
+}

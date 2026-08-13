@@ -107,9 +107,29 @@ export function projectReferenceAssignmentsToPolicy({ generationMode, assignment
  *
  * P3-A spec §14 / §15: the UI shows the assignment as
  * `{ assetId, role, source, displayName?, previewUri? }`.
- * Display fields are preserved; the fingerprint authority
- * is the (assetId, role, source) triple.
+ *
+ * Semantic vs UI-only matrix (P3-A6):
+ *   - assetId, role, source: SEMANTIC (participate in
+ *     generation fingerprint; trigger STALE on change).
+ *   - displayName, previewUri: UI-ONLY (preserved for
+ *     display; never participate in fingerprint; never
+ *     trigger STALE).
+ *   - selectionOrderUI, thumbnail: UI-ONLY (dropped; the
+ *     UI reorders / sources thumbnails from the upstream
+ *     project assets surface, not the Workspace).
+ *
+ * The function returns only the 5 canonical view keys
+ * (REFERENCE_VIEW_KEYS); the workspace view-model allows
+ * future keys to leak in by accident.
  */
+export const REFERENCE_VIEW_KEYS = Object.freeze([
+  'assetId',
+  'role',
+  'source',
+  'displayName',
+  'previewUri',
+]);
+
 export function projectReferenceAssignmentForView(assignment) {
   const raw = asObject(assignment);
   return Object.freeze({
@@ -119,6 +139,16 @@ export function projectReferenceAssignmentForView(assignment) {
     displayName: asString(raw.displayName) || undefined,
     previewUri: asString(raw.previewUri) || undefined,
   });
+}
+
+/**
+ * Snapshot helper for tests: returns the structural
+ * keys of the reference-assignment view projection so a
+ * test can pin the canonical surface. (P3-A6 hardening
+ * of P3-A4's canonical-keys allowlist pattern.)
+ */
+export function getPackagingReferenceAssignmentsViewKeys() {
+  return REFERENCE_VIEW_KEYS.slice();
 }
 
 /**

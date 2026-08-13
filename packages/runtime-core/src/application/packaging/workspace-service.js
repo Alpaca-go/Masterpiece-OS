@@ -93,6 +93,8 @@ import {
 import {
   projectReferenceAssignmentsToPolicy,
   PACKAGING_WORKSPACE_REFERENCE_ASSIGNMENTS_VERSION,
+  REFERENCE_VIEW_KEYS,
+  getPackagingReferenceAssignmentsViewKeys,
 } from './reference-assignments.js';
 import {
   projectPackagingWorkspaceView,
@@ -102,6 +104,8 @@ import {
   projectLockedAssetsForView,
   computeLockedAssetsFingerprint,
   PACKAGING_WORKSPACE_LOCK_ASSETS_PROJECTION_VERSION,
+  getPackagingLockedAssetsProjectionKeys,
+  getPackagingLockedAssetsRedactedKeys,
 } from './lock-assets-projection.js';
 
 export {
@@ -115,9 +119,13 @@ export {
   PACKAGING_SHOT_CONTRACT_IDS,
   PACKAGING_REFERENCE_ROLES,
   STALE_REASON,
+  REFERENCE_VIEW_KEYS,
   validateReferenceAssignment,
   projectReferenceAssignmentsToPolicy,
+  getPackagingReferenceAssignmentsViewKeys,
   projectLockedAssetsForView,
+  getPackagingLockedAssetsProjectionKeys,
+  getPackagingLockedAssetsRedactedKeys,
   computeLockedAssetsFingerprint,
   projectPackagingWorkspaceView,
   getPackagingGenerationServiceFingerprint,
