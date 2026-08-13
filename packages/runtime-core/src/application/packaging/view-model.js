@@ -31,6 +31,10 @@
 import {
   PACKAGING_WORKSPACE_STATUS,
   PACKAGING_WORKSPACE_STATUS_LABELS,
+  isExecuteAllowed,
+  isIntentEditAllowed,
+  isPrepareAllowed,
+  isResetAllowed,
 } from './workspace-state.js';
 import { projectLockedAssetsForView } from './lock-assets-projection.js';
 import { projectReferenceAssignmentForView } from './reference-assignments.js';
@@ -258,28 +262,78 @@ function projectErrorView(lastError) {
   if (!isPlainObject(lastError)) return null;
   const code = asString(lastError.code);
   const userMessage = CANONICAL_ERROR_USER_MESSAGES[code] || DEFAULT_USER_MESSAGE;
+  // P3-A4 hostile-input redaction. The error surface accepts
+  // arbitrary strings from upstream errors (provider
+  // exceptions, filesystem errors, etc.). We sanitize the
+  // `title` and `suggestedAction` fields against:
+  //   - absolute paths (Windows / Unix / file:// / UNC)
+  //   - credential substrings (apiKey / Authorization / Bearer)
+  //   - oversized strings (> 200 chars, treat as hostile)
+  // If the upstream value is hostile, fall back to a safe
+  // default. The canonical `code` is preserved verbatim
+  // (P3-A spec §35 forbids rewriting the canonical source
+  // code).
   return Object.freeze({
     code,
     severity: asString(lastError.severity, 'blocking'),
-    title: asString(lastError.title) || code,
+    title: sanitizeShortText(asString(lastError.title)) || code,
     userMessage,
     recoverable: Boolean(lastError.recoverable),
-    suggestedAction: asString(lastError.suggestedAction) || null,
+    suggestedAction: sanitizeShortText(asString(lastError.suggestedAction)) || null,
   });
 }
 
+// Strings matching any of these patterns are treated as
+// hostile and replaced with the safe default. The patterns
+// are conservative: any path-looking or credential-looking
+// substring triggers redaction. This is defense-in-depth on
+// top of the canonical-code userMessage lookup.
+const HOSTILE_PATTERNS = [
+  // Windows drive absolute
+  /[A-Za-z]:[\\/]/,
+  // Unix absolute
+  /(^|[^A-Za-z0-9])\/(?:home|tmp|etc|var|usr|opt|Users|root)\//,
+  // file:// scheme
+  /file:\/\//i,
+  // UNC path
+  /\\\\[A-Za-z0-9_.$-]+\\[A-Za-z0-9_.$-]+/,
+  // Credential substrings
+  /api[_-]?key/i,
+  /authorization/i,
+  /bearer\s+[A-Za-z0-9._~+/=-]+/i,
+  /access[_-]?token/i,
+  /\bsecret\b/i,
+  /\bpassword\b/i,
+  /\bcredential\b/i,
+  // Long base64 (>= 80 chars) is suspicious; data URIs
+  /data:[^;,]+;base64,/i,
+];
+
+const MAX_SAFE_TEXT_LENGTH = 200;
+
+function sanitizeShortText(value) {
+  if (typeof value !== 'string' || !value) return value;
+  if (value.length > MAX_SAFE_TEXT_LENGTH) return '';
+  for (const pattern of HOSTILE_PATTERNS) {
+    if (pattern.test(value)) return '';
+  }
+  return value;
+}
+
 // ---------------------------------------------------------------------------
-// Read-only readiness (P3-A3 spec §13)
+// Read-only readiness (P3-A3 spec §13 / P3-A4 spec §11)
 //
 // The future P3-B UI reads status / canPrepare / canExecute /
 // canReset / canEditIntent / isBusy / isStale / staleReasons /
 // lastError from the view model without re-deriving the state
 // machine. This is the SOLE projection authority the UI has.
 //
-// The capability projection is the canonical source; per-state
-// invariants live in workspace-state.js STATE_INVARIANTS and
-// are kept in sync with this function (asserted by
-// tests/runtime-application/packaging-workspace-state-machine.test.ts).
+// P3-A4 invariant (spec §5): the capability projection MUST
+// delegate to workspace-state helpers so that changing the
+// state machine semantics requires only one source of truth.
+// We import `isExecuteAllowed` / `isIntentEditAllowed` /
+// `isPrepareAllowed` / `isResetAllowed` rather than re-hardcoding
+// the rules inline.
 // ---------------------------------------------------------------------------
 
 function isBusyStatus(status) {
@@ -295,74 +349,43 @@ function projectReadiness(session, preparedView) {
   // workspace-state.js (`isIntentEditAllowed`); the UI must
   // NOT re-derive this. Per P3-A spec §11, no silent recompile:
   // during PREPARING / EXECUTING, intent edits are rejected.
-  const canEditIntent = !isBusy;
-  if (status === PACKAGING_WORKSPACE_STATUS.READY) {
-    return Object.freeze({
-      canPrepare: false,
-      canExecute: true,
-      canRetry: true,
-      canReset: true,
-      canEditIntent,
-      isBusy,
-      isStale: false,
-      stale: false,
-      blockers: Object.freeze([]),
-      warnings: Object.freeze([]),
-    });
-  }
-  if (status === PACKAGING_WORKSPACE_STATUS.EXECUTED) {
-    return Object.freeze({
-      canPrepare: true,
-      canExecute: true,
-      canRetry: true,
-      canReset: true,
-      canEditIntent,
-      isBusy,
-      isStale: false,
-      stale: false,
-      blockers: Object.freeze([]),
-      warnings: Object.freeze([]),
-    });
-  }
+  const canEditIntent = isIntentEditAllowed(status);
+  // The capability helpers are the SOLE authority. The view
+  // model MUST NOT maintain a parallel rule table. Any change
+  // to workspace-state semantics automatically flows through.
+  const canExecute = isExecuteAllowed(status);
+  const canPrepare = isPrepareAllowed(status);
+  const canReset = isResetAllowed(status);
+  const isStale = status === PACKAGING_WORKSPACE_STATUS.STALE;
+  // canRetry is a derived capability: re-execute is allowed
+  // from READY (after a previous failure with the same
+  // prepared snapshot) and from EXECUTED (P3-A spec §28.1).
+  // All other statuses reject canRetry.
+  const canRetry = status === PACKAGING_WORKSPACE_STATUS.READY
+                || status === PACKAGING_WORKSPACE_STATUS.EXECUTED;
+  // `stale` is the legacy alias for `isStale` (kept for
+  // backward compatibility with the A2 view-model shape).
+  const stale = isStale;
+  // Blockers (UI-displayable): the canonical code that
+  // currently blocks the action. The UI is allowed to render
+  // these as a single-line list; the codes are the source of
+  // truth (P3-A spec §35).
+  let blockers = Object.freeze([]);
   if (status === PACKAGING_WORKSPACE_STATUS.STALE) {
-    return Object.freeze({
-      canPrepare: true,
-      canExecute: false,
-      canRetry: false,
-      canReset: true,
-      canEditIntent,
-      isBusy,
-      isStale: true,
-      stale: true,
-      blockers: Object.freeze([asString(session.lastStaleReason) || 'intent_changed']),
-      warnings: Object.freeze([]),
-    });
-  }
-  if (status === PACKAGING_WORKSPACE_STATUS.FAILED) {
-    return Object.freeze({
-      canPrepare: true,
-      canExecute: false,
-      canRetry: false,
-      canReset: true,
-      canEditIntent,
-      isBusy,
-      isStale: false,
-      stale: false,
-      blockers: Object.freeze([asString(session.lastError?.code) || 'unknown_failure']),
-      warnings: Object.freeze([]),
-    });
+    blockers = Object.freeze([asString(session.lastStaleReason) || 'intent_changed']);
+  } else if (status === PACKAGING_WORKSPACE_STATUS.FAILED) {
+    blockers = Object.freeze([asString(session.lastError?.code) || 'unknown_failure']);
   }
   return Object.freeze({
-    canPrepare: true,
-    canExecute: false,
-    canRetry: false,
-    canReset: status !== PACKAGING_WORKSPACE_STATUS.PREPARING
-      && status !== PACKAGING_WORKSPACE_STATUS.EXECUTING,
+    canPrepare,
+    canExecute,
+    canRetry,
+    canReset,
     canEditIntent,
     isBusy,
-    isStale: false,
-    stale: false,
-    blockers: Object.freeze([]),
+    isStale,
+    stale,
+    blockers,
     warnings: Object.freeze([]),
   });
 }
@@ -433,33 +456,220 @@ export function projectPackagingWorkspaceView(session) {
   });
 }
 
+// ---------------------------------------------------------------------------
+// Deterministic serialization
+// ---------------------------------------------------------------------------
+
 /**
- * Snapshot helper for tests.
+ * Project a session state into a JSON string with a
+ * deterministic key order. The output is byte-stable for the
+ * same input (P3-A4 spec §19).
+ *
+ * The future P3-B UI may use this for cache keys, log
+ * deduplication, or test snapshots. The view-model object
+ * itself is already frozen (immutable), but `JSON.stringify`
+ * has implementation-defined property iteration order;
+ * `serializeWorkspaceView` enforces a stable order by
+ * walking the canonical schema key list and emitting one
+ * field at a time.
+ */
+function stableJsonStringify(value, indent = 2) {
+  const seen = new WeakSet();
+  const walk = (v) => {
+    if (v === null) return 'null';
+    if (typeof v === 'string') return JSON.stringify(v);
+    if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+    if (Array.isArray(v)) {
+      if (seen.has(v)) return '"[Circular]"';
+      seen.add(v);
+      const items = v.map(walk).join(',');
+      seen.delete(v);
+      return `[${items}]`;
+    }
+    if (typeof v === 'object') {
+      if (seen.has(v)) return '"[Circular]"';
+      seen.add(v);
+      const keys = Object.keys(v).sort();
+      const members = keys
+        .filter((k) => v[k] !== undefined)
+        .map((k) => `${JSON.stringify(k)}:${walk(v[k])}`)
+        .join(',');
+      seen.delete(v);
+      return `{${members}}`;
+    }
+    return JSON.stringify(String(v));
+  };
+  return walk(value);
+}
+
+/**
+ * Serialize a view model with deterministic key order.
+ * Useful for test snapshots, cache keys, and
+ * deterministic logging.
+ */
+export function serializeWorkspaceView(view) {
+  if (!isPlainObject(view)) {
+    throw new TypeError('view must be an object');
+  }
+  return stableJsonStringify(view, 0);
+}
+
+// ---------------------------------------------------------------------------
+// Schema / shape documentation
+// ---------------------------------------------------------------------------
+
+/**
+ * Canonical allowlist of top-level view-model keys.
+ * P3-A4 spec §16: prefer an allowlist over a copy-then-delete
+ * approach so future fields cannot accidentally leak.
+ */
+const CANONICAL_VIEW_MODEL_KEYS = Object.freeze([
+  'schemaVersion',
+  'sessionId',
+  'projectId',
+  'target',
+  'status',
+  'statusLabel',
+  'isBusy',
+  'canEditIntent',
+  'mode',
+  'shot',
+  'references',
+  'lockedAssets',
+  'intent',
+  'readiness',
+  'prepared',
+  'execution',
+  'error',
+  'staleReasons',
+]);
+
+/**
+ * Canonical allowlist of intent projection keys.
+ * Each key is UI-safe; no credential, no absolute path,
+ * no raw provider payload.
+ */
+const CANONICAL_INTENT_KEYS = Object.freeze([
+  'generationMode',
+  'shotContractId',
+  'explicitUserConstraintsText',
+  'referenceCount',
+  'providerModelId',
+  'apiProfileId',
+]);
+
+/**
+ * Canonical allowlist of execution projection keys.
+ */
+const CANONICAL_EXECUTION_KEYS = Object.freeze([
+  'runId',
+  'status',
+  'generationMode',
+  'shotContractId',
+  'provider',
+  'model',
+  'apiProfileId',
+  'artifacts',
+  'diagnostics',
+]);
+
+/**
+ * Canonical allowlist of prepared projection keys.
+ */
+const CANONICAL_PREPARED_KEYS = Object.freeze([
+  'target',
+  'generationMode',
+  'shotContractId',
+  'readiness',
+  'referenceSummary',
+  'lockedAssetSummary',
+  'providerSummary',
+  'compiledPromptPreview',
+  'metadataSummary',
+  'fingerprintSummary',
+  'warnings',
+  'blockers',
+]);
+
+/**
+ * Canonical allowlist of error projection keys.
+ */
+const CANONICAL_ERROR_KEYS = Object.freeze([
+  'code',
+  'severity',
+  'title',
+  'userMessage',
+  'recoverable',
+  'suggestedAction',
+]);
+
+/**
+ * Return the canonical allowlist of top-level view-model
+ * keys. The future P3-B UI may rely on this set to detect
+ * schema additions.
+ */
+export function getPackagingWorkspaceViewModelKeys() {
+  return CANONICAL_VIEW_MODEL_KEYS.slice();
+}
+
+export function getPackagingWorkspaceIntentKeys() {
+  return CANONICAL_INTENT_KEYS.slice();
+}
+
+export function getPackagingWorkspaceExecutionKeys() {
+  return CANONICAL_EXECUTION_KEYS.slice();
+}
+
+export function getPackagingWorkspacePreparedKeys() {
+  return CANONICAL_PREPARED_KEYS.slice();
+}
+
+export function getPackagingWorkspaceErrorKeys() {
+  return CANONICAL_ERROR_KEYS.slice();
+}
+
+/**
+ * Snapshot helper for tests. Documents the canonical
+ * view-model surface and the explicit safe-side / unsafe-side
+ * allowlist.
  */
 export function getPackagingWorkspaceViewModelFingerprint() {
   return Object.freeze({
     schemaVersion: PACKAGING_WORKSPACE_VIEW_MODEL_VERSION,
     includes: Object.freeze([
-      'identity',
-      'status',
-      'target',
-      'mode',
-      'shot',
-      'references',
-      'lockedAssets',
-      'readiness',
-      'prepared',
-      'execution',
-      'error',
+      'identity (sessionId, projectId)',
+      'state (status, statusLabel, isBusy, canEditIntent)',
+      'capabilities (readiness.{canPrepare, canExecute, canRetry, canReset, canEditIntent, isBusy, isStale, stale, blockers, warnings})',
+      'intent (projection of 6 user-editable semantic fields; apiProfileId is an identifier, not a secret)',
+      'references (UI-safe projection: assetId, role, source, displayName, previewUri; UI-only fields preserved)',
+      'lockedAssets (projection: brand, logo, productIdentity, category, structure, mandatoryCopy, confirmedComponents; path / credential keys stripped)',
+      'prepared (UI-safe Prepared View: target, generationMode, shotContractId, referenceSummary, lockedAssetSummary, providerSummary, compiledPromptPreview, metadataSummary, fingerprintSummary, warnings, blockers)',
+      'execution (runId, status, provider, model, apiProfileId, artifacts, diagnostics; relativePath only)',
+      'error (code, severity, title, userMessage keyed off canonical code, recoverable, suggestedAction)',
+      'staleReasons (string list)',
     ]),
     excludes: Object.freeze([
       'apiKey',
       'Authorization',
-      'Bearer',
-      'raw signed URL',
-      'absolute path',
+      'Bearer <token>',
+      'raw signed URL credentials',
+      'absolute local path (Windows drive / Unix / file:// / UNC)',
       'raw provider request body',
       'raw provider response body',
+      'raw error.message (view model uses canonical userMessage lookup)',
+      'raw stack trace',
+      'raw execution config',
+      'raw payload object',
+      'raw 14-block topology',
+      'intentAtPrepare / truthFingerprintAtPrepare (internal application state, not UI surface)',
+      'second generation fingerprint (any parallel fingerprint authority is forbidden)',
     ]),
+    canonicalKeys: Object.freeze({
+      topLevel: CANONICAL_VIEW_MODEL_KEYS.slice(),
+      intent: CANONICAL_INTENT_KEYS.slice(),
+      execution: CANONICAL_EXECUTION_KEYS.slice(),
+      prepared: CANONICAL_PREPARED_KEYS.slice(),
+      error: CANONICAL_ERROR_KEYS.slice(),
+    }),
   });
 }

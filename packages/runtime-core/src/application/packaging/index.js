@@ -79,4 +79,10 @@ export {
 export {
   PACKAGING_WORKSPACE_VIEW_MODEL_VERSION as _VIEW_VERSION_DUP,
   getPackagingWorkspaceViewModelFingerprint,
+  serializeWorkspaceView,
+  getPackagingWorkspaceViewModelKeys,
+  getPackagingWorkspaceIntentKeys,
+  getPackagingWorkspaceExecutionKeys,
+  getPackagingWorkspacePreparedKeys,
+  getPackagingWorkspaceErrorKeys,
 } from './view-model.js';
