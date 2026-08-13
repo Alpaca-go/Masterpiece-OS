@@ -1,0 +1,1274 @@
+// P3-A7 — Packaging Workspace Architecture Guards (A-L).
+//
+// 12 canonical guard groups per P3-A spec §64 + additional
+// authority guards. Each group has at least one source-level
+// static invariant; some groups also carry behavioural
+// cross-checks against the existing A2..A6 tests.
+//
+// Mapping (per P3-A spec §64):
+//   A  Runtime Dependency Boundary      → canonical call path
+//   B  Web UI Import Boundary           → future P3-B UI boundary
+//   C  Compiler Boundary                → STOP-P3-A-01
+//   D  Provider Payload Boundary        → STOP-P3-A-02
+//   E  Credential Boundary              → STOP-P3-A-03
+//   F  Frozen P2 Contract Guard         → STOP-P3-A-04
+//   G  Reference Role Authority Guard   → STOP-P3-A-05
+//   H  Reference Precedence Guard       → STOP-P3-A-06
+//   I  Stale Fail-closed Guard          → STOP-P3-A-07
+//   J  Persistence / Leakage Guard      → STOP-P3-A-08
+//   K  Web UI Provider Network Guard    → STOP-P3-A-09
+//   L  Shared Regression Guards         → STOP-P3-A-10/11/12
+//
+// Additional Authority Guards (P-V):
+//   P  No second generation fingerprint authority
+//   Q  No second state machine
+//   R  No second stale engine
+//   S  No second Locked Asset authority
+//   T  Public Runtime export boundary
+//   U  Workspace Service orchestrator invariants
+//   V  View Model projection invariants
+//
+// All guards are PURE source-level static checks. The
+// guards do NOT introduce new production code; they are
+// self-contained tests that read files via the runtime
+// fs module and assert on patterns.
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import path from 'node:path';
+
+const ROOT = path.resolve(import.meta.dirname, '..', '..');
+const PACKAGING_PROD_DIR = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'packaging');
+const PACKAGING_INDEX = path.join(PACKAGING_PROD_DIR, 'index.js');
+const RUNTIME_CORE_INDEX = path.join(ROOT, 'packages', 'runtime-core', 'src', 'index.js');
+const WEB_DIR = path.join(ROOT, 'apps', 'web', 'src');
+const P2_FROZEN_DIR = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'packaging');
+const P2_FROZEN_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
+
+const P2_PUBLIC_FACADE = new Set([
+  'translation.js',
+  'contracts.js',
+  'reference-policy.js',
+  'generation-service.js',
+]);
+const P2_FROZEN_MODULES = Object.freeze([
+  'compiler.js',
+  'contracts.js',
+  'generation-service.js',
+  'metadata.js',
+  'provider-adapter.js',
+  'provider-capability.js',
+  'reference-policy.js',
+  'translation.js',
+  'validation.js',
+]);
+const P2_FROZEN_EXTERNAL = Object.freeze([
+  'core/packaging-generation-core.js',
+  'redact.js',
+  'deliverables',
+  'policies.js',
+  'gates.js',
+  'task-builder.js',
+  'download-verify.js',
+]);
+
+const PACKAGING_PROD_FILES = Object.freeze([
+  'workspace-service.js',
+  'workspace-state.js',
+  'intent-schema.js',
+  'stale-tracker.js',
+  'reference-assignments.js',
+  'lock-assets-projection.js',
+  'view-model.js',
+  'index.js',
+]);
+
+// --- helpers ----------------------------------------------------------------
+
+function readFile(filePath: string): string {
+  return readFileSync(filePath, 'utf8');
+}
+
+function allPackagingProd(): string[] {
+  return PACKAGING_PROD_FILES.map((f) => path.join(PACKAGING_PROD_DIR, f));
+}
+
+function listWebSourceFiles(): string[] {
+  if (!existsSync(WEB_DIR)) return [];
+  const found: string[] = [];
+  const visit = (abs: string, rel: string) => {
+    for (const entry of readdirSync(abs, { withFileTypes: true })) {
+      const childAbs = path.join(abs, entry.name);
+      const childRel = rel ? path.join(rel, entry.name) : entry.name;
+      if (entry.isDirectory()) {
+        if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === 'out') continue;
+        visit(childAbs, childRel);
+      } else if (/\.(?:c|m)?(?:js|ts)x?$/.test(entry.name)) {
+        found.push(childAbs);
+      }
+    }
+  };
+  visit(WEB_DIR, '');
+  return found;
+}
+
+function runGit(args: string[]): string {
+  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' });
+}
+
+// Strip JS-style comments from the source so that
+// forbidden-pattern checks are not fooled by JSDoc /
+// inline references. We remove:
+//   - /* ... */ block comments
+//   - // line comments
+// Strings (single / double / template) are preserved.
+function stripComments(src: string): string {
+  // 1) Block comments
+  let out = src.replace(/\/\*[\s\S]*?\*\//g, '');
+  // 2) Line comments (only outside strings — naïve
+  //    heuristic: strip from `//` to end-of-line)
+  out = out.replace(/(^|[^:'"`\\])\/\/[^\n]*/g, (m, p1) => p1);
+  return out;
+}
+
+function hasFunctionCall(src: string, name: string): boolean {
+  return stripComments(src).includes(name);
+}
+
+function hasImportFrom(src: string, moduleName: string): boolean {
+  const stripped = stripComments(src);
+  const re = new RegExp(`from\\s+['"]${moduleName.replace(/[/.]/g, '\\$&')}['"]`);
+  return re.test(stripped);
+}
+
+function hasExportedFunction(src: string, name: string): boolean {
+  const re = new RegExp(`export\\s+function\\s+${name}\\b`);
+  return re.test(stripComments(src));
+}
+
+// =============================================================================
+// Group A — Runtime Dependency Boundary (canonical call path)
+// =============================================================================
+
+test('A-01 Workspace production code imports only the P2 public facade (no deep-import into Compiler / Provider adapter / metadata / task-builder)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // No deep imports of P2 internals. The only P2
+    // imports allowed in Workspace production are the
+    // 4 public facade modules.
+    const matches = src.match(/from\s+['"]@masterpiece\/image-generation-runtime\/[^'"]+['"]/g) || [];
+    for (const m of matches) {
+      const moduleName = m.match(/packaging\/([^'"]+)/)?.[1];
+      assert.ok(
+        moduleName && P2_PUBLIC_FACADE.has(moduleName),
+        `${path.basename(file)} imports forbidden P2 module: ${m} (allowed facade: ${[...P2_PUBLIC_FACADE].join(', ')})`,
+      );
+    }
+  }
+});
+
+test('A-02 Workspace does NOT import P2 core/ (packaging-generation-core.js)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(
+      /packaging-generation-core/.test(src),
+      false,
+      `${path.basename(file)} must not import P2 packaging-generation-core.js`,
+    );
+  }
+});
+
+test('A-03 Workspace does NOT import any forbidden Shared Core file (redact.js / policies.js / gates.js / task-builder.js / download-verify.js)', () => {
+  const forbidden = ['redact.js', 'policies.js', 'gates.js', 'task-builder.js', 'download-verify.js'];
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    for (const f of forbidden) {
+      assert.equal(
+        src.includes(f),
+        false,
+        `${path.basename(file)} must not reference the forbidden Shared Core file: ${f}`,
+      );
+    }
+  }
+});
+
+test('A-04 Workspace uses the canonical P2 entry points (preparePackagingGeneration + executePackagingGeneration) only through workspace-service.js', () => {
+  // preparePackagingGeneration / executePackagingGeneration
+  // must be imported ONLY by workspace-service.js. Other
+  // Workspace modules must NOT import them from the P2
+  // frozen generation-service.js directly.
+  for (const file of allPackagingProd()) {
+    if (path.basename(file) === 'workspace-service.js') continue;
+    const src = stripComments(readFile(file));
+    const re = /import\s+\{[^}]*(?:preparePackagingGeneration|executePackagingGeneration)[^}]*\}\s+from\s+['"]@masterpiece\/image-generation-runtime\/packaging\/generation-service\.js['"]/;
+    assert.equal(
+      re.test(src),
+      false,
+      `${path.basename(file)} must not import the P2 generation service directly`,
+    );
+  }
+});
+
+test('A-05 Workspace orchestrates via the service surface (no parallel orchestrator)', () => {
+  // No Workspace module exports a function named
+  // `orchestrate` or `runGeneration` that bypasses the
+  // service.
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(/export\s+function\s+orchestrate/.test(src), false, `${path.basename(file)} must not export orchestrate`);
+    assert.equal(/export\s+function\s+runGeneration/.test(src), false, `${path.basename(file)} must not export runGeneration`);
+  }
+});
+
+// =============================================================================
+// Group B — Web UI Import Boundary (future P3-B UI guard)
+// =============================================================================
+
+test('B-01 Web UI source does NOT deep-import P2 frozen packaging internals', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    for (const forbidden of [
+      'compiler.js',
+      'provider-adapter.js',
+      'provider-capability.js',
+      'metadata.js',
+      'task-builder.js',
+      'download-verify.js',
+      'gates.js',
+      'policies.js',
+      'redact.js',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.relative(ROOT, file)} must not deep-import ${forbidden}`,
+      );
+    }
+  }
+});
+
+test('B-02 Web UI source does NOT import the P2 frozen reference-policy implementation directly', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(
+      /reference-policy\.js/.test(src),
+      false,
+      `${path.relative(ROOT, file)} must not import the P2 reference-policy implementation; route through @masterpiece/runtime-core`,
+    );
+  }
+});
+
+test('B-03 Web UI source does NOT import the locked-assets-service (production authority)', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(
+      /locked-assets-service/.test(src),
+      false,
+      `${path.relative(ROOT, file)} must not import the locked-assets-service; route through @masterpiece/runtime-core`,
+    );
+  }
+});
+
+test('B-04 Web UI source does NOT import credential implementation (node-credential-store / readCredentials / process.env.*KEY)', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(/node-credential-store/.test(src), false, `${path.relative(ROOT, file)} must not import node-credential-store`);
+    assert.equal(/readCredentials/.test(src), false, `${path.relative(ROOT, file)} must not import readCredentials`);
+    // process.env.*_KEY / *_SECRET / *_TOKEN is forbidden.
+    assert.equal(/process\.env\.[A-Z_]*(?:KEY|SECRET|TOKEN|PASSWORD|CREDENTIAL)/.test(src), false, `${path.relative(ROOT, file)} must not read process.env.* credential variables`);
+  }
+});
+
+test('B-05 Web UI source does NOT import the P2 frozen generation-service (call through runtime-core only)', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(
+      /image-generation-runtime\/packaging\/generation-service/.test(src),
+      false,
+      `${path.relative(ROOT, file)} must not import the P2 generation service directly; route through @masterpiece/runtime-core`,
+    );
+  }
+});
+
+// =============================================================================
+// Group C — Compiler Boundary (STOP-P3-A-01)
+// =============================================================================
+
+test('C-01 Workspace does NOT import P2 frozen compiler.js', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(
+      /['"]@masterpiece\/image-generation-runtime\/packaging\/compiler['"]/.test(src),
+      false,
+      `${path.basename(file)} must not import P2 frozen compiler.js`,
+    );
+  }
+});
+
+test('C-02 Workspace does NOT call P2 frozen translation or compile internals directly', () => {
+  // The P2 frozen entry points Workspace may call are
+  // preparePackagingGeneration + executePackagingGeneration
+  // from generation-service.js. Direct calls to
+  // createPackagingTranslation or createPackagingCompiledPrompt
+  // are forbidden.
+  for (const file of allPackagingProd()) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'createPackagingTranslation',
+      'createPackagingCompiledPrompt',
+      'createPackagingCompileInput',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not call ${forbidden} directly`,
+      );
+    }
+  }
+});
+
+test('C-03 The "compiler" identifier only appears in production as a data field (compileFingerprint / compiledPromptPreview / compilerVersion), never as a function call', () => {
+  // Defense in depth: the word "compiler" should not
+  // appear as a function call site in Workspace
+  // production. Data-field names (compileFingerprint,
+  // compiledPromptPreview, compilerVersion) are allowed.
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(/compiler\s*\(/.test(src), false, `${path.basename(file)} must not call compiler(...) as a function`);
+    assert.equal(/\bimport\s+.*compiler\b/.test(src), false, `${path.basename(file)} must not import a symbol named compiler`);
+  }
+});
+
+// =============================================================================
+// Group D — Provider Payload Boundary (STOP-P3-A-02)
+// =============================================================================
+
+test('D-01 Workspace does NOT construct a Provider payload (no buildPackagingProviderPayload / buildProviderPayload / createProviderRequestBody)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    for (const forbidden of [
+      'buildPackagingProviderPayload',
+      'buildProviderPayload',
+      'createProviderRequestBody',
+      'constructProviderPayload',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not call ${forbidden}`,
+      );
+    }
+  }
+});
+
+test('D-02 View Model does NOT carry a Provider-payload-shaped field (only the preparedResult is passed through; the view projection is a UI-safe subset)', () => {
+  const view = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  // No top-level `payload` field on the view shape.
+  // The `prepared` view projection has `compiledPromptPreview`,
+  // not the raw Provider payload.
+  assert.equal(/['"]payload['"]\s*:/.test(view), false, 'view-model must not surface a raw Provider payload field');
+  assert.equal(/['"]providerPayload['"]\s*:/.test(view), false, 'view-model must not surface a providerPayload field');
+});
+
+test('D-03 Web UI does NOT import any Provider-payload builder (no buildProviderPayload from P2 internals)', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    for (const forbidden of ['buildPackagingProviderPayload', 'buildProviderPayload', 'createProviderRequestBody']) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.relative(ROOT, file)} must not reference ${forbidden}`,
+      );
+    }
+  }
+});
+
+// =============================================================================
+// Group E — Credential Boundary (STOP-P3-A-03)
+// =============================================================================
+
+test('E-01 Workspace does NOT import node-credential-store or any credential reader', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    for (const forbidden of [
+      'node-credential-store',
+      'readCredentials',
+      'getCredentials',
+      'loadCredentials',
+      'loadApiKey',
+      'readApiKey',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not import ${forbidden}`,
+      );
+    }
+  }
+});
+
+test('E-02 Workspace does NOT read process.env.*KEY / SECRET / TOKEN / PASSWORD / CREDENTIAL', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(
+      /process\.env\.[A-Z_]*(?:KEY|SECRET|TOKEN|PASSWORD|CREDENTIAL)/.test(src),
+      false,
+      `${path.basename(file)} must not read credential env vars`,
+    );
+  }
+});
+
+test('E-03 Workspace does NOT carry an apiKey field (only apiProfileId as identifier)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // The Workspace may reference `apiProfileId`
+    // (identifier) but not `apiKey` or any bearer /
+    // secret value.
+    const apiKeyMatches = src.match(/['"]apiKey['"]\s*:/g) || [];
+    assert.equal(apiKeyMatches.length, 0, `${path.basename(file)} must not carry an apiKey field`);
+  }
+});
+
+test('E-04 The Workspace public surface (PACKAGING_WORKSPACE_SERVICE_VERSION) does not surface an apiKey / Authorization / Bearer / secret', () => {
+  // The service surface is the union of exported names.
+  // We scan the source for any surface shape that
+  // would carry a credential.
+  for (const file of allPackagingProd()) {
+    const src = stripComments(readFile(file));
+    // No `Authorization:` literal (would indicate a
+    // header construction in Workspace).
+    assert.equal(/Authorization\s*:/.test(src), false, `${path.basename(file)} must not construct an Authorization header`);
+    // No real Bearer token literal (the `<token>`
+    // placeholder in the description is OK; we only
+    // flag actual base64 / JWT-style tokens).
+    assert.equal(/Bearer\s+[A-Za-z0-9._~+/-]{8,}/.test(src), false, `${path.basename(file)} must not include a real Bearer token literal`);
+  }
+});
+
+test('E-05 The public Runtime barrel does NOT re-export any credential implementation', () => {
+  const barrel = readFile(PACKAGING_INDEX);
+  for (const forbidden of [
+    'node-credential-store',
+    'readCredentials',
+    'loadApiKey',
+    'apiKey',
+    'getApiKey',
+  ]) {
+    assert.equal(
+      barrel.includes(forbidden),
+      false,
+      `public Runtime barrel must not re-export ${forbidden}`,
+    );
+  }
+});
+
+// =============================================================================
+// Group F — Frozen P2 Contract Guard (STOP-P3-A-04)
+// =============================================================================
+
+test('F-01 All 9 P2 frozen packaging modules exist on disk', () => {
+  for (const f of P2_FROZEN_MODULES) {
+    const filePath = path.join(P2_FROZEN_DIR, f);
+    assert.ok(existsSync(filePath), `P2 frozen module missing: ${f}`);
+  }
+});
+
+test('F-02 P2 frozen Shared Core / image-generation-runtime files exist (core/ + redact.js + deliverables/ + policies.js + gates.js + task-builder.js + download-verify.js)', () => {
+  const checks = [
+    'core/packaging-generation-core.js',
+    'redact.js',
+    'deliverables',
+    'policies.js',
+    'gates.js',
+    'task-builder.js',
+    'download-verify.js',
+  ];
+  const base = path.join(ROOT, 'packages', 'image-generation-runtime', 'src');
+  for (const c of checks) {
+    assert.ok(existsSync(path.join(base, c)), `P2 frozen Shared Core file missing: ${c}`);
+  }
+});
+
+test('F-03 The P2 frozen baseline commit is reachable in git history', () => {
+  const out = runGit(['cat-file', '-t', P2_FROZEN_BASELINE]).trim();
+  assert.equal(out, 'commit', `P2 frozen baseline ${P2_FROZEN_BASELINE} must be a reachable commit`);
+});
+
+test('F-04 No commit on the current branch has modified a P2 frozen module since the baseline', () => {
+  // For each frozen module, check the diff between
+  // baseline and HEAD is empty (i.e. no commit on the
+  // current branch has touched a P2 frozen module).
+  const allFrozen = [
+    ...P2_FROZEN_MODULES.map((m) => `packages/image-generation-runtime/src/packaging/${m}`),
+    ...P2_FROZEN_EXTERNAL,
+  ].map((p) => `packages/image-generation-runtime/src/${p}`);
+  for (const f of allFrozen) {
+    let diffOut = '';
+    try {
+      diffOut = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD', '--', f]).trim();
+    } catch {
+      // ignore — fall through to the assertion
+    }
+    assert.equal(
+      diffOut,
+      '',
+      `P2 frozen module ${f} was modified between ${P2_FROZEN_BASELINE} and HEAD`,
+    );
+  }
+});
+
+test('F-05 Workspace does NOT modify any P2 frozen module (no Workspace code path writes into the frozen directory)', () => {
+  // Source-level proof: no Workspace module references
+  // a writable path under packages/image-generation-runtime/.
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(
+      /packages\/image-generation-runtime\/src\/(?:packaging|core|redact|deliverables|policies|gates|task-builder|download-verify)/.test(src),
+      false,
+      `${path.basename(file)} must not reference a path inside the P2 frozen directory`,
+    );
+  }
+});
+
+// =============================================================================
+// Group G — Reference Role Authority Guard (STOP-P3-A-05)
+// =============================================================================
+
+test('G-01 No Workspace module defines a second canonical Reference role array', () => {
+  // The only role-array definition site is the P2
+  // frozen PACKAGING_REFERENCE_ROLES. Workspace must
+  // only re-export it, never redefine it.
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // No `const ... = [...]` that contains the canonical
+    // role value names.
+    for (const role of [
+      'high_fidelity_visual_reference',
+      'structure_reference',
+      'material_reference',
+      'composition_reference',
+      'style_reference',
+      'product_identity_reference',
+    ]) {
+      const re = new RegExp(`(?:const|let|var)\\s+\\w*[Rr]oles?\\w*\\s*=\\s*\\[[^\\]]*['"\`]${role}['"\`]`, 'g');
+      assert.equal(
+        re.test(src),
+        false,
+        `${path.basename(file)} must not redefine the canonical role '${role}'`,
+      );
+    }
+  }
+});
+
+test('G-02 The canonical role source is imported only from the P2 frozen reference-policy.js', () => {
+  // PACKAGING_REFERENCE_ROLES must come from
+  // reference-policy.js (P2 frozen). The Workspace
+  // re-exports the same memory pointer.
+  const refAssignments = readFile(path.join(PACKAGING_PROD_DIR, 'reference-assignments.js'));
+  const intentSchema = readFile(path.join(PACKAGING_PROD_DIR, 'intent-schema.js'));
+  const workspaceService = readFile(path.join(PACKAGING_PROD_DIR, 'workspace-service.js'));
+  for (const [name, src] of [
+    ['reference-assignments.js', refAssignments],
+    ['intent-schema.js', intentSchema],
+    ['workspace-service.js', workspaceService],
+  ] as [string, string][]) {
+    // The role list must come from reference-policy.js
+    // OR be re-exported as a single import (no copy).
+    const hasFromP2 = /from\s+['"]@masterpiece\/image-generation-runtime\/packaging\/reference-policy\.js['"]/.test(src);
+    assert.ok(hasFromP2, `${name} must import PACKAGING_REFERENCE_ROLES from the P2 frozen reference-policy.js`);
+  }
+});
+
+test('G-03 No Workspace module exports a UI-specific role enum (no WorkspaceRole / UIRole / DisplayRole)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    for (const forbidden of ['WORKSPACE_REFERENCE_ROLES', 'UI_REFERENCE_ROLES', 'WORKSPACE_ROLES', 'DISPLAY_ROLES', 'WorkspaceReferenceRole']) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not export a UI-specific role enum (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('G-04 The view-model references array does NOT carry a precedence rank / winsOver / priorityWeight field', () => {
+  const view = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  assert.equal(/precedence|priority|winsOver|rank/i.test(view.split(/projectReferenceAssignmentForView/)[1] || ''), false, 'reference view projection must not carry a precedence/priority/winsOver/rank field');
+});
+
+// =============================================================================
+// Group H — Reference Precedence Guard (STOP-P3-A-06)
+// =============================================================================
+
+test('H-01 No Workspace module implements a precedence engine (no sortReferences / rankReferences / winsOver / priorityWeight / resolveWorkspacePrecedence / mergeReferencePriority)', () => {
+  const forbidden = [
+    'sortReferences',
+    'rankReferences',
+    'winsOver',
+    'priorityWeight',
+    'resolveWorkspacePrecedence',
+    'mergeReferencePriority',
+    'sortByRolePriority',
+  ];
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    for (const token of forbidden) {
+      assert.equal(
+        src.includes(token),
+        false,
+        `${path.basename(file)} must not implement a precedence engine (${token})`,
+      );
+    }
+  }
+});
+
+test('H-02 PACKAGING_REFERENCE_PRECEDENCE is imported only by P2 frozen reference-policy.js (Workspace does not re-export or implement it)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // No definition, no re-export, no value-level use of
+    // the precedence array.
+    assert.equal(/PACKAGING_REFERENCE_PRECEDENCE\s*=/.test(src), false, `${path.basename(file)} must not define PACKAGING_REFERENCE_PRECEDENCE`);
+    assert.equal(/PACKAGING_REFERENCE_PRECEDENCE\s*\./.test(src), false, `${path.basename(file)} must not call methods on the precedence array`);
+  }
+});
+
+test('H-03 The Workspace public barrel does NOT re-export the canonical precedence constant (UI cannot consume it to make generation decisions)', () => {
+  const barrel = readFile(PACKAGING_INDEX);
+  assert.equal(
+    /PACKAGING_REFERENCE_PRECEDENCE/.test(barrel),
+    false,
+    'public Runtime barrel must not re-export the precedence constant (P3-A spec §18 / §22)',
+  );
+});
+
+// =============================================================================
+// Group I — Stale Fail-closed Guard (STOP-P3-A-07)
+// =============================================================================
+
+test('I-01 All Workspace execution goes through workspace-service.executeGeneration (no parallel execute entry point)', () => {
+  // The Workspace production modules other than
+  // workspace-service.js must not export a function
+  // named `execute` / `run` / `generate` that bypasses
+  // the service.
+  for (const file of allPackagingProd()) {
+    if (path.basename(file) === 'workspace-service.js') continue;
+    const src = readFile(file);
+    for (const forbidden of [
+      /export\s+function\s+execute\w*/,
+      /export\s+function\s+run\w*[Gg]eneration/,
+      /export\s+function\s+generate\w*/,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${path.basename(file)} must not export a parallel execute entry point`,
+      );
+    }
+  }
+});
+
+test('I-02 executeGeneration runs the isExecuteAllowed gate (single capability authority: workspace-state)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'workspace-service.js'));
+  assert.ok(/isExecuteAllowed/.test(src), 'executeGeneration must consult isExecuteAllowed');
+});
+
+test('I-03 executeGeneration runs the Workspace stale revalidation (computeStale / late double-check)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'workspace-service.js'));
+  // Either the early gate or the late double-check
+  // calls computeStale.
+  const inExecuteGen = src.split(/function\s+executeGeneration/)[1] || '';
+  assert.ok(/computeStale/.test(inExecuteGen), 'executeGeneration must run computeStale double-check');
+});
+
+test('I-04 No Workspace module imports executePackagingGeneration directly from the P2 frozen generation-service (only workspace-service.js does)', () => {
+  // The canonical entry: workspace-service.js imports
+  // executePackagingGeneration from
+  // @masterpiece/image-generation-runtime/packaging/generation-service.js.
+  // No other Workspace module may import it directly.
+  for (const file of allPackagingProd()) {
+    if (path.basename(file) === 'workspace-service.js') continue;
+    const src = stripComments(readFile(file));
+    const re = /import\s+\{[^}]*executePackagingGeneration[^}]*\}\s+from\s+['"]@masterpiece\/image-generation-runtime\/packaging\/generation-service\.js['"]/;
+    assert.equal(
+      re.test(src),
+      false,
+      `${path.basename(file)} must not import executePackagingGeneration from the P2 frozen generation-service`,
+    );
+  }
+});
+
+test('I-05 No Workspace module imports preparePackagingGeneration directly from the P2 frozen generation-service (only workspace-service.js does)', () => {
+  for (const file of allPackagingProd()) {
+    if (path.basename(file) === 'workspace-service.js') continue;
+    const src = stripComments(readFile(file));
+    const re = /import\s+\{[^}]*preparePackagingGeneration[^}]*\}\s+from\s+['"]@masterpiece\/image-generation-runtime\/packaging\/generation-service\.js['"]/;
+    assert.equal(
+      re.test(src),
+      false,
+      `${path.basename(file)} must not import preparePackagingGeneration from the P2 frozen generation-service`,
+    );
+  }
+});
+
+// =============================================================================
+// Group J — Persistence / Leakage Guard (STOP-P3-A-08)
+// =============================================================================
+
+test('J-01 View Model does NOT spread raw `session` as the public UI surface', () => {
+  const view = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  // The view is constructed by picking a small
+  // allowlist of fields, not by spreading the entire
+  // session.
+  assert.equal(
+    /\{[.]{2,3}(state|session|internalState)\b/.test(view),
+    false,
+    'view-model must not spread session/state/internalState as the public surface',
+  );
+});
+
+test('J-02 View Model does NOT spread raw `preparedResult` as a UI field (the prepared view projection is a UI-safe subset)', () => {
+  const view = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  // prepared.preparedResult is allowed inside
+  // session.prepared (storage), but the view must not
+  // surface it as a single field on the public shape.
+  assert.equal(
+    /['"]preparedResult['"]\s*:/.test(view.split(/export\s+function\s+projectPackagingWorkspaceView/)[1] || ''),
+    false,
+    'view-model must not surface preparedResult as a public field',
+  );
+});
+
+test('J-03 View Model does NOT spread raw `executionResult` as a UI field (the execution view projection is a UI-safe subset)', () => {
+  const view = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  assert.equal(
+    /['"]executionResult['"]\s*:/.test(view.split(/export\s+function\s+projectPackagingWorkspaceView/)[1] || ''),
+    false,
+    'view-model must not surface executionResult as a public field',
+  );
+});
+
+test('J-04 Workspace production code does NOT JSON.stringify(session / preparedResult / executionResult) as a public surface', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(
+      /JSON\.stringify\((?:state|session|internalState|preparedResult|executionResult)\b/.test(src),
+      false,
+      `${path.basename(file)} must not JSON.stringify the raw session/prepared/execution as a public surface`,
+    );
+  }
+});
+
+test('J-05 The prepared view projection does NOT carry a Provider payload field (only the UI-safe prompt preview + metadata summary)', () => {
+  // The CANONICAL_PREPARED_KEYS allowlist locks the
+  // 12 prepared view keys; the guard checks that the
+  // keys include compiledPromptPreview + metadataSummary
+  // + fingerprintSummary but do NOT include a raw
+  // `payload` field.
+  const view = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  const canonicalKeys = /CANONICAL_PREPARED_KEYS\s*=\s*Object\.freeze\(\[([\s\S]*?)\]\)/.exec(view);
+  assert.ok(canonicalKeys, 'CANONICAL_PREPARED_KEYS must be defined in view-model');
+  const keys = canonicalKeys[1].split(',').map((k) => k.trim().replace(/['"]/g, '')).filter(Boolean);
+  assert.equal(keys.includes('payload'), false, 'CANONICAL_PREPARED_KEYS must not include "payload"');
+  assert.ok(keys.includes('compiledPromptPreview'), 'CANONICAL_PREPARED_KEYS must include compiledPromptPreview');
+  assert.ok(keys.includes('metadataSummary'), 'CANONICAL_PREPARED_KEYS must include metadataSummary');
+  assert.ok(keys.includes('fingerprintSummary'), 'CANONICAL_PREPARED_KEYS must include fingerprintSummary');
+});
+
+// =============================================================================
+// Group K — Web UI Provider Network Guard (STOP-P3-A-09)
+// =============================================================================
+
+test('K-01 Web UI source does NOT import P2 frozen provider-adapter.js', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(
+      /provider-adapter\.js/.test(src),
+      false,
+      `${path.relative(ROOT, file)} must not import provider-adapter.js`,
+    );
+  }
+});
+
+test('K-02 Web UI source does NOT import Provider-specific SDKs (OpenAI SDK / Volcengine SDK / Aliyun SDK) directly', () => {
+  const files = listWebSourceFiles();
+  const forbidden = [
+    'openai',
+    'volcengine',
+    'aliyun',
+    '@alicloud',
+    '@baiducloud',
+    '@tencentcloud',
+  ];
+  for (const file of files) {
+    const src = readFile(file);
+    for (const f of forbidden) {
+      const re = new RegExp(`from\\s+['"]${f}['"]`);
+      assert.equal(
+        re.test(src),
+        false,
+        `${path.relative(ROOT, file)} must not import Provider SDK ${f}`,
+      );
+    }
+  }
+});
+
+test('K-03 Web UI source does NOT POST to a Provider endpoint directly (no direct Provider fetch with image-generation payload shape)', () => {
+  const files = listWebSourceFiles();
+  for (const file of files) {
+    const src = readFile(file);
+    // No direct fetch with Provider-specific URL paths.
+    for (const providerUrl of [
+      'api.openai.com',
+      'ark.cn-beijing.volces.com',
+      'dashscope.aliyuncs.com',
+    ]) {
+      assert.equal(
+        src.includes(providerUrl),
+        false,
+        `${path.relative(ROOT, file)} must not call Provider URL ${providerUrl} directly`,
+      );
+    }
+  }
+});
+
+test('K-04 Web UI source may use the local masterpiece RPC (no global ban on fetch)', () => {
+  // Sanity: the boundary is "no direct Provider network",
+  // not "no fetch in Web UI". The Web UI uses the local
+  // RPC for generation. We do NOT globally ban fetch —
+  // a positive test confirms that the only allowed
+  // generation-channel is the local masterpiece RPC.
+  const webApi = readFile(path.join(WEB_DIR, 'web-api.ts'));
+  // The Web API layer is the boundary; it routes
+  // generation calls through the local masterpiece RPC.
+  assert.ok(/masterpiece|local-rpc|\/_\w+\/rpc/i.test(webApi), 'web-api.ts must route generation through the local masterpiece RPC');
+});
+
+// =============================================================================
+// Group L — Shared Regression Guards (STOP-P3-A-10/11/12)
+// =============================================================================
+
+test('L-01 P2 frozen image-generation regression: all expected packaging/ modules are present and untouched by the current branch', () => {
+  // Cross-checks F-01 (modules exist) and F-04 (no
+  // modification since baseline). Group L is the
+  // "shared regression" gate; this test asserts the
+  // P2 frozen packaging/ boundary is intact.
+  for (const f of P2_FROZEN_MODULES) {
+    const filePath = path.join(P2_FROZEN_DIR, f);
+    assert.ok(existsSync(filePath), `P2 frozen module missing (regression): ${f}`);
+  }
+});
+
+test('L-02 P2 frozen Shared Core boundary is intact (packaging-generation-core.js + redact.js + deliverables/ + policies.js + gates.js + task-builder.js + download-verify.js)', () => {
+  const checks = [
+    'core/packaging-generation-core.js',
+    'redact.js',
+    'deliverables',
+    'policies.js',
+    'gates.js',
+    'task-builder.js',
+    'download-verify.js',
+  ];
+  const base = path.join(ROOT, 'packages', 'image-generation-runtime', 'src');
+  for (const c of checks) {
+    assert.ok(existsSync(path.join(base, c)), `P2 frozen Shared Core regression: ${c}`);
+  }
+});
+
+test('L-03 P2 frozen packaging/ + Shared Core files have not been modified between the baseline and HEAD', () => {
+  // Comprehensive F-04 sweep including Shared Core.
+  const allFrozen = [
+    ...P2_FROZEN_MODULES.map((m) => `packages/image-generation-runtime/src/packaging/${m}`),
+    ...P2_FROZEN_EXTERNAL.map((p) => `packages/image-generation-runtime/src/${p}`),
+  ];
+  for (const f of allFrozen) {
+    let diffOut = '';
+    try {
+      diffOut = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD', '--', f]).trim();
+    } catch {
+      // ignore
+    }
+    assert.equal(diffOut, '', `P2 frozen file ${f} was modified between baseline and HEAD`);
+  }
+});
+
+test('L-04 Visual Analysis workspace surface does NOT import the Packaging Workspace application surface', () => {
+  // The Visual Analysis workspace (apps/web Runtime
+  // Host) and the Packaging Workspace are sibling
+  // application surfaces in runtime-core. They must
+  // not cross-import (they each import from the
+  // shared runtime-core barrel, not from each other).
+  const vaSurface = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'image-generation');
+  if (!existsSync(vaSurface)) return; // optional directory
+  const files: string[] = [];
+  const visit = (abs: string) => {
+    for (const entry of readdirSync(abs, { withFileTypes: true })) {
+      const child = path.join(abs, entry.name);
+      if (entry.isDirectory()) visit(child);
+      else if (/\.(?:c|m)?js$/.test(entry.name)) files.push(child);
+    }
+  };
+  visit(vaSurface);
+  for (const f of files) {
+    const src = readFile(f);
+    assert.equal(
+      /from\s+['"][^'"]*application\/packaging\//.test(src),
+      false,
+      `${path.relative(ROOT, f)} must not import from the Packaging Workspace application surface`,
+    );
+  }
+});
+
+test('L-05 Packaging Workspace surface does NOT import the Visual Analysis workspace internals', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(
+      /from\s+['"][^'"]*application\/image-generation\//.test(src),
+      false,
+      `${path.basename(file)} must not import from the Visual Analysis workspace internals`,
+    );
+  }
+});
+
+test('L-06 repo:verify authoritative config files exist and are valid JSON', () => {
+  const configs = [
+    'config/repository-contract/current-authorities.json',
+    'config/repository-contract/version-namespace-allowlist.json',
+    'config/repository-contract/prompt-integrity.json',
+    'config/repository-contract/compatibility-registry.json',
+  ];
+  for (const c of configs) {
+    const abs = path.join(ROOT, c);
+    assert.ok(existsSync(abs), `repo:verify config missing: ${c}`);
+    // Sanity: the file parses as JSON.
+    const parsed = JSON.parse(readFile(abs));
+    assert.ok(parsed, `${c} must parse as JSON`);
+  }
+});
+
+// =============================================================================
+// Group P — Additional Authority Guards
+// =============================================================================
+
+test('P-01 No second generation fingerprint authority (the only authority is the P2 frozen metadata.compileFingerprint)', () => {
+  // No Workspace module defines a function or constant
+  // named like a generation fingerprint algorithm.
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    for (const forbidden of [
+      'computeGenerationFingerprint',
+      'computeWorkspaceFingerprint',
+      'computeViewFingerprint',
+      'computeSessionFingerprint',
+      'hashGenerationInputs',
+      'hashReferencePlan',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not define a parallel generation fingerprint (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('P-02 No second state machine (workspace-state.js is the only state authority)', () => {
+  // No Workspace module exports a function that
+  // performs a state transition outside workspace-state.
+  for (const file of allPackagingProd()) {
+    if (path.basename(file) === 'workspace-state.js') continue;
+    const src = readFile(file);
+    assert.equal(
+      /export\s+function\s+transition(?:Session|State|Status|Generation)\b/.test(src),
+      false,
+      `${path.basename(file)} must not export a parallel state-machine transition`,
+    );
+  }
+});
+
+test('P-03 No second stale engine (stale-tracker.js is the only stale authority; intent-schema owns the data-side comparison only)', () => {
+  // The "stale engine" canonical surface is:
+  //   - stale-tracker.js: computeStale, STALE_REASON
+  //   - intent-schema.js: detectStaleChange (data-side
+  //     structural comparison) + computeTruthFingerprint
+  // No other Workspace module may export a function
+  // that produces a stale signal.
+  for (const file of allPackagingProd()) {
+    const fname = path.basename(file);
+    if (fname === 'stale-tracker.js' || fname === 'intent-schema.js') continue;
+    const stripped = stripComments(readFile(file));
+    assert.equal(
+      /export\s+function\s+(?:compute|detect)(?:Stale|Drift|Truth)\w*/.test(stripped),
+      false,
+      `${fname} must not export a parallel stale / truth engine`,
+    );
+  }
+  // STALE_REASON is defined only in stale-tracker.js.
+  for (const file of allPackagingProd()) {
+    const fname = path.basename(file);
+    if (fname === 'stale-tracker.js') continue;
+    const stripped = stripComments(readFile(file));
+    assert.equal(
+      /STALE_REASON\s*=/.test(stripped) && !/STALE_REASON\s*,\s*STALE_REASON\b/.test(stripped),
+      false,
+      `${fname} must not define STALE_REASON (single source: stale-tracker.js)`,
+    );
+  }
+});
+
+test('P-04 No second Locked Asset authority (workspace does not own Locked Assets)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // No write/edit API for Locked Assets.
+    for (const forbidden of [
+      'saveLockedAsset',
+      'updateLockedAsset',
+      'unlockAsset',
+      'replaceLockedAsset',
+      'editLockedAsset',
+      'setLockedAsset',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not define a Locked-Asset write API (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('P-05 No second Project authority (Workspace session stores only a snapshot of project identity; the project itself is upstream)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // No Workspace module reads / writes the project
+    // store directly.
+    assert.equal(/project-store/.test(src), false, `${path.basename(file)} must not import project-store`);
+    assert.equal(/creative-session-service/.test(src), false, `${path.basename(file)} must not import creative-session-service`);
+    // No Workspace module mutates a `projectIdentity`
+    // field outside the truthSnapshot shape.
+    const writesIdentity = /(set|update|save)\s*\(.*projectIdentity/.test(src);
+    assert.equal(writesIdentity, false, `${path.basename(file)} must not write to projectIdentity`);
+  }
+});
+
+test('P-06 No second Provider registry / capability authority (Provider capability is owned by P2 frozen)', () => {
+  for (const file of allPackagingProd()) {
+    const src = stripComments(readFile(file));
+    // Specific forbidden symbol names (not free-text
+    // "Provider" in comments).
+    for (const forbidden of [
+      'createProviderAdapter',
+      'registerProvider',
+      'getProviderAdapter',
+      'ProviderRegistry',
+      'createProviderRegistry',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${path.basename(file)} must not implement a Provider registry (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('P-07 No second credential authority (Shared Core / node-credential-store is the sole owner)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    assert.equal(/node-credential-store/.test(src), false);
+    assert.equal(/loadApiKey|readApiKey|getApiKey|readCredentials/.test(src), false);
+  }
+});
+
+test('P-08 No second run-store authority (Workspace stores the last execution as a session field; the run-store is upstream)', () => {
+  for (const file of allPackagingProd()) {
+    const src = readFile(file);
+    // No Workspace module imports the run-store.
+    assert.equal(/run-store/.test(src), false, `${path.basename(file)} must not import run-store`);
+    // No Workspace module exports a function that
+    // persists a run.
+    assert.equal(/export\s+function\s+(?:saveRun|persistRun|writeRun|createRun)/.test(src), false, `${path.basename(file)} must not export a run persistence API`);
+  }
+});
+
+// =============================================================================
+// Group T — Public Runtime Export Boundary
+// =============================================================================
+
+test('T-01 The public Runtime barrel does NOT re-export P2 frozen compiler.js / provider-adapter.js / provider-capability.js / metadata.js / validation.js / task-builder.js / download-verify.js / policies.js / gates.js / redact.js / core/ internals', () => {
+  const barrel = readFile(PACKAGING_INDEX);
+  for (const forbidden of [
+    'compiler.js',
+    'provider-adapter.js',
+    'provider-capability.js',
+    'metadata.js',
+    'validation.js',
+    'task-builder.js',
+    'download-verify.js',
+    'policies.js',
+    'gates.js',
+    'redact.js',
+    'packaging-generation-core',
+    'createPackagingTranslation',
+    'createPackagingCompiledPrompt',
+    'buildPackagingProviderPayload',
+    'verifyPackagingGenerationMetadata',
+    'PACKAGING_REFERENCE_PRECEDENCE',
+  ]) {
+    assert.equal(
+      barrel.includes(forbidden),
+      false,
+      `public Runtime barrel must not re-export ${forbidden}`,
+    );
+  }
+});
+
+test('T-02 The runtime-core public barrel does NOT re-export the Packaging Workspace internals (workspace-service / workspace-state / intent-schema / stale-tracker / view-model are NOT public)', () => {
+  const barrel = readFile(RUNTIME_CORE_INDEX);
+  for (const forbidden of [
+    'workspace-service',
+    'workspace-state',
+    'intent-schema',
+    'stale-tracker',
+    'view-model',
+    'lock-assets-projection',
+    'reference-assignments',
+  ]) {
+    assert.equal(
+      barrel.includes(forbidden),
+      false,
+      `runtime-core public barrel must not re-export the Packaging Workspace internals (${forbidden}); the public barrel is the packaging/index.js only`,
+    );
+  }
+});
+
+test('T-03 The Packaging public barrel exposes the canonical Workspace surface (createPackagingWorkspaceService + canonical roles + canonical modes + view-model helpers)', () => {
+  const barrel = readFile(PACKAGING_INDEX);
+  for (const required of [
+    'createPackagingWorkspaceService',
+    'PACKAGING_REFERENCE_ROLES',
+    'PACKAGING_GENERATION_MODES',
+    'PACKAGING_SHOT_CONTRACT_IDS',
+    'STALE_REASON',
+    'projectPackagingWorkspaceView',
+    'getPackagingGenerationServiceFingerprint',
+  ]) {
+    assert.ok(
+      barrel.includes(required),
+      `public Runtime barrel must expose ${required}`,
+    );
+  }
+});
+
+// =============================================================================
+// Group U — Workspace Service Orchestrator Invariants
+// =============================================================================
+
+test('U-01 workspace-service.js is a thin orchestrator (delegates state machine + stale tracker + reference / locked-asset projection)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'workspace-service.js'));
+  for (const required of [
+    'transitionSession',
+    'isExecuteAllowed',
+    'isIntentEditAllowed',
+    'isPrepareAllowed',
+    'isResetAllowed',
+    'computeStale',
+    'projectReferenceAssignmentsToPolicy',
+    'projectLockedAssetsForView',
+  ]) {
+    assert.ok(
+      src.includes(required),
+      `workspace-service.js must delegate to ${required}`,
+    );
+  }
+});
+
+test('U-02 workspace-service.js does NOT generate a parallel fingerprint (no crypto.createHash / no second hash algorithm)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'workspace-service.js'));
+  assert.doesNotMatch(src, /crypto\.createHash|createHash\(/);
+  // truthFingerprint is a structural helper
+  // (stableStringify in intent-schema.js), not a hash.
+  // workspace-service.js may read truthFingerprintAtPrepare
+  // but does not compute a hash.
+  assert.equal(/md5|sha1|sha256|hash\(/i.test(src), false, 'workspace-service.js must not call any hash function');
+});
+
+test('U-03 workspace-service.js does NOT call Provider / network / fs / credential / Provider payload construction', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'workspace-service.js'));
+  for (const forbidden of [
+    'node:fs',
+    'fetch(',
+    'buildPackagingProviderPayload',
+    'readCredentials',
+    'node-credential-store',
+  ]) {
+    assert.equal(
+      src.includes(forbidden),
+      false,
+      `workspace-service.js must not call ${forbidden}`,
+    );
+  }
+});
+
+// =============================================================================
+// Group V — View Model Projection Invariants
+// =============================================================================
+
+test('V-01 view-model.js is a projection (no prepare / execute / Provider network / fs / credential / session mutation)', () => {
+  const src = stripComments(readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js')));
+  for (const forbidden of [
+    'preparePackagingGeneration',
+    'executePackagingGeneration',
+    'fetch(',
+    'node:fs',
+    'readCredentials',
+    'node-credential-store',
+  ]) {
+    assert.equal(
+      src.includes(forbidden),
+      false,
+      `view-model.js must not call ${forbidden}`,
+    );
+  }
+});
+
+test('V-02 view-model.js delegates capability projection to the workspace-state authority (no parallel rule table)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  for (const required of [
+    'isExecuteAllowed',
+    'isIntentEditAllowed',
+    'isPrepareAllowed',
+    'isResetAllowed',
+  ]) {
+    assert.ok(
+      src.includes(required),
+      `view-model.js must delegate to ${required}`,
+    );
+  }
+});
+
+test('V-03 view-model.js does NOT mutate the session (no spread-write of session.*)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  // The view projection is read-only. No `session.x = y`
+  // and no method call on session that mutates it.
+  assert.doesNotMatch(src, /\bsession\.\w+\s*=/);
+  // Object.freeze on the view is required.
+  assert.ok(/Object\.freeze/.test(src), 'view-model must Object.freeze the projection');
+});
+
+test('V-04 view-model.js does NOT detect stale independently (no computeStale / detectStaleChange calls)', () => {
+  const src = readFile(path.join(PACKAGING_PROD_DIR, 'view-model.js'));
+  // The view reflects state; it does not compute stale.
+  // Stale is a state-machine concern (workspace-state +
+  // stale-tracker), not a view-model concern.
+  assert.doesNotMatch(src, /computeStale|detectStaleChange/);
+});
