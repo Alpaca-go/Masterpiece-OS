@@ -376,7 +376,10 @@ test('P2-C-8b analysis_led + referenceSupport=false is valid (no reference requi
   assert.equal(validatePackagingTranslation(t), t);
 });
 
-test('P2-C-8c reference_count > provider maxReferenceImages fails closed', () => {
+test('P2-C-8c reference_count > provider maxReferenceImages fails closed with PROVIDER_CAPABILITY_MISMATCH (P2-E closes the P2-C placeholder)', () => {
+  // P2-E closes the P2-C placeholder. The Reference role is
+  // legal; the failure is a Provider capability issue. The
+  // canonical code is PROVIDER_CAPABILITY_MISMATCH (P2 spec §32).
   assert.throws(
     () => createPackagingTranslation(makeBaseInput({
       generationMode: 'reference_first',
@@ -391,10 +394,7 @@ test('P2-C-8c reference_count > provider maxReferenceImages fails closed', () =>
       },
     })),
     (err) => {
-      // Count-exceedance uses REFERENCE_ROLE_INVALID as a placeholder
-      // code path (not REFERENCE_UNSUPPORTED — the provider does
-      // support references, just not that many).
-      assert.ok(['REFERENCE_ROLE_INVALID', 'REFERENCE_UNSUPPORTED'].includes(err.code));
+      assert.equal(err.code, 'PROVIDER_CAPABILITY_MISMATCH');
       assert.ok(err.issues.some((issue) => issue.startsWith('reference_count_exceeds_provider_capability')));
       return true;
     },

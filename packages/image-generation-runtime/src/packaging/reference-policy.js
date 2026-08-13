@@ -51,6 +51,13 @@ export const PACKAGING_REFERENCE_POLICY_VERSION = '1.0.0';
 export const REFERENCE_REQUIRED = 'REFERENCE_REQUIRED';
 export const REFERENCE_ROLE_INVALID = 'REFERENCE_ROLE_INVALID';
 export const REFERENCE_UNSUPPORTED = 'REFERENCE_UNSUPPORTED';
+// P2-E closes the P2-C placeholder. The reference count > provider
+// maxReferenceImages case used to map to REFERENCE_ROLE_INVALID as a
+// stand-in. The Reference role is legal; the failure is a Provider
+// capability issue, so the canonical code is
+// PROVIDER_CAPABILITY_MISMATCH. P2-E re-exports the constant from
+// provider-capability.js for ergonomic consumption.
+export { PROVIDER_CAPABILITY_MISMATCH } from './provider-capability.js';
 
 // P2 spec §14. The six canonical Reference roles. Roles are
 // capability-named; no project-specific wording.
@@ -257,9 +264,13 @@ export function resolveReferencePolicy(input, options = {}) {
 
 /**
  * Validate a resolved Reference Policy. Throws the canonical
- * P2 spec §32 code (REFERENCE_REQUIRED / REFERENCE_ROLE_INVALID /
- * REFERENCE_UNSUPPORTED) on the first fatal issue, with .code,
- * .issues, and .policy attached for upstream debug.
+ * P2 spec §32 code on the first fatal issue, with .code, .issues,
+ * and .policy attached for upstream debug.
+ *
+ * P2-E closes the P2-C placeholder: the reference-count > provider
+ * maxReferenceImages case maps to PROVIDER_CAPABILITY_MISMATCH
+ * (the Reference role is legal; the failure is a Provider
+ * capability issue).
  *
  * Returns the resolved policy unchanged on success.
  */
@@ -272,6 +283,11 @@ export function validateReferencePolicy(resolved) {
   let code = REFERENCE_ROLE_INVALID;
   if (first === 'reference_required_in_reference_first') code = REFERENCE_REQUIRED;
   else if (first === 'reference_unsupported_by_provider') code = REFERENCE_UNSUPPORTED;
+  else if (first.startsWith('reference_count_exceeds_provider_capability')) {
+    // P2-E: the role is legal; the provider cannot accept that
+    // many. Surface the canonical Provider capability code.
+    code = 'PROVIDER_CAPABILITY_MISMATCH';
+  }
   const err = new Error(`${code}: ${resolved.fatal.join(', ')}`);
   err.code = code;
   err.issues = resolved.issues.slice();

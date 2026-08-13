@@ -52,11 +52,9 @@
 //   - does not invent project-specific visual defaults
 //   - does not hardcode any brand color / motif / numeric range
 //
-// P2-E known item (recorded here, not handled in P2-D):
-//   reference count > provider maxReferenceImages currently surfaces
-//   as REFERENCE_ROLE_INVALID (placeholder) in reference-policy.js.
-//   P2-E will rename this to PROVIDER_CAPABILITY_MISMATCH (P2 spec
-//   §32). P2-D does NOT extend provider serialization.
+// P2-E: provider serialization lives in the provider-adapter.js
+// boundary (provider-agnostic). The Compiler remains
+// provider-agnostic and does not import the provider subsystem.
 
 import {
   PACKAGING_SHOT_CONTRACT_IDS,

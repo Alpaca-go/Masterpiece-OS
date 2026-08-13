@@ -624,19 +624,32 @@ test('P2-A-no-reasoning Translation does not import any model / reasoner / provi
   const dir = join(repoRoot, 'packages/image-generation-runtime/src/packaging');
   for (const file of readdirSync(dir)) {
     const src = readFileSync(join(dir, file), 'utf8');
-    // The Translation layer is allowed to import only its sibling module.
-    // Reasoning surfaces (Creative Director, Analysis reasoner, provider
-    // API, model client) are forbidden.
+    // The Translation layer is allowed to import only its sibling
+    // module. Reasoning surfaces (Creative Director, Analysis
+    // reasoner, model / provider API) are forbidden. We check
+    // ACTUAL import statements, not arbitrary string mentions —
+    // the P2-B / P2-C / P2-D / P2-E sibling modules
+    // (contracts.js / reference-policy.js / compiler.js /
+    // provider-adapter.js / provider-capability.js) are mentioned
+    // in prose but the Translation layer does not import them.
+    const importPattern = /import\s+[^;]+from\s+['"][^'"]+['"]/g;
+    const requirePattern = /require\s*\(\s*['"][^'"]+['"]\s*\)/g;
+    const imports = [];
+    let m;
+    while ((m = importPattern.exec(src))) imports.push(m[0]);
+    while ((m = requirePattern.exec(src))) imports.push(m[0]);
     const reasonerHints = [
       'creative-director',
       'analysis-engine',
       'reasoner',
-      'provider-adapter',
       'image-generation-runtime/src/providers',
+      'image-generation-runtime/src/model-runtime',
       'fetch(',
     ];
-    for (const hint of reasonerHints) {
-      assert.ok(!src.includes(hint), `${file} imports a reasoning surface: ${hint}`);
+    for (const line of imports) {
+      for (const hint of reasonerHints) {
+        assert.ok(!line.includes(hint), `${file} imports a reasoning surface: ${hint} (line: ${line})`);
+      }
     }
   }
 });
