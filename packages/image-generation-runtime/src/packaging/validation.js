@@ -1,4 +1,4 @@
-// Packaging Translation Validator — P2-A.
+// Packaging Translation Validator — P2-A (refined in P2-C).
 //
 // Capability boundary:
 //   PackagingTranslation (from translation.js)
@@ -15,10 +15,20 @@
 //   required translation fields
 //   provider capability compatibility
 //
-// Structured error code (P2 spec §32): PACKAGING_TRANSLATION_INVALID.
-// The thrown error exposes `.code`, `.issues[]`, and `.translation` for
-// upstream debug. No generic Error; the upstream contract requires a
-// specific code so that production code can branch on it.
+// P2-C update: the Reference surface is now driven by reference-policy.js
+// (the single source of truth for roles, precedence, and the canonical
+// REFERENCE_REQUIRED / REFERENCE_ROLE_INVALID / REFERENCE_UNSUPPORTED
+// error codes). The validator still inspects the Translation shape for
+// defense-in-depth, but fatal reference-policy failures are now thrown
+// by translation.js (via resolveReferencePolicy + validateReferencePolicy)
+// before the Translation object is returned. The inspect path here
+// therefore surfaces advisory issues, not the primary fatal errors.
+//
+// Structured error code (P2 spec §32): PACKAGING_TRANSLATION_INVALID
+// for translation-shape issues. P2-B aligned the shot-id error code
+// to the canonical SHOT_CONTRACT_INVALID (no prefixed alias). P2-C
+// reference-policy fatal errors use REFERENCE_REQUIRED /
+// REFERENCE_ROLE_INVALID / REFERENCE_UNSUPPORTED directly.
 //
 // Stop conditions honoured (P2 spec §20 §58):
 //   - does not call a model
@@ -129,7 +139,17 @@ export function inspectPackagingTranslation(translation) {
     issues.push('structure_evidence_missing');
   }
 
-  // Reference policy (P2 spec §15 §25).
+  // Reference policy (P2 spec §15 §25, refined in P2-C).
+  // The Translation now carries:
+  //   - references: [{ assetId, role, source, includeReason? }]
+  //   - count: derived from references.length (single authority)
+  //   - precedence: frozen 6-layer chain (single source of truth in
+  //     reference-policy.js)
+  //   - providerCapability: pass-through shape
+  // Fatal reference-policy failures (REFERENCE_REQUIRED /
+  // REFERENCE_ROLE_INVALID / REFERENCE_UNSUPPORTED) are thrown by
+  // translation.js buildReferencePolicy; this inspect is a
+  // defense-in-depth check on the resulting shape.
   const refPolicy = translation.referencePolicy;
   if (!isPlainObject(refPolicy)) {
     issues.push('reference_policy_missing');
@@ -137,14 +157,27 @@ export function inspectPackagingTranslation(translation) {
     if (translation.generationMode === 'reference_first') {
       if (refPolicy.enabled !== true) issues.push('reference_policy_disabled_in_reference_first');
       if (refPolicy.required !== true) issues.push('reference_policy_not_required_in_reference_first');
-      if (!Array.isArray(refPolicy.roles) || refPolicy.roles.length === 0) {
-        issues.push('reference_policy_roles_empty_in_reference_first');
+      if (!Array.isArray(refPolicy.references) || refPolicy.references.length === 0) {
+        issues.push('reference_policy_references_empty_in_reference_first');
       }
     }
-    if (Array.isArray(refPolicy.roles)) {
-      const invalid = refPolicy.roles.filter((role) => !PACKAGING_REFERENCE_ROLES.includes(role));
-      if (invalid.length) {
-        issues.push(`reference_policy_roles_invalid:${invalid.join(',')}`);
+    if (Array.isArray(refPolicy.references)) {
+      for (const r of refPolicy.references) {
+        if (!isString(r?.assetId)) {
+          issues.push('reference_policy_reference_asset_id_missing');
+          break;
+        }
+        if (!isString(r?.role) || !PACKAGING_REFERENCE_ROLES.includes(r.role)) {
+          issues.push(`reference_policy_reference_role_invalid:${r?.role ?? 'missing'}`);
+          break;
+        }
+      }
+      // Single authority: count MUST equal references.length. If these
+      // drift the Translation has been mutated by something other than
+      // buildReferencePolicy.
+      if (typeof refPolicy.count === 'number'
+          && refPolicy.count !== refPolicy.references.length) {
+        issues.push(`reference_policy_count_mismatch:count_${refPolicy.count}_references_${refPolicy.references.length}`);
       }
     }
     if (Array.isArray(refPolicy.precedence)) {
@@ -153,6 +186,9 @@ export function inspectPackagingTranslation(translation) {
           || refPolicy.precedence.some((value, idx) => value !== expected[idx])) {
         issues.push('reference_policy_precedence_must_match_frozen_chain');
       }
+    }
+    if (!isPlainObject(refPolicy.providerCapability)) {
+      issues.push('reference_policy_provider_capability_missing');
     }
   }
 

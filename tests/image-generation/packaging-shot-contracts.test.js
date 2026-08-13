@@ -288,25 +288,12 @@ test('P2-B-ssot the translation Translation shape now carries structureRequireme
 });
 
 // ---------------------------------------------------------------------------
-// P2-C known gap (recorded here per the P2-B pre-conditions).
-//
-// This test currently passes because the implicit role inference is still
-// in buildReferencePolicy. P2-C MUST remove the inference, at which point
-// this test will go RED until P2-C adds the fail-closed path. That is the
-// intent: a red-flag that catches the gap before P2-D Compiler lands.
+// P2-C pre-condition #8: the previous "P2-C-known-gap" test that pinned
+// the implicit role fill behavior has been REMOVED. The new Reference
+// Policy (reference-policy.js) makes implicit role fill impossible; the
+// comprehensive test for the new fail-closed behavior lives in
+// tests/image-generation/packaging-reference-policy.test.js (the P2-C
+// test file) and is asserted by the P2-A test P2-A-6d. This comment is
+// kept here as a tombstone so a future reader does not reintroduce the
+// implicit fill branch.
 // ---------------------------------------------------------------------------
-
-test('P2-C-known-gap (RED on P2-C) reference_first + enabled + empty roles currently triggers implicit role fill', () => {
-  // The implicit fill is a P2 spec §14 violation. P2-C will remove the
-  // branch and replace it with a fail-closed REFERENCE_REQUIRED error.
-  // Until then this test pins the current behavior so the gap is
-  // visible. The TODO marker in translation.js buildReferencePolicy
-  // names the work block.
-  const t = createPackagingTranslation(makeBaseInput({
-    generationMode: 'reference_first',
-    referencePolicy: { enabled: true, required: true, roles: [] },
-  }));
-  // Current behavior: roles are filled with the canonical
-  // high_fidelity_visual_reference so validation passes.
-  assert.deepEqual(t.referencePolicy.roles, ['high_fidelity_visual_reference']);
-});

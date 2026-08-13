@@ -33,6 +33,13 @@ import {
   getPackagingShotContract,
 } from './contracts.js';
 
+import {
+  PACKAGING_REFERENCE_ROLES,
+  PACKAGING_REFERENCE_PRECEDENCE,
+  resolveReferencePolicy,
+  validateReferencePolicy,
+} from './reference-policy.js';
+
 export const PACKAGING_TRANSLATION_VERSION = '1.0.0';
 export const PACKAGING_TRANSLATION_TARGET = 'packaging';
 
@@ -47,29 +54,11 @@ export const PACKAGING_GENERATION_MODES = Object.freeze([
 // contracts.js; this re-export is a convenience, not a parallel authority.
 export { PACKAGING_SHOT_CONTRACT_IDS };
 
-// Per P2 spec §14. These six reference roles are the minimum required for
-// Packaging reference assignment. Roles are capability-named; no Golden
-// project wording.
-export const PACKAGING_REFERENCE_ROLES = Object.freeze([
-  'high_fidelity_visual_reference',
-  'structure_reference',
-  'material_reference',
-  'composition_reference',
-  'style_reference',
-  'product_identity_reference',
-]);
-
-// Per P2 spec §12. The reference precedence chain is frozen. Code that
-// needs to compare precedence must compare index in this array; lower
-// index = stronger authority.
-export const PACKAGING_REFERENCE_PRECEDENCE = Object.freeze([
-  'locked_assets',
-  'explicit_user_constraints',
-  'reference_image',
-  'packaging_translation',
-  'analysis_context',
-  'model_defaults',
-]);
+// Re-exported for downstream consumers that need the canonical
+// Reference roles / precedence without depending on reference-policy.js
+// directly. The single source of truth lives in reference-policy.js;
+// this re-export is a convenience, not a parallel authority.
+export { PACKAGING_REFERENCE_ROLES, PACKAGING_REFERENCE_PRECEDENCE };
 
 // Per P2 spec §21 §22 §23. The single source of truth for shot
 // contracts lives in contracts.js. This module is a CONSUMER of that
@@ -301,55 +290,38 @@ function buildSceneProgram(input) {
 }
 
 function buildReferencePolicy(input, generationMode) {
+  // P2-C: this function is a CONSUMER of reference-policy.js, not a
+  // parallel implementation site. The single source of truth for
+  // roles, precedence, error codes, and resolution rules lives in
+  // reference-policy.js. We only:
+  //   1. resolve the upstream input + providerCapability into a
+  //      canonical policy shape;
+  //   2. validate it (validateReferencePolicy throws the canonical
+  //      REFERENCE_REQUIRED / REFERENCE_ROLE_INVALID / REFERENCE_UNSUPPORTED
+  //      code on any fatal issue);
+  //   3. carry the resolved shape into the Translation output.
+  //
+  // P2 spec §14 ("Each Reference must have an explicit role") and the
+  // P2-C pre-conditions (no implicit role fill, no implicit project
+  // asset fallback, single source of truth for referenceCount) are
+  // enforced in reference-policy.js. This wrapper does NOT add any
+  // fall-through logic; if the policy cannot be resolved the throw
+  // from validateReferencePolicy propagates.
   const raw = asObject(input?.referencePolicy);
-  // In reference_first mode the policy must be enabled and a reference is
-  // required. In analysis_led mode the policy is allowed to be disabled,
-  // but if enabled it must still declare a coherent role set.
-  const enabled = asBoolean(raw.enabled, generationMode === 'reference_first');
-  const required = asBoolean(raw.required, generationMode === 'reference_first');
-  let roles = asArray(raw.roles);
-  // Reject unknown roles fail-closed (P2 spec §15 / §58: no implicit fallback).
-  const canonicalOrder = PACKAGING_REFERENCE_ROLES;
-  const unknown = roles.filter((role) => !canonicalOrder.includes(role));
-  if (unknown.length) {
-    const err = new Error(
-      `PACKAGING_TRANSLATION_INVALID: referencePolicy contains unknown role(s): ${unknown.join(', ')}`,
-    );
-    err.code = 'PACKAGING_TRANSLATION_INVALID';
-    err.issues = [`reference_role_invalid:${unknown.join(',')}`];
-    throw err;
-  }
-  // ---- P2-C TODO (known gap, slated for removal before P2-D) ----
-  // P2 spec §14: "Each Reference must have an explicit role. No implicit
-  // project-asset fallback."
-  //
-  // The block below silently fills an empty roles array with
-  // ['high_fidelity_visual_reference'] when generationMode is
-  // 'reference_first' and policy.enabled is true. That is exactly the
-  // kind of implicit role inference §14 forbids. P2-C (Reference Policy)
-  // MUST replace it with: empty roles + required=true -> fail closed
-  // (REFERENCE_REQUIRED), and upstream must always pass an explicit
-  // role for each reference.
-  //
-  // Do NOT extend this fallback. The P2-A baseline freezes the current
-  // behavior so P2-B (this commit) is reversible; P2-C removes it.
-  if (!roles.length) {
-    roles = enabled
-      ? (generationMode === 'reference_first'
-        ? ['high_fidelity_visual_reference']
-        : [])
-      : [];
-  }
-  // ---- end P2-C TODO ----
-  // Deduplicate and freeze role order while preserving the canonical
-  // PACKAGING_REFERENCE_ROLES order.
-  const roleSet = new Set(roles);
-  const orderedRoles = canonicalOrder.filter((role) => roleSet.has(role));
+  const providerCapability = asObject(input?.providerCapability);
+  const resolved = resolveReferencePolicy({
+    generationMode,
+    referencePolicy: raw,
+    providerCapability,
+  });
+  validateReferencePolicy(resolved);
   return {
-    enabled,
-    required,
-    roles: orderedRoles,
-    precedence: PACKAGING_REFERENCE_PRECEDENCE.slice(),
+    enabled: resolved.enabled,
+    required: resolved.required,
+    references: resolved.references,
+    count: resolved.count,
+    precedence: resolved.precedence,
+    providerCapability: resolved.providerCapability,
   };
 }
 
@@ -357,10 +329,16 @@ function buildNegativeConstraints(input) {
   return asArray(input?.negativeConstraints);
 }
 
-function buildProviderHints(input) {
+function buildProviderHints(input, derivedReferenceCount) {
+  // P2-C pre-condition #3: referenceCount has one authority. The
+  // upstream input MUST NOT pre-declare a parallel count; this field
+  // is now read-only on the output and is derived from the resolved
+  // referencePolicy.references. Any input.providerHints.referenceCount
+  // is intentionally ignored so the two surfaces cannot drift.
   const raw = asObject(input?.providerHints);
+  const count = Math.max(0, Math.floor(asNumber(derivedReferenceCount, 0)));
   return {
-    referenceCount: Math.max(0, Math.floor(asNumber(raw.referenceCount, 0))),
+    referenceCount: count,
     referenceRolePriority: asArray(raw.referenceRolePriority),
     imageSize: asString(raw.imageSize),
     aspectRatio: asString(raw.aspectRatio),
@@ -407,6 +385,10 @@ export function createPackagingTranslation(input = {}) {
     throw err;
   }
 
+  // Resolve reference policy first; its count is the SOLE source for
+  // providerHints.referenceCount (P2-C pre-condition #3: one authority).
+  const referencePolicy = buildReferencePolicy(obj, generationMode);
+
   const translation = {
     schemaVersion: '1.0',
     translationVersion: PACKAGING_TRANSLATION_VERSION,
@@ -427,17 +409,20 @@ export function createPackagingTranslation(input = {}) {
     camera: buildCamera(obj),
     sceneProgram: buildSceneProgram(obj),
 
-    referencePolicy: buildReferencePolicy(obj, generationMode),
+    referencePolicy,
     negativeConstraints: buildNegativeConstraints(obj),
-    providerHints: buildProviderHints(obj),
+    providerHints: buildProviderHints(obj, referencePolicy.count),
 
     provenance: buildProvenance(obj, generationMode),
   };
 
-  // Ensure the canonical order is the actual iteration order so tests and
-  // downstream consumers can rely on it.
-  Object.freeze(translation.referencePolicy.roles);
+  // Freeze the canonical order on the new Translation shape so tests
+  // and downstream consumers can rely on iteration order. The role
+  // array from P2-A is gone; the new shape carries `references` and
+  // `precedence` and the derived `count`.
+  Object.freeze(translation.referencePolicy.references);
   Object.freeze(translation.referencePolicy.precedence);
+  Object.freeze(translation.referencePolicy.providerCapability);
   Object.freeze(translation.negativeConstraints);
 
   return translation;

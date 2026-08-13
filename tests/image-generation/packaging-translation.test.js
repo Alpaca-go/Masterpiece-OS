@@ -87,6 +87,10 @@ function makeBaseInput(overrides = {}) {
     camera: { aspectRatio: '1:1' },
     sceneProgram: { type: 'studio' },
     providerHints: { aspectRatio: '1:1' },
+    // Default provider capability: reference support on with a
+    // generous cap. Tests that exercise reference surface override
+    // this explicitly.
+    providerCapability: { referenceSupport: true, maxReferenceImages: 4 },
     ...overrides,
   };
 }
@@ -117,10 +121,27 @@ test('P2-A-3a analysis_led mode is accepted', () => {
   assert.equal(t.generationMode, 'analysis_led');
 });
 
-test('P2-A-3b reference_first mode is accepted', () => {
-  const t = createPackagingTranslation(makeBaseInput({ generationMode: 'reference_first', referencePolicy: { enabled: true, required: true, roles: ['high_fidelity_visual_reference'] } }));
+test('P2-A-3b reference_first mode is accepted with an explicit reference + provider capability', () => {
+  // P2-C: each Reference must have an explicit role and an explicit
+  // assetId; providerCapability is the only signal of whether the
+  // target provider supports references. The base input ships with
+  // referenceSupport=true so this test only needs to pass an explicit
+  // reference.
+  const t = createPackagingTranslation(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true,
+      required: true,
+      references: [
+        { assetId: 'asset-ref-001', role: 'high_fidelity_visual_reference', source: 'user' },
+      ],
+    },
+  }));
   assert.equal(t.generationMode, 'reference_first');
   assert.equal(t.referencePolicy.required, true);
+  assert.equal(t.referencePolicy.references.length, 1);
+  assert.equal(t.referencePolicy.references[0].assetId, 'asset-ref-001');
+  assert.equal(t.referencePolicy.references[0].role, 'high_fidelity_visual_reference');
 });
 
 test('P2-A-3c unsupported generation mode throws PACKAGING_TRANSLATION_INVALID', () => {
@@ -265,41 +286,144 @@ test('P2-A-6a reference policy carries the six P2 reference roles + frozen prece
   ]);
 });
 
-test('P2-A-6b reference policy roles are deduplicated and ordered canonically', () => {
+test('P2-A-6b reference policy references carry canonical role and a unique assetId per reference', () => {
+  // P2-C: the new shape is references: [{ assetId, role, ... }] with
+  // each reference carrying its own explicit role. Duplicate assetId
+  // is rejected fail-closed (no silent dedup — that would mask a real
+  // conflict between two references claiming the same asset).
   const t = createPackagingTranslation(makeBaseInput({
     generationMode: 'reference_first',
     referencePolicy: {
       enabled: true,
       required: true,
-      roles: ['composition_reference', 'style_reference', 'composition_reference'],
+      references: [
+        { assetId: 'asset-style', role: 'style_reference', source: 'user' },
+        { assetId: 'asset-composition', role: 'composition_reference', source: 'user' },
+      ],
     },
   }));
-  assert.deepEqual(t.referencePolicy.roles, ['composition_reference', 'style_reference']);
+  assert.equal(t.referencePolicy.references.length, 2);
+  assert.equal(t.referencePolicy.references[0].assetId, 'asset-style');
+  assert.equal(t.referencePolicy.references[0].role, 'style_reference');
+  assert.equal(t.referencePolicy.references[1].assetId, 'asset-composition');
+  assert.equal(t.referencePolicy.references[1].role, 'composition_reference');
+  assert.equal(t.referencePolicy.count, 2);
 });
 
-test('P2-A-6c reference policy rejects unknown role strings', () => {
+test('P2-A-6b2 duplicate assetId is rejected fail-closed (no silent dedup)', () => {
+  // Two references claiming the same assetId is a real conflict, not
+  // an input typo to silently dedup.
   assert.throws(
     () => createPackagingTranslation(makeBaseInput({
       generationMode: 'reference_first',
-      referencePolicy: { enabled: true, required: true, roles: ['unknown_role', 'style_reference'] },
+      referencePolicy: {
+        enabled: true,
+        required: true,
+        references: [
+          { assetId: 'asset-style', role: 'style_reference', source: 'user' },
+          { assetId: 'asset-style', role: 'composition_reference', source: 'user' },
+        ],
+      },
     })),
     (err) => {
-      assert.equal(err.code, 'PACKAGING_TRANSLATION_INVALID');
+      assert.equal(err.code, 'REFERENCE_ROLE_INVALID');
+      assert.ok(err.issues.some((issue) => issue.startsWith('reference_asset_id_duplicate')));
+      return true;
+    },
+  );
+});
+
+test('P2-A-6c reference policy rejects unknown role strings (REFERENCE_ROLE_INVALID)', () => {
+  assert.throws(
+    () => createPackagingTranslation(makeBaseInput({
+      generationMode: 'reference_first',
+      referencePolicy: {
+        enabled: true,
+        required: true,
+        references: [
+          { assetId: 'asset-x', role: 'unknown_role' },
+          { assetId: 'asset-y', role: 'style_reference' },
+        ],
+      },
+    })),
+    (err) => {
+      // P2-C: the canonical code for unknown role is REFERENCE_ROLE_INVALID
+      // (P2 spec §32). The legacy PACKAGING_TRANSLATION_INVALID prefix
+      // is NOT carried forward for the reference surface.
+      assert.equal(err.code, 'REFERENCE_ROLE_INVALID');
       assert.ok(err.issues.some((issue) => issue.startsWith('reference_role_invalid')));
       return true;
     },
   );
 });
 
-test('P2-A-6d reference_first without a required role fails validation closed', () => {
+test('P2-A-6d reference_first without explicit references fails closed (REFERENCE_REQUIRED)', () => {
+  // P2-C: no implicit project asset fallback. An empty references
+  // array in reference_first + required = true MUST throw
+  // REFERENCE_REQUIRED. analysis_led with no references stays valid.
+  assert.throws(
+    () => createPackagingTranslation(makeBaseInput({
+      generationMode: 'reference_first',
+      referencePolicy: { enabled: true, required: true, references: [] },
+    })),
+    (err) => {
+      assert.equal(err.code, 'REFERENCE_REQUIRED');
+      return true;
+    },
+  );
+});
+
+test('P2-A-6e reference role must be explicit (missing role per reference fails closed)', () => {
+  // P2 spec §14: "Each Reference must have an explicit role."
+  assert.throws(
+    () => createPackagingTranslation(makeBaseInput({
+      generationMode: 'reference_first',
+      referencePolicy: {
+        enabled: true,
+        required: true,
+        references: [
+          { assetId: 'asset-x' /* role omitted */ },
+        ],
+      },
+    })),
+    (err) => {
+      assert.equal(err.code, 'REFERENCE_ROLE_INVALID');
+      assert.ok(err.issues.some((issue) => issue.startsWith('reference_role_missing')));
+      return true;
+    },
+  );
+});
+
+test('P2-A-6f reference assetId must be explicit (missing assetId fails closed)', () => {
+  // P2 spec §15 + P2-C: each Reference must be associated with a
+  // concrete asset identity; bare roles[] are not enough.
+  assert.throws(
+    () => createPackagingTranslation(makeBaseInput({
+      generationMode: 'reference_first',
+      referencePolicy: {
+        enabled: true,
+        required: true,
+        references: [
+          { role: 'style_reference' /* assetId omitted */ },
+        ],
+      },
+    })),
+    (err) => {
+      assert.equal(err.code, 'REFERENCE_ROLE_INVALID');
+      assert.ok(err.issues.some((issue) => issue.startsWith('reference_asset_id_missing')));
+      return true;
+    },
+  );
+});
+
+test('P2-A-6g analysis_led with no references is valid (no implicit Reference required)', () => {
   const t = createPackagingTranslation(makeBaseInput({
-    generationMode: 'reference_first',
-    referencePolicy: { enabled: false, required: false, roles: [] },
+    generationMode: 'analysis_led',
+    referencePolicy: { enabled: false, required: false, references: [] },
   }));
-  const result = inspectPackagingTranslation(t);
-  assert.equal(result.valid, false);
-  assert.ok(result.issues.includes('reference_policy_disabled_in_reference_first'));
-  assert.throws(() => validatePackagingTranslation(t), (err) => err.code === 'PACKAGING_TRANSLATION_INVALID');
+  assert.equal(t.referencePolicy.references.length, 0);
+  assert.equal(t.referencePolicy.count, 0);
+  assert.equal(inspectPackagingTranslation(t).valid, true);
 });
 
 // ---------------------------------------------------------------------------
@@ -426,9 +550,17 @@ for (const { mode, shot } of SIX_ROUTES) {
     const t = createPackagingTranslation(makeBaseInput({
       generationMode: mode,
       shotContract: { id: shot },
+      // P2-C: every reference carries an explicit role + assetId; the
+      // analysis_led routes ship with no references at all.
       referencePolicy: mode === 'reference_first'
-        ? { enabled: true, required: true, roles: ['high_fidelity_visual_reference'] }
-        : { enabled: false, required: false, roles: [] },
+        ? {
+          enabled: true,
+          required: true,
+          references: [
+            { assetId: 'asset-route-001', role: 'high_fidelity_visual_reference', source: 'user' },
+          ],
+        }
+        : { enabled: false, required: false, references: [] },
     }));
     assert.equal(t.generationMode, mode);
     assert.equal(t.shotContract.id, shot);
