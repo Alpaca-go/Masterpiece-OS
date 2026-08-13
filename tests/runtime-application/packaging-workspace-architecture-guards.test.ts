@@ -41,9 +41,11 @@ import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const PACKAGING_PROD_DIR = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'packaging');
+const PACKAGING_PROD_PARENT = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application');
 const PACKAGING_INDEX = path.join(PACKAGING_PROD_DIR, 'index.js');
 const RUNTIME_CORE_INDEX = path.join(ROOT, 'packages', 'runtime-core', 'src', 'index.js');
 const WEB_DIR = path.join(ROOT, 'apps', 'web', 'src');
+const APPS_WEB_SRC = WEB_DIR;
 const P2_FROZEN_DIR = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'packaging');
 const P2_FROZEN_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
 
@@ -111,6 +113,24 @@ function listWebSourceFiles(): string[] {
     }
   };
   visit(WEB_DIR, '');
+  return found;
+}
+
+function walkSourceDir(absRoot: string): string[] {
+  if (!existsSync(absRoot)) return [];
+  const found: string[] = [];
+  const visit = (abs: string) => {
+    for (const entry of readdirSync(abs, { withFileTypes: true })) {
+      const childAbs = path.join(abs, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === 'out') continue;
+        visit(childAbs);
+      } else if (/\.(?:c|m)?(?:js|ts)x?$/.test(entry.name)) {
+        found.push(childAbs);
+      }
+    }
+  };
+  visit(absRoot);
   return found;
 }
 
@@ -1271,4 +1291,238 @@ test('V-04 view-model.js does NOT detect stale independently (no computeStale / 
   // Stale is a state-machine concern (workspace-state +
   // stale-tracker), not a view-model concern.
   assert.doesNotMatch(src, /computeStale|detectStaleChange/);
+});
+
+// =============================================================================
+// Group W — P3-B2 RPC Binding Boundary (additive; does NOT modify P3-A7 A-L)
+// =============================================================================
+//
+// These guards are P3-B2-specific. They protect the contract
+// that:
+//   - The Web Packaging feature is RPC-only. It MUST NOT
+//     instantiate `createPackagingWorkspaceService` locally.
+//   - There is no fallback / dual-path architecture. If the
+//     runtime RPC is unavailable, the Web feature renders a
+//     canonical unavailable surface — it does NOT silently
+//     fall back to a local in-process stub.
+//   - The runtime operations layer is the SOLE owner of the
+//     P2 frozen deps seam. The Web feature never sends
+//     `apiKey` / `Authorization` / `Bearer` over RPC.
+
+const PACKAGING_WEB_FEATURE = path.join(APPS_WEB_SRC, 'features/packaging');
+const PACKAGING_OPERATIONS = path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js');
+const PACKAGING_RUNTIME_SERVICES = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'runtime-services.ts');
+
+test('W-01 the Web Packaging feature directory exists under apps/web/src/features/packaging/', () => {
+  assert.ok(
+    existsSync(PACKAGING_WEB_FEATURE),
+    'P3-B2 requires apps/web/src/features/packaging/ (per P3-A1 audit + P3-A9 freeze §20)',
+  );
+});
+
+test('W-02 the Web Packaging feature does NOT import or call createPackagingWorkspaceService locally', () => {
+  // Walk the entire feature directory; the symbol must not
+  // appear in any executable context (import / function
+  // call / type-only import). Comments and JSX text that
+  // mention the symbol as a guardrail are allowed.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  assert.ok(files.length > 0, 'Packaging Web feature must contain at least one source file');
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const re of [
+      /^import\s*\{[^}]*\bcreatePackagingWorkspaceService\b/mu,
+      /^import\s+type\s*\{[^}]*\bcreatePackagingWorkspaceService\b/mu,
+      /\bcreatePackagingWorkspaceService\s*\(/,
+      /\bcreatePackagingWorkspaceService\s*</,
+      /\bReturnType\s*<\s*typeof\s+createPackagingWorkspaceService\b/,
+    ]) {
+      assert.equal(
+        re.test(src),
+        false,
+        `${file} must not match ${re.toString()} (P3-B2 §3 — no local Workspace service instance)`,
+      );
+    }
+  }
+});
+
+test('W-03 the Web Packaging feature does NOT import @masterpiece/image-generation-runtime (no deep-import of P2 frozen)', () => {
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(
+      src.includes('@masterpiece/image-generation-runtime'),
+      false,
+      `${file} must not deep-import @masterpiece/image-generation-runtime (P3-A7 B)`,
+    );
+  }
+});
+
+test('W-04 the Web Packaging feature does NOT read process.env / fs / crypto for credentials', () => {
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = readFile(file);
+    for (const forbidden of [
+      'process.env',
+      'fs.readFile',
+      'fs.writeFile',
+      "from 'node:fs'",
+      "from 'node:fs/promises'",
+      'crypto.createHash',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not access ${forbidden} (P3-A7 E Credential Boundary)`,
+      );
+    }
+  }
+});
+
+test('W-05 the Web Packaging feature consumes window.masterpiece.packaging.* only (no local in-process service fallback)', () => {
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let usesRpc = false;
+  for (const file of files) {
+    const src = readFile(file);
+    if (src.includes('window.masterpiece') || src.includes('masterpiece.packaging')) {
+      usesRpc = true;
+    }
+    // The Web feature must not define a local
+    // `createPackagingWorkspaceService` / `preparePackagingGeneration`
+    // stub. (P3-B2 §3: no dual-path architecture.)
+    assert.equal(
+      src.includes('preparePackagingGeneration = NOOP') || src.includes('NOOP_STUB'),
+      false,
+      `${file} must not define a local in-process stub for prepare/execute (P3-B2 §3 dual-path forbidden)`,
+    );
+  }
+  assert.ok(usesRpc, 'Web Packaging feature must consume window.masterpiece.packaging.* (RPC only)');
+});
+
+test('W-06 the operations layer is the sole Web-facing bridge to the frozen Workspace service', () => {
+  assert.ok(
+    existsSync(PACKAGING_OPERATIONS),
+    'packaging-operations.js must exist as the sole Web-facing bridge',
+  );
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // The operations file MUST NOT deep-import the frozen
+  // P2 / application internals. The Workspace service
+  // arrives via the `service` parameter (injected by the
+  // runtime-side composition root in runtime-services.ts).
+  for (const forbidden of [
+    '@masterpiece/image-generation-runtime',
+    'createPackagingTranslation',
+    'compilePackagingPrompt',
+    'buildPackagingProviderPayload',
+    'resolvePackagingProviderCapability',
+    'createPackagingWorkspaceService',
+  ]) {
+    assert.equal(
+      opsSrc.includes(forbidden),
+      false,
+      `packaging-operations.js must not import or call ${forbidden} (P3-B2 §7 + P3-A7 B/F)`,
+    );
+  }
+  // The operations file MUST NOT have a second bridge (no
+  // additional rpc-server, no express, no http.Server).
+  for (const forbidden of [
+    'express',
+    'http.createServer',
+    'new Server',
+    'WebSocketServer',
+    'local-rpc-server',
+  ]) {
+    assert.equal(
+      opsSrc.includes(forbidden),
+      false,
+      `packaging-operations.js must not start a second HTTP / RPC server (${forbidden})`,
+    );
+  }
+});
+
+test('W-07 the operations layer does not read credentials directly (it accepts them via the readCredentials adapter only)', () => {
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  for (const forbidden of [
+    'process.env',
+    "from 'node:fs'",
+    "from 'node:fs/promises'",
+    'crypto.createHash',
+  ]) {
+    assert.equal(
+      opsSrc.includes(forbidden),
+      false,
+      `packaging-operations.js must not access credentials via the forbidden surface (${forbidden})`,
+    );
+  }
+  // The operations layer must accept readCredentials as an
+  // adapter (function parameter), not hardcode any specific
+  // credential store.
+  assert.match(
+    opsSrc,
+    /readCredentials/,
+    'packaging-operations.js must accept readCredentials as a factory adapter',
+  );
+});
+
+test('W-08 the runtime services factory instantiates the Packaging Workspace service once per runtime process', () => {
+  const rtSrc = readFile(PACKAGING_RUNTIME_SERVICES);
+  // Exactly one createPackagingWorkspaceService call in
+  // runtime-services.ts (not inside an arrow inside an
+  // arrow).
+  const matches = rtSrc.match(/createPackagingWorkspaceService\s*\(/g) || [];
+  assert.equal(
+    matches.length,
+    1,
+    `runtime-services.ts must instantiate createPackagingWorkspaceService exactly once (found ${matches.length})`,
+  );
+  // The factory is held in the frozen services object so
+  // RPC operations can reuse it.
+  assert.match(
+    rtSrc,
+    /createPackagingWorkspaceService\(\)/,
+    'runtime-services.ts must call createPackagingWorkspaceService() without test-stub injection',
+  );
+});
+
+test('W-09 the Web feature exposes a no-fallback unavailable surface (RPC unavailable → render error, not local stub)', () => {
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let foundUnavailable = false;
+  for (const file of files) {
+    const src = readFile(file);
+    if (
+      src.includes('isPackagingRuntimeAvailable') ||
+      src.includes('RPC_UNAVAILABLE') ||
+      src.includes('unavailable') ||
+      src.includes('RPC_UNAVAILABLE_REASON')
+    ) {
+      foundUnavailable = true;
+    }
+  }
+  assert.ok(
+    foundUnavailable,
+    'Web Packaging feature must explicitly detect the unavailable runtime and render a canonical unavailable surface (P3-B2 §3 + §12)',
+  );
+});
+
+test('W-10 the Web feature does not embed a demo seed of Locked Assets in the production code path', () => {
+  // The B1 demo seed was a function called `buildSeedTruthSnapshot`
+  // that hard-coded 7 canonical Locked-Asset fields with
+  // empty / placeholder values. P3-B2 production path must
+  // NOT contain this kind of seed (per the user spec §20
+  // "B1 当时 seed 了 7 个 canonical Locked-Asset 字段 作为
+  // shell demo. B2 接入真实 RPC 后：这些 seed/demo values
+  // 不得继续充当 production truth").
+  //
+  // The runtime side MAY keep an analogous empty-shape seed
+  // for the resolveTruthSnapshot default — that is the
+  // runtime authority, not a fake UI seed. This guard only
+  // checks the Web feature.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = readFile(file);
+    assert.equal(
+      src.includes('buildSeedTruthSnapshot'),
+      false,
+      `${file} must not contain the B1 buildSeedTruthSnapshot helper (P3-B2 §20)`,
+    );
+  }
 });

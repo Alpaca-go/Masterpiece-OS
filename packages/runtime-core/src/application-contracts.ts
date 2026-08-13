@@ -2084,6 +2084,216 @@ export interface SaveModelBenchmarkEvaluationInput {
   notes?: string;
 }
 
+// ---------------------------------------------------------------------------
+// P3-B2 — Packaging Workspace RPC contract
+//
+// The Packaging Workspace is a frozen P3-A application surface. The
+// P3-B2 RPC binding exposes ONLY the safe public surface:
+//   - 7 RPC methods (createSession / getView / updateIntent /
+//     setTruthSnapshot / prepareGeneration / executeGeneration /
+//     resetPreparation)
+//   - 1 frozen view model projection (the 18 canonical top-level
+//     keys per P3-A freeze report §13.2)
+//
+// Hard prohibitions (P3-A freeze report §20/21):
+//   - No second HTTP server / no second RPC runtime.
+//   - No raw session / preparedResult / executionResult / Provider
+//     payload / credential / absolute path in the RPC response.
+//   - No fallback to a local createPackagingWorkspaceService in
+//     the Web feature.
+//   - No _removeSession in the public RPC surface.
+//   - No deep-import of `packages/image-generation-runtime/...`
+//     from the Web feature.
+// ---------------------------------------------------------------------------
+
+export interface PackagingWorkspaceIntent {
+  generationMode: string;
+  shotContractId: string;
+  explicitUserConstraintsText: string;
+  referenceCount: number;
+  providerModelId: string;
+  apiProfileId: string;
+}
+
+export interface PackagingWorkspaceReference {
+  assetId: string;
+  role: string;
+  source: string;
+  displayName: string;
+  previewUri: string;
+}
+
+export interface PackagingWorkspaceLockedField {
+  name?: string;
+  present?: boolean;
+  usageMode?: string;
+  formFactor?: string;
+  items?: string[];
+  locked: true;
+}
+
+export interface PackagingWorkspaceLockedAssets {
+  schemaVersion: string;
+  fields: {
+    brand?: PackagingWorkspaceLockedField;
+    logo?: PackagingWorkspaceLockedField;
+    productIdentity?: PackagingWorkspaceLockedField;
+    category?: PackagingWorkspaceLockedField;
+    structure?: PackagingWorkspaceLockedField;
+    mandatoryCopy?: PackagingWorkspaceLockedField;
+    confirmedComponents?: PackagingWorkspaceLockedField;
+  };
+  allLocked: boolean;
+}
+
+export interface PackagingWorkspaceReadiness {
+  canPrepare: boolean;
+  canExecute: boolean;
+  canRetry: boolean;
+  canReset: boolean;
+  canEditIntent: boolean;
+  isBusy: boolean;
+  isStale: boolean;
+  stale: boolean;
+  blockers: string[];
+  warnings: string[];
+}
+
+export interface PackagingWorkspacePreparedSummary {
+  target: string;
+  generationMode: string;
+  shotContractId: string;
+  readiness: string;
+  referenceSummary: {
+    enabled: boolean;
+    required: boolean;
+    count: number;
+    roles: string[];
+  };
+  lockedAssetSummary: PackagingWorkspaceLockedAssets;
+  providerSummary: {
+    registryModelId: string;
+    provider: string;
+    protocol: string;
+    referenceSupport: boolean;
+    maxReferenceImages: number | null;
+  };
+  compiledPromptPreview: string | null;
+  metadataSummary: {
+    translationVersion: string;
+    compilerVersion: string;
+    providerCapabilityVersion: string;
+    metadataVersion: string;
+  };
+  fingerprintSummary: {
+    sourceBundleHash: string | null;
+    userIntentHash: string | null;
+    deliverableHash: string | null;
+    referencePlanHash: string | null;
+    compiledPromptHash: string | null;
+    executionIdentityHash: string | null;
+    compiledAt: string;
+  };
+  warnings: string[];
+  blockers: string[];
+}
+
+export interface PackagingWorkspaceExecutionSummary {
+  runId: string;
+  status: string;
+  generationMode: string;
+  shotContractId: string;
+  provider: { adapterId: string; protocol: string; provider: string } | null;
+  model: { registryModelId: string; providerModelId: string } | null;
+  apiProfileId: string;
+  artifacts: Array<{
+    imageId: string;
+    mimeType: string;
+    hasB64: boolean;
+    hasUrl: boolean;
+    relativePath: string;
+    thumbnailRelativePath: string;
+    width: number | null;
+    height: number | null;
+    sizeBytes: number | null;
+  }>;
+  diagnostics: {
+    startedAt: string;
+    completedAt: string;
+    durationMs: number | null;
+    referenceCount: number | null;
+    imageCount: number | null;
+    region: string | null;
+  } | null;
+}
+
+export interface PackagingWorkspaceError {
+  code: string;
+  severity: string;
+  title: string;
+  userMessage: string;
+  recoverable: boolean;
+  suggestedAction: string | null;
+}
+
+export interface PackagingWorkspaceView {
+  schemaVersion: string;
+  sessionId: string;
+  projectId: string;
+  target: string;
+  status: string;
+  statusLabel: string;
+  isBusy: boolean;
+  canEditIntent: boolean;
+  mode: string | null;
+  shot: string | null;
+  references: PackagingWorkspaceReference[];
+  lockedAssets: PackagingWorkspaceLockedAssets;
+  intent: PackagingWorkspaceIntent | null;
+  readiness: PackagingWorkspaceReadiness;
+  prepared: PackagingWorkspacePreparedSummary | null;
+  execution: PackagingWorkspaceExecutionSummary | null;
+  error: PackagingWorkspaceError | null;
+  staleReasons: string[];
+}
+
+export interface PackagingCreateSessionInput {
+  projectId: string;
+  truthSnapshot?: Record<string, unknown> | null;
+  initialIntent?: Record<string, unknown> | null;
+}
+
+export interface PackagingCreateSessionResult {
+  sessionId: string;
+  view: PackagingWorkspaceView;
+}
+
+export interface PackagingUpdateIntentInput {
+  sessionId: string;
+  patch: Record<string, unknown>;
+}
+
+export interface PackagingSetTruthSnapshotInput {
+  sessionId: string;
+  truthSnapshot: Record<string, unknown>;
+}
+
+export interface PackagingSessionMutationResult {
+  view: PackagingWorkspaceView;
+}
+
+export interface PackagingExecutionInput {
+  sessionId: string;
+  /**
+   * Safe execution seam: the caller (Web UI) supplies only the
+   * canonical safe identifiers. Credentials are NEVER read by
+   * the Web UI; the runtime authority resolves them from
+   * `apiProfileId` + the existing credential store.
+   */
+  providerModelId?: string;
+  apiProfileId?: string;
+}
+
 export interface RuntimeApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -2452,6 +2662,32 @@ export interface RuntimeApi {
     export(projectId: string): Promise<string | null>;
     /** 搂8 鍒犻櫎琚紩鐢ㄧ殑鏂囨。 Context 鍓嶆鏌ュ紩鐢ㄥ叧绯汇€?*/
     isDocumentContextReferenced(runId: string): Promise<boolean>;
+  };
+  // P3-B2 — Packaging Workspace RPC namespace. The Web UI is
+  // a thin client; the workspace service lives on the runtime
+  // side. The view model is the only thing the UI binds to.
+  // No raw session / preparedResult / executionResult is ever
+  // returned over RPC.
+  packaging: {
+    createSession(
+      input: PackagingCreateSessionInput
+    ): Promise<PackagingCreateSessionResult>;
+    getView(sessionId: string): Promise<PackagingWorkspaceView>;
+    updateIntent(
+      input: PackagingUpdateIntentInput
+    ): Promise<PackagingSessionMutationResult>;
+    setTruthSnapshot(
+      input: PackagingSetTruthSnapshotInput
+    ): Promise<PackagingSessionMutationResult>;
+    prepareGeneration(
+      sessionId: string
+    ): Promise<PackagingSessionMutationResult>;
+    executeGeneration(
+      input: PackagingExecutionInput
+    ): Promise<PackagingSessionMutationResult>;
+    resetPreparation(
+      sessionId: string
+    ): Promise<PackagingSessionMutationResult>;
   };
 }
 

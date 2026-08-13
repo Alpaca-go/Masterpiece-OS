@@ -18,6 +18,11 @@ import { createImageGenerationService } from './image-generation/service.ts';
 import { createDeliverableValidatorService } from './image-generation/deliverable-validator-service.ts';
 import { createShortChainGenerationService } from './image-generation/short-chain-service.ts';
 import { createLockedAssetsService } from './locked-assets-service.ts';
+// P3-B2: Packaging Workspace service. Imported lazily via the
+// `application/packaging/index.js` barrel (not the P2 frozen
+// internals) so the Web UI / tests continue to see only the
+// frozen P3-A public surface.
+import { createPackagingWorkspaceService } from './packaging/index.js';
 import { createPipelineService } from './pipeline-service.ts';
 import { createProjectContextService, type SaveDialogResult } from './project-context-service.ts';
 import { createProjectStore } from './project-store.ts';
@@ -158,6 +163,16 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   const visualExplorations = createVisualExplorationService(projects, creativeSessions, creativeDirections, styleProfiles, imageGeneration);
   const generationSeriesExecution = createGenerationSeriesExecutionService(generationSeries, creativeGeneration, formalAssets);
 
+  // P3-B2: Packaging Workspace service is created ONCE per
+  // runtime process and held in the frozen services object.
+  // The session Map inside the Workspace service keeps the
+  // canonical session authority; the Web UI never holds the
+  // service instance (it consumes the view model over RPC
+  // only). The factory defaults to the real P2 frozen
+  // prepare/execute functions; no test stubs are wired in
+  // production.
+  const packaging = createPackagingWorkspaceService();
+
   return Object.freeze({
     projects, reports: createReportService(projects), pipeline, documentContext, projectContext,
     contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
@@ -166,6 +181,10 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeriesExecution,
+    // P3-B2: exposed on the runtime services surface so the
+    // packaging-operations RPC layer can bind it. Web consumers
+    // never receive this instance over RPC.
+    packaging,
   });
 }
 

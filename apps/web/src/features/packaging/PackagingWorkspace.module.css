@@ -590,7 +590,115 @@
   font-weight: 600;
 }
 
-.refreshButton:hover {
+.refreshButton:hover:not(:disabled) {
   border-color: #b9a8e0;
   color: #4a2faf;
+}
+
+.refreshButton:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+/* ----------------------------- bootstrap surface ------------------- */
+.bootstrapMain {
+  display: grid;
+  place-items: center;
+  padding: 56px clamp(36px, 5vw, 72px);
+}
+
+.bootstrapPanel {
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  gap: 14px;
+  padding: 28px 30px;
+  border: 1px solid #ddd6cb;
+  border-radius: 14px;
+  background: #faf9f6;
+  box-shadow: 0 18px 50px #29212e08;
+}
+
+.bootstrapTitle {
+  margin: 0;
+  font: 500 20px Georgia, "Songti SC", serif;
+  letter-spacing: -.01em;
+}
+
+.bootstrapBody {
+  margin: 0;
+  color: #5f5866;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.bootstrapLabel {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: #49444c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bootstrapInput {
+  width: 100%;
+  border: 1px solid #d3cec7;
+  border-radius: 7px;
+  padding: 10px 12px;
+  outline: none;
+  color: #242126;
+  background: #fff;
+  font-size: 13px;
+}
+
+.bootstrapInput:focus {
+  border-color: #815ad9;
+  box-shadow: 0 0 0 3px #815ad914;
+}
+
+.bootstrapInput:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.bootstrapError {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 7px;
+  color: #933b3b;
+  background: #f7e3e2;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.bootstrapActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.bootstrapHint {
+  margin: 4px 0 0;
+  color: #847d87;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* ----------------------------- intent patch form -------------------- */
+.patchForm {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #ebe5d9;
+}
+
+.patchLabel {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  color: #49444c;
+  font-size: 11px;
+  font-weight: 700;
 }

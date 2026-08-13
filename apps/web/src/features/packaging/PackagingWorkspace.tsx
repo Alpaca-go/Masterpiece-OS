@@ -1,66 +1,251 @@
-// P3-B1 — Packaging Workspace UI Shell.
+// P3-B2 — Packaging Workspace UI (RPC client).
 //
-// P3-B1 is a UI SHELL ONLY. This component:
-//   - Consumes only the P3-A public barrel
-//     (`@masterpiece/runtime-core`); no deep-imports.
-//   - Calls `getView()` to obtain a frozen, UI-safe projection
-//     of the Workspace session. The raw session / preparedResult
-//     / executionResult are NEVER read here (P3-A freeze report
-//     §13.2).
-//   - Renders the 6 canonical sections (Generation Intent /
-//     Reference Assignments / Locked Assets / Readiness & Stale
-//     / Last Execution / Error Surface) in a tile grid.
-//   - Does NOT wire real RPC. Prepare / Execute / Reset are
-//     visible as disabled placeholders to make the contract
-//     surface explicit, but they do NOT trigger any real
-//     operation. Real RPC binding lands in a follow-up P3-B
-//     sub-step.
+// P3-B2 changes from the B1 in-process shell:
+//   - The Workspace service is NO LONGER instantiated in the
+//     browser. All operations go through
+//     `window.masterpiece.packaging.*` RPC channels.
+//   - `createPackagingSession()` returns the initial
+//     `{ sessionId, view }` from the runtime side.
+//   - Prepare / Execute / Reset buttons are wired to the
+//     corresponding RPC channels. Their enabled / disabled
+//     state still comes from `view.readiness.*` (P3-A4 §5)
+//     and `view.isBusy` — the React component does NOT
+//     maintain a second rule table.
+//   - There is NO "fallback to local service" path. If the
+//     runtime is not available, the workspace renders a
+//     canonical "RPC unavailable" surface and refuses to
+//     proceed. This is required by P3-B2 §3 (no dual-path
+//     architecture).
+//   - Locked-Asset values come from the runtime-resolved
+//     truth snapshot (no fake seed in the Web feature).
 //
 // Architectural guard rails honoured:
 //   - P3-A7 STOP-P3-A-09: no direct Provider network call.
 //   - P3-A7 B: no deep-import of
 //     `packages/image-generation-runtime/...`.
-//   - P3-A4: no second state machine / no parallel rule table
-//     in React; all capabilities come from `view.readiness.*`
-//     and the top-level `view.isBusy` / `view.canEditIntent`.
+//   - P3-A4: no second state machine / no parallel rule
+//     table in React.
 //   - P3-A4 hostile-input redaction: only the redacted view
-//     is read; raw error.message / path / payload never reach
-//     the DOM.
-//   - P3-A6: Locked Assets are read-only display only. No
-//     edit / unlock / replace / save calls from this file.
+//     is read; raw error.message / path / payload never
+//     reach the DOM.
+//   - P3-A6: Locked Assets are read-only display only.
 //   - P3-A5.1: STALE is distinguishable from UNPREPARED via
-//     `view.readiness.isStale` and `view.staleReasons`. The
-//     readiness tile shows the canonical STALE-specific
-//     reason list rather than a generic "not ready" hint.
+//     `view.readiness.isStale` + `view.staleReasons`.
+//   - P3-A3 §10.6: execute != implicit prepare + execute.
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
-  PACKAGING_WORKSPACE_STATUS_LABELS,
   PACKAGING_REFERENCE_ROLES,
-  type createPackagingWorkspaceService,
+  PACKAGING_WORKSPACE_STATUS_LABELS,
 } from '@masterpiece/runtime-core';
+import type {
+  PackagingWorkspaceReference,
+  PackagingWorkspaceView,
+} from '@masterpiece/runtime-core/application-contracts.ts';
 import {
-  createPackagingShellSession,
-  type PackagingShellService,
+  createPackagingSession,
+  executePackagingGeneration,
+  getPackagingView,
+  isPackagingRuntimeAvailable,
+  preparePackagingGeneration,
+  resetPackagingPreparation,
+  setPackagingTruthSnapshot,
+  updatePackagingIntent,
+  type PackagingClientSession,
 } from './service';
 import styles from './PackagingWorkspace.module.css';
 
-type WorkspaceView = ReturnType<PackagingShellService['getView']>;
-
 interface Props {
   onBack: () => void;
+  /**
+   * Optional pre-selected project id. When the Web side
+   * enters the Packaging workspace from the project page, the
+   * caller passes the selected project id here. When the user
+   * enters from the home page without a selected project, the
+   * workspace shows the project-id bootstrap form.
+   */
+  initialProjectId?: string;
 }
 
-export function PackagingWorkspace({ onBack }: Props) {
-  const session = useMemo(() => createPackagingShellSession(), []);
-  const [view, setView] = useState<WorkspaceView>(() =>
-    session.service.getView(session.sessionId)
-  );
+type WorkspaceState =
+  | { kind: 'unavailable'; reason: string }
+  | { kind: 'bootstrap'; defaultProjectId: string; error: string | null; pending: boolean }
+  | { kind: 'ready'; sessionId: string; view: PackagingWorkspaceView; pending: boolean; error: string | null };
 
-  function refresh() {
-    setView(session.service.getView(session.sessionId));
+const RPC_UNAVAILABLE_REASON =
+  'window.masterpiece.packaging 命名空间未注册。' +
+  'Packaging Workspace 依赖 Shared Runtime RPC 桥接。' +
+  '请确认 Node Runtime Host 已启动并加载了 P3-B2 operations。';
+
+export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
+  const runtimeAvailable = useMemo(() => isPackagingRuntimeAvailable(), []);
+
+  const [state, setState] = useState<WorkspaceState>(() => {
+    if (!runtimeAvailable) {
+      return { kind: 'unavailable', reason: RPC_UNAVAILABLE_REASON };
+    }
+    return {
+      kind: 'bootstrap',
+      defaultProjectId: initialProjectId,
+      error: null,
+      pending: false,
+    };
+  });
+
+  const refreshView = useCallback(async (sessionId: string) => {
+    const view = await getPackagingView(sessionId);
+    setState((current) => (current.kind === 'ready' && current.sessionId === sessionId
+      ? { ...current, view }
+      : current));
+  }, []);
+
+  const handleCreateSession = useCallback(async (projectId: string) => {
+    setState((current) => current.kind === 'bootstrap' ? { ...current, pending: true, error: null } : current);
+    try {
+      const result: PackagingClientSession = await createPackagingSession({ projectId });
+      setState({
+        kind: 'ready',
+        sessionId: result.sessionId,
+        view: result.view,
+        pending: false,
+        error: null,
+      });
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setState((current) => current.kind === 'bootstrap'
+        ? { ...current, pending: false, error: message }
+        : current);
+    }
+  }, []);
+
+  const handlePrepare = useCallback(async () => {
+    if (state.kind !== 'ready' || state.pending) return;
+    setState({ ...state, pending: true, error: null });
+    try {
+      const view = await preparePackagingGeneration(state.sessionId);
+      setState({ ...state, view, pending: false });
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setState({ ...state, pending: false, error: message });
+    }
+  }, [state]);
+
+  const handleExecute = useCallback(async () => {
+    if (state.kind !== 'ready' || state.pending) return;
+    setState({ ...state, pending: true, error: null });
+    try {
+      const view = await executePackagingGeneration({ sessionId: state.sessionId });
+      setState({ ...state, view, pending: false });
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setState({ ...state, pending: false, error: message });
+    }
+  }, [state]);
+
+  const handleReset = useCallback(async () => {
+    if (state.kind !== 'ready' || state.pending) return;
+    setState({ ...state, pending: true, error: null });
+    try {
+      const view = await resetPackagingPreparation(state.sessionId);
+      setState({ ...state, view, pending: false });
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setState({ ...state, pending: false, error: message });
+    }
+  }, [state]);
+
+  const handleRefresh = useCallback(async () => {
+    if (state.kind !== 'ready') return;
+    try {
+      await refreshView(state.sessionId);
+    } catch {
+      // Refresh errors are non-blocking; the next mutation
+      // will surface a real error.
+    }
+  }, [state, refreshView]);
+
+  if (state.kind === 'unavailable') {
+    return <UnavailableSurface reason={state.reason} onBack={onBack} />;
   }
+  if (state.kind === 'bootstrap') {
+    return (
+      <BootstrapSurface
+        defaultProjectId={state.defaultProjectId}
+        error={state.error}
+        pending={state.pending}
+        onCreate={handleCreateSession}
+        onBack={onBack}
+      />
+    );
+  }
+  return (
+    <ReadySurface
+      sessionId={state.sessionId}
+      view={state.view}
+      pending={state.pending}
+      transientError={state.error}
+      onPrepare={handlePrepare}
+      onExecute={handleExecute}
+      onReset={handleReset}
+      onRefresh={handleRefresh}
+      onUpdateIntent={async (patch) => {
+        const view = await updatePackagingIntent(state.sessionId, patch);
+        setState((current) => current.kind === 'ready' ? { ...current, view } : current);
+      }}
+      onSetTruthSnapshot={async (truthSnapshot) => {
+        const view = await setPackagingTruthSnapshot(state.sessionId, truthSnapshot);
+        setState((current) => current.kind === 'ready' ? { ...current, view } : current);
+      }}
+      onBack={onBack}
+    />
+  );
+}
 
+// ---------------------------------------------------------------------------
+// Surfaces
+// ---------------------------------------------------------------------------
+
+function UnavailableSurface({ reason, onBack }: { reason: string; onBack: () => void }) {
+  return (
+    <div className={styles.shell}>
+      <header className={styles.topNav}>
+        <div className={styles.topNavLeft}>
+          <p className={styles.eyebrow}>PACKAGING GENERATOR</p>
+          <h1 className={styles.title}>包装生成工作台</h1>
+        </div>
+        <div className={styles.topNavRight}>
+          <button className={styles.backButton} onClick={onBack}>返回首页</button>
+        </div>
+      </header>
+      <main className={styles.bootstrapMain}>
+        <section className={styles.bootstrapPanel}>
+          <h2 className={styles.bootstrapTitle}>Shared Runtime RPC 不可用</h2>
+          <p className={styles.bootstrapBody}>
+            P3-B2 将 Packaging Workspace 完全迁移到了 Shared Runtime RPC。Web
+            端不再本地实例化 Workspace service。
+          </p>
+          <p className={styles.bootstrapBody}>{reason}</p>
+          <button className={styles.backButton} onClick={onBack}>返回首页</button>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function BootstrapSurface({
+  defaultProjectId,
+  error,
+  pending,
+  onCreate,
+  onBack,
+}: {
+  defaultProjectId: string;
+  error: string | null;
+  pending: boolean;
+  onCreate: (projectId: string) => void;
+  onBack: () => void;
+}) {
+  const [value, setValue] = useState(defaultProjectId);
   return (
     <div className={styles.shell}>
       <header className={styles.topNav}>
@@ -68,43 +253,117 @@ export function PackagingWorkspace({ onBack }: Props) {
           <p className={styles.eyebrow}>PACKAGING GENERATOR</p>
           <h1 className={styles.title}>包装生成工作台</h1>
           <p className={styles.subtitle}>
-            基于已完成的视觉分析，使用 Workspace Architecture
-            推导并生成包装效果图。
+            选择项目以建立 Packaging Workspace 会话。Locked Assets 等事实面
+            将由 runtime 侧从项目存储与 Locked-Assets-Service 解析。
+          </p>
+        </div>
+        <div className={styles.topNavRight}>
+          <button className={styles.backButton} onClick={onBack}>返回首页</button>
+        </div>
+      </header>
+      <main className={styles.bootstrapMain}>
+        <section className={styles.bootstrapPanel}>
+          <h2 className={styles.bootstrapTitle}>建立 Workspace 会话</h2>
+          <label className={styles.bootstrapLabel}>
+            项目 ID
+            <input
+              className={styles.bootstrapInput}
+              value={value}
+              placeholder="例如 pkg-2024-skin-cream"
+              onChange={(event) => setValue(event.target.value)}
+              disabled={pending}
+            />
+          </label>
+          {error && <p className={styles.bootstrapError}>{error}</p>}
+          <div className={styles.bootstrapActions}>
+            <button
+              className={`${styles.toolbarButton} ${styles.toolbarButtonPrimary}`}
+              disabled={pending || !value.trim()}
+              onClick={() => onCreate(value.trim())}
+            >
+              {pending ? '建立中…' : '建立会话'}
+            </button>
+            <button className={styles.toolbarButton} onClick={onBack} disabled={pending}>
+              取消
+            </button>
+          </div>
+          <p className={styles.bootstrapHint}>
+            会话由 runtime 端持有。Web 端只保留 sessionId + View Model。本地
+            不再存在 Packaging Workspace service 实例。
+          </p>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+interface ReadySurfaceProps {
+  sessionId: string;
+  view: PackagingWorkspaceView;
+  pending: boolean;
+  transientError: string | null;
+  onPrepare: () => void;
+  onExecute: () => void;
+  onReset: () => void;
+  onRefresh: () => void;
+  onUpdateIntent: (patch: Record<string, unknown>) => Promise<void>;
+  onSetTruthSnapshot: (truthSnapshot: Record<string, unknown>) => Promise<void>;
+  onBack: () => void;
+}
+
+function ReadySurface({
+  sessionId,
+  view,
+  pending,
+  transientError,
+  onPrepare,
+  onExecute,
+  onReset,
+  onRefresh,
+  onUpdateIntent,
+  onSetTruthSnapshot,
+  onBack,
+}: ReadySurfaceProps) {
+  return (
+    <div className={styles.shell}>
+      <header className={styles.topNav}>
+        <div className={styles.topNavLeft}>
+          <p className={styles.eyebrow}>PACKAGING GENERATOR</p>
+          <h1 className={styles.title}>包装生成工作台</h1>
+          <p className={styles.subtitle}>
+            基于已完成的视觉分析，使用 Workspace Architecture 推导并生成包装效果图。
           </p>
         </div>
         <div className={styles.topNavRight}>
           <StatusBadge status={view.status} label={view.statusLabel} />
-          <SessionIdBadge value={view.sessionId} />
-          <button className={styles.backButton} onClick={onBack}>
-            返回首页
-          </button>
+          <SessionIdBadge value={sessionId} />
+          <button className={styles.backButton} onClick={onBack}>返回首页</button>
         </div>
       </header>
 
-      <PlaceholderToolbar />
+      <ActionToolbar
+        view={view}
+        pending={pending}
+        onPrepare={onPrepare}
+        onExecute={onExecute}
+        onReset={onReset}
+        onRefresh={onRefresh}
+      />
 
       <main className={styles.tiles}>
-        <GenerationIntentTile view={view} />
+        <GenerationIntentTile view={view} onPatchIntent={onUpdateIntent} />
         <ReferenceAssignmentsTile view={view} />
-        <LockedAssetsTile view={view} />
-        <ReadinessStaleTile view={view} />
+        <LockedAssetsTile view={view} onRefreshTruth={() => onSetTruthSnapshot({})} />
+        <ReadinessStaleTile view={view} transientError={transientError} />
         <LastExecutionTile view={view} />
         <ErrorSurfaceTile view={view} />
       </main>
 
       <footer className={styles.footer}>
         <small>
-          P3-B1 仅为 UI Shell。所有写入操作（准备 / 执行 / 重置）在
-          后续 P3-B 子步骤中通过 Shared Runtime RPC 接入，本屏不直接
-          调用任何 Provider。
+          P3-B2: Workspace 会话由 Shared Runtime 持有。Web 端只消费 RPC + View Model。
+          本地不再持有 createPackagingWorkspaceService 实例。
         </small>
-        <button
-          className={styles.refreshButton}
-          onClick={refresh}
-          title="重新读取当前 Workspace 视图"
-        >
-          刷新视图
-        </button>
       </footer>
     </div>
   );
@@ -113,6 +372,67 @@ export function PackagingWorkspace({ onBack }: Props) {
 // ---------------------------------------------------------------------------
 // Top-level UI bits
 // ---------------------------------------------------------------------------
+
+function ActionToolbar({
+  view,
+  pending,
+  onPrepare,
+  onExecute,
+  onReset,
+  onRefresh,
+}: {
+  view: PackagingWorkspaceView;
+  pending: boolean;
+  onPrepare: () => void;
+  onExecute: () => void;
+  onReset: () => void;
+  onRefresh: () => void;
+}) {
+  // Capability projection comes from the frozen view
+  // model. React MUST NOT re-derive a rule table.
+  const canPrepare = Boolean(view.readiness?.canPrepare);
+  const canExecute = Boolean(view.readiness?.canExecute);
+  const canReset = Boolean(view.readiness?.canReset);
+  const isBusy = Boolean(view.isBusy) || pending;
+  return (
+    <div className={styles.toolbar}>
+      <p className={styles.toolbarHint}>
+        按钮启用状态由 View Model 决定。execute ≠ implicit prepare + execute
+        （P3-A §10.6）。
+      </p>
+      <div className={styles.toolbarButtons}>
+        <button
+          className={styles.toolbarButton}
+          onClick={onPrepare}
+          disabled={!canPrepare || isBusy}
+        >
+          {isBusy && view.status === 'preparing' ? '准备中…' : '准备生成'}
+        </button>
+        <button
+          className={`${styles.toolbarButton} ${styles.toolbarButtonPrimary}`}
+          onClick={onExecute}
+          disabled={!canExecute || isBusy}
+        >
+          {isBusy && view.status === 'executing' ? '执行中…' : '执行生成'}
+        </button>
+        <button
+          className={styles.toolbarButton}
+          onClick={onReset}
+          disabled={!canReset || isBusy}
+        >
+          重置
+        </button>
+        <button
+          className={styles.refreshButton}
+          onClick={onRefresh}
+          disabled={isBusy}
+        >
+          刷新视图
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function StatusBadge({ status, label }: { status: string; label: string }) {
   const tone = resolveStatusTone(status);
@@ -134,33 +454,17 @@ function SessionIdBadge({ value }: { value: string }) {
   );
 }
 
-function PlaceholderToolbar() {
-  return (
-    <div className={styles.toolbar}>
-      <p className={styles.toolbarHint}>
-        当前为 P3-B1 UI Shell：仅渲染 View Model。Prepare /
-        Execute / Reset 将在后续子步骤中接入真实 RPC。
-      </p>
-      <div className={styles.toolbarButtons}>
-        <button className={styles.toolbarButton} disabled>
-          准备生成
-        </button>
-        <button className={`${styles.toolbarButton} ${styles.toolbarButtonPrimary}`} disabled>
-          执行生成
-        </button>
-        <button className={styles.toolbarButton} disabled>
-          重置
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
 // 01 — Generation Intent
 // ---------------------------------------------------------------------------
 
-function GenerationIntentTile({ view }: { view: WorkspaceView }) {
+function GenerationIntentTile({
+  view,
+  onPatchIntent,
+}: {
+  view: PackagingWorkspaceView;
+  onPatchIntent: (patch: Record<string, unknown>) => Promise<void>;
+}) {
   const intent = view.intent;
   return (
     <section className={styles.tile}>
@@ -169,31 +473,37 @@ function GenerationIntentTile({ view }: { view: WorkspaceView }) {
         <div>
           <h2 className={styles.tileTitle}>生成意图</h2>
           <p className={styles.tileSubtitle}>
-            Generation Intent · view.intent
+            Generation Intent · view.intent（支持 RPC updateIntent）
           </p>
         </div>
       </header>
       {intent ? (
-        <dl className={styles.kvList}>
-          <KV label="生成模式" value={intent.generationMode || '—'} />
-          <KV label="镜头合约" value={intent.shotContractId || '—'} />
-          <KV
-            label="显式约束"
-            value={intent.explicitUserConstraintsText || '—'}
-            mono
+        <>
+          <dl className={styles.kvList}>
+            <KV label="生成模式" value={intent.generationMode || '—'} />
+            <KV label="镜头合约" value={intent.shotContractId || '—'} />
+            <KV
+              label="显式约束"
+              value={intent.explicitUserConstraintsText || '—'}
+              mono
+            />
+            <KV label="参考图数量" value={String(intent.referenceCount)} />
+            <KV
+              label="Provider Model"
+              value={intent.providerModelId || '—'}
+              mono
+            />
+            <KV
+              label="API Profile"
+              value={intent.apiProfileId || '—'}
+              mono
+            />
+          </dl>
+          <IntentPatchForm
+            disabled={!view.canEditIntent}
+            onPatch={onPatchIntent}
           />
-          <KV label="参考图数量" value={String(intent.referenceCount)} />
-          <KV
-            label="Provider Model"
-            value={intent.providerModelId || '—'}
-            mono
-          />
-          <KV
-            label="API Profile"
-            value={intent.apiProfileId || '—'}
-            mono
-          />
-        </dl>
+        </>
       ) : (
         <EmptyHint message="尚未设置生成意图。" />
       )}
@@ -201,11 +511,65 @@ function GenerationIntentTile({ view }: { view: WorkspaceView }) {
   );
 }
 
+function IntentPatchForm({
+  disabled,
+  onPatch,
+}: {
+  disabled: boolean;
+  onPatch: (patch: Record<string, unknown>) => Promise<void>;
+}) {
+  const [apiProfileId, setApiProfileId] = useState('');
+  const [providerModelId, setProviderModelId] = useState('');
+  return (
+    <form
+      className={styles.patchForm}
+      onSubmit={async (event) => {
+        event.preventDefault();
+        const patch: Record<string, unknown> = {};
+        if (apiProfileId.trim()) patch.apiProfileId = apiProfileId.trim();
+        if (providerModelId.trim()) patch.providerModelId = providerModelId.trim();
+        if (Object.keys(patch).length === 0) return;
+        await onPatch(patch);
+        setApiProfileId('');
+        setProviderModelId('');
+      }}
+    >
+      <label className={styles.patchLabel}>
+        更新 API Profile
+        <input
+          className={styles.bootstrapInput}
+          value={apiProfileId}
+          onChange={(event) => setApiProfileId(event.target.value)}
+          placeholder="可选 — 留空则不更新"
+          disabled={disabled}
+        />
+      </label>
+      <label className={styles.patchLabel}>
+        更新 Provider Model
+        <input
+          className={styles.bootstrapInput}
+          value={providerModelId}
+          onChange={(event) => setProviderModelId(event.target.value)}
+          placeholder="可选 — 留空则不更新"
+          disabled={disabled}
+        />
+      </label>
+      <button
+        className={styles.toolbarButton}
+        type="submit"
+        disabled={disabled || (!apiProfileId.trim() && !providerModelId.trim())}
+      >
+        写入 updateIntent
+      </button>
+    </form>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // 02 — Reference Assignments (consume view.references only)
 // ---------------------------------------------------------------------------
 
-function ReferenceAssignmentsTile({ view }: { view: WorkspaceView }) {
+function ReferenceAssignmentsTile({ view }: { view: PackagingWorkspaceView }) {
   const refs = view.references ?? [];
   return (
     <section className={styles.tile}>
@@ -221,7 +585,7 @@ function ReferenceAssignmentsTile({ view }: { view: WorkspaceView }) {
       </header>
       {refs.length > 0 ? (
         <ul className={styles.refList}>
-          {refs.map((ref, index) => (
+          {refs.map((ref: PackagingWorkspaceReference, index: number) => (
             <li key={ref.assetId} className={styles.refRow}>
               <div className={styles.refRowMain}>
                 <strong>{ref.displayName || ref.assetId}</strong>
@@ -241,7 +605,7 @@ function ReferenceAssignmentsTile({ view }: { view: WorkspaceView }) {
       <details className={styles.refRolesHelp}>
         <summary>canonical 角色（来自 P2 frozen reference-policy）</summary>
         <ul className={styles.roleList}>
-          {PACKAGING_REFERENCE_ROLES.map((role) => (
+          {(PACKAGING_REFERENCE_ROLES as readonly string[]).map((role: string) => (
             <li key={role} className={styles.roleChip}>{role}</li>
           ))}
         </ul>
@@ -254,7 +618,13 @@ function ReferenceAssignmentsTile({ view }: { view: WorkspaceView }) {
 // 03 — Locked Assets (read-only, no authority mutation)
 // ---------------------------------------------------------------------------
 
-function LockedAssetsTile({ view }: { view: WorkspaceView }) {
+function LockedAssetsTile({
+  view,
+  onRefreshTruth,
+}: {
+  view: PackagingWorkspaceView;
+  onRefreshTruth: () => void;
+}) {
   const fields = view.lockedAssets?.fields ?? {};
   const allLocked = Boolean(view.lockedAssets?.allLocked);
   return (
@@ -264,8 +634,8 @@ function LockedAssetsTile({ view }: { view: WorkspaceView }) {
         <div>
           <h2 className={styles.tileTitle}>锁定资产</h2>
           <p className={styles.tileSubtitle}>
-            Locked Assets · view.lockedAssets（只读，
-            {allLocked ? '全部已锁定' : '存在可编辑项'}）
+            Locked Assets · view.lockedAssets（只读 · 来源：runtime
+            {allLocked ? ' · 全部已锁定' : ' · 存在可配置项'}）
           </p>
         </div>
       </header>
@@ -285,7 +655,15 @@ function LockedAssetsTile({ view }: { view: WorkspaceView }) {
       </ul>
       <p className={styles.lockedNote}>
         UI 不直接编辑锁定资产；变更请走既有项目 / Locked-Assets-Service 流程。
+        空值 = 真实 project 当前未提供该字段。
       </p>
+      <button
+        className={styles.toolbarButton}
+        onClick={onRefreshTruth}
+        title="触发 RPC setTruthSnapshot({}) — 重新走 runtime 真相面解析"
+      >
+        重新解析真相面
+      </button>
     </section>
   );
 }
@@ -294,7 +672,13 @@ function LockedAssetsTile({ view }: { view: WorkspaceView }) {
 // 04 — Readiness & Stale
 // ---------------------------------------------------------------------------
 
-function ReadinessStaleTile({ view }: { view: WorkspaceView }) {
+function ReadinessStaleTile({
+  view,
+  transientError,
+}: {
+  view: PackagingWorkspaceView;
+  transientError: string | null;
+}) {
   const r = view.readiness;
   const reasons = view.staleReasons ?? [];
   const isStale = Boolean(r?.isStale);
@@ -319,13 +703,19 @@ function ReadinessStaleTile({ view }: { view: WorkspaceView }) {
         <CapabilityChip label="可重置" on={Boolean(r?.canReset)} />
         <CapabilityChip label="执行中" on={Boolean(r?.isBusy)} />
       </div>
+      {transientError && (
+        <div className={styles.staleBox}>
+          <strong>本次 RPC 错误：</strong>
+          <p>{transientError}</p>
+        </div>
+      )}
       {isStale ? (
         <div className={styles.staleBox}>
           <strong>当前准备结果已失效，需要重新准备。</strong>
           <p>STALE 原因（canonical code，来自 view.staleReasons）：</p>
           <ul>
             {reasons.length > 0 ? (
-              reasons.map((reason) => (
+              reasons.map((reason: string) => (
                 <li key={reason} className={styles.staleReason}>
                   {reason}
                 </li>
@@ -354,7 +744,7 @@ function ReadinessStaleTile({ view }: { view: WorkspaceView }) {
 // 05 — Last Execution
 // ---------------------------------------------------------------------------
 
-function LastExecutionTile({ view }: { view: WorkspaceView }) {
+function LastExecutionTile({ view }: { view: PackagingWorkspaceView }) {
   const exec = view.execution;
   return (
     <section className={styles.tile}>
@@ -418,7 +808,7 @@ function LastExecutionTile({ view }: { view: WorkspaceView }) {
 // 06 — Error Surface (consume view.error only; raw error.message never used)
 // ---------------------------------------------------------------------------
 
-function ErrorSurfaceTile({ view }: { view: WorkspaceView }) {
+function ErrorSurfaceTile({ view }: { view: PackagingWorkspaceView }) {
   const err = view.error;
   return (
     <section
@@ -523,9 +913,8 @@ function resolveStatusTone(status: string): string {
 }
 
 // Sentinel: keep PACKAGING_WORKSPACE_STATUS_LABELS imported so the
-// tree-shaker doesn't drop the dependency; we deliberately read
-// `view.statusLabel` from the projection rather than the labels
-// table so the view remains the single source of UI text.
+// tree-shaker doesn't drop the dependency; the view's
+// `statusLabel` is the canonical UI text.
 void PACKAGING_WORKSPACE_STATUS_LABELS;
 
 interface LockedFieldDef {
@@ -601,10 +990,3 @@ function readArrayField(value: unknown, key: string): string {
 function MutedEmpty() {
   return <em className={styles.lockedMuted}>未提供</em>;
 }
-
-// Pinned reference: keep the type-only import tied to its source so the
-// `createPackagingWorkspaceService` return-type inference stays stable
-// when the underlying factory signature is updated. The actual factory
-// call lives in `service.ts`; this file only consumes the resulting
-// service via the `PackagingShellService` alias.
-type _FactoryRef = ReturnType<typeof createPackagingWorkspaceService>;

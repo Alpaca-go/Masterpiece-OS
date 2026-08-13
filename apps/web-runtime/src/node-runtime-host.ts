@@ -58,13 +58,21 @@ export async function startNodeRuntimeHost(options: NodeRuntimeHostOptions): Pro
   });
   const runtime = createSharedRuntime();
   runtime.registerOperations(createCurrentBusinessOperations(services, {
-    get: getSettings,
-    save: saveSettings,
-    saveProfile: saveApiProfile,
-    deleteProfile: deleteApiProfile,
-    setDefaultProfile: setDefaultApiProfile,
-    setProfileEnabled: setApiProfileEnabled,
-    testProfile: testApiProfile,
+    settings: {
+      get: getSettings,
+      save: saveSettings,
+      saveProfile: saveApiProfile,
+      deleteProfile: deleteApiProfile,
+      setDefaultProfile: setDefaultApiProfile,
+      setProfileEnabled: setApiProfileEnabled,
+      testProfile: testApiProfile,
+    },
+    // P3-B2: the existing Shared Core credential resolver
+    // is the SOLE authority the Packaging operations layer
+    // uses to fill the P2 frozen `executePackagingGeneration`
+    // deps seam. The credential secret NEVER crosses the Web
+    // RPC boundary.
+    readCredentials: getProviderCredentials,
   }));
   runtime.registerOperations(createNodeNativeOperations(services, runtimePaths));
   await runtime.start();
