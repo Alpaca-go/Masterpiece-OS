@@ -1,57 +1,100 @@
-// Packaging Generation Service — P2-G.
+// Packaging Generation Service 鈥?P2-G Final.
 //
 // Capability boundary:
-//   this module is the FIRST real Packaging production service route.
-//   It is a thin orchestrator that wires the frozen P2-A..P2-F
-//   modules together with the existing Shared Generation Core
-//   (image-generation-adapter / image-generation-runtime download+
-//   redaction). It is NOT a second runtime: there is no second
-//   credential stack, no second retry stack, no Packaging-specific
-//   provider HTTP client, no second reasoning call.
+//   this module is the FIRST real Packaging production service
+//   route. It is a thin orchestrator that wires the frozen
+//   P2-A..P2-F modules together with the existing Shared
+//   Generation Core (image-generation-adapter / image-generation-
+//   runtime download + redaction). It is NOT a second runtime:
+//   there is no second credential stack, no second retry stack,
+//   no Packaging-specific provider HTTP client, no second
+//   reasoning call.
 //
-// P2 spec §47 §54 (P2-G Exit) + the P2-G transition rules:
+// P2-G Finalization Delta (16 items). Key contracts:
 //
-//   - The service is split into two layers (P2 spec §3):
-//       preparePackagingGeneration(...) — deterministic, no network
-//       executePackagingGeneration(prepared) — network + persistence
-//     Tests can drive prepare end-to-end without API keys.
+//   1) No second prompt serializer. The Provider's `prompt` is
+//      `prepared.payload.prompt` verbatim. The P2-E Adapter is
+//      the unique serialization authority.
 //
-//   - The Shared Provider dispatch is
-//     `createMultiModelImageAdapter({...}).execute(input, {fetchImpl})`
-//     (packages/image-generation-adapter/src/multi-model.js). The
-//     Service does NOT import provider internals; it does NOT
-//     construct provider-specific HTTP endpoints; it does NOT
-//     call `fetch` or `http.request` directly.
+//   2) No second hints authority. `aspectRatio` / `imageSize` /
+//      `qualityProfile` come from `prepared.payload.hints`.
 //
-//   - The Shared Run persistence, the Shared download/verify, the
-//     Shared redaction and the Shared fingerprint verifier are the
-//     only authorities for the corresponding surface. The Service
-//     only orchestrates them.
+//   3) Negative rules are not duplicated. The 14-block Prompt
+//      already carries the canonical `negative_constraints`
+//      block. The Service passes `negativeRules: []` to the
+//      Shared Adapter so the Shared Adapter does not append a
+//      second copy.
 //
-//   - References are resolved through an injected `readReference`
-//     dependency. The Service does NOT scan local directories, does
-//     NOT build an assetId-to-path registry, and does NOT inspect
-//     project state. A missing reference fails closed with
-//     `REFERENCE_ASSET_UNRESOLVED`.
+//   4) One Reference execution authority. The Service resolves
+//      references from `prepared.payload.references` only. There
+//      is no second `prepared.references` surface; the payload
+//      is the single execution source and is also covered by
+//      the Compile Fingerprint / payloadFingerprint.
 //
-//   - The pre-execution stale gate is
-//     `verifyPackagingGenerationMetadata`. A stale fingerprint
-//     fails closed with `COMPILE_INPUT_STALE`; the Service does
-//     NOT silently re-compile and re-try.
+//   5) Shared production config bridge. `resolveExecutionConfig`
+//      and `resolveArtifactLifecycle` are the two production
+//      seams; production wires them from the existing Shared
+//      runtime / credential infrastructure. Tests inject fake
+//      implementations; the Service does not read .env, dotenv,
+//      or credential files directly.
 //
-// Stop conditions honoured (P2 spec §20 §58 §59):
+//   6) `registryModelId` and `providerModelId` are separated.
+//      The Shared multi-model `adapterId` is the registry
+//      routing identity (e.g. 'seedream-5.0-pro'); the actual
+//      API model field comes from the resolved execution config
+//      and may differ (e.g. 'doubao-seedream-5-0-pro-260628').
+//
+//   7) Real Provider request audit. The redacted audit request
+//      comes from `adapter.compileRequest(universalInput)`, not
+//      from a hand-rolled redaction.
+//
+//   8) Artifact lifecycle is mandatory in production. Missing
+//      `runRoot` (or `targetPath` / `thumbnailPath`) is a
+//      fail-closed `ARTIFACT_LIFECYCLE_REQUIRED`. Tests inject
+//      a fake lifecycle seam.
+//
+//   9) Decoded image required. `downloaded.decoded !== true` is
+//      a fail-closed `GENERATION_PROVIDER_FAILED`.
+//
+//  10) Exactly one image enforced. `images.length !== 1` is a
+//      fail-closed `GENERATION_PROVIDER_FAILED`.
+//
+//  11) Run identity is separate from fingerprint. `createRunId`
+//      is a seam; same input + two executions produce different
+//      runIds; tests inject deterministic runIds.
+//
+//  12) Persistence failure is NOT a Provider failure. The
+//      canonical code for saveRun failure is
+//      `GENERATION_PERSISTENCE_FAILED`; the Provider succeeded
+//      and the binary is on disk, but the audit-trail write did
+//      not land.
+//
+//  13) External error redaction. The `err.message` of a
+//      `GENERATION_PROVIDER_FAILED` is a safe generic string;
+//      the original `code` / `retryable` / raw message are
+//      preserved on `err.internal` and `err.cause` for internal
+//      diagnostics. Raw `Authorization` / `Secret` / signed-URL
+//      tokens never reach the user-facing surface or the
+//      persisted metadata.
+//
+//  14) The Service is honest about its production wiring. The
+//      default `resolveExecutionConfig` and
+//      `resolveArtifactLifecycle` are stubs that fail closed;
+//      Shared production wiring is required.
+//
+// Stop conditions honoured (P2 spec 搂20 搂58 搂59):
 //   - does not call a model directly
 //   - does not import any Golden project asset
 //   - does not invent a second fingerprint algorithm
 //   - does not silently rewrite Locked Assets
 //   - does not introduce a second credential or retry stack
-//   - does not introduce Packaging-specific provider HTTP client
+//   - does not introduce a Packaging-specific provider HTTP
+//     client
 //   - does not branch on a specific provider identity at the
 //     Service layer; provider-specific serialization belongs to
-//     the Shared Provider Adapter. The capability layer is the
-//     single authority on which provider is eligible for
-//     Packaging, and the Shared multi-model adapter owns the
-//     protocol-specific request shape.
+//     the Shared Provider Adapter.
+//   - does not embed raw base64 in audit / metadata surfaces
+//   - does not derive runId from a semantic fingerprint
 
 import { createPackagingTranslation } from './translation.js';
 import { validatePackagingTranslation } from './validation.js';
@@ -74,23 +117,62 @@ import { redactProviderRequest, redactProviderResponse } from '../redact.js';
 
 export const PACKAGING_GENERATION_SERVICE_VERSION = '1.0.0';
 
-// Canonical error code (P2 spec §32): the only post-execution
-// Packaging code is GENERATION_PROVIDER_FAILED. Pre-execution
-// failure codes (PACKAGING_TRANSLATION_INVALID,
-// PACKAGING_STRUCTURE_EVIDENCE_MISSING, REFERENCE_REQUIRED,
-// REFERENCE_ROLE_INVALID, PROVIDER_CAPABILITY_MISMATCH,
-// REFERENCE_UNSUPPORTED, SHOT_CONTRACT_INVALID,
-// PACKAGING_METADATA_INVALID, COMPILE_INPUT_STALE) keep their
-// canonical upstream identity and are NOT rewrapped as
-// GENERATION_PROVIDER_FAILED (P2 spec §12).
+// Canonical post-execution error codes (P2 spec 搂32 + the P2-G
+// Finalization Delta items 12 + 13):
+//   - GENERATION_PROVIDER_FAILED:     Provider request / network /
+//                                    download/verify failure.
+//   - GENERATION_PERSISTENCE_FAILED:  Provider succeeded but the
+//                                    Run store rejected the audit
+//                                    trail write.
+//   - REFERENCE_ASSET_UNRESOLVED:     Reference id could not be
+//                                    resolved to a binary by the
+//                                    injected readReference seam.
+//   - ARTIFACT_LIFECYCLE_REQUIRED:    No runRoot / targetPath /
+//                                    thumbnailPath provided;
+//                                    production Shared runtime
+//                                    must wire the artifact
+//                                    lifecycle seam.
+//   - EXECUTION_PROVIDER_MODEL_REQUIRED:
+//                                    No execution config seam
+//                                    (apiKey + providerModelId +
+//                                    baseUrl); production Shared
+//                                    runtime must wire the
+//                                    resolveExecutionConfig seam.
+//
+// Pre-execution errors keep their canonical upstream code and
+// are NOT rewrapped (P2 spec 搂12).
 export const GENERATION_PROVIDER_FAILED = 'GENERATION_PROVIDER_FAILED';
+export const GENERATION_PERSISTENCE_FAILED = 'GENERATION_PERSISTENCE_FAILED';
 export const REFERENCE_ASSET_UNRESOLVED = 'REFERENCE_ASSET_UNRESOLVED';
+export const ARTIFACT_LIFECYCLE_REQUIRED = 'ARTIFACT_LIFECYCLE_REQUIRED';
+export const EXECUTION_PROVIDER_MODEL_REQUIRED = 'EXECUTION_PROVIDER_MODEL_REQUIRED';
+
+// Safe generic message for the user-facing surface of a
+// Provider / network / download failure (item 13). The
+// original `code` / `retryable` / raw message live on
+// `err.internal` and `err.cause` for internal diagnostics.
+const SAFE_GENERIC_PROVIDER_MESSAGE = 'Packaging provider request failed; see internal diagnostics for details.';
 
 function isPlainObject(v) {
   return v != null && typeof v === 'object' && !Array.isArray(v);
 }
 
-function asString(v, fallback = '') {
+// asStringRaw: type guard only, no whitespace trim. Use for
+// the canonical Provider prompt (P2-G Final item 1) where
+// the byte sequence must be preserved verbatim — the P2-E
+// payload.prompt ends with `\n` from
+// `flattenCompiledPromptToString` and the Provider must
+// receive the same byte sequence.
+function asStringRaw(v, fallback = '') {
+  if (typeof v !== 'string') return fallback;
+  return v;
+}
+
+// asStringTrim: trim + fallback. Use for identifiers,
+// error codes, model / provider / protocol labels, paths,
+// and any other field where surrounding whitespace is not
+// semantically meaningful.
+function asStringTrim(v, fallback = '') {
   return typeof v === 'string' && v.trim() ? v.trim() : fallback;
 }
 
@@ -100,15 +182,29 @@ function asArray(v) {
   return [v];
 }
 
-// ---------------------------------------------------------------------------
-// P2-G: Pinned structured error codes surfaced verbatim to the caller.
-// Pre-execution errors keep their canonical upstream code; only the
-// post-execution (Provider / network / download) bucket is mapped
-// to GENERATION_PROVIDER_FAILED.
-// ---------------------------------------------------------------------------
+// Secret-like substring deny-list (defense in depth on
+// `err.message` for redaction; identical to the P2-F metadata
+// deny-list).
+const SECRET_LITERAL_DENY = Object.freeze([
+  'apiKey', 'api_key', 'accessToken', 'access_token',
+  'authorization', 'Authorization',
+  'bearer', 'Bearer',
+  'secret', 'Secret',
+  'credential', 'Credential',
+  'masterKey', 'password', 'token',
+  'privateKey', 'private_key',
+]);
+
+function containsSecretLiteral(value) {
+  if (typeof value !== 'string' || !value) return false;
+  for (const needle of SECRET_LITERAL_DENY) {
+    if (value.includes(needle)) return true;
+  }
+  return false;
+}
 
 function newError(code, message, extras = {}) {
-  const err = new Error(`${code}: ${message}`);
+  const err = new Error(`${code}: ${asStringTrim(message, 'unknown error')}`);
   err.code = code;
   err.issues = [code, ...(extras.issues ?? [])];
   if (extras.cause) err.cause = extras.cause;
@@ -117,108 +213,150 @@ function newError(code, message, extras = {}) {
 }
 
 // Map a Shared provider / network error to a normalized
-// GENERATION_PROVIDER_FAILED. The original error is preserved on
-// `err.cause` and on `err.internal.code` so the audit trail is
-// intact; the user-facing surface is redacted to the canonical
-// code (P2 spec §12).
+// GENERATION_PROVIDER_FAILED. The original error is preserved
+// on `err.cause` and on `err.internal`; the user-facing
+// `err.message` is a safe generic string (item 13). The raw
+// `error.message` is never embedded in the public surface.
 function toGenerationProviderFailed(error) {
-  const code = asString(error?.code, GENERATION_PROVIDER_FAILED);
-  const message = asString(error?.message, 'Packaging provider request failed.');
-  return newError(GENERATION_PROVIDER_FAILED, message, {
+  const code = asStringTrim(error?.code, GENERATION_PROVIDER_FAILED);
+  const rawMessage = asStringTrim(error?.message, 'Provider request failed.');
+  // Defense in depth: if the raw message contains a secret
+  // literal, drop it. The internal surface still has the raw
+  // diagnostic for the audit trail; the public message is
+  // always the safe generic string.
+  const internalMessage = containsSecretLiteral(rawMessage)
+    ? 'redacted (raw message contained a secret literal)'
+    : rawMessage;
+  return newError(GENERATION_PROVIDER_FAILED, SAFE_GENERIC_PROVIDER_MESSAGE, {
     cause: error,
-    internal: { code, message, retryable: Boolean(error?.retryable) },
+    internal: { code, message: internalMessage, retryable: Boolean(error?.retryable) },
   });
 }
 
-// Map a download/verify error to GENERATION_PROVIDER_FAILED. The
-// download/verify layer is a Shared concern; the Service only
-// owns the canonical code surface.
 function toDownloadProviderFailed(error) {
-  const code = asString(error?.code, 'IMAGE_DOWNLOAD_FAILED');
-  const message = asString(error?.message, 'Packaging image download failed.');
-  return newError(GENERATION_PROVIDER_FAILED, message, {
+  const code = asStringTrim(error?.code, 'IMAGE_DOWNLOAD_FAILED');
+  const rawMessage = asStringTrim(error?.message, 'Packaging image download failed.');
+  const internalMessage = containsSecretLiteral(rawMessage)
+    ? 'redacted (raw message contained a secret literal)'
+    : rawMessage;
+  return newError(GENERATION_PROVIDER_FAILED, SAFE_GENERIC_PROVIDER_MESSAGE, {
     cause: error,
-    internal: { code, message },
+    internal: { code, message: internalMessage },
   });
 }
 
-// ---------------------------------------------------------------------------
-// P2-G input authority: the Service accepts a Packaging Translation
-// input (P2-A shape) + a selected modelId. It does NOT re-interpret
-// Visual Analysis, Reference Roles, Shot semantics, Locked Assets
-// or Provider capability. Those are owned by their canonical
-// upstream modules (P2 spec §4).
-// ---------------------------------------------------------------------------
+function toPersistenceFailed(error) {
+  const code = asStringTrim(error?.code, GENERATION_PERSISTENCE_FAILED);
+  const rawMessage = asStringTrim(error?.message, 'Packaging run persistence failed.');
+  const internalMessage = containsSecretLiteral(rawMessage)
+    ? 'redacted (raw message contained a secret literal)'
+    : rawMessage;
+  return newError(GENERATION_PERSISTENCE_FAILED, rawMessage, {
+    cause: error,
+    internal: { code, message: internalMessage },
+  });
+}
 
 function validateServiceInput(input) {
   if (!isPlainObject(input)) {
     throw newError('PACKAGING_TRANSLATION_INVALID', 'input is not an object');
   }
   const { modelId } = input;
-  if (!asString(modelId)) {
+  if (!asStringTrim(modelId)) {
     throw newError(PROVIDER_CAPABILITY_MISMATCH, 'modelId is required');
   }
 }
 
 // ---------------------------------------------------------------------------
-// Default dependency set. Tests inject a custom `deps` object so
-// the Service can run end-to-end with a fake Shared Provider
-// dispatch, a fake file reader and a fake Run store (P2 spec §17).
-// Production callers supply the real Shared infrastructure
-// (image-generation-adapter multi-model + the Shared Run store).
+// Default production seam stubs. Each fails closed; production wires
+// them from the Shared runtime / credential / persistence
+// infrastructure (item 5 + item 8 + item 14).
 // ---------------------------------------------------------------------------
 
+async function defaultResolveExecutionConfig() {
+  throw newError(
+    EXECUTION_PROVIDER_MODEL_REQUIRED,
+    'No resolveExecutionConfig seam was provided; production Shared runtime must wire the resolveExecutionConfig dependency.',
+  );
+}
+
+function defaultResolveArtifactLifecycle() {
+  throw newError(
+    ARTIFACT_LIFECYCLE_REQUIRED,
+    'No resolveArtifactLifecycle seam was provided; production Shared runtime must wire the resolveArtifactLifecycle dependency.',
+  );
+}
+
+function defaultCreateRunId() {
+  // Default to a crypto-backed UUID; tests inject a deterministic
+  // implementation (item 11). The fingerprint does NOT seed
+  // the runId; the runId is purely an execution identity.
+  // crypto.randomUUID is available in Node 19+ and modern
+  // browsers; the test environment is Node 24.
+  // eslint-disable-next-line node/no-unsupported-features/node-builtins
+  return `pkg-${(globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`)}`;
+}
+
 const DEFAULT_DEPS = Object.freeze({
-  // eslint-disable-next-line no-unused-vars
-  readReference: async (_reference) => {
+  // Reference resolution seam. Production wires the Shared
+  // reference-asset resolver (item 5 + item 8). The default
+  // fail-closed reference is provided here only to make the
+  // module self-consistent in tests that do not exercise the
+  // Reference path; any real Reference path must inject a
+  // real readReference.
+  readReference: async () => {
     throw newError(
       REFERENCE_ASSET_UNRESOLVED,
-      'No readReference dependency was provided; reference assets cannot be resolved.',
+      'No readReference dependency was provided; production Shared runtime must wire the readReference dependency.',
     );
   },
-  fetchImpl: undefined,
-  // eslint-disable-next-line no-unused-vars
-  saveRun: async (_run) => undefined,
-  // eslint-disable-next-line no-unused-vars
-  now: () => new Date().toISOString(),
-  // Test / shared-executor seam (P2 spec §17). When provided, the
-  // Service dispatches through this executor instead of building
-  // the real Shared multi-model adapter. The executor MUST honour
-  // the Shared dispatch shape (`{ execute(universalInput, options) }`
-  // returning `{ status, modelId, requestId, images: [...] }`).
+  // Test seam for the Shared Provider dispatch (item 5 + item 7).
+  // When provided, must expose `execute` and `compileRequest` in
+  // the same shape as the real Shared adapter. Production wires
+  // `createMultiModelImageAdapter` instead.
   executor: undefined,
+  // Shared download/verify seam (item 8). Default uses the real
+  // Shared `downloadAndVerifyImage`; tests may inject a fake.
+  downloadImpl: downloadAndVerifyImage,
+  // Shared persistence seam (item 5 + item 12). Default fails
+  // closed; production wires the Shared Run store.
+  saveRun: async () => {
+    throw newError(
+      GENERATION_PERSISTENCE_FAILED,
+      'No saveRun dependency was provided; production Shared runtime must wire the saveRun dependency.',
+    );
+  },
+  // Production execution config seam (item 5 + item 6). Default
+  // fails closed. Production wires a function that calls the
+  // Shared runtime's credential / model resolution.
+  resolveExecutionConfig: defaultResolveExecutionConfig,
+  // Artifact lifecycle seam (item 8). Default fails closed.
+  // Production wires `{ runRoot, targetPath, thumbnailPath }`
+  // resolved from the Shared Run store.
+  resolveArtifactLifecycle: defaultResolveArtifactLifecycle,
+  // Run identity seam (item 11). Default is crypto.randomUUID.
+  createRunId: defaultCreateRunId,
+  fetchImpl: undefined,
+  now: () => new Date().toISOString(),
 });
 
 function resolveDeps(deps) {
   if (deps == null) return DEFAULT_DEPS;
   return Object.freeze({
     readReference: typeof deps.readReference === 'function' ? deps.readReference : DEFAULT_DEPS.readReference,
-    fetchImpl: typeof deps.fetchImpl === 'function' ? deps.fetchImpl : DEFAULT_DEPS.fetchImpl,
-    saveRun: typeof deps.saveRun === 'function' ? deps.saveRun : DEFAULT_DEPS.saveRun,
-    now: typeof deps.now === 'function' ? deps.now : DEFAULT_DEPS.now,
     executor: isPlainObject(deps.executor) ? deps.executor : DEFAULT_DEPS.executor,
-    apiKey: typeof deps.apiKey === 'string' ? deps.apiKey : undefined,
-    baseUrl: typeof deps.baseUrl === 'string' ? deps.baseUrl : undefined,
-    region: typeof deps.region === 'string' ? deps.region : undefined,
-    runRoot: typeof deps.runRoot === 'string' ? deps.runRoot : undefined,
-    targetPath: typeof deps.targetPath === 'string' ? deps.targetPath : undefined,
-    thumbnailPath: typeof deps.thumbnailPath === 'string' ? deps.thumbnailPath : undefined,
+    downloadImpl: typeof deps.downloadImpl === 'function' ? deps.downloadImpl : DEFAULT_DEPS.downloadImpl,
+    saveRun: typeof deps.saveRun === 'function' ? deps.saveRun : DEFAULT_DEPS.saveRun,
+    resolveExecutionConfig: typeof deps.resolveExecutionConfig === 'function' ? deps.resolveExecutionConfig : DEFAULT_DEPS.resolveExecutionConfig,
+    resolveArtifactLifecycle: typeof deps.resolveArtifactLifecycle === 'function' ? deps.resolveArtifactLifecycle : DEFAULT_DEPS.resolveArtifactLifecycle,
+    createRunId: typeof deps.createRunId === 'function' ? deps.createRunId : DEFAULT_DEPS.createRunId,
+    fetchImpl: typeof deps.fetchImpl === 'function' ? deps.fetchImpl : DEFAULT_DEPS.fetchImpl,
+    now: typeof deps.now === 'function' ? deps.now : DEFAULT_DEPS.now,
   });
 }
 
 // ---------------------------------------------------------------------------
 // P2-G layer 1: preparePackagingGeneration
-//
-//   input + deps -> { translation, compiled, capability, payload,
-//                    metadata, fingerprintInputs, runId, references }
-//
-//   - No network call. No Provider dispatch. No run persistence.
-//   - The metadata is the audit-trail surface; it is BUILT here
-//     (P2 spec §5 step 7) so the pre-execution stale gate can
-//     validate the canonical inputs at execute time.
-//   - Returns the runId + the universal input the Shared Provider
-//     Adapter expects at execute time, so the execute layer does
-//     not have to re-derive anything that already decided.
 // ---------------------------------------------------------------------------
 
 export function preparePackagingGeneration(input, deps = null) {
@@ -228,37 +366,34 @@ export function preparePackagingGeneration(input, deps = null) {
 
   // 1) Translation (P2-A).
   const translation = createPackagingTranslation(input);
-  // 2) Validate the translation shape (P2-A / P2 spec §32).
   validatePackagingTranslation(translation);
 
-  // 3) Compiler (P2-D) — deterministic 14-block topology.
+  // 2) Compiler (P2-D) 鈥?deterministic 14-block topology.
   const compiled = compilePackagingPrompt(translation);
   if (!isPlainObject(compiled)) {
-    // compilePackagingPrompt is fail-closed; this is a defense-in-depth
-    // check that the canonical upstream returned a usable shape.
     throw newError('PACKAGING_COMPILE_FAILED', 'compiled output is not an object');
   }
 
-  // 4) Provider Capability gate (P2-E).
+  // 3) Provider Capability gate (P2-E). The registryModelId
+  //    comes from the input verbatim; the actual providerModelId
+  //    is resolved later in the execute layer against the Shared
+  //    credential / model configuration.
   const capability = resolvePackagingProviderCapability({
     modelId: input.modelId,
     generationMode: translation.generationMode,
     referencePolicy: translation.referencePolicy,
   });
-  // 5) Canonical upstream validate. The capability layer accepts
-  //    the same input shape (modelId + generationMode +
-  //    referencePolicy) and emits PROVIDER_CAPABILITY_MISMATCH or
-  //    REFERENCE_UNSUPPORTED on gate failure; we re-throw verbatim.
   validatePackagingProviderCapability({
     modelId: input.modelId,
     generationMode: translation.generationMode,
     referencePolicy: translation.referencePolicy,
   });
 
-  // 6) Provider Adapter Payload (P2-E Finalization).
+  // 4) Provider Adapter Payload (P2-E). This is the SINGLE
+  //    execution surface for prompt / hints / references.
   const payload = buildPackagingProviderPayload({ compiled, capability, translation });
 
-  // 7) Generation Metadata + Compile Fingerprint (P2-F).
+  // 5) Generation Metadata + Compile Fingerprint (P2-F).
   const metadata = buildPackagingGenerationMetadata({
     translation,
     compiled,
@@ -267,94 +402,161 @@ export function preparePackagingGeneration(input, deps = null) {
     createdAt: now,
   });
 
-  // References for the execute layer. The assetId list comes from
-  // the Translation's reference policy verbatim; the Service does
-  // NOT scan any local directory or registry. Resolution to binary
-  // / file / URL happens at execute time via the injected
-  // readReference dependency.
-  const references = asArray(translation.referencePolicy?.references).map((r) => ({
-    assetId: asString(r.assetId),
-    role: asString(r.role),
-    source: asString(r.source),
-  }));
-
-  // Deterministic runId derived from the fingerprint inputs (not
-  // from a fresh UUID). This keeps prepare + execute reproducible
-  // for the same canonical input.
-  const runId = `pkg-${metadata.compileFingerprint.sourceBundleHash.slice(0, 12)}`;
-
   return Object.freeze({
-    runId,
     now,
     translation,
     compiled,
     capability,
     payload,
     metadata,
-    references,
   });
 }
 
 // ---------------------------------------------------------------------------
-// P2-G helper: build the universal input the Shared Provider
-// Adapter expects from the prepared generation. Lives in this
-// module (not in the Adapter) so the Adapter stays
-// target-agnostic and the Service is the single authority on how
-// a Packaging prepared state becomes a Provider request.
-//
-// We serialize the 14 blocks (id / title / items / sources) into
-// a single prompt string. The block-by-block shape is preserved
-// in `payload.promptSourceMap` for audit; the serialized string
-// is what the Shared Adapter actually sends to the Provider.
+// buildUniversalInput: consume the P2-E payload as the single
+// source of truth. No second prompt serializer. No second hints
+// authority. No duplicated negative rules (item 1 + 2 + 3).
 // ---------------------------------------------------------------------------
 
-function buildPackagingProviderPrompt(compiled) {
-  const blocks = Array.isArray(compiled?.blocks) ? compiled.blocks : [];
-  return blocks
-    .map((block) => {
-      const id = asString(block.id);
-      const title = asString(block.title, id);
-      const items = asArray(block.items)
-        .map((item) => (typeof item === 'string' ? item.trim() : ''))
-        .filter(Boolean);
-      if (!items.length) return null;
-      return `## ${title}\n${items.join('\n')}`;
-    })
-    .filter(Boolean)
-    .join('\n\n');
-}
-
-function buildUniversalInput({ prepared, adapterReferences, prompt }) {
-  const hints = isPlainObject(prepared.compiled?.providerHints)
-    ? prepared.compiled.providerHints
-    : (isPlainObject(prepared.translation?.providerHints) ? prepared.translation.providerHints : {});
+function buildUniversalInput({ prepared, adapterReferences }) {
+  const payloadHints = isPlainObject(prepared.payload?.hints) ? prepared.payload.hints : {};
   return Object.freeze({
-    prompt,
-    aspectRatio: asString(hints.aspectRatio, '1:1'),
-    imageSize: asString(hints.imageSize, '2K'),
-    outputCount: 1,
-    negativeRules: asArray(prepared.translation?.negativeConstraints),
+    // 1) prompt: P2-E payload verbatim.
+    prompt: asStringRaw(prepared.payload?.prompt),
+    // 2) hints: P2-E payload verbatim.
+    aspectRatio: asStringTrim(payloadHints.aspectRatio, '1:1'),
+    imageSize: asStringTrim(payloadHints.imageSize, '2K'),
+    qualityProfile: asStringTrim(payloadHints.qualityProfile),
+    // 3) negativeRules: empty. The 14-block Prompt already
+    //    carries `negative_constraints`. The Shared Adapter
+    //    must not append a second copy.
+    negativeRules: [],
+    // 4) references: produced by the Service from
+    //    `prepared.payload.references` only (item 4).
     references: adapterReferences,
+    // 5) outputCount: 1, hard-coded. The Shared universal
+    //    contract is exactly one image per call (item 10).
+    outputCount: 1,
   });
+}
+
+// ---------------------------------------------------------------------------
+// buildAdapter: pick the Shared dispatch surface. Production falls
+// through to `createMultiModelImageAdapter`; tests inject
+// `deps.executor`. The two must honour the same
+// `{ id, protocol, version, compileRequest, execute }` shape so
+// the audit / dispatch paths share the same code (item 7).
+// ---------------------------------------------------------------------------
+
+function buildAdapter({ resolvedDeps, capability, executionConfig }) {
+  // adapterId: registry-routing identity. For now, the Registry
+  // id and the ADAPTERS map key coincide for the registered
+  // Packaging models; if a future registry profile adds a
+  // different ADAPTERS key, the routing lookup should be
+  // extended here without forking the dispatch shape.
+  const adapterId = asStringTrim(capability.modelId);
+  if (isPlainObject(resolvedDeps.executor)
+    && typeof resolvedDeps.executor.execute === 'function'
+    && typeof resolvedDeps.executor.compileRequest === 'function') {
+    return Object.freeze({
+      id: asStringTrim(resolvedDeps.executor.id, adapterId),
+      version: asStringTrim(resolvedDeps.executor.version, 'shared-test-executor@1.0.0'),
+      protocol: asStringTrim(resolvedDeps.executor.protocol, capability.protocol),
+      compileRequest: resolvedDeps.executor.compileRequest,
+      execute: resolvedDeps.executor.execute,
+    });
+  }
+  if (isPlainObject(resolvedDeps.executor)
+    && (typeof resolvedDeps.executor.execute === 'function'
+      || typeof resolvedDeps.executor.compileRequest === 'function')) {
+    throw newError(
+      EXECUTION_PROVIDER_MODEL_REQUIRED,
+      'Test executor seam must expose BOTH execute and compileRequest in the Shared adapter shape.',
+    );
+  }
+  return createMultiModelImageAdapter({
+    adapterId,
+    apiKey: asStringTrim(executionConfig.apiKey),
+    baseUrl: asStringTrim(executionConfig.baseUrl),
+    modelId: asStringTrim(executionConfig.providerModelId),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// resolveExecutionConfig: production bridge. Production wires
+// `deps.resolveExecutionConfig` to call the Shared runtime's
+// credential / model resolver and returns
+// `{ apiKey, baseUrl, providerModelId, profileId, protocol, provider }`.
+// The Service validates that the resolved `provider` and
+// `protocol` align with the capability's Registry identity; a
+// drift is a `PROVIDER_CAPABILITY_MISMATCH` (item 6).
+// ---------------------------------------------------------------------------
+
+async function resolveProductionExecutionConfig({ resolvedDeps, capability }) {
+  const cfg = await resolvedDeps.resolveExecutionConfig({
+    registryModelId: asStringTrim(capability.modelId),
+    profileId: resolvedDeps.profileId,
+  });
+  if (!isPlainObject(cfg)) {
+    throw newError(EXECUTION_PROVIDER_MODEL_REQUIRED, 'resolveExecutionConfig must return an object');
+  }
+  if (!asStringTrim(cfg.apiKey)) {
+    throw newError(EXECUTION_PROVIDER_MODEL_REQUIRED, 'resolveExecutionConfig did not return an apiKey');
+  }
+  if (!asStringTrim(cfg.providerModelId)) {
+    throw newError(EXECUTION_PROVIDER_MODEL_REQUIRED, 'resolveExecutionConfig did not return a providerModelId');
+  }
+  if (asStringTrim(cfg.protocol) && asStringTrim(cfg.protocol) !== asStringTrim(capability.protocol)) {
+    throw newError(
+      PROVIDER_CAPABILITY_MISMATCH,
+      `Execution config protocol ${asStringTrim(cfg.protocol)} does not match capability protocol ${asStringTrim(capability.protocol)}.`,
+    );
+  }
+  if (asStringTrim(cfg.provider) && asStringTrim(cfg.provider) !== asStringTrim(capability.provider)) {
+    throw newError(
+      PROVIDER_CAPABILITY_MISMATCH,
+      `Execution config provider ${asStringTrim(cfg.provider)} does not match capability provider ${asStringTrim(capability.provider)}.`,
+    );
+  }
+  return {
+    apiKey: asStringTrim(cfg.apiKey),
+    baseUrl: asStringTrim(cfg.baseUrl),
+    providerModelId: asStringTrim(cfg.providerModelId),
+    profileId: asStringTrim(cfg.profileId),
+    protocol: asStringTrim(cfg.protocol) || asStringTrim(capability.protocol),
+    provider: asStringTrim(cfg.provider) || asStringTrim(capability.provider),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// resolveArtifactLifecycle: production bridge. Production wires
+// `deps.resolveArtifactLifecycle` to return
+// `{ runRoot, targetPath, thumbnailPath }` from the Shared Run
+// store. Missing or empty fields fail closed (item 8 + item 9).
+// ---------------------------------------------------------------------------
+
+function resolveProductionArtifactLifecycle({ resolvedDeps }) {
+  const lifecycle = resolvedDeps.resolveArtifactLifecycle();
+  if (!isPlainObject(lifecycle)) {
+    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'resolveArtifactLifecycle must return an object');
+  }
+  const runRoot = asStringTrim(lifecycle.runRoot);
+  const targetPath = asStringTrim(lifecycle.targetPath);
+  const thumbnailPath = asStringTrim(lifecycle.thumbnailPath);
+  if (!runRoot) {
+    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle runRoot is required');
+  }
+  if (!targetPath) {
+    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle targetPath is required');
+  }
+  if (!thumbnailPath) {
+    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailPath is required');
+  }
+  return Object.freeze({ runRoot, targetPath, thumbnailPath });
 }
 
 // ---------------------------------------------------------------------------
 // P2-G layer 2: executePackagingGeneration
-//
-//   prepared + deps -> Generation Result
-//
-//   - Pre-execution stale gate (P2 spec §6) is run BEFORE Provider
-//     dispatch. Stale -> COMPILE_INPUT_STALE; metadata drift ->
-//     PACKAGING_METADATA_INVALID. NO silent re-compile.
-//   - Reference resolution uses the injected readReference
-//     dependency. Missing -> REFERENCE_ASSET_UNRESOLVED (fail
-//     closed).
-//   - Provider dispatch uses the Shared multi-model adapter
-//     (the same one Wan / gpt-image-2 / nano-banana / seedream
-//     share). The Service does NOT call `fetch` directly.
-//   - Provider response is normalized through Shared redaction.
-//   - The final Result is frozen and never carries the raw
-//     Provider response (P2 spec §13).
 // ---------------------------------------------------------------------------
 
 export async function executePackagingGeneration(prepared, deps = null) {
@@ -362,119 +564,104 @@ export async function executePackagingGeneration(prepared, deps = null) {
     throw newError(PACKAGING_METADATA_INVALID, 'prepared generation is not a valid prepared state');
   }
   const resolvedDeps = resolveDeps(deps);
-  const { runId, now, translation, compiled, capability, payload, metadata, references } = prepared;
+  const { now, translation, compiled, capability, payload, metadata } = prepared;
   const startedAt = resolvedDeps.now();
 
-  // 8) Pre-execution stale gate. The verifier rebuilds the
-  //    canonical fingerprint inputs and compares. The Prepared
-  //    state was produced by the same canonical inputs builder
-  //    (P2-F); the verify MUST pass before any Provider dispatch.
+  // Item 11: runId is produced by the createRunId seam; the
+  // fingerprint does NOT seed it. Two executions of the same
+  // canonical input produce different runIds.
+  const runId = asStringTrim(resolvedDeps.createRunId());
+  if (!runId) {
+    throw newError(EXECUTION_PROVIDER_MODEL_REQUIRED, 'createRunId must return a non-empty string');
+  }
+
+  // Pre-execution stale gate (P2 spec 搂6 + P2-F). Rebuild via
+  // the canonical fingerprint input mapping. The Service does
+  // NOT silently re-prepare; the gate is fail-closed.
   const stale = verifyPackagingGenerationMetadata(metadata, {
     translation, compiled, capability, payload,
   });
   if (!stale.valid) {
-    // Stale gate failure keeps the canonical upstream code
-    // (COMPILE_INPUT_STALE or PACKAGING_METADATA_INVALID). The
-    // Service does NOT silently re-prepare.
-    const code = asString(stale.code, PACKAGING_METADATA_INVALID);
+    const code = asStringTrim(stale.code, PACKAGING_METADATA_INVALID);
     throw newError(code, `pre-execution stale gate failed: ${(stale.mismatches ?? []).join(', ') || 'unknown'}`, {
       issues: asArray(stale.mismatches),
     });
   }
 
-  // 9) Reference asset resolution. We do NOT scan local paths.
-  //    The injected readReference must return a normalized
-  //    `{ name, mimeType, data }` shape that the Shared Adapter
-  //    accepts. A failure here is fail-closed.
+  // Item 5: production execution config bridge. Default
+  // fail-closed.
+  const executionConfig = await resolveProductionExecutionConfig({ resolvedDeps, capability });
+  // Item 8: artifact lifecycle bridge. Default fail-closed.
+  const artifactLifecycle = resolveProductionArtifactLifecycle({ resolvedDeps });
+
+  // Item 4: one Reference execution authority. We resolve
+  // from `prepared.payload.references` only; the payload is
+  // covered by payloadFingerprint and is the single source of
+  // Reference identity for the Provider dispatch.
+  const payloadReferences = Array.isArray(payload?.references) ? payload.references : [];
   const adapterReferences = [];
-  for (const reference of references) {
+  for (const reference of payloadReferences) {
     let resolved;
     try {
       resolved = await resolvedDeps.readReference(reference);
     } catch (error) {
-      if (asString(error?.code) === REFERENCE_ASSET_UNRESOLVED) {
+      if (asStringTrim(error?.code) === REFERENCE_ASSET_UNRESOLVED) {
         throw error;
       }
       throw newError(
         REFERENCE_ASSET_UNRESOLVED,
-        `reference ${reference.assetId || 'unknown'} could not be resolved: ${asString(error?.message, 'unknown')}`,
+        `reference ${reference.assetId || 'unknown'} could not be resolved: ${asStringTrim(error?.message, 'unknown')}`,
         { cause: error },
       );
     }
-    if (!isPlainObject(resolved) || !asString(resolved.mimeType) || !asString(resolved.data)) {
+    if (!isPlainObject(resolved) || !asStringTrim(resolved.mimeType) || !asStringTrim(resolved.data)) {
       throw newError(
         REFERENCE_ASSET_UNRESOLVED,
         `reference ${reference.assetId || 'unknown'} returned an invalid shape`,
       );
     }
     adapterReferences.push({
-      name: asString(resolved.name, reference.assetId),
-      mimeType: asString(resolved.mimeType),
-      data: asString(resolved.data),
+      name: asStringTrim(resolved.name, reference.assetId),
+      mimeType: asStringTrim(resolved.mimeType),
+      data: asStringTrim(resolved.data),
     });
   }
 
-  // 10) Provider dispatch through the Shared multi-model adapter.
-  //     The Service does NOT branch on a specific provider
-  //     identity. All registered image-generation models share
-  //     the same Shared dispatch surface; capability + protocol
-  //     determine the actual HTTP route.
-  //
-  //     Tests inject `deps.executor` (P2 spec §17) to drive the
-  //     same Shared dispatch shape with a fake / shared executor.
-  //     Production callers fall through to the real Shared
-  //     multi-model adapter.
-  const adapterId = asString(capability.modelId);
-  if (!adapterId) {
-    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'capability.modelId is empty; cannot dispatch');
-  }
-  let adapter;
-  if (isPlainObject(resolvedDeps.executor) && typeof resolvedDeps.executor.execute === 'function') {
-    // Test / shared-executor seam. The fake executor MUST honour
-    // the same return shape as the real Shared adapter
-    // (`{ status, adapterId, modelId, requestId, images: [...] }`).
-    adapter = {
-      id: asString(resolvedDeps.executor.id, adapterId),
-      version: asString(resolvedDeps.executor.version, 'shared-test-executor@1.0.0'),
-      protocol: asString(resolvedDeps.executor.protocol, capability.protocol),
-      execute: resolvedDeps.executor.execute,
-    };
-  } else {
-    adapter = createMultiModelImageAdapter({
-      adapterId,
-      apiKey: asString(resolvedDeps.apiKey),
-      baseUrl: asString(resolvedDeps.baseUrl),
-      modelId: asString(capability.modelId),
-    });
-  }
-  const prompt = buildPackagingProviderPrompt(compiled);
-  const universalInput = buildUniversalInput({ prepared, adapterReferences, prompt });
+  // Item 1 / 2 / 3: build universal input from the P2-E
+  // payload verbatim. No second prompt serializer, no second
+  // hints authority, no duplicated negative rules.
+  const universalInput = buildUniversalInput({ prepared, adapterReferences });
 
-  // 11) Normalize the Provider request (Shared redaction) before
-  //     any audit-trail write. The Service records the redacted
-  //     shape; the raw request (with API key / base64 references)
-  //     never leaves the Shared Adapter.
+  // Item 6: registryModelId (capability routing) is separate
+  // from providerModelId (concrete API execution). The
+  // adapterId is the registry-routing identity.
+  const adapter = buildAdapter({ resolvedDeps, capability, executionConfig });
+  const registryModelId = asStringTrim(capability.modelId);
+  const providerModelId = asStringTrim(executionConfig.providerModelId);
+
+  // Item 7: real Provider request audit. The redacted audit
+  // request is the Shared adapter's `compileRequest(universalInput)`
+  // output passed through the Shared redaction; the audit
+  // request is NEVER hand-rolled.
+  let request;
+  try {
+    request = adapter.compileRequest(universalInput);
+  } catch (error) {
+    throw toGenerationProviderFailed(error);
+  }
+  if (!isPlainObject(request)) {
+    throw toGenerationProviderFailed(new Error('Shared adapter compileRequest returned a non-object.'));
+  }
   const redactedRequest = redactProviderRequest({
-    endpoint: asString(adapter.protocol),
-    region: asString(resolvedDeps.region),
-    modelId: asString(capability.modelId),
-    body: {
-      input: {
-        prompt: universalInput.prompt,
-        aspect_ratio: universalInput.aspectRatio,
-        image_size: universalInput.imageSize,
-        references: universalInput.references.map((ref) => ({
-          name: ref.name,
-          mimeType: ref.mimeType,
-          hasData: Boolean(ref.data),
-        })),
-      },
-    },
+    endpoint: asStringTrim(adapter.protocol),
+    region: asStringTrim(resolvedDeps.profileId), // best-effort label; not a secret
+    modelId: providerModelId,
+    body: request.body ?? request,
   });
 
-  // 12) Real Provider dispatch. The Shared adapter is the
-  //     single network authority; the Service never calls
-  //     `fetch` directly.
+  // Item 10: real Provider dispatch. The Shared adapter is the
+  // single network authority; the Service never calls
+  // `fetch` directly.
   let providerResponse;
   try {
     providerResponse = await adapter.execute(universalInput, {
@@ -483,18 +670,25 @@ export async function executePackagingGeneration(prepared, deps = null) {
   } catch (error) {
     throw toGenerationProviderFailed(error);
   }
-
-  if (!isPlainObject(providerResponse) || providerResponse.status !== 'succeeded' || !Array.isArray(providerResponse.images) || !providerResponse.images.length) {
+  if (!isPlainObject(providerResponse) || providerResponse.status !== 'succeeded' || !Array.isArray(providerResponse.images)) {
     throw toGenerationProviderFailed(new Error('Provider response did not contain a successful image payload.'));
   }
+  // Item 10: exactly one image per call. The Shared universal
+  // contract is `outputCount = 1`.
+  if (providerResponse.images.length !== 1) {
+    throw toGenerationProviderFailed(new Error(
+      `Provider returned ${providerResponse.images.length} images; expected exactly 1 (outputCount=1).`,
+    ));
+  }
 
-  // 13) Normalize the Provider response (Shared redaction).
+  // Item 7: redacted Provider response from the canonical
+  // Shared redaction; no hand-rolled redaction.
   const redactedResponse = redactProviderResponse({
     requestId: providerResponse.requestId,
     providerTaskId: providerResponse.requestId,
     state: 'succeeded',
     taskStatus: 'succeeded',
-    model: asString(providerResponse.modelId),
+    model: asStringTrim(providerResponse.modelId || providerModelId),
     parameters: {
       aspectRatio: universalInput.aspectRatio,
       imageSize: universalInput.imageSize,
@@ -502,58 +696,65 @@ export async function executePackagingGeneration(prepared, deps = null) {
     images: providerResponse.images,
   });
 
-  // 14) Download / verify (Shared). The Service does NOT
-  //     implement its own download. A download failure is
-  //     bucketed under GENERATION_PROVIDER_FAILED (Provider-side
-  //     problem).
+  // Item 8 + 9: download / verify (Shared). The Service does
+  // NOT implement its own download. Missing artifact
+  // lifecycle is fail-closed (item 8). A download failure is
+  // bucketed under GENERATION_PROVIDER_FAILED; the Service
+  // requires `downloaded.decoded === true` (item 9).
   const firstImage = providerResponse.images[0];
-  const rootDir = asString(resolvedDeps.runRoot, '');
   let downloaded = null;
-  if (rootDir) {
-    try {
-      downloaded = await downloadAndVerifyImage({
-        url: firstImage?.url,
-        b64: firstImage?.b64,
-        targetPath: resolvedDeps.targetPath
-          ? asString(resolvedDeps.targetPath)
-          : `${rootDir.replace(/[\\/]+$/u, '')}/image-01.png`,
-        thumbnailPath: resolvedDeps.thumbnailPath
-          ? asString(resolvedDeps.thumbnailPath)
-          : `${rootDir.replace(/[\\/]+$/u, '')}/image-01.webp`,
-        fetchImpl: resolvedDeps.fetchImpl,
-      });
-    } catch (error) {
-      throw toDownloadProviderFailed(error);
-    }
-    if (downloaded?.downloadFailed || !downloaded?.written) {
-      throw toDownloadProviderFailed(new Error(asString(downloaded?.error, 'download failed')));
-    }
+  try {
+    downloaded = await resolvedDeps.downloadImpl({
+      url: firstImage?.url,
+      b64: firstImage?.b64,
+      targetPath: artifactLifecycle.targetPath,
+      thumbnailPath: artifactLifecycle.thumbnailPath,
+      fetchImpl: resolvedDeps.fetchImpl,
+    });
+  } catch (error) {
+    throw toDownloadProviderFailed(error);
+  }
+  if (!isPlainObject(downloaded) || downloaded.downloadFailed || !downloaded.written || !downloaded.decoded) {
+    const reason = asStringTrim(downloaded?.error, 'image download/verify failed');
+    throw toDownloadProviderFailed(new Error(reason));
   }
 
-  // 15) Build the canonical Generation Result (P2 spec §13).
+  // Item 13: build the canonical Generation Result. The
+  // Generation Result is the audit-trail surface; raw base64
+  // image bytes are NOT embedded (item 13).
   const completedAt = resolvedDeps.now();
   const result = {
     schemaVersion: '1.0',
     target: 'packaging',
     status: 'succeeded',
     runId,
-    generationMode: asString(translation.generationMode),
-    shotContractId: asString(translation.shotContract?.id),
+    generationMode: asStringTrim(translation.generationMode),
+    shotContractId: asStringTrim(translation.shotContract?.id),
+    // Item 6: registryModelId / providerModelId both
+    // surfaced on the audit trail. The fingerprint sees
+    // registryModelId through the canonical input mapping; the
+    // providerModelId is the concrete API execution identity
+    // and is recorded on the result for the audit.
+    model: Object.freeze({
+      registryModelId,
+      providerModelId,
+    }),
     provider: Object.freeze({
-      adapterId: asString(adapterId),
-      modelId: asString(providerResponse.modelId || capability.modelId),
-      provider: asString(capability.provider),
-      protocol: asString(capability.protocol),
-      requestId: asString(providerResponse.requestId) || null,
+      adapterId: asStringTrim(adapter.id),
+      protocol: asStringTrim(adapter.protocol),
+      provider: asStringTrim(capability.provider),
     }),
     metadata,
     artifacts: Object.freeze(providerResponse.images.map((image, index) => ({
       imageId: `image-${String(index + 1).padStart(2, '0')}`,
-      mimeType: asString(image.mimeType, 'image/png'),
+      mimeType: asStringTrim(image.mimeType, 'image/png'),
       hasB64: Boolean(image.b64),
       hasUrl: Boolean(image.url),
-      sha256: asString(downloaded?.sha256) || null,
-      relativePath: downloaded?.relativePathWritten || null,
+      sha256: asStringTrim(downloaded.sha256) || null,
+      relativePath: asStringTrim(downloaded.relativePathWritten) || null,
+      width: Number.isFinite(downloaded.width) ? downloaded.width : null,
+      height: Number.isFinite(downloaded.height) ? downloaded.height : null,
+      sizeBytes: Number.isFinite(downloaded.sizeBytes) ? downloaded.sizeBytes : null,
     }))),
     diagnostics: Object.freeze({
       startedAt,
@@ -561,35 +762,25 @@ export async function executePackagingGeneration(prepared, deps = null) {
       durationMs: Number.isFinite(Date.parse(completedAt) - Date.parse(startedAt))
         ? Date.parse(completedAt) - Date.parse(startedAt)
         : null,
-      referenceCount: references.length,
+      referenceCount: payloadReferences.length,
       imageCount: providerResponse.images.length,
+      artifactRoot: artifactLifecycle.runRoot,
+      // Item 7: the redacted audit request is the Shared
+      // adapter's compileRequest output, not a hand-rolled
+      // generic shape.
       redactedRequest,
       redactedResponse,
-      ...(downloaded ? {
-        downloaded: {
-          mimeType: asString(downloaded.mimeType) || null,
-          sizeBytes: Number.isFinite(downloaded.sizeBytes) ? downloaded.sizeBytes : null,
-          width: Number.isFinite(downloaded.width) ? downloaded.width : null,
-          height: Number.isFinite(downloaded.height) ? downloaded.height : null,
-          decoded: Boolean(downloaded.decoded),
-        },
-      } : {}),
     }),
   };
 
-  // 16) Persist / return. The Service does NOT define a
-  //     Packaging-specific Run store; it calls the Shared
-  //     persistence seam through the injected saveRun
-  //     dependency. Production wires the Shared Run store
-  //     (packages/runtime-core/src/application/image-generation/
-  //     run-store.ts) through this seam.
+  // Item 12: persistence failure is NOT a Provider failure.
+  // The Shared Run store rejected the audit-trail write; the
+  // Provider succeeded and the binary is on disk. The
+  // canonical code is GENERATION_PERSISTENCE_FAILED.
   try {
     await resolvedDeps.saveRun(result);
   } catch (error) {
-    // Persistence failure is also a Provider-side bucket; the
-    // Service has produced a valid Result but the Shared
-    // persistence seam rejected it.
-    throw toGenerationProviderFailed(error);
+    throw toPersistenceFailed(error);
   }
 
   return Object.freeze(result);
@@ -598,7 +789,7 @@ export async function executePackagingGeneration(prepared, deps = null) {
 // ---------------------------------------------------------------------------
 // P2-G single-call wrapper. Tests + UI use this; it composes
 // prepare + execute. Tests that want to inspect prepared state
-// can call prepare / execute separately (P2 spec §3).
+// can call prepare / execute separately (P2 spec 搂3).
 // ---------------------------------------------------------------------------
 
 export async function runPackagingGeneration(input, deps = null) {
@@ -618,11 +809,28 @@ export function getPackagingGenerationServiceFingerprint() {
     schemaVersion: '1.0',
     serviceVersion: PACKAGING_GENERATION_SERVICE_VERSION,
     layers: Object.freeze(['prepare', 'execute']),
-    sharedAuthority: Object.freeze({
-      providerDispatch: 'createMultiModelImageAdapter',
-      downloadVerify: 'downloadAndVerifyImage',
-      redaction: 'redactProviderRequest / redactProviderResponse',
-      fingerprint: 'buildPackagingGenerationMetadata / verifyPackagingGenerationMetadata',
+    authority: Object.freeze({
+      // The Service is honest about its production wiring
+      // (item 14): the production Shared runtime must wire
+      // the production dependency bridge; the Service does NOT
+      // claim a "fully wired" production path by default.
+      promptSerialization: 'P2-E buildPackagingProviderPayload (single authority)',
+      hintsSerialization: 'P2-E buildPackagingProviderPayload (single authority)',
+      negativeRules: 'empty by contract; 14-block Prompt already carries negative_constraints',
+      referenceExecution: 'P2-E payload.references (single authority; covered by payloadFingerprint)',
+      providerDispatch: 'createMultiModelImageAdapter (Shared)',
+      downloadVerify: 'downloadAndVerifyImage (Shared, with decoded === true requirement)',
+      redaction: 'redactProviderRequest / redactProviderResponse (Shared)',
+      fingerprint: 'buildPackagingGenerationMetadata / verifyPackagingGenerationMetadata (P2-F)',
+      // Item 5 + 8 + 11 + 14: production dependency bridge
+      // seams. Each is a fail-closed stub by default;
+      // production wires them from the Shared runtime.
+      productionSeam: Object.freeze({
+        resolveExecutionConfig: 'must be wired by production Shared runtime',
+        resolveArtifactLifecycle: 'must be wired by production Shared runtime',
+        saveRun: 'must be wired by production Shared runtime',
+        createRunId: 'crypto.randomUUID default; tests inject deterministic implementation',
+      }),
     }),
   });
 }
