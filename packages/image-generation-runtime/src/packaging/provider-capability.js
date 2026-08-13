@@ -1,4 +1,4 @@
-// Provider Capability Authority (Packaging consumer) — P2-E.
+// Provider Capability Authority (Packaging consumer) — P2-E Final.
 //
 // Capability boundary:
 //   this module is a CONSUMER of the existing Model Registry
@@ -7,49 +7,33 @@
 //   mappings. It does NOT relax gating "to make it work" — if a
 //   capability is missing from the registry, the route fails closed.
 //
-// P2 spec §47 §52 (P2-E Exit):
-//   [ ] current Packaging provider profile supported
-//   [ ] modelType validated
-//   [ ] packaging capability explicitly validated
-//   [ ] unsupported model fails closed
-//   [ ] Reference support validated
-//   [ ] reference-count overflow uses PROVIDER_CAPABILITY_MISMATCH
-//   [ ] P2-C placeholder removed
-//   [ ] provider serialization outside Compiler
-//   [ ] existing Shared Provider infrastructure reused
-//   [ ] no second credential/runtime/retry stack
-//   [ ] deterministic provider serialization
-//   [ ] no Golden leakage
-//   [ ] Runtime Asset Guard PASS
-//   [ ] repo:verify PASS
+// P2 spec §47 §52 (P2-E Exit) + P2-E Finalization Delta item 4:
 //
-// P2-E pre-conditions (single source of truth, no second authority):
-//   - Provider / Model / Protocol / Capability are four separate
-//     axes. We do not collapse "provider X = packaging supported";
-//     the resolved shape always carries all four.
-//   - The only model currently registered with `packaging` in its
-//     declared capabilities is seedream-5.0-pro. Other image
-//     generation models (gpt-image-2, nano-banana, wan2.7-image-pro)
-//     do NOT carry the packaging capability and therefore fail
-//     closed at this layer. Adding new models requires an
-//     independent provider smoke + Model Registry update, NOT a
-//     relaxed gate inside the Packaging adapter.
-//   - Analysis models (qwen3.6-plus today) are NEVER accepted by
-//     the Packaging production route, regardless of any other
-//     capability they may declare. modelType === 'analysis' is a
-//     hard reject.
+//   - The Model Registry is the SINGLE authority for
+//     maxReferenceImages. The capability layer does NOT accept a
+//     caller-supplied maxReferenceImages override. If the
+//     Registry does not declare one, the layer reports
+//     maxReferenceImages = null (unbounded). Synthetic profiles
+//     are only available through the pure evaluator
+//     `evaluatePackagingCapability`, which tests use to drive
+//     gate behaviour without polluting the production Registry.
+//
+//   - Production code MUST use `resolvePackagingProviderCapability`.
+//     The pure evaluator is exported for tests and for future
+//     tooling that needs to validate a synthetic profile; it is
+//     NOT a back door for the production call site to inject
+//     ad-hoc capability data.
 //
 // Structured errors (P2 spec §32, refined for P2-E):
 //   PROVIDER_CAPABILITY_MISMATCH — model type, packaging capability,
 //     reference count, or protocol does not satisfy the current
-//     route. Used for cases B, C, E (P2-E test plan).
+//     route.
 //   REFERENCE_UNSUPPORTED        — the selected model does not
-//     carry Reference support at all. Used for case D.
-//   GENERATION_PROVIDER_FAILED   — the capability check passed but
-//     the real provider request failed. This layer does NOT issue
-//     GENERATION_PROVIDER_FAILED; that belongs to the adapter
-//     runtime (P2-G / Generation Service). The error code is
-//     exported here so the P2-E wiring is forward-compatible.
+//     carry Reference support at all.
+//   GENERATION_PROVIDER_FAILED   — capability check passed but
+//     the real provider request failed. P2-E exports the constant
+//     for forward compatibility; the actual throw site is the
+//     Shared Provider runtime (P2-G), not this layer.
 //
 // Stop conditions honoured (P2 spec §20 §58 §59):
 //   - does not invent a second registry
@@ -71,70 +55,177 @@ export const REFERENCE_UNSUPPORTED = 'REFERENCE_UNSUPPORTED';
 // (P2-G) owns the real failure path.
 export const GENERATION_PROVIDER_FAILED = 'GENERATION_PROVIDER_FAILED';
 
-const PACKAGING_CAPABILITY = 'packaging';
-
-// Sentinel used by capability resolution to mark "no provider-side
-// limit on reference count". Distinct from the Number.MAX_SAFE_INTEGER
-// we would otherwise reach for; tests assert on this exact value.
+// Sentinel: the Model Registry currently does not declare a
+// maxReferenceImages for any registered model, so the production
+// resolver reports null (unbounded). The synthetic evaluator
+// accepts an explicit value for tests.
 export const NO_REFERENCE_COUNT_LIMIT = null;
 
-function asString(value, fallback = '') {
-  return typeof value === 'string' && value.trim() ? value.trim() : fallback;
-}
+const PACKAGING_CAPABILITY = 'packaging';
 
-function asBoolean(value, fallback = false) {
-  if (typeof value === 'boolean') return value;
-  if (value === 'true') return true;
-  if (value === 'false') return false;
+function isString(v) {
+  return typeof v === 'string' && v.trim().length > 0;
+}
+function isObject(v) {
+  return v != null && typeof v === 'object' && !Array.isArray(v);
+}
+function asString(v, fallback = '') {
+  return isString(v) ? v.trim() : fallback;
+}
+function asBoolean(v, fallback) {
+  if (typeof v === 'boolean') return v;
+  if (v === 'true') return true;
+  if (v === 'false') return false;
   return fallback;
 }
 
-function asNumberOrUndef(value) {
-  if (value == null) return undefined;
-  const n = Number(value);
-  return Number.isFinite(n) && n >= 0 ? n : undefined;
-}
+// ---------------------------------------------------------------------------
+// Pure capability evaluator (synthetic profile; tests + future tooling).
+// ---------------------------------------------------------------------------
 
 /**
- * Resolve a Packaging Provider Capability result for the given
- * upstream provider / model profile + Translation shape.
+ * Pure capability evaluator. Accepts a synthetic resolved model
+ * profile so tests can exercise gate behaviour without registering
+ * a fake model in the production Registry. Production code MUST
+ * use `resolvePackagingProviderCapability` instead.
  *
- * Does NOT throw. Returns a stable, provider-agnostic result shape
- * so the Compiler and the adapter can stay provider-agnostic.
- *
- * @param {object} input
- * @param {string} input.modelId              - registry model id
- * @param {string} [input.provider]           - provider name (advisory; registry wins)
- * @param {string} [input.protocol]           - protocol name (advisory; registry wins)
- * @param {string} [input.referencePolicy]    - Translation.referencePolicy (for reference count / enabled)
- * @param {string} [input.maxReferenceImages]  - explicit max (rare; registry is the authority)
+ * @param {object} profile - the resolved model profile
+ * @param {string} profile.modelType           - 'image_generation' (any other value -> reject)
+ * @param {boolean} profile.packagingSupport   - true iff the model declares the 'packaging' capability
+ * @param {boolean} profile.referenceSupport   - true iff the model supports Reference image input
+ * @param {number|null} profile.maxReferenceImages - explicit cap, or null (unbounded)
+ * @param {string} [generationMode]            - 'analysis_led' | 'reference_first'
+ * @param {object} [referencePolicy]            - { enabled, required, references: [...] }
  * @returns {{
- *   schemaVersion: string,
- *   modelId: string,
- *   provider: string,
- *   protocol: string,
- *   modelType: string,
- *   packagingSupport: boolean,
- *   referenceSupport: boolean,
- *   maxReferenceImages: number | null,
- *   referenceCount: number,
- *   accepted: boolean,
- *   rejectionCode: string | null,
- *   rejectionReason: string | null,
- *   issues: string[],
+ *   schemaVersion, modelId, provider, protocol, modelType,
+ *   packagingSupport, referenceSupport, maxReferenceImages,
+ *   referenceCount, accepted, rejectionCode, rejectionReason, issues,
  * }}
  */
+export function evaluatePackagingCapability(profile, generationMode = '', referencePolicy = {}) {
+  const issues = [];
+  const referenceCount = Array.isArray(referencePolicy?.references)
+    ? referencePolicy.references.length
+    : 0;
+
+  // Defensive: a missing profile is rejected fail-closed.
+  if (!isObject(profile)) {
+    return rejected(PROVIDER_CAPABILITY_MISMATCH, 'profile is not an object', 'profile_not_object', referenceCount, '');
+  }
+
+  // Gate 1: modelType MUST be 'image_generation'. Analysis models
+  // are NEVER accepted by the Packaging production route (P2-E
+  // constraint #3).
+  if (profile.modelType !== 'image_generation') {
+    issues.push('model_type_not_image_generation');
+    return rejected(
+      PROVIDER_CAPABILITY_MISMATCH,
+      `modelType is ${JSON.stringify(profile.modelType ?? 'missing')}; Packaging production requires image_generation`,
+      'model_type_not_image_generation',
+      referenceCount,
+      profile.modelType ?? '',
+    );
+  }
+
+  // Gate 2: the profile must explicitly declare the 'packaging'
+  // capability. P2-E constraint #2 — never accept a model for
+  // Packaging just because it is also an image generation model.
+  if (profile.packagingSupport !== true) {
+    issues.push('packaging_capability_not_declared');
+    return rejected(
+      PROVIDER_CAPABILITY_MISMATCH,
+      "profile does not declare packagingSupport = true; only models with the packaging capability are eligible",
+      'packaging_capability_not_declared',
+      referenceCount,
+      profile.modelType,
+    );
+  }
+
+  // Gate 3: Reference support. Reference-First requires it.
+  if (generationMode === 'reference_first' && profile.referenceSupport !== true) {
+    issues.push('reference_unsupported_by_provider');
+    return rejected(
+      REFERENCE_UNSUPPORTED,
+      'profile.referenceSupport is false; Reference-First is not viable on this profile',
+      'reference_unsupported_by_provider',
+      referenceCount,
+      profile.modelType,
+    );
+  }
+
+  // Gate 4: reference count must fit the declared max (if any).
+  const max = profile.maxReferenceImages;
+  if (max != null && referenceCount > max) {
+    issues.push('reference_count_exceeds_provider_capability');
+    return rejected(
+      PROVIDER_CAPABILITY_MISMATCH,
+      `reference count ${referenceCount} exceeds profile maxReferenceImages ${max}`,
+      'reference_count_exceeds_provider_capability',
+      referenceCount,
+      profile.modelType,
+    );
+  }
+
+  // Accept.
+  return {
+    schemaVersion: '1.0',
+    modelId: '',
+    provider: '',
+    protocol: '',
+    modelType: profile.modelType,
+    packagingSupport: true,
+    referenceSupport: profile.referenceSupport === true,
+    maxReferenceImages: max == null ? NO_REFERENCE_COUNT_LIMIT : max,
+    referenceCount,
+    accepted: true,
+    rejectionCode: null,
+    rejectionReason: null,
+    issues: [],
+  };
+}
+
+function rejected(rejectionCode, rejectionReason, issue, referenceCount, modelType) {
+  return {
+    schemaVersion: '1.0',
+    modelId: '',
+    provider: '',
+    protocol: '',
+    modelType: modelType || '',
+    packagingSupport: false,
+    referenceSupport: false,
+    maxReferenceImages: NO_REFERENCE_COUNT_LIMIT,
+    referenceCount,
+    accepted: false,
+    rejectionCode,
+    rejectionReason,
+    issues: [issue],
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Production resolver (Registry authority).
+// ---------------------------------------------------------------------------
+
+/**
+ * Production resolver. Looks up the registered model by id and
+ * delegates to the pure evaluator with a profile built from the
+ * Registry. The caller MUST NOT pass a maxReferenceImages override
+ * — the Registry is the single authority.
+ *
+ * @param {object} input
+ * @param {string} input.modelId
+ * @param {string} [input.generationMode]
+ * @param {object} [input.referencePolicy]
+ * @returns {object} capability result
+ */
 export function resolvePackagingProviderCapability(input = {}) {
-  const obj = input && typeof input === 'object' ? input : {};
+  const obj = isObject(input) ? input : {};
   const modelId = asString(obj.modelId);
-  const registered = modelId ? getRegisteredModel(modelId) : null;
-  const referencePolicy = obj.referencePolicy && typeof obj.referencePolicy === 'object'
-    ? obj.referencePolicy
-    : {};
+  const generationMode = asString(obj.generationMode);
+  const referencePolicy = isObject(obj.referencePolicy) ? obj.referencePolicy : {};
   const referenceCount = Array.isArray(referencePolicy.references)
     ? referencePolicy.references.length
     : 0;
-  const issues = [];
 
   if (!modelId) {
     return {
@@ -154,6 +245,7 @@ export function resolvePackagingProviderCapability(input = {}) {
     };
   }
 
+  const registered = getRegisteredModel(modelId);
   if (!registered) {
     return {
       schemaVersion: '1.0',
@@ -172,120 +264,27 @@ export function resolvePackagingProviderCapability(input = {}) {
     };
   }
 
-  // Hard reject: analysis models are NEVER accepted by the
-  // Packaging production route, regardless of any other capability
-  // they declare. P2-E constraint #3.
-  if (registered.type !== 'image_generation') {
-    issues.push('model_type_not_image_generation');
-    return {
-      schemaVersion: '1.0',
-      modelId: registered.id,
-      provider: registered.provider,
-      protocol: registered.protocol,
-      modelType: registered.type,
-      packagingSupport: false,
-      referenceSupport: asBoolean(registered.referenceSupport, false),
-      maxReferenceImages: NO_REFERENCE_COUNT_LIMIT,
-      referenceCount,
-      accepted: false,
-      rejectionCode: PROVIDER_CAPABILITY_MISMATCH,
-      rejectionReason: `${registered.name} (${registered.type}) is not an image_generation model; Packaging production requires image_generation`,
-      issues,
-    };
-  }
+  // Build the profile from the Registry. The Registry currently
+  // does not declare a maxReferenceImages for any model; when
+  // such a field is added, the resolver should read it here.
+  // Until then the production resolver reports unbounded
+  // (NO_REFERENCE_COUNT_LIMIT).
+  const profile = {
+    modelType: registered.type,
+    packagingSupport: Array.isArray(registered.capabilities) && registered.capabilities.includes(PACKAGING_CAPABILITY),
+    referenceSupport: asBoolean(registered.referenceSupport, false),
+    maxReferenceImages: NO_REFERENCE_COUNT_LIMIT,
+  };
 
-  // Hard reject: the registered capabilities must explicitly
-  // include 'packaging'. P2-E constraint #2 — never accept a model
-  // for Packaging just because it is also an image generation
-  // model. Adding new models is a Registry-side decision.
-  const caps = Array.isArray(registered.capabilities) ? registered.capabilities : [];
-  const packagingSupport = caps.includes(PACKAGING_CAPABILITY);
-  if (!packagingSupport) {
-    issues.push('packaging_capability_not_declared');
-    return {
-      schemaVersion: '1.0',
-      modelId: registered.id,
-      provider: registered.provider,
-      protocol: registered.protocol,
-      modelType: registered.type,
-      packagingSupport: false,
-      referenceSupport: asBoolean(registered.referenceSupport, false),
-      maxReferenceImages: NO_REFERENCE_COUNT_LIMIT,
-      referenceCount,
-      accepted: false,
-      rejectionCode: PROVIDER_CAPABILITY_MISMATCH,
-      rejectionReason: `${registered.name} does not declare the 'packaging' capability; only models with the packaging capability are eligible for the Packaging production route`,
-      issues,
-    };
-  }
-
-  // Reference support: Reference-First requires it; Analysis-led is
-  // permissive. P2-E constraint #5.
-  const referenceSupport = asBoolean(registered.referenceSupport, false);
-  const generationMode = asString(obj.generationMode);
-  if (generationMode === 'reference_first' && !referenceSupport) {
-    issues.push('reference_unsupported_by_provider');
-    return {
-      schemaVersion: '1.0',
-      modelId: registered.id,
-      provider: registered.provider,
-      protocol: registered.protocol,
-      modelType: registered.type,
-      packagingSupport: true,
-      referenceSupport: false,
-      maxReferenceImages: NO_REFERENCE_COUNT_LIMIT,
-      referenceCount,
-      accepted: false,
-      rejectionCode: REFERENCE_UNSUPPORTED,
-      rejectionReason: `${registered.name} has no referenceSupport; Reference-First is not viable on this model`,
-      issues,
-    };
-  }
-
-  // Reference count: explicit caller override is rare; the registry
-  // is the authority. If neither provides a limit we treat the
-  // model as unbounded (NO_REFERENCE_COUNT_LIMIT).
-  const explicitMax = asNumberOrUndef(obj.maxReferenceImages);
-  const maxReferenceImages = explicitMax != null
-    ? explicitMax
-    : NO_REFERENCE_COUNT_LIMIT;
-  if (maxReferenceImages != null && referenceCount > maxReferenceImages) {
-    // P2-E closes the P2-C placeholder: this is a PROVIDER
-    // capability issue, NOT a Reference role issue. The role is
-    // legal; the provider cannot accept that many.
-    issues.push('reference_count_exceeds_provider_capability');
-    return {
-      schemaVersion: '1.0',
-      modelId: registered.id,
-      provider: registered.provider,
-      protocol: registered.protocol,
-      modelType: registered.type,
-      packagingSupport: true,
-      referenceSupport: true,
-      maxReferenceImages,
-      referenceCount,
-      accepted: false,
-      rejectionCode: PROVIDER_CAPABILITY_MISMATCH,
-      rejectionReason: `reference count ${referenceCount} exceeds model ${registered.name} max ${maxReferenceImages}`,
-      issues,
-    };
-  }
-
-  // Accept.
+  const result = evaluatePackagingCapability(profile, generationMode, referencePolicy);
+  // Surface the Registry identity on the accepted / rejected
+  // result so the caller can branch on modelId / provider /
+  // protocol.
   return {
-    schemaVersion: '1.0',
+    ...result,
     modelId: registered.id,
     provider: registered.provider,
     protocol: registered.protocol,
-    modelType: registered.type,
-    packagingSupport: true,
-    referenceSupport,
-    maxReferenceImages,
-    referenceCount,
-    accepted: true,
-    rejectionCode: null,
-    rejectionReason: null,
-    issues: [],
   };
 }
 

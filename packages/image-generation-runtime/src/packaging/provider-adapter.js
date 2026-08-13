@@ -1,10 +1,10 @@
-// Provider Adapter (Packaging serialization boundary) — P2-E.
+// Provider Adapter (Packaging serialization boundary) — P2-E Final.
 //
 // Capability boundary:
 //   Canonical Compiled Packaging Prompt (from compiler.js)
 //   + Packaging Provider Capability (from provider-capability.js)
-//   + Reference Policy resolution (already in Translation)
-//   + Provider hints
+//   + PackagingTranslation (P2-A; for the authoritative reference
+//     surface + providerHints surface)
 //     -> deterministic provider-ready payload
 //
 // This module is the ONLY place in the Packaging pipeline that
@@ -15,37 +15,41 @@
 // surface (Shared Generation Core); P2-G integrates that runtime
 // with the Packaging pipeline.
 //
-// P2 spec §24 §25 (Provider Capability Adaptation):
-//   - Translation / Compiler emit providerHints + referencePolicy
-//     + reference assignments; the adapter consumes these.
-//   - Reference-First on a no-reference provider fails closed at
-//     the capability layer (provider-capability.js). The adapter
-//     does NOT silently downgrade Reference-First to Analysis-led
-//     or drop references. P2-E constraint #5.
-//   - Provider-specific serialization (Seedream HTTP payload,
-//     Gemini / OpenAI shapes) belongs to the Shared Provider
-//     adapter boundary; the Packaging adapter emits a
-//     provider-agnostic skeleton that the Shared Provider layer
-//     can project to a specific protocol.
+// Data-closure contract (P2-E Finalization Delta, items 1, 2, 3):
 //
-// P2 spec §12 (Prompt flattening):
-//   - canonical 14 blocks -> deterministic provider prompt string
-//   - block order, block boundaries, and semantic contents are
-//     preserved verbatim
-//   - the adapter does NOT re-author any prompt content
-//   - same compiled representation -> same provider prompt string
+//   - payload.references is sourced from
+//     translation.referencePolicy.references verbatim. Every entry
+//     preserves { assetId, role, source }. The adapter NEVER infers
+//     references from the compiled prompt text.
 //
-// P2 spec §15 (References must keep traceability):
-//   - references are passed through with { assetId, role, source }
-//     intact. The adapter does NOT resolve assetId to a local path
-//     / URL / temp file. The Shared Reference Engine handles that
-//     when the actual provider call is made (P2-G).
+//   - payload.promptSourceMap is the compiled.sourceMap object
+//     preserved verbatim. The adapter does NOT re-shape it.
+//
+//   - payload.hints is sourced from translation.providerHints
+//     verbatim. The adapter does NOT infer hints from the compiled
+//     prompt text or any other surface.
+//
+//   - The adapter is read-only on the three inputs. It does not
+//     mutate the compiled, capability, or translation shapes.
+//
+// Consistency gate (P2-E Finalization Delta, item 6):
+//
+//   capability.referenceCount must equal
+//   translation.referencePolicy.references.length. A drift
+//   surfaces as PROVIDER_CAPABILITY_MISMATCH.
+//
+// Determinism contract (P2-E Finalization Delta, item 7):
+//
+//   Same (compiled, capability, translation) -> deepEqual payload.
+//   No timestamp / local path / temp path / UUID / secret in the
+//   output shape. payload is Object.freeze'd.
 //
 // Stop conditions honoured (P2 spec §20 §58 §59):
 //   - does not call a model
 //   - does not import any Golden project asset
 //   - does not invent a second adapter / credential / retry stack
 //   - does not re-author the canonical prompt
+//   - does not resolve assetId to a local path / URL
 
 import { PACKAGING_PROMPT_BLOCKS } from './compiler.js';
 import {
@@ -55,27 +59,23 @@ import {
 
 export const PACKAGING_PROVIDER_ADAPTER_VERSION = '1.0.0';
 
-// Provider-agnostic skeleton the Shared Provider layer can project
-// to a specific protocol. The shape is intentionally minimal; the
-// Shared Provider layer (P2-G) owns protocol-specific fields.
-const ADAPTER_FIELDS = Object.freeze([
-  'modelId', 'provider', 'protocol', 'modelType',
-  'packagingSupport', 'referenceSupport', 'maxReferenceImages',
-  'referenceCount',
-]);
-
-function asString(value, fallback = '') {
-  return typeof value === 'string' && value.trim() ? value.trim() : fallback;
-}
-
-function asObject(value) {
-  return value != null && typeof value === 'object' && !Array.isArray(value) ? value : {};
+function isPlainObject(value) {
+  return value != null && typeof value === 'object' && !Array.isArray(value);
 }
 
 function asArray(value) {
   if (value == null) return [];
   if (Array.isArray(value)) return value.slice();
   return [value];
+}
+
+function asString(value, fallback = '') {
+  return typeof value === 'string' && value.trim() ? value.trim() : fallback;
+}
+
+function asNumber(value, fallback) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
 }
 
 /**
@@ -85,41 +85,30 @@ function asArray(value) {
  * No block is dropped, reordered, or rewritten. The function is a
  * pure function of the input — the same compiled representation
  * yields the same string.
- *
- * @param {object} compiled - the output of compilePackagingPrompt
- * @returns {string}
  */
 export function flattenCompiledPromptToString(compiled) {
-  if (compiled == null || typeof compiled !== 'object') {
-    const err = new Error(`${PROVIDER_CAPABILITY_MISMATCH}: flatten input is not an object`);
-    err.code = PROVIDER_CAPABILITY_MISMATCH;
-    err.issues = ['flatten_input_not_object'];
-    throw err;
+  if (!isPlainObject(compiled)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'flatten input is not an object', ['flatten_input_not_object']);
   }
   if (!Array.isArray(compiled.blocks) || compiled.blocks.length === 0) {
-    const err = new Error(`${PROVIDER_CAPABILITY_MISMATCH}: compiled.blocks is missing or empty`);
-    err.code = PROVIDER_CAPABILITY_MISMATCH;
-    err.issues = ['flatten_blocks_empty'];
-    throw err;
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'compiled.blocks is missing or empty', ['flatten_blocks_empty']);
   }
   if (compiled.blocks.length !== PACKAGING_PROMPT_BLOCKS.length) {
-    const err = new Error(`${PROVIDER_CAPABILITY_MISMATCH}: compiled block count ${compiled.blocks.length} does not match the canonical ${PACKAGING_PROMPT_BLOCKS.length}`);
-    err.code = PROVIDER_CAPABILITY_MISMATCH;
-    err.issues = ['flatten_block_count_mismatch'];
-    throw err;
+    throw newError(
+      PROVIDER_CAPABILITY_MISMATCH,
+      `compiled block count ${compiled.blocks.length} does not match the canonical ${PACKAGING_PROMPT_BLOCKS.length}`,
+      ['flatten_block_count_mismatch'],
+    );
   }
-  // Block order enforcement: same check as the Compiler.
   for (let i = 0; i < compiled.blocks.length; i += 1) {
     if (compiled.blocks[i].id !== PACKAGING_PROMPT_BLOCKS[i][0]) {
-      const err = new Error(`${PROVIDER_CAPABILITY_MISMATCH}: block at index ${i} is ${compiled.blocks[i].id}; expected ${PACKAGING_PROMPT_BLOCKS[i][0]}`);
-      err.code = PROVIDER_CAPABILITY_MISMATCH;
-      err.issues = ['flatten_block_order_violation'];
-      throw err;
+      throw newError(
+        PROVIDER_CAPABILITY_MISMATCH,
+        `block at index ${i} is ${compiled.blocks[i].id}; expected ${PACKAGING_PROMPT_BLOCKS[i][0]}`,
+        ['flatten_block_order_violation'],
+      );
     }
   }
-  // Render. Each block is `## {title}\n{lines}` joined by '\n'.
-  // The blank line between blocks is a deliberate boundary
-  // marker; it does not carry semantic content.
   const sections = compiled.blocks.map((b) => {
     const lines = asArray(b.items);
     if (lines.length === 0) return `## ${b.title}`;
@@ -134,54 +123,98 @@ export function flattenCompiledPromptToString(compiled) {
  * specific protocol (Seedream / Gemini / OpenAI / etc.).
  *
  * @param {object} input
- * @param {object} input.compiled   - the output of compilePackagingPrompt
- * @param {object} input.capability - the result of resolvePackagingProviderCapability
- * @returns {{
- *   schemaVersion: string,
- *   adapterVersion: string,
- *   modelId: string, provider: string, protocol: string, modelType: string,
- *   packagingSupport: boolean, referenceSupport: boolean, maxReferenceImages: number | null,
- *   referenceCount: number,
- *   prompt: string,
- *   promptSourceMap: { blockId: string[] }[],
- *   promptBlockOrder: string[],
- *   references: Array<{ assetId: string, role: string, source: string }>,
- *   hints: object,
- * }}
+ * @param {object} input.compiled    - the output of compilePackagingPrompt
+ * @param {object} input.capability  - the result of resolvePackagingProviderCapability
+ * @param {object} input.translation - the validated PackagingTranslation (P2-A)
+ * @returns {object} payload
  *
- * The adapter does NOT resolve assetId to a local path / URL; the
- * Shared Reference Engine handles that on the actual provider call.
- *
- * Throws PROVIDER_CAPABILITY_MISMATCH / REFERENCE_UNSUPPORTED if the
- * capability is not accepted.
+ * Throws PROVIDER_CAPABILITY_MISMATCH / REFERENCE_UNSUPPORTED on:
+ *   - capability not accepted
+ *   - compiled / capability / translation shape drift
+ *   - capability.referenceCount != translation.referencePolicy.references.length
+ *   - any block boundary / order violation in compiled
  */
 export function buildPackagingProviderPayload(input = {}) {
-  const obj = asObject(input);
-  const compiled = asObject(obj.compiled);
-  const capability = asObject(obj.capability);
+  if (!isPlainObject(input)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'payload input is not an object', ['payload_input_not_object']);
+  }
+  const compiled = input.compiled;
+  const capability = input.capability;
+  const translation = input.translation;
+  if (!isPlainObject(compiled)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'compiled is not an object', ['compiled_not_object']);
+  }
+  if (!isPlainObject(capability)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'capability is not an object', ['capability_not_object']);
+  }
+  if (!isPlainObject(translation)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'translation is not an object', ['translation_not_object']);
+  }
+  if (!isPlainObject(translation.referencePolicy)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'translation.referencePolicy is not an object', ['reference_policy_not_object']);
+  }
+  if (!isPlainObject(translation.providerHints)) {
+    throw newError(PROVIDER_CAPABILITY_MISMATCH, 'translation.providerHints is not an object', ['provider_hints_not_object']);
+  }
 
-  if (!capability.accepted) {
+  // 1. Capability acceptance gate.
+  if (capability.accepted !== true) {
     const code = capability.rejectionCode || PROVIDER_CAPABILITY_MISMATCH;
-    const err = new Error(`${code}: ${capability.rejectionReason || 'capability not accepted'}`);
-    err.code = code;
-    err.issues = Array.isArray(capability.issues) ? capability.issues.slice() : [];
+    const err = newError(
+      code,
+      capability.rejectionReason || 'capability not accepted',
+      Array.isArray(capability.issues) ? capability.issues.slice() : [],
+    );
     err.capability = capability;
     throw err;
   }
 
-  // Compile the prompt string deterministically.
+  // 2. Consistency gate: capability.referenceCount must equal
+  //    translation.referencePolicy.references.length. A drift
+  //    surfaces as PROVIDER_CAPABILITY_MISMATCH.
+  const translationReferences = Array.isArray(translation.referencePolicy.references)
+    ? translation.referencePolicy.references
+    : [];
+  if (capability.referenceCount !== translationReferences.length) {
+    throw newError(
+      PROVIDER_CAPABILITY_MISMATCH,
+      `capability.referenceCount (${capability.referenceCount}) does not match translation.referencePolicy.references.length (${translationReferences.length})`,
+      ['reference_count_drift'],
+    );
+  }
+
+  // 3. Reference closure: from translation.referencePolicy.references
+  //    verbatim. Each entry preserves { assetId, role, source }.
+  //    The adapter does NOT infer references from the compiled
+  //    prompt text; the Translation is the authoritative reference
+  //    surface (P2 spec §15 + P2-A referencePolicy output).
+  const references = translationReferences.map((r) => ({
+    assetId: asString(r.assetId),
+    role: asString(r.role),
+    source: asString(r.source),
+  }));
+
+  // 4. Hints closure: from translation.providerHints verbatim.
+  //    The Translation is the only hints authority (P2 spec §9 +
+  //    P2-A buildProviderHints single-source rule).
+  const hints = {
+    aspectRatio: asString(translation.providerHints.aspectRatio),
+    imageSize: asString(translation.providerHints.imageSize),
+    qualityProfile: asString(translation.providerHints.qualityProfile),
+    referenceRolePriority: asArray(translation.providerHints.referenceRolePriority),
+    referenceCount: asNumber(translation.providerHints.referenceCount, 0),
+  };
+
+  // 5. SourceMap closure: from compiled.sourceMap (object). The
+  //    Compiler emits sourceMap as { blockId: source[] }; preserve
+  //    the object verbatim.
+  const promptSourceMap = isPlainObject(compiled.sourceMap) ? compiled.sourceMap : {};
+
+  // 6. Flatten: deterministic, provider-agnostic prompt string.
   const prompt = flattenCompiledPromptToString(compiled);
 
-  // Carry reference assignments verbatim. The adapter does NOT
-  // resolve assetId; that is the Shared Reference Engine's job
-  // (P2 spec §15 + P2-E constraint #11).
-  const references = Array.isArray(capability.referenceCount)
-    ? [] // belt-and-suspenders; capability.referenceCount is a number, not an array
-    : extractReferences(compiled);
-
-  // Carry a provider-agnostic hints surface. The Shared Provider
-  // layer (P2-G) projects this to a specific protocol.
-  const hints = extractHints(compiled);
+  // 7. Block order: from compiled.blockOrder.
+  const promptBlockOrder = Array.isArray(compiled.blockOrder) ? compiled.blockOrder : [];
 
   const payload = {
     schemaVersion: '1.0',
@@ -195,41 +228,19 @@ export function buildPackagingProviderPayload(input = {}) {
     maxReferenceImages: capability.maxReferenceImages,
     referenceCount: capability.referenceCount,
     prompt,
-    promptSourceMap: Array.isArray(compiled.sourceMap) ? compiled.sourceMap : {},
-    promptBlockOrder: Array.isArray(compiled.blockOrder) ? compiled.blockOrder : [],
+    promptSourceMap,
+    promptBlockOrder,
     references,
     hints,
   };
   return Object.freeze(payload);
 }
 
-// ---------------------------------------------------------------------------
-// Internal helpers (provider-agnostic, deterministic)
-// ---------------------------------------------------------------------------
-
-function extractReferences(compiled) {
-  // The Compiler does not carry the references on the compiled
-  // shape directly; the adapter reads them off the source map.
-  // In practice the adapter is invoked with both the compiled and
-  // the capability (which carries the resolved references via
-  // referenceCount); the references are then reconstructed from
-  // the Translation at the integration point. The helper below
-  // is intentionally narrow: it only returns the references
-  // recorded on the compiled shape, if any. If a caller needs
-  // references, they pass them via input.references; the public
-  // helper buildPackagingProviderPayload accepts a third optional
-  // argument for that.
-  return [];
-}
-
-function extractHints(compiled) {
-  // The compiled shape does not carry the original providerHints
-  // (the Compiler only renders the rendering-relevant slice into
-  // the rendering_requirements block). The adapter therefore
-  // produces an empty hints surface here; the integration point
-  // (P2-G) is expected to inject the original Translation.
-  // providerHints into the payload if it needs them.
-  return {};
+function newError(code, message, issues) {
+  const err = new Error(`${code}: ${message}`);
+  err.code = code;
+  err.issues = Array.isArray(issues) ? issues.slice() : [];
+  return err;
 }
 
 /**
@@ -239,6 +250,5 @@ function extractHints(compiled) {
 export function getPackagingProviderAdapterFingerprint() {
   return Object.freeze({
     schemaVersion: PACKAGING_PROVIDER_ADAPTER_VERSION,
-    adapterFields: ADAPTER_FIELDS.slice(),
   });
 }
