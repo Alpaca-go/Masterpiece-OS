@@ -1,4 +1,4 @@
-// Packaging Generation Service 鈥?P2-G Final.
+// Packaging Generation Service — P2-G Finalization Delta #2.
 //
 // Capability boundary:
 //   this module is the FIRST real Packaging production service
@@ -10,79 +10,113 @@
 //   no Packaging-specific provider HTTP client, no second
 //   reasoning call.
 //
-// P2-G Finalization Delta (16 items). Key contracts:
+// P2-G Finalization Delta #2 (16 items). Key contracts:
 //
 //   1) No second prompt serializer. The Provider's `prompt` is
-//      `prepared.payload.prompt` verbatim. The P2-E Adapter is
-//      the unique serialization authority.
+//      `prepared.payload.prompt` verbatim.
 //
-//   2) No second hints authority. `aspectRatio` / `imageSize` /
-//      `qualityProfile` come from `prepared.payload.hints`.
+//   2) Consume canonical payload hints (aspectRatio / imageSize
+//      / qualityProfile come from `prepared.payload.hints`).
 //
 //   3) Negative rules are not duplicated. The 14-block Prompt
-//      already carries the canonical `negative_constraints`
-//      block. The Service passes `negativeRules: []` to the
-//      Shared Adapter so the Shared Adapter does not append a
-//      second copy.
+//      already carries `negative_constraints`; the Service
+//      passes `negativeRules: []`.
 //
 //   4) One Reference execution authority. The Service resolves
-//      references from `prepared.payload.references` only. There
-//      is no second `prepared.references` surface; the payload
-//      is the single execution source and is also covered by
-//      the Compile Fingerprint / payloadFingerprint.
+//      references from `prepared.payload.references` only.
 //
-//   5) Shared production config bridge. `resolveExecutionConfig`
-//      and `resolveArtifactLifecycle` are the two production
-//      seams; production wires them from the existing Shared
-//      runtime / credential infrastructure. Tests inject fake
-//      implementations; the Service does not read .env, dotenv,
-//      or credential files directly.
+//   5) Shared production config bridge. The Service exposes
+//      `resolveExecutionConfig({apiProfileId, ...})` and
+//      `resolveArtifactLifecycle({runId, metadata, translation,
+//      apiProfileId})`. Both default to fail-closed stubs.
 //
 //   6) `registryModelId` and `providerModelId` are separated.
 //      The Shared multi-model `adapterId` is the registry
-//      routing identity (e.g. 'seedream-5.0-pro'); the actual
-//      API model field comes from the resolved execution config
-//      and may differ (e.g. 'doubao-seedream-5-0-pro-260628').
+//      routing identity; the actual API model field comes
+//      from the resolved execution config.
 //
 //   7) Real Provider request audit. The redacted audit request
-//      comes from `adapter.compileRequest(universalInput)`, not
-//      from a hand-rolled redaction.
+//      is `adapter.compileRequest(universalInput)` passed
+//      through the Shared redaction layer (which now strips
+//      base64 / data URIs / signed-URL credentials across
+//      Seedream / OpenAI / Gemini / Wan / etc.).
 //
-//   8) Artifact lifecycle is mandatory in production. Missing
-//      `runRoot` (or `targetPath` / `thumbnailPath`) is a
-//      fail-closed `ARTIFACT_LIFECYCLE_REQUIRED`. Tests inject
-//      a fake lifecycle seam.
+//   8) Artifact lifecycle is mandatory and async. The Service
+//      refuses to execute if `resolveArtifactLifecycle` is not
+//      wired or returns an empty shape.
 //
-//   9) Decoded image required. `downloaded.decoded !== true` is
-//      a fail-closed `GENERATION_PROVIDER_FAILED`.
+//   9) Decoded image required.
 //
-//  10) Exactly one image enforced. `images.length !== 1` is a
-//      fail-closed `GENERATION_PROVIDER_FAILED`.
+//  10) Exactly one image enforced (outputCount=1).
 //
-//  11) Run identity is separate from fingerprint. `createRunId`
-//      is a seam; same input + two executions produce different
-//      runIds; tests inject deterministic runIds.
+//  11) Run identity is separate from fingerprint.
 //
 //  12) Persistence failure is NOT a Provider failure. The
-//      canonical code for saveRun failure is
-//      `GENERATION_PERSISTENCE_FAILED`; the Provider succeeded
-//      and the binary is on disk, but the audit-trail write did
-//      not land.
+//      canonical code is `GENERATION_PERSISTENCE_FAILED`.
+//      Public `err.message` is a safe generic string; raw
+//      filesystem / database messages live on `err.cause` and
+//      `err.internal` for internal diagnostics only.
 //
-//  13) External error redaction. The `err.message` of a
-//      `GENERATION_PROVIDER_FAILED` is a safe generic string;
-//      the original `code` / `retryable` / raw message are
-//      preserved on `err.internal` and `err.cause` for internal
-//      diagnostics. Raw `Authorization` / `Secret` / signed-URL
-//      tokens never reach the user-facing surface or the
-//      persisted metadata.
+//  P2-G Finalization Delta #2 (P2-G-F#2, items 1-15):
 //
-//  14) The Service is honest about its production wiring. The
-//      default `resolveExecutionConfig` and
-//      `resolveArtifactLifecycle` are stubs that fail closed;
-//      Shared production wiring is required.
+//  - Redact base64 / data URIs / signed-URL credentials from
+//    audit: handled by the Shared redaction layer (item 1).
+//    The Service consumes the redacted audit verbatim.
 //
-// Stop conditions honoured (P2 spec 搂20 搂58 搂59):
+//  - P2-G-F no longer pins the raw body: the test asserts
+//    the audit is the Shared-redacted shape, not the raw
+//    compileRequest body.
+//
+//  - concrete providerModelId recorded in final metadata
+//    and participates in execution identity. The P2-F
+//    semantic fingerprint remains the canonical authority;
+//    the final metadata adds an `executionIdentity` block
+//    whose hash participates in stale verification.
+//
+//  - prepare remains secret-free / deterministic. The
+//    semantic metadata is built in `prepare`; the final
+//    metadata is built in `execute` from the resolved
+//    execution config (which is the production-only
+//    boundary; prepare never sees an API Key).
+//
+//  - explicit `apiProfileId` (not `profileId`). The
+//    `apiProfileId` is forwarded to both
+//    `resolveExecutionConfig` and `resolveArtifactLifecycle`
+//    so production can resolve the right credentials /
+//    project root.
+//
+//  - `region` is not `profileId`. The audit `region` comes
+//    from `executionConfig.region`; if absent, it is
+//    `undefined` (not a fabricated profile id).
+//
+//  - artifact lifecycle receives `runId` / `metadata` /
+//    `translation` / `apiProfileId` and may be async; the
+//    Shared Runtime's real artifact root may need async
+//    project-root resolution.
+//
+//  - artifact lifecycle owns `relativePath` /
+//    `thumbnailRelativePath`. The Service does NOT depend on
+//    `downloadAndVerifyImage.relativePathWritten` (which the
+//    real Shared helper does not return); the relative paths
+//    come from the lifecycle shape.
+//
+//  - the persisted Generation Result records `relativePath`
+//    and `thumbnailRelativePath` only. Absolute paths
+//    (`runRoot`, `targetPath`, `thumbnailPath`) stay inside
+//    the runtime I/O scope and are NEVER persisted on the
+//    `artifacts[]` surface or in `diagnostics`.
+//
+//  - persistence public error message is the safe generic
+//    text; raw filesystem / database messages live only on
+//    `err.cause` / `err.internal`.
+//
+//  - `err.cause` is not a long-term-persisted secret
+//    container: the serialization-safety test asserts that
+//    `JSON.stringify(err)` and `JSON.stringify(err.cause)`
+//    never leak raw Authorization / API Key / signed-URL
+//    fragments.
+//
+// Stop conditions honoured (P2 spec §20 §58 §59):
 //   - does not call a model directly
 //   - does not import any Golden project asset
 //   - does not invent a second fingerprint algorithm
@@ -90,11 +124,13 @@
 //   - does not introduce a second credential or retry stack
 //   - does not introduce a Packaging-specific provider HTTP
 //     client
-//   - does not branch on a specific provider identity at the
-//     Service layer; provider-specific serialization belongs to
-//     the Shared Provider Adapter.
-//   - does not embed raw base64 in audit / metadata surfaces
+//   - does not branch on a specific provider identity at
+//     the Service layer
+//   - does not embed raw base64 in audit / metadata
+//     surfaces
 //   - does not derive runId from a semantic fingerprint
+//   - does not persist absolute local paths in the
+//     Generation Result
 
 import { createPackagingTranslation } from './translation.js';
 import { validatePackagingTranslation } from './validation.js';
@@ -114,64 +150,43 @@ import {
 import { createMultiModelImageAdapter } from '../../../image-generation-adapter/src/multi-model.js';
 import { downloadAndVerifyImage } from '../download-verify.js';
 import { redactProviderRequest, redactProviderResponse } from '../redact.js';
+import { stableHash as sharedStableHash } from '../deliverables/compile-fingerprint.js';
 
 export const PACKAGING_GENERATION_SERVICE_VERSION = '1.0.0';
 
-// Canonical post-execution error codes (P2 spec 搂32 + the P2-G
-// Finalization Delta items 12 + 13):
-//   - GENERATION_PROVIDER_FAILED:     Provider request / network /
-//                                    download/verify failure.
-//   - GENERATION_PERSISTENCE_FAILED:  Provider succeeded but the
-//                                    Run store rejected the audit
-//                                    trail write.
-//   - REFERENCE_ASSET_UNRESOLVED:     Reference id could not be
-//                                    resolved to a binary by the
-//                                    injected readReference seam.
-//   - ARTIFACT_LIFECYCLE_REQUIRED:    No runRoot / targetPath /
-//                                    thumbnailPath provided;
-//                                    production Shared runtime
-//                                    must wire the artifact
-//                                    lifecycle seam.
-//   - EXECUTION_PROVIDER_MODEL_REQUIRED:
-//                                    No execution config seam
-//                                    (apiKey + providerModelId +
-//                                    baseUrl); production Shared
-//                                    runtime must wire the
-//                                    resolveExecutionConfig seam.
-//
-// Pre-execution errors keep their canonical upstream code and
-// are NOT rewrapped (P2 spec 搂12).
+// Canonical post-execution error codes (P2 spec §32 + the P2-G
+// Finalization Delta items 12 + 13 + P2-G-F#2 item 11).
 export const GENERATION_PROVIDER_FAILED = 'GENERATION_PROVIDER_FAILED';
 export const GENERATION_PERSISTENCE_FAILED = 'GENERATION_PERSISTENCE_FAILED';
 export const REFERENCE_ASSET_UNRESOLVED = 'REFERENCE_ASSET_UNRESOLVED';
 export const ARTIFACT_LIFECYCLE_REQUIRED = 'ARTIFACT_LIFECYCLE_REQUIRED';
 export const EXECUTION_PROVIDER_MODEL_REQUIRED = 'EXECUTION_PROVIDER_MODEL_REQUIRED';
+// P2-G-F#2 item 3: the canonical code for a final metadata
+// whose executionIdentity (providerModelId / apiProfileId /
+// region) drifted away from the previous execution. The
+// semantic fingerprint (P2-F) remains valid; the
+// executionIdentityHash no longer matches. This is the
+// P2-G-F#2 counterpart of the P2-F `COMPILE_INPUT_STALE`
+// for the execution boundary.
+export const GENERATION_EXECUTION_STALE = 'GENERATION_EXECUTION_STALE';
 
 // Safe generic message for the user-facing surface of a
-// Provider / network / download failure (item 13). The
-// original `code` / `retryable` / raw message live on
-// `err.internal` and `err.cause` for internal diagnostics.
+// Provider / network / download / persistence failure
+// (P2-G-F#2 item 11 + 12). Raw messages are kept on
+// `err.cause` and `err.internal` for internal diagnostics.
 const SAFE_GENERIC_PROVIDER_MESSAGE = 'Packaging provider request failed; see internal diagnostics for details.';
+const SAFE_GENERIC_PERSISTENCE_MESSAGE = 'Packaging run persistence failed; see internal diagnostics for details.';
+const SAFE_GENERIC_DOWNLOAD_MESSAGE = 'Packaging image download failed; see internal diagnostics for details.';
 
 function isPlainObject(v) {
   return v != null && typeof v === 'object' && !Array.isArray(v);
 }
 
-// asStringRaw: type guard only, no whitespace trim. Use for
-// the canonical Provider prompt (P2-G Final item 1) where
-// the byte sequence must be preserved verbatim — the P2-E
-// payload.prompt ends with `\n` from
-// `flattenCompiledPromptToString` and the Provider must
-// receive the same byte sequence.
 function asStringRaw(v, fallback = '') {
   if (typeof v !== 'string') return fallback;
   return v;
 }
 
-// asStringTrim: trim + fallback. Use for identifiers,
-// error codes, model / provider / protocol labels, paths,
-// and any other field where surrounding whitespace is not
-// semantically meaningful.
 function asStringTrim(v, fallback = '') {
   return typeof v === 'string' && v.trim() ? v.trim() : fallback;
 }
@@ -183,8 +198,7 @@ function asArray(v) {
 }
 
 // Secret-like substring deny-list (defense in depth on
-// `err.message` for redaction; identical to the P2-F metadata
-// deny-list).
+// `err.message` and `err.cause`).
 const SECRET_LITERAL_DENY = Object.freeze([
   'apiKey', 'api_key', 'accessToken', 'access_token',
   'authorization', 'Authorization',
@@ -203,8 +217,8 @@ function containsSecretLiteral(value) {
   return false;
 }
 
-function newError(code, message, extras = {}) {
-  const err = new Error(`${code}: ${asStringTrim(message, 'unknown error')}`);
+function newError(code, publicMessage, extras = {}) {
+  const err = new Error(`${code}: ${asStringTrim(publicMessage, 'unknown error')}`);
   err.code = code;
   err.issues = [code, ...(extras.issues ?? [])];
   if (extras.cause) err.cause = extras.cause;
@@ -212,18 +226,9 @@ function newError(code, message, extras = {}) {
   return err;
 }
 
-// Map a Shared provider / network error to a normalized
-// GENERATION_PROVIDER_FAILED. The original error is preserved
-// on `err.cause` and on `err.internal`; the user-facing
-// `err.message` is a safe generic string (item 13). The raw
-// `error.message` is never embedded in the public surface.
 function toGenerationProviderFailed(error) {
   const code = asStringTrim(error?.code, GENERATION_PROVIDER_FAILED);
   const rawMessage = asStringTrim(error?.message, 'Provider request failed.');
-  // Defense in depth: if the raw message contains a secret
-  // literal, drop it. The internal surface still has the raw
-  // diagnostic for the audit trail; the public message is
-  // always the safe generic string.
   const internalMessage = containsSecretLiteral(rawMessage)
     ? 'redacted (raw message contained a secret literal)'
     : rawMessage;
@@ -239,7 +244,7 @@ function toDownloadProviderFailed(error) {
   const internalMessage = containsSecretLiteral(rawMessage)
     ? 'redacted (raw message contained a secret literal)'
     : rawMessage;
-  return newError(GENERATION_PROVIDER_FAILED, SAFE_GENERIC_PROVIDER_MESSAGE, {
+  return newError(GENERATION_PROVIDER_FAILED, SAFE_GENERIC_DOWNLOAD_MESSAGE, {
     cause: error,
     internal: { code, message: internalMessage },
   });
@@ -251,7 +256,10 @@ function toPersistenceFailed(error) {
   const internalMessage = containsSecretLiteral(rawMessage)
     ? 'redacted (raw message contained a secret literal)'
     : rawMessage;
-  return newError(GENERATION_PERSISTENCE_FAILED, rawMessage, {
+  // P2-G-F#2 item 11: the PUBLIC message is the safe generic
+  // text; the raw filesystem / database message is preserved
+  // on `err.cause` and `err.internal` only.
+  return newError(GENERATION_PERSISTENCE_FAILED, SAFE_GENERIC_PERSISTENCE_MESSAGE, {
     cause: error,
     internal: { code, message: internalMessage },
   });
@@ -270,7 +278,7 @@ function validateServiceInput(input) {
 // ---------------------------------------------------------------------------
 // Default production seam stubs. Each fails closed; production wires
 // them from the Shared runtime / credential / persistence
-// infrastructure (item 5 + item 8 + item 14).
+// infrastructure (P2-G Final item 5 + P2-G-F#2 items 5/7).
 // ---------------------------------------------------------------------------
 
 async function defaultResolveExecutionConfig() {
@@ -280,7 +288,7 @@ async function defaultResolveExecutionConfig() {
   );
 }
 
-function defaultResolveArtifactLifecycle() {
+async function defaultResolveArtifactLifecycle() {
   throw newError(
     ARTIFACT_LIFECYCLE_REQUIRED,
     'No resolveArtifactLifecycle seam was provided; production Shared runtime must wire the resolveArtifactLifecycle dependency.',
@@ -289,53 +297,34 @@ function defaultResolveArtifactLifecycle() {
 
 function defaultCreateRunId() {
   // Default to a crypto-backed UUID; tests inject a deterministic
-  // implementation (item 11). The fingerprint does NOT seed
-  // the runId; the runId is purely an execution identity.
-  // crypto.randomUUID is available in Node 19+ and modern
-  // browsers; the test environment is Node 24.
+  // implementation (P2-G Final item 11).
   // eslint-disable-next-line node/no-unsupported-features/node-builtins
   return `pkg-${(globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`)}`;
 }
 
 const DEFAULT_DEPS = Object.freeze({
-  // Reference resolution seam. Production wires the Shared
-  // reference-asset resolver (item 5 + item 8). The default
-  // fail-closed reference is provided here only to make the
-  // module self-consistent in tests that do not exercise the
-  // Reference path; any real Reference path must inject a
-  // real readReference.
   readReference: async () => {
     throw newError(
       REFERENCE_ASSET_UNRESOLVED,
       'No readReference dependency was provided; production Shared runtime must wire the readReference dependency.',
     );
   },
-  // Test seam for the Shared Provider dispatch (item 5 + item 7).
-  // When provided, must expose `execute` and `compileRequest` in
-  // the same shape as the real Shared adapter. Production wires
-  // `createMultiModelImageAdapter` instead.
   executor: undefined,
-  // Shared download/verify seam (item 8). Default uses the real
-  // Shared `downloadAndVerifyImage`; tests may inject a fake.
   downloadImpl: downloadAndVerifyImage,
-  // Shared persistence seam (item 5 + item 12). Default fails
-  // closed; production wires the Shared Run store.
   saveRun: async () => {
     throw newError(
       GENERATION_PERSISTENCE_FAILED,
       'No saveRun dependency was provided; production Shared runtime must wire the saveRun dependency.',
     );
   },
-  // Production execution config seam (item 5 + item 6). Default
-  // fails closed. Production wires a function that calls the
-  // Shared runtime's credential / model resolution.
   resolveExecutionConfig: defaultResolveExecutionConfig,
-  // Artifact lifecycle seam (item 8). Default fails closed.
-  // Production wires `{ runRoot, targetPath, thumbnailPath }`
-  // resolved from the Shared Run store.
   resolveArtifactLifecycle: defaultResolveArtifactLifecycle,
-  // Run identity seam (item 11). Default is crypto.randomUUID.
   createRunId: defaultCreateRunId,
+  // P2-G-F#2 item 5: the explicit Profile selection name. It
+  // is forwarded to both `resolveExecutionConfig` and
+  // `resolveArtifactLifecycle`; it is NEVER a `profileId`
+  // masquerading as a region.
+  apiProfileId: '',
   fetchImpl: undefined,
   now: () => new Date().toISOString(),
 });
@@ -350,6 +339,7 @@ function resolveDeps(deps) {
     resolveExecutionConfig: typeof deps.resolveExecutionConfig === 'function' ? deps.resolveExecutionConfig : DEFAULT_DEPS.resolveExecutionConfig,
     resolveArtifactLifecycle: typeof deps.resolveArtifactLifecycle === 'function' ? deps.resolveArtifactLifecycle : DEFAULT_DEPS.resolveArtifactLifecycle,
     createRunId: typeof deps.createRunId === 'function' ? deps.createRunId : DEFAULT_DEPS.createRunId,
+    apiProfileId: typeof deps.apiProfileId === 'string' ? deps.apiProfileId : DEFAULT_DEPS.apiProfileId,
     fetchImpl: typeof deps.fetchImpl === 'function' ? deps.fetchImpl : DEFAULT_DEPS.fetchImpl,
     now: typeof deps.now === 'function' ? deps.now : DEFAULT_DEPS.now,
   });
@@ -357,6 +347,7 @@ function resolveDeps(deps) {
 
 // ---------------------------------------------------------------------------
 // P2-G layer 1: preparePackagingGeneration
+//   secret-free / deterministic / no providerModelId yet.
 // ---------------------------------------------------------------------------
 
 export function preparePackagingGeneration(input, deps = null) {
@@ -368,16 +359,14 @@ export function preparePackagingGeneration(input, deps = null) {
   const translation = createPackagingTranslation(input);
   validatePackagingTranslation(translation);
 
-  // 2) Compiler (P2-D) 鈥?deterministic 14-block topology.
+  // 2) Compiler (P2-D) — deterministic 14-block topology.
   const compiled = compilePackagingPrompt(translation);
   if (!isPlainObject(compiled)) {
     throw newError('PACKAGING_COMPILE_FAILED', 'compiled output is not an object');
   }
 
   // 3) Provider Capability gate (P2-E). The registryModelId
-  //    comes from the input verbatim; the actual providerModelId
-  //    is resolved later in the execute layer against the Shared
-  //    credential / model configuration.
+  //    comes from the input verbatim.
   const capability = resolvePackagingProviderCapability({
     modelId: input.modelId,
     generationMode: translation.generationMode,
@@ -389,11 +378,15 @@ export function preparePackagingGeneration(input, deps = null) {
     referencePolicy: translation.referencePolicy,
   });
 
-  // 4) Provider Adapter Payload (P2-E). This is the SINGLE
-  //    execution surface for prompt / hints / references.
+  // 4) Provider Adapter Payload (P2-E). Single execution
+  //    surface for prompt / hints / references.
   const payload = buildPackagingProviderPayload({ compiled, capability, translation });
 
   // 5) Generation Metadata + Compile Fingerprint (P2-F).
+  //    prepare builds the SEMANTIC metadata; the final
+  //    EXECUTION-bound metadata is composed in `execute`
+  //    once the production execution config is resolved
+  //    (P2-G-F#2 item 4).
   const metadata = buildPackagingGenerationMetadata({
     translation,
     compiled,
@@ -415,45 +408,23 @@ export function preparePackagingGeneration(input, deps = null) {
 // ---------------------------------------------------------------------------
 // buildUniversalInput: consume the P2-E payload as the single
 // source of truth. No second prompt serializer. No second hints
-// authority. No duplicated negative rules (item 1 + 2 + 3).
+// authority. No duplicated negative rules.
 // ---------------------------------------------------------------------------
 
 function buildUniversalInput({ prepared, adapterReferences }) {
   const payloadHints = isPlainObject(prepared.payload?.hints) ? prepared.payload.hints : {};
   return Object.freeze({
-    // 1) prompt: P2-E payload verbatim.
     prompt: asStringRaw(prepared.payload?.prompt),
-    // 2) hints: P2-E payload verbatim.
     aspectRatio: asStringTrim(payloadHints.aspectRatio, '1:1'),
     imageSize: asStringTrim(payloadHints.imageSize, '2K'),
     qualityProfile: asStringTrim(payloadHints.qualityProfile),
-    // 3) negativeRules: empty. The 14-block Prompt already
-    //    carries `negative_constraints`. The Shared Adapter
-    //    must not append a second copy.
     negativeRules: [],
-    // 4) references: produced by the Service from
-    //    `prepared.payload.references` only (item 4).
     references: adapterReferences,
-    // 5) outputCount: 1, hard-coded. The Shared universal
-    //    contract is exactly one image per call (item 10).
     outputCount: 1,
   });
 }
 
-// ---------------------------------------------------------------------------
-// buildAdapter: pick the Shared dispatch surface. Production falls
-// through to `createMultiModelImageAdapter`; tests inject
-// `deps.executor`. The two must honour the same
-// `{ id, protocol, version, compileRequest, execute }` shape so
-// the audit / dispatch paths share the same code (item 7).
-// ---------------------------------------------------------------------------
-
 function buildAdapter({ resolvedDeps, capability, executionConfig }) {
-  // adapterId: registry-routing identity. For now, the Registry
-  // id and the ADAPTERS map key coincide for the registered
-  // Packaging models; if a future registry profile adds a
-  // different ADAPTERS key, the routing lookup should be
-  // extended here without forking the dispatch shape.
   const adapterId = asStringTrim(capability.modelId);
   if (isPlainObject(resolvedDeps.executor)
     && typeof resolvedDeps.executor.execute === 'function'
@@ -482,20 +453,15 @@ function buildAdapter({ resolvedDeps, capability, executionConfig }) {
   });
 }
 
-// ---------------------------------------------------------------------------
-// resolveExecutionConfig: production bridge. Production wires
-// `deps.resolveExecutionConfig` to call the Shared runtime's
-// credential / model resolver and returns
-// `{ apiKey, baseUrl, providerModelId, profileId, protocol, provider }`.
-// The Service validates that the resolved `provider` and
-// `protocol` align with the capability's Registry identity; a
-// drift is a `PROVIDER_CAPABILITY_MISMATCH` (item 6).
-// ---------------------------------------------------------------------------
-
 async function resolveProductionExecutionConfig({ resolvedDeps, capability }) {
+  // P2-G-F#2 item 5: the explicit Profile selection name is
+  // forwarded to the production resolver. The
+  // `apiProfileId` is the single source of the Profile
+  // selection; it is NEVER a `profileId` masquerading as a
+  // region.
   const cfg = await resolvedDeps.resolveExecutionConfig({
     registryModelId: asStringTrim(capability.modelId),
-    profileId: resolvedDeps.profileId,
+    apiProfileId: asStringTrim(resolvedDeps.apiProfileId),
   });
   if (!isPlainObject(cfg)) {
     throw newError(EXECUTION_PROVIDER_MODEL_REQUIRED, 'resolveExecutionConfig must return an object');
@@ -522,37 +488,180 @@ async function resolveProductionExecutionConfig({ resolvedDeps, capability }) {
     apiKey: asStringTrim(cfg.apiKey),
     baseUrl: asStringTrim(cfg.baseUrl),
     providerModelId: asStringTrim(cfg.providerModelId),
-    profileId: asStringTrim(cfg.profileId),
+    apiProfileId: asStringTrim(cfg.apiProfileId ?? resolvedDeps.apiProfileId),
     protocol: asStringTrim(cfg.protocol) || asStringTrim(capability.protocol),
     provider: asStringTrim(cfg.provider) || asStringTrim(capability.provider),
+    // P2-G-F#2 item 6: `region` is the audit-region surfaced
+    // by the Shared runtime's credential resolution. It is
+    // NEVER derived from `profileId` (the Profile
+    // selection).
+    region: asStringTrim(cfg.region),
   };
 }
 
-// ---------------------------------------------------------------------------
-// resolveArtifactLifecycle: production bridge. Production wires
-// `deps.resolveArtifactLifecycle` to return
-// `{ runRoot, targetPath, thumbnailPath }` from the Shared Run
-// store. Missing or empty fields fail closed (item 8 + item 9).
-// ---------------------------------------------------------------------------
-
-function resolveProductionArtifactLifecycle({ resolvedDeps }) {
-  const lifecycle = resolvedDeps.resolveArtifactLifecycle();
+// P2-G-F#2 item 8: artifact lifecycle owns the relative
+// paths. The Service never derives `relativePath` from the
+// download result (the real Shared download helper does not
+// return `relativePathWritten`); the lifecycle is the single
+// authority. Absolute paths stay inside the runtime I/O scope
+// and are never persisted on the Generation Result.
+async function resolveProductionArtifactLifecycle({ resolvedDeps, runId, metadata, translation }) {
+  const lifecycle = await resolvedDeps.resolveArtifactLifecycle({
+    runId,
+    metadata,
+    translation,
+    apiProfileId: asStringTrim(resolvedDeps.apiProfileId),
+  });
   if (!isPlainObject(lifecycle)) {
     throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'resolveArtifactLifecycle must return an object');
   }
   const runRoot = asStringTrim(lifecycle.runRoot);
   const targetPath = asStringTrim(lifecycle.targetPath);
   const thumbnailPath = asStringTrim(lifecycle.thumbnailPath);
-  if (!runRoot) {
-    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle runRoot is required');
+  const relativePath = asStringTrim(lifecycle.relativePath);
+  const thumbnailRelativePath = asStringTrim(lifecycle.thumbnailRelativePath);
+  if (!runRoot) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle runRoot is required');
+  if (!targetPath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle targetPath is required');
+  if (!thumbnailPath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailPath is required');
+  if (!relativePath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle relativePath is required');
+  if (!thumbnailRelativePath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailRelativePath is required');
+  return Object.freeze({
+    runRoot,
+    targetPath,
+    thumbnailPath,
+    relativePath,
+    thumbnailRelativePath,
+  });
+}
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2 item 3: final EXECUTION-BOUND metadata. The P2-F
+// semantic metadata is the canonical identity; we extend it
+// with an `executionIdentity` block whose hash participates in
+// the stale verification. The Shared `stableHash` is the only
+// hash authority; we do NOT introduce a second fingerprint
+// algorithm.
+//
+// Shape of the FINAL metadata:
+//   {
+//     ...semanticMetadata (P2-F frozen),
+//     executionIdentity: {
+//       registryModelId,
+//       providerModelId,
+//       provider,
+//       protocol,
+//       apiProfileId,
+//       region | undefined,
+//     },
+//     compileFingerprint: {
+//       ...5 P2-F hashes + compiledAt,
+//       executionIdentityHash: <stableHash(executionIdentity)>,
+//     },
+//   }
+// ---------------------------------------------------------------------------
+
+function buildExecutionIdentity({ capability, executionConfig }) {
+  return Object.freeze({
+    registryModelId: asStringTrim(capability.modelId),
+    providerModelId: asStringTrim(executionConfig.providerModelId),
+    provider: asStringTrim(executionConfig.provider),
+    protocol: asStringTrim(executionConfig.protocol),
+    apiProfileId: asStringTrim(executionConfig.apiProfileId),
+    region: asStringTrim(executionConfig.region) || undefined,
+  });
+}
+
+function buildFinalMetadata({ semanticMetadata, capability, executionConfig }) {
+  const executionIdentity = buildExecutionIdentity({ capability, executionConfig });
+  const executionIdentityHash = sharedStableHash(executionIdentity);
+  // Freeze the executionIdentityHash as an additional
+  // semantic field on the fingerprint; this is the only
+  // way the concrete execution identity participates in
+  // stale verification without inventing a second hash
+  // algorithm.
+  const extendedFingerprint = Object.freeze({
+    ...semanticMetadata.compileFingerprint,
+    executionIdentityHash,
+  });
+  return Object.freeze({
+    ...semanticMetadata,
+    executionIdentity,
+    compileFingerprint: extendedFingerprint,
+  });
+}
+
+// P2-G-F#2 item 3 + P2-G-F#2 Final Exit: stale verification
+// for the final metadata. The 5 P2-F semantic hashes still
+// pin the canonical identity (rebuilt via
+// verifyPackagingGenerationMetadata); the
+// `executionIdentityHash` is verified by direct compare on
+// the rebuilt execution identity.
+//
+// Signature: `verifyFinalMetadata(previous, current)`. The
+// caller passes the previous final metadata (typically
+// loaded from disk) and the current execution inputs
+// (translation, compiled, capability, payload,
+// executionConfig). The function rebuilds the current
+// execution's expected fingerprints and compares them
+// against the previous metadata. A `null` previous means
+// the first execution for a run; the result is trivially
+// `valid: true`.
+//
+// `executePackagingGeneration` does NOT call this function
+// on the freshly-built final metadata (the comparison is
+// self-evident for the in-process build); stale verification
+// is the caller's responsibility when replaying a previous
+// run.
+export function verifyFinalMetadata(previous, current) {
+  if (previous == null) {
+    return { valid: true, mismatches: [] };
   }
-  if (!targetPath) {
-    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle targetPath is required');
+  if (!isPlainObject(previous) || !isPlainObject(previous.compileFingerprint)) {
+    return { valid: false, code: PACKAGING_METADATA_INVALID, mismatches: ['previous_not_object'] };
   }
-  if (!thumbnailPath) {
-    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailPath is required');
+  if (!isPlainObject(current) || !isPlainObject(current.executionConfig) || !isPlainObject(current.capability)) {
+    return { valid: false, code: PACKAGING_METADATA_INVALID, mismatches: ['current_not_object'] };
   }
-  return Object.freeze({ runRoot, targetPath, thumbnailPath });
+  // First, the P2-F semantic stale gate. The previous
+  // metadata preserves the P2-F shape (extended with
+  // executionIdentity + executionIdentityHash, both of
+  // which the P2-F verifier ignores).
+  const semanticStale = verifyPackagingGenerationMetadata(previous, {
+    translation: current.translation,
+    compiled: current.compiled,
+    capability: current.capability,
+    payload: current.payload,
+  });
+  if (!semanticStale.valid) {
+    return semanticStale;
+  }
+  // Then, the execution-identity stale gate. The
+  // previous fingerprint carries an `executionIdentityHash`;
+  // the rebuild computes the expected hash from the
+  // current inputs and compares.
+  const expectedExecutionIdentity = buildExecutionIdentity({
+    capability: current.capability,
+    executionConfig: current.executionConfig,
+  });
+  const expectedExecutionIdentityHash = sharedStableHash(expectedExecutionIdentity);
+  if (expectedExecutionIdentityHash !== previous.compileFingerprint.executionIdentityHash) {
+    return {
+      valid: false,
+      code: GENERATION_EXECUTION_STALE,
+      mismatches: ['executionIdentityHash'],
+    };
+  }
+  // The stored execution identity must match the rebuild
+  // (defense in depth — guards against a hand-edited
+  // metadata surface).
+  if (expectedExecutionIdentityHash !== sharedStableHash(previous.executionIdentity)) {
+    return {
+      valid: false,
+      code: GENERATION_EXECUTION_STALE,
+      mismatches: ['executionIdentity'],
+    };
+  }
+  return { valid: true, mismatches: [] };
 }
 
 // ---------------------------------------------------------------------------
@@ -564,40 +673,60 @@ export async function executePackagingGeneration(prepared, deps = null) {
     throw newError(PACKAGING_METADATA_INVALID, 'prepared generation is not a valid prepared state');
   }
   const resolvedDeps = resolveDeps(deps);
-  const { now, translation, compiled, capability, payload, metadata } = prepared;
+  const { now, translation, compiled, capability, payload, metadata: semanticMetadata } = prepared;
   const startedAt = resolvedDeps.now();
 
-  // Item 11: runId is produced by the createRunId seam; the
-  // fingerprint does NOT seed it. Two executions of the same
-  // canonical input produce different runIds.
+  // P2-G Final item 11: runId is the execution identity; it
+  // is produced by the createRunId seam and is NOT derived
+  // from the semantic fingerprint.
   const runId = asStringTrim(resolvedDeps.createRunId());
   if (!runId) {
     throw newError(EXECUTION_PROVIDER_MODEL_REQUIRED, 'createRunId must return a non-empty string');
   }
 
-  // Pre-execution stale gate (P2 spec 搂6 + P2-F). Rebuild via
-  // the canonical fingerprint input mapping. The Service does
-  // NOT silently re-prepare; the gate is fail-closed.
-  const stale = verifyPackagingGenerationMetadata(metadata, {
+  // P2-G-F#2 item 5: production execution config bridge.
+  // Default fail-closed; the production Shared runtime wires
+  // the seam from the existing credential / model
+  // resolution.
+  const executionConfig = await resolveProductionExecutionConfig({ resolvedDeps, capability });
+
+  // P2-G-F#2 item 7: artifact lifecycle bridge. Default
+  // fail-closed; the production Shared runtime wires
+  // `runRoot` / `targetPath` / `thumbnailPath` /
+  // `relativePath` / `thumbnailRelativePath`.
+  const artifactLifecycle = await resolveProductionArtifactLifecycle({
+    resolvedDeps,
+    runId,
+    metadata: semanticMetadata,
+    translation,
+  });
+
+  // Compose the FINAL EXECUTION-BOUND metadata (P2-G-F#2
+  // item 3 + 4). The final metadata is what the Generation
+  // Result carries.
+  const finalMetadata = buildFinalMetadata({
+    semanticMetadata,
+    capability,
+    executionConfig,
+  });
+
+  // Pre-execution SEMANTIC stale gate (P2 spec §6 + P2-F +
+  // P2-G). The 5 P2-F semantic hashes pin the canonical
+  // identity; an in-process mutation of the prepared inputs
+  // (e.g. a tampered Locked Asset) is detected before any
+  // Provider dispatch.
+  const semanticStale = verifyPackagingGenerationMetadata(finalMetadata, {
     translation, compiled, capability, payload,
   });
-  if (!stale.valid) {
-    const code = asStringTrim(stale.code, PACKAGING_METADATA_INVALID);
-    throw newError(code, `pre-execution stale gate failed: ${(stale.mismatches ?? []).join(', ') || 'unknown'}`, {
-      issues: asArray(stale.mismatches),
+  if (!semanticStale.valid) {
+    const code = asStringTrim(semanticStale.code, PACKAGING_METADATA_INVALID);
+    throw newError(code, `pre-execution stale gate failed: ${(semanticStale.mismatches ?? []).join(', ') || 'unknown'}`, {
+      issues: asArray(semanticStale.mismatches),
     });
   }
 
-  // Item 5: production execution config bridge. Default
-  // fail-closed.
-  const executionConfig = await resolveProductionExecutionConfig({ resolvedDeps, capability });
-  // Item 8: artifact lifecycle bridge. Default fail-closed.
-  const artifactLifecycle = resolveProductionArtifactLifecycle({ resolvedDeps });
-
-  // Item 4: one Reference execution authority. We resolve
-  // from `prepared.payload.references` only; the payload is
-  // covered by payloadFingerprint and is the single source of
-  // Reference identity for the Provider dispatch.
+  // P2-G Final item 4: Reference resolution from
+  // `prepared.payload.references` only.
   const payloadReferences = Array.isArray(payload?.references) ? payload.references : [];
   const adapterReferences = [];
   for (const reference of payloadReferences) {
@@ -627,22 +756,24 @@ export async function executePackagingGeneration(prepared, deps = null) {
     });
   }
 
-  // Item 1 / 2 / 3: build universal input from the P2-E
-  // payload verbatim. No second prompt serializer, no second
-  // hints authority, no duplicated negative rules.
+  // P2-G Final items 1 / 2 / 3: build universal input from
+  // the P2-E payload verbatim.
   const universalInput = buildUniversalInput({ prepared, adapterReferences });
 
-  // Item 6: registryModelId (capability routing) is separate
-  // from providerModelId (concrete API execution). The
-  // adapterId is the registry-routing identity.
+  // P2-G Final item 6 + P2-G-F#2: registryModelId /
+  // providerModelId both flow into the Shared multi-model
+  // adapter. The Shared adapter uses `adapterId` for routing
+  // and `modelId` for the actual API field.
   const adapter = buildAdapter({ resolvedDeps, capability, executionConfig });
   const registryModelId = asStringTrim(capability.modelId);
   const providerModelId = asStringTrim(executionConfig.providerModelId);
 
-  // Item 7: real Provider request audit. The redacted audit
-  // request is the Shared adapter's `compileRequest(universalInput)`
-  // output passed through the Shared redaction; the audit
-  // request is NEVER hand-rolled.
+  // P2-G Final item 7 + P2-G-F#2: real Provider request
+  // audit. The redacted audit request is the Shared
+  // adapter's `compileRequest(universalInput)` output
+  // passed through the Shared redaction layer (which now
+  // strips base64 / data URIs / signed-URL credentials
+  // across Seedream / OpenAI / Gemini / Wan).
   let request;
   try {
     request = adapter.compileRequest(universalInput);
@@ -654,14 +785,18 @@ export async function executePackagingGeneration(prepared, deps = null) {
   }
   const redactedRequest = redactProviderRequest({
     endpoint: asStringTrim(adapter.protocol),
-    region: asStringTrim(resolvedDeps.profileId), // best-effort label; not a secret
+    // P2-G-F#2 item 6: `region` comes from the execution
+    // config (the audit region surfaced by the Shared
+    // runtime's credential resolution). It is NEVER
+    // derived from `apiProfileId` (Profile selection).
+    region: asStringTrim(executionConfig.region) || undefined,
     modelId: providerModelId,
     body: request.body ?? request,
+    headers: isPlainObject(request.headers) ? request.headers : undefined,
   });
 
-  // Item 10: real Provider dispatch. The Shared adapter is the
-  // single network authority; the Service never calls
-  // `fetch` directly.
+  // P2-G Final item 10: real Provider dispatch. The
+  // Shared adapter is the single network authority.
   let providerResponse;
   try {
     providerResponse = await adapter.execute(universalInput, {
@@ -673,16 +808,12 @@ export async function executePackagingGeneration(prepared, deps = null) {
   if (!isPlainObject(providerResponse) || providerResponse.status !== 'succeeded' || !Array.isArray(providerResponse.images)) {
     throw toGenerationProviderFailed(new Error('Provider response did not contain a successful image payload.'));
   }
-  // Item 10: exactly one image per call. The Shared universal
-  // contract is `outputCount = 1`.
   if (providerResponse.images.length !== 1) {
     throw toGenerationProviderFailed(new Error(
       `Provider returned ${providerResponse.images.length} images; expected exactly 1 (outputCount=1).`,
     ));
   }
 
-  // Item 7: redacted Provider response from the canonical
-  // Shared redaction; no hand-rolled redaction.
   const redactedResponse = redactProviderResponse({
     requestId: providerResponse.requestId,
     providerTaskId: providerResponse.requestId,
@@ -696,11 +827,9 @@ export async function executePackagingGeneration(prepared, deps = null) {
     images: providerResponse.images,
   });
 
-  // Item 8 + 9: download / verify (Shared). The Service does
-  // NOT implement its own download. Missing artifact
-  // lifecycle is fail-closed (item 8). A download failure is
-  // bucketed under GENERATION_PROVIDER_FAILED; the Service
-  // requires `downloaded.decoded === true` (item 9).
+  // P2-G Final items 8 + 9: download / verify. Missing
+  // artifact lifecycle is fail-closed (handled above);
+  // `decoded === true` is required.
   const firstImage = providerResponse.images[0];
   let downloaded = null;
   try {
@@ -719,9 +848,13 @@ export async function executePackagingGeneration(prepared, deps = null) {
     throw toDownloadProviderFailed(new Error(reason));
   }
 
-  // Item 13: build the canonical Generation Result. The
-  // Generation Result is the audit-trail surface; raw base64
-  // image bytes are NOT embedded (item 13).
+  // P2-G-F#2 item 8 + 9: the Generation Result records the
+  // RELATIVE paths from the artifact lifecycle. Absolute
+  // paths stay inside the runtime I/O scope and are NEVER
+  // persisted on the `artifacts[]` surface or in
+  // `diagnostics`. The audit `region` is the only
+  // region-level surface; absolute local paths are
+  // excluded.
   const completedAt = resolvedDeps.now();
   const result = {
     schemaVersion: '1.0',
@@ -730,11 +863,6 @@ export async function executePackagingGeneration(prepared, deps = null) {
     runId,
     generationMode: asStringTrim(translation.generationMode),
     shotContractId: asStringTrim(translation.shotContract?.id),
-    // Item 6: registryModelId / providerModelId both
-    // surfaced on the audit trail. The fingerprint sees
-    // registryModelId through the canonical input mapping; the
-    // providerModelId is the concrete API execution identity
-    // and is recorded on the result for the audit.
     model: Object.freeze({
       registryModelId,
       providerModelId,
@@ -744,14 +872,18 @@ export async function executePackagingGeneration(prepared, deps = null) {
       protocol: asStringTrim(adapter.protocol),
       provider: asStringTrim(capability.provider),
     }),
-    metadata,
+    apiProfileId: asStringTrim(executionConfig.apiProfileId),
+    metadata: finalMetadata,
     artifacts: Object.freeze(providerResponse.images.map((image, index) => ({
       imageId: `image-${String(index + 1).padStart(2, '0')}`,
       mimeType: asStringTrim(image.mimeType, 'image/png'),
       hasB64: Boolean(image.b64),
       hasUrl: Boolean(image.url),
       sha256: asStringTrim(downloaded.sha256) || null,
-      relativePath: asStringTrim(downloaded.relativePathWritten) || null,
+      // P2-G-F#2 item 8: relative path comes from the
+      // artifact lifecycle, NOT from the download result.
+      relativePath: artifactLifecycle.relativePath,
+      thumbnailRelativePath: artifactLifecycle.thumbnailRelativePath,
       width: Number.isFinite(downloaded.width) ? downloaded.width : null,
       height: Number.isFinite(downloaded.height) ? downloaded.height : null,
       sizeBytes: Number.isFinite(downloaded.sizeBytes) ? downloaded.sizeBytes : null,
@@ -764,19 +896,20 @@ export async function executePackagingGeneration(prepared, deps = null) {
         : null,
       referenceCount: payloadReferences.length,
       imageCount: providerResponse.images.length,
-      artifactRoot: artifactLifecycle.runRoot,
-      // Item 7: the redacted audit request is the Shared
-      // adapter's compileRequest output, not a hand-rolled
-      // generic shape.
+      // P2-G-F#2 item 9: the audit region is the only
+      // region-level surface; absolute local paths are
+      // excluded from the persisted Generation Result.
+      region: asStringTrim(executionConfig.region) || undefined,
       redactedRequest,
       redactedResponse,
     }),
   };
 
-  // Item 12: persistence failure is NOT a Provider failure.
-  // The Shared Run store rejected the audit-trail write; the
-  // Provider succeeded and the binary is on disk. The
-  // canonical code is GENERATION_PERSISTENCE_FAILED.
+  // P2-G Final item 12 + P2-G-F#2 item 11: persistence
+  // failure is NOT a Provider failure. The public
+  // `err.message` of the failure is the safe generic
+  // text; the raw filesystem / database message is
+  // preserved on `err.cause` and `err.internal` only.
   try {
     await resolvedDeps.saveRun(result);
   } catch (error) {
@@ -786,23 +919,10 @@ export async function executePackagingGeneration(prepared, deps = null) {
   return Object.freeze(result);
 }
 
-// ---------------------------------------------------------------------------
-// P2-G single-call wrapper. Tests + UI use this; it composes
-// prepare + execute. Tests that want to inspect prepared state
-// can call prepare / execute separately (P2 spec 搂3).
-// ---------------------------------------------------------------------------
-
 export async function runPackagingGeneration(input, deps = null) {
   const prepared = preparePackagingGeneration(input, deps);
   return executePackagingGeneration(prepared, deps);
 }
-
-// ---------------------------------------------------------------------------
-// Structural fingerprint. Used by the architecture-boundary
-// tests to assert: no fetch / no http.request / no axios / no
-// API key loader / no retry loop / no download implementation /
-// no provider-specific HTTP endpoint inside this module.
-// ---------------------------------------------------------------------------
 
 export function getPackagingGenerationServiceFingerprint() {
   return Object.freeze({
@@ -810,26 +930,20 @@ export function getPackagingGenerationServiceFingerprint() {
     serviceVersion: PACKAGING_GENERATION_SERVICE_VERSION,
     layers: Object.freeze(['prepare', 'execute']),
     authority: Object.freeze({
-      // The Service is honest about its production wiring
-      // (item 14): the production Shared runtime must wire
-      // the production dependency bridge; the Service does NOT
-      // claim a "fully wired" production path by default.
       promptSerialization: 'P2-E buildPackagingProviderPayload (single authority)',
       hintsSerialization: 'P2-E buildPackagingProviderPayload (single authority)',
       negativeRules: 'empty by contract; 14-block Prompt already carries negative_constraints',
       referenceExecution: 'P2-E payload.references (single authority; covered by payloadFingerprint)',
       providerDispatch: 'createMultiModelImageAdapter (Shared)',
       downloadVerify: 'downloadAndVerifyImage (Shared, with decoded === true requirement)',
-      redaction: 'redactProviderRequest / redactProviderResponse (Shared)',
-      fingerprint: 'buildPackagingGenerationMetadata / verifyPackagingGenerationMetadata (P2-F)',
-      // Item 5 + 8 + 11 + 14: production dependency bridge
-      // seams. Each is a fail-closed stub by default;
-      // production wires them from the Shared runtime.
+      redaction: 'redactProviderRequest / redactProviderResponse (Shared, target-neutral recursive)',
+      fingerprint: 'P2-F semantic metadata (5 hashes) + P2-G executionIdentityHash (Shared stableHash, no second algorithm)',
       productionSeam: Object.freeze({
         resolveExecutionConfig: 'must be wired by production Shared runtime',
-        resolveArtifactLifecycle: 'must be wired by production Shared runtime',
+        resolveArtifactLifecycle: 'must be wired by production Shared runtime (returns runRoot + relativePath)',
         saveRun: 'must be wired by production Shared runtime',
         createRunId: 'crypto.randomUUID default; tests inject deterministic implementation',
+        apiProfileId: 'explicit Profile selection name; forwarded to both execution and lifecycle seams',
       }),
     }),
   });

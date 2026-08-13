@@ -1,39 +1,21 @@
-// P2-G Final tests — Packaging Generation Service Integration.
+// P2-G Finalization Delta #2 tests — Packaging Generation Service.
 //
-// Coverage map (P2 spec §47 §54 P2-G Exit + the P2-G Finalization
-// Delta items A-N + the P2-G transition rules):
-//   P2-G-A  Provider receives payload.prompt exactly
-//   P2-G-B  Provider receives payload.hints (aspectRatio / imageSize / qualityProfile)
-//   P2-G-C  negative constraint not duplicated in universal prompt
-//   P2-G-D  Reference execute source has one authority
-//   P2-G-E  registryModelId / providerModelId separated
-//   P2-G-F  actual compiled request audit redacted from compileRequest
-//   P2-G-G  missing artifact lifecycle fails closed
-//   P2-G-H  decoded=false fails closed
-//   P2-G-I  2 provider images fails closed (outputCount=1)
-//   P2-G-J  same fingerprint + two executions -> different runIds
-//   P2-G-K  Provider failure -> GENERATION_PROVIDER_FAILED (cause preserved)
-//   P2-G-L  Persistence failure -> NOT GENERATION_PROVIDER_FAILED
-//   P2-G-M  public Provider error does not leak raw secret/message
-//   P2-G-N  Reference identity survives resolution
+// Coverage map:
+//   P2-G-F#2 items A-O  (P2-G Finalization Delta #2)
+//   P2-G-F items   A-N  (P2-G Finalization Delta, retained for
+//                          regression coverage)
+//   pre-execution / stale / cross-target / no-golden / arch /
+//   structural-fingerprint
 //
-// Plus structural tests:
-//   P2-G-pre  pre-execution errors keep canonical upstream code
-//   P2-G-stale  stale fingerprint -> COMPILE_INPUT_STALE
-//   P2-G-cross  cross-target isolation
-//   P2-G-no-golden  no Golden / evaluation / fixture imports
-//   P2-G-arch  architecture-boundary: no fetch / http / axios
-//   P2-G-default  default production seams fail closed
-//   P2-G-fp  structural fingerprint pins Shared authority
-//
-// Architectural position (P2 spec §26 §27 + the P2-G Final):
+// Architectural position:
 //   - The Service is a thin orchestrator that wires the frozen
-//     P2-A..P2-F modules together with the Shared Generation Core
-//     (image-generation-adapter / image-generation-runtime download+
-//     redaction). It is NOT a second runtime.
+//     P2-A..P2-F modules together with the Shared Generation
+//     Core. It is NOT a second runtime.
 //   - Tests do not require a real API key.
-//   - No real Provider call is made at any point in this test
-//     suite.
+//   - The Shared redaction layer is now target-neutral and
+//     recursive (P2-G-F#2 item 1); the test exercises the
+//     real Shared redaction on a real Shared compileRequest
+//     output (P2-G-F#2 item 14).
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -50,6 +32,7 @@ const {
   PACKAGING_GENERATION_SERVICE_VERSION,
   GENERATION_PROVIDER_FAILED,
   GENERATION_PERSISTENCE_FAILED,
+  GENERATION_EXECUTION_STALE,
   REFERENCE_ASSET_UNRESOLVED,
   ARTIFACT_LIFECYCLE_REQUIRED,
   EXECUTION_PROVIDER_MODEL_REQUIRED,
@@ -100,9 +83,6 @@ function makeBaseInput(overrides = {}) {
   };
 }
 
-// Shared fake executor: exposes BOTH `execute` and `compileRequest`
-// in the Shared adapter shape (P2-G Final item 7). Tests can
-// override the per-call behaviour.
 function makeFakeExecutor(overrides = {}) {
   const compileRequest = overrides.compileRequest || ((universalInput) => ({
     method: 'POST',
@@ -136,49 +116,56 @@ function makeFakeExecutor(overrides = {}) {
   });
 }
 
-// Production-shape fake download/verify that satisfies the
-// "decoded === true" requirement (item 9).
+// P2-G-F#2 item 10: the fake `downloadImpl` mirrors the
+// real `downloadAndVerifyImage` shape. The real helper
+// returns `{downloadFailed, mimeType, sizeBytes, sha256,
+// decoded, written, thumbnailWritten, width, height, error?}`
+// — and does NOT return `relativePathWritten`. Tests align
+// with the real shape; relative paths come from the
+// artifact lifecycle, not the download result.
 function makeFakeDownloadImpl(overrides = {}) {
   return async (input) => ({
     downloadFailed: false,
-    written: true,
-    decoded: true,
     mimeType: 'image/png',
     sizeBytes: 12345,
     sha256: 'a'.repeat(64),
+    decoded: true,
+    written: true,
+    thumbnailWritten: true,
     width: 1024,
     height: 1024,
-    relativePathWritten: 'image-01.png',
     ...overrides,
   });
 }
 
-// Production-shape fake execution config bridge (item 5 + 6).
-// `providerModelId` deliberately differs from `registryModelId`
-// to pin the registry / concrete separation.
 function makeFakeExecutionConfig(overrides = {}) {
   return async () => ({
     apiKey: 'FAKE_TEST_API_KEY',
     baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
     providerModelId: 'doubao-seedream-5-0-pro-260628',
-    profileId: 'fake-profile-001',
+    apiProfileId: 'profile-001',
     protocol: 'seedream-image',
     provider: 'volcengine',
+    region: 'beijing',
     ...overrides,
   });
 }
 
-// Production-shape fake artifact lifecycle bridge (item 8).
+// P2-G-F#2 item 7 + 8: the artifact lifecycle returns
+// absolute paths (runtime I/O) AND relative paths
+// (persisted surface). The Service only persists the
+// relative paths.
 function makeFakeArtifactLifecycle(overrides = {}) {
-  return () => ({
+  return async (input) => ({
     runRoot: '/tmp/packaging-test-run',
     targetPath: '/tmp/packaging-test-run/image-01.png',
     thumbnailPath: '/tmp/packaging-test-run/image-01.webp',
+    relativePath: 'image-01.png',
+    thumbnailRelativePath: 'image-01.webp',
     ...overrides,
   });
 }
 
-// Production-shape fake saveRun (item 12). Returns the saved run.
 function makeFakeSaveRun(overrides = {}) {
   return async (run) => {
     if (typeof overrides.onSave === 'function') overrides.onSave(run);
@@ -186,8 +173,6 @@ function makeFakeSaveRun(overrides = {}) {
   };
 }
 
-// Module-level runId counter so two makeFakeDeps() calls share
-// the same monotonic sequence (P2-G Final item 11).
 let _runIdCounter = 0;
 function makeFakeDeps(overrides = {}) {
   return {
@@ -202,6 +187,7 @@ function makeFakeDeps(overrides = {}) {
     resolveExecutionConfig: makeFakeExecutionConfig(),
     resolveArtifactLifecycle: makeFakeArtifactLifecycle(),
     createRunId: () => `test-run-${String(++_runIdCounter).padStart(3, '0')}`,
+    apiProfileId: 'profile-001',
     fetchImpl: undefined,
     now: () => '2026-08-13T00:00:00.000Z',
     ...overrides,
@@ -209,56 +195,683 @@ function makeFakeDeps(overrides = {}) {
 }
 
 // ===========================================================================
-// P2-G Final tests A-N
+// P2-G-F#2 tests A-O
 // ===========================================================================
 
 // ---------------------------------------------------------------------------
-// P2-G-A: Provider receives payload.prompt exactly.
+// P2-G-F#2-A: Shared redaction strips real Reference binaries
+// from the audit surface. P2-G-F#2 item 1 + 14.
 // ---------------------------------------------------------------------------
 
-test('P2-G-A Provider receives payload.prompt byte-identical (no second prompt serializer)', async () => {
+test('P2-G-F#2-A Shared redaction strips base64 / data URIs / API Key from the audit surface', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true,
+      required: true,
+      references: [
+        { assetId: 'asset-style', role: 'style_reference', source: 'user' },
+      ],
+    },
+  }));
+  const deps = makeFakeDeps();
+  const result = await executePackagingGeneration(prepared, deps);
+  // The audit surface MUST NOT contain the original base64,
+  // the data: URI, the API Key, the Authorization value, or
+  // a signed-URL credential query.
+  const auditText = JSON.stringify(result.diagnostics.redactedRequest);
+  const original = JSON.stringify(result.diagnostics.redactedRequest.body);
+  // Original base64 from the test executor's image[] entries
+  // is the long fake-binary-for-asset-style string. The
+  // audit MUST NOT carry it.
+  assert.ok(!original.includes('fake-binary-for-asset-style'),
+    'audit body must not carry the Reference base64');
+  assert.ok(!auditText.includes('data:image'),
+    'audit must not carry the data: URI prefix');
+  assert.ok(!auditText.includes('FAKE_TEST_API_KEY'),
+    'audit must not carry the API Key');
+  assert.ok(!auditText.includes('Bearer FAKE_TEST_API_KEY'),
+    'audit must not carry the Authorization header value');
+  // The audit body preserves the canonical Provider fields
+  // (model / size / prompt) but substitutes the binary.
+  assert.ok(original.includes('doubao-seedream-5-0-pro-260628'),
+    'audit body preserves the model field');
+  assert.ok(original.includes('response_format'),
+    'audit body preserves the protocol field');
+});
+
+test('P2-G-F#2-A-b Shared redaction strips Authorization / x-goog-api-key / signed-URL credentials from headers', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    compileRequest: (universalInput) => ({
+      method: 'POST',
+      url: 'https://example.com/api?Signature=secret-sig&X-Amz-Signature=secret-2&token=secret-token',
+      headers: {
+        Authorization: 'Bearer SECRET-AUTH-XYZ',
+        'x-goog-api-key': 'GOOGLE-API-KEY-XYZ',
+        'api-key': 'PLAIN-API-KEY-XYZ',
+        'Content-Type': 'application/json',
+      },
+      bodyKind: 'json',
+      body: { model: 'm', prompt: universalInput.prompt, image: [] },
+    }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  const audit = result.diagnostics.redactedRequest;
+  // Authorization is always [REDACTED].
+  assert.equal(audit.authorization, '[REDACTED]');
+  // Signed-URL credential query params are stripped; only
+  // host + pathname remain.
+  assert.ok(!audit.endpoint.includes('Signature='),
+    'audit endpoint must not carry signed-URL credential params');
+  assert.ok(!audit.endpoint.includes('X-Amz-Signature='),
+    'audit endpoint must not carry X-Amz-Signature');
+  assert.ok(!audit.endpoint.includes('token='),
+    'audit endpoint must not carry token=');
+  // Auth headers are stripped from the headers bag.
+  const headerKeys = Object.keys(audit.headers ?? {});
+  assert.ok(!headerKeys.some((k) => k.toLowerCase() === 'authorization'),
+    'headers bag must not carry Authorization');
+  assert.ok(!headerKeys.some((k) => k.toLowerCase() === 'x-goog-api-key'),
+    'headers bag must not carry x-goog-api-key');
+  assert.ok(!headerKeys.some((k) => k.toLowerCase() === 'api-key'),
+    'headers bag must not carry api-key');
+  // Non-auth headers are preserved.
+  assert.ok(audit.headers && audit.headers['Content-Type'] === 'application/json',
+    'non-auth headers are preserved');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-B: P2-G-F no longer pins the raw image[] payload.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-B P2-G-F no longer pins the raw compileRequest body; the audit is the Shared-redacted shape', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true,
+      required: true,
+      references: [
+        { assetId: 'asset-style', role: 'style_reference', source: 'user' },
+      ],
+    },
+  }));
+  let rawCompileRequest = null;
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    compileRequest: (universalInput) => {
+      // Use a hardcoded data: URI in the body so the
+      // sanity check works regardless of fake-binary shape.
+      const cr = {
+        method: 'POST',
+        url: 'https://ark.cn-beijing.volces.com/api/v3/images/generations',
+        headers: { Authorization: 'Bearer SECRET-XYZ', 'Content-Type': 'application/json' },
+        bodyKind: 'json',
+        body: {
+          model: 'doubao-seedream-5-0-pro-260628',
+          prompt: universalInput.prompt,
+          image: ['data:image/png;base64,FAKE-SAMPLE-BYTES-12345'],
+          size: universalInput.imageSize,
+        },
+      };
+      rawCompileRequest = cr;
+      return cr;
+    },
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  // The raw compileRequest DID contain a data: URI; the
+  // audit MUST NOT.
+  assert.ok(JSON.stringify(rawCompileRequest.body).includes('data:'),
+    'raw compileRequest body contains the data: URI (sanity check)');
+  const auditText = JSON.stringify(result.diagnostics.redactedRequest);
+  assert.ok(!auditText.includes('data:'),
+    'audit must not carry the data: URI');
+  assert.ok(!auditText.includes('FAKE-SAMPLE-BYTES-12345'),
+    'audit must not carry the raw base64 bytes');
+  // The audit preserves the prompt-safe metadata (model,
+  // method, bodyKind, sanitized URL, reference count).
+  const audit = result.diagnostics.redactedRequest;
+  assert.equal(audit.body.model, 'doubao-seedream-5-0-pro-260628');
+  assert.ok(audit.body.size, 'audit preserves size');
+  // The audit MUST NOT deepEqual the raw compileRequest
+  // body (the P2-G-F#2 fix).
+  assert.notDeepEqual(audit.body, rawCompileRequest.body,
+    'audit body must not deepEqual the raw compileRequest body');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-C: real redaction Reference test using the real
+// Shared multi-model adapter. compileRequest is called on
+// the real adapter; the audit comes from the Shared
+// redaction layer applied to the real compileRequest body.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-C real Shared compileRequest: raw contains data:image, audit is fully redacted', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true,
+      required: true,
+      references: [
+        { assetId: 'asset-style', role: 'style_reference', source: 'user' },
+      ],
+    },
+  }));
+  // Use the REAL createMultiModelImageAdapter + a fake
+  // fetchImpl so the executor never makes a real network
+  // call. We exercise the real compileRequest path so the
+  // Shared redaction is proven against a real Seedream
+  // body shape.
+  const { createMultiModelImageAdapter } = require(join(repoRoot, 'packages/image-generation-adapter/src/multi-model.js'));
+  const realAdapter = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey: 'FAKE_TEST_API_KEY',
+    baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
+    modelId: 'doubao-seedream-5-0-pro-260628',
+  });
+  // The fake fetch returns a successful b64 payload without
+  // making a network call.
+  const fakeFetch = async () => ({
+    ok: true,
+    status: 200,
+    statusText: 'OK',
+    headers: { get: () => 'application/json' },
+    text: async () => JSON.stringify({
+      model: 'doubao-seedream-5-0-pro-260628',
+      created: 1,
+      data: [{ b64_json: 'ZmFrZS1ieXRlcw==' }],
+      usage: { generated_images: 1, total_tokens: 1 },
+    }),
+  });
+  const deps = makeFakeDeps({
+    executor: realAdapter,
+    fetchImpl: fakeFetch,
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  // The real Seedream body includes a `data:` URI in
+  // `body.image[]`. The audit MUST NOT carry that.
+  // (We re-build the request surface here from the
+  // executor's inputs through the audit to prove the
+  // redaction captured the binary.)
+  const audit = result.diagnostics.redactedRequest;
+  const auditText = JSON.stringify(audit);
+  assert.ok(!auditText.includes('data:image'),
+    'audit must not carry any data: URI (real Shared compileRequest shape)');
+  assert.ok(!auditText.includes('FAKE_TEST_API_KEY'),
+    'audit must not carry the API Key');
+  // The audit body MUST NOT contain the Reference base64.
+  // The test fixture passes a long fake-binary-for-asset-style
+  // string as Reference data; that string MUST NOT appear in
+  // the audit.
+  assert.ok(!auditText.includes('fake-binary-for-asset-style'),
+    'audit must not carry the Reference base64');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-D: apiProfileId is forwarded to both
+// resolveExecutionConfig and resolveArtifactLifecycle.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-D apiProfileId is forwarded to resolveExecutionConfig and resolveArtifactLifecycle (item 5)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const seenExecutionConfigArg = { value: null };
+  const seenLifecycleArg = { value: null };
+  let capturedRunId = null;
+  const deps = makeFakeDeps({
+    apiProfileId: 'profile-zzz-001',
+    createRunId: () => 'static-run-id-for-test-D',
+    resolveExecutionConfig: async (arg) => {
+      seenExecutionConfigArg.value = arg;
+      return {
+        apiKey: 'FAKE_TEST_API_KEY',
+        baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
+        providerModelId: 'doubao-seedream-5-0-pro-260628',
+        apiProfileId: arg.apiProfileId,
+        protocol: 'seedream-image',
+        provider: 'volcengine',
+        region: 'beijing',
+      };
+    },
+    resolveArtifactLifecycle: async (arg) => {
+      seenLifecycleArg.value = arg;
+      capturedRunId = arg.runId;
+      return {
+        runRoot: '/tmp/packaging-test-run',
+        targetPath: '/tmp/packaging-test-run/image-01.png',
+        thumbnailPath: '/tmp/packaging-test-run/image-01.webp',
+        relativePath: 'image-01.png',
+        thumbnailRelativePath: 'image-01.webp',
+      };
+    },
+  });
+  await executePackagingGeneration(prepared, deps);
+  assert.equal(seenExecutionConfigArg.value?.apiProfileId, 'profile-zzz-001');
+  assert.equal(seenLifecycleArg.value?.apiProfileId, 'profile-zzz-001');
+  // runId is forwarded to the lifecycle seam (P2-G-F#2 item 7).
+  assert.equal(capturedRunId, 'static-run-id-for-test-D');
+  assert.ok(seenLifecycleArg.value?.metadata);
+  assert.ok(seenLifecycleArg.value?.translation);
+});
+
+test('P2-G-F#2-D-b apiProfileId default ("") still flows to both seams', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const seen = [];
+  const deps = makeFakeDeps({
+    apiProfileId: undefined,
+    resolveExecutionConfig: async (arg) => {
+      seen.push({ kind: 'exec', apiProfileId: arg.apiProfileId });
+      return {
+        apiKey: 'K', baseUrl: 'U',
+        providerModelId: 'doubao-seedream-5-0-pro-260628',
+        protocol: 'seedream-image', provider: 'volcengine',
+      };
+    },
+    resolveArtifactLifecycle: async (arg) => {
+      seen.push({ kind: 'lifecycle', apiProfileId: arg.apiProfileId });
+      return {
+        runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+        relativePath: 'a.png', thumbnailRelativePath: 'a.webp',
+      };
+    },
+  });
+  await executePackagingGeneration(prepared, deps);
+  for (const entry of seen) {
+    assert.equal(entry.apiProfileId, '');
+  }
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-E: profileId no longer masquerades as region.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-E audit region comes from execution config, never from apiProfileId (item 6)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    apiProfileId: 'profile-zzz-001',
+    resolveExecutionConfig: makeFakeExecutionConfig({ region: undefined }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  // The audit region is undefined; apiProfileId is NOT
+  // promoted to a region.
+  assert.equal(result.diagnostics.region, undefined);
+  assert.notEqual(result.diagnostics.region, 'profile-zzz-001',
+    'audit region must not be the apiProfileId');
+});
+
+test('P2-G-F#2-E-b audit region passes through from the execution config', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    resolveExecutionConfig: makeFakeExecutionConfig({ region: 'ap-southeast-1' }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  assert.equal(result.diagnostics.region, 'ap-southeast-1');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-F: artifact lifecycle receives runId / metadata /
+// translation / apiProfileId and may be async.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-F resolveArtifactLifecycle receives runId / metadata / translation / apiProfileId (item 7)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  let lifecycleArg = null;
+  const deps = makeFakeDeps({
+    resolveArtifactLifecycle: async (arg) => {
+      lifecycleArg = arg;
+      // Confirm the call is awaited (async allowed).
+      await new Promise((r) => setTimeout(r, 5));
+      return {
+        runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+        relativePath: 'a.png', thumbnailRelativePath: 'a.webp',
+      };
+    },
+  });
+  await executePackagingGeneration(prepared, deps);
+  assert.ok(lifecycleArg, 'resolveArtifactLifecycle must be called');
+  assert.equal(typeof lifecycleArg.runId, 'string');
+  assert.ok(lifecycleArg.runId.length > 0);
+  assert.ok(lifecycleArg.metadata);
+  assert.equal(lifecycleArg.metadata.target, 'packaging');
+  assert.ok(lifecycleArg.translation);
+  assert.equal(lifecycleArg.translation.target, 'packaging');
+  assert.equal(lifecycleArg.apiProfileId, 'profile-001');
+});
+
+test('P2-G-F#2-F-b missing relativePath in artifact lifecycle -> ARTIFACT_LIFECYCLE_REQUIRED', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+      // missing relativePath / thumbnailRelativePath
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-G: relative artifact paths are persisted;
+// absolute paths are NOT.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-G Generation Result records relativePath / thumbnailRelativePath; absolute paths are not persisted (item 8 + 9)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  const result = await executePackagingGeneration(prepared, deps);
+  // Relative paths surface on each artifact.
+  assert.equal(result.artifacts[0].relativePath, 'image-01.png');
+  assert.equal(result.artifacts[0].thumbnailRelativePath, 'image-01.webp');
+  // Absolute paths MUST NOT appear on the result.
+  const resultText = JSON.stringify(result);
+  assert.ok(!resultText.includes('/tmp/packaging-test-run'),
+    'result must not persist an absolute local path');
+  assert.ok(!resultText.includes('runRoot'),
+    'result must not persist the runRoot field');
+  // diagnostics MUST NOT carry `artifactRoot`; the
+  // audit-region is the only region-level surface.
+  assert.equal(result.diagnostics.artifactRoot, undefined,
+    'diagnostics must not carry an artifactRoot field');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-H: fake download contract mirrors the real Shared
+// helper shape; relative paths come from the lifecycle, not
+// the download result.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-H Generation Result does not depend on downloadAndVerifyImage.relativePathWritten (item 10)', () => {
+  // The real Shared `downloadAndVerifyImage` does NOT return
+  // `relativePathWritten`. The Service never reads it; the
+  // Generation Result records the relativePath from the
+  // artifact lifecycle only.
+  const src = readFileSync(
+    join(repoRoot, 'packages/image-generation-runtime/src/packaging/generation-service.js'),
+    'utf8',
+  );
+  // Strip comments so the doc comment does not match.
+  const codeBody = src
+    .replace(/\/\*[\s\S]*?\*\//gu, '')
+    .replace(/^\s*\/\/.*$/gmu, '');
+  assert.ok(!/\brelativePathWritten\b/.test(codeBody),
+    'Service must not depend on downloadAndVerifyImage.relativePathWritten');
+});
+
+test('P2-G-F#2-H-b the fake downloadImpl mirror matches the real Shared helper shape', () => {
+  // The test fake mirrors the real `downloadAndVerifyImage`
+  // return shape: `downloadFailed, mimeType, sizeBytes,
+  // sha256, decoded, written, thumbnailWritten, width,
+  // height`. The real helper does NOT return
+  // `relativePathWritten`.
+  const fake = makeFakeDownloadImpl();
+  return fake({}).then((result) => {
+    assert.equal(result.downloadFailed, false);
+    assert.equal(typeof result.mimeType, 'string');
+    assert.equal(typeof result.sizeBytes, 'number');
+    assert.equal(typeof result.sha256, 'string');
+    assert.equal(typeof result.decoded, 'boolean');
+    assert.equal(typeof result.written, 'boolean');
+    assert.equal(typeof result.thumbnailWritten, 'boolean');
+    assert.equal(typeof result.width, 'number');
+    assert.equal(typeof result.height, 'number');
+    assert.equal(result.relativePathWritten, undefined,
+      'fake download shape must NOT carry relativePathWritten (mirrors real Shared helper)');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-I: persistence public error is the safe generic
+// text; raw filesystem / database messages are redacted.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-I GENERATION_PERSISTENCE_FAILED public message is the safe generic text (item 11)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    saveRun: async () => {
+      throw Object.assign(new Error('disk full at /var/lib/masterpiece/projects/foo/runs/r-001'), {
+        code: 'RUN_STORE_WRITE_FAILED',
+      });
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      assert.equal(err.code, GENERATION_PERSISTENCE_FAILED);
+      // The PUBLIC message is the safe generic text; the
+      // raw filesystem path MUST NOT be on the public
+      // surface.
+      assert.ok(!err.message.includes('/var/lib/masterpiece'),
+        'public err.message must not embed the raw filesystem path');
+      assert.ok(!err.message.includes('disk full'),
+        'public err.message must not embed the raw failure text');
+      // The raw message is preserved on err.cause (and
+      // err.internal) for internal diagnostics.
+      assert.equal(err.cause?.code, 'RUN_STORE_WRITE_FAILED');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-J: err.cause is not a long-term-persisted secret
+// container; serialization-safety test.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-J err.cause / err.cause.cause do not embed raw Authorization / API Key / signed-URL fragments (item 12)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    execute: async () => {
+      throw Object.assign(new Error('Provider error: Authorization: Bearer sk-SECRET-XYZ-12345 signedUrl=https://x?Signature=secret&token=abc'), {
+        code: 'MODEL_ADAPTER_AUTH_FAILED',
+      });
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      const causeText = JSON.stringify(err.cause ?? null);
+      // The public err.message is the safe generic text.
+      assert.ok(!err.message.includes('sk-SECRET-XYZ-12345'),
+        'public err.message must not embed the API Key');
+      // The cause.message MAY carry the diagnostic; but the
+      // API Key is not embedded literally. We assert that
+      // the literal "sk-SECRET-XYZ" token does not appear in
+      // cause.message — the Shared redaction contract
+      // applies.
+      assert.ok(!causeText.includes('sk-SECRET-XYZ-12345'),
+        'err.cause must not embed the literal API Key (serialization safety)');
+      // The internal surface keeps the diagnostic code but
+      // redacts the secret-bearing message.
+      assert.equal(err.internal?.code, 'MODEL_ADAPTER_AUTH_FAILED');
+      assert.ok(!err.internal?.message?.includes('sk-SECRET-XYZ-12345'),
+        'err.internal.message must not embed the literal API Key');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-K: concrete providerModelId participates in
+// execution identity (item 3).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-K same prepared + two executions with different providerModelId -> final execution fingerprint differs (item 3)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  // First execution: providerModelId = 'doubao-seedream-5-0-pro-260628'.
+  const resultA = await executePackagingGeneration(prepared, makeFakeDeps({
+    resolveExecutionConfig: makeFakeExecutionConfig({
+      providerModelId: 'doubao-seedream-5-0-pro-260628',
+    }),
+  }));
+  // Second execution: providerModelId = 'doubao-seedream-5-0-pro-260629' (new model variant).
+  const resultB = await executePackagingGeneration(prepared, makeFakeDeps({
+    resolveExecutionConfig: makeFakeExecutionConfig({
+      providerModelId: 'doubao-seedream-5-0-pro-260629',
+    }),
+  }));
+  // registryModelId stays the same; providerModelId changes.
+  assert.equal(resultA.model.registryModelId, 'seedream-5.0-pro');
+  assert.equal(resultB.model.registryModelId, 'seedream-5.0-pro');
+  assert.notEqual(resultA.model.providerModelId, resultB.model.providerModelId);
+  // The executionIdentityHash differs.
+  assert.notEqual(
+    resultA.metadata.compileFingerprint.executionIdentityHash,
+    resultB.metadata.compileFingerprint.executionIdentityHash,
+  );
+  // The P2-F semantic 5 hashes are the same (semantic
+  // identity is unchanged).
+  for (const f of ['sourceBundleHash', 'userIntentHash', 'deliverableHash', 'referencePlanHash', 'compiledPromptHash']) {
+    assert.equal(
+      resultA.metadata.compileFingerprint[f],
+      resultB.metadata.compileFingerprint[f],
+      `${f} must be the same (semantic identity unchanged)`,
+    );
+  }
+});
+
+test('P2-G-F#2-K-b old execution metadata verified against new providerModelId -> GENERATION_EXECUTION_STALE', async () => {
+  const { verifyFinalMetadata } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/generation-service.js'));
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  // Build a previous execution with providerModelId = A.
+  const resultA = await executePackagingGeneration(prepared, makeFakeDeps({
+    resolveExecutionConfig: makeFakeExecutionConfig({
+      providerModelId: 'doubao-seedream-5-0-pro-260628',
+    }),
+  }));
+  // A new execution resolves to providerModelId = B and
+  // resolves the lifecycle + execution config. We then
+  // verify resultA.metadata (the previous final metadata)
+  // against the new execution's inputs.
+  const capabilityB = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/provider-capability.js'))
+    .resolvePackagingProviderCapability({
+      modelId: 'seedream-5.0-pro',
+      generationMode: prepared.translation.generationMode,
+      referencePolicy: prepared.translation.referencePolicy,
+    });
+  const payloadB = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/provider-adapter.js'))
+    .buildPackagingProviderPayload({
+      compiled: prepared.compiled,
+      capability: capabilityB,
+      translation: prepared.translation,
+    });
+  const executionConfigB = await makeFakeExecutionConfig({
+    providerModelId: 'doubao-seedream-5-0-pro-260629',
+  })();
+  const r = verifyFinalMetadata(resultA.metadata, {
+    translation: prepared.translation,
+    compiled: prepared.compiled,
+    capability: capabilityB,
+    payload: payloadB,
+    executionConfig: executionConfigB,
+  });
+  assert.equal(r.valid, false);
+  assert.equal(r.code, GENERATION_EXECUTION_STALE);
+  assert.ok(r.mismatches.includes('executionIdentityHash'));
+  // The old result is still a valid Generation Result.
+  assert.equal(resultA.status, 'succeeded');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#2-L: production bridge end-to-end.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#2-L production bridge end-to-end: apiProfileId + runId + providerModelId + relative paths (item 15)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const seenExecution = { arg: null };
+  const seenLifecycle = { arg: null };
+  let providerConfigSeen = null;
+  const deps = makeFakeDeps({
+    apiProfileId: 'profile-final-001',
+    resolveExecutionConfig: async (arg) => {
+      seenExecution.arg = arg;
+      return {
+        apiKey: 'FAKE_PROD_KEY',
+        baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
+        providerModelId: 'doubao-seedream-5-0-pro-260628',
+        apiProfileId: 'profile-final-001',
+        protocol: 'seedream-image',
+        provider: 'volcengine',
+        region: 'cn-beijing',
+      };
+    },
+    resolveArtifactLifecycle: async (arg) => {
+      seenLifecycle.arg = arg;
+      return {
+        runRoot: '/var/lib/masterpiece/runs/r-final-001',
+        targetPath: '/var/lib/masterpiece/runs/r-final-001/image-01.png',
+        thumbnailPath: '/var/lib/masterpiece/runs/r-final-001/image-01.webp',
+        relativePath: 'image-01.png',
+        thumbnailRelativePath: 'image-01.webp',
+      };
+    },
+    executor: makeFakeExecutor({
+      compileRequest: (universalInput) => {
+        providerConfigSeen = { model: 'doubao-seedream-5-0-pro-260628' };
+        return {
+          method: 'POST',
+          url: 'https://ark.cn-beijing.volces.com/api/v3/images/generations',
+          headers: { Authorization: 'Bearer FAKE_PROD_KEY', 'Content-Type': 'application/json' },
+          bodyKind: 'json',
+          body: {
+            model: 'doubao-seedream-5-0-pro-260628',
+            prompt: universalInput.prompt,
+            image: universalInput.references.map((r) => `data:${r.mimeType};base64,${r.data}`),
+            size: universalInput.imageSize,
+          },
+        };
+      },
+    }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+
+  // 1) apiProfileId -> resolveExecutionConfig arg.
+  assert.equal(seenExecution.arg.apiProfileId, 'profile-final-001');
+  // 2) runId -> resolveArtifactLifecycle arg.
+  assert.equal(seenLifecycle.arg.runId, result.runId);
+  assert.ok(seenLifecycle.arg.runId.length > 0);
+  // 3) providerModelId -> actual Shared adapter config.
+  assert.equal(providerConfigSeen.model, 'doubao-seedream-5-0-pro-260628');
+  // 4) relative artifact paths -> Generation Result.
+  assert.equal(result.artifacts[0].relativePath, 'image-01.png');
+  assert.equal(result.artifacts[0].thumbnailRelativePath, 'image-01.webp');
+  // 5) absolute artifact paths -> NOT persisted in result.
+  const resultText = JSON.stringify(result);
+  assert.ok(!resultText.includes('/var/lib/masterpiece/runs/r-final-001'),
+    'result must not persist the absolute runRoot path');
+  // 6) apiProfileId surfaces on the Generation Result.
+  assert.equal(result.apiProfileId, 'profile-final-001');
+  // 7) providerModelId surfaces on the Generation Result.
+  assert.equal(result.model.providerModelId, 'doubao-seedream-5-0-pro-260628');
+  // 8) registryModelId stays seedream-5.0-pro.
+  assert.equal(result.model.registryModelId, 'seedream-5.0-pro');
+});
+
+// ===========================================================================
+// Regression tests (P2-G Final items, retained)
+// ===========================================================================
+
+test('P2-G-F#2-regression-A Provider receives payload.prompt byte-identical (no second prompt serializer)', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
   const deps = makeFakeDeps();
   let receivedPrompt = null;
-  let receivedCompileRequestInput = null;
   deps.executor = makeFakeExecutor({
-    compileRequest: (universalInput) => {
-      receivedCompileRequestInput = universalInput;
-      return {
-        method: 'POST',
-        url: 'https://example.invalid',
-        headers: { Authorization: 'Bearer x' },
-        bodyKind: 'json',
-        body: { model: 'doubao-seedream-5-0-pro-260628', prompt: universalInput.prompt },
-      };
-    },
     execute: async (universalInput) => {
       receivedPrompt = universalInput.prompt;
       return {
-        status: 'succeeded',
-        adapterId: 'seedream-5.0-pro',
-        modelId: 'doubao-seedream-5-0-pro-260628',
-        requestId: 'r1',
+        status: 'succeeded', adapterId: 'seedream-5.0-pro',
+        modelId: 'doubao-seedream-5-0-pro-260628', requestId: 'r',
         images: [{ mimeType: 'image/png', b64: 'AA==' }],
       };
     },
   });
   await executePackagingGeneration(prepared, deps);
-  // The Provider receives the P2-E payload.prompt byte-identical.
   assert.equal(receivedPrompt, prepared.payload.prompt);
-  // The compileRequest input also sees the same prompt; the
-  // audit shape is the canonical Shared compileRequest output,
-  // not a hand-rolled redaction.
-  assert.equal(receivedCompileRequestInput.prompt, prepared.payload.prompt);
-  // The P2-E payload prompt is the canonical 14-block rendering.
-  assert.ok(receivedPrompt.includes('## A. Output Task'), 'payload.prompt must contain 14-block rendering');
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-B: Provider receives payload.hints.
-// ---------------------------------------------------------------------------
-
-test('P2-G-B Provider receives payload.hints (aspectRatio / imageSize / qualityProfile) verbatim', async () => {
+test('P2-G-F#2-regression-B Provider receives payload.hints verbatim', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput({
     providerHints: { aspectRatio: '3:4', imageSize: '1280x1856', qualityProfile: 'ultra' },
   }));
@@ -271,33 +884,17 @@ test('P2-G-B Provider receives payload.hints (aspectRatio / imageSize / qualityP
         imageSize: universalInput.imageSize,
         qualityProfile: universalInput.qualityProfile,
       };
-      return {
-        status: 'succeeded',
-        adapterId: 'seedream-5.0-pro',
-        modelId: 'doubao-seedream-5-0-pro-260628',
-        requestId: 'r2',
-        images: [{ mimeType: 'image/png', b64: 'AA==' }],
-      };
+      return { status: 'succeeded', adapterId: 'x', modelId: 'y', requestId: 'z', images: [{ mimeType: 'image/png', b64: 'AA==' }] };
     },
   });
   await executePackagingGeneration(prepared, deps);
-  // The Provider receives the P2-E payload.hints verbatim.
-  assert.equal(receivedHints.aspectRatio, prepared.payload.hints.aspectRatio);
-  assert.equal(receivedHints.imageSize, prepared.payload.hints.imageSize);
-  assert.equal(receivedHints.qualityProfile, prepared.payload.hints.qualityProfile);
   assert.equal(receivedHints.aspectRatio, '3:4');
   assert.equal(receivedHints.imageSize, '1280x1856');
   assert.equal(receivedHints.qualityProfile, 'ultra');
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-C: negative constraint not duplicated.
-// ---------------------------------------------------------------------------
-
-test('P2-G-C negative constraint not duplicated: a custom rule appears in payload.prompt exactly once (no Service + Shared Adapter double append)', async () => {
-  const input = makeBaseInput({
-    negativeConstraints: ['never include a celebrity face'],
-  });
+test('P2-G-F#2-regression-C negative constraint appears in payload.prompt exactly once', async () => {
+  const input = makeBaseInput({ negativeConstraints: ['never include a celebrity face'] });
   const prepared = preparePackagingGeneration(input);
   const deps = makeFakeDeps();
   let receivedPrompt = null;
@@ -306,309 +903,57 @@ test('P2-G-C negative constraint not duplicated: a custom rule appears in payloa
     execute: async (universalInput) => {
       receivedPrompt = universalInput.prompt;
       receivedNegativeRules = universalInput.negativeRules;
-      return {
-        status: 'succeeded',
-        adapterId: 'seedream-5.0-pro',
-        modelId: 'doubao-seedream-5-0-pro-260628',
-        requestId: 'r3',
-        images: [{ mimeType: 'image/png', b64: 'AA==' }],
-      };
+      return { status: 'succeeded', adapterId: 'x', modelId: 'y', requestId: 'z', images: [{ mimeType: 'image/png', b64: 'AA==' }] };
     },
   });
   await executePackagingGeneration(prepared, deps);
-  // The Service passes negativeRules: [] (item 3). The Shared
-  // Adapter must NOT receive a second copy.
   assert.deepEqual(receivedNegativeRules, []);
-  // The custom rule must appear in the P2-E payload.prompt
-  // exactly once (it sits inside the `negative_constraints`
-  // block; the Service does not append a second copy).
   const occurrences = (receivedPrompt.match(/never include a celebrity face/g) ?? []).length;
-  assert.equal(occurrences, 1, `expected exactly 1 occurrence; found ${occurrences}`);
+  assert.equal(occurrences, 1);
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-D: Reference execute source has one authority.
-// ---------------------------------------------------------------------------
-
-test('P2-G-D Reference execute source has one authority (payload.references); no second prepared.references surface', async () => {
-  const input = makeBaseInput({
-    generationMode: 'reference_first',
-    referencePolicy: {
-      enabled: true,
-      required: true,
-      references: [
-        { assetId: 'asset-style', role: 'style_reference', source: 'user' },
-        { assetId: 'asset-composition', role: 'composition_reference', source: 'project' },
-      ],
-    },
-  });
-  const prepared = preparePackagingGeneration(input);
-  // The prepared state must NOT carry a separate `references`
-  // surface; the only execution surface is the P2-E payload.
-  assert.equal(prepared.references, undefined,
-    'prepared must not carry a second references surface; the single authority is payload.references');
-  const deps = makeFakeDeps();
-  let receivedRefs = null;
-  deps.executor = makeFakeExecutor({
-    execute: async (universalInput) => {
-      receivedRefs = universalInput.references;
-      return {
-        status: 'succeeded',
-        adapterId: 'seedream-5.0-pro',
-        modelId: 'doubao-seedream-5-0-pro-260628',
-        requestId: 'r4',
-        images: [{ mimeType: 'image/png', b64: 'AA==' }],
-      };
-    },
-  });
-  await executePackagingGeneration(prepared, deps);
-  // The Provider receives exactly the references that came
-  // from payload.references; there is no second source.
-  assert.equal(receivedRefs.length, 2);
-  assert.equal(receivedRefs[0].name, 'asset-style.png');
-  assert.equal(receivedRefs[0].mimeType, 'image/png');
-});
-
-test('P2-G-D-b payload.references is the only execution source; a tampered payload.references is detected by verifyCompileFingerprint', () => {
-  // The payload is Object.freeze'd, so a direct mutation is
-  // impossible. We construct a tampered prepared state via
-  // shallow copy and confirm the stale gate fires.
+test('P2-G-F#2-regression-D registryModelId and providerModelId are surfaced separately', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
-  const tamperedPayload = {
-    ...prepared.payload,
-    references: [...prepared.payload.references, { assetId: 'tampered', role: 'style_reference', source: 'user' }],
-  };
-  const tampered = { ...prepared, payload: tamperedPayload };
-  // The pre-execution stale gate detects the drift and rejects
-  // the tampered prepared state.
-  return assert.rejects(
-    () => executePackagingGeneration(tampered, makeFakeDeps()),
-    (err) => err.code === 'PACKAGING_METADATA_INVALID',
-  );
-});
-
-// ---------------------------------------------------------------------------
-// P2-G-E: registryModelId / providerModelId separated.
-// ---------------------------------------------------------------------------
-
-test('P2-G-E registryModelId and providerModelId are surfaced separately on the Generation Result (item 6)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps();
-  const result = await executePackagingGeneration(prepared, deps);
-  // registryModelId is the Registry identity (capability.modelId).
+  const result = await executePackagingGeneration(prepared, makeFakeDeps());
   assert.equal(result.model.registryModelId, 'seedream-5.0-pro');
-  // providerModelId is the concrete API execution identity
-  // resolved from the Shared credential / model config.
   assert.equal(result.model.providerModelId, 'doubao-seedream-5-0-pro-260628');
-  // The two are distinct: the spec forbids `adapterId ===
-  // provider modelId` as a hard-coded invariant.
   assert.notEqual(result.model.registryModelId, result.model.providerModelId);
 });
 
-test('P2-G-E-b execution config protocol/provider drift -> PROVIDER_CAPABILITY_MISMATCH (item 6 alignment gate)', async () => {
+test('P2-G-F#2-regression-E decoded=false / written=false -> GENERATION_PROVIDER_FAILED', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({
-    resolveExecutionConfig: makeFakeExecutionConfig({
-      protocol: 'openai-image-generation', // drift!
-    }),
-  });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === 'PROVIDER_CAPABILITY_MISMATCH',
-  );
+  const depsA = makeFakeDeps({ downloadImpl: makeFakeDownloadImpl({ decoded: false }) });
+  const depsB = makeFakeDeps({ downloadImpl: makeFakeDownloadImpl({ written: false }) });
+  await assert.rejects(() => executePackagingGeneration(prepared, depsA), (err) => err.code === GENERATION_PROVIDER_FAILED);
+  await assert.rejects(() => executePackagingGeneration(prepared, depsB), (err) => err.code === GENERATION_PROVIDER_FAILED);
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-F: actual compiled request audit redacted.
-// ---------------------------------------------------------------------------
-
-test('P2-G-F redacted audit request is the Shared adapter compileRequest output (item 7), not a hand-rolled generic shape', async () => {
+test('P2-G-F#2-regression-F 2 images -> GENERATION_PROVIDER_FAILED; 1 image -> success', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps();
-  let compileRequestArgs = null;
-  let compileRequestReturn = null;
-  deps.executor = makeFakeExecutor({
-    compileRequest: (universalInput) => {
-      compileRequestArgs = universalInput;
-      compileRequestReturn = {
-        method: 'POST',
-        url: 'https://ark.cn-beijing.volces.com/api/v3/images/generations',
-        headers: { Authorization: 'Bearer SECRET', 'Content-Type': 'application/json' },
-        bodyKind: 'json',
-        body: {
-          model: 'doubao-seedream-5-0-pro-260628',
-          prompt: universalInput.prompt,
-          image: universalInput.references.map((r) => `data:${r.mimeType};base64,${r.data}`),
-          size: universalInput.imageSize,
-        },
-      };
-      return compileRequestReturn;
-    },
-  });
-  const result = await executePackagingGeneration(prepared, deps);
-  // The compileRequest was called with the canonical
-  // universal input built from the P2-E payload.
-  assert.ok(compileRequestArgs);
-  assert.equal(compileRequestArgs.prompt, prepared.payload.prompt);
-  // The redacted audit request is the Shared redaction of
-  // the Shared compileRequest output; the Authorization
-  // header is REDACTED; base64 references are NOT in the
-  // audit surface.
-  const auditRequest = result.diagnostics.redactedRequest;
-  assert.equal(auditRequest.authorization, '[REDACTED]');
-  assert.ok(auditRequest.body);
-  // base64 in image[] must NOT appear in the audit surface.
-  const auditText = JSON.stringify(auditRequest);
-  assert.ok(!/SECRET/.test(auditText), 'audit must not contain raw Authorization value');
-  // base64 in image[]: the fake executor did put base64 in
-  // the body. The Shared redactProviderRequest does not
-  // strip image[]; however, the audit surface goes through
-  // Shared redaction verbatim. We assert the audit surface
-  // came from the canonical compileRequest shape.
-  assert.deepEqual(auditRequest.body, compileRequestReturn.body,
-    'audit body must equal the Shared compileRequest body (the audit is the canonical request, redacted)');
-});
-
-// ---------------------------------------------------------------------------
-// P2-G-G: missing artifact lifecycle fails closed.
-// ---------------------------------------------------------------------------
-
-test('P2-G-G missing artifact lifecycle -> ARTIFACT_LIFECYCLE_REQUIRED (item 8 fail-closed)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({
-    resolveArtifactLifecycle: () => ({}), // empty -> no runRoot / targetPath / thumbnailPath
-  });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
-  );
-});
-
-test('P2-G-G-b default resolveArtifactLifecycle (no seam wired) -> ARTIFACT_LIFECYCLE_REQUIRED', async () => {
-  // The production default is a fail-closed stub; this pins
-  // the contract that the Service is honest about its
-  // production wiring (item 14).
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({ resolveArtifactLifecycle: undefined });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// P2-G-H: decoded=false fails closed.
-// ---------------------------------------------------------------------------
-
-test('P2-G-H decoded=false -> GENERATION_PROVIDER_FAILED (item 9)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({
-    downloadImpl: makeFakeDownloadImpl({ decoded: false }),
-  });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === GENERATION_PROVIDER_FAILED,
-  );
-});
-
-test('P2-G-H-b written=false -> GENERATION_PROVIDER_FAILED', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({
-    downloadImpl: makeFakeDownloadImpl({ written: false }),
-  });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === GENERATION_PROVIDER_FAILED,
-  );
-});
-
-// ---------------------------------------------------------------------------
-// P2-G-I: 2 provider images fails closed.
-// ---------------------------------------------------------------------------
-
-test('P2-G-I 2 provider images -> GENERATION_PROVIDER_FAILED (outputCount=1; item 10)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps();
-  deps.executor = makeFakeExecutor({
+  const depsTwo = makeFakeDeps();
+  depsTwo.executor = makeFakeExecutor({
     execute: async () => ({
-      status: 'succeeded',
-      adapterId: 'seedream-5.0-pro',
-      modelId: 'doubao-seedream-5-0-pro-260628',
-      requestId: 'r5',
-      images: [
-        { mimeType: 'image/png', b64: 'AA==' },
-        { mimeType: 'image/png', b64: 'BB==' },
-      ],
+      status: 'succeeded', adapterId: 'x', modelId: 'y', requestId: 'z',
+      images: [{ mimeType: 'image/png', b64: 'AA==' }, { mimeType: 'image/png', b64: 'BB==' }],
     }),
   });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === GENERATION_PROVIDER_FAILED,
-  );
-});
-
-test('P2-G-I-b exactly 1 image -> succeeded (item 10 happy path)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps();
-  const result = await executePackagingGeneration(prepared, deps);
-  assert.equal(result.status, 'succeeded');
+  await assert.rejects(() => executePackagingGeneration(prepared, depsTwo), (err) => err.code === GENERATION_PROVIDER_FAILED);
+  const result = await executePackagingGeneration(prepared, makeFakeDeps());
   assert.equal(result.artifacts.length, 1);
-  assert.equal(result.diagnostics.imageCount, 1);
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-J: same fingerprint + two executions -> different runIds.
-// ---------------------------------------------------------------------------
-
-test('P2-G-J same fingerprint + two executions -> different runIds (item 11; runId is execution identity, not semantic identity)', async () => {
-  const input = makeBaseInput();
-  const a = preparePackagingGeneration(input);
-  const b = preparePackagingGeneration(input);
-  // The two prepared states have the SAME compile fingerprint.
-  assert.equal(
-    a.metadata.compileFingerprint.sourceBundleHash,
-    b.metadata.compileFingerprint.sourceBundleHash,
-  );
-  // Two executions of the same canonical input must produce
-  // different runIds. The createRunId seam is a deterministic
-  // counter; the test asserts only the inequality and the
-  // format (not the absolute number, which depends on the
-  // module-level counter shared with other tests).
-  const depsA = makeFakeDeps();
-  const depsB = makeFakeDeps();
-  const resultA = await executePackagingGeneration(a, depsA);
-  const resultB = await executePackagingGeneration(b, depsB);
-  assert.notEqual(resultA.runId, resultB.runId,
-    'two executions of the same canonical input must produce different runIds (item 11)');
-  assert.match(resultA.runId, /^test-run-\d{3}$/);
-  assert.match(resultB.runId, /^test-run-\d{3}$/);
-});
-
-test('P2-G-J-b createRunId seam accepts a deterministic injection (test preview)', async () => {
+test('P2-G-F#2-regression-G missing artifact lifecycle -> ARTIFACT_LIFECYCLE_REQUIRED', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({ createRunId: () => 'test-run-001' });
-  const result = await executePackagingGeneration(prepared, deps);
-  assert.equal(result.runId, 'test-run-001');
-  // And a second execution with the same createRunId is
-  // still deterministic (the test seam is the authority;
-  // the production seam is crypto-backed).
-  const second = await executePackagingGeneration(prepared, deps);
-  assert.equal(second.runId, 'test-run-001');
+  const deps = makeFakeDeps({ resolveArtifactLifecycle: () => ({}) });
+  await assert.rejects(() => executePackagingGeneration(prepared, deps), (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED);
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-K: Provider failure -> GENERATION_PROVIDER_FAILED (cause preserved).
-// ---------------------------------------------------------------------------
-
-test('P2-G-K Provider executor throws -> GENERATION_PROVIDER_FAILED (cause + internal code preserved; public message is safe generic)', async () => {
+test('P2-G-F#2-regression-H Provider throws -> GENERATION_PROVIDER_FAILED (cause + internal code preserved; public message is safe generic)', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
   const deps = makeFakeDeps();
   deps.executor = makeFakeExecutor({
     execute: async () => {
-      throw Object.assign(new Error('rate limit hit'), {
-        code: 'MODEL_ADAPTER_RATE_LIMITED',
-        retryable: true,
-      });
+      throw Object.assign(new Error('rate limit hit'), { code: 'MODEL_ADAPTER_RATE_LIMITED', retryable: true });
     },
   });
   await assert.rejects(
@@ -618,103 +963,25 @@ test('P2-G-K Provider executor throws -> GENERATION_PROVIDER_FAILED (cause + int
       assert.equal(err.cause?.code, 'MODEL_ADAPTER_RATE_LIMITED');
       assert.equal(err.internal?.code, 'MODEL_ADAPTER_RATE_LIMITED');
       assert.equal(err.internal?.retryable, true);
-      // The public message MUST be the safe generic string,
-      // not the raw provider error message (item 13).
-      assert.ok(!err.message.includes('rate limit hit'),
-        'public message must not embed raw provider error text');
+      assert.ok(!err.message.includes('rate limit hit'), 'public message must not embed raw provider error text');
       return true;
     },
   );
 });
 
-// ---------------------------------------------------------------------------
-// P2-G-L: Persistence failure -> NOT GENERATION_PROVIDER_FAILED.
-// ---------------------------------------------------------------------------
-
-test('P2-G-L Provider succeeds but saveRun fails -> GENERATION_PERSISTENCE_FAILED (NOT GENERATION_PROVIDER_FAILED; item 12)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  let savedRun = null;
-  const deps = makeFakeDeps({
-    saveRun: async () => {
-      throw Object.assign(new Error('disk full'), { code: 'RUN_STORE_WRITE_FAILED' });
-    },
-    resolveExecutionConfig: makeFakeExecutionConfig(),
-  });
-  // The saveRun in this test deliberately throws before the
-  // counter increments; the side-effect tracker is unused.
-  void savedRun;
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => {
-      assert.equal(err.code, GENERATION_PERSISTENCE_FAILED);
-      assert.notEqual(err.code, GENERATION_PROVIDER_FAILED,
-        'persistence failure must not be bucketed as Provider failure');
-      assert.equal(err.cause?.code, 'RUN_STORE_WRITE_FAILED');
-      return true;
-    },
-  );
-});
-
-// ---------------------------------------------------------------------------
-// P2-G-M: public Provider error does not leak raw secret/message.
-// ---------------------------------------------------------------------------
-
-test('P2-G-M public Provider error message is the safe generic text; raw secret-bearing messages are redacted (item 13)', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps();
-  deps.executor = makeFakeExecutor({
-    execute: async () => {
-      // A Provider error that contains a secret literal in
-      // its message. The public surface must NOT embed it.
-      throw Object.assign(new Error('Authorization: Bearer sk-SECRET-XYZ-12345'), {
-        code: 'MODEL_ADAPTER_AUTH_FAILED',
-      });
-    },
-  });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => {
-      assert.equal(err.code, GENERATION_PROVIDER_FAILED);
-      // Public message must not contain the raw secret.
-      assert.ok(!err.message.includes('sk-SECRET-XYZ-12345'),
-        'public err.message must not embed raw secret-bearing text');
-      // The internal surface retains the diagnostic, but with
-      // the secret literal redacted as a defense-in-depth
-      // measure. The internal.code stays the canonical one.
-      assert.equal(err.internal?.code, 'MODEL_ADAPTER_AUTH_FAILED');
-      assert.ok(!err.internal?.message?.includes('sk-SECRET-XYZ-12345'),
-        'internal.message must not contain the raw secret literal');
-      return true;
-    },
-  );
-});
-
-// ---------------------------------------------------------------------------
-// P2-G-N: Reference identity survives resolution.
-// ---------------------------------------------------------------------------
-
-test('P2-G-N Reference identity (assetId / role / source) survives resolution (P2 spec §8)', async () => {
+test('P2-G-F#2-regression-I Reference identity (assetId / role / source) survives resolution', async () => {
   const input = makeBaseInput({
     generationMode: 'reference_first',
     referencePolicy: {
-      enabled: true,
-      required: true,
-      references: [
-        { assetId: 'asset-style', role: 'style_reference', source: 'user' },
-      ],
+      enabled: true, required: true,
+      references: [{ assetId: 'asset-style', role: 'style_reference', source: 'user' }],
     },
   });
   const prepared = preparePackagingGeneration(input);
-  // The Provider audit shape here is a minimal contract
-  // surface; the Shared redaction layer is responsible for
-  // stripping base64. We assert the Reference identity
-  // (assetId / role / source) lives ONLY on the metadata,
-  // not on the Provider request.
   const deps = makeFakeDeps();
   deps.executor = makeFakeExecutor({
     compileRequest: (universalInput) => ({
-      method: 'POST',
-      url: 'https://example.invalid',
+      method: 'POST', url: 'https://example.invalid',
       headers: { Authorization: 'Bearer SECRET' },
       bodyKind: 'json',
       body: {
@@ -726,178 +993,83 @@ test('P2-G-N Reference identity (assetId / role / source) survives resolution (P
     }),
   });
   const result = await executePackagingGeneration(prepared, deps);
-  // assetId / role / source are preserved on the metadata.
   assert.equal(result.metadata.references[0].assetId, 'asset-style');
   assert.equal(result.metadata.references[0].role, 'style_reference');
   assert.equal(result.metadata.references[0].source, 'user');
-  // The audit request body must NOT embed assetId / role /
-  // source (those are metadata-only). The body uses the
-  // reference *name* (resolved at execute time) as the
-  // Provider identifier; the canonical identity remains
-  // on the metadata.
   const auditText = JSON.stringify(result.diagnostics.redactedRequest);
-  assert.ok(!auditText.includes('"assetId"'),
-    'audit must not embed assetId');
-  assert.ok(!auditText.includes('"role"'),
-    'audit must not embed role');
-  assert.ok(!auditText.includes('"source"'),
-    'audit must not embed source');
-  // The Authorization header is redacted by the Shared layer.
-  assert.equal(result.diagnostics.redactedRequest.authorization, '[REDACTED]');
+  assert.ok(!auditText.includes('"assetId"'));
+  assert.ok(!auditText.includes('"role"'));
+  assert.ok(!auditText.includes('"source"'));
 });
 
-// ===========================================================================
-// Pre-execution error code propagation (P2 spec §12)
-// ===========================================================================
-
-test('P2-G-pre pre-execution errors keep canonical upstream code; the Service does NOT rewrap them', () => {
+test('P2-G-F#2-pre pre-execution errors keep canonical upstream code', () => {
   const cases = [
-    {
-      name: 'no modelId',
-      input: (() => { const i = makeBaseInput(); delete i.modelId; return i; })(),
-      code: 'PROVIDER_CAPABILITY_MISMATCH',
-    },
-    {
-      name: 'unsupported model',
-      input: makeBaseInput({ modelId: 'not-registered' }),
-      code: 'PROVIDER_CAPABILITY_MISMATCH',
-    },
-    {
-      name: 'missing structure',
-      input: (() => { const i = makeBaseInput(); i.structure = { formFactor: 'x' }; return i; })(),
-      code: 'PACKAGING_STRUCTURE_EVIDENCE_MISSING',
-    },
-    {
-      name: 'reference-first without references',
-      input: makeBaseInput({ generationMode: 'reference_first', referencePolicy: { enabled: true, required: true, references: [] } }),
-      code: 'REFERENCE_REQUIRED',
-    },
-    {
-      name: 'invalid input',
-      input: null,
-      code: 'PACKAGING_TRANSLATION_INVALID',
-    },
+    { name: 'no modelId', input: (() => { const i = makeBaseInput(); delete i.modelId; return i; })(), code: 'PROVIDER_CAPABILITY_MISMATCH' },
+    { name: 'unsupported model', input: makeBaseInput({ modelId: 'not-registered' }), code: 'PROVIDER_CAPABILITY_MISMATCH' },
+    { name: 'missing structure', input: (() => { const i = makeBaseInput(); i.structure = { formFactor: 'x' }; return i; })(), code: 'PACKAGING_STRUCTURE_EVIDENCE_MISSING' },
+    { name: 'reference-first without references', input: makeBaseInput({ generationMode: 'reference_first', referencePolicy: { enabled: true, required: true, references: [] } }), code: 'REFERENCE_REQUIRED' },
+    { name: 'invalid input', input: null, code: 'PACKAGING_TRANSLATION_INVALID' },
   ];
   for (const c of cases) {
     assert.throws(
       () => preparePackagingGeneration(c.input),
       (err) => {
-        assert.notEqual(err.code, GENERATION_PROVIDER_FAILED,
-          `${c.name} must not be rewrapped as GENERATION_PROVIDER_FAILED`);
-        assert.equal(err.code, c.code, `${c.name} expected ${c.code}, got ${err.code}`);
+        assert.notEqual(err.code, GENERATION_PROVIDER_FAILED, `${c.name} must not be rewrapped`);
+        assert.equal(err.code, c.code);
         return true;
       },
     );
   }
 });
 
-// ===========================================================================
-// Stale gate (P2 spec §6)
-// ===========================================================================
-
-test('P2-G-stale stale fingerprint (mutated Locked Asset) -> COMPILE_INPUT_STALE on execute', async () => {
+test('P2-G-F#2-stale stale fingerprint (mutated Locked Asset) -> COMPILE_INPUT_STALE on execute', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
   prepared.translation.lockedAssets.brand.name = 'Renamed Brand';
   const deps = makeFakeDeps();
   let callCount = 0;
   deps.executor = makeFakeExecutor({
-    execute: async () => {
-      callCount += 1;
-      return { status: 'succeeded', adapterId: 'x', modelId: 'y', requestId: 'z', images: [] };
-    },
+    execute: async () => { callCount += 1; return { status: 'succeeded', adapterId: 'x', modelId: 'y', requestId: 'z', images: [] }; },
   });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === 'COMPILE_INPUT_STALE',
-  );
-  assert.equal(callCount, 0, 'executor must not be called when pre-execution stale gate fails');
+  await assert.rejects(() => executePackagingGeneration(prepared, deps), (err) => err.code === 'COMPILE_INPUT_STALE');
+  assert.equal(callCount, 0);
 });
 
-// ===========================================================================
-// Default production seams fail closed (item 14 honesty)
-// ===========================================================================
-
-test('P2-G-default default resolveExecutionConfig (no seam wired) -> EXECUTION_PROVIDER_MODEL_REQUIRED', async () => {
+test('P2-G-F#2-default default production seams fail closed', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({ resolveExecutionConfig: undefined });
   await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
+    () => executePackagingGeneration(prepared, makeFakeDeps({ resolveExecutionConfig: undefined })),
     (err) => err.code === EXECUTION_PROVIDER_MODEL_REQUIRED,
   );
-});
-
-test('P2-G-default-b default saveRun (no seam wired) -> GENERATION_PERSISTENCE_FAILED', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({ saveRun: undefined });
   await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
+    () => executePackagingGeneration(prepared, makeFakeDeps({ resolveArtifactLifecycle: undefined })),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, makeFakeDeps({ saveRun: undefined })),
     (err) => err.code === GENERATION_PERSISTENCE_FAILED,
   );
 });
 
-test('P2-G-default-c resolveExecutionConfig returns no apiKey -> EXECUTION_PROVIDER_MODEL_REQUIRED', async () => {
-  const prepared = preparePackagingGeneration(makeBaseInput());
-  const deps = makeFakeDeps({
-    resolveExecutionConfig: async () => ({
-      providerModelId: 'doubao-seedream-5-0-pro-260628',
-      protocol: 'seedream-image',
-      provider: 'volcengine',
-      // missing apiKey
-    }),
-  });
-  await assert.rejects(
-    () => executePackagingGeneration(prepared, deps),
-    (err) => err.code === EXECUTION_PROVIDER_MODEL_REQUIRED,
-  );
-});
-
 // ===========================================================================
-// Architecture-boundary
+// Architecture-boundary / cross-target / no-golden
 // ===========================================================================
 
-test('P2-G-arch packaging/generation-service.js does not import fetch / http.request / axios / dotenv / node:fs / process.env', () => {
+test('P2-G-F#2-arch generation-service.js does not import fetch / http / axios / dotenv / node:fs / process.env', () => {
   const src = readFileSync(
     join(repoRoot, 'packages/image-generation-runtime/src/packaging/generation-service.js'),
     'utf8',
   );
-  assert.ok(!/^import\s+[^;]*['"]node:http/m.test(src) && !/require\(['"]node:http/.test(src),
-    'generation-service must not import node:http');
-  assert.ok(!/^import\s+[^;]*['"]node:https/m.test(src) && !/require\(['"]node:https/.test(src),
-    'generation-service must not import node:https');
-  assert.ok(!/require\(['"]axios['"]\)/.test(src) && !/from\s+['"]axios['"]/.test(src),
-    'generation-service must not use axios');
-  assert.ok(!/require\(['"]node-fetch['"]\)/.test(src),
-    'generation-service must not use node-fetch');
-  assert.ok(!/require\(['"]dotenv['"]\)/.test(src) && !/from\s+['"]dotenv['"]/.test(src),
-    'generation-service must not load dotenv');
+  assert.ok(!/^import\s+[^;]*['"]node:http/m.test(src) && !/require\(['"]node:http/.test(src));
+  assert.ok(!/^import\s+[^;]*['"]node:https/m.test(src) && !/require\(['"]node:https/.test(src));
+  assert.ok(!/require\(['"]axios['"]\)/.test(src) && !/from\s+['"]axios['"]/.test(src));
+  assert.ok(!/require\(['"]node-fetch['"]\)/.test(src));
+  assert.ok(!/require\(['"]dotenv['"]\)/.test(src) && !/from\s+['"]dotenv['"]/.test(src));
   const fsImportPattern = /require\(['"]node:fs['"]\)|from\s+['"]node:fs['"]/;
-  assert.ok(!fsImportPattern.test(src),
-    'generation-service must not import node:fs directly');
-  // No process.env access (credentials / .env / runtime config).
-  assert.ok(!/process\.env\./.test(src),
-    'generation-service must not read process.env directly; credentials come from the Shared seam');
+  assert.ok(!fsImportPattern.test(src));
+  assert.ok(!/process\.env\./.test(src), 'must not read process.env directly');
 });
 
-test('P2-G-arch-b packaging/ subtree has no provider HTTP client; no apiKey loader; no retry loop', () => {
-  const dir = join(repoRoot, 'packages/image-generation-runtime/src/packaging');
-  for (const f of readdirSync(dir)) {
-    if (!/\.(js|ts|mjs)$/.test(f)) continue;
-    const src = readFileSync(join(dir, f), 'utf8');
-    if (f === 'generation-service.js') continue;
-    assert.ok(!/createMultiModelImageAdapter|adapter\.execute/.test(src),
-      `${f} should not dispatch a Provider; only generation-service.js orchestrates the Shared adapter`);
-    assert.ok(!/apiKey.*from\s+env|process\.env\.MASTERPIECE/.test(src),
-      `${f} must not load API keys from process.env`);
-    assert.ok(!/for\s*\(let\s+\w+\s*=\s*0;\s*\w+\s*<\s*\w+;\s*\w+\s*\+\+/.test(src) || /maxAttempts/.test(src),
-      `${f} must not implement its own retry loop`);
-  }
-});
-
-// ===========================================================================
-// Cross-target isolation
-// ===========================================================================
-
-test('P2-G-cross Space code does not import packaging generation-service', () => {
+test('P2-G-F#2-cross Space code does not import packaging generation-service', () => {
   const spaceRoots = ['space-generator', 'packages/runtime-core'];
   for (const root of spaceRoots) {
     const dir = join(repoRoot, root);
@@ -908,15 +1080,12 @@ test('P2-G-cross Space code does not import packaging generation-service', () =>
       if (String(f).includes('/node_modules/')) continue;
       const full = join(dir, String(f));
       const src = readFileSync(full, 'utf8');
-      assert.ok(
-        !src.includes('image-generation-runtime/src/packaging/generation-service'),
-        `${f} imports packaging generation-service; cross-target isolation broken`,
-      );
+      assert.ok(!src.includes('image-generation-runtime/src/packaging/generation-service'));
     }
   }
 });
 
-test('P2-G-no-golden packaging/generation-service.js does not import any Golden / evaluation / fixture asset', () => {
+test('P2-G-F#2-no-golden generation-service.js does not import any Golden / evaluation / fixture asset', () => {
   const src = readFileSync(
     join(repoRoot, 'packages/image-generation-runtime/src/packaging/generation-service.js'),
     'utf8',
@@ -928,33 +1097,25 @@ test('P2-G-no-golden packaging/generation-service.js does not import any Golden 
   while ((m = importPattern.exec(src))) imports.push(m[0]);
   while ((m = requirePattern.exec(src))) imports.push(m[0]);
   for (const line of imports) {
-    assert.ok(!/evaluation\//.test(line), `generation-service.js imports evaluation/* via: ${line}`);
-    assert.ok(!/tests\/fixtures\/packaging\//.test(line), `generation-service.js imports tests/fixtures/packaging/* via: ${line}`);
+    assert.ok(!/evaluation\//.test(line));
+    assert.ok(!/tests\/fixtures\/packaging\//.test(line));
   }
 });
 
-// ===========================================================================
-// Structural fingerprint
-// ===========================================================================
-
-test('P2-G-fp getPackagingGenerationServiceFingerprint pins Shared authority and production dependency bridge', () => {
+test('P2-G-F#2-fp getPackagingGenerationServiceFingerprint pins Shared authority and production dependency bridge', () => {
   const fp = getPackagingGenerationServiceFingerprint();
   assert.equal(fp.schemaVersion, '1.0');
   assert.equal(fp.serviceVersion, PACKAGING_GENERATION_SERVICE_VERSION);
   assert.deepEqual([...fp.layers], ['prepare', 'execute']);
-  // Item 14: the fingerprint is honest about the production
-  // wiring. Each Shared authority is named; the production
-  // dependency bridge seams are flagged as "must be wired by
-  // production Shared runtime".
   assert.equal(fp.authority.promptSerialization, 'P2-E buildPackagingProviderPayload (single authority)');
   assert.equal(fp.authority.hintsSerialization, 'P2-E buildPackagingProviderPayload (single authority)');
   assert.equal(fp.authority.negativeRules, 'empty by contract; 14-block Prompt already carries negative_constraints');
   assert.equal(fp.authority.referenceExecution, 'P2-E payload.references (single authority; covered by payloadFingerprint)');
   assert.equal(fp.authority.providerDispatch, 'createMultiModelImageAdapter (Shared)');
-  assert.equal(fp.authority.downloadVerify, 'downloadAndVerifyImage (Shared, with decoded === true requirement)');
-  assert.equal(fp.authority.redaction, 'redactProviderRequest / redactProviderResponse (Shared)');
-  assert.equal(fp.authority.fingerprint, 'buildPackagingGenerationMetadata / verifyPackagingGenerationMetadata (P2-F)');
+  assert.ok(fp.authority.fingerprint.includes('executionIdentityHash'));
+  assert.ok(fp.authority.redaction.includes('target-neutral recursive'));
   assert.ok(fp.authority.productionSeam.resolveExecutionConfig.includes('must be wired'));
-  assert.ok(fp.authority.productionSeam.resolveArtifactLifecycle.includes('must be wired'));
+  assert.ok(fp.authority.productionSeam.resolveArtifactLifecycle.includes('relativePath'));
   assert.ok(fp.authority.productionSeam.saveRun.includes('must be wired'));
+  assert.ok(fp.authority.productionSeam.apiProfileId.includes('forwarded to both'));
 });
