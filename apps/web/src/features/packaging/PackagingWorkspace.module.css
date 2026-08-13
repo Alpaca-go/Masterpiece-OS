@@ -307,12 +307,43 @@
 }
 
 .refRowMain {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.refThumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #e0dcd6;
+  background: #ece8ef;
+  flex: none;
+}
+
+.refThumbPlaceholder {
   display: grid;
-  gap: 3px;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px dashed #d4cec4;
+  color: #908a92;
+  background: #faf9f6;
+  font-size: 9px;
+  flex: none;
+}
+
+.refRowText {
+  display: grid;
+  gap: 2px;
   min-width: 0;
 }
 
-.refRowMain strong {
+.refRowText strong {
   font-size: 12px;
   color: #2c292f;
   overflow: hidden;
@@ -327,10 +358,70 @@
   letter-spacing: .12em;
 }
 
+.refRowAssetId {
+  margin: 0;
+  color: #8b858d;
+  font-size: 9px;
+  font-family: "SFMono-Regular", Consolas, monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .refRowMeta {
   color: #908a92;
   font-size: 10px;
   white-space: nowrap;
+}
+
+.refRowActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.refRoleSelect {
+  padding: 4px 6px;
+  border: 1px solid #d4cfc7;
+  border-radius: 6px;
+  background: #faf9f6;
+  color: #2c292f;
+  font-size: 11px;
+  max-width: 170px;
+}
+
+.refRoleSelect:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.refRemoveButton {
+  border: 1px solid #e0c8c8;
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: #9b3f46;
+  background: #fff7f7;
+  font-size: 10px;
+}
+
+.refRemoveButton:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.refActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.refMetaHint {
+  color: #847d87;
+  font-size: 11px;
+  line-height: 1.55;
 }
 
 .refRolesHelp {
@@ -357,12 +448,61 @@
 }
 
 .roleChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 4px 8px;
   border-radius: 5px;
   color: #6741bd;
   background: #eee6ff;
   font-size: 10px;
   font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.roleChip code {
+  font-family: inherit;
+  color: inherit;
+}
+
+.roleChipLabel {
+  color: #4b4650;
+  font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* ----------------------------- reference picker ------------------- */
+.pickerBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  background: rgba(28, 26, 32, 0.45);
+}
+
+.pickerPanel {
+  width: 100%;
+  max-width: 520px;
+  display: grid;
+  gap: 12px;
+  padding: 22px 24px 24px;
+  border-radius: 14px;
+  background: #faf9f6;
+  border: 1px solid #ddd6cb;
+  box-shadow: 0 24px 60px #29212e14;
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.pickerTitle {
+  margin: 0;
+  font: 500 16px Georgia, "Songti SC", serif;
 }
 
 /* ----------------------------- locked assets --------------------- */

@@ -16,7 +16,7 @@
 //   R-10 reset RPC reaches the frozen application service
 //         (status transitions READY → UNPREPARED)
 //   R-11 execute with explicit deps reaches the P2 frozen
-//         executePackagingGeneration (mock injection)
+//         executePackagingGeneration (mock authority override)
 //   R-12 canonical error code is preserved (no RPC_FAILED collapse)
 //   R-13 STALE execute preserves the STALE-specific issue envelope
 //         (per P3-A5.1)
@@ -413,9 +413,45 @@ test('R-07c prepare / execute / reset with unknown sessionId all fail closed', a
   await assert.rejects(
     () => ops.operations['packaging:set-truth-snapshot'](
       { host: 'node-web' },
-      { sessionId: 'no-such-session', truthSnapshot: {} },
+      { sessionId: 'no-such-session' },
     ),
     (err) => err.code === 'PACKAGING_WORKSPACE_UNKNOWN_SESSION',
+  );
+});
+
+test('R-07d set-truth-snapshot with a caller-supplied truthSnapshot is rejected with PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION (P3-B3 §11)', async () => {
+  const { ops } = makeBundle();
+  const created = await ops.operations['packaging:create-session'](
+    { host: 'node-web' },
+    { projectId: 'pkg-rpc-7d' },
+  );
+  await assert.rejects(
+    () => ops.operations['packaging:set-truth-snapshot'](
+      { host: 'node-web' },
+      { sessionId: created.sessionId, truthSnapshot: { lockedAssets: {} } },
+    ),
+    (err) => {
+      assert.equal(err.code, 'PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION');
+      return true;
+    },
+  );
+});
+
+test('R-07e set-truth-snapshot with a caller-supplied projectId is rejected with PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION (P3-B3 §12)', async () => {
+  const { ops } = makeBundle();
+  const created = await ops.operations['packaging:create-session'](
+    { host: 'node-web' },
+    { projectId: 'pkg-rpc-7e' },
+  );
+  await assert.rejects(
+    () => ops.operations['packaging:set-truth-snapshot'](
+      { host: 'node-web' },
+      { sessionId: created.sessionId, projectId: 'different-project' },
+    ),
+    (err) => {
+      assert.equal(err.code, 'PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION');
+      return true;
+    },
   );
 });
 

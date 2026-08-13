@@ -1479,7 +1479,7 @@ test('W-08 the runtime services factory instantiates the Packaging Workspace ser
   assert.match(
     rtSrc,
     /createPackagingWorkspaceService\(\)/,
-    'runtime-services.ts must call createPackagingWorkspaceService() without test-stub injection',
+    'runtime-services.ts must call createPackagingWorkspaceService() without test-stub authority override',
   );
 });
 
@@ -1525,4 +1525,483 @@ test('W-10 the Web feature does not embed a demo seed of Locked Assets in the pr
       `${file} must not contain the B1 buildSeedTruthSnapshot helper (P3-B2 §20)`,
     );
   }
+});
+
+// =============================================================================
+// Group X — P3-B3 Reference & Truth Architecture Guards (additive)
+// =============================================================================
+//
+// P3-B3 = Reference Selection UI + Runtime Truth Projection. These
+// guards are additive to the P3-A7 A-L + P3-B2 W groups; they do NOT
+// modify any frozen P3-A production surface.
+//
+// The guards enforce:
+//   - canonical 6-role vocabulary imported from the frozen
+//     runtime-core barrel (NOT derived from view.references)
+//   - no local semantic role enum in the Web feature
+//   - no precedence / priority / sort-by-role logic in the Web
+//     feature
+//   - no Provider payload construction in the Web feature
+//   - no second asset resolver / no absolute filesystem path
+//   - Locked Asset UI is read-only (no edit / unlock / replace /
+//     delete / upload / save action)
+//   - the Web feature cannot inject an arbitrary truthSnapshot
+//     (P3-B3 §11 + §12)
+//   - truth refresh resolves the runtime-side authority
+//   - no second truth store
+//   - reference semantic updates use updateIntent RPC
+//   - P3-A frozen files unchanged
+//   - P2 frozen files unchanged
+
+test('X-01 the Web feature imports canonical roles from @masterpiece/runtime-core (the frozen P3-A authority)', () => {
+  // The Web feature must import PACKAGING_REFERENCE_ROLES
+  // from the P3-A frozen public barrel. It must NOT define
+  // a second role enum.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let foundImport = false;
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    if (/@masterpiece\/runtime-core/.test(src) && src.includes('PACKAGING_REFERENCE_ROLES')) {
+      foundImport = true;
+    }
+    // The Web feature must NOT define a local semantic role
+    // enum (P3-B3 §2).
+    for (const forbidden of [
+      'WORKSPACE_REFERENCE_ROLES',
+      'UI_REFERENCE_ROLES',
+      'PACKAGING_ROLE_ENUM',
+      'const REFERENCE_ROLES = [',
+      'enum ReferenceRole',
+      'type ReferenceRole =',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not define a second role enum (${forbidden})`,
+      );
+    }
+  }
+  assert.ok(
+    foundImport,
+    'Web feature must import PACKAGING_REFERENCE_ROLES from @masterpiece/runtime-core',
+  );
+});
+
+test('X-02 the Web feature does NOT derive the role vocabulary from view.references', () => {
+  // The role vocabulary is the frozen canonical 6 roles,
+  // not the current set of assigned references.
+  // view.references is the user's current assignments; the
+  // vocabulary is PACKAGING_REFERENCE_ROLES.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    // We allow reading `view.references` for display, but
+    // the role vocabulary must come from the canonical
+    // PACKAGING_REFERENCE_ROLES export.
+    if (src.includes('view.references')) {
+      // The component must not iterate view.references to
+      // derive a role vocabulary.
+      assert.equal(
+        /\.map\(\s*\(?\s*\w+\s*\)?\s*=>\s*[\w.]+\.role/.test(src),
+        false,
+        `${file} must not derive a role vocabulary from view.references (P3-B3 §2)`,
+      );
+    }
+  }
+});
+
+test('X-03 the Web feature does NOT implement Reference precedence / priority / sort-by-role', () => {
+  // P2 frozen reference-policy is the sole owner of
+  // precedence. The Web feature MUST NOT sort, rank, or
+  // reorder references by role / priority / winsOver.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'winsOver',
+      'precedence',
+      'priority',
+      'sortReferencesByRole',
+      'sortByRole',
+      'rankByRole',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not implement precedence / priority / sort-by-role (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('X-04 the Web feature does NOT construct a Provider payload', () => {
+  // P2 frozen provider-adapter is the sole owner of the
+  // Provider payload. The Web feature MUST NOT build a
+  // Provider payload.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'buildPackagingProviderPayload',
+      'buildProviderPayload',
+      'createProviderPayload',
+      'packaging-payload',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not construct a Provider payload (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('X-05 the Web feature does NOT expose an absolute filesystem path for asset selection', () => {
+  // The Web feature picks assets via the existing
+  // `window.masterpiece.projects.scanAssets(projectId)` RPC,
+  // which returns AssetItem with a safe `thumbnailDataUrl`
+  // and stable `id`. The Web feature MUST NOT use absolute
+  // filesystem paths for asset preview or selection.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'file://',
+      'C:\\\\',
+      '/Users/',
+      '/home/',
+      '\\\\\\\\',
+      'C:/',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not embed absolute filesystem path (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('X-06 the Locked Asset UI does NOT expose an edit / unlock / replace / delete / save action', () => {
+  // P3-B3 §13: the Locked Asset UI is strictly read-only.
+  // No edit / unlock / replace / delete / upload / save
+  // action is exposed.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    // Look for forbidden Locked Asset mutation verbs in
+    // the Locked Asset tile.
+    for (const forbidden of [
+      'unlockAsset',
+      'replaceAsset',
+      'deleteLockedAsset',
+      'editLockedAsset',
+      'saveLockedAsset',
+      'uploadLockedAsset',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not contain a Locked Asset mutation method (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('X-07 the Web feature does NOT send an arbitrary truthSnapshot to setTruthSnapshot (P3-B3 §11)', () => {
+  // The Web feature's setTruthSnapshot RPC client must only
+  // send { sessionId } (no truthSnapshot, no projectId).
+  // The createSession RPC DOES accept a truthSnapshot
+  // (creation-time input); that is the canonical P3-A
+  // contract. This guard only protects the setTruthSnapshot
+  // path.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    // Look for the setTruthSnapshot call. The argument
+    // object literal passed to it must NOT include a
+    // truthSnapshot key. We use a simpler regex here.
+    const callRe = /setTruthSnapshot\(\s*\{([^{}]*)\}\s*\)/gu;
+    const calls = src.match(callRe) || [];
+    for (const call of calls) {
+      assert.equal(
+        /truthSnapshot\s*:/.test(call),
+        false,
+        `${file} setTruthSnapshot call must not include truthSnapshot (${call})`,
+      );
+    }
+  }
+});
+
+test('X-08 the Web feature does NOT send a projectId to setTruthSnapshot (P3-B3 §12)', () => {
+  // The Web RPC client must not include a projectId in
+  // the setTruthSnapshot input. The session's projectId is
+  // the sole authority.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    // Look for `projectId:` assignments inside the
+    // setTruthSnapshot callsite. We allow `projectId: ''` in
+    // the createSession bootstrap form, but NOT in the
+    // setTruthSnapshot payload.
+    const re = /setTruthSnapshot\([^)]*\)/gmu;
+    const matches = src.match(re) || [];
+    for (const call of matches) {
+      assert.equal(
+        /projectId\s*:/.test(call),
+        false,
+        `${file} must not send a projectId in setTruthSnapshot (${call})`,
+      );
+    }
+  }
+});
+
+test('X-09 the Web feature uses the existing `projects.scanAssets` RPC for reference asset selection (no second asset resolver)', () => {
+  // P3-B3 §3: the Reference Picker reuses the existing
+  // project asset authority. The Web feature calls
+  // `window.masterpiece.projects.scanAssets(projectId)`.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let usesExisting = false;
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    if (src.includes('projects.scanAssets') || src.includes('projects\'.scanAssets')) {
+      usesExisting = true;
+    }
+  }
+  assert.ok(
+    usesExisting,
+    'Web feature must reuse projects.scanAssets for reference asset selection (P3-B3 §3)',
+  );
+});
+
+test('X-10 the Web feature refreshTruth request passes only sessionId (no caller-supplied truth payload)', () => {
+  // Look for the function that calls setTruthSnapshot in
+  // the Web service adapter. It must construct the input
+  // with only the sessionId.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let foundRefresh = false;
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    if (src.includes('setTruthSnapshot') || src.includes('refreshPackagingTruth')) {
+      foundRefresh = true;
+      // The refresh function must construct the input
+      // with only sessionId.
+      const re = /\{\s*sessionId\s*\}/u;
+      assert.match(
+        src,
+        re,
+        `${file} must construct the refresh input as { sessionId } only`,
+      );
+    }
+  }
+  assert.ok(
+    foundRefresh,
+    'Web feature must have a refresh helper that calls setTruthSnapshot',
+  );
+});
+
+test('X-11 the Web feature does NOT implement a second truth store (no second createPackagingWorkspaceService consumer)', () => {
+  // P3-B3 §10: the resolver is the runtime-side projection
+  // / resolution seam. The Web feature does NOT maintain
+  // its own truth store. We check that the Web feature does
+  // not import or call the Workspace service factory (this
+  // is also enforced by W-02; X-11 is a redundant
+  // additivity check).
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    assert.equal(
+      src.includes('createPackagingWorkspaceService'),
+      false,
+      `${file} must not instantiate createPackagingWorkspaceService (P3-B3 §10)`,
+    );
+  }
+});
+
+test('X-12 the Web feature submits reference updates via the updateIntent RPC channel', () => {
+  // P3-B3 §4: every semantic reference change must
+  // ultimately go through updateIntent. The Web feature
+  // uses `updatePackagingIntent` (the RPC client wrapper)
+  // or `ops.operations['packaging:update-intent']`
+  // (in tests).
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let found = false;
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    if (src.includes('updatePackagingIntent')) {
+      found = true;
+    }
+  }
+  assert.ok(
+    found,
+    'Web feature must submit reference updates via the updatePackagingIntent RPC',
+  );
+});
+
+test('X-13 the Web feature has a presentation-only role label map (not a semantic second enum)', () => {
+  // P3-B3 §2: a presentation-only label map is allowed,
+  // but the semantic value MUST be the canonical role.
+  // We check that the label map exists (presentation) and
+  // is keyed by the canonical role strings.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  let foundMap = false;
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    if (src.includes('ROLE_PRESENTATION_LABELS') || src.includes('roleLabel')) {
+      foundMap = true;
+    }
+  }
+  assert.ok(
+    foundMap,
+    'Web feature should have a presentation-only role label map (ROLE_PRESENTATION_LABELS / roleLabel)',
+  );
+});
+
+test('X-14 the Web feature does NOT construct a second reference asset database or file resolver', () => {
+  // P3-B3 §3: no Packaging-only file picker backend, no
+  // second asset resolver, no second file database. The Web
+  // feature must not implement its own asset selection
+  // server.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'http.createServer',
+      'WebSocketServer',
+      'express',
+      'createServer(',
+      'fs.readdir',
+      'fs.readFile',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not contain a second asset resolver (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('X-15 the Web feature does NOT import P2 frozen internals (no deep-import of @masterpiece/image-generation-runtime)', () => {
+  // P3-B3 §20: the Web feature MUST NOT deep-import P2
+  // frozen internals. The application boundary is the
+  // public @masterpiece/runtime-core barrel.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    assert.equal(
+      src.includes('@masterpiece/image-generation-runtime'),
+      false,
+      `${file} must not deep-import @masterpiece/image-generation-runtime (P3-B3 §20)`,
+    );
+  }
+});
+
+test('X-16 the runtime operations layer rejects a caller-supplied truthSnapshot on set-truth-snapshot (P3-B3 §11)', () => {
+  // The operations layer is the authority boundary. The
+  // set-truth-snapshot channel MUST reject a caller-supplied
+  // truthSnapshot payload.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  assert.match(
+    opsSrc,
+    /PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION/,
+    'packaging-operations.js must define the truth-authority override forbidden code',
+  );
+  // The check for `truthSnapshot !== undefined` lives in
+  // the set-truth-snapshot handler.
+  const setHandler = opsSrc.match(/\[PACKAGING_OPERATION_IDS\.SET_TRUTH_SNAPSHOT\][\s\S]*?\},\s*\[PACKAGING_OPERATION_IDS\.PREPARE_GENERATION\]/u);
+  if (setHandler) {
+    assert.match(
+      setHandler[0],
+      /truthSnapshot\s*!==\s*undefined/u,
+      'set-truth-snapshot handler must reject caller-supplied truthSnapshot',
+    );
+    assert.match(
+      setHandler[0],
+      /projectId\s*!==\s*undefined/u,
+      'set-truth-snapshot handler must reject caller-supplied projectId (cross-project guard)',
+    );
+  }
+});
+
+test('X-17 the runtime operations layer never persists a second truth store (no own Locked Asset or truth DB)', () => {
+  // P3-B3 §10: no second truth store. The runtime
+  // operations layer is a thin bridge that delegates truth
+  // resolution to the runtime authority seam.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  for (const forbidden of [
+    'createLockedAssets',
+    'new LockedAsset',
+    'saveLockedAsset',
+    'compileLockedAssets',
+    'fs.writeFile',
+    'fs.readFile',
+    'prisma',
+    'knex',
+    'typeorm',
+    'drizzle',
+  ]) {
+    assert.equal(
+      opsSrc.includes(forbidden),
+      false,
+      `packaging-operations.js must not contain a second truth store (${forbidden})`,
+    );
+  }
+});
+
+test('X-18 the runtime operations layer delegates truth resolution to the resolveTruthSnapshot adapter (no hard-coded truth data)', () => {
+  // P3-B3 §9 + §11: the operations layer is the bridge;
+  // the truth data is resolved by the runtime side via the
+  // `resolveTruthSnapshot` adapter. The operations file
+  // must NOT hard-code any Locked Asset data.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // The `resolveTruthSnapshot` parameter MUST be invoked in
+  // both the create-session and set-truth-snapshot handlers.
+  assert.match(opsSrc, /resolveTruthSnapshot\(/u, 'operations layer must call resolveTruthSnapshot');
+});
+
+test('X-19 the runtime composition root passes the canonical truth resolver (no in-Web truth store)', () => {
+  // current-operation-graph.ts is the runtime composition
+  // root. It must construct a resolveTruthSnapshot that
+  // reads from the existing project + lockedAssets
+  // authority.
+  const graphSrc = readFile(path.join(ROOT, 'apps', 'web-runtime', 'src', 'current-operation-graph.ts'));
+  assert.match(
+    graphSrc,
+    /resolveTruthSnapshot\s*=/u,
+    'current-operation-graph.ts must define resolveTruthSnapshot',
+  );
+  assert.match(
+    graphSrc,
+    /lockedAssets\.list/u,
+    'resolveTruthSnapshot must read from the lockedAssets service',
+  );
+  assert.match(
+    graphSrc,
+    /projects\.get/u,
+    'resolveTruthSnapshot must read from the projects service',
+  );
+});
+
+test('X-20 the runtime operations layer routes executeGeneration deps through readSettings + readCredentials (no Web-supplied credential)', () => {
+  // P3-B3 §12: the Web caller may supply providerModelId
+  // and apiProfileId (safe identifiers). The apiKey /
+  // baseUrl / region are resolved on the runtime side via
+  // readSettings + readCredentials.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  assert.match(
+    opsSrc,
+    /buildExecutionDeps/u,
+    'operations layer must build execute deps on the runtime side',
+  );
+  assert.match(
+    opsSrc,
+    /readSettings\(\)/u,
+    'execute deps must call readSettings',
+  );
+  assert.match(
+    opsSrc,
+    /readCredentials\(apiProfileId\)/u,
+    'execute deps must call readCredentials(apiProfileId)',
+  );
 });

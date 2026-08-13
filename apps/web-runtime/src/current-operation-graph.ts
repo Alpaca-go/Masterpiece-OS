@@ -62,7 +62,7 @@ export function createCurrentBusinessOperations(
     packaging,
   } = services;
 
-  // P3-B2: resolve a canonical truth snapshot for a project
+  // P3-B3: resolve a canonical truth snapshot for a project
   // from the runtime-side authorities. The Web side never
   // fabricates Locked Assets; this resolver is the only place
   // the truth surface is constructed. When the project has
@@ -70,30 +70,81 @@ export function createCurrentBusinessOperations(
   // with empty canonical fields and a real `projectIdentity`
   // pulled from the project store. The view will then show
   // "未提供" for the empty fields (NOT a fake seed).
+  //
+  // P3-B3 truth mapping (LockedAsset.type → 7 canonical
+  // Packaging fields per P3-A freeze report §12.2):
+  //   brand_name                → brand.name
+  //   logo                      → logo.present + usageMode
+  //   product_category          → category.name
+  //   packaging_structure       → structure.formFactor
+  //   packaging_artwork         → productIdentity.name
+  //   product_color             → productIdentity (color)
+  //   product_arrangement       → productIdentity (arrangement)
+  //   core_symbol               → mandatoryCopy.items
+  //   required_visual_element   → mandatoryCopy.items
+  //   forbidden_reference_content → confirmedComponents.items
   const resolveTruthSnapshot = async (projectId: string) => {
     const safeId = typeof projectId === 'string' ? projectId : '';
     if (!safeId) return null;
-    let project: { id?: string; projectName?: string } | null = null;
+    let project: { id?: string; projectName?: string; industry?: string } | null = null;
     try {
       project = await projects.get(safeId);
     } catch {
       project = null;
     }
+    // Best-effort Locked Asset list. If the project has no
+    // configured Locked Assets, the list is empty and the
+    // canonical fields stay empty (NOT a fake seed).
+    let lockedAssetRecords: Array<{ type?: string; name?: string; thumbnail?: string }> = [];
+    try {
+      lockedAssetRecords = await lockedAssets.list(safeId);
+    } catch {
+      lockedAssetRecords = [];
+    }
+    const findByType = (type: string) =>
+      lockedAssetRecords.find((record) => record && record.type === type);
+    const collectByTypes = (types: string[]) =>
+      lockedAssetRecords
+        .filter((record) => record && types.includes(record.type || ''))
+        .map((record) => record.name)
+        .filter((name): name is string => typeof name === 'string' && name.length > 0);
+
+    const brandRecord = findByType('brand_name');
+    const logoRecord = findByType('logo');
+    const categoryRecord = findByType('product_category');
+    const structureRecord = findByType('packaging_structure');
+    const artworkRecord = findByType('packaging_artwork');
+    const colorRecord = findByType('product_color');
+    const arrangementRecord = findByType('product_arrangement');
+    const productIdentityName =
+      artworkRecord?.name || colorRecord?.name || arrangementRecord?.name || '';
+    const productIdentityThumb =
+      artworkRecord?.thumbnail || colorRecord?.thumbnail || arrangementRecord?.thumbnail;
+    const mandatoryCopyItems = collectByTypes(['core_symbol', 'required_visual_element']);
+    const confirmedComponentsItems = collectByTypes(['forbidden_reference_content']);
+
     const projectIdentity = project
       ? { projectId: project.id || safeId, projectName: project.projectName || '' }
       : { projectId: safeId, projectName: '' };
     return {
       lockedAssets: {
-        brand: { name: '', locked: true },
-        logo: { present: false, usageMode: 'reserved', locked: true },
-        productIdentity: { name: '', locked: true },
-        category: { name: '', locked: true },
-        structure: { formFactor: '', locked: true },
-        mandatoryCopy: { items: [], locked: true },
-        confirmedComponents: { items: [], locked: true },
+        brand: { name: brandRecord?.name || '', locked: true },
+        logo: {
+          present: Boolean(logoRecord),
+          // P3-A frozen contract restricts `usageMode` to
+          // 'reserved' | 'rendered'. The P3-A default is
+          // 'reserved' when no upstream value is available.
+          usageMode: 'reserved',
+          locked: true,
+        },
+        productIdentity: { name: productIdentityName, locked: true },
+        category: { name: categoryRecord?.name || '', locked: true },
+        structure: { formFactor: structureRecord?.name || '', locked: true },
+        mandatoryCopy: { items: mandatoryCopyItems, locked: true },
+        confirmedComponents: { items: confirmedComponentsItems, locked: true },
       },
       analysisContext: {
-        detectedIndustry: '',
+        detectedIndustry: project?.industry || '',
         detectedProjectName: project?.projectName || '',
         confidence: 0,
       },

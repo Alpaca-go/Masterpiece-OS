@@ -1,37 +1,42 @@
-// P3-B2 — Packaging Workspace UI (RPC client).
+// P3-B3 — Packaging Workspace UI (Reference Selection + Truth Projection).
 //
-// P3-B2 changes from the B1 in-process shell:
-//   - The Workspace service is NO LONGER instantiated in the
-//     browser. All operations go through
-//     `window.masterpiece.packaging.*` RPC channels.
-//   - `createPackagingSession()` returns the initial
-//     `{ sessionId, view }` from the runtime side.
-//   - Prepare / Execute / Reset buttons are wired to the
-//     corresponding RPC channels. Their enabled / disabled
-//     state still comes from `view.readiness.*` (P3-A4 §5)
-//     and `view.isBusy` — the React component does NOT
-//     maintain a second rule table.
-//   - There is NO "fallback to local service" path. If the
-//     runtime is not available, the workspace renders a
-//     canonical "RPC unavailable" surface and refuses to
-//     proceed. This is required by P3-B2 §3 (no dual-path
-//     architecture).
-//   - Locked-Asset values come from the runtime-resolved
-//     truth snapshot (no fake seed in the Web feature).
+// P3-B3 changes from P3-B2:
+//   - The "02 Reference Assignments" tile now has a real
+//     picker: the user can add / remove / change-role on
+//     reference assignments. The picker reads the project's
+//     existing `AssetSummary` (via
+//     `window.masterpiece.projects.scanAssets(projectId)`)
+//     and reuses the safe asset identity (AssetItem.id) as
+//     the Packaging reference `assetId`.
+//   - The canonical 6 roles are imported from
+//     `@masterpiece/runtime-core` (the frozen P3-A authority
+//     via `application/packaging/index.js` re-export). The
+//     role vocabulary is NOT derived from `view.references`
+//     (which only carries the user's current assignments).
+//   - The "03 Locked Assets" tile now shows the REAL truth
+//     projection resolved on the runtime side from the
+//     upstream Locked-Assets-Service (no fake seed). Empty
+//     fields render as "未提供" (which is the same
+//     presentation the upstream "no Locked Asset configured"
+//     case produces).
+//   - The "重新解析真相面" button now calls
+//     `refreshPackagingTruth(sessionId)` which only sends
+//     the sessionId. The runtime re-resolves the truth
+//     surface from the canonical authority and rejects any
+//     cross-project truth authority override at the operations
+//     layer (P3-B3 §11/§12).
+//   - No precedence / priority / sort-by-role logic exists
+//     in the Web feature. The P2 frozen authority is the
+//     sole owner of reference precedence (per P3-A freeze
+//     report §11.2 / P3-B3 §5).
+//   - Locked Asset UI is strictly read-only. No edit /
+//     unlock / replace / delete / upload / save action is
+//     exposed (P3-B3 §13 + §14).
 //
-// Architectural guard rails honoured:
-//   - P3-A7 STOP-P3-A-09: no direct Provider network call.
-//   - P3-A7 B: no deep-import of
-//     `packages/image-generation-runtime/...`.
-//   - P3-A4: no second state machine / no parallel rule
-//     table in React.
-//   - P3-A4 hostile-input redaction: only the redacted view
-//     is read; raw error.message / path / payload never
-//     reach the DOM.
-//   - P3-A6: Locked Assets are read-only display only.
-//   - P3-A5.1: STALE is distinguishable from UNPREPARED via
-//     `view.readiness.isStale` + `view.staleReasons`.
-//   - P3-A3 §10.6: execute != implicit prepare + execute.
+// Capability projection (still): the buttons are enabled /
+// disabled exclusively from `view.readiness.*` and
+// `view.isBusy` (P3-A4 §5). React does NOT maintain a
+// second rule table.
 
 import { useCallback, useMemo, useState } from 'react';
 import {
@@ -39,6 +44,9 @@ import {
   PACKAGING_WORKSPACE_STATUS_LABELS,
 } from '@masterpiece/runtime-core';
 import type {
+  AssetItem,
+  AssetSummary,
+  PackagingWorkspaceLockedField,
   PackagingWorkspaceReference,
   PackagingWorkspaceView,
 } from '@masterpiece/runtime-core/application-contracts.ts';
@@ -48,8 +56,8 @@ import {
   getPackagingView,
   isPackagingRuntimeAvailable,
   preparePackagingGeneration,
+  refreshPackagingTruth,
   resetPackagingPreparation,
-  setPackagingTruthSnapshot,
   updatePackagingIntent,
   type PackagingClientSession,
 } from './service';
@@ -70,12 +78,28 @@ interface Props {
 type WorkspaceState =
   | { kind: 'unavailable'; reason: string }
   | { kind: 'bootstrap'; defaultProjectId: string; error: string | null; pending: boolean }
-  | { kind: 'ready'; sessionId: string; view: PackagingWorkspaceView; pending: boolean; error: string | null };
+  | { kind: 'ready'; sessionId: string; projectId: string; view: PackagingWorkspaceView; pending: boolean; error: string | null };
 
 const RPC_UNAVAILABLE_REASON =
   'window.masterpiece.packaging 命名空间未注册。' +
   'Packaging Workspace 依赖 Shared Runtime RPC 桥接。' +
   '请确认 Node Runtime Host 已启动并加载了 P3-B2 operations。';
+
+// P3-B3 §2: presentation-only label map. The semantic value
+// remains the canonical role from `PACKAGING_REFERENCE_ROLES`
+// (frozen P3-A authority). This map is display-only.
+const ROLE_PRESENTATION_LABELS: Record<string, string> = Object.freeze({
+  high_fidelity_visual_reference: '高保真视觉参考',
+  structure_reference: '结构参考',
+  material_reference: '材料参考',
+  composition_reference: '构图参考',
+  style_reference: '风格参考',
+  product_identity_reference: '产品身份参考',
+});
+
+function roleLabel(role: string): string {
+  return ROLE_PRESENTATION_LABELS[role] || role;
+}
 
 export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
   const runtimeAvailable = useMemo(() => isPackagingRuntimeAvailable(), []);
@@ -92,13 +116,6 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
     };
   });
 
-  const refreshView = useCallback(async (sessionId: string) => {
-    const view = await getPackagingView(sessionId);
-    setState((current) => (current.kind === 'ready' && current.sessionId === sessionId
-      ? { ...current, view }
-      : current));
-  }, []);
-
   const handleCreateSession = useCallback(async (projectId: string) => {
     setState((current) => current.kind === 'bootstrap' ? { ...current, pending: true, error: null } : current);
     try {
@@ -106,6 +123,7 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
       setState({
         kind: 'ready',
         sessionId: result.sessionId,
+        projectId: result.view.projectId || projectId,
         view: result.view,
         pending: false,
         error: null,
@@ -117,6 +135,17 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
         : current);
     }
   }, []);
+
+  const handleRefreshView = useCallback(async () => {
+    if (state.kind !== 'ready') return;
+    try {
+      const view = await getPackagingView(state.sessionId);
+      setState((current) => current.kind === 'ready' ? { ...current, view } : current);
+    } catch {
+      // Refresh errors are non-blocking; the next mutation
+      // will surface a real error.
+    }
+  }, [state]);
 
   const handlePrepare = useCallback(async () => {
     if (state.kind !== 'ready' || state.pending) return;
@@ -154,15 +183,29 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
     }
   }, [state]);
 
-  const handleRefresh = useCallback(async () => {
-    if (state.kind !== 'ready') return;
+  const handlePatchIntent = useCallback(async (patch: Record<string, unknown>) => {
+    if (state.kind !== 'ready' || state.pending) return;
+    setState({ ...state, pending: true, error: null });
     try {
-      await refreshView(state.sessionId);
-    } catch {
-      // Refresh errors are non-blocking; the next mutation
-      // will surface a real error.
+      const view = await updatePackagingIntent(state.sessionId, patch);
+      setState({ ...state, view, pending: false });
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setState({ ...state, pending: false, error: message });
     }
-  }, [state, refreshView]);
+  }, [state]);
+
+  const handleRefreshTruth = useCallback(async () => {
+    if (state.kind !== 'ready' || state.pending) return;
+    setState({ ...state, pending: true, error: null });
+    try {
+      const view = await refreshPackagingTruth(state.sessionId);
+      setState({ ...state, view, pending: false });
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setState({ ...state, pending: false, error: message });
+    }
+  }, [state]);
 
   if (state.kind === 'unavailable') {
     return <UnavailableSurface reason={state.reason} onBack={onBack} />;
@@ -181,21 +224,16 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
   return (
     <ReadySurface
       sessionId={state.sessionId}
+      projectId={state.projectId}
       view={state.view}
       pending={state.pending}
       transientError={state.error}
       onPrepare={handlePrepare}
       onExecute={handleExecute}
       onReset={handleReset}
-      onRefresh={handleRefresh}
-      onUpdateIntent={async (patch) => {
-        const view = await updatePackagingIntent(state.sessionId, patch);
-        setState((current) => current.kind === 'ready' ? { ...current, view } : current);
-      }}
-      onSetTruthSnapshot={async (truthSnapshot) => {
-        const view = await setPackagingTruthSnapshot(state.sessionId, truthSnapshot);
-        setState((current) => current.kind === 'ready' ? { ...current, view } : current);
-      }}
+      onRefreshView={handleRefreshView}
+      onPatchIntent={handlePatchIntent}
+      onRefreshTruth={handleRefreshTruth}
       onBack={onBack}
     />
   );
@@ -221,7 +259,7 @@ function UnavailableSurface({ reason, onBack }: { reason: string; onBack: () => 
         <section className={styles.bootstrapPanel}>
           <h2 className={styles.bootstrapTitle}>Shared Runtime RPC 不可用</h2>
           <p className={styles.bootstrapBody}>
-            P3-B2 将 Packaging Workspace 完全迁移到了 Shared Runtime RPC。Web
+            P3-B2/B3 将 Packaging Workspace 完全迁移到了 Shared Runtime RPC。Web
             端不再本地实例化 Workspace service。
           </p>
           <p className={styles.bootstrapBody}>{reason}</p>
@@ -299,31 +337,24 @@ function BootstrapSurface({
 
 interface ReadySurfaceProps {
   sessionId: string;
+  projectId: string;
   view: PackagingWorkspaceView;
   pending: boolean;
   transientError: string | null;
   onPrepare: () => void;
   onExecute: () => void;
   onReset: () => void;
-  onRefresh: () => void;
-  onUpdateIntent: (patch: Record<string, unknown>) => Promise<void>;
-  onSetTruthSnapshot: (truthSnapshot: Record<string, unknown>) => Promise<void>;
+  onRefreshView: () => void;
+  onPatchIntent: (patch: Record<string, unknown>) => Promise<void>;
+  onRefreshTruth: () => void;
   onBack: () => void;
 }
 
-function ReadySurface({
-  sessionId,
-  view,
-  pending,
-  transientError,
-  onPrepare,
-  onExecute,
-  onReset,
-  onRefresh,
-  onUpdateIntent,
-  onSetTruthSnapshot,
-  onBack,
-}: ReadySurfaceProps) {
+function ReadySurface(props: ReadySurfaceProps) {
+  const {
+    sessionId, projectId, view, pending, transientError,
+    onPrepare, onExecute, onReset, onRefreshView, onPatchIntent, onRefreshTruth, onBack,
+  } = props;
   return (
     <div className={styles.shell}>
       <header className={styles.topNav}>
@@ -332,6 +363,7 @@ function ReadySurface({
           <h1 className={styles.title}>包装生成工作台</h1>
           <p className={styles.subtitle}>
             基于已完成的视觉分析，使用 Workspace Architecture 推导并生成包装效果图。
+            参考图与锁定资产均来自项目既有事实面（runtime 侧解析）。
           </p>
         </div>
         <div className={styles.topNavRight}>
@@ -347,13 +379,18 @@ function ReadySurface({
         onPrepare={onPrepare}
         onExecute={onExecute}
         onReset={onReset}
-        onRefresh={onRefresh}
+        onRefreshView={onRefreshView}
       />
 
       <main className={styles.tiles}>
-        <GenerationIntentTile view={view} onPatchIntent={onUpdateIntent} />
-        <ReferenceAssignmentsTile view={view} />
-        <LockedAssetsTile view={view} onRefreshTruth={() => onSetTruthSnapshot({})} />
+        <GenerationIntentTile view={view} onPatchIntent={onPatchIntent} />
+        <ReferenceAssignmentsTile
+          view={view}
+          projectId={projectId}
+          pending={pending}
+          onPatchIntent={onPatchIntent}
+        />
+        <LockedAssetsTile view={view} onRefreshTruth={onRefreshTruth} />
         <ReadinessStaleTile view={view} transientError={transientError} />
         <LastExecutionTile view={view} />
         <ErrorSurfaceTile view={view} />
@@ -361,8 +398,8 @@ function ReadySurface({
 
       <footer className={styles.footer}>
         <small>
-          P3-B2: Workspace 会话由 Shared Runtime 持有。Web 端只消费 RPC + View Model。
-          本地不再持有 createPackagingWorkspaceService 实例。
+          P3-B3: 参考图与锁定资产均来自 runtime 端既有事实面（Locked-Assets-Service
+          + project store + analysis context）。Web 不再构造 second authority。
         </small>
       </footer>
     </div>
@@ -379,14 +416,14 @@ function ActionToolbar({
   onPrepare,
   onExecute,
   onReset,
-  onRefresh,
+  onRefreshView,
 }: {
   view: PackagingWorkspaceView;
   pending: boolean;
   onPrepare: () => void;
   onExecute: () => void;
   onReset: () => void;
-  onRefresh: () => void;
+  onRefreshView: () => void;
 }) {
   // Capability projection comes from the frozen view
   // model. React MUST NOT re-derive a rule table.
@@ -424,7 +461,7 @@ function ActionToolbar({
         </button>
         <button
           className={styles.refreshButton}
-          onClick={onRefresh}
+          onClick={onRefreshView}
           disabled={isBusy}
         >
           刷新视图
@@ -566,11 +603,80 @@ function IntentPatchForm({
 }
 
 // ---------------------------------------------------------------------------
-// 02 — Reference Assignments (consume view.references only)
+// 02 — Reference Assignments (P3-B3 real picker)
 // ---------------------------------------------------------------------------
 
-function ReferenceAssignmentsTile({ view }: { view: PackagingWorkspaceView }) {
+interface ReferenceAssignmentsTileProps {
+  view: PackagingWorkspaceView;
+  projectId: string;
+  pending: boolean;
+  onPatchIntent: (patch: Record<string, unknown>) => Promise<void>;
+}
+
+function ReferenceAssignmentsTile(props: ReferenceAssignmentsTileProps) {
+  const { view, projectId, pending, onPatchIntent } = props;
   const refs = view.references ?? [];
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [assetSummary, setAssetSummary] = useState<AssetSummary | null>(null);
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [summaryError, setSummaryError] = useState<string | null>(null);
+
+  const openPicker = useCallback(async () => {
+    if (!projectId) return;
+    setPickerOpen(true);
+    if (assetSummary && assetSummary.items.length > 0) return;
+    setLoadingSummary(true);
+    setSummaryError(null);
+    try {
+      if (!window.masterpiece?.projects?.scanAssets) {
+        throw new Error('PACKAGING_RPC_UNAVAILABLE: projects.scanAssets is not available');
+      }
+      const summary = await window.masterpiece.projects.scanAssets(projectId);
+      setAssetSummary(summary);
+    } catch (reason) {
+      const message = reason instanceof Error ? reason.message : String(reason);
+      setSummaryError(message);
+    } finally {
+      setLoadingSummary(false);
+    }
+  }, [assetSummary, projectId]);
+
+  const closePicker = useCallback(() => {
+    setPickerOpen(false);
+  }, []);
+
+  const handleAddAssignment = useCallback(
+    async (asset: AssetItem, role: string) => {
+      const normalized: PackagingWorkspaceReference = {
+        assetId: asset.id,
+        role,
+        source: 'user',
+        displayName: asset.name,
+        previewUri: asset.thumbnailDataUrl || '',
+      };
+      const nextRefs = mergeAssignment(refs, normalized);
+      await onPatchIntent({ referenceAssignments: nextRefs });
+      setPickerOpen(false);
+    },
+    [refs, onPatchIntent]
+  );
+
+  const handleRemoveAssignment = useCallback(
+    async (assetId: string) => {
+      const nextRefs = refs.filter((ref) => ref.assetId !== assetId);
+      await onPatchIntent({ referenceAssignments: nextRefs });
+    },
+    [refs, onPatchIntent]
+  );
+
+  const handleChangeRole = useCallback(
+    async (assetId: string, newRole: string) => {
+      const nextRefs = refs.map((ref) => ref.assetId === assetId ? { ...ref, role: newRole } : ref);
+      await onPatchIntent({ referenceAssignments: nextRefs });
+    },
+    [refs, onPatchIntent]
+  );
+
   return (
     <section className={styles.tile}>
       <header className={styles.tileHeader}>
@@ -578,44 +684,215 @@ function ReferenceAssignmentsTile({ view }: { view: PackagingWorkspaceView }) {
         <div>
           <h2 className={styles.tileTitle}>参考图分配</h2>
           <p className={styles.tileSubtitle}>
-            Reference Assignments · view.references
-            （{refs.length} 项）
+            Reference Assignments · view.references（{refs.length} 项）· 来自
+            项目既有资产（runtime `projects.scanAssets`），不在 Web 端伪造
           </p>
         </div>
       </header>
       {refs.length > 0 ? (
         <ul className={styles.refList}>
-          {refs.map((ref: PackagingWorkspaceReference, index: number) => (
-            <li key={ref.assetId} className={styles.refRow}>
-              <div className={styles.refRowMain}>
-                <strong>{ref.displayName || ref.assetId}</strong>
-                <small className={styles.refRowRole}>
-                  {ref.role || '—'}
-                </small>
-              </div>
-              <small className={styles.refRowMeta}>
-                {ref.source || '—'} · #{index + 1}
-              </small>
-            </li>
+          {refs.map((ref) => (
+            <ReferenceRow
+              key={ref.assetId}
+              ref={ref}
+              disabled={pending || !view.canEditIntent}
+              onRemove={() => handleRemoveAssignment(ref.assetId)}
+              onChangeRole={(newRole) => handleChangeRole(ref.assetId, newRole)}
+            />
           ))}
         </ul>
       ) : (
-        <EmptyHint message="尚未分配参考图。canonical 角色：" />
+        <EmptyHint message="尚未分配参考图。在下方选择项目资产并赋予 canonical role。" />
       )}
+      <div className={styles.refActions}>
+        <button
+          className={styles.toolbarButton}
+          onClick={openPicker}
+          disabled={pending || !view.canEditIntent}
+        >
+          + 添加参考图
+        </button>
+        <span className={styles.refMetaHint}>
+          canonical 角色来自 P3-A frozen `PACKAGING_REFERENCE_ROLES`（6 项）
+        </span>
+      </div>
       <details className={styles.refRolesHelp}>
         <summary>canonical 角色（来自 P2 frozen reference-policy）</summary>
         <ul className={styles.roleList}>
-          {(PACKAGING_REFERENCE_ROLES as readonly string[]).map((role: string) => (
-            <li key={role} className={styles.roleChip}>{role}</li>
+          {(PACKAGING_REFERENCE_ROLES as readonly string[]).map((role) => (
+            <li key={role} className={styles.roleChip}>
+              <code>{role}</code>
+              <span className={styles.roleChipLabel}>{roleLabel(role)}</span>
+            </li>
           ))}
         </ul>
       </details>
+      {pickerOpen && (
+        <ReferencePicker
+          assetSummary={assetSummary}
+          loading={loadingSummary}
+          error={summaryError}
+          existingRefs={refs}
+          onCancel={closePicker}
+          onAdd={handleAddAssignment}
+        />
+      )}
     </section>
   );
 }
 
+function ReferenceRow({
+  ref,
+  disabled,
+  onRemove,
+  onChangeRole,
+}: {
+  ref: PackagingWorkspaceReference;
+  disabled: boolean;
+  onRemove: () => void;
+  onChangeRole: (role: string) => void;
+}) {
+  return (
+    <li className={styles.refRow}>
+      <div className={styles.refRowMain}>
+        {ref.previewUri ? (
+          <img
+            src={ref.previewUri}
+            alt=""
+            className={styles.refThumb}
+          />
+        ) : (
+          <div className={styles.refThumbPlaceholder} aria-hidden>无</div>
+        )}
+        <div className={styles.refRowText}>
+          <strong>{ref.displayName || ref.assetId}</strong>
+          <small className={styles.refRowRole}>{roleLabel(ref.role)}</small>
+          <code className={styles.refRowAssetId}>{ref.assetId}</code>
+        </div>
+      </div>
+      <div className={styles.refRowActions}>
+        <select
+          className={styles.refRoleSelect}
+          value={ref.role}
+          onChange={(event) => onChangeRole(event.target.value)}
+          disabled={disabled}
+        >
+          {(PACKAGING_REFERENCE_ROLES as readonly string[]).map((role) => (
+            <option key={role} value={role}>{roleLabel(role)}</option>
+          ))}
+        </select>
+        <button
+          className={styles.refRemoveButton}
+          onClick={onRemove}
+          disabled={disabled}
+          aria-label={`移除 ${ref.displayName || ref.assetId}`}
+        >
+          移除
+        </button>
+      </div>
+    </li>
+  );
+}
+
+function ReferencePicker({
+  assetSummary,
+  loading,
+  error,
+  existingRefs,
+  onCancel,
+  onAdd,
+}: {
+  assetSummary: AssetSummary | null;
+  loading: boolean;
+  error: string | null;
+  existingRefs: PackagingWorkspaceReference[];
+  onCancel: () => void;
+  onAdd: (asset: AssetItem, role: string) => void;
+}) {
+  const [selectedAssetId, setSelectedAssetId] = useState('');
+  const [selectedRole, setSelectedRole] = useState<string>(
+    (PACKAGING_REFERENCE_ROLES as readonly string[])[0] || ''
+  );
+  const existingIds = new Set(existingRefs.map((r) => r.assetId));
+  const candidates = (assetSummary?.items || []).filter(
+    (item) => !existingIds.has(item.id)
+  );
+  return (
+    <div className={styles.pickerBackdrop} role="dialog" aria-label="选择参考图">
+      <div className={styles.pickerPanel}>
+        <header className={styles.pickerHeader}>
+          <h3 className={styles.pickerTitle}>选择项目资产作为参考</h3>
+          <button className={styles.toolbarButton} onClick={onCancel}>取消</button>
+        </header>
+        {error && <p className={styles.bootstrapError}>{error}</p>}
+        {loading && <p className={styles.bootstrapHint}>正在读取项目资产…</p>}
+        {!loading && !error && candidates.length === 0 && (
+          <p className={styles.bootstrapHint}>
+            项目当前没有可用的资产（{assetSummary?.totalFiles ?? 0} 个文件）。
+            请先在项目页导入素材。
+          </p>
+        )}
+        {!loading && !error && candidates.length > 0 && (
+          <>
+            <label className={styles.bootstrapLabel}>
+              资产
+              <select
+                className={styles.bootstrapInput}
+                value={selectedAssetId}
+                onChange={(event) => setSelectedAssetId(event.target.value)}
+              >
+                <option value="">选择资产…</option>
+                {candidates.map((asset) => (
+                  <option key={asset.id} value={asset.id}>
+                    {asset.name}（{asset.id}）
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.bootstrapLabel}>
+              Canonical Role
+              <select
+                className={styles.bootstrapInput}
+                value={selectedRole}
+                onChange={(event) => setSelectedRole(event.target.value)}
+              >
+                {(PACKAGING_REFERENCE_ROLES as readonly string[]).map((role) => (
+                  <option key={role} value={role}>{roleLabel(role)}</option>
+                ))}
+              </select>
+            </label>
+            <div className={styles.bootstrapActions}>
+              <button
+                className={`${styles.toolbarButton} ${styles.toolbarButtonPrimary}`}
+                disabled={!selectedAssetId || !selectedRole}
+                onClick={() => {
+                  const asset = candidates.find((a) => a.id === selectedAssetId);
+                  if (asset) onAdd(asset, selectedRole);
+                }}
+              >
+                添加到参考图
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function mergeAssignment(
+  current: PackagingWorkspaceReference[],
+  next: PackagingWorkspaceReference
+): PackagingWorkspaceReference[] {
+  // Append if not present; otherwise leave the existing
+  // entry untouched (Web does NOT auto-reorder; the P2
+  // frozen authority is the sole owner of precedence).
+  if (current.some((r) => r.assetId === next.assetId)) return current;
+  return [...current, next];
+}
+
 // ---------------------------------------------------------------------------
-// 03 — Locked Assets (read-only, no authority mutation)
+// 03 — Locked Assets (P3-B3 real projection from runtime)
 // ---------------------------------------------------------------------------
 
 function LockedAssetsTile({
@@ -635,13 +912,14 @@ function LockedAssetsTile({
           <h2 className={styles.tileTitle}>锁定资产</h2>
           <p className={styles.tileSubtitle}>
             Locked Assets · view.lockedAssets（只读 · 来源：runtime
-            {allLocked ? ' · 全部已锁定' : ' · 存在可配置项'}）
+            Locked-Assets-Service + project store ·{' '}
+            {allLocked ? '全部已锁定' : '存在可配置项'}）
           </p>
         </div>
       </header>
       <ul className={styles.lockedList}>
         {LOCKED_FIELD_LABELS.map(({ key, label, render }) => {
-          const field = (fields as Record<string, unknown>)[key];
+          const field = (fields as Record<string, PackagingWorkspaceLockedField | undefined>)[key];
           return (
             <li key={key} className={styles.lockedRow}>
               <span className={styles.lockedLabel}>{label}</span>
@@ -655,12 +933,12 @@ function LockedAssetsTile({
       </ul>
       <p className={styles.lockedNote}>
         UI 不直接编辑锁定资产；变更请走既有项目 / Locked-Assets-Service 流程。
-        空值 = 真实 project 当前未提供该字段。
+        空值 = 真实 project 当前未提供该字段（NOT a fake seed）。
       </p>
       <button
         className={styles.toolbarButton}
         onClick={onRefreshTruth}
-        title="触发 RPC setTruthSnapshot({}) — 重新走 runtime 真相面解析"
+        title="触发 RPC refreshPackagingTruth(sessionId) — runtime 重新走 Locked-Assets-Service 解析"
       >
         重新解析真相面
       </button>
@@ -920,24 +1198,24 @@ void PACKAGING_WORKSPACE_STATUS_LABELS;
 interface LockedFieldDef {
   key: string;
   label: string;
-  render?: (value: unknown) => React.ReactNode;
+  render?: (value: PackagingWorkspaceLockedField | undefined) => React.ReactNode;
 }
 
 const LOCKED_FIELD_LABELS: LockedFieldDef[] = [
   {
     key: 'brand',
     label: '品牌',
-    render: (v) => readStringField(v, 'name') || <MutedEmpty />,
+    render: (v) => v?.name || <MutedEmpty />,
   },
   {
     key: 'logo',
     label: 'Logo',
     render: (v) => {
-      const present = readBoolField(v, 'present');
-      const usage = readStringField(v, 'usageMode');
+      const present = Boolean(v?.present);
+      const usage = v?.usageMode || 'reserved';
       return (
         <>
-          {present ? '已提供' : '未提供'} · 用法：{usage || 'reserved'}
+          {present ? '已提供' : '未提供'} · 用法：{usage}
         </>
       );
     },
@@ -945,47 +1223,35 @@ const LOCKED_FIELD_LABELS: LockedFieldDef[] = [
   {
     key: 'productIdentity',
     label: '产品身份',
-    render: (v) => readStringField(v, 'name') || <MutedEmpty />,
+    render: (v) => v?.name || <MutedEmpty />,
   },
   {
     key: 'category',
     label: '品类',
-    render: (v) => readStringField(v, 'name') || <MutedEmpty />,
+    render: (v) => v?.name || <MutedEmpty />,
   },
   {
     key: 'structure',
     label: '结构',
-    render: (v) => readStringField(v, 'formFactor') || <MutedEmpty />,
+    render: (v) => v?.formFactor || <MutedEmpty />,
   },
   {
     key: 'mandatoryCopy',
-    label: '必出文案',
-    render: (v) => readArrayField(v, 'items') || <MutedEmpty />,
+    label: '必出元素',
+    render: (v) => {
+      const items = Array.isArray(v?.items) ? v!.items : [];
+      return items.length > 0 ? `${items.length} 项` : <MutedEmpty />;
+    },
   },
   {
     key: 'confirmedComponents',
-    label: '已确认组件',
-    render: (v) => readArrayField(v, 'items') || <MutedEmpty />,
+    label: '已排除 / 已确认',
+    render: (v) => {
+      const items = Array.isArray(v?.items) ? v!.items : [];
+      return items.length > 0 ? `${items.length} 项` : <MutedEmpty />;
+    },
   },
 ];
-
-function readStringField(value: unknown, key: string): string {
-  if (!value || typeof value !== 'object') return '';
-  const v = (value as Record<string, unknown>)[key];
-  return typeof v === 'string' && v.trim() ? v : '';
-}
-
-function readBoolField(value: unknown, key: string): boolean {
-  if (!value || typeof value !== 'object') return false;
-  return Boolean((value as Record<string, unknown>)[key]);
-}
-
-function readArrayField(value: unknown, key: string): string {
-  if (!value || typeof value !== 'object') return '';
-  const v = (value as Record<string, unknown>)[key];
-  if (Array.isArray(v)) return v.length > 0 ? `${v.length} 项` : '';
-  return '';
-}
 
 function MutedEmpty() {
   return <em className={styles.lockedMuted}>未提供</em>;

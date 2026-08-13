@@ -1,12 +1,20 @@
-// P3-B2 — Packaging Workspace RPC client adapter.
+// P3-B2/B3 — Packaging Workspace RPC client adapter.
 //
 // This module is a thin RPC client that talks to the runtime-side
 // Packaging Workspace service via `window.masterpiece.packaging.*`.
 // It is the SOLE bridge between the Web UI and the frozen P3-A
 // Workspace application service (per P3-A freeze report §20/21).
 //
+// P3-B3 tightening: `setPackagingTruthSnapshot` is a refresh
+// request that takes ONLY the sessionId. The runtime resolves
+// the truth surface from the canonical authority
+// (Locked-Assets-Service + project store + analysis context).
+// The Web caller is NOT allowed to inject an arbitrary
+// truthSnapshot — that would be cross-project truth authority override.
+// See the P3-B3 contract (§11 + §12).
+//
 // Hard prohibitions (P3-A freeze report §20/21 + this file's
-// P3-B2 contract):
+// P3-B3 contract):
 //   - The Web UI does NOT call `createPackagingWorkspaceService`.
 //     The Workspace service lives on the runtime side and is
 //     owned by `runtime-core/src/application/runtime-services.ts`.
@@ -17,22 +25,15 @@
 //     executionResult / Provider payload / credential / absolute
 //     path. The RPC responses carry the frozen UI-safe view
 //     model only.
-//   - The Web UI does NOT read or write Locked Assets / truth
-//     snapshot authority directly. Locked Assets are populated
-//     by the runtime-side `Locked-Assets-Service` during
-//     `createSession` (truth surface is resolved on the
-//     runtime side; the Web side only sends the safe canonical
-//     truth snapshot projection if it has one).
-//   - The Web UI does NOT call `setTruthSnapshot` from a
-//     fabricated truth surface. Callers may refresh the
-//     snapshot, but the canonical truth authority is the
-//     runtime-side `project-store` + `Locked-Assets-Service`
-//     chain. The adapter does NOT auto-build a demo seed.
-//
-// P3-B1 stub removal: this file used to instantiate the
-// Workspace service in-process and inject throwing stubs for
-// `preparePackagingGeneration` / `executePackagingGeneration`.
-// Both are gone. P3-B2 production path is RPC-only.
+//   - The Web UI does NOT send an arbitrary `truthSnapshot` to
+//     `setPackagingTruthSnapshot`. The runtime resolves the
+//     truth from the upstream authority; the Web only requests
+//     a refresh of the session's bound project.
+//   - The Web UI does NOT bypass the canonical role vocabulary
+//     (PACKAGING_REFERENCE_ROLES) with a second role enum.
+//   - The Web UI does NOT implement Reference precedence /
+//     priority / winsOver. The P2 frozen authority is the
+//     sole owner.
 
 import type {
   PackagingWorkspaceView,
@@ -84,11 +85,11 @@ export interface PackagingClientSession {
  * not fabricate a truth seed.
  *
  * `input.truthSnapshot` is OPTIONAL. When supplied by the
- * caller, the runtime applies it via the canonical `setTruthSnapshot`
- * path (which goes through the P3-A fail-closed state machine).
- * When omitted, the runtime uses the canonical Locked-Assets
- * projection for the project — i.e. the same surface the
- * project page sees.
+ * caller, the runtime applies it via the canonical
+ * `setTruthSnapshot` path (which goes through the P3-A
+ * fail-closed state machine). When omitted, the runtime uses
+ * the canonical Locked-Assets projection for the project —
+ * i.e. the same surface the project page sees.
  */
 export async function createPackagingSession(
   input: PackagingCreateSessionInput
@@ -119,12 +120,19 @@ export async function updatePackagingIntent(
   return result.view;
 }
 
-export async function setPackagingTruthSnapshot(
-  sessionId: string,
-  truthSnapshot: Record<string, unknown>
+/**
+ * P3-B3 refresh request: the runtime re-resolves the truth
+ * surface from the canonical authority (Locked-Assets-Service
+ * + project store + analysis context) that owns the session's
+ * projectId. The Web caller MUST NOT supply a truthSnapshot
+ * payload — the runtime operations layer rejects it with
+ * `PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION`.
+ */
+export async function refreshPackagingTruth(
+  sessionId: string
 ): Promise<PackagingWorkspaceView> {
   const api = resolvePackagingApi();
-  const result = await api.setTruthSnapshot({ sessionId, truthSnapshot });
+  const result = await api.setTruthSnapshot({ sessionId });
   return result.view;
 }
 

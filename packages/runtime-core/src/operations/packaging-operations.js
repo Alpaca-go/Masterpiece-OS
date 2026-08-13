@@ -236,11 +236,49 @@ export function createPackagingOperations({
         throw err;
       }
       const sessionId = asString(input.sessionId);
-      getViewOrThrow(sessionId); // fail-closed: unknown session
-      service.setTruthSnapshot(
-        sessionId,
-        isPlainObject(input.truthSnapshot) ? input.truthSnapshot : {}
-      );
+      // P3-B3 tightened contract: the Web caller is NOT
+      // allowed to send a `truthSnapshot` payload. The
+      // canonical truth authority is on the runtime side;
+      // the Web only requests a refresh of the session's
+      // bound project. The runtime re-resolves the truth
+      // from the upstream authority and applies it via the
+      // frozen P3-A `service.setTruthSnapshot` API.
+      if (input.truthSnapshot !== undefined) {
+        const err = new Error(
+          'PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION: setTruthSnapshot does not accept a caller-supplied truthSnapshot; the runtime resolves truth from the canonical authority (P3-B3 §11).'
+        );
+        err.code = 'PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION';
+        throw err;
+      }
+      if (input.projectId !== undefined) {
+        // The Web caller MUST NOT specify a projectId that
+        // differs from the session's projectId — that would
+        // be cross-project truth authority override (P3-B3 §12).
+        const err = new Error(
+          'PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION: setTruthSnapshot does not accept a caller-supplied projectId; the session owns the projectId.'
+        );
+        err.code = 'PACKAGING_OPERATIONS_TRUTH_AUTHORITY_VIOLATION';
+        throw err;
+      }
+      // Fail-closed: unknown session.
+      const existingView = getViewOrThrow(sessionId);
+      const boundProjectId = asString(existingView.projectId);
+      if (!boundProjectId) {
+        const err = new Error('PACKAGING_OPERATIONS_TRUTH_REFRESH_REJECTED: session has no bound projectId');
+        err.code = 'PACKAGING_OPERATIONS_TRUTH_REFRESH_REJECTED';
+        throw err;
+      }
+      // Resolve the truth from the canonical authority.
+      // The resolver may return null if the project no
+      // longer exists; in that case the service rejects the
+      // update via the existing P3-A validation.
+      const resolvedTruth = await resolveTruthSnapshot(boundProjectId);
+      if (!isPlainObject(resolvedTruth)) {
+        const err = new Error('PACKAGING_OPERATIONS_TRUTH_REJECTED: truth resolver returned no truth for the bound projectId');
+        err.code = 'PACKAGING_OPERATIONS_TRUTH_REJECTED';
+        throw err;
+      }
+      service.setTruthSnapshot(sessionId, resolvedTruth);
       return Object.freeze({ view: service.getView(sessionId) });
     },
 

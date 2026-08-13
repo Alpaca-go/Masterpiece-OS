@@ -2274,8 +2274,15 @@ export interface PackagingUpdateIntentInput {
 }
 
 export interface PackagingSetTruthSnapshotInput {
+  /**
+   * Session id of the workspace. The runtime resolves the
+   * truth surface (Locked Assets + analysis context +
+   * project identity) from the canonical authorities that
+   * own the session's projectId. The Web caller is NOT
+   * allowed to supply a truthSnapshot directly — that would
+   * be cross-project truth authority override.
+   */
   sessionId: string;
-  truthSnapshot: Record<string, unknown>;
 }
 
 export interface PackagingSessionMutationResult {
