@@ -74,8 +74,27 @@ export function redactUrl(rawUrl) {
         u.searchParams.set(key, '[REDACTED]');
       }
     }
-    // 短期可复用链接一律不保留 query，只留 host+pathname
-    return `${u.origin}${u.pathname}`;
+    // 短期可复用链接一律不保留 query，只留 host+pathname。
+    // 注意：当原 URL 在 host 后没有显式给出 path（即典型的
+    // `https://host` base URL 形态，常见于 Wan / OpenAI 等
+    // SDK 的 baseURL），`u.pathname` 会被 WHATWG URL 解析器
+    // 规范化为 `'/'`。我们在 audit 里必须镜像调用方实际发出
+    // 的请求形态，否则会把 `https://dashscope.aliyuncs.com`
+    // 改写成 `https://dashscope.aliyuncs.com/`，让 audit 与
+    // 真实 baseURL 不一致。因此从 rawUrl 自身分离 origin 与
+    // 显式 path —— origin 用 `u.origin`（含 userinfo / port
+    // 仍可见，属于独立的 userinfo cleanup 问题，不在本次
+    // Security Closure 范围），path 段用 rawUrl 在 host 之后
+    // 的显式部分（不含 query / hash）。
+    const afterScheme = rawUrl.slice(rawUrl.indexOf('://') + 3);
+    const firstSlash = afterScheme.indexOf('/');
+    if (firstSlash === -1) {
+      return u.origin;
+    }
+    const afterHost = afterScheme.slice(firstSlash);
+    const queryOrHash = afterHost.search(/[?#]/);
+    const pathPart = queryOrHash === -1 ? afterHost : afterHost.slice(0, queryOrHash);
+    return `${u.origin}${pathPart}`;
   } catch {
     return '[REDACTED_URL]';
   }
@@ -244,6 +263,9 @@ export function redactProviderRequest(input = {}) {
   const rawAuditUrl = typeof url === 'string' && url
     ? url
     : (typeof endpoint === 'string' && endpoint ? endpoint : undefined);
+  const sanitizedAuditUrl = typeof rawAuditUrl === 'string' && rawAuditUrl
+    ? redactUrl(rawAuditUrl)
+    : undefined;
   return {
     protocol,
     method,
@@ -251,16 +273,20 @@ export function redactProviderRequest(input = {}) {
     // query params are stripped, only `host + pathname` is
     // kept. `undefined` when the caller did not surface a
     // URL.
-    url: typeof rawAuditUrl === 'string' && rawAuditUrl ? redactUrl(rawAuditUrl) : undefined,
+    url: sanitizedAuditUrl,
     bodyKind,
     modelId,
     region,
     headers: redactAuthHeaders(headers),
     body: safeBody,
     authorization: '[REDACTED]',
-    // Legacy: the `endpoint` field is preserved for callers
-    // that still read it. New code (P2-G) MUST read `url`.
-    ...(typeof endpoint === 'string' && endpoint ? { endpoint } : {}),
+    // P2-G Final Security Closure item 1: the legacy
+    // `endpoint` field is also sanitized. A caller that
+    // passes a signed-URL `endpoint` no longer sees the
+    // raw credential query on the audit surface; new code
+    // (P2-G) MUST read `url`, and legacy readers of
+    // `endpoint` get the same sanitized value.
+    ...(sanitizedAuditUrl !== undefined ? { endpoint: sanitizedAuditUrl } : {}),
   };
 }
 

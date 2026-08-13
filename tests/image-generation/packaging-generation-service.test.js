@@ -1462,3 +1462,218 @@ test('P2-G-F#3-H `..` traversal in relativePath rejected -> ARTIFACT_LIFECYCLE_R
     (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
   );
 });
+
+// ===========================================================================
+// P2-G Final Security Closure tests A-E
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// P2-G-FSC-A: legacy `endpoint` with signed-URL query is sanitized
+// identically to `url`. Both fields surface the same
+// `redactUrl`-processed value.
+// ---------------------------------------------------------------------------
+
+test('P2-G-FSC-A legacy endpoint signed query is sanitized (item 1)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    compileRequest: () => ({
+      method: 'POST',
+      // Legacy callers pass the audit URL as `endpoint`,
+      // not `url`. The audit MUST NOT carry the raw
+      // credential query in either field.
+      endpoint: 'https://example.com/x?Signature=secret&token=abc',
+      url: 'https://example.com/x?Signature=secret&token=abc',
+      headers: { Authorization: 'Bearer SECRET' },
+      bodyKind: 'json',
+      body: { model: 'm' },
+    }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  const auditText = JSON.stringify(result.diagnostics.redactedRequest);
+  // Neither `audit.url` nor `audit.endpoint` carries the
+  // raw credential query.
+  assert.ok(!auditText.includes('Signature='),
+    'audit url must not carry signed-URL credential params');
+  assert.ok(!auditText.includes('token=abc'),
+    'audit url must not carry the token= literal');
+  assert.ok(!auditText.includes('secret'),
+    'audit must not carry the signed-URL secret literal');
+  // The sanitized URL is the only URL on the audit surface.
+  assert.ok(auditText.includes('https://example.com/x'),
+    'audit carries the sanitized URL host + pathname');
+  // `audit.url` and `audit.endpoint` are the same sanitized
+  // value.
+  assert.equal(result.diagnostics.redactedRequest.url,
+    result.diagnostics.redactedRequest.endpoint,
+    'legacy endpoint and new url must agree on the sanitized value');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-FSC-B: readReference throws an ENOENT-style error that
+// includes an absolute filesystem path. The public
+// REFERENCE_ASSET_UNRESOLVED message MUST NOT carry the
+// absolute path.
+// ---------------------------------------------------------------------------
+
+test('P2-G-FSC-B readReference ENOENT-style error -> public message has no absolute path (item 2)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true, required: true,
+      references: [{ assetId: 'asset-style', role: 'style_reference', source: 'user' }],
+    },
+  }));
+  const deps = makeFakeDeps({
+    readReference: async () => {
+      throw Object.assign(new Error('ENOENT: no such file or directory, open \'C:\\Users\\alice\\secret.png\''), {
+        code: 'ENOENT',
+      });
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      assert.equal(err.code, REFERENCE_ASSET_UNRESOLVED);
+      // The public message is the canonical generic text;
+      // the absolute path MUST NOT appear.
+      assert.ok(!err.message.includes('C:\\Users\\alice\\secret.png'),
+        'public err.message must not carry the raw filesystem path');
+      assert.ok(!err.message.includes('ENOENT'),
+        'public err.message must not carry the raw ENOENT fragment');
+      // The canonical generic text is present.
+      assert.ok(err.message.includes('Packaging reference asset could not be resolved.'),
+        'public err.message carries the canonical generic text');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-FSC-C: REFERENCE_ASSET_UNRESOLVED err.cause is a
+// sanitized snapshot; no `message` field, no raw filesystem
+// path. assetId is preserved for the audit trail.
+// ---------------------------------------------------------------------------
+
+test('P2-G-FSC-C REFERENCE_ASSET_UNRESOLVED err.cause is a sanitized snapshot (item 2)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true, required: true,
+      references: [{ assetId: 'asset-style', role: 'style_reference', source: 'user' }],
+    },
+  }));
+  const deps = makeFakeDeps({
+    readReference: async () => {
+      throw Object.assign(new Error('ENOENT: C:\\Users\\alice\\secret.png not found'), {
+        code: 'ENOENT',
+      });
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      const causeText = JSON.stringify(err.cause);
+      // err.cause is a sanitized snapshot; no `message`
+      // field; no raw filesystem path.
+      assert.equal(err.cause.message, undefined,
+        'err.cause must not carry a `message` field');
+      assert.ok(!causeText.includes('C:\\Users\\alice\\secret.png'),
+        'err.cause must not carry the raw filesystem path');
+      // The cause code is the only diagnostic. The raw
+      // ENOENT fragment is the message text; we assert
+      // it does not appear anywhere on the err surface.
+      assert.equal(err.cause.code, 'ENOENT');
+      // assetId is preserved for the audit trail.
+      assert.equal(err.cause.assetId, 'asset-style');
+      // JSON serialization of the error contains no
+      // filesystem path or raw error.message.
+      const serialized = JSON.stringify(err);
+      assert.ok(!serialized.includes('C:\\Users\\alice\\secret.png'),
+        'serialized error must not carry the raw filesystem path');
+      assert.ok(!serialized.includes('not found'),
+        'serialized error must not carry the raw error.message text');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-FSC-D: absolute lifecycle path rejection -> error
+// serialization has no raw path on the public surface.
+// ---------------------------------------------------------------------------
+
+test('P2-G-FSC-D absolute lifecycle path rejection -> error serialization has no raw path (item 3)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+      // Absolute POSIX path carrying an absolute filesystem
+      // path; the public error message MUST NOT echo it.
+      relativePath: '/var/lib/masterpiece/runs/r-001/image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      assert.equal(err.code, ARTIFACT_LIFECYCLE_REQUIRED);
+      // The public message is the canonical generic text;
+      // the absolute path MUST NOT appear.
+      assert.ok(!err.message.includes('/var/lib/masterpiece'),
+        'public err.message must not carry the absolute path');
+      assert.ok(!err.message.includes('/image-01.png'),
+        'public err.message must not carry the file name');
+      // The canonical generic text is present.
+      assert.ok(err.message.includes('unsafe relative path'),
+        'public err.message carries the canonical generic text');
+      // The issues flag records the failure category.
+      assert.ok(Array.isArray(err.issues));
+      assert.ok(err.issues.includes('relative_path_unsafe'),
+        'issues flag records the failure category');
+      // No absolute path on any error surface.
+      const serialized = JSON.stringify(err);
+      assert.ok(!serialized.includes('/var/lib/masterpiece'),
+        'serialized error must not carry the absolute path');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-FSC-E: `..` traversal rejection -> same canonical
+// code, same canonical generic text, no raw path on the
+// public surface.
+// ---------------------------------------------------------------------------
+
+test('P2-G-FSC-E `..` traversal rejection -> same canonical code (item 3)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+      relativePath: '../../etc/passwd',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      assert.equal(err.code, ARTIFACT_LIFECYCLE_REQUIRED);
+      // The public message is the canonical generic text.
+      assert.ok(err.message.includes('unsafe relative path'));
+      // The `..` fragment is NOT echoed.
+      assert.ok(!err.message.includes('../'),
+        'public err.message must not echo the `..` fragment');
+      assert.ok(!err.message.includes('etc/passwd'),
+        'public err.message must not echo the traversal target');
+      // The issues flag is present.
+      assert.ok(err.issues.includes('relative_path_unsafe'),
+        'issues flag records the failure category');
+      // No raw path on any error surface.
+      const serialized = JSON.stringify(err);
+      assert.ok(!serialized.includes('../../etc/passwd'),
+        'serialized error must not carry the raw traversal path');
+      return true;
+    },
+  );
+});

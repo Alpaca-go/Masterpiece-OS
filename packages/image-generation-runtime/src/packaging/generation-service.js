@@ -543,10 +543,25 @@ async function resolveProductionArtifactLifecycle({ resolvedDeps, runId, metadat
   if (!relativePath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle relativePath is required');
   if (!thumbnailRelativePath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailRelativePath is required');
   if (!isRelativePathSafe(relativePath)) {
-    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, `artifact lifecycle relativePath is not a safe relative path: ${relativePath}`);
+    // P2-G Final Security Closure item 3: the public
+    // message MUST NOT echo the offending path. The raw
+    // path may carry absolute local paths, drive letters,
+    // Windows-style absolute roots, or `..` traversal
+    // fragments; none of those belong on the public
+    // error surface. The `issues` flag records the
+    // failure category without leaking shape.
+    throw newError(
+      ARTIFACT_LIFECYCLE_REQUIRED,
+      'artifact lifecycle returned an unsafe relative path.',
+      { issues: ['relative_path_unsafe'] },
+    );
   }
   if (!isRelativePathSafe(thumbnailRelativePath)) {
-    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, `artifact lifecycle thumbnailRelativePath is not a safe relative path: ${thumbnailRelativePath}`);
+    throw newError(
+      ARTIFACT_LIFECYCLE_REQUIRED,
+      'artifact lifecycle returned an unsafe relative path.',
+      { issues: ['relative_path_unsafe'] },
+    );
   }
   return Object.freeze({
     runRoot,
@@ -758,18 +773,53 @@ export async function executePackagingGeneration(prepared, deps = null) {
       resolved = await resolvedDeps.readReference(reference);
     } catch (error) {
       if (asStringTrim(error?.code) === REFERENCE_ASSET_UNRESOLVED) {
-        throw error;
+        // P2-G Final Security Closure item 2: a downstream
+        // `REFERENCE_ASSET_UNRESOLVED` is a sanitized
+        // snapshot (no raw Error attached). We re-throw
+        // verbatim; production callers are expected to
+        // surface sanitized errors. Defense in depth: if the
+        // error carries a `message`, we drop it from the
+        // public surface.
+        throw newError(
+          REFERENCE_ASSET_UNRESOLVED,
+          'Packaging reference asset could not be resolved.',
+          {
+            issues: ['reference_unresolved'],
+            cause: { code: asStringTrim(error?.code, REFERENCE_ASSET_UNRESOLVED) },
+          },
+        );
       }
+      // P2-G Final Security Closure item 2: the public
+      // message is the canonical generic text; the raw
+      // `error.message` (which may carry an absolute path,
+      // an ENOENT fragment, or any other secret-bearing
+      // text) MUST NOT enter the public surface. The cause
+      // is a sanitized snapshot; the assetId is preserved
+      // for the audit trail; an `issues` flag marks the
+      // failure category.
       throw newError(
         REFERENCE_ASSET_UNRESOLVED,
-        `reference ${reference.assetId || 'unknown'} could not be resolved: ${asStringTrim(error?.message, 'unknown')}`,
-        { cause: error },
+        'Packaging reference asset could not be resolved.',
+        {
+          issues: ['reference_unresolved'],
+          cause: {
+            code: asStringTrim(error?.code, REFERENCE_ASSET_UNRESOLVED),
+            assetId: asStringTrim(reference.assetId) || null,
+          },
+        },
       );
     }
     if (!isPlainObject(resolved) || !asStringTrim(resolved.mimeType) || !asStringTrim(resolved.data)) {
       throw newError(
         REFERENCE_ASSET_UNRESOLVED,
-        `reference ${reference.assetId || 'unknown'} returned an invalid shape`,
+        'Packaging reference asset could not be resolved.',
+        {
+          issues: ['reference_invalid_shape'],
+          cause: {
+            code: REFERENCE_ASSET_UNRESOLVED,
+            assetId: asStringTrim(reference.assetId) || null,
+          },
+        },
       );
     }
     adapterReferences.push({
