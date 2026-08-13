@@ -57,8 +57,14 @@ export const GENERATION_PROVIDER_FAILED = 'GENERATION_PROVIDER_FAILED';
 
 // Sentinel: the Model Registry currently does not declare a
 // maxReferenceImages for any registered model, so the production
-// resolver reports null (unbounded). The synthetic evaluator
-// accepts an explicit value for tests.
+// resolver reports null (unbounded) via the explicit projection
+// in resolvePackagingProviderCapability. The synthetic evaluator
+// accepts an explicit value for tests. P2-F Finalization Delta
+// item 9: this is an EXPLICIT projection (registered.maxReference
+// Images ?? NO_REFERENCE_COUNT_LIMIT), NOT an "auto picked up"
+// behaviour — adding the field to a future Registry entry will
+// be picked up because the projection is explicit, not because
+// of a magic auto-bind.
 export const NO_REFERENCE_COUNT_LIMIT = null;
 
 const PACKAGING_CAPABILITY = 'packaging';
@@ -264,16 +270,20 @@ export function resolvePackagingProviderCapability(input = {}) {
     };
   }
 
-  // Build the profile from the Registry. The Registry currently
-  // does not declare a maxReferenceImages for any model; when
-  // such a field is added, the resolver should read it here.
-  // Until then the production resolver reports unbounded
-  // (NO_REFERENCE_COUNT_LIMIT).
+  // Build the profile from the Registry. maxReferenceImages is
+  // an EXPLICIT projection of the Registry field — it is NOT
+  // "auto picked up" (P2-F Finalization Delta item 9). The
+  // resolver deliberately reads `registered.maxReferenceImages`
+  // and falls back to NO_REFERENCE_COUNT_LIMIT only when the
+  // Registry does not declare the field. If a future Registry
+  // entry adds `maxReferenceImages: N`, the resolver will pick
+  // it up because the projection is explicit, not because of a
+  // magic auto-bind.
   const profile = {
     modelType: registered.type,
     packagingSupport: Array.isArray(registered.capabilities) && registered.capabilities.includes(PACKAGING_CAPABILITY),
     referenceSupport: asBoolean(registered.referenceSupport, false),
-    maxReferenceImages: NO_REFERENCE_COUNT_LIMIT,
+    maxReferenceImages: registered.maxReferenceImages ?? NO_REFERENCE_COUNT_LIMIT,
   };
 
   const result = evaluatePackagingCapability(profile, generationMode, referencePolicy);

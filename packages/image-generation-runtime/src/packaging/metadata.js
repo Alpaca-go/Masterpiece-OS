@@ -1,4 +1,4 @@
-// Packaging Generation Metadata — P2-F.
+// Packaging Generation Metadata — P2-F Final.
 //
 // Capability boundary:
 //   this module is the SINGLE source of truth for the Packaging
@@ -6,21 +6,20 @@
 //   from the Provider Payload (P2-E) and the Provider Request
 //   (P2-G). It does NOT enter the Provider Request.
 //
-// P2 spec §47 §53 (P2-F Exit) + the P2-F transition rules:
+// P2 spec §47 §53 (P2-F Exit) + the P2-F transition rules +
+// P2-F Finalization Delta (items 1-9):
 //
 //   - Metadata records decisions; Metadata does not make
 //     decisions. Every field on the metadata surface is sourced
 //     from a canonical upstream output (Translation / Compiled /
-//     Capability / Adapter Payload). The metadata module does NOT
-//     re-parse raw Visual Analysis / raw project assets / raw
-//     references / raw model config.
+//     Capability / Adapter Payload).
 //
 //   - The Shared Compile Fingerprint is integrated through the
 //     existing Shared Core (packages/image-generation-runtime/src/
 //     deliverables/compile-fingerprint.js). P2-F does NOT define
-//     a second fingerprint algorithm; it reuses createCompileFingerprint
-//     / stableHash / verifyCompileFingerprint and documents the
-//     Packaging -> Shared sourceBundle mapping.
+//     a second fingerprint algorithm. The canonical input mapping
+//     is the function `buildPackagingFingerprintInputs`; both
+//     create and verify consume it.
 //
 //   - Provider Payload is timestamp-free and deterministic
 //     (P2-E Finalization). Generation Metadata is traceable and
@@ -34,6 +33,17 @@
 //     is NOT in the sourceBundle; the same semantic input at
 //     09:00 and 10:00 produces the same 5 semantic hashes.
 //
+//   - Component versions (contractVersion / translationVersion /
+//     referencePolicyVersion / compilerVersion / providerCapability
+//     Version / providerAdapterVersion) enter the `deliverable`
+//     semantic input so a runtime component upgrade produces
+//     `COMPILE_INPUT_STALE` against the older fingerprint.
+//
+//   - Provider / Model (modelId / provider / protocol / modelType)
+//     enters the `deliverable` semantic input. A model swap
+//     against an otherwise unchanged Translation produces
+//     `COMPILE_INPUT_STALE`.
+//
 // Stop conditions honoured (P2 spec §20 §58 §59):
 //   - does not call a model
 //   - does not import any Golden project asset
@@ -41,8 +51,6 @@
 //   - does not silently rewrite Locked Assets
 //   - does not enter the Provider Request
 //   - does not leak secret fields (allowlist construction)
-//
-// Component version (P2 spec §4 capability-naming discipline).
 
 import { PACKAGING_TRANSLATION_VERSION } from './translation.js';
 import { PACKAGING_SHOT_CONTRACT_VERSION } from './contracts.js';
@@ -64,8 +72,11 @@ export const PACKAGING_METADATA_VERSION = '1.0.0';
 export const PACKAGING_METADATA_INVALID = 'PACKAGING_METADATA_INVALID';
 
 // Component-version manifest. Sourced from the canonical module
-// output; the caller cannot override these (P2-F constraint #4:
-// "不要让 caller 自己随便传 ... 造成版本 spoof").
+// output; the caller cannot override these (P2-F constraint #4).
+// All six component versions enter the `deliverable` semantic
+// input (P2-F Finalization Delta item 5); they are also exposed
+// on the metadata surface as `componentVersions` for the audit
+// trail.
 const COMPONENT_VERSION_MANIFEST = Object.freeze({
   schemaVersion: '1.0',
   metadataVersion: PACKAGING_METADATA_VERSION,
@@ -77,9 +88,8 @@ const COMPONENT_VERSION_MANIFEST = Object.freeze({
   providerAdapterVersion: PACKAGING_PROVIDER_ADAPTER_VERSION,
 });
 
-// Secret field deny-list (P2-F constraint #15). The metadata
-// builder is allowlist-only; the deny-list is a defense in depth
-// for runtime / upstream regression.
+// Secret field deny-list (P2-F constraint #15). Case-insensitive
+// substring match.
 const SECRET_FIELD_DENY_LIST = Object.freeze([
   'apiKey', 'accessToken', 'authorization', 'cookie', 'secret',
   'credential', 'masterKey', 'password', 'token', 'bearer',
@@ -101,25 +111,15 @@ function asArray(v) {
 }
 
 // ---------------------------------------------------------------------------
-// sourceBundle normalization (P2-F constraints #9, #10, #11, #12, #13)
+// sourceBundle normalization (semantic inputs only; runtime noise
+// stripped; Locked Asset content carried for fingerprint reactivity)
 // ---------------------------------------------------------------------------
 
-/**
- * Build the Shared sourceBundle from the Translation. Strips
- * runtime noise (createdAt / timestamp / local path / UUID /
- * runId) and only carries semantic fields. The same semantic
- * Translation at 09:00 and 10:00 produces the same sourceBundle
- * (and therefore the same sourceBundleHash).
- */
 function buildSharedSourceBundle(translation) {
   if (!isPlainObject(translation)) {
     throw newError('translation is not an object');
   }
   const la = isPlainObject(translation.lockedAssets) ? translation.lockedAssets : {};
-  // Note: we carry Locked Asset NAME / FORMFACTOR / COPY etc.
-  // because the spec requires fingerprint to react to Locked
-  // Asset content changes. We do NOT carry createdAt, runId, or
-  // local path noise.
   return {
     target: asString(translation.target),
     generationMode: asString(translation.generationMode),
@@ -138,7 +138,7 @@ function buildSharedSourceBundle(translation) {
     negativeConstraints: asArray(translation.negativeConstraints),
     providerHints: pickProviderHints(translation.providerHints),
     // EXCLUDED: provenance.createdAt, provenance.inputSources,
-    // any local path / temp / UUID / runId.
+    // any local path / temp / UUID / runId / secret.
   };
 }
 
@@ -260,9 +260,8 @@ function pickProviderHints(ph) {
 }
 
 // ---------------------------------------------------------------------------
-// referencePlanIdentity (Shared Core's helper uses
-// { selected, analysisOnly, excluded }; P2-F feeds the Translation's
-// resolved referencePolicy with explicit assetId+role identity)
+// referencePlanForHash (explicit assetId + role identity; source is
+// metadata-only and not in the semantic hash)
 // ---------------------------------------------------------------------------
 
 function buildReferencePlanForHash(translation) {
@@ -275,6 +274,98 @@ function buildReferencePlanForHash(translation) {
     analysisOnly: [],
     excluded: [],
   };
+}
+
+// ---------------------------------------------------------------------------
+// compiledPromptForHash (P2-F Finalization Delta item 1):
+//   hash the actual compiled semantic content. The 14-block
+//   topology alone is NOT enough; a Compiler that produces a
+//   different `items` array for a block MUST change the hash.
+//
+//   Sources are included for audit-trail completeness; the
+//   canonicalization order is deterministic (blockOrder first,
+//   then per-block id / title / items / sources).
+// ---------------------------------------------------------------------------
+
+function buildCompiledPromptForHash(compiled) {
+  if (!isPlainObject(compiled)) return {};
+  const blocks = Array.isArray(compiled.blocks) ? compiled.blocks : [];
+  return {
+    blockOrder: Array.isArray(compiled.blockOrder) ? compiled.blockOrder.slice() : [],
+    blocks: blocks.map((b) => ({
+      id: asString(b.id),
+      title: asString(b.title),
+      items: asArray(b.items),
+      sources: Array.isArray(b.sources) ? b.sources.slice() : [],
+    })),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// deliverableForHash (P2-F Finalization Delta items 4 + 5):
+//   the canonical deliverable carries the Shot Contract id, the
+//   target, the generation mode, the execution identity
+//   (modelId / provider / protocol / modelType) and the six
+//   component versions. A component version upgrade or a model
+//   swap both produce COMPILE_INPUT_STALE against the older
+//   fingerprint.
+// ---------------------------------------------------------------------------
+
+function buildDeliverableForHash({ target, shotContractId, generationMode, capability, versions }) {
+  return {
+    target: asString(target),
+    shotContractId: asString(shotContractId),
+    generationMode: asString(generationMode),
+    execution: {
+      modelId: asString(capability.modelId),
+      provider: asString(capability.provider),
+      protocol: asString(capability.protocol),
+      modelType: asString(capability.modelType),
+    },
+    versions: { ...versions },
+  };
+}
+
+// ---------------------------------------------------------------------------
+// buildPackagingFingerprintInputs (P2-F Finalization Delta item 2 + 8):
+//   the SINGLE canonical input-mapping authority. Both create
+//   (buildPackagingGenerationMetadata) and verify
+//   (verifyPackagingGenerationMetadata) consume it. No second
+//   field set; no second canonicalization.
+// ---------------------------------------------------------------------------
+
+export function buildPackagingFingerprintInputs({ translation, compiled, capability, payload } = {}) {
+  if (!isPlainObject(translation)) throw newError('translation is not an object');
+  if (!isPlainObject(compiled)) throw newError('compiled is not an object');
+  if (!isPlainObject(capability)) throw newError('capability is not an object');
+  if (!isPlainObject(payload)) throw newError('payload is not an object');
+  const target = asString(translation.target);
+  const generationMode = asString(translation.generationMode);
+  const shotContractId = asString(translation.shotContract?.id);
+  return {
+    sourceBundle: buildSharedSourceBundle(translation),
+    userIntent: { generationMode, shotContractId },
+    deliverable: buildDeliverableForHash({
+      target,
+      shotContractId,
+      generationMode,
+      capability,
+      versions: { ...COMPONENT_VERSION_MANIFEST },
+    }),
+    referencePlan: buildReferencePlanForHash(translation),
+    compiledPrompt: buildCompiledPromptForHash(compiled),
+    payload: deepFreezeForHash(payload),
+  };
+}
+
+// Helper for the payloadHash side. The Adapter Payload is
+// already Object.freeze'd (P2-E Finalization). We re-freeze in
+// case the caller passes a fresh shape. The Shared stableHash
+// does the canonicalization; we do not duplicate it here.
+function deepFreezeForHash(value) {
+  if (value == null || typeof value !== 'object') return value;
+  if (Object.isFrozen(value)) return value;
+  return Object.freeze(value);
 }
 
 // ---------------------------------------------------------------------------
@@ -321,10 +412,6 @@ function scanForSecretFields(value, path = '') {
   if (typeof value === 'object') {
     for (const [k, v] of Object.entries(value)) {
       const lower = k.toLowerCase();
-      // Case-insensitive substring match. The deny-list already
-      // contains both 'apiKey' and 'api_key' spellings; matching
-      // is case-insensitive so 'APIKEY' / 'apikey' / 'apiKey' all
-      // hit.
       if (SECRET_FIELD_DENY_LIST.some((needle) => lower.includes(needle.toLowerCase()))) {
         hits.push(`${path}.${k}`);
       }
@@ -340,25 +427,7 @@ function scanForSecretFields(value, path = '') {
 
 /**
  * Build the canonical Packaging Generation Metadata. The metadata
- * is an allowlist construction sourced from the canonical
- * upstream outputs (Translation / Compiled / Capability / Adapter
- * Payload). The metadata carries:
- *
- *   - Identity block (target / generationMode / shotContractId /
- *     schemaVersion / metadataVersion)
- *   - Component-version manifest (6 component versions +
- *     metadataVersion; all sourced from canonical module output)
- *   - Provider/Model snapshot (modelId / provider / protocol /
- *     modelType / packagingSupport / referenceSupport /
- *     maxReferenceImages)
- *   - Reference identity (assetId + role + source; assetId + role
- *     are the semantic identity; source is metadata-only)
- *   - Locked Asset status (7 categories; allRequiredLocked)
- *   - Source map (promptSourceMap + promptBlockOrder; 14 block
- *     ids complete)
- *   - Shared Compile Fingerprint (5 semantic hashes + compiledAt
- *     audit timestamp; createdAt == compiledAt; semantic hashes
- *     are timestamp-free)
+ * is allowlist-built from canonical upstream outputs.
  *
  * @param {object} input
  * @param {object} input.translation - the validated PackagingTranslation
@@ -367,8 +436,6 @@ function scanForSecretFields(value, path = '') {
  * @param {object} input.payload     - the output of buildPackagingProviderPayload
  * @param {string} [input.createdAt]  - audit timestamp; defaults to Date.now().toISOString()
  * @returns {object} the metadata surface
- *
- * Throws PACKAGING_METADATA_INVALID on consistency drift.
  */
 export function buildPackagingGenerationMetadata(input = {}) {
   const obj = isPlainObject(input) ? input : {};
@@ -379,9 +446,7 @@ export function buildPackagingGenerationMetadata(input = {}) {
   if (!isPlainObject(payload)) throw newError('payload is not an object');
 
   // Secret-safety scan on ALL inputs (P2-F constraint #15: "Metadata
-  // 根本不接触 secret input"). The metadata is allowlist-built;
-  // the safest policy is to refuse any input that carries a
-  // secret-like field at all.
+  // 根本不接触 secret input"). Allowlist + deny-list on input.
   const inputSecretHits = [
     ...scanForSecretFields(translation, 'translation'),
     ...scanForSecretFields(compiled, 'compiled'),
@@ -432,28 +497,24 @@ export function buildPackagingGenerationMetadata(input = {}) {
   const promptSourceMap = isPlainObject(compiled.sourceMap) ? compiled.sourceMap : {};
   const promptBlockOrder = Array.isArray(compiled.blockOrder) ? compiled.blockOrder.slice() : [];
 
-  // Shared Compile Fingerprint.
-  const sourceBundle = buildSharedSourceBundle(translation);
-  const referencePlan = buildReferencePlanForHash(translation);
-  const userIntent = { generationMode, shotContractId };
-  const deliverable = { target, shotContractId, contractVersion: COMPONENT_VERSION_MANIFEST.contractVersion };
-  const compiledPrompt = {
-    blockOrder: promptBlockOrder,
-    // The compiled prompt is rendered as the canonical 14-block
-    // topology; we do not include the prompt string here because
-    // the Adapter owns the flattened string and the Metadata does
-    // not duplicate it.
-    blockIds: promptBlockOrder,
-  };
+  // Shared Compile Fingerprint. The single canonical input
+  // mapping feeds both create and verify.
+  const fingerprintInputs = buildPackagingFingerprintInputs({
+    translation, compiled, capability, payload,
+  });
   const createdAt = asString(obj.createdAt, new Date().toISOString());
   const sharedFingerprint = createCompileFingerprint({
-    sourceBundle,
-    userIntent,
-    deliverable,
-    referencePlan,
-    compiledPrompt,
+    sourceBundle: fingerprintInputs.sourceBundle,
+    userIntent: fingerprintInputs.userIntent,
+    deliverable: fingerprintInputs.deliverable,
+    referencePlan: fingerprintInputs.referencePlan,
+    compiledPrompt: fingerprintInputs.compiledPrompt,
     compiledAt: createdAt,
   });
+  // The payload hash is a Shared stableHash of the Adapter
+  // Payload. The Shared Core owns canonicalization; we do not
+  // re-implement it (P2-F Finalization Delta item 7).
+  const payloadHash = sharedStableHash(fingerprintInputs.payload);
 
   const metadata = {
     schemaVersion: '1.0',
@@ -486,20 +547,12 @@ export function buildPackagingGenerationMetadata(input = {}) {
       compiledAt: sharedFingerprint.compiledAt,
     },
 
-    // Audit timestamp. NOT in the semantic hash inputs; carries
-    // only the most recent compileAt.
-    createdAt,
+    payloadFingerprint: payloadHash,
 
-    // Provider payload fingerprint (for the audit trail; does
-    // NOT leak the payload content). The payload itself is
-    // timestamp-free (P2-E Finalization), so this hash is
-    // deterministic across calls given the same inputs.
-    payloadFingerprint: computePayloadFingerprint(payload),
+    createdAt,
   };
 
-  // Secret-safety scan (P2-F constraint #15). Allowlist
-  // construction should already prevent secrets, but we run a
-  // final scan as defense in depth.
+  // Secret-safety scan on the OUTPUT metadata (defense in depth).
   const secretHits = scanForSecretFields(metadata);
   if (secretHits.length) {
     throw newError(`metadata contains secret-like fields: ${secretHits.join(', ')}`);
@@ -550,54 +603,15 @@ function referencesLength(translation) {
     : 0;
 }
 
-function computePayloadFingerprint(payload) {
-  // Deterministic hash of the Adapter Payload. The payload is
-  // already Object.freeze'd and timestamp-free (P2-E
-  // Finalization), so this is stable across calls.
-  // We reuse the Shared stableHash via a tiny inline
-  // canonicalization (the same JSON canonical sort order the
-  // Shared Core uses) without duplicating the algorithm.
-  return stableHashLocal(payload);
-}
-
-function stableHashLocal(value) {
-  // The Shared Core exposes `stableHash` (SHA-256 over the
-  // canonicalized JSON). We import it via the public surface to
-  // avoid duplicating the algorithm. The local helper is just
-  // a thin wrapper that ensures we call the Shared authority
-  // rather than re-implement.
-  return sharedStableHash(canonicalize(value));
-}
-
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.keys(value).sort().map((k) => [k, canonicalize(value[k])]),
-    );
-  }
-  return value;
-}
-
-// We import stableHash from the Shared Core. To avoid duplicating
-// the algorithm, we call the Shared function via the public
-// surface. The local canonicalize helper is a private
-// normaliser (the same shape the Shared Core uses); the actual
-// SHA-256 + canonicalization is done by the Shared authority.
+// ---------------------------------------------------------------------------
+// Verify (P2-F Finalization Delta item 2 + 3 + 6)
 //
-// (The stableHash import is hoisted to the top of the file with
-// the other Shared Core imports.)
-
+// verifyPackagingGenerationMetadata uses the SAME canonical
+// input mapping as build (buildPackagingFingerprintInputs) and
+// the Shared Core verifyCompileFingerprint. There is exactly one
+// mapping authority; the verifier is the Shared Core.
 // ---------------------------------------------------------------------------
-// Verify
-// ---------------------------------------------------------------------------
 
-/**
- * Verify the metadata against a fresh translation / compiled /
- * capability / payload. Returns the Shared verify result
- * ({ valid, code: 'COMPILE_INPUT_STALE' | undefined, mismatches })
- * PLUS a metadata consistency check.
- */
 export function verifyPackagingGenerationMetadata(metadata, current) {
   if (!isPlainObject(metadata)) {
     return { valid: false, code: PACKAGING_METADATA_INVALID, mismatches: ['metadata_not_object'] };
@@ -605,38 +619,62 @@ export function verifyPackagingGenerationMetadata(metadata, current) {
   if (!isPlainObject(current)) {
     return { valid: false, code: PACKAGING_METADATA_INVALID, mismatches: ['current_not_object'] };
   }
-  const drift = consistencyGate(
-    current.translation,
-    current.compiled,
-    current.capability,
-    current.payload,
-  );
+  const { translation, compiled, capability, payload } = current;
+  if (!isPlainObject(translation) || !isPlainObject(compiled) || !isPlainObject(capability) || !isPlainObject(payload)) {
+    return { valid: false, code: PACKAGING_METADATA_INVALID, mismatches: ['current_inputs_not_objects'] };
+  }
+  // 1) Consistency gate.
+  const drift = consistencyGate(translation, compiled, capability, payload);
   if (drift.length) {
     return { valid: false, code: PACKAGING_METADATA_INVALID, mismatches: drift };
   }
-  const rebuilt = buildPackagingGenerationMetadata(current);
-  const fields = [
-    'sourceBundleHash', 'userIntentHash', 'deliverableHash',
-    'referencePlanHash', 'compiledPromptHash',
-  ];
-  const mismatches = [];
-  for (const f of fields) {
-    if (rebuilt.compileFingerprint[f] !== metadata.compileFingerprint?.[f]) {
-      mismatches.push(f);
-    }
-  }
+  // 2) Shared compile fingerprint. We rebuild the canonical
+  //    inputs via the SINGLE mapping authority and feed the
+  //    Shared verifier verbatim. We pass the previous compiledAt
+  //    so the Shared verifier does not compare timestamps; only
+  //    the 5 semantic hashes are compared.
+  const currentInputs = buildPackagingFingerprintInputs({ translation, compiled, capability, payload });
+  const rebuilt = createCompileFingerprint({
+    sourceBundle: currentInputs.sourceBundle,
+    userIntent: currentInputs.userIntent,
+    deliverable: currentInputs.deliverable,
+    referencePlan: currentInputs.referencePlan,
+    compiledPrompt: currentInputs.compiledPrompt,
+    compiledAt: metadata.compileFingerprint?.compiledAt,
+  });
+  const fields = ['sourceBundleHash', 'userIntentHash', 'deliverableHash', 'referencePlanHash', 'compiledPromptHash'];
+  const mismatches = fields.filter((f) => rebuilt[f] !== metadata.compileFingerprint?.[f]);
   if (mismatches.length) {
     return { valid: false, code: 'COMPILE_INPUT_STALE', mismatches };
+  }
+  // 3) payloadFingerprint verification (Shared stableHash).
+  //    The Adapter Payload is supposed to be deterministic from
+  //    the same inputs (P2-E Finalization). A drift here is
+  //    either:
+  //      - a compile semantic identity drift (e.g. model swap
+  //        without re-running the Compiler, or a different
+  //        provider serialization), classified as
+  //        COMPILE_INPUT_STALE; or
+  //      - a metadata shape corruption (e.g. someone hand-edited
+  //        the payload), classified as PACKAGING_METADATA_INVALID.
+  //    We default to COMPILE_INPUT_STALE because the only
+  //    legitimate way for a payload to differ given the same
+  //    Translation / Compiled / Capability is an upstream
+  //    semantic mutation; the test suite pins the boundary.
+  const currentPayloadHash = sharedStableHash(currentInputs.payload);
+  if (currentPayloadHash !== metadata.payloadFingerprint) {
+    return { valid: false, code: 'COMPILE_INPUT_STALE', mismatches: ['payloadFingerprint'] };
   }
   return { valid: true, mismatches: [] };
 }
 
 /**
  * Direct Shared Core verifier (exposed for tests + future
- * tooling). Re-uses verifyCompileFingerprint verbatim.
+ * tooling). Re-uses verifyCompileFingerprint verbatim; metadata
+ * does not wrap it.
  */
-export function verifySharedCompileFingerprint(fingerprint, current) {
-  return verifyCompileFingerprint(fingerprint, current);
+export function verifySharedCompileFingerprint(fingerprint, currentInputs) {
+  return verifyCompileFingerprint(fingerprint, currentInputs);
 }
 
 function newError(message) {
