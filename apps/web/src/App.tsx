@@ -20,9 +20,10 @@ import { DocumentContextWorkspace } from './components/DocumentContextWorkspace'
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
 import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
+import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { cleanError, formatBytes, formatDuration } from './utils';
 
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session';
+type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session' | 'packaging';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -456,6 +457,8 @@ export function App() {
     </div>;
   }
 
+  if (screen === 'packaging') return <PackagingWorkspace onBack={() => setScreen('home')} />;
+
   const defaultProfile = settings.profiles.find((profile) => profile.isDefault)
     || settings.profiles.find((profile) => profile.isEnabled);
   const hasUsableProfile = analysisProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
@@ -466,7 +469,7 @@ export function App() {
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   return <div className="app-shell">
     <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Web</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
-    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
+    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button secondary" onClick={() => setScreen('packaging')}>包装生成</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
       {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
       {error && <div className="notice error">{error}</div>}
       <section className="recent-section"><div className="section-title"><div><span>RECENT ANALYSIS</span><h2>最近分析记录</h2></div><small>{recentRecords.length} 条本地记录</small></div>
