@@ -1,4 +1,4 @@
-// P2-I Finalization Delta — Cross-Target Isolation & Golden Boundary.
+// P2-I Scanner Closure #2 — Cross-Target Isolation & Golden Boundary.
 //
 // P2-I is a TEST-ONLY phase. It proves two architectural
 // boundaries on the production codebase:
@@ -11,37 +11,38 @@
 //
 //   B. Golden benchmark knowledge (Golden Prompt, Golden
 //      Output, evaluation/*, docs/golden/*, named-project
-//      benchmark criteria) remains evaluation-only and
+//     benchmark criteria) remains evaluation-only and
 //      does NOT become a Packaging production rule /
 //      runtime dependency / hardcoded production branch.
 //
-// The P2-I matrix reuses and extends the existing
-// repository verifiers (verify-golden-production-boundary,
-// verify-no-project-specific-production-rules,
-// verify-production-boundaries, verify:workspace-boundaries)
-// and adds two small P2-I-specific test-side helpers:
+// P2-I Scanner Closure #2 closes the two false-green
+// paths the previous P2-I Finalization review surfaced:
 //
-//   1. extractModuleSpecifiers(source) — covers all 7
-//      import forms called out by P2-I §7: import x from,
-//      export x from, import '...' (side-effect), await
-//      import(...), const x = await import(...), require(...),
-//      const x = require(...).
-//   2. extractFsPathSpecifiers(source) — covers the
-//      filesystem-based dependency surface: readFile /
-//      readFileSync / createReadStream / readdir /
-//      readdirSync / existsSync / path.join / path.resolve /
-//      new URL. Captures all string-literal segments inside
-//      the relevant call expression (not only the first),
-//      so segmented paths like
-//        path.join(root, 'evaluation', 'golden-cases', 'a.json')
-//      are surfaced as the logical candidate
-//        'evaluation/golden-cases/a.json'.
+//   §1  collectSourceFiles(root) now supports both
+//       FILE roots and DIRECTORY roots uniformly
+//       (previously, a single-file root fell through
+//       readdirSync and produced zero files — a false
+//       PASS).
 //
-// P2-I does NOT introduce a second competing repository
-// dependency scanner. It is a boundary witness: it
-// composes existing patterns with the small helper pair
-// above and asserts the existing repository verifiers
-// (Group H) remain PASS at test time.
+//   §4  The filesystem-call extractor also recognizes
+//       the destructured `join(...)` / `resolve(...)`
+//       forms (not just `path.join(...)` /
+//       `path.resolve(...)`).
+//
+//   §6  The cross-target classifier generalizes from
+//       fixed-depth `../packaging/` / `../../packaging/`
+//       / `../../../packaging/` to arbitrary
+//       `(?:\.\./)+packaging/` (and the symmetric Space
+//       form).
+//
+//   §2  Group I self-sanity now asserts that every
+//       declared Shared primitive root actually scanned
+//       at least one file (no silent zero-file PASS).
+//
+//   §3 / §5 / §7  Add scanner regression fixtures
+//       covering the file-root helper, the destructured
+//       `join(...)` / `resolve(...)` form, and the
+//       arbitrary-depth relative traversal form.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -57,10 +58,6 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-// Resolve repository root from `import.meta.url` via
-// `node:path` — platform-aware. P2-I Finalization Delta
-// §1 replaces the previous hand-rolled dirname() helper
-// with the platform-aware authority.
 const repoRoot = join(here, '..', '..');
 const require = createRequire(import.meta.url);
 
@@ -79,26 +76,33 @@ const require = createRequire(import.meta.url);
 // Both targets live in the same package but in distinct
 // subtrees; the cross-target invariant is a *subtree*
 // boundary (Space does not reach into Packaging and vice
-// versa) plus a *subpath* boundary (no
-// `@masterpiece/image-generation-runtime/...packaging...`
-// or `...space...` subpath import from a sibling target
-// production file).
+// versa) plus a *subpath* boundary.
 //
-// The `core/` directory is a Shared Core facade surface
-// (P2-I §8). Some `core/` files are target-specific
-// facades (e.g. `core/space-generation-core.js`,
-// `core/packaging-generation-core.js`) that re-export
-// target-specific code; others are target-neutral Shared
-// primitives (e.g. `deliverables/compile-fingerprint.js`,
-// `redact.js`, `download-verify.js`). The P2-I matrix
-// distinguishes between the two — see Group I.
+// Shared Core surfaces are split into two categories
+// (P2-I §7 / §8):
 //
-// P2-I Finalization Delta §2: production roots must
-// EXIST and CONTAIN source files. A missing root is a
-// hard precondition failure, not a zero-violation PASS.
+//   - Target-neutral Shared primitive
+//     (task-builder / deliverables / download-verify /
+//     redact / policies / gates): a target-neutral
+//     primitive that BOTH Space and Packaging use. The
+//     P2-I matrix asserts these primitives do not
+//     reverse-depend on the Space or Packaging subtrees.
+//
+//   - Target-specific Core facade
+//     (packages/image-generation-runtime/src/core):
+//     target-specific facade handshakes that re-export
+//     target implementation. The P2-I matrix does NOT
+//     classify every `core/` file as target-neutral —
+//     some are facades by design.
 // -----------------------------------------------------------------------
 const SPACE_PRODUCTION_ROOT = 'packages/image-generation-runtime/src/space';
 const PACKAGING_PRODUCTION_ROOT = 'packages/image-generation-runtime/src/packaging';
+
+// SHARED_CORE_PRIMITIVE_ROOTS contains BOTH single-file
+// and directory roots. P2-I Scanner Closure #2 §1 fixes
+// the false-green path where a single-file root fell
+// through readdirSync and silently produced zero files;
+// `collectSourceFiles()` now handles both uniformly.
 const SHARED_CORE_PRIMITIVE_ROOTS = [
   'packages/image-generation-runtime/src/task-builder.js',
   'packages/image-generation-runtime/src/deliverables',
@@ -115,9 +119,8 @@ const SOURCE_EXTENSIONS = new Set(['.js', '.mjs', '.cjs', '.ts']);
 
 // -----------------------------------------------------------------------
 // File walker — pattern reused from
-// `scripts/verify-production-boundaries.mjs`. This is a
-// small inline helper; we do NOT introduce a second
-// competing walker.
+// `scripts/verify-production-boundaries.mjs`. We do NOT
+// introduce a second walker.
 // -----------------------------------------------------------------------
 function* walk(directory) {
   let entries;
@@ -137,30 +140,37 @@ function* walk(directory) {
   }
 }
 
-function collectFiles(directory) {
-  const root = join(repoRoot, directory);
-  if (!statSync(root, { throwIfNoEntry: false })) return [];
-  return [...walk(root)];
+// -----------------------------------------------------------------------
+// P2-I Scanner Closure #2 §1 — collectSourceFiles.
+//
+// `rootRel` may be a directory (recursive walk) OR a
+// single source file (return that file). The previous
+// `collectFiles` implementation treated every root as a
+// directory and silently produced zero files for a
+// single-file root, which is a false-green path the
+// review caught.
+//
+// Behaviour:
+//   - root does not exist  -> returns [] (caller decides
+//     whether empty is fail-closed via assertSourceRoot)
+//   - root is a file        -> returns [absoluteFile]
+//   - root is a directory   -> returns [...walk(root)]
+// -----------------------------------------------------------------------
+function collectSourceFiles(rootRel) {
+  const root = join(repoRoot, rootRel);
+  const stat = statSync(root, { throwIfNoEntry: false });
+  if (!stat) return [];
+  if (stat.isFile()) {
+    return SOURCE_EXTENSIONS.has(extname(root)) ? [root] : [];
+  }
+  if (stat.isDirectory()) {
+    return [...walk(root)];
+  }
+  return [];
 }
 
 // -----------------------------------------------------------------------
 // Module-specifier extraction (P2-I §7).
-//
-// We extract the string-literal module specifier from
-// each import / require / dynamic import form:
-//
-//   - import x from '...'
-//   - export x from '...'
-//   - import '...'
-//   - await import('...')
-//   - const x = await import('...')
-//   - require('...')
-//   - const x = require('...')
-//
-// The first three (static) share the `from '...'` shape;
-// `import 'spec'` (side-effect) has no `from`. We use
-// four patterns and dedup the specifier set, so a single
-// import edge is not double-counted.
 // -----------------------------------------------------------------------
 const SPECIFIER_PATTERNS = [
   // `import x from 'spec'` and `export x from 'spec'`
@@ -185,45 +195,49 @@ function extractModuleSpecifiers(source) {
 
 // -----------------------------------------------------------------------
 // Filesystem-call expression extraction (P2-I Finalization
-// Delta §5).
+// §5 + Scanner Closure #2 §4).
 //
-// The previous extractor captured only the first
-// string-literal in a call expression. A segmented
-// path like
+// P2-I Scanner Closure #2 §4 added destructured
+// `join(...)` / `resolve(...)` (production may use
+// `import { join, resolve } from 'node:path'`). The
+// callee set therefore covers:
+//   - readFile / readFileSync / createReadStream /
+//     readdir / readdirSync / existsSync
+//   - path.join / path.resolve
+//   - join / resolve  (destructured form)
 //
-//   path.join(root, 'evaluation', 'golden-cases', 'a.json')
-//
-// was therefore under-detected. The hardened extractor
-// captures the call's full text (up to a balanced closing
-// parenthesis) and extracts every string literal inside,
-// then normalizes the concatenation of those literals
-// into a logical candidate.
-//
-// `new URL('...', import.meta.url)` is the resource-load
-// channel; we capture the URL specifier literally.
-//
-// The result is a list of *logical candidate strings*.
-// Each candidate is the concatenated-and-slash-joined
-// version of the string literals inside one call
-// expression. Segmented paths land as a single
-// normalized candidate.
+// The extractor walks the call's full text (up to a
+// balanced closing parenthesis) and captures every
+// string-literal inside. The slash-joined concatenation
+// of the literals is the logical candidate; each
+// individual literal is also surfaced so the
+// forbidden-path predicate can match a fragment in
+// isolation.
 // -----------------------------------------------------------------------
+const FS_CALLEES = [
+  'readFile',
+  'readFileSync',
+  'createReadStream',
+  'readdir',
+  'readdirSync',
+  'existsSync',
+  'path.join',
+  'path.resolve',
+  // P2-I Scanner Closure #2 §4: destructured
+  // `import { join, resolve } from 'node:path'`. We
+  // match the bare identifier; the preceding
+  // non-identifier char in the regex keeps us from
+  // matching `path.join` (already covered above).
+  'join',
+  'resolve',
+];
 
-/**
- * Extract the full text of a single call expression
- * starting at a given index. The caller is expected to
- * have located the callee (e.g. `path.join(`); this
- * function then walks forward, tracking string-literal
- * boundaries and parenthesis depth, and returns the
- * substring up to and including the matching `)`.
- */
 function extractCallText(source, startIndex) {
-  // Find the opening `(` of the call expression.
   const openParen = source.indexOf('(', startIndex);
   if (openParen === -1) return null;
   let depth = 1;
   let i = openParen + 1;
-  let inString = null; // quote char or null
+  let inString = null;
   let escaped = false;
   while (i < source.length) {
     const ch = source[i];
@@ -252,13 +266,6 @@ function extractCallText(source, startIndex) {
   return null;
 }
 
-/**
- * Extract every single-quoted / double-quoted /
- * backtick-templated string literal from a text region.
- * Template literals are reduced to a single string
- * containing their static text portion; we deliberately
- * do NOT execute or interpret template expressions.
- */
 function extractStringLiterals(text) {
   const out = [];
   let i = 0;
@@ -286,8 +293,6 @@ function extractStringLiterals(text) {
       out.push(buf);
       i = j + 1;
     } else if (ch === '`') {
-      // Template literal: take the static portions
-      // (skip ${...} expressions).
       let j = i + 1;
       let buf = '';
       let depth = 0;
@@ -296,7 +301,6 @@ function extractStringLiterals(text) {
         if (depth === 0 && cj === '`') {
           break;
         } else if (depth === 0 && cj === '$' && text[j + 1] === '{') {
-          // skip the ${...} expression
           depth = 1;
           j += 2;
           continue;
@@ -320,34 +324,11 @@ function extractStringLiterals(text) {
   return out;
 }
 
-/**
- * The set of callee identifiers the P2-I matrix treats
- * as filesystem-dependency surface. We match by bare
- * identifier or by `path.<method>` member expression;
- * the call's first occurrence as a callee is enough.
- */
-const FS_CALLEES = [
-  'readFile',
-  'readFileSync',
-  'createReadStream',
-  'readdir',
-  'readdirSync',
-  'existsSync',
-  'path.join',
-  'path.resolve',
-];
-
 function extractFsPathSpecifiers(source) {
   const out = new Set();
   for (const callee of FS_CALLEES) {
-    // Match the callee as a free identifier, allowing
-    // optional member access (`path.join`) or a leading
-    // member access (`fs.readFile`). We do not restrict
-    // to the start of a line — the previous P2-H
-    // `^/m` limitation caused under-detection of
-    // expressions mid-line.
     const re = new RegExp(
-      `(?:^|[^A-Za-z0-9_$])(?:(?:[A-Za-z_$][\\w$]*\\.)?(${callee.replace(/\./g, '\\.')}))(?=\\s*\\()`,
+      `(?:^|[^A-Za-z0-9_$\\.])(?:(?:[A-Za-z_$][\\w$]*\\.)?(${callee.replace(/\./g, '\\.')}))(?=\\s*\\()`,
       'gu',
     );
     for (const match of source.matchAll(re)) {
@@ -356,25 +337,15 @@ function extractFsPathSpecifiers(source) {
       if (!callText) continue;
       const literals = extractStringLiterals(callText);
       if (literals.length === 0) continue;
-      // The logical candidate is the slash-joined
-      // concatenation of all string literals inside
-      // the call expression. Segmented paths land as
-      // one candidate.
       const candidate = literals
         .map((s) => s.replaceAll('\\', '/'))
         .join('/');
       out.add(candidate);
-      // Also surface each individual literal so the
-      // forbidden-path predicate can match a single
-      // fragment in isolation (e.g. `'golden-cases'`
-      // inside a `path.join(...)` call).
       for (const literal of literals) {
         out.add(literal);
       }
     }
   }
-  // `new URL('...', import.meta.url)` — single-literal
-  // resource-load channel.
   const urlRe = /\bnew\s+URL\s*\(\s*['"]([^'"]+)['"]/gu;
   for (const match of source.matchAll(urlRe)) {
     out.add(match[1]);
@@ -384,16 +355,6 @@ function extractFsPathSpecifiers(source) {
 
 // -----------------------------------------------------------------------
 // Forbidden-path patterns (P2-I §8).
-//
-//   - `evaluation/golden-cases` / `evaluation/anti-cases` /
-//     `evaluation/hidden-cases` — Golden / benchmark
-//     fixtures.
-//   - `tests/fixtures` / `tests/evaluation` — test-side
-//     evaluation assets.
-//   - `docs/golden` — Golden documentation / anchor
-//     assets.
-//   - `golden-cases` / `golden-anchors` / `goldenPrompt` /
-//     `golden_prompt` — keyword-form references.
 // -----------------------------------------------------------------------
 const FORBIDDEN_PATH_FRAGMENTS = [
   'evaluation/golden-cases',
@@ -414,20 +375,19 @@ function isForbiddenPath(specifier) {
 }
 
 // -----------------------------------------------------------------------
-// Cross-target classification (P2-I §4 / §5).
+// Cross-target classification (P2-I Scanner Closure #2 §6).
 //
-// A specifier is "Packaging" if it reaches into the
-// Packaging subtree of `image-generation-runtime/src/`
-// (relative path) or carries the Packaging target in a
-// subpath import (`@masterpiece/.../packaging...`).
-// A specifier is "Space" by the symmetric definition.
+// The classifier generalizes from fixed-depth
+// `../packaging/` / `../../packaging/` /
+// `../../../packaging/` to arbitrary
+// `(?:\.\./)+packaging/` (and the symmetric Space form).
+// The bare-bare-word and `@masterpiece/...` subpath
+// forms are preserved.
 // -----------------------------------------------------------------------
 function isPackagingSpecifier(specifier) {
   if (typeof specifier !== 'string') return false;
   const normalized = specifier.replaceAll('\\', '/');
-  if (/(?:^|\/)\.\.\/packaging\//u.test(normalized)) return true;
-  if (/(?:^|\/)\.\.\/\.\.\/packaging\//u.test(normalized)) return true;
-  if (/(?:^|\/)\.\.\/\.\.\/\.\.\/packaging\//u.test(normalized)) return true;
+  if (/(?:\.\.\/)+packaging\//u.test(normalized)) return true;
   if (/@masterpiece\/[^/]*packaging/u.test(normalized)) return true;
   if (/(?:^|\/)packaging\//u.test(normalized)) return true;
   return false;
@@ -436,9 +396,7 @@ function isPackagingSpecifier(specifier) {
 function isSpaceSpecifier(specifier) {
   if (typeof specifier !== 'string') return false;
   const normalized = specifier.replaceAll('\\', '/');
-  if (/(?:^|\/)\.\.\/space\//u.test(normalized)) return true;
-  if (/(?:^|\/)\.\.\/\.\.\/space\//u.test(normalized)) return true;
-  if (/(?:^|\/)\.\.\/\.\.\/\.\.\/space\//u.test(normalized)) return true;
+  if (/(?:\.\.\/)+space\//u.test(normalized)) return true;
   if (/@masterpiece\/[^/]*space/u.test(normalized)) return true;
   if (/(?:^|\/)space\//u.test(normalized)) return true;
   return false;
@@ -446,41 +404,7 @@ function isSpaceSpecifier(specifier) {
 
 // -----------------------------------------------------------------------
 // Project-specific Golden rule literals (P2-I §10).
-//
-// P2-I Finalization Delta §10 refines the boundary:
-// strong unique Golden literals are direct production
-// guards; ambiguous generic design vocabulary (feather /
-// peacock / beauty salon / tea space / sales office)
-// requires contextual evidence of hardcoded
-// rule / default / branch behavior before being
-// flagged.
-//
-// Architectural rule (P2-I §17):
-//
-//   - FORBIDDEN: hardcoded Golden decision knowledge
-//     in production code (`if industry == 'xxx'` /
-//     `dominantColor = 'pearl white'` /
-//     `if no reference: loadGoldenAnchor()`).
-//   - ALLOWED: generic capability vocabulary
-//     (a real user's Analysis may legitimately
-//     mention similar language).
-//
-// The matrix below keeps strong unique Golden literals
-// (e.g. 九州美学, 矿物紫, 珍珠白, 70/20/10) as direct
-// guards, and treats `peacock` / `feather` /
-// `beauty salon` / `tea space` / `sales office` as
-// context-required literals — they only count as a
-// violation when the surrounding code is a
-// rule / default / branch (an `if`, ternary, `case`,
-// `===`, or `= ... =` assignment, or a `loadDefault*`
-// call).
-//
-// Comments and docstrings are NOT part of the scan
-// surface (P2-I §10); we strip them before scanning.
 // -----------------------------------------------------------------------
-
-// Strong unique Golden literals — direct production
-// guards (no contextual evidence required).
 const STRONG_GOLDEN_LITERALS = [
   '九州美学',
   '孔雀',
@@ -500,9 +424,6 @@ const STRONG_GOLDEN_LITERALS = [
   '夜店式虹彩',
 ];
 
-// Ambiguous generic design vocabulary — only flagged
-// when the surrounding code is a hardcoded production
-// rule / default / branch.
 const CONTEXTUAL_GOLDEN_LITERALS = [
   'peacock',
   'feather',
@@ -512,40 +433,25 @@ const CONTEXTUAL_GOLDEN_LITERALS = [
   'sales office',
 ];
 
-// Strip line + block comments to avoid false positives
-// in doc comments.
 function stripComments(source) {
   let out = source.replace(/\/\*[\s\S]*?\*\//gu, '');
   out = out.replace(/\/\/[^\n]*/gu, '');
   return out;
 }
 
-/**
- * Identify a 60-character context window of executable
- * code around a literal's match. We then check whether
- * the window contains a hardcoded production
- * rule / default / branch shape:
- *
- *   - `if (...)` / `else` / `case` / `? :` / `===` / `==`
- *   - `=` followed by the literal as the right-hand
- *     side of an assignment
- *   - a `loadDefault*` / `default<Role>Anchor` / etc.
- *     function-call name
- */
 function isInsideHardcodedRuleContext(source, matchIndex) {
   const windowStart = Math.max(0, matchIndex - 60);
   const windowEnd = Math.min(source.length, matchIndex + 60);
   const window = source.slice(windowStart, windowEnd);
-  // Rule shapes:
   const rulePatterns = [
     /\bif\s*\(/u,
     /\belse\b/u,
     /\bswitch\s*\(/u,
     /\bcase\s+/u,
-    /\?[^:]+:/u, // ternary
+    /\?[^:]+:/u,
     /==/u,
     /!==?/u,
-    /=[^=]/u, // assignment (catches `= 'peacock'`)
+    /=[^=]/u,
     /\bloadDefault/u,
     /\bdefaultAnchor/u,
     /\bdefaultReference/u,
@@ -556,9 +462,7 @@ function isInsideHardcodedRuleContext(source, matchIndex) {
 
 // -----------------------------------------------------------------------
 // Reference-First implicit Golden Anchor patterns
-// (P2-I §11). Reference-First must use the user's
-// explicit Reference identity; it must NEVER silently
-// select a Golden Anchor.
+// (P2-I §11).
 // -----------------------------------------------------------------------
 const GOLDEN_ANCHOR_FALLBACK_PATTERNS = [
   /\bgolden[-_]?anchor\b/iu,
@@ -570,13 +474,14 @@ const GOLDEN_ANCHOR_FALLBACK_PATTERNS = [
 ];
 
 // -----------------------------------------------------------------------
-// File-level scan helper.
+// scanRoot — unified scan over a single root (file or
+// directory). Replaces the previous `scanDirectory`
+// which assumed every root was a directory.
 // -----------------------------------------------------------------------
-function scanDirectory(rootRel, specifierPredicate, fsPathPredicate) {
-  const root = join(repoRoot, rootRel);
-  if (!statSync(root, { throwIfNoEntry: false })) return [];
+function scanRoot(rootRel, specifierPredicate, fsPathPredicate) {
+  const files = collectSourceFiles(rootRel);
   const edges = [];
-  for (const file of walk(root)) {
+  for (const file of files) {
     const source = readFileSync(file, 'utf8');
     const fileRel = relative(repoRoot, file).replaceAll(sep, '/');
     if (specifierPredicate) {
@@ -598,7 +503,7 @@ function scanDirectory(rootRel, specifierPredicate, fsPathPredicate) {
 }
 
 // -----------------------------------------------------------------------
-// P2-I Finalization Delta §2 — fail-closed preconditions.
+// P2-I Scanner Closure #2 §2 — preconditions + self-sanity.
 // -----------------------------------------------------------------------
 function assertRepoRoot() {
   assert.ok(statSync(repoRoot, { throwIfNoEntry: false }), `repository root does not exist: ${repoRoot}`);
@@ -608,25 +513,20 @@ function assertRepoRoot() {
 }
 
 // =======================================================================
-// Preconditions (P2-I Finalization Delta §2 + §3)
+// Preconditions (P2-I §2 / §3)
 // =======================================================================
 
 test('P2-I preconditions — repository root and production roots exist; scanner enumerates source files', () => {
   assertRepoRoot();
-  // Scanner self-sanity (§3). A zero-file scan would be
-  // an enumeration failure, NOT a zero-violation PASS.
-  const spaceFiles = collectFiles(SPACE_PRODUCTION_ROOT);
-  const packagingFiles = collectFiles(PACKAGING_PRODUCTION_ROOT);
+  const spaceFiles = collectSourceFiles(SPACE_PRODUCTION_ROOT);
+  const packagingFiles = collectSourceFiles(PACKAGING_PRODUCTION_ROOT);
   assert.ok(spaceFiles.length > 0, `Space production root must contain source files; found 0 in ${SPACE_PRODUCTION_ROOT}`);
   assert.ok(packagingFiles.length > 0, `Packaging production root must contain source files; found 0 in ${PACKAGING_PRODUCTION_ROOT}`);
-  // Optional canonical-file witnesses — pinning known
-  // files without hardcoding total counts.
   const spaceRel = spaceFiles.map((f) => relative(repoRoot, f).replaceAll(sep, '/'));
   const packagingRel = packagingFiles.map((f) => relative(repoRoot, f).replaceAll(sep, '/'));
   for (const canonical of ['packages/image-generation-runtime/src/packaging/compiler.js', 'packages/image-generation-runtime/src/packaging/translation.js']) {
     assert.ok(packagingRel.includes(canonical), `Packaging scan must observe canonical file ${canonical}`);
   }
-  // At least one Space canonical file is observed.
   assert.ok(
     spaceRel.some((p) => p.startsWith(`${SPACE_PRODUCTION_ROOT}/`)),
     'Space scan must observe at least one Space production file',
@@ -634,11 +534,32 @@ test('P2-I preconditions — repository root and production roots exist; scanner
 });
 
 // =======================================================================
-// P2-I Finalization Delta §6 — scanner regression fixtures.
-//
-// Synthetic source strings that exercise the scanner's
-// edge cases. No production code is touched; these are
-// pure test-side fixtures.
+// P2-I Scanner Closure #2 §3 — file-root helper regression
+// =======================================================================
+
+test('P2-I scanner regression — collectSourceFiles handles file roots and directory roots uniformly', () => {
+  // File root: returns exactly that source file, not [].
+  const fileRoot = 'packages/image-generation-runtime/src/redact.js';
+  const fileFiles = collectSourceFiles(fileRoot);
+  assert.equal(fileFiles.length, 1, `collectSourceFiles('${fileRoot}') must return exactly that source file`);
+  assert.ok(fileFiles[0].endsWith(`redact${sep}.js`) || fileFiles[0].endsWith('redact.js'), `file-root scan must observe redact.js; got ${fileFiles[0]}`);
+
+  // Directory root: returns > 0 files.
+  const dirFiles = collectSourceFiles('packages/image-generation-runtime/src/gates');
+  assert.ok(dirFiles.length > 0, 'collectSourceFiles on a directory root must return > 0 files');
+  for (const f of dirFiles) {
+    assert.ok(SOURCE_EXTENSIONS.has(extname(f)), `directory-root scan must return only source files; got ${f}`);
+  }
+
+  // Non-existent root: returns [] (caller decides whether
+  // empty is fail-closed).
+  const missingFiles = collectSourceFiles('packages/this/does/not/exist.js');
+  assert.deepEqual(missingFiles, [], 'non-existent root must return [] (caller decides fail-closed)');
+});
+
+// =======================================================================
+// P2-I §6 — scanner regression fixtures (A-E) + Scanner
+// Closure #2 §5 (F, G) + §7 (deep traversal)
 // =======================================================================
 
 test('P2-I scanner regression A — static relative import is captured', () => {
@@ -656,59 +577,70 @@ test('P2-I scanner regression B — await import("...") is captured', () => {
 test('P2-I scanner regression C — segmented path.join captures the full logical candidate', () => {
   const source = `fs.readFileSync(path.join(root, 'evaluation', 'golden-cases', 'a.json'));`;
   const candidates = extractFsPathSpecifiers(source);
-  // The logical candidate (concatenation) is the
-  // slash-joined literal list inside the call.
   const expectedLogical = 'evaluation/golden-cases/a.json';
-  assert.ok(
-    candidates.includes(expectedLogical),
-    `segmented path.join must surface the logical candidate ${expectedLogical}; got ${JSON.stringify(candidates)}`,
-  );
-  // Each individual literal is also surfaced so the
-  // forbidden-path predicate can match a single
-  // fragment in isolation.
+  assert.ok(candidates.includes(expectedLogical), `segmented path.join must surface ${expectedLogical}; got ${JSON.stringify(candidates)}`);
   for (const lit of ['evaluation', 'golden-cases', 'a.json']) {
-    assert.ok(candidates.includes(lit), `individual literal ${lit} must be surfaced; got ${JSON.stringify(candidates)}`);
+    assert.ok(candidates.includes(lit), `individual literal ${lit} must be surfaced`);
   }
 });
 
 test('P2-I scanner regression D — segmented path.resolve captures the full logical candidate', () => {
   const source = `path.resolve(root, 'packages', 'image-generation-runtime', 'src', 'packaging', 'compiler.js');`;
   const candidates = extractFsPathSpecifiers(source);
-  // The logical candidate is the slash-joined literal
-  // list. The P2-I matrix treats this as a Packaging
-  // edge because the literal sequence contains
-  // 'packaging' + 'compiler.js'.
   const expectedLogical = 'packages/image-generation-runtime/src/packaging/compiler.js';
-  assert.ok(
-    candidates.includes(expectedLogical),
-    `segmented path.resolve must surface the logical candidate ${expectedLogical}; got ${JSON.stringify(candidates)}`,
-  );
-  // Individual literals are also surfaced.
+  assert.ok(candidates.includes(expectedLogical), `segmented path.resolve must surface ${expectedLogical}; got ${JSON.stringify(candidates)}`);
   assert.ok(candidates.includes('packaging'), 'individual literal "packaging" must be surfaced');
 });
 
 test('P2-I scanner regression E — new URL("...", import.meta.url) is captured', () => {
   const source = `new URL('../../docs/golden/a.json', import.meta.url)`;
   const candidates = extractFsPathSpecifiers(source);
-  assert.ok(candidates.includes('../../docs/golden/a.json'), `new URL("...", import.meta.url) must surface the specifier; got ${JSON.stringify(candidates)}`);
+  assert.ok(candidates.includes('../../docs/golden/a.json'), `new URL must surface the specifier; got ${JSON.stringify(candidates)}`);
+});
+
+test('P2-I scanner regression F (Scanner Closure §5) — destructured join(...) is captured', () => {
+  // Production code may use
+  //   import { join } from 'node:path';
+  // and call `join(root, 'evaluation', 'golden-cases', 'a.json')`
+  // — without the `path.` member access. The bare-identifier
+  // FS_CALLEES entry covers this form.
+  const source = `join(root, 'evaluation', 'golden-cases', 'a.json');`;
+  const candidates = extractFsPathSpecifiers(source);
+  const expectedLogical = 'evaluation/golden-cases/a.json';
+  assert.ok(candidates.includes(expectedLogical), `destructured join must surface ${expectedLogical}; got ${JSON.stringify(candidates)}`);
+});
+
+test('P2-I scanner regression G (Scanner Closure §5) — destructured resolve(...) surfaces a Packaging candidate', () => {
+  const source = `resolve(root, 'packages', 'image-generation-runtime', 'src', 'packaging', 'compiler.js');`;
+  const candidates = extractFsPathSpecifiers(source);
+  const expectedLogical = 'packages/image-generation-runtime/src/packaging/compiler.js';
+  assert.ok(candidates.includes(expectedLogical), `destructured resolve must surface ${expectedLogical}; got ${JSON.stringify(candidates)}`);
+});
+
+test('P2-I scanner regression H (Scanner Closure §7) — arbitrary-depth relative traversal is captured by cross-target classifier', () => {
+  // The classifier generalizes from fixed-depth
+  // `../packaging/` / `../../packaging/` / to
+  // `(?:\.\./)+packaging/`. These synthetic specifiers
+  // exercise 4- and 5-level deep traversal.
+  assert.equal(isPackagingSpecifier('../../../../packaging/compiler.js'), true, '4-level-deep Packaging specifier must be classified as Packaging');
+  assert.equal(isSpaceSpecifier('../../../../../space/index.js'), true, '5-level-deep Space specifier must be classified as Space');
+  // 1-level and 2-level forms remain classified.
+  assert.equal(isPackagingSpecifier('../packaging/compiler.js'), true, '1-level Packaging specifier must be classified as Packaging');
+  assert.equal(isPackagingSpecifier('../../packaging/compiler.js'), true, '2-level Packaging specifier must be classified as Packaging');
+  // Negative cases: deep traversal to a non-target
+  // subtree must NOT classify as cross-target.
+  assert.equal(isPackagingSpecifier('../../../../image-generation-runtime/src/deliverables/compile-fingerprint.js'), false, 'deep traversal to deliverables/ must NOT classify as Packaging');
+  assert.equal(isSpaceSpecifier('../../../../image-generation-runtime/src/redact.js'), false, 'deep traversal to redact/ must NOT classify as Space');
 });
 
 // =======================================================================
-// Group A — Space production source has zero Packaging
-// semantic edges (module specifiers + filesystem
-// dependency candidates).
+// Group A — Space production has zero Packaging semantic
+// edges (module + filesystem).
 // =======================================================================
 
 test('P2-I Group A — Space production has zero Packaging semantic edges (module + filesystem)', () => {
-  const moduleEdges = scanDirectory(
-    SPACE_PRODUCTION_ROOT,
-    (specifier) => isPackagingSpecifier(specifier),
-  );
-  const fsEdges = scanDirectory(
-    SPACE_PRODUCTION_ROOT,
-    null,
-    (fsPath) => isPackagingSpecifier(fsPath),
-  );
+  const moduleEdges = scanRoot(SPACE_PRODUCTION_ROOT, (s) => isPackagingSpecifier(s));
+  const fsEdges = scanRoot(SPACE_PRODUCTION_ROOT, null, (p) => isPackagingSpecifier(p));
   const edges = [...moduleEdges, ...fsEdges];
   assert.deepEqual(
     edges,
@@ -718,21 +650,13 @@ test('P2-I Group A — Space production has zero Packaging semantic edges (modul
 });
 
 // =======================================================================
-// Group B — Packaging production source has zero Space
-// semantic edges (module specifiers + filesystem
-// dependency candidates).
+// Group B — Packaging production has zero Space semantic
+// edges (module + filesystem).
 // =======================================================================
 
 test('P2-I Group B — Packaging production has zero Space semantic edges (module + filesystem)', () => {
-  const moduleEdges = scanDirectory(
-    PACKAGING_PRODUCTION_ROOT,
-    (specifier) => isSpaceSpecifier(specifier),
-  );
-  const fsEdges = scanDirectory(
-    PACKAGING_PRODUCTION_ROOT,
-    null,
-    (fsPath) => isSpaceSpecifier(fsPath),
-  );
+  const moduleEdges = scanRoot(PACKAGING_PRODUCTION_ROOT, (s) => isSpaceSpecifier(s));
+  const fsEdges = scanRoot(PACKAGING_PRODUCTION_ROOT, null, (p) => isSpaceSpecifier(p));
   const edges = [...moduleEdges, ...fsEdges];
   assert.deepEqual(
     edges,
@@ -742,20 +666,20 @@ test('P2-I Group B — Packaging production has zero Space semantic edges (modul
 });
 
 // =======================================================================
-// Group C — Cross-target isolation. Combines Group A
-// and Group B into a single bidirectional invariant.
+// Group C — Cross-target isolation. Combines A and B
+// into a single bidirectional invariant.
 // =======================================================================
 
 test('P2-I Group C — cross-target isolation is bidirectional (Space ↔ Packaging)', () => {
-  const spaceToPackaging = scanDirectory(
+  const spaceToPackaging = scanRoot(
     SPACE_PRODUCTION_ROOT,
-    (specifier) => isPackagingSpecifier(specifier),
-    (fsPath) => isPackagingSpecifier(fsPath),
+    (s) => isPackagingSpecifier(s),
+    (p) => isPackagingSpecifier(p),
   );
-  const packagingToSpace = scanDirectory(
+  const packagingToSpace = scanRoot(
     PACKAGING_PRODUCTION_ROOT,
-    (specifier) => isSpaceSpecifier(specifier),
-    (fsPath) => isSpaceSpecifier(fsPath),
+    (s) => isSpaceSpecifier(s),
+    (p) => isSpaceSpecifier(p),
   );
   const all = [...spaceToPackaging, ...packagingToSpace];
   assert.deepEqual(
@@ -771,10 +695,7 @@ test('P2-I Group C — cross-target isolation is bidirectional (Space ↔ Packag
 // =======================================================================
 
 test('P2-I Group D — Packaging production has zero Golden / evaluation / docs-golden imports', () => {
-  const edges = scanDirectory(
-    PACKAGING_PRODUCTION_ROOT,
-    (specifier) => isForbiddenPath(specifier),
-  );
+  const edges = scanRoot(PACKAGING_PRODUCTION_ROOT, (s) => isForbiddenPath(s));
   assert.deepEqual(
     edges,
     [],
@@ -784,16 +705,11 @@ test('P2-I Group D — Packaging production has zero Golden / evaluation / docs-
 
 // =======================================================================
 // Group E — Packaging production has zero Golden runtime
-// reads. The hardened extractor (§5) covers both
-// single-literal and segmented-path forms.
+// reads.
 // =======================================================================
 
 test('P2-I Group E — Packaging production has zero Golden runtime reads (hardened fs extractor)', () => {
-  const edges = scanDirectory(
-    PACKAGING_PRODUCTION_ROOT,
-    null,
-    (fsPath) => isForbiddenPath(fsPath),
-  );
+  const edges = scanRoot(PACKAGING_PRODUCTION_ROOT, null, (p) => isForbiddenPath(p));
   assert.deepEqual(
     edges,
     [],
@@ -803,11 +719,7 @@ test('P2-I Group E — Packaging production has zero Golden runtime reads (harde
 
 // =======================================================================
 // Group F — Packaging production has zero hardcoded
-// Golden project-specific rule literals. Comments and
-// docstrings are stripped. Strong unique Golden literals
-// are direct guards; ambiguous generic vocabulary
-// requires contextual evidence (hardcoded production
-// rule / default / branch shape).
+// Golden project-specific rule literals.
 // =======================================================================
 
 test('P2-I Group F — Packaging production has zero hardcoded Golden project-specific rule literals', () => {
@@ -817,16 +729,12 @@ test('P2-I Group F — Packaging production has zero hardcoded Golden project-sp
     const source = readFileSync(file, 'utf8');
     const fileRel = relative(repoRoot, file).replaceAll(sep, '/');
     const executable = stripComments(source);
-    // Strong unique Golden literals — direct guards.
     for (const literal of STRONG_GOLDEN_LITERALS) {
       const escaped = literal.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
       const pattern = new RegExp(escaped, 'iu');
       const match = pattern.exec(executable);
       if (match) violations.push({ file: fileRel, literal, kind: 'strong' });
     }
-    // Ambiguous generic design vocabulary — context-
-    // required (only flagged when inside a hardcoded
-    // production rule / default / branch shape).
     for (const literal of CONTEXTUAL_GOLDEN_LITERALS) {
       const escaped = literal.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
       const pattern = new RegExp(escaped, 'iu');
@@ -844,8 +752,8 @@ test('P2-I Group F — Packaging production has zero hardcoded Golden project-sp
 });
 
 // =======================================================================
-// Group G — Reference-First production route has no
-// implicit Golden reference fallback.
+// Group G — Reference-First has no implicit Golden
+// reference fallback.
 // =======================================================================
 
 test('P2-I Group G — Packaging Reference-First has no implicit Golden reference fallback', () => {
@@ -869,17 +777,11 @@ test('P2-I Group G — Packaging Reference-First has no implicit Golden referenc
 
 // =======================================================================
 // Group H — Existing repository Golden boundary
-// verifiers remain PASS. P2-I does not replace those
-// verifiers; the existing authorities are the single
-// source of truth.
+// verifiers remain PASS.
 // =======================================================================
 
 function readJsonScriptResult(scriptRelativePath) {
   const { spawnSync } = require('node:child_process');
-  // Re-derive the script path from `process.cwd()` (the
-  // repository root that `npm test` launches the test
-  // runner from) so Windows path normalization does
-  // not collapse the leading segment.
   const scriptPath = join(process.cwd(), scriptRelativePath);
   const result = spawnSync(process.execPath, [scriptPath], {
     cwd: process.cwd(),
@@ -915,50 +817,66 @@ test('P2-I Group H — existing Golden boundary verifiers remain PASS', () => {
 });
 
 // =======================================================================
-// Group I — Shared Core directionality
-// (P2-I Finalization Delta §7 / §8).
+// Group I — Shared Core directionality (P2-I §7 / §8 /
+// Scanner Closure #2 §2 / §8).
 //
-// Distinguish two Shared Core surfaces:
+// The P2-I matrix:
+//   1. Asserts every declared Shared primitive root
+//      was actually scanned (each >= 1 file).
+//   2. Asserts zero reverse-dependency on Space /
+//      Packaging subtrees (module + filesystem).
 //
-//   - Target-neutral Shared primitive (e.g. compile-
-//     fingerprint, redact, download-verify, policies,
-//     gates): used by both Space and Packaging Core
-//     facades; target-neutral.
-//
-//   - Target-specific Core facade (e.g.
-//     `core/space-generation-core.js` re-exports
-//     `../space/index.js`; `core/packaging-generation-core.js`
-//     re-exports the same Shared primitives for a
-//     Packaging facade): ALLOWED — the facade handshake
-//     is the architectural surface.
-//
-// What is FORBIDDEN is: a target-neutral Shared
-// primitive reverse-depending on the Space or Packaging
-// subtree. P2-I Finalization Delta §7 audits the
-// canonical Shared primitive surfaces listed in
-// `SHARED_CORE_PRIMITIVE_ROOTS` and asserts zero reverse
-// dependencies on `space/` or `packaging/`.
-//
-// P2-I does NOT create an impossible rule that every
-// `core/` file must be target-neutral — only that the
-// listed Shared primitives are target-neutral. The
-// facades (`core/space-generation-core.js`,
-// `core/packaging-generation-core.js`) are documented
-// and not subject to the same constraint.
+// The two assertions share the same scan but record
+// different facts. The previous P2-I Finalization
+// combined them; Scanner Closure #2 §2 / §8 splits
+// them so a primitive that scans zero files is
+// reported with a distinct failure mode (no scan
+// provenance) instead of a misleading "zero edges"
+// PASS.
 // =======================================================================
+
+test('P2-I Group I (Scanner Closure §2) — every declared Shared primitive root was actually scanned (>= 1 file)', () => {
+  const provenance = [];
+  for (const primitiveRoot of SHARED_CORE_PRIMITIVE_ROOTS) {
+    const files = collectSourceFiles(primitiveRoot);
+    assert.ok(
+      files.length > 0,
+      `Shared primitive root must contain >= 1 source file; ${primitiveRoot} returned ${files.length} file(s). This is the false-green path Scanner Closure #2 §1 closed: a single-file root must not silently produce zero files.`,
+    );
+    provenance.push({ root: primitiveRoot, fileCount: files.length });
+  }
+  // Specific witness: the canonical single-file
+  // primitives listed in the spec must all be scanned.
+  for (const expectedFileRoot of [
+    'packages/image-generation-runtime/src/task-builder.js',
+    'packages/image-generation-runtime/src/download-verify.js',
+    'packages/image-generation-runtime/src/redact.js',
+    'packages/image-generation-runtime/src/policies.js',
+    'packages/image-generation-runtime/src/gates.js',
+  ]) {
+    const files = collectSourceFiles(expectedFileRoot);
+    assert.ok(files.length === 1, `${expectedFileRoot} must be scanned as a single file; got ${files.length}`);
+  }
+  // Specific witness: the canonical directory primitives
+  // must all be scanned.
+  for (const expectedDirRoot of [
+    'packages/image-generation-runtime/src/deliverables',
+    'packages/image-generation-runtime/src/gates',
+  ]) {
+    const files = collectSourceFiles(expectedDirRoot);
+    assert.ok(files.length >= 1, `${expectedDirRoot} directory root must be scanned and contain >= 1 source file; got ${files.length}`);
+  }
+  // Test-side provenance is logged only via the
+  // assertion failures above; we do NOT persist this
+  // provenance to production or to disk.
+  assert.ok(provenance.length === SHARED_CORE_PRIMITIVE_ROOTS.length, 'provenance must cover every declared primitive root');
+});
 
 test('P2-I Group I — target-neutral Shared primitives do not reverse-depend on Space or Packaging subtrees', () => {
   const violations = [];
   for (const primitiveRoot of SHARED_CORE_PRIMITIVE_ROOTS) {
-    const moduleEdges = scanDirectory(
-      primitiveRoot,
-      (specifier) => isSpaceSpecifier(specifier) || isPackagingSpecifier(specifier),
-    );
-    const fsEdges = scanDirectory(
-      primitiveRoot,
-      null,
-      (fsPath) => isSpaceSpecifier(fsPath) || isPackagingSpecifier(fsPath),
-    );
+    const moduleEdges = scanRoot(primitiveRoot, (s) => isSpaceSpecifier(s) || isPackagingSpecifier(s));
+    const fsEdges = scanRoot(primitiveRoot, null, (p) => isSpaceSpecifier(p) || isPackagingSpecifier(p));
     for (const e of [...moduleEdges, ...fsEdges]) {
       violations.push({ primitive: primitiveRoot, ...e });
     }
@@ -971,15 +889,8 @@ test('P2-I Group I — target-neutral Shared primitives do not reverse-depend on
 });
 
 test('P2-I Group I-facade — target-specific Core facades exist as documented (sanity witness)', () => {
-  // The two target-specific facades are the architectural
-  // handshake surface. The P2-I matrix documents that
-  // they are ALLOWED and asserts they exist (i.e. the
-  // facade handshake is not accidentally dropped).
-  // This is a witness, not a constraint — the P2-I
-  // matrix does not say every `core/` file must be
-  // target-neutral; some are facades by design.
   for (const facade of SHARED_CORE_FACADE_ROOTS) {
-    const files = collectFiles(facade);
+    const files = collectSourceFiles(facade);
     assert.ok(files.length > 0, `Core facade root must contain source files; found 0 in ${facade}`);
   }
 });
