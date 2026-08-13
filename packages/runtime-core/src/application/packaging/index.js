@@ -56,6 +56,7 @@ export {
   isPrepareAllowed,
   isResetAllowed,
   getPackagingWorkspaceStateMachineFingerprint,
+  getStateInvariant,
 } from './workspace-state.js';
 
 export {

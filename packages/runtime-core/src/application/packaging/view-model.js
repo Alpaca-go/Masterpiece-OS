@@ -203,32 +203,108 @@ function projectExecutionView(lastExecution) {
 
 // ---------------------------------------------------------------------------
 // Error projection (P3-A spec §35)
+//
+// Canonical error surface for the future P3-B UI:
+//   code        — preserved verbatim (P3-A spec §35 forbids rewriting
+//                 the canonical source code)
+//   severity    — 'blocking' default
+//   title       — canonical code (no PII / no raw path)
+//   userMessage — CANONICAL SAFE message keyed off the error
+//                 code; we NEVER fall back to the raw `error.message`
+//                 because it may carry absolute paths /
+//                 credentials / provider response bodies.
+//                 (P3-A spec §46 / P3-A2 audit.)
+//   recoverable — best-effort retryable flag
+//   suggestedAction — UI hint, not a command
+//
+// The raw `error.message` and `error.cause` are kept on the
+// internal session state for diagnostics; the view model
+// NEVER projects them.
 // ---------------------------------------------------------------------------
+
+const CANONICAL_ERROR_USER_MESSAGES = Object.freeze({
+  GENERATION_PROVIDER_FAILED: '生成服务请求失败，请稍后重试。',
+  GENERATION_PERSISTENCE_FAILED: '生成结果保存失败，请稍后重试。',
+  REFERENCE_ASSET_UNRESOLVED: '参考图无法解析，请检查已分配角色的参考图。',
+  ARTIFACT_LIFECYCLE_REQUIRED: '生成结果存储路径缺失，请重试或联系支持。',
+  EXECUTION_PROVIDER_MODEL_REQUIRED: '生成模型未配置，请先在设置中选择。',
+  GENERATION_EXECUTION_STALE: '执行上下文已变更，请重新准备后再执行。',
+  PACKAGING_METADATA_INVALID: '生成元数据无效，请重新准备。',
+  PACKAGING_TRANSLATION_INVALID: '生成输入无效，请检查模式 / 镜头 / 约束。',
+  SHOT_CONTRACT_INVALID: '镜头合约 ID 无效。',
+  PACKAGING_COMPILE_FAILED: '提示编译失败，请重新准备。',
+  COMPILE_INPUT_STALE: '已重新准备后再执行。',
+  REFERENCE_REQUIRED: '参考图优先模式至少需要 1 张已分配角色的参考图。',
+  REFERENCE_ROLE_INVALID: '参考图角色无效，请使用 6 个 canonical 角色之一。',
+  REFERENCE_UNSUPPORTED: '当前生成模型不支持参考图。',
+  PROVIDER_CAPABILITY_MISMATCH: '当前模型能力不匹配，请选择其他模型。',
+  PACKAGING_WORKSPACE_INTENT_EDIT_REJECTED: '正在生成中，无法编辑意图。',
+  PACKAGING_WORKSPACE_PREPARE_REJECTED: '准备被拒绝，请检查当前状态。',
+  PACKAGING_WORKSPACE_PREPARE_FAILED: '准备失败，请修改后重试。',
+  PACKAGING_WORKSPACE_EXECUTE_REJECTED: '执行被拒绝（已过期或状态不允许）。',
+  PACKAGING_WORKSPACE_EXECUTE_FAILED: '执行失败，请稍后重试。',
+  PACKAGING_WORKSPACE_RESET_REJECTED: '正在生成中，无法重置。',
+  PACKAGING_WORKSPACE_INVALID_TRANSITION: '状态转换被拒绝。',
+  PACKAGING_WORKSPACE_INVALID_INPUT: '输入无效。',
+  PACKAGING_WORKSPACE_INVALID_INTENT: '意图无效，请检查字段。',
+  PACKAGING_WORKSPACE_INVALID_PATCH: '更新补丁无效。',
+  PACKAGING_WORKSPACE_UNKNOWN_SESSION: '会话不存在或已失效。',
+  PACKAGING_WORKSPACE_UNKNOWN_ERROR: '未知错误，请稍后重试。',
+});
+
+const DEFAULT_USER_MESSAGE = '操作失败，请稍后重试。';
 
 function projectErrorView(lastError) {
   if (!isPlainObject(lastError)) return null;
+  const code = asString(lastError.code);
+  const userMessage = CANONICAL_ERROR_USER_MESSAGES[code] || DEFAULT_USER_MESSAGE;
   return Object.freeze({
-    code: asString(lastError.code),
+    code,
     severity: asString(lastError.severity, 'blocking'),
-    title: asString(lastError.title) || asString(lastError.code),
-    userMessage: asString(lastError.userMessage) || asString(lastError.message),
+    title: asString(lastError.title) || code,
+    userMessage,
     recoverable: Boolean(lastError.recoverable),
     suggestedAction: asString(lastError.suggestedAction) || null,
   });
 }
 
 // ---------------------------------------------------------------------------
-// Read-only readiness
+// Read-only readiness (P3-A3 spec §13)
+//
+// The future P3-B UI reads status / canPrepare / canExecute /
+// canReset / canEditIntent / isBusy / isStale / staleReasons /
+// lastError from the view model without re-deriving the state
+// machine. This is the SOLE projection authority the UI has.
+//
+// The capability projection is the canonical source; per-state
+// invariants live in workspace-state.js STATE_INVARIANTS and
+// are kept in sync with this function (asserted by
+// tests/runtime-application/packaging-workspace-state-machine.test.ts).
 // ---------------------------------------------------------------------------
+
+function isBusyStatus(status) {
+  return status === PACKAGING_WORKSPACE_STATUS.PREPARING
+      || status === PACKAGING_WORKSPACE_STATUS.EXECUTING;
+}
 
 function projectReadiness(session, preparedView) {
   const status = asString(session.status);
+  const isBusy = isBusyStatus(status);
+  // canEditIntent is the canonical "may the UI submit an intent
+  // patch?" answer. The intent-edit gate is implemented in
+  // workspace-state.js (`isIntentEditAllowed`); the UI must
+  // NOT re-derive this. Per P3-A spec §11, no silent recompile:
+  // during PREPARING / EXECUTING, intent edits are rejected.
+  const canEditIntent = !isBusy;
   if (status === PACKAGING_WORKSPACE_STATUS.READY) {
     return Object.freeze({
       canPrepare: false,
       canExecute: true,
       canRetry: true,
       canReset: true,
+      canEditIntent,
+      isBusy,
+      isStale: false,
       stale: false,
       blockers: Object.freeze([]),
       warnings: Object.freeze([]),
@@ -240,6 +316,9 @@ function projectReadiness(session, preparedView) {
       canExecute: true,
       canRetry: true,
       canReset: true,
+      canEditIntent,
+      isBusy,
+      isStale: false,
       stale: false,
       blockers: Object.freeze([]),
       warnings: Object.freeze([]),
@@ -251,6 +330,9 @@ function projectReadiness(session, preparedView) {
       canExecute: false,
       canRetry: false,
       canReset: true,
+      canEditIntent,
+      isBusy,
+      isStale: true,
       stale: true,
       blockers: Object.freeze([asString(session.lastStaleReason) || 'intent_changed']),
       warnings: Object.freeze([]),
@@ -262,6 +344,9 @@ function projectReadiness(session, preparedView) {
       canExecute: false,
       canRetry: false,
       canReset: true,
+      canEditIntent,
+      isBusy,
+      isStale: false,
       stale: false,
       blockers: Object.freeze([asString(session.lastError?.code) || 'unknown_failure']),
       warnings: Object.freeze([]),
@@ -273,6 +358,9 @@ function projectReadiness(session, preparedView) {
     canRetry: false,
     canReset: status !== PACKAGING_WORKSPACE_STATUS.PREPARING
       && status !== PACKAGING_WORKSPACE_STATUS.EXECUTING,
+    canEditIntent,
+    isBusy,
+    isStale: false,
     stale: false,
     blockers: Object.freeze([]),
     warnings: Object.freeze([]),
@@ -305,6 +393,7 @@ export function projectPackagingWorkspaceView(session) {
   const executionView = projectExecutionView(lastExecution);
   const errorView = projectErrorView(lastError);
 
+  const readiness = projectReadiness(session, preparedView);
   return Object.freeze({
     schemaVersion: PACKAGING_WORKSPACE_VIEW_MODEL_VERSION,
     sessionId: asString(session.sessionId),
@@ -312,6 +401,12 @@ export function projectPackagingWorkspaceView(session) {
     target: 'packaging',
     status: asString(session.status),
     statusLabel: asString(PACKAGING_WORKSPACE_STATUS_LABELS[session.status] ?? session.status),
+    // Top-level capability flags (P3-A3 spec §13). The future
+    // P3-B UI should bind to these directly; the
+    // `readiness.*` block is the same surface under a
+    // namespaced key.
+    isBusy: readiness.isBusy,
+    canEditIntent: readiness.canEditIntent,
     mode: intent ? asString(intent.generationMode) : null,
     shot: intent ? asString(intent.shotContractId) : null,
     references: intent
@@ -330,7 +425,7 @@ export function projectPackagingWorkspaceView(session) {
           apiProfileId: asString(intent.apiProfileId),
         })
       : null,
-    readiness: projectReadiness(session, preparedView),
+    readiness,
     prepared: preparedView,
     execution: executionView,
     error: errorView,

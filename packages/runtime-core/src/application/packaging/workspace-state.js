@@ -71,6 +71,15 @@ const STATUS_SET = new Set(Object.values(PACKAGING_WORKSPACE_STATUS));
 // READY (that requires going through PREPARING), from
 // READY to EXECUTING (that requires going through EXECUTING),
 // etc.
+//
+// P3-A3 audit note: `failed -> failed` was removed because it
+// has no legitimate use case (a new failure on a FAILED
+// session always lands via prepare/execute → PREPARING/EXECUTING
+// first, then back to FAILED). The remaining `failed ->
+// unprepared` entry is for documentation only — the actual
+// FAILED → UNPREPARED path goes through
+// `resetPackagingWorkspacePreparation`, which constructs the
+// new state directly without consulting this table.
 const ALLOWED_TRANSITIONS = Object.freeze({
   new: Object.freeze(['unprepared', 'preparing', 'failed']),
   unprepared: Object.freeze(['preparing', 'failed']),
@@ -79,11 +88,178 @@ const ALLOWED_TRANSITIONS = Object.freeze({
   stale: Object.freeze(['preparing', 'failed']),
   executing: Object.freeze(['executed', 'failed']),
   executed: Object.freeze(['preparing', 'stale', 'executing', 'failed']),
-  failed: Object.freeze(['preparing', 'unprepared', 'failed']),
+  failed: Object.freeze(['preparing', 'unprepared']),
 });
 
 function isPlainObject(value) {
   return value != null && typeof value === 'object' && !Array.isArray(value);
+}
+
+// ---------------------------------------------------------------------------
+// State invariants (P3-A3 spec §13 / §14 / §15 / §16 / §17 / §18 / §19 / §20)
+//
+// Per-state documentation. Used by the view-model projection and
+// by future P3-B UI; the test suite asserts the entry / required
+// / forbidden / allowed-actions / allowed-transitions / ui-projection
+// shapes for every status.
+//
+// The invariants table is the authoritative reference for
+// "what does status X mean?". It is intentionally informational
+// (no I/O, no behavior change). The transition guard
+// (`transitionSession` + `ALLOWED_TRANSITIONS`) remains the
+// runtime authority.
+// ---------------------------------------------------------------------------
+
+const STATE_INVARIANTS = Object.freeze({
+  new: Object.freeze({
+    label: 'new',
+    description: 'Session has just been created; intent may or may not be set yet.',
+    entryCondition: '`createPackagingWorkspaceSession` succeeded; `state.prepared === null`.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot']),
+    forbiddenFields: Object.freeze(['prepared', 'lastExecution']),
+    allowedActions: Object.freeze(['updateIntent', 'prepareGeneration']),
+    forbiddenActions: Object.freeze(['executeGeneration', 'getView (returns NEW)']),
+    allowedOutgoingTransitions: Object.freeze(['unprepared', 'preparing', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: true,
+      canExecute: false,
+      canEditIntent: true,
+      isBusy: false,
+      isStale: false,
+    }),
+  }),
+  unprepared: Object.freeze({
+    label: 'unprepared',
+    description: 'Intent is set; no prepared snapshot exists.',
+    entryCondition: 'Either `createSession` accepted an initial intent, or `reset` cleared a preparation while preserving intent.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot']),
+    forbiddenFields: Object.freeze(['prepared', 'lastExecution']),
+    allowedActions: Object.freeze(['updateIntent', 'prepareGeneration']),
+    forbiddenActions: Object.freeze(['executeGeneration']),
+    allowedOutgoingTransitions: Object.freeze(['preparing', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: true,
+      canExecute: false,
+      canEditIntent: true,
+      isBusy: false,
+      isStale: false,
+    }),
+  }),
+  preparing: Object.freeze({
+    label: 'preparing',
+    description: 'Prepare is in flight. Async work; the session is not mutable from the outside.',
+    entryCondition: '`prepareGeneration` accepted the request and the P2 frozen preparation has not returned yet.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot']),
+    forbiddenFields: Object.freeze(['prepared (transitional null)', 'lastExecution']),
+    allowedActions: Object.freeze(['await prepareGeneration return']),
+    forbiddenActions: Object.freeze(['updateIntent', 'executeGeneration', 'resetPreparation']),
+    allowedOutgoingTransitions: Object.freeze(['ready', 'stale', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: false,
+      canExecute: false,
+      canEditIntent: false,
+      isBusy: true,
+      isStale: false,
+    }),
+  }),
+  ready: Object.freeze({
+    label: 'ready',
+    description: 'Prepared snapshot exists; current intent matches the saved preparation identity.',
+    entryCondition: 'P2 frozen `preparePackagingGeneration` returned; `computeStale` reports no drift.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot', 'prepared']),
+    forbiddenFields: Object.freeze(['lastError (must be null)']),
+    allowedActions: Object.freeze(['updateIntent (transitions to STALE)', 'executeGeneration', 'resetPreparation']),
+    forbiddenActions: Object.freeze(['updateIntent silently recompiling']),
+    allowedOutgoingTransitions: Object.freeze(['preparing', 'stale', 'executing', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: false,
+      canExecute: true,
+      canEditIntent: true,
+      isBusy: false,
+      isStale: false,
+    }),
+  }),
+  stale: Object.freeze({
+    label: 'stale',
+    description: 'Prepared snapshot exists; current effective input no longer matches the saved identity.',
+    entryCondition: '`computeStale` reports drift; `updateIntent` produced a semantic edit, or truth surface changed.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot', 'prepared', 'lastStaleReasons']),
+    forbiddenFields: Object.freeze(['lastError (must be null)']),
+    allowedActions: Object.freeze(['updateIntent (stays in STALE)', 'prepareGeneration (re-prepares)', 'resetPreparation']),
+    forbiddenActions: Object.freeze(['executeGeneration (STOP-P3-A-07)']),
+    allowedOutgoingTransitions: Object.freeze(['preparing', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: true,
+      canExecute: false,
+      canEditIntent: true,
+      isBusy: false,
+      isStale: true,
+    }),
+  }),
+  executing: Object.freeze({
+    label: 'executing',
+    description: 'Execute is in flight. Async work; the session is not mutable from the outside.',
+    entryCondition: '`executeGeneration` accepted the request and the P2 frozen execution has not returned yet.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot', 'prepared']),
+    forbiddenFields: Object.freeze(['lastExecution (transitional null)']),
+    allowedActions: Object.freeze(['await executeGeneration return']),
+    forbiddenActions: Object.freeze(['updateIntent', 'prepareGeneration (re-entrant)', 'executeGeneration (re-entrant)', 'resetPreparation']),
+    allowedOutgoingTransitions: Object.freeze(['executed', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: false,
+      canExecute: false,
+      canEditIntent: false,
+      isBusy: true,
+      isStale: false,
+    }),
+  }),
+  executed: Object.freeze({
+    label: 'executed',
+    description: 'Execute has produced a Generation Result. Re-execute (same semantic request) is allowed.',
+    entryCondition: 'P2 frozen `executePackagingGeneration` returned a successful result; `state.lastExecution !== null`.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot', 'prepared', 'lastExecution']),
+    forbiddenFields: Object.freeze(['lastError (must be null)']),
+    allowedActions: Object.freeze(['updateIntent (transitions to STALE if semantic)', 'executeGeneration (re-execute, same semantic)', 'prepareGeneration (re-prepare)', 'resetPreparation']),
+    forbiddenActions: Object.freeze(['silent re-prepare on intent edit']),
+    allowedOutgoingTransitions: Object.freeze(['preparing', 'stale', 'executing', 'failed']),
+    uiProjection: Object.freeze({
+      canPrepare: true,
+      canExecute: true,
+      canEditIntent: true,
+      isBusy: false,
+      isStale: false,
+    }),
+  }),
+  failed: Object.freeze({
+    label: 'failed',
+    description: 'Prepare or execute failed. Lifecycle state, not project corruption. FAILED is NOT a dead-end.',
+    entryCondition: 'P2 frozen `preparePackagingGeneration` / `executePackagingGeneration` threw; `state.lastError !== null`.',
+    requiredFields: Object.freeze(['sessionId', 'projectId', 'status', 'intent', 'truthSnapshot', 'lastError']),
+    forbiddenFields: Object.freeze(['a clean session — the failure is on the public surface, not the persistence layer']),
+    allowedActions: Object.freeze(['updateIntent', 'prepareGeneration (re-prepare)', 'resetPreparation']),
+    forbiddenActions: Object.freeze(['executeGeneration (must re-prepare first)']),
+    allowedOutgoingTransitions: Object.freeze(['preparing', 'unprepared']),
+    uiProjection: Object.freeze({
+      canPrepare: true,
+      canExecute: false,
+      canEditIntent: true,
+      isBusy: false,
+      isStale: false,
+    }),
+  }),
+});
+
+/**
+ * Get the documented invariant for a given status.
+ *
+ * Returns the frozen STATE_INVARIANTS entry. Returns `null`
+ * for an unknown status. The view-model may use this to
+ * enrich the projection with documentation strings; the
+ * UI should treat it as advisory.
+ */
+export function getStateInvariant(status) {
+  if (typeof status !== 'string') return null;
+  return STATE_INVARIANTS[status] || null;
 }
 
 // ---------------------------------------------------------------------------
