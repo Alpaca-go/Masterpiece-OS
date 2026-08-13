@@ -573,12 +573,37 @@ export function createPackagingWorkspaceService(options = {}) {
   async function executeGeneration(sessionId, deps = null) {
     const state = getSessionOrThrow(sessionId);
     if (!isExecuteAllowed(state.status)) {
+      // P3-A5.1 — STALE execute must remain distinguishable
+      // from a plain "not yet ready" rejection. The early
+      // gate projects the canonical STALE issues
+      // ['stale', ...lastStaleReasons] (deterministic
+      // canonical order inherited from `detectStaleChange`
+      // / `computeStale`); non-STALE rejections keep
+      // ['not_ready']. This is the single source of truth;
+      // we do NOT introduce a second stale detector.
+      let issues = ['not_ready'];
+      if (state.status === PACKAGING_WORKSPACE_STATUS.STALE) {
+        const stale = computeStale({
+          currentIntent: state.intent,
+          prepared: state.prepared,
+          truthSnapshot: state.truthSnapshot,
+        });
+        // Defense in depth: if computeStale returns no
+        // reasons (e.g. prepared was cleared), fall back
+        // to the saved lastStaleReasons.
+        const reasons = stale.reasons.length > 0
+          ? stale.reasons
+          : (Array.isArray(state.lastStaleReasons) ? Array.from(state.lastStaleReasons) : []);
+        issues = reasons.length > 0
+          ? ['stale', ...reasons]
+          : ['stale'];
+      }
       const err = new Error(
         `PACKAGING_WORKSPACE_EXECUTE_REJECTED: status=${state.status}; execute requires status=ready|executed`,
       );
       err.code = 'PACKAGING_WORKSPACE_EXECUTE_REJECTED';
       err.status = state.status;
-      err.issues = ['not_ready'];
+      err.issues = Object.freeze(issues);
       throw err;
     }
     if (!state.prepared) {

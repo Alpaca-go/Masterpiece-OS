@@ -592,11 +592,13 @@ test('S-30 execute from UNPREPARED is rejected', async () => {
   assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
 });
 
-test('S-31 execute from STALE is rejected (early isExecuteAllowed gate)', async () => {
-  // STALE is caught by the pre-state gate
-  // `isExecuteAllowed` BEFORE the late computeStale check
-  // fires, so the rejection carries `not_ready` (not
-  // `stale` / `intent_changed`).
+test('S-31 execute from STALE is rejected (STALE-specific issue surface)', async () => {
+  // P3-A5.1: STALE execute is rejected with
+  // ['stale', 'intent_changed'] (not just ['not_ready']).
+  // The STALE-specific issue surface keeps a plain
+  // UNPREPARED rejection distinguishable from a STALE
+  // rejection: UNPREPARED → ['not_ready'],
+  // STALE → ['stale', ...lastStaleReasons].
   const svc = makeService();
   const session = makeSession(svc);
   svc.prepareGeneration(session.sessionId);
@@ -606,12 +608,7 @@ test('S-31 execute from STALE is rejected (early isExecuteAllowed gate)', async 
   try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
   assert.ok(captured);
   assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
-  assert.ok(captured.issues.includes('not_ready'));
-  // The view confirms the STALE state (UI projection):
-  // the user can read the staleReasons for context.
-  const view = svc.getView(session.sessionId);
-  assert.equal(view.status, PACKAGING_WORKSPACE_STATUS.STALE);
-  assert.deepEqual([...view.staleReasons], [STALE_REASON.INTENT_CHANGED]);
+  assert.deepEqual([...captured.issues], ['stale', STALE_REASON.INTENT_CHANGED]);
 });
 
 test('S-32 execute from FAILED is rejected', async () => {
@@ -696,18 +693,17 @@ test('S-36 execute runs workspace stale check FIRST (returns stale error before 
   svc.prepareGeneration(session.sessionId);
   // Truth drift via the public API transitions status to
   // STALE before the next execute. The early
-  // isExecuteAllowed gate then rejects with `not_ready`
-  // (the late computeStale double-check is a defense in
-  // depth; for STALE state the early gate wins).
+  // isExecuteAllowed gate rejects with the STALE-specific
+  // issues ['stale', 'truth_surface_changed'] (the late
+  // computeStale double-check is a defense in depth; for
+  // STALE state the early gate wins).
   svc.setTruthSnapshot(session.sessionId, makeTruthSnapshot('AcmeNew'));
   assert.equal(svc.getView(session.sessionId).status, PACKAGING_WORKSPACE_STATUS.STALE);
   let captured: any = null;
   try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
   assert.ok(captured);
   assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
-  // The early gate stamps `not_ready`; the user's
-  // staleReasons UI field carries the reason.
-  assert.ok(captured.issues.includes('not_ready'));
+  assert.deepEqual([...captured.issues], ['stale', STALE_REASON.TRUTH_SURFACE_CHANGED]);
   assert.equal(providerCalled, false, 'Provider MUST NOT be called when workspace stale check fails');
 });
 
@@ -796,12 +792,9 @@ test('S-41 EXECUTED + intent drift → STALE → retry rejected', async () => {
   try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
   assert.ok(captured);
   assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
-  // STALE execute is rejected by the early isExecuteAllowed
-  // gate (not_ready). The actual stale reason is exposed
-  // on the view for the UI to surface.
-  assert.ok(captured.issues.includes('not_ready'));
-  const view = svc.getView(session.sessionId);
-  assert.deepEqual([...view.staleReasons], [STALE_REASON.INTENT_CHANGED]);
+  // P3-A5.1: STALE execute issues are
+  // ['stale', ...reasons] in canonical order.
+  assert.deepEqual([...captured.issues], ['stale', STALE_REASON.INTENT_CHANGED]);
 });
 
 test('S-42 EXECUTED + truth drift → STALE → retry rejected', async () => {
@@ -817,9 +810,7 @@ test('S-42 EXECUTED + truth drift → STALE → retry rejected', async () => {
   try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
   assert.ok(captured);
   assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
-  assert.ok(captured.issues.includes('not_ready'));
-  const view = svc.getView(session.sessionId);
-  assert.deepEqual([...view.staleReasons], [STALE_REASON.TRUTH_SURFACE_CHANGED]);
+  assert.deepEqual([...captured.issues], ['stale', STALE_REASON.TRUTH_SURFACE_CHANGED]);
 });
 
 test('S-43 EXECUTED + same semantic input → retry preserves the semantic compile fingerprint', async () => {
@@ -1130,12 +1121,8 @@ test('S-59 TOCTOU: prepare → setTruthSnapshot drift → execute fails closed (
   try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
   assert.ok(captured);
   assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
-  // STALE execute is rejected by the early isExecuteAllowed
-  // gate (not_ready). The stale reason is visible to the
-  // UI on the view's staleReasons field.
-  assert.ok(captured.issues.includes('not_ready'));
-  const view = svc.getView(session.sessionId);
-  assert.deepEqual([...view.staleReasons], [STALE_REASON.TRUTH_SURFACE_CHANGED]);
+  // P3-A5.1: STALE-specific issue surface.
+  assert.deepEqual([...captured.issues], ['stale', STALE_REASON.TRUTH_SURFACE_CHANGED]);
 });
 
 test('S-60 TOCTOU: prepare → intent edit → intent restored to original → STALE preserved (once-stale fail-closed)', () => {
@@ -1455,4 +1442,159 @@ test('S-80 P3-A5 schema versions are capability-named + X.Y.Z format (no P3A_* /
   ]) {
     assert.match(v, /^\d+\.\d+\.\d+$/);
   }
+});
+
+// =============================================================================
+// S-81..S-86 P3-A5.1 STALE execute issue surface contract
+// =============================================================================
+
+test('S-81 STALE + both intent + truth drift → issues are canonical-ordered stale + both reasons', async () => {
+  // P3-A5.1: when both intent AND truth have drifted, the
+  // STALE execute rejection issues list both reasons in
+  // the canonical order inherited from `detectStaleChange`:
+  //   ['stale', 'intent_changed', 'truth_surface_changed']
+  // The order is the same as computeStale's reasons
+  // array, with 'stale' prepended as the first token.
+  const svc = makeService();
+  const session = makeSession(svc);
+  svc.prepareGeneration(session.sessionId);
+  // Drift intent AND truth on the same session.
+  svc.updateIntent(session.sessionId, { apiProfileId: 'profile-2' });
+  svc.setTruthSnapshot(session.sessionId, makeTruthSnapshot('AcmeNew'));
+  assert.equal(svc.getView(session.sessionId).status, PACKAGING_WORKSPACE_STATUS.STALE);
+  let captured: any = null;
+  try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
+  assert.ok(captured);
+  assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
+  assert.deepEqual(
+    [...captured.issues],
+    ['stale', STALE_REASON.INTENT_CHANGED, STALE_REASON.TRUTH_SURFACE_CHANGED],
+    'STALE execute issues must follow the canonical order: stale, intent_changed, truth_surface_changed',
+  );
+});
+
+test('S-82 STALE execute issues are deterministic across repeated invocations', async () => {
+  // P3-A5.1: the early-gate issue surface is a pure
+  // function of the session state; repeated execute calls
+  // on a STALE session with the same drift produce
+  // byte-identical issues arrays (deterministic, safe for
+  // log dedup / cache key / snapshot tests).
+  const capturedIssues: string[][] = [];
+  for (let i = 0; i < 3; i += 1) {
+    const svc = makeService();
+    const session = makeSession(svc);
+    svc.prepareGeneration(session.sessionId);
+    svc.updateIntent(session.sessionId, { providerModelId: 'seedream-5.0-pro' });
+    try { await svc.executeGeneration(session.sessionId); } catch (e: any) {
+      capturedIssues.push([...e.issues]);
+    }
+  }
+  assert.equal(capturedIssues.length, 3);
+  for (let i = 1; i < capturedIssues.length; i += 1) {
+    assert.deepEqual(capturedIssues[i], capturedIssues[0]);
+  }
+});
+
+test('S-83 STALE execute issues are frozen (UI cannot mutate the rejection envelope)', async () => {
+  // P3-A5.1: the issues array is a frozen Object.freeze
+  // copy, not a shared reference to internal session
+  // state. Strict-mode mutation throws.
+  const svc = makeService();
+  const session = makeSession(svc);
+  svc.prepareGeneration(session.sessionId);
+  svc.updateIntent(session.sessionId, { providerModelId: 'seedream-5.0-pro' });
+  let captured: any = null;
+  try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
+  assert.ok(captured);
+  assert.ok(Object.isFrozen(captured.issues), 'issues must be frozen');
+  assert.throws(() => { (captured.issues as string[]).push('mutated'); }, TypeError);
+});
+
+test('S-84 STALE execute issues contain no raw path / secret / diff / provider payload', async () => {
+  // P3-A5.1: the issues list is a closed canonical
+  // vocabulary; it must NOT leak Windows drive paths,
+  // unix paths, secrets, raw diff strings, or provider
+  // payload fragments. (Defense in depth: the canonical
+  // issue codes are the source of truth, and the user
+  // message is keyed off them via CANONICAL_ERROR_USER_MESSAGES.)
+  const svc = makeService();
+  const session = makeSession(svc);
+  svc.prepareGeneration(session.sessionId);
+  svc.updateIntent(session.sessionId, { providerModelId: 'seedream-5.0-pro' });
+  let captured: any = null;
+  try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
+  assert.ok(captured);
+  for (const issue of captured.issues) {
+    assert.equal(typeof issue, 'string');
+    // No path fragments.
+    assert.equal(/[A-Z]:[\\/]/.test(issue), false, `issue must not contain Windows path: ${issue}`);
+    assert.equal(/\/(home|tmp|etc|var|usr|opt|Users|root)\//.test(issue), false, `issue must not contain Unix path: ${issue}`);
+    assert.equal(/file:\/\//.test(issue), false, `issue must not contain file://: ${issue}`);
+    // No secret-style tokens.
+    assert.equal(/api[_-]?key/i.test(issue), false, `issue must not contain apiKey: ${issue}`);
+    assert.equal(/Authorization/i.test(issue), false);
+    assert.equal(/Bearer\s/i.test(issue), false);
+    assert.equal(/secret/i.test(issue), false);
+    assert.equal(/password/i.test(issue), false);
+    assert.equal(/credential/i.test(issue), false);
+  }
+  // The full rejected error envelope is also checked for
+  // raw leakage in the message / cause path.
+  assert.equal(typeof captured.message, 'string');
+  assert.equal(/[A-Z]:[\\/]/.test(captured.message), false, 'rejection message must not contain Windows path');
+  assert.equal(/\bapi[_-]?key\b/i.test(captured.message), false);
+});
+
+test('S-85 UNPREPARED execute issues remain [not_ready] (regression lock)', async () => {
+  // P3-A5.1 regression: a plain UNPREPARED execute
+  // rejection keeps the simple ['not_ready'] envelope.
+  // STALE-specific issues must NOT bleed into the
+  // UNPREPARED path.
+  const svc = makeService();
+  const session = makeSession(svc);
+  svc.resetPreparation(session.sessionId); // UNPREPARED
+  let captured: any = null;
+  try { await svc.executeGeneration(session.sessionId); } catch (e) { captured = e; }
+  assert.ok(captured);
+  assert.equal(captured.code, 'PACKAGING_WORKSPACE_EXECUTE_REJECTED');
+  assert.deepEqual([...captured.issues], ['not_ready']);
+  // The STALE token must NOT appear on a non-STALE rejection.
+  assert.equal(captured.issues.includes('stale'), false);
+});
+
+test('S-86 NEW / FAILED / EXECUTING execute issues remain [not_ready] (regression lock)', async () => {
+  // P3-A5.1 regression: every non-STALE rejection path
+  // must project the simple ['not_ready'] envelope.
+  const codes: string[] = [];
+  // 1) NEW
+  {
+    const svc = makeService();
+    const session = makeSession(svc);
+    try { await svc.executeGeneration(session.sessionId); } catch (e: any) { codes.push(...e.issues); }
+  }
+  // 2) FAILED (via prepare throwing)
+  {
+    const svc = makeService({
+      prepare: () => { const e: any = new Error('fail'); e.code = 'X'; throw e; },
+    });
+    const session = makeSession(svc);
+    try { svc.prepareGeneration(session.sessionId); } catch { /* expected */ }
+    try { await svc.executeGeneration(session.sessionId); } catch (e: any) { codes.push(...e.issues); }
+  }
+  // 3) EXECUTING (concurrent second execute)
+  {
+    let release: () => void = () => {};
+    const blocked = new Promise<void>((r) => { release = r; });
+    const svc = makeService({ execute: () => blocked.then(() => makeExecutionResult()) });
+    const session = makeSession(svc);
+    svc.prepareGeneration(session.sessionId);
+    const first = svc.executeGeneration(session.sessionId);
+    await new Promise((r) => setImmediate(r));
+    try { await svc.executeGeneration(session.sessionId); } catch (e: any) { codes.push(...e.issues); }
+    release();
+    await first;
+  }
+  // All three rejections should carry the same simple
+  // ['not_ready'] envelope, never 'stale'.
+  assert.deepEqual(codes, ['not_ready', 'not_ready', 'not_ready']);
 });
