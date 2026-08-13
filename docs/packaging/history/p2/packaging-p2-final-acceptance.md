@@ -4,14 +4,16 @@
 **Date:** 2026-08-13
 **Status:** `P2_FROZEN` (final acceptance complete; P3 requires explicit user approval)
 **Branch:** `codex/visual-analysis-a1-multi-provider`
-**Frozen head SHA:** `335405342951fedae5d4d6816444c2b4d2402787` (P2-I Scanner Closure #2)
+**Frozen code baseline (immediately before P2-J):** `335405342951fedae5d4d6816444c2b4d2402787` (P2-I Scanner Closure #2)
+**P2-J acceptance-report commit (docs-only):** `2442ed3966eaff7a4b31c3b0ec6278575a4bac53`
 **Predecessor:** A4 `VISUAL_ANALYSIS_PRODUCTION_BASELINE_FROZEN` at commit `f94c51a`
 **P0 Frozen:** `78c6021` (Packaging V1 P0 — Architecture & Reuse Audit, audit only)
 
 P2-J is not a feature-development phase. It is full regression + P2
 final acceptance + this final report. P2-J introduced **0 production
 source changes** — the only deliverable is this acceptance report and a
-matching commit-message text.
+matching commit-message text. The frozen code baseline above is
+unaffected by the P2-J docs-only commit.
 
 ---
 
@@ -26,16 +28,36 @@ matching commit-message text.
 | Documentation | this file | 1 |
 | Commit-message text | `.codex-smoke/p2-*-commit-msg.txt` (audit artifacts) | n/a |
 
-P2-A → P2-G production history is preserved verbatim. The only
-**production** change in the entire P2 phase is the P2-E Provider
-Payload Target Contract Closure (`de849fd`): a 1-line `target:
-'packaging'` addition to the payload object and a
-`PACKAGING_PROVIDER_ADAPTER_VERSION` bump 1.0.0 → 1.0.1. This was
-explicitly authorized by the P2-H Finalization code review (Path A′).
+P2-A → P2-G introduced the Packaging production implementation
+(Translation / Validation / Shot Contracts / Reference Policy /
+Compiler / Provider Capability / Provider Adapter / Metadata /
+Generation Service, plus the `core/packaging-generation-core.js`
+Shared Core facade). After that initial implementation, the only
+later corrective production delta exposed by the test /
+finalization phases was the **P2-E Provider Payload Target Contract
+Closure** (`de849fd`): a 1-line `target: 'packaging'` addition to the
+payload object and a `PACKAGING_PROVIDER_ADAPTER_VERSION` bump
+1.0.0 → 1.0.1. This corrective delta was explicitly authorized by
+the P2-H Finalization code review (Path A′).
 
 ---
 
 ## 2. Production modules added (P2)
+
+The Packaging production code is split into **nine Packaging
+implementation modules** under `packages/image-generation-runtime/src/packaging/`
+plus **one Packaging-specific Shared Core facade** at
+`packages/image-generation-runtime/src/core/packaging-generation-core.js`.
+
+The facade is **not** a tenth implementation module; it is a
+Shared Core re-export surface that exposes generic Shared primitives
+(compile-fingerprint / gates / download-verify / redact / policies /
+task-builder) under a Packaging-scoped name. The facade does NOT
+re-export the nine Packaging implementation modules — that is the
+facade / implementation distinction P2-I Cross-Target Isolation
+preserves.
+
+### 2.1 Packaging implementation modules (9)
 
 | Module | Path | Purpose |
 |---|---|---|
@@ -45,14 +67,26 @@ explicitly authorized by the P2-H Finalization code review (Path A′).
 | Packaging Reference Policy | `packages/image-generation-runtime/src/packaging/reference-policy.js` | 6-layer frozen precedence chain; `REFERENCE_REQUIRED` / `REFERENCE_ROLE_INVALID` / `REFERENCE_UNSUPPORTED` (P2-C) |
 | Packaging Compiler | `packages/image-generation-runtime/src/packaging/compiler.js` | Deterministic 14-block prompt topology; the only render-authority for the 14-block prompt (P2-D) |
 | Packaging Provider Capability | `packages/image-generation-runtime/src/packaging/provider-capability.js` | Registry-backed capability gate (P2-E) |
-| Packaging Provider Adapter | `packages/image-generation-runtime/src/packaging/provider-adapter.js` | Provider-agnostic payload builder (P2-E) |
+| Packaging Provider Adapter | `packages/image-generation-runtime/src/packaging/provider-adapter.js` | Provider-agnostic payload builder (P2-E); carries `target: 'packaging'` as a literal (P2-E Provider Payload Target Contract Closure) |
 | Packaging Generation Metadata | `packages/image-generation-runtime/src/packaging/metadata.js` | 5 compile semantic hashes + payloadFingerprint + componentVersions (P2-F) |
 | Packaging Generation Service | `packages/image-generation-runtime/src/packaging/generation-service.js` | Thin orchestrator: 12-step `prepare` (deterministic) / `execute` (network + persistence) split (P2-G) |
-| Packaging Core Facade | `packages/image-generation-runtime/src/core/packaging-generation-core.js` | The Shared Core re-export facade (P2-A) — re-exports generic Shared primitives only (NOT Packaging internals) |
 
-All nine modules are **target-specific** Packaging code. The
-`provider-adapter.js` module is the Packaging-specific provider
-serialization authority (carries `target: 'packaging'` as a literal).
+The nine implementation modules are **target-specific** Packaging
+code. The `provider-adapter.js` module is the Packaging-specific
+provider serialization authority (carries `target: 'packaging'` as a
+literal).
+
+### 2.2 Packaging-specific Shared Core facade (1)
+
+| Facade | Path | Purpose |
+|---|---|---|
+| Packaging Core Facade | `packages/image-generation-runtime/src/core/packaging-generation-core.js` | Shared Core re-export facade (P2-A) — re-exports generic Shared primitives only (NOT the nine Packaging implementation modules above) |
+
+The facade is the architectural handshake surface that lets the
+Shared runtime consume Packaging-scoped generic primitives without
+deep-importing the nine Packaging implementation modules. The
+facade does not introduce a second runtime, credential stack, or
+fingerprint algorithm.
 
 ---
 
@@ -512,36 +546,65 @@ requires explicit user approval.
 
 ---
 
-## 19. P2 frozen commit lineage
+## 19. P2 acceptance lineage (22 listed pre-P2-J checkpoints)
 
-P2 spans 14 production commits on `codex/visual-analysis-a1-multi-provider`:
+The P2 acceptance lineage records **22 listed pre-P2-J checkpoints /
+SHAs** on `codex/visual-analysis-a1-multi-provider`. The lineage
+includes:
+
+- **production implementation** (P2-A → P2-G main + final)
+- **audit** (P0 / P1)
+- **test-only** (P2-H / P2-I)
+- **guard hardening** (Tracked Runtime Assets Guard Hardening)
+- **corrective production delta** (P2-E Provider Payload Target
+  Contract Closure, explicitly authorized by the P2-H Finalization
+  Path A′ code review)
+
+Not every checkpoint is a production-implementation commit. The
+22 entries below record the SHAs the P2 acceptance review
+consulted; the `Subject` column annotates the kind of work each
+checkpoint represents.
 
 | # | SHA | Subject |
 |---|---|---|
-| 1 | `78c6021` | (P0) Packaging V1 P0 — Architecture & Reuse Audit (audit only, 0 code change) |
-| 2 | `33a3184` | (P1) Packaging V1 P1 — Golden Manifest / Contract / Failure Taxonomy (test only) |
+| 1 | `78c6021` | (P0) audit only — Architecture & Reuse Audit, 0 code change |
+| 2 | `33a3184` | (P1) test only — Golden Manifest / Contract / Failure Taxonomy |
 | 3 | `af28306` | (Guard Hardening) Tracked Runtime Assets Guard Hardening (3 commits) |
-| 4 | `37b1ab7` | (P2-A) Translation + Validation baseline |
-| 5 | `a557882` | (P2-B) Shot Contract Production Representation |
-| 6 | `95b8940` | (P2-C) Reference Policy (STOP-P2-07 CLOSED) |
-| 7 | `0cb1b97` | (P2-D) Deterministic Compiler (14-block topology) |
-| 8 | `ea50958` | (P2-E) Provider Capability Adaptation |
-| 9 | `81aa61e` | (P2-E Final) data-closure + capability authority cleanup |
-| 10 | `3753e5b` | (P2-F) Generation Metadata + Compile Fingerprint |
-| 11 | `31f37f9` | (P2-F Final) single fingerprint input mapping + payload fingerprint verification |
-| 12 | `fdca33c` | (P2-G) Packaging Generation Service Integration |
-| 13 | `ec30995` | (P2-G Final #1) single-source execution + production dependency bridge |
-| 14 | `92d1d86` | (P2-G Final #2) Shared redaction hardening + execution identity + production bridge honesty |
-| 15 | `b969936` | (P2-G Final #3) audit redaction closure + error serialization |
-| 16 | `7abdce1` | (P2-G Final Security Closure) endpoint sanitization + reference / lifecycle error redaction |
-| 17 | `cad8cd3` | (P2-H) Six-Route Integration Matrix (test only) |
-| 18 | `de849fd` | (P2-E Provider Payload Target Contract Closure) production closure |
-| 19 | `c3296f3` | (P2-H Finalization Delta) 5 items, all PASS |
-| 20 | `47d5278` | (P2-I) Cross-Target Isolation & Golden Boundary |
-| 21 | `0353ee3` | (P2-I Finalization Delta) 14 items, all PASS |
-| 22 | `3354053` | (P2-I Scanner Closure #2) 21 cases, all PASS |
+| 4 | `37b1ab7` | (P2-A) production implementation — Translation + Validation baseline |
+| 5 | `a557882` | (P2-B) production implementation — Shot Contract Production Representation |
+| 6 | `95b8940` | (P2-C) production implementation — Reference Policy (STOP-P2-07 CLOSED) |
+| 7 | `0cb1b97` | (P2-D) production implementation — Deterministic Compiler (14-block topology) |
+| 8 | `ea50958` | (P2-E) production implementation — Provider Capability Adaptation |
+| 9 | `81aa61e` | (P2-E Final) production implementation — data-closure + capability authority cleanup |
+| 10 | `3753e5b` | (P2-F) production implementation — Generation Metadata + Compile Fingerprint |
+| 11 | `31f37f9` | (P2-F Final) production implementation — single fingerprint input mapping + payload fingerprint verification |
+| 12 | `fdca33c` | (P2-G) production implementation — Packaging Generation Service Integration |
+| 13 | `ec30995` | (P2-G Final #1) production implementation — single-source execution + production dependency bridge |
+| 14 | `92d1d86` | (P2-G Final #2) production implementation — Shared redaction hardening + execution identity + production bridge honesty |
+| 15 | `b969936` | (P2-G Final #3) production implementation — audit redaction closure + error serialization |
+| 16 | `7abdce1` | (P2-G Final Security Closure) production implementation — endpoint sanitization + reference / lifecycle error redaction |
+| 17 | `cad8cd3` | (P2-H) test only — Six-Route Integration Matrix |
+| 18 | `de849fd` | (P2-E closure) corrective production delta — Provider Payload Target Contract Closure (1 line + 1 version bump, authorized by P2-H Finalization Path A′) |
+| 19 | `c3296f3` | (P2-H Finalization Delta) test only — 5 items, all PASS |
+| 20 | `47d5278` | (P2-I) test only — Cross-Target Isolation & Golden Boundary |
+| 21 | `0353ee3` | (P2-I Finalization Delta) test only — 14 items, all PASS |
+| 22 | `3354053` | (P2-I Scanner Closure #2) test only — 21 cases, all PASS |
 
-Frozen head SHA: `335405342951fedae5d4d6816444c2b4d2402787`.
+### 19.1 Frozen code baseline (immediately before P2-J)
+
+`335405342951fedae5d4d6816444c2b4d2402787` — the P2-I Scanner
+Closure #2 commit. This is the frozen semantic / code baseline
+immediately before the P2-J report-only commit. The P2-J
+report-only commit does NOT amend this baseline.
+
+### 19.2 P2-J acceptance-report commit (docs-only)
+
+`2442ed3966eaff7a4b31c3b0ec6278575a4bac53` — the docs(packaging):
+record P2 final acceptance commit. This is a documentation-only
+commit; it does NOT modify the frozen semantic / code baseline
+above. The HEAD and origin / `codex/visual-analysis-a1-multi-provider`
+were identical before P2-J work began; P2-J did not amend the
+frozen P2-A → P2-I history.
 
 ---
 
@@ -641,6 +704,13 @@ This report contains:
 P2-J is history / work breakdown only. The report file is named
 `packaging-p2-final-acceptance.md` (using "P2" in a history /
 acceptance filename is allowed per spec).
+
+The frozen code baseline immediately before P2-J is
+`335405342951fedae5d4d6816444c2b4d2402787` (P2-I Scanner Closure #2).
+The P2-J acceptance-report commit is
+`2442ed3966eaff7a4b31c3b0ec6278575a4bac53` (docs-only, no semantic
+code change). The report does NOT redefine the semantic code
+baseline as the docs-only commit.
 
 ---
 
