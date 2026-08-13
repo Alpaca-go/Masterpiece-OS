@@ -392,7 +392,7 @@ function ReadySurface(props: ReadySurfaceProps) {
         />
         <LockedAssetsTile view={view} onRefreshTruth={onRefreshTruth} />
         <ReadinessStaleTile view={view} transientError={transientError} />
-        <LastExecutionTile view={view} />
+        <ResultTile view={view} />
         <ErrorSurfaceTile view={view} />
       </main>
 
@@ -427,31 +427,79 @@ function ActionToolbar({
 }) {
   // Capability projection comes from the frozen view
   // model. React MUST NOT re-derive a rule table.
+  // P3-B4: canRetry is exposed by the frozen P3-A readiness
+  // (READY / EXECUTED → retry allowed). It maps to the same
+  // `executeGeneration` RPC and is NOT an implicit
+  // prepare+execute (P3-A §10.6).
   const canPrepare = Boolean(view.readiness?.canPrepare);
   const canExecute = Boolean(view.readiness?.canExecute);
   const canReset = Boolean(view.readiness?.canReset);
+  const canRetry = Boolean(view.readiness?.canRetry);
   const isBusy = Boolean(view.isBusy) || pending;
+  const status = String(view.status || '');
+  const isStale = status === 'stale';
+  // P3-B4 §VII: real status copy only. We never render fake
+  // progress percentages — the busy label simply names the
+  // current lifecycle stage.
+  const busyLabel =
+    status === 'preparing' ? '准备中…' :
+    status === 'executing' ? '执行中…' :
+    null;
+  // P3-B4 §XV: STALE state hints at the user that the
+  // current configuration no longer matches the prepared
+  // snapshot; they must re-Prepare before they can Execute
+  // again. We surface this as a non-actionable hint next to
+  // the toolbar (not as a fake disable reason).
   return (
     <div className={styles.toolbar}>
-      <p className={styles.toolbarHint}>
-        按钮启用状态由 View Model 决定。execute ≠ implicit prepare + execute
-        （P3-A §10.6）。
-      </p>
+      <div>
+        <p className={styles.toolbarHint}>
+          按钮启用状态由 View Model 决定。execute ≠ implicit prepare + execute
+          （P3-A §10.6）。Retry 走同一个 executeGeneration RPC，不是
+          隐式 prepare+execute。
+        </p>
+        {isStale && (
+          <p className={styles.toolbarStaleHint}>
+            当前 configuration 已变化 — 上次准备已失效，需先「准备生成」再执行。
+          </p>
+        )}
+      </div>
       <div className={styles.toolbarButtons}>
+        {isBusy && busyLabel && (
+          <span className={styles.toolbarBusy} aria-live="polite">
+            <span className={styles.toolbarBusyDot} />
+            {busyLabel}
+          </span>
+        )}
         <button
           className={styles.toolbarButton}
           onClick={onPrepare}
           disabled={!canPrepare || isBusy}
         >
-          {isBusy && view.status === 'preparing' ? '准备中…' : '准备生成'}
+          {status === 'preparing' ? '准备中…' : '准备生成'}
         </button>
         <button
           className={`${styles.toolbarButton} ${styles.toolbarButtonPrimary}`}
           onClick={onExecute}
           disabled={!canExecute || isBusy}
+          title={isStale ? 'STALE: 请先重新准备' : undefined}
         >
-          {isBusy && view.status === 'executing' ? '执行中…' : '执行生成'}
+          {status === 'executing' ? '执行中…' : '执行生成'}
         </button>
+        {canRetry && !isBusy && (
+          <button
+            className={styles.toolbarRetryButton}
+            onClick={onExecute}
+            // Retry shares the same `executeGeneration` RPC;
+            // we re-use `onExecute` (same handler) because the
+            // RPC contract is identical — no new endpoint, no
+            // implicit prepare.
+            data-action="retry"
+            title="使用当前 prepared snapshot 再执行一次（与 Execute 共用 RPC）"
+          >
+            再次生成
+          </button>
+        )}
         <button
           className={styles.toolbarButton}
           onClick={onReset}
@@ -960,6 +1008,15 @@ function ReadinessStaleTile({
   const r = view.readiness;
   const reasons = view.staleReasons ?? [];
   const isStale = Boolean(r?.isStale);
+  // P3-B4 §XIII: Prepared Summary. We surface a deliberately
+  // small subset of view.prepared here — the UI must not
+  // expose the full compiler debug surface (the 5 P2-F
+  // hashes + executionIdentityHash stay on the View Model's
+  // fingerprintSummary as canonical short ids). The
+  // compiledPromptPreview is a read-only surface (P3-A
+  // §22) and is exposed as a collapsible details so the user
+  // can inspect it without editing it.
+  const prepared = view.prepared;
   return (
     <section
       className={`${styles.tile} ${isStale ? styles.tileStale : ''}`}
@@ -981,6 +1038,58 @@ function ReadinessStaleTile({
         <CapabilityChip label="可重置" on={Boolean(r?.canReset)} />
         <CapabilityChip label="执行中" on={Boolean(r?.isBusy)} />
       </div>
+      {prepared && (
+        <div className={styles.preparedSummary}>
+          <h3 className={styles.preparedSummaryTitle}>
+            本次准备（view.prepared，UI-safe 摘要）
+          </h3>
+          <dl className={styles.kvList}>
+            <KV label="模式" value={prepared.generationMode || '—'} />
+            <KV label="镜头" value={prepared.shotContractId || '—'} />
+            <KV
+              label="参考图"
+              value={
+                prepared.referenceSummary
+                  ? `${prepared.referenceSummary.count ?? 0} 张${
+                      prepared.referenceSummary.required ? '（必出）' : ''
+                    }`
+                  : '—'
+              }
+            />
+            <KV
+              label="Provider"
+              value={
+                prepared.providerSummary
+                  ? `${prepared.providerSummary.provider || '—'} / ${
+                      prepared.providerSummary.registryModelId || '—'
+                    }`
+                  : '—'
+              }
+            />
+          </dl>
+          {prepared.warnings && prepared.warnings.length > 0 && (
+            <div className={styles.preparedSummaryWarnings}>
+              <strong>Warnings:</strong>
+              <ul>
+                {prepared.warnings.map((w: string) => (
+                  <li key={w}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {prepared.compiledPromptPreview && (
+            <details className={styles.preparedSummaryDetails}>
+              <summary>Compiled Prompt Preview（read-only）</summary>
+              <pre className={styles.preparedSummaryPrompt}>
+                {prepared.compiledPromptPreview}
+              </pre>
+              <p className={styles.preparedSummaryHint}>
+                P3-A §22: 该预览为只读。无法编辑或回写至 intent。
+              </p>
+            </details>
+          )}
+        </div>
+      )}
       {transientError && (
         <div className={styles.staleBox}>
           <strong>本次 RPC 错误：</strong>
@@ -1019,67 +1128,249 @@ function ReadinessStaleTile({
 }
 
 // ---------------------------------------------------------------------------
-// 05 — Last Execution
+// 05 — Result Tile (P3-B4 Execution & Result Gallery)
+//
+// Authority:
+//   - Consumes ONLY the frozen `view.execution` UI-safe summary.
+//   - No raw preparedResult / executionResult / Provider payload /
+//     absolute path is ever read. The artifact cards surface
+//     safe metadata (imageId / mimeType / hasB64 / hasUrl / width
+//     / height / sizeBytes) and a placeholder thumbnail.
+//   - P3-B4 §IX: the production saveRun adapter is owned by the
+//     runtime; the Packaging runId (`pkg-...`) does NOT route
+//     through `imageGeneration.getImageDataUrl`. We do not call
+//     any preview RPC from the Web feature — the preview is a
+//     safe metadata card. Downloading a real preview requires
+//     the production runtime to wire the canonical
+//     artifact-serving seam, which is out of scope for B4.
+//   - P3-B4 §XV: when the current `view.status === 'stale'`,
+//     `view.execution` still carries the previous result (the
+//     View Model does NOT clear it on STALE). We render a
+//     presentation-only "上次结果" badge so the user can see
+//     the old gallery while understanding the prepared
+//     snapshot is no longer valid.
 // ---------------------------------------------------------------------------
 
-function LastExecutionTile({ view }: { view: PackagingWorkspaceView }) {
+function ResultTile({ view }: { view: PackagingWorkspaceView }) {
   const exec = view.execution;
+  const status = String(view.status || '');
+  const isStale = status === 'stale';
+  const isExecuted = status === 'executed';
+  const isFailed = status === 'failed';
+  // P3-B4 §XV: the previous-result label applies whenever the
+  // current lifecycle is NOT executed — stale, failed, etc.
+  // show "上次结果" so the user is not misled into thinking the
+  // gallery reflects the current configuration.
+  const showPreviousLabel = Boolean(exec) && !isExecuted;
   return (
     <section className={styles.tile}>
       <header className={styles.tileHeader}>
         <span className={styles.tileIndex}>05</span>
         <div>
-          <h2 className={styles.tileTitle}>上次执行</h2>
+          <h2 className={styles.tileTitle}>当前产物</h2>
           <p className={styles.tileSubtitle}>
-            Last Execution · view.execution
+            Result Gallery · view.execution（仅消费 UI-safe 字段）
           </p>
         </div>
       </header>
       {exec ? (
-        <dl className={styles.kvList}>
-          <KV label="Run ID" value={exec.runId || '—'} mono />
-          <KV label="状态" value={exec.status || '—'} />
-          <KV label="生成模式" value={exec.generationMode || '—'} />
-          <KV label="镜头合约" value={exec.shotContractId || '—'} />
-          <KV
-            label="Provider"
-            value={
-              exec.provider
-                ? `${exec.provider.adapterId || '—'} / ${
-                    exec.provider.protocol || '—'
-                  }`
-                : '—'
-            }
-          />
-          <KV
-            label="Model"
-            value={
-              exec.model
-                ? `${exec.model.registryModelId || '—'} / ${
-                    exec.model.providerModelId || '—'
-                  }`
-                : '—'
-            }
-            mono
-          />
-          <KV
-            label="结果数"
-            value={String(exec.artifacts?.length ?? 0)}
-          />
-          <KV
-            label="耗时"
-            value={
-              exec.diagnostics?.durationMs != null
-                ? `${exec.diagnostics.durationMs} ms`
-                : '—'
-            }
-          />
-        </dl>
+        <>
+          <div className={styles.resultHeader}>
+            <div className={styles.resultMeta}>
+              <span className={styles.resultMetaTitle}>
+                {exec.provider?.provider || '—'} · {exec.model?.registryModelId || '—'} · {exec.model?.providerModelId || '—'}
+              </span>
+              <span>Run ID: {exec.runId || '—'}</span>
+              <span>状态: {exec.status || '—'}</span>
+            </div>
+            <div className={styles.resultBadgeRow}>
+              {showPreviousLabel && (
+                <span className={styles.resultPreviousBadge}>
+                  <span className={styles.resultPreviousBadgeDot} />
+                  {isStale ? '上次结果 · 当前 configuration 已变化' : isFailed ? '上次结果 · 上次执行未成功' : '上次结果'}
+                </span>
+              )}
+              {isExecuted && (
+                <span className={styles.resultCurrentBadge}>
+                  <span className={styles.resultCurrentBadgeDot} />
+                  本次结果
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* P3-B4 §VIII: artifact cards. P3-B4 §IX does not call
+              any preview RPC; we surface only the safe metadata
+              that the frozen View Model already redacts. */}
+          {Array.isArray(exec.artifacts) && exec.artifacts.length > 0 ? (
+            <div className={styles.resultArtifacts}>
+              {exec.artifacts.map((artifact, index) => {
+                const cardKey = artifact.imageId || `artifact-${index}`;
+                return (
+                  <article
+                    key={cardKey}
+                    className={styles.resultArtifactCard}
+                    data-testid="packaging-artifact-card"
+                  >
+                    <div className={styles.resultArtifactThumb}>
+                      <span className={styles.resultArtifactThumbMuted}>
+                        缩略图占位
+                      </span>
+                    </div>
+                    <div className={styles.resultArtifactBody}>
+                      <span
+                        className={styles.resultArtifactTitle}
+                        title={artifact.imageId || ''}
+                      >
+                        {artifact.imageId || `artifact-${index + 1}`}
+                      </span>
+                      <ArtifactKv label="MIME" value={artifact.mimeType || '—'} />
+                      {artifact.width != null && artifact.height != null && (
+                        <ArtifactKv
+                          label="尺寸"
+                          value={`${artifact.width} × ${artifact.height}`}
+                        />
+                      )}
+                      {artifact.sizeBytes != null && (
+                        <ArtifactKv
+                          label="大小"
+                          value={formatBytes(artifact.sizeBytes)}
+                        />
+                      )}
+                      {artifact.hasB64 && (
+                        <ArtifactKv label="内联" value="b64" />
+                      )}
+                      {artifact.hasUrl && (
+                        <ArtifactKv label="Provider URL" value="已提供（仅元数据）" />
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className={styles.resultEmpty}>
+              <div className={styles.resultEmptyTitle}>该次执行未产出 artifacts。</div>
+              <div>
+                Provider 报告执行成功但没有图像产物。请检查
+                Provider 配额 / 模型能力，必要时重新准备后再执行。
+              </div>
+            </div>
+          )}
+
+          {/* P3-B4 §VIII: diagnostics. We surface duration /
+              referenceCount / imageCount / region only — the
+              raw redactedRequest / redactedResponse bodies
+              stay on the internal session, not the View. */}
+          {exec.diagnostics && (
+            <div className={styles.resultDiagnostics}>
+              {exec.diagnostics.durationMs != null && (
+                <div className={styles.resultDiagnosticsRow}>
+                  <span className={styles.resultDiagnosticsLabel}>耗时</span>
+                  <span className={styles.resultDiagnosticsValue}>
+                    {exec.diagnostics.durationMs} ms
+                  </span>
+                </div>
+              )}
+              {exec.diagnostics.referenceCount != null && (
+                <div className={styles.resultDiagnosticsRow}>
+                  <span className={styles.resultDiagnosticsLabel}>参考图</span>
+                  <span className={styles.resultDiagnosticsValue}>
+                    {exec.diagnostics.referenceCount}
+                  </span>
+                </div>
+              )}
+              {exec.diagnostics.imageCount != null && (
+                <div className={styles.resultDiagnosticsRow}>
+                  <span className={styles.resultDiagnosticsLabel}>产物数</span>
+                  <span className={styles.resultDiagnosticsValue}>
+                    {exec.diagnostics.imageCount}
+                  </span>
+                </div>
+              )}
+              {exec.diagnostics.startedAt && (
+                <div className={styles.resultDiagnosticsRow}>
+                  <span className={styles.resultDiagnosticsLabel}>开始</span>
+                  <span className={styles.resultDiagnosticsValue}>
+                    {exec.diagnostics.startedAt}
+                  </span>
+                </div>
+              )}
+              {exec.diagnostics.completedAt && (
+                <div className={styles.resultDiagnosticsRow}>
+                  <span className={styles.resultDiagnosticsLabel}>完成</span>
+                  <span className={styles.resultDiagnosticsValue}>
+                    {exec.diagnostics.completedAt}
+                  </span>
+                </div>
+              )}
+              {exec.diagnostics.region && (
+                <div className={styles.resultDiagnosticsRow}>
+                  <span className={styles.resultDiagnosticsLabel}>审计区域</span>
+                  <span className={styles.resultDiagnosticsValue}>
+                    {exec.diagnostics.region}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* P3-B4 §XV: STALE + previous result banner. The View
+              Model still carries the old result; we explicitly
+              call out that re-Execute requires Prepare. The
+              banner is a presentation-only hint; the application
+              state machine remains the source of truth. */}
+          {isStale && (
+            <div className={styles.resultStaleBanner}>
+              <strong>本次结果已过期</strong>
+              当前 configuration（参考图、锁定资产、模型）已变化，
+              旧 prepared snapshot 不能再用于生成。请在「准备生成」后
+              再「执行生成」以产出与当前 configuration 一致的新结果。
+            </div>
+          )}
+
+          {/* P3-B4 §IX: explicit note explaining that real
+              preview bytes are not loaded in B4. The production
+              artifact-serving seam is owned by the runtime; the
+              Web feature is RPC-only and never reaches into the
+              filesystem. */}
+          <p className={styles.resultNote}>
+            产物缩略图由 runtime artifact-serving seam 渲染（不属于
+            P3-B4 scope）。B4 仅展示 frozen View Model 已经裁剪过的
+            safe metadata，不读取任何 absolute path / 文件系统 / Provider
+            原始响应。
+          </p>
+        </>
       ) : (
-        <EmptyHint message="尚未执行任何生成。" />
+        <div className={styles.resultEmpty}>
+          <div className={styles.resultEmptyTitle}>尚未执行任何生成。</div>
+          <div>
+            完成「准备生成」后，「执行生成」会调用同一个
+            <code style={{ margin: '0 4px' }}>executeGeneration</code>
+            RPC；B4 不会隐式 prepare+execute。成功执行后，artifact 元数据会
+            在这里出现。
+          </div>
+        </div>
       )}
     </section>
   );
+}
+
+function ArtifactKv({ label, value }: { label: string; value: string }) {
+  return (
+    <div className={styles.resultArtifactKv}>
+      <span className={styles.resultArtifactKvLabel}>{label}</span>
+      <span className={styles.resultArtifactKvValue}>{value}</span>
+    </div>
+  );
+}
+
+function formatBytes(n: number): string {
+  if (!Number.isFinite(n) || n < 0) return '—';
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  if (n < 1024 * 1024 * 1024) return `${(n / 1024 / 1024).toFixed(1)} MB`;
+  return `${(n / 1024 / 1024 / 1024).toFixed(2)} GB`;
 }
 
 // ---------------------------------------------------------------------------

@@ -735,6 +735,349 @@
   color: #4a2faf;
 }
 
+/* --------------------- retry / stale / busy affordance -------------- */
+.toolbarBusy {
+  font-size: 12px;
+  color: #6c42d8;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbarBusyDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6c42d8;
+  display: inline-block;
+  animation: toolbarPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes toolbarPulse {
+  0%   { opacity: 0.35; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.35; }
+}
+
+.toolbarStaleHint {
+  font-size: 11px;
+  color: #b46a2a;
+  margin: 0 8px 0 0;
+  font-weight: 600;
+}
+
+.toolbarRetryButton {
+  border: 1px solid #6c42d8;
+  border-radius: 7px;
+  padding: 9px 14px;
+  color: #ffffff;
+  background: #6c42d8;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toolbarRetryButton:hover:not(:disabled) {
+  background: #5a36b8;
+  border-color: #5a36b8;
+}
+
+.toolbarRetryButton:disabled {
+  background: #d8d3e0;
+  border-color: #d8d3e0;
+  color: #6f6a78;
+  cursor: not-allowed;
+}
+
+/* --------------------- result gallery -------------------------------- */
+.resultHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.resultBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.resultPreviousBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fdf4e3;
+  color: #8a5a1a;
+  border: 1px solid #e9d9b1;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.resultPreviousBadgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c9881a;
+  display: inline-block;
+}
+
+.resultCurrentBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #eef7ed;
+  color: #2e7a32;
+  border: 1px solid #c8e3c5;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.resultCurrentBadgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2e7a32;
+  display: inline-block;
+}
+
+.resultMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: #847d87;
+}
+
+.resultMetaTitle {
+  color: #49444c;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.resultArtifacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.resultArtifactCard {
+  border: 1px solid #e2dcd2;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.resultArtifactThumb {
+  width: 100%;
+  height: 110px;
+  background:
+    linear-gradient(135deg, #f0eef5 0%, #e7e3ec 50%, #f4f1f7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #847d87;
+  font-size: 11px;
+  text-align: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #ece6dc;
+  line-height: 1.45;
+}
+
+.resultArtifactThumbMuted {
+  color: #a09aab;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.resultArtifactBody {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.resultArtifactTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c2730;
+  word-break: break-all;
+}
+
+.resultArtifactKv {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #847d87;
+}
+
+.resultArtifactKvLabel {
+  color: #a09aab;
+}
+
+.resultArtifactKvValue {
+  color: #49444c;
+  font-weight: 500;
+  text-align: right;
+  word-break: break-all;
+}
+
+.resultDiagnostics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #faf9f6;
+  border-radius: 8px;
+  border: 1px solid #ece6dc;
+  font-size: 11px;
+  color: #5f5866;
+}
+
+.resultDiagnosticsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.resultDiagnosticsLabel {
+  color: #847d87;
+}
+
+.resultDiagnosticsValue {
+  color: #49444c;
+  font-weight: 500;
+  text-align: right;
+  font-family: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+}
+
+.resultStaleBanner {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #fdf4e3;
+  border: 1px solid #e9d9b1;
+  color: #8a5a1a;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.resultStaleBanner strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #6b3e0d;
+}
+
+.resultEmpty {
+  padding: 18px 16px;
+  border: 1px dashed #d4cfc7;
+  border-radius: 10px;
+  background: #faf9f6;
+  color: #847d87;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.resultEmptyTitle {
+  font-weight: 600;
+  color: #49444c;
+  margin-bottom: 4px;
+}
+
+.resultNote {
+  margin-top: 8px;
+  font-size: 10.5px;
+  color: #a09aab;
+  line-height: 1.5;
+}
+
+/* --------------------- prepared summary (P3-B4) --------------------- */
+.preparedSummary {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f6f3ff;
+  border: 1px solid #d9cff0;
+}
+
+.preparedSummaryTitle {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a2faf;
+  letter-spacing: 0.02em;
+}
+
+.preparedSummaryWarnings {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #8a5a1a;
+}
+
+.preparedSummaryWarnings strong {
+  color: #6b3e0d;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.preparedSummaryWarnings ul {
+  margin: 0;
+  padding-left: 18px;
+  list-style: disc;
+}
+
+.preparedSummaryDetails {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #5f5866;
+}
+
+.preparedSummaryDetails summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #4a2faf;
+  padding: 2px 0;
+}
+
+.preparedSummaryPrompt {
+  margin: 8px 0 4px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e2dcd2;
+  border-radius: 6px;
+  font-family: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #2c2730;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.preparedSummaryHint {
+  margin: 0;
+  font-size: 10.5px;
+  color: #847d87;
+  font-style: italic;
+}
+
 .refreshButton:disabled {
   opacity: .55;
   cursor: not-allowed;

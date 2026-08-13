@@ -1,23 +1,23 @@
-// P3-A7 — Packaging Workspace Architecture Guards (A-L).
+// P3-A7 鈥?Packaging Workspace Architecture Guards (A-L).
 //
-// 12 canonical guard groups per P3-A spec §64 + additional
+// 12 canonical guard groups per P3-A spec 搂64 + additional
 // authority guards. Each group has at least one source-level
 // static invariant; some groups also carry behavioural
 // cross-checks against the existing A2..A6 tests.
 //
-// Mapping (per P3-A spec §64):
-//   A  Runtime Dependency Boundary      → canonical call path
-//   B  Web UI Import Boundary           → future P3-B UI boundary
-//   C  Compiler Boundary                → STOP-P3-A-01
-//   D  Provider Payload Boundary        → STOP-P3-A-02
-//   E  Credential Boundary              → STOP-P3-A-03
-//   F  Frozen P2 Contract Guard         → STOP-P3-A-04
-//   G  Reference Role Authority Guard   → STOP-P3-A-05
-//   H  Reference Precedence Guard       → STOP-P3-A-06
-//   I  Stale Fail-closed Guard          → STOP-P3-A-07
-//   J  Persistence / Leakage Guard      → STOP-P3-A-08
-//   K  Web UI Provider Network Guard    → STOP-P3-A-09
-//   L  Shared Regression Guards         → STOP-P3-A-10/11/12
+// Mapping (per P3-A spec 搂64):
+//   A  Runtime Dependency Boundary      鈫?canonical call path
+//   B  Web UI Import Boundary           鈫?future P3-B UI boundary
+//   C  Compiler Boundary                鈫?STOP-P3-A-01
+//   D  Provider Payload Boundary        鈫?STOP-P3-A-02
+//   E  Credential Boundary              鈫?STOP-P3-A-03
+//   F  Frozen P2 Contract Guard         鈫?STOP-P3-A-04
+//   G  Reference Role Authority Guard   鈫?STOP-P3-A-05
+//   H  Reference Precedence Guard       鈫?STOP-P3-A-06
+//   I  Stale Fail-closed Guard          鈫?STOP-P3-A-07
+//   J  Persistence / Leakage Guard      鈫?STOP-P3-A-08
+//   K  Web UI Provider Network Guard    鈫?STOP-P3-A-09
+//   L  Shared Regression Guards         鈫?STOP-P3-A-10/11/12
 //
 // Additional Authority Guards (P-V):
 //   P  No second generation fingerprint authority
@@ -147,7 +147,7 @@ function runGit(args: string[]): string {
 function stripComments(src: string): string {
   // 1) Block comments
   let out = src.replace(/\/\*[\s\S]*?\*\//g, '');
-  // 2) Line comments (only outside strings — naïve
+  // 2) Line comments (only outside strings 鈥?na茂ve
   //    heuristic: strip from `//` to end-of-line)
   out = out.replace(/(^|[^:'"`\\])\/\/[^\n]*/g, (m, p1) => p1);
   return out;
@@ -169,7 +169,7 @@ function hasExportedFunction(src: string, name: string): boolean {
 }
 
 // =============================================================================
-// Group A — Runtime Dependency Boundary (canonical call path)
+// Group A 鈥?Runtime Dependency Boundary (canonical call path)
 // =============================================================================
 
 test('A-01 Workspace production code imports only the P2 public facade (no deep-import into Compiler / Provider adapter / metadata / task-builder)', () => {
@@ -243,7 +243,7 @@ test('A-05 Workspace orchestrates via the service surface (no parallel orchestra
 });
 
 // =============================================================================
-// Group B — Web UI Import Boundary (future P3-B UI guard)
+// Group B 鈥?Web UI Import Boundary (future P3-B UI guard)
 // =============================================================================
 
 test('B-01 Web UI source does NOT deep-import P2 frozen packaging internals', () => {
@@ -318,7 +318,7 @@ test('B-05 Web UI source does NOT import the P2 frozen generation-service (call 
 });
 
 // =============================================================================
-// Group C — Compiler Boundary (STOP-P3-A-01)
+// Group C 鈥?Compiler Boundary (STOP-P3-A-01)
 // =============================================================================
 
 test('C-01 Workspace does NOT import P2 frozen compiler.js', () => {
@@ -367,7 +367,7 @@ test('C-03 The "compiler" identifier only appears in production as a data field 
 });
 
 // =============================================================================
-// Group D — Provider Payload Boundary (STOP-P3-A-02)
+// Group D 鈥?Provider Payload Boundary (STOP-P3-A-02)
 // =============================================================================
 
 test('D-01 Workspace does NOT construct a Provider payload (no buildPackagingProviderPayload / buildProviderPayload / createProviderRequestBody)', () => {
@@ -412,7 +412,7 @@ test('D-03 Web UI does NOT import any Provider-payload builder (no buildProvider
 });
 
 // =============================================================================
-// Group E — Credential Boundary (STOP-P3-A-03)
+// Group E 鈥?Credential Boundary (STOP-P3-A-03)
 // =============================================================================
 
 test('E-01 Workspace does NOT import node-credential-store or any credential reader', () => {
@@ -491,7 +491,7 @@ test('E-05 The public Runtime barrel does NOT re-export any credential implement
 });
 
 // =============================================================================
-// Group F — Frozen P2 Contract Guard (STOP-P3-A-04)
+// Group F 鈥?Frozen P2 Contract Guard (STOP-P3-A-04)
 // =============================================================================
 
 test('F-01 All 9 P2 frozen packaging modules exist on disk', () => {
@@ -535,7 +535,7 @@ test('F-04 No commit on the current branch has modified a P2 frozen module since
     try {
       diffOut = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD', '--', f]).trim();
     } catch {
-      // ignore — fall through to the assertion
+      // ignore 鈥?fall through to the assertion
     }
     assert.equal(
       diffOut,
@@ -559,7 +559,7 @@ test('F-05 Workspace does NOT modify any P2 frozen module (no Workspace code pat
 });
 
 // =============================================================================
-// Group G — Reference Role Authority Guard (STOP-P3-A-05)
+// Group G 鈥?Reference Role Authority Guard (STOP-P3-A-05)
 // =============================================================================
 
 test('G-01 No Workspace module defines a second canonical Reference role array', () => {
@@ -626,7 +626,7 @@ test('G-04 The view-model references array does NOT carry a precedence rank / wi
 });
 
 // =============================================================================
-// Group H — Reference Precedence Guard (STOP-P3-A-06)
+// Group H 鈥?Reference Precedence Guard (STOP-P3-A-06)
 // =============================================================================
 
 test('H-01 No Workspace module implements a precedence engine (no sortReferences / rankReferences / winsOver / priorityWeight / resolveWorkspacePrecedence / mergeReferencePriority)', () => {
@@ -666,12 +666,12 @@ test('H-03 The Workspace public barrel does NOT re-export the canonical preceden
   assert.equal(
     /PACKAGING_REFERENCE_PRECEDENCE/.test(barrel),
     false,
-    'public Runtime barrel must not re-export the precedence constant (P3-A spec §18 / §22)',
+    'public Runtime barrel must not re-export the precedence constant (P3-A spec 搂18 / 搂22)',
   );
 });
 
 // =============================================================================
-// Group I — Stale Fail-closed Guard (STOP-P3-A-07)
+// Group I 鈥?Stale Fail-closed Guard (STOP-P3-A-07)
 // =============================================================================
 
 test('I-01 All Workspace execution goes through workspace-service.executeGeneration (no parallel execute entry point)', () => {
@@ -740,7 +740,7 @@ test('I-05 No Workspace module imports preparePackagingGeneration directly from 
 });
 
 // =============================================================================
-// Group J — Persistence / Leakage Guard (STOP-P3-A-08)
+// Group J 鈥?Persistence / Leakage Guard (STOP-P3-A-08)
 // =============================================================================
 
 test('J-01 View Model does NOT spread raw `session` as the public UI surface', () => {
@@ -804,7 +804,7 @@ test('J-05 The prepared view projection does NOT carry a Provider payload field 
 });
 
 // =============================================================================
-// Group K — Web UI Provider Network Guard (STOP-P3-A-09)
+// Group K 鈥?Web UI Provider Network Guard (STOP-P3-A-09)
 // =============================================================================
 
 test('K-01 Web UI source does NOT import P2 frozen provider-adapter.js', () => {
@@ -864,8 +864,7 @@ test('K-03 Web UI source does NOT POST to a Provider endpoint directly (no direc
 test('K-04 Web UI source may use the local masterpiece RPC (no global ban on fetch)', () => {
   // Sanity: the boundary is "no direct Provider network",
   // not "no fetch in Web UI". The Web UI uses the local
-  // RPC for generation. We do NOT globally ban fetch —
-  // a positive test confirms that the only allowed
+  // RPC for generation. We do NOT globally ban fetch 鈥?  // a positive test confirms that the only allowed
   // generation-channel is the local masterpiece RPC.
   const webApi = readFile(path.join(WEB_DIR, 'web-api.ts'));
   // The Web API layer is the boundary; it routes
@@ -874,7 +873,7 @@ test('K-04 Web UI source may use the local masterpiece RPC (no global ban on fet
 });
 
 // =============================================================================
-// Group L — Shared Regression Guards (STOP-P3-A-10/11/12)
+// Group L 鈥?Shared Regression Guards (STOP-P3-A-10/11/12)
 // =============================================================================
 
 test('L-01 P2 frozen image-generation regression: all expected packaging/ modules are present and untouched by the current branch', () => {
@@ -976,7 +975,7 @@ test('L-06 repo:verify authoritative config files exist and are valid JSON', () 
 });
 
 // =============================================================================
-// Group P — Additional Authority Guards
+// Group P 鈥?Additional Authority Guards
 // =============================================================================
 
 test('P-01 No second generation fingerprint authority (the only authority is the P2 frozen metadata.compileFingerprint)', () => {
@@ -1121,7 +1120,7 @@ test('P-08 No second run-store authority (Workspace stores the last execution as
 });
 
 // =============================================================================
-// Group T — Public Runtime Export Boundary
+// Group T 鈥?Public Runtime Export Boundary
 // =============================================================================
 
 test('T-01 The public Runtime barrel does NOT re-export P2 frozen compiler.js / provider-adapter.js / provider-capability.js / metadata.js / validation.js / task-builder.js / download-verify.js / policies.js / gates.js / redact.js / core/ internals', () => {
@@ -1190,7 +1189,7 @@ test('T-03 The Packaging public barrel exposes the canonical Workspace surface (
 });
 
 // =============================================================================
-// Group U — Workspace Service Orchestrator Invariants
+// Group U 鈥?Workspace Service Orchestrator Invariants
 // =============================================================================
 
 test('U-01 workspace-service.js is a thin orchestrator (delegates state machine + stale tracker + reference / locked-asset projection)', () => {
@@ -1240,7 +1239,7 @@ test('U-03 workspace-service.js does NOT call Provider / network / fs / credenti
 });
 
 // =============================================================================
-// Group V — View Model Projection Invariants
+// Group V 鈥?View Model Projection Invariants
 // =============================================================================
 
 test('V-01 view-model.js is a projection (no prepare / execute / Provider network / fs / credential / session mutation)', () => {
@@ -1294,7 +1293,7 @@ test('V-04 view-model.js does NOT detect stale independently (no computeStale / 
 });
 
 // =============================================================================
-// Group W — P3-B2 RPC Binding Boundary (additive; does NOT modify P3-A7 A-L)
+// Group W 鈥?P3-B2 RPC Binding Boundary (additive; does NOT modify P3-A7 A-L)
 // =============================================================================
 //
 // These guards are P3-B2-specific. They protect the contract
@@ -1303,7 +1302,7 @@ test('V-04 view-model.js does NOT detect stale independently (no computeStale / 
 //     instantiate `createPackagingWorkspaceService` locally.
 //   - There is no fallback / dual-path architecture. If the
 //     runtime RPC is unavailable, the Web feature renders a
-//     canonical unavailable surface — it does NOT silently
+//     canonical unavailable surface 鈥?it does NOT silently
 //     fall back to a local in-process stub.
 //   - The runtime operations layer is the SOLE owner of the
 //     P2 frozen deps seam. The Web feature never sends
@@ -1312,11 +1311,14 @@ test('V-04 view-model.js does NOT detect stale independently (no computeStale / 
 const PACKAGING_WEB_FEATURE = path.join(APPS_WEB_SRC, 'features/packaging');
 const PACKAGING_OPERATIONS = path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js');
 const PACKAGING_RUNTIME_SERVICES = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'runtime-services.ts');
+const PACKAGING_WORKSPACE = path.join(PACKAGING_WEB_FEATURE, 'PackagingWorkspace.tsx');
+const PACKAGING_SERVICE = path.join(PACKAGING_WEB_FEATURE, 'service.ts');
+const PACKAGING_VIEW_MODEL = path.join(PACKAGING_PROD_DIR, 'view-model.js');
 
 test('W-01 the Web Packaging feature directory exists under apps/web/src/features/packaging/', () => {
   assert.ok(
     existsSync(PACKAGING_WEB_FEATURE),
-    'P3-B2 requires apps/web/src/features/packaging/ (per P3-A1 audit + P3-A9 freeze §20)',
+    'P3-B2 requires apps/web/src/features/packaging/ (per P3-A1 audit + P3-A9 freeze 搂20)',
   );
 });
 
@@ -1339,7 +1341,7 @@ test('W-02 the Web Packaging feature does NOT import or call createPackagingWork
       assert.equal(
         re.test(src),
         false,
-        `${file} must not match ${re.toString()} (P3-B2 §3 — no local Workspace service instance)`,
+        `${file} must not match ${re.toString()} (P3-B2 搂3 鈥?no local Workspace service instance)`,
       );
     }
   }
@@ -1388,11 +1390,11 @@ test('W-05 the Web Packaging feature consumes window.masterpiece.packaging.* onl
     }
     // The Web feature must not define a local
     // `createPackagingWorkspaceService` / `preparePackagingGeneration`
-    // stub. (P3-B2 §3: no dual-path architecture.)
+    // stub. (P3-B2 搂3: no dual-path architecture.)
     assert.equal(
       src.includes('preparePackagingGeneration = NOOP') || src.includes('NOOP_STUB'),
       false,
-      `${file} must not define a local in-process stub for prepare/execute (P3-B2 §3 dual-path forbidden)`,
+      `${file} must not define a local in-process stub for prepare/execute (P3-B2 搂3 dual-path forbidden)`,
     );
   }
   assert.ok(usesRpc, 'Web Packaging feature must consume window.masterpiece.packaging.* (RPC only)');
@@ -1419,7 +1421,7 @@ test('W-06 the operations layer is the sole Web-facing bridge to the frozen Work
     assert.equal(
       opsSrc.includes(forbidden),
       false,
-      `packaging-operations.js must not import or call ${forbidden} (P3-B2 §7 + P3-A7 B/F)`,
+      `packaging-operations.js must not import or call ${forbidden} (P3-B2 搂7 + P3-A7 B/F)`,
     );
   }
   // The operations file MUST NOT have a second bridge (no
@@ -1483,7 +1485,7 @@ test('W-08 the runtime services factory instantiates the Packaging Workspace ser
   );
 });
 
-test('W-09 the Web feature exposes a no-fallback unavailable surface (RPC unavailable → render error, not local stub)', () => {
+test('W-09 the Web feature exposes a no-fallback unavailable surface (RPC unavailable 鈫?render error, not local stub)', () => {
   const files = walkSourceDir(PACKAGING_WEB_FEATURE);
   let foundUnavailable = false;
   for (const file of files) {
@@ -1499,7 +1501,7 @@ test('W-09 the Web feature exposes a no-fallback unavailable surface (RPC unavai
   }
   assert.ok(
     foundUnavailable,
-    'Web Packaging feature must explicitly detect the unavailable runtime and render a canonical unavailable surface (P3-B2 §3 + §12)',
+    'Web Packaging feature must explicitly detect the unavailable runtime and render a canonical unavailable surface (P3-B2 搂3 + 搂12)',
   );
 });
 
@@ -1507,13 +1509,13 @@ test('W-10 the Web feature does not embed a demo seed of Locked Assets in the pr
   // The B1 demo seed was a function called `buildSeedTruthSnapshot`
   // that hard-coded 7 canonical Locked-Asset fields with
   // empty / placeholder values. P3-B2 production path must
-  // NOT contain this kind of seed (per the user spec §20
-  // "B1 当时 seed 了 7 个 canonical Locked-Asset 字段 作为
-  // shell demo. B2 接入真实 RPC 后：这些 seed/demo values
-  // 不得继续充当 production truth").
+  // NOT contain this kind of seed (per the user spec 搂20
+  // "B1 褰撴椂 seed 浜?7 涓?canonical Locked-Asset 瀛楁 浣滀负
+  // shell demo. B2 鎺ュ叆鐪熷疄 RPC 鍚庯細杩欎簺 seed/demo values
+  // 涓嶅緱缁х画鍏呭綋 production truth").
   //
   // The runtime side MAY keep an analogous empty-shape seed
-  // for the resolveTruthSnapshot default — that is the
+  // for the resolveTruthSnapshot default 鈥?that is the
   // runtime authority, not a fake UI seed. This guard only
   // checks the Web feature.
   const files = walkSourceDir(PACKAGING_WEB_FEATURE);
@@ -1522,13 +1524,13 @@ test('W-10 the Web feature does not embed a demo seed of Locked Assets in the pr
     assert.equal(
       src.includes('buildSeedTruthSnapshot'),
       false,
-      `${file} must not contain the B1 buildSeedTruthSnapshot helper (P3-B2 §20)`,
+      `${file} must not contain the B1 buildSeedTruthSnapshot helper (P3-B2 搂20)`,
     );
   }
 });
 
 // =============================================================================
-// Group X — P3-B3 Reference & Truth Architecture Guards (additive)
+// Group X 鈥?P3-B3 Reference & Truth Architecture Guards (additive)
 // =============================================================================
 //
 // P3-B3 = Reference Selection UI + Runtime Truth Projection. These
@@ -1546,7 +1548,7 @@ test('W-10 the Web feature does not embed a demo seed of Locked Assets in the pr
 //   - Locked Asset UI is read-only (no edit / unlock / replace /
 //     delete / upload / save action)
 //   - the Web feature cannot inject an arbitrary truthSnapshot
-//     (P3-B3 §11 + §12)
+//     (P3-B3 搂11 + 搂12)
 //   - truth refresh resolves the runtime-side authority
 //   - no second truth store
 //   - reference semantic updates use updateIntent RPC
@@ -1565,7 +1567,7 @@ test('X-01 the Web feature imports canonical roles from @masterpiece/runtime-cor
       foundImport = true;
     }
     // The Web feature must NOT define a local semantic role
-    // enum (P3-B3 §2).
+    // enum (P3-B3 搂2).
     for (const forbidden of [
       'WORKSPACE_REFERENCE_ROLES',
       'UI_REFERENCE_ROLES',
@@ -1604,7 +1606,7 @@ test('X-02 the Web feature does NOT derive the role vocabulary from view.referen
       assert.equal(
         /\.map\(\s*\(?\s*\w+\s*\)?\s*=>\s*[\w.]+\.role/.test(src),
         false,
-        `${file} must not derive a role vocabulary from view.references (P3-B3 §2)`,
+        `${file} must not derive a role vocabulary from view.references (P3-B3 搂2)`,
       );
     }
   }
@@ -1683,7 +1685,7 @@ test('X-05 the Web feature does NOT expose an absolute filesystem path for asset
 });
 
 test('X-06 the Locked Asset UI does NOT expose an edit / unlock / replace / delete / save action', () => {
-  // P3-B3 §13: the Locked Asset UI is strictly read-only.
+  // P3-B3 搂13: the Locked Asset UI is strictly read-only.
   // No edit / unlock / replace / delete / upload / save
   // action is exposed.
   const files = walkSourceDir(PACKAGING_WEB_FEATURE);
@@ -1708,7 +1710,7 @@ test('X-06 the Locked Asset UI does NOT expose an edit / unlock / replace / dele
   }
 });
 
-test('X-07 the Web feature does NOT send an arbitrary truthSnapshot to setTruthSnapshot (P3-B3 §11)', () => {
+test('X-07 the Web feature does NOT send an arbitrary truthSnapshot to setTruthSnapshot (P3-B3 搂11)', () => {
   // The Web feature's setTruthSnapshot RPC client must only
   // send { sessionId } (no truthSnapshot, no projectId).
   // The createSession RPC DOES accept a truthSnapshot
@@ -1733,7 +1735,7 @@ test('X-07 the Web feature does NOT send an arbitrary truthSnapshot to setTruthS
   }
 });
 
-test('X-08 the Web feature does NOT send a projectId to setTruthSnapshot (P3-B3 §12)', () => {
+test('X-08 the Web feature does NOT send a projectId to setTruthSnapshot (P3-B3 搂12)', () => {
   // The Web RPC client must not include a projectId in
   // the setTruthSnapshot input. The session's projectId is
   // the sole authority.
@@ -1757,7 +1759,7 @@ test('X-08 the Web feature does NOT send a projectId to setTruthSnapshot (P3-B3 
 });
 
 test('X-09 the Web feature uses the existing `projects.scanAssets` RPC for reference asset selection (no second asset resolver)', () => {
-  // P3-B3 §3: the Reference Picker reuses the existing
+  // P3-B3 搂3: the Reference Picker reuses the existing
   // project asset authority. The Web feature calls
   // `window.masterpiece.projects.scanAssets(projectId)`.
   const files = walkSourceDir(PACKAGING_WEB_FEATURE);
@@ -1770,7 +1772,7 @@ test('X-09 the Web feature uses the existing `projects.scanAssets` RPC for refer
   }
   assert.ok(
     usesExisting,
-    'Web feature must reuse projects.scanAssets for reference asset selection (P3-B3 §3)',
+    'Web feature must reuse projects.scanAssets for reference asset selection (P3-B3 搂3)',
   );
 });
 
@@ -1801,7 +1803,7 @@ test('X-10 the Web feature refreshTruth request passes only sessionId (no caller
 });
 
 test('X-11 the Web feature does NOT implement a second truth store (no second createPackagingWorkspaceService consumer)', () => {
-  // P3-B3 §10: the resolver is the runtime-side projection
+  // P3-B3 搂10: the resolver is the runtime-side projection
   // / resolution seam. The Web feature does NOT maintain
   // its own truth store. We check that the Web feature does
   // not import or call the Workspace service factory (this
@@ -1813,13 +1815,13 @@ test('X-11 the Web feature does NOT implement a second truth store (no second cr
     assert.equal(
       src.includes('createPackagingWorkspaceService'),
       false,
-      `${file} must not instantiate createPackagingWorkspaceService (P3-B3 §10)`,
+      `${file} must not instantiate createPackagingWorkspaceService (P3-B3 搂10)`,
     );
   }
 });
 
 test('X-12 the Web feature submits reference updates via the updateIntent RPC channel', () => {
-  // P3-B3 §4: every semantic reference change must
+  // P3-B3 搂4: every semantic reference change must
   // ultimately go through updateIntent. The Web feature
   // uses `updatePackagingIntent` (the RPC client wrapper)
   // or `ops.operations['packaging:update-intent']`
@@ -1839,7 +1841,7 @@ test('X-12 the Web feature submits reference updates via the updateIntent RPC ch
 });
 
 test('X-13 the Web feature has a presentation-only role label map (not a semantic second enum)', () => {
-  // P3-B3 §2: a presentation-only label map is allowed,
+  // P3-B3 搂2: a presentation-only label map is allowed,
   // but the semantic value MUST be the canonical role.
   // We check that the label map exists (presentation) and
   // is keyed by the canonical role strings.
@@ -1858,7 +1860,7 @@ test('X-13 the Web feature has a presentation-only role label map (not a semanti
 });
 
 test('X-14 the Web feature does NOT construct a second reference asset database or file resolver', () => {
-  // P3-B3 §3: no Packaging-only file picker backend, no
+  // P3-B3 搂3: no Packaging-only file picker backend, no
   // second asset resolver, no second file database. The Web
   // feature must not implement its own asset selection
   // server.
@@ -1883,7 +1885,7 @@ test('X-14 the Web feature does NOT construct a second reference asset database 
 });
 
 test('X-15 the Web feature does NOT import P2 frozen internals (no deep-import of @masterpiece/image-generation-runtime)', () => {
-  // P3-B3 §20: the Web feature MUST NOT deep-import P2
+  // P3-B3 搂20: the Web feature MUST NOT deep-import P2
   // frozen internals. The application boundary is the
   // public @masterpiece/runtime-core barrel.
   const files = walkSourceDir(PACKAGING_WEB_FEATURE);
@@ -1892,12 +1894,12 @@ test('X-15 the Web feature does NOT import P2 frozen internals (no deep-import o
     assert.equal(
       src.includes('@masterpiece/image-generation-runtime'),
       false,
-      `${file} must not deep-import @masterpiece/image-generation-runtime (P3-B3 §20)`,
+      `${file} must not deep-import @masterpiece/image-generation-runtime (P3-B3 搂20)`,
     );
   }
 });
 
-test('X-16 the runtime operations layer rejects a caller-supplied truthSnapshot on set-truth-snapshot (P3-B3 §11)', () => {
+test('X-16 the runtime operations layer rejects a caller-supplied truthSnapshot on set-truth-snapshot (P3-B3 搂11)', () => {
   // The operations layer is the authority boundary. The
   // set-truth-snapshot channel MUST reject a caller-supplied
   // truthSnapshot payload.
@@ -1925,7 +1927,7 @@ test('X-16 the runtime operations layer rejects a caller-supplied truthSnapshot 
 });
 
 test('X-17 the runtime operations layer never persists a second truth store (no own Locked Asset or truth DB)', () => {
-  // P3-B3 §10: no second truth store. The runtime
+  // P3-B3 搂10: no second truth store. The runtime
   // operations layer is a thin bridge that delegates truth
   // resolution to the runtime authority seam.
   const opsSrc = readFile(PACKAGING_OPERATIONS);
@@ -1950,7 +1952,7 @@ test('X-17 the runtime operations layer never persists a second truth store (no 
 });
 
 test('X-18 the runtime operations layer delegates truth resolution to the resolveTruthSnapshot adapter (no hard-coded truth data)', () => {
-  // P3-B3 §9 + §11: the operations layer is the bridge;
+  // P3-B3 搂9 + 搂11: the operations layer is the bridge;
   // the truth data is resolved by the runtime side via the
   // `resolveTruthSnapshot` adapter. The operations file
   // must NOT hard-code any Locked Asset data.
@@ -1984,7 +1986,7 @@ test('X-19 the runtime composition root passes the canonical truth resolver (no 
 });
 
 test('X-20 the runtime operations layer routes executeGeneration deps through readSettings + readCredentials (no Web-supplied credential)', () => {
-  // P3-B3 §12: the Web caller may supply providerModelId
+  // P3-B3 搂12: the Web caller may supply providerModelId
   // and apiProfileId (safe identifiers). The apiKey /
   // baseUrl / region are resolved on the runtime side via
   // readSettings + readCredentials.
@@ -2004,4 +2006,537 @@ test('X-20 the runtime operations layer routes executeGeneration deps through re
     /readCredentials\(apiProfileId\)/u,
     'execute deps must call readCredentials(apiProfileId)',
   );
+});
+
+// =============================================================================
+// Group Y 鈥?P3-B4 Execution & Result Gallery guards
+// =============================================================================
+//
+// P3-B4 only adds the Result Gallery + Retry + Prepared Summary on top
+// of P3-B2 RPC binding and P3-B3 reference/truth. The P3-A frozen
+// surface must remain UNCHANGED. These guards are pure source-level
+// static checks (additive, no overlap with A-L / W / X).
+//
+// Each guard maps to one of the B4 spec sections:
+//   Y-01  result UI consumes view.execution only            (搂III / 搂XII)
+//   Y-02  no absolute path in Web                           (搂II / 搂X / 搂XV)
+//   Y-03  no file:// preview in Web                        (搂IX / 搂X)
+//   Y-04  no base64 / data URI in Web                      (搂IX / 搂X)
+//   Y-05  no fake progress percentage                      (搂VII)
+//   Y-06  no Provider response rendering                   (搂XII / 搂XV)
+//   Y-07  no credential / path rendering                   (搂II / 搂XV)
+//   Y-08  no execution.history invented contract           (搂XIX)
+//   Y-09  no localStorage result history                   (搂XVIII / 搂XIX)
+//   Y-10  no IndexedDB result authority                    (搂XVIII)
+//   Y-11  Retry uses executeGeneration RPC only            (搂XVII)
+//   Y-12  Reset renders RPC returned View                  (搂XVI)
+//   Y-13  no modification to frozen P3-A View Model        (搂XXVIII)
+//   Y-14  no second artifact server in Web                 (搂IX / 搂XVIII)
+//   Y-15  no second run-store in Web                       (搂XVIII)
+//   Y-16  no filesystem API in Web                         (搂XVIII)
+//   Y-17  P3-A frozen application files unchanged          (搂XXVIII)
+//   Y-18  P2 frozen modules unchanged                      (搂XXI / 搂XXVIII)
+//   Y-19  STALE + previous result only via view.execution  (搂XV)
+//   Y-20  no Browser-side execution result persistence     (搂XVIII)
+
+test('Y-01 the Result Gallery UI consumes only view.execution (no raw executionResult / preparedResult / Provider payload)', () => {
+  // P3-B4 搂III / 搂XII: the Web Result Gallery is allowed to
+  // read only the frozen `view.execution` summary. It MUST
+  // NOT reach into raw session, preparedResult,
+  // executionResult, or any Provider-payload-shaped object.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'session.lastExecution',
+      'session.prepared',
+      'lastExecution.runId',
+      'lastExecution.artifacts',
+      'preparedResult.compiled',
+      'preparedResult.payload',
+      'executeResult',
+      'providerResponse',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not read ${forbidden}; Result Gallery consumes only view.execution`,
+      );
+    }
+  }
+});
+
+test('Y-02 the Web feature does not render absolute paths in any execution surface (artifact, execution, runId, diagnostics)', () => {
+  // P3-B4 搂II / 搂X: any absolute path appearing in the Web
+  // feature is treated as a hostile leak. The execution
+  // surface must not even transitively surface
+  // `relativePath` as a filesystem path.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /[A-Za-z]:[\\/]/u,
+      /file:\/\//iu,
+      /\\\\[A-Za-z0-9_.$-]+\\[A-Za-z0-9_.$-]+/u,
+      'relativePath',
+      'runRoot',
+      'artifactPath',
+    ]) {
+      if (forbidden instanceof RegExp) {
+        assert.equal(
+          forbidden.test(src),
+          false,
+          `${file} must not contain absolute path pattern ${forbidden}`,
+        );
+      } else {
+        assert.equal(
+          src.includes(forbidden),
+          false,
+          `${file} must not contain ${forbidden} (P3-B4 搂IX / 搂XV)`,
+        );
+      }
+    }
+  }
+});
+
+test('Y-03 the Web feature does not construct a file:// preview URL', () => {
+  // P3-B4 搂IX / 搂X: preview must go through the runtime
+  // artifact-serving seam, not a hand-rolled file:// URL.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    assert.equal(
+      /['"`]file:\/\//u.test(src),
+      false,
+      `${file} must not contain a file:// preview URL (P3-B4 搂IX)`,
+    );
+  }
+});
+
+test('Y-04 the Web feature does NOT dump base64 / data URIs into the Result Gallery', () => {
+  // P3-B4 搂IX / 搂X: a data: URI is the canonical sign of a
+  // leaked image. The Web feature must not embed base64 or
+  // data: URIs as preview content. The frozen View Model
+  // exposes `hasB64` as a metadata flag only; the bytes
+  // themselves stay on the runtime side.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    assert.equal(
+      /data:[^;,]+;base64,/u.test(src),
+      false,
+      `${file} must not embed a base64 data URI in the Result Gallery`,
+    );
+    assert.equal(
+      /toDataURL\s*\(/u.test(src),
+      false,
+      `${file} must not call toDataURL() (P3-B4 搂IX)`,
+    );
+    assert.equal(
+      /readAsDataURL\s*\(/u.test(src),
+      false,
+      `${file} must not call readAsDataURL() (P3-B4 搂IX)`,
+    );
+  }
+});
+
+test('Y-05 the Web feature does NOT display fake progress percentages (27% / 63% / 92% / ...)', () => {
+  // P3-B4 搂VII: when the runtime has no real progress
+  // signal, the UI must NOT render a fake percentage. The
+  // busy label is a real status copy (`鍑嗗涓€ /
+  // `鎵ц涓€), not a percent figure.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /progress\s*[:=]\s*\d+/u,
+      /\bprogress\.current\b/u,
+      /['"`]\s*\d{1,2}\s*%\s*['"`]/u,
+      /\{progress\}/u,
+      /progressBar/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not contain a fake progress percentage pattern ${forbidden}`,
+      );
+    }
+  }
+});
+
+test('Y-06 the Web feature does NOT render Provider raw response bodies / redactedRequest / redactedResponse', () => {
+  // P3-B4 搂XII / 搂XV: the View Model intentionally strips
+  // the redacted request / response bodies from the
+  // `view.execution.diagnostics` surface. The Web feature
+  // must not attempt to surface them through a back door.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'redactedRequest',
+      'redactedResponse',
+      'providerResponse.body',
+      'rawResponse',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not contain ${forbidden}`,
+      );
+    }
+  }
+});
+
+test('Y-07 the Web feature does NOT render credentials / secrets / Authorization / Bearer / apiKey', () => {
+  // P3-B4 搂II / 搂XV: view.execution may surface the
+  // audit-region by design, but never apiKey / Authorization
+  // / Bearer / password / secret. The Result Gallery must
+  // not even reach into them.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /api[_-]?key/iu,
+      /authorization/iu,
+      /\bbearer\b/iu,
+      /\bpassword\b/iu,
+      /\bsecret\b/iu,
+      /\bcredential\b/iu,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not contain credential-ish substring ${forbidden}`,
+      );
+    }
+  }
+});
+
+test('Y-08 the Web feature does NOT invent an execution.history contract', () => {
+  // P3-B4 搂XIX: history is explicitly forbidden in B4. The
+  // frozen P3-A View Model does not define `execution.history`;
+  // the Web feature must not invent it.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'execution.history',
+      'executionHistory',
+      'runsHistory',
+      'historyList',
+      'pastRuns',
+      'lastNRuns',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not invent ${forbidden} (P3-B4 搂XIX)`,
+      );
+    }
+  }
+});
+
+test('Y-09 the Web feature does NOT use localStorage for result history', () => {
+  // P3-B4 搂XVIII: no browser-local persistence of result
+  // history. The frozen P3-A View Model is the only source
+  // of truth.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    assert.equal(
+      /localStorage\s*\./u.test(src),
+      false,
+      `${file} must not call localStorage.* (P3-B4 搂XVIII)`,
+    );
+  }
+});
+
+test('Y-10 the Web feature does NOT use IndexedDB / caches / sessionStorage for result authority', () => {
+  // P3-B4 搂XVIII: no second result persistence layer in the
+  // browser. IndexedDB / sessionStorage / Cache API are all
+  // forbidden for execution result authority.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      'indexedDB',
+      'sessionStorage',
+      'caches.open',
+      'CacheStorage',
+    ]) {
+      assert.equal(
+        src.includes(forbidden),
+        false,
+        `${file} must not use ${forbidden} (P3-B4 搂XVIII)`,
+      );
+    }
+  }
+});
+
+test('Y-11 Retry uses the same executeGeneration RPC (no implicit prepare+execute, no new endpoint)', () => {
+  // P3-B4 搂XVII: Retry re-uses the canonical
+  // `executePackagingGeneration` RPC. It must NOT be a
+  // separate endpoint, must NOT implicitly call prepare,
+  // and must NOT be implemented as a local handler that
+  // bypasses the service.
+  const serviceSrc = readFile(PACKAGING_SERVICE);
+  assert.match(
+    serviceSrc,
+    /executePackagingGeneration/u,
+    'service.ts must still export executePackagingGeneration (Retry contract)',
+  );
+  // The ops layer has one executeGeneration channel; no
+  // separate retry channel.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  assert.match(
+    opsSrc,
+    /execute-generation/u,
+    'operations layer must keep the single execute-generation channel',
+  );
+  // Web feature: Retry button calls the same handler as
+  // Execute (i.e. uses the existing RPC client).
+  const workspaceSrc = readFile(PACKAGING_WORKSPACE);
+  assert.match(
+    workspaceSrc,
+    /data-action=['"]retry['"]/u,
+    'PackagingWorkspace must surface Retry as a button labelled with the retry contract',
+  );
+  assert.match(
+    workspaceSrc,
+    /onExecute/u,
+    'PackagingWorkspace must reuse onExecute for Retry (same handler / same RPC)',
+  );
+});
+
+test('Y-12 Reset renders the RPC-returned View (no local setState of execution = null)', () => {
+  // P3-B4 搂XVI: after clicking Reset, the UI MUST render
+  // whatever View the runtime returns. Reset must NOT
+  // locally mutate `view.execution` to null. The
+  // application state machine owns the truth.
+  const workspaceSrc = readFile(PACKAGING_WORKSPACE);
+  // The Reset handler must call resetPackagingPreparation
+  // and apply the returned view.
+  assert.match(
+    workspaceSrc,
+    /resetPackagingPreparation/u,
+    'PackagingWorkspace must call resetPackagingPreparation',
+  );
+  // No local `view.execution = null` after reset.
+  assert.equal(
+    /execution\s*=\s*null/u.test(workspaceSrc),
+    false,
+    'PackagingWorkspace must not locally null out view.execution after Reset',
+  );
+});
+
+test('Y-13 the frozen P3-A View Model is unchanged by P3-B4 (no schema / no field additions)', () => {
+  // P3-B4 搂XXVIII: the frozen `view-model.js` is the only
+  // View Model authority. P3-B4 does not introduce a new
+  // schema, does not rename keys, does not add fields.
+  // We verify by comparing the file's `view` projection
+  // (the `return Object.freeze({` block in
+  // projectPackagingWorkspaceView) against the canonical
+  // 18-key allowlist declared in the file itself.
+  const viewModelSrc = readFile(PACKAGING_VIEW_MODEL);
+  // The canonical 18 top-level keys are listed in
+  // CANONICAL_VIEW_MODEL_KEYS; P3-B4 must not add new keys.
+  const declaredMatch = viewModelSrc.match(
+    /CANONICAL_VIEW_MODEL_KEYS\s*=\s*Object\.freeze\(\[([\s\S]*?)\]\)/u,
+  );
+  assert.ok(declaredMatch, 'CANONICAL_VIEW_MODEL_KEYS must be declared');
+  const declared = declaredMatch[1]
+    .split(',')
+    .map((s) => s.trim().replace(/^['"`]|['"`]$/g, ''))
+    .filter(Boolean);
+  // P3-A9 freeze 搂13.2: 18 canonical top-level keys.
+  assert.equal(declared.length, 18, 'P3-A canonical top-level key count must remain 18');
+  // No "history" / "previous" / "retry" / "pending" key has
+  // been smuggled into the top-level surface.
+  for (const forbidden of [
+    'history', 'previousExecution', 'lastN', 'retryStatus', 'pendingExecution',
+  ]) {
+    assert.equal(
+      declared.includes(forbidden),
+      false,
+      `frozen view-model must not declare ${forbidden} (P3-B4 搂XIX)`,
+    );
+  }
+});
+
+test('Y-14 the Web feature does NOT introduce a second artifact-serving server', () => {
+  // P3-B4 搂IX / 搂XVIII: the Web feature must not spin up
+  // its own image-serving HTTP / WebSocket / IPC server.
+  // All artifact serving is the runtime's responsibility.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /http\.createServer/u,
+      /WebSocketServer/u,
+      /\bexpress\b/u,
+      /createServer\s*\(/u,
+      /new\s+Server\s*\(/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not introduce a second artifact server (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('Y-15 the Web feature does NOT introduce a second run-store', () => {
+  // P3-B4 搂XVIII: a run-store is a runtime-side authority.
+  // The Web feature must not maintain a parallel in-memory
+  // map of `runId 鈫?result`.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /new\s+Map\s*\(\s*\)/u,
+      /runStore\s*[:=]/u,
+      /runs\s*:\s*new\s+Map/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not introduce a second run-store (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('Y-16 the Web feature does NOT import filesystem APIs (fs / path / child_process / fs.promises)', () => {
+  // P3-B4 搂XVIII: the Web feature is a renderer; it must
+  // never reach into the filesystem. node:fs / node:path /
+  // node:child_process are forbidden imports in
+  // `apps/web/src/features/packaging/*`.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /from\s+['"]node:fs/u,
+      /from\s+['"]node:path/u,
+      /from\s+['"]node:child_process/u,
+      /require\s*\(\s*['"]fs['"]\s*\)/u,
+      /require\s*\(\s*['"]path['"]\s*\)/u,
+      /require\s*\(\s*['"]child_process['"]\s*\)/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not import a filesystem API (${forbidden})`,
+      );
+    }
+  }
+});
+
+test('Y-17 the P3-A frozen production modules are unchanged by P3-B4 (zero-line diff)', () => {
+  // P3-B4 搂XXVIII: P3-A frozen application files in
+  // `packages/runtime-core/src/application/packaging/*` MUST
+  // NOT be modified by P3-B4. We assert by `git diff`
+  // against the P3-A production baseline (dd4570a).
+  let diffOutput = '';
+  try {
+    diffOutput = runGit([
+      'diff',
+      '--name-only',
+      'dd4570a',
+      '--',
+      'packages/runtime-core/src/application/packaging/',
+    ]);
+  } catch (e) {
+    assert.fail(`git diff failed: ${e instanceof Error ? e.message : String(e)}`);
+  }
+  const changed = diffOutput
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  assert.equal(
+    changed.length,
+    0,
+    `P3-B4 must not modify any P3-A frozen application file; got:\n${changed.join('\n')}`,
+  );
+});
+
+test('Y-18 the P2 frozen protected modules are unchanged by P3-B4 (zero-line diff vs P2 baseline)', () => {
+  // P3-B4 搂XXI / 搂XXVIII: P2 frozen modules (16 protected
+  // paths in `packages/image-generation-runtime/src/packaging/*`)
+  // MUST NOT be modified by P3-B4.
+  let diffOutput = '';
+  try {
+    diffOutput = runGit([
+      'diff',
+      '--name-only',
+      P2_FROZEN_BASELINE,
+      '--',
+      'packages/image-generation-runtime/src/packaging/',
+    ]);
+  } catch (e) {
+    assert.fail(`git diff failed: ${e instanceof Error ? e.message : String(e)}`);
+  }
+  const changed = diffOutput
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  assert.equal(
+    changed.length,
+    0,
+    `P3-B4 must not modify any P2 frozen module; got:\n${changed.join('\n')}`,
+  );
+});
+
+test('Y-19 the STALE + previous-result presentation only reads view.execution (no second source)', () => {
+  // P3-B4 搂XV: when the current `view.status === 'stale'`,
+  // the previous result is whatever `view.execution` still
+  // carries. The Web feature MUST NOT have a second source
+  // for "previous execution" (no localStorage backup, no
+  // parallel map, no in-component ref to the last view).
+  const workspaceSrc = readFile(PACKAGING_WORKSPACE);
+  // ResultTile must read `view.execution` for the gallery
+  // content. The presence of a ResultTile / result-related
+  // rendering is the positive signal; the negative signal
+  // is no alternative source.
+  assert.match(
+    workspaceSrc,
+    /view\.execution/u,
+    'PackagingWorkspace must consume view.execution for Result Gallery',
+  );
+  // No "previousExecution" / "lastExecutionCache" / "stale
+  // previous" state.
+  for (const forbidden of [
+    'previousExecution',
+    'lastExecutionCache',
+    'stalePreviousResult',
+    'cachedExecution',
+  ]) {
+    assert.equal(
+      workspaceSrc.includes(forbidden),
+      false,
+      `PackagingWorkspace must not introduce ${forbidden} (P3-B4 搂XV)`,
+    );
+  }
+});
+
+test('Y-20 the Web feature does NOT persist the execution result on the browser side', () => {
+  // P3-B4 搂XVIII: no second execution result authority. The
+  // browser side does not cache, store, or re-transmit the
+  // execution result beyond what the View Model provides.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /cache\.put\s*\(/u,
+      /setItem\s*\(\s*['"`]execution/u,
+      /setItem\s*\(\s*['"`]result/u,
+      /setItem\s*\(\s*['"`]packaging/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not persist execution result to the browser (${forbidden})`,
+      );
+    }
+  }
 });
