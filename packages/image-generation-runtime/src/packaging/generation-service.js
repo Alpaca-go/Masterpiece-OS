@@ -228,40 +228,34 @@ function newError(code, publicMessage, extras = {}) {
 
 function toGenerationProviderFailed(error) {
   const code = asStringTrim(error?.code, GENERATION_PROVIDER_FAILED);
-  const rawMessage = asStringTrim(error?.message, 'Provider request failed.');
-  const internalMessage = containsSecretLiteral(rawMessage)
-    ? 'redacted (raw message contained a secret literal)'
-    : rawMessage;
+  // P2-G Finalization Delta #3 item 3: `err.cause` is a
+  // sanitized snapshot, NOT the raw Error. The raw Error
+  // MUST NOT be attached to a public / persisted error
+  // surface. Internal diagnostics keep `code` + `retryable`
+  // only.
   return newError(GENERATION_PROVIDER_FAILED, SAFE_GENERIC_PROVIDER_MESSAGE, {
-    cause: error,
-    internal: { code, message: internalMessage, retryable: Boolean(error?.retryable) },
+    cause: { code, retryable: Boolean(error?.retryable) },
+    internal: { code, retryable: Boolean(error?.retryable) },
   });
 }
 
 function toDownloadProviderFailed(error) {
   const code = asStringTrim(error?.code, 'IMAGE_DOWNLOAD_FAILED');
-  const rawMessage = asStringTrim(error?.message, 'Packaging image download failed.');
-  const internalMessage = containsSecretLiteral(rawMessage)
-    ? 'redacted (raw message contained a secret literal)'
-    : rawMessage;
   return newError(GENERATION_PROVIDER_FAILED, SAFE_GENERIC_DOWNLOAD_MESSAGE, {
-    cause: error,
-    internal: { code, message: internalMessage },
+    cause: { code },
+    internal: { code },
   });
 }
 
 function toPersistenceFailed(error) {
   const code = asStringTrim(error?.code, GENERATION_PERSISTENCE_FAILED);
-  const rawMessage = asStringTrim(error?.message, 'Packaging run persistence failed.');
-  const internalMessage = containsSecretLiteral(rawMessage)
-    ? 'redacted (raw message contained a secret literal)'
-    : rawMessage;
   // P2-G-F#2 item 11: the PUBLIC message is the safe generic
-  // text; the raw filesystem / database message is preserved
-  // on `err.cause` and `err.internal` only.
+  // text; the raw filesystem / database message is NOT
+  // attached to the public cause. P2-G Final #3 item 3:
+  // `err.cause` is a sanitized snapshot, not a raw Error.
   return newError(GENERATION_PERSISTENCE_FAILED, SAFE_GENERIC_PERSISTENCE_MESSAGE, {
-    cause: error,
-    internal: { code, message: internalMessage },
+    cause: { code },
+    internal: { code },
   });
 }
 
@@ -499,12 +493,35 @@ async function resolveProductionExecutionConfig({ resolvedDeps, capability }) {
   };
 }
 
-// P2-G-F#2 item 8: artifact lifecycle owns the relative
-// paths. The Service never derives `relativePath` from the
-// download result (the real Shared download helper does not
-// return `relativePathWritten`); the lifecycle is the single
-// authority. Absolute paths stay inside the runtime I/O scope
-// and are never persisted on the Generation Result.
+// P2-G-F#2 item 8 + P2-G Final #3 item 4: artifact
+// lifecycle owns the relative paths. The Service never
+// derives `relativePath` from the download result (the
+// real Shared download helper does not return
+// `relativePathWritten`); the lifecycle is the single
+// authority. Absolute paths stay inside the runtime I/O
+// scope and are never persisted on the Generation Result.
+// P2-G Final #3 item 4 enforces the contract at the code
+// level (not by convention): a relative path that is
+// actually absolute, or that contains a `..` traversal
+// segment, is fail-closed `ARTIFACT_LIFECYCLE_REQUIRED`.
+//
+// The deny rules:
+//   - non-empty
+//   - must NOT be a platform-absolute path:
+//     - POSIX: starts with `/`
+//     - Windows: starts with `\` or matches `/^[A-Za-z]:[\\\/]/`
+//       (drive letter) or starts with `\\` (UNC)
+//   - must NOT contain a `..` segment after splitting by
+//     `/` or `\` (catches `../foo`, `foo/../bar`, `foo/..`).
+function isRelativePathSafe(p) {
+  if (typeof p !== 'string' || !p) return false;
+  if (p.startsWith('/') || p.startsWith('\\')) return false;
+  if (/^[A-Za-z]:[\\\/]/.test(p)) return false;
+  const segments = p.split(/[\\\/]+/u).filter((s) => s.length > 0);
+  if (segments.includes('..')) return false;
+  return true;
+}
+
 async function resolveProductionArtifactLifecycle({ resolvedDeps, runId, metadata, translation }) {
   const lifecycle = await resolvedDeps.resolveArtifactLifecycle({
     runId,
@@ -525,6 +542,12 @@ async function resolveProductionArtifactLifecycle({ resolvedDeps, runId, metadat
   if (!thumbnailPath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailPath is required');
   if (!relativePath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle relativePath is required');
   if (!thumbnailRelativePath) throw newError(ARTIFACT_LIFECYCLE_REQUIRED, 'artifact lifecycle thumbnailRelativePath is required');
+  if (!isRelativePathSafe(relativePath)) {
+    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, `artifact lifecycle relativePath is not a safe relative path: ${relativePath}`);
+  }
+  if (!isRelativePathSafe(thumbnailRelativePath)) {
+    throw newError(ARTIFACT_LIFECYCLE_REQUIRED, `artifact lifecycle thumbnailRelativePath is not a safe relative path: ${thumbnailRelativePath}`);
+  }
   return Object.freeze({
     runRoot,
     targetPath,
@@ -768,12 +791,14 @@ export async function executePackagingGeneration(prepared, deps = null) {
   const registryModelId = asStringTrim(capability.modelId);
   const providerModelId = asStringTrim(executionConfig.providerModelId);
 
-  // P2-G Final item 7 + P2-G-F#2: real Provider request
-  // audit. The redacted audit request is the Shared
-  // adapter's `compileRequest(universalInput)` output
-  // passed through the Shared redaction layer (which now
-  // strips base64 / data URIs / signed-URL credentials
-  // across Seedream / OpenAI / Gemini / Wan).
+  // P2-G Final item 7 + P2-G-F#2 + P2-G Final #3: real
+  // Provider request audit. The redacted audit request is
+  // the Shared adapter's `compileRequest(universalInput)`
+  // output passed through the Shared redaction layer. The
+  // audit `url` is the real request URL sanitized by
+  // `redactUrl`; the audit `protocol` is the Shared
+  // adapter's protocol identity. The audit MUST NOT
+  // pretend that `protocol` is the request endpoint.
   let request;
   try {
     request = adapter.compileRequest(universalInput);
@@ -784,13 +809,16 @@ export async function executePackagingGeneration(prepared, deps = null) {
     throw toGenerationProviderFailed(new Error('Shared adapter compileRequest returned a non-object.'));
   }
   const redactedRequest = redactProviderRequest({
-    endpoint: asStringTrim(adapter.protocol),
+    protocol: asStringTrim(adapter.protocol),
+    method: asStringTrim(request.method),
+    url: asStringTrim(request.url),
+    bodyKind: asStringTrim(request.bodyKind),
+    modelId: providerModelId,
     // P2-G-F#2 item 6: `region` comes from the execution
     // config (the audit region surfaced by the Shared
     // runtime's credential resolution). It is NEVER
     // derived from `apiProfileId` (Profile selection).
     region: asStringTrim(executionConfig.region) || undefined,
-    modelId: providerModelId,
     body: request.body ?? request,
     headers: isPlainObject(request.headers) ? request.headers : undefined,
   });

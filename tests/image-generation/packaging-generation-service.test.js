@@ -263,12 +263,12 @@ test('P2-G-F#2-A-b Shared redaction strips Authorization / x-goog-api-key / sign
   assert.equal(audit.authorization, '[REDACTED]');
   // Signed-URL credential query params are stripped; only
   // host + pathname remain.
-  assert.ok(!audit.endpoint.includes('Signature='),
-    'audit endpoint must not carry signed-URL credential params');
-  assert.ok(!audit.endpoint.includes('X-Amz-Signature='),
-    'audit endpoint must not carry X-Amz-Signature');
-  assert.ok(!audit.endpoint.includes('token='),
-    'audit endpoint must not carry token=');
+  assert.ok(!audit.url.includes('Signature='),
+    'audit url must not carry signed-URL credential params');
+  assert.ok(!audit.url.includes('X-Amz-Signature='),
+    'audit url must not carry X-Amz-Signature');
+  assert.ok(!audit.url.includes('token='),
+    'audit url must not carry token=');
   // Auth headers are stripped from the headers bag.
   const headerKeys = Object.keys(audit.headers ?? {});
   assert.ok(!headerKeys.some((k) => k.toLowerCase() === 'authorization'),
@@ -1118,4 +1118,347 @@ test('P2-G-F#2-fp getPackagingGenerationServiceFingerprint pins Shared authority
   assert.ok(fp.authority.productionSeam.resolveArtifactLifecycle.includes('relativePath'));
   assert.ok(fp.authority.productionSeam.saveRun.includes('must be wired'));
   assert.ok(fp.authority.productionSeam.apiProfileId.includes('forwarded to both'));
+});
+
+// ===========================================================================
+// P2-G Finalization Delta #3 tests A-H
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-A: actual request URL sanitized. The audit `url` is
+// the real request URL passed through `redactUrl`.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-A actual request URL sanitized (item 1)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    compileRequest: () => ({
+      method: 'POST',
+      url: 'https://example.com/images?Signature=abc&token=xyz&X-Amz-Signature=secret&sts=TOKEN-STS',
+      headers: { Authorization: 'Bearer SECRET', 'Content-Type': 'application/json' },
+      bodyKind: 'json',
+      body: { model: 'm' },
+    }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  const audit = result.diagnostics.redactedRequest;
+  // The real URL is sanitized: only host + pathname.
+  assert.ok(audit.url.startsWith('https://example.com/images'),
+    'audit url must keep the host + pathname');
+  assert.ok(!audit.url.includes('Signature='),
+    'audit url must not carry signed-URL credential params');
+  assert.ok(!audit.url.includes('X-Amz-Signature='),
+    'audit url must not carry X-Amz-Signature');
+  assert.ok(!audit.url.includes('token='),
+    'audit url must not carry token=');
+  assert.ok(!audit.url.includes('sts='),
+    'audit url must not carry sts=');
+  // The audit carries the real method / bodyKind / protocol.
+  assert.equal(audit.method, 'POST');
+  assert.equal(audit.bodyKind, 'json');
+  // The protocol is a separate field; the audit MUST NOT
+  // pretend that `protocol` is the request endpoint.
+  assert.equal(audit.protocol, 'seedream-image');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-B: body nested signed URL sanitized (item 2).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-B body nested signed URL sanitized (item 2)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    compileRequest: () => ({
+      method: 'POST',
+      url: 'https://example.com/api',
+      headers: {},
+      bodyKind: 'json',
+      body: {
+        model: 'm',
+        sourceUrl: 'https://example.com/file.png?X-Amz-Signature=secret&Signature=abc&token=xyz',
+        reference: { signedUrl: 'https://cdn.example.com/asset?Signature=stolensig' },
+        notAUrl: 'plain text — not sanitized',
+      },
+    }),
+  });
+  const result = await executePackagingGeneration(prepared, deps);
+  const auditText = JSON.stringify(result.diagnostics.redactedRequest);
+  // Signed-URL credential query params are stripped from
+  // every nested URL field.
+  assert.ok(!auditText.includes('X-Amz-Signature='),
+    'audit must not carry X-Amz-Signature in any body field');
+  assert.ok(!auditText.includes('Signature=abc'),
+    'audit must not carry Signature=abc');
+  assert.ok(!auditText.includes('stolensig'),
+    'audit must not carry the stolensig signed-URL credential');
+  // The plain text is preserved (not all strings are URLs).
+  assert.ok(auditText.includes('plain text'),
+    'audit preserves non-URL string fields');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-C: Seedream real image[] base64 continues to be
+// redacted (regression on the existing Wan redaction path).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-C Seedream real image[] base64 continues to be redacted (item 1 / 2 regression)', async () => {
+  const { createMultiModelImageAdapter } = require(join(repoRoot, 'packages/image-generation-adapter/src/multi-model.js'));
+  const prepared = preparePackagingGeneration(makeBaseInput({
+    generationMode: 'reference_first',
+    referencePolicy: {
+      enabled: true, required: true,
+      references: [{ assetId: 'asset-style', role: 'style_reference', source: 'user' }],
+    },
+  }));
+  const realAdapter = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro',
+    apiKey: 'FAKE_TEST_API_KEY',
+    baseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
+    modelId: 'doubao-seedream-5-0-pro-260628',
+  });
+  const fakeFetch = async () => ({
+    ok: true, status: 200, statusText: 'OK',
+    headers: { get: () => 'application/json' },
+    text: async () => JSON.stringify({
+      model: 'doubao-seedream-5-0-pro-260628',
+      data: [{ b64_json: 'ZmFrZS1ieXRlcw==' }],
+    }),
+  });
+  const deps = makeFakeDeps({ executor: realAdapter, fetchImpl: fakeFetch });
+  const result = await executePackagingGeneration(prepared, deps);
+  const audit = result.diagnostics.redactedRequest;
+  const auditText = JSON.stringify(audit);
+  // The real Seedream body includes a `data:` URI in
+  // `body.image[]`. The audit MUST NOT carry that.
+  assert.ok(!auditText.includes('data:image'),
+    'audit must not carry any data: URI');
+  assert.ok(!auditText.includes('ZmFrZS1ieXRlcw=='),
+    'audit must not carry the raw base64 bytes');
+  assert.ok(!auditText.includes('FAKE_TEST_API_KEY'),
+    'audit must not carry the API Key');
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-D: err.cause.message is structurally absent (item 3).
+// The cause is a sanitized snapshot `{code, retryable}`; there
+// is no `message` field, so secret-bearing messages cannot
+// leak through the cause surface.
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-D err.cause is a sanitized snapshot, no message field (item 3)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    execute: async () => {
+      throw Object.assign(new Error('Authorization: Bearer sk-SECRET-XYZ-12345 signedUrl=https://x?Signature=secret'), {
+        code: 'MODEL_ADAPTER_AUTH_FAILED',
+      });
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      assert.equal(err.code, GENERATION_PROVIDER_FAILED);
+      // err.cause is a sanitized snapshot; no `message` field.
+      assert.ok(err.cause && typeof err.cause === 'object',
+        'err.cause must be an object');
+      assert.equal(err.cause.message, undefined,
+        'err.cause must not carry a `message` field (item 3)');
+      assert.equal(err.cause.code, 'MODEL_ADAPTER_AUTH_FAILED');
+      assert.equal(typeof err.cause.retryable, 'boolean');
+      // The cause does not embed the raw API Key / Authorization
+      // literal.
+      const causeText = JSON.stringify(err.cause);
+      assert.ok(!causeText.includes('sk-SECRET-XYZ-12345'),
+        'err.cause must not embed the literal API Key');
+      assert.ok(!causeText.includes('Bearer sk-SECRET'),
+        'err.cause must not embed the Bearer literal');
+      // The PUBLIC err.message is the safe generic text.
+      assert.ok(!err.message.includes('sk-SECRET-XYZ-12345'),
+        'public err.message must not embed the API Key');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-E: JSON-serialized error contains no secret literals
+// (item 3).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-E JSON-serialized error contains no secret literals (item 3)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps();
+  deps.executor = makeFakeExecutor({
+    execute: async () => {
+      throw Object.assign(new Error('Provider error: Authorization: Bearer sk-SECRET-XYZ-12345 signedUrl=https://x?Signature=secret&token=abc'), {
+        code: 'MODEL_ADAPTER_AUTH_FAILED',
+      });
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      const serialized = JSON.stringify(err);
+      assert.ok(!serialized.includes('sk-SECRET-XYZ-12345'),
+        'serialized error must not embed the literal API Key');
+      assert.ok(!serialized.includes('Bearer sk-SECRET'),
+        'serialized error must not embed the Bearer literal');
+      assert.ok(!serialized.includes('Signature=secret'),
+        'serialized error must not embed signed-URL credential');
+      assert.ok(!serialized.includes('token=abc'),
+        'serialized error must not embed the token=');
+      // The internal surface is also sanitized.
+      const internalText = JSON.stringify(err.internal);
+      assert.ok(!internalText.includes('sk-SECRET-XYZ-12345'),
+        'err.internal must not embed the literal API Key');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-F: persistence cause does not carry an absolute
+// filesystem path (item 3).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-F persistence cause does not carry an absolute filesystem path (item 3)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  const deps = makeFakeDeps({
+    saveRun: async () => {
+      throw Object.assign(
+        new Error('disk full at /var/lib/masterpiece/projects/foo/runs/r-001'),
+        { code: 'RUN_STORE_WRITE_FAILED' },
+      );
+    },
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, deps),
+    (err) => {
+      assert.equal(err.code, GENERATION_PERSISTENCE_FAILED);
+      // The cause is a sanitized snapshot; no message field;
+      // no absolute filesystem path.
+      const causeText = JSON.stringify(err.cause);
+      assert.ok(!causeText.includes('/var/lib/masterpiece'),
+        'cause must not carry an absolute filesystem path');
+      assert.ok(!causeText.includes('disk full'),
+        'cause must not carry the raw filesystem message');
+      // The public err.message is the safe generic text.
+      assert.ok(!err.message.includes('/var/lib/masterpiece'),
+        'public err.message must not carry an absolute filesystem path');
+      // The internal surface is also sanitized.
+      const internalText = JSON.stringify(err.internal);
+      assert.ok(!internalText.includes('/var/lib/masterpiece'),
+        'err.internal must not carry an absolute filesystem path');
+      return true;
+    },
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-G: absolute relativePath rejected (item 4).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-G absolute relativePath rejected -> ARTIFACT_LIFECYCLE_REQUIRED (item 4)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  // POSIX absolute.
+  const depsPosix = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/var/lib/masterpiece/runs/r-001',
+      targetPath: '/var/lib/masterpiece/runs/r-001/image-01.png',
+      thumbnailPath: '/var/lib/masterpiece/runs/r-001/image-01.webp',
+      relativePath: '/abs/path/image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsPosix),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+  // Windows drive letter.
+  const depsWin = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: 'C:\\runs\\r-001',
+      targetPath: 'C:\\runs\\r-001\\image-01.png',
+      thumbnailPath: 'C:\\runs\\r-001\\image-01.webp',
+      relativePath: 'C:\\abs\\image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsWin),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+  // Backslash-only absolute.
+  const depsBack = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '\\runs\\r-001',
+      targetPath: '\\runs\\r-001\\image-01.png',
+      thumbnailPath: '\\runs\\r-001\\image-01.webp',
+      relativePath: '\\abs\\image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsBack),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+});
+
+// ---------------------------------------------------------------------------
+// P2-G-F#3-H: `..` traversal rejected (item 4).
+// ---------------------------------------------------------------------------
+
+test('P2-G-F#3-H `..` traversal in relativePath rejected -> ARTIFACT_LIFECYCLE_REQUIRED (item 4)', async () => {
+  const prepared = preparePackagingGeneration(makeBaseInput());
+  // `../` prefix.
+  const depsUp = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+      relativePath: '../escape/image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsUp),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+  // Mid-path `..`.
+  const depsMid = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+      relativePath: 'foo/../bar/image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsMid),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+  // Trailing `..`.
+  const depsTrail = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: '/x', targetPath: '/x/a.png', thumbnailPath: '/x/a.webp',
+      relativePath: 'foo/..',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsTrail),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
+  // Windows-style `..\`.
+  const depsWin = makeFakeDeps({
+    resolveArtifactLifecycle: async () => ({
+      runRoot: 'C:\\x', targetPath: 'C:\\x\\a.png', thumbnailPath: 'C:\\x\\a.webp',
+      relativePath: 'foo\\..\\bar\\image-01.png',
+      thumbnailRelativePath: 'image-01.webp',
+    }),
+  });
+  await assert.rejects(
+    () => executePackagingGeneration(prepared, depsWin),
+    (err) => err.code === ARTIFACT_LIFECYCLE_REQUIRED,
+  );
 });

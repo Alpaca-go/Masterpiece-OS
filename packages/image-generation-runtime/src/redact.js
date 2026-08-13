@@ -53,6 +53,14 @@ const BINARY_FIELD_DENY_PATTERNS = Object.freeze([
 // the Shared redaction layer does not attempt to detect other
 // encodings (the deny list is intentionally narrow to avoid
 // over-redaction of prompt text).
+
+// `http://` / `https://` URL prefix used by the recursive
+// walker (P2-G Finalization Delta #3 item 2). The walker
+// re-routes any string that looks like an HTTP URL through
+// `redactUrl` so signed-URL credential query params are
+// stripped from body fields (Seedream / OpenAI / Gemini /
+// Wan alike).
+const HTTP_URL_PREFIX = /^https?:\/\//iu;
 const DATA_URI_PREFIX = /^data:[^;,]+;base64,/i;
 const LONG_BASE64_LIKE = /^[A-Za-z0-9+/_-]{200,}={0,2}$/;
 
@@ -144,10 +152,15 @@ function summarizeBinaryField(key, value) {
   return '[binary data omitted]';
 }
 
+function looksLikeUrl(value) {
+  return typeof value === 'string' && HTTP_URL_PREFIX.test(value);
+}
+
 function redactObject(obj) {
   if (obj == null || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map((item) => {
     if (item && typeof item === 'object') return redactObject(item);
+    if (typeof item === 'string' && looksLikeUrl(item)) return redactUrl(item);
     return item;
   });
   const result = {};
@@ -170,6 +183,7 @@ function redactObject(obj) {
           if (typeof item === 'string' && looksLikeBinaryString(item)) {
             return summarizeBinaryField(key, item);
           }
+          if (typeof item === 'string' && looksLikeUrl(item)) return redactUrl(item);
           if (item && typeof item === 'object') return redactObject(item);
           return item;
         });
@@ -182,6 +196,15 @@ function redactObject(obj) {
     }
     if (value && typeof value === 'object') {
       result[key] = redactObject(value);
+    } else if (typeof value === 'string' && looksLikeUrl(value)) {
+      // P2-G Finalization Delta #3 item 2: any string field
+      // whose value is an http(s) URL is sanitized through
+      // `redactUrl` so signed-URL credential query params do
+      // not survive in the audit body (Seedream sourceUrl,
+      // OpenAI image URL, Gemini input URL, Wan asset URL,
+      // etc.). This is target-neutral and does not branch on
+      // a specific provider.
+      result[key] = redactUrl(value);
     } else {
       result[key] = value;
     }
@@ -197,26 +220,47 @@ function redactObject(obj) {
  * preserves shape but never embeds raw Reference bytes,
  * signed-URL credentials, or API keys.
  *
- * Backward compatibility: the Wan / multi-model fields
- * `body.input.ref_img` (Wan) and `body.input.messages[].content[].image`
- * (OpenAI multimodal) are still redacted through the
- * `isBinaryFieldName` deny list (ref_img and image are both
- * covered). Other reference surfaces — Seedream `body.image[]`,
- * OpenAI multipart `body.files[]`, Gemini `body.input[].inlineData` —
- * are also redacted by the same deny list.
+ * P2-G Finalization Delta #3:
+ *   - The audit `url` is the real request URL sanitized via
+ *     `redactUrl` (signed-URL credential query params
+ *     stripped). The `protocol` is a separate field (the
+ *     Shared adapter's protocol identity); the audit MUST
+ *     NOT pretend that `protocol` is the request endpoint.
+ *   - The body walker also redacts any string field that
+ *     looks like an `http://` / `https://` URL by passing it
+ *     through `redactUrl`. This is target-neutral — Seedream
+ *     / OpenAI / Gemini / Wan are all covered.
  *
- * @param {object} input { endpoint, region, modelId, body, headers }
+ * @param {object} input { protocol, method, url, bodyKind, modelId, region, headers, body }
  */
 export function redactProviderRequest(input = {}) {
-  const { endpoint, region, modelId, body, headers } = input;
+  const { protocol, method, url, endpoint, bodyKind, modelId, region, headers, body } = input;
   const safeBody = body ? redactObject(body) : undefined;
+  // Backward-compat: legacy callers (e.g. the Wan
+  // `provider-dashscope` test) pass `endpoint` as the audit
+  // URL. P2-G Final #3 prefers the explicit `url` field,
+  // sanitized through `redactUrl`. When neither is provided
+  // the audit `url` is `undefined`.
+  const rawAuditUrl = typeof url === 'string' && url
+    ? url
+    : (typeof endpoint === 'string' && endpoint ? endpoint : undefined);
   return {
-    endpoint,
-    region,
+    protocol,
+    method,
+    // The real request URL, sanitized: signed-URL credential
+    // query params are stripped, only `host + pathname` is
+    // kept. `undefined` when the caller did not surface a
+    // URL.
+    url: typeof rawAuditUrl === 'string' && rawAuditUrl ? redactUrl(rawAuditUrl) : undefined,
+    bodyKind,
     modelId,
+    region,
+    headers: redactAuthHeaders(headers),
     body: safeBody,
     authorization: '[REDACTED]',
-    headers: redactAuthHeaders(headers),
+    // Legacy: the `endpoint` field is preserved for callers
+    // that still read it. New code (P2-G) MUST read `url`.
+    ...(typeof endpoint === 'string' && endpoint ? { endpoint } : {}),
   };
 }
 
