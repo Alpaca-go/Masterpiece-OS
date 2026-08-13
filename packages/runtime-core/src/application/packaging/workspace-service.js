@@ -442,6 +442,63 @@ export function createPackagingWorkspaceService(options = {}) {
   }
 
   // -----------------------------------------------------------------------
+  // 2.5) setTruthSnapshot — P3-A5 §30 Project Restore Contract.
+  //
+  // The truth surface (Locked Assets + Analysis Context) is
+  // read-only on the Workspace side, but upstream the
+  // project may have changed (e.g. the user updated the
+  // locked brand name through the upstream project
+  // authority). P3-A spec §30 mandates that a truth drift
+  // invalidates the current preparation; the caller is the
+  // sole owner of the truth surface (no second truth store).
+  //
+  // This API is the single canonical way to update truth
+  // within the same session:
+  //   - Caller-controlled (no implicit refresh, no automatic
+  //     upstream sync)
+  //   - Triggers the existing `withStaleStatusIfNeeded`
+  //     helper; if the saved `truthFingerprintAtPrepare` no
+  //     longer matches the new truth, the session transitions
+  //     to STALE with reason `truth_surface_changed`
+  //   - Gated by the same intent-edit gate as
+  //     `updatePackagingWorkspaceIntent` (no mutation during
+  //     PREPARING / EXECUTING)
+  //   - Preserves intent, projectId, lastExecution, and any
+  //     other session fields
+  //   - Does NOT silently recompile (STOP-P3-A-07): the
+  //     caller must explicitly re-prepare.
+  // -----------------------------------------------------------------------
+
+  function setTruthSnapshot(sessionId, newTruth) {
+    const state = getSessionOrThrow(sessionId);
+    if (!isIntentEditAllowed(state.status)) {
+      const err = new Error(
+        `PACKAGING_WORKSPACE_TRUTH_UPDATE_REJECTED: status=${state.status}; truth update is not allowed during async work`,
+      );
+      err.code = 'PACKAGING_WORKSPACE_TRUTH_UPDATE_REJECTED';
+      err.status = state.status;
+      throw err;
+    }
+    if (!isPlainObject(newTruth)) {
+      const err = new Error('PACKAGING_WORKSPACE_INVALID_INPUT: newTruth must be an object');
+      err.code = 'PACKAGING_WORKSPACE_INVALID_INPUT';
+      throw err;
+    }
+    const truthSnapshot = {
+      lockedAssets: newTruth.lockedAssets || {},
+      analysisContext: newTruth.analysisContext || {},
+      projectIdentity: newTruth.projectIdentity || {},
+    };
+    let nextState = {
+      ...state,
+      truthSnapshot,
+      lastError: null,
+    };
+    nextState = withStaleStatusIfNeeded(nextState);
+    return freezeAndStore(nextState);
+  }
+
+  // -----------------------------------------------------------------------
   // 3) preparePackagingWorkspaceGeneration
   // -----------------------------------------------------------------------
 
@@ -496,6 +553,15 @@ export function createPackagingWorkspaceService(options = {}) {
       status: PACKAGING_WORKSPACE_STATUS.READY,
       prepared: preparedSnapshot,
       lastError: null,
+      // P3-A spec §11 "no silent recompile" + §30: a
+      // successful re-prepare establishes a fresh
+      // identity, so the previous stale reasons are no
+      // longer relevant. The new prepared snapshot is
+      // anchored to the new intentAtPrepare and
+      // truthFingerprintAtPrepare; computeStale on the
+      // new snapshot returns `stale: false`.
+      lastStaleReasons: Object.freeze([]),
+      lastStaleReason: null,
     });
     return freezeAndStore(nextState);
   }
@@ -617,6 +683,7 @@ export function createPackagingWorkspaceService(options = {}) {
     schemaVersion: PACKAGING_WORKSPACE_SERVICE_VERSION,
     createSession,
     updateIntent,
+    setTruthSnapshot,
     prepareGeneration,
     executeGeneration,
     resetPreparation,
