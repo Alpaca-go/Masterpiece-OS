@@ -27,6 +27,12 @@
 //
 // Component version follows the P2 spec §4 capability-naming discipline.
 
+import {
+  PACKAGING_SHOT_CONTRACT_IDS,
+  SHOT_CONTRACT_INVALID,
+  getPackagingShotContract,
+} from './contracts.js';
+
 export const PACKAGING_TRANSLATION_VERSION = '1.0.0';
 export const PACKAGING_TRANSLATION_TARGET = 'packaging';
 
@@ -35,11 +41,11 @@ export const PACKAGING_GENERATION_MODES = Object.freeze([
   'reference_first',
 ]);
 
-export const PACKAGING_SHOT_CONTRACT_IDS = Object.freeze([
-  'PKG-HERO-SINGLE',
-  'PKG-SERIES-GROUP',
-  'PKG-GIFT-OPEN',
-]);
+// Re-exported for downstream consumers (e.g. P2-B tests, future Compiler)
+// that need to enumerate the three V1 frozen shot ids without depending
+// on contracts.js directly. The single source of truth lives in
+// contracts.js; this re-export is a convenience, not a parallel authority.
+export { PACKAGING_SHOT_CONTRACT_IDS };
 
 // Per P2 spec §14. These six reference roles are the minimum required for
 // Packaging reference assignment. Roles are capability-named; no Golden
@@ -65,68 +71,10 @@ export const PACKAGING_REFERENCE_PRECEDENCE = Object.freeze([
   'model_defaults',
 ]);
 
-// Per P2 spec §21 §22 §23. Shot contract structural requirements differ
-// meaningfully per shot. These are the minimum required compiler
-// requirements for each shot; richer requirements can be appended via
-// shotContract.compilerRequirements without breaking the contract.
-const SHOT_CONTRACT_SEED = Object.freeze({
-  'PKG-HERO-SINGLE': Object.freeze({
-    purpose: 'single package hero render',
-    mustProve: Object.freeze([
-      'brand fidelity',
-      'package structure fidelity',
-      'material credibility',
-      'visual direction',
-      'hero composition',
-      'commercial presentation',
-    ]),
-    compilerRequirements: Object.freeze([
-      'single primary package',
-      'clear structural readability',
-      'premium product photography',
-      'controlled environment',
-      'visual hierarchy centered on product',
-      'no excessive campaign storytelling',
-    ]),
-  }),
-  'PKG-SERIES-GROUP': Object.freeze({
-    purpose: 'multi-SKU / series presentation',
-    mustProve: Object.freeze([
-      'series consistency',
-      'SKU differentiation',
-      'shared brand grammar',
-      'controlled color relationship',
-      'repeated packaging structure',
-      'group composition',
-    ]),
-    compilerRequirements: Object.freeze([
-      'same family',
-      'not duplicate clones',
-      'not unrelated products',
-      'controlled multi-package composition',
-      'shared brand grammar across SKUs',
-    ]),
-  }),
-  'PKG-GIFT-OPEN': Object.freeze({
-    purpose: 'open gift box / internal structure',
-    mustProve: Object.freeze([
-      'outer package',
-      'inner package logic',
-      'tray / compartment logic',
-      'open-box physical plausibility',
-      'product placement',
-      'structural hierarchy',
-    ]),
-    compilerRequirements: Object.freeze([
-      'outer package visible',
-      'inner package logic visible',
-      'tray / compartment / opening mechanism visible',
-      'physically plausible opening state',
-      'clear product placement',
-      'structural hierarchy from outer to inner',
-    ]),
-  }),
-});
+// Per P2 spec §21 §22 §23. The single source of truth for shot
+// contracts lives in contracts.js. This module is a CONSUMER of that
+// authority, not a parallel definition site. Re-imports above (top of
+// file) bind us to the canonical ids + invalidation code.
 
 function asArray(value) {
   if (value == null) return [];
@@ -157,22 +105,37 @@ function asBoolean(value, fallback) {
 function buildShotContract(input) {
   const raw = asObject(input?.shotContract);
   const id = asString(raw.id);
-  const seed = SHOT_CONTRACT_SEED[id];
-  if (!seed) {
-    const err = new Error(`PACKAGING_SHOT_CONTRACT_INVALID: unknown shot contract id: ${id || '(empty)'}`);
-    err.code = 'PACKAGING_SHOT_CONTRACT_INVALID';
-    err.issues = [`unknown_shot_contract_id:${id || 'empty'}`];
+  // getPackagingShotContract throws SHOT_CONTRACT_INVALID for unknown ids.
+  // We use a try/catch to preserve the legacy-style message prefix the
+  // rest of the upstream P2 surface expects ("SHOT_CONTRACT_INVALID: ...").
+  let contract;
+  try {
+    contract = getPackagingShotContract(id);
+  } catch (err) {
+    // Re-throw with the same code/structure; contracts.js already throws
+    // SHOT_CONTRACT_INVALID, so this catch is mostly defensive in case
+    // the canonical authority is ever swapped.
+    if (err && err.code === SHOT_CONTRACT_INVALID) throw err;
     throw err;
   }
-  const mustProve = asArray(raw.mustProve).length ? asArray(raw.mustProve) : Array.from(seed.mustProve);
+  const mustProve = asArray(raw.mustProve).length ? asArray(raw.mustProve) : Array.from(contract.mustProve);
   const compilerRequirements = asArray(raw.compilerRequirements).length
     ? asArray(raw.compilerRequirements)
-    : Array.from(seed.compilerRequirements);
+    : Array.from(contract.compilerRequirements);
   return {
     id,
-    purpose: asString(raw.purpose, seed.purpose),
+    purpose: asString(raw.purpose, contract.purpose),
     mustProve,
     compilerRequirements,
+    // Carry the per-shot structure / opening / sku / presentation
+    // strategy forward verbatim from the single source of truth so the
+    // Translation shape includes the full Production Representation
+    // (P2 spec §9 §21 §22 §23 §49). The Compiler is the eventual
+    // consumer; today the Translation layer is the safe carrier.
+    structureRequirements: contract.structureRequirements,
+    presentationStrategy: contract.presentationStrategy,
+    openingLayout: contract.openingLayout,
+    skuStrategy: contract.skuStrategy,
   };
 }
 
@@ -356,6 +319,20 @@ function buildReferencePolicy(input, generationMode) {
     err.issues = [`reference_role_invalid:${unknown.join(',')}`];
     throw err;
   }
+  // ---- P2-C TODO (known gap, slated for removal before P2-D) ----
+  // P2 spec §14: "Each Reference must have an explicit role. No implicit
+  // project-asset fallback."
+  //
+  // The block below silently fills an empty roles array with
+  // ['high_fidelity_visual_reference'] when generationMode is
+  // 'reference_first' and policy.enabled is true. That is exactly the
+  // kind of implicit role inference §14 forbids. P2-C (Reference Policy)
+  // MUST replace it with: empty roles + required=true -> fail closed
+  // (REFERENCE_REQUIRED), and upstream must always pass an explicit
+  // role for each reference.
+  //
+  // Do NOT extend this fallback. The P2-A baseline freezes the current
+  // behavior so P2-B (this commit) is reversible; P2-C removes it.
   if (!roles.length) {
     roles = enabled
       ? (generationMode === 'reference_first'
@@ -363,6 +340,7 @@ function buildReferencePolicy(input, generationMode) {
         : [])
       : [];
   }
+  // ---- end P2-C TODO ----
   // Deduplicate and freeze role order while preserving the canonical
   // PACKAGING_REFERENCE_ROLES order.
   const roleSet = new Set(roles);

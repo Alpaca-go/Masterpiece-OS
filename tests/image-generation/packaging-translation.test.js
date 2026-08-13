@@ -151,7 +151,11 @@ test('P2-A-4b an unknown shot contract id is rejected', () => {
   assert.throws(
     () => createPackagingTranslation(makeBaseInput({ shotContract: { id: 'PKG-WINDOW-DISPLAY' } })),
     (err) => {
-      assert.equal(err.code, 'PACKAGING_SHOT_CONTRACT_INVALID');
+      // P2-B aligned the canonical error code to SHOT_CONTRACT_INVALID
+      // (P2 spec §32). The legacy prefixed alias from P2-A is NOT
+      // carried forward; if a compat consumer is ever found we stop
+      // and report rather than introduce a parallel authority.
+      assert.equal(err.code, 'SHOT_CONTRACT_INVALID');
       return true;
     },
   );
