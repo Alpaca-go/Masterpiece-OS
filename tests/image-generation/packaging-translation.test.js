@@ -44,6 +44,10 @@ const {
 } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/translation.js'));
 
 const {
+  getPackagingShotContract,
+} = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/contracts.js'));
+
+const {
   inspectPackagingTranslation,
   validatePackagingTranslation,
   PACKAGING_VALIDATION_VERSION,
@@ -86,7 +90,7 @@ function makeBaseInput(overrides = {}) {
     lighting: { intent: 'soft studio' },
     camera: { aspectRatio: '1:1' },
     sceneProgram: { type: 'studio' },
-    providerHints: { aspectRatio: '1:1' },
+    providerHints: { aspectRatio: '4:5' },
     // Default provider capability: reference support on with a
     // generous cap. Tests that exercise reference surface override
     // this explicitly.
@@ -161,7 +165,10 @@ test('P2-A-3c unsupported generation mode throws PACKAGING_TRANSLATION_INVALID',
 
 for (const shotId of SHOTS) {
   test(`P2-A-4a shot contract ${shotId} is accepted and returns canonical purpose / mustProve`, () => {
-    const t = createPackagingTranslation(makeBaseInput({ shotContract: { id: shotId } }));
+    const t = createPackagingTranslation(makeBaseInput({
+      shotContract: { id: shotId },
+      providerHints: { aspectRatio: getPackagingShotContract(shotId).aspectRatio },
+    }));
     assert.equal(t.shotContract.id, shotId);
     assert.ok(Array.isArray(t.shotContract.mustProve) && t.shotContract.mustProve.length > 0);
     assert.ok(Array.isArray(t.shotContract.compilerRequirements) && t.shotContract.compilerRequirements.length > 0);
@@ -550,6 +557,7 @@ for (const { mode, shot } of SIX_ROUTES) {
     const t = createPackagingTranslation(makeBaseInput({
       generationMode: mode,
       shotContract: { id: shot },
+      providerHints: { aspectRatio: getPackagingShotContract(shot).aspectRatio },
       // P2-C: every reference carries an explicit role + assetId; the
       // analysis_led routes ship with no references at all.
       referencePolicy: mode === 'reference_first'

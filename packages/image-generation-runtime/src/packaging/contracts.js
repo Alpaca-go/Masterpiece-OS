@@ -51,6 +51,10 @@ export const PACKAGING_SHOT_CONTRACT_IDS = Object.freeze([
 // layout) reinforce the same.
 const HERO = Object.freeze({
   id: 'PKG-HERO-SINGLE',
+  // P2-K corrective: output geometry belongs to the Shot Contract.
+  // P3/application callers must project this value verbatim; they must not
+  // maintain a second shot-to-ratio table or infer it from a Reference.
+  aspectRatio: '4:5',
   purpose: 'single package hero render',
   mustProve: Object.freeze([
     'brand fidelity',
@@ -88,6 +92,7 @@ const HERO = Object.freeze({
 
 const SERIES = Object.freeze({
   id: 'PKG-SERIES-GROUP',
+  aspectRatio: '16:9',
   purpose: 'multi-SKU / series presentation',
   mustProve: Object.freeze([
     'series consistency',
@@ -130,6 +135,7 @@ const SERIES = Object.freeze({
 
 const OPEN = Object.freeze({
   id: 'PKG-GIFT-OPEN',
+  aspectRatio: '4:3',
   purpose: 'open gift box / internal structure',
   mustProve: Object.freeze([
     'outer package',
@@ -210,6 +216,7 @@ export function getPackagingShotContractFingerprint() {
       PACKAGING_SHOT_CONTRACT_IDS.map((id) => {
         const c = SHOT_CONTRACTS[id];
         return [id, Object.freeze({
+          aspectRatio: c.aspectRatio,
           mustProve: c.mustProve.length,
           compilerRequirements: c.compilerRequirements.length,
           structureRequirementsFields: Object.keys(c.structureRequirements).length,

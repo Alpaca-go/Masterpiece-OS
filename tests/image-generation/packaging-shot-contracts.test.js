@@ -46,6 +46,14 @@ const {
   createPackagingTranslation,
 } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/translation.js'));
 
+const {
+  inspectPackagingTranslation,
+} = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/validation.js'));
+
+const {
+  compilePackagingPrompt,
+} = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/compiler.js'));
+
 function makeBaseInput(overrides = {}) {
   return {
     generationMode: 'analysis_led',
@@ -71,7 +79,7 @@ function makeBaseInput(overrides = {}) {
     visualDirection: {
       summary: 'Calm botanical apothecary aesthetic with controlled gloss highlights.',
     },
-    providerHints: { aspectRatio: '1:1' },
+    providerHints: { aspectRatio: '4:5' },
     ...overrides,
   };
 }
@@ -109,6 +117,62 @@ test('P2-B-4b the frozen fingerprint reports exactly three shot entries', () => 
   assert.equal(fp.schemaVersion, PACKAGING_SHOT_CONTRACT_VERSION);
   assert.equal(fp.ids.length, 3);
   assert.equal(Object.keys(fp.counts).length, 3);
+});
+
+// ---------------------------------------------------------------------------
+// P2-K corrective reopen: output geometry is canonical Shot Contract truth.
+// ---------------------------------------------------------------------------
+
+test('P2-K-1 the three frozen Shot Contracts expose their canonical output geometry', () => {
+  assert.equal(getPackagingShotContract('PKG-HERO-SINGLE').aspectRatio, '4:5');
+  assert.equal(getPackagingShotContract('PKG-SERIES-GROUP').aspectRatio, '16:9');
+  assert.equal(getPackagingShotContract('PKG-GIFT-OPEN').aspectRatio, '4:3');
+});
+
+test('P2-K-2 canonical aspectRatio is represented in the frozen fingerprint', () => {
+  const fp = getPackagingShotContractFingerprint();
+  for (const id of PACKAGING_SHOT_CONTRACT_IDS) {
+    assert.equal(fp.counts[id].aspectRatio, getPackagingShotContract(id).aspectRatio);
+  }
+});
+
+for (const id of PACKAGING_SHOT_CONTRACT_IDS) {
+  test(`P2-K-3 ${id} projects canonical aspectRatio through Translation and Compiler`, () => {
+    const canonical = getPackagingShotContract(id).aspectRatio;
+    const translation = createPackagingTranslation(makeBaseInput({
+      shotContract: { id },
+      providerHints: { aspectRatio: canonical },
+    }));
+    assert.equal(translation.shotContract.aspectRatio, canonical);
+    assert.equal(translation.providerHints.aspectRatio, canonical);
+    assert.equal(inspectPackagingTranslation(translation).valid, true);
+
+    const compiled = compilePackagingPrompt(translation);
+    const shotBlock = compiled.blocks.find((block) => block.id === 'shot_contract');
+    assert.ok(shotBlock.items.includes(`Canonical aspect ratio: ${canonical}`));
+  });
+}
+
+for (const id of PACKAGING_SHOT_CONTRACT_IDS) {
+  test(`P2-K-4 ${id} rejects a provider hint that diverges from canonical geometry`, () => {
+    const canonical = getPackagingShotContract(id).aspectRatio;
+    const translation = createPackagingTranslation(makeBaseInput({
+      shotContract: { id },
+      providerHints: { aspectRatio: canonical === '1:1' ? '2:3' : '1:1' },
+    }));
+    const result = inspectPackagingTranslation(translation);
+    assert.equal(result.valid, false);
+    assert.ok(result.issues.some((issue) => issue.startsWith(
+      `provider_hints_aspect_ratio_mismatch:expected_${canonical}_got_`,
+    )));
+  });
+}
+
+test('P2-K-5 missing provider aspectRatio fails closed instead of inventing a fallback', () => {
+  const translation = createPackagingTranslation(makeBaseInput({ providerHints: {} }));
+  const result = inspectPackagingTranslation(translation);
+  assert.equal(result.valid, false);
+  assert.ok(result.issues.includes('provider_hints_aspect_ratio_missing'));
 });
 
 // ---------------------------------------------------------------------------

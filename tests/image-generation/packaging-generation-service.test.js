@@ -78,7 +78,7 @@ function makeBaseInput(overrides = {}) {
     lighting: { intent: 'soft studio' },
     camera: { aspectRatio: '1:1' },
     sceneProgram: { type: 'studio' },
-    providerHints: { aspectRatio: '1:1', imageSize: '2K', qualityProfile: 'high' },
+    providerHints: { aspectRatio: '4:5', imageSize: '2K', qualityProfile: 'high' },
     ...overrides,
   };
 }
@@ -873,7 +873,7 @@ test('P2-G-F#2-regression-A Provider receives payload.prompt byte-identical (no 
 
 test('P2-G-F#2-regression-B Provider receives payload.hints verbatim', async () => {
   const prepared = preparePackagingGeneration(makeBaseInput({
-    providerHints: { aspectRatio: '3:4', imageSize: '1280x1856', qualityProfile: 'ultra' },
+    providerHints: { aspectRatio: '4:5', imageSize: '1280x1856', qualityProfile: 'ultra' },
   }));
   const deps = makeFakeDeps();
   let receivedHints = null;
@@ -888,7 +888,7 @@ test('P2-G-F#2-regression-B Provider receives payload.hints verbatim', async () 
     },
   });
   await executePackagingGeneration(prepared, deps);
-  assert.equal(receivedHints.aspectRatio, '3:4');
+  assert.equal(receivedHints.aspectRatio, '4:5');
   assert.equal(receivedHints.imageSize, '1280x1856');
   assert.equal(receivedHints.qualityProfile, 'ultra');
 });

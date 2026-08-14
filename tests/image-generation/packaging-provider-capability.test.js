@@ -101,7 +101,7 @@ function makeBaseInput(overrides = {}) {
     },
     visualDirection: { summary: 'Calm botanical apothecary aesthetic.' },
     providerHints: {
-      aspectRatio: '1:1',
+      aspectRatio: '4:5',
       imageSize: '1024x1024',
       qualityProfile: 'high',
     },
@@ -564,6 +564,7 @@ test('P2-E-Final-3a payload.hints reflects translation.providerHints verbatim', 
   // referencePolicy.references.length (single authority, P2-C
   // pre-condition #3).
   const translation = createPackagingTranslation(makeBaseInput({
+    shotContract: { id: 'PKG-SERIES-GROUP' },
     generationMode: 'reference_first',
     referencePolicy: {
       enabled: true,
@@ -602,6 +603,7 @@ test('P2-E-Final-3b the adapter does not infer hints from the compiled prompt te
   // NOT reverse-engineer it. The payload.hints is taken from
   // translation.providerHints.
   const translation = createPackagingTranslation(makeBaseInput({
+    shotContract: { id: 'PKG-GIFT-OPEN' },
     providerHints: { aspectRatio: '4:3', imageSize: '800x600', qualityProfile: 'low' },
   }));
   const compiled = compilePackagingPrompt(translation);

@@ -162,6 +162,7 @@ function buildProductPackageIdentityBlock(t) {
 function buildShotContractBlock(t, shotContract) {
   return block('shot_contract', PACKAGING_PROMPT_BLOCKS[2][1], [
     `Shot id: ${shotContract.id}`,
+    `Canonical aspect ratio: ${shotContract.aspectRatio}`,
     `Purpose: ${shotContract.purpose}`,
     `Must prove: ${shotContract.mustProve.join('; ')}`,
     `Compiler requirements: ${shotContract.compilerRequirements.join('; ')}`,

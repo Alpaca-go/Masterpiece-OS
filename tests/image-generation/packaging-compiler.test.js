@@ -101,7 +101,7 @@ function makeBaseInput(overrides = {}) {
     lighting: { intent: 'soft studio' },
     camera: { aspectRatio: '1:1' },
     sceneProgram: { type: 'studio' },
-    providerHints: { aspectRatio: '1:1' },
+    providerHints: { aspectRatio: '4:5' },
     providerCapability: { referenceSupport: true, maxReferenceImages: 4 },
     ...overrides,
   };
@@ -274,7 +274,10 @@ test('P2-D-4b the Compiler consumes shotContract.structureRequirements / opening
   // structural_requirements block. This proves the Compiler is
   // CONSUMING the canonical Shot Contract, not re-deriving it.
   for (const id of PACKAGING_SHOT_CONTRACT_IDS) {
-    const t = makeTranslation({ shotContract: { id } });
+    const t = makeTranslation({
+      shotContract: { id },
+      providerHints: { aspectRatio: getPackagingShotContract(id).aspectRatio },
+    });
     const out = compilePackagingPrompt(t);
     const sr = out.blocks.find((b) => b.id === 'structural_requirements');
     assert.ok(sr, `structural_requirements block missing for ${id}`);
@@ -574,7 +577,10 @@ test('P2-D-11 Reference-First compiles with explicit references', () => {
 
 for (const id of PACKAGING_SHOT_CONTRACT_IDS) {
   test(`P2-D-12-14 ${id} compiles through the same 14-block topology`, () => {
-    const t = makeTranslation({ shotContract: { id } });
+    const t = makeTranslation({
+      shotContract: { id },
+      providerHints: { aspectRatio: getPackagingShotContract(id).aspectRatio },
+    });
     const out = compilePackagingPrompt(t);
     assert.equal(out.shotContractId, id);
     assert.equal(out.blocks.length, 14);
@@ -595,6 +601,7 @@ test('P2-D-12-14b the 6-route matrix (analysis_led + reference_first × 3 shots)
     const t = makeTranslation({
       generationMode: mode,
       shotContract: { id },
+      providerHints: { aspectRatio: getPackagingShotContract(id).aspectRatio },
       referencePolicy: mode === 'reference_first'
         ? { enabled: true, required: true, references: [{ assetId: 'asset-r', role: 'high_fidelity_visual_reference' }] }
         : { enabled: false, required: false, references: [] },
@@ -677,6 +684,7 @@ test('P2-D-struct every block has at least one item on the canonical 6 routes', 
     const t = makeTranslation({
       generationMode: mode,
       shotContract: { id },
+      providerHints: { aspectRatio: getPackagingShotContract(id).aspectRatio },
       referencePolicy: mode === 'reference_first'
         ? { enabled: true, required: true, references: [{ assetId: 'asset-r', role: 'high_fidelity_visual_reference' }] }
         : { enabled: false, required: false, references: [] },

@@ -113,6 +113,10 @@ function buildShotContract(input) {
     : Array.from(contract.compilerRequirements);
   return {
     id,
+    // P2-K: geometry is copied from the canonical Shot Contract, never from
+    // caller-owned provider hints. Validation later requires the caller's
+    // projected hint to agree with this authority.
+    aspectRatio: contract.aspectRatio,
     purpose: asString(raw.purpose, contract.purpose),
     mustProve,
     compilerRequirements,

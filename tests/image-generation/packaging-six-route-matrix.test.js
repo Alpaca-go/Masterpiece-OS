@@ -53,7 +53,10 @@ const {
 
 const { PACKAGING_PROMPT_BLOCKS } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/compiler.js'));
 
-const { PACKAGING_SHOT_CONTRACT_IDS } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/contracts.js'));
+const {
+  PACKAGING_SHOT_CONTRACT_IDS,
+  getPackagingShotContract,
+} = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/contracts.js'));
 
 // -----------------------------------------------------------------------
 // Frozen 14-block order (P2 spec §19).
@@ -133,7 +136,6 @@ const BASE_STRUCTURE = Object.freeze({
 });
 
 const BASE_PROVIDER_HINTS = Object.freeze({
-  aspectRatio: '1:1',
   imageSize: '2K',
   qualityProfile: 'high',
 });
@@ -202,7 +204,7 @@ function makeRouteInput({ mode, shotId, includeReference = false }) {
     camera: { aspectRatio: '1:1' },
     sceneProgram: { type: 'studio' },
     providerHints: {
-      aspectRatio: BASE_PROVIDER_HINTS.aspectRatio,
+      aspectRatio: getPackagingShotContract(shotId).aspectRatio,
       imageSize: BASE_PROVIDER_HINTS.imageSize,
       qualityProfile: BASE_PROVIDER_HINTS.qualityProfile,
     },
@@ -607,7 +609,7 @@ test('P2-H Provider Adapter Payload — 6/6 routes pass Adapter integrity', () =
       assert.equal(p.provider, prepared.capability.provider, `${mode} × ${shotId}: payload.provider must mirror capability.provider`);
       assert.equal(p.protocol, prepared.capability.protocol, `${mode} × ${shotId}: payload.protocol must mirror capability.protocol`);
       // payload.hints carries the canonical fields.
-      assert.equal(p.hints.aspectRatio, '1:1', `${mode} × ${shotId}: hints.aspectRatio`);
+      assert.equal(p.hints.aspectRatio, getPackagingShotContract(shotId).aspectRatio, `${mode} × ${shotId}: hints.aspectRatio`);
       assert.equal(p.hints.imageSize, '2K', `${mode} × ${shotId}: hints.imageSize`);
       assert.equal(p.hints.qualityProfile, 'high', `${mode} × ${shotId}: hints.qualityProfile`);
       assert.equal(typeof p.hints.referenceCount, 'number', `${mode} × ${shotId}: hints.referenceCount must be a number`);

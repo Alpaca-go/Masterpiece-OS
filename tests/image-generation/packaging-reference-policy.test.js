@@ -66,6 +66,10 @@ const {
   validatePackagingTranslation,
 } = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/validation.js'));
 
+const {
+  getPackagingShotContract,
+} = require(join(repoRoot, 'packages/image-generation-runtime/src/packaging/contracts.js'));
+
 function makeBaseInput(overrides = {}) {
   return {
     generationMode: 'analysis_led',
@@ -89,7 +93,7 @@ function makeBaseInput(overrides = {}) {
       structuralFeatures: ['cylindrical body', 'screw cap', 'pipette dropper'],
     },
     visualDirection: { summary: 'Calm botanical apothecary aesthetic.' },
-    providerHints: { aspectRatio: '1:1' },
+    providerHints: { aspectRatio: '4:5' },
     providerCapability: { referenceSupport: true, maxReferenceImages: 4 },
     ...overrides,
   };
@@ -308,7 +312,7 @@ test('P2-C-7a count is derived from references.length (not from input)', () => {
         { assetId: 'asset-b', role: 'composition_reference' },
       ],
     },
-    providerHints: { aspectRatio: '1:1', referenceCount: 999 }, // should be ignored
+    providerHints: { aspectRatio: '4:5', referenceCount: 999 }, // should be ignored
   }));
   assert.equal(t.referencePolicy.count, 2);
   assert.equal(t.providerHints.referenceCount, 2);
@@ -615,6 +619,7 @@ for (const { mode, shot } of SIX_ROUTES) {
     const t = createPackagingTranslation(makeBaseInput({
       generationMode: mode,
       shotContract: { id: shot },
+      providerHints: { aspectRatio: getPackagingShotContract(shot).aspectRatio },
       referencePolicy: mode === 'reference_first'
         ? {
           enabled: true,

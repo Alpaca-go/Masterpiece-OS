@@ -128,7 +128,7 @@ function makeBaseInput(overrides = {}) {
     lighting: { intent: 'soft studio' },
     camera: { aspectRatio: '1:1' },
     sceneProgram: { type: 'studio' },
-    providerHints: { aspectRatio: '1:1', imageSize: '1024x1024', qualityProfile: 'high' },
+    providerHints: { aspectRatio: '4:5', imageSize: '1024x1024', qualityProfile: 'high' },
     providerCapability: { referenceSupport: true, maxReferenceImages: 4 },
     ...overrides,
   };
@@ -424,6 +424,7 @@ test('P2-F-J changing the Shot Contract (HERO -> SERIES) -> userIntentHash / del
   const a = buildPackagingGenerationMetadata({ translation: t1, compiled: c1, capability: k1, payload: p1 });
   const { translation: t2, compiled: c2, capability: k2, payload: p2 } = buildFixture({
     shotContract: { id: 'PKG-SERIES-GROUP' },
+    providerHints: { aspectRatio: '16:9', imageSize: '1024x1024', qualityProfile: 'high' },
   });
   const b = buildPackagingGenerationMetadata({ translation: t2, compiled: c2, capability: k2, payload: p2 });
   assert.notEqual(a.compileFingerprint.userIntentHash, b.compileFingerprint.userIntentHash);
@@ -453,10 +454,10 @@ test('P2-F-J-b changing generationMode (analysis_led -> reference_first) -> user
 // P2-F test K: provider/model relevant config change -> fingerprint changes.
 // ---------------------------------------------------------------------------
 
-test('P2-F-K changing aspect ratio (1:1 -> 16:9) -> sourceBundleHash changes', () => {
+test('P2-F-K changing provider image size -> sourceBundleHash changes', () => {
   const { translation, compiled, capability, payload } = buildFixture();
   const a = buildPackagingGenerationMetadata({ translation, compiled, capability, payload });
-  translation.providerHints.aspectRatio = '16:9';
+  translation.providerHints.imageSize = '2048x2560';
   const b = buildPackagingGenerationMetadata({ translation, compiled, capability, payload });
   assert.notEqual(a.compileFingerprint.sourceBundleHash, b.compileFingerprint.sourceBundleHash);
 });
@@ -1131,4 +1132,3 @@ test('P2-F-Final-struct maxReferenceImages is an explicit projection of register
   const cap = resolvePackagingProviderCapability({ modelId: 'seedream-5.0-pro' });
   assert.equal(cap.maxReferenceImages, null);
 });
-

@@ -84,6 +84,9 @@ export function inspectPackagingTranslation(translation) {
   if (!Array.isArray(translation.shotContract?.compilerRequirements) || translation.shotContract.compilerRequirements.length === 0) {
     issues.push('shot_contract_compiler_requirements_empty');
   }
+  if (!isString(translation.shotContract?.aspectRatio)) {
+    issues.push('shot_contract_aspect_ratio_missing');
+  }
 
   // Locked Assets (P2 spec §16). When the field is "locked:true" the value
   // is required and must be present; otherwise the translation is unsafe to
@@ -199,6 +202,11 @@ export function inspectPackagingTranslation(translation) {
     issues.push('provider_hints_missing');
   } else if (!isString(hints.aspectRatio)) {
     issues.push('provider_hints_aspect_ratio_missing');
+  } else if (isString(translation.shotContract?.aspectRatio)
+      && hints.aspectRatio !== translation.shotContract.aspectRatio) {
+    issues.push(
+      `provider_hints_aspect_ratio_mismatch:expected_${translation.shotContract.aspectRatio}_got_${hints.aspectRatio}`,
+    );
   }
 
   // Visual direction is a hard requirement: without it the Translation
