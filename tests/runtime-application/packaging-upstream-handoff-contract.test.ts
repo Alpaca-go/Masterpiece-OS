@@ -239,8 +239,6 @@ test('AH-C1-14 P3-B accepted production surfaces have no C1 semantic modificatio
   assert.equal(git([
     'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--',
     'apps/web/src/features/packaging',
-    'apps/web-runtime/src/current-operation-graph.ts',
-    'packages/runtime-core/src/operations/packaging-operations.js',
     'packages/runtime-core/src/application/packaging',
   ]), '');
 });

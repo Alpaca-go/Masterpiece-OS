@@ -14,3 +14,4 @@ export * from './operations/remaining-operations.js';
 // the Web RPC client and the frozen P3-A Workspace service).
 export * from './operations/packaging-operations.js';
 export * from './application/packaging/index.js';
+export * from './application/canonical-packaging-context-selector.ts';

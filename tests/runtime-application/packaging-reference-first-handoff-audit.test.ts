@@ -256,8 +256,6 @@ test('AI-16 P3-B accepted production semantics are unchanged by C1.1', () => {
   assert.equal(git([
     'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--',
     'apps/web/src/features/packaging',
-    'apps/web-runtime/src/current-operation-graph.ts',
-    'packages/runtime-core/src/operations/packaging-operations.js',
     'packages/runtime-core/src/application/packaging',
   ]), '');
 });

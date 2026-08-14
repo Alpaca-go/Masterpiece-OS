@@ -14,6 +14,8 @@ import {
   createProjectOperations,
   createReferenceOperations,
   createReportOperations,
+  projectSelectedPackagingContextToTruth,
+  selectCanonicalPackagingContext,
   createSettingsOperations,
   createVisualMemoryOperations,
   setPackagingArtifactStorePathImpl,
@@ -21,6 +23,7 @@ import {
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
   ProviderCredentials,
+  ProjectRecord,
   SaveApiProfileInput,
   SaveSettingsInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
@@ -110,10 +113,10 @@ export function createCurrentBusinessOperations(
   //   core_symbol               → mandatoryCopy.items
   //   required_visual_element   → mandatoryCopy.items
   //   forbidden_reference_content → confirmedComponents.items
-  const resolveTruthSnapshot = async (projectId: string) => {
+  const resolveTruthSnapshot = async (projectId: string, generationMode = 'analysis_led') => {
     const safeId = typeof projectId === 'string' ? projectId : '';
     if (!safeId) return null;
-    let project: { id?: string; projectName?: string; industry?: string } | null = null;
+    let project: ProjectRecord | null = null;
     try {
       project = await projects.get(safeId);
     } catch {
@@ -150,29 +153,18 @@ export function createCurrentBusinessOperations(
     const mandatoryCopyItems = collectByTypes(['core_symbol', 'required_visual_element']);
     const confirmedComponentsItems = collectByTypes(['forbidden_reference_content']);
 
-    // P3-A11: the Project Visual Context service remains the authority for
-    // packaging structure evidence and visual direction. This composition
-    // adapter projects only the two existing canonical fields needed by the
-    // Workspace; it does not infer, summarize, or provide defaults.
-    let projectVisualContext: {
-      lockedAssets?: { packageStructures?: string[] };
-      visualDecisionPacket?: {
-        mediaTranslations?: { packaging?: { packagingConcept?: string } };
-      };
-    } | null = null;
-    try {
-      projectVisualContext = await projectContext.getShortChain(safeId);
-    } catch {
-      projectVisualContext = null;
-    }
-    const packageStructures = Array.isArray(projectVisualContext?.lockedAssets?.packageStructures)
-      ? projectVisualContext.lockedAssets.packageStructures
-        .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
-      : [];
-    const packagingConcept = typeof projectVisualContext?.visualDecisionPacket
-      ?.mediaTranslations?.packaging?.packagingConcept === 'string'
-      ? projectVisualContext.visualDecisionPacket.mediaTranslations.packaging.packagingConcept.trim()
-      : '';
+    // P3-C2: generationMode is the sole producer selector. The shared selector
+    // validates the project/source/active-Reference provenance and returns only
+    // canonical PackagingTranslationV2 semantics. This composition root does
+    // not inspect producer internals, discover runs, or infer a fallback.
+    const projectVisualContext = await projectContext.getShortChain(safeId);
+    const selectedPackagingContext = selectCanonicalPackagingContext({
+      workspaceProjectId: safeId,
+      generationMode,
+      projectVisualContext,
+      activeReferenceSource: project?.activeReferenceSource,
+    });
+    const packagingTruthContext = projectSelectedPackagingContextToTruth(selectedPackagingContext);
 
     const projectIdentity = project
       ? { projectId: project.id || safeId, projectName: project.projectName || '' }
@@ -200,10 +192,7 @@ export function createCurrentBusinessOperations(
         confidence: 0,
       },
       projectIdentity,
-      projectVisualContext: {
-        packageStructures,
-        packagingConcept,
-      },
+      projectVisualContext: packagingTruthContext,
     };
   };
 

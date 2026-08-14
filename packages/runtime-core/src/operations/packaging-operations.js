@@ -1809,7 +1809,10 @@ export function createPackagingOperations({
       // fabricates Locked Assets.
       let truthSnapshot = isPlainObject(input.truthSnapshot) ? input.truthSnapshot : null;
       if (!truthSnapshot) {
-        truthSnapshot = await resolveTruthSnapshot(projectId);
+        const initialGenerationMode = isPlainObject(input.initialIntent)
+          ? asString(input.initialIntent.generationMode, 'analysis_led')
+          : 'analysis_led';
+        truthSnapshot = await resolveTruthSnapshot(projectId, initialGenerationMode);
       }
       // P3-A frozen contract: `service.createSession` returns
       // the FROZEN raw session (not the sessionId). The
@@ -1894,7 +1897,8 @@ export function createPackagingOperations({
       // The resolver may return null if the project no
       // longer exists; in that case the service rejects the
       // update via the existing P3-A validation.
-      const resolvedTruth = await resolveTruthSnapshot(boundProjectId);
+      const generationMode = asString(existingView?.intent?.generationMode, 'analysis_led');
+      const resolvedTruth = await resolveTruthSnapshot(boundProjectId, generationMode);
       if (!isPlainObject(resolvedTruth)) {
         const err = new Error('PACKAGING_OPERATIONS_TRUTH_REJECTED: truth resolver returned no truth for the bound projectId');
         err.code = 'PACKAGING_OPERATIONS_TRUTH_REJECTED';
@@ -1905,7 +1909,19 @@ export function createPackagingOperations({
     },
 
     [PACKAGING_OPERATION_IDS.PREPARE_GENERATION]: async function (_context, sessionId) {
-      getViewOrThrow(sessionId); // fail-closed: unknown session
+      const existingView = getViewOrThrow(sessionId); // fail-closed: unknown session
+      const boundProjectId = asString(existingView.projectId);
+      const generationMode = asString(existingView?.intent?.generationMode, 'analysis_led');
+      const resolvedTruth = await resolveTruthSnapshot(boundProjectId, generationMode);
+      if (!isPlainObject(resolvedTruth)) {
+        const err = new Error('PACKAGING_OPERATIONS_TRUTH_REJECTED: truth resolver returned no truth for the bound projectId');
+        err.code = 'PACKAGING_OPERATIONS_TRUTH_REJECTED';
+        throw err;
+      }
+      // Re-resolve immediately before Prepare so a mode change, active-source
+      // revocation, or producer drift cannot reuse a cached handoff. The frozen
+      // P3-A service remains the sole stale/state-machine authority.
+      service.setTruthSnapshot(sessionId, resolvedTruth);
       service.prepareGeneration(sessionId);
       return Object.freeze({ view: service.getView(sessionId) });
     },
