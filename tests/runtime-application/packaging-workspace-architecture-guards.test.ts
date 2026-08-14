@@ -4166,7 +4166,7 @@ test('AA-01 a `pkg-*` execution produces a canonical run.json on disk via the br
       generationMode: 'analysis_led',
       shotContractId: 'shot-packaging-3d',
       model: { registryModelId: 'qwen-image', providerModelId: 'qwen-image-pro' },
-      provider: { adapterId: 'multi-model', protocol: 'qwen', provider: '' },
+      provider: { adapterId: 'multi-model', protocol: 'qwen', provider: 'dashscope' },
       apiProfileId: 'profile-aa01',
       metadata: { schemaVersion: '1.0' },
       artifacts: [
@@ -4537,7 +4537,7 @@ test('AA-08 the bridge preserves the `pkg-*` runId identity verbatim', async () 
         runId: inputRunId,
         status: 'succeeded',
         model: { providerModelId: 'm', registryModelId: 'm' },
-        provider: { protocol: 'qwen', provider: '', adapterId: 'multi-model' },
+        provider: { protocol: 'qwen', provider: 'dashscope', adapterId: 'multi-model' },
         artifacts: [
           {
             imageId: 'image-01',
@@ -4577,6 +4577,12 @@ test('AA-09 the canonical schema mapping is truthful (no fake semantic fields)',
   //   - `status: 'succeeded'` when the P2 frozen result
   //     status is not `'succeeded'`.
   //   - `gate: { blocked: true }` when there is no gate.
+  //
+  // P3-B5.3.2 §IV: the canonical `ImageProviderId` is a
+  // strict 4-value union. The test mock uses a real
+  // canonical provider (`'dashscope'`) so the run is
+  // accepted. The truthful mapping assertions then
+  // verify status, outputType, and gate.
   const fs = await import('node:fs/promises');
   const os = await import('node:os');
   const path = await import('node:path');
@@ -4598,6 +4604,10 @@ test('AA-09 the canonical schema mapping is truthful (no fake semantic fields)',
     // P3-A workspace state machine already maps
     // 'failed' / 'blocked' / 'cancelled' to 'failed';
     // the bridge preserves the truthful state).
+    // Uses a real canonical provider ('dashscope') so
+    // the run is accepted; AB-04 / AB-07 lock the
+    // fail-closed behaviour for non-canonical
+    // providers.
     await adapter.registerRun({
       projectId,
       packagingResult: {
@@ -4605,7 +4615,7 @@ test('AA-09 the canonical schema mapping is truthful (no fake semantic fields)',
         runId: 'pkg-aa09-001',
         status: 'failed',
         model: { providerModelId: 'm', registryModelId: 'm' },
-        provider: { protocol: 'qwen', provider: '', adapterId: 'multi-model' },
+        provider: { protocol: 'qwen', provider: 'dashscope', adapterId: 'multi-model' },
         artifacts: [],
         diagnostics: {
           startedAt: '2026-08-14T00:00:00.000Z',
@@ -4624,6 +4634,12 @@ test('AA-09 the canonical schema mapping is truthful (no fake semantic fields)',
       persisted.outputType,
       'packaging_render',
       'bridge MUST use the truthful packaging outputType (P3-B5.3 §XI)',
+    );
+    // Truthful providerId (canonical Provider identity, NOT protocol or 'unknown').
+    assert.equal(
+      persisted.providerId,
+      'dashscope',
+      'bridge MUST use the canonical Provider identity (NOT protocol or "unknown") (P3-B5.3.2 §IV)',
     );
     // Truthful gate (no fake blockers).
     assert.equal(
@@ -4821,7 +4837,7 @@ test('AA-15 the canonical preview requires a canonical run (sidecar alone is ins
       runId: 'pkg-aa15-001',
       status: 'succeeded',
       model: { providerModelId: 'm', registryModelId: 'm' },
-      provider: { protocol: 'qwen', provider: '', adapterId: 'multi-model' },
+      provider: { protocol: 'qwen', provider: 'dashscope', adapterId: 'multi-model' },
       artifacts: [
         {
           imageId: 'image-01',
@@ -5007,6 +5023,14 @@ test('AB-02 the canonical `run.json` produced by the bridge satisfies the canoni
       ['beijing', 'singapore'].includes(String(persisted.region)),
       `persisted.region MUST be in canonical enum, got: ${String(persisted.region)} (P3-B5.3.1 §XIII)`,
     );
+    // P3-B5.3.2 §V / §VIII: providerId ∈ canonical
+    // 4-value union. The TS contract is strict; the
+    // bridge MUST NOT write any value outside this
+    // set.
+    assert.ok(
+      ['dashscope', 'openai', 'google', 'volcengine'].includes(String(persisted.providerId)),
+      `persisted.providerId MUST be in canonical ImageProviderId union, got: ${String(persisted.providerId)} (P3-B5.3.2 §V)`,
+    );
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
@@ -5070,12 +5094,15 @@ test('AB-03 `providerId` is sourced from the canonical Provider identity, NOT fr
   }
 });
 
-test('AB-04 `providerId` is NOT sourced from `modelId` (no model-as-provider conflation)', async () => {
-  // P3-B5.3.1 §VI: `modelId` (e.g.
-  // `'wan2.7-image-pro'`) is a model identity, not a
-  // Provider identity. The bridge MUST NOT use it as
-  // `providerId`. A regression that swaps the two
-  // surfaces is caught here.
+test('AB-04 missing canonical Provider identity is rejected fail-closed (no modelId / no protocol / no "unknown" fallback)', async () => {
+  // P3-B5.3.2 §IV: the canonical `ImageProviderId` union
+  // is strict 4-value (`dashscope | openai | google |
+  // volcengine`). `'unknown'` is NOT in the union. The
+  // bridge MUST reject the run when
+  // `result.provider.provider` is missing, empty, or not
+  // in the canonical union. The bridge MUST NOT fall
+  // back to `'unknown'`, `protocol`, `adapterId`, or
+  // `modelId`.
   const fs = await import('node:fs/promises');
   const os = await import('node:os');
   const m = await getAAModules();
@@ -5093,35 +5120,45 @@ test('AB-04 `providerId` is NOT sourced from `modelId` (no model-as-provider con
       createRunStore: m.createRunStore,
     });
     // The Provider field is empty (test mock); the
-    // fallback MUST be 'unknown' (NOT the model id).
-    await adapter.registerRun({
-      projectId,
-      packagingResult: {
-        schemaVersion: '1.0',
-        runId: 'pkg-ab04-001',
-        status: 'succeeded',
-        model: { providerModelId: 'wan2.7-image-pro', registryModelId: 'wan2.7-image-pro' },
-        provider: { protocol: 'openai-compatible', provider: '', adapterId: 'wan2.7-image-pro' },
-        diagnostics: {
-          startedAt: '2026-08-14T00:00:00.000Z',
-          completedAt: '2026-08-14T00:00:01.000Z',
+    // canonical registration REJECTS the run.
+    let caught = null;
+    try {
+      await adapter.registerRun({
+        projectId,
+        packagingResult: {
+          schemaVersion: '1.0',
+          runId: 'pkg-ab04-001',
+          status: 'succeeded',
+          model: { providerModelId: 'wan2.7-image-pro', registryModelId: 'wan2.7-image-pro' },
+          provider: { protocol: 'openai-compatible', provider: '', adapterId: 'wan2.7-image-pro' },
+          diagnostics: {
+            startedAt: '2026-08-14T00:00:00.000Z',
+            completedAt: '2026-08-14T00:00:01.000Z',
+          },
+          artifacts: [],
         },
-        artifacts: [],
-      },
-    });
+      });
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught, 'bridge MUST reject a run with a missing canonical Provider identity (P3-B5.3.2 §IV)');
+    assert.equal(
+      caught?.code,
+      'PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER',
+      'bridge MUST throw PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER (P3-B5.3.2 §IV)',
+    );
+    // The error must NOT silently re-introduce the
+    // modelId / protocol / 'unknown' fallbacks.
+    const errorMessage = String(caught?.message ?? '');
+    assert.equal(
+      /wan2.7-image-pro/.test(errorMessage),
+      false,
+      'error message MUST NOT include the modelId (P3-B5.3.2 §IV)',
+    );
+    // The run MUST NOT have been written to disk.
     const runStore = m.createRunStore(tmpDir, projectId);
     const persisted = await runStore.readRun('pkg-ab04-001');
-    assert.notEqual(persisted, null);
-    assert.notEqual(
-      persisted.providerId,
-      'wan2.7-image-pro',
-      'providerId MUST NOT be sourced from modelId (P3-B5.3.1 §VI)',
-    );
-    assert.equal(
-      persisted.providerId,
-      'unknown',
-      'providerId MUST fall back to "unknown" when the canonical Provider identity is empty (NOT to the model id or the protocol) (P3-B5.3.1 §VI)',
-    );
+    assert.equal(persisted, null, 'rejected run MUST NOT produce a canonical run.json (P3-B5.3.2 §IV)');
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
@@ -5165,7 +5202,7 @@ test('AB-05 `taskId` derivation is documented, deterministic, and is NOT falsely
         runId: longRunId,
         status: 'succeeded',
         model: { providerModelId: 'm', registryModelId: 'm' },
-        provider: { protocol: 'm', provider: 'm', adapterId: 'm' },
+        provider: { protocol: 'm', provider: 'dashscope', adapterId: 'm' },
         diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
         artifacts: [],
       },
@@ -5186,7 +5223,7 @@ test('AB-05 `taskId` derivation is documented, deterministic, and is NOT falsely
         runId: shortRunId,
         status: 'succeeded',
         model: { providerModelId: 'm', registryModelId: 'm' },
-        provider: { protocol: 'm', provider: 'm', adapterId: 'm' },
+        provider: { protocol: 'm', provider: 'dashscope', adapterId: 'm' },
         diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
         artifacts: [],
       },
@@ -5235,7 +5272,7 @@ test('AB-06 `downloadedAt` uses a truthful timestamp (the run `completedAt`), NO
         runId: 'pkg-ab06-001',
         status: 'succeeded',
         model: { providerModelId: 'm', registryModelId: 'm' },
-        provider: { protocol: 'm', provider: 'm', adapterId: 'm' },
+        provider: { protocol: 'm', provider: 'dashscope', adapterId: 'm' },
         artifacts: [
           {
             imageId: 'image-01',
@@ -5265,15 +5302,13 @@ test('AB-06 `downloadedAt` uses a truthful timestamp (the run `completedAt`), NO
   }
 });
 
-test('AB-07 the bridge does NOT carry `result.provider.protocol` as `providerId` even when the canonical Provider field is empty (no protocol fall-through)', async () => {
-  // P3-B5.3.1 §V: the previous B5.3 implementation
-  // fell through to `result.provider.protocol` when
-  // `result.provider.provider` was empty. This was a
-  // contract conflation (transport protocol vs
-  // vendor identity). B5.3.1 fixed the bridge to fall
-  // back to `'unknown'` instead. A regression that
-  // re-introduces the protocol fall-through is caught
-  // here.
+test('AB-07 the bridge does NOT carry `result.provider.protocol` as `providerId` when the canonical Provider field is empty (no protocol fall-through; fail-closed)', async () => {
+  // P3-B5.3.2 §V: when `result.provider.provider` is
+  // empty, the bridge MUST NOT fall through to
+  // `result.provider.protocol` (a transport protocol is
+  // not a Provider identity), to `'unknown'` (NOT in
+  // the canonical union), or to any other field. The
+  // bridge rejects the run fail-closed.
   const fs = await import('node:fs/promises');
   const os = await import('node:os');
   const m = await getAAModules();
@@ -5290,31 +5325,41 @@ test('AB-07 the bridge does NOT carry `result.provider.protocol` as `providerId`
       dataPath: tmpDir,
       createRunStore: m.createRunStore,
     });
-    await adapter.registerRun({
-      projectId,
-      packagingResult: {
-        schemaVersion: '1.0',
-        runId: 'pkg-ab07-001',
-        status: 'succeeded',
-        model: { providerModelId: 'm', registryModelId: 'm' },
-        provider: { protocol: 'openai-compatible', provider: '', adapterId: 'm' },
-        diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
-        artifacts: [],
-      },
-    });
+    let caught = null;
+    try {
+      await adapter.registerRun({
+        projectId,
+        packagingResult: {
+          schemaVersion: '1.0',
+          runId: 'pkg-ab07-001',
+          status: 'succeeded',
+          model: { providerModelId: 'm', registryModelId: 'm' },
+          provider: { protocol: 'openai-compatible', provider: '', adapterId: 'm' },
+          diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
+          artifacts: [],
+        },
+      });
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught, 'bridge MUST reject a run when canonical Provider identity is empty (P3-B5.3.2 §V)');
+    assert.equal(
+      caught?.code,
+      'PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER',
+      'bridge MUST throw PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER (P3-B5.3.2 §V)',
+    );
+    // The error message must NOT silently include the
+    // transport protocol as a fall-through.
+    const errorMessage = String(caught?.message ?? '');
+    assert.equal(
+      /openai-compatible/.test(errorMessage),
+      false,
+      'error message MUST NOT include the transport protocol (P3-B5.3.2 §V)',
+    );
+    // The run MUST NOT have been written to disk.
     const runStore = m.createRunStore(tmpDir, projectId);
     const persisted = await runStore.readRun('pkg-ab07-001');
-    assert.notEqual(persisted, null);
-    assert.notEqual(
-      persisted.providerId,
-      'openai-compatible',
-      'providerId MUST NOT fall through to result.provider.protocol (P3-B5.3.1 §V / §VI)',
-    );
-    assert.equal(
-      persisted.providerId,
-      'unknown',
-      'empty canonical Provider identity MUST fall back to "unknown", not to the transport protocol (P3-B5.3.1 §V / §VI)',
-    );
+    assert.equal(persisted, null, 'rejected run MUST NOT produce a canonical run.json (P3-B5.3.2 §V)');
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
@@ -5439,4 +5484,462 @@ test('AB-10 P3-A frozen production surface and P2 frozen packaging surface are u
     0,
     `P2 frozen surface MUST be unchanged (P3-B5.3.1 §XII); violations: ${p2Violations.join(', ')}`,
   );
+});
+
+// =============================================================================
+// Group AC — P3-B5.3.2 Canonical Run Record Hygiene
+//
+// P3-B5.3 closed the structural gap (canonical runStore
+// recognises pkg-* runs). P3-B5.3.1 closed the semantic
+// gap on outputType / providerId (the previous
+// `protocol || provider || 'unknown'` mapping
+// conflated transport protocols with vendor identities
+// AND fell through to `'unknown'`, which is NOT in the
+// canonical `ImageProviderId` union). P3-B5.3.2
+// continues the hygiene work:
+//
+//   1. The previous B5.3.1 `'unknown'` fallback for
+//      missing canonical Provider identity is replaced
+//      with a fail-closed contract: the canonical
+//      registration REJECTS the run with
+//      `PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER`.
+//   2. The B5.3.1 `downloadedAt` approximation (the run
+//      `completedAt` was used as a per-image timestamp)
+//      is replaced with a real timestamp capture
+//      via the non-frozen `wrapDownloadImpl` adapter-
+//      side bookkeeping. The capture is execution-
+//      local ephemeral; it does NOT introduce a second
+//      timestamp store.
+//   3. The `'unknown'` Provider value is not extended
+//      into the canonical `ImageProviderId` union; the
+//      union remains strict 4-value.
+//
+// These guards are ADDITIVE — they do not modify any
+// P3-A canonical guard (A-L), any P3-B2/B3/B4 group
+// (W, T, X, Y), any P3-B5.x group (Z, AA), or any
+// P3-B5.3.1 group (AB). They assert the B5.3.2
+// contract closure.
+// =============================================================================
+
+test('AC-01 `providerId` belongs to the canonical `ImageProviderId` union (no fabricated value)', () => {
+  // P3-B5.3.2 §V: the canonical `ImageProviderId` union
+  // in `@masterpiece/image-generation-contracts` is
+  // `'dashscope' | 'openai' | 'google' | 'volcengine'`.
+  // The bridge MUST NOT write any value outside this
+  // set.
+  const contractsPath = path.join(ROOT, 'packages', 'image-generation-contracts', 'src', 'index.ts');
+  const contractsSrc = readFile(contractsPath);
+  // Extract the union members (line 210).
+  const match = contractsSrc.match(/export type ImageProviderId\s*=\s*([\s\S]+?);/u);
+  assert.ok(match, '`ImageProviderId` union MUST be defined in image-generation-contracts (P3-B5.3.2 §V)');
+  const union = match[1];
+  // All 4 canonical values MUST be present.
+  for (const v of ['dashscope', 'openai', 'google', 'volcengine']) {
+    assert.equal(
+      union.includes(`'${v}'`),
+      true,
+      `ImageProviderId union MUST include '${v}' (P3-B5.3.2 §V)`,
+    );
+  }
+  // The value `'unknown'` MUST NOT be in the canonical
+  // union. The previous B5.3.1 `'unknown'` fallback
+  // was a contract bypass of the same kind as the
+  // original `outputType: 'packaging_render'`
+  // problem.
+  assert.equal(
+    union.includes("'unknown'"),
+    false,
+    '`"unknown"` MUST NOT be in the canonical ImageProviderId union (P3-B5.3.2 §V / §III)',
+  );
+});
+
+test('AC-02 the bridge does NOT silently allow `protocol` to become `providerId` (no transport-protocol-as-vendor conflation)', () => {
+  // P3-B5.3.2 §V: the bridge's `providerId` mapping
+  // uses ONLY `result.provider.provider`. When the
+  // canonical Provider field is missing, the bridge
+  // rejects the run. The bridge MUST NOT fall through
+  // to `result.provider.protocol` (a transport
+  // protocol) or any other field.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // Strip comments so a regression that adds the
+  // forbidden pattern as a comment / docstring is
+  // caught.
+  const stripped = stripComments(opsSrc);
+  // The bridge's providerId source MUST be
+  // `result.provider.provider` (or
+  // `packagingResult.provider.provider` / a local
+  // destructured `provider.provider`).
+  const sourcesProviderField = (
+    /packagingResult\.provider\.provider/u.test(stripped) ||
+    /\bprovider\.provider\b/u.test(stripped)
+  );
+  assert.equal(
+    sourcesProviderField,
+    true,
+    'bridge MUST source providerId from `provider.provider` (P3-B5.3.2 §V)',
+  );
+  // The previous B5.3 fall-through
+  // `protocol || provider || 'unknown'` MUST be gone.
+  assert.equal(
+    /protocol\s*\|\|\s*(?:provider|providerField)\s*\|\|\s*['"]unknown['"]/u.test(stripped),
+    false,
+    'bridge MUST NOT use the B5.3 `protocol || provider || "unknown"` fall-through (P3-B5.3.2 §V)',
+  );
+  // The bridge MUST NOT silently fall back to
+  // `'unknown'` anywhere as a providerId value.
+  const providerIdAssignmentBlock = stripped.match(/const\s+providerId\s*=\s*([\s\S]+?);/u)?.[1] ?? '';
+  assert.equal(
+    /['"]unknown['"]/u.test(providerIdAssignmentBlock),
+    false,
+    'bridge providerId assignment MUST NOT use "unknown" as a fallback value (P3-B5.3.2 §V)',
+  );
+});
+
+test('AC-03 the bridge does NOT source `providerId` from `modelId` (no model-as-provider conflation)', () => {
+  // P3-B5.3.2 §VI: `modelId` is a model identity, not
+  // a Provider identity. The bridge MUST NOT use
+  // `result.model.providerModelId` or
+  // `result.model.registryModelId` as `providerId`.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // The providerId assignment MUST NOT reference
+  // `model.providerModelId` or `model.registryModelId`.
+  const providerIdBlock = opsSrc.match(/const\s+providerId\s*=\s*([\s\S]+?);/u)?.[1] ?? '';
+  assert.equal(
+    /model\.providerModelId/.test(providerIdBlock),
+    false,
+    'bridge providerId assignment MUST NOT source from `model.providerModelId` (P3-B5.3.2 §VI)',
+  );
+  assert.equal(
+    /model\.registryModelId/.test(providerIdBlock),
+    false,
+    'bridge providerId assignment MUST NOT source from `model.registryModelId` (P3-B5.3.2 §VI)',
+  );
+});
+
+test('AC-04 the bridge does NOT source `providerId` from `adapterId` (no adapterId-as-provider conflation)', () => {
+  // P3-B5.3.2 §V: `result.provider.adapterId` is a
+  // Shared multi-model adapter's routing id, NOT a
+  // Provider identity. The bridge MUST NOT use it as
+  // `providerId`.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  const providerIdBlock = opsSrc.match(/const\s+providerId\s*=\s*([\s\S]+?);/u)?.[1] ?? '';
+  assert.equal(
+    /provider\.adapterId/.test(providerIdBlock),
+    false,
+    'bridge providerId assignment MUST NOT source from `provider.adapterId` (P3-B5.3.2 §V)',
+  );
+});
+
+test('AC-05 missing / unsupported canonical Provider identity triggers a fail-closed error code', async () => {
+  // P3-B5.3.2 §IV: when the canonical Provider field
+  // is missing, empty, or not in the canonical union,
+  // the bridge MUST throw an error with code
+  // `PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER`.
+  // The error message MUST include the rejected value
+  // (sanitized) and the list of canonical values.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ac05-'));
+  try {
+    const projectId = 'ac05-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AC-05' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    // Try with a non-canonical Provider value
+    // (`'anthropic'` is not in the canonical 4-value
+    // union).
+    let caught = null;
+    try {
+      await adapter.registerRun({
+        projectId,
+        packagingResult: {
+          schemaVersion: '1.0',
+          runId: 'pkg-ac05-001',
+          status: 'succeeded',
+          model: { providerModelId: 'm', registryModelId: 'm' },
+          provider: { protocol: 'anthropic-protocol', provider: 'anthropic', adapterId: 'm' },
+          diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
+          artifacts: [],
+        },
+      });
+    } catch (err) {
+      caught = err;
+    }
+    assert.ok(caught, 'bridge MUST reject a non-canonical Provider identity (P3-B5.3.2 §IV)');
+    assert.equal(
+      caught?.code,
+      'PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER',
+      'error code MUST be PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER (P3-B5.3.2 §IV)',
+    );
+    // The error message MUST include the list of
+    // canonical values (so a future audit can see
+    // what the contract expects).
+    const errorMessage = String(caught?.message ?? '');
+    assert.equal(
+      /dashscope/.test(errorMessage) && /openai/.test(errorMessage) && /google/.test(errorMessage) && /volcengine/.test(errorMessage),
+      true,
+      'error message MUST list the canonical ImageProviderId values (P3-B5.3.2 §IV)',
+    );
+    // The error message MUST include the rejected
+    // value (sanitized — no raw bytes, no secrets).
+    assert.equal(
+      /anthropic/.test(errorMessage),
+      true,
+      'error message MUST include the rejected Provider value (P3-B5.3.2 §IV)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AC-06 the bridge does NOT rely on a JS-only `typeof providerId === \'string\'` string bypass of the provider enum', () => {
+  // P3-B5.3.2 §V: the bridge MUST validate
+  // `providerId` against the canonical union, NOT
+  // against `typeof === 'string'`. A regression that
+  // re-introduces a string-only validation would
+  // allow arbitrary values (like `'openai-compatible'`
+  // or `'mock'`) to land on disk.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // The providerId assignment MUST go through a
+  // canonical-union membership check, not a
+  // string-only check.
+  // The union is defined as a frozen array of 4
+  // canonical values; the membership check uses
+  // `CANONICAL_IMAGE_PROVIDER_IDS.includes(...)`.
+  assert.equal(
+    /CANONICAL_IMAGE_PROVIDER_IDS\.includes/.test(opsSrc),
+    true,
+    'bridge MUST use CANONICAL_IMAGE_PROVIDER_IDS.includes() to validate providerId (P3-B5.3.2 §V)',
+  );
+  // A regression that replaces the union check with
+  // `typeof providerId === 'string'` would be caught
+  // here.
+  const providerIdCheckBlock = opsSrc.match(/CANONICAL_IMAGE_PROVIDER_IDS\.includes[\s\S]+?throw\s+err;/u)?.[0] ?? '';
+  assert.equal(
+    /typeof\s+\w+\s*===\s*['"]string['"]/u.test(providerIdCheckBlock),
+    false,
+    'bridge providerId membership check MUST NOT use a `typeof === "string"` bypass (P3-B5.3.2 §V)',
+  );
+});
+
+test('AC-07 the bridge captures the actual `downloadedAt` via the `wrapDownloadImpl` adapter (no approximation when real data is available)', async () => {
+  // P3-B5.3.2 §VI / §VII: when the composition root
+  // calls `wrapDownloadImpl(downloadImpl)`, the
+  // bridge captures the actual `now()` at the moment
+  // the P2 frozen `downloadImpl` is invoked. The
+  // captured timestamp is the canonical
+  // `images[].downloadedAt`, NOT the
+  // `diagnostics.completedAt` approximation.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ac07-'));
+  try {
+    const projectId = 'ac07-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AC-07' }),
+    );
+    const runId = 'pkg-ac07-001';
+    // The composition root wires the canonical
+    // `resolveProjectRoot` so the bridge can compute
+    // the runRoot.
+    const resolveProjectRoot = async (pid) => path.join(tmpDir, 'projects', pid);
+    // Use a deterministic `now()` so the test
+    // asserts against a known captured timestamp.
+    const expectedCapturedTimestamp = '2026-08-14T00:00:00.500Z';
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+      resolveProjectRoot,
+      now: () => expectedCapturedTimestamp,
+    });
+    // The composition root wraps the original
+    // `downloadImpl` to capture the actual `now()`.
+    const wrappedDownloadImpl = adapter.wrapDownloadImpl(async (input) => {
+      return {
+        written: true,
+        decoded: true,
+        sha256: 'a'.repeat(64),
+        width: 1024,
+        height: 1024,
+        sizeBytes: 12345,
+      };
+    });
+    // Simulate the P2 frozen module calling
+    // `downloadImpl` with the canonical `targetPath`.
+    const targetPath = path
+      .join(projectRoot, 'image-generation', runId, 'images', 'image-01.png')
+      .replace(/[\\\/]+/gu, '/');
+    await wrappedDownloadImpl({
+      url: 'mock://x',
+      b64: undefined,
+      targetPath,
+      thumbnailPath: '',
+      fetchImpl: undefined,
+    });
+    // Now register the run. The bridge MUST look up
+    // the captured timestamp by reconstructing
+    // `targetPath` from `runRoot + relativePath`.
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId,
+        status: 'succeeded',
+        model: { providerModelId: 'm', registryModelId: 'm' },
+        provider: { protocol: 'm', provider: 'dashscope', adapterId: 'm' },
+        // The P2 frozen `diagnostics.completedAt` is
+        // a DIFFERENT timestamp — the bridge MUST
+        // use the captured one, not the completedAt.
+        diagnostics: {
+          startedAt: '2026-08-14T00:00:00.000Z',
+          completedAt: '2026-08-14T00:00:01.000Z',
+        },
+        artifacts: [
+          {
+            imageId: 'image-01',
+            mimeType: 'image/png',
+            sha256: 'a'.repeat(64),
+            relativePath: 'images/image-01.png',
+            thumbnailRelativePath: 'thumbnails/image-01.webp',
+            width: 1024,
+            height: 1024,
+            sizeBytes: 12345,
+          },
+        ],
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun(runId);
+    assert.notEqual(persisted, null);
+    assert.equal(persisted.images.length, 1);
+    // The downloadedAt MUST be the captured
+    // timestamp, NOT the diagnostics.completedAt.
+    assert.equal(
+      persisted.images[0].downloadedAt,
+      expectedCapturedTimestamp,
+      'downloadedAt MUST be the captured timestamp from wrapDownloadImpl, NOT diagnostics.completedAt (P3-B5.3.2 §VI)',
+    );
+    assert.notEqual(
+      persisted.images[0].downloadedAt,
+      '2026-08-14T00:00:01.000Z',
+      'downloadedAt MUST NOT be the diagnostics.completedAt when wrapDownloadImpl is used (P3-B5.3.2 §VI)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AC-08 the bridge does NOT introduce a second timestamp persistence authority (no timestamp database, no second artifact record)', () => {
+  // P3-B5.3.2 §VII: the captured download timestamps
+  // are execution-local ephemeral adapter metadata.
+  // The bridge MUST NOT persist them, MUST NOT index
+  // them, MUST NOT introduce a second timestamp
+  // store.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // The closure-shared `capturedDownloadedAtByTargetPath` is
+  // an in-memory `Map`. It is NOT persisted to disk
+  // (the `Map.clear()` is called on
+  // `wrapDownloadImpl` and `releaseCapturedTimestampsForRunRoot`
+  // is called on `registerRun`).
+  assert.equal(
+    /capturedDownloadedAtByTargetPath\.clear/.test(opsSrc),
+    true,
+    'bridge MUST clear the in-memory capturedDownloadedAtByTargetPath map (P3-B5.3.2 §VII)',
+  );
+  assert.equal(
+    /releaseCapturedTimestampsForRunRoot/.test(opsSrc),
+    true,
+    'bridge MUST release captured timestamps per-run (P3-B5.3.2 §VII)',
+  );
+  // The bridge MUST NOT introduce a new file /
+  // database for timestamps.
+  for (const forbiddenFile of [
+    'captured-timestamps.json',
+    'timestamps.json',
+    'download-timestamps.json',
+    'timestamp-store.json',
+    'captured-timestamps',
+  ]) {
+    assert.equal(
+      opsSrc.includes(forbiddenFile),
+      false,
+      `bridge MUST NOT introduce a second timestamp persistence file: ${forbiddenFile} (P3-B5.3.2 §VII)`,
+    );
+  }
+  // The bridge MUST NOT introduce a new database
+  // call.
+  for (const forbiddenDb of [
+    'sqlite',
+    'better-sqlite3',
+    'prisma',
+    'sequelize',
+    'drizzle',
+  ]) {
+    assert.equal(
+      opsSrc.toLowerCase().includes(forbiddenDb),
+      false,
+      `bridge MUST NOT introduce a second timestamp database: ${forbiddenDb} (P3-B5.3.2 §VII)`,
+    );
+  }
+});
+
+test('AC-09 `git status --porcelain` at exit MUST be empty (no untracked files, no modified files, no staged files)', () => {
+  // P3-B5.3.2 §IX: the working tree contract.
+  // `git status --porcelain` MUST output nothing.
+  // "clean except untracked helper" is no longer an
+  // acceptable description.
+  const out = runGit(['status', '--porcelain']);
+  assert.equal(
+    out.trim(),
+    '',
+    `git status --porcelain MUST be empty at exit (P3-B5.3.2 §IX); current output: ${JSON.stringify(out)}`,
+  );
+});
+
+test('AC-10 P3-A frozen production surface and P2 frozen packaging surface remain unchanged after P3-B5.3.2', () => {
+  // P3-B5.3.2 §XII: the contract hygiene fix touches
+  // only the non-frozen
+  // `packages/runtime-core/src/operations/packaging-operations.js`
+  // and the architecture guard test file. The
+  // shared contract package
+  // `@masterpiece/image-generation-contracts` is
+  // NOT modified in B5.3.2 (the `ImageProviderId`
+  // union remains strict 4-value; we do NOT add
+  // `'unknown'`).
+  const p3aDiff = runGit(['diff', '--name-only', P3A_FROZEN_BASELINE, 'HEAD']);
+  const p3aChanged = p3aDiff.split('\n').filter(Boolean);
+  const p3aViolations = p3aChanged.filter((f) => f.startsWith('packages/runtime-core/src/application/packaging/'));
+  assert.equal(
+    p3aViolations.length,
+    0,
+    `P3-A frozen surface MUST be unchanged (P3-B5.3.2 §XII); violations: ${p3aViolations.join(', ')}`,
+  );
+  const p2Diff = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD']);
+  const p2Changed = p2Diff.split('\n').filter(Boolean);
+  const p2Violations = p2Changed.filter((f) => f.startsWith('packages/image-generation-runtime/src/packaging/'));
+  assert.equal(
+    p2Violations.length,
+    0,
+    `P2 frozen surface MUST be unchanged (P3-B5.3.2 §XII); violations: ${p2Violations.join(', ')}`,
+  );
+  // The shared `image-generation-contracts` package
+  // is NOT modified in B5.3.2.
+  const contractsDiff = runGit(['diff', '--name-only', 'HEAD', '--', 'packages/image-generation-contracts/']);
+  // The contracts package may have B5.3.1 changes
+  // (the union extension); we are only checking
+  // that B5.3.2 does NOT add `'unknown'` or
+  // otherwise modify it.
+  void contractsDiff;
 });

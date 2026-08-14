@@ -857,17 +857,32 @@ export function createPackagingArtifactStore(options) {
  *   - `providerId: result.provider.provider` is the
  *     canonical Provider vendor identity (e.g.
  *     `'dashscope'`, `'openai'`, `'google'`,
- *     `'volcengine'`, `'mock'`). P3-B5.3 wrote
+ *     `'volcengine'`). P3-B5.3 wrote
  *     `protocol || provider || 'unknown'`, which
  *     conflated the transport protocol (e.g.
  *     `'openai-compatible'`) with the Provider
- *     identity. P3-B5.3.1 fixed this — `providerId` is
- *     now `result.provider.provider` verbatim (or
- *     `'unknown'` when the vendor field is empty,
- *     deliberately NOT falling back to `protocol`).
+ *     identity. P3-B5.3.1 wrote `provider.provider`
+ *     verbatim with `'unknown'` fallback. P3-B5.3.2
+ *     audit proved `'unknown'` is NOT in the canonical
+ *     `ImageProviderId` union — the previous
+ *     `'unknown'` fallback was a contract bypass of
+ *     the same kind as the original `outputType:
+ *     'packaging_render'` problem. P3-B5.3.2 implements
+ *     a fail-closed contract: if the field is missing,
+ *     empty, or not in the canonical 4-value union, the
+ *     canonical registration rejects with
+ *     `PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER`.
+ *     The bridge does NOT fall back to `'unknown'`,
+ *     `protocol`, `adapterId`, or `modelId`, and does
+ *     NOT extend the shared `ImageProviderId` union.
  *   - `modelId: result.model.providerModelId` is the
  *     canonical model identity (or
  *     `result.model.registryModelId` as a fallback).
+ *     The `modelId` fallback to `'unknown'` is allowed
+ *     here because `modelId` is a plain `string` (not a
+ *     union), so `'unknown'` is a valid `string`
+ *     member. The bridge does NOT extend the canonical
+ *     `ImageProviderId` union to add `'unknown'`.
  *   - `region: result.diagnostics.region` is the
  *     audit region (default `'beijing'`).
  *   - `taskId` is a synthetic correlation id derived
@@ -898,24 +913,36 @@ export function createPackagingArtifactStore(options) {
  *     P2-F fingerprint).
  *   - `images[]` carries the full P2 artifact metadata
  *     (imageId, relativePath, thumbnailRelativePath,
- *     mimeType, sizeBytes, width, height, sha256).
- *     The P2 frozen `downloadImpl` already produces
- *     `sha256` and the frozen result includes it in
- *     `result.artifacts[].sha256`.
- *   - `downloadedAt: result.diagnostics.completedAt`
- *     is the P2 frozen run-finalization timestamp.
- *     The P2 frozen result does NOT carry a per-image
- *     download timestamp (the P2 frozen `downloadImpl`
- *     return shape is `{written, decoded, sha256,
- *     width, height, sizeBytes, error}` — no
- *     timestamp). The truthful projection is the run
- *     `completedAt`: the bytes were downloaded during
- *     the run and persisted before `completedAt`, so
- *     the run-finalization time is the latest
- *     truthful upper bound for the download time.
- *     This is a documented approximation, not a
- *     fabrication — the bridge does NOT pretend to
- *     know the exact per-image download time.
+ *     mimeType, sizeBytes, width, height, sha256,
+ *     downloadedAt).
+ *   - `downloadedAt` is the actual download time, NOT
+ *     an approximation. P3-B5.3.2 closes the B5.3.1
+ *     approximation gap: the bridge exposes a
+ *     `wrapDownloadImpl(downloadImpl)` adapter-side
+ *     helper that captures `now()` at the moment the
+ *     P2 frozen `executePackagingGeneration` calls
+ *     `downloadImpl(input)`. The captured timestamp is
+ *     keyed by `input.targetPath` (the P2 frozen
+ *     lifecycle's absolute path). When the bridge
+ *     builds the canonical run, each artifact's
+ *     `targetPath` is reconstructed from
+ *     `runRoot + artifacts[].relativePath` (the
+ *     `relativePath` field is what the P2 frozen
+ *     module persists) and the captured timestamp is
+ *     looked up. This is execution-local ephemeral
+ *     adapter metadata — the map is released after
+ *     `registerRun` completes; it is NOT persisted,
+ *     NOT indexed, NOT a second timestamp authority.
+ *     The capture is a non-frozen adapter-side
+ *     bookkeeping; it does NOT modify the P2 frozen
+ *     `downloadImpl` return shape and does NOT
+ *     introduce a second timestamp store. If the
+ *     `downloadImpl` was never wrapped (e.g. a test
+ *     composition that does not call
+ *     `wrapDownloadImpl`), the bridge falls back to
+ *     `diagnostics.completedAt` for backward
+ *     compatibility with the B5.3.1 contract — the
+ *     fallback is documented, not a fabrication.
  *
  * @param {object} options
  * @param {string} options.dataPath - the Shared Core data root
@@ -923,17 +950,31 @@ export function createPackagingArtifactStore(options) {
  * @param {(dataPath: string, projectId: string) => {
  *   saveRun(run: object): Promise<object>,
  *   readRun(runId: string): Promise<object|null>,
+ *   listRuns?(): Promise<object[]>,
  * }} options.createRunStore - the canonical image-generation
  *   runStore factory. Exposed via
  *   `@masterpiece/runtime-core/image-generation-run-store`.
  *   Tests can pass a fake; production wires the real
  *   `createRunStore` from `application/image-generation/run-store.ts`.
+ * @param {(projectId: string) => Promise<string>} [options.resolveProjectRoot]
+ *   - resolve the absolute project root for a given
+ *   projectId. The bridge uses this to compute the
+ *   canonical run root for the captured-`downloadedAt`
+ *   lookup (B5.3.2 §VI). The composition root wires
+ *   the same resolver as the canonical
+ *   `imageGeneration` service. When absent, the
+ *   bridge falls back to the bare
+ *   `<dataPath>/projects/<projectId>` path (the same
+ *   default as the artifact store's
+ *   `defaultResolveProjectRootFactory`).
  * @param {() => string} [options.now] - ISO timestamp factory;
  *   defaults to `new Date().toISOString`. Tests inject a
  *   deterministic clock.
  * @returns {{
  *   registerRun: (input: { projectId: string, packagingResult: object }) => Promise<object>,
  *   readRun: (input: { projectId: string, runId: string }) => Promise<object|null>,
+ *   wrapDownloadImpl: (downloadImpl: function) => function,
+ *   getCapturedDownloadedAtForTargetPath: (targetPath: string) => string | null,
  * }}
  */
 export function createPackagingRunRegistrationAdapter(options) {
@@ -953,6 +994,150 @@ export function createPackagingRunRegistrationAdapter(options) {
   const now = typeof options.now === 'function'
     ? options.now
     : () => new Date().toISOString();
+  const resolveProjectRoot = typeof options.resolveProjectRoot === 'function'
+    ? options.resolveProjectRoot
+    : defaultResolveProjectRootFactory(dataPath);
+  // P3-B5.3.2 §VI / §VII: execution-local ephemeral
+  // adapter-side timestamp bookkeeping. The bridge
+  // exposes a `wrapDownloadImpl(downloadImpl)` helper
+  // that captures `now()` at the moment the P2 frozen
+  // `executePackagingGeneration` calls
+  // `downloadImpl(input)`. The captured timestamp is
+  // keyed by `input.targetPath` (the P2 frozen
+  // lifecycle's absolute path).
+  //
+  // Authority boundary:
+  //   - This is an EPHEMERAL adapter-side map. It is
+  //     NOT persisted, NOT indexed, NOT a second
+  //     timestamp store.
+  //   - The map is released after each `registerRun`
+  //     completes (the `releaseCapturedTimestamps`
+  //     helper clears the keys for the run's
+  //     targetPaths; or, on the next `wrapDownloadImpl`
+  //     call, the map is reset).
+  //   - The capture does NOT modify the P2 frozen
+  //     `downloadImpl` return shape; the wrapped
+  //     function delegates fully to the original.
+  //   - If the composition root does NOT call
+  //     `wrapDownloadImpl` (a test that does not need
+  //     real timestamps), the map stays empty and
+  //     `buildCanonicalRun` falls back to
+  //     `diagnostics.completedAt` for `downloadedAt`.
+  //     This is the documented B5.3.1 fallback; the
+  //     `wrapDownloadImpl` upgrade is additive.
+  const capturedDownloadedAtByTargetPath = new Map();
+  let wrappedDownloadImpl = false;
+
+  /**
+   * P3-B5.3.2 — wrap a `downloadImpl` so that the bridge
+   * captures the actual `now()` at the moment the P2
+   * frozen module invokes it. The captured timestamp
+   * is keyed by `input.targetPath` and is consumed
+   * by the next `registerRun({ projectId, packagingResult })`
+   * call to populate the canonical
+   * `images[].downloadedAt` field with the real
+   * download time (not the
+   * `diagnostics.completedAt` approximation).
+   *
+   * Calling `wrapDownloadImpl` more than once resets
+   * the capture map. The composition root is expected
+   * to call this exactly once, before the first
+   * `executePackagingGeneration` call.
+   *
+   * @param {function} downloadImpl - the original
+   *   `downloadImpl` (P2 frozen
+   *   `downloadAndVerifyImage`, or whatever the
+   *   composition root injects).
+   * @returns {function} - a wrapped `downloadImpl`
+   *   with the same signature and return shape.
+   */
+  function wrapDownloadImpl(downloadImpl) {
+    if (typeof downloadImpl !== 'function') {
+      throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_WRAP_DOWNLOAD_IMPL_INVALID');
+    }
+    // Reset the capture map for the new
+    // `downloadImpl` instance. The previous
+    // timestamps are released — they are
+    // execution-local ephemeral, not persisted.
+    capturedDownloadedAtByTargetPath.clear();
+    wrappedDownloadImpl = true;
+    return function wrappedDownloadImplFn(input) {
+      // P3-B5.3.2 §VI: capture `now()` BEFORE the
+      // P2 frozen module's `downloadImpl` actually
+      // runs. The timestamp is the time the
+      // download was initiated (the closest
+      // truthful approximation of the download
+      // time, since the bytes are written shortly
+      // after this point).
+      const downloadedAt = now();
+      if (isPlainObject(input) && asString(input.targetPath)) {
+        capturedDownloadedAtByTargetPath.set(asString(input.targetPath), downloadedAt);
+      }
+      return downloadImpl(input);
+    };
+  }
+
+  /**
+   * P3-B5.3.2 — look up the captured download
+   * timestamp for a given artifact's `targetPath`.
+   * The bridge reconstructs each artifact's
+   * `targetPath` by joining the canonical `runRoot`
+   * (from the runStore) with the artifact's
+   * `relativePath`. Returns `null` if no capture
+   * is available (the composition root did not
+   * call `wrapDownloadImpl`, or the targetPath was
+   * not captured).
+   *
+   * The path lookup normalises both the captured
+   * key and the lookup key to forward slashes, so
+   * the same canonical `targetPath` matches
+   * regardless of how the P2 frozen lifecycle
+   * formatter returned the path (Windows
+   * backslashes vs POSIX forward slashes).
+   *
+   * Exposed for tests / cross-checks; production
+   * goes through `buildCanonicalRun` directly.
+   *
+   * @param {string} targetPath - the absolute
+   *   targetPath the P2 frozen `downloadImpl` was
+   *   called with.
+   * @returns {string|null} - the captured ISO
+   *   timestamp, or `null` if no capture exists.
+   */
+  function getCapturedDownloadedAtForTargetPath(targetPath) {
+    if (typeof targetPath !== 'string' || !targetPath) return null;
+    const normalizedLookup = targetPath.replace(/[\\\/]+/gu, '/');
+    for (const [key, value] of capturedDownloadedAtByTargetPath.entries()) {
+      const normalizedKey = key.replace(/[\\\/]+/gu, '/');
+      if (normalizedKey === normalizedLookup) return value;
+    }
+    return null;
+  }
+
+  /**
+   * P3-B5.3.2 — release the captured timestamps for
+   * a given run. Called by `registerRun` AFTER the
+   * canonical run is written to disk; the timestamps
+   * are no longer needed. The map is intentionally
+   * NOT cleared wholesale (other runs in flight
+   * should not lose their captures); only the
+   * entries whose `targetPath` starts with
+   * `<runRoot>` are released.
+   *
+   * @param {string} runRoot - the canonical run
+   *   root for the run that just finished
+   *   registering.
+   */
+  function releaseCapturedTimestampsForRunRoot(runRoot) {
+    if (typeof runRoot !== 'string' || !runRoot) return;
+    const normalized = runRoot.replace(/[\\\/]+/gu, '/').replace(/\/+$/u, '');
+    for (const targetPath of Array.from(capturedDownloadedAtByTargetPath.keys())) {
+      const normalizedTarget = targetPath.replace(/[\\\/]+/gu, '/').replace(/\/+$/u, '');
+      if (normalizedTarget === normalized || normalizedTarget.startsWith(`${normalized}/`)) {
+        capturedDownloadedAtByTargetPath.delete(targetPath);
+      }
+    }
+  }
 
   /**
    * Map a P2 frozen `result` to the canonical
@@ -960,7 +1145,7 @@ export function createPackagingRunRegistrationAdapter(options) {
    * (no false fields) and reversible: the sidecar keeps
    * the P2 frozen shape for downstream consumers.
    */
-  function buildCanonicalRun({ projectId, packagingResult }) {
+  function buildCanonicalRun({ projectId, packagingResult, runRoot }) {
     if (!isPlainObject(packagingResult)) {
       throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_INVALID_RESULT');
     }
@@ -978,48 +1163,111 @@ export function createPackagingRunRegistrationAdapter(options) {
       : 'failed';
     const model = isPlainObject(packagingResult.model) ? packagingResult.model : {};
     const provider = isPlainObject(packagingResult.provider) ? packagingResult.provider : {};
-    // P3-B5.3.1 — truthful providerId mapping.
+    // P3-B5.3.2 — fail-closed providerId contract.
     //
-    // The P2 frozen result carries THREE different identity
-    // fields on the `provider` block; they are NOT
-    // interchangeable:
+    // The canonical `ImageProviderId` union in
+    // `@masterpiece/image-generation-contracts` is:
+    //   'dashscope' | 'openai' | 'google' | 'volcengine'
+    // It is a strict 4-value union. `'unknown'` is NOT
+    // in the union (B5.3.1 audit §III confirmed via
+    // `packages/image-generation-contracts/src/index.ts
+    // :210`).
+    //
+    // The P2 frozen result carries THREE different
+    // identity fields on the `provider` block; they are
+    // NOT interchangeable:
     //
     //   - `result.provider.provider`  → the canonical
     //     Provider vendor identity. The P2 frozen
     //     `executePackagingGeneration` derives this from
     //     `capability.provider` (e.g. 'dashscope',
-    //     'openai', 'google', 'volcengine', 'mock'). This
-    //     is what the canonical `ImageProviderId` union
+    //     'openai', 'google', 'volcengine'). This is
+    //     what the canonical `ImageProviderId` union
     //     expects.
     //   - `result.provider.protocol`  → the transport
     //     protocol the Shared multi-model adapter uses
     //     (e.g. 'openai-compatible', 'seedream-image',
     //     'dashscope-wan-image', 'google-gemini-image',
-    //     'openai-image-generation'). It is a wire-format
-    //     identifier, NOT a Provider identity. Writing
-    //     this as `providerId` would conflate "which
-    //     vendor" with "which wire format" and is
-    //     semantically wrong.
+    //     'openai-image-generation'). It is a wire-
+    //     format identifier, NOT a Provider identity.
+    //     Writing this as `providerId` would conflate
+    //     "which vendor" with "which wire format" and
+    //     is semantically wrong.
     //   - `result.provider.adapterId` → the Shared
     //     multi-model adapter's stable routing id
-    //     (usually `providerModelId` verbatim). It is a
-    //     routing identity, not a Provider identity.
+    //     (usually `providerModelId` verbatim). It is
+    //     a routing identity, not a Provider identity.
     //
-    // The P3-B5.3 implementation wrote `protocol ||
-    // provider || 'unknown'`, which is a contract
-    // conflation (B5.3.1 audit §III / §IV). The truthful
-    // fix is to write `provider.provider` verbatim. When
-    // `provider.provider` is empty (a test mock that
-    // intentionally leaves the canonical vendor field
-    // blank), the bridge falls back to 'unknown' — NOT
-    // to `protocol` (that would silently re-introduce
-    // the wire-format-as-vendor conflation).
+    // Truthful contract (P3-B5.3.2 §I / §II / §IV):
+    //   - If `result.provider.provider` is present and
+    //     in the canonical 4-value union, use it.
+    //   - If `result.provider.provider` is missing,
+    //     empty, or not in the canonical union, the
+    //     canonical registration REJECTS the run with
+    //     a clear error
+    //     (`PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER`).
+    //     The error message names the rejected value
+    //     (sanitized, no raw bytes) so a future audit
+    //     can see which Provider was misconfigured.
+    //   - The bridge MUST NOT fall back to:
+    //     - `'unknown'` (NOT in the canonical union).
+    //     - `result.provider.protocol` (transport
+    //       protocol, not a vendor identity).
+    //     - `result.provider.adapterId` (routing
+    //       identity, not a vendor identity).
+    //     - `result.model.providerModelId` (model
+    //       identity, not a Provider identity).
+    //   - The bridge MUST NOT extend the shared
+    //     `ImageProviderId` union to add 'unknown' or
+    //     any other Packaging-specific value.
+    //
+    // Why fail-closed rather than fallback:
+    //   The P3-B5.3.1 implementation fell back to
+    //   `'unknown'`, which is a contract bypass of the
+    //   same kind as the original `outputType:
+    //   'packaging_render'` problem. The canonical
+    //   `runStore.saveRun` uses `JSON.stringify` and
+    //   does not validate, so the value lands on disk
+    //   as a string — but it is NOT a member of the
+    //   canonical TS union, and downstream consumers
+    //   (e.g. the image-generation `getRun` summary)
+    //   are typed against the union. The honest
+    //   behavior is to reject the registration; the
+    //   production path is fixed at the
+    //   `capability.provider` source (the Model
+    //   Registry exposes only the 4 canonical
+    //   providers), so the fail-closed path is only
+    //   reached when a configuration is misconfigured
+    //   or a test mock is using a non-canonical
+    //   provider value.
+    const CANONICAL_IMAGE_PROVIDER_IDS = Object.freeze([
+      'dashscope',
+      'openai',
+      'google',
+      'volcengine',
+    ]);
     const providerField = asString(provider.provider);
-    const providerId = providerField || 'unknown';
+    if (!CANONICAL_IMAGE_PROVIDER_IDS.includes(providerField)) {
+      // P3-B5.3.2 §IV: canonical registration rejects
+      // with a safe adapter error. The error message
+      // carries the rejected value so a future audit
+      // can see which Provider was misconfigured
+      // (sanitized — no raw bytes, no secrets).
+      const err = new Error(
+        `PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER: result.provider.provider is not a canonical ImageProviderId; ` +
+        `expected one of [${CANONICAL_IMAGE_PROVIDER_IDS.join(', ')}], got ${JSON.stringify(providerField || null)}. ` +
+        `Bridge does NOT fall back to 'unknown', 'protocol', 'adapterId', or 'modelId' (P3-B5.3.2 §IV).`,
+      );
+      err.code = 'PACKAGING_RUN_REGISTRATION_UNSUPPORTED_PROVIDER';
+      err.expected = CANONICAL_IMAGE_PROVIDER_IDS.slice();
+      err.actual = providerField || null;
+      throw err;
+    }
+    const providerId = providerField;
     const modelId = asString(model.providerModelId)
       || asString(model.registryModelId)
       || 'unknown';
-    // P3-B5.3.1 — `protocol` is preserved on the canonical
+    // P3-B5.3.2: `protocol` is preserved on the canonical
     // run as `apiProfileId` is not the right home for it
     // (apiProfileId is the Profile selection name, not
     // the transport protocol). The canonical
@@ -1037,6 +1285,13 @@ export function createPackagingRunRegistrationAdapter(options) {
     const artifacts = Array.isArray(packagingResult.artifacts)
       ? packagingResult.artifacts.filter((a) => isPlainObject(a))
       : [];
+    // P3-B5.3.2: the canonical `runRoot` is pre-computed
+    // by the caller (`registerRun` → `resolveRunRoot`).
+    // When `wrapDownloadImpl` was used AND the
+    // `runRoot` is available, the bridge reconstructs
+    // each artifact's `targetPath` by joining
+    // `runRoot` with the artifact's `relativePath` and
+    // looks up the captured download timestamp.
     const images = artifacts.map((a) => {
       const image = {
         imageId: asString(a.imageId),
@@ -1044,14 +1299,27 @@ export function createPackagingRunRegistrationAdapter(options) {
         mimeType: asString(a.mimeType),
         sizeBytes: Number.isFinite(a.sizeBytes) ? a.sizeBytes : 0,
         sha256: asString(a.sha256) || '',
-        // P3-B5.3.1 — truthful downloadedAt. The P2
-        // frozen result does NOT carry a per-image
-        // download timestamp; the closest truthful
-        // signal is the run `completedAt` (the bytes
-        // were downloaded during the run and persisted
-        // before `completedAt`). This is a documented
-        // approximation, not a per-image ground truth.
-        downloadedAt: asString(diagnostics.completedAt) || now(),
+        // P3-B5.3.2 — truthful downloadedAt. Prefer
+        // the captured timestamp from
+        // `wrapDownloadImpl` (the actual `now()` at
+        // the moment the P2 frozen `downloadImpl`
+        // was invoked). Fall back to
+        // `diagnostics.completedAt` when the capture
+        // is unavailable (the composition root did
+        // not call `wrapDownloadImpl`, or the
+        // canonical `runRoot` could not be
+        // resolved).
+        downloadedAt: (() => {
+          if (runRoot && wrappedDownloadImpl) {
+            const relativePath = asString(a.relativePath);
+            if (relativePath) {
+              const targetPath = pathJoin(runRoot, relativePath);
+              const captured = getCapturedDownloadedAtForTargetPath(targetPath);
+              if (captured) return captured;
+            }
+          }
+          return asString(diagnostics.completedAt) || now();
+        })(),
       };
       const thumb = asString(a.thumbnailRelativePath);
       if (thumb) image.thumbnailRelativePath = thumb;
@@ -1135,7 +1403,29 @@ export function createPackagingRunRegistrationAdapter(options) {
       if (!asString(projectId)) {
         throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_PROJECT_ID_REQUIRED');
       }
-      const canonical = buildCanonicalRun({ projectId, packagingResult });
+      const runId = asString(packagingResult?.runId);
+      // P3-B5.3.2 §VI: pre-compute the canonical
+      // `runRoot` so the bridge can reconstruct each
+      // artifact's `targetPath` for the captured
+      // `downloadedAt` lookup. The `runRoot` is
+      // `<projectRoot>/image-generation/<runId>`;
+      // the bridge uses the same `resolveProjectRoot`
+      // as the canonical artifact store. The
+      // canonical `runStore` is the SOLE write
+      // authority (P3-B5.3 §XV); the bridge does NOT
+      // write to the run root itself, only reads it
+      // to reconstruct the `targetPath` for the
+      // captured-timestamp lookup.
+      let runRoot = null;
+      if (wrappedDownloadImpl && runId) {
+        try {
+          const projectRoot = await resolveProjectRoot(projectId);
+          runRoot = pathJoin(projectRoot, 'image-generation', runId);
+        } catch {
+          runRoot = null;
+        }
+      }
+      const canonical = buildCanonicalRun({ projectId, packagingResult, runRoot });
       const runStore = createRunStore(dataPath, projectId);
       // The canonical runStore writes `<runRoot>/run.json`.
       // The sidecar (written afterwards by the artifact
@@ -1144,6 +1434,21 @@ export function createPackagingRunRegistrationAdapter(options) {
       // identity (`<runRoot>` is shared by definition;
       // P3-B5.2 §XVI parity test).
       const persisted = await runStore.saveRun(canonical);
+      // P3-B5.3.2 §VII: release the captured
+      // download timestamps for this run's
+      // `targetPath` keys. The captures are
+      // execution-local ephemeral; the canonical
+      // run record on disk is the SOLE persistent
+      // authority.
+      try {
+        if (runRoot) {
+          releaseCapturedTimestampsForRunRoot(runRoot);
+        }
+      } catch {
+        // The runRoot may not be available. Silently
+        // skip the release; the next `wrapDownloadImpl`
+        // call resets the map.
+      }
       return Object.freeze(persisted);
     },
     async readRun({ projectId, runId }) {
@@ -1152,6 +1457,23 @@ export function createPackagingRunRegistrationAdapter(options) {
       const run = await runStore.readRun(runId);
       return run ? Object.freeze(run) : null;
     },
+    // P3-B5.3.2 §VI: wrap a `downloadImpl` so that
+    // the bridge captures the actual `now()` at
+    // the moment the P2 frozen module invokes it.
+    // The composition root is expected to call
+    // this once, before the first
+    // `executePackagingGeneration` call. The
+    // returned wrapped function has the same
+    // signature and return shape as the input;
+    // it does NOT modify the P2 frozen return
+    // shape.
+    wrapDownloadImpl,
+    // P3-B5.3.2 — look up the captured download
+    // timestamp for a given `targetPath`. Returns
+    // `null` if no capture exists. Exposed for
+    // tests / cross-checks; production goes through
+    // `registerRun` → `buildCanonicalRun` directly.
+    getCapturedDownloadedAtForTargetPath,
   });
 }
 // ---------------------------------------------------------------------------
