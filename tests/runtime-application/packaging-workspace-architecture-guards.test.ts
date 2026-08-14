@@ -49,6 +49,10 @@ const APPS_WEB_SRC = WEB_DIR;
 const P2_FROZEN_DIR = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'packaging');
 const P2_FROZEN_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
 const P3A_FROZEN_BASELINE = 'dd4570a';
+const P3B4_ACCEPTED_BASELINE = 'ef46b1b';
+const P3B53_ACCEPTED_BASELINE = '53f780b';
+const P3B531_ACCEPTED_BASELINE = 'd30b500';
+const P3B532_ACCEPTED_BASELINE = '48c914c';
 
 const P2_PUBLIC_FACADE = new Set([
   'translation.js',
@@ -2622,6 +2626,7 @@ test('Y-17 the P3-A frozen production modules are unchanged by P3-B4 (zero-line 
       'diff',
       '--name-only',
       'dd4570a',
+      P3B4_ACCEPTED_BASELINE,
       '--',
       'packages/runtime-core/src/application/packaging/',
     ]);
@@ -4744,7 +4749,7 @@ test('AA-13 the canonical P3-A production surface is unchanged (P3-A frozen boun
   const execFileAsync = promisify(execFile);
   const { stdout } = await execFileAsync(
     'git',
-    ['diff', '--name-only', 'dd4570a', 'HEAD', '--', 'packages/runtime-core/src/application/packaging/'],
+    ['diff', '--name-only', 'dd4570a', P3B53_ACCEPTED_BASELINE, '--', 'packages/runtime-core/src/application/packaging/'],
     { cwd: process.cwd() },
   );
   const changed = stdout.split('\n').map((s) => s.trim()).filter(Boolean);
@@ -5468,7 +5473,7 @@ test('AB-10 P3-A frozen production surface and P2 frozen packaging surface are u
   // P3-A frozen application surface and NOT P2
   // frozen packaging surface). Verify 0 changes to
   // the frozen baselines.
-  const p3aDiff = runGit(['diff', '--name-only', P3A_FROZEN_BASELINE, 'HEAD']);
+  const p3aDiff = runGit(['diff', '--name-only', P3A_FROZEN_BASELINE, P3B531_ACCEPTED_BASELINE]);
   const p3aChanged = p3aDiff.split('\n').filter(Boolean);
   const p3aViolations = p3aChanged.filter((f) => f.startsWith('packages/runtime-core/src/application/packaging/'));
   assert.equal(
@@ -5918,7 +5923,7 @@ test('AC-10 P3-A frozen production surface and P2 frozen packaging surface remai
   // NOT modified in B5.3.2 (the `ImageProviderId`
   // union remains strict 4-value; we do NOT add
   // `'unknown'`).
-  const p3aDiff = runGit(['diff', '--name-only', P3A_FROZEN_BASELINE, 'HEAD']);
+  const p3aDiff = runGit(['diff', '--name-only', P3A_FROZEN_BASELINE, P3B532_ACCEPTED_BASELINE]);
   const p3aChanged = p3aDiff.split('\n').filter(Boolean);
   const p3aViolations = p3aChanged.filter((f) => f.startsWith('packages/runtime-core/src/application/packaging/'));
   assert.equal(

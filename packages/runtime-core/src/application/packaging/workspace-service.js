@@ -232,6 +232,12 @@ function projectIntentToTranslationInput({ intent, truthSnapshot, now }) {
   return {
     schemaVersion: '1.0',
     target: 'packaging', // fixed; P2 frozen ignores caller-supplied target
+    // P3-A10 corrective mapping: the Workspace's historical
+    // `providerModelId` field carries the user-selected registry
+    // model identity. P2 calls that same capability-lookup identity
+    // `modelId`; the concrete Provider API model is resolved later
+    // from `apiProfileId` by the execution-config seam.
+    modelId: intent.providerModelId,
     generationMode: intent.generationMode,
     shotContract: { id: intent.shotContractId },
     lockedAssets: isPlainObject(truthSnapshot?.lockedAssets)

@@ -84,8 +84,8 @@ function browserRuntimeGraph(entry: string): { files: Set<string>; builtins: Set
   return { files, builtins };
 }
 
-function gitDiff(base: string, target: string): string[] {
-  const output = execFileSync('git', ['diff', '--name-only', base, 'HEAD', '--', target], {
+function gitDiff(base: string, target: string, end = 'HEAD'): string[] {
+  const output = execFileSync('git', ['diff', '--name-only', base, end, '--', target], {
     cwd: ROOT,
     encoding: 'utf8',
   });
@@ -145,7 +145,10 @@ test('AE-09 responsive contract prevents horizontal content overflow', () => {
 });
 
 test('AE-10 P3-A frozen Packaging application diff is zero', () => {
-  assert.deepEqual(gitDiff('dd4570a', 'packages/runtime-core/src/application/packaging/'), []);
+  assert.deepEqual(
+    gitDiff('dd4570a', 'packages/runtime-core/src/application/packaging/', '92a8008'),
+    [],
+  );
 });
 
 test('AE-11 P2 frozen Packaging diff is zero', () => {

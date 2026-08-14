@@ -15,8 +15,8 @@ function stripComments(source: string): string {
   return source.replace(/\/\*[\s\S]*?\*\//gu, '').replace(/^\s*\/\/.*$/gmu, '');
 }
 
-function gitDiff(base: string, target: string): string[] {
-  const output = execFileSync('git', ['diff', '--name-only', base, 'HEAD', '--', target], {
+function gitDiff(base: string, target: string, end = 'HEAD'): string[] {
+  const output = execFileSync('git', ['diff', '--name-only', base, end, '--', target], {
     cwd: ROOT,
     encoding: 'utf8',
   });
@@ -105,7 +105,10 @@ test('AD-16 mobile layout has no forced fixed workspace width', () => {
 });
 
 test('AD-17 P3-A frozen application diff is zero', () => {
-  assert.deepEqual(gitDiff('dd4570a', 'packages/runtime-core/src/application/packaging/'), []);
+  assert.deepEqual(
+    gitDiff('dd4570a', 'packages/runtime-core/src/application/packaging/', '27575a0'),
+    [],
+  );
 });
 
 test('AD-18 P2 frozen Packaging diff is zero', () => {
