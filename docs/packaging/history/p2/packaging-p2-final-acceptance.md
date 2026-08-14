@@ -3,6 +3,13 @@
 **Phase:** Packaging V1 / P2 — Translation + Compiler + Service + Metadata + Cross-Target Isolation
 **Date:** 2026-08-13
 **Status:** `P2_FROZEN` (final acceptance complete; P3 requires explicit user approval)
+
+> **2026-08-14 corrective amendment:** P2-K reopened the Shot Contract
+> output-geometry boundary and RE-FROZE P2 at
+> `a593278b55e437fac59d768c5cee734d9a9fc201`. The original baseline below
+> remains historical evidence. The current P2 baseline and handoff are
+> recorded in
+> [`p2-k-shot-contract-output-geometry-corrective.md`](./p2-k-shot-contract-output-geometry-corrective.md).
 **Branch:** `codex/visual-analysis-a1-multi-provider`
 **Frozen code baseline (immediately before P2-J):** `335405342951fedae5d4d6816444c2b4d2402787` (P2-I Scanner Closure #2)
 **P2-J acceptance-report commit (docs-only):** `2442ed3966eaff7a4b31c3b0ec6278575a4bac53`
