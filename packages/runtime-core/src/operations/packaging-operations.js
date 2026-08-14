@@ -842,34 +842,80 @@ export function createPackagingArtifactStore(options) {
  *   - `imageGeneration.runRoot(runId)` returns the canonical
  *     run root. The sidecar lives at the same physical root.
  *
- * Truthful mapping contract (P3-B5.3 §III / §IV):
- *   - `outputType: 'packaging_render'` is the existing
- *     production de-facto value already used by
- *     `anchor-generation-service`, `generation-series-execution
- *     -service`, and `image-generation/service.ts`. The TS
- *     union is a type lag (the production code is the
- *     source of truth for what the value means).
- *   - `providerId` / `region` carry the P2 frozen values
- *     verbatim. The TS enum is a type lag; the JSON is
- *     the source of truth.
- *   - `taskId` is derived from `runId` mirroring the
+ * Truthful mapping contract (P3-B5.3 + P3-B5.3.1):
+ *   - `outputType: 'packaging_render'` is the canonical
+ *     Packaging outputType. P3-B5.3.1 formally extended
+ *     the `ImageGenerationOutputType` TS union in
+ *     `@masterpiece/image-generation-contracts` to
+ *     recognize `'packaging_render'`. The value is the
+ *     same one used on
+ *     `GenerationDeliverable = 'packaging_render' | ...`,
+ *     `VisualExploration.outputType`, and
+ *     `GenerationBlueprint.imagePurpose` across the
+ *     repository — the canonical runStore is the only
+ *     surface that needed to formally accept it.
+ *   - `providerId: result.provider.provider` is the
+ *     canonical Provider vendor identity (e.g.
+ *     `'dashscope'`, `'openai'`, `'google'`,
+ *     `'volcengine'`, `'mock'`). P3-B5.3 wrote
+ *     `protocol || provider || 'unknown'`, which
+ *     conflated the transport protocol (e.g.
+ *     `'openai-compatible'`) with the Provider
+ *     identity. P3-B5.3.1 fixed this — `providerId` is
+ *     now `result.provider.provider` verbatim (or
+ *     `'unknown'` when the vendor field is empty,
+ *     deliberately NOT falling back to `protocol`).
+ *   - `modelId: result.model.providerModelId` is the
+ *     canonical model identity (or
+ *     `result.model.registryModelId` as a fallback).
+ *   - `region: result.diagnostics.region` is the
+ *     audit region (default `'beijing'`).
+ *   - `taskId` is a synthetic correlation id derived
+ *     from `runId`. It is NOT a Provider task id and
+ *     does NOT claim to be one — the canonical
+ *     `ImageGenerationRun.taskId` field is documented
+ *     as a stable task correlation identifier, and the
  *     `igt-${runId.slice(0,8)}` convention
- *     (`pkg-${runId.slice(0,8)}`).
- *   - `gate` is the canonical `{ errors, warnings, blocked }`
+ *     (mirrored as `pkg-${runId.slice(0,8)}` here) is
+ *     the de-facto production pattern. Short `pkg-*`
+ *     runIds (≤16 chars) use the full runId as taskId
+ *     to avoid the redundant `pkg-pkg-...` prefix.
+ *     The derivation is deterministic and
+ *     collision-aware; the value is a truthful
+ *     correlation identifier, not a fabricated
+ *     external task.
+ *   - `gate: { errors: [], warnings: [], blocked: false }`
+ *     is the canonical `{ errors, warnings, blocked }`
  *     triple. Packaging has no P2-G gate; the truthful
- *     projection is "no errors, no warnings, not blocked"
- *     (a successful P2 frozen execution has already passed
- *     the P2 stale gate). The 5 P2-F hashes live in the
- *     sidecar's source-context snapshot, not in `gate`.
+ *     projection is "no errors, no warnings, not
+ *     blocked" (a successful P2 frozen execution has
+ *     already passed the P2 stale gate). The 5 P2-F
+ *     semantic hashes + executionIdentityHash live in
+ *     the sidecar's source-context snapshot, not in
+ *     `gate` (the canonical `gate` field is for
+ *     pre-execution identity-safety / task-executable
+ *     / artifact-completeness decisions, not for the
+ *     P2-F fingerprint).
  *   - `images[]` carries the full P2 artifact metadata
  *     (imageId, relativePath, thumbnailRelativePath,
- *     mimeType, sizeBytes, width, height, sha256). The
- *     P2 frozen `downloadImpl` already produces `sha256`
- *     and the frozen result includes it in
+ *     mimeType, sizeBytes, width, height, sha256).
+ *     The P2 frozen `downloadImpl` already produces
+ *     `sha256` and the frozen result includes it in
  *     `result.artifacts[].sha256`.
- *   - `downloadedAt` is the P2 frozen `diagnostics.completedAt`
- *     (truthful approximation: the bytes were downloaded
- *     during execution and persisted before `completedAt`).
+ *   - `downloadedAt: result.diagnostics.completedAt`
+ *     is the P2 frozen run-finalization timestamp.
+ *     The P2 frozen result does NOT carry a per-image
+ *     download timestamp (the P2 frozen `downloadImpl`
+ *     return shape is `{written, decoded, sha256,
+ *     width, height, sizeBytes, error}` — no
+ *     timestamp). The truthful projection is the run
+ *     `completedAt`: the bytes were downloaded during
+ *     the run and persisted before `completedAt`, so
+ *     the run-finalization time is the latest
+ *     truthful upper bound for the download time.
+ *     This is a documented approximation, not a
+ *     fabrication — the bridge does NOT pretend to
+ *     know the exact per-image download time.
  *
  * @param {object} options
  * @param {string} options.dataPath - the Shared Core data root
@@ -932,18 +978,57 @@ export function createPackagingRunRegistrationAdapter(options) {
       : 'failed';
     const model = isPlainObject(packagingResult.model) ? packagingResult.model : {};
     const provider = isPlainObject(packagingResult.provider) ? packagingResult.provider : {};
-    // P2 frozen capability returns `provider.provider = ''`;
-    // the real adapter identity is in `provider.protocol`.
-    // Use the protocol as the truthful providerId (it is
-    // what the Shared runtime adapter uses to route the
-    // request). When the protocol is empty (a mock), fall
-    // back to the literal `provider.provider` field.
-    const protocol = asString(provider.protocol);
+    // P3-B5.3.1 — truthful providerId mapping.
+    //
+    // The P2 frozen result carries THREE different identity
+    // fields on the `provider` block; they are NOT
+    // interchangeable:
+    //
+    //   - `result.provider.provider`  → the canonical
+    //     Provider vendor identity. The P2 frozen
+    //     `executePackagingGeneration` derives this from
+    //     `capability.provider` (e.g. 'dashscope',
+    //     'openai', 'google', 'volcengine', 'mock'). This
+    //     is what the canonical `ImageProviderId` union
+    //     expects.
+    //   - `result.provider.protocol`  → the transport
+    //     protocol the Shared multi-model adapter uses
+    //     (e.g. 'openai-compatible', 'seedream-image',
+    //     'dashscope-wan-image', 'google-gemini-image',
+    //     'openai-image-generation'). It is a wire-format
+    //     identifier, NOT a Provider identity. Writing
+    //     this as `providerId` would conflate "which
+    //     vendor" with "which wire format" and is
+    //     semantically wrong.
+    //   - `result.provider.adapterId` → the Shared
+    //     multi-model adapter's stable routing id
+    //     (usually `providerModelId` verbatim). It is a
+    //     routing identity, not a Provider identity.
+    //
+    // The P3-B5.3 implementation wrote `protocol ||
+    // provider || 'unknown'`, which is a contract
+    // conflation (B5.3.1 audit §III / §IV). The truthful
+    // fix is to write `provider.provider` verbatim. When
+    // `provider.provider` is empty (a test mock that
+    // intentionally leaves the canonical vendor field
+    // blank), the bridge falls back to 'unknown' — NOT
+    // to `protocol` (that would silently re-introduce
+    // the wire-format-as-vendor conflation).
     const providerField = asString(provider.provider);
-    const providerId = protocol || providerField || 'unknown';
+    const providerId = providerField || 'unknown';
     const modelId = asString(model.providerModelId)
       || asString(model.registryModelId)
       || 'unknown';
+    // P3-B5.3.1 — `protocol` is preserved on the canonical
+    // run as `apiProfileId` is not the right home for it
+    // (apiProfileId is the Profile selection name, not
+    // the transport protocol). The canonical
+    // `ImageGenerationRun` schema does NOT have a
+    // dedicated `protocol` field, so we keep the field
+    // off the persisted record rather than fabricating
+    // one. The protocol is still on the P2 frozen
+    // `result` itself, which the sidecar preserves
+    // verbatim for downstream consumers.
     const region = asString(diagnostics.region) || 'beijing';
     // P2 frozen `result.artifacts[]` is the canonical
     // mapping source. Each artifact carries
@@ -959,6 +1044,13 @@ export function createPackagingRunRegistrationAdapter(options) {
         mimeType: asString(a.mimeType),
         sizeBytes: Number.isFinite(a.sizeBytes) ? a.sizeBytes : 0,
         sha256: asString(a.sha256) || '',
+        // P3-B5.3.1 — truthful downloadedAt. The P2
+        // frozen result does NOT carry a per-image
+        // download timestamp; the closest truthful
+        // signal is the run `completedAt` (the bytes
+        // were downloaded during the run and persisted
+        // before `completedAt`). This is a documented
+        // approximation, not a per-image ground truth.
         downloadedAt: asString(diagnostics.completedAt) || now(),
       };
       const thumb = asString(a.thumbnailRelativePath);
@@ -967,15 +1059,28 @@ export function createPackagingRunRegistrationAdapter(options) {
       if (Number.isFinite(a.height)) image.height = a.height;
       return image;
     });
-    // Canonical `taskId` mirrors the image-generation
-    // convention: for uuid-style runIds the canonical
-    // taskId is `<prefix>-${runId.slice(0,8)}`; for
-    // short `pkg-...` runIds the full runId is used
-    // (the `pkg-` prefix already uniquely identifies the
-    // run; concatenating another prefix is redundant and
-    // produces strings like `pkg-pkg-aa01`).
-    // The canonical contract is: `taskId` is unique per
-    // run and deterministically derived from the runId.
+    // P3-B5.3.1 — truthful taskId derivation. The
+    // canonical `ImageGenerationRun.taskId` is a
+    // stable task correlation identifier, not a
+    // Provider task id (Provider task id lives on
+    // `providerTaskId` / `providerRequestId`). The
+    // Packaging pipeline does not have a separate
+    // task-builder task object; the runId IS the
+    // task. The derivation mirrors the
+    // `igt-${runId.slice(0,8)}` convention used in
+    // production (`pkg-${runId.slice(0,8)}` here):
+    //   - For uuid-style runIds (e.g.
+    //     `pkg-aa01bb02-...`), the canonical taskId
+    //     is `pkg-${runId.slice(0, 8)}`.
+    //   - For short `pkg-*` runIds (≤16 chars, e.g.
+    //     `pkg-aa01`), the full runId is used — the
+    //     `pkg-` prefix already uniquely identifies
+    //     the run, and concatenating another prefix
+    //     would produce redundant strings like
+    //     `pkg-pkg-aa01`.
+    // The derivation is deterministic, collision-
+    // aware, and truthful (it is a correlation id,
+    // not a fabricated external task).
     const taskId = runId.startsWith('pkg-') && runId.length <= 16
       ? runId
       : `pkg-${runId.slice(0, 8)}`;
@@ -985,11 +1090,18 @@ export function createPackagingRunRegistrationAdapter(options) {
       projectId,
       taskId,
       status,
-      // P3-B5.3: `'packaging_render'` is the existing
-      // production de-facto value already used by
-      // `anchor-generation-service` and
-      // `generation-series-execution-service`. The TS
-      // union is a type lag.
+      // P3-B5.3.1: `'packaging_render'` is the canonical
+      // Packaging outputType. The
+      // `ImageGenerationOutputType` TS union was formally
+      // extended in
+      // `@masterpiece/image-generation-contracts` to
+      // include this value (it was already a
+      // `GenerationDeliverable` value and was the
+      // de-facto production outputType for the
+      // Packaging pipeline). The value is now
+      // contractually canonical — the previous bridge
+      // justification that the value was outside the
+      // union has been retired.
       outputType: 'packaging_render',
       providerId,
       modelId,
@@ -1001,7 +1113,13 @@ export function createPackagingRunRegistrationAdapter(options) {
       completedAt,
       // Packaging has no P2-G gate; the truthful projection
       // is "passed" (the P2 stale gate has already run and
-      // thrown before reaching `saveRun`).
+      // thrown before reaching `saveRun`). The 5 P2-F
+      // semantic hashes + executionIdentityHash live in
+      // the sidecar's source-context snapshot, not in
+      // `gate` — the canonical `gate` field is for
+      // pre-execution identity-safety / task-executability
+      // / artifact-completeness decisions, not for the
+      // P2-F fingerprint.
       gate: Object.freeze({
         errors: Object.freeze([]),
         warnings: Object.freeze([]),

@@ -11,8 +11,36 @@
 // §3 输出类型与规格
 // ---------------------------------------------------------------------------
 
-/** §3.1 P0 唯一正式输出类型。 */
-export type ImageGenerationOutputType = 'concept_image' | 'master_anchor_image';
+/**
+ * §3.1 P0 正式输出类型。
+ *
+ * P3-B5.3.1: `'packaging_render'` is added as a canonical
+ * value. It was already the de-facto production outputType
+ * for the Packaging pipeline (per the
+ * `GenerationDeliverable = 'packaging_render' | ...` union
+ * shared with `image-generation-runtime/src/deliverables/*`
+ * and `creative-production-runtime/src/visual-exploration.js`).
+ * The previous 2-value union was a contract lag: the
+ * canonical `runStore.saveRun` accepted any string
+ * (`JSON.stringify` is not type-validating) and the
+ * Packaging bridge wrote `'packaging_render'` as the
+ * truthful packaging outputType, but the TS type lag
+ * meant the value was outside the documented union.
+ *
+ * This is a generic, additive, backward-compatible
+ * correction — adding a union member does not change
+ * existing values. It is NOT a Packaging-specific hack:
+ * the same value already lives on
+ * `GenerationDeliverable` / `GenerationPromptSnapshot
+ * .outputType` / `VisualExploration.outputType` /
+ * `GenerationBlueprint.imagePurpose` across the
+ * repository, and the canonical runStore is the only
+ * surface that needs to formally recognize it.
+ */
+export type ImageGenerationOutputType =
+  | 'concept_image'
+  | 'master_anchor_image'
+  | 'packaging_render';
 
 export type ImageGenerationPreset =
   | 'visual_extension'

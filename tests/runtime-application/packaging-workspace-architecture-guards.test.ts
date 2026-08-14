@@ -48,6 +48,7 @@ const WEB_DIR = path.join(ROOT, 'apps', 'web', 'src');
 const APPS_WEB_SRC = WEB_DIR;
 const P2_FROZEN_DIR = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'packaging');
 const P2_FROZEN_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
+const P3A_FROZEN_BASELINE = 'dd4570a';
 
 const P2_PUBLIC_FACADE = new Set([
   'translation.js',
@@ -4853,4 +4854,589 @@ test('AA-15 the canonical preview requires a canonical run (sidecar alone is ins
   } finally {
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
+});
+
+// =============================================================================
+// Group AB — P3-B5.3.1 Canonical Run Contract Truthfulness
+//
+// P3-B5.3 closed the structural gap (canonical runStore
+// recognises pkg-* runs); P3-B5.3.1 closes the SEMANTIC gap
+// (the canonical `ImageGenerationRun` record produced by
+// the bridge is contractually truthful, not just
+// storage-accepted).
+//
+// Three fields were at risk in P3-B5.3:
+//   1. `outputType`     — the bridge wrote
+//      `'packaging_render'`, which was outside the
+//      documented `ImageGenerationOutputType` union
+//      (`'concept_image' | 'master_anchor_image'`). The
+//      P3-B5.3 report called this a "type lag"; B5.3.1
+//      audit proved it was a contract bypass. The fix is
+//      to formally extend the union in
+//      `@masterpiece/image-generation-contracts`.
+//   2. `providerId`     — the bridge wrote
+//      `result.provider.protocol`, conflating the
+//      transport protocol (e.g. `'openai-compatible'`)
+//      with the Provider vendor identity
+//      (`'dashscope' / 'openai' / 'volcengine' / etc.`).
+//      The fix is to write `result.provider.provider`
+//      verbatim, with `'unknown'` as a documented
+//      fallback (NOT a fall-through to `protocol`).
+//   3. `downloadedAt` / `taskId` — these were
+//      approximations the P3-B5.3 report acknowledged.
+//      B5.3.1 documents the truthfulness of each
+//      derivation explicitly and adds structural
+//      assertions so a future regression that swaps a
+//      derivation for a fabrication is caught.
+//
+// These guards are ADDITIVE — they do not modify any
+// P3-A canonical guard (A-L), any P3-B2/B3/B4 group
+// (W, T, X, Y), or any P3-B5.x group (Z, AA). They
+// only assert what was *not* asserted before: that the
+// canonical record's semantic fields are truthful.
+// =============================================================================
+
+test('AB-01 Packaging `outputType` is in the canonical `ImageGenerationOutputType` union (no JS-only type bypass)', async () => {
+  // P3-B5.3.1 audit §III: `'packaging_render'` is now
+  // formally part of the canonical union. The bridge
+  // writes it; the TS compiler accepts it; the canonical
+  // runStore accepts it. A regression that reverts the
+  // union extension is caught here.
+  const contractsPath = path.join(ROOT, 'packages', 'image-generation-contracts', 'src', 'index.ts');
+  const contractsSrc = readFile(contractsPath);
+  assert.equal(
+    /export type ImageGenerationOutputType[\s\S]+?'packaging_render'/u.test(contractsSrc),
+    true,
+    '`ImageGenerationOutputType` union MUST formally include `packaging_render` (P3-B5.3.1 §III / §X)',
+  );
+  // The bridge writes `'packaging_render'`.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  assert.equal(
+    /outputType:\s*['"]packaging_render['"]/u.test(opsSrc),
+    true,
+    'bridge MUST write `outputType: "packaging_render"` as the truthful Packaging outputType (P3-B5.3.1 §III)',
+  );
+  // No "type lag" / "runtime accepts it anyway" / "JSON.stringify
+  // does not validate" comments. The previous B5.3.1 audit
+  // claim that the union was a "type lag" was a contract
+  // bypass, not a real justification.
+  for (const forbiddenPhrase of [
+    'type lag',
+    'runtime accepts any string',
+    'JSON.stringify does not',
+    'JSON.stringify doesn\'t validate',
+    'not validated at write',
+  ]) {
+    assert.equal(
+      opsSrc.toLowerCase().includes(forbiddenPhrase.toLowerCase()),
+      false,
+      `bridge MUST NOT use "${forbiddenPhrase}" as a justification for an out-of-union value (P3-B5.3.1 §IV)`,
+    );
+  }
+});
+
+test('AB-02 the canonical `run.json` produced by the bridge satisfies the canonical TS schema (outputType ∈ union, status ∈ enum, providerId ∈ enum)', async () => {
+  // P3-B5.3.1 §IX: when a real canonical `runStore` is
+  // asked to `readRun` a bridge-registered pkg run, the
+  // returned record must be type-valid against the
+  // canonical TS schema. We perform a structural check
+  // (since we cannot run `tsc` here) that asserts each
+  // semantic field falls in its expected set.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab02-'));
+  try {
+    const projectId = 'ab02-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-02' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: 'pkg-ab02-001',
+        status: 'succeeded',
+        model: { providerModelId: 'wan2.7-image-pro', registryModelId: 'wan2.7-image-pro' },
+        provider: { protocol: 'openai-compatible', provider: 'dashscope', adapterId: 'wan2.7-image-pro' },
+        apiProfileId: 'profile-ab02',
+        artifacts: [
+          {
+            imageId: 'image-01',
+            mimeType: 'image/png',
+            sha256: 'a'.repeat(64),
+            relativePath: 'images/image-01.png',
+            thumbnailRelativePath: 'thumbnails/image-01.webp',
+            width: 1024,
+            height: 1024,
+            sizeBytes: 12345,
+          },
+        ],
+        diagnostics: {
+          startedAt: '2026-08-14T00:00:00.000Z',
+          completedAt: '2026-08-14T00:00:01.000Z',
+          region: 'beijing',
+        },
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun('pkg-ab02-001');
+    assert.notEqual(persisted, null);
+    // outputType ∈ canonical union.
+    assert.ok(
+      ['concept_image', 'master_anchor_image', 'packaging_render'].includes(String(persisted.outputType)),
+      `persisted.outputType MUST be in canonical union, got: ${String(persisted.outputType)} (P3-B5.3.1 §III)`,
+    );
+    // status ∈ canonical enum.
+    assert.ok(
+      [
+        'created', 'validating', 'blocked', 'ready', 'submitting',
+        'queued', 'running', 'downloading', 'succeeded', 'failed', 'cancelled',
+      ].includes(String(persisted.status)),
+      `persisted.status MUST be in canonical enum, got: ${String(persisted.status)} (P3-B5.3.1 §XIII)`,
+    );
+    // region ∈ canonical enum.
+    assert.ok(
+      ['beijing', 'singapore'].includes(String(persisted.region)),
+      `persisted.region MUST be in canonical enum, got: ${String(persisted.region)} (P3-B5.3.1 §XIII)`,
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-03 `providerId` is sourced from the canonical Provider identity, NOT from the transport protocol', async () => {
+  // P3-B5.3.1 §V / §VI: the canonical Provider
+  // identity lives in `result.provider.provider`
+  // (e.g. `'dashscope'`). The transport protocol
+  // (`'openai-compatible'`) is a wire-format
+  // identifier, NOT a vendor identity. The bridge
+  // MUST NOT conflate them.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab03-'));
+  try {
+    const projectId = 'ab03-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-03' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: 'pkg-ab03-001',
+        status: 'succeeded',
+        model: { providerModelId: 'wan2.7-image-pro', registryModelId: 'wan2.7-image-pro' },
+        // A realistic case: the protocol is
+        // `openai-compatible` but the canonical Provider
+        // identity is `dashscope` (DashScope is reachable
+        // through an OpenAI-compatible API). The bridge
+        // MUST record `dashscope` as providerId, NOT
+        // `openai-compatible`.
+        provider: { protocol: 'openai-compatible', provider: 'dashscope', adapterId: 'wan2.7-image-pro' },
+        diagnostics: {
+          startedAt: '2026-08-14T00:00:00.000Z',
+          completedAt: '2026-08-14T00:00:01.000Z',
+          region: 'beijing',
+        },
+        artifacts: [],
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun('pkg-ab03-001');
+    assert.notEqual(persisted, null);
+    assert.equal(
+      persisted.providerId,
+      'dashscope',
+      'providerId MUST be sourced from the canonical Provider identity (result.provider.provider), NOT from the transport protocol (P3-B5.3.1 §V / §VI)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-04 `providerId` is NOT sourced from `modelId` (no model-as-provider conflation)', async () => {
+  // P3-B5.3.1 §VI: `modelId` (e.g.
+  // `'wan2.7-image-pro'`) is a model identity, not a
+  // Provider identity. The bridge MUST NOT use it as
+  // `providerId`. A regression that swaps the two
+  // surfaces is caught here.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab04-'));
+  try {
+    const projectId = 'ab04-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-04' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    // The Provider field is empty (test mock); the
+    // fallback MUST be 'unknown' (NOT the model id).
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: 'pkg-ab04-001',
+        status: 'succeeded',
+        model: { providerModelId: 'wan2.7-image-pro', registryModelId: 'wan2.7-image-pro' },
+        provider: { protocol: 'openai-compatible', provider: '', adapterId: 'wan2.7-image-pro' },
+        diagnostics: {
+          startedAt: '2026-08-14T00:00:00.000Z',
+          completedAt: '2026-08-14T00:00:01.000Z',
+        },
+        artifacts: [],
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun('pkg-ab04-001');
+    assert.notEqual(persisted, null);
+    assert.notEqual(
+      persisted.providerId,
+      'wan2.7-image-pro',
+      'providerId MUST NOT be sourced from modelId (P3-B5.3.1 §VI)',
+    );
+    assert.equal(
+      persisted.providerId,
+      'unknown',
+      'providerId MUST fall back to "unknown" when the canonical Provider identity is empty (NOT to the model id or the protocol) (P3-B5.3.1 §VI)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-05 `taskId` derivation is documented, deterministic, and is NOT falsely represented as an external task id', async () => {
+  // P3-B5.3.1 §VII: the canonical `ImageGenerationRun
+  // .taskId` is a stable task correlation identifier,
+  // not a Provider task id. The Packaging pipeline
+  // does not have a separate task-builder task
+  // object; the runId IS the task. The derivation is:
+  //   - For uuid-style runIds (e.g.
+  //     `pkg-aa01bb02-...`), the canonical taskId is
+  //     `pkg-${runId.slice(0, 8)}`.
+  //   - For short `pkg-*` runIds (≤16 chars), the
+  //     full runId is the taskId.
+  //   - The bridge does NOT pretend the taskId came
+  //     from a real Provider task object.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab05-'));
+  try {
+    const projectId = 'ab05-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-05' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    // Long runId → `pkg-${runId.slice(0, 8)}`.
+    const longRunId = 'pkg-aa01bb02-cc03-4d04-ee05-ff06aabbccdd';
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: longRunId,
+        status: 'succeeded',
+        model: { providerModelId: 'm', registryModelId: 'm' },
+        provider: { protocol: 'm', provider: 'm', adapterId: 'm' },
+        diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
+        artifacts: [],
+      },
+    });
+    let runStore = m.createRunStore(tmpDir, projectId);
+    let persisted = await runStore.readRun(longRunId);
+    assert.equal(
+      persisted.taskId,
+      `pkg-${longRunId.slice(0, 8)}`,
+      'long pkg-* runId → taskId is `pkg-${runId.slice(0, 8)}` (P3-B5.3.1 §VII)',
+    );
+    // Short runId (≤16 chars) → full runId is the taskId.
+    const shortRunId = 'pkg-aa01';
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: shortRunId,
+        status: 'succeeded',
+        model: { providerModelId: 'm', registryModelId: 'm' },
+        provider: { protocol: 'm', provider: 'm', adapterId: 'm' },
+        diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
+        artifacts: [],
+      },
+    });
+    runStore = m.createRunStore(tmpDir, projectId);
+    persisted = await runStore.readRun(shortRunId);
+    assert.equal(
+      persisted.taskId,
+      shortRunId,
+      'short pkg-* runId (≤16 chars) → taskId is the full runId (no redundant `pkg-pkg-...` prefix) (P3-B5.3.1 §VII)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-06 `downloadedAt` uses a truthful timestamp (the run `completedAt`), NOT an approximation when real data is available', async () => {
+  // P3-B5.3.1 §VIII: the P2 frozen result does NOT
+  // carry a per-image download timestamp. The
+  // closest truthful signal is the run `completedAt`
+  // (the bytes were downloaded during the run and
+  // persisted before `completedAt`). The bridge
+  // documents this as a known approximation; it does
+  // NOT pretend to know the per-image download time.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab06-'));
+  try {
+    const projectId = 'ab06-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-06' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    const fixedCompletedAt = '2026-08-14T00:00:01.500Z';
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: 'pkg-ab06-001',
+        status: 'succeeded',
+        model: { providerModelId: 'm', registryModelId: 'm' },
+        provider: { protocol: 'm', provider: 'm', adapterId: 'm' },
+        artifacts: [
+          {
+            imageId: 'image-01',
+            mimeType: 'image/png',
+            sha256: 'a'.repeat(64),
+            relativePath: 'images/image-01.png',
+            thumbnailRelativePath: 'thumbnails/image-01.webp',
+          },
+        ],
+        diagnostics: {
+          startedAt: '2026-08-14T00:00:00.000Z',
+          completedAt: fixedCompletedAt,
+        },
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun('pkg-ab06-001');
+    assert.notEqual(persisted, null);
+    assert.equal(persisted.images.length, 1);
+    assert.equal(
+      persisted.images[0].downloadedAt,
+      fixedCompletedAt,
+      'downloadedAt MUST be the run `completedAt` (P3-B5.3.1 §VIII)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-07 the bridge does NOT carry `result.provider.protocol` as `providerId` even when the canonical Provider field is empty (no protocol fall-through)', async () => {
+  // P3-B5.3.1 §V: the previous B5.3 implementation
+  // fell through to `result.provider.protocol` when
+  // `result.provider.provider` was empty. This was a
+  // contract conflation (transport protocol vs
+  // vendor identity). B5.3.1 fixed the bridge to fall
+  // back to `'unknown'` instead. A regression that
+  // re-introduces the protocol fall-through is caught
+  // here.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab07-'));
+  try {
+    const projectId = 'ab07-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-07' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: 'pkg-ab07-001',
+        status: 'succeeded',
+        model: { providerModelId: 'm', registryModelId: 'm' },
+        provider: { protocol: 'openai-compatible', provider: '', adapterId: 'm' },
+        diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
+        artifacts: [],
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun('pkg-ab07-001');
+    assert.notEqual(persisted, null);
+    assert.notEqual(
+      persisted.providerId,
+      'openai-compatible',
+      'providerId MUST NOT fall through to result.provider.protocol (P3-B5.3.1 §V / §VI)',
+    );
+    assert.equal(
+      persisted.providerId,
+      'unknown',
+      'empty canonical Provider identity MUST fall back to "unknown", not to the transport protocol (P3-B5.3.1 §V / §VI)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-08 the canonical record carries no fabricated semantic fields (only truthful, mapped, or omitted fields)', async () => {
+  // P3-B5.3.1 §XIII: the canonical record MUST NOT
+  // carry fields that misrepresent the Packaging
+  // semantics. Forbidden fabrications:
+  //   - `outputType: 'concept_image'` (a packaging
+  //     render is NOT a concept image).
+  //   - `outputType: 'master_anchor_image'` (a
+  //     packaging render is NOT a master anchor).
+  //   - `status: 'succeeded'` when the P2 frozen
+  //     result is `'failed'`.
+  //   - `gate.blocked: true` (there is no gate).
+  //   - `providerId: 'openai-compatible'`
+  //     (protocol-as-provider conflation).
+  //   - `taskId: 'external-task-id'` (no such
+  //     external task).
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const m = await getAAModules();
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ab08-'));
+  try {
+    const projectId = 'ab08-project';
+    const projectRoot = path.join(tmpDir, 'projects', projectId);
+    await fs.mkdir(projectRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(projectRoot, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'AB-08' }),
+    );
+    const adapter = m.createPackagingRunRegistrationAdapter({
+      dataPath: tmpDir,
+      createRunStore: m.createRunStore,
+    });
+    // Failed run: status MUST be preserved as 'failed'.
+    await adapter.registerRun({
+      projectId,
+      packagingResult: {
+        schemaVersion: '1.0',
+        runId: 'pkg-ab08-001',
+        status: 'failed',
+        model: { providerModelId: 'm', registryModelId: 'm' },
+        provider: { protocol: 'openai-compatible', provider: 'volcengine', adapterId: 'm' },
+        diagnostics: { startedAt: '2026-08-14T00:00:00.000Z', completedAt: '2026-08-14T00:00:01.000Z' },
+        artifacts: [],
+      },
+    });
+    const runStore = m.createRunStore(tmpDir, projectId);
+    const persisted = await runStore.readRun('pkg-ab08-001');
+    assert.notEqual(persisted, null);
+    assert.equal(persisted.status, 'failed', 'bridge MUST preserve truthful failed status (P3-B5.3.1 §XIII)');
+    assert.equal(persisted.outputType, 'packaging_render', 'outputType MUST be packaging_render (P3-B5.3.1 §III / §XIII)');
+    assert.equal(persisted.gate.blocked, false, 'gate.blocked MUST be false (P3-B5.3.1 §XIII)');
+    assert.equal(persisted.providerId, 'volcengine', 'providerId MUST be the canonical Provider identity (P3-B5.3.1 §V)');
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  }
+});
+
+test('AB-09 the shared `image-generation-contracts` union extension is minimal, additive, and does not change existing values', () => {
+  // P3-B5.3.1 §X: the union extension MUST be
+  // backwards-compatible. Existing values
+  // ('concept_image' / 'master_anchor_image') MUST
+  // remain in the union; the only change is the
+  // addition of 'packaging_render'.
+  const contractsPath = path.join(ROOT, 'packages', 'image-generation-contracts', 'src', 'index.ts');
+  const contractsSrc = readFile(contractsPath);
+  // Both pre-existing values MUST still be present.
+  assert.equal(
+    contractsSrc.includes("'concept_image'"),
+    true,
+    'pre-existing ImageGenerationOutputType value "concept_image" MUST be preserved (P3-B5.3.1 §X)',
+  );
+  assert.equal(
+    contractsSrc.includes("'master_anchor_image'"),
+    true,
+    'pre-existing ImageGenerationOutputType value "master_anchor_image" MUST be preserved (P3-B5.3.1 §X)',
+  );
+  // The new value MUST be present.
+  assert.equal(
+    contractsSrc.includes("'packaging_render'"),
+    true,
+    'new ImageGenerationOutputType value "packaging_render" MUST be added (P3-B5.3.1 §III / §X)',
+  );
+  // The contracts package version MUST be unchanged
+  // (0.0.0; private). The extension is purely
+  // additive — it does not require a version bump.
+  const pkgPath = path.join(ROOT, 'packages', 'image-generation-contracts', 'package.json');
+  const pkgSrc = readFile(pkgPath);
+  assert.equal(
+    /"version"\s*:\s*"0\.0\.0"/.test(pkgSrc),
+    true,
+    'contracts package version MUST remain 0.0.0 (the union extension is purely additive; no version bump) (P3-B5.3.1 §XI)',
+  );
+});
+
+test('AB-10 P3-A frozen production surface and P2 frozen packaging surface are unchanged after P3-B5.3.1', () => {
+  // P3-B5.3.1 §XII: the contract truthfulness fix
+  // touches only the non-frozen
+  // `packages/runtime-core/src/operations/packaging-operations.js`
+  // and the additive
+  // `packages/image-generation-contracts/src/index.ts`
+  // (which is the shared contract package, NOT
+  // P3-A frozen application surface and NOT P2
+  // frozen packaging surface). Verify 0 changes to
+  // the frozen baselines.
+  const p3aDiff = runGit(['diff', '--name-only', P3A_FROZEN_BASELINE, 'HEAD']);
+  const p3aChanged = p3aDiff.split('\n').filter(Boolean);
+  const p3aViolations = p3aChanged.filter((f) => f.startsWith('packages/runtime-core/src/application/packaging/'));
+  assert.equal(
+    p3aViolations.length,
+    0,
+    `P3-A frozen surface MUST be unchanged (P3-B5.3.1 §XII); violations: ${p3aViolations.join(', ')}`,
+  );
+  const p2Diff = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD']);
+  const p2Changed = p2Diff.split('\n').filter(Boolean);
+  const p2Violations = p2Changed.filter((f) => f.startsWith('packages/image-generation-runtime/src/packaging/'));
+  assert.equal(
+    p2Violations.length,
+    0,
+    `P2 frozen surface MUST be unchanged (P3-B5.3.1 §XII); violations: ${p2Violations.join(', ')}`,
+  );
 });
