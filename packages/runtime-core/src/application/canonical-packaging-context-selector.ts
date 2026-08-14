@@ -25,9 +25,12 @@ export interface PackagingTruthVisualContext {
 }
 
 export class CanonicalPackagingContextError extends Error {
-  constructor(public readonly code: string, message: string) {
+  readonly code: string;
+
+  constructor(code: string, message: string) {
     super(`${code}: ${message}`);
     this.name = 'CanonicalPackagingContextError';
+    this.code = code;
   }
 }
 
