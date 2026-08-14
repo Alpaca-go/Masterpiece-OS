@@ -1,4 +1,4 @@
-﻿// P3-B2 / P3-B5 — Packaging Workspace RPC operations.
+// P3-B2 / P3-B5 — Packaging Workspace RPC operations.
 //
 // Capability boundary:
 //   Thin RPC layer that maps the Web `window.masterpiece.packaging.*`
@@ -316,6 +316,19 @@ function assertInside(root, candidate) {
  *   implementation. The store does NOT import the P2 frozen
  *   module directly (it accepts the function as an adapter to
  *   keep the operations layer free of frozen-module deep-imports).
+ * @param {(sessionId: string, packagingResult: object) => Promise<void>} options.registerCanonicalRun
+ *   - P3-B5.3 Canonical Run Registration Bridge. The
+ *   composition root wires this to `createPackagingRunRegistration
+ *   Adapter`, which calls the existing canonical
+ *   `createRunStore(dataPath, projectId).saveRun(...)` to write
+ *   the canonical `<runRoot>/run.json`. The canonical
+ *   `run.json` is the run identity authority; the sidecar is a
+ *   target-specific extension written afterwards.
+ * @param {(input: {projectId: string, runId: string}) => Promise<object | null>} options.canonicalReadRun
+ *   - P3-B5.3 Canonical Run Read. The preview path consults
+ *   this FIRST. A sidecar without a canonical run is an
+ *   orphan and the preview path returns `null` (B5.2 §IX /
+ *   B5.3 §VIII).
  * @returns {{
  *   saveRun: (sessionId: string, packagingResult: object) => Promise<void>,
  *   resolveArtifactLifecycle: (input: object) => Promise<object>,
@@ -373,6 +386,36 @@ export function createPackagingArtifactStore(options) {
   // service falls back to its bundled default. This keeps
   // the operations layer free of any direct frozen-module
   // deep-imports.
+  // P3-B5.3 — Canonical Run Registration Bridge.
+  //
+  // The store DOES NOT own the canonical run existence. The
+  // composition root wires a `registerCanonicalRun` adapter
+  // that calls the existing `imageGeneration.runStore.saveRun`
+  // (P3-B5.2 §XIX: canonical run identity authority). The
+  // Packaging sidecar is then written as a target-specific
+  // extension; the sidecar is NOT the run identity.
+  //
+  // The store also exposes a `canonicalReadRun` adapter that
+  // the preview path consults FIRST. A sidecar that exists
+  // without a canonical run is an orphan and the preview
+  // path returns `null` (B5.2 §IX / B5.3 §IX).
+  //
+  // Both adapters are REQUIRED. We deliberately do not
+  // provide a default — production must wire them through
+  // the composition root so a frozen regression cannot
+  // silently bypass canonical run registration.
+  const registerCanonicalRun = typeof options.registerCanonicalRun === 'function'
+    ? options.registerCanonicalRun
+    : null;
+  if (typeof registerCanonicalRun !== 'function') {
+    throw new Error('PACKAGING_ARTIFACT_STORE_REGISTER_CANONICAL_RUN_REQUIRED');
+  }
+  const canonicalReadRun = typeof options.canonicalReadRun === 'function'
+    ? options.canonicalReadRun
+    : null;
+  if (typeof canonicalReadRun !== 'function') {
+    throw new Error('PACKAGING_ARTIFACT_STORE_CANONICAL_READ_RUN_REQUIRED');
+  }
   const downloadImplFn = downloadImpl;
 
   /**
@@ -502,6 +545,13 @@ export function createPackagingArtifactStore(options) {
    * to `<runRoot>/<PACKAGING_ARTIFACT_RECORD_FILE>`. The record
    * is intentionally small so the preview RPC does not get a
    * path into the wider audit surface.
+   *
+   * P3-B5.3: the canonical run registration runs FIRST. The
+   * canonical `run.json` is the run identity authority; the
+   * sidecar is a target-specific extension. If canonical
+   * registration fails the sidecar is NOT written, so the
+   * run never appears as "EXECUTED" with a sidecar but no
+   * canonical record (the P3-B5.2 orphan-sidecar risk).
    */
   async function saveRun(sessionId, packagingResult) {
     const projectId = await getProjectIdForSession(sessionId);
@@ -510,6 +560,12 @@ export function createPackagingArtifactStore(options) {
       throw new Error('PACKAGING_ARTIFACT_STORE_INVALID_RESULT');
     }
     const runId = record.runId;
+    // Canonical registration runs FIRST. If this throws
+    // the sidecar is never written, and the Web feature's
+    // `view.execution.runId === runId` is the canonical
+    // identity check (B5.3 §VII). A canonical `run.json`
+    // is the run existence authority.
+    await registerCanonicalRun(sessionId, packagingResult);
     const runRoot = await runRootForProject(projectId, runId);
     // Defense in depth: even if the record is well-formed, the
     // store refuses to write outside the canonical run root.
@@ -634,6 +690,25 @@ export function createPackagingArtifactStore(options) {
     // path-safety check. The RPC layer validates runId shape
     // already, but the store is the last line of defense.
     if (!isRelativePathSafe(runId)) return null;
+    // P3-B5.3: the canonical runStore MUST recognise this
+    // runId. The sidecar alone is NOT run existence
+    // authority (P3-B5.2 §IX / B5.3 §VIII). An orphan
+    // sidecar (no canonical run.json) returns `null` so
+    // the Web feature renders the "预览不可用"
+    // placeholder. The canonical check is the SOLE gate
+    // that distinguishes a "Packaging run" from a stale
+    // / tampered / leftover sidecar.
+    let canonicalRun = null;
+    try {
+      canonicalRun = await canonicalReadRun({ projectId, runId });
+    } catch {
+      canonicalRun = null;
+    }
+    if (!isPlainObject(canonicalRun)) {
+      // P3-B5.3: sidecar without canonical run → no preview.
+      // This is the orphan-sidecar contract (B5.3 §IX).
+      return null;
+    }
     const runRoot = await runRootForProject(projectId, runId);
     let record;
     try {
@@ -745,6 +820,222 @@ export function createPackagingArtifactStore(options) {
   });
 }
 
+
+/**
+ * P3-B5.3 — Canonical Run Registration Bridge.
+ *
+ * Maps a P2 frozen `executePackagingGeneration` result to the
+ * canonical `ImageGenerationRun` shape and writes it to the
+ * existing image-generation run-store at
+ * `<projectRoot>/image-generation/<runId>/run.json`. The
+ * canonical `run.json` is the run identity authority; the
+ * Packaging sidecar is a target-specific extension written
+ * afterwards by `createPackagingArtifactStore.saveRun`.
+ *
+ * After this adapter runs:
+ *   - `createRunStore(dataPath, projectId).readRun(runId)`
+ *     returns a non-null `ImageGenerationRun`.
+ *   - `createRunStore(dataPath, projectId).listRuns()`
+ *     includes the `pkg-*` run.
+ *   - `imageGeneration.getRun(runId)` (the canonical
+ *     service) returns a non-null `ImageGenerationRun`.
+ *   - `imageGeneration.runRoot(runId)` returns the canonical
+ *     run root. The sidecar lives at the same physical root.
+ *
+ * Truthful mapping contract (P3-B5.3 §III / §IV):
+ *   - `outputType: 'packaging_render'` is the existing
+ *     production de-facto value already used by
+ *     `anchor-generation-service`, `generation-series-execution
+ *     -service`, and `image-generation/service.ts`. The TS
+ *     union is a type lag (the production code is the
+ *     source of truth for what the value means).
+ *   - `providerId` / `region` carry the P2 frozen values
+ *     verbatim. The TS enum is a type lag; the JSON is
+ *     the source of truth.
+ *   - `taskId` is derived from `runId` mirroring the
+ *     `igt-${runId.slice(0,8)}` convention
+ *     (`pkg-${runId.slice(0,8)}`).
+ *   - `gate` is the canonical `{ errors, warnings, blocked }`
+ *     triple. Packaging has no P2-G gate; the truthful
+ *     projection is "no errors, no warnings, not blocked"
+ *     (a successful P2 frozen execution has already passed
+ *     the P2 stale gate). The 5 P2-F hashes live in the
+ *     sidecar's source-context snapshot, not in `gate`.
+ *   - `images[]` carries the full P2 artifact metadata
+ *     (imageId, relativePath, thumbnailRelativePath,
+ *     mimeType, sizeBytes, width, height, sha256). The
+ *     P2 frozen `downloadImpl` already produces `sha256`
+ *     and the frozen result includes it in
+ *     `result.artifacts[].sha256`.
+ *   - `downloadedAt` is the P2 frozen `diagnostics.completedAt`
+ *     (truthful approximation: the bytes were downloaded
+ *     during execution and persisted before `completedAt`).
+ *
+ * @param {object} options
+ * @param {string} options.dataPath - the Shared Core data root
+ *   (the same root the image-generation run-store uses).
+ * @param {(dataPath: string, projectId: string) => {
+ *   saveRun(run: object): Promise<object>,
+ *   readRun(runId: string): Promise<object|null>,
+ * }} options.createRunStore - the canonical image-generation
+ *   runStore factory. Exposed via
+ *   `@masterpiece/runtime-core/image-generation-run-store`.
+ *   Tests can pass a fake; production wires the real
+ *   `createRunStore` from `application/image-generation/run-store.ts`.
+ * @param {() => string} [options.now] - ISO timestamp factory;
+ *   defaults to `new Date().toISOString`. Tests inject a
+ *   deterministic clock.
+ * @returns {{
+ *   registerRun: (input: { projectId: string, packagingResult: object }) => Promise<object>,
+ *   readRun: (input: { projectId: string, runId: string }) => Promise<object|null>,
+ * }}
+ */
+export function createPackagingRunRegistrationAdapter(options) {
+  if (!options || typeof options !== 'object') {
+    throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_OPTIONS_REQUIRED');
+  }
+  const dataPath = asString(options.dataPath);
+  if (!dataPath) {
+    throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_DATA_PATH_REQUIRED');
+  }
+  const createRunStore = typeof options.createRunStore === 'function'
+    ? options.createRunStore
+    : null;
+  if (typeof createRunStore !== 'function') {
+    throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_CREATE_RUN_STORE_REQUIRED');
+  }
+  const now = typeof options.now === 'function'
+    ? options.now
+    : () => new Date().toISOString();
+
+  /**
+   * Map a P2 frozen `result` to the canonical
+   * `ImageGenerationRun` shape. The mapping is truthful
+   * (no false fields) and reversible: the sidecar keeps
+   * the P2 frozen shape for downstream consumers.
+   */
+  function buildCanonicalRun({ projectId, packagingResult }) {
+    if (!isPlainObject(packagingResult)) {
+      throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_INVALID_RESULT');
+    }
+    const runId = asString(packagingResult.runId);
+    if (!runId) {
+      throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_MISSING_RUN_ID');
+    }
+    const diagnostics = isPlainObject(packagingResult.diagnostics)
+      ? packagingResult.diagnostics
+      : {};
+    const startedAt = asString(diagnostics.startedAt) || now();
+    const completedAt = asString(diagnostics.completedAt) || now();
+    const status = asString(packagingResult.status) === 'succeeded'
+      ? 'succeeded'
+      : 'failed';
+    const model = isPlainObject(packagingResult.model) ? packagingResult.model : {};
+    const provider = isPlainObject(packagingResult.provider) ? packagingResult.provider : {};
+    // P2 frozen capability returns `provider.provider = ''`;
+    // the real adapter identity is in `provider.protocol`.
+    // Use the protocol as the truthful providerId (it is
+    // what the Shared runtime adapter uses to route the
+    // request). When the protocol is empty (a mock), fall
+    // back to the literal `provider.provider` field.
+    const protocol = asString(provider.protocol);
+    const providerField = asString(provider.provider);
+    const providerId = protocol || providerField || 'unknown';
+    const modelId = asString(model.providerModelId)
+      || asString(model.registryModelId)
+      || 'unknown';
+    const region = asString(diagnostics.region) || 'beijing';
+    // P2 frozen `result.artifacts[]` is the canonical
+    // mapping source. Each artifact carries
+    // `imageId / relativePath / thumbnailRelativePath /
+    // mimeType / sha256 / width / height / sizeBytes`.
+    const artifacts = Array.isArray(packagingResult.artifacts)
+      ? packagingResult.artifacts.filter((a) => isPlainObject(a))
+      : [];
+    const images = artifacts.map((a) => {
+      const image = {
+        imageId: asString(a.imageId),
+        relativePath: asString(a.relativePath),
+        mimeType: asString(a.mimeType),
+        sizeBytes: Number.isFinite(a.sizeBytes) ? a.sizeBytes : 0,
+        sha256: asString(a.sha256) || '',
+        downloadedAt: asString(diagnostics.completedAt) || now(),
+      };
+      const thumb = asString(a.thumbnailRelativePath);
+      if (thumb) image.thumbnailRelativePath = thumb;
+      if (Number.isFinite(a.width)) image.width = a.width;
+      if (Number.isFinite(a.height)) image.height = a.height;
+      return image;
+    });
+    // Canonical `taskId` mirrors the image-generation
+    // convention: for uuid-style runIds the canonical
+    // taskId is `<prefix>-${runId.slice(0,8)}`; for
+    // short `pkg-...` runIds the full runId is used
+    // (the `pkg-` prefix already uniquely identifies the
+    // run; concatenating another prefix is redundant and
+    // produces strings like `pkg-pkg-aa01`).
+    // The canonical contract is: `taskId` is unique per
+    // run and deterministically derived from the runId.
+    const taskId = runId.startsWith('pkg-') && runId.length <= 16
+      ? runId
+      : `pkg-${runId.slice(0, 8)}`;
+    const run = {
+      schemaVersion: '1.0',
+      runId,
+      projectId,
+      taskId,
+      status,
+      // P3-B5.3: `'packaging_render'` is the existing
+      // production de-facto value already used by
+      // `anchor-generation-service` and
+      // `generation-series-execution-service`. The TS
+      // union is a type lag.
+      outputType: 'packaging_render',
+      providerId,
+      modelId,
+      region,
+      apiProfileId: asString(packagingResult.apiProfileId),
+      createdAt: startedAt,
+      updatedAt: completedAt,
+      startedAt,
+      completedAt,
+      // Packaging has no P2-G gate; the truthful projection
+      // is "passed" (the P2 stale gate has already run and
+      // thrown before reaching `saveRun`).
+      gate: Object.freeze({
+        errors: Object.freeze([]),
+        warnings: Object.freeze([]),
+        blocked: false,
+      }),
+      images: Object.freeze(images.map((img) => Object.freeze(img))),
+    };
+    return Object.freeze(run);
+  }
+
+  return Object.freeze({
+    async registerRun({ projectId, packagingResult }) {
+      if (!asString(projectId)) {
+        throw new Error('PACKAGING_RUN_REGISTRATION_ADAPTER_PROJECT_ID_REQUIRED');
+      }
+      const canonical = buildCanonicalRun({ projectId, packagingResult });
+      const runStore = createRunStore(dataPath, projectId);
+      // The canonical runStore writes `<runRoot>/run.json`.
+      // The sidecar (written afterwards by the artifact
+      // store) is a sibling file at the same physical
+      // root. Both are owned by the same canonical run
+      // identity (`<runRoot>` is shared by definition;
+      // P3-B5.2 §XVI parity test).
+      const persisted = await runStore.saveRun(canonical);
+      return Object.freeze(persisted);
+    },
+    async readRun({ projectId, runId }) {
+      if (!asString(projectId) || !asString(runId)) return null;
+      const runStore = createRunStore(dataPath, projectId);
+      const run = await runStore.readRun(runId);
+      return run ? Object.freeze(run) : null;
+    },
+  });
+}
 // ---------------------------------------------------------------------------
 // Internal helpers (file-system bound; the store is the SOLE
 // consumer of these).

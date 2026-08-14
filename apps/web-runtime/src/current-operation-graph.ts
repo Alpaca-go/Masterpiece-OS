@@ -9,6 +9,7 @@ import {
   createImageGenerationOperations,
   createPackagingArtifactStore,
   createPackagingOperations,
+  createPackagingRunRegistrationAdapter,
   createProjectContextOperations,
   createProjectOperations,
   createReferenceOperations,
@@ -24,6 +25,14 @@ import type {
   SaveSettingsInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { atomicWriteJsonWithRetry } from '@masterpiece/runtime-core/application/runtime/atomic-write.ts';
+// P3-B5.3 — Canonical Run Registration Bridge.
+// `createRunStore` is the canonical image-generation runStore
+// factory. The Packaging adapter calls into it to write the
+// canonical `<runRoot>/run.json`. We import the subpath
+// explicitly (the runtime-core public barrel does not
+// re-export this internal factory by design; the subpath
+// was added in B5.3).
+import { createRunStore } from '@masterpiece/runtime-core/image-generation-run-store';
 
 export interface NodeSettingsAdapter {
   get: () => unknown;
@@ -256,6 +265,22 @@ export function createCurrentBusinessOperations(
       absolutePath,
     });
   };
+  // P3-B5.3 — Canonical Run Registration Bridge instance.
+  // The adapter holds the canonical runStore factory
+  // (`createRunStore`) and the data path. Each
+  // `registerRun` call resolves the session's projectId
+  // and writes a canonical `ImageGenerationRun`-shaped
+  // record to `<projectRoot>/image-generation/<runId>/
+  // run.json`. After this runs the canonical
+  // `imageGeneration.getRun(runId)` returns a non-null
+  // record; `imageGeneration.listRuns` includes the
+  // `pkg-*` run.
+  const packagingRunRegistration = createPackagingRunRegistrationAdapter({
+    dataPath,
+    createRunStore: (dataPathArg, projectId) => createRunStore(dataPathArg, projectId),
+    now: () => new Date().toISOString(),
+  });
+
   const packagingArtifactStore = createPackagingArtifactStore({
     dataPath,
     resolveProjectRoot: resolveProjectRootForArtifactStore,
@@ -281,6 +306,33 @@ export function createCurrentBusinessOperations(
       } catch {
         return '';
       }
+    },
+    // P3-B5.3 — Canonical Run Registration Bridge. The
+    // adapter calls into the existing
+    // `createRunStore(dataPath, projectId).saveRun(...)`
+    // to write the canonical `<runRoot>/run.json`. The
+    // canonical `run.json` is the run identity authority;
+    // the sidecar is a target-specific extension written
+    // afterwards by the artifact store.
+    registerCanonicalRun: async (sessionId, packagingResult) => {
+      const view = (() => {
+        try {
+          return packaging.getView(sessionId);
+        } catch {
+          return null;
+        }
+      })();
+      const projectId = typeof view?.projectId === 'string' ? view.projectId : '';
+      if (!projectId) {
+        throw new Error('PACKAGING_BRIDGE_PROJECT_ID_MISSING');
+      }
+      await packagingRunRegistration.registerRun({ projectId, packagingResult });
+    },
+    canonicalReadRun: async ({ projectId, runId }) => {
+      if (typeof projectId !== 'string' || !projectId) return null;
+      if (typeof runId !== 'string' || !runId) return null;
+      const persisted = await packagingRunRegistration.readRun({ projectId, runId });
+      return persisted || null;
     },
   });
 

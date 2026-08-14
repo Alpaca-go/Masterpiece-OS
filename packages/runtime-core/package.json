@@ -9,7 +9,8 @@
     ".": "./src/index.js",
     "./*": "./src/*",
     "./checkpoint-store": "./src/checkpoint-store.js",
-    "./runtime-contracts": "./src/runtime-contracts.js"
+    "./runtime-contracts": "./src/runtime-contracts.js",
+    "./image-generation-run-store": "./src/application/image-generation/run-store.ts"
   },
   "dependencies": {
     "@masterpiece/image-generation-contracts": "0.0.0",

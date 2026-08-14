@@ -1,4 +1,4 @@
-﻿// P3-B5.1 — Packaging Artifact Preview MIME Security Tests
+// P3-B5.1 — Packaging Artifact Preview MIME Security Tests
 //
 // P3-B5.1 §VI / §VII / §VIII / §XVII — the preview RPC is
 // fail-closed on MIME. The canonical allowlist is
@@ -145,6 +145,19 @@ function makeStore(opts: {
       await fs.mkdir(absolutePath, { recursive: true });
     },
     getProjectIdForSession: () => opts.projectId,
+    // P3-B5.3: bridge adapters. The mime-security suite
+    // tests the sidecar + preview path, not the canonical
+    // registration path. We mock both adapters with no-ops
+    // that do NOT touch the filesystem (the sidecar-only
+    // tests focus on the sidecar + preview MIME
+    // enforcement, which is unchanged by the bridge).
+    registerCanonicalRun: async () => undefined,
+    canonicalReadRun: async () => ({
+      runId: opts.runId,
+      projectId: opts.projectId,
+      gate: { errors: [], warnings: [], blocked: false },
+      images: [],
+    }),
   });
 
   return { store, runRoot, imagesDir, thumbsDir, recordFile, writes };
@@ -814,4 +827,3 @@ test('S-14 the successful preview payload does not leak runRoot, Buffer, or cred
     await fs.rm(tmpDir, { recursive: true, force: true });
   }
 });
-
