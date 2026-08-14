@@ -8,9 +8,9 @@
 //     `window.masterpiece.projects.scanAssets(projectId)`)
 //     and reuses the safe asset identity (AssetItem.id) as
 //     the Packaging reference `assetId`.
-//   - The canonical 6 roles are imported from
-//     `@masterpiece/runtime-core` (the frozen P3-A authority
-//     via `application/packaging/index.js` re-export). The
+//   - The canonical 6 roles are imported through the narrow,
+//     browser-safe `@masterpiece/runtime-core/browser/packaging-contracts.js`
+//     seam. That seam re-exports the frozen P2 Reference Policy authority. The
 //     role vocabulary is NOT derived from `view.references`
 //     (which only carries the user's current assignments).
 //   - The "03 Locked Assets" tile now shows the REAL truth
@@ -39,10 +39,7 @@
 // second rule table.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  PACKAGING_REFERENCE_ROLES,
-  PACKAGING_WORKSPACE_STATUS_LABELS,
-} from '@masterpiece/runtime-core';
+import { PACKAGING_REFERENCE_ROLES } from '@masterpiece/runtime-core/browser/packaging-contracts.js';
 import type {
   AssetItem,
   AssetSummary,
@@ -1776,11 +1773,6 @@ function readinessGuidance(status: string, blockers: readonly string[]): string 
   if (status === 'failed') return '生成未完成，请查看错误提示并重试。';
   return '当前配置可以继续编辑；完成后选择“准备生成”。';
 }
-
-// Sentinel: keep PACKAGING_WORKSPACE_STATUS_LABELS imported so the
-// tree-shaker doesn't drop the dependency; the view's
-// `statusLabel` is the canonical UI text.
-void PACKAGING_WORKSPACE_STATUS_LABELS;
 
 interface LockedFieldDef {
   key: string;

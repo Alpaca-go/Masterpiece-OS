@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.js",
     "./*": "./src/*",
+    "./browser/packaging-contracts.js": "./src/browser/packaging-contracts.js",
     "./checkpoint-store": "./src/checkpoint-store.js",
     "./runtime-contracts": "./src/runtime-contracts.js",
     "./image-generation-run-store": "./src/application/image-generation/run-store.ts"
