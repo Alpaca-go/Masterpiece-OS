@@ -24,6 +24,7 @@ import type { RuntimeServices } from '@masterpiece/runtime-core/application/runt
 import type {
   ProviderCredentials,
   ProjectRecord,
+  ProjectVisualContextShortChain,
   SaveApiProfileInput,
   SaveSettingsInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
@@ -66,6 +67,31 @@ export interface NodeRuntimeAdapters {
    * runId namespace isolates the two streams.
    */
   dataPath: string;
+}
+
+/**
+ * P3-C4.1 narrow corrective projection.
+ *
+ * Each field is copied from its existing canonical owner. This is deliberately
+ * not a fallback chain: ProjectRecord owns project/display identity, the
+ * canonical Project Visual Context owns the evidence-backed brand role, and
+ * the existing Locked Assets projection owns product identity.
+ */
+export function projectCanonicalIdentityFromAuthorities(input: {
+  projectId: string;
+  project: ProjectRecord | null;
+  projectVisualContext: ProjectVisualContextShortChain;
+  productIdentityName: string;
+}) {
+  const projectFacts = input.projectVisualContext.promptSourceObject?.projectFacts;
+  return Object.freeze({
+    projectId: input.project?.id || input.projectId,
+    projectName: input.project?.projectName || '',
+    brandName: input.project?.brandName || '',
+    industry: input.project?.industry || '',
+    brandRole: typeof projectFacts?.brandRole === 'string' ? projectFacts.brandRole.trim() : '',
+    productIdentity: input.productIdentityName,
+  });
 }
 
 export function createCurrentBusinessOperations(
@@ -166,9 +192,12 @@ export function createCurrentBusinessOperations(
     });
     const packagingTruthContext = projectSelectedPackagingContextToTruth(selectedPackagingContext);
 
-    const projectIdentity = project
-      ? { projectId: project.id || safeId, projectName: project.projectName || '' }
-      : { projectId: safeId, projectName: '' };
+    const projectIdentity = projectCanonicalIdentityFromAuthorities({
+      projectId: safeId,
+      project,
+      projectVisualContext,
+      productIdentityName,
+    });
     return {
       lockedAssets: {
         brand: { name: brandRecord?.name || '', locked: true },

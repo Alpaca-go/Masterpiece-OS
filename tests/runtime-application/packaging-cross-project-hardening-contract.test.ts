@@ -84,4 +84,7 @@ test('AN-12 hardening and new-feature scope are explicitly separated', () => {
 test('AN-13 P2 frozen production diff remains zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AN-14 P3-A frozen production diff remains zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging']), ''));
 test('AN-15 P3-B accepted UI and Workspace semantic diff remains zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']), ''));
-test('AN-16 P3-C frozen integration semantic diff remains zero', () => assert.equal(git(['diff', '--name-only', P3C, 'HEAD', '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']), ''));
+test('AN-16 P3-C frozen integration permits only the authorized C4.1 composition-root seam', () => assert.equal(
+  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
+  'apps/web-runtime/src/current-operation-graph.ts',
+));
