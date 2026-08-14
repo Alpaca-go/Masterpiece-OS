@@ -15,6 +15,13 @@ no authority boundary is altered by P3-A9 itself.
 > recorded in
 > [`p3-a10-model-identity-corrective.md`](./p3-a10-model-identity-corrective.md).
 
+> **P3-A11 amendment:** after P2-K established canonical Shot output
+> geometry, P3-A completed the remaining Translation truth projections and
+> was re-frozen at production baseline
+> `f95c145b9b1e37430ac68315c9e039f1f3262ae4`. Historical P3-A9/P3-A10
+> evidence remains unchanged. The current record is
+> [`p3-a11-translation-completeness-corrective.md`](./p3-a11-translation-completeness-corrective.md).
+
 ---
 
 ## 1. Executive Freeze Decision
