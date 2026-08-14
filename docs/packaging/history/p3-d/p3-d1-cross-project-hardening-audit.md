@@ -309,7 +309,42 @@ Recommended P3-D2 scope, in order:
 
 Do not start custom ratio, new Shot Contracts, auto-assignment, new structure semantics, batch generation, History UI or provider expansion.
 
-## 26. D1 decision
+## 26. D1 verification evidence
+
+Verification completed offline on 2026-08-15:
+
+- `node --test --experimental-strip-types tests/runtime-application/packaging-cross-project-hardening-contract.test.ts` — PASS, AN 16/16.
+- `npm test` — PASS.
+- `npm run runtime-application:test` — PASS.
+- `npm run runtime:test` — PASS.
+- `npm run test:image-generation` — PASS.
+- `npm run cli:test` — PASS, 40/40.
+- `npm run web:typecheck` — PASS.
+- `npm run web:build` — PASS.
+- `npm run web-runtime:typecheck` — PASS.
+- `npm run web-runtime:test` — PASS, 4/4.
+- `npm run web:smoke` — PASS; Provider calls 0, business writes 0, Electron/Desktop processes 0.
+- `npm run repo:verify` — PASS.
+- `npm run repo:check` — PASS.
+- `npm run verify:current-flows` — PASS; external API calls 0.
+- `npm run verify:space-compiler-baseline` — PASS.
+- `npm run verify:space-r8.6-golden-boundary` — PASS.
+- `npm run golden:test` — PASS; Provider calls 0; Golden auto-updated NO.
+
+Closure accounting:
+
+| Item | Result |
+|---|---|
+| Production changed files | 0 |
+| P2 frozen production diff | 0 |
+| P3-A frozen production diff | 0 |
+| P3-B accepted UI/Workspace semantic diff | 0 |
+| P3-C frozen integration semantic diff | 0 |
+| Real Provider calls | 0 |
+| Golden/digest auto-update | NO |
+| `STOP-P3-D-01` through `STOP-P3-D-12` | NOT TRIGGERED |
+
+## 27. D1 decision
 
 The audit contract is complete. It exposes two material D2 inputs rather than hiding them:
 
