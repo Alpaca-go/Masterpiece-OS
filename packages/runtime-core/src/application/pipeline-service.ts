@@ -12,6 +12,8 @@ import type {
   ProjectRuntimeContext,
   ProviderCredentials,
   PublicSettings,
+  ReferenceFirstAnalysisOutput,
+  ReferencePackagingProjectInput,
   ReferenceAssetDecision,
   ReferenceInheritanceRule,
   ReferenceStyleProfile,
@@ -87,6 +89,7 @@ import {
   buildReferenceStylePrompt,
   buildVisualReconstructionDecisionPrompt
 } from './reference-reconstruction-prompts.ts';
+import { normalizePackagingTranslationV2 } from './packaging-translation-contract.ts';
 import {
   buildAudienceFacts,
   parseProjectFactsModelOutput,
@@ -316,6 +319,37 @@ function styleRuleArray(value: unknown): ReferenceStyleRule[] {
       confidence: Math.max(0, Math.min(1, Number(source.confidence ?? 0.7)))
     }];
   });
+}
+
+/** Parser boundary for the one-pass Reference style + Packaging response. */
+export function normalizeReferenceFirstAnalysisOutput(
+  raw: Record<string, unknown>,
+  assetIds: string[],
+): ReferenceFirstAnalysisOutput {
+  const style = raw.referenceStyleProfile && typeof raw.referenceStyleProfile === 'object'
+    ? raw.referenceStyleProfile as Record<string, unknown>
+    : {};
+  return {
+    referenceStyleProfile: {
+      schemaVersion: 'reference-style-profile-v3',
+      overallTemperament: styleRuleArray(style.overallTemperament),
+      colorSystem: styleRuleArray(style.colorSystem),
+      compositionSystem: styleRuleArray(style.compositionSystem),
+      graphicLanguage: styleRuleArray(style.graphicLanguage),
+      typographySystem: styleRuleArray(style.typographySystem),
+      materialSystem: styleRuleArray(style.materialSystem),
+      lightingSystem: styleRuleArray(style.lightingSystem),
+      photographySystem: styleRuleArray(style.photographySystem),
+      packagingPresentation: styleRuleArray(style.packagingPresentation),
+      posterPresentation: styleRuleArray(style.posterPresentation),
+      viExtensionSystem: styleRuleArray(style.viExtensionSystem),
+      excludedIdentityTerms: valueArray(style.excludedIdentityTerms),
+      sourceAssetIds: valueArray(style.sourceAssetIds).length
+        ? valueArray(style.sourceAssetIds)
+        : assetIds,
+    },
+    packagingTranslation: normalizePackagingTranslationV2(raw.packagingTranslation),
+  };
 }
 
 const recordValue = (value: unknown): Record<string, unknown> =>
@@ -1296,33 +1330,30 @@ export function createPipelineService(
     projectId: string,
     apiProfileId?: string,
     purpose: VisualAnalysisPurpose = 'reference_style',
-    assetIds?: string[]
+    assetIds?: string[],
+    currentProject?: ReferencePackagingProjectInput,
   ) {
     if (purpose !== 'reference_style') throw new Error(`不支持的参考视觉分析用途：${purpose}`);
-    return runStructuredReferenceStep<ReferenceStyleProfile>({
+    if (!currentProject || currentProject.projectId.trim() === '') {
+      throw Object.assign(new Error('Reference semantic producer requires current project truth'), {
+        code: 'CURRENT_PROJECT_CONTEXT_MISSING',
+      });
+    }
+    return runStructuredReferenceStep<ReferenceFirstAnalysisOutput>({
       step: 'reference-style-profile',
       projectId,
       apiProfileId,
-      prompt: buildReferenceStylePrompt(),
+      prompt: buildReferenceStylePrompt(currentProject),
       includeVisualAssets: true,
       assetIds,
-      normalize: (raw, assetIds) => ({
-        schemaVersion: 'reference-style-profile-v3',
-        overallTemperament: styleRuleArray(raw.overallTemperament),
-        colorSystem: styleRuleArray(raw.colorSystem),
-        compositionSystem: styleRuleArray(raw.compositionSystem),
-        graphicLanguage: styleRuleArray(raw.graphicLanguage),
-        typographySystem: styleRuleArray(raw.typographySystem),
-        materialSystem: styleRuleArray(raw.materialSystem),
-        lightingSystem: styleRuleArray(raw.lightingSystem),
-        photographySystem: styleRuleArray(raw.photographySystem),
-        packagingPresentation: styleRuleArray(raw.packagingPresentation),
-        posterPresentation: styleRuleArray(raw.posterPresentation),
-        viExtensionSystem: styleRuleArray(raw.viExtensionSystem),
-        excludedIdentityTerms: valueArray(raw.excludedIdentityTerms),
-        sourceAssetIds: valueArray(raw.sourceAssetIds).length ? valueArray(raw.sourceAssetIds) : assetIds
+      normalize: normalizeReferenceFirstAnalysisOutput,
+      validate: (value) => ({
+        referenceStyleProfile: validateReferenceStyleProfile(
+          value.referenceStyleProfile,
+          value.referenceStyleProfile.excludedIdentityTerms,
+        ),
+        packagingTranslation: value.packagingTranslation,
       }),
-      validate: (value) => validateReferenceStyleProfile(value, value.excludedIdentityTerms)
     });
   }
 

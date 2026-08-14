@@ -16,9 +16,11 @@ import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type {
+  ActiveReferenceSource,
   AnchorAspectRatio,
   AnchorDecision,
   DocumentVisualContext,
+  PackagingTranslationSource,
   ProjectVisualContext,
   PublicSettings,
   ReferenceAnchorProgress,
@@ -28,6 +30,8 @@ import type {
   ReferenceAnchorStage,
   ReferenceAnchorWarning,
   ReferenceAssetSelection,
+  ReferenceFirstAnalysisOutput,
+  ReferencePackagingProjectInput,
   ReferenceStyleCapsule,
   ReferenceStyleProfile,
   StartReferenceAnchorInput
@@ -55,6 +59,11 @@ import {
   validateReferenceStyleCapsule,
   type MergedCurrentProject
 } from './reference-anchor-core.ts';
+import {
+  computeReferencePackagingSourceFingerprint,
+  createReferencePackagingSource,
+  validateReferencePackagingSource,
+} from './reference-packaging-authority.ts';
 import { BLOCKING_CONFLICT_FIELDS } from './context-resolver.ts';
 import type { ContextIntegrationService } from './context-integration-service.ts';
 
@@ -81,6 +90,7 @@ const RUN_ID_PATTERN = /^[a-f0-9-]{36}$/i;
 const MIN_REFERENCE_ASSETS = 4;
 const MAX_REFERENCE_ASSETS = 8;
 const CAPSULE_FILENAME = 'reference-style-capsule.json';
+const PACKAGING_TRANSLATION_FILENAME = 'reference-packaging-translation.json';
 const CAPSULE_MD_FILENAME = '参考风格胶囊.md';
 const BRIEF_FILENAME = 'Anchor-Generation-Brief.md';
 
@@ -117,6 +127,39 @@ async function writeJson(filename: string, value: unknown): Promise<void> {
 
 async function readJson<T>(filename: string): Promise<T> {
   return JSON.parse(await fs.readFile(filename, 'utf8')) as T;
+}
+
+async function hashFile(filename: string): Promise<string> {
+  const buffer = await fs.readFile(filename);
+  return crypto.createHash('sha256').update(buffer).digest('hex');
+}
+
+function packagingProjectInput(
+  projectId: string,
+  merged: MergedCurrentProject,
+  visual: ProjectVisualContext,
+): ReferencePackagingProjectInput {
+  const structures = [...new Set([
+    ...(visual.packaging?.structures || []),
+    ...(merged.facts?.touchpoints?.packaging || []),
+  ].map((item) => String(item || '').trim()).filter(Boolean))];
+  return {
+    projectId,
+    brandName: merged.brandName,
+    industry: merged.industry,
+    coreProducts: [...merged.coreProducts],
+    businessTouchpoints: [...merged.businessTouchpoints],
+    packagingStructures: structures.map((structure) => ({
+      structure,
+      locked: visual.packaging?.status === 'confirmed',
+      evidenceRefs: [...new Set((visual.packaging?.evidenceSources || []).map((item) => {
+        const value = String(item || '').trim();
+        return path.isAbsolute(value) ? path.basename(value) : value;
+      }).filter(Boolean))],
+    })),
+    lockedFacts: [...merged.lockedFacts],
+    logoLocked: merged.logoLocked,
+  };
 }
 
 export function createReferenceAnchorService(
@@ -300,6 +343,7 @@ export function createReferenceAnchorService(
     merged: MergedCurrentProject;
     visual: ProjectVisualContext;
     referenceStyle: ReferenceStyleProfile;
+    packagingSource: PackagingTranslationSource & { sourceKind: 'reference_first' };
     preference: string | null;
     avoidance: string[];
     aspectRatio?: AnchorAspectRatio;
@@ -309,7 +353,7 @@ export function createReferenceAnchorService(
   }
 
   async function compileAndPersist(params: CompileParams): Promise<ReferenceAnchorResult> {
-    const { record, visual, referenceStyle } = params;
+    const { record, visual, referenceStyle, packagingSource } = params;
     // v5.3.1 §3：兜底重建事实分类（旧缓存 merged 可能缺 facts）。
     const merged: MergedCurrentProject = { ...params.merged, facts: ensureProjectFacts(params.merged) };
     const root = await runRoot(record.id);
@@ -327,6 +371,20 @@ export function createReferenceAnchorService(
       aspectRatio: params.aspectRatio
     });
     const capsule = compiled.capsule;
+    validateReferencePackagingSource(packagingSource, {
+      projectId: record.projectId,
+      runId: record.id,
+      sourceFingerprint: record.sourceFingerprint || undefined,
+    });
+    if (
+      packagingSource.translation.packagingConcept.trim()
+      && packagingSource.translation.packagingConcept.trim() === capsule.anchorGoal.trim()
+    ) {
+      throw blockingError(
+        'REFERENCE_PACKAGING_CONCEPT_ALIAS_FORBIDDEN',
+        'Packaging concept must be produced independently and cannot alias the Anchor goal',
+      );
+    }
 
     // §12 参考身份隔离硬阻断（确定性兜底）
     const inheritedRules = [
@@ -347,6 +405,12 @@ export function createReferenceAnchorService(
       referenceStyle.excludedIdentityTerms || [],
       currentIdentityTerms
     );
+    leaks.push(...detectReferenceIdentityLeaks(
+      [JSON.stringify(packagingSource.translation)],
+      '',
+      referenceStyle.excludedIdentityTerms || [],
+      currentIdentityTerms,
+    ));
     if (leaks.length) {
       const first = leaks[0]!;
       await writeJson(path.join(root, 'debug', 'validation-details.json'), {
@@ -407,6 +471,7 @@ export function createReferenceAnchorService(
     await fs.mkdir(path.join(root, 'debug'), { recursive: true });
     await Promise.all([
       writeJson(path.join(root, 'outputs', CAPSULE_FILENAME), capsule),
+      writeJson(path.join(root, 'outputs', PACKAGING_TRANSLATION_FILENAME), packagingSource),
       fs.writeFile(path.join(root, 'outputs', CAPSULE_MD_FILENAME), capsuleMarkdown, 'utf8'),
       fs.writeFile(path.join(root, 'outputs', BRIEF_FILENAME), briefMarkdown, 'utf8'),
       writeJson(path.join(root, 'debug', 'validation-details.json'), {
@@ -437,7 +502,7 @@ export function createReferenceAnchorService(
       warnings: warnings.length,
       brief_chars: briefValidation.lengthChars
     }).catch(() => undefined);
-    return { run: saved, capsule, capsuleMarkdown, briefMarkdown };
+    return { run: saved, capsule, capsuleMarkdown, briefMarkdown, packagingSource };
   }
 
   // ── 主流程 start（§4/§5：全程 1 次模型调用）──
@@ -497,7 +562,9 @@ export function createReferenceAnchorService(
       warnings: [],
       errorCode: null,
       lastError: null,
-      briefFilename: null
+      briefFilename: null,
+      sourceFingerprint: null,
+      packagingTranslationFilename: null,
     };
     record = await saveRun(record);
     const root = await runRoot(runId);
@@ -519,13 +586,26 @@ export function createReferenceAnchorService(
       // 参考图复制到 input/（§16 换参考图才需要重新分析）
       const assetsDir = path.join(root, 'input', 'reference-assets');
       await fs.mkdir(assetsDir, { recursive: true });
+      const referenceAssetContentHashes: string[] = [];
       for (let index = 0; index < usedPaths.length; index += 1) {
         const source = usedPaths[index]!;
         const stat = await fs.stat(source).catch(() => null);
         if (!stat?.isFile()) throw blockingError('REFERENCE_ASSETS_MISSING', `参考图不存在：${path.basename(source)}`);
+        referenceAssetContentHashes.push(await hashFile(source));
         await fs.copyFile(source, path.join(assetsDir, `${String(index + 1).padStart(2, '0')}-${path.basename(source)}`));
       }
       assertNotCancelled(runId);
+
+      const currentProject = packagingProjectInput(currentProjectId, loaded.merged, loaded.visual);
+      const sourceFingerprint = computeReferencePackagingSourceFingerprint({
+        project: currentProject,
+        referenceAssetContentHashes,
+      });
+      record = await saveRun({
+        ...record,
+        sourceFingerprint,
+        packagingTranslationFilename: PACKAGING_TRANSLATION_FILENAME,
+      });
 
       // 01-reference-analysis：唯一一次模型调用（视觉模型识别参考视觉关系 + 品牌身份隔离）
       record = await saveRun({ ...record, status: 'analyzing_reference', currentStage: '01-reference-analysis' });
@@ -536,13 +616,19 @@ export function createReferenceAnchorService(
       if (activeRun) activeRun.pipelineProjectId = referenceProject.id;
       await dependencies.projects.scan(referenceProject.id);
       assertNotCancelled(runId);
-      let referenceStyle: ReferenceStyleProfile;
+      let referenceAnalysis: ReferenceFirstAnalysisOutput;
       let provider = '';
       let model = '';
       let modelCallCount = 0;
       try {
-        const result = await dependencies.pipeline.analyzeReferenceStyle(referenceProject.id, apiProfileId, 'reference_style');
-        referenceStyle = result.value;
+        const result = await dependencies.pipeline.analyzeReferenceStyle(
+          referenceProject.id,
+          apiProfileId,
+          'reference_style',
+          undefined,
+          currentProject,
+        );
+        referenceAnalysis = result.value;
         provider = result.provider;
         model = result.model;
         modelCallCount = result.modelCallCount;
@@ -550,24 +636,44 @@ export function createReferenceAnchorService(
         if ((error as { code?: string }).code === 'CANCELLED' || active.get(runId)?.cancelled) throw error;
         throw blockingError('MODEL_CALL_FAILED', `参考视觉分析模型调用失败：${(error as Error).message}`);
       }
+      const lockedStructures = new Set(
+        currentProject.packagingStructures.filter((item) => item.locked).map((item) => item.structure),
+      );
+      const inventedLocks = referenceAnalysis.packagingTranslation.structureStrategy
+        .filter((item) => item.locked && !lockedStructures.has(item.structure));
+      if (inventedLocks.length) {
+        throw blockingError(
+          'REFERENCE_PACKAGING_LOCKED_STRUCTURE_INVALID',
+          'Reference Packaging translation attempted to create a new Locked structure authority',
+        );
+      }
       assertNotCancelled(runId);
 
       // §6 debug：原始参考观察（普通用户 UI 不展示）
       await fs.mkdir(path.join(root, 'debug'), { recursive: true });
       await writeJson(path.join(root, 'debug', 'raw-reference-observations.json'), {
-        schemaVersion: referenceStyle.schemaVersion,
-        referenceStyleProfile: referenceStyle,
+        schemaVersion: referenceAnalysis.referenceStyleProfile.schemaVersion,
+        referenceStyleProfile: referenceAnalysis.referenceStyleProfile,
+        packagingTranslation: referenceAnalysis.packagingTranslation,
         provider,
         model,
         modelCallCount
       });
 
       record = await saveRun({ ...record, provider, model, modelCallCount });
+      const packagingSource = createReferencePackagingSource({
+        projectId: currentProjectId,
+        runId,
+        sourceFingerprint,
+        generatedAt: createdAt,
+        translation: referenceAnalysis.packagingTranslation,
+      });
       const result = await compileAndPersist({
         record,
         merged: loaded.merged,
         visual: loaded.visual,
-        referenceStyle,
+        referenceStyle: referenceAnalysis.referenceStyleProfile,
+        packagingSource,
         preference,
         avoidance,
         aspectRatio: input.aspectRatio,
@@ -608,6 +714,92 @@ export function createReferenceAnchorService(
     return fs.readFile(path.join(await runRoot(runId), 'outputs', BRIEF_FILENAME), 'utf8');
   }
 
+  async function getPackagingSource(
+    runId: string,
+  ): Promise<PackagingTranslationSource & { sourceKind: 'reference_first' }> {
+    const record = await getRun(runId);
+    const source = await readJson<PackagingTranslationSource>(
+      path.join(await runRoot(runId), 'outputs', record.packagingTranslationFilename || PACKAGING_TRANSLATION_FILENAME),
+    ).catch(() => null);
+    validateReferencePackagingSource(source, {
+      projectId: record.projectId,
+      runId: record.id,
+      sourceFingerprint: record.sourceFingerprint || undefined,
+    });
+    return source;
+  }
+
+  async function setActiveSource(
+    projectId: string,
+    runId: string,
+  ): Promise<ActiveReferenceSource> {
+    const record = await getRun(runId);
+    if (record.projectId !== projectId) {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_PROJECT_MISMATCH', 'Reference source does not belong to this project');
+    }
+    if (record.status !== 'completed' || record.decision !== 'approved') {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_NOT_APPROVED', 'Reference source must be approved before selection');
+    }
+    const source = await getPackagingSource(runId);
+    await dependencies.projectContext.upsertPackagingTranslation(projectId, source);
+    const activeSource: ActiveReferenceSource = {
+      schemaVersion: '1.0',
+      projectId,
+      runId,
+      sourceFingerprint: source.sourceFingerprint,
+      selectedAt: new Date().toISOString(),
+    };
+    await dependencies.projects.update(projectId, { activeReferenceSource: activeSource });
+    return activeSource;
+  }
+
+  async function getActiveSource(
+    projectId: string,
+  ): Promise<PackagingTranslationSource & { sourceKind: 'reference_first' }> {
+    const project = await dependencies.projects.get(projectId);
+    const activeSource = project.activeReferenceSource;
+    if (!activeSource) {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_UNAVAILABLE', 'No active Reference source is selected for this project');
+    }
+    if (activeSource.projectId !== projectId) {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_PROJECT_MISMATCH', 'Active Reference source project binding is invalid');
+    }
+    const selectedRun = await getRun(activeSource.runId).catch(() => null);
+    if (!selectedRun) {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_MISSING', 'The selected Reference source is missing');
+    }
+    if (selectedRun.status !== 'completed' || selectedRun.decision !== 'approved') {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_INVALID', 'The selected Reference source is no longer approved');
+    }
+    const source = await getPackagingSource(activeSource.runId).catch(() => null);
+    if (!source) {
+      throw blockingError('REFERENCE_ACTIVE_SOURCE_MISSING', 'The selected Reference source is missing');
+    }
+    validateReferencePackagingSource(source, {
+      projectId,
+      runId: activeSource.runId,
+      sourceFingerprint: activeSource.sourceFingerprint,
+    });
+    if (source.translation.status !== 'ready') {
+      throw blockingError(
+        'REFERENCE_PACKAGING_TRANSLATION_UNAVAILABLE',
+        `Active Reference source is Packaging-insufficient: ${source.translation.missingRequiredFields.join(', ')}`,
+      );
+    }
+    return source;
+  }
+
+  async function clearActiveSourceIfMatches(projectId: string, runId: string): Promise<void> {
+    const project = await dependencies.projects.get(projectId).catch(() => null);
+    if (!project?.activeReferenceSource || project.activeReferenceSource.runId !== runId) return;
+    await dependencies.projectContext.removePackagingTranslation(
+      projectId,
+      'reference_first',
+      project.activeReferenceSource.sourceFingerprint,
+    );
+    await dependencies.projects.update(projectId, { activeReferenceSource: null });
+  }
+
   async function briefPath(runId: string): Promise<string> {
     const root = await runRoot(runId);
     await fs.access(path.join(root, 'outputs', BRIEF_FILENAME));
@@ -617,6 +809,7 @@ export function createReferenceAnchorService(
   /** §16 读取缓存的参考分析结果与合并上下文（重试路径零模型调用）。 */
   async function readCachedAnalysis(runId: string): Promise<{
     referenceStyle: ReferenceStyleProfile;
+    packagingSource: PackagingTranslationSource & { sourceKind: 'reference_first' };
     visual: ProjectVisualContext;
     merged: MergedCurrentProject;
   }> {
@@ -630,7 +823,13 @@ export function createReferenceAnchorService(
     if (!observations?.referenceStyleProfile || !context?.visual || !context?.merged) {
       throw new Error('该任务缺少可复用的参考分析缓存，请重新开始分析');
     }
-    return { referenceStyle: observations.referenceStyleProfile, visual: context.visual, merged: context.merged };
+    const packagingSource = await getPackagingSource(runId);
+    return {
+      referenceStyle: observations.referenceStyleProfile,
+      packagingSource,
+      visual: context.visual,
+      merged: context.merged,
+    };
   }
 
   // ── §13 重试范围 ──
@@ -641,6 +840,7 @@ export function createReferenceAnchorService(
     if (!['awaiting_decision', 'completed', 'rejected', 'failed'].includes(record.status)) {
       throw new Error(`当前状态（${record.status}）不允许修改继承偏好`);
     }
+    await clearActiveSourceIfMatches(record.projectId, record.id);
     const cached = await readCachedAnalysis(runId);
     const nextPreference = String(preference || '').slice(0, 500).trim() || null;
     const nextAvoidance = [...new Set((avoidance || []).map((item) => String(item || '').trim()).filter(Boolean))].slice(0, 12);
@@ -661,6 +861,7 @@ export function createReferenceAnchorService(
       merged: cached.merged,
       visual: cached.visual,
       referenceStyle: cached.referenceStyle,
+      packagingSource: cached.packagingSource,
       preference: nextPreference,
       avoidance: nextAvoidance,
       baseWarnings: [],
@@ -679,6 +880,7 @@ export function createReferenceAnchorService(
     if (!['awaiting_decision', 'completed', 'rejected', 'failed'].includes(record.status)) {
       throw new Error(`当前状态（${record.status}）不允许重编 Anchor Brief`);
     }
+    await clearActiveSourceIfMatches(record.projectId, record.id);
     const capsule = await getCapsule(runId).catch(() => {
       throw new Error('该任务尚未生成参考风格胶囊，无法重编 Brief');
     });
@@ -714,7 +916,8 @@ export function createReferenceAnchorService(
       run: saved,
       capsule,
       capsuleMarkdown: await getCapsuleMarkdown(runId).catch(() => compileCapsuleMarkdown(capsule)),
-      briefMarkdown
+      briefMarkdown,
+      packagingSource: await getPackagingSource(runId),
     };
   }
 
@@ -745,6 +948,8 @@ export function createReferenceAnchorService(
       decision,
       has_note: Boolean(note)
     }).catch(() => undefined);
+    if (decision === 'approved') await setActiveSource(saved.projectId, saved.id);
+    else await clearActiveSourceIfMatches(saved.projectId, saved.id);
     return saved;
   }
 
@@ -790,9 +995,11 @@ export function createReferenceAnchorService(
 
   async function remove(runId: string): Promise<void> {
     if (active.has(safeRunId(runId))) throw new Error('正在运行的 Anchor 任务不能删除，请先取消');
+    const record = await getRun(runId).catch(() => null);
     const root = await runRoot(runId);
     assertInside(await dataRoot(), root);
     await fs.rm(root, { recursive: true, force: true });
+    if (record) await clearActiveSourceIfMatches(record.projectId, record.id);
   }
 
   return {
@@ -803,6 +1010,9 @@ export function createReferenceAnchorService(
     getCapsule,
     getCapsuleMarkdown,
     getBrief,
+    getPackagingSource,
+    getActiveSource,
+    setActiveSource,
     briefPath,
     updatePreference,
     retryBrief,

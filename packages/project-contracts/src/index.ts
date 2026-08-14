@@ -963,6 +963,11 @@ export interface ProjectVisualContextShortChain {
   promptSourceObject?: PromptSourceObject;
   /** Primary project semantics for report and Prompt compilation. */
   visualDecisionPacket?: VisualDecisionPacket;
+  /**
+   * Canonical Packaging semantics by upstream producer. Slots are independent:
+   * rebuilding one producer must never overwrite the other producer's result.
+   */
+  packagingTranslations?: ProjectPackagingTranslations;
 }
 
 export type PromptSourceLogoUsageMode = 'reference' | 'blank_area' | 'post_composite';
@@ -1377,6 +1382,37 @@ export interface PackagingTranslationV2 {
   photographyDirection: string[];
   packagingMisreadRisks: string[];
   missingRequiredFields: string[];
+}
+
+export type PackagingTranslationSourceKind = 'analysis_led' | 'reference_first';
+
+/** Provenance envelope shared by every upstream Packaging semantic producer. */
+export interface PackagingTranslationSource {
+  schemaVersion: '1.0';
+  sourceKind: PackagingTranslationSourceKind;
+  projectId: string;
+  /** Execution instance identity. Legacy analysis contexts may not have one. */
+  producerRunId: string | null;
+  /** Producer-owned semantic input revision; never a generation fingerprint. */
+  sourceFingerprint: string;
+  translationContract: 'PackagingTranslationV2';
+  generatedAt: string;
+  translation: PackagingTranslationV2;
+}
+
+export interface ProjectPackagingTranslations {
+  schemaVersion: '1.0';
+  analysisLed?: PackagingTranslationSource & { sourceKind: 'analysis_led' };
+  referenceFirst?: PackagingTranslationSource & { sourceKind: 'reference_first' };
+}
+
+/** Explicit project-level Reference workflow selection authority. */
+export interface ActiveReferenceSource {
+  schemaVersion: '1.0';
+  projectId: string;
+  runId: string;
+  sourceFingerprint: string;
+  selectedAt: string;
 }
 
 export interface DeferredMediaTranslationV2 {

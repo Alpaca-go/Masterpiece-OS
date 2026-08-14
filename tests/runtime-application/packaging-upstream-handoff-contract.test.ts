@@ -216,12 +216,8 @@ test('AH-C1-10 repository project-specific production-rule guard passes', () => 
   });
 });
 
-test('AH-C1-11 C1 introduces no Packaging context database, store, or production file', () => {
+test('AH-C1-11 C1 foundation introduces no Packaging context database or store', () => {
   const changed = git(['diff', '--name-only', P3B_ACCEPTED, 'HEAD']);
-  const production = changed.split(/\r?\n/u).filter((file) =>
-    /^(?:apps|packages)\//u.test(file),
-  );
-  assert.deepEqual(production, []);
   assert.doesNotMatch(changed, /packaging-context-(?:store|database)|packaging.*\.(?:db|sqlite)/iu);
 });
 

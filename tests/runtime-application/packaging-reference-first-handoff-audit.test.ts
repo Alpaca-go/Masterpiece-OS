@@ -141,12 +141,14 @@ test('AI-02 Reference image or capsule ratio cannot override P2 output geometry'
   assert.doesNotMatch(read(CURRENT_GRAPH), /referenceStyleCapsule[\s\S]{0,200}aspectRatio/iu);
 });
 
-test('AI-03 audit evidence: current Reference producer is not independently Packaging-complete', () => {
+test('AI-03 Reference producer owns Packaging semantics independently of analysis-led output', () => {
   const service = read(REFERENCE_SERVICE);
   assert.match(service, /projectContext\.get\(projectId\)/u);
   assert.match(service, /pipeline\.analyzeReferenceStyle/u);
-  assert.doesNotMatch(service, /PackagingTranslationV2|packagingConcept/u);
-  assert.doesNotMatch(read(REFERENCE_PROMPT), /"packagingConcept"/u);
+  assert.match(service, /createReferencePackagingSource/u);
+  assert.match(read(REFERENCE_PROMPT), /"packagingTranslation"/u);
+  assert.match(read(REFERENCE_PROMPT), /"packagingConcept"/u);
+  assert.doesNotMatch(service, /visualDecisionPacket\.mediaTranslations\.packaging/u);
 });
 
 test('AI-04 cross-project Reference output is rejected before creative consumption', async () => {
@@ -172,14 +174,11 @@ test('AI-05 Reference capsule requires an explicit producer run identity', () =>
   assert.ok(validation.errors.some((item) => item.includes('sourceRunId')));
 });
 
-test('AI-06 audit evidence: reliable semantic source fingerprint is absent and cannot be claimed', () => {
+test('AI-06 reliable semantic source fingerprint is producer-owned', () => {
   const contracts = read(PROJECT_CONTRACTS);
-  const capsuleBlock = contracts.slice(
-    contracts.indexOf('export interface ReferenceStyleCapsule'),
-    contracts.indexOf('export interface ContextConflict'),
-  );
-  assert.doesNotMatch(capsuleBlock, /sourceFingerprint|sourceRevision/u);
-  assert.doesNotMatch(read(REFERENCE_SERVICE), /referenceSourceFingerprint/u);
+  assert.match(contracts, /export interface PackagingTranslationSource[\s\S]*sourceFingerprint/u);
+  assert.match(read(REFERENCE_SERVICE), /computeReferencePackagingSourceFingerprint/u);
+  assert.doesNotMatch(read(REFERENCE_SERVICE), /sourceFingerprint\s*:\s*(?:runId|record\.id|new Date|Date\.now)/u);
 });
 
 test('AI-07 no Packaging Context, Reference Packaging, or binding store is introduced', () => {

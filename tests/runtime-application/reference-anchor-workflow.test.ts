@@ -262,6 +262,27 @@ interface ServiceHarness {
   setVisualContext: (context: ProjectVisualContext | null) => void;
 }
 
+function buildPackagingTranslation() {
+  return {
+    status: 'ready' as const,
+    packagingConcept: '以项目产品秩序与参考关系机制构成克制的包装系统。',
+    productAndCategoryRole: ['核心产品作为包装信息与开启体验的中心'],
+    structureStrategy: [{ structure: '礼盒包装', purpose: '承载核心产品', locked: true, evidenceRefs: ['project-context'] }],
+    openingExperience: ['分层开启并清晰呈现产品'],
+    productArrangement: ['产品沿稳定网格排列'],
+    graphicTranslation: [],
+    informationHierarchy: ['品牌、产品、规格、必要信息依次呈现'],
+    substrateLanguage: ['克制的触感纸张'],
+    craftLanguage: [{ craft: '压凹', purpose: '建立触觉层级', forbiddenUse: [] }],
+    colorBehavior: { base: ['中性基底'], identity: ['项目识别色'], accent: ['少量强调色'], forbidden: [] },
+    logoPolicy: ['保持 Locked Logo 安全区'],
+    seriesArchitecture: ['固定信息骨架并按产品变化'],
+    photographyDirection: ['真实产品质感与受控光线'],
+    packagingMisreadRisks: [],
+    missingRequiredFields: [],
+  };
+}
+
 async function buildHarness(): Promise<ServiceHarness> {
   const dataPath = await fs.mkdtemp(path.join(os.tmpdir(), 'reference-anchor-test-'));
   const assetPaths: string[] = [];
@@ -280,10 +301,15 @@ async function buildHarness(): Promise<ServiceHarness> {
   let referenceStyle = buildReferenceStyle();
   let visualContext: ProjectVisualContext | null = buildVisualContext();
   const removedProjects: string[] = [];
+  let activeReferenceSource: any = null;
 
   const service = createReferenceAnchorService(() => settings, {
     projects: {
-      get: async () => ({ id: 'project-current', projectName: '九州美学品牌升级', brandName: '九州美学', apiProfileId: 'profile-1' }),
+      get: async () => ({ id: 'project-current', projectName: '九州美学品牌升级', brandName: '九州美学', apiProfileId: 'profile-1', activeReferenceSource }),
+      update: async (_projectId: string, changes: any) => {
+        if ('activeReferenceSource' in changes) activeReferenceSource = changes.activeReferenceSource;
+        return { id: 'project-current', activeReferenceSource };
+      },
       create: async () => ({ id: 'reference-temp-project' }),
       scan: async () => ({}),
       remove: async (projectId: string) => { removedProjects.push(projectId); }
@@ -291,7 +317,15 @@ async function buildHarness(): Promise<ServiceHarness> {
     pipeline: {
       analyzeReferenceStyle: async () => {
         callCount += 1;
-        return { value: referenceStyle, provider: 'mock', model: 'mock-model', modelCallCount: 1 };
+        return {
+          value: {
+            referenceStyleProfile: referenceStyle,
+            packagingTranslation: buildPackagingTranslation(),
+          },
+          provider: 'mock',
+          model: 'mock-model',
+          modelCallCount: 1,
+        };
       },
       cancel: () => undefined
     } as never,
@@ -299,7 +333,9 @@ async function buildHarness(): Promise<ServiceHarness> {
       get: async () => {
         if (!visualContext) throw new Error('project-visual-context.json 不存在');
         return visualContext;
-      }
+      },
+      upsertPackagingTranslation: async () => ({}),
+      removePackagingTranslation: async () => ({}),
     } as never,
     documentContext: {
       getExtracted: async () => buildDocumentContext()

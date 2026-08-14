@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type {
   LockedAsset,
+  PackagingTranslationSource,
   PromptSourceObject,
   ProjectVisualContextShortChain,
   VisualDecisionPacket,
@@ -61,6 +62,61 @@ function sourceFingerprint(value: unknown): string {
     .createHash('sha256')
     .update(JSON.stringify(stableValue(value)))
     .digest('hex');
+}
+
+function contextSemanticFingerprint(
+  context: ProjectVisualContextShortChain,
+  packagingTranslations = context.packagingTranslations,
+): string {
+  return sourceFingerprint({
+    projectId: context.projectId,
+    brandCore: context.brandCore,
+    lockedAssets: context.lockedAssets,
+    visualIdentity: context.visualIdentity,
+    styleBoundaries: context.styleBoundaries,
+    confirmedDecisions: context.confirmedDecisions,
+    sourceAssetRefs: context.sourceAssetRefs,
+    promptSourceFingerprint: context.promptSourceObject?.provenance.sourceFingerprint ?? null,
+    visualDecisionPacketFingerprint: context.visualDecisionPacket?.provenance.sourceFingerprint ?? null,
+    packagingTranslationFingerprints: {
+      analysisLed: packagingTranslations?.analysisLed?.sourceFingerprint ?? null,
+      referenceFirst: packagingTranslations?.referenceFirst?.sourceFingerprint ?? null,
+    },
+  });
+}
+
+function validatePackagingSource(
+  source: PackagingTranslationSource,
+  projectId: string,
+): string[] {
+  const errors: string[] = [];
+  if (source.schemaVersion !== '1.0') errors.push('schemaVersion');
+  if (source.projectId !== projectId) errors.push('projectId');
+  if (!['analysis_led', 'reference_first'].includes(source.sourceKind)) errors.push('sourceKind');
+  if (!source.sourceFingerprint) errors.push('sourceFingerprint');
+  if (source.translationContract !== 'PackagingTranslationV2') errors.push('translationContract');
+  if (!source.translation || !source.translation.packagingConcept && source.translation.status === 'ready') {
+    errors.push('translation');
+  }
+  if (source.sourceKind === 'reference_first' && !source.producerRunId) errors.push('producerRunId');
+  return errors;
+}
+
+function analysisPackagingSource(
+  context: ProjectVisualContextShortChain,
+): PackagingTranslationSource & { sourceKind: 'analysis_led' } | null {
+  const packet = context.visualDecisionPacket;
+  if (!packet?.mediaTranslations?.packaging) return null;
+  return {
+    schemaVersion: '1.0',
+    sourceKind: 'analysis_led',
+    projectId: context.projectId,
+    producerRunId: context.provenance.structuredAnalysisRunId ?? null,
+    sourceFingerprint: packet.provenance.sourceFingerprint,
+    translationContract: 'PackagingTranslationV2',
+    generatedAt: packet.provenance.generatedAt || context.generatedAt,
+    translation: packet.mediaTranslations.packaging,
+  };
 }
 
 function confidence(value: boolean, confirmed = false): number {
@@ -158,6 +214,19 @@ export function migrateProjectVisualContext(
       visualDecisionPacket: migrateVisualDecisionPacketShape(context.visualDecisionPacket),
     };
   }
+  if (!context.packagingTranslations?.analysisLed) {
+    const analysisLed = analysisPackagingSource(context);
+    if (analysisLed) {
+      context = {
+        ...context,
+        packagingTranslations: {
+          schemaVersion: '1.0',
+          ...context.packagingTranslations,
+          analysisLed,
+        },
+      };
+    }
+  }
   if (context.promptSourceObject?.schemaVersion === '1.0') {
     return context as ProjectVisualContextShortChain & { promptSourceObject: PromptSourceObject };
   }
@@ -251,6 +320,66 @@ export function migrateProjectVisualContext(
     },
   };
   return { ...context, promptSourceObject };
+}
+
+/** Add or replace one producer slot without touching the other producer. */
+export function upsertProjectPackagingTranslation(
+  value: ProjectVisualContextShortChain,
+  source: PackagingTranslationSource,
+  generatedAt = new Date().toISOString(),
+): ProjectVisualContextShortChain {
+  const context = migrateProjectVisualContext(value);
+  const errors = validatePackagingSource(source, context.projectId);
+  if (errors.length) {
+    throw Object.assign(new Error(`Packaging translation source invalid: ${errors.join(', ')}`), {
+      code: 'PROJECT_PACKAGING_TRANSLATION_INVALID',
+    });
+  }
+  const packagingTranslations = {
+    schemaVersion: '1.0' as const,
+    ...context.packagingTranslations,
+    ...(source.sourceKind === 'analysis_led'
+      ? { analysisLed: source as PackagingTranslationSource & { sourceKind: 'analysis_led' } }
+      : { referenceFirst: source as PackagingTranslationSource & { sourceKind: 'reference_first' } }),
+  };
+  return {
+    ...context,
+    version: context.version + 1,
+    generatedAt,
+    packagingTranslations,
+    provenance: {
+      ...context.provenance,
+      sourceFingerprint: contextSemanticFingerprint(context, packagingTranslations),
+    },
+  };
+}
+
+export function removeProjectPackagingTranslation(
+  value: ProjectVisualContextShortChain,
+  sourceKind: 'analysis_led' | 'reference_first',
+  expectedFingerprint?: string,
+  generatedAt = new Date().toISOString(),
+): ProjectVisualContextShortChain {
+  const context = migrateProjectVisualContext(value);
+  const current = sourceKind === 'analysis_led'
+    ? context.packagingTranslations?.analysisLed
+    : context.packagingTranslations?.referenceFirst;
+  if (!current || (expectedFingerprint && current.sourceFingerprint !== expectedFingerprint)) return context;
+  const packagingTranslations = {
+    schemaVersion: '1.0' as const,
+    ...(sourceKind === 'analysis_led' ? {} : { analysisLed: context.packagingTranslations?.analysisLed }),
+    ...(sourceKind === 'reference_first' ? {} : { referenceFirst: context.packagingTranslations?.referenceFirst }),
+  };
+  return {
+    ...context,
+    version: context.version + 1,
+    generatedAt,
+    packagingTranslations,
+    provenance: {
+      ...context.provenance,
+      sourceFingerprint: contextSemanticFingerprint(context, packagingTranslations),
+    },
+  };
 }
 
 function assetRole(
@@ -445,6 +574,17 @@ export function validateProjectVisualContext(
       || record(context.visualDecisionPacket).projectId !== context.projectId
     )
   ) errors.push('visualDecisionPacket must be schema 1.0 and belong to the project');
+  const translations = record(context.packagingTranslations);
+  if (Object.keys(translations).length) {
+    if (translations.schemaVersion !== '1.0') errors.push('packagingTranslations.schemaVersion must be 1.0');
+    for (const [slot, expectedKind] of [['analysisLed', 'analysis_led'], ['referenceFirst', 'reference_first']] as const) {
+      if (!translations[slot]) continue;
+      const source = translations[slot] as PackagingTranslationSource;
+      const sourceErrors = validatePackagingSource(source, String(context.projectId));
+      if (source.sourceKind !== expectedKind) sourceErrors.push('slot sourceKind');
+      if (sourceErrors.length) errors.push(`packagingTranslations.${slot} invalid: ${sourceErrors.join(', ')}`);
+    }
+  }
   return { valid: errors.length === 0, errors };
 }
 

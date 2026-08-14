@@ -1,4 +1,9 @@
-import type { CurrentProjectProfile, ProjectRecord, ReferenceStyleProfile } from '../shared/types.ts';
+import type {
+  CurrentProjectProfile,
+  ProjectRecord,
+  ReferencePackagingProjectInput,
+  ReferenceStyleProfile,
+} from '../shared/types.ts';
 import { compileProjectFactsPromptConstraints } from './model-schema/project-facts.schema.ts';
 
 const jsonOnly = `
@@ -62,25 +67,49 @@ coreProducts 中每项必须是产品或服务名；targetAudience 只做开放�
 ${jsonOnly}`;
 }
 
-export function buildReferenceStylePrompt(): string {
-  return `你正在执行 Reference Style Visual Analysis。参考图片只是视觉样式样本，不是品牌项目。
-只分析可观察的视觉形式，不保留图片中文字的品牌、产品、Slogan、客户或行业语义。
+export function buildReferenceStylePrompt(currentProject: ReferencePackagingProjectInput): string {
+  return `你正在执行一次性的 Reference-First Upstream Semantic Analysis。
+参考图片只是视觉样式证据，不是品牌项目。只分析可观察的视觉形式，不保留图片中文字的品牌、产品、Slogan、客户或行业语义。
+
+CURRENT_PROJECT_TRUTH:
+${JSON.stringify(currentProject, null, 2)}
+
+当前项目事实与 Locked Assets 优先。Packaging translation 必须服务当前项目，参考图只提供关系、机制与表现语言；不得读取或假设 analysis-led translation。
 
 输出结构：
 {
-  "overallTemperament": [StyleRule],
-  "colorSystem": [StyleRule],
-  "compositionSystem": [StyleRule],
-  "graphicLanguage": [StyleRule],
-  "typographySystem": [StyleRule],
-  "materialSystem": [StyleRule],
-  "lightingSystem": [StyleRule],
-  "photographySystem": [StyleRule],
-  "packagingPresentation": [StyleRule],
-  "posterPresentation": [StyleRule],
-  "viExtensionSystem": [StyleRule],
-  "excludedIdentityTerms": ["识别到但必须排除的品牌名、产品名、Slogan、竞品名或专属符号"],
-  "sourceAssetIds": ["实际观察的视觉附件 ID"]
+  "referenceStyleProfile": {
+    "overallTemperament": [StyleRule],
+    "colorSystem": [StyleRule],
+    "compositionSystem": [StyleRule],
+    "graphicLanguage": [StyleRule],
+    "typographySystem": [StyleRule],
+    "materialSystem": [StyleRule],
+    "lightingSystem": [StyleRule],
+    "photographySystem": [StyleRule],
+    "packagingPresentation": [StyleRule],
+    "posterPresentation": [StyleRule],
+    "viExtensionSystem": [StyleRule],
+    "excludedIdentityTerms": ["识别到但必须排除的品牌名、产品名、Slogan、竞品名或专属符号"],
+    "sourceAssetIds": ["实际观察的视觉附件 ID"]
+  },
+  "packagingTranslation": {
+    "packagingConcept": "当前项目专属的包装概念，不得复制 anchorGoal 或参考品牌身份",
+    "productAndCategoryRole": ["核心产品与品类在包装中的角色"],
+    "structureStrategy": [{"structure":"来自 CURRENT_PROJECT_TRUTH 的真实结构；未知时不得编造","purpose":"结构目的","locked":true,"evidenceRefs":["当前项目事实引用"]}],
+    "openingExperience": ["开启与取用体验"],
+    "productArrangement": ["产品陈列与内装关系"],
+    "graphicTranslation": [{"sourceMeaning":"当前项目语义或参考机制","packagingExpression":["包装表达"],"forbiddenLiteralUse":["不得复制的参考表层元素"]}],
+    "informationHierarchy": ["品牌、产品、规格与法定信息层级"],
+    "substrateLanguage": ["承印物与表面语言"],
+    "craftLanguage": [{"craft":"工艺","purpose":"工艺目的","forbiddenUse":["禁止用途"]}],
+    "colorBehavior": {"base":["基础色角色"],"identity":["当前项目识别色角色"],"accent":["强调色角色"],"forbidden":["禁止色彩误读"]},
+    "logoPolicy": ["Locked Logo 的安全区与使用规则"],
+    "seriesArchitecture": ["系列一致性与变量"],
+    "photographyDirection": ["产品摄影方向"],
+    "packagingMisreadRisks": ["包装可能被误读的风险"],
+    "missingRequiredFields": ["证据不足的字段名；完整时为空数组"]
+  }
 }
 
 StyleRule：
@@ -89,6 +118,8 @@ StyleRule：
 每个风格类别必须输出 1–4 条，跨图重复规律优先。规则不得逐字转录参考报告或图片文案。
 禁止固定模板前缀，尤其禁止“通过网格、留白与信息区之间的稳定关系组织”“通过材质表面、光线方向与影像景深共同形成”等句式。
 禁止品牌名、Logo、Slogan、产品名、客户名、竞品、审计问题、Creative Brief、GPT Execution Core、Runtime Protocol、Asset-008 或 Markdown 表格进入 StyleRule。
+Packaging translation 不得包含 output aspectRatio，不得覆盖 Locked Assets；结构的 locked 只能来自 CURRENT_PROJECT_TRUTH，参考结构观察不能升级为锁定事实。
+anchorGoal 不属于本输出，也不得被写入 packagingConcept。Packaging translation 缺少真实结构或产品事实时必须通过 missingRequiredFields 明示，不得编造。
 ${jsonOnly}`;
 }
 

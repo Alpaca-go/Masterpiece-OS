@@ -590,6 +590,8 @@ export interface ProjectRecord {
   visualContextVNextStatus?: 'missing' | 'ready' | 'failed';
   visualContextVNextVersion?: number | null;
   visualContextVNextLastBuiltAt?: string | null;
+  /** Reference workflow authority; absent means no active Reference source. */
+  activeReferenceSource?: ActiveReferenceSource | null;
 }
 
 // 鈹€鈹€ 鍏变韩濂戠害绫诲瀷宸茶縼绉昏嚦 packages/project-contracts锛坮epository-slimming-v2 Phase 1锛夆攢鈹€
@@ -605,6 +607,10 @@ export type {
   AnchorAspectRatio,
   NormalizedProjectFacts,
   ReferenceStyleCapsule,
+  PackagingTranslationV2,
+  PackagingTranslationSource,
+  ProjectPackagingTranslations,
+  ActiveReferenceSource,
   ContextConflict,
   ResolvedProjectContext
 } from '@masterpiece/project-contracts/index.ts';
@@ -618,6 +624,10 @@ import type {
   AnchorAspectRatio,
   NormalizedProjectFacts,
   ReferenceStyleCapsule,
+  PackagingTranslationV2,
+  PackagingTranslationSource,
+  ProjectPackagingTranslations,
+  ActiveReferenceSource,
   ContextConflict,
   ResolvedProjectContext
 } from '@masterpiece/project-contracts/index.ts';
@@ -1119,6 +1129,28 @@ export interface ReferenceStyleProfile {
   excludedIdentityTerms: string[];
   sourceAssetIds: string[];
   portfolioPresentation?: ReferenceStyleRule[];
+}
+
+/** Current-project facts supplied to the one-pass Reference semantic producer. */
+export interface ReferencePackagingProjectInput {
+  projectId: string;
+  brandName: string;
+  industry: string;
+  coreProducts: string[];
+  businessTouchpoints: string[];
+  packagingStructures: Array<{
+    structure: string;
+    locked: boolean;
+    evidenceRefs: string[];
+  }>;
+  lockedFacts: string[];
+  logoLocked: boolean;
+}
+
+/** Composite output of the canonical one-pass Reference analysis. */
+export interface ReferenceFirstAnalysisOutput {
+  referenceStyleProfile: ReferenceStyleProfile;
+  packagingTranslation: PackagingTranslationV2;
 }
 
 export interface StyleApplicationPlan {
@@ -1784,6 +1816,9 @@ export interface ReferenceAnchorRun {
   errorCode?: string | null;
   lastError?: string | null;
   briefFilename?: string | null;
+  /** Producer-owned source revision; distinct from this run's id. */
+  sourceFingerprint?: string | null;
+  packagingTranslationFilename?: string | null;
 }
 
 export interface StartReferenceAnchorInput {
@@ -1805,6 +1840,8 @@ export interface ReferenceAnchorResult {
   capsule: ReferenceStyleCapsule;
   capsuleMarkdown: string;
   briefMarkdown: string;
+  /** Present for current producer runs; optional only for legacy renderer projections. */
+  packagingSource?: PackagingTranslationSource & { sourceKind: 'reference_first' };
 }
 
 // 鈹€鈹€ Phase 4 涓夊ぇ鍔熻兘杞婚噺鏁村悎锛歊esolved Project Context 鈹€鈹€
@@ -2995,4 +3032,3 @@ export interface ProtocolHardcodeScanResult {
   concreteTouchpointTerms: string[];
   passed: boolean;
 }
-

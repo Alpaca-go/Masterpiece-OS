@@ -1,6 +1,10 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ProjectVisualContext, ProjectVisualContextShortChain } from '../shared/types.ts';
+import type {
+  PackagingTranslationSource,
+  ProjectVisualContext,
+  ProjectVisualContextShortChain,
+} from '../shared/types.ts';
 import type { ProjectStore } from './project-store.ts';
 import {
   compileProjectVisualContext,
@@ -12,6 +16,8 @@ import {
 import {
   buildProjectVisualContext,
   migrateProjectVisualContext,
+  removeProjectPackagingTranslation,
+  upsertProjectPackagingTranslation,
   validateProjectVisualContext,
   writeProjectVisualContext as writeStructuredProjectVisualContext,
 } from './project-visual-context-builder.ts';
@@ -262,6 +268,47 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return context;
   }
 
+  async function upsertPackagingTranslation(
+    projectId: string,
+    source: PackagingTranslationSource,
+  ): Promise<ProjectVisualContextShortChain> {
+    if (source.projectId !== projectId) {
+      throw Object.assign(new Error('Packaging translation source belongs to another project'), {
+        code: 'PROJECT_PACKAGING_TRANSLATION_PROJECT_MISMATCH',
+      });
+    }
+    const current = await getShortChain(projectId).catch(() => rebuildShortChain(projectId));
+    const next = upsertProjectPackagingTranslation(current, source);
+    const paths = await projects.paths(projectId);
+    await writeStructuredProjectVisualContext(contextShortChainTarget(paths.root), next);
+    await projects.update(projectId, {
+      visualContextVNextFilename: PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME,
+      visualContextVNextStatus: 'ready',
+      visualContextVNextVersion: next.version,
+      visualContextVNextLastBuiltAt: next.generatedAt,
+    });
+    return next;
+  }
+
+  async function removePackagingTranslation(
+    projectId: string,
+    sourceKind: 'analysis_led' | 'reference_first',
+    expectedFingerprint?: string,
+  ): Promise<ProjectVisualContextShortChain> {
+    const current = await getShortChain(projectId);
+    const next = removeProjectPackagingTranslation(current, sourceKind, expectedFingerprint);
+    if (next === current) return current;
+    const paths = await projects.paths(projectId);
+    await writeStructuredProjectVisualContext(contextShortChainTarget(paths.root), next);
+    await projects.update(projectId, {
+      visualContextVNextFilename: PROJECT_VISUAL_CONTEXT_VNEXT_FILENAME,
+      visualContextVNextStatus: 'ready',
+      visualContextVNextVersion: next.version,
+      visualContextVNextLastBuiltAt: next.generatedAt,
+    });
+    return next;
+  }
+
   async function exportContext(projectId: string): Promise<string | null> {
     const context = await get(projectId);
     if (!deps.showSaveDialog) throw new Error('未配置导出对话框');
@@ -274,7 +321,16 @@ export function createProjectContextService(deps: ProjectContextServiceDeps) {
     return result.filePath;
   }
 
-  return { get, rebuild, export: exportContext, getShortChain, rebuildShortChain, getGenerationContextReadiness };
+  return {
+    get,
+    rebuild,
+    export: exportContext,
+    getShortChain,
+    rebuildShortChain,
+    upsertPackagingTranslation,
+    removePackagingTranslation,
+    getGenerationContextReadiness,
+  };
 }
 
 export type ProjectContextService = ReturnType<typeof createProjectContextService>;
