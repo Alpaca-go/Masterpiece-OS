@@ -43,6 +43,8 @@ import type {
   PackagingSetTruthSnapshotInput,
   PackagingExecutionInput,
   PackagingSessionMutationResult,
+  PackagingArtifactPreviewInput,
+  PackagingArtifactPreviewResult,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 
 interface PackagingRuntimeApi {
@@ -53,6 +55,7 @@ interface PackagingRuntimeApi {
   prepareGeneration(sessionId: string): Promise<PackagingSessionMutationResult>;
   executeGeneration(input: PackagingExecutionInput): Promise<PackagingSessionMutationResult>;
   resetPreparation(sessionId: string): Promise<PackagingSessionMutationResult>;
+  getArtifactPreview(input: PackagingArtifactPreviewInput): Promise<PackagingArtifactPreviewResult>;
 }
 
 function resolvePackagingApi(): PackagingRuntimeApi {
@@ -158,6 +161,28 @@ export async function resetPackagingPreparation(
   const api = resolvePackagingApi();
   const result = await api.resetPreparation(sessionId);
   return result.view;
+}
+
+/**
+ * P3-B5: identity-validated artifact preview read.
+ *
+ * The runtime enforces that:
+ *   - `runId` equals the session's `view.execution.runId`.
+ *   - `imageId` matches the canonical `image-NN` pattern.
+ *   - the persisted artifact exists on disk; otherwise
+ *     `result.preview` is `null` and the Web feature falls
+ *     back to a placeholder.
+ *
+ * The Web feature MUST NOT call this RPC without a valid
+ * `sessionId` (the runtime rejects unknown sessions
+ * fail-closed). The RPC never returns an absolute path,
+ * a Buffer, or a credential.
+ */
+export async function getPackagingArtifactPreview(
+  input: PackagingArtifactPreviewInput
+): Promise<PackagingArtifactPreviewResult> {
+  const api = resolvePackagingApi();
+  return api.getArtifactPreview(input);
 }
 
 /**

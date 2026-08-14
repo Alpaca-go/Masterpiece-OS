@@ -191,7 +191,26 @@ function makeResolveTruthSnapshot() {
   });
 }
 
-function makeBundle(overrides: { resolveTruthSnapshot?: (id: string) => Promise<unknown> } = {}) {
+function makePackagingArtifactStoreMock(overrides: { readArtifactPreview?: unknown } = {}) {
+  // P3-B5: tests for the 7 legacy channels do not need a real
+  // artifact store. The mock satisfies the `packagingArtifactStore`
+  // required parameter and exposes the same surface so the
+  // buildExecutionDeps path is exercised without ever touching
+  // the filesystem. Tests for the new `get-artifact-preview`
+  // channel (V-*) override `readArtifactPreview` directly.
+  return {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}),
+    readReference: async () => ({}),
+    readArtifactPreview: overrides.readArtifactPreview
+      ?? (async () => null),
+  };
+}
+
+function makeBundle(overrides: {
+  resolveTruthSnapshot?: (id: string) => Promise<unknown>;
+  packagingArtifactStore?: unknown;
+} = {}) {
   const stubs = makeStubs();
   const service = createPackagingWorkspaceService({
     preparePackagingGeneration: stubs.prepareFn,
@@ -202,6 +221,8 @@ function makeBundle(overrides: { resolveTruthSnapshot?: (id: string) => Promise<
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: overrides.resolveTruthSnapshot ?? makeResolveTruthSnapshot(),
+    packagingArtifactStore: overrides.packagingArtifactStore
+      ?? makePackagingArtifactStoreMock(),
   });
   return { service, ops, stubs };
 }
@@ -210,7 +231,7 @@ function makeBundle(overrides: { resolveTruthSnapshot?: (id: string) => Promise<
 // R-01 — namespace is registered
 // ---------------------------------------------------------------------------
 
-test('R-01 the packaging operations factory exposes 7 RPC channels under the `packaging:` prefix', () => {
+test('R-01 the packaging operations factory exposes 8 RPC channels under the `packaging:` prefix (P3-B5 added `get-artifact-preview`)', () => {
   const { ops } = makeBundle();
   const ids = Object.keys(ops.operations).sort();
   assert.deepEqual(
@@ -218,13 +239,14 @@ test('R-01 the packaging operations factory exposes 7 RPC channels under the `pa
     [
       'packaging:create-session',
       'packaging:execute-generation',
+      'packaging:get-artifact-preview',
       'packaging:get-view',
       'packaging:prepare-generation',
       'packaging:reset-preparation',
       'packaging:set-truth-snapshot',
       'packaging:update-intent',
     ],
-    'packaging operations factory must register exactly 7 channels (no more, no less)',
+    'packaging operations factory must register exactly 8 channels (P3-B2 7 + P3-B5 artifact preview)',
   );
   assert.equal(typeof ops.ids, 'object', 'ops.ids must expose the channel-id constants');
   assert.equal(ops.ids.CREATE_SESSION, 'packaging:create-session');
@@ -232,6 +254,7 @@ test('R-01 the packaging operations factory exposes 7 RPC channels under the `pa
   assert.equal(ops.ids.PREPARE_GENERATION, 'packaging:prepare-generation');
   assert.equal(ops.ids.EXECUTE_GENERATION, 'packaging:execute-generation');
   assert.equal(ops.ids.RESET_PREPARATION, 'packaging:reset-preparation');
+  assert.equal(ops.ids.GET_ARTIFACT_PREVIEW, 'packaging:get-artifact-preview');
 });
 
 test('R-01b PACKAGING_OPERATION_VERSION is exported and pinned to 1.0.0', () => {
@@ -614,6 +637,7 @@ test('R-11 execute RPC builds deps from the canonical credential + settings auth
       region: 'cn-hangzhou',
     }),
     resolveTruthSnapshot: makeResolveTruthSnapshot(),
+    packagingArtifactStore: makePackagingArtifactStoreMock(),
   });
   const created = await ops.operations['packaging:create-session'](
     { host: 'node-web' },
@@ -683,6 +707,7 @@ test('R-12 prepare failure preserves the canonical error code on the view', asyn
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: makeResolveTruthSnapshot(),
+    packagingArtifactStore: makePackagingArtifactStoreMock(),
   });
   const created = await ops.operations['packaging:create-session'](
     { host: 'node-web' },
@@ -992,6 +1017,7 @@ test('R-28 execute RPC fails closed when readCredentials rejects', async () => {
       throw new Error('CREDENTIAL_STORE_OFFLINE');
     },
     resolveTruthSnapshot: makeResolveTruthSnapshot(),
+    packagingArtifactStore: makePackagingArtifactStoreMock(),
   });
   const created = await failingOps.operations['packaging:create-session'](
     { host: 'node-web' },

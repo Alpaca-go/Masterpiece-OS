@@ -1,4 +1,4 @@
-// P3-A7 鈥?Packaging Workspace Architecture Guards (A-L).
+﻿// P3-A7 鈥?Packaging Workspace Architecture Guards (A-L).
 //
 // 12 canonical guard groups per P3-A spec 搂64 + additional
 // authority guards. Each group has at least one source-level
@@ -2540,3 +2540,656 @@ test('Y-20 the Web feature does NOT persist the execution result on the browser 
     }
   }
 });
+
+
+
+// ============================================================================
+// Group Z  —  P3-B5 Packaging Artifact Persistence & Safe Preview Bridge
+// ============================================================================
+
+test('Z-01 the Packaging execute deps wire the existing canonical artifact persistence adapter (saveRun) into the P2 frozen deps seam', () => {
+  // P3-B5 §VI / §VII: the production execute path must flow
+  // `saveRun` through the existing `executePackagingGeneration`
+  // deps seam — not via a new write path, not via a Web-side
+  // stub. We assert the operations layer injects a `saveRun`
+  // adapter (not a no-op) and that the adapter routes through
+  // `packagingArtifactStore.saveRun` (the canonical seam).
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The ops layer must accept a `packagingArtifactStore` option.
+  assert.match(
+    stripped,
+    /packagingArtifactStore/u,
+    'packaging-operations must accept a packagingArtifactStore option (P3-B5 §VI)',
+  );
+  // The ops layer must call `packagingArtifactStore.saveRun`
+  // (the canonical seam) — not a local saveRun implementation.
+  assert.match(
+    stripped,
+    /packagingArtifactStore\.saveRun/u,
+    'packaging-operations must route saveRun through packagingArtifactStore.saveRun (canonical seam)',
+  );
+  // The P2 frozen DEFAULT_DEPS.saveRun (which throws GENERATION_PERSISTENCE_FAILED)
+  // is NOT the route the production execute path uses.
+  assert.equal(
+    /DEFAULT_DEPS\.saveRun/u.test(stripped),
+    false,
+    'packaging-operations must NOT use P2 frozen DEFAULT_DEPS.saveRun',
+  );
+});
+
+test('Z-02 the Packaging execute deps wire the existing canonical executor (P2 frozen createMultiModelImageAdapter) with a no-op fallback', () => {
+  // P3-B5 §VI: the production execute path uses the canonical
+  // P2 frozen `createMultiModelImageAdapter` factory. When the
+  // factory throws (e.g. test mock-model), the ops layer falls
+  // back to a no-op executor that still satisfies the P2 frozen
+  // deps seam. The fallback must NOT bypass the P2 frozen
+  // contract — it stays inside the existing `executePackaging-
+  // Generation` deps boundary.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /createMultiModelImageAdapter/u,
+    'packaging-operations must import createMultiModelImageAdapter (P3-B5 §VI)',
+  );
+  // The executor field is exposed on the deps object.
+  assert.match(
+    stripped,
+    /executor\s*,/u,
+    'packaging-operations must expose `executor` on the execute deps',
+  );
+  // A no-op fallback exists for the case when
+  // createMultiModelImageAdapter throws.
+  assert.match(
+    stripped,
+    /compileRequest\s*:\s*\(input\)/u,
+    'packaging-operations must have a no-op executor fallback (P3-B5 §VI fallback)',
+  );
+});
+
+test('Z-03 the Web feature does NOT import the existing imageGeneration run-store surface for packaging artifacts', () => {
+  // P3-B5 §IV / §V: the Web feature never calls
+  // `imageGeneration.getImageDataUrl` for packaging artifacts.
+  // Packaging has its own preview RPC (`packaging:get-artifact-
+  // preview`); cross-namespace preview reads are forbidden.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /imageGeneration\.getImageDataUrl/u,
+      /window\.masterpiece\.imageGeneration\.getImageDataUrl/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not call ${forbidden} (P3-B5 §IV / §V)`,
+      );
+    }
+  }
+});
+
+test('Z-04 the Web feature does NOT render an artifact.relativePath / thumbnailRelativePath as an <img src>', () => {
+  // P3-B5 §X / Y-02: the canonical relativePath / thumbnail-
+  // RelativePath are runtime-internal storage paths. The Web
+  // feature MUST NOT pass them to an `<img src={...}>` or to a
+  // `fetch(...)` URL. The only safe img src is the data URL
+  // returned by the `packaging:get-artifact-preview` RPC.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /src=\{[^}]*artifact\.relativePath/u,
+      /src=\{[^}]*artifact\.thumbnailRelativePath/u,
+      /src=\{[^}]*relativePath/u,
+      /src=\{[^}]*thumbnailRelativePath/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not pass relativePath/thumbnailRelativePath to <img src=> (P3-B5 §X)`,
+      );
+    }
+  }
+});
+
+test('Z-05 the preview RPC input validates runId shape (no path traversal in the Web caller)', () => {
+  // P3-B5 §XIII / §XIV: the Web client sends
+  // `{ sessionId, runId, imageId }` to the preview RPC. The
+  // Web client must NOT send a hostile runId that contains
+  // path separators or `..` segments. The runtime-side
+  // validation is the source of truth; the Web client must
+  // not pre-bake an unsafe runId either.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /runId:\s*['"]\.\./u,
+      /runId:\s*['"]\.\.\\/u,
+      /runId:\s*['"]\.\.\//u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not construct hostile runId values`,
+      );
+    }
+  }
+});
+
+test('Z-06 the preview RPC consumer never reads the run-store directly (no runStore / artifactStore import in Web)', () => {
+  // P3-B5 §XVII: the Web feature is RPC-only. It must not
+  // import a run-store, an artifact store, a saveRun helper,
+  // or any direct filesystem surface. The canonical
+  // `packaging:get-artifact-preview` RPC is the SOLE bridge.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /runStore/u,
+      /artifactStore/u,
+      /saveRun\b/u,
+      /readFile\b/u,
+      /node:fs/u,
+      /node:path/u,
+      /@masterpiece\/runtime-core\/application\/image-generation\/run-store/u,
+      /@masterpiece\/runtime-core\/application\/image-generation\/service/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not import ${forbidden} (P3-B5 §XVII)`,
+      );
+    }
+  }
+});
+
+test('Z-07 the preview RPC channel is registered in the Packaging RPC namespace (not in imageGeneration)', () => {
+  // P3-B5 §X / §XI: the preview RPC is a Packaging channel,
+  // NOT an imageGeneration channel. Cross-namespace channel
+  // registration is forbidden.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  assert.match(
+    opsSrc,
+    /GET_ARTIFACT_PREVIEW:\s*['"]packaging:get-artifact-preview['"]/u,
+    'Packaging operations must register `packaging:get-artifact-preview`',
+  );
+  assert.equal(
+    /imageGeneration:get-artifact/u.test(opsSrc),
+    false,
+    'Packaging operations must NOT register `imageGeneration:get-artifact-preview`',
+  );
+});
+
+test('Z-08 the preview RPC identity guard rejects cross-session / cross-project reads', () => {
+  // P3-B5 §XIII: the preview RPC enforces that the caller\'s
+  // `runId` equals `view.execution.runId` for the session. The
+  // check is the SOLE cross-session / cross-project guard.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /assertPreviewIdentity/u,
+    'Packaging operations must define assertPreviewIdentity (P3-B5 §XIII)',
+  );
+  // The guard reads view.execution.runId (not a caller-supplied runId).
+  assert.match(
+    stripped,
+    /execution\.runId/u,
+    'assertPreviewIdentity must read view.execution.runId (P3-B5 §XIII)',
+  );
+  // Mismatch is rejected with the canonical preview code.
+  assert.match(
+    stripped,
+    /PACKAGING_OPERATIONS_PREVIEW_NOT_FOUND/u,
+    'Preview identity mismatch must surface PACKAGING_OPERATIONS_PREVIEW_NOT_FOUND',
+  );
+});
+
+test('Z-09 the preview RPC enforces the canonical imageId pattern (image-NN) on the runtime side', () => {
+  // P3-B5 §X / §XIV: the runtime refuses any imageId that does
+  // not match the canonical `image-\d{2}` pattern. This
+  // prevents the Web client from using imageId as a path
+  // fragment.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /CANONICAL_IMAGE_ID_PATTERN/u,
+    'Packaging operations must define CANONICAL_IMAGE_ID_PATTERN (P3-B5 §X)',
+  );
+  // The imageId regex is a regex literal `^image-\d{2}$/u` in
+  // the source.  We assert the exact pattern string is
+  // present in the source (case-sensitive substring).
+  assert.equal(
+    stripped.indexOf('^image-\\d{2}$/u') >= 0,
+    true,
+    'CANONICAL_IMAGE_ID_PATTERN must match image-NN format (P3-B5 §X)',
+  );
+});
+
+test('Z-10 the preview RPC rejects hostile runId (path traversal / absolute path / file://)', () => {
+  // P3-B5 §XIII / §XIV: the runtime refuses to read a
+  // runId that contains `..`, an absolute path, a Windows
+  // drive letter, or a `file://` scheme. The check is
+  // redundant with the input shape check, but the store
+  // re-asserts it (defense in depth).
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /isRelativePathSafe/u,
+    'Packaging operations must define isRelativePathSafe (P3-B5 §XIII)',
+  );
+  // `..` is rejected.
+  assert.match(
+    stripped,
+    /segments\.includes\(['"]\.\.['"]\)/u,
+    'isRelativePathSafe must reject `..` segments (P3-B5 §XIII)',
+  );
+  // `file://` is rejected.
+  assert.match(
+    stripped,
+    /\^file:\\\/\\\//u,
+    'isRelativePathSafe must reject `file://` URLs (P3-B5 §XIII)',
+  );
+  // Windows drive letter is rejected.
+  assert.match(
+    stripped,
+    /\^\[A-Za-z\]:/u,
+    'isRelativePathSafe must reject Windows drive letters (P3-B5 §XIII)',
+  );
+});
+
+test('Z-11 the preview RPC never returns an absolute path, runRoot, or Buffer to the Web', () => {
+  // P3-B5 §IX / §X: the preview response is a
+  // `{ mimeType, dataUrl }` payload only. The runtime
+  // response contract deliberately omits absolute path,
+  // runRoot, and Buffer — those stay on the runtime side.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The success response builder only has mimeType and dataUrl.
+  assert.match(
+    stripped,
+    /mimeType/u,
+    'Packaging preview payload must include mimeType',
+  );
+  assert.match(
+    stripped,
+    /dataUrl/u,
+    'Packaging preview payload must include dataUrl',
+  );
+  // The preview return block is the unique `readArtifactPreview`
+  // function.  We narrow by requiring both `mimeType` and
+  // `dataUrl` keys AND the `Buffer.isBuffer` precondition (which
+  // only `readArtifactPreview` uses).  This avoids matching
+  // `resolveArtifactLifecycle` which also returns a frozen
+  // object but with `runRoot` / `relativePath` fields.
+  const previewBlock = stripped.match(
+    /if\s*\(!buffer\s*\|\|\s*!Buffer\.isBuffer\(buffer\)\)[\s\S]*?return Object\.freeze\(\{[\s\S]*?dataUrl[\s\S]*?\}\);/u,
+  );
+  assert.ok(previewBlock, 'preview payload must be a frozen { mimeType, dataUrl } object');
+  // The preview return block must NOT carry absolutePath (the
+  // canonical surface is mimeType + dataUrl only).
+  assert.equal(
+    previewBlock[0].includes('absolutePath'),
+    false,
+    'Preview payload must not expose absolutePath (P3-B5 §X)',
+  );
+  // The preview return block must use buffer.toString('base64'),
+  // not buffer.toString('utf8') (which would be wrong for image
+  // binary data).
+  assert.match(
+    previewBlock[0],
+    /buffer\.toString\('base64'\)/u,
+    'Preview payload must use buffer.toString("base64") for the dataUrl (P3-B5 §X)',
+  );
+});
+
+test('Z-12 the preview RPC never exposes the Provider response body or any redacted request / response shape', () => {
+  // P3-B5 §XXV: the preview RPC never includes the raw
+  // Provider response, the redacted request, or the redacted
+  // response body. Only the canonical `{ mimeType, dataUrl }`
+  // leaves the runtime.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /redactedRequest/u,
+      /redactedResponse/u,
+      /providerResponse/u,
+      /auditLog/u,
+      /requestBody/u,
+      /responseBody/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not render ${forbidden} (P3-B5 §XXV)`,
+      );
+    }
+  }
+});
+
+test('Z-13 the Packaging Artifact Store re-asserts the identity guard (defense in depth)', () => {
+  // P3-B5 §XIII: the store re-asserts that the requested
+  // runId is well-formed. The store never trusts the RPC layer
+  // to be the only line of defense.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The store path safety check is invoked at read time.
+  assert.match(
+    stripped,
+    /isRelativePathSafe\(runId\)/u,
+    'Store readArtifactPreview must re-assert isRelativePathSafe (P3-B5 §XIII defense in depth)',
+  );
+  // The store re-asserts the canonical imageId pattern.
+  assert.match(
+    stripped,
+    /CANONICAL_IMAGE_ID_PATTERN\.test\(imageId\)/u,
+    'Store readArtifactPreview must re-assert CANONICAL_IMAGE_ID_PATTERN (P3-B5 §XIII defense in depth)',
+  );
+});
+
+test('Z-14 the Packaging Artifact Store refuses to construct a path outside the canonical run root', () => {
+  // P3-B5 §XIV: the store refuses any path that escapes the
+  // canonical `<runRoot>/` directory. We assert the runtime-
+  // side check (`assertInside`) exists and is called.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /assertInside/u,
+    'Store must define assertInside (P3-B5 §XIV)',
+  );
+  // assertInside is invoked from the preview read path.
+  assert.match(
+    stripped,
+    /assertInside\(runRoot,\s*candidatePath\)/u,
+    'Store readArtifactPreview must invoke assertInside(runRoot, candidatePath) (P3-B5 §XIV)',
+  );
+  // Path-traversal exception is named PATH_TRAVERSAL_REJECTED.
+  assert.match(
+    stripped,
+    /PATH_TRAVERSAL_REJECTED/u,
+    'Store must throw PATH_TRAVERSAL_REJECTED on traversal (P3-B5 §XIV)',
+  );
+});
+
+test('Z-15 the Packaging Artifact Store does NOT introduce a second filesystem root (shares the image-generation run root)', () => {
+  // P3-B5 §VII: the store writes to
+  // `<projectRoot>/image-generation/<runId>/` — the same
+  // physical root the image-generation run-store uses. The
+  // `pkg-...` runId namespace isolates the two streams; the
+  // `image-generation/` physical root is shared, never re-
+  // defined.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /pathJoin\([^)]*image-generation[^)]*\)/u,
+    'Store must route through the image-generation physical root (P3-B5 §VII)',
+  );
+  // The store does NOT introduce a sibling root like
+  // `pathJoin('packaging', runId)` or similar.
+  assert.equal(
+    /pathJoin\(['"]packaging['"]/u.test(stripped),
+    false,
+    'Store must NOT introduce a second filesystem root like packaging/ (P3-B5 §VII)',
+  );
+});
+
+test('Z-16 the Packaging Artifact Store does NOT introduce a second artifact server (only the existing local RPC bridge)', () => {
+  // P3-B5 §XII: the Web feature never constructs a second
+  // HTTP / artifact server. All preview reads flow through the
+  // existing local RPC bridge.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /http\.createServer/u,
+      /express\(\)/u,
+      /new\s+Server\(/u,
+      /new\s+WebSocketServer/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not construct ${forbidden} (P3-B5 §XII)`,
+      );
+    }
+  }
+});
+
+test('Z-17 the Web feature does NOT introduce a fake progress percentage on the preview card', () => {
+  // P3-B5 §XVII: the preview card is loading / loaded /
+  // unavailable / error — never a fake "X% downloaded"
+  // progress bar. The CSS scanner animation is a real visual
+  // effect, not a numeric progress indicator.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /progress:\s*[\d.]+/u,
+      /progressPercent/u,
+      /progress\.toFixed/u,
+      /\{[\d.]+\s*%\}/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not fake a numeric progress (P3-B5 §XVII)`,
+      );
+    }
+  }
+});
+
+test('Z-18 the Web feature does NOT add a run history UI (no execution.history / no recentRuns / no listRuns)', () => {
+  // P3-B5 §XXV: even though the run-store physically persists
+  // Packaging runs now, the Web feature does NOT expose a
+  // history browser. History is a separate product decision.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /execution\.history/u,
+      /recentRuns/u,
+      /listRuns/u,
+      /runsHistory/u,
+      /pastRuns/u,
+      /runHistory/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not invent ${forbidden} (P3-B5 §XXV)`,
+      );
+    }
+  }
+});
+
+test('Z-19 the Packaging Artifact Store handles provider-success + persistence-fail as a canonical failure', () => {
+  // P3-B5 §XXII: the runtime keeps the canonical
+  // GENERATION_PERSISTENCE_FAILED error path. The store does
+  // NOT swallow persistence failures; the P2 frozen
+  // `executePackagingGeneration` propagates the failure.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The store saveRun propagates the underlying write failure
+  // (it awaits writeJsonSafe, which throws on persistence
+  // failure). The canonical error code is set by the
+  // composition root's writeJsonSafe adapter wrapper
+  // (see current-operation-graph.ts).  We assert the store
+  // does NOT swallow the failure and that the writeJsonSafe
+  // call is the canonical surface.
+  assert.match(
+    stripped,
+    /writeJsonSafe/u,
+    'Store saveRun must call writeJsonSafe (P3-B5 §XXII)',
+  );
+  // The store does NOT swallow the failure.
+  assert.equal(
+    /saveRun[^\n]*try\s*\{[^\n]*\}\s*catch\s*\{[^\n]*return\s+null/u.test(stripped),
+    false,
+    'Store must not swallow saveRun failures (P3-B5 §XXII)',
+  );
+});
+
+test('Z-20 the Web feature does NOT call imageGeneration.* for artifact bytes (PreviewCard is RPC-only)', () => {
+  // P3-B5 §XI: the ArtifactPreviewCard is RPC-only. It calls
+  // `getPackagingArtifactPreview` (the canonical
+  // `packaging:get-artifact-preview` channel), NOT any
+  // `imageGeneration.*` surface.
+  const workspaceSrc = readFile(path.join(PACKAGING_WEB_FEATURE, 'PackagingWorkspace.tsx'));
+  const serviceSrc = readFile(path.join(PACKAGING_WEB_FEATURE, 'service.ts'));
+  assert.match(
+    workspaceSrc,
+    /getPackagingArtifactPreview/u,
+    'PackagingWorkspace must call getPackagingArtifactPreview (P3-B5 §XI)',
+  );
+  assert.match(
+    serviceSrc,
+    /getPackagingArtifactPreview/u,
+    'service.ts must export getPackagingArtifactPreview (P3-B5 §XI)',
+  );
+  // The service.ts routes the call through api.getArtifactPreview.
+  assert.match(
+    serviceSrc,
+    /api\.getArtifactPreview/u,
+    'service.ts must call api.getArtifactPreview (P3-B5 §XI)',
+  );
+});
+
+test('Z-21 STALE + previous-result preview: the previous runId is still allowed to fetch its preview', () => {
+  // P3-B5 §XIX: when `view.status === 'stale'`, the previous
+  // run is still queryable. The preview RPC continues to work
+  // for the old runId because the identity guard checks the
+  // session's `view.execution.runId` (which still equals the
+  // old runId while the view has not been re-prepared).
+  const workspaceSrc = readFile(path.join(PACKAGING_WEB_FEATURE, 'PackagingWorkspace.tsx'));
+  // The ArtifactPreviewCard receives `runId={exec.runId}`
+  // from the ResultTile. The view.execution.runId is the
+  // single source of truth.
+  assert.match(
+    workspaceSrc,
+    /runId=\{exec\.runId\}/u,
+    'ArtifactPreviewCard must read runId from exec.runId (P3-B5 §XIX)',
+  );
+});
+
+test('Z-22 Reset does NOT delete a run locally; the previous run remains previewable after reset', () => {
+  // P3-B5 §XX: the Reset RPC clears the prepared snapshot
+  // but does NOT delete a run. The view.execution may still
+  // carry the old run after reset (P3-A frozen contract).
+  // The Web feature never deletes an artifact locally.
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /deleteRun/u,
+      /removeRun/u,
+      /unlink/u,
+      /(?:^|[^A-Za-z])rm\(/u,
+      /unlinkSync/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not delete a run locally (P3-B5 §XX)`,
+      );
+    }
+  }
+});
+
+test('Z-23 Retry re-loads the new run\'s previews via the returned View (no in-Web artifact state)', () => {
+  // P3-B5 §XXI: Retry invokes the same `executePackaging-
+  // Generation` RPC. The new run produces a new `runId`; the
+  // returned View is the source of truth. The Web feature
+  // does NOT maintain an in-memory artifact cache.
+  const workspaceSrc = readFile(path.join(PACKAGING_WEB_FEATURE, 'PackagingWorkspace.tsx'));
+  // The handler reads the result from the RPC return value,
+  // not from a local artifact map.
+  assert.match(
+    workspaceSrc,
+    /result\.view/u,
+    'executePackagingGeneration handler must read result.view (P3-B5 §XXI)',
+  );
+  // The Web feature does NOT have a local runs Map.
+  assert.equal(
+    /runs\s*:\s*new\s+Map/u.test(workspaceSrc),
+    false,
+    'PackagingWorkspace must not maintain a runs Map (P3-B5 §XXI)',
+  );
+});
+
+test('Z-24 the Packaging Artifact Store canonical record does NOT include Provider response or redacted request bodies', () => {
+  // P3-B5 §IX / §XXV: the canonical artifact record
+  // (`<runRoot>/packaging-generation-result.json`) is a small
+  // index — it deliberately omits the Provider response body,
+  // the redacted request body, and the redacted response body.
+  // Only the per-image logical mapping is persisted.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The buildArtifactRecord function exists.
+  assert.match(
+    stripped,
+    /function\s+buildArtifactRecord/u,
+    'Store must define buildArtifactRecord (P3-B5 §IX)',
+  );
+  // The record shape is the small canonical set.
+  assert.match(
+    stripped,
+    /runId/u,
+    'Canonical record must include runId (P3-B5 §IX)',
+  );
+  assert.match(
+    stripped,
+    /target:\s*['"]packaging['"]/u,
+    'Canonical record must include target=packaging (P3-B5 §IX)',
+  );
+  // The record must NOT carry Provider response body fields.
+  const recordBlock = stripped.match(
+    /function\s+buildArtifactRecord[\s\S]*?return Object\.freeze/u,
+  );
+  if (recordBlock) {
+    for (const forbidden of [
+      'providerResponse',
+      'redactedRequest',
+      'redactedResponse',
+      'requestBody',
+      'responseBody',
+    ]) {
+      assert.equal(
+        recordBlock[0].includes(forbidden),
+        false,
+        `Canonical record must not include ${forbidden} (P3-B5 §IX)`,
+      );
+    }
+  }
+});
+
+test('Z-25 the Web feature does NOT introduce a Browser-side persistence for the artifact preview data URL', () => {
+  // P3-B5 §XVII: the data URL lives in React local state only.
+  // It is never written to localStorage / sessionStorage /
+  // IndexedDB / Cache API. The user's privacy boundary is
+  // preserved across reloads (a fresh page = a fresh preview
+  // load, never a stale cached image).
+  const files = walkSourceDir(PACKAGING_WEB_FEATURE);
+  for (const file of files) {
+    const src = stripComments(readFile(file));
+    for (const forbidden of [
+      /localStorage\s*\./u,
+      /sessionStorage\s*\./u,
+      /indexedDB/u,
+      /caches\.open/u,
+      /setItem\s*\(/u,
+    ]) {
+      assert.equal(
+        forbidden.test(src),
+        false,
+        `${file} must not persist preview data to the browser (P3-B5 §XVII)`,
+      );
+    }
+  }
+});
+

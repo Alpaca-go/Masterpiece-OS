@@ -2301,6 +2301,44 @@ export interface PackagingExecutionInput {
   apiProfileId?: string;
 }
 
+/**
+ * P3-B5: identity-validated artifact preview read.
+ *
+ * The input is the canonical triple `{ sessionId, runId,
+ * imageId }`:
+ *   - `sessionId` — the Packaging session id (the canonical
+ *     P3-A binding; the Web side never holds the raw session).
+ *   - `runId` — the `pkg-...` run identifier the Web side
+ *     observed on `view.execution.runId`.
+ *   - `imageId` — the canonical `image-NN` identifier from
+ *     `view.execution.artifacts[].imageId`.
+ *
+ * The runtime enforces identity (`runId` must match
+ * `view.execution.runId`) and shape (both `runId` and
+ * `imageId` are matched against canonical regexes) before the
+ * canonical artifact store is consulted. The Web feature
+ * MUST NOT pass anything other than these three fields.
+ */
+export interface PackagingArtifactPreviewInput {
+  sessionId: string;
+  runId: string;
+  imageId: string;
+}
+
+/**
+ * P3-B5: artifact preview payload.
+ *
+ * `preview` is `{ mimeType, dataUrl } | null`. A `null` preview
+ * means the run is not yet persisted (the Web feature renders
+ * a placeholder in that case). The data URL is the
+ * canonical `<runRoot>/<relative-or-thumbnail-path>` read by
+ * the artifact store; the Web side MUST NOT construct its own
+ * data URL or absolute path.
+ */
+export interface PackagingArtifactPreviewResult {
+  preview: { mimeType: string; dataUrl: string } | null;
+}
+
 export interface RuntimeApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -2695,6 +2733,18 @@ export interface RuntimeApi {
     resetPreparation(
       sessionId: string
     ): Promise<PackagingSessionMutationResult>;
+    /**
+     * P3-B5: read a Packaging artifact preview as a safe data URL.
+     * The input is identity-validated on the runtime side
+     * (`runId` must equal `view.execution.runId`; `imageId` must
+     * match the canonical `image-NN` pattern). The output is
+     * `{ preview: { mimeType, dataUrl } | null }` — the Web
+     * feature never receives an absolute path, a Buffer, or a
+     * credential.
+     */
+    getArtifactPreview(
+      input: PackagingArtifactPreviewInput
+    ): Promise<PackagingArtifactPreviewResult>;
   };
 }
 

@@ -38,7 +38,7 @@
 // `view.isBusy` (P3-A4 §5). React does NOT maintain a
 // second rule table.
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   PACKAGING_REFERENCE_ROLES,
   PACKAGING_WORKSPACE_STATUS_LABELS,
@@ -53,6 +53,7 @@ import type {
 import {
   createPackagingSession,
   executePackagingGeneration,
+  getPackagingArtifactPreview,
   getPackagingView,
   isPackagingRuntimeAvailable,
   preparePackagingGeneration,
@@ -392,7 +393,7 @@ function ReadySurface(props: ReadySurfaceProps) {
         />
         <LockedAssetsTile view={view} onRefreshTruth={onRefreshTruth} />
         <ReadinessStaleTile view={view} transientError={transientError} />
-        <ResultTile view={view} />
+        <ResultTile view={view} sessionId={sessionId} />
         <ErrorSurfaceTile view={view} />
       </main>
 
@@ -1151,7 +1152,7 @@ function ReadinessStaleTile({
 //     snapshot is no longer valid.
 // ---------------------------------------------------------------------------
 
-function ResultTile({ view }: { view: PackagingWorkspaceView }) {
+function ResultTile({ view, sessionId }: { view: PackagingWorkspaceView; sessionId: string }) {
   const exec = view.execution;
   const status = String(view.status || '');
   const isStale = status === 'stale';
@@ -1199,52 +1200,24 @@ function ResultTile({ view }: { view: PackagingWorkspaceView }) {
             </div>
           </div>
 
-          {/* P3-B4 §VIII: artifact cards. P3-B4 §IX does not call
-              any preview RPC; we surface only the safe metadata
-              that the frozen View Model already redacts. */}
+          {/* P3-B5: artifact cards. Each card loads its preview
+              via the canonical `packaging:get-artifact-preview`
+              RPC channel. The preview is identity-validated on
+              the runtime side (`runId` must equal
+              `view.execution.runId`); the Web feature never
+              sees an absolute path, a Buffer, or a credential. */}
           {Array.isArray(exec.artifacts) && exec.artifacts.length > 0 ? (
             <div className={styles.resultArtifacts}>
               {exec.artifacts.map((artifact, index) => {
                 const cardKey = artifact.imageId || `artifact-${index}`;
                 return (
-                  <article
+                  <ArtifactPreviewCard
                     key={cardKey}
-                    className={styles.resultArtifactCard}
-                    data-testid="packaging-artifact-card"
-                  >
-                    <div className={styles.resultArtifactThumb}>
-                      <span className={styles.resultArtifactThumbMuted}>
-                        缩略图占位
-                      </span>
-                    </div>
-                    <div className={styles.resultArtifactBody}>
-                      <span
-                        className={styles.resultArtifactTitle}
-                        title={artifact.imageId || ''}
-                      >
-                        {artifact.imageId || `artifact-${index + 1}`}
-                      </span>
-                      <ArtifactKv label="MIME" value={artifact.mimeType || '—'} />
-                      {artifact.width != null && artifact.height != null && (
-                        <ArtifactKv
-                          label="尺寸"
-                          value={`${artifact.width} × ${artifact.height}`}
-                        />
-                      )}
-                      {artifact.sizeBytes != null && (
-                        <ArtifactKv
-                          label="大小"
-                          value={formatBytes(artifact.sizeBytes)}
-                        />
-                      )}
-                      {artifact.hasB64 && (
-                        <ArtifactKv label="内联" value="b64" />
-                      )}
-                      {artifact.hasUrl && (
-                        <ArtifactKv label="Provider URL" value="已提供（仅元数据）" />
-                      )}
-                    </div>
-                  </article>
+                    sessionId={sessionId}
+                    runId={exec.runId}
+                    artifact={artifact}
+                    index={index}
+                  />
                 );
               })}
             </div>
@@ -1353,6 +1326,160 @@ function ResultTile({ view }: { view: PackagingWorkspaceView }) {
         </div>
       )}
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 05.x — Artifact preview card (P3-B5)
+//
+// Loads a single artifact preview via the canonical
+// `packaging:get-artifact-preview` RPC channel. The runtime
+// enforces identity (`runId` must equal `view.execution.runId`)
+// and shape (`imageId` must match `image-NN`); the Web feature
+// just renders the data URL it receives.
+//
+// State machine:
+//   - 'idle' / 'loading' → CSS placeholder + scan animation.
+//   - 'loaded'            → `<img src={dataUrl}>` (data URL).
+//   - 'unavailable'       → CSS placeholder + "预览不可用".
+//   - 'error'             → CSS placeholder + "预览失败".
+//
+// Notes:
+//   - The data URL is owned by the preview tile only. The tile
+//     never persists it (no localStorage / sessionStorage /
+//     IndexedDB; the runtime is the SOLE preview authority).
+//   - When `view.execution` changes (e.g. Retry produces a new
+//     runId), the `useEffect` re-fires and the tile re-loads.
+// ---------------------------------------------------------------------------
+
+type ArtifactPreviewState =
+  | { kind: 'loading' }
+  | { kind: 'loaded'; dataUrl: string; mimeType: string }
+  | { kind: 'unavailable' }
+  | { kind: 'error'; message: string };
+
+interface PackagingArtifactView {
+  // We deliberately omit `relativePath` and
+  // `thumbnailRelativePath` from this view shape (P3-B4 Y-02
+  // / P3-B5 §IX): the Web feature MUST NOT carry filesystem
+  // path identifiers through its component contract. The
+  // runtime is the SOLE authority for the underlying
+  // artifact paths; the Web side identifies artifacts by
+  // their logical `imageId` only.
+  imageId: string;
+  mimeType: string;
+  hasB64: boolean;
+  hasUrl: boolean;
+  width: number | null;
+  height: number | null;
+  sizeBytes: number | null;
+}
+
+function ArtifactPreviewCard({
+  sessionId,
+  runId,
+  artifact,
+  index,
+}: {
+  sessionId: string;
+  runId: string;
+  artifact: PackagingArtifactView;
+  index: number;
+}) {
+  const [state, setState] = useState<ArtifactPreviewState>({ kind: 'loading' });
+  // P3-B5 §XVIII: preview presentation state only. The
+  // artifact list, run metadata, and result authority live on
+  // `view.execution` (frozen P3-A). The data URL is held in
+  // local state and is NEVER persisted to the browser side.
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      const imageId = artifact.imageId;
+      if (!imageId || !runId || !sessionId) {
+        if (!cancelled) setState({ kind: 'unavailable' });
+        return;
+      }
+      try {
+        const result = await getPackagingArtifactPreview({ sessionId, runId, imageId });
+        if (cancelled) return;
+        if (result && result.preview) {
+          setState({
+            kind: 'loaded',
+            dataUrl: result.preview.dataUrl,
+            mimeType: result.preview.mimeType,
+          });
+        } else {
+          setState({ kind: 'unavailable' });
+        }
+      } catch (reason) {
+        if (cancelled) return;
+        const message = reason instanceof Error ? reason.message : String(reason);
+        setState({ kind: 'error', message });
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [sessionId, runId, artifact.imageId]);
+  const cardKey = artifact.imageId || `artifact-${index}`;
+  return (
+    <article
+      key={cardKey}
+      className={styles.resultArtifactCard}
+      data-testid="packaging-artifact-card"
+    >
+      <div className={styles.resultArtifactThumb}>
+        {state.kind === 'loaded' ? (
+          <img
+            className={styles.resultArtifactThumbImage}
+            src={state.dataUrl}
+            alt={artifact.imageId || `artifact-${index + 1}`}
+            data-testid="packaging-artifact-preview-img"
+          />
+        ) : null}
+        {state.kind === 'loading' && (
+          <span className={styles.resultArtifactThumbLoading}>加载中…</span>
+        )}
+        {state.kind === 'unavailable' && (
+          <span className={styles.resultArtifactThumbMuted}>
+            缩略图占位
+          </span>
+        )}
+        {state.kind === 'error' && (
+          <span className={`${styles.resultArtifactThumbMuted} ${styles.resultArtifactThumbError}`}>
+            预览失败
+          </span>
+        )}
+      </div>
+      <div className={styles.resultArtifactBody}>
+        <span
+          className={styles.resultArtifactTitle}
+          title={artifact.imageId || ''}
+        >
+          {artifact.imageId || `artifact-${index + 1}`}
+        </span>
+        <ArtifactKv label="MIME" value={artifact.mimeType || '—'} />
+        {artifact.width != null && artifact.height != null && (
+          <ArtifactKv
+            label="尺寸"
+            value={`${artifact.width} × ${artifact.height}`}
+          />
+        )}
+        {artifact.sizeBytes != null && (
+          <ArtifactKv
+            label="大小"
+            value={formatBytes(artifact.sizeBytes)}
+          />
+        )}
+        {artifact.hasB64 && (
+          <ArtifactKv label="内联" value="b64" />
+        )}
+        {artifact.hasUrl && (
+          <ArtifactKv label="Provider URL" value="已提供（仅元数据）" />
+        )}
+      </div>
+    </article>
   );
 }
 

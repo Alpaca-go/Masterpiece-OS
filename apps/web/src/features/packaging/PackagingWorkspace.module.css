@@ -1006,6 +1006,71 @@
   line-height: 1.5;
 }
 
+/* --------------------- artifact preview (P3-B5) ----------------- */
+.resultArtifactThumb {
+  position: relative;
+  overflow: hidden;
+}
+
+.resultArtifactThumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.resultArtifactThumbLoading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(240, 238, 245, 0.85) 0%,
+    rgba(231, 227, 236, 0.85) 50%,
+    rgba(244, 241, 247, 0.85) 100%
+  );
+  color: #847d87;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  backdrop-filter: blur(1px);
+}
+
+.resultArtifactThumbLoading::after {
+  content: '';
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 14%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(108, 66, 216, 0.55) 50%,
+    transparent 100%
+  );
+  animation: resultArtifactScan 1.4s ease-in-out infinite;
+}
+
+@keyframes resultArtifactScan {
+  0%   { transform: translateX(-30%); opacity: 0.2; }
+  50%  { transform: translateX(30%);  opacity: 1; }
+  100% { transform: translateX(90%);  opacity: 0.2; }
+}
+
+.resultArtifactThumbError {
+  background:
+    linear-gradient(135deg, #faf2ee 0%, #f3e6df 50%, #f7eee8 100%);
+  color: #a06b2a;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 /* --------------------- prepared summary (P3-B4) --------------------- */
 .preparedSummary {
   margin-top: 14px;

@@ -1,6 +1,6 @@
-// P3-B3 — Packaging Reference Selection & Runtime Truth Projection tests.
+// P3-B3 鈥?Packaging Reference Selection & Runtime Truth Projection tests.
 //
-// Test groups (per P3-B3 spec §23):
+// Test groups (per P3-B3 spec 搂23):
 //   T-01..T-15  Reference UI / Contract
 //   T-16..T-35  Locked Asset / Truth
 //   T-36..T-40  Integration
@@ -222,6 +222,15 @@ function makeBundle(options: {
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot,
+    // P3-B5: the truth-only tests do not need a real artifact
+    // store; the no-op mock satisfies the new required
+    // parameter without touching the filesystem.
+    packagingArtifactStore: {
+      saveRun: async () => undefined,
+      resolveArtifactLifecycle: async () => ({}),
+      readReference: async () => ({}),
+      readArtifactPreview: async () => null,
+    },
   });
   return { service, ops, stubs };
 }
@@ -246,7 +255,7 @@ async function prepareReadySession(ops: ReturnType<typeof createPackagingOperati
 }
 
 // ---------------------------------------------------------------------------
-// T-01..T-15 — Reference UI / Contract
+// T-01..T-15 鈥?Reference UI / Contract
 // ---------------------------------------------------------------------------
 
 test('T-01 PACKAGING_REFERENCE_ROLES exports exactly 6 canonical roles (frozen P3-A authority)', () => {
@@ -268,7 +277,7 @@ test('T-01 PACKAGING_REFERENCE_ROLES exports exactly 6 canonical roles (frozen P
 
 test('T-02 the role vocabulary is NOT derived from view.references (it is the P3-A frozen barrel export)', () => {
   // The role vocabulary is loaded from
-  // @masterpiece/runtime-core → application/packaging/index.js
+  // @masterpiece/runtime-core 鈫?application/packaging/index.js
   // (re-exported from workspace-state.js / reference-policy.js).
   // It is NOT a UI-side enum. We assert here that the
   // exported value is the same frozen Set on every call.
@@ -461,10 +470,10 @@ test('T-08 multiple assets with the same role is allowed (canonical contract)', 
   assert.equal(view.references[1].role, 'material_reference');
 });
 
-test('T-09 reference semantic update transitions READY → STALE (P3-A5 contract)', async () => {
+test('T-09 reference semantic update transitions READY 鈫?STALE (P3-A5 contract)', async () => {
   const { ops } = makeBundle();
   const created = await prepareReadySession(ops, 'pkg-ref-9');
-  // Drift the reference set → READY → STALE
+  // Drift the reference set 鈫?READY 鈫?STALE
   await ops.operations['packaging:update-intent'](
     { host: 'node-web' },
     {
@@ -489,7 +498,7 @@ test('T-10 UI-only metadata (displayName / previewUri) does not change the assig
   // in the intent. A subsequent updateIntent that submits
   // the same reference (same assetId + role + source) but
   // with a new displayName / previewUri must NOT mark the
-  // session STALE — the canonical intent normalizer strips
+  // session STALE 鈥?the canonical intent normalizer strips
   // UI-only fields and deepEqual is used for stale detection.
   const { ops } = makeBundle();
   const created = await ops.operations['packaging:create-session'](
@@ -563,7 +572,7 @@ test('T-11 reference-first mode with no references is rejected by P2 frozen REFE
 
 test('T-12 the operations layer does NOT sort / rank references (no precedence engine)', async () => {
   // The operations layer is a thin bridge. It MUST NOT
-  // re-order or rank references — the P2 frozen authority
+  // re-order or rank references 鈥?the P2 frozen authority
   // is the sole owner of reference precedence.
   const { ops } = makeBundle();
   const created = await ops.operations['packaging:create-session'](
@@ -624,7 +633,7 @@ test('T-14 updateIntent with referenceAssignments returns the new view (P3-A RPC
 
 test('T-15 UI-only metadata fields do not create stale semantics', async () => {
   // Updating ONLY previewUri / displayName must NOT mark
-  // the session STALE — these are UI-only fields per the
+  // the session STALE 鈥?these are UI-only fields per the
   // P3-A6 reference view projection. The session is
   // prepared WITH the reference already in the intent; the
   // subsequent re-submission with the same semantic
@@ -679,7 +688,7 @@ test('T-15 UI-only metadata fields do not create stale semantics', async () => {
 });
 
 // ---------------------------------------------------------------------------
-// T-16..T-35 — Locked Asset / Truth
+// T-16..T-35 鈥?Locked Asset / Truth
 // ---------------------------------------------------------------------------
 
 function makeLockedAsset(type: string, name: string): LockedAssetRecord {
@@ -738,7 +747,7 @@ test('T-18 the logo projection renders present=true when a logo Locked Asset exi
   assert.equal(created.view.lockedAssets.fields.logo.usageMode, 'reserved');
 });
 
-test('T-19 the productIdentity projection falls back to artwork → color → arrangement', async () => {
+test('T-19 the productIdentity projection falls back to artwork 鈫?color 鈫?arrangement', async () => {
   const { ops } = makeBundle({
     lockedAssets: [makeLockedAsset('product_color', 'Glossy Red')],
   });
@@ -852,7 +861,13 @@ test('T-25 the project truth refresh re-resolves the canonical authority (runtim
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: liveResolver,
-  });
+    packagingArtifactStore: {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}) as any,
+    readReference: async () => ({}),
+    readArtifactPreview: async () => null,
+  },
+});
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
     { projectId: 'pkg-truth' },
@@ -869,7 +884,7 @@ test('T-25 the project truth refresh re-resolves the canonical authority (runtim
   assert.equal(refreshed.view.lockedAssets.fields.brand.name, 'New Brand');
 });
 
-test('T-26 the Web caller cannot inject an arbitrary truthSnapshot (P3-B3 §11)', async () => {
+test('T-26 the Web caller cannot inject an arbitrary truthSnapshot (P3-B3 搂11)', async () => {
   const { ops } = makeBundle({
     lockedAssets: [makeLockedAsset('brand_name', 'Original')],
   });
@@ -887,7 +902,7 @@ test('T-26 the Web caller cannot inject an arbitrary truthSnapshot (P3-B3 §11)'
       return true;
     },
   );
-  // The original truth is preserved — the authority override was
+  // The original truth is preserved 鈥?the authority override was
   // rejected, the session's view is unchanged.
   const view = await ops.operations['packaging:get-view'](
     { host: 'node-web' },
@@ -896,7 +911,7 @@ test('T-26 the Web caller cannot inject an arbitrary truthSnapshot (P3-B3 §11)'
   assert.equal(view.lockedAssets.fields.brand.name, 'Original');
 });
 
-test('T-27 the Web caller cannot supply a cross-projectId in setTruthSnapshot (P3-B3 §12)', async () => {
+test('T-27 the Web caller cannot supply a cross-projectId in setTruthSnapshot (P3-B3 搂12)', async () => {
   const { ops } = makeBundle();
   const created = await ops.operations['packaging:create-session'](
     { host: 'node-web' },
@@ -914,7 +929,7 @@ test('T-27 the Web caller cannot supply a cross-projectId in setTruthSnapshot (P
   );
 });
 
-test('T-28 truth drift after truth refresh transitions READY → STALE with truth_surface_changed (P3-A5)', async () => {
+test('T-28 truth drift after truth refresh transitions READY 鈫?STALE with truth_surface_changed (P3-A5)', async () => {
   // P3-A5: when the truth surface changes, the prepared
   // snapshot is marked STALE. The reason is
   // `truth_surface_changed` (per P3-A6 contract).
@@ -932,7 +947,13 @@ test('T-28 truth drift after truth refresh transitions READY → STALE with trut
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: liveResolver,
-  });
+    packagingArtifactStore: {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}) as any,
+    readReference: async () => ({}),
+    readArtifactPreview: async () => null,
+  },
+});
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
     { projectId: 'pkg-truth' },
@@ -947,7 +968,7 @@ test('T-28 truth drift after truth refresh transitions READY → STALE with trut
   );
   // Truth drift upstream
   lockedAssetStore.push(makeLockedAsset('brand_name', 'Drift Brand'));
-  // Refresh truth → STALE
+  // Refresh truth 鈫?STALE
   const refreshed = await liveOps.operations['packaging:set-truth-snapshot'](
     { host: 'node-web' },
     { sessionId: created.sessionId },
@@ -973,7 +994,13 @@ test('T-29 STALE execute after truth drift preserves the STALE-specific issue en
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: liveResolver,
-  });
+    packagingArtifactStore: {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}) as any,
+    readReference: async () => ({}),
+    readArtifactPreview: async () => null,
+  },
+});
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
     { projectId: 'pkg-truth' },
@@ -1002,7 +1029,7 @@ test('T-29 STALE execute after truth drift preserves the STALE-specific issue en
   );
 });
 
-test('T-30 the view never carries an absolute filesystem path (P3-B3 §18)', async () => {
+test('T-30 the view never carries an absolute filesystem path (P3-B3 搂18)', async () => {
   const project: ProjectLike = { id: 'pkg-truth', projectName: 'Project' };
   const lockedAssetStore: LockedAssetRecord[] = [
     {
@@ -1025,7 +1052,13 @@ test('T-30 the view never carries an absolute filesystem path (P3-B3 §18)', asy
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: liveResolver,
-  });
+    packagingArtifactStore: {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}) as any,
+    readReference: async () => ({}),
+    readArtifactPreview: async () => null,
+  },
+});
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
     { projectId: 'pkg-truth' },
@@ -1047,7 +1080,7 @@ test('T-30 the view never carries an absolute filesystem path (P3-B3 §18)', asy
   }
 });
 
-test('T-31 the view never carries a credential (P3-B3 §18)', async () => {
+test('T-31 the view never carries a credential (P3-B3 搂18)', async () => {
   const { ops } = makeBundle();
   const created = await prepareReadySession(ops, 'pkg-truth-31');
   const viewText = JSON.stringify(created.view);
@@ -1112,7 +1145,13 @@ test('T-33 the view never carries binary / base64 / data URI for the Locked Asse
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: liveResolver,
-  });
+    packagingArtifactStore: {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}) as any,
+    readReference: async () => ({}),
+    readArtifactPreview: async () => null,
+  },
+});
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
     { projectId: 'pkg-truth' },
@@ -1163,6 +1202,12 @@ test('T-34 a session has a single projectId binding; truth refresh reads from th
       const records = projectId === 'pkg-bound' ? lockedAssetStoreA : lockedAssetStoreB;
       return makeResolveTruthSnapshot({ project, lockedAssets: records })(projectId);
     },
+    packagingArtifactStore: {
+      saveRun: async () => undefined,
+      resolveArtifactLifecycle: async () => ({}),
+      readReference: async () => ({}),
+      readArtifactPreview: async () => null,
+    },
   });
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
@@ -1200,7 +1245,7 @@ test('T-35 setTruthSnapshot on a session with no bound projectId is rejected', a
 });
 
 // ---------------------------------------------------------------------------
-// T-36..T-40 — Integration
+// T-36..T-40 鈥?Integration
 // ---------------------------------------------------------------------------
 
 test('T-36 reference edit + truth drift produces the canonical stale envelope', async () => {
@@ -1218,7 +1263,13 @@ test('T-36 reference edit + truth drift produces the canonical stale envelope', 
     readSettings: makeReadSettings(),
     readCredentials: makeReadCredentials(),
     resolveTruthSnapshot: liveResolver,
-  });
+    packagingArtifactStore: {
+    saveRun: async () => undefined,
+    resolveArtifactLifecycle: async () => ({}) as any,
+    readReference: async () => ({}),
+    readArtifactPreview: async () => null,
+  },
+});
   const created = await liveOps.operations['packaging:create-session'](
     { host: 'node-web' },
     { projectId: 'pkg-integration' },
@@ -1246,7 +1297,7 @@ test('T-36 reference edit + truth drift produces the canonical stale envelope', 
     { host: 'node-web' },
     { sessionId: created.sessionId },
   );
-  // Try to execute — must fail closed with the STALE
+  // Try to execute 鈥?must fail closed with the STALE
   // envelope that combines intent_changed + truth_surface_changed.
   await assert.rejects(
     () => liveOps.operations['packaging:execute-generation'](
@@ -1282,7 +1333,7 @@ test('T-37 explicit prepare is required after STALE (no implicit re-prepare)', a
       },
     },
   );
-  // Now try to execute directly — must fail closed; the
+  // Now try to execute directly 鈥?must fail closed; the
   // workspace does NOT auto-re-prepare.
   await assert.rejects(
     () => ops.operations['packaging:execute-generation'](
@@ -1342,7 +1393,7 @@ test('T-38 the session persists across many RPC calls (no per-call service recre
   assert.equal(direct.sessionId, created.sessionId);
 });
 
-test('T-39 the Web feature is RPC-only — there is no local createPackagingWorkspaceService in the Web source', async () => {
+test('T-39 the Web feature is RPC-only 鈥?there is no local createPackagingWorkspaceService in the Web source', async () => {
   // This test is a source-level guard. The actual
   // enforcement is in the architecture-guards test
   // (W-02..W-10). The P3-B3 reference + truth tests must

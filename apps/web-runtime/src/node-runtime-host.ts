@@ -73,6 +73,12 @@ export async function startNodeRuntimeHost(options: NodeRuntimeHostOptions): Pro
     // deps seam. The credential secret NEVER crosses the Web
     // RPC boundary.
     readCredentials: getProviderCredentials,
+    // P3-B5: the Shared Core data root is the parent of every
+    // `<projectRoot>/` directory. The Packaging Artifact
+    // Store writes to `<dataPath>/projects/<id>/image-generation/
+    // <runId>/` — the same physical root the existing
+    // image-generation run-store uses.
+    dataPath: path.resolve(settings.defaultDataPath),
   }));
   runtime.registerOperations(createNodeNativeOperations(services, runtimePaths));
   await runtime.start();

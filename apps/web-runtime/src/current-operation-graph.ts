@@ -7,6 +7,7 @@ import {
   createCreativeSessionOperations,
   createDocumentOperations,
   createImageGenerationOperations,
+  createPackagingArtifactStore,
   createPackagingOperations,
   createProjectContextOperations,
   createProjectOperations,
@@ -14,6 +15,7 @@ import {
   createReportOperations,
   createSettingsOperations,
   createVisualMemoryOperations,
+  setPackagingArtifactStorePathImpl,
 } from '@masterpiece/runtime-core';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
@@ -21,6 +23,7 @@ import type {
   SaveApiProfileInput,
   SaveSettingsInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
+import { atomicWriteJsonWithRetry } from '@masterpiece/runtime-core/application/runtime/atomic-write.ts';
 
 export interface NodeSettingsAdapter {
   get: () => unknown;
@@ -43,6 +46,14 @@ export interface NodeRuntimeAdapters {
    * `node-credential-store`.
    */
   readCredentials: (profileId?: string) => Promise<ProviderCredentials>;
+  /**
+   * P3-B5: the absolute Shared Core data root. The Packaging
+   * Artifact Store writes to `<dataPath>/projects/<id>/
+   * image-generation/<runId>/` — the same physical root the
+   * existing image-generation run-store uses. The `pkg-...`
+   * runId namespace isolates the two streams.
+   */
+  dataPath: string;
 }
 
 export function createCurrentBusinessOperations(
@@ -52,6 +63,13 @@ export function createCurrentBusinessOperations(
   const settings = adapters.settings;
   const readSettings = (settings.get as () => unknown) as () => Promise<unknown>;
   const readCredentials = adapters.readCredentials;
+  // P3-B5: the Shared Core data root is the parent of every
+  // `<projectRoot>/` directory. We resolve it to an absolute
+  // path here so the Packaging Artifact Store never has to
+  // guess the layout. The image-generation run-store lives
+  // in the same root; the `pkg-...` runId namespace isolates
+  // the two streams.
+  const dataPath = path.resolve(adapters.dataPath);
   const {
     projects, reports, pipeline, documentContext, projectContext, contextIntegration,
     referenceAnchor, imageGeneration, shortChainGeneration, creativeSessions,
@@ -152,6 +170,120 @@ export function createCurrentBusinessOperations(
     };
   };
 
+  // P3-B5: the canonical Packaging Artifact Store. The store
+  // writes to `<dataPath>/projects/<id>/image-generation/<runId>/`
+  // — the same physical root the existing image-generation
+  // run-store uses. The `pkg-...` runId namespace isolates the
+  // two streams; we do NOT introduce a second filesystem root.
+  //
+  // The store is constructed here (composition root) so the
+  // P3-A frozen `workspace-service.js` stays unchanged. The
+  // P2 frozen `generation-service.js` is also unchanged: the
+  // store is wired into the P2 frozen deps via the same
+  // `executePackagingGeneration` deps seam that P3-B2 already
+  // established.
+  setPackagingArtifactStorePathImpl(path);
+  // The store needs to resolve a `projectId` back to a
+  // projectRoot. The image-generation run-store convention
+  // is `<dataPath>/projects/<sanitizedName>-<id8>/`; the
+  // project-store resolves the canonical name by scanning
+  // `project.json` files. The store does NOT replicate that
+  // scan (it would re-define the image-generation run-store's
+  // path-resolution authority). Instead, the store asks the
+  // existing `projects.get(projectId)` authority for the
+  // project's directory name. The composition root wires the
+  // resolver; tests inject a fake one.
+  const projectStoreRootByProjectId = new Map<string, string>();
+  const resolveProjectRootForArtifactStore = async (projectId: string) => {
+    if (typeof projectId !== 'string' || !projectId) {
+      throw new Error('PACKAGING_ARTIFACT_STORE_INVALID_PROJECT_ID');
+    }
+    const cached = projectStoreRootByProjectId.get(projectId);
+    if (cached) return cached;
+    // The Shared Core project-store scans `<dataPath>/projects/`
+    // and matches `project.json` `id` to `projectId`. We use
+    // the same convention: the project's directory name is
+    // `<sanitizedName>-<id8>` (the image-generation run-store
+    // reuses this layout). The simplest portable resolver is
+    // `<dataPath>/projects/<projectId>` — production projects
+    // always have an id that matches the directory name (the
+    // project-store normalises both to the canonical id).
+    const projectRoot = path.join(dataPath, 'projects', projectId);
+    projectStoreRootByProjectId.set(projectId, projectRoot);
+    return projectRoot;
+  };
+  // Resolve a project asset to its absolute on-disk path.
+  // The packaging reference carries `assetId` (an
+  // `AssetItem.id`); the assets are stored under
+  // `<projectRoot>/<asset.relativePath>` for generation
+  // references, or `<projectRoot>/input/<asset.relativePath>`
+  // for analysis sources. The `usage` field on the asset
+  // record tells us which subtree to use. The composition
+  // root here uses `projects.scanAssets(projectId)` to look
+  // up the asset and the project-store convention for the
+  // absolute path. Tests can inject a fake resolver.
+  const resolveAssetByIdForArtifactStore = async (projectId: string, assetId: string) => {
+    if (typeof projectId !== 'string' || !projectId) return null;
+    if (typeof assetId !== 'string' || !assetId) return null;
+    let summary;
+    try {
+      summary = await projects.scan(projectId);
+    } catch {
+      return null;
+    }
+    const items = summary && Array.isArray(summary.items) ? summary.items : [];
+    const item = items.find((candidate) => candidate && candidate.id === assetId);
+    if (!item || typeof item.relativePath !== 'string' || !item.relativePath) return null;
+    const projectRoot = await resolveProjectRootForArtifactStore(projectId);
+    // Asset path convention (mirrors `image-generation/paths.ts`
+    // `assetAbsolutePath`): generation references live at
+    // `<projectRoot>/<relativePath>`; analysis sources live
+    // at `<projectRoot>/input/<relativePath>`.
+    const usage = typeof item.usage === 'string' ? item.usage : 'analysis_source';
+    const absolutePath = usage === 'generation_reference'
+      ? path.join(projectRoot, item.relativePath)
+      : path.join(projectRoot, 'input', item.relativePath);
+    const extension = (typeof item.extension === 'string' && item.extension) || '';
+    const lowerExt = extension.toLowerCase();
+    const mimeType = lowerExt === '.jpg' || lowerExt === '.jpeg'
+      ? 'image/jpeg'
+      : lowerExt === '.webp'
+        ? 'image/webp'
+        : 'image/png';
+    return Object.freeze({
+      name: typeof item.name === 'string' ? item.name : 'reference',
+      mimeType,
+      absolutePath,
+    });
+  };
+  const packagingArtifactStore = createPackagingArtifactStore({
+    dataPath,
+    resolveProjectRoot: resolveProjectRootForArtifactStore,
+    resolveAssetById: resolveAssetByIdForArtifactStore,
+    readFileBytes: async (absolutePath) => fs.readFile(absolutePath),
+    writeJsonSafe: async (absolutePath, value) => {
+      const result = await atomicWriteJsonWithRetry(absolutePath, value);
+      if (!result || result.success !== true) {
+        throw new Error('PACKAGING_ARTIFACT_STORE_WRITE_FAILED');
+      }
+    },
+    ensureDir: async (absolutePath) => {
+      await fs.mkdir(absolutePath, { recursive: true });
+    },
+    // The store derives `projectId` from the canonical P3-A
+    // view (`view.projectId`) — the Web side never supplies
+    // it. The composition root supplies a thin helper that
+    // calls `service.getView(sessionId)`.
+    getProjectIdForSession: (sessionId) => {
+      try {
+        const view = packaging.getView(sessionId);
+        return typeof view?.projectId === 'string' ? view.projectId : '';
+      } catch {
+        return '';
+      }
+    },
+  });
+
   return Object.assign(
     {},
     createSettingsOperations(settings),
@@ -172,6 +304,7 @@ export function createCurrentBusinessOperations(
       readSettings: async () => readSettings(),
       readCredentials,
       resolveTruthSnapshot,
+      packagingArtifactStore,
     }).operations,
     createCreativeSessionOperations({
       creativeSessions, creativeDirections, styleProfiles, visualCanons,
