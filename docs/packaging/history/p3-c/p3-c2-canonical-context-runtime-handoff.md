@@ -8,8 +8,9 @@ Decision: **PASS — P3-C3 READY**
 
 ## A. Git
 
-P3-C2 consumes the pushed C1.2 acceptance commit above. Production and AK
-guards are committed separately from this report.
+P3-C2 consumes the pushed C1.2 acceptance commit above. Implementation commit:
+`3035ada`; Node strip-only compatibility correction: `a010687`; this report is
+the documentation commit.
 
 ## B. C1.2 Baseline Consumed
 
@@ -171,12 +172,24 @@ are unchanged.
 
 ## AB. Full Regression
 
-Pending final clean-tree verification record.
+- root public contracts: 1233/1233;
+- Runtime Core/Application: 14/14 and 1207/1207;
+- image generation: 981/981;
+- CLI: 40/40;
+- P2 geometry: 37/37;
+- Reference workflow/authority: 52/52;
+- Visual Analysis: 10/10;
+- analysis Provider contracts: 32/32;
+- Web typecheck and production build: PASS;
+- Node Web Host typecheck and tests: PASS, 4/4;
+- browser smoke: PASS, Provider calls 0, business writes 0,
+  Electron/Desktop processes 0;
+- `repo:verify`, `repo:check` and `verify:current-flows`: PASS;
+- space compiler and R8.6 Golden boundary: PASS, 0 failures.
 
 ## AC. Golden / Provider Calls
 
-Pending final verification. Required Provider calls: 0; Golden auto-update is
-forbidden.
+Golden regression: 5/5 PASS. Provider calls: 0. Golden auto-update: NO.
 
 ## AD. Frozen Diff
 
@@ -188,8 +201,9 @@ forbidden.
 
 ## AE. Verification
 
-Clean-tree Runtime Application: 1207/1207. Remaining release gates are recorded
-after final completion.
+All required phase, repository, boundary, build, smoke and Golden gates passed
+from the committed tree. `verify:current-flows` completed without external API
+calls.
 
 ## AF. Working Tree
 
