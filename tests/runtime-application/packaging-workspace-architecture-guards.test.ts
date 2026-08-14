@@ -1,4 +1,4 @@
-﻿// P3-A7 鈥?Packaging Workspace Architecture Guards (A-L).
+// P3-A7 鈥?Packaging Workspace Architecture Guards (A-L).
 //
 // 12 canonical guard groups per P3-A spec 搂64 + additional
 // authority guards. Each group has at least one source-level
@@ -230,6 +230,86 @@ function extractFunctionBody(src: string, start: number): string {
     i++;
   }
   return '';
+}
+
+/**
+ * P3-B5.2 — Build a small in-memory fixture that exercises
+ * the canonical `imageGeneration.runStore` against a
+ * `pkg-*` run. Used by Z-36 / Z-37 to lock the audit
+ * finding (canonical runStore does NOT see pkg runs).
+ *
+ * The fixture creates a tmp dir, seeds a project.json, and
+ * returns the canonical runStore plus a tiny fs helper for
+ * the test to write sidecar / image bytes. The fixture
+ * MUST be cleaned up in a `finally` block.
+ */
+async function makeCanonicalRunStoreFixture() {
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'audit-b52-'));
+  const dataPath = tmpDir;
+  const projectId = 'mock-canonical';
+  const projectsRoot = path.join(dataPath, 'projects');
+  const projectRoot = path.join(projectsRoot, projectId);
+  await fs.mkdir(projectRoot, { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, 'project.json'),
+    JSON.stringify({ id: projectId, name: 'Canonical Audit' }),
+  );
+  // Load the canonical runStore factory (TS — node strips types).
+  const { pathToFileURL } = await import('node:url');
+  const runStoreModule = await import(
+    pathToFileURL('D:/Masterpiece-OS/packages/runtime-core/src/application/image-generation/run-store.ts').href
+  );
+  const runStore = runStoreModule.createRunStore(dataPath, projectId);
+  const fsHelpers = {
+    writePackagingRunOnly(runId: string) {
+      return (async () => {
+        const runRoot = path.join(projectRoot, 'image-generation', runId);
+        const imagesDir = path.join(runRoot, 'images');
+        const thumbsDir = path.join(runRoot, 'thumbnails');
+        await fs.mkdir(imagesDir, { recursive: true });
+        await fs.mkdir(thumbsDir, { recursive: true });
+        await fs.writeFile(
+          path.join(imagesDir, 'image-01.png'),
+          Buffer.from([0x89, 0x50, 0x4e, 0x47]),
+        );
+        await fs.writeFile(
+          path.join(thumbsDir, 'image-01.webp'),
+          Buffer.from([0x52, 0x49, 0x46, 0x46]),
+        );
+        await fs.writeFile(
+          path.join(runRoot, 'packaging-generation-result.json'),
+          JSON.stringify({
+            runId,
+            target: 'packaging',
+            createdAt: new Date().toISOString(),
+            artifacts: [
+              {
+                imageId: 'image-01',
+                relativePath: 'images/image-01.png',
+                thumbnailRelativePath: 'thumbnails/image-01.webp',
+                mimeType: 'image/png',
+              },
+            ],
+          }),
+        );
+      })();
+    },
+    async readIfExists(rel: string): Promise<string | null> {
+      const abs = path.join(projectRoot, 'image-generation', rel);
+      try {
+        return await fs.readFile(abs, 'utf8');
+      } catch {
+        return null;
+      }
+    },
+    async cleanup() {
+      await fs.rm(tmpDir, { recursive: true, force: true });
+    },
+  };
+  return { runStore, fsHelpers };
 }
 
 // =============================================================================
@@ -3579,5 +3659,255 @@ test('Z-35 B4 behavioural coverage is not weakened (U-01..U-05 button-readiness 
       new RegExp(`test\\(\\s*['"]${id}\\b`),
       `U-suite must include ${id} (P3-B5.1 §X)`,
     );
+  }
+});
+
+// =============================================================================
+// Group Z (continued) — P3-B5.2 Run-store Authority Convergence
+//
+// P3-B5.2 audit result: HOLD — RUN-STORE AUTHORITY GAP.
+//
+// The canonical image-generation run-store
+// (`packages/runtime-core/src/application/image-generation/run-store.ts`)
+// does NOT recognize `pkg-*` runs. Behavioural evidence:
+//   - `createRunStore(dataPath, projectId).readRun('pkg-...')` returns `null`
+//     (the directory exists, the sidecar `packaging-generation-result.json`
+//     exists, but there is no `run.json` to read).
+//   - `createRunStore(dataPath, projectId).listRuns()` filters out
+//     directories without a `run.json` (the implementation reads each
+//     subdirectory's `run.json` and filters nulls). `pkg-*` subdirectories
+//     are silently absent from the canonical list.
+//   - The canonical run-store has no `deleteRun` / retention API at all
+//     (verified by enumerating the surface).
+//
+// P2 frozen `executePackagingGeneration` accepts `saveRun` as a free-form
+// dependency; the production Shared runtime chose to wire it as the
+// Packaging sidecar adapter (`packagingArtifactStore.saveRun`), not as
+// the canonical `runStore.saveRun`. There is no architectural place where
+// the canonical run.json is written for a `pkg-*` run.
+//
+// P3-B5.2 does NOT pretend this gap does not exist. The guards below
+// LOCK the audit finding in CI so a future refactor cannot silently
+// regress without surfacing it. The P3-B5.1 report's over-claim that
+// "run identity authority = existing run.json" is corrected to
+// "Packaging persistence is a target-specific adapter; the canonical
+// run-store does not own pkg-* runs today (P3-B5.2 audit)".
+// =============================================================================
+
+test('Z-36 the canonical image-generation runStore does NOT recognize a `pkg-*` run (audit truth)', async () => {
+  // P3-B5.2 §II / §IV: behavioural evidence that the
+  // canonical runStore cannot load a Packaging run. We
+  // exercise the actual factory the production code uses
+  // and assert it returns `null` for a run that exists on
+  // disk under the canonical physical root but was written
+  // only via the Packaging sidecar adapter (no `run.json`).
+  const { runStore, fsHelpers } = await makeCanonicalRunStoreFixture();
+  try {
+    // Seed a Packaging run (sidecar + bytes) but no
+    // canonical `run.json`.
+    await fsHelpers.writePackagingRunOnly('pkg-audit-001');
+    // The canonical runStore MUST NOT see it. If this
+    // assertion ever starts failing it means the
+    // canonical surface grew a way to see Packaging
+    // runs — which would be a real convergence, not a
+    // regression, and the test should be revisited.
+    const read = await runStore.readRun('pkg-audit-001');
+    assert.equal(
+      read,
+      null,
+      'canonical runStore.readRun MUST return null for a pkg-* run (P3-B5.2 §II audit truth)',
+    );
+    const list = await runStore.listRuns();
+    assert.equal(
+      list.length,
+      0,
+      'canonical runStore.listRuns MUST NOT include pkg-* subdirectories (P3-B5.2 §II audit truth)',
+    );
+    // The `run.json` was never written.
+    const runJson = await fsHelpers.readIfExists(
+      'pkg-audit-001/run.json',
+    );
+    assert.equal(
+      runJson,
+      null,
+      'P3-B5.2 audit: pkg-* runs have NO canonical run.json (P2 frozen does not write it)',
+    );
+    // The sidecar IS written.
+    const sidecar = await fsHelpers.readIfExists(
+      'pkg-audit-001/packaging-generation-result.json',
+    );
+    assert.notEqual(
+      sidecar,
+      null,
+      'pkg-* runs DO have a sidecar (packaging-generation-result.json)',
+    );
+  } finally {
+    await fsHelpers.cleanup();
+  }
+});
+
+test('Z-37 the canonical runStore API surface does NOT include deleteRun / retention (audit truth)', async () => {
+  // P3-B5.2 §V: the canonical surface has no delete /
+  // retention methods. We enumerate the surface to lock
+  // the negative invariant — if a future change adds a
+  // delete / retention path that covers `pkg-*` runs,
+  // this test will start failing and the convergence
+  // owner must re-evaluate the audit conclusion.
+  const { runStore, fsHelpers } = await makeCanonicalRunStoreFixture();
+  try {
+    const surface = Object.keys(runStore).sort();
+    for (const forbidden of [
+      'deleteRun',
+      'deleteRuns',
+      'purgeRun',
+      'purgeRuns',
+      'retainRun',
+      'retention',
+      'cleanup',
+    ]) {
+      assert.equal(
+        surface.includes(forbidden),
+        false,
+        `canonical runStore MUST NOT expose ${forbidden} (P3-B5.2 §V)`,
+      );
+    }
+  } finally {
+    await fsHelpers.cleanup();
+  }
+});
+
+test('Z-38 the Packaging adapter is documented as NOT a run identity / lifecycle authority', () => {
+  // P3-B5.2 §XIII: the operations file MUST explicitly
+  // acknowledge that the Packaging adapter is NOT a run
+  // identity / lifecycle authority. The audit found a
+  // HOLD — RUN-STORE AUTHORITY GAP; this guard locks the
+  // acknowledgement into the source so the gap cannot be
+  // silently re-buried in future edits.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  // The adapter role is documented.
+  assert.match(
+    opsSrc,
+    /ADAPTER\s*\(not authority\)/iu,
+    'packaging-operations.js must document the adapter role (P3-B5.2 §XIII)',
+  );
+  // The audit gap is acknowledged in the operations file.
+  assert.match(
+    opsSrc,
+    /HOLD|audit|does not own|does not recognize|cannot list/iu,
+    'packaging-operations.js must acknowledge the P3-B5.2 audit finding (no implicit authority claim)',
+  );
+  // The adapter MUST NOT claim to be the canonical run identity authority.
+  assert.equal(
+    /run identity authority[\s\S]{0,200}?packaging-generation-result/u.test(opsSrc),
+    false,
+    'packaging-operations.js must NOT claim `packaging-generation-result.json` is the run identity authority (P3-B5.2 §XIII)',
+  );
+});
+
+test('Z-39 the Packaging adapter does NOT write / own the canonical run.json (write authority belongs to the canonical runStore)', () => {
+  // P3-B5.2 §V / §VII: the Packaging adapter's `saveRun`
+  // is wired by the production composition root. The
+  // adapter must not call into the canonical runStore
+  // (that would require a Shared-Runtime architectural
+  // decision); equally, the adapter must not pretend to
+  // BE the canonical runStore. We assert the
+  // operations file imports the canonical `ImageGenerationRun`
+  // schema nowhere — the Packaging sidecar has its own
+  // record shape and is decoupled from
+  // `image-generation/run-store.ts` by design.
+  const opsSrc = readFile(PACKAGING_OPERATIONS);
+  const stripped = stripComments(opsSrc);
+  // The operations file must not deep-import the
+  // canonical runStore or the canonical ImageGenerationRun
+  // type.
+  for (const forbidden of [
+    'createRunStore',
+    'ImageGenerationRun',
+    'RUN_FILES',
+  ]) {
+    assert.equal(
+      stripped.includes(forbidden),
+      false,
+      `packaging-operations.js must not deep-import the canonical runStore (${forbidden}) (P3-B5.2 §V)`,
+    );
+  }
+  // The sidecar file name is intentionally distinct.
+  assert.match(
+    opsSrc,
+    /packaging-generation-result\.json/u,
+    'Sidecar must be `packaging-generation-result.json` (NOT `run.json`)',
+  );
+});
+
+test('Z-40 project-root resolver parity gap is acknowledged (P3-B5.2 audit finding)', async () => {
+  // P3-B5.2 §VIII: the Packaging adapter's
+  // `resolveProjectRoot` is, today, a PARALLEL
+  // implementation of the convention the canonical
+  // `image-generation/paths.ts` defines. When a
+  // project's directory name differs from its
+  // canonical `projectId`, the two resolvers return
+  // DIFFERENT roots. This guard LOCKS that finding in
+  // CI so the gap cannot be silently re-buried.
+  //
+  // The fix (eliminating the duplication) requires one
+  // of:
+  //   (a) reuse the canonical resolver (Public API seam
+  //       on `image-generation/paths.ts` — currently a
+  //       private helper, requires a Shared-Runtime
+  //       decision);
+  //   (b) generalize the canonical resolver to accept
+  //       any `target` (image-generation / packaging /
+  //       …);
+  //   (c) accept the parallel implementation and
+  //       document the divergence as a known gap
+  //       (this is what the audit landed on).
+  //
+  // Until a convergence owner picks (a) or (b), this
+  // test stays green and the gap stays visible.
+  const fs = await import('node:fs/promises');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const { pathToFileURL } = await import('node:url');
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'parity-'));
+  try {
+    const dataPath = tmpDir;
+    const projectId = 'mock-parity';
+    // Seed a directory whose name differs from the
+    // projectId. The canonical resolver scans the
+    // projects root for `project.json` whose `id`
+    // matches `projectId`.
+    const projectsRoot = path.join(dataPath, 'projects');
+    const canonicalDirName = 'parity-name';
+    await fs.mkdir(path.join(projectsRoot, canonicalDirName), { recursive: true });
+    await fs.writeFile(
+      path.join(projectsRoot, canonicalDirName, 'project.json'),
+      JSON.stringify({ id: projectId, name: 'Parity' }),
+    );
+    // Load the canonical resolver.
+    const canonicalPaths = await import(
+      pathToFileURL(
+        'D:/Masterpiece-OS/packages/runtime-core/src/application/image-generation/paths.ts',
+      ).href
+    );
+    const canonicalRoot = await canonicalPaths.resolveProjectRoot(dataPath, projectId);
+    // The Packaging adapter's default resolver joins
+    // `<dataPath>/projects/<projectId>` — this is what
+    // `current-operation-graph.ts` ships today.
+    const adapterRoot = path.join(dataPath, 'projects', projectId);
+    // Audit truth: the two resolvers DIVERGE when
+    // the canonical directory name differs from
+    // projectId.
+    assert.equal(
+      canonicalRoot,
+      path.join(projectsRoot, canonicalDirName),
+      'canonical resolver MUST find the directory by id, not by name',
+    );
+    assert.notEqual(
+      canonicalRoot,
+      adapterRoot,
+      'audit finding: Packaging adapter resolver DIVERGES from canonical resolver when dir-name != projectId (P3-B5.2 §VIII)',
+    );
+  } finally {
+    await fs.rm(tmpDir, { recursive: true, force: true });
   }
 });
