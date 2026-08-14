@@ -66,8 +66,12 @@ import {
 } from '@masterpiece/image-generation-runtime/packaging/generation-service.js';
 
 import { PACKAGING_GENERATION_MODES } from '@masterpiece/image-generation-runtime/packaging/translation.js';
-import { PACKAGING_SHOT_CONTRACT_IDS } from '@masterpiece/image-generation-runtime/packaging/contracts.js';
+import {
+  PACKAGING_SHOT_CONTRACT_IDS,
+  getPackagingShotContract,
+} from '@masterpiece/image-generation-runtime/packaging/contracts.js';
 import { PACKAGING_REFERENCE_ROLES } from '@masterpiece/image-generation-runtime/packaging/reference-policy.js';
+import { resolvePackagingProviderCapability } from '@masterpiece/image-generation-runtime/packaging/provider-capability.js';
 
 import {
   PACKAGING_WORKSPACE_STATUS,
@@ -224,11 +228,31 @@ function canonicalErrorCode(error) {
 // ---------------------------------------------------------------------------
 
 function projectIntentToTranslationInput({ intent, truthSnapshot, now }) {
+  const selectedModelId = intent.providerModelId;
+  // Resolve the registered model through the existing P2 capability
+  // authority so Reference-First validation sees the same capability that
+  // P2 will gate after compilation. The Workspace does not author a support
+  // flag or reference limit.
+  const providerCapability = resolvePackagingProviderCapability({
+    modelId: selectedModelId,
+    generationMode: intent.generationMode,
+    referencePolicy: { references: intent.referenceAssignments },
+  });
   const policy = projectReferenceAssignmentsToPolicy({
     generationMode: intent.generationMode,
     assignments: intent.referenceAssignments,
-    providerCapability: { referenceSupport: true, maxReferenceImages: null },
+    providerCapability,
   });
+  // P3-A11 consumes, but never redefines, the P2 Shot Contract geometry.
+  // An invalid id or incomplete canonical contract fails through the existing
+  // P2 authority; there is no Workspace-owned ratio or fallback.
+  const shotContract = getPackagingShotContract(intent.shotContractId);
+  const lockedAssets = isPlainObject(truthSnapshot?.lockedAssets)
+    ? truthSnapshot.lockedAssets
+    : {};
+  const projectVisualContext = isPlainObject(truthSnapshot?.projectVisualContext)
+    ? truthSnapshot.projectVisualContext
+    : {};
   return {
     schemaVersion: '1.0',
     target: 'packaging', // fixed; P2 frozen ignores caller-supplied target
@@ -237,16 +261,30 @@ function projectIntentToTranslationInput({ intent, truthSnapshot, now }) {
     // model identity. P2 calls that same capability-lookup identity
     // `modelId`; the concrete Provider API model is resolved later
     // from `apiProfileId` by the execution-config seam.
-    modelId: intent.providerModelId,
+    modelId: selectedModelId,
     generationMode: intent.generationMode,
     shotContract: { id: intent.shotContractId },
-    lockedAssets: isPlainObject(truthSnapshot?.lockedAssets)
-      ? truthSnapshot.lockedAssets
-      : {},
+    lockedAssets,
+    // The same canonical Locked Asset structure truth serves the P2 locked
+    // surface and its structural formFactor. Structural features remain
+    // distinct evidence from Project Visual Context packageStructures.
+    structure: {
+      formFactor: lockedAssets?.structure?.formFactor,
+      structuralFeatures: Array.isArray(projectVisualContext.packageStructures)
+        ? projectVisualContext.packageStructures
+        : [],
+    },
+    visualDirection: {
+      summary: projectVisualContext.packagingConcept,
+    },
     referencePolicy: {
       enabled: policy.enabled,
       required: policy.required,
       references: policy.references,
+    },
+    providerCapability: {
+      referenceSupport: providerCapability.referenceSupport,
+      maxReferenceImages: providerCapability.maxReferenceImages,
     },
     userConstraints: {
       text: intent.explicitUserConstraints?.text ?? '',
@@ -259,6 +297,7 @@ function projectIntentToTranslationInput({ intent, truthSnapshot, now }) {
     negativeConstraints: [],
     providerHints: {
       referenceRolePriority: intent.referenceAssignments.map((r) => r.role),
+      aspectRatio: shotContract.aspectRatio,
     },
     projectIdentity: isPlainObject(truthSnapshot?.projectIdentity)
       ? truthSnapshot.projectIdentity
@@ -392,6 +431,9 @@ export function createPackagingWorkspaceService(options = {}) {
         lockedAssets: truthSnapshot.lockedAssets || {},
         analysisContext: truthSnapshot.analysisContext || {},
         projectIdentity: truthSnapshot.projectIdentity || {},
+        ...(isPlainObject(truthSnapshot.projectVisualContext)
+          ? { projectVisualContext: truthSnapshot.projectVisualContext }
+          : {}),
       },
       initialIntent: normalizedIntent,
     });
@@ -502,6 +544,9 @@ export function createPackagingWorkspaceService(options = {}) {
       lockedAssets: newTruth.lockedAssets || {},
       analysisContext: newTruth.analysisContext || {},
       projectIdentity: newTruth.projectIdentity || {},
+      ...(isPlainObject(newTruth.projectVisualContext)
+        ? { projectVisualContext: newTruth.projectVisualContext }
+        : {}),
     };
     let nextState = {
       ...state,

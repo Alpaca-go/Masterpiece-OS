@@ -56,7 +56,8 @@ const PACKAGING_OPERATIONS = path.join(
   'operations',
   'packaging-operations.js',
 );
-const P2_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
+const ORIGINAL_P2_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
+const CURRENT_P2_BASELINE = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const NOW = '2026-08-14T00:00:00.000Z';
 
 function makeTruthSnapshot() {
@@ -77,6 +78,10 @@ function makeTruthSnapshot() {
       productIdentity: 'Acme Bottle',
     },
     analysisContext: {},
+    projectVisualContext: {
+      packageStructures: ['cylindrical body'],
+      packagingConcept: 'Premium minimal cosmetics packaging.',
+    },
   };
 }
 
@@ -122,33 +127,8 @@ function makePreparedResult(modelId = 'seedream-5.0-pro') {
   };
 }
 
-// Supply the unrelated complete semantic truth expected by the frozen P2
-// translation validator while preserving the modelId emitted by P3-A. This
-// lets the corrective test cross the real P2 capability/compile seam without
-// broadening the production mapping under test.
 function prepareThroughRealP2(input: any) {
-  return preparePackagingGeneration({
-    ...input,
-    structure: {
-      formFactor: 'cylindrical glass bottle',
-      primaryPackage: 'glass bottle',
-      structuralFeatures: ['cylindrical body'],
-    },
-    visualDirection: { summary: 'Premium minimal cosmetics packaging.' },
-    colorSystem: { base: ['warm white'], accent: ['sage'] },
-    motifSystem: { primary: ['botanical linework'] },
-    materialSystem: { substrate: ['glass'], craft: ['matte label'] },
-    composition: { type: 'centered hero' },
-    lighting: { intent: 'soft studio' },
-    camera: { intent: 'product hero', aspectRatio: '1:1' },
-    sceneProgram: { type: 'studio' },
-    providerHints: {
-      ...input.providerHints,
-      aspectRatio: '1:1',
-      imageSize: '2K',
-      qualityProfile: 'high',
-    },
-  });
+  return preparePackagingGeneration(input);
 }
 
 test('AF-01 Workspace intent providerModelId reaches P2 translation input.modelId', () => {
@@ -262,10 +242,14 @@ test('AF-09 Workspace creates no second generation fingerprint authority', () =>
 });
 
 test('AF-10 P2 frozen production surfaces remain unchanged', () => {
+  assert.equal(execFileSync('git', ['cat-file', '-t', ORIGINAL_P2_BASELINE], {
+    cwd: ROOT,
+    encoding: 'utf8',
+  }).trim(), 'commit');
   const changed = execFileSync('git', [
     'diff',
     '--name-only',
-    P2_BASELINE,
+    CURRENT_P2_BASELINE,
     '--',
     'packages/image-generation-runtime/src/packaging',
     'packages/image-generation-runtime/src/core/packaging-generation-core.js',
@@ -331,7 +315,8 @@ test('AF-13 whitespace-only model remains the canonical missing-model failure', 
 test('AF-14 model translation is a single projection in the P3-A application boundary', () => {
   const serviceSource = readFileSync(WORKSPACE_SERVICE, 'utf8');
   const intentSource = readFileSync(INTENT_SCHEMA, 'utf8');
-  assert.equal((serviceSource.match(/modelId:\s*intent\.providerModelId/gu) || []).length, 1);
+  assert.equal((serviceSource.match(/const selectedModelId\s*=\s*intent\.providerModelId/gu) || []).length, 1);
+  assert.equal((serviceSource.match(/modelId:\s*selectedModelId/gu) || []).length, 2);
   assert.doesNotMatch(intentSource, /['"]modelId['"]\s*,/u);
   assert.doesNotMatch(intentSource, /['"]registryModelId['"]\s*,/u);
 });

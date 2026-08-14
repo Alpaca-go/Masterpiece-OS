@@ -150,6 +150,30 @@ export function createCurrentBusinessOperations(
     const mandatoryCopyItems = collectByTypes(['core_symbol', 'required_visual_element']);
     const confirmedComponentsItems = collectByTypes(['forbidden_reference_content']);
 
+    // P3-A11: the Project Visual Context service remains the authority for
+    // packaging structure evidence and visual direction. This composition
+    // adapter projects only the two existing canonical fields needed by the
+    // Workspace; it does not infer, summarize, or provide defaults.
+    let projectVisualContext: {
+      lockedAssets?: { packageStructures?: string[] };
+      visualDecisionPacket?: {
+        mediaTranslations?: { packaging?: { packagingConcept?: string } };
+      };
+    } | null = null;
+    try {
+      projectVisualContext = await projectContext.getShortChain(safeId);
+    } catch {
+      projectVisualContext = null;
+    }
+    const packageStructures = Array.isArray(projectVisualContext?.lockedAssets?.packageStructures)
+      ? projectVisualContext.lockedAssets.packageStructures
+        .filter((value): value is string => typeof value === 'string' && value.trim().length > 0)
+      : [];
+    const packagingConcept = typeof projectVisualContext?.visualDecisionPacket
+      ?.mediaTranslations?.packaging?.packagingConcept === 'string'
+      ? projectVisualContext.visualDecisionPacket.mediaTranslations.packaging.packagingConcept.trim()
+      : '';
+
     const projectIdentity = project
       ? { projectId: project.id || safeId, projectName: project.projectName || '' }
       : { projectId: safeId, projectName: '' };
@@ -176,6 +200,10 @@ export function createCurrentBusinessOperations(
         confidence: 0,
       },
       projectIdentity,
+      projectVisualContext: {
+        packageStructures,
+        packagingConcept,
+      },
     };
   };
 

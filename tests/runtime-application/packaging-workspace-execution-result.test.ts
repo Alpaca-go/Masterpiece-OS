@@ -25,7 +25,6 @@ const PACKAGING_WORKSPACE = path.join(PACKAGING_WEB_FEATURE, 'PackagingWorkspace
 const PACKAGING_SERVICE = path.join(PACKAGING_WEB_FEATURE, 'service.ts');
 const PACKAGING_VIEW_MODEL = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'packaging', 'view-model.js');
 const PACKAGING_PROD_DIR = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'packaging');
-const P2_FROZEN_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
 const P3A_PROD_BASELINE = 'dd4570a';
 
 const workspaceSrc = readFileSync(PACKAGING_WORKSPACE, 'utf8');

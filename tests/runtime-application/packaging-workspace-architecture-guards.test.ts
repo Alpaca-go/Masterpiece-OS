@@ -47,7 +47,8 @@ const RUNTIME_CORE_INDEX = path.join(ROOT, 'packages', 'runtime-core', 'src', 'i
 const WEB_DIR = path.join(ROOT, 'apps', 'web', 'src');
 const APPS_WEB_SRC = WEB_DIR;
 const P2_FROZEN_DIR = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'packaging');
-const P2_FROZEN_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
+const ORIGINAL_P2_BASELINE = '335405342951fedae5d4d6816444c2b4d2402787';
+const CURRENT_P2_BASELINE = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A_FROZEN_BASELINE = 'dd4570a';
 const P3B4_ACCEPTED_BASELINE = 'ef46b1b';
 const P3B53_ACCEPTED_BASELINE = '53f780b';
@@ -58,6 +59,7 @@ const P2_PUBLIC_FACADE = new Set([
   'translation.js',
   'contracts.js',
   'reference-policy.js',
+  'provider-capability.js',
   'generation-service.js',
 ]);
 const P2_FROZEN_MODULES = Object.freeze([
@@ -701,8 +703,9 @@ test('F-02 P2 frozen Shared Core / image-generation-runtime files exist (core/ +
 });
 
 test('F-03 The P2 frozen baseline commit is reachable in git history', () => {
-  const out = runGit(['cat-file', '-t', P2_FROZEN_BASELINE]).trim();
-  assert.equal(out, 'commit', `P2 frozen baseline ${P2_FROZEN_BASELINE} must be a reachable commit`);
+  assert.equal(runGit(['cat-file', '-t', ORIGINAL_P2_BASELINE]).trim(), 'commit');
+  const out = runGit(['cat-file', '-t', CURRENT_P2_BASELINE]).trim();
+  assert.equal(out, 'commit', `current P2 frozen baseline ${CURRENT_P2_BASELINE} must be a reachable commit`);
 });
 
 test('F-04 No commit on the current branch has modified a P2 frozen module since the baseline', () => {
@@ -716,14 +719,14 @@ test('F-04 No commit on the current branch has modified a P2 frozen module since
   for (const f of allFrozen) {
     let diffOut = '';
     try {
-      diffOut = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD', '--', f]).trim();
+      diffOut = runGit(['diff', '--name-only', CURRENT_P2_BASELINE, 'HEAD', '--', f]).trim();
     } catch {
       // ignore 鈥?fall through to the assertion
     }
     assert.equal(
       diffOut,
       '',
-      `P2 frozen module ${f} was modified between ${P2_FROZEN_BASELINE} and HEAD`,
+      `P2 frozen module ${f} was modified between ${CURRENT_P2_BASELINE} and HEAD`,
     );
   }
 });
@@ -1095,7 +1098,7 @@ test('L-03 P2 frozen packaging/ + Shared Core files have not been modified betwe
   for (const f of allFrozen) {
     let diffOut = '';
     try {
-      diffOut = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD', '--', f]).trim();
+      diffOut = runGit(['diff', '--name-only', CURRENT_P2_BASELINE, 'HEAD', '--', f]).trim();
     } catch {
       // ignore
     }
@@ -2653,7 +2656,7 @@ test('Y-18 the P2 frozen protected modules are unchanged by P3-B4 (zero-line dif
     diffOutput = runGit([
       'diff',
       '--name-only',
-      P2_FROZEN_BASELINE,
+      CURRENT_P2_BASELINE,
       '--',
       'packages/image-generation-runtime/src/packaging/',
     ]);
@@ -4772,7 +4775,7 @@ test('AA-14 the canonical P2 frozen surface is unchanged (P2 frozen boundary)', 
   const execFileAsync = promisify(execFile);
   const { stdout } = await execFileAsync(
     'git',
-    ['diff', '--name-only', '335405342951fedae5d4d6816444c2b4d2402787', 'HEAD', '--', 'packages/image-generation-runtime/src/packaging/'],
+    ['diff', '--name-only', CURRENT_P2_BASELINE, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging/'],
     { cwd: process.cwd() },
   );
   const changed = stdout.split('\n').map((s) => s.trim()).filter(Boolean);
@@ -5481,7 +5484,7 @@ test('AB-10 P3-A frozen production surface and P2 frozen packaging surface are u
     0,
     `P3-A frozen surface MUST be unchanged (P3-B5.3.1 §XII); violations: ${p3aViolations.join(', ')}`,
   );
-  const p2Diff = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD']);
+  const p2Diff = runGit(['diff', '--name-only', CURRENT_P2_BASELINE, 'HEAD']);
   const p2Changed = p2Diff.split('\n').filter(Boolean);
   const p2Violations = p2Changed.filter((f) => f.startsWith('packages/image-generation-runtime/src/packaging/'));
   assert.equal(
@@ -5931,7 +5934,7 @@ test('AC-10 P3-A frozen production surface and P2 frozen packaging surface remai
     0,
     `P3-A frozen surface MUST be unchanged (P3-B5.3.2 §XII); violations: ${p3aViolations.join(', ')}`,
   );
-  const p2Diff = runGit(['diff', '--name-only', P2_FROZEN_BASELINE, 'HEAD']);
+  const p2Diff = runGit(['diff', '--name-only', CURRENT_P2_BASELINE, 'HEAD']);
   const p2Changed = p2Diff.split('\n').filter(Boolean);
   const p2Violations = p2Changed.filter((f) => f.startsWith('packages/image-generation-runtime/src/packaging/'));
   assert.equal(

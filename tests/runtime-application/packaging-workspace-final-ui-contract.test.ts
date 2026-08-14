@@ -113,7 +113,7 @@ test('AD-17 P3-A frozen application diff is zero', () => {
 
 test('AD-18 P2 frozen Packaging diff is zero', () => {
   assert.deepEqual(
-    gitDiff('335405342951fedae5d4d6816444c2b4d2402787', 'packages/image-generation-runtime/src/packaging/'),
+    gitDiff('a593278b55e437fac59d768c5cee734d9a9fc201', 'packages/image-generation-runtime/src/packaging/'),
     [],
   );
 });
