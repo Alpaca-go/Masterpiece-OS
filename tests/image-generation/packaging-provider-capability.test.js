@@ -46,6 +46,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { createRequire } from 'node:module';
+import { listMultiModelAdapters } from '@masterpiece/image-generation-adapter/multi-model';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(here, '..', '..');
@@ -131,11 +132,9 @@ test('P2-E-A seedream-5.0-pro (image_generation + packaging + referenceSupport) 
   assert.equal(r.modelId, 'seedream-5.0-pro');
   assert.equal(r.provider, 'volcengine');
   assert.equal(r.protocol, 'seedream-image');
-  // Production resolver does not accept caller-supplied
-  // maxReferenceImages overrides. The Registry is the only
-  // authority; the Registry currently does not declare a
-  // maxReferenceImages, so the resolver reports unbounded.
-  assert.equal(r.maxReferenceImages, NO_REFERENCE_COUNT_LIMIT);
+  // Production resolver does not accept caller-supplied overrides.
+  // The Registry is the preflight authority for the Seedream cap.
+  assert.equal(r.maxReferenceImages, 10);
 });
 
 // ---------------------------------------------------------------------------
@@ -722,10 +721,8 @@ test('P2-E-Final-7c the payload is Object.freeze\'d (no downstream mutation)', (
 // ---------------------------------------------------------------------------
 
 test('P2-E-Final-4a the production resolver does NOT accept a caller-supplied maxReferenceImages override', () => {
-  // The production resolver must consult the Registry (and the
-  // Registry currently does not declare a maxReferenceImages).
   // A caller who passes maxReferenceImages in the input MUST be
-  // ignored; the resolver reports NO_REFERENCE_COUNT_LIMIT.
+  // ignored; the resolver reports the Registry-owned value.
   const r = resolvePackagingProviderCapability({
     modelId: 'seedream-5.0-pro',
     generationMode: 'analysis_led',
@@ -733,7 +730,28 @@ test('P2-E-Final-4a the production resolver does NOT accept a caller-supplied ma
     // Caller attempt to override:
     maxReferenceImages: 99,
   });
-  assert.equal(r.maxReferenceImages, NO_REFERENCE_COUNT_LIMIT);
+  assert.equal(r.maxReferenceImages, 10);
+});
+
+test('P3-D2 D-PROVIDER-01 Registry preflight and Seedream adapter share one effective cap', () => {
+  const registered = resolvePackagingProviderCapability({
+    modelId: 'seedream-5.0-pro',
+    generationMode: 'analysis_led',
+    referencePolicy: { references: Array.from({ length: 10 }, (_, index) => ({ assetId: `asset-${index}` })) },
+  });
+  const rejected = resolvePackagingProviderCapability({
+    modelId: 'seedream-5.0-pro',
+    generationMode: 'analysis_led',
+    referencePolicy: { references: Array.from({ length: 11 }, (_, index) => ({ assetId: `asset-${index}` })) },
+  });
+  const adapter = listMultiModelAdapters().find((item) => item.id === 'seedream-5.0-pro');
+
+  assert.equal(adapter?.maxReferences, 10);
+  assert.equal(registered.maxReferenceImages, adapter?.maxReferences);
+  assert.equal(registered.accepted, true);
+  assert.equal(rejected.accepted, false);
+  assert.equal(rejected.rejectionCode, PROVIDER_CAPABILITY_MISMATCH);
+  assert.deepEqual(rejected.issues, ['reference_count_exceeds_provider_capability']);
 });
 
 test('P2-E-Final-4b the production resolver is the single capability authority (no parallel resolver)', () => {

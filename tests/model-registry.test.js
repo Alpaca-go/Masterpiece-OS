@@ -21,6 +21,7 @@ test('Model Registry v2 separates the analysis model from generation models', ()
     ['gpt-image-2', 'nano-banana', 'seedream-5.0-pro'],
   );
   assert.equal(getRegisteredModel('gpt-image-2').referenceSupport, true);
+  assert.equal(getRegisteredModel('seedream-5.0-pro').maxReferenceImages, 10);
 });
 
 test('Model Registry blocks analysis/generation responsibility conflicts', () => {

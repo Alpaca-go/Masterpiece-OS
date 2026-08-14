@@ -41,6 +41,7 @@ const MODELS = Object.freeze([
     protocol: 'seedream-image',
     capabilities: Object.freeze(['packaging', 'poster', 'chinese_commercial_design']),
     referenceSupport: true,
+    maxReferenceImages: 10,
     enabledByDefault: true,
   }),
   Object.freeze({

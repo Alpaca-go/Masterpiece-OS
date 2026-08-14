@@ -192,9 +192,7 @@ test('P2-F-C metadata provider/model snapshot is sourced from the accepted capab
   assert.equal(pm.modelType, 'image_generation');
   assert.equal(pm.packagingSupport, true);
   assert.equal(pm.referenceSupport, true);
-  // P2-F known limitation (item #20): Registry currently does not
-  // declare maxReferenceImages, so the snapshot is null.
-  assert.equal(pm.maxReferenceImages, null);
+  assert.equal(pm.maxReferenceImages, 10);
 });
 
 // ---------------------------------------------------------------------------
@@ -1126,9 +1124,8 @@ test('P2-F-Final-struct maxReferenceImages is an explicit projection of register
     ),
     'production resolver must not silently default to NO_REFERENCE_COUNT_LIMIT; explicit projection required',
   );
-  // Live: seedream-5.0-pro does not declare maxReferenceImages,
-  // so the capability still reports null. The contract is "if
-  // the field is missing, we say so" — not "the field is ignored".
+  // Live: the Registry now closes the Seedream defensive adapter
+  // cap at the preflight boundary.
   const cap = resolvePackagingProviderCapability({ modelId: 'seedream-5.0-pro' });
-  assert.equal(cap.maxReferenceImages, null);
+  assert.equal(cap.maxReferenceImages, 10);
 });
