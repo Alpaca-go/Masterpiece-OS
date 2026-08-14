@@ -9,6 +9,12 @@ for the P3-A phase. It is a docs-only commit. No
 production code, no test code, no P2 frozen module,
 no authority boundary is altered by P3-A9 itself.
 
+> **P3-A10 amendment:** P3-A was formally reopened for one corrective
+> model-identity translation repair and re-frozen. The original baseline and
+> this report remain historical evidence. The current corrective baseline is
+> recorded in
+> [`p3-a10-model-identity-corrective.md`](./p3-a10-model-identity-corrective.md).
+
 ---
 
 ## 1. Executive Freeze Decision
