@@ -168,6 +168,70 @@ function hasExportedFunction(src: string, name: string): boolean {
   return re.test(stripComments(src));
 }
 
+/**
+ * Walk the brace-balanced function body starting at
+ * `start` (the index of the opening `function …` or
+ * `async function …` token). Returns the body substring
+ * (including the outer braces) or `''` if the function
+ * cannot be parsed.
+ *
+ * The walker is string- and comment-aware: braces inside
+ * template literals, single-line comments, and block
+ * comments are not counted. This matches the source
+ * convention used in the rest of the suite.
+ */
+function extractFunctionBody(src: string, start: number): string {
+  if (typeof start !== 'number' || start < 0) return '';
+  // Find the opening `{` of the function body.
+  let i = start;
+  // Skip past the function signature up to the first `{`.
+  while (i < src.length && src[i] !== '{') i++;
+  if (i >= src.length) return '';
+  const openIdx = i;
+  let depth = 1;
+  i++;
+  let inString: string | null = null;
+  let inLineComment = false;
+  let inBlockComment = false;
+  while (i < src.length) {
+    const c = src[i];
+    const next = i + 1 < src.length ? src[i + 1] : '';
+    if (inLineComment) {
+      if (c === '\n') inLineComment = false;
+    } else if (inBlockComment) {
+      if (c === '*' && next === '/') {
+        inBlockComment = false;
+        i++;
+      }
+    } else if (inString) {
+      if (c === '\\') {
+        i++;
+      } else if (c === inString) {
+        inString = null;
+      }
+    } else {
+      if (c === '/' && next === '/') {
+        inLineComment = true;
+        i++;
+      } else if (c === '/' && next === '*') {
+        inBlockComment = true;
+        i++;
+      } else if (c === '"' || c === "'" || c === '`') {
+        inString = c;
+      } else if (c === '{') {
+        depth++;
+      } else if (c === '}') {
+        depth--;
+        if (depth === 0) {
+          return src.substring(openIdx, i + 1);
+        }
+      }
+    }
+    i++;
+  }
+  return '';
+}
+
 // =============================================================================
 // Group A 鈥?Runtime Dependency Boundary (canonical call path)
 // =============================================================================
@@ -3193,3 +3257,327 @@ test('Z-25 the Web feature does NOT introduce a Browser-side persistence for the
   }
 });
 
+
+// =============================================================================
+// Group Z (continued) — P3-B5.1 Authority & Preview Safety Cleanup
+//
+// P3-B5.1 §XVI — additive guards; the existing Z-01..Z-25
+// are NOT modified. The new Z-26..Z-35 lock the sidecar
+// boundary, the canonical preview MIME allowlist, and the
+// fail-closed contract.
+// =============================================================================
+
+test('Z-26 unknown / unrecognised MIME is rejected by the canonical preview allowlist (fail-closed)', () => {
+  // P3-B5.1 §VI: the readArtifactPreview path must reject
+  // any MIME that is not on the canonical allowlist. We
+  // assert the source-level contract:
+  //   - the canonical allowlist is declared (3 entries)
+  //   - the read path validates against it
+  //   - the previous fail-open default `image/png` is gone
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.match(
+    stripped,
+    /CANONICAL_PREVIEW_MIME_ALLOWLIST\s*=\s*Object\.freeze\(\s*\[\s*['"]image\/png['"]\s*,\s*['"]image\/jpeg['"]\s*,\s*['"]image\/webp['"]\s*,?\s*\]\s*\)/u,
+    'Canonical preview MIME allowlist must declare exactly image/png | image/jpeg | image/webp',
+  );
+  // Isolate the readArtifactPreview function body. The
+  // function is followed by `^  }$` (module-level
+  // indentation) — we walk braces from the function head to
+  // the matching close.
+  const readFnStart = stripped.indexOf('async function readArtifactPreview');
+  assert.ok(readFnStart >= 0, 'readArtifactPreview function must be defined');
+  const readFnBody = extractFunctionBody(stripped, readFnStart);
+  assert.ok(readFnBody.length > 0, 'readArtifactPreview body must be parseable');
+  // The read path must consult isCanonicalPreviewMime, not
+  // default to image/png. The old `asString(entry.mimeType,
+  // 'image/png')` literal MUST be gone from the read path.
+  assert.equal(
+    /asString\(entry\.mimeType\s*,\s*['"]image\/png['"]\)/u.test(readFnBody),
+    false,
+    'readArtifactPreview must not default missing MIME to image/png (P3-B5.1 §VI fail-closed)',
+  );
+  // The read path must reject non-allowlist MIME.
+  assert.match(
+    readFnBody,
+    /isCanonicalPreviewMime\s*\(\s*rawMime\s*\)/u,
+    'readArtifactPreview must validate rawMime against the canonical allowlist',
+  );
+});
+
+test('Z-27 text/html MIME is rejected by the preview RPC (no HTML execution surface in the renderer)', () => {
+  // P3-B5.1 §VI / §XVII: `text/html` is the classic XSS
+  // delivery vector through a data URL. The read path must
+  // refuse it. We assert:
+  //   - the allowlist helper rejects `text/html`
+  //   - the read path returns `null` for that MIME
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The allowlist does not contain text/html.
+  assert.equal(
+    /CANONICAL_PREVIEW_MIME_ALLOWLIST[\s\S]{0,400}?text\/html/u.test(stripped),
+    false,
+    'Canonical preview MIME allowlist must not include text/html',
+  );
+  // Isolate the read function body.
+  const readFnStart = stripped.indexOf('async function readArtifactPreview');
+  const readFnBody = extractFunctionBody(stripped, readFnStart);
+  assert.ok(readFnBody.length > 0, 'readArtifactPreview must be defined');
+  assert.match(
+    readFnBody,
+    /isCanonicalPreviewMime\s*\(\s*rawMime\s*\)/u,
+    'readArtifactPreview must validate rawMime before constructing the data URL',
+  );
+  // After the validation, the data URL interpolation must
+  // only see the validated mimeType.
+  assert.match(
+    readFnBody,
+    /data:\$?\{mimeType\};base64/u,
+    'readArtifactPreview must interpolate only the validated mimeType into the data URL',
+  );
+});
+
+test('Z-28 image/svg+xml MIME is rejected by the preview RPC (no SVG / script execution surface in the renderer)', () => {
+  // P3-B5.1 §VI / §XVII: `image/svg+xml` is a script-bearing
+  // format. <img src="data:image/svg+xml;..."> does NOT
+  // execute scripts (per HTML5 spec), but a renderer-side
+  // `data:` URL is still a confusing surface to surface. The
+  // allowlist rejects it.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  assert.equal(
+    /CANONICAL_PREVIEW_MIME_ALLOWLIST[\s\S]{0,400}?image\/svg\+xml/u.test(stripped),
+    false,
+    'Canonical preview MIME allowlist must not include image/svg+xml',
+  );
+  // isCanonicalPreviewMime must use the canonical allowlist
+  // as the SOLE positive source. Walk the helper body.
+  const helperStart = stripped.indexOf('function isCanonicalPreviewMime');
+  const helperBody = extractFunctionBody(stripped, helperStart);
+  assert.ok(helperBody.length > 0, 'isCanonicalPreviewMime helper must be defined');
+  assert.match(
+    helperBody,
+    /CANONICAL_PREVIEW_MIME_ALLOWLIST\.includes/u,
+    'isCanonicalPreviewMime must use the canonical allowlist as the SOLE acceptance check',
+  );
+});
+
+test('Z-29 application/javascript and other executable MIME are rejected by the preview RPC', () => {
+  // P3-B5.1 §VI: `application/javascript` (and its aliases
+  // `text/javascript`, `application/ecmascript`, etc.) must
+  // be rejected. The allowlist is the only positive source.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  for (const forbidden of [
+    'application/javascript',
+    'text/javascript',
+    'application/ecmascript',
+    'application/x-javascript',
+  ]) {
+    assert.equal(
+      stripped.includes(forbidden),
+      false,
+      `packaging-operations.js must not embed a permissive reference to ${forbidden} (P3-B5.1 §VI)`,
+    );
+  }
+});
+
+test('Z-30 only a validated MIME enters the data URL (no raw `entry.mimeType` interpolation)', () => {
+  // P3-B5.1 §VIII: the data URL is constructed only from
+  // `mimeType` (the validated, lower-cased value). A raw
+  // `entry.mimeType` interpolation would re-introduce the
+  // unvalidated field into the data URL.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  const readFnStart = stripped.indexOf('async function readArtifactPreview');
+  const readFnBody = extractFunctionBody(stripped, readFnStart);
+  assert.ok(readFnBody.length > 0, 'readArtifactPreview must be defined');
+  // Find the data: URL line.
+  assert.match(
+    readFnBody,
+    /data:\$?\{[^}]+\};base64/u,
+    'readArtifactPreview must construct a data URL with the canonical pattern',
+  );
+  // The interpolation must be `mimeType` (validated), not
+  // `entry.mimeType` (unvalidated).
+  assert.equal(
+    /data:\$?\{entry\.mimeType\};base64/u.test(readFnBody),
+    false,
+    'readArtifactPreview must NOT interpolate entry.mimeType into the data URL (P3-B5.1 §VIII)',
+  );
+  assert.match(
+    readFnBody,
+    /data:\$?\{mimeType\};base64/u,
+    'readArtifactPreview must interpolate the validated mimeType variable into the data URL',
+  );
+});
+
+test('Z-31 packaging-generation-result.json is documented as a sidecar (not run lifecycle authority)', () => {
+  // P3-B5.1 §IV: the canonical artifact record is a
+  // *target-specific sidecar* for preview lookups. It is NOT
+  // a run lifecycle / retention / index authority. The
+  // documentation in the operations file must say so
+  // explicitly.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  assert.match(
+    opsSrc,
+    /sidecar/u,
+    'packaging-operations.js must call out the sidecar role (P3-B5.1 §IV)',
+  );
+  assert.match(
+    opsSrc,
+    /run identity authority[\s\S]{0,200}?image-generation/u,
+    'packaging-operations.js must name the existing image-generation run-store as the run identity authority (P3-B5.1 §IV)',
+  );
+  assert.match(
+    opsSrc,
+    /retention authority[\s\S]{0,200}?image-generation/u,
+    'packaging-operations.js must name the existing image-generation run-store as the retention authority (P3-B5.1 §IV)',
+  );
+  assert.match(
+    opsSrc,
+    /run index authority[\s\S]{0,200}?listRuns/u,
+    'packaging-operations.js must name imageGeneration.listRuns as the run index authority (P3-B5.1 §IV)',
+  );
+});
+
+test('Z-32 no second run index (the sidecar is not enumerable)', () => {
+  // P3-B5.1 §IV: the sidecar is read by name only. It is
+  // never listed, searched, or enumerated. We assert the
+  // operations file does not implement a `listArtifactRecords`
+  // / `listAllArtifactRecords` / `indexByImageId` etc.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  for (const forbidden of [
+    'listArtifactRecords',
+    'listAllArtifactRecords',
+    'indexArtifactRecords',
+    'indexByImageId',
+    'allArtifactRecords',
+    'artifactsByProjectId',
+  ]) {
+    assert.equal(
+      stripped.includes(forbidden),
+      false,
+      `packaging-operations.js must not introduce a sidecar index (${forbidden}) (P3-B5.1 §IV)`,
+    );
+  }
+  // The store return surface must not include a list-style
+  // method.
+  const storeReturnBlock = stripped.match(
+    /return Object\.freeze\(\{[\s\S]*?\}\);/u,
+  );
+  assert.ok(storeReturnBlock, 'Store must define a frozen return surface');
+  for (const forbidden of [
+    /list\s*:/u,
+    /listRuns\s*:/u,
+    /listRecords\s*:/u,
+  ]) {
+    assert.equal(
+      forbidden.test(storeReturnBlock[0]),
+      false,
+      `Store return surface must not expose a list/iteration method (${forbidden}) (P3-B5.1 §IV)`,
+    );
+  }
+});
+
+test('Z-33 no second retention / deletion authority (sidecar inherits the run root lifecycle)', () => {
+  // P3-B5.1 §IV: the sidecar does NOT implement a retention
+  // policy, a TTL, or a delete API. The lifecycle is owned
+  // by the existing image-generation run-store.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  for (const forbidden of [
+    /retention\s*:/u,
+    /deleteRun\s*:/u,
+    /deleteArtifact/u,
+    /purgeArtifact/u,
+    /ttl\s*:/u,
+    /expiresAt\s*:/u,
+    /cleanup\s*:/u,
+  ]) {
+    assert.equal(
+      forbidden.test(stripped),
+      false,
+      `packaging-operations.js must not introduce a sidecar retention / deletion method (${forbidden}) (P3-B5.1 §IV)`,
+    );
+  }
+  // The store return surface must not expose a delete-style
+  // method either.
+  const storeReturnBlock = stripped.match(
+    /return Object\.freeze\(\{[\s\S]*?\}\);/u,
+  );
+  assert.ok(storeReturnBlock, 'Store must define a frozen return surface');
+  for (const forbidden of [
+    /delete\s*:/u,
+    /purge\s*:/u,
+    /remove\s*:/u,
+  ]) {
+    assert.equal(
+      forbidden.test(storeReturnBlock[0]),
+      false,
+      `Store return surface must not expose a delete method (${forbidden}) (P3-B5.1 §IV)`,
+    );
+  }
+});
+
+test('Z-34 the canonical run root is reused (no second filesystem root)', () => {
+  // P3-B5.1 §V: the sidecar writes to
+  // `<projectRoot>/image-generation/<runId>/` — the same
+  // physical root the existing image-generation run-store
+  // uses. There is no `packaging-artifact-root` or
+  // `packaging-run-store` module. The store's path helpers
+  // join the existing `image-generation/` directory.
+  const opsSrc = readFile(path.join(ROOT, 'packages', 'runtime-core', 'src', 'operations', 'packaging-operations.js'));
+  const stripped = stripComments(opsSrc);
+  // The path computation must use `image-generation/<runId>/`.
+  assert.match(
+    stripped,
+    /image-generation/iu,
+    'Sidecar must be written under the existing image-generation/ root (P3-B5.1 §V)',
+  );
+  // There must be no second root.
+  for (const forbidden of [
+    'packaging-artifact-root',
+    'packaging-run-store',
+    'packaging-output',
+    'packaging-data',
+    'packaging-db',
+    'packaging-history-index',
+  ]) {
+    assert.equal(
+      stripped.includes(forbidden),
+      false,
+      `packaging-operations.js must not introduce a second root (${forbidden}) (P3-B5.1 §V)`,
+    );
+  }
+  // The path computation must reuse the canonical
+  // image-generation path helpers or a pathJoin adapter.
+  assert.match(
+    stripped,
+    /runRootForProject|runRootUnder|imageGenRootUnder|standaloneImageGenRoot|pathJoin/iu,
+    'Sidecar path computation must reuse the canonical image-generation path helpers or a pathJoin adapter (P3-B5.1 §V)',
+  );
+});
+
+test('Z-35 B4 behavioural coverage is not weakened (U-01..U-05 button-readiness invariants are restored)', () => {
+  // P3-B5.1 §X / §XI: P3-B5 silently removed the source-level
+  // toolbar readiness tests (U-01..U-05) when the file was
+  // rewritten. P3-B5.1 restores them. The guard verifies
+  // that the U-suite now has at least 40 cases (the B4
+  // baseline) and that U-01..U-05 are present.
+  const uSuite = readFile(path.join(ROOT, 'tests', 'runtime-application', 'packaging-workspace-execution-result.test.ts'));
+  // Count U- test cases.
+  const uTests = uSuite.match(/^\s*test\(\s*['"]U-\d{2}/gum) || [];
+  assert.ok(
+    uTests.length >= 40,
+    `U-suite must have at least 40 cases (B4 baseline); got ${uTests.length}`,
+  );
+  for (const id of ['U-01', 'U-02', 'U-03', 'U-04', 'U-05']) {
+    assert.match(
+      uSuite,
+      new RegExp(`test\\(\\s*['"]${id}\\b`),
+      `U-suite must include ${id} (P3-B5.1 §X)`,
+    );
+  }
+});

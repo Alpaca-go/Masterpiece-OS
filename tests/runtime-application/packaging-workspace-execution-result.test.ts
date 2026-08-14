@@ -232,6 +232,93 @@ function extractFn(src: string, name: string): string {
 }
 
 
+// ---------------------------------------------------------------------------
+// Group 1 — Prepare / Execution state machine (U-01..U-10)
+//
+// P3-B4 acceptance baseline: U-01..U-10 covered the toolbar
+// readiness gating + execute + retry + reset + STALE contract.
+// P3-B5 silently removed U-01..U-05 (button-level
+// `disabled={!canPrepare || isBusy}` source-level invariants).
+// P3-B5.1 §X / §XI restores them: the source-level toolbar
+// gating is a behavioural invariant that nothing else in the
+// suite 1:1 locks. Restoring these five tests is the canonical
+// coverage recovery.
+// ---------------------------------------------------------------------------
+
+test('U-01 Prepare button is enabled only when view.readiness.canPrepare is true', () => {
+  // P3-B4 §V: button enable comes from the view model. The
+  // Prepare button must check `view.readiness.canPrepare`
+  // and combine with `isBusy` (not the local pending state).
+  assert.match(workspaceSrc, /canPrepare/u);
+  // The Prepare button is bound to the canPrepare + isBusy
+  // gate; we forbid a direct `state.pending` check.
+  assert.match(
+    workspaceSrc,
+    /disabled=\{!canPrepare \|\| isBusy\}/u,
+    'Prepare button must use canPrepare + isBusy gate',
+  );
+});
+
+test('U-02 Execute button is enabled only when view.readiness.canExecute is true', () => {
+  assert.match(workspaceSrc, /canExecute/u);
+  assert.match(
+    workspaceSrc,
+    /disabled=\{!canExecute \|\| isBusy\}/u,
+    'Execute button must use canExecute + isBusy gate',
+  );
+});
+
+test('U-03 Reset button is enabled only when view.readiness.canReset is true', () => {
+  assert.match(workspaceSrc, /canReset/u);
+  assert.match(
+    workspaceSrc,
+    /disabled=\{!canReset \|\| isBusy\}/u,
+    'Reset button must use canReset + isBusy gate',
+  );
+});
+
+test('U-04 isBusy (PREPARING / EXECUTING) disables all conflicting actions', () => {
+  // P3-B4 §V: while PREPARING / EXECUTING, the toolbar must
+  // not offer a parallel prepare / execute / reset. The
+  // source-level gate is `isBusy`; the Web feature must
+  // honour it on every action button.
+  assert.match(workspaceSrc, /\bisBusy\b/u);
+  // The three action buttons must all carry the isBusy
+  // disable clause.
+  const canPrepareDisabled = workspaceSrc.match(
+    /disabled=\{!canPrepare \|\| isBusy\}/u,
+  );
+  const canExecuteDisabled = workspaceSrc.match(
+    /disabled=\{!canExecute \|\| isBusy\}/u,
+  );
+  const canResetDisabled = workspaceSrc.match(
+    /disabled=\{!canReset \|\| isBusy\}/u,
+  );
+  assert.ok(canPrepareDisabled, 'Prepare must carry isBusy');
+  assert.ok(canExecuteDisabled, 'Execute must carry isBusy');
+  assert.ok(canResetDisabled, 'Reset must carry isBusy');
+});
+
+test('U-05 the Web handler does NOT implicitly call prepareGeneration before executeGeneration', () => {
+  // P3-B4 §V / §XVII: the Web handler must NOT call
+  // prepareGeneration from inside the Execute click handler.
+  // Prepare is its own user action; Execute re-uses an
+  // already-prepared snapshot.
+  const executeHandlerMatch = workspaceSrc.match(
+    /onExecute[\s\S]{0,800}?/u,
+  );
+  assert.ok(executeHandlerMatch, 'onExecute handler must exist');
+  // The handler body must NOT call preparePackagingGeneration
+  // / prepareGeneration.
+  assert.equal(
+    /preparePackagingGeneration|prepareGeneration/u.test(
+      executeHandlerMatch[0],
+    ),
+    false,
+    'onExecute must not call prepareGeneration (P3-B4 §V)',
+  );
+});
+
 test('U-06 READY execute reaches the frozen service through the executePackagingGeneration RPC', () => {
   // P3-B2 / P3-B4 contract: the Web-side execute handler
   // calls `executePackagingGeneration` (the service.ts

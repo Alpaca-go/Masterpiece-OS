@@ -1,4 +1,4 @@
-// P3-B2 / P3-B5 — Packaging Workspace RPC operations.
+﻿// P3-B2 / P3-B5 — Packaging Workspace RPC operations.
 //
 // Capability boundary:
 //   Thin RPC layer that maps the Web `window.masterpiece.packaging.*`
@@ -58,6 +58,29 @@
 //   - STOP-P3-B5-02: the operations layer does NOT introduce a
 //     second artifact server. All artifact reads go through the
 //     existing Shared Runtime RPC bridge.
+//   - STOP-P3-B5.1-01: the operations layer does NOT introduce a
+//     second run lifecycle / retention / index authority. The
+//     artifact record (`<runRoot>/packaging-generation-result
+//     .json`) is a *target-specific sidecar* — it is read
+//     by name for preview lookups and is the SOLE responsibility
+//     of this layer; it is NOT listed, NOT retained, NOT
+//     deleted, NOT indexed. If it is missing / corrupt, the
+//     preview RPC returns `null` and the run is still
+//     EXECUTED (the lifecycle / retention / index authorities
+//     are unchanged).
+//   - STOP-P3-B5.1-02: the preview RPC's MIME handling is
+//     fail-closed. The canonical allowlist is
+//     `image/png | image/jpeg | image/webp`; any other value
+//     (unknown / hostile / empty / malformed / `text/html` /
+//     `image/svg+xml` / `application/javascript` / etc.) is
+//     rejected at record-write AND re-validated at record-read.
+//     The previous B5 fail-open default
+//     (`asString(entry.mimeType, 'image/png')`) is REMOVED.
+//   - STOP-P3-B5.1-03: the data URL is constructed ONLY from a
+//     validated MIME. The renderer-facing surface is
+//     `data:<validatedMime>;base64,...` and nothing else.
+//     `record.mimeType` is never interpolated into a `data:`
+//     URL without first passing the canonical allowlist.
 //
 // Public RPC surface (8 channels):
 //   packaging:create-session
@@ -103,34 +126,57 @@ function asString(value, fallback = '') {
 }
 
 // ---------------------------------------------------------------------------
-// P3-B5 — Packaging Artifact Store
+// P3-B5 / P3-B5.1 — Packaging Artifact Store
 //
-// Authority boundary:
-//   - Sole persistence / preview authority for Packaging runs.
-//   - Writes go to `<projectRoot>/image-generation/<runId>/` — the
-//     same physical root the existing image-generation run-store
-//     uses. The runId namespace (`pkg-...` for Packaging vs
-//     `igt-...` for image-generation) isolates the two streams.
-//   - Reads go through the canonical artifact record written by
-//     `saveRun(packagingResult)`. The record stores the
-//     `relativePath` / `thumbnailRelativePath` returned by the
-//     P2 frozen `resolveArtifactLifecycle`; `readArtifactPreview`
-//     joins that record with the file system to produce a safe
-//     `{ mimeType, dataUrl }` payload.
+// Role: ADAPTER (not authority). This module is a thin
+// sidecar adapter that:
+//   - writes a target-specific preview-lookup record
+//     (`<runRoot>/packaging-generation-result.json`) AFTER the
+//     P2 frozen `executePackagingGeneration` lifecycle has
+//     finished;
+//   - reads that same record to serve the
+//     `packaging:get-artifact-preview` RPC channel.
 //
-// What the store does NOT do:
-//   - It does NOT touch the image-generation service's run-store.
-//     `saveRun` writes a Packaging-shaped record
-//     (`<runRoot>/packaging-generation-result.json`), not the
-//     image-generation `run.json`.
-//   - It does NOT expose absolute paths. The read API returns a
-//     data URL; the input is `{ runId, imageId }` (logical
-//     identities), not a path.
-//   - It does NOT validate ownership by side-effect. The RPC
-//     layer is responsible for verifying that the caller's
-//     `sessionId` is bound to a session whose `view.execution.
-//     runId` equals the requested `runId`. The store assumes
-//     this has already been checked (defense in depth).
+// Authority boundary (P3-B5.1 §III / §IV):
+//   - run identity authority   → existing image-generation
+//     run-store (the canonical `run.json`).
+//   - run root authority       → existing image-generation
+//     run-store (the canonical
+//     `<projectRoot>/image-generation/<runId>/` directory;
+//     the sidecar is a sibling of `run.json`).
+//   - artifact lifecycle       → P2 frozen
+//     `executePackagingGeneration` +
+//     `resolveArtifactLifecycle` + `downloadImpl`.
+//   - artifact persistence authority → P2 frozen
+//     `downloadImpl` writes the image / thumbnail bytes; the
+//     sidecar only records the *paths*. The sidecar is
+//     written AFTER bytes are persisted; a sidecar-write
+//     failure does not roll back the lifecycle.
+//   - artifact read authority   → this sidecar adapter, but
+//     ONLY for `imageId → dataUrl` lookups; the read API
+//     never lists / enumerates / searches.
+//   - retention authority       → existing image-generation
+//     run-store. The sidecar has no retention contract.
+//   - run index authority       → existing
+//     `imageGeneration.listRuns`. The sidecar is not
+//     indexed.
+//   - deletion authority        → existing image-generation
+//     run-store. The sidecar has no delete path.
+//
+// What the adapter does NOT do (P3-B5.1 §V):
+//   - It does NOT create a parallel `packaging-run-store`,
+//     `packaging-result-database`, `packaging-artifact-root`,
+//     or `packaging-history-index`. The `image-generation/`
+//     physical root is shared and is never re-defined.
+//   - It does NOT introduce a second filesystem root.
+//   - It does NOT list, enumerate, or search the sidecar
+//     records; the only read is by name
+//     (`<runId>/packaging-generation-result.json`).
+//   - It does NOT validate ownership by side-effect. The
+//     RPC layer is responsible for verifying that the
+//     caller's `sessionId` is bound to a session whose
+//     `view.execution.runId` equals the requested `runId`.
+//     The adapter re-asserts this (defense in depth).
 // ---------------------------------------------------------------------------
 
 /**
@@ -153,6 +199,62 @@ function asString(value, fallback = '') {
 const PACKAGING_ARTIFACT_RECORD_FILE = 'packaging-generation-result.json';
 
 const CANONICAL_IMAGE_ID_PATTERN = /^image-\d{2}$/u;
+
+// P3-B5.1 — Canonical preview MIME allowlist.
+//
+// Authority:
+//   - The preview RPC (`packaging:get-artifact-preview`) is the
+//     sole read surface that turns artifact bytes into a data
+//     URL the Web feature can render. The data URL's
+//     `mediaType` is consumed by the renderer's <img> element;
+//     the value is therefore a *security boundary*, not a
+//     presentation choice.
+//
+// Fail-closed contract (P3-B5.1 §VI / §VII / §VIII):
+//   - Only the three allowlist entries below are valid. Any
+//     other MIME — `text/html`, `image/svg+xml`,
+//     `application/javascript`, `application/octet-stream`,
+//     `text/plain`, empty string, malformed input, or anything
+//     else — MUST be rejected. The preview RPC returns
+//     `{ preview: null }` and the Web feature renders the
+//     "预览不可用" placeholder (artifact metadata stays visible).
+//   - We never fall back to `image/png`. The previous B5
+//     behaviour (`asString(entry.mimeType, 'image/png')`) was
+//     a fail-open default and is REMOVED.
+//   - We never guess the MIME from the file extension, the
+//     user input, or the artifact's URL. The MIME in the
+//     sidecar record is the only input we honour — and only if
+//     it is in the allowlist.
+//   - The data URL is constructed only AFTER the MIME has been
+//     validated. `data:<validatedMime>;base64,...` is the only
+//     legal shape. We never interpolate an unvalidated record
+//     field into a data URL.
+//
+// What this allowlist does NOT do:
+//   - It does NOT validate the bytes behind the MIME. A
+//     re-encoded JPEG labelled as `image/jpeg` is still
+//     served. The allowlist is a *transport* guard (the
+//     `<img>` will not execute JS / render HTML), not a deep
+//     content verifier. The Provider-side byte verification
+//     (P2 frozen `downloadImpl` SHA-256) is the content trust
+//     boundary; this allowlist is the renderer-side boundary.
+const CANONICAL_PREVIEW_MIME_ALLOWLIST = Object.freeze([
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+]);
+
+function isCanonicalPreviewMime(value) {
+  if (typeof value !== 'string' || !value) return false;
+  // Reject anything that is not a plain `type/subtype` token
+  // (no parameters, no whitespace, no leading / trailing
+  // garbage). This blocks `"image/png; charset=utf-8"`,
+  // `" image/png "`, `"\nimage/png\n"`, etc. — they are valid
+  // in HTTP headers but they are not what we want to pipe
+  // into a `data:` URL.
+  if (!/^[a-z0-9.+-]+\/[a-z0-9.+-]+$/iu.test(value)) return false;
+  return CANONICAL_PREVIEW_MIME_ALLOWLIST.includes(value.toLowerCase());
+}
 
 function isRelativePathSafe(relativePath) {
   if (typeof relativePath !== 'string' || !relativePath) return false;
@@ -312,6 +414,43 @@ export function createPackagingArtifactStore(options) {
    * mapping. Provider response bodies, redacted requests, and
    * execution identities stay on the internal packaging result
    * object — they are not serialized.
+   *
+   * P3-B5.1 — sidecar boundary. The artifact record
+   * (`<runRoot>/packaging-generation-result.json`) is a
+   * *target-specific sidecar metadata file* used by the
+   * preview RPC to map `imageId` → on-disk path. It is NOT
+   * a run lifecycle authority:
+   *   - run identity authority  → existing image-generation
+   *     `run.json` (canonical, owned by the P2 frozen
+   *     image-generation run-store).
+   *   - run root authority      → existing image-generation
+   *     run-store (the `image-generation/<runId>/` physical
+   *     directory; the sidecar lives next to `run.json`,
+   *     never replacing it).
+   *   - artifact lifecycle      → P2 frozen
+   *     `executePackagingGeneration` + the existing
+   *     `downloadImpl`. The sidecar is written AFTER the
+   *     lifecycle has finished; if the sidecar write fails
+   *     the run is still canonical (preview will return
+   *     `null`, not change the lifecycle outcome).
+   *   - retention authority     → existing image-generation
+   *     run-store retention. The sidecar has NO retention
+   *     contract; it inherits the lifecycle of the parent
+   *     run root.
+   *   - run index authority     → existing `imageGeneration
+   *     .listRuns`. The sidecar is not listed, not searched,
+   *     not enumerated — it is only ever read by name
+   *     (`<runId>/packaging-generation-result.json`) for
+   *     preview lookups.
+   *   - deletion authority      → existing image-generation
+   *     run-store. The sidecar has no delete path of its
+   *     own; it goes away when the run root is removed.
+   *
+   * Consequence: if the sidecar is missing / corrupt, the
+   * preview RPC returns `null` (placeholder). The run is
+   * still EXECUTED; the user is shown a placeholder. Nothing
+   * about the run lifecycle, the project index, or the
+   * retention contract is affected.
    */
   function buildArtifactRecord(packagingResult) {
     if (!isPlainObject(packagingResult)) return null;
@@ -324,12 +463,25 @@ export function createPackagingArtifactStore(options) {
           const imageId = asString(artifact.imageId);
           const relativePath = asString(artifact.relativePath);
           const thumbnailRelativePath = asString(artifact.thumbnailRelativePath);
+          // P3-B5.1 — fail-closed MIME. An artifact with a
+          // non-allowlist / missing / empty / malformed MIME
+          // is dropped at record-write time. The P2 frozen
+          // `executePackagingGeneration` output contract is
+          // expected to produce only the canonical preview
+          // MIME values; an artifact that does not match is
+          // treated as a malformed lifecycle result and the
+          // preview RPC must not render it.
           if (!imageId || !relativePath) return null;
+          if (!isCanonicalPreviewMime(artifact.mimeType)) return null;
           return {
             imageId,
             relativePath,
             thumbnailRelativePath: thumbnailRelativePath || null,
-            mimeType: asString(artifact.mimeType, 'image/png'),
+            // P3-B5.1: the MIME is on the canonical allowlist
+            // (validated above). Lower-case it so the on-disk
+            // record is canonical regardless of how the
+            // upstream Provider formatted it.
+            mimeType: String(artifact.mimeType).toLowerCase(),
             width: Number.isFinite(artifact.width) ? artifact.width : null,
             height: Number.isFinite(artifact.height) ? artifact.height : null,
             sizeBytes: Number.isFinite(artifact.sizeBytes) ? artifact.sizeBytes : null,
@@ -515,7 +667,17 @@ export function createPackagingArtifactStore(options) {
     } catch {
       return null;
     }
-    if (!isRelativePathSafe(safePath)) return null;
+    // P3-B5.1: `safePath` is an absolute path that has
+    // already been asserted to live inside `runRoot` via
+    // `assertInside`. The earlier `isRelativePathSafe`
+    // call (which refuses drive letters / `..` / UNC /
+    // `file://` segments) is the right gate for the
+    // *input* identifiers (`runId` / `imageId` /
+    // `entry.relativePath`); re-applying it to an
+    // absolute path would reject every Windows path
+    // (drive letter) and is a no-op on POSIX. We rely on
+    // `assertInside` for the runtime boundary instead.
+    void safePath;
     let buffer;
     try {
       buffer = await readFileBytes(safePath);
@@ -523,7 +685,27 @@ export function createPackagingArtifactStore(options) {
       return null;
     }
     if (!buffer || !Buffer.isBuffer(buffer)) return null;
-    const mimeType = asString(entry.mimeType, 'image/png');
+    // P3-B5.1 — fail-closed MIME validation. The record's
+    // `mimeType` is the only MIME we honour, and only if it
+    // matches the canonical preview allowlist. Any other
+    // value (unknown / hostile / empty / malformed) is
+    // rejected without a fallback. The Web feature renders
+    // a "预览不可用" placeholder; the generation result is
+    // not re-classified as FAILED.
+    const rawMime = asString(entry.mimeType);
+    if (!isCanonicalPreviewMime(rawMime)) {
+      // Defense in depth: refuse to feed the renderer a
+      // data URL whose mediaType is not on the allowlist.
+      // Returning `null` here is a preview-layer decision;
+      // the artifact record stays intact on disk and the
+      // artifact metadata (imageId / width / height / size)
+      // is still rendered by the Web feature.
+      return null;
+    }
+    // P3-B5.1: lowercased canonical MIME. The allowlist
+    // already lower-cased the input, so this is the safe
+    // value to interpolate into the `data:` URL.
+    const mimeType = rawMime.toLowerCase();
     return Object.freeze({
       mimeType,
       dataUrl: `data:${mimeType};base64,${buffer.toString('base64')}`,
