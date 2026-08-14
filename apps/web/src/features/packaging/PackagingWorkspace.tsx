@@ -38,7 +38,7 @@
 // `view.isBusy` (P3-A4 §5). React does NOT maintain a
 // second rule table.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   PACKAGING_REFERENCE_ROLES,
   PACKAGING_WORKSPACE_STATUS_LABELS,
@@ -82,9 +82,7 @@ type WorkspaceState =
   | { kind: 'ready'; sessionId: string; projectId: string; view: PackagingWorkspaceView; pending: boolean; error: string | null };
 
 const RPC_UNAVAILABLE_REASON =
-  'window.masterpiece.packaging 命名空间未注册。' +
-  'Packaging Workspace 依赖 Shared Runtime RPC 桥接。' +
-  '请确认 Node Runtime Host 已启动并加载了 P3-B2 operations。';
+  '包装生成服务暂时不可用。请确认 Masterpiece Web Runtime 已启动，然后重试。';
 
 // P3-B3 §2: presentation-only label map. The semantic value
 // remains the canonical role from `PACKAGING_REFERENCE_ROLES`
@@ -98,8 +96,55 @@ const ROLE_PRESENTATION_LABELS: Record<string, string> = Object.freeze({
   product_identity_reference: '产品身份参考',
 });
 
+const STATUS_PRESENTATION_LABELS: Record<string, string> = Object.freeze({
+  new: '新建',
+  unprepared: '待准备',
+  preparing: '正在准备',
+  ready: '已就绪',
+  stale: '配置已变化',
+  executing: '正在生成',
+  executed: '生成完成',
+  failed: '生成失败',
+});
+
 function roleLabel(role: string): string {
   return ROLE_PRESENTATION_LABELS[role] || role;
+}
+
+function useDialogKeyboard(
+  onClose: () => void,
+  dialogRef: React.RefObject<HTMLElement | null>,
+  initialFocusRef: React.RefObject<HTMLElement | null>,
+) {
+  useEffect(() => {
+    initialFocusRef.current?.focus();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = Array.from(
+        dialogRef.current?.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), input:not([disabled]), select:not([disabled]), summary, [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
+      );
+      if (focusable.length === 0) return;
+      const first = focusable.at(0);
+      const last = focusable.at(-1);
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [dialogRef, initialFocusRef, onClose]);
 }
 
 export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
@@ -130,7 +175,8 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
         error: null,
       });
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '无法打开项目工作台，请确认项目与服务状态后重试。';
       setState((current) => current.kind === 'bootstrap'
         ? { ...current, pending: false, error: message }
         : current);
@@ -155,7 +201,8 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
       const view = await preparePackagingGeneration(state.sessionId);
       setState({ ...state, view, pending: false });
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '准备未完成，请检查当前配置后重试。';
       setState({ ...state, pending: false, error: message });
     }
   }, [state]);
@@ -167,7 +214,8 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
       const view = await executePackagingGeneration({ sessionId: state.sessionId });
       setState({ ...state, view, pending: false });
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '生成未完成，请查看错误提示并重试。';
       setState({ ...state, pending: false, error: message });
     }
   }, [state]);
@@ -179,7 +227,8 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
       const view = await resetPackagingPreparation(state.sessionId);
       setState({ ...state, view, pending: false });
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '重置未完成，请稍后重试。';
       setState({ ...state, pending: false, error: message });
     }
   }, [state]);
@@ -191,7 +240,8 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
       const view = await updatePackagingIntent(state.sessionId, patch);
       setState({ ...state, view, pending: false });
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '配置更新未完成，请检查输入后重试。';
       setState({ ...state, pending: false, error: message });
     }
   }, [state]);
@@ -203,7 +253,8 @@ export function PackagingWorkspace({ onBack, initialProjectId = '' }: Props) {
       const view = await refreshPackagingTruth(state.sessionId);
       setState({ ...state, view, pending: false });
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '锁定信息刷新未完成，请稍后重试。';
       setState({ ...state, pending: false, error: message });
     }
   }, [state]);
@@ -258,10 +309,9 @@ function UnavailableSurface({ reason, onBack }: { reason: string; onBack: () => 
       </header>
       <main className={styles.bootstrapMain}>
         <section className={styles.bootstrapPanel}>
-          <h2 className={styles.bootstrapTitle}>Shared Runtime RPC 不可用</h2>
+          <h2 className={styles.bootstrapTitle}>包装生成服务不可用</h2>
           <p className={styles.bootstrapBody}>
-            P3-B2/B3 将 Packaging Workspace 完全迁移到了 Shared Runtime RPC。Web
-            端不再本地实例化 Workspace service。
+            当前无法连接生成服务。你可以返回首页，确认服务状态后再次进入。
           </p>
           <p className={styles.bootstrapBody}>{reason}</p>
           <button className={styles.backButton} onClick={onBack}>返回首页</button>
@@ -292,8 +342,7 @@ function BootstrapSurface({
           <p className={styles.eyebrow}>PACKAGING GENERATOR</p>
           <h1 className={styles.title}>包装生成工作台</h1>
           <p className={styles.subtitle}>
-            选择项目以建立 Packaging Workspace 会话。Locked Assets 等事实面
-            将由 runtime 侧从项目存储与 Locked-Assets-Service 解析。
+            选择项目，开始配置参考图并生成包装效果图。
           </p>
         </div>
         <div className={styles.topNavRight}>
@@ -302,7 +351,7 @@ function BootstrapSurface({
       </header>
       <main className={styles.bootstrapMain}>
         <section className={styles.bootstrapPanel}>
-          <h2 className={styles.bootstrapTitle}>建立 Workspace 会话</h2>
+          <h2 className={styles.bootstrapTitle}>打开项目工作台</h2>
           <label className={styles.bootstrapLabel}>
             项目 ID
             <input
@@ -320,15 +369,14 @@ function BootstrapSurface({
               disabled={pending || !value.trim()}
               onClick={() => onCreate(value.trim())}
             >
-              {pending ? '建立中…' : '建立会话'}
+              {pending ? '正在打开…' : '打开工作台'}
             </button>
             <button className={styles.toolbarButton} onClick={onBack} disabled={pending}>
               取消
             </button>
           </div>
           <p className={styles.bootstrapHint}>
-            会话由 runtime 端持有。Web 端只保留 sessionId + View Model。本地
-            不再存在 Packaging Workspace service 实例。
+            项目中的参考素材与锁定信息会自动载入。
           </p>
         </section>
       </main>
@@ -363,8 +411,7 @@ function ReadySurface(props: ReadySurfaceProps) {
           <p className={styles.eyebrow}>PACKAGING GENERATOR</p>
           <h1 className={styles.title}>包装生成工作台</h1>
           <p className={styles.subtitle}>
-            基于已完成的视觉分析，使用 Workspace Architecture 推导并生成包装效果图。
-            参考图与锁定资产均来自项目既有事实面（runtime 侧解析）。
+            配置参考图，确认项目锁定信息，然后准备并生成包装效果图。
           </p>
         </div>
         <div className={styles.topNavRight}>
@@ -373,6 +420,14 @@ function ReadySurface(props: ReadySurfaceProps) {
           <button className={styles.backButton} onClick={onBack}>返回首页</button>
         </div>
       </header>
+
+      <section className={styles.projectIdentity} aria-labelledby="packaging-project-title">
+        <div>
+          <p className={styles.projectIdentityLabel}>当前项目</p>
+          <h2 id="packaging-project-title" className={styles.projectIdentityTitle}>{projectId}</h2>
+        </div>
+        <p className={styles.projectIdentityHint}>参考图与锁定信息均来自此项目。</p>
+      </section>
 
       <ActionToolbar
         view={view}
@@ -397,12 +452,7 @@ function ReadySurface(props: ReadySurfaceProps) {
         <ErrorSurfaceTile view={view} />
       </main>
 
-      <footer className={styles.footer}>
-        <small>
-          P3-B3: 参考图与锁定资产均来自 runtime 端既有事实面（Locked-Assets-Service
-          + project store + analysis context）。Web 不再构造 second authority。
-        </small>
-      </footer>
+      <footer className={styles.footer}>妙作 · 包装生成工作台</footer>
     </div>
   );
 }
@@ -443,8 +493,8 @@ function ActionToolbar({
   // progress percentages — the busy label simply names the
   // current lifecycle stage.
   const busyLabel =
-    status === 'preparing' ? '准备中…' :
-    status === 'executing' ? '执行中…' :
+    status === 'preparing' ? '准备中… 正在准备生成配置' :
+    status === 'executing' ? '执行中… 正在生成包装效果图' :
     null;
   // P3-B4 §XV: STALE state hints at the user that the
   // current configuration no longer matches the prepared
@@ -454,14 +504,10 @@ function ActionToolbar({
   return (
     <div className={styles.toolbar}>
       <div>
-        <p className={styles.toolbarHint}>
-          按钮启用状态由 View Model 决定。execute ≠ implicit prepare + execute
-          （P3-A §10.6）。Retry 走同一个 executeGeneration RPC，不是
-          隐式 prepare+execute。
-        </p>
+        <p className={styles.toolbarHint}>{actionGuidance(status)}</p>
         {isStale && (
           <p className={styles.toolbarStaleHint}>
-            当前 configuration 已变化 — 上次准备已失效，需先「准备生成」再执行。
+            当前配置已变化，需要重新准备。上一次结果仍会保留供你查看。
           </p>
         )}
       </div>
@@ -473,9 +519,11 @@ function ActionToolbar({
           </span>
         )}
         <button
-          className={styles.toolbarButton}
+          className={`${styles.toolbarButton} ${canPrepare ? styles.toolbarButtonPrimary : ''}`}
           onClick={onPrepare}
           disabled={!canPrepare || isBusy}
+          type="button"
+          aria-label="准备生成"
         >
           {status === 'preparing' ? '准备中…' : '准备生成'}
         </button>
@@ -483,11 +531,13 @@ function ActionToolbar({
           className={`${styles.toolbarButton} ${styles.toolbarButtonPrimary}`}
           onClick={onExecute}
           disabled={!canExecute || isBusy}
-          title={isStale ? 'STALE: 请先重新准备' : undefined}
+          title={isStale ? '当前配置已变化，请先重新准备' : undefined}
+          type="button"
+          aria-label="执行生成"
         >
           {status === 'executing' ? '执行中…' : '执行生成'}
         </button>
-        {canRetry && !isBusy && (
+        {canRetry && !isBusy && status === 'executed' && (
           <button
             className={styles.toolbarRetryButton}
             onClick={onExecute}
@@ -496,7 +546,8 @@ function ActionToolbar({
             // RPC contract is identical — no new endpoint, no
             // implicit prepare.
             data-action="retry"
-            title="使用当前 prepared snapshot 再执行一次（与 Execute 共用 RPC）"
+            title="使用当前已准备的配置再次生成"
+            type="button"
           >
             再次生成
           </button>
@@ -505,13 +556,17 @@ function ActionToolbar({
           className={styles.toolbarButton}
           onClick={onReset}
           disabled={!canReset || isBusy}
+          type="button"
+          aria-label="重置准备"
         >
-          重置
+          重置准备
         </button>
         <button
           className={styles.refreshButton}
           onClick={onRefreshView}
           disabled={isBusy}
+          type="button"
+          aria-label="刷新工作台状态"
         >
           刷新视图
         </button>
@@ -525,7 +580,8 @@ function StatusBadge({ status, label }: { status: string; label: string }) {
   return (
     <span className={`${styles.badge} ${styles[`badge_${tone}`]}`}>
       <span className={styles.badgeDot} />
-      {label || status || '未知状态'}
+      <span className={styles.visuallyHidden}>当前状态：</span>
+      {STATUS_PRESENTATION_LABELS[status] || label || status || '未知状态'}
     </span>
   );
 }
@@ -534,9 +590,10 @@ function SessionIdBadge({ value }: { value: string }) {
   if (!value) return null;
   const short = value.length > 16 ? `${value.slice(0, 8)}…${value.slice(-4)}` : value;
   return (
-    <span className={styles.sessionBadge} title={value}>
-      会话 {short}
-    </span>
+    <details className={styles.sessionDetails}>
+      <summary>会话详情</summary>
+      <code className={styles.sessionBadge} title={value}>{short}</code>
+    </details>
   );
 }
 
@@ -559,7 +616,7 @@ function GenerationIntentTile({
         <div>
           <h2 className={styles.tileTitle}>生成意图</h2>
           <p className={styles.tileSubtitle}>
-            Generation Intent · view.intent（支持 RPC updateIntent）
+            核对生成方式、镜头与模型设置。
           </p>
         </div>
       </header>
@@ -575,12 +632,12 @@ function GenerationIntentTile({
             />
             <KV label="参考图数量" value={String(intent.referenceCount)} />
             <KV
-              label="Provider Model"
+              label="生成模型"
               value={intent.providerModelId || '—'}
               mono
             />
             <KV
-              label="API Profile"
+              label="服务配置"
               value={intent.apiProfileId || '—'}
               mono
             />
@@ -607,8 +664,10 @@ function IntentPatchForm({
   const [apiProfileId, setApiProfileId] = useState('');
   const [providerModelId, setProviderModelId] = useState('');
   return (
-    <form
-      className={styles.patchForm}
+    <details className={styles.intentSettings}>
+      <summary>调整模型设置</summary>
+      <form
+        className={styles.patchForm}
       onSubmit={async (event) => {
         event.preventDefault();
         const patch: Record<string, unknown> = {};
@@ -621,7 +680,7 @@ function IntentPatchForm({
       }}
     >
       <label className={styles.patchLabel}>
-        更新 API Profile
+        服务配置 ID
         <input
           className={styles.bootstrapInput}
           value={apiProfileId}
@@ -631,7 +690,7 @@ function IntentPatchForm({
         />
       </label>
       <label className={styles.patchLabel}>
-        更新 Provider Model
+        生成模型 ID
         <input
           className={styles.bootstrapInput}
           value={providerModelId}
@@ -645,9 +704,10 @@ function IntentPatchForm({
         type="submit"
         disabled={disabled || (!apiProfileId.trim() && !providerModelId.trim())}
       >
-        写入 updateIntent
+        应用设置
       </button>
-    </form>
+      </form>
+    </details>
   );
 }
 
@@ -669,6 +729,7 @@ function ReferenceAssignmentsTile(props: ReferenceAssignmentsTileProps) {
   const [assetSummary, setAssetSummary] = useState<AssetSummary | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summaryError, setSummaryError] = useState<string | null>(null);
+  const pickerTriggerRef = useRef<HTMLButtonElement>(null);
 
   const openPicker = useCallback(async () => {
     if (!projectId) return;
@@ -683,7 +744,8 @@ function ReferenceAssignmentsTile(props: ReferenceAssignmentsTileProps) {
       const summary = await window.masterpiece.projects.scanAssets(projectId);
       setAssetSummary(summary);
     } catch (reason) {
-      const message = reason instanceof Error ? reason.message : String(reason);
+      void reason;
+      const message = '无法读取项目资产，请返回项目页确认素材后重试。';
       setSummaryError(message);
     } finally {
       setLoadingSummary(false);
@@ -692,6 +754,7 @@ function ReferenceAssignmentsTile(props: ReferenceAssignmentsTileProps) {
 
   const closePicker = useCallback(() => {
     setPickerOpen(false);
+    requestAnimationFrame(() => pickerTriggerRef.current?.focus());
   }, []);
 
   const handleAddAssignment = useCallback(
@@ -733,8 +796,7 @@ function ReferenceAssignmentsTile(props: ReferenceAssignmentsTileProps) {
         <div>
           <h2 className={styles.tileTitle}>参考图分配</h2>
           <p className={styles.tileSubtitle}>
-            Reference Assignments · view.references（{refs.length} 项）· 来自
-            项目既有资产（runtime `projects.scanAssets`），不在 Web 端伪造
+            已添加 {refs.length} 张。为每张参考图指定它在生成中的作用。
           </p>
         </div>
       </header>
@@ -751,26 +813,28 @@ function ReferenceAssignmentsTile(props: ReferenceAssignmentsTileProps) {
           ))}
         </ul>
       ) : (
-        <EmptyHint message="尚未分配参考图。在下方选择项目资产并赋予 canonical role。" />
+        <div className={styles.referenceEmpty}>
+          <strong>暂无参考图</strong>
+          <p>可添加视觉、结构、材质、构图、风格或产品身份参考。</p>
+        </div>
       )}
       <div className={styles.refActions}>
         <button
+          ref={pickerTriggerRef}
           className={styles.toolbarButton}
           onClick={openPicker}
           disabled={pending || !view.canEditIntent}
+          type="button"
         >
           + 添加参考图
         </button>
-        <span className={styles.refMetaHint}>
-          canonical 角色来自 P3-A frozen `PACKAGING_REFERENCE_ROLES`（6 项）
-        </span>
+        <span className={styles.refMetaHint}>支持 6 种参考作用</span>
       </div>
       <details className={styles.refRolesHelp}>
-        <summary>canonical 角色（来自 P2 frozen reference-policy）</summary>
+        <summary>查看可选参考作用</summary>
         <ul className={styles.roleList}>
           {(PACKAGING_REFERENCE_ROLES as readonly string[]).map((role) => (
             <li key={role} className={styles.roleChip}>
-              <code>{role}</code>
               <span className={styles.roleChipLabel}>{roleLabel(role)}</span>
             </li>
           ))}
@@ -822,6 +886,7 @@ function ReferenceRow({
       <div className={styles.refRowActions}>
         <select
           className={styles.refRoleSelect}
+          aria-label={`更改 ${ref.displayName || ref.assetId} 的参考作用`}
           value={ref.role}
           onChange={(event) => onChangeRole(event.target.value)}
           disabled={disabled}
@@ -859,47 +924,92 @@ function ReferencePicker({
   onAdd: (asset: AssetItem, role: string) => void;
 }) {
   const [selectedAssetId, setSelectedAssetId] = useState('');
+  const [query, setQuery] = useState('');
   const [selectedRole, setSelectedRole] = useState<string>(
     (PACKAGING_REFERENCE_ROLES as readonly string[])[0] || ''
   );
   const existingIds = new Set(existingRefs.map((r) => r.assetId));
-  const candidates = (assetSummary?.items || []).filter(
-    (item) => !existingIds.has(item.id)
-  );
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const candidates = (assetSummary?.items || []).filter((item) => {
+    if (existingIds.has(item.id)) return false;
+    const needle = query.trim().toLocaleLowerCase();
+    if (!needle) return true;
+    return `${item.name} ${item.id}`.toLocaleLowerCase().includes(needle);
+  });
+  useDialogKeyboard(onCancel, dialogRef, closeButtonRef);
   return (
-    <div className={styles.pickerBackdrop} role="dialog" aria-label="选择参考图">
-      <div className={styles.pickerPanel}>
+    <div
+      className={styles.pickerBackdrop}
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
+    >
+      <div
+        ref={dialogRef}
+        className={styles.pickerPanel}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="reference-picker-title"
+        aria-describedby="reference-picker-description"
+      >
         <header className={styles.pickerHeader}>
-          <h3 className={styles.pickerTitle}>选择项目资产作为参考</h3>
-          <button className={styles.toolbarButton} onClick={onCancel}>取消</button>
+          <div>
+            <h3 id="reference-picker-title" className={styles.pickerTitle}>添加参考图</h3>
+            <p id="reference-picker-description" className={styles.pickerDescription}>
+              从当前项目资产中选择一张图片并指定参考作用。
+            </p>
+          </div>
+          <button
+            ref={closeButtonRef}
+            className={styles.iconButton}
+            onClick={onCancel}
+            type="button"
+            aria-label="关闭参考图选择器"
+          >×</button>
         </header>
         {error && <p className={styles.bootstrapError}>{error}</p>}
         {loading && <p className={styles.bootstrapHint}>正在读取项目资产…</p>}
         {!loading && !error && candidates.length === 0 && (
           <p className={styles.bootstrapHint}>
-            项目当前没有可用的资产（{assetSummary?.totalFiles ?? 0} 个文件）。
-            请先在项目页导入素材。
+            {query ? '没有匹配的项目资产，请尝试其他关键词。' :
+              `项目当前没有可添加的资产（共 ${assetSummary?.totalFiles ?? 0} 个文件）。`}
           </p>
         )}
-        {!loading && !error && candidates.length > 0 && (
+        {!loading && !error && (assetSummary?.items?.length ?? 0) > 0 && (
           <>
-            <label className={styles.bootstrapLabel}>
-              资产
-              <select
+            <label className={styles.pickerSearchLabel}>
+              <span className={styles.visuallyHidden}>搜索项目资产</span>
+              <input
                 className={styles.bootstrapInput}
-                value={selectedAssetId}
-                onChange={(event) => setSelectedAssetId(event.target.value)}
-              >
-                <option value="">选择资产…</option>
-                {candidates.map((asset) => (
-                  <option key={asset.id} value={asset.id}>
-                    {asset.name}（{asset.id}）
-                  </option>
-                ))}
-              </select>
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="搜索文件名…"
+              />
             </label>
+            <div className={styles.pickerAssetGrid} role="listbox" aria-label="可用项目资产">
+              {candidates.map((asset) => (
+                <button
+                  key={asset.id}
+                  className={`${styles.pickerAsset} ${selectedAssetId === asset.id ? styles.pickerAssetSelected : ''}`}
+                  type="button"
+                  role="option"
+                  aria-selected={selectedAssetId === asset.id}
+                  onClick={() => setSelectedAssetId(asset.id)}
+                >
+                  {asset.thumbnailDataUrl ? (
+                    <img className={styles.pickerAssetThumb} src={asset.thumbnailDataUrl} alt="" />
+                  ) : (
+                    <span className={styles.pickerAssetPlaceholder} aria-hidden>图</span>
+                  )}
+                  <span className={styles.pickerAssetName} title={asset.name}>{asset.name}</span>
+                </button>
+              ))}
+            </div>
             <label className={styles.bootstrapLabel}>
-              Canonical Role
+              参考作用
               <select
                 className={styles.bootstrapInput}
                 value={selectedRole}
@@ -918,6 +1028,7 @@ function ReferencePicker({
                   const asset = candidates.find((a) => a.id === selectedAssetId);
                   if (asset) onAdd(asset, selectedRole);
                 }}
+                type="button"
               >
                 添加到参考图
               </button>
@@ -960,11 +1071,10 @@ function LockedAssetsTile({
         <div>
           <h2 className={styles.tileTitle}>锁定资产</h2>
           <p className={styles.tileSubtitle}>
-            Locked Assets · view.lockedAssets（只读 · 来源：runtime
-            Locked-Assets-Service + project store ·{' '}
-            {allLocked ? '全部已锁定' : '存在可配置项'}）
+            来自项目的锁定信息，仅供当前工作台读取。
           </p>
         </div>
+        <span className={styles.lockedHeaderBadge}>{allLocked ? '全部锁定' : '只读'}</span>
       </header>
       <ul className={styles.lockedList}>
         {LOCKED_FIELD_LABELS.map(({ key, label, render }) => {
@@ -981,15 +1091,15 @@ function LockedAssetsTile({
         })}
       </ul>
       <p className={styles.lockedNote}>
-        UI 不直接编辑锁定资产；变更请走既有项目 / Locked-Assets-Service 流程。
-        空值 = 真实 project 当前未提供该字段（NOT a fake seed）。
+        如需变更，请返回项目设置更新锁定资产；此处不会修改原始信息。
       </p>
       <button
         className={styles.toolbarButton}
         onClick={onRefreshTruth}
-        title="触发 RPC refreshPackagingTruth(sessionId) — runtime 重新走 Locked-Assets-Service 解析"
+        title="从项目重新读取锁定信息"
+        type="button"
       >
-        重新解析真相面
+        刷新锁定信息
       </button>
     </section>
   );
@@ -1027,22 +1137,20 @@ function ReadinessStaleTile({
         <div>
           <h2 className={styles.tileTitle}>就绪状态 / 失效</h2>
           <p className={styles.tileSubtitle}>
-            Readiness & Stale · view.readiness · view.staleReasons
+            查看当前是否可以准备或执行，以及下一步需要完成什么。
           </p>
         </div>
       </header>
       <div className={styles.capabilityGrid}>
-        <CapabilityChip label="可编辑意图" on={Boolean(r?.canEditIntent)} />
-        <CapabilityChip label="可准备" on={Boolean(r?.canPrepare)} />
-        <CapabilityChip label="可执行" on={Boolean(r?.canExecute)} />
-        <CapabilityChip label="可重试" on={Boolean(r?.canRetry)} />
-        <CapabilityChip label="可重置" on={Boolean(r?.canReset)} />
-        <CapabilityChip label="执行中" on={Boolean(r?.isBusy)} />
+        <CapabilityChip label="可编辑配置" on={Boolean(r?.canEditIntent)} />
+        <CapabilityChip label="可以准备" on={Boolean(r?.canPrepare)} />
+        <CapabilityChip label="可以执行" on={Boolean(r?.canExecute)} />
+        <CapabilityChip label="可以再次生成" on={Boolean(r?.canRetry)} />
       </div>
       {prepared && (
         <div className={styles.preparedSummary}>
           <h3 className={styles.preparedSummaryTitle}>
-            本次准备（view.prepared，UI-safe 摘要）
+            已准备的生成配置
           </h3>
           <dl className={styles.kvList}>
             <KV label="模式" value={prepared.generationMode || '—'} />
@@ -1070,7 +1178,7 @@ function ReadinessStaleTile({
           </dl>
           {prepared.warnings && prepared.warnings.length > 0 && (
             <div className={styles.preparedSummaryWarnings}>
-              <strong>Warnings:</strong>
+              <strong>需要注意：</strong>
               <ul>
                 {prepared.warnings.map((w: string) => (
                   <li key={w}>{w}</li>
@@ -1080,48 +1188,46 @@ function ReadinessStaleTile({
           )}
           {prepared.compiledPromptPreview && (
             <details className={styles.preparedSummaryDetails}>
-              <summary>Compiled Prompt Preview（read-only）</summary>
+              <summary>查看编译后的提示词（只读）</summary>
               <pre className={styles.preparedSummaryPrompt}>
                 {prepared.compiledPromptPreview}
               </pre>
               <p className={styles.preparedSummaryHint}>
-                P3-A §22: 该预览为只读。无法编辑或回写至 intent。
+                此内容仅用于核对，无法在这里编辑。
               </p>
             </details>
           )}
         </div>
       )}
       {transientError && (
-        <div className={styles.staleBox}>
-          <strong>本次 RPC 错误：</strong>
-          <p>{transientError}</p>
+        <div className={styles.errorBox} role="alert">
+          <strong>操作未完成</strong>
+          <p>请检查当前配置后重试；安全错误详情会显示在错误提示区域。</p>
         </div>
       )}
       {isStale ? (
         <div className={styles.staleBox}>
-          <strong>当前准备结果已失效，需要重新准备。</strong>
-          <p>STALE 原因（canonical code，来自 view.staleReasons）：</p>
-          <ul>
-            {reasons.length > 0 ? (
-              reasons.map((reason: string) => (
-                <li key={reason} className={styles.staleReason}>
-                  {reason}
-                </li>
-              ))
-            ) : (
-              <li className={styles.staleReason}>（无显式原因）</li>
-            )}
-          </ul>
+          <strong>当前配置已变化，需要重新准备。</strong>
+          <p>完成重新准备后，才能使用最新配置执行生成。</p>
           {Array.isArray(r?.blockers) && r.blockers.length > 0 && (
             <p className={styles.staleBlocker}>
-              当前阻塞：{r.blockers.join(' / ')}
+              当前需要处理：{r.blockers.join(' / ')}
             </p>
+          )}
+          {reasons.length > 0 && (
+            <details className={styles.diagnosticDetails}>
+              <summary>技术详情</summary>
+              <ul>
+                {reasons.map((reason: string) => (
+                  <li key={reason} className={styles.staleReason}>{reason}</li>
+                ))}
+              </ul>
+            </details>
           )}
         </div>
       ) : (
         <p className={styles.readinessHint}>
-          当前状态为「{view.statusLabel || view.status || '未知'}」，
-          不是 STALE。
+          {readinessGuidance(view.status, r?.blockers ?? [])}
         </p>
       )}
     </section>
@@ -1170,7 +1276,7 @@ function ResultTile({ view, sessionId }: { view: PackagingWorkspaceView; session
         <div>
           <h2 className={styles.tileTitle}>当前产物</h2>
           <p className={styles.tileSubtitle}>
-            Result Gallery · view.execution（仅消费 UI-safe 字段）
+            生成结果会优先显示图片，运行信息位于下方。
           </p>
         </div>
       </header>
@@ -1181,14 +1287,13 @@ function ResultTile({ view, sessionId }: { view: PackagingWorkspaceView; session
               <span className={styles.resultMetaTitle}>
                 {exec.provider?.provider || '—'} · {exec.model?.registryModelId || '—'} · {exec.model?.providerModelId || '—'}
               </span>
-              <span>Run ID: {exec.runId || '—'}</span>
-              <span>状态: {exec.status || '—'}</span>
+              <span>状态：{exec.status || '—'}</span>
             </div>
             <div className={styles.resultBadgeRow}>
               {showPreviousLabel && (
                 <span className={styles.resultPreviousBadge}>
                   <span className={styles.resultPreviousBadgeDot} />
-                  {isStale ? '上次结果 · 当前 configuration 已变化' : isFailed ? '上次结果 · 上次执行未成功' : '上次结果'}
+                  {isStale ? '上次结果 · 当前配置已变化' : isFailed ? '上次结果 · 上次执行未成功' : '上次结果'}
                 </span>
               )}
               {isExecuted && (
@@ -1223,10 +1328,9 @@ function ResultTile({ view, sessionId }: { view: PackagingWorkspaceView; session
             </div>
           ) : (
             <div className={styles.resultEmpty}>
-              <div className={styles.resultEmptyTitle}>该次执行未产出 artifacts。</div>
+              <div className={styles.resultEmptyTitle}>本次生成没有图片结果</div>
               <div>
-                Provider 报告执行成功但没有图像产物。请检查
-                Provider 配额 / 模型能力，必要时重新准备后再执行。
+                请检查模型配置，必要时重新准备后再次生成。
               </div>
             </div>
           )}
@@ -1295,10 +1399,8 @@ function ResultTile({ view, sessionId }: { view: PackagingWorkspaceView; session
               state machine remains the source of truth. */}
           {isStale && (
             <div className={styles.resultStaleBanner}>
-              <strong>本次结果已过期</strong>
-              当前 configuration（参考图、锁定资产、模型）已变化，
-              旧 prepared snapshot 不能再用于生成。请在「准备生成」后
-              再「执行生成」以产出与当前 configuration 一致的新结果。
+              <strong>这是上一次结果</strong>
+              当前配置已经发生变化。请重新准备并执行，以获得与当前配置一致的新结果。
             </div>
           )}
 
@@ -1307,21 +1409,16 @@ function ResultTile({ view, sessionId }: { view: PackagingWorkspaceView; session
               artifact-serving seam is owned by the runtime; the
               Web feature is RPC-only and never reaches into the
               filesystem. */}
-          <p className={styles.resultNote}>
-            产物缩略图由 runtime artifact-serving seam 渲染（不属于
-            P3-B4 scope）。B4 仅展示 frozen View Model 已经裁剪过的
-            safe metadata，不读取任何 absolute path / 文件系统 / Provider
-            原始响应。
-          </p>
+          <details className={styles.resultNote}>
+            <summary>运行详情</summary>
+            <code>{exec.runId}</code>
+          </details>
         </>
       ) : (
         <div className={styles.resultEmpty}>
           <div className={styles.resultEmptyTitle}>尚未执行任何生成。</div>
           <div>
-            完成「准备生成」后，「执行生成」会调用同一个
-            <code style={{ margin: '0 4px' }}>executeGeneration</code>
-            RPC；B4 不会隐式 prepare+execute。成功执行后，artifact 元数据会
-            在这里出现。
+            先完成「准备生成」，再选择「执行生成」。生成的包装效果图会显示在这里。
           </div>
         </div>
       )}
@@ -1387,12 +1484,16 @@ function ArtifactPreviewCard({
   index: number;
 }) {
   const [state, setState] = useState<ArtifactPreviewState>({ kind: 'loading' });
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const previewTriggerRef = useRef<HTMLButtonElement>(null);
   // P3-B5 §XVIII: preview presentation state only. The
   // artifact list, run metadata, and result authority live on
   // `view.execution` (frozen P3-A). The data URL is held in
   // local state and is NEVER persisted to the browser side.
   useEffect(() => {
     let cancelled = false;
+    setState({ kind: 'loading' });
+    setPreviewOpen(false);
     async function load() {
       const imageId = artifact.imageId;
       if (!imageId || !runId || !sessionId) {
@@ -1431,19 +1532,27 @@ function ArtifactPreviewCard({
     >
       <div className={styles.resultArtifactThumb}>
         {state.kind === 'loaded' ? (
-          <img
-            className={styles.resultArtifactThumbImage}
-            src={state.dataUrl}
-            alt={artifact.imageId || `artifact-${index + 1}`}
-            data-testid="packaging-artifact-preview-img"
-          />
+          <button
+            ref={previewTriggerRef}
+            className={styles.previewTrigger}
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            aria-label={`放大预览 ${artifact.imageId || `结果 ${index + 1}`}`}
+          >
+            <img
+              className={styles.resultArtifactThumbImage}
+              src={state.dataUrl}
+              alt={artifact.imageId || `artifact-${index + 1}`}
+              data-testid="packaging-artifact-preview-img"
+            />
+          </button>
         ) : null}
         {state.kind === 'loading' && (
           <span className={styles.resultArtifactThumbLoading}>加载中…</span>
         )}
         {state.kind === 'unavailable' && (
           <span className={styles.resultArtifactThumbMuted}>
-            缩略图占位
+            预览不可用（缩略图占位）
           </span>
         )}
         {state.kind === 'error' && (
@@ -1479,7 +1588,43 @@ function ArtifactPreviewCard({
           <ArtifactKv label="Provider URL" value="已提供（仅元数据）" />
         )}
       </div>
+      {previewOpen && state.kind === 'loaded' && (
+        <PreviewDialog
+          dataUrl={state.dataUrl}
+          alt={artifact.imageId || `结果 ${index + 1}`}
+          onClose={() => {
+            setPreviewOpen(false);
+            requestAnimationFrame(() => previewTriggerRef.current?.focus());
+          }}
+        />
+      )}
     </article>
+  );
+}
+
+function PreviewDialog({ dataUrl, alt, onClose }: { dataUrl: string; alt: string; onClose: () => void }) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useDialogKeyboard(onClose, dialogRef, closeButtonRef);
+  return (
+    <div
+      className={styles.previewBackdrop}
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div ref={dialogRef} className={styles.previewDialog} role="dialog" aria-modal="true" aria-label={`${alt} 大图预览`}>
+        <button
+          ref={closeButtonRef}
+          className={styles.previewClose}
+          type="button"
+          onClick={onClose}
+          aria-label="关闭大图预览"
+        >×</button>
+        <img className={styles.previewImage} src={dataUrl} alt={alt} />
+      </div>
+    </div>
   );
 }
 
@@ -1523,10 +1668,10 @@ function ErrorSurfaceTile({ view }: { view: PackagingWorkspaceView }) {
       {err ? (
         <div className={styles.errorBox}>
           <div className={styles.errorHeader}>
-            <strong className={styles.errorCode}>{err.code}</strong>
+            <strong>{err.recoverable ? '操作未完成' : '生成被阻止'}</strong>
             <span
               className={`${styles.badge} ${
-                err.recoverable ? styles.badgeReady : styles.badgeFailed
+                err.recoverable ? styles.badge_ready : styles.badge_failed
               }`}
             >
               {err.recoverable ? '可恢复' : '阻塞'}
@@ -1543,6 +1688,10 @@ function ErrorSurfaceTile({ view }: { view: PackagingWorkspaceView }) {
               建议：{err.suggestedAction}
             </p>
           )}
+          <details className={styles.diagnosticDetails}>
+            <summary>技术详情</summary>
+            <code className={styles.errorCode}>{err.code}</code>
+          </details>
         </div>
       ) : (
         <EmptyHint message="无错误。" />
@@ -1608,6 +1757,26 @@ function resolveStatusTone(status: string): string {
   return 'neutral';
 }
 
+function actionGuidance(status: string): string {
+  if (status === 'preparing') return '正在准备生成配置，请稍候。';
+  if (status === 'executing') return '正在生成包装效果图，请稍候。';
+  if (status === 'ready') return '配置已准备完成，可以执行生成。';
+  if (status === 'executed') return '生成已完成；可再次生成，或修改配置后重新准备。';
+  if (status === 'failed') return '上次生成未完成，请按错误提示处理后重试。';
+  if (status === 'stale') return '配置已变化，需要重新准备。';
+  return '确认生成意图、参考图与锁定信息后，准备生成配置。';
+}
+
+function readinessGuidance(status: string, blockers: readonly string[]): string {
+  if (blockers.length > 0) return `完成以下事项后继续：${blockers.join(' / ')}`;
+  if (status === 'ready') return '配置已准备完成，可以执行生成。';
+  if (status === 'executed') return '本次生成已完成，可以查看结果或再次生成。';
+  if (status === 'preparing') return '正在准备生成配置…';
+  if (status === 'executing') return '正在生成包装效果图…';
+  if (status === 'failed') return '生成未完成，请查看错误提示并重试。';
+  return '当前配置可以继续编辑；完成后选择“准备生成”。';
+}
+
 // Sentinel: keep PACKAGING_WORKSPACE_STATUS_LABELS imported so the
 // tree-shaker doesn't drop the dependency; the view's
 // `statusLabel` is the canonical UI text.
@@ -1658,7 +1827,7 @@ const LOCKED_FIELD_LABELS: LockedFieldDef[] = [
     label: '必出元素',
     render: (v) => {
       const items = Array.isArray(v?.items) ? v!.items : [];
-      return items.length > 0 ? `${items.length} 项` : <MutedEmpty />;
+      return items.length > 0 ? <LockedItems items={items} /> : <MutedEmpty />;
     },
   },
   {
@@ -1666,10 +1835,20 @@ const LOCKED_FIELD_LABELS: LockedFieldDef[] = [
     label: '已排除 / 已确认',
     render: (v) => {
       const items = Array.isArray(v?.items) ? v!.items : [];
-      return items.length > 0 ? `${items.length} 项` : <MutedEmpty />;
+      return items.length > 0 ? <LockedItems items={items} /> : <MutedEmpty />;
     },
   },
 ];
+
+function LockedItems({ items }: { items: unknown[] }) {
+  return (
+    <span className={styles.lockedItems}>
+      {items.map((item, index) => (
+        <span key={`${String(item)}-${index}`}>{String(item)}</span>
+      ))}
+    </span>
+  );
+}
 
 function MutedEmpty() {
   return <em className={styles.lockedMuted}>未提供</em>;
