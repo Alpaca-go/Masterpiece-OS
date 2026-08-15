@@ -755,15 +755,37 @@ export function createPackagingWorkspaceService(options = {}) {
   }
 
   // -----------------------------------------------------------------------
-  // checkStale (P3-C4.2.1: fresh STALE recheck for ops-layer preflight)
+  // checkStale (P3-A12 — Canonical Read-Only STALE Inspection API)
   //
-  // Returns the fresh `{ stale, reasons }` view as computed by
-  // `computeStale` against the current state, NOT the snapshot
-  // carried by `state.lastStaleReasons`. The operations layer
-  // uses this to enforce the canonical STALE-first ordering at
-  // the `execute-generation` boundary so an already-STALE
-  // session never reaches the execution-preflight
-  // identity-mismatch check in `buildExecutionDeps`.
+  // Sole owner of the canonical STALE inspection seam. The
+  // canonical STALE authority (computeStale) lives in
+  // `stale-tracker.js` and is the single source of truth.
+  // The P3-A12 corrective formally accepts this read-only
+  // seam as the bridge between the operations layer and
+  // the canonical STALE authority. The operations layer
+  // MUST NOT import computeStale / stale-tracker / STALE_REASON
+  // (the AK-15 contract remains in force: no second stale
+  // tracker); it MUST consume only `{ stale, reasons }` via
+  // this seam.
+  //
+  // Contract (P3-A12):
+  //   - READ-ONLY: no mutation of status / staleReasons /
+  //     intent / truthSnapshot / prepared / execution /
+  //     error / persistence. Verified by the AV-04..AV-07
+  //     contract tests.
+  //   - OUTPUT: `{ stale: boolean, reasons: readonly string[] }`.
+  //     Only existing canonical STALE reasons are surfaced
+  //     (intent_changed / truth_surface_changed / etc.). No
+  //     new STALE_REASON values are added by this seam.
+  //   - IDENTITY: the seam is part of the P3-A frozen
+  //     surface. It does not expose raw canonical inputs
+  //     (currentIntent / prepared.intentAtPrepare /
+  //     prepared.truthFingerprintAtPrepare / truthSnapshot)
+  //     to the operations layer; the operations layer only
+  //     sees the boolean + the reason names.
+  //   - The operations layer is forbidden from importing
+  //     `computeStale` directly. The seam is the only
+  //     legal access path.
   // -----------------------------------------------------------------------
 
   function checkStale(sessionId) {
