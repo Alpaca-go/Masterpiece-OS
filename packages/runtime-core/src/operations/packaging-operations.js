@@ -1626,12 +1626,14 @@ async function buildExecutionDeps({
   //   - The Workspace's `intent.providerModelId` is the
   //     canonical Registry identity (P3-A10 contract). It
   //     MUST match the profile's effective Registry
-  //     identity. A mismatch is recorded in the deps for
-  //     the service-level STALE gate to project as an
-  //     `identity_mismatch` STALE reason; the actual
-  //     fail-closed rejection is enforced at the service
-  //     boundary AFTER the existing STALE check so the
-  //     pre-C4.2 STALE envelope remains primary.
+  //     identity. A mismatch is an EXECUTION CONFIGURATION
+  //     error and is rejected by `buildExecutionDeps`
+  //     itself (this function) as a safe application
+  //     error BEFORE any adapter or Provider dispatch.
+  //     The Workspace STALE surface (P3-A frozen) is
+  //     intentionally NOT touched: the existing STALE
+  //     gate (R-13) remains the sole STALE authority,
+  //     and `identity_mismatch` is NOT a STALE reason.
   const profileRegistryId = asString(profile.registryModelId) || asString(profile.modelId);
   const profileApiModelId = asString(profile.modelId);
   const intentRegistryId = asString(callerProviderModelId)
@@ -1639,25 +1641,29 @@ async function buildExecutionDeps({
   const identityMismatch = Boolean(intentRegistryId)
     && Boolean(profileRegistryId)
     && intentRegistryId !== profileRegistryId;
-  // Carry the mismatch into the deps so the service-level
-  // gate can reject after the existing STALE check fires.
-  // The rejection code is preserved exactly so the test
-  // R-13 STALE envelope (and the new AS-09 negative test)
-  // both pass under the canonical order: STALE first,
-  // identity mismatch second.
-  const identityMismatchError = identityMismatch
-    ? Object.freeze({
-        code: 'PACKAGING_WORKSPACE_EXECUTE_REJECTED',
-        message:
-          'PACKAGING_WORKSPACE_EXECUTE_REJECTED: intent.providerModelId ' +
-          `"${intentRegistryId}" does not match the selected profile's registry identity ` +
-          `"${profileRegistryId}". The Workspace providerModelId is the canonical Masterpiece ` +
-          "Model Registry identity (P3-A10); a profile with a different registry identity is " +
-          'an invalid configuration and the execution must be rejected before any Provider dispatch.',
-        expected: { intentProviderModelId: intentRegistryId, profileRegistryId: profileRegistryId },
-        actual: { intentProviderModelId: intentRegistryId, profileRegistryId: profileRegistryId },
-      })
-    : null;
+  if (identityMismatch) {
+    // Execution preflight — fail closed before adapter
+    // lookup, before Provider dispatch, before any
+    // Workspace state mutation. The error uses the same
+    // `EXECUTION_*` family as the existing
+    // `EXECUTION_PROVIDER_MODEL_REQUIRED` preflight
+    // error, so the existing call sites catch the
+    // mismatch the same way they catch missing-model.
+    const err = new Error(
+      'EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH: intent.providerModelId ' +
+      `"${intentRegistryId}" does not match the selected profile's effective registry identity ` +
+      `"${profileRegistryId}". The Workspace providerModelId is the canonical Masterpiece ` +
+      'Model Registry identity (P3-A10); a profile whose effective registry identity differs ' +
+      'is an invalid execution configuration and must be corrected by the user (re-select a ' +
+      'profile whose registry identity matches the Workspace intent, or change the Workspace ' +
+      'intent to a model the selected profile supports).'
+    );
+    err.code = 'EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH';
+    err.expected = { intentProviderModelId: intentRegistryId, profileRegistryId };
+    err.actual = { intentProviderModelId: intentRegistryId, profileRegistryId };
+    err.issues = ['provider_model_identity_mismatch'];
+    throw err;
+  }
   const registryModelId = profileRegistryId;
   const providerApiModelId = profileApiModelId;
   if (!registryModelId) {
@@ -1793,14 +1799,13 @@ async function buildExecutionDeps({
     protocol,
     provider,
     region,
-    // P3-C4.2: the identity-mismatch gate is surfaced to
-    // the service so the existing STALE check fires first;
-    // the service projects the mismatch as a new
-    // `identity_mismatch` STALE reason and rejects with
-    // the canonical code. The gate stays primary; the
-    // identity-mismatch reason is added on top of the
-    // existing STALE envelope.
-    identityMismatchError,
+    // P3-C4.2.1: the identity-mismatch gate is owned by
+    // `buildExecutionDeps` itself and throws
+    // `EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH` before
+    // this deps object is ever returned. The deps surface
+    // therefore carries no mismatch payload; the P3-A
+    // Workspace STALE surface remains untouched.
+    //
     // P3-B5 additive fields (consumed by P2 frozen generation-service).
     executor,
     resolveExecutionConfig,
