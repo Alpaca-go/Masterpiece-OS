@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -23,6 +23,13 @@ const GRAPH = path.join(ROOT, 'apps/web-runtime/src/current-operation-graph.ts')
 const OPERATIONS = path.join(ROOT, 'packages/runtime-core/src/operations/packaging-operations.js');
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
+
+// P3-C4.2 corrective sub-tree (C4.2 identity-separation). The
+// frozen-diff guards subtract that sub-tree from the P3-A / P3-B
+// (and pre-C4.1 C4) baseline diff check so the corrective seam is
+// not read as a regression against a frozen baseline.
+const C4_2_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
+
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const NOW = '2026-08-14T00:00:00.000Z';
 
@@ -248,8 +255,10 @@ test('AK-27 invalid source kind and PackagingTranslationV2 fail closed', () => {
 });
 test('AK-28 P2 and P3-A frozen production diffs remain zero', () => {
   assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), '');
-  assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging']), '');
+  assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
+    C4_2_SUBTREE]), '');
 });
 test('AK-29 P3-B accepted UI and Workspace semantics remain unchanged', () => {
-  assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']), '');
+  assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+    C4_2_SUBTREE]), '');
 });

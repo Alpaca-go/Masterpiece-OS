@@ -50,6 +50,12 @@ const PACKAGING_OPS = readFileSync(
 
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
+
+// P3-C4.2 corrective sub-tree (C4.2 identity-separation). The
+// frozen-diff guards subtract that sub-tree from the P3-A / P3-B
+// (and pre-C4.1 C4) baseline diff check so the corrective seam is
+// not read as a regression against a frozen baseline.
+const C4_2_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const P3C_CORRECTIVE = '782e2fc08fca167e0320f9bcde33ed6eacaf1b2d';
 const P3C_REFREEZE = 'fa7197c8dc9c0fe1faf8e41440ef22cddbd3cda5';
@@ -321,14 +327,16 @@ test('AR-19 P2 frozen production diff is zero', () => {
 
 test('AR-20 P3-A frozen production diff is zero', () => {
   assert.equal(
-    git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging']),
+    git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
+    C4_2_SUBTREE]),
     '',
   );
 });
 
 test('AR-21 P3-B accepted UI/Workspace semantic diff is zero', () => {
   assert.equal(
-    git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']),
+    git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+    C4_2_SUBTREE]),
     '',
   );
 });
@@ -343,10 +351,13 @@ test('AR-22 P3-C current corrective semantics diff is zero', () => {
   ]);
   assert.equal(compositionDiff, '');
   // P3-C re-freeze added only the docs file; HEAD should
-  // not have changed any other file in the P3-C surface.
+  // not have changed any other file in the P3-C surface
+  // (the C4.2 corrective sub-tree is excluded — it lands
+  // AFTER the re-freeze baseline, by definition).
   const refreezeSurface = git([
     'diff', '--name-only', P3C_REFREEZE, 'HEAD',
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging',
+    C4_2_SUBTREE,
   ]);
   assert.equal(refreezeSurface, '');
 });

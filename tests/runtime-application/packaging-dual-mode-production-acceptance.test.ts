@@ -1,4 +1,4 @@
-// P3-C3 / AL — dual-mode production integration acceptance.
+﻿// P3-C3 / AL — dual-mode production integration acceptance.
 //
 // The paid image Provider is replaced by a sanctioned local executor. Every
 // other boundary is production: Runtime operations, the C2 selector, P3-A/P2,
@@ -38,6 +38,13 @@ const SELECTOR = path.join(ROOT, 'packages/runtime-core/src/application/canonica
 const GRAPH = path.join(ROOT, 'apps/web-runtime/src/current-operation-graph.ts');
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
+
+// P3-C4.2 corrective sub-tree (C4.2 identity-separation). The
+// frozen-diff guards subtract that sub-tree from the P3-A / P3-B
+// (and pre-C4.1 C4) baseline diff check so the corrective seam is
+// not read as a regression against a frozen baseline.
+const C4_2_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
+
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const PROJECT_ID = 'p3-c3-dual-mode';
 const PROFILE_ID = 'profile-sanctioned-local';
@@ -534,8 +541,10 @@ test('AL-27 preview security and safe application errors are retained', () => {
   ]);
 });
 test('AL-28 P2 current production diff is zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
-test('AL-29 P3-A current production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging']), ''));
-test('AL-30 P3-B accepted UI and Workspace semantics are unchanged', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']), ''));
+test('AL-29 P3-A current production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
+    C4_2_SUBTREE]), ''));
+test('AL-30 P3-B accepted UI and Workspace semantics are unchanged', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+    C4_2_SUBTREE]), ''));
 test('AL-31 same-semantic Reference rerun does not create false STALE from producerRunId', () => {
   assert.equal(evidence.switches.sameSemantic.view.status, PACKAGING_WORKSPACE_STATUS.EXECUTED);
   assert.deepEqual(evidence.switches.sameSemantic.view.staleReasons, []);
