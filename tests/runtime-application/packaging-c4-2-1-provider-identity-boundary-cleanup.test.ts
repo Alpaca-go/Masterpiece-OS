@@ -49,7 +49,7 @@ const ADAPTER = readFileSync(
 );
 
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
-const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
+const P3A = '1fcafc810a7e218a7cf50dd675d914cd396304b2';
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const P3C = '456ec3a9d0273b599ed15bcd424fde1f36b8ce1b';
 const C4_1 = '782e2fc08fca167e0320f9bcde33ed6eacaf1b2d';
@@ -281,21 +281,27 @@ test('AT-14 D-PROVIDER-01 cap retained at 10', () => {
 });
 
 // ---------------------------------------------------------------------------
-// AT-15 — Frozen-diff guards are direct (no exclusions hiding delta).
+// AT-15 — P3-A12 current baseline: direct zero-diff frozen guard.
 // ---------------------------------------------------------------------------
 
-test('AT-15 frozen-diff guards do not hide workspace-service changes', () => {
-  // The C4.2.1 cleanup removes the C4_2_SUBTREE
-  // (workspace-service) pathspec exclusion that the
-  // C4.2 implementation required. The P3-A diff is
-  // therefore non-zero — the documented C4.2.1
-  // sub-tree is the read-only `checkStale` helper in
-  // workspace-service.js.
-  // 1. P3-A diff is exactly the documented C4.2.1 sub-tree
-  //    (just workspace-service.js; no other P3-A
-  //    changes).
-  const diff = git(['diff', '--name-only', P3A, 'HEAD', '--', P3_A_GATE]);
-  assert.equal(diff, 'packages/runtime-core/src/application/packaging/workspace-service.js');
+test('AT-15 P3-A12 current baseline direct frozen diff is zero (no exclusion)', () => {
+  // P3-A12 (`1fcafc8`) is the current accepted P3-A
+  // production-tree baseline. The P3-A12 corrective
+  // formally accepts the read-only `checkStale` seam in
+  // workspace-service.js as part of the P3-A frozen
+  // surface. A direct `1fcafc8 -> HEAD` diff against the
+  // P3-A gate therefore requires NO exclusion — the seam
+  // is already part of the current baseline.
+  //
+  // Historical evidence (P3-A11 `f95c145b` -> P3-A12
+  // `1fcafc8`) is preserved by the P3-A_HISTORICAL constant
+  // in the AV / AW files. The historical delta is the
+  // documented C4.2.1 sub-tree (workspace-service.js) and
+  // is no longer a current-zero requirement.
+  assert.equal(
+    git(['diff', '--name-only', P3A, 'HEAD', '--', P3_A_GATE]),
+    '',
+  );
   // 2. P3-B diff is zero (no UI changes).
   const diffB = git(['diff', '--name-only', P3B, 'HEAD', '--', P3_B_GATE]);
   assert.equal(diffB, '');

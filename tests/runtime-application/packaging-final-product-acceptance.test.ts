@@ -15,18 +15,7 @@ import { getPackagingShotContract } from '@masterpiece/image-generation-runtime/
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
-const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
-
-// P3-C4.2.1 corrective sub-tree (read-only checkStale
-// helper in workspace-service.js). The P3-A frozen-diff
-// guards subtract that sub-tree from the P3-A diff
-// check so the corrective seam is not read as a STALE
-// semantic regression. The helper is read-only and does
-// NOT introduce a new STALE reason, status, or
-// transition (verified by AT-08, AT-09, AT-17).
-const C4_2_1_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
-
-
+const P3A = '1fcafc810a7e218a7cf50dd675d914cd396304b2';
 
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const C2 = '456ec3a9d0273b599ed15bcd424fde1f36b8ce1b';
@@ -88,15 +77,12 @@ test('AM-20 Renderer mobile contract contains bounded tablet and handset breakpo
 test('AM-21 Renderer accessibility contract retains dialog, live status, labels, and keyboard handling', () => containsAll(UI, [/aria-live="polite"/u, /role="dialog"/u, /aria-modal="true"/u, /aria-label=/u, /event\.key === 'Escape'/u]));
 test('AM-22 P2 frozen production diff is zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AM-23 P3-A frozen production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]), ''));
 test('AM-24 P3-B accepted production semantics diff is zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]), ''));
 test('AM-25 P3-C production baseline permits only the authorized C4.1 composition-root seam', () => {
   assert.equal(
-    git(['diff', '--name-only', C2, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE, 'packages/image-generation-runtime/src/packaging']),
+    git(['diff', '--name-only', C2, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
     'apps/web-runtime/src/current-operation-graph.ts',
   );
 });

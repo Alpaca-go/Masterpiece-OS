@@ -27,18 +27,7 @@ import type { ReferenceStyleProfile } from '@masterpiece/runtime-core/applicatio
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2_CURRENT = 'a593278b55e437fac59d768c5cee734d9a9fc201';
-const P3A_CURRENT = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
-
-// P3-C4.2.1 corrective sub-tree (read-only checkStale
-// helper in workspace-service.js). The P3-A frozen-diff
-// guards subtract that sub-tree from the P3-A diff
-// check so the corrective seam is not read as a STALE
-// semantic regression. The helper is read-only and does
-// NOT introduce a new STALE reason, status, or
-// transition (verified by AT-08, AT-09, AT-17).
-const C4_2_1_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
-
-
+const P3A_CURRENT = '1fcafc810a7e218a7cf50dd675d914cd396304b2';
 
 const P3B_ACCEPTED = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 
@@ -243,14 +232,12 @@ test('AJ-13 no Packaging Context Store is introduced', () => {
 
 test('AJ-14 downstream Packaging contains no Reference interpretation', () => {
   const graph = git(['grep', '-n', '-E', 'ReferenceStyleCapsule|anchorGoal', '--', 'apps/web-runtime/src/current-operation-graph.ts', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]);
   assert.equal(graph, '');
 });
 
 test('AJ-15 Packaging entry contains no new model call', () => {
   const graph = git(['grep', '-n', '-E', 'analyzeReferenceStyle|responses\\.create|chat\\.completions', '--', 'apps/web-runtime/src/current-operation-graph.ts', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]);
   assert.equal(graph, '');
 });
@@ -266,10 +253,8 @@ test('AJ-17 Reference translation owns no Shot Contract or aspectRatio', () => {
 
 test('AJ-18 P2 current production diff is zero', () => assert.equal(git(['diff', '--name-only', P2_CURRENT, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AJ-19 P3-A current production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A_CURRENT, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]), ''));
 test('AJ-20 P3-B accepted UI and Workspace semantics are unchanged', () => assert.equal(git(['diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]), ''));
 
 test('AJ-C01 no active source fails closed', async () => { const h = await harness(); await assert.rejects(() => h.service.getActiveSource('project-a'), (error: any) => error.code === 'REFERENCE_ACTIVE_SOURCE_UNAVAILABLE'); });

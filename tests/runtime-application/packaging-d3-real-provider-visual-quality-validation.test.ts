@@ -49,17 +49,7 @@ const PACKAGING_OPS = readFileSync(
 );
 
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
-const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
-
-// P3-C4.2.1 corrective sub-tree (read-only checkStale
-// helper in workspace-service.js). The P3-A frozen-diff
-// guards subtract that sub-tree from the P3-A diff
-// check so the corrective seam is not read as a STALE
-// semantic regression. The helper is read-only and does
-// NOT introduce a new STALE reason, status, or
-// transition (verified by AT-08, AT-09, AT-17).
-const C4_2_1_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
-
+const P3A = '1fcafc810a7e218a7cf50dd675d914cd396304b2';
 
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const P3C_CORRECTIVE = '782e2fc08fca167e0320f9bcde33ed6eacaf1b2d';
@@ -333,7 +323,6 @@ test('AR-19 P2 frozen production diff is zero', () => {
 test('AR-20 P3-A frozen production diff is zero', () => {
   assert.equal(
     git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]),
     '',
   );
@@ -342,7 +331,6 @@ test('AR-20 P3-A frozen production diff is zero', () => {
 test('AR-21 P3-B accepted UI/Workspace semantic diff is zero', () => {
   assert.equal(
     git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE,
     ]),
     '',
   );
@@ -363,8 +351,7 @@ test('AR-22 P3-C current corrective semantics diff is zero', () => {
   // AFTER the re-freeze baseline, by definition).
   const refreezeSurface = git([
     'diff', '--name-only', P3C_REFREEZE, 'HEAD',
-    '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging',
-    C4_2_1_SUBTREE, 'packages/image-generation-runtime/src/packaging'
+    '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging'
   ]);
   assert.equal(refreezeSurface, '');
 });
