@@ -1,11 +1,12 @@
-# P3-C4.2.2 — P3-A12 Baseline Rebase & Provider Boundary Freeze
+# P3-C4.2.2 �?P3-A12 Baseline Rebase & Provider Boundary Freeze
 
 Date: 2026-08-15
 Branch: `codex/visual-analysis-a1-multi-provider`
-Authorized start HEAD: `dcc281496ee2fd03e0fa35fb64a84e8c50b39c73`
+Authorized start HEAD: `dcc281496ee2fd03e0fa35fb64a84e8c50b39c73` (P3-A12 re-freeze)
 P3-A12 re-freeze: `dcc2814`
 P3-A12 corrective production: `1fcafc810a7e218a7cf50dd675d914cd396304b2`
-P3-C4.2.2 freeze: this document + 2 commits
+P3-C4.2.2 final verified HEAD: `887436e1a4b49f76f8dd631f945442f0615b6257`
+P3-C4.2.2 freeze: 3 commits (tests + tests + docs) + 1 sync commit (this document)
 Real Provider validation: **NOT PERFORMED** (test / freeze / guard cleanup phase)
 Final decision: **P3-C RE-FROZEN**
 
@@ -13,15 +14,26 @@ Final decision: **P3-C RE-FROZEN**
 
 | Stage | Commit | Class |
 |---|---|---|
-| P3-A12 corrective production | `1fcafc8` | comment-only update to checkStale; function body byte-equivalent to C4.2.1 final |
-| P3-A12 re-freeze | `dcc2814` | docs only |
-| C4.2.2 guard cleanup | this commit (1/2) | tests only (12 modified + 1 added) |
-| C4.2.2 freeze docs | this commit (2/2) | docs only |
+| P3-A12 corrective production | `1fcafc810a7e218a7cf50dd675d914cd396304b2` | comment-only update to checkStale; function body byte-equivalent to C4.2.1 final |
+| P3-A12 re-freeze | `dcc281496ee2fd03e0fa35fb64a84e8c50b39c73` | docs only |
+| **C4.2.2 (1/3) guard cleanup** | **`42249ae7930e25a6bf91e1c02189f3c438976577`** | tests only (12 modified + 1 new AW file) |
+| **C4.2.2 (2/3) follow-up** | **`887436e1a4b49f76f8dd631f945442f0615b6257`** | tests only (P3-B gate split + P3-C chain reclassification) |
+| **C4.2.2 (3/3) freeze docs** | **`f309f589bf06940553106f30aa42ddb95080cbdc`** | docs only (this document) |
+| **C4.2.2 sync** | **this commit (final C4.2.2 HEAD; see `git log` for exact SHA)** | docs only (final record synchronization) |
 
 C4.2.2 is a TEST / FREEZE / GUARD CLEANUP phase. Production
-source changes: 0. The two C4.2.2 commits are tests/docs
-only. Working tree after the C4.2.2 commits is empty
-(AC-09 enforced).
+source changes: 0. The three C4.2.2 commits are tests/docs
+only. The C4.2.2 sync commit is docs only (final record
+synchronization; no semantic change to baselines or
+guards). Working tree after the C4.2.2 sync commit is
+empty (AC-09 enforced).
+
+The three C4.2.2 commits form the complete technical
+rebase. The C4.2.2 sync commit (this document) only
+corrects the canonical record to reflect the actual
+HEAD (`887436e`) �?including the test follow-up that
+split the P3-B expanded-gate tests and reclassified
+the P3-C chain guards.
 
 ## B. P3-A12 consumed
 
@@ -89,7 +101,7 @@ const C4_2_1_SUBTREE = ':(exclude)packages/runtime-core/src/application/packagin
 ```
 
 This exclusion was needed to make the P3-A frozen-diff
-guard (P3A → HEAD) return empty, even though the C4.2.1
+guard (P3A �?HEAD) return empty, even though the C4.2.1
 corrective added the read-only `checkStale` seam to
 workspace-service.js.
 
@@ -155,66 +167,144 @@ The B-class guards were audited individually and classified
 as **CURRENT FROZEN GUARD** or **HISTORICAL EVIDENCE
 GUARD** based on which baseline they compare against.
 
-### CURRENT FROZEN GUARDS (compare against P3-A12 `1fcafc8`)
+**Final guard count at C4.2.2 verified HEAD `887436e`:**
+- **CURRENT FROZEN GUARDS: 25** (compare against current
+  P3-A12 baseline `1fcafc8` or current P3-B baseline
+  `2ac4cf1`; expect empty diff with no exclusion pathspec)
+- **HISTORICAL EVIDENCE GUARDS: 8** (compare against
+  historical baselines like `3da7a14` / `b6730c3` /
+  `fa7197c` / `P3C`; expect an explicit delta that
+  documents the C4.1 + C4.2 + C4.2.1 + P3-A12 chain)
+- **Total frozen guards: 33**
 
-| Guard ID | File | Action |
-|---|---|---|
-| AT-15 | c4-2-1 | updated to compare `1fcafc8` → HEAD, no exclusion |
-| AN-14 | cross-project-hardening | updated to compare `1fcafc8` → HEAD, no exclusion |
-| AN-15 | cross-project-hardening | updated; `':!workspace-service.js'` removed |
-| AP-15 | project-identity-projection | updated to compare `1fcafc8` → HEAD, no exclusion |
-| AP-18 | project-identity-projection | updated to compare `1fcafc8` → HEAD, no exclusion |
-| AP-19 | project-identity-projection | updated; `':!workspace-service.js'` removed |
-| AQ-23 | d2 | updated to compare `1fcafc8` → HEAD, no exclusion |
+### CURRENT FROZEN GUARDS (compare against current P3-A12 / P3-B baseline; expect empty diff with no exclusion)
 
-### HISTORICAL EVIDENCE GUARDS (compare against old baselines; expected delta is documented)
-
-| Guard ID | File | Baseline | Purpose |
+| # | Guard ID | File | Action at C4.2.2 |
 |---|---|---|---|
-| AS-20 | c4-2 | `b6730c3` (C4.2.1 corrective) → HEAD | documents the C4.2.1 + C4.2.1A + C4.2.2A + P3-A12 chain |
-| AS-21 | c4-2 | `782e2fc` (C4.1) → `4f3a0a3` (C4.2) | documents the C4.2 surface itself |
-| AN-16 | cross-project-hardening | `3da7a14` (P3-C integration) → HEAD | documents P3-C integration through C4.2.1 + P3-A12 |
-| AN-16b | cross-project-hardening | `b6730c3` (C4.2.1 corrective) → HEAD | documents the C4.2.1 + P3-A12 chain |
-| AT-19 | c4-2-1 | `P3C` → HEAD and `b6730c3` → HEAD | documents the C4.1 + C4.2.1 surface |
+| 1 | AT-15 | c4-2-1 | updated to compare `1fcafc8` �?HEAD, no exclusion |
+| 2 | AN-14 | cross-project-hardening | updated to compare `1fcafc8` �?HEAD, no exclusion |
+| 3 | AN-15 | cross-project-hardening | updated; `':!workspace-service.js'` removed (P3-B UI only) |
+| 4 | AK-28 | canonical-context | updated; `C4_2_1_SUBTREE` removed |
+| 5 | AK-29 | canonical-context | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 6 | AO-27 | cross-project-technical | updated; `C4_2_1_SUBTREE` removed |
+| 7 | AO-28 | cross-project-technical | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 8 | AQ-23 | d2 | updated to compare `1fcafc8` �?HEAD, no exclusion |
+| 9 | AQ-24 | d2 | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 10 | AR-20 | d3 | updated; `C4_2_1_SUBTREE` removed |
+| 11 | AR-21 | d3 | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 12 | AL-29 | dual-mode | updated; `C4_2_1_SUBTREE` removed |
+| 13 | AL-30 | dual-mode | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 14 | AM-23 | final-product | updated; `C4_2_1_SUBTREE` removed |
+| 15 | AM-24 | final-product | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 16 | AP-15 | project-identity-projection | updated to compare `1fcafc8` �?HEAD, no exclusion |
+| 17 | AP-18 | project-identity-projection | updated to compare `1fcafc8` �?HEAD, no exclusion |
+| 18 | AP-19 | project-identity-projection | updated; `':!workspace-service.js'` removed (P3-B UI only) |
+| 19 | AJ-19 | reference-first-authority | updated; `C4_2_1_SUBTREE` removed |
+| 20 | AJ-20 | reference-first-authority | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 21 | AI-15 | reference-first-handoff | updated; `C4_2_1_SUBTREE` removed |
+| 22 | AI-16 | reference-first-handoff | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 23 | AH-C1-13 | upstream-handoff | updated; `C4_2_1_SUBTREE` removed |
+| 24 | AH-C1-14 | upstream-handoff | updated; `C4_2_1_SUBTREE` removed (P3-B UI only after `887436e` split) |
+| 25 | AW-03 | c4-2-2 | canonical P3-A12 current baseline direct zero-diff guard |
 
-HISTORICAL EVIDENCE guards keep their explicit expected
-delta (including `workspace-service.js` in the expected
-list) and are NOT masqueraded as zero-diff. They serve as
-audit-trail evidence of the C4.2.1 / P3-A12 chain and must
-not be removed.
+### HISTORICAL EVIDENCE GUARDS (compare against old baselines; expected delta is documented, not zero)
+
+| # | Guard ID | File | Baseline | Purpose |
+|---|---|---|---|---|
+| 1 | AS-20 | c4-2 | `b6730c3` (C4.2.1 corrective) �?HEAD | documents the C4.2.1 + C4.2.1A + C4.2.2A + P3-A12 chain |
+| 2 | AS-21 | c4-2 | `782e2fc` (C4.1) �?`4f3a0a3` (C4.2) | documents the C4.2 surface itself |
+| 3 | AN-16 | cross-project-hardening | `3da7a14` (P3-C integration) �?HEAD | documents P3-C integration through C4.1 + C4.2.1 + P3-A12 |
+| 4 | AN-16b | cross-project-hardening | `b6730c3` (C4.2.1 corrective) �?HEAD | documents the C4.2.1 + P3-A12 chain |
+| 5 | AT-19 | c4-2-1 | `P3C` �?HEAD and `b6730c3` �?HEAD | documents the C4.1 + C4.2.1 surface |
+| 6 | **AO-29** | cross-project-technical | `3da7a14` (P3-C integration) �?HEAD | **reclassified in `887436e`**: expected = `current-operation-graph.ts + workspace-service.js` (C4.1 + C4.2.1 + P3-A12 chain); was zero-diff in C4.2.2a, reclassified to HISTORICAL EVIDENCE in `887436e` |
+| 7 | **AM-25** | final-product | `C2` (`456ec3a`) �?HEAD | **reclassified in `887436e`**: expected = `current-operation-graph.ts + workspace-service.js` (C4.1 + C4.2.1 + P3-A12 chain); was zero-diff in C4.2.2a, reclassified to HISTORICAL EVIDENCE in `887436e` |
+| 8 | **AR-22** | d3 | `fa7197c` (P3-C re-freeze) �?HEAD | **reclassified in `887436e`**: expected = `workspace-service.js` (C4.2.1 + P3-A12 chain); was zero-diff in C4.2.2a, reclassified to HISTORICAL EVIDENCE in `887436e` |
+
+**HISTORICAL EVIDENCE classification is explicit**:
+- The test name in each `887436e` reclassified guard
+  includes the phrase `(HISTORICAL EVIDENCE)`.
+- The expected delta is documented in the test
+  (explicit sorted list), not masqueraded as zero-diff.
+- The current P3-A12 baseline is verified separately by
+  AW-03 (canonical P3-A12 direct zero-diff guard).
+
+**P3-B gate reclassification (`887436e`):**
+
+The 14 P3-B expanded-gate tests (AK-29, AN-15, AO-28,
+AQ-24, AR-21, AL-30, AM-24, AP-19, AJ-20, AI-16,
+AH-C1-14) originally conflated the P3-B UI baseline
+(`2ac4cf1`) with the P3-A application path
+(`packages/runtime-core/src/application/packaging`). After
+P3-A12 absorbed the workspace-service.js change, the
+expanded-gate test no longer passes because the P3-A part
+is no longer empty from P3-B to HEAD.
+
+The `887436e` follow-up split each test into:
+- **P3-B UI check**: `2ac4cf1` �?HEAD against
+  `apps/web/src/features/packaging` only (expect empty).
+- The P3-A12 zero-diff check is covered separately by
+  AT-15, AN-14, AP-15, AP-18, AW-03 (no change needed;
+  the P3-A check is at the P3-A12 baseline, not the
+  P3-B baseline).
+
+**CURRENT P3-B guard = accepted P3-B surface only.**
+The P3-B guard MUST NOT include the P3-A application
+path; otherwise the P3-B baseline (which predates the
+P3-A12 corrective) cannot reach zero diff on the
+combined gate.
 
 ## J. Frozen Guard Migration Table
 
-| Guard | Old baseline | Old strategy | Old exclusion? | New baseline | New strategy | Class |
-|---|---|---|---|---|---|---|
-| AK-28 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AK-29 | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | diff vs expanded gate, no exclusion | CURRENT (P3-A12 absorbed) |
-| AO-27 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AO-29 | `3da7a14` (P3-C) | diff vs selector | `C4_2_1_SUBTREE` | `3da7a14` (P3-C) | diff vs selector, no exclusion | CURRENT (P3-A12 absorbed) |
-| AQ-23 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AQ-24 | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | diff vs expanded gate, no exclusion | CURRENT (P3-A12 absorbed) |
-| AR-20 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AL-29 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AM-23 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AJ-19 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AI-15 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AH-C1-13 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
-| AH-C1-14 | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | diff vs expanded gate, no exclusion | CURRENT (P3-A12 absorbed) |
-| AT-15 | `f95c145b` (P3-A11) | expected = `workspace-service.js` | none | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT (re-classified) |
-| AN-14 | `f95c145b` (P3-A11) | diff vs P3-A gate | `':!workspace-service.js'` | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT |
-| AN-15 | `2ac4cf1` (P3-B) | diff vs expanded gate | `':!workspace-service.js'` | `2ac4cf1` (P3-B) | diff empty, no exclusion | CURRENT |
-| AP-15 | `f95c145b` (P3-A11) | diff vs P3-A gate | `':!workspace-service.js'` | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT |
-| AP-18 | `f95c145b` (P3-A11) | diff vs P3-A gate | `':!workspace-service.js'` | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT |
-| AP-19 | `2ac4cf1` (P3-B) | diff vs expanded gate | `':!workspace-service.js'` | `2ac4cf1` (P3-B) | diff empty, no exclusion | CURRENT |
-| AS-20 | `b6730c3` (C4.2.1 corrective) | expected = `workspace-service.js + packaging-operations.js` | none | unchanged | unchanged | HISTORICAL |
-| AS-21 | `782e2fc` (C4.1) → `4f3a0a3` (C4.2) | expected = same | none | unchanged | unchanged | HISTORICAL |
-| AN-16 | `3da7a14` (P3-C) | expected = `current-operation-graph.ts + workspace-service.js` | none | unchanged | unchanged | HISTORICAL |
-| AN-16b | `b6730c3` (C4.2.1 corrective) | expected = `workspace-service.js + packaging-operations.js` | none | unchanged | unchanged | HISTORICAL |
-| AT-19 | `P3C` and `b6730c3` | expected = current delta | none | unchanged | unchanged | HISTORICAL |
+| # | Guard | Old baseline | Old strategy | Old exclusion? | New baseline | New strategy | Class |
+|---|---|---|---|---|---|---|---|
+| 1 | AK-28 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 2 | **AK-29** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AT-15 | CURRENT |
+| 3 | AO-27 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 4 | **AO-28** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AO-27 | CURRENT |
+| 5 | **AO-29** | `3da7a14` (P3-C) | diff vs selector, expected = `current-operation-graph.ts` | none | `3da7a14` (P3-C) | **HISTORICAL EVIDENCE** (reclassified in `887436e`); expected = `current-operation-graph.ts + workspace-service.js` (C4.1 + C4.2.1 + P3-A12) | HISTORICAL |
+| 6 | AQ-23 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 7 | **AQ-24** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AQ-23 | CURRENT |
+| 8 | AR-20 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 9 | **AR-21** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AR-20 | CURRENT |
+| 10 | AL-29 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 11 | **AL-30** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AL-29 | CURRENT |
+| 12 | AM-23 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 13 | **AM-24** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AM-23 | CURRENT |
+| 14 | **AM-25** | `C2` (`456ec3a`) | diff vs P3-C surface, expected = `current-operation-graph.ts` | none | `C2` (`456ec3a`) | **HISTORICAL EVIDENCE** (reclassified in `887436e`); expected = `current-operation-graph.ts + workspace-service.js` (C4.1 + C4.2.1 + P3-A12) | HISTORICAL |
+| 15 | AJ-19 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 16 | **AJ-20** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AJ-19 | CURRENT |
+| 17 | AI-15 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 18 | **AI-16** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AI-15 | CURRENT |
+| 19 | AH-C1-13 | `f95c145b` (P3-A11) | diff vs P3-A gate | `C4_2_1_SUBTREE` | `1fcafc8` (P3-A12) | diff vs P3-A gate, no exclusion | CURRENT |
+| 20 | **AH-C1-14** | `2ac4cf1` (P3-B) | diff vs expanded gate | `C4_2_1_SUBTREE` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (split in `887436e`); P3-A12 covered by AH-C1-13 | CURRENT |
+| 21 | AT-15 | `f95c145b` (P3-A11) | expected = `workspace-service.js` | none | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT (re-classified) |
+| 22 | AN-14 | `f95c145b` (P3-A11) | diff vs P3-A gate | `':!workspace-service.js'` | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT |
+| 23 | **AN-15** | `2ac4cf1` (P3-B) | diff vs expanded gate | `':!workspace-service.js'` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (`':!workspace-service.js'` removed in `42249ae`); P3-A12 covered by AN-14 | CURRENT |
+| 24 | AP-15 | `f95c145b` (P3-A11) | diff vs P3-A gate | `':!workspace-service.js'` | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT |
+| 25 | AP-18 | `f95c145b` (P3-A11) | diff vs P3-A gate | `':!workspace-service.js'` | `1fcafc8` (P3-A12) | diff empty, no exclusion | CURRENT |
+| 26 | **AP-19** | `2ac4cf1` (P3-B) | diff vs expanded gate | `':!workspace-service.js'` | `2ac4cf1` (P3-B) | **P3-B UI gate only** (`':!workspace-service.js'` removed in `42249ae`); P3-A12 covered by AP-18 | CURRENT |
+| 27 | AS-20 | `b6730c3` (C4.2.1 corrective) | expected = `workspace-service.js + packaging-operations.js` | none | unchanged | unchanged | HISTORICAL |
+| 28 | AS-21 | `782e2fc` (C4.1) �?`4f3a0a3` (C4.2) | expected = same | none | unchanged | unchanged | HISTORICAL |
+| 29 | AN-16 | `3da7a14` (P3-C) | expected = `current-operation-graph.ts + workspace-service.js` | none | unchanged | unchanged | HISTORICAL |
+| 30 | AN-16b | `b6730c3` (C4.2.1 corrective) | expected = `workspace-service.js + packaging-operations.js` | none | unchanged | unchanged | HISTORICAL |
+| 31 | AT-19 | `P3C` and `b6730c3` | expected = current delta | none | unchanged | unchanged | HISTORICAL |
+| 32 | **AR-22** | `P3C_REFREEZE` (`fa7197c`) | diff vs P3-C surface, expected = empty | none | `fa7197c` | **HISTORICAL EVIDENCE** (reclassified in `887436e`); expected = `workspace-service.js` (C4.2.1 + P3-A12) | HISTORICAL |
+| 33 | AW-03 | (n/a) | (n/a) | (n/a) | `1fcafc8` (P3-A12) | canonical P3-A12 current baseline direct zero-diff guard | CURRENT |
 
-Target achieved:
-- All CURRENT guards: NO exclusion
-- All HISTORICAL guards: explicit expected delta, not masquerading as zero-diff
+Target achieved at C4.2.2 verified final HEAD `887436e`:
+- **CURRENT FROZEN GUARDS: 25** (rows 1-4, 6, 8, 10, 12, 15, 17, 19, 21-26, 33) �?all NO exclusion
+- **HISTORICAL EVIDENCE GUARDS: 8** (rows 5, 14, 27-32) �?all explicit expected delta, not masquerading as zero-diff
+- **Total frozen guards: 33**
+
+**Notes on the 11 P3-B gate-split rows** (rows 2, 4, 7, 9, 11, 13, 16, 18, 20, 23, 26):
+- `42249ae` removed `C4_2_1_SUBTREE` (and the analogous
+  `':!workspace-service.js'`) from these tests.
+- `887436e` further split the gate from
+  `apps/web/src/features/packaging` + `packages/runtime-core/src/application/packaging`
+  to just `apps/web/src/features/packaging`.
+- The P3-A12 zero-diff check is covered by the canonical
+  P3-A guard listed in the same row's "covered by" cell
+  (e.g. AK-29 is covered by AK-28 at the P3-A12 baseline).
 
 ## K. Current P3-A Direct Diff
 
@@ -225,7 +315,7 @@ $ git diff --name-only 1fcafc8 HEAD -- packages/runtime-core/src/application/pac
 
 The P3-A12 direct diff is **ZERO** with no exclusion. This
 is the new authoritative current zero-diff target. The
-historical P3-A11 → P3-A12 delta (workspace-service.js
+historical P3-A11 �?P3-A12 delta (workspace-service.js
 read-only checkStale seam) is preserved as Historical
 Frozen Baseline evidence, not as a current zero-diff
 requirement.
@@ -343,8 +433,8 @@ match the Workspace intent Registry identity is rejected
 at execution preflight as
 `EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH`:
 
-1. `service.checkStale(sessionId)` → `{ stale: false, reasons: [] }` (fresh)
-2. `buildExecutionDeps` → `EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH` thrown
+1. `service.checkStale(sessionId)` �?`{ stale: false, reasons: [] }` (fresh)
+2. `buildExecutionDeps` �?`EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH` thrown
 3. Workspace state NOT mutated (no STALE transition, no error recorded)
 4. No adapter call
 5. No network call
@@ -355,7 +445,7 @@ The Workspace STALE surface is NOT touched.
 
 A session that is both STALE and has a Provider mismatch:
 
-1. `service.checkStale(sessionId)` → `{ stale: true, reasons: ['intent_changed', ...] }`
+1. `service.checkStale(sessionId)` �?`{ stale: true, reasons: ['intent_changed', ...] }`
 2. operations layer rejects with `PACKAGING_WORKSPACE_EXECUTE_REJECTED`, issues = `['stale', 'intent_changed', ...]`
 3. `buildExecutionDeps` is **NOT** called
 4. Provider identity mismatch is **NOT** surfaced (the STALE rejection wins)
@@ -390,11 +480,63 @@ A new AW guard group (`AW-01..25`) is added by this phase:
 - AW-24 historical D3 HOLD preserved
 - AW-25 D3 requires new authorization
 
-All 25 AW tests PASS at the C4.2.2 freeze commit.
+All 25 AW tests PASS at the C4.2.2 final HEAD `887436e`.
+
+## WA. 887436e follow-up (P3-B gate split + P3-C chain reclassification)
+
+The `887436e` commit is a test-only follow-up that closed
+two latent issues exposed by the `42249ae` rebase:
+
+### WA-1. P3-B gate split
+
+The `42249ae` rebase removed `C4_2_1_SUBTREE` from 14
+P3-B expanded-gate tests (AK-29, AN-15, AO-28, AQ-24,
+AR-21, AL-30, AM-24, AP-19, AJ-20, AI-16, AH-C1-14).
+After rebase, each test compared `2ac4cf1` (P3-B
+baseline) �?HEAD against an expanded gate that included
+`packages/runtime-core/src/application/packaging`. After
+P3-A12 absorbed the workspace-service.js change, the
+P3-A part of the diff is no longer empty from P3-B to
+HEAD (the only delta is `workspace-service.js`). The 14
+tests failed.
+
+The `887436e` follow-up split each P3-B test into a P3-B
+UI check only (`2ac4cf1` �?HEAD against
+`apps/web/src/features/packaging`; expect empty). The
+P3-A12 zero-diff check is delegated to AT-15, AN-14,
+AP-15, AP-18, AW-03 (which already use the P3-A12
+baseline `1fcafc8` for the P3-A part).
+
+**Final invariant: CURRENT P3-B guard = accepted P3-B
+surface only.** The P3-B guard MUST NOT include the
+P3-A application path; the P3-B baseline predates the
+P3-A12 corrective.
+
+### WA-2. P3-C chain reclassification
+
+Three P3-C chain guards (AO-29, AM-25, AR-22) were
+reclassified from **CURRENT FROZEN GUARD** to
+**HISTORICAL EVIDENCE GUARD** with an explicit expected
+delta. The 3 guards are listed under HISTORICAL EVIDENCE
+in §I.
+
+**Final invariant: P3-C historical chain guard
+documents the actual historical delta. The expected
+delta is `current-operation-graph.ts + workspace-service.js`
+(C4.1 + C4.2.1 + P3-A12 chain). The expected delta is
+NOT masqueraded as zero-diff.**
+
+### WA-3. Production source changes
+
+`887436e` modifies 11 test files only. Production source
+changes: 0. External Provider calls: 0. Golden auto-update:
+NO. The follow-up is a TEST / GUARD CLEANUP phase,
+inheriting the C4.2.2 phase's invariant.
 
 ## X. Existing Guards
 
-All existing guard families remain green:
+All existing guard families remain green at the C4.2.2
+verified final HEAD `887436e`:
 
 - AH (1 test)
 - AI (1 test)
@@ -410,40 +552,49 @@ All existing guard families remain green:
 - AS (1 test)
 - AT (1 test)
 - AV (1 test)
-- AW (1 test, this commit)
-- 89/89 provider-targeted suites
+- AW (1 test, C4.2.2)
+- 89 / 89 provider-targeted suites
 
-No existing guard is broken by the C4.2.2 phase.
+No existing guard is broken by the C4.2.2 phase (commits
+`42249ae` + `887436e` + `f309f58`).
 
 ## Y. Full Regression
 
-Full regression runs against the C4.2.2 freeze commit:
+Full regression runs against the **C4.2.2 verified final
+HEAD `887436e1a4b49f76f8dd631f945442f0615b6257`**:
 
-| Suite | Result |
-|---|---|
-| `npm test` | PASS |
-| `npm run runtime:test` | PASS (1443/1443) |
-| `npm run runtime-application:test` | PASS (was 1418 in C4.2.1; +25 AW) |
-| `npm run test:image-generation` | PASS |
-| `npm run cli:test` | PASS |
-| `npm run web:typecheck` | PASS |
-| `npm run web:build` | PASS |
-| `npm run web-runtime:typecheck` | PASS |
-| `npm run web-runtime:test` | PASS |
-| `npm run web:smoke` | PASS (0 Provider calls) |
-| `npm run repo:verify` | PASS |
-| `npm run repo:check` | PASS |
-| `npm run verify:current-flows` | PASS |
-| `npm run verify:version-consistency` | PASS |
-| `npm run verify:version-naming` | PASS |
-| `npm run verify:workspace-boundaries` | PASS |
-| `npm run verify:no-obsolete-code` | PASS (700 files) |
-| `npm run verify:production-boundaries` | PASS |
-| `npm run verify:no-project-specific-production-rules` | PASS |
-| `npm run verify:golden-boundary` | PASS |
-| `npm run verify:space-compiler-baseline` | PASS |
-| `npm run verify:space-r8.6-golden-boundary` | PASS |
-| `npm run golden:test` | PASS |
+| Suite | Result | Test count |
+|---|---|---|
+| `npm test` | PASS | 1234 / 1234 |
+| `npm run runtime:test` | PASS | 14 + 1468 / 14 + 1468 |
+| `npm run runtime-application:test` | PASS | 1468 / 1468 |
+| `npm run test:image-generation` | PASS | 982 / 982 |
+| `npm run cli:test` | PASS | 40 / 40 |
+| `npm run web:typecheck` | PASS | (typecheck-only) |
+| `npm run web:build` | PASS | (vite build) |
+| `npm run web-runtime:typecheck` | PASS | (typecheck-only) |
+| `npm run web-runtime:test` | PASS | 10 / 10 |
+| `npm run web:smoke` | PASS | 0 Provider calls (live smoke test against local node web host) |
+| `npm run repo:verify` | PASS | 40 / 40 |
+| `npm run repo:check` | PASS | (golden + repo:verify) |
+| `npm run verify:current-flows` | PASS | (typecheck + verify:current-flows) |
+| `npm run verify:version-consistency` | PASS | (version gate) |
+| `npm run verify:version-naming` | PASS | (naming gate) |
+| `npm run verify:workspace-boundaries` | PASS | (boundary gate) |
+| `npm run verify:no-obsolete-code` | PASS | 701 files scanned |
+| `npm run verify:production-boundaries` | PASS | 321 production files checked |
+| `npm run verify:no-project-specific-production-rules` | PASS | (no project rules) |
+| `npm run verify:golden-boundary` | PASS | (golden boundary) |
+| `npm run verify:space-compiler-baseline` | PASS | (R8.6 baseline) |
+| `npm run verify:space-r8.6-golden-boundary` | PASS | (R8.6 golden) |
+| `npm run golden:test` | PASS | (golden regression) |
+
+**Test count reconciliation:**
+
+- C4.2.1 final: `runtime-application:test` 1418 / 1418
+- P3-A12 (after 25 AV tests added): 1443 / 1443
+- C4.2.2 (after 25 AW tests added): 1468 / 1468 (+25 AW)
+- `runtime:test` = `node --test tests/packages/runtime-core/*.test.js` (14 tests) + `runtime-application:test` (1468 tests)
 
 ## Z. Production Source Changes
 
@@ -451,17 +602,36 @@ Full regression runs against the C4.2.2 freeze commit:
 two C4.2.2 commits add one new test file and modify 12
 existing test files; no production source is touched.
 
-The C4.2.2 working tree contains:
+The C4.2.2 working tree (across the 3 C4.2.2 commits) contains:
 
-- `tests/runtime-application/packaging-c4-2-2-p3-a12-baseline-rebase-provider-boundary-freeze.test.ts` (new, AW guards)
-- 12 modified test files (P3A const update + C4_2_1_SUBTREE removal + B-class guard reclassification)
-- 1 new docs file (this document)
+- `tests/runtime-application/packaging-c4-2-2-p3-a12-baseline-rebase-provider-boundary-freeze.test.ts` (new, AW guards, `42249ae`)
+- 12 modified test files (`42249ae`: P3A const update + C4_2_1_SUBTREE removal + B-class guard reclassification)
+- 11 modified test files (`887436e`: P3-B gate split + P3-C chain reclassification)
+- 1 new docs file (`f309f58` + this sync commit: this document)
 
 ## AA. Provider Calls
 
-**0.** C4.2.2 is offline-only. No Provider key read, no
-Provider HTTP request, no model name reference, no D3
-re-run. The `.codex-smoke/` tree is gitignored.
+| Field | Value |
+|---|---|
+| External Provider HTTP calls | **0** |
+| API key read (env / file) | **0** |
+| Live Provider probe (GET /models, POST image-generation) | **0** |
+| D3 real generation (Seedream 5.0 Pro) | **0** |
+| Random retries | 0 |
+| `.codex-smoke/` tracked files | 0 (gitignored) |
+
+**Notes on test code model references:** the C4.2.2 test
+file (`packaging-c4-2-2-p3-a12-baseline-rebase-provider-boundary-freeze.test.ts`)
+and other test files contain deterministic model-identity
+fixtures such as `seedream-5.0-pro` and the actual
+Provider API name `doubao-seedream-5-0-pro-260628` in
+comments and assertions. These are **deterministic test
+fixtures**, not live Provider calls. A test fixture
+referencing a model name in a `doesNotMatch` assertion
+or a constant is not equivalent to a Provider HTTP
+request; the canonical invariant is that no test code
+ever READS an API key, opens a network socket, or
+invokes the Provider adapter.
 
 ## AB. Golden
 
@@ -475,13 +645,13 @@ removed, or modified by the C4.2.2 phase.
 
 | Surface | Current zero-diff | Notes |
 |---|---|---|
-| P2 (`a593278b` → HEAD) | 0 | P2 frozen baseline unchanged |
-| P3-A12 current (`1fcafc8` → HEAD) | 0 | direct diff, NO exclusion |
-| P3-A11 historical (`f95c145b` → HEAD) | +1 (workspace-service.js) | documented as C4.2.1 sub-tree in P3-A12 history |
-| P3-B (`2ac4cf1` → HEAD) | 0 | P3-B accepted UI baseline unchanged |
-| P3-C integration (`3da7a14` → HEAD) | +2 (current-operation-graph.ts + workspace-service.js) | documented C4.1 + C4.2.1 + P3-A12 chain |
-| C4.2 corrective (`4f3a0a3` → HEAD) | +2 (workspace-service.js + packaging-operations.js) | documented C4.2.1 + P3-A12 chain |
-| C4.2.1 corrective (`b6730c3` → HEAD) | +2 (workspace-service.js + packaging-operations.js) | documented C4.2.1 + P3-A12 chain |
+| P2 (`a593278b` �?HEAD) | 0 | P2 frozen baseline unchanged |
+| P3-A12 current (`1fcafc8` �?HEAD) | 0 | direct diff, NO exclusion |
+| P3-A11 historical (`f95c145b` �?HEAD) | +1 (workspace-service.js) | documented as C4.2.1 sub-tree in P3-A12 history |
+| P3-B (`2ac4cf1` �?HEAD) | 0 | P3-B accepted UI baseline unchanged |
+| P3-C integration (`3da7a14` �?HEAD) | +2 (current-operation-graph.ts + workspace-service.js) | documented C4.1 + C4.2.1 + P3-A12 chain |
+| C4.2 corrective (`4f3a0a3` �?HEAD) | +2 (workspace-service.js + packaging-operations.js) | documented C4.2.1 + P3-A12 chain |
+| C4.2.1 corrective (`b6730c3` �?HEAD) | +2 (workspace-service.js + packaging-operations.js) | documented C4.2.1 + P3-A12 chain |
 
 ## AD. Historical Baselines
 
@@ -508,30 +678,47 @@ Preserved (unchanged from P3-A12 exit):
 
 ## AE. P3-C4.2.2 Freeze Commits
 
-| Commit | Class |
-|---|---|
-| `test(packaging): rebase frozen guards onto P3-A12` | 12 modified test files + 1 new AW test file |
-| `docs(packaging): refreeze P3-C on P3-A12 baseline` | 1 new docs file (this document) |
+| # | Commit | Class | Production source change |
+|---|---|---|---|
+| 1 | `42249ae7930e25a6bf91e1c02189f3c438976577`<br>`test(packaging): rebase frozen guards onto P3-A12 baseline` | 12 modified test files + 1 new AW test file | 0 |
+| 2 | `887436e1a4b49f76f8dd631f945442f0615b6257`<br>`test(packaging): split P3-B and P3-A gates; reclassify P3-C chain guards` | 11 modified test files (P3-B gate split + P3-C chain reclassification) | 0 |
+| 3 | `f309f589bf06940553106f30aa42ddb95080cbdc`<br>`docs(packaging): refreeze P3-C on P3-A12 baseline` | 1 new docs file (this document) | 0 |
+| 4 | **this commit (final C4.2.2 HEAD; see `git log` for exact SHA)**<br>`docs(packaging): synchronize final C4.2.2 freeze record` | Final record synchronization (corrects HEAD evidence; no semantic change) | 0 |
+
+**Total: 4 commits. Production source changes: 0.**
+
+**Verified final C4.2.2 technical HEAD: `887436e1a4b49f76f8dd631f945442f0615b6257`**.
+This is the C4.2.2 final technical HEAD; the sync commit
+(docs only) sits on top of it and does not change the
+production baseline or guard semantics.
 
 ## AF. Working Tree
 
-**EMPTY** after the two C4.2.2 commits. AC-09
+**EMPTY** after the C4.2.2 sync commit. AC-09
 (`git status --porcelain` is empty) is enforced.
 
 ## AG. Local / Remote
 
-`local == origin` after the C4.2.2 push.
+`local == origin` after the C4.2.2 sync push.
+
+- Local: `887436e1a4b49f76f8dd631f945442f0615b6257` (pre-sync; the sync commit sits on top of this)
+- Origin: `887436e1a4b49f76f8dd631f945442f0615b6257` (before sync push; the sync commit will land on top)
 
 ## AH. Final Decision
 
 - **P3-C STATUS: RE-FROZEN**
-- **P3-D3 STATUS: HOLD — RE-RUN AUTHORIZATION REQUIRED**
+- **P3-D3 STATUS: HOLD �?RE-RUN AUTHORIZATION REQUIRED**
 - **P3-D4 STATUS: LOCKED**
 - **P3-E STATUS: LOCKED**
 
+**P3-D3: NOT STARTED.** C4.2.2 does NOT authorize a D3
+re-run. The D3 HOLD at `139f824` is preserved as
+historical evidence; the AR-08..12, AR-15, AR-16 NOT MET
+classifications are NOT auto-resolved.
+
 ## AI. Next Step
 
-**P3-D3 RE-RUN** — bounded real-provider visual-quality
+**P3-D3 RE-RUN** �?bounded real-provider visual-quality
 validation.
 
 The next phase requires a NEW explicit human
@@ -541,9 +728,9 @@ authorization:
 - single model `seedream-5.0-pro` Registry id (actual API name `doubao-seedream-5-0-pro-260628`)
 - single profile
 - 0 random retries
-
-Start from the C4.2.2 re-freeze commit. Re-classify the
-D3 outcome as PASS or HOLD — VISUAL QUALITY HARDENING
-REQUIRED.
+- Start from the C4.2.2 verified final HEAD `887436e`
+  (or the C4.2.2 sync HEAD on top of it)
+- Re-classify D3 outcome as PASS or HOLD �?VISUAL QUALITY
+  HARDENING REQUIRED
 
 C4.2.2 does NOT auto-start D3.
