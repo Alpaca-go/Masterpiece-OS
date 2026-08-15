@@ -87,13 +87,20 @@ export function resolveSpaceReferences({
     // R11.2.2 §3/§27: Reference-First is HIGH FIDELITY. The legacy `role`
     // (core_reference) stays for wire compatibility; the authoritative
     // semanticRole is high_fidelity_visual_reference.
+    // P3-D3.7D: usage-aware project-root-relative path, aligned with the
+    // single path authority (resolveReferenceAsset) and the D3.7B packaging
+    // semantics. analysis_source relativePath is relative to
+    // <projectRoot>/input; generation_reference relativePath is already
+    // relative to <projectRoot> (web uploads, e.g. generation-references/<id>.png).
     const isContinuation = generationBasis === 'continuation';
     add({
       id: asset.assetId,
       role: 'core_reference',
       semanticRole: isContinuation ? 'world_consistency' : 'high_fidelity_visual_reference',
       referenceRole: isContinuation ? 'world_consistency' : 'high_fidelity_visual_reference',
-      projectRelativePath: `input/${asset.relativePath}`,
+      projectRelativePath: asset.usage === 'generation_reference'
+        ? asset.relativePath
+        : `input/${asset.relativePath}`,
     }, isContinuation ? continuationReferenceSource : 'user_explicit');
   }
 
