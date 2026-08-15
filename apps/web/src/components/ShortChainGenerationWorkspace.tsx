@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type {
   ApiProfile,
   AssetItem,
@@ -536,57 +536,79 @@ export function ShortChainGenerationWorkspace({
     });
   }
 
-  // R10.2 §9: upload a reference image. The file goes through the Project
-  // Asset system (choose -> import -> scan) so it is tracked/reusable by
-  // current/history tasks and R11 Continuation, not a temporary blob.
+  // R10.2 §9: upload a reference image through the browser file
+  // picker. The File bytes travel as raw base64 over the sanctioned
+  // `projects:import-file-bytes` RPC and become a project-bound
+  // generation_reference asset (project-store.persistBufferAsset).
+  // The file picker is a real <input type="file"> — never the
+  // env-based `projects:chooseFiles` path (P3-D3.6A/6B).
+  const uploadInputRef = useRef<HTMLInputElement>(null);
+
   async function uploadReferenceImage() {
+    // Open the real browser picker.
+    uploadInputRef.current?.click();
+  }
+
+  async function handleUploadFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const input = event.target;
+    const file = input.files?.[0];
+    // Always reset so the same file can be reselected.
+    input.value = '';
+    if (!file) return;
+    setUploading(true);
+    setError('');
     try {
-      const chosen = await window.masterpiece.projects.chooseFiles('reference');
-      if (!chosen || chosen.length === 0) return;
-      setUploading(true);
-      setError('');
-      // R11.2.1 Bug B: importFiles returns the WHOLE project asset library in
-      // summary.items, so we must only add the NEWLY imported asset ids to the
-      // explicit reference selection — never the pre-existing project assets.
-      const beforeIds = new Set((await window.masterpiece.projects.scanAssets(project.id)).items.map((i) => i.id));
-      const imported = await window.masterpiece.projects.importFiles(project.id, chosen, 'reference');
-      const after = await window.masterpiece.projects.scanAssets(project.id);
-      const images = after.items.filter((item) => item.kind === 'image');
-      setProjectAssets(images);
-      // Only assets that did NOT exist before the import are the user upload.
-      const uploadedIds = images
-        .map((item) => item.id)
-        .filter((id) => !beforeIds.has(id));
-      // R11.2.1: a chosen file that already exists in the project library is
-      // skipped by the import and reported as a duplicate. Its existing asset
-      // still belongs in the explicit reference selection — otherwise the
-      // upload appears to do nothing and the task stays blocked.
-      const duplicateIds = (imported.duplicates ?? [])
-        .map((dup) => dup.id)
-        .filter((id) => images.some((item) => item.id === id));
-      setReferenceAssetIds((current) => mergeUploadedReferenceIds(current, uploadedIds, duplicateIds));
-      // r2.0 §4.11 / Phase C-3: preflight the freshly imported assets so
-      // the user sees a status badge immediately. Best-effort: skip on
-      // IPC failure.
-      void runPreflight([...uploadedIds, ...duplicateIds]);
-      // R11.2.1: uploaded assets are user_upload provenance; a re-uploaded
-      // duplicate is the pre-existing project asset, so it is project_visual_asset.
-      setReferenceSources((current) => {
-        const next = { ...current };
-        for (const id of uploadedIds) next[id] = 'user_upload';
-        for (const id of duplicateIds) next[id] = 'project_visual_asset';
-        return next;
-      });
-      if (uploadedIds.length === 0 && duplicateIds.length === 0) {
-        setNotice('所选文件已是项目素材或不是支持的图片，未新增参考图。');
-      } else if (duplicateIds.length > 0 && uploadedIds.length === 0) {
-        setNotice('所选图片已在项目素材中，已直接加入参考选择。');
+      // Renderer precheck (UX only; runtime is authoritative).
+      const imageMime = new Set(['image/png', 'image/jpeg', 'image/webp']);
+      if (!imageMime.has(file.type)) {
+        setError('仅支持 PNG、JPEG、WEBP 参考图。');
+        return;
       }
+      if (file.size <= 0) {
+        setError('所选文件为空。');
+        return;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        setError('参考图超过 8 MiB 上限。');
+        return;
+      }
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+      }
+      const content = btoa(binary);
+      const imported = await window.masterpiece.projects.importFileBytes({
+        projectId: project.id,
+        file: {
+          name: file.name,
+          mime: file.type,
+          size: file.size,
+          content,
+        },
+      });
+      if (imported.asset.projectId !== project.id) {
+        setError('导入的参考图不属于当前项目。');
+        return;
+      }
+      const importedId = imported.asset.id;
+      const beforeIds = new Set(referenceAssetIds);
+      const fresh = !beforeIds.has(importedId) ? [importedId] : [];
+      const duplicateIds = beforeIds.has(importedId) ? [importedId] : [];
+      setReferenceAssetIds((current) => mergeUploadedReferenceIds(current, fresh, duplicateIds));
+      setReferenceSources((current) => ({
+        ...current,
+        [importedId]: 'user_upload',
+      }));
+      void runPreflight([importedId]);
+      await loadProjectAssets();
       setCompiled(null);
       setEditedPrompt('');
       setLastValidation(null);
+      setNotice('参考图已上传并加入参考选择。');
     } catch (reason) {
-      setError('参考图上传失败，请重试。');
+      setError(cleanError(reason) || '参考图上传失败，请重试。');
     } finally {
       setUploading(false);
     }
@@ -825,6 +847,13 @@ export function ShortChainGenerationWorkspace({
         {generationBasis === 'reference' && <div className="reference-first-module">
           <label>参考图（1–{MAX_SPACE_REFERENCE_IMAGES} 张）
             <div className="button-row">
+              <input
+                ref={uploadInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                style={{ display: 'none' }}
+                onChange={(event) => void handleUploadFileChange(event)}
+              />
               <button className="button secondary" disabled={uploading} onClick={() => void uploadReferenceImage()}>
                 {uploading ? '正在上传参考图…' : '上传参考图'}
               </button>
