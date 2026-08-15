@@ -355,8 +355,13 @@ test('AR-22 P3-C current corrective semantics diff is zero (HISTORICAL EVIDENCE 
   const refreezeSurface = git([
     'diff', '--name-only', P3C_REFREEZE, 'HEAD',
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging',
-  ]);
-  const expected = 'packages/runtime-core/src/application/packaging/workspace-service.js';
+  ]).split('\n').filter(Boolean).sort().join('\n');
+  // P3-D3.6B (authorized post-acceptance corrective) adds
+  // local-rpc-server.ts (channel-aware upload body cap).
+  const expected = [
+    'apps/web-runtime/src/local-rpc-server.ts',
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+  ].sort().join('\n');
   assert.equal(refreezeSurface, expected);
 });
 

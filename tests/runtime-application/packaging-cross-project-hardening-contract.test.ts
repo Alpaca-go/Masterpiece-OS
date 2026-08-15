@@ -107,6 +107,7 @@ test('AN-16 P3-C frozen integration permits only the authorized C4.1 + C4.2.1 do
   git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']).split('\n').filter(Boolean).sort().join('\n'),
   [
     'apps/web-runtime/src/current-operation-graph.ts',
+    'apps/web-runtime/src/local-rpc-server.ts', // P3-D3.6B authorized: channel-aware upload body cap
     'packages/runtime-core/src/application/packaging/workspace-service.js',
   ].sort().join('\n'),
 ));
@@ -131,6 +132,9 @@ test('AN-16b P3-C4.2.1 corrective permits only the documented ops-layer sub-tree
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
   ]).split('\n').filter(Boolean).sort().join('\n');
   const expected = [
+    // P3-D3.6B (authorized post-acceptance corrective): channel-aware
+    // upload body cap in the Web Runtime RPC server.
+    'apps/web-runtime/src/local-rpc-server.ts',
     'packages/runtime-core/src/application/packaging/workspace-service.js',
     'packages/runtime-core/src/operations/packaging-operations.js',
   ].sort().join('\n');

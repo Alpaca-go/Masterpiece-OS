@@ -439,12 +439,18 @@ test('AW-22 P3-C4.2.2 makes zero external Provider calls', () => {
   assert.equal(trackedSandbox, '', '.codex-smoke/ must remain gitignored');
   // The C4.2.2 phase did not introduce a new tracked
   // file under the P3-A / P3-B / P2 / ops / selector
-  // production paths.
+  // production paths. P3-D3.6B (authorized post-acceptance
+  // corrective) adds local-rpc-server.ts (channel-aware
+  // upload body cap) and project-operations.js
+  // (projects:import-file-bytes channel); they are the only
+  // permitted deltas.
   const c4_2_2NewProd = git(['diff', '--name-only', P3A_REFREEZE, 'HEAD',
     '--', P3_A_GATE, P3_B_GATE, P2_GATE,
     'apps/web-runtime/src', 'packages/runtime-core/src/operations',
     'packages/runtime-core/src/application/canonical-packaging-context-selector.ts',
-  ]);
+  ]).split('\n').filter(Boolean).filter((file) =>
+    file !== 'apps/web-runtime/src/local-rpc-server.ts'
+    && file !== 'packages/runtime-core/src/operations/project-operations.js').join('\n');
   assert.equal(c4_2_2NewProd, '',
     'P3-C4.2.2 must not introduce a new tracked production file. Found: ' + c4_2_2NewProd);
 });

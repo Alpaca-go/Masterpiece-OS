@@ -83,10 +83,13 @@ test('AM-24 P3-B accepted production semantics diff is zero', () => assert.equal
 test('AM-25 P3-C production baseline permits only the authorized C4.1 + C4.2.1 + P3-A12 chain (HISTORICAL EVIDENCE)', () => {
   // C2 (`456ec3a`) to HEAD. The documented sub-tree is
   // the C4.1 composition-root seam plus the C4.2.1 + P3-A12
-  // workspace-service.js change. No other P3-C surface
+  // workspace-service.js change. P3-D3.6B (authorized
+  // post-acceptance corrective) adds local-rpc-server.ts
+  // (channel-aware upload body cap). No other P3-C surface
   // changes are permitted.
   const expected = [
     'apps/web-runtime/src/current-operation-graph.ts',
+    'apps/web-runtime/src/local-rpc-server.ts',
     'packages/runtime-core/src/application/packaging/workspace-service.js',
   ].sort().join('\n');
   assert.equal(

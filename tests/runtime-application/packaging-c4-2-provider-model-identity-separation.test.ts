@@ -400,6 +400,9 @@ test('AS-20 P3-C current corrective semantics permit only the C4.2.1 documented 
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
   ]).split('\n').filter(Boolean).sort().join('\n');
   const expected = [
+    // P3-D3.6B (authorized post-acceptance corrective): channel-aware
+    // upload body cap in the Web Runtime RPC server.
+    'apps/web-runtime/src/local-rpc-server.ts',
     'packages/runtime-core/src/application/packaging/workspace-service.js',
     'packages/runtime-core/src/operations/packaging-operations.js',
   ].sort().join('\n');

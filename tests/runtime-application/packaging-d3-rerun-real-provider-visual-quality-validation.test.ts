@@ -441,12 +441,17 @@ test('AX-20 no secrets in tracked files', () => {
 
 test('AX-21 production source changes zero (D3 RE-RUN does not modify production)', () => {
   // The D3 RE-RUN phase is a runtime test. No production
-  // source is modified.
+  // source is modified. P3-D3.6B (authorized post-acceptance
+  // corrective) is the only permitted delta: local-rpc-server.ts
+  // (channel-aware upload body cap) and project-operations.js
+  // (projects:import-file-bytes channel).
   const prodDiff = git(['diff', '--name-only', C4_2_2_SYNC, 'HEAD',
     '--', P3_A_GATE, P3_B_GATE, P2_GATE,
     'apps/web-runtime/src', 'packages/runtime-core/src/operations',
     'packages/runtime-core/src/application/canonical-packaging-context-selector.ts',
-  ]);
+  ]).split('\n').filter(Boolean).filter((file) =>
+    file !== 'apps/web-runtime/src/local-rpc-server.ts'
+    && file !== 'packages/runtime-core/src/operations/project-operations.js').join('\n');
   assert.equal(prodDiff, '', 'P3-C4.2.2 + D3 RE-RUN must not introduce a new production file change');
 });
 

@@ -510,10 +510,13 @@ test('AO-29 P3-C frozen semantics permit only the authorized C4.1 + C4.2.1 + P3-
   // sub-tree is the C4.1 composition-root seam
   // (`current-operation-graph.ts`) plus the C4.2.1
   // read-only `checkStale` seam in workspace-service.js
-  // (formally absorbed by P3-A12). No other P3-C surface
+  // (formally absorbed by P3-A12). P3-D3.6B (authorized
+  // post-acceptance corrective) adds local-rpc-server.ts
+  // (channel-aware upload body cap). No other P3-C surface
   // changes are permitted.
   const expected = [
     'apps/web-runtime/src/current-operation-graph.ts',
+    'apps/web-runtime/src/local-rpc-server.ts',
     'packages/runtime-core/src/application/packaging/workspace-service.js',
   ].sort().join('\n');
   assert.equal(

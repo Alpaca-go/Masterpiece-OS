@@ -453,7 +453,11 @@ test('AZ-23 P2 Shot Contract preserved (3 frozen ids, canonical ratios)', () => 
 
 test('AZ-24 production source change = 0 (P2 / P3-A12 / P3-B / P3-C surfaces)', () => {
   const gates = [P2_GATE, P3_A_GATE, P3_B_GATE, OPS_GATE, SELECTOR_GATE, WEB_RUNTIME_GATE];
-  const diff = git(['diff', '--name-only', C4_2_2_SYNC, 'HEAD', '--', ...gates]);
+  // P3-D3.6B (authorized post-acceptance corrective) adds
+  // local-rpc-server.ts (channel-aware upload body cap). It is the
+  // only permitted delta in the web-runtime surface.
+  const diff = git(['diff', '--name-only', C4_2_2_SYNC, 'HEAD', '--', ...gates])
+    .split('\n').filter(Boolean).filter((file) => file !== 'apps/web-runtime/src/local-rpc-server.ts').join('\n');
   assert.equal(diff, '', `production source must be unchanged since C4.2.2 sync; found: ${diff}`);
   assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', P2_GATE]), '');
   assert.equal(git(['diff', '--name-only', P3A_CURRENT, 'HEAD', '--', P3_A_GATE]), '');

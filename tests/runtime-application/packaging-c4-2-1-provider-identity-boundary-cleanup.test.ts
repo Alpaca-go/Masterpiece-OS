@@ -373,6 +373,9 @@ test('AT-19 P3-C selector/identity semantics unchanged', () => {
   ]).split('\n').filter(Boolean).sort().join('\n');
   const expectedP3C = [
     'apps/web-runtime/src/current-operation-graph.ts',
+    // P3-D3.6B (authorized post-acceptance corrective): channel-aware
+    // upload body cap in the Web Runtime RPC server.
+    'apps/web-runtime/src/local-rpc-server.ts',
     'packages/runtime-core/src/application/packaging/workspace-service.js',
   ].sort().join('\n');
   assert.equal(diff, expectedP3C);
@@ -384,6 +387,7 @@ test('AT-19 P3-C selector/identity semantics unchanged', () => {
     '--', P3_B_GATE, 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', P3_A_GATE, 'packages/runtime-core/src/operations/packaging-operations.js', P2_GATE,
   ]).split('\n').filter(Boolean).sort().join('\n');
   const expectedC421 = [
+    'apps/web-runtime/src/local-rpc-server.ts',
     'packages/runtime-core/src/application/packaging/workspace-service.js',
     'packages/runtime-core/src/operations/packaging-operations.js',
   ].sort().join('\n');
