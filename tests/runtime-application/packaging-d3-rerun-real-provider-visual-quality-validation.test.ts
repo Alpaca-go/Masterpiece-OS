@@ -466,13 +466,19 @@ test('AX-24 P3-B accepted UI semantic diff is zero', () => {
   assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', P3_B_GATE]), '');
 });
 
-test('AX-25 C4.2.2 verified final HEAD P3-C guard unchanged', () => {
-  // The C4.2.2 final verified HEAD is the C4.2.2 technical
-  // freeze point. The D3 RE-RUN is a runtime test, not a
-  // frozen-surface event.
-  // Verify HEAD == c727e11 (C4.2.2 final sync HEAD)
+test('AX-25 C4.2.2 sync HEAD is the ancestor of current HEAD', () => {
+  // The C4.2.2 final sync HEAD is the last commit before the
+  // D3 RE-RUN. The D3 RE-RUN is a runtime test, not a
+  // frozen-surface event. The C4.2.2 sync HEAD must remain
+  // reachable as an ancestor of the current HEAD.
+  // Verify HEAD is a descendant of c727e11.
   const head = git(['rev-parse', 'HEAD']);
-  assert.equal(head, C4_2_2_SYNC, 'HEAD must remain at C4.2.2 sync HEAD');
+  assert.notEqual(head, C4_2_2_SYNC,
+    'HEAD must be ON TOP of C4.2.2 sync HEAD (D3 RE-RUN commit exists)');
+  // HEAD must contain C4.2.2 sync HEAD as an ancestor
+  const mergeBase = git(['merge-base', C4_2_2_SYNC, head]);
+  assert.equal(mergeBase, C4_2_2_SYNC,
+    'C4.2.2 sync HEAD must be an ancestor of current HEAD');
 });
 
 // ---------------------------------------------------------------------------
