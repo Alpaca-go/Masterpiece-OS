@@ -23,7 +23,6 @@ export function validatePackagingTranslation(translation) {
   const missing = [];
   if (!translation?.packagingConcept) missing.push('packagingConcept');
   if (!list(translation?.productAndCategoryRole).length) missing.push('productAndCategoryRole');
-  if (!list(translation?.productRoleEvidenceRefs).length) missing.push('productRoleEvidenceRefs');
   if (!Array.isArray(translation?.structureStrategy) || !translation.structureStrategy.length) {
     missing.push('structureStrategy');
   } else if (!translation.structureStrategy.some((item) => list(item?.evidenceRefs).length)) {
@@ -111,7 +110,6 @@ export function buildPackagingTranslation(input = {}) {
     packagingConcept: spatialLeaks(source.packagingConcept)
       ? '' : String(source.packagingConcept ?? '').trim(),
     productAndCategoryRole: clean(source.productAndCategoryRole),
-    productRoleEvidenceRefs: list(source.productRoleEvidenceRefs),
     structureStrategy,
     openingExperience: clean(source.openingExperience),
     productArrangement: clean(source.productArrangement),
@@ -143,7 +141,7 @@ export function assertPackagingTranslation(translation) {
     const structureMissing = validation.missingRequiredFields.some((item) =>
       item === 'structureStrategy' || item === 'structureEvidenceRefs');
     const productRoleMissing = validation.missingRequiredFields.some((item) =>
-      item === 'productAndCategoryRole' || item === 'productRoleEvidenceRefs');
+      item === 'productAndCategoryRole');
     const code = structureMissing
       ? 'PACKAGING_STRUCTURE_EVIDENCE_MISSING'
       : productRoleMissing

@@ -181,18 +181,25 @@ export function runPromptPreflightGate({
     if (!packagingTranslation?.structureStrategy?.some((item) => list(item?.evidenceRefs).length)) {
       add('PACKAGING_STRUCTURE_EVIDENCE_MISSING', 'block', 'Packaging structure evidence is missing.');
     }
-    if (!list(packagingTranslation?.productRoleEvidenceRefs).length) {
+    // P3-D3.5A: the canonical product-role authority is
+    // `productAndCategoryRole` (the structured analysis /
+    // reference producer output, per deliverable-sufficiency.ts
+    // and packaging-contract.js). The legacy `productRoleEvidenceRefs`
+    // field is NOT part of PackagingTranslationV2 and no producer
+    // emits it; requiring it caused a structural block for every
+    // packaging task. The fail-closed semantics are preserved:
+    // a task with NO confirmed product/category role still blocks.
+    const productRoleTerms = list(packagingTranslation?.productAndCategoryRole);
+    if (!productRoleTerms.length) {
       add(
         'PACKAGING_PRODUCT_ROLE_MISSING',
         'block',
-        'Packaging product/category role has no confirmed evidence.',
+        'Packaging product/category role has no confirmed upstream declaration.',
       );
     }
-    const productTerms = list(packagingTranslation?.productAndCategoryRole);
     const unsupportedProductInstruction = /瓶|罐|管|安瓶|精华|面膜|注射|器械|bottle|jar|tube|ampoule|serum/iu
       .test(String(taskContract?.currentInstruction ?? ''));
-    if (!list(packagingTranslation?.productRoleEvidenceRefs).length
-      && (productTerms.length || unsupportedProductInstruction)) {
+    if (!productRoleTerms.length && unsupportedProductInstruction) {
       add(
         'UNSUPPORTED_PRODUCT_INVENTION',
         'block',
