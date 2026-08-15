@@ -103,7 +103,7 @@ async function resolveExplicitReferencesOrThrow(
   projectId: string,
   projects: ProjectStore,
 ): Promise<
-  Array<{ assetId: string; role: string; relativePath: string }>
+  Array<{ assetId: string; role: string; relativePath: string; usage?: string }>
 > {
   if (!explicitIds || explicitIds.length === 0) return [];
   const [projectPaths, project] = await Promise.all([
@@ -129,6 +129,11 @@ async function resolveExplicitReferencesOrThrow(
     assetId: record.assetId,
     role: record.role,
     relativePath: record.relativePath,
+    // P3-D3.7B: surface the asset usage so consumers can derive the
+    // project-root-relative path with ONE interpretation authority
+    // (analysis_source is relative to <projectRoot>/input;
+    // generation_reference is already relative to <projectRoot>).
+    usage: project.assets.find((asset) => asset.id === record.assetId)?.usage,
   }));
 }
 
@@ -874,6 +879,13 @@ export function createShortChainGenerationService(
       );
       const explicitReferences = explicitResolved.flatMap((asset) => {
         const id = asset.assetId;
+        // P3-D3.7B: usage-aware project-root-relative path, aligned with
+        // resolveReferenceAsset (the single path authority). analysis_source
+        // relativePath is relative to <projectRoot>/input; generation_reference
+        // relativePath is already relative to <projectRoot>.
+        const projectRelativePath = asset.usage === 'generation_reference'
+          ? asset.relativePath
+          : `input/${asset.relativePath}`;
         return [{
           id,
           role: lockedLogoAssetIds.has(id) || asset.role === 'logo'
@@ -881,7 +893,7 @@ export function createShortChainGenerationService(
             : asset.role === 'package_structure'
               ? 'structure_reference' as const
               : 'core_reference' as const,
-          projectRelativePath: `input/${asset.relativePath}`,
+          projectRelativePath,
         }];
       });
       references = [
