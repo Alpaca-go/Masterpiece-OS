@@ -304,7 +304,7 @@ longer exists at HEAD; the boundary cleanup is auditable.
 | Suite | Count | Status |
 |---|---|---|
 | `npm test` (root) | 1234 / 1234 | PASS |
-| `npm run runtime-application:test` | 1422 / 1422 | PASS (was 1396 in C4.2; +22 AT + 4 AS amendments) |
+| `npm run runtime-application:test` | 1418 / 1418 | PASS (was 1396 in C4.2; +22 AT) |
 | `npm run test:image-generation` | 982 / 982 | PASS |
 | `npm run cli:test` | 40 / 40 | PASS |
 | `npm run web:typecheck` | — | PASS |
@@ -355,8 +355,10 @@ the D3 calls will exercise.
 | C4.2 corrective | `4f3a0a3d6ee83a3ddbb6225bd2634ce94a11f551` | unchanged |
 | C4.2 re-freeze | `35ed6df8bf2b610f640a94fbcf7e60c7cc1fa1ec` | unchanged |
 | C4.2 sub-tree test | `8042ec6dcb3aa153682cdc37e741ec2d8292058f` | unchanged |
-| **C4.2.1 corrective** | `<new SHA>` | **NEW** |
-| **C4.2.1 re-freeze** | `<new SHA>` | **NEW** |
+| **C4.2.1 corrective production** | `b6730c3ca78289a72ec624c475d3945e08d4b5ca` | **NEW** |
+| **C4.2.1 STALE-first ordering** | `8e4dc10be43d6ec607d528ed158e11595f170a60` | **NEW** |
+| **C4.2.1 AT-17 + re-freeze docs** | `c178376f9b8013cfe2f03747a2585bc83e40c7aa` | **NEW** |
+| **C4.2.1 P3-A sub-tree guard** | `cf0d221ba1b5a4c974d387f74d98eceee6a9137e` | **NEW** |
 
 After C4.2.1 lands, the **current P3-C production baseline** is the C4.2.1
 corrective commit.
