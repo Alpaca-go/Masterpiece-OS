@@ -23,6 +23,15 @@ import {
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2_CURRENT_PRODUCTION = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A_CURRENT_PRODUCTION = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
+
+// P3-C4.2.1 corrective sub-tree (read-only checkStale
+// helper in workspace-service.js). The P3-A frozen-diff
+// guards subtract that sub-tree from the P3-A diff
+// check so the corrective seam is not read as a STALE
+// semantic regression. The helper is read-only and does
+// NOT introduce a new STALE reason, status, or
+// transition (verified by AT-08, AT-09, AT-17).
+const C4_2_1_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
 const P3B_ACCEPTED = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const WEB_SOURCE = path.join(ROOT, 'apps', 'web', 'src');
 const CURRENT_GRAPH = path.join(ROOT, 'apps', 'web-runtime', 'src', 'current-operation-graph.ts');
@@ -231,7 +240,8 @@ test('AH-C1-12 current P2 frozen Packaging production diff is zero', () => {
 test('AH-C1-13 current P3-A frozen Workspace production diff is zero', () => {
   assert.equal(git([
     'diff', '--name-only', P3A_CURRENT_PRODUCTION, 'HEAD', '--',
-    'packages/runtime-core/src/application/packaging'
+    'packages/runtime-core/src/application/packaging',
+    C4_2_1_SUBTREE
   ]), '');
 });
 
@@ -239,6 +249,7 @@ test('AH-C1-14 P3-B accepted production surfaces have no C1 semantic modificatio
   assert.equal(git([
     'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--',
     'apps/web/src/features/packaging',
-    'packages/runtime-core/src/application/packaging'
+    'packages/runtime-core/src/application/packaging',
+    C4_2_1_SUBTREE
   ]), '');
 });

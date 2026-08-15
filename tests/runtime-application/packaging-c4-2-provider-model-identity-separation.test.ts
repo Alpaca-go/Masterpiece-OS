@@ -377,18 +377,33 @@ test('AS-19 P3-B accepted UI and Workspace semantic diff is zero', () => {
 test('AS-20 P3-C current corrective semantics permit only the C4.2.1 documented sub-tree', () => {
   // C4.2.1 is the new authorized P3-C corrective
   // (boundary cleanup of C4.2's STALE-surface
-  // over-coupling). From the C4.2.1 corrective baseline
+  // over-coupling). The C4.2.1 corrective spans two
+  // commits (`b6730c3` production + `8e4dc10`
+  // STALE-first ordering). The documented allowed set
+  // is:
+  //   - packages/runtime-core/src/operations/packaging-operations.js
+  //     (C4.2 identity split retained + C4.2.1
+  //     execution preflight mismatch throw + STALE-first
+  //     ordering at the execute-generation boundary)
+  //   - packages/runtime-core/src/application/packaging/workspace-service.js
+  //     (C4.2.1 adds a read-only `checkStale` helper
+  //     used by the ops layer; NO new STALE reason, NO
+  //     new status, NO new transition)
+  // From the C4.2.1 corrective production commit
   // (`b6730c3`) to HEAD, the only allowed changes in
-  // the P3-C surface are the C4.2.1 corrective re-freeze
-  // itself (no additional changes pending). The C4.2.1
-  // surface change is documented in
+  // the P3-C surface are these two files. The
+  // C4.2.1 surface change is documented in
   // p3-c4-2-1-provider-identity-boundary-cleanup.md.
   const C4_2_1_CORRECTIVE = 'b6730c3ca78289a72ec624c475d3945e08d4b5ca';
   const diff = git([
     'diff', '--name-only', C4_2_1_CORRECTIVE, 'HEAD',
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
-  ]);
-  assert.equal(diff, '');
+  ]).split('\n').filter(Boolean).sort().join('\n');
+  const expected = [
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+    'packages/runtime-core/src/operations/packaging-operations.js',
+  ].sort().join('\n');
+  assert.equal(diff, expected);
 });
 
 test('AS-21 P3-C4.2 corrective surface is exactly the documented ops-layer sub-tree', () => {

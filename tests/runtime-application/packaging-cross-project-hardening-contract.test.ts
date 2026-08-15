@@ -105,30 +105,36 @@ test('AN-15 P3-B accepted UI and Workspace semantic diff remains zero (C4.2 sub-
 // surface between P3C integration and C4.2.
 const C4_2_CORRECTIVE = '4f3a0a3d6ee83a3ddbb6225bd2634ce94a11f551';
 
-test('AN-16 P3-C frozen integration permits only the authorized C4.1 composition-root seam', () => assert.equal(
-  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
-  'apps/web-runtime/src/current-operation-graph.ts',
+test('AN-16 P3-C frozen integration permits only the authorized C4.1 + C4.2.1 documented sub-tree', () => assert.equal(
+  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']).split('\n').filter(Boolean).sort().join('\n'),
+  [
+    'apps/web-runtime/src/current-operation-graph.ts',
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+  ].sort().join('\n'),
 ));
 
 test('AN-16b P3-C4.2.1 corrective permits only the documented ops-layer sub-tree', () => {
   // The C4.2.1 corrective re-freezes the P3-C surface on
   // top of C4.1 + C4.2. The documented allowed set is:
   //   - packages/runtime-core/src/operations/packaging-operations.js
-  //     (C4.2 identity split retained + C4.2.1 execution
-  //     preflight mismatch throw; the C4.2
-  //     workspace-service.js change was reverted in
-  //     C4.2.1 because the P3-A STALE surface is frozen.)
+  //     (C4.2 identity split retained + C4.2.1
+  //     execution preflight mismatch throw + STALE-first
+  //     ordering at the execute-generation boundary)
   //   - packages/runtime-core/src/application/packaging/workspace-service.js
-  //     (C4.2.1 reverts the C4.2 identity-mismatch block;
-  //     the file at HEAD is byte-equivalent to the C4.1
-  //     baseline, so the diff from the C4.1 baseline to
-  //     HEAD is empty.)
+  //     (C4.2.1 adds a read-only `checkStale` helper;
+  //     the C4.2 identity-mismatch block was reverted
+  //     in C4.2.1 because the P3-A STALE surface is
+  //     frozen.)
   // Everything else in the P3-C surface must remain
   // unchanged from the C4.2.1 corrective baseline.
   const C4_2_1_CORRECTIVE = 'b6730c3ca78289a72ec624c475d3945e08d4b5ca';
   const diff = git([
     'diff', '--name-only', C4_2_1_CORRECTIVE, 'HEAD',
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
-  ]);
-  assert.equal(diff, '');
+  ]).split('\n').filter(Boolean).sort().join('\n');
+  const expected = [
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+    'packages/runtime-core/src/operations/packaging-operations.js',
+  ].sort().join('\n');
+  assert.equal(diff, expected);
 });

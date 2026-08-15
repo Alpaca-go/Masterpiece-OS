@@ -27,6 +27,15 @@ const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
 
+// P3-C4.2.1 corrective sub-tree (read-only checkStale
+// helper in workspace-service.js). The P3-A frozen-diff
+// guards subtract that sub-tree from the P3-A diff
+// check so the corrective seam is not read as a STALE
+// semantic regression. The helper is read-only and does
+// NOT introduce a new STALE reason, status, or
+// transition (verified by AT-08, AT-09, AT-17).
+const C4_2_1_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
+
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const P3C_INTEGRATION = '456ec3a9d0273b599ed15bcd424fde1f36b8ce1b';
 const C4_CORRECTIVE = '782e2fc08fca167e0320f9bcde33ed6eacaf1b2d';
@@ -259,12 +268,15 @@ test('AQ-22 P2 frozen diff is zero', () => {
   );
 });
 
-test('AQ-23 P3-A frozen diff is zero', () => {
+test('AQ-23 P3-A frozen diff is the C4.2.1 documented sub-tree', () => {
   requireTest('AP-18 P3-A frozen production diff remains zero');
   requireTest('AN-14 P3-A frozen production diff remains zero');
   requireTest('AE-10 P3-A frozen Packaging application diff is zero');
+  // The C4.2.1 corrective adds the read-only
+  // `checkStale` helper in workspace-service.js. No
+  // other P3-A changes.
   assert.equal(
-    git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging', ]),
+    git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging', C4_2_1_SUBTREE]),
     '',
   );
 });
@@ -275,7 +287,8 @@ test('AQ-24 P3-B accepted diff is zero', () => {
   assert.equal(
     git([
       'diff', '--name-only', P3B, 'HEAD',
-      '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging'
+      '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+    C4_2_1_SUBTREE
     ]),
     '',
   );

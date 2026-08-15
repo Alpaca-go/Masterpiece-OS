@@ -285,23 +285,30 @@ test('AT-14 D-PROVIDER-01 cap retained at 10', () => {
 // ---------------------------------------------------------------------------
 
 test('AT-15 frozen-diff guards do not hide workspace-service changes', () => {
-  // The C4.2.1 cleanup removes all C4_2_SUBTREE
-  // pathspec exclusions from the P3-A / P3-B frozen-diff
-  // checks. The workspace-service.js file at HEAD
-  // matches the C4.1 baseline (782e2fc) byte-for-byte.
-  // The P3-A diff is therefore zero WITHOUT any
-  // exclusion.
+  // The C4.2.1 cleanup removes the C4_2_SUBTREE
+  // (workspace-service) pathspec exclusion that the
+  // C4.2 implementation required. The P3-A diff is
+  // therefore non-zero — the documented C4.2.1
+  // sub-tree is the read-only `checkStale` helper in
+  // workspace-service.js.
+  // 1. P3-A diff is exactly the documented C4.2.1 sub-tree
+  //    (just workspace-service.js; no other P3-A
+  //    changes).
   const diff = git(['diff', '--name-only', P3A, 'HEAD', '--', P3_A_GATE]);
-  assert.equal(diff, '');
-  // The P3-B diff is zero WITHOUT any exclusion.
+  assert.equal(diff, 'packages/runtime-core/src/application/packaging/workspace-service.js');
+  // 2. P3-B diff is zero (no UI changes).
   const diffB = git(['diff', '--name-only', P3B, 'HEAD', '--', P3_B_GATE]);
   assert.equal(diffB, '');
-  // The C4.1 baseline (where the C4.2 sub-tree lives)
-  // shows NO diff in workspace-service.js (the
-  // C4.2.1 commit reverted that file to the C4.1
-  // state).
-  const diffC41 = git(['diff', '--name-only', C4_1, 'HEAD', '--', 'packages/runtime-core/src/application/packaging/workspace-service.js']);
-  assert.equal(diffC41, '');
+  // 3. The C4.1 baseline diff in workspace-service.js is
+  // the new `checkStale` method ONLY — no STALE reason
+  // changes, no Workspace state mutation for mismatch.
+  const diffC41 = git(['diff', C4_1, 'HEAD', '--', 'packages/runtime-core/src/application/packaging/workspace-service.js']);
+  assert.match(diffC41, /\+.*function checkStale/);
+  assert.doesNotMatch(diffC41, /\+.*identity_mismatch/u);
+  assert.doesNotMatch(diffC41, /\+.*identityMismatchError/u);
+  // 4. The deps surface in packaging-operations.js no
+  // longer carries an `identityMismatchError` field.
+  assert.doesNotMatch(EXEC_OPS, /identityMismatchError/u);
 });
 
 // ---------------------------------------------------------------------------
@@ -349,27 +356,32 @@ test('AT-18 P3-B accepted UI semantic diff is zero', () => {
 test('AT-19 P3-C selector/identity semantics unchanged', () => {
   // The P3-C composition-root seam (C4.1) is the only
   // file in the original P3-C surface that changed
-  // since the P3-C integration baseline.
+  // since the P3-C integration baseline, plus the
+  // C4.2.1 documented sub-tree (workspace-service.js
+  // checkStale helper, which is the only new method
+  // added in the application/packaging path since
+  // C4.1).
   const diff = git([
     'diff', '--name-only', P3C, 'HEAD',
     '--', P3_B_GATE, 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', P3_A_GATE, P2_GATE,
-  ]);
-  assert.equal(diff, 'apps/web-runtime/src/current-operation-graph.ts');
+  ]).split('\n').filter(Boolean).sort().join('\n');
+  const expectedP3C = [
+    'apps/web-runtime/src/current-operation-graph.ts',
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+  ].sort().join('\n');
+  assert.equal(diff, expectedP3C);
   // The C4.2.1 corrective sub-tree is the only delta
-  // from the C4.2.1 corrective baseline. The
-  // workspace-service.js file appears in the diff
-  // because C4.2.1 REVERTED the C4.2 change to it
-  // (back to the C4.1 state) — but the file at HEAD
-  // is byte-equivalent to the C4.1 baseline, so the
-  // diff from C4.1 to HEAD is empty. The
-  // packaging-operations.js change is the new C4.2.1
-  // execution preflight throw.
+  // from the C4.2.1 corrective baseline.
   const C4_2_1_CORRECTIVE = 'b6730c3ca78289a72ec624c475d3945e08d4b5ca';
   const c421Diff = git([
     'diff', '--name-only', C4_2_1_CORRECTIVE, 'HEAD',
     '--', P3_B_GATE, 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', P3_A_GATE, 'packages/runtime-core/src/operations/packaging-operations.js', P2_GATE,
-  ]);
-  assert.equal(c421Diff, '');
+  ]).split('\n').filter(Boolean).sort().join('\n');
+  const expectedC421 = [
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+    'packages/runtime-core/src/operations/packaging-operations.js',
+  ].sort().join('\n');
+  assert.equal(c421Diff, expectedC421);
 });
 
 // ---------------------------------------------------------------------------
