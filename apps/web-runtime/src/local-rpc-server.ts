@@ -14,6 +14,23 @@ export interface LocalRpcServer {
 }
 
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
+// P3-D3.6A/6B — the Web Asset Upload channel carries raw base64
+// of up to 8 MiB of image bytes (≈10.7 MiB base64 + JSON wrapper).
+// Only this channel gets a 64 MiB cap; all other RPC channels keep
+// the general 10 MiB limit. Channel-aware, not a global raise.
+const UPLOAD_CHANNEL = 'projects:import-file-bytes';
+const UPLOAD_BODY_BYTES = 64 * 1024 * 1024;
+
+function bodyCapFor(channel: string): number {
+  return channel === UPLOAD_CHANNEL ? UPLOAD_BODY_BYTES : MAX_BODY_BYTES;
+}
+
+// P3-D3.6A/6B — exported for the body-cap contract guard
+// (tests verify the channel-aware selector without allocating
+// multi-MiB payloads).
+export function resolveBodyCap(channel: string): number {
+  return bodyCapFor(channel);
+}
 
 function sendJson(response: ServerResponse, status: number, body: unknown): void {
   response.writeHead(status, {
@@ -23,13 +40,13 @@ function sendJson(response: ServerResponse, status: number, body: unknown): void
   response.end(JSON.stringify(body));
 }
 
-async function readJsonBody(request: IncomingMessage): Promise<unknown> {
+async function readJsonBody(request: IncomingMessage, cap: number): Promise<unknown> {
   const chunks: Buffer[] = [];
   let total = 0;
   for await (const chunk of request) {
     const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
     total += buffer.length;
-    if (total > MAX_BODY_BYTES) throw new Error('WEB_RPC_BODY_TOO_LARGE');
+    if (total > cap) throw new Error('WEB_RPC_BODY_TOO_LARGE');
     chunks.push(buffer);
   }
   return chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {};
@@ -68,9 +85,10 @@ export async function startLocalRpcServer(options: LocalRpcServerOptions): Promi
       return;
     }
     try {
-      const body = await readJsonBody(request) as { args?: unknown[] };
+      const channel = decodeURIComponent(match[1]!);
+      const body = await readJsonBody(request, bodyCapFor(channel)) as { args?: unknown[] };
       if (!Array.isArray(body.args)) throw new Error('WEB_RPC_ARGS_REQUIRED');
-      const result = await options.invoke(decodeURIComponent(match[1]!), body.args);
+      const result = await options.invoke(channel, body.args);
       sendJson(response, 200, { result });
     } catch (error) {
       sendJson(response, 500, { error: error instanceof Error ? error.message : String(error) });
