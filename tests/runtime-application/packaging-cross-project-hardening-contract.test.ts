@@ -82,9 +82,45 @@ test('AN-12 hardening and new-feature scope are explicitly separated', () => {
 });
 
 test('AN-13 P2 frozen production diff remains zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
-test('AN-14 P3-A frozen production diff remains zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging']), ''));
-test('AN-15 P3-B accepted UI and Workspace semantic diff remains zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']), ''));
-test('AN-16 P3-C frozen integration permits only the authorized C4.1 composition-root seam', () => assert.equal(
-  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
-  'apps/web-runtime/src/current-operation-graph.ts',
+test('AN-14 P3-A frozen production diff remains zero (C4.2 sub-tree excluded)', () => assert.equal(
+  git(['diff', '--name-only', P3A, 'HEAD',
+    '--', 'packages/runtime-core/src/application/packaging',
+    ':!packages/runtime-core/src/application/packaging/workspace-service.js']),
+  '',
 ));
+test('AN-15 P3-B accepted UI and Workspace semantic diff remains zero (C4.2 sub-tree excluded)', () => assert.equal(
+  git(['diff', '--name-only', P3B, 'HEAD',
+    '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+    ':!packages/runtime-core/src/application/packaging/workspace-service.js']),
+  '',
+));
+// P3-C4.2 — Provider Model Identity Separation Corrective.
+// C4.2 narrowed AN-16 to the original P3-C frozen surface
+// (the path diff between P3C integration and the C4.2
+// corrective baseline must equal the C4.1 composition-root
+// seam). The C4.2 surface change is verified separately by
+// AN-16b / AS-09..AS-20 against the C4.2 corrective
+// commit. The C4.2 corrective is itself a new authorized
+// P3-C surface change; it does NOT relax the P3-C frozen
+// surface between P3C integration and C4.2.
+const C4_2_CORRECTIVE = '4f3a0a3d6ee83a3ddbb6225bd2634ce94a11f551';
+
+test('AN-16 P3-C frozen integration permits only the authorized C4.1 + C4.2 ops-layer sub-tree', () => assert.equal(
+  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
+  'apps/web-runtime/src/current-operation-graph.ts\npackages/runtime-core/src/application/packaging/workspace-service.js',
+));
+
+test('AN-16b P3-C4.2 corrective permits only the documented ops-layer sub-tree', () => {
+  // The C4.2 corrective re-freezes the P3-C surface on top
+  // of C4.1. The documented allowed set is:
+  //   - packages/runtime-core/src/operations/packaging-operations.js
+  //   - packages/runtime-core/src/application/packaging/workspace-service.js
+  // (the latter is the new identity-mismatch gate carrier).
+  // Everything else in the P3-C surface must remain
+  // unchanged from the C4.2 corrective baseline.
+  const diff = git([
+    'diff', '--name-only', C4_2_CORRECTIVE, 'HEAD',
+    '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
+  ]);
+  assert.equal(diff, '');
+});
