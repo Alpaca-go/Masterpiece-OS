@@ -1594,59 +1594,128 @@ async function buildExecutionDeps({
     err.cause = cause;
     throw err;
   }
-  const providerModelId = asString(callerProviderModelId)
-    || (intent ? asString(intent.providerModelId) : '')
-    || asString(profile.modelId);
-  if (!providerModelId) {
+  // P3-C4.2 — Provider Model Identity Separation.
+  //
+  // Two distinct identities are required end-to-end:
+  //
+  //   A. Registry identity (canonical Masterpiece Model
+  //      Registry id, e.g. `seedream-5.0-pro`).
+  //      Owns: capability gate, multi-model adapter routing,
+  //      P2 semantic identity, Workspace intent identity.
+  //
+  //   B. Provider API identity (the actual HTTP-side model
+  //      name the Provider expects, e.g.
+  //      `doubao-seedream-5-0-pro-260628`).
+  //      Owns: HTTP request body `model` field, Provider
+  //      response parsing.
+  //
+  // The two may be the same (legacy / same-id profile) or
+  // different (split profile, e.g. a registry id whose
+  // Provider deployment has a different raw name).
+  //
+  // Deterministic resolution:
+  //   - `effectiveRegistryIdentity` is read from
+  //     `profile.registryModelId` (preferred) and falls
+  //     back to `profile.modelId` only when the profile
+  //     predates the registry-id contract (legacy). It is
+  //     NEVER derived from `intent.providerModelId` or
+  //     the Provider's raw API model name.
+  //   - `effectiveProviderApiIdentity` is read from
+  //     `profile.modelId` (the actual Provider deployment
+  //     name). It is NEVER read from the Registry.
+  //   - The Workspace's `intent.providerModelId` is the
+  //     canonical Registry identity (P3-A10 contract). It
+  //     MUST match the profile's effective Registry
+  //     identity. A mismatch is recorded in the deps for
+  //     the service-level STALE gate to project as an
+  //     `identity_mismatch` STALE reason; the actual
+  //     fail-closed rejection is enforced at the service
+  //     boundary AFTER the existing STALE check so the
+  //     pre-C4.2 STALE envelope remains primary.
+  const profileRegistryId = asString(profile.registryModelId) || asString(profile.modelId);
+  const profileApiModelId = asString(profile.modelId);
+  const intentRegistryId = asString(callerProviderModelId)
+    || (intent ? asString(intent.providerModelId) : '');
+  const identityMismatch = Boolean(intentRegistryId)
+    && Boolean(profileRegistryId)
+    && intentRegistryId !== profileRegistryId;
+  // Carry the mismatch into the deps so the service-level
+  // gate can reject after the existing STALE check fires.
+  // The rejection code is preserved exactly so the test
+  // R-13 STALE envelope (and the new AS-09 negative test)
+  // both pass under the canonical order: STALE first,
+  // identity mismatch second.
+  const identityMismatchError = identityMismatch
+    ? Object.freeze({
+        code: 'PACKAGING_WORKSPACE_EXECUTE_REJECTED',
+        message:
+          'PACKAGING_WORKSPACE_EXECUTE_REJECTED: intent.providerModelId ' +
+          `"${intentRegistryId}" does not match the selected profile's registry identity ` +
+          `"${profileRegistryId}". The Workspace providerModelId is the canonical Masterpiece ` +
+          "Model Registry identity (P3-A10); a profile with a different registry identity is " +
+          'an invalid configuration and the execution must be rejected before any Provider dispatch.',
+        expected: { intentProviderModelId: intentRegistryId, profileRegistryId: profileRegistryId },
+        actual: { intentProviderModelId: intentRegistryId, profileRegistryId: profileRegistryId },
+      })
+    : null;
+  const registryModelId = profileRegistryId;
+  const providerApiModelId = profileApiModelId;
+  if (!registryModelId) {
     const err = new Error(
       'EXECUTION_PROVIDER_MODEL_REQUIRED: profile has no modelId and caller did not supply providerModelId'
     );
     err.code = 'EXECUTION_PROVIDER_MODEL_REQUIRED';
     throw err;
   }
+  if (!providerApiModelId) {
+    const err = new Error(
+      'EXECUTION_PROVIDER_MODEL_REQUIRED: profile has no modelId for the Provider API identity'
+    );
+    err.code = 'EXECUTION_PROVIDER_MODEL_REQUIRED';
+    throw err;
+  }
+  // P3-C4.2: the public contract keeps `providerModelId`
+  // (P3-A10) as the canonical Registry identity for
+  // backwards compatibility. The actual API identity is
+  // exposed as the new `providerApiModelId` field.
+  const providerModelId = registryModelId;
   const apiKey = asString(credentials?.apiKey);
   const baseUrl = asString(credentials?.baseUrl);
   const region = asString(credentials?.region);
   const protocol = asString(profile.protocol);
   const provider = asString(profile.provider);
-  // P3-B5: the executor is the canonical P2 frozen
-  // `createMultiModelImageAdapter` instance. It owns the
-  // Provider HTTP client and the redacted request / response
-  // shape. The P2 frozen generation service consumes it via
-  // `resolvedDeps.executor`. When the runtime composition
-  // root does not register a real adapter for the requested
-  // `providerModelId` (e.g. test mocks, future Provider
-  // onboarding), we fall back to a no-op executor so the
-  // canonical `executePackagingGeneration` dep seam is
-  // satisfied without forcing the operations layer to know
-  // the per-Provider surface.
+  // P3-C4.2: the executor uses the Registry identity for
+  // the multi-model adapter lookup (the adapter is keyed
+  // by Masterpiece Model Registry id, NOT by the raw
+  // Provider deployment name) and the actual Provider
+  // API identity for the request body `model` field.
   let executor;
   try {
     const adapter = createMultiModelImageAdapter({
-      adapterId: providerModelId,
+      adapterId: registryModelId,
       apiKey,
       baseUrl,
-      modelId: providerModelId,
+      modelId: providerApiModelId,
     });
     executor = Object.freeze({
-      id: asString(adapter.id, providerModelId),
+      id: asString(adapter.id, registryModelId),
       version: asString(adapter.version, '1.0.0'),
       protocol: asString(adapter.protocol, protocol),
       compileRequest: adapter.compileRequest,
       execute: adapter.execute,
     });
   } catch {
-    // P3-B5: no real Provider adapter is wired for this
-    // `providerModelId` (e.g. test scenarios that use a mock
-    // model id; future Provider onboarding). The operations
-    // layer still passes a well-formed `executor` to the P2
-    // frozen deps seam; the P2 frozen `executePackagingGeneration`
-    // will produce a canonical Provider failure downstream
-    // if the executor is ever actually invoked against a
-    // real Provider. The `executeFn` is the actual mock
-    // surface the tests assert against.
+    // P3-C4.2: the mock fallback is reserved for
+    // sanctioned test scenarios where the ops layer
+    // does not register a real adapter for the
+    // requested Registry identity. Production paths
+    // must NEVER reach this branch for the split-id
+    // profile case (the Seedream Registry id is a
+    // known canonical adapter). The fallback preserves
+    // the same two-identity separation as the real
+    // adapter path.
     executor = Object.freeze({
-      id: providerModelId,
+      id: registryModelId,
       version: '1.0.0',
       protocol: protocol || 'unknown',
       compileRequest: (input) => Object.freeze({
@@ -1654,11 +1723,11 @@ async function buildExecutionDeps({
         url: 'https://mock.invalid/execute',
         headers: { 'Content-Type': 'application/json' },
         bodyKind: 'json',
-        body: { model: providerModelId, input },
+        body: { model: providerApiModelId, input },
       }),
       execute: async () => {
         const err = new Error(
-          `PACKAGING_WORKSPACE_EXECUTE_REJECTED: no real Provider adapter wired for ${providerModelId}; the test mock executeFn should override this path.`
+          `PACKAGING_WORKSPACE_EXECUTE_REJECTED: no real Provider adapter wired for Registry identity ${registryModelId}; the test mock executeFn should override this path.`
         );
         err.code = 'PACKAGING_WORKSPACE_EXECUTE_REJECTED';
         throw err;
@@ -1670,10 +1739,18 @@ async function buildExecutionDeps({
   // and metadata we already resolved. The shape mirrors the P2
   // frozen contract so the P2 frozen `artifactLifecycle` /
   // `executionIdentity` builders can run.
+  //
+  // P3-C4.2: the returned config carries BOTH identities
+  // explicitly. The P2 frozen `resolveProductionExecutionConfig`
+  // already reads `registryModelId` from the call input
+  // (the `capability.modelId` it forwards) and expects
+  // `providerModelId` in the returned config. The two
+  // are now distinct.
   const resolveExecutionConfig = async () => Object.freeze({
     apiKey,
     baseUrl,
-    providerModelId,
+    registryModelId,
+    providerModelId: providerApiModelId,
     apiProfileId,
     protocol,
     provider,
@@ -1699,13 +1776,31 @@ async function buildExecutionDeps({
     // compatibility with the prior buildExecutionDeps surface;
     // P2 frozen generation-service does not consume them
     // directly, but downstream callers may).
+    //
+    // P3-C4.2: `providerModelId` here is the canonical
+    // Masterpiece Model Registry identity (P3-A10 contract)
+    // — the SAME value as `registryModelId`. The actual
+    // Provider API identity is exposed separately as
+    // `providerApiModelId`. Downstream code that consumed
+    // `providerModelId` before C4.2 still gets the
+    // canonical Registry identity and continues to work.
     apiKey,
     baseUrl,
-    providerModelId,
+    providerModelId: registryModelId,
+    registryModelId,
+    providerApiModelId,
     apiProfileId,
     protocol,
     provider,
     region,
+    // P3-C4.2: the identity-mismatch gate is surfaced to
+    // the service so the existing STALE check fires first;
+    // the service projects the mismatch as a new
+    // `identity_mismatch` STALE reason and rejects with
+    // the canonical code. The gate stays primary; the
+    // identity-mismatch reason is added on top of the
+    // existing STALE envelope.
+    identityMismatchError,
     // P3-B5 additive fields (consumed by P2 frozen generation-service).
     executor,
     resolveExecutionConfig,

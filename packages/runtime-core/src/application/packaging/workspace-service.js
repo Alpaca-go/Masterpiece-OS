@@ -684,6 +684,25 @@ export function createPackagingWorkspaceService(options = {}) {
       err.issues = ['stale', ...stale.reasons];
       throw err;
     }
+    // P3-C4.2 — Provider Model Identity Separation.
+    // The existing STALE gate is the primary pre-execution
+    // check (P3-A5.1). The identity-mismatch gate is the
+    // secondary check: it runs AFTER the STALE gate so
+    // the canonical STALE envelope is preserved, but it
+    // also fail-closes BEFORE any Provider dispatch when
+    // the Workspace's `intent.providerModelId` (canonical
+    // Masterpiece Model Registry id) does not match the
+    // selected profile's effective Registry identity.
+    if (deps && deps.identityMismatchError) {
+      const err = new Error(deps.identityMismatchError.message);
+      err.code = deps.identityMismatchError.code;
+      err.issues = ['identity_mismatch'];
+      err.expected = deps.identityMismatchError.expected;
+      err.actual = deps.identityMismatchError.actual;
+      const failed = withError(state, err);
+      freezeAndStore(failed);
+      throw err;
+    }
     const transitional = transitionSession(state, PACKAGING_WORKSPACE_STATUS.EXECUTING);
     freezeAndStore(transitional);
     let executionResult;
