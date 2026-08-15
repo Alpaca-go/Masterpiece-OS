@@ -264,7 +264,7 @@ test('AQ-23 P3-A frozen diff is zero', () => {
   requireTest('AN-14 P3-A frozen production diff remains zero');
   requireTest('AE-10 P3-A frozen Packaging application diff is zero');
   assert.equal(
-    git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging', C4_2_SUBTREE]),
+    git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging', ]),
     '',
   );
 });

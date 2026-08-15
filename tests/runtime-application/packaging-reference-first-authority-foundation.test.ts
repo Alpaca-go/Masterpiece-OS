@@ -233,13 +233,13 @@ test('AJ-13 no Packaging Context Store is introduced', () => {
 
 test('AJ-14 downstream Packaging contains no Reference interpretation', () => {
   const graph = git(['grep', '-n', '-E', 'ReferenceStyleCapsule|anchorGoal', '--', 'apps/web-runtime/src/current-operation-graph.ts', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]);
+    ]);
   assert.equal(graph, '');
 });
 
 test('AJ-15 Packaging entry contains no new model call', () => {
   const graph = git(['grep', '-n', '-E', 'analyzeReferenceStyle|responses\\.create|chat\\.completions', '--', 'apps/web-runtime/src/current-operation-graph.ts', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]);
+    ]);
   assert.equal(graph, '');
 });
 
@@ -254,9 +254,9 @@ test('AJ-17 Reference translation owns no Shot Contract or aspectRatio', () => {
 
 test('AJ-18 P2 current production diff is zero', () => assert.equal(git(['diff', '--name-only', P2_CURRENT, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AJ-19 P3-A current production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A_CURRENT, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), ''));
+    ]), ''));
 test('AJ-20 P3-B accepted UI and Workspace semantics are unchanged', () => assert.equal(git(['diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), ''));
+    ]), ''));
 
 test('AJ-C01 no active source fails closed', async () => { const h = await harness(); await assert.rejects(() => h.service.getActiveSource('project-a'), (error: any) => error.code === 'REFERENCE_ACTIVE_SOURCE_UNAVAILABLE'); });
 

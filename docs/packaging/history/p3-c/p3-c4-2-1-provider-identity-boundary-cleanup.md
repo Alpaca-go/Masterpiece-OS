@@ -221,10 +221,21 @@ C4.2.1 production delta (relative to C4.1 baseline `782e2fc`):
   - C4.2 identity split retained.
   - C4.2.1 mismatch check moves from deps-payload to in-function throw.
   - One new error code: `EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH`.
+  - New STALE-first ordering at the `execute-generation`
+    operation: uses the service's `checkStale` to surface
+    the canonical STALE envelope BEFORE the
+    execution-preflight mismatch check.
 
 - `packages/runtime-core/src/application/packaging/workspace-service.js`:
   - C4.2 mismatch block REMOVED.
-  - File is byte-equivalent to the C4.1 baseline (no diff vs `782e2fc`).
+  - New read-only helper `checkStale(sessionId)` that
+    exposes the existing `computeStale` result. The
+    helper does NOT introduce a new STALE reason, a new
+    status, or a new transition. It only re-runs the
+    canonical `computeStale` against the current state.
+  - The C4.2 `identityMismatchError` block is gone.
+  - The R-13 STALE envelope (`PACKAGING_WORKSPACE_EXECUTE_REJECTED:
+    stale; reasons=...`) is preserved byte-for-byte.
 
 No other production files change.
 

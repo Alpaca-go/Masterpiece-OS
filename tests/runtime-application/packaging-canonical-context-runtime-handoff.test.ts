@@ -251,9 +251,9 @@ test('AK-27 invalid source kind and PackagingTranslationV2 fail closed', () => {
 test('AK-28 P2 and P3-A frozen production diffs remain zero', () => {
   assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), '');
   assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), '');
+    ]), '');
 });
 test('AK-29 P3-B accepted UI and Workspace semantics remain unchanged', () => {
   assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), '');
+    ]), '');
 });

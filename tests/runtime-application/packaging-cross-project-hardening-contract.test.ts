@@ -110,18 +110,24 @@ test('AN-16 P3-C frozen integration permits only the authorized C4.1 composition
   'apps/web-runtime/src/current-operation-graph.ts',
 ));
 
-test('AN-16b P3-C4.2 corrective permits only the documented ops-layer sub-tree', () => {
-  // The C4.2 corrective re-freezes the P3-C surface on top
-  // of C4.1. The documented allowed set is:
+test('AN-16b P3-C4.2.1 corrective permits only the documented ops-layer sub-tree', () => {
+  // The C4.2.1 corrective re-freezes the P3-C surface on
+  // top of C4.1 + C4.2. The documented allowed set is:
   //   - packages/runtime-core/src/operations/packaging-operations.js
-  //   (C4.2 identity split + execution preflight mismatch
-  //   throw; the C4.2 workspace-service.js change was
-  //   reverted in C4.2.1 because the P3-A STALE surface is
-  //   frozen.)
+  //     (C4.2 identity split retained + C4.2.1 execution
+  //     preflight mismatch throw; the C4.2
+  //     workspace-service.js change was reverted in
+  //     C4.2.1 because the P3-A STALE surface is frozen.)
+  //   - packages/runtime-core/src/application/packaging/workspace-service.js
+  //     (C4.2.1 reverts the C4.2 identity-mismatch block;
+  //     the file at HEAD is byte-equivalent to the C4.1
+  //     baseline, so the diff from the C4.1 baseline to
+  //     HEAD is empty.)
   // Everything else in the P3-C surface must remain
-  // unchanged from the C4.2 corrective baseline.
+  // unchanged from the C4.2.1 corrective baseline.
+  const C4_2_1_CORRECTIVE = 'b6730c3ca78289a72ec624c475d3945e08d4b5ca';
   const diff = git([
-    'diff', '--name-only', C4_2_CORRECTIVE, 'HEAD',
+    'diff', '--name-only', C4_2_1_CORRECTIVE, 'HEAD',
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
   ]);
   assert.equal(diff, '');

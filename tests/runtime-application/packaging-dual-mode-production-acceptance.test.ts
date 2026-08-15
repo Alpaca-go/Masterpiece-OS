@@ -537,9 +537,9 @@ test('AL-27 preview security and safe application errors are retained', () => {
 });
 test('AL-28 P2 current production diff is zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AL-29 P3-A current production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), ''));
+    ]), ''));
 test('AL-30 P3-B accepted UI and Workspace semantics are unchanged', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), ''));
+    ]), ''));
 test('AL-31 same-semantic Reference rerun does not create false STALE from producerRunId', () => {
   assert.equal(evidence.switches.sameSemantic.view.status, PACKAGING_WORKSPACE_STATUS.EXECUTED);
   assert.deepEqual(evidence.switches.sameSemantic.view.staleReasons, []);

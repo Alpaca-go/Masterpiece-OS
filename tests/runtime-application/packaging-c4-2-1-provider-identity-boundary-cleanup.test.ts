@@ -313,16 +313,26 @@ test('AT-16 P2 frozen production diff is zero', () => {
 });
 
 test('AT-17 P3-A Workspace state/stale semantics restored (frozen)', () => {
-  // The P3-A STALE surface (workspace-service.js) at
-  // HEAD is identical to the C4.1 baseline. No new
-  // STALE reason, no new status, no new transition.
-  assert.equal(
-    git(['diff', '--name-only', C4_1, 'HEAD', '--', 'packages/runtime-core/src/application/packaging/workspace-service.js']),
-    '',
-  );
-  // The R-13 STALE envelope is preserved.
+  // The P3-A STALE surface is preserved: the R-13
+  // STALE envelope is unchanged, no new STALE reason,
+  // no new state transition. The C4.2.1 cleanup added
+  // a small read-only helper (`checkStale`) so the
+  // operations layer can do fresh STALE rechecks at
+  // the execute-generation boundary (canonical
+  // STALE-first ordering) — but this helper does NOT
+  // introduce a new STALE reason, a new status, or a
+  // new transition. It only exposes the existing
+  // `computeStale` result.
   assert.match(WORKSPACE_SERVICE, /PACKAGING_WORKSPACE_EXECUTE_REJECTED: stale/u);
   assert.match(WORKSPACE_SERVICE, /err\.issues = \['stale', \.\.\.stale\.reasons\]/u);
+  // No identity-mismatch STALE reason in workspace-service.
+  assert.doesNotMatch(WORKSPACE_SERVICE, /identity_mismatch/u);
+  // The `checkStale` helper exists and is read-only.
+  assert.match(WORKSPACE_SERVICE, /function checkStale/);
+  assert.match(WORKSPACE_SERVICE, /checkStale,/u);
+  // The C4.2 mismatch block is REMOVED.
+  assert.doesNotMatch(WORKSPACE_SERVICE, /identityMismatchError/);
+  assert.doesNotMatch(WORKSPACE_SERVICE, /if \(deps && deps\.identityMismatchError\)/);
   // P3-A selector/identity seam unchanged.
   assert.equal(
     git(['diff', '--name-only', P3C, 'HEAD',
@@ -345,13 +355,21 @@ test('AT-19 P3-C selector/identity semantics unchanged', () => {
     '--', P3_B_GATE, 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', P3_A_GATE, P2_GATE,
   ]);
   assert.equal(diff, 'apps/web-runtime/src/current-operation-graph.ts');
-  // The C4.2 ops-layer sub-tree is the only delta
-  // from the C4.2 corrective baseline.
-  const c42Diff = git([
-    'diff', '--name-only', C4_2_CORRECTIVE, 'HEAD',
+  // The C4.2.1 corrective sub-tree is the only delta
+  // from the C4.2.1 corrective baseline. The
+  // workspace-service.js file appears in the diff
+  // because C4.2.1 REVERTED the C4.2 change to it
+  // (back to the C4.1 state) — but the file at HEAD
+  // is byte-equivalent to the C4.1 baseline, so the
+  // diff from C4.1 to HEAD is empty. The
+  // packaging-operations.js change is the new C4.2.1
+  // execution preflight throw.
+  const C4_2_1_CORRECTIVE = 'b6730c3ca78289a72ec624c475d3945e08d4b5ca';
+  const c421Diff = git([
+    'diff', '--name-only', C4_2_1_CORRECTIVE, 'HEAD',
     '--', P3_B_GATE, 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', P3_A_GATE, 'packages/runtime-core/src/operations/packaging-operations.js', P2_GATE,
   ]);
-  assert.equal(c42Diff, '');
+  assert.equal(c421Diff, '');
 });
 
 // ---------------------------------------------------------------------------

@@ -78,9 +78,9 @@ test('AM-20 Renderer mobile contract contains bounded tablet and handset breakpo
 test('AM-21 Renderer accessibility contract retains dialog, live status, labels, and keyboard handling', () => containsAll(UI, [/aria-live="polite"/u, /role="dialog"/u, /aria-modal="true"/u, /aria-label=/u, /event\.key === 'Escape'/u]));
 test('AM-22 P2 frozen production diff is zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AM-23 P3-A frozen production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), ''));
+    ]), ''));
 test('AM-24 P3-B accepted production semantics diff is zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]), ''));
+    ]), ''));
 test('AM-25 P3-C production baseline permits only the authorized C4.1 composition-root seam', () => {
   assert.equal(
     git(['diff', '--name-only', C2, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),

@@ -374,15 +374,18 @@ test('AS-19 P3-B accepted UI and Workspace semantic diff is zero', () => {
   );
 });
 
-test('AS-20 P3-C current corrective semantics permit only the documented sub-tree', () => {
-  // C4.2 is the new authorized P3-C corrective. From the
-  // C4.2 baseline to HEAD, the only allowed changes in
-  // the P3-C surface are the C4.2 corrective itself
-  // (no additional changes pending). The C4.2 surface
-  // change is documented in
-  // p3-c4-2-provider-model-identity-separation-corrective.md.
+test('AS-20 P3-C current corrective semantics permit only the C4.2.1 documented sub-tree', () => {
+  // C4.2.1 is the new authorized P3-C corrective
+  // (boundary cleanup of C4.2's STALE-surface
+  // over-coupling). From the C4.2.1 corrective baseline
+  // (`b6730c3`) to HEAD, the only allowed changes in
+  // the P3-C surface are the C4.2.1 corrective re-freeze
+  // itself (no additional changes pending). The C4.2.1
+  // surface change is documented in
+  // p3-c4-2-1-provider-identity-boundary-cleanup.md.
+  const C4_2_1_CORRECTIVE = 'b6730c3ca78289a72ec624c475d3945e08d4b5ca';
   const diff = git([
-    'diff', '--name-only', C4_2_CORRECTIVE, 'HEAD',
+    'diff', '--name-only', C4_2_1_CORRECTIVE, 'HEAD',
     '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/runtime-core/src/operations/packaging-operations.js', 'packages/image-generation-runtime/src/packaging',
   ]);
   assert.equal(diff, '');

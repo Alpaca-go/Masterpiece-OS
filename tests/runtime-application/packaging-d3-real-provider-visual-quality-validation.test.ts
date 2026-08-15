@@ -323,7 +323,7 @@ test('AR-19 P2 frozen production diff is zero', () => {
 test('AR-20 P3-A frozen production diff is zero', () => {
   assert.equal(
     git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]),
+    ]),
     '',
   );
 });
@@ -331,7 +331,7 @@ test('AR-20 P3-A frozen production diff is zero', () => {
 test('AR-21 P3-B accepted UI/Workspace semantic diff is zero', () => {
   assert.equal(
     git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE]),
+    ]),
     '',
   );
 });
