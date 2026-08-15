@@ -777,6 +777,43 @@ export interface ImportResult {
   summary: AssetSummary;
 }
 
+// P3-D3.6A/6B — Web Asset Upload Contract (frozen).
+// Browser File bytes transported as raw base64 over the JSON RPC
+// channel projects:import-file-bytes. The upload channel has a
+// dedicated 64 MiB body cap; the general RPC cap stays 10 MiB.
+// The asset authority is project-store.persistAsset (reused);
+// no second asset store, no absolute path input, no Data URL.
+export interface ImportFileBytesInput {
+  projectId: string;
+  file: {
+    /** Safe display name; runtime basenames + sanitizes. */
+    name: string;
+    /** Browser-declared MIME; advisory only (runtime validates). */
+    mime: string;
+    /** Raw byte count; runtime verifies decoded length matches. */
+    size: number;
+    /** Raw base64 only — NO data: prefix. */
+    content: string;
+  };
+}
+
+export interface ImportFileBytesResult {
+  asset: {
+    id: string;
+    projectId: string;
+    name: string;
+    mime: string;
+    sizeBytes: number;
+    relativePath: string;
+    sha256: string;
+    usage: NonNullable<ProjectAsset['usage']>;
+  };
+  /** True when sha256 dedup returned the existing project asset. */
+  duplicate: boolean;
+  /** Set when duplicate; the canonical project-bound asset id. */
+  existingAssetId?: string;
+}
+
 export interface AnalysisResult {
   project: ProjectRecord;
   reportFilename: string;
@@ -2394,6 +2431,7 @@ export interface RuntimeApi {
     chooseFiles(kind: 'assets' | 'logo' | 'brief' | 'reference'): Promise<string[]>;
     chooseFolder(): Promise<string[]>;
     importFiles(projectId: string, paths: string[], kind: 'assets' | 'logo' | 'brief' | 'reference'): Promise<ImportResult>;
+    importFileBytes(input: ImportFileBytesInput): Promise<ImportFileBytesResult>;
     scanAssets(projectId: string): Promise<AssetSummary>;
     removeAsset(projectId: string, assetId: string): Promise<AssetSummary>;
     removeBatch(projectId: string, batchId: string): Promise<AssetSummary>;

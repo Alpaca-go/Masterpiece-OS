@@ -20,5 +20,10 @@ export function createProjectOperations({ projects, pipeline }) {
     'projects:remove-batch': (_context, projectId, batchId) => projects.removeBatch(projectId, batchId),
     'projects:clear-assets': (_context, projectId) => projects.clearAssets(projectId),
     'projects:import-files': (_context, projectId, paths, kind) => projects.importFiles(projectId, paths, kind),
+    // P3-D3.6A/6B — Web Asset Upload Contract (frozen). Browser
+    // File bytes (raw base64) → project-bound generation_reference
+    // asset. The asset authority is project-store.importFileBytes
+    // (persistBufferAsset). No absolute path, no second store.
+    'projects:import-file-bytes': (_context, input) => projects.importFileBytes(input),
   });
 }

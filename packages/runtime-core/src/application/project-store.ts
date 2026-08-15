@@ -8,6 +8,8 @@ import type {
   AssetItem,
   AssetSummary,
   CreateProjectInput,
+  ImportFileBytesInput,
+  ImportFileBytesResult,
   ImportResult,
   ProjectAsset,
   ProjectRecord,
@@ -22,6 +24,30 @@ const IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
 const MAX_ZIP_ENTRIES = 2_000;
 const MAX_ZIP_UNCOMPRESSED_BYTES = 2 * 1024 * 1024 * 1024;
 const MAX_IMPORTED_FILES = 2_000;
+
+// P3-D3.6A/6B — Web Reference upload contract limits.
+// Reference images only: PNG / JPEG / WEBP. Per-file raw cap
+// 8 MiB (base64 ≈ 10.7 MiB < upload-channel 64 MiB body cap).
+const UPLOAD_IMAGE_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.webp']);
+const UPLOAD_IMAGE_MIME: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+};
+const UPLOAD_MAX_FILE_BYTES = 8 * 1024 * 1024;
+
+function uploadError(code: string, message: string): Error {
+  const err = new Error(`${code}: ${message}`);
+  err.name = 'UploadError';
+  (err as Error & { code?: string }).code = code;
+  return err;
+}
+
+function sanitizeUploadFilename(raw: string): string {
+  const basename = String(raw || '').split(/[\\/]/u).pop() || '';
+  return sanitizeFilenamePart(basename) || 'reference-image';
+}
 
 export type SettingsReader = () => Promise<PublicSettings>;
 
@@ -75,6 +101,59 @@ async function hashFile(filename: string): Promise<string> {
     stream.on('data', (chunk) => hash.update(chunk));
     stream.on('end', () => resolve(hash.digest('hex')));
   });
+}
+
+// P3-D3.6A/6B — canonical single-asset buffer persistence.
+// Shared by `importFiles` (zip extraction) and the Web asset
+// upload RPC (`importFileBytes`). One persistence path, one
+// sha256 dedup, one asset-id authority, one project-binding
+// rule. No second asset store.
+async function persistBufferAsset(options: {
+  root: string;
+  assetsRoot: string;
+  generationReference: boolean;
+  assets: ProjectAsset[];
+  knownHashes: Set<string>;
+  buffer: Buffer;
+  originalName: string;
+  batchId: string;
+  sourceType: ProjectAsset['sourceType'];
+  archiveSourceName?: string;
+}): Promise<{ ok: boolean; created?: ProjectAsset; duplicate?: { id: string; name: string } }> {
+  const {
+    root, assetsRoot, generationReference, assets, knownHashes,
+    buffer, originalName, batchId, sourceType, archiveSourceName,
+  } = options;
+  const extension = path.extname(originalName).toLowerCase();
+  if (!SUPPORTED_ASSET.has(extension)) return { ok: false };
+  const sha256 = hashBuffer(buffer);
+  if (knownHashes.has(sha256)) {
+    const existing = assets.find((asset) =>
+      asset.sha256 === sha256 && (generationReference || asset.usage !== 'generation_reference'));
+    if (existing) return { ok: false, duplicate: { id: existing.id, name: existing.originalName } };
+  }
+  const id = crypto.randomUUID();
+  const filename = `${id}${extension === '.jpeg' ? '.jpg' : extension}`;
+  const destination = assertInside(generationReference ? root : path.join(root, 'input'), path.join(assetsRoot, filename));
+  await fs.mkdir(path.dirname(destination), { recursive: true });
+  await fs.writeFile(destination, buffer);
+  const stat = await fs.stat(destination);
+  const record: ProjectAsset = {
+    id,
+    batchId,
+    sourceType,
+    originalName: path.basename(originalName),
+    relativePath: path.relative(generationReference ? root : path.join(root, 'input'), destination).replaceAll('\\', '/'),
+    mimeType: MIME_TYPES[extension] || 'application/octet-stream',
+    sizeBytes: stat.size,
+    sha256,
+    status: 'ready',
+    usage: generationReference ? 'generation_reference' : 'analysis_source',
+    archiveSourceName
+  };
+  assets.push(record);
+  knownHashes.add(sha256);
+  return { ok: true, created: record };
 }
 
 export function createProjectStore(readSettings: SettingsReader) {
@@ -280,7 +359,37 @@ export function createProjectStore(readSettings: SettingsReader) {
         skipped.push(options.originalName);
         return false;
       }
-      const sha256 = options.buffer ? hashBuffer(options.buffer) : await hashFile(options.sourcePath!);
+      if (options.buffer) {
+        const result = await persistBufferAsset({
+          root,
+          assetsRoot,
+          generationReference,
+          assets,
+          knownHashes,
+          buffer: options.buffer,
+          originalName: options.originalName,
+          batchId: options.batchId,
+          sourceType: options.sourceType,
+          archiveSourceName: options.archiveSourceName,
+        });
+        if (result.duplicate) {
+          duplicates.push(result.duplicate);
+          skipped.push(`${options.originalName}（重复）`);
+          return false;
+        }
+        if (!result.created) {
+          skipped.push(options.originalName);
+          return false;
+        }
+        createdFiles.push(path.join(
+          generationReference ? root : path.join(root, 'input'),
+          result.created.relativePath,
+        ));
+        imported.push(result.created.relativePath);
+        if (options.sourceType === 'archive-extracted') extracted.push(result.created.relativePath);
+        return true;
+      }
+      const sha256 = await hashFile(options.sourcePath!);
       if (knownHashes.has(sha256)) {
         const existing = assets.find((asset) =>
           asset.sha256 === sha256 && (generationReference || asset.usage !== 'generation_reference'));
@@ -291,8 +400,7 @@ export function createProjectStore(readSettings: SettingsReader) {
       const id = crypto.randomUUID();
       const filename = `${id}${extension === '.jpeg' ? '.jpg' : extension}`;
       const destination = assertInside(generationReference ? root : input, path.join(assetsRoot, filename));
-      if (options.buffer) await fs.writeFile(destination, options.buffer);
-      else await fs.copyFile(options.sourcePath!, destination);
+      await fs.copyFile(options.sourcePath!, destination);
       createdFiles.push(destination);
       const stat = await fs.stat(destination);
       const record: ProjectAsset = {
@@ -416,6 +524,104 @@ export function createProjectStore(readSettings: SettingsReader) {
       await reidentifyProject(projectId);
     }
     return { imported, extracted, skipped, duplicates, summary: await scan(projectId) };
+  }
+
+  // P3-D3.6A/6B — Web Asset Upload Contract (frozen).
+  // Browser File bytes → project-bound generation_reference asset.
+  // Reuses persistBufferAsset (canonical sha256 dedup, project
+  // binding via assertInside, asset id authority, MIME/extension
+  // validation). Never accepts an absolute path; never stores a
+  // second asset authority.
+  async function importFileBytes(input: ImportFileBytesInput): Promise<ImportFileBytesResult> {
+    const projectId = typeof input?.projectId === 'string' ? input.projectId.trim() : '';
+    if (!projectId) throw uploadError('UPLOAD_PROJECT_NOT_FOUND', '项目不存在');
+    let root: string;
+    try {
+      root = await rootForId(projectId);
+    } catch {
+      throw uploadError('UPLOAD_PROJECT_NOT_FOUND', '项目不存在');
+    }
+    const project = await readProject(root);
+    const file = (input?.file && typeof input.file === 'object' ? input.file : {}) as ImportFileBytesInput['file'];
+    const rawName = typeof file.name === 'string' ? file.name : '';
+    const mime = typeof file.mime === 'string' ? file.mime.trim().toLowerCase() : '';
+    const declaredSize = typeof file.size === 'number' ? file.size : Number(file.size);
+    const content = typeof file.content === 'string' ? file.content : '';
+    const name = sanitizeUploadFilename(rawName);
+    const extension = path.extname(name).toLowerCase();
+    if (!UPLOAD_IMAGE_EXTENSIONS.has(extension) || !SUPPORTED_ASSET.has(extension)) {
+      throw uploadError('UPLOAD_FILE_TYPE_UNSUPPORTED', '仅支持 PNG、JPEG、WEBP 参考图');
+    }
+    const expectedMime = UPLOAD_IMAGE_MIME[extension];
+    if (!expectedMime || (mime && mime !== expectedMime && mime !== `image/jpg`)) {
+      throw uploadError('UPLOAD_FILE_TYPE_UNSUPPORTED', '文件类型与扩展名不一致');
+    }
+    if (!Number.isFinite(declaredSize) || declaredSize <= 0) {
+      throw uploadError('UPLOAD_FILE_EMPTY', '文件内容为空');
+    }
+    if (declaredSize > UPLOAD_MAX_FILE_BYTES) {
+      throw uploadError('UPLOAD_FILE_TOO_LARGE', `文件超过 ${UPLOAD_MAX_FILE_BYTES / (1024 * 1024)} MiB 上限`);
+    }
+    if (!content) throw uploadError('UPLOAD_FILE_EMPTY', '文件内容为空');
+    let buffer: Buffer;
+    try {
+      buffer = Buffer.from(content, 'base64');
+    } catch {
+      throw uploadError('UPLOAD_TRANSPORT_FAILED', '文件内容编码无效');
+    }
+    if (buffer.length !== declaredSize) {
+      throw uploadError('UPLOAD_TRANSPORT_FAILED', '文件内容与声明大小不一致');
+    }
+    const assetsRoot = path.join(root, 'generation-references');
+    await fs.mkdir(assetsRoot, { recursive: true });
+    const assets = [...project.assets.filter((asset) => asset.status === 'ready')];
+    const knownHashes = new Set(assets.map((asset) => asset.sha256));
+    const batchId = crypto.randomUUID();
+    const result = await persistBufferAsset({
+      root,
+      assetsRoot,
+      generationReference: true,
+      assets,
+      knownHashes,
+      buffer,
+      originalName: name,
+      batchId,
+      sourceType: 'file',
+    });
+    if (result.duplicate) {
+      const existing = project.assets.find((asset) => asset.id === result.duplicate!.id);
+      if (existing) {
+        return {
+          asset: {
+            id: existing.id,
+            projectId,
+            name: existing.originalName,
+            mime: existing.mimeType,
+            sizeBytes: existing.sizeBytes,
+            relativePath: existing.relativePath,
+            sha256: existing.sha256,
+            usage: 'generation_reference',
+          },
+          duplicate: true,
+          existingAssetId: existing.id,
+        };
+      }
+    }
+    if (!result.created) throw uploadError('UPLOAD_PERSIST_FAILED', '文件保存失败');
+    await writeProject(root, { ...project, assets });
+    return {
+      asset: {
+        id: result.created.id,
+        projectId,
+        name: result.created.originalName,
+        mime: result.created.mimeType,
+        sizeBytes: result.created.sizeBytes,
+        relativePath: result.created.relativePath,
+        sha256: result.created.sha256,
+        usage: 'generation_reference',
+      },
+      duplicate: false,
+    };
   }
 
   async function migrateLegacyAssets(projectId: string, root: string, project: ProjectRecord): Promise<ProjectRecord> {
@@ -629,6 +835,7 @@ export function createProjectStore(readSettings: SettingsReader) {
     update,
     scan,
     importFiles,
+    importFileBytes,
     removeAsset,
     removeBatch,
     clearAssets,
