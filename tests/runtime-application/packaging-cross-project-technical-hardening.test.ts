@@ -30,11 +30,6 @@ const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
 
-// P3-C4.2 corrective sub-tree (C4.2 identity-separation). The
-// frozen-diff guards subtract that sub-tree from the P3-A / P3-B
-// (and pre-C4.1 C4) baseline diff check so the corrective seam is
-// not read as a regression against a frozen baseline.
-const C4_2_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
 
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const P3C = '3da7a14424074b85d5fd3a735d006749cd5f03a9';
@@ -511,12 +506,9 @@ test('AO-27 P3-A frozen production diff remains zero', () => assert.equal(git(['
     C4_2_SUBTREE]), ''));
 test('AO-28 P3-B accepted semantic diff remains zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
     C4_2_SUBTREE]), ''));
-test('AO-29 P3-C frozen semantics permit only the authorized C4.1 + C4.2 ops-layer sub-tree', () => assert.equal(
-  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']).split('\n').filter(Boolean).sort().join('\n'),
-  [
-    'apps/web-runtime/src/current-operation-graph.ts',
-    'packages/runtime-core/src/application/packaging/workspace-service.js',
-  ].sort().join('\n'),
+test('AO-29 P3-C frozen semantics permit only the authorized C4.1 composition-root seam', () => assert.equal(
+  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
+  'apps/web-runtime/src/current-operation-graph.ts',
 ));
 
 test('AO-30 two sessions for one project keep preparation, stale state, and runs independent', async () => {

@@ -27,11 +27,6 @@ const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
 
-// P3-C4.2 corrective sub-tree (C4.2 identity-separation). The
-// frozen-diff guards subtract that sub-tree from the P3-A / P3-B
-// (and pre-C4.1 C4) baseline diff check so the corrective seam is
-// not read as a regression against a frozen baseline.
-const C4_2_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
 const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const P3C_INTEGRATION = '456ec3a9d0273b599ed15bcd424fde1f36b8ce1b';
 const C4_CORRECTIVE = '782e2fc08fca167e0320f9bcde33ed6eacaf1b2d';
@@ -280,8 +275,7 @@ test('AQ-24 P3-B accepted diff is zero', () => {
   assert.equal(
     git([
       'diff', '--name-only', P3B, 'HEAD',
-      '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE,
+      '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging'
     ]),
     '',
   );

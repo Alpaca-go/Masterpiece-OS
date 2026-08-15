@@ -23,11 +23,6 @@ const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const P2_CURRENT = 'a593278b55e437fac59d768c5cee734d9a9fc201';
 const P3A_CURRENT = 'f95c145b9b1e37430ac68315c9e039f1f3262ae4';
 const P3B_ACCEPTED = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
-// P3-C4.2 corrective sub-tree (C4.2 identity-separation). The
-// reference-first-handoff-audit guards subtract that sub-tree
-// from the P3-A / P3-B frozen diff check so the corrective
-// seam is not read as a C1.1 semantic regression.
-const C4_2_SUBTREE = ':(exclude)packages/runtime-core/src/application/packaging/workspace-service.js';
 const REFERENCE_CORE = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'reference-anchor-core.ts');
 const REFERENCE_SERVICE = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'reference-anchor-service.ts');
 const REFERENCE_PROMPT = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'reference-reconstruction-prompts.ts');
@@ -253,8 +248,7 @@ test('AI-14 current P2 frozen Packaging production diff is zero', () => {
 test('AI-15 current P3-A frozen Workspace production diff is zero', () => {
   assert.equal(git([
     'diff', '--name-only', P3A_CURRENT, 'HEAD', '--',
-    'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE,
+    'packages/runtime-core/src/application/packaging'
   ]), '');
 });
 
@@ -262,7 +256,6 @@ test('AI-16 P3-B accepted production semantics are unchanged by C1.1', () => {
   assert.equal(git([
     'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--',
     'apps/web/src/features/packaging',
-    'packages/runtime-core/src/application/packaging',
-    C4_2_SUBTREE,
+    'packages/runtime-core/src/application/packaging'
   ]), '');
 });

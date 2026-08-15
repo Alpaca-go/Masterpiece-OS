@@ -75,10 +75,15 @@ test('AS-01 intent providerModelId remains the canonical Registry identity (P3-A
   );
   // P3-A5.1 — STALE envelope preserved.
   assert.match(WORKSPACE_SERVICE, /PACKAGING_WORKSPACE_EXECUTE_REJECTED: stale/u);
-  // The new C4.2 identity-mismatch gate is a SECONDARY
-  // gate, not a replacement. It projects as an additional
-  // STALE reason, not a new error code.
-  assert.match(WORKSPACE_SERVICE, /identity_mismatch/u);
+  // C4.2.1 — identity-mismatch is NOT a Workspace STALE
+  // reason. The P3-A STALE surface remains unchanged; the
+  // mismatch is owned by `buildExecutionDeps` as a safe
+  // preflight error (not a Workspace state mutation).
+  assert.doesNotMatch(
+    WORKSPACE_SERVICE,
+    /identity_mismatch/u,
+    'C4.2.1: workspace-service must not carry identity_mismatch (P3-A STALE surface is frozen)',
+  );
 });
 
 test('AS-02 profile registryModelId identifies the Registry model', () => {
@@ -180,21 +185,37 @@ test('AS-08 split-id profile works', () => {
 // AS-09 — Intent/profile Registry mismatch fails closed.
 // ---------------------------------------------------------------------------
 
-test('AS-09 intent/profile Registry mismatch fails closed (after the STALE gate)', () => {
-  // The C4.2 fix carries the mismatch as a `deps.identityMismatchError`.
-  // The service-level gate consumes it AFTER the existing
-  // STALE check. The mismatch projects as a new
-  // `identity_mismatch` STALE reason. The canonical
-  // PACKAGING_WORKSPACE_EXECUTE_REJECTED code is preserved.
+test('AS-09 intent/profile Registry mismatch fails closed (execution preflight, NOT a STALE reason)', () => {
+  // C4.2.1: the identity-mismatch check is owned by
+  // `buildExecutionDeps` itself and throws
+  // `EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH` BEFORE
+  // any adapter / network call. The Workspace STALE
+  // surface (P3-A frozen) is NOT touched: workspace-service
+  // carries no `identity_mismatch` field, no new
+  // `staleReasons` member, and no Workspace state mutation.
   // 1. Mismatch detection in buildExecutionDeps.
   const execSlice = sliceBetween(EXEC_OPS, 'P3-C4.2 \u2014 Provider Model Identity Separation.', 'return {');
   assert.match(execSlice, /identityMismatch\s*=\s*Boolean\(intentRegistryId\)[\s\S]*?Boolean\(profileRegistryId\)[\s\S]*?intentRegistryId !== profileRegistryId/u);
-  assert.match(execSlice, /PACKAGING_WORKSPACE_EXECUTE_REJECTED/u);
-  // 2. Mismatch gate in workspace-service (runs AFTER STALE).
-  assert.match(WORKSPACE_SERVICE, /if \(deps && deps\.identityMismatchError\)/u);
-  assert.match(WORKSPACE_SERVICE, /identity_mismatch/u);
-  // The mismatch error is projected as a STALE reason,
-  // not a new code. The code stays PACKAGING_WORKSPACE_EXECUTE_REJECTED.
+  // 2. The error is thrown in buildExecutionDeps itself
+  //    (execution preflight), not deferred to the service.
+  assert.match(execSlice, /EXECUTION_PROVIDER_MODEL_IDENTITY_MISMATCH/u);
+  assert.match(execSlice, /throw err/u);
+  // 3. The error does NOT carry a `PACKAGING_WORKSPACE_*`
+  //    STALE code; it is a standalone execution preflight
+  //    error so the P3-A STALE envelope is not coupled.
+  assert.doesNotMatch(execSlice, /PACKAGING_WORKSPACE_EXECUTE_REJECTED[\s\S]{0,200}identityMismatch/u);
+  // 4. workspace-service carries no `identity_mismatch` /
+  //    `identityMismatchError` field — the P3-A surface is
+  //    restored.
+  assert.doesNotMatch(
+    WORKSPACE_SERVICE,
+    /identity_mismatch|identityMismatchError/u,
+    'C4.2.1: workspace-service must not reference identity-mismatch (P3-A STALE surface is frozen)',
+  );
+  // 5. The canonical R-13 STALE envelope is preserved
+  //    unchanged (no new stale reason).
+  assert.match(WORKSPACE_SERVICE, /PACKAGING_WORKSPACE_EXECUTE_REJECTED: stale/u);
+  assert.match(WORKSPACE_SERVICE, /err\.issues = \['stale', \.\.\.stale\.reasons\]/u);
 });
 
 // ---------------------------------------------------------------------------
