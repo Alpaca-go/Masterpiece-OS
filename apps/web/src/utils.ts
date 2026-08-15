@@ -45,9 +45,28 @@ const AUTO_RECOVERABLE_CODES = [
   'SPACE_PROVIDER_PROMPT_INVALID',
 ];
 
+// P3-D3.5A: `PROMPT_PREFLIGHT_BLOCKED` is only auto-recoverable when
+// the underlying findings are recompile-recoverable (fingerprint
+// staleness / rule-version drift / compile-time normalization). Data-gap
+// findings — a missing canonical product/category role or an unsupported
+// product invention — cannot be repaired by clicking 生成 again; the
+// auto-recompile path re-compiles with the same project truth. Marking
+// those as "可自动恢复" was a false recoverability claim. These findings
+// are matched on their structured code tokens (part of the error message),
+// never on human-readable Chinese text.
+const PREFLIGHT_DATA_GAP_FINDINGS = [
+  'PACKAGING_PRODUCT_ROLE_MISSING',
+  'UNSUPPORTED_PRODUCT_INVENTION',
+];
+
 export function errorIsAutoRecoverable(error: unknown): boolean {
   const message = cleanError(error);
-  return AUTO_RECOVERABLE_CODES.some((code) => message.includes(code));
+  if (!AUTO_RECOVERABLE_CODES.some((code) => message.includes(code))) return false;
+  if (message.includes('PROMPT_PREFLIGHT_BLOCKED')
+    && PREFLIGHT_DATA_GAP_FINDINGS.some((code) => message.includes(code))) {
+    return false;
+  }
+  return true;
 }
 
 export function autoRecoverableHint(error: unknown): string | null {
