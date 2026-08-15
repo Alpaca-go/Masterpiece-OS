@@ -60,7 +60,11 @@ test('preflight exposes project specificity, legacy reuse, packaging evidence an
     projectContract,
     packagingTranslation: {
       ...packet.mediaTranslations.packaging,
-      productRoleEvidenceRefs: [],
+      // P3-D3.5A: the canonical product-role authority is
+      // `productAndCategoryRole` (not the legacy productRoleEvidenceRefs
+      // field, which is not part of PackagingTranslationV2). A task with
+      // no confirmed product/category role must still fail closed.
+      productAndCategoryRole: [],
       structureStrategy: [{ structure: '盒', evidenceRefs: [] }],
     },
   });

@@ -29,6 +29,17 @@ const NON_RECOVERABLE_SAMPLES = [
   '',
 ];
 
+// P3-D3.5A: packaging product-role data-gap findings are NOT
+// auto-recoverable — clicking 生成 again re-compiles with the same
+// project truth and cannot fill a missing canonical product/category
+// role. Only recompile-recoverable findings (fingerprint staleness /
+// rule drift / normalization) remain recoverable.
+const DATA_GAP_PREFLIGHT_SAMPLES = [
+  'PROMPT_PREFLIGHT_BLOCKED: PACKAGING_PRODUCT_ROLE_MISSING, UNSUPPORTED_PRODUCT_INVENTION, LOCKED_ASSET_OMITTED',
+  'PROMPT_PREFLIGHT_BLOCKED: PACKAGING_PRODUCT_ROLE_MISSING',
+  'Error invoking remote method \'image-generation:start-validated-vnext\': Error: PROMPT_PREFLIGHT_BLOCKED: UNSUPPORTED_PRODUCT_INVENTION',
+];
+
 test('cleanError strips the IPC wrapper + the leading "Error:" so the banner shows only the meaningful code', () => {
   assert.equal(
     cleanError(new Error('PROMPT_PREFLIGHT_BLOCKED: ...')),
@@ -50,6 +61,22 @@ test('errorIsAutoRecoverable returns true for the known auto-recoverable codes',
 test('errorIsAutoRecoverable returns false for unrelated / unknown errors', () => {
   for (const sample of NON_RECOVERABLE_SAMPLES) {
     assert.equal(errorIsAutoRecoverable(sample), false, `should NOT recognise: "${sample}"`);
+  }
+});
+
+test('errorIsAutoRecoverable returns false for packaging product-role data-gap preflight findings', () => {
+  // P3-D3.5A: missing canonical product/category role or unsupported
+  // product invention cannot be repaired by re-clicking 生成 (the
+  // auto-recompile uses the same project truth). No false "可自动恢复".
+  for (const sample of DATA_GAP_PREFLIGHT_SAMPLES) {
+    assert.equal(errorIsAutoRecoverable(sample), false, `data-gap preflight should NOT be auto-recoverable: ${sample}`);
+    assert.equal(errorIsAutoRecoverable(new Error(sample)), false, `data-gap preflight should NOT be auto-recoverable (Error wrapper): ${sample}`);
+  }
+});
+
+test('autoRecoverableHint returns null for packaging product-role data-gap preflight findings', () => {
+  for (const sample of DATA_GAP_PREFLIGHT_SAMPLES) {
+    assert.equal(autoRecoverableHint(sample), null, `data-gap preflight should yield no hint: ${sample}`);
   }
 });
 
