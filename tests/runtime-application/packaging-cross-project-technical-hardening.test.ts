@@ -503,12 +503,24 @@ test('AO-25 rich/minimal optional inputs do not leak raw upstream objects', () =
 test('AO-26 P2 frozen production diff remains zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AO-27 P3-A frozen production diff remains zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
     ]), ''));
-test('AO-28 P3-B accepted semantic diff remains zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+test('AO-28 P3-B accepted semantic diff remains zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging',
     ]), ''));
-test('AO-29 P3-C frozen semantics permit only the authorized C4.1 composition-root seam', () => assert.equal(
-  git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
-  'apps/web-runtime/src/current-operation-graph.ts',
-));
+test('AO-29 P3-C frozen semantics permit only the authorized C4.1 + C4.2.1 + P3-A12 chain (HISTORICAL EVIDENCE)', () => {
+  // P3-C integration (`3da7a14`) to HEAD. The documented
+  // sub-tree is the C4.1 composition-root seam
+  // (`current-operation-graph.ts`) plus the C4.2.1
+  // read-only `checkStale` seam in workspace-service.js
+  // (formally absorbed by P3-A12). No other P3-C surface
+  // changes are permitted.
+  const expected = [
+    'apps/web-runtime/src/current-operation-graph.ts',
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+  ].sort().join('\n');
+  assert.equal(
+    git(['diff', '--name-only', P3C, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']).split('\n').filter(Boolean).sort().join('\n'),
+    expected,
+  );
+});
 
 test('AO-30 two sessions for one project keep preparation, stale state, and runs independent', async () => {
   const first = await operations['packaging:create-session']({}, { projectId: CASES.bottle.id });

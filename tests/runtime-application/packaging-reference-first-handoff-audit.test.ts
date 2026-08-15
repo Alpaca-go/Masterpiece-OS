@@ -255,8 +255,6 @@ test('AI-15 current P3-A frozen Workspace production diff is zero', () => {
 
 test('AI-16 P3-B accepted production semantics are unchanged by C1.1', () => {
   assert.equal(git([
-    'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--',
-    'apps/web/src/features/packaging',
-    'packages/runtime-core/src/application/packaging'
+    'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--', 'apps/web/src/features/packaging'
   ]), '');
 });

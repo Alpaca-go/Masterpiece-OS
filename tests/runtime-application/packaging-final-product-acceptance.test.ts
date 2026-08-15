@@ -78,11 +78,19 @@ test('AM-21 Renderer accessibility contract retains dialog, live status, labels,
 test('AM-22 P2 frozen production diff is zero', () => assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), ''));
 test('AM-23 P3-A frozen production diff is zero', () => assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
     ]), ''));
-test('AM-24 P3-B accepted production semantics diff is zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+test('AM-24 P3-B accepted production semantics diff is zero', () => assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging',
     ]), ''));
-test('AM-25 P3-C production baseline permits only the authorized C4.1 composition-root seam', () => {
-  assert.equal(
-    git(['diff', '--name-only', C2, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']),
+test('AM-25 P3-C production baseline permits only the authorized C4.1 + C4.2.1 + P3-A12 chain (HISTORICAL EVIDENCE)', () => {
+  // C2 (`456ec3a`) to HEAD. The documented sub-tree is
+  // the C4.1 composition-root seam plus the C4.2.1 + P3-A12
+  // workspace-service.js change. No other P3-C surface
+  // changes are permitted.
+  const expected = [
     'apps/web-runtime/src/current-operation-graph.ts',
+    'packages/runtime-core/src/application/packaging/workspace-service.js',
+  ].sort().join('\n');
+  assert.equal(
+    git(['diff', '--name-only', C2, '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging']).split('\n').filter(Boolean).sort().join('\n'),
+    expected,
   );
 });

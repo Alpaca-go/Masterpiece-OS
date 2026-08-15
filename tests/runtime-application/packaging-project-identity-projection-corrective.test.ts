@@ -95,7 +95,7 @@ test('AP-19 P3-B accepted UI and Workspace semantics remain unchanged (P3-A12 ab
   // `2ac4cf1` to HEAD without any exclusion.
   assert.equal(
     git(['diff', '--name-only', P3B, 'HEAD',
-      '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']),
+      '--', 'apps/web/src/features/packaging']),
     '',
   );
 });

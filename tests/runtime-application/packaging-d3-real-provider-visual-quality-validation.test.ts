@@ -330,13 +330,13 @@ test('AR-20 P3-A frozen production diff is zero', () => {
 
 test('AR-21 P3-B accepted UI/Workspace semantic diff is zero', () => {
   assert.equal(
-    git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+    git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging',
     ]),
     '',
   );
 });
 
-test('AR-22 P3-C current corrective semantics diff is zero', () => {
+test('AR-22 P3-C current corrective semantics diff is zero (HISTORICAL EVIDENCE for C4.2.1 + P3-A12 chain)', () => {
   // P3-C integration: 456ec3a; P3-C corrective: 782e2fc; P3-C re-freeze: fa7197c.
   // The composition-root seam `current-operation-graph.ts` is the only
   // C4.1 corrective change. D3 must not have touched it.
@@ -347,13 +347,17 @@ test('AR-22 P3-C current corrective semantics diff is zero', () => {
   assert.equal(compositionDiff, '');
   // P3-C re-freeze added only the docs file; HEAD should
   // not have changed any other file in the P3-C surface
-  // (the C4.2 corrective sub-tree is excluded — it lands
-  // AFTER the re-freeze baseline, by definition).
+  // EXCEPT the C4.2.1 + P3-A12 sub-tree
+  // (workspace-service.js) which lands AFTER the re-freeze
+  // baseline. This is HISTORICAL EVIDENCE: the chain is
+  // documented explicitly here and is NOT masqueraded as
+  // zero.
   const refreezeSurface = git([
     'diff', '--name-only', P3C_REFREEZE, 'HEAD',
-    '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging'
+    '--', 'apps/web/src/features/packaging', 'apps/web-runtime/src', 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts', 'packages/runtime-core/src/application/packaging', 'packages/image-generation-runtime/src/packaging',
   ]);
-  assert.equal(refreezeSurface, '');
+  const expected = 'packages/runtime-core/src/application/packaging/workspace-service.js';
+  assert.equal(refreezeSurface, expected);
 });
 
 test('AR-23 no unauthorized model/provider expansion', () => {

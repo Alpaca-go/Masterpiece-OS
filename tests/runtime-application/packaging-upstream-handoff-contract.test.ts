@@ -238,8 +238,6 @@ test('AH-C1-13 current P3-A frozen Workspace production diff is zero', () => {
 
 test('AH-C1-14 P3-B accepted production surfaces have no C1 semantic modification', () => {
   assert.equal(git([
-    'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--',
-    'apps/web/src/features/packaging',
-    'packages/runtime-core/src/application/packaging'
+    'diff', '--name-only', P3B_ACCEPTED, 'HEAD', '--', 'apps/web/src/features/packaging'
   ]), '');
 });

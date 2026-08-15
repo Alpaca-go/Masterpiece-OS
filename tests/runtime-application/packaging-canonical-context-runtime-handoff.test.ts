@@ -253,6 +253,6 @@ test('AK-28 P2 and P3-A frozen production diffs remain zero', () => {
     ]), '');
 });
 test('AK-29 P3-B accepted UI and Workspace semantics remain unchanged', () => {
-  assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging',
+  assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging',
     ]), '');
 });

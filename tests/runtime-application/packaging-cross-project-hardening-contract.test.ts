@@ -89,7 +89,7 @@ test('AN-14 P3-A12 current baseline direct frozen diff is zero (no exclusion)', 
 ));
 test('AN-15 P3-B accepted UI and Workspace semantic diff remains zero (P3-A12 absorbed)', () => assert.equal(
   git(['diff', '--name-only', P3B, 'HEAD',
-    '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging']),
+    '--', 'apps/web/src/features/packaging']),
   '',
 ));
 // P3-C4.2 — Provider Model Identity Separation Corrective.

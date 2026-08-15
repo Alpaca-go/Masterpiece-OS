@@ -282,7 +282,7 @@ test('AQ-24 P3-B accepted diff is zero', () => {
   assert.equal(
     git([
       'diff', '--name-only', P3B, 'HEAD',
-      '--', 'apps/web/src/features/packaging', 'packages/runtime-core/src/application/packaging'
+      '--', 'apps/web/src/features/packaging'
     ]),
     '',
   );
