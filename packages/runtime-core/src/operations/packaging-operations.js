@@ -2034,6 +2034,38 @@ export function createPackagingOperations({
       }
       const sessionId = asString(input.sessionId);
       getViewOrThrow(sessionId); // fail-closed: unknown session
+      // P3-C4.2.1 — STALE-first ordering at the operations
+      // boundary. The Workspace STALE surface is the
+      // canonical P3-A authority and must win when the
+      // session is already STALE — even if the
+      // execution-preflight identity-mismatch check
+      // (in `buildExecutionDeps`) would also fire. The
+      // STALE envelope is the user-facing failure
+      // surface; the identity-mismatch preflight is a
+      // execution configuration error that runs ONLY
+      // when the session is READY (or already past
+      // READY). Surface the canonical
+      // `PACKAGING_WORKSPACE_EXECUTE_REJECTED` with
+      // `issues: ['stale', ...reasons]` BEFORE calling
+      // `buildExecutionDeps`. Uses the service's
+      // `checkStale` so the reasons are FRESH (covering
+      // both intent drift and truth-surface drift that
+      // happened across multiple steps).
+      if (typeof service.checkStale === 'function') {
+        const stale = service.checkStale(sessionId);
+        if (stale && stale.stale === true) {
+          const reasons = Array.isArray(stale.reasons) ? Array.from(stale.reasons) : [];
+          const issues = reasons.length > 0
+            ? ['stale', ...reasons]
+            : ['stale'];
+          const err = new Error(
+            `PACKAGING_WORKSPACE_EXECUTE_REJECTED: stale; reasons=${reasons.join(',') || '<none>'}`,
+          );
+          err.code = 'PACKAGING_WORKSPACE_EXECUTE_REJECTED';
+          err.issues = Object.freeze(issues);
+          throw err;
+        }
+      }
       const deps = await buildExecutionDeps({
         service,
         sessionId,

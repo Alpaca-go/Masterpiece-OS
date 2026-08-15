@@ -755,6 +755,31 @@ export function createPackagingWorkspaceService(options = {}) {
   }
 
   // -----------------------------------------------------------------------
+  // checkStale (P3-C4.2.1: fresh STALE recheck for ops-layer preflight)
+  //
+  // Returns the fresh `{ stale, reasons }` view as computed by
+  // `computeStale` against the current state, NOT the snapshot
+  // carried by `state.lastStaleReasons`. The operations layer
+  // uses this to enforce the canonical STALE-first ordering at
+  // the `execute-generation` boundary so an already-STALE
+  // session never reaches the execution-preflight
+  // identity-mismatch check in `buildExecutionDeps`.
+  // -----------------------------------------------------------------------
+
+  function checkStale(sessionId) {
+    const state = getSessionOrThrow(sessionId);
+    const fresh = computeStale({
+      currentIntent: state.intent,
+      prepared: state.prepared,
+      truthSnapshot: state.truthSnapshot,
+    });
+    return Object.freeze({
+      stale: fresh.stale === true,
+      reasons: Object.freeze(Array.isArray(fresh.reasons) ? Array.from(fresh.reasons) : []),
+    });
+  }
+
+  // -----------------------------------------------------------------------
   // removeSession (test/utility helper; not part of the P3-A2 public API)
   // -----------------------------------------------------------------------
 
@@ -772,6 +797,7 @@ export function createPackagingWorkspaceService(options = {}) {
     executeGeneration,
     resetPreparation,
     getView,
+    checkStale,
     _removeSession,
   });
 }
