@@ -85,8 +85,8 @@ The Seedream profile was selected from the existing `masterpiece-os-desktop/sett
 | API profile enabled | PASS (Seedream 5.0 Pro profile) |
 | Model capability (D-PROVIDER-01) | PASS (cap = 10, Registry and adapter reconciled) |
 | Artifact destination | PASS (canonical `image-generation/<runId>/` per project root) |
-| No STALE | PASS (all 5 calls were fresh Prepare; canonical P3-A12 checkStale returned `{ stale: false, reasons: [] }` for every call) |
-| External Provider auth | **FAIL (HTTP 401)** |
+| No STALE | PASS (all 5 RERUN-CALLs cleared the canonical P3-A12 STALE precheck; `checkStale` returned `{ stale: false, reasons: [] }` for every call) |
+| External Provider auth | **FAIL (HTTP 401)** for the 3 RERUN-CALLs that reached the Provider HTTP layer; the 2 RERUN-CALLs that terminated at `prepare-generation` never contacted the Provider |
 
 ## F. Real Call Ledger
 
@@ -230,7 +230,7 @@ The analysis-led calls (`RERUN-CALL-01`, `RERUN-CALL-03`, `RERUN-CALL-05`) all r
 
 ## M. Reference-first Summary
 
-The reference-first calls (`RERUN-CALL-02`, `RERUN-CALL-04`) all reached the Provider layer but were rejected with HTTP 401. No reference-first image was generated. The production path correctly resolved the Reference asset (`a02b332c-5317-49ca-8adc-24ea836a5f73`) and passed it to the multi-model adapter. The Provider rejection was an authentication failure, not a Reference resolution failure.
+The reference-first calls (`RERUN-CALL-02`, `RERUN-CALL-04`) did **NOT** reach the Provider HTTP layer. They were rejected at `prepare-generation` by `validateReferencePolicy` with `REFERENCE_REQUIRED: reference_required_in_reference_first`, before any Provider HTTP request was issued. No reference-first image was generated. The defect is in the **Reference translation-slot binding path** (the sanctioned project's reference asset `a02b332c-5317-49ca-8adc-24ea836a5f73` was specified in `intent.referenceAssetId` but the reference policy validation in the translation slot could not bind it as a usable reference). This is a translation-slot defect, **not** a Provider authentication failure. The Provider was never contacted for these 2 calls.
 
 ## N. Structure Fidelity
 
@@ -250,7 +250,7 @@ Text / Logo hallucination audit is **N/A** because no images were generated. The
 
 ## R. Artifact Integrity
 
-Artifact integrity audit is **N/A** because no artifacts were produced. The 5 attempts did not reach the artifact persistence stage because the Provider rejected the calls at the auth layer. No `image-generation/<runId>/` directory was created. No preview was generated.
+Artifact integrity audit is **N/A** because no artifacts were produced. None of the 5 RERUN-CALLs reached the artifact persistence stage: 3 were rejected by the Provider at the auth layer (HTTP 401) before any successful Provider response could trigger a run registration, and 2 were rejected at `prepare-generation` (REFERENCE_REQUIRED) before the Provider HTTP request was issued. No `image-generation/<runId>/` directory was created. No preview was generated.
 
 ## S. Failure Taxonomy
 
@@ -266,7 +266,7 @@ The 5 failures split into TWO sub-classes:
 - **3 (RERUN-CALL-01, -03, -05)**: D-ARCH / D-PROVIDER (Provider auth). This is the same class as the previous D3 HOLD at `139f82435d2cb0841f7c217fb3c02af05efed380`. The D3 RE-RUN does NOT introduce a new D-PROVIDER defect — it confirms that the previous D3 HOLD classification was correct.
 - **2 (RERUN-CALL-02, -04)**: D-ARCH / D-TRANSLATION (reference policy). This is a separate, smaller finding the D3 RE-RUN surfaced: the sanctioned project's reference asset binding in the translation slot failed before the Provider was contacted. This is a translation-slot defect, NOT a Provider credential defect. It is documented here and remains open.
 
-The root cause of the D-PROVIDER class is **the user-supplied API key is malformed**. The Provider explicitly states: `The API key format is incorrect`. A valid Volcengine API key does not start with `ark-` and does not contain `-f0fe2` style suffixes. The user should verify the API key format and re-supply a valid key for any future D3 re-run.
+The root cause of the D-PROVIDER class is **the user-supplied API key was rejected by the Provider at the HTTP auth layer**. The Provider explicitly states: `The API key format is incorrect`. The credential supplied to the Ark image-generation endpoint was rejected by Provider authentication and must be re-issued / re-verified before the next D3 real-provider run. (This report does not freeze any universal claim about valid Volcengine credential formats; the rejection is recorded as a Provider-side authentication response, not as a credential-format rule.)
 
 The root cause of the D-TRANSLATION class is **the reference asset binding path in the translation slot did not produce a usable reference for the policy validator**. This is a separate workstream and is not addressed by changing the API key.
 
@@ -419,7 +419,7 @@ All existing guard families remain green at the D3 RE-RUN HEAD:
 
 The D3 RE-RUN produced two distinct findings:
 
-1. **D-PROVIDER (3/5 calls)**: The 3 analysis_led calls reached the Provider HTTP layer via the production path and were rejected with `401 AuthenticationError: The API key format is incorrect`. The defect is NOT in the production path — the production path successfully reached the Provider layer and was correctly rejected. The defect is in the user-supplied API key (format invalid; Volcengine keys do not start with `ark-` and do not contain `-f0fe2` style suffixes). This is the same class as the previous D3 HOLD at `139f82435d2cb0841f7c217fb3c02af05efed380`.
+1. **D-PROVIDER (3/5 calls)**: The 3 analysis_led calls reached the Provider HTTP layer via the production path and were rejected with `401 AuthenticationError: The API key format is incorrect`. The defect is NOT in the production path — the production path successfully reached the Provider layer and was correctly rejected. The Provider rejected the user-supplied credential at the authentication layer. (The credential must be re-issued / re-verified before the next D3 real-provider run. This report does not freeze any universal claim about valid Volcengine credential formats.) This is the same class as the previous D3 HOLD at `139f82435d2cb0841f7c217fb3c02af05efed380`.
 
 2. **D-TRANSLATION (2/5 calls)**: The 2 reference_first calls were rejected at `prepare-generation` by `validateReferencePolicy` with `REFERENCE_REQUIRED: reference_required_in_reference_first`. The Provider was never contacted. The sanctioned project's reference asset (`a02b332c-5317-49ca-8adc-24ea836a5f73`) was specified in `intent.referenceAssetId` but the reference policy validation in the translation slot could not bind it as a usable reference. This is a separate, smaller finding; it is not a Provider credential defect and is not addressed by changing the API key. This is a NEW finding the D3 RE-RUN surfaced; it is documented here and remains open.
 
@@ -438,19 +438,19 @@ For this D3 RE-RUN, the image review handoff is empty.
 ## AG. Next Step
 
 **A new D3 RE-RUN** requires:
-- A valid Volcengine API key (not the malformed `ark-…-f0fe2` key used in this attempt)
+- A newly issued / re-verified Ark image-generation credential (the one used in this D3 RE-RUN was rejected by Provider authentication; the exact format constraint of valid Volcengine credentials is not frozen by this report and must be re-verified by the user against the current Provider contract)
 - New explicit human authorization (max 5 calls, single model, single profile, 0 retries)
 - Start from the D3 RE-RUN HEAD (the 2-commit chain on top of `c727e11`)
 - **Resolution of the D-TRANSLATION reference-binding defect** (see AE.2 above) so that the next reference_first calls do not terminate at `prepare-generation` before the Provider is contacted
 
 The D3 RE-RUN does NOT auto-start a new attempt. The user must:
-1. Verify the API key format (Volcengine API keys do not start with `ark-` and do not contain `-f0fe2`).
-2. Provide a valid API key.
+1. Re-issue / re-verify the Ark credential against the current Provider authentication contract.
+2. Provide a usable credential through the sanctioned injection path.
 3. Authorize a new D3 RE-RUN with the same hard cap (5 calls, 1 model, 1 profile, 0 retries).
 4. Address the D-TRANSLATION finding (separate workstream).
 
 If the next D3 RE-RUN produces successful images, the AX-12..AX-18 guards will validate artifact integrity, hallucination audit, and visual quality rubric. The new D3 RE-RUN should be the **next P3-D3 decision point**, not the previous HOLD.
 
-The D3 RE-RUN does NOT auto-promote to PASS. The P3-D3 status remains **HOLD — PROVIDER EXECUTION GAP (key invalid) + TRANSLATION-SLOT REFERENCE BINDING DEFECT** until a future D3 RE-RUN with a valid API key and a fixed reference-binding path produces a successful real-Provider image that passes the visual quality rubric.
+The D3 RE-RUN does NOT auto-promote to PASS. The P3-D3 status remains **HOLD — PROVIDER EXECUTION GAP (credential rejected) + TRANSLATION-SLOT REFERENCE BINDING DEFECT** until a future D3 RE-RUN with a re-issued credential and a fixed reference-binding path produces a successful real-Provider image that passes the visual quality rubric.
 
 P3-D4 remains LOCKED.
