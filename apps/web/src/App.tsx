@@ -22,6 +22,7 @@ import { ShortChainGenerationWorkspace } from './components/ShortChainGeneration
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { StatusBadgeInline } from './components/StatusBadgeInline';
+import { ProjectDetail } from './components/ProjectDetail';
 import { cleanError, formatBytes, formatDuration, formatRelativeTime } from './utils';
 
 type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session' | 'packaging';
@@ -355,26 +356,36 @@ export function App() {
   if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
 
   if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
-  if (screen === 'create') return <div className="analysis-workspace-shell">
-    <AnalysisModeTabs value={analysisMode} onChange={(mode) => {
-      setAnalysisMode(mode);
-      if (mode !== 'document-context') setRequestedDocumentContextRunId('');
-      if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
-    }} />
-    <div hidden={analysisMode !== 'visual-analysis'}><ProjectWizard settings={settings} onCancel={() => { setScreen('home'); void refresh(); }} onStart={(project, profileId) => {
-      setSelected(project);
-      setSelectedApiProfileId(profileId);
-      void run(project, true, profileId);
-    }} /></div>
-    <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateReferencePreview={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'reference_preview', purpose: 'exploration', projectId, reference: { referenceAnchorRunId }, userIntent: {} })} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'integrated_anchor', purpose: 'production', projectId, visual: { projectId }, reference: { referenceAnchorRunId }, userIntent: {} })} onContinueCreativeProduction={(projectId) => {
-      const project = projects.find((item) => item.id === projectId);
-      if (project) {
-        setSelected(project);
-        setScreen('creative-session');
-      }
-    }} /></div>
-    <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
-  </div>;
+  if (screen === 'create') return (
+    <div className="create-shell-v2">
+      <header className="create-shell-v2__bar">
+        <button className="ui-button ui-button--ghost ui-button--sm" onClick={() => { setScreen('home'); void refresh(); }}>
+          <span aria-hidden>←</span> 返回首页
+        </button>
+        <AnalysisModeTabs value={analysisMode} onChange={(mode) => {
+          setAnalysisMode(mode);
+          if (mode !== 'document-context') setRequestedDocumentContextRunId('');
+          if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
+        }} />
+        <div style={{ width: 80 }} />
+      </header>
+      <div className="create-shell-v2__body">
+        <div hidden={analysisMode !== 'visual-analysis'}><ProjectWizard settings={settings} onCancel={() => { setScreen('home'); void refresh(); }} onStart={(project, profileId) => {
+          setSelected(project);
+          setSelectedApiProfileId(profileId);
+          void run(project, true, profileId);
+        }} /></div>
+        <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateReferencePreview={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'reference_preview', purpose: 'exploration', projectId, reference: { referenceAnchorRunId }, userIntent: {} })} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'integrated_anchor', purpose: 'production', projectId, visual: { projectId }, reference: { referenceAnchorRunId }, userIntent: {} })} onContinueCreativeProduction={(projectId) => {
+          const project = projects.find((item) => item.id === projectId);
+          if (project) {
+            setSelected(project);
+            setScreen('creative-session');
+          }
+        }} /></div>
+        <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
+      </div>
+    </div>
+  );
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
     progress={progress}
@@ -414,48 +425,27 @@ export function App() {
   />;
 
   if (screen === 'project' && selected) {
-    const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
-    return <div className="page project-page">
-      <header className="page-header"><div><p className="eyebrow">PROJECT WORKSPACE</p><div className="title-line"><h1>{selected.projectName}</h1><StatusBadge status={selected.status} /></div><p>{selected.brandName} · {selected.industry}</p></div><div className="button-row"><button className="button ghost" onClick={() => { setScreen('home'); void refresh(); }}>返回首页</button>{selected.lastReportFilename && <button className="button secondary" onClick={() => setScreen('report')}>查看报告</button>}</div></header>
-      {error && <div className={`notice ${/忽略/.test(error) ? 'ok' : 'error'} top-notice`}>{error}</div>}
-      <div className="project-grid">
-        <section className="panel assets-panel">
-          <div className="section-heading"><span>01</span><div><h2>视觉素材</h2><p>{assets?.totalFiles ?? selected.assetCount} 个文件 · {assets ? formatBytes(assets.totalBytes) : '正在读取'}</p></div><div className="button-row asset-toolbar"><button className="button text-button" onClick={() => void importMore('assets')}>+ 添加素材</button><button className="button danger" disabled={!assets?.totalFiles} onClick={() => void clearAssets()}>清空全部</button></div></div>
-          {batches.length > 1 && <div className="batch-actions"><small>导入批次</small>{batches.map(([batchId, batch]) => <button key={batchId} onClick={() => void removeBatch(batchId, batch.label)}>{batch.label} · {batch.count} 个 ×</button>)}</div>}
-          {assets?.items.length ? <div className="asset-grid">{assets.items.map((item) => <div className="asset-card removable" key={item.id}><button className="asset-remove" title={`删除 ${item.name}`} aria-label={`删除 ${item.name}`} onClick={() => void removeAsset(item.id)}>×</button>{item.thumbnailDataUrl ? <img src={item.thumbnailDataUrl} alt="" /> : <div className={`file-placeholder ${item.kind}`}>{item.extension.replace('.', '').toUpperCase()}</div>}<strong title={item.relativePath}>{item.name}</strong><small>{formatBytes(item.bytes)}</small>{item.warning && <em>{item.warning}</em>}</div>)}</div> : <div className="empty-state"><strong>尚未导入素材</strong><p>支持 ZIP、JPG、JPEG、PNG、WEBP 和 PDF。</p><button className="button secondary" onClick={() => void importMore('assets')}>选择视觉方案</button></div>}
-        </section>
-        <aside className="panel project-sidebar">
-          <div className="section-heading"><span>02</span><div><h2>运行前检查</h2><p>选择本次分析使用的配置</p></div></div>
-          <label>分析模型<select value={selectedProfile?.id || ''} onChange={(event) => setSelectedApiProfileId(event.target.value)}>{!analysisProfiles.length && <option value="">尚无可用分析配置</option>}{analysisProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.provider} / {profile.modelId}</option>)}</select></label>
-          <ul className="check-list"><li className={assets?.totalFiles ? 'pass' : ''}><span>{assets?.totalFiles ? '✓' : '!'}</span>项目素材不为空</li><li className="pass"><span>✓</span>真实项目名将在同次视觉分析中确认</li><li className="pass"><span>✓</span>原始 Logo 默认锁定</li><li className="pass"><span>✓</span>固定输出简体中文</li><li className={selectedProfile?.hasApiKey ? 'pass' : ''}><span>{selectedProfile?.hasApiKey ? '✓' : '!'}</span>API Key 已安全保存</li><li className={selectedProfile?.baseUrl && selectedProfile.modelId ? 'pass' : ''}><span>{selectedProfile?.baseUrl && selectedProfile.modelId ? '✓' : '!'}</span>{selectedProfile?.modelId || '模型未配置'}</li></ul>
-          <div className="facts-box"><small>当前导入线索</small><p>项目：{selected.detectedProjectName}（{Math.round(selected.projectNameConfidence * 100)}%）</p><p>行业：{selected.detectedIndustry}（{Math.round(selected.factConfidence.industry * 100)}%）</p><p>通用文件名不会成为最终报告名称。</p></div>
-          <div className="profile-card"><small>默认分析模式</small><strong>融合增强</strong><p>一次多模态调用，强化事实判断、真实触点、材料与工艺。</p></div>
-          <button className="button primary full" disabled={!canAnalyze} onClick={() => void run(selected, true, selectedProfile?.id)}>开始分析</button>
-          <button className="button ghost full" disabled={!selected.lastReportFilename || !canAnalyze} onClick={() => void run(selected, false, selectedProfile?.id)}>使用精确缓存</button>
-          {/* When the persisted Project + Visual Context already has the
-              minimum data needed for Short-Chain Generation,
-              surface a "直接创作" entry that bypasses the analysis
-              report page entirely. The full LLM report is no longer a
-              hard product gate; the Project Context is. When not ready
-              (compatibility status != ready, schema missing, context file
-              unreadable, etc.), the entry stays hidden — the user
-              still has the "开始分析" path as the explicit way to
-              produce the missing data. */}
-          {generationReadiness?.ready && (
-            <button
-              className="button secondary full"
-              onClick={() => setScreen('creative-session')}
-              title={generationReadiness.vnextSchemaVersion
-                ? `Project Visual Context ${generationReadiness.vnextSchemaVersion} 已就绪`
-                : 'Project Context 已就绪'}
-            >
-              继续创作 / 直接创作
-            </button>
-          )}
-        </aside>
-      </div>
-      <ContextIntegrationPanel projectId={selected.id} projectName={selected.projectName} onOpenReference={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }} />
-    </div>;
+    return <ProjectDetail
+      project={selected}
+      settings={settings}
+      assets={assets}
+      analysisProfiles={analysisProfiles}
+      selectedProfile={selectedProfile}
+      selectedApiProfileId={selectedApiProfileId}
+      generationReadiness={generationReadiness}
+      batches={batches}
+      error={error}
+      onSelectApiProfile={setSelectedApiProfileId}
+      onImportMore={(kind) => void importMore(kind)}
+      onClearAssets={() => void clearAssets()}
+      onRemoveBatch={(batchId, label) => void removeBatch(batchId, label)}
+      onRemoveAsset={(id) => void removeAsset(id)}
+      onRun={(force) => void run(selected, force, selectedProfile?.id)}
+      onGoHome={() => { setScreen('home'); void refresh(); }}
+      onGoReport={() => setScreen('report')}
+      onGoCreative={() => setScreen('creative-session')}
+      onOpenReference={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}
+    />;
   }
 
   if (screen === 'packaging') return <PackagingWorkspace onBack={() => setScreen('home')} />;
