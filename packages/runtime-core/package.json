@@ -14,6 +14,7 @@
     "./image-generation-run-store": "./src/application/image-generation/run-store.ts"
   },
   "dependencies": {
+    "@masterpiece/creative-intelligence": "0.0.0",
     "@masterpiece/image-generation-contracts": "0.0.0",
     "@masterpiece/model-runtime": "0.0.0",
     "@masterpiece/project-contracts": "0.0.0",
