@@ -778,489 +778,653 @@ export function ShortChainGenerationWorkspace({
     setNotice('已加入纠偏要求，请重新查看最终 Prompt。');
   }
 
-  return <div className="page project-page">
-    <header className="page-header">
-      <div>
-        <p className="eyebrow">图片生成</p>
-        <h1>{project.projectName}</h1>
-        <p>{project.brandName} · 首图直接交付，无需先选 Anchor</p>
-      </div>
-      <div className="button-row">
-        {/* r2.0 / r10.4 UX: make it explicit that going back does NOT
-            require re-analysis and does not lose the user's current
-            settings. Without this label, users interpreted "返回报告"
-            as a "start over" affordance and reached for the heavy
-            "强制重新分析" button on the report page. */}
-        <button className="button ghost" onClick={onBack}>返回报告（不丢失当前设置）</button>
-        <button className="button secondary" onClick={onOpenSettings}>模型设置</button>
-      </div>
-    </header>
-
-    {error && (
-      <div className="notice error top-notice">
-        <div>{error}</div>
-        {autoRecoverableHint(error) && (
-          <div style={{ marginTop: 6, fontWeight: 500 }}>
-            {autoRecoverableHint(error)}
+  return (
+    <div className="sc-workspace">
+      {/* ── Header ── */}
+      <header className="sc-workspace__header">
+        <div className="sc-workspace__header-left">
+          <button className="sc-workspace__back" onClick={onBack} title="返回报告（不丢失当前设置）">←</button>
+          <div className="sc-workspace__titles">
+            <div className="sc-workspace__breadcrumb"><strong>Short-Chain</strong> · 视觉生成</div>
+            <h1 className="sc-workspace__title">{project.projectName}</h1>
+            <p className="sc-workspace__subtitle">{project.brandName} · 首图直接交付</p>
           </div>
-        )}
-      </div>
-    )}
-    {notice && !error && <div className="notice ok top-notice">{notice}</div>}
-
-    <div className="project-grid image-generation-grid">
-      <section className="panel assets-panel">
-        <div className="section-heading"><span>01</span><div><h2>当前任务</h2><p>任务类型优先于历史上下文和模板默认值</p></div></div>
-        <div className="deliverable-grid">
-          {(Object.keys(FAMILY_LABELS) as Family[]).map((item) =>
-            <button
-              key={item}
-              className={family === item ? 'deliverable-card selected' : 'deliverable-card'}
-              onClick={() => changeFamily(item)}
-            ><strong>{FAMILY_LABELS[item]}</strong></button>)}
         </div>
-        <div className="basis-grid">
-          <button
-            type="button"
-            className={generationBasis === 'standard' ? 'basis-card selected' : 'basis-card'}
-            onClick={() => changeBasis('standard')}
-          >
-            <strong>标准生成 / Standard</strong>
-            <span>基于当前项目分析结果生成空间方案</span>
-          </button>
-          <button
-            type="button"
-            className={generationBasis === 'reference' ? 'basis-card selected' : 'basis-card'}
-            onClick={() => changeBasis('reference')}
-          >
-            <strong>参考优先 / Reference-First</strong>
-            <span>高保真继承所选参考图的视觉与空间表达</span>
-          </button>
+        <div className="sc-workspace__header-right">
+          <button className="button ghost" onClick={onOpenSettings}>模型设置</button>
         </div>
+      </header>
 
-        {generationBasis === 'reference' && <div className="facts-box">
-          <small>参考优先 / Reference First</small>
-          <p>高保真继承所选参考图的视觉与空间表达，更适合参考图与目标空间类型一致的生成任务。</p>
-          <p>如果希望保留当前设计方向，但生成另一个功能空间，请使用「以此方向继续」进行空间延展。</p>
-        </div>}
-
-        {generationBasis === 'reference' && <div className="reference-first-module">
-          <label>参考图（1–{MAX_SPACE_REFERENCE_IMAGES} 张）
-            <div className="button-row">
-              <input
-                ref={uploadInputRef}
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                style={{ display: 'none' }}
-                onChange={(event) => void handleUploadFileChange(event)}
-              />
-              <button className="button secondary" disabled={uploading} onClick={() => void uploadReferenceImage()}>
-                {uploading ? '正在上传参考图…' : '上传参考图'}
-              </button>
-              <button className="button ghost" onClick={() => setPickerOpen((value) => !value)}>
-                {pickerOpen ? '收起素材选择' : '从项目素材选择'}
-              </button>
-            </div>
-          </label>
-
-          {referenceAssetIds.length > 0 && <div className="reference-cards">
-            {projectAssets
-              .filter((asset) => referenceAssetIds.includes(asset.id))
-              .map((asset) => (
-                <div key={asset.id} className="reference-card">
-                  {asset.thumbnailDataUrl
-                    ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
-                    : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
-                  <div className="reference-card-meta">
-                    <strong>{asset.name}</strong>
-                    <span>{referenceSourceLabelFor(asset, referenceSources[asset.id])}</span>
-                  </div>
-                  <div className="reference-card-actions">
-                    <button
-                      className="button ghost"
-                      title="替换（仅更新本次任务的参考选择，不删除项目原文件）"
-                      onClick={() => void replaceReferenceAsset(asset.id)}
-                    >替换</button>
-                    <button
-                      className="button ghost danger"
-                      title="移除（仅取消本次任务的参考引用，不删除项目原文件）"
-                      onClick={() => toggleReferenceAsset(asset.id)}
-                    >移除</button>
-                  </div>
-                </div>
-              ))}
-          </div>}
-
-          {pickerOpen && <div className="asset-picker">
-            {assetsLoading
-              ? <span className="muted">正在加载项目图片资产…</span>
-              : <div className="reference-asset-grid">
-                {projectAssets.length === 0
-                  ? <span className="muted">当前项目没有可用图片资产。请先上传参考图。</span>
-                  : projectAssets.map((asset) => {
-                    const preflight = referencePreflight[asset.id];
-                    const preflightFailed = preflight?.status === 'failed';
-                    // r2.0 §4.11 / Phase C-3: a failed preflight means
-                    // vnext-service.start() will throw the same code at
-                    // submit time. Disable the checkbox so the user is
-                    // not tempted to select an unusable asset.
-                    const checkboxDisabled = preflightFailed
-                      || (!referenceAssetIds.includes(asset.id)
-                        && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES);
-                    return (
-                      <label
-                        key={asset.id}
-                        className={
-                          referenceAssetIds.includes(asset.id)
-                            ? 'asset-tile selected'
-                            : preflightFailed
-                              ? 'asset-tile disabled-preflight'
-                              : 'asset-tile'
-                        }
-                        title={preflightFailed && preflight.status === 'failed' ? preflight.failure.message : undefined}
-                      >
-                        <input
-                          type="checkbox"
-                          disabled={checkboxDisabled}
-                          checked={referenceAssetIds.includes(asset.id)}
-                          onChange={() => toggleReferenceAsset(asset.id)}
-                        />
-                        {asset.thumbnailDataUrl
-                          ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
-                          : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
-                        <span>{asset.name}</span>
-                        {/* r2.0 §4.11 / Phase C-3: per-asset preflight badge.
-                            resolved = green check, failed = red X + code, no
-                            preflight yet = "…" hint. Helps the user
-                            understand WHY a checkbox is disabled. */}
-                        <span
-                          className={
-                            preflight?.status === 'resolved'
-                              ? 'preflight-badge preflight-ok'
-                              : preflight?.status === 'failed'
-                                ? 'preflight-badge preflight-fail'
-                                : 'preflight-badge preflight-pending'
-                          }
-                          aria-label={preflight?.status === 'failed' ? `preflight failed: ${preflight.failure.code}` : undefined}
-                        >
-                          {preflight?.status === 'resolved' ? '✓'
-                            : preflight?.status === 'failed' ? `✕ ${preflight.failure.code}`
-                              : '…'}
-                        </span>
-                      </label>
-                    );
-                  })}
-              </div>}
-          </div>}
-
-          {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
-            <span className="muted">最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。</span>
-          )}
-
-          {referenceAssetIds.length > 0 && (
-            <div className="notice info">参考优先会较强地保留参考图的空间结构与构图，生成前请确认这正是你想要的效果。</div>
-          )}
-
-          {showCrossSceneAdvisory && crossSceneReference && (
-            <div className="notice warn advisory">
-              <strong>跨场景建议（空间延展）</strong>
-              <p>这张参考图来自妙作生成的「{crossSceneReference.confirmed.sourceScene || '已确认空间'}」空间，当前目标为「{subtype}」。</p>
-              <p>参考优先会尽量保留原图的构图与空间结构。如果希望保持设计方向，但重新设计新的功能空间，建议使用「空间延展」。</p>
-              <div className="button-row">
-                <button className="button secondary" onClick={() => setCrossSceneAdvisoryDismissed(true)}>仍使用参考优先</button>
-                <button className="button primary" onClick={() => routeCrossSceneReferenceToContinuation()}>改为以此方向继续</button>
+      {/* ── Error / notice banners ── */}
+      {error && (
+        <div style={{ margin: '0 var(--space-11)', paddingTop: 'var(--space-5)' }}>
+          <div className="notice error">
+            <div>{error}</div>
+            {autoRecoverableHint(error) && (
+              <div style={{ marginTop: 6, fontWeight: 500 }}>
+                {autoRecoverableHint(error)}
               </div>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+      )}
+      {notice && !error && (
+        <div style={{ margin: '0 var(--space-11)', paddingTop: 'var(--space-5)' }}>
+          <div className="notice ok">{notice}</div>
+        </div>
+      )}
 
-          {generationBasis === 'reference' && referenceValidation.hard.length > 0 && (
-            <div className="notice error">{referenceValidation.hard.join('；')}</div>
-          )}
-          {generationBasis === 'reference' && referenceValidation.hard.length === 0 && referenceValidation.soft.length > 0 && (
-            <div className="notice warn">{referenceValidation.soft.join('；')}</div>
-          )}
-        </div>}
-        <label>子类型
-          <select value={subtype} onChange={(event) => setSubtype(event.target.value)}>
-            {(familyOptions?.subtypes ?? []).map((item) => <option key={item}>{item}</option>)}
-          </select>
-        </label>
-        <label>本轮要求
-          <textarea
-            rows={5}
-            value={instruction}
-            onChange={(event) => setInstruction(event.target.value)}
-            placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。"
-          />
-        </label>
-        {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
-        <details className="advanced-settings">
-          <summary>高级设置</summary>
-          <div className="advanced-settings-content">
-        <label>镜头 / 构图
-          <select value={shot} onChange={(event) => { setShot(event.target.value); setShotSource('user_explicit'); }}>
-            {(familyOptions?.shots ?? []).map((item) => <option key={item}>{item}</option>)}
-          </select>
-        </label>
-        {generationBasis === 'reference' && (
-          <label>参考图场景关系
-            <select
-              value={referenceSceneRelation}
-              onChange={(event) => setReferenceSceneRelation(event.target.value as ShortChainReferenceSceneRelation)}
-              title="参考图的场景与目标场景的关系（同场景 / 跨场景 / 未知）。仅作为 Trace 与 Reference Boundary 强度提示，不影响功能程序权威。">
-              <option value="unknown">未知（待人工或自动判定）</option>
-              <option value="same_scene">同场景（目标 = 参考图场景）</option>
-              <option value="cross_scene">跨场景（目标 ≠ 参考图场景）</option>
-            </select>
-          </label>
-        )}
-        <label>比例
-          <select value={aspectRatio} onChange={(event) =>
-            setAspectRatio(event.target.value as ShortChainTaskContract['aspectRatio'])}>
-            {['1:1', '4:3', '3:4', '16:9', '9:16'].map((item) => <option key={item}>{item}</option>)}
-          </select>
-        </label>
-        <label>生成模型
-          <select value={imageApiProfileId} onChange={(event) => onImageApiProfileChange(event.target.value)}>
-            <option value="">请选择 Seedream 生图配置</option>
-            {imageProfiles.map((profile) =>
-              <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
-          </select>
-        </label>
-        <label>Logo 处理方式
-          <select value={logoUsageMode} onChange={(event) =>
-            setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
-            <option value="post_composite">后期合成 Logo 到结果图（Logo Locked 项目必须）</option>
-            <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
-            <option value="reference" disabled>把真实 Logo 作为模型参考（仅无 logo 项目可用）</option>
-          </select>
-        </label>
-        <label>必须包含（每行一项）
-          <textarea
-            rows={3}
-            value={mustIncludeText}
-            onChange={(event) => setMustIncludeText(event.target.value)}
-            placeholder="例如：完整前台；清晰入口动线"
-          />
-        </label>
-        <label>必须避免（每行一项）
-          <textarea
-            rows={3}
-            value={mustAvoidText}
-            onChange={(event) => setMustAvoidText(event.target.value)}
-            placeholder="例如：VI 展板；错误品牌文字"
-          />
-        </label>
-          </div>
-        </details>
-        <button className="button primary full" disabled={!canCompile || busy} onClick={() => void compilePrompt()}>
-          查看最终 Prompt
-        </button>
-      </section>
-
-      <section className="panel">
-        <div className="section-heading"><span>02</span><div><h2>生成结果</h2><p>系统自动编译 Prompt 并生成，如需调整请修改左侧任务要求</p></div></div>
-        {compiled ? <>
-          <div className="prompt-source-summary">
-            <div>
-              <small>Logo 策略</small>
-              <strong>{compiled.compiledPrompt.logoUsageMode === 'reference'
-                ? '真实 Logo 参考'
-                : '无文字 · 预留干净区域'}</strong>
-            </div>
-            <div>
-              <small>必须包含</small>
-              <p>{compiled.taskContract.mustInclude.join('；') || '仅执行本轮任务要求'}</p>
-            </div>
-            <div>
-              <small>必须避免</small>
-              <p>{compiled.taskContract.mustAvoid.join('；') || '使用项目与模板默认禁用项'}</p>
-            </div>
-          </div>
-          <details className="prompt-preview">
-            <summary>查看最终 Prompt（只读）</summary>
-            <textarea rows={18} value={editedPrompt} readOnly />
-          </details>
-          <div className="button-row">
-            <button className="button primary full" disabled={!canGenerate || compileStale} onClick={() => void generate()}>生成正式成果</button>
-          </div>
-        </> : <div className="empty-state"><strong>先明确成果物，再生成</strong><p>填写左侧任务要求后，系统将自动编译并生成。</p></div>}
-
-        {imageDataUrl && <div className="result-card">
-          {/* r2.0 §4.13 / Phase E: 5-state banner. Driven by flowState
-              (from ShortChainValidatedGenerationResult). When the first
-              image is preserved across a correction failure, the
-              banner explains which step the flow is in so the user
-              always knows what they're looking at. */}
-          {flowState && <FlowStateBanner state={flowState} hasFirstImage={Boolean(firstImage)} />}
-          {/* r2.0 §6.7 / Phase E UI extension: minimal Final
-              Acceptance block banner. Renders when the similarity
-              audit was triggered but failed. The generation result
-              (the image below) is preserved as-is; flowState is
-              unchanged. We do NOT add a new acceptance dashboard —
-              this is just a banner that explains the audit-evidence
-              gap and how the user can recover. */}
-          {similarityAudit === 'unavailable' && (
-            <FinalAcceptanceBlockBanner reason="audit_unavailable" />
-          )}
-          {similarityAudit && similarityAudit !== 'unavailable' && similarityAudit.pass.overall === false && (
-            <FinalAcceptanceBlockBanner reason="audit_failed" />
-          )}
-          <img src={imageDataUrl} alt="已生成的图片" />
-          {(activeModeBadge || activeLineage) && <div className="result-mode-badges">
-            {activeModeBadge && <span className="mode-badge">{activeModeBadge}</span>}
-            {activeLineage && <span className="lineage-badge">{activeLineage}</span>}
-          </div>}
-          {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '') && (
-            <div className="confirmation-badge">已确认方向</div>
-          )}
-          <details className="result-details">
-            <summary>生成详情</summary>
-            <div className="result-details-content">
-              {lastValidation && <div className="validation-summary">
-                <strong>结果校验：{lastValidation.status}</strong>
-                <p>{lastValidation.mismatchTypes.length
-                  ? lastValidation.mismatchTypes.join(' · ')
-                  : '未发现可见结构性偏差'}</p>
-              </div>}
-            </div>
-          </details>
-          <div className="button-row">
-            <button className="button primary" disabled={busy} onClick={() => void confirmDirection()}>沿用此方向</button>
-            <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
-          </div>
-          <div className="button-row">
-            {activeRun && activeRun.images?.[0] && (() => {
-              const firstImage = activeRun.images![0];
-              return (
+      {/* ── 3-column body ── */}
+      <div className="sc-workspace__body">
+        {/* ═══════ LEFT COLUMN: CONFIG ═══════ */}
+        <div className="sc-panel">
+          {/* Deliverable type */}
+          <div className="sc-panel__section">
+            <h3 className="sc-panel__section-title">成果物类型</h3>
+            <div className="sc-deliverable-grid">
+              {(Object.keys(FAMILY_LABELS) as Family[]).map((item) => (
                 <button
-                  className="button secondary"
-                  disabled={busy || continuationBusy}
-                  onClick={() => void openContinuation(activeRun.runId, firstImage.imageId)}
-                >以此方向继续</button>
-              );
-            })()}
-            {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '')
-              ? (() => {
-                  const confirmed = Object.values(confirmedOutputs).find(
-                    (o) => o.sourceRunId === activeRun.runId && o.confirmationState === 'confirmed',
-                  );
-                  return confirmed ? (
-                    <button className="button ghost danger" disabled={busy || continuationBusy} onClick={() => void revokeContinuation(confirmed.assetId)}>
-                      取消确认
-                    </button>
-                  ) : null;
-                })()
-              : null}
+                  key={item}
+                  className={family === item ? 'sc-deliverable-card is-selected' : 'sc-deliverable-card'}
+                  onClick={() => changeFamily(item)}
+                >
+                  <strong>{FAMILY_LABELS[item]}</strong>
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="button-row result-feedback">
-            <button className="button ghost" onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
-            <button className="button ghost" onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>
-            <button className="button ghost" onClick={() => applyResultFeedback('logo_text')}>Logo/文字不对</button>
-          </div>
-        </div>}
-        {continuationPanelOpen && continuationSource && (
-          <div className="continuation-panel">
-            <div className="section-heading"><span>＋</span><div><h2>空间延展</h2><p>在同一设计世界下继续设计另一个空间</p></div></div>
-            {/* Source preview (R11.2 §10): 已确认方向, not a generic reference card */}
-            <div className="confirmed-source-card">
-              {imageDataUrl
-                ? <img src={imageDataUrl} alt="已确认方向" />
-                : <span className="asset-fallback">已确认方向</span>}
-              <div className="confirmed-source-meta">
-                <strong>已确认方向</strong>
-                <span>源场景：{continuationSource.sourceScene || 'space'}</span>
-                <small>以此图作为后续空间延展的设计依据</small>
-              </div>
-              <button className="button ghost danger" disabled={continuationBusy} onClick={() => void revokeContinuation(continuationSource.assetId)}>
-                取消确认
+
+          {/* Generation basis */}
+          <div className="sc-panel__section">
+            <h3 className="sc-panel__section-title">生成模式</h3>
+            <div className="sc-basis-switch">
+              <button
+                type="button"
+                className={generationBasis === 'standard' ? 'is-active' : ''}
+                onClick={() => changeBasis('standard')}
+              >
+                标准生成
+              </button>
+              <button
+                type="button"
+                className={generationBasis === 'reference' ? 'is-active' : ''}
+                onClick={() => changeBasis('reference')}
+              >
+                参考优先
               </button>
             </div>
 
-            {/* Target scene selector (R11.2 §12-§15) */}
-            <label>选择目标空间
-              <div className="continuation-scene-grid">
-                {CONTINUATION_SCENE_CARDS.map((card) => {
-                  const isSource = isTargetSceneDisabled(card.id, continuationSource.sourceScene);
-                  const disabled = isSource || (card.id === 'custom' && !continuationCustomDescription.trim() && continuationTargetScene !== 'custom');
-                  return (
-                    <button
-                      key={card.id}
-                      type="button"
-                      className={continuationTargetScene === card.id ? 'scene-card selected' : 'scene-card'}
-                      disabled={isSource || continuationBusy}
-                      onClick={() => {
-                        setContinuationTargetScene(card.id);
-                        setContinuationCustomDescription('');
-                      }}
-                    >
-                      <strong>{card.label}</strong>
-                      <span>{isSource ? '当前场景' : card.hint}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {continuationTargetScene === 'custom' && (
-                <textarea
-                  rows={3}
-                  value={continuationCustomDescription}
-                  onChange={(event) => setContinuationCustomDescription(event.target.value)}
-                  placeholder="例如：一个更私密的小型 VIP 咨询室，供 1 对 1 深度沟通使用。"
-                />
-              )}
-            </label>
+            {generationBasis === 'reference' && (
+              <div style={{ marginTop: 'var(--space-4)' }}>
+                <div className="sc-ref-actions">
+                  <input
+                    ref={uploadInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    style={{ display: 'none' }}
+                    onChange={(event) => void handleUploadFileChange(event)}
+                  />
+                  <button
+                    className="button secondary"
+                    disabled={uploading}
+                    onClick={() => void uploadReferenceImage()}
+                  >
+                    {uploading ? '上传中…' : '上传参考图'}
+                  </button>
+                  <button className="button ghost" onClick={() => setPickerOpen((value) => !value)}>
+                    {pickerOpen ? '收起' : '从项目选择'}
+                  </button>
+                </div>
 
-            {/* Additional requirement (R11.2 §16) */}
-            <label>补充要求（可选）
+                {referenceAssetIds.length > 0 && (
+                  <div className="sc-ref-list">
+                    {projectAssets
+                      .filter((asset) => referenceAssetIds.includes(asset.id))
+                      .map((asset) => (
+                        <div key={asset.id} className="sc-ref-item">
+                          {asset.thumbnailDataUrl
+                            ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                            : <span className="sc-ref-item__fallback">{asset.name.slice(0, 8)}</span>}
+                          <div className="sc-ref-item__meta">
+                            <strong>{asset.name}</strong>
+                            <small>{referenceSourceLabelFor(asset, referenceSources[asset.id])}</small>
+                          </div>
+                          <div className="sc-ref-item__actions">
+                            <button
+                              title="替换"
+                              onClick={() => void replaceReferenceAsset(asset.id)}
+                            >替换</button>
+                            <button
+                              className="danger"
+                              title="移除"
+                              onClick={() => toggleReferenceAsset(asset.id)}
+                            >×</button>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {pickerOpen && (
+                  <div className="asset-picker" style={{ marginTop: 'var(--space-3)' }}>
+                    {assetsLoading
+                      ? <span className="muted">加载中…</span>
+                      : <div className="reference-asset-grid">
+                        {projectAssets.length === 0
+                          ? <span className="muted">当前项目没有可用图片资产。</span>
+                          : projectAssets.map((asset) => {
+                            const preflight = referencePreflight[asset.id];
+                            const preflightFailed = preflight?.status === 'failed';
+                            const checkboxDisabled = preflightFailed
+                              || (!referenceAssetIds.includes(asset.id)
+                                && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES);
+                            return (
+                              <label
+                                key={asset.id}
+                                className={
+                                  referenceAssetIds.includes(asset.id)
+                                    ? 'asset-tile selected'
+                                    : preflightFailed
+                                      ? 'asset-tile disabled-preflight'
+                                      : 'asset-tile'
+                                }
+                                title={preflightFailed && preflight.status === 'failed' ? preflight.failure.message : undefined}
+                              >
+                                <input
+                                  type="checkbox"
+                                  disabled={checkboxDisabled}
+                                  checked={referenceAssetIds.includes(asset.id)}
+                                  onChange={() => toggleReferenceAsset(asset.id)}
+                                />
+                                {asset.thumbnailDataUrl
+                                  ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                                  : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
+                                <span>{asset.name}</span>
+                                <span
+                                  className={
+                                    preflight?.status === 'resolved'
+                                      ? 'preflight-badge preflight-ok'
+                                      : preflight?.status === 'failed'
+                                        ? 'preflight-badge preflight-fail'
+                                        : 'preflight-badge preflight-pending'
+                                  }
+                                >
+                                  {preflight?.status === 'resolved' ? '✓'
+                                    : preflight?.status === 'failed' ? '✕ ' + preflight.failure.code
+                                      : '…'}
+                                </span>
+                              </label>
+                            );
+                          })}
+                      </div>}
+                  </div>
+                )}
+
+                {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
+                  <p style={{ marginTop: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
+                    最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。
+                  </p>
+                )}
+
+                {referenceAssetIds.length > 0 && (
+                  <div className="notice info" style={{ marginTop: 'var(--space-3)' }}>
+                    参考优先会较强地保留参考图的空间结构与构图。
+                  </div>
+                )}
+
+                {showCrossSceneAdvisory && crossSceneReference && (
+                  <div className="notice warn advisory" style={{ marginTop: 'var(--space-3)' }}>
+                    <strong>跨场景建议</strong>
+                    <p>这张参考图来自「{crossSceneReference.confirmed.sourceScene || '已确认空间'}」，当前目标为「{subtype}」。</p>
+                    <p>建议使用「空间延展」保持方向的同时重新设计功能空间。</p>
+                    <div className="button-row" style={{ marginTop: 'var(--space-3)' }}>
+                      <button className="button secondary" onClick={() => setCrossSceneAdvisoryDismissed(true)}>仍使用参考优先</button>
+                      <button className="button primary" onClick={() => routeCrossSceneReferenceToContinuation()}>改为以此方向继续</button>
+                    </div>
+                  </div>
+                )}
+
+                {referenceValidation.hard.length > 0 && (
+                  <div className="notice error" style={{ marginTop: 'var(--space-3)' }}>
+                    {referenceValidation.hard.join('；')}
+                  </div>
+                )}
+                {referenceValidation.hard.length === 0 && referenceValidation.soft.length > 0 && (
+                  <div className="notice warn" style={{ marginTop: 'var(--space-3)' }}>
+                    {referenceValidation.soft.join('；')}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Subtype + instruction */}
+          <div className="sc-panel__section">
+            <h3 className="sc-panel__section-title">创意指令</h3>
+            <label style={{ display: 'grid', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
+              <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>子类型</span>
+              <select value={subtype} onChange={(event) => setSubtype(event.target.value)}>
+                {(familyOptions?.subtypes ?? []).map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </label>
+            <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+              <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>本轮要求</span>
               <textarea
-                rows={3}
-                value={continuationRequirement}
-                onChange={(event) => setContinuationRequirement(event.target.value)}
-                placeholder="例如：更私密；更开放；增加展示；更温暖"
+                className="sc-instruction"
+                rows={5}
+                value={instruction}
+                onChange={(event) => setInstruction(event.target.value)}
+                placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。"
               />
             </label>
-
-            {/* Preserve / redesign summary (R11.2 §17) */}
-            <div className="continuation-boundary-grid">
-              <div className="continuation-boundary-block">
-                <strong>将保留</strong>
-                <ul>{CONTINUATION_PRESERVE_COPY.map((item) => <li key={item}>{item}</li>)}</ul>
+            {activeAnchor && (
+              <div className="facts-box" style={{ marginTop: 'var(--space-4)' }}>
+                <small>本类型隐式参考</small>
+                <p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p>
               </div>
-              <div className="continuation-boundary-block redesign">
-                <strong>将重新设计</strong>
-                <ul>{CONTINUATION_REDESIGN_COPY.map((item) => <li key={item}>{item}</li>)}</ul>
-              </div>
-            </div>
+            )}
 
-            {/* Generation summary + CTA (R11.2 §18-§20) */}
-            <div className="facts-box">
-              <small>生成模式　空间延展</small>
-              <p>当前方向　{continuationSource.sourceScene || 'space'}</p>
-              <p>目标空间　{continuationTargetScene || '（请选择）'}</p>
-              {continuationRequirement.trim() && <p>补充要求　{continuationRequirement.trim()}</p>}
-            </div>
+            {/* Advanced settings */}
+            <details className="sc-advanced">
+              <summary>高级设置</summary>
+              <div className="sc-advanced__content">
+                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>镜头 / 构图</span>
+                  <select value={shot} onChange={(event) => { setShot(event.target.value); setShotSource('user_explicit'); }}>
+                    {(familyOptions?.shots ?? []).map((item) => <option key={item}>{item}</option>)}
+                  </select>
+                </label>
+                {generationBasis === 'reference' && (
+                  <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                    <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>参考图场景关系</span>
+                    <select
+                      value={referenceSceneRelation}
+                      onChange={(event) => setReferenceSceneRelation(event.target.value as ShortChainReferenceSceneRelation)}
+                    >
+                      <option value="unknown">未知（待人工或自动判定）</option>
+                      <option value="same_scene">同场景</option>
+                      <option value="cross_scene">跨场景</option>
+                    </select>
+                  </label>
+                )}
+                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>比例</span>
+                  <select value={aspectRatio} onChange={(event) =>
+                    setAspectRatio(event.target.value as ShortChainTaskContract['aspectRatio'])}>
+                    {['1:1', '4:3', '3:4', '16:9', '9:16'].map((item) => <option key={item}>{item}</option>)}
+                  </select>
+                </label>
+                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>生成模型</span>
+                  <select value={imageApiProfileId} onChange={(event) => onImageApiProfileChange(event.target.value)}>
+                    <option value="">请选择 Seedream 生图配置</option>
+                    {imageProfiles.map((profile) =>
+                      <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
+                  </select>
+                </label>
+                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>Logo 处理方式</span>
+                  <select value={logoUsageMode} onChange={(event) =>
+                    setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
+                    <option value="post_composite">后期合成 Logo 到结果图</option>
+                    <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
+                    <option value="reference" disabled>把真实 Logo 作为模型参考</option>
+                  </select>
+                </label>
+                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须包含（每行一项）</span>
+                  <textarea
+                    rows={3}
+                    value={mustIncludeText}
+                    onChange={(event) => setMustIncludeText(event.target.value)}
+                    placeholder="例如：完整前台；清晰入口动线"
+                  />
+                </label>
+                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须避免（每行一项）</span>
+                  <textarea
+                    rows={3}
+                    value={mustAvoidText}
+                    onChange={(event) => setMustAvoidText(event.target.value)}
+                    placeholder="例如：VI 展板；错误品牌文字"
+                  />
+                </label>
+              </div>
+            </details>
+          </div>
+
+          {/* Generate CTA */}
+          <div className="sc-cta">
             <button
-              className="button primary full"
-              disabled={continuationBusy
-                || !canSubmitContinuation({
-                  sourceConfirmed: Boolean(continuationSource),
-                  sourceScene: continuationSource?.sourceScene,
-                  targetScene: continuationTargetScene,
-                  customDescription: continuationCustomDescription,
-                })}
-              onClick={() => void submitContinuation()}
+              className="sc-cta__primary"
+              disabled={!canCompile || busy}
+              onClick={() => void compilePrompt()}
             >
-              {continuationBusy ? '正在生成延展空间…' : '生成延展空间'}
+              {busy ? '编译中…' : '编译并生成'}
+            </button>
+            <button
+              className="sc-cta__secondary"
+              disabled={!compiled || busy}
+              onClick={() => void compilePrompt()}
+            >
+              仅查看最终 Prompt
             </button>
           </div>
-        )}
-        {session?.history.length ? <div className="facts-box">
-          <small>结果与 Prompt 历史</small>
-          <p>{session.history.length} 条记录 · 空间、包装、VI、海报分别保存参考</p>
-        </div> : null}
-      </section>
+        </div>
+
+        {/* ═══════ CENTER COLUMN: PREVIEW ═══════ */}
+        <div className="sc-center">
+          <div className="sc-preview">
+            {imageDataUrl ? (
+              <>
+                {/* Flow state banner */}
+                {flowState && (
+                  <div className={'sc-flow-banner sc-flow-banner--' + (FLOW_STATE_COPY[flowState]?.tone || 'info')}>
+                    <strong>{FLOW_STATE_COPY[flowState]?.title}</strong>
+                    <p>{FLOW_STATE_COPY[flowState]?.detail}</p>
+                    {firstImage && <small>下方展示的是首张图，即使后续步骤失败也会保留。</small>}
+                  </div>
+                )}
+                {similarityAudit === 'unavailable' && (
+                  <div className="sc-flow-banner sc-flow-banner--block">
+                    <strong>终验收阻塞：审计证据不完整</strong>
+                    <p>生成已成功。相似度审计失败，结果被标记为 unavailable。</p>
+                    <small>请重跑一次以补齐审计证据，或在人工核验后手动确认方向。</small>
+                  </div>
+                )}
+                {similarityAudit && similarityAudit !== 'unavailable' && similarityAudit.pass.overall === false && (
+                  <div className="sc-flow-banner sc-flow-banner--block">
+                    <strong>终验收阻塞：相似度审计未通过</strong>
+                    <p>生成已成功。多模态审计在 6 维评分上未达标，Final Acceptance 暂时阻塞。</p>
+                    <small>请参考审计报告调整 Prompt，或人工复核后确认方向。</small>
+                  </div>
+                )}
+
+                <div className="sc-preview__body">
+                  <img src={imageDataUrl} alt="已生成的图片" />
+                </div>
+
+                <div className="sc-preview__badges">
+                  {activeModeBadge && <span className="mode-badge">{activeModeBadge}</span>}
+                  {activeLineage && <span className="lineage-badge">{activeLineage}</span>}
+                  {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '') && (
+                    <span className="confirmation-badge">已确认方向</span>
+                  )}
+                </div>
+
+                <div className="sc-preview__actions">
+                  <button className="ui-button ui-button--primary" style={{ flex: 1 }} disabled={busy} onClick={() => void confirmDirection()}>
+                    沿用此方向
+                  </button>
+                  <button className="ui-button ui-button--secondary" style={{ flex: 1 }} onClick={() => void generate()}>
+                    调整后重做
+                  </button>
+                </div>
+                <div className="sc-preview__actions sc-preview__actions--secondary">
+                  {activeRun && activeRun.images?.[0] && (() => {
+                    const firstImg = activeRun.images![0];
+                    return (
+                      <button
+                        className="ui-button ui-button--ghost"
+                        disabled={busy || continuationBusy}
+                        onClick={() => void openContinuation(activeRun.runId, firstImg.imageId)}
+                      >
+                        以此方向继续
+                      </button>
+                    );
+                  })()}
+                  {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '') && (() => {
+                    const confirmed = Object.values(confirmedOutputs).find(
+                      (o) => o.sourceRunId === activeRun.runId && o.confirmationState === 'confirmed',
+                    );
+                    return confirmed ? (
+                      <button className="ui-button ui-button--ghost danger" disabled={busy || continuationBusy} onClick={() => void revokeContinuation(confirmed.assetId)}>
+                        取消确认
+                      </button>
+                    ) : null;
+                  })()}
+                </div>
+
+                <div className="sc-feedback">
+                  <button onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
+                  <button onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>
+                  <button onClick={() => applyResultFeedback('logo_text')}>Logo/文字不对</button>
+                </div>
+              </>
+            ) : compiled ? (
+              <div className="sc-preview__body">
+                <div className="sc-preview__empty">
+                  <div className="sc-preview__empty-icon">→</div>
+                  <strong>Prompt 已就绪</strong>
+                  <p>点击下方按钮，开始生成正式成果。</p>
+                </div>
+              </div>
+            ) : (
+              <div className="sc-preview__body">
+                <div className="sc-preview__empty">
+                  <div className="sc-preview__empty-icon">M</div>
+                  <strong>先明确成果物，再生成</strong>
+                  <p>填写左侧任务要求后，系统将自动编译并生成。</p>
+                </div>
+              </div>
+            )}
+
+            {compiled && !imageDataUrl && (
+              <div className="sc-preview__actions">
+                <button
+                  className="ui-button ui-button--primary"
+                  style={{ flex: 1 }}
+                  disabled={!canGenerate || compileStale}
+                  onClick={() => void generate()}
+                >
+                  生成正式成果
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Continuation panel (below preview) */}
+          {continuationPanelOpen && continuationSource && (
+            <div className="sc-continuation">
+              <h3 className="sc-continuation__title">空间延展</h3>
+              <div className="confirmed-source-card" style={{ marginBottom: 'var(--space-5)' }}>
+                {imageDataUrl
+                  ? <img src={imageDataUrl} alt="已确认方向" />
+                  : <span className="asset-fallback">已确认方向</span>}
+                <div className="confirmed-source-meta">
+                  <strong>已确认方向</strong>
+                  <span>源场景：{continuationSource.sourceScene || 'space'}</span>
+                  <small>以此图作为后续空间延展的设计依据</small>
+                </div>
+                <button className="button ghost danger" disabled={continuationBusy} onClick={() => void revokeContinuation(continuationSource.assetId)}>
+                  取消确认
+                </button>
+              </div>
+
+              <label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>
+                <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>选择目标空间</span>
+                <div className="continuation-scene-grid" style={{ marginTop: 'var(--space-3)' }}>
+                  {CONTINUATION_SCENE_CARDS.map((card) => {
+                    const isSource = isTargetSceneDisabled(card.id, continuationSource.sourceScene);
+                    return (
+                      <button
+                        key={card.id}
+                        type="button"
+                        className={continuationTargetScene === card.id ? 'scene-card selected' : 'scene-card'}
+                        disabled={isSource || continuationBusy}
+                        onClick={() => {
+                          setContinuationTargetScene(card.id);
+                          setContinuationCustomDescription('');
+                        }}
+                      >
+                        <strong>{card.label}</strong>
+                        <span>{isSource ? '当前场景' : card.hint}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {continuationTargetScene === 'custom' && (
+                  <textarea
+                    rows={3}
+                    style={{ marginTop: 'var(--space-3)', width: '100%' }}
+                    value={continuationCustomDescription}
+                    onChange={(event) => setContinuationCustomDescription(event.target.value)}
+                    placeholder="例如：一个更私密的小型 VIP 咨询室"
+                  />
+                )}
+              </label>
+
+              <label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>
+                <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>补充要求（可选）</span>
+                <textarea
+                  rows={2}
+                  style={{ marginTop: 'var(--space-3)', width: '100%' }}
+                  value={continuationRequirement}
+                  onChange={(event) => setContinuationRequirement(event.target.value)}
+                  placeholder="例如：更私密；更开放；增加展示"
+                />
+              </label>
+
+              <div className="continuation-boundary-grid">
+                <div className="continuation-boundary-block">
+                  <strong>将保留</strong>
+                  <ul>{CONTINUATION_PRESERVE_COPY.map((item) => <li key={item}>{item}</li>)}</ul>
+                </div>
+                <div className="continuation-boundary-block redesign">
+                  <strong>将重新设计</strong>
+                  <ul>{CONTINUATION_REDESIGN_COPY.map((item) => <li key={item}>{item}</li>)}</ul>
+                </div>
+              </div>
+
+              <button
+                className="sc-cta__primary"
+                style={{ marginTop: 'var(--space-5)', width: '100%' }}
+                disabled={continuationBusy
+                  || !canSubmitContinuation({
+                    sourceConfirmed: Boolean(continuationSource),
+                    sourceScene: continuationSource.sourceScene,
+                    targetScene: continuationTargetScene,
+                    customDescription: continuationCustomDescription,
+                  })}
+                onClick={() => void submitContinuation()}
+              >
+                {continuationBusy ? '正在生成延展空间…' : '生成延展空间'}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ═══════ RIGHT COLUMN: DETAILS ═══════ */}
+        <div className="sc-panel">
+          {/* Prompt summary */}
+          <div className="sc-panel__section">
+            <h3 className="sc-panel__section-title">编译结果</h3>
+            {compiled ? (
+              <>
+                <div className="sc-detail-row">
+                  <span className="sc-detail-row__label">类型</span>
+                  <span className="sc-detail-row__value">{FAMILY_LABELS[family]} · {subtype}</span>
+                </div>
+                <div className="sc-detail-row">
+                  <span className="sc-detail-row__label">比例</span>
+                  <span className="sc-detail-row__value">{aspectRatio}</span>
+                </div>
+                <div className="sc-detail-row">
+                  <span className="sc-detail-row__label">Logo 策略</span>
+                  <span className="sc-detail-row__value">
+                    {compiled.compiledPrompt.logoUsageMode === 'reference'
+                      ? '真实 Logo 参考'
+                      : '预留干净区域'}
+                  </span>
+                </div>
+                <div className="sc-detail-row">
+                  <span className="sc-detail-row__label">必须包含</span>
+                  <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
+                    {compiled.taskContract.mustInclude.join('；') || '仅任务要求'}
+                  </span>
+                </div>
+                <div className="sc-detail-row">
+                  <span className="sc-detail-row__label">必须避免</span>
+                  <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
+                    {compiled.taskContract.mustAvoid.join('；') || '默认禁用项'}
+                  </span>
+                </div>
+
+                <details className="prompt-preview" style={{ marginTop: 'var(--space-4)' }}>
+                  <summary>查看完整 Prompt（只读）</summary>
+                  <div className="sc-prompt-preview">{editedPrompt}</div>
+                </details>
+              </>
+            ) : (
+              <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1.6 }}>
+                左侧填写任务要求后，点击「编译并生成」以查看编译结果。
+              </p>
+            )}
+          </div>
+
+          {/* Validation */}
+          {lastValidation && (
+            <div className="sc-panel__section">
+              <h3 className="sc-panel__section-title">对题验证</h3>
+              <div className="sc-detail-row">
+                <span className="sc-detail-row__label">状态</span>
+                <span className="sc-detail-row__value">{lastValidation.status}</span>
+              </div>
+              <div className="sc-detail-row">
+                <span className="sc-detail-row__label">偏差项</span>
+                <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
+                  {lastValidation.mismatchTypes.length
+                    ? lastValidation.mismatchTypes.join(' · ')
+                    : '未发现结构性偏差'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Stale indicator */}
+          {compileStale && (
+            <div className="sc-panel__section" style={{ borderColor: 'var(--color-warning-line)', background: 'var(--color-warning-bg)' }}>
+              <h3 className="sc-panel__section-title" style={{ color: 'var(--color-warning-text)' }}>提示</h3>
+              <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-warning-text)', lineHeight: 1.6 }}>
+                设置已变更，当前 Prompt 已过期。请重新编译。
+              </p>
+            </div>
+          )}
+
+          {/* Provider info */}
+          {activeRun && (
+            <div className="sc-panel__section">
+              <h3 className="sc-panel__section-title">运行信息</h3>
+              <div className="sc-detail-row">
+                <span className="sc-detail-row__label">模型</span>
+                <span className="sc-detail-row__value" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>
+                  {activeRun.modelId || '—'}
+                </span>
+              </div>
+              <div className="sc-detail-row">
+                <span className="sc-detail-row__label">耗时</span>
+                <span className="sc-detail-row__value">
+                  {activeRun.startedAt && activeRun.completedAt
+                    ? Math.round((new Date(activeRun.completedAt).getTime() - new Date(activeRun.startedAt).getTime()) / 1000) + 's'
+                    : '—'}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* History */}
+          {session?.history.length ? (
+            <div className="sc-panel__section">
+              <h3 className="sc-panel__section-title">历史记录</h3>
+              <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+                {session.history.length} 条记录
+              </p>
+            </div>
+          ) : null}
+        </div>
+      </div>
     </div>
-  </div>;
+  );
 }
 
 // r2.0 §4.13 / Phase E: the 5-state banner shown above the result
