@@ -17,6 +17,9 @@ import type {
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatBytes, formatDurationHuman } from '../utils';
 import { VisualAssetUploader } from './VisualAssetUploader';
+import { AppShell } from './layout/AppShell';
+import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
+import { Button } from './ui/Button';
 
 interface Props {
   settings: PublicSettings;
@@ -439,7 +442,34 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   // ── 结果 / 决策页 ──
   if (view === 'result' && selectedRun) {
     const decided = selectedRun.decision === 'approved' || selectedRun.decision === 'rejected';
-    return <div className="page report-page visual-translation-report reference-anchor-result-page">
+    return <AppShell
+      topBar={
+        <TopBar
+          left={
+            <TopBarBreadcrumb
+              items={[
+                { label: '项目', onClick: onBack },
+                { label: '参考锚定', onClick: () => { setView('workspace'); setRetryMode('none'); void refreshRuns().catch(() => {}); } },
+                { label: selectedRun.projectName },
+              ]}
+            />
+          }
+          right={
+            <TopBarActions>
+              <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+              <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
+            </TopBarActions>
+          }
+        />
+      }
+      bottomBar={
+        <>
+          <span>参考锚定 · 决策页</span>
+          <span>{selectedRun.projectName} · {STATUS_LABELS[selectedRun.status]}</span>
+        </>
+      }
+    >
+    <div className="page report-page visual-translation-report reference-anchor-result-page">
       <header className="page-header">
         <div><p className="eyebrow">REFERENCE ANCHOR</p><h1>{selectedRun.projectName}</h1><p>{selectedRun.referenceAssetCount} 张参考图 · {STATUS_LABELS[selectedRun.status]} · 决策：{DECISION_LABELS[selectedRun.decision]}</p></div>
         <button className="button ghost" onClick={() => { setView('workspace'); setRetryMode('none'); void refreshRuns().catch(() => {}); }}>返回工作台</button>
@@ -499,14 +529,40 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
           <div className="button-row"><button className="button primary" disabled={busy} onClick={() => void retryUpdatePreference()}>按新偏好重新编译</button></div>
         </div>}
       </section>}
-    </div>;
+    </div>
+    </AppShell>;
   }
 
   // ── 工作台（默认视图）──
-  return <div className="page visual-translation-page reference-anchor-page">
+  return <AppShell
+    topBar={
+      <TopBar
+        left={
+          <TopBarBreadcrumb
+            items={[
+              { label: '项目', onClick: onBack },
+              { label: '参考锚定（Anchor）' },
+            ]}
+          />
+        }
+        right={
+          <TopBarActions>
+            <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+            <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
+          </TopBarActions>
+        }
+      />
+    }
+    bottomBar={
+      <>
+        <span>参考锚定（Anchor）</span>
+        <span>{selectedProject?.projectName || '未选择项目'}</span>
+      </>
+    }
+  >
+  <div className="page visual-translation-page reference-anchor-page">
     <header className="page-header">
       <div><p className="eyebrow">REFERENCE → ANCHOR</p><h1>参考锚定（Anchor）</h1><p>选择当前项目，上传 4–8 张参考图，提炼可继承的风格规则并生成 Anchor Generation Brief，由你确认后交给图像生成。</p></div>
-      <div className="button-row"><button className="button ghost" onClick={onOpenSettings}>API 设置</button><button className="button ghost" onClick={onBack}>返回首页</button></div>
     </header>
 
     {error && <div className="notice error">{error}</div>}
@@ -623,5 +679,6 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
       <div className="visual-stage-strip">{STAGES.map(([stage, label], index) => <div key={stage} className={index < activeStageIndex ? 'done' : index === activeStageIndex ? 'active' : ''}><span>{index < activeStageIndex ? '✓' : String(index + 1).padStart(2, '0')}</span><strong>{label}</strong></div>)}</div>
       {busy && activeRunId && <button className="button danger" onClick={() => void window.masterpiece.referenceAnchor.cancel(activeRunId)}>取消锚定</button>}
     </section>}
-  </div>;
+  </div>
+  </AppShell>;
 }

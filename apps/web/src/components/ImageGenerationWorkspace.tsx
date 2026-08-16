@@ -16,6 +16,9 @@ import type {
   StartImageGenerationInput
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError } from '../utils';
+import { AppShell } from './layout/AppShell';
+import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
+import { Button } from './ui/Button';
 
 interface Props {
   sourceBundle: ImageGenerationSourceBundle;
@@ -342,16 +345,39 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
   } | undefined;
   const deliverableLabel = DELIVERABLES.find((item) => item.id === deliverable)?.label ?? deliverable;
 
-  return <div className="page project-page">
+  return <AppShell
+    topBar={
+      <TopBar
+        left={
+          <TopBarBreadcrumb
+            items={[
+              { label: '项目', onClick: onBack },
+              { label: `图像生成 · ${deliverableLabel}` },
+            ]}
+          />
+        }
+        right={
+          <TopBarActions>
+            <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+            <Button variant="secondary" size="sm" disabled={!activeRunId} onClick={() => void window.masterpiece.imageGeneration.openFolder(activeRunId)}>打开本地文件夹</Button>
+            <Button variant="primary" size="sm" onClick={onBack}>返回</Button>
+          </TopBarActions>
+        }
+      />
+    }
+    bottomBar={
+      <>
+        <span>图像生成 · {deliverableLabel}</span>
+        <span>来源：{SOURCE_LABELS[sourcePreset]}{runScopeId ? ` · ${runScopeId.slice(0, 8)}` : ''}</span>
+      </>
+    }
+  >
+  <div className="page project-page">
     <header className="page-header">
       <div>
         <p className="eyebrow">IMAGE GENERATION</p>
         <div className="title-line"><h1>{deliverableLabel}</h1></div>
         <p>上下文来源：{SOURCE_LABELS[sourcePreset]} · 交付类型：{deliverableLabel}</p>
-      </div>
-      <div className="button-row">
-        <button className="button ghost" onClick={onBack}>返回</button>
-        <button className="button secondary" disabled={!activeRunId} onClick={() => void window.masterpiece.imageGeneration.openFolder(activeRunId)}>打开本地文件夹</button>
       </div>
     </header>
 
@@ -534,5 +560,6 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
         ))}
       </div>
     </footer>}
-  </div>;
+  </div>
+  </AppShell>;
 }

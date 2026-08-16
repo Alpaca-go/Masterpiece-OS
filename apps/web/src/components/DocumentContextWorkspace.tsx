@@ -10,6 +10,9 @@ import type {
   VisualTranslationDocumentSummary
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatDurationHuman } from '../utils';
+import { AppShell } from './layout/AppShell';
+import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
+import { Button } from './ui/Button';
 
 interface Props {
   settings: PublicSettings;
@@ -329,7 +332,34 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
   }
 
   // ── 简报页 ──
-  if (view === 'brief' && selectedRun) return <div className="page report-page visual-translation-report">
+  if (view === 'brief' && selectedRun) return <AppShell
+    topBar={
+      <TopBar
+        left={
+          <TopBarBreadcrumb
+            items={[
+              { label: '项目', onClick: onBack },
+              { label: '文档上下文提取', onClick: () => setView('workspace') },
+              { label: '简报' },
+            ]}
+          />
+        }
+        right={
+          <TopBarActions>
+            <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+            <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
+          </TopBarActions>
+        }
+      />
+    }
+    bottomBar={
+      <>
+        <span>文档上下文提取 · 简报</span>
+        <span>{selectedRun.projectName} · {selectedRun.briefFilename || '未保存'}</span>
+      </>
+    }
+  >
+  <div className="page report-page visual-translation-report">
     <header className="page-header">
       <div><p className="eyebrow">VISUAL CONTEXT BRIEF</p><h1>{selectedRun.projectName}</h1><p>{selectedRun.briefFilename || '项目视觉上下文简报.md'}</p></div>
       <button className="button ghost" onClick={() => { setView('workspace'); setBriefMarkdown(''); void refreshRuns().catch(() => {}); }}>返回工作台</button>
@@ -350,12 +380,40 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
     {error && <div className="notice error">{error}</div>}
     {selectedRun.warnings?.length ? <div className="notice warn">{selectedRun.warnings.map((warning) => <p key={`${warning.code}-${warning.field || ''}`}>{warning.message}</p>)}</div> : null}
     <article className="markdown-preview" dangerouslySetInnerHTML={{ __html: briefHtml }} />
-  </div>;
+  </div>
+  </AppShell>;
 
   // ── 人工确认页 ──
   if (view === 'confirm' && selectedRun && draft) {
     const totalFields = SCALAR_FIELDS.length + LIST_FIELDS.length;
-    return <div className="page document-context-confirm-page">
+    return <AppShell
+      topBar={
+        <TopBar
+          left={
+            <TopBarBreadcrumb
+              items={[
+                { label: '项目', onClick: onBack },
+                { label: '文档上下文提取', onClick: () => { setView('workspace'); setDraft(null); } },
+                { label: '人工确认' },
+              ]}
+            />
+          }
+          right={
+            <TopBarActions>
+              <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+              <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
+            </TopBarActions>
+          }
+        />
+      }
+      bottomBar={
+        <>
+          <span>文档上下文提取 · 人工确认</span>
+          <span>{selectedRun.projectName} · {totalFields} 个字段</span>
+        </>
+      }
+    >
+    <div className="page document-context-confirm-page">
       <header className="page-header">
         <div><p className="eyebrow">HUMAN CONFIRMATION</p><h1>{selectedRun.projectName}</h1><p>逐项核对提取结果：确认、修改、删除或标记未知。你的修改会覆盖模型结果。</p></div>
         <button className="button ghost" onClick={() => { setView('workspace'); setDraft(null); }}>返回工作台</button>
@@ -415,14 +473,40 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
         </div>
         <button className="button primary" disabled={busy} onClick={() => void confirmAndCompile()}>{busy ? '正在编译简报…' : '确认并生成简报'}</button>
       </footer>
-    </div>;
+    </div>
+    </AppShell>;
   }
 
   // ── 工作台（默认视图）──
-  return <div className="page visual-translation-page document-context-page">
+  return <AppShell
+    topBar={
+      <TopBar
+        left={
+          <TopBarBreadcrumb
+            items={[
+              { label: '项目', onClick: onBack },
+              { label: '文档上下文提取' },
+            ]}
+          />
+        }
+        right={
+          <TopBarActions>
+            <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+            <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
+          </TopBarActions>
+        }
+      />
+    }
+    bottomBar={
+      <>
+        <span>文档上下文提取</span>
+        <span>{selectedRun?.projectName || '未选择文档'}</span>
+      </>
+    }
+  >
+  <div className="page visual-translation-page document-context-page">
     <header className="page-header">
       <div><p className="eyebrow">DOCUMENT → VISUAL CONTEXT</p><h1>文档上下文提取</h1><p>上传项目文档，提取视觉相关品牌事实，经人工确认后生成项目视觉上下文简报。</p></div>
-      <div className="button-row"><button className="button ghost" onClick={onOpenSettings}>API 设置</button><button className="button ghost" onClick={onBack}>返回首页</button></div>
     </header>
 
     {error && <div className="notice error">{error}</div>}
@@ -471,5 +555,6 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
       <div className="visual-stage-strip">{STAGES.map(([stage, label], index) => <div key={stage} className={index < activeStageIndex ? 'done' : index === activeStageIndex ? 'active' : ''}><span>{index < activeStageIndex ? '✓' : String(index + 1).padStart(2, '0')}</span><strong>{label}</strong></div>)}</div>
       {busy && activeRunId && <button className="button danger" onClick={() => void window.masterpiece.documentContext.cancel(activeRunId)}>取消提取</button>}
     </section>}
-  </div>;
+  </div>
+  </AppShell>;
 }
