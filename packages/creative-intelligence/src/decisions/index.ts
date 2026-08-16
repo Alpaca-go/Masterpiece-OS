@@ -1,9 +1,16 @@
-/**
- * Decisions namespace — structured analysis validation & self-healing runtime.
- *
- * CI-1: ownership transfer from @masterpiece/analysis-runtime.
- * Module structure mirrors the original package to allow parity verification.
- */
-
-// CI-1B will fill this in.
-export {};
+export * from './analysis-completion-orchestrator.ts';
+export * from './clarification-builder.ts';
+export * from './contracts.ts';
+export * from './conflict-resolver.ts';
+export * from './deliverable-sufficiency.ts';
+export * from './deterministic-repair.ts';
+export * from './evidence-safe-merge.ts';
+export * from './field-repair-policy.ts';
+export * from './missing-field-classifier.ts';
+export * from './repair-planner.ts';
+export * from './repair-audit.ts';
+export * from './repair-prompt-builder.ts';
+export * from './schema-migrations.ts';
+export * from './schema-validator.ts';
+export * from './source-fingerprint.ts';
+export * from './structured-repair-runner.ts';
