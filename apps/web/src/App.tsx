@@ -208,6 +208,19 @@ export function App() {
     return window.masterpiece.analysis.onProgress((event) => setProgress(event));
   }, []);
 
+  // Phase 5.7: surface transient `error` state as a toast once the app
+  // is past the splash screen. Splash-time errors (loading === false but
+  // settings === null) keep their inline display at the splash return
+  // because the user has not yet reached the home view. After that, any
+  // setError(...) from event handlers (importMore / removeAsset / delete
+  // project / etc.) becomes a toast and clears the inline state.
+  useEffect(() => {
+    if (error && settings) {
+      pushToast({ tone: 'error', title: error, duration: 5000 });
+      setError('');
+    }
+  }, [error, settings, pushToast]);
+
   async function openProject(project: ProjectRecord) {
     setSelected(project);
     setError('');
@@ -601,7 +614,10 @@ export function App() {
             <Button variant="secondary" onClick={() => setScreen('settings')}>前往设置</Button>
           </div>
         )}
-        {error && <div className="notice error" style={{ marginBottom: 'var(--space-6)' }}>{error}</div>}
+        {/* Phase 5.7: transient `error` state is now surfaced as a toast
+            via the useEffect above; the inline .notice is removed. Splash
+            errors (init failure / 20s timeout) still display inline via
+            the splash return. */}
 
         {/* Hero — editorial */}
         <section className="hero">
