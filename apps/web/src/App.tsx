@@ -130,6 +130,30 @@ export function App() {
   const [cmdOpen, setCmdOpen] = useCommandPalette();
   const { toasts, push: pushToast, dismiss: dismissToast } = useToasts();
 
+  // Build the command palette registry from current app state.
+  // Zero-logic: just lists existing data + reuses existing setScreen handlers.
+  // MUST be called before any early return below (see comment above) — otherwise
+  // navigating from a non-home screen back to home changes hook count and trips
+  // React's "Rendered more hooks than during the previous render" guard.
+  const commandItems = useMemo(() => {
+    const items: Array<{ id: string; label: string; hint?: string; section?: string; shortcut?: string; keywords?: string[]; }> = [
+      { id: 'nav.home', label: '回到项目首页', hint: 'Home', section: '导航', keywords: ['home', 'project', '项目'], shortcut: 'g h' },
+      { id: 'nav.create', label: '新建分析（视觉）', hint: 'Create / Visual', section: '导航', keywords: ['create', 'analysis', '新建', '分析'], shortcut: 'g c' },
+      { id: 'nav.settings', label: 'API 与模型设置', hint: 'Settings', section: '导航', keywords: ['settings', '设置', 'api'], shortcut: 'g s' },
+      { id: 'nav.packaging', label: '包装生成', hint: 'Packaging', section: '导航', keywords: ['packaging', '包装'] },
+    ];
+    for (const project of projects.slice(0, 8)) {
+      items.push({
+        id: `project.${project.id}`,
+        label: project.projectName,
+        hint: `${project.industry} · ${project.assetCount} 个素材`,
+        section: '最近项目',
+        keywords: ['project', project.brandName, project.industry, '项目'],
+      });
+    }
+    return items;
+  }, [projects]);
+
   async function refresh() {
     const [nextSettings, nextProjects, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
       window.masterpiece.settings.get(),
@@ -472,27 +496,6 @@ export function App() {
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   const currentScreen = screen as Screen;
-
-  // Build the command palette registry from current app state.
-  // Zero-logic: just lists existing data + reuses existing setScreen handlers.
-  const commandItems = useMemo(() => {
-    const items: Array<{ id: string; label: string; hint?: string; section?: string; shortcut?: string; keywords?: string[]; }> = [
-      { id: 'nav.home', label: '回到项目首页', hint: 'Home', section: '导航', keywords: ['home', 'project', '项目'], shortcut: 'g h' },
-      { id: 'nav.create', label: '新建分析（视觉）', hint: 'Create / Visual', section: '导航', keywords: ['create', 'analysis', '新建', '分析'], shortcut: 'g c' },
-      { id: 'nav.settings', label: 'API 与模型设置', hint: 'Settings', section: '导航', keywords: ['settings', '设置', 'api'], shortcut: 'g s' },
-      { id: 'nav.packaging', label: '包装生成', hint: 'Packaging', section: '导航', keywords: ['packaging', '包装'] },
-    ];
-    for (const project of projects.slice(0, 8)) {
-      items.push({
-        id: `project.${project.id}`,
-        label: project.projectName,
-        hint: `${project.industry} · ${project.assetCount} 个素材`,
-        section: '最近项目',
-        keywords: ['project', project.brandName, project.industry, '项目'],
-      });
-    }
-    return items;
-  }, [projects]);
 
   function runCommand(item: { id: string }) {
     if (item.id === 'nav.home') setScreen('home');
