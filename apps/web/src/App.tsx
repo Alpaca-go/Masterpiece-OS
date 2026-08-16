@@ -29,8 +29,7 @@ import { TopBar, TopBarBrand, TopBarBreadcrumb, TopBarActions, TopBarSegment } f
 import { CommandPalette, useCommandPalette } from './components/layout/CommandPalette';
 import { ToastViewport, useToasts } from './components/layout/Toast';
 import { cleanError, formatBytes, formatDuration, formatRelativeTime } from './utils';
-
-type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session' | 'packaging';
+import { useUrlScreen, type Screen } from './lib/useUrlScreen';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -80,7 +79,10 @@ function ReferenceAnchorStatusBadge({ status }: { status: ReferenceAnchorRun['st
 }
 
 export function App() {
-  const [screen, setScreen] = useState<Screen>('home');
+  // Phase 5.8: screen state now derives from URL pathname via HashRouter.
+  // setScreen(...) is a thin wrapper over navigate(); the 46 call sites
+  // in this file are unchanged in shape.
+  const [screen, setScreen, navigateToPath] = useUrlScreen();
   const [settings, setSettings] = useState<PublicSettings | null>(null);
   const [projects, setProjects] = useState<ProjectRecord[]>([]);
   const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
@@ -229,7 +231,17 @@ export function App() {
       || analysisProfiles.find((item) => item.isDefault)
       || analysisProfiles[0];
     setSelectedApiProfileId(profile?.id || '');
-    setScreen(project.status === 'completed' && project.lastReportFilename ? 'report' : 'project');
+    // Phase 5.8: include the project id in the URL so the page is
+    // shareable. setScreen drives the screen segment; the id segment
+    // is appended for deep-link round-trips. The `selected` state
+    // still owns the canonical record (the id segment is a hint, not
+    // a source of truth — refresh() races and a stale id are both OK
+    // because openProject always sets `selected` immediately).
+    if (project.status === 'completed' && project.lastReportFilename) {
+      navigateToPath(`/projects/${project.id}/report`);
+    } else {
+      navigateToPath(`/projects/${project.id}`);
+    }
     try { setAssets(await window.masterpiece.projects.scanAssets(project.id)); }
     catch (reason) { setError(cleanError(reason)); }
     // r2.0 / r10.4 UX: ask the backend whether the persisted Project
@@ -508,7 +520,7 @@ export function App() {
     ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
-  const currentScreen = screen as Screen;
+  const currentScreen = screen;
 
   function runCommand(item: { id: string }) {
     if (item.id === 'nav.home') setScreen('home');
