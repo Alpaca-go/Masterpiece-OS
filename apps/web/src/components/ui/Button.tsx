@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'text';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'text' | 'link';
 type Size = 'sm' | 'md' | 'lg';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -9,18 +9,21 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   fullWidth?: boolean;
   icon?: ReactNode;
   iconPosition?: 'left' | 'right';
+  hot?: boolean; // Single accent — uses warm-orange (for destructive emphasis)
 }
 
 /**
- * Masterpiece UI Button — warm modernism.
- * 8px grid, rounded base, subtle elevation on hover.
+ * Masterpiece UI Button — Notion × Figma editorial.
+ * Hairline-first, monochrome black default, restrained warm-orange for "hot" CTAs.
+ * No drop shadows, no gradient fills, no scale-on-hover.
  */
 export function Button({
-  variant = 'primary',
+  variant = 'secondary',
   size = 'md',
   fullWidth = false,
   icon,
   iconPosition = 'left',
+  hot = false,
   className = '',
   children,
   ...rest
@@ -31,6 +34,7 @@ export function Button({
     `ui-button--${size}`,
     fullWidth ? 'ui-button--full' : '',
     icon ? `ui-button--icon-${iconPosition}` : '',
+    hot ? 'ui-button--hot' : '',
     className
   ].filter(Boolean).join(' ');
 

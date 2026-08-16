@@ -23,6 +23,7 @@ import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { StatusBadgeInline } from './components/StatusBadgeInline';
 import { ProjectDetail } from './components/ProjectDetail';
+import { Button } from './components/ui/Button';
 import { cleanError, formatBytes, formatDuration, formatRelativeTime } from './utils';
 
 type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session' | 'packaging';
@@ -531,26 +532,43 @@ export function App() {
           )}
           {error && <div className="notice error" style={{ marginBottom: 'var(--space-6)' }}>{error}</div>}
 
-          {/* Hero */}
+          {/* Hero — editorial */}
           <section className="hero">
-            <p className="hero__eyebrow">Creative Director Preparation System</p>
-            <h1 className="hero__title">让视觉判断<br />成为可执行的系统。</h1>
+            <p className="hero__eyebrow">Masterpiece OS — Creative Director Preparation</p>
+            <h1 className="hero__title">
+              Visual judgment,<br />
+              <em>as a system.</em>
+            </h1>
             <p className="hero__subtitle">
               上传品牌素材，自动分析生成视觉总览与创作方向，一键交付规范级别的设计成果。
             </p>
             <div className="hero__actions">
-              <button className="ui-button ui-button--primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
-                新建视觉分析
-              </button>
-              <button className="ui-button ui-button--ghost" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>
+              <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
+                新建视觉分析 →
+              </Button>
+              <Button variant="ghost" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>
                 文档分析
-              </button>
-              <button className="ui-button ui-button--ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
+              </Button>
+              <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
                 参考视觉转换
-              </button>
-              <button className="ui-button ui-button--ghost" onClick={() => setScreen('packaging')}>
+              </Button>
+              <Button variant="ghost" onClick={() => setScreen('packaging')}>
                 包装生成
-              </button>
+              </Button>
+            </div>
+            <div className="hero__meta">
+              <div className="hero__meta-item">
+                <small>分析模型</small>
+                <strong>{defaultProfile?.modelId || '未配置'}</strong>
+              </div>
+              <div className="hero__meta-item">
+                <small>本地记录</small>
+                <strong>{recentRecords.length}</strong>
+              </div>
+              <div className="hero__meta-item">
+                <small>系统版本</small>
+                <strong>5.0.0-rc.1</strong>
+              </div>
             </div>
           </section>
 
