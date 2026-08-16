@@ -15,6 +15,8 @@
     "./evidence/*": "./src/evidence/*",
     "./truth": "./src/truth/index.ts",
     "./truth/*": "./src/truth/*",
+    "./document-intelligence": "./src/document-intelligence/index.ts",
+    "./document-intelligence/*": "./src/document-intelligence/*",
     "./integration": "./src/integration/index.ts",
     "./integration/*": "./src/integration/*",
     "./contracts": "./src/contracts/index.ts"
