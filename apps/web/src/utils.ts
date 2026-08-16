@@ -73,3 +73,33 @@ export function autoRecoverableHint(error: unknown): string | null {
   if (!errorIsAutoRecoverable(error)) return null;
   return '这是可自动恢复的提示：直接点击「生成」即可，无需回到报告页或重新分析。';
 }
+
+/**
+ * Format an ISO timestamp string as a human-readable relative time
+ * (e.g. "3 分钟前", "2 小时前", "昨天", "7 月 15 日").
+ */
+export function formatRelativeTime(iso: string): string {
+  if (!iso) return '—';
+  const now = Date.now();
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return '—';
+  const diffMs = now - then;
+  const diffSec = Math.max(0, Math.floor(diffMs / 1000));
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffSec < 60) return '刚刚';
+  if (diffMin < 60) return `${diffMin} 分钟前`;
+  if (diffHour < 24) return `${diffHour} 小时前`;
+  if (diffDay === 1) return '昨天';
+  if (diffDay < 7) return `${diffDay} 天前`;
+
+  const d = new Date(then);
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  if (d.getFullYear() === new Date(now).getFullYear()) {
+    return `${month} 月 ${day} 日`;
+  }
+  return `${d.getFullYear()} 年 ${month} 月 ${day} 日`;
+}

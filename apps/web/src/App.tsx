@@ -21,7 +21,8 @@ import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace'
 import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
-import { cleanError, formatBytes, formatDuration } from './utils';
+import { StatusBadgeInline } from './components/StatusBadgeInline';
+import { cleanError, formatBytes, formatDuration, formatRelativeTime } from './utils';
 
 type Screen = 'home' | 'settings' | 'create' | 'project' | 'analysis' | 'report' | 'image-generation' | 'creative-session' | 'packaging';
 
@@ -467,44 +468,211 @@ export function App() {
     ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
-  return <div className="app-shell">
-    <aside className="sidebar"><div className="logo-lockup"><div className="brand-mark">M</div><div><strong>Masterpiece OS</strong><small>Web</small></div></div><nav><button className={screen === 'home' ? 'active' : ''} onClick={() => setScreen('home')}>项目</button><button onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button><button onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button></nav><div className="sidebar-footer"><span className={`status-dot ${settings.connectionStatus}`} /><div><small>默认模型</small><strong>{defaultProfile?.modelId || '未配置'}</strong></div></div></aside>
-    <main className="home-main"><header className="home-header"><div><p className="eyebrow">CREATIVE DIRECTOR PREPARATION SYSTEM</p><h1>让视觉判断<br />成为可执行的系统。</h1></div><div className="header-actions"><button className="button secondary" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>文档分析</button><button className="button secondary" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>参考视觉转换</button><button className="button secondary" onClick={() => setScreen('packaging')}>包装生成</button><button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>API 设置</button><button className="button primary large" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>新建视觉分析 <span>↗</span></button></div></header>
-      {!hasUsableProfile && <div className="setup-banner"><div><strong>完成首次 API 配置</strong><p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p></div><button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button></div>}
-      {error && <div className="notice error">{error}</div>}
-      <section className="recent-section"><div className="section-title"><div><span>RECENT ANALYSIS</span><h2>最近分析记录</h2></div><small>{recentRecords.length} 条本地记录</small></div>
-        {recentRecords.length ? <div className="project-list">{recentRecords.map((record, index) => record.kind === 'visual-analysis' ? <div className="project-row" key={`analysis-${record.project.id}`}>
-          <button className="project-row-open" onClick={() => void openProject(record.project)}>
-            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{record.project.projectName}</strong><small><span className="record-type visual-analysis">视觉分析</span>{record.project.industry} · {record.project.assetCount} 个素材</small></div>
-            <StatusBadge status={record.project.status} />
-            <div className="project-model"><small>MODEL</small><strong>{record.project.model || '—'}</strong></div>
-            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.project.lastDurationMs)}</strong></div>
-            <span className="row-arrow">→</span>
+  const currentScreen = screen as Screen;
+  return (
+    <div className="app-shell-v2">
+      {/* ── Top navigation ── */}
+      <header className="app-topbar">
+        <div className="app-topbar__left">
+          <div className="app-topbar__brand">
+            <div className="app-topbar__brand-mark">M</div>
+            <span className="app-topbar__brand-name">Masterpiece OS<span className="app-topbar__brand-tag">Web</span></span>
+          </div>
+        </div>
+
+        <nav className="app-topbar__center">
+          <div className="app-topbar__nav">
+            <button className={currentScreen === 'home' ? 'is-active' : ''} onClick={() => setScreen('home')}>项目</button>
+            <button className={currentScreen === 'create' ? 'is-active' : ''} onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>分析工作台</button>
+          </div>
+        </nav>
+
+        <div className="app-topbar__right">
+          <div className="app-topbar__status">
+            <span className={'status-dot ' + settings.connectionStatus} style={{ width: '8px', height: '8px', borderRadius: '50%', display: 'inline-block' }} />
+            <span>{defaultProfile?.modelId ? <strong>{defaultProfile.modelId}</strong> : '未配置'}</span>
+          </div>
+          <button className="button ghost" onClick={() => { setSettingsReturnScreen('home'); setScreen('settings'); }}>设置</button>
+          <button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
+            新建分析
           </button>
-          <button className="project-delete" disabled={record.project.status === 'running' || deletingProjectId === record.project.id} title={record.project.status === 'running' ? '请先取消正在运行的分析' : `删除 ${record.project.projectName} 及本地文件夹`} aria-label={`删除项目 ${record.project.projectName}`} onClick={() => void deleteProject(record.project)}>{deletingProjectId === record.project.id ? '…' : '删除'}</button>
-        </div> : record.kind === 'reference-anchor' ? <div className="project-row translation-record" key={`reference-anchor-${record.run.id}`}>
-          <button className="project-row-open" onClick={() => { setRequestedReferenceAnchorRunId(record.run.id); setAnalysisMode('reference-anchor'); setScreen('create'); }}>
-            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type reference-anchor">参考锚定</span>{record.run.referenceAssetCount} 张参考图</small></div>
-            <ReferenceAnchorStatusBadge status={record.run.status} />
-            <div className="project-model"><small>MODEL</small><strong>{record.run.model || '—'}</strong></div>
-            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
-            <span className="row-arrow">→</span>
-          </button>
-          <button className="project-delete" disabled={REFERENCE_ANCHOR_EXECUTING.has(record.run.status) || deletingReferenceAnchorRunId === record.run.id} title={REFERENCE_ANCHOR_EXECUTING.has(record.run.status) ? '请先取消正在运行的锚定任务' : `删除参考锚定任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除参考锚定任务 ${record.run.projectName}`} onClick={() => void deleteReferenceAnchorRun(record.run)}>{deletingReferenceAnchorRunId === record.run.id ? '…' : '删除'}</button>
-        </div> : record.kind === 'document-context' ? <div className="project-row translation-record" key={`document-context-${record.run.id}`}>
-          <button className="project-row-open" onClick={() => { setRequestedDocumentContextRunId(record.run.id); setAnalysisMode('document-context'); setScreen('create'); }}>
-            <span className="project-index">{String(index + 1).padStart(2, '0')}</span>
-            <div className="project-name"><strong>{record.run.projectName}</strong><small><span className="record-type document-context">文档上下文提取</span>{record.run.documentCount} 份文档</small></div>
-            <DocumentContextStatusBadge status={record.run.status} />
-            <div className="project-model"><small>MODEL</small><strong>{record.run.model || '—'}</strong></div>
-            <div className="project-time"><small>DURATION</small><strong>{formatDuration(record.run.durationMs || null)}</strong></div>
-            <span className="row-arrow">→</span>
-          </button>
-          <button className="project-delete" disabled={DOCUMENT_CONTEXT_EXECUTING.has(record.run.status) || deletingDocumentContextRunId === record.run.id} title={DOCUMENT_CONTEXT_EXECUTING.has(record.run.status) ? '请先取消正在运行的提取任务' : `删除文档上下文提取任务 ${record.run.projectName} 及本地文件夹`} aria-label={`删除文档上下文提取任务 ${record.run.projectName}`} onClick={() => void deleteDocumentContextRun(record.run)}>{deletingDocumentContextRunId === record.run.id ? '…' : '删除'}</button>
-        </div> : null)}</div> : <div className="empty-home"><div className="empty-orbit" /><strong>还没有分析记录</strong><p>进入分析工作台，选择视觉分析、文档分析或参考视觉转换开始第一次任务。</p><button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>开始第一次分析</button></div>}
-      </section>
-    </main>
-  </div>;
+        </div>
+      </header>
+
+      {/* ── Main body: left rail + content ── */}
+      <div className="app-body">
+        {/* Left rail: recent projects */}
+        <aside className="app-rail">
+          <div className="app-rail__heading">
+            <h3>最近项目</h3>
+          </div>
+          <div className="app-rail__list">
+            {projects.slice(0, 8).map((project) => (
+              <button
+                key={project.id}
+                className={'app-rail-item' + (selected?.id === project.id ? ' is-active' : '')}
+                onClick={() => void openProject(project)}
+              >
+                <div className="app-rail-item__icon">{project.projectName.charAt(0)}</div>
+                <div className="app-rail-item__body">
+                  <span className="app-rail-item__name">{project.projectName}</span>
+                  <span className="app-rail-item__meta">{project.industry} · {project.assetCount} 个素材</span>
+                </div>
+              </button>
+            ))}
+            {projects.length === 0 && (
+              <div style={{ padding: 'var(--space-4)', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', textAlign: 'center' }}>
+                还没有项目
+              </div>
+            )}
+          </div>
+        </aside>
+
+        {/* Main content */}
+        <main className="app-main">
+          {!hasUsableProfile && (
+            <div className="setup-banner" style={{ marginBottom: 'var(--space-8)' }}>
+              <div>
+                <strong>完成首次 API 配置</strong>
+                <p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p>
+              </div>
+              <button className="button secondary" onClick={() => setScreen('settings')}>前往设置</button>
+            </div>
+          )}
+          {error && <div className="notice error" style={{ marginBottom: 'var(--space-6)' }}>{error}</div>}
+
+          {/* Hero */}
+          <section className="hero">
+            <p className="hero__eyebrow">Creative Director Preparation System</p>
+            <h1 className="hero__title">让视觉判断<br />成为可执行的系统。</h1>
+            <p className="hero__subtitle">
+              上传品牌素材，自动分析生成视觉总览与创作方向，一键交付规范级别的设计成果。
+            </p>
+            <div className="hero__actions">
+              <button className="ui-button ui-button--primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
+                新建视觉分析
+              </button>
+              <button className="ui-button ui-button--ghost" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>
+                文档分析
+              </button>
+              <button className="ui-button ui-button--ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
+                参考视觉转换
+              </button>
+              <button className="ui-button ui-button--ghost" onClick={() => setScreen('packaging')}>
+                包装生成
+              </button>
+            </div>
+          </section>
+
+          {/* Recent records */}
+          <section>
+            <div className="section-head">
+              <div className="section-head__titles">
+                <span className="section-head__eyebrow">Recent</span>
+                <h2 className="section-head__title">最近分析记录</h2>
+              </div>
+              <span className="section-head__meta">{recentRecords.length} 条本地记录</span>
+            </div>
+
+            {recentRecords.length ? (
+              <div className="record-grid">
+                {/* New project CTA card */}
+                <button
+                  className="record-card record-card--cta"
+                  onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}
+                >
+                  <div className="record-card__plus">+</div>
+                  <strong>开始新的分析</strong>
+                </button>
+
+                {recentRecords.map((record) => {
+                  const typeClass = record.kind === 'visual-analysis' ? 'record-card__type--analysis'
+                    : record.kind === 'reference-anchor' ? 'record-card__type--reference'
+                    : 'record-card__type--document';
+                  const typeLabel = record.kind === 'visual-analysis' ? '视觉分析'
+                    : record.kind === 'reference-anchor' ? '参考锚定'
+                    : '文档上下文';
+                  const name = record.kind === 'visual-analysis' ? record.project.projectName
+                    : record.run.projectName;
+                  const desc = record.kind === 'visual-analysis'
+                    ? record.project.industry + ' · ' + record.project.assetCount + ' 个素材'
+                    : record.kind === 'reference-anchor'
+                      ? record.run.referenceAssetCount + ' 张参考图'
+                      : record.run.documentCount + ' 份文档';
+                  const status = record.kind === 'visual-analysis' ? record.project.status
+                    : record.run.status;
+                  const handleClick = () => {
+                    if (record.kind === 'visual-analysis') {
+                      void openProject(record.project);
+                    } else if (record.kind === 'reference-anchor') {
+                      setRequestedReferenceAnchorRunId(record.run.id);
+                      setAnalysisMode('reference-anchor');
+                      setScreen('create');
+                    } else {
+                      setRequestedDocumentContextRunId(record.run.id);
+                      setAnalysisMode('document-context');
+                      setScreen('create');
+                    }
+                  };
+                  const isDeleting = record.kind === 'visual-analysis' && deletingProjectId === record.project.id
+                    || record.kind === 'reference-anchor' && deletingReferenceAnchorRunId === record.run.id
+                    || record.kind === 'document-context' && deletingDocumentContextRunId === record.run.id;
+                  const canDelete = record.kind === 'visual-analysis' && record.project.status !== 'running'
+                    || record.kind === 'reference-anchor' && !REFERENCE_ANCHOR_EXECUTING.has(record.run.status)
+                    || record.kind === 'document-context' && !DOCUMENT_CONTEXT_EXECUTING.has(record.run.status);
+                  const handleDelete = (e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    if (record.kind === 'visual-analysis') void deleteProject(record.project);
+                    else if (record.kind === 'reference-anchor') void deleteReferenceAnchorRun(record.run);
+                    else void deleteDocumentContextRun(record.run);
+                  };
+
+                  return (
+                    <button key={record.kind + '-' + (record.kind === 'visual-analysis' ? record.project.id : record.run.id)}
+                      className="record-card"
+                      onClick={handleClick}
+                    >
+                      <div className="record-card__head">
+                        <span className={'record-card__type ' + typeClass}>{typeLabel}</span>
+                        <StatusBadgeInline status={status} />
+                      </div>
+                      <h3 className="record-card__name">{name}</h3>
+                      <p className="record-card__desc">{desc}</p>
+                      <div className="record-card__foot">
+                        <div className="record-card__meta">
+                          <small>更新于</small>
+                          <strong>{formatRelativeTime(record.createdAt)}</strong>
+                        </div>
+                        <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+                          <button
+                            className="project-delete"
+                            style={{ margin: 0 }}
+                            disabled={!canDelete || isDeleting}
+                            onClick={handleDelete}
+                            aria-label="删除"
+                          >
+                            {isDeleting ? '…' : '删除'}
+                          </button>
+                          <span className="record-card__arrow" aria-hidden>→</span>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="empty-home">
+                <div className="empty-orbit" />
+                <strong>还没有分析记录</strong>
+                <p>进入分析工作台，选择视觉分析、文档分析或参考视觉转换开始第一次任务。</p>
+                <button className="button primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
+                  开始第一次分析
+                </button>
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
+    </div>
+  );
 }
