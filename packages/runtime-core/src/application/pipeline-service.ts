@@ -31,7 +31,7 @@ import {
   type AnalysisRepairResult,
   type StructuredRepairModelRequest,
   type VisualAnalysisRuntimeAdapter,
-} from '@masterpiece/analysis-runtime/core/visual-analysis-core.ts';
+} from '@masterpiece/creative-intelligence/decisions/core/visual-analysis-core.ts';
 import {
   normalizeSpatialFunctionalValue,
   validateSpatialSemantics,
