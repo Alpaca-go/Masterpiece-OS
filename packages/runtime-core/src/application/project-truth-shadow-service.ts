@@ -35,6 +35,7 @@ import {
   adaptCurrentProjectCorePack,
   adaptCurrentProjectProfile,
   runShadowProjectTruth,
+  interpretDocumentContext,
   type AdapterContext,
   type AdapterOutput,
   CI_VERSION,
@@ -42,6 +43,7 @@ import {
 import { assertInside, sanitizeFilenamePart } from './analysis-contract.ts';
 
 const SHADOW_DIRNAME = 'creative-intelligence-shadow';
+const DOC_INTEL_FILENAME = 'document-intelligence.json';
 
 export interface ShadowCarrierInput {
   projectRecord?: unknown;
@@ -179,7 +181,7 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
     };
   }
 
-  // Persist 6 files.
+  // Persist 6 base files.
   await fs.mkdir(shadowDir, { recursive: true });
   const filesWritten: string[] = [];
   for (const filename of ARTIFACT_FILES) {
@@ -199,6 +201,46 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
     }
     await fs.writeFile(target, JSON.stringify(payload, null, 2), 'utf8');
     filesWritten.push(filename);
+  }
+
+  // CI-3: optionally persist document-intelligence.json.
+  if (input.carriers.documentVisualContext) {
+    try {
+      const diResult = interpretDocumentContext({
+        projectId: input.projectId,
+        context: input.carriers.documentVisualContext as never,
+      });
+      const diPath = path.join(shadowDir, sanitizeFilenamePart(DOC_INTEL_FILENAME) ?? DOC_INTEL_FILENAME);
+      await assertInside(shadowDir, diPath);
+      await fs.writeFile(
+        diPath,
+        JSON.stringify(
+          {
+            schemaVersion: '0.1',
+            authoritative: false,
+            mode: 'shadow',
+            projectId: input.projectId,
+            sourceRunId: diResult.sourceRunId,
+            generatedAt: diResult.generatedAt,
+            ciVersion: CI_VERSION,
+            isEmpty: diResult.isEmpty,
+            warnings: diResult.warnings,
+            diagnostics: [], // diagnostics are produced by diagnose() if needed
+            // surface a slim DocumentIntelligenceResult; full brief excluded
+            // to keep the artifact small (the full brief is regenerable).
+            context: diResult.context,
+          },
+          null,
+          2,
+        ),
+        'utf8',
+      );
+      filesWritten.push(DOC_INTEL_FILENAME);
+    } catch (e) {
+      // Spec #56: document intelligence shadow failure must not break the
+      // overall shadow run. The base 6 files have already been written.
+      warnings.push(`document_intelligence artifact: ${(e as Error).message}`);
+    }
   }
 
   return { ok: true, artifactDirectory: shadowDir, files: filesWritten };
