@@ -4,18 +4,18 @@
  * Creative Intelligence Shared Capability.
  *
  * CI-1: Foundation & Boundary Stabilization.
- * This package is the canonical future home of creative intelligence
- * capabilities. In CI-1 it establishes the boundary and takes ownership
- * of decision validation / repair runtime.
+ * CI-2: Project Truth & Evidence Integration (shadow mode).
  *
  * Sub-packages:
  *   ./decisions   — structured analysis validation & self-healing runtime
- *   ./evidence    — evidence ledger (skeleton in CI-1)
- *   ./truth       — project truth model (skeleton in CI-1)
+ *   ./evidence    — evidence ledger + normalizer + source index
+ *   ./truth       — project truth model + adapters + assembler + precedence + conflict
+ *   ./integration — shadow validator + report builder + orchestrator
  *   ./contracts   — shared CI type contracts
  */
 
 export * from './decisions/index.ts';
 export * from './evidence/index.ts';
 export * from './truth/index.ts';
+export * from './integration/index.ts';
 export * from './contracts/index.ts';

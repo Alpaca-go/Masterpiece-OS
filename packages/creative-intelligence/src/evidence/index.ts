@@ -1,9 +1,5 @@
-/**
- * Evidence namespace — evidence ledger foundation.
- *
- * CI-1: skeleton only — types + InMemoryEvidenceLedger.
- * No production integration yet.
- */
-
+// Evidence contracts and persistence-free implementations.
 export * from './contracts.ts';
-export { InMemoryEvidenceLedger } from './in-memory-ledger.ts';
+export * from './in-memory-ledger.ts';
+export * from './normalizer.ts';
+export * from './source-index.ts';

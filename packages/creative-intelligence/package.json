@@ -12,7 +12,11 @@
     "./decisions": "./src/decisions/index.ts",
     "./decisions/*": "./src/decisions/*",
     "./evidence": "./src/evidence/index.ts",
+    "./evidence/*": "./src/evidence/*",
     "./truth": "./src/truth/index.ts",
+    "./truth/*": "./src/truth/*",
+    "./integration": "./src/integration/index.ts",
+    "./integration/*": "./src/integration/*",
     "./contracts": "./src/contracts/index.ts"
   }
 }
