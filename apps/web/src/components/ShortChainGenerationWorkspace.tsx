@@ -17,11 +17,15 @@ import type {
   ShortChainTaskContract,
   ShortChainValidatedGenerationImageRef,
 } from '@masterpiece/runtime-core/application-contracts.ts';
-import { cleanError, autoRecoverableHint } from '../utils';
+import { cleanError } from '../utils';
 import { AppShell } from './layout/AppShell';
 import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
+import { ShortChainHeader } from './shortchain/ShortChainHeader';
+import { ShortChainPreviewPanel } from './shortchain/ShortChainPreviewPanel';
+import { ShortChainBanners } from './shortchain/ShortChainBanners';
+import type { Family } from './shortchain/ShortChainTypes';
 import {
   MAX_SPACE_REFERENCE_IMAGES,
   validateReferenceHard,
@@ -54,7 +58,6 @@ interface Props {
   onOpenSettings(): void;
 }
 
-type Family = ShortChainTaskContract['deliverableFamily'];
 type TemplateOptions = Record<Family, { subtypes: string[]; shots: string[] }>;
 
 const FAMILY_LABELS: Record<Family, string> = {
@@ -811,39 +814,11 @@ export function ShortChainGenerationWorkspace({
       }
     >
     <div className="sc-workspace">
-      {/* ── Header ── */}
-      <header className="sc-workspace__header">
-        <div className="sc-workspace__header-left">
-          <button className="sc-workspace__back" onClick={onBack} title="返回报告（不丢失当前设置）">←</button>
-          <div className="sc-workspace__titles">
-            <div className="sc-workspace__breadcrumb"><strong>Short-Chain</strong> · 视觉生成</div>
-            <h1 className="sc-workspace__title">{project.projectName}</h1>
-            <p className="sc-workspace__subtitle">{project.brandName} · 首图直接交付</p>
-          </div>
-        </div>
-        <div className="sc-workspace__header-right">
-          <button className="button ghost" onClick={onOpenSettings}>模型设置</button>
-        </div>
-      </header>
+      {/* ── Header ── Phase 5.9: extracted to ShortChainHeader */}
+      <ShortChainHeader project={project} onBack={onBack} onOpenSettings={onOpenSettings} />
 
-      {/* ── Error / notice banners ── */}
-      {error && (
-        <div style={{ margin: '0 var(--space-11)', paddingTop: 'var(--space-5)' }}>
-          <div className="notice error">
-            <div>{error}</div>
-            {autoRecoverableHint(error) && (
-              <div style={{ marginTop: 6, fontWeight: 500 }}>
-                {autoRecoverableHint(error)}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {notice && !error && (
-        <div style={{ margin: '0 var(--space-11)', paddingTop: 'var(--space-5)' }}>
-          <div className="notice ok">{notice}</div>
-        </div>
-      )}
+      {/* ── Error / notice banners ── Phase 5.9: extracted to ShortChainBanners */}
+      <ShortChainBanners error={error} notice={notice} />
 
       {/* ── 3-column body ── */}
       <div className="sc-workspace__body">
@@ -1345,114 +1320,18 @@ export function ShortChainGenerationWorkspace({
           )}
         </div>
 
-        {/* ═══════ RIGHT COLUMN: DETAILS ═══════ */}
-        <div className="sc-panel">
-          {/* Prompt summary */}
-          <div className="sc-panel__section">
-            <h3 className="sc-panel__section-title">编译结果</h3>
-            {compiled ? (
-              <>
-                <div className="sc-detail-row">
-                  <span className="sc-detail-row__label">类型</span>
-                  <span className="sc-detail-row__value">{FAMILY_LABELS[family]} · {subtype}</span>
-                </div>
-                <div className="sc-detail-row">
-                  <span className="sc-detail-row__label">比例</span>
-                  <span className="sc-detail-row__value">{aspectRatio}</span>
-                </div>
-                <div className="sc-detail-row">
-                  <span className="sc-detail-row__label">Logo 策略</span>
-                  <span className="sc-detail-row__value">
-                    {compiled.compiledPrompt.logoUsageMode === 'reference'
-                      ? '真实 Logo 参考'
-                      : '预留干净区域'}
-                  </span>
-                </div>
-                <div className="sc-detail-row">
-                  <span className="sc-detail-row__label">必须包含</span>
-                  <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
-                    {compiled.taskContract.mustInclude.join('；') || '仅任务要求'}
-                  </span>
-                </div>
-                <div className="sc-detail-row">
-                  <span className="sc-detail-row__label">必须避免</span>
-                  <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
-                    {compiled.taskContract.mustAvoid.join('；') || '默认禁用项'}
-                  </span>
-                </div>
-
-                <details className="prompt-preview" style={{ marginTop: 'var(--space-4)' }}>
-                  <summary>查看完整 Prompt（只读）</summary>
-                  <div className="sc-prompt-preview">{editedPrompt}</div>
-                </details>
-              </>
-            ) : (
-              <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1.6 }}>
-                左侧填写任务要求后，点击「编译并生成」以查看编译结果。
-              </p>
-            )}
-          </div>
-
-          {/* Validation */}
-          {lastValidation && (
-            <div className="sc-panel__section">
-              <h3 className="sc-panel__section-title">对题验证</h3>
-              <div className="sc-detail-row">
-                <span className="sc-detail-row__label">状态</span>
-                <span className="sc-detail-row__value">{lastValidation.status}</span>
-              </div>
-              <div className="sc-detail-row">
-                <span className="sc-detail-row__label">偏差项</span>
-                <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
-                  {lastValidation.mismatchTypes.length
-                    ? lastValidation.mismatchTypes.join(' · ')
-                    : '未发现结构性偏差'}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Stale indicator */}
-          {compileStale && (
-            <div className="sc-panel__section" style={{ borderColor: 'var(--color-warning-line)', background: 'var(--color-warning-bg)' }}>
-              <h3 className="sc-panel__section-title" style={{ color: 'var(--color-warning-text)' }}>提示</h3>
-              <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-warning-text)', lineHeight: 1.6 }}>
-                设置已变更，当前 Prompt 已过期。请重新编译。
-              </p>
-            </div>
-          )}
-
-          {/* Provider info */}
-          {activeRun && (
-            <div className="sc-panel__section">
-              <h3 className="sc-panel__section-title">运行信息</h3>
-              <div className="sc-detail-row">
-                <span className="sc-detail-row__label">模型</span>
-                <span className="sc-detail-row__value" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>
-                  {activeRun.modelId || '—'}
-                </span>
-              </div>
-              <div className="sc-detail-row">
-                <span className="sc-detail-row__label">耗时</span>
-                <span className="sc-detail-row__value">
-                  {activeRun.startedAt && activeRun.completedAt
-                    ? Math.round((new Date(activeRun.completedAt).getTime() - new Date(activeRun.startedAt).getTime()) / 1000) + 's'
-                    : '—'}
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* History */}
-          {session?.history.length ? (
-            <div className="sc-panel__section">
-              <h3 className="sc-panel__section-title">历史记录</h3>
-              <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
-                {session.history.length} 条记录
-              </p>
-            </div>
-          ) : null}
-        </div>
+        {/* ═══════ RIGHT COLUMN: DETAILS ═══════ Phase 5.9: extracted to ShortChainPreviewPanel */}
+        <ShortChainPreviewPanel
+          family={family}
+          subtype={subtype}
+          aspectRatio={aspectRatio}
+          editedPrompt={editedPrompt}
+          compiled={compiled}
+          lastValidation={lastValidation}
+          compileStale={compileStale}
+          activeRun={activeRun}
+          session={session}
+        />
       </div>
     </div>
     </AppShell>
