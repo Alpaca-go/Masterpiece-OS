@@ -341,6 +341,13 @@ label { display: grid; gap: 7px; margin: 16px 0; color: #49444c; font-size: 11px
 .prompt-preview { margin: 14px 0; }
 .prompt-preview summary { cursor: pointer; color: #6c42d8; font-size: 12px; font-weight: 700; }
 .prompt-preview pre { margin-top: 10px; max-height: 320px; overflow: auto; padding: 14px; border: 1px solid #e0dcd6; border-radius: 9px; background: #fff; font-size: 11px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; color: #3a353f; }
+.prompt-preview textarea { margin-top: 10px; width: 100%; min-height: 280px; padding: 14px; border: 1px solid #e0dcd6; border-radius: 9px; background: #faf8fc; font-size: 11px; line-height: 1.55; resize: vertical; color: #5a5260; }
+.advanced-settings { margin: 6px 0 14px; border-top: 1px solid #ece8f0; border-bottom: 1px solid #ece8f0; padding: 8px 0; }
+.advanced-settings summary { cursor: pointer; font-size: 12px; font-weight: 600; color: #6c42d8; padding: 4px 0; }
+.advanced-settings-content { padding-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.result-details { margin: 10px 0; }
+.result-details summary { cursor: pointer; font-size: 11px; color: #847d88; }
+.result-details-content { padding-top: 8px; }
 .prompt-source-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
 .prompt-source-summary > div, .prompt-block-list > div { padding: 10px; border: 1px solid #e0dcd6; border-radius: 8px; background: #f8f6fa; }
 .prompt-source-summary small, .prompt-source-summary strong, .prompt-block-list strong, .prompt-block-list small { display: block; }

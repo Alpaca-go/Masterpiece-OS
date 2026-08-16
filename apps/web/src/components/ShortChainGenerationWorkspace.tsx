@@ -985,6 +985,18 @@ export function ShortChainGenerationWorkspace({
             {(familyOptions?.subtypes ?? []).map((item) => <option key={item}>{item}</option>)}
           </select>
         </label>
+        <label>本轮要求
+          <textarea
+            rows={5}
+            value={instruction}
+            onChange={(event) => setInstruction(event.target.value)}
+            placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。"
+          />
+        </label>
+        {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
+        <details className="advanced-settings">
+          <summary>高级设置</summary>
+          <div className="advanced-settings-content">
         <label>镜头 / 构图
           <select value={shot} onChange={(event) => { setShot(event.target.value); setShotSource('user_explicit'); }}>
             {(familyOptions?.shots ?? []).map((item) => <option key={item}>{item}</option>)}
@@ -1015,15 +1027,6 @@ export function ShortChainGenerationWorkspace({
               <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
           </select>
         </label>
-        <label>本轮要求
-          <textarea
-            rows={5}
-            value={instruction}
-            onChange={(event) => setInstruction(event.target.value)}
-            placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。"
-          />
-        </label>
-        {activeAnchor && <div className="facts-box"><small>本类型隐式参考</small><p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p></div>}
         <label>Logo 处理方式
           <select value={logoUsageMode} onChange={(event) =>
             setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
@@ -1048,13 +1051,15 @@ export function ShortChainGenerationWorkspace({
             placeholder="例如：VI 展板；错误品牌文字"
           />
         </label>
+          </div>
+        </details>
         <button className="button primary full" disabled={!canCompile || busy} onClick={() => void compilePrompt()}>
           查看最终 Prompt
         </button>
       </section>
 
       <section className="panel">
-        <div className="section-heading"><span>02</span><div><h2>Prompt 与正式成果</h2><p>可轻度编辑、恢复模板编译结果或保存为项目资产</p></div></div>
+        <div className="section-heading"><span>02</span><div><h2>生成结果</h2><p>系统自动编译 Prompt 并生成，如需调整请修改左侧任务要求</p></div></div>
         {compiled ? <>
           <div className="prompt-source-summary">
             <div>
@@ -1073,23 +1078,13 @@ export function ShortChainGenerationWorkspace({
             </div>
           </div>
           <details className="prompt-preview">
-            <summary>查看 12 个 Prompt 区块与来源</summary>
-            <div className="prompt-block-list">
-              {compiled.compiledPrompt.blocks.map((block) => <div key={block.id}>
-                <strong>{block.title}</strong>
-                <small>{(block as { sources?: string[] }).sources
-                  ? (block as { sources: string[] }).sources.join(' · ')
-                  : ((compiled.compiledPrompt.sourceMap as Record<string, string[]> | undefined)?.[block.id] ?? []).join(' · ') || '—'}</small>
-              </div>)}
-            </div>
+            <summary>查看最终 Prompt（只读）</summary>
+            <textarea rows={18} value={editedPrompt} readOnly />
           </details>
-          <textarea rows={18} value={editedPrompt} onChange={(event) => setEditedPrompt(event.target.value)} />
           <div className="button-row">
-            <button className="button ghost" onClick={() => setEditedPrompt(compiled.compiledPrompt.finalPrompt)}>恢复模板默认</button>
-            <button className="button secondary" disabled={!editedPrompt.trim() || busy} onClick={() => void savePromptAsset()}>保存为项目 Prompt</button>
-            <button className="button primary" disabled={!canGenerate || compileStale} onClick={() => void generate()}>生成正式成果</button>
+            <button className="button primary full" disabled={!canGenerate || compileStale} onClick={() => void generate()}>生成正式成果</button>
           </div>
-        </> : <div className="empty-state"><strong>先明确成果物，再查看最终 Prompt</strong><p>默认只生成 1 张，避免错误批量放大。</p></div>}
+        </> : <div className="empty-state"><strong>先明确成果物，再生成</strong><p>填写左侧任务要求后，系统将自动编译并生成。</p></div>}
 
         {imageDataUrl && <div className="result-card">
           {/* r2.0 §4.13 / Phase E: 5-state banner. Driven by flowState
@@ -1116,15 +1111,20 @@ export function ShortChainGenerationWorkspace({
             {activeModeBadge && <span className="mode-badge">{activeModeBadge}</span>}
             {activeLineage && <span className="lineage-badge">{activeLineage}</span>}
           </div>}
-          {lastValidation && <div className="validation-summary">
-            <strong>结果校验：{lastValidation.status}</strong>
-            <p>{lastValidation.mismatchTypes.length
-              ? lastValidation.mismatchTypes.join(' · ')
-              : '未发现可见结构性偏差'}</p>
-          </div>}
           {activeRun && isConfirmedSource(activeRun.runId, activeRun.images?.[0]?.imageId ?? '') && (
             <div className="confirmation-badge">已确认方向</div>
           )}
+          <details className="result-details">
+            <summary>生成详情</summary>
+            <div className="result-details-content">
+              {lastValidation && <div className="validation-summary">
+                <strong>结果校验：{lastValidation.status}</strong>
+                <p>{lastValidation.mismatchTypes.length
+                  ? lastValidation.mismatchTypes.join(' · ')
+                  : '未发现可见结构性偏差'}</p>
+              </div>}
+            </div>
+          </details>
           <div className="button-row">
             <button className="button primary" disabled={busy} onClick={() => void confirmDirection()}>沿用此方向</button>
             <button className="button secondary" onClick={() => void generate()}>调整后重做</button>
