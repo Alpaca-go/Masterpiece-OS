@@ -18,6 +18,10 @@ import type {
   ShortChainValidatedGenerationImageRef,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, autoRecoverableHint } from '../utils';
+import { AppShell } from './layout/AppShell';
+import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
+import { Button } from './ui/Button';
+import { Badge } from './ui/Badge';
 import {
   MAX_SPACE_REFERENCE_IMAGES,
   validateReferenceHard,
@@ -779,6 +783,33 @@ export function ShortChainGenerationWorkspace({
   }
 
   return (
+    <AppShell
+      topBar={
+        <TopBar
+          left={
+            <TopBarBreadcrumb
+              items={[
+                { label: '项目', onClick: onBack },
+                { label: project.projectName, onClick: onBack },
+                { label: 'Short-Chain 生成' },
+              ]}
+            />
+          }
+          right={
+            <TopBarActions>
+              <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+              <Button variant="primary" size="sm" onClick={onBack}>返回报告</Button>
+            </TopBarActions>
+          }
+        />
+      }
+      bottomBar={
+        <>
+          <span>Short-Chain · 视觉生成</span>
+          <span>{project.projectName} · {project.industry}</span>
+        </>
+      }
+    >
     <div className="sc-workspace">
       {/* ── Header ── */}
       <header className="sc-workspace__header">
@@ -1424,6 +1455,7 @@ export function ShortChainGenerationWorkspace({
         </div>
       </div>
     </div>
+    </AppShell>
   );
 }
 
