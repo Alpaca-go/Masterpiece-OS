@@ -122,6 +122,14 @@ export function App() {
     return [...result.entries()];
   }, [assets]);
 
+  // ── Architecture layer hooks (Phase 5) ──
+  // MUST be called on every render BEFORE any early return below,
+  // otherwise React will throw "Rendered more hooks than during the
+  // previous render" when the user navigates between screens that
+  // take the early return paths and the home path.
+  const [cmdOpen, setCmdOpen] = useCommandPalette();
+  const { toasts, push: pushToast, dismiss: dismissToast } = useToasts();
+
   async function refresh() {
     const [nextSettings, nextProjects, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
       window.masterpiece.settings.get(),
@@ -464,10 +472,6 @@ export function App() {
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   const currentScreen = screen as Screen;
-
-  // ── Architecture layer hooks (Phase 5) ──
-  const [cmdOpen, setCmdOpen] = useCommandPalette();
-  const { toasts, push: pushToast, dismiss: dismissToast } = useToasts();
 
   // Build the command palette registry from current app state.
   // Zero-logic: just lists existing data + reuses existing setScreen handlers.
