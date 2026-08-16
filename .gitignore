@@ -1,4 +1,7 @@
 node_modules/
+_p5_msg.txt
+_unused_commit_msg.txt
+
 .npmcache/
 masterpiece-os-output/
 coverage/
