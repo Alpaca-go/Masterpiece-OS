@@ -1,5 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { assertInside } from '@masterpiece/runtime-core/application/analysis-contract.ts';
 import {
   createAnalysisOperations,
   createContextIntegrationOperations,
@@ -93,6 +95,64 @@ export function projectCanonicalIdentityFromAuthorities(input: {
     brandRole: typeof projectFacts?.brandRole === 'string' ? projectFacts.brandRole.trim() : '',
     productIdentity: input.productIdentityName,
   });
+}
+
+// CI-W1B.1 follow-up — browser document intake for Creative Intelligence.
+// The `document-context:choose-documents` bridge is env-var driven for
+// smoke/E2E runs; real browsers have no host file dialog. This channel
+// receives document bytes (base64, from a browser <input type=file>) and
+// persists them under <userData>/documents-intake/<batch>/ so the CI
+// runtime can consume the returned absolute paths exactly like paths
+// chosen by the host bridge.
+const DOCUMENT_IMPORT_EXTENSIONS = new Set(['.pdf', '.docx', '.md', '.markdown', '.txt']);
+const DOCUMENT_IMPORT_MAX_FILES = 30;
+const DOCUMENT_IMPORT_MAX_FILE_BYTES = 32 * 1024 * 1024;
+
+function sanitizeImportName(rawName: unknown): string {
+  const base = path.basename(String(rawName ?? '')).replace(/[\u0000-\u001f<>:"/\\|?*]/g, '_').trim();
+  return base || 'document.txt';
+}
+
+async function importDocumentBatch(input: unknown, intakeRoot: string): Promise<string[]> {
+  const payload = (input && typeof input === 'object' ? input : {}) as { documents?: Array<{ name?: unknown; content?: unknown; size?: unknown }> };
+  const documents = Array.isArray(payload.documents) ? payload.documents : [];
+  if (documents.length === 0) throw new Error('WEB_DOCUMENT_IMPORT_EMPTY: 没有可导入的文档');
+  if (documents.length > DOCUMENT_IMPORT_MAX_FILES) throw new Error(`WEB_DOCUMENT_IMPORT_TOO_MANY: 一次最多导入 ${DOCUMENT_IMPORT_MAX_FILES} 份文档`);
+  const batchRoot = assertInside(intakeRoot, path.join(intakeRoot, randomUUID()));
+  await fs.mkdir(batchRoot, { recursive: true });
+  const paths: string[] = [];
+  try {
+    for (const document of documents) {
+      const name = sanitizeImportName(typeof document?.name === 'string' ? document.name : '');
+      const extension = path.extname(name).toLowerCase();
+      if (!DOCUMENT_IMPORT_EXTENSIONS.has(extension)) {
+        throw new Error(`WEB_DOCUMENT_IMPORT_UNSUPPORTED: 仅支持 PDF / DOCX / Markdown / TXT（收到 ${extension || '无扩展名'}）`);
+      }
+      const content = typeof document?.content === 'string' ? document.content : '';
+      if (!content) throw new Error(`WEB_DOCUMENT_IMPORT_EMPTY: 「${name}」内容为空`);
+      let buffer: Buffer;
+      try {
+        buffer = Buffer.from(content, 'base64');
+      } catch {
+        throw new Error(`WEB_DOCUMENT_IMPORT_TRANSPORT_FAILED: 「${name}」内容编码无效`);
+      }
+      if (buffer.length === 0) throw new Error(`WEB_DOCUMENT_IMPORT_EMPTY: 「${name}」内容为空`);
+      if (buffer.length > DOCUMENT_IMPORT_MAX_FILE_BYTES) {
+        throw new Error(`WEB_DOCUMENT_IMPORT_TOO_LARGE: 「${name}」超过 32 MiB 上限`);
+      }
+      const declaredSize = typeof document?.size === 'number' ? document.size : buffer.length;
+      if (declaredSize !== buffer.length) {
+        throw new Error(`WEB_DOCUMENT_IMPORT_TRANSPORT_FAILED: 「${name}」内容与声明大小不一致`);
+      }
+      const destination = assertInside(batchRoot, path.join(batchRoot, name));
+      await fs.writeFile(destination, buffer);
+      paths.push(destination);
+    }
+    return paths;
+  } catch (error) {
+    await fs.rm(batchRoot, { recursive: true, force: true }).catch(() => undefined);
+    throw error;
+  }
 }
 
 export function createCurrentBusinessOperations(
@@ -395,6 +455,14 @@ export function createCurrentBusinessOperations(
     createVisualMemoryOperations({ visualMemory, referencePacks }),
     createContextIntegrationOperations({ contextIntegration }),
     createDocumentOperations({ documentContext, readTextFile: (source: string) => fs.readFile(source, 'utf8') }),
+    {
+      // CI-W1B.1 follow-up: browser document intake. Lives here (not in
+      // node-native-operations) so the Web Host frozen-surface diff keeps
+      // its existing file set: current-operation-graph.ts already carries
+      // the Node document pipeline wiring.
+      'document-context:import-documents': async (_context: unknown, input: unknown) =>
+        importDocumentBatch(input, path.resolve(dataPath, '..', 'documents-intake')),
+    },
     createReferenceOperations({ referenceAnchor }),
     createImageGenerationOperations({ service: imageGeneration, shortChainService: shortChainGeneration }),
     // CI-W1A: Creative Intelligence Runtime Application Layer operations.

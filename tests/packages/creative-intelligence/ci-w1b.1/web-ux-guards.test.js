@@ -106,16 +106,29 @@ test('CI-W1B.1 UX03: documentContext.chooseDocuments is invoked from the single 
   assert.equal(matches.length, 1, 'picker RPC must be called exactly once, from handleChooseDocuments');
 });
 
+test('CI-W1B.1 UX03: empty host picker falls back to the browser file dialog', () => {
+  assert.equal(/if \(chosen && chosen\.length\)/.test(workspace), true, 'host paths are consumed when present');
+  assert.equal(workspace.includes('fileInputRef.current?.click()'), true, 'empty host result opens the browser picker');
+  assert.equal(workspace.includes('type="file"'), true, 'hidden browser file input present');
+  assert.equal(workspace.includes('accept=".pdf,.docx,.md,.markdown,.txt"'), true, 'document extensions accepted');
+  assert.equal(workspace.includes('importDocuments({ documents })'), true, 'picked bytes upload through document-context:import-documents');
+});
+
+test('CI-W1B.1 UX03: drag & drop uploads file content when no host paths resolve', () => {
+  assert.equal(/void ingestFiles\(files\)/.test(workspace), true, 'drop falls back to content upload');
+});
+
 // ---------------------------------------------------------------------------
 // UX04 — picker errors are visible
 // ---------------------------------------------------------------------------
 
 test('CI-W1B.1 UX04: picker failure shows a visible error instead of failing silently', () => {
   assert.equal(workspace.includes('无法打开文件选择器，请重试。'), true, 'user-facing picker error copy present');
-  assert.equal(/if \(!chosen \|\| !chosen\.length\)/.test(workspace), true, 'empty picker result is detected');
   assert.equal(workspace.includes('setPickerErrorDetail('), true, 'raw detail is retained for advanced info');
   assert.equal(workspace.includes('role="alert"'), true, 'picker error is announced via role=alert');
   assert.equal(/catch \(reason\) \{[\s\S]*?setPickerError\(PICKER_UNAVAILABLE_TEXT\)/.test(workspace), true, 'thrown picker errors are surfaced');
+  assert.equal(workspace.includes("typeof bridge.importDocuments !== 'function'"), true, 'missing import bridge is detected');
+  assert.equal(workspace.includes("'上传完成但未返回任何文档路径。'"), true, 'empty upload result is surfaced');
 });
 
 test('CI-W1B.1 UX04: Start is disabled without document paths and enabled with them', () => {

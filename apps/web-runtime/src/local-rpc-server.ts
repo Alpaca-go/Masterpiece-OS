@@ -16,13 +16,16 @@ export interface LocalRpcServer {
 const MAX_BODY_BYTES = 10 * 1024 * 1024;
 // P3-D3.6A/6B — the Web Asset Upload channel carries raw base64
 // of up to 8 MiB of image bytes (≈10.7 MiB base64 + JSON wrapper).
-// Only this channel gets a 64 MiB cap; all other RPC channels keep
+// Only these channels get a 64 MiB cap; all other RPC channels keep
 // the general 10 MiB limit. Channel-aware, not a global raise.
-const UPLOAD_CHANNEL = 'projects:import-file-bytes';
+const UPLOAD_CHANNELS = new Set([
+  'projects:import-file-bytes',
+  'document-context:import-documents',
+]);
 const UPLOAD_BODY_BYTES = 64 * 1024 * 1024;
 
 function bodyCapFor(channel: string): number {
-  return channel === UPLOAD_CHANNEL ? UPLOAD_BODY_BYTES : MAX_BODY_BYTES;
+  return UPLOAD_CHANNELS.has(channel) ? UPLOAD_BODY_BYTES : MAX_BODY_BYTES;
 }
 
 // P3-D3.6A/6B — exported for the body-cap contract guard

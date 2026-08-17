@@ -18,7 +18,7 @@
 //     ciworkspace (controller / types) for resume, tests and the
 //     advanced-analysis drawer.
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type {
   CreativeIntelligenceFactReview,
@@ -61,7 +61,34 @@ import { DIRECTION_FAMILY_LABELS, EVALUATION_DIMENSION_LABELS, RUN_STATUS_LABELS
 
 const PICKER_UNAVAILABLE_TEXT = '无法打开文件选择器，请重试。';
 const PICKER_EMPTY_DETAIL = '选择器未返回任何文档。当前运行环境没有可用的文件选择器。';
-const PICKER_DROP_DETAIL = '当前运行环境无法从拖入的文件解析出文件路径。';
+
+// Browser document intake — when the host picker bridge (env-var driven)
+// returns nothing, the input page falls back to a real <input type=file>
+// and uploads the bytes through document-context:import-documents.
+interface WebDocumentImportEntry {
+  name: string;
+  content: string;
+  size: number;
+}
+
+type WebDocumentImportBridge = {
+  chooseDocuments(): Promise<string[]>;
+  importDocuments?(input: { documents: WebDocumentImportEntry[] }): Promise<string[]>;
+};
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
+async function readDocumentFile(file: File): Promise<WebDocumentImportEntry> {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  return { name: file.name, content: bytesToBase64(bytes), size: bytes.length };
+}
 
 interface Props {
   settings: PublicSettings;
@@ -164,21 +191,53 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
 
   // ── Document picker — the SINGLE upload entry point (CI-W1B.1 Part A).
   // Every trigger (dropzone click, icon click, 选择文档 button, keyboard
-  // Enter / Space) routes through this handler. Picker failures are always
-  // visible — never silent.
+  // Enter / Space) routes through this handler. The host picker bridge is
+  // tried first (keeps the env-var smoke/E2E path working); when it has
+  // no picker the browser file dialog opens and the picked bytes are
+  // uploaded through document-context:import-documents. Picker and
+  // upload failures are always visible — never silent.
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const handleChooseDocuments = useCallback(async () => {
+    if (busy) return;
     setPickerError(''); setPickerErrorDetail('');
     try {
       const chosen = await window.masterpiece.documentContext.chooseDocuments();
-      if (!chosen || !chosen.length) {
-        setPickerError(PICKER_UNAVAILABLE_TEXT);
-        setPickerErrorDetail(PICKER_EMPTY_DETAIL);
+      if (chosen && chosen.length) {
+        setInputDocumentPaths((current) => [...new Set([...current, ...chosen])]);
         return;
       }
-      setInputDocumentPaths((current) => [...new Set([...current, ...chosen])]);
+      fileInputRef.current?.click();
     } catch (reason) {
       setPickerError(PICKER_UNAVAILABLE_TEXT);
       setPickerErrorDetail(cleanError(reason));
+    }
+  }, [busy]);
+
+  const ingestFiles = useCallback(async (files: FileList | null) => {
+    setPickerError(''); setPickerErrorDetail('');
+    if (!files || !files.length) return;
+    const bridge = window.masterpiece.documentContext as unknown as WebDocumentImportBridge;
+    if (typeof bridge.importDocuments !== 'function') {
+      setPickerError(PICKER_UNAVAILABLE_TEXT);
+      setPickerErrorDetail(PICKER_EMPTY_DETAIL);
+      return;
+    }
+    setBusy(true);
+    try {
+      const documents = await Promise.all(Array.from(files).map(readDocumentFile));
+      const imported = await bridge.importDocuments({ documents });
+      if (!imported || !imported.length) {
+        setPickerError(PICKER_UNAVAILABLE_TEXT);
+        setPickerErrorDetail('上传完成但未返回任何文档路径。');
+        return;
+      }
+      setInputDocumentPaths((current) => [...new Set([...current, ...imported])]);
+    } catch (reason) {
+      setPickerError(PICKER_UNAVAILABLE_TEXT);
+      setPickerErrorDetail(cleanError(reason));
+    } finally {
+      setBusy(false);
     }
   }, []);
 
@@ -188,13 +247,12 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
     const paths = Array.from(files)
       .map((file) => window.masterpiece.files.getPathForFile(file))
       .filter(Boolean);
-    if (!paths.length) {
-      setPickerError('无法添加这些文件，请改用「选择文档」。');
-      setPickerErrorDetail(PICKER_DROP_DETAIL);
+    if (paths.length) {
+      setInputDocumentPaths((current) => [...new Set([...current, ...paths])]);
       return;
     }
-    setInputDocumentPaths((current) => [...new Set([...current, ...paths])]);
-  }, []);
+    void ingestFiles(files);
+  }, [ingestFiles]);
 
   // ── Fact review (human confirmation gate) ──
   const handleOpenFactReview = useCallback(async (runId: string) => {
@@ -428,6 +486,20 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           diagnostics={diagnostics}
         />
       )}
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept=".pdf,.docx,.md,.markdown,.txt"
+        style={{ display: 'none' }}
+        aria-hidden="true"
+        tabIndex={-1}
+        onChange={(event) => {
+          void ingestFiles(event.target.files);
+          event.target.value = '';
+        }}
+      />
 
       {pendingSelection && (
         <SelectionDialog
