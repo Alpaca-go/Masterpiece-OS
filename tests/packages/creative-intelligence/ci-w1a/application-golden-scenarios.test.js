@@ -124,9 +124,22 @@ test('G01 document-led normal: full pipeline runs end-to-end and produces a work
       assert.ok(view.truth, 'workspace must include truth');
       assert.ok(view.conceptSet, 'workspace must include conceptSet');
     } else {
-      // Sparse data: run reaches awaiting_direction_selection but cannot
-      // proceed (no valid directions). This is also a valid end-state.
-      assert.equal(result.run.status, 'awaiting_direction_selection');
+      // CI-W1B.2: the test fixture may not produce enough coverage for
+      // valid Directions. The new application state is
+      // `direction_blocked` (NOT a crash), with a structured
+      // blockerSummaries projection. Accept either legacy
+      // `awaiting_direction_selection` (when ≥1 valid direction was
+      // produced) or the new `direction_blocked` state.
+      assert.ok(
+        result.run.status === 'awaiting_direction_selection'
+          || result.run.status === 'direction_blocked',
+        `expected awaiting_direction_selection or direction_blocked, got ${result.run.status}`,
+      );
+      if (result.run.status === 'direction_blocked') {
+        const view = await result.service.getWorkspace(result.run.id);
+        assert.equal(view.run.blockerCode, 'CI_APP_DIRECTION_BLOCKED_ALL');
+        assert.ok(Array.isArray(view.blockerSummaries), 'direction_blocked workspace must project blockerSummaries');
+      }
     }
   } finally {
     await fs.rm(dataDir, { recursive: true, force: true });
@@ -164,9 +177,17 @@ test('G03 conflict-heavy: truth/evidence blocks carry forward as warnings, run s
   const dataDir = await newTmpDir('g03-');
   try {
     const result = await runFullPipeline(dataDir, { stopBeforeSelection: true });
-    // The run reached awaiting_direction_selection despite sparse data.
-    assert.equal(result.run.status, 'awaiting_direction_selection');
-    // Workspace surfaces blockers + warnings.
+    // CI-W1B.2: the conflict-heavy fixture may produce a run that
+    // either reaches awaiting_direction_selection (≥1 valid
+    // direction) OR direction_blocked (0 valid). Both are valid
+    // forward-progress outcomes; only `failed` would be a real
+    // regression.
+    assert.ok(
+      result.run.status === 'awaiting_direction_selection'
+        || result.run.status === 'direction_blocked',
+      `expected awaiting_direction_selection or direction_blocked, got ${result.run.status}`,
+    );
+    // Workspace surfaces blockers + warnings either way.
     assert.ok(Array.isArray(result.workspace.blockers));
     assert.ok(Array.isArray(result.workspace.warnings));
   } finally {
@@ -187,18 +208,26 @@ test('G04 all concepts blocked: pipeline produces 0 valid directions, no selecti
       (d) => d.status === 'grounded' || d.status === 'provisional',
     );
     if (valid.length === 0) {
-      // Try to select a blocked direction; must fail.
-      const blocked = (directionSet?.directions ?? []).find((d) => d.status === 'blocked');
-      if (blocked) {
-        await assert.rejects(
-          () => service.selectDirection(run.id, { directionId: blocked.id }),
-          (err) => err.code === 'CI_APP_SELECTION_INVALID',
-        );
-      }
+      // CI-W1B.2: zero valid directions is now an explicit application
+      // state — `direction_blocked` — NOT a confused
+      // `awaiting_direction_selection`. selectDirection must reject
+      // with the dedicated `CI_APP_DIRECTION_BLOCKED_ALL` code.
+      await assert.rejects(
+        () => service.selectDirection(run.id, { directionId: 'd-nonexistent' }),
+        (err) => err.code === 'CI_APP_DIRECTION_BLOCKED_ALL',
+      );
     }
-    // Either way, the run remains in awaiting_direction_selection.
-    const stillAwaiting = await service.getRun(run.id);
-    assert.equal(stillAwaiting.status, 'awaiting_direction_selection');
+    // The run lands in the explicit `direction_blocked` state when no
+    // valid Direction exists, and stays in
+    // `awaiting_direction_selection` when at least one exists.
+    const still = await service.getRun(run.id);
+    assert.ok(
+      still.status === 'awaiting_direction_selection' || still.status === 'direction_blocked',
+      `expected awaiting_direction_selection or direction_blocked, got ${still.status}`,
+    );
+    if (still.status === 'direction_blocked') {
+      assert.equal(still.blockerCode, 'CI_APP_DIRECTION_BLOCKED_ALL');
+    }
   } finally {
     await fs.rm(dataDir, { recursive: true, force: true });
   }

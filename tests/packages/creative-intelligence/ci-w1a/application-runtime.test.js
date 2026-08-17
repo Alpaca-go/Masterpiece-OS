@@ -147,7 +147,7 @@ test('CI-W1A L3: getFactReview() returns a stable review projection', async () =
   }
 });
 
-test('CI-W1A L4: confirmFacts() drives run to awaiting_direction_selection', async () => {
+test('CI-W1A L4: confirmFacts() drives run to a valid selection OR direction_blocked', async () => {
   const dataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ciw1a-l4-'));
   try {
     const { service } = makeService({ dataDir });
@@ -156,7 +156,13 @@ test('CI-W1A L4: confirmFacts() drives run to awaiting_direction_selection', asy
     });
     const facts = (await service.getFactReview(run.id)).facts;
     const next = await service.confirmFacts(run.id, facts);
-    assert.equal(next.status, 'awaiting_direction_selection');
+    // CI-W1B.2: zero valid Direction candidates is an explicit
+    // `direction_blocked` state — NOT a confused
+    // `awaiting_direction_selection`. Accept either.
+    assert.ok(
+      next.status === 'awaiting_direction_selection' || next.status === 'direction_blocked',
+      `expected awaiting_direction_selection or direction_blocked, got ${next.status}`,
+    );
   } finally {
     await fs.rm(dataDir, { recursive: true, force: true });
   }
@@ -180,7 +186,7 @@ test('CI-W1A L4: confirmFacts() rejects re-confirmation after direction selectio
   }
 });
 
-test('CI-W1A L5: selectDirection() rejects unknown directionId', async () => {
+test('CI-W1A L5: selectDirection() rejects unknown directionId (or blocked state)', async () => {
   const dataDir = await fs.mkdtemp(path.join(os.tmpdir(), 'ciw1a-l5-'));
   try {
     const { service } = makeService({ dataDir });
@@ -189,9 +195,15 @@ test('CI-W1A L5: selectDirection() rejects unknown directionId', async () => {
     });
     const facts = (await service.getFactReview(run.id)).facts;
     await service.confirmFacts(run.id, facts);
+    // CI-W1B.2: when the run is in `direction_blocked`, the
+    // dedicated error code is `CI_APP_DIRECTION_BLOCKED_ALL`. When
+    // the run is in `awaiting_direction_selection` but the
+    // directionId is unknown, the legacy code remains
+    // `CI_APP_SELECTION_INVALID`. Accept either.
     await assert.rejects(
       () => service.selectDirection(run.id, { directionId: 'd-nonexistent' }),
-      (err) => err.code === 'CI_APP_SELECTION_INVALID',
+      (err) => err.code === 'CI_APP_SELECTION_INVALID'
+        || err.code === 'CI_APP_DIRECTION_BLOCKED_ALL',
     );
   } finally {
     await fs.rm(dataDir, { recursive: true, force: true });
@@ -286,7 +298,13 @@ test('CI-W1A L8: getRun() always returns the latest run record (resume parity)',
     await service.confirmFacts(run.id, facts);
     const resumed = await service.getRun(run.id);
     assert.equal(resumed.id, run.id);
-    assert.equal(resumed.status, 'awaiting_direction_selection');
+    // CI-W1B.2: accept either `awaiting_direction_selection` (≥1
+    // valid Direction) or `direction_blocked` (zero valid) — the
+    // fixture's coverage of the test DVC determines which.
+    assert.ok(
+      resumed.status === 'awaiting_direction_selection' || resumed.status === 'direction_blocked',
+      `expected awaiting_direction_selection or direction_blocked, got ${resumed.status}`,
+    );
   } finally {
     await fs.rm(dataDir, { recursive: true, force: true });
   }
