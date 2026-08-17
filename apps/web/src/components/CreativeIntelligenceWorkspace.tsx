@@ -36,7 +36,8 @@ import {
   type RunLifecycle,
   type SelectionProposal,
   type ThinkingProgressKey,
-  type WorkspaceView
+  type WorkspaceView,
+  type AllBlockedView
 } from '../ciworkspace/types.ts';
 import {
   applyLocalFactAction,
@@ -45,6 +46,7 @@ import {
   buildSelectionProposal,
   buildTraceChain,
   computeConceptReferenceability,
+  deriveAllBlockedView,
   deriveCreativeIntelligenceUserView,
   deriveRunLifecycle,
   deriveThinkingProgress,
@@ -470,6 +472,11 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           selectedDirectionId={selectedDirectionId}
           onProposeSelection={handleProposeSelection}
         />}
+        {userView === 'all-blocked' && activeLifecycle && <AllBlockedPage
+          allBlocked={deriveAllBlockedView(activeView)}
+          onOpenAdvanced={() => setShowAdvanced(true)}
+          onRemove={() => void handleRemove(activeLifecycle.run)}
+        />}
         {userView === 'visual-system' && activeLifecycle && <VisualSystemPage
           visualCanon={visualCanon}
           anchorContract={anchorContract}
@@ -526,6 +533,7 @@ function viewHeading(userView: CreativeIntelligenceUserView): string {
     case 'fact-review': return '确认项目事实';
     case 'thinking': return '正在形成创意方向';
     case 'direction-decision': return 'Creative Directions';
+    case 'all-blocked': return '暂时无法形成可用的创意方向';
     case 'visual-system': return '视觉系统';
   }
 }
@@ -536,6 +544,7 @@ function viewSubtitle(userView: CreativeIntelligenceUserView): string {
     case 'fact-review': return '这些信息会成为后续创意推理的事实基础。请确认、修改或标记未知。';
     case 'thinking': return '系统正在后台完成事实到方向的全部分析，完成后会请你选择创意方向。';
     case 'direction-decision': return '系统已生成并评估多个创意方向。请选择其一作为后续视觉系统的基础。';
+    case 'all-blocked': return '系统已经完成项目分析，但当前所有概念均未通过进入创意方向的条件。下方是真实原因和恢复路径。';
     case 'visual-system': return '基于你选择的方向生成的视觉系统、验收标准与应用适配。';
   }
 }
@@ -1070,6 +1079,92 @@ function SelectionDialog({ proposal, onCancel, onConfirm, busy }: {
       </div>
     </div>
   </div>;
+}
+
+// ---------------------------------------------------------------------------
+// CI-W1B.2: All-Blocked recovery page.
+//
+// The page is rendered ONLY when run.status === 'direction_blocked'.
+// It shows the Runtime-projected blocker summary (one row per issue
+// code) and offers three CTAs: 查看详细原因 / 重新创建任务 / 删除此任务.
+// There is NO "返回事实确认" button because the Runtime does NOT
+// yet support fact-revision (Spec §12, §29) — wiring one would be a
+// fake-failure surface.
+// ---------------------------------------------------------------------------
+
+const CATEGORY_LABEL: Record<AllBlockedView['blockers'][number]['category'], string> = {
+  need_coverage: '需求覆盖',
+  identity_conflict: '身份冲突',
+  asset_authorization: '资产 / 资质',
+  evidence_gap: '事实依据',
+  unsupported_claim: '事实声明',
+  other: '其它'
+};
+
+function AllBlockedPage({ allBlocked, onOpenAdvanced, onRemove }: {
+  allBlocked: AllBlockedView | null;
+  onOpenAdvanced(): void;
+  onRemove(): void;
+}) {
+  if (!allBlocked) {
+    return <section className="ci-ab-view" data-ciw-user-view="all-blocked">
+      <div className="panel">
+        <h2>暂时无法形成可用的创意方向</h2>
+        <p>未能加载阻断原因摘要。</p>
+      </div>
+    </section>;
+  }
+  const { blockers, blockedConceptCount, totalConceptCount, fallbackOnly } = allBlocked;
+  return <section className="ci-ab-view" data-ciw-user-view="all-blocked" data-ciw-fallback={fallbackOnly ? 'true' : 'false'}>
+    <div className="panel ci-ab-head">
+      <h2>暂时无法形成可用的创意方向</h2>
+      <p>
+        系统已经完成项目分析，
+        但当前 <strong>{totalConceptCount}</strong> 个概念中 <strong>{blockedConceptCount}</strong> 个未通过进入创意方向的条件。
+      </p>
+      <p className="ci-ab-sub">
+        这不是错误，是系统在"当前没有可成立的创意方向"时的明确状态。
+        下方是真实原因和恢复路径。
+      </p>
+    </div>
+
+    <div className="panel ci-ab-summary">
+      <h3>原因摘要</h3>
+      {fallbackOnly ? <p>暂无详细诊断条目。系统未记录具体 Gate 阻断原因，请打开分析抽屉查看原始 Gate 结果。</p> : null}
+      <ul className="ci-ab-list" data-ciw-blocker-count={blockers.length}>
+        {blockers.map((b) => <li
+          key={b.code}
+          className="ci-ab-row"
+          data-ciw-blocker-code={b.code}
+          data-ciw-blocker-recoverable={b.recoverable ? 'true' : 'false'}
+        >
+          <div className="ci-ab-row__title">
+            <strong>{b.title}</strong>
+            <span className="ci-ab-row__count">{b.count} 个概念</span>
+          </div>
+          <div className="ci-ab-row__meta">
+            <span className="ci-ab-row__category">{CATEGORY_LABEL[b.category] ?? b.category}</span>
+            <code className="ci-ab-row__code">{b.code}</code>
+            {b.recoverable ? <span className="ci-ab-row__recoverable">可恢复</span> : <span className="ci-ab-row__recoverable ci-ab-row__recoverable--no">暂无可恢复路径</span>}
+          </div>
+        </li>)}
+      </ul>
+    </div>
+
+    <div className="panel ci-ab-actions" data-ciw-actions="view-details,recreate,remove">
+      <h3>恢复路径</h3>
+      <p>请选择你希望执行的下一步。本阶段没有"返回事实确认"这条路径，因为系统尚未支持事实修订能力。</p>
+      <div className="ci-ab-actions__buttons">
+        <Button variant="secondary" size="md" onClick={onOpenAdvanced}>查看详细原因</Button>
+        <Button
+          variant="secondary"
+          size="md"
+          onClick={() => { window.location.reload(); }}
+        >重新创建任务</Button>
+        <Button variant="danger" size="md" onClick={onRemove}>删除此任务</Button>
+      </div>
+    </div>
+  </section>;
 }
 
 // ---------------------------------------------------------------------------

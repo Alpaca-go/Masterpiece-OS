@@ -80,6 +80,11 @@ import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import { RunWriteCoordinator } from './runtime/run-write-coordinator.ts';
 import { appendRuntimeEvent } from './runtime/event-log.ts';
 import { assertInside } from './analysis-contract.ts';
+import {
+  countSelectableDirections,
+  projectBlockerSummaries,
+  CI_APP_DIRECTION_BLOCKED_ALL,
+} from './blocker-projection.ts';
 
 // ---------------------------------------------------------------------------
 // CI surface import — keep tight; we only import what we need to drive the
@@ -164,6 +169,7 @@ function toProgressStage(status: CreativeIntelligenceRunStatus): CreativeIntelli
     case 'building_directions': return 'direction';
     case 'evaluating': return 'evaluation';
     case 'awaiting_direction_selection': return 'selection';
+    case 'direction_blocked': return 'selection';
     case 'building_canon': return 'canon';
     case 'building_translation': return 'translation';
     case 'completed': return 'completed';
@@ -236,6 +242,7 @@ async function buildWorkspaceView(
   blockers: string[],
   warnings: string[],
   diagnostics: string[],
+  blockerSummaries?: unknown,
 ): Promise<CreativeIntelligenceWorkspaceView> {
   const readJson = async <T>(name: string): Promise<T | null> => {
     try {
@@ -297,6 +304,7 @@ async function buildWorkspaceView(
     blockers,
     warnings,
     diagnostics,
+    blockerSummaries: Array.isArray(blockerSummaries) ? (blockerSummaries as never) : undefined,
   };
 }
 
@@ -552,6 +560,7 @@ export function createCreativeIntelligenceApplicationService(
       diagnostics: [],
       errorCode: null,
       lastError: null,
+      blockerCode: null,
     };
     // Persist before any long-running work so resume can find it.
     const runRoot = await runRootOf(runId);
@@ -796,6 +805,54 @@ export function createCreativeIntelligenceApplicationService(
     if (signal.aborted) throw ciAppError(CI_APP_ERROR_CODES.CANCELLED, 'Run 已被取消');
     await persistIntermediate(runId, 'evaluation.json', evaluation);
 
+    // CI-W1B.2: Decide between awaiting_direction_selection and
+    // direction_blocked based on the count of selectable Directions.
+    // `selectable` requires the Direction to be grounded/provisional,
+    // not in the blockedDirectionIds list, and not blocked by the
+    // Direction-evaluation pass. We compute it here, NOT in the Web
+    // side, so the Application owns the semantic answer.
+    const directionSetRecord = direction.directionSet as unknown as Record<string, unknown>;
+    const selectableCount = countSelectableDirections(directionSetRecord as never);
+
+    if (selectableCount === 0) {
+      // Zero selectable Directions. This is a valid application
+      // outcome (NOT a crash): the Concept gate produced no Direction
+      // candidates the user can actually pick. Persist blocker code
+      // on the run record so callers can detect the outcome without
+      // parsing the error text. Do NOT initialize the selection
+      // state — there is nothing to select.
+      await updateRun(runId, (current) => ({
+        ...current,
+        status: 'direction_blocked',
+        currentStage: 'selection',
+        blockerCode: CI_APP_DIRECTION_BLOCKED_ALL,
+        completedAt: undefined,
+        errorCode: null,
+        lastError: null,
+      }));
+      // Persist blocker summaries as a derived artifact so future
+      // getWorkspace() does not have to re-parse the gateResults
+      // (it still does, but the persisted form is the source of
+      // truth for downstream audits).
+      const summaries = projectBlockerSummaries(
+        concept.conceptSet as unknown as Record<string, unknown>,
+        directionSetRecord,
+        { includeAllBlockedFallback: true },
+      );
+      await persistIntermediate(runId, 'blocker-summaries.json', summaries);
+      const runRoot = await runRootOf(runId);
+      await appendRuntimeEvent(path.join(runRoot, 'runtime'), runId, 'DIRECTION_BLOCKED', {
+        blockerCode: CI_APP_DIRECTION_BLOCKED_ALL,
+        summaryCount: summaries.length,
+      }).catch(() => undefined);
+      deps.log?.('info', JSON.stringify({
+        event: 'CI_APP_DIRECTION_BLOCKED',
+        runId,
+        summaryCount: summaries.length,
+      }));
+      return;
+    }
+
     // Stage 8 — Awaiting direction selection
     await transition(runId, 'awaiting_direction_selection', 'selection', '等待用户选择方向', run);
 
@@ -839,7 +896,41 @@ export function createCreativeIntelligenceApplicationService(
         blockers.push('当前选择不是由 user 完成的');
       }
     }
-    return buildWorkspaceView(run, runRoot, run.documentRunId, sourceRunId, blockers, warnings, diagnostics);
+
+    // CI-W1B.2: project blocker summaries. The persisted
+    // `blocker-summaries.json` is the source of truth; we re-project
+    // from gateResults when the run is in `direction_blocked` AND
+    // the persisted file is missing (forward-compat for runs
+    // created before this commit).
+    const persisted = await readIntermediate<unknown>(runId, 'blocker-summaries.json');
+    let blockerSummaries: unknown[] | null = null;
+    if (run.status === 'direction_blocked') {
+      if (Array.isArray(persisted) && persisted.length > 0) {
+        blockerSummaries = persisted;
+      } else {
+        const conceptSet = await readIntermediate<Record<string, unknown>>(runId, 'concept-set.json');
+        const directionSet = await readIntermediate<Record<string, unknown>>(runId, 'direction-set.json');
+        blockerSummaries = projectBlockerSummaries(conceptSet, directionSet, { includeAllBlockedFallback: true });
+      }
+      if (Array.isArray(blockerSummaries) && blockerSummaries.length > 0) {
+        // Single human-readable line for the run's blocker slot.
+        const codes = (blockerSummaries as Array<{ code: string; count: number }>)
+          .map((s) => s.code)
+          .join(', ');
+        blockers.push(`当前没有可选择的创意方向: ${codes}`);
+      }
+    }
+
+    return buildWorkspaceView(
+      run,
+      runRoot,
+      run.documentRunId,
+      sourceRunId,
+      blockers,
+      warnings,
+      diagnostics,
+      blockerSummaries as never,
+    );
   }
 
   // ------------------------ selectDirection ------------------------
@@ -853,6 +944,16 @@ export function createCreativeIntelligenceApplicationService(
     }
     const run = await getRun(runId);
     if (run.status !== 'awaiting_direction_selection') {
+      // CI-W1B.2: `direction_blocked` is a valid, non-crash
+      // application state. Surface it as a distinct error code so the
+      // Web layer can map it to the All-Blocked recovery view
+      // instead of treating it as a generic state error.
+      if (run.status === 'direction_blocked') {
+        throw ciAppError(
+          CI_APP_ERROR_CODES.DIRECTION_BLOCKED_ALL,
+          `Run 处于 direction_blocked 状态: ${run.blockerCode ?? CI_APP_DIRECTION_BLOCKED_ALL}`,
+        );
+      }
       throw ciAppError(CI_APP_ERROR_CODES.SELECTION_INVALID, `当前状态无法选择方向: ${run.status}`);
     }
     const directionSet = await readIntermediate<Record<string, unknown>>(runId, 'direction-set.json');
@@ -1025,6 +1126,16 @@ export function createCreativeIntelligenceApplicationService(
     // the run status if it was previously in a recoverable state.
     if (run.status === 'completed' || run.status === 'failed' || run.status === 'cancelled') {
       throw ciAppError(CI_APP_ERROR_CODES.RUN_STATE_INVALID, `Run 不可恢复: ${run.status}`);
+    }
+    // CI-W1B.2: `direction_blocked` is a terminal state for the
+    // selection pipeline — there is no downstream work to re-apply,
+    // and there is no revision capability yet (Spec §29). The user
+    // has only two recovery actions: "重新创建任务" or "删除此任务".
+    if (run.status === 'direction_blocked') {
+      throw ciAppError(
+        CI_APP_ERROR_CODES.RUN_STATE_INVALID,
+        `Run 处于 direction_blocked 状态，无下游工作可恢复: ${run.blockerCode ?? CI_APP_DIRECTION_BLOCKED_ALL}`,
+      );
     }
     return run;
   }

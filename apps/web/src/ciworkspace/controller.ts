@@ -27,7 +27,8 @@ import type {
   ConceptReferenceability,
   TraceStep,
   CreativeIntelligenceUserView,
-  ThinkingProgressKey
+  ThinkingProgressKey,
+  AllBlockedView
 } from './types.ts';
 
 // ---------------------------------------------------------------------------
@@ -45,6 +46,7 @@ const STAGE_BY_STATUS: Record<RunStatus, StageId> = {
   'building_directions': '05-directions',
   'evaluating': '06-evaluation',
   'awaiting_direction_selection': '07-selection',
+  'direction_blocked': '07-selection',
   'building_canon': '08-canon',
   'building_translation': '09-translation',
   'completed': '09-translation',
@@ -63,6 +65,7 @@ const STAGE_LABEL_BY_STATUS: Record<RunStatus, string> = {
   'building_directions': '构建视觉方向',
   'evaluating': '评估方向',
   'awaiting_direction_selection': '待人工选择 (Checkpoint B)',
+  'direction_blocked': '当前没有可选择的创意方向',
   'building_canon': '构建 Visual Canon',
   'building_translation': '构建生产翻译',
   'completed': '已完成',
@@ -96,6 +99,7 @@ const USER_VIEW_BY_STATUS: Record<RunStatus, CreativeIntelligenceUserView> = {
   'building_directions': 'thinking',
   'evaluating': 'thinking',
   'awaiting_direction_selection': 'direction-decision',
+  'direction_blocked': 'all-blocked',
   'building_canon': 'thinking',
   'building_translation': 'thinking',
   'completed': 'visual-system',
@@ -127,6 +131,7 @@ const THINKING_PROGRESS_BY_STATUS: Record<RunStatus, ThinkingProgressKey | null>
   'building_directions': 'direction-evaluation',
   'evaluating': 'direction-evaluation',
   'awaiting_direction_selection': null,
+  'direction_blocked': null,
   'building_canon': 'visual-system-build',
   'building_translation': 'visual-system-build',
   'completed': null,
@@ -165,6 +170,10 @@ export function deriveRunLifecycle(run: Run): RunLifecycle {
   ]);
   const isExecuting = executingStates.has(run.status);
   const isCheckpoint = checkpointStates.has(run.status);
+  // CI-W1B.2: `direction_blocked` is inspectable, not resumable.
+  // The user has only "重新创建任务" / "删除此任务" — there is no
+  // revision capability yet (Spec §29), so we do NOT expose a
+  // resume CTA. The run IS removable because it is not executing.
   return {
     run,
     resumable: isCheckpoint || run.status === 'failed',
@@ -202,6 +211,61 @@ export function computeConceptReferenceability(workspace: WorkspaceView | null):
     referenceable.add(concept.id);
   }
   return { referenceableConceptIds: referenceable, blockedConceptIds: blockedConcepts, blockedDirectionIds: blockedDirections };
+}
+
+// ---------------------------------------------------------------------------
+// CI-W1B.2: All-Blocked view projection.
+// Pure function. Consumes the Runtime's `WorkspaceView.blockerSummaries`
+// list. When the list is empty but the run is in `direction_blocked`,
+// falls back to a single `CI_APP_DIRECTION_BLOCKED_ALL` row so the
+// user always sees a reason summary.
+// ---------------------------------------------------------------------------
+
+const FALLBACK_BLOCKER: AllBlockedView['blockers'][number] = {
+  code: 'CI_APP_DIRECTION_BLOCKED_ALL',
+  title: '当前没有可选择的创意方向',
+  category: 'other',
+  affectedConceptIds: [],
+  issueCodes: ['CI_APP_DIRECTION_BLOCKED_ALL'],
+  count: 0,
+  recoverable: false,
+};
+
+export function deriveAllBlockedView(workspace: WorkspaceView | null): AllBlockedView | null {
+  if (!workspace) return null;
+  if (workspace.run?.status !== 'direction_blocked') return null;
+  const conceptSet = workspace.conceptSet as null | { concepts?: Array<{ id: string }>; blockedConceptIds?: string[] };
+  const totalConceptCount = (conceptSet?.concepts ?? []).length;
+  const blockedConceptCount = new Set<string>(conceptSet?.blockedConceptIds ?? []).size;
+
+  const raw = (workspace as { blockerSummaries?: unknown }).blockerSummaries;
+  const persisted = Array.isArray(raw)
+    ? (raw as AllBlockedView['blockers']).filter((b) => b && typeof b === 'object' && typeof (b as { code?: unknown }).code === 'string')
+    : [];
+
+  // Sort: largest count first, then code alphabetical.
+  const sorted = [...persisted].sort((a, b) => {
+    if (b.count !== a.count) return b.count - a.count;
+    return a.code.localeCompare(b.code);
+  });
+
+  if (sorted.length === 0) {
+    return {
+      run: workspace.run,
+      blockedConceptCount,
+      totalConceptCount,
+      blockers: [{ ...FALLBACK_BLOCKER }],
+      fallbackOnly: true,
+    };
+  }
+
+  return {
+    run: workspace.run,
+    blockedConceptCount,
+    totalConceptCount,
+    blockers: sorted,
+    fallbackOnly: false,
+  };
 }
 
 /**

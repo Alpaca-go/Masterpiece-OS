@@ -75,6 +75,7 @@ export type CreativeIntelligenceUserView =
   | 'fact-review'
   | 'thinking'
   | 'direction-decision'
+  | 'all-blocked'
   | 'visual-system';
 
 export const USER_VIEWS: readonly CreativeIntelligenceUserView[] = [
@@ -82,6 +83,7 @@ export const USER_VIEWS: readonly CreativeIntelligenceUserView[] = [
   'fact-review',
   'thinking',
   'direction-decision',
+  'all-blocked',
   'visual-system'
 ] as const;
 
@@ -180,6 +182,49 @@ export interface ConceptReferenceability {
   referenceableConceptIds: Set<string>;
   blockedConceptIds: Set<string>;
   blockedDirectionIds: Set<string>;
+}
+
+// ---------------------------------------------------------------------------
+// CI-W1B.2: All-Blocked view projection.
+// The Web side consumes the Runtime's structured blocker summary list
+// and renders the recovery view. The view-model is a flat, sorted
+// list (largest blocker first) so the React component does not have
+// to re-aggregate.
+// ---------------------------------------------------------------------------
+
+export type BlockerCategory =
+  | 'need_coverage'
+  | 'identity_conflict'
+  | 'asset_authorization'
+  | 'evidence_gap'
+  | 'unsupported_claim'
+  | 'other';
+
+export interface BlockerSummary {
+  code: string;
+  title: string;
+  category: BlockerCategory;
+  affectedConceptIds: string[];
+  issueCodes: string[];
+  count: number;
+  recoverable: boolean;
+}
+
+export interface AllBlockedView {
+  run: Run;
+  /** Total Concepts that were gate-blocked. */
+  blockedConceptCount: number;
+  /** Total Concepts in the ConceptSet. */
+  totalConceptCount: number;
+  /** Sorted (largest first) blocker projection rows. */
+  blockers: BlockerSummary[];
+  /**
+   * True when Runtime did NOT provide a persisted blocker
+   * projection AND the gateResults themselves contained no
+   * issues. We fall back to a single `CI_APP_DIRECTION_BLOCKED_ALL`
+   * row in that case so the user always sees a reason summary.
+   */
+  fallbackOnly: boolean;
 }
 
 // ---------------------------------------------------------------------------

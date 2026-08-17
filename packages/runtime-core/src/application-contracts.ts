@@ -3117,6 +3117,7 @@ export type CreativeIntelligenceRunStatus =
   | 'building_directions'
   | 'evaluating'
   | 'awaiting_direction_selection'
+  | 'direction_blocked'
   | 'building_canon'
   | 'building_translation'
   | 'completed'
@@ -3143,6 +3144,16 @@ export interface CreativeIntelligenceRun {
   diagnostics: string[];
   errorCode?: string | null;
   lastError?: string | null;
+  /**
+   * CI-W1B.2: structured application-level blocker code. Distinct from
+   * `errorCode` (which is reserved for failed-state crashes). The only
+   * currently emitted value is `CI_APP_DIRECTION_BLOCKED_ALL`, set when
+   * the pipeline produced zero selectable Direction candidates and the
+   * run transitions to `direction_blocked`. The detailed reason list
+   * lives in `WorkspaceView.blockerSummaries`; this field exists so a
+   * caller can detect a blocked outcome without parsing `lastError`.
+   */
+  blockerCode?: string | null;
 }
 
 export type CreativeIntelligenceProgressStage =
@@ -3240,4 +3251,42 @@ export interface CreativeIntelligenceWorkspaceView {
   blockers: string[];
   warnings: string[];
   diagnostics: string[];
+  /**
+   * CI-W1B.2: structured projection of WHY the run has no selectable
+   * Direction. Non-empty only when `run.status === 'direction_blocked'`
+   * OR when individual Concepts were gate-blocked while the run
+   * itself still produced a DirectionSet. The Web side MUST consume
+   * this projection instead of re-deriving Gate semantics from
+   * `conceptSet.gateResults` directly.
+   */
+  blockerSummaries?: CreativeIntelligenceBlockerSummary[];
+}
+
+/**
+ * CI-W1B.2: structured application-level blocker projection.
+ *
+ * `code` is a stable, machine-readable identifier (e.g. an issue code
+ * from Concept Gate, or `CI_APP_DIRECTION_BLOCKED_ALL`). `category`
+ * groups blockers for user-facing aggregation. `affectedConceptIds`
+ * lists the Concepts the blocker applies to; `issueCodes` lists the
+ * raw gate issue codes so the Web drawer can deep-link into the
+ * Trace Drawer. `count` is the number of Concepts affected.
+ * `recoverable` indicates whether the user has a known recovery
+ * action today (false when only "wait for a future revision
+ * capability" is the path).
+ */
+export interface CreativeIntelligenceBlockerSummary {
+  code: string;
+  title: string;
+  category:
+    | 'need_coverage'
+    | 'identity_conflict'
+    | 'asset_authorization'
+    | 'evidence_gap'
+    | 'unsupported_claim'
+    | 'other';
+  affectedConceptIds: string[];
+  issueCodes: string[];
+  count: number;
+  recoverable: boolean;
 }

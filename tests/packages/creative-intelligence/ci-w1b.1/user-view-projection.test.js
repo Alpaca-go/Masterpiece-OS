@@ -49,14 +49,15 @@ test('CI-W1B.1 UX01: failed / cancelled runs fall back to input so error + recov
 // User view mapping table (Spec §14)
 // ---------------------------------------------------------------------------
 
-test('CI-W1B.1 MAPPING: every RunStatus projects onto one of the five user views', () => {
+test('CI-W1B.1 MAPPING: every RunStatus projects onto one of the user views', () => {
   const validViews = new Set(types.USER_VIEWS);
-  assert.deepEqual([...types.USER_VIEWS], ['input', 'fact-review', 'thinking', 'direction-decision', 'visual-system']);
+  assert.deepEqual([...types.USER_VIEWS], ['input', 'fact-review', 'thinking', 'direction-decision', 'all-blocked', 'visual-system']);
   const allStatuses = [
     'pending', 'preparing_documents', 'extracting_facts',
     'awaiting_fact_confirmation', 'building_truth', 'building_understanding',
     'building_concepts', 'building_directions', 'evaluating',
-    'awaiting_direction_selection', 'building_canon', 'building_translation',
+    'awaiting_direction_selection', 'direction_blocked',
+    'building_canon', 'building_translation',
     'completed', 'failed', 'cancelled'
   ];
   for (const status of allStatuses) {
