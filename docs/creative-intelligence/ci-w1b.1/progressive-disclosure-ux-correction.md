@@ -476,3 +476,49 @@ through the browser file input path, whichever CI-W1C scopes.
 CTA or routing change exists in this phase. Post-phase instruction:
 stop here; do not continue UI changes; proceed to CI-W1C when
 authorized.
+
+---
+
+## 30. Post-Phase Follow-up — Real Browser Document Picker (`dd4a766b`)
+
+Field feedback: clicking the upload box in a real browser showed
+`无法打开文件选择器，请重试。` because the Node Web Host
+`document-context:choose-documents` bridge is env-var driven
+(`MASTERPIECE_WEB_SELECTED_DOCUMENTS`) and had no real picker. The
+visible error was the correct CI-W1B.1 behavior, but the user task
+("点击上传 → 打开文件选择器 → 文件进入 Input State → Start 可用")
+was not yet achieved outside smoke env-var runs. Fix (Web Host +
+renderer only — **no runtime / CI semantic change**):
+
+- New channel `document-context:import-documents` registered in the
+  Node operation graph (`apps/web-runtime/src/current-operation-graph.ts`
+  — same file that already carries the Node document pipeline wiring,
+  so the Web Host frozen-surface file set is unchanged). It validates
+  the PDF / DOCX / Markdown / TXT allowlist, per-file 32 MiB cap and
+  declared size, sanitizes names, writes into
+  `<userData>/documents-intake/<batch>/` and returns absolute paths.
+  The channel shares the 64 MiB upload body cap
+  (`local-rpc-server.ts` upload-channel set).
+- The input page keeps the single `handleChooseDocuments` entry point:
+  host bridge first (env-var smoke/E2E path unchanged) → empty result
+  opens a hidden browser `<input type="file" multiple
+  accept=".pdf,.docx,.md,.markdown,.txt">` → picked bytes upload via
+  `import-documents` → returned paths enter the same
+  `inputDocumentPaths` state. Drag & drop uploads file content the
+  same way when no host path resolves. RPC / upload failures remain
+  visible (无法打开文件选择器 + raw detail); cancelling the dialog is
+  a no-op.
+- Tests: `web-runtime:test` 13/13 (host channels 167 → 168, import
+  roundtrip + unsupported-extension / empty-batch rejections, body-cap
+  assertions); CI-W1B.1 guards 44/44 (UX03/UX04 updated for the
+  fallback).
+
+Follow-up regression: `npm test` 1364/1365 (only pre-existing
+tracked-runtime-assets-guard Case 1); `runtime:test` back to the same
+14 pre-existing UI-guard fails after commit (AW-21 / AC-09 pass on the
+clean tree); all verify:* gates PASS; web:typecheck PASS;
+web-runtime:typecheck unchanged at 100 pre-existing errors; web:build
+JS delta +738 B (564,199 → 564,937), CSS unchanged. Frozen-surface
+evidence tests (AN-16 / AM-25 / AO-29) keep passing because the new
+channel lives in `current-operation-graph.ts` (already part of the
+authorized diff set).
