@@ -44,6 +44,12 @@ import {
   buildSelectedDirectionSnapshot,
   buildVisualCanon,
   buildAnchorContract,
+  buildProductionTranslationContext,
+  buildSpaceTranslation,
+  buildPackagingTranslation,
+  validateCrossMediaConsistency,
+  buildTranslationComparison,
+  detectReferenceCanonConflict,
   CI_VERSION,
   type AdapterContext,
   type AdapterOutput,
@@ -62,6 +68,11 @@ const DIRECTION_SELECTION_FILENAME = 'direction-selection.json';
 const SELECTED_DIRECTION_SNAPSHOT_FILENAME = 'selected-direction-snapshot.json';
 const VISUAL_CANON_FILENAME = 'visual-canon.json';
 const ANCHOR_CONTRACT_FILENAME = 'anchor-contract.json';
+const PRODUCTION_TRANSLATION_CONTEXT_FILENAME = 'production-translation-context.json';
+const SPACE_TRANSLATION_FILENAME = 'space-translation.json';
+const PACKAGING_TRANSLATION_FILENAME = 'packaging-translation.json';
+const SPACE_TRANSLATION_COMPARISON_FILENAME = 'space-translation-comparison.json';
+const PACKAGING_TRANSLATION_COMPARISON_FILENAME = 'packaging-translation-comparison.json';
 
 export interface ShadowCarrierInput {
   projectRecord?: unknown;
@@ -519,6 +530,41 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
     filesWritten.push(SELECTED_DIRECTION_SNAPSHOT_FILENAME);
     // visual-canon and anchor-contract are NOT written when no selection exists
     // (this is the Golden fixture: no selection → no canon, no anchor)
+
+    // CI-9: Production Translation Bridge.
+    // Always write production-translation-context.json (even when no selection
+    // exists, the context is null with PT_CANON_REQUIRED diagnostic). Space and
+    // Packaging translation contracts are only written when a valid Canon exists.
+    try {
+      // The shadow service has no user-action state, so the production
+      // translation context cannot be built (snapshot/canon/anchor all
+      // require an explicit user selection). We write the artifact as a
+      // null context with PT_CANON_REQUIRED diagnostic — same pattern as
+      // selected-direction-snapshot.json.
+      const ptCtxPath = path.join(shadowDir, sanitizeFilenamePart(PRODUCTION_TRANSLATION_CONTEXT_FILENAME) ?? PRODUCTION_TRANSLATION_CONTEXT_FILENAME);
+      await assertInside(shadowDir, ptCtxPath);
+      await fs.writeFile(ptCtxPath, JSON.stringify({
+        schemaVersion: '0.1',
+        authoritative: false,
+        mode: 'shadow',
+        projectId: input.projectId,
+        ciVersion: CI_VERSION,
+        generatedAt: bundle.projectTruth.provenance.generatedAt,
+        context: null,
+        diagnostics: ['PT_CANON_REQUIRED: shadow service has no user-action state; production translation must come from runtime application layer'],
+      }, null, 2), 'utf8');
+      filesWritten.push(PRODUCTION_TRANSLATION_CONTEXT_FILENAME);
+
+      // Space and Packaging translations require a valid Canon + Anchor.
+      // The shadow service has no selection in this phase, so we do NOT
+      // write space/packaging translation artifacts in the default fixture.
+      // When a runtime application layer wires user-action state into the
+      // shadow service in a future phase, those artifacts would be written
+      // here guarded by a valid context.
+    } catch (e) {
+      // Spec #59: production translation shadow failure must not block production.
+      warnings.push(`production_translation_context artifact: ${(e as Error).message}`);
+    }
   } catch (e) {
     // Spec #52: direction shadow failure must not block production.
     warnings.push(`direction_intelligence artifact: ${(e as Error).message}`);
