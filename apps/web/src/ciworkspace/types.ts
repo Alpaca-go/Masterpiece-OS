@@ -54,6 +54,56 @@ export const STAGES = [
 export type StageId = typeof STAGES[number]['id'];
 
 // ---------------------------------------------------------------------------
+// User-facing view state (CI-W1B.1 progressive disclosure).
+//
+// The 9-entry STAGES rail above stays as the INTERNAL mapping for the
+// controller, tests, resume and the advanced-analysis drawer. The default
+// user interface projects run.status onto exactly five user views:
+//
+//   input              上传项目资料（无活动 run 或 failed/cancelled 恢复）
+//   fact-review        确认项目事实（Human Checkpoint A）
+//   thinking           正在形成创意方向（内部推理统一为一个状态）
+//   direction-decision Creative Directions（Directions + Evaluation + Selection 合并）
+//   visual-system      视觉系统（Selection → Canon → Translation 完成）
+//
+// The projection is derived by `deriveCreativeIntelligenceUserView` in
+// controller.ts; the internal state machine is never modified.
+// ---------------------------------------------------------------------------
+
+export type CreativeIntelligenceUserView =
+  | 'input'
+  | 'fact-review'
+  | 'thinking'
+  | 'direction-decision'
+  | 'visual-system';
+
+export const USER_VIEWS: readonly CreativeIntelligenceUserView[] = [
+  'input',
+  'fact-review',
+  'thinking',
+  'direction-decision',
+  'visual-system'
+] as const;
+
+// Thinking progress — friendly steps shown while the internal
+// Truth / Need / Insight / Opportunity / Concept / Evaluation pipeline
+// runs behind the single "正在形成创意方向" state.
+export type ThinkingProgressKey =
+  | 'intake'
+  | 'core-information'
+  | 'opportunities'
+  | 'direction-evaluation'
+  | 'visual-system-build';
+
+export const THINKING_PROGRESS_LABELS: Record<ThinkingProgressKey, string> = {
+  'intake': '准备项目资料',
+  'core-information': '理解项目核心信息',
+  'opportunities': '梳理创意机会',
+  'direction-evaluation': '生成并评估创意方向',
+  'visual-system-build': '生成视觉系统与适配方案'
+};
+
+// ---------------------------------------------------------------------------
 // Run lifecycle — view-layer representation of the run for the list panel.
 // The `selectable` and `resumable` flags are derived by the controller
 // from run.status; the Web side does NOT compute them from raw state.

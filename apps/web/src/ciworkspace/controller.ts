@@ -25,7 +25,9 @@ import type {
   SelectionAvailability,
   SelectionProposal,
   ConceptReferenceability,
-  TraceStep
+  TraceStep,
+  CreativeIntelligenceUserView,
+  ThinkingProgressKey
 } from './types.ts';
 
 // ---------------------------------------------------------------------------
@@ -77,6 +79,71 @@ export function activeStageForStatus(status: RunStatus): StageId {
 
 export function stageLabelForStatus(status: RunStatus): string {
   return STAGE_LABEL_BY_STATUS[status] ?? '未知';
+}
+
+// ---------------------------------------------------------------------------
+// User view projection (CI-W1B.1 progressive disclosure)
+// ---------------------------------------------------------------------------
+
+const USER_VIEW_BY_STATUS: Record<RunStatus, CreativeIntelligenceUserView> = {
+  'pending': 'thinking',
+  'preparing_documents': 'thinking',
+  'extracting_facts': 'thinking',
+  'awaiting_fact_confirmation': 'fact-review',
+  'building_truth': 'thinking',
+  'building_understanding': 'thinking',
+  'building_concepts': 'thinking',
+  'building_directions': 'thinking',
+  'evaluating': 'thinking',
+  'awaiting_direction_selection': 'direction-decision',
+  'building_canon': 'thinking',
+  'building_translation': 'thinking',
+  'completed': 'visual-system',
+  'failed': 'input',
+  'cancelled': 'input'
+};
+
+/**
+ * Pure function. Project a run status onto the five user-facing views.
+ * No active run (null/undefined) renders the upload-first input view.
+ * failed / cancelled fall back to the input view where the run list
+ * presents the error and the recovery actions (恢复 / 删除).
+ */
+export function deriveCreativeIntelligenceUserView(
+  status: RunStatus | null | undefined
+): CreativeIntelligenceUserView {
+  if (!status) return 'input';
+  return USER_VIEW_BY_STATUS[status] ?? 'input';
+}
+
+const THINKING_PROGRESS_BY_STATUS: Record<RunStatus, ThinkingProgressKey | null> = {
+  'pending': 'intake',
+  'preparing_documents': 'intake',
+  'extracting_facts': 'intake',
+  'awaiting_fact_confirmation': null,
+  'building_truth': 'core-information',
+  'building_understanding': 'core-information',
+  'building_concepts': 'opportunities',
+  'building_directions': 'direction-evaluation',
+  'evaluating': 'direction-evaluation',
+  'awaiting_direction_selection': null,
+  'building_canon': 'visual-system-build',
+  'building_translation': 'visual-system-build',
+  'completed': null,
+  'failed': null,
+  'cancelled': null
+};
+
+/**
+ * Pure function. Friendly progress step for the single Thinking view.
+ * Returns null when the run is not inside the internal reasoning
+ * pipeline (checkpoints / terminal states).
+ */
+export function deriveThinkingProgress(
+  status: RunStatus | null | undefined
+): ThinkingProgressKey | null {
+  if (!status) return null;
+  return THINKING_PROGRESS_BY_STATUS[status] ?? null;
 }
 
 /**
@@ -351,6 +418,52 @@ export function buildTraceChain(workspace: WorkspaceView | null): TraceStep[] {
     });
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// Fact review grouping (CI-W1B.1 user-facing groups)
+// ---------------------------------------------------------------------------
+
+export interface FactRowGroup {
+  key: string;
+  label: string;
+  rows: LocalFactRow[];
+}
+
+const FACT_GROUP_ORDER = ['brand', 'business', 'product', 'audience', 'requirements', 'locked', 'unconfirmed'] as const;
+
+/**
+ * Pure function. Partition the local fact rows into the user-facing
+ * groups: 品牌 / 业务 / 产品·服务 / 目标用户 / 核心要求 / Locked Facts /
+ * 尚未确认. Grouping is derived from the fact field name (heuristics),
+ * the authority ('locked' → Locked Facts) and the local action
+ * ('unknown' → 尚未确认). Internal fields are never shown.
+ */
+export function groupFactRows(rows: LocalFactRow[]): FactRowGroup[] {
+  const groups: Record<'brand' | 'business' | 'product' | 'audience' | 'requirements' | 'locked' | 'unconfirmed', FactRowGroup> = {
+    brand: { key: 'brand', label: '品牌', rows: [] },
+    business: { key: 'business', label: '业务', rows: [] },
+    product: { key: 'product', label: '产品 / 服务', rows: [] },
+    audience: { key: 'audience', label: '目标用户', rows: [] },
+    requirements: { key: 'requirements', label: '核心要求', rows: [] },
+    locked: { key: 'locked', label: 'Locked Facts', rows: [] },
+    unconfirmed: { key: 'unconfirmed', label: '尚未确认', rows: [] }
+  };
+  for (const row of rows) {
+    let key: keyof typeof groups = 'requirements';
+    const field = String(row.field ?? '');
+    const authority = String(row.authority ?? '');
+    if (row.userAction === 'unknown') key = 'unconfirmed';
+    else if (/locked/i.test(authority)) key = 'locked';
+    else if (/brand|品牌|logo|标识|vi|视觉识别|名称|name/i.test(field)) key = 'brand';
+    else if (/business|业务|industry|行业|positioning|定位|market|市场|渠道|channel/i.test(field)) key = 'business';
+    else if (/product|产品|service|服务|category|品类|sku|offer/i.test(field)) key = 'product';
+    else if (/audience|用户|target|客群|consumer|customer|客户|persona/i.test(field)) key = 'audience';
+    groups[key].rows.push(row);
+  }
+  return FACT_GROUP_ORDER
+    .filter((groupKey) => groups[groupKey].rows.length > 0)
+    .map((groupKey) => groups[groupKey]);
 }
 
 // ---------------------------------------------------------------------------
