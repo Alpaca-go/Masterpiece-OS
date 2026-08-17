@@ -34,6 +34,11 @@ import { createStyleProfileService } from './style-profile-service.ts';
 import { createVisualCanonService } from './visual-canon-service.ts';
 import { createVisualExplorationService } from './visual-exploration-service.ts';
 import { createVisualMemoryService } from './visual-memory-service.ts';
+// CI-W1A: Creative Intelligence Runtime Application Layer.
+import {
+  createCreativeIntelligenceApplicationService,
+  type CreativeIntelligenceApplicationService,
+} from './creative-intelligence-application-service.ts';
 
 export interface RuntimeServiceAdapters {
   dataPath: string;
@@ -173,6 +178,60 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   // production.
   const packaging = createPackagingWorkspaceService();
 
+  // CI-W1A: Creative Intelligence Runtime Application Service.
+  // Reuses documentContext for the ONE fact-extraction call (which already
+  // exists). All other stages are deterministic CI-1..CI-9 pipelines.
+  const creativeIntelligence: CreativeIntelligenceApplicationService = createCreativeIntelligenceApplicationService({
+    readSettings: adapters.readSettings,
+    readCredentials: async (profileId) => {
+      if (!profileId) {
+        throw new Error('CI_APP_PROFILE_REQUIRED');
+      }
+      const creds = await adapters.readCredentials(profileId);
+      return {
+        apiKey: creds.apiKey,
+        model: creds.model,
+        provider: creds.provider,
+        baseUrl: creds.baseUrl,
+      };
+    },
+    resolveProfile: async (profileId) => {
+      const settings = await adapters.readSettings();
+      const profile = settings.profiles.find((p) => p.id === profileId);
+      if (!profile) return null;
+      return { id: profile.id, provider: profile.provider, modelId: profile.modelId };
+    },
+    // Bridge: delegate to the existing documentContext service so the
+    // CI application reuses the legacy fact-extraction pipeline. The
+    // DocumentVisualContext returned has a real sourceRunId (the
+    // documentContextRun.id) and survives the CI-3 / Truth adapter.
+    runDocumentIntake: async (input) => {
+      const run = await documentContext.start(input.paths, input.profileId);
+      // The legacy contract returns when status reaches
+      // awaiting_confirmation (after the model call + repair + dedupe).
+      const finalRun = await waitForFactConfirmation(run.id, documentContext);
+      const dvc = await documentContext.getExtracted(finalRun.id);
+      return {
+        documentRunId: finalRun.id,
+        sourceRunId: dvc?.sourceRunId ?? finalRun.id,
+        dvc,
+      };
+    },
+    loadProjectRecord: async (projectId) => {
+      if (!projectId) return null;
+      try {
+        const record = await projects.get(projectId);
+        return record as unknown as Record<string, unknown>;
+      } catch {
+        return null;
+      }
+    },
+    log: (level, message) => {
+      // eslint-disable-next-line no-console
+      console[level]?.(message);
+    },
+  });
+
   return Object.freeze({
     projects, reports: createReportService(projects), pipeline, documentContext, projectContext,
     contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
@@ -185,7 +244,37 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     // packaging-operations RPC layer can bind it. Web consumers
     // never receive this instance over RPC.
     packaging,
+    // CI-W1A: Creative Intelligence Runtime Application Layer.
+    // Web consumers receive operations only (creative-intelligence:*).
+    creativeIntelligence,
   });
+}
+
+/**
+ * Helper: poll a documentContext run until it reaches
+ * awaiting_confirmation (or fails/cancels). Returns the final run.
+ */
+async function waitForFactConfirmation(
+  runId: string,
+  documentContext: {
+    getRun: (id: string) => Promise<{ id: string; status: string }>;
+  },
+  options: { timeoutMs?: number; pollMs?: number } = {},
+): Promise<{ id: string; status: string }> {
+  const timeoutMs = options.timeoutMs ?? 5 * 60 * 1000;
+  const pollMs = options.pollMs ?? 250;
+  const start = Date.now();
+  let current: { id: string; status: string };
+  do {
+    current = await documentContext.getRun(runId);
+    if (current.status === 'awaiting_confirmation' || current.status === 'failed' || current.status === 'cancelled') {
+      return current;
+    }
+    if (Date.now() - start > timeoutMs) {
+      throw new Error('document intake timeout');
+    }
+    await new Promise((r) => setTimeout(r, pollMs));
+  } while (true);
 }
 
 export type RuntimeServices = ReturnType<typeof createRuntimeServices>;

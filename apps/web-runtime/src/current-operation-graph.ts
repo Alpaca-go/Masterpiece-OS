@@ -5,6 +5,7 @@ import {
   createContextIntegrationOperations,
   createCreativeProductionOperations,
   createCreativeSessionOperations,
+  createCreativeIntelligenceOperations,
   createDocumentOperations,
   createImageGenerationOperations,
   createPackagingArtifactStore,
@@ -116,6 +117,8 @@ export function createCurrentBusinessOperations(
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeries, generationSeriesExecution, formalAssets,
     packaging,
+    // CI-W1A: Creative Intelligence Runtime Application Layer.
+    creativeIntelligence,
   } = services;
 
   // P3-B3: resolve a canonical truth snapshot for a project
@@ -394,6 +397,11 @@ export function createCurrentBusinessOperations(
     createDocumentOperations({ documentContext, readTextFile: (source: string) => fs.readFile(source, 'utf8') }),
     createReferenceOperations({ referenceAnchor }),
     createImageGenerationOperations({ service: imageGeneration, shortChainService: shortChainGeneration }),
+    // CI-W1A: Creative Intelligence Runtime Application Layer operations.
+    // Bound to the same kebab-case RPC channels the Web side expects
+    // (creative-intelligence:list-runs, etc.). The Web never imports
+    // the application service directly.
+    createCreativeIntelligenceOperations({ creativeIntelligence }),
     // P3-B2: Packaging Workspace RPC operations. The
     // Workspace service is held by `runtime-services.ts`; the
     // operations layer is a thin bridge to it.

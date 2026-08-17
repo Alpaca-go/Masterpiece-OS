@@ -2466,6 +2466,31 @@ export interface RuntimeApi {
     openFolder(runId: string): Promise<void>;
     onProgress(callback: (progress: DocumentContextProgress) => void): () => void;
   };
+  // CI-W1A: Creative Intelligence Runtime Application Layer.
+  // Lifecycle, persistence, document intake, fact confirmation, CI
+  // orchestration, explicit user selection, Canon + Translation
+  // continuation. The Web side never reaches into CI package directly.
+  creativeIntelligence: {
+    listRuns(): Promise<CreativeIntelligenceRun[]>;
+    getRun(runId: string): Promise<CreativeIntelligenceRun>;
+    start(input: StartCreativeIntelligenceInput): Promise<CreativeIntelligenceRun>;
+    getFactReview(runId: string): Promise<CreativeIntelligenceFactReview>;
+    confirmFacts(
+      runId: string,
+      facts: CreativeIntelligenceFactItem[]
+    ): Promise<CreativeIntelligenceRun>;
+    getWorkspace(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+    selectDirection(
+      runId: string,
+      action: SelectDirectionActionInput
+    ): Promise<CreativeIntelligenceWorkspaceView>;
+    resume(runId: string): Promise<CreativeIntelligenceRun>;
+    cancel(runId: string): Promise<boolean>;
+    remove(runId: string): Promise<void>;
+    onProgress(
+      callback: (progress: CreativeIntelligenceProgress) => void
+    ): () => void;
+  };
   referenceAnchor: {
     chooseReferenceAssets(): Promise<string[]>;
     inspectAssets(paths: string[]): Promise<ReferenceAssetSelection>;
@@ -3069,4 +3094,150 @@ export interface ProtocolHardcodeScanResult {
   productTerms: string[];
   concreteTouchpointTerms: string[];
   passed: boolean;
+}
+
+// =====================================================================
+// CI-W1A: Creative Intelligence Runtime Application Contracts
+// =====================================================================
+//
+// Owner: runtime-core (lifecycle / persistence / orchestration).
+// The CI package continues to own the semantic contracts (Truth, Concept,
+// Direction, Evaluation, Selection, Canon, Anchor Contract, Translation).
+// This block is the wiring layer that lets a real Web feature drive
+// CI-1..CI-9 with explicit user checkpoints and persistent state.
+
+export type CreativeIntelligenceRunStatus =
+  | 'pending'
+  | 'preparing_documents'
+  | 'extracting_facts'
+  | 'awaiting_fact_confirmation'
+  | 'building_truth'
+  | 'building_understanding'
+  | 'building_concepts'
+  | 'building_directions'
+  | 'evaluating'
+  | 'awaiting_direction_selection'
+  | 'building_canon'
+  | 'building_translation'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+export interface CreativeIntelligenceRun {
+  schemaVersion: 'creative-intelligence-run-v0.1';
+  id: string;
+  projectId?: string | null;
+  projectName: string;
+  status: CreativeIntelligenceRunStatus;
+  documentRunId?: string | null;
+  apiProfileId: string;
+  provider: string;
+  model: string;
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+  currentStage?: string;
+  selectionRevision: number;
+  selectedDirectionId?: string | null;
+  warnings: string[];
+  diagnostics: string[];
+  errorCode?: string | null;
+  lastError?: string | null;
+}
+
+export type CreativeIntelligenceProgressStage =
+  | 'document_intake'
+  | 'fact_extraction'
+  | 'fact_confirmation'
+  | 'truth'
+  | 'understanding'
+  | 'concept'
+  | 'direction'
+  | 'evaluation'
+  | 'selection'
+  | 'canon'
+  | 'translation'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+export interface CreativeIntelligenceProgress {
+  runId: string;
+  stage: CreativeIntelligenceProgressStage;
+  message: string;
+  startedAt: string;
+  elapsedMs: number;
+}
+
+export interface StartCreativeIntelligenceInput {
+  documentPaths: string[];
+  apiProfileId: string;
+  projectId?: string;
+  projectName?: string;
+  expectedBrandName?: string;
+  expectedBrandRole?: string;
+}
+
+/**
+ * A single fact that the user must confirm, modify, or mark as UNKNOWN
+ * before downstream CI reasoning can proceed.
+ */
+export interface CreativeIntelligenceFactItem {
+  field: string;
+  value: unknown;
+  authority: string;
+  sourceRef?: string;
+  evidenceRefs: string[];
+  userAction?: 'confirm' | 'edit' | 'remove' | 'unknown';
+  editedValue?: unknown;
+}
+
+export interface CreativeIntelligenceFactReview {
+  runId: string;
+  projectId?: string | null;
+  documentRunId: string;
+  sourceRunId: string;
+  context: Record<string, unknown>;
+  evidenceSummary: {
+    total: number;
+    byField: Record<string, number>;
+  };
+  unknownFields: string[];
+  facts: CreativeIntelligenceFactItem[];
+  status: 'awaiting_confirmation';
+  diagnostics: string[];
+}
+
+export interface SelectDirectionActionInput {
+  directionId: string;
+  reason?: string;
+  occurredAt?: string;
+}
+
+export interface CreativeIntelligenceWorkspaceView {
+  schemaVersion: 'creative-intelligence-workspace-v0.1';
+  run: CreativeIntelligenceRun;
+  documentRunId?: string | null;
+  sourceRunId?: string | null;
+  truth?: Record<string, unknown> | null;
+  evidence?: Record<string, unknown> | null;
+  needs?: unknown[];
+  insights?: unknown[];
+  opportunityMap?: Record<string, unknown> | null;
+  conceptSet?: Record<string, unknown> | null;
+  directionSet?: Record<string, unknown> | null;
+  evaluation?: Record<string, unknown> | null;
+  recommendation?: Record<string, unknown> | null;
+  selection?: Record<string, unknown> | null;
+  selectedDirectionSnapshot?: Record<string, unknown> | null;
+  visualCanon?: Record<string, unknown> | null;
+  anchorContract?: Record<string, unknown> | null;
+  productionTranslation?: {
+    context: Record<string, unknown> | null;
+    space: Record<string, unknown> | null;
+    packaging: Record<string, unknown> | null;
+  } | null;
+  blockers: string[];
+  warnings: string[];
+  diagnostics: string[];
 }
