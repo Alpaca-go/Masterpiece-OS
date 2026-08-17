@@ -38,6 +38,7 @@ import {
   interpretDocumentContext,
   runNicePipeline,
   runConceptPipeline,
+  runDirectionPipeline,
   CI_VERSION,
   type AdapterContext,
   type AdapterOutput,
@@ -50,6 +51,7 @@ const NEED_INTEL_FILENAME = 'need-intelligence.json';
 const INSIGHT_INTEL_FILENAME = 'insight-intelligence.json';
 const OPPORTUNITY_MAP_FILENAME = 'opportunity-map.json';
 const CONCEPT_INTEL_FILENAME = 'concept-intelligence.json';
+const DIRECTION_INTEL_FILENAME = 'direction-intelligence.json';
 
 export interface ShadowCarrierInput {
   projectRecord?: unknown;
@@ -383,6 +385,77 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
   } catch (e) {
     // Spec #59: concept shadow failure must not block production.
     warnings.push(`concept_intelligence artifact: ${(e as Error).message}`);
+  }
+
+  // CI-6: Direction Intelligence pipeline. Runs against the validated
+  // Concept Set + NICE output. Failure MUST NOT break the shadow run.
+  try {
+    const documentResult = input.carriers.documentVisualContext
+      ? (() => {
+          try {
+            return interpretDocumentContext({
+              projectId: input.projectId,
+              context: input.carriers.documentVisualContext as never,
+            });
+          } catch {
+            return undefined;
+          }
+        })()
+      : undefined;
+    const nice = runNicePipeline({
+      projectId: input.projectId,
+      truth: bundle.projectTruth,
+      evidence: bundle.evidenceLedger,
+      document: documentResult,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+    });
+    const conceptResult = runConceptPipeline({
+      projectId: input.projectId,
+      truth: bundle.projectTruth,
+      evidence: bundle.evidenceLedger,
+      needs: nice.needs,
+      insights: nice.insights,
+      opportunityMap: nice.opportunityMap,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+    });
+
+    const directionResult = runDirectionPipeline({
+      projectId: input.projectId,
+      truth: bundle.projectTruth,
+      evidence: bundle.evidenceLedger,
+      needs: nice.needs,
+      insights: nice.insights,
+      opportunityMap: nice.opportunityMap,
+      conceptSet: conceptResult.conceptSet,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+    });
+
+    const directionPath = path.join(shadowDir, sanitizeFilenamePart(DIRECTION_INTEL_FILENAME) ?? DIRECTION_INTEL_FILENAME);
+    await assertInside(shadowDir, directionPath);
+
+    await fs.writeFile(directionPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      directionSet: directionResult.directionSet,
+      familyDifference: directionResult.familyDifference,
+      gateSummary: {
+        overallStatus: directionResult.gateSummary.overallStatus,
+        passedCount: directionResult.gateSummary.passedCount,
+        warningCount: directionResult.gateSummary.warningCount,
+        blockedCount: directionResult.gateSummary.blockedCount,
+        perDirection: directionResult.gateSummary.perDirection,
+      },
+      leakage: directionResult.leakage,
+      dedupe: directionResult.dedupe,
+    }, null, 2), 'utf8');
+    filesWritten.push(DIRECTION_INTEL_FILENAME);
+  } catch (e) {
+    // Spec #52: direction shadow failure must not block production.
+    warnings.push(`direction_intelligence artifact: ${(e as Error).message}`);
   }
 
   return { ok: true, artifactDirectory: shadowDir, files: filesWritten };

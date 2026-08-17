@@ -53,8 +53,8 @@ test('CI-4 shadow: writes 9 base+CI artifacts when DVC + project record provided
       },
     });
     assert.equal(result.ok, true);
-    // 6 base + 1 doc-intel + 3 NICE + 1 concept (CI-5) = 11 files
-    assert.equal(result.files.length, 11);
+    // 6 base + 1 doc-intel + 3 NICE + 1 concept (CI-5) + 1 direction (CI-6) = 12 files
+    assert.equal(result.files.length, 12);
     // All 3 NICE artifacts present.
     assert.ok(result.files.includes('need-intelligence.json'));
     assert.ok(result.files.includes('insight-intelligence.json'));
@@ -94,8 +94,8 @@ test('CI-4 shadow: NICE artifacts written even without DVC (no doc-intel file)',
       },
     });
     assert.equal(result.ok, true);
-    // 6 base + 0 doc-intel + 3 NICE + 1 concept (CI-5) = 10 files
-    assert.equal(result.files.length, 10);
+    // 6 base + 0 doc-intel + 3 NICE + 1 concept (CI-5) + 1 direction (CI-6) = 11 files
+    assert.equal(result.files.length, 11);
     assert.ok(!result.files.includes('document-intelligence.json'));
     assert.ok(result.files.includes('need-intelligence.json'));
     assert.ok(result.files.includes('insight-intelligence.json'));
