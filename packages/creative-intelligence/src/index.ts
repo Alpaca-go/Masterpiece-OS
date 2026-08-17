@@ -10,6 +10,7 @@
  * CI-5: Concept Intelligence (first grounded creative output).
  * CI-6: Direction Intelligence (first visual-system output).
  * CI-7: Evaluation & User Selection State.
+ * CI-8: Visual Canon & Anchor Contract.
  *
  * Sub-packages:
  *   ./decisions              — structured analysis validation & self-healing runtime
@@ -23,6 +24,8 @@
  *   ./direction-intelligence — Creative Directions + Gates (CI-6)
  *   ./evaluation             — Direction Evaluation, Ranking, Recommendation (CI-7)
  *   ./selection              — User Selection State (CI-7)
+ *   ./visual-canon           — Visual Canon, DNA, Grammar, Cross-Media (CI-8)
+ *   ./anchor-contract        — Anchor Contract, leakage guard (CI-8)
  *   ./integration            — shadow validator + report builder + NICE orchestrator
  *   ./contracts              — shared CI type contracts
  */
@@ -38,5 +41,7 @@ export * from './concept-intelligence/index.ts';
 export * from './direction-intelligence/index.ts';
 export * from './evaluation/index.ts';
 export * from './selection/index.ts';
+export * from './visual-canon/index.ts';
+export * from './anchor-contract/index.ts';
 export * from './integration/index.ts';
 export * from './contracts/index.ts';

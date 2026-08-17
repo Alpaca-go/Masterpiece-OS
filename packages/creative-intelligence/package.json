@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Creative Intelligence Shared Capability — decisions, evidence, truth, document-intelligence, need-intelligence, insight-intelligence, opportunity, concept-intelligence, direction-intelligence, evaluation, selection.",
+  "description": "Creative Intelligence Shared Capability — decisions, evidence, truth, document-intelligence, need-intelligence, insight-intelligence, opportunity, concept-intelligence, direction-intelligence, evaluation, selection, visual-canon, anchor-contract.",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -31,6 +31,10 @@
     "./evaluation/*": "./src/evaluation/*",
     "./selection": "./src/selection/index.ts",
     "./selection/*": "./src/selection/*",
+    "./visual-canon": "./src/visual-canon/index.ts",
+    "./visual-canon/*": "./src/visual-canon/*",
+    "./anchor-contract": "./src/anchor-contract/index.ts",
+    "./anchor-contract/*": "./src/anchor-contract/*",
     "./integration": "./src/integration/index.ts",
     "./integration/*": "./src/integration/*",
     "./contracts": "./src/contracts/index.ts"

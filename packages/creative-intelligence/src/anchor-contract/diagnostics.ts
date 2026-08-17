@@ -1,0 +1,15 @@
+/**
+ * Anchor Contract diagnostic constants.
+ */
+
+import type { AnchorDiagnosticCode } from './contracts.ts';
+
+export const ANCHOR_DIAGNOSTIC_CODES: readonly AnchorDiagnosticCode[] = [
+  'ANCHOR_CONTRACT_SELECTION_REQUIRED',
+  'ANCHOR_CONTRACT_CANON_INVALID',
+  'ANCHOR_CONTRACT_MISSING_DNA',
+  'ANCHOR_CONTRACT_MISSING_GRAMMAR',
+  'ANCHOR_CONTRACT_LOCKED_ASSET_VIOLATION',
+  'ANCHOR_CONTRACT_PROMPT_LEAKAGE',
+  'ANCHOR_CONTRACT_PRODUCTION_SPEC_LEAKAGE',
+] as const;
