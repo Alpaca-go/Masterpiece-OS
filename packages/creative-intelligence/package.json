@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Creative Intelligence Shared Capability — decisions, evidence, truth.",
+  "description": "Creative Intelligence Shared Capability — decisions, evidence, truth, document-intelligence, need-intelligence, insight-intelligence, opportunity.",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "exports": {
@@ -17,6 +17,12 @@
     "./truth/*": "./src/truth/*",
     "./document-intelligence": "./src/document-intelligence/index.ts",
     "./document-intelligence/*": "./src/document-intelligence/*",
+    "./need-intelligence": "./src/need-intelligence/index.ts",
+    "./need-intelligence/*": "./src/need-intelligence/*",
+    "./insight-intelligence": "./src/insight-intelligence/index.ts",
+    "./insight-intelligence/*": "./src/insight-intelligence/*",
+    "./opportunity": "./src/opportunity/index.ts",
+    "./opportunity/*": "./src/opportunity/*",
     "./integration": "./src/integration/index.ts",
     "./integration/*": "./src/integration/*",
     "./contracts": "./src/contracts/index.ts"
