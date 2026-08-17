@@ -54,8 +54,8 @@ test('CI-4 shadow: writes 9 base+CI artifacts when DVC + project record provided
     });
     assert.equal(result.ok, true);
     // 6 base + 1 doc-intel + 3 NICE + 1 concept (CI-5) + 1 direction (CI-6)
-    // + 1 evaluation + 1 selection (CI-7) = 14 files
-    assert.equal(result.files.length, 14);
+    // + 1 evaluation + 1 selection (CI-7) + 1 selected-direction-snapshot (CI-8) = 15 files
+    assert.equal(result.files.length, 15);
     // All 3 NICE artifacts present.
     assert.ok(result.files.includes('need-intelligence.json'));
     assert.ok(result.files.includes('insight-intelligence.json'));
@@ -96,8 +96,8 @@ test('CI-4 shadow: NICE artifacts written even without DVC (no doc-intel file)',
     });
     assert.equal(result.ok, true);
     // 6 base + 0 doc-intel + 3 NICE + 1 concept (CI-5) + 1 direction (CI-6)
-    // + 1 evaluation + 1 selection (CI-7) = 13 files
-    assert.equal(result.files.length, 13);
+    // + 1 evaluation + 1 selection (CI-7) + 1 selected-direction-snapshot (CI-8) = 14 files
+    assert.equal(result.files.length, 14);
     assert.ok(!result.files.includes('document-intelligence.json'));
     assert.ok(result.files.includes('need-intelligence.json'));
     assert.ok(result.files.includes('insight-intelligence.json'));
@@ -119,7 +119,7 @@ test('CI-4 shadow: NICE failure does NOT break base shadow files', async () => {
     });
     assert.equal(result.ok, true);
     // 6 base + 3 NICE + 1 concept (CI-5) + 1 direction (CI-6)
-    // + 1 evaluation + 1 selection (CI-7) = 13 files
+    // + 1 evaluation + 1 selection (CI-7) + 1 selected-direction-snapshot (CI-8) = 14 files
     // Core assertion: all base files still present; count reflects current artifact set.
     assert.ok(result.files.length >= 11, `expected ≥11 files, got ${result.files.length}`);
     assert.ok(result.files.includes('project-truth.json'));

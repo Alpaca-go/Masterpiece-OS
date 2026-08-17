@@ -53,9 +53,9 @@ test('CI-3 shadow: writes 6 base files + 1 document-intelligence.json when DVC p
     });
     assert.equal(result.ok, true);
     // CI-4 adds 3 NICE artifacts; CI-5 adds 1 concept; CI-6 adds 1 direction;
-    // CI-7 adds 1 evaluation + 1 selection = 2.
-    // expect 6 base + 1 doc-intel + 3 NICE + 1 concept + 1 direction + 2 = 14.
-    assert.equal(result.files.length, 14);
+    // CI-7 adds 1 evaluation + 1 selection = 2; CI-8 adds 1 selected-direction-snapshot.
+    // expect 6 base + 1 doc-intel + 3 NICE + 1 concept + 1 direction + 2 + 1 = 15.
+    assert.equal(result.files.length, 15);
     assert.ok(result.files.includes('document-intelligence.json'));
     // Verify the doc-intel artifact structure.
     const diPath = path.join(result.artifactDirectory, 'document-intelligence.json');
@@ -84,8 +84,8 @@ test('CI-3 shadow: omits document-intelligence.json when no DVC provided', async
     });
     assert.equal(result.ok, true);
     // 6 base + 0 doc-intel + 3 NICE + 1 concept (CI-5) + 1 direction (CI-6)
-    // + 1 evaluation + 1 selection (CI-7) = 13 files.
-    assert.equal(result.files.length, 13);
+    // + 1 evaluation + 1 selection (CI-7) + 1 selected-direction-snapshot (CI-8) = 14 files.
+    assert.equal(result.files.length, 14);
     assert.ok(!result.files.includes('document-intelligence.json'));
   } finally {
     await fs.rm(tmp, { recursive: true, force: true });
@@ -118,10 +118,10 @@ test('CI-3 shadow: DVC validation failure does NOT break the base 6 files', asyn
     });
     // Base 6 files must still be written; doc-intel skipped; CI-4 NICE always
     // written (3 files); CI-5 concept always written; CI-6 direction always written;
-    // CI-7 evaluation + selection always written.
-    // Total 13.
+    // CI-7 evaluation + selection always written; CI-8 selected-direction-snapshot.
+    // Total 14.
     assert.equal(result.ok, true);
-    assert.equal(result.files.length, 13);
+    assert.equal(result.files.length, 14);
     assert.ok(!result.files.includes('document-intelligence.json'));
   } finally {
     await fs.rm(tmp, { recursive: true, force: true });

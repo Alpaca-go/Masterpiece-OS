@@ -41,6 +41,9 @@ import {
   runDirectionPipeline,
   evaluateDirections,
   createUnselectedState,
+  buildSelectedDirectionSnapshot,
+  buildVisualCanon,
+  buildAnchorContract,
   CI_VERSION,
   type AdapterContext,
   type AdapterOutput,
@@ -56,6 +59,9 @@ const CONCEPT_INTEL_FILENAME = 'concept-intelligence.json';
 const DIRECTION_INTEL_FILENAME = 'direction-intelligence.json';
 const DIRECTION_EVAL_FILENAME = 'direction-evaluation.json';
 const DIRECTION_SELECTION_FILENAME = 'direction-selection.json';
+const SELECTED_DIRECTION_SNAPSHOT_FILENAME = 'selected-direction-snapshot.json';
+const VISUAL_CANON_FILENAME = 'visual-canon.json';
+const ANCHOR_CONTRACT_FILENAME = 'anchor-contract.json';
 
 export interface ShadowCarrierInput {
   projectRecord?: unknown;
@@ -492,6 +498,27 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
       selectionState,
     }, null, 2), 'utf8');
     filesWritten.push(DIRECTION_SELECTION_FILENAME);
+
+    // CI-8: Visual Canon + Anchor Contract (only when explicit selection exists)
+    // The shadow service has no user-action state; selection must come from the
+    // runtime application layer. We always write a null snapshot file with
+    // CANON_SELECTION_REQUIRED diagnostic so downstream can see why canon/anchor
+    // were skipped. (This is the Golden fixture: no selection → no canon, no anchor.)
+    const snapshotPath = path.join(shadowDir, sanitizeFilenamePart(SELECTED_DIRECTION_SNAPSHOT_FILENAME) ?? SELECTED_DIRECTION_SNAPSHOT_FILENAME);
+    await assertInside(shadowDir, snapshotPath);
+    await fs.writeFile(snapshotPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      snapshot: null,
+      diagnostics: ['CANON_SELECTION_REQUIRED: shadow service has no user-action state; selection must come from runtime application layer'],
+    }, null, 2), 'utf8');
+    filesWritten.push(SELECTED_DIRECTION_SNAPSHOT_FILENAME);
+    // visual-canon and anchor-contract are NOT written when no selection exists
+    // (this is the Golden fixture: no selection → no canon, no anchor)
   } catch (e) {
     // Spec #52: direction shadow failure must not block production.
     warnings.push(`direction_intelligence artifact: ${(e as Error).message}`);
