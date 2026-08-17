@@ -6,7 +6,7 @@
 > **Baseline:** CI-W1B = GO  
 > **Baseline HEAD:** `b5cdc1ea`  
 > **Implementation HEAD:** `d4da1901`  
-> **Documentation Commit:** `8a8a4d8a`  
+> **Documentation Commit:** `ff5d1c8b`  
 > **Scope:** Web UX correction only  
 > **Runtime / CI Semantic Change:** NONE  
 > **CI-10:** NOT STARTED  
@@ -14,9 +14,25 @@
 
 ---
 
-## 1. Problem Statement
+## 0. Commits
 
-CI-W1B delivered a complete Web Workspace but the real page exposed two
+The seven suggested commit messages were consolidated into four
+semantic commits because the component surface was delivered as one
+progressive-disclosure rewrite (Parts A + D–I live in the same file and
+cannot be split without breaking the typecheck at intermediate
+commits):
+
+| # | Commit | Subject |
+|---|---|---|
+| 1 | `3d22c809` | refactor(web): replace CI stage rail with progressive user views (user view projection + fact grouping in `ciworkspace`; internal mapping retained) |
+| 2 | `f351b85f` | fix(web): repair creative intelligence document picker interaction (P0 upload repair + input/fact-review/thinking/direction-decision/visual-system UI + advanced analysis drawer) |
+| 3 | `d4da1901` | test(web): add CI-W1B.1 progressive disclosure and upload guards (42 cases, wired into root `npm test`) |
+| 4 | `ff5d1c8b` | docs(ci): record CI-W1B.1 UX correction (this report) |
+| — | (finalization) | docs(ci): fix CI-W1B.1 report commit reference (self-reference hash correction) |
+
+---
+
+## 1. Problem StatementCI-W1B delivered a complete Web Workspace but the real page exposed two
 problems:
 
 1. **P0 — upload area click produced no response.** On the initial
@@ -416,7 +432,7 @@ expected and permitted by this phase.
 
 ## 26. Rollback
 
-`git revert 8a8a4d8a d4da1901 f351b85f 3d22c809` restores the
+`git revert ff5d1c8b d4da1901 f351b85f 3d22c809` restores the
 CI-W1B UI exactly. No data migration, no runtime state change, no
 schema change — the workspace view model and run files are untouched by
 this phase, so a rollback is lossless.
