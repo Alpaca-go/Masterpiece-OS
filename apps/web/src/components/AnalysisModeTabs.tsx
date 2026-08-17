@@ -15,7 +15,7 @@ interface Props {
 
 const VISIBLE_MODES: Array<{ key: AnalysisMode; label: string; hint: string; primary?: boolean }> = [
   { key: 'visual-analysis', label: '视觉分析', hint: '上传视觉方案、图片、PDF 或 ZIP' },
-  { key: 'creative-intelligence', label: 'Creative Intelligence', hint: '文档 → 事实 → 概念 → 方向 → Canon → 翻译', primary: true },
+  { key: 'creative-intelligence', label: 'Creative Intelligence', hint: '上传资料 → 确认事实 → 选择创意方向 → 视觉系统', primary: true },
   { key: 'reference-anchor', label: '参考锚定（Anchor）', hint: '上传参考图提炼风格规则，生成 Anchor Brief 交人工确认' }
 ];
 
