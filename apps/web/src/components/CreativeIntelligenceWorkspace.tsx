@@ -234,8 +234,11 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
       }
       setInputDocumentPaths((current) => [...new Set([...current, ...imported])]);
     } catch (reason) {
+      const message = cleanError(reason);
       setPickerError(PICKER_UNAVAILABLE_TEXT);
-      setPickerErrorDetail(cleanError(reason));
+      setPickerErrorDetail(/RUNTIME_OPERATION_NOT_FOUND/i.test(message)
+        ? `${message}\nWeb Runtime 缺少文档导入通道（可能是旧进程）。请重启 Web Runtime（停止后重新运行 npm run web:dev），再刷新页面重试。`
+        : message);
     } finally {
       setBusy(false);
     }
