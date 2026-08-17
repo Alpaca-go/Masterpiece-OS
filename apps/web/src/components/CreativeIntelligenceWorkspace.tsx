@@ -548,7 +548,7 @@ function InputPanel({ profiles, profileId, onProfileChange, inputDocumentPaths, 
       <>
         <div className="ci-form-row">
           <label>项目名称（可选，自动从文档识别）
-            <input value={projectName} onChange={(e) => onProjectNameChange(e.target.value)} placeholder="例如：九州美学 · 一剂良方" />
+            <input value={projectName} onChange={(e) => onProjectNameChange(e.target.value)} placeholder="项目名称（可选）" />
           </label>
         </div>
         <div className="ci-form-row">
