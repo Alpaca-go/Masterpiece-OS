@@ -4,7 +4,7 @@
 > **Phase:** Creative Intelligence — CI-5  
 > **Baseline:** `dc7a4a4` (CI-4 final)  
 > **Implementation HEAD:** `a21e2c4` (gates + tests + shadow)  
-> **Documentation commit:** `070674`  
+> **Documentation commit:** `4b006b5`  
 > **Branch:** `feat/short-chain-simplified-ui`
 
 ---
@@ -61,7 +61,7 @@ Production file count before CI-5: **417**
 |---|---|---|
 | 1 | `81ce79e` | feat(ci): add concept-intelligence namespace with deterministic synthesis (CI-5) |
 | 2 | `a21e2c4` | feat(ci): add concept gates, shadow integration, and CI-5 tests (CI-5) |
-| 3 | `070674` | docs(ci): record CI-5 concept intelligence |
+| 3 | `4b006b5` | docs(ci): record CI-5 concept intelligence |
 
 ### Package Structure
 
@@ -630,7 +630,7 @@ What changed:
 ## 18. Rollback
 
 ```bash
-git revert 070674 a21e2c4 81ce79e
+git revert 4b006b5 a21e2c4 81ce79e
 ```
 
 Reverse order: docs → tests+shadow → namespace+gates.
