@@ -44,8 +44,9 @@ const FORBIDDEN_PATTERNS = [
   // labs
   { pattern: /from ['"]@masterpiece-labs\//, label: 'labs/* packages' },
   { pattern: /from ['"].*labs\//, label: 'labs/ relative' },
-  // evaluation
-  { pattern: /from ['"].*evaluation\//, label: 'evaluation/*' },
+  // evaluation — only labs/ evaluation, not the CI evaluation namespace
+  { pattern: /from ['"]@masterpiece-labs\/.*evaluation/, label: 'labs evaluation' },
+  { pattern: /from ['"].*labs\/.*evaluation/, label: 'labs/ evaluation' },
   // image generation internals
   { pattern: /from ['"]@masterpiece\/image-generation-runtime\/src\/(space|packaging|creative-director|generation)\//, label: 'image-generation compiler internals' },
   // React / UI

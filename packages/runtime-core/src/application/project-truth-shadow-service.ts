@@ -39,6 +39,8 @@ import {
   runNicePipeline,
   runConceptPipeline,
   runDirectionPipeline,
+  evaluateDirections,
+  createUnselectedState,
   CI_VERSION,
   type AdapterContext,
   type AdapterOutput,
@@ -52,6 +54,8 @@ const INSIGHT_INTEL_FILENAME = 'insight-intelligence.json';
 const OPPORTUNITY_MAP_FILENAME = 'opportunity-map.json';
 const CONCEPT_INTEL_FILENAME = 'concept-intelligence.json';
 const DIRECTION_INTEL_FILENAME = 'direction-intelligence.json';
+const DIRECTION_EVAL_FILENAME = 'direction-evaluation.json';
+const DIRECTION_SELECTION_FILENAME = 'direction-selection.json';
 
 export interface ShadowCarrierInput {
   projectRecord?: unknown;
@@ -453,6 +457,41 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
       dedupe: directionResult.dedupe,
     }, null, 2), 'utf8');
     filesWritten.push(DIRECTION_INTEL_FILENAME);
+
+    // CI-7: Direction Evaluation
+    const evaluation = evaluateDirections({
+      projectId: input.projectId,
+      directionSet: directionResult.directionSet,
+      familyDifference: directionResult.familyDifference,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+    });
+    const evalPath = path.join(shadowDir, sanitizeFilenamePart(DIRECTION_EVAL_FILENAME) ?? DIRECTION_EVAL_FILENAME);
+    await assertInside(shadowDir, evalPath);
+    await fs.writeFile(evalPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      evaluationSet: evaluation,
+    }, null, 2), 'utf8');
+    filesWritten.push(DIRECTION_EVAL_FILENAME);
+
+    // CI-7: Selection State (always initialize as unselected)
+    const selectionState = createUnselectedState(input.projectId, bundle.projectTruth.provenance.generatedAt);
+    const selectionPath = path.join(shadowDir, sanitizeFilenamePart(DIRECTION_SELECTION_FILENAME) ?? DIRECTION_SELECTION_FILENAME);
+    await assertInside(shadowDir, selectionPath);
+    await fs.writeFile(selectionPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      selectionState,
+    }, null, 2), 'utf8');
+    filesWritten.push(DIRECTION_SELECTION_FILENAME);
   } catch (e) {
     // Spec #52: direction shadow failure must not block production.
     warnings.push(`direction_intelligence artifact: ${(e as Error).message}`);
