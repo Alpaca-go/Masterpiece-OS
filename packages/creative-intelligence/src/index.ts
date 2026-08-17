@@ -9,6 +9,7 @@
  * CI-4: Need & Insight Intelligence (NICE N + I + Opportunity Map).
  * CI-5: Concept Intelligence (first grounded creative output).
  * CI-6: Direction Intelligence (first visual-system output).
+ * CI-7: Evaluation & User Selection State.
  *
  * Sub-packages:
  *   ./decisions              — structured analysis validation & self-healing runtime
@@ -20,6 +21,8 @@
  *   ./opportunity            — Opportunity Map (CI-4)
  *   ./concept-intelligence   — Concept Candidates + Gates (CI-5)
  *   ./direction-intelligence — Creative Directions + Gates (CI-6)
+ *   ./evaluation             — Direction Evaluation, Ranking, Recommendation (CI-7)
+ *   ./selection              — User Selection State (CI-7)
  *   ./integration            — shadow validator + report builder + NICE orchestrator
  *   ./contracts              — shared CI type contracts
  */
@@ -33,5 +36,7 @@ export * from './insight-intelligence/index.ts';
 export * from './opportunity/index.ts';
 export * from './concept-intelligence/index.ts';
 export * from './direction-intelligence/index.ts';
+export * from './evaluation/index.ts';
+export * from './selection/index.ts';
 export * from './integration/index.ts';
 export * from './contracts/index.ts';
