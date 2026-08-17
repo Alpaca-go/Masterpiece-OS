@@ -46,6 +46,13 @@ export interface DirectionGenerationInput {
   /** Maximum directions per concept. Default 2. */
   maxPerConcept?: number;
   generatedAt?: string;
+  /**
+   * Optional per-concept effective status override (CI-W1A P0 fix).
+   * If provided, status propagation uses this map instead of
+   * `concept.status` directly. This is the bridge between the Concept
+   * Status Authority and Direction generation.
+   */
+  effectiveConceptStatusById?: Record<string, 'grounded' | 'provisional' | 'blocked'>;
 }
 
 // --- Family templates ---
@@ -203,6 +210,9 @@ function buildDirectionForConcept(
   variant: number,
   ctx: Omit<DirectionGenerationInput, 'concepts' | 'opportunityMap' | 'insights' | 'needs' | 'facts' | 'evidence' | 'conflicts'>,
 ): CreativeDirectionCandidate {
+  // CI-W1A P0 fix: prefer the precomputed effective status if provided.
+  // Downstream certainty may NEVER increase.
+  const effectiveStatus = ctx.effectiveConceptStatusById?.[concept.id] ?? concept.status;
   const tpl = FAMILY_TEMPLATES[family];
   const titleSuffix = variant === 0 ? '主路径' : '备选路径';
 
@@ -214,14 +224,14 @@ function buildDirectionForConcept(
   const factRefs = [...concept.factRefs];
   const evidenceRefs = [...concept.evidenceRefs];
 
-  // Status propagation (Step 13):
-  //   blocked Concept → Direction status = blocked
-  //   provisional Concept → Direction max status = provisional
-  //   grounded Concept → Direction may be grounded
+  // Status propagation (Step 13 / CI-W1A P0):
+  //   blocked Concept (effective) → Direction status = blocked
+  //   provisional Concept (effective) → Direction max status = provisional
+  //   grounded Concept (effective) → Direction may be grounded
   let status: DirectionStatus;
-  if (concept.status === 'blocked') {
+  if (effectiveStatus === 'blocked') {
     status = 'blocked';
-  } else if (concept.status === 'provisional') {
+  } else if (effectiveStatus === 'provisional') {
     status = 'provisional';
   } else {
     // grounded Concept → Direction can be grounded
@@ -295,8 +305,11 @@ export function generateDirections(input: DirectionGenerationInput): DirectionGe
   const diagnostics: string[] = [];
   const directions: CreativeDirectionCandidate[] = [];
 
-  // Only generate from valid concepts (not blocked)
-  const eligibleConcepts = concepts.filter((c) => c.status !== 'blocked');
+  // Only generate from valid concepts (not blocked, considering EFFECTIVE status)
+  const eligibleConcepts = concepts.filter((c) => {
+    const effective = input.effectiveConceptStatusById?.[c.id] ?? c.status;
+    return effective !== 'blocked';
+  });
 
   if (eligibleConcepts.length === 0) {
     diagnostics.push('NO_ELIGIBLE_CONCEPTS: 无已验证的概念可生成 Direction');

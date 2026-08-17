@@ -16,7 +16,7 @@ import type { EvidenceLedgerSnapshot } from '../evidence/contracts.ts';
 import type { NeedItem } from '../need-intelligence/contracts.ts';
 import type { InsightItem } from '../insight-intelligence/contracts.ts';
 import type { OpportunityMap } from '../opportunity/contracts.ts';
-import type { ConceptSet } from '../concept-intelligence/contracts.ts';
+import type { ConceptSet, ConceptGateStatus } from '../concept-intelligence/contracts.ts';
 import type {
   DirectionSet,
   DirectionEvaluationResult,
@@ -31,6 +31,11 @@ import { runDirectionGatesForSet } from './direction-gates.ts';
 import type { FullDirectionGateSummary } from './direction-gates.ts';
 import { evaluateDirectionFamilyDifference } from './direction-family.ts';
 import { detectDirectionLeakage } from './direction-leakage.ts';
+import {
+  filterValidConceptsForDirection,
+  resolveEffectiveConceptStatus,
+  computeEffectiveConceptStatusMap,
+} from '../concept-intelligence/concept-status-authority.ts';
 
 export interface DirectionPipelineInput {
   projectId: string;
@@ -74,8 +79,11 @@ export function runDirectionPipeline(input: DirectionPipelineInput): DirectionPi
   const generatedAt = input.generatedAt ?? new Date().toISOString();
   const conflicts: ProjectTruthConflict[] = input.truth.conflicts ?? [];
 
-  // Use only valid (non-blocked) concepts as input
-  const validConcepts = input.conceptSet.concepts.filter((c) => c.status !== 'blocked');
+  // CI-W1A P0 fix: use EFFECTIVE Concept status (candidate + gate + blockedConceptIds)
+  // to filter Concepts before Direction generation. A Concept is valid for
+  // Direction generation iff its effective status is not 'blocked'.
+  const effectiveConceptStatusById = computeEffectiveConceptStatusMap(input.conceptSet);
+  const validConcepts = filterValidConceptsForDirection(input.conceptSet);
 
   // 1. Generate
   const { directions: rawDirections, diagnostics: genDiagnostics } = generateDirections({
@@ -90,6 +98,7 @@ export function runDirectionPipeline(input: DirectionPipelineInput): DirectionPi
     maxDirections: input.maxDirections,
     maxPerConcept: input.maxPerConcept,
     generatedAt,
+    effectiveConceptStatusById,
   });
 
   // 2. Dedupe

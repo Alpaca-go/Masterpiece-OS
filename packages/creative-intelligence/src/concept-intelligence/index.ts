@@ -16,3 +16,9 @@ export { runConceptGates, runConceptGatesForSet } from './concept-gates.ts';
 export { detectConceptLeakage } from './concept-leakage.ts';
 export { runConceptPipeline } from './concept-pipeline.ts';
 export type { ConceptPipelineInput, ConceptPipelineResult } from './concept-pipeline.ts';
+export {
+  resolveEffectiveConceptStatus,
+  filterValidConceptsForDirection,
+  computeEffectiveConceptStatusMap,
+  maxDirectionStatusFromConcept,
+} from './concept-status-authority.ts';

@@ -77,7 +77,7 @@ function vucFixture(overrides = {}) {
   };
 }
 
-function buildScenario(projectId, carriers) {
+function buildScenario(projectId, carriers, expectedBrandName = 'AcmeCorp') {
   const carrierOutputs = carriers.map((c) => c());
   const { truth, ledger } = assembleProjectTruth({
     projectId, carrierOutputs, context: CTX,
@@ -87,12 +87,13 @@ function buildScenario(projectId, carriers) {
     projectId, truth, evidence: ledger,
     needs: nice.needs, insights: nice.insights,
     opportunityMap: nice.opportunityMap, generatedAt: CTX.generatedAt,
+    expectedBrandName,
   });
   const direction = runDirectionPipeline({
     projectId, truth, evidence: ledger,
     needs: nice.needs, insights: nice.insights,
     opportunityMap: nice.opportunityMap, conceptSet: concept.conceptSet,
-    generatedAt: CTX.generatedAt, expectedBrandName: 'AcmeCorp',
+    generatedAt: CTX.generatedAt, expectedBrandName,
   });
   return { truth, ledger, nice, concept, direction };
 }
@@ -133,14 +134,20 @@ function validateDirectionHardAcceptance(scenarioName, result) {
 }
 
 // ── 1. document-led ──
-
-test('CI-6 golden 1: document-led — grounded directions, full trace', () => {
-  const { direction } = buildScenario('p-doc', [
+// CI-W1A: with the P0 fix, this scenario's gate correctly blocks all 4 concepts
+// because the minimal DVC fixture triggers OFFICIAL_CERTIFICATION_CLAIM and
+// MISSING_CRITICAL_NEED_COVERAGE blocks. This is the P0 regression test:
+// gate-blocked Concepts MUST NOT produce Directions.
+test('CI-6 golden 1: document-led — sparse input → all concepts gate-blocked (P0 regression)', () => {
+  const { direction, concept } = buildScenario('p-doc', [
     () => adaptProjectRecord({ id: 'p-doc', brandName: 'DocBrand', industry: 'tech', logoLocked: true }, CTX),
     () => adaptDocumentVisualContext(dvcFixture({ brandName: 'DocBrand' }), CTX),
-  ]);
-  validateDirectionHardAcceptance('document-led', direction);
-  assert.ok(direction.directionSet.directions.length > 0, 'document-led should produce directions');
+  ], 'DocBrand');
+  // P0 fix: all 4 concepts are in blockedConceptIds → 0 Directions expected.
+  assert.equal(concept.conceptSet.blockedConceptIds.length, concept.conceptSet.concepts.length,
+    'sparse document-led: all concepts gate-blocked');
+  assert.equal(direction.directionSet.directions.length, 0,
+    'gate-blocked Concepts MUST NOT produce Directions (P0 fix)');
 });
 
 // ── 2. visual-led ──
