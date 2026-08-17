@@ -20,6 +20,7 @@ import { DocumentContextWorkspace } from './components/DocumentContextWorkspace'
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
 import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
+import { CreativeIntelligenceWorkspace } from './components/CreativeIntelligenceWorkspace';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { StatusBadgeInline } from './components/StatusBadgeInline';
 import { ProjectDetail } from './components/ProjectDetail';
@@ -428,6 +429,7 @@ export function App() {
           setAnalysisMode(mode);
           if (mode !== 'document-context') setRequestedDocumentContextRunId('');
           if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
+          if (mode === 'creative-intelligence') { setScreen('creative-intelligence'); }
         }} />
         <div style={{ width: 80 }} />
       </header>
@@ -448,6 +450,16 @@ export function App() {
       </div>
     </div>
   );
+  // CI-W1B: Creative Intelligence Web Workspace (primary Web entry).
+  // Reached via /creative-intelligence. Hidden primary, no AppShell leak
+  // — the workspace owns its own AppShell.
+  if (screen === 'creative-intelligence') return <CreativeIntelligenceWorkspace
+    settings={settings}
+    selectedApiProfileId={selectedApiProfileId}
+    onApiProfileChange={setSelectedApiProfileId}
+    onBack={() => { setScreen('home'); void refresh(); }}
+    onOpenSettings={() => { setSettingsReturnScreen('creative-intelligence'); setScreen('settings'); }}
+  />;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
     progress={progress}

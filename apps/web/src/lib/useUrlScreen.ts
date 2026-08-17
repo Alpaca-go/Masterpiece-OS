@@ -24,7 +24,15 @@ export type Screen =
   | 'report'
   | 'image-generation'
   | 'creative-session'
-  | 'packaging';
+  | 'packaging'
+  // CI-W1B: Creative Intelligence Web Workspace. The screen owns the
+  // top-level route; the per-run deep-link resolves via the runId URL
+  // segment (`/creative-intelligence/:runId`). The legacy 'document-context'
+  // screen key is NOT deleted — the URL is still routable and the old
+  // DocumentContextWorkspace is still mounted, just no longer surfaced in
+  // the primary entry points.
+  | 'creative-intelligence'
+  | 'document-context';
 
 const SCREEN_TO_PATH: Record<Screen, string> = {
   'home': '/',
@@ -36,6 +44,8 @@ const SCREEN_TO_PATH: Record<Screen, string> = {
   'image-generation': '/image-generation',
   'creative-session': '/creative-session',
   'packaging': '/packaging',
+  'creative-intelligence': '/creative-intelligence',
+  'document-context': '/document-context'
 };
 
 function pathToScreen(pathname: string): Screen {
@@ -54,6 +64,10 @@ function pathToScreen(pathname: string): Screen {
   if (pathname.startsWith('/image-generation')) return 'image-generation';
   if (pathname.startsWith('/creative-session')) return 'creative-session';
   if (pathname.startsWith('/packaging')) return 'packaging';
+  // CI-W1B: creative-intelligence must be matched BEFORE document-context
+  // because the latter is a legacy deep-link. Both routes remain routable.
+  if (pathname.startsWith('/creative-intelligence')) return 'creative-intelligence';
+  if (pathname.startsWith('/document-context')) return 'document-context';
   // Unknown path → home. HashRouter only, so server-side rewrites aren't needed.
   return 'home';
 }
