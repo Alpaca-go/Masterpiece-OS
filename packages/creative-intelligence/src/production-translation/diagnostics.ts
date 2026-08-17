@@ -1,0 +1,24 @@
+/**
+ * Production Translation diagnostic constants.
+ */
+
+import type { ProductionTranslationDiagnosticCode } from './contracts.ts';
+
+export const PRODUCTION_TRANSLATION_DIAGNOSTIC_CODES: readonly ProductionTranslationDiagnosticCode[] = [
+  'PT_CANON_REQUIRED',
+  'PT_CANON_BLOCKED',
+  'PT_CANON_STALE',
+  'PT_SELECTION_MISMATCH',
+  'PT_TRACE_INCOMPLETE',
+  'PT_HARD_DNA_MISSING',
+  'PT_HARD_GRAMMAR_MISSING',
+  'PT_LOCKED_ASSET_RULE_MISSING',
+  'PT_REFERENCE_CONTAMINATION',
+  'PT_NEW_VISUAL_MECHANISM',
+  'PT_NEW_DIRECTION_FAMILY',
+  'PT_MEDIA_RULE_UNGROUNDED',
+  'PT_PRODUCTION_PROMPT_LEAKAGE',
+  'PT_EXISTING_INPUT_CONFLICT',
+  'PT_CONSUMER_SWITCH_FORBIDDEN',
+  'PT_REFERENCE_CANON_CONFLICT',
+] as const;

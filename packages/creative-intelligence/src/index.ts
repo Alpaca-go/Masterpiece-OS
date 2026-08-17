@@ -11,6 +11,7 @@
  * CI-6: Direction Intelligence (first visual-system output).
  * CI-7: Evaluation & User Selection State.
  * CI-8: Visual Canon & Anchor Contract.
+ * CI-9: Production Translation Bridge (Space + Packaging).
  *
  * Sub-packages:
  *   ./decisions              — structured analysis validation & self-healing runtime
@@ -26,6 +27,7 @@
  *   ./selection              — User Selection State (CI-7)
  *   ./visual-canon           — Visual Canon, DNA, Grammar, Cross-Media (CI-8)
  *   ./anchor-contract        — Anchor Contract, leakage guard (CI-8)
+ *   ./production-translation — Space + Packaging translation contracts (CI-9)
  *   ./integration            — shadow validator + report builder + NICE orchestrator
  *   ./contracts              — shared CI type contracts
  */
@@ -43,5 +45,6 @@ export * from './evaluation/index.ts';
 export * from './selection/index.ts';
 export * from './visual-canon/index.ts';
 export * from './anchor-contract/index.ts';
+export * from './production-translation/index.ts';
 export * from './integration/index.ts';
 export * from './contracts/index.ts';
