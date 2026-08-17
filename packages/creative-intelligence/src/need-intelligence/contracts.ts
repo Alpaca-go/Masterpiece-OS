@@ -33,6 +33,32 @@ export interface NeedItem {
   whyItMatters: string;
   status: NeedStatus;
   priority: NeedPriority;
+  /**
+   * CI-W1B.2: how this Need must be honored by downstream Concept /
+   * Direction gates. Distinct from priority (which is importance) and
+   * from status (which is readiness).
+   *
+   *   - `required`         — Concept must reference this Need in its
+   *                         trace to be considered valid. This is
+   *                         the only NeedRole the value-coverage
+   *                         gate blocks on.
+   *   - `constraint_only`  — Concept must RESPECT this Need, not
+   *                         cover it as a topic. Validation lives
+   *                         in the relevant constraint gate
+   *                         (preservation / asset-authorization /
+   *                         etc.). The value-coverage gate MUST
+   *                         NOT count it as a coverage target.
+   *   - `not_applicable`   — Need is a pre-blocking signal
+   *                         (clarification / conflict-risk) and is
+   *                         already projected as `status=blocked`,
+   *                         which filters it out of coverage
+   *                         evaluation entirely.
+   *
+   * Defaults to `required` for backward compatibility (older Need
+   * items built by lab/external code paths); new rules emitted by
+   * `derive-needs.ts` set it explicitly.
+   */
+  coverageRequirement?: 'required' | 'constraint_only' | 'not_applicable';
   /** Stable fact ids from ProjectTruthModel. */
   factRefs: string[];
   /** Stable evidence ids from EvidenceLedgerSnapshot. */

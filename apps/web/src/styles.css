@@ -5772,3 +5772,25 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * CI-W1B.2: All-Blocked recovery view styles.
+ * Used when run.status === 'direction_blocked'.
+ * --------------------------------------------------------------------------- */
+.ci-ab-view { display: flex; flex-direction: column; gap: 24px; padding: 24px 0; }
+.ci-ab-head h2 { margin: 0 0 12px 0; color: #c92a2a; }
+.ci-ab-head p { margin: 0 0 8px 0; color: #495057; line-height: 1.6; }
+.ci-ab-sub { font-size: 14px; color: #6c757d; }
+.ci-ab-summary h3, .ci-ab-actions h3 { margin: 0 0 12px 0; font-size: 16px; font-weight: 600; }
+.ci-ab-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.ci-ab-row { background: #fff5f5; border: 1px solid #ffc9c9; border-radius: 8px; padding: 12px 16px; }
+.ci-ab-row__title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.ci-ab-row__title strong { color: #c92a2a; font-size: 15px; }
+.ci-ab-row__count { background: #c92a2a; color: white; border-radius: 12px; padding: 2px 10px; font-size: 12px; font-weight: 500; }
+.ci-ab-row__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-size: 12px; color: #6c757d; }
+.ci-ab-row__category { background: #f1f3f5; padding: 2px 8px; border-radius: 4px; }
+.ci-ab-row__code { font-family: monospace; background: #f1f3f5; padding: 2px 6px; border-radius: 3px; color: #495057; }
+.ci-ab-row__recoverable { color: #2b8a3e; }
+.ci-ab-row__recoverable--no { color: #c92a2a; }
+.ci-ab-actions p { margin: 0 0 16px 0; color: #495057; }
+.ci-ab-actions__buttons { display: flex; flex-wrap: wrap; gap: 12px; }

@@ -45,6 +45,7 @@ function makeNeed(input: {
   conflictIds: string[];
   sourceKinds: string[];
   confidence?: number;
+  coverageRequirement?: 'required' | 'constraint_only' | 'not_applicable';
   referenceFactIds: Set<string>;
 }): NeedItem {
   // Reference contamination guard (spec #34): any fact that is reference-derived
@@ -59,6 +60,7 @@ function makeNeed(input: {
       whyItMatters: input.whyItMatters,
       status: 'blocked',
       priority: input.priority,
+      coverageRequirement: input.coverageRequirement ?? 'required',
       factRefs: input.factIds,
       evidenceRefs: input.evidenceIds,
       conflictRefs: input.conflictIds,
@@ -75,6 +77,7 @@ function makeNeed(input: {
     whyItMatters: input.whyItMatters,
     status: input.status,
     priority: input.priority,
+    coverageRequirement: input.coverageRequirement ?? 'required',
     factRefs: input.factIds,
     evidenceRefs: input.evidenceIds,
     conflictRefs: input.conflictIds,
@@ -124,6 +127,12 @@ const identityPreservationRule: NeedRule = {
       whyItMatters: 'Confirmed brand name/role facts anchor all downstream communication; any drift introduces category misread risk.',
       status: 'required',
       priority: 3,
+      // CI-W1B.2: brand identity is a constraint, not a coverage
+      // target. The Concept must respect it (no unauthorized brand
+      // substitution), but it does not have to be the Concept's
+      // creative theme. Marking it `constraint_only` removes the
+      // false-positive MISSING_CRITICAL_NEED_COVERAGE block.
+      coverageRequirement: 'constraint_only',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -157,6 +166,9 @@ const lockedPreservationRule: NeedRule = {
       whyItMatters: 'Lock state is the strongest authority; any change invalidates user / system intent.',
       status: 'required',
       priority: 3,
+      // CI-W1B.2: locked facts are constraints the Concept must
+      // NOT modify; they are not coverage targets.
+      coverageRequirement: 'constraint_only',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -190,6 +202,10 @@ const businessCommunicationRule: NeedRule = {
       whyItMatters: 'Business model facts constrain which audiences, touchpoints, and visuals are appropriate.',
       status: 'important',
       priority: 2,
+      // CI-W1B.2: business communication is a real coverage
+      // target — a Concept that fails to address the business
+      // model is a strategic miss.
+      coverageRequirement: 'required',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -227,6 +243,8 @@ const audienceRequirementRule: NeedRule = {
       whyItMatters: 'Audience facts drive emotional register, language register, and reference vocabulary.',
       status: 'important',
       priority: 2,
+      // CI-W1B.2: audience is a real coverage target.
+      coverageRequirement: 'required',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -262,6 +280,8 @@ const differentiationRule: NeedRule = {
       whyItMatters: 'Brand role + industry together define the differentiation space.',
       status: 'important',
       priority: 2,
+      // CI-W1B.2: differentiation is a real coverage target.
+      coverageRequirement: 'required',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -299,6 +319,10 @@ const constraintsRule: NeedRule = {
       whyItMatters: 'Prohibited directions are explicit negative constraints; violating them produces a category misread or a brand-incompatible output.',
       status: 'required',
       priority: 3,
+      // CI-W1B.2: prohibited directions are negative constraints.
+      // They are validated by the constraint-violation gate, not
+      // counted as a coverage target.
+      coverageRequirement: 'constraint_only',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -337,6 +361,9 @@ const clarificationRule: NeedRule = {
       whyItMatters: 'Unknown on these keys makes downstream strategic claims provisional; resolving them is a precondition.',
       status: 'blocked',
       priority: 3,
+      // CI-W1B.2: clarification needs are upstream-block signals
+      // (`status=blocked`); they MUST NEVER be coverage targets.
+      coverageRequirement: 'not_applicable',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -378,6 +405,8 @@ const conflictRiskRule: NeedRule = {
       whyItMatters: 'Open conflict on identity or business facts would otherwise be silently selected and could produce a confident but wrong strategic claim.',
       status: 'blocked',
       priority: 3,
+      // CI-W1B.2: conflict-risk needs are upstream-block signals.
+      coverageRequirement: 'not_applicable',
       factIds,
       evidenceIds: [],
       conflictIds: [...ctx.conflictIds].filter((id) =>

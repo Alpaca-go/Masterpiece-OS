@@ -337,6 +337,24 @@ function runUnsupportedClaimGate(ctx: GateContext): ConceptGateIssue[] {
 // Lab invariant: "Concept must address at least one validated
 // audience/consumer/user-value Need when such a Need is critical."
 // Adapted from consumer-value-coverage + business-model-coverage evaluators.
+//
+// CI-W1B.2 audit (Spec §13-18, §25): the original implementation
+// counted every priority=3 Need as a coverage target. That produced
+// a false-positive MISSING_CRITICAL_NEED_COVERAGE block for Concept
+// Sets whose Concepts correctly REFERENCE but do not THEME the
+// identity-preservation / locked-preservation / prohibited-directions
+// Needs (which are constraints, not coverage targets).
+//
+// New rule: a Need counts as a coverage target iff
+//   coverageRequirement === 'required' && priority >= 2 && status !== 'blocked'
+// Constraint / preservation / upstream-block Needs are excluded;
+// they are validated by the relevant constraint gates instead.
+
+function isCoverageCriticalNeed(n: { priority?: number; status?: string; coverageRequirement?: string }): boolean {
+  if (n.status === 'blocked') return false;
+  if (n.coverageRequirement && n.coverageRequirement !== 'required') return false;
+  return (n.priority ?? 0) >= 2;
+}
 
 function runValueCoverageGate(ctx: GateContext): ConceptGateIssue[] {
   const issues: ConceptGateIssue[] = [];
@@ -352,15 +370,13 @@ function runValueCoverageGate(ctx: GateContext): ConceptGateIssue[] {
   });
 
   const tracedNeeds = needs.filter((n) => trace.needIds.has(n.id));
-  const criticalNeeds = needs.filter((n) => n.priority === 3 && n.status !== 'blocked');
+  const coverageCriticalNeeds = needs.filter(isCoverageCriticalNeed);
+  const tracedCoverageCritical = tracedNeeds.filter(isCoverageCriticalNeed);
 
-  if (criticalNeeds.length > 0) {
-    const coversCritical = tracedNeeds.some((n) => n.priority === 3);
-    if (!coversCritical) {
-      issues.push(makeIssue('value-coverage', concept.id,
-        'MISSING_CRITICAL_NEED_COVERAGE', 'block',
-        '存在关键需求（优先级 3），但该概念未覆盖任何关键需求'));
-    }
+  if (coverageCriticalNeeds.length > 0 && tracedCoverageCritical.length === 0) {
+    issues.push(makeIssue('value-coverage', concept.id,
+      'MISSING_CRITICAL_NEED_COVERAGE', 'block',
+      '存在关键覆盖需求（priority≥2 且 required），但该概念未覆盖任何关键覆盖需求'));
   }
 
   // Business model alignment check: if there are business-type needs,
