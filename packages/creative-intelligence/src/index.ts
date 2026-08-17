@@ -8,6 +8,7 @@
  * CI-3: Document Intelligence Core.
  * CI-4: Need & Insight Intelligence (NICE N + I + Opportunity Map).
  * CI-5: Concept Intelligence (first grounded creative output).
+ * CI-6: Direction Intelligence (first visual-system output).
  *
  * Sub-packages:
  *   ./decisions              — structured analysis validation & self-healing runtime
@@ -18,6 +19,7 @@
  *   ./insight-intelligence   — Insight I layer (CI-4)
  *   ./opportunity            — Opportunity Map (CI-4)
  *   ./concept-intelligence   — Concept Candidates + Gates (CI-5)
+ *   ./direction-intelligence — Creative Directions + Gates (CI-6)
  *   ./integration            — shadow validator + report builder + NICE orchestrator
  *   ./contracts              — shared CI type contracts
  */
@@ -30,5 +32,6 @@ export * from './need-intelligence/index.ts';
 export * from './insight-intelligence/index.ts';
 export * from './opportunity/index.ts';
 export * from './concept-intelligence/index.ts';
+export * from './direction-intelligence/index.ts';
 export * from './integration/index.ts';
 export * from './contracts/index.ts';
