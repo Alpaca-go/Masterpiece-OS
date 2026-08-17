@@ -52,7 +52,8 @@ test('CI-3 shadow: writes 6 base files + 1 document-intelligence.json when DVC p
       },
     });
     assert.equal(result.ok, true);
-    assert.equal(result.files.length, 7);
+    // CI-4 adds 3 NICE artifacts; expect 6 base + 1 doc-intel + 3 NICE = 10.
+    assert.equal(result.files.length, 10);
     assert.ok(result.files.includes('document-intelligence.json'));
     // Verify the doc-intel artifact structure.
     const diPath = path.join(result.artifactDirectory, 'document-intelligence.json');
@@ -80,7 +81,8 @@ test('CI-3 shadow: omits document-intelligence.json when no DVC provided', async
       },
     });
     assert.equal(result.ok, true);
-    assert.equal(result.files.length, 6);
+    // 6 base + 0 doc-intel + 3 NICE = 9 files.
+    assert.equal(result.files.length, 9);
     assert.ok(!result.files.includes('document-intelligence.json'));
   } finally {
     await fs.rm(tmp, { recursive: true, force: true });
@@ -111,9 +113,10 @@ test('CI-3 shadow: DVC validation failure does NOT break the base 6 files', asyn
         },
       },
     });
-    // Base 6 files must still be written.
+    // Base 6 files must still be written; doc-intel skipped; CI-4 NICE always
+    // written (3 files). Total 9.
     assert.equal(result.ok, true);
-    assert.equal(result.files.length, 6);
+    assert.equal(result.files.length, 9);
     assert.ok(!result.files.includes('document-intelligence.json'));
   } finally {
     await fs.rm(tmp, { recursive: true, force: true });

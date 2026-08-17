@@ -290,7 +290,7 @@ test('CI-2 hard acceptance: unknown silently fabricated = 0', () => {
 
 // --- Shadow service end-to-end (writes real files) ---
 
-test('CI-2 shadow service: writes 6 artifacts to non-authoritative path', async () => {
+test('CI-2 shadow service: writes base 6 artifacts (CI-3/4 may add more)', async () => {
   const tmp = await fs.mkdtemp(path.join(os.tmpdir(), 'ci2-shadow-'));
   try {
     const result = await runProjectTruthShadowSafely({
@@ -301,8 +301,10 @@ test('CI-2 shadow service: writes 6 artifacts to non-authoritative path', async 
       },
     });
     assert.equal(result.ok, true);
-    assert.equal(result.files.length, 6);
+    // CI-3/4 may add more artifacts (document-intelligence.json, NICE N+I+O).
+    // We only assert the CI-2 base 6 are present.
     for (const filename of ['project-truth.json', 'evidence-ledger.json', 'truth-resolutions.json', 'truth-conflicts.json', 'validation-report.json', 'shadow-report.json']) {
+      assert.ok(result.files.includes(filename), `missing CI-2 base file: ${filename}`);
       const fullPath = path.join(result.artifactDirectory, filename);
       const stat = await fs.stat(fullPath);
       assert.ok(stat.size > 0, `${filename} should be non-empty`);

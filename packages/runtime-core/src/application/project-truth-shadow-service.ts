@@ -36,14 +36,18 @@ import {
   adaptCurrentProjectProfile,
   runShadowProjectTruth,
   interpretDocumentContext,
+  runNicePipeline,
+  CI_VERSION,
   type AdapterContext,
   type AdapterOutput,
-  CI_VERSION,
 } from '@masterpiece/creative-intelligence/index.ts';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract.ts';
 
 const SHADOW_DIRNAME = 'creative-intelligence-shadow';
 const DOC_INTEL_FILENAME = 'document-intelligence.json';
+const NEED_INTEL_FILENAME = 'need-intelligence.json';
+const INSIGHT_INTEL_FILENAME = 'insight-intelligence.json';
+const OPPORTUNITY_MAP_FILENAME = 'opportunity-map.json';
 
 export interface ShadowCarrierInput {
   projectRecord?: unknown;
@@ -241,6 +245,78 @@ export async function runProjectTruthShadow(input: RunShadowInput): Promise<RunS
       // overall shadow run. The base 6 files have already been written.
       warnings.push(`document_intelligence artifact: ${(e as Error).message}`);
     }
+  }
+
+  // CI-4: NICE N+I+O pipeline. Runs against the assembled Project Truth +
+  // Evidence + (optional) Document Intelligence result. Always writes 3
+  // artifacts; failure here MUST NOT break the rest of the shadow run.
+  try {
+    const documentResult = input.carriers.documentVisualContext
+      ? (() => {
+          try {
+            return interpretDocumentContext({
+              projectId: input.projectId,
+              context: input.carriers.documentVisualContext as never,
+            });
+          } catch {
+            return undefined;
+          }
+        })()
+      : undefined;
+    const nice = runNicePipeline({
+      projectId: input.projectId,
+      truth: bundle.projectTruth,
+      evidence: bundle.evidenceLedger,
+      document: documentResult,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+    });
+
+    const needPath = path.join(shadowDir, sanitizeFilenamePart(NEED_INTEL_FILENAME) ?? NEED_INTEL_FILENAME);
+    const insightPath = path.join(shadowDir, sanitizeFilenamePart(INSIGHT_INTEL_FILENAME) ?? INSIGHT_INTEL_FILENAME);
+    const oppPath = path.join(shadowDir, sanitizeFilenamePart(OPPORTUNITY_MAP_FILENAME) ?? OPPORTUNITY_MAP_FILENAME);
+    await assertInside(shadowDir, needPath);
+    await assertInside(shadowDir, insightPath);
+    await assertInside(shadowDir, oppPath);
+
+    await fs.writeFile(needPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      needs: nice.needs,
+      diagnostics: nice.needDiagnostics,
+    }, null, 2), 'utf8');
+    filesWritten.push(NEED_INTEL_FILENAME);
+
+    await fs.writeFile(insightPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      insights: nice.insights,
+      diagnostics: nice.insightDiagnostics,
+    }, null, 2), 'utf8');
+    filesWritten.push(INSIGHT_INTEL_FILENAME);
+
+    await fs.writeFile(oppPath, JSON.stringify({
+      schemaVersion: '0.1',
+      authoritative: false,
+      mode: 'shadow',
+      projectId: input.projectId,
+      ciVersion: CI_VERSION,
+      generatedAt: bundle.projectTruth.provenance.generatedAt,
+      opportunityMap: nice.opportunityMap,
+      diagnostics: nice.opportunityDiagnostics,
+      traceValidation: nice.traceValidation,
+    }, null, 2), 'utf8');
+    filesWritten.push(OPPORTUNITY_MAP_FILENAME);
+  } catch (e) {
+    // Spec #41: NICE shadow failure must not block production.
+    warnings.push(`nice_pipeline artifacts: ${(e as Error).message}`);
   }
 
   return { ok: true, artifactDirectory: shadowDir, files: filesWritten };
