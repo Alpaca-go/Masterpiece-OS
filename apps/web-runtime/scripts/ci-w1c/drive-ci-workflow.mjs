@@ -427,18 +427,28 @@ try {
   recordCheckpoint('E11', { status: 'pass', anchorRunId: anchorStart?.anchorProduction?.run?.id, candidateIds: anchorStart?.anchorProduction?.candidates?.map((c) => c.id) });
 
   // Poll the anchor sub-run until 3 candidates are present.
+  // CI-W1C.3 PART K: the `creative-intelligence:get-anchor-production`
+  // channel returns the same CreativeIntelligenceWorkspaceView shape
+  // as `get-workspace` — the anchor sub-run state lives under
+  // `result.anchorProduction`, NOT at the top level. Earlier
+  // drive-script revisions (CI-W1C / CI-W1C.1 / CI-W1C.2) polled
+  // the wrong field path (`result.run` / `result.candidates`) and
+  // timed out at 180s even though disk + RPC + Web Host all returned
+  // the freshly persisted state. PART J classifies this as root
+  // cause H (response-shape / polling bug in the harness). The
+  // production code is unchanged; only this polling block is fixed.
   let anchorCandidates = [];
   const anchorDeadline = Date.now() + 180_000;
   while (Date.now() < anchorDeadline) {
     const w = await rpc(rendererUrl, 'creative-intelligence:get-anchor-production', [ciRunId]);
-    const anchor = w.body.result;
-    if (anchor?.run?.status === 'completed' && (anchor?.candidates?.length || 0) === 3) {
-      anchorCandidates = anchor.candidates;
+    const anchorProd = w.body.result?.anchorProduction;
+    if (anchorProd?.run?.status === 'completed' && (anchorProd?.candidates?.length || 0) === 3) {
+      anchorCandidates = anchorProd.candidates;
       break;
     }
-    if (anchor?.run?.status === 'failed' || anchor?.run?.status === 'cancelled') {
-      recordCheckpoint('E11-poll-failed', { status: 'fail', runStatus: anchor?.run?.status, errorCode: anchor?.run?.errorCode });
-      throw new Error(`Anchor sub-run terminated: ${anchor?.run?.status} ${anchor?.run?.errorCode}`);
+    if (anchorProd?.run?.status === 'failed' || anchorProd?.run?.status === 'cancelled') {
+      recordCheckpoint('E11-poll-failed', { status: 'fail', runStatus: anchorProd?.run?.status, errorCode: anchorProd?.run?.errorCode });
+      throw new Error(`Anchor sub-run terminated: ${anchorProd?.run?.status} ${anchorProd?.run?.errorCode}`);
     }
     await delay(pollMs);
   }

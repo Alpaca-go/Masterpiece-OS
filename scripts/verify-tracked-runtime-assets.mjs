@@ -310,7 +310,7 @@ function checkPromptIntegrity() {
 }
 
 // ---------------------------------------------------------------------------
-// Check H — Runtime Dependency Declaration Coverage
+// Check H �?Runtime Dependency Declaration Coverage
 // (added 2026-08-12; spec section H of the user's directive)
 // ---------------------------------------------------------------------------
 // Scans production code for static filesystem calls
@@ -353,6 +353,12 @@ const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
   'apps/web-runtime/scripts/ci-w1c/probe-ci-channels.mjs',
   'apps/web-runtime/scripts/ci-w1c/list-profiles.mjs',
   'apps/web-runtime/scripts/ci-w1c/drive-ci-workflow.mjs',
+  // CI-W1C.3 Web Host RPC / process-boundary freshness probe
+  // scripts (test infrastructure only; see
+  // docs/creative-intelligence/ci-w1c.3/web-host-rpc-process-boundary-freshness-repair.md).
+  'apps/web-runtime/scripts/ci-w1c/probe-pre-fix.mjs',
+  'apps/web-runtime/scripts/ci-w1c/probe-post-fix.mjs',
+  'apps/web-runtime/scripts/ci-w1c/summarize-evidence.mjs',
 ]);
 
 // Allow the test harness to extend the production scan roots
@@ -488,7 +494,7 @@ function extractStaticDependenciesFromFile(absFilePath) {
     if (typeof s !== 'string') return false;
     if (s.length < 1 || s.length > 200) return false;
     if (pathLikeOrNull(s) === null) return false;
-    // Skip pure relative dot-segments (../../../) — those are
+    // Skip pure relative dot-segments (../../../) �?those are
     // base-path computations, not file reads.
     if (/^(\.\.?(\/|\\|$))+$/.test(s)) return false;
     return true;
