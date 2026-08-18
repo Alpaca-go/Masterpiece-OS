@@ -954,7 +954,7 @@ export function createCreativeIntelligenceApplicationService(
       }
     }
 
-    const baseView = buildWorkspaceView(
+    const baseView = await buildWorkspaceView(
       run,
       runRoot,
       run.documentRunId,
