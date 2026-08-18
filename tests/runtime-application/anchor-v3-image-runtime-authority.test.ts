@@ -1,4 +1,4 @@
-// CI-W1C.1 PART J â€” Authority regression suite.
+// CI-W1C.1 PART J â€?Authority regression suite.
 //
 // Locks the model authority fix:
 //   - PART B: runtime-services.ts `submitAnchorGeneration` MUST NOT
@@ -145,7 +145,7 @@ test('CI-W1C.1 A03 (static): runtime-services.ts submitAnchorGeneration does not
 });
 
 // ---------------------------------------------------------------------------
-// C: CI_ANCHOR_IMAGE_PROFILE_REQUIRED â€” fail-closed when apiProfileId
+// C: CI_ANCHOR_IMAGE_PROFILE_REQUIRED â€?fail-closed when apiProfileId
 // is missing. Asserted via the runtime boundary.
 // ---------------------------------------------------------------------------
 
@@ -177,7 +177,7 @@ test('CI-W1C.1 C (dynamic): runtime-services submitAnchorGeneration fails closed
   assert.ok(services.creativeIntelligence, 'creativeIntelligence service wired');
 
   // Static guard lock: re-read the source and assert the guard is
-  // inside submitAnchorGeneration. This is the regression lock â€” the
+  // inside submitAnchorGeneration. This is the regression lock â€?the
   // boundary MUST throw CI_ANCHOR_IMAGE_PROFILE_REQUIRED before
   // calling imageGeneration.compile when apiProfileId is missing.
   const src = await fs.readFile(RUNTIME_SERVICES_SRC, 'utf8');
@@ -241,7 +241,7 @@ test('CI-W1C.1 A01+A02+A04+A05+A06+A08: V3 path resolves image model from image 
     projectId,
     apiProfileId: SEEDREAM_PROFILE_ID,
     // modelId intentionally omitted (CI-W1C.1 PART B)
-    size: '2560*1440',
+    size: '2048*1152',
     dryRun: true,
   };
   // Defense-in-depth: assert the shape we pass does not contain modelId.
@@ -276,7 +276,7 @@ test('CI-W1C.1 A01+A02+A04+A05+A06+A08: V3 path resolves image model from image 
     projectId,
     apiProfileId: SEEDREAM_PROFILE_ID,
     // modelId intentionally omitted (CI-W1C.1 PART B)
-    size: '2560*1440',
+    size: '2048*1152',
     dryRun: true,
   });
   assert.ok(startResult, 'A08: V3 start returned a run');
@@ -288,7 +288,7 @@ test('CI-W1C.1 A01+A02+A04+A05+A06+A08: V3 path resolves image model from image 
 });
 
 // ---------------------------------------------------------------------------
-// M01: Seedream profile + supported 16:9 â†’ PASS (gate not blocked).
+// M01: Seedream profile + supported 16:9 â†?PASS (gate not blocked).
 // M02: qwen analysis model never used (asserted via A02 above; M02 is
 //      the same lock at a different level).
 // M03: truly unsupported image size still BLOCK.
@@ -333,7 +333,7 @@ test('CI-W1C.1 M03: truly unsupported image size still BLOCK (defense-in-depth)'
   await fs.rm(root, { recursive: true, force: true });
 });
 
-test('CI-W1C.1 M04: old wrong override (modelId: input.modelId) would have broken â€” confirms pre-fix call shape is no longer present', async () => {
+test('CI-W1C.1 M04: old wrong override (modelId: input.modelId) would have broken â€?confirms pre-fix call shape is no longer present', async () => {
   // This test guards against the historical bug shape. The lock is
   // primarily the static A03 test above; this test asserts the V3
   // path's `resolveProviderConfig` will pick the profile's model
@@ -363,10 +363,10 @@ test('CI-W1C.1 M04: old wrong override (modelId: input.modelId) would have broke
     sources: v3Sources(projectId),
     projectId,
     apiProfileId: SEEDREAM_PROFILE_ID,
-    size: '2560*1440',
+    size: '2048*1152',
     dryRun: true,
   });
-  assert.equal(profileRun.run.modelId, SEEDREAM_MODEL, 'M04: no override â†’ profile model wins');
+  assert.equal(profileRun.run.modelId, SEEDREAM_MODEL, 'M04: no override â†?profile model wins');
 
   // With explicit modelId: explicit wins (this is the pre-fix bug
   // shape; we verify the V3 path honors it so the test is honest
@@ -378,7 +378,7 @@ test('CI-W1C.1 M04: old wrong override (modelId: input.modelId) would have broke
     projectId,
     apiProfileId: SEEDREAM_PROFILE_ID,
     modelId: 'qwen3.6-plus', // simulated analysis model override
-    size: '2560*1440',
+    size: '2048*1152',
     dryRun: true,
   });
   assert.equal(overrideRun.run.modelId, 'qwen3.6-plus', 'M04: explicit modelId override would still win (this is why the boundary fix matters)');

@@ -221,12 +221,23 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
         aspectRatio: input.aspectRatio,
       },
     };
+    // CI-W1C.1 PART G: Size / capability. The 16:9 Anchor size must
+    // be one that the resolved image model actually supports. The
+    // V3 path's static capability table
+    // (`DASHSCOPE_CAPABILITIES.supportedSizes`) lists 16:9 sizes
+    // (e.g. Seedream: 2048*1152). We use 2048*1152 (16:9) as the
+    // Anchor default; the V3 path's gate still validates against
+    // the resolved image profile and BLOCKS if the resolved model
+    // does not support this size. The previous hardcoded
+    // `2560*1440` was outside the capability table and caused
+    // `ASPECT_OR_SIZE_UNSUPPORTED` regardless of model authority.
+    const ANCHOR_SIZE_16_9 = '2048*1152';
     const compileResult = await imageGeneration.compile({
       sources: compileSources,
       projectId: input.projectId ?? undefined,
       apiProfileId: input.apiProfileId,
       // modelId intentionally omitted (CI-W1C.1 PART B)
-      size: '2560*1440',
+      size: ANCHOR_SIZE_16_9,
       dryRun: false,
     });
     const compileRunId = compileResult.run.runId;
@@ -236,7 +247,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       projectId: input.projectId ?? undefined,
       apiProfileId: input.apiProfileId,
       // modelId intentionally omitted (CI-W1C.1 PART B)
-      size: '2560*1440',
+      size: ANCHOR_SIZE_16_9,
       dryRun: false,
     });
     const images = run.images ?? [];
