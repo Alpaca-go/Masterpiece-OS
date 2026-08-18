@@ -144,6 +144,19 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
   const [pickerError, setPickerError] = useState('');
   const [pickerErrorDetail, setPickerErrorDetail] = useState('');
 
+  // CI-W1C.1 PART C: Anchor Production requires an explicit IMAGE
+  // profile (separate from the ANALYSIS profile used for the CI main
+  // run). The orchestrator throws SELECTION_REQUIRED if this is
+  // missing — the analysis profile fallback is forbidden. Track a
+  // dedicated image profile id here and pass it through to
+  // startAnchorProduction.
+  const imageProfiles = settings.profiles.filter((profile) =>
+    profile.isEnabled
+    && profile.hasApiKey
+    && profile.modelType === 'image_generation');
+  const defaultImageProfile = imageProfiles.find((profile) => profile.isDefault) || imageProfiles[0];
+  const [imageApiProfileId, setImageApiProfileId] = useState<string>(defaultImageProfile?.id || '');
+
   const ci = window.masterpiece.creativeIntelligence;
 
   // ── Lifecycle: list runs on mount + subscribe to progress ──
@@ -386,14 +399,15 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
 
   const handleStartAnchorProduction = useCallback(async (runId: string) => {
     if (!ci.startAnchorProduction) return;
+    if (!imageApiProfileId) { setError('请先选择图像生成模型（Image Profile）。'); return; }
     setBusy(true); setError(''); setNotice('');
     try {
-      const view = await ci.startAnchorProduction(runId, undefined);
+      const view = await ci.startAnchorProduction(runId, { apiProfileId: imageApiProfileId });
       setActiveView(view as WorkspaceView);
       setNotice('视觉锚点生成中…');
     } catch (reason) { setError(cleanError(reason)); }
     finally { setBusy(false); }
-  }, [ci]);
+  }, [ci, imageApiProfileId]);
 
   const handleApproveAnchorCandidate = useCallback(async (runId: string, candidateId: string) => {
     const workspace = (activeView as unknown as { anchorProduction?: AnchorProductionWorkspaceView } | null)?.anchorProduction;
@@ -586,6 +600,9 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           anchorProduction={activeView?.anchorProduction as AnchorProductionWorkspaceView | null}
           canonLocked={canonLocked}
           translationLocked={translationLocked}
+          imageProfiles={imageProfiles}
+          imageApiProfileId={imageApiProfileId}
+          onImageApiProfileChange={setImageApiProfileId}
           onStartAnchorProduction={() => void handleStartAnchorProduction(activeLifecycle.run.id)}
           onApproveAnchorCandidate={(candidateId) => void handleApproveAnchorCandidate(activeLifecycle.run.id, candidateId)}
           onRejectAnchorCandidate={(candidateId) => void handleRejectAnchorCandidate(activeLifecycle.run.id, candidateId)}
@@ -1087,6 +1104,9 @@ function VisualSystemPage({
   anchorProduction,
   canonLocked,
   translationLocked,
+  imageProfiles,
+  imageApiProfileId,
+  onImageApiProfileChange,
   onStartAnchorProduction,
   onApproveAnchorCandidate,
   onRejectAnchorCandidate,
@@ -1099,6 +1119,9 @@ function VisualSystemPage({
   anchorProduction: AnchorProductionWorkspaceView | null;
   canonLocked: boolean;
   translationLocked: boolean;
+  imageProfiles: Array<{ id: string; displayName: string; modelId: string; protocol?: string }>;
+  imageApiProfileId: string;
+  onImageApiProfileChange(profileId: string): void;
   onStartAnchorProduction(): void;
   onApproveAnchorCandidate(candidateId: string): void;
   onRejectAnchorCandidate(candidateId: string): void;
@@ -1190,16 +1213,39 @@ function VisualSystemPage({
         {anchorView === 'unvisualized' && (
           <div className="ci-anchor-empty" data-ciw-anchor-empty>
             <p className="ci-hint">尚未生成视觉锚点。</p>
+            <div className="panel ci-profile-mini ci-anchor-image-profile">
+              <label htmlFor="ci-anchor-image-profile-select">图像生成模型</label>
+              <select
+                id="ci-anchor-image-profile-select"
+                data-ciw-anchor-image-profile-select
+                value={imageApiProfileId}
+                onChange={(event) => onImageApiProfileChange(event.target.value)}
+                disabled={!imageProfiles.length}
+              >
+                {imageProfiles.length === 0 && <option value="">暂无已启用的图像生成模型，请先在模型设置中配置。</option>}
+                {imageProfiles.map((profile) => (
+                  <option key={profile.id} value={profile.id}>
+                    {profile.displayName} / {profile.modelId}
+                  </option>
+                ))}
+              </select>
+              <p className="ci-hint">
+                必须为视觉锚点选择独立的图像生成模型，不能沿用 CI 主流程的文本分析模型。
+              </p>
+            </div>
             <Button
               variant="primary"
               size="md"
-              disabled={!availability.canStart}
+              disabled={!availability.canStart || !imageApiProfileId}
               onClick={onStartAnchorProduction}
             >
               生成视觉锚点
             </Button>
             {!availability.canStart && (
               <p className="ci-hint">当前状态下不能启动视觉锚点生成。</p>
+            )}
+            {availability.canStart && !imageApiProfileId && (
+              <p className="ci-hint">请先选择图像生成模型。</p>
             )}
           </div>
         )}
