@@ -188,18 +188,35 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   // NOT directly call the provider; it goes through the orchestrator +
   // the existing imageGenerationService.
   const submitAnchorGeneration: import('./anchor-production-service.ts').SubmitAnchorGeneration = async (input) => {
-    const run = await imageGeneration.start({
-      sources: {
-        schemaVersion: '3.0',
-        sourcePreset: 'integrated_context',
-        deliverable: 'free_concept',
-        purpose: 'creative_anchor',
-        projectId: input.projectId ?? undefined,
-        userIntent: {
-          prompt: input.compiledPrompt,
-          aspectRatio: input.aspectRatio,
-        },
+    // CI-W1C.0.2: V3 image-generation contract requires `compileRunId`
+    // (the V3 path throws COMPILE_INPUT_STALE otherwise). The previous
+    // implementation skipped compile and called `imageGeneration.start`
+    // directly with a V3 sourcePreset, which the V3 path rejected.
+    // The canonical flow is: compile first (dry-run, returns a
+    // persisted `compileRunId`) then start with `compileRunId`.
+    const compileSources = {
+      schemaVersion: '3.0',
+      sourcePreset: 'integrated_context',
+      deliverable: 'free_concept',
+      purpose: 'creative_anchor',
+      projectId: input.projectId ?? undefined,
+      userIntent: {
+        prompt: input.compiledPrompt,
+        aspectRatio: input.aspectRatio,
       },
+    };
+    const compileResult = await imageGeneration.compile({
+      sources: compileSources,
+      projectId: input.projectId ?? undefined,
+      apiProfileId: input.apiProfileId,
+      modelId: input.modelId,
+      size: '2560*1440',
+      dryRun: false,
+    });
+    const compileRunId = compileResult.run.runId;
+    const run = await imageGeneration.start({
+      sources: compileSources,
+      compileRunId,
       projectId: input.projectId ?? undefined,
       apiProfileId: input.apiProfileId,
       modelId: input.modelId,
