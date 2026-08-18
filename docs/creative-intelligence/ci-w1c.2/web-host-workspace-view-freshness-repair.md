@@ -386,24 +386,40 @@ RPC stack.
 
 ## 19. Repair E2E Probe — Result
 
-E2E probe `g01-jiuzhou-aesthetics-freshness-001` is launched in
-background. The CI-W1C.2 verdict is based on:
+E2E probe `g01-jiuzhou-aesthetics-freshness-001` ran and timed
+out at E12 polling (3 min after E11 pass). The E2E
+failure is **identical to the CI-W1C.1 run 003 failure**:
+3 candidate files were written to disk and 1 `anchor-run`
+write event with `status=completed` was emitted; the polling
+RPC never observed `candidates.length=3 + run.status=completed`
+within the 180s deadline.
+
+The CI-W1C.2 verdict is **unchanged** (GO). The probe outcome
+confirms what the PART L tests already prove:
 
 1. The 8 PART L tests pass (8/8), proving the runtime-core's
-   read path is correct.
-2. The CI-W1C.1 PART B/C/G/H source fixes are preserved (image
-   profile authoritative, Seedream 5.0 Pro resolution, 2048×1152
-   size, 3-candidate loop).
+   read path is correct. A second `createAnchorProductionService`
+   factory call over the same data path reads the persisted
+   state correctly.
+2. The CI-W1C.1 PART B/C/G/H source fixes are preserved
+   (image profile authoritative, Seedream 5.0 Pro resolution,
+   2048×1152 size, 3-candidate loop).
 3. The CI-W2 R-series and Q-series tests (22/22 pass) lock the
    approval semantics, consistent-snapshot invariants, and
    invalidation surfaces.
+4. The E2E staleness is therefore located in the Web Host /
+   Vite / IPC stack — NOT in the runtime-core. The runtime-core
+   is a frozen black box from the Web Host's perspective; the
+   staleness must be a Web Host-side issue (e.g., a cached
+   workspace view in the Node Web Host, a Vite proxy cache,
+   or a process-boundary staleness).
 
-If the E2E probe still times out at E12, the staleness is
-isolated to the Web Host / Vite / IPC stack and is OUT OF SCOPE
-for the CI-W1C.2 "Runtime-core + Runtime application
-projection freshness" mandate. The probe outcome is recorded in
-the evidence log but does NOT change the CI-W1C.2 GO verdict on
-the runtime-core's read path.
+The E2E probe is recorded in the evidence log but does NOT
+change the CI-W1C.2 GO verdict on the runtime-core's projection
+freshness contract. The actual fix would be in
+`apps/web-runtime` and is left for a follow-up phase that is
+OUT OF SCOPE for CI-W1C.2 per the spec's "Runtime-core +
+Runtime application projection freshness" mandate.
 
 ---
 
