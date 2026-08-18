@@ -2,26 +2,26 @@
 //
 // These are PROJECT-AGNOSTIC structural fixtures modeled on the shape
 // of real CI-W2 candidate runs for the two known real projects
-// ("九州美学" / "一剂良方"). They are intentionally NOT named after
-// any specific brand, but their visual/structural shape — Direction
-// family, locked assets, prohibited mutations — is identical to what
+// ("九州美学" / "一剂良�?). They are intentionally NOT named after
+// any specific brand, but their visual/structural shape �?Direction
+// family, locked assets, prohibited mutations �?is identical to what
 // the real runs produced. Each fixture pins the gate outcome so a
 // future refactor that regresses CI-W2's hard acceptance fails fast.
 //
-// The full real-project end-to-end retest ("九州美学" / "一剂良方")
+// The full real-project end-to-end retest ("九州美学" / "一剂良�?)
 // is the user-authorized retest from PART Q; it is NOT a unit
 // fixture. See
 // `docs/creative-intelligence/ci-w2/anchor-production-and-visual-confirmation.md`
 // for the retest report (Part Q §18).
 //
 // Spec mapping (Part Q §18):
-//   Q01 generic B2B brand → contract ready, 3 candidates, no auto-approval
-//   Q02 generic B2C brand → contract ready, 3 candidates, no auto-approval
-//   Q03 explicit user approval → ApprovedVisualAnchor exists, history
-//   Q04 re-approve with different candidate → approvalRevision + 1
-//   Q05 retry → does NOT replace existing approval
-//   Q06 selection revision change → old approval invalidated
-//   Q07 canon version change → old approval invalidated
+//   Q01 generic B2B brand �?contract ready, 3 candidates, no auto-approval
+//   Q02 generic B2C brand �?contract ready, 3 candidates, no auto-approval
+//   Q03 explicit user approval �?ApprovedVisualAnchor exists, history
+//   Q04 re-approve with different candidate �?approvalRevision + 1
+//   Q05 retry �?does NOT replace existing approval
+//   Q06 selection revision change �?old approval invalidated
+//   Q07 canon version change �?old approval invalidated
 //   Q08 no auto-selection (candidate with 0 hard-fail evaluations)
 
 import assert from 'node:assert/strict';
@@ -131,8 +131,8 @@ function makeAnchorContract(overrides = {}) {
   };
 }
 
-// Shape: real-project (a) — B2B service platform (analog of 九州美学)
-// "高端医美全链生态平台" → 旗舰品牌空间效果图 → material-led, calm tones
+// Shape: real-project (a) �?B2B service platform (analog of 九州美学)
+// "高端医美全链生态平�? �?旗舰品牌空间效果�?�?material-led, calm tones
 const B2B_SHAPE = {
   directionFamily: 'material-led',
   creativeThesis: 'A calm, material-led visual world for a high-end B2B service platform.',
@@ -144,8 +144,8 @@ const B2B_SHAPE = {
   mustPreserve: ['Chinese brand name', 'Logo mark', 'Color palette'],
 };
 
-// Shape: real-project (b) — B2C packaged product (analog of 一剂良方)
-// 中式滋补 / 食疗品牌 → 包装视觉升级 → food-ingredient-led
+// Shape: real-project (b) �?B2C packaged product (analog of 一剂良�?
+// 中式滋补 / 食疗品牌 �?包装视觉升级 �?food-ingredient-led
 const B2C_SHAPE = {
   directionFamily: 'ingredient-led',
   creativeThesis: 'An ingredient-led visual world for a B2C packaged product brand.',
@@ -235,10 +235,10 @@ async function newTmpDir() {
 }
 
 // ---------------------------------------------------------------------------
-// Q01: B2B platform project → contract ready, 3 candidates, no auto-approval
+// Q01: B2B platform project �?contract ready, 3 candidates, no auto-approval
 // ---------------------------------------------------------------------------
 
-test('Q01: B2B platform shape (analog of 九州美学) → contract ready, 3 candidates, no auto-approval', async () => {
+test('Q01: B2B platform shape (analog of 九州美学) �?contract ready, 3 candidates, no auto-approval', async () => {
   const dataDir = await newTmpDir();
   try {
     // Compile the contract first
@@ -267,7 +267,7 @@ test('Q01: B2B platform shape (analog of 九州美学) → contract ready, 3 can
 
     // Then run the orchestrator
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q01', undefined, makeParentForShape(B2B_SHAPE));
+    const ws = await service.startAnchorProduction('run-q01', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2B_SHAPE));
     assert.equal(ws.run.status, 'completed');
     assert.equal(ws.candidates.length, 3, '3 candidates persisted for B2B project');
     assert.equal(ws.approvedAnchor, null, 'NO auto-approval (hard invariant)');
@@ -278,10 +278,10 @@ test('Q01: B2B platform shape (analog of 九州美学) → contract ready, 3 can
 });
 
 // ---------------------------------------------------------------------------
-// Q02: B2C packaged product project → contract ready, 3 candidates, no auto-approval
+// Q02: B2C packaged product project �?contract ready, 3 candidates, no auto-approval
 // ---------------------------------------------------------------------------
 
-test('Q02: B2C packaged product shape (analog of 一剂良方) → contract ready, 3 candidates, no auto-approval', async () => {
+test('Q02: B2C packaged product shape (analog of 一剂良�? �?contract ready, 3 candidates, no auto-approval', async () => {
   const dataDir = await newTmpDir();
   try {
     const compileResult = buildAnchorProductionContract({
@@ -306,7 +306,7 @@ test('Q02: B2C packaged product shape (analog of 一剂良方) → contract read
     assert.equal(compileResult.contract.candidateCount, 3);
 
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q02', undefined, makeParentForShape(B2C_SHAPE));
+    const ws = await service.startAnchorProduction('run-q02', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2C_SHAPE));
     assert.equal(ws.run.status, 'completed');
     assert.equal(ws.candidates.length, 3, '3 candidates persisted for B2C project');
     assert.equal(ws.approvedAnchor, null, 'NO auto-approval (hard invariant)');
@@ -317,14 +317,14 @@ test('Q02: B2C packaged product shape (analog of 一剂良方) → contract read
 });
 
 // ---------------------------------------------------------------------------
-// Q03: explicit user approval → ApprovedVisualAnchor exists, history preserved
+// Q03: explicit user approval �?ApprovedVisualAnchor exists, history preserved
 // ---------------------------------------------------------------------------
 
 test('Q03: explicit user approval creates ApprovedVisualAnchor and history entry', async () => {
   const dataDir = await newTmpDir();
   try {
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q03', undefined, makeParentForShape(B2B_SHAPE));
+    const ws = await service.startAnchorProduction('run-q03', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2B_SHAPE));
     // Before approval: null
     assert.equal(ws.approvedAnchor, null);
     assert.equal(ws.approvalHistory.length, 0);
@@ -347,18 +347,18 @@ test('Q03: explicit user approval creates ApprovedVisualAnchor and history entry
 });
 
 // ---------------------------------------------------------------------------
-// Q04: re-approve with different candidate → approvalRevision + 1, history preserved
+// Q04: re-approve with different candidate �?approvalRevision + 1, history preserved
 // ---------------------------------------------------------------------------
 
 test('Q04: re-approve with different candidate advances approvalRevision and preserves history', async () => {
   const dataDir = await newTmpDir();
   try {
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q04', undefined, makeParentForShape(B2C_SHAPE));
+    const ws = await service.startAnchorProduction('run-q04', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2C_SHAPE));
     const first = await service.approveAnchorCandidate('run-q04', ws.candidates[0].id, 'First pick');
     assert.equal(first.approvedAnchor.approvalRevision, 1);
 
-    const second = await service.approveAnchorCandidate('run-q04', ws.candidates[2].id, 'Second pick — better ingredient close-up');
+    const second = await service.approveAnchorCandidate('run-q04', ws.candidates[2].id, 'Second pick �?better ingredient close-up');
     assert.equal(second.approvedAnchor.approvalRevision, 2, 'approvalRevision must advance');
     assert.equal(second.approvedAnchor.candidateId, ws.candidates[2].id);
     assert.equal(second.approvalHistory.length, 2, 'history must preserve both approvals');
@@ -370,14 +370,14 @@ test('Q04: re-approve with different candidate advances approvalRevision and pre
 });
 
 // ---------------------------------------------------------------------------
-// Q05: retry → does NOT replace existing approval
+// Q05: retry �?does NOT replace existing approval
 // ---------------------------------------------------------------------------
 
 test('Q05: retrying image generation does NOT replace an existing approval', async () => {
   const dataDir = await newTmpDir();
   try {
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q05', undefined, makeParentForShape(B2B_SHAPE));
+    const ws = await service.startAnchorProduction('run-q05', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2B_SHAPE));
     const approved = await service.approveAnchorCandidate('run-q05', ws.candidates[0].id, 'Picked for centering');
     const approvedAnchorId = approved.approvedAnchor.candidateId;
     const approvedAt = approved.approvedAnchor.approvedAt;
@@ -395,7 +395,7 @@ test('Q05: retrying image generation does NOT replace an existing approval', asy
 });
 
 // ---------------------------------------------------------------------------
-// Q06: parent selection revision change → old approval invalidated
+// Q06: parent selection revision change �?old approval invalidated
 // ---------------------------------------------------------------------------
 
 test('Q06: parent selection revision change invalidates the previous approval', async () => {
@@ -416,7 +416,7 @@ test('Q06: parent selection revision change invalidates the previous approval', 
       'utf8',
     );
 
-    const ws = await service.startAnchorProduction(runId, undefined, makeParentForShape(B2B_SHAPE));
+    const ws = await service.startAnchorProduction(runId, { apiProfileId: 'profile-image-test' }, makeParentForShape(B2B_SHAPE));
     await service.approveAnchorCandidate(runId, ws.candidates[0].id, 'First approval');
 
     // Parent run's selection revision advances (e.g. user re-selected direction)
@@ -436,7 +436,7 @@ test('Q06: parent selection revision change invalidates the previous approval', 
 });
 
 // ---------------------------------------------------------------------------
-// Q07: canon version change → old approval invalidated
+// Q07: canon version change �?old approval invalidated
 // ---------------------------------------------------------------------------
 
 test('Q07: parent canon version change invalidates the previous approval', async () => {
@@ -448,7 +448,7 @@ test('Q07: parent canon version change invalidates the previous approval', async
     // matches the initial approval. Then change the Anchor sub-run's
     // canonVersion on disk (simulating Visual Canon re-issue) and
     // assert the approval is invalidated.
-    const ws = await service.startAnchorProduction(runId, undefined, makeParentForShape(B2C_SHAPE));
+    const ws = await service.startAnchorProduction(runId, { apiProfileId: 'profile-image-test' }, makeParentForShape(B2C_SHAPE));
     await service.approveAnchorCandidate(runId, ws.candidates[1].id, 'First approval');
 
     // Advance the Anchor sub-run's canonVersion on disk to a newer value.
@@ -465,10 +465,10 @@ test('Q07: parent canon version change invalidates the previous approval', async
 });
 
 // ---------------------------------------------------------------------------
-// Q08: no auto-selection — generated candidate is never pre-marked "approve"
+// Q08: no auto-selection �?generated candidate is never pre-marked "approve"
 // ---------------------------------------------------------------------------
 
-test('Q08: generated candidates are not pre-marked approveable — verdict gates are user-decided', async () => {
+test('Q08: generated candidates are not pre-marked approveable �?verdict gates are user-decided', async () => {
   // The CI package NEVER pre-decides which candidate to approve.
   // The orchestrator emits candidates with status='generated' and
   // hard verdicts in the candidate evaluation. The user MUST click
@@ -477,7 +477,7 @@ test('Q08: generated candidates are not pre-marked approveable — verdict gates
   const dataDir = await newTmpDir();
   try {
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q08', undefined, makeParentForShape(B2B_SHAPE));
+    const ws = await service.startAnchorProduction('run-q08', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2B_SHAPE));
     for (const c of ws.candidates) {
       assert.equal(c.status, 'generated', 'candidate status is generated, not approved');
       assert.equal(c.approved, undefined, 'no approved flag on generated candidate');
@@ -524,11 +524,11 @@ test('Q09: locked asset refs surface on the contract for both project shapes', (
 // Q10: candidate evaluations are emitted for all 3 candidates
 // ---------------------------------------------------------------------------
 
-test('Q10: 3 candidates × evaluations — one evaluation record per candidate with structured verdicts', async () => {
+test('Q10: 3 candidates × evaluations �?one evaluation record per candidate with structured verdicts', async () => {
   const dataDir = await newTmpDir();
   try {
     const service = makeService(dataDir);
-    const ws = await service.startAnchorProduction('run-q10', undefined, makeParentForShape(B2B_SHAPE));
+    const ws = await service.startAnchorProduction('run-q10', { apiProfileId: 'profile-image-test' }, makeParentForShape(B2B_SHAPE));
     assert.equal(ws.candidates.length, 3);
     for (const c of ws.candidates) {
       assert.ok(c.evaluation, `candidate ${c.id} has an evaluation record`);

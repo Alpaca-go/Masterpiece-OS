@@ -1,4 +1,4 @@
-// CI-W2 Part O (Runtime): R01–R12 — Anchor Production orchestrator.
+// CI-W2 Part O (Runtime): R01–R12 �?Anchor Production orchestrator.
 //
 // The orchestrator is the boundary between the CI application
 // service and the existing image-generation runtime. These tests
@@ -200,7 +200,7 @@ test('R01: startAnchorProduction creates a sub-run with the 6-state lifecycle', 
     const service = makeService({ dataDir });
     const runId = 'run-r01';
     const parent = makeParent();
-    const ws = await service.startAnchorProduction(runId, undefined, parent);
+    const ws = await service.startAnchorProduction(runId, { apiProfileId: 'profile-image-test' }, parent);
     assert.equal(ws.run.status, 'completed', 'sub-run terminates in completed');
     assert.equal(ws.run.creativeIntelligenceRunId, runId);
     assert.equal(ws.run.selectedDirectionId, 'dir-001');
@@ -240,7 +240,7 @@ test('R02: start invokes the injected image-runtime boundary exactly once', asyn
       };
     };
     const service = makeService({ dataDir, submit });
-    await service.startAnchorProduction('run-r02', undefined, makeParent());
+    await service.startAnchorProduction('run-r02', { apiProfileId: 'profile-image-test' }, makeParent());
     assert.equal(callCount, 1, 'image runtime is invoked exactly once per start');
   } finally {
     await fs.rm(dataDir, { recursive: true, force: true });
@@ -255,7 +255,7 @@ test('R03: 3 candidates are persisted to candidates/<id>.json with deterministic
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir, candidateCount: 3 });
-    const ws = await service.startAnchorProduction('run-r03', undefined, makeParent());
+    const ws = await service.startAnchorProduction('run-r03', { apiProfileId: 'profile-image-test' }, makeParent());
     assert.equal(ws.candidates.length, 3);
     for (const c of ws.candidates) {
       assert.equal(c.schemaVersion, 'anchor-candidate-v0.1');
@@ -279,7 +279,7 @@ test('R04: after generation, approvedAnchor is null and approval history is empt
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    const ws = await service.startAnchorProduction('run-r04', undefined, makeParent());
+    const ws = await service.startAnchorProduction('run-r04', { apiProfileId: 'profile-image-test' }, makeParent());
     assert.equal(ws.approvedAnchor, null, 'approvedAnchor must be null after generation');
     assert.equal(ws.approvalHistory.length, 0, 'no approval history yet');
   } finally {
@@ -295,7 +295,7 @@ test('R05: explicit approveAnchorCandidate persists approval + history entry', a
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    const start = await service.startAnchorProduction('run-r05', undefined, makeParent());
+    const start = await service.startAnchorProduction('run-r05', { apiProfileId: 'profile-image-test' }, makeParent());
     const target = start.candidates[0];
     const after = await service.approveAnchorCandidate('run-r05', target.id, 'user-confirmed');
     assert.ok(after.approvedAnchor, 'approvedAnchor is set after explicit click');
@@ -317,7 +317,7 @@ test('R06: re-approval increments approvalRevision and keeps history', async () 
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    const start = await service.startAnchorProduction('run-r06', undefined, makeParent());
+    const start = await service.startAnchorProduction('run-r06', { apiProfileId: 'profile-image-test' }, makeParent());
     const first = await service.approveAnchorCandidate('run-r06', start.candidates[0].id, 'user-confirmed');
     const second = await service.approveAnchorCandidate('run-r06', start.candidates[1].id, 'user-confirmed');
     assert.equal(second.approvedAnchor.candidateId, start.candidates[1].id);
@@ -336,7 +336,7 @@ test('R07: retryAnchorCandidate does NOT change the existing approval', async ()
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    const start = await service.startAnchorProduction('run-r07', undefined, makeParent());
+    const start = await service.startAnchorProduction('run-r07', { apiProfileId: 'profile-image-test' }, makeParent());
     const first = await service.approveAnchorCandidate('run-r07', start.candidates[0].id, 'user-confirmed');
     const approvalId = first.approvedAnchor.candidateId;
     const afterRetry = await service.retryAnchorCandidate('run-r07', start.candidates[1].id);
@@ -356,7 +356,7 @@ test('R08: direction change invalidates the previous approval (approvedAnchor be
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    const start = await service.startAnchorProduction('run-r08', undefined, makeParent());
+    const start = await service.startAnchorProduction('run-r08', { apiProfileId: 'profile-image-test' }, makeParent());
     const first = await service.approveAnchorCandidate('run-r08', start.candidates[0].id, 'user-confirmed');
     assert.ok(first.approvedAnchor);
     // Bump the parent run's selectionRevision (Direction re-selection).
@@ -383,7 +383,7 @@ test('R09: canon version change invalidates the previous approval', async () => 
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    const start = await service.startAnchorProduction('run-r09', undefined, makeParent());
+    const start = await service.startAnchorProduction('run-r09', { apiProfileId: 'profile-image-test' }, makeParent());
     await service.approveAnchorCandidate('run-r09', start.candidates[0].id, 'user-confirmed');
     // Change the Anchor sub-run's canonVersion (Canon re-build).
     await service.getAnchorProduction('run-r09');
@@ -410,7 +410,7 @@ test('R10: image-runtime failure produces failed sub-run; CI main state is untou
     };
     const service = makeService({ dataDir, submit });
     await assert.rejects(
-      () => service.startAnchorProduction('run-r10', undefined, makeParent()),
+      () => service.startAnchorProduction('run-r10', { apiProfileId: 'profile-image-test' }, makeParent()),
       /SIMULATED_PROVIDER_FAILURE/,
     );
     // CI main run record must not exist (the orchestrator only writes
@@ -435,10 +435,10 @@ test('R11: cancelAnchorProduction is idempotent (cancelling a completed run is a
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    await service.startAnchorProduction('run-r11', undefined, makeParent());
+    await service.startAnchorProduction('run-r11', { apiProfileId: 'profile-image-test' }, makeParent());
     const once = await service.cancelAnchorProduction('run-r11');
     const twice = await service.cancelAnchorProduction('run-r11');
-    // Completed runs are terminal — cancel is a no-op, NOT a destructive
+    // Completed runs are terminal �?cancel is a no-op, NOT a destructive
     // overwrite. The R08 / R09 invalidation tests cover the case
     // where a NEW approval is invalidated by parent state change.
     assert.equal(once.run.status, 'completed', 'cancel of completed run is a no-op');
@@ -456,7 +456,7 @@ test('R12: listAnchorCandidates returns candidates in stable order', async () =>
   const dataDir = await newTmpDir();
   try {
     const service = makeService({ dataDir });
-    await service.startAnchorProduction('run-r12', undefined, makeParent());
+    await service.startAnchorProduction('run-r12', { apiProfileId: 'profile-image-test' }, makeParent());
     const listed = await service.listAnchorCandidates('run-r12');
     assert.equal(listed.length, 3);
     for (let i = 1; i < listed.length; i++) {

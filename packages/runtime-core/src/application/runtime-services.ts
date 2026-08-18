@@ -194,6 +194,22 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     // directly with a V3 sourcePreset, which the V3 path rejected.
     // The canonical flow is: compile first (dry-run, returns a
     // persisted `compileRunId`) then start with `compileRunId`.
+    //
+    // CI-W1C.1 PART B: model authority. The orchestrator's `input.modelId`
+    // is the ANALYSIS model id (from `parent.model`); passing it as an
+    // explicit `modelId` to imageGeneration.compile/start made the
+    // V3 path resolve to the analysis provider (dashscope + qwen3.6-plus)
+    // which has no image capability and rejected the run with
+    // `ASPECT_OR_SIZE_UNSUPPORTED`. Per CI-W1C.1 PART B rule
+    // "image profile is the sole authority for the image modelId",
+    // we OMIT `modelId` from both compile and start. The V3 path
+    // then calls `readCredentials(apiProfileId)` which returns
+    // `credentials.model` (the profile's real image model id) and
+    // `credentials.provider` (the image provider). For the Seedream
+    // profile this resolves to volcengine + doubao-seedream-5-0-pro-260628.
+    if (!input.apiProfileId) {
+      throw Object.assign(new Error('CI_ANCHOR_IMAGE_PROFILE_REQUIRED: Anchor Production requires an explicit imageApiProfileId; analysis profile fallback is forbidden.'), { code: 'CI_ANCHOR_IMAGE_PROFILE_REQUIRED' });
+    }
     const compileSources = {
       schemaVersion: '3.0',
       sourcePreset: 'visual_analysis',
@@ -209,7 +225,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       sources: compileSources,
       projectId: input.projectId ?? undefined,
       apiProfileId: input.apiProfileId,
-      modelId: input.modelId,
+      // modelId intentionally omitted (CI-W1C.1 PART B)
       size: '2560*1440',
       dryRun: false,
     });
@@ -219,7 +235,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       compileRunId,
       projectId: input.projectId ?? undefined,
       apiProfileId: input.apiProfileId,
-      modelId: input.modelId,
+      // modelId intentionally omitted (CI-W1C.1 PART B)
       size: '2560*1440',
       dryRun: false,
     });

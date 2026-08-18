@@ -464,6 +464,24 @@ export function createAnchorProductionService(deps: AnchorProductionServiceDeps)
     options: { candidateCount?: number; apiProfileId?: string } | undefined,
     parent: AnchorProductionParentSnapshot,
   ): Promise<AnchorProductionWorkspace> {
+    // CI-W1C.1 PART C: Anchor Production requires an explicit IMAGE
+    // profile id. The previous `?? parent.apiProfileId` silently
+    // substituted the parent CI run's ANALYSIS profile (qwen3.6-plus
+    // by default), which made the V3 image-generation path resolve
+    // to a non-image model and block with ASPECT_OR_SIZE_UNSUPPORTED.
+    // Per the spec: "no analysis profile fallback; if imageApiProfileId
+    // is missing, fail closed." This guard runs BEFORE preflight so
+    // the error is unambiguous and cannot be confused with the
+    // pre-existing SELECTION_REQUIRED guard. The downstream
+    // `submitAnchorGeneration` boundary in runtime-services.ts also
+    // enforces the same guard.
+    const apiProfileId = options?.apiProfileId;
+    if (!apiProfileId) {
+      throw ciAnchorError(
+        ANCHOR_PRODUCTION_ERROR_CODES.SELECTION_REQUIRED,
+        'Anchor Production requires an explicit imageApiProfileId; analysis profile fallback is forbidden (CI-W1C.1 PART C).',
+      );
+    }
     if (!parent.selectedDirectionSnapshot || !parent.visualCanon || !parent.anchorContract) {
       throw ciAnchorError(ANCHOR_PRODUCTION_ERROR_CODES.SELECTION_REQUIRED, '请先完成 Direction 选择并构�?Visual Canon');
     }
@@ -485,7 +503,6 @@ export function createAnchorProductionService(deps: AnchorProductionServiceDeps)
     const candidateCount = requestedCount > 0
       ? Math.max(1, Math.min(4, requestedCount))
       : 3;
-    const apiProfileId = options?.apiProfileId ?? parent.apiProfileId;
 
     const now = new Date().toISOString();
     const runId = makeRunId();
