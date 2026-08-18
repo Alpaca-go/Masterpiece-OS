@@ -93,7 +93,7 @@ export interface PromptSourceMapV3 {
   sections: Array<{ id: string; source: string[]; priority: number }>;
 }
 
-export type ImageGenerationPurpose = 'exploration' | 'production';
+export type ImageGenerationPurpose = 'exploration' | 'production' | 'creative_anchor';
 
 /** Creative authority used when generating a visual direction from analysis. */
 export type VisualGenerationMode = 'extend' | 'upgrade' | 'rebuild';
