@@ -241,26 +241,65 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       dryRun: false,
     });
     const compileRunId = compileResult.run.runId;
-    const run = await imageGeneration.start({
-      sources: compileSources,
-      compileRunId,
-      projectId: input.projectId ?? undefined,
-      apiProfileId: input.apiProfileId,
-      // modelId intentionally omitted (CI-W1C.1 PART B)
-      size: ANCHOR_SIZE_16_9,
-      dryRun: false,
-    });
-    const images = run.images ?? [];
+    // CI-W1C.1 PART H: Each call to imageGeneration.start produces
+    // ONE image (the V3 path's `maxOutputCount: 1` cap from the
+    // static capability table). Anchor Production requires up to
+    // N candidates (default 3, max 4). To produce N candidates we
+    // submit N independent start() calls against the same
+    // compileRunId. Each call generates one image with a fresh
+    // providerTaskId; the V3 path's compile fingerprint check
+    // ensures all calls share the same compiled prompt / source
+    // bundle. This is the documented V3 path: a single compile
+    // may be replayed N times to produce N candidates.
+    const targetCount = input.candidateIds.length;
+    const allImages: Array<{ imageId: string; relativePath: string; sha256: string; runId: string }> = [];
+    let lastRun = null as null | Awaited<ReturnType<typeof imageGeneration.start>>;
+    for (let i = 0; i < targetCount; i += 1) {
+      const subRun = await imageGeneration.start({
+        sources: compileSources,
+        compileRunId,
+        projectId: input.projectId ?? undefined,
+        apiProfileId: input.apiProfileId,
+        // modelId intentionally omitted (CI-W1C.1 PART B)
+        size: ANCHOR_SIZE_16_9,
+        dryRun: false,
+      });
+      lastRun = subRun;
+      const subImages = subRun.images ?? [];
+      if (subImages.length === 0) {
+        // No image returned for this candidate slot; abort the
+        // loop and surface a partial candidate set. The
+        // orchestrator will mark the sub-run as failed via its
+        // catch handler (line below).
+        break;
+      }
+      const first = subImages[0]!;
+      allImages.push({
+        imageId: first.imageId,
+        relativePath: first.relativePath,
+        sha256: first.sha256 ?? '',
+        runId: subRun.runId,
+      });
+    }
+    if (allImages.length === 0 && lastRun) {
+      // Surface a descriptive error if the provider returned
+      // nothing for any of the candidate slots.
+      const code = lastRun.errorCode ?? 'CI_ANCHOR_GENERATION_FAILED';
+      const message = lastRun.errorMessage ?? 'imageGeneration.start returned no images';
+      throw Object.assign(new Error(`${code}: ${message}`), { code });
+    }
+    const images = allImages;
+    const run = lastRun!;
     return {
       imageGenerationRunId: run.runId,
       providerId: run.providerId,
       modelId: run.modelId,
-      candidates: images.slice(0, input.candidateIds.length).map((image, index) => ({
+      candidates: images.slice(0, targetCount).map((image, index) => ({
         candidateId: input.candidateIds[index]!,
         imageId: image.imageId,
         imagePath: image.relativePath,
         thumbnailPath: null,
-        imageFingerprint: image.sha256 ?? '',
+        imageFingerprint: image.sha256,
         sourceFingerprint: input.contract.sourceFingerprint,
         aspectRatio: input.aspectRatio,
       })),
