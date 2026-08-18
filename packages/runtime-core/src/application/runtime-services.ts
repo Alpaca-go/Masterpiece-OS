@@ -196,8 +196,8 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     // persisted `compileRunId`) then start with `compileRunId`.
     const compileSources = {
       schemaVersion: '3.0',
-      sourcePreset: 'integrated_context',
-      deliverable: 'free_concept',
+      sourcePreset: 'visual_analysis',
+      deliverable: 'anchor_image',
       purpose: 'creative_anchor',
       projectId: input.projectId ?? undefined,
       userIntent: {
