@@ -1,6 +1,7 @@
 import type { AnalysisProgress, ProviderCredentials, PublicSettings } from '../shared/types.ts';
 import { createAnchorCandidateService } from './anchor-candidate-service.ts';
 import { createAnchorGenerationService } from './anchor-generation-service.ts';
+import { createAnchorProductionService } from './anchor-production-service.ts';
 import { createContextIntegrationService } from './context-integration-service.ts';
 import { createCreativeDirectionService } from './creative-direction-service.ts';
 import { createCreativeGenerationService } from './creative-generation-service.ts';
@@ -181,6 +182,102 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   // CI-W1A: Creative Intelligence Runtime Application Service.
   // Reuses documentContext for the ONE fact-extraction call (which already
   // exists). All other stages are deterministic CI-1..CI-9 pipelines.
+  //
+  // CI-W2: Anchor Production sub-run is wired through the existing
+  // image-generation runtime via a thin adapter. The CI service does
+  // NOT directly call the provider; it goes through the orchestrator +
+  // the existing imageGenerationService.
+  const submitAnchorGeneration: import('./anchor-production-service.ts').SubmitAnchorGeneration = async (input) => {
+    const run = await imageGeneration.start({
+      sources: {
+        schemaVersion: '3.0',
+        sourcePreset: 'integrated_context',
+        deliverable: 'free_concept',
+        purpose: 'creative_anchor',
+        projectId: input.projectId ?? undefined,
+        userIntent: {
+          prompt: input.compiledPrompt,
+          aspectRatio: input.aspectRatio,
+        },
+      },
+      projectId: input.projectId ?? undefined,
+      apiProfileId: input.apiProfileId,
+      modelId: input.modelId,
+      size: '2560*1440',
+      dryRun: false,
+    });
+    const images = run.images ?? [];
+    return {
+      imageGenerationRunId: run.runId,
+      providerId: run.providerId,
+      modelId: run.modelId,
+      candidates: images.slice(0, input.candidateIds.length).map((image, index) => ({
+        candidateId: input.candidateIds[index]!,
+        imageId: image.imageId,
+        imagePath: image.relativePath,
+        thumbnailPath: null,
+        imageFingerprint: image.sha256 ?? '',
+        sourceFingerprint: input.contract.sourceFingerprint,
+        aspectRatio: input.aspectRatio,
+      })),
+    };
+  };
+
+  const submitAnchorRetryGeneration: import('./anchor-production-service.ts').SubmitAnchorRetryGeneration = async (input) => {
+    const result = await submitAnchorGeneration(input);
+    return { ...result, retriedCandidateIds: input.retriedCandidateIds };
+  };
+
+  const cancelAnchorGeneration: import('./anchor-production-service.ts').CancelAnchorGeneration = async (imageGenerationRunId) => {
+    try {
+      await imageGeneration.cancel(imageGenerationRunId);
+    } catch (err) {
+      // The image runtime is best-effort for cancel; we never let
+      // it block the orchestrator's cancellation flow.
+      // eslint-disable-next-line no-console
+      console.warn?.(`CI anchor: image runtime cancel failed for ${imageGenerationRunId}: ${(err as Error).message}`);
+    }
+  };
+
+  const resolveLockedAssetKeys = async (projectId: string | null): Promise<string[]> => {
+    if (!projectId) return [];
+    try {
+      const items = await lockedAssets.list(projectId);
+      return items
+        .filter((item) => item && item.type && item.name)
+        .map((item) => `${item.type}:${item.name}`);
+    } catch {
+      return [];
+    }
+  };
+
+  const resolveProjectBrandIdentityRefs = async (projectId: string | null): Promise<string[]> => {
+    if (!projectId) return [];
+    try {
+      const record = await projects.get(projectId);
+      if (!record) return [];
+      const refs: string[] = [];
+      if (record.brandName) refs.push(`brand:${record.brandName}`);
+      if (record.industry) refs.push(`industry:${record.industry}`);
+      return refs;
+    } catch {
+      return [];
+      }
+  };
+
+  const anchorProduction = createAnchorProductionService({
+    readDataDir: async () => dataPath,
+    submitAnchorGeneration,
+    submitAnchorRetryGeneration,
+    cancelAnchorGeneration,
+    resolveLockedAssetKeys: (projectId, _ciRunId) => resolveLockedAssetKeys(projectId),
+    resolveProjectBrandIdentityRefs: (projectId, _ciRunId) => resolveProjectBrandIdentityRefs(projectId),
+    log: (level, message) => {
+      // eslint-disable-next-line no-console
+      console[level]?.(message);
+    },
+  });
+
   const creativeIntelligence: CreativeIntelligenceApplicationService = createCreativeIntelligenceApplicationService({
     readSettings: adapters.readSettings,
     readCredentials: async (profileId) => {
@@ -226,6 +323,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
         return null;
       }
     },
+    anchorProduction,
     log: (level, message) => {
       // eslint-disable-next-line no-console
       console[level]?.(message);

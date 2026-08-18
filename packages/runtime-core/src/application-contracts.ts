@@ -2490,6 +2490,30 @@ export interface RuntimeApi {
     onProgress(
       callback: (progress: CreativeIntelligenceProgress) => void
     ): () => void;
+    // CI-W2: Anchor Production sub-run surface.
+    startAnchorProduction(
+      runId: string,
+      options: { candidateCount?: number; apiProfileId?: string } | undefined
+    ): Promise<CreativeIntelligenceWorkspaceView>;
+    compileAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+    getAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+    listAnchorCandidates(runId: string): Promise<CiAnchorCandidate[]>;
+    approveAnchorCandidate(
+      runId: string,
+      candidateId: string,
+      reason: string | undefined
+    ): Promise<CreativeIntelligenceWorkspaceView>;
+    rejectAnchorCandidate(
+      runId: string,
+      candidateId: string
+    ): Promise<CreativeIntelligenceWorkspaceView>;
+    retryAnchorCandidate(
+      runId: string,
+      candidateId: string | null
+    ): Promise<CreativeIntelligenceWorkspaceView>;
+    cancelAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+    getApprovedAnchor(runId: string): Promise<ApprovedVisualAnchor | null>;
+    getAnchorApprovalHistory(runId: string): Promise<AnchorApprovalHistoryEntry[]>;
   };
   referenceAnchor: {
     chooseReferenceAssets(): Promise<string[]>;
@@ -3260,6 +3284,15 @@ export interface CreativeIntelligenceWorkspaceView {
    * `conceptSet.gateResults` directly.
    */
   blockerSummaries?: CreativeIntelligenceBlockerSummary[];
+
+  /**
+   * CI-W2: Anchor Production sub-run projection. Null until the
+   * user starts Anchor Production from the visual-system view. The
+   * CI main run status is unaffected by Anchor Production — this
+   * field is the only place the Web side reads / mutates anchor
+   * state.
+   */
+  anchorProduction?: AnchorProductionWorkspace | null;
 }
 
 /**
@@ -3289,4 +3322,163 @@ export interface CreativeIntelligenceBlockerSummary {
   issueCodes: string[];
   count: number;
   recoverable: boolean;
+}
+
+// =====================================================================
+// CI-W2: Anchor Production & Visual Confirmation contracts
+// =====================================================================
+//
+// The CI main run lifecycle is unchanged. Anchor Production lives as
+// a sub-run of the CI main run, persisted under
+// `<runRoot>/anchor-production/` and projected onto the
+// `WorkspaceView.anchorProduction` field. The Web side never
+// imports from the @masterpiece/creative-intelligence package; it
+// only reads `WorkspaceView.anchorProduction` and calls the
+// `creative-intelligence:*-anchor-*` RPC channels.
+
+/**
+ * CI-W2: Anchor Production sub-run status.
+ *
+ * Mirrors the @masterpiece/creative-intelligence semantic type but
+ * is re-declared here so the Web side can import it without
+ * pulling in the CI package.
+ */
+export type AnchorProductionRunStatus =
+  | 'pending'
+  | 'compiling'
+  | 'generating'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
+
+export interface AnchorProductionRun {
+  schemaVersion: 'anchor-production-run-v0.1';
+  id: string;
+  creativeIntelligenceRunId: string;
+  projectId?: string | null;
+  selectedDirectionId: string;
+  selectionRevision: number;
+  canonVersion: string;
+  anchorContractVersion: string;
+  status: AnchorProductionRunStatus;
+  candidateIds: string[];
+  imageGenerationRunId?: string | null;
+  providerId?: string | null;
+  modelId?: string | null;
+  apiProfileId?: string | null;
+  createdAt: string;
+  startedAt?: string;
+  completedAt?: string;
+  errorCode?: string | null;
+  lastError?: string | null;
+}
+
+export interface AnchorProductionContract {
+  schemaVersion: '0.1';
+  projectId?: string | null;
+  creativeIntelligenceRunId: string;
+  selectedDirectionId: string;
+  selectionRevision: number;
+  canonVersion: string;
+  anchorContractVersion: string;
+  candidateCount: number;
+  mustDemonstrate: string[];
+  mustPreserve: string[];
+  mayExplore: string[];
+  mustNotChange: string[];
+  evaluationCriteria: Array<{
+    id: string;
+    criterion: string;
+    severity: 'hard' | 'strong' | 'adaptive';
+    sourceRefs: string[];
+  }>;
+  requiredDNARefs: string[];
+  requiredGrammarRefs: string[];
+  lockedAssetRuleRefs: string[];
+  sourceFingerprint: string;
+  productionFingerprint: string;
+  status: 'ready' | 'blocked';
+  blockedReasonCodes: string[];
+  authoritative: false;
+  mode: 'shadow';
+}
+
+export interface CiAnchorCandidateEvaluation {
+  visualMechanism: 'pass' | 'warning' | 'fail';
+  composition: 'pass' | 'warning' | 'fail';
+  colorRelationship: 'pass' | 'warning' | 'fail';
+  materialRelationship: 'pass' | 'warning' | 'fail';
+  identitySafety: 'pass' | 'warning' | 'fail';
+  lockedAssetSafety: 'pass' | 'warning' | 'fail';
+  prohibitedMutation: 'pass' | 'warning' | 'fail';
+  warnings: string[];
+  blockedReasonCodes: string[];
+}
+
+export interface CiAnchorCandidate {
+  schemaVersion: 'anchor-candidate-v0.1';
+  id: string;
+  anchorRunId: string;
+  creativeIntelligenceRunId: string;
+  imageId: string;
+  imagePath: string;
+  thumbnailPath?: string | null;
+  imageFingerprint: string;
+  sourceFingerprint: string;
+  status: 'generated' | 'rejected' | 'superseded';
+  evaluation: CiAnchorCandidateEvaluation;
+  createdAt: string;
+}
+
+export interface ApprovedVisualAnchor {
+  schemaVersion: '0.1';
+  projectId?: string | null;
+  creativeIntelligenceRunId: string;
+  anchorRunId: string;
+  candidateId: string;
+  imageId: string;
+  selectedDirectionId: string;
+  selectionRevision: number;
+  canonVersion: string;
+  approvedBy: 'user';
+  approvedAt: string;
+  approvalRevision: number;
+  sourceFingerprint: string;
+  authoritative: false;
+}
+
+export interface AnchorApprovalHistoryEntry {
+  revision: number;
+  candidateId: string;
+  imageId: string;
+  selectedDirectionId: string;
+  selectionRevision: number;
+  canonVersion: string;
+  approvedAt: string;
+  approvedBy: 'user';
+  supersededBy?: 're_approval' | 'canon_change' | 'direction_change' | 'manual';
+}
+
+export interface AnchorProductionWorkspace {
+  /** Sub-run state. Null when no Anchor Production has started. */
+  run: AnchorProductionRun | null;
+  /** The compiled contract, or null if not yet compiled. */
+  contract: AnchorProductionContract | null;
+  /** Candidate list in display order. */
+  candidates: CiAnchorCandidate[];
+  /** Current approval. Null until the user explicitly approves. */
+  approvedAnchor: ApprovedVisualAnchor | null;
+  /** Append-only history (most recent last). */
+  approvalHistory: AnchorApprovalHistoryEntry[];
+  /** Hard blockers (no anchor possible). */
+  blockers: string[];
+  /** Soft warnings. */
+  warnings: string[];
+}
+
+/** CI-W2: input for explicit Anchor candidate approval. */
+export interface ApproveAnchorCandidateInput {
+  candidateId: string;
+  reason?: string;
+  occurredAt?: string;
 }
