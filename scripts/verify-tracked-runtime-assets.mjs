@@ -348,6 +348,11 @@ const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
   // smoke / dev runners, not production
   'apps/web-runtime/scripts/run-web-primary-smoke.mjs',
   'apps/web-runtime/scripts/run-web-dev.mjs',
+  // CI-W1C Web E2E validation harness (test infrastructure only;
+  // see docs/creative-intelligence/ci-w1c/real-web-e2e-anchor-translation-qualification.md).
+  'apps/web-runtime/scripts/ci-w1c/probe-ci-channels.mjs',
+  'apps/web-runtime/scripts/ci-w1c/list-profiles.mjs',
+  'apps/web-runtime/scripts/ci-w1c/drive-ci-workflow.mjs',
 ]);
 
 // Allow the test harness to extend the production scan roots
