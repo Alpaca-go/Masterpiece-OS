@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CI-W1A: Creative Intelligence Runtime Application Service.
  *
  * Owns:
@@ -243,6 +243,7 @@ async function buildWorkspaceView(
   warnings: string[],
   diagnostics: string[],
   blockerSummaries?: unknown,
+  anchorProduction?: unknown,
 ): Promise<CreativeIntelligenceWorkspaceView> {
   const readJson = async <T>(name: string): Promise<T | null> => {
     try {
@@ -305,6 +306,7 @@ async function buildWorkspaceView(
     warnings,
     diagnostics,
     blockerSummaries: Array.isArray(blockerSummaries) ? (blockerSummaries as never) : undefined,
+    anchorProduction: anchorProduction ?? null,
   };
 }
 
@@ -350,6 +352,13 @@ export interface CreateCreativeIntelligenceApplicationServiceInput {
    * If absent, the service builds a minimal synthetic record from the DVC.
    */
   loadProjectRecord?(projectId: string): Promise<Record<string, unknown> | null>;
+  /**
+   * CI-W2: Anchor Production sub-run dependencies. The CI service
+   * delegates Anchor Production lifecycle to the dedicated
+   * orchestrator. When omitted, the CI service still validates
+   * state but does NOT actually submit to the image runtime.
+   */
+  anchorProduction?: import('./anchor-production-service.ts').AnchorProductionService;
   /** Optional logger sink. */
   log?(level: 'info' | 'warn' | 'error', message: string): void;
 }
@@ -374,6 +383,30 @@ export interface CreativeIntelligenceApplicationService {
   onProgress(
     callback: (progress: CreativeIntelligenceProgress) => void
   ): () => void;
+  // CI-W2: Anchor Production sub-run surface.
+  startAnchorProduction(
+    runId: string,
+    options: { candidateCount?: number; apiProfileId?: string } | undefined
+  ): Promise<CreativeIntelligenceWorkspaceView>;
+  compileAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+  getAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+  listAnchorCandidates(runId: string): Promise<unknown[]>;
+  approveAnchorCandidate(
+    runId: string,
+    candidateId: string,
+    reason: string | undefined
+  ): Promise<CreativeIntelligenceWorkspaceView>;
+  rejectAnchorCandidate(
+    runId: string,
+    candidateId: string
+  ): Promise<CreativeIntelligenceWorkspaceView>;
+  retryAnchorCandidate(
+    runId: string,
+    candidateId: string | null
+  ): Promise<CreativeIntelligenceWorkspaceView>;
+  cancelAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
+  getApprovedAnchor(runId: string): Promise<unknown>;
+  getAnchorApprovalHistory(runId: string): Promise<unknown[]>;
 }
 
 export function createCreativeIntelligenceApplicationService(
@@ -921,7 +954,7 @@ export function createCreativeIntelligenceApplicationService(
       }
     }
 
-    return buildWorkspaceView(
+    const baseView = buildWorkspaceView(
       run,
       runRoot,
       run.documentRunId,
@@ -931,6 +964,12 @@ export function createCreativeIntelligenceApplicationService(
       diagnostics,
       blockerSummaries as never,
     );
+    // CI-W2: project the Anchor Production sub-run state when
+    // the run is past selection. The orchestrator handles the
+    // approval staleness check internally; we just project the
+    // latest persisted state.
+    const anchorProductionProjection = await projectAnchorProduction(deps, runId);
+    return Object.assign({}, baseView, { anchorProduction: anchorProductionProjection });
   }
 
   // ------------------------ selectDirection ------------------------
@@ -1167,6 +1206,125 @@ export function createCreativeIntelligenceApplicationService(
     cancelledRuns.delete(runId);
   }
 
+  // ------------------------ CI-W2: Anchor Production sub-run ------------------------
+
+  async function projectAnchorProduction(
+    deps_: CreateCreativeIntelligenceApplicationServiceInput,
+    runId: string,
+  ): Promise<AnchorProductionWorkspace | null> {
+    if (!deps_.anchorProduction) return null;
+    return await deps_.anchorProduction.getAnchorProduction(runId);
+  }
+
+  function requireAnchorProductionService() {
+    if (!deps.anchorProduction) {
+      throw ciAppError('CI_APP_ANCHOR_PRODUCTION_DISABLED',
+        'Anchor Production is not wired into this runtime. Provide anchorProduction in deps.');
+    }
+    return deps.anchorProduction;
+  }
+
+  async function buildAnchorParentSnapshot(ciRunId: string) {
+    const run = await getRun(ciRunId);
+    const runRoot = await runRootOf(ciRunId);
+    const snapshot = await readJsonFile<Record<string, unknown>>(path.join(runRoot, 'intermediate', 'snapshot.json'));
+    const canon = await readJsonFile<Record<string, unknown>>(path.join(runRoot, 'intermediate', 'canon.json'));
+    const anchor = await readJsonFile<Record<string, unknown>>(path.join(runRoot, 'intermediate', 'anchor.json'));
+    return {
+      projectId: run.projectId ?? null,
+      apiProfileId: run.apiProfileId,
+      provider: run.provider,
+      model: run.model,
+      selectionRevision: run.selectionRevision,
+      selectedDirectionSnapshot: snapshot,
+      visualCanon: canon,
+      anchorContract: anchor,
+    };
+  }
+
+  function workspaceFromAnchor(workspace: CreativeIntelligenceWorkspaceView, anchor: unknown) {
+    return { ...workspace, anchorProduction: anchor } as CreativeIntelligenceWorkspaceView;
+  }
+
+  async function startAnchorProduction(
+    runId: string,
+    options: { candidateCount?: number; apiProfileId?: string } | undefined,
+  ): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    // CI main run must be `completed` (or a terminal state with valid
+    // Canon + Anchor). We accept `completed` only — `failed` /
+    // `cancelled` cannot start Anchor Production.
+    const run = await getRun(runId);
+    if (run.status !== 'completed') {
+      throw ciAppError(CI_APP_ERROR_CODES.RUN_STATE_INVALID, `CI run 状态不允许 Anchor Production: ${run.status}`);
+    }
+    const parent = await buildAnchorParentSnapshot(runId);
+    const result = await anchor.startAnchorProduction(runId, options, parent);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function compileAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    const parent = await buildAnchorParentSnapshot(runId);
+    const result = await anchor.compileAnchorProduction(runId, parent);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function getAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    const result = await anchor.getAnchorProduction(runId);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function listAnchorCandidates(runId: string) {
+    const anchor = requireAnchorProductionService();
+    return anchor.listAnchorCandidates(runId);
+  }
+
+  async function approveAnchorCandidate(
+    runId: string,
+    candidateId: string,
+    reason: string | undefined,
+  ): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    const result = await anchor.approveAnchorCandidate(runId, candidateId, reason);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function rejectAnchorCandidate(
+    runId: string,
+    candidateId: string,
+  ): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    const result = await anchor.rejectAnchorCandidate(runId, candidateId);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function retryAnchorCandidate(
+    runId: string,
+    candidateId: string | null,
+  ): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    const result = await anchor.retryAnchorCandidate(runId, candidateId);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function cancelAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView> {
+    const anchor = requireAnchorProductionService();
+    const result = await anchor.cancelAnchorProduction(runId);
+    return workspaceFromAnchor(await getWorkspace(runId), result);
+  }
+
+  async function getApprovedAnchor(runId: string) {
+    const anchor = requireAnchorProductionService();
+    return anchor.getApprovedAnchor(runId);
+  }
+
+  async function getAnchorApprovalHistory(runId: string) {
+    const anchor = requireAnchorProductionService();
+    return anchor.getAnchorApprovalHistory(runId);
+  }
+
   function onProgress(callback: (progress: CreativeIntelligenceProgress) => void): () => void {
     progressListeners.add(callback);
     return () => progressListeners.delete(callback);
@@ -1184,5 +1342,15 @@ export function createCreativeIntelligenceApplicationService(
     cancel,
     remove,
     onProgress,
+    startAnchorProduction,
+    compileAnchorProduction,
+    getAnchorProduction,
+    listAnchorCandidates,
+    approveAnchorCandidate,
+    rejectAnchorCandidate,
+    retryAnchorCandidate,
+    cancelAnchorProduction,
+    getApprovedAnchor,
+    getAnchorApprovalHistory,
   };
 }
