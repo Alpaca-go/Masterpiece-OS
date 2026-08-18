@@ -1,6 +1,6 @@
 // CI-W1B: Web-side type re-exports + view-model projections.
 //
-// The Web side NEVER imports from @masterpiece/creative-intelligence.
+// The Web side NEVER imports from the CI domain package directly.
 // It only imports the structural types from @masterpiece/runtime-core
 // application-contracts (which the CI package re-exports to runtime
 // via the same `as` interface the existing document-context chain uses).

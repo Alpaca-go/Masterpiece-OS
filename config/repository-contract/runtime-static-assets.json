@@ -304,7 +304,13 @@
       "user-confirmed-visual-decision.json",
       "effective-visual-decision-packet.json",
       "creative_decision.json",
-      "manifest.json"
+      "manifest.json",
+      "contract.json",
+      "approval.json",
+      "approval-history.json",
+      "selection.json",
+      "selection-history.json",
+      "canon.json"
     ],
     "userDataPathPrefixes": [
       "projects/",

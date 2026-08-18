@@ -7,7 +7,8 @@
 //     layout, sub-views, and dialogs.
 //   - The component NEVER reads run files from disk. The only CI access
 //     is through `window.masterpiece.creativeIntelligence` (kebab-case RPC).
-//   - The component NEVER imports from @masterpiece/creative-intelligence.
+//   - The component NEVER imports from the CI domain package directly
+//     (it talks to the runtime via window.masterpiece.creativeIntelligence).
 //   - The component NEVER auto-selects the recommendation. Selection is
 //     gated by an explicit user click + confirm dialog.
 //   - CI-W1B.1: the internal 9-stage rail (Input → Facts → Understanding →
@@ -55,6 +56,22 @@ import {
   groupFactRows,
   serializeFactRows
 } from '../ciworkspace/controller.ts';
+import {
+  buildAnchorApprovalProposal,
+  deriveAnchorAvailability,
+  deriveAnchorUserView,
+  describeEvaluationSummary,
+  formatApprovalRevision,
+  formatApprovalTimestamp,
+  isCandidateApproveable,
+  statusLabelFor,
+} from '../ciworkspace/anchor-controller.ts';
+import type {
+  AnchorApprovalProposal,
+  AnchorProductionWorkspace as AnchorProductionWorkspaceView,
+  CiAnchorCandidate,
+  CiAnchorCandidateEvaluation,
+} from '../ciworkspace/anchor-types.ts';
 import { cleanError, formatRelativeTime } from '../utils';
 import { AppShell } from './layout/AppShell';
 import { TopBar, TopBarActions, TopBarBreadcrumb } from './layout/TopBar';
@@ -360,6 +377,91 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
     } catch (reason) { setError(cleanError(reason)); }
   }, [ci, handleOpenFactReview]);
 
+  // ── CI-W2: Anchor Production handlers (kebab-case RPC) ──
+  // The Web never imports from the CI package; the only path to
+  // Anchor Production state is through `creativeIntelligence:*-anchor-*`
+  // channels. The component owns the dialog / confirm flow; the
+  // controller owns the projection.
+  const [pendingAnchorProposal, setPendingAnchorProposal] = useState<AnchorApprovalProposal | null>(null);
+
+  const handleStartAnchorProduction = useCallback(async (runId: string) => {
+    if (!ci.startAnchorProduction) return;
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const view = await ci.startAnchorProduction(runId, undefined);
+      setActiveView(view as WorkspaceView);
+      setNotice('视觉锚点生成中…');
+    } catch (reason) { setError(cleanError(reason)); }
+    finally { setBusy(false); }
+  }, [ci]);
+
+  const handleApproveAnchorCandidate = useCallback(async (runId: string, candidateId: string) => {
+    const workspace = (activeView as unknown as { anchorProduction?: AnchorProductionWorkspaceView } | null)?.anchorProduction;
+    const candidate = workspace?.candidates?.find((c) => c.id === candidateId);
+    if (!candidate) {
+      setError('找不到候选视觉锚点');
+      return;
+    }
+    if (!isCandidateApproveable(candidate)) {
+      setError('当前候选包含阻断项，无法设为视觉基准');
+      return;
+    }
+    const index = workspace?.candidates?.indexOf(candidate) ?? 0;
+    const proposal = buildAnchorApprovalProposal(candidate, index);
+    setPendingAnchorProposal(proposal);
+  }, [activeView]);
+
+  const confirmAnchorApproval = useCallback(async () => {
+    if (!pendingAnchorProposal) return;
+    const runId = activeLifecycle?.run.id;
+    if (!runId) {
+      setPendingAnchorProposal(null);
+      return;
+    }
+    setBusy(true); setError(''); setNotice('');
+    try {
+      if (!ci.approveAnchorCandidate) throw new Error('approveAnchorCandidate 不可用');
+      const view = await ci.approveAnchorCandidate(runId, pendingAnchorProposal.candidateId, 'user-confirmed');
+      setActiveView(view as WorkspaceView);
+      setNotice('已设为视觉基准');
+    } catch (reason) { setError(cleanError(reason)); }
+    finally {
+      setPendingAnchorProposal(null);
+      setBusy(false);
+    }
+  }, [pendingAnchorProposal, activeLifecycle, ci]);
+
+  const handleRejectAnchorCandidate = useCallback(async (runId: string, candidateId: string) => {
+    if (!ci.rejectAnchorCandidate) return;
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const view = await ci.rejectAnchorCandidate(runId, candidateId);
+      setActiveView(view as WorkspaceView);
+    } catch (reason) { setError(cleanError(reason)); }
+    finally { setBusy(false); }
+  }, [ci]);
+
+  const handleRetryAnchorCandidate = useCallback(async (runId: string, candidateId: string | null) => {
+    if (!ci.retryAnchorCandidate) return;
+    setBusy(true); setError(''); setNotice('');
+    try {
+      const view = await ci.retryAnchorCandidate(runId, candidateId);
+      setActiveView(view as WorkspaceView);
+    } catch (reason) { setError(cleanError(reason)); }
+    finally { setBusy(false); }
+  }, [ci]);
+
+  const handleCancelAnchorProduction = useCallback(async (runId: string) => {
+    if (!window.confirm('确定取消当前视觉锚点生成吗？')) return;
+    if (!ci.cancelAnchorProduction) return;
+    setBusy(true); setError('');
+    try {
+      const view = await ci.cancelAnchorProduction(runId);
+      setActiveView(view as WorkspaceView);
+    } catch (reason) { setError(cleanError(reason)); }
+    finally { setBusy(false); }
+  }, [ci]);
+
   // ── Computed ──
   const conceptRef = useMemo(() => computeConceptReferenceability(activeView), [activeView]);
   const trace = useMemo(() => buildTraceChain(activeView), [activeView]);
@@ -481,8 +583,14 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           visualCanon={visualCanon}
           anchorContract={anchorContract}
           productionTranslation={productionTranslation}
+          anchorProduction={activeView?.anchorProduction as AnchorProductionWorkspaceView | null}
           canonLocked={canonLocked}
           translationLocked={translationLocked}
+          onStartAnchorProduction={() => void handleStartAnchorProduction(activeLifecycle.run.id)}
+          onApproveAnchorCandidate={(candidateId) => void handleApproveAnchorCandidate(activeLifecycle.run.id, candidateId)}
+          onRejectAnchorCandidate={(candidateId) => void handleRejectAnchorCandidate(activeLifecycle.run.id, candidateId)}
+          onRetryAnchorCandidates={(candidateId) => void handleRetryAnchorCandidate(activeLifecycle.run.id, candidateId)}
+          onCancelAnchorProduction={() => void handleCancelAnchorProduction(activeLifecycle.run.id)}
         />}
       </div>
 
@@ -516,6 +624,15 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           proposal={pendingSelection}
           onCancel={() => setPendingSelection(null)}
           onConfirm={() => void handleConfirmSelection()}
+          busy={busy}
+        />
+      )}
+
+      {pendingAnchorProposal && (
+        <AnchorApprovalDialog
+          proposal={pendingAnchorProposal}
+          onCancel={() => setPendingAnchorProposal(null)}
+          onConfirm={() => void confirmAnchorApproval()}
           busy={busy}
         />
       )}
@@ -963,17 +1080,48 @@ function DirectionDecisionCard({ direction, index, availability, selectedDirecti
 // Visual system page (CI-W1B.1 Part H)
 // ---------------------------------------------------------------------------
 
-function VisualSystemPage({ visualCanon, anchorContract, productionTranslation, canonLocked, translationLocked }: {
+function VisualSystemPage({
+  visualCanon,
+  anchorContract,
+  productionTranslation,
+  anchorProduction,
+  canonLocked,
+  translationLocked,
+  onStartAnchorProduction,
+  onApproveAnchorCandidate,
+  onRejectAnchorCandidate,
+  onRetryAnchorCandidates,
+  onCancelAnchorProduction,
+}: {
   visualCanon: { creativeThesis?: string; visualMechanism?: string; systemHypothesis?: string; directionFamily?: string; visualDNA?: unknown; visualGrammar?: Record<string, unknown>; crossMediaCanon?: unknown; lockedAssetRules?: unknown[]; prohibitedMutations?: string[]; canonVersion?: string; trace?: unknown; status?: string } | null;
   anchorContract: { purpose?: string; mustDemonstrate?: string[]; mustPreserve?: string[]; mayExplore?: string[]; mustNotChange?: string[]; evaluationCriteria?: unknown[]; status?: string } | null;
   productionTranslation: { context?: unknown; space?: { mustPreserve?: string[]; mayAdapt?: string[]; mustNotIntroduce?: string[]; canonVersion?: string; translationVersion?: string; status?: string }; packaging?: { mustPreserve?: string[]; mayAdapt?: string[]; mustNotIntroduce?: string[]; canonVersion?: string; translationVersion?: string; status?: string } } | null;
+  anchorProduction: AnchorProductionWorkspaceView | null;
   canonLocked: boolean;
   translationLocked: boolean;
+  onStartAnchorProduction(): void;
+  onApproveAnchorCandidate(candidateId: string): void;
+  onRejectAnchorCandidate(candidateId: string): void;
+  onRetryAnchorCandidates(candidateId: string | null): void;
+  onCancelAnchorProduction(): void;
 }) {
   const space = productionTranslation?.space;
   const packaging = productionTranslation?.packaging;
   const grammar = visualCanon?.visualGrammar ?? {};
   const grammarText = plainText(visualCanon?.visualGrammar);
+  const selectedDirectionId = (anchorProduction?.run?.selectedDirectionId) ?? null;
+  const selectionRevision = anchorProduction?.run?.selectionRevision ?? 0;
+  const canonVersion = anchorProduction?.run?.canonVersion ?? null;
+  const parent = visualCanon
+    ? { selectionRevision, canonVersion: visualCanon.canonVersion ?? canonVersion }
+    : (canonVersion ? { selectionRevision, canonVersion } : null);
+  const availability = deriveAnchorAvailability(anchorProduction, parent);
+  const anchorView = deriveAnchorUserView(anchorProduction);
+  const approved = anchorProduction?.approvedAnchor ?? null;
+  const candidates: CiAnchorCandidate[] = anchorProduction?.candidates ?? [];
+  const generatedCandidates = candidates.filter((c: CiAnchorCandidate) => c.status === 'generated');
+  const history = anchorProduction?.approvalHistory ?? [];
+  const subRun = anchorProduction?.run ?? null;
   return <section className="ci-vs-view" data-ciw-user-view="visual-system">
     <div className="ci-vs-grid">
       <section className="panel ci-vs-section">
@@ -1028,8 +1176,158 @@ function VisualSystemPage({ visualCanon, anchorContract, productionTranslation, 
             </div> : <p className="ci-hint">尚无包装适配说明。</p>}
           </>}
       </section>
+
+      <section className="panel ci-vs-section ci-anchor-section" data-ciw-anchor-view={anchorView}>
+        <h3>建立视觉基准</h3>
+        <p className="ci-hint">将当前 Creative Direction 转化为第一组视觉 Anchor，用于确认这个方向在真实视觉中的表现。</p>
+
+        {availability.blockers.length > 0 && (
+          <ul className="ci-anchor-blockers" data-ciw-anchor-blockers>
+            {availability.blockers.map((b) => <li key={b}>{anchorBlockerLabel(b)}</li>)}
+          </ul>
+        )}
+
+        {anchorView === 'unvisualized' && (
+          <div className="ci-anchor-empty" data-ciw-anchor-empty>
+            <p className="ci-hint">尚未生成视觉锚点。</p>
+            <Button
+              variant="primary"
+              size="md"
+              disabled={!availability.canStart}
+              onClick={onStartAnchorProduction}
+            >
+              生成视觉锚点
+            </Button>
+            {!availability.canStart && (
+              <p className="ci-hint">当前状态下不能启动视觉锚点生成。</p>
+            )}
+          </div>
+        )}
+
+        {anchorView === 'generating-anchor' && (
+          <div className="ci-anchor-generating" data-ciw-anchor-generating>
+            <p>正在生成视觉锚点</p>
+            <p className="ci-hint">状态：{statusLabelFor(subRun?.status)}</p>
+            {subRun?.providerId && subRun?.modelId && (
+              <p className="ci-hint">模型：{subRun.providerId} / {subRun.modelId}</p>
+            )}
+            <Button variant="ghost" size="sm" onClick={onCancelAnchorProduction}>取消</Button>
+          </div>
+        )}
+
+        {(anchorView === 'anchor-review' || anchorView === 'anchor-approved') && (
+          <div className="ci-anchor-review" data-ciw-anchor-review>
+            {anchorView === 'anchor-approved' && approved && (
+              <div className="ci-anchor-approved-banner" data-ciw-anchor-approved>
+                <strong>视觉基准已确认</strong>
+                <p>Selected Direction · {selectedDirectionId ?? '—'}</p>
+                <p>Canon Version · {approved.canonVersion}</p>
+                <p>Anchor Revision · {formatApprovalRevision(approved.approvalRevision)}</p>
+                <p>Approved at · {formatApprovalTimestamp(approved.approvedAt)}</p>
+              </div>
+            )}
+
+            {generatedCandidates.length === 0 ? (
+              <p className="ci-hint">未生成候选视觉锚点。</p>
+            ) : (
+              <ol className="ci-anchor-candidate-grid" data-ciw-anchor-candidate-grid>
+                {generatedCandidates.map((cand: CiAnchorCandidate, idx: number) => {
+                  const isApproved = approved?.candidateId === cand.id;
+                  return <li
+                    key={cand.id}
+                    className={`ci-anchor-candidate ${isApproved ? 'is-approved' : ''}`}
+                    data-ciw-anchor-candidate={cand.id}
+                    data-ciw-anchor-candidate-index={idx}
+                  >
+                    <div className="ci-anchor-candidate__media">
+                      <span className="ci-anchor-candidate__placeholder">
+                        Anchor Candidate 0{idx + 1}
+                      </span>
+                    </div>
+                    <div className="ci-anchor-candidate__body">
+                      <p className="ci-anchor-candidate__id">candidate · {cand.id.slice(0, 8)}</p>
+                      <p className="ci-anchor-candidate__eval">
+                        验收摘要 · {describeEvaluationSummary(cand.evaluation)}
+                      </p>
+                      {cand.evaluation.warnings.length > 0 && (
+                        <ul className="ci-anchor-candidate__warnings">
+                          {cand.evaluation.warnings.map((w) => <li key={w}>{w}</li>)}
+                        </ul>
+                      )}
+                      <div className="ci-anchor-candidate__cta">
+                        <Button variant="ghost" size="sm" onClick={() => onRetryAnchorCandidates(cand.id)}>重新生成</Button>
+                        <Button variant="ghost" size="sm" onClick={() => onRejectAnchorCandidate(cand.id)}>拒绝</Button>
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          disabled={!availability.canApprove || !isCandidateApproveable(cand)}
+                          onClick={() => onApproveAnchorCandidate(cand.id)}
+                        >
+                          设为视觉基准
+                        </Button>
+                      </div>
+                      {isApproved && <span className="ci-anchor-candidate__badge">已设为视觉基准</span>}
+                    </div>
+                  </li>;
+                })}
+              </ol>
+            )}
+
+            <div className="ci-anchor-actions">
+              <Button variant="ghost" size="sm" disabled={!availability.canRetry} onClick={() => onRetryAnchorCandidates(null)}>
+                重新生成全部
+              </Button>
+            </div>
+
+            {history.length > 0 && (
+              <details className="ci-anchor-history">
+                <summary>查看历史（{history.length}）</summary>
+                <ul>
+                  {history.map((h) => <li key={`${h.revision}-${h.candidateId}`}>
+                    v{h.revision} · {h.candidateId.slice(0, 8)} · {h.canonVersion}
+                    {h.supersededBy && <> · {h.supersededBy}</>}
+                    · {formatApprovalTimestamp(h.approvedAt)}
+                  </li>)}
+                </ul>
+              </details>
+            )}
+
+            {approved && (
+              <div className="ci-anchor-next" data-ciw-anchor-next>
+                <h4>应用这个视觉系统</h4>
+                <p className="ci-hint">以下为后续入口，CI-W2 暂不触发生产。</p>
+                <div className="ci-anchor-next__cards">
+                  <article className="ci-anchor-next__card" aria-disabled="true">
+                    <strong>空间效果图</strong>
+                    <p>基于已确认的 Visual Canon + Approved Visual Anchor 延展。</p>
+                    <span className="ci-anchor-next__disabled">CI-10 启动</span>
+                  </article>
+                  <article className="ci-anchor-next__card" aria-disabled="true">
+                    <strong>包装效果图</strong>
+                    <p>基于已确认的 Visual Canon + Approved Visual Anchor 延展。</p>
+                    <span className="ci-anchor-next__disabled">CI-10 启动</span>
+                  </article>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
     </div>
   </section>;
+}
+
+function anchorBlockerLabel(reason: string): string {
+  switch (reason) {
+    case 'no-selection': return '请先完成 Direction 选择。';
+    case 'no-canon': return '请先生成 Visual Canon。';
+    case 'no-contract': return '请先生成 Anchor Contract。';
+    case 'contract-blocked': return 'Anchor Contract 当前被阻断。';
+    case 'locked-asset-conflict': return '锁定资产与 Anchor Contract 不一致。';
+    case 'generation-failed': return '上次视觉锚点生成失败。';
+    case 'run-not-found': return 'Anchor sub-run 不存在。';
+    default: return reason;
+  }
 }
 
 function VisualCanonRow({ index, title, value }: { index: string; title: string; value?: string }) {
@@ -1076,6 +1374,31 @@ function SelectionDialog({ proposal, onCancel, onConfirm, busy }: {
       <div className="ci-modal__actions">
         <Button variant="ghost" size="md" onClick={onCancel} disabled={busy}>取消</Button>
         <Button variant="primary" size="md" onClick={onConfirm} disabled={busy}>{busy ? '提交中…' : '确认选择'}</Button>
+      </div>
+    </div>
+  </div>;
+}
+
+// ---------------------------------------------------------------------------
+// CI-W2: Anchor Approval confirmation dialog.
+// Mirrors the SelectionDialog flow: the user must explicitly confirm
+// before the runtime commits the approval. Auto-confirm is forbidden.
+// ---------------------------------------------------------------------------
+
+function AnchorApprovalDialog({ proposal, onCancel, onConfirm, busy }: {
+  proposal: AnchorApprovalProposal;
+  onCancel(): void;
+  onConfirm(): void;
+  busy: boolean;
+}) {
+  return <div className="ci-modal" role="dialog" aria-modal="true" data-ciw-anchor-approval-dialog>
+    <div className="ci-modal__panel panel">
+      <h2>将这张图设为视觉基准？</h2>
+      <p>将这张图设为当前 Creative Direction 的视觉基准？后续空间与包装延展将以该 Visual Canon + Anchor 为参考。</p>
+      <p className="ci-hint">候选 ID · {proposal.candidateId.slice(0, 8)}</p>
+      <div className="ci-modal__actions">
+        <Button variant="ghost" size="md" disabled={busy} onClick={onCancel}>取消</Button>
+        <Button variant="primary" size="md" disabled={busy} onClick={onConfirm}>确认设为视觉基准</Button>
       </div>
     </div>
   </div>;
