@@ -266,7 +266,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   };
 
   const anchorProduction = createAnchorProductionService({
-    readDataDir: async () => dataPath,
+    readDataDir: async () => adapters.dataPath,
     submitAnchorGeneration,
     submitAnchorRetryGeneration,
     cancelAnchorGeneration,
