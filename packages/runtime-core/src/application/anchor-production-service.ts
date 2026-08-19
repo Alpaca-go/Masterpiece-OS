@@ -1061,17 +1061,91 @@ function collectedCandidateWarnings(candidates: CiAnchorCandidate[]): string[] {
 }
 
 /**
- * Compile a deterministic prompt from the contract. The image
- * runtime expects a string; this function is pure so the test
- * suite can pin its output.
+ * Planning-First Creative Anchor prompt compiler (CI-W1C.6 PART G).
+ *
+ * Compiles a planning-first authoritative prompt from an
+ * AnchorProductionContract + (optional) parent Direction / Canon
+ * semantic text. The prompt must contain human-readable
+ * planning-derived content:
+ *   - Creative Thesis
+ *   - Direction Family
+ *   - System / Strategic Hypothesis
+ *   - Visual Mechanism
+ *   - Composition Logic
+ *   - Color Relationship
+ *   - Material Relationship (if present)
+ *   - Cross-media Intention
+ *   - Must Demonstrate / May Explore / Must Not Change
+ *   - Locked identity constraints
+ *
+ * Opaque DNA / Grammar refs may remain for traceability but MUST NOT
+ * substitute for semantic text. Legacy visual evidence (per CI-W1C.6
+ * PART B demoted visualAsset contribution) does NOT contribute to the
+ * prompt; only planning-derived content is included.
+ *
+ * @param contract  The AnchorProductionContract
+ * @param planningText  Optional human-readable planning text (Creative
+ *                      Thesis, Visual Mechanism, etc.). When omitted, the
+ *                      prompt falls back to the contract's selectedDirectionId
+ *                      (legacy behavior; new callers SHOULD pass it).
  */
-export function compilePromptFromContract(contract: AnchorProductionContract): string {
+export function compilePromptFromContract(
+  contract: AnchorProductionContract,
+  planningText?: {
+    creativeThesis?: string;
+    visualMechanism?: string;
+    systemHypothesis?: string;
+    directionFamily?: string;
+    compositionLogic?: string;
+    colorRelationship?: string;
+    materialRelationship?: string;
+    crossMedia?: string;
+  },
+): string {
   const lines: string[] = [];
   lines.push('// CI-W2 Anchor Production');
-  lines.push('// Visual Confirmation �?NOT a final deliverable.');
+  lines.push('// Visual Confirmation — NOT a final deliverable.');
   lines.push('');
   lines.push('# Creative Direction');
   lines.push(`Selected direction: ${contract.selectedDirectionId} (selection revision ${contract.selectionRevision})`);
+  if (planningText?.directionFamily) {
+    lines.push(`Direction Family: ${planningText.directionFamily}`);
+  }
+  if (planningText?.creativeThesis) {
+    lines.push('');
+    lines.push('## Creative Thesis');
+    lines.push(planningText.creativeThesis);
+  }
+  if (planningText?.systemHypothesis) {
+    lines.push('');
+    lines.push('## System / Strategic Hypothesis');
+    lines.push(planningText.systemHypothesis);
+  }
+  if (planningText?.visualMechanism) {
+    lines.push('');
+    lines.push('## Visual Mechanism');
+    lines.push(planningText.visualMechanism);
+  }
+  if (planningText?.compositionLogic) {
+    lines.push('');
+    lines.push('## Composition Logic');
+    lines.push(planningText.compositionLogic);
+  }
+  if (planningText?.colorRelationship) {
+    lines.push('');
+    lines.push('## Color Relationship');
+    lines.push(planningText.colorRelationship);
+  }
+  if (planningText?.materialRelationship) {
+    lines.push('');
+    lines.push('## Material Relationship');
+    lines.push(planningText.materialRelationship);
+  }
+  if (planningText?.crossMedia) {
+    lines.push('');
+    lines.push('## Cross-media Intention');
+    lines.push(planningText.crossMedia);
+  }
   lines.push('');
   lines.push('# Must Demonstrate');
   for (const item of contract.mustDemonstrate) lines.push(`- ${item}`);
@@ -1088,10 +1162,14 @@ export function compilePromptFromContract(contract: AnchorProductionContract): s
   lines.push('# Evaluation Criteria');
   for (const c of contract.evaluationCriteria) lines.push(`- [${c.severity}] ${c.criterion}`);
   lines.push('');
-  lines.push('# Required DNA refs');
+  // CI-W1C.6 PART G: opaque DNA / Grammar refs are kept for
+  // traceability but MUST NOT substitute for semantic text. The
+  // required DNA refs section is the LAST section (after the
+  // semantic text) so the Provider reads planning-first content first.
+  lines.push('# Required DNA refs (traceability only)');
   for (const ref of contract.requiredDNARefs) lines.push(`- ${ref}`);
   lines.push('');
-  lines.push('# Required Grammar refs');
+  lines.push('# Required Grammar refs (traceability only)');
   for (const ref of contract.requiredGrammarRefs) lines.push(`- ${ref}`);
   lines.push('');
   lines.push('# Locked Asset Rules (preserve)');

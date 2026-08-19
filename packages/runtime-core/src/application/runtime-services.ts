@@ -212,6 +212,25 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     }
     const compileSources = {
       schemaVersion: '3.0',
+      // CI-W1C.6 PART E (deferred): the dedicated
+      // `creative_intelligence` source preset has been added to the
+      // V3 enum (see image-generation-contracts + V3 schema) but the
+      // V2 path's source loader mapping is unchanged. To avoid
+      // breaking the live CI Anchor path, we continue to use
+      // `visual_analysis` (which the V2 path maps to
+      // `visual_extension`). The PART E dedicated route will be
+      // activated in a follow-up phase that wires the V2 path's
+      // source loader for `creative_intelligence` (returning empty
+      // references per PART F reference gate).
+      //
+      // CI-W1C.6 PART B (active): the demoted visual evidence
+      // (VisualEvidenceContribution → preservation Need +
+      // constraint_only coverage) prevents legacy visual descriptors
+      // from being promoted into positive future-style Need /
+      // Concept / Direction / Anchor prompt text. The CI Anchor
+      // prompt is now planning-first authoritative (compiledPrompt
+      // contains the human-readable Direction text, not opaque DNA
+      // / Grammar IDs).
       sourcePreset: 'visual_analysis',
       deliverable: 'anchor_image',
       purpose: 'creative_anchor',

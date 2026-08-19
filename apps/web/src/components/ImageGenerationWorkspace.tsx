@@ -77,6 +77,11 @@ const SOURCE_LABELS: Record<GenerationSourcePreset, string> = {
   document_context: '文档上下文',
   reference_anchor: 'Reference Anchor',
   integrated_context: '完整上下文',
+  // CI-W1C.6 PART E: dedicated Creative Intelligence Anchor source
+  // preset. The Web UI exposes the label so the user can see the
+  // source route; the actual reference gate (PART F) is enforced
+  // server-side.
+  creative_intelligence: 'CI Anchor (planning-first)',
 };
 
 const DEFAULT_DELIVERABLE: Record<ImageGenerationSourceBundle['preset'], GenerationDeliverable> = {

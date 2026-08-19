@@ -6,9 +6,9 @@
   "required": ["schemaVersion", "sourcePreset", "deliverable", "purpose", "userIntent"],
   "properties": {
     "schemaVersion": { "const": "3.0" },
-    "sourcePreset": { "enum": ["visual_analysis", "document_context", "reference_anchor", "integrated_context"] },
+    "sourcePreset": { "enum": ["visual_analysis", "document_context", "reference_anchor", "integrated_context", "creative_intelligence"] },
     "deliverable": { "enum": ["anchor_image", "brand_poster", "packaging_render", "vi_application", "interior_scene", "storefront_scene", "free_concept"] },
-    "purpose": { "enum": ["exploration", "production"] },
+    "purpose": { "enum": ["exploration", "production", "creative_anchor"] },
     "projectId": { "type": "string", "minLength": 1 },
     "visual": {
       "type": "object",

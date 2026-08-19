@@ -48,7 +48,7 @@ export type ImageGenerationPreset =
   | 'reference_preview'
   | 'integrated_anchor';
 
-export type GenerationSourcePreset = 'visual_analysis' | 'document_context' | 'reference_anchor' | 'integrated_context';
+export type GenerationSourcePreset = 'visual_analysis' | 'document_context' | 'reference_anchor' | 'integrated_context' | 'creative_intelligence';
 export type GenerationDeliverable = 'anchor_image' | 'brand_poster' | 'packaging_render' | 'vi_application' | 'interior_scene' | 'storefront_scene' | 'free_concept';
 export const GENERATION_DELIVERABLE_LABELS: Record<GenerationDeliverable, string> = {
   anchor_image: 'Anchor Image', brand_poster: '品牌海报', packaging_render: '包装渲染图', vi_application: 'VI 应用图', interior_scene: '店内空间效果图', storefront_scene: '店面 / 门头效果图', free_concept: '自由概念图'

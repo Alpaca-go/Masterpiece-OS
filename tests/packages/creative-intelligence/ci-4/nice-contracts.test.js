@@ -95,7 +95,7 @@ test('CI-4 contract: 7 Insight diagnostic codes registered', () => {
   assert.ok(INSIGHT_DIAGNOSTIC_CODES.includes('INSIGHT_WITHOUT_FACT_TRACE'));
 });
 
-test('CI-4 contract: 9 Need rules registered (8 original + 1 visualAsset CI-W1C.5 PART E)', () => {
+test('CI-4 contract: 9 Need rules registered (8 original + 1 legacy visual evidence preservation CI-W1C.6 PART B)', () => {
   assert.equal(NEED_RULES.length, 9);
 });
 

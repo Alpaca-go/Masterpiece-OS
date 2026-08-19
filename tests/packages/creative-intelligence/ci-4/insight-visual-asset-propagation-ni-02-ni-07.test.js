@@ -1,20 +1,28 @@
 /**
- * CI-W1C.5.1 PART B — Insight unit coverage tests (NI-02..NI-07).
+ * CI-W1C.5.1 PART B (REWRITTEN for CI-W1C.6) — Insight unit coverage
+ * tests (NI-02..NI-07).
  *
  * Project-agnostic: uses synthetic vnext payloads (Project-A: purple /
  * peacock / feather / concrete-glass; Project-B: red 良 / siyuan song /
  * seal / wood / matte paper) — NO G01/G02 hardcode.
  *
- * These tests assert that the production-equivalent chain
- * (assembleProjectTruth + adaptCurrentProjectCorePack + adaptDocumentVisualContext
- * + buildVisualEvidenceContribution + contributionToTruthFacts +
- * runNicePipeline) propagates the visualAsset facts far enough that
- * the Insight layer carries project-specific semantics with a
- * visualAsset fact/evidence trace.
+ * CI-W1C.6 PART B demoted the visualAsset rule. The differentiation
+ * Insight now only fires on the brandRole+industry differentiation Need
+ * (Rule 5) — NOT on a visualAsset differentiation Need (Rule 9 was
+ * demoted to a preservation Need with constraint_only coverage).
  *
- * If these tests fail because the production chain cannot surface a
- * project-specific Insight with visualAsset trace, the verdict
- * escalates to HOLD_FOR_INSIGHT_PROPAGATION_DEFECT (per CI-W1C.5.1 §PART B).
+ * The new tests assert the demoted behavior:
+ *   - NI-02/03: project-specific Insight comes from planning-derived
+ *     differentiation (brandRole+industry), not from legacy visual.
+ *   - NI-04: A vs B differentiation Insight factRefs differ.
+ *   - NI-05: differentiation Insight does NOT have legacy visualAsset
+ *     facts in its factRefs (the demoted Rule 9 is no longer a
+ *     differentiator source). visualAsset.* facts remain in trace via
+ *     the preservation Need's factRefs.
+ *   - NI-06: shared generic insights (audience / business) are allowed
+ *     to be identical.
+ *   - NI-07: visualAsset facts surfaced by the chain retain
+ *     VISUAL_SOURCE_FACT authority.
  *
  * Production delta = 0. Tests only.
  */
@@ -114,166 +122,94 @@ function runNiceFor(name, vnext, brandName, industry) {
   return { nice, inMemoryTruth, visualFacts };
 }
 
-function findInsightsWithVisualAssetTrace(nice) {
-  // An Insight is considered to have visualAsset trace if EITHER:
-  // (a) its factRefs directly include a visualAsset.* fact id, OR
-  // (b) any of its needRefs point to a Need whose factRefs include
-  //     a visualAsset.* fact id (transitive trace via Needs).
-  const visualFactIds = new Set();
-  for (const f of nice.needs.flatMap((n) => n.factRefs)) {
-    if (f.startsWith('visualAsset.')) visualFactIds.add(f);
-  }
-  return nice.insights.filter((i) => {
-    if (i.factRefs.some((fid) => fid.startsWith('visualAsset.'))) return true;
-    for (const needId of i.needRefs) {
-      const need = nice.needs.find((n) => n.id === needId);
-      if (need && need.factRefs.some((fid) => fid.startsWith('visualAsset.'))) return true;
-    }
-    return false;
-  });
-}
+// ── NI-02 (CI-W1C.6 demoted): Project-A emits a project-specific
+// Insight from PLANNING-derived differentiation (brandRole + industry),
+// not from legacy visual. ──
 
-function findProjectSpecificInsights(niceA, niceB) {
-  // An Insight is "project-specific" if its statement / factRefs /
-  // evidenceRefs differ in any way between A and B. ID prefixes are
-  // intentionally ignored (those are project-id bound by construction).
-  return niceA.insights.filter((insA) => {
-    const insB = niceB.insights.find((b) => {
-      // Match by type + opportunityHint + (non-project-id) characteristics
-      return b.type === insA.type && b.opportunityHint === insA.opportunityHint;
-    });
-    if (!insB) return true; // unique to A
-    if (insA.statement !== insB.statement) return true;
-    // Compare factRefs / evidenceRefs ignoring project-id prefix
-    const strip = (s) => s.replace(/(p-A|p-B):/g, '').replace(/^r-/, '');
-    const factsA = insA.factRefs.map(strip).sort();
-    const factsB = insB.factRefs.map(strip).sort();
-    if (JSON.stringify(factsA) !== JSON.stringify(factsB)) return true;
-    return false;
-  });
-}
-
-// ── NI-02: Project-A emits a project-specific Insight ──
-
-test('CI-5.1 NI-02: Project-A emits a project-specific Insight (via differentiation cluster)', () => {
-  const { nice, inMemoryTruth } = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
-  // Assert differentiation insight exists (the only generic cluster
-  // that can carry visualAsset trace via the differentiation Need).
-  const diffInsight = nice.insights.find((i) => i.type === 'differentiation');
-  if (!diffInsight) {
-    // Per CI-W1C.5.1 §PART B: STOP. Production chain cannot emit
-    // a differentiation Insight (no brand.role fact in fixture).
-    throw new Error(
-      'CI-W1C.5.1 HOLD_FOR_INSIGHT_PROPAGATION_DEFECT: ' +
-      'Production-equivalent chain does not emit a differentiation Insight. ' +
-      'No brand.role fact was extracted from the fixture. The Insight layer ' +
-      'cannot carry visualAsset trace without a production-side rule update. ' +
-      'See CI-W1C.5.1 PART B for the escalation path.',
-    );
-  }
-  assert.ok(diffInsight, 'differentiation insight emitted for Project-A');
-  // The factRefs may include brandRole/industry but the test ALSO
-  // accepts transitive visualAsset trace (via differentiation Need).
-  const visualInsight = findInsightsWithVisualAssetTrace(nice);
-  assert.ok(visualInsight.length > 0,
-    'Project-A has at least one Insight with visualAsset fact/evidence trace');
-});
-
-// ── NI-03: Project-B emits a project-specific Insight ──
-
-test('CI-5.1 NI-03: Project-B emits a project-specific Insight', () => {
-  const { nice } = runNiceFor('B', makeVnextB(), 'BrandB', 'health');
-  const diffInsight = nice.insights.find((i) => i.type === 'differentiation');
-  if (!diffInsight) {
-    throw new Error(
-      'CI-W1C.5.1 HOLD_FOR_INSIGHT_PROPAGATION_DEFECT: ' +
-      'Production-equivalent chain does not emit a differentiation Insight for Project-B.',
-    );
-  }
-  const visualInsight = findInsightsWithVisualAssetTrace(nice);
-  assert.ok(visualInsight.length > 0,
-    'Project-B has at least one Insight with visualAsset fact/evidence trace');
-});
-
-// ── NI-04: A vs B Insight semantics differ ──
-
-test('CI-5.1 NI-04: A vs B differentiation Insight has project-specific visualAsset factRefs (transitive via needRefs)', () => {
-  const ra = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
-  const rb = runNiceFor('B', makeVnextB(), 'BrandB', 'health');
-  // Find the differentiation Insight in each project
-  const diffA = ra.nice.insights.find((i) => i.type === 'differentiation');
-  const diffB = rb.nice.insights.find((i) => i.type === 'differentiation');
-  if (!diffA || !diffB) {
-    throw new Error(
-      'CI-W1C.5.1 HOLD_FOR_INSIGHT_PROPAGATION_DEFECT: ' +
-      'Differentiation Insight missing in A or B.',
-    );
-  }
-  // Pull every visualAsset.* fact id reachable from the differentiation
-  // Insight via needRefs (transitive trace). The visualAsset.* fact
-  // ids embed the project-id by construction, so this set MUST differ
-  // between A and B.
-  const visualFactIdsA = new Set();
-  const visualFactIdsB = new Set();
-  for (const needId of diffA.needRefs) {
-    const need = ra.nice.needs.find((n) => n.id === needId);
-    if (need) {
-      for (const fid of need.factRefs) {
-        if (fid.startsWith('visualAsset.')) visualFactIdsA.add(fid);
-      }
-    }
-  }
-  for (const needId of diffB.needRefs) {
-    const need = rb.nice.needs.find((n) => n.id === needId);
-    if (need) {
-      for (const fid of need.factRefs) {
-        if (fid.startsWith('visualAsset.')) visualFactIdsB.add(fid);
-      }
-    }
-  }
-  assert.ok(visualFactIdsA.size > 0,
-    'Differentiation Insight reaches visualAsset facts in A (transitive)');
-  assert.ok(visualFactIdsB.size > 0,
-    'Differentiation Insight reaches visualAsset facts in B (transitive)');
-  assert.notDeepEqual(
-    [...visualFactIdsA].sort(),
-    [...visualFactIdsB].sort(),
-    'Differentiation Insight visualAsset fact IDs differ between A and B (project-specific)',
-  );
-});
-
-// ── NI-05: Insight has visualAsset fact/evidence trace ──
-
-test('CI-5.1 NI-05: differentiation Insight has visualAsset fact/evidence trace (via needRefs)', () => {
+test('CI-5.1 NI-02: Project-A emits a project-specific Insight (from brandRole+industry differentiation)', () => {
   const { nice } = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
   const diffInsight = nice.insights.find((i) => i.type === 'differentiation');
-  if (!diffInsight) {
-    throw new Error(
-      'CI-W1C.5.1 HOLD_FOR_INSIGHT_PROPAGATION_DEFECT: ' +
-      'Differentiation Insight not emitted.',
-    );
-  }
-  const visualInsight = findInsightsWithVisualAssetTrace(nice);
-  assert.ok(visualInsight.length > 0,
-    'At least one Insight has visualAsset fact/evidence trace');
-  // Confirm the trace is via needRefs (transitive)
-  const tracedViaNeed = visualInsight.some((i) =>
-    i.needRefs.some((needId) => {
-      const need = nice.needs.find((n) => n.id === needId);
-      return need && need.factRefs.some((fid) => fid.startsWith('visualAsset.'));
-    }),
-  );
-  assert.ok(tracedViaNeed, 'visualAsset trace is reachable from Insight via needRefs');
+  assert.ok(diffInsight, 'A differentiation Insight is emitted (from planning-derived Rule 5)');
+  // The differentiation Insight factRefs reference brandRole + industry
+  // (NOT visualAsset.*).
+  assert.ok(diffInsight.factRefs.some((f) => f.includes('brand.role')),
+    'A differentiation Insight factRefs include brand.role (planning-derived)');
+  // CI-W1C.6 demoted: the differentiation Insight does NOT have visualAsset
+  // facts in its factRefs. The demoted Rule 9 emits a preservation Need
+  // (not differentiation), so the differentiation Insight is fired only
+  // by the brandRole+industry differentiation Need (Rule 5).
+  const visualFactRefInInsight = diffInsight.factRefs.find((f) => f.startsWith('visualAsset.'));
+  assert.equal(visualFactRefInInsight, undefined,
+    'A differentiation Insight does NOT have visualAsset.* in factRefs (CI-W1C.6 demoted)');
 });
 
-// ── NI-06: shared generic Insight is allowed (audience / business) ──
+// ── NI-03 (CI-W1C.6 demoted): Project-B emits a project-specific
+// Insight from planning-derived differentiation. ──
+
+test('CI-5.1 NI-03: Project-B emits a project-specific Insight (from brandRole+industry differentiation)', () => {
+  const { nice } = runNiceFor('B', makeVnextB(), 'BrandB', 'health');
+  const diffInsight = nice.insights.find((i) => i.type === 'differentiation');
+  assert.ok(diffInsight, 'B differentiation Insight is emitted (from planning-derived Rule 5)');
+  assert.ok(diffInsight.factRefs.some((f) => f.includes('brand.role')),
+    'B differentiation Insight factRefs include brand.role (planning-derived)');
+  const visualFactRefInInsight = diffInsight.factRefs.find((f) => f.startsWith('visualAsset.'));
+  assert.equal(visualFactRefInInsight, undefined,
+    'B differentiation Insight does NOT have visualAsset.* in factRefs (CI-W1C.6 demoted)');
+});
+
+// ── NI-04 (CI-W1C.6 demoted): A vs B differentiation Insight factRefs
+// differ (planning-derived; project-id bound by construction). ──
+
+test('CI-5.1 NI-04: A vs B differentiation Insight has project-specific factRefs (planning-derived)', () => {
+  const ra = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
+  const rb = runNiceFor('B', makeVnextB(), 'BrandB', 'health');
+  const diffA = ra.nice.insights.find((i) => i.type === 'differentiation');
+  const diffB = rb.nice.insights.find((i) => i.type === 'differentiation');
+  assert.ok(diffA && diffB, 'Differentiation Insight in A and B');
+  // Strip source prefix but keep the project-id portion of the fact id,
+  // because the project-id IS the differentiator (per the CI-W1C.5.1
+  // spec for XD2-06: sourceRunId / runId differences are NOT
+  // differentiation; the project-id IS).
+  const stripSource = (s) => s.replace(/^[a-z_]+:/, '');
+  const factsA = diffA.factRefs.map(stripSource).sort();
+  const factsB = diffB.factRefs.map(stripSource).sort();
+  assert.notDeepEqual(factsA, factsB,
+    'Differentiation Insight factRefs differ between A and B (planning-derived project-specific)');
+});
+
+// ── NI-05 (CI-W1C.6 demoted): The differentiation Insight does NOT
+// carry legacy visualAsset facts in its factRefs. The visualAsset.* facts
+// remain in trace via the preservation Need's factRefs (which the
+// differentiation Insight does NOT reach, because the Insight is only
+// emitted for differentiation-typed Needs, and Rule 9 is now
+// preservation-typed). ──
+
+test('CI-5.1 NI-05: differentiation Insight does NOT have legacy visualAsset facts in factRefs', () => {
+  const { nice } = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
+  const diffInsight = nice.insights.find((i) => i.type === 'differentiation');
+  assert.ok(diffInsight, 'differentiation Insight emitted');
+  // CI-W1C.6 demoted: the differentiation Insight factRefs do NOT
+  // include visualAsset.*. The demoted Rule 9 emits a preservation Need
+  // (not a differentiation Need), so the differentiation Insight rule
+  // (which only fires on differentiation Needs) does not pick up
+  // visualAsset.* facts.
+  const visualFactRefInInsight = diffInsight.factRefs.find((f) => f.startsWith('visualAsset.'));
+  assert.equal(visualFactRefInInsight, undefined,
+    'CI-W1C.6: differentiation Insight has NO visualAsset.* in factRefs (demoted)');
+  // The visualAsset.* facts remain in the truth model (trace / evidence)
+  // and are referenced by the preservation Need (Rule 9 demoted).
+  const presNeed = nice.needs.find((n) => n.id.includes('visualAsset') && n.type === 'preservation');
+  assert.ok(presNeed, 'preservation Need is emitted (CI-W1C.6 demoted Rule 9)');
+  assert.ok(presNeed.factRefs.some((f) => f.startsWith('visualAsset.')),
+    'preservation Need factRefs include visualAsset.* (traceable)');
+});
+
+// ── NI-06: shared generic insights (audience / business) are allowed
+// to be identical. ──
 
 test('CI-5.1 NI-06: shared generic insights (audience / business) are allowed to be identical', () => {
   const ra = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
   const rb = runNiceFor('B', makeVnextB(), 'BrandB', 'health');
-  // Audience and business insights are template-driven and are
-  // allowed to be the same across projects. The contract is that
-  // they MUST exist (no fabrication, no missing chain).
   const audA = ra.nice.insights.find((i) => i.type === 'audience');
   const audB = rb.nice.insights.find((i) => i.type === 'audience');
   const bizA = ra.nice.insights.find((i) => i.type === 'business');
@@ -294,7 +230,8 @@ test('CI-5.1 NI-06: shared generic insights (audience / business) are allowed to
   );
 });
 
-// ── NI-07: visualAsset authority remains VISUAL_SOURCE_FACT (no regression) ──
+// ── NI-07: visualAsset facts surfaced by the chain retain
+// VISUAL_SOURCE_FACT authority (no regression). ──
 
 test('CI-5.1 NI-07: visualAsset facts surfaced by the chain retain VISUAL_SOURCE_FACT authority', () => {
   const { nice, inMemoryTruth } = runNiceFor('A', makeVnextA(), 'BrandA', 'tech');
@@ -308,13 +245,13 @@ test('CI-5.1 NI-07: visualAsset facts surfaced by the chain retain VISUAL_SOURCE
     assert.equal(f.truthClass, 'fact',
       'visualAsset fact has truthClass=fact (not creative_hypothesis / user_requirement)');
   }
-  // Also check that the differentiation Need (from Rule 9) uses the
-  // visualAsset facts via factRefs and the source type is preserved.
-  const diffNeed = nice.needs.find((n) => n.type === 'differentiation' && n.id.includes('visualAsset'));
-  assert.ok(diffNeed, 'Rule 9 differentiation Need is emitted with visualAsset.* factRefs');
-  for (const fid of diffNeed.factRefs) {
+  // Also check that the demoted Rule 9 preservation Need references
+  // visualAsset.* facts and the source type is preserved.
+  const presNeed = nice.needs.find((n) => n.type === 'preservation' && n.id.includes('visualAsset'));
+  assert.ok(presNeed, 'Rule 9 preservation Need is emitted (CI-W1C.6 demoted)');
+  for (const fid of presNeed.factRefs) {
     const fact = inMemoryTruth.facts.find((f) => f.id === fid);
     assert.equal(fact.authority, 'VISUAL_SOURCE_FACT',
-      `Differentiation Need factRef ${fid} has VISUAL_SOURCE_FACT authority`);
+      `preservation Need factRef ${fid} has VISUAL_SOURCE_FACT authority`);
   }
 });

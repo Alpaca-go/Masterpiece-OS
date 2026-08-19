@@ -418,14 +418,27 @@ const conflictRiskRule: NeedRule = {
   },
 };
 
-// ── Rule 9: visualAsset differentiation (CI-W1C.5 PART E) ──
+// ── Rule 9: legacy visual evidence preservation (CI-W1C.6 PART B) ──
+//
+// CI-W1C.5 PART E emitted a `differentiation` Need whose statement
+// embedded project-specific visual descriptors as positive future-style
+// anchors (`coverageRequirement: 'required'`). CI-W1C.6 demotes this
+// rule: visualAsset.* facts remain traceable evidence but MUST NOT
+// automatically become positive future-style Need coverage targets.
+//
+// The Need keeps type='preservation' + coverageRequirement='constraint_only'
+// so it shows up in the trace/evidence ledger but does NOT drive the
+// value-coverage gate that downstream Concept / Direction must satisfy.
+// The Insight layer (Rule 3 differentiation) still fires on the
+// brand.role + industry Need (Rule 5) — not on this preservation rule.
 
-const visualAssetDifferentiationRule: NeedRule = {
-  id: 'rule-visual-asset-differentiation',
+const legacyVisualEvidencePreservationRule: NeedRule = {
+  id: 'rule-legacy-visual-evidence-preservation',
   applies(ctx) {
     // Applies iff the visual contribution surfaced at least one
     // visualAsset.* fact (logo / color / typography / motif / imagery /
-    // layout / material).
+    // layout / material). The Need is emitted only for trace / evidence
+    // purposes; it is NOT a positive future-style coverage target.
     return ctx.facts.some(
       (f) =>
         typeof f.key === 'string'
@@ -440,10 +453,6 @@ const visualAssetDifferentiationRule: NeedRule = {
     const factIds: string[] = [];
     const sourceKinds = new Set<string>();
     let confidence: number | undefined;
-    // Project-specific asset descriptors pulled from the visual facts,
-    // used to make the Need statement project-specific (so the Need is
-    // actually differentiated across projects, not a fixed template).
-    const assetDescriptors: string[] = [];
     for (const f of ctx.facts) {
       if (
         typeof f.key === 'string'
@@ -458,31 +467,26 @@ const visualAssetDifferentiationRule: NeedRule = {
         if (f.confidence !== undefined) {
           confidence = Math.max(confidence ?? 0, f.confidence);
         }
-        // value shape: [{ assetId, statement, frequency, sourceRef }]
-        if (Array.isArray(f.value)) {
-          for (const item of f.value) {
-            if (item && typeof item.statement === 'string' && item.statement.length > 0) {
-              assetDescriptors.push(item.statement);
-            }
-          }
-        }
       }
     }
     if (factIds.length === 0) return [];
-    // Build a project-specific statement that lists the actual visual
-    // descriptors (e.g. "紫色渐变 logo | 思源宋体 字体 | 莲花 图形"),
-    // bounded to the first 6 items to keep Need statements readable.
-    const descriptorList = assetDescriptors.slice(0, 6).join(' | ');
-    const statement = descriptorList.length > 0
-      ? `Differentiate creative direction via project-specific visual assets: ${descriptorList} — not by generic category expression.`
-      : 'Differentiate creative direction by the project-specific visual asset inventory (logo / color / typography / motif / imagery / layout / material), not by generic category expression.';
+    // The statement is intentionally generic and does NOT embed visual
+    // descriptors. Legacy visual evidence is preserved for trace /
+    // evidence / risk / problem context — not for future direction
+    // prescription.
+    const statement =
+      'Preserve legacy visual evidence (logo / color / typography / motif / imagery / layout / material) as traceable VISUAL_SOURCE_FACT; do not auto-promote to future creative direction. Concrete descriptors remain in the VisualEvidenceContribution audit log only.';
     return [makeNeed({
-      type: 'differentiation',
+      type: 'preservation',
       statement,
-      whyItMatters: 'Visual asset inventory is the most project-specific signal in the understanding chain. Without it, Concept / Direction collapse to a generic template (e.g. "Asset activation territory") that does not differentiate between projects with materially different visual inputs.',
-      status: 'important',
-      priority: 2,
-      coverageRequirement: 'required',
+      whyItMatters: 'Per CI-W1C.6 PART B, legacy visual evidence is preserved as audit / trace material but MUST NOT become a required coverage target for future creative direction. The visual contribution is recorded for diagnosis; future direction is driven by planning-first semantics (Need, Insight, Opportunity, Concept derived from planning truth), not by legacy visual style.',
+      status: 'required',
+      priority: 3,
+      // CI-W1C.6 PART B: constraint_only so it does not become a
+      // required coverage target for Concept / Direction. The value-
+      // coverage gate (Gate 5) treats `constraint_only` as a
+      // validation target only, not a coverage target.
+      coverageRequirement: 'constraint_only',
       factIds,
       evidenceIds: [],
       conflictIds: [],
@@ -502,13 +506,16 @@ export const NEED_RULES: NeedRule[] = [
   constraintsRule,
   clarificationRule,
   conflictRiskRule,
-  // CI-W1C.5 PART E: visualAsset differentiation rule.
-  // Surfaces project-specific visual evidence (from visualDecisionPacket
-  // contribution) as a `differentiation` Need so downstream Concept / Direction
-  // layers have a per-project visual anchor. Reference contamination guard
-  // is applied via makeNeed (visualAsset facts have isReferenceFact=false by
-  // construction in the contribution module).
-  visualAssetDifferentiationRule,
+  // CI-W1C.6 PART B: legacy visual evidence preservation rule
+  // (replaces the CI-W1C.5 PART E visualAsset differentiation rule).
+  // Surfaces project-specific visual evidence (from
+  // VisualEvidenceContribution) as a `preservation` Need with
+  // `coverageRequirement: 'constraint_only'`. The Need stays in the
+  // trace / evidence ledger but does NOT become a required coverage
+  // target for downstream Concept / Direction. Visual descriptors do
+  // NOT appear in the Need statement; the contribution audit log is
+  // the only place where they remain visible.
+  legacyVisualEvidencePreservationRule,
 ];
 
 export function buildDerivationContext(
