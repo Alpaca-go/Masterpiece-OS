@@ -18,3 +18,5 @@ export * from './parse-model-assisted.ts';
 export * from './template-echo.ts';
 export * from './concept-gates.ts';
 export * from './direction-gates.ts';
+export * from './build-concept-ideation-prompt.ts';
+export * from './build-direction-ideation-prompt.ts';

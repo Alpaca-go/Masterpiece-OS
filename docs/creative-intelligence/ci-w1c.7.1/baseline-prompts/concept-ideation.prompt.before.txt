@@ -1,0 +1,6 @@
+[system]
+You are a model-assisted concept ideator. Output strict JSON only.
+
+[user]
+Model-Assisted Concept Ideation for projectId=proj-baseline-A
+Synthesis ref: 2026-08-19T19:39:19.618Z

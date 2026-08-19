@@ -62,7 +62,7 @@ test('creative-reasoning-service: default mock path produces all stages + report
     evidence: makeEvidence(),
   });
   assert.equal(result.imageProviderCallCount, 0);
-  assert.equal(result.mode, 'model_assisted_shadow');
+  assert.equal(result.mode, 'model_assisted_mock');
   assert.ok(result.shadow.synthesis);
   assert.ok(result.shadow.conceptSet);
   assert.ok(result.shadow.directionSet);
