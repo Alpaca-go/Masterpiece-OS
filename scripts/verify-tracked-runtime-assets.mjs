@@ -359,6 +359,11 @@ const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
   'apps/web-runtime/scripts/ci-w1c/probe-pre-fix.mjs',
   'apps/web-runtime/scripts/ci-w1c/probe-post-fix.mjs',
   'apps/web-runtime/scripts/ci-w1c/summarize-evidence.mjs',
+  // CI-W1C Attempt 2 qualification harness (test infrastructure only;
+  // see docs/creative-intelligence/ci-w1c-attempt-2/real-project-qualification-and-ci10-readiness.md).
+  'apps/web-runtime/scripts/ci-w1c/extract-evidence.mjs',
+  'apps/web-runtime/scripts/ci-w1c/qualification-extract.mjs',
+  'apps/web-runtime/scripts/ci-w1c/qualification-compare.mjs',
 ]);
 
 // Allow the test harness to extend the production scan roots

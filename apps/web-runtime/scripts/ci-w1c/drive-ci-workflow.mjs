@@ -247,6 +247,15 @@ try {
   const docDir = path.join(runRoot, 'synthetic-documents');
   await fs.mkdir(docDir, { recursive: true });
   const documentPaths = [];
+  // CI-W1C Attempt 2 — qualification runs accept a project-specific
+  // brief via MASTERPIECE_CI_W1C_BRIEF_PATH. If set, the brief file
+  // is copied into the run root as the project brief; otherwise the
+  // legacy synthetic brief (project.json-derived, intentionally
+  // content-only) is used. The project-specific brief is what
+  // drives the model to produce project-distinct direction
+  // outputs; the synthetic brief is generic and produces
+  // direction outputs that are identical across projects.
+  const projectBriefPath = process.env.MASTERPIECE_CI_W1C_BRIEF_PATH;
   // The brief must NOT re-state facts that already live in
   // `project.json` (industry / lockedFacts). If the brief and the
   // project disagree, the CI Truth layer surfaces a conflict and
@@ -257,27 +266,32 @@ try {
   // conflicting carrier values.
   for (let i = 0; i < documentLimit; i += 1) {
     const docFile = path.join(docDir, `ci-w1c-brief-${i + 1}.md`);
-    // The brief is intentionally a SHORT creative-direction note only.
-    // It must NOT mention any project-side fact (industry / locked facts
-    // / asset count) that the AI would extract as a DVC fact; doing so
-    // produces source_authority_mismatch + locked_value_violation
-    // conflicts in the Truth layer. The project.json is the single
-    // source of truth for all carrier-side facts; the brief is just
-    // free-form creative intent.
-    const docBody = [
-      `# ${projectJson.projectName} — Creative Brief`,
-      '',
-      `${projectJson.description || 'Creative direction context for the qualification run.'}`,
-      '',
-      '## Direction Intent',
-      '',
-      '请基于项目的视觉方案与品牌上下文，输出与品牌气质一致的创作方向。',
-      '不引入新事实；所有事实来源于项目 project.json。',
-    ].join('\n');
+    let docBody;
+    if (projectBriefPath) {
+      docBody = await fs.readFile(projectBriefPath, 'utf8');
+    } else {
+      // The brief is intentionally a SHORT creative-direction note only.
+      // It must NOT mention any project-side fact (industry / locked facts
+      // / asset count) that the AI would extract as a DVC fact; doing so
+      // produces source_authority_mismatch + locked_value_violation
+      // conflicts in the Truth layer. The project.json is the single
+      // source of truth for all carrier-side facts; the brief is just
+      // free-form creative intent.
+      docBody = [
+        `# ${projectJson.projectName} — Creative Brief`,
+        '',
+        `${projectJson.description || 'Creative direction context for the qualification run.'}`,
+        '',
+        '## Direction Intent',
+        '',
+        '请基于项目的视觉方案与品牌上下文，输出与品牌气质一致的创作方向。',
+        '不引入新事实；所有事实来源于项目 project.json。',
+      ].join('\n');
+    }
     await fs.writeFile(docFile, docBody, 'utf8');
     documentPaths.push(docFile);
   }
-  recordCheckpoint('E02', { status: 'pass', documentCount: documentPaths.length, documentPaths });
+  recordCheckpoint('E02', { status: 'pass', documentCount: documentPaths.length, documentPaths, briefSource: projectBriefPath ? 'project-specific' : 'synthetic' });
 
   // E03 start — invoke the CI workflow via the real RPC channel.
   const startRes = await rpc(rendererUrl, 'creative-intelligence:start', [{
