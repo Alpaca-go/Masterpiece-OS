@@ -364,6 +364,11 @@ const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
   'apps/web-runtime/scripts/ci-w1c/extract-evidence.mjs',
   'apps/web-runtime/scripts/ci-w1c/qualification-extract.mjs',
   'apps/web-runtime/scripts/ci-w1c/qualification-compare.mjs',
+  // CI-W1C.4 Resume — project-specific brief generator + harness
+  // helpers (test infrastructure only; see
+  // docs/creative-intelligence/ci-w1c.4/qualification-input-semantics-and-harness-repair-resume.md).
+  'apps/web-runtime/scripts/ci-w1c/fact-edit-helper.mjs',
+  'apps/web-runtime/scripts/ci-w1c/approval-invalidation-helper.mjs',
 ]);
 
 // Allow the test harness to extend the production scan roots
