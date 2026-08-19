@@ -98,6 +98,9 @@ import {
   runNicePipeline,
   runConceptPipeline,
   runDirectionPipeline,
+  buildVisualEvidenceContribution,
+  contributionToTruthFacts,
+  type ProjectTruthModel,
   evaluateDirections,
   applySelectionAction,
   makeSelectAction,
@@ -352,6 +355,16 @@ export interface CreateCreativeIntelligenceApplicationServiceInput {
    * If absent, the service builds a minimal synthetic record from the DVC.
    */
   loadProjectRecord?(projectId: string): Promise<Record<string, unknown> | null>;
+  /**
+   * CI-W1C.5 PART E (optional): returns the parsed
+   * `project-visual-context.vnext.json` payload for the project, or null
+   * when the project has no ready vnext. When provided, the application
+   * service builds a VisualEvidenceContribution and merges its per-item
+   * `visualAsset.*` facts into the in-memory ProjectTruthModel used by
+   * NICE / Concept / Direction. The visual facts are NOT persisted to
+   * the on-disk `truth.json`.
+   */
+  loadProjectVNext?(projectId: string): Promise<unknown | null>;
   /**
    * CI-W2: Anchor Production sub-run dependencies. The CI service
    * delegates Anchor Production lifecycle to the dedicated
@@ -785,11 +798,34 @@ export function createCreativeIntelligenceApplicationService(
     await persistIntermediate(runId, 'truth.json', assembled.truth);
     await persistIntermediate(runId, 'evidence.json', assembled.ledger);
 
+    // CI-W1C.5 PART E: read vnext and build visual evidence contribution.
+    // The visual facts are merged into an IN-MEMORY copy of the truth
+    // model used by NICE / Concept / Direction. The on-disk
+    // `truth.json` is NOT modified (visual facts are not persisted).
+    let inMemoryTruth: ProjectTruthModel = assembled.truth;
+    if (deps.loadProjectVNext) {
+      try {
+        const vnext = await deps.loadProjectVNext(run.projectId ?? '');
+        if (vnext) {
+          const contribution = buildVisualEvidenceContribution(runId, vnext as Parameters<typeof buildVisualEvidenceContribution>[1]);
+          const visualFacts = contributionToTruthFacts(contribution);
+          if (visualFacts.length > 0) {
+            inMemoryTruth = {
+              ...assembled.truth,
+              facts: [...assembled.truth.facts, ...visualFacts],
+            };
+          }
+        }
+      } catch {
+        // VNext read is best-effort; absence must not break the run.
+      }
+    }
+
     // Stage 4 — Understanding (NICE N+I+O)
     await transition(runId, 'building_understanding', 'understanding', '装配需求 / 洞察 / 机会图', run);
     const nice = runNicePipeline({
       projectId: runId,
-      truth: assembled.truth,
+      truth: inMemoryTruth,
       evidence: assembled.ledger,
       generatedAt: new Date().toISOString(),
     });
@@ -802,7 +838,7 @@ export function createCreativeIntelligenceApplicationService(
     await transition(runId, 'building_concepts', 'concept', '生成概念候选 + 8 闸门', run);
     const concept = runConceptPipeline({
       projectId: runId,
-      truth: assembled.truth,
+      truth: inMemoryTruth,
       evidence: assembled.ledger,
       needs: nice.needs,
       insights: nice.insights,
@@ -816,7 +852,7 @@ export function createCreativeIntelligenceApplicationService(
     await transition(runId, 'building_directions', 'direction', '生成方向候选 + 11 闸门', run);
     const direction = runDirectionPipeline({
       projectId: runId,
-      truth: assembled.truth,
+      truth: inMemoryTruth,
       evidence: assembled.ledger,
       needs: nice.needs,
       insights: nice.insights,

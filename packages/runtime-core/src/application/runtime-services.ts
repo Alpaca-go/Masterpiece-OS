@@ -406,6 +406,17 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
         return null;
       }
     },
+    // CI-W1C.5 PART E: bridge vnext to the CI application service so
+    // NICE / Concept / Direction can read per-item visual evidence.
+    // Best-effort: returns null when the project has no ready vnext.
+    loadProjectVNext: async (projectId) => {
+      if (!projectId) return null;
+      try {
+        return await projectContext.getShortChain(projectId);
+      } catch {
+        return null;
+      }
+    },
     anchorProduction,
     log: (level, message) => {
       // eslint-disable-next-line no-console

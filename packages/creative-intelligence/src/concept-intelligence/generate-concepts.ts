@@ -215,12 +215,59 @@ function buildConceptForOpportunity(
 
   const relevantInsights = pickInsightsForOpportunity(opp, insights);
   const relevantNeeds = pickNeedsForOpportunity(opp, needs);
+
+  // CI-W1C.5 PART E: if the project has visualAsset.* facts and a
+  // differentiation Need from Rule 9, ensure the concept also
+  // references that Need (so the value-coverage gate doesn't block on
+  // MISSING_CRITICAL_NEED_COVERAGE, and so the concept's needRefs
+  // carry the project-specific differentiation Need forward to
+  // Direction).
+  const visualFactIds = facts
+    .filter((f) => typeof f.key === 'string'
+      && f.key.startsWith('visualAsset.')
+      && f.authority === 'VISUAL_SOURCE_FACT'
+      && f.value !== null
+      && f.truthClass !== 'unknown'
+      && !f.isReferenceFact)
+    .map((f) => f.id);
+
+  if (visualFactIds.length > 0) {
+    const diffNeed = needs.find((n) => n.type === 'differentiation'
+      && n.factRefs.some((id) => visualFactIds.includes(id))
+      && n.status !== 'blocked');
+    if (diffNeed && !relevantNeeds.some((n) => n.id === diffNeed.id)) {
+      relevantNeeds.push(diffNeed);
+    }
+  }
+
   const factIds = [...new Set([
     ...opp.factRefs,
     ...relevantInsights.flatMap((i) => i.factRefs),
     ...relevantNeeds.flatMap((n) => n.factRefs),
+    ...visualFactIds,
   ])].slice(0, 10);
   const evidenceIds = collectEvidenceForFacts(factIds, evidence).slice(0, 8);
+
+  // CI-W1C.5 PART E: collect project-specific visual descriptors from
+  // visualAsset.* facts (only those referenced by the concept's fact
+  // graph). When present, they are injected as a "visual anchor" line
+  // in the thesis/mechanism so the Concept text is project-specific
+  // (not just the cluster's fixed template).
+  const visualDescriptors: string[] = [];
+  for (const f of facts) {
+    if (factIds.includes(f.id)
+      && typeof f.key === 'string'
+      && f.key.startsWith('visualAsset.')
+      && f.authority === 'VISUAL_SOURCE_FACT'
+      && Array.isArray(f.value)) {
+      for (const item of f.value) {
+        if (item && typeof item.statement === 'string' && item.statement.length > 0) {
+          visualDescriptors.push(item.statement);
+        }
+      }
+    }
+  }
+  const visualAnchor = visualDescriptors.slice(0, 3).join(' | ');
 
   const status = deriveConceptStatus(opp, relevantInsights, relevantNeeds, factIds, facts);
 
@@ -234,6 +281,10 @@ function buildConceptForOpportunity(
   let problemStatement = patternMap.problemTpl(opp);
   let strengths = [...patternMap.strengths];
   let risks = [...patternMap.risks];
+
+  // CI-W1C.5 PART E: visual anchor suffix is appended AFTER the
+  // variant 1 override so both v0 and v1 variants carry the
+  // project-specific visual semantics.
 
   if (variant === 1) {
     // Secondary concept: pick a complementary pattern based on cluster
@@ -256,6 +307,16 @@ function buildConceptForOpportunity(
     problemStatement = opp.statement;
     strengths = [`${alt}路径差异化`, '提供备选方案', '降低单点风险'];
     risks = ['可能分散焦点', '需要更强的筛选机制'];
+  }
+
+  // CI-W1C.5 PART E: inject the visual anchor into the thesis /
+  // mechanism text so the Concept carries project-specific visual
+  // semantics instead of the cluster's pure-template text. The anchor
+  // is appended as a separate sentence (no rewriting of the cluster
+  // template), so the cluster semantics are preserved.
+  if (visualAnchor.length > 0) {
+    thesis = `${thesis} 视觉锚点：${visualAnchor}。`;
+    mechanism = `${mechanism} 围绕 ${visualAnchor} 组织表达。`;
   }
 
   const blockers: string[] = [];

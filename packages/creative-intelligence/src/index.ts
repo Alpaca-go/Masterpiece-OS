@@ -50,3 +50,5 @@ export * from './anchor-production/index.ts';
 export * from './production-translation/index.ts';
 export * from './integration/index.ts';
 export * from './contracts/index.ts';
+// CI-W1C.5 PART E: visual evidence contribution (per-item visual facts).
+export * from './visual-evidence/index.ts';

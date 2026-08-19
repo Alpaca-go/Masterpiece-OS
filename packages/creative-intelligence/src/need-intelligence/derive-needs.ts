@@ -418,6 +418,81 @@ const conflictRiskRule: NeedRule = {
   },
 };
 
+// ── Rule 9: visualAsset differentiation (CI-W1C.5 PART E) ──
+
+const visualAssetDifferentiationRule: NeedRule = {
+  id: 'rule-visual-asset-differentiation',
+  applies(ctx) {
+    // Applies iff the visual contribution surfaced at least one
+    // visualAsset.* fact (logo / color / typography / motif / imagery /
+    // layout / material).
+    return ctx.facts.some(
+      (f) =>
+        typeof f.key === 'string'
+        && f.key.startsWith('visualAsset.')
+        && f.authority === 'VISUAL_SOURCE_FACT'
+        && f.value !== null
+        && f.truthClass !== 'unknown'
+        && !f.isReferenceFact,
+    );
+  },
+  derive(ctx) {
+    const factIds: string[] = [];
+    const sourceKinds = new Set<string>();
+    let confidence: number | undefined;
+    // Project-specific asset descriptors pulled from the visual facts,
+    // used to make the Need statement project-specific (so the Need is
+    // actually differentiated across projects, not a fixed template).
+    const assetDescriptors: string[] = [];
+    for (const f of ctx.facts) {
+      if (
+        typeof f.key === 'string'
+        && f.key.startsWith('visualAsset.')
+        && f.authority === 'VISUAL_SOURCE_FACT'
+        && f.value !== null
+        && f.truthClass !== 'unknown'
+        && !f.isReferenceFact
+      ) {
+        factIds.push(f.id);
+        sourceKinds.add(f.sourceType);
+        if (f.confidence !== undefined) {
+          confidence = Math.max(confidence ?? 0, f.confidence);
+        }
+        // value shape: [{ assetId, statement, frequency, sourceRef }]
+        if (Array.isArray(f.value)) {
+          for (const item of f.value) {
+            if (item && typeof item.statement === 'string' && item.statement.length > 0) {
+              assetDescriptors.push(item.statement);
+            }
+          }
+        }
+      }
+    }
+    if (factIds.length === 0) return [];
+    // Build a project-specific statement that lists the actual visual
+    // descriptors (e.g. "紫色渐变 logo | 思源宋体 字体 | 莲花 图形"),
+    // bounded to the first 6 items to keep Need statements readable.
+    const descriptorList = assetDescriptors.slice(0, 6).join(' | ');
+    const statement = descriptorList.length > 0
+      ? `Differentiate creative direction via project-specific visual assets: ${descriptorList} — not by generic category expression.`
+      : 'Differentiate creative direction by the project-specific visual asset inventory (logo / color / typography / motif / imagery / layout / material), not by generic category expression.';
+    return [makeNeed({
+      type: 'differentiation',
+      statement,
+      whyItMatters: 'Visual asset inventory is the most project-specific signal in the understanding chain. Without it, Concept / Direction collapse to a generic template (e.g. "Asset activation territory") that does not differentiate between projects with materially different visual inputs.',
+      status: 'important',
+      priority: 2,
+      coverageRequirement: 'required',
+      factIds,
+      evidenceIds: [],
+      conflictIds: [],
+      sourceKinds: [...sourceKinds],
+      confidence,
+      referenceFactIds: ctx.referenceFactIds,
+    })];
+  },
+};
+
 export const NEED_RULES: NeedRule[] = [
   identityPreservationRule,
   lockedPreservationRule,
@@ -427,6 +502,13 @@ export const NEED_RULES: NeedRule[] = [
   constraintsRule,
   clarificationRule,
   conflictRiskRule,
+  // CI-W1C.5 PART E: visualAsset differentiation rule.
+  // Surfaces project-specific visual evidence (from visualDecisionPacket
+  // contribution) as a `differentiation` Need so downstream Concept / Direction
+  // layers have a per-project visual anchor. Reference contamination guard
+  // is applied via makeNeed (visualAsset facts have isReferenceFact=false by
+  // construction in the contribution module).
+  visualAssetDifferentiationRule,
 ];
 
 export function buildDerivationContext(

@@ -24,6 +24,7 @@ import { buildOpportunityMap } from '../opportunity/build-opportunity-map.ts';
 import { validateOpportunityMap } from '../opportunity/opportunity-validator.ts';
 import { hasDirectionLeakage } from '../opportunity/direction-leakage.ts';
 import { interpretDocumentContext, type DocumentIntelligenceResult } from '../document-intelligence/interpret.ts';
+import { buildVisualEvidenceContribution, contributionToTruthFacts } from '../visual-evidence/index.ts';
 
 export interface NiceInput {
   projectId: string;
@@ -35,6 +36,16 @@ export interface NiceInput {
     assetRefs?: string[];
     warnings?: string[];
   };
+  /**
+   * CI-W1C.5 PART E: optional vnext (project-visual-context.vnext.json)
+   * payload. When provided, the pipeline reads its
+   * `visualDecisionPacket.assetInventory` directly (bypassing DVC's
+   * flattened `visualPreferences` string) and injects per-item
+   * `visualAsset.*` facts (VISUAL_SOURCE_FACT authority) into the
+   * derivation context. These facts are in-memory only; they are NOT
+   * persisted to truth.json.
+   */
+  vnext?: unknown;
   generatedAt?: string;
 }
 
@@ -70,7 +81,17 @@ export function runNicePipeline(input: NiceInput): NiceResult {
   // duplicating the CI-2 truth-adapter path. Spec #5 / #13.)
   const documentWarnings: string[] = input.document?.warnings.map((w) => w.message) ?? [];
 
-  const facts = [...input.truth.facts, ...documentFacts];
+  // CI-W1C.5 PART E: if vnext payload is provided, build visual evidence
+  // contribution (per-item observed facts + inferred meanings) and merge
+  // into the local fact set. These facts are in-memory only — they are
+  // NOT written back to truth.json.
+  const visualFacts: ProjectTruthFact[] = input.vnext
+    ? contributionToTruthFacts(
+      buildVisualEvidenceContribution(input.projectId, input.vnext as Parameters<typeof buildVisualEvidenceContribution>[1]),
+    )
+    : [];
+
+  const facts = [...input.truth.facts, ...documentFacts, ...visualFacts];
   const evidenceIds = new Set(input.evidence.entries.map((e) => e.id));
   const conflictIds = new Set(input.truth.conflicts.map((c) => c.id));
   const unknownKeys = new Set<string>(input.truth.unknowns);

@@ -39,6 +39,8 @@
     "./production-translation/*": "./src/production-translation/*",
     "./integration": "./src/integration/index.ts",
     "./integration/*": "./src/integration/*",
-    "./contracts": "./src/contracts/index.ts"
+    "./contracts": "./src/contracts/index.ts",
+    "./visual-evidence": "./src/visual-evidence/index.ts",
+    "./visual-evidence/*": "./src/visual-evidence/*"
   }
 }

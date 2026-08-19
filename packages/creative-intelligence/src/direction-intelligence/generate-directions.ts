@@ -248,15 +248,39 @@ function buildDirectionForConcept(
   if (status === 'blocked') blockers.push('上游概念被阻断');
   if (status === 'provisional') blockers.push('部分事实待确认');
 
+  // CI-W1C.5 PART E: extract project-specific visual descriptors from
+  // the concept's factRefs (only visualAsset.* VISUAL_SOURCE_FACT facts
+  // already part of the trace). These are appended to visualMechanism
+  // and systemHypothesis so the Direction carries project-specific
+  // visual semantics, not just the family template.
+  const visualDescriptors: string[] = [];
+  for (const f of ctx.facts) {
+    if (factRefs.includes(f.id)
+      && typeof f.key === 'string'
+      && f.key.startsWith('visualAsset.')
+      && f.authority === 'VISUAL_SOURCE_FACT'
+      && Array.isArray(f.value)) {
+      for (const item of f.value) {
+        if (item && typeof item.statement === 'string' && item.statement.length > 0) {
+          visualDescriptors.push(item.statement);
+        }
+      }
+    }
+  }
+  const visualAnchor = visualDescriptors.slice(0, 3).join(' | ');
+  const visualAnchorSuffix = visualAnchor.length > 0
+    ? ` 视觉锚点：${visualAnchor}。`
+    : '';
+
   return {
     id: `dir-${concept.id}-${family}-v${variant}`,
     title: `${tpl.titlePrefix}${concept.title}（${titleSuffix}）`,
-    thesis: `${tpl.systemHypothesisTpl(concept)}`,
+    thesis: `${tpl.systemHypothesisTpl(concept)}${visualAnchorSuffix}`,
 
     conceptRefs,
 
-    visualMechanism: tpl.visualMechanismTpl(concept),
-    systemHypothesis: tpl.systemHypothesisTpl(concept),
+    visualMechanism: `${tpl.visualMechanismTpl(concept)}${visualAnchorSuffix}`,
+    systemHypothesis: `${tpl.systemHypothesisTpl(concept)}${visualAnchorSuffix}`,
     directionFamily: family,
 
     colorRelationship: tpl.colorRelationshipTpl(concept),
