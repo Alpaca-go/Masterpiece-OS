@@ -965,6 +965,12 @@ function ThinkingPage({ lifecycle, thinkingProgress, onCancel }: {
 // ---------------------------------------------------------------------------
 // Direction decision page — merged Directions + Evaluation + Selection
 // (CI-W1B.1 Part G)
+// CI-W1C.7: minimal projection of Model-Assisted Visual Direction
+// Exploration Report shadow artifacts (when available). The panel
+// reads from `window.masterpiece.creativeIntelligence.modelAssisted`
+// and renders nothing if the data is absent.
+// ---------------------------------------------------------------------------
+import { ModelAssistedDirectionPanel } from './ModelAssistedDirectionPanel.tsx';
 // ---------------------------------------------------------------------------
 
 function DirectionDecisionPage({ directionSet, evaluationSet, recommendations, conceptRef, selectedDirectionId, onProposeSelection }: {
@@ -1019,7 +1025,40 @@ function DirectionDecisionPage({ directionSet, evaluationSet, recommendations, c
           />;
         })}
       </ul>}
+    {(() => {
+      // CI-W1C.7 minimal projection: read model-assisted shadow
+      // artifacts from the runtime accessor if available. The
+      // panel renders nothing if the data is absent.
+      const ci = typeof window !== 'undefined' ? (window as unknown as { masterpiece?: { creativeIntelligence?: { modelAssisted?: { listDirections?: (projectId: string) => Promise<unknown> } } } }).masterpiece?.creativeIntelligence : null;
+      if (!ci?.modelAssisted?.listDirections) return null;
+      const projectId = directionSet && (directionSet as { projectId?: string }).projectId;
+      if (!projectId) return null;
+      return <ModelAssistedDirectionPanelFetcher projectId={projectId} listDirections={ci.modelAssisted.listDirections} />;
+    })()}
   </section>;
+}
+
+// CI-W1C.7: fetcher component for the Model-Assisted Direction
+// panel. Renders nothing on error. Never throws.
+function ModelAssistedDirectionPanelFetcher({ projectId, listDirections }: { projectId: string; listDirections: (projectId: string) => Promise<unknown> }) {
+  const [data, setData] = useState<{ directions: Array<{ id: string; title?: string; directionFamily?: string; creativeThesis?: string; visualMechanism?: string; systemHypothesis?: string; whyThisProject?: string; differenceFromOtherDirections?: string; strengths?: string[]; risks?: string[]; mustNotBecome?: string[]; epistemicClass?: string }>; reportPath?: string; reportPreview?: string; generatedAt?: string } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    listDirections(projectId).then((result) => {
+      if (cancelled) return;
+      setData(result as { directions: Array<{ id: string; title?: string; directionFamily?: string; creativeThesis?: string; visualMechanism?: string; systemHypothesis?: string; whyThisProject?: string; differenceFromOtherDirections?: string; strengths?: string[]; risks?: string[]; mustNotBecome?: string[]; epistemicClass?: string }>; reportPath?: string; reportPreview?: string; generatedAt?: string } | null);
+    }).catch(() => {
+      if (!cancelled) setData(null);
+    });
+    return () => { cancelled = true; };
+  }, [projectId, listDirections]);
+  if (!data) return null;
+  return <ModelAssistedDirectionPanel
+    directions={data.directions}
+    reportPath={data.reportPath}
+    reportPreview={data.reportPreview}
+    generatedAt={data.generatedAt}
+  />;
 }
 
 function DirectionDecisionCard({ direction, index, availability, selectedDirectionId, evalItem, onProposeSelection }: {

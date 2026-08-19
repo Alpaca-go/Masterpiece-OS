@@ -52,3 +52,8 @@ export * from './integration/index.ts';
 export * from './contracts/index.ts';
 // CI-W1C.5 PART E: visual evidence contribution (per-item visual facts).
 export * from './visual-evidence/index.ts';
+// CI-W1C.7: model-assisted strategic synthesis, concept ideation,
+// direction ideation, and visual direction exploration report.
+export * from './strategic-synthesis/index.ts';
+export * from './model-assisted/index.ts';
+export * from './reporting/index.ts';
