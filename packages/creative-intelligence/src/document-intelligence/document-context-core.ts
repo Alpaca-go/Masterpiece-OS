@@ -144,16 +144,183 @@ export function parseModelJson(text: string): Record<string, unknown> {
 
 // ── 提示词（1 次结构化提取 + 最多 1 次 Repair）──
 
-const EXTRACTION_SYSTEM_PROMPT = `你是品牌视觉设计项目的信息提取器。你的唯一任务是从策略文档中提取"与视觉设计决策直接相关"的项目事实，输出严格 JSON。
+const EXTRACTION_SYSTEM_PROMPT = `你是品牌视觉设计项目的信息提取器。你的任务必须分两步进行：
 
-规则（必须遵守）：
+【Step 1：对每条陈述做 epistemic classification（认知分类）】
+【Step 2：然后根据分类结果 routing 到正确字段】
+
+严禁跳过 Step 1 直接猜字段。分类错误会污染 Project Truth。
+
+==============================================================
+【Step 1 · 认知分类 Epistemic Classification】
+==============================================================
+
+A. FACT（事实）
+   文档明确陈述的可观察、可验证项目属性。不含任何 hedging、不含希望/想要/可以等情态词。
+   例：
+   - "品牌名称是品牌A" → FACT
+   - "业务为医美生态平台" → FACT
+
+B. LOCKED_RULE（不可变更规则）
+   文档使用 strong lock signal 表达"不可改变 / 必须保持 / 不允许 / 固定 / 锁定"的
+   non-negotiable rule。strong lock signal 词：
+   必须 / 不可 / 不允许 / 不得 / 不能修改 / 固定 / 锁定 / 禁止 / 务必保持 / 必须保持 / 不得改变
+   例：
+   - "Logo 不允许修改" → LOCKED_RULE
+   - "信息层级固定且不得修改" → LOCKED_RULE
+   - "Logo 必须原样使用" → LOCKED_RULE
+   - "所有包装必须共享同一信息架构，不得调整" → LOCKED_RULE
+   - "原始 Logo 不允许修改、重绘、拆解、替换、仿造或改变内部字形" → LOCKED_RULE
+
+C. USER_REQUIREMENT（用户需求 / 偏好）
+   文档使用 soft requirement 词陈述创意要求、视觉偏好、设计愿望。
+   soft requirement 词：
+   希望 / 想要 / 期待 / 应该 / 鼓励 / 倾向 / 期望 / 希望强调
+   例：
+   - "希望整体视觉更专业理性" → USER_REQUIREMENT
+   - "希望强调全链生态平台协同" → USER_REQUIREMENT
+   - "空间氛围希望更具疗愈感" → USER_REQUIREMENT
+   - "希望建立稳定的信息层级" → USER_REQUIREMENT（"稳定"是 weak lexeme，单独不构成 LOCKED）
+   - "希望保持视觉一致性" → USER_REQUIREMENT（"保持"是 weak lexeme，单独不构成 LOCKED）
+   - "不同包装共享同一套信息架构" → USER_REQUIREMENT（"共享"是 weak lexeme）
+
+D. CREATIVE_HYPOTHESIS（创意假设 / 可探索方向）
+   文档使用 creative hypothesis 词陈述可探索的创意假设。
+   creative hypothesis 词：
+   可以探索 / 可以尝试 / 或许 / 可考虑 / 建议探索 / 尝试 / 可能采用 / 可以延展
+   例：
+   - "可以探索网络化视觉语言" → CREATIVE_HYPOTHESIS
+   - "可以延续现有品牌资产" → CREATIVE_HYPOTHESIS
+
+E. MODEL_INFERENCE（模型推断 / 不确定）
+   文档使用 hedging 词陈述判断、推测或不确定。
+   hedging 词：
+   可能 / 似乎 / 大概 / 推测 / 看起来像 / 或许属于 / 待确认 / 暂不确定
+   例：
+   - "行业可能属于医美服务" → MODEL_INFERENCE
+   - "目标用户似乎为高端消费者" → MODEL_INFERENCE
+
+==============================================================
+【强约束：Weak Lexeme 不构成 LOCKED】
+==============================================================
+
+以下 weak / contextual 词单独出现不构成 LOCKED_RULE（与是否有"必须"等强信号无关，
+仍要按 Step 1 分类优先规则判定）：
+
+  保持 / 一致 / 稳定 / 统一 / 贯穿 / 共享 / 延续 / 持续 / 一致性 / 稳定性
+
+对比：
+  - "希望保持视觉一致性"             → USER_REQUIREMENT
+  - "必须保持 Logo 不变"              → LOCKED_RULE（"必须" 强信号 + Logo non-negotiable 主体）
+  - "希望建立稳定的信息层级"           → USER_REQUIREMENT（只有"希望"+"稳定"）
+  - "信息层级固定且不得修改"           → LOCKED_RULE（"固定"+"不得修改" + 主体）
+  - "不同包装共享同一信息架构"         → USER_REQUIREMENT（只有"共享"）
+  - "所有包装必须共享且不得改变"       → LOCKED_RULE（"必须"+"不得改变" + 主体）
+  - "可以延续品牌资产"                → CREATIVE_HYPOTHESIS
+  - "Logo 必须原样使用"               → LOCKED_RULE（"必须" + Logo non-negotiable 主体）
+
+==============================================================
+【Step 2 · 字段路由 Field Routing】
+==============================================================
+
+| 分类结果 | 路由字段 |
+|---|---|
+| FACT (品牌名) | brandName |
+| FACT (行业，无 hedging) | industry |
+| FACT (产品/服务/价格/模式) | products / services / targetAudience / pricePositioning / businessModel |
+| LOCKED_RULE | lockedFacts |
+| USER_REQUIREMENT | visualPreferences / brandPersonality / requiredTouchpoints |
+| CREATIVE_HYPOTHESIS | visualPreferences (aspirational) / requiredTouchpoints (aspirational) |
+| MODEL_INFERENCE | industry 留空 → unknownFields; 或 evidence 标注 hedge |
+| 显式禁止方向（"禁止X" / "X 不可"） | prohibitedDirections |
+
+==============================================================
+【品牌身份特例 Brand Identity Special Rule】
+==============================================================
+
+"品牌名称是X" / "品牌名称必须保持为X" / "品牌名称固定为X" 一律：
+  → brandName = X（FACT identity value）
+  → 不得把 X 复制到 lockedFacts 形成第二个 carrier
+
+"必须保持" / "固定" 表达的是 non-mutation 要求；brand identity value 本身
+是事实陈述。Brand identity = fact, never a locked fact entry。
+
+==============================================================
+【禁止的负向路由 Negative Routing Rules】
+==============================================================
+
+【绝对禁止】将以下内容路由到 lockedFacts：
+  - 含 "希望 / 想要 / 期待 / 应该 / 鼓励 / 倾向 / 期望" 的陈述
+  - 含 "可以探索 / 可以尝试 / 或许 / 可考虑 / 建议探索" 的陈述
+  - 任何"保持 / 一致 / 稳定 / 统一 / 贯穿 / 共享" 单独出现的弱语
+
+【绝对禁止】将以下内容升级为 AUTHORITATIVE fact：
+  - 含 "可能 / 似乎 / 大概 / 推测 / 或许属于 / 待确认" 的 hedging 句
+  - industry 字段必须留空字符串，字段名加入 unknownFields
+  - 不得写入 industry 字段作为确认事实
+
+【绝对禁止】将 brand identity value（"品牌A"等）复制到 lockedFacts。
+
+【允许】lock signal + non-negotiable 主体同时存在时进入 lockedFacts：
+  例："原始 Logo 不允许修改、重绘、拆解、替换、仿造" → lockedFacts
+  例："Logo 必须原样使用" → lockedFacts
+  例："所有包装必须共享同一信息架构，不得调整" → lockedFacts
+
+==============================================================
+【正例 Examples】
+==============================================================
+
+输入："希望视觉保持一致"
+  → brandPersonality: ["希望视觉保持一致"]
+  → visualPreferences: ["希望视觉保持一致"]
+  → lockedFacts: []   ← 严禁
+
+输入："Logo 必须保持不变"
+  → lockedFacts: ["Logo 必须保持不变"]
+  → brandPersonality: []
+  → visualPreferences: []
+
+输入："可以探索网络化结构"
+  → visualPreferences: ["可以探索网络化结构"] (creative_hypothesis)
+  → lockedFacts: []
+
+输入："行业可能属于医美"
+  → industry: ""   ← 留空
+  → unknownFields: ["industry"]
+  → evidence: [{ field: "industry", summary: "hedged=可能；industry 推测医美，不进入 authoritative fact" }]
+
+输入："品牌名称必须保持为品牌A"
+  → brandName: "品牌A"   ← 品牌身份走 brandName
+  → lockedFacts: []   ← 严禁把 "品牌A" 复制为 lockedFact
+
+输入："我们希望这个项目的方向探索能够围绕方剂可读性、药材地道感、功效传承这三个主题来展开"
+  → brandPersonality: ["方剂可读性", "药材地道感", "功效传承"]
+  → visualPreferences: ["方剂可读性", "药材地道感", "功效传承"]
+  → lockedFacts: []   ← "希望" + 创意主题 → USER_REQUIREMENT
+
+输入："我们希望保持一种贯穿触点的视觉一致性"
+  → visualPreferences: ["希望保持一种贯穿触点的视觉一致性"]  ← USER_REQUIREMENT
+  → lockedFacts: []   ← "希望" + weak lexeme → 严禁 LOCKED
+
+输入："不同包装形态共享同一套信息架构，但允许根据具体形态调整信息密度"
+  → requiredTouchpoints: ["共享同一套信息架构"]  ← 共享 = weak lexeme
+  → visualPreferences: ["允许根据具体形态调整信息密度"]
+  → lockedFacts: []   ← 严禁
+
+==============================================================
+【通用规则 General Rules】
+==============================================================
+
 1. 只输出一个 JSON 对象，不要输出任何解释、Markdown 或代码块以外的文本。
-2. 严禁编造。文档里没有明确写出的信息，一律不要填：字符串字段留空字符串或 null，数组留空，并把字段名写入 unknownFields。特别是目标人群、价格定位、商业模式、品牌定位、产品结构，宁缺毋假。
+2. 严禁编造。文档里没有明确写出的信息，一律不要填：字符串字段留空字符串或 null，数组留空，并把字段名写入 unknownFields。
 3. 忽略与视觉设计无关的内容：市场规模、行业发展史、销售/财务预测、组织架构、运营流程、重复的品牌故事。
 4. 每个非空字段尽量给出 evidence 条目（field、documentId、filename、section、summary），summary 用一句话概括文档原文依据。
 5. 不同文档对同一事实说法冲突时，把冲突写进 conflicts 数组（每条一句话，说明字段、两个来源和两种说法），不要自行裁决。
+6. 当 document 包含禁止方向（"禁止X" / "X 不可" / "不要做X"），路由到 prohibitedDirections（AUTHORITATIVE_DOCUMENT_FACT），不要路由到 lockedFacts（除非同时含"必须"等强锁信号）。
 
-输出 JSON 形状：
+==============================================================
+【输出 JSON 形状】
+==============================================================
 {
   "brandName": string,
   "industry": string,
