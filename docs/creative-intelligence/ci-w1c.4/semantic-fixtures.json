@@ -1,0 +1,121 @@
+{
+  "schemaVersion": "1.0",
+  "phase": "ci-w1c.4",
+  "purpose": "PART B + PART C — minimal semantic classification fixture set. Defines raw text + expected epistemic class for each fixture, and the production path that would be exercised.",
+  "epistemicClasses": ["FACT", "USER_REQUIREMENT", "LOCKED_RULE", "CREATIVE_HYPOTHESIS", "MODEL_INFERENCE", "UNKNOWN"],
+  "hardRule": "S03 / S04 / S05 / S08 must NOT become locked.facts (must not be projected to PROJECT_TRUTH_KEYS.LOCKED_FACTS with authority=LOCKED).",
+  "fixtures": [
+    {
+      "id": "S01",
+      "rawText": "品牌名称是九州美学",
+      "expected": {
+        "epistemicClass": "FACT",
+        "extractedField": "brandName",
+        "authority": "AUTHORITATIVE_DOCUMENT_FACT",
+        "truthClass": "fact",
+        "lockedStatus": false,
+        "truthProjection": "brand.name",
+        "conflictRisk": "low — if project.json brand.name matches, no conflict. If mismatched, identity_mismatch (correct behavior)."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT field brandName → normalizeExtractedContext.brandName → adaptDocumentVisualContext → PROJECT_TRUTH_KEYS.BRAND_NAME (truthClass=fact, authority=AUTHORITATIVE_DOCUMENT_FACT)"
+    },
+    {
+      "id": "S02",
+      "rawText": "Logo 不允许修改",
+      "expected": {
+        "epistemicClass": "LOCKED_RULE",
+        "extractedField": "lockedFacts",
+        "authority": "LOCKED",
+        "truthClass": "user_requirement",
+        "lockedStatus": true,
+        "truthProjection": "locked.facts",
+        "conflictRisk": "low — should match project.json's LOCKED locked.facts (Logo Locked) if present. If mismatched, locked_value_violation (correct behavior)."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT field lockedFacts → normalizeExtractedContext lists.lockedFacts → adaptDocumentVisualContext → PROJECT_TRUTH_KEYS.LOCKED_FACTS (authority=LOCKED, truthClass=user_requirement)"
+    },
+    {
+      "id": "S03",
+      "rawText": "希望整体视觉更专业理性",
+      "expected": {
+        "epistemicClass": "USER_REQUIREMENT",
+        "extractedField": "visualPreferences / brandPersonality",
+        "authority": "AUTHORITATIVE_DOCUMENT_FACT (since expressed in doc) / USER_REQUIREMENT (semantic)",
+        "truthClass": "fact / user_requirement",
+        "lockedStatus": false,
+        "truthProjection": "visual.preferences / brand.personality (NOT locked.facts)",
+        "conflictRisk": "MEDIUM — production has no explicit rule preventing '希望 ...' statements from being placed into lockedFacts. G02.002 evidence (ci-w1c-attempt-2) shows the model can put '希望' content into lockedFacts when the brief also contains '保持' / '一致' / '稳定' language."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT has no explicit rule mapping 希望/想要 to visualPreferences. Model decides — production behavior is non-deterministic across brief contexts."
+    },
+    {
+      "id": "S04",
+      "rawText": "希望强调全链生态平台的协同关系",
+      "expected": {
+        "epistemicClass": "USER_REQUIREMENT",
+        "extractedField": "requiredTouchpoints / brandPersonality",
+        "authority": "AUTHORITATIVE_DOCUMENT_FACT",
+        "truthClass": "user_requirement / fact",
+        "lockedStatus": false,
+        "truthProjection": "product.touchpoints / brand.personality (NOT locked.facts)",
+        "conflictRisk": "HIGH — same G02.002 trigger pattern. Wording '希望...协同' + brief context '保持...一致' triggers model to put into lockedFacts. G02.002 produced locked.facts = ['信息层级作为包装触点稳定DNA', '不同包装使用同一套信息架构但允许密度差异', '现有品牌资产激活', '跨媒介一致'] from a brief with '希望...保持...贯穿触点...一致' language."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT has no explicit rule mapping 希望+协同 to requiredTouchpoints. Model decides — production behavior non-deterministic."
+    },
+    {
+      "id": "S05",
+      "rawText": "可以探索网络化视觉语言",
+      "expected": {
+        "epistemicClass": "CREATIVE_HYPOTHESIS / low-authority preference",
+        "extractedField": "visualPreferences (creative_hypothesis)",
+        "authority": "CREATIVE_HYPOTHESIS / AUTHORITATIVE_DOCUMENT_FACT",
+        "truthClass": "creative_hypothesis / user_requirement",
+        "lockedStatus": false,
+        "truthProjection": "visual.preferences (NOT locked.facts)",
+        "conflictRisk": "LOW — '可以探索' is a soft suggestion, model is less likely to put into lockedFacts. But production has no explicit guard."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT has no explicit rule for 可以探索 / 或许. Model decides."
+    },
+    {
+      "id": "S06",
+      "rawText": "行业可能属于医美服务",
+      "expected": {
+        "epistemicClass": "MODEL_INFERENCE / UNKNOWN",
+        "extractedField": "industry (with hedging marker preserved)",
+        "authority": "MODEL_INFERENCE / UNKNOWN",
+        "truthClass": "inference / unknown",
+        "lockedStatus": false,
+        "truthProjection": "business.industry (NOT brand.name, NOT locked.facts)",
+        "conflictRisk": "MEDIUM — production EXTRACTION_SYSTEM_PROMPT has no explicit 'with hedging markers → model_inference' rule. Model may put into industry as fact (truthClass=fact, authority=AUTHORITATIVE_DOCUMENT_FACT)."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT allows industry as a fact field. No epistemic-class discrimination for '可能' / '似乎'."
+    },
+    {
+      "id": "S07",
+      "rawText": "品牌名称必须保持为一剂良方",
+      "expected": {
+        "epistemicClass": "LOCKED_RULE / USER_REQUIREMENT",
+        "extractedField": "lockedFacts (because '必须保持' is a lock signal)",
+        "authority": "LOCKED",
+        "truthClass": "user_requirement",
+        "lockedStatus": true,
+        "truthProjection": "locked.facts",
+        "conflictRisk": "expected behavior — must produce locked_value_violation if project.json brand.name is a different carrier. Note: in Attempt 2 evidence, S07-class content actually goes to brandName AND to locked.facts depending on model."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT — model decides based on '必须保持' / '保持' language. May go to brandName OR to lockedFacts. This is itself a risk for production: brand identity info should be FACT (brandName), not LOCKED_RULE (locked.facts)."
+    },
+    {
+      "id": "S08",
+      "rawText": "空间氛围希望更具疗愈感",
+      "expected": {
+        "epistemicClass": "USER_REQUIREMENT",
+        "extractedField": "visualPreferences / brandPersonality",
+        "authority": "AUTHORITATIVE_DOCUMENT_FACT",
+        "truthClass": "user_requirement / fact",
+        "lockedStatus": false,
+        "truthProjection": "visual.preferences / brand.personality (NOT locked.facts)",
+        "conflictRisk": "LOW-MEDIUM — '空间氛围...希望' is contextual preference. Model could put in brandPersonality / visualPreferences (correct) or in lockedFacts (incorrect)."
+      },
+      "productionPath": "EXTRACTION_SYSTEM_PROMPT has no explicit rule for 希望+atmosphere to visualPreferences. Model decides."
+    }
+  ]
+}
