@@ -369,6 +369,11 @@ const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
   // docs/creative-intelligence/ci-w1c.4/qualification-input-semantics-and-harness-repair-resume.md).
   'apps/web-runtime/scripts/ci-w1c/fact-edit-helper.mjs',
   'apps/web-runtime/scripts/ci-w1c/approval-invalidation-helper.mjs',
+  // CI-W1C.4 Resume.1 — differentiation smoke runner (chains two
+  // drive-ci-workflow invocations and emits differentiation-smoke-evidence.json
+  // for the XD01-XD06 contract tests; see
+  // docs/creative-intelligence/ci-w1c.4/qualification-input-semantics-and-harness-repair-resume.1.md).
+  'apps/web-runtime/scripts/ci-w1c/differentiation-smoke.mjs',
 ]);
 
 // Allow the test harness to extend the production scan roots
