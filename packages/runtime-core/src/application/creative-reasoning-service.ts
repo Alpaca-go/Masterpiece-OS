@@ -270,6 +270,9 @@ const MOCK_SYNTHESIS_FIXTURE = {
     prohibitedDirections: [],
     needs: [],
     evidence: [],
+    // CI-W1C.7.4-R2 PART I — planning claims are input-derived.
+    // Mock fixture has no planning input.
+    planningClaims: [],
     legacyVisualEvidenceExcluded: [
       'visualAsset.*', 'old_visual_style', 'old_VI', 'old_poster', 'old_packaging',
       'old_spatial', 'style_reference', 'structure_reference', 'spatial_reference',
@@ -283,20 +286,22 @@ const MOCK_SYNTHESIS_FIXTURE = {
     factRefs: [],
     needRefs: [],
     evidenceRefs: [],
+    // CI-W1C.7.4-R2 PART B — planningClaimRefs domain.
+    planningClaimRefs: [],
   },
   tensions: [
-    { id: 'mock-tens-1', statement: 'Mock tension A vs B', poleA: 'A', poleB: 'B', whyItMatters: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [] },
-    { id: 'mock-tens-2', statement: 'Mock tension C vs D', poleA: 'C', poleB: 'D', whyItMatters: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [] },
+    { id: 'mock-tens-1', statement: 'Mock tension A vs B', poleA: 'A', poleB: 'B', whyItMatters: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [], planningClaimRefs: [] },
+    { id: 'mock-tens-2', statement: 'Mock tension C vs D', poleA: 'C', poleB: 'D', whyItMatters: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [], planningClaimRefs: [] },
   ],
   insights: [
-    { id: 'mock-ins-1', statement: 'Mock insight 1', implication: 'mock', whyThisProject: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [] },
-    { id: 'mock-ins-2', statement: 'Mock insight 2', implication: 'mock', whyThisProject: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [] },
-    { id: 'mock-ins-3', statement: 'Mock insight 3', implication: 'mock', whyThisProject: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [] },
+    { id: 'mock-ins-1', statement: 'Mock insight 1', implication: 'mock', whyThisProject: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [], planningClaimRefs: [] },
+    { id: 'mock-ins-2', statement: 'Mock insight 2', implication: 'mock', whyThisProject: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [], planningClaimRefs: [] },
+    { id: 'mock-ins-3', statement: 'Mock insight 3', implication: 'mock', whyThisProject: 'mock', epistemicClass: 'MODEL_INFERENCE', factRefs: [], needRefs: [], evidenceRefs: [], planningClaimRefs: [] },
   ],
   opportunities: [
-    { id: 'mock-opp-1', title: 'Mock opportunity 1', thesis: 'mock', strategicMechanism: 'mock', whyThisProject: 'mock', risk: [], insightRefs: ['mock-ins-1'], factRefs: [] },
-    { id: 'mock-opp-2', title: 'Mock opportunity 2', thesis: 'mock', strategicMechanism: 'mock', whyThisProject: 'mock', risk: [], insightRefs: ['mock-ins-2'], factRefs: [] },
-    { id: 'mock-opp-3', title: 'Mock opportunity 3', thesis: 'mock', strategicMechanism: 'mock', whyThisProject: 'mock', risk: [], insightRefs: ['mock-ins-3'], factRefs: [] },
+    { id: 'mock-opp-1', title: 'Mock opportunity 1', thesis: 'mock', strategicMechanism: 'mock', whyThisProject: 'mock', risk: [], insightRefs: ['mock-ins-1'], factRefs: [], planningClaimRefs: [] },
+    { id: 'mock-opp-2', title: 'Mock opportunity 2', thesis: 'mock', strategicMechanism: 'mock', whyThisProject: 'mock', risk: [], insightRefs: ['mock-ins-2'], factRefs: [], planningClaimRefs: [] },
+    { id: 'mock-opp-3', title: 'Mock opportunity 3', thesis: 'mock', strategicMechanism: 'mock', whyThisProject: 'mock', risk: [], insightRefs: ['mock-ins-3'], factRefs: [], planningClaimRefs: [] },
   ],
   diagnostics: ['MOCK_EXECUTION_PATH'],
   meta: { attempt: 1, provider: 'mock', model: 'mock-fixture-v0.1', modelCallCount: 1 },
