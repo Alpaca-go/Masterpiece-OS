@@ -3,8 +3,9 @@
 > **Date:** 2026-08-20
 > **Branch:** `feat/short-chain-simplified-ui`
 > **Baseline HEAD:** `34a3423e77f3754490d00d3180815fe7572e7f13` (CI-W1C.7.4-R1 READY)
-> **Implementation Frozen HEAD:** `ef99b2b8817b072dcd23c5ae40b1f6aa02cd70fb` (post-6-commit freeze)
-> **Documentation Tip:** the last commit (`ef99b2b8 docs(ci-w1c.7.4-r2): record readiness verdict + 9 supporting docs`) IS the documentation-tip commit; it contains the 10 R2 docs and nothing else.
+> **Implementation Frozen HEAD:** `ef99b2b8817b072dcd23c5ae40b1f6aa02cd70fb` (the 6th R2 commit; closes production code, tests, and the 10 R2 docs)
+> **Documentation Tip:** `6b165e6e8b6f9b95a89b10e2e6a5d3e6b0a55f4d` (the 7th R2 commit; pins final HEAD + records 2 working-tree cleanliness guards in the regression report; doc-only)
+> **Final HEAD (post-push):** `6b165e6e` (or whatever `git rev-parse HEAD` returns after `git push`)
 > **Upstream:** CI-W1C.7.4-R1
 > **Implementation Summary:** Trace protocol for `PlanningStrategicEvidence` (carrier parity with Truth / Need / Evidence) + canonical project-level orchestration + tracked-runtime-assets-guard non-regression. Zero-network. Zero model call. Zero image call. 34 / 34 R2 tests PASS.
 > **Verdict:** `READY_FOR_REAL_PLANNING_DOCUMENT_QUALIFICATION`
@@ -29,9 +30,13 @@ R2 closes 4 R1 blockers:
 `34a3423e77f3754490d00d3180815fe7572e7f13` (CI-W1C.7.4-R1 READY)
 
 ## 2. final HEAD
-Implementation Frozen HEAD = `ef99b2b8817b072dcd23c5ae40b1f6aa02cd70fb`. See commit log for the 6 R2 commits:
+Implementation Frozen HEAD = `ef99b2b8817b072dcd23c5ae40b1f6aa02cd70fb`. The
+7th R2 commit `6b165e6e8b6f9b95a89b10e2e6a5d3e6b0a55f4d` is the
+Documentation Tip (doc-only SHA pin). See commit log for the 7 R2
+commits:
 
 ```text
+6b165e6e docs(ci-w1c.7.4-r2): pin final HEAD = ef99b2b8 + record 2 working-tree guards
 ef99b2b8 docs(ci-w1c.7.4-r2): record readiness verdict + 9 supporting docs
 ebe1ed9d test(ci-w1c.7.4-r2): add trace protocol + orchestrator + R2 E2E tests
 507a15d4 refactor(ci-w1c): route qualifier through canonical orchestrator
