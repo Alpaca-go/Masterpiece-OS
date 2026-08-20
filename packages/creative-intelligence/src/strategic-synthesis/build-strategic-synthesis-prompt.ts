@@ -24,6 +24,7 @@
 
 import type { StrategicReasoningContext } from './compile-strategic-context.ts';
 import { STRATEGIC_SYNTHESIS_LEGACY_VISUAL_EXCLUDED_MIN, STRATEGIC_SYNTHESIS_SCHEMA_VERSION } from './contracts.ts';
+import { strategicInputFingerprint } from './semantic-fingerprint.ts';
 
 // CI-W1C.7.1 prompt version. The `STRATEGIC_SYNTHESIS_PROMPT_VERSION`
 // re-exported from `contracts.ts` is the legacy CI-W1C.7 version
@@ -193,13 +194,18 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
 
   const characterCount = userMessage.length;
   const sectionCount = (userMessage.match(/^# /gm) ?? []).length;
-  const inputFingerprint = computeFingerprint({
+  // CI-W1C.7.1A: canonical SHA-256 of the full Planning-First semantic
+  // input. Replaces the previous count-only 32-char hex.
+  const inputFingerprint = strategicInputFingerprint({
     projectId: input.projectId,
-    factCount: ctx.authoritativeFacts.length,
-    needCount: ctx.needs.length,
-    evidenceCount: ctx.evidence.length,
-    lockedCount: ctx.lockedIdentity.length,
-    prohibitedCount: ctx.prohibitedDirections.length,
+    promptVersion: input.promptVersion ?? STRATEGIC_SYNTHESIS_BUILDER_PROMPT_VERSION,
+    authoritativeFacts: ctx.authoritativeFacts,
+    userRequirements: ctx.userRequirements,
+    lockedIdentity: ctx.lockedIdentity,
+    prohibitedDirections: ctx.prohibitedDirections,
+    needs: ctx.needs,
+    evidence: ctx.evidence,
+    legacyVisualEvidenceExcluded: ctx.legacyVisualEvidenceExcluded,
   });
 
   return {
@@ -215,11 +221,4 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
       evidenceCount: ctx.evidence.length,
     },
   };
-}
-
-function computeFingerprint(parts: Record<string, unknown>): string {
-  // Stable JSON serialization (sorted keys) for fingerprinting.
-  const sorted: Record<string, unknown> = {};
-  for (const k of Object.keys(parts).sort()) sorted[k] = parts[k];
-  return Buffer.from(JSON.stringify(sorted)).toString('hex').slice(0, 32);
 }

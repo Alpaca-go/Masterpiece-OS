@@ -100,7 +100,7 @@ export function compileStrategicReasoningContext(input: {
   const userRequirements = facts.filter(isUserRequirement);
   const lockedIdentity = facts.filter(isLockedIdentity);
   const prohibitedDirections = facts.filter(isProhibitedDirection);
-  const evidenceItems: EvidenceItem[] = input.evidence.items;
+  const evidenceItems: EvidenceItem[] = (input.evidence.entries ?? (input.evidence as { items?: EvidenceItem[] }).items) ?? [];
 
   // The strategic-context source map MUST include every fact ID that
   // the model is allowed to reference. The grounding gate asserts

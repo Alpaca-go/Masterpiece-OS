@@ -10,6 +10,7 @@
 
 import type { StrategicReasoningContext } from '../strategic-synthesis/compile-strategic-context.ts';
 import type { StrategicSynthesisArtifact } from '../strategic-synthesis/contracts.ts';
+import { conceptInputFingerprint } from '../strategic-synthesis/semantic-fingerprint.ts';
 import { MODEL_ASSISTED_CONCEPT_SCHEMA_VERSION, MODEL_ASSISTED_FORBIDDEN_POSITIVE_AUTHORITIES } from './contracts.ts';
 
 export const MODEL_ASSISTED_CONCEPT_IDEATION_BUILDER_PROMPT_VERSION = 'ci-w1c.7.1-model-assisted-concept-v0.2' as const;
@@ -120,11 +121,20 @@ export function buildConceptIdeationPrompt(input: ConceptIdeationPromptInput): C
 
   const characterCount = userMessage.length;
   const sectionCount = (userMessage.match(/^# /gm) ?? []).length;
-  const inputFingerprint = computeFingerprint({
+  // CI-W1C.7.1A: canonical SHA-256 of the full Concept semantic input
+  // (includes upstream synthesis + planning constraints). Replaces
+  // the previous count-only 32-char hex.
+  const inputFingerprint = conceptInputFingerprint({
     projectId: input.projectId,
-    synthesisInsightCount: synthesis.insights.length,
-    synthesisOpportunityCount: synthesis.opportunities.length,
-    allowedRefCount: allowedRefs.length,
+    promptVersion: input.promptVersion ?? MODEL_ASSISTED_CONCEPT_IDEATION_BUILDER_PROMPT_VERSION,
+    authoritativeFacts: ctx.authoritativeFacts,
+    userRequirements: ctx.userRequirements,
+    lockedIdentity: ctx.lockedIdentity,
+    prohibitedDirections: ctx.prohibitedDirections,
+    needs: ctx.needs,
+    evidence: ctx.evidence,
+    legacyVisualEvidenceExcluded: ctx.legacyVisualEvidenceExcluded,
+    synthesis,
   });
 
   return {
@@ -139,10 +149,4 @@ export function buildConceptIdeationPrompt(input: ConceptIdeationPromptInput): C
       synthesisOpportunityCount: synthesis.opportunities.length,
     },
   };
-}
-
-function computeFingerprint(parts: Record<string, unknown>): string {
-  const sorted: Record<string, unknown> = {};
-  for (const k of Object.keys(parts).sort()) sorted[k] = parts[k];
-  return Buffer.from(JSON.stringify(sorted)).toString('hex').slice(0, 32);
 }

@@ -12,6 +12,7 @@
 import type { StrategicReasoningContext } from '../strategic-synthesis/compile-strategic-context.ts';
 import type { StrategicSynthesisArtifact } from '../strategic-synthesis/contracts.ts';
 import type { ModelAssistedConceptSet } from './contracts.ts';
+import { directionInputFingerprint } from '../strategic-synthesis/semantic-fingerprint.ts';
 import {
   MODEL_ASSISTED_DIRECTION_SCHEMA_VERSION,
   MODEL_ASSISTED_FORBIDDEN_POSITIVE_AUTHORITIES,
@@ -142,11 +143,20 @@ export function buildDirectionIdeationPrompt(input: DirectionIdeationPromptInput
 
   const characterCount = userMessage.length;
   const sectionCount = (userMessage.match(/^# /gm) ?? []).length;
-  const inputFingerprint = computeFingerprint({
+  // CI-W1C.7.1A: canonical SHA-256 of the full Direction semantic input
+  // (includes upstream synthesis + ConceptSet + planning constraints).
+  const inputFingerprint = directionInputFingerprint({
     projectId: input.projectId,
-    synthesisInsightCount: synthesis.insights.length,
-    conceptCount: conceptSet.candidates.length,
-    allowedRefCount: allowedRefs.length,
+    promptVersion: input.promptVersion ?? MODEL_ASSISTED_DIRECTION_IDEATION_BUILDER_PROMPT_VERSION,
+    authoritativeFacts: ctx.authoritativeFacts,
+    userRequirements: ctx.userRequirements,
+    lockedIdentity: ctx.lockedIdentity,
+    prohibitedDirections: ctx.prohibitedDirections,
+    needs: ctx.needs,
+    evidence: ctx.evidence,
+    legacyVisualEvidenceExcluded: ctx.legacyVisualEvidenceExcluded,
+    synthesis,
+    conceptSet,
   });
 
   return {
@@ -161,10 +171,4 @@ export function buildDirectionIdeationPrompt(input: DirectionIdeationPromptInput
       conceptCount: conceptSet.candidates.length,
     },
   };
-}
-
-function computeFingerprint(parts: Record<string, unknown>): string {
-  const sorted: Record<string, unknown> = {};
-  for (const k of Object.keys(parts).sort()) sorted[k] = parts[k];
-  return Buffer.from(JSON.stringify(sorted)).toString('hex').slice(0, 32);
 }

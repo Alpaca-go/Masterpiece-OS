@@ -68,6 +68,10 @@ import {
   runStrategicGroundingGate,
   validateStrategicSynthesisStructural,
   buildStrategicSynthesisPrompt,
+  checkPromptBudget,
+  estimateInputTokens,
+  DEFAULT_QUALIFICATION_BUDGET,
+  type CreativeReasoningQualificationBudget,
   STRATEGIC_SYNTHESIS_PROMPT_VERSION,
   type StrategicSynthesisArtifact,
   type StrategicSynthesisPromptOutput,
@@ -136,6 +140,14 @@ export interface CreativeReasoningInput {
    * `@masterpiece/model-runtime`.
    */
   reasonerFactory?: (credentials: ProviderCredentials) => ModelReasoner;
+  /**
+   * CI-W1C.7.1A PART D — Optional qualification budget. When set,
+   * the service runs the budget gate BEFORE the live model is
+   * invoked. If the gate fails, the service stops with
+   * `PROMPT_BUDGET_EXCEEDED` and never calls the model.
+   * Default: `DEFAULT_QUALIFICATION_BUDGET`.
+   */
+  qualificationBudget?: CreativeReasoningQualificationBudget;
 }
 
 export interface ModelReasoner {
@@ -572,27 +584,48 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     projectId: string,
     stageName: 'synthesis' | 'concept' | 'direction',
     prompt: { systemMessage: string; userMessage: string; promptVersion: string; inputFingerprint: string; size: { characterCount: number; sectionCount: number } },
+    budget?: CreativeReasoningQualificationBudget,
   ): Promise<string | null> {
     try {
       const outRoot = await deps.outputRoot(projectId);
       const dir = path.join(outRoot, 'intermediate', 'prompt-snapshots');
       await fs.mkdir(dir, { recursive: true });
       const file = path.join(dir, `${stageName}.prompt.json`);
+      // CI-W1C.7.1A PART D: budget gate result is persisted as
+      // part of the snapshot integrity metadata. PART E: the
+      // snapshot includes projectId, stage, promptVersion,
+      // inputFingerprint, characterCount, estimatedInputTokens,
+      // qualificationBudget, budgetStatus, sourceMap, messages,
+      // generatedAt.
+      const budgetResult = checkPromptBudget({
+        characterCount: prompt.size.characterCount,
+        budget: budget ?? DEFAULT_QUALIFICATION_BUDGET,
+      });
       const payload = {
+        projectId,
+        stage: stageName,
         promptVersion: prompt.promptVersion,
-        messages: [
-          { role: 'system' as const, content: prompt.systemMessage },
-          { role: 'user' as const, content: prompt.userMessage },
-        ],
+        inputFingerprint: prompt.inputFingerprint,
+        characterCount: prompt.size.characterCount,
+        estimatedInputTokens: budgetResult.estimatedInputTokens,
+        qualificationBudget: budgetResult.budget,
+        budgetStatus: budgetResult.status,
         sourceMap: {
           // The snapshot is the source-map-shaped audit trail; we
           // persist the size diagnostics only (no secret, no
           // credentials).
           characterCount: prompt.size.characterCount,
           sectionCount: prompt.size.sectionCount,
+          estimatedInputTokens: budgetResult.estimatedInputTokens,
+          qualificationTokensRequired: budgetResult.qualificationTokensRequired,
+          contextTokensRequired: budgetResult.contextTokensRequired,
         },
-        inputFingerprint: prompt.inputFingerprint,
+        messages: [
+          { role: 'system' as const, content: prompt.systemMessage },
+          { role: 'user' as const, content: prompt.userMessage },
+        ],
         size: prompt.size,
+        generatedAt: new Date().toISOString(),
       };
       const r = await atomicWriteJsonWithRetry(file, payload);
       if (!r.success) return null;
@@ -605,6 +638,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
   async function run(input: CreativeReasoningInput): Promise<CreativeReasoningResult> {
     const useMock = input.useMock !== false;
     const liveMode = !useMock;
+    const qualificationBudget = input.qualificationBudget ?? DEFAULT_QUALIFICATION_BUDGET;
     // Cache the truth/needs/evidence on the deps so the
     // buildStagePrompt helper can re-compile per call (the helper
     // takes the context as input, but the service-level prompt
@@ -653,7 +687,81 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       projectId: input.projectId,
       ctx: synthesisCtx,
     });
-    const synthesisPromptSnapshotPath = await persistPromptSnapshot(input.projectId, 'synthesis', synthesisPrompt);
+    const synthesisPromptSnapshotPath = await persistPromptSnapshot(
+      input.projectId,
+      'synthesis',
+      synthesisPrompt,
+      qualificationBudget,
+    );
+
+    // CI-W1C.7.1A PART D — budget gate on the synthesis prompt.
+    // If the gate fails, we STOP. No live model call. Downstream
+    // stages are NOT_RUN. (fail-closed)
+    const synthesisBudget = checkPromptBudget({
+      characterCount: synthesisPrompt.size.characterCount,
+      budget: qualificationBudget,
+    });
+    if (synthesisBudget.status === 'PROMPT_BUDGET_EXCEEDED') {
+      const reason = synthesisBudget.reason ?? 'PROMPT_BUDGET_EXCEEDED';
+      const synthStage: StageRunResult<StrategicSynthesisArtifact> = {
+        status: 'FAIL',
+        attempts: 0 as unknown as 1 | 2,
+        passed: false,
+        blockedCodes: [reason],
+        artifact: null,
+        rawAttempts: [],
+        gateReport: { budget: synthesisBudget },
+      };
+      return {
+        projectId: input.projectId,
+        mode: liveMode ? 'model_assisted_live' : 'model_assisted_mock',
+        imageProviderCallCount: 0,
+        analysisProfileId: input.analysisProfileId,
+        provider,
+        model,
+        shadow: {
+          synthesis: null,
+          conceptSet: null,
+          directionSet: null,
+          report: null,
+          reportMarkdown: null,
+        },
+        stages: {
+          synthesis: synthStage,
+          concept: {
+            status: 'NOT_RUN',
+            attempts: 0 as unknown as 1 | 2,
+            passed: false,
+            blockedCodes: [],
+            artifact: null,
+            rawAttempts: [],
+            gateReport: null,
+          },
+          direction: {
+            status: 'NOT_RUN',
+            attempts: 0 as unknown as 1 | 2,
+            passed: false,
+            blockedCodes: [],
+            artifact: null,
+            rawAttempts: [],
+            gateReport: null,
+          },
+        },
+        outputPaths: {
+          synthesis: null,
+          conceptSet: null,
+          directionSet: null,
+          reportJson: null,
+          reportMarkdown: null,
+          promptSnapshots: {
+            synthesis: synthesisPromptSnapshotPath,
+            concept: null,
+            direction: null,
+          },
+          liveAttempts: attemptsDir,
+        },
+      };
+    }
 
     // Stage 1: Strategic Synthesis
     const synthStage = await runStage<StrategicSynthesisArtifact>({
@@ -699,28 +807,46 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         ctx: synthesisCtx,
         synthesis,
       });
-      await persistPromptSnapshot(input.projectId, 'concept', conceptPrompt);
-      conceptStage = await runStage<ModelAssistedConceptSet>({
-        stageName: 'concept',
-        parse: parseModelAssistedConceptSet,
-        gate: (set) => {
-          const r = runModelAssistedConceptGates({
-            set,
-            synthesis,
-            projectFactKeys: new Set(input.truth.facts.map((f) => f.key).filter((k): k is string => typeof k === 'string')),
-            lockedFactKeys: new Set(input.truth.facts.filter((f) => f.authority === 'LOCKED').map((f) => f.key).filter((k): k is string => typeof k === 'string')),
-          });
-          return { passed: r.passed, blockedCodes: r.blockedCodes };
-        },
-        buildUserMessage: () => conceptPrompt!.userMessage,
-        buildSystemMessage: () => conceptPrompt!.systemMessage,
-        promptVersion: conceptPrompt!.promptVersion,
-        projectId: input.projectId,
-        useMock,
-        provider,
-        model,
-        attemptsOutDir: attemptsDir,
+      await persistPromptSnapshot(input.projectId, 'concept', conceptPrompt, qualificationBudget);
+      // CI-W1C.7.1A PART D — budget gate on the concept prompt.
+      const conceptBudget = checkPromptBudget({
+        characterCount: conceptPrompt.size.characterCount,
+        budget: qualificationBudget,
       });
+      if (conceptBudget.status === 'PROMPT_BUDGET_EXCEEDED') {
+        const reason = conceptBudget.reason ?? 'PROMPT_BUDGET_EXCEEDED';
+        conceptStage = {
+          status: 'FAIL',
+          attempts: 0 as unknown as 1 | 2,
+          passed: false,
+          blockedCodes: [reason],
+          artifact: null,
+          rawAttempts: [],
+          gateReport: { budget: conceptBudget },
+        };
+      } else {
+        conceptStage = await runStage<ModelAssistedConceptSet>({
+          stageName: 'concept',
+          parse: parseModelAssistedConceptSet,
+          gate: (set) => {
+            const r = runModelAssistedConceptGates({
+              set,
+              synthesis,
+              projectFactKeys: new Set(input.truth.facts.map((f) => f.key).filter((k): k is string => typeof k === 'string')),
+              lockedFactKeys: new Set(input.truth.facts.filter((f) => f.authority === 'LOCKED').map((f) => f.key).filter((k): k is string => typeof k === 'string')),
+            });
+            return { passed: r.passed, blockedCodes: r.blockedCodes };
+          },
+          buildUserMessage: () => conceptPrompt!.userMessage,
+          buildSystemMessage: () => conceptPrompt!.systemMessage,
+          promptVersion: conceptPrompt!.promptVersion,
+          projectId: input.projectId,
+          useMock,
+          provider,
+          model,
+          attemptsOutDir: attemptsDir,
+        });
+      }
     }
 
     const conceptSet = conceptStage?.artifact ?? null;
@@ -745,30 +871,48 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         synthesis,
         conceptSet,
       });
-      await persistPromptSnapshot(input.projectId, 'direction', directionPrompt);
-      directionStage = await runStage<ModelAssistedDirectionSet>({
-        stageName: 'direction',
-        parse: parseModelAssistedDirectionSet,
-        gate: (set) => {
-          const r = runModelAssistedDirectionGates({
-            set,
-            synthesis,
-            conceptSet,
-            projectFactKeys: new Set(input.truth.facts.map((f) => f.key).filter((k): k is string => typeof k === 'string')),
-            lockedFactKeys: new Set(input.truth.facts.filter((f) => f.authority === 'LOCKED').map((f) => f.key).filter((k): k is string => typeof k === 'string')),
-            prohibitedFactKeys: new Set(input.truth.facts.filter((f) => typeof f.key === 'string' && (f.key.startsWith('prohibited.') || f.key.startsWith('style.prohibited'))).map((f) => f.key).filter((k): k is string => typeof k === 'string')),
-          });
-          return { passed: r.passed, blockedCodes: r.blockedCodes };
-        },
-        buildUserMessage: () => directionPrompt!.userMessage,
-        buildSystemMessage: () => directionPrompt!.systemMessage,
-        promptVersion: directionPrompt!.promptVersion,
-        projectId: input.projectId,
-        useMock,
-        provider,
-        model,
-        attemptsOutDir: attemptsDir,
+      await persistPromptSnapshot(input.projectId, 'direction', directionPrompt, qualificationBudget);
+      // CI-W1C.7.1A PART D — budget gate on the direction prompt.
+      const directionBudget = checkPromptBudget({
+        characterCount: directionPrompt.size.characterCount,
+        budget: qualificationBudget,
       });
+      if (directionBudget.status === 'PROMPT_BUDGET_EXCEEDED') {
+        const reason = directionBudget.reason ?? 'PROMPT_BUDGET_EXCEEDED';
+        directionStage = {
+          status: 'FAIL',
+          attempts: 0 as unknown as 1 | 2,
+          passed: false,
+          blockedCodes: [reason],
+          artifact: null,
+          rawAttempts: [],
+          gateReport: { budget: directionBudget },
+        };
+      } else {
+        directionStage = await runStage<ModelAssistedDirectionSet>({
+          stageName: 'direction',
+          parse: parseModelAssistedDirectionSet,
+          gate: (set) => {
+            const r = runModelAssistedDirectionGates({
+              set,
+              synthesis,
+              conceptSet,
+              projectFactKeys: new Set(input.truth.facts.map((f) => f.key).filter((k): k is string => typeof k === 'string')),
+              lockedFactKeys: new Set(input.truth.facts.filter((f) => f.authority === 'LOCKED').map((f) => f.key).filter((k): k is string => typeof k === 'string')),
+              prohibitedFactKeys: new Set(input.truth.facts.filter((f) => typeof f.key === 'string' && (f.key.startsWith('prohibited.') || f.key.startsWith('style.prohibited'))).map((f) => f.key).filter((k): k is string => typeof k === 'string')),
+            });
+            return { passed: r.passed, blockedCodes: r.blockedCodes };
+          },
+          buildUserMessage: () => directionPrompt!.userMessage,
+          buildSystemMessage: () => directionPrompt!.systemMessage,
+          promptVersion: directionPrompt!.promptVersion,
+          projectId: input.projectId,
+          useMock,
+          provider,
+          model,
+          attemptsOutDir: attemptsDir,
+        });
+      }
     }
 
     const directionSet = directionStage?.artifact ?? null;
