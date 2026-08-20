@@ -1,0 +1,250 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "auditId": "ci-w1c.7.3a-g02-anchor-authority-reclassification",
+  "auditHead": "5159d938d2f635bfad4e2397664711890fd03ea1",
+  "branch": "feat/short-chain-simplified-ui",
+  "projectId": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+  "projectLabel": "G02 一剂良方",
+  "spec": {
+    "purpose": "Reclassify every CI-W1C.7.3 G02 anchor (A01..A16) plus supplementary project-record anchors (S01..S11) into exactly one of 8 authority categories. Same contract as G01.",
+    "scoring": "2 = preserved project-specific; 1 = generalized/weakened; 0 = lost"
+  },
+  "reclassifications": [
+    {
+      "id": "A01",
+      "ci7.3Category": "logo",
+      "ci7.3Name": "4-element logo (良字+素问印章+拼音)",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Logo content (red 良字 + black 宋体 + 素问 stamp + pinyin) extracted from PNGs by VUC. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A02",
+      "ci7.3Category": "color",
+      "ci7.3Name": "#B59A6B+#B00000+#E8E5E0",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Color palette extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A03",
+      "ci7.3Category": "typography",
+      "ci7.3Name": "思源宋体+繁体字形",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Font characteristics extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A04",
+      "ci7.3Category": "graphic_motif",
+      "ci7.3Name": "花瓣/圆形底纹",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Motif (logo-derived grid) extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A05",
+      "ci7.3Category": "imagery",
+      "ci7.3Name": "中药柜摄影",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Reference imagery extracted from PNGs (also marked reference_case in DVC, but source IS visual). Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A06",
+      "ci7.3Category": "imagery",
+      "ci7.3Name": "活动物料静物摄影",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Reference imagery extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A07",
+      "ci7.3Category": "layout",
+      "ci7.3Name": "比例与安全空间规范",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Layout pattern extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A08",
+      "ci7.3Category": "material",
+      "ci7.3Name": "浅灰名片+背面凸印",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Material cue extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A09",
+      "ci7.3Category": "packaging",
+      "ci7.3Name": "处方签与记录单",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Packaging structure extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A10",
+      "ci7.3Category": "packaging",
+      "ci7.3Name": "药柜标签",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Packaging structure extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A11",
+      "ci7.3Category": "spatial",
+      "ci7.3Name": "室内导视系统 (4科室)",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Spatial cue extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A12",
+      "ci7.3Category": "spatial",
+      "ci7.3Name": "门头外观 (疼痛·慢病·养生)",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Storefront reference extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A13",
+      "ci7.3Category": "copy",
+      "ci7.3Name": "4 taglines (素问一脉承 etc.)",
+      "authorityCategory": "LEGACY_VISUAL_EVIDENCE",
+      "rationale": "Copy strings extracted from PNGs. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A14",
+      "ci7.3Category": "risk",
+      "ci7.3Name": "MISREAD_PHARMACY_ONLY",
+      "authorityCategory": "VISUAL_DIAGNOSIS",
+      "rationale": "brandMisreadRisk is a VUC-generated diagnosis. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A15",
+      "ci7.3Category": "decision",
+      "ci7.3Name": "creativeDecision block (brandRoleStatement, upgradeFrom, preserveCore, upgradeTo, uniqueUpgradeThesis, targetWorldview, toneBoundaries)",
+      "authorityCategory": "CREATIVE_HYPOTHESIS",
+      "rationale": "creativeDecision is a VUC-generated CREATIVE PROPOSAL: brandRoleStatement is a creative write-up, upgradeFrom/preserveCore/upgradeTo is a creative recommendation, uniqueUpgradeThesis is a creative narrative. NOT a planning source. Counts as CREATIVE_HYPOTHESIS, which is legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "A16",
+      "ci7.3Category": "cliche",
+      "ci7.3Name": "红+木+宋+水墨 cliché",
+      "authorityCategory": "VISUAL_DIAGNOSIS",
+      "rationale": "categoryCliches is a VUC-generated self-aware diagnosis. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S01",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "brandName=一剂良方",
+      "authorityCategory": "PROJECT_METADATA",
+      "rationale": "From project.json.brandName, derived from folder name. User-typed. Counts as planning-positive data.",
+      "countsAsPlanningPositive": true
+    },
+    {
+      "id": "S02",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "industry=中医健康管理与诊疗服务 (VUC inferred)",
+      "authorityCategory": "VISUAL_DIAGNOSIS",
+      "rationale": "From visual-decision-packet.projectFacts.industry; VUC-inferred from PNGs, NOT from project.json (which has industry=待确认). Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S03",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "brandRole=提供中医诊疗、慢病管理及养生服务的体验机构 (VUC inferred)",
+      "authorityCategory": "VISUAL_DIAGNOSIS",
+      "rationale": "From visual-decision-packet.projectFacts.brandRole; VUC-inferred. Legacy positive.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S04",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "logoLocked=true",
+      "authorityCategory": "USER_REQUIREMENT",
+      "rationale": "User explicitly set. Counts as planning-positive constraint.",
+      "countsAsPlanningPositive": true
+    },
+    {
+      "id": "S05",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "lockedFacts[0] 原始 Logo Locked",
+      "authorityCategory": "USER_REQUIREMENT",
+      "rationale": "User-confirmed. Planning-positive constraint.",
+      "countsAsPlanningPositive": true
+    },
+    {
+      "id": "S06",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "lockedFacts[1] 输出语言简体中文",
+      "authorityCategory": "USER_REQUIREMENT",
+      "rationale": "User-confirmed. Planning-positive constraint.",
+      "countsAsPlanningPositive": true
+    },
+    {
+      "id": "S07",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "locked.assets[0] 2409032d (logo)",
+      "authorityCategory": "LOCKED_IDENTITY",
+      "rationale": "LOCKED authority. Constraint retention, not planning.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S08",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "locked.assets[1] brand-name",
+      "authorityCategory": "LOCKED_IDENTITY",
+      "rationale": "LOCKED authority. Constraint retention.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S09",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "locked.assets[2] user-lock-1",
+      "authorityCategory": "LOCKED_IDENTITY",
+      "rationale": "LOCKED authority. Constraint retention.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S10",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "locked.assets[3] user-lock-2",
+      "authorityCategory": "LOCKED_IDENTITY",
+      "rationale": "LOCKED authority. Constraint retention.",
+      "countsAsPlanningPositive": false
+    },
+    {
+      "id": "S11",
+      "ci7.3Category": "supplementary",
+      "ci7.3Name": "locked.facts=LOCKED + locked.logo=true",
+      "authorityCategory": "LOCKED_IDENTITY",
+      "rationale": "LOCKED authority. Constraint retention.",
+      "countsAsPlanningPositive": false
+    }
+  ],
+  "summary": {
+    "totalAnchors": 27,
+    "byCategory": {
+      "PLANNING_STRATEGIC_SOURCE": 0,
+      "USER_REQUIREMENT": 3,
+      "PROJECT_METADATA": 1,
+      "LOCKED_IDENTITY": 5,
+      "LEGACY_VISUAL_EVIDENCE": 13,
+      "VISUAL_DIAGNOSIS": 3,
+      "CREATIVE_HYPOTHESIS": 1,
+      "UNKNOWN_SOURCE": 0
+    },
+    "planningPositiveCount": 4,
+    "legacyPositiveCount": 17,
+    "constraintOnlyCount": 5,
+    "planningPositiveAnchors": ["S01 (brandName)", "S04 (logoLocked)", "S05 (Logo Locked fact)", "S06 (简体中文 fact)"],
+    "legacyPositiveAnchors": ["A01-A13 (13 LEGACY_VISUAL_EVIDENCE: logo, color, typography, motif, imagery ×2, layout, material, packaging ×2, spatial ×2, copy)", "A14 + A16 + S02 + S03 (4 VISUAL_DIAGNOSIS: 1 brandMisreadRisk + 1 categoryCliches + VUC-inferred industry + brandRole)", "A15 (1 CREATIVE_HYPOTHESIS: creativeDecision block with brandRoleStatement + uniqueUpgradeThesis + targetWorldview + toneBoundaries)"],
+    "constraintAnchors": ["S07-S11 (5 LOCKED_IDENTITY: 4 locked.assets + locked.facts + locked.logo)"],
+    "keyFinding": "ZERO PLANNING_STRATEGIC_SOURCE. The 16 CI-W1C.7.3 anchors were ALL legacy positive (12 LEGACY_VISUAL_EVIDENCE + 2 VISUAL_DIAGNOSIS + 1 CREATIVE_HYPOTHESIS). The 4 legitimate planning-positive anchors (S01, S04-S06) are all placeholders / constraints, not strategy. Notably: the A15 creativeDecision block (a G02-specific rich source) is classified as CREATIVE_HYPOTHESIS not PLANNING — it is a VUC-generated creative proposal, not a human-authored planning document."
+  }
+}
