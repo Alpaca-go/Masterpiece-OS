@@ -12,11 +12,20 @@ import type {
   ImportFileBytesResult,
   ImportResult,
   ProjectAsset,
+  ProjectPlanningBriefRecord,
   ProjectRecord,
   PublicSettings
 } from '../shared/types.ts';
 import { assertInside, sanitizeFilenamePart } from './analysis-contract.ts';
 import { detectIntakeIdentity, type IntakeSource } from './project-intake.ts';
+import { parseStrategyDocument } from './document-processing.ts';
+import {
+  PLANNING_BRIEF_SUPPORTED_EXTENSIONS,
+  assertPlanningBriefFilename,
+  buildPlanningBriefRecord,
+  buildPlanningBriefSourceId,
+  planningBriefContentHash
+} from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 
 const SUPPORTED_DIRECT = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.zip']);
 const SUPPORTED_ASSET = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf']);
@@ -77,6 +86,14 @@ function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
     analysisProfile: 'fusion-enhanced',
     assets: Array.isArray(record.assets)
       ? record.assets.map((asset) => ({ ...asset, usage: asset.usage ?? 'analysis_source' }))
+      : [],
+    // CI-W1C.7.4-R1 — additive planning brief registry. Distinct from
+    // `briefFiles` (visual-context auto-detect).
+    planningBriefFiles: Array.isArray(record.planningBriefFiles)
+      ? record.planningBriefFiles.filter(
+          (item): item is ProjectPlanningBriefRecord =>
+            !!item && typeof item === 'object' && typeof item.sourceId === 'string'
+        )
       : [],
     visualContextVNextFilename: record.visualContextVNextFilename || null,
     visualContextVNextStatus: record.visualContextVNextStatus || 'missing',
@@ -268,6 +285,7 @@ export function createProjectStore(readSettings: SettingsReader) {
       lastError: null,
       logoFiles: [],
       briefFiles: [],
+      planningBriefFiles: [],
       assets: []
     };
     await writeProject(root, record);
@@ -810,6 +828,219 @@ export function createProjectStore(readSettings: SettingsReader) {
     return removeAssets(projectId, () => true);
   }
 
+  // ---------------------------------------------------------------------
+  // CI-W1C.7.4-R1 — Planning brief registration (project mutation).
+  //
+  // This is the real project-store mutator for planning briefs. It
+  // owns file IO, content hashing, dedupe, path safety, and the
+  // update of `project.planningBriefFiles[]`. Creative Intelligence
+  // is the policy layer; runtime-core/application is the IO layer.
+  //
+  // Hard rules (spec PART B / PART C / PART H):
+  //  - Validate extension up-front.
+  //  - Reuse existing parseStrategyDocument (no second parser).
+  //  - Persist file at <root>/planning-briefs/<contentHash[:16]>.<ext>.
+  //  - Never store raw binary / base64 in project.json.
+  //  - Dedupe by contentHash; same content returns the existing
+  //    record (no double-registration).
+  //  - Reject path traversal via assertInside.
+  //  - For replacement (same filename, different content), the new
+  //    content gets a new sourceId (content-hash-based) and a new
+  //    on-disk file; the old one stays in the list unless removed.
+  //  - Removal deletes both the on-disk file and the metadata row.
+  // ---------------------------------------------------------------------
+
+  /**
+   * Sanitize a planning-brief destination relative path. Ensures
+   * the relative path stays inside the project root and is
+   * canonical (no `..`).
+   */
+  function planningBriefRelativePath(contentHash: string, extension: string): string {
+    const normalizedExtension = extension.startsWith('.') ? extension.toLowerCase() : `.${extension.toLowerCase()}`;
+    return `planning-briefs/${contentHash.slice(0, 16)}${normalizedExtension}`;
+  }
+
+  /**
+   * Register a planning brief file from an on-disk source path.
+   *
+   * Steps:
+   *  1. Validate the source file exists + extension is supported.
+   *  2. Parse via `parseStrategyDocument` (reuses existing parser,
+   *     PDF/DOCX/MD/TXT).
+   *  3. Compute contentHash (LF-normalized SHA-256 of parsed text).
+   *  4. If a record with this sourceId already exists on the
+   *     project, return the existing record (idempotent dedupe).
+   *  5. Otherwise, copy the source file to
+   *     `<root>/planning-briefs/<contentHash[:16]>.<ext>` and
+   *     append a new `PlanningBriefRecord` to
+   *     `project.planningBriefFiles[]`.
+   *  6. Persist the project.
+   *  7. Return the record.
+   */
+  async function registerPlanningBriefFromPath(input: {
+    projectId: string;
+    sourcePath: string;
+    displayFilename?: string;
+  }): Promise<ProjectPlanningBriefRecord> {
+    const { projectId, sourcePath } = input;
+    if (!projectId) throw new Error('PLANNING-BRIEF-NO-PROJECT: projectId is required');
+    if (!sourcePath) throw new Error('PLANNING-BRIEF-NO-SOURCE: sourcePath is required');
+
+    const resolvedSource = path.resolve(sourcePath);
+    const stat = await fs.stat(resolvedSource).catch(() => null);
+    if (!stat?.isFile()) throw new Error(`PLANNING-BRIEF-SOURCE-MISSING: ${resolvedSource}`);
+
+    const sourceFilename = input.displayFilename
+      ? sanitizeFilenamePart(input.displayFilename)
+      : path.basename(resolvedSource);
+    if (!sourceFilename) throw new Error('PLANNING-BRIEF-NO-FILENAME: displayFilename is required');
+    assertPlanningBriefFilename(sourceFilename);
+
+    const root = await rootForId(projectId);
+    const project = await readProject(root);
+
+    // 1) Parse via existing parser.
+    const parsed = await parseStrategyDocument(resolvedSource);
+    if (!parsed.rawText || !parsed.rawText.trim()) {
+      throw new Error('PLANNING-BRIEF-PARSE-FAILED: empty text');
+    }
+
+    // 2) Compute content hash.
+    const contentHash = planningBriefContentHash(parsed.rawText);
+    const sourceId = buildPlanningBriefSourceId(projectId, contentHash);
+
+    // 3) Dedupe by sourceId.
+    const existing = (project.planningBriefFiles ?? []).find((record) => record.sourceId === sourceId);
+    if (existing) return existing;
+
+    // 4) Persist file under hash-based name inside project root.
+    const extension = path.extname(sourceFilename).toLowerCase();
+    const relativePath = planningBriefRelativePath(contentHash, extension);
+    const destination = assertInside(root, path.join(root, relativePath));
+    await fs.mkdir(path.dirname(destination), { recursive: true });
+    await fs.copyFile(resolvedSource, destination);
+
+    // 5) Build record.
+    const registeredAt = new Date().toISOString();
+    const record = buildPlanningBriefRecord({
+      projectId,
+      filename: sourceFilename,
+      relativePath,
+      rawText: parsed.rawText,
+      registeredAt
+    });
+    // Defensive: assert sourceId matches what we computed.
+    if (record.sourceId !== sourceId) {
+      throw new Error('PLANNING-BRIEF-SOURCEID-MISMATCH: buildPlanningBriefRecord produced a divergent sourceId');
+    }
+
+    // 6) Persist project.
+    const next = (project.planningBriefFiles ?? []).concat(record);
+    await writeProject(root, { ...project, planningBriefFiles: next });
+    return record;
+  }
+
+  /**
+   * Register a planning brief from raw bytes already in memory.
+   * Used by tests + Web upload paths where the source file is not
+   * on disk under a known path.
+   *
+   * The function writes the bytes to a temp file, calls the same
+   * parseStrategyDocument path, and then cleans up the temp file.
+   */
+  async function registerPlanningBriefFromBytes(input: {
+    projectId: string;
+    bytes: Buffer;
+    displayFilename: string;
+  }): Promise<ProjectPlanningBriefRecord> {
+    const { projectId, bytes, displayFilename } = input;
+    if (!projectId) throw new Error('PLANNING-BRIEF-NO-PROJECT: projectId is required');
+    if (!Buffer.isBuffer(bytes)) throw new Error('PLANNING-BRIEF-NO-BYTES: bytes must be a Buffer');
+    const filename = sanitizeFilenamePart(displayFilename);
+    if (!filename) throw new Error('PLANNING-BRIEF-NO-FILENAME: displayFilename is required');
+    assertPlanningBriefFilename(filename);
+    const extension = path.extname(filename).toLowerCase();
+    if (!PLANNING_BRIEF_SUPPORTED_EXTENSIONS.has(extension)) {
+      throw new Error(`PLANNING-BRIEF-UNSUPPORTED-EXT: ${extension}`);
+    }
+
+    const root = await rootForId(projectId);
+    const project = await readProject(root);
+
+    // Write to a temp file so parseStrategyDocument can read it
+    // (which expects a filename on disk).
+    const tempDir = assertInside(root, path.join(root, 'runtime'));
+    await fs.mkdir(tempDir, { recursive: true });
+    const tempFilename = `.planning-brief-tmp-${crypto.randomUUID()}${extension}`;
+    const tempPath = assertInside(tempDir, path.join(tempDir, tempFilename));
+    try {
+      await fs.writeFile(tempPath, bytes);
+      // Parse + dedupe.
+      const parsed = await parseStrategyDocument(tempPath);
+      if (!parsed.rawText || !parsed.rawText.trim()) {
+        throw new Error('PLANNING-BRIEF-PARSE-FAILED: empty text');
+      }
+      const contentHash = planningBriefContentHash(parsed.rawText);
+      const sourceId = buildPlanningBriefSourceId(projectId, contentHash);
+      const existing = (project.planningBriefFiles ?? []).find((record) => record.sourceId === sourceId);
+      if (existing) return existing;
+
+      const relativePath = planningBriefRelativePath(contentHash, extension);
+      const destination = assertInside(root, path.join(root, relativePath));
+      await fs.mkdir(path.dirname(destination), { recursive: true });
+      await fs.copyFile(tempPath, destination);
+
+      const registeredAt = new Date().toISOString();
+      const record = buildPlanningBriefRecord({
+        projectId,
+        filename,
+        relativePath,
+        rawText: parsed.rawText,
+        registeredAt
+      });
+      if (record.sourceId !== sourceId) {
+        throw new Error('PLANNING-BRIEF-SOURCEID-MISMATCH: buildPlanningBriefRecord produced a divergent sourceId');
+      }
+      const next = (project.planningBriefFiles ?? []).concat(record);
+      await writeProject(root, { ...project, planningBriefFiles: next });
+      return record;
+    } finally {
+      await fs.rm(tempPath, { force: true });
+    }
+  }
+
+  /**
+   * Remove a planning brief by sourceId. Deletes the on-disk file
+   * and removes the metadata row. Idempotent: removing a missing
+   * sourceId is a no-op (no error).
+   */
+  async function removePlanningBrief(projectId: string, sourceId: string): Promise<ProjectRecord> {
+    if (!projectId) throw new Error('PLANNING-BRIEF-NO-PROJECT: projectId is required');
+    if (!sourceId) throw new Error('PLANNING-BRIEF-NO-SOURCEID: sourceId is required');
+    const root = await rootForId(projectId);
+    const project = await readProject(root);
+    const records = project.planningBriefFiles ?? [];
+    const target = records.find((record) => record.sourceId === sourceId);
+    if (!target) {
+      // Idempotent: sourceId not present.
+      return project;
+    }
+    const absolute = assertInside(root, path.join(root, target.relativePath));
+    await fs.rm(absolute, { force: true });
+    const next = records.filter((record) => record.sourceId !== sourceId);
+    return writeProject(root, { ...project, planningBriefFiles: next });
+  }
+
+  /**
+   * List planning brief records on a project.
+   */
+  async function listPlanningBriefs(projectId: string): Promise<ProjectPlanningBriefRecord[]> {
+    if (!projectId) throw new Error('PLANNING-BRIEF-NO-PROJECT: projectId is required');
+    const root = await rootForId(projectId);
+    const project = await readProject(root);
+    return [...(project.planningBriefFiles ?? [])];
+  }
+
   async function remove(projectId: string): Promise<void> {
     const root = await rootForId(projectId);
     const parent = await projectsRoot();
@@ -839,6 +1070,11 @@ export function createProjectStore(readSettings: SettingsReader) {
     removeAsset,
     removeBatch,
     clearAssets,
+    // CI-W1C.7.4-R1 — planning brief registration surface.
+    registerPlanningBriefFromPath,
+    registerPlanningBriefFromBytes,
+    removePlanningBrief,
+    listPlanningBriefs,
     remove,
     paths
   };

@@ -548,6 +548,32 @@ export interface AssetSelectionProtocolResult {
   requestedTasks?: RequestedGenerationTask[];
 }
 
+/**
+ * CI-W1C.7.4-R1 — Structural planning-brief record shape used in
+ * `ProjectRecord.planningBriefFiles[]`. The full
+ * `PlanningBriefRecord` type lives in
+ * `@masterpiece/creative-intelligence/strategic-synthesis`
+ * (`planning-source-registration.ts`); this local copy is a
+ * structural subset declared inline to keep the
+ * `application-contracts` surface free of cross-package runtime
+ * dependencies that would pull creative-intelligence into the
+ * `apps/web` typecheck graph.
+ *
+ * Consumers in runtime-core that need the full type MUST import
+ * the canonical one from creative-intelligence; this local type
+ * is for the persisted record shape only.
+ */
+export interface ProjectPlanningBriefRecord {
+  sourceId: string;
+  filename: string;
+  extension: string;
+  relativePath: string;
+  sourceType: 'planning_document';
+  contentHash: string;
+  characterCount: number;
+  registeredAt: string;
+}
+
 export interface ProjectRecord {
   id: string;
   projectName: string;
@@ -581,6 +607,22 @@ export interface ProjectRecord {
   lastError: string | null;
   logoFiles: string[];
   briefFiles: string[];
+  /**
+   * CI-W1C.7.4-R1 — Registered planning brief files (planning-positive
+   * authority). Distinct from `briefFiles` (which is the legacy
+   * auto-detected visual-context brief heuristic, see `scan()` in
+   * project-store.ts). Each entry carries sourceId + contentHash +
+   * filename + relativePath; NEVER raw binary or base64 in JSON.
+   * The on-disk file is at `<projectRoot>/<relativePath>` and
+   * must exist for the record to remain valid.
+   *
+   * Field type is a structural subset of
+   * `@masterpiece/creative-intelligence/strategic-synthesis`
+   * `PlanningBriefRecord` (see `ProjectPlanningBriefRecord` above)
+   * to avoid pulling creative-intelligence into the apps/web
+   * typecheck graph.
+   */
+  planningBriefFiles?: ProjectPlanningBriefRecord[];
   assets: ProjectAsset[];
   visualContextFilename?: string | null;
   visualContextStatus?: 'missing' | 'ready' | 'failed';
