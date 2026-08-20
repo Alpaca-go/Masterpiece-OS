@@ -81,12 +81,26 @@ export function planningBriefContentHash(rawText: string): string {
 }
 
 /**
+ * Extensions that are safe to read as raw UTF-8.
+ * .pdf and .docx MUST be parsed through the real document parser
+ * (binary fallback would silently produce garbage text and would
+ * be impossible to recover downstream).
+ */
+const UTF8_SAFE_EXTENSIONS = new Set(['.md', '.markdown', '.txt']);
+
+/**
  * Read a planning brief file from disk and return its raw text.
  *
  * File format handling is DELEGATED to the existing
  * `runtime-core/src/application/document-processing.ts` text extraction
  * (which already supports PDF/DOCX/MD/TXT). This function is the
  * thin wrapper that the planning-strategic-evidence module calls.
+ *
+ * CI-W1C.7.4-R1 PART H — fail-closed fallback matrix:
+ *  - .md / .markdown / .txt → raw UTF-8 fallback is safe.
+ *  - .pdf / .docx           → parser REQUIRED; if unavailable,
+ *                             throw PLANNING-PARSER-UNAVAILABLE.
+ *                             No raw UTF-8 fallback. No OCR.
  *
  * @param absolutePath absolute path to the planning brief file
  * @returns the decoded raw text + the file extension
@@ -109,20 +123,29 @@ export async function readPlanningBriefFile(absolutePath: string): Promise<{
 
   if (documentProcessing && typeof documentProcessing.parseStrategyDocument === 'function') {
     const parsed = await documentProcessing.parseStrategyDocument(absolutePath);
+    if (!parsed.rawText || !parsed.rawText.trim()) {
+      throw new Error(`PLANNING-BRIEF-PARSE-FAILED: ${extension} produced empty text (${absolutePath})`);
+    }
     return {
       rawText: parsed.rawText,
       extension,
       parseWarnings: parsed.parseWarnings
     };
   }
-  // Fallback: read the file directly. Used by test paths where
-  // runtime-core may not be reachable.
-  const buffer = await readFile(absolutePath);
-  // Handle UTF-8 with optional BOM; otherwise treat as UTF-8.
-  const text = buffer.subarray(0, 3).equals(Buffer.from([0xef, 0xbb, 0xbf]))
-    ? buffer.subarray(3).toString('utf8')
-    : buffer.toString('utf8');
-  return { rawText: text, extension };
+  // Parser unavailable.
+  // For UTF-8-safe extensions we fall back to direct read.
+  // For .pdf / .docx we FAIL CLOSED — never decode binary as text.
+  if (UTF8_SAFE_EXTENSIONS.has(extension)) {
+    const buffer = await readFile(absolutePath);
+    // Handle UTF-8 with optional BOM; otherwise treat as UTF-8.
+    const text = buffer.subarray(0, 3).equals(Buffer.from([0xef, 0xbb, 0xbf]))
+      ? buffer.subarray(3).toString('utf8')
+      : buffer.toString('utf8');
+    return { rawText: text, extension };
+  }
+  throw new Error(
+    `PLANNING-PARSER-UNAVAILABLE: ${extension} requires runtime-core parseStrategyDocument (no UTF-8 fallback for binary formats)`
+  );
 }
 
 /**
