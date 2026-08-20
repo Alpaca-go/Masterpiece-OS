@@ -435,6 +435,48 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
     }
   }
 
+  // CI-W1C.7.4-R2.1 PART C — SG-12 PLANNING_SOURCE_MAP_MATCHES_RUNTIME.
+  // The model-emitted `sourceMap.planningClaims` is metadata and
+  // MUST exactly mirror the runtime input claim IDs as a sorted
+  // unique set. We do NOT silently overwrite the artifact; we
+  // BLOCK so the existing repair attempt can fix the structured
+  // output on the next attempt.
+  {
+    const runtimeClaimIds = Array.from(
+      new Set(
+        (input.planningClaims ?? [])
+          .map((c) => c?.claimId)
+          .filter((id): id is string => typeof id === 'string' && id.length > 0),
+      ),
+    ).sort();
+    const artifactClaimIds = Array.from(
+      new Set(
+        (artifact.sourceMap.planningClaims ?? []).filter(
+          (id): id is string => typeof id === 'string' && id.length > 0,
+        ),
+      ),
+    ).sort();
+    if (runtimeClaimIds.length === 0 && artifactClaimIds.length !== 0) {
+      block(
+        'SG-12',
+        'sourceMap.planningClaims',
+        `no planning input but sourceMap.planningClaims has ${artifactClaimIds.length} entr(y/ies)`,
+        artifactClaimIds,
+      );
+    } else if (
+      runtimeClaimIds.length > 0 &&
+      (artifactClaimIds.length !== runtimeClaimIds.length ||
+        artifactClaimIds.some((id, idx) => id !== runtimeClaimIds[idx]))
+    ) {
+      block(
+        'SG-12',
+        'sourceMap.planningClaims',
+        `sourceMap.planningClaims does not match runtime claim IDs: runtime=[${runtimeClaimIds.join(', ')}] artifact=[${artifactClaimIds.join(', ')}]`,
+        Array.from(new Set([...runtimeClaimIds, ...artifactClaimIds])),
+      );
+    }
+  }
+
   // Additional cross-check: keyword mention heuristic for SG-04.
   // We only WARN on keyword hints (logo / color / typography / ...)
   // because they are valid vocabulary; the model must still be

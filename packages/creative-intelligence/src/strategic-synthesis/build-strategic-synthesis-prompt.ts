@@ -235,7 +235,7 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     '  5. diagnostics (string[]; optional, can be empty)',
     '',
     'sourceMap.legacyVisualEvidenceExcluded MUST be non-empty and MUST contain every one of these tokens (this is an audit-trail requirement, not a suggestion): visualAsset.*, old_visual_style, old_VI, old_poster, old_packaging, old_spatial, style_reference, structure_reference, spatial_reference. Copy them verbatim into the array.',
-    'sourceMap.planningClaims MUST mirror the SOURCE TRACE IDS planningClaims list above. It is the audit-trail copy of the runtime input. The runtime will re-validate every *.planningClaimRefs against the runtime input — model-emitted values are NOT authority.',
+    'sourceMap.planningClaims MUST exactly copy the allowed planning claim IDs provided by runtime source trace. Do not omit, add, or invent IDs. It is the audit-trail copy of the runtime input. The runtime will re-validate every *.planningClaimRefs AND the equality of sourceMap.planningClaims against the runtime input — model-emitted values are NOT authority (SG-12 PLANNING_SOURCE_MAP_MATCHES_RUNTIME).',
     '',
     '# ID ASSIGNMENT (deterministic; you may omit the id field on each item)',
     'When you do not provide an explicit `id` on a tension / insight / opportunity, the runtime parser auto-assigns one in declaration order:',

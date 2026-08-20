@@ -195,6 +195,7 @@ export const STRATEGIC_GROUNDING_GATE_CODES = [
   'SG-09',
   'SG-10',
   'SG-11',
+  'SG-12',
 ] as const;
 export type StrategicGroundingGateCode = typeof STRATEGIC_GROUNDING_GATE_CODES[number];
 
