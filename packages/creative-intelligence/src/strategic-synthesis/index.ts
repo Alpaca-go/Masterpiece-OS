@@ -11,6 +11,9 @@
  *     `directionInputFingerprint` — CI-W1C.7.1A canonical fingerprint
  *   - `checkPromptBudget` / `DEFAULT_QUALIFICATION_BUDGET` — CI-W1C.7.1A budget gate
  *   - `STRATEGIC_SYNTHESIS_*` constants and types
+ *   - CI-W1C.7.4 planning-strategic-evidence surface (see
+ *     `planning-strategic-evidence.ts`, `planning-source-registration.ts`,
+ *     `build-planning-strategic-evidence.ts`, `epistemic-routing.ts`)
  *
  * This module does NOT call a model. Model invocation lives in
  * `runtime-core/src/application/creative-reasoning-service.ts`.
@@ -24,3 +27,7 @@ export * from './strategic-grounding-gate.ts';
 export * from './build-strategic-synthesis-prompt.ts';
 export * from './semantic-fingerprint.ts';
 export * from './prompt-budget.ts';
+export * from './planning-strategic-evidence.ts';
+export * from './planning-source-registration.ts';
+export * from './build-planning-strategic-evidence.ts';
+export * from './epistemic-routing.ts';

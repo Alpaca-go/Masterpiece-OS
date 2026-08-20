@@ -59,6 +59,7 @@ import type { NeedItem } from '../need-intelligence/contracts.ts';
 import type { EvidenceItem } from '../evidence/contracts.ts';
 import type { StrategicSynthesisArtifact } from './contracts.ts';
 import type { ModelAssistedConceptSet } from '../model-assisted/contracts.ts';
+import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
 
 // ---------------------------------------------------------------------------
 // Canonicalization helpers
@@ -193,6 +194,21 @@ export interface StrategicSemanticPayload {
     confidence: string;
     factRefs: string[];
   }>;
+  /**
+   * CI-W1C.7.4 — planning strategic evidence (positive carrier).
+   * Each claim carries its own id / key / value / epistemicClass /
+   * sourceDocumentId / chunkRefs / confidence. We hash the value
+   * + epistemic class so a planning-brief content change invalidates
+   * the snapshot.
+   */
+  planningStrategicEvidence: Array<{
+    id: string;
+    key: string;
+    value: string;
+    epistemicClass: string;
+    sourceDocumentId: string;
+    confidence: string;
+  }>;
   legacyVisualEvidenceExcluded: string[];
 }
 
@@ -268,6 +284,7 @@ function buildEvidenceBlock(evidence: EvidenceItem[]): Array<Record<string, unkn
  * @param input.prohibitedDirections          — prohibited.* / style.prohibited facts
  * @param input.needs                         — NeedItem[]
  * @param input.evidence                      — EvidenceItem[]
+ * @param input.planningStrategicEvidence     — CI-W1C.7.4 positive carrier
  * @param input.legacyVisualEvidenceExcluded  — excluded authority list
  */
 export function buildStrategicSemanticPayload(input: {
@@ -279,6 +296,7 @@ export function buildStrategicSemanticPayload(input: {
   prohibitedDirections: ProjectTruthFact[];
   needs: NeedItem[];
   evidence: EvidenceItem[];
+  planningStrategicEvidence?: PlanningStrategicClaim[];
   legacyVisualEvidenceExcluded: readonly string[];
 }): StrategicSemanticPayload {
   return {
@@ -290,8 +308,29 @@ export function buildStrategicSemanticPayload(input: {
     prohibitedDirections: buildFactsBlock(input.prohibitedDirections, false) as StrategicSemanticPayload['prohibitedDirections'],
     needs: buildNeedsBlock(input.needs) as StrategicSemanticPayload['needs'],
     evidence: buildEvidenceBlock(input.evidence) as StrategicSemanticPayload['evidence'],
+    planningStrategicEvidence: buildPlanningClaimsBlock(input.planningStrategicEvidence ?? []) as StrategicSemanticPayload['planningStrategicEvidence'],
     legacyVisualEvidenceExcluded: Array.from(input.legacyVisualEvidenceExcluded).slice().sort(),
   };
+}
+
+/**
+ * CI-W1C.7.4 — Build a fingerprint-stable projection of the
+ * planning strategic evidence. Includes id / key / value /
+ * epistemicClass / sourceDocumentId / confidence. chunkRefs are
+ * NOT part of the semantic identity (chunk ids can change if the
+ * same content is re-chunked with a different boundary algorithm).
+ */
+function buildPlanningClaimsBlock(claims: PlanningStrategicClaim[]): Array<Record<string, unknown>> {
+  return claims
+    .map((c) => ({
+      id: c.claimId,
+      key: c.key,
+      value: typeof c.value === 'string' ? c.value.replace(/\r\n/g, '\n') : String(c.value ?? ''),
+      epistemicClass: c.epistemicClass,
+      sourceDocumentId: c.sourceDocumentId,
+      confidence: typeof c.confidence === 'number' ? c.confidence.toFixed(2) : 'unspecified'
+    }))
+    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
 }
 
 /**
@@ -384,6 +423,7 @@ export function strategicInputFingerprint(input: {
   prohibitedDirections: ProjectTruthFact[];
   needs: NeedItem[];
   evidence: EvidenceItem[];
+  planningStrategicEvidence?: PlanningStrategicClaim[];
   legacyVisualEvidenceExcluded: readonly string[];
 }): string {
   return semanticSha256(buildStrategicSemanticPayload(input));
@@ -398,6 +438,7 @@ export function conceptInputFingerprint(input: {
   prohibitedDirections: ProjectTruthFact[];
   needs: NeedItem[];
   evidence: EvidenceItem[];
+  planningStrategicEvidence?: PlanningStrategicClaim[];
   legacyVisualEvidenceExcluded: readonly string[];
   synthesis: StrategicSynthesisArtifact;
 }): string {
@@ -424,6 +465,7 @@ export function directionInputFingerprint(input: {
   prohibitedDirections: ProjectTruthFact[];
   needs: NeedItem[];
   evidence: EvidenceItem[];
+  planningStrategicEvidence?: PlanningStrategicClaim[];
   legacyVisualEvidenceExcluded: readonly string[];
   synthesis: StrategicSynthesisArtifact;
   conceptSet: ModelAssistedConceptSet;

@@ -16,6 +16,13 @@
  *     style_reference / structure_reference / spatial_reference /
  *     current_project_identity (unless verified locked logo).
  *
+ * CI-W1C.7.4 ADDITION: `planningStrategicEvidence` is a positive
+ * strategic context carrier for human-authored planning claims
+ * (creative-brief / brand-strategy / market-research /
+ * product-information). It is NOT a duplicate of Project Truth,
+ * and it does NOT auto-promote to Truth; routing is performed
+ * separately by `epistemic-routing.ts`.
+ *
  * This module performs **no** model call. It compiles an in-memory
  * snapshot that the runtime can hand to a prompt builder.
  */
@@ -23,6 +30,7 @@
 import type { ProjectTruthModel, ProjectTruthFact } from '../truth/contracts.ts';
 import type { NeedItem } from '../need-intelligence/contracts.ts';
 import type { EvidenceLedgerSnapshot, EvidenceItem } from '../evidence/contracts.ts';
+import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
 
 export interface StrategicReasoningContext {
   projectId: string;
@@ -34,6 +42,14 @@ export interface StrategicReasoningContext {
   prohibitedDirections: ProjectTruthFact[];
   needs: NeedItem[];
   evidence: EvidenceItem[];
+  /**
+   * CI-W1C.7.4 — Planning strategic evidence (positive carrier).
+   * Each claim carries sourceDocumentId + chunkRefs + epistemicClass.
+   * The prompt builder serializes these into a PLANNING STRATEGIC
+   * EVIDENCE section. This is a SIBLING to authoritativeFacts, not
+   * a replacement.
+   */
+  planningStrategicEvidence: PlanningStrategicClaim[];
   /**
    * The names of source authorities that were excluded from
    * positive creative authority. The grounding gate (SG-04) and
@@ -49,6 +65,7 @@ export interface StrategicReasoningContext {
     facts: string[];
     needs: string[];
     evidence: string[];
+    planningClaims: string[];
   };
 }
 
@@ -93,6 +110,7 @@ export function compileStrategicReasoningContext(input: {
   truth: ProjectTruthModel;
   needs: NeedItem[];
   evidence: EvidenceLedgerSnapshot;
+  planningStrategicEvidence?: PlanningStrategicClaim[];
   legacyVisualEvidenceExcluded?: readonly string[];
 }): StrategicReasoningContext {
   const facts = input.truth.facts;
@@ -101,6 +119,7 @@ export function compileStrategicReasoningContext(input: {
   const lockedIdentity = facts.filter(isLockedIdentity);
   const prohibitedDirections = facts.filter(isProhibitedDirection);
   const evidenceItems: EvidenceItem[] = (input.evidence.entries ?? (input.evidence as { items?: EvidenceItem[] }).items) ?? [];
+  const planningClaims = input.planningStrategicEvidence ?? [];
 
   // The strategic-context source map MUST include every fact ID that
   // the model is allowed to reference. The grounding gate asserts
@@ -116,6 +135,10 @@ export function compileStrategicReasoningContext(input: {
 
   const sourceEvidenceIds = new Set<string>();
   for (const e of evidenceItems) sourceEvidenceIds.add(e.id);
+
+  // CI-W1C.7.4 — planning claim ids are also valid source references.
+  const sourcePlanningClaimIds = new Set<string>();
+  for (const c of planningClaims) sourcePlanningClaimIds.add(c.claimId);
 
   // The legacy visual evidence is intentionally NOT included.
   // The grounding gate asserts this — `legacyVisualEvidenceExcluded`
@@ -133,6 +156,7 @@ export function compileStrategicReasoningContext(input: {
     prohibitedDirections,
     needs: input.needs,
     evidence: evidenceItems,
+    planningStrategicEvidence: planningClaims,
     legacyVisualEvidenceExcluded: input.legacyVisualEvidenceExcluded ?? [
       'visualAsset.*',
       'old_visual_style',
@@ -148,6 +172,7 @@ export function compileStrategicReasoningContext(input: {
       facts: Array.from(sourceFactIds),
       needs: Array.from(sourceNeedIds),
       evidence: Array.from(sourceEvidenceIds),
+      planningClaims: Array.from(sourcePlanningClaimIds),
     },
   };
 }

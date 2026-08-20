@@ -63,6 +63,7 @@ export type SourceType =
   | 'reference_project'
   | 'user_input'
   | 'system_default'
+  | 'planning_document'
   | 'unknown';
 
 export type TruthStatus =

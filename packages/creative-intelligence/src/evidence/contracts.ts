@@ -17,7 +17,8 @@ export type EvidenceType =
   | 'model_inference'
   | 'project_metadata'
   | 'system_default'
-  | 'external_reference';
+  | 'external_reference'
+  | 'planning_brief';
 
 export interface EvidenceEntry {
   /** Stable id. Recommended form: `<type>:<id>` (e.g. `doc:abc:section:intro`). */

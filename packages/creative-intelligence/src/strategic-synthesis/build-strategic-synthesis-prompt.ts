@@ -32,6 +32,12 @@ import { strategicInputFingerprint } from './semantic-fingerprint.ts';
 // prompt builder's version.
 export const STRATEGIC_SYNTHESIS_BUILDER_PROMPT_VERSION = 'ci-w1c.7.1-strategic-synthesis-v0.2' as const;
 
+// CI-W1C.7.4 prompt version: same wire-shape, but planning-strategic
+// evidence is now a positive carrier. The PLANNING STRATEGIC EVIDENCE
+// section is appended before EXCLUDED LEGACY VISUAL AUTHORITIES, with
+// epistemic-class preserved per claim.
+export const STRATEGIC_SYNTHESIS_BUILDER_PROMPT_VERSION_7_4 = 'ci-w1c.7.4-strategic-synthesis-v0.3' as const;
+
 export interface StrategicSynthesisPromptInput {
   projectId: string;
   ctx: StrategicReasoningContext;
@@ -53,6 +59,7 @@ export interface StrategicSynthesisPromptOutput {
     factCount: number;
     needCount: number;
     evidenceCount: number;
+    planningClaimCount: number;
   };
 }
 
@@ -61,8 +68,9 @@ const SYSTEM_MESSAGE = [
   'You produce a StrategicSynthesisArtifact. You may NOT create new FACT.',
   'Strategic interpretation = MODEL_INFERENCE; creative proposal = CREATIVE_HYPOTHESIS.',
   'Every project-specific claim must resolve to a provided source ID.',
-  'You will receive authoritative project facts, locked rules, prohibited directions, a need skeleton, and evidence summaries.',
+  'You will receive authoritative project facts, locked rules, prohibited directions, a need skeleton, evidence summaries, and (CI-W1C.7.4) planning strategic evidence from a registered planning brief.',
   'You MUST NOT use legacy visual evidence (visualAsset.* / old VI / old poster / old packaging / old spatial / style_reference / structure_reference / spatial_reference) as positive creative authority.',
+  'Planning strategic evidence is a positive authority: cite claims by id and treat them as the strongest signal of project-specific planning intent. Preserve the claim epistemic class as written; do not promote USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN to FACT.',
   'Output the strict JSON for StrategicSynthesisArtifact with the exact schemaVersion ' + STRATEGIC_SYNTHESIS_SCHEMA_VERSION + '.',
 ].join('\n');
 
@@ -73,6 +81,7 @@ const EPISTEMIC_RULES = [
   'Do not infer new facts from brand-name semantics.',
   'Do not summarize old visual style.',
   'Do not use legacy visual evidence as positive creative authority.',
+  'Planning strategic evidence has its own epistemic class (FACT / USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN). Preserve it. Do not promote USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN claims into FACT.',
   'Unknown information remains unknown.',
   'Every Insight must have at least 1 factRef and 1 needRef.',
   'Every Opportunity must have at least 1 insightRef.',
@@ -101,6 +110,25 @@ function safeEvidence(e: { id: string; sourceKind?: string; summary?: string; fa
   return `  - id=${e.id} sourceKind=${k} confidence=${c} summary=${s} factRefs=[${fr}]`;
 }
 
+/**
+ * CI-W1C.7.4 — Render a planning strategic claim into a single
+ * human-readable line. Preserves sourceDocumentId + chunkRefs +
+ * epistemicClass. NEVER renders the raw brief text.
+ */
+function safePlanningClaim(c: {
+  claimId: string;
+  key: string;
+  value: string;
+  epistemicClass: string;
+  sourceDocumentId: string;
+  chunkRefs?: string[];
+  confidence?: number;
+}): string {
+  const conf = typeof c.confidence === 'number' ? c.confidence.toFixed(2) : 'unspecified';
+  const chunks = Array.isArray(c.chunkRefs) ? c.chunkRefs.join(',') : '';
+  return `  - id=${c.claimId} key=${c.key} value=${c.value} epistemicClass=${c.epistemicClass} confidence=${conf} sourceDocumentId=${c.sourceDocumentId} chunkRefs=[${chunks}]`;
+}
+
 export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInput): StrategicSynthesisPromptOutput {
   const { ctx } = input;
   // 1. Authoritative project facts (with VALUES)
@@ -127,11 +155,19 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
   const evidenceBlock = ctx.evidence.length === 0
     ? '  (no evidence)'
     : ctx.evidence.map(safeEvidence).join('\n');
+  // 6.5 CI-W1C.7.4 — Planning Strategic Evidence (positive carrier).
+  // Each claim has sourceDocumentId + chunkRefs + epistemicClass
+  // preserved. NO raw brief text is rendered.
+  const planningClaims = ctx.planningStrategicEvidence ?? [];
+  const planningClaimBlock = planningClaims.length === 0
+    ? '  (no planning strategic evidence — no human-authored planning brief registered)'
+    : planningClaims.map(safePlanningClaim).join('\n');
   // 7. Source trace IDs
   const sourceIdsBlock = [
     `  facts: [${ctx.sourceIds.facts.join(', ')}]`,
     `  needs: [${ctx.sourceIds.needs.join(', ')}]`,
     `  evidence: [${ctx.sourceIds.evidence.join(', ')}]`,
+    `  planningClaims: [${(ctx.sourceIds.planningClaims ?? []).join(', ')}]`,
   ].join('\n');
   // 8. Excluded legacy visual authorities
   const excludedBlock = [
@@ -166,6 +202,12 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     '# EVIDENCE',
     'Evidence summaries supporting the current-project facts. Each item has its own id and sourceKind.',
     evidenceBlock,
+    '',
+    '# PLANNING STRATEGIC EVIDENCE',
+    'Human-authored planning claims derived from a registered planning brief (creative-brief / brand-strategy / market-research / product-information).',
+    'Each claim exposes id / key / value / epistemicClass / sourceDocumentId / chunkRefs / confidence. The epistemic class is preserved from the source — FACT / USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN. Do not auto-promote.',
+    'These are positive strategic authority (sibling to AUTHORITATIVE PROJECT FACTS). Use them as the strongest signal of project-specific planning intent. Cite by claim id.',
+    planningClaimBlock,
     '',
     '# SOURCE TRACE IDS',
     'Every factRef / needRef / evidenceRef you cite MUST appear in these lists. Do not invent IDs.',
@@ -215,6 +257,9 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
   const sectionCount = (userMessage.match(/^# /gm) ?? []).length;
   // CI-W1C.7.1A: canonical SHA-256 of the full Planning-First semantic
   // input. Replaces the previous count-only 32-char hex.
+  // CI-W1C.7.4: also include planningStrategicEvidence in the input
+  // fingerprint so that a planning-brief change invalidates the
+  // snapshot.
   const inputFingerprint = strategicInputFingerprint({
     projectId: input.projectId,
     promptVersion: input.promptVersion ?? STRATEGIC_SYNTHESIS_BUILDER_PROMPT_VERSION,
@@ -224,6 +269,7 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     prohibitedDirections: ctx.prohibitedDirections,
     needs: ctx.needs,
     evidence: ctx.evidence,
+    planningStrategicEvidence: ctx.planningStrategicEvidence ?? [],
     legacyVisualEvidenceExcluded: ctx.legacyVisualEvidenceExcluded,
   });
 
@@ -238,6 +284,7 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
       factCount: ctx.authoritativeFacts.length,
       needCount: ctx.needs.length,
       evidenceCount: ctx.evidence.length,
+      planningClaimCount: (ctx.planningStrategicEvidence ?? []).length,
     },
   };
 }

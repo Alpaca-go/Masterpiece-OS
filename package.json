@@ -18,7 +18,7 @@
     "verify:version-consistency": "node ./scripts/verify-version-consistency.mjs",
     "verify:version-naming": "node ./scripts/verify-version-naming.mjs",
     "verify:workspace-boundaries": "node ./scripts/verify-workspace-boundaries.mjs",
-    "test": "node --test tests/*.test.js tests/packages/*/*.test.js tests/image-generation/*.test.js tests/packages/creative-intelligence/ci-w1b/*.test.js tests/packages/creative-intelligence/ci-w1b.1/*.test.js tests/packages/creative-intelligence/ci-w1b.2/*.test.js tests/packages/creative-intelligence/ci-w2/*.test.js",
+    "test": "node --test tests/*.test.js tests/packages/*/*.test.js tests/image-generation/*.test.js tests/packages/creative-intelligence/ci-w1b/*.test.js tests/packages/creative-intelligence/ci-w1b.1/*.test.js tests/packages/creative-intelligence/ci-w1b.2/*.test.js tests/packages/creative-intelligence/ci-w2/*.test.js tests/packages/creative-intelligence/ci-7.4/*.test.js",
     "golden:test": "node ./scripts/golden/run-golden.mjs",
     "test:image-generation": "node --test tests/image-generation/*.test.js",
     "test:space-route-integrity": "node --test tests/image-generation/space-route-integrity.test.js",
