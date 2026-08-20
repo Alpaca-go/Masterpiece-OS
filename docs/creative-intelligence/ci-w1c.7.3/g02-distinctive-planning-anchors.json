@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "auditId": "ci-w1c.7.3-g02-distinctive-planning-anchors",
+  "auditHead": "c058316c442e3554c49a91a468533d5d426e5768",
+  "branch": "feat/short-chain-simplified-ui",
+  "projectId": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+  "projectLabel": "G02 一剂良方",
+  "spec": {
+    "purpose": "Identify 8-15 REAL distinctive planning anchors (project-specific) that distinguish G02 from G01 identity-stripped comparison. UUIDs/IDs/brand-name fact IDs do NOT count as anchors.",
+    "constraint": "Each anchor must be evidence-backed by a real source line in visual-decision-packet.json or project-truth.json.",
+    "rule": "If an anchor could apply equally to a generic 中醫/養生品牌项目 without the specific evidence file, it is GENERIC and must be excluded."
+  },
+  "anchors": [
+    {
+      "id": "G02-A01",
+      "name": "图标+文字标 logo (红色良字+黑色粗宋体+素问印章+金色拼音)",
+      "category": "logo",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L79-106",
+      "factId": "locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e",
+      "distinctiveContent": "logoAssets[0].visualFeatures=['红色圆形线条构成的良字变体图标','黑色粗宋体一剂良方文字','红色素问印章','金色拼音yi ji liang fang']; possibleBrandMeaning=['传统与现代结合','专业良方','素问经典传承']; userConfirmed=true; editable=false; frequency=30",
+      "whyDistinctive": "4-element logo (icon + wordmark + 素问 stamp + 拼音) — only G02 has the 素问 stamp and the 良字图腾. G01 has 孔雀/凤凰 which is a different logo vocabulary. The 良字变体 + 素问印章 is a specific 中医 cultural signature."
+    },
+    {
+      "id": "G02-A02",
+      "name": "品牌色盘 #B59A6B 木色 + #B00000 印章红 + #E8E5E0 浅灰",
+      "category": "color",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L108-134",
+      "factId": "colorAssets[31462d08-a046-471d-ac1a-bc913aaed1f4] (frequency 15)",
+      "distinctiveContent": "visualFeatures=['#B59A6B (木色/主色)','#B00000 (红色/辅助色)','#E8E5E0 (浅灰/背景色)','白色/黑色 (基础色)']; possibleBrandMeaning=['中药柜木质感','传统印章红','洁净医疗白']",
+      "whyDistinctive": "Specific wood-tone + seal-red + medical-white palette tied to 中药柜 (materia medica cabinet). G01 has 孔雀紫 + 辅助紫. Color systems are completely disjoint and color-meanings are different (G02 ties to 中药柜, G01 to 高端美容)."
+    },
+    {
+      "id": "G02-A03",
+      "name": "思源宋体 typography (Light至Heavy全字重+繁体字形+衬线+文化感)",
+      "category": "typography",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L136-160",
+      "factId": "typographyAssets[4904493e-d74e-4fcc-80c7-fe32a8c30792] (frequency 30)",
+      "distinctiveContent": "visualFeatures=['思源宋体 Light 至 Heavy 全字重','繁体字形特征','衬线体，具有文化感']; possibleBrandMeaning=['传统文化底蕴','专业严谨']",
+      "whyDistinctive": "思源宋体 is a specific font choice (not custom like G01's 笔锋软化字体). The 繁体字形 feature is significant because the LOCKED FACT says 输出语言简体中文, yet the chosen typeface uses 繁体字形. This is a semantic tension unique to G02."
+    },
+    {
+      "id": "G02-A04",
+      "name": "辅助底纹图形 (花瓣/圆形交错线条+规律重复+网格状)",
+      "category": "graphic_motif",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L162-188",
+      "factId": "graphicMotifs[616bff74-d811-4f12-9f12-344547597de7] (frequency 20)",
+      "distinctiveContent": "name='辅助底纹图形'; visualFeatures=['由Logo演化出的花瓣/圆形交错线条','规律重复排列','形成网格状底纹']; possibleBrandMeaning=['草本植物形态','传统窗结构','循环与融合']",
+      "whyDistinctive": "Logo-derived grid motif (frequency 20 — high repetition) with double meaning (草本植物形态 + 传统窗结构). G01 has separate 孔雀+莲花 motifs. G02 has ONE geometric motif derived FROM the logo — different design philosophy."
+    },
+    {
+      "id": "G02-A05",
+      "name": "中药柜摄影 (木质抽屉+金属拉手+药材标签+暖色调)",
+      "category": "imagery",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L190-214",
+      "factId": "imageryAssets[71b79d23-9e3f-4740-bb09-9b474616923c] (frequency 1)",
+      "distinctiveContent": "name='中药柜摄影'; visualFeatures=['木质抽屉','金属拉手','药材标签','暖色调光影']; possibleBrandMeaning=['传统中药房','药材储备','品牌主色来源']; isOriginalAsset=false; contextRole='reference_case'",
+      "whyDistinctive": "Materia medica cabinet photography as a REFERENCE CASE for the brand's wood-tone palette. G01's imagery is peacock-themed posters (brand_asset). G02 explicitly marks this as reference_case (not original brand asset) — different provenance."
+    },
+    {
+      "id": "G02-A06",
+      "name": "活动物料静物摄影 (研钵+中药材+古籍书卷+浅色背景)",
+      "category": "imagery",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L215-240",
+      "factId": "imageryAssets[6321de50-b8e9-4a04-ac0c-a61fecfa9c2c] (frequency 1)",
+      "distinctiveContent": "name='活动物料静物摄影'; visualFeatures=['研钵','中药材','古籍书卷','浅色背景']; possibleBrandMeaning=['制药过程','医学经典','专业研发']; isOriginalAsset=false; contextRole='reference_case'",
+      "whyDistinctive": "Mortar + medicinal materials + ancient books as REFERENCE CASE imagery. Together with A05, G02 has TWO reference_case imagery types — G01 has ONE brand_asset imagery type. Different provenance and intent."
+    },
+    {
+      "id": "G02-A07",
+      "name": "比例与安全空间规范 (图标高度X为基准+竖横组合+安全留白)",
+      "category": "layout",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L242-267",
+      "factId": "layoutPatterns[63d082d4-118b-43bd-8003-6016029c5990] (frequency 2)",
+      "distinctiveContent": "name='比例与安全空间规范'; visualFeatures=['以图标高度X为基准单位','竖版与横版组合比例','严格的安全留白区域']; possibleBrandMeaning=['严谨','规范','专业度']; editable=false",
+      "whyDistinctive": "Layout system based on ICON HEIGHT as the base unit, with strict safe-area rules. G01's layout is 标志组合 (lockup types). Different layout philosophy: G02 = mathematical base-unit, G01 = lockup-style variants."
+    },
+    {
+      "id": "G02-A08",
+      "name": "名片纸张与工艺 (浅灰色+背面Logo凸印+哑光)",
+      "category": "material",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L269-293",
+      "factId": "materialCues[ede23e23-9195-4cda-91f6-0077f896660c] (frequency 1)",
+      "distinctiveContent": "name='名片纸张与工艺'; visualFeatures=['浅灰色纸张','背面Logo凸印工艺','哑光质感']; possibleBrandMeaning=['质感','低调奢华','触感体验']",
+      "whyDistinctive": "Business card material cue: light-grey paper + back-side logo embossing + matte. G01 has 孔雀羽毛材质 + 混凝土+玻璃 (peacock feather material + concrete+glass). Materials are disjoint."
+    },
+    {
+      "id": "G02-A09",
+      "name": "处方签与记录单 packaging (顶部品牌色块+底纹+底部Logo水印+表格线+竖版)",
+      "category": "packaging",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L295-320",
+      "factId": "packagingStructures[c7cf4ce7-9e82-4a0c-97b0-81a95f358e8d] (frequency 2)",
+      "distinctiveContent": "name='处方签与记录单'; visualFeatures=['顶部品牌色块+底纹','底部大尺寸Logo水印','标准表格线','竖版排版']; possibleBrandMeaning=['医疗专业性','品牌识别渗透','规范化服务']",
+      "whyDistinctive": "Prescription/receipt slip with brand color block + bottom Logo watermark + standard table lines. G01's 白色礼盒+紫色丝带 is gift-oriented, G02's 处方签+记录单 is service-operational. Different document semantics."
+    },
+    {
+      "id": "G02-A10",
+      "name": "药柜标签 packaging (白底黑字+大号宋体药材名+小号拼音+淡色Logo底纹)",
+      "category": "packaging",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L322-345",
+      "factId": "packagingStructures[a8ef6101-a6ac-41d7-99f2-b55adfbb40f9] (frequency 1)",
+      "distinctiveContent": "name='药柜标签'; visualFeatures=['白底黑字','大号宋体药材名','小号拼音','淡色Logo底纹']; possibleBrandMeaning=['清晰识别','传统药房元素现代化','分类管理']",
+      "whyDistinctive": "Cabinet label (白底黑字 + 大号宋体药材名). G02's packaging is functional/operational, not gift/luxury. Strong operational differentiator."
+    },
+    {
+      "id": "G02-A11",
+      "name": "室内导视系统 spatial (等候/诊疗/取药+内科/外科/疼痛科/养生科+圆形箭头)",
+      "category": "spatial",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L348-373",
+      "factId": "spatialCues[bf3d8116-3dc3-4a57-83a9-167bd16df048] (frequency 2)",
+      "distinctiveContent": "name='室内导视系统'; visualFeatures=['等候室/诊疗室/取药室指示牌','内科/外科/疼痛科/养生科铭牌','品牌色与白色交替使用','圆形箭头图标']; possibleBrandMeaning=['功能分区明确','就诊流线引导','现代医疗环境']",
+      "whyDistinctive": "G02 explicitly names 4 科室 (内科/外科/疼痛科/养生科) + 3 空间类型 (等候/诊疗/取药). This is a CLINIC service surface — completely different from G01's 医疗美容空间 (medical-aesthetic single room)."
+    },
+    {
+      "id": "G02-A12",
+      "name": "门头外观 spatial (现代建筑+Logo招牌+'疼痛·慢病·养生'标语)",
+      "category": "spatial",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L375-399",
+      "factId": "spatialCues[bcdb5c4c-1c32-45b9-9c9f-12f441d86677] (frequency 1)",
+      "distinctiveContent": "name='门头外观'; visualFeatures=['现代建筑外观','Logo招牌','疼痛·慢病·养生标语','橙色充气装置(特定活动)']; possibleBrandMeaning=['实体门店','社区服务','亲和力']; isOriginalAsset=false; contextRole='reference_case'",
+      "whyDistinctive": "Storefront with 疼痛·慢病·养生 slogan — 3 service lines. Reference case (not brand asset). G01 has NO storefront-spatial-cue; G01's only spatial cue is the medical-aesthetic interior (A10). G02 has BOTH clinic interior (A11) and storefront (A12)."
+    },
+    {
+      "id": "G02-A13",
+      "name": "copy #1: '素问一脉承 良方开新境' (frequency 5)",
+      "category": "copy",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L401-428",
+      "factId": "copyAssets[4e667882-4790-4489-9233-dd4e8a90a8db] (frequency 5)",
+      "distinctiveContent": "name='品牌标语与文案'; candidates=['素问一脉承 良方开新境','新中医智能健康管理','疼痛·慢病·养生','传承千年 启幕未来']; visualFeatures=[]; possibleBrandMeaning=['传承与创新','智能化','全生命周期健康']",
+      "whyDistinctive": "4 distinct taglines: 素问一脉承 (黄帝内经 reference), 良方开新境 (innovation), 新中医智能健康管理 (modern tech), 疼痛·慢病·养生 (3 service lines), 传承千年 启幕未来 (heritage+future). G01's 2 taglines are about 翎羽 and 科学+美学. Vocabulary completely disjoint."
+    },
+    {
+      "id": "G02-A14",
+      "name": "brandMisreadRisk #1: MISREAD_PHARMACY_ONLY (误读为药店)",
+      "category": "risk",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L498-526",
+      "factId": "brandMisreadRisks[code=MISREAD_PHARMACY_ONLY] (status=confirmed, confidence=0.9)",
+      "distinctiveContent": "description='将品牌误读为传统的药品零售店（药店），而非中医诊疗与健康管理体验馆'; appliesTo={taskFamilies:['spatial_design','service_design'], scenes:['entrance','reception','consultation_room']}",
+      "whyDistinctive": "G02's PRIMARY risk is being read as a 药店 (pharmacy) instead of 中医诊疗+健康管理体验馆. G01's risks are 传统美容院 + 奢侈品. Different risk landscape."
+    },
+    {
+      "id": "G02-A15",
+      "name": "creativeDecision: brandRoleStatement (CI-W1C.6 layered decision block)",
+      "category": "decision",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L568-585",
+      "factId": "visualDecisionPacket.creativeDecision (NOT in G01's packet)",
+      "distinctiveContent": "brandRoleStatement='一剂良方是一个融合传统中医智慧与现代智能健康管理的体验机构，提供从诊疗、慢病管理到养生的全链路服务。'; upgradeFrom=['传统中药铺的陈旧视觉','单纯的药品零售形象']; preserveCore=['Locked Logo','品牌色彩','思源宋体字韵','辅助几何底纹']; upgradeTo=['现代、洁净、专业的中医健康管理空间','强调体验与服务流线的视觉系统']; uniqueUpgradeThesis='...保留良方的专业感与素问的文化感（通过Logo和宋体），但将空间与物料背景从老旧药柜升级为现代木饰面与洁净白墙的结合...'",
+      "whyDistinctive": "G02's visual-decision-packet has a **creativeDecision** block that G01 does NOT have. This is a layered decision (what to preserve vs upgrade vs replace) that G01 lacks entirely. The uniqueUpgradeThesis is a 1-paragraph narrative explaining HOW to bridge tradition to modern."
+    },
+    {
+      "id": "G02-A16",
+      "name": "categoryCliches: '中医行业视觉' (红色+木色+宋体+水墨背景)",
+      "category": "cliche",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L486-496",
+      "factId": "diagnosis.categoryCliches[0] (confidence=0.8)",
+      "distinctiveContent": "observation='常用红色+木色+宋体+水墨背景'; whyItMatters='品牌通过引入智能健康管理概念和现代几何底纹，试图打破纯传统 cliché'",
+      "whyDistinctive": "G02 acknowledges its own cliche risk: 红+木+宋+水墨 is the TCM行业 cliché. G01's cliche is 紫+羽毛+孔雀 in 高端美容行业. Different cliche landscapes, different self-aware diagnoses."
+    }
+  ],
+  "anchorCount": 16,
+  "categoryDistribution": {
+    "logo": 1,
+    "color": 1,
+    "typography": 1,
+    "graphic_motif": 1,
+    "imagery": 2,
+    "layout": 1,
+    "material": 1,
+    "packaging": 2,
+    "spatial": 2,
+    "copy": 1,
+    "risk": 1,
+    "decision": 1,
+    "cliche": 1
+  },
+  "summary": "G02 has at least 16 real distinctive planning anchors (1 more than G01). The strongest differentiators are: 4-element logo (良字+素问印章), 思源宋体 with 繁体字形 (tension with 输出简体中文), 4-cabinet-division (内科/外科/疼痛科/养生科), and the unique creativeDecision block (which G01 lacks). G02 has more imagery and spatial anchors than G01 because the visual-decision-packet is structurally richer (added creativeDecision, more packaging/spatial types)."
+}

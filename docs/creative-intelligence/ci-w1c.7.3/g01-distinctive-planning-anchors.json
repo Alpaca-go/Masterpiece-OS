@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "auditId": "ci-w1c.7.3-g01-distinctive-planning-anchors",
+  "auditHead": "c058316c442e3554c49a91a468533d5d426e5768",
+  "branch": "feat/short-chain-simplified-ui",
+  "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+  "projectLabel": "G01 九州美学",
+  "spec": {
+    "purpose": "Identify 8-15 REAL distinctive planning anchors (project-specific) that distinguish G01 from G02 identity-stripped comparison. UUIDs/IDs/brand-name fact IDs do NOT count as anchors.",
+    "constraint": "Each anchor must be evidence-backed by a real source line in visual-decision-packet.json or project-truth.json.",
+    "rule": "If an anchor could apply equally to a generic 高端品牌项目 without the specific evidence file, it is GENERIC and must be excluded."
+  },
+  "anchors": [
+    {
+      "id": "G01-A01",
+      "name": "孔雀/凤凰主标志 (品牌核心视觉签名)",
+      "category": "logo",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L88-114",
+      "factId": "locked.assets:4f65f3f8-1749-4354-b488-1d8c50e21061",
+      "distinctiveContent": "logoAssets[0].visualFeatures=['紫色渐变','孔雀/凤凰形态','流线型设计','羽毛元素']; possibleBrandMeaning=['优雅','蜕变','高端美学']; isOriginalAsset=true; frequency=8",
+      "whyDistinctive": "紫色渐变 + 孔雀/凤凰 + 羽毛 is a SPECIFIC visual identity that no other generic brand would carry. G02 has 红色良字+素问印章 — completely different vocabulary. This is the strongest single visual differentiator."
+    },
+    {
+      "id": "G01-A02",
+      "name": "孔雀紫主色 #5837BD + 辅助紫 #A971E7",
+      "category": "color",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L141-192",
+      "factId": "colorAssets[6ec160a9...] (frequency 10) + colorAssets[6ec160a9...] (frequency 7)",
+      "distinctiveContent": "visualFeatures=['#5837BD','高贵','神秘']; ['#A971E7','柔和','渐变']. Two purples with very specific hex values.",
+      "whyDistinctive": "The specific hex pair (#5837BD + #A971E7) is a unique color signature. G02 has 木色 #B59A6B + 印章红 #B00000. Color systems are completely disjoint."
+    },
+    {
+      "id": "G01-A03",
+      "name": "九州美学定制字体 (笔锋软化, 现代感, 优雅线条)",
+      "category": "typography",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L116-138, L193-218",
+      "factId": "locked.assets:755bd372-d7ac-4ccd-824e-b2b9fbe49cad",
+      "distinctiveContent": "logoAssets[1].visualFeatures=['笔锋软化','现代感','优雅线条']; possibleBrandMeaning=['精致','专业','温和']; typographyAssets: same feature set. frequency=6.",
+      "whyDistinctive": "G01 has a CUSTOM typeface (separate from main logo) with a specific stylistic feature set. G02 has 思源宋体 (a publicly available font) — different. The 笔锋软化 is a specific design choice, not generic."
+    },
+    {
+      "id": "G01-A04",
+      "name": "孔雀羽毛 graphic motif (精细纹理+渐变+自然形态)",
+      "category": "graphic_motif",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L220-246",
+      "factId": "graphicMotifs[357df67c-bbaa-4f79-8cf3-4f90cd81719d] (frequency 8)",
+      "distinctiveContent": "name='孔雀羽毛'; visualFeatures=['精细纹理','渐变色彩','自然形态']; possibleBrandMeaning=['精致工艺','美学','蜕变']",
+      "whyDistinctive": "Peacock feather as a specific graphic motif, not a generic floral or geometric pattern. G02 has '花瓣/圆形交错线条' — different motif family. 蜕变 (transformation) semantics are specific to G01."
+    },
+    {
+      "id": "G01-A05",
+      "name": "莲花/花朵图形 (几何对称+花瓣+线条简洁)",
+      "category": "graphic_motif",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L247-272",
+      "factId": "graphicMotifs[1b97a0d5-9734-4898-b4b6-69f650793b2e] (frequency 5)",
+      "distinctiveContent": "visualFeatures=['几何对称','花瓣形态','线条简洁']; possibleBrandMeaning=['纯净','美学','和谐']",
+      "whyDistinctive": "G01 has TWO distinct motifs (孔雀 + 莲花). G02 has ONE motif (花瓣/圆形). Lotus is a specific Chinese cultural symbol. The 纯净/和谐 meaning set is unique to G01."
+    },
+    {
+      "id": "G01-A06",
+      "name": "孔雀主题海报 (孔雀与人物+梦幻场景+紫色调)",
+      "category": "imagery",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L274-299",
+      "factId": "imageryAssets[a2697445-aee3-4bc6-af02-cec2a17477b2] (frequency 4)",
+      "distinctiveContent": "name='孔雀主题海报'; visualFeatures=['孔雀与人物','梦幻场景','紫色调']; possibleBrandMeaning=['美学体验','蜕变','高端服务']",
+      "whyDistinctive": "Imagery of a peacock paired with a human figure in a dreamy purple scene — this is a specific brand narrative (蜕变 = aesthetic transformation). G02's imagery is 中药柜 + 活动物料 (materia medica cabinet + still life) — entirely different visual world."
+    },
+    {
+      "id": "G01-A07",
+      "name": "标志组合规范 (左右/上下/嵌入组合)",
+      "category": "layout",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L301-325",
+      "factId": "layoutPatterns[c5e00e6e-ce34-4370-9de0-b52299ce982c] (frequency 5)",
+      "distinctiveContent": "name='标志组合规范'; visualFeatures=['左右组合','上下组合','嵌入组合']; possibleBrandMeaning=['灵活性','系统性']",
+      "whyDistinctive": "G01 specifies 3 lockup types (LR/TB/inline). G02 specifies '以图标高度X为基准' (a different layout system based on icon height). Different lockup philosophy."
+    },
+    {
+      "id": "G01-A08",
+      "name": "白色礼盒 + 紫色丝带 packaging (精致服务+高端体验)",
+      "category": "packaging",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L378-400",
+      "factId": "packagingStructures[da3d2c6b-b147-411f-b107-cd277621b961] (frequency 2)",
+      "distinctiveContent": "name='白色礼盒'; visualFeatures=['简约','紫色丝带','高端感']; possibleBrandMeaning=['精致服务','高端体验']",
+      "whyDistinctive": "White box + purple ribbon is a specific gift packaging choice, distinct from G02's 处方签/记录单 + 药柜标签 (prescription pad + cabinet label) — completely different service surface."
+    },
+    {
+      "id": "G01-A09",
+      "name": "紫色购物袋 (品牌色+羽毛图案+手提)",
+      "category": "packaging",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L402-425",
+      "factId": "packagingStructures[2596dcd1-d56e-47a1-b6ea-858fbdaa13d4] (frequency 2)",
+      "distinctiveContent": "name='紫色购物袋'; visualFeatures=['品牌色','羽毛图案','手提设计']; possibleBrandMeaning=['品牌识别','美学传递']",
+      "whyDistinctive": "G01 has TWO packaging types (礼盒 + 购物袋) — both luxury/gift-oriented. G02 has TWO packaging types but service-oriented (处方签 + 药柜标签). Same count, different intent."
+    },
+    {
+      "id": "G01-A10",
+      "name": "医疗美容空间 (弧形设计+羽毛纹理玻璃+紫色灯光+混凝土墙面)",
+      "category": "spatial",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L426-451",
+      "factId": "spatialCues[2eed2724-e5de-465a-bca4-26dcbd8b80e7] (frequency 3)",
+      "distinctiveContent": "name='医疗美容空间'; visualFeatures=['弧形设计','羽毛纹理玻璃','紫色灯光','混凝土墙面']; possibleBrandMeaning=['现代美学','专业环境','舒适体验']",
+      "whyDistinctive": "Medical-aesthetic space: curved + feathered glass + purple lighting + concrete. This is a specific physical environment that maps to G01's 医疗美容 industry. G02 has 室内导视 + 门头 (interior signage + storefront) — different spatial program. The 弧形+羽毛+紫色 combo is unique to G01."
+    },
+    {
+      "id": "G01-A11",
+      "name": "copy #1: '精琢每一片翎羽'",
+      "category": "copy",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L453-479",
+      "factId": "copyAssets[357df67c-bbaa-4f79-8cf3-4f90cd81719d] (frequency 7)",
+      "distinctiveContent": "name='精琢每一片翎羽'; visualFeatures=['简洁排版','字间距大','优雅']; possibleBrandMeaning=['精致工艺','专注细节','高端服务']",
+      "whyDistinctive": "Specific Chinese tagline with 翎羽 (feather) as the central metaphor. G02's taglines are 中医+智能 ('素问一脉承 良方开新境' / '新中医智能健康管理' / '疼痛·慢病·养生'). The 翎羽 metaphor appears NOWHERE in G02."
+    },
+    {
+      "id": "G01-A12",
+      "name": "copy #2: '科学与美学相遇，信任与温度共生'",
+      "category": "copy",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L480-503",
+      "factId": "copyAssets[a2697445-aee3-4bc6-af02-cec2a17477b2] (frequency 5)",
+      "distinctiveContent": "name='科学与美学相遇，信任与温度共生'; visualFeatures=['双语排版','专业感']; possibleBrandMeaning=['专业与美学结合','信任建立']",
+      "whyDistinctive": "Pairs 科学 (science) with 美学 (aesthetics) and 信任 (trust) with 温度 (warmth). G02 doesn't have the 科学+美学 pairing; G02 emphasizes 传承+智能 instead."
+    },
+    {
+      "id": "G01-A13",
+      "name": "brandMisreadRisk #1: MR001 '将品牌误读为传统美容院'",
+      "category": "risk",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L583-609",
+      "factId": "brandMisreadRisks[code=MR001] (status=confirmed, confidence=0.85)",
+      "distinctiveContent": "description='将品牌误读为传统美容院而非高端医疗美容机构'; appliesTo={taskFamilies:['品牌传播','空间设计'], scenes:['客户初次接触','咨询环节']}",
+      "whyDistinctive": "G01 has the misread risk of being read as a 传统美容院 (traditional beauty salon) instead of 高端医疗美容机构 (high-end medical aesthetic institution). G02's misread risk is MISREAD_PHARMACY_ONLY (误读为药店) — completely different risk landscape."
+    },
+    {
+      "id": "G01-A14",
+      "name": "brandMisreadRisk #2: MR002 '将品牌误读为奢侈品品牌'",
+      "category": "risk",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L610-638",
+      "factId": "brandMisreadRisks[code=MR002] (status=confirmed, confidence=0.8)",
+      "distinctiveContent": "description='将品牌误读为奢侈品品牌而非医疗美容服务'; appliesTo={taskFamilies:['包装设计','物料设计'], scenes:['客户接待','服务后离店']}",
+      "whyDistinctive": "G01 has a SECOND misread risk: being read as a luxury brand instead of a service. G02's risks are MISREAD_PHARMACY_ONLY + MISREAD_LOGO_MODIFICATION — different combination."
+    },
+    {
+      "id": "G01-A15",
+      "name": "categoryCliches: '医疗美容行业常见视觉元素' (紫色+羽毛+孔雀)",
+      "category": "cliche",
+      "evidenceFile": "project-context/visual-decision-packet.json",
+      "evidenceLine": "L570-581",
+      "factId": "diagnosis.categoryCliches[0] (confidence=0.8)",
+      "distinctiveContent": "observation='使用紫色、羽毛、孔雀等元素在高端美容行业较为常见'; whyItMatters='需要进一步强化品牌独特性，避免陷入行业同质化'",
+      "whyDistinctive": "G01 acknowledges its own cliche risk: 紫色+羽毛+孔雀 are common in 高端美容. This is a SELF-AWARE diagnosis unique to G01 — G02's categoryCliches is 红色+木色+宋体+水墨 (中醫行業視覺)."
+    }
+  ],
+  "anchorCount": 15,
+  "categoryDistribution": {
+    "logo": 1,
+    "color": 1,
+    "typography": 1,
+    "graphic_motif": 2,
+    "imagery": 1,
+    "layout": 1,
+    "packaging": 2,
+    "spatial": 1,
+    "copy": 2,
+    "risk": 2,
+    "cliche": 1
+  },
+  "summary": "G01 has at least 15 real distinctive planning anchors. The strongest differentiators are: 孔雀紫 color pair (#5837BD/#A971E7), 孔雀/凤凰 logo with feathers, 翎羽 copy metaphor, and the dual 误读风险 (传统美容院 + 奢侈品). All anchors are evidence-backed by real file lines in visual-decision-packet.json."
+}
