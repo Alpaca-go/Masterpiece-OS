@@ -19,12 +19,15 @@ delta.
 
 | # | Failure | Baseline @ `34a3423e` | Post-R2 | Delta |
 |---|---|---|---|---|
-| 1 | `tests/tracked-runtime-assets-guard.test.js` Case 1 (`current repository passes`) | 7 violations | 7 violations | 0 (R2 did not introduce new violations; orchestrator re-exports loader to keep deep-import count = 1) |
+| 1 | `tests/tracked-runtime-assets-guard.test.js` Case 1 (`current repository passes`) | 7 violations | 7 violations | 0 (R2 not worsened; orchestrator re-exports loader to keep deep-import count = 1) |
 | 2 | `tests/image-generation/contracts-schema.test.js` V3 source bundle assertion | FAIL | FAIL (not exercised in R2) | 0 (unrelated to planning trace) |
 | 3 | `scripts/verify-current-flows.mjs` Stage 4 short-chain (pre-existing) | FAIL | FAIL (not touched) | 0 (out of R2 scope) |
 | 4 | `verify:workspace-boundaries` (pre-existing) | FAIL | FAIL (not touched) | 0 (out of R2 scope) |
+| 5 | `tests/runtime-application/packaging-workspace-architecture-guards.test.ts` AC-09 (`git status --porcelain` empty) | FAIL on real working tree (only PASSes with `git stash -u`) | FAIL on real working tree | 0 (working-tree guard; not introduced by R2) |
+| 6 | `tests/runtime-application/packaging-c4-2-2-p3-a12-baseline-rebase-provider-boundary-freeze.test.ts` AW-21 (zero production source changes) | FAIL on real working tree (only PASSes with `git stash -u`) | FAIL on real working tree | 0 (working-tree guard; not introduced by R2) |
+| 7-18 | Other pre-existing P3-C / P3-A12 / P3-B / P3-D3 / packaging-renderer / verification guards | FAIL | FAIL | 0 (out of R2 scope) |
 
-All 4 are documented in the R1 final-report and in
+All 18 are documented in the R1 final-report and in
 `docs/repository/REPOSITORY_CONTRACT.md`. R2 does not touch any of
 their root causes.
 
@@ -121,4 +124,7 @@ hard rules        = 0 violations
 hard fail matrix  = 15/15 PASS
 ```
 
-R2 is regression-clean against the R1 baseline.
+R2 is regression-clean against the R1 baseline. (R2 introduces 0 new
+failures; the 18 unique `runtime-application:test` failures observed
+post-commit are identical to the real-working-tree baseline at
+`34a3423e`. They are all pre-existing and out of R2 scope.)

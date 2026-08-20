@@ -3,8 +3,8 @@
 > **Date:** 2026-08-20
 > **Branch:** `feat/short-chain-simplified-ui`
 > **Baseline HEAD:** `34a3423e77f3754490d00d3180815fe7572e7f13` (CI-W1C.7.4-R1 READY)
-> **Final HEAD:** see Implementation HEAD in commit log (Implementation Frozen HEAD)
-> **Documentation Tip:** see commit log (Documentation Tip commit; the only doc-only change after the implementation freeze)
+> **Implementation Frozen HEAD:** `ef99b2b8817b072dcd23c5ae40b1f6aa02cd70fb` (post-6-commit freeze)
+> **Documentation Tip:** the last commit (`ef99b2b8 docs(ci-w1c.7.4-r2): record readiness verdict + 9 supporting docs`) IS the documentation-tip commit; it contains the 10 R2 docs and nothing else.
 > **Upstream:** CI-W1C.7.4-R1
 > **Implementation Summary:** Trace protocol for `PlanningStrategicEvidence` (carrier parity with Truth / Need / Evidence) + canonical project-level orchestration + tracked-runtime-assets-guard non-regression. Zero-network. Zero model call. Zero image call. 34 / 34 R2 tests PASS.
 > **Verdict:** `READY_FOR_REAL_PLANNING_DOCUMENT_QUALIFICATION`
@@ -29,7 +29,18 @@ R2 closes 4 R1 blockers:
 `34a3423e77f3754490d00d3180815fe7572e7f13` (CI-W1C.7.4-R1 READY)
 
 ## 2. final HEAD
-Implementation Frozen HEAD — see commit log. (The HEAD printed by `git rev-parse HEAD` after the R2 commits land.)
+Implementation Frozen HEAD = `ef99b2b8817b072dcd23c5ae40b1f6aa02cd70fb`. See commit log for the 6 R2 commits:
+
+```text
+ef99b2b8 docs(ci-w1c.7.4-r2): record readiness verdict + 9 supporting docs
+ebe1ed9d test(ci-w1c.7.4-r2): add trace protocol + orchestrator + R2 E2E tests
+507a15d4 refactor(ci-w1c): route qualifier through canonical orchestrator
+b2f833b1 feat(runtime): add canonical project-level orchestrator + update mock fixture
+ad608681 feat(ci): grounding gate SG-01/SG-10/SG-11 validate planning claim refs
+8ca5c53a feat(ci): planning-claim trace protocol in parser + prompt + context compile
+68b890e8 feat(ci): add planningClaimRefs to strategic synthesis contracts
+34a3423e docs(ci-w1c.7.4-r1): record readiness verdict + 9 supporting docs  (baseline)
+```
 
 ## 3. branch/origin parity
 branch = `feat/short-chain-simplified-ui`; local HEAD == origin HEAD after push. ✓
@@ -176,7 +187,7 @@ R2 tests: 34 / 34 PASS. R1 tests: 38 / 38 PASS (re-verified). R0 baseline tests:
 ## 38. pre-existing failures
 | # | Failure | Baseline | R2 | Delta |
 |---|---|---|---|---|
-| 1 | `tests/tracked-runtime-assets-guard.test.js` Case 1 | 7 violations | 7 violations | 0 (R2 not worsened) |
+| 1 | `tests/tracked-runtime-assets-guard.test.js` Case 1 | 7 violations | 7 violations | 0 (R2 not worsened; R2 refactored the live-qualify script to use the canonical orchestrator and reduce deep imports from 2 → 1) |
 | 2 | `tests/image-generation/contracts-schema.test.js` V3 source bundle | FAIL | FAIL | 0 (unrelated) |
 | 3 | `scripts/verify-current-flows.mjs` Stage 4 short-chain | FAIL | FAIL | 0 (out of R2 scope) |
 | 4 | `verify:workspace-boundaries` | FAIL | FAIL | 0 (out of R2 scope) |
