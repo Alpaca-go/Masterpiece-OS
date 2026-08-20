@@ -799,7 +799,17 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       parse: parseStrategicSynthesis,
       gate: (a) => {
         const structural = validateStrategicSynthesisStructural(a);
-        const grounding = runStrategicGroundingGate({ artifact: a, truth: input.truth });
+        // CI-W1C.7.4-R2.1 PART B — the synthesis gate MUST receive
+        // the EXACT runtime planning evidence. Without this, the
+        // gate's `knownPlanningClaimIds` set is empty and any
+        // valid `*.planningClaimRefs` would fail SG-01, SG-11
+        // would never trigger, and SG-12 has no runtime side to
+        // compare against.
+        const grounding = runStrategicGroundingGate({
+          artifact: a,
+          truth: input.truth,
+          planningClaims: input.planningStrategicEvidence ?? [],
+        });
         return {
           passed: structural.passed && grounding.passed,
           blockedCodes: Array.from(new Set([...structural.blockedCodes, ...grounding.blockedCodes])),
