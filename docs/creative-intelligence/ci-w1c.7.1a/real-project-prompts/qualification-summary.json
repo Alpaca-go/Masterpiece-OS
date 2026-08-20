@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-20T04:45:48.720Z",
+  "generatedAt": "2026-08-20T04:51:28.044Z",
   "budget": {
     "maxInputTokens": 16000,
     "reservedOutputTokens": 4000,
@@ -34,10 +34,10 @@
       "realSourceIdsCount": 16,
       "realLegacyExclusion": true,
       "strategic": {
-        "characterCount": 11192,
+        "characterCount": 11722,
         "inputFingerprint": "655f19133e938b8e9c3dfe46530cba986d6124c36a788e9c871bf55602f74448",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 3731,
+        "estimatedInputTokens": 3908,
         "reason": null
       },
       "concept": {
@@ -83,10 +83,10 @@
       "realSourceIdsCount": 15,
       "realLegacyExclusion": true,
       "strategic": {
-        "characterCount": 10565,
+        "characterCount": 11095,
         "inputFingerprint": "52182d5cab793ed5d63f8ad94e10db2b7caa0bab9183f67cda9de5c4fd860e9e",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 3522,
+        "estimatedInputTokens": 3699,
         "reason": null
       },
       "concept": {
