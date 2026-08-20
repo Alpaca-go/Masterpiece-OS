@@ -791,19 +791,37 @@ function checkBudget(characterCount, budget) {
   const qualificationTokensRequired =
     estimatedInputTokens + budget.reservedOutputTokens + budget.reservedRepairTokens;
   const contextTokensRequired = estimatedInputTokens + budget.reservedOutputTokens;
-  if (qualificationTokensRequired > budget.maxInputTokens) {
+  const configuredQualificationBudget =
+    budget.configuredQualificationBudget
+    ?? (budget.maxInputTokens + budget.reservedOutputTokens + budget.reservedRepairTokens);
+  // Gate 1: input cap
+  if (estimatedInputTokens > budget.maxInputTokens) {
     return {
       status: 'PROMPT_BUDGET_EXCEEDED',
       estimatedInputTokens,
+      configuredQualificationBudget,
       qualificationTokensRequired,
       contextTokensRequired,
-      reason: `qualification budget exceeded: ${qualificationTokensRequired} > maxInputTokens=${budget.maxInputTokens}`,
+      reason: `input cap exceeded: ${estimatedInputTokens} > maxInputTokens=${budget.maxInputTokens}`,
     };
   }
+  // Gate 2: total qualification budget
+  if (qualificationTokensRequired > configuredQualificationBudget) {
+    return {
+      status: 'PROMPT_BUDGET_EXCEEDED',
+      estimatedInputTokens,
+      configuredQualificationBudget,
+      qualificationTokensRequired,
+      contextTokensRequired,
+      reason: `qualification budget exceeded: ${qualificationTokensRequired} > configuredQualificationBudget=${configuredQualificationBudget}`,
+    };
+  }
+  // Gate 3: hard context limit
   if (contextTokensRequired > budget.hardContextLimit) {
     return {
       status: 'PROMPT_BUDGET_EXCEEDED',
       estimatedInputTokens,
+      configuredQualificationBudget,
       qualificationTokensRequired,
       contextTokensRequired,
       reason: `hard context limit exceeded: ${contextTokensRequired} > hardContextLimit=${budget.hardContextLimit}`,
@@ -812,6 +830,7 @@ function checkBudget(characterCount, budget) {
   return {
     status: 'PASS',
     estimatedInputTokens,
+    configuredQualificationBudget,
     qualificationTokensRequired,
     contextTokensRequired,
   };

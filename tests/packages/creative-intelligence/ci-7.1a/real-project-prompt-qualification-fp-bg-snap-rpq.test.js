@@ -318,9 +318,21 @@ test('BG-01: small prompt passes default budget', () => {
   assert.equal(r.estimatedInputTokens, Math.ceil(1000 / 3));
 });
 
-test('BG-02: huge prompt fails default qualification budget (no truncation)', () => {
-  const huge = DEFAULT_QUALIFICATION_BUDGET.maxInputTokens * 4; // 4× over
+test('BG-02: huge prompt fails default input cap (no truncation)', () => {
+  const huge = DEFAULT_QUALIFICATION_BUDGET.maxInputTokens * 4; // 4× over the input cap
   const r = checkPromptBudget({ characterCount: huge });
+  assert.equal(r.status, 'PROMPT_BUDGET_EXCEEDED');
+  // 4× over maxInputTokens trips the input cap first.
+  assert.match(r.reason ?? '', /input cap exceeded/);
+});
+
+test('BG-02b: prompt that fits input cap but exceeds configuredQualificationBudget fails the qualification budget', () => {
+  // Build a budget where input cap passes but qualification fails.
+  // maxInputTokens=2000 (cap); reservedOutput=4000; reservedRepair=4000;
+  // configuredQualificationBudget=5000.
+  const b = { maxInputTokens: 2000, reservedOutputTokens: 4000, reservedRepairTokens: 4000, hardContextLimit: 32000, configuredQualificationBudget: 5000 };
+  // characterCount = 1500 chars → est 500 input tokens. 500+4000+4000=8500 > 5000 → fail qualification.
+  const r = checkPromptBudget({ characterCount: 1500, budget: b });
   assert.equal(r.status, 'PROMPT_BUDGET_EXCEEDED');
   assert.match(r.reason ?? '', /qualification budget exceeded/);
 });
@@ -341,12 +353,17 @@ test('BG-04: hard context limit is enforced after qualification budget', () => {
 });
 
 test('BG-05: repair reserve is included in the qualification budget', () => {
+  // Build a budget where input cap and qualification are tight, and a
+  // small input pushes the total over the configuredQualificationBudget.
+  // maxInputTokens=4000; reservedOutput=4000; reservedRepair=4000;
+  // configuredQualificationBudget=9000.
+  // characterCount=6000 → est 2000 input. 2000+4000+4000=10000 > 9000 → fail.
   const r = checkPromptBudget({
-    characterCount: 3 * 1000, // estimated input = 1000
-    budget: { maxInputTokens: 2000, reservedOutputTokens: 4000, reservedRepairTokens: 4000, hardContextLimit: 32000 },
+    characterCount: 6000,
+    budget: { maxInputTokens: 4000, reservedOutputTokens: 4000, reservedRepairTokens: 4000, hardContextLimit: 32000, configuredQualificationBudget: 9000 },
   });
-  // 1000 + 4000 + 4000 = 9000 > 2000 → fail
   assert.equal(r.status, 'PROMPT_BUDGET_EXCEEDED');
+  assert.match(r.reason ?? '', /qualification budget exceeded/);
 });
 
 test('BG-06: budget result is deterministic and pure', () => {

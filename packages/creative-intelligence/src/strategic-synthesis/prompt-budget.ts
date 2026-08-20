@@ -31,6 +31,14 @@ export interface CreativeReasoningQualificationBudget {
   reservedOutputTokens: number;
   reservedRepairTokens: number;
   hardContextLimit: number;
+  /**
+   * Total qualification budget = input + primary output + repair
+   * output. The budget gate asserts
+   * `qualificationTokensRequired <= configuredQualificationBudget`.
+   * Defaults to `maxInputTokens + reservedOutputTokens +
+   * reservedRepairTokens` if not provided.
+   */
+  configuredQualificationBudget?: number;
 }
 
 export type BudgetStatus = 'PASS' | 'PROMPT_BUDGET_EXCEEDED';
@@ -93,25 +101,50 @@ export function checkPromptBudget(input: {
   const qualificationTokensRequired =
     estimatedInputTokens + budget.reservedOutputTokens + budget.reservedRepairTokens;
   const contextTokensRequired = estimatedInputTokens + budget.reservedOutputTokens;
+  const configuredQualificationBudget =
+    budget.configuredQualificationBudget
+    ?? (budget.maxInputTokens + budget.reservedOutputTokens + budget.reservedRepairTokens);
 
-  if (qualificationTokensRequired > budget.maxInputTokens) {
+  // Gate 1: input cap. The prompt's input text must fit in the input
+  // budget. If not, the model call will be silently truncated by the
+  // provider or refused.
+  if (estimatedInputTokens > budget.maxInputTokens) {
     return {
       status: 'PROMPT_BUDGET_EXCEEDED',
       estimatedInputTokens,
-      configuredQualificationBudget: budget.maxInputTokens,
+      configuredQualificationBudget,
       hardContextLimit: budget.hardContextLimit,
       qualificationTokensRequired,
       contextTokensRequired,
       budget,
-      reason: `qualification budget exceeded: ${qualificationTokensRequired} > maxInputTokens=${budget.maxInputTokens}`,
+      reason: `input cap exceeded: ${estimatedInputTokens} > maxInputTokens=${budget.maxInputTokens}`,
     };
   }
 
+  // Gate 2: total qualification budget. Input + primary output + repair
+  // output must fit. If not, the run cannot complete even with the
+  // maximum allowed repairs.
+  if (qualificationTokensRequired > configuredQualificationBudget) {
+    return {
+      status: 'PROMPT_BUDGET_EXCEEDED',
+      estimatedInputTokens,
+      configuredQualificationBudget,
+      hardContextLimit: budget.hardContextLimit,
+      qualificationTokensRequired,
+      contextTokensRequired,
+      budget,
+      reason: `qualification budget exceeded: ${qualificationTokensRequired} > configuredQualificationBudget=${configuredQualificationBudget}`,
+    };
+  }
+
+  // Gate 3: hard context limit. Input + primary output must fit the
+  // model's hard context window. A repair call would only make this
+  // worse.
   if (contextTokensRequired > budget.hardContextLimit) {
     return {
       status: 'PROMPT_BUDGET_EXCEEDED',
       estimatedInputTokens,
-      configuredQualificationBudget: budget.maxInputTokens,
+      configuredQualificationBudget,
       hardContextLimit: budget.hardContextLimit,
       qualificationTokensRequired,
       contextTokensRequired,
@@ -123,7 +156,7 @@ export function checkPromptBudget(input: {
   return {
     status: 'PASS',
     estimatedInputTokens,
-    configuredQualificationBudget: budget.maxInputTokens,
+    configuredQualificationBudget,
     hardContextLimit: budget.hardContextLimit,
     qualificationTokensRequired,
     contextTokensRequired,
