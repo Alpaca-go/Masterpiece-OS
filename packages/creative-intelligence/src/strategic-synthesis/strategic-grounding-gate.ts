@@ -29,10 +29,18 @@ import {
   STRATEGIC_SYNTHESIS_LEGACY_VISUAL_EXCLUDED_MIN,
 } from './contracts.ts';
 import type { ProjectTruthModel } from '../truth/contracts.ts';
+import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
 
 export interface StrategicGroundingGateInput {
   artifact: StrategicSynthesisArtifact;
   truth: ProjectTruthModel;
+  /**
+   * CI-W1C.7.4-R2 PART E — actual PlanningStrategicEvidence input
+   * claims. The gate builds `knownPlanningClaimIds` from this list
+   * PLUS the model-emitted `sourceMap.planningClaims` (audit trail).
+   * Model output alone is NOT authority.
+   */
+  planningClaims?: PlanningStrategicClaim[];
   /**
    * Set of "other-project" fact/need/evidence IDs that must NOT
    * appear in this artifact. Used for SG-10 cross-project
@@ -42,6 +50,7 @@ export interface StrategicGroundingGateInput {
     factIds: Set<string>;
     needIds: Set<string>;
     evidenceIds: Set<string>;
+    planningClaimIds?: Set<string>;
   };
 }
 
@@ -125,6 +134,15 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
   const knownFactIds = new Set<string>([...factIdSet, ...artifact.sourceMap.planningTruth]);
   const knownNeedIds = new Set<string>([...needIdSet, ...artifact.sourceMap.needs]);
   const knownEvidenceIds = new Set<string>([...evidenceIdSet, ...artifact.sourceMap.evidence]);
+  // CI-W1C.7.4-R2 PART E — knownPlanningClaimIds comes ONLY from
+  // the ACTUAL runtime input (`input.planningClaims`). The
+  // model-emitted `sourceMap.planningClaims` is recorded for audit
+  // but is NOT authority; the gate refuses to let the model
+  // self-authorize fake IDs (RTG-02b).
+  const knownPlanningClaimIds = new Set<string>();
+  for (const c of input.planningClaims ?? []) {
+    if (typeof c?.claimId === 'string') knownPlanningClaimIds.add(c.claimId);
+  }
 
   const block = (code: StrategicGroundingGateCode, where: string, detail: string, refs?: string[]): void => {
     issues.push({ code, severity: 'block', where, detail, ...(refs ? { refs } : {}) });
@@ -150,6 +168,18 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
         block('SG-01', `insights[${i.id}].evidenceRefs`, `unresolved evidenceRef "${ref}"`, [ref]);
       }
     }
+    // CI-W1C.7.4-R2 PART E — planning claim refs must resolve to
+    // the actual runtime input IDs, NOT to model-emitted sourceMap.
+    for (const ref of i.planningClaimRefs) {
+      if (!knownPlanningClaimIds.has(ref)) {
+        block(
+          'SG-01',
+          `insights[${i.id}].planningClaimRefs`,
+          `unresolved planningClaimRef "${ref}"`,
+          [ref],
+        );
+      }
+    }
   }
   for (const t of artifact.tensions) {
     for (const ref of t.factRefs) {
@@ -160,6 +190,16 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
     for (const ref of t.needRefs) {
       if (!knownNeedIds.has(ref)) {
         block('SG-01', `tensions[${t.id}].needRefs`, `unresolved needRef "${ref}"`, [ref]);
+      }
+    }
+    for (const ref of t.planningClaimRefs) {
+      if (!knownPlanningClaimIds.has(ref)) {
+        block(
+          'SG-01',
+          `tensions[${t.id}].planningClaimRefs`,
+          `unresolved planningClaimRef "${ref}"`,
+          [ref],
+        );
       }
     }
   }
@@ -173,10 +213,30 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
       block('SG-01', 'projectUnderstanding.needRefs', `unresolved needRef "${ref}"`, [ref]);
     }
   }
+  for (const ref of artifact.projectUnderstanding.planningClaimRefs) {
+    if (!knownPlanningClaimIds.has(ref)) {
+      block(
+        'SG-01',
+        'projectUnderstanding.planningClaimRefs',
+        `unresolved planningClaimRef "${ref}"`,
+        [ref],
+      );
+    }
+  }
   for (const o of artifact.opportunities) {
     for (const ref of o.factRefs) {
       if (!knownFactIds.has(ref)) {
         block('SG-01', `opportunities[${o.id}].factRefs`, `unresolved factRef "${ref}"`, [ref]);
+      }
+    }
+    for (const ref of o.planningClaimRefs) {
+      if (!knownPlanningClaimIds.has(ref)) {
+        block(
+          'SG-01',
+          `opportunities[${o.id}].planningClaimRefs`,
+          `unresolved planningClaimRef "${ref}"`,
+          [ref],
+        );
       }
     }
   }
@@ -297,6 +357,29 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
           block('SG-10', `insights[${i.id}]`, `foreign needRef "${ref}" detected`, [ref]);
         }
       }
+      // CI-W1C.7.4-R2 PART E — foreign planning claim IDs are blocked.
+      for (const ref of i.planningClaimRefs) {
+        if (input.foreignIds.planningClaimIds?.has(ref)) {
+          block(
+            'SG-10',
+            `insights[${i.id}].planningClaimRefs`,
+            `foreign planningClaimRef "${ref}" detected`,
+            [ref],
+          );
+        }
+      }
+    }
+    for (const t of artifact.tensions) {
+      for (const ref of t.planningClaimRefs) {
+        if (input.foreignIds.planningClaimIds?.has(ref)) {
+          block(
+            'SG-10',
+            `tensions[${t.id}].planningClaimRefs`,
+            `foreign planningClaimRef "${ref}" detected`,
+            [ref],
+          );
+        }
+      }
     }
     for (const o of artifact.opportunities) {
       for (const ref of o.factRefs) {
@@ -304,6 +387,51 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
           block('SG-10', `opportunities[${o.id}]`, `foreign factRef "${ref}" detected`, [ref]);
         }
       }
+      for (const ref of o.planningClaimRefs) {
+        if (input.foreignIds.planningClaimIds?.has(ref)) {
+          block(
+            'SG-10',
+            `opportunities[${o.id}].planningClaimRefs`,
+            `foreign planningClaimRef "${ref}" detected`,
+            [ref],
+          );
+        }
+      }
+    }
+    for (const ref of artifact.projectUnderstanding.planningClaimRefs) {
+      if (input.foreignIds.planningClaimIds?.has(ref)) {
+        block(
+          'SG-10',
+          'projectUnderstanding.planningClaimRefs',
+          `foreign planningClaimRef "${ref}" detected`,
+          [ref],
+        );
+      }
+    }
+  }
+
+  // CI-W1C.7.4-R2 PART E 7 — minimum planning claim usage.
+  // When the runtime input has planning claims, the artifact must
+  // actually use them. We do NOT force every output element to
+  // reference a planning claim, but the projectUnderstanding must
+  // and at least one tension or insight must.
+  if ((input.planningClaims ?? []).length > 0) {
+    if (artifact.projectUnderstanding.planningClaimRefs.length === 0) {
+      block(
+        'SG-11',
+        'projectUnderstanding.planningClaimRefs',
+        'projectUnderstanding must cite at least 1 planningClaimRef when planning input is present',
+      );
+    }
+    const usedInTensionOrInsight =
+      artifact.tensions.some((t) => t.planningClaimRefs.length > 0) ||
+      artifact.insights.some((i) => i.planningClaimRefs.length > 0);
+    if (!usedInTensionOrInsight) {
+      block(
+        'SG-11',
+        'planningClaimRefs',
+        'at least 1 tension or insight must cite a planningClaimRef when planning input is present',
+      );
     }
   }
 
