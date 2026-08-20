@@ -1,0 +1,110 @@
+{
+  "generatedAt": "2026-08-20T03:43:21.067Z",
+  "budget": {
+    "maxInputTokens": 16000,
+    "reservedOutputTokens": 4000,
+    "reservedRepairTokens": 4000,
+    "hardContextLimit": 32000
+  },
+  "projects": [
+    {
+      "alias": "G01",
+      "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+      "realProjectName": "九州美学",
+      "realProjectNameInPrompt": false,
+      "realProjectIdInPrompt": true,
+      "realProjectSpecificValuePresent": true,
+      "realProjectSpecificValueSamples": [
+        "4f65f3f8-1749-4354-b488-1d8c50e21061",
+        "755bd372-d7ac-4ccd-824e-b2b9fbe49cad",
+        "brand-name-32fa23e11f42",
+        "user-lock-1",
+        "user-lock-2"
+      ],
+      "realNeedStatementPresent": true,
+      "realEvidenceSummaryPresent": true,
+      "realSourceIdPresent": true,
+      "hasOutputSchema": true,
+      "hasEpistemicRules": true,
+      "hasLegacyExclusionSection": true,
+      "positiveLegacyMentions": [],
+      "factCount": 17,
+      "needCount": 5,
+      "evidenceCount": 4,
+      "realSourceIdsCount": 16,
+      "realLegacyExclusion": true,
+      "strategic": {
+        "characterCount": 10319,
+        "inputFingerprint": "655f19133e938b8e9c3dfe46530cba986d6124c36a788e9c871bf55602f74448",
+        "budgetStatus": "PASS",
+        "estimatedInputTokens": 3440,
+        "reason": null
+      },
+      "concept": {
+        "characterCount": 11878,
+        "inputFingerprint": "3d5d344e21fbfddd85478e3ce28434599fb8ad67c8f890471340375d2527bffe",
+        "budgetStatus": "PASS",
+        "estimatedInputTokens": 3960,
+        "reason": null
+      },
+      "direction": {
+        "characterCount": 15440,
+        "inputFingerprint": "1a768023ce07bd785ad0c663f3d385af162c5f6f5599db750d9cf586823ff768",
+        "budgetStatus": "PASS",
+        "estimatedInputTokens": 5147,
+        "reason": null
+      },
+      "analysisProviderCallCount": 0,
+      "imageProviderCallCount": 0
+    },
+    {
+      "alias": "G02",
+      "projectId": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+      "realProjectName": "一剂良方",
+      "realProjectNameInPrompt": false,
+      "realProjectIdInPrompt": true,
+      "realProjectSpecificValuePresent": true,
+      "realProjectSpecificValueSamples": [
+        "2409032d-af08-4a34-a5bf-10d0ede9a35e",
+        "brand-name-a29bc2c550f3",
+        "user-lock-1",
+        "user-lock-2"
+      ],
+      "realNeedStatementPresent": true,
+      "realEvidenceSummaryPresent": true,
+      "realSourceIdPresent": true,
+      "hasOutputSchema": true,
+      "hasEpistemicRules": true,
+      "hasLegacyExclusionSection": true,
+      "positiveLegacyMentions": [],
+      "factCount": 16,
+      "needCount": 5,
+      "evidenceCount": 4,
+      "realSourceIdsCount": 15,
+      "realLegacyExclusion": true,
+      "strategic": {
+        "characterCount": 9692,
+        "inputFingerprint": "52182d5cab793ed5d63f8ad94e10db2b7caa0bab9183f67cda9de5c4fd860e9e",
+        "budgetStatus": "PASS",
+        "estimatedInputTokens": 3231,
+        "reason": null
+      },
+      "concept": {
+        "characterCount": 11335,
+        "inputFingerprint": "a9d88c3a19bf24899ded657abde0a6fbd3f8ae173a025aeb429ac3d1ff621663",
+        "budgetStatus": "PASS",
+        "estimatedInputTokens": 3779,
+        "reason": null
+      },
+      "direction": {
+        "characterCount": 14897,
+        "inputFingerprint": "58bb7592eb68bc8c6fb5fa4db05831a028198f6b898a448880f604c1d8b7a159",
+        "budgetStatus": "PASS",
+        "estimatedInputTokens": 4966,
+        "reason": null
+      },
+      "analysisProviderCallCount": 0,
+      "imageProviderCallCount": 0
+    }
+  ]
+}
