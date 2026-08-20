@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-20T05:13:46.277Z",
+  "generatedAt": "2026-08-20T05:26:07.987Z",
   "budget": {
     "maxInputTokens": 16000,
     "reservedOutputTokens": 4000,
@@ -48,10 +48,10 @@
         "reason": null
       },
       "direction": {
-        "characterCount": 16086,
+        "characterCount": 16568,
         "inputFingerprint": "1a768023ce07bd785ad0c663f3d385af162c5f6f5599db750d9cf586823ff768",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 5362,
+        "estimatedInputTokens": 5523,
         "reason": null
       },
       "analysisProviderCallCount": 0,
@@ -97,10 +97,10 @@
         "reason": null
       },
       "direction": {
-        "characterCount": 15543,
+        "characterCount": 16025,
         "inputFingerprint": "58bb7592eb68bc8c6fb5fa4db05831a028198f6b898a448880f604c1d8b7a159",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 5181,
+        "estimatedInputTokens": 5342,
         "reason": null
       },
       "analysisProviderCallCount": 0,

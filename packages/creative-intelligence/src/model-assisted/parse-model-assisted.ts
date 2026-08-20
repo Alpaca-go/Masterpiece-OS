@@ -47,7 +47,7 @@ function isStringArray(v: unknown): v is string[] {
   return Array.isArray(v) && v.every((x) => typeof x === 'string');
 }
 
-const ALLOWED_DIRECTION_FAMILIES: ReadonlySet<ModelAssistedDirectionFamily> = new Set<ModelAssistedDirectionFamily>([
+export const ALLOWED_DIRECTION_FAMILIES: readonly ModelAssistedDirectionFamily[] = [
   'structural-system',
   'relational-network',
   'narrative-sequence',
@@ -57,7 +57,8 @@ const ALLOWED_DIRECTION_FAMILIES: ReadonlySet<ModelAssistedDirectionFamily> = ne
   'image-led',
   'spatial-system',
   'model-assisted',
-]);
+];
+const ALLOWED_DIRECTION_FAMILIES_SET: ReadonlySet<ModelAssistedDirectionFamily> = new Set<ModelAssistedDirectionFamily>(ALLOWED_DIRECTION_FAMILIES);
 
 function parseTranslationHypothesis(raw: unknown, prefix: string): ModelAssistedConceptCandidate['translationHypothesis'] {
   if (!isObject(raw)) {
@@ -225,7 +226,7 @@ function parseDirection(raw: unknown, index: number): ModelAssistedCreativeDirec
     );
   }
   if (!isString(raw.directionFamily)
-    || !ALLOWED_DIRECTION_FAMILIES.has(raw.directionFamily as ModelAssistedDirectionFamily)) {
+    || !ALLOWED_DIRECTION_FAMILIES_SET.has(raw.directionFamily as ModelAssistedDirectionFamily)) {
     throw new ModelAssistedParseError(
       `${prefix}.directionFamily`,
       `directionFamily must be one of: ${Array.from(ALLOWED_DIRECTION_FAMILIES).join(', ')}`,

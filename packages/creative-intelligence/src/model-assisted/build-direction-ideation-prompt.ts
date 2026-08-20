@@ -13,6 +13,7 @@ import type { StrategicReasoningContext } from '../strategic-synthesis/compile-s
 import type { StrategicSynthesisArtifact } from '../strategic-synthesis/contracts.ts';
 import type { ModelAssistedConceptSet } from './contracts.ts';
 import { directionInputFingerprint } from '../strategic-synthesis/semantic-fingerprint.ts';
+import { ALLOWED_DIRECTION_FAMILIES } from './parse-model-assisted.ts';
 import {
   MODEL_ASSISTED_DIRECTION_SCHEMA_VERSION,
   MODEL_ASSISTED_FORBIDDEN_POSITIVE_AUTHORITIES,
@@ -125,7 +126,7 @@ export function buildDirectionIdeationPrompt(input: DirectionIdeationPromptInput
     'Produce a ModelAssistedDirectionSet containing:',
     '  0. sourceMap (strategicSynthesisRef: string, conceptSetRef: string, excludedAuthorities: string[])',
     '  1. directions (3-4 ModelAssistedCreativeDirection entries; each must contain:',
-    '     - id, title, directionFamily',
+    '     - id, title, directionFamily (MUST be one of the allowed kebab-case values below)',
     '     - creativeThesis, visualMechanism, systemHypothesis',
     '     - visualLanguage: compositionLogic, colorRelationship, typographyBehavior, graphicBehavior, imageBehavior, materialRelationship?, motionBehavior?',
     '     - crossMediaBehavior: brandVI?, editorial?, campaignPoster?, packaging?, space?, digitalUI?',
@@ -138,6 +139,10 @@ export function buildDirectionIdeationPrompt(input: DirectionIdeationPromptInput
     'sourceMap.strategicSynthesisRef MUST be the artifact ID of the Strategic Synthesis above.',
     'sourceMap.conceptSetRef MUST be the artifact ID of the Concept Set above.',
     'sourceMap.excludedAuthorities MUST list every authority excluded from positive creative source (typically: visualAsset.*, old_visual_style, old_VI, old_poster, old_packaging, old_spatial, style_reference, structure_reference, spatial_reference).',
+    '',
+    '# ALLOWED directionFamily VALUES (kebab-case; copy verbatim, do NOT Title-Case them)',
+    ALLOWED_DIRECTION_FAMILIES.map((f) => `  - ${f}`).join('\n'),
+    'These are the ONLY accepted values. The runtime parser will reject any other value (including Title-Case variants like "Structural System" or made-up names like "Information Architecture" / "Contextual System").',
     '',
     '# OUTPUT JSON SCHEMA',
     `schemaVersion must be exactly "${MODEL_ASSISTED_DIRECTION_SCHEMA_VERSION}".`,
