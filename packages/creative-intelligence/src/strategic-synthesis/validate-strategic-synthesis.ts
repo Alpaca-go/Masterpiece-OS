@@ -26,7 +26,8 @@ export type StrategicStructuralCode =
   | 'STR-05'
   | 'STR-06'
   | 'STR-07'
-  | 'STR-08';
+  | 'STR-08'
+  | 'STR-09';
 
 export interface StrategicStructuralIssue {
   code: StrategicStructuralCode;
@@ -164,6 +165,56 @@ export function validateStrategicSynthesisStructural(
       severity: 'block',
       detail: 'sourceMap.legacyVisualEvidenceExcluded must not be empty (positive authority audit trail)',
       where: 'artifact.sourceMap',
+    });
+  }
+
+  // CI-W1C.7.4-R2 PART D — planningClaimRefs structural check.
+  // The parser already enforces the string[] type; this is a
+  // belt-and-suspenders safety net for direct-construct paths.
+  for (const i of artifact.insights) {
+    if (!Array.isArray(i.planningClaimRefs) || i.planningClaimRefs.some((r) => typeof r !== 'string')) {
+      issues.push({
+        code: 'STR-09',
+        severity: 'block',
+        detail: `insights[${i.id}].planningClaimRefs must be a string array`,
+        where: `insights[${i.id}]`,
+      });
+    }
+  }
+  for (const t of artifact.tensions) {
+    if (!Array.isArray(t.planningClaimRefs) || t.planningClaimRefs.some((r) => typeof r !== 'string')) {
+      issues.push({
+        code: 'STR-09',
+        severity: 'block',
+        detail: `tensions[${t.id}].planningClaimRefs must be a string array`,
+        where: `tensions[${t.id}]`,
+      });
+    }
+  }
+  for (const o of artifact.opportunities) {
+    if (!Array.isArray(o.planningClaimRefs) || o.planningClaimRefs.some((r) => typeof r !== 'string')) {
+      issues.push({
+        code: 'STR-09',
+        severity: 'block',
+        detail: `opportunities[${o.id}].planningClaimRefs must be a string array`,
+        where: `opportunities[${o.id}]`,
+      });
+    }
+  }
+  if (!Array.isArray(artifact.projectUnderstanding.planningClaimRefs) || artifact.projectUnderstanding.planningClaimRefs.some((r) => typeof r !== 'string')) {
+    issues.push({
+      code: 'STR-09',
+      severity: 'block',
+      detail: 'projectUnderstanding.planningClaimRefs must be a string array',
+      where: 'projectUnderstanding',
+    });
+  }
+  if (!Array.isArray(artifact.sourceMap.planningClaims) || artifact.sourceMap.planningClaims.some((r) => typeof r !== 'string')) {
+    issues.push({
+      code: 'STR-09',
+      severity: 'block',
+      detail: 'sourceMap.planningClaims must be a string array',
+      where: 'sourceMap',
     });
   }
 

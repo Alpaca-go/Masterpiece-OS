@@ -46,6 +46,14 @@ export interface StrategicTension {
   factRefs: string[];
   needRefs: string[];
   evidenceRefs: string[];
+  /**
+   * CI-W1C.7.4-R2 PART B — planning strategic evidence claim IDs
+   * used as a positive authority for this tension. Each ref MUST
+   * resolve to an actual PlanningStrategicEvidence claimId in
+   * the runtime input. NEVER put planning claim IDs in factRefs
+   * / needRefs / evidenceRefs.
+   */
+  planningClaimRefs: string[];
 }
 
 export interface StrategicInsight {
@@ -57,6 +65,10 @@ export interface StrategicInsight {
   factRefs: string[];
   needRefs: string[];
   evidenceRefs: string[];
+  /**
+   * CI-W1C.7.4-R2 PART B — see StrategicTension.planningClaimRefs.
+   */
+  planningClaimRefs: string[];
 }
 
 export interface StrategicOpportunity {
@@ -68,6 +80,10 @@ export interface StrategicOpportunity {
   risk: string[];
   insightRefs: string[];
   factRefs: string[];
+  /**
+   * CI-W1C.7.4-R2 PART B — see StrategicTension.planningClaimRefs.
+   */
+  planningClaimRefs: string[];
 }
 
 export interface StrategicProjectUnderstanding {
@@ -80,6 +96,10 @@ export interface StrategicProjectUnderstanding {
   factRefs: string[];
   needRefs: string[];
   evidenceRefs: string[];
+  /**
+   * CI-W1C.7.4-R2 PART B — see StrategicTension.planningClaimRefs.
+   */
+  planningClaimRefs: string[];
 }
 
 export interface StrategicSynthesisArtifact {
@@ -118,12 +138,18 @@ export interface CreativeReasoningPromptSourceMap {
   needs: string[];
   evidence: string[];
   /**
+   * CI-W1C.7.4-R2 PART B — input-derived list of PlanningStrategicEvidence
+   * claim IDs the model is allowed to cite via planningClaimRefs.
+   *
+   * This list MUST be derived from the runtime input. The model MUST
+   * NOT self-authorize IDs that are not in this list. The grounding gate
+   * (SG-01) verifies every model-emitted *.planningClaimRefs resolves
+   * to an ID in this list AND in the actual runtime input.
+   */
+  planningClaims: string[];
+  /**
    * Always present and non-empty: the names of the source authorities
-   * that were **excluded** from positive creative authority. The
-   * grounding gate asserts this is non-empty and contains the spec
-   * minimum set (visualAsset.*, old visual style, old VI, old poster,
-   * old packaging, old spatial, style_reference, structure_reference,
-   * spatial_reference).
+   * that were **excluded** from positive creative authority.
    */
   legacyVisualEvidenceExcluded: string[];
 }
@@ -168,6 +194,7 @@ export const STRATEGIC_GROUNDING_GATE_CODES = [
   'SG-08',
   'SG-09',
   'SG-10',
+  'SG-11',
 ] as const;
 export type StrategicGroundingGateCode = typeof STRATEGIC_GROUNDING_GATE_CODES[number];
 
