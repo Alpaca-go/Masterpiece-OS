@@ -1,0 +1,254 @@
+{
+  "schemaVersion": "0.1",
+  "projectId": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+  "promptVersion": "ci-w1c.7-strategic-synthesis-v0.1",
+  "generatedAt": "2026-08-20T07:08:30.825Z",
+  "sourceMap": {
+    "planningTruth": [
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e",
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3",
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:user-lock-1",
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:user-lock-2",
+      "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+      "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+    ],
+    "userRequirements": [],
+    "lockedIdentity": [
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e",
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3",
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:user-lock-1",
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:user-lock-2",
+      "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+      "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+    ],
+    "prohibitedDirections": [],
+    "needs": [
+      "need:clarification:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:business.model:critical",
+      "need:identity:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical",
+      "need:preservation:visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e:critical",
+      "need:risk:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical",
+      "need:differentiation:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:brand.role:important"
+    ],
+    "evidence": [
+      "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand_name",
+      "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:industry",
+      "model:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:visual_understanding_core",
+      "model:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:pso_provenance"
+    ],
+    "legacyVisualEvidenceExcluded": [
+      "visualAsset.*",
+      "old_visual_style",
+      "old_VI",
+      "old_poster",
+      "old_packaging",
+      "old_spatial",
+      "style_reference",
+      "structure_reference",
+      "spatial_reference"
+    ]
+  },
+  "projectUnderstanding": {
+    "summary": "The project operates under strict preservation constraints where the core visual mark and output language are fixed. Creative direction must navigate unresolved ambiguity around the business model, industry context, and audience while maintaining absolute fidelity to locked assets.",
+    "coreChallenge": "Developing strategic differentiation and contextual relevance without modifying, interpreting, or altering any locked visual or identity assets.",
+    "transformationGoal": "Establish a modular, constraint-compliant creative architecture that protects asset integrity while allowing future strategic scaling once business context is clarified.",
+    "epistemicClass": "MODEL_INFERENCE",
+    "factRefs": [
+      "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3",
+      "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+      "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+    ],
+    "needRefs": [
+      "need:clarification:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:business.model:critical",
+      "need:identity:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical",
+      "need:preservation:visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e:critical",
+      "need:risk:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical",
+      "need:differentiation:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:brand.role:important"
+    ],
+    "evidenceRefs": [
+      "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand_name",
+      "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:industry",
+      "model:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:visual_understanding_core",
+      "model:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:pso_provenance"
+    ],
+    "brandRoleInterpretation": "The brand functions as an immutable anchor within an undefined commercial context, requiring peripheral systems to carry positioning weight.",
+    "audienceTension": "Audience expectations remain unconfirmed, necessitating a conservative, assumption-light approach that avoids premature category signaling."
+  },
+  "tensions": [
+    {
+      "id": "tension-i0",
+      "statement": "Rigid asset preservation conflicts with the imperative for contextual differentiation.",
+      "poleA": "Strict adherence to unmodified logo and locked asset parameters.",
+      "poleB": "Requirement to avoid generic industry clichés and establish unique market positioning.",
+      "whyItMatters": "Over-constraining creative execution without clarity risks producing undifferentiated outputs; strategic flexibility must originate from application frameworks rather than asset manipulation.",
+      "epistemicClass": "MODEL_INFERENCE",
+      "factRefs": [
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+      ],
+      "needRefs": [
+        "need:preservation:visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e:critical",
+        "need:differentiation:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:brand.role:important"
+      ],
+      "evidenceRefs": [
+        "model:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:visual_understanding_core"
+      ]
+    },
+    {
+      "id": "tension-i1",
+      "statement": "Unresolved business identity ambiguity clashes with fixed execution mandates.",
+      "poleA": "Unconfirmed audience, industry, and business model context.",
+      "poleB": "Locked visual parameters and mandatory Simplified Chinese output.",
+      "whyItMatters": "Premature creative assumptions risk misalignment; development must bracket uncertainty while honoring hard constraints.",
+      "epistemicClass": "MODEL_INFERENCE",
+      "factRefs": [
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ],
+      "needRefs": [
+        "need:clarification:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:business.model:critical",
+        "need:risk:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical"
+      ],
+      "evidenceRefs": [
+        "model:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:pso_provenance",
+        "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand_name",
+        "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:industry"
+      ]
+    },
+    {
+      "id": "tension-i2",
+      "statement": "Preservation mandates restrict traditional evolutionary design pathways.",
+      "poleA": "Absolute prohibition on altering, reinterpreting, or replacing core marks.",
+      "poleB": "Strategic expectation for brand progression and modern relevance.",
+      "whyItMatters": "Progression must occur through systemic application and strategic framing rather than core modification, demanding non-traditional creative leverage points.",
+      "epistemicClass": "MODEL_INFERENCE",
+      "factRefs": [
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ],
+      "needRefs": [
+        "need:identity:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical",
+        "need:preservation:visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e:critical"
+      ],
+      "evidenceRefs": [
+        "model:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:visual_understanding_core"
+      ]
+    }
+  ],
+  "insights": [
+    {
+      "id": "insight-i0",
+      "statement": "When visual anchors are immutable, strategic differentiation must shift from form to positioning architecture.",
+      "implication": "Creative development should focus on spatial, typographic, or contextual application systems that frame the locked mark without altering it.",
+      "whyThisProject": "Directly addresses the preservation mandate while enabling category differentiation despite locked assets.",
+      "epistemicClass": "MODEL_INFERENCE",
+      "factRefs": [
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ],
+      "needRefs": [
+        "need:preservation:visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e:critical",
+        "need:differentiation:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:brand.role:important"
+      ],
+      "evidenceRefs": [
+        "model:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:visual_understanding_core"
+      ]
+    },
+    {
+      "id": "insight-i1",
+      "statement": "Unresolved business model ambiguity requires a modular, assumption-light creative framework.",
+      "implication": "Outputs must be structured to adapt once identity and audience are confirmed, avoiding hard-coded industry tropes or premature categorization.",
+      "whyThisProject": "Aligns with the need to clarify business context while mitigating risk from undefined commercial parameters.",
+      "epistemicClass": "MODEL_INFERENCE",
+      "factRefs": [
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ],
+      "needRefs": [
+        "need:clarification:prompt_source_object:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:business.model:critical",
+        "need:risk:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical"
+      ],
+      "evidenceRefs": [
+        "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:industry",
+        "model:chatcmpl-a404babc-0b5b-97ab-be3f-8bfe805f09c9:pso_provenance"
+      ]
+    },
+    {
+      "id": "insight-i2",
+      "statement": "Language constraint and asset rigidity dictate a precision-first communication strategy.",
+      "implication": "Messaging hierarchy, semantic clarity, and Simplified Chinese typography must carry the differentiation load while visual assets remain strictly archival.",
+      "whyThisProject": "Leverages the fixed output language and asset lock as complementary constraints rather than limitations.",
+      "epistemicClass": "MODEL_INFERENCE",
+      "factRefs": [
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+      ],
+      "needRefs": [
+        "need:identity:project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand.name:critical",
+        "need:preservation:visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e:critical"
+      ],
+      "evidenceRefs": [
+        "project:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:brand_name",
+        "model:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:visual_understanding_core"
+      ]
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-i0",
+      "title": "Contextual Framing Systems",
+      "thesis": "Build visual ecosystems that place the locked asset in dynamic, category-defying environments.",
+      "strategicMechanism": "Use layout, negative space, and environmental graphics to create distinction without touching the core mark.",
+      "whyThisProject": "Respects absolute preservation mandates while actively addressing the need for market differentiation.",
+      "risk": [
+        "Framing elements may visually compete with the locked asset if hierarchy is poorly managed."
+      ],
+      "insightRefs": [
+        "insight-i0"
+      ],
+      "factRefs": [
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+      ]
+    },
+    {
+      "id": "opp-i1",
+      "title": "Modular Positioning Frameworks",
+      "thesis": "Develop flexible messaging and layout systems that remain valid regardless of final industry or audience confirmation.",
+      "strategicMechanism": "Deploy abstract strategic placeholders that snap into place once business context is clarified, preventing premature categorization.",
+      "whyThisProject": "Directly tackles identity ambiguity and mitigates risk from undefined commercial parameters while honoring locked constraints.",
+      "risk": [
+        "Perceived as too abstract or incomplete if business clarification is significantly delayed."
+      ],
+      "insightRefs": [
+        "insight-i1"
+      ],
+      "factRefs": [
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ]
+    },
+    {
+      "id": "opp-i2",
+      "title": "Precision-Led Linguistic Anchoring",
+      "thesis": "Elevate Simplified Chinese typography and copy strategy as the primary vehicle for brand voice and category positioning.",
+      "strategicMechanism": "Shift creative weight to language, layout hierarchy, and semantic clarity while keeping visual assets entirely untouched.",
+      "whyThisProject": "Transforms the fixed language constraint and asset rigidity into complementary strategic levers rather than limitations.",
+      "risk": [
+        "Over-reliance on textual hierarchy may not translate effectively to purely non-verbal or cross-cultural contexts."
+      ],
+      "insightRefs": [
+        "insight-i2"
+      ],
+      "factRefs": [
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ]
+    }
+  ],
+  "diagnostics": [],
+  "meta": {
+    "attempt": 1,
+    "provider": "dashscope",
+    "model": "qwen3.6-plus",
+    "modelCallCount": 1
+  }
+}

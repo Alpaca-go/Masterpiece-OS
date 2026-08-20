@@ -1,0 +1,190 @@
+{
+  "schemaVersion": "0.1",
+  "projectId": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+  "promptVersion": "ci-w1c.7-model-assisted-direction-v0.1",
+  "generatedAt": "2026-08-20T07:13:03.685Z",
+  "sourceMap": {
+    "strategicSynthesisRef": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+    "conceptSetRef": "a13d6c09-99f7-4ff9-b499-3b9f8a1df31b",
+    "excludedAuthorities": [
+      "visualAsset.*",
+      "old_visual_style",
+      "old_VI",
+      "old_poster",
+      "old_packaging",
+      "old_spatial",
+      "style_reference",
+      "structure_reference",
+      "spatial_reference",
+      "current_project_identity"
+    ]
+  },
+  "directions": [
+    {
+      "id": "direction-ma-0",
+      "title": "静场域·空间留白架构",
+      "directionFamily": "structural-system",
+      "creativeThesis": "以绝对静止的锁定标识为引力核心，构建基于严格数学比例的负空间排布系统。通过非对称切割与模块化边界容器生成视觉张力，使差异化完全脱离图形修改，转而依赖空间层级的精密控制。",
+      "visualMechanism": "1. 组织对象：版面负空间与视觉边界容器。2. 规则：强制遵循模数化网格与固定比例呼吸感，标识锚定于绝对坐标不得偏移。3. 变化：随媒介尺寸伸缩的负形绝对面积与动态切割线位置。4. 恒定量：标识核心落点、空间呼吸基准比率与底层网格骨架。5. 战略解答：将创意发力点从形变转移至场域控制，在不触碰锁定资产的前提下建立强烈的秩序感与品类区隔，化解无资产改动权困境。",
+      "systemHypothesis": "通过预设的空间拓扑规则与留白算法，系统可在未来任意商业场景中自动适配布局，无需重构底层视觉资产。",
+      "visualLanguage": {
+        "compositionLogic": "非对称网格分割，强制标识占据特定象限，其余区域由负空间与线性边界构成动态张力场。",
+        "colorRelationship": "极度克制的单色或双色体系，色彩仅用于标示信息区块的边界或权重，绝不干扰核心场域。",
+        "typographyBehavior": "无衬线中性字体严格对齐网格轴线，字重仅用于区分基础信息层级，不介入视觉装饰。",
+        "graphicBehavior": "仅使用极细结构线或几何留白切割面作为辅助图形，杜绝任何装饰性纹理或渐变叠加。",
+        "imageBehavior": "若需引入图像，必须经过严格的去色、裁切或几何化处理，使其完全服从空间网格的数学边界。",
+        "materialRelationship": "偏向高反差哑光材质或纯净结构面，强调物理空间的秩序感与留白深度。",
+        "motionBehavior": "元素位移严格沿网格轴线滑动，入场遵循呼吸感缓动曲线，避免自由漂浮或无序跳跃。"
+      },
+      "crossMediaBehavior": {
+        "brandVI": "核心规范仅定义空间网格比例与标识锚点规则，不规定死板背景。",
+        "editorial": "版式依赖大幅负空间分割，图文区块按参数化插槽严格落位。",
+        "campaignPoster": "以单点视觉重心与大面积环境留白制造剧场式凝视感，拒绝元素堆砌。",
+        "packaging": "表面结构按网格切分，不同面承载独立信息模块，标识固定于主视觉面中心轴。",
+        "space": "空间导视与陈列严格遵循地面或墙面的虚拟网格延伸，标识作为悬浮或固定锚点。",
+        "digitalUI": "界面布局以容器边界和留白呼吸率为核心，元素严格对齐基准线，确保跨端一致性。"
+      },
+      "whyThisProject": "直接回应资产绝对锁定与差异化需求的核心张力，通过空间架构的精密控制替代传统的图形演变路径。",
+      "differenceFromOtherDirections": "区别于依赖信息流组装的编辑系统与侧重文字节奏的排版系统，本方向纯粹以物理空间比例与负形张力作为唯一识别载体。",
+      "epistemicClass": "CREATIVE_HYPOTHESIS",
+      "conceptRefs": [
+        "concept-ma-0"
+      ],
+      "opportunityRefs": [
+        "opp-i0"
+      ],
+      "insightRefs": [
+        "insight-i0"
+      ],
+      "factRefs": [
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.logo"
+      ],
+      "strengths": [
+        "绝对保护核心资产法律与视觉完整性",
+        "空间系统天然适配多媒介扩展，无需二次开发",
+        "视觉层级极度清晰，规避低质装饰干扰"
+      ],
+      "risks": [
+        "留白控制不当易导致版面空洞或重心失衡",
+        "对执行精度与网格纪律要求极高，容错率极低"
+      ],
+      "mustNotBecome": [
+        "避免演变为空洞的极简主义或毫无信息的空白版面"
+      ]
+    },
+    {
+      "id": "direction-ma-1",
+      "title": "语境插槽·模块化叙事框架",
+      "directionFamily": "editorial-system",
+      "creativeThesis": "构建低假设、参数化的内容组装矩阵，在商业模型明确前维持抽象中立。将锁定资产严格限定为最终验证印章，使系统具备即插即用的业务适配力与抗风险弹性。",
+      "visualMechanism": "1. 组织对象：信息流模块与动态内容区块。2. 规则：基于内容优先标识后置的参数化插槽协议，按数据密度自动分配权重。3. 变化：内容插槽的尺寸比例、排列流向与层级高亮随具体业务参数实时重组。4. 恒定量：基础网格对齐轴、标识的终端签章位置、阅读动线的底层逻辑。5. 战略解答：通过延迟定调与模块化组装，有效化解未知商业语境下的过早分类风险，确保系统在中性状态下高效运转。",
+      "systemHypothesis": "将视觉识别解耦为可独立替换的数据容器，业务参数一旦确认，即可通过规则引擎自动生成完整视觉输出。",
+      "visualLanguage": {
+        "compositionLogic": "基于可伸缩网格的模块化拼贴逻辑，区块大小由内容优先级决定，整体呈现动态平衡的数据流形态。",
+        "colorRelationship": "以功能性色彩编码区分信息类型，背景保持中性灰阶，通过色彩对比强化内容区块的跳动感。",
+        "typographyBehavior": "等宽或高可读无衬线字体建立清晰的数据层级，字号与字重严格跟随信息权重参数变化。",
+        "graphicBehavior": "使用标准几何容器、分割线或状态指示灯作为视觉锚点，杜绝情感化插画或复杂图形干扰。",
+        "imageBehavior": "图像被视为可裁剪的数据容器，必须严格遵循区块边界，支持统一滤镜以维持系统视觉中性。",
+        "materialRelationship": "倾向于标准化工程材质或数字界面基底，强调功能性与可替换性。",
+        "motionBehavior": "元素过渡采用线性数据加载动效，区块入场遵循网格吸附与权重展开逻辑。"
+      },
+      "crossMediaBehavior": {
+        "brandVI": "规范定义插槽尺寸矩阵与对齐规则，允许内容在框架内自由流动。",
+        "editorial": "信息图与长图文采用流式排版，关键数据块通过模块化组合实现视觉聚焦。",
+        "campaignPoster": "核心信息作为最大权重插槽置顶，辅助信息按逻辑链向下延伸，标识稳固定位于落版区。",
+        "packaging": "包装版面划分为独立信息模块，正面聚焦核心卖点插槽，侧面提供参数化说明书。",
+        "space": "导视牌与展示墙采用标准化插槽面板，内容更新仅替换内部模块，保持结构不变。",
+        "digitalUI": "组件库严格遵循插槽协议，响应式布局通过权重重排实现无缝适配。"
+      },
+      "whyThisProject": "针对商业身份与受众未明确的现状，提供延迟定调的弹性系统，避免视觉设计被错误的战略假设绑架。",
+      "differenceFromOtherDirections": "不同于追求空间张力的静态场域或依赖文字节奏的排版系统，本方向以内容逻辑与参数化组装为核心，强调功能性与适应性。",
+      "epistemicClass": "CREATIVE_HYPOTHESIS",
+      "conceptRefs": [
+        "concept-ma-1"
+      ],
+      "opportunityRefs": [
+        "opp-i1"
+      ],
+      "insightRefs": [
+        "insight-i1"
+      ],
+      "factRefs": [
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:2409032d-af08-4a34-a5bf-10d0ede9a35e",
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts"
+      ],
+      "strengths": [
+        "高度规避商业方向未定时的战略与品牌风险",
+        "系统具备极强的后期扩展性与无缝切换能力",
+        "保持创意中性，不绑架未来业务决策"
+      ],
+      "risks": [
+        "若业务确认周期过长，系统易被感知为未完成或过于抽象",
+        "插槽逻辑对后期内容适配的数据规范性要求严苛"
+      ],
+      "mustNotBecome": [
+        "避免沦为毫无情感连接的机械数据表格或僵化的信息图表模板"
+      ]
+    },
+    {
+      "id": "direction-ma-2",
+      "title": "字阵引航·语义优先排版系统",
+      "directionFamily": "typographic-system",
+      "creativeThesis": "将品牌沟通的视觉权重全面转移至简体中文的排版精度与语义层级。以专属字体缩放阶梯与网格吸附规则构建识别骨架，将锁定资产严格降级为终端认证签名。",
+      "visualMechanism": "1. 组织对象：简体中文字符阵列、字间距与信息密度场。2. 规则：建立专属排版缩放比例与网格吸附算法，以文本层级替代图形装饰。3. 变化：字阵的裁切边界、高亮词组的色彩权重、信息区块的疏密节奏。4. 恒定量：核心中文字族、基准排版网格、标识的固定终端签名位置。5. 战略解答：将强制性的中文输出约束转化为核心创意杠杆，以极高的语义清晰度与排版纪律建立专业权威，彻底摆脱对可变视觉图形的依赖。",
+      "systemHypothesis": "视觉识别由字符的密度与节奏驱动，系统通过预设的排版规则库自动生成各级别物料，标识仅作为最终确权符号出现。",
+      "visualLanguage": {
+        "compositionLogic": "以中文文本块为绝对视觉主体，通过字距压缩、行高调整与段落错位构建强烈的几何节奏与信息密度。",
+        "colorRelationship": "高对比度黑白主调，辅以单一战略强调色用于标记核心语义或关键数据点，色彩服务于阅读流。",
+        "typographyBehavior": "定制级中文字体应用严格遵循网格系统，字号阶梯基于数学倍率，字重仅用于区分逻辑层级。",
+        "graphicBehavior": "完全摒弃传统装饰图形，辅助元素退化为极简下划线、对齐参考线或语义高亮色块。",
+        "imageBehavior": "图像使用极度克制，若出现则作为文本的视觉注脚，采用统一裁切比例与低饱和度处理以服从字阵。",
+        "materialRelationship": "倾向于纸张原色、高质感印刷或哑光屏幕界面，突出文字的物理触感与数字清晰度。",
+        "motionBehavior": "动效聚焦于文字高亮切换与行级展开，避免图像缩放或背景漫游，保持信息流的绝对聚焦。"
+      },
+      "crossMediaBehavior": {
+        "brandVI": "核心规范聚焦字体规范、网格系统与语义层级定义，弱化图形元素。",
+        "editorial": "长图文与白皮书采用杂志级排版逻辑，通过字阵疏密对比制造阅读呼吸感。",
+        "campaignPoster": "超大字号标语占据视觉主导，形成强烈的语义冲击，标识以小比例印章形式落于底部。",
+        "packaging": "包装表面以产品参数与核心卖点字阵为主要视觉纹理，标识作为合规落版固定于角落。",
+        "space": "空间墙面转化为巨型排版画布，导视文字按严格比例放大，营造沉浸式信息场。",
+        "digitalUI": "界面以文本可读性为第一优先级，按钮与卡片严格对齐文字基线，动效聚焦于文字高亮切换。"
+      },
+      "whyThisProject": "将输出语言固定与资产不可改两项限制转化为协同杠杆，利用中文排版美学实现低成本、高权威的差异化。",
+      "differenceFromOtherDirections": "区别于空间留白的结构系统与参数插槽的编辑系统，本方向以文字本身的形态、密度与语义节奏作为唯一且最强的视觉驱动力。",
+      "epistemicClass": "CREATIVE_HYPOTHESIS",
+      "conceptRefs": [
+        "concept-ma-2"
+      ],
+      "opportunityRefs": [
+        "opp-i2"
+      ],
+      "insightRefs": [
+        "insight-i2"
+      ],
+      "factRefs": [
+        "project_record:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.facts",
+        "visual_understanding_core:a13d6c09-99f7-4ff9-b499-3b9f8a1df31b:locked.assets:brand-name-a29bc2c550f3"
+      ],
+      "strengths": [
+        "最大化利用语言约束建立独特且合规的品牌识别",
+        "信息传达效率极高，天然适配严肃商业语境",
+        "完全规避图形修改风险与潜在版权争议"
+      ],
+      "risks": [
+        "高度依赖中文排版功力，跨文化或非文本媒介适应性受限",
+        "若节奏把控不当易显枯燥，需精细调控文字张力"
+      ],
+      "mustNotBecome": [
+        "避免退化为杂乱无章的纯文本堆砌或缺乏层级感的说明书排版"
+      ]
+    }
+  ],
+  "diagnostics": [],
+  "meta": {
+    "attempt": 1,
+    "provider": "dashscope",
+    "model": "qwen3.6-plus",
+    "modelCallCount": 1
+  }
+}
