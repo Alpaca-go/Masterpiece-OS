@@ -31,3 +31,4 @@ export * from './planning-strategic-evidence.ts';
 export * from './planning-source-registration.ts';
 export * from './build-planning-strategic-evidence.ts';
 export * from './epistemic-routing.ts';
+export * from './epistemic-classifier.ts';

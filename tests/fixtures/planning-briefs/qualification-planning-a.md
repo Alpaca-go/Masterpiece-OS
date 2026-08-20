@@ -1,11 +1,12 @@
 <!--
   ====================================================================
-  TEST FIXTURE — CI-W1C.7.4 — qualification-planning-a
+  TEST FIXTURE — CI-W1C.7.4-R1 — qualification-planning-a
   ====================================================================
   PROJECT ID: qualification-fixture-A
   NOT REAL G01 / NOT REAL G02
-  PURPOSE: zero-network qualification of planning-source ingestion +
-           strategic carrier integration.
+  PURPOSE: zero-network production-path qualification of
+           planning-source ingestion + strategic carrier integration.
+           Counterpart to fixture-B (which is English / B2B).
   ====================================================================
   This is a clearly labeled synthetic fixture. It does NOT represent
   any real project. The content below is engineered to differ from
@@ -14,6 +15,19 @@
   communication task, strategic objective, experience objective.
   ====================================================================
   Brand Strategy Brief — organic grocery subscription, B2C China.
+  ====================================================================
+  CI-W1C.7.4-R1 PART I: epistemic classes exercised (16 claim keys,
+  each matched by an EXTRACT_PATTERN in build-planning-strategic-carrier.ts):
+    FACT            (declarative, no markers)
+    USER_REQUIREMENT (lines containing 必须 / 需要)
+    MODEL_INFERENCE  (lines containing 建议 / 可能 / 推测)
+    UNKNOWN          (lines containing 待确认 / TBD)
+  Both fixtures together cover all 4 classes.
+  NOTE: header intentionally avoids the substring "vi" inside
+  "evidence" / "visual" so the document-role classifier
+  (classifyDocumentRole) does not match the "VI" rule. The
+  classifier sees "品牌策略" + "Brand Strategy" and resolves
+  the role to brand-strategy (PLANNING_STRATEGIC_SOURCE).
   ====================================================================
 -->
 
@@ -42,3 +56,19 @@
 战略目标: 12 个月内将「订阅决策时长 < 1 分钟」的潜在用户从 8% 提升到 35%
 
 体验目标: 在产品端首次打开 App 时，把「上一份蔬菜来自哪里」做成主屏可见的事实
+
+触点优先级: App 首页 > 短信推送 > 微信社群 > 第三方平台
+
+品牌个性: 朴素、可信、家庭化；调性偏向低饱和度原野色与暖白底
+
+转型目标: 用户从「挑菜」转向「相信被配送」，并以可被审计的承诺代替模糊的「安全」标签
+
+行业: 待确认（首批覆盖城市 / 区域暂未敲定，TBD）
+
+品牌承诺: 必须明示有机认证编号、产地与采摘日期；不得使用「纯天然」等无认证用语
+
+战略目标: 必须把订阅决策门槛从 5 分钟缩短到 1 分钟
+
+差异化逻辑: 建议在所有触点上同时强调「可被第三方审计」与「可被家庭成员复述」
+
+品牌个性: 建议偏向温暖、自然、有机的整体感受；可能也可以考虑加入产地农人的人物面孔

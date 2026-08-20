@@ -9,11 +9,17 @@
  * No model call. No raw text in the artifact. Only normalized
  * claims with source refs + confidence + chunk refs.
  *
+ * CI-W1C.7.4-R1 PART F — epistemic class is no longer hardcoded
+ * per pattern. Each claim is classified by
+ * `classifyPlanningClaimEpistemicClass` based on the value +
+ * line text, with conservative precedence:
+ *   UNKNOWN > USER_REQUIREMENT > MODEL_INFERENCE > FACT.
+ *
  * Claim extraction (CI-W1C.7.4 minimal heuristic):
  *  - Look for patterns like `品牌定位: ...` / `行业: ...` /
  *    `brand_positioning: ...` / `industry: ...` etc.
  *  - Only match against PLANNING_CLAIM_KEYS.
- *  - Default epistemicClass = FACT (explicit statement in brief).
+ *  - Per-claim epistemic class is classifier-driven (PART F).
  *  - Default confidence = 0.7 (planning-brief well-formed).
  *
  * For CI-W1C.7.5+ a real claim-extraction model can replace this
@@ -32,7 +38,6 @@ import {
 } from './planning-source-registration.ts';
 import {
   type PlanningClaimKey,
-  type PlanningEpistemicClass,
   type PlanningSourceDocumentRef,
   type PlanningStrategicClaim,
   type PlanningStrategicEvidenceArtifact,
@@ -43,6 +48,7 @@ import {
   mapRoleToSourceRole,
   planningEvidenceFingerprint
 } from './planning-strategic-evidence.ts';
+import { classifyPlanningClaimEpistemicClass } from './epistemic-classifier.ts';
 import {
   classifyDocumentRole,
   prepareDocumentSet,
@@ -61,9 +67,7 @@ interface ExtractPattern {
   key: PlanningClaimKey;
   /** Match either Chinese or English label, case-insensitive. */
   patterns: RegExp[];
-  /** Epistemic class to assign. */
-  epistemicClass: PlanningEpistemicClass;
-  /** Default confidence. */
+  /** Default confidence. Epistemic class is classifier-driven (PART F). */
   defaultConfidence: number;
 }
 
@@ -71,24 +75,28 @@ interface ExtractPattern {
  * Extraction patterns for the 16 PLANNING_CLAIM_KEYS.
  * Each pattern matches a label followed by a value (until end-of-line
  * or a known terminator). Order matters: more specific patterns first.
+ *
+ * CI-W1C.7.4-R1: epistemicClass is no longer hardcoded here. The
+ * classifier (`epistemic-classifier.ts`) reads the value + line
+ * text and assigns the class. Default confidence stays per-key.
  */
 const EXTRACT_PATTERNS: ExtractPattern[] = [
-  { key: 'brand_positioning', patterns: [/^\s*(?:品牌定位|brand\s*positioning|positioning)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.7 },
-  { key: 'brand_role', patterns: [/^\s*(?:品牌角色|品牌业务角色|brand\s*role)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.7 },
-  { key: 'industry', patterns: [/^\s*(?:行业|industry)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.8 },
-  { key: 'business_model', patterns: [/^\s*(?:业务模式|商业模式|business\s*model)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.7 },
-  { key: 'product_service', patterns: [/^\s*(?:产品|服务|product\s*(?:or|and|&)\s*service|product|service)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.7 },
-  { key: 'target_audience', patterns: [/^\s*(?:目标客群|目标用户|受众|target\s*audience|audience)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.7 },
-  { key: 'audience_problem', patterns: [/^\s*(?:客群痛点|受众痛点|audience\s*problem|user\s*problem)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'brand_promise', patterns: [/^\s*(?:品牌承诺|价值主张|brand\s*promise|value\s*proposition)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'competitive_context', patterns: [/^\s*(?:竞争框架|竞争环境|竞品|competitive\s*context|competition)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'differentiation_logic', patterns: [/^\s*(?:差异化逻辑|差异化|differentiation\s*logic|differentiation)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'communication_task', patterns: [/^\s*(?:传播任务|沟通任务|communication\s*task)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'strategic_objective', patterns: [/^\s*(?:战略目标|商业目标|strategic\s*objective|business\s*objective)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.7 },
-  { key: 'experience_objective', patterns: [/^\s*(?:体验目标|experience\s*objective)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'transformation_objective', patterns: [/^\s*(?:转型目标|变革目标|transformation\s*objective)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'touchpoint_priority', patterns: [/^\s*(?:触点优先级|触点|touchpoint\s*priority|touchpoints?)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 },
-  { key: 'brand_personality', patterns: [/^\s*(?:品牌个性|品牌人格|brand\s*personality|personality)\s*[:：]\s*(.+?)\s*$/imu], epistemicClass: 'FACT', defaultConfidence: 0.6 }
+  { key: 'brand_positioning', patterns: [/^\s*(?:品牌定位|brand\s*positioning|positioning)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.7 },
+  { key: 'brand_role', patterns: [/^\s*(?:品牌角色|品牌业务角色|brand\s*role)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.7 },
+  { key: 'industry', patterns: [/^\s*(?:行业|industry)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.8 },
+  { key: 'business_model', patterns: [/^\s*(?:业务模式|商业模式|business\s*model)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.7 },
+  { key: 'product_service', patterns: [/^\s*(?:产品|服务|product\s*(?:or|and|&)\s*service|product|service)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.7 },
+  { key: 'target_audience', patterns: [/^\s*(?:目标客群|目标用户|受众|target\s*audience|audience)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.7 },
+  { key: 'audience_problem', patterns: [/^\s*(?:客群痛点|受众痛点|audience\s*problem|user\s*problem)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'brand_promise', patterns: [/^\s*(?:品牌承诺|价值主张|brand\s*promise|value\s*proposition)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'competitive_context', patterns: [/^\s*(?:竞争框架|竞争环境|竞品|competitive\s*context|competition)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'differentiation_logic', patterns: [/^\s*(?:差异化逻辑|差异化|differentiation\s*logic|differentiation)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'communication_task', patterns: [/^\s*(?:传播任务|沟通任务|communication\s*task)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'strategic_objective', patterns: [/^\s*(?:战略目标|商业目标|strategic\s*objective|business\s*objective)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.7 },
+  { key: 'experience_objective', patterns: [/^\s*(?:体验目标|experience\s*objective)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'transformation_objective', patterns: [/^\s*(?:转型目标|变革目标|transformation\s*objective)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'touchpoint_priority', patterns: [/^\s*(?:触点优先级|触点|touchpoint\s*priority|touchpoints?)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 },
+  { key: 'brand_personality', patterns: [/^\s*(?:品牌个性|品牌人格|brand\s*personality|personality)\s*[:：]\s*(.+?)\s*$/imu], defaultConfidence: 0.6 }
 ];
 
 /**
@@ -104,21 +112,31 @@ async function sha256(value: string): Promise<string> {
  * Returns all claims whose line matches a recognized pattern.
  * Order of iteration: lines (top-down) × patterns (declared order).
  * First-seen wins for dedupe at the artifact level.
+ *
+ * CI-W1C.7.4-R1 PART F: epistemic class is now derived by the
+ * classifier (value + line text). Hardcoded per-pattern FACT is gone.
  */
 async function extractClaimsFromChunk(
   text: string,
   sourceDocumentId: string,
-  chunkId: string
+  chunkId: string,
+  documentRole: string
 ): Promise<PlanningStrategicClaim[]> {
   const claims: PlanningStrategicClaim[] = [];
   for (const line of text.split(/\r?\n/)) {
-    for (const { key, patterns, epistemicClass, defaultConfidence } of EXTRACT_PATTERNS) {
+    for (const { key, patterns, defaultConfidence } of EXTRACT_PATTERNS) {
       for (const pattern of patterns) {
         const match = pattern.exec(line);
         if (match && match[1]) {
           const value = String(match[1]).trim();
           if (!value) continue;
           const valueHash = await sha256(value);
+          // PART F: classifier-driven epistemic class.
+          const epistemicClass = classifyPlanningClaimEpistemicClass({
+            value,
+            lineText: line,
+            documentRole
+          });
           claims.push({
             claimId: buildClaimId(sourceDocumentId, key, valueHash),
             key,
@@ -230,7 +248,7 @@ export async function buildPlanningStrategicEvidenceArtifact(
     for (const chunk of documentSet.chunks) {
       // Only process chunks from this document.
       if (chunk.sourceId !== brief.sourceId) continue;
-      const chunkClaims = await extractClaimsFromChunk(chunk.text, sourceDocumentId, chunk.chunkId);
+      const chunkClaims = await extractClaimsFromChunk(chunk.text, sourceDocumentId, chunk.chunkId, classification.role);
       for (const claim of chunkClaims) {
         // Dedupe by (key + value + sourceDocumentId). First-seen wins.
         const dedupeKey = `${claim.key}::${claim.value}::${claim.sourceDocumentId}`;
