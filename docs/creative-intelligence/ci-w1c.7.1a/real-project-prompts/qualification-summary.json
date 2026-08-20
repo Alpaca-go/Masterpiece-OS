@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-20T05:26:07.987Z",
+  "generatedAt": "2026-08-20T05:31:43.711Z",
   "budget": {
     "maxInputTokens": 16000,
     "reservedOutputTokens": 4000,
@@ -41,17 +41,17 @@
         "reason": null
       },
       "concept": {
-        "characterCount": 12419,
+        "characterCount": 12991,
         "inputFingerprint": "3d5d344e21fbfddd85478e3ce28434599fb8ad67c8f890471340375d2527bffe",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 4140,
+        "estimatedInputTokens": 4331,
         "reason": null
       },
       "direction": {
-        "characterCount": 16568,
+        "characterCount": 17218,
         "inputFingerprint": "1a768023ce07bd785ad0c663f3d385af162c5f6f5599db750d9cf586823ff768",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 5523,
+        "estimatedInputTokens": 5740,
         "reason": null
       },
       "analysisProviderCallCount": 0,
@@ -90,17 +90,17 @@
         "reason": null
       },
       "concept": {
-        "characterCount": 11876,
+        "characterCount": 12448,
         "inputFingerprint": "a9d88c3a19bf24899ded657abde0a6fbd3f8ae173a025aeb429ac3d1ff621663",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 3959,
+        "estimatedInputTokens": 4150,
         "reason": null
       },
       "direction": {
-        "characterCount": 16025,
+        "characterCount": 16675,
         "inputFingerprint": "58bb7592eb68bc8c6fb5fa4db05831a028198f6b898a448880f604c1d8b7a159",
         "budgetStatus": "PASS",
-        "estimatedInputTokens": 5342,
+        "estimatedInputTokens": 5559,
         "reason": null
       },
       "analysisProviderCallCount": 0,
