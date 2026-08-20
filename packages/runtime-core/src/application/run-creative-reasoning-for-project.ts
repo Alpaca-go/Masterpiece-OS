@@ -178,8 +178,16 @@ export async function runCreativeReasoningForProject(
   if (!_createService) {
     _createService = (await import('./creative-reasoning-service.ts')).createCreativeReasoningService;
   }
+  // CI-W1C.7.4-R2.1 PART G — when the caller supplies a custom
+  // reasonerFactory + readCredentials (e.g. the planning-aware
+  // test reasoner), we MUST forward them as service `deps` so
+  // the service's `runStage` enters the live reasoner path
+  // (it checks `deps.reasonerFactory` / `deps.readCredentials`,
+  // not the run input).
   const service = _createService({
-    outputRoot: deps.outputRoot
+    outputRoot: deps.outputRoot,
+    ...(input.reasonerFactory ? { reasonerFactory: input.reasonerFactory } : {}),
+    ...(input.readCredentials ? { readCredentials: input.readCredentials } : {})
   });
 
   const serviceInput: CreativeReasoningInput = {
@@ -194,8 +202,6 @@ export async function runCreativeReasoningForProject(
     planningStrategicEvidence,
     ...(input.analysisProfileId ? { analysisProfileId: input.analysisProfileId } : {}),
     useMock: input.useMock ?? true,
-    ...(input.reasonerFactory ? { reasonerFactory: input.reasonerFactory } : {}),
-    ...(input.readCredentials ? { readCredentials: input.readCredentials } : {}),
     ...(input.qualificationBudget ? { qualificationBudget: input.qualificationBudget } : {})
   };
   return service.run(serviceInput);
