@@ -71,6 +71,9 @@ const SYSTEM_MESSAGE = [
   'You will receive authoritative project facts, locked rules, prohibited directions, a need skeleton, evidence summaries, and (CI-W1C.7.4) planning strategic evidence from a registered planning brief.',
   'You MUST NOT use legacy visual evidence (visualAsset.* / old VI / old poster / old packaging / old spatial / style_reference / structure_reference / spatial_reference) as positive creative authority.',
   'Planning strategic evidence is a positive authority: cite claims by id and treat them as the strongest signal of project-specific planning intent. Preserve the claim epistemic class as written; do not promote USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN to FACT.',
+  // CI-W1C.7.4-R2 PART C — planning claim IDs MUST go in
+  // `planningClaimRefs`. NEVER in factRefs / needRefs / evidenceRefs.
+  'Planning claim IDs MUST be cited in planningClaimRefs (projectUnderstanding / tensions / insights / opportunities). Do NOT put planning claim IDs in factRefs / needRefs / evidenceRefs.',
   'Output the strict JSON for StrategicSynthesisArtifact with the exact schemaVersion ' + STRATEGIC_SYNTHESIS_SCHEMA_VERSION + '.',
 ].join('\n');
 
@@ -85,6 +88,11 @@ const EPISTEMIC_RULES = [
   'Unknown information remains unknown.',
   'Every Insight must have at least 1 factRef and 1 needRef.',
   'Every Opportunity must have at least 1 insightRef.',
+  // CI-W1C.7.4-R2 PART C — required output shape for the planning
+  // ref domain. The four element types each have a planningClaimRefs
+  // field that is mandatory (use [] when no planning input).
+  'projectUnderstanding.planningClaimRefs, tensions[*].planningClaimRefs, insights[*].planningClaimRefs, opportunities[*].planningClaimRefs MUST be string[] (use [] when no planning input).',
+  'When planning input is present, projectUnderstanding.planningClaimRefs MUST be non-empty AND at least 1 tension or insight MUST cite a planningClaimRef.',
 ].join('\n');
 
 function safeFact(f: { id: string; key?: string; value?: unknown; authority?: string; sourceRefs?: unknown }): string {
@@ -219,14 +227,15 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     '',
     '# TASK',
     'Produce a StrategicSynthesisArtifact containing:',
-    '  0. sourceMap (planningTruth[], userRequirements[], lockedIdentity[], prohibitedDirections[], needs[], evidence[], legacyVisualEvidenceExcluded[])',
-    '  1. projectUnderstanding (summary, coreChallenge, transformationGoal, brandRoleInterpretation?, audienceTension?, epistemicClass=MODEL_INFERENCE, factRefs, needRefs, evidenceRefs)',
-    '  2. tensions (2-5; statement, poleA, poleB, whyItMatters, epistemicClass=MODEL_INFERENCE, factRefs, needRefs, evidenceRefs) — every tension must have a one-sentence `statement` summarizing the tension in addition to poleA/poleB',
-    '  3. insights (3-6; statement, implication, whyThisProject, epistemicClass=MODEL_INFERENCE, factRefs, needRefs, evidenceRefs)',
-    '  4. opportunities (3-5; title, thesis, strategicMechanism, whyThisProject, risk, insightRefs, factRefs) — every opportunity must have a `title` in addition to thesis; opportunities do NOT need an epistemicClass field (per schema); they are derived from the synthesis.',
+    '  0. sourceMap (planningTruth[], userRequirements[], lockedIdentity[], prohibitedDirections[], needs[], evidence[], planningClaims[], legacyVisualEvidenceExcluded[])',
+    '  1. projectUnderstanding (summary, coreChallenge, transformationGoal, brandRoleInterpretation?, audienceTension?, epistemicClass=MODEL_INFERENCE, factRefs, needRefs, evidenceRefs, planningClaimRefs)',
+    '  2. tensions (2-5; statement, poleA, poleB, whyItMatters, epistemicClass=MODEL_INFERENCE, factRefs, needRefs, evidenceRefs, planningClaimRefs) — every tension must have a one-sentence `statement` summarizing the tension in addition to poleA/poleB',
+    '  3. insights (3-6; statement, implication, whyThisProject, epistemicClass=MODEL_INFERENCE, factRefs, needRefs, evidenceRefs, planningClaimRefs)',
+    '  4. opportunities (3-5; title, thesis, strategicMechanism, whyThisProject, risk, insightRefs, factRefs, planningClaimRefs) — every opportunity must have a `title` in addition to thesis; opportunities do NOT need an epistemicClass field (per schema); they are derived from the synthesis.',
     '  5. diagnostics (string[]; optional, can be empty)',
     '',
     'sourceMap.legacyVisualEvidenceExcluded MUST be non-empty and MUST contain every one of these tokens (this is an audit-trail requirement, not a suggestion): visualAsset.*, old_visual_style, old_VI, old_poster, old_packaging, old_spatial, style_reference, structure_reference, spatial_reference. Copy them verbatim into the array.',
+    'sourceMap.planningClaims MUST mirror the SOURCE TRACE IDS planningClaims list above. It is the audit-trail copy of the runtime input. The runtime will re-validate every *.planningClaimRefs against the runtime input — model-emitted values are NOT authority.',
     '',
     '# ID ASSIGNMENT (deterministic; you may omit the id field on each item)',
     'When you do not provide an explicit `id` on a tension / insight / opportunity, the runtime parser auto-assigns one in declaration order:',
@@ -241,13 +250,14 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     'projectId must equal the projectId above.',
     'All epistemicClass fields must be exactly "MODEL_INFERENCE".',
     'All factRefs / needRefs / evidenceRefs must resolve into the SOURCE TRACE IDS above.',
+    'All *.planningClaimRefs MUST be elements of the planningClaims list in SOURCE TRACE IDS. NEVER put planning claim IDs in factRefs / needRefs / evidenceRefs.',
     '',
     '# REQUIRED SHAPE — every field below MUST appear in the output',
     'Use this exact field set. Do not omit any field; the runtime parser will reject incomplete objects.',
     '',
-    'tension = { statement, poleA, poleB, whyItMatters, epistemicClass: "MODEL_INFERENCE", factRefs[], needRefs[], evidenceRefs[] }',
-    'insight = { statement, implication, whyThisProject, epistemicClass: "MODEL_INFERENCE", factRefs[], needRefs[], evidenceRefs[] }',
-    'opportunity = { title, thesis, strategicMechanism, whyThisProject, risk[], insightRefs[], factRefs[] }',
+    'tension = { statement, poleA, poleB, whyItMatters, epistemicClass: "MODEL_INFERENCE", factRefs[], needRefs[], evidenceRefs[], planningClaimRefs[] }',
+    'insight = { statement, implication, whyThisProject, epistemicClass: "MODEL_INFERENCE", factRefs[], needRefs[], evidenceRefs[], planningClaimRefs[] }',
+    'opportunity = { title, thesis, strategicMechanism, whyThisProject, risk[], insightRefs[], factRefs[], planningClaimRefs[] }',
     '',
     '# EPISTEMIC RULES',
     EPISTEMIC_RULES,

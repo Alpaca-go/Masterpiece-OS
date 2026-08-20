@@ -74,6 +74,13 @@ function parseProjectUnderstanding(raw: unknown, fallbackIndex: number): Strateg
       'projectUnderstanding must have summary/coreChallenge/transformationGoal strings',
     );
   }
+  // CI-W1C.7.4-R2 PART D — planningClaimRefs MUST be a string[].
+  if (!isStringArray(raw.planningClaimRefs)) {
+    throw new StrategicSynthesisParseError(
+      'PARSE_PLANNING_CLAIM_REFS',
+      'projectUnderstanding.planningClaimRefs must be a string array (use [] when no planning input)',
+    );
+  }
   const result: StrategicProjectUnderstanding = {
     summary: raw.summary,
     coreChallenge: raw.coreChallenge,
@@ -82,6 +89,7 @@ function parseProjectUnderstanding(raw: unknown, fallbackIndex: number): Strateg
     factRefs: isStringArray(raw.factRefs) ? raw.factRefs : [],
     needRefs: isStringArray(raw.needRefs) ? raw.needRefs : [],
     evidenceRefs: isStringArray(raw.evidenceRefs) ? raw.evidenceRefs : [],
+    planningClaimRefs: raw.planningClaimRefs,
   };
   if (isString(raw.brandRoleInterpretation)) {
     result.brandRoleInterpretation = raw.brandRoleInterpretation;
@@ -112,6 +120,13 @@ function parseTension(raw: unknown, index: number): StrategicTension {
       `tensions[${index}] must have statement/poleA/poleB/whyItMatters strings`,
     );
   }
+  // CI-W1C.7.4-R2 PART D — planningClaimRefs MUST be a string[].
+  if (!isStringArray(raw.planningClaimRefs)) {
+    throw new StrategicSynthesisParseError(
+      'PARSE_PLANNING_CLAIM_REFS',
+      `tensions[${index}].planningClaimRefs must be a string array (use [] when no planning input)`,
+    );
+  }
   return {
     id: parseId('tension', raw.id, `i${index}`),
     statement: raw.statement,
@@ -122,6 +137,7 @@ function parseTension(raw: unknown, index: number): StrategicTension {
     factRefs: isStringArray(raw.factRefs) ? raw.factRefs : [],
     needRefs: isStringArray(raw.needRefs) ? raw.needRefs : [],
     evidenceRefs: isStringArray(raw.evidenceRefs) ? raw.evidenceRefs : [],
+    planningClaimRefs: raw.planningClaimRefs,
   };
 }
 
@@ -144,6 +160,13 @@ function parseInsight(raw: unknown, index: number): StrategicInsight {
       `insights[${index}] must have statement/implication/whyThisProject strings`,
     );
   }
+  // CI-W1C.7.4-R2 PART D — planningClaimRefs MUST be a string[].
+  if (!isStringArray(raw.planningClaimRefs)) {
+    throw new StrategicSynthesisParseError(
+      'PARSE_PLANNING_CLAIM_REFS',
+      `insights[${index}].planningClaimRefs must be a string array (use [] when no planning input)`,
+    );
+  }
   return {
     id: parseId('insight', raw.id, `i${index}`),
     statement: raw.statement,
@@ -153,6 +176,7 @@ function parseInsight(raw: unknown, index: number): StrategicInsight {
     factRefs: isStringArray(raw.factRefs) ? raw.factRefs : [],
     needRefs: isStringArray(raw.needRefs) ? raw.needRefs : [],
     evidenceRefs: isStringArray(raw.evidenceRefs) ? raw.evidenceRefs : [],
+    planningClaimRefs: raw.planningClaimRefs,
   };
 }
 
@@ -169,6 +193,13 @@ function parseOpportunity(raw: unknown, index: number): StrategicOpportunity {
       `opportunities[${index}] must have title/thesis/strategicMechanism/whyThisProject strings`,
     );
   }
+  // CI-W1C.7.4-R2 PART D — planningClaimRefs MUST be a string[].
+  if (!isStringArray(raw.planningClaimRefs)) {
+    throw new StrategicSynthesisParseError(
+      'PARSE_PLANNING_CLAIM_REFS',
+      `opportunities[${index}].planningClaimRefs must be a string array (use [] when no planning input)`,
+    );
+  }
   return {
     id: parseId('opp', raw.id, `i${index}`),
     title: raw.title,
@@ -178,6 +209,7 @@ function parseOpportunity(raw: unknown, index: number): StrategicOpportunity {
     risk: isStringArray(raw.risk) ? raw.risk : [],
     insightRefs: isStringArray(raw.insightRefs) ? raw.insightRefs : [],
     factRefs: isStringArray(raw.factRefs) ? raw.factRefs : [],
+    planningClaimRefs: raw.planningClaimRefs,
   };
 }
 
@@ -189,9 +221,19 @@ function parseSourceMap(raw: unknown): CreativeReasoningPromptSourceMap {
     prohibitedDirections: [],
     needs: [],
     evidence: [],
+    planningClaims: [],
     legacyVisualEvidenceExcluded: [],
   };
   if (!isObject(raw)) return empty;
+  // CI-W1C.7.4-R2 PART D — sourceMap.planningClaims MUST be a
+  // string array. Allow [] (no planning input) but reject scalars /
+  // objects.
+  if (raw.planningClaims !== undefined && !isStringArray(raw.planningClaims)) {
+    throw new StrategicSynthesisParseError(
+      'PARSE_SOURCE_MAP_PLANNING_CLAIMS',
+      'sourceMap.planningClaims must be a string array (use [] when no planning input)',
+    );
+  }
   return {
     planningTruth: isStringArray(raw.planningTruth) ? raw.planningTruth : [],
     userRequirements: isStringArray(raw.userRequirements) ? raw.userRequirements : [],
@@ -199,6 +241,7 @@ function parseSourceMap(raw: unknown): CreativeReasoningPromptSourceMap {
     prohibitedDirections: isStringArray(raw.prohibitedDirections) ? raw.prohibitedDirections : [],
     needs: isStringArray(raw.needs) ? raw.needs : [],
     evidence: isStringArray(raw.evidence) ? raw.evidence : [],
+    planningClaims: isStringArray(raw.planningClaims) ? raw.planningClaims : [],
     legacyVisualEvidenceExcluded: isStringArray(raw.legacyVisualEvidenceExcluded)
       ? raw.legacyVisualEvidenceExcluded
       : [],

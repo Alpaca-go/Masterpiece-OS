@@ -168,6 +168,31 @@ export function compileStrategicReasoningContext(input: {
       'structure_reference',
       'spatial_reference',
     ],
+    // CI-W1C.7.4-R2 PART B — the artifact sourceMap MUST carry the
+    // input-derived planning claim ID list. The model can cite
+    // these via `*.planningClaimRefs`; the SG-01 grounding gate
+    // verifies each ref is in BOTH this set AND in the actual
+    // runtime input.
+    sourceMap: {
+      planningTruth: Array.from(sourceFactIds),
+      userRequirements: [],
+      lockedIdentity: [],
+      prohibitedDirections: [],
+      needs: Array.from(sourceNeedIds),
+      evidence: Array.from(sourceEvidenceIds),
+      planningClaims: Array.from(sourcePlanningClaimIds),
+      legacyVisualEvidenceExcluded: input.legacyVisualEvidenceExcluded ?? [
+        'visualAsset.*',
+        'old_visual_style',
+        'old_VI',
+        'old_poster',
+        'old_packaging',
+        'old_spatial',
+        'style_reference',
+        'structure_reference',
+        'spatial_reference',
+      ],
+    },
     sourceIds: {
       facts: Array.from(sourceFactIds),
       needs: Array.from(sourceNeedIds),
