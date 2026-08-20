@@ -61,6 +61,7 @@ import path from 'node:path';
 import type { ProjectTruthModel, ProjectTruthFact } from '@masterpiece/creative-intelligence/truth/index.ts';
 import type { NeedItem } from '@masterpiece/creative-intelligence/need-intelligence/index.ts';
 import type { EvidenceLedgerSnapshot } from '@masterpiece/creative-intelligence/evidence/index.ts';
+import type { PlanningStrategicClaim } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 
 import {
   compileStrategicReasoningContext,
@@ -148,6 +149,18 @@ export interface CreativeReasoningInput {
    * Default: `DEFAULT_QUALIFICATION_BUDGET`.
    */
   qualificationBudget?: CreativeReasoningQualificationBudget;
+  /**
+   * CI-W1C.7.4-R1 — Planning strategic evidence claims. Forwarded
+   * to `compileStrategicReasoningContext` so the Strategic
+   * Synthesis prompt renders the PLANNING STRATEGIC EVIDENCE
+   * section. The production caller (live qualifier / runtime
+   * pipeline) is expected to load this from the project via
+   * `loadPlanningStrategicEvidenceForProject` rather than
+   * constructing it manually.
+   *
+   * Default: `[]` (no planning evidence).
+   */
+  planningStrategicEvidence?: PlanningStrategicClaim[];
 }
 
 export interface ModelReasoner {
@@ -336,6 +349,7 @@ export interface CreativeReasoningServiceDeps {
   _lastTruth?: ProjectTruthModel;
   _lastNeeds?: NeedItem[];
   _lastEvidence?: EvidenceLedgerSnapshot;
+  _lastPlanningEvidence?: PlanningStrategicClaim[];
 }
 
 /**
@@ -409,6 +423,9 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       truth: deps._lastTruth!,
       needs: deps._lastNeeds!,
       evidence: deps._lastEvidence!,
+      // CI-W1C.7.4-R1 — forward cached planning evidence so the
+      // PLANNING STRATEGIC EVIDENCE section is rendered.
+      planningStrategicEvidence: deps._lastPlanningEvidence ?? [],
     });
     if (stageName === 'synthesis') {
       const out = buildStrategicSynthesisPrompt({ projectId: args.projectId, ctx });
@@ -646,6 +663,10 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     deps._lastTruth = input.truth;
     deps._lastNeeds = input.needs;
     deps._lastEvidence = input.evidence;
+    // CI-W1C.7.4-R1 — cache planning evidence so buildStagePrompt
+    // can forward it when re-compiling the context for the
+    // concept / direction stages.
+    deps._lastPlanningEvidence = input.planningStrategicEvidence ?? [];
 
     // Resolve provider / model metadata (PART G).
     // In live mode, resolve from the credentials (honoring
@@ -682,6 +703,10 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       truth: input.truth,
       needs: input.needs,
       evidence: input.evidence,
+      // CI-W1C.7.4-R1 — forward planning evidence so the
+      // PLANNING STRATEGIC EVIDENCE section is rendered in the
+      // synthesis prompt snapshot.
+      planningStrategicEvidence: input.planningStrategicEvidence ?? [],
     });
     const synthesisPrompt = buildStrategicSynthesisPrompt({
       projectId: input.projectId,

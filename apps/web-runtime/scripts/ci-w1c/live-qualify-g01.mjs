@@ -113,8 +113,11 @@ async function loadRealProject(args) {
   const settings = JSON.parse(await fs.readFile(path.join(args.userDataRoot, 'settings.json'), 'utf8'));
   const dataRoot = settings.defaultDataPath;
   if (!dataRoot) throw new Error('settings.json has no defaultDataPath');
-  const dir = path.join(dataRoot, 'projects', reg.dirName, 'project-context', 'creative-intelligence-shadow');
-  const [truthDoc, needsDoc, evidenceDoc] = await Promise.all([
+  const projectDir = path.join(dataRoot, 'projects', reg.dirName);
+  const projectJsonPath = path.join(projectDir, 'project.json');
+  const dir = path.join(projectDir, 'project-context', 'creative-intelligence-shadow');
+  const [projectRecord, truthDoc, needsDoc, evidenceDoc] = await Promise.all([
+    fs.readFile(projectJsonPath, 'utf8').then(JSON.parse).catch(() => null),
     fs.readFile(path.join(dir, 'project-truth.json'), 'utf8').then(JSON.parse),
     fs.readFile(path.join(dir, 'need-intelligence.json'), 'utf8').then(JSON.parse),
     fs.readFile(path.join(dir, 'evidence-ledger.json'), 'utf8').then(JSON.parse),
@@ -126,6 +129,8 @@ async function loadRealProject(args) {
     project: args.project,
     projectId: truthDoc.projectId,
     dataRoot,
+    projectDir,
+    projectRecord,
     truth: truthDoc,
     needs: needsDoc.needs || [],
     evidence: evidenceDoc,
@@ -216,6 +221,40 @@ async function main() {
     reasonerFactory,
   });
 
+  // CI-W1C.7.4-R1 PART E — auto-load planning evidence from the
+  // project. The runtime must not require the test/user to
+  // manually inject planningStrategicEvidence; the production
+  // caller resolves it from the project registry + project root.
+  let planningClaims = [];
+  let planningEvidenceMeta = { loaded: false, briefCount: 0, claimCount: 0, source: 'none' };
+  if (real.projectRecord && Array.isArray(real.projectRecord.planningBriefFiles) && real.projectRecord.planningBriefFiles.length > 0) {
+    const { loadPlanningStrategicEvidenceFromContext } = await import(
+      pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/planning-strategic-evidence-loader.ts')).href
+    );
+    try {
+      const artifact = await loadPlanningStrategicEvidenceFromContext({
+        project: real.projectRecord,
+        projectRoot: real.projectDir
+      });
+      if (artifact) {
+        planningClaims = artifact.claims;
+        planningEvidenceMeta = {
+          loaded: true,
+          briefCount: artifact.sourceDocuments.length,
+          claimCount: artifact.claims.length,
+          source: 'project.planningBriefFiles'
+        };
+        console.log(`Planning evidence loaded: briefs=${artifact.sourceDocuments.length} claims=${artifact.claims.length} fingerprint=${artifact.planningEvidenceFingerprint.slice(0, 12)}…`);
+      }
+    } catch (e) {
+      console.warn(`Planning evidence load failed: ${e.message}`);
+      // FAIL CLOSED: do not silently proceed with empty evidence.
+      throw e;
+    }
+  } else {
+    console.log(`No planning briefs registered for ${args.project}; planningStrategicEvidence=[]`);
+  }
+
   const startedAt = Date.now();
   let result;
   try {
@@ -226,6 +265,7 @@ async function main() {
       evidence: real.evidence,
       analysisProfileId: defaultProfile.id,
       useMock: false,
+      planningStrategicEvidence: planningClaims,
     });
   } catch (error) {
     const finishedAt = Date.now();
@@ -256,6 +296,7 @@ async function main() {
     imageProviderCallCount: result.imageProviderCallCount,
     analysisProviderCallCount: callRecords.length,
     callRecords,
+    planningEvidence: planningEvidenceMeta,
     stages: {
       synthesis: {
         status: result.stages.synthesis.status,
