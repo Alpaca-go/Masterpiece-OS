@@ -26,6 +26,7 @@ import {
   type ModelAssistedDirectionVisualLanguage,
   type ModelAssistedDirectionCrossMediaBehavior,
 } from './contracts.ts';
+import { stripMarkdownFences } from '../contracts/strip-markdown-fences.ts';
 
 export class ModelAssistedParseError extends Error {
   readonly code: string;
@@ -127,7 +128,7 @@ export function parseModelAssistedConceptSet(input: {
 }): ModelAssistedConceptSet {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(input.rawText);
+    parsed = JSON.parse(stripMarkdownFences(input.rawText));
   } catch (err) {
     throw new ModelAssistedParseError('PARSE_JSON', `Concept set is not valid JSON: ${err instanceof Error ? err.message : String(err)}`);
   }
@@ -274,7 +275,7 @@ export function parseModelAssistedDirectionSet(input: {
 }): ModelAssistedDirectionSet {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(input.rawText);
+    parsed = JSON.parse(stripMarkdownFences(input.rawText));
   } catch (err) {
     throw new ModelAssistedParseError('PARSE_JSON', `Direction set is not valid JSON: ${err instanceof Error ? err.message : String(err)}`);
   }

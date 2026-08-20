@@ -23,6 +23,7 @@ import {
   type StrategicEpistemicClass,
   type CreativeReasoningPromptSourceMap,
 } from './contracts.ts';
+import { stripMarkdownFences } from '../contracts/strip-markdown-fences.ts';
 
 export class StrategicSynthesisParseError extends Error {
   readonly code: string;
@@ -215,7 +216,7 @@ export function parseStrategicSynthesis(input: {
 }): StrategicSynthesisArtifact {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(input.rawText);
+    parsed = JSON.parse(stripMarkdownFences(input.rawText));
   } catch (err) {
     throw new StrategicSynthesisParseError(
       'PARSE_JSON',
