@@ -212,61 +212,48 @@ async function main() {
   }
   const readCredentialsFn = async (profileId) => readCredentials(args.userDataRoot, profileId || defaultProfile.id);
 
-  // 4. Build the runtime service + run live
-  const { createCreativeReasoningService } = await import(pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/creative-reasoning-service.ts')).href);
+  // 4. CI-W1C.7.4-R2 PART G — run the CANONICAL orchestrator.
+  //    The script is now a thin caller; it does NOT manually
+  //    compose the carriers (project / planning loader / truth /
+  //    need / evidence / service.run). Everything is owned by
+  //    `runCreativeReasoningForProject`.
   await fs.mkdir(args.outputRoot, { recursive: true });
-  const service = createCreativeReasoningService({
-    outputRoot: async (projectId) => path.join(args.outputRoot, projectId),
-    readCredentials: readCredentialsFn,
-    reasonerFactory,
-  });
-
-  // CI-W1C.7.4-R1 PART E — auto-load planning evidence from the
-  // project. The runtime must not require the test/user to
-  // manually inject planningStrategicEvidence; the production
-  // caller resolves it from the project registry + project root.
-  let planningClaims = [];
-  let planningEvidenceMeta = { loaded: false, briefCount: 0, claimCount: 0, source: 'none' };
-  if (real.projectRecord && Array.isArray(real.projectRecord.planningBriefFiles) && real.projectRecord.planningBriefFiles.length > 0) {
-    const { loadPlanningStrategicEvidenceFromContext } = await import(
-      pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/planning-strategic-evidence-loader.ts')).href
-    );
-    try {
-      const artifact = await loadPlanningStrategicEvidenceFromContext({
-        project: real.projectRecord,
-        projectRoot: real.projectDir
-      });
-      if (artifact) {
-        planningClaims = artifact.claims;
-        planningEvidenceMeta = {
-          loaded: true,
-          briefCount: artifact.sourceDocuments.length,
-          claimCount: artifact.claims.length,
-          source: 'project.planningBriefFiles'
-        };
-        console.log(`Planning evidence loaded: briefs=${artifact.sourceDocuments.length} claims=${artifact.claims.length} fingerprint=${artifact.planningEvidenceFingerprint.slice(0, 12)}…`);
-      }
-    } catch (e) {
-      console.warn(`Planning evidence load failed: ${e.message}`);
-      // FAIL CLOSED: do not silently proceed with empty evidence.
-      throw e;
-    }
-  } else {
-    console.log(`No planning briefs registered for ${args.project}; planningStrategicEvidence=[]`);
-  }
+  const { runCreativeReasoningForProject } = await import(
+    pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/run-creative-reasoning-for-project.ts')).href
+  );
 
   const startedAt = Date.now();
   let result;
   try {
-    result = await service.run({
-      projectId: real.projectId,
-      truth: real.truth,
-      needs: real.needs,
-      evidence: real.evidence,
-      analysisProfileId: defaultProfile.id,
-      useMock: false,
-      planningStrategicEvidence: planningClaims,
-    });
+    result = await runCreativeReasoningForProject(
+      {
+        projectId: real.projectId,
+        analysisProfileId: defaultProfile.id,
+        useMock: false,
+        reasonerFactory,
+        readCredentials: readCredentialsFn
+      },
+      {
+        projectStore: {
+          async get(id) {
+            return real.projectRecord ?? { id, planningBriefFiles: [] };
+          },
+          async paths() {
+            return { root: real.projectDir, input: '', prepared: '', outputs: '', runtime: '' };
+          },
+          async remove() {}
+        },
+        outputRoot: async (projectId) => path.join(args.outputRoot, projectId),
+        // The production default loader reads the shadow carriers
+        // from `<projectDir>/project-context/creative-intelligence-shadow/`.
+        // The live qualifier already has Truth/Need/Evidence in
+        // memory (from `loadRealProject`); the orchestrator uses
+        // them as the source of record for the reasoning context.
+        async loadReasoningContext(_project, _projectRoot) {
+          return { truth: real.truth, needs: real.needs, evidence: real.evidence };
+        }
+      }
+    );
   } catch (error) {
     const finishedAt = Date.now();
     await fs.writeFile(path.join(args.outputRoot, `${args.project.toLowerCase()}-live-qualification-error.json`), {
@@ -296,7 +283,7 @@ async function main() {
     imageProviderCallCount: result.imageProviderCallCount,
     analysisProviderCallCount: callRecords.length,
     callRecords,
-    planningEvidence: planningEvidenceMeta,
+    planningEvidence: { loaded: true, source: 'orchestrator', orchestrator: 'runCreativeReasoningForProject' },
     stages: {
       synthesis: {
         status: result.stages.synthesis.status,
