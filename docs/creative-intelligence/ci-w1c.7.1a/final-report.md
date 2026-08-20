@@ -5,7 +5,7 @@
 > **Date:** 2026-08-20
 > **Target Branch:** `feat/short-chain-simplified-ui`
 > **Baseline HEAD:** `58fb0e3bb94c77cdb69939037f6c99a582d8c236` (CI-W1C.7.1 frozen)
-> **Final HEAD:** `PENDING` (this phase)
+> **Final HEAD:** `58862822612658124cd56d4db4c22112b22abf94` (pushed to origin)
 > **Upstream:** CI-W1C.7.1 = `READY_FOR_MODEL_ASSISTED_TEXT_QUALIFICATION`
 > **Verdict:** **READY_FOR_MODEL_ASSISTED_TEXT_QUALIFICATION**
 
@@ -34,13 +34,11 @@ committed.
 
 ## 2. Commit list (this phase)
 
-Recommended commit plan (per spec §47 PART O):
+3 commits, all pushed to `origin/feat/short-chain-simplified-ui`:
 
-1. `feat(ci-w1c.7.1a): add real-project prompt qualification harness`
-2. `fix(ci): harden semantic prompt fingerprints with canonical sha256`
-3. `feat(validation): add creative reasoning prompt budget gate`
-4. `test(ci-w1c.7.1a): qualify real G01/G02 prompt snapshots`
-5. `docs(ci-w1c.7.1a): record real-project prompt preflight readiness`
+1. `84047840` — `feat(ci-w1c.7.1a): canonical SHA-256 semantic fingerprint + prompt budget gate`
+2. `43b6ff57` — `test(ci-w1c.7.1a): add real-project prompt qualification harness + FP/BG/SNAP/RPQ tests`
+3. `58862822` — `docs(ci-w1c.7.1a): record real G01/G02 prompt preflight readiness`
 
 ---
 
