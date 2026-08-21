@@ -225,26 +225,56 @@ function parseSourceMap(raw: unknown): CreativeReasoningPromptSourceMap {
     legacyVisualEvidenceExcluded: [],
   };
   if (!isObject(raw)) return empty;
-  // CI-W1C.7.4-R2 PART D — sourceMap.planningClaims MUST be a
-  // string array. Allow [] (no planning input) but reject scalars /
-  // objects.
-  if (raw.planningClaims !== undefined && !isStringArray(raw.planningClaims)) {
-    throw new StrategicSynthesisParseError(
-      'PARSE_SOURCE_MAP_PLANNING_CLAIMS',
-      'sourceMap.planningClaims must be a string array (use [] when no planning input)',
-    );
-  }
+  // CI-W1C.7.5-R1 PART H — every required source-map field is a
+  // string[]. Silent fallback to [] is FORBIDDEN: the model must
+  // obey the contract, and the existing single-repair attempt must
+  // see the parse failure. The empty `[]` returned when the key is
+  // missing entirely (undefined) is still allowed (per the
+  // individual fields' "allow [] when no input" semantic).
+  //
+  // Code convention: repo underscore style (matches the existing
+  // `PARSE_SOURCE_MAP_PLANNING_CLAIMS` R2 code). The R1 spec
+  // example uses hyphens, but the spec also says "Use repository
+  // naming conventions if different" — repo convention wins for
+  // consistency with the rest of the parse error codes.
+  //
+  // `planningClaims` keeps the legacy R2 error code
+  // (`PARSE_SOURCE_MAP_PLANNING_CLAIMS`) for back-compat with
+  // PTR-05; the other fields get a new R1 code.
+  const requireStringArrayOrThrow = (field: string, value: unknown): string[] => {
+    if (value === undefined) return empty[field as keyof CreativeReasoningPromptSourceMap] as string[];
+    if (!isStringArray(value)) {
+      const code = `PARSE_SOURCE_MAP_${field.toUpperCase()}_NOT_STRING_ARRAY`;
+      throw new StrategicSynthesisParseError(
+        code,
+        `sourceMap.${field} must be a string array (use [] when no input)`,
+      );
+    }
+    return value;
+  };
   return {
-    planningTruth: isStringArray(raw.planningTruth) ? raw.planningTruth : [],
-    userRequirements: isStringArray(raw.userRequirements) ? raw.userRequirements : [],
-    lockedIdentity: isStringArray(raw.lockedIdentity) ? raw.lockedIdentity : [],
-    prohibitedDirections: isStringArray(raw.prohibitedDirections) ? raw.prohibitedDirections : [],
-    needs: isStringArray(raw.needs) ? raw.needs : [],
-    evidence: isStringArray(raw.evidence) ? raw.evidence : [],
-    planningClaims: isStringArray(raw.planningClaims) ? raw.planningClaims : [],
-    legacyVisualEvidenceExcluded: isStringArray(raw.legacyVisualEvidenceExcluded)
-      ? raw.legacyVisualEvidenceExcluded
-      : [],
+    planningTruth: requireStringArrayOrThrow('planningTruth', raw.planningTruth),
+    userRequirements: requireStringArrayOrThrow('userRequirements', raw.userRequirements),
+    lockedIdentity: requireStringArrayOrThrow('lockedIdentity', raw.lockedIdentity),
+    prohibitedDirections: requireStringArrayOrThrow('prohibitedDirections', raw.prohibitedDirections),
+    needs: requireStringArrayOrThrow('needs', raw.needs),
+    evidence: requireStringArrayOrThrow('evidence', raw.evidence),
+    // Legacy back-compat: keep the R2 error code for this field.
+    planningClaims: (() => {
+      const v = raw.planningClaims;
+      if (v === undefined) return [];
+      if (!isStringArray(v)) {
+        throw new StrategicSynthesisParseError(
+          'PARSE_SOURCE_MAP_PLANNING_CLAIMS',
+          'sourceMap.planningClaims must be a string array (use [] when no planning input)',
+        );
+      }
+      return v;
+    })(),
+    legacyVisualEvidenceExcluded: requireStringArrayOrThrow(
+      'legacyVisualEvidenceExcluded',
+      raw.legacyVisualEvidenceExcluded,
+    ),
   };
 }
 

@@ -196,6 +196,13 @@ export const STRATEGIC_GROUNDING_GATE_CODES = [
   'SG-10',
   'SG-11',
   'SG-12',
+  // CI-W1C.7.5-R1 PART J — runtime/sourceMap consistency gates.
+  // The model-emitted sourceMap is an audit copy; the runtime
+  // carriers are authority. These gates enforce that the model's
+  // sourceMap mirrors the runtime input per domain.
+  'SG-13',
+  'SG-14',
+  'SG-15',
 ] as const;
 export type StrategicGroundingGateCode = typeof STRATEGIC_GROUNDING_GATE_CODES[number];
 

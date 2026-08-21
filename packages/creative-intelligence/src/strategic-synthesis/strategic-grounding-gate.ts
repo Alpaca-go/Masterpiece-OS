@@ -29,11 +29,27 @@ import {
   STRATEGIC_SYNTHESIS_LEGACY_VISUAL_EXCLUDED_MIN,
 } from './contracts.ts';
 import type { ProjectTruthModel } from '../truth/contracts.ts';
+import type { NeedItem } from '../need-intelligence/contracts.ts';
+import type { EvidenceLedgerSnapshot } from '../evidence/contracts.ts';
 import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
 
 export interface StrategicGroundingGateInput {
   artifact: StrategicSynthesisArtifact;
   truth: ProjectTruthModel;
+  /**
+   * CI-W1C.7.5-R1 PART I — runtime Need carriers. The
+   * allowed-ID set for `*.needRefs` is derived EXCLUSIVELY from
+   * this list. `artifact.sourceMap.needs` is an audit copy only
+   * and is no longer authority.
+   */
+  needs?: NeedItem[];
+  /**
+   * CI-W1C.7.5-R1 PART I — runtime Evidence carriers. The
+   * allowed-ID set for `*.evidenceRefs` is derived EXCLUSIVELY
+   * from `entries[].id`. `artifact.sourceMap.evidence` is an audit
+   * copy only and is no longer authority.
+   */
+  evidence?: EvidenceLedgerSnapshot;
   /**
    * CI-W1C.7.4-R2 PART E — actual PlanningStrategicEvidence input
    * claims. The gate builds `knownPlanningClaimIds` from this list
@@ -118,22 +134,29 @@ function mentionsAny(text: string, needles: readonly string[]): string | null {
 export function runStrategicGroundingGate(input: StrategicGroundingGateInput): StrategicGroundingReport {
   const issues: StrategicGroundingIssue[] = [];
   const { artifact, truth } = input;
+  // CI-W1C.7.5-R1 PART I — runtime carriers are the SOLE authority
+  // for the allowed-ID sets. `artifact.sourceMap.*` is an audit copy
+  // only; it is NOT used to authorize any ref. SG-13/14/15
+  // (consistency gates, added below) ensure the audit copy still
+  // mirrors the runtime input.
   const factIdSet = new Set<string>();
-  const needIdSet = new Set<string>();
-  const evidenceIdSet = new Set<string>();
   for (const f of truth.facts) factIdSet.add(f.id);
+  const needIdSet = new Set<string>();
+  for (const n of input.needs ?? []) {
+    if (typeof n?.id === 'string') needIdSet.add(n.id);
+  }
+  const evidenceIdSet = new Set<string>();
+  for (const e of input.evidence?.entries ?? []) {
+    if (typeof e?.id === 'string') evidenceIdSet.add(e.id);
+  }
   for (const c of truth.conflicts) {
     // Conflicts do not register fact IDs in the source map. We only
     // include the conflict's reference IDs in the foreignIds check.
     void c;
   }
-  // We collect need IDs from the artifact's sourceMap (deterministic
-  // run context).
-  for (const id of artifact.sourceMap.needs) needIdSet.add(id);
-  for (const id of artifact.sourceMap.evidence) evidenceIdSet.add(id);
-  const knownFactIds = new Set<string>([...factIdSet, ...artifact.sourceMap.planningTruth]);
-  const knownNeedIds = new Set<string>([...needIdSet, ...artifact.sourceMap.needs]);
-  const knownEvidenceIds = new Set<string>([...evidenceIdSet, ...artifact.sourceMap.evidence]);
+  const knownFactIds = factIdSet;
+  const knownNeedIds = needIdSet;
+  const knownEvidenceIds = evidenceIdSet;
   // CI-W1C.7.4-R2 PART E — knownPlanningClaimIds comes ONLY from
   // the ACTUAL runtime input (`input.planningClaims`). The
   // model-emitted `sourceMap.planningClaims` is recorded for audit
@@ -476,6 +499,63 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
       );
     }
   }
+
+  // CI-W1C.7.5-R1 PART J — runtime/sourceMap consistency gates for
+  // Fact (SG-13), Need (SG-14), and Evidence (SG-15). The runtime
+  // carriers are authority; the model-emitted sourceMap is an audit
+  // copy. These gates enforce that the audit copy still mirrors
+  // the runtime input. Sorted unique set equality (per domain).
+  // The set comparison itself is the safety net for the Goal D
+  // change: the gate refuses to let the model silently differ from
+  // the runtime.
+  type SortableIds = { artifactIds: string[]; runtimeIds: string[] };
+  const checkMirror = (
+    code: 'SG-13' | 'SG-14' | 'SG-15',
+    where: string,
+    field: SortableIds
+  ): void => {
+    const artifactIds = Array.from(
+      new Set(
+        field.artifactIds.filter(
+          (id): id is string => typeof id === 'string' && id.length > 0,
+        ),
+      ),
+    ).sort();
+    const runtimeIds = Array.from(
+      new Set(
+        field.runtimeIds.filter(
+          (id): id is string => typeof id === 'string' && id.length > 0,
+        ),
+      ),
+    ).sort();
+    if (
+      artifactIds.length !== runtimeIds.length ||
+      artifactIds.some((id, idx) => id !== runtimeIds[idx])
+    ) {
+      block(
+        code,
+        where,
+        `sourceMap.${where} does not match runtime IDs: runtime=[${runtimeIds.join(', ')}] artifact=[${artifactIds.join(', ')}]`,
+        Array.from(new Set([...runtimeIds, ...artifactIds])),
+      );
+    }
+  };
+  // SG-13 FACT_SOURCE_MAP_MATCHES_RUNTIME.
+  // `sourceMap.planningTruth` is the audit copy of runtime fact IDs.
+  checkMirror('SG-13', 'planningTruth', {
+    artifactIds: artifact.sourceMap.planningTruth,
+    runtimeIds: Array.from(factIdSet)
+  });
+  // SG-14 NEED_SOURCE_MAP_MATCHES_RUNTIME.
+  checkMirror('SG-14', 'needs', {
+    artifactIds: artifact.sourceMap.needs,
+    runtimeIds: Array.from(needIdSet)
+  });
+  // SG-15 EVIDENCE_SOURCE_MAP_MATCHES_RUNTIME.
+  checkMirror('SG-15', 'evidence', {
+    artifactIds: artifact.sourceMap.evidence,
+    runtimeIds: Array.from(evidenceIdSet)
+  });
 
   // Additional cross-check: keyword mention heuristic for SG-04.
   // We only WARN on keyword hints (logo / color / typography / ...)
