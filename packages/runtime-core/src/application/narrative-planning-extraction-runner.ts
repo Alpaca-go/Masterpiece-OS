@@ -41,6 +41,7 @@ import type { ModelReasoner } from './creative-reasoning-service.ts';
 import type { PlanningStrategicClaim } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 import {
   buildExtractionMessages,
+  buildRepairMessages,
   parseModelJson,
   validateDocumentVisualContext,
   normalizeExtractedContext,
@@ -48,6 +49,95 @@ import {
   type DocumentRole,
   type NormalizedDocument
 } from '@masterpiece/creative-intelligence/document-intelligence/index.ts';
+
+// CI-W1C.7.5-R1 PART C / PART D — planning-specific extraction
+// prompt. The CI-3 default `EXTRACTION_SYSTEM_PROMPT` is tuned
+// for visual context (brandName / products / brandPersonality
+// etc.) and explicitly excludes "non-visual content" like
+// market sizing / industry analysis / org structure. For
+// PLANNING extraction we want the opposite: the model SHOULD
+// surface industry, business model, brand role, competitive
+// context, strategic objective, etc. — even when these are
+// expressed as narrative prose rather than as `key: value`
+// bullets.
+//
+// This prompt is project-agnostic. It is composed here (in
+// runtime-core) and passed to `buildExtractionMessages` indirectly
+// by constructing a fresh `NormalisedDocument` whose `sections`
+// includes the planning prompt as the document body. The
+// validator + normalizer are the same CI-3 primitives, so the
+// shape stays `DocumentVisualContext`. The project-agnostic
+// guarantee is preserved: no project names, no industry terms,
+// no competitor names appear in the prompt.
+const PLANNING_EXTRACTION_PROMPT = `You are a PLANNING-DOCUMENT semantic extractor for a brand strategy / business strategy / market research document.
+
+Goal: emit a single JSON object that captures the document's PROJECT-SPECIFIC PLANNING CONTENT. Do NOT extract generic visuals or design tokens — focus on what the document says about the BRAND / BUSINESS / AUDIENCE / STRATEGY.
+
+DO:
+- Read the full document carefully.
+- Surface the document's stated industry, business model, brand role, target audience, audience problem, brand promise, competitive context, differentiation, strategic / brand / experience / transformation objectives, brand personality / positioning, etc.
+- Use the document's own wording where faithful; paraphrase is allowed but must be project-specific.
+- For each non-empty field, attach an evidence entry: { "field", "documentId", "filename", "section", "summary" }.
+- Mark "unknown" only when the document genuinely has no relevant content. Most planning documents have at least 4-6 fillable fields.
+
+DO NOT:
+- Invent facts the document does not state.
+- Fill fields with marketing clichés ("trusted partner", "innovative solutions") that do not appear in the document.
+- Promote USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN statements to FACT.
+
+Output JSON shape (use [] for empty arrays, null for empty strings):
+
+{
+  "brandName": string,
+  "industry": string,
+  "products": string[],
+  "services": string[],
+  "targetAudience": string[],
+  "pricePositioning": string | null,
+  "businessModel": string | null,
+  "brandPersonality": string[],
+  "visualPreferences": string[],
+  "requiredTouchpoints": string[],
+  "lockedFacts": string[],
+  "prohibitedDirections": string[],
+  "unknownFields": string[],
+  "evidence": [{ "field": string, "documentId": string, "filename": string, "section": string, "summary": string }],
+  "conflicts": string[]
+}
+
+Output only the JSON object. No prose, no markdown, no code fences.`;
+
+// Build a `NormalizedDocument` whose first section is the
+// planning-specific prompt (so the model sees the planning
+// instructions in the system / user message split) and the
+// remaining sections are the source document's chunks. The
+// existing CI-3 `buildExtractionMessages` uses `document.rawText`
+// directly (not the sections), so this is a thin wrap.
+function buildPlanningCorpusWithPrompt(args: {
+  sourceId: string;
+  filename: string;
+  rawText: string;
+  documentRole: DocumentRole;
+  planningPrompt: string;
+}): NormalizedDocument {
+  // The model sees only the document's rawText (per
+  // buildExtractionMessages). We prepend the planning prompt
+  // to the rawText so the model gets the planning instructions
+  // as part of the same message body. The `evidence.documentId`
+  // the model emits must still equal the planning brief's
+  // `sourceId`; we use that as the documentId.
+  const body = `${args.planningPrompt}\n\n---\n\n# DOCUMENT\n\n${args.rawText}`;
+  return {
+    id: args.sourceId,
+    filename: args.filename,
+    sourceType: 'docx',
+    title: args.filename,
+    rawText: body,
+    characterCount: body.length,
+    documentRole: args.documentRole,
+    tables: []
+  };
+}
 
 export interface NarrativePlanningExtractionInput {
   projectId: string;
@@ -77,6 +167,7 @@ export interface NarrativePlanningExtractionOutput {
     outputCharacters: number;
     inputCharacters: number;
     latencyMs: number;
+    validationErrors?: string[];
   }>;
 }
 
@@ -117,21 +208,26 @@ export async function runNarrativePlanningExtraction(
   const maximumDurationMs = input.maximumDurationMs ?? 180_000;
 
   // 1. Build the corpus + extraction prompt.
-  const corpus = buildSingleDocCorpus({
-    projectId,
+  // CI-W1C.7.5-R1 PART C / PART D — the model gets the
+  // planning-specific prompt + the source document in one
+  // message body. The downstream projection strips the prompt
+  // wrapper and only uses the source's `evidence.documentId`
+  // to claim the source.
+  const planningDoc = buildPlanningCorpusWithPrompt({
     sourceId: sourceDocumentId,
-    rawText,
     filename,
-    documentRole
+    rawText,
+    documentRole,
+    planningPrompt: PLANNING_EXTRACTION_PROMPT
   });
+  const corpus = { documents: [planningDoc] };
   const messages = buildExtractionMessages(corpus as unknown as Parameters<typeof buildExtractionMessages>[0]);
   const inputChars = messages.reduce((sum, m) => sum + (m.content?.length || 0), 0);
 
   // 2. Model call (base attempt).
   const attempts: NarrativePlanningExtractionOutput['attempts'] = [];
   const callModel = async (
-    msgs: typeof messages,
-    repairReason?: string
+    msgs: typeof messages
   ): Promise<{ text: string; latencyMs: number }> => {
     const t0 = Date.now();
     const result = await reasoner({
@@ -141,68 +237,11 @@ export async function runNarrativePlanningExtraction(
     return { text: result.reportMarkdown, latencyMs: Date.now() - t0 };
   };
 
-  // Base attempt.
-  let lastError: string | undefined;
-  try {
-    const { text, latencyMs } = await callModel(messages);
-    attempts.push({
-      attempt: 1,
-      finishStatus: 'ok',
-      outputCharacters: text.length,
-      inputCharacters: inputChars,
-      latencyMs
-    });
-    return finalize(text, attempts);
-  } catch (err) {
-    lastError = (err as Error).message;
-  }
-
-  // Repair attempt.
-  const repairMessages = [
-    messages[0],
-    {
-      role: 'user' as const,
-      content: `你上一次的输出无法通过校验。请只输出修复后的完整 JSON 对象，不要输出其它内容。\n\n错误：${lastError}\n\n上一次输出已省略。`
-    }
-  ];
-  try {
-    const { text, latencyMs } = await callModel(repairMessages, lastError);
-    attempts.push({
-      attempt: 2,
-      repairReason: lastError,
-      finishStatus: 'repair',
-      outputCharacters: text.length,
-      inputCharacters: repairMessages.reduce((sum, m) => sum + (m.content?.length || 0), 0),
-      latencyMs
-    });
-    return finalize(text, attempts);
-  } catch (err) {
-    attempts.push({
-      attempt: 2,
-      repairReason: lastError,
-      finishStatus: 'failed',
-      outputCharacters: 0,
-      inputCharacters: 0,
-      latencyMs: 0
-    });
-    throw new Error(
-      `NARRATIVE_EXTRACTION_FAILED: ${(err as Error).message ?? lastError ?? 'unknown'}`
-    );
-  }
-
-  function finalize(
-    text: string,
-    attemptRecords: NarrativePlanningExtractionOutput['attempts']
-  ): NarrativePlanningExtractionOutput {
-    // Parse → validate → normalize.
+  const validateAndProject = (text: string): Omit<NarrativePlanningExtractionOutput, 'attempts'> => {
     const parsed = parseModelJson(text) as Record<string, unknown>;
     const validation = validateDocumentVisualContext(parsed);
     if (!validation.valid) {
-      const err = new Error(
-        `NARRATIVE_EXTRACTION_SCHEMA_INVALID: ${validation.errors.join('; ')}`
-      );
-      attemptRecords[attemptRecords.length - 1].finishStatus = 'failed';
-      throw err;
+      throw new Error(`NARRATIVE_EXTRACTION_SCHEMA_INVALID: ${validation.errors.join('; ')}`);
     }
     const norm = normalizeExtractedContext(
       parsed,
@@ -210,9 +249,84 @@ export async function runNarrativePlanningExtraction(
       projectId
     );
     const dvc = norm.context;
-    // Project to planning claims.
     const claims = projectDvcToPlanningClaimsLocal(dvc, sourceDocumentId, documentRole);
-    return { claims, dvc, attempts: attemptRecords };
+    return { claims, dvc };
+  };
+  const errorMessages = (error: unknown): string[] => {
+    const message = error instanceof Error ? error.message : String(error);
+    const prefix = 'NARRATIVE_EXTRACTION_SCHEMA_INVALID: ';
+    return message.startsWith(prefix)
+      ? message.slice(prefix.length).split('; ').filter(Boolean)
+      : [message || 'unknown validation error'];
+  };
+
+  // Base attempt.
+  let previousText = '';
+  let validationErrors: string[] = [];
+  let baseLatencyMs = 0;
+  try {
+    const { text, latencyMs } = await callModel(messages);
+    baseLatencyMs = latencyMs;
+    previousText = text;
+    const result = validateAndProject(text);
+    attempts.push({
+      attempt: 1,
+      finishStatus: 'ok',
+      outputCharacters: text.length,
+      inputCharacters: inputChars,
+      latencyMs
+    });
+    return { ...result, attempts };
+  } catch (err) {
+    validationErrors = errorMessages(err);
+    attempts.push({
+      attempt: 1,
+      finishStatus: 'repair',
+      outputCharacters: previousText.length,
+      inputCharacters: inputChars,
+      latencyMs: baseLatencyMs,
+      validationErrors
+    });
+  }
+
+  // Repair uses the canonical CI-3 primitive and therefore sees
+  // both the previous output and the collected validation errors.
+  const repairMessages = buildRepairMessages(previousText, validationErrors) as typeof messages;
+  const repairInputCharacters = repairMessages.reduce(
+    (sum, message) => sum + (message.content?.length || 0),
+    0
+  );
+  let repairedText = '';
+  let repairLatencyMs = 0;
+  try {
+    const { text, latencyMs } = await callModel(repairMessages);
+    repairLatencyMs = latencyMs;
+    repairedText = text;
+    const result = validateAndProject(text);
+    attempts.push({
+      attempt: 2,
+      repairReason: validationErrors.join('; '),
+      finishStatus: 'repair',
+      outputCharacters: text.length,
+      inputCharacters: repairInputCharacters,
+      latencyMs
+    });
+    return { ...result, attempts };
+  } catch (err) {
+    const repairErrors = errorMessages(err);
+    attempts.push({
+      attempt: 2,
+      repairReason: validationErrors.join('; '),
+      finishStatus: 'failed',
+      outputCharacters: repairedText.length,
+      inputCharacters: repairInputCharacters,
+      latencyMs: repairLatencyMs,
+      validationErrors: repairErrors
+    });
+    throw Object.assign(
+      new Error(`NARRATIVE_EXTRACTION_FAILED: ${repairErrors.join('; ')}`),
+      { code: 'NARRATIVE_EXTRACTION_FAILED', attempts }
+    );
   }
 }
 

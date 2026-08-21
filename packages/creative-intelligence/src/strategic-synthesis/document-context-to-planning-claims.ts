@@ -43,11 +43,10 @@
  *   Every projected claim has:
  *     - `sourceDocumentId` (from the planning brief's existing
  *       `buildSourceDocumentId` projection)
- *     - `chunkRefs[]` — uses the DVC `evidence[].section` heading as
- *       a stand-in. Chunk-level traceability to the actual
- *       `prepareDocumentSet` chunk is a future R1+ enhancement;
- *       the planning-intake gate PI-03 (R1 PART G) accepts
- *       section-level chunkRefs as a valid trace signal.
+ *     - `chunkRefs[]` — a section-level transitional trace derived
+ *       from DVC `evidence[].section` (or the DVC field name). It is
+ *       NOT exact canonical `prepareDocumentSet` chunk grounding;
+ *       canonical chunk-id remapping is a later phase.
  *     - `epistemicClass` — from the existing
  *       `classifyPlanningClaimEpistemicClass` (FACT /
  *       USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN).
@@ -60,6 +59,8 @@
  *   - The projection is a pure function of the DVC; no
  *     production-code reference to any specific planning doc.
  */
+
+import { createHash } from 'node:crypto';
 
 import {
   buildClaimId,
@@ -240,14 +241,6 @@ function projectDvcEvidenceToClaims(args: {
 }
 
 function sha256Sync(input: string): string {
-  // Lazy import to avoid pulling node:crypto into the
-  // strategic-synthesis module surface for non-Node callers.
-  // node:crypto is available in the runtime-core / Node test
-  // harness; in pure-ESM browser contexts the call is never
-  // reached because the projection is only invoked from the
-  // orchestrator.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const { createHash } = require('node:crypto') as typeof import('node:crypto');
   return createHash('sha256').update(input).digest('hex');
 }
 

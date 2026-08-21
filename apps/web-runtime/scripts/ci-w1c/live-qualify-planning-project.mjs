@@ -1,16 +1,15 @@
 // CI-W1C.7.5 — Real Planning-Document Live Text Qualification
 // (PART R — Allowed thin qualification script.)
 //
-// Calls ONLY the canonical production surface:
-//   1. projectStore.registerPlanningBriefFromPath() (via real project-store)
-//   2. runCreativeReasoningForProject()  (canonical orchestrator)
+// The live reasoning closure uses only the canonical project-level
+// orchestrator: runCreativeReasoningForProject(). Before the live run,
+// this qualification script may call
+// loadPlanningStrategicEvidenceForProject() solely to export the
+// pre-call planning intake audit artifact. That result is never used
+// to construct the Strategic prompt or bypass the orchestrator.
 //
-// Does NOT manually call:
-//   - loadPlanningStrategicEvidenceForProject
-//   - compileStrategicReasoningContext
-//   - buildStrategicSynthesisPrompt
-//   - direct provider HTTP
-//   - image generation
+// The script does not manually call compileStrategicReasoningContext
+// or buildStrategicSynthesisPrompt, and it never calls image generation.
 //
 // Usage:
 //   node --experimental-strip-types --no-warnings \
@@ -163,7 +162,9 @@ async function main() {
   console.log(`  resolved projectId=${projectId}`);
   console.log(`  profile: ${profile.id} provider=${profile.provider} model=${profile.modelId} baseUrl=${profile.baseUrl}`);
 
-  // 4) Register planning brief via CANONICAL path.
+  // 4) Register the explicitly supplied planning brief via the
+  // canonical path. Never derive planningBriefPath from its parent
+  // directory and never scan siblings of planningBriefPath.
   await fs.mkdir(args.outputRoot, { recursive: true });
   const record = await projectStore.registerPlanningBriefFromPath({
     projectId,

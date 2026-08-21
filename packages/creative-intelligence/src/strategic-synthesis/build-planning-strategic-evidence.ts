@@ -307,16 +307,12 @@ export async function buildPlanningStrategicEvidenceArtifact(
  *   4. Recompute the artifact fingerprint.
  *
  * Dedupe policy (spec PART F §23):
- *   - Deduped by `(claimKey, normalizedValue, sourceDocumentId)`.
- *     First-seen wins.
- *   - When the SAME semantic key + SAME sourceDocumentId is
- *     emitted by both paths, prefer the higher-confidence claim.
- *   - When both paths emit claims with the same claimId
- *     (sha256 collision on value+key), the structured one wins
- *     (it is the existing baseline; the narrative adapter
- *     should produce the same claimId for the same content,
- *     so a collision here is a content collision, not a
- *     disagreement).
+ *   - Exact `claimId` collision: structured wins.
+ *   - Same `(claimKey, normalizedValue, sourceDocumentId)`:
+ *     higher confidence wins; equal confidence: structured wins.
+ *   - Different normalized content is preserved.
+ *   - Normalization is conservative: trim + Unicode NFC only;
+ *     no case folding, fuzzy matching, or semantic similarity.
  *
  * The narrative path's model output is NOT inspected here. The
  * caller is responsible for the model's prompt / parse /
@@ -363,34 +359,36 @@ export async function buildPlanningStrategicEvidenceArtifactHybrid(input: {
       && validSourceIds.has(c.sourceDocumentId)
   );
 
-  // 3. Merge: structured wins on content collision (same
-  //    claimId); otherwise higher confidence wins; otherwise
-  //    structured wins on order.
-  const byClaimId = new Map<string, PlanningStrategicClaim>();
-  for (const c of structured.claims) byClaimId.set(c.claimId, c);
-  for (const c of validNarrativeClaims) {
-    const existing = byClaimId.get(c.claimId);
-    if (!existing) {
-      byClaimId.set(c.claimId, c);
-      continue;
+  // 3. Merge under the R1.1 contract. Exact claimId collisions
+  //    are resolved before semantic-content dedupe, so a
+  //    narrative row can never displace a structured row with
+  //    the same claimId.
+  const structuredClaimIds = new Set(structured.claims.map((c) => c.claimId));
+  const normalizeValue = (value: string): string => value.trim().normalize('NFC');
+  const contentKey = (c: PlanningStrategicClaim): string =>
+    `${c.key}::${normalizeValue(c.value)}::${c.sourceDocumentId}`;
+  const confidence = (c: PlanningStrategicClaim): number =>
+    typeof c.confidence === 'number' && Number.isFinite(c.confidence)
+      ? c.confidence
+      : Number.NEGATIVE_INFINITY;
+  const byContent = new Map<string, PlanningStrategicClaim>();
+
+  for (const claim of structured.claims) {
+    byContent.set(contentKey(claim), claim);
+  }
+  for (const claim of validNarrativeClaims) {
+    if (structuredClaimIds.has(claim.claimId)) continue;
+    const key = contentKey(claim);
+    const existing = byContent.get(key);
+    if (!existing || confidence(claim) > confidence(existing)) {
+      byContent.set(key, claim);
     }
-    // Same claimId → same semantic key + value. Trust the
-    // existing (structured) row.
-    continue;
+    // Equal confidence keeps the existing row. Structured rows
+    // are inserted first, so structured wins the specified tie.
   }
-  // Also dedupe by (key, value, sourceDocumentId) so that two
-  // distinct claimIds with the same content collapse.
-  const seenContent = new Set<string>();
-  const mergedClaims: PlanningStrategicClaim[] = [];
-  const sorted = Array.from(byClaimId.values()).sort((a, b) =>
-    a.claimId.localeCompare(b.claimId)
-  );
-  for (const c of sorted) {
-    const k = `${c.key}::${c.value}::${c.sourceDocumentId}`;
-    if (seenContent.has(k)) continue;
-    seenContent.add(k);
-    mergedClaims.push(c);
-  }
+
+  const mergedClaims = Array.from(byContent.values())
+    .sort((a, b) => a.claimId.localeCompare(b.claimId));
 
   // 4. Recompute the artifact fingerprint.
   const baseArtifact = {

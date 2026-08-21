@@ -50,11 +50,14 @@ import type { ProjectTruthModel } from '@masterpiece/creative-intelligence/truth
 import type { NeedItem } from '@masterpiece/creative-intelligence/need-intelligence/index.ts';
 import type { EvidenceLedgerSnapshot } from '@masterpiece/creative-intelligence/evidence/index.ts';
 import {
+  buildSourceDocumentId,
   computeStructuredExtractionCoverage,
+  mapRoleToSourceRole,
   type PlanningStrategicClaim
 } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 import { runNarrativePlanningExtraction } from './narrative-planning-extraction-runner.ts';
 import { readPlanningBriefFile } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
+import { prepareDocumentSet } from '@masterpiece/document-ingestion/document-preparation.js';
 
 // Lazy import to avoid hard cycle at module load time. The
 // creative-reasoning-service is the only production caller of
@@ -177,61 +180,79 @@ export async function runCreativeReasoningForProject(
   const structuredArtifact = await loadPlanningStrategicEvidenceForProject(deps.projectStore, input.projectId);
   let planningArtifact = structuredArtifact;
 
-  // 4. CI-W1C.7.5-R1 PART C — hybrid planning extraction. The
-  //    structured (regex) path may produce 0 or few claims when
-  //    the source is a long narrative document. When a
-  //    `reasonerFactory` is supplied AND the structured coverage
-  //    is insufficient, run the narrative (model-assisted) path
-  //    and merge the result via the hybrid builder.
-  if (input.reasonerFactory && input.readCredentials && structuredArtifact) {
-    const structuredClaims = structuredArtifact.claims;
-    const semanticTypes = new Set(structuredClaims.map((c) => c.key));
-    const coverageSufficient =
-      structuredClaims.length >= 5 &&
-      semanticTypes.size >= 3 &&
-      structuredArtifact.sourceDocuments.length > 0;
-    if (!coverageSufficient) {
-      const brief = (project.planningBriefFiles ?? [])[0];
-      if (brief) {
-        const absPath = path.join(projectRoot, brief.relativePath);
-        try {
-          const briefContent = await readPlanningBriefFile(absPath);
-          if (briefContent.rawText && briefContent.rawText.length > 0) {
-            const credentials = await input.readCredentials(input.analysisProfileId);
-            const reasoner = input.reasonerFactory(credentials);
-            // Build the sourceDocumentId in the same way the
-            // artifact builder does (so the projection's
-            // claimIds match).
-            const sourceDocumentId = `${input.projectId}:PLANNING_STRATEGIC_SOURCE:${brief.filename}:${brief.contentHash.slice(0, 16)}`;
-            // Re-derive documentRole via the brief's role
-            // classification. The structured artifact already
-            // recorded the role; we use it directly.
-            const documentRole = structuredArtifact.sourceDocuments[0]?.documentRole ?? 'brand-strategy';
-            const narrativeOutput = await runNarrativePlanningExtraction({
-              projectId: input.projectId,
-              sourceDocumentId,
-              rawText: briefContent.rawText,
-              documentRole,
-              filename: brief.filename,
-              reasoner
-            });
-            // Re-load with the narrative claims merged in.
-            const hybrid = await loadPlanningStrategicEvidenceForProject(
-              deps.projectStore,
-              input.projectId,
-              { narrativeClaims: narrativeOutput.claims }
-            );
-            if (hybrid) planningArtifact = hybrid;
-          }
-        } catch (err) {
-          // Narrative extraction is best-effort. If it fails,
-          // fall back to the structured artifact. The intake
-          // gate (R1 PART G, optional) is the layer that decides
-          // whether to block the run on insufficient planning.
-          // For now, log + continue.
-          // eslint-disable-next-line no-console
-          console.warn(`[orchestrator] narrative planning extraction failed: ${(err as Error).message}`);
+  // 4. CI-W1C.7.5-R1.1 — canonical structured coverage decides
+  //    whether narrative extraction is required. Current live
+  //    qualification intentionally supports one narrative planning
+  //    brief; multi-document narrative extraction remains a later
+  //    phase. The registered brief path is read directly and its
+  //    parent directory is never scanned.
+  const brief = (project.planningBriefFiles ?? [])[0];
+  if (structuredArtifact && brief) {
+    const absPath = path.join(projectRoot, brief.relativePath);
+    const briefContent = await readPlanningBriefFile(absPath);
+    const sourceDocument = structuredArtifact.sourceDocuments.find(
+      (document) => document.filename === brief.filename
+    );
+    const documentRole = sourceDocument?.documentRole ?? brief.documentRole;
+    const sourceRole = mapRoleToSourceRole(documentRole);
+    const sourceDocumentId = buildSourceDocumentId(
+      input.projectId,
+      sourceRole,
+      brief.filename,
+      brief.contentHash
+    );
+    const documentSet = prepareDocumentSet({
+      projectId: input.projectId,
+      corpus: {
+        documents: [{
+          id: brief.sourceId,
+          filename: brief.filename,
+          sourceType: 'planning_document',
+          rawText: briefContent.rawText,
+          characterCount: briefContent.rawText.length,
+          documentRole,
+          sections: [{ heading: '全文', content: briefContent.rawText }]
+        }]
+      }
+    });
+    const coverage = computeStructuredExtractionCoverage({
+      claims: structuredArtifact.claims.filter(
+        (claim) => claim.sourceDocumentId === sourceDocumentId
+      ),
+      chunks: documentSet.chunks,
+      rawText: briefContent.rawText
+    });
+
+    if (!coverage.sufficient) {
+      if (!input.reasonerFactory || !input.readCredentials) {
+        throw new Error(
+          `PLANNING_NARRATIVE_EXTRACTION_REQUIRED: structured coverage=${coverage.reason}; Strategic=NOT_RUN`
+        );
+      }
+      try {
+        const credentials = await input.readCredentials(input.analysisProfileId);
+        const reasoner = input.reasonerFactory(credentials);
+        const narrativeOutput = await runNarrativePlanningExtraction({
+          projectId: input.projectId,
+          sourceDocumentId,
+          rawText: briefContent.rawText,
+          documentRole,
+          filename: brief.filename,
+          reasoner
+        });
+        const hybrid = await loadPlanningStrategicEvidenceForProject(
+          deps.projectStore,
+          input.projectId,
+          { narrativeClaims: narrativeOutput.claims }
+        );
+        if (!hybrid) {
+          throw new Error('PLANNING_NARRATIVE_HYBRID_ARTIFACT_MISSING');
         }
+        planningArtifact = hybrid;
+      } catch (error) {
+        throw new Error(
+          `PLANNING_NARRATIVE_EXTRACTION_FAILED: ${(error as Error).message}; Strategic=NOT_RUN`
+        );
       }
     }
   }
