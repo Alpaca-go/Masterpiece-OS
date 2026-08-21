@@ -37,3 +37,5 @@ export * from './structured-extraction-coverage.ts';
 export * from './document-context-to-planning-claims.ts';
 // CI-W1C.7.5-R1.2
 export * from './planning-semantic-extraction.ts';
+// CI-W1C.7.5-R1.3.1
+export * from './qualification-review.ts';
