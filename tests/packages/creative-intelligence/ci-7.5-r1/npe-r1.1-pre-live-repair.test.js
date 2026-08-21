@@ -50,19 +50,19 @@ function validPlanningExtraction(sourceDocumentId, filename) {
     schemaVersion: 'ci-planning-extraction-v1',
     claims: [
       {
-        key: 'industry', value: 'Circular materials', epistemicClass: 'FACT', confidence: 0.9,
+        key: 'industry', value: 'Circular materials', epistemicClass: 'FACT',
         evidence: [{ documentId: sourceDocumentId, filename, section: 'Market context', summary: 'Circular materials' }]
       },
       {
-        key: 'business_model', value: 'Subscription supply', epistemicClass: 'FACT', confidence: 0.9,
+        key: 'business_model', value: 'Subscription supply', epistemicClass: 'FACT',
         evidence: [{ documentId: sourceDocumentId, filename, section: 'Commercial model', summary: 'Subscription supply' }]
       },
       {
-        key: 'target_audience', value: 'Procurement teams', epistemicClass: 'FACT', confidence: 0.8,
+        key: 'target_audience', value: 'Procurement teams', epistemicClass: 'FACT',
         evidence: [{ documentId: sourceDocumentId, filename, section: 'Audience', summary: 'Procurement teams' }]
       },
       {
-        key: 'brand_personality', value: 'Practical', epistemicClass: 'MODEL_INFERENCE', confidence: 0.7,
+        key: 'brand_personality', value: 'Practical', epistemicClass: 'MODEL_INFERENCE',
         evidence: [{ documentId: sourceDocumentId, filename, section: 'Brand', summary: 'Practical' }]
       }
     ],

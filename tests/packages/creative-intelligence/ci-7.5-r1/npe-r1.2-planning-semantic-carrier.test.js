@@ -90,7 +90,11 @@ test('R1.2 carrier: raw schema covers every canonical PlanningClaimKey and proje
   const raw = rawExtraction(ALL_KEYS, sourceDocumentId);
   assert.deepEqual(validatePlanningSemanticExtractionResult(raw), { valid: true, errors: [] });
   const normalized = normalizePlanningSemanticExtractionResult(raw);
-  const projected = projectPlanningExtractionToClaims({ extraction: normalized, sourceDocumentId });
+  const projected = projectPlanningExtractionToClaims({
+    extraction: normalized,
+    sourceDocumentId,
+    documentRole: 'brand-strategy'
+  });
 
   assert.equal(projected.length, 16);
   assert.deepEqual(new Set(projected.map((claim) => claim.key)), new Set(ALL_KEYS));
@@ -145,7 +149,8 @@ test('R1.2 G01-isomorphic synthetic carrier projects all 12 qualification anchor
   assert.equal(validatePlanningSemanticExtractionResult(raw).valid, true);
   const claims = projectPlanningExtractionToClaims({
     extraction: normalizePlanningSemanticExtractionResult(raw),
-    sourceDocumentId
+    sourceDocumentId,
+    documentRole: 'brand-strategy'
   });
   assert.equal(claims.length, 12);
   assert.deepEqual(new Set(claims.map((claim) => claim.key)), new Set(G01_ISOMORPHIC_KEYS));

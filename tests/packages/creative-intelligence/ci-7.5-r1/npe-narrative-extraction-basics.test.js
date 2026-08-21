@@ -103,6 +103,7 @@ test('NPE-10: production code has no project-specific extraction literals', asyn
   ];
   const filesToScan = [
     'packages/creative-intelligence/src/strategic-synthesis/document-context-to-planning-claims.ts',
+    'packages/creative-intelligence/src/strategic-synthesis/epistemic-classifier.ts',
     'packages/creative-intelligence/src/strategic-synthesis/planning-semantic-extraction.ts',
     'packages/creative-intelligence/src/strategic-synthesis/structured-extraction-coverage.ts',
     'packages/creative-intelligence/src/strategic-synthesis/build-planning-strategic-evidence.ts',
