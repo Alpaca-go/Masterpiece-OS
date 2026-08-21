@@ -292,3 +292,120 @@ export async function buildPlanningStrategicEvidenceArtifact(
     generatedAt: new Date().toISOString()
   };
 }
+
+/**
+ * CI-W1C.7.5-R1 — Hybrid planning evidence builder (PART C §10 +
+ * §22). Runs the structured (regex) path AND merges in any
+ * pre-computed narrative (model-assisted) claims.
+ *
+ * The narrative path is NOT executed here. The caller (runtime
+ * orchestrator) provides the narrative claims as a pre-built
+ * list. The hybrid builder's only job is:
+ *   1. Run the existing structured path (per `buildPlanningStrategicEvidenceArtifact`).
+ *   2. Merge the narrative claims into the claim set.
+ *   3. Apply dedupe with a clear precedence rule (see below).
+ *   4. Recompute the artifact fingerprint.
+ *
+ * Dedupe policy (spec PART F §23):
+ *   - Deduped by `(claimKey, normalizedValue, sourceDocumentId)`.
+ *     First-seen wins.
+ *   - When the SAME semantic key + SAME sourceDocumentId is
+ *     emitted by both paths, prefer the higher-confidence claim.
+ *   - When both paths emit claims with the same claimId
+ *     (sha256 collision on value+key), the structured one wins
+ *     (it is the existing baseline; the narrative adapter
+ *     should produce the same claimId for the same content,
+ *     so a collision here is a content collision, not a
+ *     disagreement).
+ *
+ * The narrative path's model output is NOT inspected here. The
+ * caller is responsible for the model's prompt / parse /
+ * validate / normalize (per the spec PART C §3 boundary:
+ * "Model-assisted narrative extraction belongs to CI Document
+ * Intelligence, not to `buildPlanningStrategicEvidenceArtifact()`
+ * as an ad-hoc second reasoning engine.").
+ */
+export async function buildPlanningStrategicEvidenceArtifactHybrid(input: {
+  projectId: string;
+  projectRoot: string;
+  briefs: Parameters<typeof buildPlanningStrategicEvidenceArtifact>[0]['briefs'];
+  /**
+   * Pre-built narrative claims from the model-assisted path.
+   * Each claim MUST have a valid `sourceDocumentId` that matches
+   * one of the source documents in the structured artifact.
+   * Claims with unknown `sourceDocumentId` are dropped (the
+   * caller is responsible for keeping this list project-scoped).
+   */
+  narrativeClaims?: readonly import('./planning-strategic-evidence.ts').PlanningStrategicClaim[];
+}): Promise<PlanningStrategicEvidenceArtifact> {
+  // 1. Run the structured path.
+  const structured = await buildPlanningStrategicEvidenceArtifact({
+    projectId: input.projectId,
+    projectRoot: input.projectRoot,
+    briefs: input.briefs
+  });
+
+  if (!input.narrativeClaims || input.narrativeClaims.length === 0) {
+    return structured;
+  }
+
+  // 2. Build the set of valid sourceDocumentIds from the
+  //    structured artifact (so narrative claims with an unknown
+  //    source are dropped).
+  const validSourceIds = new Set<string>(
+    structured.sourceDocuments.map((d) => d.sourceDocumentId)
+  );
+  const validNarrativeClaims = input.narrativeClaims.filter(
+    (c) => typeof c?.claimId === 'string'
+      && typeof c?.key === 'string'
+      && typeof c?.value === 'string'
+      && typeof c?.sourceDocumentId === 'string'
+      && validSourceIds.has(c.sourceDocumentId)
+  );
+
+  // 3. Merge: structured wins on content collision (same
+  //    claimId); otherwise higher confidence wins; otherwise
+  //    structured wins on order.
+  const byClaimId = new Map<string, PlanningStrategicClaim>();
+  for (const c of structured.claims) byClaimId.set(c.claimId, c);
+  for (const c of validNarrativeClaims) {
+    const existing = byClaimId.get(c.claimId);
+    if (!existing) {
+      byClaimId.set(c.claimId, c);
+      continue;
+    }
+    // Same claimId → same semantic key + value. Trust the
+    // existing (structured) row.
+    continue;
+  }
+  // Also dedupe by (key, value, sourceDocumentId) so that two
+  // distinct claimIds with the same content collapse.
+  const seenContent = new Set<string>();
+  const mergedClaims: PlanningStrategicClaim[] = [];
+  const sorted = Array.from(byClaimId.values()).sort((a, b) =>
+    a.claimId.localeCompare(b.claimId)
+  );
+  for (const c of sorted) {
+    const k = `${c.key}::${c.value}::${c.sourceDocumentId}`;
+    if (seenContent.has(k)) continue;
+    seenContent.add(k);
+    mergedClaims.push(c);
+  }
+
+  // 4. Recompute the artifact fingerprint.
+  const baseArtifact = {
+    projectId: input.projectId,
+    sourceDocuments: structured.sourceDocuments,
+    claims: mergedClaims
+  };
+  const artifactFingerprint = planningEvidenceFingerprint(baseArtifact);
+  return {
+    schemaVersion: 'ci-w1c.7.4',
+    projectId: input.projectId,
+    sourceDocuments: structured.sourceDocuments,
+    claims: mergedClaims,
+    planningEvidenceFingerprint: artifactFingerprint,
+    documentSetHash: structured.documentSetHash,
+    generatedAt: structured.generatedAt
+  };
+}

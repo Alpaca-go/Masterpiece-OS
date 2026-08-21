@@ -32,3 +32,6 @@ export * from './planning-source-registration.ts';
 export * from './build-planning-strategic-evidence.ts';
 export * from './epistemic-routing.ts';
 export * from './epistemic-classifier.ts';
+// CI-W1C.7.5-R1
+export * from './structured-extraction-coverage.ts';
+export * from './document-context-to-planning-claims.ts';

@@ -24,11 +24,16 @@
  *    contracts, epistemic routing). It must not depend on
  *    runtime-core / project-store.
  *
- * This module performs NO model call.
+ * This module performs NO model call. (CI-W1C.7.5-R1 extended:
+ * the model call lives in `narrative-planning-extraction-runner.ts`,
+ * invoked by the orchestrator. The orchestrator passes the
+ * pre-built `narrativeClaims` here for the hybrid merge.)
  */
 
 import {
   buildPlanningStrategicEvidenceArtifact,
+  buildPlanningStrategicEvidenceArtifactHybrid,
+  type PlanningStrategicClaim,
   type PlanningStrategicEvidenceArtifact
 } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 
@@ -51,6 +56,10 @@ export interface ProjectContext {
  * Returns null when the project has no planning briefs (normal
  * state for projects without planning documents).
  *
+ * CI-W1C.7.5-R1 PART D — accepts an optional `narrativeClaims`
+ * list (model-assisted path). When provided, the hybrid builder
+ * merges them into the artifact.
+ *
  * Throws when:
  *  - A registered file is missing on disk (PLANNING-BRIEF-MISSING)
  *  - A registered file's content hash does not match the record
@@ -64,14 +73,18 @@ export interface ProjectContext {
  */
 export async function loadPlanningStrategicEvidenceForProject(
   store: Pick<ProjectStore, 'get' | 'paths'>,
-  projectId: string
+  projectId: string,
+  options?: { narrativeClaims?: readonly PlanningStrategicClaim[] }
 ): Promise<PlanningStrategicEvidenceArtifact | null> {
   if (!projectId) {
     throw new Error('PLANNING-LOADER-NO-PROJECT: projectId is required');
   }
   const project = await store.get(projectId);
   const { root } = await store.paths(projectId);
-  return loadPlanningStrategicEvidenceFromContext({ project, projectRoot: root });
+  return loadPlanningStrategicEvidenceFromContext(
+    { project, projectRoot: root },
+    options
+  );
 }
 
 /**
@@ -83,11 +96,13 @@ export async function loadPlanningStrategicEvidenceForProject(
  * extraction. The loader's only job is to:
  *  1. Resolve the project root.
  *  2. Read project.planningBriefFiles.
- *  3. Hand the briefs to the artifact builder.
+ *  3. Hand the briefs to the artifact builder (hybrid if
+ *     narrativeClaims is provided).
  *  4. Return the artifact.
  */
 export async function loadPlanningStrategicEvidenceFromContext(
-  ctx: ProjectContext
+  ctx: ProjectContext,
+  options?: { narrativeClaims?: readonly PlanningStrategicClaim[] }
 ): Promise<PlanningStrategicEvidenceArtifact | null> {
   const { project, projectRoot } = ctx;
   if (!projectRoot) {
@@ -95,6 +110,14 @@ export async function loadPlanningStrategicEvidenceFromContext(
   }
   const briefs = project.planningBriefFiles ?? [];
   if (briefs.length === 0) return null;
+  if (options?.narrativeClaims && options.narrativeClaims.length > 0) {
+    return buildPlanningStrategicEvidenceArtifactHybrid({
+      projectId: project.id,
+      projectRoot,
+      briefs,
+      narrativeClaims: options.narrativeClaims
+    });
+  }
   return buildPlanningStrategicEvidenceArtifact({
     projectId: project.id,
     projectRoot,
