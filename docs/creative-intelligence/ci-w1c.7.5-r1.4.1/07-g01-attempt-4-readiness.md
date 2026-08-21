@@ -15,4 +15,3 @@ Readiness conditions satisfied offline:
 Verdict: `READY_FOR_G01_ATTEMPT_4`.
 
 This report is readiness only. Attempt 4 was not executed.
-

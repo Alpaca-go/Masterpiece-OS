@@ -34,4 +34,3 @@ Neither 15/15 claim citation nor 12/12 direct anchor refs is a hard gate. This p
 - TRACE-03: no meaningful refs fails SG-11 acceptance — PASS.
 - TRACE-04: invalid ref fails SG-01 acceptance — PASS.
 - TRACE-05: an uncited redundant claim remains diagnostic — PASS.
-

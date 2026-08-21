@@ -13,4 +13,3 @@ CI-W1C.7.5-R1.4 remains `HOLD_FOR_TRACEABILITY_REPAIR`. This phase does not rewr
 ## Reclassification
 
 R1.4 history stays HOLD. For future qualification, the genuine blocker was the non-canonical Strategic-only stop; the `audience_problem` class and 11/12 direct-anchor count are not blockers under the corrected contract.
-

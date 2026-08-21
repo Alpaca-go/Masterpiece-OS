@@ -16,4 +16,3 @@ This audit replayed existing R1.3/R1.4 runtime artifacts and the already-authori
 Attempt 3 source-section evidence also contains a separate `要求` proposition. Section-level marker presence does not transfer its modality to a different extracted proposition. The extracted value and evidence summary retained the declarative source meaning without deleting a modality marker from that proposition.
 
 Result: `ATTEMPT_3_AUDIENCE_PROBLEM_FACT_IS_SOURCE_FAITHFUL`.
-

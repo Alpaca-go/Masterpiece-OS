@@ -20,4 +20,3 @@ Omitting `stopAfter` preserves the existing full Synthesis → Concept → Direc
 - SCOPE-04: omitted scope preserves the full pipeline — PASS.
 - SCOPE-05: canonical orchestrator forwards the scope and the runner uses it — PASS.
 - SCOPE-06: synthesis-only sends no Concept base or repair prompt — PASS.
-
