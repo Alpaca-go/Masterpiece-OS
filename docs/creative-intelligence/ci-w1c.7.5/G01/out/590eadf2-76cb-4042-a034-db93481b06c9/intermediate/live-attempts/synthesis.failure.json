@@ -1,0 +1,10 @@
+{
+  "stage": "synthesis",
+  "attempts": 2,
+  "blockedCodes": [
+    "SG-01"
+  ],
+  "lastError": "gate blocked: SG-01",
+  "liveMode": true,
+  "failedAt": "2026-08-21T02:47:04.260Z"
+}

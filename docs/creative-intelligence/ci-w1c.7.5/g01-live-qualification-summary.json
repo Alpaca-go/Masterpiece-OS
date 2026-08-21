@@ -1,0 +1,101 @@
+{
+  "startedAt": "2026-08-21T02:39:47.085Z",
+  "finishedAt": "2026-08-21T02:47:04.261Z",
+  "durationMs": 437176,
+  "project": "G01",
+  "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+  "provider": {
+    "profileId": "profile-9eb57f7e-7bc5-4214-b325-a013ff1f8eca",
+    "provider": "dashscope",
+    "model": "qwen3.6-plus",
+    "baseUrl": "https://ws-1miaebhuom22vyxa.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+    "protocol": "openai-chat-multimodal",
+    "modelType": "analysis",
+    "hasApiKey": true
+  },
+  "planningBriefRegistration": {
+    "sourceId": "planning-brief:590eadf2-76cb-4042-a034-db93481b06c9:97e9a84e41d59e37",
+    "filename": "九州美学品牌定位提案-1.1(1).docx",
+    "contentHash": "97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd",
+    "characterCount": 10737
+  },
+  "mode": "model_assisted_live",
+  "imageProviderCallCount": 0,
+  "analysisProviderCallCount": 2,
+  "callRecords": [
+    {
+      "timestamp": "2026-08-21T02:43:19.471Z",
+      "provider": "dashscope",
+      "model": "qwen3.6-plus",
+      "latencyMs": 212319,
+      "inputCharacters": 15657,
+      "finishReason": "stop",
+      "outputCharacters": 20964,
+      "usage": {
+        "inputTokens": 5606,
+        "outputTokens": 12428,
+        "totalTokens": 18034
+      }
+    },
+    {
+      "timestamp": "2026-08-21T02:47:04.256Z",
+      "provider": "dashscope",
+      "model": "qwen3.6-plus",
+      "latencyMs": 224778,
+      "inputCharacters": 17916,
+      "finishReason": "stop",
+      "outputCharacters": 20093,
+      "usage": {
+        "inputTokens": 6676,
+        "outputTokens": 13172,
+        "totalTokens": 19848
+      }
+    }
+  ],
+  "planningEvidence": {
+    "loaded": true,
+    "source": "orchestrator",
+    "orchestrator": "runCreativeReasoningForProject",
+    "claimCount": 0
+  },
+  "stages": {
+    "synthesis": {
+      "status": "FAIL",
+      "attempts": 2,
+      "passed": false,
+      "blockedCodes": [
+        "SG-01"
+      ]
+    },
+    "concept": {
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "passed": false,
+      "blockedCodes": []
+    },
+    "direction": {
+      "status": "NOT_RUN",
+      "attempts": 0,
+      "passed": false,
+      "blockedCodes": []
+    }
+  },
+  "synthesis": null,
+  "conceptSet": null,
+  "directionSet": null,
+  "report": null,
+  "reportMarkdown": null,
+  "outputPaths": {
+    "synthesis": null,
+    "conceptSet": null,
+    "directionSet": null,
+    "reportJson": null,
+    "reportMarkdown": null,
+    "promptSnapshots": {
+      "synthesis": "D:\\Masterpiece-OS\\docs\\creative-intelligence\\ci-w1c.7.5\\G01\\out\\590eadf2-76cb-4042-a034-db93481b06c9\\intermediate\\prompt-snapshots\\synthesis.prompt.json",
+      "concept": null,
+      "direction": null
+    },
+    "liveAttempts": "D:\\Masterpiece-OS\\docs\\creative-intelligence\\ci-w1c.7.5\\G01\\out\\590eadf2-76cb-4042-a034-db93481b06c9\\intermediate\\live-attempts"
+  }
+}

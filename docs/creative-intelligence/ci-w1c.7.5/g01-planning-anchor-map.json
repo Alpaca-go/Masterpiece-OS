@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "ci-w1c.7.5",
+  "project": "G01",
+  "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+  "note": "0 planning claims were extracted from the source doc by the heuristic extractor. The anchor map below is the SPEC-SIDE ground truth — the claims that WOULD have been extractable if the planning-extraction layer (CI-W1C.7.4-R1) supported narrative-style brand strategy docs. These are NOT used by the live qualification (planningStrategicEvidence was 0). They exist to make the semantic-retention audit reproducible: each anchor is mapped to (a) where it appears in the source text, (b) where the gate would have required it to surface, and (c) what the model actually produced (NONE for planning, generic for Truth-derived).",
+  "anchors": [
+    {
+      "id": "PA-G01-001",
+      "category": "industry",
+      "specDescription": "industry",
+      "sourceText": "医美供应链行业 / 医疗美容",
+      "sourceLocation": "first-page description / chapter 1.1 市场规模",
+      "truthMatched": "no (Truth has 医疗美容 / 待确认)",
+      "synthesisUsed": "no (model emitted generic locked-asset summary; no industry-specific statement)",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-002",
+      "category": "brand_role",
+      "specDescription": "brand_role",
+      "sourceText": "医美行业上下游最具价值的资源整合服务平台",
+      "sourceLocation": "第二章 品牌概况 / 核心定位",
+      "truthMatched": "no (Truth has 高端医疗美容服务提供者 from prior vnext run — CONTRADICTS planning doc)",
+      "synthesisUsed": "no (model did not surface brand_role in synthesis)",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-003",
+      "category": "business_model",
+      "specDescription": "business_model",
+      "sourceText": "B2B（供应链＋总代理）＋B2b（机构赋能）＋B2C（自有品牌「安迹」及线上商城）",
+      "sourceLocation": "第二章 品牌概况 / 业务模式",
+      "truthMatched": "no (Truth has business.model = '' empty)",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-004",
+      "category": "target_audience",
+      "specDescription": "target_audience",
+      "sourceText": "上游厂商 / 中游医美机构 / 下游消费者 (segmented 3-tier audience)",
+      "sourceLocation": "第二章 品牌概况 / 业务模式 + 第三章 竞品 / 第四章 核心价值主张",
+      "truthMatched": "no (Truth has no target_audience fact)",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-005",
+      "category": "audience_problem",
+      "specDescription": "audience_problem",
+      "sourceText": "中游机构端需要「降本增效」；下游消费者需要「被理解的安全感」",
+      "sourceLocation": "第二章 章节小结 / 情感缺口",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-006",
+      "category": "brand_promise",
+      "specDescription": "brand_promise",
+      "sourceText": "对品质有态度、对客户有温度、对布局有广度、对服务有深度",
+      "sourceLocation": "第二章 品牌概况 / 品牌理念",
+      "truthMatched": "no (Truth has no brand_promise fact)",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-007",
+      "category": "competitive_context",
+      "specDescription": "competitive_context",
+      "sourceText": "国药 / 上药 / 美械宝 / 京东健康 / 爱美客 (5 named competitors across 4 categories)",
+      "sourceLocation": "第三章 竞品品牌参考",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-008",
+      "category": "differentiation_logic",
+      "specDescription": "differentiation_logic",
+      "sourceText": "以科学构建信任，以美学赋予温度 (理性专业 × 温度共情) + 科学美学 / 可信美学 / 责任美学 / 共情美学 / 成长美学 / 平台美学",
+      "sourceLocation": "第二章 章节小结 / 6 维度品牌调性 + 第三章 竞品洞悉总结",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-009",
+      "category": "strategic_objective",
+      "specDescription": "strategic_objective",
+      "sourceText": "成为推动中国医美迈向高质量发展的全链路医美赋能平台",
+      "sourceLocation": "第四章 企业文化 / 愿景",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-010",
+      "category": "brand_positioning",
+      "specDescription": "brand_positioning",
+      "sourceText": "中国医美全链生态美学领航者 / 链接上下游的全链路价值整合与赋能平台",
+      "sourceLocation": "第四章 品牌定位",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-011",
+      "category": "brand_personality",
+      "specDescription": "brand_personality",
+      "sourceText": "可靠·专业·温度·美学",
+      "sourceLocation": "第四章 品牌印象",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    },
+    {
+      "id": "PA-G01-012",
+      "category": "transformation_objective",
+      "specDescription": "transformation_objective",
+      "sourceText": "从「医药流通服务商」认知升级为「医美生态美学品牌」",
+      "sourceLocation": "第二章 品牌概况 / 更名目的",
+      "truthMatched": "no",
+      "synthesisUsed": "no",
+      "retention": "DROPPED"
+    }
+  ],
+  "summary": {
+    "totalAnchors": 12,
+    "preserved": 0,
+    "generalized": 0,
+    "distortedOrDropped": 12,
+    "planningExtractionLayerStatus": "BROKEN — heuristic extractor produced 0 claims from the narrative-style doc; PLANNING STRATEGIC EVIDENCE section in the prompt was empty; model had no project-specific planning authority"
+  }
+}

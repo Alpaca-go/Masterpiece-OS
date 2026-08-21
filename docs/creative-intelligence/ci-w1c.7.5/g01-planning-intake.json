@@ -1,0 +1,19 @@
+{
+  "project": "G01",
+  "projectId": "590eadf2-76cb-4042-a034-db93481b06c9",
+  "profile": {
+    "id": "profile-9eb57f7e-7bc5-4214-b325-a013ff1f8eca",
+    "provider": "dashscope",
+    "model": "qwen3.6-plus"
+  },
+  "planningBriefRegistration": {
+    "sourceId": "planning-brief:590eadf2-76cb-4042-a034-db93481b06c9:97e9a84e41d59e37",
+    "filename": "九州美学品牌定位提案-1.1(1).docx",
+    "relativePath": "planning-briefs/97e9a84e41d59e37.docx",
+    "contentHash": "97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd",
+    "characterCount": 10737,
+    "registeredAt": "2026-08-21T02:36:59.109Z"
+  },
+  "planningClaims": [],
+  "exportedAt": "2026-08-21T02:39:47.075Z"
+}
