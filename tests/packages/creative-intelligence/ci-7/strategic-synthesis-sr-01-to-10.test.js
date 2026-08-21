@@ -89,9 +89,10 @@ function buildNeedsFixture() {
 
 function buildEvidenceFixture() {
   return {
-    schemaVersion: '1.0',
+    schemaVersion: '0.1',
     projectId: PROJECT_ID,
-    items: [
+    generatedAt: '2026-08-20T00:00:00.000Z',
+    entries: [
       {
         id: 'evi-1',
         sourceKind: 'planning_document',
@@ -110,12 +111,13 @@ function buildValidArtifact() {
     promptVersion: STRATEGIC_SYNTHESIS_PROMPT_VERSION,
     generatedAt: '2026-08-20T00:00:00.000Z',
     sourceMap: {
-      planningTruth: ['fact-brand-1', 'fact-brand-2', 'fact-industry-1', 'fact-audience-1'],
+      planningTruth: ['fact-brand-1', 'fact-brand-2', 'fact-industry-1', 'fact-audience-1', 'fact-locked-1', 'fact-prohibited-1'],
       userRequirements: [],
       lockedIdentity: ['fact-locked-1'],
       prohibitedDirections: ['fact-prohibited-1'],
       needs: ['need-1'],
       evidence: ['evi-1'],
+      planningClaims: [],
       legacyVisualEvidenceExcluded: [
         'visualAsset.*',
         'old_visual_style',
@@ -138,6 +140,7 @@ function buildValidArtifact() {
       factRefs: ['fact-brand-1', 'fact-brand-2', 'fact-audience-1'],
       needRefs: ['need-1'],
       evidenceRefs: ['evi-1'],
+      planningClaimRefs: [],
     },
     tensions: [
       {
@@ -150,6 +153,7 @@ function buildValidArtifact() {
         factRefs: ['fact-brand-1', 'fact-audience-1'],
         needRefs: ['need-1'],
         evidenceRefs: ['evi-1'],
+        planningClaimRefs: [],
       },
       {
         id: 'tension-2',
@@ -161,6 +165,7 @@ function buildValidArtifact() {
         factRefs: ['fact-brand-2'],
         needRefs: ['need-1'],
         evidenceRefs: [],
+        planningClaimRefs: [],
       },
     ],
     insights: [
@@ -173,6 +178,7 @@ function buildValidArtifact() {
         factRefs: ['fact-brand-2'],
         needRefs: ['need-1'],
         evidenceRefs: ['evi-1'],
+        planningClaimRefs: [],
       },
       {
         id: 'ins-2',
@@ -183,6 +189,7 @@ function buildValidArtifact() {
         factRefs: ['fact-audience-1'],
         needRefs: ['need-1'],
         evidenceRefs: ['evi-1'],
+        planningClaimRefs: [],
       },
       {
         id: 'ins-3',
@@ -193,6 +200,7 @@ function buildValidArtifact() {
         factRefs: ['fact-brand-1', 'fact-brand-2'],
         needRefs: ['need-1'],
         evidenceRefs: [],
+        planningClaimRefs: [],
       },
     ],
     opportunities: [
@@ -205,6 +213,7 @@ function buildValidArtifact() {
         risk: ['risk of over-explaining process'],
         insightRefs: ['ins-1', 'ins-3'],
         factRefs: ['fact-brand-2'],
+        planningClaimRefs: [],
       },
       {
         id: 'opp-2',
@@ -215,6 +224,7 @@ function buildValidArtifact() {
         risk: ['risk of seeming slow in a fast market'],
         insightRefs: ['ins-2'],
         factRefs: ['fact-audience-1'],
+        planningClaimRefs: [],
       },
       {
         id: 'opp-3',
@@ -225,6 +235,7 @@ function buildValidArtifact() {
         risk: ['risk of feeling inconsistent if warmth goes too soft'],
         insightRefs: ['ins-3', 'ins-1'],
         factRefs: ['fact-brand-1'],
+        planningClaimRefs: [],
       },
     ],
     diagnostics: [],
@@ -235,6 +246,21 @@ function buildValidArtifact() {
       modelCallCount: 1,
     },
   };
+}
+
+function runGate(artifact, options = {}) {
+  const truth = options.truth ?? buildTruthFixture();
+  const needs = options.needs ?? buildNeedsFixture();
+  const evidence = options.evidence ?? buildEvidenceFixture();
+  const ctx = compileStrategicReasoningContext({ projectId: PROJECT_ID, truth, needs, evidence });
+  return runStrategicGroundingGate({
+    artifact,
+    truth,
+    needs,
+    evidence,
+    allowedSourceIds: ctx.sourceIds,
+    ...(options.foreignIds ? { foreignIds: options.foreignIds } : {}),
+  });
 }
 
 test('SR-01: source map excludes legacy visual positive authority', () => {
@@ -261,10 +287,7 @@ test('SR-02: all refs resolve to Project Truth / Need / Evidence', () => {
     model: null,
     modelCallCount: 1,
   });
-  const truth = buildTruthFixture();
-  const gate = runStrategicGroundingGate({
-    artifact: parsed,
-    truth,
+  const gate = runGate(parsed, {
     foreignIds: { factIds: new Set(), needIds: new Set(), evidenceIds: new Set() },
   });
   const sg01 = gate.issues.filter((i) => i.code === 'SG-01');
@@ -282,8 +305,7 @@ test('SR-03: unsupported FACT claim is blocked by SG-02', () => {
     model: null,
     modelCallCount: 1,
   });
-  const truth = buildTruthFixture();
-  const gate = runStrategicGroundingGate({ artifact: parsed, truth });
+  const gate = runGate(parsed);
   assert.ok(gate.blockedCodes.includes('SG-02'),
     `expected SG-02 to block, got blockedCodes: ${gate.blockedCodes.join(',')}`);
 });
@@ -322,7 +344,7 @@ test('SR-05: CREATIVE_HYPOTHESIS is allowed in downstream Concept / Direction (s
   }
   // Sanity: the CI-5B / CI-6B epistemic class names are exported from
   // their own modules (covered in PART F / G).
-  assert.ok(STRATEGIC_GROUNDING_GATE_CODES.length === 10);
+  assert.equal(STRATEGIC_GROUNDING_GATE_CODES.length, 15);
 });
 
 test('SR-06: locked conflict is blocked (SG-05)', () => {
@@ -336,8 +358,7 @@ test('SR-06: locked conflict is blocked (SG-05)', () => {
     model: null,
     modelCallCount: 1,
   });
-  const truth = buildTruthFixture();
-  const gate = runStrategicGroundingGate({ artifact: parsed, truth });
+  const gate = runGate(parsed);
   assert.ok(gate.blockedCodes.includes('SG-05'),
     `expected SG-05 to block, got blockedCodes: ${gate.blockedCodes.join(',')}`);
 });
@@ -354,6 +375,7 @@ test('SR-07: prohibited direction is blocked (positive authority leakage)', () =
     factRefs: ['fact-brand-1'],
     needRefs: ['need-1'],
     evidenceRefs: [],
+    planningClaimRefs: [],
   });
   const parsed = parseStrategicSynthesis({
     rawText: JSON.stringify(fixture),
@@ -363,8 +385,7 @@ test('SR-07: prohibited direction is blocked (positive authority leakage)', () =
     model: null,
     modelCallCount: 1,
   });
-  const truth = buildTruthFixture();
-  const gate = runStrategicGroundingGate({ artifact: parsed, truth });
+  const gate = runGate(parsed);
   assert.ok(gate.blockedCodes.includes('SG-04'),
     `expected SG-04 to block, got blockedCodes: ${gate.blockedCodes.join(',')}`);
 });
@@ -380,10 +401,7 @@ test('SR-08: cross-project source contamination is blocked (SG-10)', () => {
     model: null,
     modelCallCount: 1,
   });
-  const truth = buildTruthFixture();
-  const gate = runStrategicGroundingGate({
-    artifact: parsed,
-    truth,
+  const gate = runGate(parsed, {
     foreignIds: { factIds: new Set(['fact-foreign-A']), needIds: new Set(), evidenceIds: new Set() },
   });
   assert.ok(gate.blockedCodes.includes('SG-10'),
@@ -404,8 +422,7 @@ test('SR-09: generic-only insight set is blocked by SG-09', () => {
     model: null,
     modelCallCount: 1,
   });
-  const truth = buildTruthFixture();
-  const gate = runStrategicGroundingGate({ artifact: parsed, truth });
+  const gate = runGate(parsed);
   assert.ok(gate.blockedCodes.includes('SG-09'),
     `expected SG-09 to block, got blockedCodes: ${gate.blockedCodes.join(',')}`);
 });
@@ -440,7 +457,7 @@ test('one-repair maximum: structural validator + grounding gate can be re-run af
   });
   const truth = buildTruthFixture();
   const report1 = validateStrategicSynthesisStructural(parsed1);
-  const gate1 = runStrategicGroundingGate({ artifact: parsed1, truth });
+  const gate1 = runGate(parsed1, { truth });
   assert.equal(report1.passed, false);
   assert.ok(report1.blockedCodes.includes('STR-06'));
   assert.ok(gate1.blockedCodes.includes('SG-07'));
@@ -457,7 +474,7 @@ test('one-repair maximum: structural validator + grounding gate can be re-run af
     repairReason: 'insights[0].factRefs was empty',
   });
   const report2 = validateStrategicSynthesisStructural(parsed2);
-  const gate2 = runStrategicGroundingGate({ artifact: parsed2, truth });
+  const gate2 = runGate(parsed2, { truth });
   assert.equal(report2.passed, true);
   assert.equal(gate2.passed, true);
   assert.equal(parsed2.meta.attempt, 2);

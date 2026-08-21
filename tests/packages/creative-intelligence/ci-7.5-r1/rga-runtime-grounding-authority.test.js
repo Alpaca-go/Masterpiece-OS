@@ -62,8 +62,8 @@ const RUNTIME = {
   truth: {
     projectId: 'rga-proj',
     facts: [
-      { id: 'fact-1', key: 'brand.name', value: 'X', authority: 'AUTHORITATIVE', sourceRefs: [], truthClass: 'fact' },
-      { id: 'fact-2', key: 'business.industry', value: 'Y', authority: 'AUTHORITATIVE', sourceRefs: [], truthClass: 'fact' }
+      { id: 'fact-1', key: 'brand.name', value: 'X', authority: 'USER_CONFIRMED', sourceRefs: [], truthClass: 'fact' },
+      { id: 'fact-2', key: 'business.industry', value: 'Y', authority: 'USER_CONFIRMED', sourceRefs: [], truthClass: 'fact' }
     ],
     conflicts: [],
     sourceRefs: [],
