@@ -8,8 +8,10 @@
 // pre-call planning intake audit artifact. That result is never used
 // to construct the Strategic prompt or bypass the orchestrator.
 //
-// The script does not manually call compileStrategicReasoningContext
-// or buildStrategicSynthesisPrompt, and it never calls image generation.
+// The script never builds or substitutes a model prompt and never calls
+// image generation. After the production run it may compile the same
+// Strategic context solely to replay parser/gate audit evidence against
+// the exact production SOURCE TRACE IDS.
 //
 // Usage:
 //   node --experimental-strip-types --no-warnings \
@@ -179,6 +181,10 @@ async function main() {
   console.log(`  registered planning-brief: sourceId=${record.sourceId}`);
   console.log(`  contentHash=${record.contentHash.slice(0, 16)}...  relativePath=${record.relativePath}`);
   console.log(`  characterCount=${record.characterCount}  documentRole=${record.documentRole}`);
+  const sourceSha256 = crypto.createHash('sha256')
+    .update(await fs.readFile(args.planningBriefPath))
+    .digest('hex')
+    .toUpperCase();
 
   // 5) Export the planning intake (canonical artifact) BEFORE any model call.
   const planningArtifactModule = await import(pathToFileURL(
@@ -450,6 +456,97 @@ async function main() {
   const finalPlanningArtifact = narrativeClaims.length > 0
     ? await planningArtifactModule.loadPlanningStrategicEvidenceForProject(projectStore, projectId, { narrativeClaims })
     : planningArtifact;
+  const synthesisAuditContext = strategicModule.compileStrategicReasoningContext({
+    projectId,
+    truth: truthDoc,
+    needs: needsDoc.needs || [],
+    evidence: evidenceDoc,
+    planningStrategicEvidence: finalPlanningArtifact?.claims ?? []
+  });
+  const strategicAttemptAudits = [];
+  for (const output of rawOutputs.filter((entry) => entry.stage === 'strategic_synthesis')) {
+    try {
+      const artifact = strategicModule.parseStrategicSynthesis({
+        rawText: output.text,
+        projectId,
+        attempt: output.attempt,
+        provider: creds.provider,
+        model: creds.model,
+        modelCallCount: output.attempt
+      });
+      const structural = strategicModule.validateStrategicSynthesisStructural(artifact);
+      const grounding = strategicModule.runStrategicGroundingGate({
+        artifact,
+        truth: truthDoc,
+        needs: needsDoc.needs || [],
+        evidence: evidenceDoc,
+        planningClaims: finalPlanningArtifact?.claims ?? [],
+        allowedSourceIds: synthesisAuditContext.sourceIds
+      });
+      strategicAttemptAudits.push({
+        attempt: output.attempt,
+        parsed: true,
+        blockedCodes: Array.from(new Set([...structural.blockedCodes, ...grounding.blockedCodes])),
+        structuralBlockedCodes: structural.blockedCodes,
+        groundingBlockedCodes: grounding.blockedCodes,
+        sourceMap: artifact.sourceMap
+      });
+    } catch (error) {
+      strategicAttemptAudits.push({
+        attempt: output.attempt,
+        parsed: false,
+        blockedCodes: [error.code || 'PARSE_FAILED'],
+        parseError: error.code || error.name || 'PARSE_FAILED'
+      });
+    }
+  }
+  const acceptedSynthesis = result.shadow.synthesis;
+  const redactedEvidence = {
+    runId: path.basename(args.outputRoot),
+    branch: 'feat/short-chain-simplified-ui',
+    head: process.env.G01_QUALIFICATION_HEAD || '',
+    source: {
+      filename: record.filename,
+      sha256: sourceSha256,
+      registeredContentHash: record.contentHash
+    },
+    calls: callRecords,
+    planning: {
+      structuredCoverage,
+      claimCount: finalPlanningArtifact?.claims?.length ?? 0,
+      claims: (finalPlanningArtifact?.claims ?? []).map((claim) => ({
+        claimId: claim.claimId,
+        key: claim.key,
+        epistemicClass: claim.epistemicClass,
+        sourceDocumentId: claim.sourceDocumentId,
+        chunkRefs: claim.chunkRefs ?? []
+      }))
+    },
+    strategicTrace: {
+      allowedFactIds: synthesisAuditContext.sourceIds.facts,
+      allowedNeedIds: synthesisAuditContext.sourceIds.needs,
+      allowedEvidenceIds: synthesisAuditContext.sourceIds.evidence,
+      allowedPlanningClaimIds: synthesisAuditContext.sourceIds.planningClaims,
+      artifactFactIds: acceptedSynthesis?.sourceMap?.planningTruth ?? [],
+      artifactNeedIds: acceptedSynthesis?.sourceMap?.needs ?? [],
+      artifactEvidenceIds: acceptedSynthesis?.sourceMap?.evidence ?? [],
+      artifactPlanningClaimIds: acceptedSynthesis?.sourceMap?.planningClaims ?? [],
+      attempts: strategicAttemptAudits,
+      blockedCodes: result.stages.synthesis.blockedCodes
+    },
+    stages: {
+      synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts },
+      concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts },
+      direction: { status: result.stages.direction.status, attempts: result.stages.direction.attempts }
+    },
+    imageProviderCallCount: result.imageProviderCallCount,
+    scopeBlockedStages
+  };
+  await fs.writeFile(
+    path.join(args.outputRoot, `${args.project.toLowerCase()}-attempt-3-evidence.runtime-redacted.json`),
+    JSON.stringify(redactedEvidence, null, 2),
+    'utf8'
+  );
   const runtimeAudit = {
     project: args.project,
     projectId,
@@ -461,6 +558,8 @@ async function main() {
     normalizedPlanningExtraction,
     narrativeClaims,
     finalPlanningArtifact,
+    synthesisAuditContext: { sourceIds: synthesisAuditContext.sourceIds },
+    strategicAttemptAudits,
     rawOutputs,
     callRecords,
     scopeBlockedStages,

@@ -1,0 +1,277 @@
+{
+  "sourceHashes": {
+    "sha256": "94EE096E905943F463B54199A7E1D0F27F88CDF7DA8AF06FD12EE5CAC688A509",
+    "registeredContentHash": "97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd"
+  },
+  "callLedger": [
+    {
+      "stage": "planning_narrative",
+      "provider": "dashscope",
+      "model": "qwen3.6-plus",
+      "latencyMs": 138714,
+      "finishReason": "stop",
+      "usage": {
+        "inputTokens": 6869,
+        "outputTokens": 8114,
+        "totalTokens": 14983
+      }
+    },
+    {
+      "stage": "strategic_synthesis",
+      "provider": "dashscope",
+      "model": "qwen3.6-plus",
+      "latencyMs": 255557,
+      "finishReason": "stop",
+      "usage": {
+        "inputTokens": 10490,
+        "outputTokens": 14996,
+        "totalTokens": 25486
+      }
+    }
+  ],
+  "planningClaims": [
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:audience_problem:b05d0823613d2399",
+      "key": "audience_problem",
+      "epistemicClass": "FACT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第一章 5、国家政策；6、用户画像；第二章 章节小结"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_personality:51a6e0e66ec05d12",
+      "key": "brand_personality",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第一章 调性与风格；第四章 品牌印象"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_positioning:cb1c133520c5c804",
+      "key": "brand_positioning",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第四章 品牌定位"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_promise:db93edfc8ef5aace",
+      "key": "brand_promise",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第四章 核心价值主张；品牌Slogan"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_role:9eb5b23607881d47",
+      "key": "brand_role",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第四章 品牌定位"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:business_model:67364049dbe1c81b",
+      "key": "business_model",
+      "epistemicClass": "FACT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第二章 品牌概况"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:communication_task:c0b8a178a6f9c13d",
+      "key": "communication_task",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第二章 洞悉总结；第三章 洞悉总结"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:competitive_context:3061ff35fc180430",
+      "key": "competitive_context",
+      "epistemicClass": "FACT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第一章 3、行业趋势；4、产品结构；第二章 品牌威胁"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:differentiation_logic:5714589dee7e047c",
+      "key": "differentiation_logic",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第一章 调性与风格；第四章 品牌核心竞争力"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:experience_objective:bdbec5387ef4c5a1",
+      "key": "experience_objective",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第四章 核心价值主张；第二章 章节小结"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:industry:e17445e94383c4ac",
+      "key": "industry",
+      "epistemicClass": "FACT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "引言；第一章 1、市场规模"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:product_service:164d020846cef71d",
+      "key": "product_service",
+      "epistemicClass": "FACT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第二章 品牌概况；品牌优势"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:strategic_objective:3957decaedaf95f0",
+      "key": "strategic_objective",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第二章 品牌理念；第四章 愿景"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:target_audience:362774e74edbe964",
+      "key": "target_audience",
+      "epistemicClass": "FACT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第二章 品牌概况；第一章 调性与风格"
+      ]
+    },
+    {
+      "claimId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:transformation_objective:7a42e718127c0232",
+      "key": "transformation_objective",
+      "epistemicClass": "USER_REQUIREMENT",
+      "sourceDocumentId": "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37",
+      "chunkRefs": [
+        "第二章 品牌概况"
+      ]
+    }
+  ],
+  "allowedSourceSets": {
+    "facts": [
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:4f65f3f8-1749-4354-b488-1d8c50e21061",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:755bd372-d7ac-4ccd-824e-b2b9fbe49cad",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:brand-name-32fa23e11f42",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:user-lock-1",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:user-lock-2",
+      "project_record:590eadf2-76cb-4042-a034-db93481b06c9:locked.facts",
+      "project_record:590eadf2-76cb-4042-a034-db93481b06c9:locked.logo"
+    ],
+    "needs": [
+      "need:clarification:prompt_source_object:chatcmpl-7e23cf29-9170-94c1-85f0-ecafb9c11906:business.model:critical",
+      "need:identity:project_record:590eadf2-76cb-4042-a034-db93481b06c9:brand.name:critical",
+      "need:preservation:visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:4f65f3f8-1749-4354-b488-1d8c50e21061:critical",
+      "need:risk:project_record:590eadf2-76cb-4042-a034-db93481b06c9:brand.name:critical",
+      "need:differentiation:prompt_source_object:chatcmpl-7e23cf29-9170-94c1-85f0-ecafb9c11906:brand.role:important"
+    ],
+    "evidence": [
+      "project:590eadf2-76cb-4042-a034-db93481b06c9:brand_name",
+      "project:590eadf2-76cb-4042-a034-db93481b06c9:industry",
+      "model:590eadf2-76cb-4042-a034-db93481b06c9:visual_understanding_core",
+      "model:chatcmpl-7e23cf29-9170-94c1-85f0-ecafb9c11906:pso_provenance"
+    ],
+    "planningClaims": [
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:audience_problem:b05d0823613d2399",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_personality:51a6e0e66ec05d12",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_positioning:cb1c133520c5c804",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_promise:db93edfc8ef5aace",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_role:9eb5b23607881d47",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:business_model:67364049dbe1c81b",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:communication_task:c0b8a178a6f9c13d",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:competitive_context:3061ff35fc180430",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:differentiation_logic:5714589dee7e047c",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:experience_objective:bdbec5387ef4c5a1",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:industry:e17445e94383c4ac",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:product_service:164d020846cef71d",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:strategic_objective:3957decaedaf95f0",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:target_audience:362774e74edbe964",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:transformation_objective:7a42e718127c0232"
+    ]
+  },
+  "artifactMirrorSets": {
+    "planningTruth": [
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:4f65f3f8-1749-4354-b488-1d8c50e21061",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:755bd372-d7ac-4ccd-824e-b2b9fbe49cad",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:brand-name-32fa23e11f42",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:user-lock-1",
+      "visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:user-lock-2",
+      "project_record:590eadf2-76cb-4042-a034-db93481b06c9:locked.facts",
+      "project_record:590eadf2-76cb-4042-a034-db93481b06c9:locked.logo"
+    ],
+    "needs": [
+      "need:clarification:prompt_source_object:chatcmpl-7e23cf29-9170-94c1-85f0-ecafb9c11906:business.model:critical",
+      "need:identity:project_record:590eadf2-76cb-4042-a034-db93481b06c9:brand.name:critical",
+      "need:preservation:visual_understanding_core:590eadf2-76cb-4042-a034-db93481b06c9:locked.assets:4f65f3f8-1749-4354-b488-1d8c50e21061:critical",
+      "need:risk:project_record:590eadf2-76cb-4042-a034-db93481b06c9:brand.name:critical",
+      "need:differentiation:prompt_source_object:chatcmpl-7e23cf29-9170-94c1-85f0-ecafb9c11906:brand.role:important"
+    ],
+    "evidence": [
+      "project:590eadf2-76cb-4042-a034-db93481b06c9:brand_name",
+      "project:590eadf2-76cb-4042-a034-db93481b06c9:industry",
+      "model:590eadf2-76cb-4042-a034-db93481b06c9:visual_understanding_core",
+      "model:chatcmpl-7e23cf29-9170-94c1-85f0-ecafb9c11906:pso_provenance"
+    ],
+    "planningClaims": [
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:audience_problem:b05d0823613d2399",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_personality:51a6e0e66ec05d12",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_positioning:cb1c133520c5c804",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_promise:db93edfc8ef5aace",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:brand_role:9eb5b23607881d47",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:business_model:67364049dbe1c81b",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:communication_task:c0b8a178a6f9c13d",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:competitive_context:3061ff35fc180430",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:differentiation_logic:5714589dee7e047c",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:experience_objective:bdbec5387ef4c5a1",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:industry:e17445e94383c4ac",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:product_service:164d020846cef71d",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:strategic_objective:3957decaedaf95f0",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:target_audience:362774e74edbe964",
+      "590eadf2-76cb-4042-a034-db93481b06c9:PLANNING_STRATEGIC_SOURCE:九州美学品牌定位提案-1.1(1).docx:97e9a84e41d59e37:transformation_objective:7a42e718127c0232"
+    ]
+  },
+  "blockedCodes": {
+    "accepted": [],
+    "attempts": [
+      {
+        "attempt": 1,
+        "parsed": true,
+        "blockedCodes": [],
+        "structuralBlockedCodes": [],
+        "groundingBlockedCodes": []
+      }
+    ]
+  },
+  "stageStatuses": {
+    "synthesis": {
+      "status": "PASS",
+      "attempts": 1
+    },
+    "concept": {
+      "status": "FAIL",
+      "attempts": 2
+    },
+    "direction": {
+      "status": "NOT_RUN",
+      "attempts": 0
+    }
+  }
+}
