@@ -32,4 +32,3 @@ The prompt prohibits omission, addition, invention, transformation, or summariza
 - Existing SG-02..11 semantics were not expanded or weakened.
 
 The production wiring reuses the already compiled synthesis context. No second fact classifier or filtering policy was introduced.
-

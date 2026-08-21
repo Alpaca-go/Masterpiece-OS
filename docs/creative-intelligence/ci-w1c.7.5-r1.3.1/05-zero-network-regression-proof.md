@@ -51,4 +51,3 @@ The new tests use the package export rather than adding deep imports, so workspa
 - image calls: 0;
 - G01 reruns: 0;
 - G02 executions: 0.
-

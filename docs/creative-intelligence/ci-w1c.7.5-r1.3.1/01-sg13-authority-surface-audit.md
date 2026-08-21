@@ -37,4 +37,3 @@ Production passes the exact `synthesisCtx.sourceIds` object into `runStrategicGr
 | SG-15 | Evidence | `sourceIds.evidence` | same set | aligned |
 
 SG-01 remains independent and strict: every emitted reference must resolve in the corresponding canonical allowed set. A model audit copy cannot authorize a reference.
-

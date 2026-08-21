@@ -20,4 +20,3 @@ The RGA fixture's obsolete `AUTHORITATIVE` authority literals were migrated to t
 ## Result
 
 The previously stale suite moved from 1/11 passing to **11/11 PASS**. Every original SR-01..10 assertion and the one-repair assertion remains active.
-

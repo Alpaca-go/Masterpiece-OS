@@ -27,4 +27,3 @@ No threshold was reduced. A pure `evaluateQualificationReview` helper now makes 
 ## Historical boundary
 
 R1.3 Attempt 2 remains `HOLD_FOR_TRACEABILITY_REPAIR` with its original recorded scores. This contract is prospective and does not rewrite the historical review.
-

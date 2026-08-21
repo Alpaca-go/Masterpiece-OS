@@ -21,4 +21,3 @@
 Readiness result: **READY_FOR_G01_ATTEMPT_3**.
 
 This is readiness only. R1.3.1 does not authorize or execute Attempt 3, G02, Concept, Direction, Anchor, or image generation.
-
