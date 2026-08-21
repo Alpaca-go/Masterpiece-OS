@@ -16,4 +16,3 @@
 Pre-existing Attempt-2-named files were observed in the starting worktree and left untouched. They are not treated as R1.1 evidence and do not change the zero-call accounting for this stage.
 
 Readiness: `READY_FOR_G01_ATTEMPT_2`
-

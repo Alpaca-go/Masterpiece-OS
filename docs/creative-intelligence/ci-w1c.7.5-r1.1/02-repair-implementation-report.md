@@ -55,4 +55,3 @@ The script now states that it may call `loadPlanningStrategicEvidenceForProject(
 - Canonical DVC evidence-to-chunk-id remapping.
 - Multi-document narrative extraction.
 - Any live qualification or image work.
-

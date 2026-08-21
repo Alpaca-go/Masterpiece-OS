@@ -1,7 +1,9 @@
 # CI-W1C.7.5-R1.1 Pre-Live Repair Audit
 
-Date: 2026-08-21  
-Branch: `feat/short-chain-simplified-ui`  
+Date: 2026-08-21
+
+Branch: `feat/short-chain-simplified-ui`
+
 Upstream and local starting HEAD: `03db54a46b624566f93fbaa150814e172aa48af0`
 
 ## Starting state
@@ -30,4 +32,3 @@ Upstream and local starting HEAD: `03db54a46b624566f93fbaa150814e172aa48af0`
 - No access to `D:\测试项目\九州美学\` or its legacy PNG files.
 - Current narrative projection trace is a **section-level transitional trace**, not exact canonical chunk grounding.
 - Current live qualification contract supports one narrative planning brief per qualification case; multi-document narrative extraction is not claimed.
-

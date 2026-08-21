@@ -1,6 +1,7 @@
 # CI-W1C.7.5-R1.1 Final Report
 
-Date: 2026-08-21  
+Date: 2026-08-21
+
 Branch: `feat/short-chain-simplified-ui`
 
 ## Outcome

@@ -54,4 +54,3 @@ The historical failures are recorded in `04-guard-delta-report.md`; none is in t
 - Legacy PNG reads: **0**
 - Narrative model seams: deterministic in-process fake reasoners only
 - Planning fixtures: synthetic temporary `.md` files only
-
