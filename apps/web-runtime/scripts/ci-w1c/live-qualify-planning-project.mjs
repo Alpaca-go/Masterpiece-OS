@@ -23,6 +23,8 @@
 //                           g01-planning-intake.{json,md}; do not call the
 //                           orchestrator. Used for the PART D preflight
 //                           human claim audit before the live model call.
+//   --strategic-only      : block Concept / Direction before any Provider
+//                           call while retaining canonical project orchestration.
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -49,6 +51,7 @@ function parseArgs(argv) {
           ? path.join(os.homedir(), 'Library', 'Application Support', 'masterpiece-os-desktop')
           : path.join(process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config'), 'masterpiece-os-desktop')),
     registerOnly: false,
+    strategicOnly: false,
     analysisProfileId: ''
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -58,6 +61,7 @@ function parseArgs(argv) {
     else if (a === '--output-root') out.outputRoot = path.resolve(argv[++i]);
     else if (a === '--user-data-root') out.userDataRoot = path.resolve(argv[++i]);
     else if (a === '--register-only') out.registerOnly = true;
+    else if (a === '--strategic-only') out.strategicOnly = true;
     else if (a === '--analysis-profile-id') out.analysisProfileId = argv[++i];
     else throw new Error(`unknown arg: ${a}`);
   }
@@ -128,6 +132,7 @@ async function main() {
   console.log(`  outputRoot: ${args.outputRoot}`);
   console.log(`  expected projectId: ${reg.expectedProjectId}`);
   console.log(`  registerOnly: ${args.registerOnly}`);
+  console.log(`  strategicOnly: ${args.strategicOnly}`);
 
   // 1) Resolve settings + profile.
   const settings = await readSettings(args.userDataRoot);
@@ -180,6 +185,44 @@ async function main() {
     path.join(repoRoot, 'packages/runtime-core/src/application/planning-strategic-evidence-loader.ts')
   ).href);
   const planningArtifact = await planningArtifactModule.loadPlanningStrategicEvidenceForProject(projectStore, projectId);
+  const strategicModule = await import(pathToFileURL(
+    path.join(repoRoot, 'packages/creative-intelligence/src/strategic-synthesis/index.ts')
+  ).href);
+  const documentIntelligenceModule = await import(pathToFileURL(
+    path.join(repoRoot, 'packages/creative-intelligence/src/document-intelligence/index.ts')
+  ).href);
+  const documentPreparationModule = await import(pathToFileURL(
+    path.join(repoRoot, 'packages/document-ingestion/src/document-preparation.js')
+  ).href);
+  const registeredBrief = await strategicModule.readPlanningBriefFile(path.join(projectDir, record.relativePath));
+  const structuredSourceDocument = planningArtifact?.sourceDocuments?.find((source) => source.filename === record.filename);
+  const documentRole = structuredSourceDocument?.documentRole ?? record.documentRole;
+  const sourceRole = strategicModule.mapRoleToSourceRole(documentRole);
+  const sourceDocumentId = strategicModule.buildSourceDocumentId(
+    projectId,
+    sourceRole,
+    record.filename,
+    record.contentHash
+  );
+  const preparedDocumentSet = documentPreparationModule.prepareDocumentSet({
+    projectId,
+    corpus: {
+      documents: [{
+        id: record.sourceId,
+        filename: record.filename,
+        sourceType: 'planning_document',
+        rawText: registeredBrief.rawText,
+        characterCount: registeredBrief.rawText.length,
+        documentRole,
+        sections: [{ heading: '全文', content: registeredBrief.rawText }]
+      }]
+    }
+  });
+  const structuredCoverage = strategicModule.computeStructuredExtractionCoverage({
+    claims: (planningArtifact?.claims ?? []).filter((claim) => claim.sourceDocumentId === sourceDocumentId),
+    chunks: preparedDocumentSet.chunks,
+    rawText: registeredBrief.rawText
+  });
   const intakeJson = {
     project: args.project,
     projectId,
@@ -196,6 +239,7 @@ async function main() {
       registeredAt: record.registeredAt
     },
     planningClaims: planningArtifact?.claims ?? [],
+    structuredCoverage,
     exportedAt: new Date().toISOString()
   };
   await fs.writeFile(
@@ -218,6 +262,7 @@ async function main() {
     `- planningEvidenceFingerprint: \`${record.planningEvidenceFingerprint ?? ''}\``,
     `- characterCount: ${record.characterCount}`,
     `- documentRole: ${record.documentRole}`,
+    `- structuredCoverage: ${structuredCoverage.sufficient ? 'sufficient' : 'insufficient'} (${structuredCoverage.reason})`,
     ``,
     `## Claims (${(planningArtifact?.claims ?? []).length})`,
     ``,
@@ -258,8 +303,28 @@ async function main() {
     baseUrl: creds.baseUrl,
   });
   const callRecords = [];
+  const rawOutputs = [];
+  const scopeBlockedStages = [];
+  const classifyStage = (messages) => {
+    const text = messages.map((message) => message.content || '').join('\n');
+    if (/Planning Semantic Extraction engine/i.test(text)) return 'planning_narrative';
+    if (/ModelAssistedDirectionSet/i.test(text)) return 'direction';
+    if (/ModelAssistedConceptSet/i.test(text)) return 'concept';
+    if (/StrategicSynthesisArtifact/i.test(text)) return 'strategic_synthesis';
+    return 'unknown';
+  };
   function reasonerFactory() {
     return async (input) => {
+      const stage = classifyStage(input.prompt.messages);
+      if (args.strategicOnly && (stage === 'concept' || stage === 'direction')) {
+        scopeBlockedStages.push({ stage, timestamp: new Date().toISOString() });
+        const boundaryError = new Error(`G01_QUALIFICATION_SCOPE_BLOCKED_${stage.toUpperCase()}`);
+        boundaryError.code = 'G01_QUALIFICATION_SCOPE_BLOCKED';
+        throw boundaryError;
+      }
+      if (stage === 'unknown') {
+        throw new Error('G01_QUALIFICATION_UNKNOWN_MODEL_STAGE');
+      }
       const t0 = Date.now();
       let result;
       let error = null;
@@ -274,6 +339,7 @@ async function main() {
       const latency = Date.now() - t0;
       const record = {
         timestamp: new Date().toISOString(),
+        stage,
         provider: creds.provider,
         model: creds.model,
         latencyMs: latency,
@@ -286,6 +352,7 @@ async function main() {
         record.finishReason = result.finishReason;
         record.outputCharacters = (result.text || '').length;
         record.usage = result.usage;
+        rawOutputs.push({ stage, attempt: rawOutputs.filter((entry) => entry.stage === stage).length + 1, text: result.text });
       }
       callRecords.push(record);
       if (error) throw error;
@@ -348,6 +415,9 @@ async function main() {
         error: error.message,
         stack: error.stack,
         callRecords,
+        rawOutputs,
+        scopeBlockedStages,
+        structuredCoverage,
         planningIntake: { sourceId: record.sourceId, claimCount: (planningArtifact?.claims ?? []).length }
       }, null, 2),
       'utf8'
@@ -357,6 +427,51 @@ async function main() {
   }
 
   const finishedAt = Date.now();
+  let normalizedPlanningExtraction = null;
+  let narrativeClaims = [];
+  const narrativeValidationAttempts = [];
+  for (const output of rawOutputs.filter((entry) => entry.stage === 'planning_narrative')) {
+    try {
+      const parsed = documentIntelligenceModule.parseModelJson(output.text);
+      const validation = strategicModule.validatePlanningSemanticExtractionResult(parsed);
+      narrativeValidationAttempts.push({ attempt: output.attempt, valid: validation.valid, errors: validation.errors });
+      if (!validation.valid) continue;
+      normalizedPlanningExtraction = strategicModule.normalizePlanningSemanticExtractionResult(parsed);
+      narrativeClaims = strategicModule.projectPlanningExtractionToClaims({
+        extraction: normalizedPlanningExtraction,
+        sourceDocumentId,
+        documentRole
+      });
+      break;
+    } catch (error) {
+      narrativeValidationAttempts.push({ attempt: output.attempt, valid: false, errors: [error.message] });
+    }
+  }
+  const finalPlanningArtifact = narrativeClaims.length > 0
+    ? await planningArtifactModule.loadPlanningStrategicEvidenceForProject(projectStore, projectId, { narrativeClaims })
+    : planningArtifact;
+  const runtimeAudit = {
+    project: args.project,
+    projectId,
+    sourceDocumentId,
+    structuredClaimCount: planningArtifact?.claims?.length ?? 0,
+    structuredCoverage,
+    narrativeRequired: !structuredCoverage.sufficient,
+    narrativeValidationAttempts,
+    normalizedPlanningExtraction,
+    narrativeClaims,
+    finalPlanningArtifact,
+    rawOutputs,
+    callRecords,
+    scopeBlockedStages,
+    productionOrchestrator: 'runCreativeReasoningForProject',
+    imageProviderCallCount: result.imageProviderCallCount
+  };
+  await fs.writeFile(
+    path.join(args.outputRoot, `${args.project.toLowerCase()}-planning-runtime-audit.json`),
+    JSON.stringify(runtimeAudit, null, 2),
+    'utf8'
+  );
   const summary = {
     startedAt: new Date(startedAt).toISOString(),
     finishedAt: new Date(finishedAt).toISOString(),
@@ -375,7 +490,16 @@ async function main() {
     imageProviderCallCount: result.imageProviderCallCount,
     analysisProviderCallCount: callRecords.length,
     callRecords,
-    planningEvidence: { loaded: true, source: 'orchestrator', orchestrator: 'runCreativeReasoningForProject', claimCount: (planningArtifact?.claims ?? []).length },
+    scopeBlockedStages,
+    strategicOnly: args.strategicOnly,
+    planningEvidence: {
+      loaded: true,
+      source: 'orchestrator',
+      orchestrator: 'runCreativeReasoningForProject',
+      structuredClaimCount: planningArtifact?.claims?.length ?? 0,
+      structuredCoverage,
+      finalClaimCount: finalPlanningArtifact?.claims?.length ?? 0
+    },
     stages: {
       synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts, passed: result.stages.synthesis.passed, blockedCodes: result.stages.synthesis.blockedCodes },
       concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts, passed: result.stages.concept.passed, blockedCodes: result.stages.concept.blockedCodes },
