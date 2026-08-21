@@ -32,6 +32,10 @@ import type { ProjectTruthModel } from '../truth/contracts.ts';
 import type { NeedItem } from '../need-intelligence/contracts.ts';
 import type { EvidenceLedgerSnapshot } from '../evidence/contracts.ts';
 import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
+import {
+  compileStrategicReasoningContext,
+  type StrategicReasoningContext,
+} from './compile-strategic-context.ts';
 
 export interface StrategicGroundingGateInput {
   artifact: StrategicSynthesisArtifact;
@@ -52,11 +56,22 @@ export interface StrategicGroundingGateInput {
   evidence?: EvidenceLedgerSnapshot;
   /**
    * CI-W1C.7.4-R2 PART E — actual PlanningStrategicEvidence input
-   * claims. The gate builds `knownPlanningClaimIds` from this list
-   * PLUS the model-emitted `sourceMap.planningClaims` (audit trail).
-   * Model output alone is NOT authority.
+   * claims. Used for the planning-usage requirement. Reference and mirror
+   * authority comes from canonical `allowedSourceIds.planningClaims`, never
+   * from the model-emitted `sourceMap.planningClaims` audit copy.
    */
   planningClaims?: PlanningStrategicClaim[];
+  /**
+   * Canonical prompt-visible source authority. Production callers pass
+   * `StrategicReasoningContext.sourceIds` directly so reference validation
+   * and sourceMap mirror validation use the exact same surface rendered in
+   * `# SOURCE TRACE IDS`.
+   *
+   * The fallback recompiles that surface through the canonical context
+   * compiler for direct/test callers; the gate never copies fact filtering
+   * policy.
+   */
+  allowedSourceIds?: StrategicReasoningContext['sourceIds'];
   /**
    * Set of "other-project" fact/need/evidence IDs that must NOT
    * appear in this artifact. Used for SG-10 cross-project
@@ -134,21 +149,24 @@ function mentionsAny(text: string, needles: readonly string[]): string | null {
 export function runStrategicGroundingGate(input: StrategicGroundingGateInput): StrategicGroundingReport {
   const issues: StrategicGroundingIssue[] = [];
   const { artifact, truth } = input;
-  // CI-W1C.7.5-R1 PART I — runtime carriers are the SOLE authority
-  // for the allowed-ID sets. `artifact.sourceMap.*` is an audit copy
-  // only; it is NOT used to authorize any ref. SG-13/14/15
-  // (consistency gates, added below) ensure the audit copy still
-  // mirrors the runtime input.
-  const factIdSet = new Set<string>();
-  for (const f of truth.facts) factIdSet.add(f.id);
-  const needIdSet = new Set<string>();
-  for (const n of input.needs ?? []) {
-    if (typeof n?.id === 'string') needIdSet.add(n.id);
-  }
-  const evidenceIdSet = new Set<string>();
-  for (const e of input.evidence?.entries ?? []) {
-    if (typeof e?.id === 'string') evidenceIdSet.add(e.id);
-  }
+  // CI-W1C.7.5-R1.3.1 — the context-compiled SOURCE TRACE IDS are the
+  // sole authority for allowed references and mirror targets.
+  // `artifact.sourceMap.*` is an audit copy only and cannot authorize refs.
+  const allowedSourceIds = input.allowedSourceIds ?? compileStrategicReasoningContext({
+    projectId: truth.projectId,
+    truth,
+    needs: input.needs ?? [],
+    evidence: input.evidence ?? {
+      schemaVersion: '0.1',
+      projectId: truth.projectId,
+      generatedAt: '',
+      entries: [],
+    },
+    planningStrategicEvidence: input.planningClaims ?? [],
+  }).sourceIds;
+  const factIdSet = new Set(allowedSourceIds.facts);
+  const needIdSet = new Set(allowedSourceIds.needs);
+  const evidenceIdSet = new Set(allowedSourceIds.evidence);
   for (const c of truth.conflicts) {
     // Conflicts do not register fact IDs in the source map. We only
     // include the conflict's reference IDs in the foreignIds check.
@@ -157,15 +175,10 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
   const knownFactIds = factIdSet;
   const knownNeedIds = needIdSet;
   const knownEvidenceIds = evidenceIdSet;
-  // CI-W1C.7.4-R2 PART E — knownPlanningClaimIds comes ONLY from
-  // the ACTUAL runtime input (`input.planningClaims`). The
-  // model-emitted `sourceMap.planningClaims` is recorded for audit
-  // but is NOT authority; the gate refuses to let the model
-  // self-authorize fake IDs (RTG-02b).
-  const knownPlanningClaimIds = new Set<string>();
-  for (const c of input.planningClaims ?? []) {
-    if (typeof c?.claimId === 'string') knownPlanningClaimIds.add(c.claimId);
-  }
+  // CI-W1C.7.4-R2 PART E — knownPlanningClaimIds comes only from the
+  // canonical context-compiled source IDs. The model-emitted audit copy
+  // cannot self-authorize fake IDs (RTG-02b).
+  const knownPlanningClaimIds = new Set(allowedSourceIds.planningClaims);
 
   const block = (code: StrategicGroundingGateCode, where: string, detail: string, refs?: string[]): void => {
     issues.push({ code, severity: 'block', where, detail, ...(refs ? { refs } : {}) });
@@ -438,7 +451,7 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
   // actually use them. We do NOT force every output element to
   // reference a planning claim, but the projectUnderstanding must
   // and at least one tension or insight must.
-  if ((input.planningClaims ?? []).length > 0) {
+  if (knownPlanningClaimIds.size > 0) {
     if (artifact.projectUnderstanding.planningClaimRefs.length === 0) {
       block(
         'SG-11',
@@ -460,18 +473,12 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
 
   // CI-W1C.7.4-R2.1 PART C — SG-12 PLANNING_SOURCE_MAP_MATCHES_RUNTIME.
   // The model-emitted `sourceMap.planningClaims` is metadata and
-  // MUST exactly mirror the runtime input claim IDs as a sorted
+  // MUST exactly mirror the prompt-visible allowed IDs as a sorted
   // unique set. We do NOT silently overwrite the artifact; we
   // BLOCK so the existing repair attempt can fix the structured
   // output on the next attempt.
   {
-    const runtimeClaimIds = Array.from(
-      new Set(
-        (input.planningClaims ?? [])
-          .map((c) => c?.claimId)
-          .filter((id): id is string => typeof id === 'string' && id.length > 0),
-      ),
-    ).sort();
+    const runtimeClaimIds = Array.from(knownPlanningClaimIds).sort();
     const artifactClaimIds = Array.from(
       new Set(
         (artifact.sourceMap.planningClaims ?? []).filter(
@@ -501,10 +508,9 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
   }
 
   // CI-W1C.7.5-R1 PART J — runtime/sourceMap consistency gates for
-  // Fact (SG-13), Need (SG-14), and Evidence (SG-15). The runtime
-  // carriers are authority; the model-emitted sourceMap is an audit
-  // copy. These gates enforce that the audit copy still mirrors
-  // the runtime input. Sorted unique set equality (per domain).
+  // Fact (SG-13), Need (SG-14), and Evidence (SG-15). The canonical
+  // prompt-visible source IDs are authority; the model-emitted sourceMap
+  // is an audit copy. Sorted unique set equality is required per domain.
   // The set comparison itself is the safety net for the Goal D
   // change: the gate refuses to let the model silently differ from
   // the runtime.
@@ -541,7 +547,8 @@ export function runStrategicGroundingGate(input: StrategicGroundingGateInput): S
     }
   };
   // SG-13 FACT_SOURCE_MAP_MATCHES_RUNTIME.
-  // `sourceMap.planningTruth` is the audit copy of runtime fact IDs.
+  // `sourceMap.planningTruth` is the audit copy of prompt-visible allowed
+  // fact IDs. It is intentionally NOT a mirror of every Project Truth fact.
   checkMirror('SG-13', 'planningTruth', {
     artifactIds: artifact.sourceMap.planningTruth,
     runtimeIds: Array.from(factIdSet)

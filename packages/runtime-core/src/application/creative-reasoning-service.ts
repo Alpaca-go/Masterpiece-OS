@@ -808,11 +808,10 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         const grounding = runStrategicGroundingGate({
           artifact: a,
           truth: input.truth,
-          // CI-W1C.7.5-R1 PART I — runtime carriers are the SOLE
-          // authority for the allowed-ID sets. The gate no longer
-          // derives grounding authority from the model-emitted
-          // sourceMap. SG-13/14/15 enforce that the audit copy
-          // still mirrors the runtime input.
+          allowedSourceIds: synthesisCtx.sourceIds,
+          // CI-W1C.7.5-R1.3.1 — the exact context-compiled SOURCE TRACE
+          // IDS are the sole reference authority and sourceMap mirror
+          // target. Model-emitted sourceMap values remain audit copies.
           needs: input.needs,
           evidence: input.evidence,
           planningClaims: input.planningStrategicEvidence ?? [],
