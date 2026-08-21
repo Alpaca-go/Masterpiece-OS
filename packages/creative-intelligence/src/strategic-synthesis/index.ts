@@ -39,3 +39,5 @@ export * from './document-context-to-planning-claims.ts';
 export * from './planning-semantic-extraction.ts';
 // CI-W1C.7.5-R1.3.1
 export * from './qualification-review.ts';
+// CI-W1C.7.5-R1.4.1
+export * from './qualification-audit.ts';
