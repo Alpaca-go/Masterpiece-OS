@@ -108,10 +108,18 @@ export type CreativeReasoningMode =
   | 'model_assisted_mock'
   | 'model_assisted_live';
 
+export type CreativeReasoningStopAfter = 'synthesis' | 'concept' | 'direction';
+
 export type StageStatus = 'PASS' | 'FAIL' | 'NOT_RUN';
 
 export interface CreativeReasoningInput {
   projectId: string;
+  /**
+   * Canonical stage authorization boundary. The service decides
+   * authorization before building or entering a downstream stage.
+   * Default: `direction` (the existing full pipeline).
+   */
+  stopAfter?: CreativeReasoningStopAfter;
   truth: ProjectTruthModel;
   needs: NeedItem[];
   evidence: EvidenceLedgerSnapshot;
@@ -176,7 +184,7 @@ export interface ModelReasoner {
 
 export interface StageRunResult<TParsed> {
   status: StageStatus;
-  attempts: 1 | 2;
+  attempts: 0 | 1 | 2;
   passed: boolean;
   blockedCodes: string[];
   artifact: TParsed | null;
@@ -660,6 +668,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
   async function run(input: CreativeReasoningInput): Promise<CreativeReasoningResult> {
     const useMock = input.useMock !== false;
     const liveMode = !useMock;
+    const stopAfter = input.stopAfter ?? 'direction';
     const qualificationBudget = input.qualificationBudget ?? DEFAULT_QUALIFICATION_BUDGET;
     // Cache the truth/needs/evidence on the deps so the
     // buildStagePrompt helper can re-compile per call (the helper
@@ -735,7 +744,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       const reason = synthesisBudget.reason ?? 'PROMPT_BUDGET_EXCEEDED';
       const synthStage: StageRunResult<StrategicSynthesisArtifact> = {
         status: 'FAIL',
-        attempts: 0 as unknown as 1 | 2,
+        attempts: 0,
         passed: false,
         blockedCodes: [reason],
         artifact: null,
@@ -760,7 +769,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           synthesis: synthStage,
           concept: {
             status: 'NOT_RUN',
-            attempts: 0 as unknown as 1 | 2,
+            attempts: 0,
             passed: false,
             blockedCodes: [],
             artifact: null,
@@ -769,7 +778,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           },
           direction: {
             status: 'NOT_RUN',
-            attempts: 0 as unknown as 1 | 2,
+            attempts: 0,
             passed: false,
             blockedCodes: [],
             artifact: null,
@@ -837,10 +846,20 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     // downstream. (PART H fail-closed)
     let conceptStage: StageRunResult<ModelAssistedConceptSet> | null = null;
     let conceptPrompt: ConceptIdeationPromptOutput | null = null;
-    if (liveMode && synthStage.status === 'FAIL') {
+    if (stopAfter === 'synthesis') {
       conceptStage = {
         status: 'NOT_RUN',
-        attempts: 0 as unknown as 1 | 2,
+        attempts: 0,
+        passed: false,
+        blockedCodes: [],
+        artifact: null,
+        rawAttempts: [],
+        gateReport: { reason: 'OUTSIDE_AUTHORIZED_SCOPE' },
+      };
+    } else if (liveMode && synthStage.status === 'FAIL') {
+      conceptStage = {
+        status: 'NOT_RUN',
+        attempts: 0,
         passed: false,
         blockedCodes: [],
         artifact: null,
@@ -863,7 +882,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         const reason = conceptBudget.reason ?? 'PROMPT_BUDGET_EXCEEDED';
         conceptStage = {
           status: 'FAIL',
-          attempts: 0 as unknown as 1 | 2,
+          attempts: 0,
           passed: false,
           blockedCodes: [reason],
           artifact: null,
@@ -900,10 +919,20 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     // Stage 3: Direction Ideation
     let directionStage: StageRunResult<ModelAssistedDirectionSet> | null = null;
     let directionPrompt: DirectionIdeationPromptOutput | null = null;
-    if (liveMode && (synthStage.status === 'FAIL' || (conceptStage && conceptStage.status === 'FAIL'))) {
+    if (stopAfter !== 'direction') {
       directionStage = {
         status: 'NOT_RUN',
-        attempts: 0 as unknown as 1 | 2,
+        attempts: 0,
+        passed: false,
+        blockedCodes: [],
+        artifact: null,
+        rawAttempts: [],
+        gateReport: { reason: 'OUTSIDE_AUTHORIZED_SCOPE' },
+      };
+    } else if (liveMode && (synthStage.status === 'FAIL' || (conceptStage && conceptStage.status === 'FAIL'))) {
+      directionStage = {
+        status: 'NOT_RUN',
+        attempts: 0,
         passed: false,
         blockedCodes: [],
         artifact: null,
@@ -927,7 +956,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         const reason = directionBudget.reason ?? 'PROMPT_BUDGET_EXCEEDED';
         directionStage = {
           status: 'FAIL',
-          attempts: 0 as unknown as 1 | 2,
+          attempts: 0,
           passed: false,
           blockedCodes: [reason],
           artifact: null,
@@ -1020,7 +1049,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         synthesis: synthStage,
         concept: conceptStage ?? {
           status: 'NOT_RUN',
-          attempts: 0 as unknown as 1 | 2,
+          attempts: 0,
           passed: false,
           blockedCodes: [],
           artifact: null,
@@ -1029,7 +1058,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         },
         direction: directionStage ?? {
           status: 'NOT_RUN',
-          attempts: 0 as unknown as 1 | 2,
+          attempts: 0,
           passed: false,
           blockedCodes: [],
           artifact: null,

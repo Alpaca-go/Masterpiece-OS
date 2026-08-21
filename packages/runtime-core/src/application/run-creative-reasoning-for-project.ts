@@ -40,7 +40,8 @@ import type {
 import type {
   CreativeReasoningInput,
   CreativeReasoningResult,
-  CreativeReasoningQualificationBudget
+  CreativeReasoningQualificationBudget,
+  CreativeReasoningStopAfter
 } from './creative-reasoning-service.ts';
 import type { ProviderCredentials } from '../shared/types.ts';
 
@@ -80,6 +81,7 @@ export interface ProjectReasoningContext {
 
 export interface RunCreativeReasoningForProjectInput {
   projectId: string;
+  stopAfter?: CreativeReasoningStopAfter;
   analysisProfileId?: string;
   useMock?: boolean;
   reasonerFactory?: (credentials: ProviderCredentials) => import('./creative-reasoning-service.ts').ModelReasoner;
@@ -276,6 +278,7 @@ export async function runCreativeReasoningForProject(
 
   const serviceInput: CreativeReasoningInput = {
     projectId: input.projectId,
+    ...(input.stopAfter ? { stopAfter: input.stopAfter } : {}),
     truth,
     needs,
     evidence,

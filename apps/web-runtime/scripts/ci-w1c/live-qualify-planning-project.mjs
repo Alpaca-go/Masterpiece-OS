@@ -25,8 +25,8 @@
 //                           g01-planning-intake.{json,md}; do not call the
 //                           orchestrator. Used for the PART D preflight
 //                           human claim audit before the live model call.
-//   --strategic-only      : block Concept / Direction before any Provider
-//                           call while retaining canonical project orchestration.
+//   --strategic-only      : ask canonical production orchestration to stop after
+//                           Strategic Synthesis; Concept / Direction remain NOT_RUN.
 
 import fs from 'node:fs/promises';
 import os from 'node:os';
@@ -74,8 +74,21 @@ function parseArgs(argv) {
 }
 
 const PROJECT_REGISTRY = {
-  G01: { dirName: '九州美学-590eadf2', expectedProjectId: '590eadf2-76cb-4042-a034-db93481b06c9' },
-  G02: { dirName: '一剂良方-a13d6c09', expectedProjectId: 'a13d6c09-99f7-4ff9-b499-3b9f8a1df31b' },
+  G01: {
+    dirName: '九州美学-590eadf2',
+    expectedProjectId: '590eadf2-76cb-4042-a034-db93481b06c9',
+    qualificationAnchorKeys: [
+      'industry', 'brand_role', 'business_model', 'target_audience',
+      'audience_problem', 'brand_promise', 'competitive_context',
+      'differentiation_logic', 'strategic_objective', 'brand_positioning',
+      'brand_personality', 'transformation_objective'
+    ]
+  },
+  G02: {
+    dirName: '一剂良方-a13d6c09',
+    expectedProjectId: 'a13d6c09-99f7-4ff9-b499-3b9f8a1df31b',
+    qualificationAnchorKeys: []
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -324,8 +337,8 @@ async function main() {
       const stage = classifyStage(input.prompt.messages);
       if (args.strategicOnly && (stage === 'concept' || stage === 'direction')) {
         scopeBlockedStages.push({ stage, timestamp: new Date().toISOString() });
-        const boundaryError = new Error(`G01_QUALIFICATION_SCOPE_BLOCKED_${stage.toUpperCase()}`);
-        boundaryError.code = 'G01_QUALIFICATION_SCOPE_BLOCKED';
+        const boundaryError = new Error(`G01_QUALIFICATION_UNEXPECTED_STAGE_${stage.toUpperCase()}`);
+        boundaryError.code = 'G01_QUALIFICATION_UNEXPECTED_STAGE';
         throw boundaryError;
       }
       if (stage === 'unknown') {
@@ -389,6 +402,7 @@ async function main() {
     result = await runCreativeReasoningForProject(
       {
         projectId,
+        ...(args.strategicOnly ? { stopAfter: 'synthesis' } : {}),
         analysisProfileId: profile.id,
         useMock: false,
         reasonerFactory,
@@ -501,50 +515,106 @@ async function main() {
     }
   }
   const acceptedSynthesis = result.shadow.synthesis;
-  const redactedEvidence = {
-    runId: path.basename(args.outputRoot),
-    branch: 'feat/short-chain-simplified-ui',
-    head: process.env.G01_QUALIFICATION_HEAD || '',
-    source: {
-      filename: record.filename,
+  const planningClaims = finalPlanningArtifact?.claims ?? [];
+  const sourceTextByKey = normalizedPlanningExtraction
+    ? Object.fromEntries(normalizedPlanningExtraction.claims.map((claim) => [
+        claim.key,
+        strategicModule.collectPlanningSourceSectionText(
+          registeredBrief.rawText,
+          claim.evidence.map((entry) => entry.section).filter(Boolean)
+        )
+      ]))
+    : {};
+  const planningEpistemicAudit = normalizedPlanningExtraction
+    ? strategicModule.buildPlanningEpistemicAudit({
+        extraction: normalizedPlanningExtraction,
+        finalClaims: planningClaims,
+        documentRole,
+        sourceTextByKey
+      })
+    : [];
+  const anchorClaimIds = planningClaims
+    .filter((claim) => reg.qualificationAnchorKeys.includes(claim.key))
+    .map((claim) => claim.claimId);
+  const strategicUsage = acceptedSynthesis
+    ? strategicModule.auditStrategicPlanningUsage({
+        artifact: acceptedSynthesis,
+        allowedPlanningClaimIds: synthesisAuditContext.sourceIds.planningClaims,
+        anchorClaimIds
+      })
+    : {
+        projectUnderstanding: { planningClaimRefs: [] },
+        tensions: [],
+        insights: [],
+        opportunities: [],
+        usedPlanningClaimIds: [],
+        usedPlanningClaimCount: 0,
+        totalPlanningClaimRefOccurrences: 0,
+        uncitedPlanningClaimIds: [...synthesisAuditContext.sourceIds.planningClaims],
+        directAnchorTraceCoverage: {
+          evaluatedAnchorClaimIds: anchorClaimIds,
+          citedAnchorClaimIds: [],
+          uncitedAnchorClaimIds: anchorClaimIds,
+          citedCount: 0,
+          totalCount: anchorClaimIds.length,
+          ratio: anchorClaimIds.length === 0 ? 1 : 0
+        }
+      };
+  const redactedEvidenceV2 = {
+    schemaVersion: strategicModule.QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION,
+    sourceHashes: {
       sha256: sourceSha256,
       registeredContentHash: record.contentHash
     },
-    calls: callRecords,
-    planning: {
-      structuredCoverage,
-      claimCount: finalPlanningArtifact?.claims?.length ?? 0,
-      claims: (finalPlanningArtifact?.claims ?? []).map((claim) => ({
+    callLedger: callRecords.map((call) => ({
+      stage: call.stage,
+      provider: call.provider,
+      model: call.model,
+      latencyMs: call.latencyMs,
+      ...(call.finishReason ? { finishReason: call.finishReason } : {}),
+      ...(call.usage ? { usage: call.usage } : {})
+    })),
+    planningClaims: planningClaims.map((claim) => ({
         claimId: claim.claimId,
         key: claim.key,
         epistemicClass: claim.epistemicClass,
         sourceDocumentId: claim.sourceDocumentId,
         chunkRefs: claim.chunkRefs ?? []
+    })),
+    planningEpistemicAudit,
+    allowedSourceSets: {
+      facts: synthesisAuditContext.sourceIds.facts,
+      needs: synthesisAuditContext.sourceIds.needs,
+      evidence: synthesisAuditContext.sourceIds.evidence,
+      planningClaims: synthesisAuditContext.sourceIds.planningClaims
+    },
+    artifactMirrorSets: {
+      planningTruth: acceptedSynthesis?.sourceMap?.planningTruth ?? [],
+      needs: acceptedSynthesis?.sourceMap?.needs ?? [],
+      evidence: acceptedSynthesis?.sourceMap?.evidence ?? [],
+      planningClaims: acceptedSynthesis?.sourceMap?.planningClaims ?? []
+    },
+    blockedCodes: {
+      accepted: result.stages.synthesis.blockedCodes,
+      attempts: strategicAttemptAudits.map((attempt) => ({
+        attempt: attempt.attempt,
+        blockedCodes: attempt.blockedCodes
       }))
     },
-    strategicTrace: {
-      allowedFactIds: synthesisAuditContext.sourceIds.facts,
-      allowedNeedIds: synthesisAuditContext.sourceIds.needs,
-      allowedEvidenceIds: synthesisAuditContext.sourceIds.evidence,
-      allowedPlanningClaimIds: synthesisAuditContext.sourceIds.planningClaims,
-      artifactFactIds: acceptedSynthesis?.sourceMap?.planningTruth ?? [],
-      artifactNeedIds: acceptedSynthesis?.sourceMap?.needs ?? [],
-      artifactEvidenceIds: acceptedSynthesis?.sourceMap?.evidence ?? [],
-      artifactPlanningClaimIds: acceptedSynthesis?.sourceMap?.planningClaims ?? [],
-      attempts: strategicAttemptAudits,
-      blockedCodes: result.stages.synthesis.blockedCodes
-    },
-    stages: {
+    stageStatuses: {
       synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts },
       concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts },
       direction: { status: result.stages.direction.status, attempts: result.stages.direction.attempts }
     },
-    imageProviderCallCount: result.imageProviderCallCount,
-    scopeBlockedStages
+    strategicUsage
   };
+  const evidenceValidation = strategicModule.validateRedactedQualificationEvidenceV2(redactedEvidenceV2);
+  if (!evidenceValidation.valid) {
+    throw new Error(`QUALIFICATION_EVIDENCE_V2_INVALID: ${evidenceValidation.errors.join('; ')}`);
+  }
   await fs.writeFile(
-    path.join(args.outputRoot, `${args.project.toLowerCase()}-attempt-3-evidence.runtime-redacted.json`),
-    JSON.stringify(redactedEvidence, null, 2),
+    path.join(args.outputRoot, `${args.project.toLowerCase()}-qualification-evidence.v2.runtime-redacted.json`),
+    JSON.stringify(redactedEvidenceV2, null, 2),
     'utf8'
   );
   const runtimeAudit = {
