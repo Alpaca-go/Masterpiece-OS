@@ -35,3 +35,5 @@ export * from './epistemic-classifier.ts';
 // CI-W1C.7.5-R1
 export * from './structured-extraction-coverage.ts';
 export * from './document-context-to-planning-claims.ts';
+// CI-W1C.7.5-R1.2
+export * from './planning-semantic-extraction.ts';

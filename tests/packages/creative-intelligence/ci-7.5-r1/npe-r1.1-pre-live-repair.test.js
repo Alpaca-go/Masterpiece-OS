@@ -29,30 +29,45 @@ function hashText(text) {
   return createHash('sha256').update(text.replace(/\r\n/g, '\n')).digest('hex');
 }
 
-function validDvc(sourceDocumentId, filename, rawLength = 1000) {
+function validProjectionDvc(sourceDocumentId, filename) {
   return {
-    schemaVersion: '1.0',
-    sourceRunId: 'zero-network-narrative-run',
-    generatedAt: '2026-08-21T00:00:00.000Z',
-    brandName: 'Example Brand',
-    industry: 'Circular materials',
-    products: ['Recovered fiber'],
-    services: [],
-    targetAudience: ['Procurement teams'],
-    pricePositioning: null,
-    businessModel: 'Subscription supply',
-    brandPersonality: ['Practical'],
-    visualPreferences: [],
-    requiredTouchpoints: [],
-    lockedFacts: [],
-    prohibitedDirections: [],
-    unknownFields: [],
+    schemaVersion: '1.0', sourceRunId: 'zero-network-projection', generatedAt: '2026-08-21T00:00:00.000Z',
+    brandName: 'Example Brand', industry: 'Circular materials', products: ['Recovered fiber'], services: [],
+    targetAudience: ['Procurement teams'], pricePositioning: null, businessModel: 'Subscription supply',
+    brandPersonality: ['Practical'], visualPreferences: [], requiredTouchpoints: [], lockedFacts: [],
+    prohibitedDirections: [], unknownFields: [],
     evidence: [
       { field: 'industry', documentId: sourceDocumentId, filename, section: 'Market context', summary: 'Circular materials' },
       { field: 'businessModel', documentId: sourceDocumentId, filename, section: 'Commercial model', summary: 'Subscription supply' },
       { field: 'targetAudience', documentId: sourceDocumentId, filename, section: 'Audience', summary: 'Procurement teams' }
     ],
-    sourceDocuments: [{ documentId: sourceDocumentId, filename, sourceType: 'docx', characterCount: rawLength }]
+    sourceDocuments: [{ documentId: sourceDocumentId, filename, sourceType: 'docx', characterCount: 1000 }]
+  };
+}
+
+function validPlanningExtraction(sourceDocumentId, filename) {
+  return {
+    schemaVersion: 'ci-planning-extraction-v1',
+    claims: [
+      {
+        key: 'industry', value: 'Circular materials', epistemicClass: 'FACT', confidence: 0.9,
+        evidence: [{ documentId: sourceDocumentId, filename, section: 'Market context', summary: 'Circular materials' }]
+      },
+      {
+        key: 'business_model', value: 'Subscription supply', epistemicClass: 'FACT', confidence: 0.9,
+        evidence: [{ documentId: sourceDocumentId, filename, section: 'Commercial model', summary: 'Subscription supply' }]
+      },
+      {
+        key: 'target_audience', value: 'Procurement teams', epistemicClass: 'FACT', confidence: 0.8,
+        evidence: [{ documentId: sourceDocumentId, filename, section: 'Audience', summary: 'Procurement teams' }]
+      },
+      {
+        key: 'brand_personality', value: 'Practical', epistemicClass: 'MODEL_INFERENCE', confidence: 0.7,
+        evidence: [{ documentId: sourceDocumentId, filename, section: 'Brand', summary: 'Practical' }]
+      }
+    ],
+    conflicts: [],
+    unknownKeys: []
   };
 }
 
@@ -118,7 +133,7 @@ test('NPE-11: ESM projection executes and emits stable claims without require()'
   const { projectDocumentContextToPlanningClaims } = await import(strategicUrl);
   const sourceDocumentId = 'project:PLANNING_STRATEGIC_SOURCE:brief.docx:0123456789abcdef';
   const claims = projectDocumentContextToPlanningClaims({
-    dvc: validDvc(sourceDocumentId, 'brief.docx'),
+    dvc: validProjectionDvc(sourceDocumentId, 'brief.docx'),
     sourceDocumentId,
     documentRole: 'brand-strategy'
   });
@@ -174,7 +189,7 @@ test('NPE-17/23: fake reasoner runs parse/validate/normalize/projection and hybr
       reasoner: async ({ prompt }) => {
         calls += 1;
         assert.ok(prompt.messages.some((message) => message.content.includes('<document')));
-        return { reportMarkdown: JSON.stringify(validDvc(sourceDocumentId, ctx.brief.filename)) };
+        return { reportMarkdown: JSON.stringify(validPlanningExtraction(sourceDocumentId, ctx.brief.filename)) };
       }
     });
     assert.equal(calls, 1);
@@ -198,7 +213,7 @@ test('NPE-24/25: repair receives previous output plus validation errors and succ
   const { runNarrativePlanningExtraction } = await import(narrativeUrl);
   const sourceDocumentId = 'project:PLANNING_STRATEGIC_SOURCE:repair.docx:0123456789abcdef';
   const seenMessages = [];
-  const responses = ['{"brandName": 7}', JSON.stringify(validDvc(sourceDocumentId, 'repair.docx'))];
+  const responses = ['{"brandName": 7}', JSON.stringify(validPlanningExtraction(sourceDocumentId, 'repair.docx'))];
   const output = await runNarrativePlanningExtraction({
     projectId: 'repair-project',
     sourceDocumentId,
@@ -212,7 +227,7 @@ test('NPE-24/25: repair receives previous output plus validation errors and succ
   });
   assert.equal(seenMessages.length, 2);
   const repairText = seenMessages[1].map((message) => message.content).join('\n');
-  assert.match(repairText, /上一次输出/);
+  assert.match(repairText, /Previous output/);
   assert.match(repairText, /\{"brandName": 7\}/);
   assert.match(repairText, /schemaVersion/);
   assert.equal(output.attempts[0].finishStatus, 'repair');
@@ -374,7 +389,7 @@ test('NPE-12/15/17: long-document canonical coverage triggers narrative and cont
         readCredentials: fakeCredentials,
         reasonerFactory: () => async () => {
           narrativeCalls += 1;
-          return { reportMarkdown: JSON.stringify(validDvc(sourceDocumentId, ctx.brief.filename, ctx.brief.characterCount)) };
+          return { reportMarkdown: JSON.stringify(validPlanningExtraction(sourceDocumentId, ctx.brief.filename)) };
         }
       },
       {
