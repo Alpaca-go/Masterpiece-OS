@@ -16,6 +16,7 @@ import {
   type PlanningEpistemicClass,
   type PlanningStrategicClaim
 } from './planning-strategic-evidence.ts';
+import { classifyPlanningClaimEpistemicClass } from './epistemic-classifier.ts';
 
 export const PLANNING_SEMANTIC_EXTRACTION_SCHEMA_VERSION = 'ci-planning-extraction-v1' as const;
 
@@ -27,7 +28,7 @@ const EPISTEMIC_CLASS_SET = new Set<PlanningEpistemicClass>([
   'UNKNOWN'
 ]);
 const ROOT_KEYS = new Set(['schemaVersion', 'claims', 'conflicts', 'unknownKeys']);
-const CLAIM_KEYS = new Set(['key', 'value', 'epistemicClass', 'confidence', 'evidence']);
+const CLAIM_KEYS = new Set(['key', 'value', 'epistemicClass', 'evidence']);
 const EVIDENCE_KEYS = new Set(['documentId', 'filename', 'section', 'summary']);
 const CONFLICT_KEYS = new Set(['key', 'description', 'sourceRefs']);
 
@@ -41,8 +42,8 @@ export interface PlanningSemanticExtractionEvidence {
 export interface PlanningSemanticExtractionClaim {
   key: PlanningClaimKey;
   value: string;
+  /** Model proposal only. Final authority is resolved deterministically. */
   epistemicClass: PlanningEpistemicClass;
-  confidence?: number;
   evidence: PlanningSemanticExtractionEvidence[];
 }
 
@@ -78,7 +79,6 @@ const OUTPUT_SHAPE = `{
     "key": "<allowed PlanningClaimKey>",
     "value": "<source-faithful planning statement>",
     "epistemicClass": "FACT | USER_REQUIREMENT | MODEL_INFERENCE | UNKNOWN",
-    "confidence": 0.0,
     "evidence": [{
       "documentId": "<document id>",
       "filename": "<filename>",
@@ -101,7 +101,7 @@ Extract only planning semantics explicitly supported by the supplied source docu
 Every claim.key MUST be one of these PlanningClaimKey values:
 ${PLANNING_CLAIM_KEYS.join('\n')}
 
-For every claim, provide a non-empty value, an allowed epistemicClass, and at least one evidence item tied to the supplied document. Confidence is optional; when present it must be between 0 and 1. Use unknownKeys only for allowed PlanningClaimKey values that the source leaves unresolved. Record explicit contradictions in conflicts.
+For every claim, provide a non-empty value, an epistemicClass proposal, and at least one evidence item tied to the supplied document. Do not output confidence or model certainty scores. Epistemic authority is resolved deterministically downstream. Use unknownKeys only for allowed PlanningClaimKey values that the source leaves unresolved. Record explicit contradictions in conflicts.
 
 Return only one JSON object with exactly this semantic shape. Do not emit sourceRunId, generatedAt, sourceDocuments, fingerprints, or other runtime metadata:
 ${OUTPUT_SHAPE}`;
@@ -187,7 +187,9 @@ export function validatePlanningSemanticExtractionResult(
         return;
       }
       for (const key of unknownKeys(claim, CLAIM_KEYS)) {
-        errors.push(`claims[${claimIndex}] unknown key: ${key}`);
+        errors.push(key === 'confidence'
+          ? `claims[${claimIndex}].confidence is not allowed: PLANNING_MODEL_CONFIDENCE_NOT_ALLOWED`
+          : `claims[${claimIndex}] unknown key: ${key}`);
       }
       if (!PLANNING_KEY_SET.has(String(claim.key))) {
         errors.push(`claims[${claimIndex}].key is not an allowed PlanningClaimKey`);
@@ -195,14 +197,6 @@ export function validatePlanningSemanticExtractionResult(
       if (!nonEmptyString(claim.value)) errors.push(`claims[${claimIndex}].value must be non-empty`);
       if (!EPISTEMIC_CLASS_SET.has(claim.epistemicClass as PlanningEpistemicClass)) {
         errors.push(`claims[${claimIndex}].epistemicClass is invalid`);
-      }
-      if (claim.confidence !== undefined && (
-        typeof claim.confidence !== 'number'
-        || !Number.isFinite(claim.confidence)
-        || claim.confidence < 0
-        || claim.confidence > 1
-      )) {
-        errors.push(`claims[${claimIndex}].confidence must be finite and between 0 and 1`);
       }
       if (!Array.isArray(claim.evidence) || claim.evidence.length === 0) {
         errors.push(`claims[${claimIndex}].evidence must be a non-empty array`);
@@ -285,7 +279,7 @@ export function normalizePlanningSemanticExtractionResult(
     const evidence = Array.from(evidenceByKey.entries())
       .sort(([a], [b]) => compareText(a, b))
       .map(([, entry]) => entry);
-    const claimKey = `${claim.key}\u0000${value}\u0000${claim.epistemicClass}\u0000${claim.confidence ?? ''}`;
+    const claimKey = `${claim.key}\u0000${value}\u0000${claim.epistemicClass}`;
     const existing = normalizedClaims.get(claimKey);
     if (existing) {
       const merged = new Map(existing.evidence.map((entry) => [
@@ -301,7 +295,6 @@ export function normalizePlanningSemanticExtractionResult(
         key: claim.key,
         value,
         epistemicClass: claim.epistemicClass,
-        ...(claim.confidence !== undefined ? { confidence: claim.confidence } : {}),
         evidence
       });
     }
@@ -335,6 +328,35 @@ export function normalizePlanningSemanticExtractionResult(
   };
 }
 
+const EPISTEMIC_CONSERVATISM_RANK: Readonly<Record<PlanningEpistemicClass, number>> = {
+  FACT: 3,
+  USER_REQUIREMENT: 2,
+  MODEL_INFERENCE: 1,
+  UNKNOWN: 0
+};
+
+/**
+ * Resolve a model proposal against the existing deterministic classifier.
+ * The lower assertion-authority class wins, so neither input can be
+ * automatically promoted. This is a resolver, not a second classifier.
+ */
+export function resolvePlanningClaimEpistemicClass(args: {
+  modelProposal: PlanningEpistemicClass;
+  value: string;
+  evidence: readonly PlanningSemanticExtractionEvidence[];
+  documentRole: string;
+}): PlanningEpistemicClass {
+  const deterministicClass = classifyPlanningClaimEpistemicClass({
+    value: args.value,
+    lineText: [args.value, ...args.evidence.map((entry) => entry.summary)].join('\n'),
+    documentRole: args.documentRole
+  });
+  return EPISTEMIC_CONSERVATISM_RANK[args.modelProposal]
+    <= EPISTEMIC_CONSERVATISM_RANK[deterministicClass]
+    ? args.modelProposal
+    : deterministicClass;
+}
+
 /**
  * Project normalized Planning semantics into the canonical claim carrier.
  * chunkRefs remain section-level transitional trace, not canonical
@@ -343,6 +365,7 @@ export function normalizePlanningSemanticExtractionResult(
 export function projectPlanningExtractionToClaims(args: {
   extraction: PlanningSemanticExtractionResult;
   sourceDocumentId: string;
+  documentRole: string;
 }): PlanningStrategicClaim[] {
   const claims: PlanningStrategicClaim[] = [];
   for (const extracted of args.extraction.claims) {
@@ -356,12 +379,17 @@ export function projectPlanningExtractionToClaims(args: {
     const chunkRefs = Array.from(new Set(
       matchingEvidence.map((entry) => entry.section || 'planning-semantic-extraction')
     )).sort(compareText);
+    const epistemicClass = resolvePlanningClaimEpistemicClass({
+      modelProposal: extracted.epistemicClass,
+      value: extracted.value,
+      evidence: matchingEvidence,
+      documentRole: args.documentRole
+    });
     claims.push({
       claimId: buildClaimId(args.sourceDocumentId, extracted.key, valueHash),
       key: extracted.key,
       value: extracted.value,
-      epistemicClass: extracted.epistemicClass,
-      ...(extracted.confidence !== undefined ? { confidence: extracted.confidence } : {}),
+      epistemicClass,
       sourceDocumentId: args.sourceDocumentId,
       chunkRefs
     });

@@ -99,7 +99,8 @@ export async function runNarrativePlanningExtraction(
     );
     const claims = projectPlanningExtractionToClaims({
       extraction,
-      sourceDocumentId: input.sourceDocumentId
+      sourceDocumentId: input.sourceDocumentId,
+      documentRole: input.documentRole
     });
     return { claims, extraction };
   };
