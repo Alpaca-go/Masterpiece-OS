@@ -12,4 +12,4 @@ Exactly one live run used `runCreativeReasoningForProject` with `stopAfter: 'syn
 
 Total duration was 411,681 ms. Total live analysis calls were 2 and image calls were 0. Both provider responses arrived with headers and `finishReason=stop`; Planning used 6,869 input / 7,380 output tokens, and Strategic used 10,535 input / 16,729 output tokens.
 
-Structured coverage was computed by the canonical coverage function: 0 structured claims, insufficient, reason `no_claims`. Production therefore invoked narrative Planning, projected 15 schema-valid claims, and continued to Strategic.
+Structured coverage was computed by the canonical coverage function: 0 structured claims, 0 semantic types, 0/3 covered chunks, `sourceChunkCoverage=0`, `characterCount=10737`, insufficient, reason `no_claims`. Production therefore invoked narrative Planning, projected 15 schema-valid claims, and continued to Strategic.

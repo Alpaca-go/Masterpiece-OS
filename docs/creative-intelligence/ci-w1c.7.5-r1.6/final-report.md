@@ -5,7 +5,7 @@ Exactly one production G01 Attempt 5 completed through `runCreativeReasoningForP
 - source SHA: `94EE096E905943F463B54199A7E1D0F27F88CDF7DA8AF06FD12EE5CAC688A509`
 - registered content hash: `97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd`
 - provider/model: dashscope / qwen3.6-plus
-- structured coverage: 0 claims, insufficient, `no_claims`
+- structured coverage: 0 claims, 0 semantic types, 0/3 chunks, ratio 0, 10,737 characters, insufficient, `no_claims`
 - Planning: BASE 1, retry 0, repair 0, PASS, 15 claims, 12/12 anchors
 - Strategic: BASE 1, retry 0, repair 0, accepted PASS
 - total live analysis calls: 2
