@@ -38,6 +38,7 @@
     "verify:no-obsolete-code": "node ./scripts/verify-no-obsolete-code.mjs",
     "verify:tracked-runtime-assets": "node ./scripts/verify-tracked-runtime-assets.mjs",
     "verify:repository-contract": "node ./scripts/verify-repository-contract.mjs",
+    "verify:g01-frozen-baseline": "node ./scripts/verify-g01-frozen-baseline.mjs",
     "verify:a4-default-authority": "node ./scripts/verify-a4-default-authority.mjs",
     "verify:a4-frozen-prompt": "node ./scripts/verify-a4-frozen-prompt.mjs",
     "verify:a4-version-namespace": "node ./scripts/verify-a4-version-namespace.mjs",

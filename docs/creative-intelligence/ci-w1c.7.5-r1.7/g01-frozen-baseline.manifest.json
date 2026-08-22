@@ -1,0 +1,266 @@
+{
+  "schemaVersion": "ci-g01-frozen-baseline-v1",
+  "baselineId": "G01",
+  "status": "FROZEN",
+  "frozenByPhase": "CI-W1C.7.5-R1.6",
+  "frozenAtCommit": "0d8ff3ec54b7cc3ff9679ef33364bef0845fb89f",
+  "qualificationVerdict": "G01_ATTEMPT_5_PASS",
+  "stateMachine": {
+    "currentState": "FROZEN",
+    "allowedStates": [
+      "FROZEN",
+      "INVALIDATION_REVIEW_REQUIRED",
+      "SUPERSEDED"
+    ],
+    "automaticTransitionAllowed": false
+  },
+  "authorizations": {
+    "g01Attempt6": false,
+    "g02LiveQualification": false,
+    "livePlanning": false,
+    "liveStrategic": false,
+    "conceptDirectionProviderCalls": false,
+    "imageCalls": false,
+    "externalSourceScan": false
+  },
+  "source": {
+    "filename": "九州美学品牌定位提案-1.1(1).docx",
+    "sha256": "94EE096E905943F463B54199A7E1D0F27F88CDF7DA8AF06FD12EE5CAC688A509",
+    "registeredContentHash": "97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd"
+  },
+  "provenance": {
+    "evidence": "../ci-w1c.7.5-r1.6/g01-attempt-5-evidence.v2.1.redacted.json",
+    "finalReport": "../ci-w1c.7.5-r1.6/final-report.md",
+    "finalVerdict": "../ci-w1c.7.5-r1.6/12-g01-attempt-5-final-verdict.md"
+  },
+  "anchors": {
+    "anchorCount": 12,
+    "requiredMaterialRetention": 12,
+    "keys": [
+      "industry",
+      "brand_role",
+      "business_model",
+      "target_audience",
+      "audience_problem",
+      "brand_promise",
+      "competitive_context",
+      "differentiation_logic",
+      "strategic_objective",
+      "brand_positioning",
+      "brand_personality",
+      "transformation_objective"
+    ]
+  },
+  "frozenContracts": {
+    "planning": {
+      "semanticCarrier": "canonical Planning claims",
+      "claimKeys": "canonical PlanningClaimKeys",
+      "coverageDecision": "structured coverage decides whether Narrative fallback is required",
+      "narrativeFallback": "Narrative fallback is the canonical recovery carrier when structured coverage is insufficient",
+      "epistemicAuthority": "deterministic classifier is authoritative",
+      "modelEpistemicProposal": "non-authoritative",
+      "confidenceProvenance": "Narrative model confidence is forbidden",
+      "sourceFaithfulness": "current proposition source-faithfulness is a hard rule",
+      "crossRunClassification": "the same key need not have the same epistemic class across runs"
+    },
+    "strategic": {
+      "acceptedArtifactRequired": true,
+      "rawProviderResponseSufficient": false
+    },
+    "sgGateSet": [
+      "SG-01",
+      "SG-11",
+      "SG-12",
+      "SG-13",
+      "SG-14",
+      "SG-15"
+    ],
+    "sourceAuthority": {
+      "domains": [
+        "facts",
+        "needs",
+        "evidence",
+        "planningClaims"
+      ],
+      "mirrorRule": "artifact sourceMap must exactly mirror runtime allowed source IDs",
+      "modelSelfAuthorizedIdsAllowed": false
+    },
+    "traceability": {
+      "hardAcceptance": {
+        "allFrozenAnchorsEvaluated": true,
+        "materialSemanticRetention": "12/12",
+        "materialSilentLossCount": 0,
+        "contradictions": 0,
+        "allSgGatesPass": true,
+        "minimumTraceabilityScore": 2
+      },
+      "diagnosticOnly": [
+        "claim count",
+        "full claim citation coverage",
+        "direct anchor reference coverage",
+        "unique cited claim count",
+        "total reference occurrences",
+        "uncited supplementary claims"
+      ],
+      "diagnosticsMayBecomeImplicitHardGates": false
+    },
+    "humanReview": {
+      "scope": "Strategic-only",
+      "applicableDimensions": [
+        "Planning Fidelity",
+        "Strategic Specificity",
+        "Semantic Retention",
+        "Insight Quality",
+        "Traceability"
+      ],
+      "notApplicableDimensions": [
+        "Conceptual Distinctness",
+        "Visual Discussability"
+      ],
+      "minimumEachApplicable": 2,
+      "minimumApplicableAverage": 2.4
+    },
+    "stageScope": {
+      "stopAfter": "synthesis",
+      "concept": {
+        "status": "NOT_RUN",
+        "attempts": 0,
+        "providerAttempts": 0
+      },
+      "direction": {
+        "status": "NOT_RUN",
+        "attempts": 0,
+        "providerAttempts": 0
+      },
+      "scopeBlockedStages": 0,
+      "unexpectedStageCount": 0
+    },
+    "transport": {
+      "timeoutAuthority": "requestTimeoutMs",
+      "acceptedG01TimeoutsMs": {
+        "planningNarrative": 180000,
+        "strategicSynthesis": 290000,
+        "conceptProvisional": 180000,
+        "directionProvisional": 180000
+      },
+      "retryStateMachine": {
+        "BASE": 1,
+        "TRANSPORT_RETRY": 1,
+        "SEMANTIC_REPAIR": 1,
+        "maximumProviderAttempts": 3,
+        "transportRetryUsesSameBaseLogicalPrompt": true,
+        "transportRetryAddsRepairMarker": false,
+        "semanticRepairRequiresUsablePreviousResponse": true
+      }
+    },
+    "providerFailureTaxonomy": [
+      "TRANSPORT_TIMEOUT",
+      "TRANSPORT_CONNECTION",
+      "RATE_LIMIT_RETRYABLE",
+      "PROVIDER_5XX_RETRYABLE",
+      "PROVIDER_4XX_NON_RETRYABLE",
+      "AUTHENTICATION_ERROR",
+      "CANCELLED",
+      "SEMANTIC_PARSE_FAILURE",
+      "SEMANTIC_GATE_FAILURE",
+      "UNKNOWN_PROVIDER_FAILURE"
+    ],
+    "evidence": {
+      "schemaVersion": "ci-qualification-evidence-v2.1",
+      "requiredProviderCallLedgerFields": [
+        "stage",
+        "attemptKind",
+        "provider",
+        "model",
+        "latencyMs",
+        "success",
+        "errorCode",
+        "causeCode",
+        "failureClass",
+        "retryable",
+        "responseHeadersReceived",
+        "finishReason",
+        "usage"
+      ]
+    }
+  },
+  "acceptedRunProvenance": {
+    "planningClaimCount": 15,
+    "planningAnchorCoverage": "12/12",
+    "epistemicCounts": {
+      "FACT": 14,
+      "USER_REQUIREMENT": 1
+    },
+    "planningProviderAttempts": 1,
+    "strategicProviderAttempts": 1,
+    "totalLiveAnalysisCalls": 2,
+    "diagnostics": {
+      "uniqueCitedPlanningClaims": "11/15",
+      "planningReferenceOccurrences": 23,
+      "directAnchorReferences": "9/12",
+      "humanReviewScores": [
+        3,
+        3,
+        3,
+        3,
+        2
+      ],
+      "humanReviewAverage": 2.8,
+      "hardGate": false
+    }
+  },
+  "operationalRisk": {
+    "strategicAcceptedLatencyMs": 285028,
+    "strategicTimeoutMs": 290000,
+    "remainingMarginMs": 4972,
+    "qualificationBlocker": false,
+    "operationalCalibrationRisk": true,
+    "g02MayAutomaticallyInheritStrategicTimeout": false
+  },
+  "invalidationPolicy": {
+    "policy": "docs/creative-intelligence/ci-w1c.7.5-r1.7/03-g01-material-change-invalidation-policy.md",
+    "materialChangeAction": "G01 baseline invalidation review",
+    "automaticG01Rerun": false,
+    "ordinaryGitDiffChangesState": false
+  },
+  "g02Readiness": {
+    "independentQualificationTarget": true,
+    "selectedSource": null,
+    "sourceRead": false,
+    "executions": 0,
+    "sourceSelectionContract": "docs/creative-intelligence/ci-w1c.7.5-r1.7/06-g02-source-selection-contract.md",
+    "anchorMapContract": "docs/creative-intelligence/ci-w1c.7.5-r1.7/07-g02-anchor-map-contract.md",
+    "qualificationMethodology": "docs/creative-intelligence/ci-w1c.7.5-r1.7/08-g02-qualification-methodology.md",
+    "independentHumanReviewedAnchorMapRequired": true,
+    "anchorMapSchemaRecommendation": "ci-qualification-anchor-map-v1",
+    "copyG01AnchorKeysMechanically": false,
+    "inheritedSgGateSet": [
+      "SG-01",
+      "SG-11",
+      "SG-12",
+      "SG-13",
+      "SG-14",
+      "SG-15"
+    ],
+    "timeoutMechanismInherited": "requestTimeoutMs",
+    "strategicTimeoutRecalibrationRequired": true,
+    "strategicTimeoutMsInheritedFromG01": false,
+    "recommendedInitialStopAfter": "synthesis",
+    "liveExecutionAuthorized": false
+  },
+  "canonicalization": {
+    "algorithm": "recursive-key-sort-json-v1",
+    "objectKeys": "sort ascending by JavaScript string order at every object level",
+    "arrays": "preserve declared order",
+    "serialization": "JSON.stringify with no insignificant whitespace",
+    "encoding": "UTF-8 without BOM",
+    "digest": "SHA-256 lowercase hexadecimal"
+  },
+  "zeroNetworkRecord": {
+    "liveCalls": 0,
+    "g01Attempt6Executions": 0,
+    "g02Executions": 0,
+    "imageCalls": 0,
+    "externalSourceReads": 0
+  }
+}
