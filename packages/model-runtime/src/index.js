@@ -5,5 +5,6 @@ export * from './qwen-analysis-provider.js';
 export * from './volcengine-reasoner.js';
 export * from './volcengine-analysis-provider.js';
 export * from './openai-compatible-text-reasoner.js';
+export * from './provider-failure-taxonomy.js';
 export * from './model-capabilities.js';
 export * from './response-parser.js';

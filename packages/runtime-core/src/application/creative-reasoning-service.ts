@@ -15,16 +15,19 @@
  * Image provider: **FORBIDDEN**. This service NEVER calls an
  * image provider. `imageProviderCallCount` is always 0.
  *
- * Live qualification (CI-W1C.7.1 PART H) is **fail-closed**:
- *   - attempt 1 fails → one repair attempt
- *   - attempt 2 fails → persist raw + gate diagnostics → STOP
+ * Live qualification is **fail-closed** and transport-aware:
+ *   - a retryable transport failure may retry the unchanged base prompt once
+ *   - only a received response that fails parse/gates may use one semantic repair
+ *   - no stage can exceed three provider attempts
+ *   - a terminal failure persists raw + gate diagnostics → STOP
  *   - mock fallback is FORBIDDEN in live mode
  *   - downstream stage does NOT run after upstream failure
  *   - no fake valid report after failure
  *
  * Repair policy:
- *   - At most 1 primary + 1 repair per stage.
- *   - `modelCallCount` in the artifact caps at 2.
+ *   - At most 1 primary + 1 transport retry + 1 semantic repair per stage.
+ *   - Explicit provider-attempt accounting caps at 3; artifact repair
+ *     metadata remains the frozen semantic base/repair value (1 or 2).
  *   - Repair prompt includes: original task, previous invalid
  *     output (bounded excerpt), blocked gate codes, repair
  *     instructions.
@@ -99,6 +102,7 @@ import {
 
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import type { ProviderCredentials } from '../shared/types.ts';
+import { classifyProviderFailure, semanticFailure } from '@masterpiece/model-runtime/provider-failure-taxonomy.js';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -112,6 +116,39 @@ export type CreativeReasoningStopAfter = 'synthesis' | 'concept' | 'direction';
 
 export type StageStatus = 'PASS' | 'FAIL' | 'NOT_RUN';
 
+export type ModelAttemptKind = 'BASE' | 'TRANSPORT_RETRY' | 'SEMANTIC_REPAIR';
+
+export interface CreativeReasoningTimeoutPolicy {
+  planningNarrativeMs: number;
+  strategicSynthesisMs: number;
+  conceptMs: number;
+  directionMs: number;
+}
+
+/**
+ * Based on live G01 evidence: Planning completed in ~121s and the last
+ * accepted Strategic response completed in ~255s. Strategic is bounded at
+ * 290s so the application owns the deadline before the observed ~305s HTTP
+ * client headers timeout, while preserving 35s of successful-run headroom.
+ * Concept and Direction retain the pre-qualification 180s provisional bound.
+ */
+export const DEFAULT_CREATIVE_REASONING_TIMEOUTS: Readonly<CreativeReasoningTimeoutPolicy> = Object.freeze({
+  planningNarrativeMs: 180_000,
+  strategicSynthesisMs: 290_000,
+  conceptMs: 180_000,
+  directionMs: 180_000,
+});
+
+export function resolveCreativeReasoningTimeouts(
+  overrides: Partial<CreativeReasoningTimeoutPolicy> = {}
+): CreativeReasoningTimeoutPolicy {
+  const resolved = { ...DEFAULT_CREATIVE_REASONING_TIMEOUTS, ...overrides };
+  for (const [key, value] of Object.entries(resolved)) {
+    if (!Number.isFinite(value) || value <= 0) throw new Error(`CREATIVE_REASONING_TIMEOUT_INVALID: ${key}`);
+  }
+  return resolved;
+}
+
 export interface CreativeReasoningInput {
   projectId: string;
   /**
@@ -120,6 +157,7 @@ export interface CreativeReasoningInput {
    * Default: `direction` (the existing full pipeline).
    */
   stopAfter?: CreativeReasoningStopAfter;
+  qualificationTimeouts?: Partial<CreativeReasoningTimeoutPolicy>;
   truth: ProjectTruthModel;
   needs: NeedItem[];
   evidence: EvidenceLedgerSnapshot;
@@ -178,18 +216,48 @@ export interface ModelReasoner {
       attachments?: unknown[];
     };
     signal?: AbortSignal;
+    requestTimeoutMs?: number;
+    attemptKind?: ModelAttemptKind;
+    /** @deprecated Compatibility alias; requestTimeoutMs is authoritative. */
     maximumDurationMs?: number;
   }): Promise<{ reportMarkdown: string }>;
 }
 
+export interface StageAttemptRecord {
+  attempt: 1 | 2 | 3;
+  attemptKind: ModelAttemptKind;
+  raw: string;
+  error?: string;
+  errorCode?: string;
+  causeCode?: string | null;
+  failureClass?: string;
+  retryable?: boolean;
+  responseHeadersReceived?: boolean;
+}
+
 export interface StageRunResult<TParsed> {
   status: StageStatus;
-  attempts: 0 | 1 | 2;
+  attempts: 0 | 1 | 2 | 3;
+  providerAttempts: number;
+  transportRetries: number;
+  semanticRepairAttempts: number;
+  acceptedAttempt: number | null;
+  failureClass: string | null;
   passed: boolean;
   blockedCodes: string[];
   artifact: TParsed | null;
-  rawAttempts: Array<{ attempt: 1 | 2; raw: string; error?: string }>;
+  rawAttempts: StageAttemptRecord[];
   gateReport: unknown;
+}
+
+function noAttemptAccounting() {
+  return {
+    providerAttempts: 0,
+    transportRetries: 0,
+    semanticRepairAttempts: 0,
+    acceptedAttempt: null,
+    failureClass: null,
+  } as const;
 }
 
 export interface CreativeReasoningResult {
@@ -469,64 +537,92 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     provider: string | null;
     model: string | null;
     attemptsOutDir: string;
+    requestTimeoutMs: number;
   }): Promise<StageRunResult<TParsed>> {
-    const rawAttempts: Array<{ attempt: 1 | 2; raw: string; error?: string }> = [];
-    const liveMode = !args.useMock;
+    const rawAttempts: StageAttemptRecord[] = [];
     const mock = mockReasonerFactory();
-    let attempts: 1 | 2 = 1;
+    const baseSystemMessage = args.buildSystemMessage();
+    const baseUserMessage = args.buildUserMessage();
+    let providerAttempts = 0;
+    let transportRetries = 0;
+    let semanticRepairAttempts = 0;
+    let attemptKind: ModelAttemptKind = 'BASE';
     let lastErr: unknown = null;
     let prevRaw = '';
     let prevBlockedCodes: string[] = [];
+    let lastFailure: ReturnType<typeof classifyProviderFailure> | null = null;
 
-    for (let attempt = 1; attempt <= 2; attempt += 1) {
+    while (providerAttempts < 3) {
+      providerAttempts += 1;
+      const providerAttempt = providerAttempts as 1 | 2 | 3;
       let rawText = '';
+      const userMessage = attemptKind === 'SEMANTIC_REPAIR'
+        ? buildRepairUserMessage(baseUserMessage, prevRaw, prevBlockedCodes)
+        : baseUserMessage;
       try {
         if (args.useMock || !deps.reasonerFactory || !deps.readCredentials) {
-          // Mock path
           const r = await mock({
-            prompt: { messages: [{ role: 'system', content: args.buildSystemMessage() }, { role: 'user', content: attempt === 1 ? args.buildUserMessage() : buildRepairUserMessage(args.buildUserMessage(), prevRaw, prevBlockedCodes) }] },
+            prompt: { messages: [{ role: 'system', content: baseSystemMessage }, { role: 'user', content: userMessage }] },
             signal: new AbortController().signal,
-            maximumDurationMs: 60_000,
+            requestTimeoutMs: args.requestTimeoutMs,
+            attemptKind,
           });
           rawText = r.reportMarkdown;
-          // The mock fixtures have a hardcoded projectId; rewrite
-          // it to the real projectId before parsing.
           rawText = rewriteProjectIdInMockFixture(rawText, args.projectId);
         } else {
-          // Live path — must honor input.analysisProfileId
-          // (PART F) by passing it to readCredentials.
           const analysisProfileId = (args as unknown as { analysisProfileId?: string }).analysisProfileId;
           const creds = await deps.readCredentials(analysisProfileId);
           const reasoner = deps.reasonerFactory(creds);
           const r = await reasoner({
-            prompt: { messages: [{ role: 'system', content: args.buildSystemMessage() }, { role: 'user', content: attempt === 1 ? args.buildUserMessage() : buildRepairUserMessage(args.buildUserMessage(), prevRaw, prevBlockedCodes) }] },
+            prompt: { messages: [{ role: 'system', content: baseSystemMessage }, { role: 'user', content: userMessage }] },
             signal: new AbortController().signal,
-            maximumDurationMs: 60_000,
+            requestTimeoutMs: args.requestTimeoutMs,
+            attemptKind,
           });
           rawText = r.reportMarkdown;
         }
-        // Persist the raw attempt for live qualification (CI-W1C.7.1 PART H).
-        const attemptFile = path.join(args.attemptsOutDir, `${args.stageName}.attempt-${attempt}.raw.txt`);
+        const attemptFile = path.join(args.attemptsOutDir, `${args.stageName}.attempt-${providerAttempt}.raw.txt`);
         await fs.writeFile(attemptFile, rawText, 'utf8');
-        rawAttempts.push({ attempt: attempt as 1 | 2, raw: rawText });
+        const attemptRecord: StageAttemptRecord = { attempt: providerAttempt, attemptKind, raw: rawText };
+        rawAttempts.push(attemptRecord);
 
-        const parsed = args.parse({
-          rawText,
-          projectId: args.projectId,
-          attempt: attempt as 1 | 2,
-          provider: args.provider,
-          model: args.model,
-          modelCallCount: attempt as 1 | 2,
-          ...(attempt === 2 ? { repairReason: lastErr instanceof Error ? lastErr.message : String(lastErr) } : {}),
-        });
+        let parsed: TParsed;
+        try {
+          parsed = args.parse({
+            rawText,
+            projectId: args.projectId,
+            attempt: semanticRepairAttempts > 0 ? 2 : 1,
+            provider: args.provider,
+            model: args.model,
+            modelCallCount: semanticRepairAttempts > 0 ? 2 : 1,
+            ...(semanticRepairAttempts > 0 ? { repairReason: lastErr instanceof Error ? lastErr.message : String(lastErr) } : {}),
+          });
+        } catch (error) {
+          const failure = semanticFailure('parse');
+          Object.assign(attemptRecord, failure, { error: error instanceof Error ? error.message : String(error) });
+          lastErr = error;
+          lastFailure = failure;
+          prevRaw = rawText;
+          prevBlockedCodes = [];
+          if (semanticRepairAttempts === 0 && prevRaw !== '') {
+            semanticRepairAttempts = 1;
+            attemptKind = 'SEMANTIC_REPAIR';
+            continue;
+          }
+          break;
+        }
         const gateReport = args.gate(parsed);
-        // Persist the gate report.
-        const gateFile = path.join(args.attemptsOutDir, `${args.stageName}.gate.json`);
+        const gateFile = path.join(args.attemptsOutDir, `${args.stageName}.attempt-${providerAttempt}.gate.json`);
         await fs.writeFile(gateFile, JSON.stringify(gateReport, null, 2), 'utf8');
         if (gateReport.passed) {
           return {
             status: 'PASS',
-            attempts: attempt as 1 | 2,
+            attempts: providerAttempt,
+            providerAttempts,
+            transportRetries,
+            semanticRepairAttempts,
+            acceptedAttempt: providerAttempt,
+            failureClass: null,
             passed: true,
             blockedCodes: [],
             artifact: parsed,
@@ -537,76 +633,62 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         prevRaw = rawText;
         prevBlockedCodes = gateReport.blockedCodes;
         lastErr = new Error(`gate blocked: ${gateReport.blockedCodes.join(',')}`);
-        attempts = 2;
+        lastFailure = semanticFailure('gate');
+        Object.assign(attemptRecord, lastFailure, { error: (lastErr as Error).message });
+        if (semanticRepairAttempts === 0 && prevRaw !== '') {
+          semanticRepairAttempts = 1;
+          attemptKind = 'SEMANTIC_REPAIR';
+          continue;
+        }
+        break;
       } catch (err) {
         lastErr = err;
-        rawAttempts.push({ attempt: attempt as 1 | 2, raw: rawText, error: err instanceof Error ? err.message : String(err) });
-        attempts = 2;
+        const failure = classifyProviderFailure(err);
+        lastFailure = failure;
+        rawAttempts.push({
+          attempt: providerAttempt,
+          attemptKind,
+          raw: rawText,
+          error: err instanceof Error ? err.message : String(err),
+          errorCode: failure.errorCode,
+          causeCode: failure.causeCode,
+          failureClass: failure.failureClass,
+          retryable: failure.retryable,
+          responseHeadersReceived: failure.responseHeadersReceived,
+        });
+        if (attemptKind === 'BASE' && failure.retryable && transportRetries === 0) {
+          transportRetries = 1;
+          attemptKind = 'TRANSPORT_RETRY';
+          continue;
+        }
+        break;
       }
     }
-    // Final repair also failed.
-    // In live mode, FAIL CLOSED: do NOT fall back to mock, do NOT
-    // emit a fake valid report, do NOT run downstream. Just return
-    // a best-effort artifact for inspection (null artifact in live
-    // mode; in mock mode, we return a best-effort mock for tests).
-    if (liveMode) {
-      // Persist failure summary (PART H).
-      const failureFile = path.join(args.attemptsOutDir, `${args.stageName}.failure.json`);
-      await fs.writeFile(failureFile, JSON.stringify({
-        stage: args.stageName,
-        attempts,
-        blockedCodes: prevBlockedCodes,
-        lastError: lastErr instanceof Error ? lastErr.message : String(lastErr),
-        liveMode: true,
-        failedAt: new Date().toISOString(),
-      }, null, 2), 'utf8');
-      return {
-        status: 'FAIL',
-        attempts,
-        passed: false,
-        blockedCodes: prevBlockedCodes,
-        artifact: null,
-        rawAttempts,
-        gateReport: null,
-      };
-    }
-    // Mock mode fallback (allowed only in mock execution).
-    // IMPORTANT: pass the stage's actual system message so the mock
-    // factory can identify the stage by its artifact name (e.g.
-    // "You produce a ModelAssistedConceptSet."). Using a generic
-    // system prompt would make the mock return the default `{}`
-    // and the parse would fail with "candidates must be an array"
-    // (or similar).
-    let rawText = '';
-    try {
-      const r = await mock({
-        prompt: { messages: [{ role: 'system', content: args.buildSystemMessage() }, { role: 'user', content: args.buildUserMessage() }] },
-        signal: new AbortController().signal,
-        maximumDurationMs: 60_000,
-      });
-      rawText = r.reportMarkdown;
-      rawText = rewriteProjectIdInMockFixture(rawText, args.projectId);
-    } catch {
-      rawText = '{}';
-    }
-    const parsed = args.parse({
-      rawText,
-      projectId: args.projectId,
-      attempt: 2,
-      provider: 'mock',
-      model: 'mock-fixture-v0.1',
-      modelCallCount: 2,
-      repairReason: lastErr instanceof Error ? lastErr.message : String(lastErr),
-    });
-    const report = args.gate(parsed);
+    const failureFile = path.join(args.attemptsOutDir, `${args.stageName}.failure.json`);
+    await fs.writeFile(failureFile, JSON.stringify({
+      stage: args.stageName,
+      providerAttempts,
+      transportRetries,
+      semanticRepairAttempts,
+      failureClass: lastFailure?.failureClass ?? 'UNKNOWN_PROVIDER_FAILURE',
+      blockedCodes: prevBlockedCodes,
+      lastError: lastErr instanceof Error ? lastErr.message : String(lastErr),
+      liveMode: !args.useMock,
+      failedAt: new Date().toISOString(),
+    }, null, 2), 'utf8');
     return {
       status: 'FAIL',
-      attempts,
+      attempts: providerAttempts as 1 | 2 | 3,
+      providerAttempts,
+      transportRetries,
+      semanticRepairAttempts,
+      acceptedAttempt: null,
+      failureClass: lastFailure?.failureClass ?? 'UNKNOWN_PROVIDER_FAILURE',
       passed: false,
-      blockedCodes: report.blockedCodes,
-      artifact: parsed,
+      blockedCodes: prevBlockedCodes,
+      artifact: null,
       rawAttempts,
-      gateReport: report,
+      gateReport: null,
     };
   }
 
@@ -669,6 +751,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     const useMock = input.useMock !== false;
     const liveMode = !useMock;
     const stopAfter = input.stopAfter ?? 'direction';
+    const qualificationTimeouts = resolveCreativeReasoningTimeouts(input.qualificationTimeouts);
     const qualificationBudget = input.qualificationBudget ?? DEFAULT_QUALIFICATION_BUDGET;
     // Cache the truth/needs/evidence on the deps so the
     // buildStagePrompt helper can re-compile per call (the helper
@@ -745,6 +828,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       const synthStage: StageRunResult<StrategicSynthesisArtifact> = {
         status: 'FAIL',
         attempts: 0,
+        ...noAttemptAccounting(),
         passed: false,
         blockedCodes: [reason],
         artifact: null,
@@ -770,6 +854,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           concept: {
             status: 'NOT_RUN',
             attempts: 0,
+            ...noAttemptAccounting(),
             passed: false,
             blockedCodes: [],
             artifact: null,
@@ -779,6 +864,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           direction: {
             status: 'NOT_RUN',
             attempts: 0,
+            ...noAttemptAccounting(),
             passed: false,
             blockedCodes: [],
             artifact: null,
@@ -838,6 +924,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       provider,
       model,
       attemptsOutDir: attemptsDir,
+      requestTimeoutMs: qualificationTimeouts.strategicSynthesisMs,
     });
     const synthesis = synthStage.artifact;
 
@@ -850,6 +937,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       conceptStage = {
         status: 'NOT_RUN',
         attempts: 0,
+        ...noAttemptAccounting(),
         passed: false,
         blockedCodes: [],
         artifact: null,
@@ -860,6 +948,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       conceptStage = {
         status: 'NOT_RUN',
         attempts: 0,
+        ...noAttemptAccounting(),
         passed: false,
         blockedCodes: [],
         artifact: null,
@@ -883,6 +972,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         conceptStage = {
           status: 'FAIL',
           attempts: 0,
+          ...noAttemptAccounting(),
           passed: false,
           blockedCodes: [reason],
           artifact: null,
@@ -910,6 +1000,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           provider,
           model,
           attemptsOutDir: attemptsDir,
+          requestTimeoutMs: qualificationTimeouts.conceptMs,
         });
       }
     }
@@ -923,6 +1014,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       directionStage = {
         status: 'NOT_RUN',
         attempts: 0,
+        ...noAttemptAccounting(),
         passed: false,
         blockedCodes: [],
         artifact: null,
@@ -933,6 +1025,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       directionStage = {
         status: 'NOT_RUN',
         attempts: 0,
+        ...noAttemptAccounting(),
         passed: false,
         blockedCodes: [],
         artifact: null,
@@ -957,6 +1050,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         directionStage = {
           status: 'FAIL',
           attempts: 0,
+          ...noAttemptAccounting(),
           passed: false,
           blockedCodes: [reason],
           artifact: null,
@@ -986,6 +1080,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           provider,
           model,
           attemptsOutDir: attemptsDir,
+          requestTimeoutMs: qualificationTimeouts.directionMs,
         });
       }
     }
@@ -1050,6 +1145,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         concept: conceptStage ?? {
           status: 'NOT_RUN',
           attempts: 0,
+          ...noAttemptAccounting(),
           passed: false,
           blockedCodes: [],
           artifact: null,
@@ -1059,6 +1155,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         direction: directionStage ?? {
           status: 'NOT_RUN',
           attempts: 0,
+          ...noAttemptAccounting(),
           passed: false,
           blockedCodes: [],
           artifact: null,

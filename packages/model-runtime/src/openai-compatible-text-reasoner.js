@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+export { classifyProviderFailure } from './provider-failure-taxonomy.js';
 
 export class OpenAICompatibleTextReasonerError extends Error {
   constructor(code, message, details = {}) {
@@ -39,6 +40,15 @@ function parseErrorBody(raw) {
 
 function streamTimeoutError(code, message, details) {
   return new OpenAICompatibleTextReasonerError(code, message, details);
+}
+
+export function resolveRequestTimeoutMs(context = {}) {
+  const canonical = Number(context.requestTimeoutMs);
+  if (Number.isFinite(canonical) && canonical > 0) return canonical;
+  // Temporary compatibility alias. It is resolved once here and never
+  // becomes an independent timeout authority.
+  const legacy = Number(context.maximumDurationMs);
+  return Number.isFinite(legacy) && legacy > 0 ? legacy : undefined;
 }
 
 async function readOpenAICompatibleStream(response, options = {}) {
@@ -185,7 +195,8 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
   const supportsThinking = /(?:maas\.aliyuncs\.com|dashscope\.aliyuncs\.com)$/i.test(new URL(url).hostname);
   return async function reason(messages, context = {}) {
     const startedAt = Date.now();
-    const timeoutSignal = context.requestTimeoutMs ? AbortSignal.timeout(context.requestTimeoutMs) : null;
+    const requestTimeoutMs = resolveRequestTimeoutMs(context);
+    const timeoutSignal = requestTimeoutMs ? AbortSignal.timeout(requestTimeoutMs) : null;
     const activityController = context.stream ? new AbortController() : null;
     const signals = [context.signal, timeoutSignal, activityController?.signal].filter(Boolean);
     const signal = signals.length > 1 ? AbortSignal.any(signals) : signals[0];
@@ -232,7 +243,7 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
       if (!response.ok) {
         const rawError = await response.text();
         const errorBody = parseErrorBody(rawError);
-        throw new OpenAICompatibleTextReasonerError('API_ERROR', `模型 API 请求失败（HTTP ${response.status}）：${redact(errorBody?.error?.message || response.statusText, apiKey)}`, { provider, model, httpStatus: response.status });
+        throw new OpenAICompatibleTextReasonerError('API_ERROR', `模型 API 请求失败（HTTP ${response.status}）：${redact(errorBody?.error?.message || response.statusText, apiKey)}`, { provider, model, httpStatus: response.status, responseHeadersReceived: true });
       }
       const contentType = String(response.headers?.get?.('content-type') || '').toLowerCase();
       if (context.stream && contentType.includes('text/event-stream')) {
@@ -254,8 +265,9 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
       clearStreamTimers();
       if (signal?.aborted) {
         if (signal.reason instanceof OpenAICompatibleTextReasonerError) throw signal.reason;
-        if (timeoutSignal?.aborted && context.timeoutErrorCode) {
-          throw new OpenAICompatibleTextReasonerError(context.timeoutErrorCode, context.timeoutErrorCode, { provider, model, timeoutMs: context.requestTimeoutMs });
+        if (timeoutSignal?.aborted) {
+          const timeoutErrorCode = context.timeoutErrorCode || 'REQUEST_TIMEOUT';
+          throw new OpenAICompatibleTextReasonerError(timeoutErrorCode, timeoutErrorCode, { provider, model, timeoutMs: requestTimeoutMs, causeCode: 'ABORT_TIMEOUT', responseHeadersReceived: false });
         }
         if (context.signal?.aborted) throw new DOMException('User cancelled the analysis', 'AbortError');
       }
@@ -264,7 +276,7 @@ export function createOpenAICompatibleTextReasoner(options = {}) {
       const cause = error?.cause;
       const causeMessage = cause && cause.code ? ` (${cause.code})` : '';
       const detail = `${redact(error?.message, apiKey)}${causeMessage}`;
-      throw new OpenAICompatibleTextReasonerError('REQUEST_FAILED', `模型 API 请求失败：${detail}`, { provider, model, causeCode: cause?.code || null });
+      throw new OpenAICompatibleTextReasonerError('REQUEST_FAILED', `模型 API 请求失败：${detail}`, { provider, model, causeCode: cause?.code || null, responseHeadersReceived: false });
     } finally {
       clearStreamTimers();
     }

@@ -350,7 +350,7 @@ async function main() {
       try {
         result = await liveReasoner(input.prompt.messages, {
           signal: input.signal,
-          maximumDurationMs: input.maximumDurationMs || 180_000,
+          requestTimeoutMs: input.requestTimeoutMs,
         });
       } catch (e) {
         error = e;
@@ -359,15 +359,23 @@ async function main() {
       const record = {
         timestamp: new Date().toISOString(),
         stage,
+        attemptKind: input.attemptKind || 'BASE',
         provider: creds.provider,
         model: creds.model,
         latencyMs: latency,
+        success: !error,
         inputCharacters: input.prompt.messages.reduce((sum, m) => sum + (m.content?.length || 0), 0),
       };
       if (error) {
+        const failure = liveReasonerModule.classifyProviderFailure(error);
         record.error = error.message;
-        record.errorCode = error.code;
+        record.errorCode = failure.errorCode;
+        record.causeCode = failure.causeCode;
+        record.failureClass = failure.failureClass;
+        record.retryable = failure.retryable;
+        record.responseHeadersReceived = failure.responseHeadersReceived;
       } else {
+        record.responseHeadersReceived = true;
         record.finishReason = result.finishReason;
         record.outputCharacters = (result.text || '').length;
         record.usage = result.usage;
@@ -561,16 +569,23 @@ async function main() {
         }
       };
   const redactedEvidenceV2 = {
-    schemaVersion: strategicModule.QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION,
+    schemaVersion: strategicModule.QUALIFICATION_EVIDENCE_V2_1_SCHEMA_VERSION,
     sourceHashes: {
       sha256: sourceSha256,
       registeredContentHash: record.contentHash
     },
     callLedger: callRecords.map((call) => ({
       stage: call.stage,
+      attemptKind: call.attemptKind,
       provider: call.provider,
       model: call.model,
       latencyMs: call.latencyMs,
+      success: call.success,
+      responseHeadersReceived: call.responseHeadersReceived,
+      errorCode: call.errorCode || null,
+      causeCode: call.causeCode || null,
+      failureClass: call.failureClass || null,
+      retryable: typeof call.retryable === 'boolean' ? call.retryable : null,
       ...(call.finishReason ? { finishReason: call.finishReason } : {}),
       ...(call.usage ? { usage: call.usage } : {})
     })),
@@ -602,9 +617,9 @@ async function main() {
       }))
     },
     stageStatuses: {
-      synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts },
-      concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts },
-      direction: { status: result.stages.direction.status, attempts: result.stages.direction.attempts }
+      synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts, providerAttempts: result.stages.synthesis.providerAttempts, transportRetries: result.stages.synthesis.transportRetries, semanticRepairAttempts: result.stages.synthesis.semanticRepairAttempts },
+      concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts, providerAttempts: result.stages.concept.providerAttempts, transportRetries: result.stages.concept.transportRetries, semanticRepairAttempts: result.stages.concept.semanticRepairAttempts },
+      direction: { status: result.stages.direction.status, attempts: result.stages.direction.attempts, providerAttempts: result.stages.direction.providerAttempts, transportRetries: result.stages.direction.transportRetries, semanticRepairAttempts: result.stages.direction.semanticRepairAttempts }
     },
     strategicUsage
   };
@@ -669,10 +684,11 @@ async function main() {
       structuredCoverage,
       finalClaimCount: finalPlanningArtifact?.claims?.length ?? 0
     },
+    qualificationFailureVerdict: strategicModule.classifyStrategicQualificationFailure({ stage: result.stages.synthesis, callLedger: callRecords }),
     stages: {
-      synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts, passed: result.stages.synthesis.passed, blockedCodes: result.stages.synthesis.blockedCodes },
-      concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts, passed: result.stages.concept.passed, blockedCodes: result.stages.concept.blockedCodes },
-      direction: { status: result.stages.direction.status, attempts: result.stages.direction.attempts, passed: result.stages.direction.passed, blockedCodes: result.stages.direction.blockedCodes }
+      synthesis: { status: result.stages.synthesis.status, attempts: result.stages.synthesis.attempts, providerAttempts: result.stages.synthesis.providerAttempts, transportRetries: result.stages.synthesis.transportRetries, semanticRepairAttempts: result.stages.synthesis.semanticRepairAttempts, passed: result.stages.synthesis.passed, failureClass: result.stages.synthesis.failureClass, blockedCodes: result.stages.synthesis.blockedCodes },
+      concept: { status: result.stages.concept.status, attempts: result.stages.concept.attempts, providerAttempts: result.stages.concept.providerAttempts, transportRetries: result.stages.concept.transportRetries, semanticRepairAttempts: result.stages.concept.semanticRepairAttempts, passed: result.stages.concept.passed, failureClass: result.stages.concept.failureClass, blockedCodes: result.stages.concept.blockedCodes },
+      direction: { status: result.stages.direction.status, attempts: result.stages.direction.attempts, providerAttempts: result.stages.direction.providerAttempts, transportRetries: result.stages.direction.transportRetries, semanticRepairAttempts: result.stages.direction.semanticRepairAttempts, passed: result.stages.direction.passed, failureClass: result.stages.direction.failureClass, blockedCodes: result.stages.direction.blockedCodes }
     },
     synthesis: result.shadow.synthesis,
     conceptSet: result.shadow.conceptSet,

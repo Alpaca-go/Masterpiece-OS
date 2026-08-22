@@ -41,7 +41,8 @@ import type {
   CreativeReasoningInput,
   CreativeReasoningResult,
   CreativeReasoningQualificationBudget,
-  CreativeReasoningStopAfter
+  CreativeReasoningStopAfter,
+  CreativeReasoningTimeoutPolicy
 } from './creative-reasoning-service.ts';
 import type { ProviderCredentials } from '../shared/types.ts';
 
@@ -87,6 +88,7 @@ export interface RunCreativeReasoningForProjectInput {
   reasonerFactory?: (credentials: ProviderCredentials) => import('./creative-reasoning-service.ts').ModelReasoner;
   readCredentials?: (profileId?: string) => Promise<ProviderCredentials>;
   qualificationBudget?: CreativeReasoningQualificationBudget;
+  qualificationTimeouts?: Partial<CreativeReasoningTimeoutPolicy>;
 }
 
 export interface RunCreativeReasoningForProjectDeps {
@@ -240,7 +242,8 @@ export async function runCreativeReasoningForProject(
           rawText: briefContent.rawText,
           documentRole,
           filename: brief.filename,
-          reasoner
+          reasoner,
+          requestTimeoutMs: input.qualificationTimeouts?.planningNarrativeMs
         });
         const hybrid = await loadPlanningStrategicEvidenceForProject(
           deps.projectStore,
@@ -289,7 +292,8 @@ export async function runCreativeReasoningForProject(
     planningStrategicEvidence,
     ...(input.analysisProfileId ? { analysisProfileId: input.analysisProfileId } : {}),
     useMock: input.useMock ?? true,
-    ...(input.qualificationBudget ? { qualificationBudget: input.qualificationBudget } : {})
+    ...(input.qualificationBudget ? { qualificationBudget: input.qualificationBudget } : {}),
+    ...(input.qualificationTimeouts ? { qualificationTimeouts: input.qualificationTimeouts } : {})
   };
   return service.run(serviceInput);
 }

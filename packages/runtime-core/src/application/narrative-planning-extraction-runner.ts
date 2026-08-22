@@ -7,7 +7,12 @@
  * deterministic PlanningStrategicClaim projection.
  */
 
-import type { ModelReasoner } from './creative-reasoning-service.ts';
+import {
+  DEFAULT_CREATIVE_REASONING_TIMEOUTS,
+  type ModelAttemptKind,
+  type ModelReasoner
+} from './creative-reasoning-service.ts';
+import { classifyProviderFailure, semanticFailure } from '@masterpiece/model-runtime/provider-failure-taxonomy.js';
 import { parseModelJson } from '@masterpiece/creative-intelligence/document-intelligence/index.ts';
 import type { DocumentRole } from '@masterpiece/creative-intelligence/document-intelligence/index.ts';
 import {
@@ -30,17 +35,19 @@ export interface NarrativePlanningExtractionInput {
   documentRole: DocumentRole;
   filename: string;
   reasoner: ModelReasoner;
-  maximumDurationMs?: number;
+  requestTimeoutMs?: number;
 }
 
 export interface NarrativePlanningExtractionAttempt {
-  attempt: 1 | 2;
+  attempt: 1 | 2 | 3;
+  attemptKind: ModelAttemptKind;
   repairReason?: string;
-  finishStatus: 'ok' | 'repair' | 'failed';
+  finishStatus: 'ok' | 'transport_retry' | 'repair' | 'failed';
   outputCharacters: number;
   inputCharacters: number;
   latencyMs: number;
   validationErrors?: string[];
+  failureClass?: string;
 }
 
 export interface NarrativePlanningExtractionOutput {
@@ -48,6 +55,9 @@ export interface NarrativePlanningExtractionOutput {
   /** Validated and deterministically normalized semantic audit copy. */
   extraction: PlanningSemanticExtractionResult;
   attempts: NarrativePlanningExtractionAttempt[];
+  providerAttempts: number;
+  transportRetries: number;
+  semanticRepairAttempts: number;
 }
 
 function messageCharacters(messages: readonly PlanningExtractionMessage[]): number {
@@ -65,7 +75,7 @@ function errorMessages(error: unknown): string[] {
 export async function runNarrativePlanningExtraction(
   input: NarrativePlanningExtractionInput
 ): Promise<NarrativePlanningExtractionOutput> {
-  const maximumDurationMs = input.maximumDurationMs ?? 180_000;
+  const requestTimeoutMs = input.requestTimeoutMs ?? DEFAULT_CREATIVE_REASONING_TIMEOUTS.planningNarrativeMs;
   const sourceDocument: PlanningExtractionSourceDocument = {
     documentId: input.sourceDocumentId,
     filename: input.filename,
@@ -76,12 +86,14 @@ export async function runNarrativePlanningExtraction(
   const attempts: NarrativePlanningExtractionAttempt[] = [];
 
   const callModel = async (
-    messages: PlanningExtractionMessage[]
+    messages: PlanningExtractionMessage[],
+    attemptKind: ModelAttemptKind
   ): Promise<{ text: string; latencyMs: number }> => {
     const startedAt = Date.now();
     const result = await input.reasoner({
       prompt: { messages },
-      maximumDurationMs
+      requestTimeoutMs,
+      attemptKind
     });
     return { text: result.reportMarkdown, latencyMs: Date.now() - startedAt };
   };
@@ -89,10 +101,18 @@ export async function runNarrativePlanningExtraction(
   const validateNormalizeProject = (
     text: string
   ): Omit<NarrativePlanningExtractionOutput, 'attempts'> => {
-    const parsed = parseModelJson(text);
+    let parsed: unknown;
+    try {
+      parsed = parseModelJson(text);
+    } catch (error) {
+      throw Object.assign(error instanceof Error ? error : new Error(String(error)), { code: 'SEMANTIC_PARSE_FAILURE' });
+    }
     const validation = validatePlanningSemanticExtractionResult(parsed);
     if (!validation.valid) {
-      throw new Error(`NARRATIVE_EXTRACTION_SCHEMA_INVALID: ${validation.errors.join('; ')}`);
+      throw Object.assign(
+        new Error(`NARRATIVE_EXTRACTION_SCHEMA_INVALID: ${validation.errors.join('; ')}`),
+        { code: 'SEMANTIC_GATE_FAILURE' }
+      );
     }
     const extraction = normalizePlanningSemanticExtractionResult(
       parsed as unknown as PlanningSemanticExtractionResult
@@ -106,68 +126,97 @@ export async function runNarrativePlanningExtraction(
   };
 
   let previousText = '';
-  let baseErrors: string[] = [];
-  let baseLatencyMs = 0;
-  try {
-    const { text, latencyMs } = await callModel(baseMessages);
-    previousText = text;
-    baseLatencyMs = latencyMs;
-    const result = validateNormalizeProject(text);
-    attempts.push({
-      attempt: 1,
-      finishStatus: 'ok',
-      outputCharacters: text.length,
-      inputCharacters: messageCharacters(baseMessages),
-      latencyMs
-    });
-    return { ...result, attempts };
-  } catch (error) {
-    baseErrors = errorMessages(error);
-    attempts.push({
-      attempt: 1,
-      finishStatus: 'repair',
-      outputCharacters: previousText.length,
-      inputCharacters: messageCharacters(baseMessages),
-      latencyMs: baseLatencyMs,
-      validationErrors: baseErrors
-    });
+  let previousErrors: string[] = [];
+  let providerAttempts = 0;
+  let transportRetries = 0;
+  let semanticRepairAttempts = 0;
+  let attemptKind: ModelAttemptKind = 'BASE';
+  let terminalErrors: string[] = [];
+
+  while (providerAttempts < 3) {
+    providerAttempts += 1;
+    const attempt = providerAttempts as 1 | 2 | 3;
+    if (attemptKind === 'SEMANTIC_REPAIR' && previousText === '') {
+      terminalErrors = ['semantic repair requires a previous raw response'];
+      break;
+    }
+    const messages = attemptKind === 'SEMANTIC_REPAIR'
+      ? buildPlanningRepairMessages({ sourceDocument, previousText, errors: previousErrors })
+      : baseMessages;
+    let text = '';
+    let latencyMs = 0;
+    try {
+      const response = await callModel(messages, attemptKind);
+      text = response.text;
+      latencyMs = response.latencyMs;
+    } catch (error) {
+      const failure = classifyProviderFailure(error);
+      terminalErrors = errorMessages(error);
+      const willRetryTransport = attemptKind === 'BASE' && failure.retryable && transportRetries === 0;
+      attempts.push({
+        attempt,
+        attemptKind,
+        finishStatus: willRetryTransport ? 'transport_retry' : 'failed',
+        outputCharacters: 0,
+        inputCharacters: messageCharacters(messages),
+        latencyMs,
+        validationErrors: terminalErrors,
+        failureClass: failure.failureClass
+      });
+      if (willRetryTransport) {
+        transportRetries = 1;
+        attemptKind = 'TRANSPORT_RETRY';
+        continue;
+      }
+      break;
+    }
+
+    try {
+      const result = validateNormalizeProject(text);
+      attempts.push({
+        attempt,
+        attemptKind,
+        finishStatus: attemptKind === 'SEMANTIC_REPAIR' ? 'repair' : 'ok',
+        outputCharacters: text.length,
+        inputCharacters: messageCharacters(messages),
+        latencyMs
+      });
+      return { ...result, attempts, providerAttempts, transportRetries, semanticRepairAttempts };
+    } catch (error) {
+      const failure = error && typeof error === 'object' && (error as { code?: string }).code === 'SEMANTIC_PARSE_FAILURE'
+        ? semanticFailure('parse')
+        : semanticFailure('gate');
+      previousText = text;
+      previousErrors = errorMessages(error);
+      terminalErrors = previousErrors;
+      const canRepair = semanticRepairAttempts === 0 && previousText !== '';
+      attempts.push({
+        attempt,
+        attemptKind,
+        finishStatus: canRepair ? 'repair' : 'failed',
+        outputCharacters: text.length,
+        inputCharacters: messageCharacters(messages),
+        latencyMs,
+        validationErrors: previousErrors,
+        failureClass: failure.failureClass
+      });
+      if (canRepair) {
+        semanticRepairAttempts = 1;
+        attemptKind = 'SEMANTIC_REPAIR';
+        continue;
+      }
+      break;
+    }
   }
 
-  const repairMessages = buildPlanningRepairMessages({
-    sourceDocument,
-    previousText,
-    errors: baseErrors
-  });
-  let repairedText = '';
-  let repairLatencyMs = 0;
-  try {
-    const { text, latencyMs } = await callModel(repairMessages);
-    repairedText = text;
-    repairLatencyMs = latencyMs;
-    const result = validateNormalizeProject(text);
-    attempts.push({
-      attempt: 2,
-      repairReason: baseErrors.join('; '),
-      finishStatus: 'repair',
-      outputCharacters: text.length,
-      inputCharacters: messageCharacters(repairMessages),
-      latencyMs
-    });
-    return { ...result, attempts };
-  } catch (error) {
-    const repairErrors = errorMessages(error);
-    attempts.push({
-      attempt: 2,
-      repairReason: baseErrors.join('; '),
-      finishStatus: 'failed',
-      outputCharacters: repairedText.length,
-      inputCharacters: messageCharacters(repairMessages),
-      latencyMs: repairLatencyMs,
-      validationErrors: repairErrors
-    });
-    throw Object.assign(
-      new Error(`NARRATIVE_EXTRACTION_FAILED: ${repairErrors.join('; ')}`),
-      { code: 'NARRATIVE_EXTRACTION_FAILED', attempts }
-    );
-  }
+  throw Object.assign(
+    new Error(`NARRATIVE_EXTRACTION_FAILED: ${terminalErrors.join('; ') || 'unknown failure'}`),
+    {
+      code: 'NARRATIVE_EXTRACTION_FAILED',
+      attempts,
+      providerAttempts,
+      transportRetries,
+      semanticRepairAttempts
+    }
+  );
 }

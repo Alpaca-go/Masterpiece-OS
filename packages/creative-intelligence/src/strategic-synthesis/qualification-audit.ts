@@ -217,9 +217,28 @@ export function evaluateTraceabilityAcceptance(input: TraceabilityAcceptanceInpu
 }
 
 export const QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION = 'ci-qualification-evidence-v2' as const;
+export const QUALIFICATION_EVIDENCE_V2_1_SCHEMA_VERSION = 'ci-qualification-evidence-v2.1' as const;
+
+export type QualificationAttemptKind = 'BASE' | 'TRANSPORT_RETRY' | 'SEMANTIC_REPAIR';
+
+export interface TransportAwareCallLedgerEntry {
+  stage: string;
+  attemptKind: QualificationAttemptKind;
+  provider: string;
+  model: string;
+  latencyMs: number;
+  success: boolean;
+  errorCode: string | null;
+  causeCode: string | null;
+  failureClass: string | null;
+  retryable: boolean | null;
+  responseHeadersReceived: boolean;
+  finishReason?: string;
+  usage?: { inputTokens?: number; outputTokens?: number; totalTokens?: number };
+}
 
 export interface RedactedQualificationEvidenceV2 {
-  schemaVersion: typeof QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION;
+  schemaVersion: typeof QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION | typeof QUALIFICATION_EVIDENCE_V2_1_SCHEMA_VERSION;
   sourceHashes: { sha256: string; registeredContentHash: string };
   callLedger: Array<{
     stage: string;
@@ -238,8 +257,21 @@ export interface RedactedQualificationEvidenceV2 {
   strategicUsage: StrategicPlanningUsageAudit;
 }
 
+export function classifyStrategicQualificationFailure(input: {
+  stage: { status: string };
+  callLedger: Array<{ stage: string; success?: boolean; responseHeadersReceived?: boolean }>;
+}): 'HOLD_FOR_PROVIDER_TRANSPORT_REPAIR' | 'HOLD_FOR_STRATEGIC_SYNTHESIS_REPAIR' | null {
+  if (input.stage.status === 'PASS') return null;
+  const strategicCalls = input.callLedger.filter((entry) => entry.stage === 'strategic_synthesis');
+  const usableResponseReachedRuntime = strategicCalls.some((entry) => entry.success === true);
+  return usableResponseReachedRuntime
+    ? 'HOLD_FOR_STRATEGIC_SYNTHESIS_REPAIR'
+    : 'HOLD_FOR_PROVIDER_TRANSPORT_REPAIR';
+}
+
 const FORBIDDEN_EVIDENCE_KEYS = new Set([
-  'apiKey', 'credentials', 'rawText', 'rawOutputs', 'responseBody', 'baseUrl', 'fullProviderResponse'
+  'apiKey', 'credentials', 'rawText', 'rawOutputs', 'responseBody', 'baseUrl', 'fullProviderResponse',
+  'stack', 'fullUrl', 'endpointUrl'
 ]);
 
 export function validateRedactedQualificationEvidenceV2(input: unknown): { valid: boolean; errors: string[] } {
@@ -248,7 +280,10 @@ export function validateRedactedQualificationEvidenceV2(input: unknown): { valid
     return { valid: false, errors: ['evidence must be an object'] };
   }
   const root = input as Record<string, unknown>;
-  if (root.schemaVersion !== QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION) errors.push('invalid schemaVersion');
+  if (
+    root.schemaVersion !== QUALIFICATION_EVIDENCE_V2_SCHEMA_VERSION
+    && root.schemaVersion !== QUALIFICATION_EVIDENCE_V2_1_SCHEMA_VERSION
+  ) errors.push('invalid schemaVersion');
   for (const required of ['sourceHashes', 'callLedger', 'planningClaims', 'planningEpistemicAudit', 'allowedSourceSets', 'artifactMirrorSets', 'blockedCodes', 'stageStatuses', 'strategicUsage']) {
     if (!(required in root)) errors.push(`missing ${required}`);
   }
@@ -264,6 +299,28 @@ export function validateRedactedQualificationEvidenceV2(input: unknown): { valid
     }
   };
   walk(root);
+  if (root.schemaVersion === QUALIFICATION_EVIDENCE_V2_1_SCHEMA_VERSION) {
+    const ledger = root.callLedger;
+    if (!Array.isArray(ledger)) {
+      errors.push('callLedger must be an array');
+    } else {
+      ledger.forEach((entry, index) => {
+        const call = entry as Partial<TransportAwareCallLedgerEntry>;
+        if (!['BASE', 'TRANSPORT_RETRY', 'SEMANTIC_REPAIR'].includes(String(call.attemptKind))) errors.push(`callLedger[${index}].attemptKind invalid`);
+        if (typeof call.success !== 'boolean') errors.push(`callLedger[${index}].success must be boolean`);
+        if (typeof call.responseHeadersReceived !== 'boolean') errors.push(`callLedger[${index}].responseHeadersReceived must be boolean`);
+        if (call.success === false) {
+          if (!call.errorCode) errors.push(`callLedger[${index}].errorCode required on failure`);
+          if (
+            !Object.prototype.hasOwnProperty.call(call, 'causeCode')
+            || (call.causeCode !== null && typeof call.causeCode !== 'string')
+          ) errors.push(`callLedger[${index}].causeCode required on failure`);
+          if (!call.failureClass) errors.push(`callLedger[${index}].failureClass required on failure`);
+          if (typeof call.retryable !== 'boolean') errors.push(`callLedger[${index}].retryable required on failure`);
+        }
+      });
+    }
+  }
   const usage = root.strategicUsage as Partial<StrategicPlanningUsageAudit> | undefined;
   if (!usage || !Array.isArray(usage.usedPlanningClaimIds)) errors.push('strategicUsage.usedPlanningClaimIds must be an array');
   if (!usage || typeof usage.totalPlanningClaimRefOccurrences !== 'number') errors.push('strategicUsage.totalPlanningClaimRefOccurrences must be a number');
