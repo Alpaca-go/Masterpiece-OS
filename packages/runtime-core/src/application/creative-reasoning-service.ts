@@ -328,7 +328,7 @@ function mockReasonerFactory(): ModelReasoner {
       return { reportMarkdown: JSON.stringify(MOCK_CONCEPT_FIXTURE) };
     }
     if (/StrategicSynthesisArtifact/i.test(allText)) {
-      return { reportMarkdown: JSON.stringify(MOCK_SYNTHESIS_FIXTURE) };
+      return { reportMarkdown: JSON.stringify(buildPlanningAwareMockSynthesisArtifact(allText)) };
     }
     return { reportMarkdown: '{}' };
   };
@@ -347,7 +347,7 @@ const MOCK_SYNTHESIS_FIXTURE = {
     needs: [],
     evidence: [],
     // CI-W1C.7.4-R2 PART I — planning claims are input-derived.
-    // Mock fixture has no planning input.
+    // Template default; production mock projection replaces this from SOURCE TRACE IDS.
     planningClaims: [],
     legacyVisualEvidenceExcluded: [
       'visualAsset.*', 'old_visual_style', 'old_VI', 'old_poster', 'old_packaging',
@@ -382,6 +382,75 @@ const MOCK_SYNTHESIS_FIXTURE = {
   diagnostics: ['MOCK_EXECUTION_PATH'],
   meta: { attempt: 1, provider: 'mock', model: 'mock-fixture-v0.1', modelCallCount: 1 },
 };
+
+type MockStrategicSourceIds = {
+  facts: string[];
+  needs: string[];
+  evidence: string[];
+  planningClaims: string[];
+};
+
+/**
+ * Read only the canonical, prompt-visible SOURCE TRACE IDS block.
+ * This deliberately does not infer IDs from prose or create mock IDs.
+ */
+function parseMockStrategicSourceIds(promptText: string): MockStrategicSourceIds {
+  const empty = (): MockStrategicSourceIds => ({ facts: [], needs: [], evidence: [], planningClaims: [] });
+  const header = '# SOURCE TRACE IDS';
+  const headerIndex = promptText.indexOf(header);
+  if (headerIndex < 0) return empty();
+  const afterHeader = promptText.slice(headerIndex + header.length);
+  const nextHeaderIndex = afterHeader.search(/^#\s+/mu);
+  const block = nextHeaderIndex < 0 ? afterHeader : afterHeader.slice(0, nextHeaderIndex);
+  const parsed = empty();
+  for (const match of block.matchAll(/^\s*(facts|needs|evidence|planningClaims)\s*:\s*\[([^\]]*)\]/gimu)) {
+    const key = match[1] as keyof MockStrategicSourceIds;
+    parsed[key] = Array.from(new Set(
+      match[2].split(',').map((id) => id.trim()).filter(Boolean)
+    ));
+  }
+  return parsed;
+}
+
+/**
+ * Production mock projection. The static fixture supplies only semantic
+ * shape/content; every authority mirror and emitted ref is derived from the
+ * same SOURCE TRACE IDS block shown to a real Strategic reasoner.
+ */
+function buildPlanningAwareMockSynthesisArtifact(promptText: string): StrategicSynthesisArtifact {
+  const ids = parseMockStrategicSourceIds(promptText);
+  const artifact = JSON.parse(JSON.stringify(MOCK_SYNTHESIS_FIXTURE)) as unknown as StrategicSynthesisArtifact;
+  artifact.sourceMap.planningTruth = [...ids.facts];
+  artifact.sourceMap.needs = [...ids.needs];
+  artifact.sourceMap.evidence = [...ids.evidence];
+  artifact.sourceMap.planningClaims = [...ids.planningClaims];
+
+  const factRefs = ids.facts.length > 0 ? [ids.facts[0]!] : [];
+  const needRefs = ids.needs.length > 0 ? [ids.needs[0]!] : [];
+  const evidenceRefs = ids.evidence.length > 0 ? [ids.evidence[0]!] : [];
+  const planningClaimRefs = ids.planningClaims.length > 0 ? [ids.planningClaims[0]!] : [];
+  artifact.projectUnderstanding.factRefs = [...factRefs];
+  artifact.projectUnderstanding.needRefs = [...needRefs];
+  artifact.projectUnderstanding.evidenceRefs = [...evidenceRefs];
+  artifact.projectUnderstanding.planningClaimRefs = [...planningClaimRefs];
+  for (const tension of artifact.tensions) {
+    tension.factRefs = [...factRefs];
+    tension.needRefs = [...needRefs];
+    tension.evidenceRefs = [...evidenceRefs];
+    tension.planningClaimRefs = [...planningClaimRefs];
+  }
+  for (const insight of artifact.insights) {
+    insight.factRefs = [...factRefs];
+    insight.needRefs = [...needRefs];
+    insight.evidenceRefs = [...evidenceRefs];
+    insight.planningClaimRefs = [...planningClaimRefs];
+  }
+  for (const opportunity of artifact.opportunities) {
+    opportunity.factRefs = [...factRefs];
+    opportunity.planningClaimRefs = [...planningClaimRefs];
+  }
+  return artifact;
+}
 
 const MOCK_CONCEPT_FIXTURE = {
   schemaVersion: '0.1',
@@ -1186,7 +1255,8 @@ export type CreativeReasoningService = ReturnType<typeof createCreativeReasoning
 
 // Re-export for callers.
 export {
-  MOCK_SYSTEM_PROMPT, mockReasonerFactory, MOCK_SYNTHESIS_FIXTURE, MOCK_CONCEPT_FIXTURE, MOCK_DIRECTION_FIXTURE,
+  MOCK_SYSTEM_PROMPT, mockReasonerFactory, buildPlanningAwareMockSynthesisArtifact,
+  MOCK_SYNTHESIS_FIXTURE, MOCK_CONCEPT_FIXTURE, MOCK_DIRECTION_FIXTURE,
   STRATEGIC_SYNTHESIS_PROMPT_VERSION, MODEL_ASSISTED_CONCEPT_IDEATION_BUILDER_PROMPT_VERSION, MODEL_ASSISTED_DIRECTION_IDEATION_BUILDER_PROMPT_VERSION,
 };
 void crypto;

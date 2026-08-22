@@ -128,13 +128,21 @@ async function runOrchestrator(ctx) {
         return {
           truth: {
             projectId: ctx.project.id,
-            facts: [],
+            facts: [{
+              id: 'r2-runtime-fact', key: 'industry', value: 'Synthetic test industry',
+              authority: 'CONFIRMED', sourceRefs: []
+            }],
             conflicts: [],
             sourceRefs: [],
             schemaVersion: 'project-truth-v0.1',
             generatedAt: '2026-08-20T00:00:00.000Z'
           },
-          needs: [],
+          needs: [{
+            id: 'r2-runtime-need', type: 'business', statement: 'Preserve the synthetic business requirement',
+            whyItMatters: 'Exercises the canonical Need authority domain', status: 'required', priority: 2,
+            factRefs: ['r2-runtime-fact'], evidenceRefs: [], conflictRefs: [], sourceKinds: ['test_fixture'],
+            generatedBy: 'deterministic_rule', traceVersion: '1.0'
+          }],
           evidence: {
             projectId: ctx.project.id,
             entries: [],
@@ -144,6 +152,23 @@ async function runOrchestrator(ctx) {
       }
     }
   );
+}
+
+function sourceTraceIds(userMessage, key) {
+  const block = userMessage.split('# SOURCE TRACE IDS')[1]?.split(/^#\s+/m)[0] ?? '';
+  const match = block.match(new RegExp(`^\\s*${key}\\s*:\\s*\\[([^\\]]*)\\]`, 'im'));
+  return match
+    ? match[1].split(',').map((id) => id.trim()).filter(Boolean)
+    : [];
+}
+
+function allPlanningClaimRefs(synthesis) {
+  return [
+    ...synthesis.projectUnderstanding.planningClaimRefs,
+    ...synthesis.tensions.flatMap((item) => item.planningClaimRefs),
+    ...synthesis.insights.flatMap((item) => item.planningClaimRefs),
+    ...synthesis.opportunities.flatMap((item) => item.planningClaimRefs),
+  ];
 }
 
 // ---------------------------------------------------------------------------
@@ -246,6 +271,8 @@ test('R2E2E-04: compiled sourceMap.planningClaims contains the real input claim 
     // slice is present in both contexts.
     const sourceIdsBlock = userMessage.split('# SOURCE TRACE IDS')[1]?.split('# ')[0] ?? '';
     assert.match(sourceIdsBlock, new RegExp(`planningClaims:.*${hashSlice.slice(0, 12)}`));
+    assert.equal(result.stages.synthesis.status, 'PASS', result.stages.synthesis.blockedCodes.join(','));
+    assert.deepEqual(result.shadow.synthesis.sourceMap.planningClaims, sourceTraceIds(userMessage, 'planningClaims'));
   } finally {
     await teardown(ctx);
   }
@@ -265,20 +292,18 @@ test('R2E2E-05: planningClaimRefs in the parsed mock artifact resolve to the run
       sourcePath: briefPath
     });
     const result = await runOrchestrator(ctx);
-    // The parsed artifact's planningClaimRefs fields must all be
-    // string arrays. The mock fixture echoes [], which IS valid.
+    const snap = JSON.parse(await fs.readFile(result.outputPaths.promptSnapshots.synthesis, 'utf8'));
+    const userMessage = snap.messages.find((m) => m.role === 'user')?.content ?? '';
+    const allowed = new Set(sourceTraceIds(userMessage, 'planningClaims'));
     const synth = result.shadow.synthesis;
+    assert.equal(result.stages.synthesis.status, 'PASS', result.stages.synthesis.blockedCodes.join(','));
     assert.ok(synth);
-    assert.ok(Array.isArray(synth.projectUnderstanding.planningClaimRefs));
-    for (const t of synth.tensions) {
-      assert.ok(Array.isArray(t.planningClaimRefs));
-    }
-    for (const i of synth.insights) {
-      assert.ok(Array.isArray(i.planningClaimRefs));
-    }
-    for (const o of synth.opportunities) {
-      assert.ok(Array.isArray(o.planningClaimRefs));
-    }
+    const refs = allPlanningClaimRefs(synth);
+    assert.ok(synth.projectUnderstanding.planningClaimRefs.length >= 1);
+    assert.ok(synth.tensions.some((item) => item.planningClaimRefs.length > 0)
+      || synth.insights.some((item) => item.planningClaimRefs.length > 0));
+    assert.ok(refs.length > 0);
+    assert.ok(refs.every((ref) => allowed.has(ref)));
   } finally {
     await teardown(ctx);
   }
@@ -298,24 +323,15 @@ test('R2E2E-06: the parsed mock artifact does not inject fake claim IDs in any *
       sourcePath: briefPath
     });
     const result = await runOrchestrator(ctx);
-    // The mock fixture echoes planningClaimRefs: [] (no fake ids).
-    // If a future mock fixture added fake ids, the SG-01 gate
-    // would still block them at runtime (RTG-02b).
+    const snap = JSON.parse(await fs.readFile(result.outputPaths.promptSnapshots.synthesis, 'utf8'));
+    const userMessage = snap.messages.find((m) => m.role === 'user')?.content ?? '';
+    const allowed = new Set(sourceTraceIds(userMessage, 'planningClaims'));
     const synth = result.shadow.synthesis;
-    const allRefs = [
-      ...synth.projectUnderstanding.planningClaimRefs,
-      ...synth.tensions.flatMap((t) => t.planningClaimRefs),
-      ...synth.insights.flatMap((i) => i.planningClaimRefs),
-      ...synth.opportunities.flatMap((o) => o.planningClaimRefs),
-    ];
-    // The mock fixture's echo is "[]" (no fake ids injected by
-    // the model). We assert no opaque / obviously-fake ids appear.
-    // Real fake ids in this test would be ones that look like
-    // 'p-c-FAKE' or similar.
-    for (const ref of allRefs) {
-      assert.ok(!/FAKE|NONEXISTENT/.test(ref),
-        `mock fixture must not echo fake planning claim ids, got ${ref}`);
-    }
+    assert.equal(result.stages.synthesis.status, 'PASS', result.stages.synthesis.blockedCodes.join(','));
+    const refs = allPlanningClaimRefs(synth);
+    const invalidRefs = refs.filter((ref) => !allowed.has(ref));
+    assert.deepEqual(invalidRefs, []);
+    assert.equal(refs.some((ref) => /FAKE|NONEXISTENT/u.test(ref)), false);
   } finally {
     await teardown(ctx);
   }

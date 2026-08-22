@@ -65,7 +65,14 @@ function passingHandler(projectId, seen = []) {
           visualMechanism: `Visual mechanism ${n} translates the selected concept without duplication`,
           systemHypothesis: `System hypothesis ${n} remains testable across touchpoints`,
           whyThisProject: `Direction ${n} answers the project's cited strategic mechanism`,
-          differenceFromOtherDirections: `Direction ${n} uses a separate organizing principle`
+          differenceFromOtherDirections: `Direction ${n} uses a separate organizing principle`,
+          visualLanguage: {
+            compositionLogic: `Composition ${n} uses a deliberate hierarchy and repeatable spacing rule`,
+            colorRelationship: `Color relationship ${n} separates primary signals from supporting information`,
+            typographyBehavior: `Typography behavior ${n} establishes a clear reading sequence across formats`,
+            graphicBehavior: `Graphic behavior ${n} repeats a controlled modular rhythm`,
+            imageBehavior: `Image behavior ${n} preserves a consistent subject and context relationship`
+          }
         });
       });
     }
@@ -156,8 +163,12 @@ test('TIMEOUT-06: default orchestration remains backward-compatible through all 
   const seen = [];
   const result = await runService(passingHandler('transport-contract-project', seen), { stopAfter: null });
   assert.deepEqual(seen.map((entry) => entry.stage), ['synthesis', 'concept', 'direction']);
-  assert.deepEqual([result.stages.synthesis.status, result.stages.concept.status], ['PASS', 'PASS']);
-  assert.ok(result.stages.direction.attempts > 0);
+  assert.equal(result.stages.direction.status, 'PASS', JSON.stringify(result.stages.direction));
+  assert.deepEqual(
+    [result.stages.synthesis.status, result.stages.concept.status, result.stages.direction.status],
+    ['PASS', 'PASS', 'PASS'],
+    result.stages.direction.blockedCodes.join(',')
+  );
 });
 
 test('RETRY-01: retryable timeout retries the exact base prompt without repair framing', async () => {

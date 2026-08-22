@@ -90,12 +90,18 @@ export async function runNarrativePlanningExtraction(
     attemptKind: ModelAttemptKind
   ): Promise<{ text: string; latencyMs: number }> => {
     const startedAt = Date.now();
-    const result = await input.reasoner({
-      prompt: { messages },
-      requestTimeoutMs,
-      attemptKind
-    });
-    return { text: result.reportMarkdown, latencyMs: Date.now() - startedAt };
+    try {
+      const result = await input.reasoner({
+        prompt: { messages },
+        requestTimeoutMs,
+        attemptKind
+      });
+      return { text: result.reportMarkdown, latencyMs: Date.now() - startedAt };
+    } catch (error) {
+      const failure = error instanceof Error ? error : new Error(String(error));
+      Object.assign(failure, { narrativeLatencyMs: Date.now() - startedAt });
+      throw failure;
+    }
   };
 
   const validateNormalizeProject = (
@@ -150,6 +156,7 @@ export async function runNarrativePlanningExtraction(
       text = response.text;
       latencyMs = response.latencyMs;
     } catch (error) {
+      latencyMs = Number((error as { narrativeLatencyMs?: number })?.narrativeLatencyMs ?? 0);
       const failure = classifyProviderFailure(error);
       terminalErrors = errorMessages(error);
       const willRetryTransport = attemptKind === 'BASE' && failure.retryable && transportRetries === 0;

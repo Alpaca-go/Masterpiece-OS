@@ -195,11 +195,13 @@ export function createPlanningAwareTestReasonerFactory(repoRoot) {
       // Concept / Direction stages do NOT consume planning refs
       // in R2.1 (PART J: the spec deliberately defers Concept /
       // Direction planningClaimRefs to CI-W1C.7.5).
-      if (/ModelAssistedConceptSet/i.test(allText) || /ConceptSetArtifact/i.test(allText)) {
-        return { reportMarkdown: JSON.stringify(MOCK_CONCEPT_FIXTURE) };
-      }
+      // Direction prompts embed the validated Concept Set, so the most
+      // specific downstream artifact must be detected first.
       if (/ModelAssistedDirectionSet/i.test(allText) || /DirectionSetArtifact/i.test(allText)) {
         return { reportMarkdown: JSON.stringify(MOCK_DIRECTION_FIXTURE) };
+      }
+      if (/ModelAssistedConceptSet/i.test(allText) || /ConceptSetArtifact/i.test(allText)) {
+        return { reportMarkdown: JSON.stringify(MOCK_CONCEPT_FIXTURE) };
       }
       // Default = Strategic Synthesis.
       const planningClaimIds = parsePlanningClaimIdsFromPrompt(allText);
