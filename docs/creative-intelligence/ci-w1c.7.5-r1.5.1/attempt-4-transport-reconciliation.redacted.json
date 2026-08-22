@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "ci-attempt-4-transport-reconciliation-v1",
+  "historicalPhase": "CI-W1C.7.5-R1.5",
+  "historicalVerdictUnchanged": "HOLD_FOR_STRATEGIC_SYNTHESIS_REPAIR",
+  "technicalRootCause": "HOLD_FOR_PROVIDER_TRANSPORT_AND_TIMEOUT_CONTRACT_REPAIR",
+  "historicalEvidenceCommit": "c344b113d779725c56dbdd977c27d16fc3935056",
+  "attempt4ProductionHead": "5ff63727d92c1da357d5895c66fa5a303347e7b1",
+  "strategicCalls": [
+    {
+      "sequence": 1,
+      "attemptKind": "BASE",
+      "latencyMs": 305852,
+      "success": false,
+      "errorCode": "REQUEST_FAILED",
+      "causeCode": "UND_ERR_HEADERS_TIMEOUT",
+      "failureClass": "TRANSPORT_TIMEOUT",
+      "retryable": true,
+      "responseHeadersReceived": false,
+      "semanticResponseReceived": false
+    },
+    {
+      "sequence": 2,
+      "attemptKind": "TRANSPORT_RETRY",
+      "latencyMs": 307214,
+      "success": false,
+      "errorCode": "REQUEST_FAILED",
+      "causeCode": "UND_ERR_HEADERS_TIMEOUT",
+      "failureClass": "TRANSPORT_TIMEOUT",
+      "retryable": true,
+      "responseHeadersReceived": false,
+      "semanticResponseReceived": false
+    }
+  ],
+  "accounting": {
+    "providerAttempts": 2,
+    "transportRetriesInSubstance": 1,
+    "semanticRepairAttemptsInSubstance": 0,
+    "parserEntered": false,
+    "structuralValidationEntered": false,
+    "groundingGateEntered": false
+  },
+  "redaction": {
+    "containsCredentials": false,
+    "containsRawSource": false,
+    "containsRawProviderResponse": false,
+    "containsFullUrl": false
+  }
+}
