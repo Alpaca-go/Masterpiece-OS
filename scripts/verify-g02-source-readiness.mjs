@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
+import { classifyDocumentRole } from '../packages/document-ingestion/src/document-preparation.js';
+import { G02_ANCHOR_EPISTEMIC_EXPECTATIONS } from './lib/g02-qualification-contract.mjs';
 
 const ROOT = path.resolve(process.cwd());
 const DEFAULT_OUTPUT_ROOT = path.join(ROOT, 'docs/creative-intelligence/ci-w1c.8-g02-a.1');
@@ -11,7 +13,7 @@ const DEFAULT_G01 = path.join(ROOT, 'docs/creative-intelligence/ci-w1c.7.5-r1.7/
 const G01_KEYS = new Set(['industry', 'brand_role', 'business_model', 'target_audience', 'audience_problem', 'brand_promise', 'competitive_context', 'differentiation_logic', 'strategic_objective', 'brand_positioning', 'brand_personality', 'transformation_objective']);
 const MATERIALITY = new Set(['CRITICAL', 'IMPORTANT', 'SUPPLEMENTARY']);
 const APPLICABILITY = new Set(['APPLICABLE', 'NOT_APPLICABLE']);
-const EPISTEMIC = new Set(['FACT', 'USER_REQUIREMENT', 'MIXED', 'UNKNOWN']);
+const EPISTEMIC = new Set(G02_ANCHOR_EPISTEMIC_EXPECTATIONS);
 const SHA256 = /^[0-9a-f]{64}$/i;
 
 function parseArgs(argv) {
@@ -113,13 +115,23 @@ function runSelfTests(g01, currentIdentity) {
   const sourceCode = readFileSync(fileURLToPath(import.meta.url), 'utf8');
   const currentSha = currentIdentity?.source?.sha256 ?? '';
   const currentFilename = currentIdentity?.source?.filename ?? '';
+  const filenameOnlyBusinessPlan = classifyDocumentRole({
+    filename: 'generic-BP.docx',
+    title: 'Notes',
+    rawText: 'Meeting notes and an unrelated contact list.'
+  });
   return [
     result('VERIFIER-01', 'G01 collision fixture computes source HOLD', collisionVerdict === 'HOLD_FOR_G02_REPLACEMENT_SOURCE_SELECTION_REPAIR'),
     result('VERIFIER-02', 'independent replacement passes source gates', independentEvaluation.sourceResults.every((entry) => entry.status === 'PASS')),
     result('VERIFIER-03', 'independent source plus valid anchors computes READY', readyVerdict === 'READY_FOR_G02_PRELIVE_READINESS'),
     result('VERIFIER-04', 'invalid anchors compute anchor HOLD', invalidVerdict === 'HOLD_FOR_G02_ANCHOR_MAP_REPAIR'),
     result('VERIFIER-05', 'verifier contains no current candidate SHA or filename hardcode', (!currentSha || !sourceCode.includes(currentSha)) && (!currentFilename || !sourceCode.includes(currentFilename))),
-    result('VERIFIER-06', 'verdict changes with evaluated data', new Set([collisionVerdict, readyVerdict, invalidVerdict]).size === 3)
+    result('VERIFIER-06', 'verdict changes with evaluated data', new Set([collisionVerdict, readyVerdict, invalidVerdict]).size === 3),
+    result('VERIFIER-07', 'canonical anchor epistemic enum is exact',
+      JSON.stringify(G02_ANCHOR_EPISTEMIC_EXPECTATIONS) === JSON.stringify(['FACT', 'USER_REQUIREMENT', 'MIXED', 'OPEN'])),
+    result('VERIFIER-08', 'Planning eligibility derives from policy, not a BP filename',
+      filenameOnlyBusinessPlan.planningStrategicEvidenceEligible === false
+        && filenameOnlyBusinessPlan.role === 'unknown')
   ];
 }
 

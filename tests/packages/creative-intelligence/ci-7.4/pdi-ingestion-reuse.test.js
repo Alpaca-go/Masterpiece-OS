@@ -182,7 +182,7 @@ test('PDI-09: end-to-end ingestion of a real fixture produces a valid artifact',
     rawText
   });
   assert.ok(
-    ['creative-brief', 'brand-strategy', 'market-research', 'product-information', 'visual-guideline', 'reference', 'unknown'].includes(classification.role),
+    ['creative-brief', 'brand-strategy', 'market-research', 'product-information', 'visual-guideline', 'reference', 'business-plan', 'mixed-planning', 'unknown'].includes(classification.role),
     `classifier returned unexpected role: ${classification.role}`
   );
 

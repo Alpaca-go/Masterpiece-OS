@@ -21,6 +21,7 @@
  *
  * Source role rules (per spec PART D):
  *  - creative-brief / brand-strategy / market-research / product-information
+ *    / business-plan
  *    → sourceRole = PLANNING_STRATEGIC_SOURCE
  *  - visual-guideline / reference → sourceRole = LEGACY_VISUAL_EVIDENCE
  *    (must NOT be treated as planning; do not include in this artifact)
@@ -129,6 +130,7 @@ export function mapRoleToSourceRole(documentRole: string): PlanningSourceRole {
     case 'brand-strategy':
     case 'market-research':
     case 'product-information':
+    case 'business-plan':
       return 'PLANNING_STRATEGIC_SOURCE';
     case 'visual-guideline':
     case 'reference':
