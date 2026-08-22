@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "ci-g02-source-identity-v1",
+  "candidateId": "G02",
+  "selectionStatus": "REJECTED_NOT_INDEPENDENT",
+  "source": {
+    "filename": "九州美学品牌定位提案-1.1(1).docx",
+    "extension": ".docx",
+    "sizeBytes": 1062344,
+    "sha256": "94EE096E905943F463B54199A7E1D0F27F88CDF7DA8AF06FD12EE5CAC688A509",
+    "registeredContentHash": null
+  },
+  "sourceBoundary": {
+    "selectedSourceCount": 1,
+    "selectedSourceReads": 1,
+    "parentDirectoryScans": 0,
+    "siblingSourceReads": 0,
+    "legacyPngReads": 0,
+    "unrelatedSourceReads": 0
+  },
+  "g01Collision": {
+    "exactFilenameMatch": true,
+    "exactSizeMatch": true,
+    "exactSha256Match": true,
+    "frozenG01RegisteredContentHash": "97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd",
+    "materiallyDifferentDimensions": [],
+    "materiallyDifferentDimensionCount": 0,
+    "requiredMinimum": 3
+  },
+  "documentRole": {
+    "classifier": "@masterpiece/document-ingestion classifyDocumentRole",
+    "signals": [
+      "filename contains 品牌定位"
+    ],
+    "selectedRole": "brand-strategy",
+    "confidence": "medium",
+    "alternativePlausibleRoles": [],
+    "ambiguity": false,
+    "sourceRole": "PLANNING_STRATEGIC_SOURCE",
+    "planningStrategicEvidenceEligible": true,
+    "contentReanalysisPerformed": false
+  },
+  "structuredCoveragePreview": {
+    "provenanceReplay": true,
+    "provenance": "../ci-w1c.7.5-r1.6/final-report.md",
+    "sufficient": false,
+    "claimCount": 0,
+    "semanticTypeCount": 0,
+    "coveredChunkCount": 0,
+    "totalChunkCount": 3,
+    "sourceChunkCoverage": 0,
+    "characterCount": 10737,
+    "reason": "no_claims",
+    "expectedFuturePath": "EXPECTED_NARRATIVE_FALLBACK"
+  },
+  "timeoutCalibration": {
+    "g01StrategicLatencyMs": 285028,
+    "g01StrategicTimeoutMs": 290000,
+    "g01RemainingMarginMs": 4972,
+    "strategicTimeoutRecalibrationRequired": true,
+    "inheritsG01StrategicTimeout": false,
+    "calibrationStatus": "BLOCKED_PENDING_INDEPENDENT_SOURCE"
+  },
+  "authorizations": {
+    "g01Attempt6": false,
+    "g02LiveQualification": false,
+    "livePlanning": false,
+    "liveStrategic": false,
+    "providerHealthProbe": false,
+    "conceptDirectionProviderCalls": false,
+    "imageCalls": false
+  },
+  "executionRecord": {
+    "successfulExternalNetworkIo": 0,
+    "providerModelCalls": 0,
+    "downloads": 0,
+    "g02Executions": 0,
+    "imageCalls": 0
+  }
+}

@@ -25,6 +25,40 @@ const EXPECTED_ANCHORS = Object.freeze([
   'transformation_objective',
 ]);
 const EXPECTED_SG_GATES = Object.freeze(['SG-01', 'SG-11', 'SG-12', 'SG-13', 'SG-14', 'SG-15']);
+const EXPECTED_HUMAN_REVIEW_DIMENSIONS = Object.freeze([
+  'Planning Fidelity',
+  'Strategic Specificity',
+  'Semantic Retention',
+  'Insight Quality',
+  'Traceability',
+]);
+const EXPECTED_PROVIDER_FAILURE_TAXONOMY = Object.freeze([
+  'TRANSPORT_TIMEOUT',
+  'TRANSPORT_CONNECTION',
+  'RATE_LIMIT_RETRYABLE',
+  'PROVIDER_5XX_RETRYABLE',
+  'PROVIDER_4XX_NON_RETRYABLE',
+  'AUTHENTICATION_ERROR',
+  'CANCELLED',
+  'SEMANTIC_PARSE_FAILURE',
+  'SEMANTIC_GATE_FAILURE',
+  'UNKNOWN_PROVIDER_FAILURE',
+]);
+const EXPECTED_LEDGER_FIELDS = Object.freeze([
+  'stage',
+  'attemptKind',
+  'provider',
+  'model',
+  'latencyMs',
+  'success',
+  'errorCode',
+  'causeCode',
+  'failureClass',
+  'retryable',
+  'responseHeadersReceived',
+  'finishReason',
+  'usage',
+]);
 const EXPECTED_SOURCE_SHA = '94EE096E905943F463B54199A7E1D0F27F88CDF7DA8AF06FD12EE5CAC688A509';
 const EXPECTED_REGISTERED_HASH = '97e9a84e41d59e37bba8edc7a6512916fd287caa856ce64a35a75f69fd5db2dd';
 const results = [];
@@ -144,6 +178,38 @@ function run() {
     manifest.authorizations?.g02LiveQualification === false
       && manifest.g02Readiness?.liveExecutionAuthorized === false
       && manifest.g02Readiness?.executions === 0);
+  check('BASELINE-11', 'Human Review applicable dimensions are exact',
+    sameArray(manifest.frozenContracts?.humanReview?.applicableDimensions, EXPECTED_HUMAN_REVIEW_DIMENSIONS));
+  check('BASELINE-12', 'Human Review thresholds are exactly 2 and 2.4',
+    manifest.frozenContracts?.humanReview?.minimumEachApplicable === 2
+      && manifest.frozenContracts?.humanReview?.minimumApplicableAverage === 2.4);
+  check('BASELINE-13', 'traceability hard contract is exact',
+    manifest.frozenContracts?.traceability?.hardAcceptance?.allFrozenAnchorsEvaluated === true
+      && manifest.frozenContracts?.traceability?.hardAcceptance?.materialSemanticRetention === '12/12'
+      && manifest.frozenContracts?.traceability?.hardAcceptance?.materialSilentLossCount === 0
+      && manifest.frozenContracts?.traceability?.hardAcceptance?.contradictions === 0
+      && manifest.frozenContracts?.traceability?.hardAcceptance?.allSgGatesPass === true
+      && manifest.frozenContracts?.traceability?.hardAcceptance?.minimumTraceabilityScore === 2);
+  check('BASELINE-14', 'diagnostics cannot become implicit hard gates',
+    manifest.frozenContracts?.traceability?.diagnosticsMayBecomeImplicitHardGates === false);
+  check('BASELINE-15', 'stage scope stops after synthesis',
+    manifest.frozenContracts?.stageScope?.stopAfter === 'synthesis');
+  check('BASELINE-16', 'Concept and Direction remain NOT_RUN with zero attempts',
+    ['concept', 'direction'].every((stage) => {
+      const value = manifest.frozenContracts?.stageScope?.[stage];
+      return value?.status === 'NOT_RUN' && value?.attempts === 0 && value?.providerAttempts === 0;
+    }));
+  check('BASELINE-17', 'timeout authority is requestTimeoutMs',
+    manifest.frozenContracts?.transport?.timeoutAuthority === 'requestTimeoutMs');
+  check('BASELINE-18', 'retry budget is BASE1/TRANSPORT1/SEMANTIC1/max3',
+    manifest.frozenContracts?.transport?.retryStateMachine?.BASE === 1
+      && manifest.frozenContracts?.transport?.retryStateMachine?.TRANSPORT_RETRY === 1
+      && manifest.frozenContracts?.transport?.retryStateMachine?.SEMANTIC_REPAIR === 1
+      && manifest.frozenContracts?.transport?.retryStateMachine?.maximumProviderAttempts === 3);
+  check('BASELINE-19', 'provider failure taxonomy is exact',
+    sameArray(manifest.frozenContracts?.providerFailureTaxonomy, EXPECTED_PROVIDER_FAILURE_TAXONOMY));
+  check('BASELINE-20', 'provider ledger required-field set is exact',
+    sameArray(manifest.frozenContracts?.evidence?.requiredProviderCallLedgerFields, EXPECTED_LEDGER_FIELDS));
 
   const methodology = readFileSync(path.join(ROOT, METHODOLOGY_RELATIVE), 'utf8');
   check('G02READY-01', 'methodology contains no G01 project claim IDs',
