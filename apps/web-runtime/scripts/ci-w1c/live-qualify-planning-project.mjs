@@ -54,7 +54,10 @@ function parseArgs(argv) {
           : path.join(process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config'), 'masterpiece-os-desktop')),
     registerOnly: false,
     strategicOnly: false,
-    analysisProfileId: ''
+    analysisProfileId: '',
+    timeoutMs: 0,
+    expectedProvider: '',
+    expectedModel: ''
   };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
@@ -65,10 +68,16 @@ function parseArgs(argv) {
     else if (a === '--register-only') out.registerOnly = true;
     else if (a === '--strategic-only') out.strategicOnly = true;
     else if (a === '--analysis-profile-id') out.analysisProfileId = argv[++i];
+    else if (a === '--timeout-ms') out.timeoutMs = Number(argv[++i]);
+    else if (a === '--expected-provider') out.expectedProvider = argv[++i];
+    else if (a === '--expected-model') out.expectedModel = argv[++i];
     else throw new Error(`unknown arg: ${a}`);
   }
   if (!out.planningBriefPath) {
     throw new Error('--planning-brief-path is required');
+  }
+  if (out.timeoutMs && (!Number.isInteger(out.timeoutMs) || out.timeoutMs <= 0)) {
+    throw new Error('--timeout-ms must be a positive integer');
   }
   return out;
 }
@@ -157,6 +166,12 @@ async function main() {
   if (!profileId) throw new Error('No default profile configured and --analysis-profile-id not given');
   const profile = settings.profiles.find((p) => p.id === profileId);
   if (!profile) throw new Error(`profile not found: ${profileId}`);
+  if (args.expectedProvider && profile.provider !== args.expectedProvider) {
+    throw new Error(`AUTHORIZED_PROVIDER_MISMATCH: expected=${args.expectedProvider} actual=${profile.provider}`);
+  }
+  if (args.expectedModel && profile.modelId !== args.expectedModel) {
+    throw new Error(`AUTHORIZED_MODEL_MISMATCH: expected=${args.expectedModel} actual=${profile.modelId}`);
+  }
 
   // 2) Build a real project-store against the user's dataRoot.
   const projectStoreUrl = pathToFileURL(
@@ -419,7 +434,13 @@ async function main() {
           maxInputTokens: 32000,
           reservedOutputTokens: 4000,
           maxTotalInputTokens: 60000
-        }
+        },
+        ...(args.timeoutMs ? {
+          qualificationTimeouts: {
+            planningNarrativeMs: args.timeoutMs,
+            strategicSynthesisMs: args.timeoutMs
+          }
+        } : {})
       },
       {
         projectStore,

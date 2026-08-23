@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "ci-g02-attempt-1-redacted-evidence-v1",
+  "attemptId": "G02_ATTEMPT_1",
+  "provider": "dashscope",
+  "model": "qwen3.6-plus",
+  "sourceSha256": "D7BE0AF1E502D470BEA2A8422F6B635EC30AF79898F9DFD9A37FB5E5EA1201EC",
+  "authorizationManifestFingerprint": "baa58da3db0cadc0b2f4710a6baa5d81a3437722d68d614c4b9445611215483d",
+  "callLedger": [
+    {
+      "stage": "planning_narrative",
+      "attemptKind": "BASE",
+      "latencyMs": 146191,
+      "timeoutMs": 360000,
+      "timeoutMarginMs": 213809,
+      "success": true,
+      "inputTokens": 4570,
+      "outputTokens": 8542,
+      "totalTokens": 13112
+    },
+    {
+      "stage": "strategic_synthesis",
+      "attemptKind": "BASE",
+      "latencyMs": 250360,
+      "timeoutMs": 360000,
+      "timeoutMarginMs": 109640,
+      "success": true,
+      "inputTokens": 10514,
+      "outputTokens": 14689,
+      "totalTokens": 25203
+    }
+  ],
+  "counters": {
+    "providerAttempts": 2,
+    "transportRetries": 0,
+    "semanticRepairAttempts": 0,
+    "fallbacks": 0,
+    "conceptExecutions": 0,
+    "directionExecutions": 0,
+    "imageCalls": 0
+  },
+  "artifacts": {
+    "planningNormalizedSha256": "0b7abbc5352f5038acabb3601a2c395453199ef92d69b6591982e2bfa1fa7530",
+    "planningArtifactSha256": "8564853636f0e03c19531ab4fee8c4ac651e65ffb857c9d7ae345d50fde91cf0",
+    "planningAuditSha256": "eebc8728e6d52b98765f8ea64d28b14eefd2d7f537fea948d537cdf45b8bc502",
+    "strategicArtifactSha256": "29a27fdf5839f932240949c090d49fbab3cbaa9c88dc1ca010b7b2d423885c64",
+    "strategicPromptSha256": "a0283d41a861b0aa2d366be4d07b8ad813ccbe974626637bd005a07077dd7a8c",
+    "strategicGateSha256": "5d5b0739ce7f1bf5a90a6966a739ae18e4ba7d841f0a8a87d1f4b2f33e4572e2",
+    "runtimeSummarySha256": "b35d9a865f6274892f7dde94635e7892066e8ab28206af1a1a768a67caaef75c",
+    "runtimeEvidenceSha256": "1719f204a24be3948afa0cf8f6b588c98a271b099c0f389ad173dc2aaf6e30b8"
+  },
+  "planning": {
+    "claimCount": 16,
+    "epistemicDistribution": { "FACT": 16 },
+    "invalidSourceRefCount": 0,
+    "g01ReferenceCount": 0
+  },
+  "strategic": {
+    "usedPlanningClaimCount": 13,
+    "totalPlanningClaimRefOccurrences": 26,
+    "uncitedPlanningClaimCount": 3,
+    "sourceMapMirrorCounts": {
+      "facts": 6,
+      "needs": 5,
+      "evidence": 4,
+      "planningClaims": 16
+    },
+    "sgGateResults": {
+      "SG-01": "PASS",
+      "SG-11": "PASS",
+      "SG-12": "PASS",
+      "SG-13": "PASS",
+      "SG-14": "PASS",
+      "SG-15": "PASS"
+    }
+  },
+  "qualificationFailure": {
+    "type": "TRACEABILITY_FAILURE",
+    "anchorMapInjectedIntoStrategicInput": false,
+    "criticalAnchorRetention": "5/7 FULL; 1 PARTIAL; 1 FAIL",
+    "action": "STOP_NO_AUTOMATIC_REPAIR"
+  },
+  "secretsPersisted": false,
+  "absoluteLocalPathsPersisted": false,
+  "finalVerdict": "HOLD_FOR_TRACEABILITY_REPAIR"
+}

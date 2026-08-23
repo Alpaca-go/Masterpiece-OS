@@ -42,6 +42,7 @@
     "verify:g02-source-readiness": "node ./scripts/verify-g02-source-readiness.mjs",
     "verify:g02-prelive-readiness": "node ./scripts/verify-g02-prelive-readiness.mjs",
     "verify:g02-live-authorization": "node ./scripts/verify-g02-live-authorization.mjs",
+    "verify:g02-attempt-1": "node ./scripts/verify-g02-attempt-1.mjs",
     "verify:a4-default-authority": "node ./scripts/verify-a4-default-authority.mjs",
     "verify:a4-frozen-prompt": "node ./scripts/verify-a4-frozen-prompt.mjs",
     "verify:a4-version-namespace": "node ./scripts/verify-a4-version-namespace.mjs",

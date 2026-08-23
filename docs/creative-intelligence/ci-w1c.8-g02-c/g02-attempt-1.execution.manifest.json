@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "ci-g02-live-execution-v1",
+  "phase": "CI-W1C.8-G02-C",
+  "attemptId": "G02_ATTEMPT_1",
+  "authorization": {
+    "humanAuthorized": true,
+    "scope": "G02 Attempt 1 Live Qualification only",
+    "approvedStages": ["Planning", "Strategic"],
+    "previousManifestFingerprint": "cd1703c6333ee75cb2af406b27eac3cfce492d143b01b6466a5bd35dc7a63032",
+    "executionManifestFingerprint": "baa58da3db0cadc0b2f4710a6baa5d81a3437722d68d614c4b9445611215483d"
+  },
+  "frozenInputs": {
+    "sourceSha256": "D7BE0AF1E502D470BEA2A8422F6B635EC30AF79898F9DFD9A37FB5E5EA1201EC",
+    "documentRole": "business-plan",
+    "sourceRole": "PLANNING_STRATEGIC_SOURCE",
+    "planningStrategicEvidenceEligible": true,
+    "anchorMapFingerprint": "910a8bf9b5bb6c250cc77ad0acb5d01920342adb03dfcaf138a615f50e79356b",
+    "g01Fingerprint": "eda3982872a0545f8d8f30f34c931a423bd1c134e14f430ac93e132544e58d12"
+  },
+  "execution": {
+    "startedAt": "2026-08-23T01:22:20.120Z",
+    "finishedAt": "2026-08-23T01:28:56.834Z",
+    "durationMs": 396714,
+    "provider": "dashscope",
+    "model": "qwen3.6-plus",
+    "configuredTimeoutMs": 360000,
+    "providerAttempts": 2,
+    "transportRetries": 0,
+    "semanticRepairAttempts": 0,
+    "fallbacks": 0,
+    "imageCalls": 0,
+    "conceptExecutions": 0,
+    "directionExecutions": 0
+  },
+  "planning": {
+    "status": "RUNTIME_ACCEPTED",
+    "providerAttempts": 1,
+    "latencyMs": 146191,
+    "timeoutMarginMs": 213809,
+    "claimCount": 16,
+    "artifactSha256": "8564853636f0e03c19531ab4fee8c4ac651e65ffb857c9d7ae345d50fde91cf0",
+    "normalizedExtractionSha256": "0b7abbc5352f5038acabb3601a2c395453199ef92d69b6591982e2bfa1fa7530",
+    "gates": {
+      "PLIVE-01": "PASS",
+      "PLIVE-02": "PASS",
+      "PLIVE-03": "PASS",
+      "PLIVE-04": "PASS_RUNTIME_ENUM_WITH_POSTHOC_EPISTEMIC_RISK",
+      "PLIVE-05": "PASS"
+    }
+  },
+  "strategic": {
+    "status": "RUNTIME_ACCEPTED",
+    "providerAttempts": 1,
+    "latencyMs": 250360,
+    "timeoutMarginMs": 109640,
+    "artifactSha256": "29a27fdf5839f932240949c090d49fbab3cbaa9c88dc1ca010b7b2d423885c64",
+    "promptSha256": "a0283d41a861b0aa2d366be4d07b8ad813ccbe974626637bd005a07077dd7a8c",
+    "gateSha256": "5d5b0739ce7f1bf5a90a6966a739ae18e4ba7d841f0a8a87d1f4b2f33e4572e2",
+    "sgGates": {
+      "SG-01": "PASS",
+      "SG-11": "PASS",
+      "SG-12": "PASS",
+      "SG-13": "PASS",
+      "SG-14": "PASS",
+      "SG-15": "PASS"
+    }
+  },
+  "qualification": {
+    "runtimeTraceability": "PASS",
+    "groundTruthAnchorMapInjected": false,
+    "posthocAnchorReview": {
+      "anchorCount": 13,
+      "pass": 8,
+      "partial": 1,
+      "fail": 4,
+      "criticalFullyRetained": 5,
+      "criticalTotal": 7
+    },
+    "failureClass": "TRACEABILITY_FAILURE",
+    "automaticRepairAllowed": false
+  },
+  "finalVerdict": "HOLD_FOR_TRACEABILITY_REPAIR"
+}
