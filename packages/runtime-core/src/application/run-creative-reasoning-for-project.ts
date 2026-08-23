@@ -55,6 +55,7 @@ import {
   buildSourceDocumentId,
   computeStructuredExtractionCoverage,
   mapRoleToSourceRole,
+  type PlanningClaimKey,
   type PlanningStrategicClaim,
   type StrategicGroundTruthAnchor
 } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
@@ -81,6 +82,37 @@ export interface ProjectReasoningContext {
   planningStrategicEvidence: PlanningStrategicClaim[];
 }
 
+export type GroundTruthAnchorTemplate = Omit<StrategicGroundTruthAnchor, 'planningClaimRefs'> & {
+  planningClaimKeys: PlanningClaimKey[];
+};
+
+/**
+ * Resolve qualification anchor templates only after Planning has emitted its
+ * runtime claim IDs. This keeps the human-reviewed map stable while ensuring
+ * Strategic receives traceable runtime references rather than fabricated IDs.
+ */
+export function resolveGroundTruthAnchorTemplates(
+  templates: GroundTruthAnchorTemplate[],
+  planningClaims: PlanningStrategicClaim[],
+): StrategicGroundTruthAnchor[] {
+  return templates.map((anchor) => {
+    const keySet = new Set<PlanningClaimKey>(anchor.planningClaimKeys);
+    const planningClaimRefs = planningClaims
+      .filter((claim) => keySet.has(claim.key))
+      .map((claim) => claim.claimId);
+    if (planningClaimRefs.length === 0) {
+      throw new Error(`GROUND_TRUTH_ANCHOR_BINDING_UNRESOLVED: ${anchor.anchorId}`);
+    }
+    return {
+      anchorId: anchor.anchorId,
+      importance: anchor.importance,
+      semanticMeaning: anchor.semanticMeaning,
+      sourceReference: anchor.sourceReference,
+      planningClaimRefs,
+    };
+  });
+}
+
 export interface RunCreativeReasoningForProjectInput {
   projectId: string;
   stopAfter?: CreativeReasoningStopAfter;
@@ -90,8 +122,20 @@ export interface RunCreativeReasoningForProjectInput {
   readCredentials?: (profileId?: string) => Promise<ProviderCredentials>;
   qualificationBudget?: CreativeReasoningQualificationBudget;
   qualificationTimeouts?: Partial<CreativeReasoningTimeoutPolicy>;
+  /**
+   * Explicit qualification resume carrier. When present, the orchestrator
+   * preserves an already accepted live Planning artifact and does not invoke
+   * Planning again. Callers must persist the originating attempt separately.
+   */
+  acceptedPlanningStrategicEvidence?: PlanningStrategicClaim[];
   /** Human-reviewed qualification anchors; omitted in ordinary production runs. */
   groundTruthAnchors?: StrategicGroundTruthAnchor[];
+  /**
+   * Qualification-only templates resolved after live Planning has produced its
+   * runtime claim IDs. Callers must use generic Planning keys, never fabricated
+   * claim IDs. Mutually exclusive with `groundTruthAnchors`.
+   */
+  groundTruthAnchorTemplates?: GroundTruthAnchorTemplate[];
 }
 
 export interface RunCreativeReasoningForProjectDeps {
@@ -111,6 +155,10 @@ export interface RunCreativeReasoningForProjectDeps {
     needs: NeedItem[];
     evidence: EvidenceLedgerSnapshot;
   }>;
+  /** Qualification evidence hook; receives the accepted Planning carrier. */
+  onPlanningStrategicEvidenceResolved?: (claims: PlanningStrategicClaim[]) => void | Promise<void>;
+  /** Qualification evidence hook; receives post-Planning runtime anchor bindings. */
+  onGroundTruthAnchorsResolved?: (anchors: StrategicGroundTruthAnchor[]) => void | Promise<void>;
 }
 
 /**
@@ -186,6 +234,10 @@ export async function runCreativeReasoningForProject(
   // 3. Load structured planning artifact (regex fast path).
   const structuredArtifact = await loadPlanningStrategicEvidenceForProject(deps.projectStore, input.projectId);
   let planningArtifact = structuredArtifact;
+  const acceptedPlanningStrategicEvidence = input.acceptedPlanningStrategicEvidence;
+  if (acceptedPlanningStrategicEvidence && acceptedPlanningStrategicEvidence.length === 0) {
+    throw new Error('ACCEPTED_PLANNING_STRATEGIC_EVIDENCE_EMPTY');
+  }
 
   // 4. CI-W1C.7.5-R1.1 — canonical structured coverage decides
   //    whether narrative extraction is required. Current live
@@ -194,7 +246,7 @@ export async function runCreativeReasoningForProject(
   //    phase. The registered brief path is read directly and its
   //    parent directory is never scanned.
   const brief = (project.planningBriefFiles ?? [])[0];
-  if (structuredArtifact && brief) {
+  if (!acceptedPlanningStrategicEvidence && structuredArtifact && brief) {
     const absPath = path.join(projectRoot, brief.relativePath);
     const briefContent = await readPlanningBriefFile(absPath);
     const sourceDocument = structuredArtifact.sourceDocuments.find(
@@ -264,7 +316,15 @@ export async function runCreativeReasoningForProject(
       }
     }
   }
-  const planningStrategicEvidence = planningArtifact?.claims ?? [];
+  const planningStrategicEvidence = acceptedPlanningStrategicEvidence ?? planningArtifact?.claims ?? [];
+  if (input.groundTruthAnchors && input.groundTruthAnchorTemplates) {
+    throw new Error('GROUND_TRUTH_ANCHOR_INPUT_AMBIGUOUS');
+  }
+  const resolvedGroundTruthAnchors: StrategicGroundTruthAnchor[] = input.groundTruthAnchorTemplates
+    ? resolveGroundTruthAnchorTemplates(input.groundTruthAnchorTemplates, planningStrategicEvidence)
+    : (input.groundTruthAnchors ?? []);
+  await deps.onPlanningStrategicEvidenceResolved?.(planningStrategicEvidence);
+  await deps.onGroundTruthAnchorsResolved?.(resolvedGroundTruthAnchors);
 
   // 5. Hand everything to the service.
   if (!_createService) {
@@ -293,7 +353,7 @@ export async function runCreativeReasoningForProject(
     // argument. The service still accepts it as input, but the
     // production path never asks the test/user to build it.
     planningStrategicEvidence,
-    ...(input.groundTruthAnchors ? { groundTruthAnchors: input.groundTruthAnchors } : {}),
+    ...(resolvedGroundTruthAnchors.length > 0 ? { groundTruthAnchors: resolvedGroundTruthAnchors } : {}),
     ...(input.analysisProfileId ? { analysisProfileId: input.analysisProfileId } : {}),
     useMock: input.useMock ?? true,
     ...(input.qualificationBudget ? { qualificationBudget: input.qualificationBudget } : {}),

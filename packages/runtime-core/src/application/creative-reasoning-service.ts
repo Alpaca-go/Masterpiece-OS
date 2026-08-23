@@ -239,6 +239,11 @@ export interface StageAttemptRecord {
   failureClass?: string;
   retryable?: boolean;
   responseHeadersReceived?: boolean;
+  requestDispatched?: boolean;
+  latencyMs?: number;
+  configuredTimeoutMs?: number;
+  timeoutMarginMs?: number;
+  failureLatencyMs?: number;
 }
 
 export interface StageRunResult<TParsed> {
@@ -613,6 +618,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     useMock: boolean;
     provider: string | null;
     model: string | null;
+    analysisProfileId?: string;
     attemptsOutDir: string;
     requestTimeoutMs: number;
   }): Promise<StageRunResult<TParsed>> {
@@ -621,6 +627,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     const baseSystemMessage = args.buildSystemMessage();
     const baseUserMessage = args.buildUserMessage();
     let providerAttempts = 0;
+    let executionAttempts = 0;
     let transportRetries = 0;
     let semanticRepairAttempts = 0;
     let attemptKind: ModelAttemptKind = 'BASE';
@@ -629,15 +636,19 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     let prevBlockedCodes: string[] = [];
     let lastFailure: ReturnType<typeof classifyProviderFailure> | null = null;
 
-    while (providerAttempts < 3) {
-      providerAttempts += 1;
-      const providerAttempt = providerAttempts as 1 | 2 | 3;
+    while (executionAttempts < 3) {
+      executionAttempts += 1;
+      const providerAttempt = executionAttempts as 1 | 2 | 3;
+      const attemptStartedAt = Date.now();
+      let providerRequestCounted = false;
       let rawText = '';
       const userMessage = attemptKind === 'SEMANTIC_REPAIR'
         ? buildRepairUserMessage(baseUserMessage, prevRaw, prevBlockedCodes)
         : baseUserMessage;
       try {
         if (args.useMock || !deps.reasonerFactory || !deps.readCredentials) {
+          providerAttempts += 1;
+          providerRequestCounted = true;
           const r = await mock({
             prompt: { messages: [{ role: 'system', content: baseSystemMessage }, { role: 'user', content: userMessage }] },
             signal: new AbortController().signal,
@@ -650,6 +661,8 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           const analysisProfileId = (args as unknown as { analysisProfileId?: string }).analysisProfileId;
           const creds = await deps.readCredentials(analysisProfileId);
           const reasoner = deps.reasonerFactory(creds);
+          providerAttempts += 1;
+          providerRequestCounted = true;
           const r = await reasoner({
             prompt: { messages: [{ role: 'system', content: baseSystemMessage }, { role: 'user', content: userMessage }] },
             signal: new AbortController().signal,
@@ -660,7 +673,15 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         }
         const attemptFile = path.join(args.attemptsOutDir, `${args.stageName}.attempt-${providerAttempt}.raw.txt`);
         await fs.writeFile(attemptFile, rawText, 'utf8');
-        const attemptRecord: StageAttemptRecord = { attempt: providerAttempt, attemptKind, raw: rawText };
+        const latencyMs = Date.now() - attemptStartedAt;
+        const attemptRecord: StageAttemptRecord = {
+          attempt: providerAttempt,
+          attemptKind,
+          raw: rawText,
+          latencyMs,
+          configuredTimeoutMs: args.requestTimeoutMs,
+          timeoutMarginMs: Math.max(0, args.requestTimeoutMs - latencyMs),
+        };
         rawAttempts.push(attemptRecord);
 
         let parsed: TParsed;
@@ -720,8 +741,11 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
         break;
       } catch (err) {
         lastErr = err;
+        const requestDispatched = (err as { details?: { requestDispatched?: boolean } })?.details?.requestDispatched;
+        if (providerRequestCounted && requestDispatched === false) providerAttempts -= 1;
         const failure = classifyProviderFailure(err);
         lastFailure = failure;
+        const failureLatencyMs = Date.now() - attemptStartedAt;
         rawAttempts.push({
           attempt: providerAttempt,
           attemptKind,
@@ -732,6 +756,11 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           failureClass: failure.failureClass,
           retryable: failure.retryable,
           responseHeadersReceived: failure.responseHeadersReceived,
+          requestDispatched,
+          latencyMs: failureLatencyMs,
+          configuredTimeoutMs: args.requestTimeoutMs,
+          timeoutMarginMs: Math.max(0, args.requestTimeoutMs - failureLatencyMs),
+          failureLatencyMs,
         });
         if (attemptKind === 'BASE' && failure.retryable && transportRetries === 0) {
           transportRetries = 1;
@@ -744,6 +773,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     const failureFile = path.join(args.attemptsOutDir, `${args.stageName}.failure.json`);
     await fs.writeFile(failureFile, JSON.stringify({
       stage: args.stageName,
+      executionAttempts,
       providerAttempts,
       transportRetries,
       semanticRepairAttempts,
@@ -755,7 +785,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     }, null, 2), 'utf8');
     return {
       status: 'FAIL',
-      attempts: providerAttempts as 1 | 2 | 3,
+      attempts: executionAttempts as 1 | 2 | 3,
       providerAttempts,
       transportRetries,
       semanticRepairAttempts,
@@ -1011,6 +1041,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       useMock,
       provider,
       model,
+      analysisProfileId: input.analysisProfileId,
       attemptsOutDir: attemptsDir,
       requestTimeoutMs: qualificationTimeouts.strategicSynthesisMs,
     });
@@ -1087,6 +1118,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           useMock,
           provider,
           model,
+          analysisProfileId: input.analysisProfileId,
           attemptsOutDir: attemptsDir,
           requestTimeoutMs: qualificationTimeouts.conceptMs,
         });
@@ -1167,6 +1199,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           useMock,
           provider,
           model,
+          analysisProfileId: input.analysisProfileId,
           attemptsOutDir: attemptsDir,
           requestTimeoutMs: qualificationTimeouts.directionMs,
         });

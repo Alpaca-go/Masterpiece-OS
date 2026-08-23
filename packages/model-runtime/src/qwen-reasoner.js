@@ -19,10 +19,13 @@ const MAX_IMAGE_EDGE = 1600;
 const IMAGE_JPEG_QUALITY = 82;
 
 export class QwenReasonerError extends Error {
-  constructor(code, message) {
-    super(message);
+  constructor(code, message, options = {}) {
+    super(message, options);
     this.name = 'QwenReasonerError';
     this.code = code;
+    this.details = Object.freeze({
+      ...(options.details && typeof options.details === 'object' ? options.details : {}),
+    });
   }
 }
 
@@ -126,10 +129,10 @@ async function runClientWithDeadline(client, request, options = {}) {
 }
 
 async function buildMultimodalUserContent(prompt, diagnostics) {
-  const userMessage = prompt.messages.find((message) => message.role === 'user');
+  const userMessage = (prompt.messages || []).find((message) => message.role === 'user');
   const content = [{ type: 'text', text: String(userMessage?.content || '') }];
   const inspectedAssetIds = [];
-  for (const attachment of prompt.attachments) {
+  for (const attachment of prompt.attachments || []) {
     if (!attachment.readable) {
       diagnostics.push({ assetId: attachment.assetId, status: 'skipped', reason: 'unreadable' });
       continue;
@@ -200,9 +203,12 @@ export function createQwenReasoner(options = {}) {
       context = { prompt: { messages: context, attachments: [] }, ...options };
     }
     const diagnostics = [];
-    const prepared = await buildMultimodalUserContent(context.prompt, diagnostics);
+    const prepared = await buildMultimodalUserContent(
+      context.prompt || { messages: [], attachments: [] },
+      diagnostics,
+    );
     for (const diagnostic of diagnostics) onDiagnostic(Object.freeze({ ...diagnostic }));
-    const systemMessage = context.prompt.messages.find((message) => message.role === 'system');
+    const systemMessage = (context.prompt?.messages || []).find((message) => message.role === 'system');
     const body = {
       model,
       messages: [
@@ -233,14 +239,27 @@ export function createQwenReasoner(options = {}) {
         body,
       }, {
         signal: context.signal,
-        maximumDurationMs: context.maximumDurationMs,
+        maximumDurationMs: context.requestTimeoutMs ?? context.maximumDurationMs,
       });
     } catch (error) {
       if (error instanceof QwenReasonerError) {
         error.message = redact(error.message, apiKey);
         throw error;
       }
-      throw new QwenReasonerError('QWEN_REQUEST_FAILED', `Qwen 请求失败：${redact(error.message, apiKey)}`);
+      const causeCode = String(error?.cause?.code || error?.code || '');
+      const preDispatchCodes = new Set(['EAI_AGAIN', 'UND_ERR_CONNECT_TIMEOUT', 'ECONNREFUSED', 'ENETUNREACH']);
+      throw new QwenReasonerError(
+        'QWEN_REQUEST_FAILED',
+        `Qwen 请求失败：${redact(error.message, apiKey)}`,
+        {
+          cause: error,
+          details: {
+            causeCode: causeCode || null,
+            responseHeadersReceived: false,
+            requestDispatched: !preDispatchCodes.has(causeCode),
+          },
+        },
+      );
     }
     const latencyMs = Date.now() - startedAtMs;
     // A3-E: read usage block if the upstream response carries one.

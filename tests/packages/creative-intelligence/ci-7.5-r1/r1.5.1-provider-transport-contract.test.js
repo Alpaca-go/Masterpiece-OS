@@ -15,6 +15,8 @@ const serviceUrl = pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/
 const narrativeUrl = pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/narrative-planning-extraction-runner.ts')).href;
 const modelRuntimeUrl = pathToFileURL(path.join(repoRoot, 'packages/model-runtime/src/openai-compatible-text-reasoner.js')).href;
 const taxonomyUrl = pathToFileURL(path.join(repoRoot, 'packages/model-runtime/src/provider-failure-taxonomy.js')).href;
+const analysisProviderUrl = '@masterpiece/model-runtime/analysis-provider';
+const qwenUrl = '@masterpiece/model-runtime/qwen-reasoner';
 const strategicUrl = pathToFileURL(path.join(repoRoot, 'packages/creative-intelligence/src/strategic-synthesis/index.ts')).href;
 
 function truth(projectId) {
@@ -87,8 +89,8 @@ async function runService(handler, options = {}) {
   try {
     const service = createCreativeReasoningService({
       outputRoot: async () => root,
-      reasonerFactory: () => handler,
-      readCredentials: dummyReadCredentials
+      reasonerFactory: options.reasonerFactory ?? (() => handler),
+      readCredentials: options.readCredentials ?? dummyReadCredentials
     });
     return await service.run({
       projectId, truth: truth(projectId), needs: needs(), evidence: evidence(projectId), useMock: false,
@@ -283,6 +285,96 @@ test('TAX-05: cancellation is never retried', async () => {
 test('TAX-06: semantic classes and unknown provider failure remain distinguishable', async () => {
   const { classifyProviderFailure } = await import(taxonomyUrl);
   assert.deepEqual(['SEMANTIC_PARSE_FAILURE', 'SEMANTIC_GATE_FAILURE', 'mystery'].map((code) => classifyProviderFailure({ code }).failureClass), ['SEMANTIC_PARSE_FAILURE', 'SEMANTIC_GATE_FAILURE', 'UNKNOWN_PROVIDER_FAILURE']);
+});
+
+test('STR-TRANSPORT-01: fetch failed with nested headers timeout is a retryable TRANSPORT_FAILURE', async () => {
+  const { classifyProviderFailure, classifyProviderFailureCategory } = await import(taxonomyUrl);
+  const error = Object.assign(new TypeError('fetch failed'), {
+    code: 'QWEN_REQUEST_FAILED',
+    details: { causeCode: 'UND_ERR_HEADERS_TIMEOUT', responseHeadersReceived: false, requestDispatched: true },
+  });
+  const failure = classifyProviderFailure(error);
+  assert.equal(failure.failureClass, 'TRANSPORT_TIMEOUT');
+  assert.equal(failure.retryable, true);
+  assert.equal(classifyProviderFailureCategory(failure), 'TRANSPORT_FAILURE');
+});
+
+test('STR-TRANSPORT-02: Qwen adapter preserves nested Undici transport evidence through normalization', async () => {
+  const { createQwenReasoner } = await import(qwenUrl);
+  const { normalizeAnalysisProviderError } = await import(analysisProviderUrl);
+  const { classifyProviderFailure } = await import(taxonomyUrl);
+  const reasoner = createQwenReasoner({
+    apiKey: 'redacted-test-key',
+    model: 'offline-test-model',
+    baseUrl: 'https://offline.invalid/v1',
+    client: async () => {
+      const error = new TypeError('fetch failed');
+      error.cause = { code: 'UND_ERR_HEADERS_TIMEOUT' };
+      throw error;
+    },
+  });
+  await assert.rejects(
+    reasoner({ prompt: { messages: [{ role: 'user', content: 'offline transport test' }] }, requestTimeoutMs: 360_000 }),
+    (error) => {
+      const normalized = normalizeAnalysisProviderError(error, 'qwen');
+      const failure = classifyProviderFailure(normalized);
+      assert.equal(normalized.details.causeCode, 'UND_ERR_HEADERS_TIMEOUT');
+      assert.equal(normalized.details.requestDispatched, true);
+      assert.equal(failure.failureClass, 'TRANSPORT_TIMEOUT');
+      return true;
+    },
+  );
+});
+
+test('STR-TRANSPORT-03: fetch transport failure receives one unchanged bounded retry', async () => {
+  const calls = [];
+  const pass = passingHandler('transport-contract-project');
+  const result = await runService(async (input) => {
+    calls.push(input);
+    if (calls.length === 1) {
+      throw Object.assign(new TypeError('fetch failed'), {
+        code: 'QWEN_REQUEST_FAILED',
+        details: { causeCode: 'UND_ERR_HEADERS_TIMEOUT', responseHeadersReceived: false, requestDispatched: true },
+      });
+    }
+    return pass(input);
+  });
+  assert.deepEqual(calls.map((call) => call.attemptKind), ['BASE', 'TRANSPORT_RETRY']);
+  assert.deepEqual([result.stages.synthesis.providerAttempts, result.stages.synthesis.transportRetries], [2, 1]);
+});
+
+test('ATTEMPT-COUNT-01: credential/preconnect failure does not count as a provider invocation', async () => {
+  let reasonerCalls = 0;
+  const result = await runService(async () => { reasonerCalls += 1; }, {
+    readCredentials: async () => { throw new Error('local credential resolution failed'); },
+  });
+  assert.equal(reasonerCalls, 0);
+  assert.equal(result.stages.synthesis.providerAttempts, 0);
+  assert.equal(result.stages.synthesis.attempts, 1);
+});
+
+test('ATTEMPT-COUNT-02: one dispatched transport retry counts exactly two provider invocations', async () => {
+  let calls = 0;
+  const pass = passingHandler('transport-contract-project');
+  const result = await runService(async (input) => {
+    calls += 1;
+    if (calls === 1) throw transportTimeout();
+    return pass(input);
+  });
+  assert.deepEqual([calls, result.stages.synthesis.providerAttempts, result.stages.synthesis.transportRetries], [2, 2, 1]);
+});
+
+test('ATTEMPT-COUNT-03: semantic repair is counted separately from transport retry', async () => {
+  let calls = 0;
+  const pass = passingHandler('transport-contract-project');
+  const result = await runService(async (input) => {
+    calls += 1;
+    return calls === 1 ? { reportMarkdown: 'not-json' } : pass(input);
+  });
+  assert.deepEqual(
+    [calls, result.stages.synthesis.providerAttempts, result.stages.synthesis.transportRetries, result.stages.synthesis.semanticRepairAttempts],
+    [2, 2, 0, 1],
+  );
 });
 
 function evidenceV21(callLedger) {

@@ -14,6 +14,10 @@ export class AnalysisProviderError extends Error {
     this.code = PROVIDER_ERROR_CODES.includes(code) ? code : 'REQUEST_FAILED';
     this.providerId = String(options.providerId || '').trim();
     this.causeCode = String(options.causeCode || '').trim();
+    this.details = Object.freeze({
+      ...(options.details && typeof options.details === 'object' ? options.details : {}),
+      ...(this.causeCode ? { causeCode: this.causeCode } : {}),
+    });
   }
 }
 
@@ -37,7 +41,13 @@ export function assertCanonicalAnalysisResult(result) {
 
 export function normalizeAnalysisProviderError(error, providerId) {
   if (error instanceof AnalysisProviderError) return error;
-  const causeCode = String(error?.code || '').toUpperCase();
+  const causeCode = String(
+    error?.details?.causeCode
+      || error?.causeCode
+      || error?.cause?.code
+      || error?.code
+      || '',
+  ).toUpperCase();
   const message = String(error?.message || error || 'Analysis Provider request failed.');
   let code = 'REQUEST_FAILED';
   if (/401|403|API_KEY|AUTH|UNAUTHORIZED|FORBIDDEN/u.test(`${causeCode} ${message}`)) code = 'AUTHENTICATION_FAILED';
@@ -45,7 +55,16 @@ export function normalizeAnalysisProviderError(error, providerId) {
   else if (/429|RATE_LIMIT/u.test(`${causeCode} ${message}`)) code = 'RATE_LIMITED';
   else if (/EMPTY|RESPONSE_INVALID|MALFORMED|PARSE/u.test(`${causeCode} ${message}`)) code = 'MALFORMED_RESPONSE';
   else if (/404|MODEL.*(?:NOT_FOUND|UNAVAILABLE)|DOES NOT EXIST/iu.test(`${causeCode} ${message}`)) code = 'MODEL_UNAVAILABLE';
-  return new AnalysisProviderError(code, message, { cause: error, providerId, causeCode });
+  return new AnalysisProviderError(code, message, {
+    cause: error,
+    providerId,
+    causeCode,
+    details: {
+      responseHeadersReceived: error?.details?.responseHeadersReceived ?? false,
+      requestDispatched: error?.details?.requestDispatched,
+      httpStatus: error?.details?.httpStatus ?? error?.httpStatus ?? error?.status,
+    },
+  });
 }
 
 export function createAnalysisProviderRegistry(providers = []) {

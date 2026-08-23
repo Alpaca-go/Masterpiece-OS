@@ -8,6 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..', '..');
 const strategicUrl = pathToFileURL(path.join(repoRoot, 'packages/creative-intelligence/src/strategic-synthesis/index.ts')).href;
 const serviceUrl = pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/creative-reasoning-service.ts')).href;
+const orchestratorUrl = pathToFileURL(path.join(repoRoot, 'packages/runtime-core/src/application/run-creative-reasoning-for-project.ts')).href;
 
 const planningClaims = Array.from({ length: 13 }, (_, index) => ({
   claimId: `runtime-claim-${index + 1}`,
@@ -109,6 +110,47 @@ test('TRACE-CLOSED-LOOP: every retained anchor resolves through a runtime Planni
   const report = evaluateGroundTruthAnchorRetention({ artifact: artifactWithPlanningRefs(planningClaims.map((claim) => claim.claimId)), groundTruthAnchors: anchors, planningClaims });
   assert.equal(report.traceability.length, anchors.length);
   assert.ok(report.traceability.every((row) => row.sourceReference.startsWith('SRC-G02-') && row.retainedPlanningClaimRefs.length > 0));
+});
+
+test('ANCHOR-BIND-01: templates resolve generic Planning keys to live runtime claim IDs', async () => {
+  const { resolveGroundTruthAnchorTemplates } = await import(orchestratorUrl);
+  const templates = [{
+    anchorId: 'G02-BP-A01', importance: 'CRITICAL', semanticMeaning: 'meaning',
+    sourceReference: 'SRC-G02-02', planningClaimKeys: ['business_model', 'product_service'],
+  }];
+  const claims = [
+    { ...planningClaims[0], claimId: 'live-business-model', key: 'business_model' },
+    { ...planningClaims[1], claimId: 'live-product-service', key: 'product_service' },
+    { ...planningClaims[2], claimId: 'unrelated', key: 'industry' },
+  ];
+  assert.deepEqual(resolveGroundTruthAnchorTemplates(templates, claims), [{
+    anchorId: 'G02-BP-A01', importance: 'CRITICAL', semanticMeaning: 'meaning',
+    sourceReference: 'SRC-G02-02', planningClaimRefs: ['live-business-model', 'live-product-service'],
+  }]);
+});
+
+test('ANCHOR-BIND-02: unresolved templates fail closed before Strategic', async () => {
+  const { resolveGroundTruthAnchorTemplates } = await import(orchestratorUrl);
+  assert.throws(
+    () => resolveGroundTruthAnchorTemplates([{
+      anchorId: 'G02-BP-A99', importance: 'CRITICAL', semanticMeaning: 'meaning',
+      sourceReference: 'SRC-G02-99', planningClaimKeys: ['communication_task'],
+    }], [{ ...planningClaims[0], key: 'industry' }]),
+    /GROUND_TRUTH_ANCHOR_BINDING_UNRESOLVED: G02-BP-A99/,
+  );
+});
+
+test('PROFILE-FORWARD-01: Strategic stage receives the explicitly selected analysis profile', async () => {
+  const source = await fs.readFile(path.join(repoRoot, 'packages/runtime-core/src/application/creative-reasoning-service.ts'), 'utf8');
+  assert.match(source, /analysisProfileId:\s*input\.analysisProfileId,[\s\S]*?attemptsOutDir:\s*attemptsDir/);
+  assert.match(source, /const analysisProfileId = \(args as unknown as \{ analysisProfileId\?: string \}\)\.analysisProfileId/);
+});
+
+test('PLANNING-RESUME-01: accepted Planning carrier bypasses live Planning regeneration explicitly', async () => {
+  const source = await fs.readFile(path.join(repoRoot, 'packages/runtime-core/src/application/run-creative-reasoning-for-project.ts'), 'utf8');
+  assert.match(source, /acceptedPlanningStrategicEvidence\?: PlanningStrategicClaim\[\]/);
+  assert.match(source, /if \(!acceptedPlanningStrategicEvidence && structuredArtifact && brief\)/);
+  assert.match(source, /acceptedPlanningStrategicEvidence \?\? planningArtifact\?\.claims \?\? \[\]/);
 });
 
 test('EPI-G02-01: future build ambition is USER_REQUIREMENT, not FACT', async () => {

@@ -11,6 +11,12 @@ export const PROVIDER_FAILURE_CLASSES = Object.freeze([
   'UNKNOWN_PROVIDER_FAILURE',
 ]);
 
+export const PROVIDER_FAILURE_CATEGORIES = Object.freeze([
+  'TRANSPORT_FAILURE',
+  'SEMANTIC_FAILURE',
+  'QUALIFICATION_FAILURE',
+]);
+
 const TIMEOUT_CODES = new Set([
   'REQUEST_TIMEOUT',
   'UND_ERR_HEADERS_TIMEOUT',
@@ -35,7 +41,7 @@ function finiteStatus(value) {
 export function classifyProviderFailure(error) {
   const code = String(error?.code || error?.name || 'UNKNOWN_PROVIDER_FAILURE');
   const errorName = String(error?.name || '');
-  const causeCode = String(error?.details?.causeCode || error?.cause?.code || '');
+  const causeCode = String(error?.details?.causeCode || error?.causeCode || error?.cause?.code || '');
   const httpStatus = finiteStatus(error?.details?.httpStatus ?? error?.httpStatus ?? error?.status);
   const responseHeadersReceived = typeof error?.details?.responseHeadersReceived === 'boolean'
     ? error.details.responseHeadersReceived
@@ -53,7 +59,7 @@ export function classifyProviderFailure(error) {
   if (TIMEOUT_CODES.has(code) || TIMEOUT_CODES.has(causeCode)) {
     return { failureClass: 'TRANSPORT_TIMEOUT', retryable: true, responseHeadersReceived: false, errorCode: code, causeCode: causeCode || null, httpStatus };
   }
-  if (CONNECTION_CODES.has(code) || CONNECTION_CODES.has(causeCode)) {
+  if (CONNECTION_CODES.has(code) || CONNECTION_CODES.has(causeCode) || /fetch failed/iu.test(String(error?.message || ''))) {
     return { failureClass: 'TRANSPORT_CONNECTION', retryable: true, responseHeadersReceived: false, errorCode: code, causeCode: causeCode || null, httpStatus };
   }
   if (httpStatus === 429) {
@@ -69,6 +75,15 @@ export function classifyProviderFailure(error) {
     return { failureClass: 'PROVIDER_4XX_NON_RETRYABLE', retryable: false, responseHeadersReceived: true, errorCode: code, causeCode: causeCode || null, httpStatus };
   }
   return { failureClass: 'UNKNOWN_PROVIDER_FAILURE', retryable: false, responseHeadersReceived, errorCode: code, causeCode: causeCode || null, httpStatus };
+}
+
+export function classifyProviderFailureCategory(failureOrError) {
+  const failure = failureOrError?.failureClass
+    ? failureOrError
+    : classifyProviderFailure(failureOrError);
+  if (failure.failureClass === 'SEMANTIC_PARSE_FAILURE') return 'SEMANTIC_FAILURE';
+  if (failure.failureClass === 'SEMANTIC_GATE_FAILURE') return 'QUALIFICATION_FAILURE';
+  return 'TRANSPORT_FAILURE';
 }
 
 export function semanticFailure(kind) {

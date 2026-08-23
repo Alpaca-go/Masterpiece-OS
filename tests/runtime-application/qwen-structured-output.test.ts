@@ -62,3 +62,34 @@ test('Qwen reasoner forwards strict JSON Schema for targeted repair calls', asyn
     },
   });
 });
+
+test('Qwen reasoner accepts text-only prompts when attachments are omitted', async () => {
+  let capturedBody: Record<string, any> | undefined;
+  const reasoner = createQwenReasoner({
+    apiKey: 'test-key',
+    model: 'test-model',
+    baseUrl: 'https://example.invalid/v1',
+    client: async (request: { body: Record<string, unknown> }) => {
+      capturedBody = request.body;
+      return {
+        id: 'text-only-response-1',
+        model: 'test-model',
+        choices: [{ message: { content: '{"ok":true}' } }],
+      };
+    },
+  });
+
+  await reasoner({
+    prompt: {
+      messages: [
+        { role: 'system', content: 'Return JSON.' },
+        { role: 'user', content: 'Text only.' },
+      ],
+    },
+  });
+
+  assert.deepEqual(capturedBody?.messages, [
+    { role: 'system', content: 'Return JSON.' },
+    { role: 'user', content: [{ type: 'text', text: 'Text only.' }] },
+  ]);
+});
