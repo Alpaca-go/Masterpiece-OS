@@ -74,5 +74,20 @@ scripts/probes/
 
 .packet/
 
+# Agent-local scratch and command logs
+/.mavis-trash/
+/logs/
+
+# One-off CI profile probe; reads machine-local userData and is not release code
+/apps/web-runtime/scripts/ci-w1c/probe-actual-userdata-profiles.mjs
+
+# Historical live-qualification raw/provider artifacts kept local only
+/docs/creative-intelligence/ci-w1c.7.2/g01-runtime/
+/docs/creative-intelligence/ci-w1c.7.5-r1/G01/
+/docs/creative-intelligence/ci-w1c.7.5-r1/g01-attempt2-live-qualification.err
+/docs/creative-intelligence/ci-w1c.7.5-r1/g01-live-qualification-summary.json
+/docs/creative-intelligence/ci-w1c.7.5-r1/g01-planning-intake.json
+/docs/creative-intelligence/ci-w1c.7.5-r1/g01-planning-intake.md
+
 # Web build output
 apps/web/dist/
