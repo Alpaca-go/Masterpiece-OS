@@ -25,12 +25,13 @@
 import type { StrategicReasoningContext } from './compile-strategic-context.ts';
 import { STRATEGIC_SYNTHESIS_LEGACY_VISUAL_EXCLUDED_MIN, STRATEGIC_SYNTHESIS_SCHEMA_VERSION } from './contracts.ts';
 import { strategicInputFingerprint } from './semantic-fingerprint.ts';
+import { validateGroundTruthAnchorBindings } from './ground-truth-anchor-retention.ts';
 
 // CI-W1C.7.1 prompt version. The `STRATEGIC_SYNTHESIS_PROMPT_VERSION`
 // re-exported from `contracts.ts` is the legacy CI-W1C.7 version
 // (used as the schema-side prompt version). This is the CI-W1C.7.1
 // prompt builder's version.
-export const STRATEGIC_SYNTHESIS_BUILDER_PROMPT_VERSION = 'ci-w1c.7.1-strategic-synthesis-v0.2' as const;
+export const STRATEGIC_SYNTHESIS_BUILDER_PROMPT_VERSION = 'ci-w1c.8-g02-c.1-strategic-synthesis-v0.4' as const;
 
 // CI-W1C.7.4 prompt version: same wire-shape, but planning-strategic
 // evidence is now a positive carrier. The PLANNING STRATEGIC EVIDENCE
@@ -60,6 +61,7 @@ export interface StrategicSynthesisPromptOutput {
     needCount: number;
     evidenceCount: number;
     planningClaimCount: number;
+    groundTruthAnchorCount: number;
   };
 }
 
@@ -68,12 +70,16 @@ const SYSTEM_MESSAGE = [
   'You produce a StrategicSynthesisArtifact. You may NOT create new FACT.',
   'Strategic interpretation = MODEL_INFERENCE; creative proposal = CREATIVE_HYPOTHESIS.',
   'Every project-specific claim must resolve to a provided source ID.',
+  'The four explicit grounding domains are Planning Claims, Planning Needs, Evidence References, and Ground Truth Anchors.',
   'You will receive authoritative project facts, locked rules, prohibited directions, a need skeleton, evidence summaries, and (CI-W1C.7.4) planning strategic evidence from a registered planning brief.',
   'You MUST NOT use legacy visual evidence (visualAsset.* / old VI / old poster / old packaging / old spatial / style_reference / structure_reference / spatial_reference) as positive creative authority.',
   'Planning strategic evidence is a positive authority: cite claims by id and treat them as the strongest signal of project-specific planning intent. Preserve the claim epistemic class as written; do not promote USER_REQUIREMENT / MODEL_INFERENCE / UNKNOWN to FACT.',
   // CI-W1C.7.4-R2 PART C — planning claim IDs MUST go in
   // `planningClaimRefs`. NEVER in factRefs / needRefs / evidenceRefs.
   'Planning claim IDs MUST be cited in planningClaimRefs (projectUnderstanding / tensions / insights / opportunities). Do NOT put planning claim IDs in factRefs / needRefs / evidenceRefs.',
+  'When Ground Truth Anchors are supplied, retain every CRITICAL anchor through its mapped Planning claim refs. Do not ignore, replace, or invent anchor IDs.',
+  'Do not create Concept, Direction, visual mechanism, style, packaging, or image-generation proposals in Strategic synthesis.',
+  'Do not introduce unauthorized external concepts or substitute another project\'s semantics.',
   'Output the strict JSON for StrategicSynthesisArtifact with the exact schemaVersion ' + STRATEGIC_SYNTHESIS_SCHEMA_VERSION + '.',
 ].join('\n');
 
@@ -137,8 +143,25 @@ function safePlanningClaim(c: {
   return `  - id=${c.claimId} key=${c.key} value=${c.value} epistemicClass=${c.epistemicClass} confidence=${conf} sourceDocumentId=${c.sourceDocumentId} chunkRefs=[${chunks}]`;
 }
 
+function safeGroundTruthAnchor(anchor: {
+  anchorId: string;
+  importance: string;
+  semanticMeaning: string;
+  sourceReference: string;
+  planningClaimRefs: string[];
+}): string {
+  return `  - anchorId=${anchor.anchorId} importance=${anchor.importance} semanticMeaning=${anchor.semanticMeaning} sourceReference=${anchor.sourceReference} planningClaimRefs=[${anchor.planningClaimRefs.join(',')}]`;
+}
+
 export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInput): StrategicSynthesisPromptOutput {
   const { ctx } = input;
+  const anchorBindings = validateGroundTruthAnchorBindings({
+    groundTruthAnchors: ctx.groundTruthAnchors,
+    planningClaims: ctx.planningStrategicEvidence,
+  });
+  if (!anchorBindings.valid) {
+    throw new Error(`GROUND_TRUTH_ANCHOR_MAP_INVALID: ${anchorBindings.errors.join('; ')}`);
+  }
   // 1. Authoritative project facts (with VALUES)
   const factBlock = ctx.authoritativeFacts.length === 0
     ? '  (no authoritative facts)'
@@ -170,6 +193,10 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
   const planningClaimBlock = planningClaims.length === 0
     ? '  (no planning strategic evidence — no human-authored planning brief registered)'
     : planningClaims.map(safePlanningClaim).join('\n');
+  const groundTruthAnchors = ctx.groundTruthAnchors ?? [];
+  const groundTruthAnchorBlock = groundTruthAnchors.length === 0
+    ? '  (no qualification Ground Truth Anchors supplied)'
+    : groundTruthAnchors.map(safeGroundTruthAnchor).join('\n');
   // 7. Source trace IDs
   const sourceIdsBlock = [
     `  facts: [${ctx.sourceIds.facts.join(', ')}]`,
@@ -217,6 +244,11 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     'These are positive strategic authority (sibling to AUTHORITATIVE PROJECT FACTS). Use them as the strongest signal of project-specific planning intent. Cite by claim id.',
     planningClaimBlock,
     '',
+    '# GROUND TRUTH ANCHORS',
+    'Human-reviewed material anchors for this qualification source. Anchor IDs and mappings are runtime authority; do not invent, rename, or import anchors from another project.',
+    'Each anchor maps to Planning Claims and a Source Reference. Every CRITICAL anchor must remain represented through at least one mapped planningClaimRef in the Strategic artifact. IMPORTANT retention target is at least 80%.',
+    groundTruthAnchorBlock,
+    '',
     '# SOURCE TRACE IDS',
     'Every factRef / needRef / evidenceRef you cite MUST appear in these lists. Do not invent IDs.',
     sourceIdsBlock,
@@ -255,6 +287,7 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     'All epistemicClass fields must be exactly "MODEL_INFERENCE".',
     'All factRefs / needRefs / evidenceRefs must resolve into the SOURCE TRACE IDS above.',
     'All *.planningClaimRefs MUST be elements of the planningClaims list in SOURCE TRACE IDS. NEVER put planning claim IDs in factRefs / needRefs / evidenceRefs.',
+    'Ground Truth Anchors are material-retention constraints, not permission to create a visual direction or an unauthorized external concept.',
     '',
     '# REQUIRED SHAPE — every field below MUST appear in the output',
     'Use this exact field set. Do not omit any field; the runtime parser will reject incomplete objects.',
@@ -284,6 +317,7 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
     needs: ctx.needs,
     evidence: ctx.evidence,
     planningStrategicEvidence: ctx.planningStrategicEvidence ?? [],
+    groundTruthAnchors: ctx.groundTruthAnchors ?? [],
     legacyVisualEvidenceExcluded: ctx.legacyVisualEvidenceExcluded,
   });
 
@@ -299,6 +333,7 @@ export function buildStrategicSynthesisPrompt(input: StrategicSynthesisPromptInp
       needCount: ctx.needs.length,
       evidenceCount: ctx.evidence.length,
       planningClaimCount: (ctx.planningStrategicEvidence ?? []).length,
+      groundTruthAnchorCount: groundTruthAnchors.length,
     },
   };
 }

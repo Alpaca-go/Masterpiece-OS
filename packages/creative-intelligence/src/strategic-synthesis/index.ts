@@ -24,6 +24,7 @@ export * from './compile-strategic-context.ts';
 export * from './parse-strategic-synthesis.ts';
 export * from './validate-strategic-synthesis.ts';
 export * from './strategic-grounding-gate.ts';
+export * from './ground-truth-anchor-retention.ts';
 export * from './build-strategic-synthesis-prompt.ts';
 export * from './semantic-fingerprint.ts';
 export * from './prompt-budget.ts';

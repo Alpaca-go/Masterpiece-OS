@@ -64,12 +64,13 @@ import path from 'node:path';
 import type { ProjectTruthModel, ProjectTruthFact } from '@masterpiece/creative-intelligence/truth/index.ts';
 import type { NeedItem } from '@masterpiece/creative-intelligence/need-intelligence/index.ts';
 import type { EvidenceLedgerSnapshot } from '@masterpiece/creative-intelligence/evidence/index.ts';
-import type { PlanningStrategicClaim } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
+import type { PlanningStrategicClaim, StrategicGroundTruthAnchor } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 
 import {
   compileStrategicReasoningContext,
   parseStrategicSynthesis,
   runStrategicGroundingGate,
+  evaluateGroundTruthAnchorRetention,
   validateStrategicSynthesisStructural,
   buildStrategicSynthesisPrompt,
   checkPromptBudget,
@@ -207,6 +208,11 @@ export interface CreativeReasoningInput {
    * Default: `[]` (no planning evidence).
    */
   planningStrategicEvidence?: PlanningStrategicClaim[];
+  /**
+   * Qualification-only, human-reviewed anchor map. When present, the
+   * Strategic prompt receives it and CRITICAL retention is a hard gate.
+   */
+  groundTruthAnchors?: StrategicGroundTruthAnchor[];
 }
 
 export interface ModelReasoner {
@@ -500,6 +506,7 @@ export interface CreativeReasoningServiceDeps {
   _lastNeeds?: NeedItem[];
   _lastEvidence?: EvidenceLedgerSnapshot;
   _lastPlanningEvidence?: PlanningStrategicClaim[];
+  _lastGroundTruthAnchors?: StrategicGroundTruthAnchor[];
 }
 
 /**
@@ -576,6 +583,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       // CI-W1C.7.4-R1 — forward cached planning evidence so the
       // PLANNING STRATEGIC EVIDENCE section is rendered.
       planningStrategicEvidence: deps._lastPlanningEvidence ?? [],
+      groundTruthAnchors: deps._lastGroundTruthAnchors ?? [],
     });
     if (stageName === 'synthesis') {
       const out = buildStrategicSynthesisPrompt({ projectId: args.projectId, ctx });
@@ -833,6 +841,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
     // can forward it when re-compiling the context for the
     // concept / direction stages.
     deps._lastPlanningEvidence = input.planningStrategicEvidence ?? [];
+    deps._lastGroundTruthAnchors = input.groundTruthAnchors ?? [];
 
     // Resolve provider / model metadata (PART G).
     // In live mode, resolve from the credentials (honoring
@@ -873,6 +882,7 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
       // PLANNING STRATEGIC EVIDENCE section is rendered in the
       // synthesis prompt snapshot.
       planningStrategicEvidence: input.planningStrategicEvidence ?? [],
+      groundTruthAnchors: input.groundTruthAnchors ?? [],
     });
     const synthesisPrompt = buildStrategicSynthesisPrompt({
       projectId: input.projectId,
@@ -980,9 +990,18 @@ export function createCreativeReasoningService(deps: CreativeReasoningServiceDep
           evidence: input.evidence,
           planningClaims: input.planningStrategicEvidence ?? [],
         });
+        const anchorRetention = evaluateGroundTruthAnchorRetention({
+          artifact: a,
+          groundTruthAnchors: input.groundTruthAnchors ?? [],
+          planningClaims: input.planningStrategicEvidence ?? [],
+        });
         return {
-          passed: structural.passed && grounding.passed,
-          blockedCodes: Array.from(new Set([...structural.blockedCodes, ...grounding.blockedCodes])),
+          passed: structural.passed && grounding.passed && anchorRetention.passed,
+          blockedCodes: Array.from(new Set([
+            ...structural.blockedCodes,
+            ...grounding.blockedCodes,
+            ...anchorRetention.blockedCodes,
+          ])),
         };
       },
       buildUserMessage: () => synthesisPrompt.userMessage,

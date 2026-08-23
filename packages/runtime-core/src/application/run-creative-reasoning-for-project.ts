@@ -55,7 +55,8 @@ import {
   buildSourceDocumentId,
   computeStructuredExtractionCoverage,
   mapRoleToSourceRole,
-  type PlanningStrategicClaim
+  type PlanningStrategicClaim,
+  type StrategicGroundTruthAnchor
 } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
 import { runNarrativePlanningExtraction } from './narrative-planning-extraction-runner.ts';
 import { readPlanningBriefFile } from '@masterpiece/creative-intelligence/strategic-synthesis/index.ts';
@@ -89,6 +90,8 @@ export interface RunCreativeReasoningForProjectInput {
   readCredentials?: (profileId?: string) => Promise<ProviderCredentials>;
   qualificationBudget?: CreativeReasoningQualificationBudget;
   qualificationTimeouts?: Partial<CreativeReasoningTimeoutPolicy>;
+  /** Human-reviewed qualification anchors; omitted in ordinary production runs. */
+  groundTruthAnchors?: StrategicGroundTruthAnchor[];
 }
 
 export interface RunCreativeReasoningForProjectDeps {
@@ -290,6 +293,7 @@ export async function runCreativeReasoningForProject(
     // argument. The service still accepts it as input, but the
     // production path never asks the test/user to build it.
     planningStrategicEvidence,
+    ...(input.groundTruthAnchors ? { groundTruthAnchors: input.groundTruthAnchors } : {}),
     ...(input.analysisProfileId ? { analysisProfileId: input.analysisProfileId } : {}),
     useMock: input.useMock ?? true,
     ...(input.qualificationBudget ? { qualificationBudget: input.qualificationBudget } : {}),

@@ -31,6 +31,7 @@ import type { ProjectTruthModel, ProjectTruthFact } from '../truth/contracts.ts'
 import type { NeedItem } from '../need-intelligence/contracts.ts';
 import type { EvidenceLedgerSnapshot, EvidenceItem } from '../evidence/contracts.ts';
 import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
+import type { StrategicGroundTruthAnchor } from './contracts.ts';
 
 export interface StrategicReasoningContext {
   projectId: string;
@@ -50,6 +51,8 @@ export interface StrategicReasoningContext {
    * a replacement.
    */
   planningStrategicEvidence: PlanningStrategicClaim[];
+  /** Human-reviewed qualification anchors; empty outside an authorized qualification. */
+  groundTruthAnchors: StrategicGroundTruthAnchor[];
   /**
    * The names of source authorities that were excluded from
    * positive creative authority. The grounding gate (SG-04) and
@@ -111,6 +114,7 @@ export function compileStrategicReasoningContext(input: {
   needs: NeedItem[];
   evidence: EvidenceLedgerSnapshot;
   planningStrategicEvidence?: PlanningStrategicClaim[];
+  groundTruthAnchors?: StrategicGroundTruthAnchor[];
   legacyVisualEvidenceExcluded?: readonly string[];
 }): StrategicReasoningContext {
   const facts = input.truth.facts;
@@ -157,6 +161,7 @@ export function compileStrategicReasoningContext(input: {
     needs: input.needs,
     evidence: evidenceItems,
     planningStrategicEvidence: planningClaims,
+    groundTruthAnchors: input.groundTruthAnchors ?? [],
     legacyVisualEvidenceExcluded: input.legacyVisualEvidenceExcluded ?? [
       'visualAsset.*',
       'old_visual_style',

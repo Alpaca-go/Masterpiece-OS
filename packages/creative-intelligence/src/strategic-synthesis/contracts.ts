@@ -36,6 +36,20 @@ export const STRATEGIC_SYNTHESIS_PROMPT_VERSION = 'ci-w1c.7-strategic-synthesis-
 export type StrategicEpistemicClass = 'MODEL_INFERENCE';
 export type CreativeEpistemicClass = 'CREATIVE_HYPOTHESIS';
 
+/**
+ * CI-W1C.8-G02-C.1 — Human-reviewed qualification anchor carried into
+ * Strategic synthesis. `planningClaimRefs` is the deterministic bridge from
+ * the approved anchor to runtime Planning evidence; it is never inferred by
+ * the model.
+ */
+export interface StrategicGroundTruthAnchor {
+  anchorId: string;
+  importance: 'CRITICAL' | 'IMPORTANT';
+  semanticMeaning: string;
+  sourceReference: string;
+  planningClaimRefs: string[];
+}
+
 export interface StrategicTension {
   id: string;
   statement: string;

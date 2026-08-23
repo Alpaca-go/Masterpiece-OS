@@ -60,6 +60,7 @@ import type { EvidenceItem } from '../evidence/contracts.ts';
 import type { StrategicSynthesisArtifact } from './contracts.ts';
 import type { ModelAssistedConceptSet } from '../model-assisted/contracts.ts';
 import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
+import type { StrategicGroundTruthAnchor } from './contracts.ts';
 
 // ---------------------------------------------------------------------------
 // Canonicalization helpers
@@ -209,6 +210,13 @@ export interface StrategicSemanticPayload {
     sourceDocumentId: string;
     confidence: string;
   }>;
+  groundTruthAnchors: Array<{
+    anchorId: string;
+    importance: string;
+    semanticMeaning: string;
+    sourceReference: string;
+    planningClaimRefs: string[];
+  }>;
   legacyVisualEvidenceExcluded: string[];
 }
 
@@ -297,6 +305,7 @@ export function buildStrategicSemanticPayload(input: {
   needs: NeedItem[];
   evidence: EvidenceItem[];
   planningStrategicEvidence?: PlanningStrategicClaim[];
+  groundTruthAnchors?: StrategicGroundTruthAnchor[];
   legacyVisualEvidenceExcluded: readonly string[];
 }): StrategicSemanticPayload {
   return {
@@ -309,6 +318,13 @@ export function buildStrategicSemanticPayload(input: {
     needs: buildNeedsBlock(input.needs) as StrategicSemanticPayload['needs'],
     evidence: buildEvidenceBlock(input.evidence) as StrategicSemanticPayload['evidence'],
     planningStrategicEvidence: buildPlanningClaimsBlock(input.planningStrategicEvidence ?? []) as StrategicSemanticPayload['planningStrategicEvidence'],
+    groundTruthAnchors: (input.groundTruthAnchors ?? []).map((anchor) => ({
+      anchorId: anchor.anchorId,
+      importance: anchor.importance,
+      semanticMeaning: anchor.semanticMeaning.replace(/\r\n/g, '\n'),
+      sourceReference: anchor.sourceReference,
+      planningClaimRefs: anchor.planningClaimRefs.slice().sort(),
+    })).sort((a, b) => a.anchorId.localeCompare(b.anchorId)),
     legacyVisualEvidenceExcluded: Array.from(input.legacyVisualEvidenceExcluded).slice().sort(),
   };
 }
@@ -424,6 +440,7 @@ export function strategicInputFingerprint(input: {
   needs: NeedItem[];
   evidence: EvidenceItem[];
   planningStrategicEvidence?: PlanningStrategicClaim[];
+  groundTruthAnchors?: StrategicGroundTruthAnchor[];
   legacyVisualEvidenceExcluded: readonly string[];
 }): string {
   return semanticSha256(buildStrategicSemanticPayload(input));
