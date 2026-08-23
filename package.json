@@ -40,6 +40,7 @@
     "verify:repository-contract": "node ./scripts/verify-repository-contract.mjs",
     "verify:g01-frozen-baseline": "node ./scripts/verify-g01-frozen-baseline.mjs",
     "verify:g02-source-readiness": "node ./scripts/verify-g02-source-readiness.mjs",
+    "verify:g02-prelive-readiness": "node ./scripts/verify-g02-prelive-readiness.mjs",
     "verify:a4-default-authority": "node ./scripts/verify-a4-default-authority.mjs",
     "verify:a4-frozen-prompt": "node ./scripts/verify-a4-frozen-prompt.mjs",
     "verify:a4-version-namespace": "node ./scripts/verify-a4-version-namespace.mjs",

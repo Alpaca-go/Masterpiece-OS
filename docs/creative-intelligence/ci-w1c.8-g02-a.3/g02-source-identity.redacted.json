@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "ci-g02-source-identity-v1",
+  "candidateId": "G02-REPLACEMENT-A1",
+  "selectionStatus": "SELECTED_INDEPENDENT",
+  "source": {
+    "filename": "素问一剂良方中医综合BP文稿(V2)(1).docx",
+    "extension": ".docx",
+    "sizeBytes": 214680,
+    "sha256": "D7BE0AF1E502D470BEA2A8422F6B635EC30AF79898F9DFD9A37FB5E5EA1201EC"
+  },
+  "integrity": {
+    "sha256Algorithm": "SHA-256",
+    "sha256VerifiedFromSingleRead": true,
+    "identityAuthority": "CI-W1C.8-G02-A.1",
+    "a3ReadPurpose": "local structured coverage and ground-truth preparation"
+  },
+  "sourceBoundary": {
+    "selectedSourceCount": 1,
+    "selectedSourceReads": 1,
+    "parentDirectoryScans": 0,
+    "siblingSourceReads": 0,
+    "legacyPngReads": 0,
+    "unrelatedSourceReads": 0
+  },
+  "g01Comparison": {
+    "frozenG01Sha256": "94EE096E905943F463B54199A7E1D0F27F88CDF7DA8AF06FD12EE5CAC688A509",
+    "exactSha256Match": false,
+    "materiallyDifferentDimensionCount": 6
+  },
+  "documentRole": {
+    "classifier": "@masterpiece/document-ingestion classifyDocumentRole",
+    "classifierVersion": "document-role-classifier-v2",
+    "selectedRole": "business-plan",
+    "confidence": "high",
+    "secondaryRoles": ["market-research"],
+    "ambiguity": false,
+    "scores": {
+      "business-plan": 19,
+      "market-research": 8
+    },
+    "strategicDomainCount": 8,
+    "sourceRole": "PLANNING_STRATEGIC_SOURCE",
+    "planningStrategicEvidenceEligible": true,
+    "manualOverride": false
+  },
+  "authorizations": {
+    "g02Attempt1": false,
+    "g02LiveQualification": false,
+    "providerModelCalls": false,
+    "conceptDirection": false,
+    "imageCalls": false
+  }
+}

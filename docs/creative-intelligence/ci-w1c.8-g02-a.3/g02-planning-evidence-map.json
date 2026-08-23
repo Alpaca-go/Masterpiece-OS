@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "ci-g02-planning-evidence-map-v1",
+  "candidateId": "G02-REPLACEMENT-A1",
+  "sourceCatalog": [
+    { "sourceRef": "SRC-G02-02", "sectionLabel": "§2 项目概述", "summary": "AI intelligence plus health-management O2O operating model and multi-age demand." },
+    { "sourceRef": "SRC-G02-05-07", "sectionLabel": "§5-7 市场规模与政策", "summary": "Source-stated market data, O2O growth, and policy context." },
+    { "sourceRef": "SRC-G02-08-09", "sectionLabel": "§8-9 行业枷锁与 PEST-SWOT", "summary": "Market pain points, competitive pressure, digitization constraints, and opportunity matrix." },
+    { "sourceRef": "SRC-G02-12", "sectionLabel": "§12 品牌与经营理念", "summary": "Modern TCM full-lifecycle positioning and preventive-care philosophy." },
+    { "sourceRef": "SRC-G02-13-15", "sectionLabel": "§13-15 团队与专家资源", "summary": "Source-stated team, expert, and medical-access resources." },
+    { "sourceRef": "SRC-G02-16-19", "sectionLabel": "§16-19 三大服务板块", "summary": "Clinic chain, health-management center, and future wellness center portfolios and audiences." },
+    { "sourceRef": "SRC-G02-20", "sectionLabel": "§20 四大优势", "summary": "Classical prescriptions, chronic-condition protocols, intelligent diagnosis, and supply-chain integration." },
+    { "sourceRef": "SRC-G02-21-24", "sectionLabel": "§21-24 项目与服务体系", "summary": "Intelligent diagnosis, lifecycle wellness, and food-therapy product/service systems." },
+    { "sourceRef": "SRC-G02-25", "sectionLabel": "§25 普通中医与智能中医对比", "summary": "Source-authored differentiation on diagnosis, knowledge transfer, and replicability." },
+    { "sourceRef": "SRC-G02-27-30", "sectionLabel": "§27-30 OMO 与服务体验", "summary": "OMO flywheel, service scenes, consumer experience, and complete service system." },
+    { "sourceRef": "SRC-G02-32", "sectionLabel": "§32 商业模式", "summary": "Service platform, revenue sources, and source-stated opening-period projections." },
+    { "sourceRef": "SRC-G02-34", "sectionLabel": "§34 推广策略", "summary": "Brand, channel, target-customer, membership, word-of-mouth, and franchise plans." },
+    { "sourceRef": "SRC-G02-36-37", "sectionLabel": "§36-37 投资与风险", "summary": "Funding/equity/exit plan and market/financial response strategies." },
+    { "sourceRef": "SRC-G02-38-39", "sectionLabel": "§38-39 发展战略与愿景", "summary": "Three-to-five-year, overseas, platform, site, workforce, and audience ambitions." }
+  ],
+  "claims": [
+    { "claimId": "G02-CLAIM-001", "sourceRef": "SRC-G02-02", "epistemicType": "USER_REQUIREMENT", "statement": "The intended operating model combines AI-enabled health assessment with offline TCM services through O2O delivery.", "traceability": "Directly mapped to the project-overview operating-model paragraph." },
+    { "claimId": "G02-CLAIM-002", "sourceRef": "SRC-G02-02", "epistemicType": "USER_REQUIREMENT", "statement": "The plan targets distinct younger, middle-aged, older, sub-health, chronic-condition, and high-net-worth wellness segments.", "traceability": "Mapped from the overview and its explicit multi-segment service intent." },
+    { "claimId": "G02-CLAIM-003", "sourceRef": "SRC-G02-05-07", "epistemicType": "FACT", "statement": "The source cites large and growing TCM and online-offline TCM markets and names Frost & Sullivan as a data source.", "traceability": "Retains source attribution; external accuracy is not independently asserted." },
+    { "claimId": "G02-CLAIM-004", "sourceRef": "SRC-G02-05-07", "epistemicType": "FACT", "statement": "The source identifies national Internet-plus-health and TCM digitization policies as favorable context.", "traceability": "Mapped to the four policy references in the source." },
+    { "claimId": "G02-CLAIM-005", "sourceRef": "SRC-G02-08-09", "epistemicType": "MODEL_INFERENCE", "statement": "The plan frames weak positioning, regulatory pressure, supply instability, digital transition, and service fragmentation as category constraints.", "traceability": "Consolidates the source-authored pain list and PEST-SWOT table without adding a new fact." },
+    { "claimId": "G02-CLAIM-006", "sourceRef": "SRC-G02-12", "epistemicType": "USER_REQUIREMENT", "statement": "The desired positioning is a modern full-lifecycle TCM health institution combining traditional practice with intelligent technology and preventive care.", "traceability": "Mapped to the organization description and operating philosophy." },
+    { "claimId": "G02-CLAIM-007", "sourceRef": "SRC-G02-16-19", "epistemicType": "USER_REQUIREMENT", "statement": "The service architecture contains three coordinated boards: clinic chain, health-management center, and future wellness center.", "traceability": "Direct one-to-one mapping to the three service-board sections." },
+    { "claimId": "G02-CLAIM-008", "sourceRef": "SRC-G02-20", "epistemicType": "USER_REQUIREMENT", "statement": "The intended advantage combines prescription heritage, standardized chronic-condition protocols, intelligent diagnosis, and upstream/downstream supply integration.", "traceability": "Mapped to the four-advantage section." },
+    { "claimId": "G02-CLAIM-009", "sourceRef": "SRC-G02-25", "epistemicType": "MODEL_INFERENCE", "statement": "The source argues that data-enabled standardization can reduce dependence on an individual famous physician and improve replicability.", "traceability": "Mapped to the source-authored comparative table; treated as inference rather than verified performance." },
+    { "claimId": "G02-CLAIM-010", "sourceRef": "SRC-G02-27-30", "epistemicType": "USER_REQUIREMENT", "statement": "The OMO model is intended to connect acquisition, retention, remote monitoring, operations, supply chain, and repeatable delivery in one service loop.", "traceability": "Mapped to the five OMO mechanisms and service-scene sections." },
+    { "claimId": "G02-CLAIM-011", "sourceRef": "SRC-G02-21-24", "epistemicType": "USER_REQUIREMENT", "statement": "The offer spans intelligent TCM assessment, treatment and chronic-condition management, lifecycle wellness, food therapy, tea drinks, and health foods.", "traceability": "Mapped to the three project-system sections." },
+    { "claimId": "G02-CLAIM-012", "sourceRef": "SRC-G02-32", "epistemicType": "USER_REQUIREMENT", "statement": "The commercial design combines store operations, channel franchising, and a multi-service health platform.", "traceability": "Mapped to the business-model and revenue-source labels." },
+    { "claimId": "G02-CLAIM-013", "sourceRef": "SRC-G02-32", "epistemicType": "UNKNOWN", "statement": "The opening-period revenue and profit projections remain unverified planning assumptions.", "traceability": "Mapped to the source-stated 12-to-18-month projections and deliberately retained as UNKNOWN." },
+    { "claimId": "G02-CLAIM-014", "sourceRef": "SRC-G02-34", "epistemicType": "USER_REQUIREMENT", "statement": "Go-to-market combines full-channel promotion, segmented customer expansion, membership and database operations, word of mouth, and franchise recruitment/support.", "traceability": "Mapped to the three promotion plans." },
+    { "claimId": "G02-CLAIM-015", "sourceRef": "SRC-G02-36-37", "epistemicType": "USER_REQUIREMENT", "statement": "The plan specifies first-stage investment, initial financing/equity terms, an exit concept, and market/financial risk responses.", "traceability": "Mapped to investment and risk sections without validating transaction feasibility." },
+    { "claimId": "G02-CLAIM-016", "sourceRef": "SRC-G02-38-39", "epistemicType": "USER_REQUIREMENT", "statement": "The roadmap seeks national chain growth, broader health-management coverage, overseas exploration, and a cross-age intelligent health platform.", "traceability": "Mapped to the three-to-five-year plan and closing vision." }
+  ],
+  "needs": [
+    { "needId": "G02-NEED-01", "description": "A differentiated and explicit market position", "claimRefs": ["G02-CLAIM-005", "G02-CLAIM-006"], "sourceRefs": ["SRC-G02-08-09", "SRC-G02-12"] },
+    { "needId": "G02-NEED-02", "description": "A coherent portfolio across distinct health segments", "claimRefs": ["G02-CLAIM-002", "G02-CLAIM-007"], "sourceRefs": ["SRC-G02-02", "SRC-G02-16-19"] },
+    { "needId": "G02-NEED-03", "description": "Standardized, traceable, repeatable service delivery", "claimRefs": ["G02-CLAIM-008", "G02-CLAIM-009"], "sourceRefs": ["SRC-G02-20", "SRC-G02-25"] },
+    { "needId": "G02-NEED-04", "description": "An integrated OMO acquisition-retention-service loop", "claimRefs": ["G02-CLAIM-010"], "sourceRefs": ["SRC-G02-27-30"] },
+    { "needId": "G02-NEED-05", "description": "A sustainable revenue and franchise model", "claimRefs": ["G02-CLAIM-012", "G02-CLAIM-014"], "sourceRefs": ["SRC-G02-32", "SRC-G02-34"] },
+    { "needId": "G02-NEED-06", "description": "Evidence-aware treatment of projections and claims", "claimRefs": ["G02-CLAIM-003", "G02-CLAIM-013"], "sourceRefs": ["SRC-G02-05-07", "SRC-G02-32"] },
+    { "needId": "G02-NEED-07", "description": "Capital and risk controls that can support expansion", "claimRefs": ["G02-CLAIM-015"], "sourceRefs": ["SRC-G02-36-37"] },
+    { "needId": "G02-NEED-08", "description": "A staged national and overseas growth roadmap", "claimRefs": ["G02-CLAIM-016"], "sourceRefs": ["SRC-G02-38-39"] }
+  ],
+  "evidenceLinks": [
+    { "evidenceId": "G02-EVID-001", "claimId": "G02-CLAIM-001", "sourceRef": "SRC-G02-02", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-002", "claimId": "G02-CLAIM-002", "sourceRef": "SRC-G02-02", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-003", "claimId": "G02-CLAIM-003", "sourceRef": "SRC-G02-05-07", "linkType": "ATTRIBUTED_SOURCE_STATEMENT" },
+    { "evidenceId": "G02-EVID-004", "claimId": "G02-CLAIM-004", "sourceRef": "SRC-G02-05-07", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-005", "claimId": "G02-CLAIM-005", "sourceRef": "SRC-G02-08-09", "linkType": "DIRECT_SECTION_AND_TABLE" },
+    { "evidenceId": "G02-EVID-006", "claimId": "G02-CLAIM-006", "sourceRef": "SRC-G02-12", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-007", "claimId": "G02-CLAIM-007", "sourceRef": "SRC-G02-16-19", "linkType": "MULTI_SECTION" },
+    { "evidenceId": "G02-EVID-008", "claimId": "G02-CLAIM-008", "sourceRef": "SRC-G02-20", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-009", "claimId": "G02-CLAIM-009", "sourceRef": "SRC-G02-25", "linkType": "COMPARATIVE_TABLE" },
+    { "evidenceId": "G02-EVID-010", "claimId": "G02-CLAIM-010", "sourceRef": "SRC-G02-27-30", "linkType": "MULTI_SECTION" },
+    { "evidenceId": "G02-EVID-011", "claimId": "G02-CLAIM-011", "sourceRef": "SRC-G02-21-24", "linkType": "MULTI_SECTION" },
+    { "evidenceId": "G02-EVID-012", "claimId": "G02-CLAIM-012", "sourceRef": "SRC-G02-32", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-013", "claimId": "G02-CLAIM-013", "sourceRef": "SRC-G02-32", "linkType": "UNVERIFIED_PROJECTION" },
+    { "evidenceId": "G02-EVID-014", "claimId": "G02-CLAIM-014", "sourceRef": "SRC-G02-34", "linkType": "DIRECT_SECTION" },
+    { "evidenceId": "G02-EVID-015", "claimId": "G02-CLAIM-015", "sourceRef": "SRC-G02-36-37", "linkType": "MULTI_SECTION" },
+    { "evidenceId": "G02-EVID-016", "claimId": "G02-CLAIM-016", "sourceRef": "SRC-G02-38-39", "linkType": "MULTI_SECTION" }
+  ],
+  "g01Inheritance": {
+    "claimIdsCopied": 0,
+    "anchorsInherited": 0
+  }
+}

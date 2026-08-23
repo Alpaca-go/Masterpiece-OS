@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "ci-g02-timeout-calibration-v1",
+  "calibrationMode": "OFFLINE_PRELIVE",
+  "g01AcceptedLatencyMs": 285028,
+  "g01RequestTimeoutMs": 290000,
+  "g01RemainingMarginMs": 4972,
+  "inheritsG01Timeout": false,
+  "recommendedRequestTimeoutMs": 360000,
+  "recommendedMarginOverG01AcceptedLatencyMs": 74972,
+  "recommendedMarginPercent": 26.3,
+  "calibrationBasis": {
+    "characterCount": 7363,
+    "tableCount": 4,
+    "semanticDomainCount": 8,
+    "planningClaimCount": 16,
+    "anchorCount": 13,
+    "minimumSafetyMarginPercent": 20
+  },
+  "riskAssessment": "MEDIUM_OPERATIONAL_CALIBRATION_RISK: multi-domain business-plan synthesis and table-derived evidence require a materially wider margin than G01; recommendation must still be validated in an explicitly authorized live phase.",
+  "runtimeChanged": false,
+  "retrySemanticsChanged": false,
+  "providerCalls": 0
+}
