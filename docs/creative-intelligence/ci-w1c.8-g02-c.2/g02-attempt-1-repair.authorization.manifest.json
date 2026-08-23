@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "ci-g02-attempt-1-repair-authorization-v1",
+  "phase": "CI-W1C.8-G02-C.2",
+  "runId": "G02_ATTEMPT_1_REPAIR_RUN",
+  "authorization": {
+    "humanAuthorized": true,
+    "authorizationScope": "G02 Attempt 1 Repair Run",
+    "approvedStages": ["Planning", "Strategic"],
+    "provider": "dashscope",
+    "model": "qwen3.6-plus",
+    "timeoutMs": 360000,
+    "allowConcept": false,
+    "allowDirection": false,
+    "allowImage": false,
+    "independentFromOriginalAttemptAuthorization": true
+  },
+  "frozenInputs": {
+    "sourceSha256": "D7BE0AF1E502D470BEA2A8422F6B635EC30AF79898F9DFD9A37FB5E5EA1201EC",
+    "sourceSizeBytes": 214680,
+    "g01Fingerprint": "eda3982872a0545f8d8f30f34c931a423bd1c134e14f430ac93e132544e58d12",
+    "anchorMapFingerprint": "910a8bf9b5bb6c250cc77ad0acb5d01920342adb03dfcaf138a615f50e79356b",
+    "originalAttemptExecutionManifestSha256": "4926b67a26f7d0b43141bce2823f21ffd747525fee22f37773a14a0bf3609b5e"
+  },
+  "providerPolicy": {
+    "automaticProviderSwitch": false,
+    "fallbackAllowed": false,
+    "silentRegenerationAllowed": false
+  },
+  "retryPolicy": {
+    "maximumProviderAttemptsPerStage": 3,
+    "maximumTransportRetriesPerStage": 1,
+    "maximumSemanticRepairsPerStage": 1,
+    "countersAreIndependent": true,
+    "maximumLiveCalls": 6
+  },
+  "executionBoundary": {
+    "planning": true,
+    "strategic": true,
+    "anchorRetentionValidation": true,
+    "traceabilityValidation": true,
+    "artifactPersistence": true,
+    "concept": false,
+    "direction": false,
+    "image": false,
+    "packaging": false,
+    "automaticG02DTransition": false
+  },
+  "canonicalization": "UTF-8 JSON; object keys recursively sorted; array order preserved; JSON.stringify with no insignificant whitespace; SHA-256 lowercase hex; manifestFingerprint field omitted",
+  "manifestFingerprint": "679e437f4ac380ed19cfd079c4e8fc41b8ef9eba7da1dc64c77174251da39d40"
+}

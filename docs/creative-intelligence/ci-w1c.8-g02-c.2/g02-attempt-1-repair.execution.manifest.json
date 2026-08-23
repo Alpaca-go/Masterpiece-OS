@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "ci-g02-attempt-1-repair-execution-v1",
+  "phase": "CI-W1C.8-G02-C.2",
+  "runId": "G02_ATTEMPT_1_REPAIR_RUN",
+  "authorizationManifestFingerprint": "679e437f4ac380ed19cfd079c4e8fc41b8ef9eba7da1dc64c77174251da39d40",
+  "frozenInputs": {
+    "sourceSha256": "D7BE0AF1E502D470BEA2A8422F6B635EC30AF79898F9DFD9A37FB5E5EA1201EC",
+    "sourceSizeBytes": 214680,
+    "g01Fingerprint": "eda3982872a0545f8d8f30f34c931a423bd1c134e14f430ac93e132544e58d12",
+    "anchorMapFingerprint": "910a8bf9b5bb6c250cc77ad0acb5d01920342adb03dfcaf138a615f50e79356b",
+    "originalAttemptExecutionManifestSha256": "4926b67a26f7d0b43141bce2823f21ffd747525fee22f37773a14a0bf3609b5e"
+  },
+  "execution": {
+    "startedAt": "2026-08-23T08:58:35.748Z",
+    "finishedAt": "2026-08-23T09:15:01.644Z",
+    "provider": "dashscope",
+    "model": "qwen3.6-plus",
+    "configuredTimeoutMs": 360000,
+    "providerAttempts": 4,
+    "externalHttpAttempts": 2,
+    "successfulExternalModelCalls": 1,
+    "preconnectContractFailures": 2,
+    "transportRetries": 0,
+    "semanticRepairAttempts": 0,
+    "fallbacks": 0,
+    "conceptExecutions": 0,
+    "directionExecutions": 0,
+    "imageCalls": 0,
+    "packagingExecutions": 0,
+    "automaticG02DTransition": false
+  },
+  "planning": {
+    "status": "RUNTIME_ACCEPTED",
+    "latencyMs": 137800,
+    "claimCount": 16,
+    "epistemicCounts": {
+      "FACT": 11,
+      "USER_REQUIREMENT": 4,
+      "MODEL_INFERENCE": 1
+    },
+    "allClaimsFact": false,
+    "artifactSha256": "4adb9eb89464e5a9655cb583ad97c2c244ca02664d414cb98c0d41acc2c67065"
+  },
+  "strategic": {
+    "status": "FAIL",
+    "latencyMs": 305631,
+    "failureClass": "UNKNOWN_PROVIDER_FAILURE",
+    "failureCode": "REQUEST_FAILED",
+    "safeFailureMessage": "fetch failed",
+    "artifactPersisted": false,
+    "sgGates": "NOT_RUN_NO_ARTIFACT"
+  },
+  "promptGrounding": {
+    "promptVersion": "ci-w1c.8-g02-c.1-strategic-synthesis-v0.4",
+    "inputFingerprint": "0b93ecacbc5c72fe159cd7109bb0a0b4a01fb3485d154e1afa54dfb505230adf",
+    "planningCarrierInjected": true,
+    "groundTruthAnchorMapInjected": true,
+    "anchorCount": 13
+  },
+  "qualification": {
+    "criticalAnchorRetention": "NOT_RUN_NO_STRATEGIC_ARTIFACT",
+    "importantAnchorRetention": "NOT_RUN_NO_STRATEGIC_ARTIFACT",
+    "closedLoopTraceability": "NOT_RUN_NO_STRATEGIC_ARTIFACT",
+    "artifactPersistence": "FAIL_STRATEGIC_ARTIFACT_MISSING"
+  },
+  "finalVerdict": "HOLD_FOR_TIMEOUT_REPAIR",
+  "canonicalization": "UTF-8 JSON; object keys recursively sorted; array order preserved; JSON.stringify with no insignificant whitespace; SHA-256 lowercase hex; executionManifestFingerprint field omitted",
+  "executionManifestFingerprint": "fb9d6005c868a8b38b98587e7ab3a7eaceae7103d6e3f7798b15b7c354cd16a9"
+}
