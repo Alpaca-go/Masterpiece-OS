@@ -14,6 +14,12 @@
 // (deliverable / mode / intent / flow banners). Extracting this
 // panel removed ~100 lines of read-only JSX from the monolith
 // without changing a single line of business logic.
+//
+// Step 1 UI cleanup: removed 10 inline `style={{...}}` props and
+// routed them through BEM modifier classes (`.sc-detail-row__value--start`,
+// `.sc-detail-row__value--mono`, `.sc-panel__section--warning`,
+// `.sc-panel__placeholder`, `.sc-prompt-preview-wrap`) so the
+// spacing is themable and not bound to JSX literals.
 
 import type {
   CompileShortChainGenerationResult,
@@ -71,24 +77,24 @@ export function ShortChainPreviewPanel({
             </div>
             <div className="sc-detail-row">
               <span className="sc-detail-row__label">必须包含</span>
-              <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
+              <span className="sc-detail-row__value sc-detail-row__value--start">
                 {compiled.taskContract.mustInclude.join('；') || '仅任务要求'}
               </span>
             </div>
             <div className="sc-detail-row">
               <span className="sc-detail-row__label">必须避免</span>
-              <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
+              <span className="sc-detail-row__value sc-detail-row__value--start">
                 {compiled.taskContract.mustAvoid.join('；') || '默认禁用项'}
               </span>
             </div>
 
-            <details className="prompt-preview" style={{ marginTop: 'var(--space-4)' }}>
+            <details className="prompt-preview sc-prompt-preview-wrap">
               <summary>查看完整 Prompt（只读）</summary>
               <div className="sc-prompt-preview">{editedPrompt}</div>
             </details>
           </>
         ) : (
-          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', lineHeight: 1.6 }}>
+          <p className="sc-panel__placeholder">
             左侧填写任务要求后，点击「编译并生成」以查看编译结果。
           </p>
         )}
@@ -104,7 +110,7 @@ export function ShortChainPreviewPanel({
           </div>
           <div className="sc-detail-row">
             <span className="sc-detail-row__label">偏差项</span>
-            <span className="sc-detail-row__value" style={{ textAlign: 'left' }}>
+            <span className="sc-detail-row__value sc-detail-row__value--start">
               {lastValidation.mismatchTypes.length
                 ? lastValidation.mismatchTypes.join(' · ')
                 : '未发现结构性偏差'}
@@ -115,9 +121,9 @@ export function ShortChainPreviewPanel({
 
       {/* Stale indicator */}
       {compileStale && (
-        <div className="sc-panel__section" style={{ borderColor: 'var(--color-warning-line)', background: 'var(--color-warning-bg)' }}>
-          <h3 className="sc-panel__section-title" style={{ color: 'var(--color-warning-text)' }}>提示</h3>
-          <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-warning-text)', lineHeight: 1.6 }}>
+        <div className="sc-panel__section sc-panel__section--warning">
+          <h3 className="sc-panel__section-title sc-panel__section-title--warning">提示</h3>
+          <p className="sc-panel__placeholder sc-panel__placeholder--warning">
             设置已变更，当前 Prompt 已过期。请重新编译。
           </p>
         </div>
@@ -129,7 +135,7 @@ export function ShortChainPreviewPanel({
           <h3 className="sc-panel__section-title">运行信息</h3>
           <div className="sc-detail-row">
             <span className="sc-detail-row__label">模型</span>
-            <span className="sc-detail-row__value" style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>
+            <span className="sc-detail-row__value sc-detail-row__value--mono">
               {activeRun.modelId || '—'}
             </span>
           </div>
@@ -148,7 +154,7 @@ export function ShortChainPreviewPanel({
       {session?.history.length ? (
         <div className="sc-panel__section">
           <h3 className="sc-panel__section-title">历史记录</h3>
-          <p style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)' }}>
+          <p className="sc-panel__placeholder">
             {session.history.length} 条记录
           </p>
         </div>

@@ -5,8 +5,14 @@
 // error pipeline (Phase 5.7), but ShortChain sets its own `error`
 // state internally (different channel from the App-level error), so
 // the inline banner stays here as a self-contained signal.
+//
+// Step 6 UI cleanup: migrated from legacy `.notice error/ok` divs to
+// the unified `Alert` primitive (severity="error"/"success"). All
+// inline margin/padding moved to `.sc-banner` / `.sc-banner__hint`
+// hooks so the spacing is themable and not bound to JSX literal.
 
 import { autoRecoverableHint } from '../../utils';
+import { Alert } from '../ui/Alert';
 
 interface Props {
   error: string;
@@ -17,20 +23,20 @@ export function ShortChainBanners({ error, notice }: Props) {
   return (
     <>
       {error && (
-        <div style={{ margin: '0 var(--space-11)', paddingTop: 'var(--space-5)' }}>
-          <div className="notice error">
+        <div className="sc-banner">
+          <Alert severity="error">
             <div>{error}</div>
             {autoRecoverableHint(error) && (
-              <div style={{ marginTop: 6, fontWeight: 500 }}>
-                {autoRecoverableHint(error)}
-              </div>
+              <div className="sc-banner__hint">{autoRecoverableHint(error)}</div>
             )}
-          </div>
+          </Alert>
         </div>
       )}
       {notice && !error && (
-        <div style={{ margin: '0 var(--space-11)', paddingTop: 'var(--space-5)' }}>
-          <div className="notice ok">{notice}</div>
+        <div className="sc-banner">
+          <Alert severity="success">
+            <div>{notice}</div>
+          </Alert>
         </div>
       )}
     </>

@@ -3,6 +3,7 @@
 // state. The parent owns onBack / onOpenSettings.
 
 import type { ProjectRecord } from '@masterpiece/runtime-core/application-contracts.ts';
+import { Button } from '../ui/Button';
 
 interface Props {
   project: ProjectRecord;
@@ -22,7 +23,7 @@ export function ShortChainHeader({ project, onBack, onOpenSettings }: Props) {
         </div>
       </div>
       <div className="sc-workspace__header-right">
-        <button className="button ghost" onClick={onOpenSettings}>模型设置</button>
+        <Button variant="ghost" size="sm" onClick={onOpenSettings}>模型设置</Button>
       </div>
     </header>
   );

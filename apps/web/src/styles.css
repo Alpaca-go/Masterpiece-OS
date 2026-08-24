@@ -1775,6 +1775,48 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   word-break: break-word;
 }
 
+/* ── Step 1 UI cleanup: modifier classes for ShortChainPreviewPanel / ShortChainBanners ──
+   Replaces inline `style={{...}}` props so spacing/typography is themable
+   instead of bound to JSX literals. */
+.sc-detail-row__value--start {
+  text-align: left;
+}
+.sc-detail-row__value--mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.sc-prompt-preview-wrap {
+  margin-top: var(--space-4);
+}
+.sc-panel__placeholder {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+/* Stale-compile warning variant — reuses .sc-panel__section surface,
+   overrides border + background to warning palette. */
+.sc-panel__section--warning {
+  border-color: var(--color-warning-line);
+  background: var(--color-warning-bg);
+}
+.sc-panel__section-title--warning {
+  color: var(--color-warning-text);
+}
+.sc-panel__placeholder--warning {
+  color: var(--color-warning-text);
+}
+/* Banner wrap for ShortChainBanners — keeps inline Alert inside the
+   page content gutter without inline margin/padding literals. */
+.sc-banner {
+  margin: 0 var(--space-11);
+  padding-top: var(--space-5);
+}
+.sc-banner__hint {
+  margin-top: 6px;
+  font-weight: 500;
+}
+
 
 /* ============================================================
    Global Layout — Redesign (Phase 2)
