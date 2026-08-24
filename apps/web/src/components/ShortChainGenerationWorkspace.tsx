@@ -874,17 +874,17 @@ export function ShortChainGenerationWorkspace({
           {/* Reference images (optional) — adding any reference auto-enables reference-first mode */}
                     <div className="sc-panel__section">
                       <h3 className="sc-panel__section-title">风格参考图（可选）</h3>
-                      <p style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                      <p className="sc-field-helper">
                         上传一张或几张风格参考图，AI 会参考它的色调、构图与材质生成同风格的图。
                         不上传则按文字描述生成。
                       </p>
-                      <div style={{ marginTop: 'var(--space-4)' }}>
+                      <div className="sc-stack-md">
                         <div className="sc-ref-actions">
                           <input
                             ref={uploadInputRef}
                             type="file"
                             accept="image/png,image/jpeg,image/webp"
-                            style={{ display: 'none' }}
+                            className="sc-input-hidden"
                             onChange={(event) => void handleUploadFileChange(event)}
                           />
                           <button
@@ -929,7 +929,7 @@ export function ShortChainGenerationWorkspace({
                         )}
 
                         {pickerOpen && (
-                          <div className="asset-picker" style={{ marginTop: 'var(--space-3)' }}>
+                          <div className="asset-picker">
                             {assetsLoading
                               ? <span className="muted">加载中…</span>
                               : <div className="reference-asset-grid">
@@ -984,24 +984,24 @@ export function ShortChainGenerationWorkspace({
                         )}
 
                         {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
-                          <p style={{ marginTop: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
+                          <p className="sc-field-helper">
                             最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。
                           </p>
                         )}
 
                         {referenceAssetIds.length > 0 && (
-                          <div className="notice info" style={{ marginTop: 'var(--space-3)' }}>
+                          <div className="notice info sc-stack-sm-start">
                             已启用「参考优先」模式：AI 会较强地保留参考图的空间结构与构图。
                             {forceStandard && '（已临时强制为标准模式，可在高级设置里关闭）'}
                           </div>
                         )}
 
                         {showCrossSceneAdvisory && crossSceneReference && (
-                          <div className="notice warn advisory" style={{ marginTop: 'var(--space-3)' }}>
+                          <div className="notice warn advisory sc-stack-sm-start">
                             <strong>跨场景建议</strong>
                             <p>这张参考图来自「{crossSceneReference.confirmed.sourceScene || '已确认空间'}」，当前目标为「{subtype}」。</p>
-                            <p>建议使用「空间延展」保持方向的同时重新设计功能空间。</p>
-                            <div className="button-row" style={{ marginTop: 'var(--space-3)' }}>
+                            <p>建议使用「空间延展」保持方向同时重新设计功能空间。</p>
+                            <div className="button-row sc-stack-sm-start">
                               <button className="button secondary" onClick={() => setCrossSceneAdvisoryDismissed(true)}>仍使用参考优先</button>
                               <button className="button primary" onClick={() => routeCrossSceneReferenceToContinuation()}>改为以此方向继续</button>
                             </div>
@@ -1009,12 +1009,12 @@ export function ShortChainGenerationWorkspace({
                         )}
 
                         {referenceValidation.hard.length > 0 && (
-                          <div className="notice error" style={{ marginTop: 'var(--space-3)' }}>
+                          <div className="notice error sc-stack-sm-start">
                             {referenceValidation.hard.join('；')}
                           </div>
                         )}
                         {referenceValidation.hard.length === 0 && referenceValidation.soft.length > 0 && (
-                          <div className="notice warn" style={{ marginTop: 'var(--space-3)' }}>
+                          <div className="notice warn sc-stack-sm-start">
                             {referenceValidation.soft.join('；')}
                           </div>
                         )}
@@ -1022,29 +1022,29 @@ export function ShortChainGenerationWorkspace({
                     </div>
 
           {/* Subtype + instruction */}
-          <div className="sc-panel__section">
+          <div className="sc-panel__section sc-stack-md">
             <h3 className="sc-panel__section-title">创意指令</h3>
-            <label style={{ display: 'grid', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
-              <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>子类型</span>
+            <label className="sc-field sc-field-block">
+              <span className="sc-field-label">子类型</span>
               <select value={subtype} onChange={(event) => setSubtype(event.target.value)}>
                 {(familyOptions?.subtypes ?? []).map((item) => <option key={item}>{item}</option>)}
               </select>
             </label>
-            <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-              <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>本轮要求</span>
+            <label className="sc-field">
+              <span className="sc-field-label">本轮要求</span>
               <textarea
-                              className="sc-instruction"
-                              rows={5}
-                              value={instruction}
-                              onChange={(event) => setInstruction(event.target.value)}
-                              placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。可以直接写「必须包含 xxx」「不要 yyy」。"
-                            />
-                            <small style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)', lineHeight: 1.5 }}>
-                              想强调/避免某些要素？直接在这里写「必须包含」「必须避免」「不要」即可。需要按行精确指定的，往下展开高级设置。
-                            </small>
-                          </label>
+                className="sc-instruction"
+                rows={5}
+                value={instruction}
+                onChange={(event) => setInstruction(event.target.value)}
+                placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。可以直接写「必须包含 xxx」「不要 yyy」。"
+              />
+              <small className="sc-field-hint">
+                想强调/避免某些要素？直接在这里写「必须包含」「必须避免」「不要」即可。需要按行精确指定的，往下展开高级设置。
+              </small>
+            </label>
             {activeAnchor && (
-              <div className="facts-box" style={{ marginTop: 'var(--space-4)' }}>
+              <div className="facts-box">
                 <small>本类型隐式参考</small>
                 <p>{activeAnchor.runId.slice(0, 8)} · 只影响 {FAMILY_LABELS[family]}</p>
               </div>
@@ -1053,16 +1053,16 @@ export function ShortChainGenerationWorkspace({
             {/* Advanced settings */}
             <details className="sc-advanced">
               <summary>高级设置</summary>
-              <div className="sc-advanced__content">
-                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>镜头 / 构图</span>
+              <div className="sc-advanced__content sc-stack-md">
+                <label className="sc-field">
+                  <span className="sc-field-label">镜头 / 构图</span>
                   <select value={shot} onChange={(event) => { setShot(event.target.value); setShotSource('user_explicit'); }}>
                     {(familyOptions?.shots ?? []).map((item) => <option key={item}>{item}</option>)}
                   </select>
                 </label>
                 {generationBasis === 'reference' && (
-                  <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                    <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>参考图场景关系</span>
+                  <label className="sc-field">
+                    <span className="sc-field-label">参考图场景关系</span>
                     <select
                       value={referenceSceneRelation}
                       onChange={(event) => setReferenceSceneRelation(event.target.value as ShortChainReferenceSceneRelation)}
@@ -1073,41 +1073,41 @@ export function ShortChainGenerationWorkspace({
                     </select>
                   </label>
                 )}
-                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>比例</span>
+                <label className="sc-field">
+                  <span className="sc-field-label">比例</span>
                   <select value={aspectRatio} onChange={(event) =>
                     setAspectRatio(event.target.value as ShortChainTaskContract['aspectRatio'])}>
                     {['1:1', '4:3', '3:4', '16:9', '9:16'].map((item) => <option key={item}>{item}</option>)}
                   </select>
                 </label>
-                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>生成模型</span>
+                <label className="sc-field">
+                  <span className="sc-field-label">生成模型</span>
                   <select value={imageApiProfileId} onChange={(event) => onImageApiProfileChange(event.target.value)}>
                     <option value="">请选择 Seedream 生图配置</option>
                     {imageProfiles.map((profile) =>
                       <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
                   </select>
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
-                                  <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                                    <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须包含（每行一项）</span>
-                                    <textarea
-                                      rows={2}
-                                      value={mustIncludeText}
-                                      onChange={(event) => setMustIncludeText(event.target.value)}
-                                      placeholder="例如：完整前台；清晰入口动线"
-                                    />
-                                  </label>
-                                  <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                                    <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须避免（每行一项）</span>
-                                    <textarea
-                                      rows={2}
-                                      value={mustAvoidText}
-                                      onChange={(event) => setMustAvoidText(event.target.value)}
-                                      placeholder="例如：VI 展板；错误品牌文字"
-                                    />
-                                  </label>
-                                </div>
+                <div className="sc-field-grid">
+                  <label className="sc-field">
+                    <span className="sc-field-label">必须包含（每行一项）</span>
+                    <textarea
+                      rows={2}
+                      value={mustIncludeText}
+                      onChange={(event) => setMustIncludeText(event.target.value)}
+                      placeholder="例如：完整前台；清晰入口动线"
+                    />
+                  </label>
+                  <label className="sc-field">
+                    <span className="sc-field-label">必须避免（每行一项）</span>
+                    <textarea
+                      rows={2}
+                      value={mustAvoidText}
+                      onChange={(event) => setMustAvoidText(event.target.value)}
+                      placeholder="例如：VI 展板；错误品牌文字"
+                    />
+                  </label>
+                </div>
               </div>
             </details>
           </div>
@@ -1165,10 +1165,10 @@ export function ShortChainGenerationWorkspace({
                 </div>
 
                 <div className="sc-preview__actions">
-                  <button className="ui-button ui-button--primary" style={{ flex: 1 }} disabled={busy} onClick={() => void confirmDirection()}>
+                  <button className="ui-button ui-button--primary sc-grow" disabled={busy} onClick={() => void confirmDirection()}>
                     设为默认风格
                   </button>
-                  <button className="ui-button ui-button--secondary" style={{ flex: 1 }} onClick={() => void regenerate()}>
+                  <button className="ui-button ui-button--secondary sc-grow" onClick={() => void regenerate()}>
                     调整后重做
                   </button>
                 </div>
@@ -1230,8 +1230,7 @@ export function ShortChainGenerationWorkspace({
             {compiled && !imageDataUrl && (
               <div className="sc-preview__actions">
                 <button
-                  className="ui-button ui-button--primary"
-                  style={{ flex: 1 }}
+                  className="ui-button ui-button--primary sc-grow"
                   disabled={!canGenerate || busy}
                   onClick={() => void generateOneClick()}
                 >
@@ -1245,7 +1244,7 @@ export function ShortChainGenerationWorkspace({
           {continuationPanelOpen && continuationSource && (
             <div className="sc-continuation">
               <h3 className="sc-continuation__title">空间延展</h3>
-              <div className="confirmed-source-card" style={{ marginBottom: 'var(--space-5)' }}>
+              <div className="confirmed-source-card">
                 {imageDataUrl
                   ? <img src={imageDataUrl} alt="已确认方向" />
                   : <span className="asset-fallback">已确认方向</span>}
@@ -1259,9 +1258,9 @@ export function ShortChainGenerationWorkspace({
                 </button>
               </div>
 
-              <label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>
-                <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>选择目标空间</span>
-                <div className="continuation-scene-grid" style={{ marginTop: 'var(--space-3)' }}>
+              <label className="sc-field-block">
+                <span className="sc-field-label">选择目标空间</span>
+                <div className="continuation-scene-grid sc-stack-sm-start">
                   {CONTINUATION_SCENE_CARDS.map((card) => {
                     const isSource = isTargetSceneDisabled(card.id, continuationSource.sourceScene);
                     return (
@@ -1284,7 +1283,7 @@ export function ShortChainGenerationWorkspace({
                 {continuationTargetScene === 'custom' && (
                   <textarea
                     rows={3}
-                    style={{ marginTop: 'var(--space-3)', width: '100%' }}
+                    className="sc-input-wide sc-stack-sm-start"
                     value={continuationCustomDescription}
                     onChange={(event) => setContinuationCustomDescription(event.target.value)}
                     placeholder="例如：一个更私密的小型 VIP 咨询室"
@@ -1292,11 +1291,11 @@ export function ShortChainGenerationWorkspace({
                 )}
               </label>
 
-              <label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>
-                <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>补充要求（可选）</span>
+              <label className="sc-field-block">
+                <span className="sc-field-label">补充要求（可选）</span>
                 <textarea
                   rows={2}
-                  style={{ marginTop: 'var(--space-3)', width: '100%' }}
+                  className="sc-input-wide sc-stack-sm-start"
                   value={continuationRequirement}
                   onChange={(event) => setContinuationRequirement(event.target.value)}
                   placeholder="例如：更私密；更开放；增加展示"
@@ -1315,8 +1314,7 @@ export function ShortChainGenerationWorkspace({
               </div>
 
               <button
-                className="sc-cta__primary"
-                style={{ marginTop: 'var(--space-5)', width: '100%' }}
+                className="sc-cta__primary sc-cta__primary--wide sc-stack-lg-start"
                 disabled={continuationBusy
                   || !canSubmitContinuation({
                     sourceConfirmed: Boolean(continuationSource),

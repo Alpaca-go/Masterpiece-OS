@@ -1817,6 +1817,76 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-weight: 500;
 }
 
+/* ── Step 2 UI cleanup: shared field / stack / helper classes for ShortChainGenerationWorkspace ──
+   Replaces inline `style={{...}}` props on labels, hints, button rows,
+   notice blocks, and form grids. New classes follow existing
+   `.sc-panel__placeholder` typography conventions. */
+.sc-field-helper {
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+/* Form field wrapper — replaces repeated
+   `<label style={{ display: 'grid', gap: 'var(--space-2)' }}>` */
+.sc-field {
+  display: grid;
+  gap: var(--space-2);
+}
+/* Form field caption — replaces repeated
+   `<span style={{ color, fontSize, fontWeight: 700 }}>` inside labels */
+.sc-field-label {
+  color: var(--color-text-strong);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+/* Field-level hint — small grey caption below an input/select */
+.sc-field-hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+/* Stack children with consistent vertical rhythm
+   (replaces inline `style={{ marginTop: 'var(--space-3)' }}`) */
+.sc-stack-sm > * + * { margin-top: var(--space-3); }
+.sc-stack-md > * + * { margin-top: var(--space-4); }
+.sc-stack-lg > * + * { margin-top: var(--space-5); }
+/* Block-level label — replaces
+   `<label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>` */
+.sc-field-block {
+  display: block;
+  margin-bottom: var(--space-4);
+}
+/* Two-column form grid — replaces inline
+   `style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap }}` */
+.sc-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+/* Grow button — replaces inline `style={{ flex: 1 }}` on buttons */
+.sc-grow {
+  flex: 1;
+}
+/* Hidden file input — replaces inline `style={{ display: 'none' }}` */
+.sc-input-hidden {
+  display: none;
+}
+/* Stack first child from top — for items inside a stack container that
+   should still get top spacing. Used together with `.sc-stack-*`. */
+.sc-stack-sm-start { margin-top: var(--space-3); }
+.sc-stack-md-start { margin-top: var(--space-4); }
+.sc-stack-lg-start { margin-top: var(--space-5); }
+/* Wide input — replaces inline `style={{ width: '100%' }}` on textareas */
+.sc-input-wide {
+  width: 100%;
+}
+/* Wide primary CTA — replaces inline `style={{ marginTop + width: '100%' }}` */
+.sc-cta__primary--wide {
+  margin-top: var(--space-5);
+  width: 100%;
+}
+
 
 /* ============================================================
    Global Layout — Redesign (Phase 2)
