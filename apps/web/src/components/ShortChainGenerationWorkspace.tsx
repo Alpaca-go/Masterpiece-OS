@@ -1033,13 +1033,16 @@ export function ShortChainGenerationWorkspace({
             <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
               <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>本轮要求</span>
               <textarea
-                className="sc-instruction"
-                rows={5}
-                value={instruction}
-                onChange={(event) => setInstruction(event.target.value)}
-                placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。"
-              />
-            </label>
+                              className="sc-instruction"
+                              rows={5}
+                              value={instruction}
+                              onChange={(event) => setInstruction(event.target.value)}
+                              placeholder="例如：生成真实可进入的前台接待空间，强调清晰动线与克制但不冷的品牌气质。可以直接写「必须包含 xxx」「不要 yyy」。"
+                            />
+                            <small style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-xs)', lineHeight: 1.5 }}>
+                              想强调/避免某些要素？直接在这里写「必须包含」「必须避免」「不要」即可。需要按行精确指定的，往下展开高级设置。
+                            </small>
+                          </label>
             {activeAnchor && (
               <div className="facts-box" style={{ marginTop: 'var(--space-4)' }}>
                 <small>本类型隐式参考</small>
@@ -1085,24 +1088,26 @@ export function ShortChainGenerationWorkspace({
                       <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
                   </select>
                 </label>
-                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须包含（每行一项）</span>
-                  <textarea
-                    rows={3}
-                    value={mustIncludeText}
-                    onChange={(event) => setMustIncludeText(event.target.value)}
-                    placeholder="例如：完整前台；清晰入口动线"
-                  />
-                </label>
-                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须避免（每行一项）</span>
-                  <textarea
-                    rows={3}
-                    value={mustAvoidText}
-                    onChange={(event) => setMustAvoidText(event.target.value)}
-                    placeholder="例如：VI 展板；错误品牌文字"
-                  />
-                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+                                  <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                                    <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须包含（每行一项）</span>
+                                    <textarea
+                                      rows={2}
+                                      value={mustIncludeText}
+                                      onChange={(event) => setMustIncludeText(event.target.value)}
+                                      placeholder="例如：完整前台；清晰入口动线"
+                                    />
+                                  </label>
+                                  <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                                    <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须避免（每行一项）</span>
+                                    <textarea
+                                      rows={2}
+                                      value={mustAvoidText}
+                                      onChange={(event) => setMustAvoidText(event.target.value)}
+                                      placeholder="例如：VI 展板；错误品牌文字"
+                                    />
+                                  </label>
+                                </div>
               </div>
             </details>
           </div>
