@@ -143,6 +143,10 @@ export function ShortChainGenerationWorkspace({
   const [similarityAudit, setSimilarityAudit] = useState<ShortChainSimilarityAuditResult | 'unavailable' | null>(null);
   const [lastValidation, setLastValidation] = useState<ShortChainDeliverableValidation | null>(null);
   const [busy, setBusy] = useState(false);
+  // Step 6 boundary: error/notice are workspace-local state-machine
+  // signals. They render through <ShortChainBanners error notice /> as
+  // inline Alert blocks. Do NOT route them through App-level Toast —
+  // see the boundary contract documented in ShortChainBanners.tsx.
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   // R11.2 Continuation UI: a generated space output the user explicitly
