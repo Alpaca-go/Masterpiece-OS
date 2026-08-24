@@ -451,8 +451,8 @@ export function App() {
         }} /></div>
         <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
         {/* B1: CI tab 留在 create screen 内 — 内嵌 CreativeIntelligenceWorkspace
-           临时会有双层 chrome (外层 create-shell-v2__bar + 内层 AppShell),
-           B2 移除内层 chrome. */}
+           B2: 传 hideChrome 去掉内层 chrome (breadcrumb + bottomBar),
+           只留 create-shell-v2__bar 外层导航 (返回首页 + AnalysisModeTabs) */}
         <div hidden={analysisMode !== 'creative-intelligence'}>
           <CreativeIntelligenceWorkspace
             settings={settings}
@@ -460,6 +460,7 @@ export function App() {
             onApiProfileChange={setSelectedApiProfileId}
             onBack={() => { setScreen('home'); void refresh(); }}
             onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }}
+            hideChrome
           />
         </div>
       </div>

@@ -115,13 +115,15 @@ interface Props {
   onApiProfileChange(profileId: string): void;
   onBack(): void;
   onOpenSettings(): void;
+  /** 隐藏外层 AppShell chrome (topBar + bottomBar), 内嵌到父布局时用 */
+  hideChrome?: boolean;
 }
 
 // ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
-export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
+export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, onApiProfileChange, onBack, onOpenSettings, hideChrome }: Props) {
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId)
@@ -504,30 +506,31 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
   );
 
   // ── Render ──
-  return <AppShell
-    topBar={
-      <TopBar
-        left={
-          <TopBarBreadcrumb
-            items={[
-              { label: '项目', onClick: onBack },
-              { label: '智能创意' }
-            ]}
-          />
-        }
-        right={
-          <TopBarActions>
-            <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
-            <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
-          </TopBarActions>
-        }
-      />
-    }
-    bottomBar={<>
+  const topBar = hideChrome ? undefined : (
+    <TopBar
+      left={
+        <TopBarBreadcrumb
+          items={[
+            { label: '项目', onClick: onBack },
+            { label: '智能创意' }
+          ]}
+        />
+      }
+      right={
+        <TopBarActions>
+          <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
+          <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
+        </TopBarActions>
+      }
+    />
+  );
+  const bottomBar = hideChrome ? undefined : (
+    <>
       <span>智能创意 · 5.0.0-rc.1</span>
       <span>{runs.length} 个任务 · {lifecycles.filter((l) => l.run.status === 'completed').length} 个完成</span>
-    </>}
-  >
+    </>
+  );
+  return <AppShell topBar={topBar} bottomBar={bottomBar}>
     <div className="page ci-workspace" data-ciw-user-view={userView}>
       <header className="page-header ci-workspace__header">
         <div>
