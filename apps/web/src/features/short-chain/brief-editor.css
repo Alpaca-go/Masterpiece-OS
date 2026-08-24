@@ -1,0 +1,102 @@
+/* features/short-chain/BriefEditor 样式 (P1.3)
+ * 沿用 §3.2 现有 token, 不引入新颜色。
+ * 与 v1 ShortChainGenerationWorkspace 的 .sc-panel__section / .sc-field 等类语义一致。
+ */
+
+.sc-brief-editor {
+  display: grid;
+  gap: var(--space-3, 12px);
+  padding: var(--space-5, 20px);
+  background: var(--color-surface, #FFFFFF);
+  border-right: 1px solid var(--color-line, #E5E2D9);
+  overflow: auto;
+  height: 100%;
+}
+
+.sc-brief-editor__title {
+  margin: 0 0 var(--space-2, 8px);
+  font-size: var(--text-base, 13px);
+  font-weight: 700;
+  color: var(--color-text-strong, #0A0A0A);
+}
+
+.sc-brief-editor__error,
+.sc-brief-editor__notice {
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border-radius: var(--r-sm, 4px);
+  font-size: var(--text-xs, 11px);
+  line-height: 1.5;
+}
+.sc-brief-editor__error {
+  color: var(--color-error-text, #8A2620);
+  background: var(--color-error-bg, #F5E0DC);
+  border: 1px solid var(--color-error-line, #D8A89F);
+}
+.sc-brief-editor__notice {
+  color: var(--color-success-text, #0E5C36);
+  background: var(--color-success-bg, #E8F1EA);
+  border: 1px solid var(--color-success-line, #B5D4BD);
+}
+
+/* Aspect ratio pills */
+.sc-aspect-row {
+  display: flex;
+  gap: var(--space-1, 4px);
+  flex-wrap: wrap;
+}
+.sc-aspect-pill {
+  flex: 1 1 auto;
+  min-width: 48px;
+  padding: 6px 10px;
+  border: 1px solid var(--color-line, #E5E2D9);
+  border-radius: var(--r-sm, 4px);
+  background: var(--color-surface, #FFFFFF);
+  color: var(--color-text-muted, #6B6B6B);
+  font-size: var(--text-xs, 11px);
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-mono, monospace);
+  transition: all 0.12s ease;
+}
+.sc-aspect-pill:hover:not(.is-active) {
+  border-color: var(--color-line-strong, #D1CDBF);
+  color: var(--color-text-strong, #0A0A0A);
+}
+.sc-aspect-pill.is-active {
+  background: var(--color-accent, #1A1A1A);
+  border-color: var(--color-accent, #1A1A1A);
+  color: var(--color-text-on-accent, #FBFAF7);
+}
+
+/* Logo mode radios */
+.sc-logo-mode {
+  border: 1px solid var(--color-line, #E5E2D9);
+  border-radius: var(--r-md, 4px);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  margin: 0;
+}
+.sc-radio-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 8px);
+  padding: var(--space-1, 4px) 0;
+  cursor: pointer;
+}
+.sc-radio-row input[type="radio"] {
+  margin: 2px 0 0;
+  accent-color: var(--color-accent, #1A1A1A);
+}
+.sc-radio-row span {
+  display: grid;
+  gap: 2px;
+}
+.sc-radio-row strong {
+  font-size: var(--text-xs, 11px);
+  font-weight: 600;
+  color: var(--color-text-strong, #0A0A0A);
+}
+.sc-radio-row small {
+  font-size: 10px;
+  color: var(--color-text-muted, #6B6B6B);
+  line-height: 1.4;
+}
