@@ -177,6 +177,35 @@ button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 ::selection { background: var(--color-accent); color: var(--color-text-on-accent); }
 
+/* ── Global keyboard focus ring (WCAG AA, Step 4) ──
+   Hairline-first philosophy: 2px solid near-black, 2px offset.
+   Only triggers on `:focus-visible` so mouse clicks do not show the ring.
+   Individual components may override (Modal / Tabs / Card etc.) when they
+   need a custom indicator. Reset for `[aria-hidden="true"]` and
+   `:disabled` so disabled controls never trap the visible focus. */
+*:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+[aria-hidden="true"]:focus,
+[aria-hidden="true"]:focus-visible {
+  outline: none;
+}
+button:disabled:focus,
+button:disabled:focus-visible,
+input:disabled:focus,
+input:disabled:focus-visible,
+textarea:disabled:focus,
+textarea:disabled:focus-visible,
+select:disabled:focus,
+select:disabled:focus-visible {
+  outline: none;
+}
+
 /* ── Old .app-shell class (kept for any leftover usage) ── */
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: var(--sidebar-width) 1fr; background: var(--color-bg); }
 
