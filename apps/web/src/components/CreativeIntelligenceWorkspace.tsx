@@ -355,7 +355,7 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
   }, [ci, refreshRuns]);
 
   const handleCancel = useCallback(async (runId: string) => {
-    if (!window.confirm('确定取消这个 Creative Intelligence 任务吗？')) return;
+    if (!window.confirm('确定取消这个智能创意任务吗？')) return;
     try {
       await ci.cancel(runId);
       if (activeRunId === runId) setActiveRunId('');
@@ -511,7 +511,7 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           <TopBarBreadcrumb
             items={[
               { label: '项目', onClick: onBack },
-              { label: 'Creative Intelligence' }
+              { label: '智能创意' }
             ]}
           />
         }
@@ -524,14 +524,14 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
       />
     }
     bottomBar={<>
-      <span>Creative Intelligence · 5.0.0-rc.1</span>
+      <span>智能创意 · 5.0.0-rc.1</span>
       <span>{runs.length} 个任务 · {lifecycles.filter((l) => l.run.status === 'completed').length} 个完成</span>
     </>}
   >
     <div className="page ci-workspace" data-ciw-user-view={userView}>
       <header className="page-header ci-workspace__header">
         <div>
-          <p className="eyebrow">CREATIVE INTELLIGENCE</p>
+          <p className="eyebrow">智能创意</p>
           <h1>{viewHeading(userView)}</h1>
           <p>{viewSubtitle(userView)}</p>
         </div>
@@ -663,10 +663,10 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
 
 function viewHeading(userView: CreativeIntelligenceUserView): string {
   switch (userView) {
-    case 'input': return 'Creative Intelligence';
+    case 'input': return '智能创意';
     case 'fact-review': return '确认项目事实';
     case 'thinking': return '正在形成创意方向';
-    case 'direction-decision': return 'Creative Directions';
+    case 'direction-decision': return '创意方向';
     case 'all-blocked': return '暂时无法形成可用的创意方向';
     case 'visual-system': return '视觉系统';
   }
@@ -797,7 +797,7 @@ function InputPage({ profiles, profileId, onProfileChange, inputDocumentPaths, p
           </label>
           <div className="ci-form-row ci-form-row--actions">
             <Button variant="primary" size="md" disabled={busy || !profileId || !inputDocumentPaths.length} onClick={onStart}>
-              {busy ? '提交中…' : '开始 Creative Intelligence'}
+              {busy ? '提交中…' : '开始智能创意'}
             </Button>
             <p className="ci-hint">加入文档后即可开始。事实提取阶段调用 1 次模型，之后为本地推理。</p>
           </div>
@@ -822,7 +822,7 @@ function InputPage({ profiles, profileId, onProfileChange, inputDocumentPaths, p
         </div>
 
         <div className="panel ci-recent">
-          <small className="ci-aside-label">最近 Creative Intelligence</small>
+          <small className="ci-aside-label">最近 智能创意</small>
           {recent.length === 0
             ? <p className="ci-hint">还没有任务。上传文档即可开始第一个任务。</p>
             : <ul className="ci-recent-list">

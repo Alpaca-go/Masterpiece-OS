@@ -68,10 +68,10 @@ test('CI-W1B.1 UX02: internal stage naming is not exposed as user-facing copy', 
 
 test('CI-W1B.1 UX02: user views are rendered by data-ciw-user-view instead', () => {
   assert.equal(/data-ciw-user-view=\{userView\}/.test(workspace), true, 'root element carries the user view');
-  assert.equal(workspace.includes("'Creative Intelligence'"), true, 'input heading present');
+  assert.equal(workspace.includes("'智能创意'"), true, 'input heading present');
   assert.equal(workspace.includes("'确认项目事实'"), true, 'fact review heading present');
   assert.equal(workspace.includes("'正在形成创意方向'"), true, 'thinking heading present');
-  assert.equal(workspace.includes("'Creative Directions'"), true, 'direction decision heading present');
+  assert.equal(workspace.includes("'创意方向'"), true, 'direction decision heading present');
   assert.equal(workspace.includes("'视觉系统'"), true, 'visual system heading present');
 });
 
