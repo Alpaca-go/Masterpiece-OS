@@ -12,3 +12,12 @@ export type { SkeletonProps } from './Skeleton';
 
 export { StatusDot } from './StatusDot';
 export type { StatusDotProps, Tone as StatusDotTone } from './StatusDot';
+
+export { Dialog } from './Dialog';
+export type { DialogProps } from './Dialog';
+
+export { Switch } from './Switch';
+export type { SwitchProps } from './Switch';
+
+export { Slider } from './Slider';
+export type { SliderProps } from './Slider';
