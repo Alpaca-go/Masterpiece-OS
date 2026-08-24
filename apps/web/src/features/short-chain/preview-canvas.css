@@ -1,0 +1,91 @@
+/* features/short-chain/PreviewCanvas 样式 (P1.4)
+ * 中栏核心画布。占满三栏布局的中栏高度 (flex: 1 from ThreeColumnLayout)。
+ */
+
+.sc-preview-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3, 12px);
+  padding: var(--space-5, 20px);
+  background: var(--color-bg, #FBFAF7);
+  overflow: auto;
+  height: 100%;
+}
+
+.sc-preview-canvas__image {
+  width: 100%;
+  max-height: calc(100vh - 200px);
+  object-fit: contain;
+  background: var(--color-surface-soft, #F9F8F4);
+  border: 1px solid var(--color-line, #E5E2D9);
+  border-radius: var(--r-md, 4px);
+}
+
+.sc-preview-canvas__placeholder {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  flex: 1;
+  min-height: 320px;
+  gap: var(--space-2, 8px);
+  padding: var(--space-9, 48px) var(--space-6, 24px);
+  border: 1px dashed var(--color-line-strong, #D1CDBF);
+  border-radius: var(--r-md, 4px);
+  background: var(--color-surface-soft, #F9F8F4);
+  text-align: center;
+  color: var(--color-text-muted, #6B6B6B);
+}
+.sc-preview-canvas__placeholder strong {
+  font-family: var(--font-display, serif);
+  font-size: var(--text-lg, 16px);
+  color: var(--color-text-strong, #0A0A0A);
+  font-weight: 400;
+}
+.sc-preview-canvas__placeholder p {
+  margin: 0;
+  font-size: var(--text-sm, 12px);
+  line-height: 1.6;
+  max-width: 420px;
+}
+.sc-preview-canvas__spinner {
+  font-size: 28px;
+  color: var(--color-accent, #1A1A1A);
+  animation: sc-preview-spin 1.4s linear infinite;
+}
+@keyframes sc-preview-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.sc-preview-canvas__error {
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border: 1px solid var(--color-error-line, #D8A89F);
+  background: var(--color-error-bg, #F5E0DC);
+  color: var(--color-error-text, #8A2620);
+  border-radius: var(--r-sm, 4px);
+  font-size: var(--text-xs, 11px);
+  line-height: 1.5;
+}
+
+/* Flow banner — 与 v1 .sc-flow-banner 视觉对齐 */
+.sc-flow-banner {
+  display: grid;
+  gap: var(--space-1, 4px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  border-radius: var(--r-md, 4px);
+  border: 1px solid;
+}
+.sc-flow-banner strong {
+  font-size: var(--text-sm, 12px);
+  font-weight: 700;
+}
+.sc-flow-banner p {
+  margin: 0;
+  font-size: var(--text-xs, 11px);
+  line-height: 1.55;
+}
+.sc-flow-banner--info  { border-color: var(--color-info-line);  background: var(--color-info-bg,  #E2EBF4); color: var(--color-info-text); }
+.sc-flow-banner--ok    { border-color: var(--color-success-line); background: var(--color-success-bg, #E8F1EA); color: var(--color-success-text); }
+.sc-flow-banner--warn  { border-color: var(--color-warning-line); background: var(--color-warning-bg, #F5EBD7); color: var(--color-warning-text); }
+.sc-flow-banner--fail  { border-color: var(--color-error-line); background: var(--color-error-bg, #F5E0DC); color: var(--color-error-text); }
