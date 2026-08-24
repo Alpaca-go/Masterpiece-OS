@@ -49,7 +49,7 @@ test('all image-generation schemas exist and are valid draft 2020-12 objects', (
 test('V3 source bundle separates source preset from deliverable', () => {
   const bundle = loadSchema('image-generation-source-bundle-v3.schema.json');
   assert.deepEqual(bundle.properties.sourcePreset.enum, [
-    'visual_analysis', 'document_context', 'reference_anchor', 'integrated_context'
+    'visual_analysis', 'document_context', 'reference_anchor', 'integrated_context', 'creative_intelligence'
   ]);
   assert.deepEqual(bundle.properties.deliverable.enum, [
     'anchor_image', 'brand_poster', 'packaging_render', 'vi_application',

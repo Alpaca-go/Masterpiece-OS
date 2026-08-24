@@ -100,12 +100,14 @@ test('Volcengine adapter redacts the API key from error messages via the registr
 });
 
 test('Volcengine adapter rejects missing API key and missing model', () => {
+  // environment: {} prevents env-var fallback (e.g. ARK_API_KEY) from masking
+  // the missing-key/model validation in test environments.
   assert.throws(
-    () => createVolcengineReasoner({ apiKey: '', model: 'doubao-seed-2.1-turbo' }),
+    () => createVolcengineReasoner({ apiKey: '', model: 'doubao-seed-2.1-turbo', environment: {} }),
     (error) => error.code === 'VOLCENGINE_API_KEY_MISSING',
   );
   assert.throws(
-    () => createVolcengineReasoner({ apiKey: 'fixture-secret', model: '' }),
+    () => createVolcengineReasoner({ apiKey: 'real-key', model: '', environment: {} }),
     (error) => error.code === 'VOLCENGINE_MODEL_MISSING',
   );
 });
