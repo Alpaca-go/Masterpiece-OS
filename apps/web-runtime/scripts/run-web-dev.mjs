@@ -11,12 +11,13 @@ const rendererConfig = path.join(repoRoot, 'apps', 'web', 'vite.config.mjs');
 const rpcPort = Number(process.env.MASTERPIECE_WEB_RPC_PORT || 4317);
 const rendererPort = Number(process.env.MASTERPIECE_WEB_RENDERER_PORT || 5173);
 const rendererOrigin = `http://127.0.0.1:${rendererPort}`;
+const rendererOriginLocalhost = `http://localhost:${rendererPort}`;
 
 const commonEnv = {
   ...process.env,
   MASTERPIECE_WEB_RPC_PORT: String(rpcPort),
   MASTERPIECE_WEB_RPC_URL: `http://127.0.0.1:${rpcPort}`,
-  MASTERPIECE_WEB_ALLOWED_ORIGIN: rendererOrigin,
+  MASTERPIECE_WEB_ALLOWED_ORIGIN: `${rendererOrigin},${rendererOriginLocalhost}`,
 };
 const children = [
   spawn(process.execPath, [tsxCli, path.join(webRuntimeRoot, 'src', 'main.ts')], {

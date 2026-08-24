@@ -3,9 +3,13 @@ import { startNodeRuntimeHost } from './node-runtime-host.ts';
 process.title = 'masterpiece-node-web-runtime';
 
 const port = Number(process.env.MASTERPIECE_WEB_RPC_PORT || 4317);
-const allowedOrigin = process.env.MASTERPIECE_WEB_ALLOWED_ORIGIN
+const allowedOriginRaw = process.env.MASTERPIECE_WEB_ALLOWED_ORIGIN
   || process.env.MASTERPIECE_WEB_RENDERER_ORIGIN
   || 'http://127.0.0.1:5173';
+// Support comma-separated list of origins (e.g. "http://127.0.0.1:5173,http://localhost:5173")
+const allowedOrigin = allowedOriginRaw.includes(',')
+  ? allowedOriginRaw.split(',').map((s) => s.trim()).filter(Boolean)
+  : allowedOriginRaw;
 const host = await startNodeRuntimeHost({ port, allowedOrigin });
 console.info(JSON.stringify({
   event: 'NODE_WEB_HOST_READY',

@@ -3,7 +3,7 @@ import http, { type IncomingMessage, type ServerResponse } from 'node:http';
 export interface LocalRpcServerOptions {
   host?: string;
   port?: number;
-  allowedOrigin: string;
+  allowedOrigin: string | string[];
   invoke(channel: string, args: unknown[]): Promise<unknown>;
 }
 
@@ -61,9 +61,14 @@ export async function startLocalRpcServer(options: LocalRpcServerOptions): Promi
   const eventClients = new Set<ServerResponse>();
   const server = http.createServer(async (request, response) => {
     const origin = request.headers.origin;
-    if (origin && origin !== options.allowedOrigin) {
-      sendJson(response, 403, { error: 'WEB_RPC_ORIGIN_REJECTED' });
-      return;
+    if (origin) {
+      const allowed = Array.isArray(options.allowedOrigin)
+        ? options.allowedOrigin
+        : [options.allowedOrigin];
+      if (!allowed.includes(origin)) {
+        sendJson(response, 403, { error: 'WEB_RPC_ORIGIN_REJECTED' });
+        return;
+      }
     }
     const requestUrl = new URL(request.url ?? '/', `http://${request.headers.host ?? `${host}:${port}`}`);
     if (request.method === 'GET' && requestUrl.pathname === '/_masterpiece/health') {

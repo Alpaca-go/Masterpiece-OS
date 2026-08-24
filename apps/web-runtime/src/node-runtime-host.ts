@@ -22,7 +22,7 @@ import { createNodeRuntimePaths } from './runtime-paths.ts';
 export interface NodeRuntimeHostOptions {
   host?: string;
   port?: number;
-  allowedOrigin: string;
+  allowedOrigin: string | string[];
   environment?: NodeJS.ProcessEnv;
   currentDirectory?: string;
 }
