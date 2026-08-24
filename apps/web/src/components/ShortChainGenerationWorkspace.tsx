@@ -155,12 +155,17 @@ export function ShortChainGenerationWorkspace({
   const [continuationRequirement, setContinuationRequirement] = useState('');
   const [continuationBusy, setContinuationBusy] = useState(false);
   // R10.2 Reference-First: Generation Basis switches between Standard
-  // (analysis-led, text-only) and Reference-First (reference-assisted, High
-  // Fidelity). When a reference image is chosen its assetId flows through
-  // the frozen R9 High Fidelity runtime (referenceAssetIds -> resolveSpaceReferences).
-  const [generationBasis, setGenerationBasis] = useState<'standard' | 'reference'>('standard');
-  const [projectAssets, setProjectAssets] = useState<AssetItem[]>([]);
-  const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+    // (analysis-led, text-only) and Reference-First (reference-assisted, High
+    // Fidelity). When a reference image is chosen its assetId flows through
+    // the frozen R9 High Fidelity runtime (referenceAssetIds -> resolveSpaceReferences).
+    const [projectAssets, setProjectAssets] = useState<AssetItem[]>([]);
+    const [referenceAssetIds, setReferenceAssetIds] = useState<string[]>([]);
+    // Streamlined v2: generationBasis is now DERIVED from reference assets.
+    // Users enable reference-first mode simply by adding a reference image.
+    // forceStandard is an advanced override (hidden in advanced settings).
+    const [forceStandard, setForceStandard] = useState(false);
+    const generationBasis: 'standard' | 'reference' =
+      referenceAssetIds.length > 0 && !forceStandard ? 'reference' : 'standard';
   // R11.2.1 provenance: which explicit reference each asset came from
   // (user_upload vs project_visual_asset). Project assets never auto-enter.
   const [referenceSources, setReferenceSources] = useState<Record<string, 'user_upload' | 'project_visual_asset'>>({});
@@ -516,18 +521,6 @@ export function ShortChainGenerationWorkspace({
     }
   }
 
-  function changeBasis(next: 'standard' | 'reference') {
-    setGenerationBasis(next);
-    setShotSource('target_scene_default');
-    setReferenceSceneRelation('unknown');
-    setCompiled(null);
-    setEditedPrompt('');
-    setActiveRun(null);
-    setImageDataUrl('');
-    setLastValidation(null);
-    if (next === 'reference') void loadProjectAssets();
-  }
-
   function toggleReferenceAsset(assetId: string) {
     setReferenceAssetIds((current) => {
       const next = toggleReferenceId(current, assetId);
@@ -878,169 +871,155 @@ export function ShortChainGenerationWorkspace({
             </div>
           </div>
 
-          {/* Generation basis */}
-          <div className="sc-panel__section">
-            <h3 className="sc-panel__section-title">生成模式</h3>
-            <div className="sc-basis-switch">
-              <button
-                type="button"
-                className={generationBasis === 'standard' ? 'is-active' : ''}
-                onClick={() => changeBasis('standard')}
-              >
-                标准生成
-              </button>
-              <button
-                type="button"
-                className={generationBasis === 'reference' ? 'is-active' : ''}
-                onClick={() => changeBasis('reference')}
-              >
-                参考优先
-              </button>
-            </div>
-
-            {generationBasis === 'reference' && (
-              <div style={{ marginTop: 'var(--space-4)' }}>
-                <div className="sc-ref-actions">
-                  <input
-                    ref={uploadInputRef}
-                    type="file"
-                    accept="image/png,image/jpeg,image/webp"
-                    style={{ display: 'none' }}
-                    onChange={(event) => void handleUploadFileChange(event)}
-                  />
-                  <button
-                    className="button secondary"
-                    disabled={uploading}
-                    onClick={() => void uploadReferenceImage()}
-                  >
-                    {uploading ? '上传中…' : '上传参考图'}
-                  </button>
-                  <button className="button ghost" onClick={() => setPickerOpen((value) => !value)}>
-                    {pickerOpen ? '收起' : '从项目选择'}
-                  </button>
-                </div>
-
-                {referenceAssetIds.length > 0 && (
-                  <div className="sc-ref-list">
-                    {projectAssets
-                      .filter((asset) => referenceAssetIds.includes(asset.id))
-                      .map((asset) => (
-                        <div key={asset.id} className="sc-ref-item">
-                          {asset.thumbnailDataUrl
-                            ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
-                            : <span className="sc-ref-item__fallback">{asset.name.slice(0, 8)}</span>}
-                          <div className="sc-ref-item__meta">
-                            <strong>{asset.name}</strong>
-                            <small>{referenceSourceLabelFor(asset, referenceSources[asset.id])}</small>
-                          </div>
-                          <div className="sc-ref-item__actions">
-                            <button
-                              title="替换"
-                              onClick={() => void replaceReferenceAsset(asset.id)}
-                            >替换</button>
-                            <button
-                              className="danger"
-                              title="移除"
-                              onClick={() => toggleReferenceAsset(asset.id)}
-                            >×</button>
-                          </div>
+          {/* Reference images (optional) — adding any reference auto-enables reference-first mode */}
+                    <div className="sc-panel__section">
+                      <h3 className="sc-panel__section-title">风格参考图（可选）</h3>
+                      <p style={{ margin: '0 0 var(--space-3) 0', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)', lineHeight: 1.6 }}>
+                        上传一张或几张风格参考图，AI 会参考它的色调、构图与材质生成同风格的图。
+                        不上传则按文字描述生成。
+                      </p>
+                      <div style={{ marginTop: 'var(--space-4)' }}>
+                        <div className="sc-ref-actions">
+                          <input
+                            ref={uploadInputRef}
+                            type="file"
+                            accept="image/png,image/jpeg,image/webp"
+                            style={{ display: 'none' }}
+                            onChange={(event) => void handleUploadFileChange(event)}
+                          />
+                          <button
+                            className="button secondary"
+                            disabled={uploading}
+                            onClick={() => void uploadReferenceImage()}
+                          >
+                            {uploading ? '上传中…' : '上传参考图'}
+                          </button>
+                          <button className="button ghost" onClick={() => setPickerOpen((value) => !value)}>
+                            {pickerOpen ? '收起' : '从项目选择'}
+                          </button>
                         </div>
-                      ))}
-                  </div>
-                )}
 
-                {pickerOpen && (
-                  <div className="asset-picker" style={{ marginTop: 'var(--space-3)' }}>
-                    {assetsLoading
-                      ? <span className="muted">加载中…</span>
-                      : <div className="reference-asset-grid">
-                        {projectAssets.length === 0
-                          ? <span className="muted">当前项目没有可用图片资产。</span>
-                          : projectAssets.map((asset) => {
-                            const preflight = referencePreflight[asset.id];
-                            const preflightFailed = preflight?.status === 'failed';
-                            const checkboxDisabled = preflightFailed
-                              || (!referenceAssetIds.includes(asset.id)
-                                && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES);
-                            return (
-                              <label
-                                key={asset.id}
-                                className={
-                                  referenceAssetIds.includes(asset.id)
-                                    ? 'asset-tile selected'
-                                    : preflightFailed
-                                      ? 'asset-tile disabled-preflight'
-                                      : 'asset-tile'
-                                }
-                                title={preflightFailed && preflight.status === 'failed' ? preflight.failure.message : undefined}
-                              >
-                                <input
-                                  type="checkbox"
-                                  disabled={checkboxDisabled}
-                                  checked={referenceAssetIds.includes(asset.id)}
-                                  onChange={() => toggleReferenceAsset(asset.id)}
-                                />
-                                {asset.thumbnailDataUrl
-                                  ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
-                                  : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
-                                <span>{asset.name}</span>
-                                <span
-                                  className={
-                                    preflight?.status === 'resolved'
-                                      ? 'preflight-badge preflight-ok'
-                                      : preflight?.status === 'failed'
-                                        ? 'preflight-badge preflight-fail'
-                                        : 'preflight-badge preflight-pending'
-                                  }
-                                >
-                                  {preflight?.status === 'resolved' ? '✓'
-                                    : preflight?.status === 'failed' ? '✕ ' + preflight.failure.code
-                                      : '…'}
-                                </span>
-                              </label>
-                            );
-                          })}
-                      </div>}
-                  </div>
-                )}
+                        {referenceAssetIds.length > 0 && (
+                          <div className="sc-ref-list">
+                            {projectAssets
+                              .filter((asset) => referenceAssetIds.includes(asset.id))
+                              .map((asset) => (
+                                <div key={asset.id} className="sc-ref-item">
+                                  {asset.thumbnailDataUrl
+                                    ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                                    : <span className="sc-ref-item__fallback">{asset.name.slice(0, 8)}</span>}
+                                  <div className="sc-ref-item__meta">
+                                    <strong>{asset.name}</strong>
+                                    <small>{referenceSourceLabelFor(asset, referenceSources[asset.id])}</small>
+                                  </div>
+                                  <div className="sc-ref-item__actions">
+                                    <button
+                                      title="替换"
+                                      onClick={() => void replaceReferenceAsset(asset.id)}
+                                    >替换</button>
+                                    <button
+                                      className="danger"
+                                      title="移除"
+                                      onClick={() => toggleReferenceAsset(asset.id)}
+                                    >×</button>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        )}
 
-                {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
-                  <p style={{ marginTop: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
-                    最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。
-                  </p>
-                )}
+                        {pickerOpen && (
+                          <div className="asset-picker" style={{ marginTop: 'var(--space-3)' }}>
+                            {assetsLoading
+                              ? <span className="muted">加载中…</span>
+                              : <div className="reference-asset-grid">
+                                {projectAssets.length === 0
+                                  ? <span className="muted">当前项目没有可用图片资产。</span>
+                                  : projectAssets.map((asset) => {
+                                    const preflight = referencePreflight[asset.id];
+                                    const preflightFailed = preflight?.status === 'failed';
+                                    const checkboxDisabled = preflightFailed
+                                      || (!referenceAssetIds.includes(asset.id)
+                                        && referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES);
+                                    return (
+                                      <label
+                                        key={asset.id}
+                                        className={
+                                          referenceAssetIds.includes(asset.id)
+                                            ? 'asset-tile selected'
+                                            : preflightFailed
+                                              ? 'asset-tile disabled-preflight'
+                                              : 'asset-tile'
+                                        }
+                                        title={preflightFailed && preflight.status === 'failed' ? preflight.failure.message : undefined}
+                                      >
+                                        <input
+                                          type="checkbox"
+                                          disabled={checkboxDisabled}
+                                          checked={referenceAssetIds.includes(asset.id)}
+                                          onChange={() => toggleReferenceAsset(asset.id)}
+                                        />
+                                        {asset.thumbnailDataUrl
+                                          ? <img src={asset.thumbnailDataUrl} alt={asset.name} />
+                                          : <span className="asset-fallback">{asset.name.slice(0, 12)}</span>}
+                                        <span>{asset.name}</span>
+                                        <span
+                                          className={
+                                            preflight?.status === 'resolved'
+                                              ? 'preflight-badge preflight-ok'
+                                              : preflight?.status === 'failed'
+                                                ? 'preflight-badge preflight-fail'
+                                                : 'preflight-badge preflight-pending'
+                                          }
+                                        >
+                                          {preflight?.status === 'resolved' ? '✓'
+                                            : preflight?.status === 'failed' ? '✕ ' + preflight.failure.code
+                                              : '…'}
+                                        </span>
+                                      </label>
+                                    );
+                                  })}
+                              </div>}
+                          </div>
+                        )}
 
-                {referenceAssetIds.length > 0 && (
-                  <div className="notice info" style={{ marginTop: 'var(--space-3)' }}>
-                    参考优先会较强地保留参考图的空间结构与构图。
-                  </div>
-                )}
+                        {referenceAssetIds.length >= MAX_SPACE_REFERENCE_IMAGES && (
+                          <p style={{ marginTop: 'var(--space-3)', fontSize: 'var(--text-sm)', color: 'var(--color-text-muted)' }}>
+                            最多可选 {MAX_SPACE_REFERENCE_IMAGES} 张参考图。
+                          </p>
+                        )}
 
-                {showCrossSceneAdvisory && crossSceneReference && (
-                  <div className="notice warn advisory" style={{ marginTop: 'var(--space-3)' }}>
-                    <strong>跨场景建议</strong>
-                    <p>这张参考图来自「{crossSceneReference.confirmed.sourceScene || '已确认空间'}」，当前目标为「{subtype}」。</p>
-                    <p>建议使用「空间延展」保持方向的同时重新设计功能空间。</p>
-                    <div className="button-row" style={{ marginTop: 'var(--space-3)' }}>
-                      <button className="button secondary" onClick={() => setCrossSceneAdvisoryDismissed(true)}>仍使用参考优先</button>
-                      <button className="button primary" onClick={() => routeCrossSceneReferenceToContinuation()}>改为以此方向继续</button>
+                        {referenceAssetIds.length > 0 && (
+                          <div className="notice info" style={{ marginTop: 'var(--space-3)' }}>
+                            已启用「参考优先」模式：AI 会较强地保留参考图的空间结构与构图。
+                            {forceStandard && '（已临时强制为标准模式，可在高级设置里关闭）'}
+                          </div>
+                        )}
+
+                        {showCrossSceneAdvisory && crossSceneReference && (
+                          <div className="notice warn advisory" style={{ marginTop: 'var(--space-3)' }}>
+                            <strong>跨场景建议</strong>
+                            <p>这张参考图来自「{crossSceneReference.confirmed.sourceScene || '已确认空间'}」，当前目标为「{subtype}」。</p>
+                            <p>建议使用「空间延展」保持方向的同时重新设计功能空间。</p>
+                            <div className="button-row" style={{ marginTop: 'var(--space-3)' }}>
+                              <button className="button secondary" onClick={() => setCrossSceneAdvisoryDismissed(true)}>仍使用参考优先</button>
+                              <button className="button primary" onClick={() => routeCrossSceneReferenceToContinuation()}>改为以此方向继续</button>
+                            </div>
+                          </div>
+                        )}
+
+                        {referenceValidation.hard.length > 0 && (
+                          <div className="notice error" style={{ marginTop: 'var(--space-3)' }}>
+                            {referenceValidation.hard.join('；')}
+                          </div>
+                        )}
+                        {referenceValidation.hard.length === 0 && referenceValidation.soft.length > 0 && (
+                          <div className="notice warn" style={{ marginTop: 'var(--space-3)' }}>
+                            {referenceValidation.soft.join('；')}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {referenceValidation.hard.length > 0 && (
-                  <div className="notice error" style={{ marginTop: 'var(--space-3)' }}>
-                    {referenceValidation.hard.join('；')}
-                  </div>
-                )}
-                {referenceValidation.hard.length === 0 && referenceValidation.soft.length > 0 && (
-                  <div className="notice warn" style={{ marginTop: 'var(--space-3)' }}>
-                    {referenceValidation.soft.join('；')}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
 
           {/* Subtype + instruction */}
           <div className="sc-panel__section">
