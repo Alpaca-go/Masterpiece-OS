@@ -793,6 +793,49 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   box-shadow: var(--shadow-focus);
 }
 
+/* ── Step 3 UI cleanup: minimal utility / modifier classes for App.tsx ──
+   Replaces 8 inline `style={{...}}` props on the App shell layer
+   (TopBar status dot, ⌘K kbd, create-shell spacer, project rail empty,
+   setup banner block, record-card footer row, project-delete reset).
+   One-to-one mechanical translation; no JSX structure changes. */
+
+/* Create-shell flex spacer — balances 3-col header bar (left/center/right) */
+.create-shell-v2__spacer {
+  width: 80px;
+  flex: none;
+}
+/* Keyboard shortcut caption (monospace, used in topbar command-palette button) */
+.kbd-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+/* Project rail empty state — used when `projects.length === 0` */
+.app-rail-empty {
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+/* Content max-width wrapper — reuses the --content-max token */
+.content-max {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+/* Setup banner block modifier — adds bottom spacing for stacked layout */
+.setup-banner--block {
+  margin-bottom: var(--space-8);
+}
+/* Generic horizontal flex row — used in record-card footer for meta + actions */
+.flex-row-sm-center {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+/* Project-delete inline modifier — removes default right margin in flex row */
+.project-delete--inline {
+  margin: 0;
+}
+
 /* ── Step 5: Destructive tone (Notion-style) ──
    Applied as `tone="destructive"` on top of any variant. Default style is
    text-only red — matches Notion's delete button. Hover softens the surface

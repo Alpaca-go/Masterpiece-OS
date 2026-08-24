@@ -431,7 +431,7 @@ export function App() {
           if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
           if (mode === 'creative-intelligence') { setScreen('creative-intelligence'); }
         }} />
-        <div style={{ width: 80 }} />
+        <div className="create-shell-v2__spacer" />
       </header>
       <div className="create-shell-v2__body">
         <div hidden={analysisMode !== 'visual-analysis'}><ProjectWizard settings={settings} onCancel={() => { setScreen('home'); void refresh(); }} onStart={(project, profileId) => {
@@ -578,11 +578,11 @@ export function App() {
           right={
             <TopBarActions>
               <div className="app-topbar__status">
-                <span className={'status-dot ' + settings.connectionStatus} style={{ width: '7px', height: '7px', borderRadius: '50%', display: 'inline-block' }} />
+                <span className={'status-dot ' + settings.connectionStatus} />
                 <span>{defaultProfile?.modelId ? <strong>{defaultProfile.modelId}</strong> : '未配置'}</span>
               </div>
               <Button variant="ghost" size="sm" onClick={() => setCmdOpen(true)} title="搜索命令 / 跳转 (⌘K)">
-                <span style={{ fontFamily: 'var(--font-mono)' }}>⌘K</span>
+                <span className="kbd-mono">⌘K</span>
               </Button>
               <Button variant="ghost" size="sm" onClick={() => { setSettingsReturnScreen(currentScreen); setScreen('settings'); }}>
                 设置
@@ -614,7 +614,7 @@ export function App() {
               </button>
             ))}
             {projects.length === 0 && (
-              <div style={{ padding: 'var(--space-4)', color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', textAlign: 'center' }}>
+              <div className="app-rail-empty">
                 还没有项目
               </div>
             )}
@@ -628,9 +628,9 @@ export function App() {
         </>
       }
     >
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+      <div className="content-max">
         {!hasUsableProfile && (
-          <div className="setup-banner" style={{ marginBottom: 'var(--space-8)' }}>
+          <div className="setup-banner setup-banner--block">
             <div>
               <strong>完成首次 API 配置</strong>
               <p>请添加并启用一个包含 API Key、Base URL 与 Model ID 的 Profile。</p>
@@ -762,10 +762,9 @@ export function App() {
                         <small>更新于</small>
                         <strong>{formatRelativeTime(record.createdAt)}</strong>
                       </div>
-                      <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
+                      <div className="flex-row-sm-center">
                         <button
-                          className="project-delete"
-                          style={{ margin: 0 }}
+                          className="project-delete project-delete--inline"
                           disabled={!canDelete || isDeleting}
                           onClick={handleDelete}
                           aria-label="删除"
