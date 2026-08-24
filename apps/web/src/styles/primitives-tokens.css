@@ -1,0 +1,71 @@
+/* §3.4 P0 新增 primitives — 完整样式由 P1 接入时填
+ * 当前只定义最低必要的占位规则，保证 EmptyState / Skeleton / StatusDot
+ * 渲染出来不破版（margin / padding / 背景用现有 token）。
+ * P1 实施时按 §3.2 dark-first token 重写。 */
+
+.ui-empty {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-9, 48px) var(--space-6, 24px);
+  color: var(--color-text-muted, #6B6B6B);
+}
+.ui-empty--bordered {
+  border: 1px dashed var(--color-line-strong, #D1CDBF);
+  border-radius: var(--radius-lg, 8px);
+  background: var(--color-surface-soft, #F9F8F4);
+}
+.ui-empty__icon {
+  font-size: var(--text-display, clamp(48px, 6.2vw, 88px));
+  color: var(--color-text-faint, #C4C2BB);
+  line-height: 1;
+}
+.ui-empty__title {
+  color: var(--color-text-strong, #0A0A0A);
+  font-family: var(--font-display, serif);
+  font-size: var(--text-2xl, 22px);
+  font-weight: 400;
+}
+.ui-empty__description {
+  max-width: 480px;
+  margin: 0;
+  font-size: var(--text-sm, 12px);
+  line-height: 1.55;
+}
+.ui-empty__action {
+  margin-top: var(--space-3, 12px);
+}
+
+.ui-skeleton {
+  display: block;
+  border-radius: var(--radius-md, 4px);
+  background: var(--color-line-soft, #F2EFE6);
+  animation: ui-skeleton-pulse 1.4s ease-in-out infinite;
+}
+.ui-skeleton--text {
+  height: 12px;
+  border-radius: 999px;
+}
+.ui-skeleton--circle {
+  border-radius: 50%;
+}
+.ui-skeleton--rect {
+  border-radius: var(--radius-md, 4px);
+}
+
+@keyframes ui-skeleton-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.ui-status-dot {
+  display: inline-block;
+  border-radius: 50%;
+  background: var(--color-text-faint, #C4C2BB);
+  flex: none;
+}
+.ui-status-dot--connected { background: var(--color-success, #1F7A4D); }
+.ui-status-dot--failed { background: var(--color-error, #C1372B); }
+.ui-status-dot--pending { background: var(--color-warning, #B8761A); }

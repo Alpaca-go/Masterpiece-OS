@@ -1,0 +1,12 @@
+/* pages 样式占位 (P0) */
+
+.ui-page {
+  padding: var(--space-8, 32px) var(--space-6, 24px);
+  min-height: 100vh;
+  background: var(--color-bg, #FBFAF7);
+}
+.ui-page--library,
+.ui-page--settings {
+  display: grid;
+  place-items: center;
+}

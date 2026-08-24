@@ -1,0 +1,12 @@
+/* feedback 组件样式占位 (P0) */
+
+.ui-connection-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2, 8px);
+  font-size: var(--text-xs, 11px);
+  color: var(--color-text-muted, #6B6B6B);
+}
+.ui-connection-indicator__label {
+  white-space: nowrap;
+}

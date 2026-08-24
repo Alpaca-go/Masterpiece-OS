@@ -1,0 +1,7 @@
+// styles/p0-skeletons.css — P0 阶段新组件的样式入口 (待 P1 接入)
+//
+// 当前阶段零运行时影响 (main.tsx 不引入)。当 P1 实施路由切换时:
+//   import '../styles/p0-skeletons.css'
+// 即可让 P0 阶段新增的 primitives / feedback / layout / pages CSS 全部生效。
+//
+// 关联: routes.tsx (待 P0 收尾最后阶段创建) + main.tsx import 链
