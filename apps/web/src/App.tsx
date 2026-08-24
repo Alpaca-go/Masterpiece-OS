@@ -655,16 +655,13 @@ export function App() {
           </p>
           <div className="hero__actions">
             <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
-              新建视觉分析 →
+              智能生成 →
             </Button>
-            <Button variant="ghost" onClick={() => { setAnalysisMode('document-context'); setScreen('create'); }}>
-              文档分析
+            <Button variant="ghost" onClick={() => { setScreen('creative-intelligence'); }}>
+              Creative Intelligence
             </Button>
             <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
               参考视觉转换
-            </Button>
-            <Button variant="ghost" onClick={() => setScreen('packaging')}>
-              包装生成
             </Button>
           </div>
           <div className="hero__meta">
@@ -782,7 +779,7 @@ export function App() {
             <div className="empty-home">
               <div className="empty-orbit" />
               <strong>还没有分析记录</strong>
-              <p>进入分析工作台，选择视觉分析、文档分析或参考视觉转换开始第一次任务。</p>
+              <p>进入分析工作台,选择智能生成、Creative Intelligence 或参考视觉转换开始第一次任务。</p>
               <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
                 开始第一次分析
               </Button>
