@@ -793,6 +793,48 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   box-shadow: var(--shadow-focus);
 }
 
+/* ── Step 5: Destructive tone (Notion-style) ──
+   Applied as `tone="destructive"` on top of any variant. Default style is
+   text-only red — matches Notion's delete button. Hover softens the surface
+   to a pale red, active deepens. The `--shadow-focus-hot` ring replaces
+   the default focus ring so destructive actions keep their visual identity
+   in keyboard navigation.
+
+   For a filled destructive CTA (used sparingly, e.g. "取消正在运行的任务"),
+   also pass `filled` — this swaps to a hot-orange filled button matching
+   the `--color-hot` accent. */
+.ui-button--tone-destructive {
+  color: var(--color-error-text);
+}
+.ui-button--tone-destructive:hover:not(:disabled) {
+  color: var(--color-error-strong);
+  background: var(--color-error-bg-soft);
+}
+.ui-button--tone-destructive:active:not(:disabled) {
+  background: var(--color-error-bg);
+}
+.ui-button--tone-destructive:focus-visible {
+  box-shadow: var(--shadow-focus-hot);
+  outline: none;
+}
+.ui-button--tone-destructive-filled {
+  color: var(--color-text-on-hot);
+  background: var(--color-hot);
+  border-color: var(--color-hot);
+}
+.ui-button--tone-destructive-filled:hover:not(:disabled) {
+  background: #C9461F;
+  border-color: #C9461F;
+}
+.ui-button--tone-destructive-filled:active:not(:disabled) {
+  background: #B83D1B;
+  border-color: #B83D1B;
+}
+.ui-button--tone-destructive-filled:focus-visible {
+  box-shadow: var(--shadow-focus-hot);
+  outline: none;
+}
+
 /* Sizes */
 .ui-button--sm { padding: 5px 10px; font-size: 12px; border-radius: 4px; }
 .ui-button--md { padding: 8px 14px; }

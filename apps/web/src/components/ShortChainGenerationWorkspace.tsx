@@ -1190,9 +1190,9 @@ export function ShortChainGenerationWorkspace({
                       (o) => o.sourceRunId === activeRun.runId && o.confirmationState === 'confirmed',
                     );
                     return confirmed ? (
-                      <button className="ui-button ui-button--ghost danger" disabled={busy || continuationBusy} onClick={() => void revokeContinuation(confirmed.assetId)}>
+                      <Button variant="ghost" size="md" tone="destructive" disabled={busy || continuationBusy} onClick={() => void revokeContinuation(confirmed.assetId)}>
                         取消确认
-                      </button>
+                      </Button>
                     ) : null;
                   })()}
                 </div>
@@ -1253,9 +1253,9 @@ export function ShortChainGenerationWorkspace({
                   <span>源场景：{continuationSource.sourceScene || 'space'}</span>
                   <small>以此图作为后续空间延展的设计依据</small>
                 </div>
-                <button className="button ghost danger" disabled={continuationBusy} onClick={() => void revokeContinuation(continuationSource.assetId)}>
+                <Button variant="ghost" size="md" tone="destructive" disabled={continuationBusy} onClick={() => void revokeContinuation(continuationSource.assetId)}>
                   取消确认
-                </button>
+                </Button>
               </div>
 
               <label className="sc-field-block">

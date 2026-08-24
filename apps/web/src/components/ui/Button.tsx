@@ -2,6 +2,12 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'text' | 'link';
 type Size = 'sm' | 'md' | 'lg';
+/** Step 5: visual tone orthogonal to variant. Default = existing behavior.
+ *  'destructive' = Notion-style — text-only red, fill only on hover.
+ *  Combine with variant='ghost' for the canonical "delete" look, or
+ *  with variant='primary' + filled=true for a hot filled destructive CTA
+ *  (e.g. "取消运行" while the run is mid-flight). */
+type Tone = 'default' | 'destructive';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -10,6 +16,10 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
   iconPosition?: 'left' | 'right';
   hot?: boolean; // Single accent — uses warm-orange (for destructive emphasis)
+  /** Step 5: tone overlay — destructive uses error palette, default uses accent. */
+  tone?: Tone;
+  /** Step 5: when tone='destructive', opt in to a filled CTA style. */
+  filled?: boolean;
 }
 
 /**
@@ -24,6 +34,8 @@ export function Button({
   icon,
   iconPosition = 'left',
   hot = false,
+  tone = 'default',
+  filled = false,
   className = '',
   children,
   ...rest
@@ -35,6 +47,8 @@ export function Button({
     fullWidth ? 'ui-button--full' : '',
     icon ? `ui-button--icon-${iconPosition}` : '',
     hot ? 'ui-button--hot' : '',
+    tone !== 'default' ? `ui-button--tone-${tone}` : '',
+    tone === 'destructive' && filled ? 'ui-button--tone-destructive-filled' : '',
     className
   ].filter(Boolean).join(' ');
 
