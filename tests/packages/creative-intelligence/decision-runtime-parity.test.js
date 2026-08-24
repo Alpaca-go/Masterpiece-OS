@@ -41,6 +41,15 @@ import { evidenceSafeMerge as newSafeMerge } from '@masterpiece/creative-intelli
 import { resolveRepairConflict as oldResolveConflict } from '@masterpiece/analysis-runtime/conflict-resolver.ts';
 import { resolveRepairConflict as newResolveConflict } from '@masterpiece/creative-intelligence/decisions/conflict-resolver.ts';
 
+// Step 7 fix: freeze "now" so timestamp-stamping SUTs return identical
+// values regardless of CPU jitter between consecutive calls. Both
+// `migrateAnalysisPacket` and `evidenceSafeMerge` in the new path take
+// an injectable clock; the old path doesn't stamp at all. Without this
+// freeze, full `npm test` runs hit millisecond boundaries and the
+// `assert.deepEqual(packet)` comparisons fail intermittently
+// (1714/1714 in isolation → 1713/1714 in the full ~14s suite).
+const FROZEN_NOW = '2026-01-01T00:00:00.000Z';
+
 // ---- fixtures ----
 
 // Full valid packet — structure from real production shape
@@ -147,8 +156,8 @@ test('CI-1B parity — source fingerprint of null is identical', () => {
 
 test('CI-1B parity — schema migration produces identical result (unversioned → 1.0)', () => {
   const unversioned = { projectId: 'test', projectFacts: {} };
-  const oldResult = oldMigrate(unversioned);
-  const newResult = newMigrate({ ...unversioned });
+  const oldResult = oldMigrate(unversioned, FROZEN_NOW);
+  const newResult = newMigrate({ ...unversioned }, FROZEN_NOW);
   assert.equal(newResult.migrated, oldResult.migrated);
   assert.equal(newResult.fromVersion, oldResult.fromVersion);
   assert.equal(newResult.toVersion, oldResult.toVersion);
@@ -158,8 +167,8 @@ test('CI-1B parity — schema migration produces identical result (unversioned �
 
 test('CI-1B parity — schema migration passes through already-versioned packet', () => {
   const versioned = { schemaVersion: '1.0', projectId: 'test' };
-  const oldResult = oldMigrate(versioned);
-  const newResult = newMigrate({ ...versioned });
+  const oldResult = oldMigrate(versioned, FROZEN_NOW);
+  const newResult = newMigrate({ ...versioned }, FROZEN_NOW);
   assert.equal(newResult.migrated, oldResult.migrated);
   assert.equal(newResult.toVersion, oldResult.toVersion);
   assert.deepEqual(newResult.packet, oldResult.packet);
@@ -223,8 +232,8 @@ test('CI-1B parity — evidence-safe-merge: inferred field applies patch when in
     value: { value: 'new-role', status: 'inferred', confidence: 0.8, evidenceRefs: ['e1'], generatedBy: 'repair_model', sourceFingerprint: 'fp', schemaVersion: '1.0' },
   }];
   const repairablePaths = ['creativeDecision.brandRoleStatement'];
-  const oldMerge = oldSafeMerge({ packet: basePacket, patches, sourceFingerprint: 'fp', repairablePaths });
-  const newMerge = newSafeMerge({ packet: structuredClone(basePacket), patches, sourceFingerprint: 'fp', repairablePaths });
+  const oldMerge = oldSafeMerge({ packet: basePacket, patches, sourceFingerprint: 'fp', repairablePaths, repairedAt: FROZEN_NOW });
+  const newMerge = newSafeMerge({ packet: structuredClone(basePacket), patches, sourceFingerprint: 'fp', repairablePaths, repairedAt: FROZEN_NOW });
 
   assert.deepEqual(newMerge.applied.sort(), oldMerge.applied.sort());
   // Verify the applied path's value is identical between old and new
