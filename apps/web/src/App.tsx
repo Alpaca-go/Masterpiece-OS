@@ -430,7 +430,9 @@ export function App() {
           setAnalysisMode(mode);
           if (mode !== 'document-context') setRequestedDocumentContextRunId('');
           if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
-          if (mode === 'creative-intelligence') { setScreen('creative-intelligence'); }
+          // B1: CI tab 不再跳走 — 留在 create screen 内
+          // 之前: if (mode === 'creative-intelligence') setScreen('creative-intelligence');
+          // 独立 screen 分发 (line 457) 仍保留, Hero 入口不变
         }} />
         <div className="create-shell-v2__spacer" />
       </header>
@@ -448,6 +450,18 @@ export function App() {
           }
         }} /></div>
         <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
+        {/* B1: CI tab 留在 create screen 内 — 内嵌 CreativeIntelligenceWorkspace
+           临时会有双层 chrome (外层 create-shell-v2__bar + 内层 AppShell),
+           B2 移除内层 chrome. */}
+        <div hidden={analysisMode !== 'creative-intelligence'}>
+          <CreativeIntelligenceWorkspace
+            settings={settings}
+            selectedApiProfileId={selectedApiProfileId}
+            onApiProfileChange={setSelectedApiProfileId}
+            onBack={() => { setScreen('home'); void refresh(); }}
+            onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }}
+          />
+        </div>
       </div>
     </div>
   );
@@ -645,8 +659,8 @@ export function App() {
             <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
               智能生成 →
             </Button>
-            <Button variant="ghost" onClick={() => { setScreen('creative-intelligence'); }}>
-              Creative Intelligence
+            <Button variant="ghost" onClick={() => { setAnalysisMode('creative-intelligence'); setScreen('create'); }}>
+              智能创意 →
             </Button>
             <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
               参考视觉转换
