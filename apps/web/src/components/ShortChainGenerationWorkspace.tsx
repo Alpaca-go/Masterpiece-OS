@@ -189,7 +189,7 @@ export function ShortChainGenerationWorkspace({
     ? validateReferenceSelection(projectAssets)
     : { hard: [], soft: [] as string[] };
   const canCompile = canUseGenerationBasis(generationBasis, referenceAssetIds, Boolean(instruction.trim() && subtype && shot));
-  const canGenerate = Boolean(compiled && imageApiProfileId && !busy);
+  const canGenerate = canCompile && Boolean(imageApiProfileId);
   // R11.2.2 §9-§12: cross-scene advisory fires only when a selected reference
   // is a confirmed generated SPACE output of a different scene than the target.
   const crossSceneReference = generationBasis === 'reference' && family === 'space'
@@ -643,12 +643,21 @@ export function ShortChainGenerationWorkspace({
     };
   }
 
-  async function compilePrompt() {
-    if (!canCompile) return;
+  // Streamlined v1: one-click generation. The compile step is internal
+  // — users don't need to know about it. We compile → generate in one
+  // flow, and show a combined status during the process.
+  async function generateOneClick() {
+    if (!canCompile || busy) return;
+    if (!imageApiProfileId) {
+      onOpenSettings();
+      return;
+    }
     setBusy(true);
     setError('');
+    setNotice('正在准备生成…');
     try {
-      const result = await window.masterpiece.imageGeneration.compileShortChain({
+      // Step 1: Compile (internal, user doesn't see this as a separate step)
+      const compileResult = await window.masterpiece.imageGeneration.compileShortChain({
         projectId: project.id,
         task: {
           deliverableFamily: family,
@@ -666,9 +675,44 @@ export function ShortChainGenerationWorkspace({
           ...(generationBasis === 'reference' ? { referenceSceneRelation } : {}),
         },
       });
-      setCompiled(result);
-      setEditedPrompt(result.compiledPrompt.editablePrompt);
-      setNotice('最终 Prompt 已编译，可检查或轻度编辑后生成。');
+      setCompiled(compileResult);
+      setEditedPrompt(compileResult.compiledPrompt.editablePrompt);
+
+      // Step 2: Start validated generation
+      setNotice('AI 正在生成，请稍候…');
+      const validated = await window.masterpiece.imageGeneration.startValidatedShortChain({
+        projectId: project.id,
+        taskId: compileResult.taskContract.taskId,
+        apiProfileId: imageApiProfileId,
+        editedPrompt: compileResult.compiledPrompt.editablePrompt,
+      });
+
+      const run = validated.correctionRun ?? validated.initialRun;
+      setLastValidation(validated.correctionValidation ?? validated.initialValidation);
+      setActiveRun(run);
+      setFlowState(validated.flowState);
+      setSimilarityAudit(validated.similarityAudit);
+
+      // r2.0 §4.13 / Phase E: first-image preservation
+      if (validated.firstImage) {
+        setFirstImage(validated.firstImage);
+        const image = await window.masterpiece.imageGeneration
+          .getImageDataUrl(validated.firstImage.runId, validated.firstImage.imageId);
+        setImageDataUrl(image?.dataUrl ?? '');
+      }
+      if (run.status === 'succeeded' && run.images[0]) {
+        if (validated.terminalStatus === 'passed') {
+          setNotice(validated.automaticRetryCount
+            ? '首次结果对题失败，系统已完成一次纠偏；纠偏结果通过验证。'
+            : '生成完成并通过对题验证。满意的话可以设为默认风格。');
+        } else if (validated.terminalStatus === 'unverified') {
+          setNotice('生成完成。暂无可用的多模态分析配置，结果尚未自动验证。');
+        } else {
+          setError('结果仍未通过对题验证。系统已停止自动扩展，请调整要求后重做。');
+        }
+      } else if (run.status === 'failed' || run.status === 'blocked') {
+        setError(run.errorMessage || '生成失败');
+      }
       await refreshSession();
     } catch (reason) {
       setError(cleanError(reason));
@@ -677,15 +721,15 @@ export function ShortChainGenerationWorkspace({
     }
   }
 
-  async function generate() {
-    if (!compiled || compileStale) return;
+  async function regenerate() {
+    if (!compiled || busy) return;
     if (!imageApiProfileId) {
       onOpenSettings();
       return;
     }
     setBusy(true);
     setError('');
-    setNotice('正在生成第一张正式成果…');
+    setNotice('正在重新生成…');
     try {
       const validated = await window.masterpiece.imageGeneration.startValidatedShortChain({
         projectId: project.id,
@@ -697,13 +741,7 @@ export function ShortChainGenerationWorkspace({
       setLastValidation(validated.correctionValidation ?? validated.initialValidation);
       setActiveRun(run);
       setFlowState(validated.flowState);
-      // r2.0 §6.7 / Phase F-3: similarity audit marker (advisory).
-      // The audit is fail-soft; 'unavailable' only triggers the
-      // Final Acceptance block banner. flowState is unchanged.
       setSimilarityAudit(validated.similarityAudit);
-      // r2.0 §4.13 / Phase E: first-image preservation. Always load
-      // the FIRST image (not the current run's image). This way a
-      // correction that fails keeps the original visible.
       if (validated.firstImage) {
         setFirstImage(validated.firstImage);
         const image = await window.masterpiece.imageGeneration
@@ -714,9 +752,9 @@ export function ShortChainGenerationWorkspace({
         if (validated.terminalStatus === 'passed') {
           setNotice(validated.automaticRetryCount
             ? '首次结果对题失败，系统已完成一次纠偏；纠偏结果通过验证。'
-            : '正式成果已生成并通过对题验证。确认后可沿用为本类型参考。');
+            : '生成完成并通过对题验证。满意的话可以设为默认风格。');
         } else if (validated.terminalStatus === 'unverified') {
-          setNotice('正式成果已生成，但没有可用的多模态分析配置，结果尚未自动验证。');
+          setNotice('生成完成。暂无可用的多模态分析配置，结果尚未自动验证。');
         } else {
           setError('结果仍未通过对题验证。系统已停止自动扩展，请调整要求后重做。');
         }
@@ -794,7 +832,7 @@ export function ShortChainGenerationWorkspace({
               items={[
                 { label: '项目', onClick: onBack },
                 { label: project.projectName, onClick: onBack },
-                { label: 'Short-Chain 生成' },
+                { label: '智能生成' },
               ]}
             />
           }
@@ -808,7 +846,7 @@ export function ShortChainGenerationWorkspace({
       }
       bottomBar={
         <>
-          <span>Short-Chain · 视觉生成</span>
+          <span>智能生成 · 视觉设计</span>
           <span>{project.projectName} · {project.industry}</span>
         </>
       }
@@ -1069,15 +1107,6 @@ export function ShortChainGenerationWorkspace({
                   </select>
                 </label>
                 <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
-                  <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>Logo 处理方式</span>
-                  <select value={logoUsageMode} onChange={(event) =>
-                    setLogoUsageMode(event.target.value as ShortChainLogoUsageMode)}>
-                    <option value="post_composite">后期合成 Logo 到结果图</option>
-                    <option value="blank_area">不生成文字，预留干净 Logo 区域</option>
-                    <option value="reference" disabled>把真实 Logo 作为模型参考</option>
-                  </select>
-                </label>
-                <label style={{ display: 'grid', gap: 'var(--space-2)' }}>
                   <span style={{ color: 'var(--color-text-strong)', fontSize: 'var(--text-sm)', fontWeight: 700 }}>必须包含（每行一项）</span>
                   <textarea
                     rows={3}
@@ -1099,21 +1128,14 @@ export function ShortChainGenerationWorkspace({
             </details>
           </div>
 
-          {/* Generate CTA */}
+          {/* Generate CTA — streamlined: one button does compile + generate */}
           <div className="sc-cta">
             <button
               className="sc-cta__primary"
               disabled={!canCompile || busy}
-              onClick={() => void compilePrompt()}
+              onClick={() => void generateOneClick()}
             >
-              {busy ? '编译中…' : '编译并生成'}
-            </button>
-            <button
-              className="sc-cta__secondary"
-              disabled={!compiled || busy}
-              onClick={() => void compilePrompt()}
-            >
-              仅查看最终 Prompt
+              {busy ? '生成中…' : '智能生成'}
             </button>
           </div>
         </div>
@@ -1160,9 +1182,9 @@ export function ShortChainGenerationWorkspace({
 
                 <div className="sc-preview__actions">
                   <button className="ui-button ui-button--primary" style={{ flex: 1 }} disabled={busy} onClick={() => void confirmDirection()}>
-                    沿用此方向
+                    设为默认风格
                   </button>
-                  <button className="ui-button ui-button--secondary" style={{ flex: 1 }} onClick={() => void generate()}>
+                  <button className="ui-button ui-button--secondary" style={{ flex: 1 }} onClick={() => void regenerate()}>
                     调整后重做
                   </button>
                 </div>
@@ -1192,9 +1214,15 @@ export function ShortChainGenerationWorkspace({
                 </div>
 
                 <div className="sc-feedback">
-                  <button onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
-                  <button onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>
-                  <button onClick={() => applyResultFeedback('logo_text')}>Logo/文字不对</button>
+                  <details className="sc-feedback__details">
+                    <summary>对结果不满意？</summary>
+                    <div className="sc-feedback__buttons">
+                      <button onClick={() => applyResultFeedback('deliverable')}>成果物/场景不对</button>
+                      <button onClick={() => applyResultFeedback('tone')}>品牌气质不对</button>
+                      <button onClick={() => applyResultFeedback('logo_text')}>Logo/文字不对</button>
+                    </div>
+                    <p className="sc-feedback__hint">点击后会自动在创意要求中加入纠偏指令，然后重新生成。</p>
+                  </details>
                 </div>
               </>
             ) : compiled ? (
@@ -1220,10 +1248,10 @@ export function ShortChainGenerationWorkspace({
                 <button
                   className="ui-button ui-button--primary"
                   style={{ flex: 1 }}
-                  disabled={!canGenerate || compileStale}
-                  onClick={() => void generate()}
+                  disabled={!canGenerate || busy}
+                  onClick={() => void generateOneClick()}
                 >
-                  生成正式成果
+                  开始生成
                 </button>
               </div>
             )}
