@@ -19,6 +19,7 @@ import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace'
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
 import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
+import { ShortChainPage } from './pages/ShortChainPage';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { CreativeIntelligenceWorkspace } from './components/CreativeIntelligenceWorkspace';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
@@ -471,22 +472,9 @@ export function App() {
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
 
   if (screen === 'creative-session' && selected) {
-    const imageProfiles = settings.profiles.filter((profile) =>
-      profile.isEnabled
-      && profile.hasApiKey
-      && profile.modelType === 'image_generation'
-      && profile.protocol === 'seedream-image');
-    const imageApiProfileId = (imageProfiles.some((profile) => profile.id === selectedApiProfileId)
-      ? selectedApiProfileId
-      : (imageProfiles.find((profile) => profile.isDefault) || imageProfiles[0])?.id) || '';
-    return <ShortChainGenerationWorkspace
-      project={selected}
-      imageProfiles={imageProfiles}
-      imageApiProfileId={imageApiProfileId}
-      onImageApiProfileChange={setSelectedApiProfileId}
-      onBack={() => setScreen('report')}
-      onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
-    />;
+    // P1.7 路由切换: 用新 ShortChainPage (路线 A / §6 P1) 替代 v1 ShortChainGenerationWorkspace.
+    // 旧的 Workspace 还保留 import 引用 (P3 退役阶段才删).
+    return <ShortChainPage project={selected} />;
   }
 
   if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
