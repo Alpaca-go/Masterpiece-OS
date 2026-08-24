@@ -1,0 +1,83 @@
+/* styles/tokens.css
+ * 路线 A / P0 设计 token — 按 docs/ui/redesign-development-doc.md §3.2
+ *
+ * 重要：本文件目前是 SKELETON。完成 §3.2 全部 token 的实现后，再
+ *       在 main.tsx 引入；当前 main.tsx 完全不动，使用的是 styles.css。
+ *
+ * 与现有 styles.css 的关系：
+ *   - styles.css 第 1-172 行已有 warm-white 主题 token（v0/v1 时期）
+ *   - 本文件的深色 token 是路线 A 的目标态（§3.1 价值观："克制：深色默认"）
+ *   - 切换时机在 P3 清理阶段（§6 P3）：styles.css 退役 → tokens.css 接管
+ *
+ * 因此 P0 阶段：本文件零运行时影响（main.tsx 没 import）。
+ */
+
+:root {
+  /* ── Background layers (§3.2) ── */
+  --bg-canvas:    #0B0D10;
+  --bg-surface:   #13161B;
+  --bg-elevated:  #1A1E25;
+  --bg-overlay:   rgba(0, 0, 0, 0.6);
+
+  /* ── Borders ── */
+  --border-subtle: #1F242C;
+  --border-strong: #2C333D;
+
+  /* ── Text ── */
+  --text-primary:   #E8EBEF;   /* 对比度 14.5:1 */
+  --text-secondary: #9AA3B2;
+  --text-muted:     #5C6675;
+  --text-disabled:  #3B424D;
+
+  /* ── Accent (warm amber, "decision" semantics) ── */
+  --accent:        #E8B86A;
+  --accent-hover:  #F0C689;
+  --accent-soft:   rgba(232, 184, 106, 0.12);
+
+  /* ── Semantic state ── */
+  --success: #6FAE7E;
+  --warning: #D4A85A;
+  --danger:  #D07070;
+  --info:    #6E94C9;
+
+  /* ── Typography (§3.2) ── */
+  --font-sans:  "Inter", "PingFang SC", -apple-system, system-ui, sans-serif;
+  --font-serif: "Source Serif 4", "Songti SC", serif;
+  --font-mono:  "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+
+  --fs-xs: 0.75rem;  --lh-xs: 1rem;
+  --fs-sm: 0.875rem; --lh-sm: 1.25rem;
+  --fs-base: 1rem;   --lh-base: 1.6rem;
+  --fs-lg: 1.125rem; --lh-lg: 1.75rem;
+  --fs-xl: 1.25rem;  --lh-xl: 1.75rem;
+  --fs-2xl: 1.5rem;  --lh-2xl: 2rem;
+  --fs-3xl: 1.875rem;--lh-3xl: 2.25rem;
+  --fs-4xl: 2.25rem; --lh-4xl: 2.5rem;
+  --fs-5xl: 3rem;    --lh-5xl: 3rem;
+
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+
+  /* ── Spacing (4px base) ── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-6: 24px; --sp-8: 32px; --sp-12: 48px; --sp-16: 64px;
+  --sp-24: 96px; --sp-32: 128px;
+
+  /* ── Radius ── */
+  --r-xs: 2px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
+  --r-xl: 12px; --r-2xl: 16px;
+
+  /* ── Shadow (dark: hairline + subtle elevation) ── */
+  --shadow-sm:  0 1px 0 rgba(255,255,255,0.02), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:  0 1px 0 rgba(255,255,255,0.02), 0 4px 8px rgba(0,0,0,0.4);
+  --shadow-glow: 0 0 0 1px rgba(232,184,106,0.4);
+
+  /* ── Motion ── */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 150ms; --dur-base: 200ms; --dur-slow: 250ms;
+}
+
+/*
+ * P0 §3.3 字体降级链（line 192 已规定 fallback）由 CSS 引擎自动处理；
+ * 不需要额外 @font-face 声明。P1 实施时如需加载 Inter / Source Serif 4 /
+ * JetBrains Mono 的 woff2，再加 @font-face 块。
+ */
