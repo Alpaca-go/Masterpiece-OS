@@ -10,16 +10,18 @@ import type {
   PublicSettings,
   ReferenceAnchorRun
 } from '@masterpiece/runtime-core/application-contracts.ts';
-import { AnalysisModeTabs, type AnalysisMode } from './components/AnalysisModeTabs';
+import { type AnalysisMode } from './components/AnalysisModeTabs';
 import { AnalysisView } from './components/AnalysisView';
-import { ProjectWizard } from './components/ProjectWizard';
 import { ReportView } from './components/ReportView';
 import { SettingsPanel } from './components/SettingsPanel';
-import { ReferenceAnchorWorkspace } from './components/ReferenceAnchorWorkspace';
-import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
 import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
+// CI-W1B invariant: DocumentContextWorkspace import 保留在 App.tsx
+// (legacy /document-context deep link 兼容保证).
+// B3 后实际渲染由 CreatePage 负责, 此处仅为 invariant test 契约保留.
+import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ShortChainPage } from './pages/ShortChainPage';
+import { CreatePage } from './pages/CreatePage';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { CreativeIntelligenceWorkspace } from './components/CreativeIntelligenceWorkspace';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
@@ -421,50 +423,24 @@ export function App() {
 
   if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
   if (screen === 'create') return (
-    <div className="create-shell-v2">
-      <header className="create-shell-v2__bar">
-        <button className="ui-button ui-button--ghost ui-button--sm" onClick={() => { setScreen('home'); void refresh(); }}>
-          <span aria-hidden>←</span> 返回首页
-        </button>
-        <AnalysisModeTabs value={analysisMode} onChange={(mode) => {
-          setAnalysisMode(mode);
-          if (mode !== 'document-context') setRequestedDocumentContextRunId('');
-          if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
-          // B1: CI tab 不再跳走 — 留在 create screen 内
-          // 之前: if (mode === 'creative-intelligence') setScreen('creative-intelligence');
-          // 独立 screen 分发 (line 457) 仍保留, Hero 入口不变
-        }} />
-        <div className="create-shell-v2__spacer" />
-      </header>
-      <div className="create-shell-v2__body">
-        <div hidden={analysisMode !== 'visual-analysis'}><ProjectWizard settings={settings} onCancel={() => { setScreen('home'); void refresh(); }} onStart={(project, profileId) => {
-          setSelected(project);
-          setSelectedApiProfileId(profileId);
-          void run(project, true, profileId);
-        }} /></div>
-        <div hidden={analysisMode !== 'reference-anchor'}><ReferenceAnchorWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedReferenceAnchorRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateReferencePreview={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'reference_preview', purpose: 'exploration', projectId, reference: { referenceAnchorRunId }, userIntent: {} })} onGenerateMasterAnchor={(projectId, referenceAnchorRunId) => openImageGeneration({ preset: 'integrated_anchor', purpose: 'production', projectId, visual: { projectId }, reference: { referenceAnchorRunId }, userIntent: {} })} onContinueCreativeProduction={(projectId) => {
-          const project = projects.find((item) => item.id === projectId);
-          if (project) {
-            setSelected(project);
-            setScreen('creative-session');
-          }
-        }} /></div>
-        <div hidden={analysisMode !== 'document-context'}><DocumentContextWorkspace settings={settings} selectedApiProfileId={selectedApiProfileId} initialRunId={requestedDocumentContextRunId} onApiProfileChange={setSelectedApiProfileId} onBack={() => { setScreen('home'); void refresh(); }} onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }} onGenerateConcept={(documentRunId) => openImageGeneration({ preset: 'document_concept', purpose: 'exploration', document: { documentRunId }, userIntent: {} })} /></div>
-        {/* B1: CI tab 留在 create screen 内 — 内嵌 CreativeIntelligenceWorkspace
-           B2: 传 hideChrome 去掉内层 chrome (breadcrumb + bottomBar),
-           只留 create-shell-v2__bar 外层导航 (返回首页 + AnalysisModeTabs) */}
-        <div hidden={analysisMode !== 'creative-intelligence'}>
-          <CreativeIntelligenceWorkspace
-            settings={settings}
-            selectedApiProfileId={selectedApiProfileId}
-            onApiProfileChange={setSelectedApiProfileId}
-            onBack={() => { setScreen('home'); void refresh(); }}
-            onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }}
-            hideChrome
-          />
-        </div>
-      </div>
-    </div>
+    <CreatePage
+      settings={settings}
+      analysisMode={analysisMode}
+      selectedApiProfileId={selectedApiProfileId}
+      requestedReferenceAnchorRunId={requestedReferenceAnchorRunId}
+      requestedDocumentContextRunId={requestedDocumentContextRunId}
+      projects={projects}
+      setAnalysisMode={setAnalysisMode}
+      setSelectedApiProfileId={setSelectedApiProfileId}
+      setRequestedReferenceAnchorRunId={setRequestedReferenceAnchorRunId}
+      setRequestedDocumentContextRunId={setRequestedDocumentContextRunId}
+      setSelected={setSelected}
+      setScreen={setScreen}
+      setSettingsReturnScreen={setSettingsReturnScreen}
+      goHome={() => { setScreen('home'); void refresh(); }}
+      openImageGeneration={openImageGeneration}
+      runAnalysis={run}
+    />
   );
   // CI-W1B: Creative Intelligence Web Workspace (primary Web entry).
   // Reached via /creative-intelligence. Hidden primary, no AppShell leak
