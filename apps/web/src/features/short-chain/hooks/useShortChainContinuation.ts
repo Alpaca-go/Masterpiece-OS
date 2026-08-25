@@ -16,6 +16,19 @@
 //   revokeContinuation(assetId)         line 270-284
 //
 // 当前阶段零运行时影响 — 不被任何组件 import (P1.5 才接 DecisionStream)。
+//
+// ⚠️  AUDIT 2026-08-25 — DEAD CODE PATH
+// ⚠️  This hook is verified to have ZERO call sites in the current P0 baseline
+// ⚠️  (apps/web, apps/web-runtime, apps/cli, packages/runtime-core). It was
+// ⚠️  staged for the DecisionStream wiring that has not landed. Do not import
+// ⚠️  from new code without re-establishing the consumer contract documented
+// ⚠️  in ShortChainPage.tsx and the IPC overrides in apps/web/src/web-api.ts.
+// ⚠️  See audit item #2.1. The exported function is marked `@deprecated`.
+//
+// 边界:
+//   - 不含 submitContinuation() — 该动作需要 useShortChainBrief + useShortChainGeneration
+//     配合, 由 ShortChainPage 顶层编排 (P1.5 才接)
+//   - 不接 reference-asset 状态 (留空数组, P1.5 才接)
 
 import { useCallback, useState } from 'react';
 import type {
@@ -58,6 +71,13 @@ export interface UseShortChainContinuationResult {
 
 /**
  * useShortChainContinuation — 空间延展状态。
+ *
+ * @deprecated Audit 2026-08-25 item #2.1: this hook has zero call sites in
+ * the current P0 baseline. Do not import from new code. The function still
+ * exists to preserve the staged P1.4 / P1.5 contract; it is not invoked by
+ * `ShortChainPage.tsx` (the only Short-Chain page in active use). When the
+ * DecisionStream panel is wired up, this hook will either be resurrected or
+ * replaced by a fresh implementation.
  *
  * 边界:
  *   - 不含 submitContinuation() — 该动作需要 useShortChainBrief + useShortChainGeneration

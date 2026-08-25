@@ -3,6 +3,14 @@
 // 路线 A / P1.1 — ShortChain 工作台的会话数据 hook。
 // 当前阶段零运行时影响 — 不被 ShortChainPage 装配 (P1.1+ 才接)。
 //
+// ⚠️  AUDIT 2026-08-25 — DEAD CODE PATH
+// ⚠️  This hook is verified to have ZERO call sites in the current P0 baseline
+// ⚠️  (apps/web, apps/web-runtime, apps/cli, packages/runtime-core).
+// ⚠️  It was staged for a P1.1 wiring that has not landed. Do not import from
+// ⚠️  new code without first re-establishing the contract documented in
+// ⚠️  useShortChainBrief.ts and ShortChainPage.tsx. See audit item #2.1.
+// ⚠️  The exported function is marked `@deprecated` so editors flag it.
+//
 // 设计:
 //   - 内部包 session / options / referenceAssets 等基础加载态
 //   - 提供 loadSession() / refresh() 等命令式动作
@@ -42,6 +50,12 @@ export interface UseShortChainSessionResult {
  *   - refresh() 调用 window.masterpiece.imageGeneration.getShortChain()
  *   - 不重复 ShortChainGenerationWorkspace 的 project context / rebuild 逻辑
  *     (那些在 P1.5 才迁过来, 因为 P1.1 不动 Workspace)
+ *
+ * @deprecated Audit 2026-08-25 item #2.1: this hook has zero call sites in
+ * the current P0 baseline. Do not import from new code. The function still
+ * exists to preserve the staged P1.1 contract, not because anything runs it.
+ * If you need session loading, look at `useShortChainBrief` + the IPC
+ * channels in `apps/web/src/web-api.ts` for the live equivalents.
  */
 export function useShortChainSession(projectId: string): UseShortChainSessionResult {
   const [session, setSession] = useState<ShortChainCreativeSession | null>(null);
