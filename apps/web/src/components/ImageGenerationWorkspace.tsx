@@ -101,6 +101,17 @@ const DELIVERABLES: Array<{ id: GenerationDeliverable; label: string; descriptio
   { id: 'free_concept', label: '自由概念图', description: '不绑定固定交付模板的探索' },
 ];
 
+// 默认画面比例 — 按交付类型推断（用户仍可在 UI 上覆盖）
+const DELIVERABLE_DEFAULT_RATIO: Record<GenerationDeliverable, string> = {
+  anchor_image: '1:1',
+  brand_poster: '3:4',
+  packaging_render: '1:1',
+  vi_application: '1:1',
+  interior_scene: '16:9',
+  storefront_scene: '16:9',
+  free_concept: '1:1',
+};
+
 function assertCompileResult(value: ImageGenerationCompileResult): ImageGenerationCompileResult {
   if (
     !value
@@ -115,9 +126,16 @@ function assertCompileResult(value: ImageGenerationCompileResult): ImageGenerati
 }
 
 export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId, onApiProfileChange, onBack, onOpenSettings }: Props) {
-  const [userIntent, setUserIntent] = useState(sourceBundle.userIntent?.prompt || '');
+  const initialUserIntent = sourceBundle.userIntent?.prompt || '';
+  const [userIntent, setUserIntent] = useState(initialUserIntent);
+  /** 用户是否主动覆写过上游预填的 intent。
+   *  false = 显示"已预填"折叠卡片（仅展示）；true = textarea 展开可编辑 */
+  const [intentOverridden, setIntentOverridden] = useState(Boolean(initialUserIntent));
   const [deliverable, setDeliverable] = useState<GenerationDeliverable>(DEFAULT_DELIVERABLE[sourceBundle.preset]);
-  const [aspectRatio, setAspectRatio] = useState(sourceBundle.userIntent?.aspectRatio || '1:1');
+  // 比例：上游明确传 → 用上游；否则按交付类型推断
+  const [aspectRatio, setAspectRatio] = useState(
+    sourceBundle.userIntent?.aspectRatio || DELIVERABLE_DEFAULT_RATIO[DEFAULT_DELIVERABLE[sourceBundle.preset]],
+  );
   const sourcePreset = SOURCE_PRESET_MAP[sourceBundle.preset];
   const currentSources: ImageGenerationSourceBundleV3 = useMemo(() => ({
     schemaVersion: '3.0',
@@ -435,20 +453,67 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
             {imageProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
           </select></label>
           {!imageProfiles.length && <em>暂无已启用的图像生成模型，请先在模型设置中配置。</em>}
-          <label>本次生成意图<textarea rows={4} value={userIntent} onChange={(event) => {
-            setUserIntent(event.target.value);
-            invalidateCompileRevision();
-          }} placeholder="描述希望生成的画面、触点或探索方向" /></label>
+
+          {/* 本次生成意图：上游已预填默认只读，"覆写"才展开 */}
+          <div className="intent-editor">
+            <div className="intent-editor__head">
+              <label className="intent-editor__label">本次生成意图</label>
+              {!intentOverridden && userIntent ? (
+                <span className="intent-editor__tag" title="上游已生成的方向摘要">已预填</span>
+              ) : null}
+            </div>
+            {intentOverridden ? (
+              <>
+                <textarea
+                  rows={4}
+                  value={userIntent}
+                  onChange={(event) => {
+                    setUserIntent(event.target.value);
+                    invalidateCompileRevision();
+                  }}
+                  placeholder="描述希望生成的画面、触点或探索方向"
+                />
+                <small className="intent-editor__hint">
+                  你正在覆写上游预填的方向。如不需要修改，请点「恢复预填」。
+                </small>
+              </>
+            ) : (
+              <div className="intent-editor__readonly" role="region">
+                <p>{userIntent || '（上游未提供方向摘要）'}</p>
+                <button
+                  type="button"
+                  className="link-button"
+                  onClick={() => setIntentOverridden(true)}
+                >
+                  覆写方向
+                </button>
+              </div>
+            )}
+            {intentOverridden && userIntent === initialUserIntent && initialUserIntent ? (
+              <button
+                type="button"
+                className="link-button intent-editor__reset"
+                onClick={() => {
+                  setUserIntent(initialUserIntent);
+                  setIntentOverridden(false);
+                  invalidateCompileRevision();
+                }}
+              >
+                恢复预填
+              </button>
+            ) : null}
+          </div>
+
           <label>画面比例
             <select value={aspectRatio} onChange={(event) => {
               setAspectRatio(event.target.value);
               invalidateCompileRevision();
             }}>
               <option value="1:1">1:1 方形</option>
-              <option value="4:3">4:3 横向</option>
               <option value="3:4">3:4 竖向</option>
-              <option value="16:9">16:9 宽屏</option>
+              <option value="4:3">4:3 横向</option>
               <option value="9:16">9:16 竖屏</option>
+              <option value="16:9">16:9 宽屏</option>
             </select>
           </label>
         </div>

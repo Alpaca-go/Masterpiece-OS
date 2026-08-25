@@ -54,6 +54,27 @@ export interface ImageGenerationOpenOpts {
   userIntent?: Record<string, unknown>;
 }
 
+/**
+ * 从 Reference Anchor Brief 提取一段方向摘要作为生图 intent。
+ * Brief 是 markdown，第一段通常是品牌方向叙述；从开头截取一段作为预填。
+ * Runtime 通过通用 RPC 暴露 referenceAnchor.getBrief（ReferenceAnchorWorkspace 也在用），
+ * 但 createPage 的类型假设下需要 cast。
+ */
+async function loadReferenceAnchorIntent(referenceAnchorRunId: string): Promise<Record<string, unknown>> {
+  try {
+    const api = window.masterpiece as unknown as {
+      referenceAnchor?: { getBrief?: (id: string) => Promise<string | null | undefined> };
+    };
+    if (!api.referenceAnchor?.getBrief) return {};
+    const brief = await api.referenceAnchor.getBrief(referenceAnchorRunId);
+    if (!brief) return {};
+    const trimmed = brief.trim().slice(0, 280);
+    return trimmed ? { prompt: trimmed } : {};
+  } catch {
+    return {};
+  }
+}
+
 export function CreatePage(props: CreatePageProps) {
   const {
     settings,
@@ -128,25 +149,27 @@ export function CreatePage(props: CreatePageProps) {
             onApiProfileChange={setSelectedApiProfileId}
             onBack={goHome}
             onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }}
-            onGenerateReferencePreview={(projectId, referenceAnchorRunId) =>
+            onGenerateReferencePreview={async (projectId, referenceAnchorRunId) => {
+              const userIntent = await loadReferenceAnchorIntent(referenceAnchorRunId);
               openImageGeneration({
                 preset: 'reference_preview',
                 purpose: 'exploration',
                 projectId,
                 reference: { referenceAnchorRunId },
-                userIntent: {},
-              })
-            }
-            onGenerateMasterAnchor={(projectId, referenceAnchorRunId) =>
+                userIntent,
+              });
+            }}
+            onGenerateMasterAnchor={async (projectId, referenceAnchorRunId) => {
+              const userIntent = await loadReferenceAnchorIntent(referenceAnchorRunId);
               openImageGeneration({
                 preset: 'integrated_anchor',
                 purpose: 'production',
                 projectId,
                 visual: { projectId },
                 reference: { referenceAnchorRunId },
-                userIntent: {},
-              })
-            }
+                userIntent,
+              });
+            }}
             onContinueCreativeProduction={(projectId) => {
               const project = projects.find((item) => item.id === projectId);
               if (project) {

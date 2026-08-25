@@ -1011,6 +1011,55 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .deliverable-card span { margin-top: 5px; color: var(--color-text-muted); font-size: 9px; line-height: 1.4; }
 .deliverable-card:hover { border-color: var(--color-primary); }
 .deliverable-card.selected { border-color: var(--color-primary); background: var(--color-primary-soft-alt); box-shadow: 0 0 0 1px var(--color-primary) inset; }
+
+/* Intent editor — 上游预填默认只读，点击"覆写"才展开 textarea */
+.intent-editor { display: grid; gap: 6px; margin-top: 6px; }
+.intent-editor__head { display: flex; align-items: center; justify-content: space-between; }
+.intent-editor__label { font-size: 11px; color: var(--color-text-muted); font-weight: 500; }
+.intent-editor__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  background: var(--color-accent-soft, #F2F1ED);
+  color: var(--color-text, #1A1A1A);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 999px;
+}
+.intent-editor__tag::before {
+  content: '✦';
+  font-size: 9px;
+}
+.intent-editor__readonly {
+  padding: 10px 12px;
+  border: 1px solid var(--color-line-soft, #F2EFE6);
+  border-radius: 8px;
+  background: var(--color-surface-soft, #F9F8F4);
+}
+.intent-editor__readonly p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--color-text, #1A1A1A);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.intent-editor__readonly .link-button {
+  margin-top: 6px;
+  font-size: 10px;
+}
+.intent-editor__hint {
+  font-size: 9px;
+  color: var(--color-text-muted, #6B6B6B);
+  font-style: italic;
+}
+.intent-editor__reset {
+  margin-top: 2px;
+  font-size: 10px;
+  align-self: flex-start;
+}
 .compile-state { display: grid; gap: 4px; margin: 12px 0; padding: 12px; border-radius: 9px; font-size: 11px; }
 .compile-state span { font-size: 9px; }
 .compile-state.stale { border: 1px solid var(--color-warning-line); background: var(--color-warning-bg); color: var(--color-warning-text); }
