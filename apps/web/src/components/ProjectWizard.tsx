@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import type { AssetSummary, ProjectRecord, PublicSettings } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatBytes } from '../utils';
 import { VisualAssetUploader } from './VisualAssetUploader';
+import { useConfirm } from './ui/ConfirmDialog';
 
 interface Props {
   settings: PublicSettings;
@@ -17,6 +18,7 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
   const [project, setProject] = useState<ProjectRecord | null>(null);
   const [summary, setSummary] = useState<AssetSummary | null>(null);
   const [busy, setBusy] = useState(false);
+  const { confirm } = useConfirm();
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const selectedProfile = enabledProfiles.find((profile) => profile.id === apiProfileId);
@@ -75,7 +77,14 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
   }
 
   async function removeBatch(batchId: string, label: string) {
-    if (!project || !window.confirm(`确定删除批次“${label}”中的全部素材吗？`)) return;
+    if (!project) return;
+    const ok = await confirm({
+      title: '删除批次',
+      message: `确定删除批次“${label}”中的全部素材吗？`,
+      confirmText: '删除',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setBusy(true);
     try { await refreshProject(project.id, await window.masterpiece.projects.removeBatch(project.id, batchId)); }
     catch (reason) { setError(cleanError(reason)); }
@@ -83,7 +92,14 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
   }
 
   async function clearAssets() {
-    if (!project || !window.confirm('确定清空全部素材吗？\n已生成的视觉总览缓存将失效。')) return;
+    if (!project) return;
+    const ok = await confirm({
+      title: '清空素材',
+      message: '确定清空全部素材吗？\n已生成的视觉总览缓存将失效。',
+      confirmText: '清空',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setBusy(true);
     try { await refreshProject(project.id, await window.masterpiece.projects.clearAssets(project.id)); }
     catch (reason) { setError(cleanError(reason)); }

@@ -4,6 +4,7 @@ import { formatDuration } from '../utils';
 import { ProviderBadge } from './ProviderBadge';
 import { PageShell } from './PageShell';
 import { Badge } from './ui/Badge';
+import { useConfirm } from './ui/ConfirmDialog';
 
 const stages: Array<[AnalysisProgress['stage'], string]> = [
   ['preparing-assets', '素材准备'],
@@ -47,8 +48,16 @@ export function AnalysisView({ project, progress, error, onCancel, onRetry, onBa
         : <Badge tone="default">已取消</Badge>)
     : <Badge tone="primary" dot>运行中</Badge>;
 
+  const { confirm } = useConfirm();
+
   async function cancel() {
-    if (!window.confirm('确定要取消当前分析吗？\n已经产生的临时文件将被清理。')) return;
+    const ok = await confirm({
+      title: '取消分析',
+      message: '确定要取消当前分析吗？\n已经产生的临时文件将被清理。',
+      confirmText: '取消分析',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setCancelling(true);
     try { await onCancel(); } finally { setCancelling(false); }
   }

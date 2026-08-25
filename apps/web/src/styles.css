@@ -1,31 +1,31 @@
 :root {
   /* ============================================================
-     Design Tokens — Masterpiece OS v5 (Notion + Figma editorial)
+     Design Tokens 鈥?Masterpiece OS v5 (Notion + Figma editorial)
      Editorial warm white + razor-thin lines + single accent
      ============================================================ */
 
-  /* ── Brand: monochrome black + restrained warm-orange accent ── */
+  /* 鈹€鈹€ Brand: monochrome black + restrained warm-orange accent 鈹€鈹€ */
   --color-accent: #1A1A1A;            /* near-black, primary action */
   --color-accent-hover: #000000;
   --color-accent-soft: #F2F1ED;       /* warm off-white tint */
   --color-accent-line: #D9D6CE;
   --color-accent-shadow: rgba(26, 26, 26, 0.08);
 
-  /* The single hot accent — used SPARINGLY (1-2 per view).
+  /* The single hot accent 鈥?used SPARINGLY (1-2 per view).
      Inspired by Figma's "remove" red and editorial publication highlights. */
   --color-hot: #E5532B;
   --color-hot-soft: #FCEEE7;
   --color-hot-text: #B83D1B;
 
-  /* ── Surface / background (Notion warm white scale) ── */
-  --color-bg: #FBFAF7;                /* main page bg — warm white */
+  /* 鈹€鈹€ Surface / background (Notion warm white scale) 鈹€鈹€ */
+  --color-bg: #FBFAF7;                /* main page bg 鈥?warm white */
   --color-bg-alt: #F4F3EE;            /* subtle warm gray for sidebars */
   --color-bg-deep: #EDEBE5;           /* deeper warm gray for inactive zones */
   --color-surface: #FFFFFF;
   --color-surface-soft: #F9F8F4;
   --color-surface-muted: #F2F1ED;
 
-  /* ── Text (high-contrast editorial black scale) ── */
+  /* 鈹€鈹€ Text (high-contrast editorial black scale) 鈹€鈹€ */
   --color-text: #1A1A1A;
   --color-text-strong: #0A0A0A;
   --color-text-muted: #6B6B6B;
@@ -34,27 +34,27 @@
   --color-text-on-accent: #FBFAF7;
   --color-text-on-hot: #FFFFFF;
 
-  /* ── Border / line (Notion hairline scale) ── */
+  /* 鈹€鈹€ Border / line (Notion hairline scale) 鈹€鈹€ */
   --color-line: #E5E2D9;
   --color-line-strong: #D1CDBF;
   --color-line-muted: #EEEBE2;
   --color-line-soft: #F2EFE6;
 
-  /* ── Semantic — success (subtle, no celebration) ── */
+  /* 鈹€鈹€ Semantic 鈥?success (subtle, no celebration) 鈹€鈹€ */
   --color-success: #1F7A4D;
   --color-success-strong: #0E5C36;
   --color-success-text: #0E5C36;
   --color-success-bg: #E8F1EA;
   --color-success-line: #B5D4BD;
 
-  /* ── Semantic — warning ── */
+  /* 鈹€鈹€ Semantic 鈥?warning 鈹€鈹€ */
   --color-warning: #B8761A;
   --color-warning-strong: #8E5B12;
   --color-warning-text: #6E4609;
   --color-warning-bg: #F5EBD7;
   --color-warning-line: #D9C188;
 
-  /* ── Semantic — error / danger ── */
+  /* 鈹€鈹€ Semantic 鈥?error / danger 鈹€鈹€ */
   --color-error: #C1372B;
   --color-error-strong: #9A2A20;
   --color-error-text: #8A2620;
@@ -64,13 +64,13 @@
   --color-error-bg-alt: #FCF1EE;
   --color-error-deep: #6E1E18;
 
-  /* ── Semantic — info ── */
+  /* 鈹€鈹€ Semantic 鈥?info 鈹€鈹€ */
   --color-info: #1F5C8F;
   --color-info-strong: #144670;
   --color-info-text: #144670;
   --color-info-bg: #E2EBF4;
 
-  /* ── Sidebar (warm dark, Figma inspector-style) ── */
+  /* 鈹€鈹€ Sidebar (warm dark, Figma inspector-style) 鈹€鈹€ */
   --color-sidebar-bg: #1A1A1A;
   --color-sidebar-text: #F4F3EE;
   --color-sidebar-muted: #8A8880;
@@ -78,12 +78,12 @@
   --color-sidebar-line: #2F2F2F;
   --color-sidebar-active: #FBFAF7;
 
-  /* ── Code / terminal ── */
+  /* 鈹€鈹€ Code / terminal 鈹€鈹€ */
   --color-code-bg: #1A1A1A;
   --color-code-text: #F4F3EE;
   --color-terminal-bg: #0F0F0F;
 
-  /* ── Typography ── */
+  /* 鈹€鈹€ Typography 鈹€鈹€ */
   /* Display: editorial serif (system fallback for offline) */
   --font-display: "Iowan Old Style", "Charter", "Source Serif Pro", Georgia, "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", serif;
   /* Sans: clean grotesque (system fallback) */
@@ -105,7 +105,7 @@
   --text-6xl: 56px;
   --text-display: clamp(48px, 6.2vw, 88px);
 
-  /* ── Spacing (4px base, generous editorial rhythm) ── */
+  /* 鈹€鈹€ Spacing (4px base, generous editorial rhythm) 鈹€鈹€ */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -121,7 +121,7 @@
   --space-13: 96px;
   --space-14: 120px;
 
-  /* ── Radius (tighter, more deliberate than v1) ── */
+  /* 鈹€鈹€ Radius (tighter, more deliberate than v1) 鈹€鈹€ */
   --radius-xs: 2px;
   --radius-sm: 3px;
   --radius-md: 4px;
@@ -133,7 +133,7 @@
   --radius-4xl: 16px;
   --radius-full: 999px;
 
-  /* ── Shadow: hairline-first, shadow-last (Notion/Figma philosophy) ── */
+  /* 鈹€鈹€ Shadow: hairline-first, shadow-last (Notion/Figma philosophy) 鈹€鈹€ */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(0, 0, 0, 0.02);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(0, 0, 0, 0.03);
@@ -143,7 +143,7 @@
   --shadow-focus: 0 0 0 3px rgba(26, 26, 26, 0.12);
   --shadow-focus-hot: 0 0 0 3px rgba(229, 83, 43, 0.18);
 
-  /* ── Layout ── */
+  /* 鈹€鈹€ Layout 鈹€鈹€ */
   --sidebar-width: 240px;
   --topbar-height: 56px;
   --content-max: 1400px;
@@ -158,7 +158,7 @@
   text-rendering: optimizeLegibility;
   font-feature-settings: "ss01", "cv11";
 
-  /* ── Legacy aliases (for backward-compat with 3000+ lines of business CSS) ── */
+  /* 鈹€鈹€ Legacy aliases (for backward-compat with 3000+ lines of business CSS) 鈹€鈹€ */
   /* These ensure the v1 purple/warm-modernism pages auto-migrate to the new
      editorial palette without touching every class definition. */
   --color-primary: var(--color-accent);
@@ -169,6 +169,333 @@
   --color-primary-shadow-strong: var(--color-accent-shadow);
   --color-text-on-primary: var(--color-text-on-accent);
   --font-serif: var(--font-display);
+
+  /* ============================================================
+     Canonical token aliases (璺嚎 A 鍛藉悕浣撶郴 鈥?鏂扮粍浠剁粺涓€浣跨敤)
+     ============================================================ */
+  /* 鑳屾櫙灞?*/
+  --bg-canvas:    var(--color-bg);
+  --bg-surface:   var(--color-surface);
+  --bg-elevated:  var(--color-surface-soft);
+  --bg-muted:     var(--color-surface-muted);
+  --bg-alt:       var(--color-bg-alt);
+  --bg-deep:      var(--color-bg-deep);
+  --bg-overlay:   rgba(0, 0, 0, 0.5);
+
+  /* 杈规 */
+  --border-subtle: var(--color-line-soft);
+  --border:        var(--color-line);
+  --border-strong: var(--color-line-strong);
+
+  /* 鏂囧瓧 */
+  --text-primary:   var(--color-text);
+  --text-strong:    var(--color-text-strong);
+  --text-secondary: var(--color-text-muted);
+  --text-muted:     var(--color-text-subtle);
+  --text-faint:     var(--color-text-faint);
+  --text-on-accent: var(--color-text-on-accent);
+
+  /* 鍝佺墝鑹?*/
+  --accent:        var(--color-accent);
+  --accent-hover:  var(--color-accent-hover);
+  --accent-soft:   var(--color-accent-soft);
+  --accent-line:   var(--color-accent-line);
+  --hot:           var(--color-hot);
+  --hot-soft:      var(--color-hot-soft);
+  --hot-text:      var(--color-hot-text);
+
+  /* 璇箟鑹?*/
+  --success:       var(--color-success);
+  --success-text:  var(--color-success-text);
+  --success-bg:    var(--color-success-bg);
+  --success-line:  var(--color-success-line);
+  --warning:       var(--color-warning);
+  --warning-text:  var(--color-warning-text);
+  --warning-bg:    var(--color-warning-bg);
+  --warning-line:  var(--color-warning-line);
+  --danger:        var(--color-error);
+  --danger-text:   var(--color-error-text);
+  --danger-bg:     var(--color-error-bg);
+  --danger-line:   var(--color-error-line);
+  --info:          var(--color-info);
+  --info-text:     var(--color-info-text);
+  --info-bg:       var(--color-info-bg);
+
+  /* 瀛椾綋鏃?*/
+  --font-display: var(--font-display); /* 宸插瓨鍦紝杩欓噷纭繚鍒悕浣撶郴涓€鑷?*/
+  --font-sans:    var(--font-sans);
+  --font-mono:    var(--font-mono);
+
+  /* 瀛楀彿闃舵 (fs = font-size, lh = line-height) */
+  --fs-xs:  var(--text-xs);
+  --fs-sm:  var(--text-sm);
+  --fs-base: var(--text-base);
+  --fs-md:  var(--text-md);
+  --fs-lg:  var(--text-lg);
+  --fs-xl:  var(--text-xl);
+  --fs-2xl: var(--text-2xl);
+  --fs-3xl: var(--text-3xl);
+  --fs-4xl: var(--text-4xl);
+  --fs-5xl: var(--text-5xl);
+  --fs-6xl: var(--text-6xl);
+
+  /* 瀛楅噸 */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* 闂磋窛 (sp = space, 4px 鍩烘暟) */
+  --sp-1:  var(--space-1);
+  --sp-2:  var(--space-2);
+  --sp-3:  var(--space-3);
+  --sp-4:  var(--space-4);
+  --sp-5:  var(--space-5);
+  --sp-6:  var(--space-6);
+  --sp-8:  var(--space-8);
+  --sp-12: var(--space-12);
+  --sp-16: var(--space-14);
+  --sp-24: 96px;
+  --sp-32: 128px;
+
+  /* 鍦嗚 (r = radius) */
+  --r-xs:   var(--radius-xs);
+  --r-sm:   var(--radius-sm);
+  --r-md:   var(--radius-md);
+  --r-lg:   var(--radius-lg);
+  --r-xl:   var(--radius-xl);
+  --r-2xl:  var(--radius-2xl);
+  --r-full: var(--radius-full);
+
+  /* 闃村奖 */
+  --shadow-sm:   var(--shadow-sm);
+  --shadow-md:   var(--shadow-md);
+  --shadow-lg:   var(--shadow-lg);
+  --shadow-glow: 0 0 0 1px rgba(26, 26, 26, 0.2);
+
+  /* 鍔ㄦ晥 */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 250ms;
+
+  /* 甯冨眬甯搁噺 */
+  --layout-topbar-height: var(--topbar-height);
+  --layout-sidebar-width: var(--sidebar-width);
+  --layout-content-max:   var(--content-max);
+
+  /* 鏂偣 (渚?JS / CSS 寮曠敤) */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}
+
+/* ============================================================
+   Theme System 鈥?娣辫壊涓婚 / 璺熼殢绯荤粺
+   ============================================================
+   浣跨敤鏂瑰紡锛?
+     - 榛樿锛氭祬鑹蹭富棰?(warm-white editorial)
+     - data-theme="dark"  寮哄埗娣辫壊
+     - data-theme="light" 寮哄埗娴呰壊
+     - 鏃?data-theme 灞炴€?鈫?璺熼殢绯荤粺 (prefers-color-scheme)
+   ============================================================ */
+
+/* 鈹€鈹€ 寮哄埗娣辫壊涓婚 鈹€鈹€ */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 鑳屾櫙灞?*/
+  --color-bg: #0B0D10;
+  --color-bg-alt: #101317;
+  --color-bg-deep: #07090B;
+  --color-surface: #13161B;
+  --color-surface-soft: #1A1E25;
+  --color-surface-muted: #16191F;
+
+  /* 鏂囧瓧 */
+  --color-text: #E8EBEF;
+  --color-text-strong: #F4F6F8;
+  --color-text-muted: #9AA3B2;
+  --color-text-subtle: #6B7280;
+  --color-text-faint: #4A5160;
+  --color-text-on-accent: #0B0D10;
+
+  /* 杈规 */
+  --color-line: #2A2F38;
+  --color-line-strong: #3A404B;
+  --color-line-muted: #1F242C;
+  --color-line-soft: #181C22;
+
+  /* 鍝佺墝鑹?*/
+  --color-accent: #E8EBEF;          /* 娣辫壊涓?accent = 杩戠櫧锛屽弽杞涔?*/
+  --color-accent-hover: #FFFFFF;
+  --color-accent-soft: rgba(232, 235, 239, 0.08);
+  --color-accent-line: rgba(232, 235, 239, 0.16);
+  --color-accent-shadow: rgba(0, 0, 0, 0.4);
+
+  /* 璇箟鑹诧紙娣辫壊涓嬭皟浜枃瀛楋紝鍔犳繁鑳屾櫙锛?*/
+  --color-success: #7FC48F;
+  --color-success-text: #8DD19C;
+  --color-success-bg: rgba(127, 196, 143, 0.12);
+  --color-success-line: rgba(127, 196, 143, 0.25);
+  --color-warning: #E5B862;
+  --color-warning-text: #EBC97E;
+  --color-warning-bg: rgba(229, 184, 98, 0.12);
+  --color-warning-line: rgba(229, 184, 98, 0.25);
+  --color-error: #E07A7A;
+  --color-error-text: #E89090;
+  --color-error-bg: rgba(224, 122, 122, 0.12);
+  --color-error-line: rgba(224, 122, 122, 0.25);
+  --color-error-bg-soft: rgba(224, 122, 122, 0.08);
+  --color-error-bg-alt: rgba(224, 122, 122, 0.06);
+  --color-info: #8BB4E8;
+  --color-info-text: #A3C4EE;
+  --color-info-bg: rgba(139, 180, 232, 0.12);
+
+  /* 闃村奖锛堟繁鑹蹭笅璋冮珮瀵规瘮搴︼級 */
+  --shadow-focus: 0 0 0 3px rgba(232, 235, 239, 0.18);
+  --shadow-focus-hot: 0 0 0 3px rgba(229, 83, 43, 0.3);
+}
+
+/* 鈹€鈹€ 璺熼殢绯荤粺锛氱郴缁熸繁鑹叉椂搴旂敤 鈹€鈹€ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-bg: #0B0D10;
+    --color-bg-alt: #101317;
+    --color-bg-deep: #07090B;
+    --color-surface: #13161B;
+    --color-surface-soft: #1A1E25;
+    --color-surface-muted: #16191F;
+
+    --color-text: #E8EBEF;
+    --color-text-strong: #F4F6F8;
+    --color-text-muted: #9AA3B2;
+    --color-text-subtle: #6B7280;
+    --color-text-faint: #4A5160;
+    --color-text-on-accent: #0B0D10;
+
+    --color-line: #2A2F38;
+    --color-line-strong: #3A404B;
+    --color-line-muted: #1F242C;
+    --color-line-soft: #181C22;
+
+    --color-accent: #E8EBEF;
+    --color-accent-hover: #FFFFFF;
+    --color-accent-soft: rgba(232, 235, 239, 0.08);
+    --color-accent-line: rgba(232, 235, 239, 0.16);
+    --color-accent-shadow: rgba(0, 0, 0, 0.4);
+
+    --color-success: #7FC48F;
+    --color-success-text: #8DD19C;
+    --color-success-bg: rgba(127, 196, 143, 0.12);
+    --color-success-line: rgba(127, 196, 143, 0.25);
+    --color-warning: #E5B862;
+    --color-warning-text: #EBC97E;
+    --color-warning-bg: rgba(229, 184, 98, 0.12);
+    --color-warning-line: rgba(229, 184, 98, 0.25);
+    --color-error: #E07A7A;
+    --color-error-text: #E89090;
+    --color-error-bg: rgba(224, 122, 122, 0.12);
+    --color-error-line: rgba(224, 122, 122, 0.25);
+    --color-error-bg-soft: rgba(224, 122, 122, 0.08);
+    --color-error-bg-alt: rgba(224, 122, 122, 0.06);
+    --color-info: #8BB4E8;
+    --color-info-text: #A3C4EE;
+    --color-info-bg: rgba(139, 180, 232, 0.12);
+
+    --shadow-focus: 0 0 0 3px rgba(232, 235, 239, 0.18);
+    --shadow-focus-hot: 0 0 0 3px rgba(229, 83, 43, 0.3);
+  }
+}
+
+/* 鈹€鈹€ 鍏ㄥ眬杩囨浮锛氫富棰樺垏鎹㈡椂骞虫粦鍙樿壊 鈹€鈹€ */
+html, body, .app-topbar-arch, .app-shell-arch, .sc-brief-editor, .sc-preview-canvas {
+  transition:
+    background-color var(--dur-base, 180ms) var(--ease-out, ease),
+    color var(--dur-base, 180ms) var(--ease-out, ease),
+    border-color var(--dur-base, 180ms) var(--ease-out, ease);
+}
+
+/* 鈹€鈹€ Theme Toggle 缁勪欢 鈹€鈹€ */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface-soft, #F9F8F4);
+  border: 1px solid var(--color-line, #E5E2D9);
+  border-radius: var(--radius-full, 999px);
+  padding: 2px;
+  gap: 0;
+  height: 32px;
+}
+
+.theme-toggle__option {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--radius-full, 999px);
+  background: transparent;
+  color: var(--color-text-muted, #6B6B6B);
+  font-size: var(--text-xs, 11px);
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: all var(--dur-fast, 120ms) var(--ease-out, ease);
+}
+
+.theme-toggle__option:hover {
+  color: var(--color-text, #1A1A1A);
+}
+
+.theme-toggle__option.is-active {
+  background: var(--color-accent, #1A1A1A);
+  color: var(--color-text-on-accent, #FBFAF7);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0,0,0,0.04));
+}
+
+.theme-toggle__icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.theme-toggle__label {
+  font-size: 11px;
+}
+
+@media (max-width: 768px) {
+  .theme-toggle__label { display: none; }
+  .theme-toggle__option { padding: 4px 8px; }
+
+  /* TopBar 绉诲姩绔揣鍑戝竷灞€ */
+  .app-topbar-arch {
+    height: 48px;
+    padding: 0 12px;
+    gap: 8px;
+  }
+  .app-topbar-arch__crumbs { display: none; }
+  .app-topbar-arch__brand-tag { display: none; }
+  .app-topbar-arch__brand-name {
+    font-size: var(--text-sm, 12px);
+    font-weight: 600;
+  }
+  .app-topbar-arch__segment button {
+    padding: 4px 10px;
+    font-size: var(--text-xs, 11px);
+  }
+  .app-topbar-arch__actions .ui-button {
+    padding: 0 10px;
+    font-size: var(--text-xs, 11px);
+  }
+
+  /* 宸︽爮 rail 鎵嬫満绔殣钘?*/
+  .app-shell-arch__rail { display: none; }
+  .app-shell-arch__main {
+    padding: 20px 16px 64px;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -177,7 +504,7 @@ button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 ::selection { background: var(--color-accent); color: var(--color-text-on-accent); }
 
-/* ── Global keyboard focus ring (WCAG AA, Step 4) ──
+/* 鈹€鈹€ Global keyboard focus ring (WCAG AA, Step 4) 鈹€鈹€
    Hairline-first philosophy: 2px solid near-black, 2px offset.
    Only triggers on `:focus-visible` so mouse clicks do not show the ring.
    Individual components may override (Modal / Tabs / Card etc.) when they
@@ -206,10 +533,10 @@ select:disabled:focus-visible {
   outline: none;
 }
 
-/* ── Old .app-shell class (kept for any leftover usage) ── */
+/* 鈹€鈹€ Old .app-shell class (kept for any leftover usage) 鈹€鈹€ */
 .app-shell { min-height: 100vh; display: grid; grid-template-columns: var(--sidebar-width) 1fr; background: var(--color-bg); }
 
-/* ── Sidebar (legacy classes, used by old home fallback) ── */
+/* 鈹€鈹€ Sidebar (legacy classes, used by old home fallback) 鈹€鈹€ */
 .sidebar { position: fixed; inset: 0 auto 0 0; width: var(--sidebar-width); display: flex; flex-direction: column; padding: 32px 22px; background: var(--color-sidebar-bg); color: var(--color-sidebar-text); }
 .logo-lockup { display: flex; gap: 12px; align-items: center; }
 .logo-lockup strong { display: block; font-size: 13px; letter-spacing: -0.01em; color: var(--color-sidebar-active); font-weight: 600; }
@@ -224,20 +551,20 @@ select:disabled:focus-visible {
 .sidebar-footer small { color: var(--color-sidebar-muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
 .sidebar-footer strong { font-size: 12px; color: var(--color-sidebar-active); }
 
-/* ── Status dot ── */
+/* 鈹€鈹€ Status dot 鈹€鈹€ */
 .status-dot { width: 7px; height: 7px; flex: none; display: inline-block; border-radius: 50%; background: var(--color-text-faint); }
 .status-dot.connected { background: var(--color-success); }
 .status-dot.failed { background: var(--color-error); }
 .status-dot.untested { background: var(--color-warning); }
 
-/* ── Home main (legacy) ── */
+/* 鈹€鈹€ Home main (legacy) 鈹€鈹€ */
 .home-main { grid-column: 2; min-height: 100vh; padding: 64px clamp(48px, 6vw, 92px); }
 .home-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
 .home-header h1 { margin: 18px 0 0; max-width: 760px; font-family: var(--font-display); font-weight: 400; font-size: var(--text-display); line-height: 1.02; letter-spacing: -0.035em; color: var(--color-text-strong); }
 .eyebrow { margin: 0; color: var(--color-text-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; }
 .header-actions { display: flex; gap: 8px; }
 
-/* ── Buttons (legacy, Notion-style minimal) ── */
+/* 鈹€鈹€ Buttons (legacy, Notion-style minimal) 鈹€鈹€ */
 .button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid transparent; border-radius: 6px; padding: 8px 14px; font-weight: 500; font-size: 13px; line-height: 1.2; color: var(--color-text); background: transparent; transition: all 0.12s ease; }
 .button:hover:not(:disabled) { background: var(--color-surface-muted); }
 .button:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -255,19 +582,19 @@ select:disabled:focus-visible {
 .button.text-button { padding: 4px 8px; color: var(--color-text); background: transparent; font-weight: 500; }
 .button.text-button:hover:not(:disabled) { background: var(--color-surface-muted); }
 
-/* ── Setup banner ── */
+/* 鈹€鈹€ Setup banner 鈹€鈹€ */
 .setup-banner { display: flex; justify-content: space-between; align-items: center; margin: 48px 0 0; padding: 20px 24px; border: 1px solid var(--color-line); border-left: 3px solid var(--color-accent); border-radius: 8px; background: var(--color-surface); }
 .setup-banner strong, .setup-banner p { margin: 0; }
 .setup-banner p { margin-top: 4px; color: var(--color-text-muted); font-size: 13px; }
 
-/* ── Section title (editorial ruled) ── */
+/* 鈹€鈹€ Section title (editorial ruled) 鈹€鈹€ */
 .recent-section { margin-top: 80px; }
 .section-title { display: flex; justify-content: space-between; align-items: end; margin-bottom: 16px; border-bottom: 1px solid var(--color-line); padding-bottom: 14px; }
 .section-title span { color: var(--color-text-muted); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; }
 .section-title h2 { margin: 4px 0 0; font-family: var(--font-display); font-size: 28px; font-weight: 400; letter-spacing: -0.02em; color: var(--color-text-strong); }
 .section-title small { color: var(--color-text-muted); font-family: var(--font-mono); font-size: 11px; }
 
-/* ── Project list (legacy row layout) ── */
+/* 鈹€鈹€ Project list (legacy row layout) 鈹€鈹€ */
 .project-list { display: grid; }
 .project-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; border-bottom: 1px solid var(--color-line); background: transparent; }
 .project-row:hover { background: var(--color-surface-soft); }
@@ -286,20 +613,20 @@ select:disabled:focus-visible {
 .record-type.reference-anchor { background: var(--color-hot-soft); color: var(--color-hot-text); }
 .record-type.document-context { background: var(--color-info-bg); color: var(--color-info-text); }
 
-/* ── Badge (legacy, sharper than v1) ── */
+/* 鈹€鈹€ Badge (legacy, sharper than v1) 鈹€鈹€ */
 .badge { display: inline-flex; align-items: center; width: fit-content; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 500; background: var(--color-surface-muted); color: var(--color-text-muted); }
 .badge.completed { color: var(--color-success-text); background: var(--color-success-bg); }
 .badge.running { color: var(--color-text); background: var(--color-accent-soft); }
 .badge.failed { color: var(--color-error-text); background: var(--color-error-bg); }
 .badge.ready { color: var(--color-warning-text); background: var(--color-warning-bg); }
 
-/* ── Empty home ── */
+/* 鈹€鈹€ Empty home 鈹€鈹€ */
 .empty-home { min-height: 360px; display: grid; place-items: center; align-content: center; text-align: center; color: var(--color-text-muted); }
 .empty-home strong { margin-top: 20px; color: var(--color-text-strong); font-family: var(--font-display); font-size: 22px; font-weight: 400; }
 .empty-home p { max-width: 400px; color: var(--color-text-muted); font-size: 13px; }
 .empty-orbit { width: 72px; height: 72px; border: 1px solid var(--color-line-strong); border-radius: 50%; box-shadow: inset 0 0 0 16px var(--color-surface-soft); }
 
-/* ── Page header (legacy) ── */
+/* 鈹€鈹€ Page header (legacy) 鈹€鈹€ */
 .page { min-height: 100vh; padding: 40px clamp(40px, 5vw, 80px); background: var(--color-bg); }
 .page-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; margin-bottom: 32px; }
 .page-header h1 { margin: 8px 0 6px; font: 400 36px var(--font-display); letter-spacing: -0.025em; color: var(--color-text-strong); }
@@ -316,7 +643,7 @@ select:disabled:focus-visible {
 .section-heading.compact { margin-top: 28px; }
 .section-heading .text-button { margin-left: auto; }
 
-/* ── Forms (legacy) ── */
+/* 鈹€鈹€ Forms (legacy) 鈹€鈹€ */
 label { display: grid; gap: 6px; margin: 14px 0; color: var(--color-text); font-size: 12px; font-weight: 500; }
 label em { color: var(--color-accent); font-style: normal; font-weight: 600; }
 input, textarea, select { width: 100%; border: 1px solid var(--color-line); border-radius: 6px; padding: 9px 12px; outline: none; color: var(--color-text); background: var(--color-surface); font-size: 13px; line-height: 1.4; transition: all 0.12s ease; }
@@ -402,9 +729,9 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .visual-stage-strip { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 20px 0; }.visual-stage-strip > div { min-height: 72px; padding: 11px; border-radius: 8px; color: var(--color-text-subtle); background: var(--color-line-soft); }.visual-stage-strip > div.active { color: var(--color-surface); background: var(--color-primary); }.visual-stage-strip > div.done { color: var(--color-success-text); background: var(--color-success-bg); }.visual-stage-strip span, .visual-stage-strip strong { display: block; }.visual-stage-strip span { font-size: 9px; }.visual-stage-strip strong { margin-top: 10px; font-size: 10px; line-height: 1.35; }
 .visual-translation-report .markdown-preview { margin-top: 24px; }
 .analysis-workspace-shell { min-height: 100vh; background: var(--color-bg-alt); }
-/* .analysis-mode-tabs 旧卡片风格已迁移到 styles.css:3573 起的下划线 tab 风格
-   (路线 A / P0 UX 清理)。任何遗留的 analysis-mode-tabs-* modifier 都用同一套
-   下划线样式定义; --ci modifier 是工作台顶部的语义标记, 不影响视觉。*/
+/* .analysis-mode-tabs 鏃у崱鐗囬鏍煎凡杩佺Щ鍒?styles.css:3573 璧风殑涓嬪垝绾?tab 椋庢牸
+   (璺嚎 A / P0 UX 娓呯悊)銆備换浣曢仐鐣欑殑 analysis-mode-tabs-* modifier 閮界敤鍚屼竴濂?
+   涓嬪垝绾挎牱寮忓畾涔? --ci modifier 鏄伐浣滃彴椤堕儴鐨勮涔夋爣璁? 涓嶅奖鍝嶈瑙夈€?/
 .translation-drop-zone { min-height: 210px; margin: 8px 0 14px; border-width: 2px; background: radial-gradient(circle at 50% 15%, var(--color-primary-soft-alt), var(--color-primary-soft-alt) 72%); }
 .translation-drop-zone.busy { opacity: .7; }
 .translation-selected-documents { margin-top: 12px; }
@@ -451,14 +778,14 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .indeterminate-dots i:nth-child(2) { animation-delay: .15s; }
 .indeterminate-dots i:nth-child(3) { animation-delay: .3s; }
 .analysis-orbit.failed .indeterminate-dots::before { content: '!'; color: var(--color-error-strong); font: 32px var(--font-serif); }
-.analysis-orbit.cancelled .indeterminate-dots::before { content: '×'; color: var(--color-text-muted); font-size: 34px; }
+.analysis-orbit.cancelled .indeterminate-dots::before { content: '脳'; color: var(--color-text-muted); font-size: 34px; }
 .analysis-orbit.failed .indeterminate-dots i, .analysis-orbit.cancelled .indeterminate-dots i { display: none; }
 @keyframes pulse { 0%, 100% { opacity: .25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
 .report-filename-editor { display: flex; gap: 10px; align-items: end; max-width: 760px; margin: 0 0 16px; }
 .report-filename-editor label { flex: 1; margin: 0; }
 .field-help { color: var(--color-text-muted); font-size: 10px; font-weight: 400; line-height: 1.5; }
 
-/* Reference-Led Visual Direction（参考转译）工作台 */
+/* Reference-Led Visual Direction锛堝弬鑰冭浆璇戯級宸ヤ綔鍙?*/
 .reference-input-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0; padding: 12px 14px; border: 1px solid var(--color-line); border-radius: 9px; background: var(--color-surface); }
 .reference-input-row strong { display: block; font-size: 12px; }
 .reference-input-row small { display: block; margin-top: 4px; color: var(--color-text-muted); font-size: 10px; word-break: break-all; }
@@ -622,7 +949,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .reference-anchor-retry-body label { display: block; font-size: 12px; font-weight: 700; color: var(--color-text-strong); }
 .reference-anchor-retry-body label textarea { margin-top: 6px; font-weight: 400; }
 
-/* ── Phase 4 三大功能轻量整合 UI ── */
+/* 鈹€鈹€ Phase 4 涓夊ぇ鍔熻兘杞婚噺鏁村悎 UI 鈹€鈹€ */
 .context-integration-panel { padding: 28px; margin-top: 22px; }
 .context-integration-panel .panel-meta { margin-top: 4px; color: var(--color-text-muted); font-size: 11px; }
 .ctx-status-list { display: grid; gap: 10px; margin: 18px 0; padding: 0; list-style: none; }
@@ -635,7 +962,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .ctx-link-picker label { margin: 0; font-size: 11px; font-weight: 700; color: var(--color-text-strong); }
 .empty-state.small { min-height: 0; padding: 14px 0; text-align: left; color: var(--color-text-muted); font-size: 12px; }
 
-/* ── 精简重构：历史任务页（只读旧版流程） ── */
+/* 鈹€鈹€ 绮剧畝閲嶆瀯锛氬巻鍙蹭换鍔￠〉锛堝彧璇绘棫鐗堟祦绋嬶級 鈹€鈹€ */
 .history-page { max-width: 1080px; margin: 0 auto; padding: 32px 28px 64px; }
 .history-tabs { display: flex; gap: 10px; margin: 18px 0 14px; }
 .history-tabs button { border: 1px solid var(--color-line-muted); background: var(--color-surface); border-radius: var(--radius-full); padding: 8px 16px; font: inherit; font-size: 13px; color: var(--color-text-muted); cursor: pointer; }
@@ -645,7 +972,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .history-row .link-button { background: none; border: none; color: var(--color-primary); font: inherit; font-weight: 700; cursor: pointer; padding: 0; }
 .history-row .link-button:hover { text-decoration: underline; }
 
-/* 生图功能 V1 工作区 */
+/* 鐢熷浘鍔熻兘 V1 宸ヤ綔鍖?*/
 .link-button { background: none; border: none; color: var(--color-primary); font: inherit; font-weight: 700; cursor: pointer; padding: 0; }
 .running-state { margin: 18px 0; }
 .running-state small { display: block; color: var(--color-text-muted); font-size: 12px; margin-bottom: 8px; }
@@ -734,7 +1061,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .source-banner strong { font-size: 13px; }
 
 /* R10 Reference-First: reference asset selection in the generation workspace. */.reference-asset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }.asset-tile { display: grid; gap: 6px; padding: 8px; border: 1px solid var(--color-line-muted); border-radius: 8px; background: var(--color-surface); cursor: pointer; }.asset-tile.selected { border-color: var(--color-primary); box-shadow: 0 0 0 1px var(--color-primary); }.asset-tile.disabled-preflight { border-color: var(--color-error-line); background: var(--color-error-bg-alt); cursor: not-allowed; opacity: 0.7; }.asset-tile img, .asset-tile .asset-fallback { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 5px; background: var(--color-line-soft); }.asset-tile .asset-fallback { display: grid; place-items: center; color: var(--color-text-muted); font-size: 10px; font-weight: 700; }.asset-tile input { display: none; }.asset-tile span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; color: var(--color-text-strong); }.preflight-badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; line-height: 1.4; }.preflight-ok { color: var(--color-success-text); background: var(--color-success-bg); }.preflight-fail { color: var(--color-error-text); background: var(--color-error-bg); }.preflight-pending { color: var(--color-text-muted); background: var(--color-line-soft); }.muted { color: var(--color-text-muted); font-size: 11px; }
-/* r2.0 §4.13 / Phase E: 5-state flow state banner shown above the
+/* r2.0 搂4.13 / Phase E: 5-state flow state banner shown above the
    result image. The banner explains which step the flow is in and
    explicitly tells the user when the first image is preserved
    across a correction failure. */
@@ -746,7 +1073,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .flow-state-info { background: var(--color-line-soft); color: var(--color-text-strong); }
 .flow-state-warn { background: var(--color-warning-bg); color: var(--color-warning-text); }
 .flow-state-fail { background: var(--color-error-bg); color: var(--color-error-deep); }
-/* r2.0 §6.7 / Phase E UI extension: Final Acceptance block tone.
+/* r2.0 搂6.7 / Phase E UI extension: Final Acceptance block tone.
    Distinct from .flow-state-fail (which is about generation). This
    banner is about the audit-evidence gap that blocks the user-facing
    Final Acceptance step. Generation has already succeeded; the
@@ -764,10 +1091,10 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 /* ============================================================
    UI Component Library
-   Warm modernism · 8px grid · purple brand
+   Warm modernism 路 8px grid 路 purple brand
    ============================================================ */
 
-/* ── Button (editorial: no shadow, no translate, monochrome default) ── */
+/* 鈹€鈹€ Button (editorial: no shadow, no translate, monochrome default) 鈹€鈹€ */
 .ui-button {
   display: inline-flex;
   align-items: center;
@@ -792,13 +1119,13 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   box-shadow: var(--shadow-focus);
 }
 
-/* ── Step 3 UI cleanup: minimal utility / modifier classes for App.tsx ──
+/* 鈹€鈹€ Step 3 UI cleanup: minimal utility / modifier classes for App.tsx 鈹€鈹€
    Replaces 8 inline `style={{...}}` props on the App shell layer
-   (TopBar status dot, ⌘K kbd, create-shell spacer, project rail empty,
+   (TopBar status dot, 鈱楰 kbd, create-shell spacer, project rail empty,
    setup banner block, record-card footer row, project-delete reset).
    One-to-one mechanical translation; no JSX structure changes. */
 
-/* Create-shell flex spacer — balances 3-col header bar (left/center/right) */
+/* Create-shell flex spacer 鈥?balances 3-col header bar (left/center/right) */
 .create-shell-v2__spacer {
   width: 80px;
   flex: none;
@@ -808,42 +1135,42 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-family: var(--font-mono);
   font-size: var(--text-xs);
 }
-/* Project rail empty state — used when `projects.length === 0` */
+/* Project rail empty state 鈥?used when `projects.length === 0` */
 .app-rail-empty {
   padding: var(--space-4);
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   text-align: center;
 }
-/* Content max-width wrapper — reuses the --content-max token */
+/* Content max-width wrapper 鈥?reuses the --content-max token */
 .content-max {
   max-width: var(--content-max);
   margin: 0 auto;
 }
-/* Setup banner block modifier — adds bottom spacing for stacked layout */
+/* Setup banner block modifier 鈥?adds bottom spacing for stacked layout */
 .setup-banner--block {
   margin-bottom: var(--space-8);
 }
-/* Generic horizontal flex row — used in record-card footer for meta + actions */
+/* Generic horizontal flex row 鈥?used in record-card footer for meta + actions */
 .flex-row-sm-center {
   display: flex;
   gap: var(--space-2);
   align-items: center;
 }
-/* Project-delete inline modifier — removes default right margin in flex row */
+/* Project-delete inline modifier 鈥?removes default right margin in flex row */
 .project-delete--inline {
   margin: 0;
 }
 
-/* ── Step 5: Destructive tone (Notion-style) ──
+/* 鈹€鈹€ Step 5: Destructive tone (Notion-style) 鈹€鈹€
    Applied as `tone="destructive"` on top of any variant. Default style is
-   text-only red — matches Notion's delete button. Hover softens the surface
+   text-only red 鈥?matches Notion's delete button. Hover softens the surface
    to a pale red, active deepens. The `--shadow-focus-hot` ring replaces
    the default focus ring so destructive actions keep their visual identity
    in keyboard navigation.
 
-   For a filled destructive CTA (used sparingly, e.g. "取消正在运行的任务"),
-   also pass `filled` — this swaps to a hot-orange filled button matching
+   For a filled destructive CTA (used sparingly, e.g. "鍙栨秷姝ｅ湪杩愯鐨勪换鍔?),
+   also pass `filled` 鈥?this swaps to a hot-orange filled button matching
    the `--color-hot` accent. */
 .ui-button--tone-destructive {
   color: var(--color-error-text);
@@ -952,7 +1279,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .ui-button__icon { display: inline-flex; font-size: 1em; line-height: 1; }
 .ui-button__label { line-height: 1.2; }
 
-/* ── Input / Textarea / Select (editorial) ── */
+/* 鈹€鈹€ Input / Textarea / Select (editorial) 鈹€鈹€ */
 .ui-field {
   display: grid;
   gap: 6px;
@@ -1033,7 +1360,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 }
 .ui-select__chevron { display: none; }
 
-/* ── Card (editorial: no shadow, hairline border) ── */
+/* 鈹€鈹€ Card (editorial: no shadow, hairline border) 鈹€鈹€ */
 .ui-card {
   border: 1px solid var(--color-line);
   border-radius: 8px;
@@ -1069,7 +1396,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .ui-card--p-none .ui-card__header, .ui-card--p-none .ui-card__body { padding: 0; }
 .ui-card--p-none .ui-card__header { border-bottom: 0; }
 
-/* ── Badge (editorial: smaller, more deliberate) ── */
+/* 鈹€鈹€ Badge (editorial: smaller, more deliberate) 鈹€鈹€ */
 .ui-badge {
   display: inline-flex;
   align-items: center;
@@ -1098,7 +1425,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-style: normal;
 }
 
-/* ── Tabs (editorial: underline, restrained) ── */
+/* 鈹€鈹€ Tabs (editorial: underline, restrained) 鈹€鈹€ */
 .ui-tabs { display: flex; gap: 0; }
 .ui-tab {
   display: inline-flex;
@@ -1182,7 +1509,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 .ui-tabs--sm .ui-tab { padding: 6px 10px; font-size: 12px; }
 
-/* ── Modal (editorial: hairline, no shadow) ── */
+/* 鈹€鈹€ Modal (editorial: hairline, no shadow) 鈹€鈹€ */
 .ui-modal-overlay {
   position: fixed;
   inset: 0;
@@ -1242,13 +1569,307 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   gap: 8px;
 }
 
+/* ConfirmDialog */
+.ui-confirm__title {
+  margin: 0 0 8px;
+  font-family: var(--font-display, serif);
+  font-size: var(--text-lg, 16px);
+  font-weight: 500;
+  color: var(--color-text-strong, #0A0A0A);
+  line-height: 1.4;
+}
+.ui-confirm__message {
+  font-size: var(--text-sm, 12px);
+  line-height: 1.6;
+  color: var(--color-text, #1A1A1A);
+  white-space: pre-wrap;
+}
+.ui-button--destructive {
+  color: var(--color-error, #C1372B) !important;
+}
+.ui-button--destructive:hover {
+  background: var(--color-error-bg-soft, #FAEAE6) !important;
+  color: var(--color-error-strong, #9A2A20) !important;
+}
+
+/* Keyboard shortcuts modal */
+.ui-shortcuts {
+  display: grid;
+  gap: var(--space-5, 20px);
+}
+.ui-shortcuts__group-title {
+  margin: 0 0 var(--space-2, 8px);
+  font-size: var(--text-xs, 11px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #6B6B6B);
+}
+.ui-shortcuts__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2, 8px);
+}
+.ui-shortcuts__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4, 16px);
+}
+.ui-shortcuts__desc {
+  font-size: var(--text-sm, 12px);
+  color: var(--color-text, #1A1A1A);
+}
+.ui-shortcuts__keys {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+}
+.ui-shortcuts__sep {
+  color: var(--color-text-faint, #C4C2BB);
+  margin: 0 2px;
+}
+.ui-shortcuts__keys kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  background: var(--color-surface-soft, #F9F8F4);
+  border: 1px solid var(--color-line, #E5E2D9);
+  border-radius: var(--r-sm, 4px);
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: var(--color-text, #1A1A1A);
+  box-shadow: 0 1px 0 var(--color-line, #E5E2D9);
+}
+
+/* 鈹€鈹€ EmptyState primitive 鈹€鈹€ */
+.ui-empty {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-9, 48px) var(--space-6, 24px);
+  color: var(--color-text-muted, #6B6B6B);
+}
+.ui-empty--bordered {
+  border: 1px dashed var(--color-line-strong, #D1CDBF);
+  border-radius: var(--radius-lg, 8px);
+  background: var(--color-surface-soft, #F9F8F4);
+}
+.ui-empty__icon {
+  font-size: var(--text-display, clamp(48px, 6.2vw, 88px));
+  color: var(--color-text-faint, #C4C2BB);
+  line-height: 1;
+}
+.ui-empty__title {
+  color: var(--color-text-strong, #0A0A0A);
+  font-family: var(--font-display, serif);
+  font-size: var(--text-2xl, 22px);
+  font-weight: 400;
+}
+.ui-empty__description {
+  max-width: 480px;
+  margin: 0;
+  font-size: var(--text-sm, 12px);
+  line-height: 1.55;
+}
+.ui-empty__action {
+  margin-top: var(--space-3, 12px);
+}
+
+/* 鈹€鈹€ Empty illustration 鈥?绠€绾︾嚎鏉?SVG 瑁呴グ 鈹€鈹€ */
+.ui-empty-illustration {
+  display: inline-block;
+  color: var(--color-text-faint, #C4C2BB);
+  transition: color var(--dur-base, 180ms) var(--ease-out, ease);
+}
+
+/* 鈹€鈹€ Banner 鈥?椤甸潰绾фí骞?鈹€鈹€ */
+.ui-banner {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: var(--space-3, 12px);
+  padding: var(--space-3, 12px) var(--space-4, 16px);
+  border: 1px solid;
+  border-radius: var(--r-md, 6px);
+  font-size: var(--text-sm, 13px);
+  line-height: 1.5;
+}
+.ui-banner--info {
+  border-color: var(--color-info-line, #B5D4BD);
+  background: var(--color-info-bg, #E2EBF4);
+  color: var(--color-info-text, #144670);
+}
+.ui-banner--warn {
+  border-color: var(--color-warning-line, #D9C188);
+  background: var(--color-warning-bg, #F5EBD7);
+  color: var(--color-warning-text, #6E4609);
+}
+.ui-banner--error {
+  border-color: var(--color-error-line, #D8A89F);
+  background: var(--color-error-bg, #F5E0DC);
+  color: var(--color-error-text, #8A2620);
+}
+.ui-banner--success {
+  border-color: var(--color-success-line, #B5D4BD);
+  background: var(--color-success-bg, #E8F1EA);
+  color: var(--color-success-text, #0E5C36);
+}
+.ui-banner__icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: currentColor;
+  color: var(--color-surface, #FFFFFF);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  flex: none;
+}
+.ui-banner__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-banner__label {
+  font-size: var(--text-xs, 11px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+.ui-banner__message {
+  font-size: var(--text-sm, 12px);
+  color: var(--color-text-strong, #0A0A0A);
+}
+.ui-banner__action {
+  flex: none;
+}
+.ui-banner__close {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--r-sm, 3px);
+  background: transparent;
+  color: currentColor;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all var(--dur-fast, 120ms) var(--ease-out, ease);
+}
+.ui-banner__close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  opacity: 1;
+}
+.ui-empty-illustration svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.ui-empty:hover .ui-empty-illustration {
+  color: var(--color-text-muted, #6B6B6B);
+}
+
+/* RadioGroup 鈥?鑷畾涔夊崟閫夌粍锛圵AI-ARIA 閿洏瀵艰埅锛?*/
+.ui-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 4px);
+}
+.ui-radio-group--horizontal {
+  flex-direction: row;
+  gap: var(--space-4, 16px);
+}
+.ui-radio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2, 8px);
+  padding: var(--space-2, 8px) var(--space-3, 12px);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm, 4px);
+  cursor: pointer;
+  transition: background-color var(--dur-fast, 120ms) var(--ease-out, ease);
+}
+.ui-radio-item:hover:not(.is-disabled) {
+  background: var(--color-surface-soft, #F9F8F4);
+}
+.ui-radio-item.is-checked {
+  background: var(--color-accent-soft, #F2F1ED);
+  border-color: var(--color-line, #E5E2D9);
+}
+.ui-radio-item.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ui-radio-item__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.ui-radio-item__control {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  border: 1.5px solid var(--color-line-strong, #D1CDBF);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: all var(--dur-fast, 120ms) var(--ease-out, ease);
+}
+.ui-radio-item.is-checked .ui-radio-item__control {
+  border-color: var(--color-accent, #1A1A1A);
+}
+.ui-radio-item__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent, #1A1A1A);
+  transform: scale(0);
+  transition: transform var(--dur-fast, 120ms) var(--ease-out, ease);
+}
+.ui-radio-item.is-checked .ui-radio-item__dot {
+  transform: scale(1);
+}
+.ui-radio-item__body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.ui-radio-item__label {
+  font-size: var(--text-sm, 12px);
+  font-weight: 500;
+  color: var(--color-text, #1A1A1A);
+  line-height: 1.4;
+}
+.ui-radio-item__desc {
+  font-size: var(--text-xs, 11px);
+  color: var(--color-text-muted, #6B6B6B);
+  line-height: 1.4;
+}
+
 @keyframes ui-fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ui-modal-in {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Alert (editorial: hairline border, no fill) ── */
+/* 鈹€鈹€ Alert (editorial: hairline border, no fill) 鈹€鈹€ */
 .ui-alert {
   display: flex;
   align-items: flex-start;
@@ -1270,7 +1891,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .ui-alert--warning { color: var(--color-warning-text); background: var(--color-warning-bg); border-color: var(--color-warning-line); }
 .ui-alert--error   { color: var(--color-error-text);   background: var(--color-error-bg); border-color: var(--color-error-line); }
 
-/* ── Tooltip (editorial: small, sharp) ── */
+/* 鈹€鈹€ Tooltip (editorial: small, sharp) 鈹€鈹€ */
 .ui-tooltip-wrap { position: relative; display: inline-block; }
 .ui-tooltip {
   position: absolute;
@@ -1292,11 +1913,11 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 
 /* ============================================================
-   Short-Chain Generation Workspace — Redesign
-   Warm modernism · 3-column layout · card-based controls
+   Short-Chain Generation Workspace 鈥?Redesign
+   Warm modernism 路 3-column layout 路 card-based controls
    ============================================================ */
 
-/* ── Workspace shell ── */
+/* 鈹€鈹€ Workspace shell 鈹€鈹€ */
 .sc-workspace {
   min-height: 100vh;
   background: var(--color-bg-alt);
@@ -1377,7 +1998,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   flex: none;
 }
 
-/* ── Main grid ── */
+/* 鈹€鈹€ Main grid 鈹€鈹€ */
 .sc-workspace__body {
   display: grid;
   grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.5fr) minmax(280px, 0.7fr);
@@ -1400,7 +2021,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   }
 }
 
-/* ── Column panels ── */
+/* 鈹€鈹€ Column panels 鈹€鈹€ */
 .sc-panel {
   display: grid;
   gap: var(--space-5);
@@ -1433,7 +2054,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   background: var(--color-primary);
 }
 
-/* ── Center panel (preview) ── */
+/* 鈹€鈹€ Center panel (preview) 鈹€鈹€ */
 .sc-center {
   display: grid;
   gap: var(--space-5);
@@ -1513,7 +2134,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   background: transparent;
 }
 
-/* ── Deliverable selector ── */
+/* 鈹€鈹€ Deliverable selector 鈹€鈹€ */
 .sc-deliverable-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -1553,7 +2174,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 }
 .sc-deliverable-card.is-selected small { color: var(--color-primary); opacity: 0.8; }
 
-/* ── Basis switch ── */
+/* 鈹€鈹€ Basis switch 鈹€鈹€ */
 .sc-basis-switch {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1582,7 +2203,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   box-shadow: var(--shadow-sm);
 }
 
-/* ── Reference section ── */
+/* 鈹€鈹€ Reference section 鈹€鈹€ */
 .sc-ref-actions {
   display: flex;
   gap: var(--space-2);
@@ -1656,7 +2277,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   background: var(--color-error-bg-soft);
 }
 
-/* ── Instruction textarea ── */
+/* 鈹€鈹€ Instruction textarea 鈹€鈹€ */
 .sc-instruction {
   width: 100%;
   min-height: 120px;
@@ -1678,7 +2299,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   box-shadow: 0 0 0 3px var(--color-primary-shadow);
 }
 
-/* ── Advanced settings collapse ── */
+/* 鈹€鈹€ Advanced settings collapse 鈹€鈹€ */
 .sc-advanced {
   border-top: 1px solid var(--color-line-soft);
   margin-top: var(--space-4);
@@ -1708,7 +2329,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   margin-top: var(--space-4);
 }
 
-/* ── Generate CTA ── */
+/* 鈹€鈹€ Generate CTA 鈹€鈹€ */
 .sc-cta {
   display: grid;
   gap: var(--space-3);
@@ -1754,7 +2375,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   color: var(--color-primary);
 }
 
-/* ── Right panel detail items ── */
+/* 鈹€鈹€ Right panel detail items 鈹€鈹€ */
 .sc-detail-row {
   display: flex;
   justify-content: space-between;
@@ -1781,7 +2402,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   word-break: break-word;
 }
 
-/* ── Prompt preview in right panel ── */
+/* 鈹€鈹€ Prompt preview in right panel 鈹€鈹€ */
 .sc-prompt-preview {
   margin-top: var(--space-3);
   max-height: 280px;
@@ -1797,7 +2418,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   word-break: break-word;
 }
 
-/* ── Flow state banner (integrated into preview) ── */
+/* 鈹€鈹€ Flow state banner (integrated into preview) 鈹€鈹€ */
 .sc-flow-banner {
   margin: var(--space-4) var(--space-7) 0;
   padding: var(--space-4) var(--space-5);
@@ -1814,7 +2435,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .sc-flow-banner--fail { background: var(--color-error-bg-soft); color: var(--color-error-text); }
 .sc-flow-banner--block { background: #FED7AA; color: #7C2D12; border: 1px solid #FB923C; }
 
-/* ── Feedback buttons (compact chips) ── */
+/* 鈹€鈹€ Feedback buttons (compact chips) 鈹€鈹€ */
 .sc-feedback {
   display: flex;
   flex-wrap: wrap;
@@ -1839,7 +2460,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   background: var(--color-error-bg-soft);
 }
 
-/* ── Continuation panel (re-styled) ── */
+/* 鈹€鈹€ Continuation panel (re-styled) 鈹€鈹€ */
 .sc-continuation {
   background: var(--color-surface-soft);
   border: 1px solid var(--color-line-muted);
@@ -1888,7 +2509,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   word-break: break-word;
 }
 
-/* ── Step 1 UI cleanup: modifier classes for ShortChainPreviewPanel / ShortChainBanners ──
+/* 鈹€鈹€ Step 1 UI cleanup: modifier classes for ShortChainPreviewPanel / ShortChainBanners 鈹€鈹€
    Replaces inline `style={{...}}` props so spacing/typography is themable
    instead of bound to JSX literals. */
 .sc-detail-row__value--start {
@@ -1907,7 +2528,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-size: var(--text-sm);
   line-height: 1.6;
 }
-/* Stale-compile warning variant — reuses .sc-panel__section surface,
+/* Stale-compile warning variant 鈥?reuses .sc-panel__section surface,
    overrides border + background to warning palette. */
 .sc-panel__section--warning {
   border-color: var(--color-warning-line);
@@ -1919,7 +2540,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .sc-panel__placeholder--warning {
   color: var(--color-warning-text);
 }
-/* Banner wrap for ShortChainBanners — keeps inline Alert inside the
+/* Banner wrap for ShortChainBanners 鈥?keeps inline Alert inside the
    page content gutter without inline margin/padding literals. */
 .sc-banner {
   margin: 0 var(--space-11);
@@ -1930,7 +2551,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-weight: 500;
 }
 
-/* ── Step 2 UI cleanup: shared field / stack / helper classes for ShortChainGenerationWorkspace ──
+/* 鈹€鈹€ Step 2 UI cleanup: shared field / stack / helper classes for ShortChainGenerationWorkspace 鈹€鈹€
    Replaces inline `style={{...}}` props on labels, hints, button rows,
    notice blocks, and form grids. New classes follow existing
    `.sc-panel__placeholder` typography conventions. */
@@ -1940,20 +2561,20 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   color: var(--color-text-muted);
   line-height: 1.6;
 }
-/* Form field wrapper — replaces repeated
+/* Form field wrapper 鈥?replaces repeated
    `<label style={{ display: 'grid', gap: 'var(--space-2)' }}>` */
 .sc-field {
   display: grid;
   gap: var(--space-2);
 }
-/* Form field caption — replaces repeated
+/* Form field caption 鈥?replaces repeated
    `<span style={{ color, fontSize, fontWeight: 700 }}>` inside labels */
 .sc-field-label {
   color: var(--color-text-strong);
   font-size: var(--text-sm);
   font-weight: 700;
 }
-/* Field-level hint — small grey caption below an input/select */
+/* Field-level hint 鈥?small grey caption below an input/select */
 .sc-field-hint {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
@@ -1964,37 +2585,37 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .sc-stack-sm > * + * { margin-top: var(--space-3); }
 .sc-stack-md > * + * { margin-top: var(--space-4); }
 .sc-stack-lg > * + * { margin-top: var(--space-5); }
-/* Block-level label — replaces
+/* Block-level label 鈥?replaces
    `<label style={{ display: 'block', marginBottom: 'var(--space-4)' }}>` */
 .sc-field-block {
   display: block;
   margin-bottom: var(--space-4);
 }
-/* Two-column form grid — replaces inline
+/* Two-column form grid 鈥?replaces inline
    `style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap }}` */
 .sc-field-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
 }
-/* Grow button — replaces inline `style={{ flex: 1 }}` on buttons */
+/* Grow button 鈥?replaces inline `style={{ flex: 1 }}` on buttons */
 .sc-grow {
   flex: 1;
 }
-/* Hidden file input — replaces inline `style={{ display: 'none' }}` */
+/* Hidden file input 鈥?replaces inline `style={{ display: 'none' }}` */
 .sc-input-hidden {
   display: none;
 }
-/* Stack first child from top — for items inside a stack container that
+/* Stack first child from top 鈥?for items inside a stack container that
    should still get top spacing. Used together with `.sc-stack-*`. */
 .sc-stack-sm-start { margin-top: var(--space-3); }
 .sc-stack-md-start { margin-top: var(--space-4); }
 .sc-stack-lg-start { margin-top: var(--space-5); }
-/* Wide input — replaces inline `style={{ width: '100%' }}` on textareas */
+/* Wide input 鈥?replaces inline `style={{ width: '100%' }}` on textareas */
 .sc-input-wide {
   width: 100%;
 }
-/* Wide primary CTA — replaces inline `style={{ marginTop + width: '100%' }}` */
+/* Wide primary CTA 鈥?replaces inline `style={{ marginTop + width: '100%' }}` */
 .sc-cta__primary--wide {
   margin-top: var(--space-5);
   width: 100%;
@@ -2002,11 +2623,11 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 
 /* ============================================================
-   Global Layout — Redesign (Phase 2)
+   Global Layout 鈥?Redesign (Phase 2)
    Top nav + left project rail + centered main content
    ============================================================ */
 
-/* ── App shell (editorial) ── */
+/* 鈹€鈹€ App shell (editorial) 鈹€鈹€ */
 .app-shell-v2 {
   min-height: 100vh;
   display: flex;
@@ -2014,7 +2635,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   background: var(--color-bg);
 }
 
-/* ── Top navigation (Notion-style: ultra-thin hairline) ── */
+/* 鈹€鈹€ Top navigation (Notion-style: ultra-thin hairline) 鈹€鈹€ */
 .app-topbar {
   position: sticky;
   top: 0;
@@ -2131,7 +2752,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-size: 11px;
 }
 
-/* ── Content area with left rail ── */
+/* 鈹€鈹€ Content area with left rail 鈹€鈹€ */
 .app-body {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
@@ -2153,7 +2774,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   .app-body { grid-template-columns: 1fr; padding: 32px 16px 48px; }
 }
 
-/* ── Left project rail (Notion-style: hairline-separated list) ── */
+/* 鈹€鈹€ Left project rail (Notion-style: hairline-separated list) 鈹€鈹€ */
 .app-rail {
   display: flex;
   flex-direction: column;
@@ -2242,7 +2863,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   white-space: nowrap;
 }
 
-/* ── Hero section (editorial display) ── */
+/* 鈹€鈹€ Hero section (editorial display) 鈹€鈹€ */
 .hero {
   position: relative;
   padding: 56px 0 72px;
@@ -2304,7 +2925,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   font-family: var(--font-display);
 }
 
-/* ── Section head (ruled, editorial) ── */
+/* 鈹€鈹€ Section head (ruled, editorial) 鈹€鈹€ */
 .section-head {
   display: flex;
   align-items: flex-end;
@@ -2340,7 +2961,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   flex: none;
 }
 
-/* ── Record grid (editorial: hairline table-like) ── */
+/* 鈹€鈹€ Record grid (editorial: hairline table-like) 鈹€鈹€ */
 .record-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -2436,7 +3057,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   transform: translateX(2px);
 }
 
-/* ── Quick create card (CTA) ── */
+/* 鈹€鈹€ Quick create card (CTA) 鈹€鈹€ */
 .record-card--cta {
   background: var(--color-surface-soft);
   justify-content: center;
@@ -2482,7 +3103,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 }
 
 /* ============================================================
-   PageShell — shared sub-page framework (Phase 3.2)
+   PageShell 鈥?shared sub-page framework (Phase 3.2)
    ============================================================ */
 .page-shell-v2 {
   min-height: 100vh;
@@ -2545,7 +3166,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   padding: 0 var(--space-8) var(--space-16);
 }
 
-/* ── AnalysisView (Phase 3.2) ── */
+/* 鈹€鈹€ AnalysisView (Phase 3.2) 鈹€鈹€ */
 .analysis-v2 {
   display: flex;
   flex-direction: column;
@@ -2674,7 +3295,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   .analysis-v2__metrics { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* ── ReportView (Phase 3.2) ── */
+/* 鈹€鈹€ ReportView (Phase 3.2) 鈹€鈹€ */
 .report-v2__metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2771,7 +3392,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   .report-v2__filename { flex-direction: column; align-items: stretch; }
 }
 
-/* ── ProjectDetail (Phase 3.2) ── */
+/* 鈹€鈹€ ProjectDetail (Phase 3.2) 鈹€鈹€ */
 .project-v2__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
@@ -3042,7 +3663,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   .project-v2__sidebar { position: static; }
 }
 
-/* ── SettingsPanel (Phase 3.2) ── */
+/* 鈹€鈹€ SettingsPanel (Phase 3.2) 鈹€鈹€ */
 .settings-v2__notice {
   margin-bottom: var(--space-6);
 }
@@ -3245,7 +3866,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   .settings-v2__form-grid { grid-template-columns: 1fr; }
 }
 
-/* ── Create workspace shell (editorial) ── */
+/* 鈹€鈹€ Create workspace shell (editorial) 鈹€鈹€ */
 .create-shell-v2 {
   min-height: 100vh;
   display: flex;
@@ -3277,7 +3898,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
    without any JSX changes.
    ============================================================ */
 
-/* ── Page shell / background ── */
+/* 鈹€鈹€ Page shell / background 鈹€鈹€ */
 .page {
   background: var(--color-bg-alt);
   padding: var(--space-8) clamp(var(--space-6), 5vw, var(--space-12));
@@ -3302,7 +3923,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
   text-transform: uppercase;
 }
 
-/* ── Buttons (legacy, editorial override) ── */
+/* 鈹€鈹€ Buttons (legacy, editorial override) 鈹€鈹€ */
 .button {
   border-radius: 5px;
   padding: 8px 14px;
@@ -3348,7 +3969,7 @@ textarea { min-height: 90px; resize: vertical; line-height: 1.5; }
 .button.large { padding: 11px 20px; font-size: 14px; }
 .button.full { width: 100%; margin-top: 12px; }
 
-/* ── Forms ── */
+/* 鈹€鈹€ Forms 鈹€鈹€ */
 label {
   gap: 6px;
   color: var(--color-text);
@@ -3386,7 +4007,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-size: 11px;
 }
 
-/* ── Panels (editorial) ── */
+/* 鈹€鈹€ Panels (editorial) 鈹€鈹€ */
 .panel {
   border: 1px solid var(--color-line);
   border-radius: 8px;
@@ -3425,7 +4046,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-size: 12px;
 }
 
-/* ── Badges ── */
+/* 鈹€鈹€ Badges 鈹€鈹€ */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -3461,7 +4082,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   background: var(--color-error-bg);
 }
 
-/* ── Notices ── */
+/* 鈹€鈹€ Notices 鈹€鈹€ */
 .notice {
   margin: var(--space-3) 0;
   padding: var(--space-3) var(--space-4);
@@ -3473,7 +4094,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 .notice.error { color: var(--color-error-text); background: var(--color-error-bg); }
 .notice.warn { color: var(--color-warning-text); background: var(--color-warning-bg); }
 
-/* ── Cards / lists / grids ── */
+/* 鈹€鈹€ Cards / lists / grids 鈹€鈹€ */
 .button-row { gap: var(--space-2); }
 .settings-grid, .wizard-grid, .project-grid {
   max-width: 1400px;
@@ -3517,7 +4138,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   flex-wrap: wrap;
 }
 
-/* ── Visual run / translation cards ── */
+/* 鈹€鈹€ Visual run / translation cards 鈹€鈹€ */
 .visual-run-card {
   padding: var(--space-4);
   border: 1px solid var(--color-line-soft);
@@ -3568,7 +4189,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 }
 .visual-stage-strip strong { font-size: var(--text-xs); }
 
-/* ── Analysis mode tabs (in Create shell, editorial) ── */
+/* 鈹€鈹€ Analysis mode tabs (in Create shell, editorial) 鈹€鈹€ */
 .analysis-mode-tabs {
   display: flex;
   position: static;
@@ -3578,7 +4199,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   margin: 0 auto;
   border: 0;
 }
-/* 在 create-shell-v2__bar 容器内, tab 居中显示; 在其它容器内保持左对齐 */
+/* 鍦?create-shell-v2__bar 瀹瑰櫒鍐? tab 灞呬腑鏄剧ず; 鍦ㄥ叾瀹冨鍣ㄥ唴淇濇寔宸﹀榻?*/
 .create-shell-v2__bar .analysis-mode-tabs {
   justify-content: center;
 }
@@ -3605,7 +4226,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 .analysis-mode-tabs span { font-size: 13px; font-weight: 500; }
 .analysis-mode-tabs small { opacity: 0.7; font-size: 11px; }
 
-/* ── Drop zones / upload ── */
+/* 鈹€鈹€ Drop zones / upload 鈹€鈹€ */
 .drop-zone {
   border: 1px dashed var(--color-line-strong);
   border-radius: 8px;
@@ -3630,7 +4251,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-size: 18px;
 }
 
-/* ── Asset grid ── */
+/* 鈹€鈹€ Asset grid 鈹€鈹€ */
 .asset-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -3693,7 +4314,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-size: var(--text-xs);
 }
 
-/* ── Facts / source banner ── */
+/* 鈹€鈹€ Facts / source banner 鈹€鈹€ */
 .facts-box {
   margin: var(--space-4) 0;
   padding: var(--space-4);
@@ -3730,7 +4351,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 }
 .source-banner strong { font-size: var(--text-sm); color: var(--color-text-strong); }
 
-/* ── Empty states ── */
+/* 鈹€鈹€ Empty states 鈹€鈹€ */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -3752,7 +4373,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 .empty-home strong { color: var(--color-text-strong); font-size: var(--text-lg); margin-bottom: var(--space-2); }
 .empty-home p { font-size: var(--text-sm); margin: 0 0 var(--space-5); max-width: 420px; }
 
-/* ── Markdown report area (used in result pages) ── */
+/* 鈹€鈹€ Markdown report area (used in result pages) 鈹€鈹€ */
 .markdown-preview {
   max-width: 1400px;
   margin: 0 auto;
@@ -3785,10 +4406,10 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   vertical-align: top;
 }
 
-/* ── Wizard page (visual analysis create) ── */
+/* 鈹€鈹€ Wizard page (visual analysis create) 鈹€鈹€ */
 .wizard-grid { gap: var(--space-6); }
 
-/* ── Footer decision bars ── */
+/* 鈹€鈹€ Footer decision bars 鈹€鈹€ */
 .context-confirm-footer {
   max-width: 1400px;
   margin: var(--space-6) auto 0;
@@ -3802,7 +4423,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 .context-confirm-footer p { margin: 4px 0 0; font-size: var(--text-sm); color: var(--color-text-muted); }
 .context-confirm-footer input { margin-top: var(--space-3); }
 
-/* ── Toggles (old .toggle class) ── */
+/* 鈹€鈹€ Toggles (old .toggle class) 鈹€鈹€ */
 .toggle {
   display: flex;
   align-items: center;
@@ -3811,7 +4432,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 }
 .toggle input { width: 16px; height: 16px; accent-color: var(--color-primary); }
 
-/* ── Responsive ── */
+/* 鈹€鈹€ Responsive 鈹€鈹€ */
 @media (max-width: 960px) {
   .settings-grid, .wizard-grid, .project-grid, .visual-translation-grid {
     grid-template-columns: 1fr;
@@ -3825,11 +4446,11 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 }
 
 /* ============================================================
-   Architecture Layer — Phase 5
+   Architecture Layer 鈥?Phase 5
    AppShell + TopBar + CommandPalette + InspectorDrawer + Toast
    ============================================================ */
 
-/* ── AppShell (Figma 3-pane layout) ── */
+/* 鈹€鈹€ AppShell (Figma 3-pane layout) 鈹€鈹€ */
 .app-shell-arch {
   min-height: 100vh;
   display: flex;
@@ -3869,6 +4490,11 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   margin: 0 auto;
   padding: 32px 40px 80px;
 }
+.app-shell-arch__main--workspace {
+  padding: 0;
+  height: calc(100vh - var(--topbar-height, 56px));
+  min-height: 0;
+}
 .app-shell-arch__inspector {
   width: 320px;
   flex: none;
@@ -3897,7 +4523,67 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   z-index: 30;
 }
 
-/* ── TopBar ── */
+/* 鈹€鈹€ ThreeColumnLayout (Short-Chain 宸ヤ綔鍙? 鈹€鈹€ */
+.ui-three-column {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  gap: 0;
+}
+.ui-three-column__left,
+.ui-three-column__right {
+  flex: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-line);
+  min-height: 0;
+}
+.ui-three-column__right {
+  border-right: 0;
+  border-left: 1px solid var(--color-line);
+}
+.ui-three-column__center {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+/* 骞虫澘 (768-1279px): 宸﹀彸鏍忓搴︾缉灏忥紝鐢诲竷浼樺厛 */
+@media (max-width: 1279px) {
+  .ui-three-column__left  { width: 300px !important; }
+  .ui-three-column__right { width: 300px !important; }
+}
+
+/* 鎵嬫満 (<768px): 鍗曟爮绾靛悜鍫嗗彔 */
+@media (max-width: 767px) {
+  .ui-three-column {
+    flex-direction: column;
+    height: auto;
+    min-height: 100%;
+  }
+  .ui-three-column__left,
+  .ui-three-column__right {
+    width: 100% !important;
+    height: auto !important;
+    flex: none;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .ui-three-column__right {
+    border-bottom: 0;
+    border-top: 1px solid var(--color-line);
+  }
+  .ui-three-column__center {
+    min-height: 60vh;
+  }
+}
+
+/* 鈹€鈹€ TopBar 鈹€鈹€ */
 .app-topbar-arch {
   display: flex;
   align-items: center;
@@ -4032,7 +4718,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   gap: 6px;
 }
 
-/* ── Command Palette ── */
+/* 鈹€鈹€ Command Palette 鈹€鈹€ */
 .cmd-palette-overlay {
   position: fixed;
   inset: 0;
@@ -4172,7 +4858,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   margin-right: 4px;
 }
 
-/* ── Inspector Drawer (Figma right rail slide-in) ── */
+/* 鈹€鈹€ Inspector Drawer (Figma right rail slide-in) 鈹€鈹€ */
 .drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -4298,7 +4984,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   color: var(--color-text);
 }
 
-/* ── Toast Viewport ── */
+/* 鈹€鈹€ Toast Viewport 鈹€鈹€ */
 .toast-viewport {
   position: fixed;
   bottom: 16px;
@@ -4369,7 +5055,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 }
 .toast__dismiss:hover { color: var(--color-text); background: var(--color-surface-muted); }
 
-/* ── Responsive ── */
+/* 鈹€鈹€ Responsive 鈹€鈹€ */
 @media (max-width: 960px) {
   .app-shell-arch__rail { width: 200px; }
   .app-shell-arch__inspector { display: none; }
@@ -4381,7 +5067,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   .app-topbar-arch__crumbs { display: none; }
 }
 
-/* ── Settings architecture (Phase 5.3) — two-column with sticky nav ── */
+/* 鈹€鈹€ Settings architecture (Phase 5.3) 鈥?two-column with sticky nav 鈹€鈹€ */
 .settings-v2__grid--arch {
   display: grid;
   grid-template-columns: 200px minmax(0, 1fr);
@@ -4484,7 +5170,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 }
 
 /* =====================================================================
- * CI-W1B — Creative Intelligence Web Workspace styles.
+ * CI-W1B 鈥?Creative Intelligence Web Workspace styles.
  *
  * Visual contract: Notion + Figma editorial aesthetic (matches the rest
  * of the apps/web UI). Hairline borders, monochrome + single warm-orange
@@ -4552,7 +5238,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
 .ci-runstate-badge--done { border-left: 3px solid var(--color-success); }
 .ci-runstate-badge--failed { border-left: 3px solid var(--color-error); }
 
-/* ── Run list ──────────────────────────────────────────────────── */
+/* 鈹€鈹€ Run list 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-run-list {
   display: grid;
@@ -4639,7 +5325,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-weight: 600;
 }
 
-/* ── Detail panel ──────────────────────────────────────────────── */
+/* 鈹€鈹€ Detail panel 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-detail {
   display: grid;
@@ -4747,7 +5433,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-size: 12px;
 }
 
-/* ── Fact review ──────────────────────────────────────────────── */
+/* 鈹€鈹€ Fact review 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-checkpoint-prompt {
   display: grid;
@@ -4812,7 +5498,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   color: var(--color-text-muted);
 }
 
-/* ── Understanding ────────────────────────────────────────────── */
+/* 鈹€鈹€ Understanding 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-understanding-grid {
   display: grid;
@@ -4874,7 +5560,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   line-height: 1.6;
 }
 
-/* ── Concept ──────────────────────────────────────────────────── */
+/* 鈹€鈹€ Concept 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-concept-list {
   list-style: none;
@@ -4951,7 +5637,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   background: var(--color-surface);
 }
 
-/* ── Direction / Evaluation / Selection ──────────────────────── */
+/* 鈹€鈹€ Direction / Evaluation / Selection 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-recommendation-banner {
   display: grid;
@@ -5200,7 +5886,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   line-height: 1.5;
 }
 
-/* ── Canon + Translation ─────────────────────────────────────── */
+/* 鈹€鈹€ Canon + Translation 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-locked {
   display: grid;
@@ -5269,7 +5955,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   color: var(--color-warning);
 }
 
-/* ── Modal + Trace Drawer ────────────────────────────────────── */
+/* 鈹€鈹€ Modal + Trace Drawer 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-modal {
   position: fixed;
@@ -5520,7 +6206,7 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   color: var(--color-text-muted);
 }
 
-/* ── Analysis mode tabs (CI variant) ─────────────────────────── */
+/* 鈹€鈹€ Analysis mode tabs (CI variant) 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .analysis-mode-tabs--ci {
   display: grid;
@@ -5570,14 +6256,14 @@ textarea { min-height: 80px; resize: vertical; line-height: 1.55; }
   font-weight: 500;
 }
 
-/* ── CI-W1B.1 progressive disclosure views ────────────────────── */
+/* 鈹€鈹€ CI-W1B.1 progressive disclosure views 鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€鈹€ */
 
 .ci-workspace__body {
   display: grid;
   gap: var(--space-6);
 }
 
-/* Input page — upload-first */
+/* Input page 鈥?upload-first */
 
 .ci-input-layout {
   display: grid;

@@ -20,6 +20,7 @@ import { VisualAssetUploader } from './VisualAssetUploader';
 import { AppShell } from './layout/AppShell';
 import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
 import { Button } from './ui/Button';
+import { useConfirm } from './ui/ConfirmDialog';
 
 interface Props {
   settings: PublicSettings;
@@ -79,6 +80,7 @@ function splitLines(value: string): string[] {
 }
 
 export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateMasterAnchor, onGenerateReferencePreview, onContinueCreativeProduction }: Props) {
+  const { confirm } = useConfirm();
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
@@ -234,7 +236,14 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   }
 
   async function clearUploadAssets() {
-    if (!uploadProject || !window.confirm('确定清空全部素材吗？')) return;
+    if (!uploadProject) return;
+    const ok = await confirm({
+      title: '清空素材',
+      message: '确定清空全部素材吗？',
+      confirmText: '清空',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setBusy(true);
     try { setUploadSummary(await window.masterpiece.projects.clearAssets(uploadProject.id)); }
     catch (reason) { setError(cleanError(reason)); }
@@ -242,7 +251,15 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   }
 
   async function discardUploadProject() {
-    if (uploadProject && !window.confirm(`放弃并删除刚上传的项目「${uploadProject.projectName}」吗？`)) return;
+    if (uploadProject) {
+      const ok = await confirm({
+        title: '放弃并删除项目',
+        message: `放弃并删除刚上传的项目「${uploadProject.projectName}」吗？`,
+        confirmText: '放弃',
+        tone: 'destructive',
+      });
+      if (!ok) return;
+    }
     const target = uploadProject;
     setUploadProject(null);
     setUploadSummary(null);
@@ -399,7 +416,13 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
 
   async function removeRun(run: ReferenceAnchorRun) {
     if (EXECUTING_STATUSES.has(run.status)) return;
-    if (!window.confirm(`确定删除参考锚定任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的参考图副本、胶囊、Brief 和运行记录，且无法撤销。`)) return;
+    const ok = await confirm({
+      title: '删除参考锚定任务',
+      message: `确定删除参考锚定任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的参考图副本、胶囊、Brief 和运行记录，且无法撤销。`,
+      confirmText: '删除任务',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setError('');
     try {
       await window.masterpiece.referenceAnchor.remove(run.id);

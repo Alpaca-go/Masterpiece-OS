@@ -28,10 +28,15 @@ import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { StatusBadgeInline } from './components/StatusBadgeInline';
 import { ProjectDetail } from './components/ProjectDetail';
 import { Button } from './components/ui/Button';
+import { Banner } from './components/ui/Banner';
+import { ConfirmProvider, useConfirm } from './components/ui/ConfirmDialog';
+import { EmptyIllustration } from './components/primitives/EmptyIllustration';
 import { AppShell } from './components/layout/AppShell';
 import { TopBar, TopBarBrand, TopBarBreadcrumb, TopBarActions, TopBarSegment } from './components/layout/TopBar';
 import { CommandPalette, useCommandPalette } from './components/layout/CommandPalette';
 import { ToastViewport, useToasts } from './components/layout/Toast';
+import { KeyboardShortcutsModal, useKeyboardShortcuts } from './components/layout/KeyboardShortcuts';
+import { ThemeToggle, useTheme } from './theme';
 import { cleanError, formatBytes, formatDuration, formatRelativeTime } from './utils';
 import { useUrlScreen, type Screen } from './lib/useUrlScreen';
 
@@ -83,6 +88,14 @@ function ReferenceAnchorStatusBadge({ status }: { status: ReferenceAnchorRun['st
 }
 
 export function App() {
+  return (
+    <ConfirmProvider>
+      <AppContent />
+    </ConfirmProvider>
+  );
+}
+
+function AppContent() {
   // Phase 5.8: screen state now derives from URL pathname via HashRouter.
   // setScreen(...) is a thin wrapper over navigate(); the 46 call sites
   // in this file are unchanged in shape.
@@ -135,6 +148,9 @@ export function App() {
   // take the early return paths and the home path.
   const [cmdOpen, setCmdOpen] = useCommandPalette();
   const { toasts, push: pushToast, dismiss: dismissToast } = useToasts();
+  const { mode: themeMode, setTheme: setThemeMode, toggle: toggleTheme } = useTheme();
+  const { confirm } = useConfirm();
+  const [shortcutsOpen, setShortcutsOpen] = useKeyboardShortcuts();
 
   // Build the command palette registry from current app state.
   // Zero-logic: just lists existing data + reuses existing setScreen handlers.
@@ -147,6 +163,11 @@ export function App() {
       { id: 'nav.create', label: '新建分析（视觉）', hint: 'Create / Visual', section: '导航', keywords: ['create', 'analysis', '新建', '分析'], shortcut: 'g c' },
       { id: 'nav.settings', label: 'API 与模型设置', hint: 'Settings', section: '导航', keywords: ['settings', '设置', 'api'], shortcut: 'g s' },
       { id: 'nav.packaging', label: '包装生成', hint: 'Packaging', section: '导航', keywords: ['packaging', '包装'] },
+      { id: 'theme.toggle', label: '切换亮/暗主题', hint: themeMode === 'dark' ? '当前: 深色' : themeMode === 'light' ? '当前: 浅色' : '当前: 跟随系统', section: '外观', keywords: ['theme', 'dark', 'light', '主题', '深色', '浅色'], shortcut: 'shift t' },
+      { id: 'theme.light', label: '切换到浅色主题', hint: 'Light', section: '外观', keywords: ['theme', 'light', '浅色'] },
+      { id: 'theme.dark', label: '切换到深色主题', hint: 'Dark', section: '外观', keywords: ['theme', 'dark', '深色'] },
+      { id: 'theme.system', label: '跟随系统主题', hint: 'System', section: '外观', keywords: ['theme', 'system', '系统'] },
+      { id: 'app.shortcuts', label: '快捷键一览', hint: 'Keyboard Shortcuts', section: '帮助', keywords: ['shortcuts', 'keyboard', 'help', '快捷键', '帮助', '?'], shortcut: '?' },
     ];
     for (const project of projects.slice(0, 8)) {
       items.push({
@@ -158,7 +179,7 @@ export function App() {
       });
     }
     return items;
-  }, [projects]);
+  }, [projects, themeMode]);
 
   async function refresh() {
     const [nextSettings, nextProjects, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
@@ -330,20 +351,40 @@ export function App() {
   }
 
   async function removeBatch(batchId: string, label: string) {
-    if (!selected || !window.confirm(`确定删除批次“${label}”中的全部素材吗？`)) return;
+    if (!selected) return;
+    const ok = await confirm({
+      title: '删除批次',
+      message: `确定删除批次“${label}”中的全部素材吗？`,
+      confirmText: '删除',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     try { await refreshSelected(selected.id, await window.masterpiece.projects.removeBatch(selected.id, batchId)); }
     catch (reason) { setError(cleanError(reason)); }
   }
 
   async function clearAssets() {
-    if (!selected || !window.confirm('确定清空全部素材吗？\n已生成的视觉总览缓存将失效。')) return;
+    if (!selected) return;
+    const ok = await confirm({
+      title: '清空素材',
+      message: '确定清空全部素材吗？\n已生成的视觉总览缓存将失效。',
+      confirmText: '清空',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     try { await refreshSelected(selected.id, await window.masterpiece.projects.clearAssets(selected.id)); }
     catch (reason) { setError(cleanError(reason)); }
   }
 
   async function deleteProject(project: ProjectRecord) {
     if (project.status === 'running') return;
-    if (!window.confirm(`确定删除项目“${project.projectName}”吗？\n\n此操作会同时永久删除该项目对应的本地文件夹，包括素材、缓存、报告和运行记录，且无法撤销。`)) return;
+    const ok = await confirm({
+      title: '删除项目',
+      message: `确定删除项目“${project.projectName}”吗？\n\n此操作会同时永久删除该项目对应的本地文件夹，包括素材、缓存、报告和运行记录，且无法撤销。`,
+      confirmText: '删除项目',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setDeletingProjectId(project.id);
     setError('');
     try {
@@ -362,7 +403,13 @@ export function App() {
 
   async function deleteReferenceAnchorRun(run: ReferenceAnchorRun) {
     if (REFERENCE_ANCHOR_EXECUTING.has(run.status)) return;
-    if (!window.confirm(`确定删除参考锚定任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的参考图副本、风格胶囊、Anchor Brief 和运行记录，且无法撤销。`)) return;
+    const ok = await confirm({
+      title: '删除参考锚定任务',
+      message: `确定删除参考锚定任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的参考图副本、风格胶囊、Anchor Brief 和运行记录，且无法撤销。`,
+      confirmText: '删除任务',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setDeletingReferenceAnchorRunId(run.id);
     setError('');
     try {
@@ -378,7 +425,13 @@ export function App() {
 
   async function deleteDocumentContextRun(run: DocumentContextRun) {
     if (DOCUMENT_CONTEXT_EXECUTING.has(run.status)) return;
-    if (!window.confirm(`确定删除文档上下文提取任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的文档副本、中间产物、简报和运行记录，且无法撤销。`)) return;
+    const ok = await confirm({
+      title: '删除文档上下文任务',
+      message: `确定删除文档上下文提取任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的文档副本、中间产物、简报和运行记录，且无法撤销。`,
+      confirmText: '删除任务',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     setDeletingDocumentContextRunId(run.id);
     setError('');
     try {
@@ -419,7 +472,16 @@ export function App() {
   }
 
   if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
-  if (!settings) return <div className="splash"><div className="brand-mark">!</div><p>{error || '客户端初始化失败，请重新启动。'}</p></div>;
+  if (!settings) return (
+    <div className="splash">
+      <div className="splash__brand">
+        <div className="brand-mark">!</div>
+      </div>
+      <Banner tone="error" dismissible={false}>
+        {error || '客户端初始化失败，请重新启动。'}
+      </Banner>
+    </div>
+  );
 
   if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
   if (screen === 'create') return (
@@ -465,7 +527,11 @@ export function App() {
   if (screen === 'creative-session' && selected) {
     // P1.7 路由切换: 用新 ShortChainPage (路线 A / §6 P1) 替代 v1 ShortChainGenerationWorkspace.
     // 旧的 Workspace 还保留 import 引用 (P3 退役阶段才删).
-    return <ShortChainPage project={selected} />;
+    return <ShortChainPage
+      project={selected}
+      onBack={() => setScreen('project')}
+      onGoHome={() => setScreen('home')}
+    />;
   }
 
   if (screen === 'image-generation' && requestedImageGen) return <ImageGenerationWorkspace
@@ -518,6 +584,11 @@ export function App() {
     else if (item.id === 'nav.create') { setAnalysisMode('visual-analysis'); setScreen('create'); }
     else if (item.id === 'nav.settings') { setSettingsReturnScreen(currentScreen); setScreen('settings'); }
     else if (item.id === 'nav.packaging') setScreen('packaging');
+    else if (item.id === 'theme.toggle') { toggleTheme(); }
+    else if (item.id === 'theme.light') { setThemeMode('light'); }
+    else if (item.id === 'theme.dark') { setThemeMode('dark'); }
+    else if (item.id === 'theme.system') { setThemeMode('system'); }
+    else if (item.id === 'app.shortcuts') { setShortcutsOpen(true); }
     else if (item.id.startsWith('project.')) {
       const id = item.id.slice('project.'.length);
       const project = projects.find((p) => p.id === id);
@@ -560,6 +631,7 @@ export function App() {
                 <span className={'status-dot ' + settings.connectionStatus} />
                 <span>{defaultProfile?.modelId ? <strong>{defaultProfile.modelId}</strong> : '未配置'}</span>
               </div>
+              <ThemeToggle />
               <Button variant="ghost" size="sm" onClick={() => setCmdOpen(true)} title="搜索命令 / 跳转 (⌘K)">
                 <span className="kbd-mono">⌘K</span>
               </Button>
@@ -756,7 +828,7 @@ export function App() {
             </div>
           ) : (
             <div className="empty-home">
-              <div className="empty-orbit" />
+              <EmptyIllustration variant="welcome" />
               <strong>还没有分析记录</strong>
               <p>进入分析工作台,选择智能生成、Creative Intelligence 或参考视觉转换开始第一次任务。</p>
               <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
@@ -776,6 +848,7 @@ export function App() {
       placeholder="搜索命令、跳转页面、打开项目…"
     />
     <ToastViewport toasts={toasts} onDismiss={dismissToast} />
+    <KeyboardShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </>
   );
 }

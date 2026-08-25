@@ -1,6 +1,7 @@
 // features/short-chain/BriefEditor.tsx
 //
 // 路线 A / P1.3 — Brief 编辑器 (左栏) 接入 useShortChainBrief hook。
+// P1-2 改进: 字段分级折叠 (核心 + 高级)，降低认知负荷。
 //
 // 设计: pure presentational — 通过 props 接收 hook 状态 + setter,
 // 不直接调用 hook。这样 ShortChainPage 顶层统一 useShortChainBrief,
@@ -8,20 +9,15 @@
 //
 // 当前 scope (P1.3 起步):
 // - 4 个 family 切换 (Space / Packaging / VI / Poster)
-// - 1 个 subtype 下拉
-// - 1 个 shot 下拉
+// - 1 个 subtype 下拉 (高级)
+// - 1 个 shot 下拉 (高级)
 // - 1 个 aspectRatio 选择器 (1:1 / 4:3 / 3:4 / 16:9 / 9:16)
 // - 1 个 instruction 大 textarea
-// - 2 个 mustInclude / mustAvoid textarea
-// - 1 个 logoUsageMode 单选 (blank_area / post_composite)
+// - 2 个 mustInclude / mustAvoid textarea (高级)
+// - 1 个 logoUsageMode 单选 (高级)
 // - 1 个 '智能生成' 主按钮 (基于 canCompile 启用)
-//
-// 未做 (留到 P1.5+):
-// - referenceAssetIds 多选 (useShortChainReferenceAssets)
-// - shotSource 选择器 (下游 useShortChainReferenceAssets)
-// - referenceSceneRelation 切换
 
-import type { ChangeEvent } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import type { Family } from '../../components/shortchain/ShortChainTypes';
 import type { ShortChainLogoUsageMode, ShortChainTaskContract } from '@masterpiece/runtime-core/application-contracts.ts';
 
@@ -88,6 +84,12 @@ const LOGO_MODE_OPTIONS: Array<{ value: ShortChainLogoUsageMode; label: string; 
   { value: 'post_composite', label: '后期合成', hint: '项目有已确认 Logo 时使用' },
 ];
 
+const LOGO_MODE_LABELS: Record<ShortChainLogoUsageMode, string> = {
+  blank_area: '预留区域',
+  post_composite: '后期合成',
+  reference: '参考图合成',
+};
+
 export function BriefEditor(props: BriefEditorProps) {
   const {
     family, subtype, shot, aspectRatio, instruction, mustIncludeText, mustAvoidText,
@@ -97,6 +99,8 @@ export function BriefEditor(props: BriefEditorProps) {
     onGenerate,
   } = props;
 
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+
   function onFamilyChange(e: ChangeEvent<HTMLSelectElement>) {
     const next = e.target.value as Family;
     setFamily(next);
@@ -104,9 +108,20 @@ export function BriefEditor(props: BriefEditorProps) {
     if (next !== family) changeFamily(next);
   }
 
+  // 计算已配置的高级项摘要（用于折叠标题显示）
+  const advancedSummaryParts: string[] = [];
+  if (subtype && SUBTYPE_OPTIONS[family][0] !== subtype) advancedSummaryParts.push(`子类型: ${subtype}`);
+  if (shot && SHOT_OPTIONS[family][0] !== shot) advancedSummaryParts.push(`镜头: ${shot}`);
+  if (mustIncludeText.trim()) advancedSummaryParts.push(`必含 ${mustIncludeText.trim().split('\n').filter(Boolean).length} 项`);
+  if (mustAvoidText.trim()) advancedSummaryParts.push(`必避 ${mustAvoidText.trim().split('\n').filter(Boolean).length} 项`);
+  if (logoUsageMode !== 'blank_area') advancedSummaryParts.push(`Logo: ${LOGO_MODE_LABELS[logoUsageMode]}`);
+  const advancedSummary = advancedSummaryParts.length ? advancedSummaryParts.join(' · ') : '';
+
   return (
     <div className="sc-brief-editor">
       <h3 className="sc-brief-editor__title">创意指令</h3>
+
+      {/* ═══ 核心字段 ═══ */}
 
       {/* Family 选择 */}
       <label className="sc-field">
@@ -114,26 +129,6 @@ export function BriefEditor(props: BriefEditorProps) {
         <select value={family} onChange={onFamilyChange}>
           {(Object.keys(FAMILY_LABELS) as Family[]).map((f) => (
             <option key={f} value={f}>{FAMILY_LABELS[f]}</option>
-          ))}
-        </select>
-      </label>
-
-      {/* Subtype */}
-      <label className="sc-field">
-        <span className="sc-field-label">子类型</span>
-        <select value={subtype} onChange={(e) => setSubtype(e.target.value)}>
-          {SUBTYPE_OPTIONS[family].map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-      </label>
-
-      {/* Shot */}
-      <label className="sc-field">
-        <span className="sc-field-label">镜头 / 构图</span>
-        <select value={shot} onChange={(e) => setShot(e.target.value)}>
-          {SHOT_OPTIONS[family].map((s) => (
-            <option key={s} value={s}>{s}</option>
           ))}
         </select>
       </label>
@@ -171,49 +166,7 @@ export function BriefEditor(props: BriefEditorProps) {
         </small>
       </label>
 
-      {/* Must include / avoid */}
-      <div className="sc-field sc-field-grid">
-        <label className="sc-field">
-          <span className="sc-field-label">必须包含 (每行一项)</span>
-          <textarea
-            rows={2}
-            value={mustIncludeText}
-            onChange={(e) => setMustIncludeText(e.target.value)}
-            placeholder="例如: 完整前台;清晰入口动线"
-          />
-        </label>
-        <label className="sc-field">
-          <span className="sc-field-label">必须避免 (每行一项)</span>
-          <textarea
-            rows={2}
-            value={mustAvoidText}
-            onChange={(e) => setMustAvoidText(e.target.value)}
-            placeholder="例如: VI 展板;错误品牌文字"
-          />
-        </label>
-      </div>
-
-      {/* Logo mode */}
-      <fieldset className="sc-field sc-logo-mode">
-        <legend className="sc-field-label">Logo 处理</legend>
-        {LOGO_MODE_OPTIONS.map((opt) => (
-          <label key={opt.value} className="sc-radio-row">
-            <input
-              type="radio"
-              name="sc-logo-mode"
-              value={opt.value}
-              checked={logoUsageMode === opt.value}
-              onChange={() => setLogoUsageMode(opt.value)}
-            />
-            <span>
-              <strong>{opt.label}</strong>
-              <small>{opt.hint}</small>
-            </span>
-          </label>
-        ))}
-      </fieldset>
-
-      {/* Generate CTA */}
+      {/* Generate CTA (核心区底部) */}
       <button
         type="button"
         className="sc-cta__primary"
@@ -222,6 +175,90 @@ export function BriefEditor(props: BriefEditorProps) {
       >
         {compiling ? '生成中…' : '智能生成'}
       </button>
+
+      {/* ═══ 高级设置 (折叠) ═══ */}
+      <div className={`sc-advanced${advancedOpen ? ' is-open' : ''}`}>
+        <button
+          type="button"
+          className="sc-advanced__toggle"
+          onClick={() => setAdvancedOpen(!advancedOpen)}
+          aria-expanded={advancedOpen}
+        >
+          <span className="sc-advanced__toggle-label">
+            <span className="sc-advanced__toggle-icon" aria-hidden>
+              {advancedOpen ? '▾' : '▸'}
+            </span>
+            高级设置
+          </span>
+          {advancedSummary && !advancedOpen && (
+            <span className="sc-advanced__toggle-summary">{advancedSummary}</span>
+          )}
+        </button>
+
+        <div className="sc-advanced__content" hidden={!advancedOpen}>
+          {/* Subtype */}
+          <label className="sc-field">
+            <span className="sc-field-label">子类型</span>
+            <select value={subtype} onChange={(e) => setSubtype(e.target.value)}>
+              {SUBTYPE_OPTIONS[family].map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </label>
+
+          {/* Shot */}
+          <label className="sc-field">
+            <span className="sc-field-label">镜头 / 构图</span>
+            <select value={shot} onChange={(e) => setShot(e.target.value)}>
+              {SHOT_OPTIONS[family].map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </label>
+
+          {/* Must include / avoid */}
+          <div className="sc-field sc-field-grid">
+            <label className="sc-field">
+              <span className="sc-field-label">必须包含 (每行一项)</span>
+              <textarea
+                rows={2}
+                value={mustIncludeText}
+                onChange={(e) => setMustIncludeText(e.target.value)}
+                placeholder="例如: 完整前台;清晰入口动线"
+              />
+            </label>
+            <label className="sc-field">
+              <span className="sc-field-label">必须避免 (每行一项)</span>
+              <textarea
+                rows={2}
+                value={mustAvoidText}
+                onChange={(e) => setMustAvoidText(e.target.value)}
+                placeholder="例如: VI 展板;错误品牌文字"
+              />
+            </label>
+          </div>
+
+          {/* Logo mode */}
+          <fieldset className="sc-field sc-logo-mode">
+            <legend className="sc-field-label">Logo 处理</legend>
+            {LOGO_MODE_OPTIONS.map((opt) => (
+              <label key={opt.value} className="sc-radio-row">
+                <input
+                  type="radio"
+                  name="sc-logo-mode"
+                  value={opt.value}
+                  checked={logoUsageMode === opt.value}
+                  onChange={() => setLogoUsageMode(opt.value)}
+                />
+                <span>
+                  <strong>{opt.label}</strong>
+                  <small>{opt.hint}</small>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+        </div>
+      </div>
 
       {/* 反馈 */}
       {error && <div className="sc-brief-editor__error" role="alert">{error}</div>}

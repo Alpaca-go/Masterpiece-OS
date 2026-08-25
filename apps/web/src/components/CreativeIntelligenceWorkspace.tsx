@@ -76,6 +76,7 @@ import { cleanError, formatRelativeTime } from '../utils';
 import { AppShell } from './layout/AppShell';
 import { TopBar, TopBarActions, TopBarBreadcrumb } from './layout/TopBar';
 import { Button } from './ui/Button';
+import { useConfirm } from './ui/ConfirmDialog';
 import { DIRECTION_FAMILY_LABELS, EVALUATION_DIMENSION_LABELS, RUN_STATUS_LABELS, SCORE_LABELS, STATUS_TONE } from '../ciworkspace/format.ts';
 
 const PICKER_UNAVAILABLE_TEXT = '无法打开文件选择器，请重试。';
@@ -124,6 +125,7 @@ interface Props {
 // ---------------------------------------------------------------------------
 
 export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, onApiProfileChange, onBack, onOpenSettings, hideChrome }: Props) {
+  const { confirm } = useConfirm();
   const profiles = settings.profiles.filter((profile) => profile.isEnabled);
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId)
@@ -357,16 +359,28 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
   }, [ci, refreshRuns]);
 
   const handleCancel = useCallback(async (runId: string) => {
-    if (!window.confirm('确定取消这个智能创意任务吗？')) return;
+    const ok = await confirm({
+      title: '取消任务',
+      message: '确定取消这个智能创意任务吗？',
+      confirmText: '取消任务',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     try {
       await ci.cancel(runId);
       if (activeRunId === runId) setActiveRunId('');
       await refreshRuns();
     } catch (reason) { setError(cleanError(reason)); }
-  }, [ci, activeRunId, refreshRuns]);
+  }, [ci, activeRunId, refreshRuns, confirm]);
 
   const handleRemove = useCallback(async (run: Run) => {
-    if (!window.confirm(`确定删除任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的所有运行记录与产出。`)) return;
+    const ok = await confirm({
+      title: '删除任务',
+      message: `确定删除任务“${run.projectName}”吗？\n\n此操作会永久删除该任务的所有运行记录与产出。`,
+      confirmText: '删除任务',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     try {
       await ci.remove(run.id);
       if (activeRunId === run.id) {
@@ -377,7 +391,7 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
       }
       await refreshRuns();
     } catch (reason) { setError(cleanError(reason)); }
-  }, [ci, activeRunId, refreshRuns]);
+  }, [ci, activeRunId, refreshRuns, confirm]);
 
   // ── View switch helpers ──
   const openRun = useCallback(async (run: Run) => {
@@ -468,7 +482,13 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
   }, [ci]);
 
   const handleCancelAnchorProduction = useCallback(async (runId: string) => {
-    if (!window.confirm('确定取消当前视觉锚点生成吗？')) return;
+    const ok = await confirm({
+      title: '取消生成',
+      message: '确定取消当前视觉锚点生成吗？',
+      confirmText: '取消生成',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     if (!ci.cancelAnchorProduction) return;
     setBusy(true); setError('');
     try {
@@ -476,7 +496,7 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
       setActiveView(view as WorkspaceView);
     } catch (reason) { setError(cleanError(reason)); }
     finally { setBusy(false); }
-  }, [ci]);
+  }, [ci, confirm]);
 
   // ── Computed ──
   const conceptRef = useMemo(() => computeConceptReferenceability(activeView), [activeView]);

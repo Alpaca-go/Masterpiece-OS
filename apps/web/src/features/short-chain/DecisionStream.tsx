@@ -10,12 +10,13 @@
 //
 // P1 起步只占位.
 
-import { EmptyState } from '../../components/primitives/EmptyState';
+import { EmptyState, EmptyIllustration } from '../../components/primitives';
 
 export function DecisionStream() {
   return (
     <div className="sc-decision-stream">
       <EmptyState
+        icon={<EmptyIllustration variant="no-history" />}
         title="决策历史"
         description="P1.1 接入 session.history, 显示时间线 (compile → run → confirm → revoke)"
         bordered

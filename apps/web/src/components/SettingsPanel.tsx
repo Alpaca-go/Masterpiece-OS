@@ -13,6 +13,7 @@ import { ProfilesSection } from './settings/ProfilesSection';
 import { RegistrySection } from './settings/RegistrySection';
 import { LocalSection } from './settings/LocalSection';
 import { SettingsNav } from './settings/SettingsNav';
+import { useConfirm } from './ui/ConfirmDialog';
 
 interface Props {
   settings: PublicSettings;
@@ -65,6 +66,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   const [editor, setEditor] = useState<SaveApiProfileInput | null>(null);
   const [showKey, setShowKey] = useState(false);
   const [busy, setBusy] = useState('');
+  const { confirm } = useConfirm();
   const [notice, setNotice] = useState<{
     tone: 'ok' | 'error';
     text: string;
@@ -143,7 +145,13 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   }
 
   async function removeProfile(profile: ApiProfile) {
-    if (!window.confirm(`确定删除 API Profile"${profile.displayName}"吗？\n对应的安全凭据也会同步删除。`)) return;
+    const ok = await confirm({
+      title: '删除 API Profile',
+      message: `确定删除 API Profile"${profile.displayName}"吗？\n对应的安全凭据也会同步删除。`,
+      confirmText: '删除',
+      tone: 'destructive',
+    });
+    if (!ok) return;
     await perform(
       `delete-${profile.id}`,
       () => window.masterpiece.settings.deleteProfile(profile.id),
