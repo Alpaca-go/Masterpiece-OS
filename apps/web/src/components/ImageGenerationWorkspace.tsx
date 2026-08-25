@@ -19,6 +19,7 @@ import { cleanError } from '../utils';
 import { AppShell } from './layout/AppShell';
 import { TopBar, TopBarBreadcrumb, TopBarActions } from './layout/TopBar';
 import { Button } from './ui/Button';
+import { GateErrorHints } from './GateErrorHints';
 
 interface Props {
   sourceBundle: ImageGenerationSourceBundle;
@@ -585,9 +586,9 @@ export function ImageGenerationWorkspace({ sourceBundle, settings, apiProfileId,
             <summary>查看编译后的 Prompt</summary>
             <pre>{compileResult.compiledPrompt}</pre>
           </details>
-          {compileResult.gate.errors.length > 0 && <div className="notice error">
+          {compileResult.gate.errors.length > 0 && <div className="notice error gate-block">
             <strong>阻断错误（{compileResult.gate.errors.length}）</strong>
-            <ul>{compileResult.gate.errors.map((e) => <li key={e.code}>{e.message}</li>)}</ul>
+            <GateErrorHints errors={compileResult.gate.errors} />
           </div>}
           {compileResult.gate.warnings.length > 0 && <div className="notice warn">
             <strong>Warning（{compileResult.gate.warnings.length}）</strong>
