@@ -19,7 +19,7 @@ test('renderer routes supported entry points into the current generation workspa
   }
   assert.doesNotMatch(appSource, /preset: 'visual_extension'/);
   assert.match(appSource, /setScreen\('creative-session'\)/);
-  assert.match(appSource, /<ShortChainGenerationWorkspace/u);
+  assert.match(appSource, /<ShortChainPage/u);
   assert.doesNotMatch(appSource, /CreativeSessionWorkspace/u);
   assert.match(reportSource, /onGenerateVisual/);
   assert.match(documentSource, /onGenerateConcept/);

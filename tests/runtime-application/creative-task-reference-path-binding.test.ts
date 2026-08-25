@@ -228,10 +228,14 @@ test('BD-16 referenceAssignments authority unchanged', () => {
   assert.doesNotMatch(src, /referenceAssignments/u);
 });
 
-test('BD-17 Web upload implementation unchanged', () => {
+test('BD-17 Web upload RPC server unchanged', () => {
+  // P3-D corrective guard: local-rpc-server.ts upload wiring must be
+  // untouched by subsequent changes. (The legacy workspace file that
+  // originally paired with this assertion was deleted in F6.B; this
+  // test now asserts the surviving half only.)
   const delta = git(['diff', '--name-only', 'dfffa19b1b909e1146065785914cd6f724b0d8fd', 'HEAD',
-    '--', 'apps/web/src/components/ShortChainGenerationWorkspace.tsx', 'apps/web-runtime/src/local-rpc-server.ts']);
-  assert.equal(delta, '', 'Web upload implementation must be untouched by this corrective');
+    '--', 'apps/web-runtime/src/local-rpc-server.ts']);
+  assert.equal(delta, '', 'Web upload RPC server must be untouched by this corrective');
 });
 
 test('BD-18 project-store persistence unchanged', () => {

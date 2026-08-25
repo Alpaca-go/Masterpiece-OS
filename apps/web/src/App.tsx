@@ -12,7 +12,6 @@ import { AnalysisView } from './components/AnalysisView';
 import { ReportView } from './components/ReportView';
 import { SettingsPanel } from './components/SettingsPanel';
 import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace';
-import { ShortChainGenerationWorkspace } from './components/ShortChainGenerationWorkspace';
 // CI-W1B invariant: DocumentContextWorkspace import 保留在 App.tsx
 // (legacy /document-context deep link 兼容保证).
 // B3 后实际渲染由 CreatePage 负责, 此处仅为 invariant test 契约保留.
@@ -538,8 +537,7 @@ function AppContent() {
   if (screen === 'report' && selected) return <ReportView project={selected} onBack={() => setScreen('project')} onRerun={(force) => void run(selected, force, selectedApiProfileId)} onGenerateVisual={() => setScreen('creative-session')} />;
 
   if (screen === 'creative-session' && selected) {
-    // P1.7 路由切换: 用新 ShortChainPage (路线 A / §6 P1) 替代 v1 ShortChainGenerationWorkspace.
-    // 旧的 Workspace 还保留 import 引用 (P3 退役阶段才删).
+    // P1.7 路由切换: ShortChainPage (路线 A / §6 P1) 是 creative-session 唯一入口.
     return <ShortChainPage
       project={selected}
       onBack={() => setScreen('project')}

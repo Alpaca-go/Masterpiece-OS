@@ -11,7 +11,7 @@ test('Stage 4 makes short-chain the only production path; legacy removed from UI
   // Short chain is the default pipeline mode.
   assert.match(settingsSource, /imageGenerationPipelineMode:\s*'vnext'/u);
   // App.tsx mounts only the vnext/short-chain workspace for creative-session.
-  assert.match(appSource, /<ShortChainGenerationWorkspace/u);
+  assert.match(appSource, /<ShortChainPage/u);
   assert.doesNotMatch(appSource, /<CreativeSessionWorkspace/u);
   // App.tsx no longer branches on pipeline mode for routing.
   assert.doesNotMatch(appSource, /imageGenerationPipelineMode\s*!==\s*['"]legacy['"]/u);

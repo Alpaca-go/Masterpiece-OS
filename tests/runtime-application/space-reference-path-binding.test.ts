@@ -232,10 +232,14 @@ test('BE-18 Packaging D3.7B unchanged', () => {
   assert.equal(delta, '', 'packaging short-chain-service must be untouched by this corrective');
 });
 
-test('BE-19 Web upload unchanged', () => {
+test('BE-19 Web upload RPC server unchanged', () => {
+  // P3-D corrective guard: local-rpc-server.ts upload wiring must be
+  // untouched by subsequent changes. (The legacy workspace file that
+  // originally paired with this assertion was deleted in F6.B; this
+  // test now asserts the surviving half only.)
   const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'apps/web/src/components/ShortChainGenerationWorkspace.tsx', 'apps/web-runtime/src/local-rpc-server.ts']);
-  assert.equal(delta, '', 'web upload must be untouched');
+    '--', 'apps/web-runtime/src/local-rpc-server.ts']);
+  assert.equal(delta, '', 'web upload RPC server must be untouched');
 });
 
 test('BE-20 Reference preview unchanged', () => {
