@@ -1,0 +1,120 @@
+/* styles/f7-theme-dark.css 鈥?extracted from styles.css lines 294-412 (F7, 2026-08-26) */
+/* ============================================================
+   Theme System 鈥?娣辫壊涓婚 / 璺熼殢绯荤粺
+   ============================================================
+   浣跨敤鏂瑰紡锛?
+     - 榛樿锛氭祬鑹蹭富棰?(warm-white editorial)
+     - data-theme="dark"  寮哄埗娣辫壊
+     - data-theme="light" 寮哄埗娴呰壊
+     - 鏃?data-theme 灞炴€?鈫?璺熼殢绯荤粺 (prefers-color-scheme)
+   ============================================================ */
+
+/* 鈹€鈹€ 寮哄埗娣辫壊涓婚 鈹€鈹€ */
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 鑳屾櫙灞?*/
+  --color-bg: #0B0D10;
+  --color-bg-alt: #101317;
+  --color-bg-deep: #07090B;
+  --color-surface: #13161B;
+  --color-surface-soft: #1A1E25;
+  --color-surface-muted: #16191F;
+
+  /* 鏂囧瓧 */
+  --color-text: #E8EBEF;
+  --color-text-strong: #F4F6F8;
+  --color-text-muted: #9AA3B2;
+  --color-text-subtle: #6B7280;
+  --color-text-faint: #4A5160;
+  --color-text-on-accent: #0B0D10;
+
+  /* 杈规 */
+  --color-line: #2A2F38;
+  --color-line-strong: #3A404B;
+  --color-line-muted: #1F242C;
+  --color-line-soft: #181C22;
+
+  /* 鍝佺墝鑹?*/
+  --color-accent: #E8EBEF;          /* 娣辫壊涓?accent = 杩戠櫧锛屽弽杞涔?*/
+  --color-accent-hover: #FFFFFF;
+  --color-accent-soft: rgba(232, 235, 239, 0.08);
+  --color-accent-line: rgba(232, 235, 239, 0.16);
+  --color-accent-shadow: rgba(0, 0, 0, 0.4);
+
+  /* 璇箟鑹诧紙娣辫壊涓嬭皟浜枃瀛楋紝鍔犳繁鑳屾櫙锛?*/
+  --color-success: #7FC48F;
+  --color-success-text: #8DD19C;
+  --color-success-bg: rgba(127, 196, 143, 0.12);
+  --color-success-line: rgba(127, 196, 143, 0.25);
+  --color-warning: #E5B862;
+  --color-warning-text: #EBC97E;
+  --color-warning-bg: rgba(229, 184, 98, 0.12);
+  --color-warning-line: rgba(229, 184, 98, 0.25);
+  --color-error: #E07A7A;
+  --color-error-text: #E89090;
+  --color-error-bg: rgba(224, 122, 122, 0.12);
+  --color-error-line: rgba(224, 122, 122, 0.25);
+  --color-error-bg-soft: rgba(224, 122, 122, 0.08);
+  --color-error-bg-alt: rgba(224, 122, 122, 0.06);
+  --color-info: #8BB4E8;
+  --color-info-text: #A3C4EE;
+  --color-info-bg: rgba(139, 180, 232, 0.12);
+
+  /* 闃村奖锛堟繁鑹蹭笅璋冮珮瀵规瘮搴︼級 */
+  --shadow-focus: 0 0 0 3px rgba(232, 235, 239, 0.18);
+  --shadow-focus-hot: 0 0 0 3px rgba(229, 83, 43, 0.3);
+}
+
+/* 鈹€鈹€ 璺熼殢绯荤粺锛氱郴缁熸繁鑹叉椂搴旂敤 鈹€鈹€ */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --color-bg: #0B0D10;
+    --color-bg-alt: #101317;
+    --color-bg-deep: #07090B;
+    --color-surface: #13161B;
+    --color-surface-soft: #1A1E25;
+    --color-surface-muted: #16191F;
+
+    --color-text: #E8EBEF;
+    --color-text-strong: #F4F6F8;
+    --color-text-muted: #9AA3B2;
+    --color-text-subtle: #6B7280;
+    --color-text-faint: #4A5160;
+    --color-text-on-accent: #0B0D10;
+
+    --color-line: #2A2F38;
+    --color-line-strong: #3A404B;
+    --color-line-muted: #1F242C;
+    --color-line-soft: #181C22;
+
+    --color-accent: #E8EBEF;
+    --color-accent-hover: #FFFFFF;
+    --color-accent-soft: rgba(232, 235, 239, 0.08);
+    --color-accent-line: rgba(232, 235, 239, 0.16);
+    --color-accent-shadow: rgba(0, 0, 0, 0.4);
+
+    --color-success: #7FC48F;
+    --color-success-text: #8DD19C;
+    --color-success-bg: rgba(127, 196, 143, 0.12);
+    --color-success-line: rgba(127, 196, 143, 0.25);
+    --color-warning: #E5B862;
+    --color-warning-text: #EBC97E;
+    --color-warning-bg: rgba(229, 184, 98, 0.12);
+    --color-warning-line: rgba(229, 184, 98, 0.25);
+    --color-error: #E07A7A;
+    --color-error-text: #E89090;
+    --color-error-bg: rgba(224, 122, 122, 0.12);
+    --color-error-line: rgba(224, 122, 122, 0.25);
+    --color-error-bg-soft: rgba(224, 122, 122, 0.08);
+    --color-error-bg-alt: rgba(224, 122, 122, 0.06);
+    --color-info: #8BB4E8;
+    --color-info-text: #A3C4EE;
+    --color-info-bg: rgba(139, 180, 232, 0.12);
+
+    --shadow-focus: 0 0 0 3px rgba(232, 235, 239, 0.18);
+    --shadow-focus-hot: 0 0 0 3px rgba(229, 83, 43, 0.3);
+  }
+}

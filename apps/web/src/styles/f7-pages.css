@@ -1,21 +1,4 @@
-/* styles.css 鈥?App-wide stylesheet entry.
- *
- * F7 (2026-08-26): split tokens / theme-dark / layout / components / pages into
- * apps/web/src/styles/f7-*.css. main.tsx imports them in order so cascade stays
- * identical to pre-split behavior. This file now contains only the page-level
- * styles that lived at the bottom of the old styles.css (lines 2602-end).
- * The dead Cluster A (lines 1964-2601, Short-Chain Workspace redesign) was
- * dropped in the same commit (verified 6-region grep: 0 external consumers).
- *
- * Import order in main.tsx (cascade order, tokens first):
- *   styles/f7-tokens.css
- *   styles/f7-theme-dark.css
- *   styles/f7-components.css
- *   styles/f7-layout.css
- *   styles/f7-pages.css
- *   styles.css (this file)
- */
-
+/* styles/f7-pages.css 鈥?extracted from styles.css lines 2602-end (F7, 2026-08-26) */
 
 /* 鈹€鈹€ Step 2 UI cleanup: shared field / stack / helper classes for ShortChainGenerationWorkspace 鈹€鈹€
    Replaces inline `style={{...}}` props on labels, hints, button rows,
