@@ -16,28 +16,44 @@ Reference First Status: STABLE / CURRENT BASELINE
 
 ## 1. Runtime baseline
 
+> **Documented 2026-08-25 (audit reconciliation).** This section previously
+> described an Electron Desktop shell + renderer under `apps/desktop/src/*`
+> and listed it as baseline-critical. The current `masterpiece-reference-first-stable-2026-08`
+> baseline no longer ships that Electron tree — `apps/desktop/` today only
+> contains historical `out/` build artifacts (smoke fixtures). The Primary
+> Runtime is now `apps/web-runtime/` (Node WebSocket host) plus
+> `apps/web/` (Vite renderer). The text has been rewritten to match reality;
+> `BASELINE_LOCK.md` continues to govern P0 baseline-critical paths (Visual
+> Analysis, Reference First, Space Generator, Packaging, Provider) which
+> are unchanged.
+
 ```text
 npm run web:dev
-  -> apps/desktop/scripts/run-web-dev.mjs
-  -> electron-vite dev with MASTERPIECE_WEB_MODE=1
-  -> apps/desktop/src/renderer/index.html
-  -> apps/desktop/src/renderer/src/main.tsx
-  -> apps/desktop/src/renderer/src/App.tsx
-  -> apps/desktop/src/renderer/src/web-api.ts
-  -> /_masterpiece RPC proxy
-  -> apps/desktop/src/main/web-rpc-server.ts
-  -> apps/desktop/src/main/index.ts
-  -> Desktop-hosted shared services and @masterpiece/* packages
+  -> apps/web-runtime/scripts/run-web-dev.mjs
+  -> apps/web-runtime/src/main.ts
+  -> startNodeRuntimeHost() in apps/web-runtime/src/node-runtime-host.ts
+  -> ws RPC on MASTERPIECE_WEB_RPC_PORT (default 4317)
+  -> apps/web (Vite dev, separate process) at MASTERPIECE_WEB_RENDERER_ORIGIN
+  -> apps/web/src/main.tsx
+  -> apps/web/src/App.tsx
+  -> apps/web/src/web-api.ts
+  -> fetch POST /_masterpiece/rpc/<channel>  (proxy → ws)
+  -> EventSource /_masterpiece/events        (proxy → ws broadcast)
+  -> local-rpc-server.ts / current-operation-graph.ts / node-native-operations.ts
+  -> runtime-core operation registry → @masterpiece/* packages
 ```
 
-Desktop is the Legacy Runtime shell, but currently still hosts shared runtime services for the Primary Web Runtime. `apps/desktop/src/main` is therefore baseline-critical shared core, not removable legacy code.
+Primary Runtime: Node + Web. Desktop Electron shell is no longer part of the
+shipped surface and `apps/desktop/` is a historical artifacts directory, not
+baseline-critical code. See `docs/baseline/runtime-reconciliation-2026-08-25.md`
+for the audit notes.
 
 Web start command: `npm run web:dev`  
-Web entry configuration: `apps/desktop/electron.vite.config.ts`  
-Renderer entry: `apps/desktop/src/renderer/src/main.tsx`  
-RPC client: `apps/desktop/src/renderer/src/web-api.ts`  
-RPC server: `apps/desktop/src/main/web-rpc-server.ts`  
-Backend service host: `apps/desktop/src/main/index.ts`
+Web runtime entry: `apps/web-runtime/src/main.ts`  
+Renderer entry: `apps/web/src/main.tsx`  
+RPC client: `apps/web/src/web-api.ts`  
+RPC host: `apps/web-runtime/src/node-runtime-host.ts` (`local-rpc-server.ts` + `current-operation-graph.ts` + `node-native-operations.ts`)  
+Backend service host: `runtime-core` operation registry in `packages/runtime-core/src/operations/`
 
 ## 2. Visual Analysis baseline
 
