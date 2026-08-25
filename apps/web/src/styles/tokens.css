@@ -1,23 +1,39 @@
 /* styles/tokens.css
  *
- * ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
- * ⚠️  This file is the §3.2 P0 target-state design token sheet. It is NOT
- * ⚠️  imported by apps/web/src/main.tsx. The shipped stylesheet is
- * ⚠️  apps/web/src/styles.css (which uses a different token namespace
- * ⚠️  `--color-*` instead of the `--text-*` / `--bg-*` / `--sp-*` / `--fs-*`
- * ⚠️  family declared here).
- * ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
- * ⚠️  See apps/web/src/styles.css lines 1-172 for the LIVE token sheet.
+ * 📚 REFERENCE-ONLY — P0 target-state design token sheet
+ *
+ * This file is the §3.2 P0 target-state design tokens — a dark-first
+ * sketch that was authored before the F3.A refactor landed. It is
+ * NOT wired into apps/web/src/main.tsx on this branch.
+ *
+ * On the refactor/styles-split branch (audit commit F3.A), the
+ * routing split differently:
+ *   - styles/tokens.css      = byte-identical copy of styles.css lines 1-292
+ *                                (light/warm-white defaults, :root)
+ *   - styles/theme-dark.css  = byte-identical copy of styles.css lines 294-412
+ *                                ([data-theme="dark"] + prefers-color-scheme)
+ *   - styles.css             = business + component styles only
+ *
+ * That refactor uses the existing styles.css token values verbatim
+ * (the route-A aliases `--text-*` / `--bg-*` / `--accent` / `--fs-*`
+ * are already defined in styles.css line 174-291) rather than this
+ * dark-first P3 draft. Two different `:root` blocks would have
+ * produced CSS specificity conflicts.
+ *
+ * This file is therefore kept in the tree as historical reference
+ * for the P0 design intent, but is not imported by the current
+ * shipping surface on either branch.
+ *
+ * See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1
+ * for the audit trail.
  *
  * 路线 A / P0 设计 token — 按 docs/ui/redesign-development-doc.md §3.2
  *
- * 重要：本文件目前是 SKELETON。完成 §3.2 全部 token 的实现后，再
- *       在 main.tsx 引入；当前 main.tsx 完全不动，使用的是 styles.css。
- *
- * 与现有 styles.css 的关系：
- *   - styles.css 第 1-172 行已有 warm-white 主题 token（v0/v1 时期）
- *   - 本文件的深色 token 是路线 A 的目标态（§3.1 价值观："克制：深色默认"）
- *   - 切换时机在 P3 清理阶段（§6 P3）：styles.css 退役 → tokens.css 接管
+ * 切换计划：
+ *   - 阶段 1 (F3.A, refactor/styles-split)：以 styles.css 既有 token
+ *     块为权威，把 token 区拆到 styles/tokens.css + styles/theme-dark.css，
+ *     main.tsx 按 (tokens → theme-dark → styles) 顺序 import。
+ *   - 阶段 2 (P3, 待规划)：dark-first 切换。本文件作为目标态参考。
  *
  * 因此 P0 阶段：本文件零运行时影响（main.tsx 没 import）。
  */

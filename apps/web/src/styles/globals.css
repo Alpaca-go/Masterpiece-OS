@@ -1,10 +1,22 @@
 /* styles/globals.css
  *
- * ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
- * ⚠️  This file is the §3 P0 target-state global reset + base typography.
- * ⚠️  It is NOT imported by apps/web/src/main.tsx. The shipped global
- * ⚠️  stylesheet is apps/web/src/styles.css.
- * ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
+ * 📚 REFERENCE-ONLY — P0 target-state global reset + base typography.
+ *
+ * This file is the §3 P0 target-state design sketch. It is NOT wired
+ * into apps/web/src/main.tsx. The shipped global stylesheet is
+ * apps/web/src/styles.css.
+ *
+ * On the refactor/styles-split branch (audit commit F3.A), styles.css
+ * was preserved unchanged (the global reset block — `* { box-sizing }`,
+ * `html, body { ... }` — was already inside styles.css and stayed
+ * there). This skeleton was therefore not promoted.
+ *
+ * This file is kept in the tree as historical reference for the P0
+ * design intent. Do not import from new code without coordinating with
+ * the design system owner.
+ *
+ * See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1
+ * for the audit trail.
  *
  * 路线 A / P0 — 全局重置 + 基础排版 (docs/ui/redesign-development-doc.md §3)
  *

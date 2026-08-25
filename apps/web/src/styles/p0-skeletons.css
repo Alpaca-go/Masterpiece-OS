@@ -1,8 +1,6 @@
-// ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
-// ⚠️  This file is the §3 P0 routing-time entry point that aggregates the
-// ⚠️  other styles/*.css skeleton files. It is NOT imported by
-// ⚠️  apps/web/src/main.tsx. The shipped stylesheet is apps/web/src/styles.css.
-// ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
+// 📚 REFERENCE-ONLY — P0 routing-time entry point that aggregates the
+// other styles/*.css skeleton files. It is NOT wired into
+// apps/web/src/main.tsx. The shipped stylesheet is apps/web/src/styles.css.
 //
 // styles/p0-skeletons.css — P0 阶段新组件的样式入口 (待 P1 接入)
 //

@@ -1,8 +1,18 @@
-/* ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
- * ⚠️  This file is the §3 P0 layout-components style sheet. It is NOT
- * ⚠️  imported by apps/web/src/main.tsx and has no `.tsx` consumer. The
- * ⚠️  shipped stylesheet is apps/web/src/styles.css.
- * ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
+/* 📚 REFERENCE-ONLY — P0 layout-components style sheet.
+ *
+ * This file is the §3 P0 target-state design sketch. It is NOT wired
+ * into apps/web/src/main.tsx and has no `.tsx` consumer. The shipped
+ * stylesheet is apps/web/src/styles.css.
+ *
+ * On the refactor/styles-split branch (audit commit F3.A), the
+ * layout-component styles stayed inside styles.css unchanged. This
+ * skeleton was therefore not promoted.
+ *
+ * This file is kept in the tree as historical reference for the P0
+ * design intent. Do not import from new code without coordinating with
+ * the design system owner.
+ *
+ * See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
  *
  * layout 组件样式占位 (P0)
  */
