@@ -145,13 +145,13 @@ test('REE-07: MODEL_INFERENCE is never routed to TRUTH', async () => {
 
 test('REE-08: real extraction over the A fixture emits >=2 epistemic classes', async () => {
   const { readPlanningBriefFile, buildPlanningStrategicEvidenceArtifact, buildPlanningBriefRecord } = await import(csIndexUrl);
-  const fixturePath = path.join(repoRoot, 'tests', 'fixtures', 'planning-briefs', 'qualification-planning-a.md');
+  const fixturePath = path.join(repoRoot, 'tests', 'support', 'planning-briefs', 'qualification-planning-a.md');
   const { rawText } = await readPlanningBriefFile(fixturePath);
   const contentHash = (await import('node:crypto')).createHash('sha256').update(rawText).digest('hex');
   const record = buildPlanningBriefRecord({
     projectId: 'qualification-fixture-A',
     filename: 'qualification-planning-a.md',
-    relativePath: 'tests/fixtures/planning-briefs/qualification-planning-a.md',
+    relativePath: 'tests/support/planning-briefs/qualification-planning-a.md',
     rawText,
     registeredAt: '2026-08-20T00:00:00.000Z'
   });
@@ -175,12 +175,12 @@ test('REE-09: across fixtures A and B, all four epistemic classes are exercised'
   ];
   const allClasses = new Set();
   for (const fixture of fixtures) {
-    const fixturePath = path.join(repoRoot, 'tests', 'fixtures', 'planning-briefs', fixture.path);
+    const fixturePath = path.join(repoRoot, 'tests', 'support', 'planning-briefs', fixture.path);
     const { rawText } = await readPlanningBriefFile(fixturePath);
     const record = buildPlanningBriefRecord({
       projectId: fixture.id,
       filename: fixture.path,
-      relativePath: `tests/fixtures/planning-briefs/${fixture.path}`,
+      relativePath: `tests/support/planning-briefs/${fixture.path}`,
       rawText,
       registeredAt: '2026-08-20T00:00:00.000Z'
     });

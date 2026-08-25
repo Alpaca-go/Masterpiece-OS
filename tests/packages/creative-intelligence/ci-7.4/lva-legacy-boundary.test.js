@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import {
   mapRoleToSourceRole,
   assertPlanningSourceRole
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 import { classifyDocumentRole } from '@masterpiece/document-ingestion/document-preparation.js';
 
 // ---------------------------------------------------------------------------

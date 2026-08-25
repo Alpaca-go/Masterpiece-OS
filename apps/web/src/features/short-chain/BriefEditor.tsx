@@ -45,7 +45,7 @@ export interface BriefEditorProps {
   setMustIncludeText: (next: string) => void;
   setMustAvoidText: (next: string) => void;
   setLogoUsageMode: (next: ShortChainLogoUsageMode) => void;
-  /** '智能生成' 主按钮 — P1.5 才接完整 generateOneClick(), P1.3 仅占位 */
+  /** '智能生成' 主按钮，由页面编排 compile → validated generation。 */
   onGenerate: () => void;
 
   // 反馈 (来自 useShortChainBrief)

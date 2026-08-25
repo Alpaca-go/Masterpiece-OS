@@ -126,7 +126,10 @@ interface Props {
 
 export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, onApiProfileChange, onBack, onOpenSettings, hideChrome }: Props) {
   const { confirm } = useConfirm();
-  const profiles = settings.profiles.filter((profile) => profile.isEnabled);
+  const profiles = settings.profiles.filter((profile) =>
+    profile.isEnabled
+    && profile.modelType === 'analysis'
+    && profile.protocol === 'openai-chat-multimodal');
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId)
     ? selectedApiProfileId
@@ -623,6 +626,8 @@ export function CreativeIntelligenceWorkspace({ settings, selectedApiProfileId, 
           anchorProduction={activeView?.anchorProduction as AnchorProductionWorkspaceView | null}
           canonLocked={canonLocked}
           translationLocked={translationLocked}
+          parentSelectedDirectionId={selectedDirectionId}
+          parentSelectionRevision={activeView?.run.selectionRevision ?? 0}
           imageProfiles={imageProfiles}
           imageApiProfileId={imageApiProfileId}
           onImageApiProfileChange={setImageApiProfileId}
@@ -722,6 +727,154 @@ function plainText(value: unknown): string {
   if (value === undefined || value === null) return '';
   if (typeof value === 'string') return value;
   try { return JSON.stringify(value); } catch { return String(value); }
+}
+
+function structuredRecord(value: unknown): Record<string, unknown> | null {
+  if (value && typeof value === 'object' && !Array.isArray(value)) return value as Record<string, unknown>;
+  if (typeof value !== 'string' || !value.trim().startsWith('{')) return null;
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function arrayLength(record: Record<string, unknown>, key: string): number {
+  return Array.isArray(record[key]) ? record[key].length : 0;
+}
+
+function readableScalar(value: unknown): string {
+  if (typeof value === 'string' && !value.trim().startsWith('{') && !value.trim().startsWith('[')) return value;
+  const record = structuredRecord(value);
+  if (!record) return '';
+  const rule = record.rule ?? record.description ?? record.summary;
+  return typeof rule === 'string' ? rule : '';
+}
+
+function summarizeVisualDna(value: unknown): string[] {
+  const record = structuredRecord(value);
+  if (!record) return readableScalar(value) ? [readableScalar(value)] : [];
+  const groups: Array<[string, string]> = [
+    ['structuralDNA', '结构'], ['identityDNA', '品牌识别'], ['rhythmDNA', '节奏'],
+    ['hierarchyDNA', '层级'], ['relationDNA', '关系'], ['colorDNA', '色彩'],
+    ['materialDNA', '材质'], ['graphicDNA', '图形'],
+  ];
+  const active = groups.filter(([key]) => arrayLength(record, key) > 0);
+  const count = active.reduce((sum, [key]) => sum + arrayLength(record, key), 0);
+  if (!count) return ['视觉规则已生成，详细追溯信息可在“查看分析依据”中查看。'];
+  return [
+    `已定义 ${count} 条视觉规则，覆盖${active.map(([, label]) => label).join('、')}。`,
+    '默认仅展示面向设计决策的摘要；内部字段、来源引用与规则 ID 已收纳到分析依据中。',
+  ];
+}
+
+function summarizeVisualGrammar(value: Record<string, unknown>): string[] {
+  const groups: Array<[string, string]> = [
+    ['compositionRules', '构图'], ['hierarchyRules', '层级'], ['repetitionRules', '重复'],
+    ['transformationRules', '变形'], ['assetUsageRules', '资产使用'],
+    ['crossMediaAdaptationRules', '跨媒介适配'], ['forbiddenCombinations', '禁止组合'],
+  ];
+  const active = groups.filter(([key]) => arrayLength(value, key) > 0);
+  const count = active.reduce((sum, [key]) => sum + arrayLength(value, key), 0);
+  const direct = readableScalar(value.compositionLogic ?? value.layout);
+  if (!count) return direct ? [direct] : [];
+  return [
+    `已定义 ${count} 条构图与层级规则，覆盖${active.map(([, label]) => label).join('、')}。`,
+    '规则用于约束后续设计延展，不在默认视图展示机器字段。',
+  ];
+}
+
+const MEDIA_LABELS: Record<string, string> = {
+  'brand/VI': '品牌视觉',
+  'campaign/poster': '活动与海报',
+  editorial: '编辑设计',
+  'digital/UI': '数字界面',
+  space: '空间',
+  packaging: '包装',
+};
+
+function summarizeCrossMediaCanon(value: unknown): string[] {
+  const record = structuredRecord(value);
+  if (!record) return readableScalar(value) ? [readableScalar(value)] : [];
+  const invariants = Array.isArray(record.invariants) ? record.invariants.length : 0;
+  const adaptations = structuredRecord(record.adaptations);
+  const media = adaptations ? Object.keys(adaptations).map((key) => MEDIA_LABELS[key] ?? key) : [];
+  return [
+    invariants ? `已定义 ${invariants} 条跨媒介不变量。` : '',
+    media.length ? `适配范围：${media.join('、')}。` : '',
+  ].filter(Boolean);
+}
+
+const DISPLAY_TRANSLATIONS: Record<string, string> = {
+  'Brand identity assets': '品牌识别资产',
+  'Brand identity and locked assets': '品牌识别与锁定资产',
+  'Direction family and visual mechanism': '方向体系与视觉机制',
+  'Relation logic and hierarchy DNA': '关系逻辑与层级规则',
+  'Locked identity assets': '锁定的品牌识别资产',
+  'Physical scale': '物理尺度',
+  'Material density (within DNA relationship)': '材质密度（保持视觉规则关系）',
+  'Format ratio': '版式比例',
+  Scale: '尺度',
+  'Content density': '内容密度',
+  'Surface implementation': '表面呈现',
+  'Information density': '信息密度',
+  'Auxiliary copy': '辅助文案',
+  'Camera angle': '镜头角度',
+  'Lighting prompt': '灯光提示词',
+  'Render parameters': '渲染参数',
+  'Aspect ratio': '画面比例',
+  'Provider prompt': '服务商提示词',
+  'New visual mechanism': '新的视觉机制',
+  'New direction family': '新的方向体系',
+  'New brand identity': '新的品牌识别',
+  'Redesign of locked assets': '重新设计锁定资产',
+  'Locked asset redesign': '重新设计锁定资产',
+  'Specific lobby layout': '具体大堂布局',
+  'Exact material specification': '精确材质规格',
+  'Specific box geometry': '具体包装盒几何形态',
+  'Shot contract': '镜头约束',
+  'Shot contract (replaces frozen one)': '替换已锁定的镜头约束',
+  'Render prompt': '渲染提示词',
+  'analysis_led execution': '分析驱动的执行方式',
+  'reference_first policy compatibility': '参考优先策略兼容性',
+  'frozen shot contracts': '已锁定的镜头约束',
+  'mandatory copy': '必须文案',
+  'confirmed components': '已确认组件',
+  'Modular identity grammar': '模块化品牌识别语法',
+  'Required brand hierarchy': '必需的品牌层级',
+};
+
+function localizeDisplayItem(value: string): string {
+  const trimmed = value.trim();
+  if (DISPLAY_TRANSLATIONS[trimmed]) return DISPLAY_TRANSLATIONS[trimmed];
+  if (trimmed.startsWith('(Direction did not explicitly engage')) return '当前方向未明确覆盖此媒介，以下规则为暂定建议。';
+  if (trimmed.startsWith('Hard DNA categories')) return '核心视觉规则类别（结构、识别、节奏、层级、关系）';
+  if (trimmed.startsWith('Hard VisualGrammar')) return '核心视觉语法（构图、资产使用与禁止组合）';
+  return trimmed;
+}
+
+function uniqueDisplayItems(items: string[]): string[] {
+  const result: string[] = [];
+  const seen = new Set<string>();
+  for (const item of items) {
+    if (typeof item !== 'string' || !item.trim()) continue;
+    const localized = localizeDisplayItem(item);
+    const key = localized.toLocaleLowerCase('zh-CN');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(localized);
+  }
+  return result;
+}
+
+function userFacingPurpose(value: string | undefined): string {
+  if (!value) return '';
+  return /[\u3400-\u9fff]/u.test(value)
+    ? value
+    : '验证所选方向的视觉机制，并确保品牌识别、锁定资产与核心视觉规则在后续产出中得到保留。';
 }
 
 function versionLabel(value: unknown): string {
@@ -1166,6 +1319,8 @@ function VisualSystemPage({
   anchorProduction,
   canonLocked,
   translationLocked,
+  parentSelectedDirectionId,
+  parentSelectionRevision,
   imageProfiles,
   imageApiProfileId,
   onImageApiProfileChange,
@@ -1181,6 +1336,8 @@ function VisualSystemPage({
   anchorProduction: AnchorProductionWorkspaceView | null;
   canonLocked: boolean;
   translationLocked: boolean;
+  parentSelectedDirectionId: string | null;
+  parentSelectionRevision: number;
   imageProfiles: Array<{ id: string; displayName: string; modelId: string; protocol?: string }>;
   imageApiProfileId: string;
   onImageApiProfileChange(profileId: string): void;
@@ -1193,9 +1350,8 @@ function VisualSystemPage({
   const space = productionTranslation?.space;
   const packaging = productionTranslation?.packaging;
   const grammar = visualCanon?.visualGrammar ?? {};
-  const grammarText = plainText(visualCanon?.visualGrammar);
-  const selectedDirectionId = (anchorProduction?.run?.selectedDirectionId) ?? null;
-  const selectionRevision = anchorProduction?.run?.selectionRevision ?? 0;
+  const selectedDirectionId = anchorProduction?.run?.selectedDirectionId ?? parentSelectedDirectionId;
+  const selectionRevision = anchorProduction?.run?.selectionRevision ?? parentSelectionRevision;
   const canonVersion = anchorProduction?.run?.canonVersion ?? null;
   const parent = visualCanon
     ? { selectionRevision, canonVersion: visualCanon.canonVersion ?? canonVersion }
@@ -1218,13 +1374,13 @@ function VisualSystemPage({
             {visualCanon.visualMechanism && <p className="ci-canon-user__line"><strong>视觉机制：</strong>{visualCanon.visualMechanism}</p>}
             {visualCanon.systemHypothesis && <p className="ci-canon-user__line"><strong>系统假设：</strong>{visualCanon.systemHypothesis}</p>}
             {visualCanon.directionFamily && <p className="ci-canon-user__line"><strong>方向族：</strong>{DIRECTION_FAMILY_LABELS[visualCanon.directionFamily as keyof typeof DIRECTION_FAMILY_LABELS] ?? visualCanon.directionFamily}</p>}
-            <VisualCanonRow index="02" title="视觉 DNA" value={plainText(visualCanon.visualDNA)} />
-            <VisualCanonRow index="03" title="构图与层级" value={plainText(grammar.compositionLogic ?? grammar.layout ?? (grammarText && !grammar.colorRelationship && !grammar.materialRelationship && !grammar.graphicBehavior ? grammarText : ''))} />
-            <VisualCanonRow index="04" title="色彩关系" value={plainText(grammar.colorRelationship)} />
-            <VisualCanonRow index="05" title="材质关系" value={plainText(grammar.materialRelationship)} />
-            <VisualCanonRow index="06" title="图形语言" value={plainText(grammar.graphicBehavior)} />
-            <VisualCanonRow index="07" title="跨媒介延展" value={plainText(visualCanon.crossMediaCanon)} />
-            <VisualCanonRow index="08" title="禁止偏移" value={(visualCanon.prohibitedMutations ?? []).join('；')} />
+            <VisualCanonRow index="02" title="视觉规则" items={summarizeVisualDna(visualCanon.visualDNA)} />
+            <VisualCanonRow index="03" title="构图与层级" items={summarizeVisualGrammar(grammar)} />
+            <VisualCanonRow index="04" title="色彩关系" value={readableScalar(grammar.colorRelationship)} />
+            <VisualCanonRow index="05" title="材质关系" value={readableScalar(grammar.materialRelationship)} />
+            <VisualCanonRow index="06" title="图形语言" value={readableScalar(grammar.graphicBehavior)} />
+            <VisualCanonRow index="07" title="跨媒介延展" items={summarizeCrossMediaCanon(visualCanon.crossMediaCanon)} />
+            <VisualCanonRow index="08" title="禁止偏移" items={uniqueDisplayItems(visualCanon.prohibitedMutations ?? [])} />
           </div>}
       </section>
 
@@ -1234,7 +1390,7 @@ function VisualSystemPage({
         {!anchorContract
           ? <p className="ci-hint">尚无验收标准。</p>
           : <div className="ci-anchor-user">
-            {anchorContract.purpose && <p><strong>目的：</strong>{anchorContract.purpose}</p>}
+            {anchorContract.purpose && <p><strong>目的：</strong>{userFacingPurpose(anchorContract.purpose)}</p>}
             <ContractBucket title="必须呈现" items={anchorContract.mustDemonstrate ?? []} />
             <ContractBucket title="必须保留" items={anchorContract.mustPreserve ?? []} />
             <ContractBucket title="可以探索" items={anchorContract.mayExplore ?? []} />
@@ -1246,7 +1402,8 @@ function VisualSystemPage({
         <h3>应用适配</h3>
         {translationLocked
           ? <p className="ci-hint">完成方向选择与视觉系统生成后，才会产出空间与包装的适配说明。</p>
-          : <>
+          : <details className="ci-disclosure">
+            <summary>查看空间与包装适配规则</summary>
             {space ? <div className="ci-adapt">
               <h4>空间适配</h4>
               <AdaptationBucket title="必须保留" items={space.mustPreserve ?? []} />
@@ -1259,12 +1416,12 @@ function VisualSystemPage({
               <AdaptationBucket title="可以调整" items={packaging.mayAdapt ?? []} />
               <AdaptationBucket title="不能引入" items={packaging.mustNotIntroduce ?? []} />
             </div> : <p className="ci-hint">尚无包装适配说明。</p>}
-          </>}
+          </details>}
       </section>
 
       <section className="panel ci-vs-section ci-anchor-section" data-ciw-anchor-view={anchorView}>
         <h3>建立视觉基准</h3>
-        <p className="ci-hint">将当前 Creative Direction 转化为第一组视觉 Anchor，用于确认这个方向在真实视觉中的表现。</p>
+        <p className="ci-hint">将当前创意方向转化为第一组视觉锚点，用于确认这个方向在真实视觉中的表现。</p>
 
         {availability.blockers.length > 0 && (
           <ul className="ci-anchor-blockers" data-ciw-anchor-blockers>
@@ -1328,10 +1485,10 @@ function VisualSystemPage({
             {anchorView === 'anchor-approved' && approved && (
               <div className="ci-anchor-approved-banner" data-ciw-anchor-approved>
                 <strong>视觉基准已确认</strong>
-                <p>Selected Direction · {selectedDirectionId ?? '—'}</p>
-                <p>Canon Version · {approved.canonVersion}</p>
-                <p>Anchor Revision · {formatApprovalRevision(approved.approvalRevision)}</p>
-                <p>Approved at · {formatApprovalTimestamp(approved.approvedAt)}</p>
+                <p>已选方向 · {selectedDirectionId ?? '—'}</p>
+                <p>视觉系统版本 · {approved.canonVersion}</p>
+                <p>锚点修订 · {formatApprovalRevision(approved.approvalRevision)}</p>
+                <p>确认时间 · {formatApprovalTimestamp(approved.approvedAt)}</p>
               </div>
             )}
 
@@ -1407,12 +1564,12 @@ function VisualSystemPage({
                 <div className="ci-anchor-next__cards">
                   <article className="ci-anchor-next__card" aria-disabled="true">
                     <strong>空间效果图</strong>
-                    <p>基于已确认的 Visual Canon + Approved Visual Anchor 延展。</p>
+                    <p>基于已确认的视觉系统与视觉锚点延展。</p>
                     <span className="ci-anchor-next__disabled">CI-10 启动</span>
                   </article>
                   <article className="ci-anchor-next__card" aria-disabled="true">
                     <strong>包装效果图</strong>
-                    <p>基于已确认的 Visual Canon + Approved Visual Anchor 延展。</p>
+                    <p>基于已确认的视觉系统与视觉锚点延展。</p>
                     <span className="ci-anchor-next__disabled">CI-10 启动</span>
                   </article>
                 </div>
@@ -1427,38 +1584,42 @@ function VisualSystemPage({
 
 function anchorBlockerLabel(reason: string): string {
   switch (reason) {
-    case 'no-selection': return '请先完成 Direction 选择。';
-    case 'no-canon': return '请先生成 Visual Canon。';
-    case 'no-contract': return '请先生成 Anchor Contract。';
-    case 'contract-blocked': return 'Anchor Contract 当前被阻断。';
-    case 'locked-asset-conflict': return '锁定资产与 Anchor Contract 不一致。';
+    case 'no-selection': return '请先选择创意方向。';
+    case 'no-canon': return '请先完成视觉系统。';
+    case 'no-contract': return '请先生成视觉验收标准。';
+    case 'contract-blocked': return '视觉验收标准当前被阻断。';
+    case 'locked-asset-conflict': return '锁定资产与视觉验收标准不一致。';
     case 'generation-failed': return '上次视觉锚点生成失败。';
-    case 'run-not-found': return 'Anchor sub-run 不存在。';
+    case 'run-not-found': return '视觉锚点子任务不存在。';
     default: return reason;
   }
 }
 
-function VisualCanonRow({ index, title, value }: { index: string; title: string; value?: string }) {
-  if (!value) return null;
+function VisualCanonRow({ index, title, value, items = [] }: { index: string; title: string; value?: string; items?: string[] }) {
+  const displayItems = uniqueDisplayItems(items);
+  if (!value && !displayItems.length) return null;
   return <div className="ci-canon-user__row">
     <strong>{index} · {title}</strong>
-    <p>{value}</p>
+    {value && <p>{value}</p>}
+    {displayItems.length > 0 && <ul>{displayItems.map((item) => <li key={item}>{item}</li>)}</ul>}
   </div>;
 }
 
 function ContractBucket({ title, items }: { title: string; items: string[] }) {
-  if (!items.length) return null;
+  const displayItems = uniqueDisplayItems(items);
+  if (!displayItems.length) return null;
   return <div className="ci-anchor-user__bucket">
     <h4>{title}</h4>
-    <ul>{items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+    <ul>{displayItems.map((item) => <li key={item}>{item}</li>)}</ul>
   </div>;
 }
 
 function AdaptationBucket({ title, items }: { title: string; items: string[] }) {
-  if (!items.length) return null;
+  const displayItems = uniqueDisplayItems(items);
+  if (!displayItems.length) return null;
   return <div className="ci-adapt__bucket">
     <h4>{title}</h4>
-    <ul>{items.map((item, i) => <li key={i}>{item}</li>)}</ul>
+    <ul>{displayItems.map((item) => <li key={item}>{item}</li>)}</ul>
   </div>;
 }
 

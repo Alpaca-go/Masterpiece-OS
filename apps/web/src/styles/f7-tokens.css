@@ -223,9 +223,6 @@
   --info-bg:       var(--color-info-bg);
 
   /* 瀛椾綋鏃?*/
-  --font-display: var(--font-display); /* 宸插瓨鍦紝杩欓噷纭繚鍒悕浣撶郴涓€鑷?*/
-  --font-sans:    var(--font-sans);
-  --font-mono:    var(--font-mono);
 
   /* 瀛楀彿闃舵 (fs = font-size, lh = line-height) */
   --fs-xs:  var(--text-xs);
@@ -269,9 +266,6 @@
   --r-full: var(--radius-full);
 
   /* 闃村奖 */
-  --shadow-sm:   var(--shadow-sm);
-  --shadow-md:   var(--shadow-md);
-  --shadow-lg:   var(--shadow-lg);
   --shadow-glow: 0 0 0 1px rgba(26, 26, 26, 0.2);
 
   /* 鍔ㄦ晥 */

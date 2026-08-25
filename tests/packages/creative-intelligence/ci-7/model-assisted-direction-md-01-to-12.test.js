@@ -14,11 +14,11 @@ import {
   runModelAssistedDirectionGates,
   MODEL_ASSISTED_CONCEPT_PROMPT_VERSION,
   MODEL_ASSISTED_DIRECTION_PROMPT_VERSION,
-} from '../../../../packages/creative-intelligence/src/model-assisted/index.ts';
+} from '@masterpiece/creative-intelligence/model-assisted';
 import {
   parseStrategicSynthesis,
   STRATEGIC_SYNTHESIS_PROMPT_VERSION,
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 const PROJECT_ID = 'proj-test-md';
 

@@ -11,7 +11,10 @@ interface Props {
 }
 
 export function ProjectWizard({ settings, onStart, onCancel }: Props) {
-  const enabledProfiles = settings.profiles.filter((profile) => profile.isEnabled);
+  const enabledProfiles = settings.profiles.filter((profile) =>
+    profile.isEnabled
+    && profile.modelType === 'analysis'
+    && profile.protocol === 'openai-chat-multimodal');
   const [apiProfileId, setApiProfileId] = useState(
     enabledProfiles.find((profile) => profile.isDefault)?.id || enabledProfiles[0]?.id || ''
   );

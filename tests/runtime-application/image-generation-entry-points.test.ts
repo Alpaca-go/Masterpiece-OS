@@ -5,6 +5,7 @@ import path from 'node:path';
 
 const rendererRoot = path.resolve(import.meta.dirname, '../../apps/web/src');
 const appSource = fs.readFileSync(path.join(rendererRoot, 'App.tsx'), 'utf8');
+const createPageSource = fs.readFileSync(path.join(rendererRoot, 'pages', 'CreatePage.tsx'), 'utf8');
 const generationSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ImageGenerationWorkspace.tsx'), 'utf8');
 const referenceSource = fs.readFileSync(path.join(rendererRoot, 'components', 'ReferenceAnchorWorkspace.tsx'), 'utf8');
 const documentSource = fs.readFileSync(path.join(rendererRoot, 'components', 'DocumentContextWorkspace.tsx'), 'utf8');
@@ -12,10 +13,11 @@ const reportSource = fs.readFileSync(path.join(rendererRoot, 'components', 'Repo
 const mainSource = fs.readFileSync(path.join(rendererRoot, 'main.tsx'), 'utf8');
 const errorBoundarySource = fs.readFileSync(path.join(rendererRoot, 'components', 'AppErrorBoundary.tsx'), 'utf8');
 const settingsSource = fs.readFileSync(path.join(rendererRoot, 'components', 'SettingsPanel.tsx'), 'utf8');
+const profilesSettingsSource = fs.readFileSync(path.join(rendererRoot, 'components', 'settings', 'ProfilesSection.tsx'), 'utf8');
 
 test('renderer routes supported entry points into the current generation workspaces', () => {
   for (const preset of ['document_concept', 'reference_preview', 'integrated_anchor']) {
-    assert.match(appSource, new RegExp(`preset: '${preset}'`));
+    assert.match(createPageSource, new RegExp(`preset: '${preset}'`));
   }
   assert.doesNotMatch(appSource, /preset: 'visual_extension'/);
   assert.match(appSource, /setScreen\('creative-session'\)/);
@@ -37,7 +39,7 @@ test('generation workspace uses source bundles and registered image models', () 
 test('model connection failures expose structured upstream diagnostics', () => {
   assert.match(settingsSource, /connectionResult\.responseBody/);
   assert.match(settingsSource, /connectionResult\.requestId/);
-  assert.match(settingsSource, /openai-video-generation/);
+  assert.match(profilesSettingsSource, /openai-video-generation/);
 });
 
 test('rejected reference anchors never expose the preview action', () => {

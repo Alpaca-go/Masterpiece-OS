@@ -19,7 +19,7 @@ import {
   StrategicSynthesisParseError,
   STRATEGIC_SYNTHESIS_PROMPT_VERSION,
   STRATEGIC_GROUNDING_GATE_CODES,
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 const PROJECT_ID = 'proj-test-sr';
 

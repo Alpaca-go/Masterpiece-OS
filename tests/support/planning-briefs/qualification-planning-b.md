@@ -1,6 +1,6 @@
 <!--
   ====================================================================
-  TEST FIXTURE — CI-W1C.7.4-R1 — qualification-planning-b
+  TEST SUPPORT INPUT — CI-W1C.7.4-R1 — qualification-planning-b
   ====================================================================
   PROJECT ID: qualification-fixture-B
   NOT REAL G01 / NOT REAL G02

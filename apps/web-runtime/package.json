@@ -7,6 +7,7 @@
     "smoke": "node ./scripts/run-web-primary-smoke.mjs"
   },
   "dependencies": {
+    "@masterpiece/model-runtime": "file:../../packages/model-runtime",
     "@masterpiece/model-registry": "file:../../packages/model-registry",
     "@masterpiece/runtime-core": "file:../../packages/runtime-core"
   },

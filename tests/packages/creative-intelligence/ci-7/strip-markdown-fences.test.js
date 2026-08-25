@@ -18,7 +18,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { stripMarkdownFences } from '../../../../packages/creative-intelligence/src/contracts/strip-markdown-fences.ts';
+import { stripMarkdownFences } from '@masterpiece/creative-intelligence/contracts/strip-markdown-fences.ts';
 
 test('FENCE-01: strips ```json ... ``` wrapper (with newline after opening fence)', () => {
   const input = '```json\n{"a":1,"b":2}\n```';

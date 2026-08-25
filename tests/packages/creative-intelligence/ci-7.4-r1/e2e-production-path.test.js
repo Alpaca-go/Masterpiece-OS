@@ -66,8 +66,8 @@ const csIndexUrl = pathToFileURL(
   path.join(repoRoot, 'packages/creative-intelligence/src/strategic-synthesis/index.ts')
 ).href;
 
-const FIXTURE_A = path.join(repoRoot, 'tests', 'fixtures', 'planning-briefs', 'qualification-planning-a.md');
-const FIXTURE_B = path.join(repoRoot, 'tests', 'fixtures', 'planning-briefs', 'qualification-planning-b.md');
+const FIXTURE_A = path.join(repoRoot, 'tests', 'support', 'planning-briefs', 'qualification-planning-a.md');
+const FIXTURE_B = path.join(repoRoot, 'tests', 'support', 'planning-briefs', 'qualification-planning-b.md');
 
 // ---------------------------------------------------------------------------
 // Test setup

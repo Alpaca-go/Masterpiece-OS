@@ -9,7 +9,6 @@ import './styles/f7-theme-dark.css';
 import './styles/f7-components.css';
 import './styles/f7-layout.css';
 import './styles/f7-pages.css';
-import './styles.css';
 
 if (!window.masterpiece) {
   document.documentElement.dataset.runtime = 'web';

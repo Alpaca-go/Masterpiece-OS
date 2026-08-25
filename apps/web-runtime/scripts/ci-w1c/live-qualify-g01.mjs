@@ -17,7 +17,7 @@ import path from 'path';
 import crypto from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'url';
 
-import { createOpenAICompatibleTextReasoner } from '../../../../packages/model-runtime/src/openai-compatible-text-reasoner.js';
+import { createOpenAICompatibleTextReasoner } from '@masterpiece/model-runtime/openai-compatible-text-reasoner';
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const webRuntimeRoot = path.resolve(scriptDir, '..', '..');

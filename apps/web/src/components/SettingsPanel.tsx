@@ -179,7 +179,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
 
   return (
     <PageShell
-      eyebrow="MODEL CENTER"
+      eyebrow="模型中心"
       title="API 与模型"
       subtitle="分析模型与生成模型职责隔离；每个 Provider Key 独立加密。"
       onBack={onClose}
@@ -210,8 +210,8 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
 
         <div className="settings-v2__grid settings-v2__grid--arch">
           <SettingsNav items={[
-            { id: 'section-profiles', label: 'Provider', hint: 'API 配置 + 凭据' },
-            { id: 'section-registry', label: 'Model Registry', hint: '可用模型清单' },
+            { id: 'section-profiles', label: '服务配置', hint: 'API 配置 + 凭据' },
+            { id: 'section-registry', label: '模型注册表', hint: '可用模型清单' },
             { id: 'section-local', label: '本地行为', hint: '数据目录 · 缓存 · 日志' },
           ]} />
           <div className="settings-v2__content">

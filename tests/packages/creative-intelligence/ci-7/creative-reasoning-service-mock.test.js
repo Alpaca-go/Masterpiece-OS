@@ -19,7 +19,7 @@ import os from 'node:os';
 
 import {
   createCreativeReasoningService,
-} from '../../../../packages/runtime-core/src/application/creative-reasoning-service.ts';
+} from '@masterpiece/runtime-core/application/creative-reasoning-service.ts';
 
 function makeTruth() {
   return {

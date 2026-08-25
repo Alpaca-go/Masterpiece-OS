@@ -17,7 +17,7 @@ import {
   buildStrategicSynthesisPrompt,
   strategicInputFingerprint,
   semanticSha256
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 function makeFact(over) {
   return {

@@ -24,7 +24,7 @@ import test from 'node:test';
 import {
   buildVisualEvidenceContribution,
   contributionToTruthFacts,
-} from '../../../../packages/creative-intelligence/src/visual-evidence/index.ts';
+} from '@masterpiece/creative-intelligence/visual-evidence';
 
 const SAMPLE_VNEXT = {
   schemaVersion: '2.0',

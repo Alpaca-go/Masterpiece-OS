@@ -43,7 +43,7 @@ export function ProfilesSection() {
       <div className="settings-v2__section-head">
         <div>
           <span className="project-v2__section-num">01</span>
-          <h2>Provider Manager</h2>
+          <h2>服务配置</h2>
           <p>可新增、编辑、测试、启停并设置默认配置</p>
         </div>
         <Button variant="text" size="sm" onClick={startAddProfile}>

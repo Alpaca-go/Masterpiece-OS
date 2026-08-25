@@ -2,16 +2,8 @@
 //
 // 路线 A / P3 (架构-3) — Short-Chain 工作台右栏: 已生成产物网格 + A/B 对比。
 //
-// 当前阶段 (P3 架构-3 骨架):
-//   - Mock 历史数据结构 (useMockGallery hook)
-//   - 缩略图网格 + 选中态
-//   - 多选两张 → A/B 对比模式
-//   - A/B 对比 UI (左右栏 + 元信息)
-//
-// 下一步 (真实数据接入):
-//   - 从 session 历史 (新 hook, 见 audit 2026-08-25 item #2.1) 接 OutputGallery.items
-//   - 点击缩略图 → PreviewCanvas 显示
-//   - 持久化"已确认方向"到 project store
+// 仅渲染调用方提供的真实运行结果；无运行时显示空态。
+// 后续接入 session 历史时仍通过 items 输入，避免在生产 UI 内部伪造数据。
 
 import { useMemo, useState } from 'react';
 import { EmptyState, EmptyIllustration } from '../../components/primitives';
@@ -28,8 +20,11 @@ export interface OutputItem {
   confirmed?: boolean;
 }
 
-export function OutputGallery() {
-  const items = useMockGallery();
+export interface OutputGalleryProps {
+  items?: OutputItem[];
+}
+
+export function OutputGallery({ items = [] }: OutputGalleryProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [compareMode, setCompareMode] = useState(false);
 
@@ -109,7 +104,7 @@ export function OutputGallery() {
         <EmptyState
           icon={<EmptyIllustration variant="no-output" />}
           title="已生成产物"
-          description="P1.1 接入 session.history (image 类型), 显示缩略图网格 + 已确认方向标记"
+          description="本次会话还没有可展示的真实生成结果。"
           bordered
         />
       </div>
@@ -165,54 +160,4 @@ function formatRelative(iso: string): string {
   if (ms < 3_600_000) return `${Math.floor(ms / 60_000)} 分钟前`;
   if (ms < 86_400_000) return `${Math.floor(ms / 3_600_000)} 小时前`;
   return `${Math.floor(ms / 86_400_000)} 天前`;
-}
-
-/**
- * useMockGallery — 临时 mock 数据。
- * P3-架构-3 之后会替换成真实数据 hook（替代原 useShortChainSession.history，已删除）。
- */
-function useMockGallery(): OutputItem[] {
-  return useMemo(() => {
-    // 1x1 透明 PNG 占位
-    const placeholder = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80"><rect width="100%" height="100%" fill="%23E5E2D9"/></svg>';
-    return [
-      {
-        id: 'mock-1',
-        dataUrl: placeholder,
-        thumbnailDataUrl: placeholder,
-        createdAt: new Date(Date.now() - 5 * 60_000).toISOString(),
-        family: 'space',
-        subtype: 'reception',
-        status: 'passed',
-        confirmed: true,
-      },
-      {
-        id: 'mock-2',
-        dataUrl: placeholder,
-        thumbnailDataUrl: placeholder,
-        createdAt: new Date(Date.now() - 12 * 60_000).toISOString(),
-        family: 'space',
-        subtype: 'reception',
-        status: 'passed',
-      },
-      {
-        id: 'mock-3',
-        dataUrl: placeholder,
-        thumbnailDataUrl: placeholder,
-        createdAt: new Date(Date.now() - 25 * 60_000).toISOString(),
-        family: 'packaging',
-        subtype: 'paper_pouch',
-        status: 'pending',
-      },
-      {
-        id: 'mock-4',
-        dataUrl: placeholder,
-        thumbnailDataUrl: placeholder,
-        createdAt: new Date(Date.now() - 2 * 3_600_000).toISOString(),
-        family: 'poster',
-        subtype: 'brand_key_visual',
-        status: 'failed',
-      },
-    ];
-  }, []);
 }

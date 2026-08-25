@@ -55,7 +55,7 @@ import {
 const SAMPLE_BRIEF_PATH = path.join(
   repoRoot,
   'tests',
-  'fixtures',
+  'support',
   'planning-briefs',
   'qualification-planning-a.md'
 );

@@ -149,6 +149,7 @@ export function CreatePage(props: CreatePageProps) {
             onApiProfileChange={setSelectedApiProfileId}
             onBack={goHome}
             onOpenSettings={() => { setSettingsReturnScreen('create'); setScreen('settings'); }}
+            hideChrome
             onGenerateReferencePreview={async (projectId, referenceAnchorRunId) => {
               const userIntent = await loadReferenceAnchorIntent(referenceAnchorRunId);
               openImageGeneration({

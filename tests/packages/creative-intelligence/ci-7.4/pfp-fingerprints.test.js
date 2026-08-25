@@ -22,7 +22,7 @@ import {
   buildPlanningBriefSourceId,
   buildPlanningBriefRecord,
   planningEvidenceFingerprint
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 // ---------------------------------------------------------------------------
 // PFP-01..02 — content hash

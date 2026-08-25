@@ -44,7 +44,7 @@ import { detectConflicts } from '@masterpiece/creative-intelligence/truth/confli
 
 const CTX = { projectId: 'p-yiji', generatedAt: '2026-08-19T00:00:00.000Z', sourceFingerprints: {} };
 
-// G02.002 brief content (from .codex-smoke/ci-w1c-attempt-2/g02-yiji-brief.md)
+// Deterministic, embedded G02.002-style synthetic brief content.
 const G02_BRIEF_TEXT = `# 一剂良方 — Creative Brief
 
 我们希望这个项目的方向探索能够围绕方剂可读性、药材地道感、功效传承这三个主题来展开，

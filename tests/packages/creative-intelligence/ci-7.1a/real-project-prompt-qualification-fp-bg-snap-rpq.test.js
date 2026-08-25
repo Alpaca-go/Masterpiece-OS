@@ -39,7 +39,7 @@ import {
   checkPromptBudget,
   estimateInputTokens,
   DEFAULT_QUALIFICATION_BUDGET,
-} from '../../../../packages/creative-intelligence/src/index.ts';
+} from '@masterpiece/creative-intelligence';
 
 // ---------------------------------------------------------------------------
 // Test fixtures

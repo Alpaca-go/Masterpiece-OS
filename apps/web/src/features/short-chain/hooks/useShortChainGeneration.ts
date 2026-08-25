@@ -38,6 +38,7 @@ export interface UseShortChainGenerationResult {
   startValidated: (
     projectId: string,
     compiled: CompileShortChainGenerationResult,
+    apiProfileId: string,
   ) => Promise<{ flowState: ShortChainGenerationFlowState | null; activeRun: ImageGenerationRun | null }>;
   /** 加载最新图像的 dataUrl (Workspace line 454-461) */
   loadImageDataUrl: (run: ImageGenerationRun) => Promise<void>;
@@ -54,6 +55,7 @@ export interface UseShortChainGenerationResult {
 
   // 错误
   generationError: string;
+  starting: boolean;
 }
 
 /**
@@ -75,6 +77,7 @@ export function useShortChainGeneration(): UseShortChainGenerationResult {
   >(null);
   const [lastValidation, setLastValidation] = useState<ShortChainDeliverableValidation | null>(null);
   const [generationError, setGenerationError] = useState('');
+  const [starting, setStarting] = useState(false);
 
   const isTerminal = flowState === 'passed'
     || flowState === 'correction_still_failed'
@@ -117,17 +120,29 @@ export function useShortChainGeneration(): UseShortChainGenerationResult {
   const startValidated = useCallback(async (
     projectId: string,
     compiled: CompileShortChainGenerationResult,
+    apiProfileId: string,
   ): Promise<{ flowState: ShortChainGenerationFlowState | null; activeRun: ImageGenerationRun | null }> => {
     if (!window.masterpiece?.imageGeneration) {
       setGenerationError('客户端安全桥接未就绪');
       return { flowState: null, activeRun: null };
     }
+    if (!apiProfileId) {
+      setGenerationError('请先选择并配置生图模型');
+      return { flowState: null, activeRun: null };
+    }
+    setStarting(true);
     setGenerationError('');
+    setActiveRun(null);
+    setImageDataUrl('');
+    setFirstImage(null);
+    setFlowState(null);
+    setSimilarityAudit(null);
+    setLastValidation(null);
     try {
       const validated = await window.masterpiece.imageGeneration.startValidatedShortChain({
         projectId,
         taskId: compiled.taskContract.taskId,
-        apiProfileId: '', // P1.3 起步: apiProfileId 由调用方在 P1.5 注入
+        apiProfileId,
         editedPrompt: compiled.compiledPrompt.editablePrompt,
       });
       const run = validated.correctionRun ?? validated.initialRun;
@@ -141,14 +156,18 @@ export function useShortChainGeneration(): UseShortChainGenerationResult {
           validated.firstImage.imageId,
         );
         setImageDataUrl(image?.dataUrl ?? '');
+      } else if (run.status === 'succeeded' && run.images?.[0]) {
+        await loadImageDataUrl(run);
       }
       setLastValidation(validated.correctionValidation ?? validated.initialValidation);
       return { flowState: validated.flowState, activeRun: run };
     } catch (reason) {
       setGenerationError(cleanError(reason));
       return { flowState: null, activeRun: null };
+    } finally {
+      setStarting(false);
     }
-  }, []);
+  }, [loadImageDataUrl]);
 
   const resetForContinuation = useCallback(() => {
     setLastValidation(null);
@@ -157,6 +176,6 @@ export function useShortChainGeneration(): UseShortChainGenerationResult {
   return {
     activeRun, imageDataUrl, firstImage, flowState, similarityAudit, lastValidation,
     startValidated, loadImageDataUrl, subscribeProgress, resetForContinuation,
-    displayableImage, isTerminal, generationError,
+    displayableImage, isTerminal, generationError, starting,
   };
 }

@@ -19,7 +19,7 @@ import {
   PLANNING_TO_TRUTH_KEY,
   routePlanningClaim,
   assertEpistemicClassPreserved
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 function makeClaim(over) {
   return {

@@ -7,11 +7,15 @@
 import { useState } from 'react';
 import { Tabs } from '../../components/ui/Tabs';
 import { DecisionStream } from './DecisionStream';
-import { OutputGallery } from './OutputGallery';
+import { OutputGallery, type OutputItem } from './OutputGallery';
 
 type RightPanelTab = 'decisions' | 'gallery';
 
-export function RightPanel() {
+export interface RightPanelProps {
+  outputItems?: OutputItem[];
+}
+
+export function RightPanel({ outputItems = [] }: RightPanelProps) {
   const [tab, setTab] = useState<RightPanelTab>('decisions');
 
   return (
@@ -30,7 +34,7 @@ export function RightPanel() {
       </div>
       <div className="sc-right-panel__content">
         {tab === 'decisions' && <DecisionStream />}
-        {tab === 'gallery' && <OutputGallery />}
+        {tab === 'gallery' && <OutputGallery items={outputItems} />}
       </div>
     </div>
   );

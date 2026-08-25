@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import {
   compileVisualDirectionReport,
   renderVisualDirectionReportMarkdown,
-} from '../../../../packages/creative-intelligence/src/reporting/index.ts';
+} from '@masterpiece/creative-intelligence/reporting';
 import {
   parseModelAssistedConceptSet,
   parseModelAssistedDirectionSet,
@@ -20,12 +20,12 @@ import {
   runModelAssistedDirectionGates,
   MODEL_ASSISTED_CONCEPT_PROMPT_VERSION,
   MODEL_ASSISTED_DIRECTION_PROMPT_VERSION,
-} from '../../../../packages/creative-intelligence/src/model-assisted/index.ts';
+} from '@masterpiece/creative-intelligence/model-assisted';
 import {
   parseStrategicSynthesis,
   runStrategicGroundingGate,
   STRATEGIC_SYNTHESIS_PROMPT_VERSION,
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 const PROJECT_ID = 'proj-test-rp';
 

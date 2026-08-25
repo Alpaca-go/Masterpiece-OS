@@ -32,6 +32,8 @@ interface Props {
   onGenerateMasterAnchor(projectId: string, referenceAnchorRunId: string): void;
   onGenerateReferencePreview(projectId: string, referenceAnchorRunId: string): void;
   onContinueCreativeProduction(projectId: string): void;
+  /** 嵌入统一创建页时由父级提供导航，避免重复顶栏和底栏。 */
+  hideChrome?: boolean;
 }
 
 const STAGES: Array<[ReferenceAnchorStage, string]> = [
@@ -79,9 +81,12 @@ function splitLines(value: string): string[] {
   return value.split(/\r?\n/).map((item) => item.trim()).filter(Boolean);
 }
 
-export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateMasterAnchor, onGenerateReferencePreview, onContinueCreativeProduction }: Props) {
+export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateMasterAnchor, onGenerateReferencePreview, onContinueCreativeProduction, hideChrome }: Props) {
   const { confirm } = useConfirm();
-  const profiles = settings.profiles.filter((profile) => profile.isEnabled);
+  const profiles = settings.profiles.filter((profile) =>
+    profile.isEnabled
+    && profile.modelType === 'analysis'
+    && profile.protocol === 'openai-chat-multimodal');
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
 
@@ -466,7 +471,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   if (view === 'result' && selectedRun) {
     const decided = selectedRun.decision === 'approved' || selectedRun.decision === 'rejected';
     return <AppShell
-      topBar={
+      topBar={hideChrome ? undefined :
         <TopBar
           left={
             <TopBarBreadcrumb
@@ -485,7 +490,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
           }
         />
       }
-      bottomBar={
+      bottomBar={hideChrome ? undefined :
         <>
           <span>参考锚定 · 决策页</span>
           <span>{selectedRun.projectName} · {STATUS_LABELS[selectedRun.status]}</span>
@@ -558,7 +563,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
 
   // ── 工作台（默认视图）──
   return <AppShell
-    topBar={
+    topBar={hideChrome ? undefined :
       <TopBar
         left={
           <TopBarBreadcrumb
@@ -576,7 +581,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         }
       />
     }
-    bottomBar={
+    bottomBar={hideChrome ? undefined :
       <>
         <span>参考锚定（Anchor）</span>
         <span>{selectedProject?.projectName || '未选择项目'}</span>

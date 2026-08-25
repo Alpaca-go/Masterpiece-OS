@@ -21,7 +21,7 @@ import {
   buildPlanningBriefSourceId,
   buildPlanningBriefRecord,
   planningBriefContentHash
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 // ---------------------------------------------------------------------------
 // PSR-01..02 — supported extensions

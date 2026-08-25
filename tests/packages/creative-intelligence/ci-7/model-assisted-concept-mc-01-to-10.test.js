@@ -16,12 +16,12 @@ import {
   getTemplateEchoCorpus,
   MODEL_ASSISTED_CONCEPT_PROMPT_VERSION,
   ModelAssistedParseError,
-} from '../../../../packages/creative-intelligence/src/model-assisted/index.ts';
+} from '@masterpiece/creative-intelligence/model-assisted';
 import {
   parseStrategicSynthesis,
   runStrategicGroundingGate,
   STRATEGIC_SYNTHESIS_PROMPT_VERSION,
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 
 const PROJECT_ID = 'proj-test-mc';
 

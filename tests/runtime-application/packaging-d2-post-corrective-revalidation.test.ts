@@ -48,7 +48,7 @@ const ADAPTER = readFileSync(
   'utf8',
 );
 const GLOBAL_CSS = readFileSync(
-  path.join(ROOT, 'apps/web/src/styles.css'),
+  path.join(ROOT, 'apps/web/src/styles/f7-pages.css'),
   'utf8',
 );
 const WORKSPACE_CSS = readFileSync(

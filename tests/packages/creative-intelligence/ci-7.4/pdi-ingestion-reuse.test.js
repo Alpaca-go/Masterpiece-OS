@@ -20,7 +20,7 @@ import {
   assertPlanningSourceRole,
   planningEvidenceFingerprint,
   buildPlanningStrategicEvidenceArtifact
-} from '../../../../packages/creative-intelligence/src/strategic-synthesis/index.ts';
+} from '@masterpiece/creative-intelligence/strategic-synthesis';
 import { classifyDocumentRole } from '@masterpiece/document-ingestion/document-preparation.js';
 
 // ---------------------------------------------------------------------------
@@ -155,7 +155,7 @@ test('PDI-09: end-to-end ingestion of a real fixture produces a valid artifact',
   const fixturePath = path.join(
     process.cwd(),
     'tests',
-    'fixtures',
+    'support',
     'planning-briefs',
     'qualification-planning-a.md'
   );
@@ -193,7 +193,7 @@ test('PDI-09: end-to-end ingestion of a real fixture produces a valid artifact',
     sourceId: 'planning-brief:qualification-fixture-A:' + contentHash.slice(0, 16),
     filename: 'qualification-planning-a.md',
     extension: '.md',
-    relativePath: 'tests/fixtures/planning-briefs/qualification-planning-a.md',
+    relativePath: 'tests/support/planning-briefs/qualification-planning-a.md',
     sourceType: 'planning_document',
     contentHash,
     characterCount: rawText.length,

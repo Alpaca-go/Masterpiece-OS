@@ -92,7 +92,10 @@ function FieldEvidence({ field, context }: { field: string; context: DocumentVis
 }
 
 export function DocumentContextWorkspace({ settings, selectedApiProfileId, initialRunId, onApiProfileChange, onBack, onOpenSettings, onGenerateConcept }: Props) {
-  const profiles = settings.profiles.filter((profile) => profile.isEnabled);
+  const profiles = settings.profiles.filter((profile) =>
+    profile.isEnabled
+    && profile.modelType === 'analysis'
+    && profile.protocol === 'openai-chat-multimodal');
   const initialProfile = profiles.find((profile) => profile.isDefault) || profiles[0];
   const profileId = profiles.some((profile) => profile.id === selectedApiProfileId) ? selectedApiProfileId : initialProfile?.id || '';
   const [documents, setDocuments] = useState<VisualTranslationDocumentSummary[]>([]);

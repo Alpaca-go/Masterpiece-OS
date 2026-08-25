@@ -140,6 +140,11 @@ function AppContent() {
   const enabledProfiles = settings?.profiles.filter((profile) => profile.isEnabled) || [];
   const analysisProfiles = enabledProfiles.filter((profile) =>
     profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal');
+  const imageProfiles = enabledProfiles.filter((profile) =>
+    profile.modelType === 'image_generation' && profile.hasApiKey);
+  const selectedImageProfile = imageProfiles.find((profile) => profile.id === selectedApiProfileId)
+    || imageProfiles.find((profile) => profile.isDefault)
+    || imageProfiles[0];
   const selectedProfile = analysisProfiles.find((profile) => profile.id === selectedApiProfileId)
     || analysisProfiles.find((profile) => profile.isDefault)
     || analysisProfiles[0];
@@ -540,8 +545,10 @@ function AppContent() {
     // P1.7 路由切换: ShortChainPage (路线 A / §6 P1) 是 creative-session 唯一入口.
     return <ShortChainPage
       project={selected}
+      apiProfileId={selectedImageProfile?.id || ''}
       onBack={() => setScreen('project')}
       onGoHome={() => setScreen('home')}
+      onOpenSettings={() => { setSettingsReturnScreen('creative-session'); setScreen('settings'); }}
     />;
   }
 
@@ -805,35 +812,33 @@ function AppContent() {
                   else void deleteDocumentContextRun(record.run);
                 };
 
+                const recordKey = record.kind + '-' + (record.kind === 'visual-analysis' ? record.project.id : record.run.id);
                 return (
-                  <button key={record.kind + '-' + (record.kind === 'visual-analysis' ? record.project.id : record.run.id)}
-                    className="record-card"
-                    onClick={handleClick}
-                  >
-                    <div className="record-card__head">
-                      <span className={'record-card__type ' + typeClass}>{typeLabel}</span>
-                      <StatusBadgeInline status={status} />
-                    </div>
-                    <h3 className="record-card__name">{name}</h3>
-                    <p className="record-card__desc">{desc}</p>
-                    <div className="record-card__foot">
-                      <div className="record-card__meta">
-                        <small>更新于</small>
-                        <strong>{formatRelativeTime(record.createdAt)}</strong>
+                  <article key={recordKey} className="record-card">
+                    <button className="record-card__open" onClick={handleClick} aria-label={`打开${typeLabel}“${name}”`}>
+                      <div className="record-card__head">
+                        <span className={'record-card__type ' + typeClass}>{typeLabel}</span>
+                        <StatusBadgeInline status={status} />
                       </div>
-                      <div className="flex-row-sm-center">
-                        <button
-                          className="project-delete project-delete--inline"
-                          disabled={!canDelete || isDeleting}
-                          onClick={handleDelete}
-                          aria-label="删除"
-                        >
-                          {isDeleting ? '…' : '删除'}
-                        </button>
+                      <h3 className="record-card__name">{name}</h3>
+                      <p className="record-card__desc">{desc}</p>
+                      <div className="record-card__foot">
+                        <div className="record-card__meta">
+                          <small>更新于</small>
+                          <strong>{formatRelativeTime(record.createdAt)}</strong>
+                        </div>
                         <span className="record-card__arrow" aria-hidden>→</span>
                       </div>
-                    </div>
-                  </button>
+                    </button>
+                    <button
+                      className="project-delete project-delete--inline record-card__delete"
+                      disabled={!canDelete || isDeleting}
+                      onClick={handleDelete}
+                      aria-label={`删除${typeLabel}“${name}”`}
+                    >
+                      {isDeleting ? '…' : '删除'}
+                    </button>
+                  </article>
                 );
               })}
             </div>
