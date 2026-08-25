@@ -215,7 +215,7 @@ if (subViolations.size === 0) {
   ok('all subpath imports in apps/** and tests/** are valid');
 } else {
   for (const [pkgName, subPaths] of subViolations) {
-    fail(`${dir}/** deep-imports subpaths from packages/${pkgName}`, `${subPaths.size} unique subpath(s)`);
+    fail(`apps/** and tests/** deep-import subpaths from packages/${pkgName}`, `${subPaths.size} unique subpath(s)`);
   }
 }
 
