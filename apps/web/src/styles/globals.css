@@ -1,4 +1,11 @@
 /* styles/globals.css
+ *
+ * ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
+ * ⚠️  This file is the §3 P0 target-state global reset + base typography.
+ * ⚠️  It is NOT imported by apps/web/src/main.tsx. The shipped global
+ * ⚠️  stylesheet is apps/web/src/styles.css.
+ * ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
+ *
  * 路线 A / P0 — 全局重置 + 基础排版 (docs/ui/redesign-development-doc.md §3)
  *
  * 当前阶段：SKELETON。完成 §3 全部基础样式后，在 main.tsx 引入；

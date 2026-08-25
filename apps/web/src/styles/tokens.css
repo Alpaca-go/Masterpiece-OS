@@ -1,4 +1,14 @@
 /* styles/tokens.css
+ *
+ * ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
+ * ⚠️  This file is the §3.2 P0 target-state design token sheet. It is NOT
+ * ⚠️  imported by apps/web/src/main.tsx. The shipped stylesheet is
+ * ⚠️  apps/web/src/styles.css (which uses a different token namespace
+ * ⚠️  `--color-*` instead of the `--text-*` / `--bg-*` / `--sp-*` / `--fs-*`
+ * ⚠️  family declared here).
+ * ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
+ * ⚠️  See apps/web/src/styles.css lines 1-172 for the LIVE token sheet.
+ *
  * 路线 A / P0 设计 token — 按 docs/ui/redesign-development-doc.md §3.2
  *
  * 重要：本文件目前是 SKELETON。完成 §3.2 全部 token 的实现后，再

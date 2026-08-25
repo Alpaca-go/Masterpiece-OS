@@ -1,7 +1,14 @@
-/* §3.4 P0 新增 primitives — 完整样式由 P1 接入时填
+/* ⚠️  AUDIT 2026-08-25 — SKELETON, NOT WIRED
+ * ⚠️  This file is the §3.4 P0 primitives placeholder. It is NOT imported
+ * ⚠️  by apps/web/src/main.tsx and has no `.tsx` consumer. The shipped
+ * ⚠️  stylesheet is apps/web/src/styles.css.
+ * ⚠️  See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1.
+ *
+ * §3.4 P0 新增 primitives — 完整样式由 P1 接入时填
  * 当前只定义最低必要的占位规则，保证 EmptyState / Skeleton / StatusDot
  * 渲染出来不破版（margin / padding / 背景用现有 token）。
- * P1 实施时按 §3.2 dark-first token 重写。 */
+ * P1 实施时按 §3.2 dark-first token 重写。
+ */
 
 .ui-empty {
   display: grid;
