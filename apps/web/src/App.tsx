@@ -1,11 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import type {
-  AnalysisProgress,
   AssetSummary,
   DocumentContextRun,
-  GenerationContextReadiness,
   ImageGenerationSourceBundle,
-  ImageGenerationRunSummary,
   ProjectRecord,
   PublicSettings,
   ReferenceAnchorRun
@@ -37,8 +34,13 @@ import { CommandPalette, useCommandPalette } from './components/layout/CommandPa
 import { ToastViewport, useToasts } from './components/layout/Toast';
 import { KeyboardShortcutsModal, useKeyboardShortcuts } from './components/layout/KeyboardShortcuts';
 import { ThemeToggle, useTheme } from './theme';
-import { cleanError, formatBytes, formatDuration, formatRelativeTime } from './utils';
+import { cleanError, formatRelativeTime } from './utils';
 import { useUrlScreen, type Screen } from './lib/useUrlScreen';
+import { useProjects } from './hooks/useProjects';
+import { useAnalysisProgress } from './hooks/useAnalysisProgress';
+import { useDocumentContext } from './hooks/useDocumentContext';
+import { useReferenceAnchor } from './hooks/useReferenceAnchor';
+import { useAppShellState } from './hooks/useAppShellState';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -100,31 +102,42 @@ function AppContent() {
   // setScreen(...) is a thin wrapper over navigate(); the 46 call sites
   // in this file are unchanged in shape.
   const [screen, setScreen, navigateToPath] = useUrlScreen();
-  const [settings, setSettings] = useState<PublicSettings | null>(null);
-  const [projects, setProjects] = useState<ProjectRecord[]>([]);
-  const [documentContextRuns, setDocumentContextRuns] = useState<DocumentContextRun[]>([]);
-  const [referenceAnchorRuns, setReferenceAnchorRuns] = useState<ReferenceAnchorRun[]>([]);
-  const [requestedImageGen, setRequestedImageGen] = useState<ImageGenerationSourceBundle | null>(null);
-  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('visual-analysis');
-  const [requestedDocumentContextRunId, setRequestedDocumentContextRunId] = useState('');
-  const [requestedReferenceAnchorRunId, setRequestedReferenceAnchorRunId] = useState('');
-  const [selected, setSelected] = useState<ProjectRecord | null>(null);
-  const [selectedApiProfileId, setSelectedApiProfileId] = useState('');
-  const [settingsReturnScreen, setSettingsReturnScreen] = useState<Screen>('home');
-  const [assets, setAssets] = useState<AssetSummary | null>(null);
-  const [progress, setProgress] = useState<AnalysisProgress | null>(null);
-  const [error, setError] = useState('');
-  const [runFailure, setRunFailure] = useState('');
-  // r2.0 / r10.4 UX: project-page entry decoupling. When the persisted
-  // Project + Visual Context already has the minimum data needed for a
-  // Short-Chain Generation lets the project page show a "继续创作 / 直接创作"
-  // entry that bypasses the analysis report page. The full LLM report
-  // is no longer a hard product gate; the Project Context is.
-  const [generationReadiness, setGenerationReadiness] = useState<GenerationContextReadiness | null>(null);
-  const [deletingProjectId, setDeletingProjectId] = useState('');
-  const [deletingDocumentContextRunId, setDeletingDocumentContextRunId] = useState('');
-  const [deletingReferenceAnchorRunId, setDeletingReferenceAnchorRunId] = useState('');
-  const [loading, setLoading] = useState(true);
+  const projects = useProjects();
+  const progress = useAnalysisProgress();
+  const documentContext = useDocumentContext();
+  const referenceAnchor = useReferenceAnchor();
+  const shell = useAppShellState();
+  const {
+    settings, setSettings,
+    loading, setLoading,
+    settingsReturnScreen, setSettingsReturnScreen,
+    requestedImageGen, setRequestedImageGen
+  } = shell;
+  const {
+    projects: projectsList, setProjects,
+    selected, setSelected,
+    selectedApiProfileId, setSelectedApiProfileId,
+    deletingProjectId, setDeletingProjectId
+  } = projects;
+  const {
+    assets, setAssets,
+    progress: progressState, setProgress,
+    error, setError,
+    runFailure, setRunFailure,
+    analysisMode, setAnalysisMode,
+    generationReadiness, setGenerationReadiness
+  } = progress;
+  const {
+    runs: documentContextRuns, setRuns: setDocumentContextRuns,
+    requestedId: requestedDocumentContextRunId, setRequestedId: setRequestedDocumentContextRunId,
+    deletingId: deletingDocumentContextRunId, setDeletingId: setDeletingDocumentContextRunId
+  } = documentContext;
+  const {
+    runs: referenceAnchorRuns, setRuns: setReferenceAnchorRuns,
+    requestedId: requestedReferenceAnchorRunId, setRequestedId: setRequestedReferenceAnchorRunId,
+    deletingId: deletingReferenceAnchorRunId, setDeletingId: setDeletingReferenceAnchorRunId
+  } = referenceAnchor;
+
   const enabledProfiles = settings?.profiles.filter((profile) => profile.isEnabled) || [];
   const analysisProfiles = enabledProfiles.filter((profile) =>
     profile.modelType === 'analysis' && profile.protocol === 'openai-chat-multimodal');
@@ -167,9 +180,9 @@ function AppContent() {
       { id: 'theme.light', label: '切换到浅色主题', hint: 'Light', section: '外观', keywords: ['theme', 'light', '浅色'] },
       { id: 'theme.dark', label: '切换到深色主题', hint: 'Dark', section: '外观', keywords: ['theme', 'dark', '深色'] },
       { id: 'theme.system', label: '跟随系统主题', hint: 'System', section: '外观', keywords: ['theme', 'system', '系统'] },
-      { id: 'app.shortcuts', label: '快捷键一览', hint: 'Keyboard Shortcuts', section: '帮助', keywords: ['shortcuts', 'keyboard', 'help', '快捷键', '帮助', '?'], shortcut: '?' },
+      { id: 'app.shortcuts', label: '快捷键一览', hint: 'Keyboard Shortcuts', section: '帮助', keywords: ['shortcuts', 'keyboard', 'help', '快捷键', '帮助', '?', '?'], shortcut: '?' },
     ];
-    for (const project of projects.slice(0, 8)) {
+    for (const project of projectsList.slice(0, 8)) {
       items.push({
         id: `project.${project.id}`,
         label: project.projectName,
@@ -179,7 +192,7 @@ function AppContent() {
       });
     }
     return items;
-  }, [projects, themeMode]);
+  }, [projectsList, themeMode]);
 
   async function refresh() {
     const [nextSettings, nextProjects, nextDocumentContextRuns, nextReferenceAnchorRuns] = await Promise.all([
@@ -491,7 +504,7 @@ function AppContent() {
       selectedApiProfileId={selectedApiProfileId}
       requestedReferenceAnchorRunId={requestedReferenceAnchorRunId}
       requestedDocumentContextRunId={requestedDocumentContextRunId}
-      projects={projects}
+      projects={projectsList}
       setAnalysisMode={setAnalysisMode}
       setSelectedApiProfileId={setSelectedApiProfileId}
       setRequestedReferenceAnchorRunId={setRequestedReferenceAnchorRunId}
@@ -516,7 +529,7 @@ function AppContent() {
   />;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
-    progress={progress}
+    progress={progressState}
     error={runFailure}
     onCancel={() => window.masterpiece.analysis.cancel(selected.id)}
     onRetry={() => void run(selected, true, selectedApiProfileId)}
@@ -573,7 +586,7 @@ function AppContent() {
     || settings.profiles.find((profile) => profile.isEnabled);
   const hasUsableProfile = analysisProfiles.some((profile) => profile.hasApiKey && profile.baseUrl && profile.modelId);
   const recentRecords = [
-    ...projects.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
+    ...projectsList.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
     ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),
     ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
@@ -591,7 +604,7 @@ function AppContent() {
     else if (item.id === 'app.shortcuts') { setShortcutsOpen(true); }
     else if (item.id.startsWith('project.')) {
       const id = item.id.slice('project.'.length);
-      const project = projects.find((p) => p.id === id);
+      const project = projectsList.find((p) => p.id === id);
       if (project) void openProject(project);
     }
   }
@@ -620,7 +633,7 @@ function AppContent() {
                 else if (v === 'create') { setAnalysisMode('visual-analysis'); setScreen('create'); }
               }}
               options={[
-                { value: 'home' as const, label: '项目', count: projects.length },
+                { value: 'home' as const, label: '项目', count: projectsList.length },
                 { value: 'create' as const, label: '分析工作台' },
               ]}
             />
@@ -651,7 +664,7 @@ function AppContent() {
             <h3>最近项目</h3>
           </div>
           <div className="app-rail__list">
-            {projects.slice(0, 8).map((project) => (
+            {projectsList.slice(0, 8).map((project) => (
               <button
                 key={project.id}
                 className={'app-rail-item' + (selected?.id === project.id ? ' is-active' : '')}
@@ -664,7 +677,7 @@ function AppContent() {
                 </div>
               </button>
             ))}
-            {projects.length === 0 && (
+            {projectsList.length === 0 && (
               <div className="app-rail-empty">
                 还没有项目
               </div>
@@ -675,7 +688,7 @@ function AppContent() {
       bottomBar={
         <>
           <span>Masterpiece OS · 5.0.0-rc.1</span>
-          <span>{projects.length} 个项目 · {documentContextRuns.length} 份文档 · {referenceAnchorRuns.length} 次锚定</span>
+          <span>{projectsList.length} 个项目 · {documentContextRuns.length} 份文档 · {referenceAnchorRuns.length} 次锚定</span>
         </>
       }
     >
