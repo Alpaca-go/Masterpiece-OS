@@ -9,7 +9,7 @@
 //   - A/B 对比 UI (左右栏 + 元信息)
 //
 // 下一步 (真实数据接入):
-//   - useShortChainSession.history 接 OutputGallery.items
+//   - 从 session 历史 (新 hook, 见 audit 2026-08-25 item #2.1) 接 OutputGallery.items
 //   - 点击缩略图 → PreviewCanvas 显示
 //   - 持久化"已确认方向"到 project store
 
@@ -169,7 +169,7 @@ function formatRelative(iso: string): string {
 
 /**
  * useMockGallery — 临时 mock 数据。
- * P3-架构-3 之后会替换成 useShortChainSession.history 真实数据。
+ * P3-架构-3 之后会替换成真实数据 hook（替代原 useShortChainSession.history，已删除）。
  */
 function useMockGallery(): OutputItem[] {
   return useMemo(() => {

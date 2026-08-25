@@ -36,7 +36,8 @@ export interface ShortChainPageProps {
 
 export function ShortChainPage({ project, onBack, onGoHome }: ShortChainPageProps) {
   // P1.3: 顶层调 brief hook, P1.4: 加 generation hook.
-  // P1.5 才接 useShortChainSession / useShortChainContinuation.
+  // P1.5 起的 session / continuation 接入待新 hook 设计 (原 useShortChainSession
+  // + useShortChainContinuation 已在 audit 2026-08-25 commit F2 中删除).
   // P1.7 起 project prop 由 App.tsx 传入; P1.8+ routes 路由化时由 URL hash 解出.
   const brief = useShortChainBrief();
   const gen = useShortChainGeneration();

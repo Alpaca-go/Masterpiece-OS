@@ -27,7 +27,14 @@ import type {
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError } from '../../../utils';
 import type { Family } from '../../../components/shortchain/ShortChainTypes';
-import type { TemplateOptions } from './useShortChainSession';
+
+// TemplateOptions is a per-family catalog of subtypes + shots. Originally
+// co-located with useShortChainSession (removed in audit 2026-08-25 commit
+// F2 — that hook had zero call sites). The type is now inlined here so the
+// useShortChainBrief.compile signature does not need to change. Kept as an
+// index signature (matching the original) so the compile() argument remains
+// permissive; current implementation does not actually read options.
+type TemplateOptions = Record<string, { subtypes: string[]; shots: string[] }>;
 
 // 与 ShortChainGenerationWorkspace line 70-75 的 DEFAULTS 同步
 const DEFAULTS: Record<Family, { subtype: string; shot: string; ratio: ShortChainTaskContract['aspectRatio'] }> = {
