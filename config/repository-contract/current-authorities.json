@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0",
-  "freezeCommit": "81dc4cf08946c23257f0ec55f4b8752e11e8eda1",
+  "freezeCommit": "d980a78e8ec94fe51a37f778dc463bef84eacfe7",
   "authorities": [
     { "capability": "project-runtime", "authority": "apps/web-runtime/src/node-runtime-host.ts", "ownerLayer": "node-host" },
     { "capability": "web-ui", "authority": "apps/web/src/App.tsx", "ownerLayer": "web-renderer" },
