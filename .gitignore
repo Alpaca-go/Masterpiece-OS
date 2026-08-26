@@ -89,5 +89,10 @@ scripts/probes/
 /docs/creative-intelligence/ci-w1c.7.5-r1/g01-planning-intake.json
 /docs/creative-intelligence/ci-w1c.7.5-r1/g01-planning-intake.md
 
+# Local archive for retired, version-labeled workflow utilities and evidence.
+# Nothing under this directory may be imported by production or deterministic tests.
+/local-archive/
+/space-generator/quality-baselines/README.local.md
+
 # Web build output
 apps/web/dist/

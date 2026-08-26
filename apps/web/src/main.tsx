@@ -4,11 +4,11 @@ import { HashRouter } from 'react-router-dom';
 import { App } from './App';
 import { AppErrorBoundary } from './components/AppErrorBoundary';
 import { createWebRuntimeApi } from './web-api';
-import './styles/f7-tokens.css';
-import './styles/f7-theme-dark.css';
-import './styles/f7-components.css';
-import './styles/f7-layout.css';
-import './styles/f7-pages.css';
+import './styles/tokens.css';
+import './styles/theme-dark.css';
+import './styles/components.css';
+import './styles/layout.css';
+import './styles/pages.css';
 
 if (!window.masterpiece) {
   document.documentElement.dataset.runtime = 'web';

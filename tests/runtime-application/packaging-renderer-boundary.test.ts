@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
@@ -10,7 +10,7 @@ const ENTRY = path.join(WEB_SRC, 'main.tsx');
 const WORKSPACE_PATH = path.join(WEB_SRC, 'features', 'packaging', 'PackagingWorkspace.tsx');
 const CSS_PATH = path.join(WEB_SRC, 'features', 'packaging', 'PackagingWorkspace.module.css');
 const APP = readFileSync(path.join(WEB_SRC, 'App.tsx'), 'utf8');
-const GLOBAL_CSS = readFileSync(path.join(WEB_SRC, 'styles', 'f7-pages.css'), 'utf8');
+const GLOBAL_CSS = readFileSync(path.join(WEB_SRC, 'styles', 'pages.css'), 'utf8');
 const WORKSPACE = readFileSync(WORKSPACE_PATH, 'utf8');
 const CSS = readFileSync(CSS_PATH, 'utf8');
 const BROWSER_SEAM = path.join(ROOT, 'packages', 'runtime-core', 'src', 'browser', 'packaging-contracts.js');
@@ -19,8 +19,17 @@ const SOURCE_EXTENSIONS = ['', '.js', '.ts', '.tsx', '.jsx'];
 const NODE_ONLY = new Set(['node:crypto', 'node:fs', 'node:path', 'crypto', 'fs', 'path']);
 
 function sourceFiles(root: string): string[] {
-  const output = execFileSync('rg', ['--files', root], { cwd: ROOT, encoding: 'utf8' });
-  return output.split(/\r?\n/u).filter((file) => /\.(?:js|jsx|ts|tsx)$/u.test(file));
+  const files: string[] = [];
+  const pending = [root];
+  while (pending.length > 0) {
+    const current = pending.pop()!;
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const absolute = path.join(current, entry.name);
+      if (entry.isDirectory()) pending.push(absolute);
+      else if (/\.(?:js|jsx|ts|tsx)$/u.test(entry.name)) files.push(absolute);
+    }
+  }
+  return files;
 }
 
 function runtimeSpecifiers(source: string): string[] {
@@ -38,11 +47,11 @@ function runtimeSpecifiers(source: string): string[] {
 function resolveFile(candidate: string): string | null {
   for (const suffix of SOURCE_EXTENSIONS) {
     const file = `${candidate}${suffix}`;
-    if (existsSync(file)) return path.normalize(file);
+    if (existsSync(file) && statSync(file).isFile()) return path.normalize(file);
   }
   for (const suffix of SOURCE_EXTENSIONS.slice(1)) {
     const file = path.join(candidate, `index${suffix}`);
-    if (existsSync(file)) return path.normalize(file);
+    if (existsSync(file) && statSync(file).isFile()) return path.normalize(file);
   }
   return null;
 }

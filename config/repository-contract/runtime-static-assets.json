@@ -56,21 +56,17 @@
                        "frozenBy":  "A2"
                    },
                    {
-                       "path":  "space-generator/v1-experimental/architecture-anchors/registry.json",
+                       "path":  "packages/image-generation-runtime/assets/architecture-anchors/registry.json",
                        "owner":  "space",
                        "classification":  "TRACKED_RUNTIME_ASSET",
                        "required":  true,
                        "releaseRequired":  true,
                        "reason":  "Production Space architecture-anchor registry (read by packages/image-generation-runtime/src/space/architecture-context.js at line 67). Single source of truth for 3 brands (JZMX / FTT / YJLF) and 9 anchors.",
-                       "sha256":  "f5ebf4431ed377e34857288040b7707ab4351ddd5f30e12b6e5e4b9d2168922d",
-                       "frozenBy":  "A4",
-                       "knownRisks":  [
-                                          "Located under space-generator/v1-experimental/ (a non-production path). Per Tracked Runtime Assets Guard spec §2 non-goal, this phase does NOT move the file; the registry stays at its current path and the production code resolves it via REPO_ROOT.",
-                                          "Defer to Repository Stabilization for any future path migration (resolves Tracked Runtime Assets Guard spec §26 STOP-05)."
-                                      ]
+                       "sha256":  "672fe173f5b9c0cac20f6f01e845d643b92fe42cec6a6ffa49bda058184b5bd9",
+                       "frozenBy":  "repository-version-cleanup"
                    },
                    {
-                       "path":  "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
+                       "path":  "packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
                        "owner":  "space",
                        "classification":  "TRACKED_RUNTIME_ASSET",
                        "required":  true,
@@ -81,7 +77,7 @@
                        "registryReference":  "registry.json -\u003e brands.jiuzhou-aesthetics.anchors[0].imagePath"
                    },
                    {
-                       "path":  "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
+                       "path":  "packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
                        "owner":  "space",
                        "classification":  "TRACKED_RUNTIME_ASSET",
                        "required":  true,
@@ -92,7 +88,7 @@
                        "registryReference":  "registry.json -\u003e brands.jiuzhou-aesthetics.anchors[1].imagePath"
                    },
                    {
-                       "path":  "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png",
+                       "path":  "packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png",
                        "owner":  "space",
                        "classification":  "TRACKED_RUNTIME_ASSET",
                        "required":  true,
@@ -107,11 +103,11 @@
                             "specSection":  "Tracked Runtime Assets Guard spec §17",
                             "checkedRegistries":  [
                                                       {
-                                                          "registryPath":  "space-generator/v1-experimental/architecture-anchors/registry.json",
+                                                          "registryPath":  "packages/image-generation-runtime/assets/architecture-anchors/registry.json",
                                                           "referencedImagePaths":  [
-                                                                                       "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
-                                                                                       "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
-                                                                                       "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png"
+                                                                                       "packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png",
+                                                                                       "packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png",
+                                                                                       "packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png"
                                                                                    ],
                                                           "conceptOnlyCount":  6,
                                                           "conceptOnlyBrands":  [
@@ -151,11 +147,11 @@
                                                                      {
                                                                          "loaderId":  "space-anchor-registry-loader",
                                                                          "loaderSite":  "packages/image-generation-runtime/src/space/architecture-context.js",
-                                                                         "loaderForm":  "fs.readFileSync(path.join(REPO_ROOT, \u0027space-generator\u0027, \u0027v1-experimental\u0027, \u0027architecture-anchors\u0027, \u0027registry.json\u0027), \u0027utf8\u0027)",
+                                                                         "loaderForm":  "fs.readFileSync(path.join(PACKAGE_ROOT, \u0027assets\u0027, \u0027architecture-anchors\u0027, \u0027registry.json\u0027), \u0027utf8\u0027)",
                                                                          "produces":  "TRACKED_RUNTIME_ASSET",
-                                                                         "staticRoot":  "space-generator/v1-experimental/architecture-anchors/",
+                                                                         "staticRoot":  "packages/image-generation-runtime/assets/architecture-anchors/",
                                                                          "staticFiles":  [
-                                                                                             "space-generator/v1-experimental/architecture-anchors/registry.json"
+                                                                                             "packages/image-generation-runtime/assets/architecture-anchors/registry.json"
                                                                                          ],
                                                                          "registryClosure":  "registry.json -\u003e brands.*.anchors[*].imagePath -\u003e the 3 JZMX PNG files (also TRACKED_RUNTIME_ASSET)"
                                                                      },
@@ -385,21 +381,5 @@
                                                                  "node_modules/"
                                                              ]
                                    },
-    "excludedByDesign":  {
-                             "experimentalLoader":  {
-                                                        "path":  "space-generator/v1-experimental/architecture-anchors/loader/load-anchors.mjs",
-                                                        "reason":  "Not in the production path. The production code at packages/image-generation-runtime/src/space/architecture-context.js re-implements the registry read + selection scoring; it does NOT import the experimental loader. The experimental loader and its tests are tracked but not declared as production runtime assets. The workspace-boundary guard already prevents production from deep-importing the experimental tree."
-                                                    },
-                             "experimentalMetadata":  {
-                                                          "files":  [
-                                                                        "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/architecture-dna-analysis.yaml",
-                                                                        "space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/metadata.yaml",
-                                                                        "space-generator/v1-experimental/architecture-anchors/feng-tang-tang/architecture-dna-analysis.yaml",
-                                                                        "space-generator/v1-experimental/architecture-anchors/feng-tang-tang/metadata.yaml",
-                                                                        "space-generator/v1-experimental/architecture-anchors/yi-ji-liang-fang/architecture-dna-analysis.yaml",
-                                                                        "space-generator/v1-experimental/architecture-anchors/yi-ji-liang-fang/metadata.yaml"
-                                                                    ],
-                                                          "reason":  "Read only by the experimental loader (not in production). They are tracked (Git knows them) but they are not TRACKED_RUNTIME_ASSET per the production-rule definition."
-                                                      }
-                         }
+    "excludedByDesign":  {}
 }

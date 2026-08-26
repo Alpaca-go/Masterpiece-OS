@@ -10,7 +10,6 @@
 | `task-builder.js::compileImageGenerationTaskV3` | standard Short-Chain source bundle 3.0 | deliverable routing | ACTIVE_DEPENDENCY | HIGH |
 | `deliverables/deliverable-prompt-compiler.js` | task v3 | packaging/interior/etc final prompt | ACTIVE_DEPENDENCY | HIGH |
 | `task-builder` v1/v2 branches | persisted old tasks and migrations | compatibility | ACTIVE_DEPENDENCY | HIGH |
-| `space-generator/v1-experimental/prompt-compiler/*` | root named tests and historical A/B runners | isolated experiments | TEST_DEPENDENCY | HIGH |
 
 There is compiler chaining: vNext orchestration creates the contract and route; Space tasks delegate to Phase9B compiler, then Seedream adapter adds provider boundary/payload semantics. Packaging bypasses the Space compiler and uses deliverable compiler.
 
@@ -25,10 +24,9 @@ There is compiler chaining: vNext orchestration creates the contract and route; 
 | Space blocks rendered by `phase9b-space-compiler.js` | Reference-First and current Space | provider final prompt | ACTIVE_DEPENDENCY |
 | `vnext/prompt-compiler.js` templates/contracts | fallback and non-space vNext | provider final prompt | ACTIVE_DEPENDENCY |
 | `space-generator/v1-baseline/*` prompt copies | experimental comparison tests | frozen comparison | TEST_DEPENDENCY |
-| `space-generator/v1-experimental/**/*prompt*` | isolated tests/A-B results | research and regression | TEST_DEPENDENCY / HISTORICAL_REFERENCE |
 
 SHA-256 audit found exact copies between CLI v5 and `space-generator/v1-baseline` for at least `benchmark-instructions.md` and `execution-core-template.md`. This is `BEHAVIOR_SENSITIVE_DUPLICATION`; the baseline is read by tests and the production copy is active, so neither is an archive candidate.
 
 ## Safety conclusion
 
-The apparent overlap between `vnext`, `phase9b`, `r8_6_golden`, and `v1-experimental` is not interchangeable equivalence. Output-sensitive differences and runtime flags make merge/refactor unsafe before S2 Golden protection.
+The apparent overlap between `vnext`, `phase9b`, and `r8_6_golden` is not interchangeable equivalence. Output-sensitive differences and runtime flags require Golden protection before compiler consolidation.

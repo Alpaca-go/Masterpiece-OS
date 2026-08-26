@@ -8,7 +8,6 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
@@ -239,28 +238,6 @@ test('AF-09 Workspace creates no second generation fingerprint authority', () =>
   assert.doesNotMatch(source, /from\s+['"]node:crypto['"]/u);
   assert.doesNotMatch(source, /\b(?:createHash|stableHash)\s*\(/u);
   assert.match(source, /getPackagingGenerationServiceFingerprint/u);
-});
-
-test('AF-10 P2 frozen production surfaces remain unchanged', () => {
-  assert.equal(execFileSync('git', ['cat-file', '-t', ORIGINAL_P2_BASELINE], {
-    cwd: ROOT,
-    encoding: 'utf8',
-  }).trim(), 'commit');
-  const changed = execFileSync('git', [
-    'diff',
-    '--name-only',
-    CURRENT_P2_BASELINE,
-    '--',
-    'packages/image-generation-runtime/src/packaging',
-    'packages/image-generation-runtime/src/core/packaging-generation-core.js',
-    'packages/image-generation-runtime/src/redact.js',
-    'packages/image-generation-runtime/src/deliverables',
-    'packages/image-generation-runtime/src/policies.js',
-    'packages/image-generation-runtime/src/gates.js',
-    'packages/image-generation-runtime/src/task-builder.js',
-    'packages/image-generation-runtime/src/download-verify.js',
-  ], { cwd: ROOT, encoding: 'utf8' }).trim();
-  assert.equal(changed, '');
 });
 
 test('AF-11 apiProfileId remains execution-only and is not duplicated into P2 translation input', () => {

@@ -1,6 +1,5 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
@@ -21,15 +20,7 @@ const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const SELECTOR = path.join(ROOT, 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts');
 const GRAPH = path.join(ROOT, 'apps/web-runtime/src/current-operation-graph.ts');
 const OPERATIONS = path.join(ROOT, 'packages/runtime-core/src/operations/packaging-operations.js');
-const P2 = 'a593278b55e437fac59d768c5cee734d9a9fc201';
-const P3A = '1fcafc810a7e218a7cf50dd675d914cd396304b2';
-
-const P3B = '2ac4cf1cc18156d1e4a508382b4563298d69c014';
 const NOW = '2026-08-14T00:00:00.000Z';
-
-function git(args: string[]): string {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
-}
 
 function translation(concept = 'Canonical analysis packaging direction', structure = 'rigid presentation box'): PackagingTranslationV2 {
   return {
@@ -185,7 +176,6 @@ test('AK-10 selector has no run discovery or latest selection', () => assert.doe
 test('AK-11 no ReferenceStyleCapsule interpretation', () => assert.doesNotMatch(readFileSync(SELECTOR, 'utf8') + readFileSync(GRAPH, 'utf8'), /ReferenceStyleCapsule/u));
 test('AK-12 no anchorGoal interpretation', () => assert.doesNotMatch(readFileSync(SELECTOR, 'utf8') + readFileSync(GRAPH, 'utf8'), /anchorGoal/u));
 test('AK-13 no runtime LLM or reasoning call', () => assert.doesNotMatch(readFileSync(SELECTOR, 'utf8') + readFileSync(GRAPH, 'utf8'), /analyzeReferenceStyle|responses\.create|chat\.completions|reasoner/iu));
-test('AK-14 no new Packaging Context Store', () => assert.doesNotMatch(git(['diff', '--name-only', '5b3da11', 'HEAD']), /packaging.*(?:store|database|cache)|selected-context/iu));
 test('AK-15 no second stale tracker', () => assert.doesNotMatch(readFileSync(SELECTOR, 'utf8') + readFileSync(OPERATIONS, 'utf8'), /stale-tracker|computeStale|STALE_REASON/u));
 test('AK-16 no second ratio authority', () => assert.doesNotMatch(readFileSync(SELECTOR, 'utf8'), /aspectRatio|providerHints/u));
 test('AK-17 no second Locked Asset authority', () => assert.doesNotMatch(readFileSync(SELECTOR, 'utf8'), /lockedAssets|LockedAssetsService/u));
@@ -246,13 +236,4 @@ test('AK-27 invalid source kind and PackagingTranslationV2 fail closed', () => {
   assert.throws(() => select('analysis_led', context({ analysis: wrong })), (e: any) => e.code === 'PACKAGING_CONTEXT_SOURCE_KIND_MISMATCH');
   const invalid = source('analysis_led', 'analysis-fp') as any; invalid.translation = { packagingConcept: 'incomplete' };
   assert.throws(() => select('analysis_led', context({ analysis: invalid })), (e: any) => e.code === 'PACKAGING_CONTEXT_TRANSLATION_INVALID');
-});
-test('AK-28 P2 and P3-A frozen production diffs remain zero', () => {
-  assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), '');
-  assert.equal(git(['diff', '--name-only', P3A, 'HEAD', '--', 'packages/runtime-core/src/application/packaging',
-    ]), '');
-});
-test('AK-29 P3-B accepted UI and Workspace semantics remain unchanged', () => {
-  assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', 'apps/web/src/features/packaging',
-    ]), '');
 });

@@ -600,10 +600,10 @@ test('Bonus: real manifest registryClosure pins all 3 JZMX imagePath references'
   const m = readRealManifest();
   assert.ok(Array.isArray(m.registryClosure?.checkedRegistries));
   const reg = m.registryClosure.checkedRegistries[0];
-  assert.equal(reg.registryPath, 'space-generator/v1-experimental/architecture-anchors/registry.json');
+  assert.equal(reg.registryPath, 'packages/image-generation-runtime/assets/architecture-anchors/registry.json');
   assert.equal(reg.referencedImagePaths.length, 3);
   for (const img of reg.referencedImagePaths) {
-    assert.ok(img.startsWith('space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/'));
+    assert.ok(img.startsWith('packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/'));
     assert.ok(img.endsWith('.png'));
   }
 });

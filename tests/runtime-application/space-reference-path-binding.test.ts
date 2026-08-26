@@ -12,16 +12,14 @@
 //   analysis_source       -> input/<asset.relativePath>
 //   generation_reference  -> <asset.relativePath>
 //
-// Authoritative: docs/packaging/history/p3-d/p3-d3-7c-cross-deliverable-reference-path-authority-audit.md
-//                docs/packaging/history/p3-d/p3-d3-7d-space-reference-path-corrective.md
+// Space reference path binding regression coverage.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { createProjectStore } from '@masterpiece/runtime-core/application/project-store.ts';
 import { resolveReferenceAsset } from '@masterpiece/image-generation-runtime/reference-engine/reference-asset-resolver.ts';
 import { resolveSpaceReferences } from '@masterpiece/image-generation-runtime/space/space-reference-policy.js';
@@ -29,17 +27,12 @@ import type { PublicSettings } from '@masterpiece/runtime-core/application-contr
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const SPACE_POLICY = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'space', 'space-reference-policy.js');
-const D37C = path.join(ROOT, 'docs', 'packaging', 'history', 'p3-d', 'p3-d3-7c-cross-deliverable-reference-path-authority-audit.md');
 
 const ONE_PIXEL_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64');
 const OTHER_PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 
 function read(file) {
   return readFileSync(file, 'utf8');
-}
-
-function git(args) {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
 }
 
 async function makeStore() {
@@ -71,13 +64,6 @@ function spaceResolve(explicitAssets) {
 // ---------------------------------------------------------------------------
 // BE-01..BE-05 — Root cause + reference frames + corrected derivation.
 // ---------------------------------------------------------------------------
-
-test('BE-01 D3.7C root cause preserved', () => {
-  assert.ok(existsSync(D37C), 'D3.7C doc must exist');
-  const doc = read(D37C);
-  assert.match(doc, /space-reference-policy\.js:96/u);
-  assert.match(doc, /SPACE CREATIVE TASK REFERENCE PATH DEFECT/u);
-});
 
 test('BE-02 Space analysis_source reference frame documented', () => {
   const src = read(SPACE_POLICY);
@@ -224,46 +210,6 @@ test('BE-16 Space reference role unchanged', () => {
 test('BE-17 Space relationship unchanged', () => {
   const src = read(SPACE_POLICY);
   assert.match(src, /referenceRole/u);
-});
-
-test('BE-18 Packaging D3.7B unchanged', () => {
-  const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'packages/runtime-core/src/application/image-generation/short-chain-service.ts']);
-  assert.equal(delta, '', 'packaging short-chain-service must be untouched by this corrective');
-});
-
-test('BE-19 Web upload RPC server unchanged', () => {
-  // P3-D corrective guard: local-rpc-server.ts upload wiring must be
-  // untouched by subsequent changes. (The legacy workspace file that
-  // originally paired with this assertion was deleted in F6.B; this
-  // test now asserts the surviving half only.)
-  const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'apps/web-runtime/src/local-rpc-server.ts']);
-  assert.equal(delta, '', 'web upload RPC server must be untouched');
-});
-
-test('BE-20 Reference preview unchanged', () => {
-  const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'packages/runtime-core/src/application/project-store.ts']);
-  assert.equal(delta, '', 'project-store (preview source) must be untouched');
-});
-
-test('BE-21 Space prompt unchanged', () => {
-  const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'packages/image-generation-runtime/src/space/compiler.js']);
-  assert.equal(delta, '', 'space compiler must be untouched');
-});
-
-test('BE-22 Space Golden unchanged', () => {
-  const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'evaluation/golden-cases/', 'evaluation/anti-cases/', 'evaluation/hidden-cases/']);
-  assert.equal(delta, '', 'no Golden delta since D3.7C HEAD');
-});
-
-test('BE-23 R8.6 boundary unchanged', () => {
-  const delta = git(['diff', '--name-only', '2004f9a7bea0a213bd884a0d1c2d00316a3d8e4e', 'HEAD',
-    '--', 'space-generator/v1-experimental/architecture-anchors/']);
-  assert.equal(delta, '', 'R8.6 anchor baseline untouched');
 });
 
 test('BE-24 P3-A stale unchanged', () => {

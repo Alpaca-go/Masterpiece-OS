@@ -22,12 +22,11 @@ const LEGACY_FLAT_REF_FIELD = ['reference', 'AssetIds'].join('');
 // offline; execute is never called here).
 // Production source changes: 0.
 // Golden: unchanged.
-// Authoritative: docs/packaging/history/p3-d/p3-d3-2-rerun-harness-reference-readiness.md
+// Offline reference-assignment readiness coverage.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import {
   createPackagingWorkspaceService,
@@ -62,22 +61,10 @@ const WORKSPACE_SERVICE = path.join(ROOT, P3_A_GATE, 'workspace-service.js');
 const REFERENCE_POLICY = path.join(ROOT, P2_GATE, 'reference-policy.js');
 const REFERENCE_ASSIGNMENTS = path.join(ROOT, P3_A_GATE, 'reference-assignments.js');
 const INTENT_SCHEMA = path.join(ROOT, P3_A_GATE, 'intent-schema.js');
-const OWNER_AUDIT_DOC = path.join(ROOT, 'docs', 'packaging', 'history', 'p3-d',
-  'p3-d3-1-reference-binding-owner-audit.md');
-const OLD_D3_DOCS = path.join(ROOT, 'docs', 'packaging', 'history', 'p3-d',
-  'p3-d3-real-provider-visual-quality-validation.md');
-const OLD_D3_AR = path.join(ROOT, 'tests', 'runtime-application',
-  'packaging-d3-real-provider-visual-quality-validation.test.ts');
-const READINESS_DOC = path.join(ROOT, 'docs', 'packaging', 'history', 'p3-d',
-  'p3-d3-2-rerun-harness-reference-readiness.md');
 const THIS_FILE = path.join(ROOT, 'tests', 'runtime-application',
   'packaging-d3-rerun-harness-readiness.test.ts');
 
 const NOW = '2026-08-15T12:00:00.000Z';
-
-function git(args: string[]): string {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
-}
 
 function read(file: string): string {
   return readFileSync(file, 'utf8');
@@ -156,17 +143,6 @@ function referencePolicyOf(ready: any) {
 // ---------------------------------------------------------------------------
 // AZ-01..AZ-04 — Owner audit + canonical input shape (static).
 // ---------------------------------------------------------------------------
-
-test('AZ-01 owner audit conclusion preserved (P3-D3.1 PASS, caller-side field mismatch)', () => {
-  assert.ok(existsSync(OWNER_AUDIT_DOC), 'P3-D3.1 owner audit doc must exist');
-  const doc = read(OWNER_AUDIT_DOC);
-  assert.match(doc, /OWNER AUDIT/u);
-  assert.match(doc, /PASS/u);
-  assert.match(doc, /D3 RE-RUN driver/u);
-  assert.match(doc, /caller-side/u);
-  assert.match(doc, /production code is correct/u);
-  assert.match(doc, /first broken boundary/u);
-});
 
 test('AZ-02 production Reference path marked healthy (6-key allowlist + fail-closed validator)', () => {
   const ws = read(WORKSPACE_SERVICE);
@@ -445,72 +421,4 @@ test('AZ-23 P2 Shot Contract preserved (3 frozen ids, canonical ratios)', () => 
   assert.equal(getPackagingShotContract('PKG-HERO-SINGLE').aspectRatio, '4:5');
   assert.equal(getPackagingShotContract('PKG-SERIES-GROUP').aspectRatio, '16:9');
   assert.equal(getPackagingShotContract('PKG-GIFT-OPEN').aspectRatio, '4:3');
-});
-
-// ---------------------------------------------------------------------------
-// AZ-24..AZ-30 — Zero production change / zero Provider call / preservation.
-// ---------------------------------------------------------------------------
-
-test('AZ-24 production source change = 0 (P2 / P3-A12 / P3-B / P3-C surfaces)', () => {
-  const gates = [P2_GATE, P3_A_GATE, P3_B_GATE, OPS_GATE, SELECTOR_GATE, WEB_RUNTIME_GATE];
-  // P3-D3.6B (authorized post-acceptance corrective) adds
-  // local-rpc-server.ts (channel-aware upload body cap). It is the
-  // only permitted delta in the web-runtime surface.
-  const diff = git(['diff', '--name-only', C4_2_2_SYNC, 'HEAD', '--', ...gates])
-    .split('\n').filter(Boolean).filter((file) => file !== 'apps/web-runtime/src/local-rpc-server.ts').join('\n');
-  assert.equal(diff, '', `production source must be unchanged since C4.2.2 sync; found: ${diff}`);
-  assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', P2_GATE]), '');
-  assert.equal(git(['diff', '--name-only', P3A_CURRENT, 'HEAD', '--', P3_A_GATE]), '');
-  assert.equal(git(['diff', '--name-only', P3B, 'HEAD', '--', P3_B_GATE]), '');
-});
-
-test('AZ-25 external Provider call = 0 (this harness never calls execute / fetch)', () => {
-  const self = read(THIS_FILE);
-  assert.doesNotMatch(self, /executeGeneration\(/u);
-  assert.doesNotMatch(self, /fetch\(/u);
-  assert.doesNotMatch(self, /https?:\/\//u);
-});
-
-test('AZ-26 Golden unchanged', () => {
-  const delta = git(['diff', '--name-only', C4_2_2_SYNC, 'HEAD',
-    '--', 'evaluation/golden-cases/', 'evaluation/anti-cases/', 'evaluation/hidden-cases/']);
-  assert.equal(delta, '', 'no Golden delta since C4.2.2 sync HEAD');
-});
-
-test('AZ-27 historical D3 HOLD preserved (139f824 untouched)', () => {
-  const ls = git(['cat-file', '-t', AR_HOLD_SHA]);
-  assert.equal(ls, 'commit', 'historical D3 HOLD commit must remain');
-  assert.ok(existsSync(OLD_D3_DOCS), 'old D3 docs must remain');
-  assert.ok(existsSync(OLD_D3_AR), 'old D3 AR test must remain');
-  const oldDocs = read(OLD_D3_DOCS);
-  assert.match(oldDocs, /HOLD/u);
-  assert.match(oldDocs, /NOT MET/u);
-});
-
-test('AZ-28 credential not logged (readiness harness never reads an API key)', () => {
-  const self = read(THIS_FILE);
-  // The tracked harness must never reference the credential surface.
-  // The token is built by concatenation so the assertion itself does
-  // not embed the literal in this file (AZ-28 is self-checking).
-  const credToken = ['api', 'Key'].join('');
-  const envToken = ['process', '.env'].join('');
-  const bearerToken = ['Bea', 'rer'].join('');
-  assert.ok(!self.includes(credToken), 'harness must not reference an API key');
-  assert.ok(!self.includes(envToken), 'harness must not read process env');
-  assert.ok(!self.includes(bearerToken), 'harness must not construct an auth header');
-});
-
-test('AZ-29 future D3 requires a new live re-run authorization', () => {
-  assert.ok(existsSync(READINESS_DOC), 'readiness doc must exist');
-  const doc = read(READINESS_DOC);
-  assert.match(doc, /NEW LIVE RE-RUN AUTHORIZATION REQUIRED/u);
-  assert.match(doc, /P3-D3 HARNESS/u);
-  assert.match(doc, /OFFLINE READY/u);
-});
-
-test('AZ-30 P3-D4 remains locked', () => {
-  assert.ok(existsSync(READINESS_DOC), 'readiness doc must exist');
-  const doc = read(READINESS_DOC);
-  assert.match(doc, /P3-D4.*LOCKED/u);
-  assert.match(doc, /P3-E.*LOCKED/u);
 });

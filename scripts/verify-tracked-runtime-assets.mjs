@@ -274,9 +274,9 @@ function checkRegistryClosure(manifest) {
       const anchors = Array.isArray(brandEntry?.anchors) ? brandEntry.anchors : [];
       for (const anchor of anchors) {
         if (!anchor?.imagePath) continue;
-        // registry imagePath is relative to space-generator/ (per the comment in
-        // packages/image-generation-runtime/src/space/architecture-context.js:195)
-        const resolvedRel = path.posix.join('space-generator', anchor.imagePath);
+        // Registry image paths are relative to the registry file itself so an
+        // owning package can move its complete asset bundle atomically.
+        const resolvedRel = path.posix.join(path.posix.dirname(reg.registryPath), anchor.imagePath);
         const resolvedAbs = path.join(REPO_ROOT, resolvedRel);
         if (!fs.existsSync(resolvedAbs)) {
           fail(
@@ -300,11 +300,11 @@ function checkRegistryClosure(manifest) {
 
 function checkPromptIntegrity() {
   // Check F (spec \u00a716): delegate to the existing A4
-  // verify-a4-frozen-prompt guard. The A4 guard already
+  // analysis prompt integrity guard. That guard already
   // recomputes the 2 frozen-prompt digests; we do not duplicate
   // it here. This function is a placeholder for the spec \u00a716
   // responsibility assignment: the Tracked Runtime Assets
-  // Guard checks existence + tracking; the A4 guard checks
+  // Guard checks existence + tracking; the analysis prompt integrity guard checks
   // content-integrity (frozen-digest match).
   // No-op in this script.
 }

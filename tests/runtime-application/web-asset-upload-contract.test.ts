@@ -1,4 +1,4 @@
-﻿// P3-D3.6A/6B / UA 鈥?Web Asset Upload Contract tests.
+// P3-D3.6A/6B / UA 鈥?Web Asset Upload Contract tests.
 //
 // Pins the frozen browser File 鈫?project asset contract:
 //   projects.importFileBytes({ projectId, file: { name, mime, size,
@@ -9,8 +9,7 @@
 // MIME/extension validation). Reference images only: PNG/JPEG/WEBP,
 // per-file cap 8 MiB. No absolute path, no second asset store.
 //
-// Authoritative: docs/packaging/history/p3-d/p3-d3-6a-web-asset-upload-architecture-contract.md
-//                docs/packaging/history/p3-d/p3-d3-6b-web-asset-upload-implementation.md
+// Web asset upload boundary regression coverage.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';

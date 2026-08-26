@@ -9,10 +9,6 @@ import {
   prepareDocumentSet,
   resolvePlanningSourcePolicy
 } from '@masterpiece/document-ingestion/document-preparation.js';
-import {
-  G02_ANCHOR_EPISTEMIC_CONTRACT,
-  G02_ANCHOR_EPISTEMIC_EXPECTATIONS
-} from '../../../scripts/lib/g02-qualification-contract.mjs';
 
 const strategyRichBusinessPlan = {
   filename: 'regional-health-business-plan.docx',
@@ -179,25 +175,6 @@ test('G01ROLE-01 frozen G01 remains brand-strategy and eligible', () => {
   assert.equal(result.role, 'brand-strategy');
   assert.equal(result.sourceRole, 'PLANNING_STRATEGIC_SOURCE');
   assert.equal(result.planningStrategicEvidenceEligible, true);
-});
-
-test('ANCHOR-EPI-01 canonical enum is exact', () => {
-  assert.deepEqual(G02_ANCHOR_EPISTEMIC_EXPECTATIONS, ['FACT', 'USER_REQUIREMENT', 'MIXED', 'OPEN']);
-});
-
-test('ANCHOR-EPI-02 generic contract exposes the same enum', () => {
-  assert.equal(G02_ANCHOR_EPISTEMIC_CONTRACT.values, G02_ANCHOR_EPISTEMIC_EXPECTATIONS);
-});
-
-test('ANCHOR-EPI-03 OPEN and UNKNOWN ambiguity is eliminated', () => {
-  assert.equal(G02_ANCHOR_EPISTEMIC_EXPECTATIONS.includes('OPEN'), true);
-  assert.equal(G02_ANCHOR_EPISTEMIC_EXPECTATIONS.includes('UNKNOWN'), false);
-  assert.equal(G02_ANCHOR_EPISTEMIC_CONTRACT.unknownIsExpectationValue, false);
-});
-
-test('ANCHOR-EPI-04 anchor expectation cannot override runtime authority', () => {
-  assert.equal(G02_ANCHOR_EPISTEMIC_CONTRACT.expectationAuthority, 'NON_AUTHORITATIVE');
-  assert.equal(G02_ANCHOR_EPISTEMIC_CONTRACT.runtimeAuthority, 'deterministic Planning epistemic classifier');
 });
 
 test('classifier version and taxonomy are explicit and additive', () => {

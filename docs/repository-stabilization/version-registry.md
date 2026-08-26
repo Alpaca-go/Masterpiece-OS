@@ -23,16 +23,15 @@ Snapshot counts below are counts of classified implementation/version **instance
 | 17 | `quality-baselines/r10*` | Space Baseline | R10/R10.4.1 | evidence only | current tests | TEST_DEPENDENCY | HIGH |
 | 18 | `quality-baselines/r11*` | Continuation | R11/R11.2 | evidence only | current tests | TEST_DEPENDENCY | HIGH |
 | 19 | R2-B1..B4 tests/smoke | Reference First | R2 | behavior now active | current | TEST_DEPENDENCY | HIGH |
-| 20 | `space-generator/v1-experimental` | Space Lab | v1 experimental | isolated from production | root named tests | TEST_DEPENDENCY | HIGH |
-| 21 | `space-generator/v1-baseline` | Space Baseline | v1 | comparison assets | test-read | TEST_DEPENDENCY | HIGH |
-| 22 | lab `visual-translation/v1` | Visual Lab | v1 | imported by lab v2 only | lab tests | TEST_DEPENDENCY | MEDIUM |
-| 23 | lab `visual-translation/v2` | Visual Lab | v2 | isolated lab runner | lab tests | TEST_DEPENDENCY | MEDIUM |
-| 24 | image-generation v1/vnext fixtures | Fixtures | v1/vnext | no direct production | compatibility tests | TEST_DEPENDENCY | HIGH |
-| 25 | version-named Desktop real-provider runners wired in package scripts | Smoke | V18.1/V6 names | manual smoke | package script/manual | TEST_DEPENDENCY | HIGH |
-| 26 | `docs/archive/v3.3` | Documentation | v3.3 | none | none found | HISTORICAL_REFERENCE | LOW |
-| 27 | `docs/archive/v4.0` | Documentation | v4.0 | none | none found | HISTORICAL_REFERENCE | LOW |
-| 28 | `space-generator/archaeology` | Space docs | R8.4 evidence | none | none found | HISTORICAL_REFERENCE | LOW |
-| 29 | versioned `evaluation/reports/*` | Evaluation | mixed | production boundary forbids | evidence only | HISTORICAL_REFERENCE | MEDIUM |
+| 20 | `space-generator/v1-baseline` | Space Baseline | v1 | comparison assets | test-read | TEST_DEPENDENCY | HIGH |
+| 21 | lab `visual-translation/v1` | Visual Lab | v1 | imported by lab v2 only | lab tests | TEST_DEPENDENCY | MEDIUM |
+| 22 | lab `visual-translation/v2` | Visual Lab | v2 | isolated lab runner | lab tests | TEST_DEPENDENCY | MEDIUM |
+| 23 | image-generation v1/vnext fixtures | Fixtures | v1/vnext | no direct production | compatibility tests | TEST_DEPENDENCY | HIGH |
+| 24 | version-named Desktop real-provider runners wired in package scripts | Smoke | V18.1/V6 names | manual smoke | package script/manual | TEST_DEPENDENCY | HIGH |
+| 25 | `docs/archive/v3.3` | Documentation | v3.3 | none | none found | HISTORICAL_REFERENCE | LOW |
+| 26 | `docs/archive/v4.0` | Documentation | v4.0 | none | none found | HISTORICAL_REFERENCE | LOW |
+| 27 | `space-generator/archaeology` | Space docs | R8.4 evidence | none | none found | HISTORICAL_REFERENCE | LOW |
+| 28 | versioned `evaluation/reports/*` | Evaluation | mixed | production boundary forbids | evidence only | HISTORICAL_REFERENCE | MEDIUM |
 | 30 | CLI v5 vs space v1 exact prompt copies | Prompt | mixed | one side active | baseline tests | DUPLICATE_CANDIDATE | CRITICAL |
 | 31 | exact duplicate baseline prompts/traces/payloads | Evidence | R8–R11 | none | some current | DUPLICATE_CANDIDATE | HIGH |
 | 32 | `apps/desktop/scripts/space-r10-archive` | Manual tooling | R10/R11 | no active import found | no package entry found | UNKNOWN | HIGH |

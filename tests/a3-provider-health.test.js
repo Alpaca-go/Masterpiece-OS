@@ -3,7 +3,7 @@
 // Per A3 spec §20 / §21: getProviderHealth / setProviderHealth
 // expose a 4-state health model (configured / available / degraded
 // / unavailable; + 'unknown' as initial). The actual probe is a
-// manual / opt-in script in scripts/a3-provider-health-probe.mjs;
+// manual / opt-in script in scripts/probe-analysis-provider-health.mjs;
 // this test only exercises the cache layer (no network).
 //
 // Tests:

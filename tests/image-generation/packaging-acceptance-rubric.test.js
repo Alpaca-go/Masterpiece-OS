@@ -111,7 +111,7 @@ test('P1 acceptance-rubric.md doc is consistent with the JSON', () => {
   // The doc must call out the auto-fail set.
   assert.ok(doc.includes('auto-fail'));
   // The doc must NOT use the forbidden phase/version namespace
-  // (the A4 verify-a4-version-namespace guard enforces this on
+  // (the analysis namespace guard enforces this on
   // production files; we double-check the doc here for hygiene).
   assert.doesNotMatch(doc, /\bp\d-packaging-/u);
   assert.doesNotMatch(doc, /\bP\d_PACKAGING_/u);

@@ -61,7 +61,7 @@ Of the 87 readFile calls, the breakdown is:
 
 | Class | Count | Example |
 |---|---|---|
-| **TRACKED_RUNTIME_ASSET** (static in repo, Git tracked, production read) | 5 (4 prompts + 1 registry) | `apps/cli/prompts/analysis/deep-creative-director.md`, `space-generator/v1-experimental/architecture-anchors/registry.json` |
+| **TRACKED_RUNTIME_ASSET** (static in repo, Git tracked, production read) | 5 (4 prompts + 1 registry) | `apps/cli/prompts/analysis/deep-creative-director.md`, `packages/image-generation-runtime/assets/architecture-anchors/registry.json` |
 | **GENERATED_RUNTIME_ASSET** (run output, written by production before read) | ~25 | `task-contract.json`, `run.json`, `trace.json`, `compiled-prompt.json`, `model-payload.json` (under user's project dir) |
 | **USER_DATA** (per-user, never required in fresh install) | ~30 | `settings.json`, credential store, user attachments, project-context/ snapshots, Anchor-Generation-Brief.md, logo post-composite input |
 | **OPTIONAL_RESOURCE** (smoke / debug only) | 2 | `apps/web-runtime/scripts/run-web-primary-smoke.mjs:66` (existsSync candidate scan) |
@@ -100,10 +100,10 @@ must exist).
 
 | Path | Read by | Tracked? |
 |---|---|---|
-| `space-generator/v1-experimental/architecture-anchors/registry.json` | `packages/image-generation-runtime/src/space/architecture-context.js:67` (readFileSync) | ✓ |
-| `space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png` | registry `imagePath` reference; resolved by `architecture-context.js:197` | ✓ |
-| `space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png` | same | ✓ |
-| `space-generator/v1-experimental/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png` | same | ✓ |
+| `packages/image-generation-runtime/assets/architecture-anchors/registry.json` | `packages/image-generation-runtime/src/space/architecture-context.js` (readFileSync) | ✓ |
+| `packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-01.png` | registry `imagePath` reference; resolved by `architecture-context.js` | ✓ |
+| `packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-02.png` | same | ✓ |
+| `packages/image-generation-runtime/assets/architecture-anchors/jiuzhou-aesthetics/JZMX-ARCH-03.png` | same | ✓ |
 
 The registry.json is the **single source of truth** for
 architecture anchor metadata. Three brands are declared
@@ -113,11 +113,9 @@ no image referenced). Each imagePath in the registry resolves
 to a tracked PNG file on disk today (verified by
 `git ls-files --error-unmatch`).
 
-The experimental `loader/load-anchors.mjs` is **not** in the
-production path (per `verify:workspace-boundaries`); the
-production code at `architecture-context.js` re-implements
-the registry read + selection scoring. The experimental
-loader is therefore not in the runtime asset inventory.
+The package-owned registry and images now live beside the runtime that
+loads them. Experimental loaders and A/B artifacts are not part of the
+runtime asset inventory.
 
 ### 3.3 NOT in the inventory (per spec §5 + §19)
 
@@ -157,12 +155,12 @@ Masterpiece-OS-Projects/
 |---|---|---|---|
 | STOP-01 | Production depends on an untracked static file that affects output quality | **NOT TRIGGERED** | All 8 declared assets are Git tracked today (verified by `git ls-files --error-unmatch` for each) |
 | STOP-02 | A required runtime file is matched only from local scratch / ignored path | **NOT TRIGGERED** | All 8 assets are tracked AND exist on disk; no required asset is matched only from a `.gitignore`d location |
-| STOP-03 | A static dependency contains secret material | **NOT TRIGGERED** | Declared assets are the 4 VA prompts + 1 registry + 3 PNG anchor images; none are credentials / tokens / API keys (the secret-safety A4 guard also scans them) |
+| STOP-03 | A static dependency contains secret material | **NOT TRIGGERED** | Declared assets are the 4 VA prompts + 1 registry + 3 PNG anchor images; none are credentials / tokens / API keys (`verify:secret-safety` also scans them) |
 | STOP-04 | A runtime dependency points into user project data as a default source-of-truth | **NOT TRIGGERED (intended design)** | Production code reads `outputs/Anchor-Generation-Brief.md`, `task-contract.json`, `run.json`, `trace.json`, etc. — but all of these are GENERATED, not source-of-truth. The registry.json is the source-of-truth and is in the inventory. |
-| STOP-05 | Fixing the issue would require moving baseline-critical Space resources | **DOCUMENTED — defer to Repository Stabilization** | `space-generator/v1-experimental/architecture-anchors/` is a non-production path. The production code reads from it via a hard-coded `REPO_ROOT` resolve. Per spec §2 ("do not move v1-experimental resources in this phase"), the inventory declares the asset at its current path; moving it to a production path is a future Repository Stabilization task. |
+| STOP-05 | Fixing the issue would require moving baseline-critical Space resources | **RESOLVED** | Runtime-owned anchor assets were moved into `packages/image-generation-runtime/assets/architecture-anchors/`; historical experimental resources are no longer a production dependency. |
 | STOP-06 | Fixing the issue would alter Prompt / Compiler / Reference-First semantics | **NOT TRIGGERED** | This phase adds 0 production code, 0 test changes, 0 schema changes. Pure additive: 1 manifest + 1 guard script + 1 test file + 1 audit doc + 1 npm-script wiring. |
 | STOP-07 | A Golden or evaluation asset is imported by Production Runtime | **NOT TRIGGERED** | The 8 declared assets are not in the Golden / evaluation boundary (`tests/fixtures/packaging/jiuzhou/`, `tests/fixtures/visual-analysis/`, etc.). The P1 / C4 manifest guard + the P1 / D1 prompts-boundary guard already enforce the Golden-vs-Production boundary. |
-| STOP-08 | `repo:verify` or Space regression becomes red | **NOT TRIGGERED** | This phase wires the new guard into `repo:verify` between `verify:production-boundaries` and `verify:no-project-specific-production-rules` (per spec §21). All existing 9 verify gates + 6 A4 guards remain green. |
+| STOP-08 | `repo:verify` or Space regression becomes red | **NOT TRIGGERED** | This phase wires the new guard into `repo:verify` between `verify:production-boundaries` and `verify:no-project-specific-production-rules` (per spec §21). Existing verification gates and six analysis release guards remain green. |
 
 ## 5. Action taken (per spec §24)
 
@@ -173,7 +171,7 @@ Masterpiece-OS-Projects/
 | 3. Guard script + npm command | `scripts/verify-tracked-runtime-assets.mjs` + `npm run verify:tracked-runtime-assets` |
 | 4. Guard wired into `repo:verify` | `package.json` script chain (after `verify:production-boundaries`, before `verify:no-project-specific-production-rules`) |
 | 5. Guard self-tests | `tests/tracked-runtime-assets-guard.test.js` (10 spec cases + 3 bonus + 3 Check H cases) |
-| 6. Existing guards left green | A4 `verify-a4-secret-safety` (1753+ tracked files, 0 secret matches) + existing 9 verify gates + 6 A4 guards |
+| 6. Existing guards left green | `verify:secret-safety` (1753+ tracked files, 0 secret matches) + existing verification gates + six analysis release guards |
 
 ## 5.5 Declared Dependency Coverage (Check H, 2026-08-12)
 

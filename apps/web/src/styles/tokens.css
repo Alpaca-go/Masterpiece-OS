@@ -1,109 +1,287 @@
-/* styles/tokens.css
- *
- * 📚 REFERENCE-ONLY — P0 target-state design token sheet
- *
- * This file is the §3.2 P0 target-state design tokens — a dark-first
- * sketch that was authored before the F3.A refactor landed. It is
- * NOT wired into apps/web/src/main.tsx on this branch.
- *
- * On the refactor/styles-split branch (audit commit F3.A), the
- * routing split differently:
- *   - styles/tokens.css      = byte-identical copy of styles.css lines 1-292
- *                                (light/warm-white defaults, :root)
- *   - styles/theme-dark.css  = byte-identical copy of styles.css lines 294-412
- *                                ([data-theme="dark"] + prefers-color-scheme)
- *   - styles.css             = business + component styles only
- *
- * That refactor uses the existing styles.css token values verbatim
- * (the route-A aliases `--text-*` / `--bg-*` / `--accent` / `--fs-*`
- * are already defined in styles.css line 174-291) rather than this
- * dark-first P3 draft. Two different `:root` blocks would have
- * produced CSS specificity conflicts.
- *
- * This file is therefore kept in the tree as historical reference
- * for the P0 design intent, but is not imported by the current
- * shipping surface on either branch.
- *
- * See docs/baseline/runtime-reconciliation-2026-08-25.md item #4.1
- * for the audit trail.
- *
- * 路线 A / P0 设计 token — 按 docs/ui/redesign-development-doc.md §3.2
- *
- * 切换计划：
- *   - 阶段 1 (F3.A, refactor/styles-split)：以 styles.css 既有 token
- *     块为权威，把 token 区拆到 styles/tokens.css + styles/theme-dark.css，
- *     main.tsx 按 (tokens → theme-dark → styles) 顺序 import。
- *   - 阶段 2 (P3, 待规划)：dark-first 切换。本文件作为目标态参考。
- *
- * 因此 P0 阶段：本文件零运行时影响（main.tsx 没 import）。
- */
-
+/* Current design tokens. */
 :root {
-  /* ── Background layers (§3.2) ── */
-  --bg-canvas:    #0B0D10;
-  --bg-surface:   #13161B;
-  --bg-elevated:  #1A1E25;
-  --bg-overlay:   rgba(0, 0, 0, 0.6);
+  /* ============================================================
+     Design Tokens 鈥?Masterpiece OS v5 (Notion + Figma editorial)
+     Editorial warm white + razor-thin lines + single accent
+     ============================================================ */
 
-  /* ── Borders ── */
-  --border-subtle: #1F242C;
-  --border-strong: #2C333D;
+  /* 鈹€鈹€ Brand: monochrome black + restrained warm-orange accent 鈹€鈹€ */
+  --color-accent: #1A1A1A;            /* near-black, primary action */
+  --color-accent-hover: #000000;
+  --color-accent-soft: #F2F1ED;       /* warm off-white tint */
+  --color-accent-line: #D9D6CE;
+  --color-accent-shadow: rgba(26, 26, 26, 0.08);
 
-  /* ── Text ── */
-  --text-primary:   #E8EBEF;   /* 对比度 14.5:1 */
-  --text-secondary: #9AA3B2;
-  --text-muted:     #5C6675;
-  --text-disabled:  #3B424D;
+  /* The single hot accent 鈥?used SPARINGLY (1-2 per view).
+     Inspired by Figma's "remove" red and editorial publication highlights. */
+  --color-hot: #E5532B;
+  --color-hot-soft: #FCEEE7;
+  --color-hot-text: #B83D1B;
 
-  /* ── Accent (warm amber, "decision" semantics) ── */
-  --accent:        #E8B86A;
-  --accent-hover:  #F0C689;
-  --accent-soft:   rgba(232, 184, 106, 0.12);
+  /* 鈹€鈹€ Surface / background (Notion warm white scale) 鈹€鈹€ */
+  --color-bg: #FBFAF7;                /* main page bg 鈥?warm white */
+  --color-bg-alt: #F4F3EE;            /* subtle warm gray for sidebars */
+  --color-bg-deep: #EDEBE5;           /* deeper warm gray for inactive zones */
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #F9F8F4;
+  --color-surface-muted: #F2F1ED;
 
-  /* ── Semantic state ── */
-  --success: #6FAE7E;
-  --warning: #D4A85A;
-  --danger:  #D07070;
-  --info:    #6E94C9;
+  /* 鈹€鈹€ Text (high-contrast editorial black scale) 鈹€鈹€ */
+  --color-text: #1A1A1A;
+  --color-text-strong: #0A0A0A;
+  --color-text-muted: #6B6B6B;
+  --color-text-subtle: #9A9A9A;
+  --color-text-faint: #C4C2BB;
+  --color-text-on-accent: #FBFAF7;
+  --color-text-on-hot: #FFFFFF;
 
-  /* ── Typography (§3.2) ── */
-  --font-sans:  "Inter", "PingFang SC", -apple-system, system-ui, sans-serif;
-  --font-serif: "Source Serif 4", "Songti SC", serif;
-  --font-mono:  "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+  /* 鈹€鈹€ Border / line (Notion hairline scale) 鈹€鈹€ */
+  --color-line: #E5E2D9;
+  --color-line-strong: #D1CDBF;
+  --color-line-muted: #EEEBE2;
+  --color-line-soft: #F2EFE6;
 
-  --fs-xs: 0.75rem;  --lh-xs: 1rem;
-  --fs-sm: 0.875rem; --lh-sm: 1.25rem;
-  --fs-base: 1rem;   --lh-base: 1.6rem;
-  --fs-lg: 1.125rem; --lh-lg: 1.75rem;
-  --fs-xl: 1.25rem;  --lh-xl: 1.75rem;
-  --fs-2xl: 1.5rem;  --lh-2xl: 2rem;
-  --fs-3xl: 1.875rem;--lh-3xl: 2.25rem;
-  --fs-4xl: 2.25rem; --lh-4xl: 2.5rem;
-  --fs-5xl: 3rem;    --lh-5xl: 3rem;
+  /* 鈹€鈹€ Semantic 鈥?success (subtle, no celebration) 鈹€鈹€ */
+  --color-success: #1F7A4D;
+  --color-success-strong: #0E5C36;
+  --color-success-text: #0E5C36;
+  --color-success-bg: #E8F1EA;
+  --color-success-line: #B5D4BD;
 
-  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+  /* 鈹€鈹€ Semantic 鈥?warning 鈹€鈹€ */
+  --color-warning: #B8761A;
+  --color-warning-strong: #8E5B12;
+  --color-warning-text: #6E4609;
+  --color-warning-bg: #F5EBD7;
+  --color-warning-line: #D9C188;
 
-  /* ── Spacing (4px base) ── */
-  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
-  --sp-6: 24px; --sp-8: 32px; --sp-12: 48px; --sp-16: 64px;
-  --sp-24: 96px; --sp-32: 128px;
+  /* 鈹€鈹€ Semantic 鈥?error / danger 鈹€鈹€ */
+  --color-error: #C1372B;
+  --color-error-strong: #9A2A20;
+  --color-error-text: #8A2620;
+  --color-error-bg: #F5E0DC;
+  --color-error-line: #D8A89F;
+  --color-error-bg-soft: #FAEAE6;
+  --color-error-bg-alt: #FCF1EE;
+  --color-error-deep: #6E1E18;
 
-  /* ── Radius ── */
-  --r-xs: 2px; --r-sm: 4px; --r-md: 6px; --r-lg: 8px;
-  --r-xl: 12px; --r-2xl: 16px;
+  /* 鈹€鈹€ Semantic 鈥?info 鈹€鈹€ */
+  --color-info: #1F5C8F;
+  --color-info-strong: #144670;
+  --color-info-text: #144670;
+  --color-info-bg: #E2EBF4;
 
-  /* ── Shadow (dark: hairline + subtle elevation) ── */
-  --shadow-sm:  0 1px 0 rgba(255,255,255,0.02), 0 1px 2px rgba(0,0,0,0.4);
-  --shadow-md:  0 1px 0 rgba(255,255,255,0.02), 0 4px 8px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 0 1px rgba(232,184,106,0.4);
+  /* 鈹€鈹€ Sidebar (warm dark, Figma inspector-style) 鈹€鈹€ */
+  --color-sidebar-bg: #1A1A1A;
+  --color-sidebar-text: #F4F3EE;
+  --color-sidebar-muted: #8A8880;
+  --color-sidebar-hover: #2A2A2A;
+  --color-sidebar-line: #2F2F2F;
+  --color-sidebar-active: #FBFAF7;
 
-  /* ── Motion ── */
+  /* 鈹€鈹€ Code / terminal 鈹€鈹€ */
+  --color-code-bg: #1A1A1A;
+  --color-code-text: #F4F3EE;
+  --color-terminal-bg: #0F0F0F;
+
+  /* 鈹€鈹€ Typography 鈹€鈹€ */
+  /* Display: editorial serif (system fallback for offline) */
+  --font-display: "Iowan Old Style", "Charter", "Source Serif Pro", Georgia, "Songti SC", "Source Han Serif SC", "Noto Serif CJK SC", serif;
+  /* Sans: clean grotesque (system fallback) */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+  /* Mono: code / data */
+  --font-mono: ui-monospace, "SF Mono", "SFMono-Regular", "JetBrains Mono", Consolas, Menlo, monospace;
+
+  /* Editorial type scale (Notion-grade) */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+  --text-4xl: 36px;
+  --text-5xl: 44px;
+  --text-6xl: 56px;
+  --text-display: clamp(48px, 6.2vw, 88px);
+
+  /* 鈹€鈹€ Spacing (4px base, generous editorial rhythm) 鈹€鈹€ */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 48px;
+  --space-10: 56px;
+  --space-11: 64px;
+  --space-12: 80px;
+  --space-13: 96px;
+  --space-14: 120px;
+
+  /* 鈹€鈹€ Radius (tighter, more deliberate than v1) 鈹€鈹€ */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-base: 5px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 10px;
+  --radius-3xl: 12px;
+  --radius-4xl: 16px;
+  --radius-full: 999px;
+
+  /* 鈹€鈹€ Shadow: hairline-first, shadow-last (Notion/Figma philosophy) 鈹€鈹€ */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 1px 0 rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 16px 40px rgba(0, 0, 0, 0.10), 0 1px 0 rgba(0, 0, 0, 0.05);
+  --shadow-2xl: 0 24px 60px rgba(0, 0, 0, 0.14), 0 1px 0 rgba(0, 0, 0, 0.06);
+  --shadow-focus: 0 0 0 3px rgba(26, 26, 26, 0.12);
+  --shadow-focus-hot: 0 0 0 3px rgba(229, 83, 43, 0.18);
+
+  /* 鈹€鈹€ Layout 鈹€鈹€ */
+  --sidebar-width: 240px;
+  --topbar-height: 56px;
+  --content-max: 1400px;
+  --meta-strip-height: 36px;
+
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "ss01", "cv11";
+
+  /* 鈹€鈹€ Legacy aliases (for backward-compat with 3000+ lines of business CSS) 鈹€鈹€ */
+  /* These ensure the v1 purple/warm-modernism pages auto-migrate to the new
+     editorial palette without touching every class definition. */
+  --color-primary: var(--color-accent);
+  --color-primary-hover: var(--color-accent-hover);
+  --color-primary-soft: var(--color-accent-soft);
+  --color-primary-soft-alt: var(--color-surface-soft);
+  --color-primary-shadow: var(--color-accent-shadow);
+  --color-primary-shadow-strong: var(--color-accent-shadow);
+  --color-text-on-primary: var(--color-text-on-accent);
+  --font-serif: var(--font-display);
+
+  /* ============================================================
+     Canonical token aliases (璺嚎 A 鍛藉悕浣撶郴 鈥?鏂扮粍浠剁粺涓€浣跨敤)
+     ============================================================ */
+  /* 鑳屾櫙灞?*/
+  --bg-canvas:    var(--color-bg);
+  --bg-surface:   var(--color-surface);
+  --bg-elevated:  var(--color-surface-soft);
+  --bg-muted:     var(--color-surface-muted);
+  --bg-alt:       var(--color-bg-alt);
+  --bg-deep:      var(--color-bg-deep);
+  --bg-overlay:   rgba(0, 0, 0, 0.5);
+
+  /* 杈规 */
+  --border-subtle: var(--color-line-soft);
+  --border:        var(--color-line);
+  --border-strong: var(--color-line-strong);
+
+  /* 鏂囧瓧 */
+  --text-primary:   var(--color-text);
+  --text-strong:    var(--color-text-strong);
+  --text-secondary: var(--color-text-muted);
+  --text-muted:     var(--color-text-subtle);
+  --text-faint:     var(--color-text-faint);
+  --text-on-accent: var(--color-text-on-accent);
+
+  /* 鍝佺墝鑹?*/
+  --accent:        var(--color-accent);
+  --accent-hover:  var(--color-accent-hover);
+  --accent-soft:   var(--color-accent-soft);
+  --accent-line:   var(--color-accent-line);
+  --hot:           var(--color-hot);
+  --hot-soft:      var(--color-hot-soft);
+  --hot-text:      var(--color-hot-text);
+
+  /* 璇箟鑹?*/
+  --success:       var(--color-success);
+  --success-text:  var(--color-success-text);
+  --success-bg:    var(--color-success-bg);
+  --success-line:  var(--color-success-line);
+  --warning:       var(--color-warning);
+  --warning-text:  var(--color-warning-text);
+  --warning-bg:    var(--color-warning-bg);
+  --warning-line:  var(--color-warning-line);
+  --danger:        var(--color-error);
+  --danger-text:   var(--color-error-text);
+  --danger-bg:     var(--color-error-bg);
+  --danger-line:   var(--color-error-line);
+  --info:          var(--color-info);
+  --info-text:     var(--color-info-text);
+  --info-bg:       var(--color-info-bg);
+
+  /* 瀛椾綋鏃?*/
+
+  /* 瀛楀彿闃舵 (fs = font-size, lh = line-height) */
+  --fs-xs:  var(--text-xs);
+  --fs-sm:  var(--text-sm);
+  --fs-base: var(--text-base);
+  --fs-md:  var(--text-md);
+  --fs-lg:  var(--text-lg);
+  --fs-xl:  var(--text-xl);
+  --fs-2xl: var(--text-2xl);
+  --fs-3xl: var(--text-3xl);
+  --fs-4xl: var(--text-4xl);
+  --fs-5xl: var(--text-5xl);
+  --fs-6xl: var(--text-6xl);
+
+  /* 瀛楅噸 */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* 闂磋窛 (sp = space, 4px 鍩烘暟) */
+  --sp-1:  var(--space-1);
+  --sp-2:  var(--space-2);
+  --sp-3:  var(--space-3);
+  --sp-4:  var(--space-4);
+  --sp-5:  var(--space-5);
+  --sp-6:  var(--space-6);
+  --sp-8:  var(--space-8);
+  --sp-12: var(--space-12);
+  --sp-16: var(--space-14);
+  --sp-24: 96px;
+  --sp-32: 128px;
+
+  /* 鍦嗚 (r = radius) */
+  --r-xs:   var(--radius-xs);
+  --r-sm:   var(--radius-sm);
+  --r-md:   var(--radius-md);
+  --r-lg:   var(--radius-lg);
+  --r-xl:   var(--radius-xl);
+  --r-2xl:  var(--radius-2xl);
+  --r-full: var(--radius-full);
+
+  /* 闃村奖 */
+  --shadow-glow: 0 0 0 1px rgba(26, 26, 26, 0.2);
+
+  /* 鍔ㄦ晥 */
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --dur-fast: 150ms; --dur-base: 200ms; --dur-slow: 250ms;
-}
+  --dur-fast: 120ms;
+  --dur-base: 180ms;
+  --dur-slow: 250ms;
 
-/*
- * P0 §3.3 字体降级链（line 192 已规定 fallback）由 CSS 引擎自动处理；
- * 不需要额外 @font-face 声明。P1 实施时如需加载 Inter / Source Serif 4 /
- * JetBrains Mono 的 woff2，再加 @font-face 块。
- */
+  /* 甯冨眬甯搁噺 */
+  --layout-topbar-height: var(--topbar-height);
+  --layout-sidebar-width: var(--sidebar-width);
+  --layout-content-max:   var(--content-max);
+
+  /* 鏂偣 (渚?JS / CSS 寮曠敤) */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+}

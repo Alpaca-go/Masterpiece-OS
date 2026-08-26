@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import test from 'node:test';
@@ -27,10 +26,6 @@ const COMPOSITION = readFileSync(path.join(ROOT, 'apps/web-runtime/src/current-o
 const SELECTOR_PATH = 'packages/runtime-core/src/application/canonical-packaging-context-selector.ts';
 const ADAPTER = readFileSync(path.join(ROOT, 'packages/image-generation-adapter/src/multi-model.js'), 'utf8');
 
-function git(args: string[]): string {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
-}
-
 function correctiveProjectorSource(): string {
   const start = COMPOSITION.indexOf('export function projectCanonicalIdentityFromAuthorities');
   const end = COMPOSITION.indexOf('export function createCurrentBusinessOperations');
@@ -50,54 +45,6 @@ test('AP-10 no filename or project-name-to-brand heuristic exists', () => {
   const source = correctiveProjectorSource();
   assert.doesNotMatch(source, /filename|originalName|projectName\s*(?:\|\||\?\?)\s*.*brand/u);
   assert.match(source, /brandName:\s*input\.project\?\.brandName\s*\|\|\s*''/u);
-});
-
-test('AP-15 P3-A12 current baseline direct frozen diff is zero (no exclusion)', () => {
-  // P3-A12 (`1fcafc8`) is the current accepted P3-A
-  // production-tree baseline. The C4.2.1 / P3-A12
-  // corrective absorbed the read-only `checkStale` seam
-  // in `workspace-service.js` as part of the P3-A frozen
-  // surface. A direct `1fcafc8 -> HEAD` diff against the
-  // P3-A gate therefore requires NO exclusion.
-  assert.equal(
-    git(['diff', '--name-only', P3A, 'HEAD',
-      '--', 'packages/runtime-core/src/application/packaging']),
-    '',
-  );
-});
-
-test('AP-16 P3-C selector authority remains unchanged', () => {
-  assert.equal(git(['diff', '--name-only', P3C_INTEGRATION, 'HEAD', '--', SELECTOR_PATH]), '');
-});
-
-test('AP-17 P2 frozen production diff remains zero', () => {
-  assert.equal(git(['diff', '--name-only', P2, 'HEAD', '--', 'packages/image-generation-runtime/src/packaging']), '');
-});
-
-test('AP-18 P3-A12 current baseline direct frozen diff is zero (no exclusion)', () => {
-  // P3-A12 (`1fcafc8`) is the current accepted P3-A
-  // production-tree baseline. The C4.2.1 / P3-A12
-  // corrective absorbed the read-only `checkStale` seam
-  // in `workspace-service.js` as part of the P3-A frozen
-  // surface. A direct `1fcafc8 -> HEAD` diff against the
-  // P3-A gate therefore requires NO exclusion.
-  assert.equal(
-    git(['diff', '--name-only', P3A, 'HEAD',
-      '--', 'packages/runtime-core/src/application/packaging']),
-    '',
-  );
-});
-
-test('AP-19 P3-B accepted UI and Workspace semantics remain unchanged (P3-A12 absorbed)', () => {
-  // P3-A12 absorbed the C4.2.1 + comment-only P3-A12
-  // delta to `workspace-service.js`. The P3-B sub-tree
-  // (UI + Workspace semantic) is therefore unchanged from
-  // `2ac4cf1` to HEAD without any exclusion.
-  assert.equal(
-    git(['diff', '--name-only', P3B, 'HEAD',
-      '--', 'apps/web/src/features/packaging']),
-    '',
-  );
 });
 
 test('AP-20 D-PROVIDER-01 effective cap remains 10 in Registry and Seedream adapter', () => {

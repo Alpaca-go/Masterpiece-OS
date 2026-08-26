@@ -1,14 +1,8 @@
-// Architecture Context — production port of the Phase 9B anchor selection.
+// Architecture Context — production architecture-anchor selection.
 //
-// The experimental module lives at
-// space-generator/v1-experimental/architecture-anchors/loader/load-anchors.mjs
-// and loads registry.json from that experimental tree. Production code must not
-// deep-import the experimental tree (workspace boundary gate), so this module:
-//   1. Loads the SAME registry.json (frozen baseline) via a resolved path.
-//   2. Reimplements the Phase 8C/8D selection scoring (industry/scene/context/
-//      function/weight, with the Phase 8D anti-overfit industry hard-gate).
-//   3. Renders the "Architecture Context" prompt block that Phase 9B Mode B
-//      places before the architecture-function bridge (recovery doc §7.2).
+// Runtime assets live with the package that owns this capability. This module
+// loads the registry, selects anchors by industry/scene/context/function, and
+// renders a stable Architecture Context prompt block.
 //
 // No brand is hardcoded: the brandKey is supplied by the caller (resolved from
 // project data), and the registry is the single source of truth. This keeps
@@ -19,16 +13,8 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-// packages/image-generation-runtime/src/space/
-//   -> ../../../../ = repo root
-const REPO_ROOT = resolve(__dirname, '..', '..', '..', '..');
-const REGISTRY_PATH = join(
-  REPO_ROOT,
-  'space-generator',
-  'v1-experimental',
-  'architecture-anchors',
-  'registry.json',
-);
+const ANCHOR_ASSET_ROOT = resolve(__dirname, '..', '..', 'assets', 'architecture-anchors');
+const REGISTRY_PATH = join(ANCHOR_ASSET_ROOT, 'registry.json');
 
 let registryCache = null;
 
@@ -134,8 +120,8 @@ function scoreAnchor(anchor, criteria, weights) {
 }
 
 /**
- * Select architecture anchors for a brand using Phase 8C/8D scoring.
- * Mirrors experimental selectAnchors() including the anti-overfit hard gate.
+ * Select architecture anchors for a brand using the current weighted policy,
+ * including the cross-industry anti-overfit hard gate.
  *
  * @param {string} brandKey
  * @param {object} criteria { industry, sceneType, commercialContext, operationalRealism, requireFunctionStrength }
@@ -167,7 +153,7 @@ export function selectArchitectureAnchors(brandKey, criteria = {}, maxCount) {
     const breakdown = scoreAnchor(anchor, criteria, weights);
     let hasAnyMatch = breakdown.industry > 0 || breakdown.sceneType > 0 || breakdown.commercialContext > 0;
     let score = breakdown.total;
-    // Phase 8D anti-overfit: an explicit industry that the anchor doesn't cover
+    // Anti-overfit: an explicit industry that the anchor doesn't cover
     // zeroes it out regardless of other matches.
     if (criteria.industry != null) {
       const appl = anchor.applicability ?? {};
@@ -191,9 +177,8 @@ export function selectArchitectureAnchors(brandKey, criteria = {}, maxCount) {
  */
 export function resolveArchitectureAnchorImagePath(anchor) {
   if (!anchor || !anchor.imagePath) return null;
-  // Registry imagePath values are relative to space-generator/
-  // (e.g. "v1-experimental/architecture-anchors/.../JZMX-ARCH-01.png").
-  return resolve(REPO_ROOT, 'space-generator', anchor.imagePath);
+  // Registry imagePath values are relative to the package-owned asset root.
+  return resolve(ANCHOR_ASSET_ROOT, anchor.imagePath);
 }
 
 /**
@@ -203,7 +188,7 @@ export function resolveArchitectureAnchorImagePath(anchor) {
 export function renderArchitectureContextBlock(anchors) {
   if (!Array.isArray(anchors) || anchors.length === 0) return '';
   const lines = [
-    '# Architecture Context (in-context reference, Phase 8A / Phase 9B)',
+    '# Architecture Context (in-context reference)',
     '',
     '> Building-mechanism prior: the following are architecture-language samples accepted for this brand.',
     '> Use them as a mechanism PRIOR, not as a literal object to copy.',

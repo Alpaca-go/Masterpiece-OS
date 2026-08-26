@@ -18,7 +18,7 @@
 // layer a persistent store on top of `setProviderHealth`.
 //
 // Per A3 spec §21: the actual probe lives in a separate
-// `scripts/a3-provider-health-probe.mjs` (manual / opt-in, runs in
+// `scripts/probe-analysis-provider-health.mjs` (manual / opt-in, runs in
 // `.codex-smoke/`). This module is consumed by the Web and CLI to
 // read the cached state.
 

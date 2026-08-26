@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 const forbiddenExtensions = new Set(['.psd', '.ai', '.cdr', '.pdf', '.zip', '.rar', '.7z']);
@@ -12,7 +13,10 @@ const gitAvailable = spawnSync('git', ['rev-parse', '--is-inside-work-tree'], { 
 function repositoryFiles() {
   const result = spawnSync('git', ['-c', 'core.quotepath=false', 'ls-files', '--cached', '--others', '--exclude-standard', '-z'], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr);
-  return result.stdout.split('\0').filter(Boolean).map((file) => file.replaceAll('\\', '/'));
+  return result.stdout.split('\0')
+    .filter(Boolean)
+    .map((file) => file.replaceAll('\\', '/'))
+    .filter((file) => existsSync(path.join(process.cwd(), file)));
 }
 
 test('仓库不包含项目源文件或项目交付物', { skip: gitAvailable ? false : '当前副本不含 .git 元数据' }, () => {
@@ -31,9 +35,9 @@ test('仓库不包含项目源文件或项目交付物', { skip: gitAvailable ? 
   assert.deepEqual(violations, [], `发现 GitHub 文件管理规范违规：\n${violations.join('\n')}`);
 });
 
-test('仓库内栅格图片只能用于脱敏示例、测试或模板', { skip: gitAvailable ? false : '当前副本不含 .git 元数据' }, () => {
+test('仓库内栅格图片只能用于脱敏示例、测试、模板或已声明运行时资产', { skip: gitAvailable ? false : '当前副本不含 .git 元数据' }, () => {
   const raster = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp']);
   const violations = repositoryFiles().filter((file) => raster.has(path.posix.extname(file).toLowerCase()))
-    .filter((file) => !/^(examples|tests|templates|space-generator\/v1-baseline\/benchmarks|space-generator\/v1-experimental\/architecture-anchors)\//.test(file));
+    .filter((file) => !/^(examples|tests|templates|space-generator\/v1-baseline\/benchmarks|packages\/image-generation-runtime\/assets\/architecture-anchors)\//.test(file));
   assert.deepEqual(violations, [], `栅格图片位置不合规：\n${violations.join('\n')}`);
 });

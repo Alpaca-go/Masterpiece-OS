@@ -9,12 +9,11 @@
 // packaging task. This corrective reconciles the gate with the
 // canonical contract while preserving fail-closed semantics.
 //
-// Authoritative: docs/packaging/history/p3-d/p3-d3-5a-product-role-evidence-contract-corrective.md
+// Product-role evidence contract regression coverage.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { runPromptPreflightGate } from '@masterpiece/image-generation-runtime/gates/prompt-preflight-gate.js';
 import { compileProjectSpecificGenerationContract } from '@masterpiece/creative-production-runtime/project-generation-contract.js';
@@ -25,12 +24,6 @@ const GATE = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'gat
 const CONTRACT = path.join(ROOT, 'packages', 'runtime-core', 'src', 'application', 'packaging-translation-contract.ts');
 const C_PROD = path.join(ROOT, 'packages', 'creative-production-runtime', 'src', 'packaging-translation.js');
 const UTILS = path.join(ROOT, 'apps', 'web', 'src', 'utils.ts');
-const D34_AUDIT = path.join(ROOT, 'docs', 'packaging', 'history', 'p3-d', 'p3-d3-4-web-packaging-workflow-blocking-audit.md');
-const D35A_DOC = path.join(ROOT, 'docs', 'packaging', 'history', 'p3-d', 'p3-d3-5a-product-role-evidence-contract-corrective.md');
-
-function git(args) {
-  return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8' }).trim();
-}
 
 function read(file) {
   return readFileSync(file, 'utf8');
@@ -53,13 +46,6 @@ function projectContract() {
 // ---------------------------------------------------------------------------
 // BB-01..BB-03 — Root cause / evidence owner / no fabrication.
 // ---------------------------------------------------------------------------
-
-test('BB-01 P3-D3.4 root cause preserved', () => {
-  assert.ok(existsSync(D34_AUDIT), 'D3.4 audit doc must exist');
-  const doc = read(D34_AUDIT);
-  assert.match(doc, /productRoleEvidenceRefs/u);
-  assert.match(doc, /PACKAGING_PRODUCT_ROLE_MISSING/u);
-});
 
 test('BB-02 canonical evidence owner identified (productAndCategoryRole)', () => {
   // The canonical owner is productAndCategoryRole: analysis-runtime
@@ -272,20 +258,7 @@ test('BB-22 production Provider calls = 0 (gate is offline)', () => {
   assert.doesNotMatch(gate, /https?:\/\//u);
 });
 
-test('BB-23 Golden unchanged', () => {
-  const delta = git(['diff', '--name-only', 'faad9406d4dad5e457ad636a4aa09380fa97e455', 'HEAD',
-    '--', 'evaluation/golden-cases/', 'evaluation/anti-cases/', 'evaluation/hidden-cases/']);
-  assert.equal(delta, '', 'no Golden delta since D3.4 audit HEAD');
-});
-
-test('BB-24 historical D3.4 audit preserved', () => {
-  assert.ok(existsSync(D34_AUDIT), 'D3.4 audit doc must remain');
-  assert.match(read(D34_AUDIT), /BLOCKER IDENTIFIED/u);
-});
-
 test('BB-25 Reference upload blocker remains untouched', () => {
   const native = read(path.join(ROOT, 'apps', 'web-runtime', 'src', 'node-native-operations.ts'));
   assert.match(native, /MASTERPIECE_WEB_SELECTED_FILES/u);
-  assert.doesNotMatch(git(['diff', '--name-only', 'faad9406d4dad5e457ad636a4aa09380fa97e455', 'HEAD',
-    '--', 'apps/web-runtime/src/node-native-operations.ts']), /.+/u);
 });

@@ -3,7 +3,7 @@
 //
 // This script compiles BOTH:
 //   Mode A  — frozen Phase 9B Mode B experimental pipeline
-//             (space-generator/v1-experimental/spatial-intelligence-pipeline)
+//             using the current package-owned Space compiler
 //   Mode B  — repaired production compiler
 //             (@masterpiece/image-generation-runtime/generation/space-quality)
 //

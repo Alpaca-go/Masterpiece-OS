@@ -12,7 +12,7 @@ test('Stage 4 makes short-chain the only production path; legacy removed from UI
     fs.readFile(new URL('../../apps/web/src/features/short-chain/hooks/useShortChainGeneration.ts', import.meta.url), 'utf8'),
     fs.readFile(new URL('../../apps/web/src/features/short-chain/OutputGallery.tsx', import.meta.url), 'utf8'),
     fs.readFile(new URL('../../apps/web/src/main.tsx', import.meta.url), 'utf8'),
-    fs.readFile(new URL('../../apps/web/src/styles/f7-tokens.css', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../../apps/web/src/styles/tokens.css', import.meta.url), 'utf8'),
   ]);
   // Short chain is the default pipeline mode.
   assert.match(settingsSource, /imageGenerationPipelineMode:\s*'vnext'/u);
@@ -39,7 +39,7 @@ test('Stage 4 makes short-chain the only production path; legacy removed from UI
   assert.doesNotMatch(gallerySource, /useMockGallery|mock-1|placeholder = 'data:image/u);
 
   // The stylesheet split has one page-rules authority and no cyclic aliases.
-  assert.match(mainSource, /import '\.\/styles\/f7-pages\.css'/u);
+  assert.match(mainSource, /import '\.\/styles\/pages\.css'/u);
   assert.doesNotMatch(mainSource, /import '\.\/styles\.css'/u);
   assert.doesNotMatch(tokensSource, /--([\w-]+):\s*var\(--\1\)/u);
 });
