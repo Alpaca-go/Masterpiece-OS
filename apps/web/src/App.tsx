@@ -647,7 +647,7 @@ function AppContent() {
             <TopBarActions>
               <div className="app-topbar__status">
                 <span className={'status-dot ' + settings.connectionStatus} />
-                <span>{defaultProfile?.modelId ? <strong>{defaultProfile.modelId}</strong> : '未配置'}</span>
+                <span>{hasUsableProfile ? '服务可用' : '未配置'}</span>
               </div>
               <ThemeToggle />
               <Button variant="ghost" size="sm" onClick={() => setCmdOpen(true)} title="搜索命令 / 跳转 (⌘K)">
@@ -655,9 +655,6 @@ function AppContent() {
               </Button>
               <Button variant="ghost" size="sm" onClick={() => { setSettingsReturnScreen(currentScreen); setScreen('settings'); }}>
                 设置
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
-                新建分析
               </Button>
             </TopBarActions>
           }
@@ -724,28 +721,14 @@ function AppContent() {
           </p>
           <div className="hero__actions">
             <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
-              智能生成 →
+              分析视觉素材 →
             </Button>
             <Button variant="ghost" onClick={() => { setAnalysisMode('creative-intelligence'); setScreen('create'); }}>
               智能创意 →
             </Button>
             <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
-              参考视觉转换
+              参考图定风格
             </Button>
-          </div>
-          <div className="hero__meta">
-            <div className="hero__meta-item">
-              <small>分析模型</small>
-              <strong>{defaultProfile?.modelId || '未配置'}</strong>
-            </div>
-            <div className="hero__meta-item">
-              <small>本地记录</small>
-              <strong>{recentRecords.length}</strong>
-            </div>
-            <div className="hero__meta-item">
-              <small>系统版本</small>
-              <strong>5.0.0-rc.1</strong>
-            </div>
           </div>
         </section>
 
@@ -756,20 +739,11 @@ function AppContent() {
               <span className="section-head__eyebrow">Recent</span>
               <h2 className="section-head__title">最近分析记录</h2>
             </div>
-            <span className="section-head__meta">{recentRecords.length} 条本地记录</span>
+            <span className="section-head__meta">{recentRecords.length} 条</span>
           </div>
 
           {recentRecords.length ? (
             <div className="record-grid">
-              {/* New project CTA card */}
-              <button
-                className="record-card record-card--cta"
-                onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}
-              >
-                <div className="record-card__plus">+</div>
-                <strong>开始新的分析</strong>
-              </button>
-
               {recentRecords.map((record) => {
                 const typeClass = record.kind === 'visual-analysis' ? 'record-card__type--analysis'
                   : record.kind === 'reference-anchor' ? 'record-card__type--reference'
@@ -846,7 +820,7 @@ function AppContent() {
             <div className="empty-home">
               <EmptyIllustration variant="welcome" />
               <strong>还没有分析记录</strong>
-              <p>进入分析工作台,选择智能生成、Creative Intelligence 或参考视觉转换开始第一次任务。</p>
+              <p>上传视觉素材开始分析，或从智能创意整理项目方向。</p>
               <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
                 开始第一次分析
               </Button>

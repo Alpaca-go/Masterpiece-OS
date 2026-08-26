@@ -155,6 +155,57 @@ async function importDocumentBatch(input: unknown, intakeRoot: string): Promise<
   }
 }
 
+const VISUAL_IMPORT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.pdf', '.zip']);
+const VISUAL_IMPORT_MAX_FILES = 30;
+const VISUAL_IMPORT_MAX_FILE_BYTES = 48 * 1024 * 1024;
+
+interface StagedVisualBatch {
+  root: string;
+  paths: string[];
+}
+
+async function stageVisualBatch(input: unknown, intakeRoot: string): Promise<StagedVisualBatch> {
+  const payload = (input && typeof input === 'object' ? input : {}) as {
+    files?: Array<{ name?: unknown; content?: unknown; size?: unknown }>;
+  };
+  const files = Array.isArray(payload.files) ? payload.files : [];
+  if (files.length === 0) throw new Error('WEB_VISUAL_IMPORT_EMPTY: 没有可导入的视觉素材');
+  if (files.length > VISUAL_IMPORT_MAX_FILES) {
+    throw new Error(`WEB_VISUAL_IMPORT_TOO_MANY: 一次最多导入 ${VISUAL_IMPORT_MAX_FILES} 个文件`);
+  }
+  const batchRoot = assertInside(intakeRoot, path.join(intakeRoot, randomUUID()));
+  await fs.mkdir(batchRoot, { recursive: true });
+  const paths: string[] = [];
+  try {
+    for (const [index, file] of files.entries()) {
+      const name = sanitizeImportName(typeof file?.name === 'string' ? file.name : '');
+      const extension = path.extname(name).toLowerCase();
+      if (!VISUAL_IMPORT_EXTENSIONS.has(extension)) {
+        throw new Error(`WEB_VISUAL_IMPORT_UNSUPPORTED: 仅支持 ZIP / JPG / JPEG / PNG / WEBP / PDF（收到 ${extension || '无扩展名'}）`);
+      }
+      const content = typeof file?.content === 'string' ? file.content : '';
+      if (!content) throw new Error(`WEB_VISUAL_IMPORT_EMPTY: 「${name}」内容为空`);
+      const buffer = Buffer.from(content, 'base64');
+      const declaredSize = typeof file?.size === 'number' ? file.size : buffer.length;
+      if (!buffer.length || declaredSize !== buffer.length) {
+        throw new Error(`WEB_VISUAL_IMPORT_TRANSPORT_FAILED: 「${name}」内容与声明大小不一致`);
+      }
+      if (buffer.length > VISUAL_IMPORT_MAX_FILE_BYTES) {
+        throw new Error(`WEB_VISUAL_IMPORT_TOO_LARGE: 「${name}」超过 48 MiB 上限`);
+      }
+      const fileRoot = assertInside(batchRoot, path.join(batchRoot, String(index)));
+      await fs.mkdir(fileRoot, { recursive: true });
+      const destination = assertInside(fileRoot, path.join(fileRoot, name));
+      await fs.writeFile(destination, buffer);
+      paths.push(destination);
+    }
+    return { root: batchRoot, paths };
+  } catch (error) {
+    await fs.rm(batchRoot, { recursive: true, force: true }).catch(() => undefined);
+    throw error;
+  }
+}
+
 export function createCurrentBusinessOperations(
   services: RuntimeServices,
   adapters: NodeRuntimeAdapters
@@ -462,6 +513,31 @@ export function createCurrentBusinessOperations(
       // the Node document pipeline wiring.
       'document-context:import-documents': async (_context: unknown, input: unknown) =>
         importDocumentBatch(input, path.resolve(dataPath, '..', 'documents-intake')),
+      'projects:create-from-browser-files': async (_context: unknown, input: unknown) => {
+        const payload = (input && typeof input === 'object' ? input : {}) as { apiProfileId?: unknown };
+        const staged = await stageVisualBatch(input, path.resolve(dataPath, '..', 'visual-intake'));
+        try {
+          return await projects.create({
+            sourcePaths: staged.paths,
+            apiProfileId: typeof payload.apiProfileId === 'string' ? payload.apiProfileId : '',
+          });
+        } finally {
+          await fs.rm(staged.root, { recursive: true, force: true }).catch(() => undefined);
+        }
+      },
+      'projects:import-browser-files': async (_context: unknown, input: unknown) => {
+        const payload = (input && typeof input === 'object' ? input : {}) as { projectId?: unknown };
+        const staged = await stageVisualBatch(input, path.resolve(dataPath, '..', 'visual-intake'));
+        try {
+          return await projects.importFiles(
+            typeof payload.projectId === 'string' ? payload.projectId : '',
+            staged.paths,
+            'assets',
+          );
+        } finally {
+          await fs.rm(staged.root, { recursive: true, force: true }).catch(() => undefined);
+        }
+      },
     },
     createReferenceOperations({ referenceAnchor }),
     createImageGenerationOperations({ service: imageGeneration, shortChainService: shortChainGeneration }),

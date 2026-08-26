@@ -153,3 +153,9 @@
   gap: var(--space-3, 12px);
   padding: var(--space-3, 12px) 4px var(--space-2, 8px);
 }
+.sc-advanced__content[hidden] { display: none; }
+.sc-brief-editor__hint {
+  margin-top: calc(var(--space-2, 8px) * -1);
+  color: var(--color-text-muted, #6B6B6B);
+  font-size: var(--text-xs, 11px);
+}

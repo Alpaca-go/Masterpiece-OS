@@ -20,6 +20,8 @@ const MAX_BODY_BYTES = 10 * 1024 * 1024;
 // the general 10 MiB limit. Channel-aware, not a global raise.
 const UPLOAD_CHANNELS = new Set([
   'projects:import-file-bytes',
+  'projects:create-from-browser-files',
+  'projects:import-browser-files',
   'document-context:import-documents',
 ]);
 const UPLOAD_BODY_BYTES = 64 * 1024 * 1024;

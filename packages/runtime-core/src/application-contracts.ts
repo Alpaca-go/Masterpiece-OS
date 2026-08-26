@@ -55,6 +55,7 @@ export interface ModelRegistryEntry {
   type: ModelType;
   provider: string;
   protocol: ApiProtocol;
+  defaultBaseUrl?: string;
   capabilities: string[];
   referenceSupport: boolean;
   enabledByDefault: boolean;
@@ -854,6 +855,23 @@ export interface ImportFileBytesResult {
   duplicate: boolean;
   /** Set when duplicate; the canonical project-bound asset id. */
   existingAssetId?: string;
+}
+
+export interface BrowserVisualFileEntry {
+  name: string;
+  mime: string;
+  size: number;
+  content: string;
+}
+
+export interface CreateProjectFromBrowserFilesInput {
+  apiProfileId: string;
+  files: BrowserVisualFileEntry[];
+}
+
+export interface ImportBrowserFilesInput {
+  projectId: string;
+  files: BrowserVisualFileEntry[];
 }
 
 export interface AnalysisResult {
@@ -2474,6 +2492,8 @@ export interface RuntimeApi {
     chooseFolder(): Promise<string[]>;
     importFiles(projectId: string, paths: string[], kind: 'assets' | 'logo' | 'brief' | 'reference'): Promise<ImportResult>;
     importFileBytes(input: ImportFileBytesInput): Promise<ImportFileBytesResult>;
+    createFromBrowserFiles(input: CreateProjectFromBrowserFilesInput): Promise<ProjectRecord>;
+    importBrowserFiles(input: ImportBrowserFilesInput): Promise<ImportResult>;
     scanAssets(projectId: string): Promise<AssetSummary>;
     removeAsset(projectId: string, assetId: string): Promise<AssetSummary>;
     removeBatch(projectId: string, batchId: string): Promise<AssetSummary>;

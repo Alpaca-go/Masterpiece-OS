@@ -14,6 +14,15 @@ interface Props {
   onGenerateVisual(): void;
 }
 
+function extractDecisionSummary(markdown: string): string {
+  const section = markdown.match(/(?:^|\n)##\s+5\.[^\n]*\n([\s\S]*?)(?=\n##\s|$)/)?.[1] ?? '';
+  const lines = section
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^\s*[-*]\s*/, '').replace(/^\[[^\]]+\]\s*/, '').trim())
+    .filter(Boolean);
+  return lines.slice(0, 3).join(' ') || '视觉分析已经完成。请先查看关键结论，再决定是否继续创作或展开完整报告。';
+}
+
 export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props) {
   const [markdown, setMarkdown] = useState('');
   const [html, setHtml] = useState('');
@@ -105,17 +114,12 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
       subtitle={filename}
       onBack={onBack}
       backLabel="返回项目"
-      actions={
-        <Button variant="primary" onClick={() => void exportReport()}>
-          导出报告
-        </Button>
-      }
     >
       {/* Summary metrics card */}
       <div className="report-v2__metrics">
         <div className="report-metric">
-          <small>模型</small>
-          <strong>{project.model}</strong>
+          <small>状态</small>
+          <strong>分析完成</strong>
         </div>
         <div className="report-metric">
           <small>耗时</small>
@@ -126,8 +130,8 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
           <strong>{project.assetCount} 个</strong>
         </div>
         <div className="report-metric">
-          <small>模式</small>
-          <strong>融合增强</strong>
+          <small>推荐下一步</small>
+          <strong>继续创作</strong>
         </div>
       </div>
 
@@ -137,25 +141,8 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
         </div>
       )}
 
-      {/* Filename editor */}
-      <div className="report-v2__filename">
-        <label className="ui-field">
-          <span className="ui-field__label">导出文件名</span>
-          <input
-            className="ui-input"
-            value={filename}
-            onChange={(event) => setFilename(event.target.value)}
-          />
-        </label>
-        <Button variant="secondary" onClick={() => void renameReport()}>更新文件名</Button>
-      </div>
-
       {/* Primary actions */}
       <div className="report-v2__actions">
-        <Button variant="secondary" onClick={() => void copy()}>复制内容</Button>
-        <Button variant="secondary" onClick={() => void window.masterpiece.report.openFolder(project.id)}>
-          打开输出文件夹
-        </Button>
         <Button
           variant="primary"
           disabled={contextStatus !== 'ready'}
@@ -163,6 +150,8 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
         >
           根据分析继续创作
         </Button>
+        <Button variant="secondary" onClick={() => void exportReport()}>导出报告</Button>
+        <Button variant="ghost" onClick={() => void copy()}>复制内容</Button>
       </div>
 
       {/* Visual Context panel */}
@@ -174,17 +163,7 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
           </div>
           <Badge tone={contextTone as 'success' | 'error' | 'default'}>{contextStatusLabel}</Badge>
         </div>
-        <div className="report-v2__context-actions">
-          <Button variant="secondary" size="sm" onClick={() => void viewContextJson()}>查看 JSON</Button>
-          <Button variant="secondary" size="sm" onClick={() => void exportContextJson()}>导出 JSON</Button>
-          <Button variant="secondary" size="sm" onClick={() => void rebuildContext()}>重新编译</Button>
-          <Button variant="ghost" size="sm" onClick={() => void window.masterpiece.report.openFolder(project.id)}>
-            打开输出文件夹
-          </Button>
-        </div>
-        {showContextJson && context && (
-          <pre className="report-v2__json">{JSON.stringify(context, null, 2)}</pre>
-        )}
+        <p className="report-v2__context-copy">继续创作时会自动读取已确认的视觉结论，无需手动处理上下文文件。</p>
         {contextNotice && (
           <div className={`notice ${/失败|不能为空|存在/.test(contextNotice) ? 'error' : 'ok'}`}>
             {contextNotice}
@@ -192,14 +171,36 @@ export function ReportView({ project, onBack, onRerun, onGenerateVisual }: Props
         )}
       </section>
 
-      {/* Rerun controls */}
-      <div className="report-v2__rerun">
-        <Button variant="ghost" size="sm" onClick={() => onRerun(true)}>强制重新分析</Button>
-        <Button variant="ghost" size="sm" onClick={() => onRerun(false)}>使用缓存重跑</Button>
-      </div>
+      <details className="ux-advanced report-v2__advanced">
+        <summary>高级操作与诊断</summary>
+        <div className="report-v2__filename">
+          <label className="ui-field">
+            <span className="ui-field__label">导出文件名</span>
+            <input className="ui-input" value={filename} onChange={(event) => setFilename(event.target.value)} />
+          </label>
+          <Button variant="secondary" onClick={() => void renameReport()}>更新文件名</Button>
+        </div>
+        <div className="report-v2__context-actions">
+          <Button variant="secondary" size="sm" onClick={() => void viewContextJson()}>查看上下文数据</Button>
+          <Button variant="secondary" size="sm" onClick={() => void exportContextJson()}>导出上下文数据</Button>
+          <Button variant="secondary" size="sm" onClick={() => void rebuildContext()}>重新生成上下文</Button>
+          <Button variant="ghost" size="sm" onClick={() => void window.masterpiece.report.openFolder(project.id)}>打开输出文件夹</Button>
+          <Button variant="ghost" size="sm" onClick={() => onRerun(true)}>重新分析全部素材</Button>
+          <Button variant="ghost" size="sm" onClick={() => onRerun(false)}>复用已有结果重跑</Button>
+        </div>
+        {showContextJson && context && <pre className="report-v2__json">{JSON.stringify(context, null, 2)}</pre>}
+      </details>
 
-      {/* Markdown report */}
-      <article className="markdown-preview report-v2__markdown" dangerouslySetInnerHTML={{ __html: html }} />
+      <section className="report-v2__decision-summary">
+        <span className="page-shell-v2__eyebrow">KEY DECISION</span>
+        <h2>关键升级判断</h2>
+        <p>{extractDecisionSummary(markdown)}</p>
+      </section>
+
+      <details className="ux-advanced report-v2__full-report">
+        <summary>查看完整分析报告与证据</summary>
+        <article className="markdown-preview report-v2__markdown" dangerouslySetInnerHTML={{ __html: html }} />
+      </details>
     </PageShell>
   );
 }

@@ -79,6 +79,16 @@ const SHOT_OPTIONS: Record<Family, string[]> = {
   poster: ['subject_centered', 'rule_of_thirds', 'wide_composition'],
 };
 
+const OPTION_LABELS: Record<string, string> = {
+  reception: '前台接待区', lobby: '大堂', open_office: '开放办公区', meeting_room: '会议室', executive_office: '管理层办公室', exhibition_hall: '展厅',
+  lid_and_base_box: '天地盖盒', cylindrical_tube: '圆筒包装', paper_pouch: '纸袋', glass_bottle: '玻璃瓶', metal_can: '金属罐',
+  business_card: '名片', letterhead: '信纸', envelope: '信封', folder: '文件夹', signage: '导视标识',
+  brand_key_visual: '品牌主视觉', product_hero: '产品主画面', event_poster: '活动海报', campaign_banner: '推广横幅',
+  entrance_view: '入口视角', three_quarter_view: '斜侧全景', detail_view: '细节特写', birdseye_view: '俯视',
+  three_quarter_hero: '斜侧主视角', flat_lay: '平铺俯拍', side_profile: '侧面', in_context: '使用场景',
+  front: '正面', back: '背面', detail_macro: '局部特写', subject_centered: '主体居中', rule_of_thirds: '三分构图', wide_composition: '宽幅构图',
+};
+
 const LOGO_MODE_OPTIONS: Array<{ value: ShortChainLogoUsageMode; label: string; hint: string }> = [
   { value: 'blank_area', label: '预留干净区域', hint: 'AI 不放 Logo, 后期合成' },
   { value: 'post_composite', label: '后期合成', hint: '项目有已确认 Logo 时使用' },
@@ -133,23 +143,6 @@ export function BriefEditor(props: BriefEditorProps) {
         </select>
       </label>
 
-      {/* Aspect ratio */}
-      <label className="sc-field">
-        <span className="sc-field-label">画幅比例</span>
-        <div className="sc-aspect-row">
-          {ASPECT_RATIOS.map((r) => (
-            <button
-              key={r}
-              type="button"
-              className={`sc-aspect-pill${aspectRatio === r ? ' is-active' : ''}`}
-              onClick={() => setAspectRatio(r)}
-            >
-              {r}
-            </button>
-          ))}
-        </div>
-      </label>
-
       {/* Instruction */}
       <label className="sc-field">
         <span className="sc-field-label">本轮要求</span>
@@ -196,12 +189,21 @@ export function BriefEditor(props: BriefEditorProps) {
         </button>
 
         <div className="sc-advanced__content" hidden={!advancedOpen}>
+          <label className="sc-field">
+            <span className="sc-field-label">画幅比例</span>
+            <div className="sc-aspect-row">
+              {ASPECT_RATIOS.map((r) => (
+                <button key={r} type="button" className={`sc-aspect-pill${aspectRatio === r ? ' is-active' : ''}`} onClick={() => setAspectRatio(r)}>{r}</button>
+              ))}
+            </div>
+          </label>
+
           {/* Subtype */}
           <label className="sc-field">
             <span className="sc-field-label">子类型</span>
             <select value={subtype} onChange={(e) => setSubtype(e.target.value)}>
               {SUBTYPE_OPTIONS[family].map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>{OPTION_LABELS[s] ?? s}</option>
               ))}
             </select>
           </label>
@@ -211,7 +213,7 @@ export function BriefEditor(props: BriefEditorProps) {
             <span className="sc-field-label">镜头 / 构图</span>
             <select value={shot} onChange={(e) => setShot(e.target.value)}>
               {SHOT_OPTIONS[family].map((s) => (
-                <option key={s} value={s}>{s}</option>
+                <option key={s} value={s}>{OPTION_LABELS[s] ?? s}</option>
               ))}
             </select>
           </label>
@@ -262,6 +264,7 @@ export function BriefEditor(props: BriefEditorProps) {
 
       {/* 反馈 */}
       {error && <div className="sc-brief-editor__error" role="alert">{error}</div>}
+      {!error && !canCompile && !compiling && <div className="sc-brief-editor__hint">请先写下本轮想生成的画面。</div>}
       {notice && !error && <div className="sc-brief-editor__notice">{notice}</div>}
     </div>
   );

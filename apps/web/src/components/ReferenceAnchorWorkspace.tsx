@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type {
   AnalysisProgress,
   AssetSummary,
+  BrowserVisualFileEntry,
   DocumentContextRun,
   ProjectDocumentContextLink,
   ProjectRecord,
@@ -151,6 +152,12 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     });
   }, []);
 
+  useEffect(() => {
+    if (!selectedProjectId && readyProjects.length > 0 && projectSourceMode === 'existing') {
+      setSelectedProjectId(readyProjects[0].id);
+    }
+  }, [projectSourceMode, readyProjects, selectedProjectId]);
+
   // 上传新项目时订阅视觉分析进度（仅展示当前上传项目的进度）。
   useEffect(() => {
     if (!uploadProject) return;
@@ -222,6 +229,30 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         if (imported.skipped.length) setNotice(`已忽略 ${imported.skipped.length} 个不支持或重复的文件。`);
       } else {
         const created = await window.masterpiece.projects.create({ sourcePaths: unique, apiProfileId: profileId });
+        setUploadProject(created);
+        setUploadSummary(await window.masterpiece.projects.scanAssets(created.id));
+      }
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function addBrowserProjectAssets(files: BrowserVisualFileEntry[]) {
+    if (!files.length) return;
+    if (!profileId) { setError('请先在下方选择分析模型（API Profile）。'); return; }
+    setError('');
+    setNotice('');
+    setBusy(true);
+    try {
+      if (uploadProject) {
+        const imported = await window.masterpiece.projects.importBrowserFiles({ projectId: uploadProject.id, files });
+        setUploadProject(await window.masterpiece.projects.get(uploadProject.id));
+        setUploadSummary(imported.summary);
+        if (imported.skipped.length) setNotice(`已忽略 ${imported.skipped.length} 个不支持或重复的文件。`);
+      } else {
+        const created = await window.masterpiece.projects.createFromBrowserFiles({ apiProfileId: profileId, files });
         setUploadProject(created);
         setUploadSummary(await window.masterpiece.projects.scanAssets(created.id));
       }
@@ -590,7 +621,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   >
   <div className="page visual-translation-page reference-anchor-page">
     <header className="page-header">
-      <div><p className="eyebrow">REFERENCE → ANCHOR</p><h1>参考锚定（Anchor）</h1><p>选择当前项目，上传 4–8 张参考图，提炼可继承的风格规则并生成 Anchor Generation Brief，由你确认后交给图像生成。</p></div>
+      <div><p className="eyebrow">REFERENCE STYLE</p><h1>参考图定风格</h1><p>上传 4–8 张参考图，系统会提炼可继承的风格规则，并交给你确认。</p></div>
     </header>
 
     {error && <div className="notice error">{error}</div>}
@@ -598,34 +629,32 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
 
     <div className="visual-translation-grid">
       <section className="panel visual-translation-form">
-        <div className="section-heading"><span>01</span><div><h2>当前项目</h2><p>必须已完成视觉分析（读取项目视觉上下文与 Locked Assets）</p></div></div>
-        <div className="analysis-mode-tabs anchor-project-source-tabs" role="tablist" aria-label="当前项目来源">
-          <button role="tab" aria-selected={projectSourceMode === 'existing'} className={projectSourceMode === 'existing' ? 'active' : ''} disabled={analyzing} onClick={() => setProjectSourceMode('existing')}><span>选择已有项目</span><small>已完成视觉分析</small></button>
-          <button role="tab" aria-selected={projectSourceMode === 'upload'} className={projectSourceMode === 'upload' ? 'active' : ''} disabled={analyzing} onClick={() => setProjectSourceMode('upload')}><span>上传新项目</span><small>拖入图片，自动分析</small></button>
-        </div>
+        <div className="section-heading"><span>01</span><div><h2>选择项目</h2><p>默认使用最近完成视觉分析的项目</p></div></div>
 
         {projectSourceMode === 'existing' && <>
           <label>当前项目<select value={selectedProjectId} onChange={(event) => setSelectedProjectId(event.target.value)}>
             <option value="">请选择已完成视觉分析的项目</option>
             {readyProjects.map((project) => <option key={project.id} value={project.id}>{project.projectName} · {project.brandName}</option>)}
           </select></label>
-          {!readyProjects.length && <div className="notice warn">还没有已完成视觉分析的项目。可切到「上传新项目」直接拖入图片，或先在「视觉分析」中完成一次分析。</div>}
+          {!readyProjects.length && <div className="notice warn">还没有可用项目，请上传项目素材并先完成视觉分析。</div>}
           {selectedProject && <div className="facts-box"><small>身份锁定</small><p>品牌：{selectedProject.brandName} · 行业：{selectedProject.industry}</p><p>参考图仅用于提炼风格规则；参考品牌的名称 / Logo / Slogan / 标志性图形不会进入生成。</p></div>}
           {selectedProject && sourceInfo && (
-            <div className="source-banner">
-              <small>当前读取来源（§7.3）</small>
+            <details className="ux-advanced"><summary>查看项目上下文来源</summary><div className="source-banner">
+              <small>系统读取内容</small>
               <ul>
                 <li><span>当前项目</span><strong>{selectedProject.projectName}</strong></li>
                 <li><span>视觉上下文</span><strong>{sourceInfo.visual.status === 'ready' ? `v${sourceInfo.visual.schemaVersion ?? ''}` : '未生成'}</strong></li>
                 <li><span>文档上下文</span><strong>{sourceInfo.link ? '已关联' : '未关联'}</strong></li>
                 <li><span>合并状态</span><strong>{!sourceInfo.link ? '仅视觉上下文' : sourceInfo.resolved ? (sourceInfo.resolved.conflicts.some((conflict) => conflict.resolution === 'unresolved') ? '有冲突' : '可用') : '未生成'}</strong></li>
-                <li><span>Locked Assets</span><strong>{sourceInfo.resolved ? sourceInfo.resolved.lockedAssets.logoAssetIds.length + sourceInfo.resolved.lockedAssets.lockedFacts.length : 0} 项</strong></li>
+                <li><span>锁定的品牌资产</span><strong>{sourceInfo.resolved ? sourceInfo.resolved.lockedAssets.logoAssetIds.length + sourceInfo.resolved.lockedAssets.lockedFacts.length : 0} 项</strong></li>
               </ul>
-            </div>
+            </div></details>
           )}
+          <button className="button ghost" type="button" disabled={analyzing} onClick={() => setProjectSourceMode('upload')}>没有合适的项目？上传新项目</button>
         </>}
 
         {projectSourceMode === 'upload' && <div className="anchor-project-upload">
+          <button className="button ghost" type="button" disabled={analyzing} onClick={() => setProjectSourceMode('existing')}>← 选择已有项目</button>
           <VisualAssetUploader
             role="current_project"
             busy={busy}
@@ -637,6 +666,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
               thumbnailDataUrl: item.thumbnailDataUrl
             }))}
             onAddPaths={addProjectAssets}
+            onAddBrowserFiles={addBrowserProjectAssets}
             onChooseFiles={() => window.masterpiece.projects.chooseFiles('assets')}
             onChooseFolder={() => window.masterpiece.projects.chooseFolder()}
             onRemove={removeUploadAsset}
@@ -655,11 +685,13 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
           </div>
           {!profiles.some((profile) => profile.hasApiKey) && <div className="notice error">尚未配置可用的 API Profile，请先前往 API 设置。</div>}
         </div>}
-        <label>文档上下文（可选）<select value={selectedDocumentRunId} onChange={(event) => setSelectedDocumentRunId(event.target.value)}>
-          <option value="">不加载文档上下文</option>
-          {readyDocumentRuns.map((run) => <option key={run.id} value={run.id}>{run.projectName} · {new Date(run.createdAt).toLocaleDateString('zh-CN')}</option>)}
-        </select></label>
-        <label>分析模型<select value={profileId} onChange={(event) => onApiProfileChange(event.target.value)}><option value="">请选择 API Profile</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName} / {profile.modelId}</option>)}</select></label>
+        <details className="ux-advanced"><summary>高级设置（可选）</summary>
+          <label>补充项目文档<select value={selectedDocumentRunId} onChange={(event) => setSelectedDocumentRunId(event.target.value)}>
+            <option value="">自动使用项目视觉上下文</option>
+            {readyDocumentRuns.map((run) => <option key={run.id} value={run.id}>{run.projectName} · {new Date(run.createdAt).toLocaleDateString('zh-CN')}</option>)}
+          </select></label>
+          <label>分析配置<select value={profileId} onChange={(event) => onApiProfileChange(event.target.value)}><option value="">请选择分析配置</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName}</option>)}</select></label>
+        </details>
 
         <div className="section-heading"><span>02</span><div><h2>参考图（{assetCount} / {MIN_ASSETS}–{MAX_ASSETS}）</h2><p>建议同一风格体系的 4–8 张参考图，超过 {MAX_ASSETS} 张将截取前 {MAX_ASSETS} 张</p></div></div>
         <div className={`drop-zone translation-drop-zone ${busy ? 'busy' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
@@ -678,15 +710,16 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         </div>)}</div> : null}
         {assetCount > 0 && assetCount < MIN_ASSETS && <div className="notice warn">参考图少于 {MIN_ASSETS} 张：仍可运行，但风格证据不足，规则置信度会降低。</div>}
 
-        <div className="section-heading"><span>03</span><div><h2>继承偏好（可选）</h2><p>告诉系统你想要什么、不要什么</p></div></div>
-        <label>希望继承的内容<textarea rows={2} value={preference} placeholder="例如：继承它的留白节奏和低饱和用色" onChange={(event) => setPreference(event.target.value)} /></label>
-        <label>明确不要继承的内容（每行一条）<textarea rows={2} value={avoidanceText} placeholder={'例如：\n不要它的插画风格'} onChange={(event) => setAvoidanceText(event.target.value)} /></label>
+        <details className="ux-advanced"><summary>补充风格偏好（可选）</summary>
+          <label>希望继承的内容<textarea rows={2} value={preference} placeholder="例如：继承它的留白节奏和低饱和用色" onChange={(event) => setPreference(event.target.value)} /></label>
+          <label>明确不要继承的内容<textarea rows={2} value={avoidanceText} placeholder={'例如：\n不要它的插画风格'} onChange={(event) => setAvoidanceText(event.target.value)} /></label>
+        </details>
         {!profiles.some((profile) => profile.hasApiKey) && <div className="notice error">尚未配置可用的 API Profile，请先前往 API 设置。</div>}
         <button className="button primary full" disabled={busy || !selectedProjectId || !assetCount || !profiles.find((profile) => profile.id === profileId)?.hasApiKey} onClick={() => void start()}>{busy ? '锚定运行中…' : '开始参考锚定'}</button>
       </section>
 
       <aside className="panel visual-translation-history">
-        <div className="section-heading"><span>04</span><div><h2>锚定记录</h2><p>待决策任务可直接进入决策页；重试仅本地重编译，不重复调用模型</p></div></div>
+        <div className="section-heading"><span>03</span><div><h2>最近记录</h2><p>继续确认未完成的任务，或查看已有结果</p></div></div>
         {runs.length ? <div className="visual-run-list">{runs.map((run) => <div key={run.id} className={`visual-run-card ${run.status}`}>
           <div><strong>{run.projectName}</strong><span>{STATUS_LABELS[run.status]}</span></div>
           <small>{run.referenceAssetCount} 张参考图 · {run.model}</small>

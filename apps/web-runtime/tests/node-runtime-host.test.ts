@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 178 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 180 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -31,7 +31,7 @@ test('Node Runtime Host binds all 178 channels to the Shared Registry without El
     delete process.env.MASTERPIECE_WEB_OPEN_PATH;
   });
 
-  assert.equal(host.operationCount, 178);
+  assert.equal(host.operationCount, 180);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),
@@ -56,6 +56,8 @@ test('Node Runtime Host binds all 178 channels to the Shared Registry without El
 test('P3-D3.6B body cap: upload channel 64 MiB, general RPC 10 MiB', async () => {
   const { resolveBodyCap } = await import('../src/local-rpc-server.ts');
   assert.equal(resolveBodyCap('projects:import-file-bytes'), 64 * 1024 * 1024);
+  assert.equal(resolveBodyCap('projects:create-from-browser-files'), 64 * 1024 * 1024);
+  assert.equal(resolveBodyCap('projects:import-browser-files'), 64 * 1024 * 1024);
   assert.equal(resolveBodyCap('document-context:import-documents'), 64 * 1024 * 1024);
   assert.equal(resolveBodyCap('projects:list'), 10 * 1024 * 1024);
   assert.equal(resolveBodyCap('image-generation:start-validated-short-chain'), 10 * 1024 * 1024);

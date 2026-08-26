@@ -719,8 +719,13 @@ function RunStateBadge({ lifecycle }: { lifecycle: RunLifecycle }) {
   const tone = STATUS_TONE[lifecycle.run.status] ?? 'neutral';
   return <div className={`ci-runstate-badge ci-runstate-badge--${tone}`}>
     <strong>{RUN_STATUS_LABELS[lifecycle.run.status] ?? lifecycle.run.status}</strong>
-    <small>{lifecycle.run.projectName} · 修订 v{lifecycle.run.selectionRevision}</small>
+    <small>{creativeRunDisplayName(lifecycle.run)} · 修订 v{lifecycle.run.selectionRevision}</small>
   </div>;
+}
+
+function creativeRunDisplayName(run: { projectName: string; createdAt: string }): string {
+  if (!/^CI-Run-/i.test(run.projectName)) return run.projectName;
+  return `智能创意 · ${new Date(run.createdAt).toLocaleDateString('zh-CN')}`;
 }
 
 function plainText(value: unknown): string {
@@ -945,10 +950,7 @@ function InputPage({ profiles, profileId, onProfileChange, inputDocumentPaths, p
           <strong>上传项目资料</strong>
           <p className="ci-upload-formats">PDF · DOCX · Markdown · TXT</p>
           <p className="ci-upload-caption">可一次上传多份策划、品牌、产品或业务资料</p>
-          <button className="button primary" type="button" disabled={busy}
-            onClick={(event) => { event.stopPropagation(); onChooseDocuments(); }}>
-            选择文档
-          </button>
+          <span className="button primary" aria-hidden>选择文档</span>
         </div>
 
         {pickerError && <div className="notice error ci-picker-error" role="alert">
@@ -967,22 +969,25 @@ function InputPage({ profiles, profileId, onProfileChange, inputDocumentPaths, p
               <button type="button" aria-label="移除" onClick={() => onRemoveDocument(path)}>×</button>
             </li>)}
           </ul> : <p className="ci-hint">尚未选择文档。点击上方上传区域或拖入文件。</p>}
-          <label className="ci-form-row">
-            <span>项目名称（可选，自动从文档识别）</span>
-            <input value={projectName} onChange={(e) => onProjectNameChange(e.target.value)} placeholder="项目名称（可选）" />
-          </label>
+          {inputDocumentPaths.length > 0 && <details className="ux-advanced">
+            <summary>修改自动识别的项目名称（可选）</summary>
+            <label className="ci-form-row">
+              <span>项目名称</span>
+              <input value={projectName} onChange={(e) => onProjectNameChange(e.target.value)} placeholder="留空则从文档自动识别" />
+            </label>
+          </details>}
           <div className="ci-form-row ci-form-row--actions">
             <Button variant="primary" size="md" disabled={busy || !profileId || !inputDocumentPaths.length} onClick={onStart}>
               {busy ? '提交中…' : '开始智能创意'}
             </Button>
-            <p className="ci-hint">加入文档后即可开始。事实提取阶段调用 1 次模型，之后为本地推理。</p>
+            <p className="ci-hint">加入文档后即可开始，系统会自动完成事实提取与创意梳理。</p>
           </div>
         </div>
       </div>
 
       <aside className="ci-input-aside">
-        <div className="panel ci-profile-mini">
-          <small className="ci-aside-label">分析模型 / API</small>
+        {profiles.length > 1 && <details className="panel ux-advanced ci-profile-mini">
+          <summary>更换分析配置</summary>
           {showProfileEdit ? <>
             <select value={profileId} onChange={(e) => onProfileChange(e.target.value)}>
               <option value="">请选择 API Profile</option>
@@ -992,10 +997,11 @@ function InputPage({ profiles, profileId, onProfileChange, inputDocumentPaths, p
               <Button variant="ghost" size="sm" onClick={() => setShowProfileEdit(false)}>完成</Button>
             </div>
           </> : <>
-            <p className="ci-profile-mini__line">{currentProfile ? `当前模型：${currentProfile.displayName} / ${currentProfile.modelId}` : '未选择 API Profile'}</p>
+            <p className="ci-profile-mini__line">{currentProfile ? `当前配置：${currentProfile.displayName}` : '未选择分析配置'}</p>
             <button className="button ghost" type="button" onClick={() => setShowProfileEdit(true)}>更改</button>
           </>}
-        </div>
+        </details>}
+        {profiles.length === 0 && <div className="notice error">尚未配置可用的分析服务，请先前往设置。</div>}
 
         <div className="panel ci-recent">
           <small className="ci-aside-label">最近 智能创意</small>
@@ -1004,7 +1010,7 @@ function InputPage({ profiles, profileId, onProfileChange, inputDocumentPaths, p
             : <ul className="ci-recent-list">
               {recent.map((lifecycle) => <li key={lifecycle.run.id}>
                 <button className="ci-recent-item" type="button" onClick={() => onOpenRun(lifecycle.run)}>
-                  <strong>{lifecycle.run.projectName}</strong>
+                  <strong>{creativeRunDisplayName(lifecycle.run)}</strong>
                   <small>{RUN_STATUS_LABELS[lifecycle.run.status] ?? lifecycle.run.status} · 更新于 {formatRelativeTime(lifecycle.run.completedAt ?? lifecycle.run.createdAt)}</small>
                 </button>
                 {lifecycle.resumable && <Button variant="secondary" size="sm" onClick={() => onResume(lifecycle.run.id)}>恢复</Button>}
@@ -1353,8 +1359,9 @@ function VisualSystemPage({
   const selectedDirectionId = anchorProduction?.run?.selectedDirectionId ?? parentSelectedDirectionId;
   const selectionRevision = anchorProduction?.run?.selectionRevision ?? parentSelectionRevision;
   const canonVersion = anchorProduction?.run?.canonVersion ?? null;
+  const effectiveCanonVersion = visualCanon?.canonVersion ?? space?.canonVersion ?? packaging?.canonVersion ?? canonVersion ?? null;
   const parent = visualCanon
-    ? { selectionRevision, canonVersion: visualCanon.canonVersion ?? canonVersion }
+    ? { selectionRevision, canonVersion: effectiveCanonVersion }
     : (canonVersion ? { selectionRevision, canonVersion } : null);
   const availability = deriveAnchorAvailability(anchorProduction, parent);
   const anchorView = deriveAnchorUserView(anchorProduction);
@@ -1432,26 +1439,13 @@ function VisualSystemPage({
         {anchorView === 'unvisualized' && (
           <div className="ci-anchor-empty" data-ciw-anchor-empty>
             <p className="ci-hint">尚未生成视觉锚点。</p>
-            <div className="panel ci-profile-mini ci-anchor-image-profile">
-              <label htmlFor="ci-anchor-image-profile-select">图像生成模型</label>
-              <select
-                id="ci-anchor-image-profile-select"
-                data-ciw-anchor-image-profile-select
-                value={imageApiProfileId}
-                onChange={(event) => onImageApiProfileChange(event.target.value)}
-                disabled={!imageProfiles.length}
-              >
-                {imageProfiles.length === 0 && <option value="">暂无已启用的图像生成模型，请先在模型设置中配置。</option>}
-                {imageProfiles.map((profile) => (
-                  <option key={profile.id} value={profile.id}>
-                    {profile.displayName} / {profile.modelId}
-                  </option>
-                ))}
+            {imageProfiles.length === 0 && <div className="notice warn">尚未配置图像生成服务，请先前往模型设置。</div>}
+            {imageProfiles.length > 1 && <details className="ux-advanced ci-anchor-image-profile">
+              <summary>更换图像生成服务</summary>
+              <select id="ci-anchor-image-profile-select" data-ciw-anchor-image-profile-select value={imageApiProfileId} onChange={(event) => onImageApiProfileChange(event.target.value)}>
+                {imageProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName}</option>)}
               </select>
-              <p className="ci-hint">
-                必须为视觉锚点选择独立的图像生成模型，不能沿用 CI 主流程的文本分析模型。
-              </p>
-            </div>
+            </details>}
             <Button
               variant="primary"
               size="md"
@@ -1460,11 +1454,8 @@ function VisualSystemPage({
             >
               生成视觉锚点
             </Button>
-            {!availability.canStart && (
-              <p className="ci-hint">当前状态下不能启动视觉锚点生成。</p>
-            )}
             {availability.canStart && !imageApiProfileId && (
-              <p className="ci-hint">请先选择图像生成模型。</p>
+              <p className="ci-hint">请先配置图像生成服务。</p>
             )}
           </div>
         )}
@@ -1565,12 +1556,12 @@ function VisualSystemPage({
                   <article className="ci-anchor-next__card" aria-disabled="true">
                     <strong>空间效果图</strong>
                     <p>基于已确认的视觉系统与视觉锚点延展。</p>
-                    <span className="ci-anchor-next__disabled">CI-10 启动</span>
+                    <span className="ci-anchor-next__disabled">即将开放</span>
                   </article>
                   <article className="ci-anchor-next__card" aria-disabled="true">
                     <strong>包装效果图</strong>
                     <p>基于已确认的视觉系统与视觉锚点延展。</p>
-                    <span className="ci-anchor-next__disabled">CI-10 启动</span>
+                    <span className="ci-anchor-next__disabled">即将开放</span>
                   </article>
                 </div>
               </div>
@@ -1585,7 +1576,7 @@ function VisualSystemPage({
 function anchorBlockerLabel(reason: string): string {
   switch (reason) {
     case 'no-selection': return '请先选择创意方向。';
-    case 'no-canon': return '请先完成视觉系统。';
+    case 'no-canon': return '当前结果缺少可继续生成的视觉系统版本，请重新打开任务或重新选择创意方向。';
     case 'no-contract': return '请先生成视觉验收标准。';
     case 'contract-blocked': return '视觉验收标准当前被阻断。';
     case 'locked-asset-conflict': return '锁定资产与视觉验收标准不一致。';

@@ -87,7 +87,8 @@ test('CI-W1B.1 UX03: exactly one choose-documents handler exists', () => {
 test('CI-W1B.1 UX03: upload hero click routes through the single handler', () => {
   assert.equal(workspace.includes('onClick={onChooseDocuments}'), true, 'upload hero click wired');
   assert.equal(workspace.includes('aria-label="上传项目资料，选择文档"'), true, 'upload hero is the labelled primary surface');
-  assert.equal(workspace.includes('event.stopPropagation(); onChooseDocuments();'), true, '选择文档 button routes to the same handler');
+  assert.equal(workspace.includes('<span className="button primary" aria-hidden>选择文档</span>'), true, 'visual CTA is non-interactive inside the upload surface');
+  assert.equal(workspace.includes('event.stopPropagation(); onChooseDocuments();'), false, 'upload surface must not nest a second interactive control');
 });
 
 test('CI-W1B.1 UX03: keyboard Enter and Space trigger the same handler', () => {

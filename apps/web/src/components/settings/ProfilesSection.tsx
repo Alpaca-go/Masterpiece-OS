@@ -1,6 +1,5 @@
 import type {
   ApiProfile,
-  ModelRegistryEntry,
   SaveApiProfileInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { Button } from '../ui/Button';
@@ -86,12 +85,12 @@ function ProfileCard({ profile, busy, onEdit }: { profile: ApiProfile; busy: str
           {!profile.isEnabled && <Badge tone="default" size="sm">已停用</Badge>}
         </div>
       </div>
-      <dl className="settings-v2__profile-meta">
-        <div><dt>Provider</dt><dd>{profile.provider}</dd></div>
-        <div><dt>协议</dt><dd>{profile.protocol}</dd></div>
-        <div><dt>Model</dt><dd>{profile.modelId}</dd></div>
-        <div><dt>状态</dt><dd>{statusLabel(profile)} · {profile.hasApiKey ? 'Key 已保存' : '缺少 Key'}</dd></div>
-      </dl>
+      <p className="settings-v2__profile-summary">{statusLabel(profile)} · {profile.hasApiKey ? '凭据已保存' : '缺少 API Key'}</p>
+      <details className="ux-advanced"><summary>查看连接详情</summary><dl className="settings-v2__profile-meta">
+        <div><dt>服务商</dt><dd>{profile.provider}</dd></div>
+        <div><dt>调用协议</dt><dd>{profile.protocol}</dd></div>
+        <div><dt>模型标识</dt><dd>{profile.modelId}</dd></div>
+      </dl></details>
       <div className="settings-v2__profile-actions">
         <Button variant="secondary" size="sm" disabled={Boolean(busy) || !profile.isEnabled} onClick={() => void testProfile(profileInput(profile), `test-${profile.id}`)}>
           {busy === `test-${profile.id}` ? '测试中…' : '测试连接'}
@@ -113,39 +112,46 @@ function ProfileCard({ profile, busy, onEdit }: { profile: ApiProfile; busy: str
 
 function ProfileEditor() {
   const ctx = useSettingsContext();
-  const { editor, showKey, busy, registry, setShowKey, selectRegistryModel, updateProfile, saveProfile, testProfile, setEditor } = ctx;
+  const { editor, showKey, busy, registry, setShowKey, selectRegistryModel, updateProfile, verifyAndSaveProfile, setEditor } = ctx;
   if (!editor) return null;
   return (
     <div className="settings-v2__editor">
       <div className="settings-v2__section-head compact">
         <div>
           <h2>{editor.id ? '编辑 API 配置' : '新增 API 配置'}</h2>
-          <p>API Key 留空时保留已保存的凭据</p>
+          <p>选择模型并填写凭据；连接参数会自动沿用模型配置。</p>
         </div>
       </div>
-      <div className="settings-v2__form-grid">
         <label className="ui-field">
-          <span className="ui-field__label">Registry 模型</span>
+          <span className="ui-field__label">选择模型</span>
           <select className="ui-select" value={editor.registryModelId || ''} onChange={(event) => selectRegistryModel(event.target.value)}>
-            <option value="">自定义模型</option>
-            <optgroup label="Analysis Models">{registry.filter((model) => model.type === 'analysis').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
-            <optgroup label="Generation Models">{registry.filter((model) => model.type === 'image_generation').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
+            <option value="">自定义模型（高级）</option>
+            <optgroup label="分析模型">{registry.filter((model) => model.type === 'analysis').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
+            <optgroup label="图像生成模型">{registry.filter((model) => model.type === 'image_generation').map((model) => <option key={model.id} value={model.id}>{model.name}</option>)}</optgroup>
           </select>
         </label>
-        <label className="ui-field">
-          <span className="ui-field__label">模型职责</span>
-          <select className="ui-select" value={editor.modelType} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('modelType', event.target.value as SaveApiProfileInput['modelType'])}>
-            <option value="analysis">Analysis Model</option>
-            <option value="image_generation">Image Generation Model</option>
-            <option value="video_generation">Video Generation Model</option>
-          </select>
-        </label>
-      </div>
       <label className="ui-field">
-        <span className="ui-field__label">配置名称</span>
-        <input className="ui-input" value={editor.displayName} placeholder="例如：千问 VL Plus / GPT Vision / 本地模型" onChange={(event) => updateProfile('displayName', event.target.value)} />
+        <span className="ui-field__label">显示名称（可选）</span>
+        <input className="ui-input" value={editor.displayName} placeholder="默认使用模型名称" onChange={(event) => updateProfile('displayName', event.target.value)} />
       </label>
       <label className="ui-field">
+        <span className="ui-field__label">API Key</span>
+        <div className="ui-secret-field">
+          <input type={showKey ? 'text' : 'password'} value={editor.apiKey || ''} placeholder={editor.id ? '留空则保持现有 Key' : '粘贴 API Key'} onChange={(event) => updateProfile('apiKey', event.target.value)} />
+          <button type="button" onClick={() => setShowKey(!showKey)}>{showKey ? '隐藏' : '显示'}</button>
+        </div>
+      </label>
+      <details className="ux-advanced settings-v2__connection-advanced" open={!editor.registryModelId}>
+        <summary>高级连接设置{editor.registryModelId ? '（通常无需修改）' : ''}</summary>
+        <label className="ui-field">
+          <span className="ui-field__label">模型用途</span>
+          <select className="ui-select" value={editor.modelType} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('modelType', event.target.value as SaveApiProfileInput['modelType'])}>
+            <option value="analysis">分析</option>
+            <option value="image_generation">图像生成</option>
+            <option value="video_generation">视频生成</option>
+          </select>
+        </label>
+        <label className="ui-field">
         <span className="ui-field__label">调用协议</span>
         <select className="ui-select" value={editor.protocol} disabled={Boolean(editor.registryModelId)} onChange={(event) => updateProfile('protocol', event.target.value as SaveApiProfileInput['protocol'])}>
           <option value="openai-chat-multimodal">OpenAI 兼容多模态</option>
@@ -155,12 +161,10 @@ function ProfileEditor() {
           <option value="dashscope-wan-image">DashScope Wan Image</option>
           <option value="openai-video-generation">Video Generation</option>
         </select>
-        <span className="ui-field__hint">协议决定连接测试和 Adapter 请求格式。</span>
       </label>
       <label className="ui-field">
-        <span className="ui-field__label">Provider 标识</span>
+        <span className="ui-field__label">服务商标识</span>
         <input className="ui-input" list="provider-suggestions" value={editor.provider} placeholder="自由输入，例如 aliyun-bailian" onChange={(event) => updateProfile('provider', event.target.value)} />
-        <span className="ui-field__hint">仅作为配置与运行记录标识，不限制厂商；请求接口由模型类型与调用协议共同决定。</span>
       </label>
       <datalist id="provider-suggestions">
         <option value="aliyun-bailian" />
@@ -171,20 +175,13 @@ function ProfileEditor() {
         <option value="openrouter" />
         <option value="local-openai-compatible" />
       </datalist>
-      <label className="ui-field">
-        <span className="ui-field__label">API Key</span>
-        <div className="ui-secret-field">
-          <input type={showKey ? 'text' : 'password'} value={editor.apiKey || ''} placeholder={editor.id ? '留空则保持现有 Key' : '输入 API Key'} onChange={(event) => updateProfile('apiKey', event.target.value)} />
-          <button type="button" onClick={() => setShowKey(!showKey)}>{showKey ? '隐藏' : '显示'}</button>
-        </div>
-      </label>
       <div className="settings-v2__form-grid">
         <label className="ui-field">
-          <span className="ui-field__label">Base URL</span>
+          <span className="ui-field__label">服务地址</span>
           <input className="ui-input" value={editor.baseUrl} placeholder="https://…/compatible-mode/v1" onChange={(event) => updateProfile('baseUrl', event.target.value)} />
         </label>
         <label className="ui-field">
-          <span className="ui-field__label">Model ID</span>
+          <span className="ui-field__label">模型标识</span>
           <input className="ui-input" value={editor.modelId} placeholder="输入端点实际支持的多模态 Model ID" onChange={(event) => updateProfile('modelId', event.target.value)} />
         </label>
       </div>
@@ -198,9 +195,9 @@ function ProfileEditor() {
           <span>设为默认配置</span>
         </label>
       </div>
+      </details>
       <div className="settings-v2__editor-actions">
-        <Button variant="primary" disabled={Boolean(busy)} onClick={() => void saveProfile()}>{busy === 'profile-save' ? '保存中…' : '保存配置'}</Button>
-        <Button variant="secondary" disabled={Boolean(busy)} onClick={() => void testProfile(editor, 'editor-test')}>{busy === 'editor-test' ? '测试中…' : '测试模型连接'}</Button>
+        <Button variant="primary" disabled={Boolean(busy)} onClick={() => void verifyAndSaveProfile()}>{busy === 'profile-verify-save' ? '正在验证…' : '验证并保存'}</Button>
         <Button variant="ghost" disabled={Boolean(busy)} onClick={() => setEditor(null)}>取消编辑</Button>
       </div>
     </div>

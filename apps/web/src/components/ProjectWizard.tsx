@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import type { AssetSummary, ProjectRecord, PublicSettings } from '@masterpiece/runtime-core/application-contracts.ts';
+import type { AssetSummary, BrowserVisualFileEntry, ProjectRecord, PublicSettings } from '@masterpiece/runtime-core/application-contracts.ts';
 import { cleanError, formatBytes } from '../utils';
 import { VisualAssetUploader } from './VisualAssetUploader';
 import { useConfirm } from './ui/ConfirmDialog';
@@ -71,6 +71,32 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
     }
   }
 
+  async function prepareBrowserFiles(files: BrowserVisualFileEntry[]) {
+    if (!files.length) return;
+    if (!apiProfileId) {
+      setError('请先在设置中添加并启用一个 API Profile。');
+      return;
+    }
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      if (project) {
+        const imported = await window.masterpiece.projects.importBrowserFiles({ projectId: project.id, files });
+        await refreshProject(project.id, imported.summary);
+        if (imported.skipped.length) setNotice(`已忽略 ${imported.skipped.length} 个不支持或重复的文件。`);
+      } else {
+        const created = await window.masterpiece.projects.createFromBrowserFiles({ apiProfileId, files });
+        setProject(created);
+        setSummary(await window.masterpiece.projects.scanAssets(created.id));
+      }
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function removeAsset(assetId: string) {
     if (!project) return;
     setBusy(true);
@@ -118,8 +144,7 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
 
   return <div className="page wizard-page minimal-intake-page">
     <header className="page-header">
-      <div><p className="eyebrow">NEW ANALYSIS</p><h1>导入视觉方案</h1><p>ZIP 会直接解压并哈希去重，原压缩包不会进入素材列表或分析附件。</p></div>
-      <button className="button ghost" onClick={() => void cancel()}>取消</button>
+      <div><p className="eyebrow">NEW ANALYSIS</p><h1>导入视觉方案</h1><p>上传图片、PDF、ZIP 或整个素材文件夹，系统会自动整理重复文件。</p></div>
     </header>
 
     <section className="panel intake-panel">
@@ -135,6 +160,7 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
           thumbnailDataUrl: item.thumbnailDataUrl
         }))}
         onAddPaths={prepare}
+        onAddBrowserFiles={prepareBrowserFiles}
         onChooseFiles={() => window.masterpiece.projects.chooseFiles('assets')}
         onChooseFolder={() => window.masterpiece.projects.chooseFolder()}
         onRemove={removeAsset}
@@ -155,20 +181,19 @@ export function ProjectWizard({ settings, onStart, onCancel }: Props) {
           <div><small>总大小</small><strong>{formatBytes(summary.totalBytes)}</strong></div>
           <div><small>Logo 线索</small><strong>{summary.logoDetected ? '已识别' : '默认锁定'}</strong></div>
         </div>
-        {batches.length > 1 && <div className="batch-actions"><small>导入批次</small>{batches.map(([batchId, batch]) => <button key={batchId} disabled={busy} onClick={() => void removeBatch(batchId, batch.label)} title="删除整个批次">{batch.label} · {batch.count} 个 ×</button>)}</div>}
+        {batches.length > 1 && <details className="ux-advanced"><summary>管理 {batches.length} 个导入批次</summary><div className="batch-actions">{batches.map(([batchId, batch]) => <button key={batchId} disabled={busy} onClick={() => void removeBatch(batchId, batch.label)} title="删除整个批次">{batch.label} · {batch.count} 个 ×</button>)}</div></details>}
         <div className="auto-facts-note">
-          <div><small>品牌线索</small><strong>{project.detectedBrandName}</strong><span>置信度 {Math.round(project.factConfidence.brandName * 100)}%</span></div>
-          <div><small>行业线索</small><strong>{project.detectedIndustry}</strong><span>置信度 {Math.round(project.factConfidence.industry * 100)}%</span></div>
+          <div><small>品牌线索</small><strong>{project.detectedBrandName}</strong></div>
+          <div><small>行业线索</small><strong>{project.detectedIndustry}</strong></div>
           <p>通用文件名不会成为最终项目名；不确定信息会标记为“基于现有素材推断”或“待确认”。</p>
         </div>
       </div>}
     </section>
 
     <footer className="intake-footer">
-      <label className="analysis-profile-select">分析模型<select value={apiProfileId} onChange={(event) => setApiProfileId(event.target.value)}>
-        {!enabledProfiles.length && <option value="">尚无可用配置</option>}
-        {enabledProfiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName} / {profile.modelId}</option>)}
-      </select><span>{selectedProfile ? `${selectedProfile.provider} · ${selectedProfile.hasApiKey ? 'Key 已保存' : '缺少 Key'}` : '请前往设置添加 API Profile'}</span></label>
+      <div className="readonly-model"><small>分析服务</small><strong>{selectedProfile?.hasApiKey ? '已就绪，将自动使用默认配置' : '尚未配置可用服务'}</strong>
+        {enabledProfiles.length > 1 && <details className="ux-advanced"><summary>更换分析配置</summary><select value={apiProfileId} onChange={(event) => setApiProfileId(event.target.value)}>{enabledProfiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName}</option>)}</select></details>}
+      </div>
       <div className="button-row"><button className="button ghost" onClick={() => void cancel()}>取消</button><button className="button primary large" disabled={!ready || busy} onClick={() => project && onStart(project, apiProfileId)}>开始分析</button></div>
     </footer>
   </div>;

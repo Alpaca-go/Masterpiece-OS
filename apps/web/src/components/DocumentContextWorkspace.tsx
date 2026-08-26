@@ -347,12 +347,6 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
             ]}
           />
         }
-        right={
-          <TopBarActions>
-            <Button variant="ghost" size="sm" onClick={onOpenSettings}>API 设置</Button>
-            <Button variant="primary" size="sm" onClick={onBack}>返回首页</Button>
-          </TopBarActions>
-        }
       />
     }
     bottomBar={
@@ -368,17 +362,24 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
       <button className="button ghost" onClick={() => { setView('workspace'); setBriefMarkdown(''); void refreshRuns().catch(() => {}); }}>返回工作台</button>
     </header>
     <div className="result-summary">
-      <div><small>模型</small><strong>{selectedRun.model}</strong></div>
-      <div><small>模型调用</small><strong>{selectedRun.modelCallCount ?? 0} 次</strong></div>
-      <div><small>Repair</small><strong>{selectedRun.repairCount ?? 0} 次</strong></div>
+      <div><small>状态</small><strong>简报已完成</strong></div>
+      <div><small>项目</small><strong>{selectedRun.projectName}</strong></div>
+      <div><small>文档</small><strong>{selectedRun.documentCount} 份</strong></div>
       <div><small>非阻断警告</small><strong>{selectedRun.warnings?.length ?? 0} 条</strong></div>
     </div>
     <div className="result-actions">
-      <button className="button primary" onClick={() => void exportBrief()}>导出简报</button>
-      <button className="button secondary" onClick={() => void navigator.clipboard.writeText(briefMarkdown).then(() => setNotice('简报内容已复制。'))}>复制内容</button>
-      <button className="button secondary" onClick={() => void window.masterpiece.documentContext.openFolder(selectedRun.id)}>打开输出文件夹</button>
       <button className="button primary" onClick={() => onGenerateConcept(selectedRun.id)}>生成概念稿</button>
+      <button className="button secondary" onClick={() => void exportBrief()}>导出简报</button>
+      <button className="button secondary" onClick={() => void navigator.clipboard.writeText(briefMarkdown).then(() => setNotice('简报内容已复制。'))}>复制内容</button>
     </div>
+    <details className="ux-advanced"><summary>高级诊断与文件位置</summary>
+      <div className="result-summary">
+        <div><small>分析配置</small><strong>{selectedRun.model}</strong></div>
+        <div><small>模型调用</small><strong>{selectedRun.modelCallCount ?? 0} 次</strong></div>
+        <div><small>自动修正</small><strong>{selectedRun.repairCount ?? 0} 次</strong></div>
+      </div>
+      <button className="button ghost" onClick={() => void window.masterpiece.documentContext.openFolder(selectedRun.id)}>打开输出文件夹</button>
+    </details>
     {notice && <div className="notice ok">{notice}</div>}
     {error && <div className="notice error">{error}</div>}
     {selectedRun.warnings?.length ? <div className="notice warn">{selectedRun.warnings.map((warning) => <p key={`${warning.code}-${warning.field || ''}`}>{warning.message}</p>)}</div> : null}
@@ -518,8 +519,8 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
     <div className="visual-translation-grid">
       <section className="panel visual-translation-form">
         <div className="section-heading"><span>01</span><div><h2>准备提取任务</h2><p>支持 PDF、DOCX、Markdown 和 TXT</p></div></div>
-        <label>提取模型<select value={profileId} onChange={(event) => onApiProfileChange(event.target.value)}><option value="">请选择 API Profile</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName} / {profile.modelId}</option>)}</select></label>
-        <div className="mode-hint">默认流程：1 次模型调用（最多 1 次修复）提取事实 → 本地归一化 → 人工逐项确认 → 本地编译简报。不联网检索、不生成三个方向、不自动推荐。</div>
+        <details className="ux-advanced"><summary>更换分析配置</summary><label>分析配置<select value={profileId} onChange={(event) => onApiProfileChange(event.target.value)}><option value="">请选择分析配置</option>{profiles.map((profile) => <option value={profile.id} key={profile.id}>{profile.displayName}</option>)}</select></label></details>
+        <div className="mode-hint">系统会从文档提取项目事实，交由你确认后生成视觉简报。</div>
         <div className="document-toolbar"><div><strong>项目文档</strong><small>{documents.length} 份 · {totalCharacters.toLocaleString('zh-CN')} 字符</small></div></div>
         <div className={`drop-zone translation-drop-zone ${busy ? 'busy' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
           event.preventDefault();
@@ -536,7 +537,7 @@ export function DocumentContextWorkspace({ settings, selectedApiProfileId, initi
       </section>
 
       <aside className="panel visual-translation-history">
-        <div className="section-heading"><span>02</span><div><h2>提取记录</h2><p>待确认任务可直接进入确认页；恢复只走本地缓存，不重复调用模型</p></div></div>
+        <div className="section-heading"><span>02</span><div><h2>最近记录</h2><p>继续确认未完成任务，或查看已有简报</p></div></div>
         {runs.length ? <div className="visual-run-list">{runs.map((run) => <div key={run.id} className={`visual-run-card ${run.status}`}>
           <div><strong>{run.projectName}</strong><span>{STATUS_LABELS[run.status]}</span></div>
           <small>{run.documentCount} 份文档 · {run.model}</small>

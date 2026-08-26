@@ -38,6 +38,7 @@ export interface SettingsContextValue {
   // Actions
   perform: (key: string, action: () => Promise<PublicSettings>, message: string) => Promise<PublicSettings | null>;
   testProfile: (input: SaveApiProfileInput, busyKey: string) => Promise<void>;
+  verifyAndSaveProfile: () => Promise<void>;
   saveProfile: () => Promise<void>;
   saveLocal: () => Promise<void>;
   removeProfile: (profile: ApiProfile) => Promise<void>;

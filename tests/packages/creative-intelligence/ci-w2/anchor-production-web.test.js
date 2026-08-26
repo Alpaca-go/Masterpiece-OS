@@ -255,7 +255,7 @@ test('W08: formatApprovalRevision returns a versioned label for any positive int
 test('W09: Space / Packaging next-step cards MUST remain non-executable (aria-disabled)', async () => {
   // The anchor section in CreativeIntelligenceWorkspace.tsx
   // renders the next-step cards with `aria-disabled="true"` and a
-  // visible `CI-10 启动` chip. We pin the source code so a
+  // visible user-facing availability chip. We pin the source code so a
   // future refactor that wires the cards to a real RPC fails the
   // gate before merge.
   const file = path.resolve(
@@ -267,10 +267,10 @@ test('W09: Space / Packaging next-step cards MUST remain non-executable (aria-di
     /aria-disabled="true"/.test(content),
     'aria-disabled="true" must be present in CreativeIntelligenceWorkspace.tsx',
   );
-  // The label "CI-10 启动" must be present in the next-step cards.
+  // Internal milestone names must not leak into the next-step cards.
   assert.ok(
-    /CI-10 启动/.test(content),
-    '"CI-10 启动" chip must be present on the next-step cards',
+    /即将开放/.test(content) && !/CI-10 启动/.test(content),
+    'next-step cards must use user-facing availability copy',
   );
   // The cards must NOT have a real onClick that produces images.
   // We assert the absence of any image-generation RPC name in the

@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import type {
   AssetSummary,
   GenerationContextReadiness,
@@ -68,15 +67,6 @@ export function ProjectDetail({
 }: Props) {
   const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
 
-  const checks = useMemo(() => [
-    { pass: Boolean(assets?.totalFiles), label: '项目素材不为空' },
-    { pass: true, label: '真实项目名将在同次视觉分析中确认' },
-    { pass: true, label: '原始 Logo 默认锁定' },
-    { pass: true, label: '固定输出简体中文' },
-    { pass: Boolean(selectedProfile?.hasApiKey), label: 'API Key 已安全保存' },
-    { pass: Boolean(selectedProfile?.baseUrl && selectedProfile.modelId), label: selectedProfile?.modelId || '模型未配置' },
-  ], [assets?.totalFiles, selectedProfile]);
-
   return (
     <PageShell
       eyebrow="PROJECT WORKSPACE"
@@ -89,11 +79,6 @@ export function ProjectDetail({
       }
       onBack={onGoHome}
       backLabel="返回首页"
-      actions={
-        project.lastReportFilename ? (
-          <Button variant="secondary" onClick={onGoReport}>查看报告</Button>
-        ) : undefined
-      }
     >
       {error && (
         <div className={`notice ${/忽略/.test(error) ? 'ok' : 'error'}`} style={{ marginBottom: 'var(--space-6)' }}>
@@ -116,16 +101,12 @@ export function ProjectDetail({
             </div>
           </div>
 
-          {batches.length > 1 && (
+          {batches.length > 1 && <details className="ux-advanced project-v2__batch-details">
+            <summary>管理 {batches.length} 个导入批次</summary>
             <div className="project-v2__batches">
-              <small>导入批次</small>
-              {batches.map(([batchId, batch]) => (
-                <button key={batchId} onClick={() => onRemoveBatch(batchId, batch.label)}>
-                  {batch.label} · {batch.count} 个 ×
-                </button>
-              ))}
+              {batches.map(([batchId, batch]) => <button key={batchId} onClick={() => onRemoveBatch(batchId, batch.label)}>{batch.label} · {batch.count} 个 ×</button>)}
             </div>
-          )}
+          </details>}
 
           {assets?.items.length ? (
             <div className="project-v2__assets">
@@ -165,78 +146,60 @@ export function ProjectDetail({
             <div className="project-v2__section-head">
               <div>
                 <span className="project-v2__section-num">02</span>
-                <h2>运行前检查</h2>
-                <p>选择本次分析使用的配置</p>
+                <h2>下一步</h2>
+                <p>{project.lastReportFilename ? '查看结论或继续创作' : '素材准备好后即可开始分析'}</p>
               </div>
             </div>
 
-            <label className="ui-field">
-              <span className="ui-field__label">分析模型</span>
-              <select
-                className="ui-select"
-                value={selectedApiProfileId}
-                onChange={(event) => onSelectApiProfile(event.target.value)}
-              >
-                {!analysisProfiles.length && <option value="">尚无可用分析配置</option>}
-                {analysisProfiles.map((profile) => (
-                  <option key={profile.id} value={profile.id}>
-                    {profile.displayName} / {profile.provider} / {profile.modelId}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <ul className="project-v2__checks">
-              {checks.map((check, i) => (
-                <li key={i} className={check.pass ? 'is-pass' : 'is-warn'}>
-                  <span className="project-v2__check-marker">{check.pass ? '✓' : '!'}</span>
-                  {check.label}
-                </li>
-              ))}
-            </ul>
+            {!canAnalyze && <div className="notice warn">{!assets?.totalFiles ? '请先添加视觉素材。' : '分析服务尚未配置完整，请前往设置。'}</div>}
 
             <div className="project-v2__facts">
               <small>当前导入线索</small>
-              <p>项目：{project.detectedProjectName}（{Math.round(project.projectNameConfidence * 100)}%）</p>
-              <p>行业：{project.detectedIndustry}（{Math.round(project.factConfidence.industry * 100)}%）</p>
-              <p className="project-v2__facts-hint">通用文件名不会成为最终报告名称。</p>
-            </div>
-
-            <div className="project-v2__mode-card">
-              <small>默认分析模式</small>
-              <strong>融合增强</strong>
-              <p>一次多模态调用，强化事实判断、真实触点、材料与工艺。</p>
+              <p>项目：{project.detectedProjectName}</p>
+              <p>行业：{project.detectedIndustry}</p>
+              <p className="project-v2__facts-hint">系统会在分析中核对这些线索。</p>
             </div>
 
             <div className="project-v2__cta-stack">
-              <Button variant="primary" fullWidth disabled={!canAnalyze} onClick={() => onRun(true)}>
-                开始分析
-              </Button>
-              <Button variant="ghost" fullWidth disabled={!project.lastReportFilename || !canAnalyze} onClick={() => onRun(false)}>
-                使用精确缓存
-              </Button>
               {generationReadiness?.ready && (
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   fullWidth
                   onClick={onGoCreative}
                   title={generationReadiness.vnextSchemaVersion
                     ? `Project Visual Context ${generationReadiness.vnextSchemaVersion} 已就绪`
                     : 'Project Context 已就绪'}
                 >
-                  继续创作 / 直接创作
+                  继续创作
                 </Button>
               )}
+              {project.lastReportFilename
+                ? <Button variant="secondary" fullWidth onClick={onGoReport}>查看分析报告</Button>
+                : <Button variant="primary" fullWidth disabled={!canAnalyze} onClick={() => onRun(true)}>开始分析</Button>}
             </div>
+
+            <details className="ux-advanced">
+              <summary>高级分析设置</summary>
+              <label className="ui-field">
+                <span className="ui-field__label">分析配置</span>
+                <select className="ui-select" value={selectedApiProfileId} onChange={(event) => onSelectApiProfile(event.target.value)}>
+                  {!analysisProfiles.length && <option value="">尚无可用分析配置</option>}
+                  {analysisProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName}</option>)}
+                </select>
+              </label>
+              {project.lastReportFilename && <div className="button-row">
+                <Button variant="ghost" size="sm" disabled={!canAnalyze} onClick={() => onRun(true)}>重新分析全部素材</Button>
+                <Button variant="ghost" size="sm" disabled={!canAnalyze} onClick={() => onRun(false)}>复用已有结果重跑</Button>
+              </div>}
+            </details>
           </div>
         </aside>
       </div>
 
-      <ContextIntegrationPanel
-        projectId={project.id}
-        projectName={project.projectName}
-        onOpenReference={onOpenReference}
-      />
+      <details className="ux-advanced project-v2__context-details">
+        <summary>高级：文档关联与上下文冲突处理</summary>
+        <ContextIntegrationPanel projectId={project.id} projectName={project.projectName} onOpenReference={onOpenReference} />
+      </details>
     </PageShell>
   );
 }

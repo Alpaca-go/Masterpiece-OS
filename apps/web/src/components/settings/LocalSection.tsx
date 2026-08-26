@@ -10,10 +10,12 @@ export function LocalSection() {
       <div className="settings-v2__section-head">
         <div>
           <span className="project-v2__section-num">03</span>
-          <h2>本地行为</h2>
-          <p>项目数据始终位于仓库之外</p>
+          <h2>高级本地设置</h2>
+          <p>仅在排障或迁移数据时修改</p>
         </div>
       </div>
+      <details className="ux-advanced settings-v2__local-advanced">
+      <summary>显示开发者设置</summary>
       <label className="ui-field">
         <span className="ui-field__label">项目数据目录</span>
         <input className="ui-input" value={localForm.defaultDataPath} onChange={(event) => updateLocal('defaultDataPath', event.target.value)} />
@@ -31,16 +33,17 @@ export function LocalSection() {
         </select>
       </label>
       <div className="settings-v2__info-card" style={{ marginTop: 'var(--space-4)' }}>
-        <strong>生图主链路</strong>
-        <p>短链路（生成工作台）— Masterpiece OS 5 的唯一生图路径。历史 Legacy 数据仍可读取，但不再创建新的 Legacy 生图任务。</p>
+        <strong>生成方式</strong>
+        <p>当前使用短链路统一生成工作台；历史任务仍可读取。</p>
       </div>
       <Button variant="primary" fullWidth style={{ marginTop: 'var(--space-4)' }} disabled={Boolean(busy)} onClick={() => void saveLocal()}>
         {busy === 'local' ? '保存中…' : '保存本地设置'}
       </Button>
       <div className="settings-v2__info-card" style={{ marginTop: 'var(--space-4)' }}>
-        <strong>本地加密存储</strong>
-        <p>每个 API Key 使用 Node Host 的 AES-256-GCM 凭据存储独立加密，仅在发起 Provider 请求时短暂读取。删除 Profile 会同步删除对应凭据。</p>
+        <strong>凭据安全</strong>
+        <p>API Key 会在本机加密保存，仅在请求模型服务时读取。删除配置会同步删除对应凭据。</p>
       </div>
+      </details>
     </section>
   );
 }

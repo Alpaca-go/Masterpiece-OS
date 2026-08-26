@@ -10,7 +10,6 @@ import { cleanError } from '../utils';
 import { PageShell } from './PageShell';
 import { SettingsContext, type SettingsContextValue } from './settings/SettingsContext';
 import { ProfilesSection } from './settings/ProfilesSection';
-import { RegistrySection } from './settings/RegistrySection';
 import { LocalSection } from './settings/LocalSection';
 import { SettingsNav } from './settings/SettingsNav';
 import { useConfirm } from './ui/ConfirmDialog';
@@ -89,6 +88,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
       protocol: model.protocol,
       modelType: model.type,
       modelId: model.id,
+      baseUrl: current.registryModelId === model.id ? current.baseUrl : model.defaultBaseUrl || '',
     } : current ? { ...current, registryModelId: undefined } : current);
   };
 
@@ -144,6 +144,29 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
     }
   }
 
+  async function verifyAndSaveProfile() {
+    if (!editor) return;
+    setBusy('profile-verify-save');
+    setNotice(null);
+    try {
+      const result = await window.masterpiece.settings.testProfile(editor);
+      if (!result.ok) {
+        onSaved(await window.masterpiece.settings.get().catch(() => settings));
+        setNotice({ tone: 'error', text: result.message, connectionResult: result });
+        return;
+      }
+      const next = await window.masterpiece.settings.saveProfile(editor);
+      onSaved(next);
+      setNotice({ tone: 'ok', text: `连接验证通过，配置已保存 · ${result.elapsedMs} ms` });
+      setEditor(null);
+      setShowKey(false);
+    } catch (error) {
+      setNotice({ tone: 'error', text: cleanError(error) });
+    } finally {
+      setBusy('');
+    }
+  }
+
   async function removeProfile(profile: ApiProfile) {
     const ok = await confirm({
       title: '删除 API Profile',
@@ -161,7 +184,17 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
   }
 
   function startAddProfile() {
-    setEditor(profileInput());
+    const model = registry.find((item) => item.enabledByDefault) || registry[0];
+    setEditor(model ? {
+      ...profileInput(),
+      displayName: model.name,
+      registryModelId: model.id,
+      provider: model.provider,
+      protocol: model.protocol,
+      modelType: model.type,
+      modelId: model.id,
+      baseUrl: model.defaultBaseUrl || '',
+    } : profileInput());
     setShowKey(false);
   }
   function startEditProfile(profile: ApiProfile) {
@@ -173,7 +206,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
     settings, registry,
     localForm, editor, showKey, busy, notice,
     updateLocal, updateProfile, selectRegistryModel, setShowKey, setEditor,
-    perform, testProfile, saveProfile, saveLocal, removeProfile,
+    perform, testProfile, verifyAndSaveProfile, saveProfile, saveLocal, removeProfile,
     startAddProfile, startEditProfile,
   };
 
@@ -181,7 +214,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
     <PageShell
       eyebrow="模型中心"
       title="API 与模型"
-      subtitle="分析模型与生成模型职责隔离；每个 Provider Key 独立加密。"
+      subtitle="连接分析与图像生成服务；通常只需选择模型并填写 API Key。"
       onBack={onClose}
       backLabel="返回"
     >
@@ -190,7 +223,7 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
           <div className={`settings-v2__notice notice ${notice.tone}`}>
             <strong>{notice.text}</strong>
             {notice.connectionResult && !notice.connectionResult.ok && (
-              <dl className="connection-error-details">
+              <details className="ux-advanced"><summary>查看技术详情</summary><dl className="connection-error-details">
                 <div><dt>上游服务</dt><dd>{notice.connectionResult.provider || '未知'}</dd></div>
                 <div><dt>请求接口类型</dt><dd>{notice.connectionResult.requestInterface || '未知'}</dd></div>
                 <div><dt>HTTP 状态码</dt><dd>{notice.connectionResult.httpStatus ?? '未收到响应'}</dd></div>
@@ -203,20 +236,18 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
                     <dd><pre>{notice.connectionResult.responseBody}</pre></dd>
                   </div>
                 )}
-              </dl>
+              </dl></details>
             )}
           </div>
         )}
 
         <div className="settings-v2__grid settings-v2__grid--arch">
           <SettingsNav items={[
-            { id: 'section-profiles', label: '服务配置', hint: 'API 配置 + 凭据' },
-            { id: 'section-registry', label: '模型注册表', hint: '可用模型清单' },
-            { id: 'section-local', label: '本地行为', hint: '数据目录 · 缓存 · 日志' },
+            { id: 'section-profiles', label: '模型服务', hint: '连接与凭据' },
+            { id: 'section-local', label: '高级设置', hint: '目录 · 缓存 · 日志' },
           ]} />
           <div className="settings-v2__content">
             <ProfilesSection />
-            <RegistrySection />
             <LocalSection />
           </div>
         </div>

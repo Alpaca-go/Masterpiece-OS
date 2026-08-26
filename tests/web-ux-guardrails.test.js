@@ -46,3 +46,28 @@ test('theme automatic mode is named explicitly', () => {
   const source = read('apps', 'web', 'src', 'theme', 'ThemeToggle.tsx');
   assert.match(source, /value: 'system', label: '自动'/);
 });
+
+test('visual analysis upload surface opens the file picker', () => {
+  const source = read('apps', 'web', 'src', 'components', 'VisualAssetUploader.tsx');
+  assert.match(source, /className="intake-drop-zone__picker"/);
+  assert.match(source, /onClick=\{\(\) => void chooseAndAdd\(onChooseFiles, 'files'\)\}/);
+  assert.match(source, /aria-label="选择要上传的视觉素材"/);
+  assert.match(source, /ref=\{fileInputRef\} hidden type="file" multiple/);
+  assert.match(source, /onAddBrowserFiles\(entries\)/);
+  const runtime = read('apps', 'web-runtime', 'src', 'current-operation-graph.ts');
+  assert.match(runtime, /'projects:create-from-browser-files'/);
+  assert.match(runtime, /'projects:import-browser-files'/);
+});
+
+test('production UX hides diagnostics and unfinished milestones by default', () => {
+  const decisions = read('apps', 'web', 'src', 'features', 'short-chain', 'DecisionStream.tsx');
+  const briefCss = read('apps', 'web', 'src', 'features', 'short-chain', 'brief-editor.css');
+  const report = read('apps', 'web', 'src', 'components', 'ReportView.tsx');
+  const project = read('apps', 'web', 'src', 'components', 'ProjectDetail.tsx');
+  const creative = read('apps', 'web', 'src', 'components', 'CreativeIntelligenceWorkspace.tsx');
+  assert.doesNotMatch(decisions, /P1\.1|session\.history|compile → run/);
+  assert.match(briefCss, /\.sc-advanced__content\[hidden\] \{ display: none; \}/);
+  assert.match(report, /<details className="ux-advanced report-v2__advanced">/);
+  assert.match(project, /高级：文档关联与上下文冲突处理/);
+  assert.doesNotMatch(creative, /CI-10 启动/);
+});
