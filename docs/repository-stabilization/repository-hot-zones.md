@@ -10,7 +10,7 @@
 - reference resolver, Reference Boundary, target-scene projection, continuation contracts and authority/integrity gates.
 - `packages/model-runtime`, `model-registry`, image adapters/providers.
 - schemas and project/image-generation contracts.
-- `space-generator/quality-baselines/r8.6` and its golden-boundary verifier.
+- `space-generator/quality-baselines/current-verification/space-golden` and its golden-boundary verifier.
 - `apps/desktop/scripts/run-web-primary-smoke.mjs` (`PROTECTED_BASELINE_INFRASTRUCTURE`).
 
 ## ORANGE — active validation, adapters, historical dependency

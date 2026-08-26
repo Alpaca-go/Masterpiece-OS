@@ -1,6 +1,6 @@
 // R8.6 Golden Baseline manifest test (Baseline Freeze & R9 Unlock).
 //
-// Mirrors scripts/verify-space-r8.6-golden-boundary.mjs in the test suite so a
+// Mirrors scripts/verify-space-golden-boundary.mjs in the test suite so a
 // deleted/renamed/corrupted baseline fails `npm test`, not just the release gate.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -9,7 +9,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const base = 'space-generator/quality-baselines/r8.6';
+const base = 'space-generator/quality-baselines/current-verification/space-golden';
 
 const BRANDS = ['jiuzhou-aesthetics', 'feng-tang-tang', 'yi-ji-liang-fang'];
 const SMOKE_SCENES = [
@@ -80,8 +80,8 @@ test('R8.6 reference trace records a trackable ref count of zero', () => {
   }
 });
 
-test('R8.6 R9-UNLOCK.json exists, is unlocked and lists parity requirements', () => {
-  const u = readJson(`${base}/R9-UNLOCK.json`);
+test('space production-unlock authority exists and lists parity requirements', () => {
+  const u = readJson(`${base}/production-unlock.json`);
   assert.equal(u.phase, 'R9');
   assert.equal(u.unlocked, true);
   assert.equal(u.sourceBaseline, 'space-r8.6-golden');

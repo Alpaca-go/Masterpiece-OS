@@ -8,8 +8,8 @@ These are candidates only. S1 does not create S2 Golden Regression or claim new 
 - Reference: accepted Reception reference already bound in existing evidence.
 - Target scene: Consultation.
 - Evidence paths:
-  - `space-generator/quality-baselines/r10-final/jiuzhou-aesthetics/reference-first/`
-  - `space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/`
+  - `space-generator/quality-baselines/current-verification/production-acceptance/jiuzhou-aesthetics/reference-first/`
+  - `space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/`
 - Expected prompt: `generationBasis=reference_first`, explicit-only reference, high-fidelity visual role, consultation target projection, no public reception program as hard requirement.
 - Expected behavior: visual-world continuity, consultation function authority, complete provenance/evidence, near-copy risk bounded.
 - Known-good output: existing `output.png` files in the cited directories.
@@ -18,7 +18,7 @@ These are candidates only. S1 does not create S2 Golden Regression or claim new 
 ## G-02 Standard Space — R8.6/R9 parity set
 
 - Inputs/projects: 九州美学, 冯烫烫, 一剂良方.
-- Evidence: `space-generator/quality-baselines/r8.6/` and `r9-parity/`.
+- Evidence: `space-generator/quality-baselines/current-verification/space-golden/` and `current-verification/production-acceptance/`.
 - Expected: frozen block order, architecture expressiveness, cross-brand isolation, zero implicit references for Standard.
 - Known-good outputs: four R8.6 accepted `output.png` files.
 - S2 readiness: HIGH; manifest records human 4/4 acceptance and R9 byte/visual parity.
@@ -27,7 +27,7 @@ These are candidates only. S1 does not create S2 Golden Regression or claim new 
 
 - Input: confirmed generated output from existing R11.1 continuation evidence.
 - Expected: `generationBasis=continuation`, role `world_consistency`, source scene differs from target, full lineage, `KEEP GRAMMAR / CHANGE PROGRAM`.
-- Evidence: `space-generator/quality-baselines/r11.1-continuation/` and versioned reruns.
+- Evidence: `space-generator/quality-baselines/current-verification/continuation-smoke/`.
 - S2 readiness: MEDIUM; requires selection of the canonical final evidence directory.
 
 ## G-04 Visual Analysis

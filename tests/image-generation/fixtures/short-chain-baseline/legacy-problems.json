@@ -1,0 +1,30 @@
+{
+  "fixtureVersion": "1.0",
+  "pipelineMode": "legacy",
+  "cases": [
+    {
+      "id": "space-routed-to-vi-board",
+      "instruction": "Generate a real reception space.",
+      "expectedFamily": "space",
+      "legacyFailure": "The result is a VI application board or material collage."
+    },
+    {
+      "id": "packaging-structure-lost",
+      "instruction": "Generate a rigid lid-and-base gift box.",
+      "expectedFamily": "packaging",
+      "legacyFailure": "The result is an unidentified flat sheet or shopping bag."
+    },
+    {
+      "id": "report-chain-semantic-loss",
+      "instruction": "Generate the requested deliverable from confirmed project facts.",
+      "expectedFamily": "poster",
+      "legacyFailure": "Report summaries override the current task."
+    },
+    {
+      "id": "batch-amplifies-mismatch",
+      "instruction": "Generate one formal first result.",
+      "expectedCount": 1,
+      "legacyFailure": "A wrong route produces several wrong candidates."
+    }
+  ]
+}

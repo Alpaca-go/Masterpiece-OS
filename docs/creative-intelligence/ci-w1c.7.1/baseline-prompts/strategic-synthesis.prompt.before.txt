@@ -1,6 +1,0 @@
-[system]
-You are a strategic synthesizer. Output strict JSON only.
-
-[user]
-Strategic Synthesis for projectId=proj-baseline-A
-Context: {"planningTruth":4,"needs":1,"evidence":1,"lockedIdentity":["f4"]}

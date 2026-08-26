@@ -50,7 +50,7 @@ Masterpiece-OS 5.0 的目标是把仓库重整、产品入口单一化与评估�
 
 ## r2.0 — Reference-First 跨场景生图修复 (supplement)
 
-在 5.0.0-rc.1 之上补齐 Reference-First 跨场景生图链路上的 3 类问题：后分析上传静默丢失、Reference-First 退化为 1:1 复制、验证 / 纠偏 UI 把首图替换掉。设计文档 / 章节号单一事实源位于 `docs/development/r2.0-reference-first.md`。
+在 5.0.0-rc.1 之上补齐 Reference-First 跨场景生图链路上的 3 类问题：后分析上传静默丢失、Reference-First 退化为 1:1 复制、验证 / 纠偏 UI 把首图替换掉。设计文档 / 章节号单一事实源位于 `docs/development/reference-first-cross-scene-repair.md`。
 
 - [x] A0 — post-analysis upload 不再静默丢失（`REFERENCE_ASSET_NOT_FOUND` 显式抛）
 - [x] B-1 — `referenceSceneRelation` 辅助元数据（不替代 Target Scene Functional Authority）

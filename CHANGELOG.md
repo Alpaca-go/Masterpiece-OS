@@ -2,7 +2,7 @@
 
 ## 5.0.0-rc.1 — Reference-First 跨场景生图修复 (r2.0 supplement) — 2026-08-10
 
-> 在 5.0.0-rc.1 之上补齐 Reference-First 跨场景生图链路上的 3 类问题：后分析上传静默丢失、Reference-First 退化为 1:1 复制、验证 / 纠偏 UI 把首图替换掉。设计文档位于 `docs/development/r2.0-reference-first.md`（§-章节号为代码注释 / commit message / 测试文件单一事实源）。
+> 在 5.0.0-rc.1 之上补齐 Reference-First 跨场景生图链路上的 3 类问题：后分析上传静默丢失、Reference-First 退化为 1:1 复制、验证 / 纠偏 UI 把首图替换掉。设计文档位于 `docs/development/reference-first-cross-scene-repair.md`（§-章节号为代码注释 / commit message / 测试文件单一事实源）。
 
 ### 5 invariants kept（全程未触碰）
 
@@ -38,7 +38,7 @@
 | F-3 | Audit 接入 `vnext-service.startValidated` (advisory, fail-soft) | §6.7 | `a729f1e` |
 | F-4 | Evidence Checkpoint 两层 (desktop scanner + runtime validator) | §8 | `943fdb5` |
 | tsc | F-4 测试 tsc strict mode 隐式 widening 修复 | — | `cb2fcac` |
-| docs | r2.0 设计文档 `docs/development/r2.0-reference-first.md` | — | `317c666` |
+| docs | Reference-First 设计文档 `docs/development/reference-first-cross-scene-repair.md` | — | `317c666` |
 | UI | 最小 Final Acceptance block banner (`similarityAudit=unavailable`) | — | `e3b01ba` |
 
 ### B-4 smoke 实际跑通

@@ -23,7 +23,7 @@ async function loadCompile() {
 
 function loadPacket(brand) {
   return JSON.parse(fs.readFileSync(
-    path.join(repoRoot, `space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`),
+    path.join(repoRoot, `space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`),
     'utf8',
   ));
 }
@@ -90,7 +90,7 @@ test('R10 Reference-First explicit refs>=1 records id/source/count', async () =>
 
 test('R10 route-baseline marks architecture anchor as prompt-level prior only', () => {
   const b = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, 'space-generator/quality-baselines/r10-final/route-baseline.json'),
+    path.join(repoRoot, 'space-generator/quality-baselines/current-verification/production-acceptance/route-baseline.json'),
     'utf8',
   ));
   assert.equal(b.architectureAnchorFreeze.standardAutoReference, false);

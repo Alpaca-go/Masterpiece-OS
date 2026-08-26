@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 import { compileSpacePrompt } from '@masterpiece/image-generation-runtime/space/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const base = 'space-generator/quality-baselines/r8.6';
+const base = 'space-generator/quality-baselines/current-verification/space-golden';
 
 const SCENES = [
   { brand: 'jiuzhou-aesthetics', scene: 'final-reception-1', subtype: 'reception', shot: 'entrance_view' },
@@ -53,7 +53,7 @@ test('R9/R10.4.1 production compiler keeps R8.6 block structure and functional h
   for (const { brand, scene, subtype, shot } of SCENES) {
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
     const run = load(`${base}/${brand}/${scene}/run.json`);
-    const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
+    const packet = load(`space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`);
     const out = compileSpacePrompt({
       packet,
       taskContract: buildTask(manifest, subtype, shot),
@@ -75,7 +75,7 @@ test('R9/R10.4.1 production compiler keeps R8.6 block structure and functional h
 test('R9 production compiler keeps architecture-before-brand and negatives last', () => {
   for (const { brand, scene, subtype, shot } of SCENES) {
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
-    const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
+    const packet = load(`space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`);
     const out = compileSpacePrompt({
       packet,
       taskContract: buildTask(manifest, subtype, shot),
@@ -94,7 +94,7 @@ test('R9 production compiler keeps architecture-before-brand and negatives last'
 test('R9 production compiler does not inject project hardcode into prompts', () => {
   for (const { brand, scene, subtype, shot } of SCENES) {
     const manifest = load(`${base}/${brand}/${scene}/manifest.json`);
-    const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
+    const packet = load(`space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`);
     const out = compileSpacePrompt({
       packet,
       taskContract: buildTask(manifest, subtype, shot),

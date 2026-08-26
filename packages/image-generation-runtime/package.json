@@ -15,7 +15,6 @@
     "./task-builder": "./src/task-builder.js",
     "./pipeline-mode": "./src/pipeline-mode.js",
     "./generation": "./src/generation/index.js",
-    "./vnext": "./src/vnext/index.js",
     "./space": "./src/space/index.js",
     "./space/index.js": "./src/space/index.js",
     "./prompt-templates": "./src/prompt-templates/deliverable-template-system.js",

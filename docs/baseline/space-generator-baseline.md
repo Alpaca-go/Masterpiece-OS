@@ -24,8 +24,8 @@ The current implementation is the R9 productionized Phase9B compiler with R8.6 G
 
 ## Locked evidence
 
-- `space-generator/quality-baselines/r8.6/manifest.json` — frozen, human accepted 4/4.
-- `space-generator/quality-baselines/r9-production/manifest.json` — R9 production route and parity.
+- `space-generator/quality-baselines/current-verification/space-golden/manifest.json` — frozen, human accepted 4/4.
+- `space-generator/quality-baselines/current-verification/production-route/manifest.json` — R9 production route and parity.
 - R10/R11/R2 regression cases — current behavior and accepted Reference-First/continuation evidence.
 
 No R12 production compiler was found. R12-named smoke output is not promoted to the baseline implementation.

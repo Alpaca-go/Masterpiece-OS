@@ -1,4 +1,4 @@
-﻿================================================================================
+================================================================================
 CURRENT
 $ git status && echo --- && git branch --show-current && git rev-parse HEAD
 ================================================================================
@@ -433,7 +433,7 @@ ROOT DIRECTORIES (maxdepth 3, excluding node_modules and .git)
   docs/Masterpiece-OS-文档分析流程协议-v3.1.docx  [F]
   docs/phase1-generalization-and-first-delivery-reliability.md  [F]
   docs/phase1.5-contract-decay-audit.md  [F]
-  docs/phase1.5-project-quality-recovery-loop.md  [F]
+  docs/development/project-quality-recovery-loop.md  [F]
   docs/phase1.5-repo-cleanup-stage0.md  [F]
   docs/phase4-context-integration-report.md  [F]
   docs/repository-consolidation  [D]

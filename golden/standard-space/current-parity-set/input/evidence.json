@@ -1,0 +1,4 @@
+{
+  "manifest": "space-generator/quality-baselines/current-verification/space-golden/manifest.json",
+  "packets": "space-generator/quality-baselines/current-verification/source-packets/_packets/{project}/visual-decision-packet.json"
+}

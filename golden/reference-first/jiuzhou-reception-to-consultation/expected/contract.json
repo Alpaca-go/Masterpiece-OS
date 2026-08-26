@@ -3,5 +3,5 @@
   "orderedSections": ["task", "spatial_intent", "architecture_language", "architecture_context", "architecture_function_bridge", "architectural_concept", "architecture_dna", "brand_translation", "functional_requirement", "material", "lighting", "composition", "rendering", "negative_constraints"],
   "requiredSemantics": ["consultation", "human_scale_consultation_view", "1 对 1", "半私密", "target_scene_projection"],
   "forbiddenSemantics": ["大型公共接待台", "大型公共前台", "前台作为核心展示区", "等候休息区 must be legible"],
-  "visualEvidence": "space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/output.png"
+  "visualEvidence": "space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/output.png"
 }

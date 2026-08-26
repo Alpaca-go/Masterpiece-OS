@@ -14,9 +14,9 @@
   `CURRENT_BASELINE.md` 与 `BASELINE_LOCK.md`。
 
 - Node.js 20 或更高；`package.json` 是 workspaces 容器。
-- 工作区：`apps/cli`（v5 引擎 + Prompt 模板）、`apps/web`（React 19 Web
-  Renderer）、`apps/web-runtime`（Node Web Host）、`packages/*`（14 个内部包，
-  命名空间统一为 `@masterpiece/*`）、`labs/*`（两个独立实验，**不**进入
+- 工作区：`apps/cli`（分析引擎 + Prompt 模板）、`apps/web`（React 19 Web
+  Renderer）、`apps/web-runtime`（Node Web Host）、`packages/*`（内部包
+  命名空间统一为 `@masterpiece/*`）、`labs/*`（独立实验，**不**进入
   Web UI/Runtime/构建）、`evaluation/*`（评估资产，与生产 Runtime 隔离）。
 - Desktop/Electron workspace 已在 S5 删除；不得重新引入。
 - 单一 Lockfile：根 `package-lock.json`。

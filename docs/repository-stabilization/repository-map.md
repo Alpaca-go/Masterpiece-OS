@@ -42,5 +42,5 @@
 
 - Web 是 Primary Runtime，但其后端由 `apps/desktop/src/main/*` 托管，不能按目录名把 Desktop 判为可移除。
 - `evaluation/` 与 `labs/` 不进入生产运行链；它们仍承担测试和研究职责。
-- `space-generator/quality-baselines/r8.6` 是发布/回归保护资产，不是普通历史文档。
+- `space-generator/quality-baselines/current-verification/space-golden` 是发布/回归保护资产，不是普通历史文档。
 - 本 S0 没有删除、移动、重命名或清理任何路径。

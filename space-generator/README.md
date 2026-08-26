@@ -109,7 +109,7 @@ R8.6 关键事实：
 - RC tag `space-generator-r8.5.2-rc1`（`fd785a9`）；compiler v1.1.0、source-adapter v1.4.0
 - Final Smoke 4/4 text-only refs=0（volcengine doubao-seedream-5-0-pro-260628 2K 16:9）
 - **人眼验收 v1.0（`human-r8.6-acceptance`）覆盖 auto 分**：JZMX Architecture 91 / Commercial 89、FTT Commercial 86、YJLF Commercial 86
-- baseline status=frozen、`R9-UNLOCK.json`（unlocked，仅等价 Productionization）
+- baseline status=frozen、`production-unlock.json`（unlocked，仅等价 Productionization）
 - anti-regression samples 已索引（R8.5.1 literal-motif 失败样本）
 - 门禁：`npm run verify:space-r8.6-golden-boundary`
 

@@ -96,7 +96,7 @@ test('R11.2 UI task assembly routes through the R11.1 continuation contract', as
   const compileUrl = pathToFileURL(path.join(repoRoot, 'packages/image-generation-runtime/src/generation/compile.js')).href;
   const { compileShortChainGeneration } = await import(compileUrl);
   const packet = JSON.parse(await fs.readFile(
-    path.join(repoRoot, 'space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json'),
+    path.join(repoRoot, 'space-generator/quality-baselines/current-verification/source-packets/_packets/jiuzhou-aesthetics/visual-decision-packet.json'),
     'utf8',
   ));
   const ctx: Record<string, unknown> = { projectId };

@@ -26,7 +26,7 @@ const SMOKES = [
     subtype: 'entrance',
   },
   {
-    base: 'space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1',
+    base: 'space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation',
     brandKey: 'jiuzhou-aesthetics',
     brandDisplayName: '九州美学',
     sourceScene: 'reception',

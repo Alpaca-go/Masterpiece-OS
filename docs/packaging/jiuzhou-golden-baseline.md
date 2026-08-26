@@ -101,7 +101,7 @@ hard Production rule. (See `golden-vs-production-boundary.md`.)
 
 ## 7. Cross-Reference to Existing `phase1.js`
 
-The existing `tests/fixtures/phase1.js` already encodes a
+The existing `tests/fixtures/packaging-analysis-context.js` already encodes a
 Jiuzhou-fiavored project context (brand 九州美学, locked packaging
 structure 天地盖硬盒, motif language, color behavior, brand
 misread risk). It is the **analysis-led seed** for the Golden.

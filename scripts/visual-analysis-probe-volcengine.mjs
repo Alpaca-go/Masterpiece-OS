@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Visual Analysis A2-B.2 — Volcengine / Ark capability probe (real Provider smoke).
+// Visual Analysis — Volcengine / Ark capability probe (real Provider smoke).
 //
-// Manual / opt-in / networked / cost-sensitive. Per A2 spec §20 and §21:
+// Manual / opt-in / networked / cost-sensitive:
 //   - Requires the VOLCENGINE_API_KEY env var. Without it, exits 2.
 //   - Never enters repo:verify or default CI. `npm test`, `repo:verify`,
 //     `web:smoke`, and `golden:test` do not invoke this script.
@@ -10,7 +10,7 @@
 //   - Sends 4 minimal multimodal requests: vision / multi-image /
 //     structured output / context introspection.
 //   - Writes a markdown report to
-//     docs/visual-analysis/A2-volcengine-probe-report.md
+//     .codex-smoke/visual-analysis/volcengine-probe-report.md
 //     (overwrites any prior report).
 //
 // Invocation (manual):
@@ -50,7 +50,7 @@ function defaultUserData() {
 
 const userData = process.env.MASTERPIECE_USER_DATA_DIR || defaultUserData();
 const settingsPath = path.join(userData, 'settings.json');
-const reportPath = path.join(repoRoot, 'docs', 'visual-analysis', 'A2-volcengine-probe-report.md');
+const reportPath = path.join(repoRoot, '.codex-smoke', 'visual-analysis', 'volcengine-probe-report.md');
 const fixturesDir = path.join(repoRoot, '.codex-smoke', 'a2-volcengine-probe-fixtures');
 
 const apiKey = String(process.env.VOLCENGINE_API_KEY || '').trim();
@@ -78,6 +78,7 @@ console.log(`[a2-probe] Base URL: ${profile.baseUrl}`);
 console.log(`[a2-probe] Model:    ${profile.modelId}`);
 
 mkdirSync(fixturesDir, { recursive: true });
+mkdirSync(path.dirname(reportPath), { recursive: true });
 
 async function buildGradientPng(label, topColor, bottomColor) {
   const width = 256;
@@ -306,6 +307,6 @@ reportLines.push('  A2-D / A2-F / A2-G work.');
 reportLines.push('');
 
 writeFileSync(reportPath, reportLines.join('\n'), 'utf8');
-console.log(`[a2-probe] Report written to ${reportPath}`);
+console.log(`[analysis-probe] Report written to ${reportPath}`);
 
 try { rmSync(fixturesDir, { recursive: true, force: true }); } catch { /* best-effort */ }

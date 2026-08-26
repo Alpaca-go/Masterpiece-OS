@@ -17,7 +17,7 @@ import {
 } from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const base = 'space-generator/quality-baselines/r8.6';
+const base = 'space-generator/quality-baselines/current-verification/space-golden';
 
 const SMOKE_SCENES = [
   'jiuzhou-aesthetics/final-reception-1',

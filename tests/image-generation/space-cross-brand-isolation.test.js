@@ -25,7 +25,7 @@ const BRANDS = [
 
 async function compileBrand(brand) {
   const packet = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, `space-generator/quality-baselines/phase9b-recovered/_packets/${brand.key}/visual-decision-packet.json`),
+    path.join(repoRoot, `space-generator/quality-baselines/current-verification/source-packets/_packets/${brand.key}/visual-decision-packet.json`),
     'utf8',
   ));
   const context = { projectId: 'isolation-probe' };
@@ -78,7 +78,7 @@ test('R8.6 golden records per brand are distinct and isolated', () => {
   const seen = new Set();
   for (const brand of BRANDS) {
     const gs = JSON.parse(fs.readFileSync(
-      path.join(repoRoot, `space-generator/quality-baselines/r8.6/${brand.key}/golden-selection.json`),
+      path.join(repoRoot, `space-generator/quality-baselines/current-verification/space-golden/${brand.key}/golden-selection.json`),
       'utf8',
     ));
     assert.ok(gs.golds.length >= 1, `${brand.key}: has goldens`);

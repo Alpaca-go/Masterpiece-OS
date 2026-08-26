@@ -49,7 +49,7 @@
 
 - `scripts/verify-no-obsolete-code.mjs`：扫描禁止关键字（文档 §10-Phase6 列表，扣除偏差 1 的两个保留文件名）
 - `scripts/verify-production-boundaries.mjs`：desktop 不 import labs/、打包配置不含 labs、preload 无遗留 API
-- 全量验证 + portable 打包 + `docs/development/repository/cleanup/repository-slimming-v2-validation.md`
+- 全量验证 + portable 打包 + `docs/development/repository/cleanup/repository-slimming-validation.md`
 
 ## 风险与回滚
 

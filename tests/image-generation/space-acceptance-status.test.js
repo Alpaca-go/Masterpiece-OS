@@ -1,7 +1,7 @@
 // R10 final acceptance — status + archived artifacts test.
 //
 // Guards the frozen R10.4 final baseline so it cannot be lost or silently
-// altered: R10-FINAL-STATUS.json must keep r11Ready=true and the pass flags;
+// altered: production-status.json must keep r11Ready=true and the pass flags;
 // the four archived smokes must keep their complete tracked metadata set and
 // image hash bindings with the correct refs and r8_6_golden compiler mode;
 // provider output binaries intentionally remain untracked.
@@ -12,7 +12,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const base = 'space-generator/quality-baselines/r10-final';
+const base = 'space-generator/quality-baselines/current-verification/production-acceptance';
 
 const REQUIRED_ARTIFACTS = [
   'run.json',
@@ -37,7 +37,7 @@ function readJson(rel) {
 }
 
 test('R10 final status marks complete + r11Ready with pass flags', () => {
-  const status = readJson(`${base}/R10-FINAL-STATUS.json`);
+  const status = readJson(`${base}/production-status.json`);
   assert.equal(status.phase, 'R10');
   assert.equal(status.status, 'complete');
   assert.equal(status.regressionHold, false);
@@ -117,7 +117,7 @@ test('R10 route-baseline freezes the safety boundaries', () => {
 });
 
 test('R10 final acceptance report exists', () => {
-  const report = path.join(repoRoot, base, 'R10-FINAL-ACCEPTANCE.md');
+  const report = path.join(repoRoot, base, 'acceptance-report.md');
   assert.ok(fs.existsSync(report), 'acceptance report present');
   assert.ok(fs.statSync(report).size > 0);
 });

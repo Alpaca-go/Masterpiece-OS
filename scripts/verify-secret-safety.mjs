@@ -19,7 +19,6 @@
 // Allowlist:
 //   - .gitignore (line 8 lists .codex-smoke/ where env files live)
 //   - This script itself (the FORBIDDEN_PATTERNS list)
-//   - docs/visual-analysis/A2-H-*-env* docs (reference only, no real keys)
 //   - apps/web-runtime/src/node-credential-store.ts (handles
 //     credentials via OS keychain; the source code does not
 //     contain real keys, but it references the credential key path)
@@ -66,14 +65,6 @@ const FORBIDDEN_PATTERNS = [
 // production secrets.
 const ALLOWLIST = new Set([
   'scripts/verify-secret-safety.mjs',  // this file
-  'docs/visual-analysis/A2-H-default-provider-authority-audit.md',
-  'docs/visual-analysis/A2-H-default-switch-manifest.md',
-  'docs/visual-analysis/A2-H-final-report.md',
-  'docs/visual-analysis/A2-final-freeze.md',
-  'docs/visual-analysis/A3-final-freeze.md',
-  'docs/visual-analysis/A3-final-report.md',
-  'docs/visual-analysis/A4-production-contract-freeze.md',
-  'docs/visual-analysis/A4-operational-failure-matrix.md',
   // The credential store is allowed to reference "apiKey" / "credentialKey"
   // as a name; it does not contain real keys.
   'apps/web-runtime/src/node-credential-store.ts',

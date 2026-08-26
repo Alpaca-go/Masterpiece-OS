@@ -17,7 +17,7 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { runPromptPreflightGate } from '@masterpiece/image-generation-runtime/gates/prompt-preflight-gate.js';
 import { compileProjectSpecificGenerationContract } from '@masterpiece/creative-production-runtime/project-generation-contract.js';
-import { phase1Packet } from '../fixtures/phase1.js';
+import { phase1Packet } from '../fixtures/packaging-analysis-context.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..', '..');
 const GATE = path.join(ROOT, 'packages', 'image-generation-runtime', 'src', 'gates', 'prompt-preflight-gate.js');

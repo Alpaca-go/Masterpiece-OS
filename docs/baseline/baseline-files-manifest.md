@@ -72,9 +72,9 @@ Baseline content commit: `deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2`. Formal reco
 | `schemas/image-generation/image-generation-source-bundle-v3.schema.json` | Schema | source bundle 3.0 | CRITICAL | current Standard input |
 | `schemas/image-generation/image-generation-run.schema.json` | Schema | persisted run | HIGH | recovery/retry |
 | `schemas/image-generation/image-provider-capabilities.schema.json` | Schema | provider capability | HIGH | adapter gates |
-| `space-generator/quality-baselines/r8.6/manifest.json` | Golden | frozen source baseline | CRITICAL | current parity identity |
-| `space-generator/quality-baselines/r9-production/manifest.json` | Golden | production route | HIGH | compiler truth |
-| `scripts/verify-space-r8.6-golden-boundary.mjs` | Gate | Golden protection | HIGH | baseline integrity |
+| `space-generator/quality-baselines/current-verification/space-golden/manifest.json` | Golden | frozen source baseline | CRITICAL | current parity identity |
+| `space-generator/quality-baselines/current-verification/production-route/manifest.json` | Golden | production route | HIGH | compiler truth |
+| `scripts/verify-space-golden-boundary.mjs` | Gate | Golden protection | HIGH | baseline integrity |
 | `apps/desktop/scripts/run-web-primary-smoke.mjs` | Smoke | Current Web Smoke | CRITICAL | Primary Acceptance |
 | `scripts/verify-current-flows.mjs` | Gate | offline current flows | HIGH | release validation |
 

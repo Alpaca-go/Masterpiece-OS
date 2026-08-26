@@ -57,25 +57,6 @@ const FORBIDDEN = Object.freeze([
   /\bVNEXT_VISUAL_ANALYSIS/iu,
 ]);
 
-const ALLOWLIST = new Set([
-  // Test fixtures + design docs that discuss the historical names
-  // (necessary for documentation, not new namespaces).
-  'docs/visual-analysis/A2-final-freeze.md',
-  'docs/visual-analysis/A3-manifests.md',
-  'docs/visual-analysis/A3-rollback-plan.md',
-  'docs/visual-analysis/A3-web-ux.md',
-  'docs/visual-analysis/A4-production-contract-freeze.md',
-  'docs/visual-analysis/A4-operational-failure-matrix.md',
-  'docs/visual-analysis/A3-final-freeze.md',
-  'docs/visual-analysis/A3-final-report.md',
-  'docs/visual-analysis/A3-provider-policy.md',
-  'docs/visual-analysis/A3-fallback-policy.md',
-  'docs/visual-analysis/A3-cli-provider-registry-closure.md',
-  'docs/visual-analysis/A3-observability-report.md',
-  'docs/visual-analysis/A3-production-smoke-report.md',
-  'docs/visual-analysis/A3-regression-report.md',
-]);
-
 async function walk(dir, files = []) {
   let entries;
   try {
@@ -107,7 +88,6 @@ for (const scanRoot of SCAN_ROOTS) {
   const files = await walk(abs);
   for (const file of files) {
     const rel = relativePosix(file);
-    if (ALLOWLIST.has(rel)) continue;
     const content = await fs.readFile(file, 'utf8');
     scanned += 1;
     for (const pattern of FORBIDDEN) {
@@ -129,7 +109,7 @@ for (const scanRoot of SCAN_ROOTS) {
 const result = {
   guard: 'A4-version-namespace',
   scannedFiles: scanned,
-  allowlistedFiles: ALLOWLIST.size,
+  allowlistedFiles: 0,
   violationCount: violations.length,
   violations,
 };

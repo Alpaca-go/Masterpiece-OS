@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { compileShortChainGeneration } from '@masterpiece/image-generation-runtime/generation/index.js';
-import { phase1Context } from '../fixtures/phase1.js';
+import { phase1Context } from '../fixtures/packaging-analysis-context.js';
 
 test('Jiuzhou spatial decisions compile into a fourteen-block packaging contract', () => {
   const result = compileShortChainGeneration({

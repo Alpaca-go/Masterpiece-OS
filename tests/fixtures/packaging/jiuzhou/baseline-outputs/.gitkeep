@@ -6,7 +6,7 @@
 # file path, rubric result, human-approval status, known
 # limitations. The directory is intentionally empty at P1
 # freeze time because the real provider runs are pending
-# the user opt-in (see docs/packaging/p1-final-report.md
+# the user opt-in (see docs/packaging/history/p1/final-report.md
 # §P1-D2 and the comparison protocol in
 # tests/fixtures/packaging/jiuzhou/prompts/_PROVENANCE.md).
 #

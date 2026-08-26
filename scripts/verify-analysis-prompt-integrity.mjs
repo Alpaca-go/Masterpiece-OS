@@ -3,13 +3,13 @@
 // Per A4 spec §4 / §11:
 //   G-A4-03: Detect unexpected mutation of the frozen prompt authority.
 //
-// Frozen Prompt = the analysis prompt builder and the canonical A2
-// evaluation corpus / rubric. Their SHA-256 digests are recorded in
-// A2-final-freeze §6. This guard recomputes the digest on every run
+// Frozen Prompt = the analysis prompt builder and the canonical
+// evaluation corpus / rubric. Their SHA-256 digests were recorded by
+// the original evaluation freeze. This guard recomputes the digest on every run
 // and fails if any of the recorded digests have drifted.
 //
-// If the digests HAVE legitimately changed (e.g. a future A2.x
-// re-evaluation cycle), update A2-final-freeze §6 and re-freeze.
+// If the digests HAVE legitimately changed during a future
+// re-evaluation cycle, update the recorded authority and re-freeze.
 
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
@@ -24,9 +24,9 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 // of this constant is an A2.x re-evaluation event, not a silent
 // edit.
 const FROZEN_DIGESTS = Object.freeze({
-  'docs/visual-analysis/A2-evaluation-rubric.md':
+  'docs/visual-analysis/current-verification/evaluation-rubric.md':
     '7220F30FF07226D1920AF085C562DD65BE2A799D816E6524960B9933E84F8C35',
-  'docs/visual-analysis/A2-evaluation-corpus.md':
+  'docs/visual-analysis/current-verification/evaluation-corpus.md':
     '12D1526F6CEB2BE3733532DD43CAAE266403E8E96A3013EEF33711D88D246637',
 });
 

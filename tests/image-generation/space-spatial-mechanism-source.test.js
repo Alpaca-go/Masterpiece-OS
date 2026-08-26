@@ -14,8 +14,8 @@ import {
 } from '@masterpiece/image-generation-runtime/generation/space-quality/index.js';
 import { readFileSync } from 'node:fs';
 
-const PACKET_PATH = 'space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json';
-const BASELINE_PROMPT_PATH = 'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-reception-1/prompt.md';
+const PACKET_PATH = 'space-generator/quality-baselines/current-verification/source-packets/_packets/jiuzhou-aesthetics/visual-decision-packet.json';
+const BASELINE_PROMPT_PATH = 'space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1/prompt.md';
 
 function loadJZMX() {
   return JSON.parse(readFileSync(PACKET_PATH, 'utf8'));

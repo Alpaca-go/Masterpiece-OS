@@ -1,17 +1,7 @@
 {
   "schemaVersion": "1.0",
-  "baselineEntryCount": 5,
+  "baselineEntryCount": 4,
   "entries": [
-    {
-      "identifier": "@masterpiece/image-generation-runtime/vnext",
-      "type": "PACKAGE_SUBPATH_ALIAS",
-      "locations": ["packages/image-generation-runtime/package.json", "packages/image-generation-runtime/src/vnext/index.js"],
-      "consumer": "Supported integrations using the pre-S6 package subpath",
-      "reason": "Preserve imports while current code uses the generation namespace.",
-      "owner": "image-generation-runtime",
-      "removalCondition": "Tracked and supported external consumers are confirmed at zero.",
-      "introducedPhase": "S6"
-    },
     {
       "identifier": "project-visual-context.vnext.json and visualContextVNext*",
       "type": "PERSISTED_PROJECT_CONTRACT",

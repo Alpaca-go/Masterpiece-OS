@@ -45,7 +45,7 @@ function assertOrdered(actual, expected) {
 }
 
 function loadPacket(brand) {
-  return readJson(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
+  return readJson(`space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`);
 }
 
 function compileSpace(brand, taskContract) {
@@ -83,9 +83,9 @@ function baseTask(overrides = {}) {
 
 async function runG01() {
   const caseConfig = readJson('golden/reference-first/jiuzhou-reception-to-consultation/case.json');
-  const task = readJson('space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/task-contract.json');
-  const referenceTrace = readJson('space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/reference-trace.json');
-  const acceptedTrace = readJson('space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/trace.json');
+  const task = readJson('space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/task-contract.json');
+  const referenceTrace = readJson('space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/reference-trace.json');
+  const acceptedTrace = readJson('space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/trace.json');
 
   assert.equal(task.generationBasis, 'reference_first');
   assert.equal(task.referenceSceneRelation, 'cross_scene');
@@ -109,7 +109,7 @@ async function runG01() {
   assert.doesNotMatch(byId.architecture_function_bridge, /前台作为核心展示区|接待区位于空间前部/);
   assert.equal(compiled.layers.targetSceneProjection.functionalBlockSource, 'target_scene_projection');
   assert.equal(compiled.layers.targetSceneProjection.viewStrategySource, 'target_scene_default');
-  const run = readJson('space-generator/quality-baselines/r2-b4-reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/run.json');
+  const run = readJson('space-generator/quality-baselines/current-verification/reference-first-smoke/jiuzhou-aesthetics/jzrx-reception-to-consultation-b4-1-final/run.json');
   assert.equal(caseConfig.expected.visualStatus, 'HUMAN_ACCEPTED');
   assert.match(run.outputSha256, /^[a-f0-9]{64}$/u);
   assert.ok(run.completedAt);
@@ -118,8 +118,8 @@ async function runG01() {
 }
 
 async function runG02() {
-  const caseConfig = readJson('golden/standard-space/r8-6-parity-set/case.json');
-  const manifest = readJson('space-generator/quality-baselines/r8.6/manifest.json');
+  const caseConfig = readJson('golden/standard-space/current-parity-set/case.json');
+  const manifest = readJson('space-generator/quality-baselines/current-verification/space-golden/manifest.json');
   assert.equal(manifest.status, 'frozen');
   assert.equal(manifest.spaceCompilerId, 'phase9b-quality-compiler');
   assert.equal(manifest.finalSmoke.runs, 4);
@@ -139,10 +139,10 @@ async function runG02() {
   }
 
   for (const artifactRoot of [
-    'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-entrance-1',
-    'space-generator/quality-baselines/r8.6/jiuzhou-aesthetics/final-reception-1',
-    'space-generator/quality-baselines/r8.6/feng-tang-tang/final-dining-1',
-    'space-generator/quality-baselines/r8.6/yi-ji-liang-fang/final-reception-1',
+    'space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-entrance-1',
+    'space-generator/quality-baselines/current-verification/space-golden/jiuzhou-aesthetics/final-reception-1',
+    'space-generator/quality-baselines/current-verification/space-golden/feng-tang-tang/final-dining-1',
+    'space-generator/quality-baselines/current-verification/space-golden/yi-ji-liang-fang/final-reception-1',
   ]) {
     const artifactManifest = readJson(`${artifactRoot}/manifest.json`);
     const run = readJson(`${artifactRoot}/run.json`);
@@ -158,8 +158,8 @@ async function runG02() {
 
 async function runG03() {
   const caseConfig = readJson('golden/continuation/jiuzhou-reception-to-consultation/case.json');
-  const evidence = readJson('space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1/continuation-contract.json');
-  const trace = readJson('space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1/trace.json');
+  const evidence = readJson('space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/continuation-contract.json');
+  const trace = readJson('space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/trace.json');
   for (const [key, value] of Object.entries({
     generationBasis: 'continuation', referenceRole: 'world_consistency',
     referenceSource: 'confirmed_generated_output', referenceCount: 1,
@@ -194,7 +194,7 @@ async function runG03() {
   assert.equal(sg.continuation.referenceSource, 'confirmed_generated_output');
   assert.equal(sg.continuation.sourceScene, 'reception');
   assert.equal(sg.continuation.targetScene, 'consultation');
-  const artifactRoot = 'space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1';
+  const artifactRoot = 'space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation';
   const artifactManifest = readJson(`${artifactRoot}/manifest.json`);
   const evaluation = readJson(`${artifactRoot}/evaluation.json`);
   const run = readJson(`${artifactRoot}/run.json`);

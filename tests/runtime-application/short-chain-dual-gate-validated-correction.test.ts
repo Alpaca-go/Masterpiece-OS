@@ -34,7 +34,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'
 async function loadPacket() {
   const packetPath = path.join(
     repoRoot,
-    'space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json',
+    'space-generator/quality-baselines/current-verification/source-packets/_packets/jiuzhou-aesthetics/visual-decision-packet.json',
   );
   return JSON.parse(await fs.readFile(packetPath, 'utf8'));
 }

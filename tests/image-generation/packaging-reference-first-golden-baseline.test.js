@@ -36,7 +36,7 @@ function readJson(rel) {
 // the shot contract + the visual direction, but the
 // compileShortChainGeneration function does not read the
 // Golden fixture today (Golden is evaluator input only).
-const phase1 = await import('../../tests/fixtures/phase1.js');
+const phase1 = await import('../../tests/fixtures/packaging-analysis-context.js');
 
 function projectContextFor(shotContract) {
   // phase1Context() returns the project context directly. The

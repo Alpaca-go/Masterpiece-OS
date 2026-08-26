@@ -105,7 +105,7 @@ function loadJson(rel) {
 
 async function compileProduction(brandKey, subtype, shot, projectId, referenceAssetIds, currentInstruction) {
   process.env.MASTERPIECE_SPACE_COMPILER_MODE = 'r8_6_golden';
-  const packet = loadJson(`space-generator/quality-baselines/phase9b-recovered/_packets/${brandKey}/visual-decision-packet.json`);
+  const packet = loadJson(`space-generator/quality-baselines/current-verification/source-packets/_packets/${brandKey}/visual-decision-packet.json`);
   const ctx = { projectId };
   ctx.visualDecisionPacket = packet;
   const task = {

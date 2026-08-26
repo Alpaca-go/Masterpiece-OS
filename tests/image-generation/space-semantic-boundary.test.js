@@ -21,7 +21,7 @@ const BRANDS = ['jiuzhou-aesthetics', 'feng-tang-tang', 'yi-ji-liang-fang'];
 
 function loadPacket(brand) {
   return JSON.parse(fs.readFileSync(
-    path.join(repoRoot, `space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`),
+    path.join(repoRoot, `space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`),
     'utf8',
   ));
 }
@@ -95,7 +95,7 @@ test('R10 semantic boundary: separateSpaceSemantics keeps functional vs brand bu
 
 test('R10 route-baseline semantic freeze excludes identity/motif from functional layer', () => {
   const b = JSON.parse(fs.readFileSync(
-    path.join(repoRoot, 'space-generator/quality-baselines/r10-final/route-baseline.json'),
+    path.join(repoRoot, 'space-generator/quality-baselines/current-verification/production-acceptance/route-baseline.json'),
     'utf8',
   ));
   const excluded = b.semanticBoundaryFreeze.excludedFromFunctionalLayer;

@@ -14,7 +14,7 @@ import { pathToFileURL } from 'node:url';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const base = 'space-generator/quality-baselines/r8.6';
+const base = 'space-generator/quality-baselines/current-verification/space-golden';
 
 const SCENES = [
   { brand: 'jiuzhou-aesthetics', scene: 'final-reception-1', subtype: 'reception', shot: 'entrance_view', rel: 'jiuzhou-aesthetics/final-reception-1' },
@@ -45,7 +45,7 @@ function load(rel) {
 }
 
 async function recompile(brand, scene, subtype, shot, projectId) {
-  const packet = load(`space-generator/quality-baselines/phase9b-recovered/_packets/${brand}/visual-decision-packet.json`);
+  const packet = load(`space-generator/quality-baselines/current-verification/source-packets/_packets/${brand}/visual-decision-packet.json`);
   const context = { projectId };
   context.visualDecisionPacket = packet;
   const task = {

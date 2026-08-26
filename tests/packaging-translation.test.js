@@ -4,7 +4,7 @@ import {
   buildPackagingTranslation,
   validatePackagingTranslation,
 } from '@masterpiece/creative-production-runtime/packaging-translation.js';
-import { phase1Packet } from './fixtures/phase1.js';
+import { phase1Packet } from './fixtures/packaging-analysis-context.js';
 
 test('packaging translation preserves packaging decisions and removes spatial language', () => {
   const packet = phase1Packet();

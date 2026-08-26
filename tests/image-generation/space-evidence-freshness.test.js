@@ -1,7 +1,7 @@
 // R10.4.1 — fresh post-repair sample binding test.
 //
 // Guards the R10.4.1 final-acceptance evidence: the three fresh Standard
-// samples under quality-baselines/r10.4.1-post-repair/ must be bound to their
+// samples under current-verification/post-repair-evidence/ must be bound to their
 // real run/output metadata (runId, imageSha256, promptHash, compilerId,
 // commitSha, baselineId, generatedAt). Provider output binaries intentionally
 // remain untracked; committed integrity reports preserve their verified
@@ -13,7 +13,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const base = 'space-generator/quality-baselines/r10.4.1-post-repair';
+const base = 'space-generator/quality-baselines/current-verification/post-repair-evidence';
 const REPAIR_COMMIT = 'de5b0f804371d16968f9209b649ae21f29c7775b';
 
 const FRESH_SAMPLES = [

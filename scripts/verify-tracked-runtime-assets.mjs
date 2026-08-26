@@ -348,42 +348,7 @@ const PRODUCTION_SCAN_EXCLUDE_FILES = new Set([
   // smoke / dev runners, not production
   'apps/web-runtime/scripts/run-web-primary-smoke.mjs',
   'apps/web-runtime/scripts/run-web-dev.mjs',
-  // CI-W1C Web E2E validation harness (test infrastructure only;
-  // see docs/creative-intelligence/ci-w1c/real-web-e2e-anchor-translation-qualification.md).
-  'apps/web-runtime/scripts/ci-w1c/probe-ci-channels.mjs',
-  'apps/web-runtime/scripts/ci-w1c/list-profiles.mjs',
-  'apps/web-runtime/scripts/ci-w1c/drive-ci-workflow.mjs',
-  // CI-W1C.3 Web Host RPC / process-boundary freshness probe
-  // scripts (test infrastructure only; see
-  // docs/creative-intelligence/ci-w1c.3/web-host-rpc-process-boundary-freshness-repair.md).
-  'apps/web-runtime/scripts/ci-w1c/probe-pre-fix.mjs',
-  'apps/web-runtime/scripts/ci-w1c/probe-post-fix.mjs',
-  'apps/web-runtime/scripts/ci-w1c/summarize-evidence.mjs',
-  // CI-W1C Attempt 2 qualification harness (test infrastructure only;
-  // see docs/creative-intelligence/ci-w1c-attempt-2/real-project-qualification-and-ci10-readiness.md).
-  'apps/web-runtime/scripts/ci-w1c/extract-evidence.mjs',
-  'apps/web-runtime/scripts/ci-w1c/qualification-extract.mjs',
-  'apps/web-runtime/scripts/ci-w1c/qualification-compare.mjs',
-  // CI-W1C.4 Resume — project-specific brief generator + harness
-  // helpers (test infrastructure only; see
-  // docs/creative-intelligence/ci-w1c.4/qualification-input-semantics-and-harness-repair-resume.md).
-  'apps/web-runtime/scripts/ci-w1c/fact-edit-helper.mjs',
-  'apps/web-runtime/scripts/ci-w1c/approval-invalidation-helper.mjs',
-  // CI-W1C.4 Resume.1 — differentiation smoke runner (chains two
-    // drive-ci-workflow invocations and emits differentiation-smoke-evidence.json
-    // for the XD01-XD06 contract tests; see
-    // docs/creative-intelligence/ci-w1c.4/qualification-input-semantics-and-harness-repair-resume.1.md).
-    'apps/web-runtime/scripts/ci-w1c/differentiation-smoke.mjs',
-    // CI-W1C.* live qualification / regeneration / userdata-probe
-    // harnesses — these dynamically import production runtime modules and
-    // prompt JSON files strictly to exercise the live creative-reasoning
-    // pipeline end-to-end. They are test infrastructure only, not
-    // production code paths, and never ship to users.
-    'apps/web-runtime/scripts/ci-w1c/live-qualify-g01.mjs',
-    'apps/web-runtime/scripts/ci-w1c/live-qualify-planning-project.mjs',
-    'apps/web-runtime/scripts/ci-w1c/probe-actual-userdata-profiles.mjs',
-    'apps/web-runtime/scripts/ci-w1c/regenerate-g02-summary.mjs',
-  ]);
+]);
 
 // Allow the test harness to extend the production scan roots
 // (e.g. add a temp directory containing a synthetic loader).

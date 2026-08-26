@@ -1,4 +1,4 @@
 {
-  "packet": "space-generator/quality-baselines/phase9b-recovered/_packets/jiuzhou-aesthetics/visual-decision-packet.json",
-  "continuationContract": "space-generator/quality-baselines/r11.1-continuation-v12/jiuzhou-aesthetics/jzmx-rec-to-consult-v12-1/continuation-contract.json"
+  "packet": "space-generator/quality-baselines/current-verification/source-packets/_packets/jiuzhou-aesthetics/visual-decision-packet.json",
+  "continuationContract": "space-generator/quality-baselines/current-verification/continuation-smoke/jiuzhou-aesthetics/reception-to-consultation/continuation-contract.json"
 }
