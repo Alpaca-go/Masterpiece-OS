@@ -1709,6 +1709,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         compiled.task.compileFingerprint = compiled.compileFingerprint;
         const deliverableErrors = evaluateDeliverableGate({
           deliverable: sources.deliverable,
+          sourcePreset: sources.sourcePreset,
+          purpose: sources.purpose,
           userIntentResolution: compiled.userIntentResolution,
           compiledPrompt: prompt,
           referencePlan: compiled.referencePlan,

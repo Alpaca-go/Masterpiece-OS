@@ -1,5 +1,5 @@
 import { getDeliverableNegativeRules } from './deliverable-negative-rules.js';
-import { getDeliverablePolicy } from './deliverable-policies.js';
+import { resolveDeliverablePolicy } from './deliverable-policies.js';
 import { resolveUserIntent } from './user-intent-resolver.js';
 
 const SOURCE_LABELS = {
@@ -24,6 +24,7 @@ function referenceInstruction(references) {
 export function compileDeliverablePrompt(input) {
   const {
     sourcePreset,
+    purpose,
     deliverable,
     userIntent = {},
     lockedAssets = [],
@@ -33,7 +34,7 @@ export function compileDeliverablePrompt(input) {
     textSafety = [],
     outputSpec = [],
   } = input ?? {};
-  const policy = getDeliverablePolicy(deliverable);
+  const policy = resolveDeliverablePolicy(deliverable, { sourcePreset, purpose });
   const resolution = resolveUserIntent({ prompt: userIntent.prompt, deliverable });
   if (resolution.conflicts.length) {
     throw Object.assign(new Error(resolution.conflicts[0].message), {

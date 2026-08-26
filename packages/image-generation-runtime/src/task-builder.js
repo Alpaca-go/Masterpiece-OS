@@ -81,6 +81,8 @@ function compileImageGenerationTaskV3(input) {
   } = input;
   const referencePlan = buildDeliverableReferencePlan({
     deliverable: sources.deliverable,
+    sourcePreset: sources.sourcePreset,
+    purpose: sources.purpose,
     references: context?.references ?? [],
     capabilities,
   });
@@ -96,13 +98,22 @@ function compileImageGenerationTaskV3(input) {
   ].slice(0, 40);
   const compiled = compileDeliverablePrompt({
     sourcePreset: sources.sourcePreset,
+    purpose: sources.purpose,
     deliverable: sources.deliverable,
     userIntent: sources.userIntent,
     lockedAssets,
     identity,
     upstreamContext,
     references: selected,
-    textSafety: ['不得臆造不可辨识的小字；品牌文字与标志只按已锁定资产呈现。'],
+    textSafety: [
+      '不得臆造不可辨识的小字；品牌文字与标志只按已锁定资产呈现。',
+      ...(sources.sourcePreset === 'document_context'
+        && sources.purpose === 'exploration'
+        && sources.deliverable === 'brand_poster'
+        && !selected.some((reference) => reference.generationRole === 'identity_reference')
+        ? ['本次没有可验证的品牌身份图片：不得生成、临摹或猜测 Logo、字标与品牌专属图形；相关位置保持无标志或使用中性占位。']
+        : []),
+    ],
     outputSpec: [
       `画布尺寸：${parameters.size ?? ''}`,
       `宽高比：${sources.userIntent?.aspectRatio ?? '按画布尺寸'}`,
@@ -192,6 +203,8 @@ function compileImageGenerationTaskV3(input) {
   });
   const deliverableErrors = evaluateDeliverableGate({
     deliverable: sources.deliverable,
+    sourcePreset: sources.sourcePreset,
+    purpose: sources.purpose,
     userIntentResolution: compiled.userIntentResolution,
     compiledPrompt: compiled.compiledPromptMarkdown,
     referencePlan,

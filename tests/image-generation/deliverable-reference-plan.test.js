@@ -74,3 +74,14 @@ test('packaging render prioritizes a structure reference', () => {
   assert.deepEqual(plan.selected.map((item) => item.role), ['identity_reference', 'structure_reference', 'style_reference']);
   assert.deepEqual(plan.missingRequiredRoles, []);
 });
+
+test('document-context poster exploration has no missing required identity role', () => {
+  const plan = buildDeliverableReferencePlan({
+    deliverable: 'brand_poster',
+    sourcePreset: 'document_context',
+    purpose: 'exploration',
+    references: [],
+    capabilities: { maxReferenceImages: 6, supportsMultiImageReference: true },
+  });
+  assert.deepEqual(plan.missingRequiredRoles, []);
+});

@@ -105,3 +105,21 @@ export function getDeliverablePolicy(deliverable) {
   if (!value) throw Object.assign(new Error(`不支持的交付类型：${deliverable || '未提供'}`), { code: 'DELIVERABLE_UNSUPPORTED' });
   return structuredClone(value);
 }
+
+/**
+ * 文档上下文的探索任务没有可验证的图片身份资产。品牌海报在此路径上
+ * 允许以“无 Logo 的概念稿”生成；生产路径及其他交付类型仍保持原 Gate。
+ */
+export function resolveDeliverablePolicy(deliverable, context = {}) {
+  const value = getDeliverablePolicy(deliverable);
+  if (
+    deliverable === 'brand_poster'
+    && context.sourcePreset === 'document_context'
+    && context.purpose === 'exploration'
+  ) {
+    value.requiredReferenceRoles = value.requiredReferenceRoles.filter(
+      (role) => role !== 'identity_reference',
+    );
+  }
+  return value;
+}

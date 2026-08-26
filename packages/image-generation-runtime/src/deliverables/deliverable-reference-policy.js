@@ -1,4 +1,4 @@
-import { getDeliverablePolicy } from './deliverable-policies.js';
+import { resolveDeliverablePolicy } from './deliverable-policies.js';
 
 const SPATIAL_PATTERN = /interior|store|space|shop|restaurant|room|floorplan|装修|店内|空间|门店|户型|灯光参考|材质参考/iu;
 const VI_COLLECTION_PATTERN = /business.?card|menu|apron|t.?shirt|coaster|bag|mockup|flat.?lay|portfolio|grid|名片|菜单册|围裙|T\s*恤|杯垫|包装袋|样机|平铺|作品集|拼贴|物料合集/iu;
@@ -43,8 +43,14 @@ export function classifyReferenceForDeliverable(reference, deliverable) {
   return 'analysis_only';
 }
 
-export function buildDeliverableReferencePlan({ deliverable, references = [], capabilities = {} }) {
-  const policy = getDeliverablePolicy(deliverable);
+export function buildDeliverableReferencePlan({
+  deliverable,
+  sourcePreset,
+  purpose,
+  references = [],
+  capabilities = {},
+}) {
+  const policy = resolveDeliverablePolicy(deliverable, { sourcePreset, purpose });
   const classified = references.map((reference, sourceIndex) => ({
     assetId: reference.assetId,
     role: classifyReferenceForDeliverable(reference, deliverable),

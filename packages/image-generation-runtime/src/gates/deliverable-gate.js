@@ -1,4 +1,4 @@
-import { getDeliverablePolicy } from '../deliverables/deliverable-policies.js';
+import { resolveDeliverablePolicy } from '../deliverables/deliverable-policies.js';
 
 const error = (code, message, detail) => ({
   code,
@@ -9,6 +9,8 @@ const error = (code, message, detail) => ({
 
 export function evaluateDeliverableGate({
   deliverable,
+  sourcePreset,
+  purpose,
   userIntentResolution,
   compiledPrompt,
   referencePlan,
@@ -17,7 +19,7 @@ export function evaluateDeliverableGate({
   if (!deliverable) return [error('DELIVERABLE_MISSING', '请选择本次生图交付类型。')];
   let policy;
   try {
-    policy = getDeliverablePolicy(deliverable);
+    policy = resolveDeliverablePolicy(deliverable, { sourcePreset, purpose });
   } catch {
     return [error('DELIVERABLE_UNSUPPORTED', `不支持的交付类型：${deliverable}`)];
   }
