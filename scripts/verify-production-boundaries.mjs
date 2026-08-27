@@ -6,6 +6,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const extensions = new Set(['.ts', '.tsx', '.js', '.mjs', '.cjs']);
 const productionRoots = ['apps/cli/src', 'apps/web/src', 'apps/web-runtime/src', 'packages'];
 const importPattern = /(?:from\s+|import\s*\(|require\s*\()\s*['"]([^'"]+)['"]/gu;
+const creativeResearchRoot = path.join(root, 'packages', 'runtime-core', 'src', 'application', 'creative-research');
 
 function* walk(directory) {
   if (!fs.existsSync(directory)) return;
@@ -25,6 +26,17 @@ export function classifyProductionImport(specifier) {
   return null;
 }
 
+export function classifyCreativeResearchImport(file, specifier) {
+  const resolvedFile = path.resolve(file);
+  const relativeFile = path.relative(creativeResearchRoot, resolvedFile);
+  if (relativeFile.startsWith('..') || path.isAbsolute(relativeFile)) return null;
+  if (!specifier.startsWith('.')) return 'external runtime or provider dependency';
+  const resolvedImport = path.resolve(path.dirname(resolvedFile), specifier);
+  const relativeImport = path.relative(creativeResearchRoot, resolvedImport);
+  if (relativeImport.startsWith('..') || path.isAbsolute(relativeImport)) return 'dependency outside Creative Research foundation';
+  return null;
+}
+
 function run() {
   const failures = [];
   let fileCount = 0;
@@ -36,6 +48,10 @@ function run() {
         const specifier = match[1];
         const violation = classifyProductionImport(specifier);
         if (violation) failures.push(`RC002 ${path.relative(root, file)} imports ${violation} "${specifier}"`);
+        const creativeResearchViolation = classifyCreativeResearchImport(file, specifier);
+        if (creativeResearchViolation) {
+          failures.push(`RC002 ${path.relative(root, file)} imports ${creativeResearchViolation} "${specifier}"`);
+        }
       }
     }
   }
