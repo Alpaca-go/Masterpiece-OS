@@ -4,6 +4,8 @@ import type {
   DesignBriefEvidence,
   DesignBriefField,
   ReferenceAttribute,
+  SearchQueryKind,
+  SimilarSearchDimension,
   SearchKeywordKind,
   UserReferenceItem,
   WebReferenceItem,
@@ -45,6 +47,35 @@ export interface PreferenceInsightDraftMaterial {
 
 export interface ReferencePreferenceAnalysisAdapter {
   analyzePreferences(input: ReferencePreferenceAnalysisInput): Promise<PreferenceInsightDraftMaterial[]>;
+}
+
+export interface ReferenceSearchRefinementInput {
+  sessionId: string;
+  profileId: string;
+  mode: 'REFRESH' | 'SIMILAR';
+  enabledSearchKeywords: Array<{ id: string; value: string; kind: SearchKeywordKind }>;
+  conceptKeywords: string[];
+  visualKeywords: string[];
+  recentQueries: Array<{ id: string; text: string; providerQueryText?: string; kind: SearchQueryKind; batch: string }>;
+  selections: Array<{ referenceId: string; selectedAttributes: ReferenceAttribute[]; designerNote?: string }>;
+  activeRejectionReasons: Array<{ sourceReferenceId: string; reason?: string }>;
+  preferenceInsights: Array<{ id: string; category: ReferenceAttribute; text: string }>;
+  similar?: {
+    dimension?: SimilarSearchDimension;
+    targetKind: SearchQueryKind;
+    reference?: { id: string; title: string; publisher: string; remoteImageUrl?: string; selectedAttributes: ReferenceAttribute[]; designerNote?: string };
+    preferenceInsight?: { id: string; category: ReferenceAttribute; text: string; supportingReferenceIds: string[] };
+  };
+}
+
+export interface SearchRefinementQueryDraft {
+  kind: SearchQueryKind;
+  text: string;
+  derivedFromKeywordIds: string[];
+}
+
+export interface ReferenceSearchRefinementAdapter {
+  planQueries(input: ReferenceSearchRefinementInput): Promise<SearchRefinementQueryDraft[]>;
 }
 
 export interface DocumentIntakeMaterial {
@@ -106,6 +137,21 @@ export interface AnalysisModelAdapter {
   }): Promise<DesignBriefDraftMaterial>;
 }
 
+export interface DesignBriefReanalysisInput extends DocumentIntakeMaterial {
+  sessionId: string;
+  profileId: string;
+  previousBrief: import('./contracts.ts').DesignBrief;
+  recentSearchHistory: Array<{ id: string; text: string; kind: SearchQueryKind; origin: string; status: string }>;
+  selections: Array<{ referenceId: string; state: string; selectedAttributes: ReferenceAttribute[]; designerNote?: string }>;
+  activeNegativeSignals: Array<{ id: string; type: string; scope: string; reason?: string; value?: string }>;
+  preferenceInsights: Array<{ id: string; category: ReferenceAttribute; text: string; status: string }>;
+  feedback: string[];
+}
+
+export interface DesignBriefReanalysisAdapter {
+  reanalyzeDesignBrief(input: DesignBriefReanalysisInput): Promise<DesignBriefDraftMaterial>;
+}
+
 export interface UserReferenceAdapter {
   resolveProjectAsset(input: {
     sessionId: string;
@@ -152,6 +198,8 @@ export const CREATIVE_RESEARCH_ADAPTER_NAMES = [
   'ProjectBriefLinkAdapter',
   'AnalysisModelAdapter',
   'ReferencePreferenceAnalysisAdapter',
+  'ReferenceSearchRefinementAdapter',
+  'DesignBriefReanalysisAdapter',
   'UserReferenceAdapter',
   'WebReferenceImportAdapter',
   'ExplorationGenerationAdapter',

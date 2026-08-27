@@ -87,9 +87,11 @@ export type DesignBriefField = typeof DESIGN_BRIEF_FIELDS[number];
 
 export const SEARCH_QUERY_KINDS = ['CONCEPT', 'CATEGORY'] as const;
 export const SEARCH_QUERY_STATUSES = ['PENDING', 'COMPLETED', 'FAILED'] as const;
+export const SEARCH_QUERY_ORIGINS = ['INITIAL', 'REFRESH', 'KEYWORD_ADJUSTMENT', 'SIMILAR'] as const;
 
 export type SearchQueryKind = typeof SEARCH_QUERY_KINDS[number];
 export type SearchQueryStatus = typeof SEARCH_QUERY_STATUSES[number];
+export type SearchQueryOrigin = typeof SEARCH_QUERY_ORIGINS[number];
 
 export interface SearchQuery {
   id: string;
@@ -108,7 +110,19 @@ export interface SearchQuery {
   errorMessage?: string;
   resultCount?: number;
   providerCalls?: number;
+  origin?: SearchQueryOrigin;
+  parentQueryIds?: string[];
+  sourceReferenceIds?: string[];
+  sourcePreferenceInsightIds?: string[];
+  excludeSeen?: boolean;
 }
+
+export const SIMILAR_SEARCH_DIMENSIONS = [
+  'TYPOGRAPHY', 'LAYOUT', 'COLOR', 'GRAPHIC', 'MATERIAL', 'PHOTOGRAPHY',
+  'IMAGE_TREATMENT', 'APPLICATION', 'ATMOSPHERE', 'PEER_CASE',
+] as const;
+
+export type SimilarSearchDimension = typeof SIMILAR_SEARCH_DIMENSIONS[number];
 
 export const REFERENCE_SOURCE_TYPES = [
   'WEB_REFERENCE',
