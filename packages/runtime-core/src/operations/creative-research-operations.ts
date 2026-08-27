@@ -1,20 +1,25 @@
 import type {
+  CreativeDirectionContextDto,
   CreativeResearchBriefDto,
   CreativeResearchCredentialStatusDto,
   CreativeResearchBriefEvidenceDto,
   CreativeResearchBriefFieldDto,
+  CreativeResearchDirectionBoardDto,
   CreativeResearchQueryDto,
   CreativeResearchNegativeSignalDto,
   CreativeResearchPreferenceInsightDto,
   CreativeResearchReferenceDto,
   CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
+  CompleteCreativeResearchDirectionInput,
   UpdateCreativeResearchBriefInput,
+  UpdateCreativeResearchDirectionBoardInput,
   SetCreativeResearchReferenceSelectionInput,
   UpdateCreativeResearchSearchStrategyInput,
   PlanCreativeResearchSimilarSearchInput,
 } from '../application-contracts.ts';
-import type { CreativeResearchSession, DesignBrief, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeDirectionContext, CreativeResearchSession, DesignBrief, DirectionBoard, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeResearchDirectionService } from '../application/creative-research-direction-service.ts';
 import type { CreativeResearchSelectionService } from '../application/creative-research-selection-service.ts';
 import type { CreativeResearchPreferenceAnalysisService } from '../application/creative-research-preference-analysis-service.ts';
 import type { SearchHistoryRepository } from '../application/creative-research/ports.ts';
@@ -206,12 +211,69 @@ export function toCreativeResearchPreferenceInsightDto(value: PreferenceInsight)
   });
 }
 
+export function toCreativeResearchDirectionBoardDto(value: DirectionBoard): CreativeResearchDirectionBoardDto {
+  return Object.freeze({
+    id: value.id,
+    sessionId: value.sessionId,
+    revision: value.revision,
+    summary: value.summary,
+    visualKeywords: [...value.visualKeywords],
+    ...(value.typography !== undefined ? { typography: value.typography } : {}),
+    ...(value.layout !== undefined ? { layout: value.layout } : {}),
+    ...(value.color !== undefined ? { color: value.color } : {}),
+    ...(value.graphic !== undefined ? { graphic: value.graphic } : {}),
+    ...(value.material !== undefined ? { material: value.material } : {}),
+    ...(value.photography !== undefined ? { photography: value.photography } : {}),
+    referenceIds: [...value.referenceIds],
+    referenceRegionIds: [...value.referenceRegionIds],
+    negativeSignalIds: [...value.negativeSignalIds],
+    designerNotes: [...value.designerNotes],
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
+  });
+}
+
+export function toCreativeDirectionContextDto(value: CreativeDirectionContext): CreativeDirectionContextDto {
+  return Object.freeze({
+    sessionId: value.sessionId,
+    projectId: value.projectId,
+    briefRevision: value.briefRevision,
+    directionBoardRevision: value.directionBoardRevision,
+    projectBrief: value.projectBrief,
+    constraints: [...value.constraints],
+    visualKeywords: [...value.visualKeywords],
+    selectedReferenceIds: [...value.selectedReferenceIds],
+    selectedReferenceRegionIds: [...value.selectedReferenceRegionIds],
+    preferredAttributes: [...value.preferredAttributes],
+    negativeSignals: value.negativeSignals.map((signal) => Object.freeze({
+      id: signal.id,
+      type: signal.type,
+      scope: signal.scope,
+      ...(signal.value ? { value: signal.value } : {}),
+      ...(signal.reason ? { reason: signal.reason } : {}),
+    })),
+    designerNotes: [...value.designerNotes],
+    directionSummary: value.directionSummary,
+    provenance: Object.freeze({
+      designBriefId: value.provenance.designBriefId,
+      directionBoardId: value.provenance.directionBoardId,
+      sourceDocumentCount: value.provenance.sourceDocumentIds.length,
+      sourceDocumentLabels: value.provenance.sourceDocumentIds.map(safeDocumentLabel),
+      referenceIds: [...value.provenance.referenceIds],
+      referenceRegionIds: [...value.provenance.referenceRegionIds],
+      negativeSignalIds: [...value.provenance.negativeSignalIds],
+    }),
+    createdAt: value.createdAt,
+  });
+}
+
 export function createCreativeResearchOperations(options: {
   briefs: BriefService;
   search: SearchService;
   history: SearchHistoryRepository;
   selection: CreativeResearchSelectionService;
   preferences: CreativeResearchPreferenceAnalysisService;
+  direction: CreativeResearchDirectionService;
   refinement: SearchRefinementService;
   strategy: SearchStrategyService;
   reanalysis: ReanalysisService;
@@ -292,6 +354,46 @@ export function createCreativeResearchOperations(options: {
       toCreativeResearchPreferenceInsightDto(await options.preferences.updateInsight(sessionId, insightId, designerOverride)),
     'creative-research:finalize-preference-insight': async (_context: unknown, sessionId: string, insightId: string) =>
       toCreativeResearchPreferenceInsightDto(await options.preferences.finalizeInsight(sessionId, insightId)),
+    'creative-research:start-direction': async (_context: unknown, sessionId: string) => {
+      const result = await options.direction.startDirection(sessionId);
+      return Object.freeze({
+        session: toCreativeResearchSessionDto(result.session),
+        board: toCreativeResearchDirectionBoardDto(result.board),
+        availableReferenceIds: [...result.availableReferenceIds],
+        pendingFinalizedInsights: result.pendingFinalizedInsights.map((insight) => Object.freeze({
+          id: insight.id,
+          category: insight.category,
+          text: insight.text,
+        })),
+      });
+    },
+    'creative-research:get-direction-board': async (_context: unknown, sessionId: string) => {
+      const result = await options.direction.getDirectionBoard(sessionId);
+      return Object.freeze({
+        session: toCreativeResearchSessionDto(result.session),
+        board: result.board ? toCreativeResearchDirectionBoardDto(result.board) : null,
+      });
+    },
+    'creative-research:update-direction-board': async (_context: unknown, sessionId: string, update: UpdateCreativeResearchDirectionBoardInput) =>
+      toCreativeResearchDirectionBoardDto(await options.direction.updateDirectionBoard(sessionId, update)),
+    'creative-research:list-direction-board-revisions': async (_context: unknown, sessionId: string) =>
+      (await options.direction.listDirectionBoardRevisions(sessionId)).map(toCreativeResearchDirectionBoardDto),
+    'creative-research:return-to-research': async (_context: unknown, sessionId: string) =>
+      toCreativeResearchSessionDto(await options.direction.returnToResearch(sessionId)),
+    'creative-research:complete-direction': async (_context: unknown, sessionId: string, input: CompleteCreativeResearchDirectionInput) => {
+      const result = await options.direction.completeDirection(sessionId, input);
+      return Object.freeze({
+        session: toCreativeResearchSessionDto(result.session),
+        context: toCreativeDirectionContextDto(result.context),
+      });
+    },
+    'creative-research:get-direction-context': async (_context: unknown, sessionId: string) => {
+      const result = await options.direction.getDirectionContext(sessionId);
+      return Object.freeze({
+        session: toCreativeResearchSessionDto(result.session),
+        context: result.context ? toCreativeDirectionContextDto(result.context) : null,
+      });
+    },
     'creative-research:get-search-credential-status': credentialStatus,
     'creative-research:save-search-credential': async (_context: unknown, value: string) => {
       const credential = String(value || '').trim();

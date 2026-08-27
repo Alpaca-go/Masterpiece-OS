@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import type {
+  CreativeDirectionContextDto,
   CreativeResearchBriefDto,
   CreativeResearchBriefFieldDto,
   CreativeResearchCredentialStatusDto,
+  CreativeResearchDirectionBoardDto,
   CreativeResearchNegativeSignalDto,
+  CreativeResearchPendingInsightDto,
   CreativeResearchPreferenceInsightDto,
   CreativeResearchQueryDto,
   CreativeResearchReferenceDto,
@@ -13,6 +16,7 @@ import type {
   ProjectRecord,
   PublicSettings,
   UpdateCreativeResearchBriefInput,
+  UpdateCreativeResearchDirectionBoardInput,
   UpdateCreativeResearchSearchStrategyInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { Button } from '../../components/ui/Button';
@@ -29,6 +33,7 @@ import { ReferenceCard } from './ReferenceCard';
 import { SelectionTray } from './SelectionTray';
 import { PreferenceInsightsPanel } from './PreferenceInsightsPanel';
 import { CorrectionToolbar } from './CorrectionToolbar';
+import { DirectionWorkspace } from './DirectionWorkspace';
 import './creative-research.css';
 
 function fileToBase64(file: File): Promise<string> {
@@ -155,20 +160,29 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [filter, setFilter] = useState('all');
   const [researchKind, setResearchKind] = useState<ReferenceResearchKind>('CONCEPT');
   const [trayExpanded, setTrayExpanded] = useState(false);
-  const [tab, setTab] = useState<'brief' | 'references'>('brief');
+  const [tab, setTab] = useState<'brief' | 'references' | 'direction'>('brief');
+  const [board, setBoard] = useState<CreativeResearchDirectionBoardDto | null>(null);
+  const [directionContext, setDirectionContext] = useState<CreativeDirectionContextDto | null>(null);
+  const [pendingFinalizedInsights, setPendingFinalizedInsights] = useState<CreativeResearchPendingInsightDto[]>([]);
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
 
   async function loadSession(id: string) {
     const nextSession = await api.getSession(id);
-    const [nextBrief, nextQueries, nextReferences, nextSelections, nextNegativeSignals, nextPreferenceInsights] = await Promise.all([
+    const inDirection = nextSession.status === 'DIRECTION' || nextSession.status === 'COMPLETED';
+    const [nextBrief, nextQueries, nextReferences, nextSelections, nextNegativeSignals, nextPreferenceInsights, nextBoardResult, nextContextResult] = await Promise.all([
       api.getDesignBrief(id).catch(() => null), api.getSearchHistory(id), api.listReferences(id),
       api.listSelections(id), api.listNegativeSignals(id), api.listPreferenceInsights(id),
+      inDirection ? api.getDirectionBoard(id).catch(() => null) : Promise.resolve(null),
+      nextSession.status === 'COMPLETED' ? api.getDirectionContext(id).catch(() => null) : Promise.resolve(null),
     ]);
     setSession(nextSession); setBrief(nextBrief); setQueries(nextQueries); setReferences(nextReferences);
     setSelections(nextSelections); setNegativeSignals(nextNegativeSignals);
     setPreferenceInsights(nextPreferenceInsights);
+    setBoard(nextBoardResult?.board || null);
+    setDirectionContext(nextContextResult?.context || null);
+    setPendingFinalizedInsights([]);
   }
   useEffect(() => { void api.getSearchCredentialStatus().then(setCredential).catch((reason) => setError(cleanError(reason))); }, []);
   useEffect(() => {
@@ -276,6 +290,43 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
     });
   }
 
+  async function startDirectionFlow() {
+    await action('direction', async () => {
+      const result = await api.startDirection(sessionId);
+      setSession(result.session); setBoard(result.board);
+      setPendingFinalizedInsights(result.pendingFinalizedInsights);
+      setTab('direction');
+    });
+  }
+
+  async function resumeDirection() {
+    await action('direction', async () => {
+      const result = await api.getDirectionBoard(sessionId);
+      setSession(result.session); setBoard(result.board);
+      setTab('direction');
+    });
+  }
+
+  async function saveDirectionBoard(input: UpdateCreativeResearchDirectionBoardInput) {
+    await action('direction:saving', async () => {
+      setBoard(await api.updateDirectionBoard(sessionId, input));
+    });
+  }
+
+  async function returnToResearchFlow() {
+    await action('direction:returning', async () => {
+      setSession(await api.returnToResearch(sessionId));
+      setTab('references');
+    });
+  }
+
+  async function completeDirectionFlow() {
+    await action('direction:completing', async () => {
+      const result = await api.completeDirection(sessionId, { confirm: true });
+      setSession(result.session); setDirectionContext(result.context);
+    });
+  }
+
   const uiState = deriveResearchUiState(queries, busy);
   const kindQueries = useMemo(() => listQueriesByResearchKind(queries, researchKind), [queries, researchKind]);
   const kindReferences = useMemo(() => filterReferencesByResearchKind(references, queries, researchKind), [references, queries, researchKind]);
@@ -284,6 +335,9 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const webReferences = visibleReferences.filter((reference) => reference.resourceType === 'WEB');
   const correctionSuggestion = useMemo(() => deriveSoftCorrectionSuggestion(queries, references, selections), [queries, references, selections]);
   const project = projects.find((item) => item.id === (session?.projectId || projectId));
+  const selectedReferenceCount = selections.filter((item) => item.state === 'SELECTED').length;
+  const directionTabEnabled = session?.status === 'DIRECTION' || session?.status === 'COMPLETED';
+  const referencesReadOnly = session?.status !== 'RESEARCH';
 
   if (!sessionId) return <main className="cr-shell">
     <header className="cr-top"><button onClick={onBack}>← 项目</button><div><span>Creative Research</span><h1>灵感研究工作台</h1></div><button onClick={onOpenSettings}>模型设置</button></header>
@@ -301,10 +355,11 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   return <main className="cr-shell">
     <header className="cr-top"><button onClick={() => onNavigate('/creative-research')}>← 研究列表</button><div><span>{project?.projectName || 'Creative Research'}</span><h1>灵感研究工作台</h1></div><div className="cr-top__status"><b>{session?.status || '载入中'}</b><button onClick={onOpenSettings}>设置</button></div></header>
     {error && <div className="cr-alert cr-alert--error">{error}</div>}
-    <nav className="cr-tabs"><button className={tab === 'brief' ? 'is-active' : ''} onClick={() => setTab('brief')}>Brief</button><button className={tab === 'references' ? 'is-active' : ''} onClick={() => setTab('references')}>References <span>{references.length}</span></button></nav>
+    <nav className="cr-tabs"><button className={tab === 'brief' ? 'is-active' : ''} onClick={() => setTab('brief')}>Brief</button><button className={tab === 'references' ? 'is-active' : ''} onClick={() => setTab('references')}>References <span>{references.length}</span></button><button className={tab === 'direction' ? 'is-active' : ''} disabled={!directionTabEnabled} title={directionTabEnabled ? undefined : '收藏参考后，通过「整理成视觉方向」进入方向整理。'} onClick={() => setTab('direction')}>Direction</button></nav>
     {!session || !brief ? <section className="cr-panel cr-loading">{busy === 'brief' ? '正在分析文档并生成 Brief…' : <><p>此 Session 尚未生成 Design Brief。</p><Button variant="primary" disabled={!profileId || busy !== ''} onClick={() => void action('brief', async () => { const next = await api.prepareDesignBrief(sessionId, { profileId }); setBrief(next); })}>生成 Design Brief</Button></>}</section>
       : tab === 'brief' ? <><BriefEditor brief={brief} editable={session.status === 'INTAKE'} busy={busy !== ''} onSave={async (input) => action('saving', async () => setBrief(await api.updateDesignBrief(session.id, input)))} />
         {session.status === 'INTAKE' && <section className="cr-start"><div><h2>Brief 已就绪</h2><p>开始研究后 Brief 将只读，并按启用的概念与品类关键词执行首轮搜索。</p></div><Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void runInitialSearch()}>开始研究</Button></section>}</>
+      : tab === 'direction' ? (board ? <DirectionWorkspace session={session} brief={brief} board={board} references={references} selections={selections} negativeSignals={negativeSignals} insights={preferenceInsights} pendingFinalizedInsights={pendingFinalizedInsights} context={directionContext} busy={busy.startsWith('direction:')} onSave={saveDirectionBoard} onReturnToResearch={returnToResearchFlow} onComplete={completeDirectionFlow} /> : <section className="cr-panel cr-loading">方向板载入中…</section>)
       : <section className="cr-references">
         <div className="cr-search-head"><div><span>Search state</span><h2>{uiState}</h2></div><div>{!credential.configured ? <><input type="password" value={credentialValue} placeholder="百度搜索 API Key" onChange={(event) => setCredentialValue(event.target.value)} /><Button size="sm" variant="secondary" onClick={() => void action('credential', async () => { setCredential(await api.saveSearchCredential(credentialValue)); setCredentialValue(''); })}>保存凭据</Button></> : <><span className="cr-configured">百度搜索已配置</span><button onClick={() => void action('credential', async () => setCredential(await api.deleteSearchCredential()))}>删除</button></>}</div></div>
         <nav className="cr-kind-tabs" aria-label="参考研究类型">
@@ -318,11 +373,13 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
         {queries.some((query) => query.status === 'FAILED') && <div className="cr-alert cr-alert--warning"><span>部分查询失败，已有结果仍可浏览。</span><Button size="sm" variant="secondary" disabled={busy !== '' || !credential.configured} onClick={() => void action('searching', async () => { await api.executeSearchBatch(sessionId, queries.filter((query) => query.status === 'FAILED').map((query) => query.id)); await loadSession(sessionId); })}>重试失败查询</Button></div>}
         {!queries.length && session?.status === 'RESEARCH' && <Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void action('planning', async () => { const planned = await api.planInitialSearch(sessionId); setQueries(planned); setBusy('searching'); try { await api.executeSearchBatch(sessionId); } finally { await loadSession(sessionId); } })}>规划并搜索</Button>}
         <SelectionTray selections={selections} references={references} expanded={trayExpanded} onToggle={() => setTrayExpanded((value) => !value)} busy={busy !== ''} onAnalyze={() => void analyzePreferences()} />
-        {preferenceInsights.length > 0 && <PreferenceInsightsPanel insights={preferenceInsights} references={references} negativeSignals={negativeSignals} busy={busy.startsWith('insight:') || busy === 'similar'} onUpdate={updatePreferenceInsight} onFinalize={finalizePreferenceInsight} onFindMoreSimilar={(insightId) => findSimilar({ sourcePreferenceInsightId: insightId })} />}
+        {session.status === 'RESEARCH' && selectedReferenceCount >= 1 && <section className="cr-direction-cta"><p>这些参考已经足够让我开始设计了。</p><Button variant="primary" disabled={busy !== ''} onClick={() => void startDirectionFlow()}>整理成视觉方向</Button></section>}
+        {session.status === 'DIRECTION' && <section className="cr-direction-cta"><p>视觉方向已开始整理，保存的参考与排除记录都会保留。</p><Button variant="primary" disabled={busy !== ''} onClick={() => void resumeDirection()}>继续整理视觉方向</Button></section>}
+        {preferenceInsights.length > 0 && <PreferenceInsightsPanel insights={preferenceInsights} references={references} negativeSignals={negativeSignals} busy={busy.startsWith('insight:') || busy === 'similar'} readOnly={referencesReadOnly} onUpdate={updatePreferenceInsight} onFinalize={finalizePreferenceInsight} onFindMoreSimilar={(insightId) => findSimilar({ sourcePreferenceInsightId: insightId })} />}
         <div className="cr-section-head"><h3>图片灵感板</h3><span>{imageReferences.length}</span></div>
-        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display="IMAGE" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
+        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display="IMAGE" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} readOnly={referencesReadOnly} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
         <div className="cr-section-head"><h3>网页来源</h3><span>{webReferences.length}</span></div>
-        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display="WEB" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
+        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display="WEB" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} readOnly={referencesReadOnly} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
       </section>}
   </main>;
 }

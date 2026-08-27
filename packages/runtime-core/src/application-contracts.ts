@@ -2661,6 +2661,104 @@ export interface CreativeResearchCredentialStatusDto {
   configured: boolean;
 }
 
+export interface CreativeResearchDirectionBoardDto {
+  id: string;
+  sessionId: string;
+  revision: number;
+  summary: string;
+  visualKeywords: string[];
+  typography?: string;
+  layout?: string;
+  color?: string;
+  graphic?: string;
+  material?: string;
+  photography?: string;
+  referenceIds: string[];
+  referenceRegionIds: string[];
+  negativeSignalIds: string[];
+  designerNotes: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreativeResearchPendingInsightDto {
+  id: string;
+  category: string;
+  text: string;
+}
+
+export interface CreativeResearchStartDirectionResultDto {
+  session: CreativeResearchSessionDto;
+  board: CreativeResearchDirectionBoardDto;
+  availableReferenceIds: string[];
+  pendingFinalizedInsights: CreativeResearchPendingInsightDto[];
+}
+
+export interface UpdateCreativeResearchDirectionBoardInput {
+  summary?: string;
+  visualKeywords?: string[];
+  typography?: string;
+  layout?: string;
+  color?: string;
+  graphic?: string;
+  material?: string;
+  photography?: string;
+  referenceIds?: string[];
+  referenceRegionIds?: string[];
+  negativeSignalIds?: string[];
+  designerNotes?: string[];
+}
+
+export interface CreativeDirectionContextNegativeSignalDto {
+  id: string;
+  type: 'REJECT_REFERENCE' | 'REMOVE_KEYWORD' | 'DESIGNER_NOTE' | 'REANALYSIS_FEEDBACK';
+  scope: 'SESSION' | 'REFERENCE' | 'KEYWORD' | 'DIRECTION';
+  value?: string;
+  reason?: string;
+}
+
+export interface CreativeDirectionContextProvenanceDto {
+  designBriefId: string;
+  directionBoardId: string;
+  sourceDocumentCount: number;
+  sourceDocumentLabels: string[];
+  referenceIds: string[];
+  referenceRegionIds: string[];
+  negativeSignalIds: string[];
+}
+
+export interface CreativeDirectionContextDto {
+  sessionId: string;
+  projectId: string;
+  briefRevision: number;
+  directionBoardRevision: number;
+  projectBrief: string;
+  constraints: string[];
+  visualKeywords: string[];
+  selectedReferenceIds: string[];
+  selectedReferenceRegionIds: string[];
+  preferredAttributes: CreativeResearchReferenceAttributeDto[];
+  negativeSignals: CreativeDirectionContextNegativeSignalDto[];
+  designerNotes: string[];
+  directionSummary: string;
+  provenance: CreativeDirectionContextProvenanceDto;
+  createdAt: string;
+}
+
+export interface CompleteCreativeResearchDirectionInput {
+  confirm: boolean;
+}
+
+export interface CreativeResearchDirectionContextResultDto {
+  session: CreativeResearchSessionDto;
+  context: CreativeDirectionContextDto | null;
+}
+
+export interface CreativeResearchCompleteDirectionResultDto {
+  session: CreativeResearchSessionDto;
+  context: CreativeDirectionContextDto;
+}
+
 export interface RuntimeApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -2790,6 +2888,13 @@ export interface RuntimeApi {
     listPreferenceInsights(sessionId: string): Promise<CreativeResearchPreferenceInsightDto[]>;
     updatePreferenceInsight(sessionId: string, insightId: string, designerOverride: string): Promise<CreativeResearchPreferenceInsightDto>;
     finalizePreferenceInsight(sessionId: string, insightId: string): Promise<CreativeResearchPreferenceInsightDto>;
+    startDirection(sessionId: string): Promise<CreativeResearchStartDirectionResultDto>;
+    getDirectionBoard(sessionId: string): Promise<{ session: CreativeResearchSessionDto; board: CreativeResearchDirectionBoardDto | null }>;
+    updateDirectionBoard(sessionId: string, update: UpdateCreativeResearchDirectionBoardInput): Promise<CreativeResearchDirectionBoardDto>;
+    listDirectionBoardRevisions(sessionId: string): Promise<CreativeResearchDirectionBoardDto[]>;
+    returnToResearch(sessionId: string): Promise<CreativeResearchSessionDto>;
+    completeDirection(sessionId: string, input: CompleteCreativeResearchDirectionInput): Promise<CreativeResearchCompleteDirectionResultDto>;
+    getDirectionContext(sessionId: string): Promise<CreativeResearchDirectionContextResultDto>;
     getSearchCredentialStatus(): Promise<CreativeResearchCredentialStatusDto>;
     saveSearchCredential(value: string): Promise<CreativeResearchCredentialStatusDto>;
     deleteSearchCredential(): Promise<CreativeResearchCredentialStatusDto>;

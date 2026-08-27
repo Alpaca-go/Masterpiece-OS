@@ -14,11 +14,12 @@ type SelectionChange = {
   rejectionReason?: string;
 };
 
-export function ReferenceCard({ reference, selection, display, busy, onSelectionChange, onFindSimilar }: {
+export function ReferenceCard({ reference, selection, display, busy, readOnly = false, onSelectionChange, onFindSimilar }: {
   reference: CreativeResearchReferenceDto;
   selection?: CreativeResearchReferenceSelectionDto;
   display: 'IMAGE' | 'WEB';
   busy: boolean;
+  readOnly?: boolean;
   onSelectionChange(change: SelectionChange): Promise<void>;
   onFindSimilar(dimension: CreativeResearchReferenceAttributeDto | 'PEER_CASE'): Promise<void>;
 }) {
@@ -34,7 +35,11 @@ export function ReferenceCard({ reference, selection, display, busy, onSelection
     if (url) window.open(url, '_blank', 'noopener,noreferrer');
   };
   const set = (change: SelectionChange) => onSelectionChange(change);
-  const controls = <div className="cr-reference-judgment">
+  const controls = readOnly ? <div className="cr-reference-judgment">
+    <div className="cr-reference-actions">
+      <button type="button" onClick={source}>查看来源 ↗</button>
+    </div>
+  </div> : <div className="cr-reference-judgment">
     <div className="cr-reference-actions">
       <button type="button" className={state === 'SELECTED' ? 'is-selected' : ''} disabled={busy} onClick={() => void set(state === 'SELECTED'
         ? { state: 'NONE', selectedAttributes: [] }

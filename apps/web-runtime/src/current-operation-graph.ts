@@ -26,6 +26,10 @@ import {
 } from '@masterpiece/runtime-core';
 import { createCreativeResearchAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-analysis-adapter.ts';
 import { createCreativeResearchDesignBriefService } from '@masterpiece/runtime-core/application/creative-research-design-brief-service.ts';
+import { createCreativeResearchDirectionBoardService } from '@masterpiece/runtime-core/application/creative-research-direction-board-service.ts';
+import { createCreativeResearchDirectionBoardStore } from '@masterpiece/runtime-core/application/creative-research-direction-board-store.ts';
+import { createCreativeDirectionContextStore } from '@masterpiece/runtime-core/application/creative-research-direction-context-store.ts';
+import { createCreativeResearchDirectionService } from '@masterpiece/runtime-core/application/creative-research-direction-service.ts';
 import { createCreativeResearchDocumentAdapter } from '@masterpiece/runtime-core/application/creative-research-document-adapter.ts';
 import {
   BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID,
@@ -291,6 +295,22 @@ export function createCurrentBusinessOperations(
     insights: creativeResearchPreferenceStore,
     documentAdapter: creativeResearchDocumentAdapter,
     adapter: createCreativeResearchReanalysisAdapter({ readCredentials: async (profileId) => readCredentials(profileId) }),
+  });
+  const creativeResearchDirectionBoards = createCreativeResearchDirectionBoardStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchDirectionContexts = createCreativeDirectionContextStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchDirectionBoardService = createCreativeResearchDirectionBoardService({
+    references: creativeResearchResearchStore.references,
+    insights: creativeResearchPreferenceStore,
+    boards: creativeResearchDirectionBoards,
+  });
+  const creativeResearchDirection = createCreativeResearchDirectionService({
+    sessions: creativeResearchStore.sessions,
+    briefs: creativeResearchStore.briefs,
+    references: creativeResearchResearchStore.references,
+    insights: creativeResearchPreferenceStore,
+    boards: creativeResearchDirectionBoards,
+    contexts: creativeResearchDirectionContexts,
+    boardService: creativeResearchDirectionBoardService,
   });
   const creativeResearchIntakeRoot = path.resolve(dataPath, '..', 'documents-intake');
   const creativeResearchBrowserBriefs = {
@@ -633,6 +653,7 @@ export function createCurrentBusinessOperations(
       history: creativeResearchResearchStore.history,
       selection: creativeResearchSelection,
       preferences: creativeResearchPreferences,
+      direction: creativeResearchDirection,
       refinement: creativeResearchRefinement,
       strategy: creativeResearchStrategy,
       reanalysis: creativeResearchReanalysis,

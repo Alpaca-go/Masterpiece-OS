@@ -15,11 +15,12 @@ function confidenceLabel(value?: number): string {
   return '低';
 }
 
-export function PreferenceInsightsPanel({ insights, references, negativeSignals, busy, onUpdate, onFinalize, onFindMoreSimilar }: {
+export function PreferenceInsightsPanel({ insights, references, negativeSignals, busy, readOnly = false, onUpdate, onFinalize, onFindMoreSimilar }: {
   insights: CreativeResearchPreferenceInsightDto[];
   references: CreativeResearchReferenceDto[];
   negativeSignals: CreativeResearchNegativeSignalDto[];
   busy: boolean;
+  readOnly?: boolean;
   onUpdate(insightId: string, designerOverride: string): Promise<void>;
   onFinalize(insightId: string): Promise<void>;
   onFindMoreSimilar(insightId: string): Promise<void>;
@@ -39,9 +40,9 @@ export function PreferenceInsightsPanel({ insights, references, negativeSignals,
         {insight.designerOverride && <small>AI 原始解释：{insight.summary}</small>}
         <div className="cr-insight-actions">
           <button type="button" onClick={() => setEvidenceId(evidenceId === insight.id ? null : insight.id)}>查看依据（{evidenceCount}）</button>
-          <button type="button" disabled={busy} onClick={() => { setEditingId(insight.id); setOverride(insight.designerOverride || insight.summary); }}>修改</button>
-          {insight.status === 'DRAFT' && <button type="button" disabled={busy} onClick={() => void onFinalize(insight.id)}>确认这条倾向</button>}
-          <button type="button" disabled={busy} onClick={() => void onFindMoreSimilar(insight.id)}>找更多类似</button>
+          {!readOnly && <button type="button" disabled={busy} onClick={() => { setEditingId(insight.id); setOverride(insight.designerOverride || insight.summary); }}>修改</button>}
+          {!readOnly && insight.status === 'DRAFT' && <button type="button" disabled={busy} onClick={() => void onFinalize(insight.id)}>确认这条倾向</button>}
+          {!readOnly && <button type="button" disabled={busy} onClick={() => void onFindMoreSimilar(insight.id)}>找更多类似</button>}
         </div>
         {editingId === insight.id && <div className="cr-insight-override"><textarea aria-label="设计师修正" value={override} onChange={(event) => setOverride(event.target.value)} /><div><button type="button" onClick={() => setEditingId(null)}>取消</button><button type="button" disabled={busy || !override.trim()} onClick={() => void onUpdate(insight.id, override).then(() => setEditingId(null))}>保存修正</button></div></div>}
         {evidenceId === insight.id && <div className="cr-insight-evidence">
