@@ -23,7 +23,64 @@ interface BaiduReference {
   website?: string;
   web_anchor?: string;
   type?: string;
-  image?: { url?: string; width?: number; height?: number };
+  image?: { url?: string; width?: number | string; height?: number | string };
+}
+
+export interface BaiduReferenceSearchRequest {
+  messages: [{ role: 'user'; content: string }];
+  search_source: 'baidu_search_v2';
+  resource_type_filter: [
+    { type: 'web'; top_k: number },
+    { type: 'image'; top_k: number },
+  ];
+}
+
+export function normalizeBaiduQueryWhitespace(text: string): string {
+  return String(text || '').normalize('NFC').replace(/\s+/gu, ' ').trim();
+}
+
+export function measureBaiduQueryUnits(text: string): number {
+  return [...normalizeBaiduQueryWhitespace(text)]
+    .reduce((units, character) => units + (character.codePointAt(0)! <= 0x7f ? 1 : 2), 0);
+}
+
+function trimTokenToBaiduUnits(token: string, limit: number): string {
+  let units = 0;
+  let result = '';
+  for (const character of token) {
+    const next = character.codePointAt(0)! <= 0x7f ? 1 : 2;
+    if (units + next > limit) break;
+    result += character;
+    units += next;
+  }
+  return result;
+}
+
+export function prepareBaiduQueryText(text: string, limit = 72): string {
+  const normalized = normalizeBaiduQueryWhitespace(text);
+  if (!normalized) throw creativeResearchSearchError('QUERY_INVALID', '百度搜索查询不能为空');
+  if (!Number.isInteger(limit) || limit < 1) throw creativeResearchSearchError('QUERY_INVALID', '百度搜索 Query unit limit 无效');
+  if (measureBaiduQueryUnits(normalized) <= limit) return normalized;
+  const tokens = normalized.split(' ');
+  while (tokens.length > 1 && measureBaiduQueryUnits(tokens.join(' ')) > limit) tokens.pop();
+  const candidate = tokens.join(' ');
+  if (measureBaiduQueryUnits(candidate) <= limit) return candidate;
+  const trimmed = trimTokenToBaiduUnits(candidate, limit);
+  if (!trimmed) throw creativeResearchSearchError('QUERY_INVALID', '百度搜索查询无法裁剪到合法长度');
+  return trimmed;
+}
+
+export function buildBaiduReferenceSearchRequest(input: ReferenceSearchInput): BaiduReferenceSearchRequest {
+  const providerQueryText = prepareBaiduQueryText(input.query);
+  const limit = input.limit ?? 10;
+  return {
+    messages: [{ role: 'user', content: providerQueryText }],
+    search_source: 'baidu_search_v2',
+    resource_type_filter: [
+      { type: 'web', top_k: Math.min(limit, 50) },
+      { type: 'image', top_k: Math.min(limit, 30) },
+    ],
+  };
 }
 
 function normalizeUrl(value: string, removeTracking: boolean): string {
@@ -46,7 +103,8 @@ function stableReferenceId(resourceType: 'IMAGE' | 'WEB', canonicalUrl: string, 
 }
 
 function positiveInteger(value: unknown): number | undefined {
-  return Number.isInteger(value) && Number(value) > 0 ? Number(value) : undefined;
+  const parsed = typeof value === 'string' && /^\d+$/u.test(value.trim()) ? Number(value) : value;
+  return Number.isInteger(parsed) && Number(parsed) > 0 ? Number(parsed) : undefined;
 }
 
 function toReference(item: BaiduReference, input: ReferenceSearchInput, rank: number, retrievedAt: string): WebReferenceItem | null {
@@ -110,7 +168,8 @@ export function createBaiduReferenceSearchGateway(options: {
       try { assertReferenceSearchInput(input); } catch (error) {
         throw creativeResearchSearchError('QUERY_INVALID', error instanceof Error ? error.message : '搜索查询无效', { cause: error });
       }
-      if ([...input.query].length > 72) throw creativeResearchSearchError('QUERY_INVALID', '百度搜索查询不得超过 72 个字符');
+      const request = buildBaiduReferenceSearchRequest(input);
+      const providerQueryText = request.messages[0].content;
       const credential = String(await options.readCredential() || '').trim();
       if (!credential) throw creativeResearchSearchError('SEARCH_CREDENTIAL_REQUIRED', '缺少百度搜索凭据');
       let providerCalls = 0;
@@ -123,14 +182,7 @@ export function createBaiduReferenceSearchGateway(options: {
           response = await fetchImpl(endpoint, {
             method: 'POST',
             headers: { Authorization: `Bearer ${credential}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              messages: [{ role: 'user', content: input.query }],
-              search_source: 'baidu_search_v2',
-              resource_type_filter: {
-                web: { top_k: Math.min(input.limit ?? 10, 50) },
-                image: { top_k: Math.min(input.limit ?? 10, 30) },
-              },
-            }),
+            body: JSON.stringify(request),
             signal: controller.signal,
           });
         } catch (error) {
@@ -169,7 +221,10 @@ export function createBaiduReferenceSearchGateway(options: {
           seen.add(dedupeKey);
           items.push(reference);
         }
-        const page = { items, provider: PROVIDER, query: input.query, providerCalls } as SearchResultPage;
+        const page = {
+          items, provider: PROVIDER, query: input.query, providerCalls,
+          ...(providerQueryText !== input.query ? { providerQueryText } : {}),
+        } as SearchResultPage;
         assertSearchResultPage(page, { query: input.query });
         return page;
       }

@@ -6,6 +6,7 @@ export function assertSearchResultPage(page: SearchResultPage, expected?: { quer
   if (!page.query.trim()) throw new Error('search result page requires query');
   if (expected?.query !== undefined && page.query !== expected.query) throw new Error('search result page query mismatch');
   if (!page.provider.trim()) throw new Error('search result page requires provider');
+  if (page.providerQueryText !== undefined && !page.providerQueryText.trim()) throw new Error('search result page providerQueryText cannot be empty');
   if (!Array.isArray(page.items)) throw new Error('search result page items must be an array');
   if (page.providerCalls !== undefined && (!Number.isInteger(page.providerCalls) || page.providerCalls < 1)) {
     throw new Error('search result page providerCalls must be a positive integer');

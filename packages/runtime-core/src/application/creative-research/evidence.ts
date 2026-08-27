@@ -155,6 +155,7 @@ export function assertSearchQuery(query: SearchQuery): void {
   assertEnum(query.kind, SEARCH_QUERY_KINDS, 'query.kind');
   assertEnum(query.status, SEARCH_QUERY_STATUSES, 'query.status');
   requireText(query.batch, 'query.batch');
+  if (query.providerQueryText !== undefined) requireText(query.providerQueryText, 'query.providerQueryText');
   if (!Array.isArray(query.derivedFromKeywordIds) || !query.derivedFromKeywordIds.length) {
     throw new Error('query.derivedFromKeywordIds requires at least one keyword');
   }

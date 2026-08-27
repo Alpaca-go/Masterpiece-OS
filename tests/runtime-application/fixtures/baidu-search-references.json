@@ -14,7 +14,7 @@
       "url": "https://example.com/case/two",
       "website": "example.com",
       "type": "image",
-      "image": { "url": "https://img.example.com/a.jpg?token=signed", "width": 1200, "height": 800 }
+      "image": { "url": "https://img.example.com/a.jpg?token=signed", "width": "1200", "height": "800" }
     },
     {
       "id": 3,
@@ -22,7 +22,7 @@
       "url": "https://example.com/case/another-page",
       "website": "example.com",
       "type": "image",
-      "image": { "url": "https://img.example.com/a.jpg?token=signed", "width": 1200, "height": 800 }
+      "image": { "url": "https://img.example.com/a.jpg?token=signed", "width": "1200", "height": "800" }
     },
     {
       "id": 4,

@@ -4,6 +4,7 @@ import type { SearchQuery, WebReferenceItem } from './creative-research/contract
 import { planInitialSearchQueries } from './creative-research-search-query-planner.ts';
 import { asCreativeResearchSearchError, creativeResearchSearchError } from './creative-research-search-errors.ts';
 import { creativeResearchError } from './creative-research-errors.ts';
+import { assertCreativeResearchTransition } from './creative-research/invariants.ts';
 
 export function createCreativeResearchReferenceSearchService(options: {
   sessions: CreativeResearchSessionRepository;
@@ -25,10 +26,12 @@ export function createCreativeResearchReferenceSearchService(options: {
 
   async function startResearch(sessionId: string) {
     const session = await requireSession(sessionId);
-    if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', '只有 INTAKE Session 可以进入 RESEARCH');
     const brief = await options.briefs.getActiveRevision(sessionId);
     if (!brief) throw creativeResearchError('CREATIVE_RESEARCH_BRIEF_NOT_FOUND', '开始研究前必须存在 active Design Brief');
-    if (!brief.searchKeywords.some((keyword) => keyword.enabled)) throw creativeResearchSearchError('QUERY_INVALID', 'Design Brief 没有启用的 Search Keyword');
+    assertCreativeResearchTransition(session, 'RESEARCH', {
+      activeDesignBrief: brief,
+      searchKeywords: brief.searchKeywords,
+    });
     return options.sessions.save({ ...session, status: 'RESEARCH', updatedAt: now() });
   }
 
@@ -50,7 +53,10 @@ export function createCreativeResearchReferenceSearchService(options: {
     if (!query) throw creativeResearchSearchError('QUERY_NOT_FOUND', `Search Query 不存在：${queryId}`);
     if (query.status !== 'PENDING') throw creativeResearchSearchError('QUERY_INVALID', `Search Query ${queryId} 已经终止`);
     try {
-      const page = await options.gateway.search({ sessionId, queryId, query: query.text, kind: query.kind, cursor: query.cursor });
+      const page = await options.gateway.search({
+        sessionId, queryId, query: query.text, kind: query.kind,
+        ...(query.cursor ? { cursor: query.cursor } : {}),
+      });
       const stored: WebReferenceItem[] = [];
       for (const reference of page.items) {
         const value = await options.references.storeReference(reference);
@@ -59,6 +65,7 @@ export function createCreativeResearchReferenceSearchService(options: {
       const completed = await options.history.recordQueryProgress(sessionId, queryId, {
         status: 'COMPLETED', provider: page.provider, completedAt: now(),
         ...(page.nextCursor ? { cursor: page.nextCursor } : {}),
+        ...(page.providerQueryText ? { providerQueryText: page.providerQueryText } : {}),
         resultCount: stored.length, providerCalls: page.providerCalls ?? 1,
       });
       return { query: completed, references: stored };

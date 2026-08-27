@@ -19,11 +19,17 @@ if (!confirmed || !credential) {
       sessionId: 'manual-smoke', queryId: `manual-${startedAt}`,
       query: '新中式餐饮品牌设计', kind: 'CATEGORY', limit: 5,
     });
+    const webReferences = result.items.filter((item) => item.resourceType === 'WEB');
+    if (!result.items.length || !webReferences.length) throw Object.assign(new Error('No Web references returned'), { code: 'RESPONSE_INVALID' });
+    if (result.items.some((item) => item.provider !== 'baidu-search' || item.queryId !== `manual-${startedAt}` || !item.sourceUrl)) {
+      throw Object.assign(new Error('Reference provenance is invalid'), { code: 'RESPONSE_INVALID' });
+    }
     console.log(JSON.stringify({
       status: 'COMPLETED', provider: result.provider, query: result.query,
       providerCalls: result.providerCalls, referenceCount: result.items.length,
       imageCount: result.items.filter((item) => item.resourceType === 'IMAGE').length,
       webCount: result.items.filter((item) => item.resourceType === 'WEB').length,
+      publisherDomains: [...new Set(result.items.map((item) => item.publisherOrDomain))].slice(0, 10),
       durationMs: Date.now() - startedAt,
       retention: 'PROVENANCE_METADATA_ONLY',
     }));

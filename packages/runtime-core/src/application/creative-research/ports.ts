@@ -32,6 +32,7 @@ export interface SearchHistoryRepository {
     provider?: string;
     cursor?: string;
     completedAt?: string;
+    providerQueryText?: string;
     errorCode?: string;
     errorMessage?: string;
     resultCount?: number;
@@ -82,6 +83,7 @@ export interface SearchResultPage {
   nextCursor?: string;
   provider: string;
   query: string;
+  providerQueryText?: string;
   providerCalls?: number;
 }
 

@@ -103,6 +103,7 @@ export interface SearchQuery {
   derivedFromKeywordIds: string[];
   createdAt: string;
   completedAt?: string;
+  providerQueryText?: string;
   errorCode?: string;
   errorMessage?: string;
   resultCount?: number;

@@ -66,12 +66,20 @@ test('R3 Baidu provider consumes references only, normalizes provenance and dedu
   });
   const page = await gateway.search({ sessionId: 'session-1', queryId: 'query-1', query: '新中式餐饮品牌设计', kind: 'CATEGORY' });
   assert.equal(authorization, 'Bearer secret-test-key');
-  assert.match(requestBody, /"search_source":"baidu_search_v2"/u);
+  const body = JSON.parse(requestBody);
+  assert.equal(body.search_source, 'baidu_search_v2');
+  assert.equal(Array.isArray(body.resource_type_filter), true);
+  assert.deepEqual(body.resource_type_filter, [
+    { type: 'web', top_k: 10 },
+    { type: 'image', top_k: 10 },
+  ]);
   assert.equal(page.provider, 'baidu-search');
   assert.equal(page.items.length, 2);
   assert.deepEqual(page.items.map((item) => item.resourceType), ['WEB', 'IMAGE']);
   assert.equal(page.items[0]?.canonicalUrl, 'https://example.com/case/one');
   assert.equal(page.items[1]?.remoteImageUrl, 'https://img.example.com/a.jpg?token=signed');
+  assert.equal(page.items[1]?.imageWidth, 1200);
+  assert.equal(page.items[1]?.imageHeight, 800);
   assert.ok(page.items.every((item) => item.sourceUrl && item.licenseOrUsageStatus === 'UNKNOWN'));
   assert.doesNotMatch(JSON.stringify(page), /generated answer/u);
 });
@@ -143,6 +151,7 @@ test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references
         active -= 1;
         return {
           provider: 'baidu-search', query: input.query, providerCalls: 1,
+          ...(input.queryId === 'q1' ? { providerQueryText: 'provider-safe-query' } : {}),
           items: [{
             id: 'webref-shared', sessionId: input.sessionId, sourceType: 'WEB_REFERENCE' as const, resourceType: 'WEB' as const,
             sourceUrl: 'https://example.com/shared', canonicalUrl: 'https://example.com/shared', provider: 'baidu-search',
@@ -163,6 +172,7 @@ test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references
     assert.equal(peak, 2);
     const history = await service.getSearchHistory('session-1');
     assert.ok(history.every((query) => query.status === 'COMPLETED' && query.provider === 'baidu-search' && query.resultCount === 1));
+    assert.equal(history.find((query) => query.id === 'q1')?.providerQueryText, 'provider-safe-query');
     const references = await service.listWebReferences('session-1');
     assert.equal(references.length, 1);
     assert.deepEqual(references[0]?.matchedQueryIds?.sort(), queries.map((query) => query.id).sort());
