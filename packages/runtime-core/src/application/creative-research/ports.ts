@@ -1,4 +1,5 @@
 import type {
+  CreativeDirectionContext,
   CreativeResearchSession,
   DesignBrief,
   DirectionBoard,
@@ -65,6 +66,11 @@ export interface DirectionBoardRepository {
   listRevisionHistory(sessionId: string): Promise<DirectionBoard[]>;
 }
 
+export interface CreativeDirectionContextRepository {
+  save(context: CreativeDirectionContext): Promise<CreativeDirectionContext>;
+  getCurrent(sessionId: string): Promise<CreativeDirectionContext | null>;
+}
+
 export interface ReferenceSearchExclusions {
   referenceIds?: string[];
   domains?: string[];
@@ -101,5 +107,6 @@ export const CREATIVE_RESEARCH_PORT_NAMES = [
   'ReferenceResearchRepository',
   'PreferenceEvidenceRepository',
   'DirectionBoardRepository',
+  'CreativeDirectionContextRepository',
   'ReferenceSearchGateway',
 ] as const;

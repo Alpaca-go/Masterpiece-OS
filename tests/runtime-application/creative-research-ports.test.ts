@@ -20,6 +20,7 @@ test('Creative Research declares the bounded repository, search and authority ad
     'ReferenceResearchRepository',
     'PreferenceEvidenceRepository',
     'DirectionBoardRepository',
+    'CreativeDirectionContextRepository',
     'ReferenceSearchGateway',
   ]);
   assert.deepEqual(CREATIVE_RESEARCH_ADAPTER_NAMES, [
