@@ -202,9 +202,9 @@ try {
   const result = {
     schemaVersion: '1.1', status: 'pass', runtime: 'web', host: 'node', rendererUrl, rpcUrl,
     checks: {
-      // 147 pre-Packaging operations + the 8 canonical Packaging Workspace
-      // channels registered by the current operation graph.
-      nodeHostBoot: hostReady.operationCount === 155,
+      // Current 180-channel production baseline plus the fourteen narrow R4
+      // Creative Research channels registered by the current operation graph.
+      nodeHostBoot: hostReady.operationCount === 194,
       nodeHealth: health.host === 'node',
       rendererPage: screenshot.length > 10_000 && rendererState.rootClass !== 'splash',
       configLoad: Array.isArray(settings.body.result?.profiles),

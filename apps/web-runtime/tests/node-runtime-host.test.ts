@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 180 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 194 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -31,7 +31,8 @@ test('Node Runtime Host binds all 180 channels to the Shared Registry without El
     delete process.env.MASTERPIECE_WEB_OPEN_PATH;
   });
 
-  assert.equal(host.operationCount, 180);
+  // R4 adds fourteen narrow creative-research:* operations to the 180-channel baseline.
+  assert.equal(host.operationCount, 194);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),
@@ -41,6 +42,15 @@ test('Node Runtime Host binds all 180 channels to the Shared Registry without El
   assert.ok(Array.isArray((await rpc(host.url, 'projects:list', [])).result));
   assert.ok(Array.isArray((await rpc(host.url, 'document-context:list-runs', [])).result));
   assert.ok(Array.isArray((await rpc(host.url, 'reference-anchor:list-runs', [])).result));
+  assert.deepEqual((await rpc(host.url, 'creative-research:get-search-credential-status', [])).result, {
+    provider: 'baidu-search', configured: false,
+  });
+  const credentialSave = await rpc(host.url, 'creative-research:save-search-credential', ['r4-host-secret']);
+  assert.deepEqual(credentialSave.result, { provider: 'baidu-search', configured: true });
+  assert.doesNotMatch(JSON.stringify(credentialSave), /r4-host-secret/u);
+  assert.deepEqual((await rpc(host.url, 'creative-research:delete-search-credential', [])).result, {
+    provider: 'baidu-search', configured: false,
+  });
   assert.equal((await rpc(host.url, 'analysis:cancel', ['__no_active_project__'])).result, false);
   assert.ok((await rpc(host.url, 'image-generation:get-capabilities', [])).result.modelId);
   assert.ok((await rpc(host.url, 'image-generation:short-chain-options', [])).result);

@@ -168,6 +168,12 @@ test('P3-C4.1 production composition root identity fixture', async (t) => {
       apiKey: 'SANCTIONED_LOCAL_TEST_ONLY', baseUrl: 'http://127.0.0.1:1', region: '',
     } as any),
     dataPath,
+    searchCredential: {
+      has: async () => false,
+      read: async () => '',
+      write: async () => undefined,
+      remove: async () => undefined,
+    },
   });
 
   async function prepare(mode: 'analysis_led' | 'reference_first') {
