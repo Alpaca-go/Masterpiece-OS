@@ -8,6 +8,7 @@ import {
   createCreativeProductionOperations,
   createCreativeSessionOperations,
   createCreativeIntelligenceOperations,
+  createCreativeResearchOperations,
   createDocumentOperations,
   createImageGenerationOperations,
   createPackagingArtifactStore,
@@ -23,6 +24,16 @@ import {
   createVisualMemoryOperations,
   setPackagingArtifactStorePathImpl,
 } from '@masterpiece/runtime-core';
+import { createCreativeResearchAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-analysis-adapter.ts';
+import { createCreativeResearchDesignBriefService } from '@masterpiece/runtime-core/application/creative-research-design-brief-service.ts';
+import { createCreativeResearchDocumentAdapter } from '@masterpiece/runtime-core/application/creative-research-document-adapter.ts';
+import {
+  BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID,
+  createBaiduReferenceSearchGateway,
+} from '@masterpiece/runtime-core/application/creative-research-reference-search-baidu.ts';
+import { createCreativeResearchReferenceSearchService } from '@masterpiece/runtime-core/application/creative-research-reference-search-service.ts';
+import { createCreativeResearchResearchStore } from '@masterpiece/runtime-core/application/creative-research-research-store.ts';
+import { createCreativeResearchStore } from '@masterpiece/runtime-core/application/creative-research-store.ts';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
   ProviderCredentials,
@@ -70,6 +81,12 @@ export interface NodeRuntimeAdapters {
    * runId namespace isolates the two streams.
    */
   dataPath: string;
+  searchCredential: {
+    has(credentialId: string): Promise<boolean>;
+    read(credentialId: string): Promise<string>;
+    write(credentialId: string, value: string): Promise<void>;
+    remove(credentialId: string): Promise<void>;
+  };
 }
 
 /**
@@ -220,6 +237,31 @@ export function createCurrentBusinessOperations(
   // in the same root; the `pkg-...` runId namespace isolates
   // the two streams.
   const dataPath = path.resolve(adapters.dataPath);
+  const creativeResearchStore = createCreativeResearchStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchResearchStore = createCreativeResearchResearchStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchBriefs = createCreativeResearchDesignBriefService({
+    ...creativeResearchStore,
+    documentAdapter: createCreativeResearchDocumentAdapter(),
+    analysisAdapter: createCreativeResearchAnalysisAdapter({
+      readCredentials: async (profileId) => readCredentials(profileId),
+    }),
+  });
+  const creativeResearchSearch = createCreativeResearchReferenceSearchService({
+    ...creativeResearchStore,
+    ...creativeResearchResearchStore,
+    gateway: createBaiduReferenceSearchGateway({
+      readCredential: () => adapters.searchCredential.read(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),
+    }),
+  });
+  const creativeResearchIntakeRoot = path.resolve(dataPath, '..', 'documents-intake');
+  const creativeResearchBrowserBriefs = {
+    ...creativeResearchBriefs,
+    createSession: async (input: { projectId: string; sourceDocumentIds: string[] }) => {
+      const sourceDocumentIds = input.sourceDocumentIds.map((source) =>
+        assertInside(creativeResearchIntakeRoot, path.resolve(String(source || ''))));
+      return creativeResearchBriefs.createSession({ ...input, sourceDocumentIds });
+    },
+  };
   const {
     projects, reports, pipeline, documentContext, projectContext, contextIntegration,
     referenceAnchor, imageGeneration, shortChainGeneration, creativeSessions,
@@ -546,6 +588,17 @@ export function createCurrentBusinessOperations(
     // (creative-intelligence:list-runs, etc.). The Web never imports
     // the application service directly.
     createCreativeIntelligenceOperations({ creativeIntelligence }),
+    createCreativeResearchOperations({
+      briefs: creativeResearchBrowserBriefs,
+      search: creativeResearchSearch,
+      history: creativeResearchResearchStore.history,
+      listSessions: (projectId) => creativeResearchStore.sessions.listByProject(projectId),
+      credential: {
+        has: () => adapters.searchCredential.has(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),
+        save: (value) => adapters.searchCredential.write(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID, value),
+        remove: () => adapters.searchCredential.remove(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),
+      },
+    }),
     // P3-B2: Packaging Workspace RPC operations. The
     // Workspace service is held by `runtime-services.ts`; the
     // operations layer is a thin bridge to it.

@@ -2473,6 +2473,99 @@ export interface PackagingArtifactPreviewResult {
   preview: { mimeType: string; dataUrl: string } | null;
 }
 
+export type CreativeResearchSessionStatusDto = 'INTAKE' | 'RESEARCH' | 'DIRECTION' | 'COMPLETED';
+export type CreativeResearchKeywordKindDto = 'CONCEPT' | 'VISUAL' | 'CATEGORY';
+
+export interface CreativeResearchSessionDto {
+  id: string;
+  projectId: string;
+  status: CreativeResearchSessionStatusDto;
+  sourceDocumentCount: number;
+  activeDesignBriefId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreativeResearchBriefDto {
+  id: string;
+  sessionId: string;
+  revision: number;
+  projectSummary: string;
+  designTask: string;
+  audience: string;
+  scenarios: string[];
+  coreMessages: string[];
+  constraints: string[];
+  conceptKeywords: string[];
+  visualKeywords: string[];
+  designerNotes: string[];
+  searchKeywords: Array<{
+    id: string;
+    value: string;
+    kind: CreativeResearchKeywordKindDto;
+    source: 'AI' | 'DESIGNER';
+    enabled: boolean;
+    rationale?: string;
+    locale?: string;
+  }>;
+  warnings: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UpdateCreativeResearchBriefInput {
+  projectSummary?: string;
+  designTask?: string;
+  audience?: string;
+  scenarios?: string[];
+  coreMessages?: string[];
+  constraints?: string[];
+  conceptKeywords?: string[];
+  visualKeywords?: string[];
+  designerNotes?: string[];
+  searchKeywords?: Array<{
+    id?: string;
+    value: string;
+    kind: CreativeResearchKeywordKindDto;
+    enabled?: boolean;
+    rationale?: string;
+    locale?: string;
+  }>;
+}
+
+export interface CreativeResearchQueryDto {
+  id: string;
+  text: string;
+  kind: 'CONCEPT' | 'CATEGORY';
+  status: 'PENDING' | 'COMPLETED' | 'FAILED';
+  provider?: string;
+  providerQueryText?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  resultCount?: number;
+  createdAt: string;
+  completedAt?: string;
+}
+
+export interface CreativeResearchReferenceDto {
+  id: string;
+  resourceType: 'IMAGE' | 'WEB';
+  title: string;
+  sourceUrl: string;
+  thumbnailUrl?: string;
+  remoteImageUrl?: string;
+  publisher: string;
+  queryId: string;
+  matchedQueryIds: string[];
+  resultRank: number;
+  retrievedAt: string;
+}
+
+export interface CreativeResearchCredentialStatusDto {
+  provider: 'baidu-search';
+  configured: boolean;
+}
+
 export interface RuntimeApi {
   settings: {
     get(): Promise<PublicSettings>;
@@ -2512,6 +2605,7 @@ export interface RuntimeApi {
   };
   documentContext: {
     chooseDocuments(): Promise<string[]>;
+    importDocuments(input: { documents: Array<{ name: string; content: string; size: number }> }): Promise<string[]>;
     inspectDocuments(paths: string[]): Promise<VisualTranslationDocumentSummary[]>;
     listRuns(): Promise<DocumentContextRun[]>;
     getRun(runId: string): Promise<DocumentContextRun>;
@@ -2576,6 +2670,22 @@ export interface RuntimeApi {
     cancelAnchorProduction(runId: string): Promise<CreativeIntelligenceWorkspaceView>;
     getApprovedAnchor(runId: string): Promise<ApprovedVisualAnchor | null>;
     getAnchorApprovalHistory(runId: string): Promise<AnchorApprovalHistoryEntry[]>;
+  };
+  creativeResearch: {
+    listSessions(projectId: string): Promise<CreativeResearchSessionDto[]>;
+    createSession(input: { projectId: string; sourceDocumentIds: string[] }): Promise<CreativeResearchSessionDto>;
+    getSession(sessionId: string): Promise<CreativeResearchSessionDto>;
+    prepareDesignBrief(sessionId: string, input: { profileId: string; designerNotes?: string[] }): Promise<CreativeResearchBriefDto>;
+    getDesignBrief(sessionId: string): Promise<CreativeResearchBriefDto>;
+    updateDesignBrief(sessionId: string, input: UpdateCreativeResearchBriefInput): Promise<CreativeResearchBriefDto>;
+    startResearch(sessionId: string): Promise<CreativeResearchSessionDto>;
+    planInitialSearch(sessionId: string): Promise<CreativeResearchQueryDto[]>;
+    executeSearchBatch(sessionId: string, queryIds?: string[]): Promise<CreativeResearchQueryDto[]>;
+    getSearchHistory(sessionId: string): Promise<CreativeResearchQueryDto[]>;
+    listReferences(sessionId: string): Promise<CreativeResearchReferenceDto[]>;
+    getSearchCredentialStatus(): Promise<CreativeResearchCredentialStatusDto>;
+    saveSearchCredential(value: string): Promise<CreativeResearchCredentialStatusDto>;
+    deleteSearchCredential(): Promise<CreativeResearchCredentialStatusDto>;
   };
   referenceAnchor: {
     chooseReferenceAssets(): Promise<string[]>;

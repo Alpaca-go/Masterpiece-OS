@@ -13,6 +13,10 @@ import {
   setApiProfileEnabled,
   setDefaultApiProfile,
   testApiProfile,
+  hasNodeCredential,
+  readNodeCredential,
+  removeNodeCredential,
+  writeNodeCredential,
 } from './node-settings-store.ts';
 import { createCurrentBusinessOperations } from './current-operation-graph.ts';
 import { startLocalRpcServer, type LocalRpcServer } from './local-rpc-server.ts';
@@ -79,6 +83,12 @@ export async function startNodeRuntimeHost(options: NodeRuntimeHostOptions): Pro
     // <runId>/` — the same physical root the existing
     // image-generation run-store uses.
     dataPath: path.resolve(settings.defaultDataPath),
+    searchCredential: {
+      has: hasNodeCredential,
+      read: readNodeCredential,
+      write: writeNodeCredential,
+      remove: removeNodeCredential,
+    },
   }));
   runtime.registerOperations(createNodeNativeOperations(services, runtimePaths));
   await runtime.start();

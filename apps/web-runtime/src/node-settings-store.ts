@@ -241,6 +241,15 @@ async function saveCredential(profileId: string, apiKey: string): Promise<void> 
   await nodeCredentials.write(profileId, apiKey);
 }
 
+// R4 keeps the dedicated reference-search secret in the same encrypted Node
+// credential authority as model profiles. These generic host helpers are not
+// exposed over RPC; the Creative Research operation layer fixes the credential
+// id and returns status only.
+export const hasNodeCredential = (credentialId: string) => nodeCredentials.has(credentialId);
+export const readNodeCredential = (credentialId: string) => nodeCredentials.read(credentialId);
+export const writeNodeCredential = (credentialId: string, value: string) => nodeCredentials.write(credentialId, value);
+export const removeNodeCredential = (credentialId: string) => nodeCredentials.remove(credentialId);
+
 export async function getSettings(): Promise<PublicSettings> {
   return publicSettings(await readStored());
 }
