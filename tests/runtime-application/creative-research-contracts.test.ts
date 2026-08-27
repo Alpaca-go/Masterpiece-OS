@@ -172,19 +172,21 @@ test('Search contracts lock kind, batch, cursor, exclusions and real Web provena
 
 test('Selections, regions, negative signals and finalized insights require designer evidence', () => {
   const selected: ReferenceSelection = {
-    referenceId: 'reference-web-1', state: 'SELECTED', selectedAttributes: ['TYPOGRAPHY', 'LAYOUT'],
+    sessionId: 'session-1', referenceId: 'reference-web-1', state: 'SELECTED', selectedAttributes: ['TYPOGRAPHY', 'LAYOUT'],
     designerNote: '保留编辑式留白', actor: 'DESIGNER', createdAt: NOW, updatedAt: NOW,
   };
   const rejected: ReferenceSelection = { ...selected, referenceId: 'reference-web-2', state: 'REJECTED' };
   assert.doesNotThrow(() => assertReferenceSelection(selected));
   assert.doesNotThrow(() => assertReferenceSelection(rejected));
+  assert.throws(() => assertReferenceSelection({ ...selected, sessionId: '' }), /sessionId is required/);
   assert.throws(() => assertReferenceSelection({ ...selected, selectedAttributes: ['LIGHTING' as never] }), /invalid/);
 
   const region = {
-    id: 'region-1', referenceId: selected.referenceId, x: 0.1, y: 0.2, width: 0.4, height: 0.5,
+    id: 'region-1', sessionId: 'session-1', referenceId: selected.referenceId, x: 0.1, y: 0.2, width: 0.4, height: 0.5,
     coordinateSpace: 'NORMALIZED_0_1' as const, selectedAttributes: ['COLOR' as const], createdAt: NOW,
   };
   assert.doesNotThrow(() => assertReferenceRegion(region));
+  assert.throws(() => assertReferenceRegion({ ...region, sessionId: '' }), /sessionId is required/);
   assert.throws(() => assertReferenceRegion({ ...region, x: 0.8, width: 0.4 }), /normalized bounds/);
 
   const negative: NegativeSignal = {
@@ -203,7 +205,7 @@ test('Selections, regions, negative signals and finalized insights require desig
 
 test('Creative Direction Context compiles deterministically without downstream private schema', () => {
   const selection: ReferenceSelection = {
-    referenceId: 'reference-web-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'],
+    sessionId: 'session-1', referenceId: 'reference-web-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'],
     designerNote: '保持单一焦点', actor: 'DESIGNER', createdAt: NOW, updatedAt: NOW,
   };
   const board: DirectionBoard = {

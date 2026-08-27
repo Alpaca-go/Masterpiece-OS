@@ -70,7 +70,9 @@ function serviceFor(session: CreativeResearchSession, brief: DesignBrief, onSave
     },
     references: {
       async storeReference(value) { return value; }, async getReference() { return null; }, async listSessionReferences() { return []; },
-      async saveSelection(value) { return value; }, async saveRegion(value) { return value; }, async saveNegativeSignal(value) { return value; },
+      async saveSelection(value) { return value; }, async listSelections() { return []; },
+      async saveRegion(value) { return value; }, async listRegions() { return []; },
+      async saveNegativeSignal(value) { return value; }, async listNegativeSignals() { return []; },
     },
     gateway: { async search() { throw new Error('unused'); } },
     now: () => NOW,

@@ -221,6 +221,7 @@ export function assertReferenceItem(reference: ReferenceItem): void {
 }
 
 export function assertReferenceSelection(selection: ReferenceSelection): void {
+  requireText(selection.sessionId, 'selection.sessionId');
   requireText(selection.referenceId, 'selection.referenceId');
   assertEnum(selection.state, REFERENCE_SELECTION_STATES, 'selection.state');
   if (selection.actor !== 'DESIGNER') throw new Error('selection.actor must be DESIGNER');
@@ -232,6 +233,7 @@ export function assertReferenceSelection(selection: ReferenceSelection): void {
 
 export function assertReferenceRegion(region: ReferenceRegion): void {
   requireText(region.id, 'region.id');
+  requireText(region.sessionId, 'region.sessionId');
   requireText(region.referenceId, 'region.referenceId');
   if (region.coordinateSpace !== 'NORMALIZED_0_1') throw new Error('region.coordinateSpace must be NORMALIZED_0_1');
   for (const [field, value] of Object.entries({ x: region.x, y: region.y, width: region.width, height: region.height })) {
@@ -269,6 +271,7 @@ export function assertNegativeSignal(signal: NegativeSignal): void {
 export function assertPreferenceInsight(insight: PreferenceInsight): void {
   requireText(insight.id, 'insight.id');
   requireText(insight.sessionId, 'insight.sessionId');
+  if (insight.analysisRunId !== undefined) requireText(insight.analysisRunId, 'insight.analysisRunId');
   requireText(insight.summary, 'insight.summary');
   assertEnum(insight.category, REFERENCE_ATTRIBUTES, 'insight.category');
   assertEnum(insight.status, ['DRAFT', 'FINALIZED'] as const, 'insight.status');

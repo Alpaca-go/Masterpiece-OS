@@ -32,7 +32,7 @@ function brief(revision = 1, id = `brief-${revision}`): DesignBrief {
 }
 
 const selected: ReferenceSelection = {
-  referenceId: 'reference-1', state: 'SELECTED', selectedAttributes: ['COLOR'], actor: 'DESIGNER', createdAt: NOW, updatedAt: NOW,
+  sessionId: 'session-1', referenceId: 'reference-1', state: 'SELECTED', selectedAttributes: ['COLOR'], actor: 'DESIGNER', createdAt: NOW, updatedAt: NOW,
 };
 const board: DirectionBoard = {
   id: 'board-1', sessionId: 'session-1', revision: 1, summary: '有证据支持的方向', visualKeywords: ['温暖'],

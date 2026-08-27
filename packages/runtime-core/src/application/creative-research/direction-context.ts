@@ -94,6 +94,11 @@ export function compileCreativeDirectionContext(
   if (brief.sessionId !== session.id || directionBoard.sessionId !== session.id) {
     throw new Error('direction handoff inputs must preserve session identity');
   }
+  if (selections.some((selection) => selection.sessionId !== session.id)
+    || regions.some((region) => region.sessionId !== session.id)
+    || negativeSignals.some((signal) => signal.sessionId !== session.id)) {
+    throw new Error('direction evidence must preserve session identity');
+  }
   if (session.activeDesignBriefId !== brief.id) throw new Error('direction handoff requires the active DesignBrief');
   if (session.activeDirectionBoardId !== directionBoard.id) throw new Error('direction handoff requires the active DirectionBoard');
 

@@ -1,7 +1,20 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import type { ReferenceItem, SearchQuery, WebReferenceItem } from './creative-research/contracts.ts';
-import { assertReferenceItem, assertSearchQuery } from './creative-research/evidence.ts';
+import type {
+  NegativeSignal,
+  ReferenceItem,
+  ReferenceRegion,
+  ReferenceSelection,
+  SearchQuery,
+  WebReferenceItem,
+} from './creative-research/contracts.ts';
+import {
+  assertNegativeSignal,
+  assertReferenceItem,
+  assertReferenceRegion,
+  assertReferenceSelection,
+  assertSearchQuery,
+} from './creative-research/evidence.ts';
 import type { ReferenceResearchRepository, SearchHistoryRepository } from './creative-research/ports.ts';
 import { assertInside } from './analysis-contract.ts';
 import { atomicWriteJsonWithRetry, type AtomicWriteResult } from './runtime/atomic-write.ts';
@@ -36,8 +49,14 @@ export function createCreativeResearchResearchStore(options: {
   };
   const queryDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'queries');
   const referenceDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'references');
+  const selectionDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'selections');
+  const regionDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'regions');
+  const negativeSignalDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'negative-signals');
   const queryPath = async (sessionId: string, queryId: string) => path.join(await queryDirectory(sessionId), `${safeIdentifier(queryId, 'Query ID')}.json`);
   const referencePath = async (sessionId: string, referenceId: string) => path.join(await referenceDirectory(sessionId), `${safeIdentifier(referenceId, 'Reference ID')}.json`);
+  const selectionPath = async (sessionId: string, referenceId: string) => path.join(await selectionDirectory(sessionId), `${safeIdentifier(referenceId, 'Reference ID')}.json`);
+  const regionPath = async (sessionId: string, regionId: string) => path.join(await regionDirectory(sessionId), `${safeIdentifier(regionId, 'Region ID')}.json`);
+  const negativeSignalPath = async (sessionId: string, signalId: string) => path.join(await negativeSignalDirectory(sessionId), `${safeIdentifier(signalId, 'Negative Signal ID')}.json`);
   const associationPath = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'associations', 'reference-query.jsonl');
   const persist = async (filename: string, value: unknown) => {
     const result = await writeJson(filename, value);
@@ -48,6 +67,13 @@ export function createCreativeResearchResearchStore(options: {
     const current = previous.catch(() => undefined).then(operation);
     locks.set(key, current);
     try { return await current; } finally { if (locks.get(key) === current) locks.delete(key); }
+  };
+  const listJson = async <T>(directory: string, assertValue: (value: T) => void): Promise<T[]> => {
+    const entries = await fs.readdir(directory).catch(() => []);
+    const values = await Promise.all(entries
+      .filter((entry) => entry.endsWith('.json'))
+      .map((entry) => readJson<T>(path.join(directory, entry))));
+    return values.filter((item): item is T => Boolean(item)).map((item) => { assertValue(item); return item; });
   };
 
   const history: SearchHistoryRepository = {
@@ -113,9 +139,56 @@ export function createCreativeResearchResearchStore(options: {
       return values.filter((item): item is ReferenceItem => Boolean(item)).map((item) => { assertReferenceItem(item); return item; })
         .sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id));
     },
-    async saveSelection() { throw creativeResearchSearchError('STORE_FAILED', 'CI-R3 不支持 Reference Selection'); },
-    async saveRegion() { throw creativeResearchSearchError('STORE_FAILED', 'CI-R3 不支持 Reference Region'); },
-    async saveNegativeSignal() { throw creativeResearchSearchError('STORE_FAILED', 'CI-R3 不支持 Negative Signal'); },
+    async saveSelection(selection) {
+      assertReferenceSelection(selection);
+      const filename = await selectionPath(selection.sessionId, selection.referenceId);
+      return serialize(filename, async () => {
+        const reference = await readJson<ReferenceItem>(await referencePath(selection.sessionId, selection.referenceId));
+        if (!reference) throw creativeResearchSearchError('STORE_FAILED', `Reference 不存在：${selection.referenceId}`);
+        if (reference.sessionId !== selection.sessionId) throw creativeResearchSearchError('STORE_FAILED', 'Selection session identity 不匹配');
+        const previous = await readJson<ReferenceSelection>(filename);
+        if (previous && previous.sessionId !== selection.sessionId) throw creativeResearchSearchError('STORE_FAILED', 'Selection session identity 不匹配');
+        await persist(filename, selection);
+        return selection;
+      });
+    },
+    async listSelections(sessionId) {
+      const values = await listJson<ReferenceSelection>(await selectionDirectory(sessionId), assertReferenceSelection);
+      return values.sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.referenceId.localeCompare(right.referenceId));
+    },
+    async saveRegion(region) {
+      assertReferenceRegion(region);
+      const filename = await regionPath(region.sessionId, region.id);
+      return serialize(filename, async () => {
+        if (!await readJson<ReferenceItem>(await referencePath(region.sessionId, region.referenceId))) {
+          throw creativeResearchSearchError('STORE_FAILED', `Reference 不存在：${region.referenceId}`);
+        }
+        const previous = await readJson<ReferenceRegion>(filename);
+        if (previous) throw creativeResearchSearchError('STORE_FAILED', `Reference Region 已存在：${region.id}`);
+        await persist(filename, region);
+        return region;
+      });
+    },
+    async listRegions(sessionId) {
+      const values = await listJson<ReferenceRegion>(await regionDirectory(sessionId), assertReferenceRegion);
+      return values.sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id));
+    },
+    async saveNegativeSignal(signal) {
+      assertNegativeSignal(signal);
+      const filename = await negativeSignalPath(signal.sessionId, signal.id);
+      return serialize(filename, async () => {
+        if (signal.sourceReferenceId && !await readJson<ReferenceItem>(await referencePath(signal.sessionId, signal.sourceReferenceId))) {
+          throw creativeResearchSearchError('STORE_FAILED', `Reference 不存在：${signal.sourceReferenceId}`);
+        }
+        if (await readJson<NegativeSignal>(filename)) throw creativeResearchSearchError('STORE_FAILED', `Negative Signal 已存在：${signal.id}`);
+        await persist(filename, signal);
+        return signal;
+      });
+    },
+    async listNegativeSignals(sessionId) {
+      const values = await listJson<NegativeSignal>(await negativeSignalDirectory(sessionId), assertNegativeSignal);
+      return values.sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id));
+    },
   };
 
   return { history, references };

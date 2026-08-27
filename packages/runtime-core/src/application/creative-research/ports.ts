@@ -46,14 +46,17 @@ export interface ReferenceResearchRepository {
   getReference(sessionId: string, referenceId: string): Promise<ReferenceItem | null>;
   listSessionReferences(sessionId: string): Promise<ReferenceItem[]>;
   saveSelection(selection: ReferenceSelection): Promise<ReferenceSelection>;
+  listSelections(sessionId: string): Promise<ReferenceSelection[]>;
   saveRegion(region: ReferenceRegion): Promise<ReferenceRegion>;
+  listRegions(sessionId: string): Promise<ReferenceRegion[]>;
   saveNegativeSignal(signal: NegativeSignal): Promise<NegativeSignal>;
+  listNegativeSignals(sessionId: string): Promise<NegativeSignal[]>;
 }
 
 export interface PreferenceEvidenceRepository {
   saveInsight(insight: PreferenceInsight): Promise<PreferenceInsight>;
   listInsights(sessionId: string): Promise<PreferenceInsight[]>;
-  storeDesignerOverride(insightId: string, designerOverride: string): Promise<PreferenceInsight>;
+  storeDesignerOverride(sessionId: string, insightId: string, designerOverride: string): Promise<PreferenceInsight>;
 }
 
 export interface DirectionBoardRepository {

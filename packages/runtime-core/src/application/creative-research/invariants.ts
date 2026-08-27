@@ -88,7 +88,7 @@ export function assertCreativeResearchTransition(
   if (session.status === 'RESEARCH' && targetStatus === 'DIRECTION') {
     const selections = evidence.selections ?? [];
     for (const selection of selections) assertReferenceSelection(selection);
-    if (!selections.some((selection) => selection.state === 'SELECTED' && selection.actor === 'DESIGNER')) {
+    if (!selections.some((selection) => selection.sessionId === session.id && selection.state === 'SELECTED' && selection.actor === 'DESIGNER')) {
       throw new Error('RESEARCH -> DIRECTION requires a designer-selected reference');
     }
     return;

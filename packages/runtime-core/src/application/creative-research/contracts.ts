@@ -191,6 +191,7 @@ export type ReferenceAttribute = typeof REFERENCE_ATTRIBUTES[number];
 export type DesignerEvidenceActor = 'DESIGNER';
 
 export interface ReferenceSelection {
+  sessionId: string;
   referenceId: string;
   state: ReferenceSelectionState;
   selectedAttributes: ReferenceAttribute[];
@@ -202,6 +203,7 @@ export interface ReferenceSelection {
 
 export interface ReferenceRegion {
   id: string;
+  sessionId: string;
   referenceId: string;
   x: number;
   y: number;
@@ -244,6 +246,7 @@ export type PreferenceInsightStatus = 'DRAFT' | 'FINALIZED';
 export interface PreferenceInsight {
   id: string;
   sessionId: string;
+  analysisRunId?: string;
   category: ReferenceAttribute;
   summary: string;
   status: PreferenceInsightStatus;
