@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type {
   CreativeResearchBriefDto,
+  CreativeResearchBriefFieldDto,
   CreativeResearchCredentialStatusDto,
   CreativeResearchQueryDto,
   CreativeResearchReferenceDto,
@@ -11,7 +12,14 @@ import type {
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { Button } from '../../components/ui/Button';
 import { cleanError, formatRelativeTime } from '../../utils';
-import { deriveResearchUiState, filterCreativeResearchReferences, safeReferenceUrl } from './creative-research-view-model';
+import {
+  deriveResearchUiState,
+  filterReferencesForResearchView,
+  filterReferencesByResearchKind,
+  listQueriesByResearchKind,
+  safeReferenceUrl,
+  type ReferenceResearchKind,
+} from './creative-research-view-model';
 import './creative-research.css';
 
 function fileToBase64(file: File): Promise<string> {
@@ -34,30 +42,58 @@ function BriefEditor({ brief, editable, busy, onSave }: {
   onSave(input: UpdateCreativeResearchBriefInput): Promise<void>;
 }) {
   const [draft, setDraft] = useState(brief);
+  const [evidenceField, setEvidenceField] = useState<CreativeResearchBriefFieldDto | null>(null);
   useEffect(() => setDraft(brief), [brief]);
   const field = (key: 'projectSummary' | 'designTask' | 'audience') => ({
     value: draft[key],
-    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => setDraft({ ...draft, [key]: event.target.value }),
+    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setEvidenceField((current) => current === key ? null : current);
+      setDraft({ ...draft, [key]: event.target.value });
+    },
     disabled: !editable,
   });
   const listField = (key: 'scenarios' | 'coreMessages' | 'constraints' | 'conceptKeywords' | 'visualKeywords' | 'designerNotes') => ({
     value: draft[key].join('\n'),
-    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => setDraft({ ...draft, [key]: listText(event.target.value) }),
+    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+      if (key === 'scenarios' || key === 'coreMessages' || key === 'constraints') {
+        setEvidenceField((current) => current === key ? null : current);
+      }
+      setDraft({ ...draft, [key]: listText(event.target.value) });
+    },
     disabled: !editable,
   });
+  const evidenceIdsFor = (key: CreativeResearchBriefFieldDto) =>
+    brief.fieldEvidence.find((item) => item.field === key)?.evidenceIds || [];
+  const valueChanged = (key: CreativeResearchBriefFieldDto) =>
+    JSON.stringify(draft[key]) !== JSON.stringify(brief[key]);
+  const evidenceFor = (key: CreativeResearchBriefFieldDto) => {
+    const ids = new Set(evidenceIdsFor(key));
+    return brief.evidence.filter((item) => ids.has(item.id));
+  };
+  const fieldHeader = (label: string, key: CreativeResearchBriefFieldDto) => <div className="cr-brief-field__label">
+    <span>{label}</span>
+    {!valueChanged(key) && evidenceIdsFor(key).length > 0 && <button type="button" onClick={() => setEvidenceField(key)}>依据</button>}
+  </div>;
   return <section className="cr-panel cr-brief">
     <header className="cr-panel__head"><div><span>Brief</span><h2>设计任务书</h2></div><b>Revision {brief.revision}</b></header>
     <div className="cr-brief__grid">
-      <label>项目摘要<textarea {...field('projectSummary')} /></label>
-      <label>设计任务<textarea {...field('designTask')} /></label>
-      <label>目标受众<textarea {...field('audience')} /></label>
-      <label>使用场景（每行一项）<textarea {...listField('scenarios')} /></label>
-      <label>核心信息（每行一项）<textarea {...listField('coreMessages')} /></label>
-      <label>约束（每行一项）<textarea {...listField('constraints')} /></label>
+      <div className="cr-brief-field">{fieldHeader('项目摘要', 'projectSummary')}<textarea aria-label="项目摘要" {...field('projectSummary')} /></div>
+      <div className="cr-brief-field">{fieldHeader('设计任务', 'designTask')}<textarea aria-label="设计任务" {...field('designTask')} /></div>
+      <div className="cr-brief-field">{fieldHeader('目标受众', 'audience')}<textarea aria-label="目标受众" {...field('audience')} /></div>
+      <div className="cr-brief-field">{fieldHeader('使用场景（每行一项）', 'scenarios')}<textarea aria-label="使用场景" {...listField('scenarios')} /></div>
+      <div className="cr-brief-field">{fieldHeader('核心信息（每行一项）', 'coreMessages')}<textarea aria-label="核心信息" {...listField('coreMessages')} /></div>
+      <div className="cr-brief-field">{fieldHeader('约束（每行一项）', 'constraints')}<textarea aria-label="约束" {...listField('constraints')} /></div>
       <label>概念词（每行一项）<textarea {...listField('conceptKeywords')} /></label>
       <label>视觉词（每行一项）<textarea {...listField('visualKeywords')} /></label>
       <label className="cr-brief__wide">设计师备注<textarea {...listField('designerNotes')} /></label>
     </div>
+    {evidenceField && <aside className="cr-evidence" role="dialog" aria-label="字段依据">
+      <header><div><span>Evidence trace</span><h3>字段依据</h3></div><button type="button" onClick={() => setEvidenceField(null)}>关闭</button></header>
+      {evidenceFor(evidenceField).map((item) => <article key={item.id}>
+        <dl><div><dt>来源</dt><dd>{item.sourceLabel}</dd></div><div><dt>位置</dt><dd>{item.locator.kind} · {item.locator.value}</dd></div></dl>
+        <blockquote>{item.excerpt || '该依据没有可展示的摘录。'}</blockquote>
+      </article>)}
+    </aside>}
     <div className="cr-keywords">
       <h3>搜索关键词</h3>
       {draft.searchKeywords.map((keyword, index) => <div className="cr-keyword" key={keyword.id}>
@@ -117,6 +153,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [credentialValue, setCredentialValue] = useState('');
   const [documents, setDocuments] = useState<File[]>([]);
   const [filter, setFilter] = useState('all');
+  const [researchKind, setResearchKind] = useState<ReferenceResearchKind>('CONCEPT');
   const [tab, setTab] = useState<'brief' | 'references'>('brief');
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
@@ -161,7 +198,9 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   }
 
   const uiState = deriveResearchUiState(queries, busy);
-  const visibleReferences = useMemo(() => filterCreativeResearchReferences(references, filter), [references, filter]);
+  const kindQueries = useMemo(() => listQueriesByResearchKind(queries, researchKind), [queries, researchKind]);
+  const kindReferences = useMemo(() => filterReferencesByResearchKind(references, queries, researchKind), [references, queries, researchKind]);
+  const visibleReferences = useMemo(() => filterReferencesForResearchView(references, queries, researchKind, filter), [references, queries, researchKind, filter]);
   const imageReferences = visibleReferences.filter((reference) => reference.resourceType === 'IMAGE');
   const webReferences = visibleReferences.filter((reference) => reference.resourceType === 'WEB');
   const project = projects.find((item) => item.id === (session?.projectId || projectId));
@@ -187,7 +226,11 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
         {session.status === 'INTAKE' && <section className="cr-start"><div><h2>Brief 已就绪</h2><p>开始研究后 Brief 将只读，并按启用的概念与品类关键词执行首轮搜索。</p></div><Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void runInitialSearch()}>开始研究</Button></section>}</>
       : <section className="cr-references">
         <div className="cr-search-head"><div><span>Search state</span><h2>{uiState}</h2></div><div>{!credential.configured ? <><input type="password" value={credentialValue} placeholder="百度搜索 API Key" onChange={(event) => setCredentialValue(event.target.value)} /><Button size="sm" variant="secondary" onClick={() => void action('credential', async () => { setCredential(await api.saveSearchCredential(credentialValue)); setCredentialValue(''); })}>保存凭据</Button></> : <><span className="cr-configured">百度搜索已配置</span><button onClick={() => void action('credential', async () => setCredential(await api.deleteSearchCredential()))}>删除</button></>}</div></div>
-        <div className="cr-query-chips"><button className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>全部 {references.length}</button>{queries.map((query) => <button key={query.id} className={filter === query.id ? 'is-active' : ''} onClick={() => setFilter(query.id)}>{query.kind === 'CONCEPT' ? '概念' : '品类'} · {query.text} <span>{query.status}</span></button>)}</div>
+        <nav className="cr-kind-tabs" aria-label="参考研究类型">
+          <button className={researchKind === 'CONCEPT' ? 'is-active' : ''} onClick={() => { setResearchKind('CONCEPT'); setFilter('all'); }}>Concept References</button>
+          <button className={researchKind === 'CATEGORY' ? 'is-active' : ''} onClick={() => { setResearchKind('CATEGORY'); setFilter('all'); }}>Category References</button>
+        </nav>
+        <div className="cr-query-chips"><button className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>全部 {kindReferences.length}</button>{kindQueries.map((query) => <button key={query.id} className={filter === query.id ? 'is-active' : ''} onClick={() => setFilter(query.id)}>{query.text} <span>{query.status}</span></button>)}</div>
         {queries.some((query) => query.status === 'FAILED') && <div className="cr-alert cr-alert--warning"><span>部分查询失败，已有结果仍可浏览。</span><Button size="sm" variant="secondary" disabled={busy !== '' || !credential.configured} onClick={() => void action('searching', async () => { await api.executeSearchBatch(sessionId, queries.filter((query) => query.status === 'FAILED').map((query) => query.id)); await loadSession(sessionId); })}>重试失败查询</Button></div>}
         {!queries.length && session?.status === 'RESEARCH' && <Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void action('planning', async () => { const planned = await api.planInitialSearch(sessionId); setQueries(planned); setBusy('searching'); try { await api.executeSearchBatch(sessionId); } finally { await loadSession(sessionId); } })}>规划并搜索</Button>}
         <div className="cr-section-head"><h3>图片灵感板</h3><span>{imageReferences.length}</span></div>

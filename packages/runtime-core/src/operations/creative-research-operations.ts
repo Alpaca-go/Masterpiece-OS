@@ -1,6 +1,8 @@
 import type {
   CreativeResearchBriefDto,
   CreativeResearchCredentialStatusDto,
+  CreativeResearchBriefEvidenceDto,
+  CreativeResearchBriefFieldDto,
   CreativeResearchQueryDto,
   CreativeResearchReferenceDto,
   CreativeResearchSessionDto,
@@ -37,7 +39,40 @@ export function toCreativeResearchSessionDto(value: CreativeResearchSession): Cr
   });
 }
 
+const PUBLIC_EVIDENCE_FIELDS: CreativeResearchBriefFieldDto[] = [
+  'projectSummary', 'designTask', 'audience', 'scenarios', 'coreMessages', 'constraints',
+];
+
+function safeDocumentLabel(value: string): string {
+  const normalized = String(value || '').replace(/\\/gu, '/').replace(/\/+$/gu, '');
+  const basename = normalized.split('/').pop()?.trim() || '';
+  return basename && basename !== '.' && basename !== '..' ? basename.slice(0, 180) : '来源文档';
+}
+
+export function projectCreativeResearchBriefEvidence(value: DesignBrief): {
+  evidence: CreativeResearchBriefEvidenceDto[];
+  fieldEvidence: CreativeResearchBriefDto['fieldEvidence'];
+} {
+  const evidenceById = new Map(value.evidence.map((item) => [item.id, item]));
+  const fieldEvidence = PUBLIC_EVIDENCE_FIELDS.flatMap((field) => {
+    const evidenceIds = [...new Set(value.fieldEvidence?.[field] || [])]
+      .filter((evidenceId) => evidenceById.has(evidenceId));
+    return evidenceIds.length ? [{ field, evidenceIds }] : [];
+  });
+  const referencedIds = new Set(fieldEvidence.flatMap((item) => item.evidenceIds));
+  const evidence = value.evidence
+    .filter((item) => referencedIds.has(item.id))
+    .map((item) => Object.freeze({
+      id: item.id,
+      sourceLabel: safeDocumentLabel(item.sourceDocumentId),
+      locator: Object.freeze({ kind: item.locator.kind, value: item.locator.value }),
+      excerpt: String(item.excerpt || ''),
+    }));
+  return Object.freeze({ evidence, fieldEvidence });
+}
+
 export function toCreativeResearchBriefDto(value: DesignBrief): CreativeResearchBriefDto {
+  const evidenceProjection = projectCreativeResearchBriefEvidence(value);
   return Object.freeze({
     id: value.id,
     sessionId: value.sessionId,
@@ -60,6 +95,7 @@ export function toCreativeResearchBriefDto(value: DesignBrief): CreativeResearch
       rationale: keyword.rationale,
       locale: keyword.locale,
     })),
+    ...evidenceProjection,
     warnings: [...(value.warnings || [])],
     createdAt: value.createdAt,
     updatedAt: value.updatedAt,

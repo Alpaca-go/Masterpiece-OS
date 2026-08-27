@@ -1,13 +1,42 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { createCreativeResearchOperations, toCreativeResearchReferenceDto } from '@masterpiece/runtime-core/operations/creative-research-operations.ts';
-import { deriveResearchUiState, filterCreativeResearchReferences, safeReferenceUrl } from '../../apps/web/src/features/creative-research/creative-research-view-model.ts';
+import {
+  createCreativeResearchOperations,
+  projectCreativeResearchBriefEvidence,
+  toCreativeResearchBriefDto,
+  toCreativeResearchReferenceDto,
+} from '@masterpiece/runtime-core/operations/creative-research-operations.ts';
+import {
+  deriveResearchUiState,
+  filterCreativeResearchReferences,
+  filterReferencesForResearchView,
+  filterReferencesByResearchKind,
+  listQueriesByResearchKind,
+  safeReferenceUrl,
+} from '../../apps/web/src/features/creative-research/creative-research-view-model.ts';
+import type { DesignBrief } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
 
 const NOW = '2026-08-27T10:00:00.000Z';
 
-function query(id: string, status: 'PENDING' | 'COMPLETED' | 'FAILED') {
-  return { id, sessionId: 'session-1', text: id, kind: 'CONCEPT' as const, batch: 'batch-1', status, derivedFromKeywordIds: ['keyword-1'], createdAt: NOW };
+function query(id: string, status: 'PENDING' | 'COMPLETED' | 'FAILED', kind: 'CONCEPT' | 'CATEGORY' = 'CONCEPT') {
+  return { id, sessionId: 'session-1', text: id, kind, batch: 'batch-1', status, derivedFromKeywordIds: ['keyword-1'], createdAt: NOW };
+}
+
+function briefEvidenceFixture(fieldEvidence?: DesignBrief['fieldEvidence']): DesignBrief {
+  return {
+    id: 'brief-1', sessionId: 'session-1', revision: 1,
+    projectSummary: 'Summary', designTask: 'Task', audience: 'Audience', scenarios: ['Store'],
+    coreMessages: ['Message'], constraints: ['Constraint'], conceptKeywords: [], visualKeywords: [],
+    searchKeywords: [], designerNotes: [],
+    evidence: [
+      { id: 'e1', sourceDocumentId: 'C:\\private\\intake\\品牌策划.pdf', locator: { kind: 'DOCUMENT_SECTION', value: '项目背景' }, excerpt: '品牌希望建立清晰定位。', createdAt: NOW },
+      { id: 'e2', sourceDocumentId: '/private/intake/调研.md', locator: { kind: 'DOCUMENT_PAGE', value: 'page:12' }, excerpt: '核心用户是城市青年。', createdAt: NOW },
+      { id: 'unused', sourceDocumentId: '/private/intake/raw.txt', locator: { kind: 'DOCUMENT_RANGE', value: 'characters:1-20' }, excerpt: '不应投影', createdAt: NOW },
+    ],
+    fieldEvidence: fieldEvidence || { projectSummary: ['e1', 'missing'], audience: ['e1', 'e2'] },
+    createdAt: NOW, updatedAt: NOW,
+  };
 }
 
 test('R4 reference projection exposes browser-safe provenance only', () => {
@@ -24,6 +53,32 @@ test('R4 reference projection exposes browser-safe provenance only', () => {
     'retrievedAt', 'sourceUrl', 'thumbnailUrl', 'title',
   ]);
   assert.doesNotMatch(JSON.stringify(projected), /localAssetId|contentHash|attribution|must-not-cross/u);
+});
+
+test('R4.1 Brief evidence projection resolves active field traces and redacts source paths', () => {
+  const projected = toCreativeResearchBriefDto(briefEvidenceFixture());
+  assert.deepEqual(projected.fieldEvidence, [
+    { field: 'projectSummary', evidenceIds: ['e1'] },
+    { field: 'audience', evidenceIds: ['e1', 'e2'] },
+  ]);
+  assert.deepEqual(projected.evidence.map((item) => item.sourceLabel), ['品牌策划.pdf', '调研.md']);
+  assert.deepEqual(projected.evidence.map((item) => item.locator), [
+    { kind: 'DOCUMENT_SECTION', value: '项目背景' },
+    { kind: 'DOCUMENT_PAGE', value: 'page:12' },
+  ]);
+  assert.match(projected.evidence[0]?.excerpt || '', /清晰定位/u);
+  assert.doesNotMatch(JSON.stringify(projected), /C:\\private|\/private\/intake|raw\.txt|不应投影/u);
+});
+
+test('R4.1 Brief evidence supports multiple evidence and drops stale or unknown ids after designer override', () => {
+  const active = projectCreativeResearchBriefEvidence(briefEvidenceFixture({ audience: ['e1', 'e2', 'unknown'] }));
+  assert.deepEqual(active.fieldEvidence, [{ field: 'audience', evidenceIds: ['e1', 'e2'] }]);
+  assert.deepEqual(active.evidence.map((item) => item.id), ['e1', 'e2']);
+  const overridden = projectCreativeResearchBriefEvidence(briefEvidenceFixture({ projectSummary: ['e1'] }));
+  assert.deepEqual(overridden.fieldEvidence, [{ field: 'projectSummary', evidenceIds: ['e1'] }]);
+  assert.equal(overridden.evidence.some((item) => item.id === 'e2'), false);
+  const fullyOverridden = projectCreativeResearchBriefEvidence(briefEvidenceFixture({}));
+  assert.deepEqual(fullyOverridden, { evidence: [], fieldEvidence: [] });
 });
 
 test('R4 operation layer keeps credential write-only and retries the same failed query', async () => {
@@ -71,6 +126,23 @@ test('R4 view model derives honest states, cross-query filters, and rejects unsa
   assert.equal(safeReferenceUrl('https://example.com/source'), 'https://example.com/source');
 });
 
+test('R4.1 view model separates Concept and Category before applying current-kind query chips', () => {
+  const queries = [query('concept-1', 'COMPLETED', 'CONCEPT'), query('category-1', 'COMPLETED', 'CATEGORY')];
+  const references = [
+    { id: 'concept-only', matchedQueryIds: ['concept-1'] },
+    { id: 'category-only', matchedQueryIds: ['category-1'] },
+    { id: 'cross-kind', matchedQueryIds: ['concept-1', 'category-1'] },
+  ] as any;
+  assert.deepEqual(listQueriesByResearchKind(queries, 'CONCEPT').map((item) => item.id), ['concept-1']);
+  assert.deepEqual(listQueriesByResearchKind(queries, 'CATEGORY').map((item) => item.id), ['category-1']);
+  const concept = filterReferencesByResearchKind(references, queries, 'CONCEPT');
+  const category = filterReferencesByResearchKind(references, queries, 'CATEGORY');
+  assert.deepEqual(concept.map((item) => item.id), ['concept-only', 'cross-kind']);
+  assert.deepEqual(category.map((item) => item.id), ['category-only', 'cross-kind']);
+  assert.deepEqual(filterCreativeResearchReferences(concept, 'concept-1').map((item) => item.id), ['concept-only', 'cross-kind']);
+  assert.deepEqual(filterReferencesForResearchView(references, queries, 'CONCEPT', 'category-1'), []);
+});
+
 test('R4 route remains parallel to the unchanged Creative Intelligence route and exposes only Brief/References tabs', async () => {
   const [routes, app, workspace] = await Promise.all([
     fs.readFile('apps/web/src/lib/useUrlScreen.ts', 'utf8'),
@@ -83,5 +155,8 @@ test('R4 route remains parallel to the unchanged Creative Intelligence route and
   assert.match(app, /screen === 'creative-research'.*CreativeResearchWorkspace/su);
   assert.match(workspace, />Brief</u);
   assert.match(workspace, />References /u);
+  assert.match(workspace, /Concept References/u);
+  assert.match(workspace, /Category References/u);
+  assert.match(workspace, />依据</u);
   assert.doesNotMatch(workspace, /Selection Tray|更像这个|负向偏好|区域框选/u);
 });

@@ -2508,9 +2508,34 @@ export interface CreativeResearchBriefDto {
     rationale?: string;
     locale?: string;
   }>;
+  evidence: CreativeResearchBriefEvidenceDto[];
+  fieldEvidence: CreativeResearchFieldEvidenceDto[];
   warnings: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+export type CreativeResearchBriefFieldDto =
+  | 'projectSummary'
+  | 'designTask'
+  | 'audience'
+  | 'scenarios'
+  | 'coreMessages'
+  | 'constraints';
+
+export interface CreativeResearchBriefEvidenceDto {
+  id: string;
+  sourceLabel: string;
+  locator: {
+    kind: 'DOCUMENT_PAGE' | 'DOCUMENT_SECTION' | 'DOCUMENT_RANGE';
+    value: string;
+  };
+  excerpt: string;
+}
+
+export interface CreativeResearchFieldEvidenceDto {
+  field: CreativeResearchBriefFieldDto;
+  evidenceIds: string[];
 }
 
 export interface UpdateCreativeResearchBriefInput {

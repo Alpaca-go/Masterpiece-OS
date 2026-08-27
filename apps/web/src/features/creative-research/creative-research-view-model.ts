@@ -1,6 +1,7 @@
 import type { CreativeResearchQueryDto, CreativeResearchReferenceDto } from '@masterpiece/runtime-core/application-contracts.ts';
 
 export type ResearchUiState = 'NOT_STARTED' | 'PLANNING' | 'SEARCHING' | 'READY' | 'PARTIAL_FAILURE' | 'FAILED';
+export type ReferenceResearchKind = 'CONCEPT' | 'CATEGORY';
 
 export function deriveResearchUiState(queries: CreativeResearchQueryDto[], busy: string): ResearchUiState {
   if (busy === 'planning') return 'PLANNING';
@@ -18,6 +19,35 @@ export function filterCreativeResearchReferences(
   queryId: string,
 ): CreativeResearchReferenceDto[] {
   return queryId === 'all' ? references : references.filter((reference) => reference.matchedQueryIds.includes(queryId));
+}
+
+export function listQueriesByResearchKind(
+  queries: CreativeResearchQueryDto[],
+  kind: ReferenceResearchKind,
+): CreativeResearchQueryDto[] {
+  return queries.filter((query) => query.kind === kind);
+}
+
+export function filterReferencesByResearchKind(
+  references: CreativeResearchReferenceDto[],
+  queries: CreativeResearchQueryDto[],
+  kind: ReferenceResearchKind,
+): CreativeResearchReferenceDto[] {
+  const queryIds = new Set(listQueriesByResearchKind(queries, kind).map((query) => query.id));
+  return references.filter((reference) => reference.matchedQueryIds.some((queryId) => queryIds.has(queryId)));
+}
+
+export function filterReferencesForResearchView(
+  references: CreativeResearchReferenceDto[],
+  queries: CreativeResearchQueryDto[],
+  kind: ReferenceResearchKind,
+  queryId: string,
+): CreativeResearchReferenceDto[] {
+  const kindQueries = listQueriesByResearchKind(queries, kind);
+  const kindReferences = filterReferencesByResearchKind(references, queries, kind);
+  if (queryId === 'all') return kindReferences;
+  if (!kindQueries.some((query) => query.id === queryId)) return [];
+  return filterCreativeResearchReferences(kindReferences, queryId);
 }
 
 export function safeReferenceUrl(value: string): string | null {
