@@ -152,7 +152,7 @@ test('R4.1 view model separates Concept and Category before applying current-kin
   assert.deepEqual(filterReferencesForResearchView(references, queries, 'CONCEPT', 'category-1'), []);
 });
 
-test('R4 route remains parallel to the unchanged Creative Intelligence route and exposes only Brief/References tabs', async () => {
+test('R4 route remains parallel to unchanged Creative Intelligence while R6 retains the Brief/References workspace', async () => {
   const [routes, app, workspace] = await Promise.all([
     fs.readFile('apps/web/src/lib/useUrlScreen.ts', 'utf8'),
     fs.readFile('apps/web/src/App.tsx', 'utf8'),
@@ -167,5 +167,6 @@ test('R4 route remains parallel to the unchanged Creative Intelligence route and
   assert.match(workspace, /Concept References/u);
   assert.match(workspace, /Category References/u);
   assert.match(workspace, />依据</u);
-  assert.doesNotMatch(workspace, /更像这个|换一批|Direction Board|区域框选/u);
+  assert.match(workspace, /CorrectionToolbar/u);
+  assert.doesNotMatch(workspace, /Direction Board|区域框选/u);
 });

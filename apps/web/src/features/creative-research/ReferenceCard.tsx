@@ -14,16 +14,18 @@ type SelectionChange = {
   rejectionReason?: string;
 };
 
-export function ReferenceCard({ reference, selection, display, busy, onSelectionChange }: {
+export function ReferenceCard({ reference, selection, display, busy, onSelectionChange, onFindSimilar }: {
   reference: CreativeResearchReferenceDto;
   selection?: CreativeResearchReferenceSelectionDto;
   display: 'IMAGE' | 'WEB';
   busy: boolean;
   onSelectionChange(change: SelectionChange): Promise<void>;
+  onFindSimilar(dimension: CreativeResearchReferenceAttributeDto | 'PEER_CASE'): Promise<void>;
 }) {
   const [broken, setBroken] = useState(false);
   const [note, setNote] = useState(selection?.designerNote || '');
   const [rejectionReason, setRejectionReason] = useState('');
+  const [similarDimension, setSimilarDimension] = useState<CreativeResearchReferenceAttributeDto | 'PEER_CASE'>('LAYOUT');
   useEffect(() => setNote(selection?.designerNote || ''), [selection?.designerNote]);
   const state = selection?.state || 'NONE';
   const attributes = selection?.selectedAttributes || [];
@@ -41,6 +43,12 @@ export function ReferenceCard({ reference, selection, display, busy, onSelection
         ? { state: 'NONE', selectedAttributes: [] }
         : { state: 'REJECTED', selectedAttributes: [], rejectionReason })}>{state === 'REJECTED' ? '取消排除' : '不要类似'}</button>
       <button type="button" onClick={source}>查看来源 ↗</button>
+      <select aria-label="找相似维度" value={similarDimension} disabled={busy} onChange={(event) => setSimilarDimension(event.target.value as typeof similarDimension)}>
+        <option value="TYPOGRAPHY">字体</option><option value="LAYOUT">版式</option><option value="COLOR">色彩</option>
+        <option value="GRAPHIC">图形</option><option value="MATERIAL">材质</option><option value="PHOTOGRAPHY">摄影</option>
+        <option value="IMAGE_TREATMENT">图像处理</option><option value="APPLICATION">应用方式</option><option value="ATMOSPHERE">氛围</option><option value="PEER_CASE">同类案例</option>
+      </select>
+      <button type="button" disabled={busy} onClick={() => void onFindSimilar(similarDimension)}>找相似</button>
     </div>
     {state === 'SELECTED' && <div className="cr-selected-detail">
       <ReferenceAttributePicker value={attributes} disabled={busy} onChange={(next) => void set({ state: 'SELECTED', selectedAttributes: next, designerNote: note })} />

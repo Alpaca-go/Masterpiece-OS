@@ -2570,6 +2570,24 @@ export interface CreativeResearchQueryDto {
   resultCount?: number;
   createdAt: string;
   completedAt?: string;
+  batch: string;
+  origin: 'INITIAL' | 'REFRESH' | 'KEYWORD_ADJUSTMENT' | 'SIMILAR';
+}
+
+export interface UpdateCreativeResearchSearchStrategyInput {
+  conceptKeywords?: string[];
+  visualKeywords?: string[];
+  searchKeywords?: UpdateCreativeResearchBriefInput['searchKeywords'];
+  designerNote?: string;
+}
+
+export interface PlanCreativeResearchSimilarSearchInput {
+  sessionId: string;
+  profileId: string;
+  sourceReferenceId?: string;
+  sourcePreferenceInsightId?: string;
+  dimension?: CreativeResearchReferenceAttributeDto | 'PEER_CASE';
+  targetKind: 'CONCEPT' | 'CATEGORY';
 }
 
 export interface CreativeResearchReferenceDto {
@@ -2619,6 +2637,8 @@ export interface CreativeResearchNegativeSignalDto {
   type: 'REJECT_REFERENCE' | 'REMOVE_KEYWORD' | 'DESIGNER_NOTE' | 'REANALYSIS_FEEDBACK';
   scope: 'SESSION' | 'REFERENCE' | 'KEYWORD' | 'DIRECTION';
   sourceReferenceId?: string;
+  sourceKeywordId?: string;
+  value?: string;
   reason?: string;
   createdAt: string;
 }
@@ -2755,6 +2775,11 @@ export interface RuntimeApi {
     updateDesignBrief(sessionId: string, input: UpdateCreativeResearchBriefInput): Promise<CreativeResearchBriefDto>;
     startResearch(sessionId: string): Promise<CreativeResearchSessionDto>;
     planInitialSearch(sessionId: string): Promise<CreativeResearchQueryDto[]>;
+    planRefreshSearch(sessionId: string, profileId: string): Promise<CreativeResearchQueryDto[]>;
+    updateSearchStrategy(sessionId: string, input: UpdateCreativeResearchSearchStrategyInput): Promise<CreativeResearchBriefDto>;
+    planKeywordAdjustmentSearch(sessionId: string): Promise<CreativeResearchQueryDto[]>;
+    planSimilarSearch(input: PlanCreativeResearchSimilarSearchInput): Promise<CreativeResearchQueryDto[]>;
+    reanalyzeDesignBrief(sessionId: string, input: { profileId: string; feedback: string[] }): Promise<CreativeResearchBriefDto>;
     executeSearchBatch(sessionId: string, queryIds?: string[]): Promise<CreativeResearchQueryDto[]>;
     getSearchHistory(sessionId: string): Promise<CreativeResearchQueryDto[]>;
     listReferences(sessionId: string): Promise<CreativeResearchReferenceDto[]>;

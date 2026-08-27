@@ -164,7 +164,7 @@ test('R5 Selection Tray counts only current SELECTED evidence and existing attri
   assert.deepEqual(summary.attributeCounts, { TYPOGRAPHY: 1, LAYOUT: 2, MATERIAL: 1 });
 });
 
-test('R5 Web judgment surface exposes only selection controls and keeps R6/R7 absent', async () => {
+test('R5 Web judgment surface remains intact when R6 adds designer-driven correction and keeps R7 absent', async () => {
   const [workspace, card, tray] = await Promise.all([
     fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/ReferenceCard.tsx', 'utf8'),
@@ -177,5 +177,7 @@ test('R5 Web judgment surface exposes only selection controls and keeps R6/R7 ab
   assert.match(tray, /至少选择 3 个参考/u);
   assert.match(workspace, /Concept References/u);
   assert.match(workspace, /Category References/u);
-  assert.doesNotMatch(`${workspace}\n${card}\n${tray}`, /More Like This|换一批|Direction Board|compile-direction|more-like-this/u);
+  assert.match(card, /找相似/u);
+  assert.match(workspace, /CorrectionToolbar/u);
+  assert.doesNotMatch(`${workspace}\n${card}\n${tray}`, /Direction Board|compile-direction/u);
 });

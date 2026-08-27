@@ -100,7 +100,17 @@ export function createCreativeResearchSearchRefinementService(options: {
       } } : {}),
     });
     const historical = new Set(data.history.flatMap((item) => [item.text, item.providerQueryText || '']).map(normalized).filter(Boolean));
-    if (drafts.some((item) => historical.has(normalized(item.text)))) {
+    const enabledById = new Map(enabled.map((item) => [item.id, item]));
+    const maximum = input.mode === 'SIMILAR' ? 2 : 4;
+    if (!drafts.length || drafts.length > maximum || drafts.some((item) => !['CONCEPT', 'CATEGORY'].includes(item.kind)
+      || (input.mode === 'SIMILAR' && item.kind !== input.targetKind)
+      || !item.derivedFromKeywordIds.length
+      || item.derivedFromKeywordIds.some((id) => !enabledById.has(id))
+      || !item.derivedFromKeywordIds.some((id) => enabledById.get(id)?.kind === item.kind))) {
+      throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_OUTPUT_INVALID', '搜索纠偏结果违反数量、类型或 keyword evidence contract');
+    }
+    const outputKeys = drafts.map((item) => normalized(item.text));
+    if (outputKeys.some((key) => !key || historical.has(key)) || new Set(outputKeys).size !== outputKeys.length) {
       throw creativeResearchCorrectionError('CREATIVE_RESEARCH_REFRESH_NO_NOVEL_QUERY', '当前关键词已经很难产生新的搜索组合，建议调整关键词。');
     }
     const timestamp = now();

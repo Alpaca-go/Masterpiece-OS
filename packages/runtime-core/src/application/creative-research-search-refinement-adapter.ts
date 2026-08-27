@@ -41,6 +41,9 @@ export function normalizeSearchRefinementDrafts(value: unknown, input: Reference
     if (!['CONCEPT', 'CATEGORY'].includes(kind) || !text || !ids.length || ids.some((id) => !enabled.has(id))) {
       throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_OUTPUT_INVALID', `queries[${index}] 的 kind、text 或 keyword evidence 无效`);
     }
+    if (input.mode === 'SIMILAR' && kind !== input.similar?.targetKind) {
+      throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_OUTPUT_INVALID', `queries[${index}] 与 target research kind 不匹配`);
+    }
     if (!ids.some((id) => enabled.get(id)?.kind === kind)) {
       throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_OUTPUT_INVALID', `queries[${index}] 缺少同 kind primary keyword`);
     }
@@ -109,7 +112,11 @@ export function createCreativeResearchSearchRefinementAdapter(options: {
         try { modelCallCount += 1; return String((await reasoner(messages, { maxOutputTokens: 2048 }))?.text || ''); }
         catch (error) { throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_MODEL_FAILED', `搜索纠偏模型调用失败：${(error as Error).message}`); }
       };
-      let output = await call(buildSearchRefinementMessages(input));
+      const modelInput = credentials.protocol === 'openai-chat-multimodal' ? input : {
+        ...input,
+        ...(input.similar?.reference ? { similar: { ...input.similar, reference: { ...input.similar.reference, remoteImageUrl: undefined } } } : {}),
+      };
+      let output = await call(buildSearchRefinementMessages(modelInput));
       try { return normalizeSearchRefinementDrafts(parseJson(output), input); }
       catch (error) {
         if (!(error instanceof CreativeResearchCorrectionError)

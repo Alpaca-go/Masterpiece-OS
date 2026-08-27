@@ -13,6 +13,31 @@ export interface SelectionTraySummary {
   attributeCounts: Partial<Record<CreativeResearchReferenceAttributeDto, number>>;
 }
 
+export interface CorrectionSuggestion {
+  message: string;
+  actions: readonly ['REFRESH', 'ADJUST_KEYWORDS', 'REANALYZE'];
+}
+
+export function deriveSoftCorrectionSuggestion(
+  queries: CreativeResearchQueryDto[],
+  references: CreativeResearchReferenceDto[],
+  selections: CreativeResearchReferenceSelectionDto[],
+): CorrectionSuggestion | null {
+  const batches = [...new Set(queries.map((query) => query.batch))];
+  if (batches.length < 3) return null;
+  const recentBatches = new Set(batches.slice(-3));
+  const recentQueryIds = new Set(queries.filter((query) => recentBatches.has(query.batch)).map((query) => query.id));
+  const recentReferenceIds = new Set(references.filter((reference) => reference.matchedQueryIds.some((id) => recentQueryIds.has(id))).map((item) => item.id));
+  const judged = selections.filter((item) => recentReferenceIds.has(item.referenceId));
+  const selected = judged.filter((item) => item.state === 'SELECTED').length;
+  const rejected = judged.filter((item) => item.state === 'REJECTED').length;
+  if (selected > 1 && rejected < Math.max(4, selected * 3)) return null;
+  return {
+    message: '你已经查看了多批参考，但还没有形成明显选择。当前搜索方向可能需要调整。',
+    actions: ['REFRESH', 'ADJUST_KEYWORDS', 'REANALYZE'],
+  };
+}
+
 export function deriveSelectionTraySummary(selections: CreativeResearchReferenceSelectionDto[]): SelectionTraySummary {
   const selected = selections.filter((selection) => selection.state === 'SELECTED');
   const attributeCounts: SelectionTraySummary['attributeCounts'] = {};

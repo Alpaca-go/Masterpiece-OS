@@ -11,6 +11,8 @@ import type {
   CreativeResearchSessionDto,
   UpdateCreativeResearchBriefInput,
   SetCreativeResearchReferenceSelectionInput,
+  UpdateCreativeResearchSearchStrategyInput,
+  PlanCreativeResearchSimilarSearchInput,
 } from '../application-contracts.ts';
 import type { CreativeResearchSession, DesignBrief, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
 import type { CreativeResearchSelectionService } from '../application/creative-research-selection-service.ts';
@@ -31,6 +33,20 @@ type SearchService = {
   executeSearchBatch(sessionId: string, queryIds?: string[]): Promise<unknown>;
   getSearchHistory(sessionId: string): Promise<SearchQuery[]>;
   listWebReferences(sessionId: string): Promise<WebReferenceItem[]>;
+};
+
+type SearchRefinementService = {
+  planRefreshSearch(sessionId: string, profileId: string): Promise<SearchQuery[]>;
+  planSimilarSearch(input: PlanCreativeResearchSimilarSearchInput): Promise<SearchQuery[]>;
+};
+
+type SearchStrategyService = {
+  updateResearchSearchStrategy(sessionId: string, input: UpdateCreativeResearchSearchStrategyInput): Promise<DesignBrief>;
+  planKeywordAdjustmentSearch(sessionId: string): Promise<SearchQuery[]>;
+};
+
+type ReanalysisService = {
+  reanalyzeDesignBrief(sessionId: string, input: { profileId: string; feedback: string[] }): Promise<DesignBrief>;
 };
 
 export function toCreativeResearchSessionDto(value: CreativeResearchSession): CreativeResearchSessionDto {
@@ -121,6 +137,8 @@ export function toCreativeResearchQueryDto(value: SearchQuery): CreativeResearch
     resultCount: value.resultCount,
     createdAt: value.createdAt,
     completedAt: value.completedAt,
+    batch: value.batch,
+    origin: value.origin || 'INITIAL',
   });
 }
 
@@ -165,8 +183,10 @@ export function toCreativeResearchNegativeSignalDto(value: NegativeSignal): Crea
     id: value.id,
     type: value.type,
     scope: value.scope,
-    sourceReferenceId: value.sourceReferenceId,
-    reason: value.reason,
+    ...(value.sourceReferenceId ? { sourceReferenceId: value.sourceReferenceId } : {}),
+    ...(value.sourceKeywordId ? { sourceKeywordId: value.sourceKeywordId } : {}),
+    ...(value.value ? { value: value.value } : {}),
+    ...(value.reason ? { reason: value.reason } : {}),
     createdAt: value.createdAt,
   });
 }
@@ -192,6 +212,9 @@ export function createCreativeResearchOperations(options: {
   history: SearchHistoryRepository;
   selection: CreativeResearchSelectionService;
   preferences: CreativeResearchPreferenceAnalysisService;
+  refinement: SearchRefinementService;
+  strategy: SearchStrategyService;
+  reanalysis: ReanalysisService;
   listSessions(projectId: string): Promise<CreativeResearchSession[]>;
   credential: {
     has(): Promise<boolean>;
@@ -221,6 +244,16 @@ export function createCreativeResearchOperations(options: {
       toCreativeResearchSessionDto(await options.search.startResearch(sessionId)),
     'creative-research:plan-initial-search': async (_context: unknown, sessionId: string) =>
       (await options.search.planInitialSearch(sessionId)).map(toCreativeResearchQueryDto),
+    'creative-research:plan-refresh-search': async (_context: unknown, sessionId: string, profileId: string) =>
+      (await options.refinement.planRefreshSearch(sessionId, profileId)).map(toCreativeResearchQueryDto),
+    'creative-research:update-search-strategy': async (_context: unknown, sessionId: string, input: UpdateCreativeResearchSearchStrategyInput) =>
+      toCreativeResearchBriefDto(await options.strategy.updateResearchSearchStrategy(sessionId, input)),
+    'creative-research:plan-keyword-adjustment-search': async (_context: unknown, sessionId: string) =>
+      (await options.strategy.planKeywordAdjustmentSearch(sessionId)).map(toCreativeResearchQueryDto),
+    'creative-research:plan-similar-search': async (_context: unknown, input: PlanCreativeResearchSimilarSearchInput) =>
+      (await options.refinement.planSimilarSearch(input)).map(toCreativeResearchQueryDto),
+    'creative-research:reanalyze-design-brief': async (_context: unknown, sessionId: string, input: { profileId: string; feedback: string[] }) =>
+      toCreativeResearchBriefDto(await options.reanalysis.reanalyzeDesignBrief(sessionId, input)),
     'creative-research:execute-search-batch': async (_context: unknown, sessionId: string, queryIds?: string[]) => {
       const requested = Array.isArray(queryIds) ? [...new Set(queryIds)] : undefined;
       if (requested?.length) {

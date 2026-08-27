@@ -32,6 +32,11 @@ import {
   createBaiduReferenceSearchGateway,
 } from '@masterpiece/runtime-core/application/creative-research-reference-search-baidu.ts';
 import { createCreativeResearchReferenceSearchService } from '@masterpiece/runtime-core/application/creative-research-reference-search-service.ts';
+import { createCreativeResearchSearchRefinementAdapter } from '@masterpiece/runtime-core/application/creative-research-search-refinement-adapter.ts';
+import { createCreativeResearchSearchRefinementService } from '@masterpiece/runtime-core/application/creative-research-search-refinement-service.ts';
+import { createCreativeResearchSearchStrategyService } from '@masterpiece/runtime-core/application/creative-research-search-strategy-service.ts';
+import { createCreativeResearchReanalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-reanalysis-adapter.ts';
+import { createCreativeResearchReanalysisService } from '@masterpiece/runtime-core/application/creative-research-reanalysis-service.ts';
 import { createCreativeResearchResearchStore } from '@masterpiece/runtime-core/application/creative-research-research-store.ts';
 import { createCreativeResearchSelectionService } from '@masterpiece/runtime-core/application/creative-research-selection-service.ts';
 import { createCreativeResearchPreferenceAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-preference-analysis-adapter.ts';
@@ -243,9 +248,10 @@ export function createCurrentBusinessOperations(
   const dataPath = path.resolve(adapters.dataPath);
   const creativeResearchStore = createCreativeResearchStore({ readDefaultDataPath: async () => dataPath });
   const creativeResearchResearchStore = createCreativeResearchResearchStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchDocumentAdapter = createCreativeResearchDocumentAdapter();
   const creativeResearchBriefs = createCreativeResearchDesignBriefService({
     ...creativeResearchStore,
-    documentAdapter: createCreativeResearchDocumentAdapter(),
+    documentAdapter: creativeResearchDocumentAdapter,
     analysisAdapter: createCreativeResearchAnalysisAdapter({
       readCredentials: async (profileId) => readCredentials(profileId),
     }),
@@ -268,6 +274,23 @@ export function createCurrentBusinessOperations(
     adapter: createCreativeResearchPreferenceAnalysisAdapter({
       readCredentials: async (profileId) => readCredentials(profileId),
     }),
+  });
+  const creativeResearchRefinement = createCreativeResearchSearchRefinementService({
+    ...creativeResearchStore,
+    ...creativeResearchResearchStore,
+    insights: creativeResearchPreferenceStore,
+    adapter: createCreativeResearchSearchRefinementAdapter({ readCredentials: async (profileId) => readCredentials(profileId) }),
+  });
+  const creativeResearchStrategy = createCreativeResearchSearchStrategyService({
+    ...creativeResearchStore,
+    ...creativeResearchResearchStore,
+  });
+  const creativeResearchReanalysis = createCreativeResearchReanalysisService({
+    ...creativeResearchStore,
+    ...creativeResearchResearchStore,
+    insights: creativeResearchPreferenceStore,
+    documentAdapter: creativeResearchDocumentAdapter,
+    adapter: createCreativeResearchReanalysisAdapter({ readCredentials: async (profileId) => readCredentials(profileId) }),
   });
   const creativeResearchIntakeRoot = path.resolve(dataPath, '..', 'documents-intake');
   const creativeResearchBrowserBriefs = {
@@ -610,6 +633,9 @@ export function createCurrentBusinessOperations(
       history: creativeResearchResearchStore.history,
       selection: creativeResearchSelection,
       preferences: creativeResearchPreferences,
+      refinement: creativeResearchRefinement,
+      strategy: creativeResearchStrategy,
+      reanalysis: creativeResearchReanalysis,
       listSessions: (projectId) => creativeResearchStore.sessions.listByProject(projectId),
       credential: {
         has: () => adapters.searchCredential.has(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),

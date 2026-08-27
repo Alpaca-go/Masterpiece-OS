@@ -7,11 +7,13 @@ import type {
   CreativeResearchPreferenceInsightDto,
   CreativeResearchQueryDto,
   CreativeResearchReferenceDto,
+  CreativeResearchReferenceAttributeDto,
   CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
   ProjectRecord,
   PublicSettings,
   UpdateCreativeResearchBriefInput,
+  UpdateCreativeResearchSearchStrategyInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { Button } from '../../components/ui/Button';
 import { cleanError, formatRelativeTime } from '../../utils';
@@ -20,11 +22,13 @@ import {
   filterReferencesForResearchView,
   filterReferencesByResearchKind,
   listQueriesByResearchKind,
+  deriveSoftCorrectionSuggestion,
   type ReferenceResearchKind,
 } from './creative-research-view-model';
 import { ReferenceCard } from './ReferenceCard';
 import { SelectionTray } from './SelectionTray';
 import { PreferenceInsightsPanel } from './PreferenceInsightsPanel';
+import { CorrectionToolbar } from './CorrectionToolbar';
 import './creative-research.css';
 
 function fileToBase64(file: File): Promise<string> {
@@ -154,6 +158,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [tab, setTab] = useState<'brief' | 'references'>('brief');
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
 
   async function loadSession(id: string) {
     const nextSession = await api.getSession(id);
@@ -232,17 +237,58 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
     });
   }
 
+  async function executePlannedSearch(planner: () => Promise<CreativeResearchQueryDto[]>) {
+    const planned = await planner();
+    setQueries((current) => [...current, ...planned]);
+    setBusy('searching');
+    try { await api.executeSearchBatch(sessionId, planned.map((item) => item.id)); } finally { await loadSession(sessionId); }
+  }
+
+  async function refreshSearch() {
+    await action('refreshing', async () => {
+      if (!profileId) throw new Error('请选择可用的分析模型');
+      await executePlannedSearch(() => api.planRefreshSearch(sessionId, profileId));
+    });
+  }
+
+  async function adjustSearchStrategy(input: UpdateCreativeResearchSearchStrategyInput) {
+    await action('adjusting', async () => {
+      setBrief(await api.updateSearchStrategy(sessionId, input));
+      await executePlannedSearch(() => api.planKeywordAdjustmentSearch(sessionId));
+      setNegativeSignals(await api.listNegativeSignals(sessionId));
+    });
+  }
+
+  async function reanalyze(feedback: string[]) {
+    await action('reanalyzing', async () => {
+      if (!profileId) throw new Error('请选择可用的分析模型');
+      await api.reanalyzeDesignBrief(sessionId, { profileId, feedback });
+      await loadSession(sessionId);
+      setTab('brief');
+      setNotice('已根据你的反馈重新分析。之前的参考、选择和排除记录都已保留。');
+    });
+  }
+
+  async function findSimilar(input: { sourceReferenceId?: string; sourcePreferenceInsightId?: string; dimension?: CreativeResearchReferenceAttributeDto | 'PEER_CASE' }) {
+    await action('similar', async () => {
+      if (!profileId) throw new Error('请选择可用的分析模型');
+      await executePlannedSearch(() => api.planSimilarSearch({ sessionId, profileId, targetKind: researchKind, ...input }));
+    });
+  }
+
   const uiState = deriveResearchUiState(queries, busy);
   const kindQueries = useMemo(() => listQueriesByResearchKind(queries, researchKind), [queries, researchKind]);
   const kindReferences = useMemo(() => filterReferencesByResearchKind(references, queries, researchKind), [references, queries, researchKind]);
   const visibleReferences = useMemo(() => filterReferencesForResearchView(references, queries, researchKind, filter), [references, queries, researchKind, filter]);
   const imageReferences = visibleReferences.filter((reference) => reference.resourceType === 'IMAGE');
   const webReferences = visibleReferences.filter((reference) => reference.resourceType === 'WEB');
+  const correctionSuggestion = useMemo(() => deriveSoftCorrectionSuggestion(queries, references, selections), [queries, references, selections]);
   const project = projects.find((item) => item.id === (session?.projectId || projectId));
 
   if (!sessionId) return <main className="cr-shell">
     <header className="cr-top"><button onClick={onBack}>← 项目</button><div><span>Creative Research</span><h1>灵感研究工作台</h1></div><button onClick={onOpenSettings}>模型设置</button></header>
     {error && <div className="cr-alert cr-alert--error">{error}</div>}
+    {notice && <div className="cr-alert cr-alert--success">{notice}</div>}
     <section className="cr-intake cr-panel">
       <div><span className="cr-step">01</span><h2>选择项目</h2><select value={projectId} onChange={(event) => setProjectId(event.target.value)}>{projects.map((item) => <option key={item.id} value={item.id}>{item.projectName}</option>)}</select></div>
       <div><span className="cr-step">02</span><h2>导入设计资料</h2><input type="file" multiple accept=".pdf,.docx,.md,.markdown,.txt" onChange={(event) => setDocuments(Array.from(event.target.files || []))} /><small>{documents.length ? `${documents.length} 份文档` : 'PDF / DOCX / Markdown / TXT'}</small></div>
@@ -265,15 +311,18 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
           <button className={researchKind === 'CONCEPT' ? 'is-active' : ''} onClick={() => { setResearchKind('CONCEPT'); setFilter('all'); }}>Concept References</button>
           <button className={researchKind === 'CATEGORY' ? 'is-active' : ''} onClick={() => { setResearchKind('CATEGORY'); setFilter('all'); }}>Category References</button>
         </nav>
+        {session.status === 'RESEARCH' && <CorrectionToolbar brief={brief} busy={busy !== ''} onRefresh={refreshSearch} onAdjust={adjustSearchStrategy} onReanalyze={reanalyze} />}
+        {session.status === 'INTAKE' && <div className="cr-alert cr-alert--warning">旧参考仍可浏览；请在 Brief 确认后重新开始研究，才能执行新搜索。</div>}
+        {correctionSuggestion && session.status === 'RESEARCH' && <div className="cr-alert cr-alert--warning cr-soft-correction"><span>{correctionSuggestion.message}</span><div><button onClick={() => void refreshSearch()}>继续换一批</button><button onClick={() => document.querySelector<HTMLButtonElement>('.cr-correction-toolbar__actions button:nth-child(2)')?.click()}>调整关键词</button><button onClick={() => document.querySelector<HTMLButtonElement>('.cr-correction-toolbar__actions button:nth-child(3)')?.click()}>重新分析</button></div></div>}
         <div className="cr-query-chips"><button className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>全部 {kindReferences.length}</button>{kindQueries.map((query) => <button key={query.id} className={filter === query.id ? 'is-active' : ''} onClick={() => setFilter(query.id)}>{query.text} <span>{query.status}</span></button>)}</div>
         {queries.some((query) => query.status === 'FAILED') && <div className="cr-alert cr-alert--warning"><span>部分查询失败，已有结果仍可浏览。</span><Button size="sm" variant="secondary" disabled={busy !== '' || !credential.configured} onClick={() => void action('searching', async () => { await api.executeSearchBatch(sessionId, queries.filter((query) => query.status === 'FAILED').map((query) => query.id)); await loadSession(sessionId); })}>重试失败查询</Button></div>}
         {!queries.length && session?.status === 'RESEARCH' && <Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void action('planning', async () => { const planned = await api.planInitialSearch(sessionId); setQueries(planned); setBusy('searching'); try { await api.executeSearchBatch(sessionId); } finally { await loadSession(sessionId); } })}>规划并搜索</Button>}
         <SelectionTray selections={selections} references={references} expanded={trayExpanded} onToggle={() => setTrayExpanded((value) => !value)} busy={busy !== ''} onAnalyze={() => void analyzePreferences()} />
-        {preferenceInsights.length > 0 && <PreferenceInsightsPanel insights={preferenceInsights} references={references} negativeSignals={negativeSignals} busy={busy.startsWith('insight:')} onUpdate={updatePreferenceInsight} onFinalize={finalizePreferenceInsight} />}
+        {preferenceInsights.length > 0 && <PreferenceInsightsPanel insights={preferenceInsights} references={references} negativeSignals={negativeSignals} busy={busy.startsWith('insight:') || busy === 'similar'} onUpdate={updatePreferenceInsight} onFinalize={finalizePreferenceInsight} onFindMoreSimilar={(insightId) => findSimilar({ sourcePreferenceInsightId: insightId })} />}
         <div className="cr-section-head"><h3>图片灵感板</h3><span>{imageReferences.length}</span></div>
-        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display="IMAGE" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}`} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
+        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display="IMAGE" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
         <div className="cr-section-head"><h3>网页来源</h3><span>{webReferences.length}</span></div>
-        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display="WEB" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}`} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} />)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
+        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display="WEB" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
       </section>}
   </main>;
 }
