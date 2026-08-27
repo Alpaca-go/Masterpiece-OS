@@ -1,0 +1,35 @@
+{
+  "choices": [{ "message": { "content": "This generated answer must be ignored." } }],
+  "references": [
+    {
+      "id": 1,
+      "title": "新中式餐饮品牌案例",
+      "url": "HTTPS://Example.COM/case/one?utm_source=test#section",
+      "website": "example.com",
+      "type": "web"
+    },
+    {
+      "id": 2,
+      "title": "门店视觉参考 A",
+      "url": "https://example.com/case/two",
+      "website": "example.com",
+      "type": "image",
+      "image": { "url": "https://img.example.com/a.jpg?token=signed", "width": 1200, "height": 800 }
+    },
+    {
+      "id": 3,
+      "title": "门店视觉参考 A duplicate",
+      "url": "https://example.com/case/another-page",
+      "website": "example.com",
+      "type": "image",
+      "image": { "url": "https://img.example.com/a.jpg?token=signed", "width": 1200, "height": 800 }
+    },
+    {
+      "id": 4,
+      "title": "缺少图片地址",
+      "url": "https://example.com/case/missing-image",
+      "website": "example.com",
+      "type": "image"
+    }
+  ]
+}

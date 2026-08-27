@@ -27,18 +27,22 @@ export interface DesignBriefRepository {
 
 export interface SearchHistoryRepository {
   appendQuery(query: SearchQuery): Promise<SearchQuery>;
-  recordQueryProgress(queryId: string, update: {
+  recordQueryProgress(sessionId: string, queryId: string, update: {
     status: SearchQuery['status'];
     provider?: string;
     cursor?: string;
     completedAt?: string;
+    errorCode?: string;
+    errorMessage?: string;
+    resultCount?: number;
+    providerCalls?: number;
   }): Promise<SearchQuery>;
   listSessionSearchHistory(sessionId: string): Promise<SearchQuery[]>;
 }
 
 export interface ReferenceResearchRepository {
   storeReference(reference: ReferenceItem): Promise<ReferenceItem>;
-  getReference(referenceId: string): Promise<ReferenceItem | null>;
+  getReference(sessionId: string, referenceId: string): Promise<ReferenceItem | null>;
   listSessionReferences(sessionId: string): Promise<ReferenceItem[]>;
   saveSelection(selection: ReferenceSelection): Promise<ReferenceSelection>;
   saveRegion(region: ReferenceRegion): Promise<ReferenceRegion>;
@@ -64,6 +68,8 @@ export interface ReferenceSearchExclusions {
 }
 
 export interface ReferenceSearchInput {
+  sessionId: string;
+  queryId: string;
   query: string;
   kind: SearchQueryKind;
   cursor?: string;
@@ -76,6 +82,7 @@ export interface SearchResultPage {
   nextCursor?: string;
   provider: string;
   query: string;
+  providerCalls?: number;
 }
 
 export interface ReferenceSearchGateway {

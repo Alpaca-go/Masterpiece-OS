@@ -74,6 +74,7 @@ function webReference(): WebReferenceItem {
     id: 'reference-web-1',
     sessionId: 'session-1',
     sourceType: 'WEB_REFERENCE',
+    resourceType: 'WEB',
     title: 'Editorial identity reference',
     tags: ['editorial'],
     sourceUrl: 'https://example.com/work/1',
@@ -149,6 +150,8 @@ test('Search contracts lock kind, batch, cursor, exclusions and real Web provena
   };
   assert.doesNotThrow(() => assertSearchQuery(query));
   assert.doesNotThrow(() => assertReferenceSearchInput({
+    sessionId: 'session-1',
+    queryId: query.id,
     query: query.text,
     kind: query.kind,
     cursor: query.cursor,
@@ -160,7 +163,7 @@ test('Search contracts lock kind, batch, cursor, exclusions and real Web provena
   }));
   assert.throws(
     () => assertSearchResultPage({
-      items: [{ id: 'llm-text', sessionId: 'session-1', sourceType: 'WEB_REFERENCE', title: 'invented', tags: [], createdAt: NOW } as never],
+      items: [{ id: 'llm-text', sessionId: 'session-1', sourceType: 'WEB_REFERENCE', resourceType: 'WEB', title: 'invented', tags: [], createdAt: NOW } as never],
       provider: 'search-provider', query: query.text,
     }),
     /sourceUrl is required/,

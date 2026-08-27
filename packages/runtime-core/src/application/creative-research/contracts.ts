@@ -103,6 +103,10 @@ export interface SearchQuery {
   derivedFromKeywordIds: string[];
   createdAt: string;
   completedAt?: string;
+  errorCode?: string;
+  errorMessage?: string;
+  resultCount?: number;
+  providerCalls?: number;
 }
 
 export const REFERENCE_SOURCE_TYPES = [
@@ -131,11 +135,16 @@ interface ReferenceItemBase {
 
 export interface WebReferenceItem extends ReferenceItemBase {
   sourceType: 'WEB_REFERENCE';
+  resourceType: 'IMAGE' | 'WEB';
   sourceUrl: string;
   canonicalUrl: string;
+  remoteImageUrl?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   provider: string;
   publisherOrDomain: string;
   queryId: string;
+  matchedQueryIds?: string[];
   resultRank: number;
   altText?: string;
   licenseOrUsageStatus?: string;

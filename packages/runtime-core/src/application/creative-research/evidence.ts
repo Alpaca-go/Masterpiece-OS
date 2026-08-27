@@ -162,6 +162,12 @@ export function assertSearchQuery(query: SearchQuery): void {
     requireText(query.provider, 'query.provider');
     requireIsoDate(query.completedAt, 'query.completedAt');
   }
+  if (query.resultCount !== undefined && (!Number.isInteger(query.resultCount) || query.resultCount < 0)) {
+    throw new Error('query.resultCount must be a non-negative integer');
+  }
+  if (query.providerCalls !== undefined && (!Number.isInteger(query.providerCalls) || query.providerCalls < 0)) {
+    throw new Error('query.providerCalls must be a non-negative integer');
+  }
   requireIsoDate(query.createdAt, 'query.createdAt');
   assertJsonSerializable(query, 'query');
 }
@@ -173,11 +179,23 @@ export function assertReferenceItem(reference: ReferenceItem): void {
   if (!Array.isArray(reference.tags)) throw new Error('reference.tags must be an array');
 
   if (reference.sourceType === 'WEB_REFERENCE') {
+    assertEnum(reference.resourceType, ['IMAGE', 'WEB'] as const, 'reference.resourceType');
     requireHttpUrl(reference.sourceUrl, 'reference.sourceUrl');
     requireHttpUrl(reference.canonicalUrl, 'reference.canonicalUrl');
+    if (reference.remoteImageUrl !== undefined) requireHttpUrl(reference.remoteImageUrl, 'reference.remoteImageUrl');
+    if (reference.resourceType === 'IMAGE' && !reference.remoteImageUrl && !reference.thumbnail?.url) {
+      throw new Error('IMAGE WEB_REFERENCE requires remoteImageUrl or thumbnail');
+    }
+    for (const [field, value] of Object.entries({ imageWidth: reference.imageWidth, imageHeight: reference.imageHeight })) {
+      if (value !== undefined && (!Number.isInteger(value) || value <= 0)) throw new Error(`reference.${field} must be a positive integer`);
+    }
     requireText(reference.provider, 'reference.provider');
     requireText(reference.publisherOrDomain, 'reference.publisherOrDomain');
     requireText(reference.queryId, 'reference.queryId');
+    if (reference.matchedQueryIds !== undefined && (!Array.isArray(reference.matchedQueryIds)
+      || reference.matchedQueryIds.some((queryId) => typeof queryId !== 'string' || !queryId.trim()))) {
+      throw new Error('reference.matchedQueryIds must contain query IDs');
+    }
     if (!Number.isInteger(reference.resultRank) || reference.resultRank < 1) throw new Error('reference.resultRank must be a positive integer');
     requireIsoDate(reference.retrievedAt, 'reference.retrievedAt');
     if (hasOwn(reference, 'generationRunId') || hasOwn(reference, 'assetId')) {

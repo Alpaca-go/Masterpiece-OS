@@ -7,17 +7,24 @@ export function assertSearchResultPage(page: SearchResultPage, expected?: { quer
   if (expected?.query !== undefined && page.query !== expected.query) throw new Error('search result page query mismatch');
   if (!page.provider.trim()) throw new Error('search result page requires provider');
   if (!Array.isArray(page.items)) throw new Error('search result page items must be an array');
+  if (page.providerCalls !== undefined && (!Number.isInteger(page.providerCalls) || page.providerCalls < 1)) {
+    throw new Error('search result page providerCalls must be a positive integer');
+  }
   for (const item of page.items) assertWebReferenceResult(item, page.provider);
   assertJsonSerializable(page, 'searchResultPage');
 }
 
 export function assertReferenceSearchInput(input: {
+  sessionId: string;
+  queryId: string;
   query: string;
   kind: string;
   cursor?: string;
   limit?: number;
   exclusions?: { referenceIds?: string[]; domains?: string[]; urls?: string[] };
 }): void {
+  if (!input.sessionId.trim()) throw new Error('search input requires sessionId');
+  if (!input.queryId.trim()) throw new Error('search input requires queryId');
   if (!input.query.trim()) throw new Error('search input requires query');
   if (!SEARCH_QUERY_KINDS.includes(input.kind as typeof SEARCH_QUERY_KINDS[number])) throw new Error('search input kind is invalid');
   if (input.limit !== undefined && (!Number.isInteger(input.limit) || input.limit < 1 || input.limit > 100)) {
