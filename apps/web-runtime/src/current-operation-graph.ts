@@ -33,6 +33,7 @@ import {
 } from '@masterpiece/runtime-core/application/creative-research-reference-search-baidu.ts';
 import { createCreativeResearchReferenceSearchService } from '@masterpiece/runtime-core/application/creative-research-reference-search-service.ts';
 import { createCreativeResearchResearchStore } from '@masterpiece/runtime-core/application/creative-research-research-store.ts';
+import { createCreativeResearchSelectionService } from '@masterpiece/runtime-core/application/creative-research-selection-service.ts';
 import { createCreativeResearchStore } from '@masterpiece/runtime-core/application/creative-research-store.ts';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
@@ -252,6 +253,9 @@ export function createCurrentBusinessOperations(
     gateway: createBaiduReferenceSearchGateway({
       readCredential: () => adapters.searchCredential.read(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),
     }),
+  });
+  const creativeResearchSelection = createCreativeResearchSelectionService({
+    references: creativeResearchResearchStore.references,
   });
   const creativeResearchIntakeRoot = path.resolve(dataPath, '..', 'documents-intake');
   const creativeResearchBrowserBriefs = {
@@ -592,6 +596,7 @@ export function createCurrentBusinessOperations(
       briefs: creativeResearchBrowserBriefs,
       search: creativeResearchSearch,
       history: creativeResearchResearchStore.history,
+      selection: creativeResearchSelection,
       listSessions: (projectId) => creativeResearchStore.sessions.listByProject(projectId),
       credential: {
         has: () => adapters.searchCredential.has(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),

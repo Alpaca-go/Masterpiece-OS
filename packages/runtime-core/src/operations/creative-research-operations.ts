@@ -4,11 +4,15 @@ import type {
   CreativeResearchBriefEvidenceDto,
   CreativeResearchBriefFieldDto,
   CreativeResearchQueryDto,
+  CreativeResearchNegativeSignalDto,
   CreativeResearchReferenceDto,
+  CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
   UpdateCreativeResearchBriefInput,
+  SetCreativeResearchReferenceSelectionInput,
 } from '../application-contracts.ts';
-import type { CreativeResearchSession, DesignBrief, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeResearchSession, DesignBrief, NegativeSignal, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeResearchSelectionService } from '../application/creative-research-selection-service.ts';
 import type { SearchHistoryRepository } from '../application/creative-research/ports.ts';
 
 type BriefService = {
@@ -144,10 +148,32 @@ export function toCreativeResearchReferenceDto(value: WebReferenceItem): Creativ
   });
 }
 
+export function toCreativeResearchSelectionDto(value: ReferenceSelection): CreativeResearchReferenceSelectionDto {
+  return Object.freeze({
+    referenceId: value.referenceId,
+    state: value.state,
+    selectedAttributes: [...value.selectedAttributes],
+    designerNote: value.designerNote,
+    updatedAt: value.updatedAt,
+  });
+}
+
+export function toCreativeResearchNegativeSignalDto(value: NegativeSignal): CreativeResearchNegativeSignalDto {
+  return Object.freeze({
+    id: value.id,
+    type: value.type,
+    scope: value.scope,
+    sourceReferenceId: value.sourceReferenceId,
+    reason: value.reason,
+    createdAt: value.createdAt,
+  });
+}
+
 export function createCreativeResearchOperations(options: {
   briefs: BriefService;
   search: SearchService;
   history: SearchHistoryRepository;
+  selection: CreativeResearchSelectionService;
   listSessions(projectId: string): Promise<CreativeResearchSession[]>;
   credential: {
     has(): Promise<boolean>;
@@ -201,6 +227,12 @@ export function createCreativeResearchOperations(options: {
       (await options.search.getSearchHistory(sessionId)).map(toCreativeResearchQueryDto),
     'creative-research:list-references': async (_context: unknown, sessionId: string) =>
       (await options.search.listWebReferences(sessionId)).map(toCreativeResearchReferenceDto),
+    'creative-research:list-selections': async (_context: unknown, sessionId: string) =>
+      (await options.selection.listSelections(sessionId)).map(toCreativeResearchSelectionDto),
+    'creative-research:set-reference-selection': async (_context: unknown, input: SetCreativeResearchReferenceSelectionInput) =>
+      toCreativeResearchSelectionDto((await options.selection.setReferenceSelection(input)).selection),
+    'creative-research:list-negative-signals': async (_context: unknown, sessionId: string) =>
+      (await options.selection.listNegativeSignals(sessionId)).map(toCreativeResearchNegativeSignalDto),
     'creative-research:get-search-credential-status': credentialStatus,
     'creative-research:save-search-credential': async (_context: unknown, value: string) => {
       const credential = String(value || '').trim();

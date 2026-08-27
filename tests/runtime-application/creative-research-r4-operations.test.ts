@@ -104,6 +104,11 @@ test('R4 operation layer keeps credential write-only and retries the same failed
       },
       listSessionSearchHistory: async () => history,
     },
+    selection: {
+      listSelections: async () => [],
+      listNegativeSignals: async () => [],
+      setReferenceSelection: async () => { throw new Error('not used'); },
+    },
     listSessions: async () => [],
     credential: { has: async () => Boolean(secret), save: async (value) => { secret = value; }, remove: async () => { secret = ''; } },
   });
@@ -158,5 +163,5 @@ test('R4 route remains parallel to the unchanged Creative Intelligence route and
   assert.match(workspace, /Concept References/u);
   assert.match(workspace, /Category References/u);
   assert.match(workspace, />依据</u);
-  assert.doesNotMatch(workspace, /Selection Tray|更像这个|负向偏好|区域框选/u);
+  assert.doesNotMatch(workspace, /更像这个|换一批|Direction Board|区域框选/u);
 });

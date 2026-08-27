@@ -5,10 +5,12 @@ import os from 'node:os';
 import path from 'node:path';
 import type { WebReferenceItem } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
 import { createCreativeResearchResearchStore } from '@masterpiece/runtime-core/application/creative-research-research-store.ts';
+import { createCreativeResearchOperations } from '@masterpiece/runtime-core/operations/creative-research-operations.ts';
 import {
   activeRejectionSignals,
   createCreativeResearchSelectionService,
 } from '@masterpiece/runtime-core/application/creative-research-selection-service.ts';
+import { deriveSelectionTraySummary } from '../../apps/web/src/features/creative-research/creative-research-view-model.ts';
 
 const NOW = '2026-08-27T12:00:00.000Z';
 
@@ -108,4 +110,62 @@ test('R5 rapid selection writes serialize by reference and reload the last submi
   } finally {
     await fs.rm(temporary, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
   }
+});
+
+test('R5 operation DTO stays browser-safe and selection actions make zero model or import calls', async () => {
+  let modelCalls = 0;
+  let importCalls = 0;
+  const saved = {
+    sessionId: 'session-1', referenceId: 'reference-1', state: 'SELECTED' as const,
+    selectedAttributes: ['LAYOUT' as const], designerNote: '只参考版式', actor: 'DESIGNER' as const,
+    createdAt: NOW, updatedAt: NOW,
+  };
+  const operations = createCreativeResearchOperations({
+    briefs: {} as any,
+    search: {} as any,
+    history: {} as any,
+    listSessions: async () => [],
+    selection: {
+      listSelections: async () => [saved],
+      listNegativeSignals: async () => [{ id: 'negative-1', sessionId: 'session-1', type: 'REJECT_REFERENCE', scope: 'REFERENCE', sourceReferenceId: 'reference-2', reason: '太商业', actor: 'DESIGNER', createdAt: NOW }],
+      setReferenceSelection: async () => ({ selection: saved }),
+    },
+    credential: { has: async () => false, save: async () => undefined, remove: async () => undefined },
+  });
+  const dto = await operations['creative-research:set-reference-selection']({}, {
+    sessionId: 'session-1', referenceId: 'reference-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'], designerNote: '只参考版式',
+  });
+  assert.deepEqual(dto, { referenceId: 'reference-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'], designerNote: '只参考版式', updatedAt: NOW });
+  assert.deepEqual(await operations['creative-research:list-negative-signals']({}, 'session-1'), [{ id: 'negative-1', type: 'REJECT_REFERENCE', scope: 'REFERENCE', sourceReferenceId: 'reference-2', reason: '太商业', createdAt: NOW }]);
+  assert.equal(modelCalls, 0);
+  assert.equal(importCalls, 0);
+  assert.doesNotMatch(JSON.stringify(dto), /sessionId|actor|sourceUrl|remoteImage|base64|apiKey/u);
+  void modelCalls; void importCalls;
+});
+
+test('R5 Selection Tray counts only current SELECTED evidence and existing attributes', () => {
+  const summary = deriveSelectionTraySummary([
+    { referenceId: 'selected-1', state: 'SELECTED', selectedAttributes: ['TYPOGRAPHY', 'LAYOUT'], updatedAt: NOW },
+    { referenceId: 'selected-2', state: 'SELECTED', selectedAttributes: ['LAYOUT', 'MATERIAL'], updatedAt: NOW },
+    { referenceId: 'rejected', state: 'REJECTED', selectedAttributes: ['COLOR'], updatedAt: NOW },
+    { referenceId: 'none', state: 'NONE', selectedAttributes: ['COLOR'], updatedAt: NOW },
+  ]);
+  assert.equal(summary.selectedCount, 2);
+  assert.deepEqual(summary.attributeCounts, { TYPOGRAPHY: 1, LAYOUT: 2, MATERIAL: 1 });
+});
+
+test('R5 Web judgment surface exposes only selection controls and keeps R6/R7 absent', async () => {
+  const [workspace, card, tray] = await Promise.all([
+    fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
+    fs.readFile('apps/web/src/features/creative-research/ReferenceCard.tsx', 'utf8'),
+    fs.readFile('apps/web/src/features/creative-research/SelectionTray.tsx', 'utf8'),
+  ]);
+  assert.match(card, /'收藏'/u);
+  assert.match(card, /'不要类似'/u);
+  assert.match(card, />查看来源/u);
+  assert.match(tray, /Selection Tray \/ 灵感篮/u);
+  assert.match(tray, /至少选择 3 个参考/u);
+  assert.match(workspace, /Concept References/u);
+  assert.match(workspace, /Category References/u);
+  assert.doesNotMatch(`${workspace}\n${card}\n${tray}`, /More Like This|换一批|Direction Board|compile-direction|more-like-this/u);
 });

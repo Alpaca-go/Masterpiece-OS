@@ -3,8 +3,10 @@ import type {
   CreativeResearchBriefDto,
   CreativeResearchBriefFieldDto,
   CreativeResearchCredentialStatusDto,
+  CreativeResearchNegativeSignalDto,
   CreativeResearchQueryDto,
   CreativeResearchReferenceDto,
+  CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
   ProjectRecord,
   PublicSettings,
@@ -17,9 +19,10 @@ import {
   filterReferencesForResearchView,
   filterReferencesByResearchKind,
   listQueriesByResearchKind,
-  safeReferenceUrl,
   type ReferenceResearchKind,
 } from './creative-research-view-model';
+import { ReferenceCard } from './ReferenceCard';
+import { SelectionTray } from './SelectionTray';
 import './creative-research.css';
 
 function fileToBase64(file: File): Promise<string> {
@@ -120,18 +123,6 @@ function BriefEditor({ brief, editable, busy, onSave }: {
   </section>;
 }
 
-function ReferenceImage({ reference }: { reference: CreativeResearchReferenceDto }) {
-  const [broken, setBroken] = useState(false);
-  const imageUrl = reference.thumbnailUrl || reference.remoteImageUrl;
-  return <article className="cr-image-card">
-    <div className="cr-image-card__media">
-      {!broken && imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setBroken(true)} /> : <span>图片暂不可用</span>}
-    </div>
-    <div><strong>{reference.title}</strong><small>{reference.publisher}</small></div>
-    <button onClick={() => { const url = safeReferenceUrl(reference.sourceUrl); if (url) window.open(url, '_blank', 'noopener,noreferrer'); }}>查看来源 ↗</button>
-  </article>;
-}
-
 export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBack, onOpenSettings }: {
   settings: PublicSettings;
   projects: ProjectRecord[];
@@ -149,21 +140,26 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [brief, setBrief] = useState<CreativeResearchBriefDto | null>(null);
   const [queries, setQueries] = useState<CreativeResearchQueryDto[]>([]);
   const [references, setReferences] = useState<CreativeResearchReferenceDto[]>([]);
+  const [selections, setSelections] = useState<CreativeResearchReferenceSelectionDto[]>([]);
+  const [negativeSignals, setNegativeSignals] = useState<CreativeResearchNegativeSignalDto[]>([]);
   const [credential, setCredential] = useState<CreativeResearchCredentialStatusDto>({ provider: 'baidu-search', configured: false });
   const [credentialValue, setCredentialValue] = useState('');
   const [documents, setDocuments] = useState<File[]>([]);
   const [filter, setFilter] = useState('all');
   const [researchKind, setResearchKind] = useState<ReferenceResearchKind>('CONCEPT');
+  const [trayExpanded, setTrayExpanded] = useState(false);
   const [tab, setTab] = useState<'brief' | 'references'>('brief');
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
 
   async function loadSession(id: string) {
     const nextSession = await api.getSession(id);
-    const [nextBrief, nextQueries, nextReferences] = await Promise.all([
+    const [nextBrief, nextQueries, nextReferences, nextSelections, nextNegativeSignals] = await Promise.all([
       api.getDesignBrief(id).catch(() => null), api.getSearchHistory(id), api.listReferences(id),
+      api.listSelections(id), api.listNegativeSignals(id),
     ]);
     setSession(nextSession); setBrief(nextBrief); setQueries(nextQueries); setReferences(nextReferences);
+    setSelections(nextSelections); setNegativeSignals(nextNegativeSignals);
   }
   useEffect(() => { void api.getSearchCredentialStatus().then(setCredential).catch((reason) => setError(cleanError(reason))); }, []);
   useEffect(() => {
@@ -194,6 +190,19 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
       const planned = await api.planInitialSearch(session.id);
       setQueries(planned); setTab('references'); setBusy('searching');
       try { await api.executeSearchBatch(session.id); } finally { await loadSession(session.id); }
+    });
+  }
+
+  async function setReferenceSelection(referenceId: string, input: {
+    state: CreativeResearchReferenceSelectionDto['state'];
+    selectedAttributes: CreativeResearchReferenceSelectionDto['selectedAttributes'];
+    designerNote?: string;
+    rejectionReason?: string;
+  }) {
+    await action(`selection:${referenceId}`, async () => {
+      const saved = await api.setReferenceSelection({ sessionId, referenceId, ...input });
+      setSelections((current) => [...current.filter((item) => item.referenceId !== referenceId), saved]);
+      if (input.state === 'REJECTED') setNegativeSignals(await api.listNegativeSignals(sessionId));
     });
   }
 
@@ -233,10 +242,11 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
         <div className="cr-query-chips"><button className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>全部 {kindReferences.length}</button>{kindQueries.map((query) => <button key={query.id} className={filter === query.id ? 'is-active' : ''} onClick={() => setFilter(query.id)}>{query.text} <span>{query.status}</span></button>)}</div>
         {queries.some((query) => query.status === 'FAILED') && <div className="cr-alert cr-alert--warning"><span>部分查询失败，已有结果仍可浏览。</span><Button size="sm" variant="secondary" disabled={busy !== '' || !credential.configured} onClick={() => void action('searching', async () => { await api.executeSearchBatch(sessionId, queries.filter((query) => query.status === 'FAILED').map((query) => query.id)); await loadSession(sessionId); })}>重试失败查询</Button></div>}
         {!queries.length && session?.status === 'RESEARCH' && <Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void action('planning', async () => { const planned = await api.planInitialSearch(sessionId); setQueries(planned); setBusy('searching'); try { await api.executeSearchBatch(sessionId); } finally { await loadSession(sessionId); } })}>规划并搜索</Button>}
+        <SelectionTray selections={selections} references={references} expanded={trayExpanded} onToggle={() => setTrayExpanded((value) => !value)} busy={busy !== ''} onAnalyze={() => setError('偏好分析将在当前 R5 开发阶段的下一步启用。')} />
         <div className="cr-section-head"><h3>图片灵感板</h3><span>{imageReferences.length}</span></div>
-        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceImage key={reference.id} reference={reference} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
+        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display="IMAGE" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}`} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
         <div className="cr-section-head"><h3>网页来源</h3><span>{webReferences.length}</span></div>
-        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <article key={reference.id}><div><strong>{reference.title}</strong><small>{reference.publisher} · 排名 {reference.resultRank}</small></div><button onClick={() => { const url = safeReferenceUrl(reference.sourceUrl); if (url) window.open(url, '_blank', 'noopener,noreferrer'); }}>查看来源 ↗</button></article>)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
+        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display="WEB" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}`} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} />)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
       </section>}
   </main>;
 }

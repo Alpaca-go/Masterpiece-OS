@@ -1,7 +1,28 @@
-import type { CreativeResearchQueryDto, CreativeResearchReferenceDto } from '@masterpiece/runtime-core/application-contracts.ts';
+import type {
+  CreativeResearchQueryDto,
+  CreativeResearchReferenceAttributeDto,
+  CreativeResearchReferenceDto,
+  CreativeResearchReferenceSelectionDto,
+} from '@masterpiece/runtime-core/application-contracts.ts';
 
 export type ResearchUiState = 'NOT_STARTED' | 'PLANNING' | 'SEARCHING' | 'READY' | 'PARTIAL_FAILURE' | 'FAILED';
 export type ReferenceResearchKind = 'CONCEPT' | 'CATEGORY';
+
+export interface SelectionTraySummary {
+  selectedCount: number;
+  attributeCounts: Partial<Record<CreativeResearchReferenceAttributeDto, number>>;
+}
+
+export function deriveSelectionTraySummary(selections: CreativeResearchReferenceSelectionDto[]): SelectionTraySummary {
+  const selected = selections.filter((selection) => selection.state === 'SELECTED');
+  const attributeCounts: SelectionTraySummary['attributeCounts'] = {};
+  for (const selection of selected) {
+    for (const attribute of new Set(selection.selectedAttributes)) {
+      attributeCounts[attribute] = (attributeCounts[attribute] || 0) + 1;
+    }
+  }
+  return { selectedCount: selected.length, attributeCounts };
+}
 
 export function deriveResearchUiState(queries: CreativeResearchQueryDto[], busy: string): ResearchUiState {
   if (busy === 'planning') return 'PLANNING';

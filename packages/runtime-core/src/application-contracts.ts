@@ -2586,6 +2586,43 @@ export interface CreativeResearchReferenceDto {
   retrievedAt: string;
 }
 
+export type CreativeResearchReferenceAttributeDto =
+  | 'TYPOGRAPHY'
+  | 'LAYOUT'
+  | 'COLOR'
+  | 'GRAPHIC'
+  | 'MATERIAL'
+  | 'PHOTOGRAPHY'
+  | 'IMAGE_TREATMENT'
+  | 'APPLICATION'
+  | 'ATMOSPHERE';
+
+export interface CreativeResearchReferenceSelectionDto {
+  referenceId: string;
+  state: 'NONE' | 'SELECTED' | 'REJECTED';
+  selectedAttributes: CreativeResearchReferenceAttributeDto[];
+  designerNote?: string;
+  updatedAt: string;
+}
+
+export interface SetCreativeResearchReferenceSelectionInput {
+  sessionId: string;
+  referenceId: string;
+  state: 'NONE' | 'SELECTED' | 'REJECTED';
+  selectedAttributes: CreativeResearchReferenceAttributeDto[];
+  designerNote?: string;
+  rejectionReason?: string;
+}
+
+export interface CreativeResearchNegativeSignalDto {
+  id: string;
+  type: 'REJECT_REFERENCE' | 'REMOVE_KEYWORD' | 'DESIGNER_NOTE' | 'REANALYSIS_FEEDBACK';
+  scope: 'SESSION' | 'REFERENCE' | 'KEYWORD' | 'DIRECTION';
+  sourceReferenceId?: string;
+  reason?: string;
+  createdAt: string;
+}
+
 export interface CreativeResearchCredentialStatusDto {
   provider: 'baidu-search';
   configured: boolean;
@@ -2708,6 +2745,9 @@ export interface RuntimeApi {
     executeSearchBatch(sessionId: string, queryIds?: string[]): Promise<CreativeResearchQueryDto[]>;
     getSearchHistory(sessionId: string): Promise<CreativeResearchQueryDto[]>;
     listReferences(sessionId: string): Promise<CreativeResearchReferenceDto[]>;
+    listSelections(sessionId: string): Promise<CreativeResearchReferenceSelectionDto[]>;
+    setReferenceSelection(input: SetCreativeResearchReferenceSelectionInput): Promise<CreativeResearchReferenceSelectionDto>;
+    listNegativeSignals(sessionId: string): Promise<CreativeResearchNegativeSignalDto[]>;
     getSearchCredentialStatus(): Promise<CreativeResearchCredentialStatusDto>;
     saveSearchCredential(value: string): Promise<CreativeResearchCredentialStatusDto>;
     deleteSearchCredential(): Promise<CreativeResearchCredentialStatusDto>;
