@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 194 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 201 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -31,8 +31,8 @@ test('Node Runtime Host binds all 194 channels to the Shared Registry without El
     delete process.env.MASTERPIECE_WEB_OPEN_PATH;
   });
 
-  // R4 adds fourteen narrow creative-research:* operations to the 180-channel baseline.
-  assert.equal(host.operationCount, 194);
+  // R5 adds seven narrow selection/preference operations to the 194-channel R4 baseline.
+  assert.equal(host.operationCount, 201);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),

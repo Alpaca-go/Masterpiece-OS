@@ -35,6 +35,11 @@ test('R5 selection persists NONE/SELECTED/REJECTED current state with session id
     const first = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     await first.references.storeReference(reference('reference-1'));
     const service = createCreativeResearchSelectionService({ references: first.references, now: () => NOW, createId: ids('negative-1') });
+    await first.references.saveRegion({
+      id: 'region-1', sessionId: 'session-1', referenceId: 'reference-1',
+      x: .1, y: .2, width: .4, height: .5, coordinateSpace: 'NORMALIZED_0_1',
+      selectedAttributes: ['LAYOUT'], designerNote: '区域证据仅验证 identity', createdAt: NOW,
+    });
     const selected = await service.setReferenceSelection({
       sessionId: 'session-1', referenceId: 'reference-1', state: 'SELECTED',
       selectedAttributes: ['TYPOGRAPHY', 'LAYOUT', 'TYPOGRAPHY'], designerNote: '只参考版式',
@@ -63,6 +68,7 @@ test('R5 selection persists NONE/SELECTED/REJECTED current state with session id
     assert.equal(history.length, 1);
     assert.equal(history[0]?.reason, '色彩过艳');
     assert.deepEqual(activeRejectionSignals(await reloaded.references.listSelections('session-1'), history), []);
+    assert.deepEqual((await reloaded.references.listRegions('session-1')).map((item) => ({ id: item.id, sessionId: item.sessionId })), [{ id: 'region-1', sessionId: 'session-1' }]);
     await Promise.all([
       fs.access(path.join(temporary, 'creative-research', 'session-1', 'research', 'selections', 'reference-1.json')),
       fs.access(path.join(temporary, 'creative-research', 'session-1', 'research', 'negative-signals', 'negative-1.json')),
