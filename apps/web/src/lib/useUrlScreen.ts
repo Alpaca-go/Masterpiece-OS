@@ -32,6 +32,7 @@ export type Screen =
   // DocumentContextWorkspace is still mounted, just no longer surfaced in
   // the primary entry points.
   | 'creative-intelligence'
+  | 'creative-research'
   | 'document-context';
 
 const SCREEN_TO_PATH: Record<Screen, string> = {
@@ -45,6 +46,7 @@ const SCREEN_TO_PATH: Record<Screen, string> = {
   'creative-session': '/creative-session',
   'packaging': '/packaging',
   'creative-intelligence': '/creative-intelligence',
+  'creative-research': '/creative-research',
   'document-context': '/document-context'
 };
 
@@ -67,6 +69,7 @@ function pathToScreen(pathname: string): Screen {
   // CI-W1B: creative-intelligence must be matched BEFORE document-context
   // because the latter is a legacy deep-link. Both routes remain routable.
   if (pathname.startsWith('/creative-intelligence')) return 'creative-intelligence';
+  if (pathname.startsWith('/creative-research')) return 'creative-research';
   if (pathname.startsWith('/document-context')) return 'document-context';
   // Unknown path → home. HashRouter only, so server-side rewrites aren't needed.
   return 'home';

@@ -20,6 +20,7 @@ import { ShortChainPage } from './pages/ShortChainPage';
 import { CreatePage } from './pages/CreatePage';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { CreativeIntelligenceWorkspace } from './components/CreativeIntelligenceWorkspace';
+import { CreativeResearchWorkspace } from './features/creative-research/CreativeResearchWorkspace';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { StatusBadgeInline } from './components/StatusBadgeInline';
 import { ProjectDetail } from './components/ProjectDetail';
@@ -531,6 +532,13 @@ function AppContent() {
     onBack={() => { setScreen('home'); void refresh(); }}
     onOpenSettings={() => { setSettingsReturnScreen('creative-intelligence'); setScreen('settings'); }}
   />;
+  if (screen === 'creative-research') return <CreativeResearchWorkspace
+    settings={settings}
+    projects={projectsList}
+    onNavigate={navigateToPath}
+    onBack={() => setScreen('home')}
+    onOpenSettings={() => { setSettingsReturnScreen('creative-research'); setScreen('settings'); }}
+  />;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
     progress={progressState}
@@ -725,6 +733,9 @@ function AppContent() {
             </Button>
             <Button variant="ghost" onClick={() => { setAnalysisMode('creative-intelligence'); setScreen('create'); }}>
               智能创意 →
+            </Button>
+            <Button variant="ghost" onClick={() => setScreen('creative-research')}>
+              创意研究 →
             </Button>
             <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
               参考图定风格
