@@ -34,6 +34,9 @@ import {
 import { createCreativeResearchReferenceSearchService } from '@masterpiece/runtime-core/application/creative-research-reference-search-service.ts';
 import { createCreativeResearchResearchStore } from '@masterpiece/runtime-core/application/creative-research-research-store.ts';
 import { createCreativeResearchSelectionService } from '@masterpiece/runtime-core/application/creative-research-selection-service.ts';
+import { createCreativeResearchPreferenceAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-preference-analysis-adapter.ts';
+import { createCreativeResearchPreferenceAnalysisService } from '@masterpiece/runtime-core/application/creative-research-preference-analysis-service.ts';
+import { createCreativeResearchPreferenceStore } from '@masterpiece/runtime-core/application/creative-research-preference-store.ts';
 import { createCreativeResearchStore } from '@masterpiece/runtime-core/application/creative-research-store.ts';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
@@ -256,6 +259,15 @@ export function createCurrentBusinessOperations(
   });
   const creativeResearchSelection = createCreativeResearchSelectionService({
     references: creativeResearchResearchStore.references,
+  });
+  const creativeResearchPreferenceStore = createCreativeResearchPreferenceStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchPreferences = createCreativeResearchPreferenceAnalysisService({
+    briefs: creativeResearchStore.briefs,
+    references: creativeResearchResearchStore.references,
+    insights: creativeResearchPreferenceStore,
+    adapter: createCreativeResearchPreferenceAnalysisAdapter({
+      readCredentials: async (profileId) => readCredentials(profileId),
+    }),
   });
   const creativeResearchIntakeRoot = path.resolve(dataPath, '..', 'documents-intake');
   const creativeResearchBrowserBriefs = {
@@ -597,6 +609,7 @@ export function createCurrentBusinessOperations(
       search: creativeResearchSearch,
       history: creativeResearchResearchStore.history,
       selection: creativeResearchSelection,
+      preferences: creativeResearchPreferences,
       listSessions: (projectId) => creativeResearchStore.sessions.listByProject(projectId),
       credential: {
         has: () => adapters.searchCredential.has(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),

@@ -26,6 +26,7 @@ test('Creative Research declares the bounded repository, search and authority ad
     'DocumentIntakeAdapter',
     'ProjectBriefLinkAdapter',
     'AnalysisModelAdapter',
+    'ReferencePreferenceAnalysisAdapter',
     'UserReferenceAdapter',
     'WebReferenceImportAdapter',
     'ExplorationGenerationAdapter',

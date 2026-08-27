@@ -109,6 +109,10 @@ test('R4 operation layer keeps credential write-only and retries the same failed
       listNegativeSignals: async () => [],
       setReferenceSelection: async () => { throw new Error('not used'); },
     },
+    preferences: {
+      analyzeSelection: async () => [], listInsights: async () => [],
+      updateInsight: async () => { throw new Error('not used'); }, finalizeInsight: async () => { throw new Error('not used'); },
+    },
     listSessions: async () => [],
     credential: { has: async () => Boolean(secret), save: async (value) => { secret = value; }, remove: async () => { secret = ''; } },
   });

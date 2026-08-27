@@ -9,6 +9,44 @@ import type {
   WebReferenceItem,
 } from './contracts.ts';
 
+export interface ReferencePreferenceAnalysisInput {
+  sessionId: string;
+  profileId: string;
+  brief: {
+    projectSummary: string;
+    designTask: string;
+    audience: string;
+    visualKeywords: string[];
+  };
+  selectedReferences: Array<{
+    id: string;
+    resourceType: 'IMAGE' | 'WEB';
+    title: string;
+    publisher: string;
+    selectedAttributes: ReferenceAttribute[];
+    designerNote?: string;
+    remoteImageUrl?: string;
+  }>;
+  activeNegativeSignals: Array<{
+    id: string;
+    sourceReferenceId: string;
+    reason?: string;
+    referenceTitle?: string;
+  }>;
+}
+
+export interface PreferenceInsightDraftMaterial {
+  category: ReferenceAttribute;
+  summary: string;
+  confidence?: number;
+  supportingReferenceIds: string[];
+  supportingNegativeSignalIds: string[];
+}
+
+export interface ReferencePreferenceAnalysisAdapter {
+  analyzePreferences(input: ReferencePreferenceAnalysisInput): Promise<PreferenceInsightDraftMaterial[]>;
+}
+
 export interface DocumentIntakeMaterial {
   projectId: string;
   sourceDocumentIds: string[];
@@ -113,6 +151,7 @@ export const CREATIVE_RESEARCH_ADAPTER_NAMES = [
   'DocumentIntakeAdapter',
   'ProjectBriefLinkAdapter',
   'AnalysisModelAdapter',
+  'ReferencePreferenceAnalysisAdapter',
   'UserReferenceAdapter',
   'WebReferenceImportAdapter',
   'ExplorationGenerationAdapter',

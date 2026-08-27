@@ -95,6 +95,23 @@
 .cr-selection-tray > small, .cr-tray-selection-list { grid-column: 1 / -1; }
 .cr-tray-selection-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
 .cr-tray-selection-list div { display: grid; gap: 3px; padding-top: 9px; border-top: 1px solid var(--color-line); }
+.cr-preferences { margin: 24px 0 38px; padding: 22px; border: 1px solid var(--color-line); background: var(--color-surface); }
+.cr-preferences > header { display: flex; justify-content: space-between; gap: 20px; align-items: end; border-bottom: 1px solid var(--color-line); padding-bottom: 16px; }
+.cr-preferences h3 { margin: 3px 0 0; font: 500 var(--text-xl) var(--font-display); }
+.cr-preferences header p { margin: 0; color: var(--color-text-muted); }
+.cr-insight-list { display: grid; gap: 0; }
+.cr-insight-list > article { padding: 18px 0; border-bottom: 1px solid var(--color-line); }
+.cr-insight-list > article.is-finalized { border-left: 3px solid var(--color-success-line); padding-left: 14px; }
+.cr-insight-head { display: flex; justify-content: space-between; gap: 12px; }
+.cr-insight-head span, .cr-insight-list article > small { color: var(--color-text-muted); font-size: var(--text-xs); }
+.cr-insight-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.cr-insight-actions button, .cr-insight-override button { border: 1px solid var(--color-line); background: transparent; color: var(--color-text-muted); padding: 6px 10px; cursor: pointer; }
+.cr-insight-override { display: grid; gap: 8px; margin-top: 12px; }
+.cr-insight-override textarea { min-height: 82px; resize: vertical; border: 1px solid var(--color-line-strong); background: var(--color-surface); color: var(--color-text); padding: 9px; }
+.cr-insight-override > div { display: flex; justify-content: flex-end; gap: 8px; }
+.cr-insight-evidence { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 8px; margin-top: 12px; }
+.cr-insight-evidence > div { display: grid; gap: 4px; padding: 10px; border: 1px solid var(--color-line); background: var(--color-surface-soft); }
+.cr-insight-evidence b { color: var(--color-text-muted); font: 500 var(--text-xs) var(--font-mono); }
 .cr-empty, .cr-loading { color: var(--color-text-muted); text-align: center; padding: 48px; border: 1px dashed var(--color-line-strong); }
 .cr-alert { max-width: 1120px; margin: 18px auto; padding: 12px 16px; display: flex; justify-content: space-between; gap: 16px; align-items: center; border: 1px solid; }
 .cr-alert--error { color: var(--color-error-text); background: var(--color-error-bg-soft); border-color: var(--color-error-line); }

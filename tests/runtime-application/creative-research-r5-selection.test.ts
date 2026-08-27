@@ -130,6 +130,10 @@ test('R5 operation DTO stays browser-safe and selection actions make zero model 
       listNegativeSignals: async () => [{ id: 'negative-1', sessionId: 'session-1', type: 'REJECT_REFERENCE', scope: 'REFERENCE', sourceReferenceId: 'reference-2', reason: '太商业', actor: 'DESIGNER', createdAt: NOW }],
       setReferenceSelection: async () => ({ selection: saved }),
     },
+    preferences: {
+      analyzeSelection: async () => [], listInsights: async () => [],
+      updateInsight: async () => { throw new Error('not used'); }, finalizeInsight: async () => { throw new Error('not used'); },
+    },
     credential: { has: async () => false, save: async () => undefined, remove: async () => undefined },
   });
   const dto = await operations['creative-research:set-reference-selection']({}, {

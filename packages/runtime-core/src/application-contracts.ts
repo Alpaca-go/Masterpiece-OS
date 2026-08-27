@@ -2623,6 +2623,19 @@ export interface CreativeResearchNegativeSignalDto {
   createdAt: string;
 }
 
+export interface CreativeResearchPreferenceInsightDto {
+  id: string;
+  analysisRunId?: string;
+  category: CreativeResearchReferenceAttributeDto;
+  summary: string;
+  status: 'DRAFT' | 'FINALIZED';
+  confidence?: number;
+  supportingReferenceIds: string[];
+  supportingNegativeSignalIds: string[];
+  designerOverride?: string;
+  createdAt: string;
+}
+
 export interface CreativeResearchCredentialStatusDto {
   provider: 'baidu-search';
   configured: boolean;
@@ -2748,6 +2761,10 @@ export interface RuntimeApi {
     listSelections(sessionId: string): Promise<CreativeResearchReferenceSelectionDto[]>;
     setReferenceSelection(input: SetCreativeResearchReferenceSelectionInput): Promise<CreativeResearchReferenceSelectionDto>;
     listNegativeSignals(sessionId: string): Promise<CreativeResearchNegativeSignalDto[]>;
+    analyzePreferences(sessionId: string, profileId: string): Promise<CreativeResearchPreferenceInsightDto[]>;
+    listPreferenceInsights(sessionId: string): Promise<CreativeResearchPreferenceInsightDto[]>;
+    updatePreferenceInsight(sessionId: string, insightId: string, designerOverride: string): Promise<CreativeResearchPreferenceInsightDto>;
+    finalizePreferenceInsight(sessionId: string, insightId: string): Promise<CreativeResearchPreferenceInsightDto>;
     getSearchCredentialStatus(): Promise<CreativeResearchCredentialStatusDto>;
     saveSearchCredential(value: string): Promise<CreativeResearchCredentialStatusDto>;
     deleteSearchCredential(): Promise<CreativeResearchCredentialStatusDto>;

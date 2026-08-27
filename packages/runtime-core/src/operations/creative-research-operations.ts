@@ -5,14 +5,16 @@ import type {
   CreativeResearchBriefFieldDto,
   CreativeResearchQueryDto,
   CreativeResearchNegativeSignalDto,
+  CreativeResearchPreferenceInsightDto,
   CreativeResearchReferenceDto,
   CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
   UpdateCreativeResearchBriefInput,
   SetCreativeResearchReferenceSelectionInput,
 } from '../application-contracts.ts';
-import type { CreativeResearchSession, DesignBrief, NegativeSignal, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeResearchSession, DesignBrief, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
 import type { CreativeResearchSelectionService } from '../application/creative-research-selection-service.ts';
+import type { CreativeResearchPreferenceAnalysisService } from '../application/creative-research-preference-analysis-service.ts';
 import type { SearchHistoryRepository } from '../application/creative-research/ports.ts';
 
 type BriefService = {
@@ -169,11 +171,27 @@ export function toCreativeResearchNegativeSignalDto(value: NegativeSignal): Crea
   });
 }
 
+export function toCreativeResearchPreferenceInsightDto(value: PreferenceInsight): CreativeResearchPreferenceInsightDto {
+  return Object.freeze({
+    id: value.id,
+    analysisRunId: value.analysisRunId,
+    category: value.category,
+    summary: value.summary,
+    status: value.status,
+    confidence: value.confidence,
+    supportingReferenceIds: [...value.supportingReferenceIds],
+    supportingNegativeSignalIds: [...value.supportingNegativeSignalIds],
+    designerOverride: value.designerOverride,
+    createdAt: value.createdAt,
+  });
+}
+
 export function createCreativeResearchOperations(options: {
   briefs: BriefService;
   search: SearchService;
   history: SearchHistoryRepository;
   selection: CreativeResearchSelectionService;
+  preferences: CreativeResearchPreferenceAnalysisService;
   listSessions(projectId: string): Promise<CreativeResearchSession[]>;
   credential: {
     has(): Promise<boolean>;
@@ -233,6 +251,14 @@ export function createCreativeResearchOperations(options: {
       toCreativeResearchSelectionDto((await options.selection.setReferenceSelection(input)).selection),
     'creative-research:list-negative-signals': async (_context: unknown, sessionId: string) =>
       (await options.selection.listNegativeSignals(sessionId)).map(toCreativeResearchNegativeSignalDto),
+    'creative-research:analyze-preferences': async (_context: unknown, sessionId: string, profileId: string) =>
+      (await options.preferences.analyzeSelection(sessionId, profileId)).map(toCreativeResearchPreferenceInsightDto),
+    'creative-research:list-preference-insights': async (_context: unknown, sessionId: string) =>
+      (await options.preferences.listInsights(sessionId)).map(toCreativeResearchPreferenceInsightDto),
+    'creative-research:update-preference-insight': async (_context: unknown, sessionId: string, insightId: string, designerOverride: string) =>
+      toCreativeResearchPreferenceInsightDto(await options.preferences.updateInsight(sessionId, insightId, designerOverride)),
+    'creative-research:finalize-preference-insight': async (_context: unknown, sessionId: string, insightId: string) =>
+      toCreativeResearchPreferenceInsightDto(await options.preferences.finalizeInsight(sessionId, insightId)),
     'creative-research:get-search-credential-status': credentialStatus,
     'creative-research:save-search-credential': async (_context: unknown, value: string) => {
       const credential = String(value || '').trim();
