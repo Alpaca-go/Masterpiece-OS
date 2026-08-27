@@ -1,5 +1,6 @@
 import {
   CREATIVE_RESEARCH_SESSION_STATUSES,
+  DESIGN_BRIEF_FIELDS,
   NEGATIVE_SIGNAL_SCOPES,
   NEGATIVE_SIGNAL_TYPES,
   REFERENCE_ATTRIBUTES,
@@ -119,6 +120,21 @@ export function assertDesignBrief(brief: DesignBrief): void {
   for (const keyword of brief.searchKeywords) {
     assertSearchKeyword(keyword);
     if (keyword.briefId !== brief.id) throw new Error('keyword.briefId must match brief.id');
+  }
+  const evidenceIds = new Set(brief.evidence.map((item) => item.id));
+  if (brief.fieldEvidence !== undefined) {
+    if (!brief.fieldEvidence || typeof brief.fieldEvidence !== 'object' || Array.isArray(brief.fieldEvidence)) {
+      throw new Error('brief.fieldEvidence must be an object');
+    }
+    for (const [field, ids] of Object.entries(brief.fieldEvidence)) {
+      assertEnum(field, DESIGN_BRIEF_FIELDS, 'brief.fieldEvidence field');
+      if (!Array.isArray(ids) || ids.some((id) => typeof id !== 'string' || !evidenceIds.has(id))) {
+        throw new Error(`brief.fieldEvidence.${field} must reference existing evidence`);
+      }
+    }
+  }
+  if (brief.warnings !== undefined && (!Array.isArray(brief.warnings) || brief.warnings.some((item) => typeof item !== 'string'))) {
+    throw new Error('brief.warnings must be a string array');
   }
   requireIsoDate(brief.createdAt, 'brief.createdAt');
   requireIsoDate(brief.updatedAt, 'brief.updatedAt');

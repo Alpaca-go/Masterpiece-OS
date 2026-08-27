@@ -2,7 +2,9 @@ import type {
   AiExplorationReferenceItem,
   CreativeDirectionContext,
   DesignBriefEvidence,
+  DesignBriefField,
   ReferenceAttribute,
+  SearchKeywordKind,
   UserReferenceItem,
   WebReferenceItem,
 } from './contracts.ts';
@@ -10,7 +12,16 @@ import type {
 export interface DocumentIntakeMaterial {
   projectId: string;
   sourceDocumentIds: string[];
+  documents?: Array<{
+    documentId: string;
+    filename: string;
+    sourceType: 'pdf' | 'docx' | 'markdown' | 'text';
+    title?: string;
+    role: string;
+    parseWarnings: string[];
+  }>;
   evidence: DesignBriefEvidence[];
+  warnings?: string[];
 }
 
 export interface DocumentIntakeAdapter {
@@ -39,10 +50,22 @@ export interface DesignBriefDraftMaterial {
   conceptKeywords: string[];
   visualKeywords: string[];
   evidenceIds: string[];
+  fieldEvidence?: Partial<Record<DesignBriefField, string[]>>;
+  searchKeywordSuggestions?: Array<{
+    value: string;
+    kind: SearchKeywordKind;
+    rationale?: string;
+    locale?: string;
+  }>;
+  warnings?: string[];
 }
 
 export interface AnalysisModelAdapter {
-  draftDesignBrief(input: DocumentIntakeMaterial & { designerNotes: string[] }): Promise<DesignBriefDraftMaterial>;
+  draftDesignBrief(input: DocumentIntakeMaterial & {
+    profileId: string;
+    designerNotes: string[];
+    linkedProjectBrief?: LinkedProjectBrief | null;
+  }): Promise<DesignBriefDraftMaterial>;
 }
 
 export interface UserReferenceAdapter {

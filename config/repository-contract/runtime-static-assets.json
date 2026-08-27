@@ -292,6 +292,7 @@
                                                                       "selection.json",
                                                                       "selection-history.json",
                                                                       "series.json",
+                                                                      "session.json",
                                                                       "similarity-audit.json",
                                                                       "snapshot.json",
                                                                       "source-context-snapshot.json",

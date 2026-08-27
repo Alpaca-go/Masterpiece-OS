@@ -66,9 +66,24 @@ export interface DesignBrief {
   searchKeywords: SearchKeyword[];
   designerNotes: string[];
   evidence: DesignBriefEvidence[];
+  fieldEvidence?: Partial<Record<DesignBriefField, string[]>>;
+  warnings?: string[];
   createdAt: string;
   updatedAt: string;
 }
+
+export const DESIGN_BRIEF_FIELDS = [
+  'projectSummary',
+  'designTask',
+  'audience',
+  'scenarios',
+  'coreMessages',
+  'constraints',
+  'conceptKeywords',
+  'visualKeywords',
+] as const;
+
+export type DesignBriefField = typeof DESIGN_BRIEF_FIELDS[number];
 
 export const SEARCH_QUERY_KINDS = ['CONCEPT', 'CATEGORY'] as const;
 export const SEARCH_QUERY_STATUSES = ['PENDING', 'COMPLETED', 'FAILED'] as const;
