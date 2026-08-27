@@ -53,9 +53,16 @@ export function createCreativeResearchReferenceSearchService(options: {
     if (!query) throw creativeResearchSearchError('QUERY_NOT_FOUND', `Search Query 不存在：${queryId}`);
     if (query.status !== 'PENDING') throw creativeResearchSearchError('QUERY_INVALID', `Search Query ${queryId} 已经终止`);
     try {
+      const seenReferences = query.excludeSeen
+        ? (await options.references.listSessionReferences(sessionId)).filter((item): item is WebReferenceItem => item.sourceType === 'WEB_REFERENCE')
+        : [];
       const page = await options.gateway.search({
         sessionId, queryId, query: query.text, kind: query.kind,
         ...(query.cursor ? { cursor: query.cursor } : {}),
+        ...(query.excludeSeen ? { exclusions: {
+          referenceIds: seenReferences.map((item) => item.id),
+          urls: [...new Set(seenReferences.flatMap((item) => [item.sourceUrl, item.canonicalUrl]).filter(Boolean))],
+        } } : {}),
       });
       const stored: WebReferenceItem[] = [];
       for (const reference of page.items) {

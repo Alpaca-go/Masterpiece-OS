@@ -34,6 +34,7 @@ function buildQuery(
     status: 'PENDING',
     derivedFromKeywordIds: parts.map((item) => item.id),
     createdAt,
+    origin: 'INITIAL',
   };
 }
 
