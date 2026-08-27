@@ -9,12 +9,6 @@
       "packages/*",
       "labs/*"
     ],
-    "// archived-workspace-packages": "Packages listed below are kept in the workspaces array but have no active runtime consumer as of 2026-08-25 audit. See each package's ARCHIVED.md for the audit trail. Do not remove from workspaces without a recorded decision.",
-    "// archived-workspace-packages-list": [
-      "@masterpiece/model-benchmark",
-      "@masterpiece/creative-production-runtime",
-      "@masterpiece/image-provider-dashscope"
-    ],
     "scripts": {
     "analyze": "node ./apps/cli/bin/masterpiece-os.js analyze",
     "inventory": "node ./apps/cli/bin/masterpiece-os.js inventory",

@@ -1,6 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { scanVersionNamingSource } from '../scripts/verify-version-naming.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {
+  scanCurrentVersionNaming,
+  scanVersionNamingSource,
+} from '../scripts/verify-version-naming.mjs';
 
 test('version naming guard detects known current product-copy blind spots', () => {
   for (const value of [
@@ -56,4 +62,29 @@ test('version naming guard allows explicit compatibility and version-domain exam
     },
   ]);
   assert.deepEqual(scanVersionNamingSource(source.split('\n').slice(0, 6).join('\n'), 'current-compatibility.ts'), []);
+});
+
+test('version naming guard scans current generation, space, prompt-contract, and model-registry roots', () => {
+  const repositoryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'masterpiece-version-naming-'));
+  const fixtures = [
+    'packages/image-generation-runtime/src/generation/fixture.js',
+    'packages/image-generation-runtime/src/space/fixture.js',
+    'packages/image-generation-runtime/src/prompt-contracts/fixture.js',
+    'packages/model-registry/src/fixture.js',
+  ];
+
+  try {
+    for (const fixture of fixtures) {
+      const absolute = path.join(repositoryRoot, fixture);
+      fs.mkdirSync(path.dirname(absolute), { recursive: true });
+      fs.writeFileSync(absolute, "const providerId = 'deep-creative-director-provider-v5';\n");
+    }
+
+    assert.deepEqual(
+      scanCurrentVersionNaming(repositoryRoot).map(({ file, category }) => ({ file, category })),
+      fixtures.map((file) => ({ file, category: 'historical-stage-provider-id' })),
+    );
+  } finally {
+    fs.rmSync(repositoryRoot, { recursive: true, force: true });
+  }
 });

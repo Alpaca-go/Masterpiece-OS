@@ -9,6 +9,10 @@ const scanRoots = [
   'apps/web/src',
   'packages/runtime-core/src/application',
   'packages/model-runtime/src',
+  'packages/image-generation-runtime/src/generation',
+  'packages/image-generation-runtime/src/space',
+  'packages/image-generation-runtime/src/prompt-contracts',
+  'packages/model-registry/src',
 ];
 const extensions = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx', '.css']);
 

@@ -1,4 +1,14 @@
-# Version Registry
+# S0 Version Registry — 2026-08-11
+
+> **HISTORICAL SNAPSHOT**
+>
+> 本文档记录 2026-08-11 S0 Repository Inventory 时的仓库状态，不代表当前
+> 运行时、当前命名或当前 Authority。当前事实请参考：
+>
+> - `docs/repository/CURRENT_REPOSITORY_MAP.md`
+> - `docs/repository/CURRENT_NAMESPACE_DICTIONARY.md`
+> - `config/repository-contract/current-authorities.json`
+> - `config/repository-contract/compatibility-registry.json`
 
 Snapshot counts below are counts of classified implementation/version **instances in this registry**, not raw matching strings. One row has exactly one S0 status. Grouped baselines represent a coherent version family.
 

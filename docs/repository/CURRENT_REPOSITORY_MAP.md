@@ -50,3 +50,15 @@ HISTORICAL / FIXTURE / ARCHIVE
 - Tests: root `tests`, app-local test directories
 - Historical implementations/evidence: historical docs, evaluation, and isolated archaeology; never import them from production.
 
+## Governance sources
+
+- Product version and compatibility navigation:
+  `docs/repository/CURRENT_VERSION_AND_COMPATIBILITY.md`
+- Current capability authorities:
+  `config/repository-contract/current-authorities.json`
+- Persisted compatibility identifiers:
+  `config/repository-contract/compatibility-registry.json`
+- Historical S0 version topology:
+  `docs/repository-stabilization/history/S0-version-registry-2026-08-11.md`
+- Retired cleanup batches recoverable through Git:
+  `docs/repository/CLEANUP_MANIFEST_2026-08-26.md`
