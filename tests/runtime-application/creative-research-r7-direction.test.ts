@@ -18,6 +18,7 @@ import { createCreativeResearchOperations } from '@masterpiece/runtime-core/oper
 
 const NOW = '2026-08-27T16:00:00.000Z';
 const LATER = '2026-08-27T16:05:00.000Z';
+const BEFORE = '2026-08-27T15:55:00.000Z';
 
 function ids(prefix: string) { let index = 0; return () => `${prefix}-${++index}`; }
 
@@ -350,6 +351,166 @@ test('R7 return-to-research preserves all evidence and re-entry clones authored 
     assert.deepEqual(reentered.pendingFinalizedInsights, [{ id: 'insight-late', category: 'COLOR', text: '晚到的倾向' }]);
     assert.doesNotMatch(JSON.stringify(reentered.board), /晚到的倾向/u);
     assert.equal((await stack.direction.listDirectionBoardRevisions('session-1')).length, 3);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  }
+});
+
+test('R8 direction re-entry compares first-finalized time while preserving legacy createdAt fallback', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r8-finalized-timing-'));
+  try {
+    const stack = createStack(root);
+    await seedSession(stack);
+    await stack.research.references.storeReference(reference('selected-1'));
+    const selection = createCreativeResearchSelectionService({
+      references: stack.research.references, sessions: stack.base.sessions, now: () => NOW, createId: ids('negative'),
+    });
+    await selection.setReferenceSelection({
+      sessionId: 'session-1', referenceId: 'selected-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'],
+    });
+
+    await stack.insights.saveInsight(insight({
+      id: 'insight-before', category: 'LAYOUT', summary: 'Board 前确认', status: 'DRAFT', createdAt: BEFORE,
+    }));
+    await stack.insights.saveInsight(insight({
+      id: 'insight-after', category: 'COLOR', summary: '旧草稿在 Board 后确认', status: 'DRAFT', createdAt: BEFORE,
+    }));
+    await stack.insights.saveInsight(insight({
+      id: 'insight-legacy', category: 'MATERIAL', summary: '旧版已确认倾向', status: 'FINALIZED', createdAt: BEFORE,
+    }));
+
+    let clock = BEFORE;
+    const preferences = createCreativeResearchPreferenceAnalysisService({
+      briefs: stack.base.briefs,
+      references: stack.research.references,
+      insights: stack.insights,
+      sessions: stack.base.sessions,
+      adapter: { async analyzePreferences() { throw new Error('not used'); } },
+      now: () => clock,
+    });
+    const finalizedBefore = await preferences.finalizeInsight('session-1', 'insight-before');
+    assert.equal(finalizedBefore.finalizedAt, BEFORE);
+
+    await stack.direction.startDirection('session-1');
+    await stack.direction.returnToResearch('session-1');
+    clock = LATER;
+    const finalizedAfter = await preferences.finalizeInsight('session-1', 'insight-after');
+    assert.equal(finalizedAfter.finalizedAt, LATER);
+
+    const reentered = await stack.direction.startDirection('session-1');
+    assert.deepEqual(reentered.pendingFinalizedInsights, [
+      { id: 'insight-after', category: 'COLOR', text: '旧草稿在 Board 后确认' },
+    ]);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  }
+});
+
+test('R8 failed Direction Board atomic write preserves the current revision and active board id', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r8-board-write-failure-'));
+  try {
+    const stack = createStack(root);
+    await seedSession(stack);
+    await stack.research.references.storeReference(reference('selected-1'));
+    const selection = createCreativeResearchSelectionService({
+      references: stack.research.references, sessions: stack.base.sessions, now: () => NOW, createId: ids('negative'),
+    });
+    await selection.setReferenceSelection({
+      sessionId: 'session-1', referenceId: 'selected-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'],
+    });
+    const started = await stack.direction.startDirection('session-1');
+
+    const failingBoards = createCreativeResearchDirectionBoardStore({
+      readDefaultDataPath: () => root,
+      writeJson: async (targetPath) => ({
+        success: false, targetPath, attempts: 1, errorCode: 'EACCES', errorMessage: 'simulated atomic rename failure',
+      }),
+    });
+    const failingBoardService = createCreativeResearchDirectionBoardService({
+      references: stack.research.references, insights: stack.insights, boards: failingBoards,
+      now: () => LATER, createId: ids('failed-edit'),
+    });
+    const failingDirection = createCreativeResearchDirectionService({
+      sessions: stack.base.sessions, briefs: stack.base.briefs, references: stack.research.references,
+      insights: stack.insights, boards: failingBoards, contexts: stack.contexts,
+      boardService: failingBoardService, now: () => LATER, createId: ids('failed-board'),
+    });
+
+    await assert.rejects(
+      failingDirection.updateDirectionBoard('session-1', { summary: '不应成为 current 的 revision' }),
+      (error: any) => error.code === 'CREATIVE_RESEARCH_DIRECTION_STORE_FAILED',
+    );
+    assert.deepEqual(await stack.boards.getCurrent('session-1'), started.board);
+    assert.deepEqual(await stack.boards.listRevisionHistory('session-1'), [started.board]);
+    assert.equal((await stack.base.sessions.get('session-1'))?.activeDirectionBoardId, started.board.id);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  }
+});
+
+test('R8 Context failure keeps DIRECTION recoverable and completion retry reuses persisted Context', async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r8-context-recovery-'));
+  try {
+    const stack = createStack(root);
+    await seedSession(stack);
+    await stack.research.references.storeReference(reference('selected-1'));
+    const selection = createCreativeResearchSelectionService({
+      references: stack.research.references, sessions: stack.base.sessions, now: () => NOW, createId: ids('negative'),
+    });
+    await selection.setReferenceSelection({
+      sessionId: 'session-1', referenceId: 'selected-1', state: 'SELECTED', selectedAttributes: ['LAYOUT'],
+    });
+    await stack.direction.startDirection('session-1');
+
+    const failingContexts = createCreativeDirectionContextStore({
+      readDefaultDataPath: () => root,
+      writeJson: async (targetPath) => ({
+        success: false, targetPath, attempts: 1, errorCode: 'EACCES', errorMessage: 'simulated context write failure',
+      }),
+    });
+    const contextWriteFailure = createCreativeResearchDirectionService({
+      sessions: stack.base.sessions, briefs: stack.base.briefs, references: stack.research.references,
+      insights: stack.insights, boards: stack.boards, contexts: failingContexts,
+      boardService: stack.boardService, now: () => NOW, createId: ids('unused'),
+    });
+    await assert.rejects(
+      contextWriteFailure.completeDirection('session-1', { confirm: true }),
+      (error: any) => error.code === 'CREATIVE_RESEARCH_DIRECTION_STORE_FAILED',
+    );
+    assert.equal((await stack.base.sessions.get('session-1'))?.status, 'DIRECTION');
+    assert.equal(await stack.contexts.getCurrent('session-1'), null);
+
+    let failCompletionSave = true;
+    let clock = NOW;
+    const retrySessions = {
+      ...stack.base.sessions,
+      async save(session: any) {
+        if (session.status === 'COMPLETED' && failCompletionSave) {
+          failCompletionSave = false;
+          throw new Error('simulated Session completion write failure');
+        }
+        return stack.base.sessions.save(session);
+      },
+    };
+    const retryDirection = createCreativeResearchDirectionService({
+      sessions: retrySessions, briefs: stack.base.briefs, references: stack.research.references,
+      insights: stack.insights, boards: stack.boards, contexts: stack.contexts,
+      boardService: stack.boardService, now: () => clock, createId: ids('unused'),
+    });
+    await assert.rejects(
+      retryDirection.completeDirection('session-1', { confirm: true }),
+      /simulated Session completion write failure/u,
+    );
+    const persistedBeforeRetry = await stack.contexts.getCurrent('session-1');
+    assert.equal(persistedBeforeRetry?.createdAt, NOW);
+    assert.equal((await stack.base.sessions.get('session-1'))?.status, 'DIRECTION');
+
+    clock = LATER;
+    const completed = await retryDirection.completeDirection('session-1', { confirm: true });
+    assert.deepEqual(completed.context, persistedBeforeRetry);
+    assert.equal(completed.context.createdAt, NOW);
+    assert.equal(completed.session.status, 'COMPLETED');
+    assert.equal(completed.session.completedAt, LATER);
   } finally {
     await fs.rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
   }

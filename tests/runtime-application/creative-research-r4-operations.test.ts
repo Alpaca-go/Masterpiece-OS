@@ -135,6 +135,18 @@ test('R4 view model derives honest states, cross-query filters, and rejects unsa
   assert.equal(safeReferenceUrl('https://example.com/source'), 'https://example.com/source');
 });
 
+test('R8 unavailable remote images fail closed to a visible placeholder', async () => {
+  const [referenceCard, directionWorkspace] = await Promise.all([
+    fs.readFile('apps/web/src/features/creative-research/ReferenceCard.tsx', 'utf8'),
+    fs.readFile('apps/web/src/features/creative-research/DirectionWorkspace.tsx', 'utf8'),
+  ]);
+  for (const source of [referenceCard, directionWorkspace]) {
+    assert.match(source, /onError=\{\(\) => setBroken\(true\)\}/u);
+    assert.match(source, /图片暂不可用/u);
+    assert.match(source, /referrerPolicy="no-referrer"/u);
+  }
+});
+
 test('R4.1 view model separates Concept and Category before applying current-kind query chips', () => {
   const queries = [query('concept-1', 'COMPLETED', 'CONCEPT'), query('category-1', 'COMPLETED', 'CATEGORY')];
   const references = [

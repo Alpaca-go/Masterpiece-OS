@@ -111,6 +111,7 @@ test('R3 Baidu provider fails closed for missing credentials and retries one ser
   const page = await gateway.search({ sessionId: 's', queryId: 'q', query: 'brand', kind: 'CONCEPT' });
   assert.equal(calls, 2);
   assert.equal(page.providerCalls, 2);
+  assert.deepEqual(page.items, []);
 });
 
 test('R3 Baidu provider classifies auth, rate-limit and invalid-response failures without aggressive retries', async () => {
@@ -131,6 +132,25 @@ test('R3 Baidu provider classifies auth, rate-limit and invalid-response failure
     );
     assert.equal(calls, 1);
   }
+});
+
+test('R8 Baidu timeout aborts safely and exposes no credential in the error', async () => {
+  const gateway = createBaiduReferenceSearchGateway({
+    readCredential: () => 'timeout-test-secret', timeoutMs: 1, maxRetries: 0,
+    fetch: async (_url, init) => new Promise<Response>((_resolve, reject) => {
+      const abort = () => {
+        const error = new Error('request aborted');
+        error.name = 'AbortError';
+        reject(error);
+      };
+      if (init?.signal?.aborted) abort();
+      else init?.signal?.addEventListener('abort', abort, { once: true });
+    }),
+  });
+  await assert.rejects(
+    gateway.search({ sessionId: 's', queryId: 'q', query: 'brand', kind: 'CONCEPT' }),
+    (error: any) => error.code === 'TIMEOUT' && !JSON.stringify(error).includes('timeout-test-secret'),
+  );
 });
 
 test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references and cross-query associations', async () => {
@@ -180,6 +200,49 @@ test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references
     const persisted = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     assert.equal((await persisted.history.listSessionSearchHistory('session-1')).length, queries.length);
     assert.equal((await persisted.references.listSessionReferences('session-1')).length, 1);
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  }
+});
+
+test('R8 partial search batch preserves completed references and records failed query state', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r8-partial-search-'));
+  try {
+    const base = createCreativeResearchStore({ readDefaultDataPath: () => temporary });
+    const research = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
+    await base.sessions.create({
+      id: 'session-1', projectId: 'project-1', status: 'INTAKE', sourceDocumentIds: ['document-1'],
+      activeDesignBriefId: 'brief-1', createdAt: NOW, updatedAt: NOW,
+    });
+    await base.briefs.saveRevision(brief());
+    const gateway = {
+      async search(input: any) {
+        if (input.queryId === 'q1') throw new Error('simulated provider failure');
+        return {
+          provider: 'baidu-search', query: input.query, providerCalls: 1,
+          items: [{
+            id: `reference-${input.queryId}`, sessionId: input.sessionId, sourceType: 'WEB_REFERENCE' as const,
+            resourceType: 'WEB' as const, sourceUrl: `https://example.com/${input.queryId}`,
+            canonicalUrl: `https://example.com/${input.queryId}`, provider: 'baidu-search',
+            publisherOrDomain: 'example.com', queryId: input.queryId, resultRank: 1,
+            tags: [], retrievedAt: NOW, createdAt: NOW,
+          }],
+        };
+      },
+    };
+    const service = createCreativeResearchReferenceSearchService({
+      sessions: base.sessions, briefs: base.briefs, history: research.history,
+      references: research.references, gateway, now: () => NOW,
+      createId: ids('batch-1', 'q1', 'q2', 'q3'),
+    });
+    await service.startResearch('session-1');
+    const queries = await service.planInitialSearch('session-1');
+    await assert.rejects(service.executeSearchBatch('session-1', queries.map((query) => query.id)), /simulated provider failure/u);
+    const history = await service.getSearchHistory('session-1');
+    assert.equal(history.filter((query) => query.status === 'FAILED').length, 1);
+    assert.equal(history.filter((query) => query.status === 'COMPLETED').length, 2);
+    assert.equal((await service.listWebReferences('session-1')).length, 2);
+    assert.equal((await base.sessions.get('session-1'))?.status, 'RESEARCH');
   } finally {
     await fs.rm(temporary, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
   }

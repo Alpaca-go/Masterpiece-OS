@@ -63,13 +63,14 @@ test('R5 preference service requires three selections and sends only selected ev
   try {
     const { base, research, insights } = await fixture(temporary);
     let captured: any;
+    let clock = NOW;
     const service = createCreativeResearchPreferenceAnalysisService({
       briefs: base.briefs, references: research.references, insights,
       adapter: { async analyzePreferences(input) {
         captured = input;
         return [{ category: 'LAYOUT', summary: '更偏向清晰层级与克制留白。', confidence: .82, supportingReferenceIds: ['selected-1', 'selected-3'], supportingNegativeSignalIds: ['negative-1'] }];
       } },
-      now: () => NOW, createId: ids('analysis'),
+      now: () => clock, createId: ids('analysis'),
     });
     const created = await service.analyzeSelection('session-1', 'profile-analysis');
     assert.equal(created[0]?.status, 'DRAFT');
@@ -81,10 +82,16 @@ test('R5 preference service requires three selections and sends only selected ev
 
     const finalized = await service.finalizeInsight('session-1', created[0]!.id);
     assert.equal(finalized.status, 'FINALIZED');
+    assert.equal(finalized.finalizedAt, NOW);
+    clock = '2026-08-27T14:05:00.000Z';
+    const finalizedAgain = await service.finalizeInsight('session-1', created[0]!.id);
+    assert.equal(finalizedAgain.finalizedAt, NOW);
     const overridden = await service.updateInsight('session-1', finalized.id, '不是极简，我选这些主要因为信息层级。');
     assert.match(overridden.designerOverride || '', /信息层级/u);
+    assert.equal(overridden.finalizedAt, NOW);
     const reloaded = createCreativeResearchPreferenceStore({ readDefaultDataPath: () => temporary });
     assert.equal((await reloaded.listInsights('session-1'))[0]?.status, 'FINALIZED');
+    assert.equal((await reloaded.listInsights('session-1'))[0]?.finalizedAt, NOW);
 
     await service.analyzeSelection('session-1', 'profile-analysis');
     const history = await service.listInsights('session-1');
@@ -92,6 +99,36 @@ test('R5 preference service requires three selections and sends only selected ev
     assert.equal(history.filter((item) => item.status === 'DRAFT').length, 1);
     const persistedText = await fs.readFile(path.join(temporary, 'creative-research', 'session-1', 'research', 'preference-insights', `${created[0]!.id}.json`), 'utf8');
     assert.doesNotMatch(persistedText, /https:\/\/images|base64|sourceUrl|apiKey/u);
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
+  }
+});
+
+test('R8 finalizedAt is valid only on FINALIZED insights and is immutable after persistence', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r8-finalized-at-'));
+  try {
+    const store = createCreativeResearchPreferenceStore({ readDefaultDataPath: () => temporary });
+    const finalized = {
+      id: 'insight-1', sessionId: 'session-1', category: 'LAYOUT' as const, summary: '偏好清晰层级',
+      status: 'FINALIZED' as const, supportingReferenceIds: ['reference-1'], supportingRegionIds: [],
+      supportingNegativeSignalIds: [], createdAt: NOW, finalizedAt: '2026-08-27T14:01:00.000Z',
+    };
+    await store.saveInsight(finalized);
+    await assert.rejects(
+      store.saveInsight({ ...finalized, finalizedAt: '2026-08-27T14:02:00.000Z' }),
+      /finalizedAt 不能修改/u,
+    );
+    const { finalizedAt: _removedFinalizedAt, ...withoutFinalizedAt } = finalized;
+    await assert.rejects(
+      store.saveInsight(withoutFinalizedAt),
+      /finalizedAt 不能修改/u,
+    );
+    const legacyFinalized = { ...withoutFinalizedAt, id: 'legacy-finalized' };
+    await store.saveInsight(legacyFinalized);
+    assert.equal(
+      (await store.listInsights('session-1')).find((item) => item.id === legacyFinalized.id)?.finalizedAt,
+      undefined,
+    );
   } finally {
     await fs.rm(temporary, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
   }
