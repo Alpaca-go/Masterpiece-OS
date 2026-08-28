@@ -4,6 +4,7 @@ import { REFERENCE_ATTRIBUTES } from './creative-research/contracts.ts';
 import type { ReferencePreferenceAnalysisAdapter } from './creative-research/adapter-contracts.ts';
 import { assertPreferenceInsight } from './creative-research/evidence.ts';
 import type {
+  CreativeResearchSessionRepository,
   DesignBriefRepository,
   PreferenceEvidenceRepository,
   ReferenceResearchRepository,
@@ -32,11 +33,22 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
   references: ReferenceResearchRepository;
   insights: PreferenceEvidenceRepository;
   adapter: ReferencePreferenceAnalysisAdapter;
+  // R7: optional session repository — when provided, COMPLETED sessions become
+  // read-only for preference analysis and insight mutations.
+  sessions?: CreativeResearchSessionRepository;
   now?: () => string;
   createId?: () => string;
 }): CreativeResearchPreferenceAnalysisService {
   const now = options.now || (() => new Date().toISOString());
   const createId = options.createId || randomUUID;
+
+  const assertSessionWritable = async (sessionId: string): Promise<void> => {
+    if (!options.sessions) return;
+    const session = await options.sessions.get(sessionId);
+    if (session?.status === 'COMPLETED') {
+      throw creativeResearchPreferenceError('CREATIVE_RESEARCH_PREFERENCE_SESSION_COMPLETED', 'Session 已完成，视觉倾向证据只读');
+    }
+  };
 
   const findInsight = async (sessionId: string, insightId: string): Promise<PreferenceInsight> => {
     const insight = (await options.insights.listInsights(sessionId)).find((item) => item.id === insightId);
@@ -48,6 +60,7 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
     async analyzeSelection(rawSessionId, rawProfileId) {
       const sessionId = requireText(rawSessionId, 'Session ID', 'CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED');
       const profileId = requireText(rawProfileId, 'Profile ID', 'CREATIVE_RESEARCH_PREFERENCE_PROFILE_REQUIRED');
+      await assertSessionWritable(sessionId);
       const [brief, selections, references, negativeSignals] = await Promise.all([
         options.briefs.getActiveRevision(sessionId),
         options.references.listSelections(sessionId),
@@ -130,10 +143,12 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
       return options.insights.listInsights(requireText(sessionId, 'Session ID', 'CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED'));
     },
     async updateInsight(sessionId, insightId, designerOverride) {
+      await assertSessionWritable(requireText(sessionId, 'Session ID', 'CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED'));
       await findInsight(sessionId, insightId);
       return options.insights.storeDesignerOverride(sessionId, insightId, designerOverride);
     },
     async finalizeInsight(sessionId, insightId) {
+      await assertSessionWritable(requireText(sessionId, 'Session ID', 'CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED'));
       const previous = await findInsight(sessionId, insightId);
       const finalized: PreferenceInsight = { ...previous, status: 'FINALIZED' };
       assertPreferenceInsight(finalized);

@@ -6,7 +6,10 @@ import type {
   ReferenceSelectionState,
 } from './creative-research/contracts.ts';
 import { REFERENCE_ATTRIBUTES } from './creative-research/contracts.ts';
-import type { ReferenceResearchRepository } from './creative-research/ports.ts';
+import type {
+  CreativeResearchSessionRepository,
+  ReferenceResearchRepository,
+} from './creative-research/ports.ts';
 import { creativeResearchSelectionError } from './creative-research-selection-errors.ts';
 
 export interface SetReferenceSelectionInput {
@@ -60,6 +63,9 @@ export function activeRejectionSignals(
 
 export function createCreativeResearchSelectionService(options: {
   references: ReferenceResearchRepository;
+  // R7: optional session repository — when provided, COMPLETED sessions become
+  // read-only for selection mutations. Older hosts (R1–R6 tests) may omit it.
+  sessions?: CreativeResearchSessionRepository;
   now?: () => string;
   createId?: () => string;
 }): CreativeResearchSelectionService {
@@ -72,6 +78,13 @@ export function createCreativeResearchSelectionService(options: {
     locks.set(key, current);
     try { return await current; } finally { if (locks.get(key) === current) locks.delete(key); }
   };
+  const assertSessionWritable = async (sessionId: string): Promise<void> => {
+    if (!options.sessions) return;
+    const session = await options.sessions.get(sessionId);
+    if (session?.status === 'COMPLETED') {
+      throw creativeResearchSelectionError('CREATIVE_RESEARCH_SELECTION_SESSION_COMPLETED', 'Session 已完成，选择记录只读');
+    }
+  };
 
   return Object.freeze({
     listSelections: (sessionId) => options.references.listSelections(requireId(sessionId, 'Session ID')),
@@ -80,6 +93,7 @@ export function createCreativeResearchSelectionService(options: {
       const sessionId = requireId(input.sessionId, 'Session ID');
       const referenceId = requireId(input.referenceId, 'Reference ID');
       return serialize(`${sessionId}:${referenceId}`, async () => {
+        await assertSessionWritable(sessionId);
         const reference = await options.references.getReference(sessionId, referenceId);
         if (!reference) {
           throw creativeResearchSelectionError(

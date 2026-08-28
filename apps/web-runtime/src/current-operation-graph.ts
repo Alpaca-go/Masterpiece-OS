@@ -269,12 +269,14 @@ export function createCurrentBusinessOperations(
   });
   const creativeResearchSelection = createCreativeResearchSelectionService({
     references: creativeResearchResearchStore.references,
+    sessions: creativeResearchStore.sessions,
   });
   const creativeResearchPreferenceStore = createCreativeResearchPreferenceStore({ readDefaultDataPath: async () => dataPath });
   const creativeResearchPreferences = createCreativeResearchPreferenceAnalysisService({
     briefs: creativeResearchStore.briefs,
     references: creativeResearchResearchStore.references,
     insights: creativeResearchPreferenceStore,
+    sessions: creativeResearchStore.sessions,
     adapter: createCreativeResearchPreferenceAnalysisAdapter({
       readCredentials: async (profileId) => readCredentials(profileId),
     }),
