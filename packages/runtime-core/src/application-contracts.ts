@@ -2654,6 +2654,7 @@ export interface CreativeResearchPreferenceInsightDto {
   supportingNegativeSignalIds: string[];
   designerOverride?: string;
   createdAt: string;
+  finalizedAt?: string;
 }
 
 export interface CreativeResearchCredentialStatusDto {

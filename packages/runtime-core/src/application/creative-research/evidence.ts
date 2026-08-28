@@ -297,6 +297,10 @@ export function assertPreferenceInsight(insight: PreferenceInsight): void {
     throw new Error('finalized PreferenceInsight requires supporting evidence');
   }
   requireIsoDate(insight.createdAt, 'insight.createdAt');
+  if (insight.finalizedAt !== undefined) {
+    requireIsoDate(insight.finalizedAt, 'insight.finalizedAt');
+    if (insight.status !== 'FINALIZED') throw new Error('draft PreferenceInsight cannot have finalizedAt');
+  }
   assertJsonSerializable(insight, 'insight');
 }
 

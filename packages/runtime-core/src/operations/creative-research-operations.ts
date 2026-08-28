@@ -208,6 +208,7 @@ export function toCreativeResearchPreferenceInsightDto(value: PreferenceInsight)
     supportingNegativeSignalIds: [...value.supportingNegativeSignalIds],
     designerOverride: value.designerOverride,
     createdAt: value.createdAt,
+    finalizedAt: value.finalizedAt,
   });
 }
 

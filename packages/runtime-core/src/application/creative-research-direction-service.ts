@@ -126,7 +126,8 @@ export function createCreativeResearchDirectionService(options: {
         .filter((id) => !onBoard.has(id));
       const pendingFinalizedInsights: PendingFinalizedInsight[] = previous
         ? preferenceInsights
-          .filter((insight) => insight.status === 'FINALIZED' && insight.createdAt > previous.updatedAt)
+          .filter((insight) => insight.status === 'FINALIZED'
+            && (insight.finalizedAt ?? insight.createdAt) > previous.updatedAt)
           .map((insight) => ({
             id: insight.id,
             category: insight.category,

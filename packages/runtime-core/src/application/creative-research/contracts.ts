@@ -270,6 +270,7 @@ export interface PreferenceInsight {
   supportingNegativeSignalIds: string[];
   designerOverride?: string;
   createdAt: string;
+  finalizedAt?: string;
 }
 
 export interface DirectionBoard {

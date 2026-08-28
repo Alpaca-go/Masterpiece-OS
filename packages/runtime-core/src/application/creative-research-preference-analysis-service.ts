@@ -150,7 +150,9 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
     async finalizeInsight(sessionId, insightId) {
       await assertSessionWritable(requireText(sessionId, 'Session ID', 'CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED'));
       const previous = await findInsight(sessionId, insightId);
-      const finalized: PreferenceInsight = { ...previous, status: 'FINALIZED' };
+      const finalized: PreferenceInsight = previous.status === 'DRAFT'
+        ? { ...previous, status: 'FINALIZED', finalizedAt: now() }
+        : previous;
       assertPreferenceInsight(finalized);
       return options.insights.saveInsight(finalized);
     },

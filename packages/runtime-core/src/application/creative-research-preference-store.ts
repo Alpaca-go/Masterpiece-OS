@@ -60,6 +60,9 @@ export function createCreativeResearchPreferenceStore(options: {
         if (previous?.status === 'FINALIZED' && insight.status !== 'FINALIZED') {
           throw creativeResearchPreferenceError('CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED', '已确认的 Preference Insight 不能降级为草稿');
         }
+        if (previous?.status === 'FINALIZED' && previous.finalizedAt !== insight.finalizedAt) {
+          throw creativeResearchPreferenceError('CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED', '已确认的 Preference Insight finalizedAt 不能修改');
+        }
         await persist(filename, insight);
         return insight;
       });
