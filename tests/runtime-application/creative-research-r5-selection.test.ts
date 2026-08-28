@@ -164,7 +164,7 @@ test('R5 Selection Tray counts only current SELECTED evidence and existing attri
   assert.deepEqual(summary.attributeCounts, { TYPOGRAPHY: 1, LAYOUT: 2, MATERIAL: 1 });
 });
 
-test('R5 Web judgment surface remains intact when R6 adds designer-driven correction and keeps R7 absent', async () => {
+test('R5 Web judgment surface remains intact with R6 correction; R7 Direction UI landed in DirectionWorkspace', async () => {
   const [workspace, card, tray] = await Promise.all([
     fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/ReferenceCard.tsx', 'utf8'),
@@ -179,5 +179,9 @@ test('R5 Web judgment surface remains intact when R6 adds designer-driven correc
   assert.match(workspace, /Category References/u);
   assert.match(card, /找相似/u);
   assert.match(workspace, /CorrectionToolbar/u);
-  assert.doesNotMatch(`${workspace}\n${card}\n${tray}`, /Direction Board|compile-direction/u);
+  // R7 landed: the workspace legitimately mounts the Direction tab via
+  // DirectionWorkspace; the research judgment components themselves stay
+  // free of direction-board concerns.
+  assert.match(workspace, /DirectionWorkspace/u);
+  assert.doesNotMatch(`${card}\n${tray}`, /Direction Board|compile-direction/u);
 });
