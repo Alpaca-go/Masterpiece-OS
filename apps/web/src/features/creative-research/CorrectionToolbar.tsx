@@ -5,10 +5,10 @@ import { Button } from '../../components/ui/Button';
 const FEEDBACK = ['太保守', '太行业化', '太常规', '太年轻', '太成熟', '太商业', '太艺术', '关键词理解偏了'];
 function lines(value: string): string[] { return value.split(/\r?\n|，|,/u).map((item) => item.trim()).filter(Boolean); }
 
-export function CorrectionToolbar({ brief, busy, onRefresh, onAdjust, onReanalyze }: {
+export function CorrectionToolbar({ brief, busy, onSearch, onAdjust, onReanalyze }: {
   brief: CreativeResearchBriefDto;
   busy: boolean;
-  onRefresh(): Promise<void>;
+  onSearch(): Promise<void>;
   onAdjust(input: UpdateCreativeResearchSearchStrategyInput): Promise<void>;
   onReanalyze(feedback: string[]): Promise<void>;
 }) {
@@ -22,9 +22,9 @@ export function CorrectionToolbar({ brief, busy, onRefresh, onAdjust, onReanalyz
   useEffect(() => { setConcept(brief.conceptKeywords.join('\n')); setVisual(brief.visualKeywords.join('\n')); setKeywords(brief.searchKeywords); }, [brief]);
   return <section className="cr-correction-toolbar" aria-label="研究纠偏">
     <div className="cr-correction-toolbar__actions">
-      <Button size="sm" variant="secondary" disabled={busy} onClick={() => void onRefresh()}>换一批</Button>
+      <Button size="sm" variant="secondary" disabled={busy} onClick={() => void onSearch()}>重新搜索</Button>
       <Button size="sm" variant="ghost" disabled={busy} onClick={() => setMode(mode === 'ADJUST' ? 'NONE' : 'ADJUST')}>调整关键词</Button>
-      <Button size="sm" variant="ghost" disabled={busy} onClick={() => setMode(mode === 'REANALYZE' ? 'NONE' : 'REANALYZE')}>重新分析</Button>
+      <Button size="sm" variant="secondary" disabled={busy} onClick={() => setMode(mode === 'REANALYZE' ? 'NONE' : 'REANALYZE')}>重新分析</Button>
     </div>
     {mode === 'ADJUST' && <div className="cr-correction-panel">
       <h3>调整搜索策略</h3><p>只修改概念、视觉和搜索关键词；项目事实保持不变。</p>

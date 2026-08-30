@@ -23,6 +23,15 @@ export function ResearchPlanPanel({ plan, busy, frozen, onGenerate }: {
   </section>;
 
   const trackById = new Map(plan.tracks.map((track) => [track.id, track]));
+  if (plan.visualReferencePlan) return <section className="cr-plan cr-panel">
+    <header className="cr-panel__head"><div><span>Visual reference plan</span><h2>视觉参考关键词组</h2></div><b>{plan.visualReferencePlan.groups.length} 组 · {plan.firstRoundQueries.length} 条平台 Query</b></header>
+    <p className="cr-plan__intro">系统将基于以下关键词组，仅在站酷、花瓣与 Pinterest 中检索视觉案例。开始搜索后计划与历史 Query 将冻结。</p>
+    <ol className="cr-plan__tracks">{plan.visualReferencePlan.groups.map((group, index) => <li key={group.id} className="is-initial">
+      <span>{String(index + 1).padStart(2, '0')}</span><div><strong>{group.title}</strong><p>{group.keywords.join(' / ')}</p><small>{group.kind} · 优先级 {group.priority}</small></div><i>●</i>
+    </li>)}</ol>
+    <div className="cr-plan__queries"><h3>Platform Queries</h3>{plan.firstRoundQueries.map((query) => <article key={query.id}><span>{query.platform}</span><strong>{query.text}</strong><small>{query.locale}</small></article>)}</div>
+    <footer><small>{frozen ? '关键词组与平台 Query 已冻结；调整请发起新一轮搜索。' : '确认关键词组后即可开始限定来源搜索。'}</small></footer>
+  </section>;
   return <section className="cr-plan cr-panel">
     <header className="cr-panel__head">
       <div><span>Research planner</span><h2>研究计划</h2></div>

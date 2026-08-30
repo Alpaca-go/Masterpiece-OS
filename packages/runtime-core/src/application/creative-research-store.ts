@@ -90,6 +90,12 @@ export function createCreativeResearchStore(options: {
       return values.filter((item): item is CreativeResearchSession => item?.projectId === projectId)
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     },
+    async delete(id) {
+      const target = await sessionRoot(id);
+      if (!await sessions.get(id)) return false;
+      await fs.rm(target, { recursive: true, force: false, maxRetries: 3, retryDelay: 50 });
+      return true;
+    },
   };
 
   const briefs: DesignBriefRepository = {

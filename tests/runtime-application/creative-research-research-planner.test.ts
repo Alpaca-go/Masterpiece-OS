@@ -105,10 +105,13 @@ test('Research Planner clusters clues, accepts a grounded model plan, and forcib
   assert.equal(plan.plannerMode, 'MODEL');
   assert.equal(plan.briefRevisionId, 'brief-1');
   assert.equal(plan.tracks.length, 4);
-  assert.equal(plan.firstRoundQueries.length, 5);
+  assert.equal(plan.firstRoundQueries.length, 9);
+  assert.equal(plan.visualReferencePlan?.groups.length, 3);
   assert.equal(plan.tracks.find((track) => track.kind === 'VISUAL')?.firstRoundEligible, false);
   assert.ok(plan.firstRoundQueries.every((query) => plan.tracks.find((track) => track.id === query.trackId)?.kind !== 'VISUAL'));
-  assert.equal(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').length, 3);
+  assert.equal(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').length, 9);
+  assert.deepEqual(new Set(plan.firstRoundQueries.map((query) => query.platform)), new Set(['ZCOOL', 'HUABAN', 'PINTEREST']));
+  assert.ok(plan.firstRoundQueries.every((query) => query.text.startsWith('site:')));
   assert.deepEqual(new Set(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').map((query) => query.locale)), new Set(['ZH', 'EN']));
   assert.equal(plan.telemetry.visualClueDeferredCount, 1);
   assert.equal(plan.telemetry.plannerFallbackUsed, false);
@@ -125,10 +128,11 @@ test('Research Planner falls back deterministically when model output fails vali
   assert.equal(plan.plannerMode, 'DETERMINISTIC_FALLBACK');
   assert.equal(plan.telemetry.plannerFallbackUsed, true);
   assert.ok(plan.tracks.length >= 3 && plan.tracks.length <= 6);
-  assert.ok(plan.firstRoundQueries.length >= 5 && plan.firstRoundQueries.length <= 8);
+  assert.ok(plan.firstRoundQueries.length >= 6 && plan.firstRoundQueries.length <= 10);
   assert.equal(new Set(plan.firstRoundQueries.map((query) => query.text.toLocaleLowerCase())).size, plan.firstRoundQueries.length);
   assert.ok(plan.firstRoundQueries.every((query) => query.text.length >= 6));
-  assert.equal(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').length, 3);
+  assert.equal(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').length, plan.firstRoundQueries.length);
+  assert.equal(plan.visualReferencePlan?.groups.length, 3);
   assert.ok(plan.firstRoundQueries.every((query) => plan.tracks.find((track) => track.id === query.trackId)?.kind !== 'VISUAL'));
   assert.doesNotMatch(plan.firstRoundQueries.map((query) => query.text).join(' '), /克制留白/u);
 });
@@ -147,7 +151,7 @@ test('Research Plan is bound to the active Brief revision and freezes after RESE
   );
 });
 
-test('Planner adapter performs one structured call and explicitly separates clues from search queries', async () => {
+test('Planner adapter performs one structured call for concise visual keyword groups', async () => {
   let calls = 0;
   let serializedMessages = '';
   const adapter = createCreativeResearchPlannerAdapter({
@@ -162,17 +166,10 @@ test('Planner adapter performs one structured call and explicitly separates clue
       calls += 1;
       serializedMessages = JSON.stringify(messages);
       return { text: JSON.stringify({
-        tracks: [
-          { title: 'Category', summary: 'category summary', clueValues: ['新中式餐饮品牌'], kind: 'CATEGORY', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'category' },
-          { title: 'Market', summary: 'market summary', clueValues: ['一二线城市年轻餐饮消费者'], kind: 'MARKET', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'market' },
-          { title: 'Concept', summary: 'concept summary', clueValues: ['建立兼具文化辨识度与现代体验的品牌视觉身份'], kind: 'CONCEPT', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'concept' },
-        ],
-        queries: [
-          { trackTitle: 'Category', query: 'category knowledge context', rationale: 'category', intent: 'KNOWLEDGE', locale: 'EN' },
-          { trackTitle: 'Market', query: 'market knowledge context', rationale: 'market', intent: 'KNOWLEDGE', locale: 'EN' },
-          { trackTitle: 'Category', query: 'category brand identity design case study', rationale: 'category visual', intent: 'VISUAL', locale: 'EN' },
-          { trackTitle: 'Market', query: '市场 品牌视觉设计 案例', rationale: 'market visual', intent: 'VISUAL', locale: 'ZH' },
-          { trackTitle: 'Concept', query: 'concept packaging typography design', rationale: 'concept visual', intent: 'VISUAL', locale: 'EN' },
+        groups: [
+          { kind: 'INDUSTRY', title: '行业属性', keywords: ['餐饮', '新中式'], rationale: 'category', priority: 1 },
+          { kind: 'POSITIONING', title: '气质定位', keywords: ['美术馆', '高端'], rationale: 'positioning', priority: 2 },
+          { kind: 'CROSS_CATEGORY', title: '跨类目补充', keywords: ['茶饮', '生活方式'], rationale: 'cross category', priority: 3 },
         ],
       }) };
     },
@@ -192,8 +189,10 @@ test('Planner adapter performs one structured call and explicitly separates clue
     ],
   });
   assert.equal(calls, 1);
-  assert.equal(draft.tracks.length, 3);
+  assert.ok('visualGroups' in draft);
+  assert.equal('visualGroups' in draft ? draft.visualGroups.length : 0, 3);
   assert.match(serializedMessages, /不是搜索引擎/u);
   assert.match(serializedMessages, /不得逐条转换成搜索请求/u);
-  assert.match(serializedMessages, /VISUAL Query 必须同时包含 ZH 与 EN/u);
+  assert.match(serializedMessages, /站酷、花瓣与 Pinterest/u);
+  assert.match(serializedMessages, /每组 1～3 个关键词/u);
 });

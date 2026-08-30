@@ -84,13 +84,19 @@ export function createCreativeResearchReferenceImageCache(options: {
         const image = sharp(downloaded.bytes, { animated: false, failOn: 'error' });
         const metadata = await image.metadata();
         if (!metadata.format || !['jpeg', 'png', 'webp', 'gif'].includes(metadata.format)) throw new Error('decoded image format is not allowed');
-        if (!metadata.width || !metadata.height || metadata.width < 480 || metadata.height < 320) throw new Error('image dimensions below 480x320');
+        if (!metadata.width || !metadata.height || metadata.width < 600 || metadata.height < 400) throw new Error('image dimensions below 600x400');
         const encoded = await image.webp({ quality: 86 }).toBuffer();
         await fs.mkdir(target, { recursive: true });
         await fs.writeFile(path.join(target, 'image.webp'), encoded);
         await fs.writeFile(path.join(target, 'metadata.json'), JSON.stringify({
-          sourceUrl: reference.remoteImageUrl, finalUrl: downloaded.finalUrl, sourceMediaType: downloaded.mediaType,
-          width: metadata.width, height: metadata.height, bytes: encoded.byteLength, cachedAt: new Date().toISOString(),
+          sourceUrl: reference.sourceUrl,
+          platform: reference.platform,
+          originalImageUrl: reference.remoteImageUrl,
+          finalUrl: downloaded.finalUrl,
+          sourceMediaType: downloaded.mediaType,
+          width: metadata.width, height: metadata.height, bytes: encoded.byteLength,
+          retrievedAt: reference.retrievedAt,
+          cachedAt: new Date().toISOString(),
         }, null, 2), 'utf8');
         return {
           ...reference, imageStatus: 'READY', localAssetId: referenceId,

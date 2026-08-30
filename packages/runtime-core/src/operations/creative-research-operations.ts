@@ -150,6 +150,8 @@ export function toCreativeResearchQueryDto(value: SearchQuery): CreativeResearch
     round: value.round || (value.origin === 'INITIAL' || value.origin === undefined ? 'INITIAL' : 'REFINEMENT'),
     intent: value.intent || 'KNOWLEDGE',
     locale: value.locale,
+    groupId: value.groupId,
+    platform: value.platform,
   });
 }
 
@@ -161,6 +163,11 @@ export function toCreativeResearchPlanDto(value: CreativeResearchPlan): Creative
     clues: value.clues.map((clue) => Object.freeze({ ...clue })),
     tracks: value.tracks.map((track) => Object.freeze({ ...track, clueIds: [...track.clueIds] })),
     firstRoundQueries: value.firstRoundQueries.map((query) => Object.freeze({ ...query, intent: query.intent || 'KNOWLEDGE', locale: query.locale || 'ZH' })),
+    ...(value.visualReferencePlan ? { visualReferencePlan: Object.freeze({
+      id: value.visualReferencePlan.id,
+      groups: value.visualReferencePlan.groups.map((group) => Object.freeze({ ...group, keywords: [...group.keywords] })),
+      createdAt: value.visualReferencePlan.createdAt,
+    }) } : {}),
     plannerMode: value.plannerMode,
     telemetry: Object.freeze({ ...value.telemetry }),
     createdAt: value.createdAt,
@@ -193,6 +200,11 @@ export function toCreativeResearchReferenceDto(value: WebReferenceItem): Creativ
     searchIntent: value.searchIntent || 'KNOWLEDGE',
     imageStatus: value.imageStatus || (value.remoteImageUrl ? 'PENDING' : 'UNAVAILABLE'),
     ...(value.cachedImageUrl ? { cachedImageUrl: value.cachedImageUrl } : {}),
+    ...(value.groupId ? { groupId: value.groupId } : {}),
+    ...(value.matchedGroupIds ? { matchedGroupIds: [...value.matchedGroupIds] } : {}),
+    ...(value.platform ? { platform: value.platform } : {}),
+    ...(value.visualRole ? { visualRole: value.visualRole } : {}),
+    ...(value.qualityScore !== undefined ? { qualityScore: value.qualityScore } : {}),
   });
 }
 
@@ -303,6 +315,7 @@ export function createCreativeResearchOperations(options: {
   strategy: SearchStrategyService;
   reanalysis: ReanalysisService;
   listSessions(projectId: string): Promise<CreativeResearchSession[]>;
+  deleteSession(sessionId: string): Promise<boolean>;
   credential: {
     has(): Promise<boolean>;
     save(value: string): Promise<void>;
@@ -319,6 +332,9 @@ export function createCreativeResearchOperations(options: {
       (await options.listSessions(String(projectId || ''))).map(toCreativeResearchSessionDto),
     'creative-research:create-session': async (_context: unknown, input: { projectId: string; sourceDocumentIds: string[] }) =>
       toCreativeResearchSessionDto(await options.briefs.createSession(input)),
+    'creative-research:delete-session': async (_context: unknown, sessionId: string) => ({
+      deleted: await options.deleteSession(String(sessionId || '')),
+    }),
     'creative-research:get-session': async (_context: unknown, sessionId: string) =>
       toCreativeResearchSessionDto(await options.briefs.getSession(sessionId)),
     'creative-research:prepare-design-brief': async (_context: unknown, sessionId: string, input: { profileId: string; designerNotes?: string[] }) =>

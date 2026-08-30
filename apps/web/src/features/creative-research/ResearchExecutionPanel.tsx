@@ -44,8 +44,13 @@ function operationStage(operation: string): string | null {
 export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput): ResearchExecutionStage[] {
   const completedQueries = input.queries.filter((query) => query.status === 'COMPLETED').length;
   const pendingQueries = input.queries.filter((query) => query.status === 'PENDING').length;
-  const knowledgeQueries = input.queries.filter((query) => query.intent === 'KNOWLEDGE');
   const visualQueries = input.queries.filter((query) => query.intent === 'VISUAL');
+  const sourceLockedQueries = input.queries.filter((query) => query.platform);
+  const platformDetail = (['ZCOOL', 'HUABAN', 'PINTEREST'] as const).map((platform) => {
+    const platformQueries = sourceLockedQueries.filter((query) => query.platform === platform);
+    const label = platform === 'ZCOOL' ? '站酷' : platform === 'HUABAN' ? '花瓣' : 'Pinterest';
+    return `${label} ${platformQueries.filter((query) => query.status === 'COMPLETED').length} / ${platformQueries.length}`;
+  }).join(' · ');
   const searchSettled = input.queries.length > 0 && pendingQueries === 0;
   const failedStage = input.failure ? operationStage(input.failure.operation) : null;
   const activeStage = operationStage(input.busy);
@@ -79,27 +84,33 @@ export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput)
     },
     {
       id: 'planning',
-      label: '归纳研究主题与 Query',
-      detail: input.queries.length ? `已编译 ${input.queries.length} 组真实搜索任务` : input.planReady ? '研究主题与首轮 Query 已就绪' : activeStage === 'planning' ? '正在聚类线索并合成首轮 Query' : '等待生成 Research Plan',
+      label: '提炼视觉参考关键词',
+      detail: input.planReady ? '视觉关键词组已就绪' : activeStage === 'planning' ? '正在提炼行业、定位与跨类目关键词' : '等待生成视觉参考计划',
       state: state('planning', input.planReady || input.queries.length > 0),
     },
     {
       id: 'knowledge-search',
-      label: '搜索研究资料',
-      detail: knowledgeQueries.length ? `已完成 ${knowledgeQueries.filter((query) => query.status === 'COMPLETED').length} / ${knowledgeQueries.length} 组知识检索` : '等待知识检索任务',
-      state: intentSearchState(knowledgeQueries),
+      label: '为设计平台生成搜索任务',
+      detail: input.queries.length ? `已生成 ${input.queries.length} 条来源锁定 Query` : '等待平台 Query',
+      state: state('planning', input.queries.length > 0),
     },
     {
       id: 'visual-search',
-      label: '搜索视觉参考',
-      detail: visualQueries.length ? `已完成 ${visualQueries.filter((query) => query.status === 'COMPLETED').length} / ${visualQueries.length} 组视觉检索` : '等待视觉检索任务',
+      label: '搜索站酷 / 花瓣 / Pinterest',
+      detail: sourceLockedQueries.length ? platformDetail : visualQueries.length ? `已完成 ${visualQueries.filter((query) => query.status === 'COMPLETED').length} / ${visualQueries.length} 组视觉检索` : '等待视觉检索任务',
       state: intentSearchState(visualQueries),
     },
     {
       id: 'references',
-      label: '整理参考结果',
+      label: '缓存并整理视觉参考',
       detail: searchSettled && completedQueries > 0 ? `已获得 ${input.referenceCount} 个参考结果` : '等待搜索结果',
       state: searchSettled && completedQueries > 0 ? 'completed' : 'waiting',
+    },
+    {
+      id: 'selection',
+      label: '等待设计师选择',
+      detail: input.referenceCount ? `已有 ${input.referenceCount} 个视觉参考可供判断` : '等待视觉参考',
+      state: input.preferenceCount > 0 ? 'completed' : input.referenceCount > 0 ? 'active' : 'waiting',
     },
     {
       id: 'preferences',

@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type { ReferenceSearchGateway, ReferenceSearchInput, SearchResultPage } from './creative-research/ports.ts';
 import type { WebReferenceItem } from './creative-research/contracts.ts';
+import { applyVisualSourcePolicy } from './creative-research-visual-source-policy.ts';
 import { assertReferenceSearchInput, assertSearchResultPage } from './creative-research/search-contract.ts';
 import { creativeResearchSearchError } from './creative-research-search-errors.ts';
 
@@ -148,6 +149,8 @@ function toReference(item: BaiduReference, input: ReferenceSearchInput, rank: nu
     ...(positiveInteger(item.image?.height) ? { imageHeight: positiveInteger(item.image?.height) } : {}),
     licenseOrUsageStatus: 'UNKNOWN',
     searchIntent: input.intent || 'KNOWLEDGE',
+    ...(input.groupId ? { groupId: input.groupId, matchedGroupIds: [input.groupId] } : {}),
+    ...(input.platform ? { platform: input.platform } : {}),
     ...(remoteImageUrl ? { imageStatus: 'PENDING' as const } : {}),
   };
   return reference;
@@ -156,9 +159,9 @@ function toReference(item: BaiduReference, input: ReferenceSearchInput, rank: nu
 const DESIGN_SIGNAL = /(设计|视觉|品牌|包装|版式|字体|摄影|材质|design|identity|branding|packaging|layout|typography|photography|material|portfolio|case study)/iu;
 const NEWS_SIGNAL = /(新闻|资讯|快讯|时政|财经|news|headline|breaking)/iu;
 
-export function applyReferenceQualityGate(items: WebReferenceItem[], intent: ReferenceSearchInput['intent'] = 'KNOWLEDGE'): WebReferenceItem[] {
+export function applyReferenceQualityGate(items: WebReferenceItem[], intent: ReferenceSearchInput['intent'] = 'KNOWLEDGE', platform?: ReferenceSearchInput['platform']): WebReferenceItem[] {
   if (intent === 'KNOWLEDGE') return items;
-  return items
+  return applyVisualSourcePolicy(items
     .filter((item) => item.resourceType === 'IMAGE' || DESIGN_SIGNAL.test(`${item.title || ''} ${item.publisherOrDomain} ${item.sourceUrl}`))
     .filter((item) => !NEWS_SIGNAL.test(`${item.title || ''} ${item.publisherOrDomain}`) || DESIGN_SIGNAL.test(item.title || ''))
     .sort((left, right) => {
@@ -167,7 +170,8 @@ export function applyReferenceQualityGate(items: WebReferenceItem[], intent: Ref
         + (item.remoteImageUrl ? 1 : 0);
       return score(right) - score(left) || left.resultRank - right.resultRank;
     })
-    .map((item, index) => ({ ...item, resultRank: index + 1 }));
+    .map((item, index) => ({ ...item, resultRank: index + 1 })))
+    .filter((item) => !platform || item.platform === platform);
 }
 
 export function createBaiduReferenceSearchGateway(options: {
@@ -243,7 +247,7 @@ export function createBaiduReferenceSearchGateway(options: {
           items.push(reference);
         }
         const page = {
-          items: applyReferenceQualityGate(items, input.intent), provider: PROVIDER, query: input.query, providerCalls,
+          items: applyReferenceQualityGate(items, input.intent, input.platform), provider: PROVIDER, query: input.query, providerCalls,
           ...(providerQueryText !== input.query ? { providerQueryText } : {}),
         } as SearchResultPage;
         assertSearchResultPage(page, { query: input.query });

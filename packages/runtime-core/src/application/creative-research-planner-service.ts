@@ -9,6 +9,8 @@ import type {
   DesignBrief,
   PlannedQuery,
   SearchQueryKind,
+  VisualReferenceKeywordGroup,
+  VisualReferencePlan,
 } from './creative-research/contracts.ts';
 import { assertCreativeResearchPlan } from './creative-research/evidence.ts';
 import type {
@@ -17,6 +19,7 @@ import type {
   DesignBriefRepository,
 } from './creative-research/ports.ts';
 import { creativeResearchError } from './creative-research-errors.ts';
+import { compilePlatformQueries } from './creative-research-platform-query-compiler.ts';
 
 const FIRST_ROUND_KINDS = new Set<CreativeResearchTrackKind>(['CATEGORY', 'MARKET', 'CONCEPT', 'CULTURE', 'COMPLIANCE']);
 const ABSTRACT_CLUE_KINDS = new Set<CreativeResearchClueKind>(['CONCEPT', 'BRAND_VALUE', 'CULTURE', 'VISUAL', 'OTHER']);
@@ -31,6 +34,57 @@ function comparisonKey(value: string): string {
     .replace(/\s+/gu, ' ')
     .trim()
     .toLocaleLowerCase();
+}
+
+const ABSTRACT_VISUAL_KEYWORD = /(安心至美|恒久之美|价值重塑|生态共建|理性温度|全链赋能|透明链路|科学塑美|克制留白|使命|愿景|赋能|价值|温度)/u;
+
+function compactKeywords(values: string[], fallback: string): string[] {
+  const output: string[] = [];
+  const seen = new Set<string>();
+  for (const source of [...values, fallback]) {
+    for (const candidate of clean(source, 120).split(/[\/／、，,；;|]/u)) {
+      const value = candidate.replace(/^(面向|针对|服务于)/u, '').trim();
+      const key = comparisonKey(value);
+      if (!value || value.length > 18 || ABSTRACT_VISUAL_KEYWORD.test(value) || seen.has(key)) continue;
+      seen.add(key); output.push(value);
+      if (output.length === 3) return output;
+    }
+  }
+  return output.length ? output : [fallback.slice(0, 18) || '品牌'];
+}
+
+function buildVisualReferencePlan(brief: DesignBrief, sessionId: string, createdAt: string, createId: () => string, modelGroups?: Array<Omit<VisualReferenceKeywordGroup, 'id'>>): VisualReferencePlan {
+  const categories = brief.searchKeywords.filter((item) => item.enabled && item.kind === 'CATEGORY').map((item) => item.value);
+  const concepts = brief.searchKeywords.filter((item) => item.enabled && item.kind === 'CONCEPT').map((item) => item.value);
+  const visuals = brief.searchKeywords.filter((item) => item.enabled && item.kind === 'VISUAL').map((item) => item.value);
+  const definitions: Array<Omit<VisualReferenceKeywordGroup, 'id'>> = modelGroups || [
+    { kind: 'INDUSTRY', title: '行业属性', keywords: compactKeywords(categories, brief.projectSummary), rationale: '从项目行业与品类中提炼直接可检索的设计类别。', priority: 1 },
+    { kind: 'POSITIONING', title: '气质定位', keywords: compactKeywords([...visuals, ...brief.visualKeywords], '高端'), rationale: '以成熟品类和视觉气质补充定位参照。', priority: 2 },
+    { kind: 'CROSS_CATEGORY', title: '跨类目补充', keywords: compactKeywords([...concepts, ...brief.conceptKeywords, ...categories.slice(1)], '包装'), rationale: '从相邻消费与审美语境中寻找可迁移案例。', priority: 3 },
+  ];
+  return {
+    id: createId(), sessionId, briefRevisionId: brief.id,
+    groups: definitions.map((group) => ({ ...group, id: createId(), keywords: group.keywords.slice(0, 3) })),
+    createdAt,
+  };
+}
+
+function compileVisualGroups(draft: Extract<CreativeResearchPlanDraft, { visualGroups: unknown }>, clues: CreativeResearchClue[], createId: () => string) {
+  if (draft.visualGroups.length < 2 || draft.visualGroups.length > 4) throw new Error('Visual planner group count must be 2..4');
+  const enabled = clues.filter((clue) => clue.enabled);
+  const groups = draft.visualGroups.map((candidate, index) => {
+    const keywords = compactKeywords(candidate.keywords, candidate.title).slice(0, 3);
+    if (!candidate.title || !candidate.rationale || !keywords.length) throw new Error('Visual planner group text is invalid');
+    return { kind: candidate.kind, title: clean(candidate.title, 120), keywords, rationale: clean(candidate.rationale, 500), priority: Number.isFinite(candidate.priority) ? candidate.priority : index + 1 };
+  });
+  if (groups.reduce((total, group) => total + group.keywords.length, 0) > 10) throw new Error('Visual planner permits at most 10 keywords');
+  const tracks: CreativeResearchTrack[] = groups.map((group, index) => ({
+    id: createId(), title: group.title, summary: group.keywords.join(' / '),
+    clueIds: [enabled[index % enabled.length]?.id || clues[0]!.id],
+    kind: group.kind === 'INDUSTRY' ? 'CATEGORY' : 'CONCEPT', priority: index === 0 ? 'PRIMARY' : 'SECONDARY',
+    firstRoundEligible: true, rationale: group.rationale,
+  }));
+  return { tracks, queries: [] as PlannedQuery[], duplicates: 0, groups };
 }
 
 function clueKind(value: string, fallback: CreativeResearchClueKind): CreativeResearchClueKind {
@@ -95,7 +149,7 @@ function queryKindForTrack(kind: CreativeResearchTrackKind): SearchQueryKind {
 }
 
 function validateModelDraft(
-  draft: CreativeResearchPlanDraft,
+  draft: Exclude<CreativeResearchPlanDraft, { visualGroups: unknown }>,
   clues: CreativeResearchClue[],
   createId: () => string,
 ): { tracks: CreativeResearchTrack[]; queries: PlannedQuery[]; duplicates: number } {
@@ -281,7 +335,7 @@ export function createCreativeResearchPlannerService(options: {
     const existing = await options.plans.get(sessionId);
     if (existing?.briefRevisionId === brief.id) return existing;
     const clues = buildCreativeResearchClues(brief, createId);
-    let compiled: { tracks: CreativeResearchTrack[]; queries: PlannedQuery[]; duplicates: number };
+    let compiled: { tracks: CreativeResearchTrack[]; queries: PlannedQuery[]; duplicates: number; groups?: Array<Omit<VisualReferenceKeywordGroup, 'id'>> };
     let plannerMode: CreativeResearchPlan['plannerMode'] = 'MODEL';
     try {
       if (!clean(input.profileId, 120)) throw new Error('Planner profile is missing');
@@ -298,25 +352,31 @@ export function createCreativeResearchPlannerService(options: {
         },
         clues,
       });
-      compiled = validateModelDraft(draft, clues, createId);
+      compiled = 'visualGroups' in draft ? compileVisualGroups(draft, clues, createId) : validateModelDraft(draft, clues, createId);
     } catch {
       plannerMode = 'DETERMINISTIC_FALLBACK';
       compiled = deterministicFallback(clues, createId);
     }
+    const createdAt = now();
+    const visualReferencePlan = buildVisualReferencePlan(brief, sessionId, createdAt, createId, compiled.groups);
+    const eligibleTracks = compiled.tracks.filter((track) => track.firstRoundEligible);
+    const trackIdsByGroup = new Map(visualReferencePlan.groups.map((group, index) => [group.id, eligibleTracks[index % eligibleTracks.length]?.id || compiled.tracks[0]!.id]));
+    const platformQueries = compilePlatformQueries({ groups: visualReferencePlan.groups, trackIdsByGroup, createId });
     const plan: CreativeResearchPlan = {
       id: createId(), sessionId, briefRevisionId: brief.id, clues,
       tracks: compiled.tracks,
-      firstRoundQueries: compiled.queries,
+      firstRoundQueries: platformQueries,
+      visualReferencePlan,
       plannerMode,
       telemetry: {
         clueCount: clues.length,
         trackCount: compiled.tracks.length,
-        initialQueryCount: compiled.queries.length,
+        initialQueryCount: platformQueries.length,
         visualClueDeferredCount: clues.filter((clue) => clue.enabled && clue.kind === 'VISUAL').length,
         plannerFallbackUsed: plannerMode === 'DETERMINISTIC_FALLBACK',
         duplicateQueryRemovedCount: compiled.duplicates,
       },
-      createdAt: now(),
+      createdAt,
     };
     assertCreativeResearchPlan(plan);
     return options.plans.save(plan);

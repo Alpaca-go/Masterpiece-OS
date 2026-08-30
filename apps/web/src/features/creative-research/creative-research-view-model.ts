@@ -60,6 +60,12 @@ export function deriveResearchUiState(queries: CreativeResearchQueryDto[], busy:
   return completed === queries.length ? 'READY' : 'NOT_STARTED';
 }
 
+export function retryableSearchQueryIds(queries: CreativeResearchQueryDto[]): string[] {
+  return queries
+    .filter((query) => query.status === 'FAILED' || query.status === 'PENDING')
+    .map((query) => query.id);
+}
+
 export function filterCreativeResearchReferences(
   references: CreativeResearchReferenceDto[],
   queryId: string,

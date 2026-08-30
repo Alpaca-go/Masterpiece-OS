@@ -1,5 +1,5 @@
 import type { SearchResultPage } from './ports.ts';
-import { CREATIVE_RESEARCH_SEARCH_INTENTS, SEARCH_QUERY_KINDS } from './contracts.ts';
+import { CREATIVE_RESEARCH_SEARCH_INTENTS, SEARCH_QUERY_KINDS, VISUAL_REFERENCE_PLATFORMS } from './contracts.ts';
 import { assertJsonSerializable, assertWebReferenceResult } from './evidence.ts';
 
 export function assertSearchResultPage(page: SearchResultPage, expected?: { query?: string }): void {
@@ -21,6 +21,8 @@ export function assertReferenceSearchInput(input: {
   query: string;
   kind: string;
   intent?: string;
+  groupId?: string;
+  platform?: string;
   cursor?: string;
   limit?: number;
   exclusions?: { referenceIds?: string[]; domains?: string[]; urls?: string[] };
@@ -30,6 +32,8 @@ export function assertReferenceSearchInput(input: {
   if (!input.query.trim()) throw new Error('search input requires query');
   if (!SEARCH_QUERY_KINDS.includes(input.kind as typeof SEARCH_QUERY_KINDS[number])) throw new Error('search input kind is invalid');
   if (input.intent !== undefined && !CREATIVE_RESEARCH_SEARCH_INTENTS.includes(input.intent as typeof CREATIVE_RESEARCH_SEARCH_INTENTS[number])) throw new Error('search input intent is invalid');
+  if (input.platform !== undefined && !VISUAL_REFERENCE_PLATFORMS.includes(input.platform as typeof VISUAL_REFERENCE_PLATFORMS[number])) throw new Error('search input platform is invalid');
+  if (input.platform && !input.query.toLowerCase().startsWith('site:')) throw new Error('platform search input requires site constraint');
   if (input.limit !== undefined && (!Number.isInteger(input.limit) || input.limit < 1 || input.limit > 100)) {
     throw new Error('search input limit must be an integer between 1 and 100');
   }

@@ -37,6 +37,20 @@ function parseObject(text: string): Record<string, unknown> {
 }
 
 function normalizeDraft(raw: Record<string, unknown>): CreativeResearchPlanDraft {
+  if (Array.isArray(raw.groups)) {
+    const visualGroups = raw.groups.map((item, index) => {
+      if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('Visual reference group must be an object');
+      const value = item as Record<string, unknown>;
+      const kind = clean(value.kind, 40);
+      const keywords = cleanList(value.keywords, 3);
+      if (!['INDUSTRY', 'POSITIONING', 'CROSS_CATEGORY'].includes(kind) || keywords.length < 1) throw new Error('Visual reference group kind or keywords are invalid');
+      return { kind: kind as 'INDUSTRY' | 'POSITIONING' | 'CROSS_CATEGORY', title: clean(value.title, 120), keywords,
+        rationale: clean(value.rationale, 500), priority: Number.isFinite(value.priority) ? Number(value.priority) : index + 1 };
+    });
+    if (visualGroups.length < 2 || visualGroups.length > 4) throw new Error('Visual reference plan requires 2 to 4 groups');
+    if (visualGroups.reduce((total, group) => total + group.keywords.length, 0) > 10) throw new Error('Visual reference plan permits at most 10 keywords');
+    return { visualGroups };
+  }
   if (!Array.isArray(raw.tracks) || !Array.isArray(raw.queries)) {
     throw new Error('Planner output requires tracks and queries arrays');
   }
@@ -80,36 +94,25 @@ function buildMessages(input: CreativeResearchPlannerInput) {
     {
       role: 'system' as const,
       content: [
-        '你是 Creative Research 的 Research Planner，不是搜索引擎。',
+        '你是 Creative Research 的视觉参考关键词规划器，不是搜索引擎。',
+        '你的目标不是开放互联网研究，而是为品牌设计师提炼最精简的视觉参考关键词组；最终来源仅限站酷、花瓣与 Pinterest。',
+        '优先围绕行业属性、定位气质、跨行业同类三层组织；每层只保留 1～3 个品类词。',
+        '不要输出品牌口号、宣传语、抽象价值词、长句、企业叙事、技术描述或公关语言。',
         '输入关键词仅代表研究线索，不得逐条转换成搜索请求。',
-        '先把线索聚类为 3～6 个研究主题，再生成 5～8 条首轮搜索语句。',
-        'Search Intent 与 Research Track 是不同维度：每个非 VISUAL Track 可以同时产生知识研究与视觉参考 Query。',
-        '必须生成 2～4 条 KNOWLEDGE 和 3～5 条 VISUAL；每个 Track 最多 2 条 Query。',
-        'VISUAL Query 必须包含品牌设计、视觉识别、包装、版式、摄影、material、identity、case study 等明确设计语境。',
-        'VISUAL Query 必须同时包含 ZH 与 EN，且视觉搜索优先。',
-        '禁止把抽象口号、价值观或内部命名单独作为 Query。只输出 JSON。',
+        '输出 2～4 个关键词组，默认严格输出 3 个：INDUSTRY、POSITIONING、CROSS_CATEGORY。',
+        '每组 1～3 个关键词，总关键词建议 4～8 个、不得超过 10 个。关键词必须短、品类化、可直接指导设计平台检索。',
+        '禁止把抽象口号、价值观或内部命名单独作为关键词。只输出 JSON。',
       ].join('\n'),
     },
     {
       role: 'user' as const,
       content: JSON.stringify({
-        task: '把 Research Clues 聚类成 Research Tracks，并合成克制的首轮 Search Queries',
+        task: '把 Brief 与 Research Clues 提炼成极简视觉参考关键词组',
         constraints: {
-          trackCount: '3..6',
-          totalQueryCount: '5..8',
-          knowledgeQueryCount: '2..4',
-          visualQueryCount: '3..5',
-          maxQueriesPerTrack: 2,
-          visualLocales: ['ZH', 'EN'],
-          clueValuesMustExactlyMatchInput: true,
+          groupCount: '2..4; target 3', keywordCountPerGroup: '1..3; target 2', totalKeywordCount: '<=10',
         },
         outputSchema: {
-          tracks: [{
-            title: 'string', summary: 'string', clueValues: 'input clue value[]',
-            kind: CREATIVE_RESEARCH_TRACK_KINDS, priority: CREATIVE_RESEARCH_TRACK_PRIORITIES,
-            firstRoundEligible: 'boolean', rationale: 'string',
-          }],
-          queries: [{ trackTitle: 'exact tracks[].title', query: 'string', rationale: 'string', intent: ['KNOWLEDGE', 'VISUAL'], locale: ['ZH', 'EN'] }],
+          groups: [{ kind: ['INDUSTRY', 'POSITIONING', 'CROSS_CATEGORY'], title: 'string', keywords: ['1..3 short category terms'], rationale: 'string', priority: 'number' }],
         },
         brief: input.brief,
         clues: input.clues.filter((clue) => clue.enabled).map((clue) => ({

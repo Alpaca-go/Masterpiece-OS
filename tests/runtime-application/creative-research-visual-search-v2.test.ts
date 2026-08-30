@@ -69,7 +69,7 @@ test('Visual Search v2 rejects private hosts, SVG, and undersized images without
       fetch: async () => new Response(small, { status: 200, headers: { 'content-type': 'image/png' } }),
     }).cache(reference());
     assert.equal(smallResult.imageStatus, 'UNAVAILABLE');
-    assert.match(smallResult.imageUnavailableReason || '', /480x320/u);
+    assert.match(smallResult.imageUnavailableReason || '', /600x400/u);
   } finally { await fs.rm(temporary, { recursive: true, force: true }); }
 });
 

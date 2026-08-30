@@ -211,8 +211,8 @@ export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
     if (!['BRIEF', 'DESIGNER'].includes(clue.source)) throw new Error('plan.clue.source is invalid');
     if (typeof clue.enabled !== 'boolean') throw new Error('plan.clue.enabled must be boolean');
   }
-  if (!Array.isArray(plan.tracks) || plan.tracks.length < 3 || plan.tracks.length > 6) {
-    throw new Error('plan.tracks must contain 3 to 6 tracks');
+  if (!Array.isArray(plan.tracks) || plan.tracks.length < (plan.visualReferencePlan ? 2 : 3) || plan.tracks.length > 6) {
+    throw new Error('plan.tracks count is invalid');
   }
   const tracks = new Map<string, CreativeResearchPlan['tracks'][number]>();
   for (const track of plan.tracks) {
@@ -230,8 +230,9 @@ export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
       throw new Error('plan.track.clueIds must reference plan clues');
     }
   }
+  const isSourceLockedVisualPlan = Boolean(plan.visualReferencePlan);
   const isVisualSearchPlan = Array.isArray(plan.firstRoundQueries) && plan.firstRoundQueries.every((query) => query.intent && query.locale);
-  if (!Array.isArray(plan.firstRoundQueries) || plan.firstRoundQueries.length < (isVisualSearchPlan ? 5 : 3) || plan.firstRoundQueries.length > (isVisualSearchPlan ? 8 : 6)) {
+  if (!Array.isArray(plan.firstRoundQueries) || plan.firstRoundQueries.length < (isSourceLockedVisualPlan ? 6 : isVisualSearchPlan ? 5 : 3) || plan.firstRoundQueries.length > (isSourceLockedVisualPlan ? 10 : isVisualSearchPlan ? 8 : 6)) {
     throw new Error('plan.firstRoundQueries count is invalid');
   }
   const queryKeys = new Set<string>();
@@ -243,6 +244,7 @@ export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
     assertEnum(query.kind, SEARCH_QUERY_KINDS, 'plan.query.kind');
     if (query.intent !== undefined) assertEnum(query.intent, ['KNOWLEDGE', 'VISUAL'] as const, 'plan.query.intent');
     if (query.locale !== undefined) assertEnum(query.locale, ['ZH', 'EN'] as const, 'plan.query.locale');
+    if (query.platform !== undefined) assertEnum(query.platform, ['ZCOOL', 'HUABAN', 'PINTEREST'] as const, 'plan.query.platform');
     if (query.round !== 'INITIAL') throw new Error('plan.query.round must be INITIAL');
     const track = tracks.get(query.trackId);
     if (!track?.firstRoundEligible) throw new Error('plan.query.trackId must reference a first-round track');
@@ -250,7 +252,17 @@ export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
     if (queryKeys.has(key)) throw new Error(`duplicate planned query: ${query.text}`);
     queryKeys.add(key);
   }
-  if (isVisualSearchPlan) {
+  if (isSourceLockedVisualPlan) {
+    const visual = plan.visualReferencePlan!;
+    if (visual.sessionId !== plan.sessionId || visual.briefRevisionId !== plan.briefRevisionId) throw new Error('plan.visualReferencePlan provenance is invalid');
+    if (visual.groups.length < 2 || visual.groups.length > 4) throw new Error('plan.visualReferencePlan groups must contain 2 to 4 groups');
+    for (const group of visual.groups) {
+      assertEnum(group.kind, ['INDUSTRY', 'POSITIONING', 'CROSS_CATEGORY'] as const, 'plan.visualReferencePlan.group.kind');
+      if (!Array.isArray(group.keywords) || group.keywords.length < 1 || group.keywords.length > 3) throw new Error('visual keyword group requires 1 to 3 keywords');
+    }
+    if (visual.groups.reduce((total, group) => total + group.keywords.length, 0) > 10) throw new Error('visual reference plan permits at most 10 keywords');
+    if (plan.firstRoundQueries.some((query) => query.intent !== 'VISUAL' || !query.platform || !query.groupId || !query.text.startsWith('site:'))) throw new Error('source-locked queries require group, platform, VISUAL intent, and site constraint');
+  } else if (isVisualSearchPlan) {
     const knowledgeCount = plan.firstRoundQueries.filter((query) => query.intent === 'KNOWLEDGE').length;
     const visualQueries = plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL');
     if (knowledgeCount < 2 || knowledgeCount > 4 || visualQueries.length < 3 || visualQueries.length > 5) throw new Error('plan query intent mix is invalid');
@@ -275,6 +287,9 @@ export function assertReferenceItem(reference: ReferenceItem): void {
     assertEnum(reference.resourceType, ['IMAGE', 'WEB'] as const, 'reference.resourceType');
     if (reference.searchIntent !== undefined) assertEnum(reference.searchIntent, ['KNOWLEDGE', 'VISUAL'] as const, 'reference.searchIntent');
     if (reference.imageStatus !== undefined) assertEnum(reference.imageStatus, ['PENDING', 'READY', 'UNAVAILABLE'] as const, 'reference.imageStatus');
+    if (reference.platform !== undefined) assertEnum(reference.platform, ['ZCOOL', 'HUABAN', 'PINTEREST'] as const, 'reference.platform');
+    if (reference.visualRole !== undefined) assertEnum(reference.visualRole, ['IMAGE', 'DESIGN_CASE_PAGE'] as const, 'reference.visualRole');
+    if (reference.qualityScore !== undefined && !Number.isFinite(reference.qualityScore)) throw new Error('reference.qualityScore must be finite');
     requireHttpUrl(reference.sourceUrl, 'reference.sourceUrl');
     requireHttpUrl(reference.canonicalUrl, 'reference.canonicalUrl');
     if (reference.remoteImageUrl !== undefined) requireHttpUrl(reference.remoteImageUrl, 'reference.remoteImageUrl');
@@ -291,6 +306,7 @@ export function assertReferenceItem(reference: ReferenceItem): void {
       || reference.matchedQueryIds.some((queryId) => typeof queryId !== 'string' || !queryId.trim()))) {
       throw new Error('reference.matchedQueryIds must contain query IDs');
     }
+    if (reference.matchedGroupIds !== undefined && (!Array.isArray(reference.matchedGroupIds) || reference.matchedGroupIds.some((groupId) => typeof groupId !== 'string' || !groupId.trim()))) throw new Error('reference.matchedGroupIds must contain group IDs');
     if (!Number.isInteger(reference.resultRank) || reference.resultRank < 1) throw new Error('reference.resultRank must be a positive integer');
     requireIsoDate(reference.retrievedAt, 'reference.retrievedAt');
     if (hasOwn(reference, 'generationRunId') || hasOwn(reference, 'assetId')) {

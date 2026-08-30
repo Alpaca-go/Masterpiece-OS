@@ -76,7 +76,7 @@ export function buildSearchRefinementMessages(input: ReferenceSearchRefinementIn
     } : undefined,
   };
   const text = [
-    '只输出 JSON：{"queries":[{"kind":"CONCEPT","text":"...","derivedFromKeywordIds":["..."]}]}。',
+    '只输出 JSON：{"queries":[{"kind":"CONCEPT","text":"...","derivedFromKeywordIds":["..."]}]}。你的目标不是开放互联网研究，而是提炼简短、品类化、设计导向的视觉检索词；不要写 site:，Runtime 会绑定设计平台。',
     'kind 只能是 CONCEPT 或 CATEGORY；VISUAL keyword 只能作 modifier。每条 query 必须引用输入中 enabled keyword id，并包含同 kind primary keyword。',
     `最多 ${input.mode === 'SIMILAR' ? 2 : 4} 条。不得重复任一历史 text/providerQueryText，不得改变 Brief 或关键词。`,
     JSON.stringify(payload),
@@ -85,7 +85,7 @@ export function buildSearchRefinementMessages(input: ReferenceSearchRefinementIn
     ? [{ type: 'image_url', image_url: { url: input.similar!.reference!.remoteImageUrl } }]
     : [];
   return [
-    { role: 'system', content: '你是设计师主导的参考搜索纠偏器。只规划新的文本检索，不生成图片，只返回 JSON。' },
+    { role: 'system', content: '你是设计师主导的视觉参考搜索纠偏器。只规划站酷、花瓣或 Pinterest 的设计案例检索词，不生成图片，只返回 JSON。' },
     { role: 'user', content: [{ type: 'text', text }, ...image] },
   ];
 }

@@ -110,3 +110,28 @@ test('R2 store rejects duplicate revisions and reports write failure without fal
     await fs.rm(temporary, { recursive: true, force: true });
   }
 });
+
+test('Creative Research session deletion removes only the bounded session root', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-delete-session-'));
+  try {
+    const { store } = dependencies(temporary);
+    await store.sessions.create({
+      id: 'session-delete', projectId: 'project-keep', status: 'INTAKE', sourceDocumentIds: ['document-1'],
+      createdAt: NOW, updatedAt: NOW,
+    });
+    const sessionRoot = path.join(temporary, 'creative-research', 'session-delete');
+    const projectSentinel = path.join(temporary, 'projects', 'project-keep', 'project.json');
+    await fs.mkdir(path.join(sessionRoot, 'research', 'references'), { recursive: true });
+    await fs.writeFile(path.join(sessionRoot, 'research', 'references', 'reference.json'), '{}', 'utf8');
+    await fs.mkdir(path.dirname(projectSentinel), { recursive: true });
+    await fs.writeFile(projectSentinel, '{}', 'utf8');
+
+    assert.equal(await store.sessions.delete('session-delete'), true);
+    assert.equal(await store.sessions.get('session-delete'), null);
+    await assert.rejects(fs.access(sessionRoot));
+    await fs.access(projectSentinel);
+    assert.equal(await store.sessions.delete('session-delete'), false);
+  } finally {
+    await fs.rm(temporary, { recursive: true, force: true });
+  }
+});

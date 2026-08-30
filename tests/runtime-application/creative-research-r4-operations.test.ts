@@ -13,6 +13,7 @@ import {
   filterReferencesForResearchView,
   filterReferencesByResearchKind,
   listQueriesByResearchKind,
+  retryableSearchQueryIds,
   safeReferenceUrl,
 } from '../../apps/web/src/features/creative-research/creative-research-view-model.ts';
 import type { DesignBrief } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
@@ -83,6 +84,7 @@ test('R4.1 Brief evidence supports multiple evidence and drops stale or unknown 
 
 test('R4 operation layer keeps credential write-only and retries the same failed query', async () => {
   let secret = '';
+  let deletedSessionId = '';
   let history = [query('q-failed', 'FAILED'), query('q-ok', 'COMPLETED')];
   const operations = createCreativeResearchOperations({
     briefs: {} as any,
@@ -114,10 +116,13 @@ test('R4 operation layer keeps credential write-only and retries the same failed
       updateInsight: async () => { throw new Error('not used'); }, finalizeInsight: async () => { throw new Error('not used'); },
     },
     listSessions: async () => [],
+    deleteSession: async (sessionId) => { deletedSessionId = sessionId; return true; },
     credential: { has: async () => Boolean(secret), save: async (value) => { secret = value; }, remove: async () => { secret = ''; } },
   });
   assert.deepEqual(await operations['creative-research:save-search-credential']({}, 'super-secret'), { provider: 'baidu-search', configured: true });
   assert.doesNotMatch(JSON.stringify(await operations['creative-research:get-search-credential-status']()), /super-secret/u);
+  assert.deepEqual(await operations['creative-research:delete-session']({}, 'session-delete'), { deleted: true });
+  assert.equal(deletedSessionId, 'session-delete');
   await operations['creative-research:execute-search-batch']({}, 'session-1', ['q-failed']);
   assert.equal(history[0]?.id, 'q-failed');
 });
@@ -147,6 +152,16 @@ test('R8 unavailable remote images fail closed to a visible placeholder', async 
   }
 });
 
+test('research rerun targets failed and pending queries while preserving completed history', () => {
+  const queries = [
+    query('completed', 'COMPLETED'),
+    query('failed', 'FAILED'),
+    query('pending', 'PENDING'),
+  ] as any;
+  assert.deepEqual(retryableSearchQueryIds(queries), ['failed', 'pending']);
+  assert.deepEqual(retryableSearchQueryIds([query('completed', 'COMPLETED')] as any), []);
+});
+
 test('R4.1 view model separates Concept and Category before applying current-kind query chips', () => {
   const queries = [query('concept-1', 'COMPLETED', 'CONCEPT'), query('category-1', 'COMPLETED', 'CATEGORY')];
   const references = [
@@ -165,10 +180,11 @@ test('R4.1 view model separates Concept and Category before applying current-kin
 });
 
 test('R4 route remains parallel to unchanged Creative Intelligence while R6 retains the Brief/References workspace', async () => {
-  const [routes, app, workspace] = await Promise.all([
+  const [routes, app, workspace, toolbar] = await Promise.all([
     fs.readFile('apps/web/src/lib/useUrlScreen.ts', 'utf8'),
     fs.readFile('apps/web/src/App.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
+    fs.readFile('apps/web/src/features/creative-research/CorrectionToolbar.tsx', 'utf8'),
   ]);
   assert.match(routes, /'creative-intelligence': '\/creative-intelligence'/u);
   assert.match(routes, /'creative-research': '\/creative-research'/u);
@@ -180,5 +196,11 @@ test('R4 route remains parallel to unchanged Creative Intelligence while R6 reta
   assert.match(workspace, /Category References/u);
   assert.match(workspace, />依据</u);
   assert.match(workspace, /CorrectionToolbar/u);
+  assert.match(workspace, /retryableSearchQueryIds/u);
+  assert.match(workspace, /documents\.length > 0/u);
+  assert.match(workspace, /deleteRecentSession/u);
+  assert.match(workspace, />删除</u);
+  assert.match(toolbar, />重新搜索</u);
+  assert.match(toolbar, />重新分析</u);
   assert.doesNotMatch(workspace, /Direction Board|区域框选/u);
 });

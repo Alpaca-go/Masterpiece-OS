@@ -672,6 +672,7 @@ export function createCurrentBusinessOperations(
       strategy: creativeResearchStrategy,
       reanalysis: creativeResearchReanalysis,
       listSessions: (projectId) => creativeResearchStore.sessions.listByProject(projectId),
+      deleteSession: (sessionId) => creativeResearchStore.sessions.delete(sessionId),
       credential: {
         has: () => adapters.searchCredential.has(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID),
         save: (value) => adapters.searchCredential.write(BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID, value),

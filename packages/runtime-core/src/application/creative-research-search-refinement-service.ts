@@ -12,6 +12,8 @@ import type {
 import { creativeResearchCorrectionError } from './creative-research-correction-errors.ts';
 import { creativeResearchError } from './creative-research-errors.ts';
 import { activeRejectionSignals } from './creative-research-selection-service.ts';
+import { lockQueryToPlatform } from './creative-research-platform-query-compiler.ts';
+import type { VisualReferencePlatform } from './creative-research/contracts.ts';
 
 function normalized(value: string): string { return String(value || '').replace(/\s+/gu, ' ').trim().toLocaleLowerCase(); }
 
@@ -116,13 +118,20 @@ export function createCreativeResearchSearchRefinementService(options: {
     const timestamp = now();
     const batch = createId();
     const origin = input.mode === 'REFRESH' ? 'REFRESH' : 'SIMILAR';
-    const queries: SearchQuery[] = drafts.map((draft) => ({
-      id: createId(), sessionId: data.session.id, text: draft.text, kind: draft.kind, batch, status: 'PENDING',
+    const platforms: VisualReferencePlatform[] = reference?.platform
+      ? [reference.platform]
+      : ['ZCOOL', 'HUABAN', 'PINTEREST'];
+    const queries: SearchQuery[] = drafts.map((draft, index) => {
+      const platform = platforms[index % platforms.length]!;
+      return ({
+      id: createId(), sessionId: data.session.id, text: lockQueryToPlatform(draft.text, platform), kind: draft.kind, batch, status: 'PENDING',
       derivedFromKeywordIds: draft.derivedFromKeywordIds, createdAt: timestamp, origin, excludeSeen: true,
+      intent: 'VISUAL', locale: platform === 'PINTEREST' ? 'EN' : 'ZH', platform,
+      ...(reference?.groupId ? { groupId: reference.groupId } : {}),
       ...(lastBatch ? { parentQueryIds: data.history.filter((item) => item.batch === lastBatch).map((item) => item.id) } : {}),
       ...(reference ? { sourceReferenceIds: [reference.id] } : {}),
       ...(preference ? { sourcePreferenceInsightIds: [preference.id] } : {}),
-    }));
+    }); });
     for (const query of queries) await options.history.appendQuery(query);
     return queries;
   }

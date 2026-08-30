@@ -8,14 +8,17 @@
 .cr-panel { max-width: 1120px; margin: 40px auto 0; padding: 28px; background: var(--color-surface); border: 1px solid var(--color-line); border-radius: var(--radius-xl); }
 .cr-intake { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 .cr-intake > div { display: grid; align-content: start; gap: 10px; min-height: 150px; border-right: 1px solid var(--color-line); padding-right: 24px; }
-.cr-intake > div:nth-child(3) { border: 0; }
+.cr-intake > div:last-of-type { border: 0; }
 .cr-intake .button { grid-column: 1 / -1; justify-self: end; }
 .cr-intake select, .cr-intake input, .cr-brief textarea, .cr-keyword input, .cr-keyword select, .cr-search-head input { width: 100%; box-sizing: border-box; border: 1px solid var(--color-line-strong); background: var(--color-surface); color: var(--color-text); border-radius: var(--radius-md); padding: 9px 10px; font: inherit; }
 .cr-intake select:disabled, .cr-intake input:disabled { opacity: .58; cursor: not-allowed; }
 .cr-step { font: 500 var(--text-xs) var(--font-mono); color: var(--color-hot); }
 .cr-recent { max-width: 1120px; margin: 36px auto; }
-.cr-recent > button { width: 100%; display: flex; justify-content: space-between; padding: 16px 2px; border: 0; border-bottom: 1px solid var(--color-line); background: transparent; color: inherit; cursor: pointer; text-align: left; }
-.cr-recent > button span { color: var(--color-text-muted); }
+.cr-recent__item { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; border-bottom: 1px solid var(--color-line); }
+.cr-recent__open { min-width: 0; display: flex; justify-content: space-between; gap: 18px; padding: 16px 2px; border: 0; background: transparent; color: inherit; cursor: pointer; text-align: left; }
+.cr-recent__open span { color: var(--color-text-muted); }
+.cr-recent__delete { padding: 6px 10px; border: 1px solid var(--color-error-line); border-radius: var(--radius-md); background: transparent; color: var(--color-error-text); cursor: pointer; }
+.cr-recent__delete:disabled { opacity: .45; cursor: not-allowed; }
 .cr-tabs { max-width: 1120px; margin: 28px auto 0; display: flex; gap: 24px; border-bottom: 1px solid var(--color-line); }
 .cr-tabs button { padding: 12px 2px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--color-text-muted); cursor: pointer; }
 .cr-tabs button.is-active { color: var(--color-text); border-color: var(--color-text); }

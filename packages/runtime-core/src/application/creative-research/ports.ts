@@ -12,6 +12,7 @@ import type {
   SearchQuery,
   SearchQueryKind,
   CreativeResearchSearchIntent,
+  VisualReferencePlatform,
   WebReferenceItem,
 } from './contracts.ts';
 
@@ -20,6 +21,7 @@ export interface CreativeResearchSessionRepository {
   get(id: string): Promise<CreativeResearchSession | null>;
   save(session: CreativeResearchSession): Promise<CreativeResearchSession>;
   listByProject(projectId: string): Promise<CreativeResearchSession[]>;
+  delete(id: string): Promise<boolean>;
 }
 
 export interface DesignBriefRepository {
@@ -90,6 +92,8 @@ export interface ReferenceSearchInput {
   query: string;
   kind: SearchQueryKind;
   intent?: CreativeResearchSearchIntent;
+  groupId?: string;
+  platform?: VisualReferencePlatform;
   cursor?: string;
   limit?: number;
   exclusions?: ReferenceSearchExclusions;

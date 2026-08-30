@@ -2541,6 +2541,8 @@ export interface CreativeResearchFieldEvidenceDto {
 export type CreativeResearchClueKindDto =
   | 'CATEGORY' | 'MARKET' | 'CONCEPT' | 'BRAND_VALUE' | 'CULTURE' | 'VISUAL' | 'COMPLIANCE' | 'OTHER';
 export type CreativeResearchTrackKindDto = 'CATEGORY' | 'MARKET' | 'CONCEPT' | 'CULTURE' | 'VISUAL' | 'COMPLIANCE';
+export type CreativeResearchVisualPlatformDto = 'ZCOOL' | 'HUABAN' | 'PINTEREST';
+export type CreativeResearchVisualGroupKindDto = 'INDUSTRY' | 'POSITIONING' | 'CROSS_CATEGORY';
 
 export interface CreativeResearchPlanDto {
   id: string;
@@ -2574,7 +2576,14 @@ export interface CreativeResearchPlanDto {
     rationale: string;
     intent: 'KNOWLEDGE' | 'VISUAL';
     locale: 'ZH' | 'EN';
+    groupId?: string;
+    platform?: CreativeResearchVisualPlatformDto;
   }>;
+  visualReferencePlan?: {
+    id: string;
+    groups: Array<{ id: string; kind: CreativeResearchVisualGroupKindDto; title: string; keywords: string[]; rationale: string; priority: number }>;
+    createdAt: string;
+  };
   plannerMode: 'MODEL' | 'DETERMINISTIC_FALLBACK';
   telemetry: {
     clueCount: number;
@@ -2625,6 +2634,8 @@ export interface CreativeResearchQueryDto {
   round: 'INITIAL' | 'REFINEMENT';
   intent: 'KNOWLEDGE' | 'VISUAL';
   locale?: 'ZH' | 'EN';
+  groupId?: string;
+  platform?: CreativeResearchVisualPlatformDto;
 }
 
 export interface UpdateCreativeResearchSearchStrategyInput {
@@ -2658,6 +2669,11 @@ export interface CreativeResearchReferenceDto {
   searchIntent: 'KNOWLEDGE' | 'VISUAL';
   imageStatus: 'PENDING' | 'READY' | 'UNAVAILABLE';
   cachedImageUrl?: string;
+  groupId?: string;
+  matchedGroupIds?: string[];
+  platform?: CreativeResearchVisualPlatformDto;
+  visualRole?: 'IMAGE' | 'DESIGN_CASE_PAGE';
+  qualityScore?: number;
 }
 
 export type CreativeResearchReferenceAttributeDto =
@@ -2924,6 +2940,7 @@ export interface RuntimeApi {
   creativeResearch: {
     listSessions(projectId: string): Promise<CreativeResearchSessionDto[]>;
     createSession(input: { projectId: string; sourceDocumentIds: string[] }): Promise<CreativeResearchSessionDto>;
+    deleteSession(sessionId: string): Promise<{ deleted: boolean }>;
     getSession(sessionId: string): Promise<CreativeResearchSessionDto>;
     prepareDesignBrief(sessionId: string, input: { profileId: string; designerNotes?: string[] }): Promise<CreativeResearchBriefDto>;
     getDesignBrief(sessionId: string): Promise<CreativeResearchBriefDto>;

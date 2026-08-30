@@ -69,6 +69,31 @@ export type CreativeResearchQueryRound = typeof CREATIVE_RESEARCH_QUERY_ROUNDS[n
 export type CreativeResearchSearchIntent = typeof CREATIVE_RESEARCH_SEARCH_INTENTS[number];
 export type CreativeResearchQueryLocale = typeof CREATIVE_RESEARCH_QUERY_LOCALES[number];
 
+export const VISUAL_REFERENCE_GROUP_KINDS = ['INDUSTRY', 'POSITIONING', 'CROSS_CATEGORY'] as const;
+export const VISUAL_REFERENCE_PLATFORMS = ['ZCOOL', 'HUABAN', 'PINTEREST'] as const;
+export const VISUAL_REFERENCE_ROLES = ['IMAGE', 'DESIGN_CASE_PAGE'] as const;
+
+export type VisualReferenceGroupKind = typeof VISUAL_REFERENCE_GROUP_KINDS[number];
+export type VisualReferencePlatform = typeof VISUAL_REFERENCE_PLATFORMS[number];
+export type VisualReferenceRole = typeof VISUAL_REFERENCE_ROLES[number];
+
+export interface VisualReferenceKeywordGroup {
+  id: string;
+  kind: VisualReferenceGroupKind;
+  title: string;
+  keywords: string[];
+  rationale: string;
+  priority: number;
+}
+
+export interface VisualReferencePlan {
+  id: string;
+  sessionId: string;
+  briefRevisionId: string;
+  groups: VisualReferenceKeywordGroup[];
+  createdAt: string;
+}
+
 export interface CreativeResearchClue {
   id: string;
   value: string;
@@ -99,6 +124,8 @@ export interface PlannedQuery {
   rationale: string;
   intent?: CreativeResearchSearchIntent;
   locale?: CreativeResearchQueryLocale;
+  groupId?: string;
+  platform?: VisualReferencePlatform;
 }
 
 export interface CreativeResearchPlanTelemetry {
@@ -117,6 +144,7 @@ export interface CreativeResearchPlan {
   clues: CreativeResearchClue[];
   tracks: CreativeResearchTrack[];
   firstRoundQueries: PlannedQuery[];
+  visualReferencePlan?: VisualReferencePlan;
   plannerMode: 'MODEL' | 'DETERMINISTIC_FALLBACK';
   telemetry: CreativeResearchPlanTelemetry;
   createdAt: string;
@@ -190,6 +218,8 @@ export interface SearchQuery {
   round?: CreativeResearchQueryRound;
   intent?: CreativeResearchSearchIntent;
   locale?: CreativeResearchQueryLocale;
+  groupId?: string;
+  platform?: VisualReferencePlatform;
 }
 
 export const SIMILAR_SEARCH_DIMENSIONS = [
@@ -246,6 +276,11 @@ export interface WebReferenceItem extends ReferenceItemBase {
   imageStatus?: 'PENDING' | 'READY' | 'UNAVAILABLE';
   cachedImageUrl?: string;
   imageUnavailableReason?: string;
+  groupId?: string;
+  matchedGroupIds?: string[];
+  platform?: VisualReferencePlatform;
+  visualRole?: VisualReferenceRole;
+  qualityScore?: number;
 }
 
 export interface UserReferenceItem extends ReferenceItemBase {

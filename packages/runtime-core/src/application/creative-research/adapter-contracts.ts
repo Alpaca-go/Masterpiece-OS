@@ -154,7 +154,7 @@ export interface CreativeResearchPlannerInput {
   clues: CreativeResearchClue[];
 }
 
-export interface CreativeResearchPlanDraft {
+export interface LegacyCreativeResearchPlanDraft {
   tracks: Array<{
     title: string;
     summary: string;
@@ -172,6 +172,18 @@ export interface CreativeResearchPlanDraft {
     locale: 'ZH' | 'EN';
   }>;
 }
+
+export interface VisualCreativeResearchPlanDraft {
+  visualGroups: Array<{
+    kind: 'INDUSTRY' | 'POSITIONING' | 'CROSS_CATEGORY';
+    title: string;
+    keywords: string[];
+    rationale: string;
+    priority: number;
+  }>;
+}
+
+export type CreativeResearchPlanDraft = LegacyCreativeResearchPlanDraft | VisualCreativeResearchPlanDraft;
 
 export interface CreativeResearchPlannerAdapter {
   createPlan(input: CreativeResearchPlannerInput): Promise<CreativeResearchPlanDraft>;

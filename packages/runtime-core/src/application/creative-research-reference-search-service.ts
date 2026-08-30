@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import type { CreativeResearchPlanRepository, CreativeResearchSessionRepository, DesignBriefRepository, ReferenceResearchRepository, ReferenceSearchGateway, SearchHistoryRepository } from './creative-research/ports.ts';
+import type { CreativeResearchPlanRepository, CreativeResearchSessionRepository, DesignBriefRepository, ReferenceResearchRepository, ReferenceSearchGateway, ReferenceSearchInput, SearchHistoryRepository } from './creative-research/ports.ts';
 import type { SearchQuery, WebReferenceItem } from './creative-research/contracts.ts';
 import { planInitialSearchQueries } from './creative-research-search-query-planner.ts';
 import { asCreativeResearchSearchError, creativeResearchSearchError } from './creative-research-search-errors.ts';
@@ -20,6 +20,13 @@ export function createCreativeResearchReferenceSearchService(options: {
 }) {
   const now = options.now || (() => new Date().toISOString());
   const createId = options.createId || (() => crypto.randomUUID());
+
+  function simplifySourceLockedQuery(query: SearchQuery): string {
+    const [site = '', ...terms] = query.text.split(/\s+/u);
+    const concise = terms.filter(Boolean).slice(0, 2);
+    const suffix = query.platform === 'PINTEREST' ? 'branding design' : '品牌设计';
+    return [site, ...concise, suffix].join(' ').replace(/\s+/gu, ' ').trim();
+  }
 
   async function requireSession(sessionId: string) {
     const session = await options.sessions.get(sessionId);
@@ -64,14 +71,24 @@ export function createCreativeResearchReferenceSearchService(options: {
       const seenReferences = query.excludeSeen
         ? (await options.references.listSessionReferences(sessionId)).filter((item): item is WebReferenceItem => item.sourceType === 'WEB_REFERENCE')
         : [];
-      const page = await options.gateway.search({
+      const searchInput = {
         sessionId, queryId, query: query.text, kind: query.kind, intent: query.intent || 'KNOWLEDGE',
+        ...(query.groupId ? { groupId: query.groupId } : {}),
+        ...(query.platform ? { platform: query.platform } : {}),
         ...(query.cursor ? { cursor: query.cursor } : {}),
         ...(query.excludeSeen ? { exclusions: {
           referenceIds: seenReferences.map((item) => item.id),
           urls: [...new Set(seenReferences.flatMap((item) => [item.sourceUrl, item.canonicalUrl]).filter(Boolean))],
         } } : {}),
-      });
+      } satisfies ReferenceSearchInput;
+      let page = await options.gateway.search(searchInput);
+      if (!page.items.length && query.groupId && query.platform) {
+        const simplified = simplifySourceLockedQuery(query);
+        if (simplified !== query.text) {
+          const retry = await options.gateway.search({ ...searchInput, query: simplified });
+          page = { ...retry, providerCalls: (page.providerCalls ?? 1) + (retry.providerCalls ?? 1) };
+        }
+      }
       const cacheQueue = [...page.items];
       const cachedItems: WebReferenceItem[] = [];
       async function cacheWorker() {
