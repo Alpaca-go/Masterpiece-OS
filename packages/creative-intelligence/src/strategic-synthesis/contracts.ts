@@ -34,7 +34,7 @@ export const STRATEGIC_SYNTHESIS_SCHEMA_VERSION = '0.1' as const;
 export const STRATEGIC_SYNTHESIS_PROMPT_VERSION = 'ci-w1c.7-strategic-synthesis-v0.1' as const;
 
 export type StrategicEpistemicClass = 'MODEL_INFERENCE';
-export type CreativeEpistemicClass = 'CREATIVE_HYPOTHESIS';
+export type StrategicCreativeEpistemicClass = 'CREATIVE_HYPOTHESIS';
 
 /**
  * CI-W1C.8-G02-C.1 — Human-reviewed qualification anchor carried into

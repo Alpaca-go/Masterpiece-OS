@@ -41,6 +41,7 @@ interface Props {
   onGoReport(): void;
   onGoCreative(): void;
   onOpenReference(): void;
+  showReferenceStyleEntry?: boolean;
 }
 
 function projectStatusTone(status: ProjectRecord['status']): 'default' | 'primary' | 'success' | 'warning' | 'error' {
@@ -63,7 +64,7 @@ export function ProjectDetail({
   project, assets, analysisProfiles, selectedProfile, selectedApiProfileId,
   generationReadiness, batches, error,
   onSelectApiProfile, onImportMore, onClearAssets, onRemoveBatch, onRemoveAsset,
-  onRun, onGoHome, onGoReport, onGoCreative, onOpenReference,
+  onRun, onGoHome, onGoReport, onGoCreative, onOpenReference, showReferenceStyleEntry = false,
 }: Props) {
   const canAnalyze = Boolean(assets?.totalFiles && selectedProfile?.hasApiKey && selectedProfile.baseUrl && selectedProfile.modelId);
 
@@ -198,7 +199,7 @@ export function ProjectDetail({
 
       <details className="ux-advanced project-v2__context-details">
         <summary>高级：文档关联与上下文冲突处理</summary>
-        <ContextIntegrationPanel projectId={project.id} projectName={project.projectName} onOpenReference={onOpenReference} />
+        <ContextIntegrationPanel projectId={project.id} projectName={project.projectName} onOpenReference={onOpenReference} showReferenceStyleEntry={showReferenceStyleEntry} />
       </details>
     </PageShell>
   );

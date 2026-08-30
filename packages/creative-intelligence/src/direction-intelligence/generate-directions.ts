@@ -208,7 +208,7 @@ function buildDirectionForConcept(
   concept: ConceptCandidate,
   family: DirectionFamily,
   variant: number,
-  ctx: Omit<DirectionGenerationInput, 'concepts' | 'opportunityMap' | 'insights' | 'needs' | 'facts' | 'evidence' | 'conflicts'>,
+  ctx: Omit<DirectionGenerationInput, 'concepts' | 'opportunityMap' | 'insights' | 'needs' | 'evidence' | 'conflicts'>,
 ): CreativeDirectionCandidate {
   // CI-W1A P0 fix: prefer the precomputed effective status if provided.
   // Downstream certainty may NEVER increase.

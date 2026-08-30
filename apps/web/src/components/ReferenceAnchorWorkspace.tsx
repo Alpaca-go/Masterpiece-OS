@@ -154,7 +154,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
 
   useEffect(() => {
     if (!selectedProjectId && readyProjects.length > 0 && projectSourceMode === 'existing') {
-      setSelectedProjectId(readyProjects[0].id);
+      setSelectedProjectId(readyProjects[0]!.id);
     }
   }, [projectSourceMode, readyProjects, selectedProjectId]);
 

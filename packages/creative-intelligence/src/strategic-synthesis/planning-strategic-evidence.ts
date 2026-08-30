@@ -32,7 +32,7 @@
 
 import { createHash } from 'node:crypto';
 
-import type { ProjectId } from '../integration/contracts.ts';
+export type ProjectId = string;
 
 export type PlanningSourceRole =
   | 'PLANNING_STRATEGIC_SOURCE'

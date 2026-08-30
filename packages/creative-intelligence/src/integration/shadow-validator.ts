@@ -20,7 +20,7 @@ import { IDENTITY_KEYS, LOCKED_KEYS, PROJECT_TRUTH_KEYS } from '../truth/key-reg
 
 export interface ShadowValidatorInput {
   truth: ProjectTruthModel;
-  currentCarriers: Record<string, Record<string, unknown>>;
+  currentCarriers: Record<string, unknown>;
   ciVersion?: string;
   generatedAt?: string;
 }

@@ -159,9 +159,10 @@ export function createCreativeResearchPreferenceAnalysisAdapter(options: {
   reasonerFactory?: ReasonerFactory;
   onDiagnostics?: (diagnostics: CreativeResearchPreferenceDiagnostics) => void;
 }): ReferencePreferenceAnalysisAdapter {
-  const reasonerFactory = options.reasonerFactory || createOpenAICompatibleTextReasoner;
-  return Object.freeze({
-    async analyzePreferences(input) {
+  const reasonerFactory: ReasonerFactory = options.reasonerFactory
+    ?? (createOpenAICompatibleTextReasoner as ReasonerFactory);
+  const adapter: ReferencePreferenceAnalysisAdapter = {
+    async analyzePreferences(input: ReferencePreferenceAnalysisInput) {
       const profileId = String(input.profileId || '').trim();
       if (!profileId) throw creativeResearchPreferenceError('CREATIVE_RESEARCH_PREFERENCE_PROFILE_REQUIRED', '必须明确选择分析 Profile');
       const credentials = await options.readCredentials(profileId).catch((error) => {
@@ -206,5 +207,6 @@ export function createCreativeResearchPreferenceAnalysisAdapter(options: {
         });
       }
     },
-  });
+  };
+  return Object.freeze(adapter);
 }

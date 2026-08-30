@@ -56,7 +56,7 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
     return insight;
   };
 
-  return Object.freeze({
+  const service: CreativeResearchPreferenceAnalysisService = {
     async analyzeSelection(rawSessionId, rawProfileId) {
       const sessionId = requireText(rawSessionId, 'Session ID', 'CREATIVE_RESEARCH_PREFERENCE_STORE_FAILED');
       const profileId = requireText(rawProfileId, 'Profile ID', 'CREATIVE_RESEARCH_PREFERENCE_PROFILE_REQUIRED');
@@ -156,5 +156,6 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
       assertPreferenceInsight(finalized);
       return options.insights.saveInsight(finalized);
     },
-  });
+  };
+  return Object.freeze(service);
 }

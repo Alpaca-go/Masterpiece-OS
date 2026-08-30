@@ -72,7 +72,7 @@ function computePairDifference(
     && tokenOverlap(a.systemHypothesis, b.systemHypothesis) < 0.6;
   const differentFamily = a.directionFamily !== b.directionFamily;
   const differentCompositionLogic = normalize(a.compositionLogic) !== normalize(b.compositionLogic)
-    && (a.compositionLogic || b.compositionLogic); // at least one has a logic
+    && Boolean(a.compositionLogic || b.compositionLogic); // at least one has a logic
   const differentCrossMediaBehavior = (() => {
     const aSet = new Set(a.crossMediaBehavior);
     const bSet = new Set(b.crossMediaBehavior);

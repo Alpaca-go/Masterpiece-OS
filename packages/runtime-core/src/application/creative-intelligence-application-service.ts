@@ -75,6 +75,7 @@ import {
   type CreativeIntelligenceWorkspaceView,
   type SelectDirectionActionInput,
   type PublicSettings,
+  type AnchorProductionWorkspace,
 } from '../application-contracts.ts';
 import { atomicWriteJsonWithRetry } from './runtime/atomic-write.ts';
 import { RunWriteCoordinator } from './runtime/run-write-coordinator.ts';
@@ -113,6 +114,8 @@ import {
   buildPackagingTranslation,
   validateCrossMediaConsistency,
 } from '@masterpiece/creative-intelligence/index.ts';
+
+type ProjectRecordCarrier = Parameters<typeof adaptProjectRecord>[0];
 
 // ---------------------------------------------------------------------------
 // Error codes
@@ -203,7 +206,7 @@ function buildFactReview(
       'pricePositioning', 'products', 'services',
     ];
     for (const field of candidateFields) {
-      const value = (dvc as Record<string, unknown>)[field];
+      const value = (dvc as unknown as Record<string, unknown>)[field];
       if (value === undefined || value === null) continue;
       facts.push({
         field,
@@ -224,7 +227,7 @@ function buildFactReview(
     projectId: projectId ?? null,
     documentRunId,
     sourceRunId: dvc?.sourceRunId ?? documentRunId,
-    context: dvc as Record<string, unknown>,
+    context: dvc as unknown as Record<string, unknown>,
     evidenceSummary: { total: facts.length, byField },
     unknownFields,
     facts,
@@ -246,7 +249,7 @@ async function buildWorkspaceView(
   warnings: string[],
   diagnostics: string[],
   blockerSummaries?: unknown,
-  anchorProduction?: unknown,
+  anchorProduction?: AnchorProductionWorkspace | null,
 ): Promise<CreativeIntelligenceWorkspaceView> {
   const readJson = async <T>(name: string): Promise<T | null> => {
     try {
@@ -354,7 +357,7 @@ export interface CreateCreativeIntelligenceApplicationServiceInput {
    * Optional: returns a stable ProjectRecord-like carrier for Truth assembly.
    * If absent, the service builds a minimal synthetic record from the DVC.
    */
-  loadProjectRecord?(projectId: string): Promise<Record<string, unknown> | null>;
+  loadProjectRecord?(projectId: string): Promise<ProjectRecordCarrier | null>;
   /**
    * CI-W1C.5 PART E (optional): returns the parsed
    * `project-visual-context.vnext.json` payload for the project, or null
@@ -751,7 +754,7 @@ export function createCreativeIntelligenceApplicationService(
     userFacts: CreativeIntelligenceFactItem[],
   ): DocumentVisualContext {
     if (!userFacts || userFacts.length === 0) return dvc;
-    const next: Record<string, unknown> = { ...(dvc as Record<string, unknown>) };
+    const next: Record<string, unknown> = { ...(dvc as unknown as Record<string, unknown>) };
     for (const fact of userFacts) {
       if (fact.userAction === 'remove') {
         delete next[fact.field];
@@ -764,7 +767,7 @@ export function createCreativeIntelligenceApplicationService(
       }
       // 'confirm' = no-op
     }
-    return next as DocumentVisualContext;
+    return next as unknown as DocumentVisualContext;
   }
 
   async function runDownstream(
@@ -934,7 +937,7 @@ export function createCreativeIntelligenceApplicationService(
   function synthesizeProjectRecord(
     run: CreativeIntelligenceRun,
     dvc: DocumentVisualContext,
-  ): Record<string, unknown> {
+  ): ProjectRecordCarrier {
     return {
       id: run.projectId ?? run.id,
       projectName: run.projectName,

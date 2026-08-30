@@ -28,11 +28,12 @@ test('visual system defaults to readable summaries instead of raw JSON', () => {
   assert.match(source, /parentSelectionRevision=\{activeView\?\.run\.selectionRevision \?\? 0\}/);
 });
 
-test('create shell owns navigation and exposes prerequisites before entering anchor flow', () => {
+test('create shell removes cross-function tabs while preserving hidden anchor wiring', () => {
   const createPage = read('apps', 'web', 'src', 'pages', 'CreatePage.tsx');
   const tabs = read('apps', 'web', 'src', 'components', 'AnalysisModeTabs.tsx');
   assert.match(createPage, /<ReferenceAnchorWorkspace[\s\S]*?hideChrome/);
   assert.match(tabs, /需已分析项目与 4–8 张参考图/);
+  assert.doesNotMatch(createPage, /<AnalysisModeTabs\b/);
 });
 
 test('home record cards avoid nested interactive controls and preserve approved CTA behavior', () => {

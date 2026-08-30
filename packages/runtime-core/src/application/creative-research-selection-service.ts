@@ -86,7 +86,7 @@ export function createCreativeResearchSelectionService(options: {
     }
   };
 
-  return Object.freeze({
+  const service: CreativeResearchSelectionService = {
     listSelections: (sessionId) => options.references.listSelections(requireId(sessionId, 'Session ID')),
     listNegativeSignals: (sessionId) => options.references.listNegativeSignals(requireId(sessionId, 'Session ID')),
     async setReferenceSelection(input) {
@@ -136,5 +136,6 @@ export function createCreativeResearchSelectionService(options: {
         };
       });
     },
-  });
+  };
+  return Object.freeze(service);
 }

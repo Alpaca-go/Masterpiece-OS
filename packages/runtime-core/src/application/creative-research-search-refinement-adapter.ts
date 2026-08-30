@@ -28,7 +28,10 @@ export function normalizeSearchRefinementDrafts(value: unknown, input: Reference
     throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_OUTPUT_INVALID', `queries 必须包含 1 至 ${maximum} 条结果`);
   }
   const enabled = new Map(input.enabledSearchKeywords.map((item) => [item.id, item]));
-  const historical = new Set(input.recentQueries.flatMap((item) => [item.text, item.providerQueryText || '']).map(normalized).filter(Boolean));
+  const historical = new Set(input.recentQueries
+    .flatMap((item) => [item.text, item.providerQueryText || ''])
+    .map((value) => normalized(value || ''))
+    .filter(Boolean));
   const current = new Set<string>();
   return candidate.queries.map((raw, index) => {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_OUTPUT_INVALID', `queries[${index}] 必须是对象`);
@@ -92,19 +95,21 @@ export function createCreativeResearchSearchRefinementAdapter(options: {
   reasonerFactory?: ReasonerFactory;
   onDiagnostics?: (value: { modelCallCount: number; repairCount: number; provider: string; model: string }) => void;
 }): ReferenceSearchRefinementAdapter {
-  return Object.freeze({
-    async planQueries(input) {
+  const reasonerFactory: ReasonerFactory = options.reasonerFactory
+    ?? (createOpenAICompatibleTextReasoner as ReasonerFactory);
+  const adapter: ReferenceSearchRefinementAdapter = {
+    async planQueries(input: ReferenceSearchRefinementInput) {
       const profileId = String(input.profileId || '').trim();
       if (!profileId) throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_PROFILE_REQUIRED', '必须明确选择分析 Profile');
       const credentials = await options.readCredentials(profileId).catch((error) => {
         throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_PROFILE_UNSUPPORTED', `读取所选 Profile 失败：${(error as Error).message}`);
       });
       if (credentials.profileId !== profileId || credentials.modelType !== 'analysis'
-        || !['openai-chat', 'openai-chat-multimodal'].includes(credentials.protocol)) {
+        || !['openai-chat', 'openai-chat-multimodal'].includes(String(credentials.protocol || ''))) {
         throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_PROFILE_UNSUPPORTED', '所选 Profile 必须是启用的 analysis Profile，且不能自动替换');
       }
       let reasoner: Reasoner;
-      try { reasoner = (options.reasonerFactory || createOpenAICompatibleTextReasoner)(credentials); }
+      try { reasoner = reasonerFactory(credentials); }
       catch (error) { throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_MODEL_FAILED', `初始化搜索纠偏模型失败：${(error as Error).message}`); }
       let modelCallCount = 0;
       let repairCount = 0;
@@ -131,5 +136,6 @@ export function createCreativeResearchSearchRefinementAdapter(options: {
         options.onDiagnostics?.({ modelCallCount, repairCount, provider: credentials.provider, model: credentials.model });
       }
     },
-  });
+  };
+  return Object.freeze(adapter);
 }

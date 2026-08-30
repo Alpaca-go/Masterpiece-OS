@@ -51,9 +51,10 @@ import {
 import { classifyPlanningClaimEpistemicClass } from './epistemic-classifier.ts';
 import {
   classifyDocumentRole,
-  prepareDocumentSet,
-  type DocumentSet
+  prepareDocumentSet
 } from '@masterpiece/document-ingestion/document-preparation.js';
+
+type DocumentSet = ReturnType<typeof prepareDocumentSet>;
 
 export interface BuildPlanningStrategicEvidenceInput {
   projectId: string;

@@ -11,14 +11,14 @@
  * tag facts accordingly and the assembler applies the reference guard.
  */
 
-import type { ProjectTruthAdapter } from './adapter-types.ts';
+import type { AdapterOutput, ProjectTruthAdapter } from './adapter-types.ts';
 import { factId, evidenceId, isUnknown } from '../normalization.ts';
 import { PROJECT_TRUTH_KEYS } from '../key-registry.ts';
 import type {
   ProjectTruthFact,
   TruthAuthority,
   SourceType,
-} from '../truth/contracts.ts';
+} from '../contracts.ts';
 
 interface LockedAssetEvidence {
   assetId?: string;
@@ -50,8 +50,8 @@ interface CurrentProjectCorePackShape {
 
 export const adaptCurrentProjectCorePack: ProjectTruthAdapter<CurrentProjectCorePackShape> = (input, ctx) => {
   const facts: ProjectTruthFact[] = [];
-  const evidence = [];
-  const warnings = [];
+  const evidence: AdapterOutput['evidence'] = [];
+  const warnings: AdapterOutput['warnings'] = [];
 
   if (!input || !input.projectId) {
     warnings.push({
@@ -112,10 +112,12 @@ export const adaptCurrentProjectCorePack: ProjectTruthAdapter<CurrentProjectCore
   if (Array.isArray(input.lockedAssets) && input.lockedAssets.length > 0) {
     const currentLocked = input.lockedAssets
       .filter((la) => la?.assetId && (la.source === 'current_project' || !la.source))
-      .map((la) => la.assetId);
+      .map((la) => la.assetId)
+      .filter((id): id is string => typeof id === 'string');
     const refLocked = input.lockedAssets
       .filter((la) => la?.assetId && la.source === 'reference_project')
-      .map((la) => la.assetId);
+      .map((la) => la.assetId)
+      .filter((id): id is string => typeof id === 'string');
 
     if (currentLocked.length > 0) {
       push(PROJECT_TRUTH_KEYS.LOCKED_ASSETS, currentLocked);

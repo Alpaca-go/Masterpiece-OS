@@ -34,6 +34,7 @@ import { SelectionTray } from './SelectionTray';
 import { PreferenceInsightsPanel } from './PreferenceInsightsPanel';
 import { CorrectionToolbar } from './CorrectionToolbar';
 import { DirectionWorkspace } from './DirectionWorkspace';
+import { ResearchExecutionPanel, type ResearchExecutionFailure } from './ResearchExecutionPanel';
 import './creative-research.css';
 
 function fileToBase64(file: File): Promise<string> {
@@ -134,17 +135,18 @@ function BriefEditor({ brief, editable, busy, onSave }: {
   </section>;
 }
 
-export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBack, onOpenSettings }: {
+export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBack, onOpenSettings, onOpenResearchSettings }: {
   settings: PublicSettings;
   projects: ProjectRecord[];
   onNavigate(path: string): void;
   onBack(): void;
   onOpenSettings(): void;
+  onOpenResearchSettings(): void;
 }) {
   const sessionId = decodeURIComponent(window.location.hash.match(/^#\/creative-research\/([^/?]+)/u)?.[1] || '');
   const api = window.masterpiece.creativeResearch;
   const analysisProfiles = settings.profiles.filter((profile) => profile.isEnabled && profile.modelType === 'analysis');
-  const [projectId, setProjectId] = useState(projects[0]?.id || '');
+  const [projectId, setProjectId] = useState('');
   const [profileId, setProfileId] = useState(analysisProfiles.find((profile) => profile.isDefault)?.id || analysisProfiles[0]?.id || '');
   const [sessions, setSessions] = useState<CreativeResearchSessionDto[]>([]);
   const [session, setSession] = useState<CreativeResearchSessionDto | null>(null);
@@ -155,7 +157,6 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [negativeSignals, setNegativeSignals] = useState<CreativeResearchNegativeSignalDto[]>([]);
   const [preferenceInsights, setPreferenceInsights] = useState<CreativeResearchPreferenceInsightDto[]>([]);
   const [credential, setCredential] = useState<CreativeResearchCredentialStatusDto>({ provider: 'baidu-search', configured: false });
-  const [credentialValue, setCredentialValue] = useState('');
   const [documents, setDocuments] = useState<File[]>([]);
   const [filter, setFilter] = useState('all');
   const [researchKind, setResearchKind] = useState<ReferenceResearchKind>('CONCEPT');
@@ -167,6 +168,8 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [operationStartedAt, setOperationStartedAt] = useState<number | null>(null);
+  const [executionFailure, setExecutionFailure] = useState<ResearchExecutionFailure | null>(null);
 
   async function loadSession(id: string) {
     const nextSession = await api.getSession(id);
@@ -189,12 +192,43 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
     if (sessionId) void loadSession(sessionId).catch((reason) => setError(cleanError(reason)));
   }, [sessionId]);
   useEffect(() => {
-    if (projectId && !sessionId) void api.listSessions(projectId).then(setSessions).catch((reason) => setError(cleanError(reason)));
-  }, [projectId, sessionId]);
+    if (sessionId) return;
+    setProjectId('');
+    setDocuments([]);
+    setSession(null);
+    setBrief(null);
+    setQueries([]);
+    setReferences([]);
+    setExecutionFailure(null);
+  }, [sessionId]);
+  useEffect(() => {
+    if (sessionId) return;
+    let active = true;
+    void Promise.all(projects.map((item) => api.listSessions(item.id)))
+      .then((groups) => {
+        if (active) setSessions(groups.flat().sort((left, right) => right.updatedAt.localeCompare(left.updatedAt)));
+      })
+      .catch((reason) => { if (active) setError(cleanError(reason)); });
+    return () => { active = false; };
+  }, [api, projects, sessionId]);
 
-  async function action(name: string, operation: () => Promise<void>) {
-    setBusy(name); setError('');
-    try { await operation(); } catch (reason) { setError(cleanError(reason)); } finally { setBusy(''); }
+  async function action(name: string, operation: (transition: (next: string) => void) => Promise<void>) {
+    let currentOperation = name;
+    const transition = (next: string) => {
+      currentOperation = next;
+      setBusy(next);
+    };
+    setBusy(name); setError(''); setExecutionFailure(null); setOperationStartedAt(Date.now());
+    try {
+      await operation(transition);
+    } catch (reason) {
+      const message = cleanError(reason);
+      setError(message);
+      setExecutionFailure({ operation: currentOperation, message });
+    } finally {
+      setBusy('');
+      setOperationStartedAt(null);
+    }
   }
 
   async function createSession() {
@@ -208,10 +242,10 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
 
   async function runInitialSearch() {
     if (!session) return;
-    await action('planning', async () => {
+    await action('planning', async (transition) => {
       await api.startResearch(session.id);
       const planned = await api.planInitialSearch(session.id);
-      setQueries(planned); setTab('references'); setBusy('searching');
+      setQueries(planned); setTab('references'); transition('searching');
       try { await api.executeSearchBatch(session.id); } finally { await loadSession(session.id); }
     });
   }
@@ -338,30 +372,48 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const selectedReferenceCount = selections.filter((item) => item.state === 'SELECTED').length;
   const directionTabEnabled = session?.status === 'DIRECTION' || session?.status === 'COMPLETED';
   const referencesReadOnly = session?.status !== 'RESEARCH';
+  const createReady = Boolean(projectId && documents.length && profileId && !busy);
 
   if (!sessionId) return <main className="cr-shell">
     <header className="cr-top"><button onClick={onBack}>← 项目</button><div><span>Creative Research</span><h1>灵感研究工作台</h1></div><button onClick={onOpenSettings}>模型设置</button></header>
     {error && <div className="cr-alert cr-alert--error">{error}</div>}
     {notice && <div className="cr-alert cr-alert--success">{notice}</div>}
     <section className="cr-intake cr-panel">
-      <div><span className="cr-step">01</span><h2>选择项目</h2><select value={projectId} onChange={(event) => setProjectId(event.target.value)}>{projects.map((item) => <option key={item.id} value={item.id}>{item.projectName}</option>)}</select></div>
-      <div><span className="cr-step">02</span><h2>导入设计资料</h2><input type="file" multiple accept=".pdf,.docx,.md,.markdown,.txt" onChange={(event) => setDocuments(Array.from(event.target.files || []))} /><small>{documents.length ? `${documents.length} 份文档` : 'PDF / DOCX / Markdown / TXT'}</small></div>
-      <div><span className="cr-step">03</span><h2>选择分析模型</h2><select value={profileId} onChange={(event) => setProfileId(event.target.value)}>{analysisProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName}</option>)}</select></div>
-      <Button variant="primary" disabled={busy !== '' || !profileId} onClick={() => void createSession()}>创建研究 Session</Button>
+      <div><span className="cr-step">01</span><h2>选择项目</h2><select value={projectId} disabled={Boolean(busy)} onChange={(event) => setProjectId(event.target.value)}><option value="" disabled>请选择项目</option>{projects.map((item) => <option key={item.id} value={item.id}>{item.projectName}</option>)}</select></div>
+      <div><span className="cr-step">02</span><h2>导入设计资料</h2><input type="file" multiple disabled={Boolean(busy)} accept=".pdf,.docx,.md,.markdown,.txt" onChange={(event) => setDocuments(Array.from(event.target.files || []))} /><small>{documents.length ? `${documents.length} 份文档` : 'PDF / DOCX / Markdown / TXT'}</small></div>
+      <div><span className="cr-step">03</span><h2>选择分析模型</h2><select value={profileId} disabled={Boolean(busy)} onChange={(event) => setProfileId(event.target.value)}>{analysisProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName}</option>)}</select></div>
+      <Button variant="primary" disabled={!createReady} onClick={() => void createSession()}>{busy === 'creating' ? '正在创建…' : '创建研究 Session'}</Button>
     </section>
-    <section className="cr-recent"><h2>最近研究</h2>{sessions.length ? sessions.map((item) => <button key={item.id} onClick={() => onNavigate(`/creative-research/${item.id}`)}><strong>{project?.projectName || item.projectId}</strong><span>{item.status} · {formatRelativeTime(item.updatedAt)}</span></button>) : <p>这个项目还没有研究记录。</p>}</section>
+    <section className="cr-recent"><h2>最近研究</h2>{sessions.length ? sessions.map((item) => <button key={item.id} onClick={() => onNavigate(`/creative-research/${item.id}`)}><strong>{projects.find((candidate) => candidate.id === item.projectId)?.projectName || item.projectId}</strong><span>{item.status} · {formatRelativeTime(item.updatedAt)}</span></button>) : <p>还没有研究记录。</p>}</section>
   </main>;
 
   return <main className="cr-shell">
     <header className="cr-top"><button onClick={() => onNavigate('/creative-research')}>← 研究列表</button><div><span>{project?.projectName || 'Creative Research'}</span><h1>灵感研究工作台</h1></div><div className="cr-top__status"><b>{session?.status || '载入中'}</b><button onClick={onOpenSettings}>设置</button></div></header>
     {error && <div className="cr-alert cr-alert--error">{error}</div>}
+    <section className={`cr-service-status ${credential.configured ? 'is-configured' : ''}`}>
+      <div><span aria-hidden>●</span><strong>搜索服务</strong><small>{credential.configured ? '百度 AI 搜索已连接' : '尚未配置百度 AI 搜索'}</small></div>
+      {!credential.configured && <Button variant="secondary" size="sm" onClick={onOpenResearchSettings}>前往 API 设置</Button>}
+    </section>
     <nav className="cr-tabs"><button className={tab === 'brief' ? 'is-active' : ''} onClick={() => setTab('brief')}>Brief</button><button className={tab === 'references' ? 'is-active' : ''} onClick={() => setTab('references')}>References <span>{references.length}</span></button><button className={tab === 'direction' ? 'is-active' : ''} disabled={!directionTabEnabled} title={directionTabEnabled ? undefined : '收藏参考后，通过「整理成视觉方向」进入方向整理。'} onClick={() => setTab('direction')}>Direction</button></nav>
-    {!session || !brief ? <section className="cr-panel cr-loading">{busy === 'brief' ? '正在分析文档并生成 Brief…' : <><p>此 Session 尚未生成 Design Brief。</p><Button variant="primary" disabled={!profileId || busy !== ''} onClick={() => void action('brief', async () => { const next = await api.prepareDesignBrief(sessionId, { profileId }); setBrief(next); })}>生成 Design Brief</Button></>}</section>
-      : tab === 'brief' ? <><BriefEditor brief={brief} editable={session.status === 'INTAKE'} busy={busy !== ''} onSave={async (input) => action('saving', async () => setBrief(await api.updateDesignBrief(session.id, input)))} />
-        {session.status === 'INTAKE' && <section className="cr-start"><div><h2>Brief 已就绪</h2><p>开始研究后 Brief 将只读，并按启用的概念与品类关键词执行首轮搜索。</p></div><Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void runInitialSearch()}>开始研究</Button></section>}</>
+    {session && <ResearchExecutionPanel
+      session={session}
+      projectName={project?.projectName || session.projectId}
+      briefReady={Boolean(brief)}
+      queries={queries}
+      referenceCount={references.length}
+      preferenceCount={preferenceInsights.length}
+      directionReady={Boolean(board) || session.status === 'DIRECTION' || session.status === 'COMPLETED'}
+      busy={busy}
+      operationStartedAt={operationStartedAt}
+      failure={executionFailure}
+      onDismissFailure={() => { setExecutionFailure(null); setError(''); }}
+    />}
+    {!session || !brief ? <section className="cr-panel cr-loading">{busy === 'brief' ? <p>资料解析与 Brief 生成正在执行，详细阶段见上方进度面板。</p> : <><p>{session ? '此 Session 尚未生成 Design Brief。' : '正在载入研究 Session…'}</p>{session && <Button variant="primary" disabled={!profileId || busy !== ''} onClick={() => void action('brief', async () => { const next = await api.prepareDesignBrief(sessionId, { profileId }); setBrief(next); })}>生成 Design Brief</Button>}</>}</section>
+      : tab === 'brief' ? <><BriefEditor brief={brief} editable={session.status === 'INTAKE' && busy === ''} busy={busy !== ''} onSave={async (input) => action('saving', async () => setBrief(await api.updateDesignBrief(session.id, input)))} />
+        {session.status === 'INTAKE' && <section className="cr-start"><div><h2>Brief 已就绪</h2><p>开始研究后 Brief 与本次 Session 输入将只读，并按启用的概念与品类关键词执行首轮搜索。</p>{!credential.configured && <small>搜索服务尚未配置。请先前往「API 与模型 → 研究服务」连接百度 AI 搜索。</small>}</div><div className="cr-start__actions">{!credential.configured && <Button variant="secondary" onClick={onOpenResearchSettings}>前往 API 设置</Button>}<Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void runInitialSearch()}>开始研究</Button></div></section>}</>
       : tab === 'direction' ? (board ? <DirectionWorkspace session={session} brief={brief} board={board} references={references} selections={selections} negativeSignals={negativeSignals} insights={preferenceInsights} pendingFinalizedInsights={pendingFinalizedInsights} context={directionContext} busy={busy.startsWith('direction:')} onSave={saveDirectionBoard} onReturnToResearch={returnToResearchFlow} onComplete={completeDirectionFlow} /> : <section className="cr-panel cr-loading">方向板载入中…</section>)
       : <section className="cr-references">
-        <div className="cr-search-head"><div><span>Search state</span><h2>{uiState}</h2></div><div>{!credential.configured ? <><input type="password" value={credentialValue} placeholder="百度搜索 API Key" onChange={(event) => setCredentialValue(event.target.value)} /><Button size="sm" variant="secondary" onClick={() => void action('credential', async () => { setCredential(await api.saveSearchCredential(credentialValue)); setCredentialValue(''); })}>保存凭据</Button></> : <><span className="cr-configured">百度搜索已配置</span><button onClick={() => void action('credential', async () => setCredential(await api.deleteSearchCredential()))}>删除</button></>}</div></div>
+        <div className="cr-search-head"><div><span>Search state</span><h2>{uiState}</h2></div><div><span className={credential.configured ? 'cr-configured' : 'cr-unconfigured'}>{credential.configured ? '百度 AI 搜索已连接' : '搜索服务未配置'}</span>{!credential.configured && <Button size="sm" variant="secondary" onClick={onOpenResearchSettings}>前往 API 设置</Button>}</div></div>
         <nav className="cr-kind-tabs" aria-label="参考研究类型">
           <button className={researchKind === 'CONCEPT' ? 'is-active' : ''} onClick={() => { setResearchKind('CONCEPT'); setFilter('all'); }}>Concept References</button>
           <button className={researchKind === 'CATEGORY' ? 'is-active' : ''} onClick={() => { setResearchKind('CATEGORY'); setFilter('all'); }}>Category References</button>
@@ -371,7 +423,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
         {correctionSuggestion && session.status === 'RESEARCH' && <div className="cr-alert cr-alert--warning cr-soft-correction"><span>{correctionSuggestion.message}</span><div><button onClick={() => void refreshSearch()}>继续换一批</button><button onClick={() => document.querySelector<HTMLButtonElement>('.cr-correction-toolbar__actions button:nth-child(2)')?.click()}>调整关键词</button><button onClick={() => document.querySelector<HTMLButtonElement>('.cr-correction-toolbar__actions button:nth-child(3)')?.click()}>重新分析</button></div></div>}
         <div className="cr-query-chips"><button className={filter === 'all' ? 'is-active' : ''} onClick={() => setFilter('all')}>全部 {kindReferences.length}</button>{kindQueries.map((query) => <button key={query.id} className={filter === query.id ? 'is-active' : ''} onClick={() => setFilter(query.id)}>{query.text} <span>{query.status}</span></button>)}</div>
         {queries.some((query) => query.status === 'FAILED') && <div className="cr-alert cr-alert--warning"><span>部分查询失败，已有结果仍可浏览。</span><Button size="sm" variant="secondary" disabled={busy !== '' || !credential.configured} onClick={() => void action('searching', async () => { await api.executeSearchBatch(sessionId, queries.filter((query) => query.status === 'FAILED').map((query) => query.id)); await loadSession(sessionId); })}>重试失败查询</Button></div>}
-        {!queries.length && session?.status === 'RESEARCH' && <Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void action('planning', async () => { const planned = await api.planInitialSearch(sessionId); setQueries(planned); setBusy('searching'); try { await api.executeSearchBatch(sessionId); } finally { await loadSession(sessionId); } })}>规划并搜索</Button>}
+        {!queries.length && session?.status === 'RESEARCH' && <Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void action('planning', async (transition) => { const planned = await api.planInitialSearch(sessionId); setQueries(planned); transition('searching'); try { await api.executeSearchBatch(sessionId); } finally { await loadSession(sessionId); } })}>规划并搜索</Button>}
         <SelectionTray selections={selections} references={references} expanded={trayExpanded} onToggle={() => setTrayExpanded((value) => !value)} busy={busy !== ''} onAnalyze={() => void analyzePreferences()} />
         {session.status === 'RESEARCH' && selectedReferenceCount >= 1 && <section className="cr-direction-cta"><p>这些参考已经足够让我开始设计了。</p><Button variant="primary" disabled={busy !== ''} onClick={() => void startDirectionFlow()}>整理成视觉方向</Button></section>}
         {session.status === 'DIRECTION' && <section className="cr-direction-cta"><p>视觉方向已开始整理，保存的参考与排除记录都会保留。</p><Button variant="primary" disabled={busy !== ''} onClick={() => void resumeDirection()}>继续整理视觉方向</Button></section>}

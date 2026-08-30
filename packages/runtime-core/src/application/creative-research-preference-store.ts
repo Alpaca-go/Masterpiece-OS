@@ -48,7 +48,7 @@ export function createCreativeResearchPreferenceStore(options: {
     try { return await current; } finally { if (locks.get(key) === current) locks.delete(key); }
   };
 
-  return Object.freeze({
+  const store: PreferenceEvidenceRepository = {
     async saveInsight(insight) {
       assertPreferenceInsight(insight);
       const filename = await insightPath(insight.sessionId, insight.id);
@@ -93,5 +93,6 @@ export function createCreativeResearchPreferenceStore(options: {
         return next;
       });
     },
-  });
+  };
+  return Object.freeze(store);
 }

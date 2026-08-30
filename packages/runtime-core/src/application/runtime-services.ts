@@ -1,4 +1,4 @@
-import type { AnalysisProgress, ProviderCredentials, PublicSettings } from '../shared/types.ts';
+import type { AnalysisProgress, ImageGenerationSourceBundleV3, ProviderCredentials, PublicSettings } from '../shared/types.ts';
 import { createAnchorCandidateService } from './anchor-candidate-service.ts';
 import { createAnchorGenerationService } from './anchor-generation-service.ts';
 import { createAnchorProductionService } from './anchor-production-service.ts';
@@ -210,7 +210,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     if (!input.apiProfileId) {
       throw Object.assign(new Error('CI_ANCHOR_IMAGE_PROFILE_REQUIRED: Anchor Production requires an explicit imageApiProfileId; analysis profile fallback is forbidden.'), { code: 'CI_ANCHOR_IMAGE_PROFILE_REQUIRED' });
     }
-    const compileSources = {
+    const compileSources: ImageGenerationSourceBundleV3 = {
       schemaVersion: '3.0',
       // CI-W1C.6 PART E (deferred): the dedicated
       // `creative_intelligence` source preset has been added to the
@@ -420,7 +420,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       if (!projectId) return null;
       try {
         const record = await projects.get(projectId);
-        return record as unknown as Record<string, unknown>;
+        return record;
       } catch {
         return null;
       }

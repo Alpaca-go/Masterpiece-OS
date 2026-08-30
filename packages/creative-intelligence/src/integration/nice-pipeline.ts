@@ -23,7 +23,7 @@ import { deriveInsights, dedupeAndSortInsights } from '../insight-intelligence/d
 import { buildOpportunityMap } from '../opportunity/build-opportunity-map.ts';
 import { validateOpportunityMap } from '../opportunity/opportunity-validator.ts';
 import { hasDirectionLeakage } from '../opportunity/direction-leakage.ts';
-import { interpretDocumentContext, type DocumentIntelligenceResult } from '../document-intelligence/interpret.ts';
+import type { DocumentIntelligenceResult } from '../document-intelligence/contracts.ts';
 import { buildVisualEvidenceContribution, contributionToTruthFacts } from '../visual-evidence/index.ts';
 
 export interface NiceInput {
@@ -65,7 +65,15 @@ export interface NiceResult {
 }
 
 export type NiceDiagnosticKind = 'need' | 'insight' | 'opportunity';
-export type NiceDiagnostic = (NeedDiagnostic | InsightDiagnostic | OpportunityDiagnostic) & { kind: NiceDiagnosticKind };
+export interface NiceDiagnostic {
+  kind: NiceDiagnosticKind;
+  code: NeedDiagnostic['code'] | InsightDiagnostic['code'] | OpportunityDiagnostic['code'] | 'DOCUMENT_WARNING';
+  message: string;
+  needId?: string;
+  insightId?: string;
+  opportunityId?: string;
+  key?: string;
+}
 
 function factIdsForKey(facts: ProjectTruthFact[], key: string): string[] {
   return facts.filter((f) => f.key === key && !f.isReferenceFact).map((f) => f.id);

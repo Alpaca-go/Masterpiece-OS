@@ -1,21 +1,19 @@
 // pages/CreatePage.tsx
 //
 // B3 — 从 App.tsx 抽出来的 create screen 统一父组件。
-// 负责 create-shell-v2 布局 + AnalysisModeTabs 三态分发。
+// 负责 create-shell-v2 布局与内部模式分发；当前产品界面不显示跨功能 Tab。
 //
-// 三个主要 tab:
+// 保留的内部工作台:
 //   1. visual-analysis — ProjectWizard (视觉分析)
 //   2. creative-intelligence — CreativeIntelligenceWorkspace (智能创意, 内嵌 + hideChrome)
 //   3. reference-anchor — ReferenceAnchorWorkspace (参考锚定)
 //
-// document-context 是 hidden legacy tab (仍保留, 但 UI 不展示,
-// AnalysisModeTabs 不显式渲染 document-context button,
-// 仅保留 key 用于向后兼容 deep link).
+// document-context 是 hidden legacy mode，仅保留 key 用于向后兼容 deep link。
 
 import type { ReactNode } from 'react';
 import type { ProjectRecord, PublicSettings } from '@masterpiece/runtime-core/application-contracts.ts';
 import type { Screen } from '../lib/useUrlScreen';
-import { AnalysisModeTabs, type AnalysisMode } from '../components/AnalysisModeTabs';
+import type { AnalysisMode } from '../components/AnalysisModeTabs';
 import { ProjectWizard } from '../components/ProjectWizard';
 import { ReferenceAnchorWorkspace } from '../components/ReferenceAnchorWorkspace';
 import { DocumentContextWorkspace } from '../components/DocumentContextWorkspace';
@@ -83,10 +81,7 @@ export function CreatePage(props: CreatePageProps) {
     requestedReferenceAnchorRunId,
     requestedDocumentContextRunId,
     projects,
-    setAnalysisMode,
     setSelectedApiProfileId,
-    setRequestedReferenceAnchorRunId,
-    setRequestedDocumentContextRunId,
     setSelected,
     setScreen,
     setSettingsReturnScreen,
@@ -94,6 +89,13 @@ export function CreatePage(props: CreatePageProps) {
     openImageGeneration,
     runAnalysis,
   } = props;
+
+  const workspaceTitle: Record<AnalysisMode, string> = {
+    'visual-analysis': '视觉分析',
+    'creative-intelligence': '智能创意',
+    'reference-anchor': '参考图定风格',
+    'document-context': '文档分析',
+  };
 
   return (
     <div className="create-shell-v2">
@@ -104,14 +106,7 @@ export function CreatePage(props: CreatePageProps) {
         >
           <span aria-hidden>←</span> 返回首页
         </button>
-        <AnalysisModeTabs
-          value={analysisMode}
-          onChange={(mode) => {
-            setAnalysisMode(mode);
-            if (mode !== 'document-context') setRequestedDocumentContextRunId('');
-            if (mode !== 'reference-anchor') setRequestedReferenceAnchorRunId('');
-          }}
-        />
+        <div className="create-shell-v2__title">{workspaceTitle[analysisMode]}</div>
         <div className="create-shell-v2__spacer" />
       </header>
       <div className="create-shell-v2__body">

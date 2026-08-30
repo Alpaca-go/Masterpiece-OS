@@ -43,11 +43,11 @@ export type ModelAssistedDirectionGateCode =
   | 'MD-11'
   | 'MD-12';
 
-export type GateSeverity = 'block' | 'warn';
+export type DirectionGateSeverity = 'block' | 'warn';
 
 export interface ModelAssistedDirectionGateIssue {
   code: ModelAssistedDirectionGateCode;
-  severity: GateSeverity;
+  severity: DirectionGateSeverity;
   where: string;
   detail: string;
   refs?: string[];

@@ -38,6 +38,7 @@ export function toLegacyImageGenerationSources(bundle: AnyImageGenerationSourceB
     document_context: 'document_concept',
     reference_anchor: 'reference_preview',
     integrated_context: 'integrated_anchor',
+    creative_intelligence: 'visual_extension',
   }[bundle.sourcePreset] as ImageGenerationSourceBundle['preset'];
   return {
     preset,

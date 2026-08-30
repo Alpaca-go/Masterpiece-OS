@@ -430,7 +430,7 @@ function runReferenceGuard(ctx: GateContext): ConceptGateIssue[] {
   const identityKeys = [
     PROJECT_TRUTH_KEYS.BRAND_NAME,
     PROJECT_TRUTH_KEYS.BRAND_ROLE,
-    PROJECT_TRUTH_KEYS.BRAND_INDUSTRY,
+    PROJECT_TRUTH_KEYS.BUSINESS_INDUSTRY,
   ];
 
   for (const key of identityKeys) {

@@ -27,7 +27,8 @@ export function createCreativeResearchAnalysisAdapter(options: {
   reasonerFactory?: ReasonerFactory;
   onDiagnostics?: (diagnostics: CreativeResearchAnalysisDiagnostics) => void;
 }): AnalysisModelAdapter {
-  const reasonerFactory = options.reasonerFactory || createOpenAICompatibleTextReasoner;
+  const reasonerFactory: ReasonerFactory = options.reasonerFactory
+    ?? (createOpenAICompatibleTextReasoner as ReasonerFactory);
   return {
     async draftDesignBrief(input): Promise<DesignBriefDraftMaterial> {
       const credentials = await options.readCredentials(input.profileId).catch((error) => {

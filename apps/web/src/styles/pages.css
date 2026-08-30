@@ -1305,6 +1305,37 @@
   color: var(--color-text-muted);
   line-height: 1.5;
 }
+.research-service-card {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  background: var(--color-surface-soft);
+  border: 1px solid var(--color-line-soft);
+  border-radius: var(--radius-xl);
+}
+.research-service-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+.research-service-card__head strong { color: var(--color-text-strong); }
+.research-service-card__head p {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+.research-service-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+.research-service-status.is-configured { color: var(--color-success-text); }
+.research-service-card .ui-field small { color: var(--color-text-muted); }
+.research-service-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .connection-error-details {
   margin-top: var(--space-3);
   display: grid;
@@ -1369,6 +1400,15 @@
   border-bottom: 1px solid var(--color-line);
 }
 .create-shell-v2__body { flex: 1; }
+.create-shell-v2__title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--color-text-strong);
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  font-weight: 500;
+}
 
 /* ============================================================
    Legacy workspace visual upgrade (Phase 3.3)

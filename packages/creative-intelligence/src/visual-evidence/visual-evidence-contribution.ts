@@ -290,7 +290,7 @@ export function contributionToTruthFacts(
       key: meaningKey,
       value,
       truthClass: 'inference',
-      status: 'provisional',
+      status: 'observed',
       authority: 'MODEL_INFERENCE',
       sourceType: 'visual_understanding_core',
       sourceId: contribution.projectId,

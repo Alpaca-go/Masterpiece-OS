@@ -59,8 +59,6 @@ import {
   canStartAnchorProduction,
   evaluateAnchorCandidate,
   type EvaluateAnchorCandidateInput,
-  type AnchorCandidate as CiSemAnchorCandidate,
-  type AnchorProductionContract as CiSemAnchorProductionContract,
   ANCHOR_PRODUCTION_ERROR_CODES,
 } from '@masterpiece/creative-intelligence/index.ts';
 
@@ -230,7 +228,7 @@ function makeCandidateId(prefix: 'cand'): string {
   return `${prefix}-${makeRunId()}`;
 }
 
-function assertCiAnchorContract(value: unknown): value is CiAnchorProductionContract {
+function assertCiAnchorContract(value: unknown): value is AnchorProductionContract {
   if (!value || typeof value !== 'object') return false;
   const v = value as Record<string, unknown>;
   return v.schemaVersion === '0.1'

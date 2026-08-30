@@ -24,14 +24,13 @@ import type {
   AdapterContext,
 } from './adapters/adapter-types.ts';
 import type {
-  EvidenceEntry,
-  EvidenceLedgerSnapshot,
   ProjectTruthConflict,
   ProjectTruthFact,
   ProjectTruthModel,
   ProjectTruthWarning,
   TruthResolution,
-} from './truth/contracts.ts';
+} from './contracts.ts';
+import type { EvidenceEntry, EvidenceLedgerSnapshot } from '../evidence/contracts.ts';
 import { InMemoryEvidenceLedger } from '../evidence/in-memory-ledger.ts';
 import { detectConflicts } from './conflict-detector.ts';
 import { resolveKey } from './precedence.ts';
@@ -153,7 +152,7 @@ export function assembleProjectTruth(input: AssemblerInput): AssemblerResult {
     resolutions,
     warnings: stableSortWarnings(allWarnings),
     provenance: {
-      carrierIds: Array.from(new Set(sortedFacts.map((f) => f.sourceId).filter(Boolean))).sort(),
+      carrierIds: Array.from(new Set(sortedFacts.map((f) => f.sourceId).filter((id): id is string => typeof id === 'string'))).sort(),
       sourceFingerprints: Object.entries(input.context.sourceFingerprints)
         .map(([k, v]) => `${k}:${v}`)
         .sort(),

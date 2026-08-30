@@ -32,6 +32,7 @@ import type { NeedItem } from '../need-intelligence/contracts.ts';
 import type { EvidenceLedgerSnapshot, EvidenceItem } from '../evidence/contracts.ts';
 import type { PlanningStrategicClaim } from './planning-strategic-evidence.ts';
 import type { StrategicGroundTruthAnchor } from './contracts.ts';
+import type { CreativeReasoningPromptSourceMap } from './contracts.ts';
 
 export interface StrategicReasoningContext {
   projectId: string;
@@ -70,6 +71,8 @@ export interface StrategicReasoningContext {
     evidence: string[];
     planningClaims: string[];
   };
+  /** Deterministic audit copy of the prompt-visible source identifiers. */
+  sourceMap: CreativeReasoningPromptSourceMap;
 }
 
 const STRATEGIC_REASONING_PROMPT_VERSION = 'ci-w1c.7-strategic-reasoning-v0.1';
@@ -81,7 +84,14 @@ const STRATEGIC_REASONING_PROMPT_VERSION = 'ci-w1c.7-strategic-reasoning-v0.1';
  */
 function isAuthoritativePlanning(fact: ProjectTruthFact): boolean {
   const a = fact.authority;
-  return a === 'USER_CONFIRMED' || a === 'CONFIRMED' || a === 'LOCKED';
+  // `CONFIRMED` is the pre-0.2 carrier value still emitted by persisted
+  // snapshots and deterministic compatibility fixtures. Treat it as the
+  // legacy spelling of USER_CONFIRMED without widening TruthAuthority.
+  return (a as string) === 'CONFIRMED'
+    || a === 'USER_CONFIRMED'
+    || a === 'LOCKED'
+    || a === 'AUTHORITATIVE_DOCUMENT_FACT'
+    || a === 'AUTHORITATIVE_PROJECT_METADATA';
 }
 
 function isUserRequirement(fact: ProjectTruthFact): boolean {
@@ -186,7 +196,7 @@ export function compileStrategicReasoningContext(input: {
       needs: Array.from(sourceNeedIds),
       evidence: Array.from(sourceEvidenceIds),
       planningClaims: Array.from(sourcePlanningClaimIds),
-      legacyVisualEvidenceExcluded: input.legacyVisualEvidenceExcluded ?? [
+      legacyVisualEvidenceExcluded: Array.from(input.legacyVisualEvidenceExcluded ?? [
         'visualAsset.*',
         'old_visual_style',
         'old_VI',
@@ -196,7 +206,7 @@ export function compileStrategicReasoningContext(input: {
         'style_reference',
         'structure_reference',
         'spatial_reference',
-      ],
+      ]),
     },
     sourceIds: {
       facts: Array.from(sourceFactIds),

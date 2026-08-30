@@ -73,7 +73,14 @@ export function createCreativeResearchResearchStore(options: {
     const values = await Promise.all(entries
       .filter((entry) => entry.endsWith('.json'))
       .map((entry) => readJson<T>(path.join(directory, entry))));
-    return values.filter((item): item is T => Boolean(item)).map((item) => { assertValue(item); return item; });
+    return values.reduce<T[]>((items, item) => {
+      if (item !== null) {
+        const value = item as T;
+        assertValue(value);
+        items.push(value);
+      }
+      return items;
+    }, []);
   };
 
   const history: SearchHistoryRepository = {

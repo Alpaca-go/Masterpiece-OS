@@ -52,15 +52,16 @@ export interface NormalizedDocument {
 export interface VisualStrategyCorpusSourceIndexEntry {
   documentId: string;
   filename: string;
-  sourceType: 'pdf' | 'docx' | 'markdown' | 'text';
+  section: string;
+  page?: number;
   characterCount: number;
-  pageCount?: number;
-  documentRole?: DocumentRole;
 }
 
 export interface VisualStrategyCorpus {
   documents: NormalizedDocument[];
   sourceIndex: VisualStrategyCorpusSourceIndexEntry[];
+  mergedText: string;
+  warnings: string[];
 }
 
 export interface DocumentContextWarning {

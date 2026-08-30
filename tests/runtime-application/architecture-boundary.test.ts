@@ -40,7 +40,7 @@ test('analysis UI contains intake actions and a free-form API Profile provider',
   const wizard = await fs.readFile(path.join(webRoot, 'components', 'ProjectWizard.tsx'), 'utf8');
   const uploader = await fs.readFile(path.join(webRoot, 'components', 'VisualAssetUploader.tsx'), 'utf8');
   const types = await fs.readFile(path.join(repositoryRoot, 'packages', 'runtime-core', 'src', 'application-contracts.ts'), 'utf8');
-  const settings = await fs.readFile(path.join(webRoot, 'components', 'SettingsPanel.tsx'), 'utf8');
+  const settings = await fs.readFile(path.join(webRoot, 'components', 'settings', 'ProfilesSection.tsx'), 'utf8');
   assert.doesNotMatch(wizard, /<input|<textarea/);
   assert.match(wizard, /VisualAssetUploader/);
   assert.match(wizard, /sourcePaths/);
@@ -52,9 +52,10 @@ test('analysis UI contains intake actions and a free-form API Profile provider',
 
 test('analysis API selection is controlled by App and survives settings navigation', async () => {
   const app = await fs.readFile(path.join(webRoot, 'App.tsx'), 'utf8');
+  const createPage = await fs.readFile(path.join(webRoot, 'pages', 'CreatePage.tsx'), 'utf8');
   assert.match(app, /selectedApiProfileId=\{selectedApiProfileId\}/);
-  assert.match(app, /onApiProfileChange=\{setSelectedApiProfileId\}/);
-  assert.match(app, /setSettingsReturnScreen\('create'\)/);
+  assert.match(createPage, /onApiProfileChange=\{setSelectedApiProfileId\}/);
+  assert.match(createPage, /setSettingsReturnScreen\('create'\)/);
 });
 
 test('Web exposes only the current production workspaces', async () => {

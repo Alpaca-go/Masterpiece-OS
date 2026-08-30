@@ -29,7 +29,7 @@ import { Banner } from './components/ui/Banner';
 import { ConfirmProvider, useConfirm } from './components/ui/ConfirmDialog';
 import { EmptyIllustration } from './components/primitives/EmptyIllustration';
 import { AppShell } from './components/layout/AppShell';
-import { TopBar, TopBarBrand, TopBarBreadcrumb, TopBarActions, TopBarSegment } from './components/layout/TopBar';
+import { TopBar, TopBarBrand, TopBarBreadcrumb, TopBarActions } from './components/layout/TopBar';
 import { CommandPalette, useCommandPalette } from './components/layout/CommandPalette';
 import { ToastViewport, useToasts } from './components/layout/Toast';
 import { KeyboardShortcutsModal, useKeyboardShortcuts } from './components/layout/KeyboardShortcuts';
@@ -41,6 +41,7 @@ import { useAnalysisProgress } from './hooks/useAnalysisProgress';
 import { useDocumentContext } from './hooks/useDocumentContext';
 import { useReferenceAnchor } from './hooks/useReferenceAnchor';
 import { useAppShellState } from './hooks/useAppShellState';
+import { UI_VISIBILITY } from './config/ui-visibility';
 
 function StatusBadge({ status }: { status: ProjectRecord['status'] }) {
   const labels: Record<ProjectRecord['status'], string> = { draft: '待导入', ready: '可分析', running: '分析中', completed: '已完成', failed: '失败', cancelled: '已取消' };
@@ -501,7 +502,13 @@ function AppContent() {
     </div>
   );
 
-  if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
+  if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => {
+    if (settingsReturnScreen === 'creative-research' && window.location.hash.includes('section=research-services')) {
+      window.history.back();
+      return;
+    }
+    setScreen(settingsReturnScreen);
+  }} />;
   if (screen === 'create') return (
     <CreatePage
       settings={settings}
@@ -538,6 +545,7 @@ function AppContent() {
     onNavigate={navigateToPath}
     onBack={() => setScreen('home')}
     onOpenSettings={() => { setSettingsReturnScreen('creative-research'); setScreen('settings'); }}
+    onOpenResearchSettings={() => { setSettingsReturnScreen('creative-research'); navigateToPath('/settings?section=research-services'); }}
   />;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}
@@ -590,6 +598,7 @@ function AppContent() {
       onGoReport={() => setScreen('report')}
       onGoCreative={() => setScreen('creative-session')}
       onOpenReference={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}
+      showReferenceStyleEntry={UI_VISIBILITY.referenceStyle}
     />;
   }
 
@@ -601,7 +610,9 @@ function AppContent() {
   const recentRecords = [
     ...projectsList.map((project) => ({ kind: 'visual-analysis' as const, createdAt: project.lastRunAt || project.updatedAt || project.createdAt, project })),
     ...documentContextRuns.map((run) => ({ kind: 'document-context' as const, createdAt: run.createdAt, run })),
-    ...referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
+    ...(UI_VISIBILITY.referenceStyle
+      ? referenceAnchorRuns.map((run) => ({ kind: 'reference-anchor' as const, createdAt: run.createdAt, run }))
+      : [])
   ].sort((left, right) => right.createdAt.localeCompare(left.createdAt));
   const currentScreen = screen;
 
@@ -637,19 +648,6 @@ function AppContent() {
                 ]}
               />
             </>
-          }
-          center={
-            <TopBarSegment
-              value={currentScreen === 'home' ? 'home' : 'create'}
-              onChange={(v) => {
-                if (v === 'home') setScreen('home');
-                else if (v === 'create') { setAnalysisMode('visual-analysis'); setScreen('create'); }
-              }}
-              options={[
-                { value: 'home' as const, label: '项目', count: projectsList.length },
-                { value: 'create' as const, label: '分析工作台' },
-              ]}
-            />
           }
           right={
             <TopBarActions>
@@ -731,15 +729,15 @@ function AppContent() {
             <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
               分析视觉素材 →
             </Button>
-            <Button variant="ghost" onClick={() => { setAnalysisMode('creative-intelligence'); setScreen('create'); }}>
+            {UI_VISIBILITY.smartCreative && <Button variant="ghost" onClick={() => { setAnalysisMode('creative-intelligence'); setScreen('create'); }}>
               智能创意 →
-            </Button>
+            </Button>}
             <Button variant="ghost" onClick={() => setScreen('creative-research')}>
               创意研究 →
             </Button>
-            <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
+            {UI_VISIBILITY.referenceStyle && <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
               参考图定风格
-            </Button>
+            </Button>}
           </div>
         </section>
 
@@ -831,7 +829,7 @@ function AppContent() {
             <div className="empty-home">
               <EmptyIllustration variant="welcome" />
               <strong>还没有分析记录</strong>
-              <p>上传视觉素材开始分析，或从智能创意整理项目方向。</p>
+              <p>上传视觉素材开始分析，或进入灵感研究工作台梳理项目方向。</p>
               <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
                 开始第一次分析
               </Button>

@@ -11,10 +11,10 @@
  * shape it needs.
  */
 
-import type { ProjectTruthAdapter } from './adapter-types.ts';
+import type { AdapterOutput, ProjectTruthAdapter } from './adapter-types.ts';
 import { factId, evidenceId, isUnknown } from '../normalization.ts';
 import { PROJECT_TRUTH_KEYS } from '../key-registry.ts';
-import type { ProjectTruthFact, TruthAuthority, TruthClass, SourceType } from '../truth/contracts.ts';
+import type { ProjectTruthFact, TruthAuthority, TruthClass, SourceType } from '../contracts.ts';
 
 interface ProjectRecordShape {
   id: string;
@@ -36,8 +36,8 @@ interface ProjectRecordShape {
 
 export const adaptProjectRecord: ProjectTruthAdapter<ProjectRecordShape> = (input, ctx) => {
   const facts: ProjectTruthFact[] = [];
-  const evidence = [];
-  const warnings = [];
+  const evidence: AdapterOutput['evidence'] = [];
+  const warnings: AdapterOutput['warnings'] = [];
 
   if (!input || !input.id) {
     warnings.push({

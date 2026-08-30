@@ -10,7 +10,7 @@
  * Do not flatten all fields into fact. Preserve evidence.
  */
 
-import type { ProjectTruthAdapter } from './adapter-types.ts';
+import type { AdapterOutput, ProjectTruthAdapter } from './adapter-types.ts';
 import { factId, evidenceId, isUnknown } from '../normalization.ts';
 import { PROJECT_TRUTH_KEYS } from '../key-registry.ts';
 import type {
@@ -18,7 +18,7 @@ import type {
   TruthAuthority,
   SourceType,
   TruthClass,
-} from '../truth/contracts.ts';
+} from '../contracts.ts';
 
 interface SourcedFact<T> {
   value: T;
@@ -46,8 +46,8 @@ interface VisualUnderstandingCoreShape {
 
 export const adaptVisualUnderstandingCore: ProjectTruthAdapter<VisualUnderstandingCoreShape> = (input, ctx) => {
   const facts: ProjectTruthFact[] = [];
-  const evidence = [];
-  const warnings = [];
+  const evidence: AdapterOutput['evidence'] = [];
+  const warnings: AdapterOutput['warnings'] = [];
 
   if (!input || !input.projectId) {
     warnings.push({

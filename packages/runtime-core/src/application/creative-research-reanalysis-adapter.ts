@@ -50,19 +50,21 @@ export function createCreativeResearchReanalysisAdapter(options: {
   reasonerFactory?: ReasonerFactory;
   onDiagnostics?: (value: { modelCallCount: number; repairCount: number; provider: string; model: string }) => void;
 }): DesignBriefReanalysisAdapter {
-  return Object.freeze({
-    async reanalyzeDesignBrief(input) {
+  const reasonerFactory: ReasonerFactory = options.reasonerFactory
+    ?? (createOpenAICompatibleTextReasoner as ReasonerFactory);
+  const adapter: DesignBriefReanalysisAdapter = {
+    async reanalyzeDesignBrief(input: DesignBriefReanalysisInput) {
       const profileId = String(input.profileId || '').trim();
       if (!profileId) throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_PROFILE_REQUIRED', '重新分析必须明确选择 Profile');
       const credentials = await options.readCredentials(profileId).catch((error) => {
         throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_PROFILE_UNSUPPORTED', `读取所选 Profile 失败：${(error as Error).message}`);
       });
       if (credentials.profileId !== profileId || credentials.modelType !== 'analysis'
-        || !['openai-chat', 'openai-chat-multimodal'].includes(credentials.protocol)) {
+        || !['openai-chat', 'openai-chat-multimodal'].includes(String(credentials.protocol || ''))) {
         throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_PROFILE_UNSUPPORTED', '所选 Profile 必须是启用的 analysis Profile，且不能自动替换');
       }
       let reasoner: Reasoner;
-      try { reasoner = (options.reasonerFactory || createOpenAICompatibleTextReasoner)(credentials); }
+      try { reasoner = reasonerFactory(credentials); }
       catch (error) { throw creativeResearchCorrectionError('CREATIVE_RESEARCH_CORRECTION_MODEL_FAILED', `初始化重新分析模型失败：${(error as Error).message}`); }
       let modelCallCount = 0;
       let repairCount = 0;
@@ -85,5 +87,6 @@ export function createCreativeResearchReanalysisAdapter(options: {
         options.onDiagnostics?.({ modelCallCount, repairCount, provider: credentials.provider, model: credentials.model });
       }
     },
-  });
+  };
+  return Object.freeze(adapter);
 }

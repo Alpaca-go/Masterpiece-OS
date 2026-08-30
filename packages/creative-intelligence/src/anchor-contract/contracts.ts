@@ -30,6 +30,7 @@ export interface AnchorEvaluationCriterion {
 
 export interface AnchorContract {
   schemaVersion: '0.1';
+  traceVersion: typeof ANCHOR_CONTRACT_TRACE_VERSION;
 
   projectId: string;
   selectedDirectionId: string;

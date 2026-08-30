@@ -37,11 +37,21 @@ export interface EvidenceEntry {
   assetId?: string;
   /** Confidence only if the upstream source provided it. Never invented. */
   confidence?: number;
+  /** Optional reverse trace retained for legacy reasoning consumers. */
+  factIds?: string[];
+  /** Alias used by later strategic-synthesis evidence carriers. */
+  factRefs?: string[];
+  /** Optional human-readable summary used by strategic fingerprinting. */
+  summary?: string;
   sourceFingerprint?: string;
   createdAt?: string;
   /** True iff this evidence came from a reference (not current) project. */
   isReferenceEvidence: boolean;
 }
+
+/** Compatibility names retained for consumers written against earlier CI drafts. */
+export type EvidenceLedgerEntry = EvidenceEntry;
+export type EvidenceItem = EvidenceEntry;
 
 export interface EvidenceLedger {
   add(entry: EvidenceEntry): EvidenceEntry;

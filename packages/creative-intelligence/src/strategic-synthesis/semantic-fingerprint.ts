@@ -367,8 +367,8 @@ export function buildConceptSemanticPayload(input: {
     ...input.strategic,
     promptVersion: input.promptVersion,
     projectId: input.projectId,
-    lockedIdentity: buildFactsBlock(input.lockedIdentity, false),
-    prohibitedDirections: buildFactsBlock(input.prohibitedDirections, false),
+    lockedIdentity: buildFactsBlock(input.lockedIdentity, false) as StrategicSemanticPayload['lockedIdentity'],
+    prohibitedDirections: buildFactsBlock(input.prohibitedDirections, false) as StrategicSemanticPayload['prohibitedDirections'],
     upstreamSynthesisFingerprint: semanticSha256(
       sortKeysDeep(stripTimestamps(input.synthesis), true),
     ),
@@ -394,8 +394,8 @@ export function buildDirectionSemanticPayload(input: {
     ...input.strategic,
     promptVersion: input.promptVersion,
     projectId: input.projectId,
-    lockedIdentity: buildFactsBlock(input.lockedIdentity, false),
-    prohibitedDirections: buildFactsBlock(input.prohibitedDirections, false),
+    lockedIdentity: buildFactsBlock(input.lockedIdentity, false) as StrategicSemanticPayload['lockedIdentity'],
+    prohibitedDirections: buildFactsBlock(input.prohibitedDirections, false) as StrategicSemanticPayload['prohibitedDirections'],
     upstreamSynthesisFingerprint: semanticSha256(
       sortKeysDeep(stripTimestamps(input.synthesis), true),
     ),

@@ -439,7 +439,8 @@ function runSpatialDriftGate(ctx: DirectionGateContext): DirectionGateIssue[] {
 
   // If project is space-capable but Direction is NOT in a space-extension family,
   // and Direction contains "space" in crossMediaBehavior, this could indicate drift.
-  const hasSpaceOpp = opportunities.some((o) => o.cluster === 'spatial-extension');
+  const hasSpaceOpp = opportunities.some((o) =>
+    /(?:空间|spatial|space)/iu.test(`${o.title} ${o.statement} ${o.strategicValue}`));
   const isInSpaceFamily = direction.directionFamily === 'spatial-extension';
   const mentionsSpace = direction.crossMediaBehavior.includes('space');
 

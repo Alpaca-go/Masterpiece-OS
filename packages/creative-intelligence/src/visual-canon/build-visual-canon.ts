@@ -153,7 +153,7 @@ function buildLockedAssetRules(
   if (lockedKeys.length === 0) return [];
   return lockedKeys.map((key) => {
     const factRefs = facts.filter((f) => f.key === key && f.authority === 'LOCKED').map((f) => f.id);
-    const evidenceRefs = evidence.filter((e) => e.factIds.some((fid) => factRefs.includes(fid))).map((e) => e.id);
+    const evidenceRefs = evidence.filter((e) => e.factIds?.some((fid) => factRefs.includes(fid))).map((e) => e.id);
     return {
       assetType: key,
       action: 'preserve' as const,

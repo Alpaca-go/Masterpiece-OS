@@ -8,7 +8,8 @@
  * an `adapt` function — easy to test, easy to compose.
  */
 
-import type { EvidenceEntry, ProjectTruthFact, ProjectTruthWarning } from './../truth/contracts.ts';
+import type { EvidenceEntry } from '../../evidence/contracts.ts';
+import type { ProjectTruthFact, ProjectTruthWarning } from '../contracts.ts';
 
 export interface AdapterOutput {
   facts: ProjectTruthFact[];

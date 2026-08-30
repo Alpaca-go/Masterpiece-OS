@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import type {
   ApiProfile,
   ConnectionTestResult,
@@ -12,6 +13,7 @@ import { SettingsContext, type SettingsContextValue } from './settings/SettingsC
 import { ProfilesSection } from './settings/ProfilesSection';
 import { LocalSection } from './settings/LocalSection';
 import { SettingsNav } from './settings/SettingsNav';
+import { ResearchServicesSection } from './settings/ResearchServicesSection';
 import { useConfirm } from './ui/ConfirmDialog';
 
 interface Props {
@@ -55,6 +57,7 @@ function profileInput(profile?: ApiProfile): SaveApiProfileInput {
  * JSX structure is decomposed across files.
  */
 export function SettingsPanel({ settings, onSaved, onClose }: Props) {
+  const location = useLocation();
   const registry = settings.modelRegistry ?? [];
   const [localForm, setLocalForm] = useState<SaveSettingsInput>({
     defaultDataPath: settings.defaultDataPath,
@@ -71,6 +74,16 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
     text: string;
     connectionResult?: ConnectionTestResult;
   } | null>(null);
+
+  useEffect(() => {
+    if (new URLSearchParams(location.search).get('section') !== 'research-services') return;
+    const frame = window.requestAnimationFrame(() => {
+      const section = document.getElementById('section-research-services');
+      section?.scrollIntoView({ block: 'start' });
+      section?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [location.search]);
 
   const updateLocal = <K extends keyof SaveSettingsInput>(key: K, value: SaveSettingsInput[K]) => {
     setLocalForm((current) => ({ ...current, [key]: value }));
@@ -244,10 +257,12 @@ export function SettingsPanel({ settings, onSaved, onClose }: Props) {
         <div className="settings-v2__grid settings-v2__grid--arch">
           <SettingsNav items={[
             { id: 'section-profiles', label: '模型服务', hint: '连接与凭据' },
+            { id: 'section-research-services', label: '研究服务', hint: '外部搜索' },
             { id: 'section-local', label: '高级设置', hint: '目录 · 缓存 · 日志' },
           ]} />
           <div className="settings-v2__content">
             <ProfilesSection />
+            <ResearchServicesSection />
             <LocalSection />
           </div>
         </div>

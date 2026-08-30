@@ -3740,7 +3740,7 @@ export interface AnchorProductionRun {
   schemaVersion: 'anchor-production-run-v0.1';
   id: string;
   creativeIntelligenceRunId: string;
-  projectId?: string | null;
+  projectId: string | null;
   selectedDirectionId: string;
   selectionRevision: number;
   canonVersion: string;
@@ -3760,7 +3760,7 @@ export interface AnchorProductionRun {
 
 export interface AnchorProductionContract {
   schemaVersion: '0.1';
-  projectId?: string | null;
+  projectId: string | null;
   creativeIntelligenceRunId: string;
   selectedDirectionId: string;
   selectionRevision: number;

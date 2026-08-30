@@ -138,12 +138,15 @@ test('CI-W1B GUARD: legacy DocumentContextWorkspace import is preserved (legacy 
   assert.equal(/DocumentContextWorkspace/.test(text), true, 'App.tsx must still import DocumentContextWorkspace for legacy deep links');
 });
 
-test('CI-W1B GUARD: AnalysisModeTabs surfaces creative-intelligence as primary + keeps document-context key', () => {
+test('CI-W1B GUARD: hidden CI capability and legacy mode wiring are preserved without cross-function tabs', () => {
   const tabs = path.join(webRoot, 'components', 'AnalysisModeTabs.tsx');
   const text = readSafe(tabs);
-  assert.equal(/creative-intelligence/.test(text), true, 'AnalysisModeTabs must surface creative-intelligence');
+  const createPage = readSafe(path.join(webRoot, 'pages', 'CreatePage.tsx'));
+  assert.equal(/creative-intelligence/.test(text), true, 'creative-intelligence mode key must remain recoverable');
   assert.equal(/document-context/.test(text), true, 'AnalysisModeTabs must keep document-context as a mode key for back-compat');
   assert.equal(/VISIBLE_MODES/.test(text), true, 'AnalysisModeTabs must use a visible list (not just include document-context)');
+  assert.equal(/<AnalysisModeTabs\b/.test(createPage), false, 'CreatePage must not render the cross-function mode tabs');
+  assert.equal(/<CreativeIntelligenceWorkspace\b/.test(createPage), true, 'hidden CI workspace wiring must remain intact');
 });
 
 test('CI-W1B GUARD: ciworkspace controller + types + format are pure (no React, no DOM, no fs)', () => {

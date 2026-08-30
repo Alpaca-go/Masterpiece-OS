@@ -18,11 +18,7 @@
  *   grounded Concept → Direction may be grounded
  */
 
-import type {
-  CreativeDirectionCandidate,
-  DirectionTraceIssue,
-  TraceValidationResult,
-} from './contracts.ts';
+import type { CreativeDirectionCandidate } from './contracts.ts';
 import type { ConceptCandidate } from '../concept-intelligence/contracts.ts';
 import type { OpportunityItem } from '../opportunity/contracts.ts';
 import type { InsightItem } from '../insight-intelligence/contracts.ts';
@@ -38,6 +34,23 @@ export interface DirectionTraceContext {
   needs: NeedItem[];
   facts: ProjectTruthFact[];
   evidence: EvidenceLedgerEntry[];
+}
+
+export interface DirectionTraceIssue {
+  directionId: string;
+  code: string;
+  message: string;
+  refType: 'concept' | 'opportunity' | 'insight' | 'need' | 'fact' | 'evidence';
+  refId?: string;
+  severity: 'warning' | 'block';
+}
+
+export interface TraceValidationResult {
+  valid: boolean;
+  totalDirections: number;
+  fullyGrounded: number;
+  issues: DirectionTraceIssue[];
+  perDirection: Record<string, { grounded: boolean; issueCount: number }>;
 }
 
 export function validateDirectionTrace(ctx: DirectionTraceContext): TraceValidationResult {

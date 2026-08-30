@@ -38,11 +38,11 @@ export type ModelAssistedConceptGateCode =
   | 'MC-09'
   | 'MC-10';
 
-export type GateSeverity = 'block' | 'warn';
+export type ConceptGateSeverity = 'block' | 'warn';
 
 export interface ModelAssistedConceptGateIssue {
   code: ModelAssistedConceptGateCode;
-  severity: GateSeverity;
+  severity: ConceptGateSeverity;
   where: string;
   detail: string;
   refs?: string[];

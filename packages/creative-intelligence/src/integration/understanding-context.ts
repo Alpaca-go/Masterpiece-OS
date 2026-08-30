@@ -9,7 +9,8 @@
  * where needed; DocumentVisualContext is imported from project-contracts.
  */
 
-import type { ProjectTruthModel, EvidenceLedgerSnapshot } from '../truth/contracts.ts';
+import type { ProjectTruthModel } from '../truth/contracts.ts';
+import type { EvidenceLedgerSnapshot } from '../evidence/contracts.ts';
 import type { DocumentUnderstandingDiagnostic } from '../document-intelligence/diagnostics.ts';
 
 export interface UnderstandingContextDocument {

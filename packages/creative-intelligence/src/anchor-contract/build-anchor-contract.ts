@@ -133,6 +133,7 @@ function buildAnchor(input: BuildAnchorInput): AnchorContract {
 
   const anchor: AnchorContract = {
     schemaVersion: '0.1',
+    traceVersion: ANCHOR_CONTRACT_TRACE_VERSION,
     projectId: input.projectId,
     selectedDirectionId: d.id,
     selectionRevision: input.snapshot.selectionRevision,
@@ -185,6 +186,5 @@ export function buildAnchorContract(input: BuildAnchorInput): BuildAnchorResult 
     return { anchor: null, status: validation.status, diagnostics };
   }
 
-  draft.traceVersion = ANCHOR_CONTRACT_TRACE_VERSION;
   return { anchor: draft, status: validation.status, diagnostics };
 }

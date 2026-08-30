@@ -94,6 +94,12 @@ export interface NeedDerivationContext {
   referenceFactIds: Set<string>;
 }
 
+export interface NeedRule {
+  id: string;
+  applies(context: NeedDerivationContext): boolean;
+  derive(context: NeedDerivationContext): NeedItem[];
+}
+
 export type NeedDiagnosticCode =
   | 'NEED_WITHOUT_FACT_TRACE'
   | 'NEED_WITHOUT_EVIDENCE'

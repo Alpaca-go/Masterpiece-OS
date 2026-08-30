@@ -17,9 +17,9 @@ import type {
   TruthAuthority,
   TruthStatus,
   SourceType,
-  EvidenceEntry,
   ProjectTruthWarning,
-} from '../truth/contracts.ts';
+} from '../contracts.ts';
+import type { EvidenceEntry } from '../../evidence/contracts.ts';
 
 interface DocumentEvidence {
   evidenceId?: string;

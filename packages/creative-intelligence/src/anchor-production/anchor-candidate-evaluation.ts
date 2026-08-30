@@ -43,13 +43,7 @@ export interface EvaluateAnchorCandidateInput {
   resolvedLockedAssetKeys: string[];
 }
 
-const PASS: AnchorCandidateEvaluation['visualMechanism'] = 'pass';
-
-function verdict(condition: boolean, failReason: string | null): 'pass' | 'warning' | 'fail' {
-  if (failReason) return 'fail';
-  if (!condition) return 'warning';
-  return PASS;
-}
+const PASS = 'pass' as const;
 
 function intersection(left: string[], right: string[]): string[] {
   const rightSet = new Set(right);
@@ -100,7 +94,7 @@ export function evaluateAnchorCandidate(
   //    `mustDemonstrate` items. A non-empty list is the strict signal
   //    that the prompt required visual-mechanism rules; an empty
   //    list is a soft warning that the contract compiled thin.
-  const visualMechanism = verdict(contract.mustDemonstrate.length > 0, null);
+  const visualMechanism: 'pass' | 'warning' = contract.mustDemonstrate.length > 0 ? PASS : 'warning';
   if (visualMechanism === 'warning') {
     warnings.push('must_demonstrate_empty');
   }

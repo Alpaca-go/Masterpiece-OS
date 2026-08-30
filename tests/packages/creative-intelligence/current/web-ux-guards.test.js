@@ -249,8 +249,10 @@ test('CI-W1B.1 INVARIANT: no selection → Canon and Translation stay locked in 
 
 test('CI-W1B.1 INVARIANT: legacy /document-context is retained', () => {
   const app = readSafe(path.join(webRoot, 'App.tsx'));
+  const createPage = readSafe(path.join(webRoot, 'pages', 'CreatePage.tsx'));
   assert.equal(/DocumentContextWorkspace/.test(app), true, 'App.tsx must still import DocumentContextWorkspace');
   const tabs = readSafe(path.join(webRoot, 'components', 'AnalysisModeTabs.tsx'));
   assert.equal(/document-context/.test(tabs), true, 'document-context mode key kept for back-compat');
-  assert.equal(/creative-intelligence/.test(tabs), true, 'creative-intelligence stays the primary mode');
+  assert.equal(/creative-intelligence/.test(tabs), true, 'creative-intelligence mode remains recoverable');
+  assert.equal(/<AnalysisModeTabs\b/.test(createPage), false, 'cross-function tabs stay absent from the active create shell');
 });

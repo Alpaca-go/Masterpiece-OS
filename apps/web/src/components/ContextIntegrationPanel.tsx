@@ -11,6 +11,7 @@ interface Props {
   projectId: string;
   projectName: string;
   onOpenReference(): void;
+  showReferenceStyleEntry?: boolean;
 }
 
 type VisualStatus = { status: 'missing' | 'ready' | 'failed'; schemaVersion?: string | null };
@@ -31,7 +32,7 @@ function StatusRow({ label, status, detail }: { label: string; status: string; d
   );
 }
 
-export function ContextIntegrationPanel({ projectId, projectName, onOpenReference }: Props) {
+export function ContextIntegrationPanel({ projectId, projectName, onOpenReference, showReferenceStyleEntry = false }: Props) {
   const [visual, setVisual] = useState<VisualStatus | null>(null);
   const [link, setLink] = useState<ProjectDocumentContextLink | null>(null);
   const [resolved, setResolved] = useState<ResolvedProjectContext | null>(null);
@@ -183,7 +184,7 @@ export function ContextIntegrationPanel({ projectId, projectName, onOpenReferenc
         )}
         <button className="button text-button" disabled={busy} onClick={() => { setShowConflicts(true); }}>查看冲突</button>
         <button className="button secondary" disabled={busy || visualStatus !== 'ready'} onClick={() => void reMerge()}>重新合并</button>
-        <button className="button primary" disabled={visualStatus !== 'ready'} onClick={onOpenReference}>打开参考视觉转换</button>
+        {showReferenceStyleEntry && <button className="button primary" disabled={visualStatus !== 'ready'} onClick={onOpenReference}>打开参考视觉转换</button>}
       </div>
 
       {!link && docRuns.length > 0 && (
