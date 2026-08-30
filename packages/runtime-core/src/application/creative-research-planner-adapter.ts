@@ -37,8 +37,8 @@ function parseObject(text: string): Record<string, unknown> {
 }
 
 function normalizeDraft(raw: Record<string, unknown>): CreativeResearchPlanDraft {
-  if (!Array.isArray(raw.tracks) || !Array.isArray(raw.firstRoundQueries)) {
-    throw new Error('Planner output requires tracks and firstRoundQueries arrays');
+  if (!Array.isArray(raw.tracks) || !Array.isArray(raw.queries)) {
+    throw new Error('Planner output requires tracks and queries arrays');
   }
   const tracks = raw.tracks.map((item) => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('Planner track must be an object');
@@ -58,16 +58,21 @@ function normalizeDraft(raw: Record<string, unknown>): CreativeResearchPlanDraft
       rationale: clean(value.rationale, 500),
     };
   });
-  const firstRoundQueries = raw.firstRoundQueries.map((item) => {
+  const queries = raw.queries.map((item) => {
     if (!item || typeof item !== 'object' || Array.isArray(item)) throw new Error('Planner query must be an object');
     const value = item as Record<string, unknown>;
+    const intent = clean(value.intent, 20);
+    const locale = clean(value.locale, 10);
+    if (!['KNOWLEDGE', 'VISUAL'].includes(intent) || !['ZH', 'EN'].includes(locale)) throw new Error('Planner query intent or locale is invalid');
     return {
       trackTitle: clean(value.trackTitle, 120),
       query: clean(value.query, 180),
       rationale: clean(value.rationale, 500),
+      intent: intent as 'KNOWLEDGE' | 'VISUAL',
+      locale: locale as 'ZH' | 'EN',
     };
   });
-  return { tracks, firstRoundQueries };
+  return { tracks, queries };
 }
 
 function buildMessages(input: CreativeResearchPlannerInput) {
@@ -77,9 +82,11 @@ function buildMessages(input: CreativeResearchPlannerInput) {
       content: [
         '你是 Creative Research 的 Research Planner，不是搜索引擎。',
         '输入关键词仅代表研究线索，不得逐条转换成搜索请求。',
-        '先把线索聚类为 3～6 个研究主题，再生成 3～6 条首轮搜索语句。',
-        '首轮优先行业、品类、市场、文化、合规与核心概念；VISUAL 默认推迟到第二轮。',
-        '每条 Query 必须包含行业或品类语境、研究主题和品牌设计/视觉系统等设计上下文。',
+        '先把线索聚类为 3～6 个研究主题，再生成 5～8 条首轮搜索语句。',
+        'Search Intent 与 Research Track 是不同维度：每个非 VISUAL Track 可以同时产生知识研究与视觉参考 Query。',
+        '必须生成 2～4 条 KNOWLEDGE 和 3～5 条 VISUAL；每个 Track 最多 2 条 Query。',
+        'VISUAL Query 必须包含品牌设计、视觉识别、包装、版式、摄影、material、identity、case study 等明确设计语境。',
+        'VISUAL Query 必须同时包含 ZH 与 EN，且视觉搜索优先。',
         '禁止把抽象口号、价值观或内部命名单独作为 Query。只输出 JSON。',
       ].join('\n'),
     },
@@ -89,9 +96,11 @@ function buildMessages(input: CreativeResearchPlannerInput) {
         task: '把 Research Clues 聚类成 Research Tracks，并合成克制的首轮 Search Queries',
         constraints: {
           trackCount: '3..6',
-          firstRoundQueryCount: '3..6',
-          onePrimaryQueryPerEligibleTrack: true,
-          visualFirstRoundEligible: false,
+          totalQueryCount: '5..8',
+          knowledgeQueryCount: '2..4',
+          visualQueryCount: '3..5',
+          maxQueriesPerTrack: 2,
+          visualLocales: ['ZH', 'EN'],
           clueValuesMustExactlyMatchInput: true,
         },
         outputSchema: {
@@ -100,7 +109,7 @@ function buildMessages(input: CreativeResearchPlannerInput) {
             kind: CREATIVE_RESEARCH_TRACK_KINDS, priority: CREATIVE_RESEARCH_TRACK_PRIORITIES,
             firstRoundEligible: 'boolean', rationale: 'string',
           }],
-          firstRoundQueries: [{ trackTitle: 'exact tracks[].title', query: 'string', rationale: 'string' }],
+          queries: [{ trackTitle: 'exact tracks[].title', query: 'string', rationale: 'string', intent: ['KNOWLEDGE', 'VISUAL'], locale: ['ZH', 'EN'] }],
         },
         brief: input.brief,
         clues: input.clues.filter((clue) => clue.enabled).map((clue) => ({

@@ -58,12 +58,16 @@ export const CREATIVE_RESEARCH_CLUE_PRIORITIES = ['HIGH', 'MEDIUM', 'LOW'] as co
 export const CREATIVE_RESEARCH_TRACK_KINDS = ['CATEGORY', 'MARKET', 'CONCEPT', 'CULTURE', 'VISUAL', 'COMPLIANCE'] as const;
 export const CREATIVE_RESEARCH_TRACK_PRIORITIES = ['PRIMARY', 'SECONDARY'] as const;
 export const CREATIVE_RESEARCH_QUERY_ROUNDS = ['INITIAL', 'REFINEMENT'] as const;
+export const CREATIVE_RESEARCH_SEARCH_INTENTS = ['KNOWLEDGE', 'VISUAL'] as const;
+export const CREATIVE_RESEARCH_QUERY_LOCALES = ['ZH', 'EN'] as const;
 
 export type CreativeResearchClueKind = typeof CREATIVE_RESEARCH_CLUE_KINDS[number];
 export type CreativeResearchCluePriority = typeof CREATIVE_RESEARCH_CLUE_PRIORITIES[number];
 export type CreativeResearchTrackKind = typeof CREATIVE_RESEARCH_TRACK_KINDS[number];
 export type CreativeResearchTrackPriority = typeof CREATIVE_RESEARCH_TRACK_PRIORITIES[number];
 export type CreativeResearchQueryRound = typeof CREATIVE_RESEARCH_QUERY_ROUNDS[number];
+export type CreativeResearchSearchIntent = typeof CREATIVE_RESEARCH_SEARCH_INTENTS[number];
+export type CreativeResearchQueryLocale = typeof CREATIVE_RESEARCH_QUERY_LOCALES[number];
 
 export interface CreativeResearchClue {
   id: string;
@@ -93,6 +97,8 @@ export interface PlannedQuery {
   kind: SearchQueryKind;
   round: 'INITIAL';
   rationale: string;
+  intent?: CreativeResearchSearchIntent;
+  locale?: CreativeResearchQueryLocale;
 }
 
 export interface CreativeResearchPlanTelemetry {
@@ -182,6 +188,8 @@ export interface SearchQuery {
   excludeSeen?: boolean;
   researchTrackId?: string;
   round?: CreativeResearchQueryRound;
+  intent?: CreativeResearchSearchIntent;
+  locale?: CreativeResearchQueryLocale;
 }
 
 export const SIMILAR_SEARCH_DIMENSIONS = [
@@ -234,6 +242,10 @@ export interface WebReferenceItem extends ReferenceItemBase {
   retrievedAt: string;
   contentHash?: string;
   localAssetId?: string;
+  searchIntent?: CreativeResearchSearchIntent;
+  imageStatus?: 'PENDING' | 'READY' | 'UNAVAILABLE';
+  cachedImageUrl?: string;
+  imageUnavailableReason?: string;
 }
 
 export interface UserReferenceItem extends ReferenceItemBase {

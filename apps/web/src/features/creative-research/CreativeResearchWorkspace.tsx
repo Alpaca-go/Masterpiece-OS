@@ -391,8 +391,8 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const kindQueries = useMemo(() => listQueriesByResearchKind(queries, researchKind), [queries, researchKind]);
   const kindReferences = useMemo(() => filterReferencesByResearchKind(references, queries, researchKind), [references, queries, researchKind]);
   const visibleReferences = useMemo(() => filterReferencesForResearchView(references, queries, researchKind, filter), [references, queries, researchKind, filter]);
-  const imageReferences = visibleReferences.filter((reference) => reference.resourceType === 'IMAGE');
-  const webReferences = visibleReferences.filter((reference) => reference.resourceType === 'WEB');
+  const imageReferences = visibleReferences.filter((reference) => reference.searchIntent === 'VISUAL');
+  const webReferences = visibleReferences.filter((reference) => reference.searchIntent === 'KNOWLEDGE');
   const correctionSuggestion = useMemo(() => deriveSoftCorrectionSuggestion(queries, references, selections), [queries, references, selections]);
   const project = projects.find((item) => item.id === (session?.projectId || projectId));
   const selectedReferenceCount = selections.filter((item) => item.state === 'SELECTED').length;
@@ -456,10 +456,10 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
         {session.status === 'RESEARCH' && selectedReferenceCount >= 1 && <section className="cr-direction-cta"><p>这些参考已经足够让我开始设计了。</p><Button variant="primary" disabled={busy !== ''} onClick={() => void startDirectionFlow()}>整理成视觉方向</Button></section>}
         {session.status === 'DIRECTION' && <section className="cr-direction-cta"><p>视觉方向已开始整理，保存的参考与排除记录都会保留。</p><Button variant="primary" disabled={busy !== ''} onClick={() => void resumeDirection()}>继续整理视觉方向</Button></section>}
         {preferenceInsights.length > 0 && <PreferenceInsightsPanel insights={preferenceInsights} references={references} negativeSignals={negativeSignals} busy={busy.startsWith('insight:') || busy === 'similar'} readOnly={referencesReadOnly} onUpdate={updatePreferenceInsight} onFinalize={finalizePreferenceInsight} onFindMoreSimilar={(insightId) => findSimilar({ sourcePreferenceInsightId: insightId })} />}
-        <div className="cr-section-head"><h3>图片灵感板</h3><span>{imageReferences.length}</span></div>
-        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display="IMAGE" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} readOnly={referencesReadOnly} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有图片结果。</div>}
-        <div className="cr-section-head"><h3>网页来源</h3><span>{webReferences.length}</span></div>
-        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display="WEB" reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} readOnly={referencesReadOnly} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有网页来源。</div>}
+        <div className="cr-section-head"><h3>视觉参考</h3><span>{imageReferences.length}</span></div>
+        {imageReferences.length ? <div className="cr-image-board">{imageReferences.map((reference) => <ReferenceCard key={reference.id} display={reference.resourceType} reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} readOnly={referencesReadOnly} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有视觉参考。</div>}
+        <div className="cr-section-head"><h3>研究资料</h3><span>{webReferences.length}</span></div>
+        {webReferences.length ? <div className="cr-web-list">{webReferences.map((reference) => <ReferenceCard key={reference.id} display={reference.resourceType} reference={reference} selection={selections.find((item) => item.referenceId === reference.id)} busy={busy === `selection:${reference.id}` || busy === 'similar'} readOnly={referencesReadOnly} onSelectionChange={(input) => setReferenceSelection(reference.id, input)} onFindSimilar={(dimension) => findSimilar({ sourceReferenceId: reference.id, dimension })} />)}</div> : <div className="cr-empty">当前筛选没有研究资料。</div>}
       </section>}
   </main>;
 }

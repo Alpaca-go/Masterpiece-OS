@@ -49,8 +49,8 @@ test('R4 reference projection exposes browser-safe provenance only', () => {
     localAssetId: 'must-not-cross', contentHash: 'must-not-cross', attribution: 'must-not-cross',
   });
   assert.deepEqual(Object.keys(projected).sort(), [
-    'id', 'matchedQueryIds', 'publisher', 'queryId', 'remoteImageUrl', 'resourceType', 'resultRank',
-    'retrievedAt', 'sourceUrl', 'thumbnailUrl', 'title',
+    'id', 'imageStatus', 'matchedQueryIds', 'publisher', 'queryId', 'remoteImageUrl', 'resourceType', 'resultRank',
+    'retrievedAt', 'searchIntent', 'sourceUrl', 'thumbnailUrl', 'title',
   ]);
   assert.doesNotMatch(JSON.stringify(projected), /localAssetId|contentHash|attribution|must-not-cross/u);
 });

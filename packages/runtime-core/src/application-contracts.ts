@@ -2572,6 +2572,8 @@ export interface CreativeResearchPlanDto {
     kind: 'CONCEPT' | 'CATEGORY';
     round: 'INITIAL';
     rationale: string;
+    intent: 'KNOWLEDGE' | 'VISUAL';
+    locale: 'ZH' | 'EN';
   }>;
   plannerMode: 'MODEL' | 'DETERMINISTIC_FALLBACK';
   telemetry: {
@@ -2621,6 +2623,8 @@ export interface CreativeResearchQueryDto {
   origin: 'INITIAL' | 'REFRESH' | 'KEYWORD_ADJUSTMENT' | 'SIMILAR';
   researchTrackId?: string;
   round: 'INITIAL' | 'REFINEMENT';
+  intent: 'KNOWLEDGE' | 'VISUAL';
+  locale?: 'ZH' | 'EN';
 }
 
 export interface UpdateCreativeResearchSearchStrategyInput {
@@ -2651,6 +2655,9 @@ export interface CreativeResearchReferenceDto {
   matchedQueryIds: string[];
   resultRank: number;
   retrievedAt: string;
+  searchIntent: 'KNOWLEDGE' | 'VISUAL';
+  imageStatus: 'PENDING' | 'READY' | 'UNAVAILABLE';
+  cachedImageUrl?: string;
 }
 
 export type CreativeResearchReferenceAttributeDto =

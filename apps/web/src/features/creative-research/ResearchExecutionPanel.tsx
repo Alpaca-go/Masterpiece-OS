@@ -43,8 +43,9 @@ function operationStage(operation: string): string | null {
 
 export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput): ResearchExecutionStage[] {
   const completedQueries = input.queries.filter((query) => query.status === 'COMPLETED').length;
-  const failedQueries = input.queries.filter((query) => query.status === 'FAILED').length;
   const pendingQueries = input.queries.filter((query) => query.status === 'PENDING').length;
+  const knowledgeQueries = input.queries.filter((query) => query.intent === 'KNOWLEDGE');
+  const visualQueries = input.queries.filter((query) => query.intent === 'VISUAL');
   const searchSettled = input.queries.length > 0 && pendingQueries === 0;
   const failedStage = input.failure ? operationStage(input.failure.operation) : null;
   const activeStage = operationStage(input.busy);
@@ -54,13 +55,14 @@ export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput)
     return completed ? 'completed' : 'waiting';
   };
 
-  const searchState: ResearchExecutionStageState = failedStage === 'search' || (searchSettled && completedQueries === 0 && failedQueries > 0)
-    ? 'failed'
-    : activeStage === 'search' || pendingQueries > 0
-      ? 'active'
-      : searchSettled
-        ? 'completed'
-        : 'waiting';
+  const intentSearchState = (queries: CreativeResearchQueryDto[]): ResearchExecutionStageState => {
+    if (!queries.length) return 'waiting';
+    if (failedStage === 'search' && queries.some((query) => query.status === 'FAILED')) return 'failed';
+    if (activeStage === 'search' && queries.some((query) => query.status === 'PENDING')) return 'active';
+    if (queries.every((query) => query.status === 'COMPLETED')) return 'completed';
+    if (queries.every((query) => query.status !== 'PENDING') && queries.some((query) => query.status === 'FAILED')) return 'failed';
+    return queries.some((query) => query.status === 'PENDING') ? 'active' : 'waiting';
+  };
 
   return [
     {
@@ -82,12 +84,16 @@ export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput)
       state: state('planning', input.planReady || input.queries.length > 0),
     },
     {
-      id: 'search',
-      label: '搜索公开资料',
-      detail: input.queries.length
-        ? `已完成 ${completedQueries} / ${input.queries.length} 组搜索${failedQueries ? `，${failedQueries} 组失败` : ''}`
-        : '等待搜索任务',
-      state: searchState,
+      id: 'knowledge-search',
+      label: '搜索研究资料',
+      detail: knowledgeQueries.length ? `已完成 ${knowledgeQueries.filter((query) => query.status === 'COMPLETED').length} / ${knowledgeQueries.length} 组知识检索` : '等待知识检索任务',
+      state: intentSearchState(knowledgeQueries),
+    },
+    {
+      id: 'visual-search',
+      label: '搜索视觉参考',
+      detail: visualQueries.length ? `已完成 ${visualQueries.filter((query) => query.status === 'COMPLETED').length} / ${visualQueries.length} 组视觉检索` : '等待视觉检索任务',
+      state: intentSearchState(visualQueries),
     },
     {
       id: 'references',

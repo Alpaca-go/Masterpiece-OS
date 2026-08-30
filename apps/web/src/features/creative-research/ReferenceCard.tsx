@@ -69,10 +69,10 @@ export function ReferenceCard({ reference, selection, display, busy, readOnly = 
     {controls}
   </article>;
 
-  const imageUrl = reference.thumbnailUrl || reference.remoteImageUrl;
+  const imageUrl = reference.cachedImageUrl || reference.thumbnailUrl || reference.remoteImageUrl;
   return <article className={`cr-image-card cr-image-card--${state.toLowerCase()}`}>
     <div className="cr-image-card__media">
-      {!broken && imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setBroken(true)} /> : <span>图片暂不可用</span>}
+      {!broken && imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setBroken(true)} /> : <span>{reference.imageStatus === 'PENDING' ? '图片缓存中' : '图片暂不可用'}</span>}
     </div>
     <div><strong>{reference.title}</strong><small>{reference.publisher}</small></div>
     {controls}

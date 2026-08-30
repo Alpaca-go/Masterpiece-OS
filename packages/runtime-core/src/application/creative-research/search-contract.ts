@@ -1,5 +1,5 @@
 import type { SearchResultPage } from './ports.ts';
-import { SEARCH_QUERY_KINDS } from './contracts.ts';
+import { CREATIVE_RESEARCH_SEARCH_INTENTS, SEARCH_QUERY_KINDS } from './contracts.ts';
 import { assertJsonSerializable, assertWebReferenceResult } from './evidence.ts';
 
 export function assertSearchResultPage(page: SearchResultPage, expected?: { query?: string }): void {
@@ -20,6 +20,7 @@ export function assertReferenceSearchInput(input: {
   queryId: string;
   query: string;
   kind: string;
+  intent?: string;
   cursor?: string;
   limit?: number;
   exclusions?: { referenceIds?: string[]; domains?: string[]; urls?: string[] };
@@ -28,6 +29,7 @@ export function assertReferenceSearchInput(input: {
   if (!input.queryId.trim()) throw new Error('search input requires queryId');
   if (!input.query.trim()) throw new Error('search input requires query');
   if (!SEARCH_QUERY_KINDS.includes(input.kind as typeof SEARCH_QUERY_KINDS[number])) throw new Error('search input kind is invalid');
+  if (input.intent !== undefined && !CREATIVE_RESEARCH_SEARCH_INTENTS.includes(input.intent as typeof CREATIVE_RESEARCH_SEARCH_INTENTS[number])) throw new Error('search input intent is invalid');
   if (input.limit !== undefined && (!Number.isInteger(input.limit) || input.limit < 1 || input.limit > 100)) {
     throw new Error('search input limit must be an integer between 1 and 100');
   }

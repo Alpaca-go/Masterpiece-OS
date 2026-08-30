@@ -60,7 +60,7 @@ export function planInitialSearchQueries(options: InitialSearchPlanOptions): Sea
   const batch = options.batchId || createId();
   const tracks = new Map(options.plan.tracks.map((track) => [track.id, track]));
   const seen = new Set<string>();
-  const maxQueries = Math.min(6, Math.max(3, options.maxQueries ?? 6));
+  const maxQueries = Math.min(8, Math.max(5, options.maxQueries ?? 8));
   const queries = options.plan.firstRoundQueries.flatMap((planned) => {
     const track = tracks.get(planned.trackId);
     const text = clean(planned.text);
@@ -77,11 +77,13 @@ export function planInitialSearchQueries(options: InitialSearchPlanOptions): Sea
       derivedFromKeywordIds: [...track.clueIds],
       researchTrackId: track.id,
       round: 'INITIAL' as const,
+      intent: planned.intent || 'KNOWLEDGE',
+      locale: planned.locale || 'ZH',
       createdAt,
       origin: 'INITIAL' as const,
     }];
   }).slice(0, maxQueries);
-  if (queries.length < 3) throw creativeResearchSearchError('QUERY_INVALID', 'Research Plan 必须提供至少 3 条有效首轮 Query');
+  if (queries.length < Math.min(5, options.plan.firstRoundQueries.length)) throw creativeResearchSearchError('QUERY_INVALID', 'Research Plan 未提供足够的有效首轮 Query');
   return queries;
 }
 

@@ -11,6 +11,7 @@ import type {
   ReferenceSelection,
   SearchQuery,
   SearchQueryKind,
+  CreativeResearchSearchIntent,
   WebReferenceItem,
 } from './contracts.ts';
 
@@ -88,6 +89,7 @@ export interface ReferenceSearchInput {
   queryId: string;
   query: string;
   kind: SearchQueryKind;
+  intent?: CreativeResearchSearchIntent;
   cursor?: string;
   limit?: number;
   exclusions?: ReferenceSearchExclusions;

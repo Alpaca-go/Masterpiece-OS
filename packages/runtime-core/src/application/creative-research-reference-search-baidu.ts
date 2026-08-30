@@ -72,13 +72,15 @@ export function prepareBaiduQueryText(text: string, limit = 72): string {
 
 export function buildBaiduReferenceSearchRequest(input: ReferenceSearchInput): BaiduReferenceSearchRequest {
   const providerQueryText = prepareBaiduQueryText(input.query);
-  const limit = input.limit ?? 10;
+  const limit = input.limit ?? (input.intent === 'VISUAL' ? 20 : input.intent === 'KNOWLEDGE' ? 15 : 10);
+  const webTopK = input.intent === 'VISUAL' ? Math.min(5, limit) : input.intent === 'KNOWLEDGE' ? Math.min(15, limit) : Math.min(50, limit);
+  const imageTopK = input.intent === 'VISUAL' ? Math.min(20, limit) : input.intent === 'KNOWLEDGE' ? Math.min(2, limit) : Math.min(30, limit);
   return {
     messages: [{ role: 'user', content: providerQueryText }],
     search_source: 'baidu_search_v2',
     resource_type_filter: [
-      { type: 'web', top_k: Math.min(limit, 50) },
-      { type: 'image', top_k: Math.min(limit, 30) },
+      { type: 'web', top_k: webTopK },
+      { type: 'image', top_k: imageTopK },
     ],
   };
 }
@@ -145,8 +147,27 @@ function toReference(item: BaiduReference, input: ReferenceSearchInput, rank: nu
     ...(positiveInteger(item.image?.width) ? { imageWidth: positiveInteger(item.image?.width) } : {}),
     ...(positiveInteger(item.image?.height) ? { imageHeight: positiveInteger(item.image?.height) } : {}),
     licenseOrUsageStatus: 'UNKNOWN',
+    searchIntent: input.intent || 'KNOWLEDGE',
+    ...(remoteImageUrl ? { imageStatus: 'PENDING' as const } : {}),
   };
   return reference;
+}
+
+const DESIGN_SIGNAL = /(设计|视觉|品牌|包装|版式|字体|摄影|材质|design|identity|branding|packaging|layout|typography|photography|material|portfolio|case study)/iu;
+const NEWS_SIGNAL = /(新闻|资讯|快讯|时政|财经|news|headline|breaking)/iu;
+
+export function applyReferenceQualityGate(items: WebReferenceItem[], intent: ReferenceSearchInput['intent'] = 'KNOWLEDGE'): WebReferenceItem[] {
+  if (intent === 'KNOWLEDGE') return items;
+  return items
+    .filter((item) => item.resourceType === 'IMAGE' || DESIGN_SIGNAL.test(`${item.title || ''} ${item.publisherOrDomain} ${item.sourceUrl}`))
+    .filter((item) => !NEWS_SIGNAL.test(`${item.title || ''} ${item.publisherOrDomain}`) || DESIGN_SIGNAL.test(item.title || ''))
+    .sort((left, right) => {
+      const score = (item: WebReferenceItem) => (item.resourceType === 'IMAGE' ? 4 : 0)
+        + (DESIGN_SIGNAL.test(`${item.title || ''} ${item.publisherOrDomain}`) ? 2 : 0)
+        + (item.remoteImageUrl ? 1 : 0);
+      return score(right) - score(left) || left.resultRank - right.resultRank;
+    })
+    .map((item, index) => ({ ...item, resultRank: index + 1 }));
 }
 
 export function createBaiduReferenceSearchGateway(options: {
@@ -222,7 +243,7 @@ export function createBaiduReferenceSearchGateway(options: {
           items.push(reference);
         }
         const page = {
-          items, provider: PROVIDER, query: input.query, providerCalls,
+          items: applyReferenceQualityGate(items, input.intent), provider: PROVIDER, query: input.query, providerCalls,
           ...(providerQueryText !== input.query ? { providerQueryText } : {}),
         } as SearchResultPage;
         assertSearchResultPage(page, { query: input.query });

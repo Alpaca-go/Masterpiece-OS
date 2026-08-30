@@ -96,6 +96,7 @@ export async function startNodeRuntimeHost(options: NodeRuntimeHostOptions): Pro
     host: options.host,
     port: options.port,
     allowedOrigin: options.allowedOrigin,
+    creativeResearchDataPath: path.resolve(settings.defaultDataPath),
     invoke: (channel, args) => runtime.registry.execute(channel, args, { host: 'node-web' }),
   });
   let closed = false;

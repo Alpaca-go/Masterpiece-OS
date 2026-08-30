@@ -5,6 +5,7 @@ import { planInitialSearchQueries } from './creative-research-search-query-plann
 import { asCreativeResearchSearchError, creativeResearchSearchError } from './creative-research-search-errors.ts';
 import { creativeResearchError } from './creative-research-errors.ts';
 import { assertCreativeResearchTransition } from './creative-research/invariants.ts';
+import type { CreativeResearchReferenceImageCache } from './creative-research-reference-image-cache.ts';
 
 export function createCreativeResearchReferenceSearchService(options: {
   sessions: CreativeResearchSessionRepository;
@@ -13,6 +14,7 @@ export function createCreativeResearchReferenceSearchService(options: {
   history: SearchHistoryRepository;
   references: ReferenceResearchRepository;
   gateway: ReferenceSearchGateway;
+  imageCache?: CreativeResearchReferenceImageCache;
   now?: () => string;
   createId?: () => string;
 }) {
@@ -63,16 +65,26 @@ export function createCreativeResearchReferenceSearchService(options: {
         ? (await options.references.listSessionReferences(sessionId)).filter((item): item is WebReferenceItem => item.sourceType === 'WEB_REFERENCE')
         : [];
       const page = await options.gateway.search({
-        sessionId, queryId, query: query.text, kind: query.kind,
+        sessionId, queryId, query: query.text, kind: query.kind, intent: query.intent || 'KNOWLEDGE',
         ...(query.cursor ? { cursor: query.cursor } : {}),
         ...(query.excludeSeen ? { exclusions: {
           referenceIds: seenReferences.map((item) => item.id),
           urls: [...new Set(seenReferences.flatMap((item) => [item.sourceUrl, item.canonicalUrl]).filter(Boolean))],
         } } : {}),
       });
+      const cacheQueue = [...page.items];
+      const cachedItems: WebReferenceItem[] = [];
+      async function cacheWorker() {
+        while (cacheQueue.length) {
+          const reference = cacheQueue.shift();
+          if (reference) cachedItems.push(options.imageCache && reference.remoteImageUrl ? await options.imageCache.cache(reference) : reference);
+        }
+      }
+      await Promise.all(Array.from({ length: Math.min(3, cacheQueue.length) }, () => cacheWorker()));
+      cachedItems.sort((left, right) => left.resultRank - right.resultRank);
       const stored: WebReferenceItem[] = [];
-      for (const reference of page.items) {
-        const value = await options.references.storeReference(reference);
+      for (const cached of cachedItems) {
+        const value = await options.references.storeReference(cached);
         if (value.sourceType === 'WEB_REFERENCE') stored.push(value);
       }
       const completed = await options.history.recordQueryProgress(sessionId, queryId, {
@@ -96,17 +108,23 @@ export function createCreativeResearchReferenceSearchService(options: {
       .filter((query) => query.status === 'PENDING' && (!queryIds || queryIds.includes(query.id)));
     const results: Array<Awaited<ReturnType<typeof executeSearchQuery>>> = [];
     const failures: unknown[] = [];
+    let fatalFailure: unknown;
     let index = 0;
     async function worker() {
-      while (index < pending.length) {
+      while (index < pending.length && !fatalFailure) {
         const query = pending[index++];
         if (query) {
           try { results.push(await executeSearchQuery(sessionId, query.id)); }
-          catch (error) { failures.push(error); }
+          catch (error) {
+            failures.push(error);
+            const failure = asCreativeResearchSearchError(error);
+            if (failure.code === 'AUTH_FAILED' || failure.code === 'SEARCH_CREDENTIAL_REQUIRED') fatalFailure = failure;
+          }
         }
       }
     }
     await Promise.all([worker(), worker()]);
+    if (fatalFailure) throw fatalFailure;
     if (failures.length) throw failures[0];
     return results;
   }

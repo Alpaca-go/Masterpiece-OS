@@ -230,8 +230,9 @@ export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
       throw new Error('plan.track.clueIds must reference plan clues');
     }
   }
-  if (!Array.isArray(plan.firstRoundQueries) || plan.firstRoundQueries.length < 3 || plan.firstRoundQueries.length > 6) {
-    throw new Error('plan.firstRoundQueries must contain 3 to 6 queries');
+  const isVisualSearchPlan = Array.isArray(plan.firstRoundQueries) && plan.firstRoundQueries.every((query) => query.intent && query.locale);
+  if (!Array.isArray(plan.firstRoundQueries) || plan.firstRoundQueries.length < (isVisualSearchPlan ? 5 : 3) || plan.firstRoundQueries.length > (isVisualSearchPlan ? 8 : 6)) {
+    throw new Error('plan.firstRoundQueries count is invalid');
   }
   const queryKeys = new Set<string>();
   for (const query of plan.firstRoundQueries) {
@@ -240,12 +241,20 @@ export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
     requireText(query.text, 'plan.query.text');
     requireText(query.rationale, 'plan.query.rationale');
     assertEnum(query.kind, SEARCH_QUERY_KINDS, 'plan.query.kind');
+    if (query.intent !== undefined) assertEnum(query.intent, ['KNOWLEDGE', 'VISUAL'] as const, 'plan.query.intent');
+    if (query.locale !== undefined) assertEnum(query.locale, ['ZH', 'EN'] as const, 'plan.query.locale');
     if (query.round !== 'INITIAL') throw new Error('plan.query.round must be INITIAL');
     const track = tracks.get(query.trackId);
     if (!track?.firstRoundEligible) throw new Error('plan.query.trackId must reference a first-round track');
     const key = query.text.replace(/\s+/gu, ' ').trim().toLocaleLowerCase();
     if (queryKeys.has(key)) throw new Error(`duplicate planned query: ${query.text}`);
     queryKeys.add(key);
+  }
+  if (isVisualSearchPlan) {
+    const knowledgeCount = plan.firstRoundQueries.filter((query) => query.intent === 'KNOWLEDGE').length;
+    const visualQueries = plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL');
+    if (knowledgeCount < 2 || knowledgeCount > 4 || visualQueries.length < 3 || visualQueries.length > 5) throw new Error('plan query intent mix is invalid');
+    if (!visualQueries.some((query) => query.locale === 'ZH') || !visualQueries.some((query) => query.locale === 'EN')) throw new Error('plan visual queries require ZH and EN');
   }
   const metrics = plan.telemetry;
   if (!metrics || typeof metrics !== 'object') throw new Error('plan.telemetry is required');
@@ -264,6 +273,8 @@ export function assertReferenceItem(reference: ReferenceItem): void {
 
   if (reference.sourceType === 'WEB_REFERENCE') {
     assertEnum(reference.resourceType, ['IMAGE', 'WEB'] as const, 'reference.resourceType');
+    if (reference.searchIntent !== undefined) assertEnum(reference.searchIntent, ['KNOWLEDGE', 'VISUAL'] as const, 'reference.searchIntent');
+    if (reference.imageStatus !== undefined) assertEnum(reference.imageStatus, ['PENDING', 'READY', 'UNAVAILABLE'] as const, 'reference.imageStatus');
     requireHttpUrl(reference.sourceUrl, 'reference.sourceUrl');
     requireHttpUrl(reference.canonicalUrl, 'reference.canonicalUrl');
     if (reference.remoteImageUrl !== undefined) requireHttpUrl(reference.remoteImageUrl, 'reference.remoteImageUrl');

@@ -148,6 +148,8 @@ export function toCreativeResearchQueryDto(value: SearchQuery): CreativeResearch
     origin: value.origin || 'INITIAL',
     researchTrackId: value.researchTrackId,
     round: value.round || (value.origin === 'INITIAL' || value.origin === undefined ? 'INITIAL' : 'REFINEMENT'),
+    intent: value.intent || 'KNOWLEDGE',
+    locale: value.locale,
   });
 }
 
@@ -158,7 +160,7 @@ export function toCreativeResearchPlanDto(value: CreativeResearchPlan): Creative
     briefRevisionId: value.briefRevisionId,
     clues: value.clues.map((clue) => Object.freeze({ ...clue })),
     tracks: value.tracks.map((track) => Object.freeze({ ...track, clueIds: [...track.clueIds] })),
-    firstRoundQueries: value.firstRoundQueries.map((query) => Object.freeze({ ...query })),
+    firstRoundQueries: value.firstRoundQueries.map((query) => Object.freeze({ ...query, intent: query.intent || 'KNOWLEDGE', locale: query.locale || 'ZH' })),
     plannerMode: value.plannerMode,
     telemetry: Object.freeze({ ...value.telemetry }),
     createdAt: value.createdAt,
@@ -188,6 +190,9 @@ export function toCreativeResearchReferenceDto(value: WebReferenceItem): Creativ
     matchedQueryIds: [...(value.matchedQueryIds || [value.queryId])],
     resultRank: value.resultRank,
     retrievedAt: value.retrievedAt,
+    searchIntent: value.searchIntent || 'KNOWLEDGE',
+    imageStatus: value.imageStatus || (value.remoteImageUrl ? 'PENDING' : 'UNAVAILABLE'),
+    ...(value.cachedImageUrl ? { cachedImageUrl: value.cachedImageUrl } : {}),
   });
 }
 

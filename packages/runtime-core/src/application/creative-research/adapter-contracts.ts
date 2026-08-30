@@ -164,10 +164,12 @@ export interface CreativeResearchPlanDraft {
     firstRoundEligible: boolean;
     rationale: string;
   }>;
-  firstRoundQueries: Array<{
+  queries: Array<{
     trackTitle: string;
     query: string;
     rationale: string;
+    intent: 'KNOWLEDGE' | 'VISUAL';
+    locale: 'ZH' | 'EN';
   }>;
 }
 

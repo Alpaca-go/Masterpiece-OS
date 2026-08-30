@@ -125,24 +125,36 @@ function validateModelDraft(
   const trackByTitle = new Map(tracks.map((track) => [comparisonKey(track.title), track]));
   const abstractValues = new Set(enabledClues.filter((clue) => ABSTRACT_CLUE_KINDS.has(clue.kind)).map((clue) => comparisonKey(clue.value)));
   const seenQueries = new Set<string>();
-  const usedTracks = new Set<string>();
+  const trackQueryCounts = new Map<string, number>();
   const queries: PlannedQuery[] = [];
   let duplicates = 0;
-  for (const candidate of draft.firstRoundQueries) {
+  for (const candidate of draft.queries) {
     const track = trackByTitle.get(comparisonKey(candidate.trackTitle));
     const text = clean(candidate.query, 180).replace(/([，,。.!！?？；;：:、])\1+/gu, '$1');
     const key = comparisonKey(text);
-    if (!track?.firstRoundEligible || usedTracks.has(track.id)) continue;
+    if (!track?.firstRoundEligible || (trackQueryCounts.get(track.id) || 0) >= 2) continue;
     if (text.length < 6 || !key || abstractValues.has(key)) throw new Error('Planner query is empty, too short, or equals an abstract clue');
+    if (candidate.intent === 'VISUAL' && !/(设计|视觉|品牌|包装|版式|字体|摄影|材质|design|identity|branding|packaging|layout|typography|photography|material|case study)/iu.test(text)) {
+      throw new Error('VISUAL query requires explicit design context');
+    }
     if (seenQueries.has(key)) { duplicates += 1; continue; }
     seenQueries.add(key);
-    usedTracks.add(track.id);
+    trackQueryCounts.set(track.id, (trackQueryCounts.get(track.id) || 0) + 1);
     queries.push({
       id: createId(), trackId: track.id, text, kind: queryKindForTrack(track.kind), round: 'INITIAL',
       rationale: clean(candidate.rationale, 500) || track.rationale,
+      intent: candidate.intent,
+      locale: candidate.locale,
     });
   }
-  if (queries.length < 3 || queries.length > 6) throw new Error('Planner first-round query count must be 3..6');
+  const knowledgeCount = queries.filter((query) => query.intent === 'KNOWLEDGE').length;
+  const visualQueries = queries.filter((query) => query.intent === 'VISUAL');
+  if (queries.length < 5 || queries.length > 8 || knowledgeCount < 2 || knowledgeCount > 4 || visualQueries.length < 3 || visualQueries.length > 5) {
+    throw new Error('Planner query mix must be 2..4 KNOWLEDGE, 3..5 VISUAL, 5..8 total');
+  }
+  if (!visualQueries.some((query) => query.locale === 'ZH') || !visualQueries.some((query) => query.locale === 'EN')) {
+    throw new Error('VISUAL queries require both ZH and EN locales');
+  }
   return { tracks, queries, duplicates };
 }
 
@@ -208,15 +220,32 @@ function deterministicFallback(clues: CreativeResearchClue[], createId: () => st
   };
   const seen = new Set<string>();
   let duplicates = 0;
-  const queries = tracks.filter((track) => track.firstRoundEligible).slice(0, 4).flatMap((track) => {
+  const eligibleTracks = tracks.filter((track) => track.firstRoundEligible);
+  const knowledgeQueries = eligibleTracks.slice(0, 2).flatMap((track) => {
     const clue = enabled.find((item) => track.clueIds.includes(item.id));
     const text = composeQuery([track.kind === 'CATEGORY' ? '' : categoryContext, clue?.value || track.title, suffix[track.kind as Exclude<CreativeResearchTrackKind, 'VISUAL'>]]);
     const key = comparisonKey(text);
     if (!key || seen.has(key)) { duplicates += 1; return []; }
     seen.add(key);
-    return [{ id: createId(), trackId: track.id, text, kind: queryKindForTrack(track.kind), round: 'INITIAL' as const, rationale: track.rationale }];
+    return [{ id: createId(), trackId: track.id, text, kind: queryKindForTrack(track.kind), round: 'INITIAL' as const, rationale: track.rationale, intent: 'KNOWLEDGE' as const, locale: 'ZH' as const }];
   });
-  if (queries.length < 3) throw new Error('Deterministic planner requires at least 3 unique queries');
+  const visualSuffixes = [
+    { locale: 'ZH' as const, text: '品牌视觉识别 设计案例 版式 包装' },
+    { locale: 'EN' as const, text: 'brand identity design case study packaging typography' },
+    { locale: 'EN' as const, text: 'visual identity design system photography material case study' },
+  ];
+  const visualQueries = visualSuffixes.flatMap((suffix, index) => {
+    const track = eligibleTracks[index % eligibleTracks.length];
+    if (!track) return [];
+    const clue = enabled.find((item) => track.clueIds.includes(item.id));
+    const text = composeQuery([categoryContext, clue?.value || track.title, suffix.text]);
+    const key = comparisonKey(text);
+    if (!key || seen.has(key)) { duplicates += 1; return []; }
+    seen.add(key);
+    return [{ id: createId(), trackId: track.id, text, kind: queryKindForTrack(track.kind), round: 'INITIAL' as const, rationale: '为该研究主题补充可观察的视觉设计案例。', intent: 'VISUAL' as const, locale: suffix.locale }];
+  });
+  const queries = [...visualQueries, ...knowledgeQueries];
+  if (knowledgeQueries.length < 2 || visualQueries.length < 3) throw new Error('Deterministic planner requires a complete intent mix');
   return { tracks, queries, duplicates };
 }
 
@@ -252,7 +281,7 @@ export function createCreativeResearchPlannerService(options: {
     const existing = await options.plans.get(sessionId);
     if (existing?.briefRevisionId === brief.id) return existing;
     const clues = buildCreativeResearchClues(brief, createId);
-    let compiled: ReturnType<typeof deterministicFallback>;
+    let compiled: { tracks: CreativeResearchTrack[]; queries: PlannedQuery[]; duplicates: number };
     let plannerMode: CreativeResearchPlan['plannerMode'] = 'MODEL';
     try {
       if (!clean(input.profileId, 120)) throw new Error('Planner profile is missing');

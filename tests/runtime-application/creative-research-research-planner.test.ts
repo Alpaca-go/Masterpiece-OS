@@ -90,11 +90,12 @@ test('Research Planner clusters clues, accepts a grounded model plan, and forcib
           { title: '当代东方叙事', summary: '研究文化概念如何进入品牌设计', clueValues: ['东方秩序', '当代东方餐叙'], kind: 'CULTURE', priority: 'PRIMARY', firstRoundEligible: true, rationale: '理解文化转译' },
           { title: '克制视觉表达', summary: '作为第二轮视觉线索', clueValues: ['克制留白'], kind: 'VISUAL', priority: 'SECONDARY', firstRoundEligible: true, rationale: '避免首轮过早收窄' },
         ],
-        firstRoundQueries: [
-          { trackTitle: '餐饮品类与定位', query: '新中式餐饮品牌定位 视觉识别 案例', rationale: '品类案例' },
-          { trackTitle: '年轻消费市场', query: '新中式餐饮 年轻消费者 品牌体验 设计案例', rationale: '市场案例' },
-          { trackTitle: '当代东方叙事', query: '新中式餐饮 当代东方文化 品牌视觉设计', rationale: '文化案例' },
-          { trackTitle: '克制视觉表达', query: '新中式餐饮 克制留白 视觉设计', rationale: '视觉案例' },
+        queries: [
+          { trackTitle: '餐饮品类与定位', query: '新中式餐饮品牌定位 行业研究', rationale: '品类研究', intent: 'KNOWLEDGE', locale: 'ZH' },
+          { trackTitle: '年轻消费市场', query: '新中式餐饮 年轻消费者 市场趋势', rationale: '市场研究', intent: 'KNOWLEDGE', locale: 'ZH' },
+          { trackTitle: '餐饮品类与定位', query: '新中式餐饮 品牌视觉识别 包装设计案例', rationale: '品类案例', intent: 'VISUAL', locale: 'ZH' },
+          { trackTitle: '年轻消费市场', query: 'modern Chinese dining brand identity design case study', rationale: '市场案例', intent: 'VISUAL', locale: 'EN' },
+          { trackTitle: '当代东方叙事', query: 'oriental dining visual identity typography design', rationale: '文化案例', intent: 'VISUAL', locale: 'EN' },
         ],
       };
     },
@@ -104,9 +105,11 @@ test('Research Planner clusters clues, accepts a grounded model plan, and forcib
   assert.equal(plan.plannerMode, 'MODEL');
   assert.equal(plan.briefRevisionId, 'brief-1');
   assert.equal(plan.tracks.length, 4);
-  assert.equal(plan.firstRoundQueries.length, 3);
+  assert.equal(plan.firstRoundQueries.length, 5);
   assert.equal(plan.tracks.find((track) => track.kind === 'VISUAL')?.firstRoundEligible, false);
   assert.ok(plan.firstRoundQueries.every((query) => plan.tracks.find((track) => track.id === query.trackId)?.kind !== 'VISUAL'));
+  assert.equal(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').length, 3);
+  assert.deepEqual(new Set(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').map((query) => query.locale)), new Set(['ZH', 'EN']));
   assert.equal(plan.telemetry.visualClueDeferredCount, 1);
   assert.equal(plan.telemetry.plannerFallbackUsed, false);
 
@@ -122,9 +125,10 @@ test('Research Planner falls back deterministically when model output fails vali
   assert.equal(plan.plannerMode, 'DETERMINISTIC_FALLBACK');
   assert.equal(plan.telemetry.plannerFallbackUsed, true);
   assert.ok(plan.tracks.length >= 3 && plan.tracks.length <= 6);
-  assert.ok(plan.firstRoundQueries.length >= 3 && plan.firstRoundQueries.length <= 4);
+  assert.ok(plan.firstRoundQueries.length >= 5 && plan.firstRoundQueries.length <= 8);
   assert.equal(new Set(plan.firstRoundQueries.map((query) => query.text.toLocaleLowerCase())).size, plan.firstRoundQueries.length);
-  assert.ok(plan.firstRoundQueries.every((query) => query.text.length >= 6 && /品牌|设计/u.test(query.text)));
+  assert.ok(plan.firstRoundQueries.every((query) => query.text.length >= 6));
+  assert.equal(plan.firstRoundQueries.filter((query) => query.intent === 'VISUAL').length, 3);
   assert.ok(plan.firstRoundQueries.every((query) => plan.tracks.find((track) => track.id === query.trackId)?.kind !== 'VISUAL'));
   assert.doesNotMatch(plan.firstRoundQueries.map((query) => query.text).join(' '), /克制留白/u);
 });
@@ -163,10 +167,12 @@ test('Planner adapter performs one structured call and explicitly separates clue
           { title: 'Market', summary: 'market summary', clueValues: ['一二线城市年轻餐饮消费者'], kind: 'MARKET', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'market' },
           { title: 'Concept', summary: 'concept summary', clueValues: ['建立兼具文化辨识度与现代体验的品牌视觉身份'], kind: 'CONCEPT', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'concept' },
         ],
-        firstRoundQueries: [
-          { trackTitle: 'Category', query: 'category query context', rationale: 'category' },
-          { trackTitle: 'Market', query: 'market query context', rationale: 'market' },
-          { trackTitle: 'Concept', query: 'concept query context', rationale: 'concept' },
+        queries: [
+          { trackTitle: 'Category', query: 'category knowledge context', rationale: 'category', intent: 'KNOWLEDGE', locale: 'EN' },
+          { trackTitle: 'Market', query: 'market knowledge context', rationale: 'market', intent: 'KNOWLEDGE', locale: 'EN' },
+          { trackTitle: 'Category', query: 'category brand identity design case study', rationale: 'category visual', intent: 'VISUAL', locale: 'EN' },
+          { trackTitle: 'Market', query: '市场 品牌视觉设计 案例', rationale: 'market visual', intent: 'VISUAL', locale: 'ZH' },
+          { trackTitle: 'Concept', query: 'concept packaging typography design', rationale: 'concept visual', intent: 'VISUAL', locale: 'EN' },
         ],
       }) };
     },
@@ -189,5 +195,5 @@ test('Planner adapter performs one structured call and explicitly separates clue
   assert.equal(draft.tracks.length, 3);
   assert.match(serializedMessages, /不是搜索引擎/u);
   assert.match(serializedMessages, /不得逐条转换成搜索请求/u);
-  assert.match(serializedMessages, /VISUAL 默认推迟到第二轮/u);
+  assert.match(serializedMessages, /VISUAL Query 必须同时包含 ZH 与 EN/u);
 });

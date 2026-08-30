@@ -142,7 +142,7 @@ export function createCreativeResearchResearchStore(options: {
         if (previous && previous.sessionId !== reference.sessionId) throw creativeResearchSearchError('STORE_FAILED', 'Reference session identity 不匹配');
         const matchedQueryIds = [...new Set([...(previous?.matchedQueryIds || [previous?.queryId].filter(Boolean) as string[]), ...(reference.matchedQueryIds || [reference.queryId])])];
         const merged: WebReferenceItem = previous
-          ? { ...previous, matchedQueryIds, resultRank: Math.min(previous.resultRank, reference.resultRank) }
+          ? { ...previous, ...reference, matchedQueryIds, resultRank: Math.min(previous.resultRank, reference.resultRank) }
           : { ...reference, matchedQueryIds };
         assertReferenceItem(merged);
         await persist(filename, merged);

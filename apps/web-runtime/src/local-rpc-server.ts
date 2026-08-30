@@ -1,10 +1,13 @@
 import http, { type IncomingMessage, type ServerResponse } from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 
 export interface LocalRpcServerOptions {
   host?: string;
   port?: number;
   allowedOrigin: string | string[];
   invoke(channel: string, args: unknown[]): Promise<unknown>;
+  creativeResearchDataPath?: string;
 }
 
 export interface LocalRpcServer {
@@ -87,6 +90,19 @@ export async function startLocalRpcServer(options: LocalRpcServerOptions): Promi
       response.write(': connected\n\n');
       eventClients.add(response);
       request.once('close', () => eventClients.delete(response));
+      return;
+    }
+    const imageMatch = /^\/_masterpiece\/creative-research\/([A-Za-z0-9._-]+)\/references\/([A-Za-z0-9._-]+)\/image\.webp$/u.exec(requestUrl.pathname);
+    if (request.method === 'GET' && imageMatch && options.creativeResearchDataPath) {
+      const root = path.join(path.resolve(options.creativeResearchDataPath), 'creative-research');
+      const filename = path.resolve(root, imageMatch[1]!, 'assets', 'references', imageMatch[2]!, 'image.webp');
+      if (!filename.startsWith(`${root}${path.sep}`)) { sendJson(response, 404, { error: 'WEB_RPC_NOT_FOUND' }); return; }
+      const stream = fs.createReadStream(filename);
+      stream.once('error', () => { if (!response.headersSent) sendJson(response, 404, { error: 'REFERENCE_IMAGE_NOT_FOUND' }); else response.destroy(); });
+      stream.once('open', () => {
+        response.writeHead(200, { 'content-type': 'image/webp', 'cache-control': 'private, max-age=31536000, immutable', 'x-content-type-options': 'nosniff' });
+        stream.pipe(response);
+      });
       return;
     }
     const match = /^\/_masterpiece\/rpc\/([^/]+)$/u.exec(requestUrl.pathname);
