@@ -24,6 +24,10 @@ const FACTUAL_FIELDS: readonly DesignBriefField[] = [
   'projectSummary', 'designTask', 'audience', 'scenarios', 'coreMessages', 'constraints',
 ];
 
+const FIELD_EVIDENCE_SCHEMA = Object.freeze(Object.fromEntries(
+  FACTUAL_FIELDS.map((field) => [field, 'string[]; required when this field has content; values must be supplied evidence ids']),
+));
+
 function cleanText(value: unknown, max = 1200): string {
   return typeof value === 'string' ? value.replace(/\s+/gu, ' ').trim().slice(0, max) : '';
 }
@@ -41,6 +45,34 @@ function cleanList(value: unknown, cap: number): string[] {
     if (result.length >= cap) break;
   }
   return result;
+}
+
+function cleanEvidenceIds(value: unknown, cap: number): string[] {
+  return cleanList(typeof value === 'string' ? [value] : value, cap);
+}
+
+function rawFieldEvidenceMap(value: unknown): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+  if (!Array.isArray(value)) return {};
+  const result: Record<string, unknown> = {};
+  for (const item of value) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+    const entry = item as Record<string, unknown>;
+    const field = cleanText(entry.field, 80);
+    if (field) result[field] = entry.evidenceIds;
+  }
+  return result;
+}
+
+function promptEvidence(input: DocumentIntakeMaterial) {
+  return input.evidence.map((item) => ({
+    id: item.id,
+    sourceDocumentId: item.sourceDocumentId,
+    locator: item.locator,
+    excerpt: item.excerpt,
+  }));
 }
 
 export function parseCreativeResearchModelJson(text: string): Record<string, unknown> {
@@ -63,12 +95,7 @@ export function buildDesignBriefMessages(input: DocumentIntakeMaterial & {
   designerNotes: string[];
   linkedProjectBrief?: LinkedProjectBrief | null;
 }): Array<{ role: 'system' | 'user'; content: string }> {
-  const evidence = input.evidence.map((item) => ({
-    id: item.id,
-    sourceDocumentId: item.sourceDocumentId,
-    locator: item.locator,
-    excerpt: item.excerpt,
-  }));
+  const evidence = promptEvidence(input);
   return [
     {
       role: 'system',
@@ -87,7 +114,7 @@ export function buildDesignBriefMessages(input: DocumentIntakeMaterial & {
           scenarios: 'string[] <= 8', coreMessages: 'string[] <= 8', constraints: 'string[] <= 16',
           conceptKeywords: 'string[] <= 12', visualKeywords: 'string[] <= 12',
           evidenceIds: 'string[]; only supplied evidence ids',
-          fieldEvidence: 'object mapping each factual field to supplied evidence ids',
+          fieldEvidence: FIELD_EVIDENCE_SCHEMA,
           searchKeywordSuggestions: 'array <= 24 of {value, kind: CONCEPT|VISUAL|CATEGORY, rationale?, locale?}',
           warnings: 'string[]',
         },
@@ -96,6 +123,11 @@ export function buildDesignBriefMessages(input: DocumentIntakeMaterial & {
         linkedProjectBrief: input.linkedProjectBrief || null,
         designerNotes: input.designerNotes,
         intakeWarnings: input.warnings || [],
+        rules: [
+          'fieldEvidence must be an object whose values are arrays, even when one evidence id is used.',
+          'Every non-empty factual field must cite at least one supplied evidence id in fieldEvidence.',
+          'evidenceIds must contain the union of all ids used by fieldEvidence.',
+        ],
       }),
     },
   ];
@@ -114,7 +146,16 @@ export function buildDesignBriefRepairMessages(
         validationError,
         invalidOutput: String(invalidOutput).slice(0, 30_000),
         allowedEvidenceIds: input.evidence.map((item) => item.id),
+        evidence: promptEvidence(input),
         requiredFields: DESIGN_BRIEF_FIELDS,
+        requiredFactualFieldEvidence: FACTUAL_FIELDS,
+        fieldEvidenceSchema: FIELD_EVIDENCE_SCHEMA,
+        repairRules: [
+          'Preserve valid content from invalidOutput.',
+          'For every non-empty factual field, add at least one supporting allowed evidence id to fieldEvidence.',
+          'fieldEvidence values must be arrays; evidenceIds must contain their union.',
+          'Do not cite an id unless its supplied excerpt supports the field.',
+        ],
       }),
     },
   ];
@@ -125,21 +166,21 @@ export function normalizeDesignBriefDraft(
   allowedEvidenceIds: readonly string[],
 ): DesignBriefDraftMaterial {
   const allowed = new Set(allowedEvidenceIds);
+  const evidenceRefCap = Math.max(allowed.size, 256);
   const requiredText = (field: 'projectSummary' | 'designTask' | 'audience') => {
     const value = cleanText(raw[field]);
     if (!value) throw creativeResearchError('CREATIVE_RESEARCH_MODEL_OUTPUT_INVALID', `${field} 不能为空`);
     return value;
   };
-  const evidenceIds = cleanList(raw.evidenceIds, allowed.size).filter((id) => allowed.has(id));
-  if (!evidenceIds.length) {
+  const submittedEvidenceIds = cleanEvidenceIds(raw.evidenceIds, evidenceRefCap);
+  const evidenceIds = submittedEvidenceIds.filter((id) => allowed.has(id));
+  if (submittedEvidenceIds.length > 0 && evidenceIds.length === 0) {
     throw creativeResearchError('CREATIVE_RESEARCH_MODEL_OUTPUT_INVALID', 'Design Brief 必须引用至少一条真实文档证据');
   }
-  const rawFieldEvidence = raw.fieldEvidence && typeof raw.fieldEvidence === 'object' && !Array.isArray(raw.fieldEvidence)
-    ? raw.fieldEvidence as Record<string, unknown>
-    : {};
+  const rawFieldEvidence = rawFieldEvidenceMap(raw.fieldEvidence);
   const fieldEvidence: Partial<Record<DesignBriefField, string[]>> = {};
   for (const field of DESIGN_BRIEF_FIELDS) {
-    const ids = cleanList(rawFieldEvidence[field], allowed.size).filter((id) => allowed.has(id));
+    const ids = cleanEvidenceIds(rawFieldEvidence[field], evidenceRefCap).filter((id) => allowed.has(id));
     if (ids.length) fieldEvidence[field] = ids;
   }
   for (const field of FACTUAL_FIELDS) {
@@ -148,6 +189,13 @@ export function normalizeDesignBriefDraft(
     if (hasContent && !fieldEvidence[field]?.length) {
       throw creativeResearchError('CREATIVE_RESEARCH_MODEL_OUTPUT_INVALID', `${field} 缺少文档证据引用`);
     }
+  }
+  const normalizedEvidenceIds = [...new Set([
+    ...evidenceIds,
+    ...Object.values(fieldEvidence).flatMap((ids) => ids || []),
+  ])];
+  if (!normalizedEvidenceIds.length) {
+    throw creativeResearchError('CREATIVE_RESEARCH_MODEL_OUTPUT_INVALID', 'Design Brief 必须引用至少一条真实文档证据');
   }
   const suggestions = Array.isArray(raw.searchKeywordSuggestions) ? raw.searchKeywordSuggestions : [];
   const normalizedSuggestions: NonNullable<DesignBriefDraftMaterial['searchKeywordSuggestions']> = [];
@@ -188,7 +236,7 @@ export function normalizeDesignBriefDraft(
     constraints: cleanList(raw.constraints, CAPS.constraints),
     conceptKeywords,
     visualKeywords,
-    evidenceIds,
+    evidenceIds: normalizedEvidenceIds,
     fieldEvidence,
     searchKeywordSuggestions: normalizedSuggestions,
     warnings: cleanList(raw.warnings, 24),

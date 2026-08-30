@@ -46,6 +46,8 @@ import { createCreativeResearchSelectionService } from '@masterpiece/runtime-cor
 import { createCreativeResearchPreferenceAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-preference-analysis-adapter.ts';
 import { createCreativeResearchPreferenceAnalysisService } from '@masterpiece/runtime-core/application/creative-research-preference-analysis-service.ts';
 import { createCreativeResearchPreferenceStore } from '@masterpiece/runtime-core/application/creative-research-preference-store.ts';
+import { createCreativeResearchPlannerAdapter } from '@masterpiece/runtime-core/application/creative-research-planner-adapter.ts';
+import { createCreativeResearchPlannerService } from '@masterpiece/runtime-core/application/creative-research-planner-service.ts';
 import { createCreativeResearchStore } from '@masterpiece/runtime-core/application/creative-research-store.ts';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
@@ -257,6 +259,13 @@ export function createCurrentBusinessOperations(
     ...creativeResearchStore,
     documentAdapter: creativeResearchDocumentAdapter,
     analysisAdapter: createCreativeResearchAnalysisAdapter({
+      readCredentials: async (profileId) => readCredentials(profileId),
+    }),
+  });
+  const creativeResearchPlanner = createCreativeResearchPlannerService({
+    ...creativeResearchStore,
+    plans: creativeResearchResearchStore.plans,
+    adapter: createCreativeResearchPlannerAdapter({
       readCredentials: async (profileId) => readCredentials(profileId),
     }),
   });
@@ -652,6 +661,7 @@ export function createCurrentBusinessOperations(
     createCreativeResearchOperations({
       briefs: creativeResearchBrowserBriefs,
       search: creativeResearchSearch,
+      planner: creativeResearchPlanner,
       history: creativeResearchResearchStore.history,
       selection: creativeResearchSelection,
       preferences: creativeResearchPreferences,

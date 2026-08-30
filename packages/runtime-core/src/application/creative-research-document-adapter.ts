@@ -11,6 +11,8 @@ import { parseStrategyDocument } from './document-processing.ts';
 import { classifyDocumentRole } from '@masterpiece/document-ingestion/document-preparation.js';
 
 const SUPPORTED_EXTENSIONS = new Set(['.pdf', '.docx', '.md', '.markdown', '.txt']);
+const EVIDENCE_CHUNK_CHARACTERS = 1200;
+const EVIDENCE_CHUNK_OVERLAP = 120;
 
 export interface CreativeResearchSourceDocument {
   path: string;
@@ -26,26 +28,57 @@ function evidenceId(sourceDocumentId: string, locator: string, excerpt: string):
 }
 
 function normalizeExcerpt(value: string): string {
-  return value.replace(/\s+/gu, ' ').trim().slice(0, 1200);
+  return value.replace(/\s+/gu, ' ').trim();
+}
+
+function evidenceChunks(value: string): Array<{ excerpt: string; start: number; end: number }> {
+  const text = normalizeExcerpt(value);
+  if (!text) return [];
+  if (text.length <= EVIDENCE_CHUNK_CHARACTERS) {
+    return [{ excerpt: text, start: 1, end: text.length }];
+  }
+  const chunks: Array<{ excerpt: string; start: number; end: number }> = [];
+  let startIndex = 0;
+  while (startIndex < text.length) {
+    let endIndex = Math.min(startIndex + EVIDENCE_CHUNK_CHARACTERS, text.length);
+    if (endIndex < text.length) {
+      const tail = text.slice(startIndex + Math.floor(EVIDENCE_CHUNK_CHARACTERS * 0.7), endIndex);
+      const boundary = Math.max(
+        tail.lastIndexOf('。'), tail.lastIndexOf('！'), tail.lastIndexOf('？'),
+        tail.lastIndexOf('. '), tail.lastIndexOf('! '), tail.lastIndexOf('? '),
+        tail.lastIndexOf('；'), tail.lastIndexOf('; '),
+      );
+      if (boundary >= 0) {
+        endIndex = startIndex + Math.floor(EVIDENCE_CHUNK_CHARACTERS * 0.7) + boundary + 1;
+      }
+    }
+    const excerpt = text.slice(startIndex, endIndex).trim();
+    if (excerpt) chunks.push({ excerpt, start: startIndex + 1, end: endIndex });
+    if (endIndex >= text.length) break;
+    startIndex = Math.max(startIndex + 1, endIndex - EVIDENCE_CHUNK_OVERLAP);
+  }
+  return chunks;
 }
 
 function evidenceForDocument(document: NormalizedDocument, sourceDocumentId: string, now: string): DesignBriefEvidence[] {
   return document.sections.flatMap((section, index) => {
-    const excerpt = normalizeExcerpt(section.content);
-    if (!excerpt) return [];
-    const locator = section.page
-      ? { kind: 'DOCUMENT_PAGE' as const, value: `page:${section.page}` }
-      : section.heading
-        ? { kind: 'DOCUMENT_SECTION' as const, value: section.heading }
-        : { kind: 'DOCUMENT_RANGE' as const, value: `section:${index + 1};characters:1-${section.content.length}` };
-    return [{
-      id: evidenceId(sourceDocumentId, `${locator.kind}:${locator.value}`, excerpt),
-      sourceDocumentId,
-      normalizedSourceId: document.id,
-      locator,
-      excerpt,
-      createdAt: now,
-    }];
+    const chunks = evidenceChunks(section.content);
+    return chunks.map((chunk) => {
+      const characterRange = `characters:${chunk.start}-${chunk.end}`;
+      const locator = section.page
+        ? { kind: 'DOCUMENT_PAGE' as const, value: chunks.length === 1 ? `page:${section.page}` : `page:${section.page};${characterRange}` }
+        : section.heading
+          ? { kind: 'DOCUMENT_SECTION' as const, value: chunks.length === 1 ? section.heading : `${section.heading};${characterRange}` }
+          : { kind: 'DOCUMENT_RANGE' as const, value: `section:${index + 1};${characterRange}` };
+      return {
+        id: evidenceId(sourceDocumentId, `${locator.kind}:${locator.value}`, chunk.excerpt),
+        sourceDocumentId,
+        normalizedSourceId: document.id,
+        locator,
+        excerpt: chunk.excerpt,
+        createdAt: now,
+      };
+    });
   });
 }
 
@@ -53,7 +86,10 @@ function conflictWarnings(evidence: DesignBriefEvidence[]): string[] {
   const bySection = new Map<string, DesignBriefEvidence[]>();
   for (const item of evidence) {
     if (item.locator.kind !== 'DOCUMENT_SECTION') continue;
-    const key = item.locator.value.replace(/\s+/gu, '').toLocaleLowerCase();
+    const key = item.locator.value
+      .replace(/;characters:\d+-\d+$/u, '')
+      .replace(/\s+/gu, '')
+      .toLocaleLowerCase();
     const items = bySection.get(key) || [];
     items.push(item);
     bySection.set(key, items);

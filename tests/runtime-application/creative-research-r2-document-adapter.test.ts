@@ -31,7 +31,7 @@ test('R2 document adapter reads PDF, DOCX, Markdown and text as traceable multi-
     const docx = path.join(temporary, 'guideline.docx');
     const pdf = path.join(temporary, 'strategy.pdf');
     await fs.writeFile(markdown, '# Brand\n\n## Audience\nUrban families');
-    await fs.writeFile(text, 'Research shows that neighborhood trust matters.');
+    await fs.writeFile(text, `${'Research evidence '.repeat(90)}FINAL_DESIGN_TASK_MARKER`);
     const zip = new AdmZip();
     zip.addFile('word/document.xml', Buffer.from('<?xml version="1.0"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:pPr><w:pStyle w:val="Heading1"/></w:pPr><w:r><w:t>Visual constraint</w:t></w:r></w:p><w:p><w:r><w:t>Keep the existing logo.</w:t></w:r></w:p></w:body></w:document>'));
     zip.writeZip(docx);
@@ -46,6 +46,10 @@ test('R2 document adapter reads PDF, DOCX, Markdown and text as traceable multi-
     assert.ok(material.evidence.length >= 4);
     assert.deepEqual(new Set(material.evidence.map((item) => item.sourceDocumentId)), new Set(sources.keys()));
     assert.ok(material.evidence.every((item) => item.excerpt && item.locator.value));
+    const longTextEvidence = material.evidence.filter((item) => item.sourceDocumentId === 'document-2');
+    assert.ok(longTextEvidence.length > 1, 'long sections must be split instead of truncated');
+    assert.ok(longTextEvidence.every((item) => (item.excerpt?.length || 0) <= 1200));
+    assert.match(longTextEvidence.map((item) => item.excerpt).join(' '), /FINAL_DESIGN_TASK_MARKER/u);
   } finally {
     await fs.rm(temporary, { recursive: true, force: true });
   }

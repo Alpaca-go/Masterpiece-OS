@@ -1,5 +1,6 @@
 import type {
   CreativeDirectionContext,
+  CreativeResearchPlan,
   CreativeResearchSession,
   DesignBrief,
   DirectionBoard,
@@ -40,6 +41,11 @@ export interface SearchHistoryRepository {
     providerCalls?: number;
   }): Promise<SearchQuery>;
   listSessionSearchHistory(sessionId: string): Promise<SearchQuery[]>;
+}
+
+export interface CreativeResearchPlanRepository {
+  save(plan: CreativeResearchPlan): Promise<CreativeResearchPlan>;
+  get(sessionId: string): Promise<CreativeResearchPlan | null>;
 }
 
 export interface ReferenceResearchRepository {
@@ -104,6 +110,7 @@ export const CREATIVE_RESEARCH_PORT_NAMES = [
   'CreativeResearchSessionRepository',
   'DesignBriefRepository',
   'SearchHistoryRepository',
+  'CreativeResearchPlanRepository',
   'ReferenceResearchRepository',
   'PreferenceEvidenceRepository',
   'DirectionBoardRepository',

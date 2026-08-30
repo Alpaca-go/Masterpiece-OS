@@ -51,6 +51,71 @@ export interface SearchKeyword {
   createdAt: string;
 }
 
+export const CREATIVE_RESEARCH_CLUE_KINDS = [
+  'CATEGORY', 'MARKET', 'CONCEPT', 'BRAND_VALUE', 'CULTURE', 'VISUAL', 'COMPLIANCE', 'OTHER',
+] as const;
+export const CREATIVE_RESEARCH_CLUE_PRIORITIES = ['HIGH', 'MEDIUM', 'LOW'] as const;
+export const CREATIVE_RESEARCH_TRACK_KINDS = ['CATEGORY', 'MARKET', 'CONCEPT', 'CULTURE', 'VISUAL', 'COMPLIANCE'] as const;
+export const CREATIVE_RESEARCH_TRACK_PRIORITIES = ['PRIMARY', 'SECONDARY'] as const;
+export const CREATIVE_RESEARCH_QUERY_ROUNDS = ['INITIAL', 'REFINEMENT'] as const;
+
+export type CreativeResearchClueKind = typeof CREATIVE_RESEARCH_CLUE_KINDS[number];
+export type CreativeResearchCluePriority = typeof CREATIVE_RESEARCH_CLUE_PRIORITIES[number];
+export type CreativeResearchTrackKind = typeof CREATIVE_RESEARCH_TRACK_KINDS[number];
+export type CreativeResearchTrackPriority = typeof CREATIVE_RESEARCH_TRACK_PRIORITIES[number];
+export type CreativeResearchQueryRound = typeof CREATIVE_RESEARCH_QUERY_ROUNDS[number];
+
+export interface CreativeResearchClue {
+  id: string;
+  value: string;
+  kind: CreativeResearchClueKind;
+  enabled: boolean;
+  source: 'BRIEF' | 'DESIGNER';
+  priority: CreativeResearchCluePriority;
+  rationale?: string;
+}
+
+export interface CreativeResearchTrack {
+  id: string;
+  title: string;
+  summary: string;
+  clueIds: string[];
+  kind: CreativeResearchTrackKind;
+  priority: CreativeResearchTrackPriority;
+  firstRoundEligible: boolean;
+  rationale: string;
+}
+
+export interface PlannedQuery {
+  id: string;
+  trackId: string;
+  text: string;
+  kind: SearchQueryKind;
+  round: 'INITIAL';
+  rationale: string;
+}
+
+export interface CreativeResearchPlanTelemetry {
+  clueCount: number;
+  trackCount: number;
+  initialQueryCount: number;
+  visualClueDeferredCount: number;
+  plannerFallbackUsed: boolean;
+  duplicateQueryRemovedCount: number;
+}
+
+export interface CreativeResearchPlan {
+  id: string;
+  sessionId: string;
+  briefRevisionId: string;
+  clues: CreativeResearchClue[];
+  tracks: CreativeResearchTrack[];
+  firstRoundQueries: PlannedQuery[];
+  plannerMode: 'MODEL' | 'DETERMINISTIC_FALLBACK';
+  telemetry: CreativeResearchPlanTelemetry;
+  createdAt: string;
+}
+
 export interface DesignBrief {
   id: string;
   sessionId: string;
@@ -115,6 +180,8 @@ export interface SearchQuery {
   sourceReferenceIds?: string[];
   sourcePreferenceInsightIds?: string[];
   excludeSeen?: boolean;
+  researchTrackId?: string;
+  round?: CreativeResearchQueryRound;
 }
 
 export const SIMILAR_SEARCH_DIMENSIONS = [

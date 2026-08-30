@@ -202,9 +202,8 @@ try {
   const result = {
     schemaVersion: '1.1', status: 'pass', runtime: 'web', host: 'node', rendererUrl, rpcUrl,
     checks: {
-      // Current 180-channel production baseline plus fourteen R4 browsing,
-      // seven R5 evidence, five R6 correction, and seven R7 direction channels.
-      nodeHostBoot: hostReady.operationCount === 213,
+      // Current production baseline, including the Research Planner create/get channels.
+      nodeHostBoot: hostReady.operationCount === 215,
       nodeHealth: health.host === 'node',
       rendererPage: screenshot.length > 10_000 && rendererState.rootClass !== 'splash',
       configLoad: Array.isArray(settings.body.result?.profiles),

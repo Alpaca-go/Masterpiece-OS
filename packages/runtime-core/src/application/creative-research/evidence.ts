@@ -1,5 +1,10 @@
 import {
   CREATIVE_RESEARCH_SESSION_STATUSES,
+  CREATIVE_RESEARCH_CLUE_KINDS,
+  CREATIVE_RESEARCH_CLUE_PRIORITIES,
+  CREATIVE_RESEARCH_TRACK_KINDS,
+  CREATIVE_RESEARCH_TRACK_PRIORITIES,
+  CREATIVE_RESEARCH_QUERY_ROUNDS,
   DESIGN_BRIEF_FIELDS,
   NEGATIVE_SIGNAL_SCOPES,
   NEGATIVE_SIGNAL_TYPES,
@@ -11,6 +16,7 @@ import {
   SEARCH_QUERY_STATUSES,
   SEARCH_QUERY_ORIGINS,
   type CreativeResearchSession,
+  type CreativeResearchPlan,
   type DesignBrief,
   type NegativeSignal,
   type PreferenceInsight,
@@ -157,6 +163,8 @@ export function assertSearchQuery(query: SearchQuery): void {
   assertEnum(query.status, SEARCH_QUERY_STATUSES, 'query.status');
   requireText(query.batch, 'query.batch');
   if (query.origin !== undefined) assertEnum(query.origin, SEARCH_QUERY_ORIGINS, 'query.origin');
+  if (query.round !== undefined) assertEnum(query.round, CREATIVE_RESEARCH_QUERY_ROUNDS, 'query.round');
+  if (query.researchTrackId !== undefined) requireText(query.researchTrackId, 'query.researchTrackId');
   for (const [field, ids] of Object.entries({
     parentQueryIds: query.parentQueryIds,
     sourceReferenceIds: query.sourceReferenceIds,
@@ -183,6 +191,69 @@ export function assertSearchQuery(query: SearchQuery): void {
   }
   requireIsoDate(query.createdAt, 'query.createdAt');
   assertJsonSerializable(query, 'query');
+}
+
+export function assertCreativeResearchPlan(plan: CreativeResearchPlan): void {
+  requireText(plan.id, 'plan.id');
+  requireText(plan.sessionId, 'plan.sessionId');
+  requireText(plan.briefRevisionId, 'plan.briefRevisionId');
+  requireIsoDate(plan.createdAt, 'plan.createdAt');
+  if (!['MODEL', 'DETERMINISTIC_FALLBACK'].includes(plan.plannerMode)) throw new Error('plan.plannerMode is invalid');
+  if (!Array.isArray(plan.clues) || plan.clues.length < 3) throw new Error('plan.clues requires at least 3 clues');
+  const clueIds = new Set<string>();
+  for (const clue of plan.clues) {
+    requireText(clue.id, 'plan.clue.id');
+    requireText(clue.value, 'plan.clue.value');
+    if (clueIds.has(clue.id)) throw new Error(`duplicate plan clue: ${clue.id}`);
+    clueIds.add(clue.id);
+    assertEnum(clue.kind, CREATIVE_RESEARCH_CLUE_KINDS, 'plan.clue.kind');
+    assertEnum(clue.priority, CREATIVE_RESEARCH_CLUE_PRIORITIES, 'plan.clue.priority');
+    if (!['BRIEF', 'DESIGNER'].includes(clue.source)) throw new Error('plan.clue.source is invalid');
+    if (typeof clue.enabled !== 'boolean') throw new Error('plan.clue.enabled must be boolean');
+  }
+  if (!Array.isArray(plan.tracks) || plan.tracks.length < 3 || plan.tracks.length > 6) {
+    throw new Error('plan.tracks must contain 3 to 6 tracks');
+  }
+  const tracks = new Map<string, CreativeResearchPlan['tracks'][number]>();
+  for (const track of plan.tracks) {
+    requireText(track.id, 'plan.track.id');
+    requireText(track.title, 'plan.track.title');
+    requireText(track.summary, 'plan.track.summary');
+    requireText(track.rationale, 'plan.track.rationale');
+    if (tracks.has(track.id)) throw new Error(`duplicate plan track: ${track.id}`);
+    tracks.set(track.id, track);
+    assertEnum(track.kind, CREATIVE_RESEARCH_TRACK_KINDS, 'plan.track.kind');
+    assertEnum(track.priority, CREATIVE_RESEARCH_TRACK_PRIORITIES, 'plan.track.priority');
+    if (typeof track.firstRoundEligible !== 'boolean') throw new Error('plan.track.firstRoundEligible must be boolean');
+    if (track.kind === 'VISUAL' && track.firstRoundEligible) throw new Error('VISUAL track cannot be first-round eligible');
+    if (!Array.isArray(track.clueIds) || !track.clueIds.length || track.clueIds.some((id) => !clueIds.has(id))) {
+      throw new Error('plan.track.clueIds must reference plan clues');
+    }
+  }
+  if (!Array.isArray(plan.firstRoundQueries) || plan.firstRoundQueries.length < 3 || plan.firstRoundQueries.length > 6) {
+    throw new Error('plan.firstRoundQueries must contain 3 to 6 queries');
+  }
+  const queryKeys = new Set<string>();
+  for (const query of plan.firstRoundQueries) {
+    requireText(query.id, 'plan.query.id');
+    requireText(query.trackId, 'plan.query.trackId');
+    requireText(query.text, 'plan.query.text');
+    requireText(query.rationale, 'plan.query.rationale');
+    assertEnum(query.kind, SEARCH_QUERY_KINDS, 'plan.query.kind');
+    if (query.round !== 'INITIAL') throw new Error('plan.query.round must be INITIAL');
+    const track = tracks.get(query.trackId);
+    if (!track?.firstRoundEligible) throw new Error('plan.query.trackId must reference a first-round track');
+    const key = query.text.replace(/\s+/gu, ' ').trim().toLocaleLowerCase();
+    if (queryKeys.has(key)) throw new Error(`duplicate planned query: ${query.text}`);
+    queryKeys.add(key);
+  }
+  const metrics = plan.telemetry;
+  if (!metrics || typeof metrics !== 'object') throw new Error('plan.telemetry is required');
+  for (const field of ['clueCount', 'trackCount', 'initialQueryCount', 'visualClueDeferredCount', 'duplicateQueryRemovedCount'] as const) {
+    if (!Number.isInteger(metrics[field]) || metrics[field] < 0) throw new Error(`plan.telemetry.${field} must be a non-negative integer`);
+  }
+  if (typeof metrics.plannerFallbackUsed !== 'boolean') throw new Error('plan.telemetry.plannerFallbackUsed must be boolean');
+  assertJsonSerializable(plan, 'plan');
 }
 
 export function assertReferenceItem(reference: ReferenceItem): void {

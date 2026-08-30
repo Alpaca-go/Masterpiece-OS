@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import type {
+  CreativeResearchPlan,
   NegativeSignal,
   ReferenceItem,
   ReferenceRegion,
@@ -9,13 +10,14 @@ import type {
   WebReferenceItem,
 } from './creative-research/contracts.ts';
 import {
+  assertCreativeResearchPlan,
   assertNegativeSignal,
   assertReferenceItem,
   assertReferenceRegion,
   assertReferenceSelection,
   assertSearchQuery,
 } from './creative-research/evidence.ts';
-import type { ReferenceResearchRepository, SearchHistoryRepository } from './creative-research/ports.ts';
+import type { CreativeResearchPlanRepository, ReferenceResearchRepository, SearchHistoryRepository } from './creative-research/ports.ts';
 import { assertInside } from './analysis-contract.ts';
 import { atomicWriteJsonWithRetry, type AtomicWriteResult } from './runtime/atomic-write.ts';
 import { creativeResearchSearchError } from './creative-research-search-errors.ts';
@@ -39,7 +41,7 @@ async function readJson<T>(filename: string): Promise<T | null> {
 export function createCreativeResearchResearchStore(options: {
   readDefaultDataPath: DataPathReader;
   writeJson?: JsonWriter;
-}): { history: SearchHistoryRepository; references: ReferenceResearchRepository } {
+}): { history: SearchHistoryRepository; plans: CreativeResearchPlanRepository; references: ReferenceResearchRepository } {
   const writeJson = options.writeJson || atomicWriteJsonWithRetry;
   const locks = new Map<string, Promise<unknown>>();
   const dataRoot = async () => path.join(path.resolve(await options.readDefaultDataPath()), 'creative-research');
@@ -48,6 +50,7 @@ export function createCreativeResearchResearchStore(options: {
     return assertInside(root, path.join(root, safeIdentifier(sessionId, 'Session ID')));
   };
   const queryDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'queries');
+  const planPath = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'plan', 'research-plan.json');
   const referenceDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'references');
   const selectionDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'selections');
   const regionDirectory = async (sessionId: string) => path.join(await sessionRoot(sessionId), 'research', 'regions');
@@ -110,6 +113,22 @@ export function createCreativeResearchResearchStore(options: {
       const values = await Promise.all(entries.filter((entry) => entry.endsWith('.json')).map((entry) => readJson<SearchQuery>(path.join(directory, entry))));
       return values.filter((item): item is SearchQuery => Boolean(item)).map((item) => { assertSearchQuery(item); return item; })
         .sort((left, right) => left.createdAt.localeCompare(right.createdAt) || left.id.localeCompare(right.id));
+    },
+  };
+
+  const plans: CreativeResearchPlanRepository = {
+    async save(plan) {
+      assertCreativeResearchPlan(plan);
+      const filename = await planPath(plan.sessionId);
+      return serialize(filename, async () => {
+        await persist(filename, plan);
+        return plan;
+      });
+    },
+    async get(sessionId) {
+      const value = await readJson<CreativeResearchPlan>(await planPath(sessionId));
+      if (value) assertCreativeResearchPlan(value);
+      return value;
     },
   };
 
@@ -198,5 +217,5 @@ export function createCreativeResearchResearchStore(options: {
     },
   };
 
-  return { history, references };
+  return { history, plans, references };
 }

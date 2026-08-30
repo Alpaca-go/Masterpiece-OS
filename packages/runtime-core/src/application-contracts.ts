@@ -2538,6 +2538,53 @@ export interface CreativeResearchFieldEvidenceDto {
   evidenceIds: string[];
 }
 
+export type CreativeResearchClueKindDto =
+  | 'CATEGORY' | 'MARKET' | 'CONCEPT' | 'BRAND_VALUE' | 'CULTURE' | 'VISUAL' | 'COMPLIANCE' | 'OTHER';
+export type CreativeResearchTrackKindDto = 'CATEGORY' | 'MARKET' | 'CONCEPT' | 'CULTURE' | 'VISUAL' | 'COMPLIANCE';
+
+export interface CreativeResearchPlanDto {
+  id: string;
+  sessionId: string;
+  briefRevisionId: string;
+  clues: Array<{
+    id: string;
+    value: string;
+    kind: CreativeResearchClueKindDto;
+    enabled: boolean;
+    source: 'BRIEF' | 'DESIGNER';
+    priority: 'HIGH' | 'MEDIUM' | 'LOW';
+    rationale?: string;
+  }>;
+  tracks: Array<{
+    id: string;
+    title: string;
+    summary: string;
+    clueIds: string[];
+    kind: CreativeResearchTrackKindDto;
+    priority: 'PRIMARY' | 'SECONDARY';
+    firstRoundEligible: boolean;
+    rationale: string;
+  }>;
+  firstRoundQueries: Array<{
+    id: string;
+    trackId: string;
+    text: string;
+    kind: 'CONCEPT' | 'CATEGORY';
+    round: 'INITIAL';
+    rationale: string;
+  }>;
+  plannerMode: 'MODEL' | 'DETERMINISTIC_FALLBACK';
+  telemetry: {
+    clueCount: number;
+    trackCount: number;
+    initialQueryCount: number;
+    visualClueDeferredCount: number;
+    plannerFallbackUsed: boolean;
+    duplicateQueryRemovedCount: number;
+  };
+  createdAt: string;
+}
+
 export interface UpdateCreativeResearchBriefInput {
   projectSummary?: string;
   designTask?: string;
@@ -2572,6 +2619,8 @@ export interface CreativeResearchQueryDto {
   completedAt?: string;
   batch: string;
   origin: 'INITIAL' | 'REFRESH' | 'KEYWORD_ADJUSTMENT' | 'SIMILAR';
+  researchTrackId?: string;
+  round: 'INITIAL' | 'REFINEMENT';
 }
 
 export interface UpdateCreativeResearchSearchStrategyInput {
@@ -2872,6 +2921,8 @@ export interface RuntimeApi {
     prepareDesignBrief(sessionId: string, input: { profileId: string; designerNotes?: string[] }): Promise<CreativeResearchBriefDto>;
     getDesignBrief(sessionId: string): Promise<CreativeResearchBriefDto>;
     updateDesignBrief(sessionId: string, input: UpdateCreativeResearchBriefInput): Promise<CreativeResearchBriefDto>;
+    createResearchPlan(sessionId: string, input: { profileId: string }): Promise<CreativeResearchPlanDto>;
+    getResearchPlan(sessionId: string): Promise<CreativeResearchPlanDto | null>;
     startResearch(sessionId: string): Promise<CreativeResearchSessionDto>;
     planInitialSearch(sessionId: string): Promise<CreativeResearchQueryDto[]>;
     planRefreshSearch(sessionId: string, profileId: string): Promise<CreativeResearchQueryDto[]>;

@@ -23,6 +23,7 @@ interface DeriveExecutionStagesInput {
   session: CreativeResearchSessionDto;
   projectName: string;
   briefReady: boolean;
+  planReady: boolean;
   queries: CreativeResearchQueryDto[];
   referenceCount: number;
   preferenceCount: number;
@@ -33,7 +34,7 @@ interface DeriveExecutionStagesInput {
 
 function operationStage(operation: string): string | null {
   if (operation === 'brief' || operation === 'saving' || operation === 'reanalyzing') return 'brief';
-  if (operation === 'planning') return 'planning';
+  if (operation === 'planning' || operation === 'research-planning') return 'planning';
   if (['searching', 'refreshing', 'adjusting', 'similar'].includes(operation)) return 'search';
   if (operation === 'preferences' || operation.startsWith('insight:')) return 'preferences';
   if (operation === 'direction' || operation.startsWith('direction:')) return 'direction';
@@ -76,9 +77,9 @@ export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput)
     },
     {
       id: 'planning',
-      label: '规划搜索关键词',
-      detail: input.queries.length ? `已生成 ${input.queries.length} 组真实搜索任务` : activeStage === 'planning' ? '正在根据已确认 Brief 规划搜索' : '等待开始研究',
-      state: state('planning', input.queries.length > 0),
+      label: '归纳研究主题与 Query',
+      detail: input.queries.length ? `已编译 ${input.queries.length} 组真实搜索任务` : input.planReady ? '研究主题与首轮 Query 已就绪' : activeStage === 'planning' ? '正在聚类线索并合成首轮 Query' : '等待生成 Research Plan',
+      state: state('planning', input.planReady || input.queries.length > 0),
     },
     {
       id: 'search',
@@ -128,7 +129,7 @@ export function ResearchExecutionPanel(props: DeriveExecutionStagesInput & {
 }) {
   const [clock, setClock] = useState(() => Date.now());
   const stages = useMemo(() => deriveResearchExecutionStages(props), [
-    props.session, props.projectName, props.briefReady, props.queries, props.referenceCount,
+    props.session, props.projectName, props.briefReady, props.planReady, props.queries, props.referenceCount,
     props.preferenceCount, props.directionReady, props.busy, props.failure,
   ]);
 

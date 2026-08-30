@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import type { CreativeResearchSession, DesignBrief } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
+import type { CreativeResearchPlan, CreativeResearchSession, DesignBrief } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
 import {
   buildBaiduReferenceSearchRequest,
   measureBaiduQueryUnits,
@@ -18,6 +18,30 @@ function validBrief(): DesignBrief {
     scenarios: [], coreMessages: [], constraints: [], conceptKeywords: [], visualKeywords: [], designerNotes: [], evidence: [],
     searchKeywords: [{ id: 'keyword-1', briefId: 'brief-1', value: 'brand identity', kind: 'CONCEPT', source: 'AI', enabled: true, createdAt: NOW }],
     createdAt: NOW, updatedAt: NOW,
+  };
+}
+
+function validPlan(): CreativeResearchPlan {
+  return {
+    id: 'plan-1', sessionId: 'session-1', briefRevisionId: 'brief-1',
+    clues: [
+      { id: 'clue-1', value: 'Project', kind: 'CATEGORY', enabled: true, source: 'BRIEF', priority: 'HIGH' },
+      { id: 'clue-2', value: 'Audience', kind: 'MARKET', enabled: true, source: 'BRIEF', priority: 'HIGH' },
+      { id: 'clue-3', value: 'Identity', kind: 'CONCEPT', enabled: true, source: 'BRIEF', priority: 'HIGH' },
+    ],
+    tracks: [
+      { id: 'track-1', title: 'Category', summary: 'Project', clueIds: ['clue-1'], kind: 'CATEGORY', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'category' },
+      { id: 'track-2', title: 'Market', summary: 'Audience', clueIds: ['clue-2'], kind: 'MARKET', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'market' },
+      { id: 'track-3', title: 'Concept', summary: 'Identity', clueIds: ['clue-3'], kind: 'CONCEPT', priority: 'PRIMARY', firstRoundEligible: true, rationale: 'concept' },
+    ],
+    firstRoundQueries: [
+      { id: 'planned-1', trackId: 'track-1', text: 'Project brand design cases', kind: 'CATEGORY', round: 'INITIAL', rationale: 'category' },
+      { id: 'planned-2', trackId: 'track-2', text: 'Project audience positioning', kind: 'CATEGORY', round: 'INITIAL', rationale: 'market' },
+      { id: 'planned-3', trackId: 'track-3', text: 'Project identity design', kind: 'CONCEPT', round: 'INITIAL', rationale: 'concept' },
+    ],
+    plannerMode: 'MODEL',
+    telemetry: { clueCount: 3, trackCount: 3, initialQueryCount: 3, visualClueDeferredCount: 0, plannerFallbackUsed: false, duplicateQueryRemovedCount: 0 },
+    createdAt: NOW,
   };
 }
 
@@ -65,6 +89,7 @@ function serviceFor(session: CreativeResearchSession, brief: DesignBrief, onSave
     briefs: {
       async saveRevision(value) { return value; }, async getActiveRevision() { return brief; }, async listRevisions() { return [brief]; },
     },
+    plans: { async save(value) { return value; }, async get() { return validPlan(); } },
     history: {
       async appendQuery(value) { return value; }, async recordQueryProgress() { throw new Error('unused'); }, async listSessionSearchHistory() { return []; },
     },

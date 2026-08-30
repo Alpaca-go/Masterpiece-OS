@@ -7,6 +7,7 @@ import type {
   CreativeResearchDirectionBoardDto,
   CreativeResearchNegativeSignalDto,
   CreativeResearchPendingInsightDto,
+  CreativeResearchPlanDto,
   CreativeResearchPreferenceInsightDto,
   CreativeResearchQueryDto,
   CreativeResearchReferenceDto,
@@ -35,6 +36,7 @@ import { PreferenceInsightsPanel } from './PreferenceInsightsPanel';
 import { CorrectionToolbar } from './CorrectionToolbar';
 import { DirectionWorkspace } from './DirectionWorkspace';
 import { ResearchExecutionPanel, type ResearchExecutionFailure } from './ResearchExecutionPanel';
+import { ResearchPlanPanel } from './ResearchPlanPanel';
 import './creative-research.css';
 
 function fileToBase64(file: File): Promise<string> {
@@ -109,22 +111,30 @@ function BriefEditor({ brief, editable, busy, onSave }: {
         <blockquote>{item.excerpt || '该依据没有可展示的摘录。'}</blockquote>
       </article>)}
     </aside>}
-    <div className="cr-keywords">
-      <h3>搜索关键词</h3>
-      {draft.searchKeywords.map((keyword, index) => <div className="cr-keyword" key={keyword.id}>
-        <input type="checkbox" checked={keyword.enabled} disabled={!editable} onChange={(event) => {
-          const next = [...draft.searchKeywords]; next[index] = { ...keyword, enabled: event.target.checked }; setDraft({ ...draft, searchKeywords: next });
-        }} />
-        <select value={keyword.kind} disabled={!editable} onChange={(event) => {
-          const next = [...draft.searchKeywords]; next[index] = { ...keyword, kind: event.target.value as typeof keyword.kind }; setDraft({ ...draft, searchKeywords: next });
-        }}><option value="CONCEPT">概念</option><option value="CATEGORY">品类</option><option value="VISUAL">视觉（不参与首轮）</option></select>
-        <input value={keyword.value} disabled={!editable} onChange={(event) => {
-          const next = [...draft.searchKeywords]; next[index] = { ...keyword, value: event.target.value }; setDraft({ ...draft, searchKeywords: next });
-        }} />
-        {editable && <button onClick={() => setDraft({ ...draft, searchKeywords: draft.searchKeywords.filter((_, itemIndex) => itemIndex !== index) })}>移除</button>}
-      </div>)}
-      {editable && <Button variant="ghost" size="sm" onClick={() => setDraft({ ...draft, searchKeywords: [...draft.searchKeywords, { id: `draft-${Date.now()}`, value: '', kind: 'CONCEPT', source: 'DESIGNER', enabled: true }] })}>添加关键词</Button>}
-    </div>
+    <details className="cr-keywords">
+      <summary><span><small>Research clues</small><strong>研究关键词池 · {draft.searchKeywords.length} 项</strong></span><em>查看全部线索</em></summary>
+      <p>系统将从这些线索中自动归纳研究主题，并组合生成实际搜索语句，不会逐条直接搜索。</p>
+      <div className="cr-keywords__counts">
+        <span>概念 {draft.searchKeywords.filter((item) => item.kind === 'CONCEPT').length}</span>
+        <span>品类 {draft.searchKeywords.filter((item) => item.kind === 'CATEGORY').length}</span>
+        <span>视觉 {draft.searchKeywords.filter((item) => item.kind === 'VISUAL').length}</span>
+      </div>
+      <div className="cr-keywords__list">
+        {draft.searchKeywords.map((keyword, index) => <div className="cr-keyword" key={keyword.id}>
+          <input type="checkbox" aria-label={`启用线索 ${keyword.value}`} checked={keyword.enabled} disabled={!editable} onChange={(event) => {
+            const next = [...draft.searchKeywords]; next[index] = { ...keyword, enabled: event.target.checked }; setDraft({ ...draft, searchKeywords: next });
+          }} />
+          <select value={keyword.kind} disabled={!editable} onChange={(event) => {
+            const next = [...draft.searchKeywords]; next[index] = { ...keyword, kind: event.target.value as typeof keyword.kind }; setDraft({ ...draft, searchKeywords: next });
+          }}><option value="CONCEPT">概念</option><option value="CATEGORY">品类</option><option value="VISUAL">视觉（第二轮）</option></select>
+          <input value={keyword.value} disabled={!editable} onChange={(event) => {
+            const next = [...draft.searchKeywords]; next[index] = { ...keyword, value: event.target.value }; setDraft({ ...draft, searchKeywords: next });
+          }} />
+          {editable && <button onClick={() => setDraft({ ...draft, searchKeywords: draft.searchKeywords.filter((_, itemIndex) => itemIndex !== index) })}>移除</button>}
+        </div>)}
+        {editable && <Button variant="ghost" size="sm" onClick={() => setDraft({ ...draft, searchKeywords: [...draft.searchKeywords, { id: `draft-${Date.now()}`, value: '', kind: 'CONCEPT', source: 'DESIGNER', enabled: true }] })}>添加研究线索</Button>}
+      </div>
+    </details>
     {brief.warnings.length > 0 && <details><summary>{brief.warnings.length} 条来源提示</summary><ul>{brief.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul></details>}
     {editable && <Button variant="primary" disabled={busy} onClick={() => onSave({
       projectSummary: draft.projectSummary, designTask: draft.designTask, audience: draft.audience,
@@ -151,6 +161,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   const [sessions, setSessions] = useState<CreativeResearchSessionDto[]>([]);
   const [session, setSession] = useState<CreativeResearchSessionDto | null>(null);
   const [brief, setBrief] = useState<CreativeResearchBriefDto | null>(null);
+  const [researchPlan, setResearchPlan] = useState<CreativeResearchPlanDto | null>(null);
   const [queries, setQueries] = useState<CreativeResearchQueryDto[]>([]);
   const [references, setReferences] = useState<CreativeResearchReferenceDto[]>([]);
   const [selections, setSelections] = useState<CreativeResearchReferenceSelectionDto[]>([]);
@@ -174,13 +185,13 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   async function loadSession(id: string) {
     const nextSession = await api.getSession(id);
     const inDirection = nextSession.status === 'DIRECTION' || nextSession.status === 'COMPLETED';
-    const [nextBrief, nextQueries, nextReferences, nextSelections, nextNegativeSignals, nextPreferenceInsights, nextBoardResult, nextContextResult] = await Promise.all([
-      api.getDesignBrief(id).catch(() => null), api.getSearchHistory(id), api.listReferences(id),
+    const [nextBrief, nextPlan, nextQueries, nextReferences, nextSelections, nextNegativeSignals, nextPreferenceInsights, nextBoardResult, nextContextResult] = await Promise.all([
+      api.getDesignBrief(id).catch(() => null), api.getResearchPlan(id).catch(() => null), api.getSearchHistory(id), api.listReferences(id),
       api.listSelections(id), api.listNegativeSignals(id), api.listPreferenceInsights(id),
       inDirection ? api.getDirectionBoard(id).catch(() => null) : Promise.resolve(null),
       nextSession.status === 'COMPLETED' ? api.getDirectionContext(id).catch(() => null) : Promise.resolve(null),
     ]);
-    setSession(nextSession); setBrief(nextBrief); setQueries(nextQueries); setReferences(nextReferences);
+    setSession(nextSession); setBrief(nextBrief); setResearchPlan(nextPlan); setQueries(nextQueries); setReferences(nextReferences);
     setSelections(nextSelections); setNegativeSignals(nextNegativeSignals);
     setPreferenceInsights(nextPreferenceInsights);
     setBoard(nextBoardResult?.board || null);
@@ -197,6 +208,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
     setDocuments([]);
     setSession(null);
     setBrief(null);
+    setResearchPlan(null);
     setQueries([]);
     setReferences([]);
     setExecutionFailure(null);
@@ -242,11 +254,25 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
 
   async function runInitialSearch() {
     if (!session) return;
-    await action('planning', async (transition) => {
+    await action(researchPlan ? 'planning' : 'research-planning', async (transition) => {
+      if (!profileId) throw new Error('请选择可用的分析模型');
+      let activePlan = researchPlan;
+      if (!activePlan) {
+        activePlan = await api.createResearchPlan(session.id, { profileId });
+        setResearchPlan(activePlan);
+      }
+      transition('planning');
       await api.startResearch(session.id);
       const planned = await api.planInitialSearch(session.id);
       setQueries(planned); setTab('references'); transition('searching');
       try { await api.executeSearchBatch(session.id); } finally { await loadSession(session.id); }
+    });
+  }
+
+  async function generateResearchPlan() {
+    if (!session || !profileId) return;
+    await action('research-planning', async () => {
+      setResearchPlan(await api.createResearchPlan(session.id, { profileId }));
     });
   }
 
@@ -399,6 +425,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
       session={session}
       projectName={project?.projectName || session.projectId}
       briefReady={Boolean(brief)}
+      planReady={Boolean(researchPlan)}
       queries={queries}
       referenceCount={references.length}
       preferenceCount={preferenceInsights.length}
@@ -408,9 +435,10 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
       failure={executionFailure}
       onDismissFailure={() => { setExecutionFailure(null); setError(''); }}
     />}
-    {!session || !brief ? <section className="cr-panel cr-loading">{busy === 'brief' ? <p>资料解析与 Brief 生成正在执行，详细阶段见上方进度面板。</p> : <><p>{session ? '此 Session 尚未生成 Design Brief。' : '正在载入研究 Session…'}</p>{session && <Button variant="primary" disabled={!profileId || busy !== ''} onClick={() => void action('brief', async () => { const next = await api.prepareDesignBrief(sessionId, { profileId }); setBrief(next); })}>生成 Design Brief</Button>}</>}</section>
-      : tab === 'brief' ? <><BriefEditor brief={brief} editable={session.status === 'INTAKE' && busy === ''} busy={busy !== ''} onSave={async (input) => action('saving', async () => setBrief(await api.updateDesignBrief(session.id, input)))} />
-        {session.status === 'INTAKE' && <section className="cr-start"><div><h2>Brief 已就绪</h2><p>开始研究后 Brief 与本次 Session 输入将只读，并按启用的概念与品类关键词执行首轮搜索。</p>{!credential.configured && <small>搜索服务尚未配置。请先前往「API 与模型 → 研究服务」连接百度 AI 搜索。</small>}</div><div className="cr-start__actions">{!credential.configured && <Button variant="secondary" onClick={onOpenResearchSettings}>前往 API 设置</Button>}<Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void runInitialSearch()}>开始研究</Button></div></section>}</>
+    {!session || !brief ? <section className="cr-panel cr-loading">{busy === 'brief' || busy === 'research-planning' ? <p>资料解析、Brief 与研究计划正在生成，详细阶段见上方进度面板。</p> : <><p>{session ? '此 Session 尚未生成 Design Brief。' : '正在载入研究 Session…'}</p>{session && <Button variant="primary" disabled={!profileId || busy !== ''} onClick={() => void action('brief', async (transition) => { const next = await api.prepareDesignBrief(sessionId, { profileId }); setBrief(next); transition('research-planning'); setResearchPlan(await api.createResearchPlan(sessionId, { profileId })); })}>生成 Design Brief</Button>}</>}</section>
+      : tab === 'brief' ? <><BriefEditor brief={brief} editable={session.status === 'INTAKE' && busy === ''} busy={busy !== ''} onSave={async (input) => action('saving', async () => { setBrief(await api.updateDesignBrief(session.id, input)); setResearchPlan(null); })} />
+        <ResearchPlanPanel plan={researchPlan} busy={busy !== ''} frozen={session.status !== 'INTAKE'} onGenerate={generateResearchPlan} />
+        {session.status === 'INTAKE' && <section className="cr-start"><div><h2>{researchPlan ? '研究计划已就绪' : 'Brief 已就绪'}</h2><p>开始研究后 Brief、首轮 Track 与 Query 将冻结；系统只执行研究计划中的 3～6 条首轮 Query。</p>{!credential.configured && <small>搜索服务尚未配置。请先前往「API 与模型 → 研究服务」连接百度 AI 搜索。</small>}</div><div className="cr-start__actions">{!credential.configured && <Button variant="secondary" onClick={onOpenResearchSettings}>前往 API 设置</Button>}<Button variant="primary" disabled={busy !== '' || !credential.configured} onClick={() => void runInitialSearch()}>{researchPlan ? '开始首轮研究' : '生成计划并开始研究'}</Button></div></section>}</>
       : tab === 'direction' ? (board ? <DirectionWorkspace session={session} brief={brief} board={board} references={references} selections={selections} negativeSignals={negativeSignals} insights={preferenceInsights} pendingFinalizedInsights={pendingFinalizedInsights} context={directionContext} busy={busy.startsWith('direction:')} onSave={saveDirectionBoard} onReturnToResearch={returnToResearchFlow} onComplete={completeDirectionFlow} /> : <section className="cr-panel cr-loading">方向板载入中…</section>)
       : <section className="cr-references">
         <div className="cr-search-head"><div><span>Search state</span><h2>{uiState}</h2></div><div><span className={credential.configured ? 'cr-configured' : 'cr-unconfigured'}>{credential.configured ? '百度 AI 搜索已连接' : '搜索服务未配置'}</span>{!credential.configured && <Button size="sm" variant="secondary" onClick={onOpenResearchSettings}>前往 API 设置</Button>}</div></div>

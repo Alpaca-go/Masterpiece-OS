@@ -8,6 +8,7 @@ import type {
   CreativeResearchQueryDto,
   CreativeResearchNegativeSignalDto,
   CreativeResearchPreferenceInsightDto,
+  CreativeResearchPlanDto,
   CreativeResearchReferenceDto,
   CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
@@ -18,11 +19,12 @@ import type {
   UpdateCreativeResearchSearchStrategyInput,
   PlanCreativeResearchSimilarSearchInput,
 } from '../application-contracts.ts';
-import type { CreativeDirectionContext, CreativeResearchSession, DesignBrief, DirectionBoard, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeDirectionContext, CreativeResearchPlan, CreativeResearchSession, DesignBrief, DirectionBoard, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
 import type { CreativeResearchDirectionService } from '../application/creative-research-direction-service.ts';
 import type { CreativeResearchSelectionService } from '../application/creative-research-selection-service.ts';
 import type { CreativeResearchPreferenceAnalysisService } from '../application/creative-research-preference-analysis-service.ts';
 import type { SearchHistoryRepository } from '../application/creative-research/ports.ts';
+import type { CreativeResearchPlannerService } from '../application/creative-research-planner-service.ts';
 
 type BriefService = {
   createSession(input: { projectId: string; sourceDocumentIds: string[] }): Promise<CreativeResearchSession>;
@@ -144,6 +146,22 @@ export function toCreativeResearchQueryDto(value: SearchQuery): CreativeResearch
     completedAt: value.completedAt,
     batch: value.batch,
     origin: value.origin || 'INITIAL',
+    researchTrackId: value.researchTrackId,
+    round: value.round || (value.origin === 'INITIAL' || value.origin === undefined ? 'INITIAL' : 'REFINEMENT'),
+  });
+}
+
+export function toCreativeResearchPlanDto(value: CreativeResearchPlan): CreativeResearchPlanDto {
+  return Object.freeze({
+    id: value.id,
+    sessionId: value.sessionId,
+    briefRevisionId: value.briefRevisionId,
+    clues: value.clues.map((clue) => Object.freeze({ ...clue })),
+    tracks: value.tracks.map((track) => Object.freeze({ ...track, clueIds: [...track.clueIds] })),
+    firstRoundQueries: value.firstRoundQueries.map((query) => Object.freeze({ ...query })),
+    plannerMode: value.plannerMode,
+    telemetry: Object.freeze({ ...value.telemetry }),
+    createdAt: value.createdAt,
   });
 }
 
@@ -271,6 +289,7 @@ export function toCreativeDirectionContextDto(value: CreativeDirectionContext): 
 export function createCreativeResearchOperations(options: {
   briefs: BriefService;
   search: SearchService;
+  planner: CreativeResearchPlannerService;
   history: SearchHistoryRepository;
   selection: CreativeResearchSelectionService;
   preferences: CreativeResearchPreferenceAnalysisService;
@@ -303,6 +322,12 @@ export function createCreativeResearchOperations(options: {
       toCreativeResearchBriefDto(await options.briefs.getDesignBrief(sessionId)),
     'creative-research:update-design-brief': async (_context: unknown, sessionId: string, input: UpdateCreativeResearchBriefInput) =>
       toCreativeResearchBriefDto(await options.briefs.updateDesignBrief(sessionId, input)),
+    'creative-research:create-research-plan': async (_context: unknown, sessionId: string, input: { profileId: string }) =>
+      toCreativeResearchPlanDto(await options.planner.createResearchPlan(sessionId, input)),
+    'creative-research:get-research-plan': async (_context: unknown, sessionId: string) => {
+      const plan = await options.planner.getResearchPlan(sessionId);
+      return plan ? toCreativeResearchPlanDto(plan) : null;
+    },
     'creative-research:start-research': async (_context: unknown, sessionId: string) =>
       toCreativeResearchSessionDto(await options.search.startResearch(sessionId)),
     'creative-research:plan-initial-search': async (_context: unknown, sessionId: string) =>

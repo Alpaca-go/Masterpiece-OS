@@ -4,7 +4,7 @@ import fs from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { DesignBrief } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
+import type { CreativeResearchPlan, DesignBrief } from '@masterpiece/runtime-core/application/creative-research/contracts.ts';
 import { planInitialSearchQueries } from '@masterpiece/runtime-core/application/creative-research-search-query-planner.ts';
 import {
   BAIDU_REFERENCE_SEARCH_CREDENTIAL_ID,
@@ -41,15 +41,41 @@ function ids(...values: string[]) {
   return () => values[index++] || `id-${index}`;
 }
 
-test('R3 planner uses enabled keywords, preserves keyword provenance and emits at most four deterministic queries', () => {
-  const queries = planInitialSearchQueries({ sessionId: 'session-1', brief: brief(), now: () => NOW, createId: ids('batch', 'q1', 'q2', 'q3') });
-  assert.deepEqual(queries.map(({ text, kind, derivedFromKeywordIds }) => ({ text, kind, derivedFromKeywordIds })), [
-    { text: '东方餐叙 克制 留白', kind: 'CONCEPT', derivedFromKeywordIds: ['concept-zh', 'visual-1'] },
-    { text: 'modern oriental dining', kind: 'CONCEPT', derivedFromKeywordIds: ['concept-en'] },
-    { text: '新中式餐饮品牌设计 克制 留白', kind: 'CATEGORY', derivedFromKeywordIds: ['category-zh', 'visual-1'] },
+function researchPlan(): CreativeResearchPlan {
+  return {
+    id: 'plan-1', sessionId: 'session-1', briefRevisionId: 'brief-1',
+    clues: [
+      { id: 'category-zh', value: '新中式餐饮品牌设计', kind: 'CATEGORY', enabled: true, source: 'BRIEF', priority: 'HIGH' },
+      { id: 'concept-zh', value: '东方餐叙', kind: 'CONCEPT', enabled: true, source: 'BRIEF', priority: 'MEDIUM' },
+      { id: 'concept-en', value: 'modern oriental dining', kind: 'CONCEPT', enabled: true, source: 'DESIGNER', priority: 'HIGH' },
+      { id: 'visual-1', value: '克制 留白', kind: 'VISUAL', enabled: true, source: 'DESIGNER', priority: 'HIGH' },
+    ],
+    tracks: [
+      { id: 'track-category', title: '新中式餐饮品类', summary: '行业案例与定位', clueIds: ['category-zh'], kind: 'CATEGORY', priority: 'PRIMARY', firstRoundEligible: true, rationale: '理解品类语境' },
+      { id: 'track-concept-zh', title: '东方餐叙概念', summary: '东方叙事路径', clueIds: ['concept-zh'], kind: 'CONCEPT', priority: 'PRIMARY', firstRoundEligible: true, rationale: '理解概念表达' },
+      { id: 'track-concept-en', title: '国际东方餐饮', summary: '国际案例语境', clueIds: ['concept-en'], kind: 'CULTURE', priority: 'SECONDARY', firstRoundEligible: true, rationale: '补充跨文化案例' },
+      { id: 'track-visual', title: '视觉表现线索', summary: '克制与留白', clueIds: ['visual-1'], kind: 'VISUAL', priority: 'SECONDARY', firstRoundEligible: false, rationale: '延后至第二轮' },
+    ],
+    firstRoundQueries: [
+      { id: 'planned-category', trackId: 'track-category', text: '新中式餐饮品牌设计 案例', kind: 'CATEGORY', round: 'INITIAL', rationale: '品类案例' },
+      { id: 'planned-concept-zh', trackId: 'track-concept-zh', text: '新中式餐饮 东方餐叙 品牌设计', kind: 'CONCEPT', round: 'INITIAL', rationale: '概念案例' },
+      { id: 'planned-concept-en', trackId: 'track-concept-en', text: 'modern oriental dining brand identity', kind: 'CONCEPT', round: 'INITIAL', rationale: '跨文化案例' },
+    ],
+    plannerMode: 'MODEL',
+    telemetry: { clueCount: 4, trackCount: 4, initialQueryCount: 3, visualClueDeferredCount: 1, plannerFallbackUsed: false, duplicateQueryRemovedCount: 0 },
+    createdAt: NOW,
+  };
+}
+
+test('Research Plan compiler preserves track provenance and keeps deferred visual clues out of the initial round', () => {
+  const queries = planInitialSearchQueries({ sessionId: 'session-1', plan: researchPlan(), now: () => NOW, createId: ids('q1', 'q2', 'q3'), batchId: 'batch' });
+  assert.deepEqual(queries.map(({ text, kind, derivedFromKeywordIds, researchTrackId, round }) => ({ text, kind, derivedFromKeywordIds, researchTrackId, round })), [
+    { text: '新中式餐饮品牌设计 案例', kind: 'CATEGORY', derivedFromKeywordIds: ['category-zh'], researchTrackId: 'track-category', round: 'INITIAL' },
+    { text: '新中式餐饮 东方餐叙 品牌设计', kind: 'CONCEPT', derivedFromKeywordIds: ['concept-zh'], researchTrackId: 'track-concept-zh', round: 'INITIAL' },
+    { text: 'modern oriental dining brand identity', kind: 'CONCEPT', derivedFromKeywordIds: ['concept-en'], researchTrackId: 'track-concept-en', round: 'INITIAL' },
   ]);
   assert.ok(queries.every((query) => query.status === 'PENDING' && query.batch === 'batch'));
-  assert.doesNotMatch(queries.map((query) => query.text).join(' '), /disabled/u);
+  assert.doesNotMatch(queries.map((query) => query.text).join(' '), /克制|留白|disabled/u);
 });
 
 test('R3 Baidu provider consumes references only, normalizes provenance and deduplicates image URLs', async () => {
@@ -160,6 +186,7 @@ test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references
     const research = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     await base.sessions.create({ id: 'session-1', projectId: 'project-1', status: 'INTAKE', sourceDocumentIds: ['document-1'], createdAt: NOW, updatedAt: NOW });
     await base.briefs.saveRevision(brief());
+    await research.plans.save(researchPlan());
     const initial = await base.sessions.get('session-1');
     await base.sessions.save({ ...initial!, activeDesignBriefId: 'brief-1' });
     let active = 0;
@@ -182,7 +209,7 @@ test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references
       },
     };
     const service = createCreativeResearchReferenceSearchService({
-      sessions: base.sessions, briefs: base.briefs, history: research.history, references: research.references, gateway,
+      sessions: base.sessions, briefs: base.briefs, plans: research.plans, history: research.history, references: research.references, gateway,
       now: () => NOW, createId: ids('batch-1', 'q1', 'q2', 'q3'),
     });
     await service.startResearch('session-1');
@@ -199,6 +226,7 @@ test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references
     await fs.access(path.join(temporary, 'creative-research', 'session-1', 'research', 'associations', 'reference-query.jsonl'));
     const persisted = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     assert.equal((await persisted.history.listSessionSearchHistory('session-1')).length, queries.length);
+    assert.equal((await persisted.plans.get('session-1'))?.briefRevisionId, 'brief-1');
     assert.equal((await persisted.references.listSessionReferences('session-1')).length, 1);
   } finally {
     await fs.rm(temporary, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
@@ -215,6 +243,7 @@ test('R8 partial search batch preserves completed references and records failed 
       activeDesignBriefId: 'brief-1', createdAt: NOW, updatedAt: NOW,
     });
     await base.briefs.saveRevision(brief());
+    await research.plans.save(researchPlan());
     const gateway = {
       async search(input: any) {
         if (input.queryId === 'q1') throw new Error('simulated provider failure');
@@ -231,7 +260,7 @@ test('R8 partial search batch preserves completed references and records failed 
       },
     };
     const service = createCreativeResearchReferenceSearchService({
-      sessions: base.sessions, briefs: base.briefs, history: research.history,
+      sessions: base.sessions, briefs: base.briefs, plans: research.plans, history: research.history,
       references: research.references, gateway, now: () => NOW,
       createId: ids('batch-1', 'q1', 'q2', 'q3'),
     });

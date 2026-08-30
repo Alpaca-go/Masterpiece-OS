@@ -1,6 +1,9 @@
 import type {
   AiExplorationReferenceItem,
   CreativeDirectionContext,
+  CreativeResearchClue,
+  CreativeResearchTrackKind,
+  CreativeResearchTrackPriority,
   DesignBriefEvidence,
   DesignBriefField,
   ReferenceAttribute,
@@ -137,6 +140,41 @@ export interface AnalysisModelAdapter {
   }): Promise<DesignBriefDraftMaterial>;
 }
 
+export interface CreativeResearchPlannerInput {
+  sessionId: string;
+  profileId: string;
+  brief: {
+    projectSummary: string;
+    designTask: string;
+    audience: string;
+    conceptKeywords: string[];
+    visualKeywords: string[];
+    searchKeywords: Array<{ id: string; value: string; kind: SearchKeywordKind; enabled: boolean }>;
+  };
+  clues: CreativeResearchClue[];
+}
+
+export interface CreativeResearchPlanDraft {
+  tracks: Array<{
+    title: string;
+    summary: string;
+    clueValues: string[];
+    kind: CreativeResearchTrackKind;
+    priority: CreativeResearchTrackPriority;
+    firstRoundEligible: boolean;
+    rationale: string;
+  }>;
+  firstRoundQueries: Array<{
+    trackTitle: string;
+    query: string;
+    rationale: string;
+  }>;
+}
+
+export interface CreativeResearchPlannerAdapter {
+  createPlan(input: CreativeResearchPlannerInput): Promise<CreativeResearchPlanDraft>;
+}
+
 export interface DesignBriefReanalysisInput extends DocumentIntakeMaterial {
   sessionId: string;
   profileId: string;
@@ -197,6 +235,7 @@ export const CREATIVE_RESEARCH_ADAPTER_NAMES = [
   'DocumentIntakeAdapter',
   'ProjectBriefLinkAdapter',
   'AnalysisModelAdapter',
+  'CreativeResearchPlannerAdapter',
   'ReferencePreferenceAnalysisAdapter',
   'ReferenceSearchRefinementAdapter',
   'DesignBriefReanalysisAdapter',

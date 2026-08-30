@@ -1,5 +1,5 @@
 import crypto from 'node:crypto';
-import type { CreativeResearchSessionRepository, DesignBriefRepository, ReferenceResearchRepository, ReferenceSearchGateway, SearchHistoryRepository } from './creative-research/ports.ts';
+import type { CreativeResearchPlanRepository, CreativeResearchSessionRepository, DesignBriefRepository, ReferenceResearchRepository, ReferenceSearchGateway, SearchHistoryRepository } from './creative-research/ports.ts';
 import type { SearchQuery, WebReferenceItem } from './creative-research/contracts.ts';
 import { planInitialSearchQueries } from './creative-research-search-query-planner.ts';
 import { asCreativeResearchSearchError, creativeResearchSearchError } from './creative-research-search-errors.ts';
@@ -9,6 +9,7 @@ import { assertCreativeResearchTransition } from './creative-research/invariants
 export function createCreativeResearchReferenceSearchService(options: {
   sessions: CreativeResearchSessionRepository;
   briefs: DesignBriefRepository;
+  plans: CreativeResearchPlanRepository;
   history: SearchHistoryRepository;
   references: ReferenceResearchRepository;
   gateway: ReferenceSearchGateway;
@@ -28,6 +29,10 @@ export function createCreativeResearchReferenceSearchService(options: {
     const session = await requireSession(sessionId);
     const brief = await options.briefs.getActiveRevision(sessionId);
     if (!brief) throw creativeResearchError('CREATIVE_RESEARCH_BRIEF_NOT_FOUND', '开始研究前必须存在 active Design Brief');
+    const plan = await options.plans.get(sessionId);
+    if (!plan || plan.briefRevisionId !== brief.id) {
+      throw creativeResearchSearchError('QUERY_INVALID', '开始研究前必须为当前 Brief Revision 生成 Research Plan');
+    }
     assertCreativeResearchTransition(session, 'RESEARCH', {
       activeDesignBrief: brief,
       searchKeywords: brief.searchKeywords,
@@ -40,8 +45,9 @@ export function createCreativeResearchReferenceSearchService(options: {
     if (session.status !== 'RESEARCH') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', '只有 RESEARCH Session 可以规划搜索');
     const brief = await options.briefs.getActiveRevision(sessionId);
     if (!brief) throw creativeResearchError('CREATIVE_RESEARCH_BRIEF_NOT_FOUND', '搜索规划需要 active Design Brief');
-    const queries = planInitialSearchQueries({ sessionId, brief, now, createId, batchId: createId() });
-    if (!queries.length) throw creativeResearchSearchError('QUERY_INVALID', '没有可规划的 CONCEPT 或 CATEGORY Search Keyword');
+    const plan = await options.plans.get(sessionId);
+    if (!plan || plan.briefRevisionId !== brief.id) throw creativeResearchSearchError('QUERY_INVALID', 'Research Plan 与 active Brief Revision 不匹配');
+    const queries = planInitialSearchQueries({ sessionId, plan, now, createId, batchId: createId() });
     for (const query of queries) await options.history.appendQuery(query);
     return queries;
   }

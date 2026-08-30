@@ -1,7 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createCreativeResearchAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-analysis-adapter.ts';
-import { normalizeDesignBriefDraft } from '@masterpiece/runtime-core/application/creative-research-design-brief-core.ts';
+import {
+  buildDesignBriefRepairMessages,
+  normalizeDesignBriefDraft,
+} from '@masterpiece/runtime-core/application/creative-research-design-brief-core.ts';
 
 const evidence = [{
   id: 'evidence-1', sourceDocumentId: 'document-1', locator: { kind: 'DOCUMENT_SECTION' as const, value: 'Audience' },
@@ -34,6 +37,32 @@ test('R2 Design Brief normalization caps collections and rejects invented eviden
     () => normalizeDesignBriefDraft({ ...valid, fieldEvidence: {} }, ['evidence-1']),
     /缺少文档证据引用/u,
   );
+  const singletonRefs = normalizeDesignBriefDraft({
+    ...valid,
+    evidenceIds: 'evidence-1',
+    fieldEvidence: Object.fromEntries(Object.keys(valid.fieldEvidence).map((field) => [field, 'evidence-1'])),
+  }, ['evidence-1']);
+  assert.deepEqual(singletonRefs.evidenceIds, ['evidence-1']);
+  assert.deepEqual(singletonRefs.fieldEvidence?.designTask, ['evidence-1']);
+  const publicDtoRefs = normalizeDesignBriefDraft({
+    ...valid,
+    evidenceIds: [],
+    fieldEvidence: Object.entries(valid.fieldEvidence).map(([field, evidenceIds]) => ({ field, evidenceIds })),
+  }, ['evidence-1']);
+  assert.deepEqual(publicDtoRefs.evidenceIds, ['evidence-1']);
+});
+
+test('R2 repair prompt includes evidence excerpts and the exact factual fieldEvidence contract', () => {
+  const messages = buildDesignBriefRepairMessages(
+    JSON.stringify({ ...valid, fieldEvidence: { ...valid.fieldEvidence, designTask: undefined } }),
+    'designTask 缺少文档证据引用',
+    { projectId: 'project-1', sourceDocumentIds: ['document-1'], evidence, designerNotes: [] },
+  );
+  const payload = JSON.parse(messages[1]!.content);
+  assert.equal(payload.evidence[0].excerpt, 'Urban families');
+  assert.ok(payload.requiredFactualFieldEvidence.includes('designTask'));
+  assert.match(payload.fieldEvidenceSchema.designTask, /required/u);
+  assert.match(payload.repairRules.join('\n'), /union/u);
 });
 
 test('R2 analysis adapter uses one primary call and at most one structured repair through profile credentials', async () => {

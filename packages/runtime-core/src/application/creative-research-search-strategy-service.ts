@@ -3,7 +3,7 @@ import type { DesignBrief, SearchKeyword, SearchKeywordKind, SearchQuery } from 
 import { DESIGN_BRIEF_FIELDS, SEARCH_KEYWORD_KINDS } from './creative-research/contracts.ts';
 import { assertDesignBriefRevision } from './creative-research/evidence.ts';
 import type { CreativeResearchSessionRepository, DesignBriefRepository, ReferenceResearchRepository, SearchHistoryRepository } from './creative-research/ports.ts';
-import { planInitialSearchQueries } from './creative-research-search-query-planner.ts';
+import { planKeywordAdjustmentQueries } from './creative-research-search-query-planner.ts';
 import { creativeResearchCorrectionError } from './creative-research-correction-errors.ts';
 import { creativeResearchError } from './creative-research-errors.ts';
 
@@ -115,7 +115,7 @@ export function createCreativeResearchSearchStrategyService(options: {
     const history = await options.history.listSessionSearchHistory(sessionId);
     const batch = createId();
     const historical = new Set(history.flatMap((item) => [item.text, item.providerQueryText || '']).map(normalized).filter(Boolean));
-    const planned = planInitialSearchQueries({ sessionId, brief, now, createId, batchId: batch, maxQueries: 4 })
+    const planned = planKeywordAdjustmentQueries({ sessionId, brief, now, createId, batchId: batch, maxQueries: 4 })
       .filter((item) => !historical.has(normalized(item.text)))
       .map((item) => ({ ...item, origin: 'KEYWORD_ADJUSTMENT' as const, excludeSeen: true,
         parentQueryIds: history.at(-1) ? history.filter((query) => query.batch === history.at(-1)!.batch).map((query) => query.id) : undefined }));

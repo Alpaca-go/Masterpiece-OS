@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 213 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 215 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -33,7 +33,7 @@ test('Node Runtime Host binds all 213 channels to the Shared Registry without El
 
   // R7 adds seven creative-research direction channels (start/get/update board,
   // list revisions, return-to-research, complete, get context) to the 206-channel R6 baseline.
-  assert.equal(host.operationCount, 213);
+  assert.equal(host.operationCount, 215);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),
