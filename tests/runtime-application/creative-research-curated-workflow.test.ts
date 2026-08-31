@@ -55,12 +55,12 @@ test('Reference Guide is bound to the active Brief revision and creates no Searc
   const service = createCreativeResearchReferenceGuideService({
     sessions: { get: async () => currentSession, create: async (value) => value, save: async (value) => value, listByProject: async () => [], delete: async () => true },
     briefs: { getActiveRevision: async () => currentBrief, saveRevision: async (value) => value, listRevisions: async () => [currentBrief] },
-    plans: research.plans, guides, now: () => NOW, createId: () => `guide-id-${++id}`,
-    createPlan: async () => ({ visualReferencePlan: { groups: [
+    guides, now: () => NOW, createId: () => `guide-id-${++id}`,
+    createGroups: async () => [
       { id: 'industry', kind: 'INDUSTRY', title: '行业基准', keywords: ['医美', '医学'], rationale: '保持行业可信', priority: 1 },
       { id: 'positioning', kind: 'POSITIONING', title: '气质迁移', keywords: ['奢侈品', '美术馆'], rationale: '寻找成熟气质', priority: 2 },
       { id: 'cross', kind: 'CROSS_CATEGORY', title: '相邻品类', keywords: ['高端护肤'], rationale: '观察消费品表达', priority: 3 },
-    ] } }),
+    ],
   });
   const guide = await service.generateReferenceGuide('session-1', { profileId: 'analysis-1' });
   assert.equal(guide.briefRevisionId, 'brief-1');

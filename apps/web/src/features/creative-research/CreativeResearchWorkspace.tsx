@@ -17,6 +17,7 @@ import type {
   UpdateCreativeResearchDirectionBoardInput,
 } from '@masterpiece/runtime-core/application-contracts.ts';
 import { Button } from '../../components/ui/Button';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 import { cleanError, formatRelativeTime } from '../../utils';
 import { DirectionWorkspace } from './DirectionWorkspace';
 import { PreferenceInsightsPanel } from './PreferenceInsightsPanel';
@@ -103,6 +104,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
   onBack(): void;
   onOpenSettings(): void;
 }) {
+  const { confirm } = useConfirm();
   const sessionId = decodeURIComponent(window.location.hash.match(/^#\/creative-research\/([^/?]+)/u)?.[1] || '');
   const api = window.masterpiece.creativeResearch;
   const analysisProfiles = settings.profiles.filter((profile) => profile.isEnabled && profile.modelType === 'analysis');
@@ -168,6 +170,23 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
       const imported = await window.masterpiece.documentContext.importDocuments({ documents: await Promise.all(documents.map(async (file) => ({ name: file.name, size: file.size, content: await fileToBase64(file) }))) });
       const created = await api.createSession({ projectId, sourceDocumentIds: imported });
       onNavigate(`/creative-research/${encodeURIComponent(created.id)}`);
+    });
+  }
+
+  async function deleteRecentSession(target: CreativeResearchSessionDto) {
+    const projectName = projects.find((item) => item.id === target.projectId)?.projectName || target.projectId;
+    const approved = await confirm({
+      title: '删除研究记录',
+      message: `确定删除「${projectName}」的这条研究记录吗？\n\n该研究 Session 的 Brief、参考和缓存将被永久删除；原项目不会被删除。`,
+      confirmText: '删除记录',
+      tone: 'destructive',
+    });
+    if (!approved) return;
+    await action('deleting', async () => {
+      const result = await api.deleteSession(target.id);
+      if (!result.deleted) throw new Error('研究记录不存在或已经被删除');
+      setSessions((current) => current.filter((item) => item.id !== target.id));
+      setNotice(`已删除「${projectName}」的研究记录。`);
     });
   }
 
@@ -245,7 +264,7 @@ export function CreativeResearchWorkspace({ settings, projects, onNavigate, onBa
       <div><span className="cr-step">03</span><h2>选择分析模型</h2><select value={profileId} disabled={Boolean(busy)} onChange={(event) => setProfileId(event.target.value)}>{analysisProfiles.map((profile) => <option key={profile.id} value={profile.id}>{profile.displayName}</option>)}</select></div>
       <Button variant="primary" disabled={!createReady} onClick={() => void createSession()}>{busy === 'creating' ? '正在创建…' : '创建研究 Session'}</Button>
     </section>
-    <section className="cr-recent"><h2>最近研究</h2>{sessions.length ? sessions.map((item) => <article key={item.id} className="cr-recent__item"><button type="button" className="cr-recent__open" onClick={() => onNavigate(`/creative-research/${item.id}`)}><strong>{projects.find((candidate) => candidate.id === item.projectId)?.projectName || item.projectId}</strong><span>{item.status} · {formatRelativeTime(item.updatedAt)}</span></button></article>) : <p>还没有研究记录。</p>}</section>
+    <section className="cr-recent"><h2>最近研究</h2>{sessions.length ? sessions.map((item) => <article key={item.id} className="cr-recent__item"><button type="button" className="cr-recent__open" onClick={() => onNavigate(`/creative-research/${item.id}`)}><strong>{projects.find((candidate) => candidate.id === item.projectId)?.projectName || item.projectId}</strong><span>{item.status} · {formatRelativeTime(item.updatedAt)}</span></button><button type="button" className="cr-recent__delete" disabled={busy !== ''} aria-label={`删除 ${projects.find((candidate) => candidate.id === item.projectId)?.projectName || item.projectId} 的研究记录`} onClick={() => void deleteRecentSession(item)}>删除</button></article>) : <p>还没有研究记录。</p>}</section>
   </main>;
 
   return <main className="cr-shell">

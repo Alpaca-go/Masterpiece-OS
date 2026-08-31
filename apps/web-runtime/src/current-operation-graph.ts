@@ -8,6 +8,7 @@ import {
   createCreativeProductionOperations,
   createCreativeSessionOperations,
   createCreativeIntelligenceOperations,
+  createCreativeDirectionOperations,
   createCreativeResearchOperations,
   createDocumentOperations,
   createImageGenerationOperations,
@@ -53,6 +54,8 @@ import { createCreativeResearchReferenceGuideStore } from '@masterpiece/runtime-
 import { createCreativeResearchReferenceGuideService } from '@masterpiece/runtime-core/application/creative-research-reference-guide-service.ts';
 import { createCreativeResearchCuratedReferenceService } from '@masterpiece/runtime-core/application/creative-research-curated-reference-service.ts';
 import { createCreativeResearchStore } from '@masterpiece/runtime-core/application/creative-research-store.ts';
+import { createCreativeDirectionStore } from '@masterpiece/runtime-core/application/creative-direction-store.ts';
+import { createCreativeDirectionApplicationService } from '@masterpiece/runtime-core/application/creative-direction-application-service.ts';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
   ProviderCredentials,
@@ -277,9 +280,8 @@ export function createCurrentBusinessOperations(
   const creativeResearchGuide = createCreativeResearchReferenceGuideService({
     sessions: creativeResearchStore.sessions,
     briefs: creativeResearchStore.briefs,
-    plans: creativeResearchResearchStore.plans,
     guides: creativeResearchGuideStore,
-    createPlan: (sessionId, input) => creativeResearchPlanner.createResearchPlan(sessionId, input),
+    createGroups: (sessionId, input) => creativeResearchPlanner.createReferenceGuideGroups(sessionId, input),
   });
   const creativeResearchCurated = createCreativeResearchCuratedReferenceService({
     readDefaultDataPath: async () => dataPath,
@@ -341,6 +343,7 @@ export function createCurrentBusinessOperations(
     contexts: creativeResearchDirectionContexts,
     boardService: creativeResearchDirectionBoardService,
   });
+  const creativeDirectionStore = createCreativeDirectionStore({ readDefaultDataPath: async () => dataPath });
   const creativeResearchIntakeRoot = path.resolve(dataPath, '..', 'documents-intake');
   const creativeResearchBrowserBriefs = {
     ...creativeResearchBriefs,
@@ -361,6 +364,19 @@ export function createCurrentBusinessOperations(
     // CI-W1A: Creative Intelligence Runtime Application Layer.
     creativeIntelligence,
   } = services;
+  const creativeDirection = createCreativeDirectionApplicationService({
+    store: creativeDirectionStore,
+    loadStrategy: (runId) => creativeIntelligence.getWorkspace(runId),
+    loadVisualResearch: async (sessionId) => {
+      const [session, boardResult, contextResult] = await Promise.all([
+        creativeResearchStore.sessions.get(sessionId),
+        creativeResearchDirection.getDirectionBoard(sessionId),
+        creativeResearchDirection.getDirectionContext(sessionId),
+      ]);
+      if (!session) throw new Error(`CREATIVE_RESEARCH_SESSION_NOT_FOUND: ${sessionId}`);
+      return { session, board: boardResult.board, context: contextResult.context };
+    },
+  });
 
   // P3-B3: resolve a canonical truth snapshot for a project
   // from the runtime-side authorities. The Web side never
@@ -676,6 +692,7 @@ export function createCurrentBusinessOperations(
     // (creative-intelligence:list-runs, etc.). The Web never imports
     // the application service directly.
     createCreativeIntelligenceOperations({ creativeIntelligence }),
+    createCreativeDirectionOperations({ creativeDirection }),
     createCreativeResearchOperations({
       briefs: creativeResearchBrowserBriefs,
       search: creativeResearchSearch,

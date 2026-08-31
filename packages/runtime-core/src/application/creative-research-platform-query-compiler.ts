@@ -20,13 +20,13 @@ const PINTEREST_TRANSLATIONS: Array<[RegExp, string]> = [
 function pinterestKeyword(value: string): string {
   if (!/[\u3400-\u9fff]/u.test(value)) return value;
   const translated = PINTEREST_TRANSLATIONS.filter(([pattern]) => pattern.test(value)).map(([, replacement]) => replacement);
-  return [...new Set(translated)].join(' ') || 'brand design';
+  return [...new Set(translated)].join(' ') || value;
 }
 
 export function compilePlatformQueryText(group: VisualReferenceKeywordGroup, platform: VisualReferencePlatform): string {
   const keywords = group.keywords.map(cleanKeyword).filter(Boolean).slice(0, 2);
   const translated = platform === 'PINTEREST'
-    ? keywords.map(pinterestKeyword)
+    ? [...new Set(keywords.map(pinterestKeyword))]
     : keywords;
   return `site:${VISUAL_PLATFORM_DOMAINS[platform]} ${[...translated, PLATFORM_SUFFIX[platform]].join(' ')}`.replace(/\s+/gu, ' ').trim();
 }
@@ -42,21 +42,28 @@ export function compilePlatformQueries(input: {
   createId(): string;
 }): PlannedQuery[] {
   const platforms: VisualReferencePlatform[] = ['ZCOOL', 'HUABAN', 'PINTEREST'];
+  const seen = new Set<string>();
   return input.groups.slice(0, 4).flatMap((group, groupIndex) => {
     const targets = input.groups.length === 4
       ? (groupIndex % 2 === 0 ? ['ZCOOL', 'PINTEREST'] : ['HUABAN', 'PINTEREST']) as VisualReferencePlatform[]
       : platforms;
-    return targets.map((platform) => ({
-    id: input.createId(),
-    trackId: input.trackIdsByGroup.get(group.id) || group.id,
-    text: compilePlatformQueryText(group, platform),
-    kind: (group.kind === 'INDUSTRY' ? 'CATEGORY' : 'CONCEPT') as SearchQueryKind,
-    round: 'INITIAL' as const,
-    rationale: group.rationale,
-    intent: 'VISUAL' as const,
-    locale: platform === 'PINTEREST' ? 'EN' as const : 'ZH' as const,
-    groupId: group.id,
-    platform,
-    }));
+    return targets.flatMap((platform) => {
+      const text = compilePlatformQueryText(group, platform);
+      const key = text.toLocaleLowerCase().replace(/\s+/gu, ' ').trim();
+      if (seen.has(key)) return [];
+      seen.add(key);
+      return [{
+        id: input.createId(),
+        trackId: input.trackIdsByGroup.get(group.id) || group.id,
+        text,
+        kind: (group.kind === 'INDUSTRY' ? 'CATEGORY' : 'CONCEPT') as SearchQueryKind,
+        round: 'INITIAL' as const,
+        rationale: group.rationale,
+        intent: 'VISUAL' as const,
+        locale: platform === 'PINTEREST' ? 'EN' as const : 'ZH' as const,
+        groupId: group.id,
+        platform,
+      }];
+    });
   });
 }

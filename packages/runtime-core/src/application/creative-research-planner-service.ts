@@ -327,6 +327,36 @@ export function createCreativeResearchPlannerService(options: {
     return session.status === 'INTAKE' && plan.briefRevisionId !== brief?.id ? null : plan;
   }
 
+  async function createReferenceGuideGroups(sessionId: string, input: { profileId: string }): Promise<VisualReferenceKeywordGroup[]> {
+    const session = await requireSession(sessionId);
+    if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', 'Reference Guide 只能在 INTAKE 阶段生成；进入 RESEARCH 后内容冻结');
+    const brief = await options.briefs.getActiveRevision(sessionId);
+    if (!brief) throw creativeResearchError('CREATIVE_RESEARCH_BRIEF_NOT_FOUND', '生成 Reference Guide 前必须存在 active Design Brief');
+    const clues = buildCreativeResearchClues(brief, createId);
+    let modelGroups: Array<Omit<VisualReferenceKeywordGroup, 'id'>> | undefined;
+    try {
+      if (!clean(input.profileId, 120)) throw new Error('Planner profile is missing');
+      const draft = await options.adapter.createPlan({
+        sessionId,
+        profileId: clean(input.profileId, 120),
+        brief: {
+          projectSummary: brief.projectSummary,
+          designTask: brief.designTask,
+          audience: brief.audience,
+          conceptKeywords: [...brief.conceptKeywords],
+          visualKeywords: [...brief.visualKeywords],
+          searchKeywords: brief.searchKeywords.map(({ id, value, kind, enabled }) => ({ id, value, kind, enabled })),
+        },
+        clues,
+      });
+      if (!('visualGroups' in draft)) throw new Error('Reference Guide requires visual groups');
+      modelGroups = compileVisualGroups(draft, clues, createId).groups;
+    } catch {
+      modelGroups = undefined;
+    }
+    return buildVisualReferencePlan(brief, sessionId, now(), createId, modelGroups).groups;
+  }
+
   async function createResearchPlan(sessionId: string, input: { profileId: string }): Promise<CreativeResearchPlan> {
     const session = await requireSession(sessionId);
     if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', 'Research Plan 只能在 INTAKE 阶段生成；进入 RESEARCH 后计划冻结');
@@ -382,7 +412,7 @@ export function createCreativeResearchPlannerService(options: {
     return options.plans.save(plan);
   }
 
-  return Object.freeze({ createResearchPlan, getResearchPlan });
+  return Object.freeze({ createResearchPlan, getResearchPlan, createReferenceGuideGroups });
 }
 
 export type CreativeResearchPlannerService = ReturnType<typeof createCreativeResearchPlannerService>;

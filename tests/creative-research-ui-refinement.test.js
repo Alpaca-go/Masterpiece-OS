@@ -16,6 +16,16 @@ test('Creative Research intake requires explicit project and document selection'
   assert.match(workspace, /Promise\.all\(projects\.map\(\(project\) => api\.listSessions\(project\.id\)\)\)/u);
 });
 
+test('recent Creative Research sessions retain destructive deletion controls', () => {
+  const workspace = read('apps', 'web', 'src', 'features', 'creative-research', 'CreativeResearchWorkspace.tsx');
+  assert.match(workspace, /const approved = await confirm\(\{/u);
+  assert.match(workspace, /tone: 'destructive'/u);
+  assert.match(workspace, /api\.deleteSession\(target\.id\)/u);
+  assert.match(workspace, /setSessions\(\(current\) => current\.filter\(\(item\) => item\.id !== target\.id\)\)/u);
+  assert.match(workspace, /className="cr-recent__delete"/u);
+  assert.match(workspace, />删除<\/button>/u);
+});
+
 test('formal Creative Research UI is disconnected from legacy search credentials', () => {
   const workspace = read('apps', 'web', 'src', 'features', 'creative-research', 'CreativeResearchWorkspace.tsx');
   const settings = read('apps', 'web', 'src', 'components', 'SettingsPanel.tsx');
@@ -30,13 +40,19 @@ test('formal Creative Research UI is disconnected from legacy search credentials
   assert.match(service, /type="password"/u);
 });
 
-test('normal UI hides deferred capabilities and removes duplicate navigation tabs', () => {
+test('normal UI exposes one Creative Direction entry while preserving hidden standalone routes', () => {
   const app = read('apps', 'web', 'src', 'App.tsx');
   const createPage = read('apps', 'web', 'src', 'pages', 'CreatePage.tsx');
   const visibility = read('apps', 'web', 'src', 'config', 'ui-visibility.ts');
-  assert.match(visibility, /smartCreative: false/u);
+  assert.match(visibility, /creativeDirection: true/u);
+  assert.match(visibility, /creativeIntelligenceStandalone: false/u);
+  assert.match(visibility, /creativeResearchStandalone: false/u);
   assert.match(visibility, /referenceStyle: false/u);
-  assert.match(app, /UI_VISIBILITY\.smartCreative/u);
+  assert.match(app, /UI_VISIBILITY\.creativeDirection/u);
+  assert.match(app, /创意策划 →/u);
+  assert.doesNotMatch(app, /智能创意 →|创意研究 →/u);
+  assert.match(app, /screen === 'creative-intelligence'/u);
+  assert.match(app, /screen === 'creative-research'/u);
   assert.match(app, /UI_VISIBILITY\.referenceStyle/u);
   assert.doesNotMatch(app, /TopBarSegment/u);
   assert.doesNotMatch(createPage, /<AnalysisModeTabs\b/u);

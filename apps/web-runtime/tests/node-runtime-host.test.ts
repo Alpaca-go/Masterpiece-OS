@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 222 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 231 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -33,7 +33,7 @@ test('Node Runtime Host binds all 222 channels to the Shared Registry without El
 
   // Creative Research adds the bounded delete-session channel after the
   // direction and Visual Search capability set.
-  assert.equal(host.operationCount, 222);
+  assert.equal(host.operationCount, 231);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),

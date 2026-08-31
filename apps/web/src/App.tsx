@@ -21,6 +21,7 @@ import { CreatePage } from './pages/CreatePage';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { CreativeIntelligenceWorkspace } from './components/CreativeIntelligenceWorkspace';
 import { CreativeResearchWorkspace } from './features/creative-research/CreativeResearchWorkspace';
+import { CreativeDirectionWorkspace } from './features/creative-direction/CreativeDirectionWorkspace';
 import { PackagingWorkspace } from './features/packaging/PackagingWorkspace';
 import { StatusBadgeInline } from './components/StatusBadgeInline';
 import { ProjectDetail } from './components/ProjectDetail';
@@ -533,6 +534,11 @@ function AppContent() {
     onBack={() => { setScreen('home'); void refresh(); }}
     onOpenSettings={() => { setSettingsReturnScreen('creative-intelligence'); setScreen('settings'); }}
   />;
+  if (screen === 'creative-direction') return <CreativeDirectionWorkspace
+    projects={projectsList}
+    onNavigate={navigateToPath}
+    onBack={() => setScreen('home')}
+  />;
   if (screen === 'creative-research') return <CreativeResearchWorkspace
     settings={settings}
     projects={projectsList}
@@ -722,12 +728,9 @@ function AppContent() {
             <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
               分析视觉素材 →
             </Button>
-            {UI_VISIBILITY.smartCreative && <Button variant="ghost" onClick={() => { setAnalysisMode('creative-intelligence'); setScreen('create'); }}>
-              智能创意 →
+            {UI_VISIBILITY.creativeDirection && <Button variant="ghost" onClick={() => setScreen('creative-direction')}>
+              创意策划 →
             </Button>}
-            <Button variant="ghost" onClick={() => setScreen('creative-research')}>
-              创意研究 →
-            </Button>
             {UI_VISIBILITY.referenceStyle && <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
               参考图定风格
             </Button>}

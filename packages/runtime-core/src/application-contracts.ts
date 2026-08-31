@@ -16,6 +16,14 @@ import type {
   VisualExploration,
   VisualCanon
 } from '@masterpiece/project-contracts/index.ts';
+import type {
+  CreateCreativeDirectionSessionInput,
+  CreativeDirectionSession,
+  CreativeDirectionWorkspace,
+  UpdateFinalCreativeDirectionInput,
+  UpdateSharedProjectContextInput,
+} from './application/creative-direction-contracts.ts';
+export type * from './application/creative-direction-contracts.ts';
 export type {
   AnchorCandidate,
   AnchorCandidateEvaluation,
@@ -3007,6 +3015,17 @@ export interface RuntimeApi {
     getSearchCredentialStatus(): Promise<CreativeResearchCredentialStatusDto>;
     saveSearchCredential(value: string): Promise<CreativeResearchCredentialStatusDto>;
     deleteSearchCredential(): Promise<CreativeResearchCredentialStatusDto>;
+  };
+  creativeDirection: {
+    listSessions(projectId?: string): Promise<CreativeDirectionSession[]>;
+    createSession(input: CreateCreativeDirectionSessionInput): Promise<CreativeDirectionWorkspace>;
+    getWorkspace(sessionId: string): Promise<CreativeDirectionWorkspace>;
+    updateContext(sessionId: string, input: UpdateSharedProjectContextInput): Promise<CreativeDirectionWorkspace>;
+    linkStrategy(sessionId: string, runId: string | null): Promise<CreativeDirectionWorkspace>;
+    linkVisualResearch(sessionId: string, sourceId: string | null): Promise<CreativeDirectionWorkspace>;
+    synthesize(sessionId: string): Promise<CreativeDirectionWorkspace>;
+    updateDraft(sessionId: string, input: UpdateFinalCreativeDirectionInput): Promise<CreativeDirectionWorkspace>;
+    finalize(sessionId: string, confirm: boolean): Promise<CreativeDirectionWorkspace>;
   };
   referenceAnchor: {
     chooseReferenceAssets(): Promise<string[]>;

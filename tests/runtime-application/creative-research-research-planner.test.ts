@@ -8,6 +8,7 @@ import type {
 import type { CreativeResearchPlannerAdapter } from '@masterpiece/runtime-core/application/creative-research/adapter-contracts.ts';
 import { createCreativeResearchPlannerAdapter } from '@masterpiece/runtime-core/application/creative-research-planner-adapter.ts';
 import { createCreativeResearchPlannerService } from '@masterpiece/runtime-core/application/creative-research-planner-service.ts';
+import { compilePlatformQueries } from '@masterpiece/runtime-core/application/creative-research-platform-query-compiler.ts';
 
 const NOW = '2026-08-30T08:00:00.000Z';
 
@@ -70,10 +71,40 @@ function fixture(adapter: CreativeResearchPlannerAdapter) {
   });
   return {
     service,
+    getStoredPlan() { return storedPlan; },
     setBrief(value: DesignBrief) { activeBrief = value; },
     setStatus(status: CreativeResearchSession['status']) { session = { ...session, status }; },
   };
 }
+
+test('Reference Guide groups bypass legacy platform-query compilation and plan persistence', async () => {
+  const stack = fixture({
+    async createPlan() {
+      return { visualGroups: [
+        { kind: 'INDUSTRY', title: '行业属性', keywords: ['品牌设计'], rationale: '行业基准', priority: 1 },
+        { kind: 'POSITIONING', title: '气质定位', keywords: ['克制留白', '理性温度'], rationale: '气质参照', priority: 2 },
+        { kind: 'CROSS_CATEGORY', title: '跨类目补充', keywords: ['科学塑美', '价值重塑'], rationale: '跨类目参照', priority: 3 },
+      ] };
+    },
+  });
+  const groups = await stack.service.createReferenceGuideGroups('session-1', { profileId: 'analysis-profile' });
+  assert.equal(groups.length, 3);
+  assert.equal(stack.getStoredPlan(), null);
+});
+
+test('legacy platform-query compilation preserves unknown Pinterest terms and removes cross-group duplicates', () => {
+  let id = 0;
+  const groups = [
+    { id: 'a', kind: 'POSITIONING' as const, title: '气质定位', keywords: ['克制留白', '理性温度'], rationale: 'A', priority: 1 },
+    { id: 'b', kind: 'CROSS_CATEGORY' as const, title: '跨类目补充', keywords: ['科学塑美', '价值重塑'], rationale: 'B', priority: 2 },
+    { id: 'c', kind: 'CROSS_CATEGORY' as const, title: '重复保护', keywords: ['克制留白', '理性温度'], rationale: 'C', priority: 3 },
+  ];
+  const queries = compilePlatformQueries({ groups, trackIdsByGroup: new Map(groups.map((group) => [group.id, group.id])), createId: () => `query-${++id}` });
+  const keys = queries.map((query) => query.text.toLocaleLowerCase().replace(/\s+/gu, ' ').trim());
+  assert.equal(new Set(keys).size, keys.length);
+  assert.ok(queries.some((query) => query.platform === 'PINTEREST' && query.text.includes('克制留白 理性温度')));
+  assert.doesNotMatch(queries.map((query) => query.text).join('\n'), /brand design brand design/u);
+});
 
 test('Research Planner clusters clues, accepts a grounded model plan, and forcibly defers VISUAL tracks', async () => {
   let calls = 0;

@@ -10,6 +10,7 @@ export * from './operations/reference-operations.js';
 export * from './operations/image-generation-operations.js';
 export * from './operations/creative-operations.js';
 export * from './operations/creative-intelligence-operations.js';
+export * from './operations/creative-direction-operations.ts';
 export * from './operations/creative-research-operations.ts';
 export * from './operations/remaining-operations.js';
 // P3-B2: Packaging Workspace RPC operations (thin bridge between

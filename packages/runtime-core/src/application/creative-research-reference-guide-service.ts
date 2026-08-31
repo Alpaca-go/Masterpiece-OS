@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import type { CreativeResearchReferenceGuide, ReferenceTerritory, VisualReferenceKeywordGroup } from './creative-research/contracts.ts';
-import type { CreativeResearchPlanRepository, CreativeResearchReferenceGuideRepository, CreativeResearchSessionRepository, DesignBriefRepository } from './creative-research/ports.ts';
+import type { CreativeResearchReferenceGuideRepository, CreativeResearchSessionRepository, DesignBriefRepository } from './creative-research/ports.ts';
 
 const OBSERVE: Record<ReferenceTerritory['kind'], string[]> = {
   INDUSTRY: ['专业可信度', '信息层级', '品牌与行业属性的平衡'],
@@ -12,9 +12,8 @@ const OBSERVE: Record<ReferenceTerritory['kind'], string[]> = {
 export function createCreativeResearchReferenceGuideService(options: {
   sessions: CreativeResearchSessionRepository;
   briefs: DesignBriefRepository;
-  plans: CreativeResearchPlanRepository;
   guides: CreativeResearchReferenceGuideRepository;
-  createPlan(sessionId: string, input: { profileId: string }): Promise<{ visualReferencePlan?: { groups: VisualReferenceKeywordGroup[] } }>;
+  createGroups(sessionId: string, input: { profileId: string }): Promise<VisualReferenceKeywordGroup[]>;
   now?: () => string;
   createId?: () => string;
 }) {
@@ -36,8 +35,7 @@ export function createCreativeResearchReferenceGuideService(options: {
     if (!brief) throw new Error('生成 Reference Guide 前必须先生成 Design Brief');
     const existing = await options.guides.get(sessionId);
     if (existing?.briefRevisionId === brief.id) return existing;
-    const plan = await options.createPlan(sessionId, input);
-    const groups = plan.visualReferencePlan?.groups || [];
+    const groups = await options.createGroups(sessionId, input);
     if (groups.length < 2 || groups.length > 4) throw new Error('模型没有生成有效的 Reference Guide Territory');
     const guide: CreativeResearchReferenceGuide = {
       id: createId(), sessionId, briefRevisionId: brief.id,
