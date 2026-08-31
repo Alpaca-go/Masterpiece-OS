@@ -25,6 +25,29 @@ function LaneBadge({ state }: { state: string }) {
   return <span className={`cd-badge cd-badge--${state.toLowerCase()}`}>{labels[state] || state}</span>;
 }
 
+function DirectionLists({ final }: { final: NonNullable<Workspace['finalDirection']> }) {
+  return <div className="cd-columns">
+    <div><h3>策略原则</h3>{final.strategicPrinciples.length ? <ul>{final.strategicPrinciples.map((item) => <li key={item}>{item}</li>)}</ul> : <p className="cd-muted">暂无策略原则</p>}</div>
+    <div><h3>视觉原则</h3>{final.visualPrinciples.length ? <ul>{final.visualPrinciples.map((item) => <li key={item}>{item}</li>)}</ul> : <p className="cd-muted">视觉研究尚未完成</p>}</div>
+    <div><h3>避免与风险</h3>{final.negativeConstraints.length || final.risks.length ? <ul>{[...final.negativeConstraints, ...final.risks].map((item) => <li key={item}>{item}</li>)}</ul> : <p className="cd-muted">暂无已识别风险</p>}</div>
+  </div>;
+}
+
+function ProductionStatus(props: {
+  workspace: Workspace;
+  busy: boolean;
+  onRetry: () => void;
+  onNavigate: (path: string) => void;
+}) {
+  const handoff = props.workspace.productionHandoff;
+  if (!handoff) return null;
+  if (handoff.status === 'STALE') return <section className="cd-production cd-production--warning"><h3>生产上下文已过期</h3><p>上游内容已发生变化。请重新综合并确认最终方向后再进入生产。</p></section>;
+  if (handoff.status === 'COMPILING') return <section className="cd-production"><h3>正在准备生产上下文</h3><ol><li className="is-done">最终方向已确认</li><li className="is-active">正在建立 Visual Canon 与 Anchor Contract</li><li>空间 / 包装生产上下文</li></ol></section>;
+  if (handoff.status === 'FAILED') return <section className="cd-production cd-production--error"><h3>最终方向已确认，但生产上下文准备失败</h3><p>{handoff.errorCode}{handoff.errorMessage ? ` · ${handoff.errorMessage}` : ''}</p><button className="cd-primary" disabled={props.busy} onClick={props.onRetry}>重新准备</button></section>;
+  if (handoff.status === 'READY') return <section className="cd-production cd-production--ready"><h3>生产上下文已准备完成</h3><p>Visual Canon 与 Anchor Contract 已建立，可进入真实可用的生产入口。</p><div className="cd-actions">{handoff.packagingTranslationId && <button className="cd-primary" onClick={() => props.onNavigate('/packaging')}>进入包装效果图</button>}</div></section>;
+  return <section className="cd-production cd-production--pending"><h3>最终方向已确认</h3>{handoff.pendingReason === 'VISUAL_RESEARCH_REQUIRED' ? <><p>视觉研究尚未完成，完整视觉生产上下文暂不生成。</p><button onClick={() => props.onNavigate(`/creative-research?projectId=${encodeURIComponent(props.workspace.session.projectId)}`)}>继续视觉研究 →</button></> : <p>Canon authority 的生产接入仍在审计中；当前不会伪造 Visual Canon 或生产入口。</p>}</section>;
+}
+
 export function CreativeDirectionWorkspace(props: {
   projects: ProjectRecord[];
   onNavigate: (path: string) => void;
@@ -133,7 +156,10 @@ export function CreativeDirectionWorkspace(props: {
       <button className="cd-primary" disabled={busy || !workspace.context.confirmedByUser || !workspace.lanes.some((lane) => lane.state === 'READY')} onClick={() => void run(() => window.masterpiece.creativeDirection.synthesize(sessionId))}>{final ? '重新综合方向' : '综合方向草案'}</button>
       {!workspace.context.confirmedByUser && <p className="cd-gate-hint">请先在“项目理解”中确认事实，之后再完成至少一条工作通道。</p>}
       {workspace.context.confirmedByUser && !workspace.lanes.some((lane) => lane.state === 'READY') && <p className="cd-gate-hint">请在策略推演中确认一个方向，或在视觉研究中完成 Direction，任一通道就绪后即可综合。</p>}
-      {final && <div className="cd-direction"><input className="cd-title-input" value={final.title} disabled={final.status === 'FINALIZED'} onChange={(event) => setWorkspace({ ...workspace, finalDirection: { ...final, title: event.target.value } })} /><textarea value={final.proposition} disabled={final.status === 'FINALIZED'} onChange={(event) => setWorkspace({ ...workspace, finalDirection: { ...final, proposition: event.target.value } })} /><div className="cd-columns"><div><h3>策略原则</h3><ul>{final.strategicPrinciples.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h3>视觉原则</h3><ul>{final.visualPrinciples.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h3>避免与风险</h3><ul>{[...final.negativeConstraints, ...final.risks].map((item) => <li key={item}>{item}</li>)}</ul></div></div><p className="cd-coverage">来源覆盖：策略 {final.sourceCoverage.strategy} · 视觉 {final.sourceCoverage.visualResearch} · Context R{final.sourceCoverage.contextRevision}</p>{final.status === 'DRAFT' && <div className="cd-actions"><button onClick={() => void run(() => window.masterpiece.creativeDirection.updateDraft(sessionId, { title: final.title, proposition: final.proposition }))}>保存编辑</button><button className="cd-primary" disabled={final.stale} onClick={() => void run(() => window.masterpiece.creativeDirection.finalize(sessionId, true))}>确认最终方向</button></div>}</div>}
+      {final?.status === 'DRAFT' && <div className="cd-direction cd-direction--draft"><input className="cd-title-input" value={final.title} onChange={(event) => setWorkspace({ ...workspace, finalDirection: { ...final, title: event.target.value } })} /><textarea value={final.proposition} onChange={(event) => setWorkspace({ ...workspace, finalDirection: { ...final, proposition: event.target.value } })} /><DirectionLists final={final} /><p className="cd-coverage">来源覆盖：策略 {final.sourceCoverage.strategy} · 视觉 {final.sourceCoverage.visualResearch} · Context R{final.sourceCoverage.contextRevision}</p>{final.sourceCoverage.visualResearch !== 'USED' && <p className="cd-gate-hint">当前方向未包含完整视觉研究；视觉研究完成后需要重新综合。</p>}<div className="cd-actions"><button onClick={() => void run(() => window.masterpiece.creativeDirection.updateDraft(sessionId, { title: final.title, proposition: final.proposition }))}>保存编辑</button><button className="cd-primary" disabled={final.stale} onClick={() => void run(() => window.masterpiece.creativeDirection.finalize(sessionId, true))}>确认最终方向</button></div></div>}
+      {final?.status === 'FINALIZED' && <div className="cd-direction cd-direction--finalized"><div className="cd-finalized-meta"><span>FINAL DIRECTION · R{final.revision}</span><strong>已确认</strong></div><h2>{final.title}</h2><div className="cd-proposition"><small>核心创意主张</small><p>{final.proposition}</p></div><DirectionLists final={final} /><p className="cd-coverage">来源：Strategy {final.sourceCoverage.strategy} · Visual {final.sourceCoverage.visualResearch} · Context R{final.sourceCoverage.contextRevision}</p><p className="cd-finalized-time">确认时间：{final.finalizedAt ? new Date(final.finalizedAt).toLocaleString() : '—'} · 来源指纹 {final.sourceFingerprint.digest.slice(0, 10)}</p></div>}
+      {final?.stale && <p className="cd-gate-hint">上游内容已发生变化，当前最终方向需要重新综合；旧生产结果仅可作为旧版本查看。</p>}
+      <ProductionStatus workspace={workspace} busy={busy} onRetry={() => void run(() => window.masterpiece.creativeDirection.retryProduction(sessionId))} onNavigate={props.onNavigate} />
     </section>
   </main>;
 }

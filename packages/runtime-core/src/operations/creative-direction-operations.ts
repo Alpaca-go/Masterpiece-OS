@@ -12,5 +12,8 @@ export function createCreativeDirectionOperations({ creativeDirection }: { creat
     'creative-direction:synthesize': (_context: unknown, id: string) => creativeDirection.synthesize(id),
     'creative-direction:update-draft': (_context: unknown, id: string, input: Parameters<CreativeDirectionApplicationService['updateDraft']>[1]) => creativeDirection.updateDraft(id, input),
     'creative-direction:finalize': (_context: unknown, id: string, confirm: boolean) => creativeDirection.finalize(id, confirm),
+    'creative-direction:get-production-handoff': (_context: unknown, id: string) => creativeDirection.getProductionHandoff(id),
+    'creative-direction:compile-production': (_context: unknown, id: string) => creativeDirection.compileProduction(id),
+    'creative-direction:retry-production': (_context: unknown, id: string) => creativeDirection.retryProduction(id),
   });
 }

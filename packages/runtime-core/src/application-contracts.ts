@@ -18,6 +18,7 @@ import type {
 } from '@masterpiece/project-contracts/index.ts';
 import type {
   CreateCreativeDirectionSessionInput,
+  CreativeDirectionProductionHandoff,
   CreativeDirectionSession,
   CreativeDirectionWorkspace,
   UpdateFinalCreativeDirectionInput,
@@ -3027,6 +3028,9 @@ export interface RuntimeApi {
     synthesize(sessionId: string): Promise<CreativeDirectionWorkspace>;
     updateDraft(sessionId: string, input: UpdateFinalCreativeDirectionInput): Promise<CreativeDirectionWorkspace>;
     finalize(sessionId: string, confirm: boolean): Promise<CreativeDirectionWorkspace>;
+    getProductionHandoff(sessionId: string): Promise<CreativeDirectionProductionHandoff | null>;
+    compileProduction(sessionId: string): Promise<CreativeDirectionWorkspace>;
+    retryProduction(sessionId: string): Promise<CreativeDirectionWorkspace>;
   };
   referenceAnchor: {
     chooseReferenceAssets(): Promise<string[]>;

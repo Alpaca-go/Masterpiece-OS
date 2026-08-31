@@ -1,25 +1,28 @@
 import { randomUUID } from 'node:crypto';
 import type { CreativeIntelligenceWorkspaceView } from '../application-contracts.ts';
-import type { CreativeDirectionContext, CreativeResearchSession, DirectionBoard } from './creative-research/contracts.ts';
 import type {
   CreateCreativeDirectionSessionInput,
   CreativeDirectionLane,
+  CreativeDirectionProductionHandoff,
+  CreativeDirectionSession,
   CreativeDirectionWorkspace,
   FinalCreativeDirection,
   SharedProjectFact,
+  StrategyContribution,
   UpdateFinalCreativeDirectionInput,
   UpdateSharedProjectContextInput,
+  VisualContribution,
 } from './creative-direction-contracts.ts';
+import { projectStrategyContribution } from './creative-direction-strategy-projection.ts';
+import { projectVisualContribution, type CreativeDirectionVisualSource } from './creative-direction-visual-projection.ts';
+import { buildCreativeDirectionSourceFingerprint, sameCreativeDirectionSourceFingerprint } from './creative-direction-source-fingerprint.ts';
+import { synthesizeCreativeDirection } from './creative-direction-synthesis-service.ts';
+import type { CreativeDirectionSynthesisAdapter } from './creative-direction-synthesis-adapter.ts';
+import {
+  validateCreativeDirectionProductionCompileResult,
+  type CreativeDirectionProductionCompiler,
+} from './creative-direction-production-compiler.ts';
 import type { CreativeDirectionStore } from './creative-direction-store.ts';
-
-type VisualSource = { session: CreativeResearchSession; board: DirectionBoard | null; context: CreativeDirectionContext | null };
-
-function texts(value: unknown, output: string[] = []): string[] {
-  if (typeof value === 'string' && value.trim()) output.push(value.trim());
-  else if (Array.isArray(value)) value.forEach((item) => texts(item, output));
-  else if (value && typeof value === 'object') Object.values(value as Record<string, unknown>).forEach((item) => texts(item, output));
-  return output;
-}
 
 function unique(values: string[], max = 8): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))].slice(0, max);
@@ -37,21 +40,25 @@ function normalizeFacts(facts: SharedProjectFact[]): SharedProjectFact[] {
 export function createCreativeDirectionApplicationService(options: {
   store: CreativeDirectionStore;
   loadStrategy: (runId: string) => Promise<CreativeIntelligenceWorkspaceView>;
-  loadVisualResearch: (sessionId: string) => Promise<VisualSource>;
-  createVisualResearch: (input: { projectId: string; sourceDocumentIds: string[] }) => Promise<CreativeResearchSession>;
+  loadVisualResearch: (sessionId: string) => Promise<CreativeDirectionVisualSource>;
+  createVisualResearch: (input: { projectId: string; sourceDocumentIds: string[] }) => Promise<CreativeDirectionVisualSource['session']>;
+  productionCompiler?: CreativeDirectionProductionCompiler;
+  synthesisAdapter?: CreativeDirectionSynthesisAdapter;
   now?: () => string;
   createId?: () => string;
 }) {
   const now = options.now || (() => new Date().toISOString());
   const createId = options.createId || randomUUID;
+
   const required = async (id: string) => {
-    const [session, context, finalDirection] = await Promise.all([
-      options.store.getSession(id), options.store.getContext(id), options.store.getFinal(id),
+    const [session, context, finalDirection, productionHandoff] = await Promise.all([
+      options.store.getSession(id), options.store.getContext(id), options.store.getFinal(id), options.store.getProductionHandoff(id),
     ]);
     if (!session || !context) throw new Error(`CREATIVE_DIRECTION_SESSION_NOT_FOUND: ${id}`);
-    return { session, context, finalDirection };
+    return { session, context, finalDirection, productionHandoff };
   };
-  const laneState = async (session: Awaited<ReturnType<typeof required>>['session']): Promise<CreativeDirectionLane[]> => {
+
+  const laneState = async (session: CreativeDirectionSession): Promise<CreativeDirectionLane[]> => {
     let strategy: CreativeDirectionLane = { kind: 'STRATEGY', linkedId: session.strategyRunId, state: 'EMPTY', summary: '尚未关联策略推演' };
     if (session.strategyRunId) {
       try {
@@ -76,9 +83,81 @@ export function createCreativeDirectionApplicationService(options: {
     }
     return [strategy, visual];
   };
+
+  const contributions = async (session: CreativeDirectionSession, lanes: CreativeDirectionLane[]) => {
+    let strategy: StrategyContribution | null = null;
+    let visual: VisualContribution | null = null;
+    if (lanes[0]?.state === 'READY' && session.strategyRunId) strategy = projectStrategyContribution(await options.loadStrategy(session.strategyRunId));
+    if (lanes[1]?.state === 'READY' && session.visualResearchSessionId) visual = projectVisualContribution(await options.loadVisualResearch(session.visualResearchSessionId));
+    return { strategy, visual };
+  };
+
   const workspace = async (id: string): Promise<CreativeDirectionWorkspace> => {
     const value = await required(id);
-    return { ...value, lanes: await laneState(value.session) };
+    const lanes = await laneState(value.session);
+    if (!value.finalDirection) return { ...value, lanes };
+    const current = await contributions(value.session, lanes);
+    const fingerprint = buildCreativeDirectionSourceFingerprint({ contextRevision: value.context.revision, ...current });
+    const stale = !sameCreativeDirectionSourceFingerprint(value.finalDirection.sourceFingerprint, fingerprint);
+    return {
+      ...value,
+      lanes,
+      finalDirection: stale ? { ...value.finalDirection, stale: true } : value.finalDirection,
+      productionHandoff: stale && value.productionHandoff ? { ...value.productionHandoff, status: 'STALE' } : value.productionHandoff,
+    };
+  };
+
+  const markDownstreamStale = async (id: string, finalDirection: FinalCreativeDirection | null, handoff: CreativeDirectionProductionHandoff | null, timestamp: string) => {
+    if (finalDirection) await options.store.saveFinal(id, { ...finalDirection, stale: true, updatedAt: timestamp });
+    if (handoff) await options.store.saveProductionHandoff(id, { ...handoff, status: 'STALE', updatedAt: timestamp });
+  };
+
+  const compileProduction = async (id: string): Promise<CreativeDirectionWorkspace> => {
+    const current = await required(id);
+    if (!current.finalDirection || current.finalDirection.status !== 'FINALIZED') throw new Error('CREATIVE_DIRECTION_FINALIZED_REQUIRED');
+    const lanes = await laneState(current.session);
+    const source = await contributions(current.session, lanes);
+    const fingerprint = buildCreativeDirectionSourceFingerprint({ contextRevision: current.context.revision, ...source });
+    if (!sameCreativeDirectionSourceFingerprint(current.finalDirection.sourceFingerprint, fingerprint)) {
+      const timestamp = now();
+      await markDownstreamStale(id, current.finalDirection, current.productionHandoff, timestamp);
+      throw new Error('CREATIVE_DIRECTION_FRESH_FINAL_REQUIRED');
+    }
+    const timestamp = now();
+    const base: CreativeDirectionProductionHandoff = current.productionHandoff ?? {
+      schemaVersion: 'creative-direction-production-handoff-v0.1', sessionId: id,
+      finalDirectionId: current.finalDirection.id, finalDirectionRevision: current.finalDirection.revision,
+      projectId: current.session.projectId, status: 'PENDING', sourceFingerprint: fingerprint,
+      createdAt: timestamp, updatedAt: timestamp,
+    };
+    if (!source.visual) {
+      await options.store.saveProductionHandoff(id, { ...base, status: 'PENDING', pendingReason: 'VISUAL_RESEARCH_REQUIRED', updatedAt: timestamp });
+      await options.store.saveSession({ ...current.session, status: 'FINALIZED', updatedAt: timestamp });
+      return workspace(id);
+    }
+    if (!options.productionCompiler) {
+      await options.store.saveProductionHandoff(id, { ...base, status: 'PENDING', pendingReason: 'PRODUCTION_COMPILER_UNAVAILABLE', updatedAt: timestamp });
+      await options.store.saveSession({ ...current.session, status: 'FINALIZED', updatedAt: timestamp });
+      return workspace(id);
+    }
+    await options.store.saveProductionHandoff(id, { ...base, status: 'COMPILING', pendingReason: undefined, errorCode: undefined, errorMessage: undefined, updatedAt: timestamp });
+    await options.store.saveSession({ ...current.session, status: 'COMPILING_PRODUCTION', updatedAt: timestamp });
+    try {
+      const result = validateCreativeDirectionProductionCompileResult(await options.productionCompiler.compile({
+        session: current.session,
+        context: current.context,
+        finalDirection: current.finalDirection,
+      }));
+      const completedAt = now();
+      await options.store.saveProductionHandoff(id, { ...base, ...result, status: 'READY', pendingReason: undefined, errorCode: undefined, errorMessage: undefined, updatedAt: completedAt });
+      await options.store.saveSession({ ...current.session, status: 'PRODUCTION_READY', updatedAt: completedAt });
+    } catch (error) {
+      const failedAt = now();
+      const cause = error as { code?: string; message?: string };
+      await options.store.saveProductionHandoff(id, { ...base, status: 'FAILED', pendingReason: undefined, errorCode: cause.code || 'PRODUCTION_COMPILE_FAILED', errorMessage: cause.message || String(error), updatedAt: failedAt });
+      await options.store.saveSession({ ...current.session, status: 'PRODUCTION_FAILED', updatedAt: failedAt });
+    }
+    return workspace(id);
   };
 
   return Object.freeze({
@@ -98,11 +177,11 @@ export function createCreativeDirectionApplicationService(options: {
         ...(input.description ? [{ key: 'description' as const, value: input.description, authority: 'PROJECT_RECORD' as const, evidence: ['项目记录'] }] : []),
         ...(input.lockedFacts || []).map((value) => ({ key: 'lockedFact' as const, value, authority: 'AUTHORITATIVE_DOCUMENT' as const, evidence: ['项目锁定事实'] })),
       ];
-      const session = {
-        schemaVersion: 'creative-direction-session-v0.1' as const, id, projectId: input.projectId,
+      const session: CreativeDirectionSession = {
+        schemaVersion: 'creative-direction-session-v0.1', id, projectId: input.projectId,
         projectName: input.projectName.trim(), sourceDocumentCount: sourceDocumentIds.length,
         sourceDocumentLabels, contextRevision: 1, strategyRunId: null,
-        visualResearchSessionId: visualResearch.id, status: 'CONTEXT_REVIEW' as const, createdAt: timestamp, updatedAt: timestamp,
+        visualResearchSessionId: visualResearch.id, status: 'CONTEXT_REVIEW', createdAt: timestamp, updatedAt: timestamp,
       };
       const context = {
         schemaVersion: 'shared-project-context-v0.1' as const, projectId: input.projectId, revision: 1,
@@ -123,7 +202,7 @@ export function createCreativeDirectionApplicationService(options: {
       const timestamp = now();
       const context = { ...current.context, revision: current.context.revision + 1, facts: normalizeFacts(input.facts), confirmedByUser: true, updatedAt: timestamp };
       await options.store.saveContext(id, context);
-      if (current.finalDirection) await options.store.saveFinal(id, { ...current.finalDirection, stale: true, updatedAt: timestamp });
+      await markDownstreamStale(id, current.finalDirection, current.productionHandoff, timestamp);
       await options.store.saveSession({ ...current.session, contextRevision: context.revision, status: 'IN_PROGRESS', updatedAt: timestamp });
       return workspace(id);
     },
@@ -134,9 +213,7 @@ export function createCreativeDirectionApplicationService(options: {
         if (source.run.projectId && source.run.projectId !== current.session.projectId) throw new Error('CREATIVE_DIRECTION_PROJECT_MISMATCH');
       }
       const timestamp = now();
-      if (current.finalDirection && current.session.strategyRunId !== runId) {
-        await options.store.saveFinal(id, { ...current.finalDirection, stale: true, updatedAt: timestamp });
-      }
+      if (current.session.strategyRunId !== runId) await markDownstreamStale(id, current.finalDirection, current.productionHandoff, timestamp);
       await options.store.saveSession({ ...current.session, strategyRunId: runId, status: 'IN_PROGRESS', updatedAt: timestamp });
       return workspace(id);
     },
@@ -144,9 +221,7 @@ export function createCreativeDirectionApplicationService(options: {
       const current = await required(id);
       if (sourceId && (await options.loadVisualResearch(sourceId)).session.projectId !== current.session.projectId) throw new Error('CREATIVE_DIRECTION_PROJECT_MISMATCH');
       const timestamp = now();
-      if (current.finalDirection && current.session.visualResearchSessionId !== sourceId) {
-        await options.store.saveFinal(id, { ...current.finalDirection, stale: true, updatedAt: timestamp });
-      }
+      if (current.session.visualResearchSessionId !== sourceId) await markDownstreamStale(id, current.finalDirection, current.productionHandoff, timestamp);
       await options.store.saveSession({ ...current.session, visualResearchSessionId: sourceId, status: 'IN_PROGRESS', updatedAt: timestamp });
       return workspace(id);
     },
@@ -154,38 +229,19 @@ export function createCreativeDirectionApplicationService(options: {
       const current = await required(id);
       if (!current.context.confirmedByUser) throw new Error('CREATIVE_DIRECTION_CONTEXT_NOT_CONFIRMED');
       const lanes = await laneState(current.session);
-      const strategyReady = lanes[0]?.state === 'READY';
-      const visualReady = lanes[1]?.state === 'READY';
-      if (!strategyReady && !visualReady) throw new Error('CREATIVE_DIRECTION_SOURCE_NOT_READY');
-      const strategy = strategyReady && current.session.strategyRunId ? await options.loadStrategy(current.session.strategyRunId) : null;
-      const visual = visualReady && current.session.visualResearchSessionId ? await options.loadVisualResearch(current.session.visualResearchSessionId) : null;
-      const strategyTexts = unique(texts(strategy?.selectedDirectionSnapshot), 12);
-      const visualTexts = unique(texts(visual?.context), 16);
-      const board = visual?.board;
-      const factTexts = current.context.facts.map((fact) => fact.value);
-      const conflicts: string[] = [];
-      const strategicCorpus = strategyTexts.join(' ').toLowerCase();
-      const visualCorpus = visualTexts.join(' ').toLowerCase();
-      if (/(trust|professional|可信|专业|清晰|information)/u.test(strategicCorpus) && /(extreme|minimal|极简|留白)/u.test(visualCorpus)) {
-        conflicts.push('保留克制与留白，但信息层级和关键事实的可读性优先。');
-      }
+      const source = await contributions(current.session, lanes);
       const timestamp = now();
-      const previous = current.finalDirection;
-      const finalDirection: FinalCreativeDirection = {
-        schemaVersion: 'final-creative-direction-v0.1', id: previous?.id || `fd-${createId()}`,
-        sessionId: id, revision: (previous?.revision || 0) + 1, status: 'DRAFT', stale: false,
-        title: previous?.title || `${current.session.projectName} 创意方向`,
-        proposition: previous?.proposition || strategyTexts[0] || board?.summary || visual?.context?.directionSummary || '围绕已确认项目事实建立一致的策略与视觉表达。',
-        strategicPrinciples: unique(strategyTexts.slice(1, 6), 5),
-        visualPrinciples: unique([...(board?.visualKeywords || []), ...visualTexts.slice(0, 5)], 8),
-        negativeConstraints: unique([...(visual?.context?.negativeSignals || []).map((item) => item.reason || item.value || item.type), ...current.context.facts.filter((fact) => fact.key === 'lockedFact').map((fact) => `不得违背：${fact.value}`)], 8),
-        risks: unique([...conflicts.map((item) => `策略与视觉张力：${item}`), ...(strategy?.warnings || [])], 8),
-        conflictResolutions: conflicts,
-        evidence: unique([...factTexts.map((value) => `共享事实：${value}`), ...(strategy ? [`策略方向：${current.session.strategyRunId}`] : []), ...(visual ? [`视觉研究：${current.session.visualResearchSessionId}`] : [])], 16),
-        sourceCoverage: { strategy: strategy ? 'USED' : current.session.strategyRunId ? 'NOT_READY' : 'NOT_LINKED', visualResearch: visual ? 'USED' : current.session.visualResearchSessionId ? 'NOT_READY' : 'NOT_LINKED', contextRevision: current.context.revision },
-        createdAt: previous?.createdAt || timestamp, updatedAt: timestamp,
+      const finalDirection = await synthesizeCreativeDirection({
+        sessionId: id, projectName: current.session.projectName, context: current.context, ...source,
+        previous: current.finalDirection, id: `fd-${createId()}`, timestamp, adapter: options.synthesisAdapter,
+      });
+      finalDirection.sourceCoverage = {
+        strategy: source.strategy ? 'USED' : current.session.strategyRunId ? 'NOT_READY' : 'NOT_LINKED',
+        visualResearch: source.visual ? 'USED' : current.session.visualResearchSessionId ? 'NOT_READY' : 'NOT_LINKED',
+        contextRevision: current.context.revision,
       };
       await options.store.saveFinal(id, finalDirection);
+      if (current.productionHandoff) await options.store.saveProductionHandoff(id, { ...current.productionHandoff, status: 'STALE', updatedAt: timestamp });
       await options.store.saveSession({ ...current.session, status: 'DRAFT_READY', updatedAt: timestamp });
       return workspace(id);
     },
@@ -198,13 +254,23 @@ export function createCreativeDirectionApplicationService(options: {
     },
     async finalize(id: string, confirm: boolean) {
       if (!confirm) throw new Error('CREATIVE_DIRECTION_FINAL_CONFIRMATION_REQUIRED');
-      const current = await required(id);
-      if (!current.finalDirection || current.finalDirection.stale) throw new Error('CREATIVE_DIRECTION_FRESH_DRAFT_REQUIRED');
+      const currentWorkspace = await workspace(id);
+      if (!currentWorkspace.finalDirection || currentWorkspace.finalDirection.stale) throw new Error('CREATIVE_DIRECTION_FRESH_DRAFT_REQUIRED');
       const timestamp = now();
-      await options.store.saveFinal(id, { ...current.finalDirection, status: 'FINALIZED', finalizedAt: timestamp, updatedAt: timestamp });
-      await options.store.saveSession({ ...current.session, status: 'FINALIZED', updatedAt: timestamp });
-      return workspace(id);
+      const finalized = { ...currentWorkspace.finalDirection, status: 'FINALIZED' as const, finalizedAt: timestamp, updatedAt: timestamp };
+      await options.store.saveFinal(id, finalized);
+      await options.store.saveSession({ ...currentWorkspace.session, status: 'FINALIZED', updatedAt: timestamp });
+      await options.store.saveProductionHandoff(id, {
+        schemaVersion: 'creative-direction-production-handoff-v0.1', sessionId: id,
+        finalDirectionId: finalized.id, finalDirectionRevision: finalized.revision,
+        projectId: currentWorkspace.session.projectId, status: 'PENDING', sourceFingerprint: finalized.sourceFingerprint,
+        createdAt: timestamp, updatedAt: timestamp,
+      });
+      return compileProduction(id);
     },
+    getProductionHandoff: async (id: string) => (await workspace(id)).productionHandoff,
+    compileProduction,
+    retryProduction: compileProduction,
   });
 }
 
