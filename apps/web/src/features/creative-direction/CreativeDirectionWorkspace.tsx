@@ -8,7 +8,17 @@ import type {
   ProjectRecord,
   SharedProjectFact,
 } from '@masterpiece/runtime-core/application-contracts.ts';
+import { useConfirm } from '../../components/ui/ConfirmDialog';
 import './creative-direction.css';
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error(`无法读取「${file.name}」`));
+    reader.onload = () => resolve(String(reader.result || '').split(',')[1] || '');
+    reader.readAsDataURL(file);
+  });
+}
 
 function LaneBadge({ state }: { state: string }) {
   const labels: Record<string, string> = { EMPTY: '尚未开始', IN_PROGRESS: '进行中', READY: '可用于综合', BLOCKED: '需要处理' };
@@ -20,11 +30,13 @@ export function CreativeDirectionWorkspace(props: {
   onNavigate: (path: string) => void;
   onBack: () => void;
 }) {
+  const { confirm } = useConfirm();
   const location = useLocation();
   const sessionId = location.pathname.match(/^\/creative-direction\/([^/]+)/)?.[1] || null;
   const [sessions, setSessions] = useState<CreativeDirectionSession[]>([]);
   const [workspace, setWorkspace] = useState<Workspace | null>(null);
   const [projectId, setProjectId] = useState(props.projects[0]?.id || '');
+  const [documents, setDocuments] = useState<File[]>([]);
   const [facts, setFacts] = useState<SharedProjectFact[]>([]);
   const [strategyRuns, setStrategyRuns] = useState<CreativeIntelligenceRun[]>([]);
   const [researchSessions, setResearchSessions] = useState<CreativeResearchSessionDto[]>([]);
@@ -52,15 +64,36 @@ export function CreativeDirectionWorkspace(props: {
     finally { setBusy(false); }
   };
   const create = async () => {
-    if (!project) return;
+    if (!project || !documents.length) return;
     setBusy(true); setError('');
     try {
+      const sourceDocumentIds = await window.masterpiece.documentContext.importDocuments({ documents: await Promise.all(documents.map(async (file) => ({
+        name: file.name, size: file.size, content: await fileToBase64(file),
+      }))) });
       const value = await window.masterpiece.creativeDirection.createSession({
         projectId: project.id, projectName: project.projectName, brandName: project.brandName,
         industry: project.industry, description: project.description, lockedFacts: project.lockedFacts,
+        sourceDocumentIds, sourceDocumentLabels: documents.map((file) => file.name),
       });
       props.onNavigate(`/creative-direction/${value.session.id}`);
-    } catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)); setBusy(false); }
+    } catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)); }
+    finally { setBusy(false); }
+  };
+  const deleteRecent = async (target: CreativeDirectionSession) => {
+    const approved = await confirm({
+      title: '删除创意策划记录',
+      message: `确定删除「${target.projectName}」的这条创意策划记录吗？\n\n只会删除统一工作区及最终方向草案；已关联的策略推演和视觉研究记录会保留。`,
+      confirmText: '删除记录',
+      tone: 'destructive',
+    });
+    if (!approved) return;
+    setBusy(true); setError('');
+    try {
+      const result = await window.masterpiece.creativeDirection.deleteSession(target.id);
+      if (!result.deleted) throw new Error('删除失败：记录不存在');
+      setSessions((current) => current.filter((item) => item.id !== target.id));
+    } catch (reason) { setError(reason instanceof Error ? reason.message : String(reason)); }
+    finally { setBusy(false); }
   };
 
   if (!sessionId) return <main className="cd-shell">
@@ -69,10 +102,11 @@ export function CreativeDirectionWorkspace(props: {
     {error && <p className="cd-error">{error}</p>}
     <section className="cd-card cd-create">
       <div><small>NEW WORKSPACE</small><h2>开始创意策划</h2></div>
+      <label className="cd-upload"><span>导入项目资料</span><input type="file" multiple disabled={busy} accept=".pdf,.docx,.md,.markdown,.txt" onChange={(event) => setDocuments(Array.from(event.target.files || []))} /><small>{documents.length ? `已选择 ${documents.length} 份文档` : '至少上传 1 份 PDF、DOCX、Markdown 或 TXT'}</small></label>
       <select value={projectId} onChange={(event) => setProjectId(event.target.value)}><option value="">请选择项目</option>{props.projects.map((item) => <option key={item.id} value={item.id}>{item.projectName}</option>)}</select>
-      <button className="cd-primary" disabled={!projectId || busy} onClick={() => void create()}>建立统一工作区</button>
+      <button className="cd-primary" disabled={!projectId || !documents.length || busy} onClick={() => void create()}>{busy ? '正在上传并创建…' : '建立统一工作区'}</button>
     </section>
-    <section className="cd-list"><h2>最近创意策划</h2>{sessions.length === 0 && <p className="cd-muted">还没有创意策划记录。</p>}{sessions.map((item) => <button key={item.id} onClick={() => props.onNavigate(`/creative-direction/${item.id}`)}><strong>{item.projectName}</strong><span>{item.status} · Context R{item.contextRevision}</span></button>)}</section>
+    <section className="cd-list"><h2>最近创意策划</h2>{sessions.length === 0 && <p className="cd-muted">还没有创意策划记录。</p>}{sessions.map((item) => <article key={item.id} className="cd-list__item"><button className="cd-list__open" onClick={() => props.onNavigate(`/creative-direction/${item.id}`)}><strong>{item.projectName}</strong><span>{item.sourceDocumentCount ?? 0} 份资料 · {item.status} · Context R{item.contextRevision}</span></button><button className="cd-list__delete" disabled={busy} aria-label={`删除 ${item.projectName} 的创意策划记录`} onClick={() => void deleteRecent(item)}>删除</button></article>)}</section>
   </main>;
 
   if (!workspace) return <main className="cd-shell"><p>{error || '正在载入创意策划…'}</p></main>;
@@ -97,6 +131,8 @@ export function CreativeDirectionWorkspace(props: {
       <div className="cd-section-title"><div><small>04 · FINAL DIRECTION</small><h2>最终方向</h2></div>{final && <span>{final.stale ? '上游已变化 · 需要重审' : final.status === 'FINALIZED' ? '已定稿' : '待确认'}</span>}</div>
       {!final && <p className="cd-muted">任一通道达到“可用于综合”即可生成草案；两个通道都完成时会一并识别策略与视觉之间的张力。</p>}
       <button className="cd-primary" disabled={busy || !workspace.context.confirmedByUser || !workspace.lanes.some((lane) => lane.state === 'READY')} onClick={() => void run(() => window.masterpiece.creativeDirection.synthesize(sessionId))}>{final ? '重新综合方向' : '综合方向草案'}</button>
+      {!workspace.context.confirmedByUser && <p className="cd-gate-hint">请先在“项目理解”中确认事实，之后再完成至少一条工作通道。</p>}
+      {workspace.context.confirmedByUser && !workspace.lanes.some((lane) => lane.state === 'READY') && <p className="cd-gate-hint">请在策略推演中确认一个方向，或在视觉研究中完成 Direction，任一通道就绪后即可综合。</p>}
       {final && <div className="cd-direction"><input className="cd-title-input" value={final.title} disabled={final.status === 'FINALIZED'} onChange={(event) => setWorkspace({ ...workspace, finalDirection: { ...final, title: event.target.value } })} /><textarea value={final.proposition} disabled={final.status === 'FINALIZED'} onChange={(event) => setWorkspace({ ...workspace, finalDirection: { ...final, proposition: event.target.value } })} /><div className="cd-columns"><div><h3>策略原则</h3><ul>{final.strategicPrinciples.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h3>视觉原则</h3><ul>{final.visualPrinciples.map((item) => <li key={item}>{item}</li>)}</ul></div><div><h3>避免与风险</h3><ul>{[...final.negativeConstraints, ...final.risks].map((item) => <li key={item}>{item}</li>)}</ul></div></div><p className="cd-coverage">来源覆盖：策略 {final.sourceCoverage.strategy} · 视觉 {final.sourceCoverage.visualResearch} · Context R{final.sourceCoverage.contextRevision}</p>{final.status === 'DRAFT' && <div className="cd-actions"><button onClick={() => void run(() => window.masterpiece.creativeDirection.updateDraft(sessionId, { title: final.title, proposition: final.proposition }))}>保存编辑</button><button className="cd-primary" disabled={final.stale} onClick={() => void run(() => window.masterpiece.creativeDirection.finalize(sessionId, true))}>确认最终方向</button></div>}</div>}
     </section>
   </main>;

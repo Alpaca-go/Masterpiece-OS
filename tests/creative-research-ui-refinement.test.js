@@ -58,6 +58,18 @@ test('normal UI exposes one Creative Direction entry while preserving hidden sta
   assert.doesNotMatch(createPage, /<AnalysisModeTabs\b/u);
 });
 
+test('Creative Direction intake uploads documents and recent records can be deleted', () => {
+  const workspace = read('apps', 'web', 'src', 'features', 'creative-direction', 'CreativeDirectionWorkspace.tsx');
+  assert.match(workspace, /accept="\.pdf,\.docx,\.md,\.markdown,\.txt"/u);
+  assert.match(workspace, /documentContext\.importDocuments/u);
+  assert.match(workspace, /sourceDocumentIds, sourceDocumentLabels/u);
+  assert.match(workspace, /props\.onNavigate\(`\/creative-direction\/\$\{value\.session\.id\}`\);[\s\S]*finally \{ setBusy\(false\); \}/u);
+  assert.match(workspace, /creativeDirection\.deleteSession\(target\.id\)/u);
+  assert.match(workspace, /tone: 'destructive'/u);
+  assert.match(workspace, /className="cd-list__delete"/u);
+  assert.match(workspace, />删除<\/button>/u);
+});
+
 test('research execution panel derives stages from persisted state and real counts', () => {
   const panel = read('apps', 'web', 'src', 'features', 'creative-research', 'ResearchExecutionPanel.tsx');
   assert.match(panel, /input\.guideReady/u);

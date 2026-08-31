@@ -56,6 +56,12 @@ export function createCreativeDirectionStore(options: { readDefaultDataPath: () 
       return sessions.filter((item): item is CreativeDirectionSession => Boolean(item) && (!projectId || item?.projectId === projectId))
         .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
+    async delete(id: string) {
+      const target = await sessionRoot(id);
+      if (!await readJson((await paths(id)).session)) return false;
+      await fs.rm(target, { recursive: true, force: false, maxRetries: 3, retryDelay: 50 });
+      return true;
+    },
   });
 }
 

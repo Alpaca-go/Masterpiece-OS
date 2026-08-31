@@ -376,6 +376,7 @@ export function createCurrentBusinessOperations(
       if (!session) throw new Error(`CREATIVE_RESEARCH_SESSION_NOT_FOUND: ${sessionId}`);
       return { session, board: boardResult.board, context: contextResult.context };
     },
+    createVisualResearch: (input) => creativeResearchBrowserBriefs.createSession(input),
   });
 
   // P3-B3: resolve a canonical truth snapshot for a project

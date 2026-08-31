@@ -3019,6 +3019,7 @@ export interface RuntimeApi {
   creativeDirection: {
     listSessions(projectId?: string): Promise<CreativeDirectionSession[]>;
     createSession(input: CreateCreativeDirectionSessionInput): Promise<CreativeDirectionWorkspace>;
+    deleteSession(sessionId: string): Promise<{ deleted: boolean; retainedStrategyRunId: string | null; retainedVisualResearchSessionId: string | null }>;
     getWorkspace(sessionId: string): Promise<CreativeDirectionWorkspace>;
     updateContext(sessionId: string, input: UpdateSharedProjectContextInput): Promise<CreativeDirectionWorkspace>;
     linkStrategy(sessionId: string, runId: string | null): Promise<CreativeDirectionWorkspace>;

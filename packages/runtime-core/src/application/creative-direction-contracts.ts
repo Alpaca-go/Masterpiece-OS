@@ -24,6 +24,8 @@ export interface CreativeDirectionSession {
   id: string;
   projectId: string;
   projectName: string;
+  sourceDocumentCount: number;
+  sourceDocumentLabels: string[];
   contextRevision: number;
   strategyRunId: string | null;
   visualResearchSessionId: string | null;
@@ -80,6 +82,8 @@ export interface CreateCreativeDirectionSessionInput {
   industry?: string;
   description?: string;
   lockedFacts?: string[];
+  sourceDocumentIds: string[];
+  sourceDocumentLabels: string[];
 }
 
 export interface UpdateSharedProjectContextInput {

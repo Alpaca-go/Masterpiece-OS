@@ -38,6 +38,7 @@ export function createCreativeDirectionApplicationService(options: {
   store: CreativeDirectionStore;
   loadStrategy: (runId: string) => Promise<CreativeIntelligenceWorkspaceView>;
   loadVisualResearch: (sessionId: string) => Promise<VisualSource>;
+  createVisualResearch: (input: { projectId: string; sourceDocumentIds: string[] }) => Promise<CreativeResearchSession>;
   now?: () => string;
   createId?: () => string;
 }) {
@@ -84,6 +85,10 @@ export function createCreativeDirectionApplicationService(options: {
     listSessions: (projectId?: string) => options.store.list(projectId),
     async createSession(input: CreateCreativeDirectionSessionInput) {
       if (!input.projectId?.trim() || !input.projectName?.trim()) throw new Error('CREATIVE_DIRECTION_PROJECT_REQUIRED');
+      const sourceDocumentIds = [...new Set((input.sourceDocumentIds || []).map((value) => String(value || '').trim()).filter(Boolean))];
+      if (!sourceDocumentIds.length) throw new Error('CREATIVE_DIRECTION_DOCUMENT_REQUIRED');
+      const sourceDocumentLabels = [...new Set((input.sourceDocumentLabels || []).map((value) => String(value || '').replace(/\\/gu, '/').split('/').pop()?.trim() || '').filter(Boolean))].slice(0, sourceDocumentIds.length);
+      const visualResearch = await options.createVisualResearch({ projectId: input.projectId, sourceDocumentIds });
       const timestamp = now();
       const id = `cd-${createId()}`;
       const facts: SharedProjectFact[] = [
@@ -95,8 +100,9 @@ export function createCreativeDirectionApplicationService(options: {
       ];
       const session = {
         schemaVersion: 'creative-direction-session-v0.1' as const, id, projectId: input.projectId,
-        projectName: input.projectName.trim(), contextRevision: 1, strategyRunId: null,
-        visualResearchSessionId: null, status: 'CONTEXT_REVIEW' as const, createdAt: timestamp, updatedAt: timestamp,
+        projectName: input.projectName.trim(), sourceDocumentCount: sourceDocumentIds.length,
+        sourceDocumentLabels, contextRevision: 1, strategyRunId: null,
+        visualResearchSessionId: visualResearch.id, status: 'CONTEXT_REVIEW' as const, createdAt: timestamp, updatedAt: timestamp,
       };
       const context = {
         schemaVersion: 'shared-project-context-v0.1' as const, projectId: input.projectId, revision: 1,
@@ -104,6 +110,11 @@ export function createCreativeDirectionApplicationService(options: {
       };
       await options.store.create(session, context);
       return workspace(id);
+    },
+    async deleteSession(id: string) {
+      const current = await required(id);
+      const deleted = await options.store.delete(id);
+      return { deleted, retainedStrategyRunId: current.session.strategyRunId, retainedVisualResearchSessionId: current.session.visualResearchSessionId };
     },
     getWorkspace: workspace,
     async updateContext(id: string, input: UpdateSharedProjectContextInput) {
