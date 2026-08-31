@@ -26,6 +26,7 @@ const UPLOAD_CHANNELS = new Set([
   'projects:create-from-browser-files',
   'projects:import-browser-files',
   'document-context:import-documents',
+  'creative-research:import-curated-references',
 ]);
 const UPLOAD_BODY_BYTES = 64 * 1024 * 1024;
 
@@ -101,6 +102,25 @@ export async function startLocalRpcServer(options: LocalRpcServerOptions): Promi
       stream.once('error', () => { if (!response.headersSent) sendJson(response, 404, { error: 'REFERENCE_IMAGE_NOT_FOUND' }); else response.destroy(); });
       stream.once('open', () => {
         response.writeHead(200, { 'content-type': 'image/webp', 'cache-control': 'private, max-age=31536000, immutable', 'x-content-type-options': 'nosniff' });
+        stream.pipe(response);
+      });
+      return;
+    }
+    const curatedImageMatch = /^\/_masterpiece\/creative-research\/([A-Za-z0-9._-]+)\/curated-references\/([A-Za-z0-9._-]+)\/image$/u.exec(requestUrl.pathname);
+    if (request.method === 'GET' && curatedImageMatch && options.creativeResearchDataPath) {
+      const root = path.join(path.resolve(options.creativeResearchDataPath), 'creative-research');
+      const referenceRoot = path.resolve(root, curatedImageMatch[1]!, 'curated-references', curatedImageMatch[2]!);
+      if (!referenceRoot.startsWith(`${root}${path.sep}`)) { sendJson(response, 404, { error: 'WEB_RPC_NOT_FOUND' }); return; }
+      const entry = (await fs.promises.readdir(referenceRoot).catch(() => []))
+        .find((name) => /^original\.(?:jpe?g|png|webp)$/iu.test(name));
+      if (!entry) { sendJson(response, 404, { error: 'CURATED_REFERENCE_IMAGE_NOT_FOUND' }); return; }
+      const filename = path.join(referenceRoot, entry);
+      const extension = path.extname(entry).toLowerCase();
+      const contentType = extension === '.png' ? 'image/png' : extension === '.webp' ? 'image/webp' : 'image/jpeg';
+      const stream = fs.createReadStream(filename);
+      stream.once('error', () => { if (!response.headersSent) sendJson(response, 404, { error: 'CURATED_REFERENCE_IMAGE_NOT_FOUND' }); else response.destroy(); });
+      stream.once('open', () => {
+        response.writeHead(200, { 'content-type': contentType, 'cache-control': 'private, max-age=31536000, immutable', 'x-content-type-options': 'nosniff' });
         stream.pipe(response);
       });
       return;

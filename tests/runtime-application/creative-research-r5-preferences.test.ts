@@ -210,8 +210,9 @@ test('R5 preference UI keeps AI interpretation as draft evidence under explicit 
   assert.match(workspace, /onAnalyze=\{\(\) => void analyzePreferences\(\)\}/u);
   assert.match(operations, /creative-research:analyze-preferences/u);
   assert.match(operations, /creative-research:finalize-preference-insight/u);
-  assert.match(panel, /找更多类似/u);
-  assert.doesNotMatch(`${workspace}\n${panel}\n${operations}`, /compile-direction|Direction Board/iu);
+  assert.doesNotMatch(panel, /找更多类似/u);
+  assert.match(workspace, /PreferenceInsightsPanel/u);
+  assert.doesNotMatch(`${workspace}\n${panel}\n${operations}`, /compile-direction/iu);
 });
 
 test('R5 preference adapter rejects unknown evidence after its single repair and validates category/confidence', async () => {

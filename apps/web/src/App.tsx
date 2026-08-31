@@ -502,13 +502,7 @@ function AppContent() {
     </div>
   );
 
-  if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => {
-    if (settingsReturnScreen === 'creative-research' && window.location.hash.includes('section=research-services')) {
-      window.history.back();
-      return;
-    }
-    setScreen(settingsReturnScreen);
-  }} />;
+  if (screen === 'settings') return <SettingsPanel settings={settings} onSaved={saveSettings} onClose={() => setScreen(settingsReturnScreen)} />;
   if (screen === 'create') return (
     <CreatePage
       settings={settings}
@@ -545,7 +539,6 @@ function AppContent() {
     onNavigate={navigateToPath}
     onBack={() => setScreen('home')}
     onOpenSettings={() => { setSettingsReturnScreen('creative-research'); setScreen('settings'); }}
-    onOpenResearchSettings={() => { setSettingsReturnScreen('creative-research'); navigateToPath('/settings?section=research-services'); }}
   />;
   if (screen === 'analysis' && selected) return <AnalysisView
     project={selected}

@@ -31,6 +31,7 @@ export interface ReferencePreferenceAnalysisInput {
     selectedAttributes: ReferenceAttribute[];
     designerNote?: string;
     remoteImageUrl?: string;
+    localImageDataUrl?: string;
   }>;
   activeNegativeSignals: Array<{
     id: string;

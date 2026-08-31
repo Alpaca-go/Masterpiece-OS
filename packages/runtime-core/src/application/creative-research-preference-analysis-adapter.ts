@@ -96,7 +96,7 @@ function boundedText(value: string, maximum: number): string {
 
 export function buildPreferenceAnalysisMessages(input: ReferencePreferenceAnalysisInput): unknown[] {
   const visualReferences = input.selectedReferences
-    .filter((reference) => reference.resourceType === 'IMAGE' && /^https?:\/\//iu.test(reference.remoteImageUrl || ''))
+    .filter((reference) => reference.resourceType === 'IMAGE' && (/^https?:\/\//iu.test(reference.remoteImageUrl || '') || /^data:image\//iu.test(reference.localImageDataUrl || '')))
     .slice(0, 12);
   const visuallyAnalyzedIds = new Set(visualReferences.map((reference) => reference.id));
   const payload = {
@@ -131,7 +131,7 @@ export function buildPreferenceAnalysisMessages(input: ReferencePreferenceAnalys
     JSON.stringify(payload),
   ].join('\n\n');
   const visualInputs = visualReferences
-    .map((reference) => ({ type: 'image_url', image_url: { url: reference.remoteImageUrl } }));
+    .map((reference) => ({ type: 'image_url', image_url: { url: reference.localImageDataUrl || reference.remoteImageUrl } }));
   return [
     { role: 'system', content: '你是设计师选择证据的整理助手。严格遵循证据边界并只返回 JSON。' },
     { role: 'user', content: [{ type: 'text', text }, ...visualInputs] },
@@ -203,7 +203,7 @@ export function createCreativeResearchPreferenceAnalysisAdapter(options: {
           provider: credentials.provider,
           model: credentials.model,
           selectedReferenceCount: input.selectedReferences.length,
-          visualInputCount: input.selectedReferences.filter((item) => item.resourceType === 'IMAGE' && item.remoteImageUrl).slice(0, 12).length,
+          visualInputCount: input.selectedReferences.filter((item) => item.resourceType === 'IMAGE' && (item.remoteImageUrl || item.localImageDataUrl)).slice(0, 12).length,
         });
       }
     },

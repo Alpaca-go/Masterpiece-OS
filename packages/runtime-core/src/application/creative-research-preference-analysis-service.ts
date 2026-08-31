@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto';
+import fs from 'node:fs/promises';
 import type { PreferenceInsight } from './creative-research/contracts.ts';
 import { REFERENCE_ATTRIBUTES } from './creative-research/contracts.ts';
-import type { ReferencePreferenceAnalysisAdapter } from './creative-research/adapter-contracts.ts';
+import type { ReferencePreferenceAnalysisAdapter, ReferencePreferenceAnalysisInput } from './creative-research/adapter-contracts.ts';
 import { assertPreferenceInsight } from './creative-research/evidence.ts';
 import type {
   CreativeResearchSessionRepository,
@@ -79,7 +80,7 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
       const missing = selected.filter((selection) => !referencesById.has(selection.referenceId));
       if (missing.length) throw creativeResearchPreferenceError('CREATIVE_RESEARCH_PREFERENCE_EVIDENCE_INVALID', 'Selection 引用了不存在的 Reference');
       const activeNegatives = activeRejectionSignals(selections, negativeSignals);
-      const selectedReferences = selected.map((selection) => {
+      const selectedReferences: ReferencePreferenceAnalysisInput['selectedReferences'] = selected.map((selection) => {
         const reference = referencesById.get(selection.referenceId)!;
         const web = reference.sourceType === 'WEB_REFERENCE' ? reference : null;
         return {
@@ -92,6 +93,15 @@ export function createCreativeResearchPreferenceAnalysisService(options: {
           ...(web?.resourceType === 'IMAGE' && web.remoteImageUrl ? { remoteImageUrl: web.remoteImageUrl } : {}),
         };
       });
+      for (const selectedReference of selectedReferences) {
+        const reference = referencesById.get(selectedReference.id);
+        if (reference?.sourceType === 'CURATED_REFERENCE') {
+          const base64 = await fs.readFile(reference.localPath).then((value) => value.toString('base64'));
+          selectedReference.localImageDataUrl = `data:${reference.mimeType};base64,${base64}`;
+          selectedReference.resourceType = 'IMAGE';
+          selectedReference.publisher = reference.sourceLabel || '设计师精选';
+        }
+      }
       const activeNegativeSignals = activeNegatives.map((signal) => ({
         id: signal.id,
         sourceReferenceId: signal.sourceReferenceId!,

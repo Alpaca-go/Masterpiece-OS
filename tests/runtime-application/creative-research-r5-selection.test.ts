@@ -164,7 +164,7 @@ test('R5 Selection Tray counts only current SELECTED evidence and existing attri
   assert.deepEqual(summary.attributeCounts, { TYPOGRAPHY: 1, LAYOUT: 2, MATERIAL: 1 });
 });
 
-test('R5 Web judgment surface remains intact with R6 correction; R7 Direction UI landed in DirectionWorkspace', async () => {
+test('designer-curated judgment surface keeps selection evidence and removes automated-search controls', async () => {
   const [workspace, card, tray] = await Promise.all([
     fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/ReferenceCard.tsx', 'utf8'),
@@ -175,10 +175,10 @@ test('R5 Web judgment surface remains intact with R6 correction; R7 Direction UI
   assert.match(card, />查看来源/u);
   assert.match(tray, /Selection Tray \/ 灵感篮/u);
   assert.match(tray, /至少选择 3 个参考/u);
-  assert.match(workspace, /Concept References/u);
-  assert.match(workspace, /Category References/u);
-  assert.match(card, /找相似/u);
-  assert.match(workspace, /CorrectionToolbar/u);
+  assert.match(workspace, /Reference Board \/ 精选参考/u);
+  assert.match(workspace, /importCuratedReferences/u);
+  assert.doesNotMatch(card, /找相似/u);
+  assert.doesNotMatch(workspace, /CorrectionToolbar|Concept References|Category References/u);
   // R7 landed: the workspace legitimately mounts the Direction tab via
   // DirectionWorkspace; the research judgment components themselves stay
   // free of direction-board concerns.

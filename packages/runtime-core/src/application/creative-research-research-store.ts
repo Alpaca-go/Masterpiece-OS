@@ -135,23 +135,39 @@ export function createCreativeResearchResearchStore(options: {
   const references: ReferenceResearchRepository = {
     async storeReference(reference) {
       assertReferenceItem(reference);
-      if (reference.sourceType !== 'WEB_REFERENCE') throw creativeResearchSearchError('STORE_FAILED', 'CI-R3 研究存储只接受 WEB_REFERENCE');
       const filename = await referencePath(reference.sessionId, reference.id);
       return serialize(filename, async () => {
-        const previous = await readJson<WebReferenceItem>(filename);
+        const previous = await readJson<ReferenceItem>(filename);
         if (previous && previous.sessionId !== reference.sessionId) throw creativeResearchSearchError('STORE_FAILED', 'Reference session identity 不匹配');
-        const matchedQueryIds = [...new Set([...(previous?.matchedQueryIds || [previous?.queryId].filter(Boolean) as string[]), ...(reference.matchedQueryIds || [reference.queryId])])];
-        const matchedGroupIds = [...new Set([...(previous?.matchedGroupIds || [previous?.groupId].filter(Boolean) as string[]), ...(reference.matchedGroupIds || [reference.groupId].filter(Boolean) as string[])])];
-        const merged: WebReferenceItem = previous
-          ? { ...previous, ...reference, matchedQueryIds, matchedGroupIds, resultRank: Math.min(previous.resultRank, reference.resultRank) }
-          : { ...reference, matchedQueryIds, matchedGroupIds };
+        const merged: ReferenceItem = reference.sourceType === 'WEB_REFERENCE'
+          ? (() => {
+            const previousWeb = previous?.sourceType === 'WEB_REFERENCE' ? previous : undefined;
+            const matchedQueryIds = [...new Set([...(previousWeb?.matchedQueryIds || [previousWeb?.queryId].filter(Boolean) as string[]), ...(reference.matchedQueryIds || [reference.queryId])])];
+            const matchedGroupIds = [...new Set([...(previousWeb?.matchedGroupIds || [previousWeb?.groupId].filter(Boolean) as string[]), ...(reference.matchedGroupIds || [reference.groupId].filter(Boolean) as string[])])];
+            return previousWeb
+              ? { ...previousWeb, ...reference, matchedQueryIds, matchedGroupIds, resultRank: Math.min(previousWeb.resultRank, reference.resultRank) }
+              : { ...reference, matchedQueryIds, matchedGroupIds };
+          })()
+          : reference;
         assertReferenceItem(merged);
         await persist(filename, merged);
-        const association = await associationPath(reference.sessionId);
-        await fs.mkdir(path.dirname(association), { recursive: true });
-        await fs.appendFile(association, `${JSON.stringify({ referenceId: reference.id, queryId: reference.queryId })}\n`, 'utf8')
-          .catch((error) => { throw creativeResearchSearchError('STORE_FAILED', '写入 Reference 查询关联失败', { cause: error }); });
+        if (reference.sourceType === 'WEB_REFERENCE') {
+          const association = await associationPath(reference.sessionId);
+          await fs.mkdir(path.dirname(association), { recursive: true });
+          await fs.appendFile(association, `${JSON.stringify({ referenceId: reference.id, queryId: reference.queryId })}\n`, 'utf8')
+            .catch((error) => { throw creativeResearchSearchError('STORE_FAILED', '写入 Reference 查询关联失败', { cause: error }); });
+        }
         return merged;
+      });
+    },
+    async removeReference(sessionId, referenceId) {
+      const filename = await referencePath(sessionId, referenceId);
+      return serialize(filename, async () => {
+        try { await fs.unlink(filename); return true; }
+        catch (error) {
+          if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false;
+          throw creativeResearchSearchError('STORE_FAILED', `删除 Reference 失败：${referenceId}`, { cause: error });
+        }
       });
     },
     async getReference(sessionId, referenceId) {

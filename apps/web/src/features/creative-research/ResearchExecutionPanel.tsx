@@ -1,31 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
-import type {
-  CreativeResearchQueryDto,
-  CreativeResearchSessionDto,
-} from '@masterpiece/runtime-core/application-contracts.ts';
+import type { CreativeResearchSessionDto } from '@masterpiece/runtime-core/application-contracts.ts';
 import { Button } from '../../components/ui/Button';
 
 export type ResearchExecutionStageState = 'completed' | 'active' | 'waiting' | 'failed';
-
-export interface ResearchExecutionFailure {
-  operation: string;
-  message: string;
-}
-
-export interface ResearchExecutionStage {
-  id: string;
-  label: string;
-  detail: string;
-  state: ResearchExecutionStageState;
-}
+export interface ResearchExecutionFailure { operation: string; message: string }
+export interface ResearchExecutionStage { id: string; label: string; detail: string; state: ResearchExecutionStageState }
 
 interface DeriveExecutionStagesInput {
   session: CreativeResearchSessionDto;
   projectName: string;
   briefReady: boolean;
-  planReady: boolean;
-  queries: CreativeResearchQueryDto[];
+  guideReady: boolean;
   referenceCount: number;
+  judgedCount: number;
   preferenceCount: number;
   directionReady: boolean;
   busy: string;
@@ -33,148 +20,53 @@ interface DeriveExecutionStagesInput {
 }
 
 function operationStage(operation: string): string | null {
-  if (operation === 'brief' || operation === 'saving' || operation === 'reanalyzing') return 'brief';
-  if (operation === 'planning' || operation === 'research-planning') return 'planning';
-  if (['searching', 'refreshing', 'adjusting', 'similar'].includes(operation)) return 'search';
+  if (operation === 'brief' || operation === 'saving') return 'brief';
+  if (operation === 'guide') return 'guide';
+  if (operation === 'importing') return 'intake';
+  if (operation.startsWith('selection:')) return 'judgment';
   if (operation === 'preferences' || operation.startsWith('insight:')) return 'preferences';
   if (operation === 'direction' || operation.startsWith('direction:')) return 'direction';
   return null;
 }
 
 export function deriveResearchExecutionStages(input: DeriveExecutionStagesInput): ResearchExecutionStage[] {
-  const completedQueries = input.queries.filter((query) => query.status === 'COMPLETED').length;
-  const pendingQueries = input.queries.filter((query) => query.status === 'PENDING').length;
-  const visualQueries = input.queries.filter((query) => query.intent === 'VISUAL');
-  const sourceLockedQueries = input.queries.filter((query) => query.platform);
-  const platformDetail = (['ZCOOL', 'HUABAN', 'PINTEREST'] as const).map((platform) => {
-    const platformQueries = sourceLockedQueries.filter((query) => query.platform === platform);
-    const label = platform === 'ZCOOL' ? '站酷' : platform === 'HUABAN' ? '花瓣' : 'Pinterest';
-    return `${label} ${platformQueries.filter((query) => query.status === 'COMPLETED').length} / ${platformQueries.length}`;
-  }).join(' · ');
-  const searchSettled = input.queries.length > 0 && pendingQueries === 0;
-  const failedStage = input.failure ? operationStage(input.failure.operation) : null;
-  const activeStage = operationStage(input.busy);
-  const state = (id: string, completed: boolean): ResearchExecutionStageState => {
-    if (failedStage === id) return 'failed';
-    if (activeStage === id) return 'active';
+  const failed = input.failure ? operationStage(input.failure.operation) : null;
+  const active = operationStage(input.busy);
+  const state = (id: string, completed: boolean, activeWhen = false): ResearchExecutionStageState => {
+    if (failed === id) return 'failed';
+    if (active === id || activeWhen) return 'active';
     return completed ? 'completed' : 'waiting';
   };
-
-  const intentSearchState = (queries: CreativeResearchQueryDto[]): ResearchExecutionStageState => {
-    if (!queries.length) return 'waiting';
-    if (failedStage === 'search' && queries.some((query) => query.status === 'FAILED')) return 'failed';
-    if (activeStage === 'search' && queries.some((query) => query.status === 'PENDING')) return 'active';
-    if (queries.every((query) => query.status === 'COMPLETED')) return 'completed';
-    if (queries.every((query) => query.status !== 'PENDING') && queries.some((query) => query.status === 'FAILED')) return 'failed';
-    return queries.some((query) => query.status === 'PENDING') ? 'active' : 'waiting';
-  };
-
   return [
-    {
-      id: 'intake',
-      label: '校验项目与资料',
-      detail: `已确认 ${input.projectName} / 已导入 ${input.session.sourceDocumentCount} 份文档`,
-      state: 'completed',
-    },
-    {
-      id: 'brief',
-      label: '解析资料并生成 Brief',
-      detail: input.briefReady ? '已完成内容读取与 Brief 生成' : activeStage === 'brief' ? '正在读取资料并整理设计任务书' : '等待生成 Design Brief',
-      state: state('brief', input.briefReady),
-    },
-    {
-      id: 'planning',
-      label: '提炼视觉参考关键词',
-      detail: input.planReady ? '视觉关键词组已就绪' : activeStage === 'planning' ? '正在提炼行业、定位与跨类目关键词' : '等待生成视觉参考计划',
-      state: state('planning', input.planReady || input.queries.length > 0),
-    },
-    {
-      id: 'knowledge-search',
-      label: '为设计平台生成搜索任务',
-      detail: input.queries.length ? `已生成 ${input.queries.length} 条来源锁定 Query` : '等待平台 Query',
-      state: state('planning', input.queries.length > 0),
-    },
-    {
-      id: 'visual-search',
-      label: '搜索站酷 / 花瓣 / Pinterest',
-      detail: sourceLockedQueries.length ? platformDetail : visualQueries.length ? `已完成 ${visualQueries.filter((query) => query.status === 'COMPLETED').length} / ${visualQueries.length} 组视觉检索` : '等待视觉检索任务',
-      state: intentSearchState(visualQueries),
-    },
-    {
-      id: 'references',
-      label: '缓存并整理视觉参考',
-      detail: searchSettled && completedQueries > 0 ? `已获得 ${input.referenceCount} 个参考结果` : '等待搜索结果',
-      state: searchSettled && completedQueries > 0 ? 'completed' : 'waiting',
-    },
-    {
-      id: 'selection',
-      label: '等待设计师选择',
-      detail: input.referenceCount ? `已有 ${input.referenceCount} 个视觉参考可供判断` : '等待视觉参考',
-      state: input.preferenceCount > 0 ? 'completed' : input.referenceCount > 0 ? 'active' : 'waiting',
-    },
-    {
-      id: 'preferences',
-      label: '分析视觉偏好',
-      detail: input.preferenceCount ? `已形成 ${input.preferenceCount} 条视觉倾向` : activeStage === 'preferences' ? '正在基于已收藏参考整理视觉倾向' : '等待设计师选择参考',
-      state: state('preferences', input.preferenceCount > 0),
-    },
-    {
-      id: 'direction',
-      label: '整理研究方向',
-      detail: input.session.status === 'COMPLETED' ? '研究方向已确认并生成上下文' : input.directionReady ? '视觉方向正在整理' : '等待进入方向整理',
-      state: input.session.status === 'COMPLETED'
-        ? 'completed'
-        : failedStage === 'direction'
-          ? 'failed'
-          : activeStage === 'direction' || input.directionReady
-            ? 'active'
-            : 'waiting',
-    },
+    { id: 'project', label: '校验项目与资料', detail: `${input.projectName} · ${input.session.sourceDocumentCount} 份资料`, state: 'completed' },
+    { id: 'brief', label: '解析资料并生成 Brief', detail: input.briefReady ? 'Design Brief 已生成' : '等待生成 Design Brief', state: state('brief', input.briefReady) },
+    { id: 'guide', label: '生成视觉参考研究指南', detail: input.guideReady ? 'Reference Guide 已就绪' : '等待生成研究领域', state: state('guide', input.guideReady) },
+    { id: 'intake', label: '等待设计师导入参考', detail: `已导入 ${input.referenceCount} 张`, state: state('intake', input.referenceCount > 0, input.session.status === 'RESEARCH' && input.referenceCount === 0) },
+    { id: 'judgment', label: '整理参考判断', detail: `已判断 ${input.judgedCount} 张`, state: state('judgment', input.judgedCount >= 3, input.referenceCount > 0 && input.judgedCount < 3) },
+    { id: 'preferences', label: '分析视觉偏好', detail: input.preferenceCount ? `已形成 ${input.preferenceCount} 条 Evidence Insight` : '至少收藏 3 张后可分析', state: state('preferences', input.preferenceCount > 0) },
+    { id: 'direction', label: '生成候选视觉方向', detail: input.directionReady ? 'Direction Board 已建立' : '等待偏好确认', state: state('direction', input.directionReady) },
+    { id: 'board', label: '整理 Direction Board', detail: input.session.status === 'COMPLETED' ? '方向板已确认' : '等待设计师确认', state: input.session.status === 'COMPLETED' ? 'completed' : input.directionReady ? 'active' : 'waiting' },
+    { id: 'context', label: '完成 Creative Direction Context', detail: input.session.status === 'COMPLETED' ? '生产上下文已冻结' : '等待最终确认', state: input.session.status === 'COMPLETED' ? 'completed' : 'waiting' },
   ];
 }
 
 function elapsedLabel(elapsedMs: number): string {
   const seconds = Math.max(0, Math.floor(elapsedMs / 1000));
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
-  return minutes ? `${minutes} 分 ${remainder} 秒` : `${remainder} 秒`;
+  return seconds >= 60 ? `${Math.floor(seconds / 60)} 分 ${seconds % 60} 秒` : `${seconds} 秒`;
 }
 
-export function ResearchExecutionPanel(props: DeriveExecutionStagesInput & {
-  operationStartedAt: number | null;
-  onDismissFailure(): void;
-}) {
+export function ResearchExecutionPanel(props: DeriveExecutionStagesInput & { operationStartedAt: number | null; onDismissFailure(): void }) {
   const [clock, setClock] = useState(() => Date.now());
-  const stages = useMemo(() => deriveResearchExecutionStages(props), [
-    props.session, props.projectName, props.briefReady, props.planReady, props.queries, props.referenceCount,
-    props.preferenceCount, props.directionReady, props.busy, props.failure,
-  ]);
-
+  const stages = useMemo(() => deriveResearchExecutionStages(props), [props]);
   useEffect(() => {
     if (!props.busy || props.operationStartedAt === null) return;
-    setClock(Date.now());
     const timer = window.setInterval(() => setClock(Date.now()), 1000);
     return () => window.clearInterval(timer);
   }, [props.busy, props.operationStartedAt]);
-
   const active = stages.find((stage) => stage.state === 'active');
-  const failureStage = stages.find((stage) => stage.state === 'failed');
-
   return <section className="cr-execution cr-panel" aria-live="polite">
-    <header className="cr-execution__head">
-      <div><span>Research progress</span><h2>{active ? '正在进行灵感研究' : '灵感研究进度'}</h2></div>
-      {props.operationStartedAt !== null && props.busy && <b>已运行 {elapsedLabel(clock - props.operationStartedAt)}</b>}
-    </header>
-    <ol className="cr-execution__stages">
-      {stages.map((stage, index) => <li key={stage.id} className={`is-${stage.state}`}>
-        <span className="cr-execution__marker" aria-hidden>{stage.state === 'completed' ? '✓' : stage.state === 'active' ? '●' : stage.state === 'failed' ? '!' : '○'}</span>
-        <div><strong>{String(index + 1).padStart(2, '0')} {stage.label}</strong><small>{stage.detail}</small></div>
-      </li>)}
-    </ol>
-    {props.failure && <div className="cr-execution__failure" role="alert">
-      <div><strong>{failureStage?.label || '研究任务'}执行失败</strong><p>{props.failure.message}</p></div>
-      <Button variant="secondary" size="sm" onClick={props.onDismissFailure}>返回研究页</Button>
-    </div>}
-    {active && <p className="cr-execution__lock">执行期间当前 Session 输入保持只读；完成或失败后才会恢复可用操作。</p>}
+    <header className="cr-execution__head"><div><span>Research progress</span><h2>{active ? active.label : '灵感研究进度'}</h2></div>{props.busy && props.operationStartedAt !== null && <b>已运行 {elapsedLabel(clock - props.operationStartedAt)}</b>}</header>
+    <ol className="cr-execution__stages">{stages.map((stage, index) => <li key={stage.id} className={`is-${stage.state}`}><span className="cr-execution__marker" aria-hidden>{stage.state === 'completed' ? '✓' : stage.state === 'active' ? '●' : stage.state === 'failed' ? '!' : '○'}</span><div><strong>{String(index + 1).padStart(2, '0')} {stage.label}</strong><small>{stage.detail}</small></div></li>)}</ol>
+    {props.failure && <div className="cr-execution__failure" role="alert"><div><strong>当前步骤执行失败</strong><p>{props.failure.message}</p></div><Button variant="secondary" size="sm" onClick={props.onDismissFailure}>关闭</Button></div>}
   </section>;
 }

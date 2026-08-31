@@ -94,6 +94,27 @@ export interface VisualReferencePlan {
   createdAt: string;
 }
 
+export const REFERENCE_TERRITORY_KINDS = ['INDUSTRY', 'POSITIONING', 'CROSS_CATEGORY', 'CUSTOM'] as const;
+export type ReferenceTerritoryKind = typeof REFERENCE_TERRITORY_KINDS[number];
+
+export interface ReferenceTerritory {
+  id: string;
+  kind: ReferenceTerritoryKind;
+  title: string;
+  keywords: string[];
+  rationale: string;
+  observe: string[];
+  suggestedQueries?: string[];
+}
+
+export interface CreativeResearchReferenceGuide {
+  id: string;
+  sessionId: string;
+  briefRevisionId: string;
+  territories: ReferenceTerritory[];
+  createdAt: string;
+}
+
 export interface CreativeResearchClue {
   id: string;
   value: string;
@@ -230,6 +251,7 @@ export const SIMILAR_SEARCH_DIMENSIONS = [
 export type SimilarSearchDimension = typeof SIMILAR_SEARCH_DIMENSIONS[number];
 
 export const REFERENCE_SOURCE_TYPES = [
+  'CURATED_REFERENCE',
   'WEB_REFERENCE',
   'USER_REFERENCE',
   'AI_EXPLORATION',
@@ -283,6 +305,20 @@ export interface WebReferenceItem extends ReferenceItemBase {
   qualityScore?: number;
 }
 
+export interface CuratedReferenceItem extends ReferenceItemBase {
+  sourceType: 'CURATED_REFERENCE';
+  originalFileName: string;
+  localPath: string;
+  mimeType: 'image/jpeg' | 'image/png' | 'image/webp';
+  width?: number;
+  height?: number;
+  sourceUrl?: string;
+  sourceLabel?: string;
+  importedAt: string;
+  contentHash: string;
+  cachedImageUrl: string;
+}
+
 export interface UserReferenceItem extends ReferenceItemBase {
   sourceType: 'USER_REFERENCE';
   assetId: string;
@@ -299,7 +335,7 @@ export interface AiExplorationReferenceItem extends ReferenceItemBase {
   assetId?: string;
 }
 
-export type ReferenceItem = WebReferenceItem | UserReferenceItem | AiExplorationReferenceItem;
+export type ReferenceItem = CuratedReferenceItem | WebReferenceItem | UserReferenceItem | AiExplorationReferenceItem;
 
 export const REFERENCE_SELECTION_STATES = ['NONE', 'SELECTED', 'REJECTED'] as const;
 export const REFERENCE_ATTRIBUTES = [

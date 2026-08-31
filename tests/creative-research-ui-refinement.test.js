@@ -13,17 +13,17 @@ test('Creative Research intake requires explicit project and document selection'
   assert.match(workspace, /<option value="" disabled>请选择项目<\/option>/u);
   assert.match(workspace, /const createReady = Boolean\(projectId && documents\.length && profileId && !busy\)/u);
   assert.match(workspace, /disabled=\{!createReady\}/u);
-  assert.match(workspace, /Promise\.all\(projects\.map\(\(item\) => api\.listSessions\(item\.id\)\)\)/u);
+  assert.match(workspace, /Promise\.all\(projects\.map\(\(project\) => api\.listSessions\(project\.id\)\)\)/u);
 });
 
-test('search credential editing lives in Research Services settings only', () => {
+test('formal Creative Research UI is disconnected from legacy search credentials', () => {
   const workspace = read('apps', 'web', 'src', 'features', 'creative-research', 'CreativeResearchWorkspace.tsx');
   const settings = read('apps', 'web', 'src', 'components', 'SettingsPanel.tsx');
   const service = read('apps', 'web', 'src', 'components', 'settings', 'ResearchServicesSection.tsx');
   assert.doesNotMatch(workspace, /credentialValue|placeholder="百度搜索 API Key"|保存凭据/u);
-  assert.match(workspace, /onOpenResearchSettings/u);
-  assert.match(settings, /section-research-services/u);
-  assert.match(settings, /<ResearchServicesSection/u);
+  assert.doesNotMatch(workspace, /onOpenResearchSettings/u);
+  assert.doesNotMatch(settings, /section-research-services/u);
+  assert.doesNotMatch(settings, /<ResearchServicesSection/u);
   assert.match(service, /getSearchCredentialStatus/u);
   assert.match(service, /saveSearchCredential/u);
   assert.match(service, /deleteSearchCredential/u);
@@ -44,11 +44,12 @@ test('normal UI hides deferred capabilities and removes duplicate navigation tab
 
 test('research execution panel derives stages from persisted state and real counts', () => {
   const panel = read('apps', 'web', 'src', 'features', 'creative-research', 'ResearchExecutionPanel.tsx');
-  assert.match(panel, /query\.status === 'COMPLETED'/u);
-  assert.match(panel, /query\.status === 'FAILED'/u);
-  assert.match(panel, /query\.status === 'PENDING'/u);
+  assert.match(panel, /input\.guideReady/u);
+  assert.match(panel, /input\.session\.status === 'RESEARCH'/u);
+  assert.match(panel, /input\.judgedCount/u);
   assert.match(panel, /input\.referenceCount/u);
   assert.match(panel, /input\.preferenceCount/u);
+  assert.doesNotMatch(panel, /query\.status/u);
   assert.match(panel, /ResearchExecutionStageState = 'completed' \| 'active' \| 'waiting' \| 'failed'/u);
   assert.doesNotMatch(panel, /Chain of Thought|正在思考|\bpercent(?:age)?\b/iu);
 });

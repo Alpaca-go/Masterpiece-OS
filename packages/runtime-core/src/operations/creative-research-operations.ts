@@ -9,6 +9,7 @@ import type {
   CreativeResearchNegativeSignalDto,
   CreativeResearchPreferenceInsightDto,
   CreativeResearchPlanDto,
+  CreativeResearchReferenceGuideDto,
   CreativeResearchReferenceDto,
   CreativeResearchReferenceSelectionDto,
   CreativeResearchSessionDto,
@@ -19,12 +20,14 @@ import type {
   UpdateCreativeResearchSearchStrategyInput,
   PlanCreativeResearchSimilarSearchInput,
 } from '../application-contracts.ts';
-import type { CreativeDirectionContext, CreativeResearchPlan, CreativeResearchSession, DesignBrief, DirectionBoard, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
+import type { CreativeDirectionContext, CreativeResearchPlan, CreativeResearchReferenceGuide, CreativeResearchSession, CuratedReferenceItem, DesignBrief, DirectionBoard, NegativeSignal, PreferenceInsight, ReferenceSelection, SearchQuery, WebReferenceItem } from '../application/creative-research/contracts.ts';
 import type { CreativeResearchDirectionService } from '../application/creative-research-direction-service.ts';
 import type { CreativeResearchSelectionService } from '../application/creative-research-selection-service.ts';
 import type { CreativeResearchPreferenceAnalysisService } from '../application/creative-research-preference-analysis-service.ts';
 import type { SearchHistoryRepository } from '../application/creative-research/ports.ts';
 import type { CreativeResearchPlannerService } from '../application/creative-research-planner-service.ts';
+import type { CreativeResearchReferenceGuideService } from '../application/creative-research-reference-guide-service.ts';
+import type { CreativeResearchCuratedReferenceService } from '../application/creative-research-curated-reference-service.ts';
 
 type BriefService = {
   createSession(input: { projectId: string; sourceDocumentIds: string[] }): Promise<CreativeResearchSession>;
@@ -184,8 +187,26 @@ function publicHttpUrl(value: string | undefined): string | undefined {
   }
 }
 
-export function toCreativeResearchReferenceDto(value: WebReferenceItem): CreativeResearchReferenceDto {
+export function toCreativeResearchReferenceDto(value: WebReferenceItem | CuratedReferenceItem): CreativeResearchReferenceDto {
+  if (value.sourceType === 'CURATED_REFERENCE') return Object.freeze({
+    sourceType: value.sourceType,
+    id: value.id,
+    resourceType: 'IMAGE',
+    title: value.title || value.originalFileName,
+    ...(value.sourceUrl ? { sourceUrl: value.sourceUrl } : {}),
+    publisher: value.sourceLabel || '设计师精选',
+    matchedQueryIds: [],
+    retrievedAt: value.importedAt,
+    searchIntent: 'VISUAL',
+    imageStatus: 'READY',
+    cachedImageUrl: value.cachedImageUrl,
+    originalFileName: value.originalFileName,
+    mimeType: value.mimeType,
+    ...(value.sourceLabel ? { sourceLabel: value.sourceLabel } : {}),
+    importedAt: value.importedAt,
+  });
   return Object.freeze({
+    sourceType: value.sourceType,
     id: value.id,
     resourceType: value.resourceType,
     title: value.title || value.publisherOrDomain,
@@ -205,6 +226,18 @@ export function toCreativeResearchReferenceDto(value: WebReferenceItem): Creativ
     ...(value.platform ? { platform: value.platform } : {}),
     ...(value.visualRole ? { visualRole: value.visualRole } : {}),
     ...(value.qualityScore !== undefined ? { qualityScore: value.qualityScore } : {}),
+  });
+}
+
+export function toCreativeResearchReferenceGuideDto(value: CreativeResearchReferenceGuide): CreativeResearchReferenceGuideDto {
+  return Object.freeze({
+    id: value.id, sessionId: value.sessionId, briefRevisionId: value.briefRevisionId,
+    territories: value.territories.map((territory) => Object.freeze({
+      id: territory.id, kind: territory.kind, title: territory.title,
+      keywords: [...territory.keywords], rationale: territory.rationale,
+      observe: [...territory.observe], suggestedQueries: [...(territory.suggestedQueries || [])],
+    })),
+    createdAt: value.createdAt,
   });
 }
 
@@ -307,6 +340,9 @@ export function createCreativeResearchOperations(options: {
   briefs: BriefService;
   search: SearchService;
   planner: CreativeResearchPlannerService;
+  guide: CreativeResearchReferenceGuideService;
+  curated: CreativeResearchCuratedReferenceService;
+  importCuratedFiles(sessionId: string, input: unknown): Promise<CuratedReferenceItem[]>;
   history: SearchHistoryRepository;
   selection: CreativeResearchSelectionService;
   preferences: CreativeResearchPreferenceAnalysisService;
@@ -349,8 +385,14 @@ export function createCreativeResearchOperations(options: {
       const plan = await options.planner.getResearchPlan(sessionId);
       return plan ? toCreativeResearchPlanDto(plan) : null;
     },
+    'creative-research:generate-reference-guide': async (_context: unknown, sessionId: string, input: { profileId: string }) =>
+      toCreativeResearchReferenceGuideDto(await options.guide.generateReferenceGuide(sessionId, input)),
+    'creative-research:get-reference-guide': async (_context: unknown, sessionId: string) => {
+      const guide = await options.guide.getReferenceGuide(sessionId);
+      return guide ? toCreativeResearchReferenceGuideDto(guide) : null;
+    },
     'creative-research:start-research': async (_context: unknown, sessionId: string) =>
-      toCreativeResearchSessionDto(await options.search.startResearch(sessionId)),
+      toCreativeResearchSessionDto(await options.guide.startResearch(sessionId)),
     'creative-research:plan-initial-search': async (_context: unknown, sessionId: string) =>
       (await options.search.planInitialSearch(sessionId)).map(toCreativeResearchQueryDto),
     'creative-research:plan-refresh-search': async (_context: unknown, sessionId: string, profileId: string) =>
@@ -386,7 +428,16 @@ export function createCreativeResearchOperations(options: {
     'creative-research:get-search-history': async (_context: unknown, sessionId: string) =>
       (await options.search.getSearchHistory(sessionId)).map(toCreativeResearchQueryDto),
     'creative-research:list-references': async (_context: unknown, sessionId: string) =>
-      (await options.search.listWebReferences(sessionId)).map(toCreativeResearchReferenceDto),
+      [...await options.curated.listCuratedReferences(sessionId), ...await options.search.listWebReferences(sessionId)].map(toCreativeResearchReferenceDto),
+    'creative-research:list-curated-references': async (_context: unknown, sessionId: string) =>
+      (await options.curated.listCuratedReferences(sessionId)).map(toCreativeResearchReferenceDto),
+    'creative-research:import-curated-references': async (_context: unknown, sessionId: string, input: unknown) =>
+      (await options.importCuratedFiles(sessionId, input)).map(toCreativeResearchReferenceDto),
+    'creative-research:remove-curated-reference': async (_context: unknown, sessionId: string, referenceId: string) => ({
+      removed: await options.curated.removeCuratedReference(sessionId, referenceId),
+    }),
+    'creative-research:update-curated-reference-source': async (_context: unknown, sessionId: string, referenceId: string, input: { sourceUrl?: string; sourceLabel?: string }) =>
+      toCreativeResearchReferenceDto(await options.curated.updateCuratedReferenceSource(sessionId, referenceId, input || {})),
     'creative-research:list-selections': async (_context: unknown, sessionId: string) =>
       (await options.selection.listSelections(sessionId)).map(toCreativeResearchSelectionDto),
     'creative-research:set-reference-selection': async (_context: unknown, input: SetCreativeResearchReferenceSelectionInput) =>

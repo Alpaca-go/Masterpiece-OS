@@ -49,6 +49,9 @@ import { createCreativeResearchPreferenceAnalysisService } from '@masterpiece/ru
 import { createCreativeResearchPreferenceStore } from '@masterpiece/runtime-core/application/creative-research-preference-store.ts';
 import { createCreativeResearchPlannerAdapter } from '@masterpiece/runtime-core/application/creative-research-planner-adapter.ts';
 import { createCreativeResearchPlannerService } from '@masterpiece/runtime-core/application/creative-research-planner-service.ts';
+import { createCreativeResearchReferenceGuideStore } from '@masterpiece/runtime-core/application/creative-research-reference-guide-store.ts';
+import { createCreativeResearchReferenceGuideService } from '@masterpiece/runtime-core/application/creative-research-reference-guide-service.ts';
+import { createCreativeResearchCuratedReferenceService } from '@masterpiece/runtime-core/application/creative-research-curated-reference-service.ts';
 import { createCreativeResearchStore } from '@masterpiece/runtime-core/application/creative-research-store.ts';
 import type { RuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
 import type {
@@ -269,6 +272,19 @@ export function createCurrentBusinessOperations(
     adapter: createCreativeResearchPlannerAdapter({
       readCredentials: async (profileId) => readCredentials(profileId),
     }),
+  });
+  const creativeResearchGuideStore = createCreativeResearchReferenceGuideStore({ readDefaultDataPath: async () => dataPath });
+  const creativeResearchGuide = createCreativeResearchReferenceGuideService({
+    sessions: creativeResearchStore.sessions,
+    briefs: creativeResearchStore.briefs,
+    plans: creativeResearchResearchStore.plans,
+    guides: creativeResearchGuideStore,
+    createPlan: (sessionId, input) => creativeResearchPlanner.createResearchPlan(sessionId, input),
+  });
+  const creativeResearchCurated = createCreativeResearchCuratedReferenceService({
+    readDefaultDataPath: async () => dataPath,
+    sessions: creativeResearchStore.sessions,
+    references: creativeResearchResearchStore.references,
   });
   const creativeResearchSearch = createCreativeResearchReferenceSearchService({
     ...creativeResearchStore,
@@ -664,6 +680,22 @@ export function createCurrentBusinessOperations(
       briefs: creativeResearchBrowserBriefs,
       search: creativeResearchSearch,
       planner: creativeResearchPlanner,
+      guide: creativeResearchGuide,
+      curated: creativeResearchCurated,
+      importCuratedFiles: async (sessionId, input) => {
+        const staged = await stageVisualBatch(input, path.resolve(dataPath, '..', 'reference-intake'));
+        try {
+          const payload = (input && typeof input === 'object' ? input : {}) as { files?: Array<{ name?: unknown; sourceUrl?: unknown; sourceLabel?: unknown }> };
+          return await creativeResearchCurated.importCuratedReferences(sessionId, staged.paths.map((filePath, index) => ({
+            path: filePath,
+            originalFileName: typeof payload.files?.[index]?.name === 'string' ? payload.files[index]!.name as string : path.basename(filePath),
+            ...(typeof payload.files?.[index]?.sourceUrl === 'string' ? { sourceUrl: payload.files[index]!.sourceUrl as string } : {}),
+            ...(typeof payload.files?.[index]?.sourceLabel === 'string' ? { sourceLabel: payload.files[index]!.sourceLabel as string } : {}),
+          })));
+        } finally {
+          await fs.rm(staged.root, { recursive: true, force: true }).catch(() => undefined);
+        }
+      },
       history: creativeResearchResearchStore.history,
       selection: creativeResearchSelection,
       preferences: creativeResearchPreferences,

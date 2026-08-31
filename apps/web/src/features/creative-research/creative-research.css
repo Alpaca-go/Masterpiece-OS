@@ -239,4 +239,17 @@
 .cr-plan__queries article:last-child { border-bottom: 0; }
 .cr-plan__queries article span { color: var(--color-text-muted); font-size: var(--text-sm); }
 .cr-plan footer { margin-top: 14px; color: var(--color-text-muted); }
+.cr-reference-guide > p, .cr-reference-intake > p { color: var(--color-text-muted); line-height: 1.7; }
+.cr-reference-guide__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.cr-reference-guide__grid article { padding: 20px; border: 1px solid var(--color-line); background: var(--color-surface-soft); }
+.cr-reference-guide__grid article > span { color: var(--color-text-muted); font-size: var(--text-xs); letter-spacing: .08em; text-transform: uppercase; }
+.cr-reference-guide__grid h3 { margin: 8px 0; font-size: var(--text-xl); }
+.cr-reference-guide__grid h4 { margin: 16px 0 6px; font-size: var(--text-xs); color: var(--color-text-muted); }
+.cr-reference-guide__grid ul { margin: 0; padding-left: 18px; line-height: 1.65; }
+.cr-guide-queries { display: flex; flex-wrap: wrap; gap: 6px; }
+.cr-guide-queries code { padding: 5px 8px; border-radius: 999px; background: var(--color-surface); font-size: var(--text-xs); }
+.cr-reference-intake input[type='file'] { width: 100%; margin: 12px 0 18px; padding: 28px; border: 1px dashed var(--color-line); background: var(--color-surface-soft); }
+.cr-legacy-references { margin-top: 28px; }
+.cr-legacy-references summary { cursor: pointer; font-weight: 700; }
+@media (max-width: 960px) { .cr-reference-guide__grid { grid-template-columns: 1fr; } }
 @media (max-width: 800px) { .cr-shell { padding-inline: 16px; } .cr-top { grid-template-columns: auto 1fr auto; } .cr-intake, .cr-brief__grid, .cr-selection-tray, .cr-web-card, .cr-direction-grid, .cr-direction-context dl { grid-template-columns: 1fr; } .cr-intake > div { border-right: 0; border-bottom: 1px solid var(--color-line); padding-bottom: 20px; } .cr-brief__wide, .cr-direction-field--wide { grid-column: auto; } .cr-keyword { grid-template-columns: 20px 1fr; } .cr-service-status, .cr-execution__head, .cr-execution__failure, .cr-start { align-items: stretch; flex-direction: column; } .cr-start__actions { justify-content: flex-start; } }

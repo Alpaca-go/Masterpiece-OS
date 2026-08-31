@@ -1,6 +1,7 @@
 import type {
   CreativeDirectionContext,
   CreativeResearchPlan,
+  CreativeResearchReferenceGuide,
   CreativeResearchSession,
   DesignBrief,
   DirectionBoard,
@@ -51,8 +52,14 @@ export interface CreativeResearchPlanRepository {
   get(sessionId: string): Promise<CreativeResearchPlan | null>;
 }
 
+export interface CreativeResearchReferenceGuideRepository {
+  save(guide: CreativeResearchReferenceGuide): Promise<CreativeResearchReferenceGuide>;
+  get(sessionId: string): Promise<CreativeResearchReferenceGuide | null>;
+}
+
 export interface ReferenceResearchRepository {
   storeReference(reference: ReferenceItem): Promise<ReferenceItem>;
+  removeReference?(sessionId: string, referenceId: string): Promise<boolean>;
   getReference(sessionId: string, referenceId: string): Promise<ReferenceItem | null>;
   listSessionReferences(sessionId: string): Promise<ReferenceItem[]>;
   saveSelection(selection: ReferenceSelection): Promise<ReferenceSelection>;
@@ -117,6 +124,7 @@ export const CREATIVE_RESEARCH_PORT_NAMES = [
   'DesignBriefRepository',
   'SearchHistoryRepository',
   'CreativeResearchPlanRepository',
+  'CreativeResearchReferenceGuideRepository',
   'ReferenceResearchRepository',
   'PreferenceEvidenceRepository',
   'DirectionBoardRepository',

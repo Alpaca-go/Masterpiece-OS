@@ -283,7 +283,21 @@ export function assertReferenceItem(reference: ReferenceItem): void {
   requireIsoDate(reference.createdAt, 'reference.createdAt');
   if (!Array.isArray(reference.tags)) throw new Error('reference.tags must be an array');
 
-  if (reference.sourceType === 'WEB_REFERENCE') {
+  if (reference.sourceType === 'CURATED_REFERENCE') {
+    requireText(reference.originalFileName, 'reference.originalFileName');
+    requireText(reference.localPath, 'reference.localPath');
+    assertEnum(reference.mimeType, ['image/jpeg', 'image/png', 'image/webp'] as const, 'reference.mimeType');
+    requireIsoDate(reference.importedAt, 'reference.importedAt');
+    requireText(reference.contentHash, 'reference.contentHash');
+    requireText(reference.cachedImageUrl, 'reference.cachedImageUrl');
+    if (reference.sourceUrl !== undefined) requireHttpUrl(reference.sourceUrl, 'reference.sourceUrl');
+    for (const [field, value] of Object.entries({ width: reference.width, height: reference.height })) {
+      if (value !== undefined && (!Number.isInteger(value) || value <= 0)) throw new Error(`reference.${field} must be a positive integer`);
+    }
+    if (hasOwn(reference, 'queryId') || hasOwn(reference, 'generationRunId') || hasOwn(reference, 'assetId')) {
+      throw new Error('CURATED_REFERENCE cannot claim Search, AI, or project-asset provenance');
+    }
+  } else if (reference.sourceType === 'WEB_REFERENCE') {
     assertEnum(reference.resourceType, ['IMAGE', 'WEB'] as const, 'reference.resourceType');
     if (reference.searchIntent !== undefined) assertEnum(reference.searchIntent, ['KNOWLEDGE', 'VISUAL'] as const, 'reference.searchIntent');
     if (reference.imageStatus !== undefined) assertEnum(reference.imageStatus, ['PENDING', 'READY', 'UNAVAILABLE'] as const, 'reference.imageStatus');

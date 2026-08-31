@@ -2596,6 +2596,24 @@ export interface CreativeResearchPlanDto {
   createdAt: string;
 }
 
+export type CreativeResearchReferenceTerritoryKindDto = 'INDUSTRY' | 'POSITIONING' | 'CROSS_CATEGORY' | 'CUSTOM';
+
+export interface CreativeResearchReferenceGuideDto {
+  id: string;
+  sessionId: string;
+  briefRevisionId: string;
+  territories: Array<{
+    id: string;
+    kind: CreativeResearchReferenceTerritoryKindDto;
+    title: string;
+    keywords: string[];
+    rationale: string;
+    observe: string[];
+    suggestedQueries: string[];
+  }>;
+  createdAt: string;
+}
+
 export interface UpdateCreativeResearchBriefInput {
   projectSummary?: string;
   designTask?: string;
@@ -2655,16 +2673,17 @@ export interface PlanCreativeResearchSimilarSearchInput {
 }
 
 export interface CreativeResearchReferenceDto {
+  sourceType: 'CURATED_REFERENCE' | 'WEB_REFERENCE';
   id: string;
   resourceType: 'IMAGE' | 'WEB';
   title: string;
-  sourceUrl: string;
+  sourceUrl?: string;
   thumbnailUrl?: string;
   remoteImageUrl?: string;
   publisher: string;
-  queryId: string;
+  queryId?: string;
   matchedQueryIds: string[];
-  resultRank: number;
+  resultRank?: number;
   retrievedAt: string;
   searchIntent: 'KNOWLEDGE' | 'VISUAL';
   imageStatus: 'PENDING' | 'READY' | 'UNAVAILABLE';
@@ -2674,6 +2693,14 @@ export interface CreativeResearchReferenceDto {
   platform?: CreativeResearchVisualPlatformDto;
   visualRole?: 'IMAGE' | 'DESIGN_CASE_PAGE';
   qualityScore?: number;
+  originalFileName?: string;
+  mimeType?: string;
+  sourceLabel?: string;
+  importedAt?: string;
+}
+
+export interface ImportCreativeResearchCuratedReferencesInput {
+  files: Array<{ name: string; content: string; size: number; sourceUrl?: string; sourceLabel?: string }>;
 }
 
 export type CreativeResearchReferenceAttributeDto =
@@ -2947,6 +2974,8 @@ export interface RuntimeApi {
     updateDesignBrief(sessionId: string, input: UpdateCreativeResearchBriefInput): Promise<CreativeResearchBriefDto>;
     createResearchPlan(sessionId: string, input: { profileId: string }): Promise<CreativeResearchPlanDto>;
     getResearchPlan(sessionId: string): Promise<CreativeResearchPlanDto | null>;
+    generateReferenceGuide(sessionId: string, input: { profileId: string }): Promise<CreativeResearchReferenceGuideDto>;
+    getReferenceGuide(sessionId: string): Promise<CreativeResearchReferenceGuideDto | null>;
     startResearch(sessionId: string): Promise<CreativeResearchSessionDto>;
     planInitialSearch(sessionId: string): Promise<CreativeResearchQueryDto[]>;
     planRefreshSearch(sessionId: string, profileId: string): Promise<CreativeResearchQueryDto[]>;
@@ -2957,6 +2986,10 @@ export interface RuntimeApi {
     executeSearchBatch(sessionId: string, queryIds?: string[]): Promise<CreativeResearchQueryDto[]>;
     getSearchHistory(sessionId: string): Promise<CreativeResearchQueryDto[]>;
     listReferences(sessionId: string): Promise<CreativeResearchReferenceDto[]>;
+    importCuratedReferences(sessionId: string, input: ImportCreativeResearchCuratedReferencesInput): Promise<CreativeResearchReferenceDto[]>;
+    listCuratedReferences(sessionId: string): Promise<CreativeResearchReferenceDto[]>;
+    removeCuratedReference(sessionId: string, referenceId: string): Promise<{ removed: boolean }>;
+    updateCuratedReferenceSource(sessionId: string, referenceId: string, input: { sourceUrl?: string; sourceLabel?: string }): Promise<CreativeResearchReferenceDto>;
     listSelections(sessionId: string): Promise<CreativeResearchReferenceSelectionDto[]>;
     setReferenceSelection(input: SetCreativeResearchReferenceSelectionInput): Promise<CreativeResearchReferenceSelectionDto>;
     listNegativeSignals(sessionId: string): Promise<CreativeResearchNegativeSignalDto[]>;

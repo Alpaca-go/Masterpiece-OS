@@ -51,7 +51,7 @@ test('R4 reference projection exposes browser-safe provenance only', () => {
   });
   assert.deepEqual(Object.keys(projected).sort(), [
     'id', 'imageStatus', 'matchedQueryIds', 'publisher', 'queryId', 'remoteImageUrl', 'resourceType', 'resultRank',
-    'retrievedAt', 'searchIntent', 'sourceUrl', 'thumbnailUrl', 'title',
+    'retrievedAt', 'searchIntent', 'sourceType', 'sourceUrl', 'thumbnailUrl', 'title',
   ]);
   assert.doesNotMatch(JSON.stringify(projected), /localAssetId|contentHash|attribution|must-not-cross/u);
 });
@@ -179,28 +179,21 @@ test('R4.1 view model separates Concept and Category before applying current-kin
   assert.deepEqual(filterReferencesForResearchView(references, queries, 'CONCEPT', 'category-1'), []);
 });
 
-test('R4 route remains parallel to unchanged Creative Intelligence while R6 retains the Brief/References workspace', async () => {
-  const [routes, app, workspace, toolbar] = await Promise.all([
+test('Creative Research route uses the designer-curated Reference Guide workflow', async () => {
+  const [routes, app, workspace] = await Promise.all([
     fs.readFile('apps/web/src/lib/useUrlScreen.ts', 'utf8'),
     fs.readFile('apps/web/src/App.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
-    fs.readFile('apps/web/src/features/creative-research/CorrectionToolbar.tsx', 'utf8'),
   ]);
   assert.match(routes, /'creative-intelligence': '\/creative-intelligence'/u);
   assert.match(routes, /'creative-research': '\/creative-research'/u);
   assert.match(app, /screen === 'creative-intelligence'.*CreativeIntelligenceWorkspace/su);
   assert.match(app, /screen === 'creative-research'.*CreativeResearchWorkspace/su);
-  assert.match(workspace, />Brief</u);
-  assert.match(workspace, />References /u);
-  assert.match(workspace, /Concept References/u);
-  assert.match(workspace, /Category References/u);
+  assert.match(workspace, /Brief & Guide/u);
+  assert.match(workspace, /Reference Board/u);
+  assert.match(workspace, /generateReferenceGuide/u);
+  assert.match(workspace, /importCuratedReferences/u);
   assert.match(workspace, />依据</u);
-  assert.match(workspace, /CorrectionToolbar/u);
-  assert.match(workspace, /retryableSearchQueryIds/u);
-  assert.match(workspace, /documents\.length > 0/u);
-  assert.match(workspace, /deleteRecentSession/u);
-  assert.match(workspace, />删除</u);
-  assert.match(toolbar, />重新搜索</u);
-  assert.match(toolbar, />重新分析</u);
-  assert.doesNotMatch(workspace, /Direction Board|区域框选/u);
+  assert.match(workspace, /不会调用搜索 API/u);
+  assert.doesNotMatch(workspace, /planInitialSearch|executeSearchBatch|CorrectionToolbar|百度 AI 搜索|找相似/u);
 });

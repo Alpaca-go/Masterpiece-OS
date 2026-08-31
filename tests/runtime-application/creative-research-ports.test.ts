@@ -18,6 +18,7 @@ test('Creative Research declares the bounded repository, search and authority ad
     'DesignBriefRepository',
     'SearchHistoryRepository',
     'CreativeResearchPlanRepository',
+    'CreativeResearchReferenceGuideRepository',
     'ReferenceResearchRepository',
     'PreferenceEvidenceRepository',
     'DirectionBoardRepository',

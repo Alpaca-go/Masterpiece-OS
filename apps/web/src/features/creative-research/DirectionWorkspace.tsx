@@ -79,17 +79,17 @@ function DirectionReferenceCard({ reference, editable, onRemove }: {
   onRemove(): void;
 }) {
   const [broken, setBroken] = useState(false);
-  const imageUrl = reference.thumbnailUrl || reference.remoteImageUrl;
+  const imageUrl = reference.cachedImageUrl || reference.thumbnailUrl || reference.remoteImageUrl;
   return <article className="cr-direction-ref">
     <div className="cr-direction-ref__media">
       {!broken && imageUrl ? <img src={imageUrl} alt="" loading="lazy" decoding="async" referrerPolicy="no-referrer" onError={() => setBroken(true)} /> : <span>图片暂不可用</span>}
     </div>
-    <div><strong>{reference.title}</strong><small>{reference.publisher} · {reference.sourceUrl}</small></div>
+    <div><strong>{reference.title}</strong><small>{reference.publisher}{reference.sourceUrl ? ` · ${reference.sourceUrl}` : ''}</small></div>
     <div className="cr-direction-ref__actions">
-      <button type="button" onClick={() => {
-        const url = safeReferenceUrl(reference.sourceUrl);
+      {reference.sourceUrl && <button type="button" onClick={() => {
+        const url = safeReferenceUrl(reference.sourceUrl!);
         if (url) window.open(url, '_blank', 'noopener,noreferrer');
-      }}>查看来源 ↗</button>
+      }}>查看来源 ↗</button>}
       {editable && <button type="button" onClick={onRemove}>从方向中移除</button>}
     </div>
   </article>;

@@ -71,16 +71,29 @@ function connectCdp(webSocketDebuggerUrl) {
     const socket = new WebSocket(webSocketDebuggerUrl);
     const pending = new Map();
     let nextId = 1;
-    socket.once('error', reject);
-    socket.once('open', () => resolve({
+    const connectTimer = setTimeout(() => reject(new Error('Chrome DevTools WebSocket connection timed out')), 10_000);
+    socket.once('error', (error) => { clearTimeout(connectTimer); reject(error); });
+    socket.once('open', () => {
+      clearTimeout(connectTimer);
+      resolve({
       async call(method, params = {}) {
         const id = nextId++;
-        const response = new Promise((resolveCall, rejectCall) => pending.set(id, { resolveCall, rejectCall }));
+        const response = new Promise((resolveCall, rejectCall) => {
+          const timer = setTimeout(() => {
+            pending.delete(id);
+            rejectCall(new Error(`Chrome DevTools ${method} timed out`));
+          }, 10_000);
+          pending.set(id, {
+            resolveCall: (value) => { clearTimeout(timer); resolveCall(value); },
+            rejectCall: (error) => { clearTimeout(timer); rejectCall(error); },
+          });
+        });
         socket.send(JSON.stringify({ id, method, params }));
         return response;
       },
       close() { socket.close(); },
-    }));
+      });
+    });
     socket.on('message', (data) => {
       const message = JSON.parse(data.toString());
       if (!message.id || !pending.has(message.id)) return;
@@ -130,8 +143,10 @@ for (const child of children) {
 function stopChildren() {
   for (const child of children) {
     if (child.exitCode !== null) continue;
-    if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true });
-    else child.kill('SIGTERM');
+    if (process.platform === 'win32') {
+      spawnSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true, timeout: 5_000 });
+      if (child.exitCode === null) child.kill();
+    } else child.kill('SIGTERM');
   }
 }
 let chromeChild = null;
@@ -157,7 +172,7 @@ try {
   await fs.rm(screenshotPath, { force: true });
   const debugPort = await freePort();
   chromeChild = spawn(chrome, [
-    '--headless=new', '--disable-gpu', '--disable-extensions', '--disable-background-networking',
+    '--headless=new', '--no-sandbox', '--disable-gpu', '--disable-extensions', '--disable-background-networking',
     '--disable-component-update', '--disable-sync', '--metrics-recording-only', '--no-first-run',
     '--no-default-browser-check', '--no-pings', `--user-data-dir=${chromeDataDir}`,
     `--remote-debugging-port=${debugPort}`, '--window-size=1440,1000', rendererUrl,
@@ -188,8 +203,10 @@ try {
   cdp.close();
   cdp = null;
   if (chromeChild.exitCode === null) {
-    if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(chromeChild.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true });
-    else chromeChild.kill('SIGTERM');
+    if (process.platform === 'win32') {
+      spawnSync('taskkill', ['/PID', String(chromeChild.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true, timeout: 5_000 });
+      if (chromeChild.exitCode === null) chromeChild.kill();
+    } else chromeChild.kill('SIGTERM');
   }
 
   const settings = await rpc(rendererUrl, 'settings:get', []);
@@ -203,7 +220,7 @@ try {
     schemaVersion: '1.1', status: 'pass', runtime: 'web', host: 'node', rendererUrl, rpcUrl,
     checks: {
       // Current production baseline, including the Research Planner create/get channels.
-      nodeHostBoot: hostReady.operationCount === 215,
+      nodeHostBoot: hostReady.operationCount === 222,
       nodeHealth: health.host === 'node',
       rendererPage: screenshot.length > 10_000 && rendererState.rootClass !== 'splash',
       configLoad: Array.isArray(settings.body.result?.profiles),
@@ -228,8 +245,10 @@ try {
 } finally {
   cdp?.close();
   if (chromeChild?.exitCode === null) {
-    if (process.platform === 'win32') spawnSync('taskkill', ['/PID', String(chromeChild.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true });
-    else chromeChild.kill('SIGTERM');
+    if (process.platform === 'win32') {
+      spawnSync('taskkill', ['/PID', String(chromeChild.pid), '/T', '/F'], { stdio: 'ignore', windowsHide: true, timeout: 5_000 });
+      if (chromeChild.exitCode === null) chromeChild.kill();
+    } else chromeChild.kill('SIGTERM');
   }
   stopChildren();
   await fs.rm(chromeDataDir, { recursive: true, force: true }).catch(() => {});
