@@ -389,9 +389,62 @@ export interface CreativeSession {
   activeVisualExplorationId?: string;
   activeVisualCanonId?: string;
   activeSeriesId?: string;
+  /**
+   * Production-owned visual evidence selected by the Visual Migration handoff.
+   * Optional for legacy sessions created before VM-1.
+   */
+  referencePackId?: string;
+  sourceReferenceAnchorRunId?: string;
+  referencePackSourceFingerprint?: string;
   history: CreativeSessionHistoryEntry[];
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * VM-0/VM-1 production evidence contract. This is deliberately distinct from
+ * the legacy Visual Memory ReferencePack contract above.
+ */
+export interface VisualMigrationReferencePackReferenceV1 {
+  referenceId: string;
+  /** Stable POSIX-style path relative to the owning project root. */
+  storagePath: string;
+  originalFileName: string;
+  mimeType: string;
+  byteSize: number;
+  sha256: string;
+  role: 'style_reference';
+  /** Reserved for later phases; VM-1 provider behavior must not use these. */
+  authority?: null;
+  transferableDimensions?: string[];
+  forbiddenDimensions?: string[];
+}
+
+export interface VisualMigrationReferencePackV1 {
+  schemaVersion: 'visual-migration-reference-pack/v1';
+  referencePackId: string;
+  projectId: string;
+  sourceReferenceAnchorRunId: string;
+  createdAt: string;
+  sourceFingerprint: string;
+  manifestFingerprint: string;
+  references: VisualMigrationReferencePackReferenceV1[];
+  semanticEvidence?: {
+    capsuleFingerprint?: string;
+    briefFingerprint?: string;
+    creativeDecisionId?: string;
+    styleProfileId?: string;
+  };
+}
+
+export interface VisualMigrationHandoffResultV1 {
+  projectId: string;
+  referenceAnchorRunId: string;
+  referencePackId: string;
+  sourceFingerprint: string;
+  creativeDecisionId?: string;
+  styleProfileId?: string;
+  created: boolean;
 }
 
 export type LockedAssetType =
