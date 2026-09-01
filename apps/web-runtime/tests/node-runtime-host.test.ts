@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 235 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 236 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -31,9 +31,9 @@ test('Node Runtime Host binds all 235 channels to the Shared Registry without El
     delete process.env.MASTERPIECE_WEB_OPEN_PATH;
   });
 
-  // Creative Direction adds three bounded production-handoff channels after
-  // the Creative Research direction and Visual Search capability set.
-  assert.equal(host.operationCount, 235);
+  // Browser Reference Anchor intake adds one bounded upload channel after the
+  // Creative Direction / Creative Research capability set.
+  assert.equal(host.operationCount, 236);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),
