@@ -37,7 +37,16 @@ test('create shell removes cross-function tabs while preserving hidden anchor wi
 });
 
 test('visual transfer requires explicit project selection and describes combined generation evidence', () => {
+  const app = read('apps', 'web', 'src', 'App.tsx');
+  const visibility = read('apps', 'web', 'src', 'config', 'ui-visibility.ts');
   const source = read('apps', 'web', 'src', 'components', 'ReferenceAnchorWorkspace.tsx');
+  assert.match(visibility, /referenceStyle: true/);
+  assert.match(app, /setAnalysisMode\('reference-anchor'\); setScreen\('create'\)/);
+  assert.match(app, /视觉迁移 →/);
+  assert.match(source, /referenceFileInputRef/);
+  assert.match(source, /referenceFileInputRef\.current\?\.click\(\)/);
+  assert.match(source, /importReferenceAssets\(\{ files: entries \}\)/);
+  assert.match(source, /type="file" multiple accept="\.jpg,\.jpeg,\.png,\.webp"/);
   assert.match(source, /const \[selectedProjectId, setSelectedProjectId\] = useState\(''\)/);
   assert.doesNotMatch(source, /setSelectedProjectId\(readyProjects\[0\]!\.id\)/);
   assert.match(source, /系统不会自动绑定最近项目/);

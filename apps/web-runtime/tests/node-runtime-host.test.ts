@@ -70,6 +70,7 @@ test('P3-D3.6B body cap: upload channel 64 MiB, general RPC 10 MiB', async () =>
   assert.equal(resolveBodyCap('projects:create-from-browser-files'), 64 * 1024 * 1024);
   assert.equal(resolveBodyCap('projects:import-browser-files'), 64 * 1024 * 1024);
   assert.equal(resolveBodyCap('document-context:import-documents'), 64 * 1024 * 1024);
+  assert.equal(resolveBodyCap('reference-anchor:import-reference-assets'), 64 * 1024 * 1024);
   assert.equal(resolveBodyCap('creative-research:import-curated-references'), 64 * 1024 * 1024);
   assert.equal(resolveBodyCap('projects:list'), 10 * 1024 * 1024);
   assert.equal(resolveBodyCap('image-generation:start-validated-short-chain'), 10 * 1024 * 1024);

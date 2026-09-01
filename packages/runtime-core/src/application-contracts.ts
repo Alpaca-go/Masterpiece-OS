@@ -3034,6 +3034,7 @@ export interface RuntimeApi {
   };
   referenceAnchor: {
     chooseReferenceAssets(): Promise<string[]>;
+    importReferenceAssets(input: { files: BrowserVisualFileEntry[] }): Promise<string[]>;
     inspectAssets(paths: string[]): Promise<ReferenceAssetSelection>;
     listRuns(): Promise<ReferenceAnchorRun[]>;
     getRun(runId: string): Promise<ReferenceAnchorRun>;

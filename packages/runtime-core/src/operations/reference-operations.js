@@ -1,9 +1,13 @@
-export function createReferenceOperations({ referenceAnchor }) {
+export function createReferenceOperations({ referenceAnchor, releaseReferenceAssets }) {
   return Object.freeze({
     'reference-anchor:inspect-assets': (_context, paths) => referenceAnchor.inspectAssets(paths),
     'reference-anchor:list-runs': () => referenceAnchor.listRuns(),
     'reference-anchor:get-run': (_context, runId) => referenceAnchor.getRun(runId),
-    'reference-anchor:start': (_context, input) => referenceAnchor.start(input),
+    'reference-anchor:start': async (_context, input) => {
+      const result = await referenceAnchor.start(input);
+      await releaseReferenceAssets?.(input?.referenceAssetPaths ?? []);
+      return result;
+    },
     'reference-anchor:get-capsule': (_context, runId) => referenceAnchor.getCapsule(runId),
     'reference-anchor:get-capsule-markdown': (_context, runId) => referenceAnchor.getCapsuleMarkdown(runId),
     'reference-anchor:get-brief': (_context, runId) => referenceAnchor.getBrief(runId),

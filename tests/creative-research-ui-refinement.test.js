@@ -40,20 +40,21 @@ test('formal Creative Research UI is disconnected from legacy search credentials
   assert.match(service, /type="password"/u);
 });
 
-test('normal UI exposes one Creative Direction entry while preserving hidden standalone routes', () => {
+test('normal UI exposes Creative Direction and Visual Transfer while preserving hidden standalone routes', () => {
   const app = read('apps', 'web', 'src', 'App.tsx');
   const createPage = read('apps', 'web', 'src', 'pages', 'CreatePage.tsx');
   const visibility = read('apps', 'web', 'src', 'config', 'ui-visibility.ts');
   assert.match(visibility, /creativeDirection: true/u);
   assert.match(visibility, /creativeIntelligenceStandalone: false/u);
   assert.match(visibility, /creativeResearchStandalone: false/u);
-  assert.match(visibility, /referenceStyle: false/u);
+  assert.match(visibility, /referenceStyle: true/u);
   assert.match(app, /UI_VISIBILITY\.creativeDirection/u);
   assert.match(app, /创意策划 →/u);
   assert.doesNotMatch(app, /智能创意 →|创意研究 →/u);
   assert.match(app, /screen === 'creative-intelligence'/u);
   assert.match(app, /screen === 'creative-research'/u);
   assert.match(app, /UI_VISIBILITY\.referenceStyle/u);
+  assert.match(app, /视觉迁移 →/u);
   assert.doesNotMatch(app, /TopBarSegment/u);
   assert.doesNotMatch(createPage, /<AnalysisModeTabs\b/u);
 });

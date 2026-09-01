@@ -11,6 +11,7 @@ import {
 
 test('Context, Document and Reference operations dispatch without Electron', async () => {
   const calls = [];
+  const releasedReferencePaths = [];
   const registry = createOperationRegistry();
   registry.registerAll(createProjectContextOperations({
     projectContext: {
@@ -68,11 +69,16 @@ test('Context, Document and Reference operations dispatch without Electron', asy
       adaptLegacyRun: async () => ({}),
       cancel: async () => {},
     },
+    releaseReferenceAssets: async (paths) => releasedReferencePaths.push(...paths),
   }));
 
   assert.deepEqual(await registry.execute('project-context:get', ['p1']), { id: 'p1' });
   await registry.execute('context-integration:link', ['p1', 'd1']);
   assert.deepEqual(calls, [['link', 'p1', 'd1']]);
   assert.equal(await registry.execute('document-context:read-brief', ['d1']), 'read:brief.md');
-  assert.deepEqual(await registry.execute('reference-anchor:start', [{ projectId: 'p1' }]), { projectId: 'p1' });
+  assert.deepEqual(
+    await registry.execute('reference-anchor:start', [{ projectId: 'p1', referenceAssetPaths: ['ref.png'] }]),
+    { projectId: 'p1', referenceAssetPaths: ['ref.png'] },
+  );
+  assert.deepEqual(releasedReferencePaths, ['ref.png']);
 });

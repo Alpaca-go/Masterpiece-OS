@@ -16,7 +16,7 @@ interface Props {
 const VISIBLE_MODES: Array<{ key: AnalysisMode; label: string; hint: string; primary?: boolean }> = [
   { key: 'visual-analysis', label: '视觉分析', hint: '上传视觉方案、图片、PDF 或 ZIP' },
   { key: 'creative-intelligence', label: '智能创意', hint: '上传资料 → 确认事实 → 选择创意方向 → 视觉系统', primary: true },
-  { key: 'reference-anchor', label: '参考图定风格', hint: '需已分析项目与 4–8 张参考图，提炼风格规则后人工确认' }
+  { key: 'reference-anchor', label: '视觉迁移', hint: '需已分析项目与 4–8 张参考图，提炼可迁移的视觉机制后人工确认' }
 ];
 
 export function AnalysisModeTabs({ value, onChange }: Props) {
