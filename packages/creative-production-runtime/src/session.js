@@ -251,6 +251,32 @@ export function setSessionLockedAssetReferences(session, lockedAssetIds, now = n
   });
 }
 
+export function setSessionVisualMigrationReference(session, reference, now = new Date().toISOString()) {
+  validateCreativeSession(session);
+  const referencePackId = requireText(reference?.referencePackId, 'reference.referencePackId');
+  const sourceReferenceAnchorRunId = requireText(
+    reference?.sourceReferenceAnchorRunId,
+    'reference.sourceReferenceAnchorRunId',
+  );
+  const referencePackSourceFingerprint = requireText(
+    reference?.sourceFingerprint,
+    'reference.sourceFingerprint',
+  );
+  return validateCreativeSession({
+    ...session,
+    referencePackId,
+    sourceReferenceAnchorRunId,
+    referencePackSourceFingerprint,
+    history: [...session.history, historyEntry(
+      'VISUAL_MIGRATION_REFERENCE_LINKED',
+      `Production Reference Pack ${referencePackId} 已关联。`,
+      now,
+      { entityType: 'decision', entityId: referencePackId },
+    )],
+    updatedAt: now,
+  });
+}
+
 export function migrateLegacyCreativeSession(legacy, now = new Date().toISOString()) {
   if (legacy?.schemaVersion === '6.0') {
     return validateCreativeSession({

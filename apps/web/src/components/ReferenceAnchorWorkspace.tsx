@@ -479,11 +479,11 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     setBusy(true);
     setError('');
     try {
-      await window.masterpiece.creativeProduction.quickExtractStyle(
+      const handoff = await window.masterpiece.creativeProduction.quickExtractStyle(
         selectedRun.projectId,
         selectedRun.id,
       );
-      setNotice('风格已提取为标准 Style Profile，并进入同一套 Anchor / Canon / Series 流程。');
+      setNotice(`参考视觉证据已交接到生产系统（${handoff.referencePackId}）${handoff.created ? '' : '，已复用现有证据包'}。`);
       onContinueCreativeProduction(selectedRun.projectId);
     } catch (reason) {
       setError(cleanError(reason));

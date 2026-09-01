@@ -41,6 +41,7 @@ const capsule = {
 
 test('Quick Extraction compiles an approved capsule into the standard Style Profile pipeline', async () => {
   const transitions: string[] = [];
+  const linkedPacks: string[] = [];
   let compiledDecision: Record<string, unknown> | undefined;
   const service = createQuickStyleExtractionService(
     {
@@ -51,6 +52,7 @@ test('Quick Extraction compiles an approved capsule into the standard Style Prof
       create: async () => ({ id: 'session-1', workflowState: 'SESSION_CREATED' }),
       recordDecision: async () => undefined,
       transition: async (_projectId: string, state: string) => { transitions.push(state); },
+      setVisualMigrationReference: async (_projectId: string, value: { referencePackId: string }) => { linkedPacks.push(value.referencePackId); },
     } as never,
     { compile: async () => [{ id: 'lock-logo' }] } as never,
     {
@@ -60,10 +62,19 @@ test('Quick Extraction compiles an approved capsule into the standard Style Prof
         return { id: 'style-1', status: 'draft' };
       },
     } as never,
+    {
+      createOrGet: async () => ({
+        created: true,
+        manifest: { referencePackId: 'vmrp-pack-1', sourceFingerprint: 'sha256:source' },
+      }),
+    } as never,
   );
   const result = await service.extract('project-1', 'reference-run-1');
   assert.equal(result.styleProfile.id, 'style-1');
   assert.deepEqual(transitions, ['CREATIVE_DECISION_COMPLETED']);
+  assert.deepEqual(linkedPacks, ['vmrp-pack-1']);
+  assert.equal(result.referencePackId, 'vmrp-pack-1');
+  assert.equal(result.created, true);
   assert.equal(compiledDecision?.projectId, 'project-1');
   assert.match(String(compiledDecision?.visualUpgradeThesis), /克制、真实/);
   assert.deepEqual(
@@ -81,6 +92,7 @@ test('Quick Extraction rejects unapproved sources and existing Style Profiles', 
     { create: async () => ({ workflowState: 'SESSION_CREATED' }) } as never,
     { compile: async () => [] } as never,
     { getActive: async () => active } as never,
+    { createOrGet: async () => { throw new Error('must not create for invalid source'); } } as never,
   );
   await assert.rejects(
     () => makeService('pending', null).extract('project-1', 'reference-run-1'),
@@ -90,4 +102,29 @@ test('Quick Extraction rejects unapproved sources and existing Style Profiles', 
     () => makeService('approved', { id: 'style-existing' }).extract('project-1', 'reference-run-1'),
     { code: 'QUICK_EXTRACTION_STYLE_EXISTS' },
   );
+});
+
+test('Visual Migration handoff never silently continues semantic extraction when pack creation fails', async () => {
+  let semanticCalls = 0;
+  const service = createQuickStyleExtractionService(
+    {
+      getRun: async () => ({ projectId: 'project-1', decision: 'approved', status: 'completed' }),
+      getCapsule: async () => capsule,
+    } as never,
+    {
+      create: async () => { semanticCalls += 1; return { workflowState: 'SESSION_CREATED' }; },
+    } as never,
+    { compile: async () => { semanticCalls += 1; return []; } } as never,
+    { getActive: async () => null, compile: async () => { semanticCalls += 1; return {}; } } as never,
+    {
+      createOrGet: async () => {
+        throw Object.assign(new Error('copy failed'), { code: 'VISUAL_MIGRATION_REFERENCE_PACK_COPY_FAILED' });
+      },
+    } as never,
+  );
+  await assert.rejects(
+    () => service.extract('project-1', 'reference-run-1'),
+    { code: 'VISUAL_MIGRATION_REFERENCE_PACK_COPY_FAILED' },
+  );
+  assert.equal(semanticCalls, 0);
 });

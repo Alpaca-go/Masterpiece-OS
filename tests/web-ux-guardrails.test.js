@@ -46,6 +46,12 @@ test('visual transfer requires explicit project selection and describes combined
   assert.doesNotMatch(source, /交给图像生成的唯一正式输入/);
 });
 
+test('visual transfer handoff reports that production evidence was persisted', () => {
+  const source = read('apps', 'web', 'src', 'components', 'ReferenceAnchorWorkspace.tsx');
+  assert.match(source, /参考视觉证据已交接到生产系统/u);
+  assert.match(source, /handoff\.referencePackId/u);
+});
+
 test('home record cards avoid nested interactive controls and preserve approved CTA behavior', () => {
   const app = read('apps', 'web', 'src', 'App.tsx');
   assert.match(app, /<article key=\{recordKey\} className="record-card">/);

@@ -44,6 +44,11 @@ test('Creative Session service persists state, decisions and active references a
     });
     await service.setActiveEntity(project.id, 'creative_direction', { id: 'direction-1', version: '1.0.0' });
     await service.setActiveEntity(project.id, 'style_profile', { id: 'style-1', version: '1.0.0' });
+    await service.setVisualMigrationReference(project.id, {
+      referencePackId: `vmrp-${'a'.repeat(32)}`,
+      sourceReferenceAnchorRunId: 'reference-run-1',
+      sourceFingerprint: `sha256:${'b'.repeat(64)}`,
+    });
     await service.transition(project.id, 'STYLE_PROFILE_CREATED', 'Style Profile 已创建');
 
     const restarted = createCreativeSessionService(projects as never);
@@ -52,6 +57,8 @@ test('Creative Session service persists state, decisions and active references a
     assert.equal(loaded?.activeCreativeDirectionId, 'direction-1');
     assert.equal(loaded?.decisions.length, 1);
     assert.equal(loaded?.workflowState, 'STYLE_PROFILE_CREATED');
+    assert.equal(loaded?.referencePackId, `vmrp-${'a'.repeat(32)}`);
+    assert.equal(loaded?.sourceReferenceAnchorRunId, 'reference-run-1');
     assert.ok((await fs.readFile(path.join(projectRoot, 'logs', 'creative-session.ndjson'), 'utf8')).includes('WORKFLOW_TRANSITION'));
   } finally {
     await fs.rm(root, { recursive: true, force: true });
@@ -72,6 +79,7 @@ test('Creative Session service migrates a legacy session in place without persis
     assert.equal(loaded?.activeStyleProfileId, 'style-old');
     assert.equal(persisted.finalGenerationInstruction, undefined);
     assert.equal(persisted.schemaVersion, '6.0');
+    assert.equal(loaded?.referencePackId, undefined);
   } finally {
     await fs.rm(root, { recursive: true, force: true });
   }

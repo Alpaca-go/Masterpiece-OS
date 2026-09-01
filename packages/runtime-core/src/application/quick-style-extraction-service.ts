@@ -3,6 +3,7 @@ import type { CreativeSessionService } from './creative-session-service.ts';
 import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { ReferenceAnchorService } from './reference-anchor-service.ts';
 import type { StyleProfileService } from './style-profile-service.ts';
+import type { VisualMigrationReferencePackService } from './visual-migration-reference-pack-service.ts';
 
 function unique(values: string[]): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
@@ -57,6 +58,7 @@ export function createQuickStyleExtractionService(
   sessions: CreativeSessionService,
   lockedAssets: LockedAssetsService,
   styles: StyleProfileService,
+  visualMigrationReferencePacks: VisualMigrationReferencePackService,
 ) {
   async function extract(projectId: string, referenceAnchorRunId: string) {
     const [run, active] = await Promise.all([
@@ -68,7 +70,8 @@ export function createQuickStyleExtractionService(
         code: 'QUICK_EXTRACTION_SOURCE_INVALID',
       });
     }
-    if (active) {
+    const creativeDecisionId = `creative-decision-quick-${referenceAnchorRunId}`;
+    if (active && active.source?.creativeDecisionId !== creativeDecisionId) {
       throw Object.assign(new Error('项目已有 active Style Profile，请继续现有生产链路。'), {
         code: 'QUICK_EXTRACTION_STYLE_EXISTS',
       });
@@ -79,7 +82,28 @@ export function createQuickStyleExtractionService(
         code: 'QUICK_EXTRACTION_SOURCE_INVALID',
       });
     }
+    const packResult = await visualMigrationReferencePacks.createOrGet(projectId, referenceAnchorRunId);
     const session = await sessions.create(projectId);
+    if (active) {
+      await sessions.setVisualMigrationReference(projectId, {
+        referencePackId: packResult.manifest.referencePackId,
+        sourceReferenceAnchorRunId: referenceAnchorRunId,
+        sourceFingerprint: packResult.manifest.sourceFingerprint,
+      });
+      return {
+        session: await sessions.create(projectId),
+        styleProfile: active,
+        lockedAssets: await lockedAssets.list(projectId),
+        sourceRunId: referenceAnchorRunId,
+        projectId,
+        referenceAnchorRunId,
+        referencePackId: packResult.manifest.referencePackId,
+        sourceFingerprint: packResult.manifest.sourceFingerprint,
+        creativeDecisionId,
+        styleProfileId: active.id,
+        created: packResult.created,
+      };
+    }
     if (session.workflowState !== 'SESSION_CREATED') {
       throw Object.assign(new Error(`当前 Session 状态 ${session.workflowState} 不允许快速提取。`), {
         code: 'QUICK_EXTRACTION_STATE_INVALID',
@@ -111,11 +135,23 @@ export function createQuickStyleExtractionService(
       },
       typographyCompatibility: capsule.inheritedStyle.layoutAndTypography,
     });
+    await sessions.setVisualMigrationReference(projectId, {
+      referencePackId: packResult.manifest.referencePackId,
+      sourceReferenceAnchorRunId: referenceAnchorRunId,
+      sourceFingerprint: packResult.manifest.sourceFingerprint,
+    });
     return {
       session: await sessions.create(projectId),
       styleProfile: profile,
       lockedAssets: locks,
       sourceRunId: referenceAnchorRunId,
+      projectId,
+      referenceAnchorRunId,
+      referencePackId: packResult.manifest.referencePackId,
+      sourceFingerprint: packResult.manifest.sourceFingerprint,
+      creativeDecisionId,
+      styleProfileId: profile.id,
+      created: packResult.created,
     };
   }
 

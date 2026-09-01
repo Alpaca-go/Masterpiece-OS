@@ -12,6 +12,7 @@ import {
   appendSessionMessage,
   setCreativeUnderstanding,
   setSessionLockedAssetReferences,
+  setSessionVisualMigrationReference,
   transitionCreativeSession,
   updateSessionEntityReference,
   validateCreativeSession,
@@ -131,6 +132,23 @@ export function createCreativeSessionService(projects: ProjectStore) {
     );
   }
 
+  async function setVisualMigrationReference(projectId: string, reference: {
+    referencePackId: string;
+    sourceReferenceAnchorRunId: string;
+    sourceFingerprint: string;
+  }): Promise<CreativeSession> {
+    const current = await create(projectId);
+    if (current.referencePackId === reference.referencePackId
+      && current.sourceReferenceAnchorRunId === reference.sourceReferenceAnchorRunId
+      && current.referencePackSourceFingerprint === reference.sourceFingerprint) {
+      return current;
+    }
+    return persist(
+      setSessionVisualMigrationReference(current, reference) as CreativeSession,
+      'VISUAL_MIGRATION_REFERENCE_LINKED',
+    );
+  }
+
   return {
     create,
     get,
@@ -140,6 +158,7 @@ export function createCreativeSessionService(projects: ProjectStore) {
     appendMessage,
     saveUnderstanding,
     setLockedAssets,
+    setVisualMigrationReference,
   };
 }
 

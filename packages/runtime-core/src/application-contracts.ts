@@ -3188,6 +3188,13 @@ export interface RuntimeApi {
       styleProfile: StyleProfile;
       lockedAssets: CreativeLockedAsset[];
       sourceRunId: string;
+      projectId: string;
+      referenceAnchorRunId: string;
+      referencePackId: string;
+      sourceFingerprint: string;
+      creativeDecisionId: string;
+      styleProfileId: string;
+      created: boolean;
     }>;
     listLockedAssets(projectId: string): Promise<CreativeLockedAsset[]>;
     listAnchorCandidates(projectId: string): Promise<AnchorCandidate[]>;
