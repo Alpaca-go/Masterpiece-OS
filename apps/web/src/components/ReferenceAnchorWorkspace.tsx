@@ -152,12 +152,6 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     });
   }, []);
 
-  useEffect(() => {
-    if (!selectedProjectId && readyProjects.length > 0 && projectSourceMode === 'existing') {
-      setSelectedProjectId(readyProjects[0]!.id);
-    }
-  }, [projectSourceMode, readyProjects, selectedProjectId]);
-
   // 上传新项目时订阅视觉分析进度（仅展示当前上传项目的进度）。
   useEffect(() => {
     if (!uploadProject) return;
@@ -544,7 +538,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         <button className="button secondary" onClick={() => void navigator.clipboard.writeText(resultTab === 'brief' ? briefMarkdown : capsuleMarkdown).then(() => setNotice('内容已复制。'))}>复制内容</button>
         <button className="button secondary" onClick={() => void window.masterpiece.referenceAnchor.openFolder(selectedRun.id)}>打开输出文件夹</button>
         {selectedRun.status !== 'rejected' && selectedRun.status !== 'failed' && selectedRun.status !== 'cancelled' && <button className="button secondary" onClick={() => onGenerateReferencePreview(selectedRun.projectId, selectedRun.id)}>试生成参考效果</button>}
-        {selectedRun.decision === 'approved' && <button className="button secondary" disabled={busy} onClick={() => void quickExtractStyle()}>快速提取到生产系统</button>}
+        {selectedRun.decision === 'approved' && <button className="button secondary" disabled={busy} onClick={() => void quickExtractStyle()}>交接到视觉生产</button>}
         {selectedRun.decision === 'approved' && <button className="button primary" onClick={() => onGenerateMasterAnchor(selectedRun.projectId, selectedRun.id)}>生成 Master Anchor Image</button>}
       </div>
       {notice && <div className="notice ok">{notice}</div>}
@@ -552,7 +546,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
       {selectedRun.warnings?.length ? <div className="notice warn">{selectedRun.warnings.map((warning) => <p key={warning.code}>{warning.message}</p>)}</div> : null}
 
       <div className="analysis-mode-tabs reference-anchor-result-tabs" role="tablist" aria-label="结果内容">
-        <button role="tab" aria-selected={resultTab === 'brief'} className={resultTab === 'brief' ? 'active' : ''} onClick={() => setResultTab('brief')}><span>Anchor Generation Brief</span><small>交给图像生成的唯一正式输入</small></button>
+        <button role="tab" aria-selected={resultTab === 'brief'} className={resultTab === 'brief' ? 'active' : ''} onClick={() => setResultTab('brief')}><span>Anchor Generation Brief</span><small>与已确认参考图和项目锁定资产共同进入生成</small></button>
         <button role="tab" aria-selected={resultTab === 'capsule'} className={resultTab === 'capsule' ? 'active' : ''} onClick={() => setResultTab('capsule')}><span>参考风格胶囊</span><small>可继承规则 / 禁止清单 / 不确定项</small></button>
       </div>
       <article className="markdown-preview" dangerouslySetInnerHTML={{ __html: resultTab === 'brief' ? briefHtml : capsuleHtml }} />
@@ -621,7 +615,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   >
   <div className="page visual-translation-page reference-anchor-page">
     <header className="page-header">
-      <div><p className="eyebrow">REFERENCE STYLE</p><h1>参考图定风格</h1><p>上传 4–8 张参考图，系统会提炼可继承的风格规则，并交给你确认。</p></div>
+      <div><p className="eyebrow">REFERENCE-GROUNDED VISUAL TRANSFER</p><h1>视觉迁移</h1><p>选择自己的项目，再上传喜欢的参考方案；系统会保留项目身份，并提炼可迁移的视觉机制交给你确认。</p></div>
     </header>
 
     {error && <div className="notice error">{error}</div>}
@@ -629,7 +623,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
 
     <div className="visual-translation-grid">
       <section className="panel visual-translation-form">
-        <div className="section-heading"><span>01</span><div><h2>选择项目</h2><p>默认使用最近完成视觉分析的项目</p></div></div>
+        <div className="section-heading"><span>01</span><div><h2>选择我的项目</h2><p>必须由你明确选择；系统不会自动绑定最近项目</p></div></div>
 
         {projectSourceMode === 'existing' && <>
           <label>当前项目<select value={selectedProjectId} onChange={(event) => setSelectedProjectId(event.target.value)}>
@@ -637,6 +631,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
             {readyProjects.map((project) => <option key={project.id} value={project.id}>{project.projectName} · {project.brandName}</option>)}
           </select></label>
           {!readyProjects.length && <div className="notice warn">还没有可用项目，请上传项目素材并先完成视觉分析。</div>}
+          {readyProjects.length > 0 && !selectedProjectId && <div className="notice warn">请选择本次视觉迁移所属的项目。未确认项目时不会开始分析。</div>}
           {selectedProject && <div className="facts-box"><small>身份锁定</small><p>品牌：{selectedProject.brandName} · 行业：{selectedProject.industry}</p><p>参考图仅用于提炼风格规则；参考品牌的名称 / Logo / Slogan / 标志性图形不会进入生成。</p></div>}
           {selectedProject && sourceInfo && (
             <details className="ux-advanced"><summary>查看项目上下文来源</summary><div className="source-banner">

@@ -36,6 +36,16 @@ test('create shell removes cross-function tabs while preserving hidden anchor wi
   assert.doesNotMatch(createPage, /<AnalysisModeTabs\b/);
 });
 
+test('visual transfer requires explicit project selection and describes combined generation evidence', () => {
+  const source = read('apps', 'web', 'src', 'components', 'ReferenceAnchorWorkspace.tsx');
+  assert.match(source, /const \[selectedProjectId, setSelectedProjectId\] = useState\(''\)/);
+  assert.doesNotMatch(source, /setSelectedProjectId\(readyProjects\[0\]!\.id\)/);
+  assert.match(source, /系统不会自动绑定最近项目/);
+  assert.match(source, /!selectedProjectId \|\| !assetCount/);
+  assert.match(source, /与已确认参考图和项目锁定资产共同进入生成/);
+  assert.doesNotMatch(source, /交给图像生成的唯一正式输入/);
+});
+
 test('home record cards avoid nested interactive controls and preserve approved CTA behavior', () => {
   const app = read('apps', 'web', 'src', 'App.tsx');
   assert.match(app, /<article key=\{recordKey\} className="record-card">/);
