@@ -93,7 +93,7 @@ export function CreatePage(props: CreatePageProps) {
   const workspaceTitle: Record<AnalysisMode, string> = {
     'visual-analysis': '视觉分析',
     'creative-intelligence': '智能创意',
-    'reference-anchor': '参考图定风格',
+    'reference-anchor': '视觉迁移',
     'document-context': '文档分析',
   };
 

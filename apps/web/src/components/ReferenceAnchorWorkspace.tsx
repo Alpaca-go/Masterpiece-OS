@@ -1,6 +1,6 @@
 import DOMPurify from 'dompurify';
 import { marked } from 'marked';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type {
   AnalysisProgress,
   AssetSummary,
@@ -121,6 +121,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const referenceFileInputRef = useRef<HTMLInputElement>(null);
   const [sourceInfo, setSourceInfo] = useState<{
     visual: { status: string; schemaVersion?: string | null };
     link: ProjectDocumentContextLink | null;
@@ -201,6 +202,37 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
     } finally {
       setBusy(false);
     }
+  }
+
+  async function addBrowserReferenceAssets(files: FileList | null, input: HTMLInputElement | null) {
+    if (!files?.length) return;
+    setError('');
+    setBusy(true);
+    try {
+      const entries = await Promise.all(Array.from(files).map(async (file): Promise<BrowserVisualFileEntry> => {
+        const bytes = new Uint8Array(await file.arrayBuffer());
+        let binary = '';
+        for (let index = 0; index < bytes.length; index += 0x8000) {
+          binary += String.fromCharCode(...bytes.subarray(index, index + 0x8000));
+        }
+        return { name: file.name, mime: file.type, size: bytes.length, content: btoa(binary) };
+      }));
+      const paths = await window.masterpiece.referenceAnchor.importReferenceAssets({ files: entries });
+      await addAssets(paths);
+    } catch (reason) {
+      setError(cleanError(reason));
+    } finally {
+      setBusy(false);
+      if (input) input.value = '';
+    }
+  }
+
+  function chooseAndAddReferenceAssets() {
+    if (busy) return;
+    setError('');
+    // Web Primary 必须在用户点击的同一个事件栈内打开文件选择器；
+    // 先等待 RPC 会丢失浏览器的 user activation，导致点击无反应。
+    referenceFileInputRef.current?.click();
   }
 
   function removeAsset(sourcePath: string) {
@@ -691,13 +723,18 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         <div className="section-heading"><span>02</span><div><h2>参考图（{assetCount} / {MIN_ASSETS}–{MAX_ASSETS}）</h2><p>建议同一风格体系的 4–8 张参考图，超过 {MAX_ASSETS} 张将截取前 {MAX_ASSETS} 张</p></div></div>
         <div className={`drop-zone translation-drop-zone ${busy ? 'busy' : ''}`} onDragOver={(event) => event.preventDefault()} onDrop={(event) => {
           event.preventDefault();
-          void addAssets(Array.from(event.dataTransfer.files).map((file) => window.masterpiece.files.getPathForFile(file)));
+          const paths = Array.from(event.dataTransfer.files)
+            .map((file) => window.masterpiece.files.getPathForFile(file))
+            .filter(Boolean);
+          if (paths.length) void addAssets(paths);
+          else void addBrowserReferenceAssets(event.dataTransfer.files, referenceFileInputRef.current);
         }}>
           <div className="upload-orbit">↥</div>
           <strong>{busy ? '正在读取参考图…' : '将参考图拖到这里'}</strong>
           <p>支持 JPG、JPEG、PNG 和 WEBP</p>
-          <button className="button secondary" type="button" disabled={busy} onClick={() => void window.masterpiece.referenceAnchor.chooseReferenceAssets().then(addAssets)}>选择参考图</button>
+          <button className="button secondary" type="button" disabled={busy} onClick={chooseAndAddReferenceAssets}>选择参考图</button>
         </div>
+        <input ref={referenceFileInputRef} hidden type="file" multiple accept=".jpg,.jpeg,.png,.webp" onChange={(event) => void addBrowserReferenceAssets(event.currentTarget.files, event.currentTarget)} />
         {selection?.items.length ? <div className="asset-grid reference-anchor-asset-grid">{selection.items.map((item) => <div className="asset-card removable" key={item.sourcePath}>
           <button className="asset-remove" title={`移除 ${item.name}`} aria-label={`移除 ${item.name}`} onClick={() => removeAsset(item.sourcePath)}>×</button>
           {item.thumbnailDataUrl ? <img src={item.thumbnailDataUrl} alt="" /> : <div className="file-placeholder image">{item.extension.replace('.', '').toUpperCase()}</div>}

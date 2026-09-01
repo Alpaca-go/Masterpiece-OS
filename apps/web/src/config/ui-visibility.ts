@@ -7,5 +7,5 @@ export const UI_VISIBILITY = Object.freeze({
   creativeIntelligenceStandalone: false,
   creativeResearchStandalone: false,
   smartCreative: false,
-  referenceStyle: false,
+  referenceStyle: true,
 });

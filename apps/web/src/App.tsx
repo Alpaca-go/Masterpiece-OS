@@ -732,7 +732,7 @@ function AppContent() {
               创意策划 →
             </Button>}
             {UI_VISIBILITY.referenceStyle && <Button variant="ghost" onClick={() => { setAnalysisMode('reference-anchor'); setScreen('create'); }}>
-              参考图定风格
+              视觉迁移 →
             </Button>}
           </div>
         </section>

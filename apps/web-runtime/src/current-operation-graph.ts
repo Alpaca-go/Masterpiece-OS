@@ -245,6 +245,21 @@ async function stageVisualBatch(input: unknown, intakeRoot: string): Promise<Sta
   }
 }
 
+async function releaseStagedVisualPaths(paths: unknown, intakeRoot: string): Promise<void> {
+  const resolvedRoot = path.resolve(intakeRoot);
+  const batchRoots = new Set<string>();
+  for (const value of Array.isArray(paths) ? paths : []) {
+    if (typeof value !== 'string') continue;
+    const relative = path.relative(resolvedRoot, path.resolve(value));
+    const [batchId] = relative.split(path.sep);
+    if (!batchId || relative.startsWith('..') || path.isAbsolute(relative)
+      || !/^[0-9a-f-]{36}$/iu.test(batchId)) continue;
+    batchRoots.add(assertInside(resolvedRoot, path.join(resolvedRoot, batchId)));
+  }
+  await Promise.all([...batchRoots].map((root) =>
+    fs.rm(root, { recursive: true, force: true }).catch(() => undefined)));
+}
+
 export function createCurrentBusinessOperations(
   services: RuntimeServices,
   adapters: NodeRuntimeAdapters
@@ -686,7 +701,17 @@ export function createCurrentBusinessOperations(
         }
       },
     },
-    createReferenceOperations({ referenceAnchor }),
+    {
+      'reference-anchor:import-reference-assets': async (_context: unknown, input: unknown) => {
+        const staged = await stageVisualBatch(input, path.resolve(dataPath, '..', 'reference-anchor-intake'));
+        return staged.paths;
+      },
+    },
+    createReferenceOperations({
+      referenceAnchor,
+      releaseReferenceAssets: (paths: unknown) =>
+        releaseStagedVisualPaths(paths, path.resolve(dataPath, '..', 'reference-anchor-intake')),
+    }),
     createImageGenerationOperations({ service: imageGeneration, shortChainService: shortChainGeneration }),
     // CI-W1A: Creative Intelligence Runtime Application Layer operations.
     // Bound to the same kebab-case RPC channels the Web side expects
