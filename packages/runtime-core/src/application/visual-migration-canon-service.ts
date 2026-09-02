@@ -28,6 +28,11 @@ export interface CreateVisualMigrationCanonInput {
   lockedAssets: LockedAsset[];
 }
 
+export interface VisualMigrationCanonPersistenceOptions {
+  readJson?: (filename: string) => Promise<unknown | null>;
+  writeJson?: (filename: string, value: unknown) => Promise<void>;
+}
+
 function canonError(code: string, message: string): Error {
   return Object.assign(new Error(message), { code });
 }
@@ -60,7 +65,11 @@ async function readJson(filename: string): Promise<unknown | null> {
 export function createVisualMigrationCanonService(
   projects: ProjectStore,
   referencePacks: VisualMigrationReferencePackService,
+  persistence: VisualMigrationCanonPersistenceOptions = {},
 ) {
+  const loadJson = persistence.readJson ?? readJson;
+  const persistJson = persistence.writeJson ?? writeJson;
+
   async function locations(projectId: string, canonId?: string) {
     const projectRoot = (await projects.paths(projectId)).root;
     const canonsRoot = inside(projectRoot, path.join(projectRoot, 'visual-migration', 'canons'));
@@ -75,7 +84,7 @@ export function createVisualMigrationCanonService(
 
   async function readPointer(projectId: string): Promise<VisualMigrationCanonPointerV1 | null> {
     const target = await locations(projectId);
-    const raw = await readJson(target.active);
+    const raw = await loadJson(target.active);
     if (!raw) return null;
     const pointer = validateVisualMigrationCanonPointerV1(raw);
     if (pointer.projectId !== projectId) {
@@ -86,7 +95,7 @@ export function createVisualMigrationCanonService(
 
   async function resolve(projectId: string, canonId: string) {
     const target = await locations(projectId, canonId);
-    const raw = await readJson(target.canonFile!);
+    const raw = await loadJson(target.canonFile!);
     if (!raw) throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', `Visual Migration Canon 不存在：${canonId}`);
     const canon = validateVisualMigrationCanonV1(raw);
     if (canon.projectId !== projectId || canon.canonId !== canonId) {
@@ -111,8 +120,7 @@ export function createVisualMigrationCanonService(
     const pointer = await readPointer(projectId);
     if (!pointer) return null;
     const resolved = await resolve(projectId, pointer.canonId);
-    if (resolved.canon.status !== 'valid'
-      || resolved.canon.sourceFingerprint !== pointer.sourceFingerprint
+    if (resolved.canon.sourceFingerprint !== pointer.sourceFingerprint
       || resolved.canon.canonFingerprint !== pointer.canonFingerprint) {
       throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', 'Active Canon pointer fingerprint 或生命周期不一致。');
     }
@@ -139,7 +147,15 @@ export function createVisualMigrationCanonService(
       project,
     });
     const target = await locations(input.projectId, built.canonId);
-    const existingRaw = await readJson(target.canonFile!);
+    const active = await readPointer(input.projectId);
+    if (active) {
+      const activeCanon = await resolve(input.projectId, active.canonId);
+      if (activeCanon.canon.sourceFingerprint !== active.sourceFingerprint
+        || activeCanon.canon.canonFingerprint !== active.canonFingerprint) {
+        throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', '现有 active Canon pointer 无法恢复。');
+      }
+    }
+    const existingRaw = await loadJson(target.canonFile!);
     let canon = built;
     let created = true;
     if (existingRaw) {
@@ -149,29 +165,23 @@ export function createVisualMigrationCanonService(
         || existing.canonFingerprint !== built.canonFingerprint) {
         throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', 'Deterministic Canon ID 已存在但内容不一致。');
       }
-      canon = existing.status === 'valid'
-        ? existing
-        : validateVisualMigrationCanonV1({ ...existing, status: 'valid', updatedAt: new Date().toISOString() });
-      if (canon !== existing) await writeJson(target.canonFile!, canon);
+      canon = existing;
       created = false;
     } else {
-      await writeJson(target.canonFile!, canon);
+      await persistJson(target.canonFile!, canon);
+      const persisted = await loadJson(target.canonFile!);
+      if (!persisted) {
+        throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', '新 Canon 写入后无法读取。');
+      }
+      const verified = validateVisualMigrationCanonV1(persisted);
+      if (verified.canonId !== canon.canonId
+        || verified.sourceFingerprint !== canon.sourceFingerprint
+        || verified.canonFingerprint !== canon.canonFingerprint) {
+        throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', '新 Canon 写入后完整性不一致。');
+      }
+      canon = verified;
     }
 
-    const active = await readPointer(input.projectId);
-    if (active && active.canonId !== canon.canonId) {
-      const oldTarget = await locations(input.projectId, active.canonId);
-      const oldRaw = await readJson(oldTarget.canonFile!);
-      if (!oldRaw) throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', 'Active pointer 引用的旧 Canon 不存在。');
-      const oldCanon = validateVisualMigrationCanonV1(oldRaw);
-      if (oldCanon.status === 'valid') {
-        await writeJson(oldTarget.canonFile!, validateVisualMigrationCanonV1({
-          ...oldCanon,
-          status: 'superseded',
-          updatedAt: new Date().toISOString(),
-        }));
-      }
-    }
     const pointer: VisualMigrationCanonPointerV1 = {
       schemaVersion: VISUAL_MIGRATION_CANON_POINTER_SCHEMA,
       projectId: input.projectId,
@@ -181,8 +191,21 @@ export function createVisualMigrationCanonService(
       updatedAt: canon.updatedAt,
     };
     validateVisualMigrationCanonPointerV1(pointer);
-    await writeJson(target.active, pointer);
-    const resolved = await resolve(input.projectId, canon.canonId);
+    if (!active || active.canonId !== pointer.canonId
+      || active.sourceFingerprint !== pointer.sourceFingerprint
+      || active.canonFingerprint !== pointer.canonFingerprint) {
+      await persistJson(target.active, pointer);
+      const activated = await readPointer(input.projectId);
+      if (!activated || activated.canonId !== pointer.canonId
+        || activated.sourceFingerprint !== pointer.sourceFingerprint
+        || activated.canonFingerprint !== pointer.canonFingerprint) {
+        throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', 'Canon active pointer 写入后验证失败。');
+      }
+    }
+    const resolved = await getActive(input.projectId);
+    if (!resolved || resolved.canon.canonId !== canon.canonId) {
+      throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', '新 Canon 未成为 active authority。');
+    }
     return { ...resolved, created };
   }
 
