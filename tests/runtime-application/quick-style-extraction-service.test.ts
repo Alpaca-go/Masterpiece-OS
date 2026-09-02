@@ -175,3 +175,33 @@ test('Quick Extraction never links Session state when Canon construction fails',
   );
   assert.deepEqual(links, []);
 });
+
+test('Quick Extraction never links Session state when the Canon active pointer write fails', async () => {
+  const links: string[] = [];
+  const service = createQuickStyleExtractionService(
+    {
+      getRun: async () => ({ projectId: 'project-1', decision: 'approved' }),
+      getCapsule: async () => capsule,
+    } as never,
+    {
+      create: async () => ({ workflowState: 'SESSION_CREATED' }),
+      recordDecision: async () => undefined,
+      transition: async () => undefined,
+      setVisualMigrationReference: async () => { links.push('pack'); },
+      setVisualMigrationCanon: async () => { links.push('canon'); },
+    } as never,
+    { compile: async () => [] } as never,
+    { getActive: async () => null, compile: async () => ({ id: 'style-1' }) } as never,
+    { createOrGet: async () => ({ manifest: { referencePackId: 'vmrp-pack-1', sourceFingerprint: 'sha256:source' } }) } as never,
+    {
+      createOrGet: async () => {
+        throw Object.assign(new Error('pointer write failed'), { code: 'VISUAL_MIGRATION_CANON_POINTER_WRITE_FAILED' });
+      },
+    } as never,
+  );
+  await assert.rejects(
+    () => service.extract('project-1', 'reference-run-1'),
+    { code: 'VISUAL_MIGRATION_CANON_POINTER_WRITE_FAILED' },
+  );
+  assert.deepEqual(links, []);
+});

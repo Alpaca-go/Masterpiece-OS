@@ -7,6 +7,7 @@ import type {
   VisualMigrationReferencePackV1,
 } from '@masterpiece/project-contracts/index.ts';
 import { buildVisualMigrationCanon } from '@masterpiece/runtime-core/application/visual-migration-canon-builder.ts';
+import { VISUAL_MIGRATION_CANON_COMPILER_VERSION } from '@masterpiece/runtime-core/application/visual-migration-canon-contract.ts';
 import {
   canonicalSerializeVisualMigrationValue,
   computeVisualMigrationManifestFingerprint,
@@ -57,7 +58,7 @@ function style(): StyleProfile {
     materialAndTexture: { materials: ['真实纸张'], surfaceRules: [], printFeeling: [], renderingRules: [], forbiddenTextures: [] },
     lightingSystem: { type: '', contrast: '', shadow: '', temperature: '' },
     typographyCompatibility: ['大留白层级'],
-    allowedVariations: ['单一焦点延展'], forbiddenVariations: [],
+    allowedVariations: ['低饱和暖色', '大留白层级', '克制线条', '真实纸张', '单一焦点延展'], forbiddenVariations: [],
     promptComponents: { required: ['迁移视觉语言'], positive: ['克制'], negative: [] },
     source: { creativeDecisionId: 'creative-decision-quick-run-1', creativeDecisionVersion: '1.0.0', compilerVersion: '1.0.0' },
     createdAt: '2026-09-02T00:00:00.000Z', updatedAt: '2026-09-02T00:00:00.000Z',
@@ -121,6 +122,19 @@ test('VM-2 builder compiles all five approved Capsule transfer dimensions', () =
   assert.equal(canon.transferSystem.materialAndPhotography[0]!.statement, '真实纸张');
   assert.equal(canon.transferSystem.extensionMechanism[0]!.statement, '单一焦点延展');
   assert.ok(canon.transferSystem.color.some((rule) => rule.source === 'style_profile' && rule.statement === '暖色主导'));
+  assert.deepEqual(
+    canon.transferSystem.extensionMechanism.map((rule) => rule.statement),
+    ['单一焦点延展'],
+  );
+  assert.ok(['低饱和暖色', '大留白层级', '克制线条', '真实纸张'].every(
+    (statement) => !canon.transferSystem.extensionMechanism.some((rule) => rule.statement === statement),
+  ));
+});
+
+test('VM-2.1 builder records compiler identity in source and trace', () => {
+  const canon = buildVisualMigrationCanon(input());
+  assert.equal(canon.source.compilerVersion, VISUAL_MIGRATION_CANON_COMPILER_VERSION);
+  assert.equal(canon.trace.compilerVersion, VISUAL_MIGRATION_CANON_COMPILER_VERSION);
 });
 
 test('VM-2 builder preserves user avoidance and all reference identity prohibitions', () => {

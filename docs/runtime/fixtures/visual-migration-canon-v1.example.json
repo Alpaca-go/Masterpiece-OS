@@ -1,24 +1,25 @@
 {
   "schemaVersion": "visual-migration-canon/v1",
-  "canonId": "vmc-84b4370704965747da125dfbcade26ba",
+  "canonId": "vmc-d7ea587077c764b4bc15da517aff5ba8",
   "projectId": "project-1",
   "version": "1.0.0",
   "status": "valid",
-  "createdAt": "2026-09-02T07:01:45.648Z",
-  "updatedAt": "2026-09-02T07:01:45.648Z",
-  "sourceFingerprint": "sha256:11be5dd19747e62908a5b42dda012e007616de74cf37fe7ce07ad8c500fe5b1d",
-  "canonFingerprint": "sha256:07075919dc74332de00a0e3ac2743d7f5e31dc6848376680abb9f96a5ae46d6e",
+  "createdAt": "2026-09-02T10:31:22.867Z",
+  "updatedAt": "2026-09-02T10:31:22.867Z",
+  "sourceFingerprint": "sha256:bf416557e5e87637c25933a59d1516de6b36cef1b56dbf74fe22ff485fef9766",
+  "canonFingerprint": "sha256:d3bd917dc552b30c320296c515f410dcaa6fdace23cf6596c5aba0b0c32a0759",
   "source": {
+    "compilerVersion": "1.1.0",
     "sourceReferenceAnchorRunId": "run-1",
     "referencePackId": "vmrp-363bf8db8768e9f884a412da7b7f6651",
     "referencePackSourceFingerprint": "sha256:f4cb230657295f55e75d29e54ad9234c218b6f2d44f3cdb6ffbdc95912d3f242",
-    "referencePackManifestFingerprint": "sha256:57539369112e4eb164c1d5fa61a234eb179f8f0f3f75301fb99bf146b11c0ae0",
+    "referencePackManifestFingerprint": "sha256:efc6f8ea7447a647d3f5bc9bde20e57acca4f95dcaf9250cb5ebf200d4c9f3f8",
     "referenceCount": 4,
     "capsuleFingerprint": "sha256:9aa06f397a7406eb57624028f1f38d69a2d4d0fcc36077453613182a4f1bd0b1",
     "briefFingerprint": "sha256:dbe44db64f3fe3c1e1740321ba8919ab7f6a4b92c75e2002e3ec6a8bfc4e8acd",
     "creativeDecisionId": "creative-decision-quick-run-1",
     "styleProfileId": "style-1",
-    "styleProfileFingerprint": "sha256:c139e4b7114cbe7096ff630dca539bca1d29ce32368dc11dedba99a8c5f16d26",
+    "styleProfileFingerprint": "sha256:af1244ef33d1bc5d25a2c8c37a6365af23b581e62bdfa137c1af45129ccc0adf",
     "lockedAssetFingerprint": "sha256:9b761692b3e95c9222b90fe679a4e34f86190a9f44feb070d55fb166deb266af",
     "projectIdentityFingerprint": "sha256:312e12b8f76e86894c29d4f798ed6e7809b7fce00539a2ba8d1a66c6045eedcc"
   },
@@ -113,34 +114,6 @@
         "statement": "单一焦点",
         "source": "reference_style_capsule",
         "invariantLevel": "strong"
-      },
-      {
-        "id": "vmcr-92d160f6decc73d8",
-        "dimension": "extension_mechanism",
-        "statement": "大留白",
-        "source": "style_profile",
-        "invariantLevel": "adaptive"
-      },
-      {
-        "id": "vmcr-d83a981488e7a4d0",
-        "dimension": "extension_mechanism",
-        "statement": "克制线条",
-        "source": "style_profile",
-        "invariantLevel": "adaptive"
-      },
-      {
-        "id": "vmcr-2e63260133d5b2a4",
-        "dimension": "extension_mechanism",
-        "statement": "暖灰",
-        "source": "style_profile",
-        "invariantLevel": "adaptive"
-      },
-      {
-        "id": "vmcr-1c78398b38e2515d",
-        "dimension": "extension_mechanism",
-        "statement": "真实纸张",
-        "source": "style_profile",
-        "invariantLevel": "adaptive"
       }
     ]
   },
@@ -159,7 +132,7 @@
   "evidence": {
     "visualEvidence": {
       "referencePackId": "vmrp-363bf8db8768e9f884a412da7b7f6651",
-      "manifestFingerprint": "sha256:57539369112e4eb164c1d5fa61a234eb179f8f0f3f75301fb99bf146b11c0ae0",
+      "manifestFingerprint": "sha256:efc6f8ea7447a647d3f5bc9bde20e57acca4f95dcaf9250cb5ebf200d4c9f3f8",
       "referenceIds": [
         "reference-01-a52f2ee24cebf41c",
         "reference-02-b7c23e74a00c13aa",
@@ -178,16 +151,17 @@
     }
   },
   "trace": {
+    "compilerVersion": "1.1.0",
     "sourceReferenceAnchorRunId": "run-1",
     "referencePackId": "vmrp-363bf8db8768e9f884a412da7b7f6651",
-    "sourceFingerprint": "sha256:11be5dd19747e62908a5b42dda012e007616de74cf37fe7ce07ad8c500fe5b1d",
+    "sourceFingerprint": "sha256:bf416557e5e87637c25933a59d1516de6b36cef1b56dbf74fe22ff485fef9766",
     "inputFingerprints": {
       "projectIdentity": "sha256:312e12b8f76e86894c29d4f798ed6e7809b7fce00539a2ba8d1a66c6045eedcc",
       "lockedAssets": "sha256:9b761692b3e95c9222b90fe679a4e34f86190a9f44feb070d55fb166deb266af",
       "referencePackSource": "sha256:f4cb230657295f55e75d29e54ad9234c218b6f2d44f3cdb6ffbdc95912d3f242",
-      "referencePackManifest": "sha256:57539369112e4eb164c1d5fa61a234eb179f8f0f3f75301fb99bf146b11c0ae0",
+      "referencePackManifest": "sha256:efc6f8ea7447a647d3f5bc9bde20e57acca4f95dcaf9250cb5ebf200d4c9f3f8",
       "capsule": "sha256:9aa06f397a7406eb57624028f1f38d69a2d4d0fcc36077453613182a4f1bd0b1",
-      "styleProfile": "sha256:c139e4b7114cbe7096ff630dca539bca1d29ce32368dc11dedba99a8c5f16d26"
+      "styleProfile": "sha256:af1244ef33d1bc5d25a2c8c37a6365af23b581e62bdfa137c1af45129ccc0adf"
     }
   }
 }

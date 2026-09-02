@@ -8,6 +8,10 @@ import { compileLockedAssets } from '@masterpiece/creative-production-runtime/lo
 import { compileStyleProfile } from '@masterpiece/creative-production-runtime/style-profile.js';
 import { createVisualMigrationCanonService } from '@masterpiece/runtime-core/application/visual-migration-canon-service.ts';
 import {
+  buildVisualMigrationCanonId,
+  computeVisualMigrationCanonFingerprint,
+} from '@masterpiece/runtime-core/application/visual-migration-canon-contract.ts';
+import {
   canonicalSerializeVisualMigrationValue,
   computeVisualMigrationManifestFingerprint,
   sha256Fingerprint,
@@ -111,10 +115,20 @@ test('VM-2 persistence creates canon.json and active.json on first build', async
 test('VM-2 persistence reuses the same Canon for identical inputs', async (t) => {
   const f = await fixture(); t.after(() => fs.rm(f.root, { recursive: true, force: true }));
   const first = await f.service.createOrGet(f.input);
+  const canonPath = path.join(f.projectRoot, 'visual-migration', 'canons', first.canon.canonId, 'canon.json');
+  const pointerPath = path.join(f.projectRoot, 'visual-migration', 'canons', 'active.json');
+  const canonBefore = await fs.readFile(canonPath);
+  const pointerBefore = await fs.readFile(pointerPath);
+  const canonMtimeBefore = (await fs.stat(canonPath)).mtimeMs;
+  const pointerMtimeBefore = (await fs.stat(pointerPath)).mtimeMs;
   const second = await f.service.createOrGet(f.input);
   assert.equal(first.created, true);
   assert.equal(second.created, false);
   assert.equal(second.canon.canonId, first.canon.canonId);
+  assert.deepEqual(await fs.readFile(canonPath), canonBefore);
+  assert.deepEqual(await fs.readFile(pointerPath), pointerBefore);
+  assert.equal((await fs.stat(canonPath)).mtimeMs, canonMtimeBefore);
+  assert.equal((await fs.stat(pointerPath)).mtimeMs, pointerMtimeBefore);
   const directories = await fs.readdir(path.join(f.projectRoot, 'visual-migration', 'canons'), { withFileTypes: true });
   assert.equal(directories.filter((entry) => entry.isDirectory()).length, 1);
 });
@@ -124,8 +138,11 @@ test('VM-2 persistence resolves Canon and visual evidence after runtime restart'
   const first = await f.service.createOrGet(f.input);
   const restarted = createVisualMigrationCanonService(f.projects as never, f.packs as never);
   const resolved = await restarted.resolve('project-1', first.canon.canonId);
+  const active = await restarted.getActive('project-1');
   assert.equal(resolved.referencePack.referencePackId, f.manifest.referencePackId);
   assert.equal(resolved.references.length, 1);
+  assert.equal(active?.canon.canonId, first.canon.canonId);
+  assert.equal(active?.referencePack.referencePackId, f.manifest.referencePackId);
 });
 
 test('VM-2 persistence detects canon.json tampering', async (t) => {
@@ -148,18 +165,76 @@ test('VM-2 persistence rejects an active pointer project mismatch', async (t) =>
   await assert.rejects(() => f.service.getActive('project-1'), { code: 'VISUAL_MIGRATION_CANON_INTEGRITY_FAILED' });
 });
 
-test('VM-2 persistence creates a new Canon and supersedes without overwriting old semantic content', async (t) => {
+test('VM-2.1 persistence creates a new Canon while preserving the old Canon byte-for-byte', async (t) => {
   const f = await fixture(); t.after(() => fs.rm(f.root, { recursive: true, force: true }));
   const first = await f.service.createOrGet(f.input);
-  const oldGoal = first.canon.transferSystem.goal;
+  const oldPath = path.join(f.projectRoot, 'visual-migration', 'canons', first.canon.canonId, 'canon.json');
+  const oldBytes = await fs.readFile(oldPath);
   const changedProfile = structuredClone(f.styleProfile);
   changedProfile.colorSystem.secondary = ['柔和中性色'];
   const second = await f.service.createOrGet({ ...f.input, styleProfile: changedProfile });
   assert.notEqual(second.canon.canonId, first.canon.canonId);
   const old = await f.service.resolve('project-1', first.canon.canonId);
-  assert.equal(old.canon.status, 'superseded');
-  assert.equal(old.canon.transferSystem.goal, oldGoal);
+  const current = await f.service.resolve('project-1', second.canon.canonId);
+  assert.equal(old.canon.status, 'valid');
+  assert.equal(current.canon.status, 'valid');
+  assert.deepEqual(await fs.readFile(oldPath), oldBytes);
   assert.equal((await f.service.getActive('project-1'))?.canon.canonId, second.canon.canonId);
+});
+
+test('VM-2.1 pointer write failure preserves the prior pointer and prior Canon', async (t) => {
+  const f = await fixture(); t.after(() => fs.rm(f.root, { recursive: true, force: true }));
+  const first = await f.service.createOrGet(f.input);
+  const canonPath = path.join(f.projectRoot, 'visual-migration', 'canons', first.canon.canonId, 'canon.json');
+  const pointerPath = path.join(f.projectRoot, 'visual-migration', 'canons', 'active.json');
+  const canonBefore = await fs.readFile(canonPath);
+  const pointerBefore = await fs.readFile(pointerPath);
+  const failing = createVisualMigrationCanonService(f.projects as never, f.packs as never, {
+    writeJson: async (filename: string, value: unknown) => {
+      if (path.basename(filename) === 'active.json') {
+        throw Object.assign(new Error('pointer write failed'), { code: 'TEST_POINTER_WRITE_FAILED' });
+      }
+      await fs.mkdir(path.dirname(filename), { recursive: true });
+      await fs.writeFile(filename, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+    },
+  });
+  const changedProfile = structuredClone(f.styleProfile);
+  changedProfile.colorSystem.secondary = ['柔和中性色'];
+  await assert.rejects(
+    () => failing.createOrGet({ ...f.input, styleProfile: changedProfile }),
+    { code: 'TEST_POINTER_WRITE_FAILED' },
+  );
+  assert.deepEqual(await fs.readFile(canonPath), canonBefore);
+  assert.deepEqual(await fs.readFile(pointerPath), pointerBefore);
+  assert.equal((await f.service.getActive('project-1'))?.canon.canonId, first.canon.canonId);
+});
+
+test('VM-2.1 resolves a legacy Canon without compiler identity alongside the current compiler Canon', async (t) => {
+  const f = await fixture(); t.after(() => fs.rm(f.root, { recursive: true, force: true }));
+  const current = await f.service.createOrGet(f.input);
+  const legacy = structuredClone(current.canon);
+  Reflect.deleteProperty(legacy.source as unknown as Record<string, unknown>, 'compilerVersion');
+  Reflect.deleteProperty(legacy.trace as unknown as Record<string, unknown>, 'compilerVersion');
+  legacy.sourceFingerprint = sha256Fingerprint(canonicalSerializeVisualMigrationValue({
+    projectId: legacy.projectId,
+    projectIdentityFingerprint: legacy.source.projectIdentityFingerprint,
+    lockedAssetFingerprint: legacy.source.lockedAssetFingerprint,
+    referencePackSourceFingerprint: legacy.source.referencePackSourceFingerprint,
+    referencePackManifestFingerprint: legacy.source.referencePackManifestFingerprint,
+    capsuleFingerprint: legacy.source.capsuleFingerprint,
+    briefFingerprint: legacy.source.briefFingerprint,
+    styleProfileFingerprint: legacy.source.styleProfileFingerprint,
+    creativeDecisionId: legacy.source.creativeDecisionId,
+  }));
+  legacy.trace.sourceFingerprint = legacy.sourceFingerprint;
+  legacy.canonId = buildVisualMigrationCanonId(legacy.projectId, legacy.sourceFingerprint);
+  legacy.canonFingerprint = computeVisualMigrationCanonFingerprint(legacy);
+  const legacyPath = path.join(f.projectRoot, 'visual-migration', 'canons', legacy.canonId, 'canon.json');
+  await fs.mkdir(path.dirname(legacyPath), { recursive: true });
+  await fs.writeFile(legacyPath, `${JSON.stringify(legacy, null, 2)}\n`, 'utf8');
+  assert.notEqual(legacy.canonId, current.canon.canonId);
+  assert.equal((await f.service.resolve('project-1', legacy.canonId)).canon.canonId, legacy.canonId);
+  assert.equal((await f.service.resolve('project-1', current.canon.canonId)).canon.canonId, current.canon.canonId);
 });
 
 test('VM-2 persistence fails explicitly when Reference Pack evidence is missing', async (t) => {

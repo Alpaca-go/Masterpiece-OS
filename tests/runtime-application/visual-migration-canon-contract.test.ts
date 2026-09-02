@@ -6,6 +6,8 @@ import type { VisualMigrationCanonV1 } from '@masterpiece/project-contracts/inde
 import {
   buildVisualMigrationCanonId,
   computeVisualMigrationCanonFingerprint,
+  computeVisualMigrationCanonSourceFingerprint,
+  VISUAL_MIGRATION_CANON_COMPILER_VERSION,
   validateVisualMigrationCanonV1,
 } from '@masterpiece/runtime-core/application/visual-migration-canon-contract.ts';
 import { canonicalSerializeVisualMigrationValue } from '@masterpiece/runtime-core/application/visual-migration-reference-pack-contract.ts';
@@ -22,7 +24,33 @@ test('VM-2 generated Canon fixture remains contract-valid and free of runtime pa
 });
 
 function canon(): VisualMigrationCanonV1 {
-  const sourceFingerprint = fp('a');
+  const source = {
+    compilerVersion: VISUAL_MIGRATION_CANON_COMPILER_VERSION,
+    sourceReferenceAnchorRunId: 'run-1',
+    referencePackId: `vmrp-${'b'.repeat(32)}`,
+    referencePackSourceFingerprint: fp('c'),
+    referencePackManifestFingerprint: fp('d'),
+    referenceCount: 1,
+    capsuleFingerprint: fp('e'),
+    briefFingerprint: fp('f'),
+    creativeDecisionId: 'creative-decision-quick-run-1',
+    styleProfileId: 'style-1',
+    styleProfileFingerprint: fp('1'),
+    lockedAssetFingerprint: fp('2'),
+    projectIdentityFingerprint: fp('3'),
+  };
+  const sourceFingerprint = computeVisualMigrationCanonSourceFingerprint({
+    projectId: 'project-1',
+    compilerVersion: source.compilerVersion,
+    projectIdentityFingerprint: source.projectIdentityFingerprint,
+    lockedAssetFingerprint: source.lockedAssetFingerprint,
+    referencePackSourceFingerprint: source.referencePackSourceFingerprint,
+    referencePackManifestFingerprint: source.referencePackManifestFingerprint,
+    capsuleFingerprint: source.capsuleFingerprint,
+    briefFingerprint: source.briefFingerprint,
+    styleProfileFingerprint: source.styleProfileFingerprint,
+    creativeDecisionId: source.creativeDecisionId,
+  });
   const value: VisualMigrationCanonV1 = {
     schemaVersion: 'visual-migration-canon/v1',
     canonId: buildVisualMigrationCanonId('project-1', sourceFingerprint),
@@ -33,20 +61,7 @@ function canon(): VisualMigrationCanonV1 {
     updatedAt: '2026-09-02T00:00:00.000Z',
     sourceFingerprint,
     canonFingerprint: fp('0'),
-    source: {
-      sourceReferenceAnchorRunId: 'run-1',
-      referencePackId: `vmrp-${'b'.repeat(32)}`,
-      referencePackSourceFingerprint: fp('c'),
-      referencePackManifestFingerprint: fp('d'),
-      referenceCount: 1,
-      capsuleFingerprint: fp('e'),
-      briefFingerprint: fp('f'),
-      creativeDecisionId: 'creative-decision-quick-run-1',
-      styleProfileId: 'style-1',
-      styleProfileFingerprint: fp('1'),
-      lockedAssetFingerprint: fp('2'),
-      projectIdentityFingerprint: fp('3'),
-    },
+    source,
     projectIdentity: {
       brandName: '当前品牌',
       lockedFacts: ['当前 Logo 必须保留'],
@@ -96,6 +111,7 @@ function canon(): VisualMigrationCanonV1 {
       },
     },
     trace: {
+      compilerVersion: VISUAL_MIGRATION_CANON_COMPILER_VERSION,
       sourceReferenceAnchorRunId: 'run-1',
       referencePackId: `vmrp-${'b'.repeat(32)}`,
       sourceFingerprint,
@@ -199,4 +215,48 @@ test('VM-2 canon fingerprint ignores lifecycle metadata', () => {
     createdAt: '2027-01-01T00:00:00.000Z',
     updatedAt: '2027-01-02T00:00:00.000Z',
   }), value.canonFingerprint);
+});
+
+test('VM-2.1 contract rejects mismatched source and trace compiler identity', () => {
+  const value = canon();
+  value.trace.compilerVersion = '1.0.0';
+  value.canonFingerprint = computeVisualMigrationCanonFingerprint(value);
+  assert.throws(() => validateVisualMigrationCanonV1(value), {
+    code: 'VISUAL_MIGRATION_CANON_COMPILER_VERSION_MISMATCH',
+  });
+});
+
+test('VM-2.1 compiler identity participates in source fingerprint and Canon id', () => {
+  const value = canon();
+  const common = {
+    projectId: value.projectId,
+    projectIdentityFingerprint: value.source.projectIdentityFingerprint,
+    lockedAssetFingerprint: value.source.lockedAssetFingerprint,
+    referencePackSourceFingerprint: value.source.referencePackSourceFingerprint,
+    referencePackManifestFingerprint: value.source.referencePackManifestFingerprint,
+    capsuleFingerprint: value.source.capsuleFingerprint,
+    briefFingerprint: value.source.briefFingerprint,
+    styleProfileFingerprint: value.source.styleProfileFingerprint,
+    creativeDecisionId: value.source.creativeDecisionId,
+  };
+  const oldFingerprint = computeVisualMigrationCanonSourceFingerprint({ ...common, compilerVersion: '1.0.0' });
+  const currentFingerprint = computeVisualMigrationCanonSourceFingerprint({
+    ...common,
+    compilerVersion: VISUAL_MIGRATION_CANON_COMPILER_VERSION,
+  });
+  assert.notEqual(currentFingerprint, oldFingerprint);
+  assert.notEqual(
+    buildVisualMigrationCanonId(value.projectId, currentFingerprint),
+    buildVisualMigrationCanonId(value.projectId, oldFingerprint),
+  );
+});
+
+test('VM-2.1 contract detects compiler identity tampering through source fingerprint validation', () => {
+  const value = canon();
+  value.source.compilerVersion = '1.2.0';
+  value.trace.compilerVersion = '1.2.0';
+  value.canonFingerprint = computeVisualMigrationCanonFingerprint(value);
+  assert.throws(() => validateVisualMigrationCanonV1(value), {
+    code: 'VISUAL_MIGRATION_CANON_FINGERPRINT_MISMATCH',
+  });
 });
