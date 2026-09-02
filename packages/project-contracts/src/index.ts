@@ -478,6 +478,7 @@ export interface VisualMigrationCanonV1 {
   sourceFingerprint: string;
   canonFingerprint: string;
   source: {
+    compilerVersion: string;
     sourceReferenceAnchorRunId: string;
     referencePackId: string;
     referencePackSourceFingerprint: string;
@@ -528,6 +529,7 @@ export interface VisualMigrationCanonV1 {
     };
   };
   trace: {
+    compilerVersion: string;
     sourceReferenceAnchorRunId: string;
     referencePackId: string;
     sourceFingerprint: string;

@@ -10,6 +10,7 @@ import {
 
 export const VISUAL_MIGRATION_CANON_SCHEMA = 'visual-migration-canon/v1' as const;
 export const VISUAL_MIGRATION_CANON_POINTER_SCHEMA = 'visual-migration-canon-pointer/v1' as const;
+export const VISUAL_MIGRATION_CANON_COMPILER_VERSION = '1.1.0' as const;
 
 const FINGERPRINT = /^sha256:[a-f0-9]{64}$/u;
 const CANON_ID = /^vmc-[a-f0-9]{32}$/u;
@@ -105,6 +106,7 @@ function semanticRuleGroups(canon: VisualMigrationCanonV1): Array<[string, Visua
 
 export function computeVisualMigrationCanonSourceFingerprint(input: {
   projectId: string;
+  compilerVersion: string;
   projectIdentityFingerprint: string;
   lockedAssetFingerprint: string;
   referencePackSourceFingerprint: string;
@@ -160,6 +162,15 @@ export function validateVisualMigrationCanonV1(value: unknown): VisualMigrationC
   const referencePackId = String(canon.source?.referencePackId ?? '').trim();
   if (!PACK_ID.test(referencePackId)) {
     throw canonError('VISUAL_MIGRATION_CANON_REFERENCE_PACK_INVALID', 'referencePackId 格式无效。');
+  }
+  const sourceCompilerVersion = String(canon.source?.compilerVersion ?? '').trim();
+  const traceCompilerVersion = String(canon.trace?.compilerVersion ?? '').trim();
+  const legacyCompilerIdentity = !sourceCompilerVersion && !traceCompilerVersion;
+  if (!legacyCompilerIdentity) {
+    if (!/^\d+\.\d+\.\d+$/u.test(sourceCompilerVersion)
+      || sourceCompilerVersion !== traceCompilerVersion) {
+      throw canonError('VISUAL_MIGRATION_CANON_COMPILER_VERSION_MISMATCH', 'Canon source / trace compilerVersion 无效或不一致。');
+    }
   }
   requireText(canon.source?.sourceReferenceAnchorRunId, 'source.sourceReferenceAnchorRunId');
   requireFingerprint(canon.source?.referencePackSourceFingerprint, 'source.referencePackSourceFingerprint');
@@ -238,6 +249,20 @@ export function validateVisualMigrationCanonV1(value: unknown): VisualMigrationC
     || canon.trace?.referencePackId !== canon.source.referencePackId
     || canon.trace?.sourceFingerprint !== canon.sourceFingerprint) {
     throw canonError('VISUAL_MIGRATION_CANON_INTEGRITY_FAILED', 'Canon trace 与 source 不一致。');
+  }
+  if (!legacyCompilerIdentity && computeVisualMigrationCanonSourceFingerprint({
+    projectId: canon.projectId,
+    compilerVersion: sourceCompilerVersion,
+    projectIdentityFingerprint: canon.source.projectIdentityFingerprint,
+    lockedAssetFingerprint: canon.source.lockedAssetFingerprint,
+    referencePackSourceFingerprint: canon.source.referencePackSourceFingerprint,
+    referencePackManifestFingerprint: canon.source.referencePackManifestFingerprint,
+    capsuleFingerprint: canon.source.capsuleFingerprint,
+    ...(canon.source.briefFingerprint ? { briefFingerprint: canon.source.briefFingerprint } : {}),
+    styleProfileFingerprint: canon.source.styleProfileFingerprint,
+    creativeDecisionId: canon.source.creativeDecisionId,
+  }) !== canon.sourceFingerprint) {
+    throw canonError('VISUAL_MIGRATION_CANON_FINGERPRINT_MISMATCH', 'sourceFingerprint 未包含一致的 compilerVersion 与输入身份。');
   }
   if (buildVisualMigrationCanonId(canon.projectId, canon.sourceFingerprint) !== canon.canonId) {
     throw canonError('VISUAL_MIGRATION_CANON_FINGERPRINT_MISMATCH', 'canonId 与 sourceFingerprint 不一致。');
