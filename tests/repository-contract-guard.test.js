@@ -1,12 +1,17 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
+import { fileURLToPath } from 'node:url';
 import {
   checkProductionReference,
   checkPromptDigest,
   classifyGoldenChanges,
   classifyCurrentPath,
-  validateCompatibilityRegistry
+  validateCompatibilityRegistry,
+  validatePromptIntegrity
 } from '../scripts/verify-repository-contract.mjs';
 import { classifyProductionImport } from '../scripts/verify-production-boundaries.mjs';
 
@@ -57,6 +62,53 @@ test('frozen prompt mutation is represented by stable RC004', () => {
   const digest = 'BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD';
   assert.equal(checkPromptDigest('abc', digest), null);
   assert.equal(checkPromptDigest('mutated', digest)?.code, 'RC004');
+});
+
+test('frozen prompt manifest entries exist and reproduce their authority digests', () => {
+  const manifest = JSON.parse(readFileSync(new URL('../config/repository-contract/prompt-integrity.json', import.meta.url), 'utf8'));
+  const repositoryRoot = fileURLToPath(new URL('..', import.meta.url));
+  assert.equal(manifest.entries.length, 4);
+  assert.deepEqual(validatePromptIntegrity(repositoryRoot, manifest), []);
+});
+
+test('frozen prompt entry without a SHA fails closed', () => {
+  const failures = validatePromptIntegrity(process.cwd(), {
+    algorithm: 'sha256',
+    entries: [{ path: 'apps/cli/prompts/analysis/report-schema.md' }]
+  });
+  assert.equal(failures[0]?.code, 'RC004');
+});
+
+test('prompt integrity validation is byte-exact, reversible, and does not update the manifest', () => {
+  const directory = mkdtempSync(path.join(tmpdir(), 'masterpiece-rc004-'));
+  const promptPath = path.join(directory, 'prompt.md');
+  const lfContent = Buffer.from('authority\nbytes\n');
+  const manifest = {
+    algorithm: 'sha256',
+    entries: [{ path: 'prompt.md', sha256: createHash('sha256').update(lfContent).digest('hex').toUpperCase() }]
+  };
+  const before = JSON.stringify(manifest);
+  try {
+    writeFileSync(promptPath, lfContent);
+    assert.deepEqual(validatePromptIntegrity(directory, manifest), []);
+    writeFileSync(promptPath, Buffer.from('authority\r\nbytes\r\n'));
+    assert.equal(validatePromptIntegrity(directory, manifest)[0]?.code, 'RC004');
+    writeFileSync(promptPath, lfContent);
+    assert.deepEqual(validatePromptIntegrity(directory, manifest), []);
+    assert.equal(JSON.stringify(manifest), before);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('frozen prompt EOL policy is limited to the four authority paths', () => {
+  const attributes = readFileSync(new URL('../.gitattributes', import.meta.url), 'utf8').trim().split(/\r?\n/);
+  assert.deepEqual(attributes, [
+    '/apps/cli/prompts/analysis/benchmark-instructions.md text eol=lf',
+    '/apps/cli/prompts/analysis/deep-creative-director.md text eol=lf',
+    '/apps/cli/prompts/analysis/execution-core-template.md text eol=lf',
+    '/apps/cli/prompts/analysis/report-schema.md text eol=lf'
+  ]);
 });
 
 test('Golden mutation is represented by stable RC005', () => {

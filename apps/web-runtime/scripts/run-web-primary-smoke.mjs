@@ -221,7 +221,7 @@ try {
     checks: {
       // Current production baseline, including the Creative Direction
       // production-handoff get/compile/retry channels.
-      nodeHostBoot: hostReady.operationCount === 235,
+      nodeHostBoot: hostReady.operationCount === 236,
       nodeHealth: health.host === 'node',
       rendererPage: screenshot.length > 10_000 && rendererState.rootClass !== 'splash',
       configLoad: Array.isArray(settings.body.result?.profiles),

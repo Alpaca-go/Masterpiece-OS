@@ -60,6 +60,29 @@ export function checkPromptDigest(content, expectedDigest, relativePath = 'promp
   return null;
 }
 
+export function validatePromptIntegrity(root, prompts) {
+  const failures = [];
+  if (prompts.algorithm !== 'sha256' || !Array.isArray(prompts.entries)) {
+    return [{ code: 'RC009', path: 'prompt-integrity.json', detail: 'prompt integrity metadata is malformed' }];
+  }
+  const seenPaths = new Set();
+  for (const entry of prompts.entries) {
+    const promptPath = path.join(root, entry.path ?? '');
+    if (!entry.path || !/^[A-F0-9]{64}$/i.test(entry.sha256 ?? '') || !existsSync(promptPath)) {
+      failures.push({ code: 'RC004', path: entry.path ?? 'prompt-integrity.json', detail: 'frozen prompt entry is incomplete or missing' });
+      continue;
+    }
+    if (seenPaths.has(entry.path)) {
+      failures.push({ code: 'RC009', path: entry.path, detail: 'frozen prompt entry is duplicated' });
+      continue;
+    }
+    seenPaths.add(entry.path);
+    const failure = checkPromptDigest(readFileSync(promptPath), entry.sha256, entry.path);
+    if (failure) failures.push(failure);
+  }
+  return failures;
+}
+
 export function classifyGoldenChanges(paths) {
   return paths.map((changedPath) => ({
     code: 'RC005',
@@ -181,15 +204,7 @@ export function verifyRepositoryContract(root = process.cwd(), options = {}) {
     }
   }
 
-  for (const entry of prompts.entries ?? []) {
-    const promptPath = path.join(root, entry.path ?? '');
-    if (!entry.path || !entry.sha256 || !existsSync(promptPath)) {
-      failures.push({ code: 'RC004', path: entry.path ?? 'prompt-integrity.json', detail: 'frozen prompt entry is incomplete or missing' });
-      continue;
-    }
-    const failure = checkPromptDigest(readFileSync(promptPath), entry.sha256, entry.path);
-    if (failure) failures.push(failure);
-  }
+  failures.push(...validatePromptIntegrity(root, prompts));
 
   failures.push(...validateCompatibilityRegistry(compatibility, allowlist));
   for (const entry of compatibility.entries ?? []) {

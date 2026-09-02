@@ -2,9 +2,9 @@
   "schemaVersion": "1.0",
   "algorithm": "sha256",
   "entries": [
-    { "path": "apps/cli/prompts/analysis/benchmark-instructions.md", "sha256": "DF937BBC81BF1C7335933952EEF5DB654C73B485BFF52A67ABED2618ECEE71CB", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
-    { "path": "apps/cli/prompts/analysis/deep-creative-director.md", "sha256": "4D258CCE657F023D054C86EE54C661FAB9382387847904A4B386E5A674B46142", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
-    { "path": "apps/cli/prompts/analysis/execution-core-template.md", "sha256": "D20DEF82F1D881A276007FB408FE62C92634F80BB346DA0A52AA2FDFB8C3D54C", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
-    { "path": "apps/cli/prompts/analysis/report-schema.md", "sha256": "CAE74A0AB49CA33827E09194005DF0D35BC979AD0E8F7165BD80524A20D637AF", "classification": "FROZEN", "reason": "Production-critical analysis report contract included in the S7 behavior baseline." }
+    { "path": "apps/cli/prompts/analysis/benchmark-instructions.md", "sha256": "5FADB6A6A5CD521FDC74F8D34048116D007A806C03746736263BA7A873BABFAD", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
+    { "path": "apps/cli/prompts/analysis/deep-creative-director.md", "sha256": "EA567A75DC54C6670D20534912F40A570AF385AF85D6590A44988EDD6B16A1B1", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
+    { "path": "apps/cli/prompts/analysis/execution-core-template.md", "sha256": "104E260EEC88F84673CBFF98AFA401EF983181905EA42CD4A15802F58099061A", "classification": "FROZEN", "reason": "Production-critical analysis prompt included in the S7 behavior baseline." },
+    { "path": "apps/cli/prompts/analysis/report-schema.md", "sha256": "B64DF59D637C40ECCC96153FDB39428C439B061DBA15D0442E907CCEAF0D6C3B", "classification": "FROZEN", "reason": "Production-critical analysis report contract included in the S7 behavior baseline." }
   ]
 }

@@ -22,7 +22,7 @@
                        "required":  true,
                        "releaseRequired":  true,
                        "reason":  "Production Visual Analysis system prompt (read by apps/cli/src/analysis-engine/creative-director/prompt-builder.js at line 29; PROMPT_ROOT defaults to apps/cli/prompts/analysis/).",
-                       "sha256":  "4d258cce657f023d054c86ee54c661fab9382387847904a4b386e5a674b46142",
+                       "sha256":  "ea567a75dc54c6670d20534912f40a570af385af85d6590a44988edd6b16a1b1",
                        "frozenBy":  "A2"
                    },
                    {
@@ -32,7 +32,7 @@
                        "required":  true,
                        "releaseRequired":  true,
                        "reason":  "Production Visual Analysis benchmark instructions (read by prompt-builder.js).",
-                       "sha256":  "df937bbc81bf1c7335933952eef5db654c73b485bff52a67abed2618ecee71cb",
+                       "sha256":  "5fadb6a6a5cd521fdc74f8d34048116d007a806c03746736263ba7a873babfad",
                        "frozenBy":  "A2"
                    },
                    {
@@ -42,7 +42,7 @@
                        "required":  true,
                        "releaseRequired":  true,
                        "reason":  "Production Visual Analysis execution-core template (read by prompt-builder.js).",
-                       "sha256":  "d20def82f1d881a276007fb408fe62c92634f80bb346da0a52aa2fdfb8c3d54c",
+                       "sha256":  "104e260eec88f84673cbff98afa401ef983181905ea42cd4a15802f58099061a",
                        "frozenBy":  "A2"
                    },
                    {
@@ -52,7 +52,7 @@
                        "required":  true,
                        "releaseRequired":  true,
                        "reason":  "Production Visual Analysis report schema (read by prompt-builder.js).",
-                       "sha256":  "cae74a0ab49ca33827e09194005df0d35bc979ad0e8f7165bd80524a20d637af",
+                       "sha256":  "b64df59d637c40eccc96153fdb39428c439b061dba15d0442e907cceaf0d6c3b",
                        "frozenBy":  "A2"
                    },
                    {
