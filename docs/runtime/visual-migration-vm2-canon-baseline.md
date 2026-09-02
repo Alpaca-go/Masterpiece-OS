@@ -1,10 +1,12 @@
 # Visual Migration VM-2 Canon Baseline
 
-Status: `VM2_IMPLEMENTED_AND_VERIFIED`
+Status: `VM2_FROZEN`
 
-Base commit: `f5ecdfa2aa21d1b00dc1311bf356a2d8e062701d`
+Next stage: `VM3_UNLOCKED`
 
-Branch: `codex/visual-migration-vm2-canon`
+VM-2.1 implementation base: `976e4ddff9c88c50cd6525c07863092a24a37714`
+
+Branch: `codex/visual-migration-vm2.1-canon-purity-lifecycle`
 
 ## Frozen outcome
 
@@ -42,11 +44,16 @@ Canon construction failure leaves neither linkage written by that handoff.
 └── <canonId>/canon.json
 ```
 
-Equal semantic source input reuses the deterministic Canon. Changed source
-input creates a new Canon, marks the former active Canon `superseded`, preserves
-its semantic content, and advances the active pointer. Every read validates the
-Canon fingerprint and resolves the linked Reference Pack with its own integrity
-checks.
+Equal semantic source input reuses the deterministic Canon without rewriting
+`canon.json` or `active.json`. Changed source input creates a new immutable
+Canon and advances the active pointer without changing any byte of the former
+Canon. `active.json` is the sole active-lifecycle authority. Every read
+validates the Canon fingerprint and resolves the linked Reference Pack with its
+own integrity checks.
+
+The frozen compiler identity is `1.1.0`. It is recorded in Canon `source` and
+`trace` and participates in `sourceFingerprint` and deterministic `canonId`.
+Legacy VM-2 Canon files without compiler identity remain read-only resolvable.
 
 ## Session linkage
 
@@ -73,7 +80,7 @@ parameters, credentials, or model responses.
 - Runtime restart resolution and idempotent repeat handoff: pass.
 - Canon and active-pointer tamper detection: pass.
 - Quick Extraction failure-closed behavior: pass.
-- `verify:current-flows`: pass, including 1308/1308 Runtime Application tests
+- `verify:current-flows`: pass, including 1315/1315 Runtime Application tests
   and Node Host/Web type checks.
 - `verify:tracked-runtime-assets`: pass after classifying `active.json` as a
   generated runtime artifact.
@@ -81,9 +88,18 @@ parameters, credentials, or model responses.
   Runtime tests, Web primary smoke, and Golden regression.
 - `web-runtime:test`: 15/15 pass.
 - `web:build`: pass; the pre-existing large-chunk advisory remains non-blocking.
-- Provider/model calls during VM-2 implementation and verification: `0`.
+- Provider/model calls during VM-2 and VM-2.1 implementation and verification:
+  `0`.
+
+VM-2.1 closure additionally passed byte-level immutability, pointer-failure
+recovery, compiler-collision, legacy coexistence, full `repo:verify`, Web
+primary smoke, Golden regression, and aggregate `repo:check` gates. See
+`docs/runtime/visual-migration-vm2.1-canon-purity-lifecycle.md` for the frozen
+evidence.
 
 ## Next boundary
 
-VM-3 may introduce task-aware reference policy. VM-2 does not assign task
-priority, select materialized references, or change Provider capacity policy.
+VM-3 is unlocked to introduce task-aware reference policy. VM-2 does not assign
+task priority, select materialized references, or change Provider capacity
+policy. VM-3 must consume this Canon as frozen semantic authority and must not
+repair its dimensions or lifecycle.
