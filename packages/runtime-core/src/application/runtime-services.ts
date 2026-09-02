@@ -36,6 +36,7 @@ import { createVisualCanonService } from './visual-canon-service.ts';
 import { createVisualExplorationService } from './visual-exploration-service.ts';
 import { createVisualMemoryService } from './visual-memory-service.ts';
 import { createVisualMigrationReferencePackService } from './visual-migration-reference-pack-service.ts';
+import { createVisualMigrationCanonService } from './visual-migration-canon-service.ts';
 // CI-W1A: Creative Intelligence Runtime Application Layer.
 import {
   createCreativeIntelligenceApplicationService,
@@ -99,6 +100,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   const visualCanons = createVisualCanonService(projects, creativeSessions, styleProfiles, lockedAssets, anchorCandidates);
   const referencePacks = createReferencePackService(projects, visualMemory, visualCanons);
   const visualMigrationReferencePacks = createVisualMigrationReferencePackService(projects, referenceAnchor);
+  const visualMigrationCanons = createVisualMigrationCanonService(projects, visualMigrationReferencePacks);
   const generationPrompts = createGenerationPromptService(
     projects,
     creativeSessions,
@@ -134,6 +136,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     lockedAssets,
     styleProfiles,
     visualMigrationReferencePacks,
+    visualMigrationCanons,
   );
 
   let imageGeneration: ReturnType<typeof createImageGenerationService>;
@@ -455,7 +458,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     projects, reports: createReportService(projects), pipeline, documentContext, projectContext,
     contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
     creativeSessions, creativeDirections, generationBlueprints, styleProfiles, lockedAssets,
-    visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, generationPrompts,
+    visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons, generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeriesExecution,

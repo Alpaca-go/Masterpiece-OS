@@ -3193,6 +3193,10 @@ export interface RuntimeApi {
       referenceAnchorRunId: string;
       referencePackId: string;
       sourceFingerprint: string;
+      visualMigrationCanonId: string;
+      visualMigrationCanonFingerprint: string;
+      visualMigrationCanonSourceFingerprint: string;
+      visualMigrationCanonCreated: boolean;
       creativeDecisionId: string;
       styleProfileId: string;
       created: boolean;

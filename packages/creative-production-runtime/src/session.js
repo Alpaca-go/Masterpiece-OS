@@ -96,6 +96,18 @@ export function validateCreativeSession(session) {
   if (session.messages.some((message) => message.type === 'generation_instruction' || /"finalPrompt"\s*:/.test(message.content))) {
     throw Object.assign(new Error('Creative Session 消息禁止保存完整 Final Generation Instruction。'), { code: 'SESSION_INVALID' });
   }
+  const canonFields = [
+    session.visualMigrationCanonId,
+    session.visualMigrationCanonFingerprint,
+    session.visualMigrationCanonSourceFingerprint,
+  ];
+  if (canonFields.some((value) => value !== undefined)) {
+    if (!/^vmc-[a-f0-9]{32}$/u.test(String(session.visualMigrationCanonId ?? ''))
+      || !/^sha256:[a-f0-9]{64}$/u.test(String(session.visualMigrationCanonFingerprint ?? ''))
+      || !/^sha256:[a-f0-9]{64}$/u.test(String(session.visualMigrationCanonSourceFingerprint ?? ''))) {
+      throw Object.assign(new Error('Creative Session 的 Visual Migration Canon 关联无效。'), { code: 'SESSION_INVALID' });
+    }
+  }
   return session;
 }
 
@@ -277,6 +289,29 @@ export function setSessionVisualMigrationReference(session, reference, now = new
   });
 }
 
+export function setSessionVisualMigrationCanon(session, reference, now = new Date().toISOString()) {
+  validateCreativeSession(session);
+  const visualMigrationCanonId = requireText(reference?.canonId, 'reference.canonId');
+  const visualMigrationCanonFingerprint = requireText(reference?.canonFingerprint, 'reference.canonFingerprint');
+  const visualMigrationCanonSourceFingerprint = requireText(
+    reference?.sourceFingerprint,
+    'reference.sourceFingerprint',
+  );
+  return validateCreativeSession({
+    ...session,
+    visualMigrationCanonId,
+    visualMigrationCanonFingerprint,
+    visualMigrationCanonSourceFingerprint,
+    history: [...session.history, historyEntry(
+      'VISUAL_MIGRATION_CANON_LINKED',
+      'Visual Migration Canon 已关联。',
+      now,
+      { entityType: 'decision', entityId: visualMigrationCanonId },
+    )],
+    updatedAt: now,
+  });
+}
+
 export function migrateLegacyCreativeSession(legacy, now = new Date().toISOString()) {
   if (legacy?.schemaVersion === '6.0') {
     return validateCreativeSession({
@@ -305,6 +340,9 @@ export function migrateLegacyCreativeSession(legacy, now = new Date().toISOStrin
     activeVisualExplorationId: legacy?.activeVisualExplorationId || undefined,
     activeVisualCanonId: legacy?.activeVisualCanonId || legacy?.visualCanonId || undefined,
     activeSeriesId: legacy?.activeSeriesId || legacy?.seriesId || undefined,
+    visualMigrationCanonId: legacy?.visualMigrationCanonId || undefined,
+    visualMigrationCanonFingerprint: legacy?.visualMigrationCanonFingerprint || undefined,
+    visualMigrationCanonSourceFingerprint: legacy?.visualMigrationCanonSourceFingerprint || undefined,
     decisions: Array.isArray(legacy?.decisions)
       ? legacy.decisions.map((item) => ({
           id: item.id || `decision-${crypto.randomUUID()}`,

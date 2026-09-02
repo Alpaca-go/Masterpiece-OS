@@ -4,6 +4,7 @@ import type { LockedAssetsService } from './locked-assets-service.ts';
 import type { ReferenceAnchorService } from './reference-anchor-service.ts';
 import type { StyleProfileService } from './style-profile-service.ts';
 import type { VisualMigrationReferencePackService } from './visual-migration-reference-pack-service.ts';
+import type { VisualMigrationCanonService } from './visual-migration-canon-service.ts';
 
 function unique(values: string[]): string[] {
   return [...new Set(values.map((value) => value.trim()).filter(Boolean))];
@@ -59,6 +60,7 @@ export function createQuickStyleExtractionService(
   lockedAssets: LockedAssetsService,
   styles: StyleProfileService,
   visualMigrationReferencePacks: VisualMigrationReferencePackService,
+  visualMigrationCanons: VisualMigrationCanonService,
 ) {
   async function extract(projectId: string, referenceAnchorRunId: string) {
     const [run, active] = await Promise.all([
@@ -85,20 +87,39 @@ export function createQuickStyleExtractionService(
     const packResult = await visualMigrationReferencePacks.createOrGet(projectId, referenceAnchorRunId);
     const session = await sessions.create(projectId);
     if (active) {
+      const currentLocks = await lockedAssets.list(projectId);
+      const canonResult = await visualMigrationCanons.createOrGet({
+        projectId,
+        referenceAnchorRunId,
+        referencePackId: packResult.manifest.referencePackId,
+        capsule,
+        styleProfile: active,
+        lockedAssets: currentLocks,
+      });
       await sessions.setVisualMigrationReference(projectId, {
         referencePackId: packResult.manifest.referencePackId,
         sourceReferenceAnchorRunId: referenceAnchorRunId,
         sourceFingerprint: packResult.manifest.sourceFingerprint,
       });
+      await sessions.setVisualMigrationCanon(projectId, {
+        canonId: canonResult.canon.canonId,
+        canonFingerprint: canonResult.canon.canonFingerprint,
+        sourceFingerprint: canonResult.canon.sourceFingerprint,
+        referencePackId: canonResult.canon.source.referencePackId,
+      });
       return {
         session: await sessions.create(projectId),
         styleProfile: active,
-        lockedAssets: await lockedAssets.list(projectId),
+        lockedAssets: currentLocks,
         sourceRunId: referenceAnchorRunId,
         projectId,
         referenceAnchorRunId,
         referencePackId: packResult.manifest.referencePackId,
         sourceFingerprint: packResult.manifest.sourceFingerprint,
+        visualMigrationCanonId: canonResult.canon.canonId,
+        visualMigrationCanonFingerprint: canonResult.canon.canonFingerprint,
+        visualMigrationCanonSourceFingerprint: canonResult.canon.sourceFingerprint,
+        visualMigrationCanonCreated: canonResult.created,
         creativeDecisionId,
         styleProfileId: active.id,
         created: packResult.created,
@@ -135,10 +156,24 @@ export function createQuickStyleExtractionService(
       },
       typographyCompatibility: capsule.inheritedStyle.layoutAndTypography,
     });
+    const canonResult = await visualMigrationCanons.createOrGet({
+      projectId,
+      referenceAnchorRunId,
+      referencePackId: packResult.manifest.referencePackId,
+      capsule,
+      styleProfile: profile,
+      lockedAssets: locks,
+    });
     await sessions.setVisualMigrationReference(projectId, {
       referencePackId: packResult.manifest.referencePackId,
       sourceReferenceAnchorRunId: referenceAnchorRunId,
       sourceFingerprint: packResult.manifest.sourceFingerprint,
+    });
+    await sessions.setVisualMigrationCanon(projectId, {
+      canonId: canonResult.canon.canonId,
+      canonFingerprint: canonResult.canon.canonFingerprint,
+      sourceFingerprint: canonResult.canon.sourceFingerprint,
+      referencePackId: canonResult.canon.source.referencePackId,
     });
     return {
       session: await sessions.create(projectId),
@@ -149,6 +184,10 @@ export function createQuickStyleExtractionService(
       referenceAnchorRunId,
       referencePackId: packResult.manifest.referencePackId,
       sourceFingerprint: packResult.manifest.sourceFingerprint,
+      visualMigrationCanonId: canonResult.canon.canonId,
+      visualMigrationCanonFingerprint: canonResult.canon.canonFingerprint,
+      visualMigrationCanonSourceFingerprint: canonResult.canon.sourceFingerprint,
+      visualMigrationCanonCreated: canonResult.created,
       creativeDecisionId,
       styleProfileId: profile.id,
       created: packResult.created,

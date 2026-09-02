@@ -515,7 +515,7 @@ export function ReferenceAnchorWorkspace({ settings, selectedApiProfileId, initi
         selectedRun.projectId,
         selectedRun.id,
       );
-      setNotice(`参考视觉证据已交接到生产系统（${handoff.referencePackId}）${handoff.created ? '' : '，已复用现有证据包'}。`);
+      setNotice(`视觉迁移生产规则与参考证据已建立${handoff.visualMigrationCanonCreated ? '' : '，已复用现有 Canon'}。`);
       onContinueCreativeProduction(selectedRun.projectId);
     } catch (reason) {
       setError(cleanError(reason));

@@ -12,6 +12,7 @@ import {
   appendSessionMessage,
   setCreativeUnderstanding,
   setSessionLockedAssetReferences,
+  setSessionVisualMigrationCanon,
   setSessionVisualMigrationReference,
   transitionCreativeSession,
   updateSessionEntityReference,
@@ -149,6 +150,29 @@ export function createCreativeSessionService(projects: ProjectStore) {
     );
   }
 
+  async function setVisualMigrationCanon(projectId: string, reference: {
+    canonId: string;
+    canonFingerprint: string;
+    sourceFingerprint: string;
+    referencePackId: string;
+  }): Promise<CreativeSession> {
+    const current = await create(projectId);
+    if (current.referencePackId !== reference.referencePackId) {
+      throw Object.assign(new Error('Session 的 Reference Pack 与 Visual Migration Canon 不一致。'), {
+        code: 'VISUAL_MIGRATION_CANON_SESSION_MISMATCH',
+      });
+    }
+    if (current.visualMigrationCanonId === reference.canonId
+      && current.visualMigrationCanonFingerprint === reference.canonFingerprint
+      && current.visualMigrationCanonSourceFingerprint === reference.sourceFingerprint) {
+      return current;
+    }
+    return persist(
+      setSessionVisualMigrationCanon(current, reference) as CreativeSession,
+      'VISUAL_MIGRATION_CANON_LINKED',
+    );
+  }
+
   return {
     create,
     get,
@@ -159,6 +183,7 @@ export function createCreativeSessionService(projects: ProjectStore) {
     saveUnderstanding,
     setLockedAssets,
     setVisualMigrationReference,
+    setVisualMigrationCanon,
   };
 }
 
