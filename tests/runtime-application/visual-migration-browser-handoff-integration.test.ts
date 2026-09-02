@@ -89,6 +89,17 @@ test('VM-1.5 browser intake cleanup preserves Run evidence for Production Pack h
       },
     } as never,
     packs,
+    {
+      createOrGet: async (input: { referencePackId: string }) => ({
+        created: true,
+        canon: {
+          canonId: `vmc-${'a'.repeat(32)}`,
+          canonFingerprint: `sha256:${'b'.repeat(64)}`,
+          sourceFingerprint: `sha256:${'c'.repeat(64)}`,
+          source: { referencePackId: input.referencePackId },
+        },
+      }),
+    } as never,
   );
   const result = await handoff.extract('project-1', 'run-1');
   assert.equal((await sessions.get('project-1'))?.referencePackId, result.referencePackId);

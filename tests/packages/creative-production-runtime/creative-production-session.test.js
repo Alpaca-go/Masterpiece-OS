@@ -9,6 +9,7 @@ import {
   recordSessionDecision,
   transitionCreativeSession,
   updateSessionEntityReference,
+  setSessionVisualMigrationCanon,
   validateCreativeSession,
 } from '@masterpiece/creative-production-runtime/session.js';
 
@@ -146,4 +147,20 @@ test('Creative Session JSON Schema exists and forbids unknown prompt fields', ()
   assert.equal(schema.properties.finalPrompt, undefined);
   assert.equal(schema.properties.finalGenerationInstruction, undefined);
   assert.equal(schema.properties.schemaVersion.const, '6.0');
+  assert.equal(schema.properties.visualMigrationCanonId.pattern, '^vmc-[a-f0-9]{32}$');
+});
+
+test('Creative Session links a complete VM-2 Canon reference and rejects partial linkage', () => {
+  const session = createCreativeSession({ projectId: 'project-1' });
+  const linked = setSessionVisualMigrationCanon(session, {
+    canonId: `vmc-${'a'.repeat(32)}`,
+    canonFingerprint: `sha256:${'b'.repeat(64)}`,
+    sourceFingerprint: `sha256:${'c'.repeat(64)}`,
+  });
+  assert.equal(linked.visualMigrationCanonId, `vmc-${'a'.repeat(32)}`);
+  assert.equal(linked.history.at(-1).event, 'VISUAL_MIGRATION_CANON_LINKED');
+  assert.throws(
+    () => validateCreativeSession({ ...session, visualMigrationCanonId: `vmc-${'a'.repeat(32)}` }),
+    (error) => error.code === 'SESSION_INVALID',
+  );
 });

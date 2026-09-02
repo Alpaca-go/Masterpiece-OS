@@ -55,10 +55,11 @@ test('visual transfer requires explicit project selection and describes combined
   assert.doesNotMatch(source, /交给图像生成的唯一正式输入/);
 });
 
-test('visual transfer handoff reports that production evidence was persisted', () => {
+test('visual transfer handoff reports Canon readiness without exposing internal ids', () => {
   const source = read('apps', 'web', 'src', 'components', 'ReferenceAnchorWorkspace.tsx');
-  assert.match(source, /参考视觉证据已交接到生产系统/u);
-  assert.match(source, /handoff\.referencePackId/u);
+  assert.match(source, /视觉迁移生产规则与参考证据已建立/u);
+  assert.match(source, /handoff\.visualMigrationCanonCreated/u);
+  assert.doesNotMatch(source, /setNotice\([^\n]*handoff\.referencePackId/u);
 });
 
 test('home record cards avoid nested interactive controls and preserve approved CTA behavior', () => {

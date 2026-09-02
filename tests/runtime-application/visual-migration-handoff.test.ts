@@ -6,15 +6,23 @@ import path from 'node:path';
 import { createCreativeSessionService } from '@masterpiece/runtime-core/application/creative-session-service.ts';
 import { createQuickStyleExtractionService } from '@masterpiece/runtime-core/application/quick-style-extraction-service.ts';
 import { createVisualMigrationReferencePackService } from '@masterpiece/runtime-core/application/visual-migration-reference-pack-service.ts';
+import { createVisualMigrationCanonService } from '@masterpiece/runtime-core/application/visual-migration-canon-service.ts';
+import { compileLockedAssets } from '@masterpiece/creative-production-runtime/locked-assets.js';
+import { compileStyleProfile } from '@masterpiece/creative-production-runtime/style-profile.js';
 
-test('VM-1 approved handoff persists the exact production Reference Pack foreign key and reuses it', async (t) => {
+test('VM-2 approved handoff persists Canon linkage, resolves evidence after restart, and reuses it', async (t) => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-vm1-handoff-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const projectRoot = path.join(root, 'project');
   const runRoot = path.join(root, 'run');
   await fs.mkdir(path.join(runRoot, 'input', 'reference-assets'), { recursive: true });
   await fs.mkdir(projectRoot, { recursive: true });
-  await fs.writeFile(path.join(runRoot, 'input', 'reference-assets', '01-reference.png'), Buffer.from('89504e470d0a1a0a0102', 'hex'));
+  for (let index = 1; index <= 4; index += 1) {
+    await fs.writeFile(
+      path.join(runRoot, 'input', 'reference-assets', `${String(index).padStart(2, '0')}-reference.png`),
+      Buffer.from(`89504e470d0a1a0a010${index}`, 'hex'),
+    );
+  }
 
   const project = {
     id: 'project-1', brandName: '测试品牌', industry: '零售', description: '视觉迁移',
@@ -39,7 +47,7 @@ test('VM-1 approved handoff persists the exact production Reference Pack foreign
   const referenceAnchors = {
     getRun: async () => ({
       id: 'run-1', projectId: 'project-1', decision: 'approved', status: 'completed',
-      referenceAssetNames: ['reference.png'],
+      referenceAssetNames: ['reference-1.png', 'reference-2.png', 'reference-3.png', 'reference-4.png'],
     }),
     getCapsule: async () => capsule,
     getBrief: async () => '# Anchor Brief',
@@ -47,17 +55,32 @@ test('VM-1 approved handoff persists the exact production Reference Pack foreign
   };
   const sessions = createCreativeSessionService(projects as never);
   const packs = createVisualMigrationReferencePackService(projects as never, referenceAnchors as never);
+  const canons = createVisualMigrationCanonService(projects as never, packs);
   let active: any = null;
+  let compiledLocks: any[] = [];
   const styles = {
     getActive: async () => active,
-    compile: async (_projectId: string, decision: any) => {
-      active = { id: 'style-1', source: { creativeDecisionId: decision.id }, status: 'draft' };
+    compile: async (_projectId: string, decision: any, overrides: any) => {
+      active = compileStyleProfile({ creativeDecision: decision, id: 'style-1', overrides });
       return active;
     },
   };
-  const lockedAssets = { compile: async () => [{ id: 'lock-1' }], list: async () => [{ id: 'lock-1' }] };
+  const lockedAssets = {
+    compile: async () => {
+      compiledLocks = compileLockedAssets({
+        projectId: 'project-1',
+        visualContext: {
+          projectId: 'project-1', identity: { brandName: '测试品牌' },
+          lockedAssets: { logoLocked: false, logoAssetIds: [], lockedFacts: ['Logo 不得修改'] },
+          products: { coreProducts: [] }, packaging: { status: 'unknown', structures: [] },
+        },
+      });
+      return compiledLocks;
+    },
+    list: async () => compiledLocks,
+  };
   const handoff = createQuickStyleExtractionService(
-    referenceAnchors as never, sessions, lockedAssets as never, styles as never, packs,
+    referenceAnchors as never, sessions, lockedAssets as never, styles as never, packs, canons,
   );
 
   const first = await handoff.extract('project-1', 'run-1');
@@ -65,8 +88,22 @@ test('VM-1 approved handoff persists the exact production Reference Pack foreign
   assert.equal(first.referencePackId, persisted?.referencePackId);
   assert.equal(persisted?.sourceReferenceAnchorRunId, 'run-1');
   assert.equal(first.created, true);
+  assert.equal(first.visualMigrationCanonId, persisted?.visualMigrationCanonId);
+  assert.equal(first.visualMigrationCanonFingerprint, persisted?.visualMigrationCanonFingerprint);
+
+  const restartedPacks = createVisualMigrationReferencePackService(projects as never, referenceAnchors as never);
+  const restartedCanons = createVisualMigrationCanonService(projects as never, restartedPacks);
+  const resolved = await restartedCanons.resolve('project-1', first.visualMigrationCanonId);
+  assert.equal(resolved.canon.source.referencePackId, first.referencePackId);
+  assert.equal(resolved.references.length, 4);
+  assert.equal(resolved.references[0]?.originalFileName, 'reference-1.png');
 
   const second = await handoff.extract('project-1', 'run-1');
   assert.equal(second.referencePackId, first.referencePackId);
   assert.equal(second.created, false);
+  assert.equal(second.visualMigrationCanonId, first.visualMigrationCanonId);
+  assert.equal(second.visualMigrationCanonCreated, false);
+  const canonDirectories = (await fs.readdir(path.join(projectRoot, 'visual-migration', 'canons'), { withFileTypes: true }))
+    .filter((entry) => entry.isDirectory());
+  assert.equal(canonDirectories.length, 1);
 });

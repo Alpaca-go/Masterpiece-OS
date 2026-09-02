@@ -42,6 +42,7 @@ const capsule = {
 test('Quick Extraction compiles an approved capsule into the standard Style Profile pipeline', async () => {
   const transitions: string[] = [];
   const linkedPacks: string[] = [];
+  const linkedCanons: string[] = [];
   let compiledDecision: Record<string, unknown> | undefined;
   const service = createQuickStyleExtractionService(
     {
@@ -53,6 +54,7 @@ test('Quick Extraction compiles an approved capsule into the standard Style Prof
       recordDecision: async () => undefined,
       transition: async (_projectId: string, state: string) => { transitions.push(state); },
       setVisualMigrationReference: async (_projectId: string, value: { referencePackId: string }) => { linkedPacks.push(value.referencePackId); },
+      setVisualMigrationCanon: async (_projectId: string, value: { canonId: string }) => { linkedCanons.push(value.canonId); },
     } as never,
     { compile: async () => [{ id: 'lock-logo' }] } as never,
     {
@@ -68,13 +70,26 @@ test('Quick Extraction compiles an approved capsule into the standard Style Prof
         manifest: { referencePackId: 'vmrp-pack-1', sourceFingerprint: 'sha256:source' },
       }),
     } as never,
+    {
+      createOrGet: async () => ({
+        created: true,
+        canon: {
+          canonId: `vmc-${'c'.repeat(32)}`,
+          canonFingerprint: `sha256:${'d'.repeat(64)}`,
+          sourceFingerprint: `sha256:${'e'.repeat(64)}`,
+          source: { referencePackId: 'vmrp-pack-1' },
+        },
+      }),
+    } as never,
   );
   const result = await service.extract('project-1', 'reference-run-1');
   assert.equal(result.styleProfile.id, 'style-1');
   assert.deepEqual(transitions, ['CREATIVE_DECISION_COMPLETED']);
   assert.deepEqual(linkedPacks, ['vmrp-pack-1']);
+  assert.deepEqual(linkedCanons, [`vmc-${'c'.repeat(32)}`]);
   assert.equal(result.referencePackId, 'vmrp-pack-1');
   assert.equal(result.created, true);
+  assert.equal(result.visualMigrationCanonCreated, true);
   assert.equal(compiledDecision?.projectId, 'project-1');
   assert.match(String(compiledDecision?.visualUpgradeThesis), /克制、真实/);
   assert.deepEqual(
@@ -93,6 +108,7 @@ test('Quick Extraction rejects unapproved sources and existing Style Profiles', 
     { compile: async () => [] } as never,
     { getActive: async () => active } as never,
     { createOrGet: async () => { throw new Error('must not create for invalid source'); } } as never,
+    { createOrGet: async () => { throw new Error('must not create Canon for invalid source'); } } as never,
   );
   await assert.rejects(
     () => makeService('pending', null).extract('project-1', 'reference-run-1'),
@@ -121,10 +137,41 @@ test('Visual Migration handoff never silently continues semantic extraction when
         throw Object.assign(new Error('copy failed'), { code: 'VISUAL_MIGRATION_REFERENCE_PACK_COPY_FAILED' });
       },
     } as never,
+    { createOrGet: async () => { throw new Error('must not create Canon after pack failure'); } } as never,
   );
   await assert.rejects(
     () => service.extract('project-1', 'reference-run-1'),
     { code: 'VISUAL_MIGRATION_REFERENCE_PACK_COPY_FAILED' },
   );
   assert.equal(semanticCalls, 0);
+});
+
+test('Quick Extraction never links Session state when Canon construction fails', async () => {
+  const links: string[] = [];
+  const service = createQuickStyleExtractionService(
+    {
+      getRun: async () => ({ projectId: 'project-1', decision: 'approved' }),
+      getCapsule: async () => capsule,
+    } as never,
+    {
+      create: async () => ({ workflowState: 'SESSION_CREATED' }),
+      recordDecision: async () => undefined,
+      transition: async () => undefined,
+      setVisualMigrationReference: async () => { links.push('pack'); },
+      setVisualMigrationCanon: async () => { links.push('canon'); },
+    } as never,
+    { compile: async () => [] } as never,
+    { getActive: async () => null, compile: async () => ({ id: 'style-1' }) } as never,
+    { createOrGet: async () => ({ manifest: { referencePackId: 'vmrp-pack-1', sourceFingerprint: 'sha256:source' } }) } as never,
+    {
+      createOrGet: async () => {
+        throw Object.assign(new Error('semantic conflict'), { code: 'VISUAL_MIGRATION_CANON_STYLE_CONFLICT' });
+      },
+    } as never,
+  );
+  await assert.rejects(
+    () => service.extract('project-1', 'reference-run-1'),
+    { code: 'VISUAL_MIGRATION_CANON_STYLE_CONFLICT' },
+  );
+  assert.deepEqual(links, []);
 });

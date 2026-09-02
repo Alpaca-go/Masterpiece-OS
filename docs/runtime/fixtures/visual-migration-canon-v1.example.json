@@ -1,0 +1,193 @@
+{
+  "schemaVersion": "visual-migration-canon/v1",
+  "canonId": "vmc-84b4370704965747da125dfbcade26ba",
+  "projectId": "project-1",
+  "version": "1.0.0",
+  "status": "valid",
+  "createdAt": "2026-09-02T07:01:45.648Z",
+  "updatedAt": "2026-09-02T07:01:45.648Z",
+  "sourceFingerprint": "sha256:11be5dd19747e62908a5b42dda012e007616de74cf37fe7ce07ad8c500fe5b1d",
+  "canonFingerprint": "sha256:07075919dc74332de00a0e3ac2743d7f5e31dc6848376680abb9f96a5ae46d6e",
+  "source": {
+    "sourceReferenceAnchorRunId": "run-1",
+    "referencePackId": "vmrp-363bf8db8768e9f884a412da7b7f6651",
+    "referencePackSourceFingerprint": "sha256:f4cb230657295f55e75d29e54ad9234c218b6f2d44f3cdb6ffbdc95912d3f242",
+    "referencePackManifestFingerprint": "sha256:57539369112e4eb164c1d5fa61a234eb179f8f0f3f75301fb99bf146b11c0ae0",
+    "referenceCount": 4,
+    "capsuleFingerprint": "sha256:9aa06f397a7406eb57624028f1f38d69a2d4d0fcc36077453613182a4f1bd0b1",
+    "briefFingerprint": "sha256:dbe44db64f3fe3c1e1740321ba8919ab7f6a4b92c75e2002e3ec6a8bfc4e8acd",
+    "creativeDecisionId": "creative-decision-quick-run-1",
+    "styleProfileId": "style-1",
+    "styleProfileFingerprint": "sha256:c139e4b7114cbe7096ff630dca539bca1d29ce32368dc11dedba99a8c5f16d26",
+    "lockedAssetFingerprint": "sha256:9b761692b3e95c9222b90fe679a4e34f86190a9f44feb070d55fb166deb266af",
+    "projectIdentityFingerprint": "sha256:312e12b8f76e86894c29d4f798ed6e7809b7fce00539a2ba8d1a66c6045eedcc"
+  },
+  "projectIdentity": {
+    "brandName": "测试品牌",
+    "lockedFacts": [
+      "Logo 不得修改"
+    ],
+    "lockedAssetIds": [
+      "locked-asset-cdb033d5533e5b7a",
+      "locked-asset-eec0753a74bfed3d"
+    ],
+    "requiredIdentityRules": [
+      {
+        "id": "vmcr-483718461913e2e7",
+        "dimension": "identity",
+        "statement": "Logo 不得修改",
+        "source": "project_locked_fact",
+        "invariantLevel": "hard"
+      },
+      {
+        "id": "vmcr-16c84a4359212deb",
+        "dimension": "identity",
+        "statement": "品牌名称必须保持为“测试品牌”。",
+        "source": "locked_asset",
+        "invariantLevel": "hard",
+        "prohibitedVariation": [
+          "不得改变品牌名称“测试品牌”的文字内容"
+        ]
+      },
+      {
+        "id": "vmcr-c77e02efbd0844f6",
+        "dimension": "identity",
+        "statement": "Logo 不得修改",
+        "source": "locked_asset",
+        "invariantLevel": "hard",
+        "prohibitedVariation": [
+          "不得重绘、拆解、替换、仿造或改变 Logo 内部字形与比例"
+        ]
+      }
+    ]
+  },
+  "transferSystem": {
+    "goal": "迁移视觉机制",
+    "color": [
+      {
+        "id": "vmcr-972ecbd5c255713d",
+        "dimension": "color",
+        "statement": "暖灰",
+        "source": "reference_style_capsule",
+        "invariantLevel": "strong"
+      }
+    ],
+    "layoutAndTypography": [
+      {
+        "id": "vmcr-6569e061955c2aeb",
+        "dimension": "layout_typography",
+        "statement": "大留白",
+        "source": "reference_style_capsule",
+        "invariantLevel": "strong"
+      },
+      {
+        "id": "vmcr-bb44e5f1f7ac3dd4",
+        "dimension": "layout_typography",
+        "statement": "保留清晰呼吸区",
+        "source": "style_profile",
+        "invariantLevel": "adaptive"
+      }
+    ],
+    "graphicLanguage": [
+      {
+        "id": "vmcr-001916c8eb87e30f",
+        "dimension": "graphic_language",
+        "statement": "克制线条",
+        "source": "reference_style_capsule",
+        "invariantLevel": "strong"
+      }
+    ],
+    "materialAndPhotography": [
+      {
+        "id": "vmcr-96f9f90499e20aa5",
+        "dimension": "material_photography",
+        "statement": "真实纸张",
+        "source": "reference_style_capsule",
+        "invariantLevel": "strong"
+      }
+    ],
+    "extensionMechanism": [
+      {
+        "id": "vmcr-f845ad4dc73d8c6f",
+        "dimension": "extension_mechanism",
+        "statement": "单一焦点",
+        "source": "reference_style_capsule",
+        "invariantLevel": "strong"
+      },
+      {
+        "id": "vmcr-92d160f6decc73d8",
+        "dimension": "extension_mechanism",
+        "statement": "大留白",
+        "source": "style_profile",
+        "invariantLevel": "adaptive"
+      },
+      {
+        "id": "vmcr-d83a981488e7a4d0",
+        "dimension": "extension_mechanism",
+        "statement": "克制线条",
+        "source": "style_profile",
+        "invariantLevel": "adaptive"
+      },
+      {
+        "id": "vmcr-2e63260133d5b2a4",
+        "dimension": "extension_mechanism",
+        "statement": "暖灰",
+        "source": "style_profile",
+        "invariantLevel": "adaptive"
+      },
+      {
+        "id": "vmcr-1c78398b38e2515d",
+        "dimension": "extension_mechanism",
+        "statement": "真实纸张",
+        "source": "style_profile",
+        "invariantLevel": "adaptive"
+      }
+    ]
+  },
+  "prohibitedTransfer": {
+    "userAvoidance": [],
+    "referenceBrandNames": [],
+    "referenceLogos": [],
+    "referenceSlogans": [],
+    "referenceSignatureGraphics": [],
+    "referenceProprietaryPatterns": [],
+    "prohibitedMutations": [
+      "不得改变品牌名称“测试品牌”的文字内容",
+      "不得重绘、拆解、替换、仿造或改变 Logo 内部字形与比例"
+    ]
+  },
+  "evidence": {
+    "visualEvidence": {
+      "referencePackId": "vmrp-363bf8db8768e9f884a412da7b7f6651",
+      "manifestFingerprint": "sha256:57539369112e4eb164c1d5fa61a234eb179f8f0f3f75301fb99bf146b11c0ae0",
+      "referenceIds": [
+        "reference-01-a52f2ee24cebf41c",
+        "reference-02-b7c23e74a00c13aa",
+        "reference-03-93a56c7c69bcc061",
+        "reference-04-66a3ca485fe4fe50"
+      ]
+    },
+    "semanticEvidence": {
+      "capsuleFingerprint": "sha256:9aa06f397a7406eb57624028f1f38d69a2d4d0fcc36077453613182a4f1bd0b1",
+      "styleProfileId": "style-1",
+      "creativeDecisionId": "creative-decision-quick-run-1",
+      "lockedAssetIds": [
+        "locked-asset-cdb033d5533e5b7a",
+        "locked-asset-eec0753a74bfed3d"
+      ]
+    }
+  },
+  "trace": {
+    "sourceReferenceAnchorRunId": "run-1",
+    "referencePackId": "vmrp-363bf8db8768e9f884a412da7b7f6651",
+    "sourceFingerprint": "sha256:11be5dd19747e62908a5b42dda012e007616de74cf37fe7ce07ad8c500fe5b1d",
+    "inputFingerprints": {
+      "projectIdentity": "sha256:312e12b8f76e86894c29d4f798ed6e7809b7fce00539a2ba8d1a66c6045eedcc",
+      "lockedAssets": "sha256:9b761692b3e95c9222b90fe679a4e34f86190a9f44feb070d55fb166deb266af",
+      "referencePackSource": "sha256:f4cb230657295f55e75d29e54ad9234c218b6f2d44f3cdb6ffbdc95912d3f242",
+      "referencePackManifest": "sha256:57539369112e4eb164c1d5fa61a234eb179f8f0f3f75301fb99bf146b11c0ae0",
+      "capsule": "sha256:9aa06f397a7406eb57624028f1f38d69a2d4d0fcc36077453613182a4f1bd0b1",
+      "styleProfile": "sha256:c139e4b7114cbe7096ff630dca539bca1d29ce32368dc11dedba99a8c5f16d26"
+    }
+  }
+}
