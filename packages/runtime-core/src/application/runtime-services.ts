@@ -37,6 +37,7 @@ import { createVisualExplorationService } from './visual-exploration-service.ts'
 import { createVisualMemoryService } from './visual-memory-service.ts';
 import { createVisualMigrationReferencePackService } from './visual-migration-reference-pack-service.ts';
 import { createVisualMigrationCanonService } from './visual-migration-canon-service.ts';
+import { createVisualMigrationReferencePolicyService } from './visual-migration-reference-policy-service.ts';
 // CI-W1A: Creative Intelligence Runtime Application Layer.
 import {
   createCreativeIntelligenceApplicationService,
@@ -101,6 +102,12 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
   const referencePacks = createReferencePackService(projects, visualMemory, visualCanons);
   const visualMigrationReferencePacks = createVisualMigrationReferencePackService(projects, referenceAnchor);
   const visualMigrationCanons = createVisualMigrationCanonService(projects, visualMigrationReferencePacks);
+  const visualMigrationReferencePolicies = createVisualMigrationReferencePolicyService(
+    projects,
+    creativeSessions,
+    visualMigrationCanons,
+    lockedAssets,
+  );
   const generationPrompts = createGenerationPromptService(
     projects,
     creativeSessions,
@@ -458,7 +465,8 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     projects, reports: createReportService(projects), pipeline, documentContext, projectContext,
     contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
     creativeSessions, creativeDirections, generationBlueprints, styleProfiles, lockedAssets,
-    visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons, generationPrompts,
+    visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons,
+    visualMigrationReferencePolicies, generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeriesExecution,
