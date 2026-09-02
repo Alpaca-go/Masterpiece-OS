@@ -16,6 +16,7 @@ import {
   computeVisualMigrationCanonFingerprint,
   computeVisualMigrationCanonSourceFingerprint,
   validateVisualMigrationCanonV1,
+  VISUAL_MIGRATION_CANON_COMPILER_VERSION,
   VISUAL_MIGRATION_CANON_SCHEMA,
 } from './visual-migration-canon-contract.ts';
 import {
@@ -130,7 +131,7 @@ function styleValues(profile: StyleProfile): Record<RuleTransferKey, string[]> {
       profile.lightingSystem.type, profile.lightingSystem.contrast,
       profile.lightingSystem.shadow, profile.lightingSystem.temperature,
     ]),
-    extensionMechanism: clean(profile.allowedVariations),
+    extensionMechanism: [],
   };
 }
 
@@ -267,6 +268,7 @@ export function buildVisualMigrationCanon(input: BuildVisualMigrationCanonInput)
   const styleProfileFingerprint = sha256Fingerprint(canonicalSerializeVisualMigrationValue(styleProfile));
   const sourceFingerprint = computeVisualMigrationCanonSourceFingerprint({
     projectId,
+    compilerVersion: VISUAL_MIGRATION_CANON_COMPILER_VERSION,
     projectIdentityFingerprint,
     lockedAssetFingerprint,
     referencePackSourceFingerprint: pack.sourceFingerprint,
@@ -316,6 +318,7 @@ export function buildVisualMigrationCanon(input: BuildVisualMigrationCanonInput)
     sourceFingerprint,
     canonFingerprint: 'sha256:'.padEnd(71, '0'),
     source: {
+      compilerVersion: VISUAL_MIGRATION_CANON_COMPILER_VERSION,
       sourceReferenceAnchorRunId: input.referenceAnchorRunId,
       referencePackId: pack.referencePackId,
       referencePackSourceFingerprint: pack.sourceFingerprint,
@@ -361,6 +364,7 @@ export function buildVisualMigrationCanon(input: BuildVisualMigrationCanonInput)
       },
     },
     trace: {
+      compilerVersion: VISUAL_MIGRATION_CANON_COMPILER_VERSION,
       sourceReferenceAnchorRunId: input.referenceAnchorRunId,
       referencePackId: pack.referencePackId,
       sourceFingerprint,
