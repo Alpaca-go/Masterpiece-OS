@@ -546,6 +546,130 @@ export interface VisualMigrationCanonPointerV1 {
   updatedAt: string;
 }
 
+export type ReferencePolicyPreset =
+  | 'visual_transfer'
+  | 'reference_first_space'
+  | 'packaging_reference_first'
+  | 'identity_locked_generation'
+  | 'analysis_led';
+
+export type ReferencePolicyRole =
+  | 'identity_reference'
+  | 'structure_reference'
+  | 'style_reference'
+  | 'analysis_only';
+
+export type ReferencePolicyRetention =
+  | 'required'
+  | 'preferred'
+  | 'optional'
+  | 'non_materializable';
+
+export type ReferencePolicyCandidateSourceKind =
+  | 'visual_migration_reference_pack'
+  | 'locked_asset'
+  | 'project_asset'
+  | 'task_reference';
+
+export type ReferencePolicyTransferDimension =
+  | 'color'
+  | 'layout_typography'
+  | 'graphic_language'
+  | 'material_photography'
+  | 'extension_mechanism';
+
+export interface VisualMigrationReferenceTaskV1 {
+  schemaVersion: 'visual-migration-reference-task/v1';
+  projectId: string;
+  taskKind:
+    | 'brand_hero'
+    | 'packaging'
+    | 'poster_graphic'
+    | 'vi_application'
+    | 'spatial'
+    | 'illustration'
+    | 'generic';
+  preset: ReferencePolicyPreset;
+  identityEvidence: 'required_if_available' | 'semantic_only';
+  structureEvidence: 'required_if_explicit' | 'not_required';
+  explicitStructureCandidateIds?: string[];
+  taskReferenceIds?: string[];
+}
+
+/** Explicit semantic declaration. Image backing is revalidated by the VM-3 service. */
+export interface VisualMigrationReferenceCandidateDeclarationV1 {
+  candidateId: string;
+  sourceKind: Exclude<ReferencePolicyCandidateSourceKind, 'visual_migration_reference_pack'>;
+  sourceId: string;
+  /** Required for locked_asset; otherwise sourceId is used as the project image asset id. */
+  imageAssetId?: string;
+  role: Exclude<ReferencePolicyRole, 'style_reference'>;
+  sourceOrder: number;
+  transferableDimensions?: ReferencePolicyTransferDimension[];
+  reasonCodes?: string[];
+}
+
+export interface ReferencePolicyCandidateV1 {
+  candidateId: string;
+  sourceKind: ReferencePolicyCandidateSourceKind;
+  sourceId: string;
+  role: ReferencePolicyRole;
+  retention: ReferencePolicyRetention;
+  sourceOrder: number;
+  requiredGroup?: 'style_floor' | 'identity_floor' | 'structure_floor';
+  transferableDimensions?: ReferencePolicyTransferDimension[];
+  reasonCodes: string[];
+}
+
+export interface TaskAwareReferencePolicyV1 {
+  schemaVersion: 'visual-migration-reference-policy/v1';
+  policyId: string;
+  compilerVersion: string;
+  projectId: string;
+  preset: 'visual_transfer';
+  sourceFingerprint: string;
+  policyFingerprint: string;
+  task: VisualMigrationReferenceTaskV1 & { taskFingerprint: string };
+  canon: {
+    canonId: string;
+    canonFingerprint: string;
+    canonSourceFingerprint: string;
+  };
+  referencePack: {
+    referencePackId: string;
+    manifestFingerprint: string;
+  };
+  guarantees: {
+    styleFloor: 1;
+    identityFloor: 0 | 1;
+    structureFloor: 0 | 1;
+    minimumRequiredReferences: number;
+  };
+  candidates: ReferencePolicyCandidateV1[];
+  surplusOrder: ['identity_reference', 'structure_reference', 'style_reference'];
+  trace: {
+    taskFingerprint: string;
+    candidateSetFingerprint: string;
+  };
+}
+
+export interface ReferencePolicyAllocationV1 {
+  policyId: string;
+  maxReferences: number;
+  minimumRequiredReferences: number;
+  selectedCandidateIds: string[];
+  droppedCandidateIds: string[];
+  reserved: {
+    style?: string;
+    identity?: string;
+    structure?: string;
+  };
+  dropReasons: Array<{
+    candidateId: string;
+    reason: 'capacity_surplus' | 'non_materializable' | 'not_required_for_task';
+  }>;
+}
+
 export interface VisualMigrationHandoffResultV1 {
   projectId: string;
   referenceAnchorRunId: string;
