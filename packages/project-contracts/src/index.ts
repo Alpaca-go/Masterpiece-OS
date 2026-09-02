@@ -396,6 +396,10 @@ export interface CreativeSession {
   referencePackId?: string;
   sourceReferenceAnchorRunId?: string;
   referencePackSourceFingerprint?: string;
+  /** VM-2 semantic production authority. Optional only for pre-VM-2 sessions. */
+  visualMigrationCanonId?: string;
+  visualMigrationCanonFingerprint?: string;
+  visualMigrationCanonSourceFingerprint?: string;
   history: CreativeSessionHistoryEntry[];
   createdAt: string;
   updatedAt: string;
@@ -437,6 +441,109 @@ export interface VisualMigrationReferencePackV1 {
   };
 }
 
+export type VisualMigrationCanonStatus = 'valid' | 'blocked' | 'superseded';
+
+export type VisualMigrationCanonRuleDimension =
+  | 'identity'
+  | 'color'
+  | 'layout_typography'
+  | 'graphic_language'
+  | 'material_photography'
+  | 'extension_mechanism';
+
+export type VisualMigrationCanonRuleSource =
+  | 'project_locked_fact'
+  | 'locked_asset'
+  | 'reference_style_capsule'
+  | 'style_profile';
+
+export interface VisualMigrationCanonSemanticRuleV1 {
+  id: string;
+  dimension: VisualMigrationCanonRuleDimension;
+  statement: string;
+  source: VisualMigrationCanonRuleSource;
+  invariantLevel: 'hard' | 'strong' | 'adaptive';
+  allowedVariation?: string[];
+  prohibitedVariation?: string[];
+}
+
+export interface VisualMigrationCanonV1 {
+  schemaVersion: 'visual-migration-canon/v1';
+  canonId: string;
+  projectId: string;
+  version: '1.0.0';
+  status: VisualMigrationCanonStatus;
+  createdAt: string;
+  updatedAt: string;
+  sourceFingerprint: string;
+  canonFingerprint: string;
+  source: {
+    sourceReferenceAnchorRunId: string;
+    referencePackId: string;
+    referencePackSourceFingerprint: string;
+    referencePackManifestFingerprint: string;
+    referenceCount: number;
+    capsuleFingerprint: string;
+    briefFingerprint?: string;
+    creativeDecisionId: string;
+    styleProfileId: string;
+    styleProfileFingerprint: string;
+    lockedAssetFingerprint: string;
+    projectIdentityFingerprint: string;
+  };
+  projectIdentity: {
+    brandName?: string;
+    lockedFacts: string[];
+    lockedAssetIds: string[];
+    requiredIdentityRules: VisualMigrationCanonSemanticRuleV1[];
+  };
+  transferSystem: {
+    goal: string;
+    color: VisualMigrationCanonSemanticRuleV1[];
+    layoutAndTypography: VisualMigrationCanonSemanticRuleV1[];
+    graphicLanguage: VisualMigrationCanonSemanticRuleV1[];
+    materialAndPhotography: VisualMigrationCanonSemanticRuleV1[];
+    extensionMechanism: VisualMigrationCanonSemanticRuleV1[];
+  };
+  prohibitedTransfer: {
+    userAvoidance: string[];
+    referenceBrandNames: string[];
+    referenceLogos: string[];
+    referenceSlogans: string[];
+    referenceSignatureGraphics: string[];
+    referenceProprietaryPatterns: string[];
+    prohibitedMutations: string[];
+  };
+  evidence: {
+    visualEvidence: {
+      referencePackId: string;
+      manifestFingerprint: string;
+      referenceIds: string[];
+    };
+    semanticEvidence: {
+      capsuleFingerprint: string;
+      styleProfileId: string;
+      creativeDecisionId: string;
+      lockedAssetIds: string[];
+    };
+  };
+  trace: {
+    sourceReferenceAnchorRunId: string;
+    referencePackId: string;
+    sourceFingerprint: string;
+    inputFingerprints: Record<string, string>;
+  };
+}
+
+export interface VisualMigrationCanonPointerV1 {
+  schemaVersion: 'visual-migration-canon-pointer/v1';
+  projectId: string;
+  canonId: string;
+  sourceFingerprint: string;
+  canonFingerprint: string;
+  updatedAt: string;
+}
+
 export interface VisualMigrationHandoffResultV1 {
   projectId: string;
   referenceAnchorRunId: string;
@@ -444,6 +551,10 @@ export interface VisualMigrationHandoffResultV1 {
   sourceFingerprint: string;
   creativeDecisionId?: string;
   styleProfileId?: string;
+  visualMigrationCanonId?: string;
+  visualMigrationCanonFingerprint?: string;
+  visualMigrationCanonSourceFingerprint?: string;
+  visualMigrationCanonCreated?: boolean;
   created: boolean;
 }
 
