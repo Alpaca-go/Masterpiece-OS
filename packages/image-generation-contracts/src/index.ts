@@ -764,6 +764,10 @@ export interface ImageGenerationRun {
   /** §13 重试链：根运行为 undefined。 */
   parentRunId?: string;
   retryMode?: ImageGenerationRetryMode;
+  /** Visual Migration bounded corrective retry bindings. */
+  sourceAuditId?: string;
+  correctionPlanId?: string;
+  automaticCorrectiveRetryDepth?: number;
 
   providerTaskId?: string;
   providerRequestId?: string;

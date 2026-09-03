@@ -41,6 +41,10 @@ import { createVisualMigrationCanonService } from './visual-migration-canon-serv
 import { createVisualMigrationReferencePolicyService } from './visual-migration-reference-policy-service.ts';
 import { createVisualMigrationReferenceExecutionService } from './visual-migration-reference-execution-service.ts';
 import { createVisualMigrationGenerationEvidenceService } from './visual-migration-generation-evidence-service.ts';
+import { createVisualMigrationAuditEvidenceResolver } from './visual-migration-audit-evidence-resolver.ts';
+import { createVisualMigrationAuditObserver } from './visual-migration-audit-observer.ts';
+import { createVisualMigrationAuditService } from './visual-migration-audit-service.ts';
+import { createVisualMigrationCorrectiveRetryService } from './visual-migration-corrective-retry-service.ts';
 // CI-W1A: Creative Intelligence Runtime Application Layer.
 import {
   createCreativeIntelligenceApplicationService,
@@ -175,6 +179,31 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
       if (!adapters.openPath) throw new Error('RUNTIME_OPEN_PATH_ADAPTER_MISSING');
       await adapters.openPath(root);
     },
+  });
+  const visualMigrationAuditEvidence = createVisualMigrationAuditEvidenceResolver({
+    dataPath: adapters.dataPath,
+    projects,
+    lockedAssets,
+    referencePacks: visualMigrationReferencePacks,
+    visualMigrationCanons,
+    generationEvidence: visualMigrationGenerationEvidence,
+    runStoreResolver: (projectId) => createRunStore(adapters.dataPath, projectId),
+  });
+  const visualMigrationAuditObserver = createVisualMigrationAuditObserver({
+    readSettings: adapters.readSettings,
+    readCredentials: adapters.readCredentials,
+  });
+  const visualMigrationAudit = createVisualMigrationAuditService({
+    evidenceResolver: visualMigrationAuditEvidence,
+    observer: visualMigrationAuditObserver,
+    runStoreResolver: (projectId) => createRunStore(adapters.dataPath, projectId),
+  });
+  const visualMigrationCorrectiveRetry = createVisualMigrationCorrectiveRetryService({
+    imageGeneration,
+    audits: visualMigrationAudit,
+    generationEvidence: visualMigrationGenerationEvidence,
+    visualMigrationCanons,
+    runStoreResolver: (projectId) => createRunStore(adapters.dataPath, projectId),
   });
   const deliverableValidator = createDeliverableValidatorService(
     projects,
@@ -483,7 +512,8 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     creativeSessions, creativeDirections, generationBlueprints, styleProfiles, lockedAssets,
     visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons,
     visualMigrationReferencePolicies, visualMigrationReferenceExecution,
-    visualMigrationGenerationEvidence, generationPrompts,
+    visualMigrationGenerationEvidence, visualMigrationAudit, visualMigrationCorrectiveRetry,
+    generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeriesExecution,

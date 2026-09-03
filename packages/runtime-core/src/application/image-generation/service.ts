@@ -151,6 +151,17 @@ export interface RetryOptions {
   dryRun?: boolean;
 }
 
+export interface ImageGenerationPreSubmitEvidence {
+  run: ImageGenerationRun;
+  protocol: string;
+  providerRequest: unknown;
+  redactedProviderRequest: unknown;
+  references: Array<{ assetId: string; role: string; sha256?: string }>;
+}
+
+export type ImageGenerationBeforeProviderSubmit =
+  (evidence: ImageGenerationPreSubmitEvidence) => Promise<void> | void;
+
 export interface CreativePromptStartOptions {
   snapshot: GenerationPromptSnapshot;
   parentRunId?: string;
@@ -902,7 +913,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   async function executeMultiModelLive(
     initialRun: ImageGenerationRun,
     task: Record<string, unknown>,
-    references: Array<{ localPath: string; assetId: string; role: string }>,
+    references: Array<{ localPath: string; assetId: string; role: string; sha256?: string }>,
     generationInput: {
       prompt: string;
       negativeRules: string[];
@@ -916,6 +927,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       protocol?: string;
     },
     adapterId: 'gpt-image-2' | 'nano-banana' | 'seedream-5.0-pro',
+    beforeProviderSubmit?: ImageGenerationBeforeProviderSubmit,
   ): Promise<ImageGenerationRun> {
     const store = storeFor(initialRun.projectId);
     const startedAt = nowFn();
@@ -958,7 +970,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         references: adapterReferences,
       };
       const request = adapter.compileRequest(universalInput);
-      await store.writeProviderRequest(run.runId, {
+      const redactedProviderRequest = {
         adapterId,
         adapterVersion: adapter.version,
         method: request.method,
@@ -969,7 +981,21 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         ...(generationInput.promptFingerprint
           ? { promptFingerprint: generationInput.promptFingerprint }
           : {}),
-      });
+      };
+      if (beforeProviderSubmit) {
+        await beforeProviderSubmit({
+          run,
+          protocol: providerConfig.protocol ?? adapterId,
+          providerRequest: request,
+          redactedProviderRequest,
+          references: references.map((reference) => ({
+            assetId: reference.assetId,
+            role: reference.role,
+            sha256: reference.sha256,
+          })),
+        });
+      }
+      await store.writeProviderRequest(run.runId, redactedProviderRequest);
       await store.appendEvent(run.runId, 'MULTI_MODEL_REQUEST_SUBMITTED', {
         adapterId,
         modelId: run.modelId,
@@ -1143,6 +1169,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   async function executeLive(
     run: ImageGenerationRun,
     options: { apiKey?: string; apiProfileId?: string; baseUrl?: string; modelId?: string },
+    beforeProviderSubmit?: ImageGenerationBeforeProviderSubmit,
   ): Promise<ImageGenerationRun> {
     const store = storeFor(run.projectId);
     const now = nowFn();
@@ -1171,7 +1198,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       const persisted = persistedTask as {
         compiledPrompt?: string;
         parameters?: { size?: string };
-        references?: Array<{ localPath: string; assetId: string; role: string }>;
+        references?: Array<{ localPath: string; assetId: string; role: string; sha256?: string }>;
         promptSnapshot?: { fingerprint?: string };
       };
       return executeMultiModelLive(
@@ -1189,6 +1216,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         },
         providerConfig,
         adapterId,
+        beforeProviderSubmit,
       );
     }
     if (providerConfig.protocol && providerConfig.protocol !== 'dashscope-wan-image') {
@@ -1235,6 +1263,18 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
 
     let providerTaskId: string | undefined;
     try {
+      const body = await buildSubmitBody(persistedTask, { fileReader });
+      const redactedProviderRequest = redactProviderRequest({ endpoint, region, modelId, body });
+      if (beforeProviderSubmit) {
+        const taskReferences = (persistedTask as { references?: Array<{ assetId: string; role: string; sha256?: string }> }).references ?? [];
+        await beforeProviderSubmit({
+          run: activeRun,
+          protocol: providerConfig.protocol ?? 'dashscope-wan-image',
+          providerRequest: body,
+          redactedProviderRequest,
+          references: taskReferences.map((reference) => ({ assetId: reference.assetId, role: reference.role, sha256: reference.sha256 })),
+        });
+      }
       const submitResult = await provider.submit(persistedTask, undefined);
       providerTaskId = submitResult.providerTaskId;
       metrics.providerRequestCount += 1;
@@ -1248,10 +1288,9 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       await store.saveRun(activeRun);
 
       // 脱敏请求记录
-      const body = await buildSubmitBody(persistedTask, { fileReader });
       await store.writeProviderRequest(
         activeRun.runId,
-        redactProviderRequest({ endpoint, region, modelId, body }),
+        redactedProviderRequest,
       );
 
       return await pollAndDownload(
@@ -1618,7 +1657,10 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
   }
 
   /** §13 手动重试：新建 runId + parentRunId，继承上下文，记录 Prompt 差异。 */
-  async function retry(options: RetryOptions): Promise<ImageGenerationRun> {
+  async function retryInternal(
+    options: RetryOptions,
+    beforeProviderSubmit?: ImageGenerationBeforeProviderSubmit,
+  ): Promise<ImageGenerationRun> {
     const parent = await getRun(options.runId);
     if (!parent) throw new Error('父运行不存在，无法重试。');
     const persistedTask = await readPersistedTask(parent.runId, parent.projectId).catch(() => null);
@@ -1782,7 +1824,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       return executeLive(run, {
         apiKey: options.apiKey,
         apiProfileId: options.apiProfileId || parent.apiProfileId,
-      });
+      }, beforeProviderSubmit);
     }
 
     const now = nowFn();
@@ -1891,7 +1933,18 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
       apiKey: options.apiKey,
       apiProfileId: options.apiProfileId || parent.apiProfileId,
       baseUrl: endpoint,
-    });
+    }, beforeProviderSubmit);
+  }
+
+  async function retry(options: RetryOptions): Promise<ImageGenerationRun> {
+    return retryInternal(options);
+  }
+
+  async function retryWithPreSubmitGuard(
+    options: RetryOptions,
+    beforeProviderSubmit: ImageGenerationBeforeProviderSubmit,
+  ): Promise<ImageGenerationRun> {
+    return retryInternal(options, beforeProviderSubmit);
   }
 
   async function saveReview(review: ImageGenerationReview): Promise<ImageGenerationRun> {
@@ -1956,6 +2009,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     listBenchmarks,
     saveBenchmarkEvaluation,
     retry,
+    retryWithPreSubmitGuard,
     cancel,
     getRun,
     listRuns,
