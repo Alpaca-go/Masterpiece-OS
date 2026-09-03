@@ -20,6 +20,7 @@ import {
 import { buildVisualMigrationCanon } from '@masterpiece/runtime-core/application/visual-migration-canon-builder.ts';
 import { buildVisualMigrationReferencePolicy } from '@masterpiece/runtime-core/application/visual-migration-reference-policy-builder.ts';
 import {
+  buildAllocationBoundProviderReferenceEnvelope,
   createVisualMigrationReferenceExecutionService,
 } from '@masterpiece/runtime-core/application/visual-migration-reference-execution-service.ts';
 import {
@@ -396,6 +397,43 @@ test('VM-4 maps missing and tampered production Pack evidence to fail-closed err
   await fs.writeFile(path.join(tampered.packRoot, 'assets', 'style-1.png'), png(88));
   await assert.rejects(tampered.prepare, { code: 'REFERENCE_EVIDENCE_INTEGRITY_FAILED' });
   assert.equal(tampered.providerCalls(), 0);
+});
+
+test('VM-4 Provider envelope rejects any downstream reorder or substitution', async (t) => {
+  const f = await fixture({ styleCount: 1, identityCount: 2, maxReferences: 3 });
+  t.after(() => fs.rm(f.root, { recursive: true, force: true }));
+  const result = await f.prepare();
+  assert.throws(
+    () => buildAllocationBoundProviderReferenceEnvelope(
+      result.capability,
+      result.allocation,
+      [...result.references].reverse(),
+    ),
+    { code: 'REFERENCE_MATERIALIZATION_SET_MISMATCH' },
+  );
+});
+
+test('VM-4 Project Store missing, not-ready and non-image evidence fail before Provider', async (t) => {
+  for (const mode of ['missing', 'not-ready', 'non-image'] as const) {
+    const f = await fixture({ styleCount: 1, identityCount: 1 });
+    t.after(() => fs.rm(f.root, { recursive: true, force: true }));
+    const index = f.projectAssets.findIndex((asset) => asset.id === 'identity-source-1');
+    if (mode === 'missing') f.projectAssets.splice(index, 1);
+    if (mode === 'not-ready') f.projectAssets[index]!.status = 'ignored';
+    if (mode === 'non-image') {
+      const filename = path.join(f.projectRoot, 'input', 'assets', 'identity-source-1.png');
+      const bytes = Buffer.from('%PDF-1.7 not an image');
+      await fs.writeFile(filename, bytes);
+      f.projectAssets[index]!.sha256 = sha256(bytes);
+    }
+    await assert.rejects(
+      f.prepare,
+      { code: mode === 'non-image'
+        ? 'REFERENCE_MATERIALIZATION_MIME_UNSUPPORTED'
+        : 'REFERENCE_MATERIALIZATION_SOURCE_NOT_FOUND' },
+    );
+    assert.equal(f.providerCalls(), 0);
+  }
 });
 
 test('production composition resolves Registry capability and dry-runs the shared adapter', async (t) => {
