@@ -1,6 +1,6 @@
 # Visual Migration VM-6 Dual-Sided Audit and Corrective Retry Baseline
 
-Status: `VM6_1_CLOSURE_IN_PROGRESS`
+Status: `FROZEN`
 
 Freeze-candidate date: `2026-09-03`
 
@@ -186,8 +186,8 @@ warning is preserved here rather than hidden.
 
 ```text
 G1-G90 = 90/90 PASS
-VM6_FROZEN = NO
-VISUAL_MIGRATION_CORE_FROZEN = NO
+VM6_FROZEN = YES
+VISUAL_MIGRATION_CORE_FROZEN = YES
 ```
 
 ## VM-6.1 Closure Reopen Record
@@ -204,3 +204,120 @@ Remote post-freeze audit identified three closure items after commit
 The historical VM-6 G1-G90 result above remains intact. Freeze is reopened only
 for these three VM-6.1 closure items and will not be restored until the VM-6.1
 G1-G61 acceptance matrix passes in full.
+
+## VM-6.1 Remote Audit Closure
+
+Remote-audited previous freeze HEAD:
+`9e9591d2baa47b0c475a165a85973b018c5333c8`
+
+Required VM-5 frozen ancestor:
+`75a22bbf8562b81353835b4cab802151801feee1`
+
+Tested VM-6.1 implementation HEAD before this refreeze record:
+`5f4493a4fcb7d907bc08f6247c73dc622fcc3114`
+
+### Closure commits
+
+| SHA | Message |
+|---|---|
+| `3b31ecf3` | `docs(visual-migration): reopen VM6 freeze for integrity closure` |
+| `d8fa4585` | `fix(visual-migration): close audit integrity gaps` |
+| `5f4493a4` | `test(visual-migration): verify VM6.1 audit closure` |
+
+### Changed files
+
+- `packages/runtime-core/src/application/visual-migration-audit-contract.ts`
+- `packages/runtime-core/src/application/visual-migration-audit-evidence-resolver.ts`
+- `packages/runtime-core/src/application/visual-migration-audit-service.ts`
+- `tests/runtime-application/visual-migration-audit.test.ts`
+- this baseline record
+
+No VM-3, VM-4, VM-5, corrective-retry, pre-submit, Provider, Space,
+Packaging, legacy selector/materializer, or UI file changed in VM-6.1.
+
+### Exact-copy closure proof
+
+Before VM-6.1, deterministic SHA equality used the bounded Reference Audit
+sample after `slice(0, 3)`. It now uses all materialized entries whose frozen
+role is `style_reference`. The multimodal sample remains separately ordered
+with the reserved style first and remains capped at three attachments.
+
+The new fixture selects `style-1` through `style-4`, reserves `style-1`, and
+makes the generated output byte-identical to `style-4`. It proves:
+
+```text
+Reference Audit sample = style-1, style-2, style-3
+sample size = 3
+exactCopyDetected = true
+decision failureClasses includes NEAR_COPY_RISK
+```
+
+A second fixture makes the output byte-identical to a dropped `style-5` while
+only `style-1` and `style-2` are selected. It proves
+`exactCopyDetected = false`; dropped or merely Pack-present references never
+enter the integrity set. Detection remains SHA-256 equality with zero model,
+embedding, similarity, or threshold calls.
+
+### Payload and binding closure proof
+
+Audit safe-payload validation now rejects Windows drive paths, UNC paths,
+POSIX absolute paths, file URIs, data URIs, and traversal. Dedicated assertions
+cover `/tmp/private/image.png` and confirm that ordinary visual prose such as
+`logo sits near / above the title`, `ratio is 4/3`, and
+`paper / foil contrast is visible` remains valid.
+
+`VisualMigrationAuditService.get()` now validates the immutable record and
+then explicitly requires its `projectId`, `runId`, and `auditId` to equal the
+requested authority. Valid matching historical Audits remain readable. Each
+of project mismatch, run mismatch, and requested Audit-ID mismatch fails with
+the existing deterministic `VISUAL_MIGRATION_AUDIT_CONFLICT` code. The Audit
+input fingerprint, Audit ID, and Audit fingerprint algorithms are unchanged.
+
+### VM-6.1 verification results
+
+| Command or evidence | Result |
+|---|---|
+| VM-6 audit + corrective targeted tests | PASS, 12/12 |
+| VM-3 through VM-6 targeted suite | PASS, 52/52 |
+| `npm test` | PASS, 1694/1694 |
+| `npm run cli:test` | PASS, 40/40 |
+| `npm run runtime:test` | PASS, Runtime Core 14/14; Runtime Application 1367/1367 |
+| `npm run web-runtime:test` | PASS, 15/15 |
+| `npm run web-runtime:typecheck` | PASS |
+| `npm run web:typecheck` | PASS |
+| `npm run web:build` | PASS |
+| `npm run web:smoke` | PASS; Provider calls 0; business writes 0 |
+| `npm run golden:test` | PASS; Provider calls 0; auto-update NO |
+| `npm run verify:current-flows` | PASS; external calls 0 |
+| `npm run verify:tracked-runtime-assets` | PASS, 8 declared static assets |
+| `npm run verify:repository-contract` | PASS; Provider calls 0; business writes 0; digest auto-update NO |
+| `npm run repo:verify` | PASS; repository guard tests 45/45 |
+| `npm run repo:check` | PASS; Provider calls 0; business writes 0; Golden update NO |
+| `git diff --check` | PASS before refreeze record; rerun after its commit |
+
+One unrelated Document Context in-flight cancellation assertion missed its
+timing window during the first high-load Runtime run. Its isolated suite then
+passed 8/8, and the complete Runtime suite passed 1367/1367 on the immediate
+rerun and on subsequent aggregate gates. No out-of-scope code was changed.
+
+The managed Windows smoke helper retained its existing `Get-CimInstance`
+permission warning. The smoke exited successfully and all structured checks
+passed; Provider calls and business writes remained zero.
+
+### VM-6.1 acceptance
+
+- G1-G9 Near-Copy Integrity: PASS
+- G10-G17 Payload Safety: PASS
+- G18-G25 Binding Integrity: PASS
+- G26-G36 Scope: PASS
+- G37-G61 Regression and side-effect gates: PASS
+
+The original VM-6 G1-G90 remain historical acceptance. VM-6.1 G1-G61 close
+the three post-freeze remote-audit findings.
+
+```text
+VM6.1 G1-G61 = 61/61 PASS
+VM6_FROZEN = YES
+VM6_1_CLOSED = YES
+VISUAL_MIGRATION_CORE_FROZEN = YES
+```
