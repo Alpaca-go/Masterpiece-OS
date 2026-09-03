@@ -7,6 +7,7 @@ import test from 'node:test';
 import { buildVisualMigrationCorrectiveRetryPlan } from '@masterpiece/runtime-core/application/visual-migration-corrective-retry-contract.ts';
 import { createVisualMigrationCorrectiveRetryService } from '@masterpiece/runtime-core/application/visual-migration-corrective-retry-service.ts';
 import { createRunStore } from '@masterpiece/runtime-core/application/image-generation/run-store.ts';
+import { executeWithOptionalPreSubmitGuard } from '@masterpiece/runtime-core/application/image-generation/service.ts';
 
 const fp = (c: string) => `sha256:${c.repeat(64)}`;
 function canon() { const r = (dimension: string, statement: string) => ({ dimension, statement }); return { canonId: 'vmc-' + '1'.repeat(32), canonFingerprint: fp('c'), projectIdentity: { requiredIdentityRules: [r('identity', 'keep own logo')], lockedFacts: ['own name'], lockedAssetIds: ['logo'] }, transferSystem: { color: [r('color', 'warm palette')], layoutAndTypography: [r('layout_typography', 'clear grid')], graphicLanguage: [r('graphic_language', 'line rhythm')], materialAndPhotography: [r('material_photography', 'paper texture')], extensionMechanism: [r('extension_mechanism', 'repeat rhythm')] }, prohibitedTransfer: { userAvoidance: [], referenceBrandNames: ['foreign brand'], referenceLogos: ['foreign logo'], referenceSlogans: [], referenceSignatureGraphics: ['signature motif'], referenceProprietaryPatterns: [], prohibitedMutations: [] } } as never; }
@@ -17,6 +18,15 @@ test('VM-6 correction plan maps failures deterministically without an LLM', () =
   assert.match(plan.promptOverlay, /keep own logo/u); assert.match(plan.promptOverlay, /foreign logo/u);
   assert.equal(plan.retryConstraints.maximumAutomaticRetryDepth, 1);
   assert.throws(() => buildVisualMigrationCorrectiveRetryPlan({ projectId: 'p', sourceRunId: 'r', sourceAuditId: 'a', parentSnapshotId: 's', parentSnapshotFingerprint: fp('1'), policyId: 'policy', canon: canon(), capabilityFingerprint: fp('2'), selectedCandidateIds: [], failureClasses: ['REFERENCE_CONFLICT'], createdAt: '2026-09-03T00:00:00Z' }), { code: 'VISUAL_MIGRATION_CORRECTIVE_NOT_ELIGIBLE' });
+});
+
+test('VM-6 shared pre-submit seam is no-op compatible and blocks submit on guard failure', async () => {
+  const evidence = { run: { runId: 'run' }, protocol: 'fixture', providerRequest: { stable: true }, redactedProviderRequest: { stable: true }, references: [] } as never;
+  let submits = 0;
+  assert.equal(await executeWithOptionalPreSubmitGuard(evidence, undefined, async () => { submits += 1; return 'legacy'; }), 'legacy');
+  assert.equal(submits, 1);
+  await assert.rejects(() => executeWithOptionalPreSubmitGuard(evidence, async () => { throw Object.assign(new Error('blocked'), { code: 'VISUAL_MIGRATION_CORRECTIVE_PRE_SUBMIT_FAILED' }); }, async () => { submits += 1; return 'forbidden'; }), { code: 'VISUAL_MIGRATION_CORRECTIVE_PRE_SUBMIT_FAILED' });
+  assert.equal(submits, 1);
 });
 
 async function fixture() {

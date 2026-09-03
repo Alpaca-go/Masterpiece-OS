@@ -162,6 +162,15 @@ export interface ImageGenerationPreSubmitEvidence {
 export type ImageGenerationBeforeProviderSubmit =
   (evidence: ImageGenerationPreSubmitEvidence) => Promise<void> | void;
 
+export async function executeWithOptionalPreSubmitGuard<T>(
+  evidence: ImageGenerationPreSubmitEvidence,
+  beforeProviderSubmit: ImageGenerationBeforeProviderSubmit | undefined,
+  submit: () => Promise<T>,
+): Promise<T> {
+  if (beforeProviderSubmit) await beforeProviderSubmit(evidence);
+  return submit();
+}
+
 export interface CreativePromptStartOptions {
   snapshot: GenerationPromptSnapshot;
   parentRunId?: string;
@@ -982,8 +991,7 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
           ? { promptFingerprint: generationInput.promptFingerprint }
           : {}),
       };
-      if (beforeProviderSubmit) {
-        await beforeProviderSubmit({
+      const preSubmitEvidence: ImageGenerationPreSubmitEvidence = {
           run,
           protocol: providerConfig.protocol ?? adapterId,
           providerRequest: request,
@@ -993,8 +1001,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
             role: reference.role,
             sha256: reference.sha256,
           })),
-        });
-      }
+      };
+      if (beforeProviderSubmit) await beforeProviderSubmit(preSubmitEvidence);
       await store.writeProviderRequest(run.runId, redactedProviderRequest);
       await store.appendEvent(run.runId, 'MULTI_MODEL_REQUEST_SUBMITTED', {
         adapterId,
@@ -1258,24 +1266,21 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
 
     let activeRun: ImageGenerationRun = { ...run, status: 'submitting', startedAt: now, updatedAt: now };
     await store.saveRun(activeRun);
-    await store.appendEvent(activeRun.runId, 'PROVIDER_SUBMITTED', {});
     emit(activeRun);
 
     let providerTaskId: string | undefined;
     try {
       const body = await buildSubmitBody(persistedTask, { fileReader });
       const redactedProviderRequest = redactProviderRequest({ endpoint, region, modelId, body });
-      if (beforeProviderSubmit) {
-        const taskReferences = (persistedTask as { references?: Array<{ assetId: string; role: string; sha256?: string }> }).references ?? [];
-        await beforeProviderSubmit({
+      const taskReferences = (persistedTask as { references?: Array<{ assetId: string; role: string; sha256?: string }> }).references ?? [];
+      const submitResult = await executeWithOptionalPreSubmitGuard({
           run: activeRun,
           protocol: providerConfig.protocol ?? 'dashscope-wan-image',
           providerRequest: body,
           redactedProviderRequest,
           references: taskReferences.map((reference) => ({ assetId: reference.assetId, role: reference.role, sha256: reference.sha256 })),
-        });
-      }
-      const submitResult = await provider.submit(persistedTask, undefined);
+        }, beforeProviderSubmit, () => provider.submit(persistedTask, undefined));
+      await store.appendEvent(activeRun.runId, 'PROVIDER_SUBMITTED', {});
       providerTaskId = submitResult.providerTaskId;
       metrics.providerRequestCount += 1;
       activeRun = {
