@@ -1,6 +1,6 @@
 # Visual Migration VM-5 Generation Evidence Baseline
 
-Status: `FREEZE_READY — REMOTE CONFIRMATION PENDING`
+Status: `FROZEN`
 
 Freeze-candidate date: `2026-09-03`
 
@@ -9,6 +9,7 @@ Freeze-candidate date: `2026-09-03`
 - Branch: `codex/visual-migration-vm5-generation-evidence-snapshot`
 - Required base HEAD: `5166ec617f69d6c0da93620466ebde6809cbe415`
 - Tested implementation HEAD: `6b85b7308e2409ddf2d4438b59bfad6e532e109b`
+- Remote verified candidate HEAD: `405b9a995fcd357372b7b8c9210ff055550fba33`
 - Freeze record: the commit containing this document
 - Remote comparison before the freeze-record commit: ahead 5, behind 0 relative
   to the frozen VM-4 base branch
@@ -191,16 +192,11 @@ checks all passed. The warning is recorded rather than hidden.
 
 ## Acceptance gates
 
-- G1-G61: PASS (61/61)
-- G62: PENDING — the tested commits and this freeze record have not yet been
-  published to and read back from the remote VM-5 branch
+- G1-G62: PASS (62/62)
+- G62: PASS — remote read-back confirmed the tested commits and freeze-candidate
+  record at `405b9a995fcd357372b7b8c9210ff055550fba33`
 
 ```text
-VM5_FROZEN = NO
-VM6_UNLOCKED = NO
+VM5_FROZEN = YES
+VM6_UNLOCKED = YES
 ```
-
-The implementation and all local gates are complete. Final freeze requires an
-explicitly authorized remote push followed by remote HEAD verification; this
-document must then be updated to `FROZEN`, `G1-G62 = PASS`,
-`VM5_FROZEN = YES`, and `VM6_UNLOCKED = YES`.
