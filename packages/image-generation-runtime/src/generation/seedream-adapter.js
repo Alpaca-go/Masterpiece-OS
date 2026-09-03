@@ -1,3 +1,5 @@
+import { resolveImageReferenceCapability } from '@masterpiece/model-registry';
+
 export const SEEDREAM_SHORT_CHAIN_ADAPTER_ID = 'seedream-5.0-pro';
 export const SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION = 'seedream-short-chain-adapter@1.1.0';
 // Phase 9B recovery: the golden Mode B space prompt runs ~9.5k chars (JZMX),
@@ -14,9 +16,18 @@ export const SEEDREAM_MAX_PROMPT_CHARACTERS = 12_000;
 // endpoint, both controls are reported unsupported. The Reference Boundary
 // (B-3) reads this and MUST not pretend to apply strength control in
 // Trace when supported=false. maxReferenceImages = 2 matches the current
-// production behavior; bumping it requires end-to-end verification.
+// production behavior is separately capped by Space Product Policy at 2.
+// The objective Provider limit below is projected from the Model Registry.
+const SEEDREAM_REGISTRY_REFERENCE_CAPABILITY = resolveImageReferenceCapability({
+  registryModelId: SEEDREAM_SHORT_CHAIN_ADAPTER_ID,
+  provider: 'volcengine',
+  protocol: 'seedream-image',
+});
 const SEEDREAM_REFERENCE_CAPABILITY = Object.freeze({
-  maxReferenceImages: 2,
+  maxReferenceImages: SEEDREAM_REGISTRY_REFERENCE_CAPABILITY.maxReferenceImages,
+  supportedReferenceMimeTypes:
+    SEEDREAM_REGISTRY_REFERENCE_CAPABILITY.supportedReferenceMimeTypes,
+  capabilityFingerprint: SEEDREAM_REGISTRY_REFERENCE_CAPABILITY.capabilityFingerprint,
   referenceStrengthControl: Object.freeze({
     supported: false,
     controlParameter: null,
@@ -110,4 +121,3 @@ export function createSeedreamShortChainAdapter(options = {}) {
     },
   });
 }
-

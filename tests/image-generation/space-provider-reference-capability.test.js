@@ -41,9 +41,11 @@ test('r2.0 B-2: Seedream adapter declares a non-null capability with the documen
   assert.equal(adapter.capability.adapterVersion, SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION);
 });
 
-test('r2.0 B-2: Seedream capability reports maxReferenceImages = 2 (current production value)', () => {
+test('VM-4.1: Seedream reports Registry Provider max=10, not the Space ceiling', () => {
   const adapter = createSeedreamShortChainAdapter();
-  assert.equal(adapter.capability.reference.maxReferenceImages, 2);
+  assert.equal(adapter.capability.reference.maxReferenceImages, 10);
+  assert.equal(adapter.capability.reference.supportedReferenceMimeTypes.includes('image/png'), true);
+  assert.equal(adapter.capability.reference.capabilityFingerprint.length, 64);
 });
 
 test('r2.0 B-2: Seedream reports referenceStrengthControl as UNSUPPORTED with an honest note', () => {
@@ -64,7 +66,7 @@ test('r2.0 B-2: Seedream reports referenceRoleControl as UNSUPPORTED with an hon
   assert.ok(ctl.note && ctl.note.length > 10);
 });
 
-test('r2.0 B-2: effective max for reference_first is min(2, 2) = 2', () => {
+test('VM-4.1: effective max for reference_first is min(product 2, Provider 10) = 2', () => {
   const adapter = createSeedreamShortChainAdapter();
   const out = resolveEffectiveMaxReferences({
     generationBasis: 'reference_first',
@@ -72,10 +74,10 @@ test('r2.0 B-2: effective max for reference_first is min(2, 2) = 2', () => {
   });
   assert.equal(out.effectiveMax, 2);
   assert.equal(out.productPolicyMax, 2);
-  assert.equal(out.adapterCapabilityMax, 2);
+  assert.equal(out.adapterCapabilityMax, 10);
   assert.equal(out.adapterStrengthControlSupported, false);
   assert.equal(out.adapterRoleControlSupported, false);
-  assert.equal(out.source, 'min_intersection');
+  assert.equal(out.source, 'product_policy');
 });
 
 test('r2.0 B-2: effective max for standard is 0 (no references)', () => {

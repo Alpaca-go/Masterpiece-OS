@@ -4,6 +4,7 @@ import {
   createMultiModelImageAdapter,
   listMultiModelAdapters,
 } from '@masterpiece/image-generation-adapter/multi-model.js';
+import { resolveImageReferenceCapability } from '@masterpiece/model-registry';
 
 const universal = {
   prompt: 'Approved Visual Canon commercial scene.',
@@ -22,6 +23,44 @@ test('Model Adapter Layer exposes GPT, Nano Banana and Seedream behind one contr
   assert.deepEqual(
     listMultiModelAdapters().map((adapter) => adapter.id),
     ['gpt-image-2', 'nano-banana', 'seedream-5.0-pro'],
+  );
+});
+
+test('adapter numeric capacity is only a Registry projection', () => {
+  const listed = listMultiModelAdapters();
+  assert.equal(listed.find((item) => item.id === 'gpt-image-2').maxReferences, null);
+  assert.equal(listed.find((item) => item.id === 'nano-banana').maxReferences, null);
+  assert.equal(listed.find((item) => item.id === 'seedream-5.0-pro').maxReferences, 10);
+});
+
+test('adapter rejects a stale capability snapshot and never reconciles limits locally', () => {
+  const capability = resolveImageReferenceCapability({ registryModelId: 'seedream-5.0-pro' });
+  assert.throws(
+    () => createMultiModelImageAdapter({
+      adapterId: 'seedream-5.0-pro',
+      apiKey: 'test-key',
+      capabilitySnapshot: { ...capability, maxReferenceImages: 9 },
+    }),
+    (error) => error.code === 'PROVIDER_CAPABILITY_CONTRACT_MISMATCH',
+  );
+});
+
+test('adapter consumes Registry count and MIME constraints without slicing', () => {
+  const capability = resolveImageReferenceCapability({ registryModelId: 'seedream-5.0-pro' });
+  const adapter = createMultiModelImageAdapter({
+    adapterId: 'seedream-5.0-pro', apiKey: 'test-key', capabilitySnapshot: capability,
+  });
+  const reference = universal.references[0];
+  assert.throws(
+    () => adapter.compileRequest({ ...universal, references: Array(11).fill(reference) }),
+    (error) => error.code === 'MODEL_REFERENCE_INVALID',
+  );
+  assert.throws(
+    () => adapter.compileRequest({
+      ...universal,
+      references: [{ ...reference, mimeType: 'image/webp' }],
+    }),
+    (error) => error.code === 'MODEL_REFERENCE_INVALID',
   );
 });
 

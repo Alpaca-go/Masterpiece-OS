@@ -8,6 +8,7 @@
 
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { resolveImageReferenceCapability } from '@masterpiece/model-registry';
 
 /** §10.5 区域 → Endpoint。 */
 export const REGION_ENDPOINTS = {
@@ -22,6 +23,12 @@ const ASYNC_SUBMIT_PATH = '/api/v1/services/aigc/image-generation/generation';
 const TASK_PATH = (taskId) => `/api/v1/tasks/${encodeURIComponent(taskId)}`;
 const CANCEL_PATH = (taskId) => `/api/v1/tasks/${encodeURIComponent(taskId)}/cancel`;
 
+const WAN_REFERENCE_CAPABILITY = resolveImageReferenceCapability({
+  registryModelId: 'wan2.7-image-pro',
+  provider: 'dashscope',
+  protocol: 'dashscope-wan-image',
+});
+
 /** §6.1 DashScope wan2.7-image-pro 静态能力（无需 API Key 即可获取，用于 dry-run 与 Gate 校验）。 */
 export const DASHSCOPE_CAPABILITIES = Object.freeze({
   providerId: 'dashscope',
@@ -30,7 +37,9 @@ export const DASHSCOPE_CAPABILITIES = Object.freeze({
   supportsMultiImageReference: true,
   supportsNegativePrompt: false,
   supportsRemoteCancel: true,
-  maxReferenceImages: 9,
+  maxReferenceImages: WAN_REFERENCE_CAPABILITY.maxReferenceImages,
+  supportedReferenceMimeTypes: WAN_REFERENCE_CAPABILITY.supportedReferenceMimeTypes,
+  referenceCapabilityFingerprint: WAN_REFERENCE_CAPABILITY.capabilityFingerprint,
   maxOutputCount: 1,
   supportedSizes: ['2048*1152', '1152*2048', '1440*1440', '1024*1024'],
   outputMimeTypes: ['image/png'],

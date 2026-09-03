@@ -10,5 +10,8 @@
     "./*": "./src/*",
     "./wan": "./src/wan.js",
     "./multi-model": "./src/multi-model.js"
+  },
+  "dependencies": {
+    "@masterpiece/model-registry": "0.0.0"
   }
 }

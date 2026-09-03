@@ -43,8 +43,9 @@
 
 import {
   getRegisteredModel,
+  resolveImageReferenceCapability,
   validateModelProfile,
-} from '../../../model-registry/src/index.js';
+} from '@masterpiece/model-registry';
 
 export const PACKAGING_PROVIDER_CAPABILITY_VERSION = '1.0.0';
 
@@ -283,7 +284,17 @@ export function resolvePackagingProviderCapability(input = {}) {
     modelType: registered.type,
     packagingSupport: Array.isArray(registered.capabilities) && registered.capabilities.includes(PACKAGING_CAPABILITY),
     referenceSupport: asBoolean(registered.referenceSupport, false),
-    maxReferenceImages: registered.maxReferenceImages ?? NO_REFERENCE_COUNT_LIMIT,
+    maxReferenceImages: (() => {
+      try {
+        return resolveImageReferenceCapability({
+          registryModelId: registered.id,
+          provider: registered.provider,
+          protocol: registered.protocol,
+        }).maxReferenceImages;
+      } catch {
+        return NO_REFERENCE_COUNT_LIMIT;
+      }
+    })(),
   };
 
   const result = evaluatePackagingCapability(profile, generationMode, referencePolicy);

@@ -1,4 +1,12 @@
-export const MODEL_REGISTRY_VERSION = '2.0.0';
+import { createHash } from 'node:crypto';
+
+export const MODEL_REGISTRY_VERSION = '3.0.0';
+export const IMAGE_REFERENCE_CAPABILITY_SCHEMA = 'image-reference-capability/v1';
+export const IMAGE_REFERENCE_CAPABILITY_VERSION = '1.0.0';
+
+export const PROVIDER_CAPABILITY_NOT_FOUND = 'PROVIDER_CAPABILITY_NOT_FOUND';
+export const PROVIDER_CAPABILITY_INCOMPLETE = 'PROVIDER_CAPABILITY_INCOMPLETE';
+export const PROVIDER_CAPABILITY_CONTRACT_MISMATCH = 'PROVIDER_CAPABILITY_CONTRACT_MISMATCH';
 
 const MODELS = Object.freeze([
   Object.freeze({
@@ -46,6 +54,12 @@ const MODELS = Object.freeze([
     capabilities: Object.freeze(['packaging', 'poster', 'chinese_commercial_design']),
     referenceSupport: true,
     maxReferenceImages: 10,
+    imageReferenceCapability: Object.freeze({
+      capabilityVersion: IMAGE_REFERENCE_CAPABILITY_VERSION,
+      supportsMultipleReferences: true,
+      maxReferenceImages: 10,
+      supportedReferenceMimeTypes: Object.freeze(['image/jpeg', 'image/png']),
+    }),
     enabledByDefault: true,
   }),
   Object.freeze({
@@ -57,6 +71,15 @@ const MODELS = Object.freeze([
     defaultBaseUrl: 'https://dashscope.aliyuncs.com/api/v1',
     capabilities: Object.freeze(['space', 'product', 'poster', 'illustration']),
     referenceSupport: true,
+    maxReferenceImages: 9,
+    imageReferenceCapability: Object.freeze({
+      capabilityVersion: IMAGE_REFERENCE_CAPABILITY_VERSION,
+      supportsMultipleReferences: true,
+      maxReferenceImages: 9,
+      supportedReferenceMimeTypes: Object.freeze([
+        'image/bmp', 'image/jpeg', 'image/png', 'image/webp',
+      ]),
+    }),
     enabledByDefault: false,
     legacyCompatible: true,
   }),
@@ -64,6 +87,35 @@ const MODELS = Object.freeze([
 
 function text(value) {
   return String(value ?? '').trim();
+}
+
+function capabilityError(code, message, details = {}) {
+  return Object.assign(new Error(message), { code, ...details });
+}
+
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (!value || typeof value !== 'object') return value;
+  return Object.fromEntries(
+    Object.keys(value).sort().map((key) => [key, canonicalize(value[key])]),
+  );
+}
+
+function deepFreeze(value) {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  Object.values(value).forEach(deepFreeze);
+  return Object.freeze(value);
+}
+
+function normalizeMimeTypes(values) {
+  if (!Array.isArray(values)) return [];
+  return [...new Set(values.map((value) => text(value).toLowerCase()).filter(Boolean))].sort();
+}
+
+function fingerprintCapability(snapshot) {
+  return createHash('sha256')
+    .update(JSON.stringify(canonicalize(snapshot)))
+    .digest('hex');
 }
 
 export function listRegisteredModels(filter = {}) {
@@ -77,6 +129,68 @@ export function getRegisteredModel(modelId) {
   const normalized = text(modelId).toLowerCase();
   const model = MODELS.find((item) => item.id.toLowerCase() === normalized);
   return model ? structuredClone(model) : null;
+}
+
+/**
+ * Resolve the immutable, normalized image-reference capability owned by the
+ * Model Registry. Provider adapters may consume this snapshot, but may not
+ * supply or override any of its objective limits.
+ */
+export function resolveImageReferenceCapability(input = {}) {
+  const registryModelId = text(input.registryModelId || input.modelId).toLowerCase();
+  const model = MODELS.find((item) => item.id.toLowerCase() === registryModelId);
+  if (!model || model.type !== 'image_generation') {
+    throw capabilityError(
+      PROVIDER_CAPABILITY_NOT_FOUND,
+      `Image-reference capability was not found for ${registryModelId || 'missing model'}.`,
+      { registryModelId: registryModelId || undefined },
+    );
+  }
+
+  const requestedProvider = text(input.provider).toLowerCase();
+  const requestedProtocol = text(input.protocol).toLowerCase();
+  if ((requestedProvider && requestedProvider !== model.provider.toLowerCase())
+    || (requestedProtocol && requestedProtocol !== model.protocol.toLowerCase())) {
+    throw capabilityError(
+      PROVIDER_CAPABILITY_CONTRACT_MISMATCH,
+      `Capability identity does not match the registered contract for ${model.id}.`,
+      { registryModelId: model.id },
+    );
+  }
+
+  const capability = model.imageReferenceCapability;
+  const mimeTypes = normalizeMimeTypes(capability?.supportedReferenceMimeTypes);
+  if (model.referenceSupport !== true
+    || !capability
+    || !Number.isInteger(capability.maxReferenceImages)
+    || capability.maxReferenceImages < 1
+    || typeof capability.supportsMultipleReferences !== 'boolean'
+    || !text(capability.capabilityVersion)
+    || mimeTypes.length === 0) {
+    throw capabilityError(
+      PROVIDER_CAPABILITY_INCOMPLETE,
+      `Image-reference capability is incomplete for ${model.id}.`,
+      { registryModelId: model.id },
+    );
+  }
+
+  const normalized = {
+    schema: IMAGE_REFERENCE_CAPABILITY_SCHEMA,
+    registryVersion: MODEL_REGISTRY_VERSION,
+    capabilityVersion: text(capability.capabilityVersion),
+    registryModelId: model.id,
+    provider: model.provider,
+    protocol: model.protocol,
+    referenceSupport: true,
+    supportsMultipleReferences: capability.supportsMultipleReferences,
+    maxReferenceImages: capability.maxReferenceImages,
+    supportedReferenceMimeTypes: mimeTypes,
+    ...(capability.constraints ? { constraints: canonicalize(capability.constraints) } : {}),
+  };
+  return deepFreeze({
+    ...normalized,
+    capabilityFingerprint: fingerprintCapability(normalized),
+  });
 }
 
 export function inferModelType(input = {}) {

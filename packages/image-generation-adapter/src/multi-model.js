@@ -1,23 +1,29 @@
-export const MULTI_MODEL_ADAPTER_VERSION = '2.0.0';
+import {
+  PROVIDER_CAPABILITY_CONTRACT_MISMATCH,
+  PROVIDER_CAPABILITY_INCOMPLETE,
+  resolveImageReferenceCapability,
+} from '@masterpiece/model-registry';
+
+export const MULTI_MODEL_ADAPTER_VERSION = '3.0.0';
 
 const ADAPTERS = Object.freeze({
   'gpt-image-2': Object.freeze({
     id: 'gpt-image-2',
+    provider: 'openai',
     protocol: 'openai-image-generation',
     defaultBaseUrl: 'https://api.openai.com/v1',
-    maxReferences: 16,
   }),
   'nano-banana': Object.freeze({
     id: 'nano-banana',
+    provider: 'google',
     protocol: 'google-gemini-image',
     defaultBaseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-    maxReferences: 10,
   }),
   'seedream-5.0-pro': Object.freeze({
     id: 'seedream-5.0-pro',
+    provider: 'volcengine',
     protocol: 'seedream-image',
     defaultBaseUrl: 'https://ark.cn-beijing.volces.com/api/v3',
-    maxReferences: 10,
   }),
 });
 
@@ -85,7 +91,51 @@ function endpointUrl(baseUrl, suffix) {
   return `${apiRoot}${suffix}`;
 }
 
-function assertUniversalInput(input, adapter) {
+function contractMismatch(adapterId, message) {
+  return Object.assign(new Error(message), {
+    code: PROVIDER_CAPABILITY_CONTRACT_MISMATCH,
+    registryModelId: adapterId,
+  });
+}
+
+function resolveAdapterCapability(adapter, suppliedSnapshot) {
+  let registrySnapshot;
+  try {
+    registrySnapshot = resolveImageReferenceCapability({
+      registryModelId: adapter.id,
+      provider: adapter.provider,
+      protocol: adapter.protocol,
+    });
+  } catch (error) {
+    if (!suppliedSnapshot && error?.code === PROVIDER_CAPABILITY_INCOMPLETE) return null;
+    throw error;
+  }
+  if (!suppliedSnapshot) return registrySnapshot;
+  const identityMatches = suppliedSnapshot.registryModelId === registrySnapshot.registryModelId
+    && suppliedSnapshot.provider === registrySnapshot.provider
+    && suppliedSnapshot.protocol === registrySnapshot.protocol;
+  const contractMatches = suppliedSnapshot.schema === registrySnapshot.schema
+    && suppliedSnapshot.registryVersion === registrySnapshot.registryVersion
+    && suppliedSnapshot.capabilityVersion === registrySnapshot.capabilityVersion
+    && suppliedSnapshot.referenceSupport === registrySnapshot.referenceSupport
+    && suppliedSnapshot.supportsMultipleReferences === registrySnapshot.supportsMultipleReferences
+    && suppliedSnapshot.maxReferenceImages === registrySnapshot.maxReferenceImages
+    && JSON.stringify(suppliedSnapshot.supportedReferenceMimeTypes)
+      === JSON.stringify(registrySnapshot.supportedReferenceMimeTypes)
+    && JSON.stringify(suppliedSnapshot.constraints ?? null)
+      === JSON.stringify(registrySnapshot.constraints ?? null);
+  if (!identityMatches
+    || !contractMatches
+    || suppliedSnapshot.capabilityFingerprint !== registrySnapshot.capabilityFingerprint) {
+    throw contractMismatch(
+      adapter.id,
+      `Supplied capability snapshot does not match the registry contract for ${adapter.id}.`,
+    );
+  }
+  return registrySnapshot;
+}
+
+function assertUniversalInput(input, adapter, capabilitySnapshot) {
   if (!input || !text(input.prompt)) {
     throw Object.assign(new Error('Universal Prompt is required.'), {
       code: 'UNIVERSAL_PROMPT_REQUIRED',
@@ -102,8 +152,15 @@ function assertUniversalInput(input, adapter) {
     });
   }
   const references = Array.isArray(input.references) ? input.references : [];
-  if (references.length > adapter.maxReferences
-    || references.some((reference) => !text(reference?.data) || !text(reference?.mimeType))) {
+  const hasInvalidReference = references.some((reference) => {
+    const mimeType = text(reference?.mimeType).toLowerCase();
+    return !text(reference?.data)
+      || !mimeType
+      || (capabilitySnapshot
+        && !capabilitySnapshot.supportedReferenceMimeTypes.includes(mimeType));
+  });
+  if ((capabilitySnapshot && references.length > capabilitySnapshot.maxReferenceImages)
+    || hasInvalidReference) {
     throw Object.assign(new Error(`Invalid reference payload for ${adapter.id}.`), {
       code: 'MODEL_REFERENCE_INVALID',
     });
@@ -240,7 +297,16 @@ function buildSeedreamRequest(config, input, references) {
 }
 
 export function listMultiModelAdapters() {
-  return Object.values(ADAPTERS).map((adapter) => structuredClone(adapter));
+  return Object.values(ADAPTERS).map((adapter) => {
+    const capability = resolveAdapterCapability(adapter);
+    return {
+      ...structuredClone(adapter),
+      // Compatibility projection only. The immutable Registry snapshot is the
+      // authority; no adapter-local numeric limit exists.
+      maxReferences: capability?.maxReferenceImages ?? null,
+      capabilityFingerprint: capability?.capabilityFingerprint ?? null,
+    };
+  });
 }
 
 export function createMultiModelImageAdapter(config = {}) {
@@ -251,9 +317,10 @@ export function createMultiModelImageAdapter(config = {}) {
       code: 'MODEL_ADAPTER_UNSUPPORTED',
     });
   }
+  const capabilitySnapshot = resolveAdapterCapability(adapter, config.capabilitySnapshot);
 
   function compileRequest(input) {
-    const references = assertUniversalInput(input, adapter);
+    const references = assertUniversalInput(input, adapter, capabilitySnapshot);
     if (!text(config.apiKey)) {
       throw Object.assign(new Error(`${adapterId} API Key is required.`), {
         code: 'MODEL_ADAPTER_AUTH_REQUIRED',
@@ -352,6 +419,7 @@ export function createMultiModelImageAdapter(config = {}) {
     id: adapterId,
     protocol: adapter.protocol,
     version: MULTI_MODEL_ADAPTER_VERSION,
+    capabilitySnapshot,
     compileRequest,
     parseResponse,
     execute,
