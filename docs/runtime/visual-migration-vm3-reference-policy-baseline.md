@@ -10,6 +10,9 @@ Verified implementation head: `049da274`
 
 Branch: `codex/visual-migration-vm3-task-aware-reference-policy`
 
+VM-3 remote freeze head verified for VM-3.1:
+`2bceae3c9d69e08ca8f026c3e314ba1a944f12e5`
+
 ## Frozen outcome
 
 VM-3 adds a deterministic, Provider-independent
@@ -116,9 +119,9 @@ Reference Pack behavior. The legacy reference files retained their base blobs:
 
 | Module | Blob |
 |---|---|
-| `reference-plan/reference-plan-compiler.js` | `766ef2b92cc4ec05b23e67b7877e75d5e1ffa79a` |
-| `reference-plan/reference-plan-materializer.js` | `de172bf55b2a50c1c6aee70ae8c52719ad878dcf` |
-| `reference-selector.js` | `b458a3f7ceeae5a58f56aa9c3ad14e484b4f2761` |
+| `reference-plan/reference-plan-compiler.js` | `d8aa0365adad04afff77fc91b47db29d142b6dd9` |
+| `reference-plan/reference-plan-materializer.js` | `b13bd55662a7e0c17808cf04a820f8cb880f5093` |
+| `reference-selector.js` | `4365b3f6edcd11843be82aaade116f4a166f3f89` |
 
 Existing Reference Plan and selector regression tests pass with identity-first
 legacy ordering unchanged.
@@ -169,3 +172,7 @@ VM-4 is unlocked to consume a validated policy and abstract allocation at the
 materialization/Provider-capability boundary. VM-4 must not mutate frozen VM-3
 policy identity or floors, must not overwrite policy JSON, and must preserve
 legacy behavior outside the explicitly activated visual-transfer path.
+
+VM3_FROZEN = YES
+
+VM4_UNLOCKED = YES
