@@ -9,6 +9,7 @@ import { createVisualMigrationAuditObserver } from '@masterpiece/runtime-core/ap
 import { createVisualMigrationAuditService } from '@masterpiece/runtime-core/application/visual-migration-audit-service.ts';
 import { createVisualMigrationAuditEvidenceResolver } from '@masterpiece/runtime-core/application/visual-migration-audit-evidence-resolver.ts';
 import { createRunStore } from '@masterpiece/runtime-core/application/image-generation/run-store.ts';
+import { assertVisualMigrationAuditSafePayload } from '@masterpiece/runtime-core/application/visual-migration-audit-contract.ts';
 
 const SHA = 'a'.repeat(64);
 const source = (changes: Record<string, unknown> = {}) => ({
@@ -35,6 +36,23 @@ test('VM-6 deterministic A-J audit matrix', () => {
   const conflict = decideVisualMigrationAudit({ source: source(), reference: reference({ referenceConflict: 'confirmed' }) });
   assert.equal(conflict.disposition, 'reference_conflict_blocked'); assert.equal(conflict.retryEligibility, false);
   assert.equal(decideVisualMigrationAudit({ source: source({ identityPreservation: 'uncertain' }), reference: reference() }).disposition, 'manual_review_required');
+});
+
+test('VM-6.1 Audit payload rejects platform paths and preserves slash-containing visual prose', () => {
+  for (const unsafe of [
+    'C:\\private\\image.png', '\\\\server\\private\\image.png', '/tmp/private/image.png',
+    'file:///tmp/private/image.png', 'data:image/png;base64,AAAA', '../private/image.png',
+  ]) {
+    assert.throws(
+      () => assertVisualMigrationAuditSafePayload({ findings: [{ observation: unsafe }] }),
+      { code: 'VISUAL_MIGRATION_AUDIT_OBSERVATION_INVALID' },
+    );
+  }
+  assert.doesNotThrow(() => assertVisualMigrationAuditSafePayload({ findings: [
+    { observation: 'logo sits near / above the title' },
+    { observation: 'ratio is 4/3' },
+    { observation: 'paper / foil contrast is visible' },
+  ] }));
 });
 
 function canon() {
@@ -83,6 +101,11 @@ test('VM-6 Audit is deterministic, immutable, restart-readable and tamper-detect
   const second = await make().audit({ projectId: f.projectId, runId: 'run-1' });
   assert.equal(first.auditId, second.auditId); assert.equal(first.auditFingerprint, second.auditFingerprint);
   assert.deepEqual(await make().get({ projectId: f.projectId, runId: 'run-1', auditId: first.auditId }), first);
+  const bindingService = createVisualMigrationAuditService({ evidenceResolver: {} as never, observer: {} as never,
+    runStoreResolver: () => ({ readVisualMigrationAudit: async () => first }) as never });
+  await assert.rejects(() => bindingService.get({ projectId: 'different-project', runId: 'run-1', auditId: first.auditId }), { code: 'VISUAL_MIGRATION_AUDIT_CONFLICT' });
+  await assert.rejects(() => bindingService.get({ projectId: f.projectId, runId: 'different-run', auditId: first.auditId }), { code: 'VISUAL_MIGRATION_AUDIT_CONFLICT' });
+  await assert.rejects(() => bindingService.get({ projectId: f.projectId, runId: 'run-1', auditId: `vma-${'f'.repeat(32)}` }), { code: 'VISUAL_MIGRATION_AUDIT_CONFLICT' });
   await assert.rejects(() => f.store.writeVisualMigrationAuditCreateOnce('run-1', first.auditId, { ...first, decision: { ...first.decision, disposition: 'pass_with_warnings' } }), { code: 'VISUAL_MIGRATION_AUDIT_CONFLICT' });
   const auditPath = path.join(f.root, 'image-generation', 'run-1', 'visual-migration-audits', first.auditId, 'audit.json');
   const tampered = JSON.parse(await fs.readFile(auditPath, 'utf8')); tampered.decision.disposition = 'pass_with_warnings';
@@ -118,4 +141,41 @@ test('VM-6 evidence resolver verifies output and exact-copy SHA before observer'
   assert.equal(resolved.exactCopyDetected, true); assert.deepEqual(resolved.reference.map((item) => item.candidateId), ['style-1']);
   await fs.writeFile(path.join(runRoot, 'images', 'image.png'), Buffer.from('tamper'));
   await assert.rejects(() => resolver.resolve({ projectId: f.projectId, runId: 'run-1' }), { code: 'VISUAL_MIGRATION_AUDIT_OUTPUT_INTEGRITY_FAILED' });
+});
+
+test('VM-6.1 exact-copy checks every selected style while keeping the audit sample bounded and excluding dropped styles', async (t) => {
+  const f = await fixtureStore(); t.after(() => fs.rm(f.dataPath, { recursive: true, force: true }));
+  const basePng = Buffer.from('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d49444154789c6360000000020001e221bc330000000049454e44ae426082', 'hex');
+  const variants = Array.from({ length: 5 }, (_, index) => Buffer.concat([basePng, Buffer.from([index])]));
+  const hashes = variants.map((bytes) => crypto.createHash('sha256').update(bytes).digest('hex'));
+  for (let index = 0; index < variants.length; index += 1) {
+    await fs.writeFile(path.join(f.root, `style-${index + 1}.png`), variants[index]);
+  }
+  const saveOutput = async (runId: string, bytes: Buffer, hash: string) => {
+    const runRoot = path.join(f.root, 'image-generation', runId);
+    await fs.mkdir(path.join(runRoot, 'images'), { recursive: true });
+    await fs.writeFile(path.join(runRoot, 'images', 'image.png'), bytes);
+    await f.store.saveRun({ schemaVersion: '3.0', runId, projectId: f.projectId, taskId: `task-${runId}`, status: 'succeeded', outputType: 'brand_poster', providerId: 'seedream', modelId: 'seedream', region: 'global', createdAt: '2026-09-03T00:00:00Z', updatedAt: '2026-09-03T00:00:00Z', gate: { blocked: false, errors: [], warnings: [] }, images: [{ imageId: 'image-01', relativePath: 'images/image.png', mimeType: 'image/png', sizeBytes: bytes.length, sha256: hash, downloadedAt: '2026-09-03T00:00:00Z' }] } as never);
+    await f.store.writeTask(runId, { references: [] });
+  };
+  await saveOutput('run-fourth-selected', variants[3], hashes[3]);
+  await saveOutput('run-dropped', variants[4], hashes[4]);
+  const frozen = (index: number) => ({ candidateId: `style-${index + 1}`, role: 'style_reference', providerRole: 'reference_style', sourceKind: 'visual_migration_reference_pack', sourceId: `ref-${index + 1}`, mimeType: 'image/png', sha256: hashes[index], byteSize: variants[index].length });
+  const snapshot = (runId: string) => runId === 'run-fourth-selected'
+    ? { authority: { canon: { canonId: `vmc-${'1'.repeat(32)}` }, referencePack: { referencePackId: `vmrp-${'1'.repeat(32)}` } }, artifacts: { task: { filename: 'task.json' } }, referenceDecision: { reserved: { style: 'style-1' }, selectedCandidateIds: ['style-1', 'style-2', 'style-3', 'style-4'], dropped: [], materializedReferences: [0, 1, 2, 3].map(frozen) } }
+    : { authority: { canon: { canonId: `vmc-${'1'.repeat(32)}` }, referencePack: { referencePackId: `vmrp-${'1'.repeat(32)}` } }, artifacts: { task: { filename: 'task.json' } }, referenceDecision: { reserved: { style: 'style-1' }, selectedCandidateIds: ['style-1', 'style-2'], dropped: [{ candidateId: 'style-5', reason: 'capacity_surplus' }], materializedReferences: [0, 1].map(frozen) } };
+  const resolver = createVisualMigrationAuditEvidenceResolver({ dataPath: f.dataPath,
+    projects: { get: async () => ({ assets: [] }), paths: async () => ({ root: f.root, input: path.join(f.root, 'input') }) } as never,
+    lockedAssets: {} as never,
+    referencePacks: { resolve: async () => ({ references: variants.map((_, index) => ({ referenceId: `ref-${index + 1}`, absolutePath: path.join(f.root, `style-${index + 1}.png`) })) }) } as never,
+    visualMigrationCanons: { resolve: async () => ({ canon: canon() }) } as never,
+    generationEvidence: { getGenerationEvidenceSnapshot: async ({ runId }: { runId: string }) => snapshot(runId) } as never,
+    runStoreResolver: () => f.store });
+  const fourth = await resolver.resolve({ projectId: f.projectId, runId: 'run-fourth-selected' });
+  assert.deepEqual(fourth.reference.map((item) => item.candidateId), ['style-1', 'style-2', 'style-3']);
+  assert.equal(fourth.reference.length, 3); assert.equal(fourth.exactCopyDetected, true);
+  assert.ok(decideVisualMigrationAudit({ source: source(), reference: reference(), exactCopyDetected: fourth.exactCopyDetected }).failureClasses.includes('NEAR_COPY_RISK'));
+  const dropped = await resolver.resolve({ projectId: f.projectId, runId: 'run-dropped' });
+  assert.deepEqual(dropped.reference.map((item) => item.candidateId), ['style-1', 'style-2']);
+  assert.equal(dropped.exactCopyDetected, false);
 });
