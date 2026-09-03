@@ -16,6 +16,7 @@ import { createGenerationSeriesExecutionService } from './generation-series-exec
 import { createGenerationSeriesService } from './generation-series-service.ts';
 import { createFileContextLoader } from './image-generation/context-loader.ts';
 import { createImageGenerationService } from './image-generation/service.ts';
+import { createRunStore } from './image-generation/run-store.ts';
 import { createDeliverableValidatorService } from './image-generation/deliverable-validator-service.ts';
 import { createShortChainGenerationService } from './image-generation/short-chain-service.ts';
 import { createLockedAssetsService } from './locked-assets-service.ts';
@@ -39,6 +40,7 @@ import { createVisualMigrationReferencePackService } from './visual-migration-re
 import { createVisualMigrationCanonService } from './visual-migration-canon-service.ts';
 import { createVisualMigrationReferencePolicyService } from './visual-migration-reference-policy-service.ts';
 import { createVisualMigrationReferenceExecutionService } from './visual-migration-reference-execution-service.ts';
+import { createVisualMigrationGenerationEvidenceService } from './visual-migration-generation-evidence-service.ts';
 // CI-W1A: Creative Intelligence Runtime Application Layer.
 import {
   createCreativeIntelligenceApplicationService,
@@ -114,6 +116,13 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     referencePolicies: visualMigrationReferencePolicies,
     referencePacks: visualMigrationReferencePacks,
     lockedAssets,
+  });
+  const visualMigrationGenerationEvidence = createVisualMigrationGenerationEvidenceService({
+    visualMigrationCanons,
+    referencePacks: visualMigrationReferencePacks,
+    referencePolicies: visualMigrationReferencePolicies,
+    referenceExecution: visualMigrationReferenceExecution,
+    imageGenerationRunStoreResolver: (projectId) => createRunStore(adapters.dataPath, projectId),
   });
   const generationPrompts = createGenerationPromptService(
     projects,
@@ -473,7 +482,8 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
     creativeSessions, creativeDirections, generationBlueprints, styleProfiles, lockedAssets,
     visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons,
-    visualMigrationReferencePolicies, visualMigrationReferenceExecution, generationPrompts,
+    visualMigrationReferencePolicies, visualMigrationReferenceExecution,
+    visualMigrationGenerationEvidence, generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeriesExecution,
