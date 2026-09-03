@@ -5,6 +5,7 @@
  * 不重新实现第二套持久化系统（§12.1）。
  */
 import fs from 'node:fs/promises';
+import crypto from 'node:crypto';
 import path from 'node:path';
 import { atomicWriteJsonWithRetry } from '../runtime/atomic-write.ts';
 import { appendRuntimeEvent } from '../runtime/event-log.ts';
@@ -43,6 +44,10 @@ async function readJsonSafe<T>(filePath: string): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+export function serializeRunJsonArtifact(value: unknown): Buffer {
+  return Buffer.from(`${JSON.stringify(value, null, 2)}\n`, 'utf8');
 }
 
 export function createRunStore(dataPath: string, projectId: string) {
@@ -95,6 +100,61 @@ export function createRunStore(dataPath: string, projectId: string) {
 
     async readSnapshot<T = unknown>(runId: string): Promise<T | null> {
       return readJsonSafe<T>(path.join(await root(runId), RUN_FILES.snapshot));
+    },
+
+    async readRunArtifact(runId: string, filename: string): Promise<Buffer | null> {
+      if (path.basename(filename) !== filename) {
+        throw new RunStoreError('RUN_STORE_PATH_INVALID', 'Run artifact filename must be canonical and run-relative.');
+      }
+      return fs.readFile(path.join(await root(runId), filename)).catch((error: NodeJS.ErrnoException) => {
+        if (error.code === 'ENOENT') return null;
+        throw error;
+      });
+    },
+
+    async writeGenerationEvidenceSnapshotCreateOnce(
+      runId: string,
+      snapshot: unknown,
+    ): Promise<{ created: boolean; bytes: Buffer }> {
+      return coordinator.enqueue(runId, 'generation-evidence-snapshot:create-once', async () => {
+        const r = await ensureDirs(runId);
+        const target = path.join(r, RUN_FILES.generationEvidenceSnapshot);
+        const bytes = serializeRunJsonArtifact(snapshot);
+        const temp = path.join(r, `.generation-evidence-${crypto.randomUUID()}.tmp`);
+        try {
+          const handle = await fs.open(temp, 'wx');
+          try {
+            await handle.writeFile(bytes);
+            await handle.sync();
+          } finally {
+            await handle.close();
+          }
+          try {
+            await fs.link(temp, target);
+            return { created: true, bytes };
+          } catch (error) {
+            if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+            const existing = await fs.readFile(target).catch(() => null);
+            if (existing && existing.equals(bytes)) return { created: false, bytes: existing };
+            throw new RunStoreError(
+              'GENERATION_EVIDENCE_CONFLICT',
+              'Generation Evidence Snapshot already exists with different content.',
+            );
+          }
+        } catch (error) {
+          if ((error as { code?: string }).code === 'GENERATION_EVIDENCE_CONFLICT') throw error;
+          throw new RunStoreError(
+            'GENERATION_EVIDENCE_WRITE_FAILED',
+            `Generation Evidence Snapshot create-once write failed: ${(error as Error).message}`,
+          );
+        } finally {
+          await fs.unlink(temp).catch(() => undefined);
+        }
+      });
+    },
+
+    async readGenerationEvidenceSnapshot<T = unknown>(runId: string): Promise<T | null> {
+      return readJsonSafe<T>(path.join(await root(runId), RUN_FILES.generationEvidenceSnapshot));
     },
 
     async writeCompiledPrompt(runId: string, markdown: string): Promise<void> {

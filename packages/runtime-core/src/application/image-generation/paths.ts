@@ -10,6 +10,7 @@
  *   ├─ source-context-snapshot.json
  *   ├─ compiled-prompt.md
  *   ├─ prompt-source-map.json
+ *   ├─ generation-evidence-snapshot.json
  *   ├─ provider-request.redacted.json
  *   ├─ provider-response.redacted.json
  *   ├─ events.ndjson
@@ -56,6 +57,7 @@ export const RUN_FILES = {
   snapshot: 'source-context-snapshot.json',
   compiledPrompt: 'compiled-prompt.md',
   promptSourceMap: 'prompt-source-map.json',
+  generationEvidenceSnapshot: 'generation-evidence-snapshot.json',
   deliverablePolicy: 'deliverable-policy.json',
   userIntentResolution: 'user-intent-resolution.json',
   referencePlan: 'reference-plan.json',
