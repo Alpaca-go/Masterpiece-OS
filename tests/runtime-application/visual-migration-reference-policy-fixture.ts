@@ -100,5 +100,5 @@ export function policyFixture() {
     project: { id: PROJECT_ID, brandName: '当前品牌', industry: '零售', logoLocked: true, lockedFacts: ['Logo 必须原样保留'] },
     now: '2026-09-02T00:00:00.000Z',
   });
-  return { canon, referencePack, lockedAsset };
+  return { canon, referencePack, lockedAsset, capsule, styleProfile };
 }

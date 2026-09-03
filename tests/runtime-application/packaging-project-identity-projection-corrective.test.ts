@@ -49,5 +49,6 @@ test('AP-10 no filename or project-name-to-brand heuristic exists', () => {
 
 test('AP-20 D-PROVIDER-01 effective cap remains 10 in Registry and Seedream adapter', () => {
   assert.equal(getRegisteredModel('seedream-5.0-pro')?.maxReferenceImages, 10);
-  assert.match(ADAPTER, /'seedream-5\.0-pro':[\s\S]{0,180}maxReferences:\s*10/u);
+  assert.match(ADAPTER, /resolveImageReferenceCapability/u);
+  assert.doesNotMatch(ADAPTER, /'seedream-5\.0-pro':[\s\S]{0,220}maxReferences:\s*10/u);
 });

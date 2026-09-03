@@ -38,6 +38,7 @@ import { createVisualMemoryService } from './visual-memory-service.ts';
 import { createVisualMigrationReferencePackService } from './visual-migration-reference-pack-service.ts';
 import { createVisualMigrationCanonService } from './visual-migration-canon-service.ts';
 import { createVisualMigrationReferencePolicyService } from './visual-migration-reference-policy-service.ts';
+import { createVisualMigrationReferenceExecutionService } from './visual-migration-reference-execution-service.ts';
 // CI-W1A: Creative Intelligence Runtime Application Layer.
 import {
   createCreativeIntelligenceApplicationService,
@@ -108,6 +109,12 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     visualMigrationCanons,
     lockedAssets,
   );
+  const visualMigrationReferenceExecution = createVisualMigrationReferenceExecutionService({
+    projects,
+    referencePolicies: visualMigrationReferencePolicies,
+    referencePacks: visualMigrationReferencePacks,
+    lockedAssets,
+  });
   const generationPrompts = createGenerationPromptService(
     projects,
     creativeSessions,
@@ -466,7 +473,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     contextIntegration, referenceAnchor, imageGeneration, shortChainGeneration,
     creativeSessions, creativeDirections, generationBlueprints, styleProfiles, lockedAssets,
     visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons,
-    visualMigrationReferencePolicies, generationPrompts,
+    visualMigrationReferencePolicies, visualMigrationReferenceExecution, generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,
     generationSeriesExecution,

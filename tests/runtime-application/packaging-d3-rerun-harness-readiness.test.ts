@@ -377,11 +377,12 @@ test('AZ-19 count 11 rejected (D-PROVIDER-01 cap = 10)', () => {
 // AZ-20..AZ-23 — Frozen authorities retained.
 // ---------------------------------------------------------------------------
 
-test('AZ-20 D-PROVIDER-01 retained (Registry maxReferenceImages = 10, adapter maxReferences = 10)', () => {
+test('VM-4.1 D-PROVIDER-01 retains max=10 through a Registry projection only', () => {
   const registry = read(path.join(ROOT, 'packages', 'model-registry', 'src', 'index.js'));
   const adapter = read(path.join(ROOT, 'packages', 'image-generation-adapter', 'src', 'multi-model.js'));
   assert.match(registry, /id:\s*'seedream-5\.0-pro'[\s\S]{0,400}maxReferenceImages:\s*10/u);
-  assert.match(adapter, /'seedream-5\.0-pro':[\s\S]{0,180}maxReferences:\s*10/u);
+  assert.match(adapter, /resolveImageReferenceCapability/u);
+  assert.doesNotMatch(adapter, /'seedream-5\.0-pro':[\s\S]{0,220}maxReferences:\s*10/u);
 });
 
 test('AZ-21 P3-A12 STALE preserved (checkStale seam + reference change -> STALE)', () => {
