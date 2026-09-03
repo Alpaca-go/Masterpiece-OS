@@ -30,8 +30,6 @@ function same(left: string[], right: string[]): boolean {
 }
 
 export function createVisualMigrationCorrectiveRetryService(deps: Dependencies) {
-  const now = deps.now ?? (() => new Date().toISOString());
-
   async function prepare(input: { projectId: string; sourceRunId: string; sourceAuditId: string }): Promise<VisualMigrationCorrectiveRetryPlanV1> {
     const [audit, snapshot, run] = await Promise.all([
       deps.audits.get({ projectId: input.projectId, runId: input.sourceRunId, auditId: input.sourceAuditId }),
@@ -59,7 +57,7 @@ export function createVisualMigrationCorrectiveRetryService(deps: Dependencies) 
       selectedCandidateIds: [...snapshot.referenceDecision.selectedCandidateIds], failureClasses: [...audit.decision.failureClasses],
       targetContentRules: [task.userIntent?.normalized ?? task.userIntent?.original ?? ''].filter(Boolean),
       structureRules: canon.projectIdentity.requiredIdentityRules.filter((rule) => rule.dimension !== 'identity').map((rule) => rule.statement),
-      createdAt: now(),
+      createdAt: audit.createdAt ?? run.createdAt,
     });
     const store = deps.runStoreResolver(input.projectId);
     const existing = await store.readVisualMigrationCorrectionPlan(input.sourceRunId, plan.correctionPlanId);
@@ -87,6 +85,7 @@ export function createVisualMigrationCorrectiveRetryService(deps: Dependencies) 
         await childStore.writePromptSourceMap(evidence.run.runId, { ...sourceMap, visualMigrationCorrection: {
           correctionPlanId: plan.correctionPlanId, sourceAuditId: plan.sourceAuditId,
           failureClasses: plan.failureClasses, canonId: plan.canonId, correctionActions: plan.correctionActions,
+          canonRulesUsed: plan.canonRulesUsed,
         } });
         const frozenRefs = parentSnapshot.referenceDecision.materializedReferences;
         const actualHashes = evidence.references.map((item) => item.sha256 ?? '');

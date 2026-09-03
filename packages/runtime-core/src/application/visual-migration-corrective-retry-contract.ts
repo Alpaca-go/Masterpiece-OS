@@ -36,6 +36,7 @@ export interface VisualMigrationCorrectiveRetryPlanV1 {
   selectedCandidateIds: string[];
   failureClasses: VisualMigrationFailureClass[];
   correctionActions: VisualMigrationCorrectionAction[];
+  canonRulesUsed: string[];
   promptOverlay: string;
   retryConstraints: {
     samePolicyRequired: true;
@@ -61,6 +62,36 @@ function statements(rules: Array<{ statement: string }> | undefined): string {
   return (rules ?? []).map((rule) => rule.statement.trim()).filter(Boolean).join('; ');
 }
 
+export function correctionCanonRulesUsed(
+  actions: VisualMigrationCorrectionAction[],
+  canon: VisualMigrationCanonV1,
+): string[] {
+  const rules: string[] = [];
+  const add = (values: string[]) => {
+    for (const value of values.map((item) => item.trim()).filter(Boolean)) {
+      if (!rules.includes(value)) rules.push(value);
+    }
+  };
+  if (actions.includes('strengthen_source_identity')) add([
+    ...canon.projectIdentity.requiredIdentityRules.map((rule) => rule.statement),
+    ...canon.projectIdentity.lockedFacts,
+    ...canon.projectIdentity.lockedAssetIds,
+  ]);
+  if (actions.includes('strengthen_palette_alignment')) add(canon.transferSystem.color.map((rule) => rule.statement));
+  if (actions.includes('strengthen_graphic_language')) add(canon.transferSystem.graphicLanguage.map((rule) => rule.statement));
+  if (actions.includes('strengthen_transfer_system')) add([
+    ...canon.transferSystem.color, ...canon.transferSystem.layoutAndTypography,
+    ...canon.transferSystem.graphicLanguage, ...canon.transferSystem.materialAndPhotography,
+    ...canon.transferSystem.extensionMechanism,
+  ].map((rule) => rule.statement));
+  if (actions.includes('suppress_reference_identity')) add([
+    ...canon.prohibitedTransfer.referenceBrandNames, ...canon.prohibitedTransfer.referenceLogos,
+    ...canon.prohibitedTransfer.referenceSlogans, ...canon.prohibitedTransfer.referenceSignatureGraphics,
+    ...canon.prohibitedTransfer.referenceProprietaryPatterns, ...canon.prohibitedTransfer.prohibitedMutations,
+  ]);
+  return rules;
+}
+
 export function correctionActionsFor(failures: VisualMigrationFailureClass[]): VisualMigrationCorrectionAction[] {
   if (!failures.length || failures.includes('REFERENCE_CONFLICT')) {
     throw error(VISUAL_MIGRATION_CORRECTIVE_NOT_ELIGIBLE, 'The audit is not eligible for automatic correction.');
@@ -82,8 +113,18 @@ export function renderVisualMigrationCorrectionOverlay(input: {
   const lines = ['[VISUAL MIGRATION CORRECTIVE OVERLAY v1]', 'Apply only these bounded corrections; preserve the original task and evidence set.'];
   const { actions, canon } = input;
   if (actions.includes('strengthen_source_identity')) lines.push(`Preserve current-project identity: ${statements(canon.projectIdentity.requiredIdentityRules)}. Locked facts/assets: ${[...canon.projectIdentity.lockedFacts, ...canon.projectIdentity.lockedAssetIds].join('; ')}.`);
-  if (actions.includes('restore_target_content_hierarchy')) lines.push(`Restore required target content hierarchy: ${(input.targetContentRules ?? []).join('; ')}.`);
-  if (actions.includes('restore_structure')) lines.push(`Restore only the required existing structure: ${(input.structureRules ?? []).join('; ')}.`);
+  if (actions.includes('restore_target_content_hierarchy')) {
+    const content = (input.targetContentRules ?? []).map((item) => item.trim()).filter(Boolean);
+    lines.push(content.length
+      ? `Restore required target content hierarchy: ${content.join('; ')}.`
+      : 'Restore only the target content hierarchy explicitly required by the original compiled prompt.');
+  }
+  if (actions.includes('restore_structure')) {
+    const structure = (input.structureRules ?? []).map((item) => item.trim()).filter(Boolean);
+    lines.push(structure.length
+      ? `Restore only the required existing structure: ${structure.join('; ')}.`
+      : 'Restore only the structure explicitly required by the original compiled prompt; do not introduce any new structure.');
+  }
   if (actions.includes('strengthen_palette_alignment')) lines.push(`Strengthen transferable color behavior: ${statements(canon.transferSystem.color)}.`);
   if (actions.includes('strengthen_graphic_language')) lines.push(`Strengthen transferable graphic language: ${statements(canon.transferSystem.graphicLanguage)}.`);
   if (actions.includes('strengthen_transfer_system')) lines.push(`Strengthen abstract transferable visual principles: ${[
@@ -108,11 +149,12 @@ export function buildVisualMigrationCorrectiveRetryPlan(input: {
   targetContentRules?: string[]; structureRules?: string[]; createdAt: string;
 }): VisualMigrationCorrectiveRetryPlanV1 {
   const correctionActions = correctionActionsFor(input.failureClasses);
+  const canonRulesUsed = correctionCanonRulesUsed(correctionActions, input.canon);
   const promptOverlay = renderVisualMigrationCorrectionOverlay({ actions: correctionActions, canon: input.canon, targetContentRules: input.targetContentRules, structureRules: input.structureRules });
   const semantic = { projectId: input.projectId, sourceRunId: input.sourceRunId, sourceAuditId: input.sourceAuditId,
     parentSnapshotId: input.parentSnapshotId, parentSnapshotFingerprint: input.parentSnapshotFingerprint,
     policyId: input.policyId, canonId: input.canon.canonId, capabilityFingerprint: input.capabilityFingerprint,
-    selectedCandidateIds: input.selectedCandidateIds, failureClasses: input.failureClasses, correctionActions, promptOverlay };
+    selectedCandidateIds: input.selectedCandidateIds, failureClasses: input.failureClasses, correctionActions, canonRulesUsed, promptOverlay };
   const digest = sha256Fingerprint(canonicalSerializeVisualMigrationValue(semantic));
   const withoutFingerprint: Omit<VisualMigrationCorrectiveRetryPlanV1, 'correctionPlanFingerprint'> = {
     schemaVersion: VISUAL_MIGRATION_CORRECTIVE_RETRY_SCHEMA,
@@ -140,7 +182,7 @@ export function validateVisualMigrationCorrectiveRetryPlanV1(value: unknown): Vi
     || computeVisualMigrationCorrectionPlanFingerprint(plan) !== plan.correctionPlanFingerprint
     || !plan.projectId || !plan.sourceRunId || !plan.sourceAuditId
     || !Array.isArray(plan.selectedCandidateIds) || new Set(plan.selectedCandidateIds).size !== plan.selectedCandidateIds.length
-    || !Array.isArray(plan.failureClasses) || !Array.isArray(plan.correctionActions)
+    || !Array.isArray(plan.failureClasses) || !Array.isArray(plan.correctionActions) || !Array.isArray(plan.canonRulesUsed)
     || !plan.promptOverlay.startsWith('[VISUAL MIGRATION CORRECTIVE OVERLAY v1]')
     || plan.retryConstraints?.maximumAutomaticRetryDepth !== 1
     || !Number.isFinite(Date.parse(plan.createdAt))) {
