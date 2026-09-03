@@ -1,6 +1,6 @@
 # Visual Migration VM-6 Dual-Sided Audit and Corrective Retry Baseline
 
-Status: `FROZEN`
+Status: `VM6_1_CLOSURE_IN_PROGRESS`
 
 Freeze-candidate date: `2026-09-03`
 
@@ -186,6 +186,21 @@ warning is preserved here rather than hidden.
 
 ```text
 G1-G90 = 90/90 PASS
-VM6_FROZEN = YES
-VISUAL_MIGRATION_CORE_FROZEN = YES
+VM6_FROZEN = NO
+VISUAL_MIGRATION_CORE_FROZEN = NO
 ```
+
+## VM-6.1 Closure Reopen Record
+
+Remote post-freeze audit identified three closure items after commit
+`9e9591d2baa47b0c475a165a85973b018c5333c8`:
+
+1. exact-copy integrity covered only the bounded Reference Audit sample rather
+   than all selected style references;
+2. Audit safe-payload validation did not reject POSIX absolute paths;
+3. Audit reads validated record integrity but did not explicitly bind the
+   returned project, run, and Audit ID to the requested authority.
+
+The historical VM-6 G1-G90 result above remains intact. Freeze is reopened only
+for these three VM-6.1 closure items and will not be restored until the VM-6.1
+G1-G61 acceptance matrix passes in full.
