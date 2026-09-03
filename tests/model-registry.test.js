@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import {
   MODEL_REGISTRY_VERSION,
@@ -80,6 +81,22 @@ test('capability fingerprint is stable across Node processes', () => {
     child.stdout,
     resolveImageReferenceCapability({ registryModelId: 'seedream-5.0-pro' })
       .capabilityFingerprint,
+  );
+});
+
+test('browser-safe capability fingerprint matches standard SHA-256', () => {
+  const snapshot = resolveImageReferenceCapability({ registryModelId: 'seedream-5.0-pro' });
+  const { capabilityFingerprint, ...unsigned } = snapshot;
+  const canonicalize = (value) => {
+    if (Array.isArray(value)) return value.map(canonicalize);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(
+      Object.keys(value).sort().map((key) => [key, canonicalize(value[key])]),
+    );
+  };
+  assert.equal(
+    capabilityFingerprint,
+    createHash('sha256').update(JSON.stringify(canonicalize(unsigned))).digest('hex'),
   );
 });
 
