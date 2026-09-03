@@ -20,7 +20,7 @@ import type {
   SourceContextSnapshot,
   ImageGenerationContextSnapshotV2,
 } from '../../shared/types.ts';
-import { resolveProjectRoot, runRootUnder, imageGenRootUnder, standaloneImageGenRoot, RUN_FILES, imagesDir, thumbnailsDir } from './paths.ts';
+import { resolveProjectRoot, runRootUnder, imageGenRootUnder, standaloneImageGenRoot, RUN_FILES, imagesDir, thumbnailsDir, visualMigrationAuditsDir, visualMigrationCorrectionsDir } from './paths.ts';
 
 export class RunStoreError extends Error {
   code: string;
@@ -75,6 +75,37 @@ export function createRunStore(dataPath: string, projectId: string) {
     await fs.mkdir(imagesDir(r), { recursive: true });
     await fs.mkdir(thumbnailsDir(r), { recursive: true });
     return r;
+  }
+
+  async function writeCreateOnce(input: {
+    runId: string;
+    operation: string;
+    directory: string;
+    filename: string;
+    value: unknown;
+    conflictCode: string;
+    writeCode: string;
+  }): Promise<{ created: boolean; bytes: Buffer }> {
+    return coordinator.enqueue(input.runId, input.operation, async () => {
+      await fs.mkdir(input.directory, { recursive: true });
+      const target = path.join(input.directory, input.filename);
+      const bytes = serializeRunJsonArtifact(input.value);
+      const temp = path.join(input.directory, `.${crypto.randomUUID()}.tmp`);
+      try {
+        const handle = await fs.open(temp, 'wx');
+        try { await handle.writeFile(bytes); await handle.sync(); } finally { await handle.close(); }
+        try { await fs.link(temp, target); return { created: true, bytes }; }
+        catch (error) {
+          if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+          const existing = await fs.readFile(target).catch(() => null);
+          if (existing?.equals(bytes)) return { created: false, bytes: existing };
+          throw new RunStoreError(input.conflictCode, `${input.filename} already exists with different content.`);
+        }
+      } catch (error) {
+        if ((error as { code?: string }).code === input.conflictCode) throw error;
+        throw new RunStoreError(input.writeCode, `${input.filename} create-once write failed: ${(error as Error).message}`);
+      } finally { await fs.unlink(temp).catch(() => undefined); }
+    });
   }
 
   return {
@@ -155,6 +186,30 @@ export function createRunStore(dataPath: string, projectId: string) {
 
     async readGenerationEvidenceSnapshot<T = unknown>(runId: string): Promise<T | null> {
       return readJsonSafe<T>(path.join(await root(runId), RUN_FILES.generationEvidenceSnapshot));
+    },
+
+    async writeVisualMigrationAuditCreateOnce(runId: string, auditId: string, audit: unknown) {
+      if (!/^vma-[a-f0-9]{32}$/u.test(auditId)) throw new RunStoreError('RUN_STORE_PATH_INVALID', 'Visual Migration Audit id is invalid.');
+      const directory = path.join(visualMigrationAuditsDir(await root(runId)), auditId);
+      return writeCreateOnce({ runId, operation: 'visual-migration-audit:create-once', directory,
+        filename: 'audit.json', value: audit, conflictCode: 'VISUAL_MIGRATION_AUDIT_CONFLICT', writeCode: 'VISUAL_MIGRATION_AUDIT_WRITE_FAILED' });
+    },
+
+    async readVisualMigrationAudit<T = unknown>(runId: string, auditId: string): Promise<T | null> {
+      if (!/^vma-[a-f0-9]{32}$/u.test(auditId)) throw new RunStoreError('RUN_STORE_PATH_INVALID', 'Visual Migration Audit id is invalid.');
+      return readJsonSafe<T>(path.join(visualMigrationAuditsDir(await root(runId)), auditId, 'audit.json'));
+    },
+
+    async writeVisualMigrationCorrectionPlanCreateOnce(runId: string, planId: string, plan: unknown) {
+      if (!/^vmcrp-[a-f0-9]{32}$/u.test(planId)) throw new RunStoreError('RUN_STORE_PATH_INVALID', 'Visual Migration correction plan id is invalid.');
+      const directory = path.join(visualMigrationCorrectionsDir(await root(runId)), planId);
+      return writeCreateOnce({ runId, operation: 'visual-migration-correction:create-once', directory,
+        filename: 'correction-plan.json', value: plan, conflictCode: 'VISUAL_MIGRATION_CORRECTIVE_PLAN_CONFLICT', writeCode: 'VISUAL_MIGRATION_CORRECTIVE_PLAN_CONFLICT' });
+    },
+
+    async readVisualMigrationCorrectionPlan<T = unknown>(runId: string, planId: string): Promise<T | null> {
+      if (!/^vmcrp-[a-f0-9]{32}$/u.test(planId)) throw new RunStoreError('RUN_STORE_PATH_INVALID', 'Visual Migration correction plan id is invalid.');
+      return readJsonSafe<T>(path.join(visualMigrationCorrectionsDir(await root(runId)), planId, 'correction-plan.json'));
     },
 
     async writeCompiledPrompt(runId: string, markdown: string): Promise<void> {

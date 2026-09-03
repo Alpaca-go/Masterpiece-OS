@@ -11,6 +11,8 @@
  *   ├─ compiled-prompt.md
  *   ├─ prompt-source-map.json
  *   ├─ generation-evidence-snapshot.json
+ *   ├─ visual-migration-audits/<auditId>/audit.json
+ *   ├─ visual-migration-corrections/<correctionPlanId>/correction-plan.json
  *   ├─ provider-request.redacted.json
  *   ├─ provider-response.redacted.json
  *   ├─ events.ndjson
@@ -83,4 +85,12 @@ export function imagesDir(runRootPath: string): string {
 
 export function thumbnailsDir(runRootPath: string): string {
   return path.join(runRootPath, 'thumbnails');
+}
+
+export function visualMigrationAuditsDir(runRootPath: string): string {
+  return path.join(runRootPath, 'visual-migration-audits');
+}
+
+export function visualMigrationCorrectionsDir(runRootPath: string): string {
+  return path.join(runRootPath, 'visual-migration-corrections');
 }
