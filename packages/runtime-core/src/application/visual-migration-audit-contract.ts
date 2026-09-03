@@ -177,7 +177,7 @@ export function validateReferenceAuditObservationV1(value: unknown): ReferenceAu
 
 export function assertVisualMigrationAuditSafePayload(value: unknown, trail = '$'): void {
   if (typeof value === 'string') {
-    if (/^[a-z]:[\\/]/iu.test(value) || /^\\\\/u.test(value) || /^file:\/\//iu.test(value)
+    if (/^[a-z]:[\\/]/iu.test(value) || /^\\\\/u.test(value) || /^\//u.test(value) || /^file:\/\//iu.test(value)
       || /^data:/iu.test(value) || /(?:^|[\\/])\.\.(?:[\\/]|$)/u.test(value)) {
       throw visualMigrationAuditError(VISUAL_MIGRATION_AUDIT_OBSERVATION_INVALID, `${trail} contains unsafe data.`);
     }

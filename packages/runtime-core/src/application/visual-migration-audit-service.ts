@@ -6,8 +6,10 @@ import {
   computeVisualMigrationAuditFingerprint,
   computeVisualMigrationAuditInputFingerprint,
   VISUAL_MIGRATION_AUDIT_DECISION_RULE_VERSION,
+  VISUAL_MIGRATION_AUDIT_CONFLICT,
   VISUAL_MIGRATION_REFERENCE_AUDIT_PROMPT_VERSION,
   VISUAL_MIGRATION_SOURCE_AUDIT_PROMPT_VERSION,
+  visualMigrationAuditError,
   validateVisualMigrationAuditV1,
   type VisualMigrationAuditV1,
 } from './visual-migration-audit-contract.ts';
@@ -58,7 +60,14 @@ export function createVisualMigrationAuditService(deps: Dependencies) {
   }
   async function get(input: { projectId: string; runId: string; auditId: string }): Promise<VisualMigrationAuditV1> {
     const value = await deps.runStoreResolver(input.projectId).readVisualMigrationAudit(input.runId, input.auditId);
-    return validateVisualMigrationAuditV1(value);
+    const validated = validateVisualMigrationAuditV1(value);
+    if (validated.projectId !== input.projectId || validated.runId !== input.runId || validated.auditId !== input.auditId) {
+      throw visualMigrationAuditError(
+        VISUAL_MIGRATION_AUDIT_CONFLICT,
+        'Audit binding does not match requested project/run/audit authority.',
+      );
+    }
+    return validated;
   }
   return { audit, get };
 }

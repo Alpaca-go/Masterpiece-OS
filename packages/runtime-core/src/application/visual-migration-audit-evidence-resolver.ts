@@ -148,7 +148,7 @@ export function createVisualMigrationAuditEvidenceResolver(deps: Dependencies) {
       snapshot, canon: canonResolution.canon,
       output: { candidateId: image.imageId, role: 'generated_output', sourceKind: 'generated_output', sourceId: image.imageId, mimeType: outputMime, sha256: outputSha, byteSize: checkedOutput.size, absolutePath: checkedOutput.actual },
       selected, source, reference,
-      exactCopyDetected: reference.some((entry) => entry.sha256 === outputSha),
+      exactCopyDetected: styles.some((entry) => entry.sha256 === outputSha),
     };
   }
   return { resolve };
