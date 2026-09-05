@@ -155,6 +155,20 @@
     "visualMigrationCanonId": { "type": "string", "pattern": "^vmc-[a-f0-9]{32}$" },
     "visualMigrationCanonFingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
     "visualMigrationCanonSourceFingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "visualMigrationProductTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["taskId", "taskKind", "userIntent", "structureRequirement", "requiresCurrentProjectIdentity", "policyId", "policyFingerprint"],
+      "properties": {
+        "taskId": { "type": "string", "pattern": "^vmpt-[a-f0-9]{32}$" },
+        "taskKind": { "enum": ["brand_hero", "vi_extension", "poster_signage"] },
+        "userIntent": { "type": "string", "minLength": 1 },
+        "structureRequirement": { "enum": ["none", "preferred", "required"] },
+        "requiresCurrentProjectIdentity": { "type": "boolean" },
+        "policyId": { "type": "string", "pattern": "^vrp-[a-f0-9]{32}$" },
+        "policyFingerprint": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
     "history": {
       "type": "array",
       "items": {

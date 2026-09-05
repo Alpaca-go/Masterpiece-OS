@@ -13,6 +13,7 @@ export * from './operations/creative-intelligence-operations.js';
 export * from './operations/creative-direction-operations.ts';
 export * from './operations/creative-research-operations.ts';
 export * from './operations/remaining-operations.js';
+export * from './operations/visual-migration-product-operations.ts';
 // P3-B2: Packaging Workspace RPC operations (thin bridge between
 // the Web RPC client and the frozen P3-A Workspace service).
 export * from './operations/packaging-operations.js';

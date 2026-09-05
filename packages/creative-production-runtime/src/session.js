@@ -108,6 +108,18 @@ export function validateCreativeSession(session) {
       throw Object.assign(new Error('Creative Session 的 Visual Migration Canon 关联无效。'), { code: 'SESSION_INVALID' });
     }
   }
+  if (session.visualMigrationProductTask !== undefined) {
+    const task = session.visualMigrationProductTask;
+    if (!task || !/^vmpt-[a-f0-9]{32}$/u.test(String(task.taskId ?? ''))
+      || !['brand_hero', 'vi_extension', 'poster_signage'].includes(task.taskKind)
+      || !String(task.userIntent ?? '').trim()
+      || !['none', 'preferred', 'required'].includes(task.structureRequirement)
+      || typeof task.requiresCurrentProjectIdentity !== 'boolean'
+      || !/^vrp-[a-f0-9]{32}$/u.test(String(task.policyId ?? ''))
+      || !/^sha256:[a-f0-9]{64}$/u.test(String(task.policyFingerprint ?? ''))) {
+      throw Object.assign(new Error('Creative Session 的 Visual Migration Product Task 关联无效。'), { code: 'SESSION_INVALID' });
+    }
+  }
   return session;
 }
 
@@ -302,11 +314,46 @@ export function setSessionVisualMigrationCanon(session, reference, now = new Dat
     visualMigrationCanonId,
     visualMigrationCanonFingerprint,
     visualMigrationCanonSourceFingerprint,
+    ...(session.visualMigrationCanonId && session.visualMigrationCanonId !== visualMigrationCanonId
+      ? { visualMigrationProductTask: undefined }
+      : {}),
     history: [...session.history, historyEntry(
       'VISUAL_MIGRATION_CANON_LINKED',
       'Visual Migration Canon 已关联。',
       now,
       { entityType: 'decision', entityId: visualMigrationCanonId },
+    )],
+    updatedAt: now,
+  });
+}
+
+export function setSessionVisualMigrationProductTask(session, binding, now = new Date().toISOString()) {
+  validateCreativeSession(session);
+  const taskId = requireText(binding?.taskId, 'binding.taskId');
+  const policyId = requireText(binding?.policyId, 'binding.policyId');
+  const policyFingerprint = requireText(binding?.policyFingerprint, 'binding.policyFingerprint');
+  const taskKind = requireText(binding?.taskKind, 'binding.taskKind');
+  const userIntent = requireText(binding?.userIntent, 'binding.userIntent');
+  if (!['brand_hero', 'vi_extension', 'poster_signage'].includes(taskKind)
+    || !['none', 'preferred', 'required'].includes(binding?.structureRequirement)
+    || typeof binding?.requiresCurrentProjectIdentity !== 'boolean'
+    || !/^vrp-[a-f0-9]{32}$/u.test(policyId)
+    || !/^sha256:[a-f0-9]{64}$/u.test(policyFingerprint)) {
+    throw Object.assign(new Error('Visual Migration Product Task 关联无效。'), { code: 'SESSION_INVALID' });
+  }
+  const visualMigrationProductTask = {
+    taskId, taskKind, userIntent,
+    structureRequirement: binding.structureRequirement,
+    requiresCurrentProjectIdentity: binding.requiresCurrentProjectIdentity,
+    policyId, policyFingerprint,
+  };
+  return validateCreativeSession({
+    ...session,
+    visualMigrationProductTask,
+    history: [...session.history, historyEntry(
+      'VISUAL_MIGRATION_PRODUCT_TASK_LINKED',
+      `Visual Migration Product Task ${taskId} 已关联。`, now,
+      { entityType: 'decision', entityId: policyId },
     )],
     updatedAt: now,
   });

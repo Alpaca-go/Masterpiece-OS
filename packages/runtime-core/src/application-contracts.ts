@@ -24,6 +24,16 @@ import type {
   UpdateFinalCreativeDirectionInput,
   UpdateSharedProjectContextInput,
 } from './application/creative-direction-contracts.ts';
+import type {
+  PrepareVisualMigrationTaskInput,
+  VisualMigrationProductStateV1,
+} from './application/visual-migration-product-contract.ts';
+export type {
+  PrepareVisualMigrationTaskInput,
+  VisualMigrationProductStateV1,
+  VisualMigrationProductStatus,
+  VisualMigrationProductTaskKind,
+} from './application/visual-migration-product-contract.ts';
 export type * from './application/creative-direction-contracts.ts';
 export type {
   AnchorCandidate,
@@ -3051,6 +3061,14 @@ export interface RuntimeApi {
     export(runId: string): Promise<string | null>;
     openFolder(runId: string): Promise<void>;
     onProgress(callback: (progress: ReferenceAnchorProgress) => void): () => void;
+  };
+  visualMigrationProduct: {
+    getState(input: { projectId: string; creativeSessionId?: string; runId?: string }): Promise<VisualMigrationProductStateV1>;
+    prepareReference(input: { projectId: string; creativeSessionId: string; referenceAnchorRunId: string }): Promise<VisualMigrationProductStateV1>;
+    prepareTask(input: PrepareVisualMigrationTaskInput): Promise<VisualMigrationProductStateV1>;
+    startGeneration(input: { projectId: string; creativeSessionId: string; policyId: string; apiProfileId?: string }): Promise<VisualMigrationProductStateV1>;
+    auditGeneration(input: { projectId: string; runId: string; auditProfileId?: string }): Promise<VisualMigrationProductStateV1>;
+    executeCorrection(input: { projectId: string; runId: string; auditId: string; apiProfileId?: string }): Promise<VisualMigrationProductStateV1>;
   };
   imageGeneration: {
     /** 搂16 鑾峰彇 Provider 鑳藉姏锛堢敤浜?UI 灞曠ず涓?Prompt 缂栬瘧绾︽潫锛夈€?*/

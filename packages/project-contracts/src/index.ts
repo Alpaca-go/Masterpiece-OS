@@ -400,6 +400,16 @@ export interface CreativeSession {
   visualMigrationCanonId?: string;
   visualMigrationCanonFingerprint?: string;
   visualMigrationCanonSourceFingerprint?: string;
+  /** PI-1 minimal Product binding; the final compiled prompt remains run-owned. */
+  visualMigrationProductTask?: {
+    taskId: string;
+    taskKind: 'brand_hero' | 'vi_extension' | 'poster_signage';
+    userIntent: string;
+    structureRequirement: 'none' | 'preferred' | 'required';
+    requiresCurrentProjectIdentity: boolean;
+    policyId: string;
+    policyFingerprint: string;
+  };
   history: CreativeSessionHistoryEntry[];
   createdAt: string;
   updatedAt: string;

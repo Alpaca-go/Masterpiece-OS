@@ -23,6 +23,7 @@ import {
   selectCanonicalPackagingContext,
   createSettingsOperations,
   createVisualMemoryOperations,
+  createVisualMigrationProductOperations,
   setPackagingArtifactStorePathImpl,
 } from '@masterpiece/runtime-core';
 import { createCreativeResearchAnalysisAdapter } from '@masterpiece/runtime-core/application/creative-research-analysis-adapter.ts';
@@ -713,6 +714,7 @@ export function createCurrentBusinessOperations(
         releaseStagedVisualPaths(paths, path.resolve(dataPath, '..', 'reference-anchor-intake')),
     }),
     createImageGenerationOperations({ service: imageGeneration, shortChainService: shortChainGeneration }),
+    createVisualMigrationProductOperations({ service: services.visualMigrationProduct }),
     // CI-W1A: Creative Intelligence Runtime Application Layer operations.
     // Bound to the same kebab-case RPC channels the Web side expects
     // (creative-intelligence:list-runs, etc.). The Web never imports

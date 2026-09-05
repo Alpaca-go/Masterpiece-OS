@@ -45,6 +45,7 @@ import { createVisualMigrationAuditEvidenceResolver } from './visual-migration-a
 import { createVisualMigrationAuditObserver } from './visual-migration-audit-observer.ts';
 import { createVisualMigrationAuditService } from './visual-migration-audit-service.ts';
 import { createVisualMigrationCorrectiveRetryService } from './visual-migration-corrective-retry-service.ts';
+import { createVisualMigrationProductService } from './visual-migration-product-service.ts';
 // CI-W1A: Creative Intelligence Runtime Application Layer.
 import {
   createCreativeIntelligenceApplicationService,
@@ -204,6 +205,23 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     generationEvidence: visualMigrationGenerationEvidence,
     visualMigrationCanons,
     runStoreResolver: (projectId) => createRunStore(adapters.dataPath, projectId),
+  });
+  const visualMigrationProduct = createVisualMigrationProductService({
+    projects,
+    creativeSessions,
+    referenceAnchor,
+    styleProfiles,
+    lockedAssets,
+    referencePacks: visualMigrationReferencePacks,
+    canons: visualMigrationCanons,
+    policies: visualMigrationReferencePolicies,
+    referenceExecution: visualMigrationReferenceExecution,
+    generationEvidence: visualMigrationGenerationEvidence,
+    audits: visualMigrationAudit,
+    correctiveRetry: visualMigrationCorrectiveRetry,
+    imageGeneration,
+    runStoreResolver: (projectId) => createRunStore(adapters.dataPath, projectId),
+    readCredentials: adapters.readCredentials,
   });
   const deliverableValidator = createDeliverableValidatorService(
     projects,
@@ -513,6 +531,7 @@ export function createRuntimeServices(adapters: RuntimeServiceAdapters) {
     visualMemory, anchorCandidates, visualCanons, referencePacks, visualMigrationReferencePacks, visualMigrationCanons,
     visualMigrationReferencePolicies, visualMigrationReferenceExecution,
     visualMigrationGenerationEvidence, visualMigrationAudit, visualMigrationCorrectiveRetry,
+    visualMigrationProduct,
     generationPrompts,
     creativeReading, generationSeries, formalAssets, creativeProductionBootstrap,
     quickStyleExtraction, creativeGeneration, anchorGeneration, visualExplorations,

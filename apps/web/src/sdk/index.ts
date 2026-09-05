@@ -21,3 +21,4 @@
 
 export type * from './types';
 export type * from './errors';
+export * from './operations/visual-migration';

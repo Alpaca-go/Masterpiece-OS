@@ -768,6 +768,18 @@ export interface ImageGenerationRun {
   sourceAuditId?: string;
   correctionPlanId?: string;
   automaticCorrectiveRetryDepth?: number;
+  /** PI-1 browser-safe authority bindings for derived Product state. */
+  visualMigrationCreativeSessionId?: string;
+  visualMigrationPolicyId?: string;
+  visualMigrationCanonId?: string;
+  visualMigrationAuditSummary?: {
+    auditId: string;
+    disposition: string;
+    failureClasses: string[];
+    warnings: string[];
+    visibleFindings: Array<{ side: 'source' | 'reference'; category: string; observation: string }>;
+    retryAvailable: boolean;
+  };
 
   providerTaskId?: string;
   providerRequestId?: string;

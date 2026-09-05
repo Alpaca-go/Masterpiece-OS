@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 236 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds all 242 channels to the Shared Registry without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -33,7 +33,7 @@ test('Node Runtime Host binds all 236 channels to the Shared Registry without El
 
   // Browser Reference Anchor intake adds one bounded upload channel after the
   // Creative Direction / Creative Research capability set.
-  assert.equal(host.operationCount, 236);
+  assert.equal(host.operationCount, 242);
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),
@@ -55,6 +55,8 @@ test('Node Runtime Host binds all 236 channels to the Shared Registry without El
   assert.equal((await rpc(host.url, 'analysis:cancel', ['__no_active_project__'])).result, false);
   assert.ok((await rpc(host.url, 'image-generation:get-capabilities', [])).result.modelId);
   assert.ok((await rpc(host.url, 'image-generation:short-chain-options', [])).result);
+  const productState = await rpc(host.url, 'visual-migration-product:get-state', [{ projectId: '__missing__' }], 500);
+  assert.match(productState.error ?? '', /Project is unavailable|PROJECT_REQUIRED/u);
   const invalidCompile = await rpc(host.url, 'image-generation:short-chain-compile', [{ projectId: '__missing__' }], 500);
   assert.ok(invalidCompile.error);
 });

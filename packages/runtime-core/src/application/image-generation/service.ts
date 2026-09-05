@@ -202,6 +202,10 @@ export interface CompiledCreativeTaskStartOptions {
   apiKey?: string;
   baseUrl?: string;
   dryRun?: boolean;
+  /** Internal application seam. Browser callers cannot provide this callback. */
+  beforeProviderSubmit?: ImageGenerationBeforeProviderSubmit;
+  /** Keeps the legacy Creative Production limit at two unless an authority layer supplies its VM-4 allocation size. */
+  maxReferences?: number;
 }
 
 export interface ImageGenerationServiceDeps {
@@ -693,8 +697,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
     if (!options.compiledPrompt.trim()) {
       throw Object.assign(new Error('Creative Task Prompt 不能为空。'), { code: 'PROMPT_EMPTY' });
     }
-    if (options.references.length > 2) {
-      throw Object.assign(new Error('Creative Task 最多只能发送 2 张必要品牌资产。'), {
+    if (options.references.length > (options.maxReferences ?? 2)) {
+      throw Object.assign(new Error(`Creative Task 最多只能发送 ${options.maxReferences ?? 2} 张必要品牌资产。`), {
         code: 'GENERATION_REFERENCE_LIMIT_EXCEEDED',
       });
     }
@@ -783,8 +787,8 @@ export function createImageGenerationService(deps: ImageGenerationServiceDeps) {
         prompt: options.compiledPrompt,
         negativeRules: [],
         aspectRatio: sizeToAspectRatio(options.size ?? DEFAULT_SIZE),
-      }, providerConfig, adapterId)
-      : await executeLive(run, options);
+      }, providerConfig, adapterId, options.beforeProviderSubmit)
+      : await executeLive(run, options, options.beforeProviderSubmit);
     if (artifacts) await store.writeGenerationResult(runId, completed);
     return completed;
   }
