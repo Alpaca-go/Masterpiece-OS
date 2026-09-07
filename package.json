@@ -5,11 +5,11 @@
   "description": "Masterpiece OS v5：项目视觉理解、设计决策、媒介转译与受控生图交付系统",
   "type": "module",
   "workspaces": [
-      "apps/*",
-      "packages/*",
-      "labs/*"
-    ],
-    "scripts": {
+    "apps/*",
+    "packages/*",
+    "labs/*"
+  ],
+  "scripts": {
     "analyze": "node ./apps/cli/bin/masterpiece-os.js analyze",
     "inventory": "node ./apps/cli/bin/masterpiece-os.js inventory",
     "cli:dev": "node ./apps/cli/bin/masterpiece-os.js analyze",
@@ -75,5 +75,8 @@
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
     "tsx": "^4.21.0"
+  },
+  "allowScripts": {
+    "esbuild": true
   }
 }
