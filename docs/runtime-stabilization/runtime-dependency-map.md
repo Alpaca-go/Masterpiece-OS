@@ -1,5 +1,12 @@
 # Runtime Dependency Map
 
+> Tip note: "Current architecture" below is the runtime-stabilization
+> snapshot. On the VM1 tip, Desktop/Electron is absent, analysis is
+> `packages/runtime-core/src/application/pipeline-service.ts` plus
+> `apps/cli/src/analysis-engine/`, and prompts are
+> `apps/cli/prompts/analysis/`. See `CURRENT_BASELINE.md`. This snapshot is
+> not rewritten.
+
 ## Current architecture
 
 ```mermaid

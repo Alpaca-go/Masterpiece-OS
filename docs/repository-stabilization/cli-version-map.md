@@ -1,5 +1,10 @@
 # CLI Version Map
 
+> Tip note: this S0 map is not the VM1 tip. The analysis pipeline is
+> `apps/cli/src/analysis-engine/bootstrap.js` with prompts in
+> `apps/cli/prompts/analysis/`. `apps/cli/src/v5/` and `apps/cli/prompts/v5/`
+> are absent. This snapshot is not rewritten.
+
 ## Entrypoints
 
 | Entry | Resolution | Status | Evidence |

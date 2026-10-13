@@ -1,5 +1,11 @@
 # Repository Hot Zones
 
+> Tip note: the RED list below is the S0 snapshot. On the VM1 tip those
+> `apps/desktop/**`, `apps/cli/src/v5`, and `apps/cli/prompts/v5` paths are
+> absent. Current locations are in `docs/baseline/baseline-files-manifest.md`.
+> Web smoke is `apps/web-runtime/scripts/run-web-primary-smoke.mjs`. This
+> snapshot is not rewritten.
+
 ## RED — behavior/current runtime
 
 - `apps/desktop/src/renderer/src/` Web/Short-Chain UI.

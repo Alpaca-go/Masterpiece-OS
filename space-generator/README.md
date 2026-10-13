@@ -8,6 +8,15 @@
 > 累计测试：127/127 PASS (Phase 2-7 + v1.1 Step 1-6)
 > 5 verify gates + npm test 301/301 + tsc clean
 
+> Tip note: the v1 asset list below is the 2026-08-01 snapshot at HEAD `eec4fee`.
+> On `codex/visual-migration-vm1-integration-freeze`, analysis prompts are
+> `apps/cli/prompts/analysis/` and the analysis engine is
+> `apps/cli/src/analysis-engine/`. The Space compiler file is
+> `packages/image-generation-runtime/src/space/compiler.js`. There is no
+> `apps/cli/prompts/v5/`, `apps/cli/src/v5/`, or
+> `packages/image-generation-runtime/src/vnext/` directory. This README's
+> historical inventory is not rewritten.
+
 ## Space Generator v1 是什么
 
 `v1` 代表 **当前 Masterpiece 空间生图模块的一个稳定版本**。它由以下 v1 资产共同构成：

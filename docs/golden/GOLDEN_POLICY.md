@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Golden Regression protects the accepted behavior anchored at `masterpiece-reference-first-stable-2026-08`. It is evidence for future repository restructuring, not a mechanism for improving prompts, compilers, providers, or generated images.
+Golden Regression protects the accepted behavior of the 2026-08 Reference First content pin `deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2`. The 2026-08 record named tag `masterpiece-reference-first-stable-2026-08` as that anchor. The tag is absent on origin. Do not invent a replacement tag. Golden evidence is for future repository restructuring, not a mechanism for improving prompts, compilers, providers, or generated images.
 
 ## Comparison levels
 

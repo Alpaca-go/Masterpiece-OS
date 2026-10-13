@@ -1,5 +1,9 @@
 # Version Topology
 
+> Tip note: this S0 topology is not the VM1 tip. Web smoke on this tip is
+> `apps/web-runtime/scripts/run-web-primary-smoke.mjs`. `apps/desktop/` is
+> absent. See `CURRENT_BASELINE.md`. This snapshot is not rewritten.
+
 Only evidence-backed arrows are shown. `?` means `RELATION_UNKNOWN`.
 
 ## Product identity

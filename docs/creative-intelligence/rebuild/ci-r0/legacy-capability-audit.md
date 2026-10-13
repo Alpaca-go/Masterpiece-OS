@@ -31,6 +31,11 @@ old versioned paths. They are useful historical/frozen-baseline evidence but
 are not reliable current-path maps. This drift is a governance follow-up; it is
 not corrected inside CI-R0.
 
+> Tip note: that governance follow-up is recorded in the baseline navigation
+> docs on `codex/visual-migration-vm1-integration-freeze`. CI-R0 itself did
+> not make the correction. Use `CURRENT_BASELINE.md` and
+> `docs/baseline/baseline-files-manifest.md` for tip paths.
+
 ## 2. Capability inventory
 
 | Capability | Current path | Production consumer / reachability | State | Recommendation |

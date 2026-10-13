@@ -1,5 +1,12 @@
 # Compiler and Prompt Version Map
 
+> Tip note: rows below are the S0 snapshot. On the VM1 tip the orchestrator is
+> `packages/image-generation-runtime/src/generation/compile.js` and the Space
+> compiler file is `packages/image-generation-runtime/src/space/compiler.js`
+> (id `phase9b-quality-compiler`). Analysis prompts are
+> `apps/cli/prompts/analysis/`. Mode aliases `r8_6_golden`, `phase9b_quality`,
+> and `vnext_legacy` remain identifiers. This snapshot is not rewritten.
+
 ## Compiler routing
 
 | Compiler | Used by | Runtime role | Status | Risk |

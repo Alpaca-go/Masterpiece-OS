@@ -25,6 +25,6 @@ upload/select -> project asset processing -> explicit resolver -> reference poli
 
 ## Baseline files
 
-Primary UI: `VNextGenerationWorkspace.tsx`; resolver: `reference-asset-resolver.ts`; service: `image-generation/vnext-service.ts`; policies and gates: `packages/image-generation-runtime/src/space/*`; compiler: `vnext/compile.js` -> `space/phase9b-space-compiler.js`; adapter: `vnext/seedream-adapter.js`.
+Primary UI: `apps/web/src/pages/ShortChainPage.tsx` and reference intake `apps/web/src/components/ReferenceAnchorWorkspace.tsx`. Resolver: `packages/image-generation-runtime/src/reference-engine/reference-asset-resolver.ts`. Reconstruction: `packages/runtime-core/src/application/reference-first-reconstruction.ts`. Service: `packages/runtime-core/src/application/image-generation/short-chain-service.ts`. Policies and gates: `packages/image-generation-runtime/src/space/*`. Orchestrator: `packages/image-generation-runtime/src/generation/compile.js`. Compiler: `packages/image-generation-runtime/src/space/compiler.js`. Adapter: `packages/image-generation-runtime/src/generation/seedream-adapter.js`.
 
 Manual Product Acceptance: PASS based on the existing JZMX Reception -> Consultation accepted output. No S1 model call or new visual scoring was performed.
