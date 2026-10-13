@@ -1,5 +1,13 @@
 # Masterpiece OS — Repository Stabilization Phase S1 Final Report
 
+> Tip note: paths in this S1 report (`apps/desktop/.../pipeline-service.ts`,
+> `apps/cli/src/v5/bootstrap.js`, `vnext/compile.js`,
+> `phase9b-space-compiler.js`) are the 2026-08 inventory. Tip paths are in
+> `CURRENT_BASELINE.md`. Recovery tag `masterpiece-reference-first-stable-2026-08`
+> and branch `codex/r10-4-regression-repair` are absent on origin. Content PIN
+> `deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2` still exists. This report is not
+> rewritten.
+
 **Phase:** S1 — Current Baseline Freeze  
 **Result:** PASS — baseline documented and verified  
 **Freeze decision:** DOCUMENTED_NOT_FROZEN  

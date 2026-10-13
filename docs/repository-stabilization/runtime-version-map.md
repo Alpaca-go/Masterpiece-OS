@@ -1,5 +1,14 @@
 # Runtime-to-Version Map
 
+> Tip note: this S0 map is not the VM1 tip. Analysis entry is
+> `packages/runtime-core/src/application/pipeline-service.ts`. The pipeline is
+> `apps/cli/src/analysis-engine/bootstrap.js`. Prompts are
+> `apps/cli/prompts/analysis/`. Space orchestration is
+> `packages/image-generation-runtime/src/generation/compile.js`. The Space
+> compiler file is `packages/image-generation-runtime/src/space/compiler.js`.
+> Web smoke is `apps/web-runtime/scripts/run-web-primary-smoke.mjs`.
+> `apps/desktop/` is absent. This snapshot is not rewritten.
+
 ## Web Primary Runtime
 
 ```text

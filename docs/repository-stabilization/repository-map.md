@@ -1,5 +1,8 @@
 # Repository Map — S0 Snapshot
 
+> Tip note: this S0 snapshot is not the VM1 tip. `apps/desktop/` was removed
+> in S5 and is not a live host. See `docs/repository/CURRENT_REPOSITORY_MAP.md`.
+
 审计基准：`322ae676c546340fd7a9d467bca66ebe3fd023f7`（2026-08-11）。本表同时记录 Git 跟踪目录与工作区实际存在但被忽略的运行目录；后者不计入源码统计。
 
 | Path | Purpose | Runtime Relevance | Versioned | Risk |

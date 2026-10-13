@@ -2,30 +2,32 @@
 
 | Field | Current baseline |
 |---|---|
-| Entry | Desktop `image-generation:vnext-*` IPC |
-| UI | `VNextGenerationWorkspace.tsx` |
-| Service | `apps/desktop/src/main/image-generation/vnext-service.ts` |
-| Orchestrator | `packages/image-generation-runtime/src/vnext/compile.js` |
-| Compiler | `src/space/phase9b-space-compiler.js` |
-| Source adapter | `src/space/phase9b-source-adapter.js` |
-| Prompt | deterministic blocks rendered by current Space compiler |
-| Reference layer | resolver + space-reference-policy + Reference Boundary |
+| Entry | Short-Chain space family through `packages/runtime-core/src/application/image-generation/short-chain-service.ts` |
+| UI | `apps/web/src/pages/ShortChainPage.tsx` |
+| Service | `packages/runtime-core/src/application/image-generation/short-chain-service.ts` |
+| Orchestrator | `packages/image-generation-runtime/src/generation/compile.js` (`compileShortChainGeneration`) |
+| Compiler | `packages/image-generation-runtime/src/space/compiler.js` (string id `phase9b-quality-compiler`) |
+| Source adapter | `packages/image-generation-runtime/src/space/source-adapter.js` |
+| Prompt | deterministic blocks rendered by `packages/image-generation-runtime/src/space/compiler.js` |
+| Reference layer | `packages/image-generation-runtime/src/reference-engine/reference-asset-resolver.ts` + `packages/image-generation-runtime/src/space/space-reference-policy.js` + `packages/image-generation-runtime/src/space/reference-boundary.js` |
 | Constraint layer | semantic separation, target-scene authority, route/provider gates |
 | Golden mode | default `r8_6_golden`; `phase9b_quality` compatible alias |
-| Generator | Desktop image-generation service |
-| Provider | Seedream protocol/current profile |
-| Schema | vNext task contract (`schemaVersion: 1.0`) and image-generation contracts |
-| Fallback | `vnext_legacy` -> `vnext/prompt-compiler.js` |
-| Tests | R8.6/R9/R10/R11/R2 suites plus Web smoke |
+| Generator | `packages/runtime-core/src/application/image-generation/service.ts` |
+| Provider | Seedream protocol/current profile via `packages/image-generation-runtime/src/generation/seedream-adapter.js` |
+| Schema | generation task contract (`packages/image-generation-runtime/src/generation/task-contract.js`) and image-generation contracts |
+| Fallback | `vnext_legacy` -> `packages/image-generation-runtime/src/generation/prompt-compiler.js` |
+| Tests | space/reference/continuation suites plus Web smoke `apps/web-runtime/scripts/run-web-primary-smoke.mjs` |
 
-## Active historical layers
+## Active compatibility identifiers
 
-The current implementation is the R9 productionized Phase9B compiler with R8.6 Golden parity identity, followed by R10 semantic/route/Reference-First repairs and R11 continuation/R11.2 target-scene authority. Every layer remains baseline-critical.
+`r8_6_golden` and `phase9b_quality` select `packages/image-generation-runtime/src/space/compiler.js`. `vnext_legacy` selects `packages/image-generation-runtime/src/generation/prompt-compiler.js`. The compiler id `phase9b-quality-compiler` stays a string. `packages/image-generation-runtime/src/vnext/` and `phase9b-space-compiler.js` are not files on this tip.
+
+Continuation lives under `packages/image-generation-runtime/src/space/continuation/`. Target-scene projection lives under `packages/image-generation-runtime/src/space/scene-projection/`.
 
 ## Locked evidence
 
 - `space-generator/quality-baselines/current-verification/space-golden/manifest.json` — frozen, human accepted 4/4.
-- `space-generator/quality-baselines/current-verification/production-route/manifest.json` — R9 production route and parity.
-- R10/R11/R2 regression cases — current behavior and accepted Reference-First/continuation evidence.
+- `space-generator/quality-baselines/current-verification/production-route/manifest.json` — production route and parity.
+- Continuation and Reference-First evidence under `space-generator/quality-baselines/current-verification/`.
 
-No R12 production compiler was found. R12-named smoke output is not promoted to the baseline implementation.
+No separate R12 production compiler file was found. R12-named smoke output is not promoted to the baseline implementation.

@@ -1,6 +1,11 @@
 # S4 Current Dependency Map
 
-Recorded: 2026-08-11  
+Recorded: 2026-08-11
+
+> Tip note: this map records 2026-08-11. On the VM1 tip, Desktop/Electron is
+> absent, analysis imports `apps/cli/src/analysis-engine/bootstrap.js`, and
+> prompts live in `apps/cli/prompts/analysis/`. See `CURRENT_BASELINE.md`.
+> This snapshot is not rewritten.  
 Starting commit: `0227ec760c0ec253b24384ca4e7942b5585b5629`
 
 ## Runtime truth

@@ -1,18 +1,24 @@
 # Compatibility Baseline
 
-| Historical-looking dependency | Why it remains required | Status |
+Identifiers below remain required. Several old directory names are absent on tip `codex/visual-migration-vm1-integration-freeze`. Absence of a directory does not authorize deleting the identifier.
+
+| Dependency | Where it lives on this tip | Status |
 |---|---|---|
-| CLI `src/v5` | Web/Desktop analysis dynamically imports its bootstrap | ACTIVE_DEPENDENCY |
-| CLI `prompts/v5` | analysis prompt builder and packaged prompt path read it | ACTIVE_DEPENDENCY |
-| `vnext` service/runtime namespace | current Reference-First orchestration and IPC | ACTIVE_RUNTIME |
-| `vnext_legacy` compiler | environment-selectable debug/fallback route | ACTIVE_DEPENDENCY |
+| Analysis pipeline | `apps/cli/src/analysis-engine/bootstrap.js`, entered from `packages/runtime-core/src/application/pipeline-service.ts` | ACTIVE_DEPENDENCY |
+| Analysis prompts | `apps/cli/prompts/analysis/` | ACTIVE_DEPENDENCY |
+| Project config filename `masterpiece-os-v5.json` | discovered by `apps/cli/src/analysis-engine/bootstrap.js` | ACTIVE_DEPENDENCY |
+| Reference First | `packages/runtime-core/src/application/reference-first-reconstruction.ts` and `packages/runtime-core/src/application/image-generation/short-chain-service.ts` | ACTIVE_RUNTIME |
+| `vnext_legacy` compiler mode | `packages/image-generation-runtime/src/generation/compile.js` selects `packages/image-generation-runtime/src/generation/prompt-compiler.js` | ACTIVE_DEPENDENCY |
+| Persisted `vnext-1.0` run contract | `packages/runtime-core/src/application/image-generation/short-chain-service.ts` | ACTIVE_DEPENDENCY |
 | task/schema `1.0` | persisted legacy tasks/runs and tests | LEGACY_DEPENDENCY |
 | task/schema `2.0` | migration/retry source into V3 | COMPATIBILITY |
-| R8.6 Golden | parity and release boundary for current Space compiler | TEST_DEPENDENCY / LOCKED |
-| Phase9B/R9 | actual current Space compiler lineage | ACTIVE_DEPENDENCY |
-| R10/R11/R11.2 | semantic, route, continuation and target-scene behavior in current files | ACTIVE_DEPENDENCY |
-| lab visual-translation v1 | directly imported by lab v2 | TEST_DEPENDENCY |
+| `r8_6_golden` | default mode for `packages/image-generation-runtime/src/space/compiler.js`; parity and release boundary | TEST_DEPENDENCY / LOCKED |
+| `phase9b_quality` and compiler id `phase9b-quality-compiler` | same production compiler as `r8_6_golden` | ACTIVE_DEPENDENCY |
+| Continuation and target-scene behavior | `space/continuation/` and `space/scene-projection/` | ACTIVE_DEPENDENCY |
 | optional generation adapters | profile/protocol-driven shared service compatibility | ACTIVE_DEPENDENCY |
-| Desktop main services | host Primary Web backend despite Legacy shell classification | ACTIVE SHARED CORE |
 
-Names such as old, legacy, v5 or vnext do not authorize deletion. Compatibility can only be reduced after S2 behavior protection and a separately authorized migration/removal phase.
+`apps/cli/src/v5/`, `apps/cli/prompts/v5/`, `packages/image-generation-runtime/src/vnext/`, `phase9b-space-compiler.js`, and `apps/desktop/` are not on this tip. Desktop was removed in S5.
+
+The registry of persisted identifiers is `config/repository-contract/compatibility-registry.json`. This page does not edit it.
+
+Names such as old, legacy, v5, or vnext do not authorize deletion. Compatibility can only be reduced after S2 behavior protection and a separately authorized migration/removal phase.

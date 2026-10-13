@@ -1,5 +1,10 @@
 # Desktop Dependency Classification
 
+> Tip note: this classification describes the Desktop tree that S5 later
+> removed. `apps/desktop/` is not on the VM1 tip, including `out/`. Web dev
+> and smoke live under `apps/web-runtime/scripts/`. This snapshot is not
+> rewritten.
+
 ## Scope and method
 
 Scanned scope:

@@ -1,5 +1,12 @@
 # Masterpiece OS — Repository Stabilization Phase S0 Final Report
 
+> Tip note: this report's branch `codex/r10-4-regression-repair` and the
+> paths it calls current (`apps/desktop/scripts/run-web-primary-smoke.mjs`,
+> `src/space/phase9b-space-compiler.js`, CLI `src/v5`) are the 2026-08-11
+> inventory. That branch is absent on origin. Tip paths are in
+> `CURRENT_BASELINE.md`. The content PIN remains
+> `deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2`. This report is not rewritten.
+
 **Phase:** S0 — Repository Inventory & Version Topology Audit  
 **Result:** PASS (inventory only)  
 **Next phase:** S1 NOT STARTED  

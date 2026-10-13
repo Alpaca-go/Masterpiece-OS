@@ -125,8 +125,13 @@ no secret committed). Procedure lives in
 
 ## Branch discipline
 
-- 长期分支只保留 `main`；其它特性以 `feat/*` / `fix/*` / `chore/*` /
-  `experiment/*` 短期分支运作。
+- origin 没有 `main` 分支。远程 HEAD / 默认分支是
+  `codex/visual-migration-vm1-integration-freeze`。
+- 该默认分支是 VM1 集成候选（CONDITIONAL PASS / NOT FROZEN），
+  见 `docs/runtime/visual-migration-vm1-integrated-baseline.md`。
+  把它当作导航起点。这里不把它写成新的产品冻结。
+- 其它工作使用短期 `feat/*` / `fix/*` / `chore/*` / `experiment/*`
+  分支，或 origin 上已经存在的 `codex/*` 线。
 - 分支治理决策表：`docs/development/repository/reference-branch-disposition.md`。
 - 完成报告：`docs/releases/5.0-repository-consolidation.md`。
 

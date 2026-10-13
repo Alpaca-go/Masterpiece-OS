@@ -1,6 +1,12 @@
 # S6 Version Namespace Inventory
 
-Date: 2026-08-12  
+Date: 2026-08-12
+
+> Tip note: classifications below are the 2026-08-12 inventory. Paths named
+> `apps/cli/src/v5`, `apps/cli/prompts/v5`, `phase9b-space-compiler.js`, and
+> `src/vnext/` are not files on `codex/visual-migration-vm1-integration-freeze`.
+> Use `docs/repository/CURRENT_REPOSITORY_MAP.md`. Compatibility identifiers
+> such as `phase9b-quality-compiler` stay registered. This inventory is not rewritten.  
 Entry commit: `9498019f9ec27e9bc22904784bf5159eb4a773a9`  
 Method: tracked-path search, static import/export tracing, dynamic import tracing, configuration and environment lookup, operation-graph reachability, test/script/Golden references, and persisted-artifact review.
 

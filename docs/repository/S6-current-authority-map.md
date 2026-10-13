@@ -2,6 +2,14 @@
 
 Date: 2026-08-12
 
+> Tip note: the "Current path" column is the 2026-08-12 snapshot. On
+> `codex/visual-migration-vm1-integration-freeze`, `apps/cli/src/v5`,
+> `project-context-vnext-builder.ts`, `image-generation/vnext-service.ts`,
+> `phase9b-space-compiler.js`, and `src/vnext/prompt-compiler.js` are not
+> current files. Navigate with `docs/repository/CURRENT_REPOSITORY_MAP.md`
+> and `config/repository-contract/current-authorities.json`. Compatibility
+> identifiers in the registry are unchanged. This snapshot is not rewritten.
+
 | Capability | Current authority | Current path | Current consumers | Historical predecessor / compatibility | Golden coverage | Target semantic namespace |
 |---|---|---|---|---|---|---|
 | Project Runtime | Node Runtime Host | `apps/web-runtime/src/node-runtime-host.ts` | Web RPC | Removed Desktop/Electron host | Web smoke | `web-runtime` |

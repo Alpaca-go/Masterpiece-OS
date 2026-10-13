@@ -1,5 +1,10 @@
 # Smoke Test Runtime Audit
 
+> Tip note: the smoke entry on the VM1 tip is
+> `apps/web-runtime/scripts/run-web-primary-smoke.mjs`. Commands under
+> `apps/desktop/` are not available. Desktop was removed in S5. This audit
+> snapshot is not rewritten.
+
 ## Answer
 
 ```text

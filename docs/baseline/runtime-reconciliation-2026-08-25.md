@@ -1,11 +1,13 @@
 # Runtime Reconciliation — 2026-08-25
 
-> **Status**: Historical reconciliation note. Not a baseline change.
-> **Audience**: Future maintainers who notice `apps/desktop/` described as
-> baseline-critical in `CURRENT_BASELINE.md` §1 (now corrected) and wonder
-> why the directory no longer ships source code.
-> **Authority**: See `CURRENT_BASELINE.md` (current truth) and
-> `BASELINE_LOCK.md` (frozen P0 baseline paths).
+> **Status**: Historical reconciliation note from 2026-08-25, with a tip
+> correction recorded below. Not a baseline change and not a new freeze.
+> **Audience**: Future maintainers who notice older text describing
+> `apps/desktop/` as baseline-critical.
+> **Authority**: See `CURRENT_BASELINE.md` (tip paths) and
+> `BASELINE_LOCK.md` (regression lock; recovery tag/branch absent).
+> VM1 integration status is CONDITIONAL PASS / NOT FROZEN:
+> `docs/runtime/visual-migration-vm1-integrated-baseline.md`.
 
 ## What changed
 
@@ -13,7 +15,9 @@ The previous `CURRENT_BASELINE.md` §1 described a runtime that started with
 `apps/desktop/scripts/run-web-dev.mjs` and an Electron-vite pipeline that
 mounted a renderer under `apps/desktop/src/renderer/src/`. That description
 predates the Web-first delivery shape that became the Primary Runtime
-during the `masterpiece-reference-first-stable-2026-08` baseline freeze.
+during the 2026-08 Reference First content pin
+(`deb1cba8b40b22bf9c026ae5ec40f5b46389d6e2`). The tag name
+`masterpiece-reference-first-stable-2026-08` is absent on origin.
 
 The current shipped surface is:
 
@@ -24,24 +28,21 @@ The current shipped surface is:
 | RPC contract | `apps/web/src/web-api.ts` ↔ `apps/web-runtime/src/{local-rpc-server,current-operation-graph,node-native-operations}.ts` |
 | Backend service host | `packages/runtime-core` operation registry |
 
-`apps/desktop/` is a historical artifacts directory. Its current contents:
+On 2026-08-25 this note observed that `apps/desktop/src/` was already gone
+and that `apps/desktop/out/` still held historical smoke-app build outputs.
+That observation is not the tip.
 
-- `apps/desktop/out/` — 20+ historical smoke-app build outputs from prior
-  visual-analysis passes (e.g. `r2-b4-reference-first-app`,
-  `phase9b-real-ab-app`, `r86-final-smoke-app`).
-- `apps/desktop/out/main/`, `apps/desktop/out/preload/`,
-  `apps/desktop/out/renderer/` — last Electron build artifacts.
-- `apps/desktop/node_modules/`, `apps/desktop/release/` — packaging artifacts.
-- `apps/desktop/.codex-runtime/` — empty.
-
-There is no `apps/desktop/package.json`, no `apps/desktop/src/`, and no
-`apps/desktop/electron.vite.config.ts` in the current tree.
+On tip `codex/visual-migration-vm1-integration-freeze`, S5 has removed the
+Desktop/Electron workspace. `apps/desktop/` is not in the tree. There is no
+`apps/desktop/out/`, no `apps/desktop/package.json`, no `apps/desktop/src/`,
+and no `apps/desktop/electron.vite.config.ts`. Do not look for Electron build
+output under `apps/desktop/`.
 
 ## Why the previous §1 was misleading
 
-The `BASELINE_LOCK.md` line 8 explicitly forbids "deletion, move,
-consolidation, rename or rewrite of baseline-critical modules before
-Golden Regression Phase S2 is complete". The §1 narrative treated the
+`BASELINE_LOCK.md` still forbids deletion, move, consolidation, rename,
+or rewrite of baseline-critical modules before Golden Regression Phase S2
+is complete. The §1 narrative treated the
 Electron shell as a live backend host, so anyone reading the baseline
 as a source of truth assumed `apps/desktop/src/main/` was
 authoritative shared code.
@@ -54,13 +55,12 @@ updated. This created a documented-vs-shipped mismatch.
 
 - `BASELINE_LOCK.md` continues to govern P0 baseline-critical paths
   (Visual Analysis, Reference First, Space Generator, Packaging, Provider).
-- The Visual Analysis entry (`apps/desktop/src/main/pipeline-service.ts`
-  referenced in §2 of `CURRENT_BASELINE.md`) is unchanged in scope; if that
-  path is now also served by a `web-runtime` operation, that is a
-  separate §2 reconciliation, tracked here once the audit identifies the
-  new entry point.
-- The `apps/desktop/out/*` historical builds are **not** deleted by this note;
-  removing them is a separate cleanup pass with its own risk profile.
+- Visual Analysis entry on this tip is
+  `packages/runtime-core/src/application/pipeline-service.ts`, which
+  dynamically imports `apps/cli/src/analysis-engine/bootstrap.js` and reads
+  `apps/cli/prompts/analysis/`. `apps/desktop/src/main/pipeline-service.ts`
+  and `apps/cli/src/v5/` are not on this tip.
+- This note does not restore `apps/desktop/out/`. That directory is absent.
 
 ## Verification of the runtime baseline as of 2026-08-25
 
@@ -68,18 +68,18 @@ updated. This created a documented-vs-shipped mismatch.
 |---|---|---|
 | Web host entry exists | `apps/web-runtime/src/main.ts` | ✅ present |
 | Renderer entry exists | `apps/web/src/main.tsx` | ✅ present |
-| Electron entry exists | `apps/desktop/src/main/index.ts` | ❌ not present |
-| Electron renderer exists | `apps/desktop/src/renderer/src/main.tsx` | ❌ not present |
-| `apps/desktop/package.json` | — | ❌ not present |
+| Electron entry | `apps/desktop/src/main/index.ts` | absent on 2026-08-25 and on this tip |
+| Electron renderer | `apps/desktop/src/renderer/src/main.tsx` | absent on 2026-08-25 and on this tip |
+| `apps/desktop/` | whole workspace | absent on this tip (S5) |
+| Analysis entry | `packages/runtime-core/src/application/pipeline-service.ts` | present |
+| Analysis pipeline | `apps/cli/src/analysis-engine/bootstrap.js` | present |
+| Web smoke | `apps/web-runtime/scripts/run-web-primary-smoke.mjs` | present |
 
 ## Forward guidance
 
-If a future audit pass decides to retire `apps/desktop/out/*` historical
-artifacts entirely, do it as a separate change with its own commit, its
-own risk assessment, and a follow-up update to this note. Do not conflate
-historical artifact removal with baseline reconciliation — they have
-different review profiles.
+S5 already removed the Desktop workspace. Do not treat `apps/desktop/out/`
+as a directory that still needs a cleanup pass on this tip.
 
 If a future change reintroduces the Electron Desktop shell as a real
-delivery surface, revert this note and re-author §1 to reflect the new
+delivery surface, re-author `CURRENT_BASELINE.md` §1 to reflect that
 runtime topology.

@@ -2,6 +2,17 @@
 
 This map records ownership and compatibility, not an inferred numeric chronology.
 
+> Tip note: labels marked CURRENT below are the S6 snapshot. On
+> `codex/visual-migration-vm1-integration-freeze` the analysis pipeline is
+> `apps/cli/src/analysis-engine/bootstrap.js` with prompts in
+> `apps/cli/prompts/analysis/`. Space orchestration is
+> `packages/image-generation-runtime/src/generation/compile.js`. The Space
+> compiler file is `packages/image-generation-runtime/src/space/compiler.js`.
+> `apps/cli/src/v5`, `apps/cli/prompts/v5`, `src/vnext/`, and
+> `phase9b-space-compiler` are not files on this tip. Mode aliases
+> `r8_6_golden`, `phase9b_quality`, and `vnext_legacy` remain identifiers.
+> This snapshot is not rewritten.
+
 ## Visual analysis
 
 ```text
