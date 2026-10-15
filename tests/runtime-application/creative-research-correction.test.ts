@@ -47,7 +47,7 @@ async function fixture(root: string) {
   return { base, research, insights };
 }
 
-test('R6 refresh appends novel provenance without mutating Brief, keywords, selections, and passes seen exclusions to search', async () => {
+test('refresh appends novel provenance without mutating Brief, keywords, selections, and passes seen exclusions to search', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r6-refresh-'));
   try {
     const { base, research, insights } = await fixture(root);
@@ -70,7 +70,7 @@ test('R6 refresh appends novel provenance without mutating Brief, keywords, sele
   } finally { await fs.rm(root, { recursive: true, force: true }); }
 });
 
-test('R6 refinement validation rejects historical duplicates and invalid keyword evidence; similar requires a same-session source', async () => {
+test('refinement validation rejects historical duplicates and invalid keyword evidence; similar requires a same-session source', async () => {
   const input: any = { sessionId: 'session-1', profileId: 'p', mode: 'REFRESH', enabledSearchKeywords: [{ id: 'concept-1', value: '公共文化', kind: 'CONCEPT' }], conceptKeywords: [], visualKeywords: [], recentQueries: [{ id: 'old', text: '重复 query', kind: 'CONCEPT', batch: 'b' }], selections: [], activeRejectionReasons: [], preferenceInsights: [] };
   assert.throws(() => normalizeSearchRefinementDrafts({ queries: [{ kind: 'CONCEPT', text: '重复 query', derivedFromKeywordIds: ['concept-1'] }] }, input), (error: any) => error.code === 'CREATIVE_RESEARCH_REFRESH_NO_NOVEL_QUERY');
   assert.throws(() => normalizeSearchRefinementDrafts({ queries: [{ kind: 'CONCEPT', text: 'new', derivedFromKeywordIds: ['fake'] }] }, input), /keyword evidence/u);
@@ -87,7 +87,7 @@ test('R6 refinement validation rejects historical duplicates and invalid keyword
   } finally { await fs.rm(root, { recursive: true, force: true }); }
 });
 
-test('R6 refinement adapter requires the explicit profile and allows only one structured-output repair', async () => {
+test('refinement adapter requires the explicit profile and allows only one structured-output repair', async () => {
   let calls = 0; let diagnostics: any;
   const adapter = createCreativeResearchSearchRefinementAdapter({
     readCredentials: async () => ({ profileId: 'profile-1', displayName: 'Analysis', provider: 'qwen', model: 'analysis-model', modelType: 'analysis', protocol: 'openai-chat', baseUrl: 'https://model.example.com', apiKey: 'secret', isEnabled: true, isDefault: false }),
@@ -99,7 +99,7 @@ test('R6 refinement adapter requires the explicit profile and allows only one st
   await assert.rejects(adapter.planQueries({ sessionId: 'session-1', profileId: '', mode: 'REFRESH', enabledSearchKeywords: [], conceptKeywords: [], visualKeywords: [], recentQueries: [], selections: [], activeRejectionReasons: [], preferenceInsights: [] }), (error: any) => error.code === 'CREATIVE_RESEARCH_CORRECTION_PROFILE_REQUIRED');
 });
 
-test('R6 research search strategy creates revision, preserves facts/evidence, records REMOVE_KEYWORD, and plans novel adjustment queries', async () => {
+test('research search strategy creates revision, preserves facts/evidence, records REMOVE_KEYWORD, and plans novel adjustment queries', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r6-strategy-'));
   try {
     const { base, research } = await fixture(root);
@@ -123,7 +123,7 @@ test('R6 research search strategy creates revision, preserves facts/evidence, re
   } finally { await fs.rm(root, { recursive: true, force: true }); }
 });
 
-test('R6 explicit reanalysis re-reads documents, uses R1 transition, accepts only document factual evidence, and preserves research evidence', async () => {
+test('explicit reanalysis re-reads documents, uses the session transition, accepts only document factual evidence, and preserves research evidence', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r6-reanalysis-'));
   try {
     const { base, research, insights } = await fixture(root);
@@ -141,7 +141,7 @@ test('R6 explicit reanalysis re-reads documents, uses R1 transition, accepts onl
   } finally { await fs.rm(root, { recursive: true, force: true }); }
 });
 
-test('R6 reanalysis rejects fabricated reference factual evidence before writing a revision or feedback signal', async () => {
+test('reanalysis rejects fabricated reference factual evidence before writing a revision or feedback signal', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r6-reanalysis-invalid-'));
   try {
     const { base, research, insights } = await fixture(root);
@@ -156,7 +156,7 @@ test('R6 reanalysis rejects fabricated reference factual evidence before writing
   } finally { await fs.rm(root, { recursive: true, force: true }); }
 });
 
-test('R6 soft correction signal is read-only and appears only after three poor batches', () => {
+test('soft correction signal is read-only and appears only after three poor batches', () => {
   const query = (batch: string, index: number) => ({ id: `q-${index}`, text: `query ${index}`, kind: 'CONCEPT' as const, status: 'COMPLETED' as const, batch, origin: 'REFRESH' as const, createdAt: NOW });
   assert.equal(deriveSoftCorrectionSuggestion([query('b1', 1), query('b2', 2)], [], []), null);
   const queries = [query('b1', 1), query('b2', 2), query('b3', 3)];

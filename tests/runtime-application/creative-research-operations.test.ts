@@ -40,7 +40,7 @@ function briefEvidenceFixture(fieldEvidence?: DesignBrief['fieldEvidence']): Des
   };
 }
 
-test('R4 reference projection exposes browser-safe provenance only', () => {
+test('reference projection exposes browser-safe provenance only', () => {
   const projected = toCreativeResearchReferenceDto({
     id: 'ref-1', sessionId: 'session-1', sourceType: 'WEB_REFERENCE', resourceType: 'IMAGE',
     title: 'Case', sourceUrl: 'https://source.example/case', canonicalUrl: 'https://source.example/case',
@@ -56,7 +56,7 @@ test('R4 reference projection exposes browser-safe provenance only', () => {
   assert.doesNotMatch(JSON.stringify(projected), /localAssetId|contentHash|attribution|must-not-cross/u);
 });
 
-test('R4.1 Brief evidence projection resolves active field traces and redacts source paths', () => {
+test('Brief evidence projection resolves active field traces and redacts source paths', () => {
   const projected = toCreativeResearchBriefDto(briefEvidenceFixture());
   assert.deepEqual(projected.fieldEvidence, [
     { field: 'projectSummary', evidenceIds: ['e1'] },
@@ -71,7 +71,7 @@ test('R4.1 Brief evidence projection resolves active field traces and redacts so
   assert.doesNotMatch(JSON.stringify(projected), /C:\\private|\/private\/intake|raw\.txt|不应投影/u);
 });
 
-test('R4.1 Brief evidence supports multiple evidence and drops stale or unknown ids after designer override', () => {
+test('Brief evidence supports multiple evidence and drops stale or unknown ids after designer override', () => {
   const active = projectCreativeResearchBriefEvidence(briefEvidenceFixture({ audience: ['e1', 'e2', 'unknown'] }));
   assert.deepEqual(active.fieldEvidence, [{ field: 'audience', evidenceIds: ['e1', 'e2'] }]);
   assert.deepEqual(active.evidence.map((item) => item.id), ['e1', 'e2']);
@@ -82,7 +82,7 @@ test('R4.1 Brief evidence supports multiple evidence and drops stale or unknown 
   assert.deepEqual(fullyOverridden, { evidence: [], fieldEvidence: [] });
 });
 
-test('R4 operation layer keeps credential write-only and retries the same failed query', async () => {
+test('operation layer keeps credential write-only and retries the same failed query', async () => {
   let secret = '';
   let deletedSessionId = '';
   let history = [query('q-failed', 'FAILED'), query('q-ok', 'COMPLETED')];
@@ -127,7 +127,7 @@ test('R4 operation layer keeps credential write-only and retries the same failed
   assert.equal(history[0]?.id, 'q-failed');
 });
 
-test('R4 view model derives honest states, cross-query filters, and rejects unsafe source URLs', () => {
+test('view model derives honest states, cross-query filters, and rejects unsafe source URLs', () => {
   assert.equal(deriveResearchUiState([], ''), 'NOT_STARTED');
   assert.equal(deriveResearchUiState([], 'planning'), 'PLANNING');
   assert.equal(deriveResearchUiState([query('a', 'COMPLETED'), query('b', 'FAILED')], ''), 'PARTIAL_FAILURE');
@@ -140,7 +140,7 @@ test('R4 view model derives honest states, cross-query filters, and rejects unsa
   assert.equal(safeReferenceUrl('https://example.com/source'), 'https://example.com/source');
 });
 
-test('R8 unavailable remote images fail closed to a visible placeholder', async () => {
+test('unavailable remote images fail closed to a visible placeholder', async () => {
   const [referenceCard, directionWorkspace] = await Promise.all([
     fs.readFile('apps/web/src/features/creative-research/ReferenceCard.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/DirectionWorkspace.tsx', 'utf8'),
@@ -162,7 +162,7 @@ test('research rerun targets failed and pending queries while preserving complet
   assert.deepEqual(retryableSearchQueryIds([query('completed', 'COMPLETED')] as any), []);
 });
 
-test('R4.1 view model separates Concept and Category before applying current-kind query chips', () => {
+test('view model separates Concept and Category before applying current-kind query chips', () => {
   const queries = [query('concept-1', 'COMPLETED', 'CONCEPT'), query('category-1', 'COMPLETED', 'CATEGORY')];
   const references = [
     { id: 'concept-only', matchedQueryIds: ['concept-1'] },

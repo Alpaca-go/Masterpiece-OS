@@ -45,7 +45,7 @@ function validPlan(): CreativeResearchPlan {
   };
 }
 
-test('R3.1 request builder emits the exact official resource_type_filter array and caps each modality', () => {
+test('request builder emits the exact official resource_type_filter array and caps each modality', () => {
   const body = buildBaiduReferenceSearchRequest({ sessionId: 'session-1', queryId: 'query-1', query: 'brand identity', kind: 'CONCEPT', limit: 20 });
   assert.equal(body.search_source, 'baidu_search_v2');
   assert.equal(Array.isArray(body.resource_type_filter), true);
@@ -61,7 +61,7 @@ test('R3.1 request builder emits the exact official resource_type_filter array a
   ]);
 });
 
-test('Visual Search v2 routes knowledge and visual intents to different modality budgets', () => {
+test('Visual Search routes knowledge and visual intents to different modality budgets', () => {
   assert.deepEqual(buildBaiduReferenceSearchRequest({ sessionId: 's', queryId: 'knowledge', query: 'brand market', kind: 'CATEGORY', intent: 'KNOWLEDGE' }).resource_type_filter, [
     { type: 'web', top_k: 15 }, { type: 'image', top_k: 2 },
   ]);
@@ -70,7 +70,7 @@ test('Visual Search v2 routes knowledge and visual intents to different modality
   ]);
 });
 
-test('R3.1 query units and deterministic trimming cover ASCII, Chinese, mixed text, whitespace and emoji', () => {
+test('query units and deterministic trimming cover ASCII, Chinese, mixed text, whitespace and emoji', () => {
   const ascii72 = 'a'.repeat(72);
   const ascii73 = 'a'.repeat(73);
   const chinese36 = '中'.repeat(36);
@@ -113,7 +113,7 @@ function serviceFor(session: CreativeResearchSession, brief: DesignBrief, onSave
   });
 }
 
-test('R3.1 startResearch delegates INTAKE -> RESEARCH authority to the R1 invariant', async () => {
+test('startResearch delegates INTAKE -> RESEARCH authority to the session transition invariant', async () => {
   const session: CreativeResearchSession = {
     id: 'session-1', projectId: 'project-1', status: 'INTAKE', sourceDocumentIds: ['document-1'],
     activeDesignBriefId: 'brief-1', createdAt: NOW, updatedAt: NOW,

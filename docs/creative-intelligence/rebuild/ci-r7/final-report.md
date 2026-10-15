@@ -170,7 +170,7 @@ Direction Board / Context 只保存 Reference ids、provenance metadata、
 R1-R6 targeted regression: **PASS**（R5 selection/preferences、R6 correction、
 R4 operations、R3 search、R2 service/store、invariants 全部保持绿色）
 R7 targeted contract tests: **PASS (11/11)**，
-`tests/runtime-application/creative-research-r7-direction.test.ts` 覆盖
+`tests/runtime-application/creative-research-direction.test.ts` 覆盖
 §41–49：Direction entry、initial board 证据权威、board save 校验与零底层写入、
 return/re-enter reconcile、context compile 精确 provenance、completion 与只读、
 Browser DTO 安全（无绝对路径/sourceDocumentIds/凭据/图片二进制）、

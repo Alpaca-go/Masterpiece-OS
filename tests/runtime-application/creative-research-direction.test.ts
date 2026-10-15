@@ -86,7 +86,7 @@ async function seedSession(stack: ReturnType<typeof createStack>, options: {
   return sessionId;
 }
 
-test('R7 direction entry requires RESEARCH with a designer-selected reference and rejects INTAKE/COMPLETED', async () => {
+test('direction entry requires RESEARCH with a designer-selected reference and rejects INTAKE/COMPLETED', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-entry-'));
   try {
     const stack = createStack(root);
@@ -104,7 +104,7 @@ test('R7 direction entry requires RESEARCH with a designer-selected reference an
   }
 });
 
-test('R7 direction entry activates DIRECTION with the saved board id and resumes idempotently', async () => {
+test('direction entry activates DIRECTION with the saved board id and resumes idempotently', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-resume-'));
   try {
     const stack = createStack(root);
@@ -134,7 +134,7 @@ test('R7 direction entry activates DIRECTION with the saved board id and resumes
   }
 });
 
-test('R7 initial board keeps only current evidence: selected refs, active rejections, FINALIZED insights with designer override', async () => {
+test('initial board keeps only current evidence: selected refs, active rejections, FINALIZED insights with designer override', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-initial-'));
   try {
     const stack = createStack(root);
@@ -176,7 +176,7 @@ test('R7 initial board keeps only current evidence: selected refs, active reject
   }
 });
 
-test('R7 initial board summary falls back to brief visualKeywords plus selected attributes', async () => {
+test('initial board summary falls back to brief visualKeywords plus selected attributes', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-fallback-'));
   try {
     const stack = createStack(root);
@@ -195,7 +195,7 @@ test('R7 initial board summary falls back to brief visualKeywords plus selected 
   }
 });
 
-test('R7 board save appends a revision, preserves history across reload, and writes nothing below the board', async () => {
+test('board save appends a revision, preserves history across reload, and writes nothing below the board', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-save-'));
   try {
     const stack = createStack(root);
@@ -247,7 +247,7 @@ test('R7 board save appends a revision, preserves history across reload, and wri
   }
 });
 
-test('R7 board save rejects unselected, nonexistent and cross-session evidence', async () => {
+test('board save rejects unselected, nonexistent and cross-session evidence', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-save-invalid-'));
   try {
     const stack = createStack(root);
@@ -290,7 +290,7 @@ test('R7 board save rejects unselected, nonexistent and cross-session evidence',
   }
 });
 
-test('R7 return-to-research preserves all evidence and re-entry clones authored text without overwriting it', async () => {
+test('return-to-research preserves all evidence and re-entry clones authored text without overwriting it', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-reentry-'));
   try {
     const stack = createStack(root);
@@ -356,7 +356,7 @@ test('R7 return-to-research preserves all evidence and re-entry clones authored 
   }
 });
 
-test('R8 direction re-entry compares first-finalized time while preserving legacy createdAt fallback', async () => {
+test('direction re-entry compares first-finalized time while preserving legacy createdAt fallback', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r8-finalized-timing-'));
   try {
     const stack = createStack(root);
@@ -406,7 +406,7 @@ test('R8 direction re-entry compares first-finalized time while preserving legac
   }
 });
 
-test('R8 failed Direction Board atomic write preserves the current revision and active board id', async () => {
+test('failed Direction Board atomic write preserves the current revision and active board id', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r8-board-write-failure-'));
   try {
     const stack = createStack(root);
@@ -448,7 +448,7 @@ test('R8 failed Direction Board atomic write preserves the current revision and 
   }
 });
 
-test('R8 Context failure keeps DIRECTION recoverable and completion retry reuses persisted Context', async () => {
+test('Context failure keeps DIRECTION recoverable and completion retry reuses persisted Context', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r8-context-recovery-'));
   try {
     const stack = createStack(root);
@@ -516,7 +516,7 @@ test('R8 Context failure keeps DIRECTION recoverable and completion retry reuses
   }
 });
 
-test('R7 completeDirection compiles an exact, persisted, immutable context and freezes the session', async () => {
+test('completeDirection compiles an exact, persisted, immutable context and freezes the session', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-complete-'));
   try {
     const stack = createStack(root);
@@ -600,7 +600,7 @@ test('R7 completeDirection compiles an exact, persisted, immutable context and f
   }
 });
 
-test('R7 COMPLETED session is read-only for selections, preference insights and new searches', async () => {
+test('COMPLETED session is read-only for selections, preference insights and new searches', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-readonly-'));
   try {
     const stack = createStack(root);
@@ -654,7 +654,7 @@ test('R7 COMPLETED session is read-only for selections, preference insights and 
   }
 });
 
-test('R7 operations layer keeps browser DTOs safe and ignores hostile board-update identity fields', async () => {
+test('operations layer keeps browser DTOs safe and ignores hostile board-update identity fields', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-operations-'));
   try {
     const stack = createStack(root);
@@ -713,7 +713,7 @@ test('R7 operations layer keeps browser DTOs safe and ignores hostile board-upda
   }
 });
 
-test('R7 full direction flow makes zero provider calls and zero downstream writes', async () => {
+test('full direction flow makes zero provider calls and zero downstream writes', async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'cr-r7-offline-'));
   try {
     const stack = createStack(root);

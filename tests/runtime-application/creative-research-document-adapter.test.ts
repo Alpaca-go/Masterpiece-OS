@@ -22,8 +22,8 @@ function makePdf(text: string): Buffer {
   return Buffer.from(output, 'ascii');
 }
 
-test('R2 document adapter reads PDF, DOCX, Markdown and text as traceable multi-document evidence', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r2-docs-'));
+test('document adapter reads PDF, DOCX, Markdown and text as traceable multi-document evidence', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-docs-'));
   try {
     const sources = new Map<string, string>();
     const markdown = path.join(temporary, 'brief.md');
@@ -55,8 +55,8 @@ test('R2 document adapter reads PDF, DOCX, Markdown and text as traceable multi-
   }
 });
 
-test('R2 document adapter preserves same-section conflicts and fails closed for unsupported or empty input', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r2-conflict-'));
+test('document adapter preserves same-section conflicts and fails closed for unsupported or empty input', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-conflict-'));
   try {
     const first = path.join(temporary, 'first.md');
     const second = path.join(temporary, 'second.md');

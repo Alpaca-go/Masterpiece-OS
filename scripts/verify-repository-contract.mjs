@@ -40,8 +40,15 @@ export function classifyCurrentPath(relativePath, allowlistedPaths = []) {
   const segments = normalized.split('/');
   for (let index = 0; index < segments.length; index += 1) {
     const segment = segments[index];
-    if (index === segments.length - 1 && path.extname(segment)) continue;
     const parent = segments[index - 1]?.toLowerCase();
+    if (index === segments.length - 1 && path.extname(segment)) {
+      const stem = segment.slice(0, -path.extname(segment).length);
+      const hasStageName = /(?:^|[-_.])(?:v\d+(?:[._-]\d+)*|vnext\d*|v-next\d*|phase\d+[a-z]?|r\d+(?:[._-]\d+)*)(?=$|[-_.])/i.test(stem);
+      if (hasStageName && !VERSIONED_CONTRACT_PARENTS.has(parent)) {
+        return { code: 'RC001', path: normalized, detail: `version identity filename: ${segment}` };
+      }
+      continue;
+    }
     if (VERSION_SEGMENT.test(segment) && !VERSIONED_CONTRACT_PARENTS.has(parent)) {
       return { code: 'RC001', path: normalized, detail: `version identity directory: ${segment}` };
     }
