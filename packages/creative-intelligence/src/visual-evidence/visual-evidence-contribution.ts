@@ -35,7 +35,8 @@
  *     / Concept to Direction. It only produces per-item facts that go
  *     THROUGH the existing CI-4 / CI-5 / CI-6 pipeline.
  *
- * Pure functions only. No model calls or IO.
+ * Pure functions only. No model calls. No IO except reading the vnext JSON
+ * if a path is provided.
  */
 
 import type { ProjectTruthFact } from '../truth/contracts.ts';
@@ -80,9 +81,9 @@ export interface VisualEvidenceContribution {
   projectId: string;
   /** Source of the contribution. */
   source: 'visual_decision_packet';
-  /** project visual context schemaVersion at extraction time. */
+  /** vnext.json schemaVersion at extraction time. */
   vnextSchemaVersion: string;
-  /** project visual context `version` field. */
+  /** vnext.json `version` field. */
   vnextVersion: number;
   /** Per-item observed facts (VISUAL_SOURCE_FACT). */
   observedFacts: VisualObservedFact[];
@@ -90,8 +91,8 @@ export interface VisualEvidenceContribution {
   inferredMeanings: VisualInferredMeaning[];
 }
 
-/** Shape of the project visual context we consume. */
-interface ProjectVisualContextShape {
+/** Shape of the vnext.json we consume. */
+interface VnextShape {
   schemaVersion?: string;
   version?: number;
   visualDecisionPacket?: {
@@ -174,28 +175,28 @@ function buildStatement(
 }
 
 /**
- * Build a VisualEvidenceContribution from a project visual context shape.
+ * Build a VisualEvidenceContribution from a vnext.json shape.
  * Pure function. No IO.
  *
  * @param projectId Project id (becomes contribution.projectId).
- * @param visualContext The parsed project visual context content.
- * @param assetInventoryPath The path used in sourceRef (e.g.
+ * @param vnext The parsed vnext.json content.
+ * @param vnextAssetInventoryPath The path used in sourceRef (e.g.
  *   "project-visual-context.vnext.json#visualDecisionPacket.assetInventory").
  *   Defaults to a standard path.
  */
 export function buildVisualEvidenceContribution(
   projectId: string,
-  visualContext: ProjectVisualContextShape,
-  assetInventoryPath: string = 'project-visual-context.vnext.json#visualDecisionPacket.assetInventory',
+  vnext: VnextShape,
+  vnextAssetInventoryPath: string = 'project-visual-context.vnext.json#visualDecisionPacket.assetInventory',
 ): VisualEvidenceContribution {
   const observedFacts: VisualObservedFact[] = [];
   const inferredMeanings: VisualInferredMeaning[] = [];
-  const inventory = visualContext.visualDecisionPacket?.assetInventory;
+  const inventory = vnext.visualDecisionPacket?.assetInventory;
   if (inventory) {
     for (const { kind, path } of KIND_PATHS) {
       const items = inventory[path] ?? [];
       for (const item of items) {
-        const sourceRef = `${assetInventoryPath}.${path}[${items.indexOf(item)}]`;
+        const sourceRef = `${vnextAssetInventoryPath}.${path}[${items.indexOf(item)}]`;
         const statement = buildStatement(kind, item.name, item.visualFeatures, item.assetId);
         const confidence = 0.8; // visualDecisionPacket items are structured-analysis output
         observedFacts.push({
@@ -224,8 +225,8 @@ export function buildVisualEvidenceContribution(
   return {
     projectId,
     source: 'visual_decision_packet',
-    vnextSchemaVersion: visualContext.schemaVersion ?? 'unknown',
-    vnextVersion: visualContext.version ?? 0,
+    vnextSchemaVersion: vnext.schemaVersion ?? 'unknown',
+    vnextVersion: vnext.version ?? 0,
     observedFacts,
     inferredMeanings,
   };

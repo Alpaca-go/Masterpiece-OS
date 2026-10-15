@@ -24,7 +24,7 @@ First user-facing Creative Research workspace. R4 stops at intake, editable Desi
 - `apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx`
 - `apps/web/src/features/creative-research/creative-research-view-model.ts`
 - `apps/web/src/features/creative-research/creative-research.css`
-- `tests/runtime-application/creative-research-operations.test.ts`
+- `tests/runtime-application/creative-research-r4-operations.test.ts`
 
 ## Public RPC
 

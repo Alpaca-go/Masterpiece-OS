@@ -47,8 +47,8 @@ function dependencies(root: string, writeJson?: typeof atomicWriteJsonWithRetry)
   return { store, documentAdapter, analysisAdapter };
 }
 
-test('service persists session and monotonic Design Brief revisions while Session remains INTAKE', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-store-'));
+test('R2 service persists session and monotonic Design Brief revisions while Session remains INTAKE', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r2-store-'));
   try {
     const { store, documentAdapter, analysisAdapter } = dependencies(temporary);
     const service = createCreativeResearchDesignBriefService({
@@ -85,8 +85,8 @@ test('service persists session and monotonic Design Brief revisions while Sessio
   }
 });
 
-test('store rejects duplicate revisions and reports write failure without false success', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-write-failure-'));
+test('R2 store rejects duplicate revisions and reports write failure without false success', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r2-write-failure-'));
   try {
     const failingWriter: typeof atomicWriteJsonWithRetry = async (filename, value, options) => {
       if (path.basename(filename) === '0001.json') {

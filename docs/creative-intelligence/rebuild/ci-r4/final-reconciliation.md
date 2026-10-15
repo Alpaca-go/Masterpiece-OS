@@ -27,7 +27,7 @@ generation, or downstream handoff behavior was added.
 - `apps/web/src/features/creative-research/creative-research-view-model.ts`
 - `apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx`
 - `apps/web/src/features/creative-research/creative-research.css`
-- `tests/runtime-application/creative-research-operations.test.ts`
+- `tests/runtime-application/creative-research-r4-operations.test.ts`
 
 ## Concept and Category Separation
 

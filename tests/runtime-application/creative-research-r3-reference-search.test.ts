@@ -78,7 +78,7 @@ test('Research Plan compiler preserves track provenance and keeps deferred visua
   assert.doesNotMatch(queries.map((query) => query.text).join(' '), /克制|留白|disabled/u);
 });
 
-test('Baidu provider consumes references only, normalizes provenance and deduplicates image URLs', async () => {
+test('R3 Baidu provider consumes references only, normalizes provenance and deduplicates image URLs', async () => {
   const fixture = await fs.readFile(fixturePath, 'utf8');
   let requestBody = '';
   let authorization = '';
@@ -110,7 +110,7 @@ test('Baidu provider consumes references only, normalizes provenance and dedupli
   assert.doesNotMatch(JSON.stringify(page), /generated answer/u);
 });
 
-test('credential reader uses the dedicated encrypted-store identifier instead of a model profile', async () => {
+test('R3 credential reader uses the dedicated encrypted-store identifier instead of a model profile', async () => {
   let requested = '';
   const readCredential = createBaiduReferenceSearchCredentialReader({
     async read(profileId) { requested = profileId; return 'stored-secret'; },
@@ -121,7 +121,7 @@ test('credential reader uses the dedicated encrypted-store identifier instead of
   assert.equal(BAIDU_REFERENCE_RETENTION_POLICY, 'PROVENANCE_METADATA_ONLY');
 });
 
-test('Baidu provider fails closed for missing credentials and retries one server failure only', async () => {
+test('R3 Baidu provider fails closed for missing credentials and retries one server failure only', async () => {
   await assert.rejects(
     createBaiduReferenceSearchGateway({ readCredential: () => '', maxRetries: 0 }).search({ sessionId: 's', queryId: 'q', query: 'brand', kind: 'CONCEPT' }),
     (error: any) => error.code === 'SEARCH_CREDENTIAL_REQUIRED',
@@ -140,7 +140,7 @@ test('Baidu provider fails closed for missing credentials and retries one server
   assert.deepEqual(page.items, []);
 });
 
-test('Baidu provider classifies auth, rate-limit and invalid-response failures without aggressive retries', async () => {
+test('R3 Baidu provider classifies auth, rate-limit and invalid-response failures without aggressive retries', async () => {
   const cases = [
     { status: 401, body: '{}', code: 'AUTH_FAILED' },
     { status: 429, body: '{}', code: 'RATE_LIMITED' },
@@ -160,7 +160,7 @@ test('Baidu provider classifies auth, rate-limit and invalid-response failures w
   }
 });
 
-test('Baidu timeout aborts safely and exposes no credential in the error', async () => {
+test('R8 Baidu timeout aborts safely and exposes no credential in the error', async () => {
   const gateway = createBaiduReferenceSearchGateway({
     readCredential: () => 'timeout-test-secret', timeoutMs: 1, maxRetries: 0,
     fetch: async (_url, init) => new Promise<Response>((_resolve, reject) => {
@@ -179,8 +179,8 @@ test('Baidu timeout aborts safely and exposes no credential in the error', async
   );
 });
 
-test('lifecycle persists INTAKE to RESEARCH, query status, deduped references and cross-query associations', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-'));
+test('R3 lifecycle persists INTAKE to RESEARCH, query status, deduped references and cross-query associations', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r3-'));
   try {
     const base = createCreativeResearchStore({ readDefaultDataPath: () => temporary });
     const research = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
@@ -233,7 +233,7 @@ test('lifecycle persists INTAKE to RESEARCH, query status, deduped references an
   }
 });
 
-test('partial search batch preserves completed references and records failed query state', async () => {
+test('R8 partial search batch preserves completed references and records failed query state', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r8-partial-search-'));
   try {
     const base = createCreativeResearchStore({ readDefaultDataPath: () => temporary });

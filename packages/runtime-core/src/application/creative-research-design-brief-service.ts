@@ -98,7 +98,7 @@ export function createCreativeResearchDesignBriefService(options: {
     designerNotes?: string[];
   }): Promise<DesignBrief> {
     const session = await requireSession(sessionId);
-    if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', '只允许在 INTAKE 阶段生成 Design Brief');
+    if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', 'R2 只允许在 INTAKE 阶段生成 Design Brief');
     if (await options.briefs.getActiveRevision(sessionId)) {
       throw creativeResearchError('CREATIVE_RESEARCH_BRIEF_CONFLICT', 'Design Brief 已存在；请使用 updateDesignBrief 创建新 revision');
     }
@@ -197,7 +197,7 @@ export function createCreativeResearchDesignBriefService(options: {
 
   async function updateDesignBrief(sessionId: string, patch: DesignBriefUpdate): Promise<DesignBrief> {
     const session = await requireSession(sessionId);
-    if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', '更新 Design Brief 时 Session 必须保持 INTAKE');
+    if (session.status !== 'INTAKE') throw creativeResearchError('CREATIVE_RESEARCH_SESSION_CONFLICT', 'R2 更新 Design Brief 时 Session 必须保持 INTAKE');
     const previous = await getDesignBrief(sessionId);
     const timestamp = now();
     const briefId = createId();

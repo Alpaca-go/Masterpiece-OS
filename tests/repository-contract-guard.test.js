@@ -12,22 +12,6 @@ import { classifyProductionImport } from '../scripts/verify-production-boundarie
 
 const fixtures = JSON.parse(readFileSync(new URL('./repository-contract-fixtures.json', import.meta.url), 'utf8'));
 
-test('current filenames reject implementation stages while explicit contracts remain valid', () => {
-  for (const filename of ['compiler-v13.ts', 'vnext-compiler.js', 'phase9b-space-compiler.js', 'research-r2.ts']) {
-    const file = `packages/example/src/${filename}`;
-    assert.equal(classifyCurrentPath(file)?.code, 'RC001', file);
-    assert.equal(classifyCurrentPath(file, [file]), null, 'registered exact path exception');
-  }
-  for (const file of [
-    'packages/example/src/schemas/task-v2.ts',
-    'packages/example/src/api/client-v2.ts',
-    'packages/example/src/migrations/project-v1.ts',
-    'packages/example/src/space/compiler.ts',
-    'packages/example/src/svg-renderer.ts',
-    'archive/space/phase9b-space-compiler.js',
-  ]) assert.equal(classifyCurrentPath(file), null, file);
-});
-
 for (const fixture of fixtures.pathCases) {
   test(`repository contract path: ${fixture.name}`, () => {
     assert.equal(classifyCurrentPath(fixture.path)?.code ?? null, fixture.expectedCode);

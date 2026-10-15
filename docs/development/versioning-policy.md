@@ -34,13 +34,6 @@ Trace-specific fields such as `compilerVersion`, `adapterVersion`, and
 
 ## Ownership
 
-Development-document revision numbers do not name implementation files. A new
-brief should identify the existing capability authority, behavior delta,
-compatibility impact, and required checks. Update that authority instead of
-creating another versioned implementation. Internal renames must update imports,
-exports, scripts, tests, documentation links, and governance paths together.
-See the [naming audit and rename map](../repository/version-naming-cleanup.md).
-
 - Product release: `VERSION` and `scripts/sync-product-version.mjs`.
 - Schema version: the package that owns the serialized artifact.
 - Component and prompt version: the implementation module that emits the trace.

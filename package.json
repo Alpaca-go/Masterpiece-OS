@@ -2,7 +2,7 @@
   "name": "masterpiece-os",
   "version": "5.0.0-rc.1",
   "private": true,
-  "description": "Masterpiece OS：项目视觉理解、设计决策、媒介转译与受控生图交付系统",
+  "description": "Masterpiece OS v5：项目视觉理解、设计决策、媒介转译与受控生图交付系统",
   "type": "module",
   "workspaces": [
       "apps/*",

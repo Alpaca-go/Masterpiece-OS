@@ -24,7 +24,7 @@ const valid = {
   warnings: [],
 };
 
-test('Design Brief normalization caps collections and rejects invented evidence', () => {
+test('R2 Design Brief normalization caps collections and rejects invented evidence', () => {
   const normalized = normalizeDesignBriefDraft(valid, ['evidence-1']);
   assert.equal(normalized.scenarios.length, 8);
   assert.deepEqual(normalized.evidenceIds, ['evidence-1']);
@@ -52,7 +52,7 @@ test('Design Brief normalization caps collections and rejects invented evidence'
   assert.deepEqual(publicDtoRefs.evidenceIds, ['evidence-1']);
 });
 
-test('repair prompt includes evidence excerpts and the exact factual fieldEvidence contract', () => {
+test('R2 repair prompt includes evidence excerpts and the exact factual fieldEvidence contract', () => {
   const messages = buildDesignBriefRepairMessages(
     JSON.stringify({ ...valid, fieldEvidence: { ...valid.fieldEvidence, designTask: undefined } }),
     'designTask 缺少文档证据引用',
@@ -65,7 +65,7 @@ test('repair prompt includes evidence excerpts and the exact factual fieldEviden
   assert.match(payload.repairRules.join('\n'), /union/u);
 });
 
-test('analysis adapter uses one primary call and at most one structured repair through profile credentials', async () => {
+test('R2 analysis adapter uses one primary call and at most one structured repair through profile credentials', async () => {
   const outputs = ['not-json', JSON.stringify(valid)];
   let calls = 0;
   let diagnostics: any;

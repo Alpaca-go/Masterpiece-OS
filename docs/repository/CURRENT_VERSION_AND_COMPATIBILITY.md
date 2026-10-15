@@ -2,9 +2,6 @@
 
 This page is a navigation aid, not a second registry.
 
-For the file-by-file naming audit, rename map, preservation reasons, and future
-development-document handoff rules, see [版本命名整理与维护指南](./version-naming-cleanup.md).
-
 ## Product version
 
 The product version authority is `/VERSION`. The synchronization script writes

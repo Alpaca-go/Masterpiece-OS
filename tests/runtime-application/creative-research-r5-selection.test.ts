@@ -29,8 +29,8 @@ function ids(...values: string[]) {
   return () => values[index++] || `generated-${index}`;
 }
 
-test('selection persists NONE/SELECTED/REJECTED current state with session identity and immutable rejection history', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-selection-'));
+test('R5 selection persists NONE/SELECTED/REJECTED current state with session identity and immutable rejection history', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r5-selection-'));
   try {
     const first = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     await first.references.storeReference(reference('reference-1'));
@@ -78,8 +78,8 @@ test('selection persists NONE/SELECTED/REJECTED current state with session ident
   }
 });
 
-test('selection rejects fake/cross-session references and invalid attributes', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-containment-'));
+test('R5 selection rejects fake/cross-session references and invalid attributes', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r5-containment-'));
   try {
     const store = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     await store.references.storeReference(reference('reference-2', 'session-2'));
@@ -97,8 +97,8 @@ test('selection rejects fake/cross-session references and invalid attributes', a
   }
 });
 
-test('rapid selection writes serialize by reference and reload the last submitted state', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-concurrency-'));
+test('R5 rapid selection writes serialize by reference and reload the last submitted state', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r5-concurrency-'));
   try {
     const store = createCreativeResearchResearchStore({ readDefaultDataPath: () => temporary });
     await store.references.storeReference(reference('reference-1'));
@@ -118,7 +118,7 @@ test('rapid selection writes serialize by reference and reload the last submitte
   }
 });
 
-test('operation DTO stays browser-safe and selection actions make zero model or import calls', async () => {
+test('R5 operation DTO stays browser-safe and selection actions make zero model or import calls', async () => {
   let modelCalls = 0;
   let importCalls = 0;
   const saved = {
@@ -153,7 +153,7 @@ test('operation DTO stays browser-safe and selection actions make zero model or 
   void modelCalls; void importCalls;
 });
 
-test('Selection Tray counts only current SELECTED evidence and existing attributes', () => {
+test('R5 Selection Tray counts only current SELECTED evidence and existing attributes', () => {
   const summary = deriveSelectionTraySummary([
     { referenceId: 'selected-1', state: 'SELECTED', selectedAttributes: ['TYPOGRAPHY', 'LAYOUT'], updatedAt: NOW },
     { referenceId: 'selected-2', state: 'SELECTED', selectedAttributes: ['LAYOUT', 'MATERIAL'], updatedAt: NOW },

@@ -58,8 +58,8 @@ async function fixture(root: string) {
   return { base, research, insights, selection };
 }
 
-test('preference service requires three selections and sends only selected evidence plus active rejection reasons', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-preference-'));
+test('R5 preference service requires three selections and sends only selected evidence plus active rejection reasons', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r5-preference-'));
   try {
     const { base, research, insights } = await fixture(temporary);
     let captured: any;
@@ -104,7 +104,7 @@ test('preference service requires three selections and sends only selected evide
   }
 });
 
-test('finalizedAt is valid only on FINALIZED insights and is immutable after persistence', async () => {
+test('R8 finalizedAt is valid only on FINALIZED insights and is immutable after persistence', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r8-finalized-at-'));
   try {
     const store = createCreativeResearchPreferenceStore({ readDefaultDataPath: () => temporary });
@@ -134,8 +134,8 @@ test('finalizedAt is valid only on FINALIZED insights and is immutable after per
   }
 });
 
-test('preference service fails below minimum and rejects fabricated adapter evidence before persistence', async () => {
-  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-preference-invalid-'));
+test('R5 preference service fails below minimum and rejects fabricated adapter evidence before persistence', async () => {
+  const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-r5-preference-invalid-'));
   try {
     const { base, research, insights, selection } = await fixture(temporary);
     await selection.setReferenceSelection({ sessionId: 'session-1', referenceId: 'selected-3', state: 'NONE', selectedAttributes: [] });
@@ -165,7 +165,7 @@ function adapterInput(imageCount = 1) {
   };
 }
 
-test('preference adapter enforces explicit multimodal profile, one repair, evidence allowlists and 12-image budget', async () => {
+test('R5 preference adapter enforces explicit multimodal profile, one repair, evidence allowlists and 12-image budget', async () => {
   let calls = 0;
   let diagnostics: any;
   const adapter = createCreativeResearchPreferenceAnalysisAdapter({
@@ -197,7 +197,7 @@ test('preference adapter enforces explicit multimodal profile, one repair, evide
   await assert.rejects(unsupported.analyzePreferences(adapterInput()), (error: any) => error.code === 'CREATIVE_RESEARCH_PREFERENCE_PROFILE_UNSUPPORTED');
 });
 
-test('preference UI keeps AI interpretation as draft evidence under explicit designer authority', async () => {
+test('R5 preference UI keeps AI interpretation as draft evidence under explicit designer authority', async () => {
   const [workspace, panel, operations] = await Promise.all([
     fs.readFile('apps/web/src/features/creative-research/CreativeResearchWorkspace.tsx', 'utf8'),
     fs.readFile('apps/web/src/features/creative-research/PreferenceInsightsPanel.tsx', 'utf8'),
@@ -215,7 +215,7 @@ test('preference UI keeps AI interpretation as draft evidence under explicit des
   assert.doesNotMatch(`${workspace}\n${panel}\n${operations}`, /compile-direction/iu);
 });
 
-test('preference adapter rejects unknown evidence after its single repair and validates category/confidence', async () => {
+test('R5 preference adapter rejects unknown evidence after its single repair and validates category/confidence', async () => {
   let calls = 0;
   const invalid = JSON.stringify({ insights: [{ category: 'LAYOUT', summary: '虚构', confidence: .5, supportingReferenceIds: ['fabricated'], supportingNegativeSignalIds: [] }] });
   const adapter = createCreativeResearchPreferenceAnalysisAdapter({

@@ -20,7 +20,7 @@ function reference(remoteImageUrl = 'https://93.184.216.34/reference.png'): WebR
   };
 }
 
-test('Visual Search caches a validated remote image as persistent WebP', async () => {
+test('Visual Search v2 caches a validated remote image as persistent WebP', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-image-cache-'));
   try {
     const source = await sharp({ create: { width: 640, height: 480, channels: 3, background: '#ccbbaa' } }).png().toBuffer();
@@ -39,7 +39,7 @@ test('Visual Search caches a validated remote image as persistent WebP', async (
   } finally { await fs.rm(temporary, { recursive: true, force: true }); }
 });
 
-test('Visual Search rejects private hosts, SVG, and undersized images without losing reference provenance', async () => {
+test('Visual Search v2 rejects private hosts, SVG, and undersized images without losing reference provenance', async () => {
   const temporary = await fs.mkdtemp(path.join(os.tmpdir(), 'creative-research-image-reject-'));
   try {
     let calls = 0;
