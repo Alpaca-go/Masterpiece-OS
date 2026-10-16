@@ -231,7 +231,11 @@ function signalsToActions(signals) {
 }
 function textToActions(text) {
   const signals = detectSignals(text);
-  return { signals, ...signalsToActions(signals) };
+  const source = String(text || "").trim();
+  // Signals classify existing intent; they do not authorize new objects,
+  // geometry, lighting hardware or operational relationships.
+  const scoped = signals.length && source ? [source] : [];
+  return { signals, strategy: [...scoped], form: [...scoped], organization: [...scoped] };
 }
 function rewriteArchitectureItems(items) {
   const list = Array.isArray(items) ? items : [];
@@ -255,7 +259,7 @@ function rewriteArchitectureItems(items) {
       dropped += 1;
       continue;
     }
-    const actions = signalsToActions(signals);
+    const actions = textToActions(strippedText);
     rewritten += 1;
     for (const s of actions.strategy) {
       const k = s.toLowerCase();

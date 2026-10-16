@@ -183,6 +183,23 @@ function renderMaterial(layers) {
   if (!body.length) body.push("- Materials, joints and surfaces must be physically credible and buildable.");
   return block("material", "Material System", body.join("\n"));
 }
+function renderColor(layers) {
+  const lines = [
+    "Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.",
+    "Preserve each supplied carrier and scope. Unknown ratios stay unknown; color alone does not authorize geometry."
+  ];
+  for (const group of ["primary", "secondary", "accent"]) {
+    for (const item of layers.color[group]) {
+      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | spatial scope: ${item.spatialUsage}`);
+      for (const key of ["role", "semanticMeaning", "surfaceApplicability", "ratio"]) {
+        if (item[key] !== undefined && item[key] !== "") lines.push(`  ${key}: ${typeof item[key] === "string" ? item[key] : JSON.stringify(item[key])}`);
+      }
+      if (item.ratio === undefined) lines.push("  area ratio: unknown");
+    }
+  }
+  lines.push(...layers.decisionTrace.conflicts.map(text => `- UNRESOLVED: ${text}`));
+  return block("color", "Spatial Color Roles", lines.join("\n"));
+}
 function renderLighting(layers) {
   const l = layers.lighting;
   const body = [
@@ -263,6 +280,7 @@ function compileSpacePrompt(input) {
     renderArchitectureDna(layers),
     renderBrandTranslation(layers),
     renderFunctionalRequirement(layers),
+    renderColor(layers),
     renderMaterial(layers),
     renderLighting(layers),
     renderComposition(layers),
@@ -337,6 +355,7 @@ ${referenceBoundaryText}` : baseFinalPrompt;
       anchorCriteria: input.anchorCriteria || null,
       architectureContextIncluded: Boolean(contextBlock),
       blockIds: presentIds,
+      decisionTrace: layers.decisionTrace,
       // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
       // was appended to the prompt. Mirrors the v1 seedream-adapter
       // referenceBoundary trace shape so downstream consumers (audit,
@@ -411,6 +430,7 @@ function blockSource(id) {
     brand_translation: ["projectFacts", "semantic.brandMotifSemantics", "semantic.decorativeIdentitySemantics", "semantic.colorAccentSemantics", "spatial.brandRoleManifestation", "_raw.mustBeVisible (identity items only)"],
     functional_requirement: ["spatial.sceneProgram", "spatial.functionalNetwork", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators"],
     material: ["materialSystem[].material|behavior|forbidden"],
+    color: ["colorSystem.primary|secondary|accent (role, spatialUsage, ratio, surfaceApplicability)"],
     lighting: ["lightingSystem.source|contrast|interactionWithMaterials|forbidden"],
     composition: ["taskContract.aspectRatio|scene", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators"],
     rendering: ["(deterministic rendering standard)"],

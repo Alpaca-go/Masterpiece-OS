@@ -1,10 +1,7 @@
-const NEUTRAL = /white|cream|beige|gray|grey|black|warm\s+white|off[- ]white|白|米白|灰|黑|中性/iu;
-const IDENTITY = /brand|identity|primary|signature|品牌|识别|主色/iu;
 const POST_COMPOSITE = /logo|wordmark|signage|标志|标识|字标/iu;
 const SPATIAL_COLOR_ROLE_VERSION = "space-color-role@1.0.0";
 function resolveSpatialColorRole(colorItem = {}) {
   const text = [
-    colorItem.name,
     colorItem.role,
     colorItem.semanticMeaning,
     colorItem.surfaceApplicability,
@@ -19,13 +16,15 @@ function resolveSpatialColorRole(colorItem = {}) {
     "detail_trim",
     "post_composite_only"
   ].includes(colorItem.spatialUsage)) return colorItem.spatialUsage;
-  if (/spatial[_ ]base|background|base surface|空间基底|空间基调|基础面/iu.test(text) && NEUTRAL.test(text)) {
-    return "dominant_field";
-  }
-  if (/soft furnishing|textile|upholstery|软装|织物/iu.test(text)) return "soft_furnishing";
-  if (/trim|edge|detail|收边|细节/iu.test(text)) return "detail_trim";
-  if (IDENTITY.test(text) || !NEUTRAL.test(text)) return "local_accent";
-  return "secondary_surface";
+  const roles = [];
+  if (/spatial[_ ]base|background|base surface|空间基底|空间基调|基础面|背景/iu.test(text)) roles.push("dominant_field");
+  if (/secondary[_ ]surface|supporting surface|次要表面|辅助承载面/iu.test(text)) roles.push("secondary_surface");
+  if (!roles.length && /\bwall\b|\bwalls\b|墙面|承载面/iu.test(text)) roles.push("secondary_surface");
+  if (/soft furnishing|textile|upholstery|软装|织物/iu.test(text)) roles.push("soft_furnishing");
+  if (/trim|edge|detail|收边|细节/iu.test(text)) roles.push("detail_trim");
+  if (/local[_ ]accent|accent|点缀|局部配色/iu.test(text)) roles.push("local_accent");
+  if (roles.length > 1) return "unresolved_conflict";
+  return roles[0] || "unspecified";
 }
 export {
   SPATIAL_COLOR_ROLE_VERSION,

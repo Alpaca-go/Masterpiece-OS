@@ -167,7 +167,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     sourceRole,
     spatialUsage: resolveSpatialColorRole({
       ...typeof item === "object" && item ? item : { name: String(item) },
-      role: typeof item === "object" && item ? item.role : sourceRole
+      role: typeof item === "object" && item ? item.role : undefined
     })
   }));
   const color = {
@@ -176,6 +176,31 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     accent: withSpatialRole(colorSystem.accent, "accent"),
     forbidden: cleanList(colorSystem.forbidden)
   };
+  // Compilation-local evidence only. Packet containers are model decisions,
+  // not independently verified material facts or user approval.
+  const decisionTrace = {
+    color: ["primary", "secondary", "accent"].flatMap(group => color[group].map((item, index) => ({
+      sourcePath: `colorSystem.${group}[${index}]`,
+      evidenceClass: "model_proposal", source: colorSystem[group][index],
+      spatialUsage: item.spatialUsage,
+      unresolved: item.spatialUsage === "unspecified" || item.spatialUsage === "unresolved_conflict"
+    }))),
+    materials: materialSystem.flatMap((source, index) => source.material && cleanList(source.behavior).length ? [{
+      sourcePath: `materialSystem[${index}]`, evidenceClass: "model_proposal",
+      source, compiled: sanitizeMaterials([{material:source.material,behavior:cleanList(source.behavior),brandRole:source.brandRole,forbidden:cleanList(source.forbidden)}])[0]
+    }] : []),
+    mechanisms: semantic.architectureRewrite.items.map(item => ({
+      sourcePath: item.sourcePath, mechanismId: item.mechanismId,
+      evidenceClass: "system_inference", sourceText: item.text,
+      actions: {strategy:item.strategy, form:item.form, organization:item.organization},
+      dropped: item.dropped, dropReason: item.dropReason
+    })),
+    unknown: ["Unprovided color area ratios and material optical parameters remain unspecified; no historical image inference is authorized."],
+    conflicts: []
+  };
+  for (const entry of decisionTrace.color) {
+    if (entry.spatialUsage === "unresolved_conflict") decisionTrace.conflicts.push(`${entry.sourcePath}: multiple spatial scopes; preserve the supplied wording without inventing allocation.`);
+  }
   const composition = {
     aspectRatio: taskContract?.aspectRatio,
     scene: taskContract?.scene,
@@ -386,6 +411,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     materials,
     lighting,
     color,
+    decisionTrace,
     composition: compositionLayers,
     negatives,
     // ---- R8.5 semantic IR (architecture / brand split + action verbs) ----

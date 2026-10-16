@@ -10,9 +10,24 @@ function compileSpatialMechanisms(packet) {
   const decorativeIdentitySemantics = [];
   let colorGeometryCouplingRisk = false;
   for (const r of audit.records) {
+    // Exclude non-spatial sources before deriving any action, not afterwards.
+    if (["uniqueUpgradeThesis", "targetWorldview"].includes(r.sourceField) || r.sourceGroup === "colorSystem") {
+      if (r.sourceGroup !== "colorSystem" && (r.classification === SEMANTIC_CLASS.ARCHITECTURAL || r.classification === SEMANTIC_CLASS.AMBIGUOUS && r.includedInArchitecturePrompt)) {
+        brandMotifSemantics.push({text:r.sourceRawText,sourceField:r.sourceField,reason:"excluded_field",mechanismId:r.id});
+      }
+      r.includedInArchitecturePrompt = false;
+      r.actionDisposition = "excluded_before_action_derivation";
+      continue;
+    }
+    if (["functionalNetwork", "functionalRelationships", "sceneProgram", "peopleBehavior"].includes(r.sourceField)) {
+      functionalSemantics.push({text:r.sourceRawText,sourceField:r.sourceField,sourcePath:r.sourcePath,mechanismId:r.id});
+      r.includedInArchitecturePrompt = false;
+      r.actionDisposition = "functional_scope_preserved";
+      continue;
+    }
     if (r.classification === SEMANTIC_CLASS.ARCHITECTURAL || r.classification === SEMANTIC_CLASS.AMBIGUOUS && r.includedInArchitecturePrompt) {
       architectureSemantics.push({
-        text: r.normalizedText || r.sourceRawText,
+        text: (r.strip || []).some(part => part.startsWith("motif:") || part.startsWith("metaphor:")) ? r.sourceRawText : r.normalizedText || r.sourceRawText,
         sourceField: r.sourceField,
         sourcePath: r.sourcePath,
         classification: r.classification,
@@ -74,6 +89,8 @@ function compileSpatialMechanisms(packet) {
     seen.add(k);
     deduped.push(m);
   }
+  // Derive only from source wording, never from geometry introduced by motif
+  // substitutions. Explicit complex architecture in that wording survives.
   const rewrite = rewriteArchitectureSemantics(deduped);
   return {
     architectureSemantics: deduped,
