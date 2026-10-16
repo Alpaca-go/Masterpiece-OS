@@ -1,0 +1,73 @@
+{
+  "reason": "Preserve source-declared cross-zone operational relationships even when a finite keyword list misses their wording",
+  "precedingRecord": "compiler-integrity-review.json",
+  "beforeManifestSha256": "f892e0c8043be70c2d95c7f08fa3b8b62a8eb29571000753e5f6c43dc91aadef",
+  "metadataUnchanged": true,
+  "qualityAcceptanceUnchanged": "pending-separate-quality-repair",
+  "entries": [
+    {
+      "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "oldSha256": "08cc377b271c5d1736ad9527b611403235927bc4d81a72aa26a768b49a2de157",
+      "candidateSha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d"
+    }
+  ],
+  "completeOriginalToCandidateMapping": [
+    {
+      "path": "src/generation-runtime/generation/compile.js",
+      "oldSha256": "9cb1685deb4ae854685352c866c68ab537f2e8c2f3d6da9e67c5d9210e69c2bd",
+      "candidateSha256": "8506c1c956eb944de39ca0a4c7b675b806cfbb79e6aa0137bbe12d42b6569a7a",
+      "reviewedCommitSha256": "8506c1c956eb944de39ca0a4c7b675b806cfbb79e6aa0137bbe12d42b6569a7a"
+    },
+    {
+      "path": "src/generation-runtime/space/architecture-context.js",
+      "oldSha256": "5c4c3323ea0000df89c0e314025c70900a37ce4fce7a6ca05c03a558b63e98a7",
+      "candidateSha256": "0ccdf2c1af6c07c669c0aa3ca4270e7da03c553a84f28ea162f8df1273f1a690",
+      "reviewedCommitSha256": "0ccdf2c1af6c07c669c0aa3ca4270e7da03c553a84f28ea162f8df1273f1a690"
+    },
+    {
+      "path": "src/generation-runtime/space/compiler.js",
+      "oldSha256": "a8e5b095b8e400a34ad1f44ba4b324fe7b755bd103b96db1db3663d0cb73e52a",
+      "candidateSha256": "2c8b6d237de17c92eb01e9d26690dc008f7d86d6c2de5d8611aaa566e07eb448",
+      "reviewedCommitSha256": "867d95573939ac11e2cea264cc1077c920cddec737d5a58a8767ab2fdcaff21f"
+    },
+    {
+      "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "oldSha256": "25199f867c6bc0a413d74c626ba44217a5b029ad2b9e65a28987dd3b9095d517",
+      "candidateSha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d",
+      "reviewedCommitSha256": "dd2d0b9a3d5e728715258afa138f2bf8cfd11000fd7711bc76f93568e7d521de"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/action-verbs.js",
+      "oldSha256": "0fdafdfd844897215b52f8f5f32ae8b5500ef179bc4ae001672742e3d1c59464",
+      "candidateSha256": "ab0b19b888590ecf11ce64f01e7cceadd95bcdfcf8b022134b654832eb00a4e0",
+      "reviewedCommitSha256": "ab0b19b888590ecf11ce64f01e7cceadd95bcdfcf8b022134b654832eb00a4e0"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
+      "oldSha256": "5a391a10e91027ba220a1bda5d4adb2dbe898f7b041b8d07ff4841f2ea5f1fc9",
+      "candidateSha256": "7cf8be50d04f95af5706d6a37c89df3dafe77c8fabaedc395f90d9045684847c",
+      "reviewedCommitSha256": "7cf8be50d04f95af5706d6a37c89df3dafe77c8fabaedc395f90d9045684847c"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/resolve-spatial-color-role.js",
+      "oldSha256": "98ddefb40d1dcf0c0bb0c17e16a0d81508aa2cee107bad47f5dd7c6953080d7a",
+      "candidateSha256": "21df86ed80eff6e657cb5e7c98a0eb2530e3bd3ce1ba556c51a6133d76fd7317",
+      "reviewedCommitSha256": "21df86ed80eff6e657cb5e7c98a0eb2530e3bd3ce1ba556c51a6133d76fd7317"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+      "oldSha256": "ea5baf7e09309f3f22d6522b9ab55a8fd8740e7da357f0137494dfce7e7f8bee",
+      "candidateSha256": "61450e0af3d1ebb9d4315c9bf28a2fa2c96b530881607a4e9fade22e6efe3e90",
+      "reviewedCommitSha256": "61450e0af3d1ebb9d4315c9bf28a2fa2c96b530881607a4e9fade22e6efe3e90"
+    },
+    {
+      "path": "src/generation-runtime/space/source-adapter.js",
+      "oldSha256": "ceb1695be0872cfae9bd706314f367ce396332a4ba32ad46e434fd2b9a3342c1",
+      "candidateSha256": "cebd87a99432954d746a927a7cfbcdd1870c13710160610b0d156efbcba68d12",
+      "reviewedCommitSha256": "38a4fc0bbcc18d58951d85d3a4da61e502ded58f481b0f71f2dc46f7ac830356"
+    }
+  ],
+  "applied": true,
+  "updatedManifestSha256": "7767be380484d444155df0b12ed4d1fe0fb860d562fb68869c8b43d3a3456bde",
+  "updatedImplementationDigest": "6bb6c099b5120c7a5209e8048dc4bd3f4dde115b04e6fb3ab4aeff3ea456f71d"
+}

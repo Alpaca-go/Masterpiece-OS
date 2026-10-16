@@ -383,10 +383,18 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   decisionTrace.architectureDecisions = standardShot ? scopeSourceEntries(architectureEntries,taskContract.subtype) : architectureEntries;
   if (standardShot) {
     decisionTrace.sceneScope = [];
+    decisionTrace.crossSceneConstraints = [];
+    const collectBoundaryConstraints = records => {
+      for (const entry of records) for (const clause of entry.boundaryConstraints ?? []) {
+        if (!decisionTrace.crossSceneConstraints.some(item=>item.text===clause.text)) decisionTrace.crossSceneConstraints.push({...clause,sourcePath:entry.sourcePath,sourceText:entry.text,evidenceClass:"system_inference"});
+      }
+    };
+    collectBoundaryConstraints([...decisionTrace.architectureDecisions,...scopedArt]);
     const projectList = (items,sourcePath) => {
       const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
       decisionTrace.sceneScope.push(...records);
-      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text);
+      collectBoundaryConstraints(records);
+      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText).filter(Boolean);
     };
     functionalRaw = {
       sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
@@ -398,6 +406,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
     const functionalItems = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
     projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text=>!functionalItems.has(text) || artSeen.has(text));
+    bridgeLayers.crossSceneConstraints = decisionTrace.crossSceneConstraints.map(entry=>entry.text);
     targetSceneProjection = {...targetSceneProjection, functionalBlockSource:"source_shot_scope",architectureBridgeSource:"source_shot_scope",operationConstraintsSource:"source_shot_scope"};
   }
   decisionTrace.canonicalOwners = [

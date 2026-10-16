@@ -18,9 +18,28 @@ function scopeSourceEntries(entries, targetScene) {
   const known = allowed.some(scene => SCENE_SCOPE_TERMS[scene]);
   return entries.map(entry => {
     const scenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(entry.text)).map(([scene])=>scene);
-    const foreign = scenes.filter(scene=>!allowed.includes(scene));
-    return {...entry, sceneScope: !known ? "unresolved" : foreign.length ? "off_frame_dependency" : "current_shot", detectedScenes:scenes,
-      evidenceClass:"system_inference", scopeReason:!known ? "unknown_target_scene" : foreign.length ? "other_program_or_cross_scene_relationship" : "source_compatible_with_shot"};
+    const localContext = scenes.some(scene=>allowed.includes(scene));
+    const relationalSource = /functionalRelationships|operationConstraints|humanExperience/iu.test(entry.sourcePath ?? "");
+    const relation = /connect|circulation|access|route|transition|guid|separat|screen|privacy|confidential|sightline|queue|handoff|buffer|isolat|cross|adjacen|next to|not\s+expose|动线|流线|通达|分流|衔接|连接|引导|分隔|遮挡|隐私|交叉|缓冲|转接|服务流程|人员通道|洁污|视线|隔离|邻接|毗邻|不得.*看到|不应.*看到/iu;
+    // Preserve original text and classify its clauses separately. A foreign
+    // interior description cannot acquire visibility through an adjacent
+    // reception constraint, nor can a boundary constraint disappear with it.
+    const clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
+      const clauseScenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(text)).map(([scene])=>scene);
+      const foreign = clauseScenes.some(scene=>!allowed.includes(scene));
+      const local = clauseScenes.some(scene=>allowed.includes(scene));
+      const foreignInterior = foreign && !local && /contain|equipped|furnish|配备|装有|内有|室内陈设/iu.test(text);
+      const sourceDeclaredRelation = relationalSource && (local || localContext);
+      const boundary = (foreign || !local && scenes.some(scene=>!allowed.includes(scene))) && !foreignInterior && (relation.test(text) || sourceDeclaredRelation) && (local || localContext || relationalSource);
+      return {text,sceneScope:!known ? "unresolved" : boundary ? "cross_scene_constraint" : foreign ? "off_frame_dependency" : "current_shot",
+        visibilityAuthority:boundary ? "current_boundary_only" : foreign ? "off_frame_interior" : "current_shot"};
+    });
+    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : "off_frame_dependency";
+    return {...entry,sceneScope,clauses,detectedScenes:scenes,
+      currentShotText:clauses.every(clause=>clause.sceneScope === "current_shot") ? entry.text : clauses.filter(clause=>clause.sceneScope === "current_shot").map(clause=>clause.text).join("; "),
+      boundaryConstraints:clauses.filter(clause=>clause.sceneScope === "cross_scene_constraint"),
+      offFrameEntities:clauses.filter(clause=>clause.sceneScope === "off_frame_dependency"),
+      evidenceClass:"system_inference",scopeReason:!known ? "unknown_target_scene" : sceneScope === "cross_scene_constraint" ? "operational_relation_without_foreign_interior_visibility" : sceneScope === "off_frame_dependency" ? "foreign_scene_entity" : "source_compatible_with_shot"};
   });
 }
 const TARGET_SCENE_PROJECTION_VERSION = "space-target-scene-projection@1.1.0";

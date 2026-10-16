@@ -74,7 +74,7 @@ function renderSpatialIntent(layers) {
   return block("spatial_intent", "Spatial Intent", body);
 }
 function renderArchitectureLanguage(layers) {
-  const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text))];
+  const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText ?? entry.text).filter(Boolean))];
   const body = [
     "> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.",
     "",
@@ -103,7 +103,9 @@ function renderArchitectureFunctionBridge(layers) {
     "Preserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.",
     "",
     "**Concept Drift Guards (must avoid)**:",
-    bullet(b.conceptDriftGuards, "- (none)")
+    bullet(b.conceptDriftGuards, "- (none)"),
+    "", "**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:",
+    bullet(b.crossSceneConstraints, "- No additional cross-zone relationship is established by the supplied sources.")
     ,"", "Off-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas."
   ].join("\n");
   return block("architecture_function_bridge", "Architecture-Function Bridge", body);

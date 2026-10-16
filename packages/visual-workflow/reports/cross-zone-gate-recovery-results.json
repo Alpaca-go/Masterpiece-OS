@@ -1,0 +1,128 @@
+{
+  "providerCalls": 0,
+  "sourceScopeVerified": true,
+  "frontendRecordsUnchanged": true,
+  "summaryChangedPaths": [
+    "src/generation-runtime/generation/compile.js",
+    "src/generation-runtime/space/architecture-context.js",
+    "src/generation-runtime/space/compiler.js",
+    "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+    "src/generation-runtime/space/semantic/action-verbs.js",
+    "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
+    "src/generation-runtime/space/semantic/resolve-spatial-color-role.js",
+    "src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+    "src/generation-runtime/space/source-adapter.js"
+  ],
+  "summaryMetadataUnchanged": true,
+  "qualityAcceptance": "pending-separate-quality-repair",
+  "summaryBeforeSha256": "3dddc8f21fb1154f9456b81b6869d1b22db0033e5acf47831308119da78afb9d",
+  "summaryAfterSha256": "7767be380484d444155df0b12ed4d1fe0fb860d562fb68869c8b43d3a3456bde",
+  "implementationDigest": "6bb6c099b5120c7a5209e8048dc4bd3f4dde115b04e6fb3ab4aeff3ea456f71d",
+  "originalProjectUnchangedSinceReviewedRun": true,
+  "packetSha256": "9c5f6082a8f83af4888a12bf8dc75665bf713b6a33f21433fe50dbf153a8ef8a",
+  "historicalPrompt": {
+    "characters": 7739,
+    "sha256": "6c8d77f60f02e035dc7a9c6b360bf2d337102b3efea111b1308a279e5cc0b563",
+    "officialRouteParity": true
+  },
+  "positioningPrompt": {
+    "characters": 7793,
+    "sha256": "108dd9aacf66ad53b76056d23e82b20b35b4ee7c06987399dfb1ef63def18761",
+    "officialRouteParity": true,
+    "userInput": {
+      "evidenceClass": "user_confirmed",
+      "text": "九州美学是具有艺术展馆空间气质的高端医美机构，艺术表达、建筑、材料与空间体验需要整体协调，同时保留真实的接待、咨询、隐私与医疗运营功能。",
+      "scope": "in_memory_review_task_only"
+    }
+  },
+  "boundaryConstraints": [
+    {
+      "text": "Public Reception Area transitions via controlled access corridors to Private VIP Consultation Rooms",
+      "sceneScope": "cross_scene_constraint",
+      "visibilityAuthority": "current_boundary_only",
+      "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+      "sourceText": "Public Reception Area transitions via controlled access corridors to Private VIP Consultation Rooms, ensuring acoustic privacy and exclusive service delivery.",
+      "evidenceClass": "system_inference"
+    },
+    {
+      "text": "ensuring acoustic privacy and exclusive service delivery",
+      "sceneScope": "cross_scene_constraint",
+      "visibilityAuthority": "current_boundary_only",
+      "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+      "sourceText": "Public Reception Area transitions via controlled access corridors to Private VIP Consultation Rooms, ensuring acoustic privacy and exclusive service delivery.",
+      "evidenceClass": "system_inference"
+    },
+    {
+      "text": "Consultation Zones connect directly to Clinical Treatment Rooms through secure internal pathways",
+      "sceneScope": "cross_scene_constraint",
+      "visibilityAuthority": "current_boundary_only",
+      "sourcePath": "derived.architectureFunctionBridge.operationConstraints[1]",
+      "sourceText": "Consultation Zones connect directly to Clinical Treatment Rooms through secure internal pathways, minimizing patient exposure in public view and maintaining hygiene standards.",
+      "evidenceClass": "system_inference"
+    }
+  ],
+  "protectedRecords": {
+    "extractionProvenanceUnchanged": true
+  },
+  "tests": {
+    "independent": {
+      "pass": 73,
+      "total": 73
+    },
+    "repoCheck": "PASS",
+    "repoVerify": "PASS",
+    "currentFlows": "PASS",
+    "root": {
+      "pass": 1701,
+      "total": 1701
+    },
+    "cli": {
+      "pass": 40,
+      "total": 40
+    },
+    "runtimeCore": {
+      "pass": 14,
+      "total": 14
+    },
+    "runtimeApplication": {
+      "pass": 1294,
+      "total": 1294
+    },
+    "boundary": {
+      "pass": 56,
+      "total": 56
+    },
+    "host": {
+      "pass": 15,
+      "total": 15
+    },
+    "webBuild": "PASS",
+    "webSmoke": "PASS",
+    "golden": "PASS (5 cases, no update)"
+  },
+  "approvedExternalTests": [
+    "apps/web-runtime/tests/node-runtime-host.test.ts",
+    "tests/runtime-application/visual-workflow-isolation.test.ts"
+  ],
+  "integrityRecords": [
+    "compiler-integrity-review.json",
+    "compiler-integrity-scope-review.json"
+  ],
+  "nonCandidateImplementationEntriesVerified": 118,
+  "qualityBudget": {
+    "historical": {
+      "chars": 7739,
+      "positiveRatio": 0.9474776293606536,
+      "negativeRatio": 0.05252237063934639,
+      "providerLimit": 12000,
+      "qualityBudgetExceeded": true
+    },
+    "positioning": {
+      "chars": 7793,
+      "positiveRatio": 0.9478428847392144,
+      "negativeRatio": 0.05215711526078558,
+      "providerLimit": 12000,
+      "qualityBudgetExceeded": true
+    }
+  }
+}

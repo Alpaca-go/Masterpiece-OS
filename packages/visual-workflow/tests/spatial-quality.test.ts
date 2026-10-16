@@ -77,10 +77,16 @@ test('explicit material installation survives in brand layer, outside the functi
   assert.ok(!request.body.image);
 });
 
-test('installation preservation retains identity and gradient guards', () => {
+test('installation preservation retains identity protection without inventing gradient area authority', () => {
   assert.deepEqual(sanitizeBrandManifestation(['带 Logo 的艺术装置']).lines, []);
   const result = sanitizeBrandManifestation(['白到紫色渐变的艺术装置']);
-  assert.equal(result.records[0].reason, 'color_demoted_to_accent');
+  assert.equal(result.records[0].disposition, 'kept');
+  assert.deepEqual(result.lines, ['白到紫色渐变的艺术装置']);
+  const packet = structuredAnalysisPacketFixture();
+  packet.colorSystem.primary = [{name:'Saturated example',role:'background',ratio:80} as any];
+  const compiled = compileSpacePrompt({packet,taskContract:{generationBasis:'standard',aspectRatio:'16:9'},projectContext:{}});
+  assert.equal(compiled.trace.decisionTrace.color[0].executionAuthority,'proposal_only');
+  assert.match(compiled.blocksById.color.text,/Do not execute an unconfirmed dominant field or area allocation/);
 });
 
 test('ordinary hospitality space needs no art object and packaging is unaffected', () => {
