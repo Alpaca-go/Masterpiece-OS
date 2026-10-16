@@ -92,6 +92,10 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const rawMustBeVisible = cleanList(spatial.mustBeVisible);
   const { safe: compositionMustBeVisible, brand: brandMustBeVisible } = splitMustBeVisible(rawMustBeVisible);
   const missing = [];
+  // Persisted packets can carry a stale ready flag from before validation.
+  for (const field of ["signatureSpatialMechanism", "functionalNetwork", "functionalRelationships"]) {
+    if (!cleanList(spatial[field]).length) missing.push(`spatial.${field}`);
+  }
   const rawExperienceGoal = firstString(
     spatial.spatialConcept,
     creativeDecision.uniqueUpgradeThesis,
@@ -147,6 +151,8 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   );
   if (!commercialPurpose) missing.push("projectFacts.brandRole | creativeDecision.uniqueUpgradeThesis");
   if (spatialTranslation.length < 1) missing.push("spatial.brandRoleManifestation | functionalNetwork");
+  if (!demoteFunctionalList(rawFunctionalNetwork, "functionalNetwork").length) missing.push("spatial.functionalNetwork (after semantic cleanup)");
+  if (!operationConstraints.length) missing.push("spatial.functionalRelationships (after semantic cleanup)");
   const conceptPrimary = firstString(spatial.spatialConcept, creativeDecision.uniqueUpgradeThesis);
   const conceptPrimaryNormalized = normalizeConceptPrimary(conceptPrimary);
   const architecturalConcept = {

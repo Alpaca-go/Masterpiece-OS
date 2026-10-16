@@ -52,6 +52,11 @@ function sanitizeBrandItem(rawItem) {
     const normalized = hasAccent ? raw : `${raw}\uFF08\u54C1\u724C\u8272\u4EC5\u4F5C\u5C40\u90E8\u70B9\u7F00\uFF0C\u4E0D\u4F5C\u7A7A\u95F4\u51E0\u4F55/\u5927\u9762\u79EF\u6E10\u53D8\uFF09`;
     return { text: normalized, raw, disposition: "normalized", reason: "color_demoted_to_accent", normalized };
   }
+  // Explicit physical installations belong to brand expression. They must
+  // still pass identity, operations, prop, prose and gradient checks above.
+  if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT) {
+    return { text: raw, raw, disposition: "kept" };
+  }
   if (hasMotif(raw)) {
     const norm = normalizeArchitectureSemantics(raw, "brandRoleManifestation");
     if (norm.includedInArchitecturePrompt && norm.normalized) {

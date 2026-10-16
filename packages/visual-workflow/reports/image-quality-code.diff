@@ -1,0 +1,107 @@
+diff --git a/packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js b/packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js
+index 8ab81d3..90183e2 100644
+--- a/packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js
++++ b/packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js
+@@ -265,6 +265,13 @@ async function completeStructuredAnalysis(input) {
+       });
+     }
+   }
++  // Semantic repair can delete unsafe entries. Recheck sufficiency on the
++  // resulting packet rather than trusting the pre-cleanup ready status.
++  if (finalStatus === "ready" || finalStatus === "ready_with_warnings") {
++    const finalSufficiency = evaluateDeliverableSufficiency({ packet, deliverable: input.deliverable, execution });
++    finalIssues = finalSufficiency.issues;
++    finalStatus = finalSufficiency.status === "repairable" ? "failed" : finalSufficiency.status;
++  }
+   finalIssues.forEach((issue) => {
+     if (issue.severity === "requires_confirmation" || issue.severity === "fatal" || issue.severity === "repairable") {
+       accumulator.unresolved.set(issue.path, issue);
+diff --git a/packages/visual-workflow/src/analysis-decisions/deliverable-sufficiency.js b/packages/visual-workflow/src/analysis-decisions/deliverable-sufficiency.js
+index c4e0c44..0595860 100644
+--- a/packages/visual-workflow/src/analysis-decisions/deliverable-sufficiency.js
++++ b/packages/visual-workflow/src/analysis-decisions/deliverable-sufficiency.js
+@@ -153,7 +153,7 @@ const DELIVERABLE_RULES = {
+ };
+ function satisfies(value, rule) {
+   if (rule.kind === "array") {
+-    return Array.isArray(value) && value.length >= (rule.minimumItems ?? 1);
++    return Array.isArray(value) && value.filter(item => typeof item === "string" ? nonEmptyText(item) : isRecord(item) && Object.keys(item).length > 0).length >= (rule.minimumItems ?? 1);
+   }
+   if (rule.kind === "object") return isRecord(value);
+   return nonEmptyText(value);
+diff --git a/packages/visual-workflow/src/generation-runtime/space/semantic/compile-spatial-mechanisms.js b/packages/visual-workflow/src/generation-runtime/space/semantic/compile-spatial-mechanisms.js
+index 52940a9..09bf786 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/semantic/compile-spatial-mechanisms.js
++++ b/packages/visual-workflow/src/generation-runtime/space/semantic/compile-spatial-mechanisms.js
+@@ -29,7 +29,7 @@ function compileSpatialMechanisms(packet) {
+           mechanismId: r.id
+         });
+       }
+-    } else if (r.classification === SEMANTIC_CLASS.BRAND_MOTIF) {
++    } else if (r.classification === SEMANTIC_CLASS.BRAND_MOTIF || r.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT && r.sourceField === "signatureSpatialMechanism") {
+       brandMotifSemantics.push({
+         text: r.sourceRawText,
+         motifHits: r.motifHits,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js b/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js
+index 7670262..3d7e837 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js
++++ b/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js
+@@ -52,6 +52,11 @@ function sanitizeBrandItem(rawItem) {
+     const normalized = hasAccent ? raw : `${raw}\uFF08\u54C1\u724C\u8272\u4EC5\u4F5C\u5C40\u90E8\u70B9\u7F00\uFF0C\u4E0D\u4F5C\u7A7A\u95F4\u51E0\u4F55/\u5927\u9762\u79EF\u6E10\u53D8\uFF09`;
+     return { text: normalized, raw, disposition: "normalized", reason: "color_demoted_to_accent", normalized };
+   }
++  // Explicit physical installations belong to brand expression. They must
++  // still pass identity, operations, prop, prose and gradient checks above.
++  if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT) {
++    return { text: raw, raw, disposition: "kept" };
++  }
+   if (hasMotif(raw)) {
+     const norm = normalizeArchitectureSemantics(raw, "brandRoleManifestation");
+     if (norm.includedInArchitecturePrompt && norm.normalized) {
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index cdd3b5e..e714bc2 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -92,6 +92,10 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+   const rawMustBeVisible = cleanList(spatial.mustBeVisible);
+   const { safe: compositionMustBeVisible, brand: brandMustBeVisible } = splitMustBeVisible(rawMustBeVisible);
+   const missing = [];
++  // Persisted packets can carry a stale ready flag from before validation.
++  for (const field of ["signatureSpatialMechanism", "functionalNetwork", "functionalRelationships"]) {
++    if (!cleanList(spatial[field]).length) missing.push(`spatial.${field}`);
++  }
+   const rawExperienceGoal = firstString(
+     spatial.spatialConcept,
+     creativeDecision.uniqueUpgradeThesis,
+@@ -147,6 +151,8 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+   );
+   if (!commercialPurpose) missing.push("projectFacts.brandRole | creativeDecision.uniqueUpgradeThesis");
+   if (spatialTranslation.length < 1) missing.push("spatial.brandRoleManifestation | functionalNetwork");
++  if (!demoteFunctionalList(rawFunctionalNetwork, "functionalNetwork").length) missing.push("spatial.functionalNetwork (after semantic cleanup)");
++  if (!operationConstraints.length) missing.push("spatial.functionalRelationships (after semantic cleanup)");
+   const conceptPrimary = firstString(spatial.spatialConcept, creativeDecision.uniqueUpgradeThesis);
+   const conceptPrimaryNormalized = normalizeConceptPrimary(conceptPrimary);
+   const architecturalConcept = {
+diff --git a/packages/visual-workflow/src/runtime/visual-decision-packet.js b/packages/visual-workflow/src/runtime/visual-decision-packet.js
+index a837570..17b6032 100644
+--- a/packages/visual-workflow/src/runtime/visual-decision-packet.js
++++ b/packages/visual-workflow/src/runtime/visual-decision-packet.js
+@@ -106,7 +106,7 @@ function spatialTranslation(value) {
+   const lightingLanguage = lightingBehavior(candidate.lightingLanguage);
+   const colors = colorBehavior(candidate.colorBehavior);
+   const ready = Boolean(
+-    spatialConcept && structureLanguage.length && materialLanguage.length && lightingLanguage.source.length && strings(candidate.sceneProgram).length && [...colors.primary, ...colors.secondary, ...colors.accent].length
++    spatialConcept && structureLanguage.length && materialLanguage.length && lightingLanguage.source.length && strings(candidate.sceneProgram).length && strings(candidate.signatureSpatialMechanism).length && strings(candidate.functionalNetwork).length && strings(candidate.functionalRelationships).length && [...colors.primary, ...colors.secondary, ...colors.accent].length
+   );
+   return {
+     status: ready ? "ready" : "insufficient",
+@@ -164,6 +164,9 @@ function missingExecutionFields(packet) {
+   if (!spatial.materialLanguage.length) missing.push("mediaTranslations.spatial.materialLanguage");
+   if (!spatial.lightingLanguage.source.length) missing.push("mediaTranslations.spatial.lightingLanguage");
+   if (!spatial.sceneProgram.length) missing.push("mediaTranslations.spatial.sceneProgram");
++  for (const field of ["signatureSpatialMechanism", "functionalNetwork", "functionalRelationships"]) {
++    if (!strings(spatial[field]).length) missing.push(`mediaTranslations.spatial.${field}`);
++  }
+   if (![...spatial.colorBehavior.primary, ...spatial.colorBehavior.secondary, ...spatial.colorBehavior.accent].length) {
+     missing.push("mediaTranslations.spatial.colorBehavior");
+   }

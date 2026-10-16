@@ -265,6 +265,13 @@ async function completeStructuredAnalysis(input) {
       });
     }
   }
+  // Semantic repair can delete unsafe entries. Recheck sufficiency on the
+  // resulting packet rather than trusting the pre-cleanup ready status.
+  if (finalStatus === "ready" || finalStatus === "ready_with_warnings") {
+    const finalSufficiency = evaluateDeliverableSufficiency({ packet, deliverable: input.deliverable, execution });
+    finalIssues = finalSufficiency.issues;
+    finalStatus = finalSufficiency.status === "repairable" ? "failed" : finalSufficiency.status;
+  }
   finalIssues.forEach((issue) => {
     if (issue.severity === "requires_confirmation" || issue.severity === "fatal" || issue.severity === "repairable") {
       accumulator.unresolved.set(issue.path, issue);

@@ -153,7 +153,7 @@ const DELIVERABLE_RULES = {
 };
 function satisfies(value, rule) {
   if (rule.kind === "array") {
-    return Array.isArray(value) && value.length >= (rule.minimumItems ?? 1);
+    return Array.isArray(value) && value.filter(item => typeof item === "string" ? nonEmptyText(item) : isRecord(item) && Object.keys(item).length > 0).length >= (rule.minimumItems ?? 1);
   }
   if (rule.kind === "object") return isRecord(value);
   return nonEmptyText(value);

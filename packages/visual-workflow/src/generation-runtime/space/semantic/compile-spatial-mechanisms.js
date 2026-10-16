@@ -29,7 +29,7 @@ function compileSpatialMechanisms(packet) {
           mechanismId: r.id
         });
       }
-    } else if (r.classification === SEMANTIC_CLASS.BRAND_MOTIF) {
+    } else if (r.classification === SEMANTIC_CLASS.BRAND_MOTIF || r.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT && r.sourceField === "signatureSpatialMechanism") {
       brandMotifSemantics.push({
         text: r.sourceRawText,
         motifHits: r.motifHits,
