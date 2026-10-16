@@ -4,6 +4,7 @@ import {
   type createOperationRegistry,
 } from '@masterpiece/runtime-core';
 import { createRuntimeServices } from '@masterpiece/runtime-core/application/runtime-services.ts';
+import { createVisualWorkflow } from '@masterpiece/visual-workflow/service.js';
 import {
   deleteApiProfile,
   getProviderCredentials,
@@ -91,6 +92,19 @@ export async function startNodeRuntimeHost(options: NodeRuntimeHostOptions): Pro
     },
   }));
   runtime.registerOperations(createNodeNativeOperations(services, runtimePaths));
+  const visualWorkflow = createVisualWorkflow({
+    root: path.join(runtimePaths.userData, 'visual-workflow'),
+    emit: (channel: string, payload: unknown) => rpcServer?.emit(channel, payload),
+    // Explicit, one-time copy adapters. Normal workflow operations never call
+    // the shared settings/project stores after the copy has completed.
+    readExistingSettings: getSettings,
+    readExistingCredentials: getProviderCredentials,
+    readExistingProject: async (id: string) => ({
+      project: await services.projects.get(id),
+      root: (await services.projects.paths(id)).root,
+    }),
+  });
+  runtime.registerOperations(visualWorkflow.operations);
   await runtime.start();
   rpcServer = await startLocalRpcServer({
     host: options.host,

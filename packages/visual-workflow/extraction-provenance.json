@@ -1,0 +1,587 @@
+{
+  "scope": "visual-workflow",
+  "qualityAcceptance": "not_asserted",
+  "note": "One-time extraction authorized by user; no automatic synchronization with source domains.",
+  "files": [
+    {
+      "path": "src/analysis-decisions/contracts.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/contracts.ts",
+      "sourceSha256": "50a8f92da06e963f0123c1f354fb691cc862c4eda6b038e1c81405b82203a970"
+    },
+    {
+      "path": "src/analysis-decisions/clarification-builder.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/clarification-builder.ts",
+      "sourceSha256": "257b87ec3cf4054ab347a136010cf2c9469796c304e91583e01f24c4f2c73530"
+    },
+    {
+      "path": "src/analysis-decisions/path-utils.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/path-utils.ts",
+      "sourceSha256": "2922e81a5e52d127c536985854ba4b8701016be44c876fb42236260b72d7ee57"
+    },
+    {
+      "path": "src/analysis-decisions/source-fingerprint.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/source-fingerprint.ts",
+      "sourceSha256": "799b6dfaa98a4d5b5df4e378e33fdf989b54cd4b12ca78ede66d7172486d1e37"
+    },
+    {
+      "path": "src/analysis-decisions/schema-migrations.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/schema-migrations.ts",
+      "sourceSha256": "8cf9dd9efc8ddf7b6f239de485957143213e3ca8c06dc1ba88519678cfbccf9b"
+    },
+    {
+      "path": "src/analysis-decisions/deterministic-repair.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/deterministic-repair.ts",
+      "sourceSha256": "2b5ef7ca2600f97c8cc08fbba3c425a7afb5bfd2ab967894014356a757e1432e"
+    },
+    {
+      "path": "src/analysis-decisions/field-repair-policy.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/field-repair-policy.ts",
+      "sourceSha256": "1219e2ed1d379f6a9fc19dd5ee79527ceccbc36c972e37faa414b518b4910de4"
+    },
+    {
+      "path": "src/analysis-decisions/missing-field-classifier.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/missing-field-classifier.ts",
+      "sourceSha256": "b63e69134df7c4aa00c952be7dbcc0e395a8dc2adde12f277d85911346bd3bca"
+    },
+    {
+      "path": "src/analysis-decisions/schema-validator.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/schema-validator.ts",
+      "sourceSha256": "95bad3face2fddb9784716255337e835e3c7c7dd57652d47ad7afc204118a107"
+    },
+    {
+      "path": "src/analysis-decisions/deliverable-sufficiency.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/deliverable-sufficiency.ts",
+      "sourceSha256": "045bc2f37dbcc2c31f8b01186183c7b223dca2cd1120e985b4d1ff89d2ef35c0"
+    },
+    {
+      "path": "src/analysis-decisions/conflict-resolver.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/conflict-resolver.ts",
+      "sourceSha256": "c0e9ac5fbe1c0a8b1a69eb818034bdd98d070118ee64cff7e1a6ff05d3decf78"
+    },
+    {
+      "path": "src/analysis-decisions/evidence-safe-merge.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/evidence-safe-merge.ts",
+      "sourceSha256": "8d996904de7de56d90ff664394b65306e0a11e22f7af233bbfa5b0acf06a6b6d"
+    },
+    {
+      "path": "src/analysis-decisions/repair-audit.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/repair-audit.ts",
+      "sourceSha256": "aad7b73ef214ce55d40ea3af1ff2b3696bcca7dd600eb9e82239e253062da285"
+    },
+    {
+      "path": "src/analysis-decisions/repair-planner.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/repair-planner.ts",
+      "sourceSha256": "41e15814c7ef811f6fe139a7e6e59f8d17724db027aad3ea0805e8eb6ac887e6"
+    },
+    {
+      "path": "src/analysis-decisions/repair-prompt-builder.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/repair-prompt-builder.ts",
+      "sourceSha256": "d96a69f1a4f60949d13c5555cf689e99de4a062d85e9619e9771fc1c70f3b27f"
+    },
+    {
+      "path": "src/analysis-decisions/structured-repair-runner.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/structured-repair-runner.ts",
+      "sourceSha256": "21b0aad6cd091328c1e92c2f1e9b840406e6c9812696b338533eb4f5797bddb8"
+    },
+    {
+      "path": "src/analysis-decisions/analysis-completion-orchestrator.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/analysis-completion-orchestrator.ts",
+      "sourceSha256": "ad447c603ad7464e62f65ce5bbadc63b84035ac0993cf64bbc8ed545efef9775"
+    },
+    {
+      "path": "src/analysis-decisions/core/visual-analysis-core.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/core/visual-analysis-core.ts",
+      "sourceSha256": "5696ffec791c5fd1f4a5a8e13aa6a9e8b6e2141992f2d6f54b1129c617d01ad1"
+    },
+    {
+      "path": "src/generation-runtime/generation/template-registry.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/template-registry.js",
+      "sourceSha256": "800af6ed76c4741e1ce9284ed15c7f23717d2f83f58747fe18c1da5347e5275b"
+    },
+    {
+      "path": "src/generation-runtime/generation/project-prompt-asset.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/project-prompt-asset.js",
+      "sourceSha256": "de60f383f86005f449165bdd04f29e3e38ed647e6a1eb0cea7e7187ab3984607"
+    },
+    {
+      "path": "src/generation-runtime/generation/task-contract.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/task-contract.js",
+      "sourceSha256": "fa59fe4cd0fa192e2bf8d9d1955add979edf52f323954e9290d138885c7f6fa2"
+    },
+    {
+      "path": "src/generation-runtime/generation/template-router.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/template-router.js",
+      "sourceSha256": "b13d9d0d307f21f39b6244de1c8530f6f48a104f376f0b5d8cb624bb6e81e2e9"
+    },
+    {
+      "path": "src/support/creative-production-runtime/src/project-generation-contract.js",
+      "extractedFrom": "packages/creative-production-runtime/src/project-generation-contract.js",
+      "sourceSha256": "8e11f8cbbae4e4af24a700bfefe693a61f5ffeda532066f303da95c42554101f"
+    },
+    {
+      "path": "src/support/creative-production-runtime/src/packaging-translation.js",
+      "extractedFrom": "packages/creative-production-runtime/src/packaging-translation.js",
+      "sourceSha256": "3591b566eae82a7d5ea3750deeb7fbf3f799b407dd2f53aec4e799337dda31fd"
+    },
+    {
+      "path": "src/generation-runtime/prompt-contracts/packaging-contract.js",
+      "extractedFrom": "packages/image-generation-runtime/src/prompt-contracts/packaging-contract.js",
+      "sourceSha256": "cf901483fd32dcaba42b00fa5ef4df8582899c9992f96014671ea1fd63aeaf74"
+    },
+    {
+      "path": "src/generation-runtime/generation/user-confirmed-visual-decision.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/user-confirmed-visual-decision.js",
+      "sourceSha256": "d7f3d3273c82bdb0a8c20b2a5ac5f1fcd1999d3578547d15f72a2cd5ee7d1b0d"
+    },
+    {
+      "path": "src/generation-runtime/generation/prompt-compiler.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/prompt-compiler.js",
+      "sourceSha256": "4109f2f7287b82542da9e6ea9ca813022bfef3b586d8ac95677ffadccef169c8"
+    },
+    {
+      "path": "src/generation-runtime/space/reference-boundary.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/reference-boundary.js",
+      "sourceSha256": "73f4c22b8c73b2584bf2c5729fb8ac5aed0bbe5d199d5dfb03400195f8abb871"
+    },
+    {
+      "path": "src/generation-runtime/generation/seedream-adapter.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/seedream-adapter.js",
+      "sourceSha256": "808055741ee1fedc792ec0efa82bcc1d71ba3292655b9db34db7ff851ddd564e"
+    },
+    {
+      "path": "src/generation-runtime/gates/prompt-preflight-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/gates/prompt-preflight-gate.js",
+      "sourceSha256": "5080048ef8948cb04e7600521fe5e19677c3820fd2b16b88ec856760d66cea8d"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/lexicons.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/lexicons.js",
+      "sourceSha256": "c1b4cdbf047b4ebbb0d920c1130b8741ab3522544acdb63cbaa2eb9385793e2c"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/separate-space-semantics.js",
+      "sourceSha256": "42f8d56908ccba29bd06224e1661309a03f2c105717e5060d2d9c11adabd16e9"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/normalize-architecture-semantics.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/normalize-architecture-semantics.js",
+      "sourceSha256": "9ee8a4d8386cdb2a74115aa3c9a5962287908ae8b56ba050262c40ac710c518f"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/mechanism-provenance.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/mechanism-provenance.js",
+      "sourceSha256": "99b668d206c14ab93fa2372f087b5de4100df1268a2b234fcfe0bd2462b83ca5"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/action-verbs.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/action-verbs.js",
+      "sourceSha256": "22bff5a02fc01c8a8716616438ab516339fe95b3e9eac1b77abf90dbfc38a90d"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/rewrite-architecture-semantics.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/rewrite-architecture-semantics.js",
+      "sourceSha256": "998c890c9db7c3c477ec5b7f325bcb42594b1692d45fa908e32100ef82f682a9"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/compile-spatial-mechanisms.js",
+      "sourceSha256": "495858ab8e91b006e59e0a7f850b2ef3946824012c54e2d0325b2e751cf8437d"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/sanitize-brand-expression.js",
+      "sourceSha256": "08c342c4bb10e1f6b59b9e154096a68efc1be0714f133ba8b29e38da583941c1"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/validate-spatial-semantics.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/validate-spatial-semantics.js",
+      "sourceSha256": "abd76da03cf111f3d4954880543b04cd7e39de935df8dfe4b8ff2a5061833422"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/resolve-spatial-color-role.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/resolve-spatial-color-role.js",
+      "sourceSha256": "193d2ff02f99658d74d14d993cf7693815e3b60bbc0a4ca8098fef5a9ff0e166"
+    },
+    {
+      "path": "src/generation-runtime/space/semantic/index.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/semantic/index.js",
+      "sourceSha256": "e555cb7fb6bf7ff217428936c48db2d34a6f6e0712919c55a2f59a0d9208a712"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/target-functional-programs.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/target-functional-programs.js",
+      "sourceSha256": "cbed5cff6b89d8751003202737712e7f420e23e6c6e1930fc0f0e9574bc9aa64"
+    },
+    {
+      "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/scene-projection/target-scene-projection.js",
+      "sourceSha256": "5c9d493e001a5051da64220432fdf93f3d6e75dc166feb7695c20ec0b0aaaca7"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/apply-continuation-program-override.js",
+      "sourceSha256": "6afcf1db0033ea089d61a4cd70bf70b8046ab92054dc1babc6fbaeb282d72eee"
+    },
+    {
+      "path": "src/generation-runtime/space/source-adapter.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/source-adapter.js",
+      "sourceSha256": "01eb6b6e092115462b510a4f07842893e3b5aba69f1cecc9ea6d477cb95ba09e"
+    },
+    {
+      "path": "src/generation-runtime/space/architecture-context.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/architecture-context.js",
+      "sourceSha256": "5638d151780e35158214da2d7461af7ca7105462cf82e7173a9f8304b40e6348"
+    },
+    {
+      "path": "src/generation-runtime/space/prompt-budget.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/prompt-budget.js",
+      "sourceSha256": "b2787501eecbc3ca8f8f72231b9481de19f3b5cdb408547d9c0dc328de0fb6d3"
+    },
+    {
+      "path": "src/generation-runtime/space/trace.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/trace.js",
+      "sourceSha256": "a839f99f0a5286784ac700565e7a9444a6a223a08032eb6d3ab92d5ce1aa3cdf"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/build-continuation-context.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/build-continuation-context.js",
+      "sourceSha256": "b02e7e5b63fb51ed91d864a06d05ad5f47d72824a1871978a3bfbc3c66c41bff"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/source-program-leakage-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/source-program-leakage-gate.js",
+      "sourceSha256": "cd422577245571b5966d4ed15062e862e3b44cbd847db76ff4e3bc5fcde827d7"
+    },
+    {
+      "path": "src/generation-runtime/space/compiler.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/compiler.js",
+      "sourceSha256": "619d3ce6132a814f43f3ecafe9c0e018c1dbd16200f9e2e252533ef9c4e9e832"
+    },
+    {
+      "path": "src/generation-runtime/space/space-reference-policy.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/space-reference-policy.js",
+      "sourceSha256": "f240ce89a4fd28dfe7ba5c56c760bcb835d350d84fd8a6a867c373317db89c0c"
+    },
+    {
+      "path": "src/generation-runtime/space/space-quality-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/space-quality-gate.js",
+      "sourceSha256": "ddb80da71e1738327df8ca2145bb6bcd4c0b8744e03d731bae269643bdc2fa6b"
+    },
+    {
+      "path": "src/generation-runtime/space/quality-baselines/active-space-route-baseline.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/quality-baselines/active-space-route-baseline.js",
+      "sourceSha256": "126c0263a688980d29d16f808f752d6e8625b788c89894123820033cfa24b107"
+    },
+    {
+      "path": "src/generation-runtime/space/gates/compile-integrity-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/gates/compile-integrity-gate.js",
+      "sourceSha256": "68b43aaadcc84a4c90e7f964444ec0e330761c2a52d06e48236095a2b2aee3e7"
+    },
+    {
+      "path": "src/generation-runtime/space/gates/generation-route-integrity-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/gates/generation-route-integrity-gate.js",
+      "sourceSha256": "c64fb1aff0c82ee9782ef2d67951310d2ce1c1598d61e298d0ae4fd56791e455"
+    },
+    {
+      "path": "src/generation-runtime/space/gates/provider-prompt-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/gates/provider-prompt-gate.js",
+      "sourceSha256": "b2c149ad3601cf62d0d9a4133b0243089de51eb81cf4bee1bc8d5ebe02482cef"
+    },
+    {
+      "path": "src/generation-runtime/space/gates/evidence-integrity-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/gates/evidence-integrity-gate.js",
+      "sourceSha256": "c42036348c3ad4b999e3d4a7cc0bce87d9fbc964d90346e316094ae4bc2b5197"
+    },
+    {
+      "path": "src/generation-runtime/space/product-policy.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/product-policy.js",
+      "sourceSha256": "751b98f855fcd8e08ba7f9efe9a493dc72cce8b3cea020614c0194124d835f1d"
+    },
+    {
+      "path": "src/generation-runtime/space/mode-boundary/mode-boundary-semantics.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/mode-boundary/mode-boundary-semantics.js",
+      "sourceSha256": "f38113a841ce2e74ce84f2ed942e587dabae47218e746a0e9f2787aaa1b9c37b"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/create-continuation-contract.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/create-continuation-contract.js",
+      "sourceSha256": "7b77bce132d480835d26bf3231015cc2a433a3f44b2bbbbc74c5c99566956c28"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/validate-continuation-source.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/validate-continuation-source.js",
+      "sourceSha256": "f08ad4beb072f4da71c2f885198bfe94026a7dae3064b148866e361daa1d7af0"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/resolve-continuation-reference.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/resolve-continuation-reference.js",
+      "sourceSha256": "17b271268bad9f660bcf02a3c53fba099daf193ad849807cedbda25b92c8933a"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/scene-differentiation-gate.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/scene-differentiation-gate.js",
+      "sourceSha256": "9ee3e6d4e66b800ce5ae58d6b660657e1cc3411916b14861fd8e7d8aa80ed263"
+    },
+    {
+      "path": "src/generation-runtime/space/continuation/index.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/continuation/index.js",
+      "sourceSha256": "a5cd165ab476fd056b7962397f6bbb37ebeaec3a89abc930a5644562fda32983"
+    },
+    {
+      "path": "src/generation-runtime/space/index.js",
+      "extractedFrom": "packages/image-generation-runtime/src/space/index.js",
+      "sourceSha256": "1094758b2e984b6b8c496032bbf25a045561da8fd053c6feebc447197cd2d80d"
+    },
+    {
+      "path": "src/generation-runtime/generation/compile.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/compile.js",
+      "sourceSha256": "7388184b44d565d7da858651bc7e2f46ddf46cedb1090940d377a63f247896d1"
+    },
+    {
+      "path": "src/generation-runtime/generation/golden-backtrace-audit.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/golden-backtrace-audit.js",
+      "sourceSha256": "b5eb971568748727b1b2beac2b9cc2c0cc4d8e7fcff0010252ee344f6d279f5f"
+    },
+    {
+      "path": "src/generation-runtime/generation/deliverable-validator.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/deliverable-validator.js",
+      "sourceSha256": "e4608caf52e8796314fea88a851751c6b6233faa4fe799da09c8dd44ca394dc1"
+    },
+    {
+      "path": "src/contracts/packaging-shot-contract.js",
+      "extractedFrom": "packages/image-generation-contracts/src/packaging-shot-contract.js",
+      "sourceSha256": "e242a53e99def1fb35118f542d7be926d74c621a38b2495470871a4de560ec0c"
+    },
+    {
+      "path": "src/contracts/index.js",
+      "extractedFrom": "packages/image-generation-contracts/src/index.ts",
+      "sourceSha256": "1e971d83cca44f43c4e13373d2a519c376b45a03f1f045dde6a486e11c0491dd"
+    },
+    {
+      "path": "src/generation-runtime/generation/index.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/index.js",
+      "sourceSha256": "78ecd88802319f7625869eb2b55872c5953e0839adc60d7962571a650a6ab44c"
+    },
+    {
+      "path": "src/generation-runtime/generation/space-quality/index.js",
+      "extractedFrom": "packages/image-generation-runtime/src/generation/space-quality/index.js",
+      "sourceSha256": "5d1275258ec0abcf2de9630e0d8f24ee1da1ff44322814bf95ac3dba12d95fe8"
+    },
+    {
+      "path": "src/generation-runtime/core/space-generation-core.js",
+      "extractedFrom": "packages/image-generation-runtime/src/core/space-generation-core.js",
+      "sourceSha256": "0629900b92aad14e62204ee5f0f5b3012d04175209b7beeb767ed1c235017b56"
+    },
+    {
+      "path": "src/runtime/project-intake.js",
+      "extractedFrom": "packages/runtime-core/src/application/project-intake.ts",
+      "sourceSha256": "0dc9645ef07b2a802620ae1a44b689cc7573493704baec0674070f26ad087db1"
+    },
+    {
+      "path": "src/runtime/analysis-contract.js",
+      "extractedFrom": "packages/runtime-core/src/application/analysis-contract.ts",
+      "sourceSha256": "2065b4394c5c949c368ee3f20762a1e684f51b4208b00bccc6f068aee0c7b2af"
+    },
+    {
+      "path": "src/runtime/runtime/atomic-write.js",
+      "extractedFrom": "packages/runtime-core/src/application/runtime/atomic-write.ts",
+      "sourceSha256": "c1985ddb8d1d82746a6776c007593ec01212d8a0a5b10780ff5e9afe2062a5dd"
+    },
+    {
+      "path": "src/runtime/project-assets.js",
+      "extractedFrom": "packages/runtime-core/src/application/project-assets.ts",
+      "sourceSha256": "31035ebf4c423f87257818a79d5ad84391453085da3e3330545a5e1eaf468d4f"
+    },
+    {
+      "path": "src/runtime/project-visual-context-compiler.js",
+      "extractedFrom": "packages/runtime-core/src/application/project-visual-context-compiler.ts",
+      "sourceSha256": "5bdd5eb5b37b6f076d6a260e3a032739e6c7be134c51aa8c2b22fae6e3835004"
+    },
+    {
+      "path": "src/analysis-decisions/index.js",
+      "extractedFrom": "packages/creative-intelligence/src/decisions/index.ts",
+      "sourceSha256": "83ec415940b4acd92369332e6cba12bdb0854631bf3287af5f93d25299c3fcbb"
+    },
+    {
+      "path": "src/runtime/project-visual-context-builder.js",
+      "extractedFrom": "packages/runtime-core/src/application/project-visual-context-builder.ts",
+      "sourceSha256": "87ea2ec5fbda497c29816f844bdf34b7133aaf6484b5db5fce1e1ab2431dd6a4"
+    },
+    {
+      "path": "src/runtime/visual-understanding-core.js",
+      "extractedFrom": "packages/runtime-core/src/application/visual-understanding-core.ts",
+      "sourceSha256": "9e008ed407dcab73f5b6ed14b3a8ac92fb763714ab1cd89a1bf62316791ad5d9"
+    },
+    {
+      "path": "src/runtime/packaging-translation-contract.js",
+      "extractedFrom": "packages/runtime-core/src/application/packaging-translation-contract.ts",
+      "sourceSha256": "94970f74a5481303222ac2b3c94ff9086755587bc872ef2568e4fa90e97a3177"
+    },
+    {
+      "path": "src/runtime/visual-decision-packet.js",
+      "extractedFrom": "packages/runtime-core/src/application/visual-decision-packet.ts",
+      "sourceSha256": "5ccaacb2f3a66a31735841b06bb1f60e7de0d7c8b0975af63a5f529db17b16bf"
+    },
+    {
+      "path": "src/runtime/unified-visual-understanding.js",
+      "extractedFrom": "packages/runtime-core/src/application/unified-visual-understanding.ts",
+      "sourceSha256": "e782003194ace5a0bbd8b0e8711ac841e15c340ec933a225c04ec405dde4fd5f"
+    },
+    {
+      "path": "src/runtime/visual-decision-report-compiler.js",
+      "extractedFrom": "packages/runtime-core/src/application/visual-decision-report-compiler.ts",
+      "sourceSha256": "0870508a3a50cfd5f3c3d3c26d0f8f1ec113ed2128f2ec32c9351955241c2558"
+    },
+    {
+      "path": "src/runtime/analysis-repair-store.js",
+      "extractedFrom": "packages/runtime-core/src/application/analysis-repair-store.ts",
+      "sourceSha256": "3bf01739d937e2950a11daadd9dd5ee860d69dc2b0f0c1abf62fbec8f1fa051c"
+    },
+    {
+      "path": "src/runtime/model-schema/validation-issues.js",
+      "extractedFrom": "packages/runtime-core/src/application/model-schema/validation-issues.ts",
+      "sourceSha256": "60fb736b17458841a03be82e9d82e48c902897df78649c5aeb73df589b8faf0d"
+    },
+    {
+      "path": "src/model-runtime/analysis-provider.js",
+      "extractedFrom": "packages/model-runtime/src/analysis-provider.js",
+      "sourceSha256": "ab4678930b355c181ba26964d54f31ace0bbe05887eb9250e890da5e385ec2f7"
+    },
+    {
+      "path": "src/model-runtime/qwen-reasoner.js",
+      "extractedFrom": "packages/model-runtime/src/qwen-reasoner.js",
+      "sourceSha256": "cc69f2ebe7687708212f51d5aea493771dba344f1d454db96ea0962413ddaa10"
+    },
+    {
+      "path": "src/model-runtime/qwen-analysis-provider.js",
+      "extractedFrom": "packages/model-runtime/src/qwen-analysis-provider.js",
+      "sourceSha256": "f1d9a87f9158c5362bcd1ee7f5702cf0bd7adf0cadf32bcb4d71891234f541f4"
+    },
+    {
+      "path": "src/model-runtime/volcengine-reasoner.js",
+      "extractedFrom": "packages/model-runtime/src/volcengine-reasoner.js",
+      "sourceSha256": "4f0f764cca314fd737f4a4571e3986a201c75fda747830cd473a1e4d14080065"
+    },
+    {
+      "path": "src/model-runtime/volcengine-analysis-provider.js",
+      "extractedFrom": "packages/model-runtime/src/volcengine-analysis-provider.js",
+      "sourceSha256": "1aadb4934678f7493c7f4f0a3c800465f9a8de3bea5f64bd0f06d84e7405590a"
+    },
+    {
+      "path": "src/model-runtime/analysis-provider-registry.js",
+      "extractedFrom": "packages/model-runtime/src/analysis-provider-registry.js",
+      "sourceSha256": "b4e3db173a59685a31bcfba1a927e628ed38bbfdde63bacdcb66d13011771fa5"
+    },
+    {
+      "path": "src/model-runtime/response-parser.js",
+      "extractedFrom": "packages/model-runtime/src/response-parser.js",
+      "sourceSha256": "a200eca28173f4eb9f3c6653f74dcfe499ceac0116c5767529f5688d46ec5e51"
+    },
+    {
+      "path": "src/cli/utils.js",
+      "extractedFrom": "apps/cli/src/utils.js",
+      "sourceSha256": "9669b9170d257dc0ef4bdcddacfb3072de1084ddc52a1950d8afed334203855c"
+    },
+    {
+      "path": "src/cli/parsers.js",
+      "extractedFrom": "apps/cli/src/parsers.js",
+      "sourceSha256": "8a7b1d36316eb4c989d01010649191f33bd433436e089e821ab1b2df1c046a8d"
+    },
+    {
+      "path": "src/cli/runtime-trace.js",
+      "extractedFrom": "apps/cli/src/runtime-trace.js",
+      "sourceSha256": "29639bd986b16447364b94496c57ae2481868d0d836a505f4df949fb9c11614e"
+    },
+    {
+      "path": "src/cli/inventory.js",
+      "extractedFrom": "apps/cli/src/inventory.js",
+      "sourceSha256": "1ff72342c5496610d5440e9aaf612f5f3ca3d724520246c33808414192cded22"
+    },
+    {
+      "path": "src/cli/analysis-engine/config/defaults.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/config/defaults.js",
+      "sourceSha256": "3211ecf512cf9c5a1d97073b87e8322a847eb9fbbae9edc4f34334ff50c7b94d"
+    },
+    {
+      "path": "src/cli/analysis-engine/config/schema.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/config/schema.js",
+      "sourceSha256": "993ddb90fe4a6a26d1e4a6baad8f7b0266407c717960c16aca74bb579150d012"
+    },
+    {
+      "path": "src/cli/analysis-engine/creative-director/session-guard.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/creative-director/session-guard.js",
+      "sourceSha256": "07ab45f8861d49273c6cc328e70f5ca85e46603f61ff3afa05a9a3813f154960"
+    },
+    {
+      "path": "src/cli/analysis-engine/creative-director/prompt-builder.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/creative-director/prompt-builder.js",
+      "sourceSha256": "a1b2d3d4c008462bca7b74c8d6bcbd9c5afa4767fbbfac69ee720937558a755a"
+    },
+    {
+      "path": "src/cli/analysis-engine/creative-director/deep-creative-director.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/creative-director/deep-creative-director.js",
+      "sourceSha256": "149de72d8615e95a0d9127b03d8f28eaf0d5d068c7ed20c4ab47556d86cab1d6"
+    },
+    {
+      "path": "src/cli/analysis-engine/creative-director/output-writer.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/creative-director/output-writer.js",
+      "sourceSha256": "3f05309993049838fd57a019f223b81d7b01ead509fc44c2d1e73d250f1afcab"
+    },
+    {
+      "path": "src/cli/analysis-engine/preparation/visual-preparation.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/preparation/visual-preparation.js",
+      "sourceSha256": "fb2d6e40da54975bdcbd8158cc8fdd12d6fd907fa68b2f76bb9fd63f873418a8"
+    },
+    {
+      "path": "src/cli/analysis-engine/preparation/benchmark-preparation.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/preparation/benchmark-preparation.js",
+      "sourceSha256": "15d524029e3d601b24caa9c6fcfaa7271d505de20d6fb871c1dacc7843f03d1a"
+    },
+    {
+      "path": "src/cli/analysis-engine/preparation/reasoning-cache.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/preparation/reasoning-cache.js",
+      "sourceSha256": "b8519101dc33a275d8097a4c374837a29ed8b547b281cbc431b2187096c0ef81"
+    },
+    {
+      "path": "src/cli/analysis-engine/telemetry/run-logger.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/telemetry/run-logger.js",
+      "sourceSha256": "4d59d82a41c9d121610f68565301efa94a2787ec481938394a7c9efb012587a0"
+    },
+    {
+      "path": "src/cli/analysis-engine/bootstrap.js",
+      "extractedFrom": "apps/cli/src/analysis-engine/bootstrap.js",
+      "sourceSha256": "0de36881f7d6c27465f14e73acfb2c04aa76d2659d416eee775fdfd1c4fb5aca"
+    },
+    {
+      "path": "src/runtime/pipeline-service.js",
+      "extractedFrom": "packages/runtime-core/src/application/pipeline-service.ts",
+      "sourceSha256": "85de67a1e65fb77c483703420434f2679c7ffecd8ea90aebeae42215b6ea575d"
+    },
+    {
+      "path": "src/generation-runtime/reference-engine/reference-asset-resolver.js",
+      "extractedFrom": "packages/image-generation-runtime/src/reference-engine/reference-asset-resolver.ts",
+      "sourceSha256": "e33abd2c0a924e51bf770aa7598ca37ac59c7a6414f16bd7bd9c1476ebd8ed57"
+    },
+    {
+      "path": "src/runtime/image-generation/logo-post-composite.js",
+      "extractedFrom": "packages/runtime-core/src/application/image-generation/logo-post-composite.ts",
+      "sourceSha256": "1a154b60d19967646bc3c9731082db8ccfaa74e3c9e1bdc1afc32ff2dcd7934d"
+    },
+    {
+      "path": "src/runtime/image-generation/short-chain-service.js",
+      "extractedFrom": "packages/runtime-core/src/application/image-generation/short-chain-service.ts",
+      "sourceSha256": "91e9c9bd86fc47da9d1020c7c96d1303bc53d44cd1977718ee645e02945c8810"
+    },
+    {
+      "path": "src/runtime/image-generation/deliverable-validator-service.js",
+      "extractedFrom": "packages/runtime-core/src/application/image-generation/deliverable-validator-service.ts",
+      "sourceSha256": "2e40a3cf9c08faf3cfcfcc866a09000f4fa8cbdf8b251610d9ed3be3d0d8a9bd"
+    },
+    {
+      "path": "src/image-adapter/multi-model.js",
+      "extractedFrom": "packages/image-generation-adapter/src/multi-model.js",
+      "sourceSha256": "f7476f4e52dbb9e1ba2faf26ad0851db7e9efa8d9fb5f7cc2c1910acf4f0ddc6"
+    }
+  ]
+}

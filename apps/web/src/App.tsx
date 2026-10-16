@@ -17,6 +17,7 @@ import { ImageGenerationWorkspace } from './components/ImageGenerationWorkspace'
 // B3 后实际渲染由 CreatePage 负责, 此处仅为 invariant test 契约保留.
 import { DocumentContextWorkspace } from './components/DocumentContextWorkspace';
 import { ShortChainPage } from './pages/ShortChainPage';
+import { VisualWorkflowWorkspace } from './features/visual-workflow/VisualWorkflowWorkspace';
 import { CreatePage } from './pages/CreatePage';
 import { ContextIntegrationPanel } from './components/ContextIntegrationPanel';
 import { CreativeIntelligenceWorkspace } from './components/CreativeIntelligenceWorkspace';
@@ -269,40 +270,7 @@ function AppContent() {
   }, [error, settings, pushToast]);
 
   async function openProject(project: ProjectRecord) {
-    setSelected(project);
-    setError('');
-    setRunFailure('');
-    const profile = analysisProfiles.find((item) => item.id === project.apiProfileId)
-      || analysisProfiles.find((item) => item.isDefault)
-      || analysisProfiles[0];
-    setSelectedApiProfileId(profile?.id || '');
-    // Phase 5.8: include the project id in the URL so the page is
-    // shareable. setScreen drives the screen segment; the id segment
-    // is appended for deep-link round-trips. The `selected` state
-    // still owns the canonical record (the id segment is a hint, not
-    // a source of truth — refresh() races and a stale id are both OK
-    // because openProject always sets `selected` immediately).
-    if (project.status === 'completed' && project.lastReportFilename) {
-      navigateToPath(`/projects/${project.id}/report`);
-    } else {
-      navigateToPath(`/projects/${project.id}`);
-    }
-    try { setAssets(await window.masterpiece.projects.scanAssets(project.id)); }
-    catch (reason) { setError(cleanError(reason)); }
-    // r2.0 / r10.4 UX: ask the backend whether the persisted Project
-    // + Visual Context already has the minimum data needed to enter
-    // creative-session. The project page uses this to surface a
-    // "继续创作 / 直接创作" entry that bypasses the analysis report
-    // page when ready. A transport failure is surfaced instead of silently
-    // collapsing back to the misleading "开始分析"-only state.
-    setGenerationReadiness(null);
-    try {
-      const readiness = await window.masterpiece.projectContext.getGenerationReadiness(project.id);
-      setGenerationReadiness(readiness);
-    } catch (reason) {
-      setGenerationReadiness(null);
-      setError(`无法读取生成就绪状态：${cleanError(reason)}`);
-    }
+    navigateToPath(`/visual-workflow?import=${encodeURIComponent(project.id)}`);
   }
 
   async function refreshSelected(projectId: string, nextAssets?: AssetSummary) {
@@ -491,6 +459,7 @@ function AppContent() {
     setScreen('image-generation');
   }
 
+  if (screen === 'visual-workflow' || screen === 'create' && analysisMode === 'visual-analysis') return <VisualWorkflowWorkspace onBack={() => setScreen('home')} />;
   if (loading) return <div className="splash"><div className="brand-mark">M</div><p>正在启动 Masterpiece OS…</p></div>;
   if (!settings) return (
     <div className="splash">
@@ -726,7 +695,7 @@ function AppContent() {
           </p>
           <div className="hero__actions">
             <Button variant="primary" onClick={() => { setAnalysisMode('visual-analysis'); setScreen('create'); }}>
-              分析视觉素材 →
+              视觉分析与生图 →
             </Button>
             {UI_VISIBILITY.creativeDirection && <Button variant="ghost" onClick={() => setScreen('creative-direction')}>
               创意策划 →

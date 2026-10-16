@@ -1,0 +1,56 @@
+import {
+  stableValue,
+  valueAtPath
+} from "./path-utils.js";
+function buildRepairPrompt(input) {
+  const evidence = Object.fromEntries(
+    input.batch.evidencePaths.map((path) => [
+      path,
+      structuredClone(valueAtPath(input.packet, path))
+    ])
+  );
+  const payload = JSON.stringify(stableValue(evidence), null, 2);
+  const targets = input.batch.fieldPaths.map((path) => `- ${path}`).join("\n");
+  const allowedRefs = input.batch.evidenceRefs.map((ref, index) => `${index + 1}. ${ref}`).join("\n");
+  return {
+    evidence,
+    prompt: `\u4F60\u6B63\u5728\u4FEE\u590D\u5F53\u524D\u9879\u76EE\u7ED3\u6784\u5316\u5206\u6790\u4E2D\u7684\u7F3A\u5931\u5B57\u6BB5\u3002
+
+\u53EA\u8F93\u51FA\u4EE5\u4E0B\u5B57\u6BB5\uFF1A
+${targets}
+
+\u53EA\u80FD\u4F7F\u7528\u4E0B\u65B9\u201C\u5F53\u524D\u9879\u76EE\u8BC1\u636E\u201D\u3002\u7981\u6B62\u8BFB\u53D6\u6216\u501F\u7528\u4EFB\u4F55\u5916\u90E8\u9879\u76EE\u3001\u5386\u53F2\u7B54\u6848\u3001\u8BC4\u6D4B\u57FA\u51C6\u3001\u884C\u4E1A\u5BA1\u7F8E\u6A21\u677F\u6216\u672A\u5217\u51FA\u7684\u4E8B\u5B9E\u3002
+\u7981\u6B62\u4FEE\u6539\u5DF2\u6709\u5B57\u6BB5\u3001\u9879\u76EE\u8EAB\u4EFD\u3001Locked Assets\u3001\u771F\u5B9E\u4EA7\u54C1\u3001\u5305\u88C5\u7ED3\u6784\u3001\u533B\u7597\u529F\u6548\u3001\u6CD5\u5F8B\u58F0\u660E\u6216\u5F3A\u5236\u6587\u6848\u3002
+
+\u6BCF\u4E2A\u5B57\u6BB5\u5FC5\u987B\u8F93\u51FA\uFF1A
+- path\uFF1A\u5FC5\u987B\u4E0E\u8BF7\u6C42\u5B57\u6BB5\u5B8C\u5168\u4E00\u81F4
+- value\uFF1A\u8BE5\u5B57\u6BB5\u7684\u4FEE\u590D\u503C
+- status\uFF1A\u53EA\u80FD\u662F inferred \u6216 proposed
+- confidence\uFF1A0 \u5230 1
+- evidenceRefs\uFF1A\u53EA\u80FD\u4ECE\u4E0B\u8868\u9009\u62E9\u5B8C\u6574\u8BC1\u636E ID\uFF0C\u6216\u4F7F\u7528\u4E0B\u8868\u5BF9\u5E94\u7684\u6574\u6570\u7F16\u53F7\uFF08\u4ECE 1 \u5F00\u59CB\uFF09\uFF0C\u81F3\u5C11 1 \u9879\uFF1B\u7981\u6B62\u5F15\u7528\u8868\u5916\u8BC1\u636E
+
+\u53EA\u8F93\u51FA\u4E25\u683C JSON\uFF1A
+{
+  "repairs": [
+    {
+      "path": "\u8BF7\u6C42\u5B57\u6BB5",
+      "value": null,
+      "status": "inferred",
+      "confidence": 0.8,
+      "evidenceRefs": [${JSON.stringify(input.batch.evidenceRefs[0] ?? "")}]
+    }
+  ]
+}
+
+\u5141\u8BB8\u5F15\u7528\uFF1A
+${allowedRefs || "- \u65E0\u53EF\u7528\u5F15\u7528\uFF1B\u4E0D\u5F97\u8865\u9F50\uFF0C\u8BF7\u8FD4\u56DE\u7A7A repairs"}
+
+\u5F53\u524D\u9879\u76EE\u8BC1\u636E\uFF1A
+${payload}
+
+\u672C\u6B21\u4E3A Repair Attempt ${input.attempt}\u3002\u4E0D\u5F97\u8F93\u51FA\u89E3\u91CA\u3001Markdown \u6216\u672A\u8BF7\u6C42\u5B57\u6BB5\u3002`
+  };
+}
+export {
+  buildRepairPrompt
+};

@@ -44,6 +44,7 @@ HISTORICAL / FIXTURE / ARCHIVE
 
 ## Five-minute navigation
 
+- Independent material → analysis → report → generation workflow: `packages/visual-workflow/src/service.js`; Web entry `/visual-workflow`, owned UI `apps/web/src/features/visual-workflow`. This capability has its own source, prompts, settings, credentials and data. Planning/migration cannot consume it; see `docs/runtime/independent-visual-workflow.md`.
 - Visual Analysis: `packages/runtime-core/src/application/pipeline-service.ts`, `apps/cli/src/analysis-engine`, `apps/cli/prompts/analysis`
 - Space orchestration: `packages/image-generation-runtime/src/generation/compile.js`
 - Space compiler file: `packages/image-generation-runtime/src/space/compiler.js`

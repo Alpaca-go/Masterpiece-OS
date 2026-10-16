@@ -69,6 +69,9 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 function normalizeProjectRecord(record: ProjectRecord): ProjectRecord {
+  if ((record as ProjectRecord & { workflowOwner?: string }).workflowOwner === 'visual-workflow') {
+    throw new Error('PROJECT_BELONGS_TO_INDEPENDENT_WORKFLOW: 此项目仅能由独立视觉工作流访问');
+  }
   return {
     ...record,
     detectedProjectName: record.detectedProjectName || record.projectName,

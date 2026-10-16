@@ -2,6 +2,7 @@
   "schemaVersion": "1.0",
   "freezeCommit": "d980a78e8ec94fe51a37f778dc463bef84eacfe7",
   "authorities": [
+    { "capability": "independent-visual-workflow", "authority": "packages/visual-workflow/src/service.js", "ownerLayer": "shared-core" },
     { "capability": "project-runtime", "authority": "apps/web-runtime/src/node-runtime-host.ts", "ownerLayer": "node-host" },
     { "capability": "web-ui", "authority": "apps/web/src/App.tsx", "ownerLayer": "web-renderer" },
     { "capability": "visual-analysis", "authority": "apps/cli/src/analysis-engine/bootstrap.js", "ownerLayer": "analysis-runtime" },

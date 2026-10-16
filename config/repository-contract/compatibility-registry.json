@@ -5,7 +5,13 @@
     {
       "identifier": "project-visual-context.vnext.json and visualContextVNext*",
       "type": "PERSISTED_PROJECT_CONTRACT",
-      "locations": ["packages/runtime-core/src/application/project-context-service.ts", "packages/runtime-core/src/application-contracts.ts"],
+      "locations": [
+        "packages/runtime-core/src/application/project-context-service.ts",
+        "packages/runtime-core/src/application-contracts.ts",
+        "packages/visual-workflow/src/service.js",
+        "packages/visual-workflow/src/runtime/pipeline-service.js",
+        "packages/visual-workflow/src/runtime/project-visual-context-builder.js"
+      ],
       "consumer": "Existing project records and structured project context files",
       "reason": "Existing projects must remain readable without rewrite.",
       "owner": "project-runtime",
@@ -15,7 +21,10 @@
     {
       "identifier": "vnext-1.0, pipelineMode=vnext, image-generation-vnext",
       "type": "PERSISTED_RUN_CONTRACT",
-      "locations": ["packages/runtime-core/src/application/image-generation/short-chain-service.ts"],
+      "locations": [
+        "packages/runtime-core/src/application/image-generation/short-chain-service.ts",
+        "packages/visual-workflow/src/runtime/image-generation/short-chain-service.js"
+      ],
       "consumer": "Existing image-generation runs and artifacts",
       "reason": "Preserve run/session/artifact loading.",
       "owner": "short-chain-generation",
@@ -25,7 +34,12 @@
     {
       "identifier": "masterpiece-os-v5.json",
       "type": "PROJECT_CONFIG_FILENAME",
-      "locations": ["apps/cli/src/analysis-engine/bootstrap.js", "packages/runtime-core/src/application/pipeline-service.ts"],
+      "locations": [
+        "apps/cli/src/analysis-engine/bootstrap.js",
+        "packages/runtime-core/src/application/pipeline-service.ts",
+        "packages/visual-workflow/src/cli/analysis-engine/bootstrap.js",
+        "packages/visual-workflow/src/runtime/pipeline-service.js"
+      ],
       "consumer": "Existing project analysis configuration",
       "reason": "Preserve project-local configuration discovery.",
       "owner": "visual-analysis",
@@ -35,7 +49,12 @@
     {
       "identifier": "r8_6_golden, phase9b_quality, vnext_legacy and Phase9B trace fields",
       "type": "CONFIG_AND_PROVENANCE_CONTRACT",
-      "locations": ["packages/image-generation-runtime/src/generation/compile.js", "packages/image-generation-runtime/src/space/compiler.js"],
+      "locations": [
+        "packages/image-generation-runtime/src/generation/compile.js",
+        "packages/image-generation-runtime/src/space/compiler.js",
+        "packages/visual-workflow/src/generation-runtime/generation/compile.js",
+        "packages/visual-workflow/src/generation-runtime/space/compiler.js"
+      ],
       "consumer": "Existing environment configuration, persisted traces and Golden evidence",
       "reason": "Accepted values and emitted evidence must remain stable.",
       "owner": "space-generation",

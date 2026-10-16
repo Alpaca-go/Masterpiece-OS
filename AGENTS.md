@@ -140,3 +140,13 @@ no secret committed). Procedure lives in
 - New production code must use Shared Core boundaries.
 - Do not reintroduce Desktop/Electron adapters.
 - Do not add new direct imports to historical versioned implementations outside the owning Core module.
+
+## 视觉工作流双向隔离（持续有效）
+
+- 用户已明确要求：视觉分析与生图、创意策划、视觉迁移分别拥有业务实现；不得为了复用而重新合并。此约定适用于后续质量修复和功能开发。
+- 修复“导入素材 → 视觉分析 → 查看报告 → 智能生图”时，只修改 `packages/visual-workflow/` 及 `apps/web/src/features/visual-workflow/` 中的业务实现。不得用修改策划/迁移所用的共享 Prompt、Compiler、Provider Adapter 来修复此功能。
+- 开发创意策划或视觉迁移时，不得导入、转导出、同步或直接调用独立工作流的代码、提示词、配置与数据。不得顺带更新其 `implementation-integrity.json`。
+- 独立配置与项目迁入只允许用户主动触发的一次性复制；禁止后台同步、共享存储、隐式回退到全局设置。
+- 公共宿主、路由、传输层、样式基础设施、依赖及根 lockfile 仍可能影响多个功能。此类变更必须明确列出影响范围，并运行所有受影响功能的回归；不能仅凭独立模块的哈希未变就判定质量不受影响。
+- 每次完成上述功能的修改前运行 `npm run repo:verify`（含双向隔离检查及其反例测试）。行为变化还须运行相关完整回归与 Golden；不得自动刷新 Prompt/Golden/完整性记录以消除失败。
+- 当前完整性记录只证明拆分内容，**不是质量验收**。待用户确认生图质量恢复后，再单独记录经确认的代码/提示词摘要、模型及参数、代表素材与结果、验收结论；后续变更不得覆盖该验收记录来冒充通过。
