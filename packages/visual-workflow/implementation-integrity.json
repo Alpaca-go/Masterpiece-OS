@@ -169,7 +169,7 @@
     },
     {
       "path": "src/contracts/index.js",
-      "sha256": "71cc9241769edfe414d4b9bc89b9abfb060726d77eeff7537af51fb03b92cbcd"
+      "sha256": "4afdcaf7645fd8fbc05baca03f32e5798f22dd46f6b040431161b3ff9c89ab89"
     },
     {
       "path": "src/contracts/packaging-shot-contract.js",
@@ -189,7 +189,7 @@
     },
     {
       "path": "src/generation-runtime/generation/deliverable-validator.js",
-      "sha256": "96b62fa8f781b82485b7247c3b6cbf123b52856a45b07e66ddf9344bbbac9681"
+      "sha256": "63feebfb07534284c7143a0887bf1fe61718f7f919f3f4259fbfe1095b84ac74"
     },
     {
       "path": "src/generation-runtime/generation/golden-backtrace-audit.js",
@@ -441,7 +441,7 @@
     },
     {
       "path": "src/runtime/image-generation/deliverable-validator-service.js",
-      "sha256": "3717053a61d9be642b76ed9de3f4465a9f531977aa33dbea7df033063ed38e4f"
+      "sha256": "6806fb5b782f50ea1445e64146af0f789cbb3370f4b2af97f51e14d630ead5a8"
     },
     {
       "path": "src/runtime/image-generation/logo-post-composite.js",
@@ -449,7 +449,7 @@
     },
     {
       "path": "src/runtime/image-generation/short-chain-service.js",
-      "sha256": "b6d57856f1329dc8445d356304e3e1c1171f8857ae0e469bf15215c467c59802"
+      "sha256": "c73a6ef81006ba7827e5c44c0280422acda26fb3350175bfe02ad1b50490bc7a"
     },
     {
       "path": "src/runtime/model-schema/validation-issues.js",
