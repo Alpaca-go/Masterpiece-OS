@@ -22,7 +22,7 @@ export function buildRepairPrompt(input: {
   );
   const payload = JSON.stringify(stableValue(evidence), null, 2);
   const targets = input.batch.fieldPaths.map((path) => `- ${path}`).join('\n');
-  const allowedRefs = input.batch.evidenceRefs.map((ref) => `- ${ref}`).join('\n');
+  const allowedRefs = input.batch.evidenceRefs.map((ref, index) => `${index + 1}. ${ref}`).join('\n');
   return {
     evidence,
     prompt: `你正在修复当前项目结构化分析中的缺失字段。
@@ -38,7 +38,7 @@ ${targets}
 - value：该字段的修复值
 - status：只能是 inferred 或 proposed
 - confidence：0 到 1
-- evidenceRefs：只能从允许引用中选择，至少 1 项
+- evidenceRefs：只能从下表选择完整证据 ID，或使用下表对应的整数编号（从 1 开始），至少 1 项；禁止引用表外证据
 
 只输出严格 JSON：
 {
@@ -48,7 +48,7 @@ ${targets}
       "value": null,
       "status": "inferred",
       "confidence": 0.8,
-      "evidenceRefs": ["允许引用"]
+      "evidenceRefs": [${JSON.stringify(input.batch.evidenceRefs[0] ?? '')}]
     }
   ]
 }

@@ -1,4 +1,5 @@
 import { ACTIVE_SPACE_ROUTE_BASELINE } from '../quality-baselines/active-space-route-baseline.js';
+import { resolveProviderPromptLimit } from '../prompt-budget.js';
 // r2.0 §4.13 / Phase D: the new compile-integrity-gate.js hosts the
 // canonical Gate A implementation. This file is preserved for backward
 // compatibility (its function is re-exported as the legacy umbrella
@@ -57,25 +58,12 @@ export function assertSpaceGenerationRouteIntegrity(input, baseline = ACTIVE_SPA
     && baseline.compilerIds.includes(trace.compilerId);
   const requiredBlocksPresent = missingBlockIds.length === 0;
   const blockOrderMatched = orderedSubset(blockIds, baseline.requiredBlockOrder);
-  const promptBudgetMatched = (() => {
-    // r2.0 §4.10 / B-3: the Reference Boundary text block is required for
-    // `reference_first` runs and adds ~700-1100 chars on top of the R8.6
-    // 7500 design target. The block is structural, not bloat. Treat its
-    // character count as exempt from the upper bound so the budget check
-    // stays meaningful (still measures whether the BODY of the prompt is
-    // in range) without spuriously blocking Reference-First runs that
-    // Gate B is about to validate. Mirrors the same adjustment in
-    // compile-integrity-gate.js (Gate A) — both checks read the same trace
-    // so the two must agree.
-    const referenceBoundaryChars = Math.max(0, Number(trace.referenceBoundary?.promptCharacters) || 0);
-    const referenceBoundaryApplied = Boolean(trace.referenceBoundary?.applied);
-    const effectiveMaxChars = referenceBoundaryApplied
-      ? baseline.promptBudget.maxChars + referenceBoundaryChars
-      : baseline.promptBudget.maxChars;
-    return promptCharacters >= baseline.promptBudget.minChars
-      && promptCharacters <= effectiveMaxChars
-      && architectureCharacters >= baseline.architectureBudget.minChars;
-  })();
+  // Match the compiler budget policy: the historical max is a quality
+  // warning, while the adapter capability is the hard limit. Count the
+  // entire prompt, including any required Reference Boundary text.
+  const promptBudgetMatched = promptCharacters >= baseline.promptBudget.minChars
+    && promptCharacters <= resolveProviderPromptLimit(input.providerCapability)
+    && architectureCharacters >= baseline.architectureBudget.minChars;
   const referencePolicyMatched = generationBasis === 'standard'
     ? referenceCount === 0 && referenceMode === 'text_only'
     : generationBasis === 'reference_first'

@@ -4,6 +4,7 @@ Use capability names to navigate current code.
 
 | Capability | Current namespace/path | Do not navigate by |
 |---|---|---|
+| Independent visual workflow | `packages/visual-workflow`, `apps/web/src/features/visual-workflow` | creative-intelligence decisions or migration services |
 | Web UI | `apps/web` | Desktop, vNext |
 | Node Host | `apps/web-runtime` | Electron Main |
 | Visual Analysis | `apps/cli/src/analysis-engine` | CLI v5 |

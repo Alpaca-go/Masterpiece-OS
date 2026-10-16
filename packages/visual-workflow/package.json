@@ -1,0 +1,8 @@
+{
+  "name": "@masterpiece/visual-workflow",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": { "./service.js": "./src/service.js", "./*": "./src/*" },
+  "dependencies": { "sharp": "0.35.3" }
+}

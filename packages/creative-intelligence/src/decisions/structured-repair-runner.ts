@@ -20,13 +20,15 @@ function parseResponse(value: unknown): unknown {
   } catch {
     throw Object.assign(new Error('Repair model returned unparseable JSON.'), {
       code: 'REPAIR_RESPONSE_INVALID',
+      repairFeedback: 'Return one complete JSON object with a repairs array; do not include prose or Markdown.',
     });
   }
 }
 
-function invalid(message: string): never {
+function invalid(message: string, repairFeedback = 'Return every requested path exactly once with the value type required by its JSON Schema.'): never {
   throw Object.assign(new Error(message), {
     code: 'REPAIR_RESPONSE_INVALID',
+    repairFeedback,
   });
 }
 
@@ -49,6 +51,11 @@ function objectSchema(
 }
 
 function valueSchemaForPath(path: string): Record<string, unknown> {
+  // Match deliverable sufficiency and the generation preflight gate. A
+  // one-item network satisfies the generic array schema but cannot complete.
+  if (path === 'mediaTranslations.spatial.functionalNetwork') {
+    return { ...stringArraySchema, minItems: 3 };
+  }
   if ([
     'creativeDecision.brandRoleStatement',
     'creativeDecision.uniqueUpgradeThesis',
@@ -165,7 +172,7 @@ function matchesValueSchema(path: string, value: unknown): boolean {
   ));
 }
 
-function responseSchema(targetFields: string[]): Record<string, unknown> {
+function responseSchema(targetFields: string[], evidenceRefs: string[]): Record<string, unknown> {
   return {
     type: 'object',
     additionalProperties: false,
@@ -181,7 +188,13 @@ function responseSchema(targetFields: string[]): Record<string, unknown> {
             value: valueSchemaForPath(path),
             status: { type: 'string', enum: ['inferred', 'proposed'] },
             confidence: { type: 'number', minimum: 0, maximum: 1 },
-            evidenceRefs: stringArraySchema,
+            evidenceRefs: {
+              ...stringArraySchema,
+              items: { anyOf: [
+                { type: 'string', enum: [...new Set(evidenceRefs)] },
+                { type: 'integer', enum: evidenceRefs.map((_, index) => index + 1) },
+              ] },
+            },
           })),
         },
       },
@@ -195,6 +208,7 @@ export async function runStructuredRepair(input: {
   attempt: number;
   sourceFingerprint: string;
   model: StructuredRepairModel;
+  previousFailure?: string;
 }): Promise<StructuredRepairRunResult> {
   if (!input.batch.evidenceRefs.length) {
     throw Object.assign(new Error('No current-project evidence is available for AI repair.'), {
@@ -206,12 +220,16 @@ export async function runStructuredRepair(input: {
     packet: input.packet,
     attempt: input.attempt,
   });
+  const schema = responseSchema(input.batch.fieldPaths, input.batch.evidenceRefs);
+  // Include value shapes in the text too: not every compatible endpoint
+  // enforces response_format, and the generic prompt's null is only a placeholder.
+  const prompt = `${built.prompt}\n\nJSON Schema（value 必须符合对应 path 的类型，不能使用 null 占位）：\n${JSON.stringify(schema)}${input.previousFailure ? `\n\n上一次校验失败，请修正：\n${input.previousFailure}` : ''}`;
   const raw = await input.model({
-    prompt: built.prompt,
+    prompt,
     attempt: input.attempt,
     batchId: input.batch.id,
     targetFields: [...input.batch.fieldPaths],
-    responseSchema: responseSchema(input.batch.fieldPaths),
+    responseSchema: schema,
   });
   const parsed = parseResponse(raw);
   if (!isRecord(parsed) || !Array.isArray(parsed.repairs)) {
@@ -239,17 +257,21 @@ export async function runStructuredRepair(input: {
     if (!Number.isFinite(confidence) || confidence < 0 || confidence > 1) {
       invalid(`Repair field ${path} has an invalid confidence.`);
     }
-    const evidenceRefs = Array.isArray(candidate.evidenceRefs)
-      ? candidate.evidenceRefs
-        .filter((ref): ref is string => typeof ref === 'string')
-        .map((ref) => ref.trim())
-        .filter(Boolean)
-      : [];
+    // The prompt explicitly numbers this request's evidence. Resolve only
+    // those integer indexes; never infer a source from an unknown citation.
+    const suppliedRefs = Array.isArray(candidate.evidenceRefs) ? candidate.evidenceRefs : [];
+    const evidenceRefs = suppliedRefs.map((ref) => {
+      if (typeof ref === 'string') return ref.trim();
+      if (typeof ref === 'number' && Number.isInteger(ref) && ref >= 1 && ref <= input.batch.evidenceRefs.length) {
+        return input.batch.evidenceRefs[ref - 1];
+      }
+      return '';
+    });
     if (
       !evidenceRefs.length
-      || evidenceRefs.some((ref) => !allowedEvidence.has(ref))
+      || evidenceRefs.some((ref) => !ref || !allowedEvidence.has(ref))
     ) {
-      invalid(`Repair field ${path} contains unavailable evidence references.`);
+      invalid(`Repair field ${path} contains unavailable evidence references.`, 'Use only the evidenceRefs listed in the allowed references; each repair requires at least one.');
     }
     if (!isMeaningfulValue(candidate.value)) {
       invalid(`Repair field ${path} contains an empty value.`);
@@ -276,7 +298,7 @@ export async function runStructuredRepair(input: {
     batchId: input.batch.id,
     attempt: input.attempt,
     patches,
-    promptRedacted: built.prompt,
+    promptRedacted: prompt,
     responseRedacted: {
       repairs: patches.map((patch) => ({
         path: patch.path,

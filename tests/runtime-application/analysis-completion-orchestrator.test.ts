@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+// @ts-ignore — shared JavaScript parser used by the production provider bridge.
+import { parseStructuredResponse } from '@masterpiece/model-runtime/response-parser';
 import {
   completeStructuredAnalysis,
   type StructuredRepairModelRequest,
@@ -91,7 +93,7 @@ test('completion orchestrator stops after two invalid repair attempts', async ()
   assert.equal(result.modelCallCount, 2);
   assert.equal(result.audit.errors.length, 2);
   assert.ok(result.audit.errors.every((error) => (
-    error.message === 'Repair model returned invalid structured output.'
+    error.message.startsWith('Repair model returned invalid structured output.')
   )));
   assert.ok(result.unresolvedFields.includes('creativeDecision.toneBoundaries'));
 });
@@ -120,6 +122,81 @@ test('completion orchestrator asks about real packaging facts without calling AI
   assert.ok(result.clarificationQuestions.some((question) => (
     /包装内实际放置的产品/u.test(question.question)
   )));
+});
+
+test('completion retries invalid shapes with corrective feedback and preserves project facts', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.creativeDecision.toneBoundaries = [];
+  const facts = structuredClone(packet.projectFacts);
+  const result = await completeStructuredAnalysis({
+    packet,
+    deliverable: 'space',
+    execution,
+    model: async (request) => {
+      if (request.attempt === 1) return { repairs: [] };
+      assert.match(request.prompt, /上一次校验失败/u);
+      assert.match(request.prompt, /every requested path exactly once/u);
+      return toneRepair(request);
+    },
+  });
+  assert.equal(result.status, 'ready');
+  assert.equal(result.modelCallCount, 2);
+  assert.deepEqual(result.packet.projectFacts, facts);
+});
+
+test('provider bridge recovers JSON formatting before validating missing spatial decisions', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.sceneProgram = [];
+  packet.mediaTranslations.spatial.functionalRelationships = [];
+  packet.mediaTranslations.spatial.functionalNetwork = [];
+  const result = await completeStructuredAnalysis({
+    packet,
+    deliverable: 'space',
+    execution,
+    model: async (request) => {
+      const raw = JSON.stringify({ repairs: request.targetFields.map((path) => ({
+        path,
+        value: path.endsWith('functionalNetwork')
+          ? ['Arrival leads to waiting', 'Staff guides guests to consultation', 'Consultation returns guests to the exit']
+          : ['Arrival connects to waiting through a visible circulation boundary'],
+        status: 'inferred',
+        confidence: 0.8,
+        evidenceRefs: ['document:brand-role'],
+      })) });
+      // A compatible endpoint can return prose and a trailing comma despite
+      // response_format. The production bridge normalizes syntax, not facts.
+      const formatted = `Here is the JSON:\n${raw.slice(0, -1)},}`;
+      assert.throws(() => JSON.parse(formatted));
+      return parseStructuredResponse(formatted);
+    },
+  });
+  assert.equal(result.status, 'ready');
+  assert.equal(result.modelCallCount, 1);
+  assert.equal(result.repairedFields.length, 3);
+  assert.deepEqual(result.packet.projectFacts, packet.projectFacts);
+});
+
+test('out-of-range citation indexes are rejected and retry uses current-project evidence', async () => {
+  const packet = structuredAnalysisPacketFixture();
+  packet.mediaTranslations.spatial.sceneProgram = [];
+  packet.mediaTranslations.spatial.functionalRelationships = [];
+  const result = await completeStructuredAnalysis({
+    packet, deliverable: 'space', execution,
+    model: async (request) => {
+      const variants = (request.responseSchema as any).properties.repairs.items.oneOf;
+      const refs = variants[0].properties.evidenceRefs.items.anyOf[0].enum;
+      assert.ok(refs.includes('document:brand-role'));
+      if (request.attempt === 2) assert.match(request.prompt, /Use only the evidenceRefs listed/u);
+      return { repairs: request.targetFields.map((path) => ({
+        path, value: ['Arrival connects to consultation through a clearly separated waiting zone'],
+        status: 'inferred', confidence: 0.8,
+        evidenceRefs: request.attempt === 1 ? [0, 999] : ['document:brand-role'],
+      })) };
+    },
+  });
+  assert.equal(result.status, 'ready');
+  assert.equal(result.modelCallCount, 2);
+  assert.equal(result.repairedFields.length, 2);
 });
 
 test('completion orchestrator validates and repairs polluted spatial semantics once', async () => {

@@ -28,6 +28,7 @@ const UPLOAD_CHANNELS = new Set([
   'document-context:import-documents',
   'reference-anchor:import-reference-assets',
   'creative-research:import-curated-references',
+  'visual-workflow:import-files',
 ]);
 const UPLOAD_BODY_BYTES = 64 * 1024 * 1024;
 

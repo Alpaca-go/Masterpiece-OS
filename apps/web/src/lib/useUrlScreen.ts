@@ -25,6 +25,7 @@ export type Screen =
   | 'image-generation'
   | 'creative-session'
   | 'packaging'
+  | 'visual-workflow'
   // CI-W1B: Creative Intelligence Web Workspace. The screen owns the
   // top-level route; the per-run deep-link resolves via the runId URL
   // segment (`/creative-intelligence/:runId`). The legacy 'document-context'
@@ -46,6 +47,7 @@ const SCREEN_TO_PATH: Record<Screen, string> = {
   'image-generation': '/image-generation',
   'creative-session': '/creative-session',
   'packaging': '/packaging',
+  'visual-workflow': '/visual-workflow',
   'creative-intelligence': '/creative-intelligence',
   'creative-direction': '/creative-direction',
   'creative-research': '/creative-research',
@@ -62,6 +64,7 @@ function pathToScreen(pathname: string): Screen {
   if (/^\/projects\/[^/]+\/creative\/?$/.test(pathname)) return 'creative-session';
   if (/^\/projects\/[^/]+\/?$/.test(pathname) || pathname === '/projects') return 'project';
   if (pathname.startsWith('/settings')) return 'settings';
+  if (pathname.startsWith('/visual-workflow')) return 'visual-workflow';
   if (pathname.startsWith('/create')) return 'create';
   if (pathname.startsWith('/analysis')) return 'analysis';
   if (pathname.startsWith('/report')) return 'report';
