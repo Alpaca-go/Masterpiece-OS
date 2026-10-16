@@ -93,3 +93,22 @@ test('Qwen reasoner accepts text-only prompts when attachments are omitted', asy
     { role: 'user', content: [{ type: 'text', text: 'Text only.' }] },
   ]);
 });
+
+test('targeted Qwen3.6 repair requests supported JSON Object mode with schema in prompt', async () => {
+  let body: any;
+  const reasoner = createQwenReasoner({
+    apiKey: 'test-key', model: 'qwen3.6-plus',
+    client: async (request: any) => {
+      body = request.body;
+      return { choices: [{ message: { content: '{"repairs":[]}' } }] };
+    },
+  });
+  const schema = { type: 'object', required: ['repairs'], properties: { repairs: { type: 'array' } } };
+  await reasoner({
+    prompt: { messages: [{ role: 'user', content: 'Repair current project fields.' }], attachments: [] },
+    responseSchema: schema, structuredOutputMode: 'json_object',
+  });
+  assert.deepEqual(body.response_format, { type: 'json_object' });
+  assert.equal(body.enable_thinking, false);
+  assert.ok(body.messages[1].content[0].text.includes(JSON.stringify(schema)));
+});

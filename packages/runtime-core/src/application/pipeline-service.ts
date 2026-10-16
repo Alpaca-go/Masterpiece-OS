@@ -703,6 +703,7 @@ export function createPipelineService(
                   },
                 },
                 responseSchemaName: 'spatial_semantic_repair',
+                structuredOutputMode: 'json_object',
                 signal: controller.signal,
                 maximumDurationMs: 15 * 60_000,
               });
@@ -768,10 +769,20 @@ export function createPipelineService(
               },
               responseSchema: request.responseSchema,
               responseSchemaName: 'analysis_repair',
+              structuredOutputMode: 'json_object',
               signal: controller.signal,
               maximumDurationMs: 15 * 60_000,
             });
-            return repairResponse.reportMarkdown;
+            // Use the same bounded JSON syntax recovery as UVU and spatial
+            // repair before the decision runner validates types and evidence.
+            try {
+              return parseModelStructuredResponse(repairResponse.reportMarkdown);
+            } catch {
+              throw Object.assign(new Error('Repair model returned unparseable JSON.'), {
+                code: 'REPAIR_RESPONSE_INVALID',
+                repairFeedback: 'Return one complete JSON object with a repairs array; do not include prose or Markdown.',
+              });
+            }
           },
         });
         promptSourceModelCallCount += completion.modelCallCount;
@@ -789,7 +800,7 @@ export function createPipelineService(
         }
         if (completion.status === 'failed') {
           throw Object.assign(
-            new Error('项目决策完善失败，请检查当前资料后重试。'),
+            new Error('模型返回的项目决策未通过校验，自动修复后仍未通过。请重新分析；若持续失败，请查看分析修复记录。'),
             { code: 'ANALYSIS_REPAIR_FAILED' },
           );
         }

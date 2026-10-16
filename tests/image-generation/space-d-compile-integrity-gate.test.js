@@ -21,6 +21,7 @@ import {
   SPACE_COMPILE_INTEGRITY_GATE_VERSION,
 } from '@masterpiece/image-generation-runtime/space/gates/compile-integrity-gate.js';
 import { ACTIVE_SPACE_ROUTE_BASELINE } from '@masterpiece/image-generation-runtime/space/quality-baselines/active-space-route-baseline.js';
+import { resolveProviderPromptLimit } from '@masterpiece/image-generation-runtime/space/prompt-budget.js';
 
 const REQUIRED_BLOCKS = ACTIVE_SPACE_ROUTE_BASELINE.requiredBlockIds;
 
@@ -136,7 +137,7 @@ test('D-1: wrong block order fails closed (regression: orderedSubset)', () => {
 
 test('D-1: prompt budget violation fails closed (over cap)', () => {
   const input = compileInput();
-  input.trace.spaceGeneration.promptCharacters = 8000; // > 7500 baseline max
+  input.trace.spaceGeneration.promptCharacters = resolveProviderPromptLimit() + 1;
   let caught;
   try { assertSpaceGenerationRouteGateA(input); } catch (error) { caught = error; }
   assert.ok(caught, 'expected throw');

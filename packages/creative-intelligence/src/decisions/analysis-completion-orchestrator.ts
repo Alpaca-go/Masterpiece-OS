@@ -32,6 +32,16 @@ import {
 } from './source-fingerprint.ts';
 import { runStructuredRepair } from './structured-repair-runner.ts';
 
+function safeRepairFeedback(error: unknown): string | undefined {
+  const feedback = (error as { repairFeedback?: unknown })?.repairFeedback;
+  const allowed = [
+    'Return one complete JSON object with a repairs array; do not include prose or Markdown.',
+    'Return every requested path exactly once with the value type required by its JSON Schema.',
+    'Use only the evidenceRefs listed in the allowed references; each repair requires at least one.',
+  ];
+  return typeof feedback === 'string' && allowed.includes(feedback) ? feedback : undefined;
+}
+
 function safeError(error: unknown, attempt?: number): {
   code: string;
   message: string;
@@ -48,7 +58,7 @@ function safeError(error: unknown, attempt?: number): {
   };
   return {
     code,
-    message: messages[code] ?? 'Structured repair failed.',
+    message: [messages[code] ?? 'Structured repair failed.', safeRepairFeedback(error)].filter(Boolean).join(' '),
     ...(attempt ? { attempt } : {}),
   };
 }
@@ -117,6 +127,7 @@ export async function completeStructuredAnalysis(input: {
   const accumulator = createRepairAuditAccumulator();
   let modelCallCount = 0;
   let attempts = 0;
+  const repairFeedback = new Map<string, string>();
   let execution = structuredClone(input.execution ?? {});
 
   await persist(input.persistence, (store) => store.saveInitial(input.packet));
@@ -225,6 +236,7 @@ export async function completeStructuredAnalysis(input: {
             modelCallCount += 1;
             return input.model(request);
           },
+          previousFailure: repairFeedback.get(batch.id),
         });
         runtimePrompts.push(result.promptRedacted);
         runtimeResponses.push(result.responseRedacted);
@@ -255,6 +267,12 @@ export async function completeStructuredAnalysis(input: {
         attemptApplied = attemptApplied || merged.applied.length > 0;
       } catch (error) {
         accumulator.errors.push(safeError(error, attempt));
+        // Only runner-generated, fixed instructions may reach a retry prompt.
+        // Provider errors can contain credentials or raw response text.
+        const feedback = safeRepairFeedback(error);
+        if (feedback) {
+          repairFeedback.set(batch.id, feedback);
+        }
       }
     }
 

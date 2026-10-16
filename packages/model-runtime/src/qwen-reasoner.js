@@ -218,7 +218,16 @@ export function createQwenReasoner(options = {}) {
       stream: false
     };
     if (context.responseSchema && typeof context.responseSchema === 'object') {
-      body.response_format = {
+      if (context.structuredOutputMode === 'json_object') {
+        // Targeted decision repair validates the schema locally. Qwen3.6 Plus
+        // supports JSON Object in non-thinking mode, not strict JSON Schema.
+        body.response_format = { type: 'json_object' };
+        body.enable_thinking = false;
+        const schemaText = JSON.stringify(context.responseSchema);
+        if (!prepared.content[0].text.includes(schemaText)) {
+          prepared.content[0].text += `\n\nReturn JSON matching this schema:\n${schemaText}`;
+        }
+      } else body.response_format = {
         type: 'json_schema',
         json_schema: {
           name: String(context.responseSchemaName || 'structured_response'),

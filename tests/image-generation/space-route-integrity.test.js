@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   assertSpaceGenerationRouteIntegrity,
+  assertSpaceGenerationRouteGateA,
 } from '@masterpiece/image-generation-runtime/space/gates/generation-route-integrity-gate.js';
+import { resolveProviderPromptLimit } from '@masterpiece/image-generation-runtime/space/prompt-budget.js';
 import { ACTIVE_SPACE_ROUTE_BASELINE } from '@masterpiece/image-generation-runtime/space/quality-baselines/active-space-route-baseline.js';
 import { resolveSpaceReferences } from '@masterpiece/image-generation-runtime/space/space-reference-policy.js';
 import { resolveArchitectureAnchorBrandKey } from '@masterpiece/image-generation-runtime/space/architecture-context.js';
@@ -109,3 +111,29 @@ test('repository baseline fingerprint matches the runtime profile', () => {
   ));
   assert.deepEqual(stored, JSON.parse(JSON.stringify(ACTIVE_SPACE_ROUTE_BASELINE)));
 });
+
+for (const gate of [assertSpaceGenerationRouteIntegrity, assertSpaceGenerationRouteGateA]) {
+  test(`${gate.name}: quality target overflow keeps the valid compiler route`, () => {
+    for (const generationBasis of ['standard', 'reference_first']) {
+      const candidate = input({ generationBasis });
+      candidate.trace.spaceGeneration.promptCharacters = 8754;
+      candidate.trace.spaceGeneration.qualityBudgetExceeded = true;
+      const result = gate(candidate);
+      assert.equal(result.routeIntegrity.status, 'pass');
+      assert.equal(result.routeIntegrity.promptBudgetMatched, true);
+    }
+  });
+
+  test(`${gate.name}: Provider hard cap includes boundary text and ignores trace limit inflation`, () => {
+    const candidate = input({ generationBasis: 'reference_first' });
+    candidate.trace.spaceGeneration.referenceBoundary = { applied: true, promptCharacters: 5000 };
+    candidate.trace.spaceGeneration.providerLimit = 100000;
+    candidate.trace.spaceGeneration.promptCharacters = resolveProviderPromptLimit();
+    assert.equal(gate(candidate).routeIntegrity.status, 'pass');
+    candidate.trace.spaceGeneration.promptCharacters += 1;
+    assert.throws(() => gate(candidate), { code: 'SPACE_COMPILER_ROUTE_MISMATCH' });
+    candidate.providerCapability = { prompt: { maxCharacters: 8000 } };
+    candidate.trace.spaceGeneration.promptCharacters = 8754;
+    assert.throws(() => gate(candidate), { code: 'SPACE_COMPILER_ROUTE_MISMATCH' });
+  });
+}
