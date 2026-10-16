@@ -53,12 +53,9 @@ function assertShortChainSimilarityAudit(scores, thresholds = VNEXT_SIMILARITY_A
 function deriveGenerationFlowState(input) {
   if (input.initialRun.status !== "succeeded") return "initial_failed";
   if (!input.initialValidation) return "awaiting_validation";
-  if (input.initialValidation.status !== "failed") return "passed";
-  if (input.initialValidation.retryRecommended !== true) return "passed";
-  if (!input.correctionRun) return "correcting";
-  if (input.correctionRun.status !== "succeeded") return "correction_start_failed";
-  if (!input.correctionValidation) return "correcting";
-  if (input.correctionValidation.status === "failed") return "correction_still_failed";
+  // Validation is not an image ranking and never authorizes paid work.
+  if (input.correctionRun) return "awaiting_human_review";
+  if (input.initialValidation.status !== "passed") return "awaiting_human_review";
   return "passed";
 }
 import {

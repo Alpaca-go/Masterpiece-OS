@@ -78,7 +78,7 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
               `Logo mode: ${input.taskContract.logoUsageMode || "blank_area"}`,
               `Confirmed brand tone: ${targetTone}`,
               `Tone boundaries to avoid: ${toneAvoid}`,
-              `Locked visible requirements: ${lockedRequirements.join("; ") || "(none)"}`,
+              `Locked requirements (identity is deferred in post_composite mode): ${lockedRequirements.join("; ") || "(none)"}`,
               "",
               "Return exactly:",
               JSON.stringify({
@@ -86,8 +86,12 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
                 detectedSubtype: "visible subtype or unknown",
                 visibleEvidence: ["only concrete visible evidence"],
                 missingRequiredItems: ["requested structures visibly missing"],
+                missingRequiredStructures: ["only missing physical structures; never deferred identity"],
                 forbiddenItemsFound: ["forbidden visible content"],
-                lockedAssetViolations: ["visible violations only"],
+                forbiddenNonIdentityItems: ["only forbidden non-identity content; identity belongs in generatedIdentityEvidence"],
+                lockedAssetViolations: ["visible violations only; no identity absence in post_composite mode"],
+                nonIdentityLockedAssetViolations: ["only visible non-identity asset violations"],
+                generatedIdentityEvidence: ["location and visible shape of unintended generated text or logo; empty if absent"],
                 brandMatch: "matched|mismatched|uncertain",
                 brandToneMatch: "matched|mismatched|uncertain",
                 sceneCompleteness: "complete|incomplete|uncertain",
@@ -96,6 +100,7 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
               }),
               "For a space result, complete means one continuous enterable scene with floor, walls, ceiling, usable function, circulation, foreground, middle ground, background, and credible scale.",
               "In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.",
+              "In post_composite mode this is the pre-composite generation stage. Logo and identity typography MUST be absent. Never report their absence as missingRequiredItems, forbiddenItemsFound or nonIdentityLockedAssetViolations. Logo fidelity/completeness is deferred to the actual post-composite stage. Independently report any wrongly generated letters, pseudo-text or logo as logoTextStatus=incorrect with concrete generatedIdentityEvidence (location and visible marks). A clean blank area is logoTextStatus=absent.",
               "Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.",
               "Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain."
             ].join("\n")

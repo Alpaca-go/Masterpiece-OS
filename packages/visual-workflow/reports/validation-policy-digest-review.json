@@ -1,0 +1,29 @@
+{
+  "status": "candidate-review-only-no-digest-update",
+  "baseCommit": "6e8542a394c3d44ad5b0697f61d13868021d0bc8",
+  "manifestSha256Unchanged": "e153cb61cfa3eeec269178251eec409d405770427dcb35a1097d282df1675fb9",
+  "qualityAcceptanceUnchanged": "pending-separate-quality-repair",
+  "realModelCalls": 0,
+  "files": [
+    {
+      "path": "src/contracts/index.js",
+      "recordedSha256": "71cc9241769edfe414d4b9bc89b9abfb060726d77eeff7537af51fb03b92cbcd",
+      "candidateSha256": "4afdcaf7645fd8fbc05baca03f32e5798f22dd46f6b040431161b3ff9c89ab89"
+    },
+    {
+      "path": "src/generation-runtime/generation/deliverable-validator.js",
+      "recordedSha256": "96b62fa8f781b82485b7247c3b6cbf123b52856a45b07e66ddf9344bbbac9681",
+      "candidateSha256": "63feebfb07534284c7143a0887bf1fe61718f7f919f3f4259fbfe1095b84ac74"
+    },
+    {
+      "path": "src/runtime/image-generation/deliverable-validator-service.js",
+      "recordedSha256": "3717053a61d9be642b76ed9de3f4465a9f531977aa33dbea7df033063ed38e4f",
+      "candidateSha256": "6806fb5b782f50ea1445e64146af0f789cbb3370f4b2af97f51e14d630ead5a8"
+    },
+    {
+      "path": "src/runtime/image-generation/short-chain-service.js",
+      "recordedSha256": "b6d57856f1329dc8445d356304e3e1c1171f8857ae0e469bf15215c467c59802",
+      "candidateSha256": "c73a6ef81006ba7827e5c44c0280422acda26fb3350175bfe02ad1b50490bc7a"
+    }
+  ]
+}

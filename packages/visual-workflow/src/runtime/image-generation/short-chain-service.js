@@ -2,7 +2,6 @@ import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
-  compileShortChainCorrectionPrompt,
   compileShortChainGeneration,
   listShortChainTemplateOptions,
   deriveGenerationFlowState,
@@ -816,83 +815,53 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       sha256: first.sha256,
       sizeBytes: first.sizeBytes
     };
-    const initialValidation = await validator.validate({
-      projectId: input.projectId,
-      taskContract: compilation.taskContract,
-      runId: initial.runId,
-      validatorProfileId: input.validatorProfileId
-    });
-    let result;
-    if (initialValidation.status !== "failed" || !initialValidation.retryRecommended) {
-      result = {
-        initialRun: initial,
-        initialValidation,
-        terminalStatus: initialValidation.status,
-        automaticRetryCount: 0,
-        flowState: deriveGenerationFlowState({
-          initialRun: initial,
-          initialValidation
-        }),
-        firstImage,
-        // Filled by the tail below; default null so the type is complete
-        // during the build step.
-        similarityAudit: null
-      };
-    } else {
-      const correctionPrompt = compileShortChainCorrectionPrompt({
-        originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,
+    let initialValidation;
+    try {
+      initialValidation = await validator.validate({
+        projectId: input.projectId,
         taskContract: compilation.taskContract,
-        validation: initialValidation
+        runId: initial.runId,
+        validatorProfileId: input.validatorProfileId
       });
-      const correctionRun = await start({
-        ...input,
-        editedPrompt: correctionPrompt
-      });
-      if (correctionRun.status !== "succeeded" || !correctionRun.images[0]) {
-        result = {
-          initialRun: initial,
-          initialValidation,
-          correctionRun,
-          terminalStatus: "failed",
-          automaticRetryCount: 1,
-          flowState: deriveGenerationFlowState({
-            initialRun: initial,
-            initialValidation,
-            correctionRun
-          }),
-          firstImage,
-          similarityAudit: null
-        };
-      } else {
-        const correctionValidation = await validator.validate({
-          projectId: input.projectId,
-          taskContract: compilation.taskContract,
-          runId: correctionRun.runId,
-          validatorProfileId: input.validatorProfileId
-        });
-        result = {
-          initialRun: initial,
-          initialValidation,
-          correctionRun,
-          correctionValidation,
-          terminalStatus: correctionValidation.status,
-          automaticRetryCount: 1,
-          flowState: deriveGenerationFlowState({
-            initialRun: initial,
-            initialValidation,
-            correctionRun,
-            correctionValidation
-          }),
-          firstImage,
-          similarityAudit: null
-        };
-      }
+    } catch {
+      // Validator failure must not discard a successfully generated paid image.
+      initialValidation = {
+        status: "unverified", runId: initial.runId, imageId: first.imageId,
+        retryRecommended: false, humanReviewRequired: true,
+        errorCode: "DELIVERABLE_VALIDATION_UNAVAILABLE"
+      };
     }
+    const result = {
+      initialRun: initial,
+      initialValidation,
+      terminalStatus: initialValidation.status,
+      automaticRetryCount: 0,
+      flowState: deriveGenerationFlowState({ initialRun: initial, initialValidation }),
+      firstImage,
+      selectedImage: firstImage,
+      attempts: [{ role: "initial", run: initial, validation: initialValidation }],
+      correctionPolicy: {
+        automaticRegeneration: "disabled",
+        nextAction: "human_review",
+        operation: "text_to_image_regeneration",
+        imageEditingSupported: false,
+        sourceImageAttached: false,
+        contentPreservationGuaranteed: false,
+        message: "No second image was requested. Text-only regeneration cannot guarantee preservation of the original scene."
+      },
+      logoIntegrity: compilation.taskContract.logoUsageMode === "post_composite" ? "pending_post_composite" : "requires_identity_review",
+      qualityAcceptance: "pending_human_review",
+      similarityAudit: null
+    };
     const audit = await runSimilarityAuditIfTriggered(result, compilation);
     const finalResult = {
       ...result,
       similarityAudit: audit
     };
+    await writeJson(
+      path.join(await vnextRoot(input.projectId), "validations", `${initial.runId}.summary.json`),
+      finalResult
+    );
     await writeJson(
       path.join(await vnextRoot(input.projectId), "validations", `${input.taskId}.summary.json`),
       finalResult
@@ -1017,6 +986,9 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
     const audit = {
       schemaVersion: "1.0",
       status: "completed",
+      validationStage: "post_composite",
+      logoIntegrity: "source_recorded_pending_visual_review",
+      qualityAcceptance: "pending_human_review",
       projectId: input.projectId,
       runId: input.runId,
       sourceImageId: input.imageId,
