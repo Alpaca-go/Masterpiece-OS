@@ -7,7 +7,6 @@ import {
   assertSpaceGenerationRouteIntegrity,
   compileSpacePrompt,
   createSpaceContinuationContract,
-  resolveArchitectureAnchorBrandKey,
   runSpaceQualityGate,
   validateSpaceGenerationModeSemantics,
   validateSpatialSemantics
@@ -115,7 +114,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     packet,
     taskContract,
     projectContext: input.projectContext,
-    brandKey: input.brandKey || input.projectContext?.brandKey || resolveArchitectureAnchorBrandKey(packet.projectFacts?.brandName?.value) || null,
+    brandKey: input.brandKey || null,
     anchorCriteria: input.anchorCriteria,
     adapter,
     referencePolicy: { mode: compilerMode }
@@ -184,7 +183,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       sourceAdapterVersion: result.sourceAdapterVersion,
       anchorIds: result.anchors.map((a) => a.id),
       referenceImages: result.referenceImages,
-      architectureContextIncluded: result.blockIds.includes("architecture_context"),
+      architectureContextIncluded: result.anchors.length > 0,
       budget: {
         chars: budget.chars,
         positiveRatio: budget.positiveRatio,
@@ -204,6 +203,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       compileDurationMs: Number((performance.now() - started).toFixed(3)),
       phase9b: true,
       anchorIds: result.trace.anchorIds,
+      decisionTrace: result.layers.decisionTrace,
       // R9 §20 trace schema: every space run records a structured
       // spaceGeneration block for image-level regression tracing.
       spaceGeneration: {

@@ -22,6 +22,8 @@ import {
   projectBrandManifestationToTargetScene,
   resolveTargetViewStrategy
 } from "./scene-projection/target-scene-projection.js";
+import { scopeSourceEntries } from "./scene-projection/target-scene-projection.js";
+import { sanitizeBrandItem } from "./semantic/sanitize-brand-expression.js";
 function cleanList(...values) {
   const out = [];
   const seen = /* @__PURE__ */ new Set();
@@ -182,6 +184,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     color: ["primary", "secondary", "accent"].flatMap(group => color[group].map((item, index) => ({
       sourcePath: `colorSystem.${group}[${index}]`,
       evidenceClass: "model_proposal", source: colorSystem[group][index],
+      executionAuthority: "proposal_only",
       spatialUsage: item.spatialUsage,
       unresolved: item.spatialUsage === "unspecified" || item.spatialUsage === "unresolved_conflict"
     }))),
@@ -358,7 +361,51 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     };
   }
   let projectedBrandManifestation = brandSanitized.lines;
-  if (knownTarget) {
+  const standardShot = taskContract?.generationBasis === "standard";
+  const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
+    const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
+    const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;
+    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath};
+  });
+  const artisticEntries = ["signatureSpatialMechanism","brandRoleManifestation","mustBeVisible"].flatMap(field => sourceEntries(spatial[field],`mediaTranslations.spatial.${field}`))
+    .filter(entry=>classifyPhrase(entry.text,"signatureSpatialMechanism").classification === SEMANTIC_CLASS.DECORATIVE_OBJECT)
+    .map(entry=>({...entry,text:sanitizeBrandItem(entry.text).text})).filter(entry=>entry.text);
+  const scopedArt = standardShot ? scopeSourceEntries(artisticEntries,taskContract.subtype) : artisticEntries;
+  const artSeen = new Set();
+  compositionLayers.artisticFocus = scopedArt.filter(entry=> {
+    if (entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
+    artSeen.add(entry.text);
+    return true;
+  }).map(entry=>({...entry,evidenceClass:"model_proposal",priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
+  decisionTrace.artisticFocus = compositionLayers.artisticFocus;
+  decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:"model_proposal"}));
+  const architectureEntries = semantic.architectureRewrite.items.filter(item=>!item.dropped && !["spatialConcept","mustBeVisible"].includes(item.sourceField));
+  decisionTrace.architectureDecisions = standardShot ? scopeSourceEntries(architectureEntries,taskContract.subtype) : architectureEntries;
+  if (standardShot) {
+    decisionTrace.sceneScope = [];
+    const projectList = (items,sourcePath) => {
+      const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
+      decisionTrace.sceneScope.push(...records);
+      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text);
+    };
+    functionalRaw = {
+      sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
+      functionalNetwork:projectList(functionalRaw.functionalNetwork,"mediaTranslations.spatial.functionalNetwork"),
+      positiveDifferentiators:projectList(functionalRaw.positiveDifferentiators,"mediaTranslations.spatial.positiveDifferentiators")
+    };
+    compositionLayers.mustBeVisible = projectList(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible");
+    compositionLayers.positiveDifferentiators = functionalRaw.positiveDifferentiators;
+    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
+    const functionalItems = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
+    projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text=>!functionalItems.has(text) || artSeen.has(text));
+    targetSceneProjection = {...targetSceneProjection, functionalBlockSource:"source_shot_scope",architectureBridgeSource:"source_shot_scope",operationConstraintsSource:"source_shot_scope"};
+  }
+  decisionTrace.canonicalOwners = [
+    ...decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>({text:entry.text,sourcePath:entry.sourcePath,blockId:"architecture_language"})),
+    ...compositionLayers.artisticFocus.map(entry=>({text:entry.text,sourcePath:entry.sourcePath,blockId:"composition"}))
+    ,...sourceEntries(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible").map(entry=>({...entry,blockId:"composition"}))
+  ];
+  if (knownTarget && !standardShot) {
     const brandProjection = projectBrandManifestationToTargetScene({
       brandManifestation: brandSanitized.lines,
       mechanismEvidence: cleanList(

@@ -2,6 +2,27 @@ import {
   resolveTargetFunctionalProgram,
   viewStrategyForScene
 } from "../continuation/target-functional-programs.js";
+// Source-based shot scope: functional classification never supplies aesthetics.
+const SCENE_SCOPE_TERMS = {
+  reception: /reception|front desk|check.?in|waiting|接待|前台|候客|等候/iu,
+  entrance: /entrance|threshold|entry|入口|门槛/iu,
+  consultation: /consultation|咨询/iu,
+  treatment: /treatment|procedure|clinical|sterile|medical equipment|治疗|诊疗|手术/iu,
+  recovery: /recovery|post.service|rest area|恢复|术后|休息/iu,
+  dining: /dining|kitchen|餐厅|厨房|堂食/iu,
+  guestroom: /guest.?room|bedroom|客房|卧室/iu
+};
+function scopeSourceEntries(entries, targetScene) {
+  const aliases = {lobby:["reception","entrance"],reception:["reception","entrance"],entrance:["entrance","reception"],dining:["dining"],restaurant:["dining"]};
+  const allowed = aliases[targetScene] ?? [targetScene];
+  const known = allowed.some(scene => SCENE_SCOPE_TERMS[scene]);
+  return entries.map(entry => {
+    const scenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(entry.text)).map(([scene])=>scene);
+    const foreign = scenes.filter(scene=>!allowed.includes(scene));
+    return {...entry, sceneScope: !known ? "unresolved" : foreign.length ? "off_frame_dependency" : "current_shot", detectedScenes:scenes,
+      evidenceClass:"system_inference", scopeReason:!known ? "unknown_target_scene" : foreign.length ? "other_program_or_cross_scene_relationship" : "source_compatible_with_shot"};
+  });
+}
 const TARGET_SCENE_PROJECTION_VERSION = "space-target-scene-projection@1.1.0";
 const TARGET_SCENE_AUTHORITY_GATE_VERSION = "space-target-scene-authority@1.1.0";
 const TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS = Object.freeze([
@@ -246,6 +267,7 @@ function validateTargetSceneAuthority({
   return { status: "pass", findings: [] };
 }
 export {
+  scopeSourceEntries,
   TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS,
   TARGET_SCENE_AUTHORITY_GATE_VERSION,
   TARGET_SCENE_PROJECTION_VERSION,

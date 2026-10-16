@@ -69,36 +69,29 @@ function renderSpatialIntent(layers) {
     "",
     `**Experience Goal**: ${si.experienceGoal}`,
     "",
-    "**Spatial Strategy**:",
-    bullet(si.spatialStrategy)
+    "**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language."
   ].join("\n");
   return block("spatial_intent", "Spatial Intent", body);
 }
 function renderArchitectureLanguage(layers) {
-  const al = layers.architectureLanguage;
+  const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text))];
   const body = [
-    "> Building language: how space is organized before brand is applied.",
+    "> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.",
     "",
-    "**Spatial Principles**:",
-    bullet(al.spatialPrinciples),
-    "",
-    "**Architectural Characteristics**:",
-    bullet(al.architecturalCharacteristics),
-    "",
-    "**Spatial Organization (functional network + program)**:",
-    bullet(al.spatialOrganization)
+    "**Source-scoped architectural decisions (each stated once)**:",
+    bullet(decisions)
   ].join("\n");
   return block("architecture_language", "Architecture Language", body);
 }
 function renderArchitectureFunctionBridge(layers) {
   const b = layers.architectureFunctionBridge;
   const body = [
-    "> Building language serves commercial reality. Translate architecture into functional action (Phase 8B.1).",
+    "> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.",
     "",
     `**Commercial Purpose**: ${b.commercialPurpose}`,
     "",
     "**Spatial Translation (architecture \u2192 commercial action)**:",
-    bullet(b.spatialTranslation),
+    "Current-shot nodes and relationships are stated in Functional & Commercial Requirement.",
     "",
     "**Operation Constraints (hard, must hold)**:",
     bullet(b.operationConstraints),
@@ -106,66 +99,56 @@ function renderArchitectureFunctionBridge(layers) {
     "**Human Experience (path + rhythm)**:",
     bullet(b.humanExperience),
     "",
-    "**Commercial Reality (do not turn the space into a gallery)**:",
-    bullet(b.commercialReality),
+    "**Commercial Reality (compatible with project artistic character)**:",
+    "Preserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.",
     "",
     "**Concept Drift Guards (must avoid)**:",
     bullet(b.conceptDriftGuards, "- (none)")
+    ,"", "Off-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas."
   ].join("\n");
   return block("architecture_function_bridge", "Architecture-Function Bridge", body);
 }
 function renderArchitecturalConcept(layers) {
-  const c = layers.architecturalConcept;
   const body = [
-    "\u7A7A\u95F4\u6982\u5FF5 / \u5EFA\u7B51\u673A\u5236\u5FC5\u987B\u5148\u4E8E\u54C1\u724C\u5143\u7D20\u88AB\u5EFA\u7ACB\u3002\u54C1\u724C\u9644\u7740\u4E8E\u5EFA\u7B51\u8BED\u8A00\u4E4B\u4E0A\uFF0C\u800C\u4E0D\u662F\u53CD\u8FC7\u6765\u3002",
-    "",
-    `**Primary Spatial Concept**: ${c.primary}`,
-    "",
-    "**Structure Language**:",
-    bullet(c.structureLanguage)
+    "Use the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.",
+    "User instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression."
   ].join("\n");
   return block("architectural_concept", "Architectural Concept", body);
 }
 function renderArchitectureDna(layers) {
-  const org = layers.architectureLanguage.spatialOrganization;
-  const form = layers.architectureLanguage.architecturalCharacteristics;
-  const strategy = layers.architectureLanguage.spatialPrinciples;
   const body = [
-    "**Building DNA**:",
-    `- Spatial strategy: ${strategy.slice(0, 4).join("; ") || "n/a"}`,
-    `- Form mechanisms: ${form.slice(0, 4).join("; ") || "n/a"}`,
-    `- Spatial organization: ${org.slice(0, 4).join("; ") || "n/a"}`,
-    "",
-    "Maintain continuous wall\u2194ceiling\u2194floor relationships and a legible circulation hierarchy."
+    "**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.",
+    "Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed."
   ].join("\n");
   return block("architecture_dna", "Architecture DNA", body);
 }
 function renderBrandTranslation(layers) {
   const p = layers.projectIdentity;
+  const architectureSources = new Set(layers.decisionTrace.canonicalOwners.filter(entry=>entry.blockId==="architecture_language").map(entry=>entry.text));
+  const ownedBrandLines = new Set(layers.brandSanitization.records.filter(entry=>architectureSources.has(entry.raw)).map(entry=>entry.text));
   const body = [
-    "> Brand is translated into mechanism, rhythm and surface behavior \u2014 never pasted as decoration.",
+    "> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.",
     "> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.",
     "",
     `**Brand**: ${p.brandName} | **Industry**: ${p.industry}`,
-    `**Brand Role**: ${p.brandRole || "n/a"}`,
+    "**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.",
     p.audience.length ? `**Audience**: ${p.audience.join("\u3001")}` : "",
     "",
     "**Brand Role Manifestation in Space**:",
-    bullet(layers._raw.brandRoleManifestation)
+    bullet(layers._raw.brandRoleManifestation.filter(text=>!layers.composition.artisticFocus?.some(entry=>entry.text===text) && !ownedBrandLines.has(text) && !layers._raw.positiveDifferentiators.includes(text)))
   ].filter(Boolean).join("\n");
   return block("brand_translation", "Brand Translation", body);
 }
 function renderFunctionalRequirement(layers) {
   const raw = layers._raw;
   const body = [
-    "**Required Program Nodes (must be legible in one image)**:",
+    "**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:",
     bullet(raw.sceneProgram),
     "",
     "**Functional Network**:",
     bullet(raw.functionalNetwork),
     "",
-    "**Must Be Visible (spatial focal hierarchy; brand identity is post-composited)**:",
-    bullet(layers.composition.mustBeVisible, "- (none)"),
+    "**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.",
     "",
     "**Positive Differentiators**:",
     bullet(raw.positiveDifferentiators, "- (none)")
@@ -186,11 +169,12 @@ function renderMaterial(layers) {
 function renderColor(layers) {
   const lines = [
     "Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.",
-    "Preserve each supplied carrier and scope. Unknown ratios stay unknown; color alone does not authorize geometry."
+    "Proposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.",
+    "Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage."
   ];
   for (const group of ["primary", "secondary", "accent"]) {
     for (const item of layers.color[group]) {
-      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | spatial scope: ${item.spatialUsage}`);
+      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | proposed spatial scope: ${item.spatialUsage} | execution authority: proposal_only`);
       for (const key of ["role", "semanticMeaning", "surfaceApplicability", "ratio"]) {
         if (item[key] !== undefined && item[key] !== "") lines.push(`  ${key}: ${typeof item[key] === "string" ? item[key] : JSON.stringify(item[key])}`);
       }
@@ -220,11 +204,15 @@ function renderComposition(layers) {
     c.aspectRatio ? `**Output Ratio**: ${c.aspectRatio}` : "",
     c.scene ? `**Scene**: ${c.scene}` : "",
     "",
-    "**Must Be Visible (focal hierarchy)**:",
+    "**Project Artistic Focus (separate from operational facilities)**:",
+    ...c.artisticFocus?.length ? c.artisticFocus.map(entry=>`- [${entry.evidenceClass}; ${entry.priority}] ${entry.text}`) : ["- No artistic installation is required by the supplied sources."],
+    "Do not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.",
+    "",
+    "**Operational Elements (remain usable alongside the artistic focus)**:",
     bullet(c.mustBeVisible),
     "",
     "**Positive Differentiators**:",
-    bullet(c.positiveDifferentiators, "- (none)"),
+    "Use the differentiators in Functional & Commercial Requirement without repeating them as additional demands.",
     "",
     "Use a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale."
   ].filter(Boolean).join("\n");
@@ -255,7 +243,9 @@ function compileSpacePrompt(input) {
   let anchors = [];
   let contextBlock = null;
   if (input.brandKey) {
-    const criteria = input.anchorCriteria || deriveAnchorCriteria(layers, input.taskContract);
+    const criteria = {...deriveAnchorCriteria(layers, input.taskContract),...input.anchorCriteria};
+    criteria.sceneType = input.taskContract?.subtype;
+    criteria.mechanismEvidence = layers.decisionTrace.architectureDecisions.filter(item=>item.sceneScope !== "off_frame_dependency").map(item=>item.text);
     const selected = selectArchitectureAnchors(input.brandKey, criteria, input.anchorMaxCount ?? 3);
     anchors = selected.map((s) => s.anchor);
     if (anchors.length) {
@@ -266,6 +256,11 @@ function compileSpacePrompt(input) {
       };
     }
   }
+  if (!contextBlock) contextBlock = block("architecture_context", "Architecture Context", [
+    "No optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.",
+    "Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.",
+    "Do not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms."
+  ].join("\n"));
   const referenceImages = anchors.map((a) => ({ anchorId: a.id, imagePath: resolveArchitectureAnchorImagePath(a) })).filter((r) => r.imagePath);
   const continuationIntentText = renderContinuationIntentBlock(input.taskContract?.continuation);
   const continuationBlock = continuationIntentText ? { id: "continuation_intent", title: "Continuation Intent", text: continuationIntentText } : null;
@@ -353,9 +348,10 @@ ${referenceBoundaryText}` : baseFinalPrompt;
     extra: {
       brandKey: input.brandKey || null,
       anchorCriteria: input.anchorCriteria || null,
-      architectureContextIncluded: Boolean(contextBlock),
+      architectureContextIncluded: anchors.length > 0,
       blockIds: presentIds,
       decisionTrace: layers.decisionTrace,
+      blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id)])),
       // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
       // was appended to the prompt. Mirrors the v1 seedream-adapter
       // referenceBoundary trace shape so downstream consumers (audit,

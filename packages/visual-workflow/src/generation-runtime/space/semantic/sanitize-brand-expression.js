@@ -5,7 +5,6 @@ const IDENTITY_RE = /logo|wordmark|logotype|slogan|mascot|emblem|monogram|\bicon
 const PROSE_MAX_CHARS = 60;
 const PEOPLE_OPS_RE = /员工制服|工服|制服|服务流程|话术|礼仪|工作人员|员工/iu;
 const DECOR_OBJECT_RE = /丝带|飘带|绸带|挂饰|摆件|装饰挂件|ribbon|hanging\s+ornament/iu;
-const GALLERY_POETRY_RE = /空间作为艺术画廊|艺术画廊般|as\s+an?\s+art\s+gallery|gallery-like/iu;
 function hasTerm(text, terms) {
   const t = String(text || "").toLowerCase();
   return terms.some((term) => {
@@ -33,17 +32,14 @@ function sanitizeBrandItem(rawItem) {
   if (DECOR_OBJECT_RE.test(raw)) {
     return { text: "", raw, disposition: "dropped", reason: "decorative_object_prop" };
   }
-  if (GALLERY_POETRY_RE.test(raw)) {
-    return { text: "", raw, disposition: "dropped", reason: "gallery_poetry_non_commercial" };
-  }
-  if ([...raw].length > PROSE_MAX_CHARS) {
-    return { text: "", raw, disposition: "dropped", reason: "creative_prose_too_long" };
-  }
   const analysis = classifyPhrase(raw, "brandRoleManifestation");
   // Explicit physical installations belong to brand expression. They must
   // still pass identity, operations, prop and prose checks above.
   if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT) {
     return { text: raw, raw, disposition: "kept" };
+  }
+  if ([...raw].length > PROSE_MAX_CHARS) {
+    return { text: "", raw, disposition: "dropped", reason: "creative_prose_too_long" };
   }
   if (hasMotif(raw)) {
     const norm = normalizeArchitectureSemantics(raw, "brandRoleManifestation");
