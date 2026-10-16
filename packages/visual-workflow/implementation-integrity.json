@@ -25,7 +25,7 @@
     },
     {
       "path": "src/analysis-decisions/analysis-completion-orchestrator.js",
-      "sha256": "8395bcbcbb798afc27388258f62f7de3eb7a9936a968c9d8280454d8d57da384"
+      "sha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae"
     },
     {
       "path": "src/analysis-decisions/clarification-builder.js",
@@ -45,7 +45,7 @@
     },
     {
       "path": "src/analysis-decisions/deliverable-sufficiency.js",
-      "sha256": "1d2341e13dd383741f677f4bfecb8a49e61d08275f48b13f98f763a68d1e223b"
+      "sha256": "b78d8becd3a7ce165bfb6305d9d2ab512f907c6103d6a893b2cfa02996d5a323"
     },
     {
       "path": "src/analysis-decisions/deterministic-repair.js",
@@ -333,7 +333,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
-      "sha256": "dad054ab68dd9b0371878a50092fe2048c27a0c09e70128d016fc69cc420d293"
+      "sha256": "5a391a10e91027ba220a1bda5d4adb2dbe898f7b041b8d07ff4841f2ea5f1fc9"
     },
     {
       "path": "src/generation-runtime/space/semantic/index.js",
@@ -361,7 +361,7 @@
     },
     {
       "path": "src/generation-runtime/space/semantic/sanitize-brand-expression.js",
-      "sha256": "d1b658cd984dc67f1c5a671beaf0d2b7c64d0adccc6fc3eb8f2e320428c56831"
+      "sha256": "ea5baf7e09309f3f22d6522b9ab55a8fd8740e7da357f0137494dfce7e7f8bee"
     },
     {
       "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
@@ -373,7 +373,7 @@
     },
     {
       "path": "src/generation-runtime/space/source-adapter.js",
-      "sha256": "a01f53c819a471f56bd499e826c2ea1e5b2d5a1ace33ece566b49c4e15798643"
+      "sha256": "ceb1695be0872cfae9bd706314f367ce396332a4ba32ad46e434fd2b9a3342c1"
     },
     {
       "path": "src/generation-runtime/space/space-quality-gate.js",
@@ -489,7 +489,7 @@
     },
     {
       "path": "src/runtime/visual-decision-packet.js",
-      "sha256": "e14a02ff9e83834c07b3673e0ad4b81cab91aabedacf6c2f772a9be40554ee81"
+      "sha256": "c2cd5758fa708cc1263bfcbf95c3d51816ac4097d4d35da4e488b26dada3e89a"
     },
     {
       "path": "src/runtime/visual-decision-report-compiler.js",
