@@ -211,7 +211,8 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     aspectRatio: taskContract?.aspectRatio,
     scene: taskContract?.scene,
     mustBeVisible: compositionMustBeVisible,
-    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators))
+    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
+    ...confirmedFields.has('mediaTranslations.spatial') && cleanList(spatial.compositionRequirements).length ? {userRequirements:cleanList(spatial.compositionRequirements)} : {}
   };
   const negatives = cleanList(
     taskContract?.mustAvoid,

@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "3a34ccce007a53d5443d3b3c2806a235b06eaef3c6577268f68cef09931b635f"
+      "sha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
@@ -373,7 +373,7 @@
     },
     {
       "path": "src/generation-runtime/space/source-adapter.js",
-      "sha256": "f0224a080003e82d7731f8c2272ac337170728e8b23ce0fb581ea3b6fd21e3b4"
+      "sha256": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5"
     },
     {
       "path": "src/generation-runtime/space/space-quality-gate.js",
@@ -525,7 +525,7 @@
     },
     {
       "path": "src/project-design-direction.js",
-      "sha256": "c6d8d459caa961683359593e7eecc7e3233c695e09fafc1018fa912f5f1f231b"
+      "sha256": "7143f177d69880eca6b3401fd75612433a13352ef4a7786cec99811cccc9edc0"
     }
   ],
   "frontendFiles": [
@@ -535,7 +535,7 @@
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "a29b25520dc858cfbdd9a8eed4a4f2ee1ba98921c08fad0a4a1a3b55f08bfb25"
+      "sha256": "564337052c7165e6c2f787b1187c46adab6cb3bd3acd7d0ac4b4082602f46ac7"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",
@@ -543,7 +543,7 @@
     },
     {
       "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
-      "sha256": "c9fccad49aec44884e401f6f49173c6d157fcda0518d92dccf1a64518a76ca7b"
+      "sha256": "f2fb7c09a217b992504dd8574e8cbce2c9a8b0cc2d5bdc499d2ae73dc653e799"
     }
   ]
 }

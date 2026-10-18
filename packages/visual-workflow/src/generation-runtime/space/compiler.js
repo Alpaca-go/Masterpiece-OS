@@ -217,6 +217,7 @@ function renderComposition(layers) {
     "",
     "**Operational Elements (remain usable alongside the artistic focus)**:",
     bullet(c.mustBeVisible),
+    ...c.userRequirements?.length ? ['**User-confirmed composition relationships**:',bullet(c.userRequirements)] : [],
     "",
     "**Positive Differentiators**:",
     "Use the differentiators in Functional & Commercial Requirement without repeating them as additional demands.",
@@ -349,7 +350,7 @@ ${referenceBoundaryText}` : baseFinalPrompt;
     compilerId: SPACE_PROMPT_COMPILER_ID,
     compilerVersion: SPACE_PROMPT_COMPILER_VERSION,
     packetFingerprint: void 0,
-    blockSources: Object.fromEntries(ordered.map((b) => [b.id, blockSource(b.id)])),
+    blockSources: Object.fromEntries(ordered.map((b) => [b.id, blockSource(b.id,layers)])),
     anchors: anchors.map((a) => ({ id: a.id, role: a.role, imagePath: a.imagePath })),
     referencePolicy: input.referencePolicy || null,
     adapter: input.adapter,
@@ -359,7 +360,7 @@ ${referenceBoundaryText}` : baseFinalPrompt;
       architectureContextIncluded: anchors.length > 0,
       blockIds: presentIds,
       decisionTrace: layers.decisionTrace,
-      blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id)])),
+      blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id,layers)])),
       // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
       // was appended to the prompt. Mirrors the v1 seedream-adapter
       // referenceBoundary trace shape so downstream consumers (audit,
@@ -422,7 +423,7 @@ function deriveAnchorCriteria(layers, taskContract) {
   const sceneType = taskContract?.subtype || void 0;
   return { industry, sceneType };
 }
-function blockSource(id) {
+function blockSource(id,layers) {
   const map = {
     task: ["taskContract", "projectFacts.brandName", "projectFacts.industry"],
     spatial_intent: ["spatial.spatialConcept (normalized)", "semantic.architectureStrategy"],
@@ -436,7 +437,7 @@ function blockSource(id) {
     material: ["materialSystem[].material|behavior|forbidden"],
     color: ["colorSystem.primary|secondary|accent (role, spatialUsage, ratio, surfaceApplicability)"],
     lighting: ["lightingSystem.source|contrast|interactionWithMaterials|forbidden"],
-    composition: ["taskContract.aspectRatio|scene", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators"],
+    composition: ["taskContract.aspectRatio|scene", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators", ...layers.composition.userRequirements?.length ? ['mediaTranslations.spatial.compositionRequirements'] : []],
     rendering: ["(deterministic rendering standard)"],
     negative_constraints: ["taskContract.mustAvoid", "diagnosis.brandMisreadRisks", "materialSystem[].forbidden", "lightingSystem.forbidden", "colorSystem.forbidden", "BASE_NEGATIVES (2 universal guards)"],
     continuation_intent: ["taskContract.continuation (source/target scene, preserve grammar, change program) \u2014 R11.1, no brand re-analysis"]

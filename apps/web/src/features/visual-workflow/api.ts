@@ -4,13 +4,20 @@ export interface WorkflowAsset { id: string; originalName: string; role: string;
 export interface WorkflowProject { id: string; projectName: string; brandName: string; industry: string; description: string; status: string; assetCount: number; assets: WorkflowAsset[]; lastReportFilename?: string; visualContextVNextStatus?: string; lastError?: string }
 export interface WorkflowRun { runId: string; status: string; errorMessage?: string; images: Array<{imageId: string}> }
 export type WorkflowOptions = Record<string, { subtypes: string[]; shots: string[] }>;
+export interface DesignColorEntry { name:string; paletteRole:string; role:string; surfaceApplicability:string; spatialUsage:string }
+export interface DesignMaterialEntry { material:string; behavior:string; brandRole:string; forbidden:string }
+export interface ProjectDesignDirectionFields extends Record<'spatialConcept' | 'structureLanguage' | 'materialLanguage' | 'lightingLanguage' | 'colorPolicy' | 'functionalProgram' | 'mustAvoid' | 'lightingContrast' | 'lightingInteraction' | 'lightingAvoid' | 'colorAvoid' | 'functionalNetwork' | 'functionalRelationships' | 'visibleRequirements' | 'artisticFocus' | 'compositionRequirements', string> {
+  colorEntries:DesignColorEntry[];
+  materialEntries:DesignMaterialEntry[];
+}
 export interface ProjectDesignDirection {
   projectId: string;
   status: 'missing' | 'draft' | 'confirmed' | 'needs_reconfirmation';
   reason: string | null;
   recordSha256: string | null;
   source: {statement: string} | null;
-  fields: Record<'spatialConcept' | 'structureLanguage' | 'materialLanguage' | 'lightingLanguage' | 'colorPolicy' | 'functionalProgram' | 'mustAvoid', string>;
+  fields: ProjectDesignDirectionFields;
+  validationIssues:string[];
   confirmedAt: string | null;
 }
 export function createStandardGenerationInput(input: {
