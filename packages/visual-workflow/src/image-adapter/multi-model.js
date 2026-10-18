@@ -1,3 +1,4 @@
+import { SEEDREAM_MAX_REFERENCE_IMAGES } from './reference-capability.js';
 const MULTI_MODEL_ADAPTER_VERSION = "2.0.0";
 const ADAPTERS = Object.freeze({
   "gpt-image-2": Object.freeze({
@@ -16,7 +17,7 @@ const ADAPTERS = Object.freeze({
     id: "seedream-5.0-pro",
     protocol: "seedream-image",
     defaultBaseUrl: "https://ark.cn-beijing.volces.com/api/v3",
-    maxReferences: 10
+    maxReferences: SEEDREAM_MAX_REFERENCE_IMAGES
   })
 });
 const SAFE_PRECONNECT_ERRORS = Object.freeze({

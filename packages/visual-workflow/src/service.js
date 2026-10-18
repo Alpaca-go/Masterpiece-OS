@@ -10,6 +10,9 @@ import { createShortChainGenerationService } from './runtime/image-generation/sh
 import { createDeliverableValidatorService } from './runtime/image-generation/deliverable-validator-service.js';
 import { validateProjectVisualContext, migrateProjectVisualContext } from './runtime/project-visual-context-builder.js';
 import { verifyImplementation } from './integrity.js';
+import { createArtDirectionStore } from './art-direction-store.js';
+import { assertArtDirectionModel } from './art-direction-contract.js';
+import { createProjectDesignDirectionStore } from './project-design-direction.js';
 
 // This is the only production composition root for this bounded workflow.
 // Other product domains receive neither its services nor its storage paths.
@@ -17,6 +20,8 @@ export function createVisualWorkflow(options) {
   const root = path.resolve(options.root);
   const configuration = createConfiguration(root);
   const projects = createProjectStore(path.join(root, 'data'));
+  const artDirection = createArtDirectionStore(projects);
+  const designDirection = createProjectDesignDirectionStore(projects);
   const emit = options.emit || (() => {});
   const pipeline = createPipelineService(projects, configuration.readCredentials, configuration.get,
     progress => emit('visual-workflow:analysis-progress', progress),
@@ -37,10 +42,19 @@ export function createVisualWorkflow(options) {
   const validator = createDeliverableValidatorService(projects, () => images, configuration.get, configuration.readCredentials, context, options.validationReasoner);
   const generation = createShortChainGenerationService(projects, context, () => images, () => validator);
   async function compile(input) {
-    if (input.task.generationBasis && input.task.generationBasis !== 'standard' || input.task.referenceAssetIds?.length || input.task.continuation) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+    const art = input.task.generationBasis === 'art_direction_reference';
+    if (!art && (input.task.generationBasis && input.task.generationBasis !== 'standard' || input.task.referenceAssetIds?.length || input.task.continuation) || art && input.task.continuation) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+    if (!art && input.task.deliverableFamily==='space' && Object.hasOwn(input,'designDirectionExpectedRecordSha256')) {
+      const current=await designDirection.get(input.projectId);
+      if (current.recordSha256!==input.designDirectionExpectedRecordSha256) throw new Error('PROJECT_DESIGN_DIRECTION_EDIT_CONFLICT');
+    }
     const settings = await configuration.get();
     const credential = await configuration.readCredentials(settings.imageProfileId);
     if (credential.modelType !== 'image_generation') throw new Error('请先选择独立生图模型');
+    if (art) {
+      assertArtDirectionModel(credential.model,credential.protocol);
+      return generation.compile({projectId:input.projectId,model:credential.model,task:input.task});
+    }
     return generation.compile({ projectId: input.projectId, model: credential.model, task: { ...input.task, generationBasis: 'standard', referenceAssetIds: [], continuation: undefined } });
   }
   async function start(input) {
@@ -118,7 +132,14 @@ export function createVisualWorkflow(options) {
     'visual-workflow:import-configuration': () => importConfiguration(),
     'visual-workflow:list-projects': async () => Promise.all((await projects.list()).map(pipeline.reconcileOrphanedProject)),
     'visual-workflow:create-project': (_context, input) => projects.create(input),
-    'visual-workflow:import-files': (_context, id, files) => projects.importFiles(id, files),
+    'visual-workflow:import-files': (_context, id, files) => {
+      if (files?.purpose === 'project_design_direction') {
+        if (files.action === 'save_draft') return designDirection.saveDraft(id,files);
+        if (files.action === 'confirm') return designDirection.confirm(id,files);
+        throw new Error('PROJECT_DESIGN_DIRECTION_ACTION_INVALID');
+      }
+      return files?.purpose === 'art_direction' ? artDirection.register({...files,projectId:id}) : projects.importFiles(id, files);
+    },
     'visual-workflow:select-logo': async (_context, id, assetId) => {
       const project = await projects.get(id);
       if (pipeline.isActive(id)) throw new Error('分析期间不能修改 Logo');
@@ -127,9 +148,14 @@ export function createVisualWorkflow(options) {
       return projects.update(id, { assets: project.assets.map(item => ({ ...item, role: item.id === assetId ? 'logo' : 'visual' })), logoFiles: [asset.relativePath], visualContextStatus: 'missing', visualContextVNextStatus: 'missing', status: 'ready' });
     },
     'visual-workflow:import-project': (_context, id) => importProject(id),
-    'visual-workflow:analyze': async (_context, id, force = true) => { const settings = await configuration.get(); return pipeline.start(id, force, settings.analysisProfileId); },
+    'visual-workflow:analyze': async (_context, id, force = true) => {
+      if (pipeline.isActive(id)) throw new Error('分析已在进行中');
+      const settings = await configuration.get();
+      await designDirection.markForReview(id);
+      return pipeline.start(id, force, settings.analysisProfileId);
+    },
     'visual-workflow:cancel-analysis': (_context, id) => pipeline.cancel(id),
-    'visual-workflow:report': (_context, id) => report(id),
+    'visual-workflow:report': (_context, id, purpose) => purpose === 'project_design_direction' ? designDirection.get(id) : report(id),
     'visual-workflow:compile': (_context, input) => compile(input),
     'visual-workflow:generate': (_context, input) => start(input),
     'visual-workflow:runs': (_context, id) => images.listRuns(id),

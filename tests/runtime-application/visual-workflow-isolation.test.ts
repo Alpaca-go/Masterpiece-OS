@@ -102,7 +102,7 @@ test('completed analysis supplies migrated Logo roles without overriding a new i
   assert.equal(selected.assets.find((asset:any)=>asset.role==='logo').id,'new-logo');
 });
 
-test('owned standard compilation ignores global mode flags and preserves extracted prompt/payload bytes', async t => {
+test('owned standard compilation ignores global mode flags and preserves independent payload contracts', async t => {
   const {service} = await fixture(t);
   const registry = JSON.parse(await fs.readFile(new URL('../../packages/visual-workflow/src/assets/architecture-anchors/registry.json',import.meta.url),'utf8'));
   const registered = Object.values(registry.brands)[0] as any;
@@ -118,11 +118,18 @@ test('owned standard compilation ignores global mode flags and preserves extract
   t.after(() => { if (saved === undefined) delete process.env.MASTERPIECE_SPACE_COMPILER_MODE; else process.env.MASTERPIECE_SPACE_COMPILER_MODE=saved; });
   process.env.MASTERPIECE_SPACE_COMPILER_MODE='r8_6_golden';
   const upstream = sharedCompile({projectContext:context,task});
+  const ownedUnderProductionFlag = isolatedCompile({projectContext:context,task});
   process.env.MASTERPIECE_SPACE_COMPILER_MODE='vnext_legacy';
   assert.equal(resolveSpaceCompilerMode(),'r8_6_golden');
   const owned = isolatedCompile({projectContext:context,task});
-  assert.equal(owned.compiledPrompt.finalPrompt,upstream.compiledPrompt.finalPrompt);
-  assert.deepEqual(owned.payload,upstream.payload);
+  assert.equal(owned.compiledPrompt.finalPrompt,ownedUnderProductionFlag.compiledPrompt.finalPrompt);
+  assert.deepEqual(owned.payload,ownedUnderProductionFlag.payload);
+  assert.notEqual(owned.compiledPrompt.finalPrompt,upstream.compiledPrompt.finalPrompt);
+  assert.equal(owned.payload.referenceBoundary.promptCharacters,[...owned.compiledPrompt.finalPrompt].length);
+  assert.deepEqual({...owned.payload,prompt:upstream.payload.prompt,
+    referenceBoundary:{...owned.payload.referenceBoundary,promptCharacters:upstream.payload.referenceBoundary.promptCharacters}},upstream.payload);
+  assert.ok(owned.payload.prompt.endsWith(owned.compiledPrompt.finalPrompt));
+  assert.equal(owned.payload.image,undefined);
 });
 
 test('offline E2E: owned import, analysis, report and image request complete without shared settings or real providers', async t => {

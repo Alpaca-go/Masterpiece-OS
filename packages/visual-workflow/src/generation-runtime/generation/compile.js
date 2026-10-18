@@ -7,12 +7,13 @@ import {
   assertSpaceGenerationRouteIntegrity,
   compileSpacePrompt,
   createSpaceContinuationContract,
-  resolveArchitectureAnchorBrandKey,
   runSpaceQualityGate,
   validateSpaceGenerationModeSemantics,
   validateSpatialSemantics
 } from "../space/index.js";
 import crypto from "node:crypto";
+import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decision.js";
+import { ART_DIRECTION_SOURCE, ART_DIRECTION_ROLE, digest, assertArtDirectionModel } from '../../art-direction-contract.js';
 const SPACE_COMPILER_MODES = Object.freeze({
   R8_6_GOLDEN: "r8_6_golden",
   PHASE9B_QUALITY: "phase9b_quality",
@@ -77,7 +78,7 @@ function compileShortChainGeneration(input) {
       preferredLogoAssetId,
       started,
       compilerMode: spaceMode,
-      enforceSpatialSemantics: input.task?.generationBasis === "standard" || input.task?.generationBasis === "reference_first"
+      enforceSpatialSemantics: input.task?.generationBasis === "standard" || input.task?.generationBasis === "reference_first" || input.task?.generationBasis === 'art_direction_reference'
     });
   } else {
     compiledPrompt = compileShortChainPrompt({
@@ -104,18 +105,28 @@ function compileShortChainGeneration(input) {
   return { taskContract, route, compiledPrompt, payload };
 }
 function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
-  const packet = input.projectContext?.visualDecisionPacket;
-  if (!packet) {
+  const originalPacket = input.projectContext?.visualDecisionPacket;
+  if (!originalPacket) {
     throw Object.assign(
       new Error("SPACE_PHASE9B_SOURCE_INSUFFICIENT: Phase 9B quality mode requires a V5 VisualDecisionPacket"),
       { code: "SPACE_PHASE9B_SOURCE_INSUFFICIENT" }
     );
   }
+  if (input.userConfirmedVisualDecision && originalPacket.projectId !== taskContract.projectId) throw new Error("Visual Decision Packet and Task Contract belong to different projects");
+  const confirmedDecision = applyUserConfirmedVisualDecision(
+    originalPacket, input.userConfirmedVisualDecision, taskContract.projectId, taskContract.deliverableFamily
+  );
+  const packet = confirmedDecision.packet;
+  const artDirection = taskContract.generationBasis === 'art_direction_reference';
+  if (artDirection) {
+    assertArtDirectionModel(input.model);
+    if (!confirmedDecision.confirmation || taskContract.artDirection.model !== input.model || digest(input.userConfirmedVisualDecision) !== taskContract.artDirection.confirmationSha256) throw new Error('ART_DIRECTION_CONFIRMATION_STALE');
+  }
   const result = compileSpacePrompt({
     packet,
     taskContract,
     projectContext: input.projectContext,
-    brandKey: input.brandKey || input.projectContext?.brandKey || resolveArchitectureAnchorBrandKey(packet.projectFacts?.brandName?.value) || null,
+    brandKey: input.brandKey || null,
     anchorCriteria: input.anchorCriteria,
     adapter,
     referencePolicy: { mode: compilerMode }
@@ -132,8 +143,8 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     finalPrompt: result.finalPrompt,
     blockIds: result.blockIds,
     blocksById,
-    referenceCount: 0,
-    hasExplicitReferenceBypass: true
+    referenceCount: artDirection ? referenceAssetIds.length : 0,
+    hasExplicitReferenceBypass: artDirection ? false : true
   });
   const blocking = qualityGate.findings.filter((f) => f.severity === "block");
   if (blocking.length) {
@@ -164,7 +175,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       checkedAt: qualityGate.checkedAt
     },
     effectiveVisualDecisionPacket: packet,
-    userConfirmedVisualDecision: null,
+    userConfirmedVisualDecision: confirmedDecision.confirmation,
     completeness: {
       complete: true,
       requiredBlockIds: result.blockIds,
@@ -184,7 +195,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       sourceAdapterVersion: result.sourceAdapterVersion,
       anchorIds: result.anchors.map((a) => a.id),
       referenceImages: result.referenceImages,
-      architectureContextIncluded: result.blockIds.includes("architecture_context"),
+      architectureContextIncluded: result.anchors.length > 0,
       budget: {
         chars: budget.chars,
         positiveRatio: budget.positiveRatio,
@@ -204,6 +215,8 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       compileDurationMs: Number((performance.now() - started).toFixed(3)),
       phase9b: true,
       anchorIds: result.trace.anchorIds,
+      decisionTrace: result.layers.decisionTrace,
+      userConfirmedVisualDecision: confirmedDecision.confirmation,
       // R9 §20 trace schema: every space run records a structured
       // spaceGeneration block for image-level regression tracing.
       spaceGeneration: {
@@ -216,7 +229,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
         // its runtime equivalent (standard <-> text_only, reference_first /
         // continuation <-> reference_assisted). Both are recorded for trace.
         generationBasis: taskContract.generationBasis,
-        referenceMode: taskContract.generationBasis === "reference_first" || taskContract.generationBasis === "continuation" ? "reference_assisted" : "text_only",
+        referenceMode: artDirection || taskContract.generationBasis === "reference_first" || taskContract.generationBasis === "continuation" ? "reference_assisted" : "text_only",
         referenceIds: referenceAssetIds,
         referenceSources: [],
         // r2.0 §4.10 / B-3: Reference Boundary text block status. The v1
@@ -276,13 +289,14 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     referenceMode: compiledPrompt.trace.spaceGeneration.referenceMode,
     // R11.1: a continuation task's reference source is the confirmed generated
     // output, not a user_explicit upload. Standard stays text-only.
-    referenceSources: taskContract.generationBasis === "continuation" ? referenceAssetIds.map(() => "confirmed_generated_output") : referenceAssetIds.map(() => "user_explicit"),
+    referenceSources: artDirection ? referenceAssetIds.map(() => ART_DIRECTION_SOURCE) : taskContract.generationBasis === "continuation" ? referenceAssetIds.map(() => "confirmed_generated_output") : referenceAssetIds.map(() => "user_explicit"),
     spatialSemanticReport
   });
   validateSpaceGenerationModeSemantics({
+    taskContract,
     generationBasis: taskContract.generationBasis,
-    referenceRole: taskContract.generationBasis === "continuation" ? taskContract.continuation?.referenceRole ?? "world_consistency" : "high_fidelity_visual_reference",
-    referenceSources: taskContract.generationBasis === "continuation" ? ["confirmed_generated_output"] : ["user_explicit"],
+    referenceRole: artDirection ? ART_DIRECTION_ROLE : taskContract.generationBasis === "continuation" ? taskContract.continuation?.referenceRole ?? "world_consistency" : "high_fidelity_visual_reference",
+    referenceSources: artDirection ? referenceAssetIds.map(()=>ART_DIRECTION_SOURCE) : taskContract.generationBasis === "continuation" ? ["confirmed_generated_output"] : ["user_explicit"],
     referenceCount: referenceAssetIds.length,
     finalPrompt: result.finalPrompt,
     sourceScene: taskContract.continuation?.sourceScene,

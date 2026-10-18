@@ -1,8 +1,10 @@
 import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { createArtDirectionStore } from '../../art-direction-store.js';
+import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
+import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
 import {
-  compileShortChainCorrectionPrompt,
   compileShortChainGeneration,
   listShortChainTemplateOptions,
   deriveGenerationFlowState,
@@ -88,6 +90,8 @@ async function writeJson(filename, value) {
   }
 }
 function createShortChainGenerationService(projects, projectContext, getImageGeneration, getValidator, getSimilarityAudit) {
+  const artDirectionStore = createArtDirectionStore(projects);
+  const designDirectionStore = createProjectDesignDirectionStore(projects);
   async function vnextRoot(projectId) {
     return path.join((await projects.paths(projectId)).root, "image-generation-vnext");
   }
@@ -151,10 +155,14 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       path.join(paths.root, "outputs", "creative_decision.json"),
       "utf8"
     ).then((value) => JSON.parse(value)).catch(() => void 0);
-    const userConfirmedVisualDecision = await fs.readFile(
+    const art = input.task.generationBasis === 'art_direction_reference';
+    const designDirection = !art && input.task.deliverableFamily === 'space' ? await designDirectionStore.capture(input.projectId) : null;
+    const userConfirmedVisualDecision = art ? await fs.readFile(
       path.join(paths.root, "project-context", "user-confirmed-visual-decision.json"),
       "utf8"
-    ).then((value) => JSON.parse(value)).catch(() => void 0);
+    ).then((value) => JSON.parse(value)).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; }) : designDirection?.confirmation;
+    const artCapture = art ? await artDirectionStore.capture(input.projectId,input.task.referenceAssetIds,input.model) : null;
+    if (art && (digest(userConfirmedVisualDecision) !== artCapture.snapshot.confirmationSha256 || userConfirmedVisualDecision.reviewTask?.currentInstruction && input.task.currentInstruction !== userConfirmedVisualDecision.reviewTask.currentInstruction)) throw new Error('ART_DIRECTION_INSTRUCTION_MISMATCH');
     const projectPromptAsset = await fs.readFile(
       path.join(
         paths.root,
@@ -172,6 +180,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       userConfirmedVisualDecision,
       task: {
         ...input.task,
+        ...art ? {artDirection:artCapture.snapshot} : {},
         projectId: input.projectId,
         logoUsageMode,
         referenceAssetIds
@@ -204,6 +213,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       }
     } : basePromptSourceMap;
     await Promise.all([
+      writeJson(path.join(artifactDirectory, 'project-design-direction.json'), designDirection?.snapshot || null),
       writeJson(path.join(artifactDirectory, "task-contract.json"), result.taskContract),
       writeJson(path.join(artifactDirectory, "compiled-prompt.json"), result.compiledPrompt),
       writeJson(path.join(artifactDirectory, "model-payload.json"), result.payload),
@@ -285,12 +295,23 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
   async function start(input) {
     let compilation = await readCompilation(input.projectId, input.taskId);
     const currentContext = await projectContext.getShortChain(input.projectId);
+    const art = compilation.taskContract.generationBasis === 'art_direction_reference';
+    const designDirectionSnapshot = !art && compilation.taskContract.deliverableFamily === 'space' ? await fs.readFile(
+      path.join(compilation.artifactDirectory,'project-design-direction.json'),'utf8'
+    ).then(JSON.parse).catch(error=>{if(error.code==='ENOENT')return null;throw error;}) : null;
+    if (!art && compilation.taskContract.deliverableFamily === 'space') await designDirectionStore.resolve(input.projectId,designDirectionSnapshot);
+    let artCapture = null;
+    if (art) {
+      if (JSON.stringify(compilation.taskContract) !== JSON.stringify(compilation.compiledPrompt.taskContract) || compilation.payload.prompt !== compilation.compiledPrompt.finalPrompt || digest(compilation.compiledPrompt.finalPrompt) !== compilation.compiledPrompt.trace.spaceGeneration.promptHash) throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
+      artCapture = await artDirectionStore.resolve(compilation.taskContract.artDirection,input.projectId,compilation.payload.model);
+    }
     let preflight = compilation.compiledPrompt.preflightReport;
     const cachedTraceFile = JSON.parse(
       await fs.readFile(path.join(compilation.artifactDirectory, "trace.json"), "utf8")
     );
     const preflightBlocked = preflight?.status !== "pass";
     const contextFingerprintStale = cachedTraceFile.contextFingerprint !== currentContext.provenance.sourceFingerprint;
+    if (art && (preflightBlocked || contextFingerprintStale)) throw new Error('ART_DIRECTION_COMPILATION_STALE');
     if (preflightBlocked || contextFingerprintStale) {
       try {
         const task = compilation.taskContract;
@@ -364,7 +385,9 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
     let isEditedPrompt = false;
     if (isProductionSpaceCompilation) {
       let resolved;
-      if (generationBasis === "continuation") {
+      if (art) {
+        resolved = {references:artCapture.snapshot.assets.map(asset=>({...asset,projectRelativePath:asset.relativePath,source:ART_DIRECTION_SOURCE})),trace:{generationBasis,referenceMode:'reference_assisted',providerReferenceCount:artCapture.snapshot.assets.length,snapshot:artCapture.snapshot}};
+      } else if (generationBasis === "continuation") {
         const continuationAssetId = explicitIds[0];
         const confirmed = continuationAssetId ? session.confirmedGeneratedOutputs?.[continuationAssetId] : null;
         const sourceRun = confirmed ? await getImageGeneration().getRun(confirmed.sourceRunId) : null;
@@ -402,6 +425,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
         });
       }
       references = resolved.references.map((ref) => ({
+        ...art ? {sha256:ref.sha256,mimeType:ref.mimeType,responsibility:ref.responsibility,projectId:ref.projectId} : {},
         id: ref.id,
         role: ref.role,
         projectRelativePath: ref.projectRelativePath,
@@ -454,7 +478,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
         },
         blockIds: promptBlockIds(compiledPrompt, compiledBlocks),
         providerReferenceCount: references.length,
-        referenceMode: generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
+        referenceMode: art || generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
         referenceSources: references.map((reference) => reference.source),
         spatialSemanticReport,
         requestedAspectRatio: compilation.taskContract.aspectRatio,
@@ -479,7 +503,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       const runSpaceTrace = {
         ...compileSpaceTrace,
         generationBasis,
-        referenceMode: generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
+        referenceMode: art || generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
         referenceIds: references.map((reference) => reference.id),
         referenceSources: references.map((reference) => reference.source),
         routeIntegrity: gateA.routeIntegrity,
@@ -492,7 +516,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       await Promise.all([
         writeJson(path.join(compilation.artifactDirectory, "reference-trace.json"), {
           schemaVersion: "1.0",
-          referenceMode: generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
+          referenceMode: art || generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
           providerReferenceCount: references.length,
           references: references.map((reference) => ({
             id: reference.id,
@@ -580,6 +604,8 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
         taskContract: compilation.taskContract,
         route: compilation.compiledPrompt.route,
         trace: compilation.compiledPrompt.trace,
+        ...!art && compilation.taskContract.deliverableFamily === 'space' ? {designDirection:designDirectionSnapshot,compiledPromptSha256:digest(actualPrompt)} : {},
+        ...art ? {compiledPromptSha256:digest(actualPrompt),userConfirmedVisualDecision:compilation.compiledPrompt.userConfirmedVisualDecision} : {},
         implicitAnchor,
         ...referenceTrace ? { referenceTrace } : {},
         ...spaceQualityGate ? { spaceQualityGate } : {}
@@ -816,83 +842,53 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       sha256: first.sha256,
       sizeBytes: first.sizeBytes
     };
-    const initialValidation = await validator.validate({
-      projectId: input.projectId,
-      taskContract: compilation.taskContract,
-      runId: initial.runId,
-      validatorProfileId: input.validatorProfileId
-    });
-    let result;
-    if (initialValidation.status !== "failed" || !initialValidation.retryRecommended) {
-      result = {
-        initialRun: initial,
-        initialValidation,
-        terminalStatus: initialValidation.status,
-        automaticRetryCount: 0,
-        flowState: deriveGenerationFlowState({
-          initialRun: initial,
-          initialValidation
-        }),
-        firstImage,
-        // Filled by the tail below; default null so the type is complete
-        // during the build step.
-        similarityAudit: null
-      };
-    } else {
-      const correctionPrompt = compileShortChainCorrectionPrompt({
-        originalPrompt: input.editedPrompt?.trim() || compilation.compiledPrompt.finalPrompt,
+    let initialValidation;
+    try {
+      initialValidation = await validator.validate({
+        projectId: input.projectId,
         taskContract: compilation.taskContract,
-        validation: initialValidation
+        runId: initial.runId,
+        validatorProfileId: input.validatorProfileId
       });
-      const correctionRun = await start({
-        ...input,
-        editedPrompt: correctionPrompt
-      });
-      if (correctionRun.status !== "succeeded" || !correctionRun.images[0]) {
-        result = {
-          initialRun: initial,
-          initialValidation,
-          correctionRun,
-          terminalStatus: "failed",
-          automaticRetryCount: 1,
-          flowState: deriveGenerationFlowState({
-            initialRun: initial,
-            initialValidation,
-            correctionRun
-          }),
-          firstImage,
-          similarityAudit: null
-        };
-      } else {
-        const correctionValidation = await validator.validate({
-          projectId: input.projectId,
-          taskContract: compilation.taskContract,
-          runId: correctionRun.runId,
-          validatorProfileId: input.validatorProfileId
-        });
-        result = {
-          initialRun: initial,
-          initialValidation,
-          correctionRun,
-          correctionValidation,
-          terminalStatus: correctionValidation.status,
-          automaticRetryCount: 1,
-          flowState: deriveGenerationFlowState({
-            initialRun: initial,
-            initialValidation,
-            correctionRun,
-            correctionValidation
-          }),
-          firstImage,
-          similarityAudit: null
-        };
-      }
+    } catch {
+      // Validator failure must not discard a successfully generated paid image.
+      initialValidation = {
+        status: "unverified", runId: initial.runId, imageId: first.imageId,
+        retryRecommended: false, humanReviewRequired: true,
+        errorCode: "DELIVERABLE_VALIDATION_UNAVAILABLE"
+      };
     }
+    const result = {
+      initialRun: initial,
+      initialValidation,
+      terminalStatus: initialValidation.status,
+      automaticRetryCount: 0,
+      flowState: deriveGenerationFlowState({ initialRun: initial, initialValidation }),
+      firstImage,
+      selectedImage: firstImage,
+      attempts: [{ role: "initial", run: initial, validation: initialValidation }],
+      correctionPolicy: {
+        automaticRegeneration: "disabled",
+        nextAction: "human_review",
+        operation: "text_to_image_regeneration",
+        imageEditingSupported: false,
+        sourceImageAttached: false,
+        contentPreservationGuaranteed: false,
+        message: "No second image was requested. Text-only regeneration cannot guarantee preservation of the original scene."
+      },
+      logoIntegrity: compilation.taskContract.logoUsageMode === "post_composite" ? "pending_post_composite" : "requires_identity_review",
+      qualityAcceptance: "pending_human_review",
+      similarityAudit: null
+    };
     const audit = await runSimilarityAuditIfTriggered(result, compilation);
     const finalResult = {
       ...result,
       similarityAudit: audit
     };
+    await writeJson(
+      path.join(await vnextRoot(input.projectId), "validations", `${initial.runId}.summary.json`),
+      finalResult
+    );
     await writeJson(
       path.join(await vnextRoot(input.projectId), "validations", `${input.taskId}.summary.json`),
       finalResult
@@ -1017,6 +1013,9 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
     const audit = {
       schemaVersion: "1.0",
       status: "completed",
+      validationStage: "post_composite",
+      logoIntegrity: "source_recorded_pending_visual_review",
+      qualityAcceptance: "pending_human_review",
       projectId: input.projectId,
       runId: input.runId,
       sourceImageId: input.imageId,

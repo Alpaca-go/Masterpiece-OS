@@ -1,0 +1,27 @@
+{
+  "workflowOwner": "visual-workflow",
+  "adapterId": "seedream-5.0-pro",
+  "profileId": "b71422e4-b62a-4640-99a9-c004350b8e2a",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "baseUrl": "https://image.example.invalid/v3",
+  "aspectRatio": "16:9",
+  "imageSize": "2K",
+  "promptSha256": "b1fb72359a6d156a82aab89c0cf226eaf9304b91d6dd78185e700f0c5c5f7e5f",
+  "promptVersion": "4d2928cb992b06e38f4974f996dda64a8c4171d704c90773091e2882fd8183b5",
+  "outputCount": 1,
+  "referenceCount": 0,
+  "designDirection": {
+    "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+    "recordSha256": "1cf6a4a663eed41af53e731a205159560dcdfbf9ef435781346a730cf5fe5fc8",
+    "confirmationSha256": "3e785bf9a84f9f57831ef8c0649ce8345b4a76fb729d5a416dd617a56ba3d2f6",
+    "analysisFingerprint": "5c8594ca69d077cb3cc05c4c8b1aebf6cb523022d6ea0f411d5eb56fe4f84a6c",
+    "source": {
+      "kind": "user_design_decision",
+      "statement": "用户确认的项目设计目标。人工认可作品仅用于离线审美校准，不是原始品牌事实，也不是生图参考输入。",
+      "evidenceRole": "offline_visual_calibration",
+      "notOriginalBrandFact": true
+    },
+    "confirmedAt": "2026-10-18T09:33:56.871Z"
+  }
+}

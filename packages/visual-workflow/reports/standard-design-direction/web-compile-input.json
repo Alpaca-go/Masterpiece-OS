@@ -1,0 +1,17 @@
+{
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "designDirectionExpectedRecordSha256": "b042e7bd3a0994635d77ee6ddd6cbb7baff4b8b8adb436eaf4c1f5875a04a31f",
+  "task": {
+    "deliverableFamily": "space",
+    "subtype": "reception",
+    "shot": "entrance_view",
+    "aspectRatio": "16:9",
+    "count": 1,
+    "currentInstruction": "生成符合项目气质的空间效果图",
+    "generationBasis": "standard",
+    "referenceAssetIds": [],
+    "mustInclude": [],
+    "mustAvoid": [],
+    "logoUsageMode": "post_composite"
+  }
+}

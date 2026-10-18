@@ -1,0 +1,1752 @@
+[
+  {
+    "sourcePath": "creativeDecision.brandRoleStatement",
+    "original": "九州美学是科学与美学相遇的高端服务平台，通过精琢每一片翎羽般的细节，为客户提供信任与温度共生的变美体验。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "建筑艺术、材料光学与装置的空间关系共同建立九州美学的美术馆气质；接待、候客、通行与隐私可用。",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeFrom[0]",
+    "original": "写实孔雀图像",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "由紫色装饰与重复建筑套语主导的普通高端医美装修",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeFrom[1]",
+    "original": "传统医美粉色/蓝色调",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeFrom[2]",
+    "original": "具象的医疗元素",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.preserveCore[0]",
+    "original": "紫色主色调 (Peacock Violet)",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "品牌原始标识仅以后期合成呈现",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.preserveCore[1]",
+    "original": "凤凰/孔雀羽毛的流线型Logo",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "精细的建筑、材料与光线体验",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.preserveCore[2]",
+    "original": "“精琢每一片翎羽”的匠心精神",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.preserveCore[3]",
+    "original": "定制字体笔锋软化特征",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeTo[0]",
+    "original": "抽象化的羽毛/花瓣纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "安静近白建筑背景、自然日光与轻薄半透明空间结构组成的展馆体验",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeTo[1]",
+    "original": "光影互动的空间氛围",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeTo[2]",
+    "original": "具有触感的材质表达（丝绸、金属、石材）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.upgradeTo[3]",
+    "original": "强调“科学与美学”融合的现代感",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.uniqueUpgradeThesis",
+    "original": "从传统的写实孔雀和具象医美元素，升级为抽象的、具有光影质感的‘翎羽’美学系统。保留紫色和流线型核心，通过材质和光线的精细化处理，强调‘精琢’的品牌承诺，避免被误读为时尚品牌，确立高端医美美学定位。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "以图二图三的轻薄半透明结构组织建筑与动线，以图四珠光层叠关系表达材料，以图五的展馆留白、自然光与克制配色确定主次。",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.targetWorldview[0]",
+    "original": "美是科学精确与艺术感性的结合",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "建筑艺术与真实运营并存",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.targetWorldview[1]",
+    "original": "细节决定品质",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.targetWorldview[2]",
+    "original": "蜕变是优雅的过程",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[0].target",
+    "original": "高端专业",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "当代美术馆式宁静与建筑艺术性",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[0].avoid[0]",
+    "original": "廉价塑料感",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "普通SPA装修",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[0].avoid[1]",
+    "original": "过度装饰",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "科幻灯光装饰",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[0].avoid[2]",
+    "original": "医疗冰冷感",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[1].target",
+    "original": "优雅柔和",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[1].avoid[0]",
+    "original": "生硬几何",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[1].avoid[1]",
+    "original": "刺眼色彩",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.toneBoundaries[1].avoid[2]",
+    "original": "粗糙纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.strategicNegatives[0]",
+    "original": "不使用写实动物照片作为主视觉",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "不伪造品牌文字或标志",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.strategicNegatives[1]",
+    "original": "不模仿时尚奢侈品的过度Logo堆砌",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "不将品牌紫扩展为全空间主导色",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "creativeDecision.strategicNegatives[2]",
+    "original": "不使用非品牌色系的杂乱色彩",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].sourceAsset",
+    "original": "fec0db86-029d-4be9-9641-c2041f754033",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].semanticMeaning[0]",
+    "original": "精致",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].semanticMeaning[1]",
+    "original": "层叠",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": true
+  },
+  {
+    "sourcePath": "abstractions[0].semanticMeaning[2]",
+    "original": "蜕变",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].semanticMeaning[3]",
+    "original": "华丽",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].formalProperties[0]",
+    "original": "流线型",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].formalProperties[1]",
+    "original": "放射状",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].formalProperties[2]",
+    "original": "细密纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].formalProperties[3]",
+    "original": "渐变",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].rhythmProperties[0]",
+    "original": "有序排列",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].rhythmProperties[1]",
+    "original": "疏密变化",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].rhythmProperties[2]",
+    "original": "流动感",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].materialPotential[0]",
+    "original": "丝绸光泽",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].materialPotential[1]",
+    "original": "金属拉丝",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].materialPotential[2]",
+    "original": "半透明亚克力",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].materialPotential[3]",
+    "original": "石材纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].lightingPotential[0]",
+    "original": "渐变光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].lightingPotential[1]",
+    "original": "反射光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].lightingPotential[2]",
+    "original": "透光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].lightingPotential[3]",
+    "original": "阴影层次",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].forbiddenLiteralUse[0]",
+    "original": "直接打印孔雀照片",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].forbiddenLiteralUse[1]",
+    "original": "使用真实羽毛装饰",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].forbiddenLiteralUse[2]",
+    "original": "模仿鸟类形态的家具",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].evidenceRefs[0]",
+    "original": "fec0db86-029d-4be9-9641-c2041f754033",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].evidenceRefs[1]",
+    "original": "501f7c5c-55ce-4580-95e3-b7e0840bacd9",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[0].evidenceRefs[2]",
+    "original": "cd7a0004-bbc6-4347-9d3a-ecd8a1b5d06f",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].sourceAsset",
+    "original": "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].semanticMeaning[0]",
+    "original": "品牌核心",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].semanticMeaning[1]",
+    "original": "飞翔",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].semanticMeaning[2]",
+    "original": "升华",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].formalProperties[0]",
+    "original": "S形曲线",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].formalProperties[1]",
+    "original": "负空间",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].formalProperties[2]",
+    "original": "不对称平衡",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].rhythmProperties[0]",
+    "original": "向上延伸",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].rhythmProperties[1]",
+    "original": "动态平衡",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].materialPotential[0]",
+    "original": "发光字",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].materialPotential[1]",
+    "original": "金属蚀刻",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].materialPotential[2]",
+    "original": "刺绣",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].lightingPotential[0]",
+    "original": "轮廓光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].lightingPotential[1]",
+    "original": "背光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].lightingPotential[2]",
+    "original": "点光源",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].forbiddenLiteralUse[0]",
+    "original": "改变Logo比例",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].forbiddenLiteralUse[1]",
+    "original": "替换Logo颜色",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].forbiddenLiteralUse[2]",
+    "original": "添加额外装饰元素到Logo内部",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].evidenceRefs[0]",
+    "original": "fe40b0b3-22ce-4616-ae5a-8c2370a0791c",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "abstractions[1].evidenceRefs[1]",
+    "original": "28e21bbc-d672-4ff6-8b87-34c162b5afed",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.spatialConcept",
+    "original": "翎羽光影——通过材质和光线模拟羽毛的层叠、光泽和流动感，营造优雅、神秘且专业的空间氛围。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "当代美术馆般的接待与入口：宁静的乳白建筑留白、透射日光和薄片层次建立空间体验；艺术焦点与接待运营有清楚主次。",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.brandRoleManifestation[0]",
+    "original": "接待区：通过大型艺术装置（抽象羽毛/花瓣）展示品牌美学高度。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "接待区：一个与建筑结合的轻薄半透明珠光层叠艺术装置，以可读的薄片层次、深度和边缘高光形成唯一艺术焦点。",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.brandRoleManifestation[1]",
+    "original": "咨询区：私密、柔和的光线，体现信任与温度。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.brandRoleManifestation[2]",
+    "original": "治疗区：洁净、科技感，体现科学严谨。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+    "original": "流线型隔断/天花造型：模仿羽毛的层叠和S形曲线，引导视线和动线。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "接待区：一个与建筑结合的轻薄半透明珠光层叠艺术装置，以可读的薄片层次、深度和边缘高光形成唯一艺术焦点。",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[1]",
+    "original": "渐变光影系统：利用灯光在墙面或地面投射出类似羽毛纹理的渐变光影。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalNetwork[0]",
+    "original": "Reception Hall: Entry zone featuring reception desk and waiting seating, facilitating initial check-in and brand introduction.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalNetwork[1]",
+    "original": "Corridors/Passageways: Transitional circulation paths connecting public areas to private zones, ensuring directional flow.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalNetwork[2]",
+    "original": "VIP Consultation Rooms: Enclosed private spaces equipped with seating and display surfaces for confidential client discussions.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalNetwork[3]",
+    "original": "Treatment Rooms: Sterile clinical environments containing medical equipment and procedure beds for aesthetic services.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalNetwork[4]",
+    "original": "Rest Areas: Post-service relaxation zones with comfortable seating for recovery and decompression.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+    "original": "区别于传统医美的冰冷白色，使用紫色调和温暖材质。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "艺术来自建筑本体、材料光学与自然光，保留真实可用的接待功能",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[1]",
+    "original": "区别于美容院的繁琐装饰，保持现代简约和科技感。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+    "original": "Reception desk and counter",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "Reception counter",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+    "original": "Directional signage and wayfinding systems",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "Clear visitor circulation",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+    "original": "Consultation room furniture (chairs/tables)",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "Consultation privacy boundary",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.mustBeVisible[4]",
+    "original": "Medical treatment beds and equipment",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.mustBeVisible[5]",
+    "original": "Privacy partitions or curtains",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.mustBeVisible[6]",
+    "original": "Post-treatment recovery seating",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.structureLanguage[0]",
+    "original": "曲线与直线的结合",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "大尺度轻薄半透明顶面与连续空间分隔，以透射日光、穿行和视线纵深组织建筑关系",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+    "original": "层叠结构",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "墙面、地面与周边顶面保持安静简洁，给主艺术系统留出展馆式呼吸感",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.structureLanguage[2]",
+    "original": "悬浮感",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[0].material",
+    "original": "紫色半透明亚克力/玻璃",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "轻薄半透明珠光层片",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[0].behavior[0]",
+    "original": "透光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "自然光分层透射，可隔着层片读取空间背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[0].behavior[1]",
+    "original": "渐变",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "珠母贝般温和虹彩、边缘细腻高光与适度反射；紫只在局部内层微弱出现",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[0].behavior[2]",
+    "original": "光滑",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[0].brandRole",
+    "original": "模拟羽毛的轻盈和光泽，用于装饰或隔断。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "与建筑空间组织融合的主艺术系统；视觉效果目标，不声称工艺、厚度或固定方式已验证",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[0].forbidden[0]",
+    "original": "使用不透明的廉价塑料",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "厚重染色玻璃",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[1].material",
+    "original": "拉丝金属（不锈钢/铜）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "暖白、乳白、浅暖灰的低对比石质或微水泥背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[1].behavior[0]",
+    "original": "反射",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "低对比的柔和反射与连续留白",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": true
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[1].behavior[1]",
+    "original": "细腻纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[1].brandRole",
+    "original": "体现精致工艺和现代感，用于收口、标识或家具。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "安静建筑背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[1].forbidden[0]",
+    "original": "使用高光镜面（易留指纹，显廉价）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[2].material",
+    "original": "白色/浅灰色石材",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[2].behavior[0]",
+    "original": "沉稳",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[2].behavior[1]",
+    "original": "自然纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[2].brandRole",
+    "original": "提供纯净背景，平衡紫色的浓郁，体现科学性。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.materialLanguage[2].forbidden[0]",
+    "original": "使用深色或花纹复杂的石材",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.source[0]",
+    "original": "隐藏式灯带",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "柔和自然日光",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.source[1]",
+    "original": "射灯",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "克制的间接光",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.source[2]",
+    "original": "艺术吊灯",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.contrast",
+    "original": "柔和渐变为主，局部重点照明",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "低对比空间背景，艺术层片保留细腻明暗与深度",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.interactionWithMaterials[0]",
+    "original": "光线透过半透明材料产生柔和光晕",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "日光穿透半透明层片形成清晰叠层、细腻散射与微弱反射",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.interactionWithMaterials[1]",
+    "original": "光线在金属表面形成细腻高光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.forbidden[0]",
+    "original": "直射强光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "紫色霓虹",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.forbidden[1]",
+    "original": "彩色霓虹灯",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "全空间紫色灯带",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.lightingLanguage.forbidden[2]",
+    "original": "频闪光源",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "连续发光描边代替建筑设计",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.primary[0].name",
+    "original": "Peacock Violet",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "暖白、乳白、浅暖灰",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.primary[0].role",
+    "original": "品牌识别，用于重点墙面、家具软装、导视系统。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "空间背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.secondary[0].name",
+    "original": "White/Light Grey",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.secondary[0].role",
+    "original": "背景色，提供洁净、专业的基调。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.accent[0].name",
+    "original": "Metallic (Gold/Silver)",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "品牌紫",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.accent[0].role",
+    "original": "点缀，提升精致感。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "少量局部材料内层虹彩及细部；不规定面积比例",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.forbidden[0]",
+    "original": "高饱和度暖色（红、橙）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "紫色共同主导墙、顶、窗帘与多类家具",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.colorBehavior.forbidden[1]",
+    "original": "杂乱的多色混搭",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.brandIntegration[0]",
+    "original": "前台背景墙：Logo与抽象羽毛造型结合",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "品牌标识以后期合成呈现，不授权模型绘制Logo或中文品牌字样",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.brandIntegration[1]",
+    "original": "导视系统：紫色字体+金属材质",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.brandIntegration[2]",
+    "original": "软装细节：抱枕、艺术品呼应品牌色和纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalRelationships[0]",
+    "original": "Public Reception Area transitions via controlled access corridors to Private VIP Consultation Rooms, ensuring acoustic privacy and exclusive service delivery.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "Reception and waiting share readable circulation; preserve the consultation privacy boundary while other room interiors remain off frame.",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalRelationships[1]",
+    "original": "Consultation Zones connect directly to Clinical Treatment Rooms through secure internal pathways, minimizing patient exposure in public view and maintaining hygiene standards.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalRelationships[2]",
+    "original": "Treatment Rooms lead to dedicated Rest Areas, providing a secluded environment for post-procedure recovery before exit.",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.sceneProgram[1]",
+    "original": "VIP咨询室",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "入口",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.sceneProgram[2]",
+    "original": "治疗室",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "候客区",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.sceneProgram[3]",
+    "original": "休息区",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.sceneProgram[4]",
+    "original": "走廊/过道",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalExperience[0]",
+    "original": "进入：被紫色光影和艺术装置吸引，感受品牌调性。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "进入时感受展馆留白与自然日光，候客设施自然退居次位",
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalExperience[1]",
+    "original": "等待：在舒适私密的环境中放松。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalExperience[2]",
+    "original": "治疗：在洁净专业的环境中建立信任。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "mediaTranslations.spatial.functionalExperience[3]",
+    "original": "离开：通过精致的包装和礼品强化记忆。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": false,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.primary[0].name",
+    "original": "Peacock Violet",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "暖白、乳白、浅暖灰",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.primary[0].role",
+    "original": "品牌识别，用于重点墙面、家具软装、导视系统。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "空间背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.secondary[0].name",
+    "original": "White/Light Grey",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.secondary[0].role",
+    "original": "背景色，提供洁净、专业的基调。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.accent[0].name",
+    "original": "Metallic (Gold/Silver)",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "品牌紫",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.accent[0].role",
+    "original": "点缀，提升精致感。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "少量局部材料内层虹彩及细部；不规定面积比例",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.forbidden[0]",
+    "original": "高饱和度暖色（红、橙）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "紫色共同主导墙、顶、窗帘与多类家具",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "colorSystem.forbidden[1]",
+    "original": "杂乱的多色混搭",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[0].material",
+    "original": "紫色半透明亚克力/玻璃",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "轻薄半透明珠光层片",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[0].behavior[0]",
+    "original": "透光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "自然光分层透射，可隔着层片读取空间背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[0].behavior[1]",
+    "original": "渐变",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "珠母贝般温和虹彩、边缘细腻高光与适度反射；紫只在局部内层微弱出现",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[0].behavior[2]",
+    "original": "光滑",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[0].brandRole",
+    "original": "模拟羽毛的轻盈和光泽，用于装饰或隔断。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "与建筑空间组织融合的主艺术系统；视觉效果目标，不声称工艺、厚度或固定方式已验证",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[0].forbidden[0]",
+    "original": "使用不透明的廉价塑料",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "厚重染色玻璃",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[1].material",
+    "original": "拉丝金属（不锈钢/铜）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "暖白、乳白、浅暖灰的低对比石质或微水泥背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[1].behavior[0]",
+    "original": "反射",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "低对比的柔和反射与连续留白",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": true
+  },
+  {
+    "sourcePath": "materialSystem[1].behavior[1]",
+    "original": "细腻纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[1].brandRole",
+    "original": "体现精致工艺和现代感，用于收口、标识或家具。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "安静建筑背景",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[1].forbidden[0]",
+    "original": "使用高光镜面（易留指纹，显廉价）",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[2].material",
+    "original": "白色/浅灰色石材",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[2].behavior[0]",
+    "original": "沉稳",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[2].behavior[1]",
+    "original": "自然纹理",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[2].brandRole",
+    "original": "提供纯净背景，平衡紫色的浓郁，体现科学性。",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "materialSystem[2].forbidden[0]",
+    "original": "使用深色或花纹复杂的石材",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.source[0]",
+    "original": "隐藏式灯带",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "柔和自然日光",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.source[1]",
+    "original": "射灯",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "克制的间接光",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.source[2]",
+    "original": "艺术吊灯",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.contrast",
+    "original": "柔和渐变为主，局部重点照明",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "低对比空间背景，艺术层片保留细腻明暗与深度",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.interactionWithMaterials[0]",
+    "original": "光线透过半透明材料产生柔和光晕",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "日光穿透半透明层片形成清晰叠层、细腻散射与微弱反射",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.interactionWithMaterials[1]",
+    "original": "光线在金属表面形成细腻高光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": null,
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.forbidden[0]",
+    "original": "直射强光",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "紫色霓虹",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.forbidden[1]",
+    "original": "彩色霓虹灯",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "全空间紫色灯带",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  },
+  {
+    "sourcePath": "lightingSystem.forbidden[2]",
+    "original": "频闪光源",
+    "sourceType": "historical_model_proposal",
+    "executionAuthority": "superseded_by_explicit_project_user_direction",
+    "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+    "replacement": "连续发光描边代替建筑设计",
+    "stillInHistoricalPrompt": true,
+    "stillInFinalPrompt": false
+  }
+]

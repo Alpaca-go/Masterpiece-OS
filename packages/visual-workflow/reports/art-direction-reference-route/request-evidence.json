@@ -1,0 +1,48 @@
+{
+  "generationBasis": "art_direction_reference",
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "snapshotSha256": "ce15c028f056ef5793056ed5271afda8f68d59c2388d76506d5ce09d35bb8187",
+  "confirmationSha256": "283b9d22f58cbd584c63d445352a11e19c0fbc9e27800c8d5be8b3234d908d57",
+  "compiledPromptSha256": "63fdcaa3d6f5ec98106fe7d6029231bb5f6a66b74fc7b4256bf0718739438604",
+  "providerPromptSha256": "74e7f6ee4b738719fa3c83e53bece7753dfaf4878b9199d792c9b210b7eee438",
+  "requestBodySha256": "39479690101f4c9b2550bf2f39c4b185f0d4897fce631ebeb5d53d2a165bc6bb",
+  "references": [
+    {
+      "index": 0,
+      "id": "286158ef-cb29-4563-8e49-ba026ea854e0",
+      "role": "approved_art_direction_reference",
+      "responsibility": "architectural_form",
+      "mimeType": "image/jpeg",
+      "sha256": "0325629fe9f82580c61241c72a7b2e22ff3b453de3c83c4adba209a155140070",
+      "requestField": "image[0]"
+    },
+    {
+      "index": 1,
+      "id": "bade105e-96a4-40d8-9200-cbd80c1a1753",
+      "role": "approved_art_direction_reference",
+      "responsibility": "spatial_integration",
+      "mimeType": "image/jpeg",
+      "sha256": "2565443f1dd0e7915c33c3a059dc403334a0076c2fa3c02e1e894a24d48efc77",
+      "requestField": "image[1]"
+    },
+    {
+      "index": 2,
+      "id": "3b256fe4-8764-469b-a6e0-188949ae0058",
+      "role": "approved_art_direction_reference",
+      "responsibility": "material_optics",
+      "mimeType": "image/jpeg",
+      "sha256": "dba974b9ca9051c5949a1ea34002c74c9b7d3c9729be367aeae7a6dc3a728a6e",
+      "requestField": "image[2]"
+    },
+    {
+      "index": 3,
+      "id": "bd5ec139-d61c-4ff8-9060-88673c17f4ff",
+      "role": "approved_art_direction_reference",
+      "responsibility": "spatial_atmosphere",
+      "mimeType": "image/png",
+      "sha256": "b7d472d98b6f1a45ccc570ee37c36dfb91fd7a499d0a76ad362401d06c8492cf",
+      "requestField": "image[3]"
+    }
+  ]
+}

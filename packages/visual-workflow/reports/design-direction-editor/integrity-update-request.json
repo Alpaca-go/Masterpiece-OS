@@ -1,0 +1,59 @@
+{
+  "status": "AWAITING_EXPLICIT_APPROVAL; NOT_APPLIED",
+  "reviewedBase": "81eaca1429608e2246cc6fe5d0133c3cdf1f46c7",
+  "recordedManifestSha256": "05f8cc1ab1f7a530d7483f617bbdaaf84d28cd17a21a4361be0e53d724ec40d4",
+  "expectedManifestSha256AfterUpdate": "ba37e4b8fa8dda6254bb9561baf80c2b8c8b65e41dec54b5e7ab519e8eaad764",
+  "beforeImplementationDigest": "2b6a2f92b47aff65eb242683a0e71e1a260244781e5f63a084eed687cbd9d89b",
+  "expectedImplementationDigestAfterUpdate": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81",
+  "scope": "Only replace the five listed hashes: three existing source and two existing frontend records. No additions, other hash changes, extraction, frozen Prompt, Golden or quality acceptance changes; no real models.",
+  "changes": [
+    {
+      "section": "files",
+      "path": "src/generation-runtime/space/compiler.js",
+      "recordedSha256": "3a34ccce007a53d5443d3b3c2806a235b06eaef3c6577268f68cef09931b635f",
+      "finalSha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8",
+      "operation": "replace_sha256"
+    },
+    {
+      "section": "files",
+      "path": "src/generation-runtime/space/source-adapter.js",
+      "recordedSha256": "f0224a080003e82d7731f8c2272ac337170728e8b23ce0fb581ea3b6fd21e3b4",
+      "finalSha256": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5",
+      "operation": "replace_sha256"
+    },
+    {
+      "section": "files",
+      "path": "src/project-design-direction.js",
+      "recordedSha256": "c6d8d459caa961683359593e7eecc7e3233c695e09fafc1018fa912f5f1f231b",
+      "finalSha256": "7143f177d69880eca6b3401fd75612433a13352ef4a7786cec99811cccc9edc0",
+      "operation": "replace_sha256"
+    },
+    {
+      "section": "frontendFiles",
+      "path": "apps/web/src/features/visual-workflow/api.ts",
+      "recordedSha256": "a29b25520dc858cfbdd9a8eed4a4f2ee1ba98921c08fad0a4a1a3b55f08bfb25",
+      "finalSha256": "564337052c7165e6c2f787b1187c46adab6cb3bd3acd7d0ac4b4082602f46ac7",
+      "operation": "replace_sha256"
+    },
+    {
+      "section": "frontendFiles",
+      "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+      "recordedSha256": "c9fccad49aec44884e401f6f49173c6d157fcda0518d92dccf1a64518a76ca7b",
+      "finalSha256": "f2fb7c09a217b992504dd8574e8cbce2c9a8b0cc2d5bdc499d2ae73dc653e799",
+      "operation": "replace_sha256"
+    }
+  ],
+  "protectedFiles": [
+    {
+      "path": "packages/visual-workflow/extraction-provenance.json",
+      "sha256": "0d099c783742b0f3ab1cf21fa935608d14d03e51b6ea1ea5fdbd74928aa7edd1",
+      "unchanged": true
+    },
+    {
+      "path": "config/repository-contract/prompt-integrity.json",
+      "sha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "unchanged": true
+    }
+  ],
+  "qualityAcceptance": "pending-separate-quality-repair"
+}

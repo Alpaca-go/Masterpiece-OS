@@ -1,0 +1,387 @@
+diff --git a/apps/web-runtime/tests/node-runtime-host.test.ts b/apps/web-runtime/tests/node-runtime-host.test.ts
+index 77f238f..f347a35 100644
+--- a/apps/web-runtime/tests/node-runtime-host.test.ts
++++ b/apps/web-runtime/tests/node-runtime-host.test.ts
+@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
+   return response.json() as Promise<{ result?: any; error?: string }>;
+ }
+ 
+-test('Node Runtime Host binds all 236 channels to the Shared Registry without Electron', async (t) => {
++test('Node Runtime Host binds shared and independently owned channels without Electron', async (t) => {
+   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
+   process.env.MASTERPIECE_USER_DATA_DIR = userData;
+   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
+@@ -31,9 +31,15 @@ test('Node Runtime Host binds all 236 channels to the Shared Registry without El
+     delete process.env.MASTERPIECE_WEB_OPEN_PATH;
+   });
+ 
+-  // Browser Reference Anchor intake adds one bounded upload channel after the
+-  // Creative Direction / Creative Research capability set.
+-  assert.equal(host.operationCount, 236);
++  // Preserve the shared/native channel count and verify the independently
++  // owned workflow registration separately.
++  const channels: string[] = host.registry.list();
++  const independentChannels = channels.filter(channel => channel.startsWith('visual-workflow:'));
++  assert.equal(channels.length - independentChannels.length, 236);
++  assert.equal(independentChannels.length, 20);
++  assert.equal(host.operationCount, 256);
++  assert.equal(new Set(channels).size, channels.length);
++  for (const channel of ['visual-workflow:select-logo','visual-workflow:analyze','visual-workflow:compile','visual-workflow:generate']) assert.ok(independentChannels.includes(channel));
+   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
+   assert.deepEqual(
+     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),
+diff --git a/packages/visual-workflow/implementation-integrity.json b/packages/visual-workflow/implementation-integrity.json
+index 5aee253..32e68e1 100644
+--- a/packages/visual-workflow/implementation-integrity.json
++++ b/packages/visual-workflow/implementation-integrity.json
+@@ -185,7 +185,7 @@
+     },
+     {
+       "path": "src/generation-runtime/generation/compile.js",
+-      "sha256": "9cb1685deb4ae854685352c866c68ab537f2e8c2f3d6da9e67c5d9210e69c2bd"
++      "sha256": "8506c1c956eb944de39ca0a4c7b675b806cfbb79e6aa0137bbe12d42b6569a7a"
+     },
+     {
+       "path": "src/generation-runtime/generation/deliverable-validator.js",
+@@ -241,11 +241,11 @@
+     },
+     {
+       "path": "src/generation-runtime/space/architecture-context.js",
+-      "sha256": "5c4c3323ea0000df89c0e314025c70900a37ce4fce7a6ca05c03a558b63e98a7"
++      "sha256": "0ccdf2c1af6c07c669c0aa3ca4270e7da03c553a84f28ea162f8df1273f1a690"
+     },
+     {
+       "path": "src/generation-runtime/space/compiler.js",
+-      "sha256": "a8e5b095b8e400a34ad1f44ba4b324fe7b755bd103b96db1db3663d0cb73e52a"
++      "sha256": "2c8b6d237de17c92eb01e9d26690dc008f7d86d6c2de5d8611aaa566e07eb448"
+     },
+     {
+       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
+@@ -325,15 +325,15 @@
+     },
+     {
+       "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
+-      "sha256": "25199f867c6bc0a413d74c626ba44217a5b029ad2b9e65a28987dd3b9095d517"
++      "sha256": "5a773b1403ab232d90be0c8d665bd2b5f119d17b05fee7a446b86fc485c0f78d"
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/action-verbs.js",
+-      "sha256": "0fdafdfd844897215b52f8f5f32ae8b5500ef179bc4ae001672742e3d1c59464"
++      "sha256": "ab0b19b888590ecf11ce64f01e7cceadd95bcdfcf8b022134b654832eb00a4e0"
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
+-      "sha256": "5a391a10e91027ba220a1bda5d4adb2dbe898f7b041b8d07ff4841f2ea5f1fc9"
++      "sha256": "7cf8be50d04f95af5706d6a37c89df3dafe77c8fabaedc395f90d9045684847c"
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/index.js",
+@@ -353,7 +353,7 @@
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/resolve-spatial-color-role.js",
+-      "sha256": "98ddefb40d1dcf0c0bb0c17e16a0d81508aa2cee107bad47f5dd7c6953080d7a"
++      "sha256": "21df86ed80eff6e657cb5e7c98a0eb2530e3bd3ce1ba556c51a6133d76fd7317"
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/rewrite-architecture-semantics.js",
+@@ -361,7 +361,7 @@
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+-      "sha256": "ea5baf7e09309f3f22d6522b9ab55a8fd8740e7da357f0137494dfce7e7f8bee"
++      "sha256": "61450e0af3d1ebb9d4315c9bf28a2fa2c96b530881607a4e9fade22e6efe3e90"
+     },
+     {
+       "path": "src/generation-runtime/space/semantic/separate-space-semantics.js",
+@@ -373,7 +373,7 @@
+     },
+     {
+       "path": "src/generation-runtime/space/source-adapter.js",
+-      "sha256": "ceb1695be0872cfae9bd706314f367ce396332a4ba32ad46e434fd2b9a3342c1"
++      "sha256": "cebd87a99432954d746a927a7cfbcdd1870c13710160610b0d156efbcba68d12"
+     },
+     {
+       "path": "src/generation-runtime/space/space-quality-gate.js",
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compiler.js b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+index 220d298..e0682d8 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/compiler.js
++++ b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+@@ -74,7 +74,7 @@ function renderSpatialIntent(layers) {
+   return block("spatial_intent", "Spatial Intent", body);
+ }
+ function renderArchitectureLanguage(layers) {
+-  const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text))];
++  const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText ?? entry.text).filter(Boolean))];
+   const body = [
+     "> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.",
+     "",
+@@ -103,7 +103,9 @@ function renderArchitectureFunctionBridge(layers) {
+     "Preserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.",
+     "",
+     "**Concept Drift Guards (must avoid)**:",
+-    bullet(b.conceptDriftGuards, "- (none)")
++    bullet(b.conceptDriftGuards, "- (none)"),
++    "", "**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:",
++    bullet(b.crossSceneConstraints, "- No additional cross-zone relationship is established by the supplied sources.")
+     ,"", "Off-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas."
+   ].join("\n");
+   return block("architecture_function_bridge", "Architecture-Function Bridge", body);
+diff --git a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+index 1c8e719..992f74e 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
++++ b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+@@ -18,9 +18,28 @@ function scopeSourceEntries(entries, targetScene) {
+   const known = allowed.some(scene => SCENE_SCOPE_TERMS[scene]);
+   return entries.map(entry => {
+     const scenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(entry.text)).map(([scene])=>scene);
+-    const foreign = scenes.filter(scene=>!allowed.includes(scene));
+-    return {...entry, sceneScope: !known ? "unresolved" : foreign.length ? "off_frame_dependency" : "current_shot", detectedScenes:scenes,
+-      evidenceClass:"system_inference", scopeReason:!known ? "unknown_target_scene" : foreign.length ? "other_program_or_cross_scene_relationship" : "source_compatible_with_shot"};
++    const localContext = scenes.some(scene=>allowed.includes(scene));
++    const relationalSource = /functionalRelationships|operationConstraints|humanExperience/iu.test(entry.sourcePath ?? "");
++    const relation = /connect|circulation|access|route|transition|guid|separat|screen|privacy|confidential|sightline|queue|handoff|buffer|isolat|cross|adjacen|next to|not\s+expose|动线|流线|通达|分流|衔接|连接|引导|分隔|遮挡|隐私|交叉|缓冲|转接|服务流程|人员通道|洁污|视线|隔离|邻接|毗邻|不得.*看到|不应.*看到/iu;
++    // Preserve original text and classify its clauses separately. A foreign
++    // interior description cannot acquire visibility through an adjacent
++    // reception constraint, nor can a boundary constraint disappear with it.
++    const clauses = String(entry.text).split(/[;；，,。]|\.(?=\s|$)/u).map(text=>text.trim()).filter(Boolean).map(text=> {
++      const clauseScenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(text)).map(([scene])=>scene);
++      const foreign = clauseScenes.some(scene=>!allowed.includes(scene));
++      const local = clauseScenes.some(scene=>allowed.includes(scene));
++      const foreignInterior = foreign && !local && /contain|equipped|furnish|配备|装有|内有|室内陈设/iu.test(text);
++      const sourceDeclaredRelation = relationalSource && (local || localContext);
++      const boundary = (foreign || !local && scenes.some(scene=>!allowed.includes(scene))) && !foreignInterior && (relation.test(text) || sourceDeclaredRelation) && (local || localContext || relationalSource);
++      return {text,sceneScope:!known ? "unresolved" : boundary ? "cross_scene_constraint" : foreign ? "off_frame_dependency" : "current_shot",
++        visibilityAuthority:boundary ? "current_boundary_only" : foreign ? "off_frame_interior" : "current_shot"};
++    });
++    const sceneScope = !known ? "unresolved" : clauses.some(clause=>clause.sceneScope === "cross_scene_constraint") ? "cross_scene_constraint" : clauses.some(clause=>clause.sceneScope === "current_shot") ? "current_shot" : "off_frame_dependency";
++    return {...entry,sceneScope,clauses,detectedScenes:scenes,
++      currentShotText:clauses.every(clause=>clause.sceneScope === "current_shot") ? entry.text : clauses.filter(clause=>clause.sceneScope === "current_shot").map(clause=>clause.text).join("; "),
++      boundaryConstraints:clauses.filter(clause=>clause.sceneScope === "cross_scene_constraint"),
++      offFrameEntities:clauses.filter(clause=>clause.sceneScope === "off_frame_dependency"),
++      evidenceClass:"system_inference",scopeReason:!known ? "unknown_target_scene" : sceneScope === "cross_scene_constraint" ? "operational_relation_without_foreign_interior_visibility" : sceneScope === "off_frame_dependency" ? "foreign_scene_entity" : "source_compatible_with_shot"};
+   });
+ }
+ const TARGET_SCENE_PROJECTION_VERSION = "space-target-scene-projection@1.1.0";
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index 3c0f433..c6be63a 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -383,10 +383,18 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+   decisionTrace.architectureDecisions = standardShot ? scopeSourceEntries(architectureEntries,taskContract.subtype) : architectureEntries;
+   if (standardShot) {
+     decisionTrace.sceneScope = [];
++    decisionTrace.crossSceneConstraints = [];
++    const collectBoundaryConstraints = records => {
++      for (const entry of records) for (const clause of entry.boundaryConstraints ?? []) {
++        if (!decisionTrace.crossSceneConstraints.some(item=>item.text===clause.text)) decisionTrace.crossSceneConstraints.push({...clause,sourcePath:entry.sourcePath,sourceText:entry.text,evidenceClass:"system_inference"});
++      }
++    };
++    collectBoundaryConstraints([...decisionTrace.architectureDecisions,...scopedArt]);
+     const projectList = (items,sourcePath) => {
+       const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
+       decisionTrace.sceneScope.push(...records);
+-      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text);
++      collectBoundaryConstraints(records);
++      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText).filter(Boolean);
+     };
+     functionalRaw = {
+       sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
+@@ -398,6 +406,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
+     const functionalItems = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
+     projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text=>!functionalItems.has(text) || artSeen.has(text));
++    bridgeLayers.crossSceneConstraints = decisionTrace.crossSceneConstraints.map(entry=>entry.text);
+     targetSceneProjection = {...targetSceneProjection, functionalBlockSource:"source_shot_scope",architectureBridgeSource:"source_shot_scope",operationConstraintsSource:"source_shot_scope"};
+   }
+   decisionTrace.canonicalOwners = [
+diff --git a/packages/visual-workflow/tests/spatial-quality.test.ts b/packages/visual-workflow/tests/spatial-quality.test.ts
+index 56991ba..c179e2e 100644
+--- a/packages/visual-workflow/tests/spatial-quality.test.ts
++++ b/packages/visual-workflow/tests/spatial-quality.test.ts
+@@ -77,10 +77,16 @@ test('explicit material installation survives in brand layer, outside the functi
+   assert.ok(!request.body.image);
+ });
+ 
+-test('installation preservation retains identity and gradient guards', () => {
++test('installation preservation retains identity protection without inventing gradient area authority', () => {
+   assert.deepEqual(sanitizeBrandManifestation(['带 Logo 的艺术装置']).lines, []);
+   const result = sanitizeBrandManifestation(['白到紫色渐变的艺术装置']);
+-  assert.equal(result.records[0].reason, 'color_demoted_to_accent');
++  assert.equal(result.records[0].disposition, 'kept');
++  assert.deepEqual(result.lines, ['白到紫色渐变的艺术装置']);
++  const packet = structuredAnalysisPacketFixture();
++  packet.colorSystem.primary = [{name:'Saturated example',role:'background',ratio:80} as any];
++  const compiled = compileSpacePrompt({packet,taskContract:{generationBasis:'standard',aspectRatio:'16:9'},projectContext:{}});
++  assert.equal(compiled.trace.decisionTrace.color[0].executionAuthority,'proposal_only');
++  assert.match(compiled.blocksById.color.text,/Do not execute an unconfirmed dominant field or area allocation/);
+ });
+ 
+ test('ordinary hospitality space needs no art object and packaging is unaffected', () => {
+diff --git a/tests/runtime-application/visual-workflow-isolation.test.ts b/tests/runtime-application/visual-workflow-isolation.test.ts
+index 149067d..3a6db99 100644
+--- a/tests/runtime-application/visual-workflow-isolation.test.ts
++++ b/tests/runtime-application/visual-workflow-isolation.test.ts
+@@ -102,7 +102,7 @@ test('completed analysis supplies migrated Logo roles without overriding a new i
+   assert.equal(selected.assets.find((asset:any)=>asset.role==='logo').id,'new-logo');
+ });
+ 
+-test('owned standard compilation ignores global mode flags and preserves extracted prompt/payload bytes', async t => {
++test('owned standard compilation ignores global mode flags and preserves independent payload contracts', async t => {
+   const {service} = await fixture(t);
+   const registry = JSON.parse(await fs.readFile(new URL('../../packages/visual-workflow/src/assets/architecture-anchors/registry.json',import.meta.url),'utf8'));
+   const registered = Object.values(registry.brands)[0] as any;
+@@ -118,11 +118,18 @@ test('owned standard compilation ignores global mode flags and preserves extract
+   t.after(() => { if (saved === undefined) delete process.env.MASTERPIECE_SPACE_COMPILER_MODE; else process.env.MASTERPIECE_SPACE_COMPILER_MODE=saved; });
+   process.env.MASTERPIECE_SPACE_COMPILER_MODE='r8_6_golden';
+   const upstream = sharedCompile({projectContext:context,task});
++  const ownedUnderProductionFlag = isolatedCompile({projectContext:context,task});
+   process.env.MASTERPIECE_SPACE_COMPILER_MODE='vnext_legacy';
+   assert.equal(resolveSpaceCompilerMode(),'r8_6_golden');
+   const owned = isolatedCompile({projectContext:context,task});
+-  assert.equal(owned.compiledPrompt.finalPrompt,upstream.compiledPrompt.finalPrompt);
+-  assert.deepEqual(owned.payload,upstream.payload);
++  assert.equal(owned.compiledPrompt.finalPrompt,ownedUnderProductionFlag.compiledPrompt.finalPrompt);
++  assert.deepEqual(owned.payload,ownedUnderProductionFlag.payload);
++  assert.notEqual(owned.compiledPrompt.finalPrompt,upstream.compiledPrompt.finalPrompt);
++  assert.equal(owned.payload.referenceBoundary.promptCharacters,[...owned.compiledPrompt.finalPrompt].length);
++  assert.deepEqual({...owned.payload,prompt:upstream.payload.prompt,
++    referenceBoundary:{...owned.payload.referenceBoundary,promptCharacters:upstream.payload.referenceBoundary.promptCharacters}},upstream.payload);
++  assert.ok(owned.payload.prompt.endsWith(owned.compiledPrompt.finalPrompt));
++  assert.equal(owned.payload.image,undefined);
+ });
+ 
+ test('offline E2E: owned import, analysis, report and image request complete without shared settings or real providers', async t => {
+diff --git a/packages/visual-workflow/tests/cross-zone-operation-scope.test.ts b/packages/visual-workflow/tests/cross-zone-operation-scope.test.ts
+new file mode 100644
+--- /dev/null
++++ b/packages/visual-workflow/tests/cross-zone-operation-scope.test.ts
+@@ -0,0 +1,65 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {scopeSourceEntries} from '../src/generation-runtime/space/scene-projection/target-scene-projection.js';
++import {compileSpacePrompt} from '../src/generation-runtime/space/compiler.js';
++import {structuredAnalysisPacketFixture} from '../../../tests/runtime-application/analysis-runtime-fixtures.ts';
++
++for (const text of [
++  'Reception circulation connects to treatment through a screened access route',
++  'Reception waiting must not expose consultation conversations',
++  'Recovery return traffic must avoid the reception queue',
++  'Reception is adjacent to consultation with an acoustic privacy boundary',
++  '接待区到治疗区的患者动线与员工通道分离',
++  '接待区与治疗区之间应保持隔声边界',
++  '咨询区入口不得从接待座位直接看到，保护隐私',
++  '恢复区返回人流不得与接待候客队列交叉'
++]) test(`cross-zone relationship remains a current boundary constraint: ${text}`,()=>{
++  const [entry]=scopeSourceEntries([{text,sourcePath:'mediaTranslations.spatial.functionalRelationships[0]'}],'reception');
++  assert.equal(entry.sceneScope,'cross_scene_constraint');
++  assert.equal(entry.text,text);
++  assert.ok(entry.boundaryConstraints.length);
++  assert.ok(entry.boundaryConstraints.every((clause:any)=>clause.visibilityAuthority==='current_boundary_only'));
++  assert.equal(entry.currentShotText,'');
++});
++
++for (const text of ['Treatment room contains procedure beds','Consultation room furniture and display walls','Recovery room equipped with lounge beds','治疗室内有诊疗设备']) test(`foreign interior remains off frame: ${text}`,()=>{
++  const [entry]=scopeSourceEntries([{text,sourcePath:'mediaTranslations.spatial.mustBeVisible[0]'}],'reception');
++  assert.equal(entry.sceneScope,'off_frame_dependency');
++  assert.equal(entry.boundaryConstraints.length,0);
++  assert.equal(entry.currentShotText,'');
++});
++
++test('mixed clauses preserve the local operational relation without granting interior visibility',()=>{
++  const text='Treatment room contains procedure beds; reception access to treatment protects privacy; Reception waiting seats remain accessible';
++  const [entry]=scopeSourceEntries([{text,sourcePath:'mediaTranslations.spatial.functionalRelationships[2]'}],'reception');
++  assert.equal(entry.text,text);
++  assert.equal(entry.currentShotText,'Reception waiting seats remain accessible');
++  assert.deepEqual(entry.boundaryConstraints.map((clause:any)=>clause.text),['reception access to treatment protects privacy']);
++  assert.deepEqual(entry.offFrameEntities.map((clause:any)=>clause.text),['Treatment room contains procedure beds']);
++});
++
++test('a foreign-only privacy statement is retained only in an operational source context',()=>{
++  const text='Protect consultation privacy at the access boundary';
++  assert.equal(scopeSourceEntries([{text,sourcePath:'mediaTranslations.spatial.functionalRelationships[0]'}],'reception')[0].sceneScope,'cross_scene_constraint');
++  assert.equal(scopeSourceEntries([{text,sourcePath:'mediaTranslations.spatial.mustBeVisible[0]'}],'reception')[0].sceneScope,'off_frame_dependency');
++});
++
++test('formal compiler retains legitimate relationships once without exposing foreign interiors or mutating input',()=>{
++  const packet=structuredAnalysisPacketFixture();
++  const relation='Reception access to treatment must protect patient privacy';
++  const consultation='Reception circulation connects to consultation through an acoustic boundary';
++  packet.mediaTranslations.spatial.functionalRelationships=[relation,consultation];
++  packet.mediaTranslations.spatial.sceneProgram=['Reception waiting','Treatment room contains procedure beds'];
++  packet.mediaTranslations.spatial.functionalNetwork=['Reception arrival','Treatment room contains procedure beds'];
++  const before=JSON.stringify(packet);
++  const compiled=compileSpacePrompt({packet,projectContext:{},taskContract:{generationBasis:'standard',subtype:'reception',aspectRatio:'16:9'}});
++  for(const text of [relation,consultation]) {
++    assert.match(compiled.blocksById.architecture_function_bridge.text,new RegExp(text));
++    assert.equal(compiled.finalPrompt.split(text).length-1,1);
++    assert.ok(compiled.trace.decisionTrace.crossSceneConstraints.some((entry:any)=>entry.text===text && entry.sourcePath.includes('operationConstraints')));
++  }
++  assert.match(compiled.blocksById.architecture_function_bridge.text,/current-shot boundary only; other interiors remain off frame/);
++  for(const id of ['functional_requirement','composition','architecture_language']) assert.doesNotMatch(compiled.blocksById[id].text,/procedure beds|Reception access to treatment must/);
++  assert.ok(compiled.trace.decisionTrace.sceneScope.some((entry:any)=>entry.offFrameEntities.some((clause:any)=>clause.text.includes('procedure beds'))));
++  assert.equal(JSON.stringify(packet),before);
++});
+diff --git a/packages/visual-workflow/tests/audit-compiler-integrity.mjs b/packages/visual-workflow/tests/audit-compiler-integrity.mjs
+new file mode 100644
+--- /dev/null
++++ b/packages/visual-workflow/tests/audit-compiler-integrity.mjs
+@@ -0,0 +1,58 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import assert from 'node:assert/strict';
++import {fileURLToPath} from 'node:url';
++import {execFileSync} from 'node:child_process';
++
++// Explicit review tool, outside production. Never updates acceptance or Golden.
++const root=fileURLToPath(new URL('../',import.meta.url));
++const repo=path.resolve(root,'../..');
++const manifestPath=path.join(root,'implementation-integrity.json');
++const reviewPath=path.join(root,'reports/compiler-integrity-review.json');
++const sha=value=>crypto.createHash('sha256').update(value).digest('hex');
++const allowed=[
++  'src/generation-runtime/generation/compile.js',
++  'src/generation-runtime/space/architecture-context.js',
++  'src/generation-runtime/space/compiler.js',
++  'src/generation-runtime/space/scene-projection/target-scene-projection.js',
++  'src/generation-runtime/space/semantic/action-verbs.js',
++  'src/generation-runtime/space/semantic/compile-spatial-mechanisms.js',
++  'src/generation-runtime/space/semantic/resolve-spatial-color-role.js',
++  'src/generation-runtime/space/semantic/sanitize-brand-expression.js',
++  'src/generation-runtime/space/source-adapter.js'
++];
++const bytes=fs.readFileSync(manifestPath);
++const manifest=JSON.parse(bytes);
++const candidate=structuredClone(manifest);
++const rows=[];
++for(const item of candidate.files) {
++  const actual=sha(fs.readFileSync(path.join(root,item.path)));
++  if(allowed.includes(item.path)) {
++    rows.push({path:item.path,oldSha256:item.sha256,candidateSha256:actual,
++      reviewedCommitSha256:sha(execFileSync('git',['show',`3ea00af:packages/visual-workflow/${item.path}`],{cwd:repo}))});
++    item.sha256=actual;
++  } else assert.equal(actual,item.sha256,`Unreviewed implementation drift: ${item.path}`);
++}
++assert.equal(rows.length,allowed.length);
++for(const item of manifest.frontendFiles ?? []) assert.equal(sha(fs.readFileSync(path.join(repo,item.path))),item.sha256,`Frontend drift: ${item.path}`);
++const changed=execFileSync('git',['diff','3b7ed4d','--name-only','--','packages/visual-workflow/src'],{cwd:repo,encoding:'utf8'}).trim().split('\n').map(p=>p.replace('packages/visual-workflow/','')).sort();
++assert.deepEqual(changed,[...allowed].sort());
++const {files:oldFiles,...oldMetadata}=manifest;
++const {files:candidateFiles,...candidateMetadata}=candidate;
++assert.deepEqual(candidateMetadata,oldMetadata);
++const review={baselineCommit:'3b7ed4d',reviewedCommit:'3ea00af',sourceScopeVerified:true,
++  nonCandidateEntriesVerified:manifest.files.length-rows.length,frontendEntriesVerified:manifest.frontendFiles?.length ?? 0,
++  oldManifestSha256:sha(bytes),oldImplementationDigest:sha(JSON.stringify(oldFiles)),
++  candidateImplementationDigest:sha(JSON.stringify(candidateFiles)),qualityAcceptanceUnchanged:manifest.qualityAcceptance,
++  entries:rows,applied:false};
++if(process.argv.includes('apply-reviewed')) {
++  const saved=JSON.parse(fs.readFileSync(reviewPath));
++  assert.equal(saved.oldManifestSha256,review.oldManifestSha256);
++  assert.deepEqual(saved.entries,review.entries);
++  fs.writeFileSync(manifestPath,JSON.stringify(candidate,null,2)+'\n');
++  review.applied=true;
++  review.updatedManifestSha256=sha(fs.readFileSync(manifestPath));
++}
++fs.writeFileSync(reviewPath,JSON.stringify(review,null,2)+'\n');
++console.log(JSON.stringify(review,null,2));

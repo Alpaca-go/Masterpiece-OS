@@ -4,8 +4,13 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { createMultiModelImageAdapter } from './image-adapter/multi-model.js';
 import { assertId, inside, readJson, writeJson } from './configuration.js';
+import { createArtDirectionStore } from './art-direction-store.js';
+import { assertArtDirectionModel, digest, ART_DIRECTION_SOURCE } from './art-direction-contract.js';
+import { createProjectDesignDirectionStore } from './project-design-direction.js';
 
 export function createImageService(root, projects, configuration, emit, fetchImpl = fetch) {
+  const artDirectionStore = createArtDirectionStore(projects);
+  const designDirectionStore = createProjectDesignDirectionStore(projects);
   const controllers = new Map();
   const runRoot = async id => path.join(root, 'runs', assertId(id));
   async function getRun(id) {
@@ -21,19 +26,49 @@ export function createImageService(root, projects, configuration, emit, fetchImp
   }
   async function startCompiledCreativeTask(input) {
     await projects.get(input.projectId);
-    if (input.references?.length || input.snapshot?.taskContract?.generationBasis !== 'standard') throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+    const task = input.snapshot?.taskContract;
+    const art = task?.generationBasis === 'art_direction_reference';
+    if (!art && (input.references?.length || task?.generationBasis !== 'standard')) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+    if (!art && task?.deliverableFamily === 'space') {
+      await designDirectionStore.resolve(input.projectId,input.snapshot?.designDirection || null);
+      if (input.snapshot?.designDirection) {
+        const compiled = await readJson(inside((await projects.paths(input.projectId)).root,`image-generation-vnext/compilations/${task.taskId}/compiled-prompt.json`));
+        if (compiled.finalPrompt !== input.compiledPrompt || digest(input.compiledPrompt)!==input.snapshot.compiledPromptSha256 || JSON.stringify(compiled.taskContract)!==JSON.stringify(task)) throw new Error('PROJECT_DESIGN_DIRECTION_COMPILATION_STALE');
+      }
+    }
     const settings = await configuration.get();
     const credential = await configuration.readCredentials(input.apiProfileId || settings.imageProfileId);
     if (credential.modelType !== 'image_generation') throw new Error('请选择独立生图模型');
     const adapterId = ({'seedream-image': 'seedream-5.0-pro', 'openai-image-generation': 'gpt-image-2', 'google-gemini-image': 'nano-banana'})[credential.protocol];
     if (!adapterId) throw new Error('当前独立生图配置协议不受支持');
+    let artCapture = null;
+    if (art) {
+      assertArtDirectionModel(credential.model,credential.protocol);
+      if (task.projectId !== input.projectId || task.deliverableFamily !== 'space' || !task.taskId || path.basename(task.taskId) !== task.taskId || task.taskId.includes('..')) throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
+      artCapture = await artDirectionStore.resolve(task.artDirection,input.projectId,credential.model);
+      const compiled = await readJson(inside((await projects.paths(input.projectId)).root,`image-generation-vnext/compilations/${task.taskId}/compiled-prompt.json`));
+      if (JSON.stringify(compiled.taskContract) !== JSON.stringify(task) || compiled.finalPrompt !== input.compiledPrompt || input.snapshot.compiledPromptSha256 !== digest(input.compiledPrompt) || compiled.trace.spaceGeneration.promptHash !== digest(input.compiledPrompt) || compiled.preflightReport.status !== 'pass' || compiled.trace.spaceGeneration.routeIntegrity.status !== 'pass') throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
+      if (!Array.isArray(input.references) || input.references.length !== artCapture.references.length || input.references.some((ref,index) => {
+        const expected = artCapture.references[index];
+        return ref.id !== expected.id || ref.sha256 !== expected.sha256 || ref.role !== expected.role || ref.projectId !== input.projectId || ref.mimeType !== expected.mimeType || ref.projectRelativePath !== expected.relativePath || ref.source !== ART_DIRECTION_SOURCE;
+      })) throw new Error('ART_DIRECTION_REQUEST_REFERENCES_CHANGED');
+    }
     const adapter = createMultiModelImageAdapter({ adapterId, modelId: credential.model, apiKey: credential.apiKey, baseUrl: credential.baseUrl });
     const runId = crypto.randomUUID();
     const directory = await runRoot(runId);
     const now = new Date().toISOString();
     let run = { runId, projectId: input.projectId, workflowOwner: 'visual-workflow', status: 'ready', images: [], createdAt: now, updatedAt: now, modelId: credential.model, provider: credential.provider, apiProfileId: credential.profileId, errorCode: null, errorMessage: null };
-    const universalInput = { prompt: input.compiledPrompt, negativeRules: [], aspectRatio: input.snapshot.taskContract.aspectRatio, imageSize: '2K', outputCount: 1, references: [] };
-    adapter.compileRequest(universalInput);
+    const universalInput = { prompt: input.compiledPrompt, negativeRules: [], aspectRatio: input.snapshot.taskContract.aspectRatio, imageSize: '2K', outputCount: 1, references: art ? artCapture.references : [] };
+    const providerRequest = adapter.compileRequest(universalInput);
+    let requestEvidence = null;
+    if (art) {
+      if (providerRequest.body.image?.length !== artCapture.references.length) throw new Error('ART_DIRECTION_REQUEST_IMAGES_MISSING');
+      requestEvidence = {generationBasis:task.generationBasis,projectId:input.projectId,model:credential.model,snapshotSha256:task.artDirection.snapshotSha256,confirmationSha256:task.artDirection.confirmationSha256,compiledPromptSha256:digest(input.compiledPrompt),providerPromptSha256:digest(providerRequest.body.prompt),requestBodySha256:digest(providerRequest.body),references:artCapture.references.map((ref,index) => {
+        const image = providerRequest.body.image[index];
+        if (image !== `data:${ref.mimeType};base64,${ref.data}` || digest(Buffer.from(image.split(',')[1],'base64')) !== ref.sha256) throw new Error('ART_DIRECTION_REQUEST_BYTES_CHANGED');
+        return {index,id:ref.id,role:ref.role,responsibility:ref.responsibility,mimeType:ref.mimeType,sha256:ref.sha256,requestField:`image[${index}]`};
+      })};
+    }
     await fs.mkdir(directory, { recursive: true });
     await writeJson(path.join(directory, 'source-context-snapshot.json'), input.snapshot);
     await fs.writeFile(path.join(directory, 'compiled-prompt.txt'), input.compiledPrompt, 'utf8');
@@ -42,8 +77,11 @@ export function createImageService(root, projects, configuration, emit, fetchImp
       provider:credential.provider, model:credential.model, baseUrl:credential.baseUrl,
       aspectRatio:universalInput.aspectRatio, imageSize:universalInput.imageSize,
       promptSha256:crypto.createHash('sha256').update(input.compiledPrompt).digest('hex'),
-      promptVersion:input.promptVersion, outputCount:1, referenceCount:0,
+      promptVersion:input.promptVersion, outputCount:1, referenceCount:universalInput.references.length,
+      ...art ? {artDirection:requestEvidence} : {},
+      ...input.snapshot?.designDirection ? {designDirection:input.snapshot.designDirection} : {},
     });
+    if (art) await writeJson(path.join(directory,'art-direction-request-evidence.json'),requestEvidence);
     await save(run);
     if (input.dryRun) return run;
     const controller = new AbortController();

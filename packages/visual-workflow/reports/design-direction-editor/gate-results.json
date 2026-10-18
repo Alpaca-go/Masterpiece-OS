@@ -1,0 +1,147 @@
+{
+  "status": "PASS",
+  "providerCalls": 0,
+  "tests": [
+    {
+      "name": "owned-tests",
+      "exitCode": 0,
+      "seconds": 12.347
+    },
+    {
+      "name": "repo-verify",
+      "exitCode": 0,
+      "seconds": 40.905
+    },
+    {
+      "name": "repo-check",
+      "exitCode": 0,
+      "seconds": 79.771
+    },
+    {
+      "name": "current-flows",
+      "exitCode": 0,
+      "seconds": 19.38
+    },
+    {
+      "name": "root-tests",
+      "exitCode": 0,
+      "seconds": 18.122
+    },
+    {
+      "name": "cli-tests",
+      "exitCode": 0,
+      "seconds": 1.105
+    },
+    {
+      "name": "runtime-tests",
+      "exitCode": 0,
+      "seconds": 18.118
+    },
+    {
+      "name": "host-tests",
+      "exitCode": 0,
+      "seconds": 2.508
+    },
+    {
+      "name": "host-typecheck",
+      "exitCode": 0,
+      "seconds": 1.323
+    },
+    {
+      "name": "web-build",
+      "exitCode": 0,
+      "seconds": 2.939
+    },
+    {
+      "name": "web-smoke",
+      "exitCode": 0,
+      "seconds": 9.847
+    },
+    {
+      "name": "golden-tests",
+      "exitCode": 0,
+      "seconds": 0.663
+    },
+    {
+      "name": "space-golden",
+      "exitCode": 0,
+      "seconds": 0.42
+    },
+    {
+      "name": "guard-tests",
+      "exitCode": 0,
+      "seconds": 1.949
+    },
+    {
+      "name": "version-consistency",
+      "exitCode": 0,
+      "seconds": 0.721
+    },
+    {
+      "name": "version-naming",
+      "exitCode": 0,
+      "seconds": 0.534
+    },
+    {
+      "name": "workspace-boundaries",
+      "exitCode": 0,
+      "seconds": 0.623
+    },
+    {
+      "name": "obsolete",
+      "exitCode": 0,
+      "seconds": 0.6
+    },
+    {
+      "name": "production-boundaries",
+      "exitCode": 0,
+      "seconds": 0.52
+    },
+    {
+      "name": "tracked-assets",
+      "exitCode": 0,
+      "seconds": 1.41
+    },
+    {
+      "name": "project-specific",
+      "exitCode": 0,
+      "seconds": 0.692
+    },
+    {
+      "name": "golden-boundary",
+      "exitCode": 0,
+      "seconds": 0.56
+    },
+    {
+      "name": "analysis-guards",
+      "exitCode": 0,
+      "seconds": 3.522
+    },
+    {
+      "name": "diff-check",
+      "exitCode": 0,
+      "seconds": 0.041
+    }
+  ],
+  "ownedTests": {
+    "total": 100,
+    "passed": 100
+  },
+  "rootTests": {
+    "total": 1701,
+    "passed": 1701
+  },
+  "runtimeApplication": {
+    "total": 1294,
+    "passed": 1294
+  },
+  "featureBrowserE2E": "PASS",
+  "fieldFidelityRows": 34,
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81"
+  },
+  "logs": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\design-direction-editor\\completed-checks"
+}

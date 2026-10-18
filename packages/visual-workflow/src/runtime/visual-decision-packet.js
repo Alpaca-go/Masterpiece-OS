@@ -106,7 +106,7 @@ function spatialTranslation(value) {
   const lightingLanguage = lightingBehavior(candidate.lightingLanguage);
   const colors = colorBehavior(candidate.colorBehavior);
   const ready = Boolean(
-    spatialConcept && structureLanguage.length && materialLanguage.length && lightingLanguage.source.length && strings(candidate.sceneProgram).length && [...colors.primary, ...colors.secondary, ...colors.accent].length
+    spatialConcept && structureLanguage.length && materialLanguage.length && lightingLanguage.source.length && strings(candidate.sceneProgram).length && strings(candidate.signatureSpatialMechanism).length && strings(candidate.functionalNetwork).length && strings(candidate.functionalRelationships).length && [...colors.primary, ...colors.secondary, ...colors.accent].length
   );
   return {
     status: ready ? "ready" : "insufficient",
@@ -164,6 +164,9 @@ function missingExecutionFields(packet) {
   if (!spatial.materialLanguage.length) missing.push("mediaTranslations.spatial.materialLanguage");
   if (!spatial.lightingLanguage.source.length) missing.push("mediaTranslations.spatial.lightingLanguage");
   if (!spatial.sceneProgram.length) missing.push("mediaTranslations.spatial.sceneProgram");
+  for (const field of ["signatureSpatialMechanism", "functionalNetwork", "functionalRelationships"]) {
+    if (!strings(spatial[field]).length) missing.push(`mediaTranslations.spatial.${field}`);
+  }
   if (![...spatial.colorBehavior.primary, ...spatial.colorBehavior.secondary, ...spatial.colorBehavior.accent].length) {
     missing.push("mediaTranslations.spatial.colorBehavior");
   }

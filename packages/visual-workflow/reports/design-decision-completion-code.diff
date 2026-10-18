@@ -1,0 +1,598 @@
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/compile.js b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+index 6d89c7b..215b486 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/compile.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+@@ -7,7 +7,6 @@ import {
+   assertSpaceGenerationRouteIntegrity,
+   compileSpacePrompt,
+   createSpaceContinuationContract,
+-  resolveArchitectureAnchorBrandKey,
+   runSpaceQualityGate,
+   validateSpaceGenerationModeSemantics,
+   validateSpatialSemantics
+@@ -115,7 +114,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+     packet,
+     taskContract,
+     projectContext: input.projectContext,
+-    brandKey: input.brandKey || input.projectContext?.brandKey || resolveArchitectureAnchorBrandKey(packet.projectFacts?.brandName?.value) || null,
++    brandKey: input.brandKey || null,
+     anchorCriteria: input.anchorCriteria,
+     adapter,
+     referencePolicy: { mode: compilerMode }
+@@ -184,7 +183,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+       sourceAdapterVersion: result.sourceAdapterVersion,
+       anchorIds: result.anchors.map((a) => a.id),
+       referenceImages: result.referenceImages,
+-      architectureContextIncluded: result.blockIds.includes("architecture_context"),
++      architectureContextIncluded: result.anchors.length > 0,
+       budget: {
+         chars: budget.chars,
+         positiveRatio: budget.positiveRatio,
+@@ -204,6 +203,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+       compileDurationMs: Number((performance.now() - started).toFixed(3)),
+       phase9b: true,
+       anchorIds: result.trace.anchorIds,
++      decisionTrace: result.layers.decisionTrace,
+       // R9 §20 trace schema: every space run records a structured
+       // spaceGeneration block for image-level regression tracing.
+       spaceGeneration: {
+diff --git a/packages/visual-workflow/src/generation-runtime/space/architecture-context.js b/packages/visual-workflow/src/generation-runtime/space/architecture-context.js
+index 9a045cb..52df237 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/architecture-context.js
++++ b/packages/visual-workflow/src/generation-runtime/space/architecture-context.js
+@@ -88,6 +88,14 @@ function selectArchitectureAnchors(brandKey, criteria = {}, maxCount) {
+   if (anchors.length === 0) return [];
+   const scored = [];
+   for (const anchor of anchors) {
++    const applicability = anchor.applicability ?? {};
++    // Optional examples must match the requested scene, not merely industry.
++    if (!criteria.sceneType || !applicability.sceneTypes?.includes(criteria.sceneType)) continue;
++    if (criteria.selectedAnchorIds && !criteria.selectedAnchorIds.includes(anchor.id)) continue;
++    const evidence = (criteria.mechanismEvidence ?? []).join(" ");
++    const mechanism = [anchor.primaryMechanism, anchor.secondaryMechanism].filter(Boolean).join(" ");
++    const features = [/curv|曲线|弧形|曲面/iu, /layer|层叠|多层/iu, /translucen|transparent|半透明|透光/iu, /membrane|膜/iu, /radial|radiat|放射/iu, /wood|木/iu, /metal|金属/iu];
++    if (!evidence.trim() || features.some(pattern => pattern.test(mechanism) && !pattern.test(evidence))) continue;
+     const breakdown = scoreAnchor(anchor, criteria, weights);
+     let hasAnyMatch = breakdown.industry > 0 || breakdown.sceneType > 0 || breakdown.commercialContext > 0;
+     let score = breakdown.total;
+@@ -117,8 +125,8 @@ function renderArchitectureContextBlock(anchors) {
+   const lines = [
+     "# Architecture Context (in-context reference)",
+     "",
+-    "> Building-mechanism prior: the following are architecture-language samples accepted for this brand.",
+-    "> Use them as a mechanism PRIOR, not as a literal object to copy.",
++    "> Optional architecture examples considered through an explicit request; these are not project facts or approved design decisions.",
++    "> User-confirmed intent, source evidence, artistic hierarchy and operational requirements take priority.",
+     ""
+   ];
+   anchors.forEach((a, i) => {
+@@ -130,8 +138,7 @@ function renderArchitectureContextBlock(anchors) {
+   });
+   lines.push("## Usage in this prompt");
+   lines.push("");
+-  lines.push("Treat the anchor mechanisms as a prior, placed before the architectural concept.");
+-  lines.push("The spatial concept must be consistent with these mechanisms, never conflicting.");
++  lines.push("Use a compatible example only as subordinate support. Discard conflicting example details; never override project intent or color scope.");
+   lines.push("Do not reproduce literal concrete objects (specific ceiling curves, glass grids, membrane shapes).");
+   return lines.join("\n");
+ }
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compiler.js b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+index cb1204a..220d298 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/compiler.js
++++ b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+@@ -69,36 +69,29 @@ function renderSpatialIntent(layers) {
+     "",
+     `**Experience Goal**: ${si.experienceGoal}`,
+     "",
+-    "**Spatial Strategy**:",
+-    bullet(si.spatialStrategy)
++    "**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language."
+   ].join("\n");
+   return block("spatial_intent", "Spatial Intent", body);
+ }
+ function renderArchitectureLanguage(layers) {
+-  const al = layers.architectureLanguage;
++  const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text))];
+   const body = [
+-    "> Building language: how space is organized before brand is applied.",
++    "> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.",
+     "",
+-    "**Spatial Principles**:",
+-    bullet(al.spatialPrinciples),
+-    "",
+-    "**Architectural Characteristics**:",
+-    bullet(al.architecturalCharacteristics),
+-    "",
+-    "**Spatial Organization (functional network + program)**:",
+-    bullet(al.spatialOrganization)
++    "**Source-scoped architectural decisions (each stated once)**:",
++    bullet(decisions)
+   ].join("\n");
+   return block("architecture_language", "Architecture Language", body);
+ }
+ function renderArchitectureFunctionBridge(layers) {
+   const b = layers.architectureFunctionBridge;
+   const body = [
+-    "> Building language serves commercial reality. Translate architecture into functional action (Phase 8B.1).",
++    "> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.",
+     "",
+     `**Commercial Purpose**: ${b.commercialPurpose}`,
+     "",
+     "**Spatial Translation (architecture \u2192 commercial action)**:",
+-    bullet(b.spatialTranslation),
++    "Current-shot nodes and relationships are stated in Functional & Commercial Requirement.",
+     "",
+     "**Operation Constraints (hard, must hold)**:",
+     bullet(b.operationConstraints),
+@@ -106,66 +99,56 @@ function renderArchitectureFunctionBridge(layers) {
+     "**Human Experience (path + rhythm)**:",
+     bullet(b.humanExperience),
+     "",
+-    "**Commercial Reality (do not turn the space into a gallery)**:",
+-    bullet(b.commercialReality),
++    "**Commercial Reality (compatible with project artistic character)**:",
++    "Preserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.",
+     "",
+     "**Concept Drift Guards (must avoid)**:",
+     bullet(b.conceptDriftGuards, "- (none)")
++    ,"", "Off-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas."
+   ].join("\n");
+   return block("architecture_function_bridge", "Architecture-Function Bridge", body);
+ }
+ function renderArchitecturalConcept(layers) {
+-  const c = layers.architecturalConcept;
+   const body = [
+-    "\u7A7A\u95F4\u6982\u5FF5 / \u5EFA\u7B51\u673A\u5236\u5FC5\u987B\u5148\u4E8E\u54C1\u724C\u5143\u7D20\u88AB\u5EFA\u7ACB\u3002\u54C1\u724C\u9644\u7740\u4E8E\u5EFA\u7B51\u8BED\u8A00\u4E4B\u4E0A\uFF0C\u800C\u4E0D\u662F\u53CD\u8FC7\u6765\u3002",
+-    "",
+-    `**Primary Spatial Concept**: ${c.primary}`,
+-    "",
+-    "**Structure Language**:",
+-    bullet(c.structureLanguage)
++    "Use the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.",
++    "User instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression."
+   ].join("\n");
+   return block("architectural_concept", "Architectural Concept", body);
+ }
+ function renderArchitectureDna(layers) {
+-  const org = layers.architectureLanguage.spatialOrganization;
+-  const form = layers.architectureLanguage.architecturalCharacteristics;
+-  const strategy = layers.architectureLanguage.spatialPrinciples;
+   const body = [
+-    "**Building DNA**:",
+-    `- Spatial strategy: ${strategy.slice(0, 4).join("; ") || "n/a"}`,
+-    `- Form mechanisms: ${form.slice(0, 4).join("; ") || "n/a"}`,
+-    `- Spatial organization: ${org.slice(0, 4).join("; ") || "n/a"}`,
+-    "",
+-    "Maintain continuous wall\u2194ceiling\u2194floor relationships and a legible circulation hierarchy."
++    "**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.",
++    "Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed."
+   ].join("\n");
+   return block("architecture_dna", "Architecture DNA", body);
+ }
+ function renderBrandTranslation(layers) {
+   const p = layers.projectIdentity;
++  const architectureSources = new Set(layers.decisionTrace.canonicalOwners.filter(entry=>entry.blockId==="architecture_language").map(entry=>entry.text));
++  const ownedBrandLines = new Set(layers.brandSanitization.records.filter(entry=>architectureSources.has(entry.raw)).map(entry=>entry.text));
+   const body = [
+-    "> Brand is translated into mechanism, rhythm and surface behavior \u2014 never pasted as decoration.",
++    "> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.",
+     "> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.",
+     "",
+     `**Brand**: ${p.brandName} | **Industry**: ${p.industry}`,
+-    `**Brand Role**: ${p.brandRole || "n/a"}`,
++    "**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.",
+     p.audience.length ? `**Audience**: ${p.audience.join("\u3001")}` : "",
+     "",
+     "**Brand Role Manifestation in Space**:",
+-    bullet(layers._raw.brandRoleManifestation)
++    bullet(layers._raw.brandRoleManifestation.filter(text=>!layers.composition.artisticFocus?.some(entry=>entry.text===text) && !ownedBrandLines.has(text) && !layers._raw.positiveDifferentiators.includes(text)))
+   ].filter(Boolean).join("\n");
+   return block("brand_translation", "Brand Translation", body);
+ }
+ function renderFunctionalRequirement(layers) {
+   const raw = layers._raw;
+   const body = [
+-    "**Required Program Nodes (must be legible in one image)**:",
++    "**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:",
+     bullet(raw.sceneProgram),
+     "",
+     "**Functional Network**:",
+     bullet(raw.functionalNetwork),
+     "",
+-    "**Must Be Visible (spatial focal hierarchy; brand identity is post-composited)**:",
+-    bullet(layers.composition.mustBeVisible, "- (none)"),
++    "**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.",
+     "",
+     "**Positive Differentiators**:",
+     bullet(raw.positiveDifferentiators, "- (none)")
+@@ -186,11 +169,12 @@ function renderMaterial(layers) {
+ function renderColor(layers) {
+   const lines = [
+     "Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.",
+-    "Preserve each supplied carrier and scope. Unknown ratios stay unknown; color alone does not authorize geometry."
++    "Proposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.",
++    "Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage."
+   ];
+   for (const group of ["primary", "secondary", "accent"]) {
+     for (const item of layers.color[group]) {
+-      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | spatial scope: ${item.spatialUsage}`);
++      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | proposed spatial scope: ${item.spatialUsage} | execution authority: proposal_only`);
+       for (const key of ["role", "semanticMeaning", "surfaceApplicability", "ratio"]) {
+         if (item[key] !== undefined && item[key] !== "") lines.push(`  ${key}: ${typeof item[key] === "string" ? item[key] : JSON.stringify(item[key])}`);
+       }
+@@ -220,11 +204,15 @@ function renderComposition(layers) {
+     c.aspectRatio ? `**Output Ratio**: ${c.aspectRatio}` : "",
+     c.scene ? `**Scene**: ${c.scene}` : "",
+     "",
+-    "**Must Be Visible (focal hierarchy)**:",
++    "**Project Artistic Focus (separate from operational facilities)**:",
++    ...c.artisticFocus?.length ? c.artisticFocus.map(entry=>`- [${entry.evidenceClass}; ${entry.priority}] ${entry.text}`) : ["- No artistic installation is required by the supplied sources."],
++    "Do not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.",
++    "",
++    "**Operational Elements (remain usable alongside the artistic focus)**:",
+     bullet(c.mustBeVisible),
+     "",
+     "**Positive Differentiators**:",
+-    bullet(c.positiveDifferentiators, "- (none)"),
++    "Use the differentiators in Functional & Commercial Requirement without repeating them as additional demands.",
+     "",
+     "Use a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale."
+   ].filter(Boolean).join("\n");
+@@ -255,7 +243,9 @@ function compileSpacePrompt(input) {
+   let anchors = [];
+   let contextBlock = null;
+   if (input.brandKey) {
+-    const criteria = input.anchorCriteria || deriveAnchorCriteria(layers, input.taskContract);
++    const criteria = {...deriveAnchorCriteria(layers, input.taskContract),...input.anchorCriteria};
++    criteria.sceneType = input.taskContract?.subtype;
++    criteria.mechanismEvidence = layers.decisionTrace.architectureDecisions.filter(item=>item.sceneScope !== "off_frame_dependency").map(item=>item.text);
+     const selected = selectArchitectureAnchors(input.brandKey, criteria, input.anchorMaxCount ?? 3);
+     anchors = selected.map((s) => s.anchor);
+     if (anchors.length) {
+@@ -266,6 +256,11 @@ function compileSpacePrompt(input) {
+       };
+     }
+   }
++  if (!contextBlock) contextBlock = block("architecture_context", "Architecture Context", [
++    "No optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.",
++    "Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.",
++    "Do not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms."
++  ].join("\n"));
+   const referenceImages = anchors.map((a) => ({ anchorId: a.id, imagePath: resolveArchitectureAnchorImagePath(a) })).filter((r) => r.imagePath);
+   const continuationIntentText = renderContinuationIntentBlock(input.taskContract?.continuation);
+   const continuationBlock = continuationIntentText ? { id: "continuation_intent", title: "Continuation Intent", text: continuationIntentText } : null;
+@@ -353,9 +348,10 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+     extra: {
+       brandKey: input.brandKey || null,
+       anchorCriteria: input.anchorCriteria || null,
+-      architectureContextIncluded: Boolean(contextBlock),
++      architectureContextIncluded: anchors.length > 0,
+       blockIds: presentIds,
+       decisionTrace: layers.decisionTrace,
++      blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id)])),
+       // r2.0 §4.10 / B-3: record whether the Reference Boundary text block
+       // was appended to the prompt. Mirrors the v1 seedream-adapter
+       // referenceBoundary trace shape so downstream consumers (audit,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+index 3349902..1c8e719 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
++++ b/packages/visual-workflow/src/generation-runtime/space/scene-projection/target-scene-projection.js
+@@ -2,6 +2,27 @@ import {
+   resolveTargetFunctionalProgram,
+   viewStrategyForScene
+ } from "../continuation/target-functional-programs.js";
++// Source-based shot scope: functional classification never supplies aesthetics.
++const SCENE_SCOPE_TERMS = {
++  reception: /reception|front desk|check.?in|waiting|接待|前台|候客|等候/iu,
++  entrance: /entrance|threshold|entry|入口|门槛/iu,
++  consultation: /consultation|咨询/iu,
++  treatment: /treatment|procedure|clinical|sterile|medical equipment|治疗|诊疗|手术/iu,
++  recovery: /recovery|post.service|rest area|恢复|术后|休息/iu,
++  dining: /dining|kitchen|餐厅|厨房|堂食/iu,
++  guestroom: /guest.?room|bedroom|客房|卧室/iu
++};
++function scopeSourceEntries(entries, targetScene) {
++  const aliases = {lobby:["reception","entrance"],reception:["reception","entrance"],entrance:["entrance","reception"],dining:["dining"],restaurant:["dining"]};
++  const allowed = aliases[targetScene] ?? [targetScene];
++  const known = allowed.some(scene => SCENE_SCOPE_TERMS[scene]);
++  return entries.map(entry => {
++    const scenes = Object.entries(SCENE_SCOPE_TERMS).filter(([,pattern])=>pattern.test(entry.text)).map(([scene])=>scene);
++    const foreign = scenes.filter(scene=>!allowed.includes(scene));
++    return {...entry, sceneScope: !known ? "unresolved" : foreign.length ? "off_frame_dependency" : "current_shot", detectedScenes:scenes,
++      evidenceClass:"system_inference", scopeReason:!known ? "unknown_target_scene" : foreign.length ? "other_program_or_cross_scene_relationship" : "source_compatible_with_shot"};
++  });
++}
+ const TARGET_SCENE_PROJECTION_VERSION = "space-target-scene-projection@1.1.0";
+ const TARGET_SCENE_AUTHORITY_GATE_VERSION = "space-target-scene-authority@1.1.0";
+ const TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS = Object.freeze([
+@@ -246,6 +267,7 @@ function validateTargetSceneAuthority({
+   return { status: "pass", findings: [] };
+ }
+ export {
++  scopeSourceEntries,
+   TARGET_SCENE_AUTHORITY_CHECKED_BLOCKS,
+   TARGET_SCENE_AUTHORITY_GATE_VERSION,
+   TARGET_SCENE_PROJECTION_VERSION,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js b/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js
+index 68b7731..92191c0 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js
++++ b/packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js
+@@ -5,7 +5,6 @@ const IDENTITY_RE = /logo|wordmark|logotype|slogan|mascot|emblem|monogram|\bicon
+ const PROSE_MAX_CHARS = 60;
+ const PEOPLE_OPS_RE = /员工制服|工服|制服|服务流程|话术|礼仪|工作人员|员工/iu;
+ const DECOR_OBJECT_RE = /丝带|飘带|绸带|挂饰|摆件|装饰挂件|ribbon|hanging\s+ornament/iu;
+-const GALLERY_POETRY_RE = /空间作为艺术画廊|艺术画廊般|as\s+an?\s+art\s+gallery|gallery-like/iu;
+ function hasTerm(text, terms) {
+   const t = String(text || "").toLowerCase();
+   return terms.some((term) => {
+@@ -33,18 +32,15 @@ function sanitizeBrandItem(rawItem) {
+   if (DECOR_OBJECT_RE.test(raw)) {
+     return { text: "", raw, disposition: "dropped", reason: "decorative_object_prop" };
+   }
+-  if (GALLERY_POETRY_RE.test(raw)) {
+-    return { text: "", raw, disposition: "dropped", reason: "gallery_poetry_non_commercial" };
+-  }
+-  if ([...raw].length > PROSE_MAX_CHARS) {
+-    return { text: "", raw, disposition: "dropped", reason: "creative_prose_too_long" };
+-  }
+   const analysis = classifyPhrase(raw, "brandRoleManifestation");
+   // Explicit physical installations belong to brand expression. They must
+   // still pass identity, operations, prop and prose checks above.
+   if (analysis.classification === SEMANTIC_CLASS.DECORATIVE_OBJECT) {
+     return { text: raw, raw, disposition: "kept" };
+   }
++  if ([...raw].length > PROSE_MAX_CHARS) {
++    return { text: "", raw, disposition: "dropped", reason: "creative_prose_too_long" };
++  }
+   if (hasMotif(raw)) {
+     const norm = normalizeArchitectureSemantics(raw, "brandRoleManifestation");
+     if (norm.includedInArchitecturePrompt && norm.normalized) {
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index c7ccbcc..3c0f433 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -22,6 +22,8 @@ import {
+   projectBrandManifestationToTargetScene,
+   resolveTargetViewStrategy
+ } from "./scene-projection/target-scene-projection.js";
++import { scopeSourceEntries } from "./scene-projection/target-scene-projection.js";
++import { sanitizeBrandItem } from "./semantic/sanitize-brand-expression.js";
+ function cleanList(...values) {
+   const out = [];
+   const seen = /* @__PURE__ */ new Set();
+@@ -182,6 +184,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     color: ["primary", "secondary", "accent"].flatMap(group => color[group].map((item, index) => ({
+       sourcePath: `colorSystem.${group}[${index}]`,
+       evidenceClass: "model_proposal", source: colorSystem[group][index],
++      executionAuthority: "proposal_only",
+       spatialUsage: item.spatialUsage,
+       unresolved: item.spatialUsage === "unspecified" || item.spatialUsage === "unresolved_conflict"
+     }))),
+@@ -358,7 +361,51 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+     };
+   }
+   let projectedBrandManifestation = brandSanitized.lines;
+-  if (knownTarget) {
++  const standardShot = taskContract?.generationBasis === "standard";
++  const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
++    const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
++    const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;
++    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath};
++  });
++  const artisticEntries = ["signatureSpatialMechanism","brandRoleManifestation","mustBeVisible"].flatMap(field => sourceEntries(spatial[field],`mediaTranslations.spatial.${field}`))
++    .filter(entry=>classifyPhrase(entry.text,"signatureSpatialMechanism").classification === SEMANTIC_CLASS.DECORATIVE_OBJECT)
++    .map(entry=>({...entry,text:sanitizeBrandItem(entry.text).text})).filter(entry=>entry.text);
++  const scopedArt = standardShot ? scopeSourceEntries(artisticEntries,taskContract.subtype) : artisticEntries;
++  const artSeen = new Set();
++  compositionLayers.artisticFocus = scopedArt.filter(entry=> {
++    if (entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
++    artSeen.add(entry.text);
++    return true;
++  }).map(entry=>({...entry,evidenceClass:"model_proposal",priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
++  decisionTrace.artisticFocus = compositionLayers.artisticFocus;
++  decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:"model_proposal"}));
++  const architectureEntries = semantic.architectureRewrite.items.filter(item=>!item.dropped && !["spatialConcept","mustBeVisible"].includes(item.sourceField));
++  decisionTrace.architectureDecisions = standardShot ? scopeSourceEntries(architectureEntries,taskContract.subtype) : architectureEntries;
++  if (standardShot) {
++    decisionTrace.sceneScope = [];
++    const projectList = (items,sourcePath) => {
++      const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
++      decisionTrace.sceneScope.push(...records);
++      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.text);
++    };
++    functionalRaw = {
++      sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
++      functionalNetwork:projectList(functionalRaw.functionalNetwork,"mediaTranslations.spatial.functionalNetwork"),
++      positiveDifferentiators:projectList(functionalRaw.positiveDifferentiators,"mediaTranslations.spatial.positiveDifferentiators")
++    };
++    compositionLayers.mustBeVisible = projectList(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible");
++    compositionLayers.positiveDifferentiators = functionalRaw.positiveDifferentiators;
++    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
++    const functionalItems = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
++    projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text=>!functionalItems.has(text) || artSeen.has(text));
++    targetSceneProjection = {...targetSceneProjection, functionalBlockSource:"source_shot_scope",architectureBridgeSource:"source_shot_scope",operationConstraintsSource:"source_shot_scope"};
++  }
++  decisionTrace.canonicalOwners = [
++    ...decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>({text:entry.text,sourcePath:entry.sourcePath,blockId:"architecture_language"})),
++    ...compositionLayers.artisticFocus.map(entry=>({text:entry.text,sourcePath:entry.sourcePath,blockId:"composition"}))
++    ,...sourceEntries(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible").map(entry=>({...entry,blockId:"composition"}))
++  ];
++  if (knownTarget && !standardShot) {
+     const brandProjection = projectBrandManifestationToTargetScene({
+       brandManifestation: brandSanitized.lines,
+       mechanismEvidence: cleanList(
+diff --git a/packages/visual-workflow/tests/capture-design-fidelity.mjs b/packages/visual-workflow/tests/capture-design-fidelity.mjs
+index 7f0bf6c..26df9b7 100644
+--- a/packages/visual-workflow/tests/capture-design-fidelity.mjs
++++ b/packages/visual-workflow/tests/capture-design-fidelity.mjs
+@@ -3,12 +3,11 @@ import path from 'node:path';
+ import crypto from 'node:crypto';
+ import assert from 'node:assert/strict';
+ import { compileSpacePrompt } from '../src/generation-runtime/space/compiler.js';
+-import { resolveArchitectureAnchorBrandKey } from '../src/generation-runtime/space/architecture-context.js';
+ import { compileShortChainGeneration } from '../src/generation-runtime/generation/compile.js';
+ 
+ // Local review tool only. Inputs are read-only; no provider or image adapter.
+ globalThis.fetch = async () => { throw new Error('OFFLINE_REVIEW_NETWORK_FORBIDDEN'); };
+-const [project, compilationEvidence, output] = process.argv.slice(2);
++const [project, compilationEvidence, output, reviewInstruction] = process.argv.slice(2);
+ if (!project || !compilationEvidence || !output) throw new Error('Usage: capture-design-fidelity.mjs PROJECT COMPILATION_EVIDENCE OUTPUT');
+ const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+ async function inventory(root) {
+@@ -31,7 +30,9 @@ const evidenceBytes = await fs.readFile(compilationEvidence);
+ const packet = JSON.parse(packetBytes);
+ const projectContext = JSON.parse(contextBytes);
+ const {taskContract} = JSON.parse(evidenceBytes);
+-const input = {packet, projectContext, taskContract, brandKey:resolveArchitectureAnchorBrandKey(packet.projectFacts.brandName.value)};
++// Optional review-only task copy. The historical task and Packet stay read-only.
++if (reviewInstruction) taskContract.currentInstruction = reviewInstruction;
++const input = {packet, projectContext, taskContract};
+ const inputSnapshot = JSON.stringify(input);
+ const compiled = compileSpacePrompt(input);
+ const routed = compileShortChainGeneration({projectContext, task:taskContract, model:'offline-review-model'});
+@@ -50,5 +51,6 @@ await fs.writeFile(path.join(output,'trace.json'),JSON.stringify({
+     materialFacts:'See original audit asset index; no image observations promoted to Packet facts',
+     unknown:'Area allocation, installation dimensions/mounting and unprovided optical parameters remain unknown'},
+   taskContract, trace:compiled.trace, layers:compiled.layers, blocks:compiled.blocks
++  ,reviewInstruction:reviewInstruction ? {evidenceClass:'user_confirmed',text:reviewInstruction,scope:'in_memory_review_task_only'} : null
+ },null,2)+'\n');
+ console.log(JSON.stringify({promptSha256:hash(compiled.finalPrompt),promptCharacters:[...compiled.finalPrompt].length,providerCalls:0}));
+diff --git a/packages/visual-workflow/tests/scene-decision-fidelity.test.ts b/packages/visual-workflow/tests/scene-decision-fidelity.test.ts
+new file mode 100644
+--- /dev/null
++++ b/packages/visual-workflow/tests/scene-decision-fidelity.test.ts
+@@ -0,0 +1,134 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {structuredAnalysisPacketFixture} from '../../../tests/runtime-application/analysis-runtime-fixtures.ts';
++import {compileSpacePrompt} from '../src/generation-runtime/space/compiler.js';
++import {compileShortChainGeneration} from '../src/generation-runtime/generation/compile.js';
++import {sanitizeBrandItem} from '../src/generation-runtime/space/semantic/sanitize-brand-expression.js';
++import {scopeSourceEntries} from '../src/generation-runtime/space/scene-projection/target-scene-projection.js';
++import {__setArchitectureAnchorRegistryForTest,loadArchitectureAnchorRegistry,selectArchitectureAnchors} from '../src/generation-runtime/space/architecture-context.js';
++
++function input(industry='Hospitality') {
++  const packet=structuredAnalysisPacketFixture();
++  packet.projectFacts.industry.value=industry;
++  return {packet,projectContext:{visualDecisionPacket:packet},taskContract:{projectId:'generic',deliverableFamily:'space',subtype:'reception',shot:'entrance_view',aspectRatio:'16:9',generationBasis:'standard',currentInstruction:'Create a complete reception scene'}};
++}
++test('artistic focus is composed once and remains distinct from operations',()=>{
++  const source=input('Medical aesthetics');
++  const artwork='A large abstract art installation at reception';
++  source.packet.mediaTranslations.spatial.signatureSpatialMechanism.push(artwork);
++  source.packet.mediaTranslations.spatial.brandRoleManifestation.push(artwork);
++  const result=compileSpacePrompt(source);
++  assert.match(result.blocksById.composition.text,/project_artistic_focus.*large abstract art installation/);
++  assert.equal(result.finalPrompt.split(artwork).length-1,1);
++  assert.ok(!result.layers._raw.functionalNetwork.includes(artwork));
++  assert.ok(!result.layers.semantic.architectureActions.includes(artwork));
++  assert.ok(result.layers._raw.brandRoleManifestation.includes(artwork)); // Historical container retained.
++  assert.match(result.blocksById.composition.text,/mounting, dimensions.*unspecified/);
++  assert.ok(result.trace.decisionTrace.artisticFocus[0].sourcePath.includes('signatureSpatialMechanism'));
++});
++test('optional artwork stays optional and a source without art does not acquire an installation',()=>{
++  const source=input();
++  assert.equal(compileSpacePrompt(source).layers.composition.artisticFocus.length,0);
++  source.packet.mediaTranslations.spatial.brandRoleManifestation.push('Optional sculpture at reception');
++  assert.equal(compileSpacePrompt(source).layers.composition.artisticFocus[0].priority,'optional');
++});
++test('single reception shot keeps other program nodes in the trace rather than displaying their interiors',()=>{
++  const source=input('Medical aesthetics');
++  const spatial=source.packet.mediaTranslations.spatial;
++  spatial.sceneProgram=['Reception arrival','Private consultation room','Treatment room','Recovery lounge'];
++  spatial.functionalNetwork=['Reception links to waiting','Private consultation room supports confidential discussion','Treatment room contains procedure beds'];
++  spatial.functionalRelationships=['Reception access protects privacy before treatment'];
++  spatial.mustBeVisible=['Reception desk','Privacy partitions','Treatment equipment'];
++  spatial.brandRoleManifestation.push('Consultation room uses softly curved walls');
++  const result=compileSpacePrompt(source);
++  assert.deepEqual(result.layers._raw.sceneProgram,['Reception arrival']);
++  assert.match(result.blocksById.functional_requirement.text,/Reception links to waiting/);
++  for(const id of ['functional_requirement','composition','brand_translation','architecture_language']) assert.doesNotMatch(result.blocksById[id].text,/procedure beds|Treatment equipment|Consultation room uses/);
++  assert.ok(result.trace.decisionTrace.sceneScope.some((entry:any)=>entry.text.includes('procedure beds') && entry.sceneScope==='off_frame_dependency'));
++  assert.match(result.blocksById.architecture_function_bridge.text,/access and privacy boundaries/);
++});
++test('scene projection preserves trace and does not translate a color or transparency keyword into new geometry',()=>{
++  const source=input();source.taskContract.subtype='consultation';
++  source.packet.mediaTranslations.spatial.brandRoleManifestation=['Translucent glass with a red surface accent'];
++  const result=compileSpacePrompt(source);
++  assert.doesNotMatch(result.finalPrompt,/localized purple|curved layered translucent consultation enclosure/);
++  assert.match(result.finalPrompt,/Translucent glass with a red surface accent/);
++});
++test('gallery character passes sanitization while identity text remains protected',()=>{
++  assert.equal(sanitizeBrandItem('A gallery-like reception with an art installation').disposition,'kept');
++  assert.equal(sanitizeBrandItem('空间作为艺术画廊，艺术装置与接待功能共同组织动线').disposition,'kept');
++  assert.equal(sanitizeBrandItem('Logo art installation').reason,'in_scene_identity_post_composite');
++  const source=input('Medical aesthetics');
++  source.taskContract.currentInstruction='Art-exhibition character alongside reception, consultation access and visitor privacy';
++  const result=compileSpacePrompt(source);
++  assert.match(result.blocksById.task.text,/Art-exhibition character/);
++  assert.doesNotMatch(result.finalPrompt,/do not turn the space into a gallery|品牌附着于建筑语言/);
++  assert.match(result.finalPrompt,/Industry constrains use, access and privacy/);
++});
++test('source-scoped decisions occur once instead of being repeated through strategy/form/organization',()=>{
++  const source=input(); const phrase='Complex curved ceiling surfaces organize the reception';
++  source.packet.mediaTranslations.spatial.signatureSpatialMechanism=[phrase];
++  const result=compileSpacePrompt(source);
++  assert.equal(result.finalPrompt.split(phrase).length-1,1);
++  assert.match(result.blocksById.architecture_language.text,/Complex curved ceiling/);
++  assert.doesNotMatch(result.blocksById.architecture_dna.text,/Complex curved ceiling/);
++});
++test('unconfirmed color scopes and ratios remain proposals without mandatory large-area authority',()=>{
++  const source=input();
++  source.packet.colorSystem.primary=[{name:'Strong red',role:'Background',ratio:86} as any];
++  const result=compileSpacePrompt(source);
++  assert.match(result.blocksById.color.text,/proposed spatial scope: dominant_field/);
++  assert.match(result.blocksById.color.text,/ratio: 86/);
++  assert.match(result.blocksById.color.text,/Do not execute an unconfirmed dominant field/);
++  assert.equal(result.trace.decisionTrace.color[0].executionAuthority,'proposal_only');
++  assert.match(result.blocksById.color.text,/gradient.*independently authorizes/);
++  assert.doesNotMatch(result.blocksById.color.text,/仅作局部点缀/);
++  source.taskContract.currentInstruction='Use strong red as the dominant background, with a complex curved ceiling';
++  assert.match(compileSpacePrompt(source).blocksById.task.text,/Use strong red as the dominant background/);
++});
++test('brand names and stored brand keys cannot auto-select architecture examples',()=>{
++  const source=input();
++  const a=compileShortChainGeneration({projectContext:{...source.projectContext,brandKey:'any-stored-brand'},task:source.taskContract});
++  source.packet.projectFacts.brandName.value='A different brand';
++  const b=compileShortChainGeneration({projectContext:source.projectContext,task:source.taskContract});
++  assert.deepEqual(a.compiledPrompt.phase9b.anchorIds,[]);
++  assert.deepEqual(b.compiledPrompt.phase9b.anchorIds,[]);
++  assert.equal(a.compiledPrompt.phase9b.architectureContextIncluded,false);
++  assert.match(a.compiledPrompt.finalPrompt,/No optional architecture examples/);
++});
++test('explicit optional examples require scene and mechanism compatibility and cannot outrank the project',t=>{
++  const saved=loadArchitectureAnchorRegistry();t.after(()=>__setArchitectureAnchorRegistryForTest(saved));
++  const anchor=(id:string,scene:string,mechanism:string)=>({id,role:'example',primaryMechanism:mechanism,applicability:{industries:['hospitality'],sceneTypes:[scene]}});
++  __setArchitectureAnchorRegistryForTest({brands:{example:{anchors:[anchor('curved-reception','reception','Curved ceiling'),anchor('consultation-example','consultation','Curved ceiling'),anchor('membrane-example','reception','Layered translucent membrane ceiling')]}},selectionPolicy:{defaultMaxCount:3}});
++  const criteria={industry:'hospitality',sceneType:'reception',mechanismEvidence:['Complex curved ceiling surfaces']};
++  assert.deepEqual(selectArchitectureAnchors('example',criteria).map((entry:any)=>entry.anchor.id),['curved-reception']);
++  assert.deepEqual(selectArchitectureAnchors('example',{industry:'hospitality'}),[]);
++  const source=input('hospitality');source.packet.mediaTranslations.spatial.structureLanguage=['Complex curved ceiling surfaces'];
++  const result=compileSpacePrompt({...source,brandKey:'example'});
++  assert.deepEqual(result.anchors.map((entry:any)=>entry.id),['curved-reception']);
++  assert.match(result.blocksById.architecture_context.text,/User-confirmed intent.*take priority/);
++  assert.doesNotMatch(result.blocksById.architecture_context.text,/accepted for this brand|never conflicting/);
++  assert.equal(result.referenceImages.length,0);
++});
++for(const industry of ['Medical aesthetics','Hospitality','Restaurant']) {
++  test(`${industry}: formal route retains complex architecture and explicit strong color without manufacturing art`,()=>{
++    const source=input(industry);
++    source.taskContract.currentInstruction='Create a reception with a strong blue background and complex curved architecture';
++    source.packet.mediaTranslations.spatial.structureLanguage=['Complex curved ceiling surfaces'];
++    const snapshot=JSON.stringify(source);
++    const result=compileShortChainGeneration({projectContext:source.projectContext,task:source.taskContract});
++    assert.match(result.compiledPrompt.finalPrompt,/Complex curved ceiling surfaces/);
++    assert.match(result.compiledPrompt.finalPrompt,/strong blue background/);
++    assert.equal(result.compiledPrompt.trace.decisionTrace.artisticFocus.length,0);
++    assert.equal(result.compiledPrompt.trace.spaceGeneration.routeIntegrity.status,'pass');
++    assert.deepEqual(result.compiledPrompt.phase9b.anchorIds,[]);
++    assert.ok(result.payload.prompt.endsWith(result.compiledPrompt.finalPrompt));
++    assert.equal(JSON.stringify(source),snapshot);
++  });
++}
++test('source scopes retain provenance and unknown scenes remain explicitly unresolved',()=>{
++  const entries=[{text:'Treatment room',sourcePath:'sceneProgram[1]'}];
++  assert.equal(scopeSourceEntries(entries,'reception')[0].sceneScope,'off_frame_dependency');
++  assert.equal(scopeSourceEntries(entries,'custom_scene')[0].sceneScope,'unresolved');
++  assert.equal(entries[0].sourcePath,'sceneProgram[1]');
++});

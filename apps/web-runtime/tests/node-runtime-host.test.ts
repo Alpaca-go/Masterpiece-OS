@@ -14,7 +14,7 @@ async function rpc(baseUrl: string, channel: string, args: unknown[], expectedSt
   return response.json() as Promise<{ result?: any; error?: string }>;
 }
 
-test('Node Runtime Host binds all 236 channels to the Shared Registry without Electron', async (t) => {
+test('Node Runtime Host binds shared and independently owned channels without Electron', async (t) => {
   const userData = await fs.mkdtemp(path.join(os.tmpdir(), 'masterpiece-node-host-'));
   process.env.MASTERPIECE_USER_DATA_DIR = userData;
   process.env.MASTERPIECE_WEB_OPEN_PATH = '0';
@@ -31,9 +31,15 @@ test('Node Runtime Host binds all 236 channels to the Shared Registry without El
     delete process.env.MASTERPIECE_WEB_OPEN_PATH;
   });
 
-  // Browser Reference Anchor intake adds one bounded upload channel after the
-  // Creative Direction / Creative Research capability set.
-  assert.equal(host.operationCount, 236);
+  // Preserve the shared/native channel count and verify the independently
+  // owned workflow registration separately.
+  const channels: string[] = host.registry.list();
+  const independentChannels = channels.filter(channel => channel.startsWith('visual-workflow:'));
+  assert.equal(channels.length - independentChannels.length, 236);
+  assert.equal(independentChannels.length, 20);
+  assert.equal(host.operationCount, 256);
+  assert.equal(new Set(channels).size, channels.length);
+  for (const channel of ['visual-workflow:select-logo','visual-workflow:analyze','visual-workflow:compile','visual-workflow:generate']) assert.ok(independentChannels.includes(channel));
   const healthResponse = await fetch(`${host.url}/_masterpiece/health`);
   assert.deepEqual(
     (({ ok, mode, host: hostKind }) => ({ ok, mode, host: hostKind }))(await healthResponse.json() as any),

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
-import { filePayload, workflowCall, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings } from './api';
+import { filePayload, workflowCall, createStandardGenerationInput, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
+import { ProjectDesignDirectionPanel } from './ProjectDesignDirectionPanel';
 import './visual-workflow.css';
 
 const FAMILY_LABELS: Record<string, string> = { space: '空间效果图', packaging: '包装效果图', vi: 'VI 应用', poster: '海报' };
@@ -28,6 +29,9 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
   const [image, setImage] = useState('');
   const [run, setRun] = useState<WorkflowRun | null>(null);
   const [resultLabel, setResultLabel] = useState('');
+  const [designDirection,setDesignDirection]=useState<ProjectDesignDirection | null>(null);
+  const [directionUnsaved,setDirectionUnsaved]=useState(false);
+  const [directionRefresh,setDirectionRefresh]=useState(0);
   const [logoPlacement, setLogoPlacement] = useState({x:50,y:30,width:12});
   const [removeLogoBackground,setRemoveLogoBackground] = useState(false);
   const [name, setName] = useState('');
@@ -75,6 +79,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     finally { setBusy(''); await refresh().catch(() => {}); }
   }
   async function open(item: WorkflowProject) {
+    setDesignDirection(null);setDirectionUnsaved(false);
     setProject(item); setReport(''); setImage(''); setRun(null); setResultLabel(''); setStep(item.status === 'completed' ? 2 : 0);
     if (item.lastReportFilename) setReport(await workflowCall<string>('report', item.id) || '');
     const runs = await workflowCall<WorkflowRun[]>('runs', item.id);
@@ -100,15 +105,19 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
     if (!project) return;
     await action('正在分析', async () => {
       setStep(1); setProgress('正在整理素材');
-      const result = await workflowCall<{project: WorkflowProject}>('analyze', project.id, true);
-      setProject(result.project); setReport(await workflowCall<string>('report', project.id) || ''); setStep(2);
+      try {
+        const result = await workflowCall<{project: WorkflowProject}>('analyze', project.id, true);
+        setProject(result.project); setReport(await workflowCall<string>('report', project.id) || ''); setStep(2);
+      } finally {setDirectionRefresh(value=>value+1);}
     });
   }
   async function generate() {
     if (!project) return;
     await action('正在生成并校验', async () => {
+      const currentDirection=await workflowCall<ProjectDesignDirection>('report',project.id,'project_design_direction');
+      if (family==='space' && (directionUnsaved || !designDirection || currentDirection.recordSha256!==designDirection.recordSha256 || !['missing','confirmed'].includes(currentDirection.status))) throw new Error('项目设计方向已变化或尚未确认，请核对并确认后再生图。');
       setImage(''); setRun(null); setResultLabel('');
-      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', { projectId: project.id, task: { deliverableFamily: family, subtype, shot, shotSource: shotExplicit ? 'user_explicit' : undefined, aspectRatio: ratio, count: 1, currentInstruction: instruction, generationBasis: 'standard', referenceAssetIds: [], mustInclude: include.split('\n').filter(Boolean), mustAvoid: avoid.split('\n').filter(Boolean), logoUsageMode: project.assets.some(a => a.role === 'logo') ? 'post_composite' : 'blank_area' } });
+      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256}));
       const result = await workflowCall<{initialRun: WorkflowRun; correctionRun?: WorkflowRun; firstImage?: {runId: string; imageId: string}; terminalStatus: string; automaticRetryCount: number}>('generate', { projectId: project.id, taskId: compiled.taskContract.taskId });
       const selected = result.correctionRun?.status === 'succeeded' ? result.correctionRun : result.initialRun;
       setRun(selected); setResultLabel(`${result.terminalStatus === 'passed' ? '校验通过' : result.terminalStatus === 'failed' ? '未通过校验，请检查结果' : '生成完成，请确认结果'}${result.automaticRetryCount ? ' · 已执行一次纠偏' : ''}`);
@@ -159,6 +168,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
       <main className="visual-workflow__main">
         <nav className="visual-workflow__steps" aria-label="视觉工作流步骤">{STEPS.map((label, index) => <button key={label} aria-current={step === index ? 'step' : undefined} disabled={Boolean(busy) || index > 0 && !project || index > 1 && !project?.lastReportFilename || index === 3 && !canGenerate} onClick={() => setStep(index)}>{index + 1}. {label}</button>)}</nav>
         <h2>{project?.projectName || '新建视觉项目'}</h2>
+        {project && <ProjectDesignDirectionPanel key={`${project.id}:${project.status}:${directionRefresh}`} projectId={project.id} disabled={Boolean(busy)} onState={(value,unsaved)=>{setDesignDirection(value);setDirectionUnsaved(unsaved);}} />}
         {step === 0 && <section><div className="visual-workflow__fields">
           <label>项目 / 品牌名称<input value={project?.projectName || name} disabled={Boolean(project)} onChange={event => setName(event.target.value)} /></label>
           <label>所属行业<input value={project?.industry || industry} disabled={Boolean(project)} onChange={event => setIndustry(event.target.value)} /></label>
@@ -176,7 +186,7 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
           <label>镜头 / 构图<select value={shot} onChange={event => {setShot(event.target.value); setShotExplicit(true);}}>{available?.shots.map(item => <option key={item} value={item}>{LABELS[item] || item}</option>)}</select></label>
           <label>必须包含（每行一项）<textarea value={include} onChange={event => setInclude(event.target.value)} /></label><label>必须避免（每行一项）<textarea value={avoid} onChange={event => setAvoid(event.target.value)} /></label>
           <p>Logo：{project?.assets.some(a => a.role === 'logo') ? '预留区域，原始 Logo 后期合成' : '预留干净区域'}</p>
-          <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId}>智能生成</button>
+          <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId || family==='space' && (directionUnsaved || !designDirection || !['missing','confirmed'].includes(designDirection.status))}>智能生成</button>
           {busy && run?.status === 'running' && <button type="button" onClick={() => void workflowCall('cancel-generation', run.runId)}>取消生成</button>}
         </form><div className="visual-workflow__preview">{image ? <><img src={image} alt="当前项目生成结果" /><p>{resultLabel}</p><a href={image} download={`${project?.projectName || '视觉结果'}.png`}>下载图片</a>{logo && run?.images[0] && <details><summary>原始 Logo 后期合成</summary><p>设置 Logo 在图片中的位置，宽度按原比例缩放。</p><div className="visual-workflow__fields">{(['x','y','width'] as const).map(field=><label key={field}>{{x:'水平位置（%）',y:'垂直位置（%）',width:'宽度（%）'}[field]}<input type="number" min={field==='width'?1:0} max={100} value={logoPlacement[field]} onChange={event=>setLogoPlacement({...logoPlacement,[field]:Number(event.target.value)})}/></label>)}</div><label><input type="checkbox" checked={removeLogoBackground} onChange={event=>setRemoveLogoBackground(event.target.checked)}/>移除 Logo 纯色背景</label><button type="button" disabled={Boolean(busy)} onClick={()=>void compositeLogo()}>确认并合成原始 Logo</button></details>}</> : <p>{busy || '生成的图片将在这里展示'}</p>}</div></section>}
       </main>

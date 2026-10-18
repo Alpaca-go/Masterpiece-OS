@@ -1,0 +1,27 @@
+{
+  "providerCalls": 0,
+  "publicOperationsPassed": true,
+  "actualNodeHost": true,
+  "actualReactRenderer": true,
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "2b6a2f92b47aff65eb242683a0e71e1a260244781e5f63a084eed687cbd9d89b"
+  },
+  "requestBodySha256": "b3eb6391e5e4f71f10c8965e607e7ed6b3255f8064c5290e5eaf244abcf03f60",
+  "formalPromptSha256": "b4363d35d1fbab9f4460c6e96dcabdcc7806f128ee2ca109f2dad35e68a0661c",
+  "providerPromptSha256": "1b3f25c6bbf16e385298850f74ac576712a7027d15efa1f01634a8b93d8b3fa5",
+  "confirmationSha256": "9511a55c7d5ced449ddf60423dc9772c973fba7b1090a3d42f5849e476779a6d",
+  "designDirectionRecordSha256": "515adeb9fdd765393d0e874023302a2684435195189eca3696006f465bfb1e25",
+  "referenceImages": 0,
+  "imageFieldPresent": false,
+  "mockImageRequests": 1,
+  "mockValidationRequests": 1,
+  "originalProjectUnchanged": true,
+  "syntheticResponses": true,
+  "screenshotPaths": [
+    "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\project-design-direction\\web-acceptance\\confirmed-standard-generation.png",
+    "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\project-design-direction\\web-acceptance\\draft-blocks-standard-generation.png"
+  ]
+}

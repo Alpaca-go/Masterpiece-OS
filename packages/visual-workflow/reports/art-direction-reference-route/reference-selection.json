@@ -1,0 +1,16 @@
+{
+  "authorization": {
+    "status": "confirmed",
+    "source": "User approval of independent art-direction reference route on 2026-10-18; offline implementation only"
+  },
+  "images": [
+    {"path":"references/approved-translucent-canopy.jpg","responsibility":"architectural_form","direction":"建筑形态首要参考：大尺度轻薄半透明结构、透射自然光与连续空间，不复制固定环形或原构图"},
+    {"path":"references/approved-sculptural-ceiling.jpeg","responsibility":"spatial_integration","direction":"空间融合参考：薄、轻、通透的层片与建筑组成一个雕塑系统，周围墙地安静简洁"},
+    {"path":"references/approved-pearl-installation.jpeg","responsibility":"material_optics","direction":"珠光材料参考：细薄层叠、边缘高光、乳白反射、微弱虹彩与可读深度；紫只局部内层，不染满空间"},
+    {"path":"references/approved-gallery-entrance.png","responsibility":"spatial_atmosphere","direction":"展馆留白参考：自然光、克制近白配色及大面积安静建筑背景，候客功能退居次位；不堆叠原图所有装置"}
+  ],
+  "excluded": [
+    {"path":"references/rejected-current.png","role":"rejected_comparison","positiveReference":false},
+    {"role":"logo","positiveReference":false,"policy":"original identity remains post-composite"}
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "authorization": "User approved exactly six reviewed SHA-256 replacements; quality acceptance remains pending",
+  "beforeManifestSha256": "df16991c37f6c1b57404d1b958d164be54efb415dca114bea7574d85ee53c321",
+  "afterManifestSha256": "e153cb61cfa3eeec269178251eec409d405770427dcb35a1097d282df1675fb9",
+  "implementationDigest": "3a56ee9273df553f74807322fcc77747b98bcfa6046800a45705a806d198fb30",
+  "entries": [
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/analysis-completion-orchestrator.js",
+      "manifestPath": "src/analysis-decisions/analysis-completion-orchestrator.js",
+      "recordedSha256": "8395bcbcbb798afc27388258f62f7de3eb7a9936a968c9d8280454d8d57da384",
+      "baselineSha256": "8395bcbcbb798afc27388258f62f7de3eb7a9936a968c9d8280454d8d57da384",
+      "candidateSha256": "9577c3d59c4d8869cb11e563163f49ad9bc324dda05855a32664f891cf1338ae",
+      "recordedMatchesBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/analysis-decisions/deliverable-sufficiency.js",
+      "manifestPath": "src/analysis-decisions/deliverable-sufficiency.js",
+      "recordedSha256": "1d2341e13dd383741f677f4bfecb8a49e61d08275f48b13f98f763a68d1e223b",
+      "baselineSha256": "1d2341e13dd383741f677f4bfecb8a49e61d08275f48b13f98f763a68d1e223b",
+      "candidateSha256": "b78d8becd3a7ce165bfb6305d9d2ab512f907c6103d6a893b2cfa02996d5a323",
+      "recordedMatchesBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
+      "manifestPath": "src/generation-runtime/space/semantic/compile-spatial-mechanisms.js",
+      "recordedSha256": "dad054ab68dd9b0371878a50092fe2048c27a0c09e70128d016fc69cc420d293",
+      "baselineSha256": "dad054ab68dd9b0371878a50092fe2048c27a0c09e70128d016fc69cc420d293",
+      "candidateSha256": "5a391a10e91027ba220a1bda5d4adb2dbe898f7b041b8d07ff4841f2ea5f1fc9",
+      "recordedMatchesBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+      "manifestPath": "src/generation-runtime/space/semantic/sanitize-brand-expression.js",
+      "recordedSha256": "d1b658cd984dc67f1c5a671beaf0d2b7c64d0adccc6fc3eb8f2e320428c56831",
+      "baselineSha256": "d1b658cd984dc67f1c5a671beaf0d2b7c64d0adccc6fc3eb8f2e320428c56831",
+      "candidateSha256": "ea5baf7e09309f3f22d6522b9ab55a8fd8740e7da357f0137494dfce7e7f8bee",
+      "recordedMatchesBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/generation-runtime/space/source-adapter.js",
+      "manifestPath": "src/generation-runtime/space/source-adapter.js",
+      "recordedSha256": "a01f53c819a471f56bd499e826c2ea1e5b2d5a1ace33ece566b49c4e15798643",
+      "baselineSha256": "a01f53c819a471f56bd499e826c2ea1e5b2d5a1ace33ece566b49c4e15798643",
+      "candidateSha256": "ceb1695be0872cfae9bd706314f367ce396332a4ba32ad46e434fd2b9a3342c1",
+      "recordedMatchesBaseline": true
+    },
+    {
+      "path": "packages/visual-workflow/src/runtime/visual-decision-packet.js",
+      "manifestPath": "src/runtime/visual-decision-packet.js",
+      "recordedSha256": "e14a02ff9e83834c07b3673e0ad4b81cab91aabedacf6c2f772a9be40554ee81",
+      "baselineSha256": "e14a02ff9e83834c07b3673e0ad4b81cab91aabedacf6c2f772a9be40554ee81",
+      "candidateSha256": "c2cd5758fa708cc1263bfcbf95c3d51816ac4097d4d35da4e488b26dada3e89a",
+      "recordedMatchesBaseline": true
+    }
+  ],
+  "qualityAcceptance": "pending-separate-quality-repair"
+}

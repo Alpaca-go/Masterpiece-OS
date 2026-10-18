@@ -1,4 +1,7 @@
 import path from "node:path";
+import { createArtDirectionStore } from '../../art-direction-store.js';
+import fs from 'node:fs/promises';
+import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
 import { validateShortChainDeliverableEvidence } from "../../generation-runtime/core/space-generation-core.js";
 import { createDefaultAnalysisReasoner } from "../../model-runtime/analysis-provider-registry.js";
 import { atomicWriteJsonWithRetry } from "../runtime/atomic-write.js";
@@ -53,8 +56,13 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
     const imagePath = path.join(runRoot, image.relativePath);
     const context = await projectContext?.getShortChain(input.projectId).catch(() => void 0);
     const promptSource = context?.promptSourceObject;
-    const targetTone = promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
-    const toneAvoid = promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
+    const art = input.taskContract.generationBasis === 'art_direction_reference';
+    const artCapture = art ? await createArtDirectionStore(projects).resolve(input.taskContract.artDirection,input.projectId,input.taskContract.artDirection.model) : null;
+    const execution = !art && input.taskContract.deliverableFamily==='space' ? JSON.parse(await fs.readFile(path.join(runRoot,'source-context-snapshot.json'),'utf8')) : null;
+    const designDirection = execution ? await createProjectDesignDirectionStore(projects).resolve(input.projectId,execution.designDirection || null) : null;
+    const confirmed = artCapture?.confirmation || designDirection?.confirmation;
+    const targetTone = confirmed ? confirmed.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
+    const toneAvoid = confirmed ? (confirmed.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
     const lockedRequirements = [
       ...context?.lockedAssets.mustPreserve ?? [],
       ...promptSource?.lockedAssets.mustPreserve ?? []
@@ -78,7 +86,7 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
               `Logo mode: ${input.taskContract.logoUsageMode || "blank_area"}`,
               `Confirmed brand tone: ${targetTone}`,
               `Tone boundaries to avoid: ${toneAvoid}`,
-              `Locked visible requirements: ${lockedRequirements.join("; ") || "(none)"}`,
+              `Locked requirements (identity is deferred in post_composite mode): ${lockedRequirements.join("; ") || "(none)"}`,
               "",
               "Return exactly:",
               JSON.stringify({
@@ -86,8 +94,12 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
                 detectedSubtype: "visible subtype or unknown",
                 visibleEvidence: ["only concrete visible evidence"],
                 missingRequiredItems: ["requested structures visibly missing"],
+                missingRequiredStructures: ["only missing physical structures; never deferred identity"],
                 forbiddenItemsFound: ["forbidden visible content"],
-                lockedAssetViolations: ["visible violations only"],
+                forbiddenNonIdentityItems: ["only forbidden non-identity content; identity belongs in generatedIdentityEvidence"],
+                lockedAssetViolations: ["visible violations only; no identity absence in post_composite mode"],
+                nonIdentityLockedAssetViolations: ["only visible non-identity asset violations"],
+                generatedIdentityEvidence: ["location and visible shape of unintended generated text or logo; empty if absent"],
                 brandMatch: "matched|mismatched|uncertain",
                 brandToneMatch: "matched|mismatched|uncertain",
                 sceneCompleteness: "complete|incomplete|uncertain",
@@ -96,6 +108,7 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
               }),
               "For a space result, complete means one continuous enterable scene with floor, walls, ceiling, usable function, circulation, foreground, middle ground, background, and credible scale.",
               "In reference Logo mode, flag distorted, invented, duplicated, or misspelled identity. In blank_area mode, any visible logo, word, letters, or pseudo-text is incorrect.",
+              "In post_composite mode this is the pre-composite generation stage. Logo and identity typography MUST be absent. Never report their absence as missingRequiredItems, forbiddenItemsFound or nonIdentityLockedAssetViolations. Logo fidelity/completeness is deferred to the actual post-composite stage. Independently report any wrongly generated letters, pseudo-text or logo as logoTextStatus=incorrect with concrete generatedIdentityEvidence (location and visible marks). A clean blank area is logoTextStatus=absent.",
               "Evaluate brand tone from visible color/material/light/form behavior, not from prompt wording.",
               "Do not infer correctness from this text. If the image cannot prove a field, use unknown/uncertain."
             ].join("\n")
@@ -121,6 +134,8 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
     });
     await persist(input.projectId, run.runId, {
       ...validation,
+      ...art ? {artDirectionSnapshotSha256:artCapture.snapshot.snapshotSha256,userConfirmationSha256:artCapture.snapshot.confirmationSha256} : {},
+      ...designDirection ? {designDirection:designDirection.snapshot} : {},
       validatorProvider: response.provider,
       validatorModel: response.model,
       validatorRunId: response.runId

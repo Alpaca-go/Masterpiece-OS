@@ -88,6 +88,14 @@ function selectArchitectureAnchors(brandKey, criteria = {}, maxCount) {
   if (anchors.length === 0) return [];
   const scored = [];
   for (const anchor of anchors) {
+    const applicability = anchor.applicability ?? {};
+    // Optional examples must match the requested scene, not merely industry.
+    if (!criteria.sceneType || !applicability.sceneTypes?.includes(criteria.sceneType)) continue;
+    if (criteria.selectedAnchorIds && !criteria.selectedAnchorIds.includes(anchor.id)) continue;
+    const evidence = (criteria.mechanismEvidence ?? []).join(" ");
+    const mechanism = [anchor.primaryMechanism, anchor.secondaryMechanism].filter(Boolean).join(" ");
+    const features = [/curv|曲线|弧形|曲面/iu, /layer|层叠|多层/iu, /translucen|transparent|半透明|透光/iu, /membrane|膜/iu, /radial|radiat|放射/iu, /wood|木/iu, /metal|金属/iu];
+    if (!evidence.trim() || features.some(pattern => pattern.test(mechanism) && !pattern.test(evidence))) continue;
     const breakdown = scoreAnchor(anchor, criteria, weights);
     let hasAnyMatch = breakdown.industry > 0 || breakdown.sceneType > 0 || breakdown.commercialContext > 0;
     let score = breakdown.total;
@@ -117,8 +125,8 @@ function renderArchitectureContextBlock(anchors) {
   const lines = [
     "# Architecture Context (in-context reference)",
     "",
-    "> Building-mechanism prior: the following are architecture-language samples accepted for this brand.",
-    "> Use them as a mechanism PRIOR, not as a literal object to copy.",
+    "> Optional architecture examples considered through an explicit request; these are not project facts or approved design decisions.",
+    "> User-confirmed intent, source evidence, artistic hierarchy and operational requirements take priority.",
     ""
   ];
   anchors.forEach((a, i) => {
@@ -130,8 +138,7 @@ function renderArchitectureContextBlock(anchors) {
   });
   lines.push("## Usage in this prompt");
   lines.push("");
-  lines.push("Treat the anchor mechanisms as a prior, placed before the architectural concept.");
-  lines.push("The spatial concept must be consistent with these mechanisms, never conflicting.");
+  lines.push("Use a compatible example only as subordinate support. Discard conflicting example details; never override project intent or color scope.");
   lines.push("Do not reproduce literal concrete objects (specific ceiling curves, glass grids, membrane shapes).");
   return lines.join("\n");
 }

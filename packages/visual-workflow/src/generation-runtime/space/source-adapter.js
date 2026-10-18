@@ -22,6 +22,8 @@ import {
   projectBrandManifestationToTargetScene,
   resolveTargetViewStrategy
 } from "./scene-projection/target-scene-projection.js";
+import { scopeSourceEntries } from "./scene-projection/target-scene-projection.js";
+import { sanitizeBrandItem } from "./semantic/sanitize-brand-expression.js";
 function cleanList(...values) {
   const out = [];
   const seen = /* @__PURE__ */ new Set();
@@ -69,6 +71,8 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const colorSystem = packet.colorSystem || {};
   const materialSystem = Array.isArray(packet.materialSystem) ? packet.materialSystem : [];
   const lightingSystem = packet.lightingSystem || {};
+  const confirmedFields = new Set(packet.provenance?.userConfirmedFields || []);
+  const evidenceClass = field => confirmedFields.has(field) ? "user_confirmed" : "model_proposal";
   const semantic = compileSpatialMechanisms(packet);
   const MECHANIC_EXCLUDED_FIELDS = /* @__PURE__ */ new Set([
     "uniqueUpgradeThesis",
@@ -92,6 +96,10 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const rawMustBeVisible = cleanList(spatial.mustBeVisible);
   const { safe: compositionMustBeVisible, brand: brandMustBeVisible } = splitMustBeVisible(rawMustBeVisible);
   const missing = [];
+  // Persisted packets can carry a stale ready flag from before validation.
+  for (const field of ["signatureSpatialMechanism", "functionalNetwork", "functionalRelationships"]) {
+    if (!cleanList(spatial[field]).length) missing.push(`spatial.${field}`);
+  }
   const rawExperienceGoal = firstString(
     spatial.spatialConcept,
     creativeDecision.uniqueUpgradeThesis,
@@ -147,6 +155,8 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   );
   if (!commercialPurpose) missing.push("projectFacts.brandRole | creativeDecision.uniqueUpgradeThesis");
   if (spatialTranslation.length < 1) missing.push("spatial.brandRoleManifestation | functionalNetwork");
+  if (!demoteFunctionalList(rawFunctionalNetwork, "functionalNetwork").length) missing.push("spatial.functionalNetwork (after semantic cleanup)");
+  if (!operationConstraints.length) missing.push("spatial.functionalRelationships (after semantic cleanup)");
   const conceptPrimary = firstString(spatial.spatialConcept, creativeDecision.uniqueUpgradeThesis);
   const conceptPrimaryNormalized = normalizeConceptPrimary(conceptPrimary);
   const architecturalConcept = {
@@ -161,7 +171,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     sourceRole,
     spatialUsage: resolveSpatialColorRole({
       ...typeof item === "object" && item ? item : { name: String(item) },
-      role: typeof item === "object" && item ? item.role : sourceRole
+      role: typeof item === "object" && item ? item.role : undefined
     })
   }));
   const color = {
@@ -170,11 +180,39 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     accent: withSpatialRole(colorSystem.accent, "accent"),
     forbidden: cleanList(colorSystem.forbidden)
   };
+  // Compilation-local evidence only. Packet containers are model decisions,
+  // not independently verified material facts or user approval.
+  const decisionTrace = {
+    confirmedFields: [...confirmedFields],
+    color: ["primary", "secondary", "accent"].flatMap(group => color[group].map((item, index) => ({
+      sourcePath: `colorSystem.${group}[${index}]`,
+      evidenceClass: evidenceClass("colorSystem"), source: colorSystem[group][index],
+      executionAuthority: confirmedFields.has("colorSystem") ? "user_confirmed_design_intent" : "proposal_only",
+      spatialUsage: item.spatialUsage,
+      unresolved: item.spatialUsage === "unspecified" || item.spatialUsage === "unresolved_conflict"
+    }))),
+    materials: materialSystem.flatMap((source, index) => source.material && cleanList(source.behavior).length ? [{
+      sourcePath: `materialSystem[${index}]`, evidenceClass: evidenceClass("materialSystem"),
+      source, compiled: sanitizeMaterials([{material:source.material,behavior:cleanList(source.behavior),brandRole:source.brandRole,forbidden:cleanList(source.forbidden)}])[0]
+    }] : []),
+    mechanisms: semantic.architectureRewrite.items.map(item => ({
+      sourcePath: item.sourcePath, mechanismId: item.mechanismId,
+      evidenceClass: "system_inference", sourceText: item.text,
+      actions: {strategy:item.strategy, form:item.form, organization:item.organization},
+      dropped: item.dropped, dropReason: item.dropReason
+    })),
+    unknown: ["Unprovided color area ratios and material optical parameters remain unspecified; no historical image inference is authorized."],
+    conflicts: []
+  };
+  for (const entry of decisionTrace.color) {
+    if (entry.spatialUsage === "unresolved_conflict") decisionTrace.conflicts.push(`${entry.sourcePath}: multiple spatial scopes; preserve the supplied wording without inventing allocation.`);
+  }
   const composition = {
     aspectRatio: taskContract?.aspectRatio,
     scene: taskContract?.scene,
     mustBeVisible: compositionMustBeVisible,
-    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators))
+    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
+    ...confirmedFields.has('mediaTranslations.spatial') && cleanList(spatial.compositionRequirements).length ? {userRequirements:cleanList(spatial.compositionRequirements)} : {}
   };
   const negatives = cleanList(
     taskContract?.mustAvoid,
@@ -327,7 +365,60 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     };
   }
   let projectedBrandManifestation = brandSanitized.lines;
-  if (knownTarget) {
+  const standardShot = taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference';
+  const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
+    const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
+    const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;
+    return {text,sourcePath:sourceIndex >= 0 ? `${sourcePath}[${sourceIndex}]` : `derived.${sourcePath}[${index}]`,sourceContainer:sourcePath};
+  });
+  const artisticEntries = ["signatureSpatialMechanism","brandRoleManifestation","mustBeVisible"].flatMap(field => sourceEntries(spatial[field],`mediaTranslations.spatial.${field}`))
+    .filter(entry=>classifyPhrase(entry.text,"signatureSpatialMechanism").classification === SEMANTIC_CLASS.DECORATIVE_OBJECT)
+    .map(entry=>({...entry,text:sanitizeBrandItem(entry.text).text})).filter(entry=>entry.text);
+  const scopedArt = standardShot ? scopeSourceEntries(artisticEntries,taskContract.subtype) : artisticEntries;
+  const artSeen = new Set();
+  compositionLayers.artisticFocus = scopedArt.filter(entry=> {
+    if (entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
+    artSeen.add(entry.text);
+    return true;
+  }).map(entry=>({...entry,evidenceClass:evidenceClass("mediaTranslations.spatial"),priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
+  decisionTrace.artisticFocus = compositionLayers.artisticFocus;
+  decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:evidenceClass("mediaTranslations.spatial")}));
+  const architectureEntries = semantic.architectureRewrite.items.filter(item=>!item.dropped && !["spatialConcept","mustBeVisible"].includes(item.sourceField));
+  decisionTrace.architectureDecisions = standardShot ? scopeSourceEntries(architectureEntries,taskContract.subtype) : architectureEntries;
+  if (standardShot) {
+    decisionTrace.sceneScope = [];
+    decisionTrace.crossSceneConstraints = [];
+    const collectBoundaryConstraints = records => {
+      for (const entry of records) for (const clause of entry.boundaryConstraints ?? []) {
+        if (!decisionTrace.crossSceneConstraints.some(item=>item.text===clause.text)) decisionTrace.crossSceneConstraints.push({...clause,sourcePath:entry.sourcePath,sourceText:entry.text,evidenceClass:"system_inference"});
+      }
+    };
+    collectBoundaryConstraints([...decisionTrace.architectureDecisions,...scopedArt]);
+    const projectList = (items,sourcePath) => {
+      const records = scopeSourceEntries(sourceEntries(items,sourcePath),taskContract.subtype);
+      decisionTrace.sceneScope.push(...records);
+      collectBoundaryConstraints(records);
+      return records.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText).filter(Boolean);
+    };
+    functionalRaw = {
+      sceneProgram:projectList(rawSceneProgram,"mediaTranslations.spatial.sceneProgram"),
+      functionalNetwork:projectList(functionalRaw.functionalNetwork,"mediaTranslations.spatial.functionalNetwork"),
+      positiveDifferentiators:projectList(functionalRaw.positiveDifferentiators,"mediaTranslations.spatial.positiveDifferentiators")
+    };
+    compositionLayers.mustBeVisible = projectList(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible");
+    compositionLayers.positiveDifferentiators = functionalRaw.positiveDifferentiators;
+    bridgeLayers = Object.fromEntries(Object.entries(bridgeLayers).map(([key,value])=>[key,Array.isArray(value) ? projectList(value,`architectureFunctionBridge.${key}`) : value]));
+    const functionalItems = new Set(cleanList(rawMustBeVisible,rawFunctionalNetwork,rawSceneProgram,spatial.peopleBehavior));
+    projectedBrandManifestation = projectList(brandSanitized.lines,"brandSanitization.lines").filter(text=>!functionalItems.has(text) || artSeen.has(text));
+    bridgeLayers.crossSceneConstraints = decisionTrace.crossSceneConstraints.map(entry=>entry.text);
+    targetSceneProjection = {...targetSceneProjection, functionalBlockSource:"source_shot_scope",architectureBridgeSource:"source_shot_scope",operationConstraintsSource:"source_shot_scope"};
+  }
+  decisionTrace.canonicalOwners = [
+    ...decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>({text:entry.text,sourcePath:entry.sourcePath,blockId:"architecture_language"})),
+    ...compositionLayers.artisticFocus.map(entry=>({text:entry.text,sourcePath:entry.sourcePath,blockId:"composition"}))
+    ,...sourceEntries(compositionLayers.mustBeVisible,"mediaTranslations.spatial.mustBeVisible").map(entry=>({...entry,blockId:"composition"}))
+  ];
+  if (knownTarget && !standardShot) {
     const brandProjection = projectBrandManifestationToTargetScene({
       brandManifestation: brandSanitized.lines,
       mechanismEvidence: cleanList(
@@ -380,6 +471,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     materials,
     lighting,
     color,
+    decisionTrace,
     composition: compositionLayers,
     negatives,
     // ---- R8.5 semantic IR (architecture / brand split + action verbs) ----

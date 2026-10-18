@@ -1,0 +1,461 @@
+diff --git a/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx b/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx
+index 09bc859..fc90855 100644
+--- a/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx
++++ b/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx
+@@ -5,2 +5,4 @@ const labels = {
+-  spatialConcept:'空间体验与设计目标', structureLanguage:'建筑结构与空间组织', materialLanguage:'材料与光学表现',
+-  lightingLanguage:'自然光与照明', colorPolicy:'空间配色与品牌色的职责', functionalProgram:'必须保留的商业功能与通行关系', mustAvoid:'必须避免的设计表现'
++  spatialConcept:'空间体验与设计目标', structureLanguage:'建筑结构与空间组织', artisticFocus:'主艺术系统与空间焦点',
++  lightingLanguage:'自然光与照明',lightingContrast:'明暗与对比',lightingInteraction:'光线与材料的相互作用',lightingAvoid:'照明禁用表现',
++  colorAvoid:'整体配色禁用表现',functionalProgram:'功能节点（每行一个区域）',functionalNetwork:'功能网络与通行连接',
++  functionalRelationships:'跨区域运营与隐私关系',visibleRequirements:'画面必须可见的功能设施',compositionRequirements:'构图、主次与画面关系',mustAvoid:'必须避免的设计表现'
+@@ -21,0 +24,3 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
++  function edit(next:ProjectDesignDirection['fields']) {
++    setFields(next);setDirty(true);setConfirmed(false);onState(value,true);
++  }
+@@ -46,0 +52 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
++    {value?.validationIssues?.length ? <div role="alert"><p>以下关系尚待补充确认；当前不会用于生图：</p><ul>{value.validationIssues.map(issue=><li key={issue}>{issue}</li>)}</ul></div> : null}
+@@ -50 +56,16 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
+-        {Object.entries(labels).map(([key,label])=><label key={key}>{label}<textarea value={fields[key as keyof typeof fields]} onChange={event=>{setFields({...fields,[key]:event.target.value});setDirty(true);setConfirmed(false);onState(value,true);}} /></label>)}
++        {Object.entries(labels).map(([key,label])=><label key={key}>{label}<textarea data-design-field={key} value={fields[key as keyof typeof labels]} onChange={event=>edit({...fields,[key]:event.target.value})} /></label>)}
++        <h4>颜色职责与作用范围</h4><p>主色排序不代表铺满空间；每种颜色请明确实际表面和范围。</p>
++        {fields.colorEntries.map((entry,index)=><fieldset key={index} data-design-color={index}><legend>颜色 {index+1}</legend><div className="visual-workflow__fields">
++          <label>颜色名称<input value={entry.name} data-color-field="name" onChange={event=>edit({...fields,colorEntries:fields.colorEntries.map((item,i)=>i===index?{...item,name:event.target.value}:item)})} /></label>
++          <label>配色角色<select value={entry.paletteRole} data-color-field="paletteRole" onChange={event=>edit({...fields,colorEntries:fields.colorEntries.map((item,i)=>i===index?{...item,paletteRole:event.target.value}:item)})}><option value="">待明确</option><option value="primary">主色</option><option value="secondary">辅色</option><option value="accent">局部点缀</option></select></label>
++          <label>视觉职责说明<input value={entry.role} data-color-field="role" onChange={event=>edit({...fields,colorEntries:fields.colorEntries.map((item,i)=>i===index?{...item,role:event.target.value}:item)})} /></label>
++          <label>空间作用范围<select value={entry.spatialUsage} data-color-field="spatialUsage" onChange={event=>edit({...fields,colorEntries:fields.colorEntries.map((item,i)=>i===index?{...item,spatialUsage:event.target.value}:item)})}><option value="">待明确，不授予面积权限</option><option value="dominant_field">明确作为大面积建筑背景</option><option value="secondary_surface">仅指定的辅助表面</option><option value="local_accent">仅局部点缀或局部光学效果</option><option value="soft_furnishing">仅指定软装</option><option value="detail_trim">仅细节收边</option><option value="post_composite_only">仅后期真实标识</option></select></label>
++          <label>作用表面与边界<textarea value={entry.surfaceApplicability} data-color-field="surfaceApplicability" onChange={event=>edit({...fields,colorEntries:fields.colorEntries.map((item,i)=>i===index?{...item,surfaceApplicability:event.target.value}:item)})} /></label>
++        </div><button type="button" onClick={()=>edit({...fields,colorEntries:fields.colorEntries.filter((_,i)=>i!==index)})}>移除此颜色</button></fieldset>)}
++        <button type="button" onClick={()=>edit({...fields,colorEntries:[...fields.colorEntries,{name:'',paletteRole:'',role:'',surfaceApplicability:'',spatialUsage:''}]})}>添加颜色</button>
++        <h4>材料与光学表现</h4>
++        {fields.materialEntries.map((entry,index)=><fieldset key={index} data-design-material={index}><legend>材料 {index+1}</legend>
++          {([['material','材质名称'],['behavior','透射、反射、层叠与光学表现'],['brandRole','材料的空间职责'],['forbidden','材料禁用表现']] as const).map(([key,label])=><label key={key}>{label}<textarea data-material-field={key} value={entry[key]} onChange={event=>edit({...fields,materialEntries:fields.materialEntries.map((item,i)=>i===index?{...item,[key]:event.target.value}:item)})} /></label>)}
++          <button type="button" onClick={()=>edit({...fields,materialEntries:fields.materialEntries.filter((_,i)=>i!==index)})}>移除此材料</button>
++        </fieldset>)}
++        <button type="button" onClick={()=>edit({...fields,materialEntries:[...fields.materialEntries,{material:'',behavior:'',brandRole:'',forbidden:''}]})}>添加材料</button>
+@@ -53 +74 @@ export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
+-          <button type="button" disabled={dirty || !confirmed} onClick={()=>void save('confirm')}>确认设计方向生效</button></>}
++          <button type="button" disabled={dirty || !confirmed || Boolean(value.validationIssues?.length)} onClick={()=>void save('confirm')}>确认设计方向生效</button></>}
+diff --git a/apps/web/src/features/visual-workflow/api.ts b/apps/web/src/features/visual-workflow/api.ts
+index 8db21e5..f712cc7 100644
+--- a/apps/web/src/features/visual-workflow/api.ts
++++ b/apps/web/src/features/visual-workflow/api.ts
+@@ -6,0 +7,6 @@ export type WorkflowOptions = Record<string, { subtypes: string[]; shots: string
++export interface DesignColorEntry { name:string; paletteRole:string; role:string; surfaceApplicability:string; spatialUsage:string }
++export interface DesignMaterialEntry { material:string; behavior:string; brandRole:string; forbidden:string }
++export interface ProjectDesignDirectionFields extends Record<'spatialConcept' | 'structureLanguage' | 'materialLanguage' | 'lightingLanguage' | 'colorPolicy' | 'functionalProgram' | 'mustAvoid' | 'lightingContrast' | 'lightingInteraction' | 'lightingAvoid' | 'colorAvoid' | 'functionalNetwork' | 'functionalRelationships' | 'visibleRequirements' | 'artisticFocus' | 'compositionRequirements', string> {
++  colorEntries:DesignColorEntry[];
++  materialEntries:DesignMaterialEntry[];
++}
+@@ -13 +19,2 @@ export interface ProjectDesignDirection {
+-  fields: Record<'spatialConcept' | 'structureLanguage' | 'materialLanguage' | 'lightingLanguage' | 'colorPolicy' | 'functionalProgram' | 'mustAvoid', string>;
++  fields: ProjectDesignDirectionFields;
++  validationIssues:string[];
+diff --git a/packages/visual-workflow/implementation-integrity.json b/packages/visual-workflow/implementation-integrity.json
+index 51005fe..40d758e 100644
+--- a/packages/visual-workflow/implementation-integrity.json
++++ b/packages/visual-workflow/implementation-integrity.json
+@@ -248 +248 @@
+-      "sha256": "3a34ccce007a53d5443d3b3c2806a235b06eaef3c6577268f68cef09931b635f"
++      "sha256": "0b90295b72f3926da8de474e7d2c8bf1ce40961003eeede4fa1fbe461f6957d8"
+@@ -376 +376 @@
+-      "sha256": "f0224a080003e82d7731f8c2272ac337170728e8b23ce0fb581ea3b6fd21e3b4"
++      "sha256": "ab726f3af21c98ed6fca26d2971b0ed8bd5772e18060bff1ef169817e0da92a5"
+@@ -528 +528 @@
+-      "sha256": "c6d8d459caa961683359593e7eecc7e3233c695e09fafc1018fa912f5f1f231b"
++      "sha256": "7143f177d69880eca6b3401fd75612433a13352ef4a7786cec99811cccc9edc0"
+@@ -538 +538 @@
+-      "sha256": "a29b25520dc858cfbdd9a8eed4a4f2ee1ba98921c08fad0a4a1a3b55f08bfb25"
++      "sha256": "564337052c7165e6c2f787b1187c46adab6cb3bd3acd7d0ac4b4082602f46ac7"
+@@ -546 +546 @@
+-      "sha256": "c9fccad49aec44884e401f6f49173c6d157fcda0518d92dccf1a64518a76ca7b"
++      "sha256": "f2fb7c09a217b992504dd8574e8cbce2c9a8b0cc2d5bdc499d2ae73dc653e799"
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compiler.js b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+index 9e1a4b6..ad551e7 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/compiler.js
++++ b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+@@ -219,0 +220 @@ function renderComposition(layers) {
++    ...c.userRequirements?.length ? ['**User-confirmed composition relationships**:',bullet(c.userRequirements)] : [],
+@@ -352 +353 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+-    blockSources: Object.fromEntries(ordered.map((b) => [b.id, blockSource(b.id)])),
++    blockSources: Object.fromEntries(ordered.map((b) => [b.id, blockSource(b.id,layers)])),
+@@ -362 +363 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+-      blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id)])),
++      blockSources: Object.fromEntries(ordered.map(b=>[b.id,blockSource(b.id,layers)])),
+@@ -425 +426 @@ function deriveAnchorCriteria(layers, taskContract) {
+-function blockSource(id) {
++function blockSource(id,layers) {
+@@ -439 +440 @@ function blockSource(id) {
+-    composition: ["taskContract.aspectRatio|scene", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators"],
++    composition: ["taskContract.aspectRatio|scene", "composition.mustBeVisible (spatial items only)", "spatial.positiveDifferentiators", ...layers.composition.userRequirements?.length ? ['mediaTranslations.spatial.compositionRequirements'] : []],
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index 0d68fb6..1bd2ed4 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -214 +214,2 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+-    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators))
++    positiveDifferentiators: sanitizeDifferentiators(cleanList(spatial.positiveDifferentiators)),
++    ...confirmedFields.has('mediaTranslations.spatial') && cleanList(spatial.compositionRequirements).length ? {userRequirements:cleanList(spatial.compositionRequirements)} : {}
+diff --git a/packages/visual-workflow/src/project-design-direction.js b/packages/visual-workflow/src/project-design-direction.js
+index 9b23392..7811222 100644
+--- a/packages/visual-workflow/src/project-design-direction.js
++++ b/packages/visual-workflow/src/project-design-direction.js
+@@ -10 +10,4 @@ const legacyPath = 'project-context/user-confirmed-visual-decision.json';
+-const fields = ['spatialConcept', 'structureLanguage', 'materialLanguage', 'lightingLanguage', 'colorPolicy', 'functionalProgram', 'mustAvoid'];
++const fields = ['spatialConcept', 'structureLanguage', 'materialLanguage', 'lightingLanguage', 'colorPolicy', 'functionalProgram', 'mustAvoid',
++  'lightingContrast', 'lightingInteraction', 'lightingAvoid', 'colorAvoid', 'functionalNetwork', 'functionalRelationships', 'visibleRequirements', 'artisticFocus', 'compositionRequirements'];
++const requiredFields = {spatialConcept:'空间体验与设计目标',structureLanguage:'建筑结构与空间组织',lightingLanguage:'自然光与照明',
++  functionalProgram:'功能节点',functionalNetwork:'功能网络与通行连接',functionalRelationships:'跨区域运营与隐私关系',visibleRequirements:'画面必须可见的功能设施',mustAvoid:'必须避免的设计表现'};
+@@ -13,0 +17,29 @@ function text(value) { return Array.isArray(value) ? value.map(item => typeof it
++function editorFields(value = {}) {
++  const result=Object.fromEntries(fields.map(field=>[field,String(value[field] || '').trim()]));
++  result.colorEntries=(Array.isArray(value.colorEntries)?value.colorEntries:[]).map(item=>({
++    name:String(item?.name || '').trim(),paletteRole:String(item?.paletteRole || '').trim(),role:String(item?.role || '').trim(),
++    surfaceApplicability:String(item?.surfaceApplicability || '').trim(),spatialUsage:String(item?.spatialUsage || '').trim()
++  }));
++  result.materialEntries=(Array.isArray(value.materialEntries)?value.materialEntries:[]).map(item=>({
++    material:String(item?.material || '').trim(),behavior:String(item?.behavior || '').trim(),brandRole:String(item?.brandRole || '').trim(),forbidden:String(item?.forbidden || '').trim()
++  }));
++  return result;
++}
++function semanticIssues(input) {
++  const issues=Object.entries(requiredFields).filter(([field])=>!input[field]).map(([,label])=>`请补充${label}`);
++  if (!input.colorEntries.length) issues.push('请按主色、辅色或局部点缀分别填写颜色；历史整段配色文字不能自动授予空间范围');
++  input.colorEntries.forEach((item,index)=>{
++    if (!item.name || !['primary','secondary','accent'].includes(item.paletteRole) || !item.role || !item.surfaceApplicability) issues.push(`颜色 ${index+1}：请明确名称、色彩职责及适用表面`);
++    if (/[\n：:；;]|主色|辅色|点缀|大面积|仅用于/u.test(item.name)) issues.push(`颜色 ${index+1}：名称中混有配色关系，请把职责和范围分开确认`);
++    if (/^(待定|未知|不确定|按需|适量|未明确)[。.!！]?$/u.test(item.surfaceApplicability)) issues.push(`颜色 ${index+1}：适用表面仍含糊，请补充具体边界`);
++    if (!['dominant_field','secondary_surface','local_accent','soft_furnishing','detail_trim','post_composite_only'].includes(item.spatialUsage)) issues.push(`颜色 ${index+1}：请明确空间作用范围；不会自动按主色铺满空间`);
++    if (item.paletteRole==='accent' && !['local_accent','soft_furnishing','detail_trim','post_composite_only'].includes(item.spatialUsage)) issues.push(`颜色 ${index+1}：局部点缀不能同时授权大面积主导，请重新明确职责`);
++  });
++  if (!input.materialEntries.length) issues.push('请分别填写材料名称与光学表现');
++  input.materialEntries.forEach((item,index)=>{
++    if (!item.material || !item.behavior || !item.brandRole) issues.push(`材料 ${index+1}：请分别补充名称、光学行为和空间职责；无特殊光学效果也请明确说明`);
++  });
++  const functional=['functionalProgram','functionalNetwork','functionalRelationships'];
++  if (functional.some((field,index)=>input[field] && functional.slice(index+1).some(other=>input[field]===input[other]))) issues.push('功能节点、通行连接与跨区域关系不能使用同一段文字，请分别确认');
++  return issues;
++}
+@@ -23 +55,6 @@ export function designDirectionFields(confirmation) {
+-    functionalProgram: text(spatial.mustBeVisible), mustAvoid: text(confirmation?.reviewTask?.mustAvoid || confirmation?.creativeDecision?.strategicNegatives)
++    colorEntries:['primary','secondary','accent'].flatMap(paletteRole=>(spatial.colorBehavior?.[paletteRole] || []).map(item=>({name:item.name || '',paletteRole,role:item.role || '',surfaceApplicability:item.surfaceApplicability || '',spatialUsage:item.spatialUsage || ''}))),
++    materialEntries:(spatial.materialLanguage || []).map(item=>({material:typeof item==='string'?item:item.material || '',behavior:text(item.behavior),brandRole:item.brandRole || '',forbidden:text(item.forbidden)})),
++    lightingContrast:spatial.lightingLanguage?.contrast || '',lightingInteraction:text(spatial.lightingLanguage?.interactionWithMaterials),lightingAvoid:text(spatial.lightingLanguage?.forbidden),colorAvoid:text(spatial.colorBehavior?.forbidden),
++    functionalProgram:text(spatial.sceneProgram),functionalNetwork:text(spatial.functionalNetwork),functionalRelationships:text(spatial.functionalRelationships),
++    visibleRequirements:text(spatial.mustBeVisible),artisticFocus:text(spatial.signatureSpatialMechanism),compositionRequirements:text(spatial.compositionRequirements),
++    mustAvoid:text([...(confirmation?.reviewTask?.mustAvoid || []),...(confirmation?.creativeDecision?.strategicNegatives || [])])
+@@ -27 +64,2 @@ function buildConfirmation(projectId, input, sourceStatement) {
+-  if (fields.some(field => !String(input[field] || '').trim())) fail('PROJECT_DESIGN_DIRECTION_FIELDS_REQUIRED');
++  const issues=semanticIssues(input);
++  if (issues.length) throw Object.assign(new Error(issues.join('；')), {code:'PROJECT_DESIGN_DIRECTION_SEMANTICS_REQUIRED',issues});
+@@ -29 +67,2 @@ function buildConfirmation(projectId, input, sourceStatement) {
+-  const functional = lines(input.functionalProgram);
++  const colorBehavior=Object.fromEntries(['primary','secondary','accent'].map(role=>[role,input.colorEntries.filter(item=>item.paletteRole===role).map(({paletteRole,...item})=>item)]));
++  const artisticFocus=lines(input.artisticFocus);
+@@ -36,5 +75,6 @@ function buildConfirmation(projectId, input, sourceStatement) {
+-      materialLanguage:lines(input.materialLanguage).map(material=>({material,behavior:[],brandRole:'用户确认的材料表现目标',forbidden:[]})),
+-      lightingLanguage:{source:lines(input.lightingLanguage),forbidden:[]},
+-      colorBehavior:{primary:[{name:input.colorPolicy.trim(),role:'用户确认的空间配色行为',spatialUsage:'dominant_field'}],secondary:[],accent:[],forbidden:[]},
+-      sceneProgram:functional,functionalNetwork:functional,functionalRelationships:functional,mustBeVisible:functional,
+-      brandRoleManifestation:lines(input.structureLanguage),signatureSpatialMechanism:lines(input.structureLanguage),positiveDifferentiators:[spatialConcept]}
++      materialLanguage:input.materialEntries.map(item=>({...item,behavior:lines(item.behavior),forbidden:lines(item.forbidden)})),
++      lightingLanguage:{source:lines(input.lightingLanguage),contrast:input.lightingContrast,interactionWithMaterials:lines(input.lightingInteraction),forbidden:lines(input.lightingAvoid)},
++      colorBehavior:{...colorBehavior,forbidden:lines(input.colorAvoid)},
++      sceneProgram:lines(input.functionalProgram),functionalNetwork:lines(input.functionalNetwork),functionalRelationships:lines(input.functionalRelationships),mustBeVisible:lines(input.visibleRequirements),
++      compositionRequirements:lines(input.compositionRequirements),
++      brandRoleManifestation:artisticFocus.length?artisticFocus:lines(input.structureLanguage),signatureSpatialMechanism:artisticFocus.length?artisticFocus:lines(input.structureLanguage),positiveDifferentiators:[spatialConcept]}
+@@ -67,0 +108,3 @@ export function createProjectDesignDirectionStore(projects) {
++    const editing=record?.fields?.colorEntries && record?.fields?.materialEntries ? editorFields(record.fields) : record?.confirmation ? designDirectionFields(record.confirmation) : editorFields(record?.fields);
++    const validationIssues=record ? semanticIssues(editing) : [];
++    const semanticReview=record?.status==='confirmed' && validationIssues.length>0;
+@@ -69,2 +112,2 @@ export function createProjectDesignDirectionStore(projects) {
+-    const status = changed ? 'needs_reconfirmation' : record?.status || 'missing';
+-    return {root,packet,record,view:{projectId,status,reason:changed?'analysis_or_intake_changed':record?.reason || null,
++    const status = changed || semanticReview ? 'needs_reconfirmation' : record?.status || 'missing';
++    return {root,packet,record,view:{projectId,status,reason:semanticReview?'editor_semantics_requires_review':changed?'analysis_or_intake_changed':record?.reason || null,
+@@ -72 +115 @@ export function createProjectDesignDirectionStore(projects) {
+-      fields:record?.fields || designDirectionFields(null),confirmedAt:record?.confirmedAt || null,
++      fields:editing,validationIssues,confirmedAt:record?.confirmedAt || null,
+@@ -98 +141 @@ export function createProjectDesignDirectionStore(projects) {
+-      const values=supplied ? designDirectionFields(supplied) : Object.fromEntries(fields.map(field=>[field,String(input.fields?.[field] || '').trim()]));
++      const values=supplied ? designDirectionFields(supplied) : editorFields(input.fields);
+@@ -99,0 +143 @@ export function createProjectDesignDirectionStore(projects) {
++      if (values.colorEntries.length>24 || values.materialEntries.length>24 || [...values.colorEntries,...values.materialEntries].some(item=>Object.values(item).some(value=>value.length>12000))) fail('PROJECT_DESIGN_DIRECTION_TOO_LONG');
+@@ -109,0 +154 @@ export function createProjectDesignDirectionStore(projects) {
++      if (current.view.validationIssues.length) throw Object.assign(new Error(current.view.validationIssues.join('；')), {code:'PROJECT_DESIGN_DIRECTION_SEMANTICS_REQUIRED',issues:current.view.validationIssues});
+diff --git a/packages/visual-workflow/tests/capture-design-direction-editor.mjs b/packages/visual-workflow/tests/capture-design-direction-editor.mjs
+new file mode 100644
+index 0000000..a2f285e
+--- /dev/null
++++ b/packages/visual-workflow/tests/capture-design-direction-editor.mjs
+@@ -0,0 +1,152 @@
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import net from 'node:net';
++import assert from 'node:assert/strict';
++import {spawn,spawnSync} from 'node:child_process';
++import WebSocket from 'ws';
++import sharp from 'sharp';
++import {createVisualWorkflow} from '../src/service.js';
++import {digest} from '../src/art-direction-contract.js';
++import {verifyImplementation} from '../src/integrity.js';
++import {assertEditorSemanticFidelity} from './design-direction-editor-evidence.mjs';
++
++const [source,outputArgument]=process.argv.slice(2);
++const output=path.resolve(outputArgument);await fs.mkdir(output);
++const read=async file=>JSON.parse(await fs.readFile(file,'utf8'));
++const write=(name,value)=>fs.writeFile(path.join(output,name),JSON.stringify(value,null,2)+'\n');
++const form=JSON.parse(await fs.readFile(new URL('./design-direction-form.json',import.meta.url),'utf8'));
++const webRequests=[];
++const nativeFetch=globalThis.fetch;
++const images=[];const validations=[];
++const responseBytes=await sharp({create:{width:320,height:180,channels:3,background:'white'}}).png().toBuffer();
++const evidence={detectedFamily:'space',detectedSubtype:'reception',visibleEvidence:['Synthetic offline browser transport output; not visual acceptance'],missingRequiredItems:[],forbiddenItemsFound:[],lockedAssetViolations:[],brandMatch:'matched',brandToneMatch:'matched',sceneCompleteness:'complete',logoTextStatus:'absent',qualityIssues:[]};
++globalThis.fetch=async (url,input)=>{
++  const target=new URL(url);
++  if(target.hostname==='image.example.invalid') {
++    assert.equal(images.length,0);assert.equal(input.method,'POST');
++    const body=JSON.parse(input.body);assert.equal('image' in body,false);images.push({url:String(url),method:input.method,body});
++    return new Response(JSON.stringify({data:[{b64_json:responseBytes.toString('base64')}]}),{status:200});
++  }
++  if(target.hostname==='validator.example.invalid') {
++    assert.equal(validations.length,0);validations.push({url:String(url),body:JSON.parse(input.body)});
++    return new Response(JSON.stringify({id:'offline-browser-validation',model:'qwen3.6-plus',choices:[{message:{content:JSON.stringify(evidence)}}]}),{status:200});
++  }
++  if(target.hostname==='127.0.0.1'||target.hostname==='localhost')return nativeFetch(url,input);
++  throw new Error('REAL_PROVIDER_NETWORK_FORBIDDEN');
++};
++async function inventory(root){const items=[];async function walk(dir){for(const item of await fs.readdir(dir,{withFileTypes:true})){assert(!item.isSymbolicLink());const file=path.join(dir,item.name);if(item.isDirectory())await walk(file);else items.push({path:path.relative(root,file),sha256:digest(await fs.readFile(file))});}}await walk(root);return items.sort((a,b)=>a.path.localeCompare(b.path));}
++const original=await inventory(source);const project=await read(path.join(source,'project.json'));
++const userData=path.join(output,'user-data');process.env.MASTERPIECE_USER_DATA_DIR=userData;
++const workflowRoot=path.join(userData,'visual-workflow');const clone=path.join(workflowRoot,'data/projects',project.id);
++await fs.mkdir(clone,{recursive:true});await fs.copyFile(path.join(source,'project.json'),path.join(clone,'project.json'));
++for(const name of ['input','project-context'])await fs.cp(path.join(source,name),path.join(clone,name),{recursive:true,errorOnExist:true,force:false});
++for(const name of ['outputs','runtime','prepared'])await fs.mkdir(path.join(clone,name),{recursive:true});
++if(project.lastReportFilename)await fs.copyFile(path.join(source,'outputs',project.lastReportFilename),path.join(clone,'outputs',project.lastReportFilename));
++const setup=createVisualWorkflow({root:workflowRoot});
++await setup.operations['visual-workflow:save-profile']({}, {name:'Offline browser image',provider:'volcengine',protocol:'seedream-image',modelId:'doubao-seedream-5-0-pro-260628',modelType:'image_generation',baseUrl:'https://image.example.invalid/v3',apiKey:'OFFLINE_FIXTURE_ONLY'});
++await setup.operations['visual-workflow:save-profile']({}, {name:'Offline browser validator',provider:'dashscope',protocol:'openai-chat-multimodal',modelId:'qwen3.6-plus',modelType:'analysis',baseUrl:'https://validator.example.invalid/v1',apiKey:'OFFLINE_FIXTURE_ONLY'});
++// No confirmation JSON or design direction is injected here. The browser fills
++// the real editor's natural-language controls and saves through its normal RPC.
++const {startNodeRuntimeHost}=await import('../../../apps/web-runtime/src/node-runtime-host.ts');
++// The existing application shell opens model settings on a completely empty
++// install. Give only the isolated shell a separate, unusable fixture profile;
++// the workflow must continue using its own two profiles, never this one.
++const shellSettings=await import('../../../apps/web-runtime/src/node-settings-store.ts');
++await shellSettings.saveApiProfile({displayName:'Unrelated shell fixture',provider:'dashscope',protocol:'openai-chat-multimodal',modelType:'analysis',modelId:'qwen3.6-plus',baseUrl:'https://unrelated.example.invalid/v1',apiKey:'OFFLINE_SHELL_ONLY'});
++async function freePort(){return new Promise(resolve=>{const server=net.createServer();server.listen(0,'127.0.0.1',()=>{const port=server.address().port;server.close(()=>resolve(port));});});}
++const hostPort=await freePort(),webPort=await freePort(),debugPort=await freePort();
++const origin=`http://127.0.0.1:${webPort}`;let host=await startNodeRuntimeHost({port:hostPort,host:'127.0.0.1',allowedOrigin:origin});
++let renderer,chrome,cdp;
++const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
++async function until(action,label,timeout=30000){const end=Date.now()+timeout;let last;while(Date.now()<end){try{const value=await action();if(value)return value;}catch(error){last=error;}await delay(200);}throw new Error(`${label}: ${last?.message||'timeout'}`);}
++async function connect(url){const socket=new WebSocket(url);await new Promise((resolve,reject)=>{socket.once('open',resolve);socket.once('error',reject);});let index=0;const pending=new Map();socket.on('message',raw=>{const data=JSON.parse(raw);if(data.method==='Network.requestWillBeSent'&&data.params.request.method==='POST'&&data.params.request.url.includes('/_masterpiece/rpc/visual-workflow'))webRequests.push({url:data.params.request.url,body:JSON.parse(data.params.request.postData)});if(data.id&&pending.has(data.id)){const item=pending.get(data.id);pending.delete(data.id);data.error?item.reject(new Error(JSON.stringify(data.error))):item.resolve(data.result);}});return {call:(method,params={})=>new Promise((resolve,reject)=>{const id=++index;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}));}),close:()=>socket.close()};}
++async function evaluate(expression){const result=await cdp.call('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(result.exceptionDetails)throw new Error(JSON.stringify(result.exceptionDetails));return result.result.value;}
++async function body(){return evaluate('document.body.innerText');}
++async function click(text){await evaluate(`(()=>{const element=[...document.querySelectorAll('button,summary')].find(item=>item.textContent.trim()===${JSON.stringify(text)});if(!element||element.disabled)throw Error('Control unavailable: '+${JSON.stringify(text)});element.click();return true;})()`);}
++async function screenshot(name){const result=await cdp.call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});await fs.writeFile(path.join(output,name),Buffer.from(result.data,'base64'));}
++async function fill(selector,value){await evaluate(`(()=>{const element=document.querySelector(${JSON.stringify(selector)});if(!element)throw Error('Missing control: '+${JSON.stringify(selector)});const prototype=element.tagName==='SELECT'?HTMLSelectElement.prototype:element.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(prototype,'value').set.call(element,${JSON.stringify(value)});element.dispatchEvent(new Event(element.tagName==='SELECT'?'change':'input',{bubbles:true}));return true;})()`);}
++const states=[];
++function stop(child){if(child&&child.exitCode===null){spawnSync('taskkill',['/PID',String(child.pid),'/T','/F'],{windowsHide:true,stdio:'ignore'});child.kill();}}
++try {
++  renderer=spawn(process.execPath,['node_modules/vite/bin/vite.js','--config','apps/web/vite.config.mjs','--host','127.0.0.1','--port',String(webPort)],{env:{...process.env,MASTERPIECE_WEB_RPC_URL:host.url},windowsHide:true,stdio:['ignore','pipe','pipe']});
++  let rendererLog='';renderer.stdout.on('data',data=>rendererLog+=data);renderer.stderr.on('data',data=>rendererLog+=data);
++  await until(async()=>{const response=await nativeFetch(origin);return response.ok;},'renderer');
++  const page=`${origin}/#/visual-workflow?import=${project.id}`;
++  chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-sandbox','--disable-gpu','--disable-extensions','--disable-background-networking','--disable-component-update','--disable-sync','--no-first-run','--no-default-browser-check','--no-pings',`--user-data-dir=${path.join(output,'chrome-data')}`,`--remote-debugging-port=${debugPort}`,'--window-size=1440,1200',page],{windowsHide:true,stdio:'ignore'});
++  const target=await until(async()=>{const response=await nativeFetch(`http://127.0.0.1:${debugPort}/json/list`);return (await response.json()).find(item=>item.type==='page'&&item.url.startsWith(origin));},'browser target');
++  cdp=await connect(target.webSocketDebuggerUrl);await cdp.call('Page.enable');await cdp.call('Network.enable');
++  await until(async()=>{const text=await body();return text.includes('项目设计方向')&&text.includes('未设置，当前使用分析建议');},'empty project direction');
++  states.push({stage:'opened_empty_editor',status:'missing'});
++  await click('查看、编辑并确认设计方向');
++  await fill('section[aria-label="项目设计方向"] label textarea',form.sourceStatement);
++  for(const [key,value] of Object.entries(form.fields))if(typeof value==='string')await fill(`[data-design-field="${key}"]`,value);
++  for(const [index,entry] of form.fields.colorEntries.entries()) {
++    await click('添加颜色');for(const [key,value] of Object.entries(entry))await fill(`[data-design-color="${index}"] [data-color-field="${key}"]`,value);
++  }
++  for(const [index,entry] of form.fields.materialEntries.entries()) {
++    await click('添加材料');for(const [key,value] of Object.entries(entry))await fill(`[data-design-material="${index}"] [data-material-field="${key}"]`,value);
++  }
++  // An ambiguous accent remains a draft and cannot be confirmed or sent.
++  await fill('[data-design-color="2"] [data-color-field="spatialUsage"]','');
++  await click('保存设计方向草稿');
++  await until(async()=>(await body()).includes('请明确空间作用范围'),'ambiguous scope clarification');
++  assert.equal(await evaluate(`[...document.querySelectorAll('button')].find(item=>item.textContent.trim()==='确认设计方向生效').disabled`),true);
++  assert.equal(images.length,0);assert.equal(validations.length,0);
++  states.push({stage:'ambiguous_accent',status:'draft',modelDispatchBlocked:true});
++  await fill('[data-design-color="2"] [data-color-field="spatialUsage"]',form.fields.colorEntries[2].spatialUsage);
++  await click('保存设计方向草稿');
++  await until(async()=>{const text=await body();return text.includes('草稿，尚未确认生效')&&!text.includes('以下关系尚待补充确认');},'semantics saved');
++  await evaluate(`document.querySelector('section[aria-label="项目设计方向"] input[type="checkbox"]').click()`);
++  await click('确认设计方向生效');
++  await until(async()=>(await body()).includes('已确认，将用于标准空间生图'),'confirmation');
++  states.push({stage:'confirmed_in_browser',status:'confirmed'});
++  await click('4. 智能生图');
++  await click('智能生成');
++  await until(async()=>images.length===1&&validations.length===1&&(await body()).includes('校验通过'),'actual web business generation');
++  const confirmed=await setup.operations['visual-workflow:report']({},project.id,'project_design_direction');
++  await screenshot('confirmed-standard-generation.png');
++  const compileRuns=await setup.operations['visual-workflow:runs']({},project.id);assert.equal(compileRuns.length,1);
++  const runRoot=await setup.images.runRoot(compileRuns[0].runId);
++  const snapshot=await read(path.join(runRoot,'source-context-snapshot.json'));
++  const compilation=await read(path.join(clone,'image-generation-vnext/compilations',snapshot.taskContract.taskId,'compiled-prompt.json'));
++  const formalPrompt=await fs.readFile(path.join(runRoot,'compiled-prompt.txt'),'utf8');
++  const fidelity=assertEditorSemanticFidelity(form.fields,confirmed.confirmation,compilation.effectiveVisualDecisionPacket,formalPrompt,images[0].body);
++  assert(compilation.sourceMap.composition.includes('mediaTranslations.spatial.compositionRequirements'));
++  const imports=webRequests.filter(item=>decodeURIComponent(item.url).endsWith('visual-workflow:import-files'));
++  assert(imports.length>=3);for(const item of imports)assert.equal(Object.hasOwn(item.body.args[1],'confirmation'),false);
++  assert.equal(snapshot.taskContract.generationBasis,'standard');assert.deepEqual(snapshot.taskContract.referenceAssetIds,[]);
++  const stamp=await read(path.join(runRoot,'workflow-implementation.json'));assert.deepEqual(stamp,await verifyImplementation());
++  const metadata=await read(path.join(runRoot,'request-metadata.json'));assert.equal(metadata.referenceCount,0);assert.equal(metadata.aspectRatio,'16:9');
++  assert.equal(metadata.designDirection.confirmationSha256,digest(confirmed.confirmation));
++  await host.close();host=await startNodeRuntimeHost({port:hostPort,host:'127.0.0.1',allowedOrigin:origin});
++  await cdp.call('Page.reload');
++  await until(async()=>(await body()).includes('已确认，将用于标准空间生图'),'restarted host persisted confirmation');
++  states.push({stage:'host_restart_and_browser_reload',status:'confirmed'});
++  await click('查看、编辑并确认设计方向');
++  await evaluate(`(()=>{const textarea=[...document.querySelectorAll('section[aria-label="项目设计方向"] label')].find(item=>item.textContent.includes('决策来源与确认依据')).querySelector('textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(textarea,textarea.value+' / Browser draft edit');textarea.dispatchEvent(new Event('input',{bubbles:true}));return true;})()`);
++  await until(async()=>(await body()).includes('有未保存修改'),'unsaved status');
++  await click('保存设计方向草稿');
++  await until(async()=>{const text=await body();return text.includes('草稿，尚未确认生效')&&!text.includes('有未保存修改');},'saved draft');
++  await click('4. 智能生图');
++  assert.equal(await evaluate(`[...document.querySelectorAll('button')].find(item=>item.textContent.trim()==='智能生成').disabled`),true);
++  await screenshot('draft-blocks-standard-generation.png');
++  await cdp.call('Page.reload');
++  await until(async()=>(await body()).includes('草稿，尚未确认生效'),'draft persisted after reopening');
++  states.push({stage:'edit_save_and_reopen',status:'draft',standardGenerationBlocked:true});
++  assert.equal(images.length,1);assert.equal(validations.length,1);assert.deepEqual(await inventory(source),original);
++  await write('provider-request.json',images[0]);await write('validator-request.json',validations[0]);
++  await write('natural-language-input.json',form);await write('web-input-requests.json',imports);await write('field-fidelity.json',fidelity);
++  await write('confirmed-direction.json',confirmed);await write('effective-packet.json',compilation.effectiveVisualDecisionPacket);await write('compiler-trace.json',compilation.trace);
++  await fs.writeFile(path.join(output,'formal-prompt.txt'),formalPrompt);await fs.writeFile(path.join(output,'provider-prompt.txt'),images[0].body.prompt);
++  await write('request-metadata.json',metadata);await write('public-operation-stamp.json',stamp);
++  await write('browser-result.json',{status:'PASS',realProviderCalls:0,recordedMockImageRequests:images.length,recordedMockValidationRequests:validations.length,automaticRegenerations:0,
++    actualNodeHost:true,actualReactRenderer:true,publicIntegrityVerified:true,naturalLanguageEnteredInBrowser:true,noConfirmationJsonInjected:true,fieldFidelityRows:fidelity.rows.length,
++    imageReferenceFieldPresent:false,referenceImages:0,sourceProjectUnchanged:true,testCopy:clone,states,
++    implementationDigest:stamp.implementationDigest,promptSha256:digest(images[0].body.prompt),runRoot,providerParameters:{model:images[0].body.model,size:images[0].body.size,fields:Object.keys(images[0].body)},humanQualityAcceptance:'pending'});
++  await fs.writeFile(path.join(output,'renderer.log'),rendererLog);
++  console.log(JSON.stringify({status:'PASS',realProviderCalls:0,referenceImages:0,publicIntegrityVerified:true,states}));
++} catch(error) {
++  await write('failure.json',{message:error.message,body:cdp?await body().catch(()=>null):null});
++  if(cdp)await screenshot('failure.png').catch(()=>{});
++  throw error;
++} finally {cdp?.close();stop(chrome);stop(renderer);await host.close();}
+diff --git a/packages/visual-workflow/tests/design-direction-editor-evidence.mjs b/packages/visual-workflow/tests/design-direction-editor-evidence.mjs
+new file mode 100644
+index 0000000..0bde65b
+--- /dev/null
++++ b/packages/visual-workflow/tests/design-direction-editor-evidence.mjs
+@@ -0,0 +1,43 @@
++import assert from 'node:assert/strict';
++
++const lines=value=>String(value || '').split('\n').map(item=>item.trim()).filter(Boolean);
++export function assertEditorSemanticFidelity(fields,confirmation,effectivePacket,formalPrompt,providerBody) {
++  const rows=[];const spatial=confirmation.spatialTranslation;
++  for(const field of ['colorSystem','materialSystem','mediaTranslations.spatial'])assert(effectivePacket.provenance.userConfirmedFields.includes(field));
++  const check=(inputPath,targetPath,expected,actual,effective,terms=[])=>{
++    assert.deepEqual(actual,expected,targetPath);assert.deepEqual(effective,expected,`effective Packet ${targetPath}`);
++    for(const term of terms){assert(formalPrompt.toLowerCase().includes(term.toLowerCase()),`Formal Prompt lost ${inputPath}: ${term}`);assert(providerBody.prompt.toLowerCase().includes(term.toLowerCase()),`Provider lost ${inputPath}: ${term}`);}
++    rows.push({inputPath,targetPath,input:expected,confirmation:actual,effectivePacket:effective,promptTermsVerified:terms,promptComparison:'case-insensitive English; exact Packet values',status:'PASS'});
++  };
++  for(const [index,item] of fields.colorEntries.entries()) {
++    const role=item.paletteRole;const offset=fields.colorEntries.slice(0,index).filter(entry=>entry.paletteRole===role).length;
++    const actual=spatial.colorBehavior[role][offset],effective=effectivePacket.colorSystem[role][offset];
++    for(const key of ['name','role','surfaceApplicability','spatialUsage'])check(`colorEntries[${index}].${key}`,`colorSystem.${role}[${offset}].${key}`,item[key],actual[key],effective[key],[item[key]]);
++  }
++  for(const role of ['primary','secondary','accent'])assert.equal(effectivePacket.colorSystem[role].length,fields.colorEntries.filter(item=>item.paletteRole===role).length);
++  for(const [index,item] of fields.materialEntries.entries())for(const key of ['material','brandRole','behavior','forbidden']) {
++    const expected=['behavior','forbidden'].includes(key)?lines(item[key]):item[key];
++    check(`materialEntries[${index}].${key}`,`materialSystem[${index}].${key}`,expected,spatial.materialLanguage[index][key],effectivePacket.materialSystem[index][key],Array.isArray(expected)?expected:[expected]);
++  }
++  const mappings={functionalProgram:'sceneProgram',functionalNetwork:'functionalNetwork',functionalRelationships:'functionalRelationships',visibleRequirements:'mustBeVisible',compositionRequirements:'compositionRequirements'};
++  for(const [input,target] of Object.entries(mappings)) {
++    const expected=lines(fields[input]);
++    // The existing cross-zone projection splits clauses and keeps the other
++    // interiors off frame. Both original relation and visible clauses are checked.
++    const terms=input==='functionalRelationships'?expected.flatMap(item=>item.split(';').map(part=>part.trim().replace(/[.]$/u,''))):expected;
++    check(input,`mediaTranslations.spatial.${target}`,expected,spatial[target],effectivePacket.mediaTranslations.spatial[target],terms);
++  }
++  check('colorAvoid','colorSystem.forbidden',lines(fields.colorAvoid),spatial.colorBehavior.forbidden,effectivePacket.colorSystem.forbidden,lines(fields.colorAvoid));
++  check('mustAvoid','creativeDecision.strategicNegatives',lines(fields.mustAvoid),confirmation.creativeDecision.strategicNegatives,effectivePacket.creativeDecision.strategicNegatives,lines(fields.mustAvoid));
++  for(const [input,target] of Object.entries({spatialConcept:'spatialConcept',structureLanguage:'structureLanguage',artisticFocus:'signatureSpatialMechanism'})) {
++    const expected=input==='spatialConcept'?fields[input]:lines(fields[input]);
++    check(input,`mediaTranslations.spatial.${target}`,expected,spatial[target],effectivePacket.mediaTranslations.spatial[target],Array.isArray(expected)?expected:[expected]);
++  }
++  for(const [input,target] of Object.entries({lightingLanguage:'source',lightingContrast:'contrast',lightingInteraction:'interactionWithMaterials',lightingAvoid:'forbidden'})) {
++    const expected=input==='lightingContrast'?fields[input]:lines(fields[input]);
++    check(input,`lightingSystem.${target}`,expected,spatial.lightingLanguage[target],effectivePacket.lightingSystem[target],Array.isArray(expected)?expected:[expected]);
++  }
++  assert.notDeepEqual(spatial.sceneProgram,spatial.functionalNetwork);assert.notDeepEqual(spatial.functionalNetwork,spatial.functionalRelationships);
++  assert.equal(Object.hasOwn(providerBody,'image'),false);assert(providerBody.prompt.endsWith(formalPrompt));
++  return {status:'PASS',referenceImages:0,imageFieldPresent:false,rows,crossRegionPolicy:'Original relation preserved in Packet; clauses projected into current-shot operational and privacy boundaries'};
++}
+diff --git a/packages/visual-workflow/tests/design-direction-editor.test.ts b/packages/visual-workflow/tests/design-direction-editor.test.ts
+new file mode 100644
+index 0000000..5533ff3
+--- /dev/null
++++ b/packages/visual-workflow/tests/design-direction-editor.test.ts
+@@ -0,0 +1,29 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs/promises';
++import {businessFixture} from './art-direction-business-fixture.ts';
++import {createProjectDesignDirectionStore} from '../src/project-design-direction.js';
++import {designDirectionFields} from '../src/project-design-direction.js';
++import {assertEditorSemanticFidelity} from './design-direction-editor-evidence.mjs';
++const form=JSON.parse(await fs.readFile(new URL('./design-direction-form.json',import.meta.url),'utf8'));
++
++test('natural-language form values retain independent semantic fields through official standard business compilation',async t=>{
++  const f=await businessFixture(t);const store=createProjectDesignDirectionStore(f.projects);
++  const draft=await store.saveDraft(f.project.id,{...form,expectedRecordSha256:null});assert.deepEqual(draft.validationIssues,[]);
++  const confirmed=await store.confirm(f.project.id,{confirmedByUser:true,expectedRecordSha256:draft.recordSha256});
++  const compiled=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task:{...f.task,generationBasis:'standard',referenceAssetIds:[],currentInstruction:'生成符合项目气质的空间效果图',mustAvoid:[]}});
++  await f.start(compiled);
++  const evidence=assertEditorSemanticFidelity(form.fields,confirmed.confirmation,compiled.compiledPrompt.effectiveVisualDecisionPacket,compiled.compiledPrompt.finalPrompt,f.requests[0].body);
++  assert(compiled.compiledPrompt.sourceMap.composition.includes('mediaTranslations.spatial.compositionRequirements'));
++  assert(evidence.rows.length>30);assert.equal(f.requests.length,1);assert.equal(f.validations.length,1);
++  const reopened=designDirectionFields(confirmed.confirmation);
++  assert.deepEqual(reopened.colorEntries,form.fields.colorEntries);assert.deepEqual(reopened.materialEntries,form.fields.materialEntries);
++});
++test('ambiguous color scope, misplaced full color prose, missing optics and duplicated function relations require clarification',async t=>{
++  const f=await businessFixture(t);const store=createProjectDesignDirectionStore(f.projects);let expectedRecordSha256=null;
++  const changes=[(value:any)=>{value.colorEntries[2].spatialUsage='';},(value:any)=>{value.colorEntries[2].surfaceApplicability='适量';},
++    (value:any)=>{value.colorEntries[0].name='主色与局部点缀：整段配色';},(value:any)=>{value.materialEntries[0].behavior='';},
++    (value:any)=>{value.functionalNetwork=value.functionalProgram;},(value:any)=>{value.colorEntries[2].spatialUsage='dominant_field';}];
++  for(const change of changes){const fields=structuredClone(form.fields);change(fields);const draft=await store.saveDraft(f.project.id,{fields,sourceStatement:form.sourceStatement,expectedRecordSha256});expectedRecordSha256=draft.recordSha256;assert(draft.validationIssues.length>0);await assert.rejects(store.confirm(f.project.id,{confirmedByUser:true,expectedRecordSha256}),error=>error.code==='PROJECT_DESIGN_DIRECTION_SEMANTICS_REQUIRED');assert.equal((await store.get(f.project.id)).status,'draft');}
++  assert.equal(f.requests.length,0);
++});
+diff --git a/packages/visual-workflow/tests/design-direction-form.json b/packages/visual-workflow/tests/design-direction-form.json
+new file mode 100644
+index 0000000..f6e198c
+--- /dev/null
++++ b/packages/visual-workflow/tests/design-direction-form.json
+@@ -0,0 +1,28 @@
++{
++  "sourceStatement": "用户确认的项目设计目标。人工认可作品仅用于离线审美校准，不是原始品牌事实，也不是生图参考输入。",
++  "fields": {
++    "spatialConcept": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
++    "structureLanguage": "轻薄半透明顶面与连续空间分隔组织自然光、穿行和视线纵深\n周边墙地及顶面保持暖白低对比留白",
++    "artisticFocus": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
++    "lightingLanguage": "柔和自然日光\n克制的间接光",
++    "lightingContrast": "建筑背景低对比，层片边缘保留细腻明暗",
++    "lightingInteraction": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构",
++    "lightingAvoid": "全空间紫色灯带\n紫色霓虹",
++    "colorAvoid": "紫色共同主导墙、顶、窗帘与多类家具",
++    "functionalProgram": "接待大厅\n入口\n候客区",
++    "functionalNetwork": "Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.",
++    "functionalRelationships": "Reception and waiting share readable circulation; preserve the consultation privacy boundary while other room interiors remain off frame.",
++    "visibleRequirements": "Reception counter\nWaiting area seating\nClear visitor circulation\nConsultation privacy boundary",
++    "compositionRequirements": "入口视角保留前景通行、中景接待与候客、背景留白的清晰纵深；艺术焦点与可用接待台形成主次，不遮挡通行。",
++    "mustAvoid": "通用医美装修\n重复拱券、波浪灯槽及连续紫色发光描边\n装饰性羽毛堆叠\n厚重染色玻璃与不透明发光浮雕",
++    "colorEntries": [
++      {"name":"暖白与乳白","paletteRole":"primary","role":"安静明亮的建筑背景","surfaceApplicability":"墙面、地面及周边顶面；不包含主艺术结构内层","spatialUsage":"dominant_field"},
++      {"name":"浅暖灰","paletteRole":"secondary","role":"辅助接待表面的低对比层次","surfaceApplicability":"接待台次要台面与限定辅助表面","spatialUsage":"secondary_surface"},
++      {"name":"品牌紫","paletteRole":"accent","role":"局部材料内层的细微虹彩；视觉识别以后期真实标识体现","surfaceApplicability":"只在层片内层和少量细部出现，不染满墙顶、窗帘或家具","spatialUsage":"local_accent"}
++    ],
++    "materialEntries": [
++      {"material":"半透明珠光薄片","behavior":"自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现","brandRole":"参与建筑分隔与空间组织的主艺术系统","forbidden":"厚重染色玻璃\n不透明自发光浮雕"},
++      {"material":"暖白矿物基底","behavior":"柔和漫反射\n连续、低对比的安静表面","brandRole":"衬托薄片与自然光的建筑背景","forbidden":"高对比镜面拼贴"}
++    ]
++  }
++}

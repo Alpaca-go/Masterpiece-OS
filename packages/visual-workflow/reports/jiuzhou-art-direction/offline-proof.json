@@ -1,0 +1,258 @@
+{
+  "baselineCommit": "7609f6634acc0d98c8a07965b6b0432b679a6c0e",
+  "modelCalls": 0,
+  "credentialsRead": false,
+  "historyUnchanged": true,
+  "bundleUnchanged": true,
+  "contextSha256": "44eb3f309d4cb52947ec33276ece9f26631bdb2e95f937e86a8e6942fa218143",
+  "projectInputSha256": "5356ca7a9282ab49ec2d40368e1b9f958f8ef37ab995655dffb7895e435e76d7",
+  "baselineIgnoresConfirmation": true,
+  "unconfirmedStandardPromptUnchanged": true,
+  "formalPromptSha256": "94d29f17731ec1a3e741c891c2ab929833dc583a6ff49a290ad6b6bcf8f207b7",
+  "formalPromptCharacters": 7412,
+  "standardInputImages": 0,
+  "referencePreviewInputImages": 4,
+  "referenceProductionRouteAvailable": false,
+  "semanticGate": {
+    "schemaVersion": "1.0",
+    "version": "space-spatial-semantic-gate@1.1.0",
+    "status": "pass",
+    "findings": []
+  },
+  "compileGate": {
+    "schemaVersion": "1.0",
+    "status": "pass",
+    "findings": [],
+    "checkedAt": "2026-10-18T02:40:50.825Z"
+  },
+  "keyConflicts": [
+    {
+      "sourcePath": "creativeDecision.preserveCore[0]",
+      "original": "紫色主色调 (Peacock Violet)",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "品牌原始标识仅以后期合成呈现",
+      "stillInHistoricalPrompt": false,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "creativeDecision.uniqueUpgradeThesis",
+      "original": "从传统的写实孔雀和具象医美元素，升级为抽象的、具有光影质感的‘翎羽’美学系统。保留紫色和流线型核心，通过材质和光线的精细化处理，强调‘精琢’的品牌承诺，避免被误读为时尚品牌，确立高端医美美学定位。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "以图二图三的轻薄半透明结构组织建筑与动线，以图四珠光层叠关系表达材料，以图五的展馆留白、自然光与克制配色确定主次。",
+      "stillInHistoricalPrompt": false,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "abstractions[1].formalProperties[0]",
+      "original": "S形曲线",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.spatialConcept",
+      "original": "翎羽光影——通过材质和光线模拟羽毛的层叠、光泽和流动感，营造优雅、神秘且专业的空间氛围。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "当代美术馆般的接待与入口：宁静的乳白建筑留白、透射日光和薄片层次建立空间体验；艺术焦点与接待运营有清楚主次。",
+      "stillInHistoricalPrompt": false,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.brandRoleManifestation[2]",
+      "original": "治疗区：洁净、科技感，体现科学严谨。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": false,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+      "original": "流线型隔断/天花造型：模仿羽毛的层叠和S形曲线，引导视线和动线。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "接待区：一个与建筑结合的轻薄半透明珠光层叠艺术装置，以可读的薄片层次、深度和边缘高光形成唯一艺术焦点。",
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[1]",
+      "original": "渐变光影系统：利用灯光在墙面或地面投射出类似羽毛纹理的渐变光影。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+      "original": "区别于传统医美的冰冷白色，使用紫色调和温暖材质。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "艺术来自建筑本体、材料光学与自然光，保留真实可用的接待功能",
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[1]",
+      "original": "区别于美容院的繁琐装饰，保持现代简约和科技感。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.materialLanguage[0].material",
+      "original": "紫色半透明亚克力/玻璃",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "轻薄半透明珠光层片",
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.materialLanguage[2].brandRole",
+      "original": "提供纯净背景，平衡紫色的浓郁，体现科学性。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.lightingLanguage.source[0]",
+      "original": "隐藏式灯带",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "柔和自然日光",
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.lightingLanguage.source[2]",
+      "original": "艺术吊灯",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.brandIntegration[0]",
+      "original": "前台背景墙：Logo与抽象羽毛造型结合",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "品牌标识以后期合成呈现，不授权模型绘制Logo或中文品牌字样",
+      "stillInHistoricalPrompt": false,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.brandIntegration[1]",
+      "original": "导视系统：紫色字体+金属材质",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "mediaTranslations.spatial.functionalExperience[0]",
+      "original": "进入：被紫色光影和艺术装置吸引，感受品牌调性。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "进入时感受展馆留白与自然日光，候客设施自然退居次位",
+      "stillInHistoricalPrompt": false,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "materialSystem[0].material",
+      "original": "紫色半透明亚克力/玻璃",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "轻薄半透明珠光层片",
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "materialSystem[2].brandRole",
+      "original": "提供纯净背景，平衡紫色的浓郁，体现科学性。",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "lightingSystem.source[0]",
+      "original": "隐藏式灯带",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": "柔和自然日光",
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    },
+    {
+      "sourcePath": "lightingSystem.source[2]",
+      "original": "艺术吊灯",
+      "sourceType": "historical_model_proposal",
+      "executionAuthority": "superseded_by_explicit_project_user_direction",
+      "handling": "read_only_original_retained; replaced_in_compilation_memory_only",
+      "replacement": null,
+      "stillInHistoricalPrompt": true,
+      "stillInFinalPrompt": false
+    }
+  ],
+  "changedLeafCount": 175,
+  "unknown": [
+    "material thickness",
+    "manufacturing and fastening",
+    "exact color area ratios",
+    "visual quality pending human acceptance"
+  ],
+  "fullReadonlyProof": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-direction-review\\submission\\review-proof.json",
+  "protection": [
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "baselineSha256": "7767be380484d444155df0b12ed4d1fe0fb860d562fb68869c8b43d3a3456bde",
+      "workingSha256": "7767be380484d444155df0b12ed4d1fe0fb860d562fb68869c8b43d3a3456bde",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/extraction-provenance.json",
+      "baselineSha256": "0d099c783742b0f3ab1cf21fa935608d14d03e51b6ea1ea5fdbd74928aa7edd1",
+      "workingSha256": "0d099c783742b0f3ab1cf21fa935608d14d03e51b6ea1ea5fdbd74928aa7edd1",
+      "unchanged": true
+    },
+    {
+      "path": "config/repository-contract/prompt-integrity.json",
+      "baselineSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "workingSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "unchanged": true
+    }
+  ]
+}

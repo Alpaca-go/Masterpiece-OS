@@ -1,0 +1,844 @@
+diff --git a/packages/visual-workflow/src/art-direction-contract.js b/packages/visual-workflow/src/art-direction-contract.js
+new file mode 100644
+index 0000000..9af54c4
+--- /dev/null
++++ b/packages/visual-workflow/src/art-direction-contract.js
+@@ -0,0 +1,39 @@
++import crypto from 'node:crypto';
++import { ART_DIRECTION_MODELS, SEEDREAM_MAX_REFERENCE_IMAGES } from './image-adapter/reference-capability.js';
++
++export const ART_DIRECTION_BOUNDARY = 'ART DIRECTION REFERENCE BOUNDARY';
++export const ART_DIRECTION_SOURCE = 'approved_art_direction_explicit';
++export const ART_DIRECTION_ROLE = 'approved_art_direction_reference';
++export const digest = value => crypto.createHash('sha256').update(typeof value === 'string' || Buffer.isBuffer(value) ? value : JSON.stringify(value)).digest('hex');
++export function artDirectionError(code) { return Object.assign(new Error(code), { code }); }
++export function assertArtDirectionModel(model, protocol = 'seedream-image') {
++  if (protocol !== 'seedream-image' || !ART_DIRECTION_MODELS.includes(model)) throw artDirectionError('ART_DIRECTION_MODEL_UNSUPPORTED');
++}
++export function assertArtDirectionSnapshot(snapshot, projectId, ids) {
++  if (!snapshot || snapshot.projectId !== projectId || snapshot.authorization?.status !== 'confirmed' || !snapshot.authorization.source || !/^[a-f0-9]{64}$/u.test(snapshot.authorization.sourceDocumentSha256 || '') || !/^[a-f0-9]{64}$/u.test(snapshot.confirmationSha256 || '')) throw artDirectionError('ART_DIRECTION_AUTHORIZATION_INVALID');
++  assertArtDirectionModel(snapshot.model);
++  const assets = snapshot.assets;
++  if (!Array.isArray(assets) || !assets.length || assets.length > SEEDREAM_MAX_REFERENCE_IMAGES || !Array.isArray(ids) || ids.length !== assets.length || new Set(ids).size !== ids.length || new Set(assets.map(item => item.sha256)).size !== assets.length) throw artDirectionError('ART_DIRECTION_SELECTION_INVALID');
++  for (const [index, asset] of assets.entries()) {
++    if (!Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0 || asset.sizeBytes > 30 * 1024 * 1024) throw artDirectionError('ART_DIRECTION_SIZE_INVALID');
++    if (asset.id !== ids[index] || asset.projectId !== projectId || asset.role !== ART_DIRECTION_ROLE || asset.authorizationStatus !== 'confirmed' || !['architectural_form','spatial_integration','material_optics','spatial_atmosphere'].includes(asset.responsibility) || typeof asset.direction !== 'string' || !asset.direction.trim() || asset.direction.length > 1500 || !/^[a-f0-9]{64}$/u.test(asset.sha256 || '') || !['image/png','image/jpeg','image/webp'].includes(asset.mimeType)) throw artDirectionError('ART_DIRECTION_ASSET_INVALID');
++  }
++  const { snapshotSha256, ...content } = snapshot;
++  if (snapshotSha256 !== digest(content)) throw artDirectionError('ART_DIRECTION_SNAPSHOT_INVALID');
++  return snapshot;
++}
++export function renderArtDirectionBoundary(task) {
++  const snapshot = assertArtDirectionSnapshot(task.artDirection, task.projectId, task.referenceAssetIds);
++  return [ART_DIRECTION_BOUNDARY,
++    `Target scene: ${task.subtype}. The current user-confirmed project direction is authoritative.`,
++    'Use the following explicitly selected images only for their assigned attributes, in this exact input order:',
++    ...snapshot.assets.map((asset, index) => `Image ${index + 1}: ${asset.responsibility}; ${asset.direction}.`),
++    'Transfer the assigned architectural and optical attributes, not a collage or exact layout. Keep one primary artistic system and the requested functional program, circulation and privacy.',
++    'Do not copy visible logos, brand text, signage or watermarks. Identity remains post-composite. Rejected comparisons and identity assets are not positive references.',
++    'Unprovided dimensions, material manufacture and mounting remain unknown. No reference weight, strength or role-control parameter is assumed.'
++  ].join('\n');
++}
++export function artDirectionReferencePolicy(task, count, mode, sources) {
++  assertArtDirectionSnapshot(task.artDirection,task.projectId,task.referenceAssetIds);
++  return count === task.referenceAssetIds.length && mode === 'reference_assisted' && sources?.length === count && sources.every(source => source === ART_DIRECTION_SOURCE);
++}
+diff --git a/packages/visual-workflow/src/art-direction-store.js b/packages/visual-workflow/src/art-direction-store.js
+new file mode 100644
+index 0000000..5efa9c2
+--- /dev/null
++++ b/packages/visual-workflow/src/art-direction-store.js
+@@ -0,0 +1,128 @@
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import sharp from 'sharp';
++import { inside, readJson, writeJson } from './configuration.js';
++import { applyUserConfirmedVisualDecision } from './generation-runtime/generation/user-confirmed-visual-decision.js';
++import { ART_DIRECTION_ROLE, digest, artDirectionError, assertArtDirectionModel, assertArtDirectionSnapshot } from './art-direction-contract.js';
++import { SEEDREAM_MAX_REFERENCE_IMAGES } from './image-adapter/reference-capability.js';
++
++const registryPath = 'project-context/art-direction/references.json';
++const confirmationPath = 'project-context/user-confirmed-visual-decision.json';
++async function safeFile(root, relative) {
++  if ((await fs.lstat(root)).isSymbolicLink()) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++  if (typeof relative !== 'string' || path.isAbsolute(relative) || relative.includes('\\') || relative.split('/').some(part => !part || part === '.' || part === '..' || part.includes(':'))) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++  const realRoot = await fs.realpath(root);
++  let file = realRoot;
++  for (const part of relative.split('/')) {
++    file = path.join(file, part);
++    if ((await fs.lstat(file)).isSymbolicLink()) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++  }
++  const real = await fs.realpath(file);
++  if (!real.startsWith(realRoot + path.sep) || !(await fs.stat(real)).isFile()) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++  return real;
++}
++async function inspect(bytes, mimeType) {
++  if (!bytes.length || bytes.length > 30 * 1024 * 1024) throw artDirectionError('ART_DIRECTION_SIZE_INVALID');
++  const info = await sharp(bytes, { limitInputPixels: 36_000_000 }).metadata();
++  if (({png:'image/png',jpeg:'image/jpeg',webp:'image/webp'})[info.format] !== mimeType || (info.pages || 1) !== 1) throw artDirectionError('ART_DIRECTION_TYPE_INVALID');
++  if (info.width <= 14 || info.height <= 14 || info.width / info.height < 1/16 || info.width / info.height > 16) throw artDirectionError('ART_DIRECTION_DIMENSIONS_INVALID');
++  await sharp(bytes, { limitInputPixels: 36_000_000 }).raw().toBuffer();
++  return {width:info.width,height:info.height};
++}
++async function safeDirectory(root, relative) {
++  if ((await fs.lstat(root)).isSymbolicLink()) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++  let directory = await fs.realpath(root);
++  for (const component of relative.split('/')) {
++    directory = path.join(directory,component);
++    const stat = await fs.lstat(directory).catch(error=>{if(error.code==='ENOENT') return null;throw error;});
++    if (stat && (stat.isSymbolicLink() || !stat.isDirectory())) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++    if (!stat) await fs.mkdir(directory);
++  }
++  return directory;
++}
++export function createArtDirectionStore(projects) {
++  async function register(input) {
++    const project = await projects.get(input.projectId);
++    if (project.status === 'running') throw artDirectionError('ART_DIRECTION_PROJECT_BUSY');
++    const root = (await projects.paths(input.projectId)).root;
++    const authorization = input.authorization;
++    if (authorization?.projectId && authorization.projectId !== input.projectId) throw artDirectionError('ART_DIRECTION_PROJECT_MISMATCH');
++    if (authorization?.status !== 'confirmed' || !authorization.source || !/^[a-f0-9]{64}$/u.test(authorization.sourceDocumentSha256 || '')) throw artDirectionError('ART_DIRECTION_AUTHORIZATION_INVALID');
++    if (!Array.isArray(input.images) || !input.images.length || input.images.length > SEEDREAM_MAX_REFERENCE_IMAGES) throw artDirectionError('ART_DIRECTION_SELECTION_INVALID');
++    const packet = await readJson(await safeFile(root,'project-context/visual-decision-packet.json'));
++    if (packet.projectId !== input.projectId) throw artDirectionError('ART_DIRECTION_PROJECT_MISMATCH');
++    applyUserConfirmedVisualDecision(packet,input.confirmation,input.projectId,'space');
++    if (!input.confirmation || input.confirmation.appliesTo?.deliverableFamilies?.join(',') !== 'space') throw artDirectionError('ART_DIRECTION_CONFIRMATION_REQUIRED');
++    // Validate the whole batch before creating any asset or changing a directive.
++    const seen = new Set();
++    const prepared = [];
++    const logoHashes = new Set((project.assets || []).filter(item => item.role === 'logo' || packet.lockedAssets?.some(locked => locked.type === 'logo' && locked.assetId === item.id)).map(item => item.sha256));
++    for (const image of input.images) {
++      if (image.projectId && image.projectId !== input.projectId) throw artDirectionError('ART_DIRECTION_PROJECT_MISMATCH');
++      if (image.role !== ART_DIRECTION_ROLE || image.authorizationStatus !== 'confirmed' || !['architectural_form','spatial_integration','material_optics','spatial_atmosphere'].includes(image.responsibility) || !String(image.direction || '').trim() || image.direction.length > 1500) throw artDirectionError('ART_DIRECTION_ASSET_INVALID');
++      if (typeof image.content !== 'string' || image.content.length > 42 * 1024 * 1024) throw artDirectionError('ART_DIRECTION_UPLOAD_INVALID');
++      const bytes = Buffer.from(image.content,'base64');
++      // Canonical round-trip validation is linear even for multi-megabyte images.
++      if (bytes.toString('base64') !== image.content) throw artDirectionError('ART_DIRECTION_UPLOAD_INVALID');
++      if (bytes.length !== image.sizeBytes || digest(bytes) !== image.sha256 || seen.has(image.sha256) || logoHashes.has(image.sha256)) throw artDirectionError('ART_DIRECTION_DIGEST_OR_DUPLICATE_INVALID');
++      seen.add(image.sha256);
++      const dimensions = await inspect(bytes,image.mimeType);
++      const extension = ({'image/png':'.png','image/jpeg':'.jpg','image/webp':'.webp'})[image.mimeType];
++      if (!extension || !((image.mimeType === 'image/jpeg' ? ['.jpg','.jpeg'] : [extension]).includes(path.extname(image.name || '').toLowerCase()))) throw artDirectionError('ART_DIRECTION_TYPE_INVALID');
++      const id = crypto.randomUUID();
++      prepared.push({bytes,asset:{id,originalName:path.basename(image.name),projectId:input.projectId,role:ART_DIRECTION_ROLE,authorizationStatus:'confirmed',responsibility:image.responsibility,direction:image.direction.trim(),sha256:image.sha256,mimeType:image.mimeType,sizeBytes:bytes.length,...dimensions,relativePath:`project-context/art-direction/assets/${id}${extension}`}});
++    }
++    // An explicit registration replaces the selection registry, never historical files.
++    // Old image files remain recoverable; an existing compilation becomes stale.
++    await safeDirectory(root,'project-context/art-direction/assets');
++    for (const relative of [registryPath,confirmationPath]) {
++      const stat = await fs.lstat(inside(root,relative)).catch(error=>{if(error.code==='ENOENT') return null;throw error;});
++      if (stat && (stat.isSymbolicLink() || !stat.isFile())) throw artDirectionError('ART_DIRECTION_PATH_INVALID');
++    }
++    for (const item of prepared) await fs.writeFile(inside(root,item.asset.relativePath),item.bytes,{flag:'wx'});
++    const registry = {projectId:input.projectId,authorization:{status:'confirmed',source:authorization.source,sourceDocumentSha256:authorization.sourceDocumentSha256},confirmationSha256:digest(input.confirmation),assets:prepared.map(item => item.asset)};
++    await writeJson(inside(root,registryPath),registry);
++    await writeJson(inside(root,confirmationPath),input.confirmation);
++    return registry;
++  }
++  async function capture(projectId, ids, model) {
++    assertArtDirectionModel(model);
++    const root = (await projects.paths(projectId)).root;
++    const registry = await readJson(await safeFile(root,registryPath));
++    const confirmation = await readJson(await safeFile(root,confirmationPath));
++    if (registry.projectId !== projectId || confirmation.projectId !== projectId || confirmation.status !== 'confirmed' || digest(confirmation) !== registry.confirmationSha256) throw artDirectionError('ART_DIRECTION_CONFIRMATION_STALE');
++    if (!Array.isArray(ids) || !ids.length || ids.length > SEEDREAM_MAX_REFERENCE_IMAGES || new Set(ids).size !== ids.length) throw artDirectionError('ART_DIRECTION_SELECTION_INVALID');
++    const assets = ids.map(id => {
++      const matches = registry.assets.filter(asset => asset.id === id);
++      if (matches.length !== 1) throw artDirectionError('ART_DIRECTION_REFERENCE_MISSING');
++      return matches[0];
++    });
++    const content = {projectId,model,authorization:registry.authorization,confirmationSha256:registry.confirmationSha256,registrySha256:digest(registry),assets};
++    const snapshot = {...content,snapshotSha256:digest(content)};
++    assertArtDirectionSnapshot(snapshot,projectId,ids);
++    const references = [];
++    const project = await projects.get(projectId);
++    const logoHashes = new Set((project.assets || []).filter(item=>item.role==='logo').map(item=>item.sha256));
++    for (const asset of assets) {
++      if (!asset.relativePath.startsWith('project-context/art-direction/assets/') || logoHashes.has(asset.sha256)) throw artDirectionError('ART_DIRECTION_ASSET_INVALID');
++      const file = await safeFile(root,asset.relativePath);
++      if (!({'image/png':['.png'],'image/jpeg':['.jpg','.jpeg'],'image/webp':['.webp']})[asset.mimeType]?.includes(path.extname(file).toLowerCase())) throw artDirectionError('ART_DIRECTION_TYPE_INVALID');
++      if ((await fs.stat(file)).size !== asset.sizeBytes) throw artDirectionError('ART_DIRECTION_SIZE_INVALID');
++      const bytes = await fs.readFile(file);
++      if (digest(bytes) !== asset.sha256) throw artDirectionError('ART_DIRECTION_ASSET_CHANGED');
++      const dimensions = await inspect(bytes,asset.mimeType);
++      if (dimensions.width !== asset.width || dimensions.height !== asset.height) throw artDirectionError('ART_DIRECTION_DIMENSIONS_INVALID');
++      references.push({...asset,data:bytes.toString('base64'),name:path.basename(file)});
++    }
++    return {snapshot,references,confirmation};
++  }
++  async function resolve(snapshot, projectId, model) {
++    assertArtDirectionSnapshot(snapshot,projectId,snapshot?.assets?.map(item=>item.id));
++    if (model !== snapshot.model) throw artDirectionError('ART_DIRECTION_MODEL_CHANGED');
++    const current = await capture(projectId,snapshot.assets.map(item=>item.id),model);
++    if (current.snapshot.snapshotSha256 !== snapshot.snapshotSha256) throw artDirectionError('ART_DIRECTION_SNAPSHOT_STALE');
++    return current;
++  }
++  return {register,capture,resolve};
++}
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/compile.js b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+index 7fd6f49..0fe6992 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/compile.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/compile.js
+@@ -15,0 +16 @@ import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decisi
++import { ART_DIRECTION_SOURCE, ART_DIRECTION_ROLE, digest, assertArtDirectionModel } from '../../art-direction-contract.js';
+@@ -80 +81 @@ function compileShortChainGeneration(input) {
+-      enforceSpatialSemantics: input.task?.generationBasis === "standard" || input.task?.generationBasis === "reference_first"
++      enforceSpatialSemantics: input.task?.generationBasis === "standard" || input.task?.generationBasis === "reference_first" || input.task?.generationBasis === 'art_direction_reference'
+@@ -118,0 +120,5 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
++  const artDirection = taskContract.generationBasis === 'art_direction_reference';
++  if (artDirection) {
++    assertArtDirectionModel(input.model);
++    if (!confirmedDecision.confirmation || taskContract.artDirection.model !== input.model || digest(input.userConfirmedVisualDecision) !== taskContract.artDirection.confirmationSha256) throw new Error('ART_DIRECTION_CONFIRMATION_STALE');
++  }
+@@ -140,2 +146,2 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+-    referenceCount: 0,
+-    hasExplicitReferenceBypass: true
++    referenceCount: artDirection ? referenceAssetIds.length : 0,
++    hasExplicitReferenceBypass: artDirection ? false : true
+@@ -226 +232 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+-        referenceMode: taskContract.generationBasis === "reference_first" || taskContract.generationBasis === "continuation" ? "reference_assisted" : "text_only",
++        referenceMode: artDirection || taskContract.generationBasis === "reference_first" || taskContract.generationBasis === "continuation" ? "reference_assisted" : "text_only",
+@@ -286 +292 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+-    referenceSources: taskContract.generationBasis === "continuation" ? referenceAssetIds.map(() => "confirmed_generated_output") : referenceAssetIds.map(() => "user_explicit"),
++    referenceSources: artDirection ? referenceAssetIds.map(() => ART_DIRECTION_SOURCE) : taskContract.generationBasis === "continuation" ? referenceAssetIds.map(() => "confirmed_generated_output") : referenceAssetIds.map(() => "user_explicit"),
+@@ -289,0 +296 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
++    taskContract,
+@@ -291,2 +298,2 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
+-    referenceRole: taskContract.generationBasis === "continuation" ? taskContract.continuation?.referenceRole ?? "world_consistency" : "high_fidelity_visual_reference",
+-    referenceSources: taskContract.generationBasis === "continuation" ? ["confirmed_generated_output"] : ["user_explicit"],
++    referenceRole: artDirection ? ART_DIRECTION_ROLE : taskContract.generationBasis === "continuation" ? taskContract.continuation?.referenceRole ?? "world_consistency" : "high_fidelity_visual_reference",
++    referenceSources: artDirection ? referenceAssetIds.map(()=>ART_DIRECTION_SOURCE) : taskContract.generationBasis === "continuation" ? ["confirmed_generated_output"] : ["user_explicit"],
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js b/packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js
+index a2b0b8a..3bbc935 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/seedream-adapter.js
+@@ -0,0 +1,2 @@
++import { SEEDREAM_MAX_REFERENCE_IMAGES } from '../../image-adapter/reference-capability.js';
++import { ART_DIRECTION_BOUNDARY } from '../../art-direction-contract.js';
+@@ -5 +7 @@ const SEEDREAM_REFERENCE_CAPABILITY = Object.freeze({
+-  maxReferenceImages: 2,
++  maxReferenceImages: SEEDREAM_MAX_REFERENCE_IMAGES,
+@@ -44,0 +47 @@ function createSeedreamShortChainAdapter(options = {}) {
++        taskContract,
+@@ -50 +53 @@ function createSeedreamShortChainAdapter(options = {}) {
+-      const prompt = boundary ? `${compiledText}
++      const prompt = boundary && !(generationBasis === 'art_direction_reference' && compiledText.includes(ART_DIRECTION_BOUNDARY)) ? `${compiledText}
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/task-contract.js b/packages/visual-workflow/src/generation-runtime/generation/task-contract.js
+index 5ccb2c7..d11d439 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/task-contract.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/task-contract.js
+@@ -1,0 +2 @@ import crypto from "node:crypto";
++import { assertArtDirectionSnapshot } from '../../art-direction-contract.js';
+@@ -16 +17 @@ function createShortChainTaskContract(input, options = {}) {
+-  const generationBasis = rawBasis === "continuation" ? "continuation" : rawBasis === "reference_first" ? "reference_first" : rawBasis === "standard" ? "standard" : requestedReferenceAssetIds.length ? "reference_first" : "standard";
++  const generationBasis = rawBasis === 'art_direction_reference' ? rawBasis : rawBasis === "continuation" ? "continuation" : rawBasis === "reference_first" ? "reference_first" : rawBasis === "standard" ? "standard" : requestedReferenceAssetIds.length ? "reference_first" : "standard";
+@@ -36,0 +38,4 @@ function createShortChainTaskContract(input, options = {}) {
++  if (generationBasis === 'art_direction_reference') {
++    if (family !== 'space' || input.referenceAssetIds?.length !== referenceAssetIds.length) throw new Error('ART_DIRECTION_SELECTION_INVALID');
++    assertArtDirectionSnapshot(input.artDirection,input.projectId,referenceAssetIds);
++  }
+@@ -70,0 +76 @@ function createShortChainTaskContract(input, options = {}) {
++    ...generationBasis === 'art_direction_reference' ? {artDirection:structuredClone(input.artDirection)} : {},
+diff --git a/packages/visual-workflow/src/generation-runtime/space/compiler.js b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+index dc6fe7e..9e1a4b6 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/compiler.js
++++ b/packages/visual-workflow/src/generation-runtime/space/compiler.js
+@@ -293,0 +294 @@ function compileSpacePrompt(input) {
++    taskContract: input.taskContract,
+@@ -332 +333 @@ ${referenceBoundaryText}` : baseFinalPrompt;
+-  const authorityGate = layers.targetSceneProjection?.functionalBlockSource === "target_scene_projection" ? validateTargetSceneAuthority({
++  const authorityGate = input.taskContract?.generationBasis === 'art_direction_reference' || layers.targetSceneProjection?.functionalBlockSource === "target_scene_projection" ? validateTargetSceneAuthority({
+diff --git a/packages/visual-workflow/src/generation-runtime/space/gates/compile-integrity-gate.js b/packages/visual-workflow/src/generation-runtime/space/gates/compile-integrity-gate.js
+index eb2a908..b0c5256 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/gates/compile-integrity-gate.js
++++ b/packages/visual-workflow/src/generation-runtime/space/gates/compile-integrity-gate.js
+@@ -1,0 +2 @@ import { ACTIVE_SPACE_ROUTE_BASELINE } from "../quality-baselines/active-space-r
++import { artDirectionReferencePolicy } from '../../../art-direction-contract.js';
+@@ -44 +45 @@ function assertSpaceGenerationRouteGateA(input, baseline = ACTIVE_SPACE_ROUTE_BA
+-  const referencePolicyMatched = generationBasis === "standard" ? referenceCount === 0 && referenceMode === "text_only" : generationBasis === "reference_first" ? referenceCount >= 1 && referenceMode === "reference_assisted" && (input.referenceSources ?? []).every((source) => [
++  const referencePolicyMatched = generationBasis === 'art_direction_reference' ? artDirectionReferencePolicy(input.taskContract,referenceCount,referenceMode,input.referenceSources) : generationBasis === "standard" ? referenceCount === 0 && referenceMode === "text_only" : generationBasis === "reference_first" ? referenceCount >= 1 && referenceMode === "reference_assisted" && (input.referenceSources ?? []).every((source) => [
+diff --git a/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js b/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js
+index 04ba8cb..e4e5a75 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js
++++ b/packages/visual-workflow/src/generation-runtime/space/gates/generation-route-integrity-gate.js
+@@ -1,0 +2 @@ import { ACTIVE_SPACE_ROUTE_BASELINE } from "../quality-baselines/active-space-r
++import { artDirectionReferencePolicy } from '../../../art-direction-contract.js';
+@@ -45 +46 @@ function assertSpaceGenerationRouteIntegrity(input, baseline = ACTIVE_SPACE_ROUT
+-  const referencePolicyMatched = generationBasis === "standard" ? referenceCount === 0 && referenceMode === "text_only" : generationBasis === "reference_first" ? referenceCount >= 1 && referenceMode === "reference_assisted" && (input.referenceSources ?? []).every((source) => [
++  const referencePolicyMatched = generationBasis === 'art_direction_reference' ? artDirectionReferencePolicy(input.taskContract,referenceCount,referenceMode,input.referenceSources) : generationBasis === "standard" ? referenceCount === 0 && referenceMode === "text_only" : generationBasis === "reference_first" ? referenceCount >= 1 && referenceMode === "reference_assisted" && (input.referenceSources ?? []).every((source) => [
+diff --git a/packages/visual-workflow/src/generation-runtime/space/gates/provider-prompt-gate.js b/packages/visual-workflow/src/generation-runtime/space/gates/provider-prompt-gate.js
+index e40dfa2..e6fa23f 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/gates/provider-prompt-gate.js
++++ b/packages/visual-workflow/src/generation-runtime/space/gates/provider-prompt-gate.js
+@@ -1,0 +2 @@ import { REFERENCE_BOUNDARY_VERSION } from "../reference-boundary.js";
++import { ART_DIRECTION_BOUNDARY } from '../../../art-direction-contract.js';
+@@ -65,0 +67,3 @@ function assertProviderPromptGateB(input) {
++  } else if (generationBasis === 'art_direction_reference') {
++    checks.generationBasisMatches = actualPrompt === compiledPrompt && actualPrompt.includes(ART_DIRECTION_BOUNDARY) && !isEdited;
++    if (!checks.generationBasisMatches) fail({checks,generationBasis},'ART_DIRECTION_PROMPT_CHANGED');
+diff --git a/packages/visual-workflow/src/generation-runtime/space/mode-boundary/mode-boundary-semantics.js b/packages/visual-workflow/src/generation-runtime/space/mode-boundary/mode-boundary-semantics.js
+index 0d92f71..b8a66a3 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/mode-boundary/mode-boundary-semantics.js
++++ b/packages/visual-workflow/src/generation-runtime/space/mode-boundary/mode-boundary-semantics.js
+@@ -0,0 +1 @@
++import { artDirectionReferencePolicy, ART_DIRECTION_ROLE } from '../../../art-direction-contract.js';
+@@ -9,0 +11 @@ const SPACE_GENERATION_MODES = Object.freeze({
++  art_direction_reference: Object.freeze({generationBasis:'art_direction_reference',referenceMode:'reference_assisted',referenceRole:ART_DIRECTION_ROLE,semantic:'Explicit project-authorized attribute references; target function and confirmed direction remain authoritative'}),
+@@ -64,0 +67,4 @@ function validateSpaceGenerationModeSemantics(input = {}) {
++  if (generationBasis === 'art_direction_reference') {
++    if (referenceRole !== ART_DIRECTION_ROLE || !artDirectionReferencePolicy(input.taskContract,referenceCount,'reference_assisted',referenceSources)) throw new Error('ART_DIRECTION_MODE_INVALID');
++    return {status:'pass',advisory:null,mode:SPACE_GENERATION_MODES.art_direction_reference};
++  }
+diff --git a/packages/visual-workflow/src/generation-runtime/space/product-policy.js b/packages/visual-workflow/src/generation-runtime/space/product-policy.js
+index b67017c..883dac0 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/product-policy.js
++++ b/packages/visual-workflow/src/generation-runtime/space/product-policy.js
+@@ -0,0 +1 @@
++import { SEEDREAM_MAX_REFERENCE_IMAGES } from '../../image-adapter/reference-capability.js';
+@@ -5,0 +7 @@ const PRODUCT_POLICY_DEFAULT_MAX_REFERENCES = Object.freeze({
++  art_direction_reference: SEEDREAM_MAX_REFERENCE_IMAGES,
+diff --git a/packages/visual-workflow/src/generation-runtime/space/reference-boundary.js b/packages/visual-workflow/src/generation-runtime/space/reference-boundary.js
+index f445a0f..6aab6a5 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/reference-boundary.js
++++ b/packages/visual-workflow/src/generation-runtime/space/reference-boundary.js
+@@ -0,0 +1 @@
++import { renderArtDirectionBoundary } from '../../art-direction-contract.js';
+@@ -22 +23,2 @@ function renderReferenceBoundary({
+-  adapterCapability = null
++  adapterCapability = null,
++  taskContract
+@@ -23,0 +26 @@ function renderReferenceBoundary({
++  if (generationBasis === 'art_direction_reference') return renderArtDirectionBoundary(taskContract);
+diff --git a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+index 950fd44..0d68fb6 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
++++ b/packages/visual-workflow/src/generation-runtime/space/source-adapter.js
+@@ -367 +367 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
+-  const standardShot = taskContract?.generationBasis === "standard";
++  const standardShot = taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference';
+diff --git a/packages/visual-workflow/src/generation-runtime/space/space-reference-policy.js b/packages/visual-workflow/src/generation-runtime/space/space-reference-policy.js
+index 0b903e9..9770f7f 100644
+--- a/packages/visual-workflow/src/generation-runtime/space/space-reference-policy.js
++++ b/packages/visual-workflow/src/generation-runtime/space/space-reference-policy.js
+@@ -66,0 +67 @@ function assertSpaceReferenceAvailable(references, { generationBasis = "standard
++  if (generationBasis === 'art_direction_reference' && !references?.length) throw new Error('ART_DIRECTION_REFERENCE_REQUIRED');
+diff --git a/packages/visual-workflow/src/image-adapter/multi-model.js b/packages/visual-workflow/src/image-adapter/multi-model.js
+index 0458794..c7e931b 100644
+--- a/packages/visual-workflow/src/image-adapter/multi-model.js
++++ b/packages/visual-workflow/src/image-adapter/multi-model.js
+@@ -0,0 +1 @@
++import { SEEDREAM_MAX_REFERENCE_IMAGES } from './reference-capability.js';
+@@ -19 +20 @@ const ADAPTERS = Object.freeze({
+-    maxReferences: 10
++    maxReferences: SEEDREAM_MAX_REFERENCE_IMAGES
+diff --git a/packages/visual-workflow/src/image-adapter/reference-capability.js b/packages/visual-workflow/src/image-adapter/reference-capability.js
+new file mode 100644
+index 0000000..04b3d26
+--- /dev/null
++++ b/packages/visual-workflow/src/image-adapter/reference-capability.js
+@@ -0,0 +1,4 @@
++// Verified request shape for the independently configured Seedream deployment.
++// Provider controls for reference weights/strength are deliberately absent.
++export const SEEDREAM_MAX_REFERENCE_IMAGES = 10;
++export const ART_DIRECTION_MODELS = Object.freeze(['doubao-seedream-5-0-pro-260628']);
+diff --git a/packages/visual-workflow/src/image-service.js b/packages/visual-workflow/src/image-service.js
+index 1d7abde..e75a5a4 100644
+--- a/packages/visual-workflow/src/image-service.js
++++ b/packages/visual-workflow/src/image-service.js
+@@ -6,0 +7,2 @@ import { assertId, inside, readJson, writeJson } from './configuration.js';
++import { createArtDirectionStore } from './art-direction-store.js';
++import { assertArtDirectionModel, digest, ART_DIRECTION_SOURCE } from './art-direction-contract.js';
+@@ -8,0 +11 @@ export function createImageService(root, projects, configuration, emit, fetchImp
++  const artDirectionStore = createArtDirectionStore(projects);
+@@ -24 +27,3 @@ export function createImageService(root, projects, configuration, emit, fetchImp
+-    if (input.references?.length || input.snapshot?.taskContract?.generationBasis !== 'standard') throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
++    const task = input.snapshot?.taskContract;
++    const art = task?.generationBasis === 'art_direction_reference';
++    if (!art && (input.references?.length || task?.generationBasis !== 'standard')) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+@@ -29,0 +35,12 @@ export function createImageService(root, projects, configuration, emit, fetchImp
++    let artCapture = null;
++    if (art) {
++      assertArtDirectionModel(credential.model,credential.protocol);
++      if (task.projectId !== input.projectId || task.deliverableFamily !== 'space' || !task.taskId || path.basename(task.taskId) !== task.taskId || task.taskId.includes('..')) throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
++      artCapture = await artDirectionStore.resolve(task.artDirection,input.projectId,credential.model);
++      const compiled = await readJson(inside((await projects.paths(input.projectId)).root,`image-generation-vnext/compilations/${task.taskId}/compiled-prompt.json`));
++      if (JSON.stringify(compiled.taskContract) !== JSON.stringify(task) || compiled.finalPrompt !== input.compiledPrompt || input.snapshot.compiledPromptSha256 !== digest(input.compiledPrompt) || compiled.trace.spaceGeneration.promptHash !== digest(input.compiledPrompt) || compiled.preflightReport.status !== 'pass' || compiled.trace.spaceGeneration.routeIntegrity.status !== 'pass') throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
++      if (!Array.isArray(input.references) || input.references.length !== artCapture.references.length || input.references.some((ref,index) => {
++        const expected = artCapture.references[index];
++        return ref.id !== expected.id || ref.sha256 !== expected.sha256 || ref.role !== expected.role || ref.projectId !== input.projectId || ref.mimeType !== expected.mimeType || ref.projectRelativePath !== expected.relativePath || ref.source !== ART_DIRECTION_SOURCE;
++      })) throw new Error('ART_DIRECTION_REQUEST_REFERENCES_CHANGED');
++    }
+@@ -35,2 +52,11 @@ export function createImageService(root, projects, configuration, emit, fetchImp
+-    const universalInput = { prompt: input.compiledPrompt, negativeRules: [], aspectRatio: input.snapshot.taskContract.aspectRatio, imageSize: '2K', outputCount: 1, references: [] };
+-    adapter.compileRequest(universalInput);
++    const universalInput = { prompt: input.compiledPrompt, negativeRules: [], aspectRatio: input.snapshot.taskContract.aspectRatio, imageSize: '2K', outputCount: 1, references: art ? artCapture.references : [] };
++    const providerRequest = adapter.compileRequest(universalInput);
++    let requestEvidence = null;
++    if (art) {
++      if (providerRequest.body.image?.length !== artCapture.references.length) throw new Error('ART_DIRECTION_REQUEST_IMAGES_MISSING');
++      requestEvidence = {generationBasis:task.generationBasis,projectId:input.projectId,model:credential.model,snapshotSha256:task.artDirection.snapshotSha256,confirmationSha256:task.artDirection.confirmationSha256,compiledPromptSha256:digest(input.compiledPrompt),providerPromptSha256:digest(providerRequest.body.prompt),requestBodySha256:digest(providerRequest.body),references:artCapture.references.map((ref,index) => {
++        const image = providerRequest.body.image[index];
++        if (image !== `data:${ref.mimeType};base64,${ref.data}` || digest(Buffer.from(image.split(',')[1],'base64')) !== ref.sha256) throw new Error('ART_DIRECTION_REQUEST_BYTES_CHANGED');
++        return {index,id:ref.id,role:ref.role,responsibility:ref.responsibility,mimeType:ref.mimeType,sha256:ref.sha256,requestField:`image[${index}]`};
++      })};
++    }
+@@ -45 +71,2 @@ export function createImageService(root, projects, configuration, emit, fetchImp
+-      promptVersion:input.promptVersion, outputCount:1, referenceCount:0,
++      promptVersion:input.promptVersion, outputCount:1, referenceCount:universalInput.references.length,
++      ...art ? {artDirection:requestEvidence} : {},
+@@ -46,0 +74 @@ export function createImageService(root, projects, configuration, emit, fetchImp
++    if (art) await writeJson(path.join(directory,'art-direction-request-evidence.json'),requestEvidence);
+diff --git a/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js b/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js
+index 52156aa..99e6a47 100644
+--- a/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js
++++ b/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js
+@@ -1,0 +2 @@ import path from "node:path";
++import { createArtDirectionStore } from '../../art-direction-store.js';
+@@ -56,2 +57,4 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
+-    const targetTone = promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
+-    const toneAvoid = promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
++    const art = input.taskContract.generationBasis === 'art_direction_reference';
++    const artCapture = art ? await createArtDirectionStore(projects).resolve(input.taskContract.artDirection,input.projectId,input.taskContract.artDirection.model) : null;
++    const targetTone = art ? artCapture.confirmation.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
++    const toneAvoid = art ? (artCapture.confirmation.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
+@@ -128,0 +132 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
++      ...art ? {artDirectionSnapshotSha256:artCapture.snapshot.snapshotSha256,userConfirmationSha256:artCapture.snapshot.confirmationSha256} : {},
+diff --git a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+index f1301f8..32d62fc 100644
+--- a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
++++ b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+@@ -3,0 +4,2 @@ import path from "node:path";
++import { createArtDirectionStore } from '../../art-direction-store.js';
++import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
+@@ -89,0 +92 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++  const artDirectionStore = createArtDirectionStore(projects);
+@@ -156 +159,4 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-    ).then((value) => JSON.parse(value)).catch(() => void 0);
++    ).then((value) => JSON.parse(value)).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
++    const art = input.task.generationBasis === 'art_direction_reference';
++    const artCapture = art ? await artDirectionStore.capture(input.projectId,input.task.referenceAssetIds,input.model) : null;
++    if (art && (digest(userConfirmedVisualDecision) !== artCapture.snapshot.confirmationSha256 || userConfirmedVisualDecision.reviewTask?.currentInstruction && input.task.currentInstruction !== userConfirmedVisualDecision.reviewTask.currentInstruction)) throw new Error('ART_DIRECTION_INSTRUCTION_MISMATCH');
+@@ -173,0 +180 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++        ...art ? {artDirection:artCapture.snapshot} : {},
+@@ -286,0 +294,6 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++    const art = compilation.taskContract.generationBasis === 'art_direction_reference';
++    let artCapture = null;
++    if (art) {
++      if (JSON.stringify(compilation.taskContract) !== JSON.stringify(compilation.compiledPrompt.taskContract) || compilation.payload.prompt !== compilation.compiledPrompt.finalPrompt || digest(compilation.compiledPrompt.finalPrompt) !== compilation.compiledPrompt.trace.spaceGeneration.promptHash) throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
++      artCapture = await artDirectionStore.resolve(compilation.taskContract.artDirection,input.projectId,compilation.payload.model);
++    }
+@@ -292,0 +306 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++    if (art && (preflightBlocked || contextFingerprintStale)) throw new Error('ART_DIRECTION_COMPILATION_STALE');
+@@ -366 +380,3 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-      if (generationBasis === "continuation") {
++      if (art) {
++        resolved = {references:artCapture.snapshot.assets.map(asset=>({...asset,projectRelativePath:asset.relativePath,source:ART_DIRECTION_SOURCE})),trace:{generationBasis,referenceMode:'reference_assisted',providerReferenceCount:artCapture.snapshot.assets.length,snapshot:artCapture.snapshot}};
++      } else if (generationBasis === "continuation") {
+@@ -403,0 +420 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++        ...art ? {sha256:ref.sha256,mimeType:ref.mimeType,responsibility:ref.responsibility,projectId:ref.projectId} : {},
+@@ -456 +473 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-        referenceMode: generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
++        referenceMode: art || generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
+@@ -481 +498 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-        referenceMode: generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
++        referenceMode: art || generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
+@@ -494 +511 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-          referenceMode: generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
++          referenceMode: art || generationBasis === "reference_first" || generationBasis === "continuation" ? "reference_assisted" : "text_only",
+@@ -581,0 +599 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++        ...art ? {compiledPromptSha256:digest(actualPrompt),userConfirmedVisualDecision:compilation.compiledPrompt.userConfirmedVisualDecision} : {},
+diff --git a/packages/visual-workflow/src/service.js b/packages/visual-workflow/src/service.js
+index a069e96..d8c0683 100644
+--- a/packages/visual-workflow/src/service.js
++++ b/packages/visual-workflow/src/service.js
+@@ -12,0 +13,2 @@ import { verifyImplementation } from './integrity.js';
++import { createArtDirectionStore } from './art-direction-store.js';
++import { assertArtDirectionModel } from './art-direction-contract.js';
+@@ -19,0 +22 @@ export function createVisualWorkflow(options) {
++  const artDirection = createArtDirectionStore(projects);
+@@ -40 +43,2 @@ export function createVisualWorkflow(options) {
+-    if (input.task.generationBasis && input.task.generationBasis !== 'standard' || input.task.referenceAssetIds?.length || input.task.continuation) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
++    const art = input.task.generationBasis === 'art_direction_reference';
++    if (!art && (input.task.generationBasis && input.task.generationBasis !== 'standard' || input.task.referenceAssetIds?.length || input.task.continuation) || art && input.task.continuation) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+@@ -43,0 +48,4 @@ export function createVisualWorkflow(options) {
++    if (art) {
++      assertArtDirectionModel(credential.model,credential.protocol);
++      return generation.compile({projectId:input.projectId,model:credential.model,task:input.task});
++    }
+@@ -121 +129 @@ export function createVisualWorkflow(options) {
+-    'visual-workflow:import-files': (_context, id, files) => projects.importFiles(id, files),
++    'visual-workflow:import-files': (_context, id, files) => files?.purpose === 'art_direction' ? artDirection.register({...files,projectId:id}) : projects.importFiles(id, files),
+diff --git a/packages/visual-workflow/tests/art-direction-business-fixture.ts b/packages/visual-workflow/tests/art-direction-business-fixture.ts
+new file mode 100644
+index 0000000..990d1fa
+--- /dev/null
++++ b/packages/visual-workflow/tests/art-direction-business-fixture.ts
+@@ -0,0 +1,51 @@
++import fs from 'node:fs/promises';
++import os from 'node:os';
++import path from 'node:path';
++import sharp from 'sharp';
++import { structuredAnalysisPacketFixture } from '../../../tests/runtime-application/analysis-runtime-fixtures.ts';
++import { createProjectStore } from '../src/project-store.js';
++import { createImageService } from '../src/image-service.js';
++import { createArtDirectionStore } from '../src/art-direction-store.js';
++import { createShortChainGenerationService } from '../src/runtime/image-generation/short-chain-service.js';
++import { createDeliverableValidatorService } from '../src/runtime/image-generation/deliverable-validator-service.js';
++import { buildProjectVisualContext } from '../src/runtime/project-visual-context-builder.js';
++import { visualDecisionPacketToPromptSourceObject } from '../src/runtime/visual-decision-packet.js';
++import { digest } from '../src/art-direction-contract.js';
++
++export async function businessFixture(t:any, industry='Medical aesthetics') {
++  const root=await fs.mkdtemp(path.join(os.tmpdir(),'art-direction-business-'));
++  t.after(()=>fs.rm(root,{recursive:true,force:true}));
++  const projects=createProjectStore(path.join(root,'data'));
++  let project=await projects.create({projectName:'Explicit direction example',industry});
++  const packet=structuredAnalysisPacketFixture();packet.projectId=project.id;packet.projectFacts.industry.value=industry;
++  const logo=await sharp({create:{width:40,height:30,channels:4,background:'#123456'}}).png().toBuffer();
++  await fs.writeFile(path.join((await projects.paths(project.id)).input,'assets/logo.png'),logo);
++  project=await projects.update(project.id,{status:'completed',visualContextVNextStatus:'ready',assets:[{id:'logo-1',status:'ready',role:'logo',usage:'analysis_source',relativePath:'assets/logo.png',originalName:'logo.png',mimeType:'image/png',sha256:digest(logo),sizeBytes:logo.length}]});
++  const projectContext=buildProjectVisualContext({project,structuredAnalysis:{visualDecisionPacket:packet,promptSourceObject:visualDecisionPacketToPromptSourceObject(packet)}});
++  const paths=await projects.paths(project.id);
++  await fs.writeFile(path.join(paths.root,'project-context/visual-decision-packet.json'),JSON.stringify(packet));
++  await fs.writeFile(path.join(paths.root,'project-context/project-visual-context.vnext.json'),JSON.stringify(projectContext));
++  const context={getShortChain:async(id:string)=>JSON.parse(await fs.readFile(path.join((await projects.paths(id)).root,'project-context/project-visual-context.vnext.json'),'utf8')),rebuildShortChain:async()=>{throw new Error('NO_REBUILD');}};
++  const model='doubao-seedream-5-0-pro-260628';
++  const settings={imageProfileId:'image',analysisProfileId:'validator',profiles:[]};
++  const credentials:any={image:{profileId:'image',modelType:'image_generation',protocol:'seedream-image',provider:'volcengine',model,apiKey:'offline-fixture',baseUrl:'https://image.example.invalid/v3'},validator:{profileId:'validator',protocol:'openai-chat-multimodal',model:'qwen3.6-plus',provider:'dashscope',modelType:'analysis'}};
++  const configuration={get:async()=>settings,readCredentials:async(id:string)=>credentials[id]};
++  const requests:any[]=[];const validations:any[]=[];
++  const output=await sharp({create:{width:320,height:180,channels:3,background:'white'}}).png().toBuffer();
++  const images=createImageService(root,projects,configuration,()=>{},async(url:any,request:any)=>{requests.push({url,body:JSON.parse(request.body)});return new Response(JSON.stringify({data:[{b64_json:output.toString('base64')}]}),{status:200});});
++  const validator=createDeliverableValidatorService(projects,()=>images,configuration.get,configuration.readCredentials,context,()=>async(input:any)=>{validations.push(input);return {provider:'offline',model:'qwen3.6-plus',reportMarkdown:JSON.stringify({detectedFamily:'space',detectedSubtype:'reception',visibleEvidence:['Offline fixture only'],missingRequiredItems:[],forbiddenItemsFound:[],lockedAssetViolations:[],brandMatch:'matched',brandToneMatch:'matched',sceneCompleteness:'complete',logoTextStatus:'absent',qualityIssues:[]})};});
++  const generation=createShortChainGenerationService(projects,context,()=>images,()=>validator);
++  const store=createArtDirectionStore(projects);
++  const confirmation=JSON.parse(await fs.readFile(new URL('../reports/jiuzhou-art-direction/project-input.json',import.meta.url),'utf8'));confirmation.projectId=project.id;
++  const roles=['architectural_form','spatial_integration','material_optics','spatial_atmosphere'];
++  const uploads=await Promise.all(roles.map(async(responsibility,index)=>{
++    const bytes=await sharp({create:{width:64+index,height:48,channels:3,background:['#eeeeee','#dddddd','#cccccc','#bbbbbb'][index]}}).png().toBuffer();
++    return {name:`approved-${responsibility}.png`,content:bytes.toString('base64'),sha256:digest(bytes),sizeBytes:bytes.length,mimeType:'image/png',role:'approved_art_direction_reference',authorizationStatus:'confirmed',responsibility,direction:`Explicit attribute ${responsibility}`};
++  }));
++  const registration={projectId:project.id,confirmation,authorization:{status:'confirmed',source:'Explicit offline test approval',sourceDocumentSha256:digest('fixture approval')},images:uploads};
++  const task:any={deliverableFamily:'space',subtype:'reception',shot:'entrance_view',count:1,aspectRatio:'16:9',generationBasis:'art_direction_reference',logoUsageMode:'post_composite',currentInstruction:confirmation.reviewTask.currentInstruction,mustAvoid:confirmation.reviewTask.mustAvoid};
++  async function register(){const result=await store.register(registration);task.referenceAssetIds=result.assets.map((item:any)=>item.id);return result;}
++  const compile=()=>generation.compile({projectId:project.id,model:credentials.image.model,task});
++  const start=(compiled:any)=>generation.startValidated({projectId:project.id,taskId:compiled.taskContract.taskId,apiProfileId:'image',validatorProfileId:'validator'});
++  return {root,projects,project,packet,context,credentials,configuration,images,generation,store,requests,validations,registration,uploads,confirmation,task,register,compile,start,paths,logo};
++}
+diff --git a/packages/visual-workflow/tests/art-direction-route.test.ts b/packages/visual-workflow/tests/art-direction-route.test.ts
+new file mode 100644
+index 0000000..1fdbef9
+--- /dev/null
++++ b/packages/visual-workflow/tests/art-direction-route.test.ts
+@@ -0,0 +1,194 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import sharp from 'sharp';
++import { businessFixture } from './art-direction-business-fixture.ts';
++import { digest } from '../src/art-direction-contract.js';
++import { SEEDREAM_ADAPTER_CAPABILITY } from '../src/generation-runtime/generation/seedream-adapter.js';
++import { listMultiModelAdapters } from '../src/image-adapter/multi-model.js';
++import { resolveEffectiveMaxReferences } from '../src/generation-runtime/space/product-policy.js';
++import { createVisualWorkflow } from '../src/service.js';
++
++test('application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter',async t=>{
++  const f=await businessFixture(t);const before=await fs.readFile(path.join(f.paths.root,'project-context/visual-decision-packet.json'));
++  const registry=await f.register();const compiled=await f.compile();
++  assert.equal(compiled.compiledPrompt.userConfirmedVisualDecision.id,f.confirmation.id);
++  assert.equal(compiled.taskContract.generationBasis,'art_direction_reference');
++  assert.equal(compiled.compiledPrompt.trace.spaceGeneration.routeIntegrity.status,'pass');
++  assert.equal(compiled.compiledPrompt.preflightReport.status,'pass');
++  assert.match(compiled.compiledPrompt.finalPrompt,/ART DIRECTION REFERENCE BOUNDARY/);
++  assert.match(compiled.compiledPrompt.finalPrompt,/乳白|暖白/);
++  assert.match(compiled.compiledPrompt.finalPrompt,/轻薄半透明|半透明珠光/);
++  const result=await f.start(compiled);
++  assert.equal(result.initialRun.status,'succeeded');assert.equal(result.automaticRetryCount,0);
++  assert.equal(f.requests.length,1);assert.equal(f.validations.length,1);
++  assert.ok(f.validations[0].prompt.messages[1].content.includes(f.confirmation.spatialTranslation.spatialConcept));
++  assert.equal(result.qualityAcceptance,'pending_human_review');
++  assert.equal(result.logoIntegrity,'pending_post_composite');
++  const request=f.requests[0].body;
++  assert.equal(request.image.length,4);
++  assert.ok(request.prompt.endsWith(compiled.compiledPrompt.finalPrompt));
++  for(const [index,item] of request.image.entries())assert.equal(digest(Buffer.from(item.split(',')[1],'base64')),f.uploads[index].sha256);
++  assert.equal('ref_strength' in request,false);assert.equal('ref_mode' in request,false);
++  assert.ok(!request.image.some((item:string)=>digest(Buffer.from(item.split(',')[1],'base64'))===digest(f.logo)));
++  const metadata=JSON.parse(await fs.readFile(path.join(await f.images.runRoot(result.initialRun.runId),'request-metadata.json'),'utf8'));
++  assert.equal(metadata.referenceCount,4);
++  assert.deepEqual(metadata.artDirection.references.map((item:any)=>item.sha256),registry.assets.map((item:any)=>item.sha256));
++  const trace=JSON.parse(await fs.readFile(path.join(compiled.artifactDirectory,'run-trace.json'),'utf8'));
++  assert.equal(trace.gateA.status,'pass');assert.equal(trace.gateB.status,'pass');
++  assert.deepEqual(await fs.readFile(path.join(f.paths.root,'project-context/visual-decision-packet.json')),before);
++  await assert.rejects(f.generation.postCompositeLogo({projectId:f.project.id,runId:result.initialRun.runId,imageId:result.initialRun.images[0].imageId}),/confirmation/i);
++  const image=result.initialRun.images[0];
++  const original=await fs.readFile(path.join(await f.images.runRoot(result.initialRun.runId),image.relativePath));
++  const composite=await f.generation.postCompositeLogo({projectId:f.project.id,runId:result.initialRun.runId,imageId:image.imageId,logoAssetId:'logo-1',confirmedByUser:true,sourceCrop:{left:0,top:0,width:40,height:30},placement:{x:0.2,y:0.2,width:0.2}});
++  assert.equal(composite.sourceLogoSha256,digest(f.logo));
++  assert.equal(composite.qualityAcceptance,'pending_human_review');
++  assert.deepEqual(await fs.readFile(composite.sourceImagePath),original);
++});
++
++test('independent provider and product capacity are consistent and unsupported models fail closed',async t=>{
++  assert.equal(SEEDREAM_ADAPTER_CAPABILITY.reference.maxReferenceImages,10);
++  assert.equal(listMultiModelAdapters().find(item=>item.id==='seedream-5.0-pro')?.maxReferences,10);
++  assert.equal(resolveEffectiveMaxReferences({generationBasis:'art_direction_reference',adapterCapability:SEEDREAM_ADAPTER_CAPABILITY}).effectiveMax,10);
++  const f=await businessFixture(t);await f.register();f.credentials.image.model='unverified-deployment';
++  await assert.rejects(f.compile(),/MODEL_UNSUPPORTED/);assert.equal(f.requests.length,0);
++});
++
++test('registration rejects negative/Logo roles, duplicates, foreign authority, corrupt images and invalid MIME before modifying a directive',async t=>{
++  const f=await businessFixture(t);
++  for(const mutate of [
++    (x:any)=>x.images[0].role='rejected_comparison',(x:any)=>x.images[0].role='logo',
++    (x:any)=>x.images.push(x.images[0]),(x:any)=>x.confirmation.projectId='foreign',
++    (x:any)=>x.authorization.status='draft',(x:any)=>x.images[0].sha256='0'.repeat(64),
++    (x:any)=>x.images[0].mimeType='image/jpeg',(x:any)=>x.images[0].authorizationStatus='revoked',
++    (x:any)=>x.images[0].projectId='foreign',(x:any)=>x.authorization.projectId='foreign',
++    (x:any)=>x.images[0].content='invalid!',
++    (x:any)=>{x.images[0]={...x.images[0],content:f.logo.toString('base64'),sha256:digest(f.logo),sizeBytes:f.logo.length};}
++  ]){const x=structuredClone(f.registration);mutate(x);await assert.rejects(f.store.register(x));}
++  await assert.rejects(fs.access(path.join(f.paths.root,'project-context/user-confirmed-visual-decision.json')));
++  assert.equal(f.requests.length,0);
++});
++
++test('missing, duplicate, foreign project and unknown reference selections never become text generation',async t=>{
++  const f=await businessFixture(t);await f.register();const saved=[...f.task.referenceAssetIds];
++  for(const ids of [[],[saved[0],saved[0]],['foreign'],[...saved,'missing']]){f.task.referenceAssetIds=ids;await assert.rejects(f.compile());}
++  f.task.referenceAssetIds=saved;
++  const foreign=await f.projects.create({projectName:'Foreign'});
++  await assert.rejects(f.store.capture(foreign.id,saved,f.credentials.image.model));
++  assert.equal(f.requests.length,0);
++});
++
++test('post-compilation asset edits and missing files fail before any adapter transport',async t=>{
++  for(const remove of [false,true]){
++    const f=await businessFixture(t);const registry=await f.register();const compiled=await f.compile();const file=path.join(f.paths.root,registry.assets[0].relativePath);
++    if(remove)await fs.unlink(file);else await fs.writeFile(file,Buffer.from('tampered'));
++    await assert.rejects(f.start(compiled));assert.equal(f.requests.length,0);
++  }
++});
++
++test('revocation, authorization change, source directive change and registry role tampering invalidate the execution snapshot',async t=>{
++  for(const change of ['revoked','source','confirmation','role']){
++    const f=await businessFixture(t);await f.register();const compiled=await f.compile();
++    const file=path.join(f.paths.root,change==='confirmation'?'project-context/user-confirmed-visual-decision.json':'project-context/art-direction/references.json');
++    const record=JSON.parse(await fs.readFile(file,'utf8'));
++    if(change==='revoked')record.authorization.status='revoked';
++    if(change==='source')record.authorization.source='changed';
++    if(change==='role')record.assets[0].role='logo';
++    if(change==='confirmation')record.spatialTranslation.structureLanguage=['Changed after approval'];
++    await fs.writeFile(file,JSON.stringify(record));await assert.rejects(f.start(compiled));assert.equal(f.requests.length,0);
++  }
++});
++
++test('provider profile model or protocol changes cannot silently execute a compiled reference task',async t=>{
++  for(const property of ['model','protocol']){
++    const f=await businessFixture(t);await f.register();const compiled=await f.compile();f.credentials.image[property]='unsupported';
++    await assert.rejects(f.start(compiled));assert.equal(f.requests.length,0);
++  }
++});
++
++test('edited prompts and tampered task snapshots cannot bypass compile or Provider prompt gates',async t=>{
++  const f=await businessFixture(t);await f.register();const compiled=await f.compile();
++  await assert.rejects(f.generation.start({projectId:f.project.id,taskId:compiled.taskContract.taskId,apiProfileId:'image',editedPrompt:'Use a different design'}));
++  const taskFile=path.join(compiled.artifactDirectory,'task-contract.json');
++  const task=JSON.parse(await fs.readFile(taskFile,'utf8'));task.referenceAssetIds.reverse();await fs.writeFile(taskFile,JSON.stringify(task));
++  await assert.rejects(f.start(compiled));assert.equal(f.requests.length,0);
++});
++
++test('asset parent junctions and registry traversal fail closed',async t=>{
++  const f=await businessFixture(t);const registry=await f.register();const compiled=await f.compile();
++  const assets=path.join(f.paths.root,'project-context/art-direction/assets');const moved=path.join(f.root,'moved-assets');
++  await fs.rename(assets,moved);await fs.symlink(moved,assets,process.platform==='win32'?'junction':'dir');
++  await assert.rejects(f.start(compiled),/PATH_INVALID/);assert.equal(f.requests.length,0);
++  assert.equal(registry.assets.length,4);
++});
++
++test('ordinary standard generation remains byte-for-byte identical across medical, restaurant and hotel projects',async t=>{
++  for(const industry of ['Medical aesthetics','Restaurant','Hotel']){
++    const f=await businessFixture(t,industry);
++    const task={...f.task,generationBasis:'standard',referenceAssetIds:[],currentInstruction:'Create the requested practical reception',mustAvoid:[]};
++    const first=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task});
++    const second=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task});
++    assert.equal(second.compiledPrompt.finalPrompt,first.compiledPrompt.finalPrompt);
++    await f.start(first);assert.equal(f.requests.length,1);assert.equal(f.requests[0].body.image,undefined);
++    assert.doesNotMatch(f.requests[0].body.prompt,/ART DIRECTION REFERENCE BOUNDARY|珠光层片|当代美术馆/);
++  }
++});
++
++test('public operation integrity still blocks the unapproved implementation before registration, compilation or generation',async t=>{
++  const f=await businessFixture(t);
++  const workflow=createVisualWorkflow({root:f.root,fetchImpl:async()=>{throw new Error('NETWORK_FORBIDDEN');}});
++  for(const operation of ['visual-workflow:import-files','visual-workflow:compile','visual-workflow:generate'])await assert.rejects(workflow.operations[operation]({},f.project.id,{purpose:'art_direction'}),/IMPLEMENTATION_CHANGED/);
++  assert.equal(f.requests.length,0);
++});
++
++test('image service independently rejects reordered or relabeled execution references',async t=>{
++  for(const change of ['order','role','hash','project']){
++    const f=await businessFixture(t);await f.register();const compiled=await f.compile();
++    const original=f.images.startCompiledCreativeTask;
++    f.images.startCompiledCreativeTask=async(input:any)=>{
++      const changed=structuredClone(input);
++      if(change==='order')changed.references.reverse();
++      if(change==='role')changed.references[0].role='logo';
++      if(change==='hash')changed.references[0].sha256='0'.repeat(64);
++      if(change==='project')changed.references[0].projectId='foreign';
++      return original(changed);
++    };
++    await assert.rejects(f.start(compiled),/REQUEST_REFERENCES_CHANGED/);assert.equal(f.requests.length,0);
++  }
++});
++
++test('ten unique authorized files are supported; eleven inputs or an empty set are rejected without truncation',async t=>{
++  const f=await businessFixture(t);const images=[];
++  for(let index=0;index<10;index++){
++    const bytes=await sharp({create:{width:64+index,height:48,channels:3,background:'white'}}).png().toBuffer();
++    images.push({...f.uploads[0],content:bytes.toString('base64'),sha256:digest(bytes),sizeBytes:bytes.length});
++  }
++  const registry=await f.store.register({...f.registration,images});
++  f.task.referenceAssetIds=registry.assets.map((item:any)=>item.id);
++  const compiled=await f.compile();await f.start(compiled);assert.equal(f.requests[0].body.image.length,10);
++  await assert.rejects(f.store.register({...f.registration,images:[...images,images[0]]}),/SELECTION_INVALID/);
++  await assert.rejects(f.store.register({...f.registration,images:[]}),/SELECTION_INVALID/);
++});
++
++test('a changed analysis context or a malformed current confirmation blocks instead of silently recompiling',async t=>{
++  for(const mode of ['context','confirmation']){
++    const f=await businessFixture(t);await f.register();const compiled=await f.compile();
++    if(mode==='confirmation')await fs.writeFile(path.join(f.paths.root,'project-context/user-confirmed-visual-decision.json'),'{invalid');
++    else {
++      const file=path.join(f.paths.root,'project-context/project-visual-context.vnext.json');
++      const context=JSON.parse(await fs.readFile(file,'utf8'));context.provenance.sourceFingerprint='changed';await fs.writeFile(file,JSON.stringify(context));
++    }
++    await assert.rejects(f.start(compiled));assert.equal(f.requests.length,0);
++  }
++});
++
++test('multi-megabyte canonical image uploads register and resolve without regex stack exhaustion',async t=>{
++  const f=await businessFixture(t);
++  const bytes=await sharp({create:{width:1500,height:1000,channels:3,background:'white'}}).png({compressionLevel:0}).toBuffer();
++  assert(bytes.length>4*1024*1024);
++  const image={...f.uploads[0],content:bytes.toString('base64'),sha256:digest(bytes),sizeBytes:bytes.length};
++  const registry=await f.store.register({...f.registration,images:[image]});
++  const resolved=await f.store.capture(f.project.id,registry.assets.map((item:any)=>item.id),f.credentials.image.model);
++  assert.equal(resolved.references[0].sha256,digest(bytes));
++});
+diff --git a/packages/visual-workflow/tests/capture-art-direction-business.mjs b/packages/visual-workflow/tests/capture-art-direction-business.mjs
+new file mode 100644
+index 0000000..dc94f80
+--- /dev/null
++++ b/packages/visual-workflow/tests/capture-art-direction-business.mjs
+@@ -0,0 +1,109 @@
++// Local evidence command. Uses application services with a recording transport,
++// never rewrites an integrity manifest or executes a real provider request.
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import assert from 'node:assert/strict';
++import { pathToFileURL, fileURLToPath } from 'node:url';
++import { execFileSync } from 'node:child_process';
++import sharp from 'sharp';
++import { createProjectStore } from '../src/project-store.js';
++import { createImageService } from '../src/image-service.js';
++import { createArtDirectionStore } from '../src/art-direction-store.js';
++import { createVisualWorkflow } from '../src/service.js';
++import { createShortChainGenerationService } from '../src/runtime/image-generation/short-chain-service.js';
++import { createDeliverableValidatorService } from '../src/runtime/image-generation/deliverable-validator-service.js';
++import { digest } from '../src/art-direction-contract.js';
++import { businessFixture } from './art-direction-business-fixture.ts';
++
++globalThis.fetch=async()=>{throw new Error('OFFLINE_NETWORK_FORBIDDEN');};
++const [project,bundle,output,selectionFile,confirmationFile,baselineRef]=process.argv.slice(2);
++if(!baselineRef)throw new Error('Usage: capture-art-direction-business.mjs PROJECT BUNDLE OUTPUT SELECTION CONFIRMATION BASELINE_REF');
++const repo=fileURLToPath(new URL('../../../',import.meta.url));
++const read=async file=>JSON.parse(await fs.readFile(file,'utf8'));
++async function inventory(root){const records=[];async function walk(dir){for(const entry of await fs.readdir(dir,{withFileTypes:true})){assert(!entry.isSymbolicLink());const file=path.join(dir,entry.name);if(entry.isDirectory())await walk(file);else records.push({path:path.relative(root,file).replaceAll('\\','/'),sha256:digest(await fs.readFile(file))});}}await walk(root);return records.sort((a,b)=>a.path.localeCompare(b.path));}
++assert(!path.resolve(output).startsWith(path.resolve(project)+path.sep));
++await fs.mkdir(path.dirname(output),{recursive:true});await fs.mkdir(output);
++const write=(name,value)=>fs.writeFile(path.join(output,name),JSON.stringify(value,null,2)+'\n');
++const sourceBefore=await inventory(project);const bundleBefore=await inventory(bundle);
++const record=await read(path.join(project,'project.json'));
++const root=path.join(output,'workflow');const copy=path.join(root,'data/projects',record.id);
++await fs.mkdir(copy,{recursive:true});
++await fs.copyFile(path.join(project,'project.json'),path.join(copy,'project.json'));
++for(const name of ['input','project-context'])await fs.cp(path.join(project,name),path.join(copy,name),{recursive:true,errorOnExist:true,force:false});
++for(const name of ['outputs','runtime','prepared'])await fs.mkdir(path.join(copy,name),{recursive:true});
++const projects=createProjectStore(path.join(root,'data'));
++const context={getShortChain:async id=>read(path.join((await projects.paths(id)).root,'project-context/project-visual-context.vnext.json')),rebuildShortChain:async()=>{throw new Error('OFFLINE_REBUILD_FORBIDDEN');}};
++const selection=await read(selectionFile);const confirmation=await read(confirmationFile);
++assert.equal(record.id,confirmation.projectId);
++const manifest=await read(path.join(bundle,'reference-manifest.json'));
++const sourceDocumentSha256=digest(await fs.readFile(path.join(bundle,'jiuzhou-art-direction.md')));
++const uploads=[];
++for(const selected of selection.images){
++  const original=manifest.images.find(item=>item.path===selected.path);
++  assert.equal(original.role,'approved_art_direction_reference');
++  const file=path.resolve(bundle,selected.path);assert(file.startsWith(path.resolve(bundle)+path.sep));
++  const bytes=await fs.readFile(file);assert.equal(digest(bytes),original.sha256);assert.equal(bytes.length,original.size_bytes);
++  uploads.push({name:path.basename(file),mimeType:path.extname(file)==='.png'?'image/png':'image/jpeg',sizeBytes:bytes.length,content:bytes.toString('base64'),sha256:original.sha256,role:original.role,authorizationStatus:'confirmed',responsibility:selected.responsibility,direction:selected.direction});
++}
++const registration=await createArtDirectionStore(projects).register({projectId:record.id,confirmation,authorization:{...selection.authorization,sourceDocumentSha256},images:uploads});
++const model='doubao-seedream-5-0-pro-260628';const profileId='offline-image-profile';
++const configuration={get:async()=>({imageProfileId:profileId,analysisProfileId:'offline-validator',profiles:[]}),readCredentials:async id=>id===profileId?{profileId,model,provider:'volcengine',protocol:'seedream-image',modelType:'image_generation',baseUrl:'https://ark.cn-beijing.volces.com/api/v3',apiKey:'OFFLINE_RECORDING_ONLY'}:{profileId:id,model:'qwen3.6-plus',provider:'dashscope',protocol:'openai-chat-multimodal',modelType:'analysis'}};
++const responseBytes=await sharp({create:{width:320,height:180,channels:3,background:'#eeeeee'}}).png().toBuffer();
++const requests=[];let validationCalls=0;let capturedValidation;
++const images=createImageService(root,projects,configuration,()=>{},async(url,input)=>{requests.push({url,method:input.method,body:JSON.parse(input.body)});return new Response(JSON.stringify({data:[{b64_json:responseBytes.toString('base64')}]}),{status:200});});
++const validator=createDeliverableValidatorService(projects,()=>images,configuration.get,configuration.readCredentials,context,()=>async input=>{validationCalls++;capturedValidation=input;return {provider:'offline-fixture',model:'qwen3.6-plus',reportMarkdown:JSON.stringify({detectedFamily:'space',detectedSubtype:'reception',visibleEvidence:['Synthetic offline transport fixture; no visual acceptance'],missingRequiredItems:[],forbiddenItemsFound:[],lockedAssetViolations:[],brandMatch:'matched',brandToneMatch:'matched',sceneCompleteness:'complete',logoTextStatus:'absent',qualityIssues:[]})};});
++const generation=createShortChainGenerationService(projects,context,()=>images,()=>validator);
++const task={deliverableFamily:'space',subtype:'reception',shot:'entrance_view',count:1,aspectRatio:'16:9',generationBasis:'art_direction_reference',currentInstruction:confirmation.reviewTask.currentInstruction,mustAvoid:confirmation.reviewTask.mustAvoid,referenceAssetIds:registration.assets.map(item=>item.id),logoUsageMode:'post_composite'};
++const compiled=await generation.compile({projectId:record.id,model,task});
++const result=await generation.startValidated({projectId:record.id,taskId:compiled.taskContract.taskId,apiProfileId:profileId,validatorProfileId:'offline-validator'});
++assert.equal(result.initialRun.status,'succeeded');assert.equal(requests.length,1);assert.equal(validationCalls,1);assert.equal(result.automaticRetryCount,0);
++const request=requests[0];assert.equal(request.body.image.length,4);
++for(const [index,data] of request.body.image.entries())assert.equal(digest(Buffer.from(data.split(',')[1],'base64')),uploads[index].sha256);
++assert.equal(compiled.payload.prompt,compiled.compiledPrompt.finalPrompt);
++assert(request.body.prompt.endsWith(compiled.compiledPrompt.finalPrompt));
++const runRoot=await images.runRoot(result.initialRun.runId);
++assert.equal(await fs.readFile(path.join(runRoot,'compiled-prompt.txt'),'utf8'),compiled.compiledPrompt.finalPrompt);
++const runSnapshot=await read(path.join(runRoot,'source-context-snapshot.json'));
++assert.deepEqual(runSnapshot.taskContract,compiled.taskContract);
++assert.equal(runSnapshot.taskContract.artDirection.confirmationSha256,digest(confirmation));
++const requestMetadata=await read(path.join(runRoot,'request-metadata.json'));
++assert.equal(requestMetadata.artDirection.requestBodySha256,digest(request.body));
++assert(capturedValidation.prompt.messages[1].content.includes(confirmation.spatialTranslation.spatialConcept));
++const facade=createVisualWorkflow({root,fetchImpl:globalThis.fetch});
++await assert.rejects(facade.operations['visual-workflow:compile']({}, {projectId:record.id,task}),/IMPLEMENTATION_CHANGED/);
++await write('business-request.json',request); // Exact body, no auth header; ignored local artifact.
++await write('registered-assets.json',registration);
++await write('task-contract.json',compiled.taskContract);
++await write('request-evidence.json',requestMetadata.artDirection);
++await write('compilation.json',compiled);
++await write('mock-result.json',{...result,providerCalls:0,recordedMockImageRequests:1,recordedMockValidationCalls:1,syntheticResponse:true});
++await fs.writeFile(path.join(output,'formal-prompt.txt'),compiled.compiledPrompt.finalPrompt);
++await fs.writeFile(path.join(output,'provider-prompt.txt'),request.body.prompt);
++
++// Compare actual Standard requests to the reviewed Git source, in an ignored
++// read-only reconstruction. No baseline fixture or current source is altered.
++const baselineRoot=path.join(output,'reviewed-source');
++const prefix='packages/visual-workflow/';
++const files=execFileSync('git',['ls-tree','-r','--name-only',baselineRef,'--',prefix+'src'],{cwd:repo,encoding:'utf8'}).trim().split('\n').filter(Boolean);
++for(const file of files){const target=path.join(baselineRoot,file.slice(prefix.length));await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,execFileSync('git',['show',`${baselineRef}:${file}`],{cwd:repo}));}
++const baselineModule=await import(pathToFileURL(path.join(baselineRoot,'src/runtime/image-generation/short-chain-service.js')).href);
++const baselineImages=await import(pathToFileURL(path.join(baselineRoot,'src/image-service.js')).href);
++const standards=[];const cleanup=[];
++try{
++  for(const industry of ['Medical aesthetics','Restaurant','Hotel']){
++    const f=await businessFixture({after:callback=>cleanup.push(callback)},industry);
++    let baselineRequest;
++    const originalImages=baselineImages.createImageService(path.join(f.root,'baseline-runs'),f.projects,f.configuration,()=>{},async(url,input)=>{baselineRequest={url,body:JSON.parse(input.body)};return new Response(JSON.stringify({data:[{b64_json:responseBytes.toString('base64')}]}),{status:200});});
++    const originalGeneration=baselineModule.createShortChainGenerationService(f.projects,f.context,()=>originalImages,()=>{throw new Error('BASELINE_VALIDATION_NOT_REQUESTED');});
++    const standardTask={...f.task,generationBasis:'standard',referenceAssetIds:[],currentInstruction:'Create a practical reception and waiting scene',mustAvoid:[]};
++    const previous=await originalGeneration.compile({projectId:f.project.id,model,task:standardTask});
++    await originalGeneration.start({projectId:f.project.id,taskId:previous.taskContract.taskId,apiProfileId:'image'});
++    const current=await f.generation.compile({projectId:f.project.id,model,task:standardTask});await f.start(current);
++    assert.equal(current.compiledPrompt.finalPrompt,previous.compiledPrompt.finalPrompt);assert.deepEqual(f.requests[0],baselineRequest);assert(!f.requests[0].body.image);
++    standards.push({industry,baselineRef,promptIdentical:true,actualRequestIdentical:true,referenceCount:0,promptSha256:digest(current.compiledPrompt.finalPrompt)});
++  }
++}finally{for(const callback of cleanup)await callback();}
++await write('standard-parity.json',standards);
++assert.deepEqual(await inventory(project),sourceBefore);assert.deepEqual(await inventory(bundle),bundleBefore);
++await write('readonly-proof.json',{providerCalls:0,credentialReads:0,modelCalls:0,recordedMockImageRequests:1,recordedMockValidationCalls:1,publicIntegrityGate:'blocked_unchanged',applicationIntegration:'official compile/startValidated/image-service/adapter/validator with recording transport',originalProjectUnchanged:true,originalBundleUnchanged:true,sourceInventory:sourceBefore,bundleInventory:bundleBefore,baselineRef,formalPromptSha256:digest(compiled.compiledPrompt.finalPrompt),formalPromptCharacters:[...compiled.compiledPrompt.finalPrompt].length,artifactDirectory:compiled.artifactDirectory,runRoot,qualityAcceptance:'pending_human_review'});
++console.log(JSON.stringify({output,providerCalls:0,mockRequests:1,inputImages:4,standardParity:standards.length,formalPromptCharacters:[...compiled.compiledPrompt.finalPrompt].length}));

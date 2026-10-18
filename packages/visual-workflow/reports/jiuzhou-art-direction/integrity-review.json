@@ -1,0 +1,53 @@
+{
+  "baselineCommit": "7609f6634acc0d98c8a07965b6b0432b679a6c0e",
+  "qualityAcceptance": "pending-separate-quality-repair",
+  "protectedFiles": [
+    {
+      "path": "packages/visual-workflow/implementation-integrity.json",
+      "baselineSha256": "7767be380484d444155df0b12ed4d1fe0fb860d562fb68869c8b43d3a3456bde",
+      "workingSha256": "7767be380484d444155df0b12ed4d1fe0fb860d562fb68869c8b43d3a3456bde",
+      "unchanged": true
+    },
+    {
+      "path": "packages/visual-workflow/extraction-provenance.json",
+      "baselineSha256": "0d099c783742b0f3ab1cf21fa935608d14d03e51b6ea1ea5fdbd74928aa7edd1",
+      "workingSha256": "0d099c783742b0f3ab1cf21fa935608d14d03e51b6ea1ea5fdbd74928aa7edd1",
+      "unchanged": true
+    },
+    {
+      "path": "config/repository-contract/prompt-integrity.json",
+      "baselineSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "workingSha256": "be3148abc17dfaddfd33dea944db6638b21a2036d4ba7210e07082c1e0f80c61",
+      "unchanged": true
+    }
+  ],
+  "changes": [
+    {
+      "path": "src/generation-runtime/generation/compile.js",
+      "recordedSha256": "8506c1c956eb944de39ca0a4c7b675b806cfbb79e6aa0137bbe12d42b6569a7a",
+      "candidateSha256": "edf0e3cefc3375a1f572247bbf1add47ad1472556bda4fecd28dc88bfd56fee5",
+      "manifestUpdated": false
+    },
+    {
+      "path": "src/generation-runtime/generation/user-confirmed-visual-decision.js",
+      "recordedSha256": "f7ca82657fa4c7e5b3601df2bcee326c721f25dc83ef3da59064dc2feb2eabcf",
+      "candidateSha256": "6296f010ec49fad5fc71cf4dd1ba3eaa44cdea358ae3474a4a53ec81b40512b5",
+      "manifestUpdated": false
+    },
+    {
+      "path": "src/generation-runtime/space/compiler.js",
+      "recordedSha256": "2c8b6d237de17c92eb01e9d26690dc008f7d86d6c2de5d8611aaa566e07eb448",
+      "candidateSha256": "78dca5d02a1bec62d227c75093dadc04a24dafed17ef7b4c615afb574d1b11ef",
+      "manifestUpdated": false
+    },
+    {
+      "path": "src/generation-runtime/space/source-adapter.js",
+      "recordedSha256": "cebd87a99432954d746a927a7cfbcdd1870c13710160610b0d156efbcba68d12",
+      "candidateSha256": "cf3ab0d39a51f39f5ceb83096247f147a377a647fcea8bebf291587b06bcb8f9",
+      "manifestUpdated": false
+    }
+  ],
+  "status": "review_required; no manifest refresh",
+  "sharedBusinessCodeChanged": false,
+  "publicHostChanged": false
+}
