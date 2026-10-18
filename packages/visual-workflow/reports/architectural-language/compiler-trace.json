@@ -1,0 +1,1626 @@
+{
+  "compilerId": "phase9b-quality-compiler",
+  "compilerVersion": "1.1.0",
+  "adapterId": "seedream-5.0-pro",
+  "adapterVersion": "seedream-short-chain-adapter@1.1.0",
+  "sourceFingerprint": "bb146fc89ab6b2d0cae725a740717c02d8feaa60e2a0c60bf30a80bf754c2017",
+  "blockIds": [
+    "task",
+    "spatial_intent",
+    "architecture_language",
+    "architecture_context",
+    "architecture_function_bridge",
+    "architectural_concept",
+    "architecture_dna",
+    "brand_translation",
+    "functional_requirement",
+    "color",
+    "material",
+    "lighting",
+    "composition",
+    "rendering",
+    "negative_constraints"
+  ],
+  "promptCharacters": 8744,
+  "compileDurationMs": 46.047,
+  "phase9b": true,
+  "anchorIds": [],
+  "decisionTrace": {
+    "confirmedFields": [
+      "mediaTranslations.spatial",
+      "colorSystem",
+      "materialSystem",
+      "lightingSystem"
+    ],
+    "color": [
+      {
+        "sourcePath": "colorSystem.primary[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "name": "暖白与乳白",
+          "role": "安静明亮的建筑背景",
+          "surfaceApplicability": "墙面、地面及周边顶面；不包含主艺术结构内层",
+          "spatialUsage": "dominant_field"
+        },
+        "executionAuthority": "user_confirmed_design_intent",
+        "spatialUsage": "dominant_field",
+        "unresolved": false
+      },
+      {
+        "sourcePath": "colorSystem.secondary[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "name": "浅暖灰",
+          "role": "辅助接待表面的低对比层次",
+          "surfaceApplicability": "接待台次要台面与限定辅助表面",
+          "spatialUsage": "secondary_surface"
+        },
+        "executionAuthority": "user_confirmed_design_intent",
+        "spatialUsage": "secondary_surface",
+        "unresolved": false
+      },
+      {
+        "sourcePath": "colorSystem.accent[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "name": "品牌紫",
+          "role": "局部材料内层的细微虹彩；视觉识别以后期真实标识体现",
+          "surfaceApplicability": "只在层片内层和少量细部出现，不染满墙顶、窗帘或家具",
+          "spatialUsage": "local_accent"
+        },
+        "executionAuthority": "user_confirmed_design_intent",
+        "spatialUsage": "local_accent",
+        "unresolved": false
+      }
+    ],
+    "materials": [
+      {
+        "sourcePath": "materialSystem[0]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "material": "半透明珠光薄片",
+          "behavior": [
+            "自然光分层透射，可读取后方空间",
+            "边缘细腻反射与温和高光",
+            "轻薄层叠保留清楚深度",
+            "珠母贝般温和虹彩，紫只在局部内层微弱出现"
+          ],
+          "brandRole": "参与建筑分隔与空间组织的主艺术系统",
+          "forbidden": [
+            "厚重染色玻璃",
+            "不透明自发光浮雕"
+          ]
+        },
+        "compiled": {
+          "material": "半透明珠光薄片",
+          "behavior": [
+            "自然光分层透射，可读取后方空间",
+            "边缘细腻反射与温和高光",
+            "轻薄层叠保留清楚深度",
+            "珠母贝般温和虹彩，紫只在局部内层微弱出现"
+          ],
+          "brandRole": "参与建筑分隔与空间组织的主艺术系统",
+          "forbidden": [
+            "厚重染色玻璃",
+            "不透明自发光浮雕"
+          ]
+        }
+      },
+      {
+        "sourcePath": "materialSystem[1]",
+        "evidenceClass": "user_confirmed",
+        "source": {
+          "material": "暖白矿物基底",
+          "behavior": [
+            "柔和漫反射",
+            "连续、低对比的安静表面"
+          ],
+          "brandRole": "衬托薄片与自然光的建筑背景",
+          "forbidden": [
+            "高对比镜面拼贴"
+          ]
+        },
+        "compiled": {
+          "material": "暖白矿物基底",
+          "behavior": [
+            "柔和漫反射",
+            "连续、低对比的安静表面"
+          ],
+          "brandRole": "衬托薄片与自然光的建筑背景",
+          "forbidden": [
+            "高对比镜面拼贴"
+          ]
+        }
+      }
+    ],
+    "mechanisms": [
+      {
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+        "mechanismId": "mech-06",
+        "evidenceClass": "system_inference",
+        "sourceText": "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。",
+        "actions": {
+          "strategy": [
+            "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。"
+          ],
+          "form": [
+            "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。"
+          ],
+          "organization": [
+            "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[2]",
+        "mechanismId": "mech-07",
+        "evidenceClass": "system_inference",
+        "sourceText": "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。",
+        "actions": {
+          "strategy": [
+            "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。"
+          ],
+          "form": [
+            "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。"
+          ],
+          "organization": [
+            "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[3]",
+        "mechanismId": "mech-08",
+        "evidenceClass": "system_inference",
+        "sourceText": "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。",
+        "actions": {
+          "strategy": [
+            "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。"
+          ],
+          "form": [
+            "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。"
+          ],
+          "organization": [
+            "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+        "mechanismId": "mech-19",
+        "evidenceClass": "system_inference",
+        "sourceText": "Reception counter with usable service approach",
+        "actions": {
+          "strategy": [],
+          "form": [],
+          "organization": []
+        },
+        "dropped": true,
+        "dropReason": "no_spatial_signal"
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+        "mechanismId": "mech-20",
+        "evidenceClass": "system_inference",
+        "sourceText": "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus",
+        "actions": {
+          "strategy": [
+            "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus"
+          ],
+          "form": [
+            "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus"
+          ],
+          "organization": [
+            "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+        "mechanismId": "mech-21",
+        "evidenceClass": "system_inference",
+        "sourceText": "Clear visitor circulation and an open semi-open transition threshold",
+        "actions": {
+          "strategy": [
+            "Clear visitor circulation and an open semi-open transition threshold"
+          ],
+          "form": [
+            "Clear visitor circulation and an open semi-open transition threshold"
+          ],
+          "organization": [
+            "Clear visitor circulation and an open semi-open transition threshold"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+        "mechanismId": "mech-22",
+        "evidenceClass": "system_inference",
+        "sourceText": "Reception privacy boundary with discreet offset onward access",
+        "actions": {
+          "strategy": [
+            "Reception privacy boundary with discreet offset onward access"
+          ],
+          "form": [
+            "Reception privacy boundary with discreet offset onward access"
+          ],
+          "organization": [
+            "Reception privacy boundary with discreet offset onward access"
+          ]
+        },
+        "dropped": false
+      },
+      {
+        "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+        "mechanismId": "mech-23",
+        "evidenceClass": "system_inference",
+        "sourceText": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "actions": {
+          "strategy": [
+            "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+          ],
+          "form": [
+            "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+          ],
+          "organization": [
+            "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+          ]
+        },
+        "dropped": false
+      }
+    ],
+    "unknown": [
+      "Unprovided color area ratios and material optical parameters remain unspecified; no historical image inference is authorized."
+    ],
+    "conflicts": [],
+    "artisticFocus": [
+      {
+        "text": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+        "sourceContainer": "mediaTranslations.spatial.signatureSpatialMechanism",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：一个与建筑结合的珠光层叠艺术装置",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "层片之间保留可读深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "成为唯一主艺术焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "user_confirmed",
+        "scopeReason": "source_compatible_with_shot",
+        "priority": "project_artistic_focus",
+        "installationDetails": "unspecified unless supplied in source wording"
+      },
+      {
+        "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[1]",
+        "sourceContainer": "mediaTranslations.spatial.signatureSpatialMechanism",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "参与上部空间、局部透景与候客艺术停留的空间秩序",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "并与顶部保持留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不增加第二主焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "user_confirmed",
+        "scopeReason": "source_compatible_with_shot",
+        "priority": "project_artistic_focus",
+        "installationDetails": "unspecified unless supplied in source wording"
+      }
+    ],
+    "artisticCandidates": [
+      {
+        "text": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+        "sourceContainer": "mediaTranslations.spatial.signatureSpatialMechanism",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：一个与建筑结合的珠光层叠艺术装置",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "层片之间保留可读深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "成为唯一主艺术焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot",
+        "sourceEvidenceClass": "user_confirmed"
+      },
+      {
+        "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[1]",
+        "sourceContainer": "mediaTranslations.spatial.signatureSpatialMechanism",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "参与上部空间、局部透景与候客艺术停留的空间秩序",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "并与顶部保持留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不增加第二主焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot",
+        "sourceEvidenceClass": "user_confirmed"
+      },
+      {
+        "text": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "sourcePath": "mediaTranslations.spatial.brandRoleManifestation[0]",
+        "sourceContainer": "mediaTranslations.spatial.brandRoleManifestation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：一个与建筑结合的珠光层叠艺术装置",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "层片之间保留可读深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "成为唯一主艺术焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot",
+        "sourceEvidenceClass": "user_confirmed"
+      },
+      {
+        "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "sourcePath": "mediaTranslations.spatial.brandRoleManifestation[1]",
+        "sourceContainer": "mediaTranslations.spatial.brandRoleManifestation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "参与上部空间、局部透景与候客艺术停留的空间秩序",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "并与顶部保持留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不增加第二主焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot",
+        "sourceEvidenceClass": "user_confirmed"
+      }
+    ],
+    "architectureDecisions": [
+      {
+        "text": "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。",
+        "sourceField": "structureLanguage",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。",
+        "mechanismId": "mech-06",
+        "signals": [
+          "ceiling",
+          "light",
+          "scale"
+        ],
+        "strategy": [
+          "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。"
+        ],
+        "form": [
+          "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。"
+        ],
+        "organization": [
+          "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "以高侧自然采光或顶部天光的空间设计目标强调竖向比例",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "保持真实人体、门洞和可用家具尺度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不虚构极端层高或不合理结构",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。",
+        "sourceField": "structureLanguage",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[2]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。",
+        "mechanismId": "mech-07",
+        "signals": [
+          "layer",
+          "translucent",
+          "open",
+          "boundary",
+          "scale"
+        ],
+        "strategy": [
+          "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。"
+        ],
+        "form": [
+          "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。"
+        ],
+        "organization": [
+          "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "主接待厅向开放或半开放的次级过厅舒展展开",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "再经退让转折到达后续运营边界",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "纵深由开敞层次、半透明透景与界面错位构成",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。",
+        "sourceField": "structureLanguage",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[3]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。",
+        "mechanismId": "mech-08",
+        "signals": [
+          "translucent",
+          "descend",
+          "ceiling"
+        ],
+        "strategy": [
+          "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。"
+        ],
+        "form": [
+          "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。"
+        ],
+        "organization": [
+          "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "上部半透明层片与建筑净高保持清晰间隔",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "保留完整竖向背景及顶部呼吸空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不形成整体贴顶下压的低吊顶",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "sourceField": "positiveDifferentiators",
+        "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+        "classification": "architectural",
+        "strip": [],
+        "compiledAction": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "mechanismId": "mech-23",
+        "signals": [
+          "translucent",
+          "soft",
+          "light",
+          "material"
+        ],
+        "strategy": [
+          "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+        ],
+        "form": [
+          "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+        ],
+        "organization": [
+          "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+        ],
+        "rewritten": true,
+        "dropped": false,
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "具有当代美术馆气质的高端医美接待空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      }
+    ],
+    "sceneScope": [
+      {
+        "text": "接待大厅",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[0]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待大厅",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待大厅",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "入口",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[1]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "入口",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "entrance"
+        ],
+        "currentShotText": "入口",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "候客区",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[2]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "候客区",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "候客区",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "半开放艺术停留与过渡区",
+        "sourcePath": "mediaTranslations.spatial.sceneProgram[3]",
+        "sourceContainer": "mediaTranslations.spatial.sceneProgram",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "半开放艺术停留与过渡区",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "半开放艺术停留与过渡区",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space.",
+        "sourcePath": "mediaTranslations.spatial.functionalNetwork[0]",
+        "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary.",
+        "sourcePath": "mediaTranslations.spatial.functionalNetwork[1]",
+        "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path.",
+        "sourcePath": "mediaTranslations.spatial.functionalNetwork[2]",
+        "sourceContainer": "mediaTranslations.spatial.functionalNetwork",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+        "sourceContainer": "mediaTranslations.spatial.positiveDifferentiators",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "具有当代美术馆气质的高端医美接待空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception counter with usable service approach",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception counter with usable service approach",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception counter with usable service approach",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Clear visitor circulation and an open semi-open transition threshold",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Clear visitor circulation and an open semi-open transition threshold",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "entrance"
+        ],
+        "currentShotText": "Clear visitor circulation and an open semi-open transition threshold",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception privacy boundary with discreet offset onward access",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception privacy boundary with discreet offset onward access",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception privacy boundary with discreet offset onward access",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "层片之间保留可读深度，成为唯一主艺术焦点",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[0]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "层片之间保留可读深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "成为唯一主艺术焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "层片之间保留可读深度，成为唯一主艺术焦点",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[1]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "参与上部空间、局部透景与候客艺术停留的空间秩序",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "并与顶部保持留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不增加第二主焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space.",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[2]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: arrival circulation reaches a usable reception counter and an integrated waiting area with grouped seating and pause space.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary.",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[3]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: the waiting area and art pause space open into a broad semi-open transition hall with an offset onward access boundary.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path.",
+        "sourcePath": "derived.architectureFunctionBridge.spatialTranslation[4]",
+        "sourceContainer": "architectureFunctionBridge.spatialTranslation",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: staff and visitors retain practical onward access without crossing seated guests or blocking the arrival path.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "Reception and waiting share readable circulation; the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame.",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+        "sourceContainer": "architectureFunctionBridge.operationConstraints",
+        "sceneScope": "cross_scene_constraint",
+        "clauses": [
+          {
+            "text": "Reception and waiting share readable circulation",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          }
+        ],
+        "detectedScenes": [
+          "reception",
+          "consultation"
+        ],
+        "currentShotText": "Reception and waiting share readable circulation",
+        "boundaryConstraints": [
+          {
+            "text": "the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame",
+            "sceneScope": "cross_scene_constraint",
+            "visibilityAuthority": "current_boundary_only"
+          }
+        ],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "operational_relation_without_foreign_interior_visibility"
+      },
+      {
+        "text": "Reception: arrival leads to reception service then waiting and art pause then open transition then the privacy boundary.",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[1]",
+        "sourceContainer": "architectureFunctionBridge.operationConstraints",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "Reception: arrival leads to reception service then waiting and art pause then open transition then the privacy boundary",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "Reception: arrival leads to reception service then waiting and art pause then open transition then the privacy boundary.",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "sourcePath": "derived.architectureFunctionBridge.commercialReality[0]",
+        "sourceContainer": "architectureFunctionBridge.commercialReality",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "具有当代美术馆气质的高端医美接待空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[0]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "品牌容易被误读为高端时尚品牌或珠宝品牌",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "而非医疗美容服务机构",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "通用医美装修",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[1]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "通用医美装修",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "通用医美装修",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "重复拱券、波浪灯槽及连续紫色发光描边",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[2]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "重复拱券、波浪灯槽及连续紫色发光描边",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "重复拱券、波浪灯槽及连续紫色发光描边",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "装饰性羽毛堆叠",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[3]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "装饰性羽毛堆叠",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "装饰性羽毛堆叠",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "厚重染色玻璃与不透明发光浮雕",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[4]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "厚重染色玻璃与不透明发光浮雕",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "厚重染色玻璃与不透明发光浮雕",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待台紧邻狭长走廊、两侧连续密集房门与向狭窄尽端收束的空间组织",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[5]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待台紧邻狭长走廊、两侧连续密集房门与向狭窄尽端收束的空间组织",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待台紧邻狭长走廊、两侧连续密集房门与向狭窄尽端收束的空间组织",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "整体贴顶下压的艺术装置、低矮商业吊顶比例与缺乏竖向留白",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[6]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "整体贴顶下压的艺术装置、低矮商业吊顶比例与缺乏竖向留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "整体贴顶下压的艺术装置、低矮商业吊顶比例与缺乏竖向留白",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "角落孤立小沙发、无功能大空间堆砌或隐藏全部运营入口",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[7]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "角落孤立小沙发、无功能大空间堆砌或隐藏全部运营入口",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "entrance"
+        ],
+        "currentShotText": "角落孤立小沙发、无功能大空间堆砌或隐藏全部运营入口",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "夸张无依据的科幻穹顶、不合理结构、超广角畸变与虚构已验证层高",
+        "sourcePath": "derived.architectureFunctionBridge.conceptDriftGuards[8]",
+        "sourceContainer": "architectureFunctionBridge.conceptDriftGuards",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "夸张无依据的科幻穹顶、不合理结构、超广角畸变与虚构已验证层高",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "夸张无依据的科幻穹顶、不合理结构、超广角畸变与虚构已验证层高",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "sourcePath": "derived.brandSanitization.lines[0]",
+        "sourceContainer": "brandSanitization.lines",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：一个与建筑结合的珠光层叠艺术装置",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "层片之间保留可读深度",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "成为唯一主艺术焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "sourcePath": "derived.brandSanitization.lines[1]",
+        "sourceContainer": "brandSanitization.lines",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "参与上部空间、局部透景与候客艺术停留的空间秩序",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "并与顶部保持留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "不增加第二主焦点",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "主接待厅以完整竖向墙面、拔高界面和顶部留白建立展馆尺度的视觉净高与竖向呼吸感。",
+        "sourcePath": "derived.brandSanitization.lines[2]",
+        "sourceContainer": "brandSanitization.lines",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "主接待厅以完整竖向墙面、拔高界面和顶部留白建立展馆尺度的视觉净高与竖向呼吸感",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "主接待厅以完整竖向墙面、拔高界面和顶部留白建立展馆尺度的视觉净高与竖向呼吸感。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "周边墙地及顶面保持暖白低对比留白",
+        "sourcePath": "derived.brandSanitization.lines[3]",
+        "sourceContainer": "brandSanitization.lines",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "周边墙地及顶面保持暖白低对比留白",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [],
+        "currentShotText": "周边墙地及顶面保持暖白低对比留白",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      },
+      {
+        "text": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "sourcePath": "derived.brandSanitization.lines[4]",
+        "sourceContainer": "brandSanitization.lines",
+        "sceneScope": "current_shot",
+        "clauses": [
+          {
+            "text": "具有当代美术馆气质的高端医美接待空间",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          },
+          {
+            "text": "以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验",
+            "sceneScope": "current_shot",
+            "visibilityAuthority": "current_shot"
+          }
+        ],
+        "detectedScenes": [
+          "reception"
+        ],
+        "currentShotText": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "boundaryConstraints": [],
+        "offFrameEntities": [],
+        "evidenceClass": "system_inference",
+        "scopeReason": "source_compatible_with_shot"
+      }
+    ],
+    "crossSceneConstraints": [
+      {
+        "text": "the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame",
+        "sceneScope": "cross_scene_constraint",
+        "visibilityAuthority": "current_boundary_only",
+        "sourcePath": "derived.architectureFunctionBridge.operationConstraints[0]",
+        "sourceText": "Reception and waiting share readable circulation; the semi-open transition maintains consultation privacy through offset screened access while other room interiors remain off frame.",
+        "evidenceClass": "system_inference"
+      }
+    ],
+    "canonicalOwners": [
+      {
+        "text": "以高侧自然采光或顶部天光的空间设计目标强调竖向比例，保持真实人体、门洞和可用家具尺度，不虚构极端层高或不合理结构。",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[1]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "主接待厅向开放或半开放的次级过厅舒展展开，再经退让转折到达后续运营边界；纵深由开敞层次、半透明透景与界面错位构成。",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[2]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "上部半透明层片与建筑净高保持清晰间隔，保留完整竖向背景及顶部呼吸空间，不形成整体贴顶下压的低吊顶。",
+        "sourcePath": "mediaTranslations.spatial.structureLanguage[3]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+        "sourcePath": "mediaTranslations.spatial.positiveDifferentiators[0]",
+        "blockId": "architecture_language"
+      },
+      {
+        "text": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[0]",
+        "blockId": "composition"
+      },
+      {
+        "text": "接待区：既有珠光薄片艺术装置延续轻薄半透明、层叠深度与自然光透射；参与上部空间、局部透景与候客艺术停留的空间秩序，并与顶部保持留白，不增加第二主焦点。",
+        "sourcePath": "mediaTranslations.spatial.signatureSpatialMechanism[1]",
+        "blockId": "composition"
+      },
+      {
+        "text": "Reception counter with usable service approach",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[0]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "Waiting area seating grouped around a usable pause space connected to arrival circulation and the art focus",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[1]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "Clear visitor circulation and an open semi-open transition threshold",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[2]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      },
+      {
+        "text": "Reception privacy boundary with discreet offset onward access",
+        "sourcePath": "mediaTranslations.spatial.mustBeVisible[3]",
+        "sourceContainer": "mediaTranslations.spatial.mustBeVisible",
+        "blockId": "composition"
+      }
+    ]
+  },
+  "userConfirmedVisualDecision": {
+    "id": "05ea784f-cf45-40b5-9e8b-0cefda4d03e1",
+    "sourceDocument": "用户授权《九州美学｜建筑语言定向修正开发文档》的项目级空间设计目标；仅用于独立测试副本的离线确认和预检。保留已审核的气质、颜色、材料及光影；新增净高感、开敞过渡和功能层级是设计意图，不是原品牌或实测建筑事实。未授权真实模型调用或视觉质量冻结。 原始资料未核实实际层高；文中净高、采光与开敞尺度均为视觉设计目标，不代表具体米数或施工事实。",
+    "sourceFingerprint": "f896851f211f24799cb31ee0440f7d8b941dabc1dfb1532bd5dc41d15dda087f"
+  },
+  "spaceGeneration": {
+    "compilerId": "phase9b-quality-compiler",
+    "compilerVersion": "1.1.0",
+    "sourceAdapterVersion": "1.4.0",
+    "semanticSeparationVersion": "1.0.0",
+    "architectureAnchorIds": [],
+    "generationBasis": "standard",
+    "referenceMode": "text_only",
+    "referenceIds": [],
+    "referenceSources": [],
+    "referenceBoundary": {
+      "applied": false,
+      "version": null,
+      "providerStrengthControl": "unsupported",
+      "promptCharacters": 0
+    },
+    "targetSceneAuthority": {
+      "targetScene": "reception",
+      "targetProgramId": "reception",
+      "functionalBlockSource": "source_shot_scope",
+      "architectureBridgeSource": "source_shot_scope",
+      "operationConstraintsSource": "source_shot_scope",
+      "viewStrategySource": "target_scene_default",
+      "viewStrategy": "reception_arrival_view",
+      "shotSource": "target_scene_default",
+      "gate": "pass",
+      "gateVersion": "space-target-scene-authority@1.1.0",
+      "authorityGate": {
+        "status": "pass",
+        "checkedBlocks": [
+          "functional_requirement",
+          "architecture_function_bridge",
+          "operation_constraints",
+          "must_be_visible",
+          "lighting",
+          "composition",
+          "brand_role_manifestation"
+        ]
+      }
+    },
+    "promptCharacters": 8744,
+    "providerLimit": 12000,
+    "qualityBudgetExceeded": true,
+    "architectureCharacters": 3469,
+    "brandCharacters": 463,
+    "negativeCharacters": 353,
+    "promptHash": "62d710e135e66d808fd110ff29015f3c2ca08a0f38450588e9365b8ed38b23f9",
+    "provider": "seedream",
+    "model": "doubao-seedream-5-0-pro-260628",
+    "canonicalCompilerMode": "r8_6_golden",
+    "blockIds": [
+      "task",
+      "spatial_intent",
+      "architecture_language",
+      "architecture_context",
+      "architecture_function_bridge",
+      "architectural_concept",
+      "architecture_dna",
+      "brand_translation",
+      "functional_requirement",
+      "color",
+      "material",
+      "lighting",
+      "composition",
+      "rendering",
+      "negative_constraints"
+    ],
+    "spatialSemanticReport": {
+      "schemaVersion": "1.0",
+      "version": "space-spatial-semantic-gate@1.1.0",
+      "status": "pass",
+      "findings": []
+    },
+    "routeIntegrity": {
+      "schemaVersion": "1.0",
+      "version": "space-route-integrity-gate@1.0.0",
+      "status": "pass",
+      "canonicalCompilerMode": "r8_6_golden",
+      "compilerMatched": true,
+      "requiredBlocksPresent": true,
+      "blockOrderMatched": true,
+      "promptBudgetMatched": true,
+      "referencePolicyMatched": true,
+      "spatialSemanticGatePassed": true,
+      "aspectRatioMatched": true
+    }
+  }
+}

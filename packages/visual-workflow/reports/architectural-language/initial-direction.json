@@ -1,0 +1,216 @@
+{
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "status": "confirmed",
+  "reason": null,
+  "recordSha256": "905a3be5097ce0e057080e32e8e1c8d64f5142018622711b244d694283dfeb71",
+  "analysisFingerprint": "5c8594ca69d077cb3cc05c4c8b1aebf6cb523022d6ea0f411d5eb56fe4f84a6c",
+  "source": {
+    "kind": "user_design_decision",
+    "statement": "用户确认的项目设计目标。人工认可作品仅用于离线审美校准，不是原始品牌事实，也不是生图参考输入。",
+    "evidenceRole": "offline_visual_calibration",
+    "notOriginalBrandFact": true
+  },
+  "fields": {
+    "spatialConcept": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+    "structureLanguage": "轻薄半透明顶面与连续空间分隔组织自然光、穿行和视线纵深\n周边墙地及顶面保持暖白低对比留白",
+    "materialLanguage": "",
+    "lightingLanguage": "柔和自然日光\n克制的间接光",
+    "colorPolicy": "",
+    "functionalProgram": "接待大厅\n入口\n候客区",
+    "mustAvoid": "通用医美装修\n重复拱券、波浪灯槽及连续紫色发光描边\n装饰性羽毛堆叠\n厚重染色玻璃与不透明发光浮雕",
+    "lightingContrast": "建筑背景低对比，层片边缘保留细腻明暗",
+    "lightingInteraction": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构",
+    "lightingAvoid": "全空间紫色灯带\n紫色霓虹",
+    "colorAvoid": "紫色共同主导墙、顶、窗帘与多类家具",
+    "functionalNetwork": "Reception: a usable reception counter connects to waiting area seating through clear visitor circulation.",
+    "functionalRelationships": "Reception and waiting share readable circulation; preserve the consultation privacy boundary while other room interiors remain off frame.",
+    "visibleRequirements": "Reception counter\nWaiting area seating\nClear visitor circulation\nConsultation privacy boundary",
+    "artisticFocus": "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。",
+    "compositionRequirements": "入口视角保留前景通行、中景接待与候客、背景留白的清晰纵深；艺术焦点与可用接待台形成主次，不遮挡通行。",
+    "colorEntries": [
+      {
+        "name": "暖白与乳白",
+        "paletteRole": "primary",
+        "role": "安静明亮的建筑背景",
+        "surfaceApplicability": "墙面、地面及周边顶面；不包含主艺术结构内层",
+        "spatialUsage": "dominant_field"
+      },
+      {
+        "name": "浅暖灰",
+        "paletteRole": "secondary",
+        "role": "辅助接待表面的低对比层次",
+        "surfaceApplicability": "接待台次要台面与限定辅助表面",
+        "spatialUsage": "secondary_surface"
+      },
+      {
+        "name": "品牌紫",
+        "paletteRole": "accent",
+        "role": "局部材料内层的细微虹彩；视觉识别以后期真实标识体现",
+        "surfaceApplicability": "只在层片内层和少量细部出现，不染满墙顶、窗帘或家具",
+        "spatialUsage": "local_accent"
+      }
+    ],
+    "materialEntries": [
+      {
+        "material": "半透明珠光薄片",
+        "behavior": "自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现",
+        "brandRole": "参与建筑分隔与空间组织的主艺术系统",
+        "forbidden": "厚重染色玻璃\n不透明自发光浮雕"
+      },
+      {
+        "material": "暖白矿物基底",
+        "behavior": "柔和漫反射\n连续、低对比的安静表面",
+        "brandRole": "衬托薄片与自然光的建筑背景",
+        "forbidden": "高对比镜面拼贴"
+      }
+    ]
+  },
+  "validationIssues": [],
+  "confirmedAt": "2026-10-18T09:55:05.987Z",
+  "confirmationSha256": "a9d642f3b2012dd155db9fc154b8f6f940fd4ed239628716e55721dd7d18c11d",
+  "confirmation": {
+    "schemaVersion": "1.0",
+    "id": "e6d00028-180a-4daa-84a1-357f00a36161",
+    "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+    "status": "confirmed",
+    "sourceDocument": "用户确认的项目设计目标。人工认可作品仅用于离线审美校准，不是原始品牌事实，也不是生图参考输入。",
+    "evidenceRefs": [
+      "project_user_design_decision"
+    ],
+    "appliesTo": {
+      "deliverableFamilies": [
+        "space"
+      ]
+    },
+    "creativeDecision": {
+      "brandRoleStatement": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+      "uniqueUpgradeThesis": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+      "strategicNegatives": [
+        "通用医美装修",
+        "重复拱券、波浪灯槽及连续紫色发光描边",
+        "装饰性羽毛堆叠",
+        "厚重染色玻璃与不透明发光浮雕"
+      ],
+      "toneBoundaries": [
+        {
+          "target": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+          "avoid": [
+            "通用医美装修",
+            "重复拱券、波浪灯槽及连续紫色发光描边",
+            "装饰性羽毛堆叠",
+            "厚重染色玻璃与不透明发光浮雕"
+          ]
+        }
+      ]
+    },
+    "abstractions": [],
+    "spatialTranslation": {
+      "spatialConcept": "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。",
+      "structureLanguage": [
+        "轻薄半透明顶面与连续空间分隔组织自然光、穿行和视线纵深",
+        "周边墙地及顶面保持暖白低对比留白"
+      ],
+      "materialLanguage": [
+        {
+          "material": "半透明珠光薄片",
+          "behavior": [
+            "自然光分层透射，可读取后方空间",
+            "边缘细腻反射与温和高光",
+            "轻薄层叠保留清楚深度",
+            "珠母贝般温和虹彩，紫只在局部内层微弱出现"
+          ],
+          "brandRole": "参与建筑分隔与空间组织的主艺术系统",
+          "forbidden": [
+            "厚重染色玻璃",
+            "不透明自发光浮雕"
+          ]
+        },
+        {
+          "material": "暖白矿物基底",
+          "behavior": [
+            "柔和漫反射",
+            "连续、低对比的安静表面"
+          ],
+          "brandRole": "衬托薄片与自然光的建筑背景",
+          "forbidden": [
+            "高对比镜面拼贴"
+          ]
+        }
+      ],
+      "lightingLanguage": {
+        "source": [
+          "柔和自然日光",
+          "克制的间接光"
+        ],
+        "contrast": "建筑背景低对比，层片边缘保留细腻明暗",
+        "interactionWithMaterials": [
+          "自然光穿透层片产生分层透射与细腻散射",
+          "边缘反射温和，不以连续发光描边代替结构"
+        ],
+        "forbidden": [
+          "全空间紫色灯带",
+          "紫色霓虹"
+        ]
+      },
+      "colorBehavior": {
+        "primary": [
+          {
+            "name": "暖白与乳白",
+            "role": "安静明亮的建筑背景",
+            "surfaceApplicability": "墙面、地面及周边顶面；不包含主艺术结构内层",
+            "spatialUsage": "dominant_field"
+          }
+        ],
+        "secondary": [
+          {
+            "name": "浅暖灰",
+            "role": "辅助接待表面的低对比层次",
+            "surfaceApplicability": "接待台次要台面与限定辅助表面",
+            "spatialUsage": "secondary_surface"
+          }
+        ],
+        "accent": [
+          {
+            "name": "品牌紫",
+            "role": "局部材料内层的细微虹彩；视觉识别以后期真实标识体现",
+            "surfaceApplicability": "只在层片内层和少量细部出现，不染满墙顶、窗帘或家具",
+            "spatialUsage": "local_accent"
+          }
+        ],
+        "forbidden": [
+          "紫色共同主导墙、顶、窗帘与多类家具"
+        ]
+      },
+      "sceneProgram": [
+        "接待大厅",
+        "入口",
+        "候客区"
+      ],
+      "functionalNetwork": [
+        "Reception: a usable reception counter connects to waiting area seating through clear visitor circulation."
+      ],
+      "functionalRelationships": [
+        "Reception and waiting share readable circulation; preserve the consultation privacy boundary while other room interiors remain off frame."
+      ],
+      "mustBeVisible": [
+        "Reception counter",
+        "Waiting area seating",
+        "Clear visitor circulation",
+        "Consultation privacy boundary"
+      ],
+      "compositionRequirements": [
+        "入口视角保留前景通行、中景接待与候客、背景留白的清晰纵深；艺术焦点与可用接待台形成主次，不遮挡通行。"
+      ],
+      "brandRoleManifestation": [
+        "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。"
+      ],
+      "signatureSpatialMechanism": [
+        "接待区：一个与建筑结合的珠光层叠艺术装置，层片之间保留可读深度，成为唯一主艺术焦点。"
+      ],
+      "positiveDifferentiators": [
+        "具有当代美术馆气质的高端医美接待空间，以建筑组织、轻薄半透明结构和材料光学形成安静明亮的艺术体验。"
+      ]
+    }
+  },
+  "boundAnalysisFingerprint": "5c8594ca69d077cb3cc05c4c8b1aebf6cb523022d6ea0f411d5eb56fe4f84a6c"
+}

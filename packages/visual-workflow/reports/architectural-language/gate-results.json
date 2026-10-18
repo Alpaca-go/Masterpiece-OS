@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "realProviderCalls": 0,
+  "results": [
+    {
+      "log": ".git/architectural-repo-check.log",
+      "seconds": 96.7049836,
+      "exitCode": 0,
+      "name": "repo:check"
+    },
+    {
+      "log": ".git/architectural-owned-tests.log",
+      "seconds": 19.3725088,
+      "name": "owned-tests",
+      "exitCode": 0
+    },
+    {
+      "log": ".git/architectural-host-tests.log",
+      "seconds": 2.6048578,
+      "name": "host-tests",
+      "exitCode": 0
+    },
+    {
+      "log": ".git/architectural-host-typecheck.log",
+      "seconds": 1.5048521,
+      "name": "host-typecheck",
+      "exitCode": 0
+    },
+    {
+      "log": ".git/architectural-web-build.log",
+      "seconds": 3.45264,
+      "name": "web-build",
+      "exitCode": 0
+    },
+    {
+      "log": ".git/architectural-space-golden-boundary.log",
+      "seconds": 0.6005239,
+      "name": "space-golden-boundary",
+      "exitCode": 0
+    },
+    {
+      "exitCode": 0,
+      "seconds": 32.8596759,
+      "name": "final repo:verify",
+      "log": ".git/architectural-final-verify.log"
+    }
+  ],
+  "logDirectory": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.git",
+  "note": "repo:check includes repo:verify/current-flows, root, CLI, runtime, Web smoke and Golden. Offline command failures during drafting are explained in review.md."
+}

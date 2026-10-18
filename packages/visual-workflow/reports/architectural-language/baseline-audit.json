@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "historicalExecution": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\standard-generation-preflight\\authorized-execution",
+  "runId": "60080629-4d6b-4262-8457-88290b9b01f9",
+  "previousRequestBodySha256": "625ff8dbb016b027143fce5454003df845821fd0774f9add107cf85fc5372442",
+  "previousPromptSha256": "b1fb72359a6d156a82aab89c0cf226eaf9304b91d6dd78185e700f0c5c5f7e5f",
+  "previousImageSha256": "f402e0c1d763658cbda3b6c072641811c9c951cc60dcb18d3043a0c20354dda8",
+  "previousConfirmationSnapshot": {
+    "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+    "recordSha256": "905a3be5097ce0e057080e32e8e1c8d64f5142018622711b244d694283dfeb71",
+    "confirmationSha256": "a9d642f3b2012dd155db9fc154b8f6f940fd4ed239628716e55721dd7d18c11d",
+    "analysisFingerprint": "5c8594ca69d077cb3cc05c4c8b1aebf6cb523022d6ea0f411d5eb56fe4f84a6c",
+    "source": {
+      "kind": "user_design_decision",
+      "statement": "用户确认的项目设计目标。人工认可作品仅用于离线审美校准，不是原始品牌事实，也不是生图参考输入。",
+      "evidenceRole": "offline_visual_calibration",
+      "notOriginalBrandFact": true
+    },
+    "confirmedAt": "2026-10-18T09:55:05.987Z"
+  },
+  "matchingPaletteMaterialLighting": true,
+  "unprovidedHeight": "unknown; design target only; no numeric metres claimed",
+  "priorConfirmationMatchesHistoricalSnapshot": true,
+  "historicalInventory": [
+    {
+      "path": "authorization-lock.json",
+      "sha256": "75f25d8a1c0126e4bd03f1741f22ce2a8690b3ee0b0bcb3007cb4badac27ded5"
+    },
+    {
+      "path": "call-ledger.json",
+      "sha256": "2ace6b48c626205b08d8dbc88acbc0ef8d3309ca7f758728991a1aa57faba416"
+    },
+    {
+      "path": "compiled-prompt.json",
+      "sha256": "b9003a5acc2d9c12f4f2d8aea48e0c1aed5dfa2e1267a3837f10226e8da21f36"
+    },
+    {
+      "path": "compiled-prompt.txt",
+      "sha256": "b1fb72359a6d156a82aab89c0cf226eaf9304b91d6dd78185e700f0c5c5f7e5f"
+    },
+    {
+      "path": "effective-visual-decision-packet.json",
+      "sha256": "e199b2dd476ddb411cf5ce0bf97d7a25358553551131f4916df77f9a406f2997"
+    },
+    {
+      "path": "execution-report.md",
+      "sha256": "1a41d894402333ff0e05492dec816450710902bda46e282d5930437d33ca4781"
+    },
+    {
+      "path": "execution-result.json",
+      "sha256": "c940442f3c797377cbfc3c69f522e01bf264cdc9faff3337e675c4ab523b306e"
+    },
+    {
+      "path": "fee-record.json",
+      "sha256": "798c06e94169c3ff3dedcc6e440ed75c71f808e6720bfa6dada4380c49ebb242"
+    },
+    {
+      "path": "generation-result.json",
+      "sha256": "2dae937f8a20b45e91c440f2e0f5560123f74b8c68363936bfacb41c03618916"
+    },
+    {
+      "path": "image-actual-request.json",
+      "sha256": "7265bf96adf463b3fa89a905352cdca3b8fbbf5c51fb40ad3c1d025eb1341e25"
+    },
+    {
+      "path": "image-provider-response.local.json",
+      "sha256": "6f493f6ba25ded73b192249f0621e6011fcb2a55cc2472d6f5c94edd36dc3ba8"
+    },
+    {
+      "path": "image-response-metadata.json",
+      "sha256": "b8a09ce8eaf5102eaf4244ecd92b99dbe2f695332d637036b9a1f83dd1eed965"
+    },
+    {
+      "path": "jiuzhou-provider-original.jpg",
+      "sha256": "76e70ad0741a7d25b6e074cb2adfa41a88e5c10f183163c64e8bfdf33ccfa985"
+    },
+    {
+      "path": "jiuzhou-standard-output.png",
+      "sha256": "f402e0c1d763658cbda3b6c072641811c9c951cc60dcb18d3043a0c20354dda8"
+    },
+    {
+      "path": "project-design-direction.json",
+      "sha256": "200027f4e60310185aa9917ba080dcd1c5d345ad181b0deb80ae88157d3ab82b"
+    },
+    {
+      "path": "prompt-source-map.json",
+      "sha256": "09319dcfceb4d999c8a1fb199252ba384a754103a717b356f15bbfe531778794"
+    },
+    {
+      "path": "provider-original-image.bin",
+      "sha256": "76e70ad0741a7d25b6e074cb2adfa41a88e5c10f183163c64e8bfdf33ccfa985"
+    },
+    {
+      "path": "provider-prompt.txt",
+      "sha256": "f49b5da009fe082d8bc1c3c8567be22109a2d9d1423b5bbd69ab4b4198d20d04"
+    },
+    {
+      "path": "request-metadata.json",
+      "sha256": "5fe37d6a3bf226d0da021db4d3eaf2b325a54167012c4789ae817b8ec71012c3"
+    },
+    {
+      "path": "runtime.json",
+      "sha256": "b7dfd019ea7b1927eb7f4f71587534088b0bb8c6c621df6f2a49d7528df2940b"
+    },
+    {
+      "path": "source-context-snapshot.json",
+      "sha256": "e218afe14408f912531ebe49b9a3b72da0270b5c036b5c15b2c023b1698cb83f"
+    },
+    {
+      "path": "validation-actual-request.json",
+      "sha256": "bb5ec85f9204158a3c320806bf57e13bc3edc1e2aa4304de5e835c5cc1b594bd"
+    },
+    {
+      "path": "validation-provider-response.local.json",
+      "sha256": "600dac1026ae14e64737c6db8f1fa4d7afc60eaea589145e862b6e3fb7f2e8c7"
+    },
+    {
+      "path": "validation-response-metadata.json",
+      "sha256": "1bf171e1a892d03fa7ea7d8782a6f7cab1e5e899337acc58111a81529a845435"
+    },
+    {
+      "path": "validation-result.json",
+      "sha256": "4b06a3a2186d43720dedb4a423c9be6c56bc76279aea9de016d57d12fa7de093"
+    },
+    {
+      "path": "web-result.png",
+      "sha256": "3aebfc950172fc8a3c01762676976b0f787f9845abb678c8dfe321712a205e8a"
+    },
+    {
+      "path": "workflow-implementation.json",
+      "sha256": "4bb2f3660f2186b291f5110eb30aba8c9960ed7d28971cbe283808237b897e54"
+    }
+  ]
+}

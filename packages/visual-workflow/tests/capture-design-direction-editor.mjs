@@ -10,11 +10,11 @@ import {digest} from '../src/art-direction-contract.js';
 import {verifyImplementation} from '../src/integrity.js';
 import {assertEditorSemanticFidelity} from './design-direction-editor-evidence.mjs';
 
-const [source,outputArgument]=process.argv.slice(2);
+const [source,outputArgument,formFile,finalState]=process.argv.slice(2);
 const output=path.resolve(outputArgument);await fs.mkdir(output);
 const read=async file=>JSON.parse(await fs.readFile(file,'utf8'));
 const write=(name,value)=>fs.writeFile(path.join(output,name),JSON.stringify(value,null,2)+'\n');
-const form=JSON.parse(await fs.readFile(new URL('./design-direction-form.json',import.meta.url),'utf8'));
+const form=JSON.parse(await fs.readFile(formFile || new URL('./design-direction-form.json',import.meta.url),'utf8'));
 const webRequests=[];
 const nativeFetch=globalThis.fetch;
 const images=[];const validations=[];
@@ -75,11 +75,14 @@ try {
   chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-sandbox','--disable-gpu','--disable-extensions','--disable-background-networking','--disable-component-update','--disable-sync','--no-first-run','--no-default-browser-check','--no-pings',`--user-data-dir=${path.join(output,'chrome-data')}`,`--remote-debugging-port=${debugPort}`,'--window-size=1440,1200',page],{windowsHide:true,stdio:'ignore'});
   const target=await until(async()=>{const response=await nativeFetch(`http://127.0.0.1:${debugPort}/json/list`);return (await response.json()).find(item=>item.type==='page'&&item.url.startsWith(origin));},'browser target');
   cdp=await connect(target.webSocketDebuggerUrl);await cdp.call('Page.enable');await cdp.call('Network.enable');
-  await until(async()=>{const text=await body();return text.includes('项目设计方向')&&text.includes('未设置，当前使用分析建议');},'empty project direction');
-  states.push({stage:'opened_empty_editor',status:'missing'});
+  const initialDirection=await setup.operations['visual-workflow:report']({},project.id,'project_design_direction');
+  await until(async()=>{const text=await body();return text.includes('项目设计方向')&&!text.includes('正在读取确认状态');},'project direction loaded');
+  states.push({stage:'opened_editor',status:initialDirection.status});
   await click('查看、编辑并确认设计方向');
   await fill('section[aria-label="项目设计方向"] label textarea',form.sourceStatement);
   for(const [key,value] of Object.entries(form.fields))if(typeof value==='string')await fill(`[data-design-field="${key}"]`,value);
+  for(let index=0;index<initialDirection.fields.colorEntries.length;index++)await click('移除此颜色');
+  for(let index=0;index<initialDirection.fields.materialEntries.length;index++)await click('移除此材料');
   for(const [index,entry] of form.fields.colorEntries.entries()) {
     await click('添加颜色');for(const [key,value] of Object.entries(entry))await fill(`[data-design-color="${index}"] [data-color-field="${key}"]`,value);
   }
@@ -122,6 +125,7 @@ try {
   await cdp.call('Page.reload');
   await until(async()=>(await body()).includes('已确认，将用于标准空间生图'),'restarted host persisted confirmation');
   states.push({stage:'host_restart_and_browser_reload',status:'confirmed'});
+  if(finalState!=='confirmed') {
   await click('查看、编辑并确认设计方向');
   await evaluate(`(()=>{const textarea=[...document.querySelectorAll('section[aria-label="项目设计方向"] label')].find(item=>item.textContent.includes('决策来源与确认依据')).querySelector('textarea');Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,'value').set.call(textarea,textarea.value+' / Browser draft edit');textarea.dispatchEvent(new Event('input',{bubbles:true}));return true;})()`);
   await until(async()=>(await body()).includes('有未保存修改'),'unsaved status');
@@ -133,10 +137,13 @@ try {
   await cdp.call('Page.reload');
   await until(async()=>(await body()).includes('草稿，尚未确认生效'),'draft persisted after reopening');
   states.push({stage:'edit_save_and_reopen',status:'draft',standardGenerationBlocked:true});
+  }
   assert.equal(images.length,1);assert.equal(validations.length,1);assert.deepEqual(await inventory(source),original);
   await write('provider-request.json',images[0]);await write('validator-request.json',validations[0]);
   await write('natural-language-input.json',form);await write('web-input-requests.json',imports);await write('field-fidelity.json',fidelity);
   await write('confirmed-direction.json',confirmed);await write('effective-packet.json',compilation.effectiveVisualDecisionPacket);await write('compiler-trace.json',compilation.trace);
+  await write('initial-direction.json',initialDirection);await write('task-contract.json',snapshot.taskContract);await write('prompt-source-map.json',compilation.sourceMap);
+  await write('readonly-proof.json',{sourceProjectUnchanged:true,sourceProject:path.resolve(source),sourceInventory:original});
   await fs.writeFile(path.join(output,'formal-prompt.txt'),formalPrompt);await fs.writeFile(path.join(output,'provider-prompt.txt'),images[0].body.prompt);
   await write('request-metadata.json',metadata);await write('public-operation-stamp.json',stamp);
   await write('browser-result.json',{status:'PASS',realProviderCalls:0,recordedMockImageRequests:images.length,recordedMockValidationRequests:validations.length,automaticRegenerations:0,

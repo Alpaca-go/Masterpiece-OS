@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "realProviderCalls": 0,
+  "syntheticResponses": true,
+  "generationBasis": "standard",
+  "referenceAssetIds": [],
+  "imageFieldPresent": false,
+  "formalPromptSha256": "62d710e135e66d808fd110ff29015f3c2ca08a0f38450588e9365b8ed38b23f9",
+  "providerPromptSha256": "53531ad086de1f0df63f331153c3fe32ef6c32349681d78c8adbe21539e702f7",
+  "requestBodySha256": "6cc069be2518ee0db326ae0ed2778abeab2f0299df649b004c21d022552487b2",
+  "confirmationSha256": "1367fdf7d18e6ed438312d8a78a05e18324fd26fc47cf432abaa052f3a57f424",
+  "recordSha256": "6559399acc7c987a55369f18858ec32cc95c67d8e3911f6b263f41905f0b7417",
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81"
+  },
+  "automaticRegenerations": 0,
+  "sourceProjectUnchanged": true,
+  "actualReactRenderer": true,
+  "actualNodeHost": true,
+  "publicIntegrityVerified": true,
+  "testCopy": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\confirmed-copy\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "runRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\confirmed-copy\\user-data\\visual-workflow\\runs\\1fed075b-aae8-4cf1-a978-5264fd4e69a6",
+  "comparisonToPrior": {
+    "modelIdentical": true,
+    "imageSizeIdentical": true,
+    "aspectRatioIdentical": true,
+    "outputCountIdentical": true
+  },
+  "humanVisualAcceptance": "not_performed"
+}
