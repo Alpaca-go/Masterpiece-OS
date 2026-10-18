@@ -1,0 +1,17 @@
+{
+  "currency": "CNY",
+  "imageUsage": {
+    "input_images": 0,
+    "generated_images": 1,
+    "output_tokens": 17424,
+    "total_tokens": 17424
+  },
+  "validationUsage": null,
+  "imageEstimatedAtPublicTariff": 0.6,
+  "validationEstimatedAtPublicTariff": null,
+  "estimatedTotal": null,
+  "actualSettledCost": null,
+  "accountBilling": "Not returned by model API; reconcile with provider billing",
+  "customWorkspaceRate": "Public tariff estimate only",
+  "totalCostHardCap": null
+}

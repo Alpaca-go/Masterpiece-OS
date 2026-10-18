@@ -1,0 +1,73 @@
+{
+  "status": "COMPLETED_STOPPED_PENDING_HUMAN_REVIEW",
+  "durationMs": 189168,
+  "commit": "459bed832c1cdec831d3ee3b2ca963c69e7a46dc",
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "taskId": "vnext-task-cec2eb15-fde5-437c-b6a8-1889c84e94b8",
+  "imageDispatches": 1,
+  "validationDispatches": 1,
+  "requestMatchesPreflight": true,
+  "confirmationSha256": "1367fdf7d18e6ed438312d8a78a05e18324fd26fc47cf432abaa052f3a57f424",
+  "formalPromptSha256": "62d710e135e66d808fd110ff29015f3c2ca08a0f38450588e9365b8ed38b23f9",
+  "providerPromptSha256": "53531ad086de1f0df63f331153c3fe32ef6c32349681d78c8adbe21539e702f7",
+  "requestBodySha256": "6cc069be2518ee0db326ae0ed2778abeab2f0299df649b004c21d022552487b2",
+  "implementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81"
+  },
+  "qualityAcceptance": "pending_human_review",
+  "humanAcceptanceUpdated": false,
+  "retries": 0,
+  "regenerations": 0,
+  "directedCorrections": 0,
+  "referenceImages": 0,
+  "imageFieldPresent": false,
+  "runId": "eeef9345-ba64-4737-92d2-40dd3934edb2",
+  "image": {
+    "originalFile": "jiuzhou-provider-original.jpg",
+    "originalSha256": "2e6e4c6b3692053277298b7fb38ffb33b4497ff24cb05787ff34829457e8a3a6",
+    "businessOutput": "jiuzhou-standard-output.png",
+    "businessOutputSha256": "525db8989b2145e0afeeaffefe979abd6020ac6295e78a4fd4aa8b19b08f76c7",
+    "width": 2816,
+    "height": 1584,
+    "actualAspectRatio": 1.7777777777777777,
+    "requestedAspectRatio": "16:9"
+  },
+  "validator": {
+    "status": "unverified",
+    "terminalStatus": "unverified",
+    "model": "qwen3.6-plus",
+    "endpointScope": "user_confirmed_custom_workspace_endpoint"
+  },
+  "originalProjectUnchanged": true,
+  "historicalImagesUnchanged": true,
+  "confirmedDirectionUnchanged": true,
+  "workingTreeClean": true,
+  "goldenChanged": false,
+  "productionCodeChanged": false,
+  "merged": false,
+  "published": false,
+  "fees": {
+    "currency": "CNY",
+    "imageUsage": {
+      "input_images": 0,
+      "generated_images": 1,
+      "output_tokens": 17424,
+      "total_tokens": 17424
+    },
+    "validationUsage": null,
+    "imageEstimatedAtPublicTariff": 0.6,
+    "validationEstimatedAtPublicTariff": null,
+    "estimatedTotal": null,
+    "actualSettledCost": null,
+    "accountBilling": "Not returned by model API; reconcile with provider billing",
+    "customWorkspaceRate": "Public tariff estimate only",
+    "totalCostHardCap": null
+  },
+  "localEvidenceDirectory": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\paid-validation\\authorized-execution",
+  "credentialValuesIncluded": false,
+  "rawProviderResponsesIncluded": false,
+  "imagesCommitted": false
+}

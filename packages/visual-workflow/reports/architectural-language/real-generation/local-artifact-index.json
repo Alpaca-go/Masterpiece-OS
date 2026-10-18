@@ -1,0 +1,166 @@
+{
+  "scope": "Hash index only. Images, original responses, request bodies and runtime files remain in ignored local evidence; none are copied here.",
+  "localEvidenceDirectory": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\architectural-language\\paid-validation\\authorized-execution",
+  "files": [
+    {
+      "name": "approved-confirmed-direction.json",
+      "bytes": 15929,
+      "sha256": "ad8044b0d1bcf522cc786b716f97567d3ce1ec44a539f3c39d84509c7f74650b"
+    },
+    {
+      "name": "approved-effective-packet.json",
+      "bytes": 33388,
+      "sha256": "9b1de183704ebaab216f8800bc820198ff1e6756a79e74bfda870ff82d7caf6c"
+    },
+    {
+      "name": "approved-field-fidelity.json",
+      "bytes": 31340,
+      "sha256": "39c09bb04ba880eca7b100a24d99df9546023f89843ec118c4a56dd49e781a19"
+    },
+    {
+      "name": "authorization.json",
+      "bytes": 2825,
+      "sha256": "a6cce15e471c83ba3bd5382822cd8353382d106a13fa40a350920365be3676ae"
+    },
+    {
+      "name": "call-ledger.json",
+      "bytes": 177,
+      "sha256": "67a6b012d5338fc33b8baf60b7ceede4bc457772d5d3e1b586b7773690f920ff"
+    },
+    {
+      "name": "compiled-prompt.json",
+      "bytes": 154582,
+      "sha256": "f1df5c99dd24710cc6595c20b9f38af1153006555fdccdc33ebd679f05cf9659"
+    },
+    {
+      "name": "compiled-prompt.txt",
+      "bytes": 11594,
+      "sha256": "62d710e135e66d808fd110ff29015f3c2ca08a0f38450588e9365b8ed38b23f9"
+    },
+    {
+      "name": "effective-visual-decision-packet.json",
+      "bytes": 33388,
+      "sha256": "9b1de183704ebaab216f8800bc820198ff1e6756a79e74bfda870ff82d7caf6c"
+    },
+    {
+      "name": "endpoint-approval.json",
+      "bytes": 1179,
+      "sha256": "7c8592a8d3ec53366270d6ad632f46178980f7d701441ed5d955184d2928cf9c"
+    },
+    {
+      "name": "execution-report.md",
+      "bytes": 8315,
+      "sha256": "6d6781262271faf4e4ee69405bc96ed9ad2fdd213bcbbc2f9ae3b93099ce9dc8"
+    },
+    {
+      "name": "execution-result.json",
+      "bytes": 3061,
+      "sha256": "adf9274de124353459136f88248e4711201234b21a855c8a6a99cd16af607ff8"
+    },
+    {
+      "name": "fee-record.json",
+      "bytes": 483,
+      "sha256": "aa174b7b8d8560aa8c2dc1ffd55ae3f1b7563fc5a9c6ee2b5f2d0f275e92fb9e"
+    },
+    {
+      "name": "generation-result.json",
+      "bytes": 3819,
+      "sha256": "b88bb6e970733eefdcfbd7e2838fff21691a0d56a5131c48f5632cabf233189d"
+    },
+    {
+      "name": "image-actual-request.json",
+      "bytes": 12293,
+      "sha256": "e2287e1a8ec0f3df5494fb567db55150d93b284aa8cc4be79fb51a52e76ad4f4"
+    },
+    {
+      "name": "image-provider-response.local.json",
+      "bytes": 327462,
+      "sha256": "639b774f33576751dc865968b8485b54b985b740ba3a059c331509beb7c91558"
+    },
+    {
+      "name": "image-response-metadata.json",
+      "bytes": 531,
+      "sha256": "976cf125e8284c88a4f821216637b68f0f6d68b55cc3422298981e986b3f0bf2"
+    },
+    {
+      "name": "jiuzhou-provider-original.jpg",
+      "bytes": 245429,
+      "sha256": "2e6e4c6b3692053277298b7fb38ffb33b4497ff24cb05787ff34829457e8a3a6"
+    },
+    {
+      "name": "jiuzhou-standard-output.png",
+      "bytes": 2703371,
+      "sha256": "525db8989b2145e0afeeaffefe979abd6020ac6295e78a4fd4aa8b19b08f76c7"
+    },
+    {
+      "name": "project-design-direction.json",
+      "bytes": 1035,
+      "sha256": "04ee9798960173f09fc408351dc6df02f03c1c03f698be2ed795db172f9baaf1"
+    },
+    {
+      "name": "prompt-source-map.json",
+      "bytes": 2489,
+      "sha256": "09319dcfceb4d999c8a1fb199252ba384a754103a717b356f15bbfe531778794"
+    },
+    {
+      "name": "provider-original-image.bin",
+      "bytes": 245429,
+      "sha256": "2e6e4c6b3692053277298b7fb38ffb33b4497ff24cb05787ff34829457e8a3a6"
+    },
+    {
+      "name": "provider-prompt.txt",
+      "bytes": 11789,
+      "sha256": "53531ad086de1f0df63f331153c3fe32ef6c32349681d78c8adbe21539e702f7"
+    },
+    {
+      "name": "request-comparison.json",
+      "bytes": 521,
+      "sha256": "0f10ece234967768a04ab786321f8fb3dccefa7354a14dfd12c335b279982715"
+    },
+    {
+      "name": "request-metadata.json",
+      "bytes": 1623,
+      "sha256": "e6e55e68ac59cd1f208122a428d430b52c212d61ed2dc42a9c7f0325dceb7550"
+    },
+    {
+      "name": "run.json",
+      "bytes": 853,
+      "sha256": "55fc13e3dd18acf11e1913b1f32450829110de98bd31c2e75b10ed4e90fb0d5b"
+    },
+    {
+      "name": "source-context-snapshot.json",
+      "bytes": 77001,
+      "sha256": "eeca93c6ef10555c6db05bbb7a6f5aa3ca7cd993b796dfbb4a59e83527a8fef0"
+    },
+    {
+      "name": "task-contract.json",
+      "bytes": 563,
+      "sha256": "038f4fa5b13afb95642b57a2c823f7d8d2dfc9316443e9096fa4428e4e64df87"
+    },
+    {
+      "name": "validation-actual-request.json",
+      "bytes": 94024,
+      "sha256": "f472e555fc850d13915d1c43c11c8eca563d6a877a15ead6547bc61b76766ba8"
+    },
+    {
+      "name": "validation-result.json",
+      "bytes": 246,
+      "sha256": "d061ad930e8d048440e5e326df4461fee9c3b2cff278f3c29da65a86b242eea4"
+    },
+    {
+      "name": "validation-transport-failure.json",
+      "bytes": 113,
+      "sha256": "c6f28676e9d57e97ed78a3e86cecb9ba1f5f4f325f0c64590246d5858851611d"
+    },
+    {
+      "name": "visual-comparison.json",
+      "bytes": 2459,
+      "sha256": "3c0a2a4ea3ff2ed4034fa9b6865d2ee26da2bf4f094752561efd99885a034096"
+    },
+    {
+      "name": "workflow-implementation.json",
+      "bytes": 245,
+      "sha256": "4bb2f3660f2186b291f5110eb30aba8c9960ed7d28971cbe283808237b897e54"
+    }
+  ]
+}
