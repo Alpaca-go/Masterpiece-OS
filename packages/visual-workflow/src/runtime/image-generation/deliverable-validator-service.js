@@ -1,5 +1,7 @@
 import path from "node:path";
 import { createArtDirectionStore } from '../../art-direction-store.js';
+import fs from 'node:fs/promises';
+import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
 import { validateShortChainDeliverableEvidence } from "../../generation-runtime/core/space-generation-core.js";
 import { createDefaultAnalysisReasoner } from "../../model-runtime/analysis-provider-registry.js";
 import { atomicWriteJsonWithRetry } from "../runtime/atomic-write.js";
@@ -56,8 +58,11 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
     const promptSource = context?.promptSourceObject;
     const art = input.taskContract.generationBasis === 'art_direction_reference';
     const artCapture = art ? await createArtDirectionStore(projects).resolve(input.taskContract.artDirection,input.projectId,input.taskContract.artDirection.model) : null;
-    const targetTone = art ? artCapture.confirmation.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
-    const toneAvoid = art ? (artCapture.confirmation.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
+    const execution = !art && input.taskContract.deliverableFamily==='space' ? JSON.parse(await fs.readFile(path.join(runRoot,'source-context-snapshot.json'),'utf8')) : null;
+    const designDirection = execution ? await createProjectDesignDirectionStore(projects).resolve(input.projectId,execution.designDirection || null) : null;
+    const confirmed = artCapture?.confirmation || designDirection?.confirmation;
+    const targetTone = confirmed ? confirmed.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
+    const toneAvoid = confirmed ? (confirmed.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
     const lockedRequirements = [
       ...context?.lockedAssets.mustPreserve ?? [],
       ...promptSource?.lockedAssets.mustPreserve ?? []
@@ -130,6 +135,7 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
     await persist(input.projectId, run.runId, {
       ...validation,
       ...art ? {artDirectionSnapshotSha256:artCapture.snapshot.snapshotSha256,userConfirmationSha256:artCapture.snapshot.confirmationSha256} : {},
+      ...designDirection ? {designDirection:designDirection.snapshot} : {},
       validatorProvider: response.provider,
       validatorModel: response.model,
       validatorRunId: response.runId

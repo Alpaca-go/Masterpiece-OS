@@ -229,7 +229,7 @@
     },
     {
       "path": "src/generation-runtime/generation/user-confirmed-visual-decision.js",
-      "sha256": "6296f010ec49fad5fc71cf4dd1ba3eaa44cdea358ae3474a4a53ec81b40512b5"
+      "sha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4"
     },
     {
       "path": "src/generation-runtime/prompt-contracts/packaging-contract.js",
@@ -393,7 +393,7 @@
     },
     {
       "path": "src/image-service.js",
-      "sha256": "19939a95b29f5507025f98b13f705d91e959c635c2e05d7bebb2f061208ff58b"
+      "sha256": "df6218ab0730832e992d1c8a51b5f653a795d732cb6fe9b5b35dc13355778c46"
     },
     {
       "path": "src/integrity.js",
@@ -441,7 +441,7 @@
     },
     {
       "path": "src/runtime/image-generation/deliverable-validator-service.js",
-      "sha256": "6a543a8836f52b022f045747ddfe4183a8a68778ab98dd873851593e576a0e71"
+      "sha256": "ffab8580c25314eb7ce2fd47c78acf230fe252e7047c04de3cada2409996c197"
     },
     {
       "path": "src/runtime/image-generation/logo-post-composite.js",
@@ -449,7 +449,7 @@
     },
     {
       "path": "src/runtime/image-generation/short-chain-service.js",
-      "sha256": "2335fdc8afcd970ea6edd8e33f1c3d28c30d3fdbd43c2e799a2b63c600787009"
+      "sha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3"
     },
     {
       "path": "src/runtime/model-schema/validation-issues.js",
@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "64471966872663e4400cd316f528336b5088f04b336b7aeda01d461d3d244bc5"
+      "sha256": "4ff5a003869bdadfc97f3d0b743d4a04acba66ee76bc784edaf651b586013b39"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -522,20 +522,28 @@
     {
       "path": "src/image-adapter/reference-capability.js",
       "sha256": "f218bf9ce066f71ab8514ea30d3e6f6577be8f68d5fc5517f370342448a56e56"
+    },
+    {
+      "path": "src/project-design-direction.js",
+      "sha256": "c6d8d459caa961683359593e7eecc7e3233c695e09fafc1018fa912f5f1f231b"
     }
   ],
   "frontendFiles": [
     {
       "path": "apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx",
-      "sha256": "91e6cf2fb567f4e97fe76a49ff8be5a8ea3f98677ca9c4e03a8d494af266bf6e"
+      "sha256": "18a7c7e2c13de9875bb74256ceb9feb1e6fee9ca6b186391e5519dc567ba7d29"
     },
     {
       "path": "apps/web/src/features/visual-workflow/api.ts",
-      "sha256": "3ccb6ce39d7d3a2eed8d331bf2cd24237e1b75f899a620b0c2e30cc6703ce0d0"
+      "sha256": "a29b25520dc858cfbdd9a8eed4a4f2ee1ba98921c08fad0a4a1a3b55f08bfb25"
     },
     {
       "path": "apps/web/src/features/visual-workflow/visual-workflow.css",
       "sha256": "73284c1f91edfa73e7213f58e057c15d625d5302f0ae3808f79b69015d637309"
+    },
+    {
+      "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+      "sha256": "c9fccad49aec44884e401f6f49173c6d157fcda0518d92dccf1a64518a76ca7b"
     }
   ]
 }

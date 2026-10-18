@@ -1,0 +1,623 @@
+diff --git a/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx b/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx
+new file mode 100644
+index 0000000..09bc859
+--- /dev/null
++++ b/apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx
+@@ -0,0 +1,58 @@
++import { useEffect, useState } from 'react';
++import { workflowCall, type ProjectDesignDirection } from './api';
++
++const labels = {
++  spatialConcept:'空间体验与设计目标', structureLanguage:'建筑结构与空间组织', materialLanguage:'材料与光学表现',
++  lightingLanguage:'自然光与照明', colorPolicy:'空间配色与品牌色的职责', functionalProgram:'必须保留的商业功能与通行关系', mustAvoid:'必须避免的设计表现'
++};
++const statuses = {missing:'未设置，当前使用分析建议',draft:'草稿，尚未确认生效',confirmed:'已确认，将用于标准空间生图',needs_reconfirmation:'需要重新确认，当前禁止按旧方向生图'};
++export function ProjectDesignDirectionPanel({projectId,disabled,onState}: {
++  projectId:string; disabled:boolean; onState:(value:ProjectDesignDirection | null,unsaved:boolean)=>void;
++}) {
++  const [value,setValue]=useState<ProjectDesignDirection | null>(null);
++  const [source,setSource]=useState('');
++  const [fields,setFields]=useState<ProjectDesignDirection['fields'] | null>(null);
++  const [dirty,setDirty]=useState(false);
++  const [confirmed,setConfirmed]=useState(false);
++  const [saving,setSaving]=useState(false);
++  const [error,setError]=useState('');
++  function accept(next:ProjectDesignDirection) {
++    setValue(next);setFields(next.fields);setSource(next.source?.statement || '');setDirty(false);setConfirmed(false);onState(next,false);
++  }
++  useEffect(()=>{
++    let active=true;
++    onState(null,false);
++    void workflowCall<ProjectDesignDirection>('report',projectId,'project_design_direction').then(next=>{if(active)accept(next);}).catch(reason=>{if(active)setError(String(reason.message));});
++    return ()=>{active=false;};
++    // The parent remounts this panel when the project or analysis result changes.
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  },[projectId]);
++  async function save(action:'save_draft' | 'confirm') {
++    if (!value || !fields) return;
++    setSaving(true);setError('');
++    try {
++      accept(await workflowCall<ProjectDesignDirection>('import-files',projectId,{
++        purpose:'project_design_direction',action,expectedRecordSha256:value.recordSha256,
++        ...(action==='save_draft'?{fields,sourceStatement:source}:{confirmedByUser:confirmed})
++      }));
++    } catch(reason) {setError(reason instanceof Error?reason.message:String(reason));}
++    finally {setSaving(false);}
++  }
++  return <section className="visual-workflow__settings" aria-label="项目设计方向">
++    <h3>项目设计方向</h3>
++    <p role="status">{value?statuses[value.status]:'正在读取确认状态'}{dirty?' · 有未保存修改':''}</p>
++    <p>这里记录用户的项目设计决策，不改写原始品牌资料。标准生图只发送文字；审美校准图片不会自动作为生图参考。</p>
++    {value?.status==='needs_reconfirmation' && <p role="alert">重新分析、素材或项目资料变化后，原方向仍保留。请核对当前分析与方向，再确认生效。</p>}
++    {error && <p role="alert">{error}</p>}
++    {value && fields && <details><summary>查看、编辑并确认设计方向</summary>
++      <fieldset disabled={disabled || saving}>
++        <label>决策来源与确认依据<textarea value={source} onChange={event=>{setSource(event.target.value);setDirty(true);setConfirmed(false);onState(value,true);}} placeholder="例如：用户确认的设计要求；参考作品仅用于离线审美校准" /></label>
++        {Object.entries(labels).map(([key,label])=><label key={key}>{label}<textarea value={fields[key as keyof typeof fields]} onChange={event=>{setFields({...fields,[key]:event.target.value});setDirty(true);setConfirmed(false);onState(value,true);}} /></label>)}
++        <button type="button" disabled={!source.trim()} onClick={()=>void save('save_draft')}>保存设计方向草稿</button>
++        {value.status!=='missing' && <><label><input type="checkbox" checked={confirmed} disabled={dirty} onChange={event=>setConfirmed(event.target.checked)} />我已核对当前项目分析，确认此方向用于空间生图</label>
++          <button type="button" disabled={dirty || !confirmed} onClick={()=>void save('confirm')}>确认设计方向生效</button></>}
++        {value.confirmedAt && <p>最近确认：{value.confirmedAt}</p>}
++      </fieldset>
++    </details>}
++  </section>;
++}
+diff --git a/apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx b/apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx
+index f4bb5dc..0027951 100644
+--- a/apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx
++++ b/apps/web/src/features/visual-workflow/VisualWorkflowWorkspace.tsx
+@@ -5 +5,2 @@ import DOMPurify from 'dompurify';
+-import { filePayload, workflowCall, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings } from './api';
++import { filePayload, workflowCall, createStandardGenerationInput, type WorkflowOptions, type WorkflowProfile, type WorkflowProject, type WorkflowRun, type WorkflowSettings, type ProjectDesignDirection } from './api';
++import { ProjectDesignDirectionPanel } from './ProjectDesignDirectionPanel';
+@@ -30,0 +32,3 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
++  const [designDirection,setDesignDirection]=useState<ProjectDesignDirection | null>(null);
++  const [directionUnsaved,setDirectionUnsaved]=useState(false);
++  const [directionRefresh,setDirectionRefresh]=useState(0);
+@@ -77,0 +82 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
++    setDesignDirection(null);setDirectionUnsaved(false);
+@@ -103,2 +108,4 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
+-      const result = await workflowCall<{project: WorkflowProject}>('analyze', project.id, true);
+-      setProject(result.project); setReport(await workflowCall<string>('report', project.id) || ''); setStep(2);
++      try {
++        const result = await workflowCall<{project: WorkflowProject}>('analyze', project.id, true);
++        setProject(result.project); setReport(await workflowCall<string>('report', project.id) || ''); setStep(2);
++      } finally {setDirectionRefresh(value=>value+1);}
+@@ -109,0 +117,2 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
++      const currentDirection=await workflowCall<ProjectDesignDirection>('report',project.id,'project_design_direction');
++      if (family==='space' && (directionUnsaved || !designDirection || currentDirection.recordSha256!==designDirection.recordSha256 || !['missing','confirmed'].includes(currentDirection.status))) throw new Error('项目设计方向已变化或尚未确认，请核对并确认后再生图。');
+@@ -111 +120 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
+-      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', { projectId: project.id, task: { deliverableFamily: family, subtype, shot, shotSource: shotExplicit ? 'user_explicit' : undefined, aspectRatio: ratio, count: 1, currentInstruction: instruction, generationBasis: 'standard', referenceAssetIds: [], mustInclude: include.split('\n').filter(Boolean), mustAvoid: avoid.split('\n').filter(Boolean), logoUsageMode: project.assets.some(a => a.role === 'logo') ? 'post_composite' : 'blank_area' } });
++      const compiled = await workflowCall<{taskContract: {taskId: string}}>('compile', createStandardGenerationInput({projectId:project.id,family,subtype,shot,shotExplicit,ratio,instruction,include,avoid,hasLogo:project.assets.some(a=>a.role==='logo'),directionRecordSha256:currentDirection.recordSha256}));
+@@ -161,0 +171 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
++        {project && <ProjectDesignDirectionPanel key={`${project.id}:${project.status}:${directionRefresh}`} projectId={project.id} disabled={Boolean(busy)} onState={(value,unsaved)=>{setDesignDirection(value);setDirectionUnsaved(unsaved);}} />}
+@@ -179 +189 @@ export function VisualWorkflowWorkspace({ onBack }: { onBack: () => void }) {
+-          <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId}>智能生成</button>
++          <button disabled={Boolean(busy) || !canGenerate || !settings?.imageProfileId || family==='space' && (directionUnsaved || !designDirection || !['missing','confirmed'].includes(designDirection.status))}>智能生成</button>
+diff --git a/apps/web/src/features/visual-workflow/api.ts b/apps/web/src/features/visual-workflow/api.ts
+index b4b0741..8db21e5 100644
+--- a/apps/web/src/features/visual-workflow/api.ts
++++ b/apps/web/src/features/visual-workflow/api.ts
+@@ -6,0 +7,18 @@ export type WorkflowOptions = Record<string, { subtypes: string[]; shots: string
++export interface ProjectDesignDirection {
++  projectId: string;
++  status: 'missing' | 'draft' | 'confirmed' | 'needs_reconfirmation';
++  reason: string | null;
++  recordSha256: string | null;
++  source: {statement: string} | null;
++  fields: Record<'spatialConcept' | 'structureLanguage' | 'materialLanguage' | 'lightingLanguage' | 'colorPolicy' | 'functionalProgram' | 'mustAvoid', string>;
++  confirmedAt: string | null;
++}
++export function createStandardGenerationInput(input: {
++  projectId:string; family:string; subtype:string; shot:string; shotExplicit:boolean; ratio:string;
++  instruction:string; include:string; avoid:string; hasLogo:boolean; directionRecordSha256:string | null;
++}) {
++  return {projectId:input.projectId,designDirectionExpectedRecordSha256:input.directionRecordSha256,
++    task:{deliverableFamily:input.family,subtype:input.subtype,shot:input.shot,shotSource:input.shotExplicit?'user_explicit':undefined,
++      aspectRatio:input.ratio,count:1,currentInstruction:input.instruction,generationBasis:'standard',referenceAssetIds:[],
++      mustInclude:input.include.split('\n').filter(Boolean),mustAvoid:input.avoid.split('\n').filter(Boolean),logoUsageMode:input.hasLogo?'post_composite':'blank_area'}};
++}
+diff --git a/packages/visual-workflow/implementation-integrity.json b/packages/visual-workflow/implementation-integrity.json
+index 7ac6fc9..51005fe 100644
+--- a/packages/visual-workflow/implementation-integrity.json
++++ b/packages/visual-workflow/implementation-integrity.json
+@@ -232 +232 @@
+-      "sha256": "6296f010ec49fad5fc71cf4dd1ba3eaa44cdea358ae3474a4a53ec81b40512b5"
++      "sha256": "3d6ec8e9fc701de0967d226c2f323c34861456d6b0137c762fa580dfc0ec0ad4"
+@@ -396 +396 @@
+-      "sha256": "19939a95b29f5507025f98b13f705d91e959c635c2e05d7bebb2f061208ff58b"
++      "sha256": "df6218ab0730832e992d1c8a51b5f653a795d732cb6fe9b5b35dc13355778c46"
+@@ -444 +444 @@
+-      "sha256": "6a543a8836f52b022f045747ddfe4183a8a68778ab98dd873851593e576a0e71"
++      "sha256": "ffab8580c25314eb7ce2fd47c78acf230fe252e7047c04de3cada2409996c197"
+@@ -452 +452 @@
+-      "sha256": "2335fdc8afcd970ea6edd8e33f1c3d28c30d3fdbd43c2e799a2b63c600787009"
++      "sha256": "9df3e2ee086e076d0e5aeb749f442836b3c57c3975377854defe8d05a9c5aec3"
+@@ -504 +504 @@
+-      "sha256": "64471966872663e4400cd316f528336b5088f04b336b7aeda01d461d3d244bc5"
++      "sha256": "4ff5a003869bdadfc97f3d0b743d4a04acba66ee76bc784edaf651b586013b39"
+@@ -524,0 +525,4 @@
++    },
++    {
++      "path": "src/project-design-direction.js",
++      "sha256": "c6d8d459caa961683359593e7eecc7e3233c695e09fafc1018fa912f5f1f231b"
+@@ -530 +534 @@
+-      "sha256": "91e6cf2fb567f4e97fe76a49ff8be5a8ea3f98677ca9c4e03a8d494af266bf6e"
++      "sha256": "18a7c7e2c13de9875bb74256ceb9feb1e6fee9ca6b186391e5519dc567ba7d29"
+@@ -534 +538 @@
+-      "sha256": "3ccb6ce39d7d3a2eed8d331bf2cd24237e1b75f899a620b0c2e30cc6703ce0d0"
++      "sha256": "a29b25520dc858cfbdd9a8eed4a4f2ee1ba98921c08fad0a4a1a3b55f08bfb25"
+@@ -538,0 +543,4 @@
++    },
++    {
++      "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
++      "sha256": "c9fccad49aec44884e401f6f49173c6d157fcda0518d92dccf1a64518a76ca7b"
+diff --git a/packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js b/packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js
+index 361433e..dcb517e 100644
+--- a/packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js
++++ b/packages/visual-workflow/src/generation-runtime/generation/user-confirmed-visual-decision.js
+@@ -70,0 +71 @@ function applyUserConfirmedVisualDecision(packet, confirmation, projectId, deliv
++      strategicNegatives: list([...(creativeDecision.strategicNegatives || []), ...list(confirmation.reviewTask?.mustAvoid)]),
+diff --git a/packages/visual-workflow/src/image-service.js b/packages/visual-workflow/src/image-service.js
+index e75a5a4..f1c24f9 100644
+--- a/packages/visual-workflow/src/image-service.js
++++ b/packages/visual-workflow/src/image-service.js
+@@ -8,0 +9 @@ import { assertArtDirectionModel, digest, ART_DIRECTION_SOURCE } from './art-dir
++import { createProjectDesignDirectionStore } from './project-design-direction.js';
+@@ -11,0 +13 @@ export function createImageService(root, projects, configuration, emit, fetchImp
++  const designDirectionStore = createProjectDesignDirectionStore(projects);
+@@ -29,0 +32,7 @@ export function createImageService(root, projects, configuration, emit, fetchImp
++    if (!art && task?.deliverableFamily === 'space') {
++      await designDirectionStore.resolve(input.projectId,input.snapshot?.designDirection || null);
++      if (input.snapshot?.designDirection) {
++        const compiled = await readJson(inside((await projects.paths(input.projectId)).root,`image-generation-vnext/compilations/${task.taskId}/compiled-prompt.json`));
++        if (compiled.finalPrompt !== input.compiledPrompt || digest(input.compiledPrompt)!==input.snapshot.compiledPromptSha256 || JSON.stringify(compiled.taskContract)!==JSON.stringify(task)) throw new Error('PROJECT_DESIGN_DIRECTION_COMPILATION_STALE');
++      }
++    }
+@@ -72,0 +82 @@ export function createImageService(root, projects, configuration, emit, fetchImp
++      ...input.snapshot?.designDirection ? {designDirection:input.snapshot.designDirection} : {},
+diff --git a/packages/visual-workflow/src/project-design-direction.js b/packages/visual-workflow/src/project-design-direction.js
+new file mode 100644
+index 0000000..9b23392
+--- /dev/null
++++ b/packages/visual-workflow/src/project-design-direction.js
+@@ -0,0 +1,135 @@
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import { readJson, writeJson, inside } from './configuration.js';
++import { digest } from './art-direction-contract.js';
++import { applyUserConfirmedVisualDecision } from './generation-runtime/generation/user-confirmed-visual-decision.js';
++
++const recordPath = 'project-context/design-direction.json';
++const legacyPath = 'project-context/user-confirmed-visual-decision.json';
++const fields = ['spatialConcept', 'structureLanguage', 'materialLanguage', 'lightingLanguage', 'colorPolicy', 'functionalProgram', 'mustAvoid'];
++function fail(code) { throw Object.assign(new Error(code), {code}); }
++function lines(value) { return String(value || '').split('\n').map(item => item.trim()).filter(Boolean); }
++function text(value) { return Array.isArray(value) ? value.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n') : String(value || ''); }
++export function designDirectionFields(confirmation) {
++  const spatial = confirmation?.spatialTranslation || {};
++  return {
++    spatialConcept: spatial.spatialConcept || '', structureLanguage: text(spatial.structureLanguage),
++    materialLanguage: text((spatial.materialLanguage || []).map(item => typeof item === 'string' ? item : `${item.material}：${text(item.behavior)}`)),
++    lightingLanguage: text(spatial.lightingLanguage?.source), colorPolicy: spatial.colorBehavior ? [
++      ...['primary','secondary','accent'].flatMap(group=>(spatial.colorBehavior[group] || []).map(item=>`${({primary:'主色',secondary:'辅色',accent:'局部点缀'})[group]} ${item.name}：${[item.role,item.surfaceApplicability].filter(Boolean).join('；')}`)),
++      ...(spatial.colorBehavior.forbidden || []).map(item=>`避免：${item}`)
++    ].join('\n') : '',
++    functionalProgram: text(spatial.mustBeVisible), mustAvoid: text(confirmation?.reviewTask?.mustAvoid || confirmation?.creativeDecision?.strategicNegatives)
++  };
++}
++function buildConfirmation(projectId, input, sourceStatement) {
++  if (fields.some(field => !String(input[field] || '').trim())) fail('PROJECT_DESIGN_DIRECTION_FIELDS_REQUIRED');
++  const spatialConcept = input.spatialConcept.trim();
++  const functional = lines(input.functionalProgram);
++  return {
++    schemaVersion:'1.0', id:crypto.randomUUID(), projectId, status:'confirmed',
++    sourceDocument:sourceStatement, evidenceRefs:['project_user_design_decision'], appliesTo:{deliverableFamilies:['space']},
++    creativeDecision:{brandRoleStatement:spatialConcept, uniqueUpgradeThesis:spatialConcept, strategicNegatives:lines(input.mustAvoid), toneBoundaries:[{target:spatialConcept,avoid:lines(input.mustAvoid)}]},
++    abstractions:[],
++    spatialTranslation:{spatialConcept,structureLanguage:lines(input.structureLanguage),
++      materialLanguage:lines(input.materialLanguage).map(material=>({material,behavior:[],brandRole:'用户确认的材料表现目标',forbidden:[]})),
++      lightingLanguage:{source:lines(input.lightingLanguage),forbidden:[]},
++      colorBehavior:{primary:[{name:input.colorPolicy.trim(),role:'用户确认的空间配色行为',spatialUsage:'dominant_field'}],secondary:[],accent:[],forbidden:[]},
++      sceneProgram:functional,functionalNetwork:functional,functionalRelationships:functional,mustBeVisible:functional,
++      brandRoleManifestation:lines(input.structureLanguage),signatureSpatialMechanism:lines(input.structureLanguage),positiveDifferentiators:[spatialConcept]}
++  };
++}
++export function createProjectDesignDirectionStore(projects) {
++  async function safe(root, relative) {
++    let current = root;
++    for (const segment of relative.split('/')) {
++      current = inside(root,path.relative(root,path.join(current,segment)));
++      const stat = await fs.lstat(current).catch(error=>{if(error.code==='ENOENT')return null;throw error;});
++      if (stat?.isSymbolicLink()) fail('PROJECT_DESIGN_DIRECTION_PATH_INVALID');
++    }
++    return current;
++  }
++  async function state(projectId) {
++    const project = await projects.get(projectId);
++    const root = (await projects.paths(projectId)).root;
++    if ((await fs.lstat(root)).isSymbolicLink()) fail('PROJECT_DESIGN_DIRECTION_PATH_INVALID');
++    const stored = await readJson(await safe(root,recordPath), null);
++    const legacy = stored ? null : await readJson(await safe(root,legacyPath), null);
++    const packet = await readJson(await safe(root,'project-context/visual-decision-packet.json'),null);
++    const context = await readJson(await safe(root,'project-context/project-visual-context.vnext.json'),null);
++    const analysisFingerprint = digest({packet,contextPacket:context?.visualDecisionPacket || null,
++      identity:{projectName:project.projectName,brandName:project.brandName,industry:project.industry,description:project.description},
++      assets:(project.assets || []).filter(asset=>!asset.usage || asset.usage==='analysis_source').map(({id,sha256,role})=>({id,sha256,role}))});
++    if (stored && (stored.projectId!==projectId || stored.schemaVersion!=='1.0' || !['draft','confirmed','needs_reconfirmation'].includes(stored.status))) fail('PROJECT_DESIGN_DIRECTION_RECORD_INVALID');
++    if (stored?.confirmation && stored.confirmation.projectId!==projectId || legacy && legacy.projectId!==projectId) fail('PROJECT_DESIGN_DIRECTION_PROJECT_MISMATCH');
++    const record = stored || (legacy ? {schemaVersion:'1.0',projectId,status:'needs_reconfirmation',confirmation:legacy,
++      fields:designDirectionFields(legacy),source:{kind:'user_design_decision',statement:legacy.sourceDocument || '历史确认记录，需核对来源',evidenceRole:'offline_visual_calibration'},reason:'legacy_confirmation_requires_review'} : null);
++    const changed = record?.status==='confirmed' && (record.analysisFingerprint!==analysisFingerprint || project.status!=='completed' || project.visualContextVNextStatus!=='ready');
++    const status = changed ? 'needs_reconfirmation' : record?.status || 'missing';
++    return {root,packet,record,view:{projectId,status,reason:changed?'analysis_or_intake_changed':record?.reason || null,
++      recordSha256:record ? digest(record) : null,analysisFingerprint,source:record?.source || null,
++      fields:record?.fields || designDirectionFields(null),confirmedAt:record?.confirmedAt || null,
++      confirmationSha256:record?.confirmation ? digest(record.confirmation) : null,
++      confirmation:record?.confirmation || null, boundAnalysisFingerprint:record?.analysisFingerprint || null}};
++  }
++  async function mutate(projectId, expectedRecordSha256, action) {
++    const root=(await projects.paths(projectId)).root;
++    const lock=await safe(root,'project-context/design-direction.lock');
++    const handle=await fs.open(lock,'wx').catch(error=>{if(error.code==='EEXIST')fail('PROJECT_DESIGN_DIRECTION_BUSY');throw error;});
++    try {
++      const current=await state(projectId);
++      if (current.view.recordSha256!==expectedRecordSha256) fail('PROJECT_DESIGN_DIRECTION_EDIT_CONFLICT');
++      const project=await projects.get(projectId);
++      if (project.status==='running') fail('PROJECT_DESIGN_DIRECTION_ANALYSIS_RUNNING');
++      const next=await action(current);
++      const directory=await safe(root,'project-context/design-direction-history');
++      await fs.mkdir(directory,{recursive:true});
++      await writeJson(path.join(directory,`${crypto.randomUUID()}.json`),{projectId,at:new Date().toISOString(),before:current.record,after:next});
++      await writeJson(await safe(root,recordPath),next);
++      return (await state(projectId)).view;
++    } finally {await handle.close();await fs.unlink(lock);}
++  }
++  async function saveDraft(projectId,input) {
++    if (!input.sourceStatement?.trim() || input.sourceStatement.length>4000) fail('PROJECT_DESIGN_DIRECTION_SOURCE_REQUIRED');
++    return mutate(projectId,input.expectedRecordSha256,async current=>{
++      const supplied=input.confirmation;
++      if (supplied) applyUserConfirmedVisualDecision(current.packet,supplied,projectId,'space');
++      const values=supplied ? designDirectionFields(supplied) : Object.fromEntries(fields.map(field=>[field,String(input.fields?.[field] || '').trim()]));
++      if (fields.some(field=>values[field].length>12000)) fail('PROJECT_DESIGN_DIRECTION_TOO_LONG');
++      return {schemaVersion:'1.0',projectId,status:'draft',fields:values,confirmation:supplied || null,
++        source:{kind:'user_design_decision',statement:input.sourceStatement.trim(),evidenceRole:'offline_visual_calibration',notOriginalBrandFact:true},
++        updatedAt:new Date().toISOString()};
++    });
++  }
++  async function confirm(projectId,input) {
++    if (input.confirmedByUser!==true) fail('PROJECT_DESIGN_DIRECTION_CONFIRMATION_REQUIRED');
++    return mutate(projectId,input.expectedRecordSha256,async current=>{
++      const project=await projects.get(projectId);
++      if (!current.record || !current.packet || current.packet.projectId!==projectId || project.status!=='completed' || project.visualContextVNextStatus!=='ready') fail('PROJECT_DESIGN_DIRECTION_ANALYSIS_REQUIRED');
++      const confirmation=current.record.confirmation || buildConfirmation(projectId,current.record.fields,current.record.source.statement);
++      applyUserConfirmedVisualDecision(current.packet,confirmation,projectId,'space');
++      return {...current.record,status:'confirmed',confirmation,analysisFingerprint:current.view.analysisFingerprint,
++        confirmedAt:new Date().toISOString(),reason:null};
++    });
++  }
++  async function markForReview(projectId) {
++    const current=await state(projectId);
++    if (!current.record) return;
++    return mutate(projectId,current.view.recordSha256,async item=>({...item.record,status:'needs_reconfirmation',reason:'analysis_requested',updatedAt:new Date().toISOString()}));
++  }
++  async function capture(projectId) {
++    const {view,packet}=await state(projectId);
++    if (view.status==='missing') return null;
++    if (view.status!=='confirmed') fail('PROJECT_DESIGN_DIRECTION_RECONFIRM_REQUIRED');
++    applyUserConfirmedVisualDecision(packet,view.confirmation,projectId,'space');
++    return {confirmation:view.confirmation,snapshot:{projectId,recordSha256:view.recordSha256,confirmationSha256:view.confirmationSha256,
++      analysisFingerprint:view.analysisFingerprint,source:view.source,confirmedAt:view.confirmedAt}};
++  }
++  async function resolve(projectId,snapshot) {
++    const current=await capture(projectId);
++    if (JSON.stringify(current?.snapshot || null)!==JSON.stringify(snapshot || null)) fail('PROJECT_DESIGN_DIRECTION_COMPILATION_STALE');
++    return current;
++  }
++  return {get:async projectId=>(await state(projectId)).view,saveDraft,confirm,markForReview,capture,resolve};
++}
+diff --git a/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js b/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js
+index 99e6a47..744405b 100644
+--- a/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js
++++ b/packages/visual-workflow/src/runtime/image-generation/deliverable-validator-service.js
+@@ -2,0 +3,2 @@ import { createArtDirectionStore } from '../../art-direction-store.js';
++import fs from 'node:fs/promises';
++import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
+@@ -59,2 +61,5 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
+-    const targetTone = art ? artCapture.confirmation.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
+-    const toneAvoid = art ? (artCapture.confirmation.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
++    const execution = !art && input.taskContract.deliverableFamily==='space' ? JSON.parse(await fs.readFile(path.join(runRoot,'source-context-snapshot.json'),'utf8')) : null;
++    const designDirection = execution ? await createProjectDesignDirectionStore(projects).resolve(input.projectId,execution.designDirection || null) : null;
++    const confirmed = artCapture?.confirmation || designDirection?.confirmation;
++    const targetTone = confirmed ? confirmed.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
++    const toneAvoid = confirmed ? (confirmed.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
+@@ -132,0 +138 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
++      ...designDirection ? {designDirection:designDirection.snapshot} : {},
+diff --git a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+index 32d62fc..ba493d4 100644
+--- a/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
++++ b/packages/visual-workflow/src/runtime/image-generation/short-chain-service.js
+@@ -5,0 +6 @@ import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
++import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
+@@ -92,0 +94 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++  const designDirectionStore = createProjectDesignDirectionStore(projects);
+@@ -156 +158,3 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-    const userConfirmedVisualDecision = await fs.readFile(
++    const art = input.task.generationBasis === 'art_direction_reference';
++    const designDirection = !art && input.task.deliverableFamily === 'space' ? await designDirectionStore.capture(input.projectId) : null;
++    const userConfirmedVisualDecision = art ? await fs.readFile(
+@@ -159,2 +163 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
+-    ).then((value) => JSON.parse(value)).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
+-    const art = input.task.generationBasis === 'art_direction_reference';
++    ).then((value) => JSON.parse(value)).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; }) : designDirection?.confirmation;
+@@ -212,0 +216 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++      writeJson(path.join(artifactDirectory, 'project-design-direction.json'), designDirection?.snapshot || null),
+@@ -294,0 +299,4 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++    const designDirectionSnapshot = !art && compilation.taskContract.deliverableFamily === 'space' ? await fs.readFile(
++      path.join(compilation.artifactDirectory,'project-design-direction.json'),'utf8'
++    ).then(JSON.parse).catch(error=>{if(error.code==='ENOENT')return null;throw error;}) : null;
++    if (!art && compilation.taskContract.deliverableFamily === 'space') await designDirectionStore.resolve(input.projectId,designDirectionSnapshot);
+@@ -598,0 +607 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
++        ...!art && compilation.taskContract.deliverableFamily === 'space' ? {designDirection:designDirectionSnapshot,compiledPromptSha256:digest(actualPrompt)} : {},
+diff --git a/packages/visual-workflow/src/service.js b/packages/visual-workflow/src/service.js
+index d8c0683..cb5eef7 100644
+--- a/packages/visual-workflow/src/service.js
++++ b/packages/visual-workflow/src/service.js
+@@ -14,0 +15 @@ import { assertArtDirectionModel } from './art-direction-contract.js';
++import { createProjectDesignDirectionStore } from './project-design-direction.js';
+@@ -22,0 +24 @@ export function createVisualWorkflow(options) {
++  const designDirection = createProjectDesignDirectionStore(projects);
+@@ -44,0 +47,4 @@ export function createVisualWorkflow(options) {
++    if (!art && input.task.deliverableFamily==='space' && Object.hasOwn(input,'designDirectionExpectedRecordSha256')) {
++      const current=await designDirection.get(input.projectId);
++      if (current.recordSha256!==input.designDirectionExpectedRecordSha256) throw new Error('PROJECT_DESIGN_DIRECTION_EDIT_CONFLICT');
++    }
+@@ -129 +135,8 @@ export function createVisualWorkflow(options) {
+-    'visual-workflow:import-files': (_context, id, files) => files?.purpose === 'art_direction' ? artDirection.register({...files,projectId:id}) : projects.importFiles(id, files),
++    'visual-workflow:import-files': (_context, id, files) => {
++      if (files?.purpose === 'project_design_direction') {
++        if (files.action === 'save_draft') return designDirection.saveDraft(id,files);
++        if (files.action === 'confirm') return designDirection.confirm(id,files);
++        throw new Error('PROJECT_DESIGN_DIRECTION_ACTION_INVALID');
++      }
++      return files?.purpose === 'art_direction' ? artDirection.register({...files,projectId:id}) : projects.importFiles(id, files);
++    },
+@@ -138 +151,6 @@ export function createVisualWorkflow(options) {
+-    'visual-workflow:analyze': async (_context, id, force = true) => { const settings = await configuration.get(); return pipeline.start(id, force, settings.analysisProfileId); },
++    'visual-workflow:analyze': async (_context, id, force = true) => {
++      if (pipeline.isActive(id)) throw new Error('分析已在进行中');
++      const settings = await configuration.get();
++      await designDirection.markForReview(id);
++      return pipeline.start(id, force, settings.analysisProfileId);
++    },
+@@ -140 +158 @@ export function createVisualWorkflow(options) {
+-    'visual-workflow:report': (_context, id) => report(id),
++    'visual-workflow:report': (_context, id, purpose) => purpose === 'project_design_direction' ? designDirection.get(id) : report(id),
+diff --git a/packages/visual-workflow/tests/art-direction-route.test.ts b/packages/visual-workflow/tests/art-direction-route.test.ts
+index d7efc2f..39cad55 100644
+--- a/packages/visual-workflow/tests/art-direction-route.test.ts
++++ b/packages/visual-workflow/tests/art-direction-route.test.ts
+@@ -11,0 +12 @@ import { createVisualWorkflow } from '../src/service.js';
++import { verifyImplementation } from '../src/integrity.js';
+@@ -154 +155 @@ test('public operations verify the approved implementation before registration,
+-  assert.equal(implementation.implementationDigest,'a90b0cc873a7999525148c660c05b2f22c90e2399d7c0c73001eebabe84627b3');
++  assert.deepEqual(implementation,await verifyImplementation());
+diff --git a/packages/visual-workflow/tests/capture-project-design-direction.mjs b/packages/visual-workflow/tests/capture-project-design-direction.mjs
+new file mode 100644
+index 0000000..a7832e2
+--- /dev/null
++++ b/packages/visual-workflow/tests/capture-project-design-direction.mjs
+@@ -0,0 +1,69 @@
++// Offline evidence from the owning business services. Public operations remain
++// guarded and are reported separately; this tool never changes integrity records.
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import assert from 'node:assert/strict';
++import sharp from 'sharp';
++import {createProjectStore} from '../src/project-store.js';
++import {createProjectDesignDirectionStore} from '../src/project-design-direction.js';
++import {createImageService} from '../src/image-service.js';
++import {createShortChainGenerationService} from '../src/runtime/image-generation/short-chain-service.js';
++import {createDeliverableValidatorService} from '../src/runtime/image-generation/deliverable-validator-service.js';
++import {createQwenReasoner} from '../src/model-runtime/qwen-reasoner.js';
++import {createVisualWorkflow} from '../src/service.js';
++import {digest} from '../src/art-direction-contract.js';
++import {createStandardGenerationInput} from '../../../apps/web/src/features/visual-workflow/api.ts';
++
++globalThis.fetch=async()=>{throw new Error('REAL_PROVIDER_NETWORK_FORBIDDEN');};
++const [source,output,confirmationFile]=process.argv.slice(2);
++if (!confirmationFile) throw new Error('Usage: capture-project-design-direction.mjs SOURCE_PROJECT OUTPUT CONFIRMATION');
++assert(!path.resolve(output).startsWith(path.resolve(source)+path.sep));
++await fs.mkdir(path.dirname(output),{recursive:true});await fs.mkdir(output);
++const read=async file=>JSON.parse(await fs.readFile(file,'utf8'));
++const write=(name,value)=>fs.writeFile(path.join(output,name),JSON.stringify(value,null,2)+'\n');
++async function inventory(root) {const entries=[];async function walk(dir){for(const item of await fs.readdir(dir,{withFileTypes:true})){assert(!item.isSymbolicLink());const file=path.join(dir,item.name);if(item.isDirectory())await walk(file);else entries.push({path:path.relative(root,file).replaceAll('\\','/'),sha256:digest(await fs.readFile(file))});}}await walk(root);return entries.sort((a,b)=>a.path.localeCompare(b.path));}
++const before=await inventory(source);const record=await read(path.join(source,'project.json'));
++const root=path.join(output,'workflow');const clone=path.join(root,'data/projects',record.id);
++await fs.mkdir(clone,{recursive:true});await fs.copyFile(path.join(source,'project.json'),path.join(clone,'project.json'));
++for(const name of ['input','project-context'])await fs.cp(path.join(source,name),path.join(clone,name),{recursive:true,errorOnExist:true,force:false});
++for(const name of ['outputs','runtime','prepared'])await fs.mkdir(path.join(clone,name),{recursive:true});
++const projects=createProjectStore(path.join(root,'data'));const directions=createProjectDesignDirectionStore(projects);
++const confirmation=await read(confirmationFile);assert.equal(confirmation.projectId,record.id);
++const current=await directions.get(record.id);
++const draft=await directions.saveDraft(record.id,{confirmation,sourceStatement:'User confirmed project design goals on 2026-10-18. Four approved works are offline visual-quality calibration only, not original brand evidence and not generation inputs.',expectedRecordSha256:current.recordSha256});
++const approved=await directions.confirm(record.id,{confirmedByUser:true,expectedRecordSha256:draft.recordSha256});
++await assert.rejects(fs.access(path.join(clone,'project-context/art-direction/references.json')));
++const context={getShortChain:async()=>read(path.join(clone,'project-context/project-visual-context.vnext.json')),rebuildShortChain:async()=>{throw new Error('OFFLINE_REBUILD_FORBIDDEN');}};
++const model='doubao-seedream-5-0-pro-260628';const credentials={image:{profileId:'offline-image',model,provider:'volcengine',protocol:'seedream-image',modelType:'image_generation',baseUrl:'https://ark.cn-beijing.volces.com/api/v3/images/generations',apiKey:'OFFLINE_FIXTURE_ONLY'},validator:{model:'qwen3.6-plus',provider:'dashscope',protocol:'openai-chat-multimodal',modelType:'analysis',baseUrl:'https://dashscope.aliyuncs.com/compatible-mode/v1',apiKey:'OFFLINE_FIXTURE_ONLY'}};
++const configuration={get:async()=>({imageProfileId:'image',analysisProfileId:'validator',profiles:[]}),readCredentials:async id=>credentials[id]};
++const imageRequests=[];const validatorRequests=[];
++const synthetic=await sharp({create:{width:320,height:180,channels:3,background:'white'}}).png().toBuffer();
++const images=createImageService(root,projects,configuration,()=>{},async(url,request)=>{imageRequests.push({url,method:request.method,body:JSON.parse(request.body)});return new Response(JSON.stringify({data:[{b64_json:synthetic.toString('base64')}]}),{status:200});});
++const evidence={detectedFamily:'space',detectedSubtype:'reception',visibleEvidence:['Synthetic offline output, no image quality acceptance'],missingRequiredItems:[],forbiddenItemsFound:[],lockedAssetViolations:[],brandMatch:'matched',brandToneMatch:'matched',sceneCompleteness:'complete',logoTextStatus:'absent',qualityIssues:[]};
++const validator=createDeliverableValidatorService(projects,()=>images,configuration.get,configuration.readCredentials,context,credential=>createQwenReasoner({...credential,client:async request=>{validatorRequests.push({url:request.url,body:request.body});return {choices:[{message:{content:JSON.stringify(evidence)}}]};}}));
++const generation=createShortChainGenerationService(projects,context,()=>images,()=>validator);
++const webInput=createStandardGenerationInput({projectId:record.id,family:'space',subtype:'reception',shot:'entrance_view',shotExplicit:false,ratio:'16:9',instruction:'生成符合项目气质的空间效果图',include:'',avoid:'',hasLogo:true,directionRecordSha256:approved.recordSha256});
++const compiled=await generation.compile({...webInput,model});
++const result=await generation.startValidated({projectId:record.id,taskId:compiled.taskContract.taskId,apiProfileId:'image',validatorProfileId:'validator'});
++assert.equal(result.initialRun.status,'succeeded');assert.equal(imageRequests.length,1);assert.equal(validatorRequests.length,1);assert.equal('image' in imageRequests[0].body,false);assert.equal(result.automaticRetryCount,0);
++assert(imageRequests[0].body.prompt.endsWith(compiled.compiledPrompt.finalPrompt));
++const runRoot=await images.runRoot(result.initialRun.runId);
++const metadata=await read(path.join(runRoot,'request-metadata.json'));assert.equal(metadata.referenceCount,0);
++assert.equal(metadata.designDirection.confirmationSha256,digest(confirmation));
++let publicOperationStatus='not_run';
++try {await createVisualWorkflow({root,fetchImpl:globalThis.fetch}).operations['visual-workflow:report']({},record.id,'project_design_direction');publicOperationStatus='PASS';}
++catch(error) {assert.match(error.message,/IMPLEMENTATION_CHANGED/);publicOperationStatus='BLOCKED_BY_UNAPPROVED_INTEGRITY';}
++assert.deepEqual(await inventory(source),before);
++await fs.writeFile(path.join(output,'formal-prompt.txt'),compiled.compiledPrompt.finalPrompt);
++await fs.writeFile(path.join(output,'provider-prompt.txt'),imageRequests[0].body.prompt);
++await write('provider-request.json',imageRequests[0]);await write('validator-request.json',validatorRequests[0]);
++await write('effective-packet.json',compiled.compiledPrompt.effectiveVisualDecisionPacket);
++await write('decision-source-record.json',approved);await write('web-compile-input.json',webInput);
++await write('decision-trace.json',compiled.compiledPrompt.trace);await write('request-metadata.json',metadata);
++await write('readonly-proof.json',{originalProjectUnchanged:true,sourceInventory:before});
++await write('offline-evidence.json',{sourceProjectId:record.id,testCopy:clone,providerCalls:0,syntheticResponses:true,
++  publicOperationStatus,businessServicesPassed:true,webTaskBuilderUsed:true,referenceImages:0,imageFieldPresent:false,
++  formalPromptSha256:digest(compiled.compiledPrompt.finalPrompt),providerPromptSha256:digest(imageRequests[0].body.prompt),
++  requestBodySha256:digest(imageRequests[0].body),confirmationSha256:digest(confirmation),recordSha256:approved.recordSha256,
++  model,recordedMockImageRequests:1,recordedMockValidationRequests:1,automaticRegenerations:0,humanQualityAcceptance:'pending',runRoot});
++console.log(JSON.stringify({providerCalls:0,businessServicesPassed:true,publicOperationStatus,referenceImages:0,promptSha256:digest(compiled.compiledPrompt.finalPrompt)}));
+diff --git a/packages/visual-workflow/tests/project-design-direction.test.ts b/packages/visual-workflow/tests/project-design-direction.test.ts
+new file mode 100644
+index 0000000..3b3679b
+--- /dev/null
++++ b/packages/visual-workflow/tests/project-design-direction.test.ts
+@@ -0,0 +1,128 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs/promises';
++import path from 'node:path';
++import {businessFixture} from './art-direction-business-fixture.ts';
++import {createProjectDesignDirectionStore} from '../src/project-design-direction.js';
++import {createShortChainGenerationService} from '../src/runtime/image-generation/short-chain-service.js';
++import {compileShortChainGeneration} from '../src/generation-runtime/generation/compile.js';
++import {createStandardGenerationInput} from '../../../apps/web/src/features/visual-workflow/api.ts';
++import {digest} from '../src/art-direction-contract.js';
++import {createVisualWorkflow} from '../src/service.js';
++import sharp from 'sharp';
++
++async function directed(t:any) {
++  const f=await businessFixture(t);
++  const store=createProjectDesignDirectionStore(f.projects);
++  const draft=await store.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'User-approved project design decisions; four artworks are offline visual calibration only, not brand facts or generation inputs.',expectedRecordSha256:null});
++  const confirmed=await store.confirm(f.project.id,{expectedRecordSha256:draft.recordSha256,confirmedByUser:true});
++  const input=createStandardGenerationInput({projectId:f.project.id,family:'space',subtype:'reception',shot:'entrance_view',shotExplicit:false,ratio:'16:9',instruction:'生成符合项目气质的空间效果图',include:'',avoid:'',hasLogo:true,directionRecordSha256:confirmed.recordSha256});
++  return {...f,store,confirmed,input,compileStandard:()=>f.generation.compile({...input,model:f.credentials.image.model})};
++}
++test('project direction saves and confirms without registering or uploading a single reference',async t=>{
++  const f=await directed(t);
++  assert.equal(f.confirmed.status,'confirmed');
++  await assert.rejects(fs.access(path.join(f.paths.root,'project-context/art-direction/references.json')));
++  await assert.rejects(fs.access(path.join(f.paths.root,'project-context/user-confirmed-visual-decision.json')));
++  const reopened=await createProjectDesignDirectionStore(f.projects).get(f.project.id);
++  assert.deepEqual(reopened,f.confirmed);
++  assert.equal(reopened.source.notOriginalBrandFact,true);
++});
++test('web standard task, effective Packet, official compiler, actual image request and validator share the confirmed direction',async t=>{
++  const f=await directed(t);const before=await fs.readFile(path.join(f.paths.root,'project-context/visual-decision-packet.json'));
++  const compiled=await f.compileStandard();
++  const direct=compileShortChainGeneration({projectContext:await f.context.getShortChain(f.project.id),task:compiled.taskContract,model:f.credentials.image.model,userConfirmedVisualDecision:f.confirmation});
++  assert.equal(compiled.compiledPrompt.finalPrompt,direct.compiledPrompt.finalPrompt);
++  assert.match(compiled.compiledPrompt.finalPrompt,/当代美术馆|展馆/);assert.match(compiled.compiledPrompt.finalPrompt,/半透明/);
++  for (const prohibited of f.confirmation.reviewTask.mustAvoid) assert(compiled.compiledPrompt.finalPrompt.includes(prohibited));
++  assert.deepEqual(compiled.compiledPrompt.effectiveVisualDecisionPacket.mediaTranslations.spatial,{...f.confirmation.spatialTranslation,status:'ready'});
++  assert.notDeepEqual(compiled.compiledPrompt.effectiveVisualDecisionPacket.colorSystem,f.packet.colorSystem);
++  const result=await f.start(compiled);
++  assert.equal(result.initialRun.status,'succeeded');assert.equal(f.requests.length,1);
++  assert.equal('image' in f.requests[0].body,false);assert.equal(result.automaticRetryCount,0);
++  assert(f.requests[0].body.prompt.endsWith(compiled.compiledPrompt.finalPrompt));
++  assert.doesNotMatch(f.requests[0].body.prompt,/ART DIRECTION REFERENCE BOUNDARY|Image 1:/);
++  assert.match(f.validations[0].prompt.messages[1].content,/当代美术馆/);
++  const run=await f.images.runRoot(result.initialRun.runId);
++  const snapshot=JSON.parse(await fs.readFile(path.join(run,'source-context-snapshot.json'),'utf8'));
++  assert.equal(snapshot.designDirection.confirmationSha256,digest(f.confirmation));
++  assert.equal(snapshot.taskContract.referenceAssetIds.length,0);
++  assert.deepEqual(await fs.readFile(path.join(f.paths.root,'project-context/visual-decision-packet.json')),before);
++});
++test('a changed analysis Packet cannot silently overwrite or reuse the confirmed decision',async t=>{
++  const f=await directed(t);const prior=structuredClone(f.confirmed.confirmation);
++  const packet=structuredClone(f.packet);packet.mediaTranslations.spatial.spatialConcept='Conflicting old model proposal';
++  await fs.writeFile(path.join(f.paths.root,'project-context/visual-decision-packet.json'),JSON.stringify(packet));
++  const next=await f.store.get(f.project.id);assert.equal(next.status,'needs_reconfirmation');assert.deepEqual(next.confirmation,prior);
++  await assert.rejects(f.compileStandard(),/RECONFIRM_REQUIRED/);
++  const refreshed=await f.store.confirm(f.project.id,{confirmedByUser:true,expectedRecordSha256:next.recordSha256});
++  assert.equal(refreshed.status,'confirmed');assert.deepEqual(refreshed.confirmation,prior);
++});
++test('an analysis request preserves direction and requires explicit reconfirmation even if analysis fails or app restarts',async t=>{
++  const f=await directed(t);await f.store.markForReview(f.project.id);
++  const reopened=await createProjectDesignDirectionStore(f.projects).get(f.project.id);
++  assert.equal(reopened.status,'needs_reconfirmation');assert.equal(reopened.reason,'analysis_requested');
++  assert.deepEqual(reopened.confirmation,f.confirmation);await assert.rejects(f.compileStandard(),/RECONFIRM_REQUIRED/);
++});
++test('decision changes after compile block dispatch and keep all history',async t=>{
++  const f=await directed(t);const compiled=await f.compileStandard();
++  await f.store.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'Edited review',expectedRecordSha256:f.confirmed.recordSha256});
++  await assert.rejects(f.start(compiled),/RECONFIRM_REQUIRED|COMPILATION_STALE/);assert.equal(f.requests.length,0);
++  assert((await fs.readdir(path.join(f.paths.root,'project-context/design-direction-history'))).length>=3);
++});
++test('cross-project, stale editing, non-confirmation and invalid confirmed decisions are rejected',async t=>{
++  const f=await directed(t);
++  await assert.rejects(f.store.confirm(f.project.id,{expectedRecordSha256:f.confirmed.recordSha256}),/CONFIRMATION_REQUIRED/);
++  await assert.rejects(f.store.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'x',expectedRecordSha256:null}),/EDIT_CONFLICT/);
++  await assert.rejects(f.store.saveDraft(f.project.id,{confirmation:{...f.confirmation,projectId:crypto.randomUUID()},sourceStatement:'x',expectedRecordSha256:f.confirmed.recordSha256}),/USER_CONFIRMED_VISUAL_DECISION_INVALID/);
++});
++test('a newly confirmed decision invalidates a previously compiled ordinary task with no direction',async t=>{
++  const f=await businessFixture(t);const compiled=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task:{...f.task,generationBasis:'standard',referenceAssetIds:[]}});
++  const store=createProjectDesignDirectionStore(f.projects);
++  const draft=await store.saveDraft(f.project.id,{confirmation:f.confirmation,sourceStatement:'Explicit user decision',expectedRecordSha256:null});
++  await store.confirm(f.project.id,{confirmedByUser:true,expectedRecordSha256:draft.recordSha256});
++  await assert.rejects(f.start(compiled),/COMPILATION_STALE/);assert.equal(f.requests.length,0);
++});
++test('ordinary industries remain byte-identical and contain no direction or image request fields',async t=>{
++  for(const industry of ['Medical aesthetics','Restaurant','Hotel']) {
++    const f=await businessFixture(t,industry);const task={...f.task,generationBasis:'standard',referenceAssetIds:[]};
++    const before=compileShortChainGeneration({projectContext:await f.context.getShortChain(f.project.id),model:f.credentials.image.model,task:{...task,projectId:f.project.id}});
++    const compiled=await f.generation.compile({projectId:f.project.id,model:f.credentials.image.model,task});
++    assert.equal(compiled.compiledPrompt.finalPrompt,before.compiledPrompt.finalPrompt);
++    await f.start(compiled);assert.equal('image' in f.requests[0].body,false);
++    assert.equal(compiled.compiledPrompt.userConfirmedVisualDecision,null);
++  }
++});
++test('existing four-image art direction route remains independent and operational',async t=>{
++  const f=await directed(t);await f.register();const compiled=await f.compile();await f.start(compiled);
++  assert.equal(f.requests[0].body.image.length,4);assert.equal((await f.store.get(f.project.id)).status,'confirmed');
++});
++test('the plain-language web editor saves and confirms a usable direction without JSON editing',async t=>{
++  const f=await directed(t);
++  const draft=await f.store.saveDraft(f.project.id,{fields:f.confirmed.fields,sourceStatement:'User reviewed plain-language design direction',expectedRecordSha256:f.confirmed.recordSha256});
++  await f.store.confirm(f.project.id,{confirmedByUser:true,expectedRecordSha256:draft.recordSha256});
++  const compiled=await f.compileStandard();assert.equal(compiled.compiledPrompt.preflightReport.status,'pass');
++  assert.match(compiled.compiledPrompt.finalPrompt,/半透明/);
++});
++test('guarded public web operations save, confirm, compile, generate, reopen and invalidate on an analysis request',async t=>{
++  const f=await businessFixture(t);const requests:any[]=[];
++  const output=await sharp({create:{width:320,height:180,channels:3,background:'white'}}).png().toBuffer();
++  const workflow=createVisualWorkflow({root:f.root,
++    fetchImpl:async(_url:any,input:any)=>{requests.push(JSON.parse(input.body));return new Response(JSON.stringify({data:[{b64_json:output.toString('base64')}]}),{status:200});},
++    analysisProviders:{createReasoner:()=>async()=>{throw new Error('OFFLINE_ANALYSIS_STOP');}},
++    validationReasoner:()=>async()=>({provider:'offline',model:'qwen3.6-plus',reportMarkdown:JSON.stringify({detectedFamily:'space',detectedSubtype:'reception',visibleEvidence:['offline'],missingRequiredItems:[],forbiddenItemsFound:[],lockedAssetViolations:[],brandMatch:'matched',brandToneMatch:'matched',sceneCompleteness:'complete',logoTextStatus:'absent',qualityIssues:[]})})
++  });
++  const op=workflow.operations;
++  await op['visual-workflow:save-profile']({}, {name:'Offline image',provider:'volcengine',protocol:'seedream-image',modelId:f.credentials.image.model,modelType:'image_generation',baseUrl:'https://image.example.invalid/v3',apiKey:'OFFLINE_FIXTURE_ONLY'});
++  await op['visual-workflow:save-profile']({}, {name:'Offline validator',provider:'dashscope',protocol:'openai-chat-multimodal',modelId:'qwen3.6-plus',modelType:'analysis',baseUrl:'https://validator.example.invalid/v1',apiKey:'OFFLINE_FIXTURE_ONLY'});
++  const draft=await op['visual-workflow:import-files']({},f.project.id,{purpose:'project_design_direction',action:'save_draft',expectedRecordSha256:null,confirmation:f.confirmation,sourceStatement:'Explicit user-approved test direction'});
++  const confirmed=await op['visual-workflow:import-files']({},f.project.id,{purpose:'project_design_direction',action:'confirm',expectedRecordSha256:draft.recordSha256,confirmedByUser:true});
++  const compiled=await op['visual-workflow:compile']({},createStandardGenerationInput({projectId:f.project.id,family:'space',subtype:'reception',shot:'entrance_view',shotExplicit:false,ratio:'16:9',instruction:'生成符合项目气质的空间效果图',include:'',avoid:'',hasLogo:true,directionRecordSha256:confirmed.recordSha256}));
++  await op['visual-workflow:generate']({}, {projectId:f.project.id,taskId:compiled.taskContract.taskId});
++  assert.equal(requests.length,1);assert.equal('image' in requests[0],false);
++  const restarted=createVisualWorkflow({root:f.root});
++  assert.equal((await restarted.operations['visual-workflow:report']({},f.project.id,'project_design_direction')).status,'confirmed');
++  await assert.rejects(op['visual-workflow:analyze']({},f.project.id,true));
++  const retained=await op['visual-workflow:report']({},f.project.id,'project_design_direction');
++  assert.equal(retained.status,'needs_reconfirmation');assert.deepEqual(retained.confirmation,f.confirmation);
++});
+diff --git a/packages/visual-workflow/tests/validation-policy.test.js b/packages/visual-workflow/tests/validation-policy.test.js
+index 96c79b8..e31228f 100644
+--- a/packages/visual-workflow/tests/validation-policy.test.js
++++ b/packages/visual-workflow/tests/validation-policy.test.js
+@@ -138,0 +139 @@ test('validator request declares stage and asks for separately scoped identity e
++  await fs.writeFile(path.join(root,'source-context-snapshot.json'),JSON.stringify({designDirection:null}));
+@@ -140 +141 @@ test('validator request declares stage and asks for separately scoped identity e
+-  const service=createDeliverableValidatorService({paths:async()=>({root})},()=>({getRun:async()=>({projectId:'project',runId:'run',status:'succeeded',images:[{imageId:'image',relativePath:'image.png'}]}),runRoot:async()=>root}),async()=>({profiles:[]}),async()=>({protocol:'openai-chat-multimodal'}),undefined,()=>async request=>{captured=request;return {reportMarkdown:JSON.stringify(evidence)};});
++  const service=createDeliverableValidatorService({get:async()=>({id:'project',assets:[]}),paths:async()=>({root})},()=>({getRun:async()=>({projectId:'project',runId:'run',status:'succeeded',images:[{imageId:'image',relativePath:'image.png'}]}),runRoot:async()=>root}),async()=>({profiles:[]}),async()=>({protocol:'openai-chat-multimodal'}),undefined,()=>async request=>{captured=request;return {reportMarkdown:JSON.stringify(evidence)};});

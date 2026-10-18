@@ -68,6 +68,7 @@ function applyUserConfirmedVisualDecision(packet, confirmation, projectId, deliv
     creativeDecision: {
       ...packet.creativeDecision,
       ...creativeDecision,
+      strategicNegatives: list([...(creativeDecision.strategicNegatives || []), ...list(confirmation.reviewTask?.mustAvoid)]),
       toneBoundaries: Array.isArray(creativeDecision.toneBoundaries) ? creativeDecision.toneBoundaries : packet.creativeDecision?.toneBoundaries
     },
     abstractions,

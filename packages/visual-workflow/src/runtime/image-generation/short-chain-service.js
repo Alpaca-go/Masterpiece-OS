@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { createArtDirectionStore } from '../../art-direction-store.js';
 import { ART_DIRECTION_SOURCE, digest } from '../../art-direction-contract.js';
+import { createProjectDesignDirectionStore } from '../../project-design-direction.js';
 import {
   compileShortChainGeneration,
   listShortChainTemplateOptions,
@@ -90,6 +91,7 @@ async function writeJson(filename, value) {
 }
 function createShortChainGenerationService(projects, projectContext, getImageGeneration, getValidator, getSimilarityAudit) {
   const artDirectionStore = createArtDirectionStore(projects);
+  const designDirectionStore = createProjectDesignDirectionStore(projects);
   async function vnextRoot(projectId) {
     return path.join((await projects.paths(projectId)).root, "image-generation-vnext");
   }
@@ -153,11 +155,12 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       path.join(paths.root, "outputs", "creative_decision.json"),
       "utf8"
     ).then((value) => JSON.parse(value)).catch(() => void 0);
-    const userConfirmedVisualDecision = await fs.readFile(
+    const art = input.task.generationBasis === 'art_direction_reference';
+    const designDirection = !art && input.task.deliverableFamily === 'space' ? await designDirectionStore.capture(input.projectId) : null;
+    const userConfirmedVisualDecision = art ? await fs.readFile(
       path.join(paths.root, "project-context", "user-confirmed-visual-decision.json"),
       "utf8"
-    ).then((value) => JSON.parse(value)).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; });
-    const art = input.task.generationBasis === 'art_direction_reference';
+    ).then((value) => JSON.parse(value)).catch(error => { if (error.code === 'ENOENT') return undefined; throw error; }) : designDirection?.confirmation;
     const artCapture = art ? await artDirectionStore.capture(input.projectId,input.task.referenceAssetIds,input.model) : null;
     if (art && (digest(userConfirmedVisualDecision) !== artCapture.snapshot.confirmationSha256 || userConfirmedVisualDecision.reviewTask?.currentInstruction && input.task.currentInstruction !== userConfirmedVisualDecision.reviewTask.currentInstruction)) throw new Error('ART_DIRECTION_INSTRUCTION_MISMATCH');
     const projectPromptAsset = await fs.readFile(
@@ -210,6 +213,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
       }
     } : basePromptSourceMap;
     await Promise.all([
+      writeJson(path.join(artifactDirectory, 'project-design-direction.json'), designDirection?.snapshot || null),
       writeJson(path.join(artifactDirectory, "task-contract.json"), result.taskContract),
       writeJson(path.join(artifactDirectory, "compiled-prompt.json"), result.compiledPrompt),
       writeJson(path.join(artifactDirectory, "model-payload.json"), result.payload),
@@ -292,6 +296,10 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
     let compilation = await readCompilation(input.projectId, input.taskId);
     const currentContext = await projectContext.getShortChain(input.projectId);
     const art = compilation.taskContract.generationBasis === 'art_direction_reference';
+    const designDirectionSnapshot = !art && compilation.taskContract.deliverableFamily === 'space' ? await fs.readFile(
+      path.join(compilation.artifactDirectory,'project-design-direction.json'),'utf8'
+    ).then(JSON.parse).catch(error=>{if(error.code==='ENOENT')return null;throw error;}) : null;
+    if (!art && compilation.taskContract.deliverableFamily === 'space') await designDirectionStore.resolve(input.projectId,designDirectionSnapshot);
     let artCapture = null;
     if (art) {
       if (JSON.stringify(compilation.taskContract) !== JSON.stringify(compilation.compiledPrompt.taskContract) || compilation.payload.prompt !== compilation.compiledPrompt.finalPrompt || digest(compilation.compiledPrompt.finalPrompt) !== compilation.compiledPrompt.trace.spaceGeneration.promptHash) throw new Error('ART_DIRECTION_COMPILATION_CHANGED');
@@ -596,6 +604,7 @@ function createShortChainGenerationService(projects, projectContext, getImageGen
         taskContract: compilation.taskContract,
         route: compilation.compiledPrompt.route,
         trace: compilation.compiledPrompt.trace,
+        ...!art && compilation.taskContract.deliverableFamily === 'space' ? {designDirection:designDirectionSnapshot,compiledPromptSha256:digest(actualPrompt)} : {},
         ...art ? {compiledPromptSha256:digest(actualPrompt),userConfirmedVisualDecision:compilation.compiledPrompt.userConfirmedVisualDecision} : {},
         implicitAnchor,
         ...referenceTrace ? { referenceTrace } : {},

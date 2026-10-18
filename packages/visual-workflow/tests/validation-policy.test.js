@@ -136,8 +136,9 @@ test('validator exception retains successful first run and truthful unverified s
 test('validator request declares stage and asks for separately scoped identity evidence', async t => {
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'visual-validator-prompt-'));
   t.after(()=>fs.rm(root,{recursive:true,force:true}));
+  await fs.writeFile(path.join(root,'source-context-snapshot.json'),JSON.stringify({designDirection:null}));
   let captured;
-  const service=createDeliverableValidatorService({paths:async()=>({root})},()=>({getRun:async()=>({projectId:'project',runId:'run',status:'succeeded',images:[{imageId:'image',relativePath:'image.png'}]}),runRoot:async()=>root}),async()=>({profiles:[]}),async()=>({protocol:'openai-chat-multimodal'}),undefined,()=>async request=>{captured=request;return {reportMarkdown:JSON.stringify(evidence)};});
+  const service=createDeliverableValidatorService({get:async()=>({id:'project',assets:[]}),paths:async()=>({root})},()=>({getRun:async()=>({projectId:'project',runId:'run',status:'succeeded',images:[{imageId:'image',relativePath:'image.png'}]}),runRoot:async()=>root}),async()=>({profiles:[]}),async()=>({protocol:'openai-chat-multimodal'}),undefined,()=>async request=>{captured=request;return {reportMarkdown:JSON.stringify(evidence)};});
   const result=await service.validate({projectId:'project',runId:'run',taskContract:task,validatorProfileId:'validator'});
   assert.match(captured.prompt.messages[1].content,/Logo and identity typography MUST be absent/);
   assert.match(captured.prompt.messages[1].content,/generatedIdentityEvidence/);

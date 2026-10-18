@@ -6,9 +6,11 @@ import { createMultiModelImageAdapter } from './image-adapter/multi-model.js';
 import { assertId, inside, readJson, writeJson } from './configuration.js';
 import { createArtDirectionStore } from './art-direction-store.js';
 import { assertArtDirectionModel, digest, ART_DIRECTION_SOURCE } from './art-direction-contract.js';
+import { createProjectDesignDirectionStore } from './project-design-direction.js';
 
 export function createImageService(root, projects, configuration, emit, fetchImpl = fetch) {
   const artDirectionStore = createArtDirectionStore(projects);
+  const designDirectionStore = createProjectDesignDirectionStore(projects);
   const controllers = new Map();
   const runRoot = async id => path.join(root, 'runs', assertId(id));
   async function getRun(id) {
@@ -27,6 +29,13 @@ export function createImageService(root, projects, configuration, emit, fetchImp
     const task = input.snapshot?.taskContract;
     const art = task?.generationBasis === 'art_direction_reference';
     if (!art && (input.references?.length || task?.generationBasis !== 'standard')) throw new Error('VISUAL_WORKFLOW_STANDARD_ONLY');
+    if (!art && task?.deliverableFamily === 'space') {
+      await designDirectionStore.resolve(input.projectId,input.snapshot?.designDirection || null);
+      if (input.snapshot?.designDirection) {
+        const compiled = await readJson(inside((await projects.paths(input.projectId)).root,`image-generation-vnext/compilations/${task.taskId}/compiled-prompt.json`));
+        if (compiled.finalPrompt !== input.compiledPrompt || digest(input.compiledPrompt)!==input.snapshot.compiledPromptSha256 || JSON.stringify(compiled.taskContract)!==JSON.stringify(task)) throw new Error('PROJECT_DESIGN_DIRECTION_COMPILATION_STALE');
+      }
+    }
     const settings = await configuration.get();
     const credential = await configuration.readCredentials(input.apiProfileId || settings.imageProfileId);
     if (credential.modelType !== 'image_generation') throw new Error('请选择独立生图模型');
@@ -70,6 +79,7 @@ export function createImageService(root, projects, configuration, emit, fetchImp
       promptSha256:crypto.createHash('sha256').update(input.compiledPrompt).digest('hex'),
       promptVersion:input.promptVersion, outputCount:1, referenceCount:universalInput.references.length,
       ...art ? {artDirection:requestEvidence} : {},
+      ...input.snapshot?.designDirection ? {designDirection:input.snapshot.designDirection} : {},
     });
     if (art) await writeJson(path.join(directory,'art-direction-request-evidence.json'),requestEvidence);
     await save(run);

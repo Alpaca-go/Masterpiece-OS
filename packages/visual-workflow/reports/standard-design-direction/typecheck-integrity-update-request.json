@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_explicit_approval; NOT_APPLIED",
+  "currentManifestSha256": "53b2f83ff51df80aa9dfc681c6b16403ae4a5182da3bf0d97ed40f7369163a66",
+  "expectedManifestSha256": "05f8cc1ab1f7a530d7483f617bbdaaf84d28cd17a21a4361be0e53d724ec40d4",
+  "implementationDigest": "2b6a2f92b47aff65eb242683a0e71e1a260244781e5f63a084eed687cbd9d89b",
+  "changes": [
+    {
+      "section": "frontendFiles",
+      "path": "apps/web/src/features/visual-workflow/ProjectDesignDirectionPanel.tsx",
+      "recordedSha256": "39d5d8549f759169e5261f4c532cc1c15745b2742d53ce9f918750aa64583d21",
+      "finalSha256": "c9fccad49aec44884e401f6f49173c6d157fcda0518d92dccf1a64518a76ca7b",
+      "reason": "Add value null guard alongside fields guard; no business behavior or Prompt change"
+    }
+  ],
+  "webTypecheck": "PASS after source fix; integrity record remains unchanged",
+  "protectedScope": "Only one frontend SHA; all source hashes, other frontend rows, Golden, frozen Prompt, quality status unchanged; no real models"
+}

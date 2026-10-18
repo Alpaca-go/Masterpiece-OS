@@ -4,6 +4,24 @@ export interface WorkflowAsset { id: string; originalName: string; role: string;
 export interface WorkflowProject { id: string; projectName: string; brandName: string; industry: string; description: string; status: string; assetCount: number; assets: WorkflowAsset[]; lastReportFilename?: string; visualContextVNextStatus?: string; lastError?: string }
 export interface WorkflowRun { runId: string; status: string; errorMessage?: string; images: Array<{imageId: string}> }
 export type WorkflowOptions = Record<string, { subtypes: string[]; shots: string[] }>;
+export interface ProjectDesignDirection {
+  projectId: string;
+  status: 'missing' | 'draft' | 'confirmed' | 'needs_reconfirmation';
+  reason: string | null;
+  recordSha256: string | null;
+  source: {statement: string} | null;
+  fields: Record<'spatialConcept' | 'structureLanguage' | 'materialLanguage' | 'lightingLanguage' | 'colorPolicy' | 'functionalProgram' | 'mustAvoid', string>;
+  confirmedAt: string | null;
+}
+export function createStandardGenerationInput(input: {
+  projectId:string; family:string; subtype:string; shot:string; shotExplicit:boolean; ratio:string;
+  instruction:string; include:string; avoid:string; hasLogo:boolean; directionRecordSha256:string | null;
+}) {
+  return {projectId:input.projectId,designDirectionExpectedRecordSha256:input.directionRecordSha256,
+    task:{deliverableFamily:input.family,subtype:input.subtype,shot:input.shot,shotSource:input.shotExplicit?'user_explicit':undefined,
+      aspectRatio:input.ratio,count:1,currentInstruction:input.instruction,generationBasis:'standard',referenceAssetIds:[],
+      mustInclude:input.include.split('\n').filter(Boolean),mustAvoid:input.avoid.split('\n').filter(Boolean),logoUsageMode:input.hasLogo?'post_composite':'blank_area'}};
+}
 
 // This client has no access to the planning/migration API namespaces.
 export async function workflowCall<T>(method: string, ...args: unknown[]): Promise<T> {

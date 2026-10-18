@@ -9,6 +9,7 @@ import { SEEDREAM_ADAPTER_CAPABILITY } from '../src/generation-runtime/generatio
 import { listMultiModelAdapters } from '../src/image-adapter/multi-model.js';
 import { resolveEffectiveMaxReferences } from '../src/generation-runtime/space/product-policy.js';
 import { createVisualWorkflow } from '../src/service.js';
+import { verifyImplementation } from '../src/integrity.js';
 
 test('application service loads confirmation, preserves gates and sends four ordered original byte inputs through actual image adapter',async t=>{
   const f=await businessFixture(t);const before=await fs.readFile(path.join(f.paths.root,'project-context/visual-decision-packet.json'));
@@ -151,7 +152,7 @@ test('public operations verify the approved implementation before registration, 
   assert.equal(result.initialRun.status,'succeeded');assert.equal(requests.length,1);assert.equal(validationCalls,1);
   assert.equal(result.automaticRetryCount,0);assert.equal(requests[0].image.length,4);
   const implementation=JSON.parse(await fs.readFile(path.join(compiled.artifactDirectory,'workflow-implementation.json'),'utf8'));
-  assert.equal(implementation.implementationDigest,'a90b0cc873a7999525148c660c05b2f22c90e2399d7c0c73001eebabe84627b3');
+  assert.deepEqual(implementation,await verifyImplementation());
   const runImplementation=JSON.parse(await fs.readFile(path.join(await workflow.images.runRoot(result.initialRun.runId),'workflow-implementation.json'),'utf8'));
   assert.deepEqual(runImplementation,implementation);
   const composed=await workflow.operations['visual-workflow:post-composite-logo']({}, {projectId:f.project.id,runId:result.initialRun.runId,imageId:result.initialRun.images[0].imageId,logoAssetId:'logo-1',confirmedByUser:true,sourceCrop:{left:0,top:0,width:40,height:30},placement:{x:0.2,y:0.2,width:0.2}});
