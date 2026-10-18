@@ -1,0 +1,65 @@
+{
+  "scope": "Textual expression and standard-request contract only. Not proof of stable model behavior or human image acceptance.",
+  "items": [
+    {
+      "id": "architecture_art_relationship",
+      "question": "主艺术系统是否已经不再是独立中央雕塑？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "signatureSpatialMechanism",
+      "promptTerm": "沿建筑边缘展开的一套空间系统",
+      "realImageVerified": false
+    },
+    {
+      "id": "interface_continuity",
+      "question": "它是否与建筑界面和空间分区建立了连续关系？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "structureLanguage",
+      "promptTerm": "竖向建筑界面延展至上部边界",
+      "realImageVerified": false
+    },
+    {
+      "id": "five_stage_sequence",
+      "question": "五段式空间关系是否在 Prompt 中被明确表达？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "sceneProgram+functionalNetwork+compositionRequirements",
+      "promptTerm": "arrival then reception then waiting and art pause then semi-open transition then a staggered privacy boundary",
+      "realImageVerified": false
+    },
+    {
+      "id": "commercial_logic",
+      "question": "候客/接待/过渡/隐私边界逻辑是否完整？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "functionalRelationships+mustBeVisible",
+      "promptTerm": "seats and small tables",
+      "realImageVerified": false
+    },
+    {
+      "id": "prevent_object_in_hall",
+      "question": "是否避免普通大厅加一件艺术品的方案？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "creativeDecision.strategicNegatives",
+      "promptTerm": "普通大厅中摆放一个巨大独立雕塑",
+      "realImageVerified": false
+    },
+    {
+      "id": "atmosphere",
+      "question": "色彩、材料、光线是否保持认可方向？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "colorSystem+materialSystem+lightingSystem",
+      "promptTerm": "柔和漫射自然日光",
+      "realImageVerified": false
+    },
+    {
+      "id": "standard_zero_reference",
+      "question": "新方案是否明确支持零参考图标准路径？",
+      "status": "EXPRESSED_AND_OFFLINE_VERIFIED",
+      "sourceField": "taskContract+providerBody",
+      "promptTerm": null,
+      "realImageVerified": false
+    }
+  ],
+  "zeroReferenceSupported": true,
+  "qualityStability": "NOT_VERIFIED",
+  "modelWillAlwaysFollow": "NOT_GUARANTEED",
+  "realCallsAuthorizedThisRound": 0
+}

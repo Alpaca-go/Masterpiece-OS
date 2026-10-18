@@ -1,0 +1,49 @@
+{
+  "referenceImages": 0,
+  "images": [
+    {
+      "role": "current_output",
+      "path": "C:/Users/kyrie/AppData/Local/Temp/codex-clipboard-0af74c72-a345-475d-8e76-f89010012ba2.png",
+      "bytes": 2342839,
+      "sha256": "f9ba5e90d1cd3b38d68eeb12b4fe280f7e6e076acdb1792b62b10ab683d826a5",
+      "usage": "manual_review_only",
+      "registered": false,
+      "uploaded": false,
+      "sentToGeneration": false
+    },
+    {
+      "role": "architectural_integration",
+      "path": "F:/九州美学垂直测试/成功图-3.png",
+      "bytes": 421170,
+      "sha256": "1030b48ac15da278cc2eb34ac325b95a625b0d9b1964f285f03b261772336d4a",
+      "usage": "manual_review_only",
+      "registered": false,
+      "uploaded": false,
+      "sentToGeneration": false
+    },
+    {
+      "role": "material_precision",
+      "path": "F:/九州美学垂直测试/成功图-2.jpeg",
+      "bytes": 410386,
+      "sha256": "73cd439a0bbe40ef339867049a7b6da43fd6892bd1f6a654615ebf1680acecca",
+      "usage": "manual_review_only",
+      "registered": false,
+      "uploaded": false,
+      "sentToGeneration": false
+    },
+    {
+      "role": "commercial_organization",
+      "path": "F:/九州美学垂直测试/成功图-1.jpeg",
+      "bytes": 432642,
+      "sha256": "9b57a781d0d6e208a70429dd5a7f30a4183f3f7ca9b5a1f8953173667979cc8b",
+      "usage": "manual_review_only",
+      "registered": false,
+      "uploaded": false,
+      "sentToGeneration": false
+    }
+  ],
+  "notCopiedToProjectAssets": true,
+  "noReferenceRegistration": true,
+  "brandLogoTreatment": "Existing post-composite mode remains; calibration-image logos do not become scene instructions",
+  "literalShapePolicy": "Use continuity, thin edges, depth and operating relationships; do not copy feather silhouettes, signs, watermarks, exact layouts or unverified dimensions."
+}

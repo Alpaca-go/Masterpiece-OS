@@ -1,0 +1,11 @@
+{
+  "documentPath": "C:/Users/kyrie/Downloads/jiuzhou_next_round_execution_doc.docx",
+  "sha256": "0db540ed43fdf2ecd5acf3b9a0f70db90b231b01638646a70cd2da3e007bbb68",
+  "userBoundary": "Images 2–4 for manual review and calibration only. Zero-reference standard route.",
+  "gitBase": "6ee4a2790538df934b1f63cc9cc90ea3f8261b49",
+  "branch": "fix/jiuzhou-architectural-language",
+  "productionCodeChanges": 0,
+  "protectedDigestsUpdated": false,
+  "goldenUpdated": false,
+  "realCalls": 0
+}

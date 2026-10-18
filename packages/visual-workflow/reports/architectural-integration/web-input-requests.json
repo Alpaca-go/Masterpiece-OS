@@ -1,0 +1,154 @@
+[
+  {
+    "url": "http://127.0.0.1:57487/_masterpiece/rpc/visual-workflow%3Aimport-files",
+    "body": {
+      "args": [
+        "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+        {
+          "purpose": "project_design_direction",
+          "action": "save_draft",
+          "expectedRecordSha256": "6559399acc7c987a55369f18858ec32cc95c67d8e3911f6b263f41905f0b7417",
+          "fields": {
+            "spatialConcept": "由展馆尺度的建筑体量、沿界面连续的半透明珠光层片系统与真实到达接待运营共同构成高端医美主接待空间；艺术性来自建筑、透景、光与功能之间的整体关系，安静、明亮、克制。",
+            "structureLanguage": "接待主厅：完整竖向墙面、上部采光界面与具有抬升感的主厅体量共同建立净高和竖向呼吸；撤去艺术层片后，围合界面与前后开口仍能形成有比例的展馆式建筑空间。\n接待主厅：连续半透明层片从一侧竖向建筑界面延展至上部边界并向候客区边缘过渡，沿同一方向组织分隔、透景与转场；它与界面及空间分区相接，而非在厅中央独立落地成团。\n接待主厅：层片与实体界面相接处保持轻薄边缘和可读间隙，上部保留净高及采光呼吸空间；前景到达、接待服务、候客艺术停留和背景过渡之间保持贯通视线。\n接待主厅：建筑开口与实体面的退让错位形成宽舒递进，背景半开放过厅必须可见；后续入口偏离到达主视线，保留真实运营通路，不形成双侧密集门洞的狭长走廊。\n周边墙地与实体顶面保持安静连续的建筑背景；顶面以体量高低与开口关系呈现秩序，保持简洁实体面，不依赖满顶构件和重复曲线灯槽。",
+            "materialLanguage": "",
+            "lightingLanguage": "柔和漫射自然日光\n克制的间接光",
+            "colorPolicy": "",
+            "functionalProgram": "入口到达与通行区\n主厅接待服务区\n成组候客与艺术停留区\n背景半开放过渡区\n错位私密入口边界",
+            "mustAvoid": "通用医美装修\n重复拱券、波浪灯槽及连续紫色发光描边\n装饰性羽毛堆叠\n厚重染色玻璃与不透明发光浮雕\n接待台紧邻狭长走廊、两侧连续密集房门与向狭窄尽端收束的空间组织\n整体贴顶下压的艺术装置、低矮商业吊顶比例与缺乏竖向留白\n角落孤立小沙发、无功能大空间堆砌或隐藏全部运营入口\n夸张无依据的科幻穹顶、不合理结构、超广角畸变与虚构已验证层高\n普通大厅中摆放一个巨大独立雕塑\n中央居中、完整落地成团的花束、贝壳或羽毛簇团装置\n艺术团块遮挡背景半开放过渡及后续入口\n左侧前台、右侧沙发与中央艺术品横向平均陈列且互不关联\n缺乏接待运营用途的纯展厅或缺乏品牌空间语言的普通商业大厅",
+            "lightingContrast": "建筑背景低对比，层片边缘保留细腻明暗",
+            "lightingInteraction": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构\n漫射光经层片的连续间隙透入候客与过渡区，保持轻薄透景，不以强光掩盖结构和光学细节",
+            "lightingAvoid": "全空间紫色灯带\n紫色霓虹\n强直射光与硬阴影\n以灯带、发光描边替代材料及建筑秩序",
+            "colorAvoid": "紫色共同主导墙、顶、窗帘与多类家具\n品牌紫扩散到沙发、靠垫、窗帘等主要软装表面",
+            "functionalNetwork": "Reception: the foreground arrival zone opens a clear path toward a usable reception service counter before branching to grouped waiting seats and small tables.\nReception: grouped waiting and art pause share the edge of a continuous architectural sheet system with views through its gaps toward the semi-open transition.\nReception: the background semi-open transition leads visibly to a staggered screened onward access boundary without blocking the main arrival route.\nReception: the service sequence is arrival then reception then waiting and art pause then semi-open transition then a staggered privacy boundary; staff access remains practical and separate from seated guests.",
+            "functionalRelationships": "Reception and waiting remain visually linked across the translucent architectural interface; the integrated art edge guides circulation toward the visible semi-open transition.\nReception: the semi-open transition maintains a staggered screened access boundary and practical onward circulation; consultation privacy remains protected while other room interiors stay off frame.",
+            "visibleRequirements": "Reception service counter with a usable staff and visitor approach\nWaiting area with at least one group of seats and small tables beside the integrated translucent partition\nClear foreground arrival circulation continuing toward a visible background semi-open transition\nReception staggered screened access boundary with a discreet onward entrance\nReception integrated translucent sheet interface with readable gaps revealing the transition behind it",
+            "artisticFocus": "接待区：与竖向界面、上部边界及候客围合连续衔接的半透明珠光层片艺术装置，构成沿建筑边缘展开的一套空间系统；主艺术性是这种连续关系，不是一个可搬离的中央雕塑。\n接待区：层片沿明确方向渐次展开，薄边精密、层间疏密和深度可读；通过层间留隙持续看见后方过渡，艺术停留贴合候客区边缘，不占据到达与转场的通行中心。",
+            "compositionRequirements": "单个接待主厅的入口斜向视角：前景到达与通行向中景接待服务引导，再连接候客与艺术停留，背景露出半开放过渡及退让错位的私密入口边界；不展示其他房间内部。\n连续层片系统沿建筑侧界面和上部边界展开，透景间隙明确框出背景过渡；候客桌椅依界面组织，接待台作为服务锚点嵌入动线，三者在纵深上相互联系而非左右平均陈列。\n保持可信人体尺度、控制透视和可读的竖向建筑比例；中心保留通行与后方空间视线，不居中摆放完整大雕塑，不以超广角或取景遮挡回避结构问题。",
+            "colorEntries": [
+              {
+                "name": "暖白与乳白",
+                "paletteRole": "primary",
+                "role": "安静明亮的建筑背景",
+                "surfaceApplicability": "墙面、地面及周边顶面；不包含主艺术结构内层",
+                "spatialUsage": "dominant_field"
+              },
+              {
+                "name": "浅暖灰",
+                "paletteRole": "secondary",
+                "role": "辅助接待表面的低对比层次",
+                "surfaceApplicability": "接待台次要台面与限定辅助表面",
+                "spatialUsage": "secondary_surface"
+              },
+              {
+                "name": "品牌紫",
+                "paletteRole": "accent",
+                "role": "局部材料内层的细微虹彩；视觉识别以后期真实标识体现",
+                "surfaceApplicability": "只允许在半透明层片内层和少量建筑细部出现；候客沙发、靠垫、窗帘及其他主要软装表面保持中性，不使用品牌紫",
+                "spatialUsage": ""
+              }
+            ],
+            "materialEntries": [
+              {
+                "material": "半透明珠光薄片",
+                "behavior": "自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现\n沿建筑界面连续、有方向地展开，薄边精密且层间留隙，能够持续透见后方空间\n局部内层弱紫虹彩随自然光变化，不成为整体染色或独立光源",
+                "brandRole": "与建筑界面连续相接并围合候客边缘的半透明空间系统；同时承担分隔、透景、方向引导和艺术体验",
+                "forbidden": "厚重染色玻璃\n不透明自发光浮雕\n圆厚花瓣、贝壳化或密实不透的团块\n对称图腾、婚庆摆件与独立中央雕塑\n平面墙饰化或简单发光灯槽化"
+              },
+              {
+                "material": "暖白矿物基底",
+                "behavior": "柔和漫反射\n连续、低对比的安静表面",
+                "brandRole": "衬托薄片与自然光的建筑背景",
+                "forbidden": "高对比镜面拼贴"
+              }
+            ]
+          },
+          "sourceStatement": "本轮用户授权的九州美学建筑语言定向修正设计意图。图2—图4仅供人工审查与方向校准，未注册为项目素材或生成参考，来源不是原品牌实测事实。仅在新的独立审查副本中离线确认：建筑界面连续层片、五段式运营关系、材料精密透景及色光防漂移；实际高度、构造与工法未核实。本轮不授权真实生图、收费校验、Golden 更新、合并或发布。"
+        }
+      ]
+    }
+  },
+  {
+    "url": "http://127.0.0.1:57487/_masterpiece/rpc/visual-workflow%3Aimport-files",
+    "body": {
+      "args": [
+        "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+        {
+          "purpose": "project_design_direction",
+          "action": "save_draft",
+          "expectedRecordSha256": "280011d89fe86af2e94b13c957e675ba2b8b7208755a9c5ff26bf39335316b74",
+          "fields": {
+            "spatialConcept": "由展馆尺度的建筑体量、沿界面连续的半透明珠光层片系统与真实到达接待运营共同构成高端医美主接待空间；艺术性来自建筑、透景、光与功能之间的整体关系，安静、明亮、克制。",
+            "structureLanguage": "接待主厅：完整竖向墙面、上部采光界面与具有抬升感的主厅体量共同建立净高和竖向呼吸；撤去艺术层片后，围合界面与前后开口仍能形成有比例的展馆式建筑空间。\n接待主厅：连续半透明层片从一侧竖向建筑界面延展至上部边界并向候客区边缘过渡，沿同一方向组织分隔、透景与转场；它与界面及空间分区相接，而非在厅中央独立落地成团。\n接待主厅：层片与实体界面相接处保持轻薄边缘和可读间隙，上部保留净高及采光呼吸空间；前景到达、接待服务、候客艺术停留和背景过渡之间保持贯通视线。\n接待主厅：建筑开口与实体面的退让错位形成宽舒递进，背景半开放过厅必须可见；后续入口偏离到达主视线，保留真实运营通路，不形成双侧密集门洞的狭长走廊。\n周边墙地与实体顶面保持安静连续的建筑背景；顶面以体量高低与开口关系呈现秩序，保持简洁实体面，不依赖满顶构件和重复曲线灯槽。",
+            "materialLanguage": "",
+            "lightingLanguage": "柔和漫射自然日光\n克制的间接光",
+            "colorPolicy": "",
+            "functionalProgram": "入口到达与通行区\n主厅接待服务区\n成组候客与艺术停留区\n背景半开放过渡区\n错位私密入口边界",
+            "mustAvoid": "通用医美装修\n重复拱券、波浪灯槽及连续紫色发光描边\n装饰性羽毛堆叠\n厚重染色玻璃与不透明发光浮雕\n接待台紧邻狭长走廊、两侧连续密集房门与向狭窄尽端收束的空间组织\n整体贴顶下压的艺术装置、低矮商业吊顶比例与缺乏竖向留白\n角落孤立小沙发、无功能大空间堆砌或隐藏全部运营入口\n夸张无依据的科幻穹顶、不合理结构、超广角畸变与虚构已验证层高\n普通大厅中摆放一个巨大独立雕塑\n中央居中、完整落地成团的花束、贝壳或羽毛簇团装置\n艺术团块遮挡背景半开放过渡及后续入口\n左侧前台、右侧沙发与中央艺术品横向平均陈列且互不关联\n缺乏接待运营用途的纯展厅或缺乏品牌空间语言的普通商业大厅",
+            "lightingContrast": "建筑背景低对比，层片边缘保留细腻明暗",
+            "lightingInteraction": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构\n漫射光经层片的连续间隙透入候客与过渡区，保持轻薄透景，不以强光掩盖结构和光学细节",
+            "lightingAvoid": "全空间紫色灯带\n紫色霓虹\n强直射光与硬阴影\n以灯带、发光描边替代材料及建筑秩序",
+            "colorAvoid": "紫色共同主导墙、顶、窗帘与多类家具\n品牌紫扩散到沙发、靠垫、窗帘等主要软装表面",
+            "functionalNetwork": "Reception: the foreground arrival zone opens a clear path toward a usable reception service counter before branching to grouped waiting seats and small tables.\nReception: grouped waiting and art pause share the edge of a continuous architectural sheet system with views through its gaps toward the semi-open transition.\nReception: the background semi-open transition leads visibly to a staggered screened onward access boundary without blocking the main arrival route.\nReception: the service sequence is arrival then reception then waiting and art pause then semi-open transition then a staggered privacy boundary; staff access remains practical and separate from seated guests.",
+            "functionalRelationships": "Reception and waiting remain visually linked across the translucent architectural interface; the integrated art edge guides circulation toward the visible semi-open transition.\nReception: the semi-open transition maintains a staggered screened access boundary and practical onward circulation; consultation privacy remains protected while other room interiors stay off frame.",
+            "visibleRequirements": "Reception service counter with a usable staff and visitor approach\nWaiting area with at least one group of seats and small tables beside the integrated translucent partition\nClear foreground arrival circulation continuing toward a visible background semi-open transition\nReception staggered screened access boundary with a discreet onward entrance\nReception integrated translucent sheet interface with readable gaps revealing the transition behind it",
+            "artisticFocus": "接待区：与竖向界面、上部边界及候客围合连续衔接的半透明珠光层片艺术装置，构成沿建筑边缘展开的一套空间系统；主艺术性是这种连续关系，不是一个可搬离的中央雕塑。\n接待区：层片沿明确方向渐次展开，薄边精密、层间疏密和深度可读；通过层间留隙持续看见后方过渡，艺术停留贴合候客区边缘，不占据到达与转场的通行中心。",
+            "compositionRequirements": "单个接待主厅的入口斜向视角：前景到达与通行向中景接待服务引导，再连接候客与艺术停留，背景露出半开放过渡及退让错位的私密入口边界；不展示其他房间内部。\n连续层片系统沿建筑侧界面和上部边界展开，透景间隙明确框出背景过渡；候客桌椅依界面组织，接待台作为服务锚点嵌入动线，三者在纵深上相互联系而非左右平均陈列。\n保持可信人体尺度、控制透视和可读的竖向建筑比例；中心保留通行与后方空间视线，不居中摆放完整大雕塑，不以超广角或取景遮挡回避结构问题。",
+            "colorEntries": [
+              {
+                "name": "暖白与乳白",
+                "paletteRole": "primary",
+                "role": "安静明亮的建筑背景",
+                "surfaceApplicability": "墙面、地面及周边顶面；不包含主艺术结构内层",
+                "spatialUsage": "dominant_field"
+              },
+              {
+                "name": "浅暖灰",
+                "paletteRole": "secondary",
+                "role": "辅助接待表面的低对比层次",
+                "surfaceApplicability": "接待台次要台面与限定辅助表面",
+                "spatialUsage": "secondary_surface"
+              },
+              {
+                "name": "品牌紫",
+                "paletteRole": "accent",
+                "role": "局部材料内层的细微虹彩；视觉识别以后期真实标识体现",
+                "surfaceApplicability": "只允许在半透明层片内层和少量建筑细部出现；候客沙发、靠垫、窗帘及其他主要软装表面保持中性，不使用品牌紫",
+                "spatialUsage": "local_accent"
+              }
+            ],
+            "materialEntries": [
+              {
+                "material": "半透明珠光薄片",
+                "behavior": "自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现\n沿建筑界面连续、有方向地展开，薄边精密且层间留隙，能够持续透见后方空间\n局部内层弱紫虹彩随自然光变化，不成为整体染色或独立光源",
+                "brandRole": "与建筑界面连续相接并围合候客边缘的半透明空间系统；同时承担分隔、透景、方向引导和艺术体验",
+                "forbidden": "厚重染色玻璃\n不透明自发光浮雕\n圆厚花瓣、贝壳化或密实不透的团块\n对称图腾、婚庆摆件与独立中央雕塑\n平面墙饰化或简单发光灯槽化"
+              },
+              {
+                "material": "暖白矿物基底",
+                "behavior": "柔和漫反射\n连续、低对比的安静表面",
+                "brandRole": "衬托薄片与自然光的建筑背景",
+                "forbidden": "高对比镜面拼贴"
+              }
+            ]
+          },
+          "sourceStatement": "本轮用户授权的九州美学建筑语言定向修正设计意图。图2—图4仅供人工审查与方向校准，未注册为项目素材或生成参考，来源不是原品牌实测事实。仅在新的独立审查副本中离线确认：建筑界面连续层片、五段式运营关系、材料精密透景及色光防漂移；实际高度、构造与工法未核实。本轮不授权真实生图、收费校验、Golden 更新、合并或发布。"
+        }
+      ]
+    }
+  },
+  {
+    "url": "http://127.0.0.1:57487/_masterpiece/rpc/visual-workflow%3Aimport-files",
+    "body": {
+      "args": [
+        "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+        {
+          "purpose": "project_design_direction",
+          "action": "confirm",
+          "expectedRecordSha256": "805897f0f9f501c8d3f99129fd204c801e9f7fd3dc1406c95226ab0bc8b039cf",
+          "confirmedByUser": true
+        }
+      ]
+    }
+  }
+]

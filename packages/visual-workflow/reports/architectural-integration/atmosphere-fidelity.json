@@ -1,0 +1,37 @@
+{
+  "status": "PRESERVED_CORE_WITH_EXPLICIT_USER_AUTHORIZED_TIGHTENING",
+  "exactlyPreserved": [
+    {
+      "field": "primary+secondary palette",
+      "status": "UNCHANGED",
+      "beforeSha256": "b1a7c4a4330be44460c00e2044dd957b0137533735e8e5c30416d6abe00c813c",
+      "afterSha256": "b1a7c4a4330be44460c00e2044dd957b0137533735e8e5c30416d6abe00c813c"
+    },
+    {
+      "field": "background mineral material",
+      "status": "UNCHANGED",
+      "beforeSha256": "163752875cf544039f9d80213f8339c622bd7cf83775cc1b0bb3e006171a8e90",
+      "afterSha256": "163752875cf544039f9d80213f8339c622bd7cf83775cc1b0bb3e006171a8e90"
+    },
+    {
+      "field": "lighting contrast",
+      "status": "UNCHANGED",
+      "beforeSha256": "303eb1c1d553ee997aeec64408625dd2d46d8aa1e7073568f25eaa0b284940e6",
+      "afterSha256": "303eb1c1d553ee997aeec64408625dd2d46d8aa1e7073568f25eaa0b284940e6"
+    },
+    {
+      "field": "accent identity+scope",
+      "status": "UNCHANGED",
+      "beforeSha256": "ee119f19e64195d85263a82c3c4c2be3a8037e0939878b5ff1448093aab950c8",
+      "afterSha256": "ee119f19e64195d85263a82c3c4c2be3a8037e0939878b5ff1448093aab950c8"
+    }
+  ],
+  "materialOpticsExistingBehaviorRetained": true,
+  "lightingInteractionExistingBehaviorRetained": true,
+  "changesAuthorized": {
+    "accentSurface": "Explicitly exclude purple sofa/cushions/curtains; keep inner-sheet and minor architectural details",
+    "light": "Soft daylight tightened to diffused daylight; exclude hard direct light/shadows",
+    "artMaterial": "Optics retained; add precision, direction, gaps and interface continuity; exclude dense petal/shell/feather clusters"
+  },
+  "qualityAcceptance": "not_performed"
+}

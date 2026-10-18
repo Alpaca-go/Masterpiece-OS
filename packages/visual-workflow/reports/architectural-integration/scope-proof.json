@@ -1,0 +1,27 @@
+{
+  "baseCommit": "6ee4a2790538df934b1f63cc9cc90ea3f8261b49",
+  "branch": "fix/jiuzhou-architectural-language",
+  "productionChanges": [],
+  "planningMigrationChanges": [],
+  "goldenChanges": [],
+  "protectedIntegrityChanges": [],
+  "newOwnedFiles": [
+    "packages/visual-workflow/tests/architectural-integration-form.json",
+    "packages/visual-workflow/tests/architectural-integration.test.ts"
+  ],
+  "projectDirectionLocation": "Explicit isolated offline review copy; see readonly-proof.json",
+  "historicalReportPackagingFix": {
+    "oldPath": "packages/visual-workflow/reports/architectural-language/review.md",
+    "newPath": "packages/visual-workflow/reports/architectural-language/architectural-language-review.md",
+    "contentSha256": "5850ca4a0e0267769d82897324a6b7377bafb5ce88b38a6f68d731d015f2d93c",
+    "contentUnchanged": true,
+    "manifestChange": "Path only; same byte length and hash",
+    "reason": "Existing repository-policy prohibits the exact basename review.md outside docs. No policy/test changes."
+  },
+  "realImageCalls": 0,
+  "realValidatorCalls": 0,
+  "calibrationImagesRegistered": 0,
+  "committed": false,
+  "merged": false,
+  "published": false
+}
