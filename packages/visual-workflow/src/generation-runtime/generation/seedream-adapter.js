@@ -1,8 +1,10 @@
+import { SEEDREAM_MAX_REFERENCE_IMAGES } from '../../image-adapter/reference-capability.js';
+import { ART_DIRECTION_BOUNDARY } from '../../art-direction-contract.js';
 const SEEDREAM_SHORT_CHAIN_ADAPTER_ID = "seedream-5.0-pro";
 const SEEDREAM_SHORT_CHAIN_ADAPTER_VERSION = "seedream-short-chain-adapter@1.1.0";
 const SEEDREAM_MAX_PROMPT_CHARACTERS = 12e3;
 const SEEDREAM_REFERENCE_CAPABILITY = Object.freeze({
-  maxReferenceImages: 2,
+  maxReferenceImages: SEEDREAM_MAX_REFERENCE_IMAGES,
   referenceStrengthControl: Object.freeze({
     supported: false,
     controlParameter: null,
@@ -42,12 +44,13 @@ function createSeedreamShortChainAdapter(options = {}) {
       const referenceSceneRelation = taskContract.referenceSceneRelation ?? "unknown";
       const targetSceneLabel = taskContract.subtype ?? "";
       const boundary = renderReferenceBoundary({
+        taskContract,
         generationBasis,
         referenceSceneRelation,
         targetSceneLabel,
         adapterCapability: SEEDREAM_ADAPTER_CAPABILITY
       });
-      const prompt = boundary ? `${compiledText}
+      const prompt = boundary && !(generationBasis === 'art_direction_reference' && compiledText.includes(ART_DIRECTION_BOUNDARY)) ? `${compiledText}
 
 ${boundary}` : compiledText;
       const promptCharacters = [...prompt].length;

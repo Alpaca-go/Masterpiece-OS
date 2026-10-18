@@ -1,0 +1,26 @@
+[
+  {
+    "industry": "Medical aesthetics",
+    "baselineRef": "eace535",
+    "promptIdentical": true,
+    "actualRequestIdentical": true,
+    "referenceCount": 0,
+    "promptSha256": "044b7a2501945d6590b19ddb38609698a4a96b1fe2b09df7a3c43e3b89f08eae"
+  },
+  {
+    "industry": "Restaurant",
+    "baselineRef": "eace535",
+    "promptIdentical": true,
+    "actualRequestIdentical": true,
+    "referenceCount": 0,
+    "promptSha256": "0c7584405cb689ed2f689563653a40cd618342e362304c4b383e60bdd163337e"
+  },
+  {
+    "industry": "Hotel",
+    "baselineRef": "eace535",
+    "promptIdentical": true,
+    "actualRequestIdentical": true,
+    "referenceCount": 0,
+    "promptSha256": "e5043a59d682a1d327da738a52c17a4ab3064dc32351612efdc6f090731beb56"
+  }
+]

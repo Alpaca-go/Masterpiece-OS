@@ -1,8 +1,10 @@
+import { SEEDREAM_MAX_REFERENCE_IMAGES } from '../../image-adapter/reference-capability.js';
 const PRODUCT_POLICY_VERSION = "space-product-policy@1.0.0";
 const PRODUCT_POLICY_DEFAULT_MAX_REFERENCES = Object.freeze({
   // Standard generation is text-only. Any reference here would silently
   // change the Standard contract.
   standard: 0,
+  art_direction_reference: SEEDREAM_MAX_REFERENCE_IMAGES,
   // Reference-First: the user uploaded a reference. Two is the current
   // UX ceiling; an explicit single-reference UX is possible but not in
   // the current workspace. Bump together with a UX review.

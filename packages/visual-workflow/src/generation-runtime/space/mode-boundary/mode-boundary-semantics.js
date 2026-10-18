@@ -1,3 +1,4 @@
+import { artDirectionReferencePolicy, ART_DIRECTION_ROLE } from '../../../art-direction-contract.js';
 const SPACE_MODE_BOUNDARY_VERSION = "space-mode-boundary@1.0.0";
 const SPACE_GENERATION_MODES = Object.freeze({
   standard: Object.freeze({
@@ -7,6 +8,7 @@ const SPACE_GENERATION_MODES = Object.freeze({
     referenceCount: 0,
     semantic: "\u6839\u636E\u9879\u76EE\u5206\u6790\u4E0E\u7A7A\u95F4\u89C4\u5219\u4ECE\u96F6\u751F\u6210"
   }),
+  art_direction_reference: Object.freeze({generationBasis:'art_direction_reference',referenceMode:'reference_assisted',referenceRole:ART_DIRECTION_ROLE,semantic:'Explicit project-authorized attribute references; target function and confirmed direction remain authoritative'}),
   reference_first: Object.freeze({
     label: "\u53C2\u8003\u4F18\u5148",
     generationBasis: "reference_first",
@@ -62,6 +64,10 @@ function validateSpaceGenerationModeSemantics(input = {}) {
   const referenceSources = Array.isArray(input.referenceSources) ? input.referenceSources : [];
   const referenceCount = Number(input.referenceCount ?? 0);
   const referenceRole = String(input.referenceRole ?? "");
+  if (generationBasis === 'art_direction_reference') {
+    if (referenceRole !== ART_DIRECTION_ROLE || !artDirectionReferencePolicy(input.taskContract,referenceCount,'reference_assisted',referenceSources)) throw new Error('ART_DIRECTION_MODE_INVALID');
+    return {status:'pass',advisory:null,mode:SPACE_GENERATION_MODES.art_direction_reference};
+  }
   if (generationBasis === "standard") {
     if (referenceCount !== 0) {
       throw Object.assign(new Error("Standard space generation must remain text-only."), {

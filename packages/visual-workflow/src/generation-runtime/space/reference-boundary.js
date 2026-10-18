@@ -1,3 +1,4 @@
+import { renderArtDirectionBoundary } from '../../art-direction-contract.js';
 const REFERENCE_BOUNDARY_VERSION = "space-reference-boundary@1.0.0";
 const PRESERVE_DESIGN_LANGUAGE = [
   "architectural language",
@@ -19,8 +20,10 @@ function renderReferenceBoundary({
   generationBasis,
   referenceSceneRelation = "unknown",
   targetSceneLabel = "",
-  adapterCapability = null
+  adapterCapability = null,
+  taskContract
 } = {}) {
+  if (generationBasis === 'art_direction_reference') return renderArtDirectionBoundary(taskContract);
   if (generationBasis !== "reference_first") return null;
   const strengthSupported = Boolean(
     adapterCapability?.reference?.referenceStrengthControl?.supported

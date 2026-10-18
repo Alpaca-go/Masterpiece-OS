@@ -291,6 +291,7 @@ function compileSpacePrompt(input) {
   ];
   const blocksById = Object.fromEntries(ordered.map((b) => [b.id, b]));
   const referenceBoundaryText = renderReferenceBoundary({
+    taskContract: input.taskContract,
     generationBasis: input.taskContract?.generationBasis,
     referenceSceneRelation: input.taskContract?.referenceSceneRelation ?? "unknown",
     targetSceneLabel: input.taskContract?.subtype ?? "",
@@ -329,7 +330,7 @@ ${referenceBoundaryText}` : baseFinalPrompt;
       finalPrompt
     });
   }
-  const authorityGate = layers.targetSceneProjection?.functionalBlockSource === "target_scene_projection" ? validateTargetSceneAuthority({
+  const authorityGate = input.taskContract?.generationBasis === 'art_direction_reference' || layers.targetSceneProjection?.functionalBlockSource === "target_scene_projection" ? validateTargetSceneAuthority({
     targetScene: input.taskContract?.subtype,
     targetProgram: input.taskContract?.continuation?.targetFunctionalProgram ?? { sceneId: input.taskContract?.subtype },
     blocksById,

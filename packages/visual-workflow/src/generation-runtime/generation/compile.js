@@ -13,6 +13,7 @@ import {
 } from "../space/index.js";
 import crypto from "node:crypto";
 import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decision.js";
+import { ART_DIRECTION_SOURCE, ART_DIRECTION_ROLE, digest, assertArtDirectionModel } from '../../art-direction-contract.js';
 const SPACE_COMPILER_MODES = Object.freeze({
   R8_6_GOLDEN: "r8_6_golden",
   PHASE9B_QUALITY: "phase9b_quality",
@@ -77,7 +78,7 @@ function compileShortChainGeneration(input) {
       preferredLogoAssetId,
       started,
       compilerMode: spaceMode,
-      enforceSpatialSemantics: input.task?.generationBasis === "standard" || input.task?.generationBasis === "reference_first"
+      enforceSpatialSemantics: input.task?.generationBasis === "standard" || input.task?.generationBasis === "reference_first" || input.task?.generationBasis === 'art_direction_reference'
     });
   } else {
     compiledPrompt = compileShortChainPrompt({
@@ -116,6 +117,11 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     originalPacket, input.userConfirmedVisualDecision, taskContract.projectId, taskContract.deliverableFamily
   );
   const packet = confirmedDecision.packet;
+  const artDirection = taskContract.generationBasis === 'art_direction_reference';
+  if (artDirection) {
+    assertArtDirectionModel(input.model);
+    if (!confirmedDecision.confirmation || taskContract.artDirection.model !== input.model || digest(input.userConfirmedVisualDecision) !== taskContract.artDirection.confirmationSha256) throw new Error('ART_DIRECTION_CONFIRMATION_STALE');
+  }
   const result = compileSpacePrompt({
     packet,
     taskContract,
@@ -137,8 +143,8 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     finalPrompt: result.finalPrompt,
     blockIds: result.blockIds,
     blocksById,
-    referenceCount: 0,
-    hasExplicitReferenceBypass: true
+    referenceCount: artDirection ? referenceAssetIds.length : 0,
+    hasExplicitReferenceBypass: artDirection ? false : true
   });
   const blocking = qualityGate.findings.filter((f) => f.severity === "block");
   if (blocking.length) {
@@ -223,7 +229,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
         // its runtime equivalent (standard <-> text_only, reference_first /
         // continuation <-> reference_assisted). Both are recorded for trace.
         generationBasis: taskContract.generationBasis,
-        referenceMode: taskContract.generationBasis === "reference_first" || taskContract.generationBasis === "continuation" ? "reference_assisted" : "text_only",
+        referenceMode: artDirection || taskContract.generationBasis === "reference_first" || taskContract.generationBasis === "continuation" ? "reference_assisted" : "text_only",
         referenceIds: referenceAssetIds,
         referenceSources: [],
         // r2.0 §4.10 / B-3: Reference Boundary text block status. The v1
@@ -283,13 +289,14 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
     referenceMode: compiledPrompt.trace.spaceGeneration.referenceMode,
     // R11.1: a continuation task's reference source is the confirmed generated
     // output, not a user_explicit upload. Standard stays text-only.
-    referenceSources: taskContract.generationBasis === "continuation" ? referenceAssetIds.map(() => "confirmed_generated_output") : referenceAssetIds.map(() => "user_explicit"),
+    referenceSources: artDirection ? referenceAssetIds.map(() => ART_DIRECTION_SOURCE) : taskContract.generationBasis === "continuation" ? referenceAssetIds.map(() => "confirmed_generated_output") : referenceAssetIds.map(() => "user_explicit"),
     spatialSemanticReport
   });
   validateSpaceGenerationModeSemantics({
+    taskContract,
     generationBasis: taskContract.generationBasis,
-    referenceRole: taskContract.generationBasis === "continuation" ? taskContract.continuation?.referenceRole ?? "world_consistency" : "high_fidelity_visual_reference",
-    referenceSources: taskContract.generationBasis === "continuation" ? ["confirmed_generated_output"] : ["user_explicit"],
+    referenceRole: artDirection ? ART_DIRECTION_ROLE : taskContract.generationBasis === "continuation" ? taskContract.continuation?.referenceRole ?? "world_consistency" : "high_fidelity_visual_reference",
+    referenceSources: artDirection ? referenceAssetIds.map(()=>ART_DIRECTION_SOURCE) : taskContract.generationBasis === "continuation" ? ["confirmed_generated_output"] : ["user_explicit"],
     referenceCount: referenceAssetIds.length,
     finalPrompt: result.finalPrompt,
     sourceScene: taskContract.continuation?.sourceScene,

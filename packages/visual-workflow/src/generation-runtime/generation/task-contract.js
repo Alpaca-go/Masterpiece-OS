@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { assertArtDirectionSnapshot } from '../../art-direction-contract.js';
 const FAMILIES = /* @__PURE__ */ new Set(["space", "packaging", "vi", "poster"]);
 const RATIOS = /* @__PURE__ */ new Set(["1:1", "4:3", "3:4", "16:9", "9:16"]);
 const LOGO_USAGE_MODES = /* @__PURE__ */ new Set(["reference", "blank_area", "post_composite"]);
@@ -13,7 +14,7 @@ function createShortChainTaskContract(input, options = {}) {
   const currentInstruction = String(input?.currentInstruction ?? "").trim();
   const requestedReferenceAssetIds = cleanList(input?.referenceAssetIds);
   const rawBasis = input?.generationBasis;
-  const generationBasis = rawBasis === "continuation" ? "continuation" : rawBasis === "reference_first" ? "reference_first" : rawBasis === "standard" ? "standard" : requestedReferenceAssetIds.length ? "reference_first" : "standard";
+  const generationBasis = rawBasis === 'art_direction_reference' ? rawBasis : rawBasis === "continuation" ? "continuation" : rawBasis === "reference_first" ? "reference_first" : rawBasis === "standard" ? "standard" : requestedReferenceAssetIds.length ? "reference_first" : "standard";
   const continuation = input?.continuation ?? null;
   const count = Number(input?.count ?? 1);
   const aspectRatio = String(input?.aspectRatio ?? "16:9");
@@ -34,6 +35,10 @@ function createShortChainTaskContract(input, options = {}) {
     throw new Error("VI generation requires a concrete material subtype");
   }
   const referenceAssetIds = requestedReferenceAssetIds;
+  if (generationBasis === 'art_direction_reference') {
+    if (family !== 'space' || input.referenceAssetIds?.length !== referenceAssetIds.length) throw new Error('ART_DIRECTION_SELECTION_INVALID');
+    assertArtDirectionSnapshot(input.artDirection,input.projectId,referenceAssetIds);
+  }
   if (family === "space" && generationBasis === "standard" && referenceAssetIds.length) {
     throw Object.assign(new Error("Standard space generation cannot include provider references."), {
       code: "SPACE_STANDARD_REFERENCE_NOT_ALLOWED"
@@ -68,6 +73,7 @@ function createShortChainTaskContract(input, options = {}) {
     aspectRatio,
     currentInstruction,
     generationBasis,
+    ...generationBasis === 'art_direction_reference' ? {artDirection:structuredClone(input.artDirection)} : {},
     mustInclude: cleanList(input.mustInclude),
     mustAvoid: cleanList(input.mustAvoid),
     referenceAssetIds,

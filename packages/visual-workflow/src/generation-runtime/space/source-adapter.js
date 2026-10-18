@@ -364,7 +364,7 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     };
   }
   let projectedBrandManifestation = brandSanitized.lines;
-  const standardShot = taskContract?.generationBasis === "standard";
+  const standardShot = taskContract?.generationBasis === "standard" || taskContract?.generationBasis === 'art_direction_reference';
   const sourceEntries = (items, sourcePath) => cleanList(items).map((text,index)=> {
     const original = sourcePath.split(".").reduce((value,key)=>value?.[key],packet);
     const sourceIndex = Array.isArray(original) ? original.findIndex(value=>cleanList(value)[0]===text) : -1;

@@ -1,4 +1,5 @@
 import { ACTIVE_SPACE_ROUTE_BASELINE } from "../quality-baselines/active-space-route-baseline.js";
+import { artDirectionReferencePolicy } from '../../../art-direction-contract.js';
 import { resolveProviderPromptLimit } from "../prompt-budget.js";
 const SPACE_COMPILE_INTEGRITY_GATE_VERSION = "space-compile-integrity-gate@1.0.0";
 function orderedSubset(actual, required) {
@@ -41,7 +42,7 @@ function assertSpaceGenerationRouteGateA(input, baseline = ACTIVE_SPACE_ROUTE_BA
   const requiredBlocksPresent = missingBlockIds.length === 0;
   const blockOrderMatched = orderedSubset(blockIds, baseline.requiredBlockOrder);
   const promptBudgetMatched = promptCharacters >= baseline.promptBudget.minChars && promptCharacters <= resolveProviderPromptLimit(input.providerCapability) && architectureCharacters >= baseline.architectureBudget.minChars;
-  const referencePolicyMatched = generationBasis === "standard" ? referenceCount === 0 && referenceMode === "text_only" : generationBasis === "reference_first" ? referenceCount >= 1 && referenceMode === "reference_assisted" && (input.referenceSources ?? []).every((source) => [
+  const referencePolicyMatched = generationBasis === 'art_direction_reference' ? artDirectionReferencePolicy(input.taskContract,referenceCount,referenceMode,input.referenceSources) : generationBasis === "standard" ? referenceCount === 0 && referenceMode === "text_only" : generationBasis === "reference_first" ? referenceCount >= 1 && referenceMode === "reference_assisted" && (input.referenceSources ?? []).every((source) => [
     "user_explicit",
     "project_asset_explicit",
     "confirmed_output_explicit"

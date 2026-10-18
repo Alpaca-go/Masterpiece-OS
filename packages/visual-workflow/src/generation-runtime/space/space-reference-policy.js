@@ -64,6 +64,7 @@ function assertSpaceReferenceAvailable(references, { generationBasis = "standard
     }
     return;
   }
+  if (generationBasis === 'art_direction_reference' && !references?.length) throw new Error('ART_DIRECTION_REFERENCE_REQUIRED');
   if ((generationBasis === "reference_first" || generationBasis === "continuation") && (!references || references.length === 0)) {
     throw Object.assign(
       new Error(generationBasis === "continuation" ? "SPACE_CONTINUATION_REFERENCE_REQUIRED: Continuation requires a confirmed generated output reference." : "SPACE_REFERENCE_FIRST_REFERENCE_REQUIRED: Reference-First requires an explicit user-selected reference."),

@@ -1,0 +1,134 @@
+{
+  "fullRegression": [
+    {
+      "name": "owned-tests",
+      "exitCode": 0,
+      "seconds": 5.69
+    },
+    {
+      "name": "repo-verify",
+      "exitCode": 1,
+      "seconds": 1.721
+    },
+    {
+      "name": "repo-check",
+      "exitCode": 1,
+      "seconds": 1.961
+    },
+    {
+      "name": "current-flows",
+      "exitCode": 1,
+      "seconds": 17.246
+    },
+    {
+      "name": "root-tests",
+      "exitCode": 0,
+      "seconds": 19.166
+    },
+    {
+      "name": "cli-tests",
+      "exitCode": 0,
+      "seconds": 1.208
+    },
+    {
+      "name": "runtime-tests",
+      "exitCode": 1,
+      "seconds": 25.208
+    },
+    {
+      "name": "host-tests",
+      "exitCode": 0,
+      "seconds": 2.623
+    },
+    {
+      "name": "host-typecheck",
+      "exitCode": 0,
+      "seconds": 2.227
+    },
+    {
+      "name": "web-build",
+      "exitCode": 0,
+      "seconds": 5.03
+    },
+    {
+      "name": "web-smoke",
+      "exitCode": 0,
+      "seconds": 10.126
+    },
+    {
+      "name": "golden-tests",
+      "exitCode": 0,
+      "seconds": 0.626
+    },
+    {
+      "name": "space-golden",
+      "exitCode": 0,
+      "seconds": 0.543
+    },
+    {
+      "name": "guard-tests",
+      "exitCode": 0,
+      "seconds": 2.123
+    },
+    {
+      "name": "version-consistency",
+      "exitCode": 0,
+      "seconds": 0.568
+    },
+    {
+      "name": "version-naming",
+      "exitCode": 0,
+      "seconds": 0.586
+    },
+    {
+      "name": "workspace-boundaries",
+      "exitCode": 0,
+      "seconds": 0.646
+    },
+    {
+      "name": "obsolete",
+      "exitCode": 0,
+      "seconds": 0.6
+    },
+    {
+      "name": "production-boundaries",
+      "exitCode": 0,
+      "seconds": 0.527
+    },
+    {
+      "name": "tracked-assets",
+      "exitCode": 0,
+      "seconds": 1.287
+    },
+    {
+      "name": "project-specific",
+      "exitCode": 0,
+      "seconds": 0.65
+    },
+    {
+      "name": "golden-boundary",
+      "exitCode": 0,
+      "seconds": 0.556
+    },
+    {
+      "name": "analysis-guards",
+      "exitCode": 0,
+      "seconds": 4.298
+    },
+    {
+      "name": "diff-check",
+      "exitCode": 0,
+      "seconds": 0.081
+    }
+  ],
+  "finalAffectedRegression": {
+    "command": "npx tsx --test packages/visual-workflow/tests/*.test.js packages/visual-workflow/tests/*.test.ts",
+    "tests": 87,
+    "pass": 87,
+    "fail": 0,
+    "log": ".codex-smoke/art-direction-reference-route/final-owned-tests.log"
+  },
+  "formalApplicationCapture": ".codex-smoke/art-direction-reference-route/approved-route-evidence/readonly-proof.json",
+  "providerCalls": 0,
+  "goldenUpdated": false
+}

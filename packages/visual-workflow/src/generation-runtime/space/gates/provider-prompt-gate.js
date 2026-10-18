@@ -1,4 +1,5 @@
 import { REFERENCE_BOUNDARY_VERSION } from "../reference-boundary.js";
+import { ART_DIRECTION_BOUNDARY } from '../../../art-direction-contract.js';
 import { SEEDREAM_MAX_PROMPT_CHARACTERS } from "../../generation/seedream-adapter.js";
 const SPACE_PROVIDER_PROMPT_GATE_VERSION = "space-provider-prompt-gate@1.0.0";
 const REFERENCE_BOUNDARY_MARKERS = [
@@ -63,6 +64,9 @@ function assertProviderPromptGateB(input) {
         unexpectedReferenceLabel: refLabel
       }, "SPACE_PROVIDER_PROMPT_INVALID");
     }
+  } else if (generationBasis === 'art_direction_reference') {
+    checks.generationBasisMatches = actualPrompt === compiledPrompt && actualPrompt.includes(ART_DIRECTION_BOUNDARY) && !isEdited;
+    if (!checks.generationBasisMatches) fail({checks,generationBasis},'ART_DIRECTION_PROMPT_CHANGED');
   } else if (generationBasis === "reference_first") {
     const boundaryLabel = findAny(actualPrompt, REFERENCE_BOUNDARY_MARKERS);
     checks.generationBasisMatches = Boolean(boundaryLabel);

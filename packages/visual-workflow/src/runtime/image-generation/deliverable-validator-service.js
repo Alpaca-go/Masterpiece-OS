@@ -1,4 +1,5 @@
 import path from "node:path";
+import { createArtDirectionStore } from '../../art-direction-store.js';
 import { validateShortChainDeliverableEvidence } from "../../generation-runtime/core/space-generation-core.js";
 import { createDefaultAnalysisReasoner } from "../../model-runtime/analysis-provider-registry.js";
 import { atomicWriteJsonWithRetry } from "../runtime/atomic-write.js";
@@ -53,8 +54,10 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
     const imagePath = path.join(runRoot, image.relativePath);
     const context = await projectContext?.getShortChain(input.projectId).catch(() => void 0);
     const promptSource = context?.promptSourceObject;
-    const targetTone = promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
-    const toneAvoid = promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
+    const art = input.taskContract.generationBasis === 'art_direction_reference';
+    const artCapture = art ? await createArtDirectionStore(projects).resolve(input.taskContract.artDirection,input.projectId,input.taskContract.artDirection.model) : null;
+    const targetTone = art ? artCapture.confirmation.spatialTranslation.spatialConcept : promptSource?.upgradeTranslation.toneBoundaries.map((item) => item.target).filter(Boolean).join("; ") || context?.visualIdentity.tone.join("; ") || "(not confirmed)";
+    const toneAvoid = art ? (artCapture.confirmation.creativeDecision?.toneBoundaries || []).flatMap(item=>item.avoid || []).join('; ') : promptSource?.upgradeTranslation.toneBoundaries.flatMap((item) => item.avoid).join("; ") || "(none confirmed)";
     const lockedRequirements = [
       ...context?.lockedAssets.mustPreserve ?? [],
       ...promptSource?.lockedAssets.mustPreserve ?? []
@@ -126,6 +129,7 @@ function createDeliverableValidatorService(projects, getImageGeneration, readSet
     });
     await persist(input.projectId, run.runId, {
       ...validation,
+      ...art ? {artDirectionSnapshotSha256:artCapture.snapshot.snapshotSha256,userConfirmationSha256:artCapture.snapshot.confirmationSha256} : {},
       validatorProvider: response.provider,
       validatorModel: response.model,
       validatorRunId: response.runId
