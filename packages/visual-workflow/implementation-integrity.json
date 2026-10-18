@@ -185,7 +185,7 @@
     },
     {
       "path": "src/generation-runtime/generation/compile.js",
-      "sha256": "8506c1c956eb944de39ca0a4c7b675b806cfbb79e6aa0137bbe12d42b6569a7a"
+      "sha256": "0d01aea348d2c4853d0e5fcff18c9d3b1e964dae1d642821a91590c39754212a"
     },
     {
       "path": "src/generation-runtime/generation/deliverable-validator.js",
@@ -209,7 +209,7 @@
     },
     {
       "path": "src/generation-runtime/generation/seedream-adapter.js",
-      "sha256": "1df79322b4c53d52c3e26eba3b7e3bdbc264cf09cb5a74fadb0a55eab7fc745f"
+      "sha256": "1a150deb5b1e495ca6bf8cb01de8566bca87012be4f36bbcfa7abf922b8926ec"
     },
     {
       "path": "src/generation-runtime/generation/space-quality/index.js",
@@ -217,7 +217,7 @@
     },
     {
       "path": "src/generation-runtime/generation/task-contract.js",
-      "sha256": "acd7f4d156ba192dc036960982fa33c939e88e054f2eff7389ec4ad6551e467d"
+      "sha256": "1feea579a9bc015f9a3c53f3e9c75c4506e97b4ed94883a3f939dc1ea53cc8e4"
     },
     {
       "path": "src/generation-runtime/generation/template-registry.js",
@@ -229,7 +229,7 @@
     },
     {
       "path": "src/generation-runtime/generation/user-confirmed-visual-decision.js",
-      "sha256": "f7ca82657fa4c7e5b3601df2bcee326c721f25dc83ef3da59064dc2feb2eabcf"
+      "sha256": "6296f010ec49fad5fc71cf4dd1ba3eaa44cdea358ae3474a4a53ec81b40512b5"
     },
     {
       "path": "src/generation-runtime/prompt-contracts/packaging-contract.js",
@@ -245,7 +245,7 @@
     },
     {
       "path": "src/generation-runtime/space/compiler.js",
-      "sha256": "2c8b6d237de17c92eb01e9d26690dc008f7d86d6c2de5d8611aaa566e07eb448"
+      "sha256": "3a34ccce007a53d5443d3b3c2806a235b06eaef3c6577268f68cef09931b635f"
     },
     {
       "path": "src/generation-runtime/space/continuation/apply-continuation-program-override.js",
@@ -285,7 +285,7 @@
     },
     {
       "path": "src/generation-runtime/space/gates/compile-integrity-gate.js",
-      "sha256": "fe2a541b203cb6b8e83f7877f6cbe8c598f7e1587a19e3f7892b57544daaed90"
+      "sha256": "08fa2f0efd3a572d59f8c07a7d885c2f48b9245e70c188ec89aae2bd3be9bab3"
     },
     {
       "path": "src/generation-runtime/space/gates/evidence-integrity-gate.js",
@@ -293,11 +293,11 @@
     },
     {
       "path": "src/generation-runtime/space/gates/generation-route-integrity-gate.js",
-      "sha256": "c67c83e522d69338b51b498e1fbd12a4fba58f1a1c12a7f46303fadc67ea1ec0"
+      "sha256": "ad276a7f823ca7255ccc0bc0decf4220d31b22cec16751942cc58823782de6e2"
     },
     {
       "path": "src/generation-runtime/space/gates/provider-prompt-gate.js",
-      "sha256": "0641eed3b63a31dfe9f2ff5030626ab7c5fc0c84df7536e1f7f479bcfd92ccbd"
+      "sha256": "860dcbcf445930f453c911aea2c8ddba791e0480eae7056afc390988f65c8015"
     },
     {
       "path": "src/generation-runtime/space/index.js",
@@ -305,11 +305,11 @@
     },
     {
       "path": "src/generation-runtime/space/mode-boundary/mode-boundary-semantics.js",
-      "sha256": "5dd43a195283ddd889a8f42230662bb967aa47a200821f3c1fdb2857592c309b"
+      "sha256": "1bb6005ca53512f85ed790497a7d0650790865f6943467c2bdd9487aa9331000"
     },
     {
       "path": "src/generation-runtime/space/product-policy.js",
-      "sha256": "f4bac38ded208fc211443cf824177a763e448ba0218f5009601f6f6ec08b8f0f"
+      "sha256": "224aaf01f63e30d4d1f7189134ea1eb59505636d6038d77f97808c8a2f0399d8"
     },
     {
       "path": "src/generation-runtime/space/prompt-budget.js",
@@ -321,7 +321,7 @@
     },
     {
       "path": "src/generation-runtime/space/reference-boundary.js",
-      "sha256": "763060575b1b10cb6276257424e7516f07588eeb09dcf346eb9029782b409a49"
+      "sha256": "c44907da6f7f8cc13feada6604788f1330d37b68d5d23e7e304a076c57b3eaed"
     },
     {
       "path": "src/generation-runtime/space/scene-projection/target-scene-projection.js",
@@ -373,7 +373,7 @@
     },
     {
       "path": "src/generation-runtime/space/source-adapter.js",
-      "sha256": "cebd87a99432954d746a927a7cfbcdd1870c13710160610b0d156efbcba68d12"
+      "sha256": "f0224a080003e82d7731f8c2272ac337170728e8b23ce0fb581ea3b6fd21e3b4"
     },
     {
       "path": "src/generation-runtime/space/space-quality-gate.js",
@@ -381,7 +381,7 @@
     },
     {
       "path": "src/generation-runtime/space/space-reference-policy.js",
-      "sha256": "133ce7d867105cc9f7da1d289382f821ea4239d5a27aff86c63239fc8ae4c1e4"
+      "sha256": "99f881575a04b292627da9c643d407eed5f1aec8faefec7556f377a977642d89"
     },
     {
       "path": "src/generation-runtime/space/trace.js",
@@ -389,11 +389,11 @@
     },
     {
       "path": "src/image-adapter/multi-model.js",
-      "sha256": "fd148439ac283452467819e1b35f097e75282f37c0ac00d496071fc057022bc0"
+      "sha256": "7cabe7adf1cc79a315b4ae757940ab482c515e40e22ca33a3fb86cada51003d1"
     },
     {
       "path": "src/image-service.js",
-      "sha256": "92aa6bc7ae387b43bbdbc2f13d16129e7448c2e857f3354e93f2f5aca9a317fd"
+      "sha256": "19939a95b29f5507025f98b13f705d91e959c635c2e05d7bebb2f061208ff58b"
     },
     {
       "path": "src/integrity.js",
@@ -441,7 +441,7 @@
     },
     {
       "path": "src/runtime/image-generation/deliverable-validator-service.js",
-      "sha256": "6806fb5b782f50ea1445e64146af0f789cbb3370f4b2af97f51e14d630ead5a8"
+      "sha256": "6a543a8836f52b022f045747ddfe4183a8a68778ab98dd873851593e576a0e71"
     },
     {
       "path": "src/runtime/image-generation/logo-post-composite.js",
@@ -449,7 +449,7 @@
     },
     {
       "path": "src/runtime/image-generation/short-chain-service.js",
-      "sha256": "c73a6ef81006ba7827e5c44c0280422acda26fb3350175bfe02ad1b50490bc7a"
+      "sha256": "2335fdc8afcd970ea6edd8e33f1c3d28c30d3fdbd43c2e799a2b63c600787009"
     },
     {
       "path": "src/runtime/model-schema/validation-issues.js",
@@ -501,7 +501,7 @@
     },
     {
       "path": "src/service.js",
-      "sha256": "22a283b4d9b6b9aa716ccb84cf5dd83bf3828aaa1730be011d9e74365c0609d5"
+      "sha256": "64471966872663e4400cd316f528336b5088f04b336b7aeda01d461d3d244bc5"
     },
     {
       "path": "src/support/creative-production-runtime/src/packaging-translation.js",
@@ -510,6 +510,18 @@
     {
       "path": "src/support/creative-production-runtime/src/project-generation-contract.js",
       "sha256": "f9ed36163c5df3d64ec2137a3a292bdd90ab467778c604a023f5b7b6f3852ea2"
+    },
+    {
+      "path": "src/art-direction-contract.js",
+      "sha256": "bd793c35a4f766657803a01b3ab03750649df5083579288b2f61afc4c001726d"
+    },
+    {
+      "path": "src/art-direction-store.js",
+      "sha256": "0fea191ad3da4c20bf34b74ad9e4724f408d404a11bc334611dc4ba461f29bf4"
+    },
+    {
+      "path": "src/image-adapter/reference-capability.js",
+      "sha256": "f218bf9ce066f71ab8514ea30d3e6f6577be8f68d5fc5517f370342448a56e56"
     }
   ],
   "frontendFiles": [

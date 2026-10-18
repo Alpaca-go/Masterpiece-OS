@@ -1,0 +1,69 @@
+{
+  "providerCalls": 0,
+  "realCredentialReads": 0,
+  "representative": {
+    "imageCalls": 1,
+    "validationCalls": 1,
+    "automaticRegenerations": 0
+  },
+  "otherStandardCases": [
+    {
+      "industry": "Medical aesthetics",
+      "publicOperationsPassed": true,
+      "implementationDigest": "a90b0cc873a7999525148c660c05b2f22c90e2399d7c0c73001eebabe84627b3",
+      "promptSha256": "044b7a2501945d6590b19ddb38609698a4a96b1fe2b09df7a3c43e3b89f08eae",
+      "inputImages": 0,
+      "modelCalls": 0,
+      "mockImageCalls": 1,
+      "mockValidationCalls": 1
+    },
+    {
+      "industry": "Restaurant",
+      "publicOperationsPassed": true,
+      "implementationDigest": "a90b0cc873a7999525148c660c05b2f22c90e2399d7c0c73001eebabe84627b3",
+      "promptSha256": "0c7584405cb689ed2f689563653a40cd618342e362304c4b383e60bdd163337e",
+      "inputImages": 0,
+      "modelCalls": 0,
+      "mockImageCalls": 1,
+      "mockValidationCalls": 1
+    },
+    {
+      "industry": "Hotel",
+      "publicOperationsPassed": true,
+      "implementationDigest": "a90b0cc873a7999525148c660c05b2f22c90e2399d7c0c73001eebabe84627b3",
+      "promptSha256": "e5043a59d682a1d327da738a52c17a4ab3064dc32351612efdc6f090731beb56",
+      "inputImages": 0,
+      "modelCalls": 0,
+      "mockImageCalls": 1,
+      "mockValidationCalls": 1
+    }
+  ],
+  "image": {
+    "model": "doubao-seedream-5-0-pro-260628",
+    "size": "2K",
+    "referenceCount": 4,
+    "requestFields": [
+      "model",
+      "prompt",
+      "image",
+      "size",
+      "response_format",
+      "watermark"
+    ]
+  },
+  "validation": {
+    "model": "qwen3.6-plus",
+    "requestFields": [
+      "model",
+      "messages",
+      "stream"
+    ],
+    "stream": false,
+    "max_tokens": null,
+    "enable_thinking": null,
+    "max_tokensPresent": false,
+    "enable_thinkingPresent": false
+  },
+  "budgetHardCapEnforcedByCurrentProduction": false,
+  "scope": "one generate operation; manual repeated operations are not a project-level call cap"
+}

@@ -135,11 +135,27 @@ test('ordinary standard generation remains byte-for-byte identical across medica
   }
 });
 
-test('public operation integrity still blocks the unapproved implementation before registration, compilation or generation',async t=>{
+test('public operations verify the approved implementation before registration, compilation, generation and Logo composition',async t=>{
   const f=await businessFixture(t);
-  const workflow=createVisualWorkflow({root:f.root,fetchImpl:async()=>{throw new Error('NETWORK_FORBIDDEN');}});
-  for(const operation of ['visual-workflow:import-files','visual-workflow:compile','visual-workflow:generate'])await assert.rejects(workflow.operations[operation]({},f.project.id,{purpose:'art_direction'}),/IMPLEMENTATION_CHANGED/);
-  assert.equal(f.requests.length,0);
+  const output=await sharp({create:{width:320,height:180,channels:3,background:'white'}}).png().toBuffer();
+  const requests:any[]=[];let validationCalls=0;
+  const workflow=createVisualWorkflow({root:f.root,
+    fetchImpl:async(_url:any,request:any)=>{requests.push(JSON.parse(request.body));return new Response(JSON.stringify({data:[{b64_json:output.toString('base64')}]}),{status:200});},
+    validationReasoner:()=>async()=>{validationCalls++;return {provider:'offline',model:'qwen3.6-plus',reportMarkdown:JSON.stringify({detectedFamily:'space',detectedSubtype:'reception',visibleEvidence:['Offline fixture'],missingRequiredItems:[],forbiddenItemsFound:[],lockedAssetViolations:[],brandMatch:'matched',brandToneMatch:'matched',sceneCompleteness:'complete',logoTextStatus:'absent',qualityIssues:[]})};}
+  });
+  await workflow.operations['visual-workflow:save-profile']({}, {name:'Offline image',provider:'volcengine',protocol:'seedream-image',modelId:f.credentials.image.model,modelType:'image_generation',baseUrl:'https://image.example.invalid/v3',apiKey:'offline-fixture-image'});
+  await workflow.operations['visual-workflow:save-profile']({}, {name:'Offline validator',provider:'dashscope',protocol:'openai-chat-multimodal',modelId:'qwen3.6-plus',modelType:'analysis',baseUrl:'https://validator.example.invalid/v1',apiKey:'offline-fixture-validator'});
+  const registration=await workflow.operations['visual-workflow:import-files']({},f.project.id,{...f.registration,purpose:'art_direction'});
+  const compiled=await workflow.operations['visual-workflow:compile']({}, {projectId:f.project.id,task:{...f.task,referenceAssetIds:registration.assets.map((item:any)=>item.id)}});
+  const result=await workflow.operations['visual-workflow:generate']({}, {projectId:f.project.id,taskId:compiled.taskContract.taskId});
+  assert.equal(result.initialRun.status,'succeeded');assert.equal(requests.length,1);assert.equal(validationCalls,1);
+  assert.equal(result.automaticRetryCount,0);assert.equal(requests[0].image.length,4);
+  const implementation=JSON.parse(await fs.readFile(path.join(compiled.artifactDirectory,'workflow-implementation.json'),'utf8'));
+  assert.equal(implementation.implementationDigest,'a90b0cc873a7999525148c660c05b2f22c90e2399d7c0c73001eebabe84627b3');
+  const runImplementation=JSON.parse(await fs.readFile(path.join(await workflow.images.runRoot(result.initialRun.runId),'workflow-implementation.json'),'utf8'));
+  assert.deepEqual(runImplementation,implementation);
+  const composed=await workflow.operations['visual-workflow:post-composite-logo']({}, {projectId:f.project.id,runId:result.initialRun.runId,imageId:result.initialRun.images[0].imageId,logoAssetId:'logo-1',confirmedByUser:true,sourceCrop:{left:0,top:0,width:40,height:30},placement:{x:0.2,y:0.2,width:0.2}});
+  assert.equal(composed.audit.sourceLogoSha256,digest(f.logo));assert.equal(composed.audit.qualityAcceptance,'pending_human_review');
 });
 
 test('image service independently rejects reordered or relabeled execution references',async t=>{
