@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "id": "jiuzhou-art-direction",
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "status": "confirmed",
+  "sourceDocument": "jiuzhou-art-direction.md sections 2–6; user request 2026-10-18",
+  "evidenceRefs": ["approved-translucent-canopy", "approved-sculptural-ceiling", "approved-pearl-installation", "approved-gallery-entrance"],
+  "appliesTo": { "deliverableFamilies": ["space"] },
+  "reviewTask": {
+    "currentInstruction": "为九州美学设计具有当代美术馆气质的高端医美接待与入口空间。安静、明亮、留白充分的乳白建筑基底，与大尺度轻薄半透明层叠空间结构交织；强调珍珠般温和虹彩、自然日光穿透和精细光学层次。每个镜头选择一个主艺术系统，参与顶面、空间分隔或动线组织。品牌紫仅在局部材料内层虹彩、细节和后期真实标识出现，不主导墙、顶、窗帘与家具。保留真实可用的接待台、候客、通达与咨询区隐私边界；其他房间内部不必入画。Logo保留后期合成，不由模型绘制。未提供的构造工法、厚度和固定方式保持未知。",
+    "mustAvoid": ["重复同心拱券、波浪灯槽及连续紫色发光描边", "紫色墙面羽毛图案或到处重复的装饰性羽毛", "厚重染色玻璃、不透明发光浮雕和普通SPA装修"]
+  },
+  "projectIdentity": { "brandRole": "具有当代美术馆、艺术展馆及艺术品陈列空间气质的高端医美机构" },
+  "creativeDecision": {
+    "brandRoleStatement": "建筑艺术、材料光学与装置的空间关系共同建立九州美学的美术馆气质；接待、候客、通行与隐私可用。",
+    "preserveCore": ["品牌原始标识仅以后期合成呈现", "精细的建筑、材料与光线体验"],
+    "upgradeFrom": ["由紫色装饰与重复建筑套语主导的普通高端医美装修"],
+    "upgradeTo": ["安静近白建筑背景、自然日光与轻薄半透明空间结构组成的展馆体验"],
+    "uniqueUpgradeThesis": "以图二图三的轻薄半透明结构组织建筑与动线，以图四珠光层叠关系表达材料，以图五的展馆留白、自然光与克制配色确定主次。",
+    "targetWorldview": ["建筑艺术与真实运营并存"],
+    "toneBoundaries": [{"target":"当代美术馆式宁静与建筑艺术性","avoid":["普通SPA装修","科幻灯光装饰"]}],
+    "strategicNegatives": ["不伪造品牌文字或标志", "不将品牌紫扩展为全空间主导色"]
+  },
+  "abstractions": [],
+  "spatialTranslation": {
+    "spatialConcept": "当代美术馆般的接待与入口：宁静的乳白建筑留白、透射日光和薄片层次建立空间体验；艺术焦点与接待运营有清楚主次。",
+    "structureLanguage": ["大尺度轻薄半透明顶面与连续空间分隔，以透射日光、穿行和视线纵深组织建筑关系", "墙面、地面与周边顶面保持安静简洁，给主艺术系统留出展馆式呼吸感"],
+    "signatureSpatialMechanism": ["接待区：一个与建筑结合的轻薄半透明珠光层叠艺术装置，以可读的薄片层次、深度和边缘高光形成唯一艺术焦点。"],
+    "materialLanguage": [
+      {"material":"轻薄半透明珠光层片","behavior":["自然光分层透射，可隔着层片读取空间背景", "珠母贝般温和虹彩、边缘细腻高光与适度反射；紫只在局部内层微弱出现"],"brandRole":"与建筑空间组织融合的主艺术系统；视觉效果目标，不声称工艺、厚度或固定方式已验证","forbidden":["厚重染色玻璃","不透明发光浮雕"]},
+      {"material":"暖白、乳白、浅暖灰的低对比石质或微水泥背景","behavior":["低对比的柔和反射与连续留白"],"brandRole":"安静建筑背景","forbidden":[]}
+    ],
+    "lightingLanguage": {"source":["柔和自然日光", "克制的间接光"],"contrast":"低对比空间背景，艺术层片保留细腻明暗与深度","interactionWithMaterials":["日光穿透半透明层片形成清晰叠层、细腻散射与微弱反射"],"forbidden":["紫色霓虹", "全空间紫色灯带", "连续发光描边代替建筑设计"]},
+    "colorBehavior": {"primary":[{"name":"暖白、乳白、浅暖灰","role":"空间背景","spatialUsage":"dominant_field","surfaceApplicability":"安静墙面、地面与周边建筑表面"}],"secondary":[],"accent":[{"name":"品牌紫","role":"少量局部材料内层虹彩及细部；不规定面积比例","spatialUsage":"local_accent","surfaceApplicability":"局部艺术层片内层；真实品牌标识另行后期合成"}],"forbidden":["紫色共同主导墙、顶、窗帘与多类家具"]},
+    "sceneProgram": ["接待大厅", "入口", "候客区"],
+    "functionalNetwork": ["Reception: a usable reception counter connects to waiting area seating through clear visitor circulation."],
+    "functionalRelationships": ["Reception and waiting share readable circulation; preserve the consultation privacy boundary while other room interiors remain off frame."],
+    "mustBeVisible": ["Reception counter", "Waiting area seating", "Clear visitor circulation", "Consultation privacy boundary"],
+    "brandRoleManifestation": ["接待区：一个与建筑结合的轻薄半透明珠光层叠艺术装置，以可读的薄片层次、深度和边缘高光形成唯一艺术焦点。"],
+    "positiveDifferentiators": ["艺术来自建筑本体、材料光学与自然光，保留真实可用的接待功能"],
+    "brandIntegration": ["品牌标识以后期合成呈现，不授权模型绘制Logo或中文品牌字样"],
+    "functionalExperience": ["进入时感受展馆留白与自然日光，候客设施自然退居次位"],
+    "peopleBehavior": [],
+    "sceneMisreadRisks": []
+  },
+  "brandMisreadRisks": []
+}

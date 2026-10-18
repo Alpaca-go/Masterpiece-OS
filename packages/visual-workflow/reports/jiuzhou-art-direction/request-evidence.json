@@ -1,0 +1,58 @@
+{
+  "status": "offline_adapter_preview_only",
+  "productionRouteAvailable": false,
+  "modelCalls": 0,
+  "basis": "art_direction_reference",
+  "inputImageCount": 4,
+  "references": [
+    {
+      "id": "approved-translucent-canopy",
+      "name": "approved-translucent-canopy.jpg",
+      "mimeType": "image/jpeg",
+      "sha256": "0325629fe9f82580c61241c72a7b2e22ff3b453de3c83c4adba209a155140070",
+      "width": 2048,
+      "height": 1152,
+      "role": "approved_art_direction_reference",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "requestField": "image[0]",
+      "decodedPayloadSha256": "0325629fe9f82580c61241c72a7b2e22ff3b453de3c83c4adba209a155140070"
+    },
+    {
+      "id": "approved-sculptural-ceiling",
+      "name": "approved-sculptural-ceiling.jpeg",
+      "mimeType": "image/jpeg",
+      "sha256": "2565443f1dd0e7915c33c3a059dc403334a0076c2fa3c02e1e894a24d48efc77",
+      "width": 2048,
+      "height": 1152,
+      "role": "approved_art_direction_reference",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "requestField": "image[1]",
+      "decodedPayloadSha256": "2565443f1dd0e7915c33c3a059dc403334a0076c2fa3c02e1e894a24d48efc77"
+    },
+    {
+      "id": "approved-pearl-installation",
+      "name": "approved-pearl-installation.jpeg",
+      "mimeType": "image/jpeg",
+      "sha256": "dba974b9ca9051c5949a1ea34002c74c9b7d3c9729be367aeae7a6dc3a728a6e",
+      "width": 2048,
+      "height": 1152,
+      "role": "approved_art_direction_reference",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "requestField": "image[2]",
+      "decodedPayloadSha256": "dba974b9ca9051c5949a1ea34002c74c9b7d3c9729be367aeae7a6dc3a728a6e"
+    },
+    {
+      "id": "approved-gallery-entrance",
+      "name": "approved-gallery-entrance.png",
+      "mimeType": "image/png",
+      "sha256": "b7d472d98b6f1a45ccc570ee37c36dfb91fd7a499d0a76ad362401d06c8492cf",
+      "width": 2048,
+      "height": 1152,
+      "role": "approved_art_direction_reference",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "requestField": "image[3]",
+      "decodedPayloadSha256": "b7d472d98b6f1a45ccc570ee37c36dfb91fd7a499d0a76ad362401d06c8492cf"
+    }
+  ],
+  "requestBodySha256": "a7ec9b2e23de9abfb791fa34a7bdf48307958f420caea9616faa4b995ae5c35a"
+}

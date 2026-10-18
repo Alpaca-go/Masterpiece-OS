@@ -83,7 +83,8 @@ function applyUserConfirmedVisualDecision(packet, confirmation, projectId, deliv
     lightingSystem: spatial.lightingLanguage,
     provenance: {
       ...packet.provenance,
-      createdFrom: list(packet.provenance?.createdFrom, confirmation.evidenceRefs),
+      createdFrom: list([...(packet.provenance?.createdFrom || []), ...list(confirmation.evidenceRefs)]),
+      userConfirmedFields: ["mediaTranslations.spatial", "colorSystem", "materialSystem", "lightingSystem"],
       userConfirmationId: confirmation.id,
       userConfirmationSource: confirmation.sourceDocument,
       sourceFingerprint

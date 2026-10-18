@@ -71,6 +71,8 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   const colorSystem = packet.colorSystem || {};
   const materialSystem = Array.isArray(packet.materialSystem) ? packet.materialSystem : [];
   const lightingSystem = packet.lightingSystem || {};
+  const confirmedFields = new Set(packet.provenance?.userConfirmedFields || []);
+  const evidenceClass = field => confirmedFields.has(field) ? "user_confirmed" : "model_proposal";
   const semantic = compileSpatialMechanisms(packet);
   const MECHANIC_EXCLUDED_FIELDS = /* @__PURE__ */ new Set([
     "uniqueUpgradeThesis",
@@ -181,15 +183,16 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
   // Compilation-local evidence only. Packet containers are model decisions,
   // not independently verified material facts or user approval.
   const decisionTrace = {
+    confirmedFields: [...confirmedFields],
     color: ["primary", "secondary", "accent"].flatMap(group => color[group].map((item, index) => ({
       sourcePath: `colorSystem.${group}[${index}]`,
-      evidenceClass: "model_proposal", source: colorSystem[group][index],
-      executionAuthority: "proposal_only",
+      evidenceClass: evidenceClass("colorSystem"), source: colorSystem[group][index],
+      executionAuthority: confirmedFields.has("colorSystem") ? "user_confirmed_design_intent" : "proposal_only",
       spatialUsage: item.spatialUsage,
       unresolved: item.spatialUsage === "unspecified" || item.spatialUsage === "unresolved_conflict"
     }))),
     materials: materialSystem.flatMap((source, index) => source.material && cleanList(source.behavior).length ? [{
-      sourcePath: `materialSystem[${index}]`, evidenceClass: "model_proposal",
+      sourcePath: `materialSystem[${index}]`, evidenceClass: evidenceClass("materialSystem"),
       source, compiled: sanitizeMaterials([{material:source.material,behavior:cleanList(source.behavior),brandRole:source.brandRole,forbidden:cleanList(source.forbidden)}])[0]
     }] : []),
     mechanisms: semantic.architectureRewrite.items.map(item => ({
@@ -376,9 +379,9 @@ function adaptSpaceSource({ packet, taskContract, projectContext }) {
     if (entry.sceneScope === "off_frame_dependency" || artSeen.has(entry.text)) return false;
     artSeen.add(entry.text);
     return true;
-  }).map(entry=>({...entry,evidenceClass:"model_proposal",priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
+  }).map(entry=>({...entry,evidenceClass:evidenceClass("mediaTranslations.spatial"),priority:/optional|可选|可考虑/iu.test(entry.text) ? "optional" : "project_artistic_focus",installationDetails:"unspecified unless supplied in source wording"}));
   decisionTrace.artisticFocus = compositionLayers.artisticFocus;
-  decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:"model_proposal"}));
+  decisionTrace.artisticCandidates = scopedArt.map(entry=>({...entry,sourceEvidenceClass:evidenceClass("mediaTranslations.spatial")}));
   const architectureEntries = semantic.architectureRewrite.items.filter(item=>!item.dropped && !["spatialConcept","mustBeVisible"].includes(item.sourceField));
   decisionTrace.architectureDecisions = standardShot ? scopeSourceEntries(architectureEntries,taskContract.subtype) : architectureEntries;
   if (standardShot) {

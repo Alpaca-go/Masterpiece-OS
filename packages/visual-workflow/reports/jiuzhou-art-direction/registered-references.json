@@ -1,0 +1,53 @@
+{
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "status": "confirmed",
+  "sourceDocumentSha256": "86e153cd12b4af8b43a3f917f9c2755586945eb2dde9469b314e93896d4369e5",
+  "source": "User attachment and explicit 2026-10-18 request",
+  "images": [
+    {
+      "path": "references/rejected-current.png",
+      "role": "rejected_comparison",
+      "sha256": "edb74207a84c96de6aaac1a9793f00a61cf55d18c1712797733d7940637147f4",
+      "size_bytes": 3221063,
+      "id": "rejected-current",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "mimeType": "image/png"
+    },
+    {
+      "path": "references/approved-translucent-canopy.jpg",
+      "role": "approved_art_direction_reference",
+      "sha256": "0325629fe9f82580c61241c72a7b2e22ff3b453de3c83c4adba209a155140070",
+      "size_bytes": 361495,
+      "id": "approved-translucent-canopy",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "path": "references/approved-sculptural-ceiling.jpeg",
+      "role": "approved_art_direction_reference",
+      "sha256": "2565443f1dd0e7915c33c3a059dc403334a0076c2fa3c02e1e894a24d48efc77",
+      "size_bytes": 405932,
+      "id": "approved-sculptural-ceiling",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "path": "references/approved-pearl-installation.jpeg",
+      "role": "approved_art_direction_reference",
+      "sha256": "dba974b9ca9051c5949a1ea34002c74c9b7d3c9729be367aeae7a6dc3a728a6e",
+      "size_bytes": 381217,
+      "id": "approved-pearl-installation",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "mimeType": "image/jpeg"
+    },
+    {
+      "path": "references/approved-gallery-entrance.png",
+      "role": "approved_art_direction_reference",
+      "sha256": "b7d472d98b6f1a45ccc570ee37c36dfb91fd7a499d0a76ad362401d06c8492cf",
+      "size_bytes": 3371191,
+      "id": "approved-gallery-entrance",
+      "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+      "mimeType": "image/png"
+    }
+  ]
+}

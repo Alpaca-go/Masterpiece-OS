@@ -76,7 +76,9 @@ function renderSpatialIntent(layers) {
 function renderArchitectureLanguage(layers) {
   const decisions = [...new Set(layers.decisionTrace.architectureDecisions.filter(entry=>entry.sceneScope !== "off_frame_dependency").map(entry=>entry.sceneScope === "unresolved" ? entry.text : entry.currentShotText ?? entry.text).filter(Boolean))];
   const body = [
-    "> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.",
+    layers.decisionTrace.confirmedFields.includes("mediaTranslations.spatial")
+      ? "> User-confirmed spatial design intent: preserve the supplied subjects, carriers and action scopes. Construction details remain unverified; do not invent hardware."
+      : "> Preserve the supplied subjects, carriers and action scopes. These are project proposals; do not add walls, ceilings or lighting hardware from generic action words.",
     "",
     "**Source-scoped architectural decisions (each stated once)**:",
     bullet(decisions)
@@ -170,13 +172,16 @@ function renderMaterial(layers) {
 }
 function renderColor(layers) {
   const lines = [
-    "Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.",
+    layers.decisionTrace.confirmedFields.includes("colorSystem")
+      ? "Palette identity rank does not determine interior area. Entries below are user-confirmed design intent, not verified material facts. Execute the explicit supplied surface scopes; leave unspecified ratios unknown."
+      : "Palette identity rank does not determine interior area. Entries below are existing model proposals, not user-confirmed facts.",
     "Proposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.",
     "Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage."
   ];
   for (const group of ["primary", "secondary", "accent"]) {
     for (const item of layers.color[group]) {
-      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | proposed spatial scope: ${item.spatialUsage} | execution authority: proposal_only`);
+      const authority = layers.decisionTrace.confirmedFields.includes("colorSystem") ? "user_confirmed_design_intent" : "proposal_only";
+      lines.push(`- ${item.name || "(unnamed)"} | palette: ${group} | proposed spatial scope: ${item.spatialUsage} | execution authority: ${authority}`);
       for (const key of ["role", "semanticMeaning", "surfaceApplicability", "ratio"]) {
         if (item[key] !== undefined && item[key] !== "") lines.push(`  ${key}: ${typeof item[key] === "string" ? item[key] : JSON.stringify(item[key])}`);
       }

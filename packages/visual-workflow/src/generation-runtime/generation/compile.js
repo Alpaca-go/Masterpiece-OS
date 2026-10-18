@@ -12,6 +12,7 @@ import {
   validateSpatialSemantics
 } from "../space/index.js";
 import crypto from "node:crypto";
+import { applyUserConfirmedVisualDecision } from "./user-confirmed-visual-decision.js";
 const SPACE_COMPILER_MODES = Object.freeze({
   R8_6_GOLDEN: "r8_6_golden",
   PHASE9B_QUALITY: "phase9b_quality",
@@ -103,13 +104,18 @@ function compileShortChainGeneration(input) {
   return { taskContract, route, compiledPrompt, payload };
 }
 function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetIds, preferredLogoAssetId, started, compilerMode = SPACE_COMPILER_MODES.R8_6_GOLDEN, enforceSpatialSemantics = false }) {
-  const packet = input.projectContext?.visualDecisionPacket;
-  if (!packet) {
+  const originalPacket = input.projectContext?.visualDecisionPacket;
+  if (!originalPacket) {
     throw Object.assign(
       new Error("SPACE_PHASE9B_SOURCE_INSUFFICIENT: Phase 9B quality mode requires a V5 VisualDecisionPacket"),
       { code: "SPACE_PHASE9B_SOURCE_INSUFFICIENT" }
     );
   }
+  if (input.userConfirmedVisualDecision && originalPacket.projectId !== taskContract.projectId) throw new Error("Visual Decision Packet and Task Contract belong to different projects");
+  const confirmedDecision = applyUserConfirmedVisualDecision(
+    originalPacket, input.userConfirmedVisualDecision, taskContract.projectId, taskContract.deliverableFamily
+  );
+  const packet = confirmedDecision.packet;
   const result = compileSpacePrompt({
     packet,
     taskContract,
@@ -163,7 +169,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       checkedAt: qualityGate.checkedAt
     },
     effectiveVisualDecisionPacket: packet,
-    userConfirmedVisualDecision: null,
+    userConfirmedVisualDecision: confirmedDecision.confirmation,
     completeness: {
       complete: true,
       requiredBlockIds: result.blockIds,
@@ -204,6 +210,7 @@ function compileSpaceGeneration({ input, taskContract, adapter, referenceAssetId
       phase9b: true,
       anchorIds: result.trace.anchorIds,
       decisionTrace: result.layers.decisionTrace,
+      userConfirmedVisualDecision: confirmedDecision.confirmation,
       // R9 §20 trace schema: every space run records a structured
       // spaceGeneration block for image-level regression tracing.
       spaceGeneration: {
