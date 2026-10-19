@@ -1,0 +1,30 @@
+{
+  "source": "user supplied four images in this task",
+  "policy": "Human visual analysis only. No image registration, copying into assets, reference IDs or image inputs.",
+  "calibration": [
+    {
+      "file": "C:/Users/kyrie/AppData/Local/Temp/codex-clipboard-6daf2256-dd8f-424c-ac67-84f9a4a7a264.png",
+      "sha256": "67d62ad0c366cc9ba2ed1798fdd8541fd04d16cec51c42f21862860fdabbe968",
+      "role": "human_review_only",
+      "registeredAsAsset": false
+    },
+    {
+      "file": "F:/九州美学垂直测试/成功图-1.jpeg",
+      "sha256": "9b57a781d0d6e208a70429dd5a7f30a4183f3f7ca9b5a1f8953173667979cc8b",
+      "role": "human_review_only",
+      "registeredAsAsset": false
+    },
+    {
+      "file": "F:/九州美学垂直测试/成功图-2.jpeg",
+      "sha256": "73cd439a0bbe40ef339867049a7b6da43fd6892bd1f6a654615ebf1680acecca",
+      "role": "human_review_only",
+      "registeredAsAsset": false
+    },
+    {
+      "file": "F:/九州美学垂直测试/成功图-3.png",
+      "sha256": "1030b48ac15da278cc2eb34ac325b95a625b0d9b1964f285f03b261772336d4a",
+      "role": "human_review_only",
+      "registeredAsAsset": false
+    }
+  ]
+}

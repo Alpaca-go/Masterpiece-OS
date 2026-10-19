@@ -1,0 +1,92 @@
+{
+  "status": "PASS",
+  "scope": "project field and formal/provider prompt fidelity; not visual acceptance",
+  "protectedFields": [
+    {
+      "field": "spatialConcept",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "8e6fd37e544bbb92487441923ee4703e9a41a1de160ebab3378e888e8b247373"
+    },
+    {
+      "field": "functionalProgram",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "23d589cdd889835d09018e5124da38277ad6a034b19c292a3263e40d09e4984b"
+    },
+    {
+      "field": "colorEntries",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "bab5fe5321e9e02e2d40f1219a39c84cdee8f4763d9ac8e10791e2d2bf4482dc"
+    },
+    {
+      "field": "colorAvoid",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "8c261d9e9e3c0c42cc51ce0e681c447c3e7f4b6138948a12a58e821952b15fa3"
+    },
+    {
+      "field": "lightingLanguage",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "6514b2efe776c5a6eca641cbacc7aa4caec784a943619d2e65fedbaeb490fd7f"
+    },
+    {
+      "field": "lightingContrast",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "303eb1c1d553ee997aeec64408625dd2d46d8aa1e7073568f25eaa0b284940e6"
+    },
+    {
+      "field": "lightingInteraction",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "03d2e40d1bdf06ae399873dce04f671f70e9c8c6e5f283ef72b8a96532aa0db3"
+    },
+    {
+      "field": "lightingAvoid",
+      "status": "EXACTLY_PRESERVED",
+      "sha256": "ffa031af2b78e1342713d361bafbabc80d9f6061648389cca8585387a899f932"
+    }
+  ],
+  "backgroundMaterialIdentical": true,
+  "pearlMaterialNameAndBrandRoleIdentical": true,
+  "pearlMaterialProhibitionsIdentical": true,
+  "originalCoreOptics": [
+    {
+      "term": "自然光分层透射，可读取后方空间",
+      "retained": true
+    },
+    {
+      "term": "边缘细腻反射与温和高光",
+      "retained": true
+    },
+    {
+      "term": "轻薄层叠保留清楚深度",
+      "retained": true
+    },
+    {
+      "term": "珠母贝般温和虹彩，紫只在局部内层微弱出现",
+      "retained": true
+    }
+  ],
+  "integration": [
+    {
+      "term": "接待区：与竖向界面、上部边界及候客围合连续衔接的半透明珠光层片艺术装置，构成沿建筑边缘展开的一套空间系统；主艺术性是这种连续关系，不是一个可搬离的中央雕塑。",
+      "inFormalPrompt": true,
+      "inProviderPrompt": true
+    },
+    {
+      "term": "接待主厅：完整竖向墙面、上部采光界面与具有抬升感的主厅体量共同建立净高和竖向呼吸；撤去艺术层片后，围合界面与前后开口仍能形成有比例的展馆式建筑空间。",
+      "inFormalPrompt": true,
+      "inProviderPrompt": true
+    },
+    {
+      "term": "连续半透明层片从一侧竖向建筑界面延展至上部边界并向候客区边缘过渡",
+      "inFormalPrompt": true,
+      "inProviderPrompt": true
+    },
+    {
+      "term": "上部保留净高及采光呼吸空间",
+      "inFormalPrompt": true,
+      "inProviderPrompt": true
+    }
+  ],
+  "negativeCountBefore": 13,
+  "negativeCountAfter": 13,
+  "newArtLanguageAdded": false
+}

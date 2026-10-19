@@ -1,0 +1,27 @@
+{
+  "workflowOwner": "visual-workflow",
+  "adapterId": "seedream-5.0-pro",
+  "profileId": "9a794bb2-48d6-4e01-8eb6-3e49272442b9",
+  "provider": "volcengine",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "baseUrl": "https://image.example.invalid/v3",
+  "aspectRatio": "16:9",
+  "imageSize": "2K",
+  "promptSha256": "0bee886af833d8ae7cbb6292fbf18fc294b06a62fa81536c1b5da37ed6ae2827",
+  "promptVersion": "273398a8af0040a76b0d3771323d06bbaec5cf77a1fc9cb3a7c9815adf8192d3",
+  "outputCount": 1,
+  "referenceCount": 0,
+  "designDirection": {
+    "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+    "recordSha256": "ce0ef5d3796adac103cda9209b41cbe8299f6f37a900cbb8d8b016496e389eb6",
+    "confirmationSha256": "e905e28071be6b0e637f5adb8196aa43e40eaa9f2592893b21445683197475c7",
+    "analysisFingerprint": "5c8594ca69d077cb3cc05c4c8b1aebf6cb523022d6ea0f411d5eb56fe4f84a6c",
+    "source": {
+      "kind": "user_design_decision",
+      "statement": "2026-10-19 用户授权的九州美学 P1—P4 离线定向精修。冻结已获方向性认可的侧向建筑界面至上部的珠光层片连续机制，仅调整尺度疏密、薄片工艺、接待候客运营与主厅横向展开。四张图片只供人工视觉诊断和校准，未注册素材、未作为生图参考。设计目标不代表原品牌实测事实。只在新独立测试副本经网页保存确认，不修改原项目，不授权真实生图、收费校验、重试、Golden、人工质量状态、合并或发布。",
+      "evidenceRole": "offline_visual_calibration",
+      "notOriginalBrandFact": true
+    },
+    "confirmedAt": "2026-10-18T16:30:11.542Z"
+  }
+}
