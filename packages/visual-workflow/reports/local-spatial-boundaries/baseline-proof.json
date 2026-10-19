@@ -1,0 +1,15 @@
+{
+  "branch": "fix/jiuzhou-final-spatial-balance",
+  "startSha": "b79f741ef0b86e352c6bef9cfa7beaa76ebf9059",
+  "frozenBranchSha": "5103076f5db51d9d3fe1705c8f2918443be24e49",
+  "workingTreeInitiallyClean": true,
+  "p5ConfirmationSha256": "9e71ce823c14d343248df4904a8cecd056d60838dbeb79b19eb20b708e6736a0",
+  "p5FormalPromptSha256": "733c44d0e67a83c051ccc1aa596aaf8424c6a53510ad87dbf738c1af6dd05a68",
+  "p5BothArtifactManifestsVerified": true,
+  "sourceMatchesP5ConfirmedDirection": true,
+  "newDataCopy": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "source": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\browser-review\\user-data\\visual-workflow\\data\\projects\\ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "readOnlyP5Image": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-spatial-balance\\real-validation\\authorized-execution\\jiuzhou-standard-output.png",
+  "p5ImageSha256": "016c988155a674f22974281d724cfe199c66629a259730c09bec4b73dfe70cff",
+  "attachedBriefSha256": "6ec6b79e355ecffe21b22dfab4e3adda120748c18007c512bf42647c8719f725"
+}

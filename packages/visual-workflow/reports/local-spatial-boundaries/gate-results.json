@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "gates": [
+    {
+      "command": "node node_modules/tsx/dist/cli.mjs --test packages/visual-workflow/tests/*.test.ts",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": 82,
+      "logSha256": "26c7cf50983acf98299ace488c282e1ef447212fe8f903f0c36b39b9337d0fe6",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries/workflow-ts.log"
+    },
+    {
+      "command": "node --test packages/visual-workflow/tests/*.test.js",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": 30,
+      "logSha256": "749e409856dcc40b37b35a8e0117411159b233a06483613566f63204d5c1101a",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries/workflow-js.log"
+    },
+    {
+      "command": "node node_modules/tsx/dist/cli.mjs .codex-smoke/jiuzhou-local-boundaries/industry-parity.mjs",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": 3,
+      "logSha256": "1a245d1a6bb1e6ab8b160e8ac8ec715653fc0ab9092806e8cfb8250be294cae7",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries/industry-parity.log"
+    },
+    {
+      "command": "npm run golden:test",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": null,
+      "logSha256": "78a4f5734232760dcf2bc1d582a66a5a73e1b296580fa769923fc6b2e2f537c5",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries/golden.log"
+    },
+    {
+      "command": "npm run repo:verify",
+      "status": "PASS",
+      "exitCode": 0,
+      "testCount": null,
+      "logSha256": "70b8b336dc252824ca811e854beba79a1fce295b1c4780fd76961ee5b181f2c3",
+      "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-local-boundaries/repo-verify.log"
+    }
+  ],
+  "workflowTests": 112,
+  "currentFlowsTests": 1294,
+  "architectureIsolationGuardTests": 56,
+  "crossIndustryRequests": 3,
+  "goldenUpdated": false,
+  "realProviderCalls": 0,
+  "unpassedGates": [],
+  "meaning": "Offline engineering and expression only; not real visual quality acceptance."
+}

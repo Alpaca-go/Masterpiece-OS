@@ -1,0 +1,37 @@
+{
+  "status": "OFFLINE_EXPRESSION_PASS_ONLY",
+  "items": [
+    {
+      "id": "P0",
+      "status": "PASS",
+      "evidence": "structureLanguage[1]; visibleRequirements[3]; compositionRequirements[2]",
+      "meaning": "左前景开放地面及前台视线为正向要求，局部排除独立圆形玻璃房、筒状围合、环形吊灯及无用途展示。"
+    },
+    {
+      "id": "P1",
+      "status": "PASS",
+      "evidence": "structureLanguage[2]; artisticFocus; visibleRequirements[4]; compositionRequirements[1]",
+      "meaning": "单套系统在同一侧附近明确起止，上部连接不跨厅；材料原值与薄边深度保留。"
+    },
+    {
+      "id": "P2",
+      "status": "PASS",
+      "evidence": "structureLanguage[3]; functionalNetwork[3]; visibleRequirements[2]",
+      "meaning": "设备操作侧人员椅/对侧顾客椅隔台相向，共同看浅色皮肤表面、面部分区或美学比例界面；无颅内解剖图或虚构数据要求。"
+    },
+    {
+      "id": "PROTECTION",
+      "status": "PASS",
+      "evidence": "protection-proof.json",
+      "meaning": "前台候客原句、配色材质照明及私密转场原值保留。"
+    },
+    {
+      "id": "TECHNICAL",
+      "status": "PASS",
+      "evidence": "request-evidence.json; standard-industry-regression.json",
+      "meaning": "标准零参考实际Adapter预演、三行业基线不变；真实模型0。"
+    }
+  ],
+  "realVisualQuality": "NOT_TESTED_PENDING_USER_REVIEW",
+  "compilerInformationLossDetected": false
+}
