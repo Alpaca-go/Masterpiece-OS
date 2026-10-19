@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "command": "npm run repo:verify",
+  "exitCode": 0,
+  "checkedOn": "2026-10-19",
+  "baseCommit": "1c882d0a2d17748bf61723fdb5422ce4a050507d",
+  "scope": "Sanitized report archive only; no production changes.",
+  "currentFlowsPassed": 1294,
+  "guardTestsPassed": 56,
+  "nodeHostTypecheck": "PASS",
+  "webRendererTypecheck": "PASS",
+  "realProviderCallsByGate": 0,
+  "log": ".git/architecture-commercial-real-generation-repo-verify.log",
+  "logSha256": "562398ba44755cfda0ad0c25ab6a9931a720fa2b809612757896cea39f84ace4"
+}

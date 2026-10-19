@@ -1,0 +1,18 @@
+{
+  "status": "EXACT_MATCH",
+  "confirmationSha256": "a513f62300c798fb28f5d14bcdedfe37f1c1564468b215fc91f19eff6ecc03e8",
+  "recordSha256": "161b38d0406aec5bd6716eef0ddb1d1eb535cb506fc985c830d4af1e903481f8",
+  "formalPromptSha256": "ae419a36a828800056038d8e7008fab2f749a6398b74fd6d9e4f781d52a99013",
+  "providerPromptSha256": "faee0ab25c94b76be305de5bca0bc700d7f7db8c8b5a9cb1601c6a689072a61d",
+  "actualRequestBodySha256": "67958bd6daa48179450934d095ffda72a4ffa5e92b8ae67e082d027f3a1500fa",
+  "reviewedRequestBodySha256": "67958bd6daa48179450934d095ffda72a4ffa5e92b8ae67e082d027f3a1500fa",
+  "formalPromptCharacters": 11259,
+  "providerPromptCharacters": 11362,
+  "providerPromptExactMatch": true,
+  "confirmationExactMatch": true,
+  "formalPromptExactMatch": true,
+  "referenceAssetIds": [],
+  "imageFieldPresent": false,
+  "decodedOriginalAndBusinessPixelsIdentical": true,
+  "postCompositePerformed": false
+}

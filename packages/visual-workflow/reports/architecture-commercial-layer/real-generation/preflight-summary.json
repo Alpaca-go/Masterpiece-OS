@@ -1,0 +1,23 @@
+{
+  "status": "PREFLIGHT_PASS",
+  "entry": "createShortChainGenerationService.start",
+  "validatorCalledByEntry": false,
+  "confirmationSha256": "a513f62300c798fb28f5d14bcdedfe37f1c1564468b215fc91f19eff6ecc03e8",
+  "formalPromptSha256": "ae419a36a828800056038d8e7008fab2f749a6398b74fd6d9e4f781d52a99013",
+  "providerPromptSha256": "faee0ab25c94b76be305de5bca0bc700d7f7db8c8b5a9cb1601c6a689072a61d",
+  "requestBodySha256": "67958bd6daa48179450934d095ffda72a4ffa5e92b8ae67e082d027f3a1500fa",
+  "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "provider": "volcengine",
+  "protocol": "seedream-image",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "outputCount": 1,
+  "generationBasis": "standard",
+  "referenceAssetIds": [],
+  "imageFieldPresent": false,
+  "credentialsSavedByUserInNewIndependentSettings": true,
+  "oldCredentialsCopied": false,
+  "globalConfigurationUsed": false,
+  "paidConnectionProbePerformed": false
+}
