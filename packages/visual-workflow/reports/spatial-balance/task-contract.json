@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0",
+  "taskId": "vnext-task-a4bee5ea-be00-4c9f-ae0f-2c03467fc6c5",
+  "projectId": "ecfcdf23-a81d-4cd2-8250-74ecd221b7fb",
+  "deliverableFamily": "space",
+  "subtype": "reception",
+  "shot": "entrance_view",
+  "count": 1,
+  "aspectRatio": "16:9",
+  "currentInstruction": "生成符合项目气质的空间效果图",
+  "generationBasis": "standard",
+  "mustInclude": [],
+  "mustAvoid": [],
+  "referenceAssetIds": [],
+  "logoUsageMode": "post_composite",
+  "shotSource": "legacy_project_default",
+  "createdAt": "2026-10-19T14:57:47.816Z"
+}

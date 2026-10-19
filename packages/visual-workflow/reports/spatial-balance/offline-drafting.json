@@ -1,0 +1,32 @@
+{
+  "iterations": [
+    {
+      "round": 1,
+      "result": "BLOCKED",
+      "reason": "SPACE_PROMPT_BUDGET_BLOCKED",
+      "formalCharacters": 12186,
+      "realProviderCalls": 0
+    },
+    {
+      "round": 2,
+      "result": "FIDELITY_FAILED",
+      "reason": "咨询人员 triggered scene projection; structureLanguage sentence missing",
+      "formalCharacters": 11650,
+      "memoryFixtureRequests": 1,
+      "realProviderCalls": 0
+    },
+    {
+      "round": 3,
+      "result": "PASS",
+      "change": "Replaced 咨询人员 with 面询人员, same seating relationship",
+      "formalCharacters": 11698,
+      "providerCharacters": 11801,
+      "memoryFixtureRequests": 1,
+      "realProviderCalls": 0
+    }
+  ],
+  "webSaveConfirmPairs": 3,
+  "automaticRetries": 0,
+  "automaticRegeneration": 0,
+  "compilerOrGuardChanges": 0
+}

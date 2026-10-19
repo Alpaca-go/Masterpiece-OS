@@ -1,0 +1,16 @@
+{
+  "status": "WAIT_FOR_USER_REVIEW_AND_SEPARATE_REAL_GENERATION_AUTHORIZATION",
+  "checks": [
+    "审核P0—P2字段完整差异及正式/Provider Prompt",
+    "确认新副本、确认记录SHA与最终Prompt摘要仍一致",
+    "重新核对Seedream 5.0 Pro / 2K / 16:9 / count=1 / standard",
+    "referenceAssetIds=[]；实际Adapter请求无image；历史图片不登记或发送",
+    "仅使用此独立功能的用户主动配置，凭据不归档",
+    "另行明确单张真实生图授权及费用；不自动附加Qwen校验",
+    "调用账本限制单次，无重试、重生成或自动质量纠正",
+    "人工检查珠光占比、前台第一服务锚点、皮肤面部图示及相向座位",
+    "复核暖白浅木弱紫漫射光、私密边界及后期Logo/导视边界",
+    "记录真实结果后停止待人工验收，不将离线PASS改写为视觉PASS"
+  ],
+  "currentRealProviderCalls": 0
+}
