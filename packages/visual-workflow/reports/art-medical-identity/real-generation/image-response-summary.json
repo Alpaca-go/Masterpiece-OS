@@ -1,0 +1,16 @@
+{
+  "httpStatus": 200,
+  "durationMs": 83357,
+  "model": "doubao-seedream-5-0-pro-260628",
+  "requestId": "021792411764071d7474cfa702fd7fc3234b385bd39455fbcb3fe",
+  "usage": {
+    "input_images": 0,
+    "generated_images": 1,
+    "output_tokens": 17424,
+    "total_tokens": 17424
+  },
+  "dataItemCount": 1,
+  "rawResponseSha256": "594acdb768f6b0fac532294ff4fc0409e2f349f974d224876f1271848f580686",
+  "actualSettledCost": null,
+  "errorCode": null
+}

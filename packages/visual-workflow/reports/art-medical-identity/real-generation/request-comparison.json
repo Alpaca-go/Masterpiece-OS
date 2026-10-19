@@ -1,0 +1,33 @@
+{
+  "status": "PASS",
+  "confirmationSha256": "9a30125902f48246e0adad56259d8cee52ee324329a60a06b1e56b0e87643495",
+  "recordSha256": "c519f9160182f8c13e132d6143eddc1b7cc1052d5bb0d0277e25cef82fab35c0",
+  "formalPromptSha256": "8f0a50fa9ddd99021757386bd81ccfa8a682b31dfc706e5eb361cdf0ee745805",
+  "providerPromptSha256": "103832bda3069f24609f619d13dabb280699df58302d006f8724cf557a311ec9",
+  "requestBodySha256": "f67862d07324bb76057f51a18a945f322363e487769cb85d9ccbd499b2417269",
+  "requestBodyMatchesReviewed": true,
+  "formalPromptIsProviderSuffix": true,
+  "model": "doubao-seedream-5-0-pro-260628",
+  "size": "2K",
+  "aspectRatio": "16:9",
+  "actualWidth": 2816,
+  "actualHeight": 1584,
+  "actualAspectRatio": "16:9",
+  "outputCount": 1,
+  "imageFieldPresent": false,
+  "generationBasis": "standard",
+  "referenceAssetIds": [],
+  "originalDecodedPixelsEqualBusinessPNG": true,
+  "decodedPixelsSha256": "f91a2fe8f2d102362e470aaab6c8ef7abbd3c2294fabf4f3882ba006cdebd254",
+  "providerOriginalPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\real-validation\\authorized-execution\\jiuzhou-provider-original.jpg",
+  "businessOutputPath": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\real-validation\\authorized-execution\\jiuzhou-standard-output.png",
+  "productionImplementation": {
+    "owner": "visual-workflow",
+    "extractionStatus": "independent-current-implementation",
+    "qualityAcceptance": "pending-separate-quality-repair",
+    "implementationDigest": "8e8469e022ed1e2e01bdad208e5e75b9126d35afb46e3ac96e212aaa8c6e6f81"
+  },
+  "validationCalled": false,
+  "logoCompositePerformed": false,
+  "textCompositePerformed": false
+}

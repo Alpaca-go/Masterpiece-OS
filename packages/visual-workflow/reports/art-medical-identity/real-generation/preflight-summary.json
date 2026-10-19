@@ -1,0 +1,43 @@
+{
+  "status": "PASS",
+  "head": "ab15bb29fc577b6f67258b1dc9344ff2c8916016",
+  "branch": "fix/jiuzhou-architectural-language",
+  "model": "doubao-seedream-5-0-pro-260628",
+  "provider": "volcengine",
+  "protocol": "seedream-image",
+  "endpoint": "https://ark.cn-beijing.volces.com/api/v3/images/generations",
+  "authorization": "User authorized max one Seedream call and zero paid validation; user saved current independent configuration.",
+  "mandatoryFiles": [
+    "review.md",
+    "confirmed-direction.json",
+    "formal-prompt.txt",
+    "provider-prompt.txt",
+    "field-differences.md",
+    "request-evidence.json",
+    "acceptance-checklist.json"
+  ],
+  "compileEntry": "createShortChainGenerationService.compile",
+  "executionEntry": "createShortChainGenerationService.start",
+  "generationOnly": true,
+  "allExistingBusinessGuardsRetained": true,
+  "credentialRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\browser-review\\user-data\\visual-workflow",
+  "executionDataRoot": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\real-validation\\user-data\\visual-workflow",
+  "noCredentialOrSettingsCopy": true,
+  "configuration": "Existing independent configuration object used in place by existing image-service factory; source profileId passed explicitly. No global/planning/migration configuration.",
+  "pricing": {
+    "checkedOn": "2026-10-19",
+    "source": "https://docs.volcengine.com/docs/ark/model-pricing?lang=zh",
+    "sources": [
+      "https://docs.volcengine.com/docs/ark/model-pricing?lang=en&redirect=1",
+      "https://docs.volcengine.com/docs/ark/seedream-5-0-pro?lang=zh"
+    ],
+    "currency": "CNY",
+    "outputPriceAbove2610000Pixels": 0.6,
+    "outputPriceAtOrBelow2610000Pixels": 0.3,
+    "expected2KSingleImageCost": 0.6,
+    "inputImages": 0,
+    "actualSettledCost": null,
+    "accountDiscountsOrBalanceRead": false,
+    "abnormalFeeIndicatorsFound": false
+  }
+}

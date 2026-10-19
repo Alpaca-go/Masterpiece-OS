@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "command": "npm run repo:verify",
+  "exitCode": 0,
+  "currentFlowsTests": 1294,
+  "architectureAndIsolationGuardTests": 56,
+  "logSha256": "05f9cf452eac091c33d423f48d7c28601f70ca6da6022aef4041fbc08a82f6bc",
+  "localLog": "E:\\Masterpiece-OS-Main-Publish-20261015-Verified\\.codex-smoke\\jiuzhou-art-medical\\real-validation\\repo-verify.log",
+  "productionChanged": false,
+  "priorWorkflowTests": 112,
+  "priorGolden": "PASS_NO_UPDATE",
+  "priorIndustryRequestParity": 3,
+  "realProviderCalls": 1,
+  "meaning": "Repository verification only; no new human visual acceptance."
+}
