@@ -1,0 +1,70 @@
+{
+  "status": "REAL_IMAGE_COMPLETE_PENDING_USER_VISUAL_REVIEW",
+  "files": [
+    {
+      "name": "call-ledger.json",
+      "bytes": 177,
+      "sha256": "67a6b012d5338fc33b8baf60b7ceede4bc457772d5d3e1b586b7773690f920ff"
+    },
+    {
+      "name": "execution-review.md",
+      "bytes": 7969,
+      "sha256": "ea68f36137fd8399411bb181921d1590ee5a1736a58bcfa7169d8da6e01df8bf"
+    },
+    {
+      "name": "execution-summary.json",
+      "bytes": 3657,
+      "sha256": "a5543c8b37a0a886731b04333ca63542705aa297e457d6943d79342981b4368e"
+    },
+    {
+      "name": "fee-record.json",
+      "bytes": 765,
+      "sha256": "e985317c98af65f51d3f9f20fb17954b3bb5da222638f9cf0753c9c5f0c73f3d"
+    },
+    {
+      "name": "gate-results.json",
+      "bytes": 233,
+      "sha256": "27beeae1c4056ae4860cc77df63d31e0a6af2c0644143a8c17158bbfe6977858"
+    },
+    {
+      "name": "image-response-summary.json",
+      "bytes": 531,
+      "sha256": "54bce1bfd8f7ae3a5bb5539d3ebfe9be5d19520dc43920cac88a302508f13a5a"
+    },
+    {
+      "name": "local-artifact-index.json",
+      "bytes": 3809,
+      "sha256": "49c806467e2e863d60da45b2bf23aecfb1c64668857e2b11454ad3aa5e816ac3"
+    },
+    {
+      "name": "new-artifact-secret-scan.json",
+      "bytes": 134,
+      "sha256": "426a96d2399fcefbe9cabbad9723732e359d925c8a6ac1437a01c0f35ffbef00"
+    },
+    {
+      "name": "preflight-summary.json",
+      "bytes": 1401,
+      "sha256": "7e4ca9737749bef7a2630fff9fe5768587114fb026340436f7192d61b6b0aa6f"
+    },
+    {
+      "name": "request-comparison.json",
+      "bytes": 1662,
+      "sha256": "2ad22e1b3c5edaef8d6d73136b8d9cde21e1911cc893e0449b645a277cf093dd"
+    },
+    {
+      "name": "validation-response-summary.json",
+      "bytes": 541,
+      "sha256": "f07e15f0e905520e9407955f518636ecc525a6d9915f3f0b3bc6732fab32184b"
+    },
+    {
+      "name": "validation-result.json",
+      "bytes": 2784,
+      "sha256": "b2a9ec2f9ed1b343ea667a4b01068706ec9d6b9a0e41aff30ae3da912a2d367f"
+    },
+    {
+      "name": "visual-comparison.json",
+      "bytes": 3271,
+      "sha256": "9fb8ca25de23a8a7e727f9546a92328ff41623a8eccb926d8afbc266a761ceb0"
+    }
+  ]
+}
