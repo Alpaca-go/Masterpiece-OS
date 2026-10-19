@@ -1,0 +1,30 @@
+{
+  "baseCommit": "df34f2d5e8fc1fa31ece4408b6ddfe2d1e6491aa",
+  "branch": "fix/jiuzhou-architectural-language",
+  "newTrackedCandidates": [
+    "packages/visual-workflow/tests/fig2-fig3-spatial-direction-form.json",
+    "packages/visual-workflow/tests/fig2-fig3-spatial-direction.test.ts",
+    "packages/visual-workflow/reports/fig2-fig3-spatial-correction/"
+  ],
+  "productionCodeChanged": false,
+  "compilerChanged": false,
+  "providerAdapterChanged": false,
+  "sharedInfrastructureChanged": false,
+  "planningOrMigrationChanged": false,
+  "implementationIntegrityUpdated": false,
+  "goldenUpdated": false,
+  "historicalHumanAcceptanceChanged": false,
+  "realImageCalls": 0,
+  "realQwenCalls": 0,
+  "otherPaidCalls": 0,
+  "reanalysisCalls": 0,
+  "projectBrandingComposites": 0,
+  "automaticRetries": 0,
+  "automaticRegeneration": 0,
+  "merged": false,
+  "deployed": false,
+  "published": false,
+  "newPromptManualReview": "PENDING",
+  "newCopyWebDirectionStatus": "confirmed_for_offline_compilation_only",
+  "confirmationSha256": "30c2125a218184fe3054223dc763043f23b2a4e68f1dc3cd8c80369b67858d85"
+}

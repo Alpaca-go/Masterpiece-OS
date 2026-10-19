@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "checkedBeforeArchive": true,
+  "protectedRoots": 19,
+  "allProtectedInventoriesEqual": true,
+  "protectedInventoryManifestSha256": "c96936d6301f8903bebb801193b9ad9f54965ba8707141766720f244ea5d1fcc",
+  "projectRecordUnchanged": true,
+  "analysisPacketsUnchanged": true,
+  "projectAssetsExactlyUnchanged": true,
+  "projectAssetCount": 27,
+  "inputImagesRegistered": 0,
+  "modelReferenceImages": 0,
+  "latestFailedImageAndHistoricalImagesUnchanged": true,
+  "postArchiveOriginalInventoriesEqual": true,
+  "onlyAllowedReportAddition": "fig2-fig3-spatial-correction/"
+}

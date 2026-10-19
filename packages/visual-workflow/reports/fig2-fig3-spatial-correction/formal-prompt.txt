@@ -1,0 +1,196 @@
+# Task
+
+Generate a single premium-grade space image for **九州美学** (医疗美容/高端美学服务).
+Scene: `reception` / reception_arrival_view.
+Task: 生成符合项目气质的空间效果图
+Aspect ratio: 16:9.
+
+# Spatial Intent
+
+> The experience goal and spatial strategy set the tone before any building mechanism.
+
+**Experience Goal**: 具有当代美术馆气质的高端医美商业接待主厅：完整可运营的前台、成组候客和半开放后续服务区共同建立空间，少量连续建筑曲面与半透明分隔提供克制艺术性；暖白米白、浅木色与柔和暖日光形成有层次、有人情感的真实服务环境。
+
+**Spatial Strategy**: source-scoped decisions are stated once in Architecture Language.
+
+# Architecture Language
+
+> User-confirmed spatial design intent: preserve the supplied subjects, carriers and action scopes. Construction details remain unverified; do not invent hardware.
+
+**Source-scoped architectural decisions (each stated once)**:
+- 接待区：艺术性由少量连续建筑曲面、轻薄半透明分隔、温暖材质和空间使用关系共同产生；曲面界定功能区而让出前台、就坐和通行，建筑界面本身是焦点。
+- 接待区：以一至两处简洁主结构关系保持界面连续，珠光仅在局部少量轻薄分层中表达，安静顶面与实体建筑框景共同形成层次。
+- 接待主厅：以清楚的实体墙、入口建筑框景、开敞通行面和可读顶面建立完整大厅；前台与候客沿横向展开，背景服务分区接入大厅而非沿狭长中轴走廊排列。
+- 接待主厅：采用一至两处干净连续的建筑曲面与半透明薄幕或隔断，局部与上部界面相接，局部围合服务分区；实体建筑面、开口和净高始终清楚可读。
+- 接待主厅：半透明界面以整洁的少量曲面形成分隔与透景，局部少量轻薄分层表达细腻珠光；前台、候客与主通行面保持开放视线，顶面以安静实体面和柔和间接采光维持呼吸。
+- 接待主厅：后续服务洽谈区属于大厅内的半开放功能分区，以透明、半透明或错位界面界定；可透见小桌与座位的服务关系，进入私密区域的路线由实体转折屏蔽。
+
+# Architecture Context
+
+No optional architecture examples have been selected for this request. Brand name and industry do not grant example authority.
+Use project decisions and the current user instruction. Artistic focus may coexist with practical reception, waiting, access and privacy requirements; examples cannot replace either dimension.
+Do not infer construction details from historical accepted images or from an industry's customary appearance. Preserve explicitly requested complex architecture without importing unrelated scene mechanisms.
+
+# Architecture-Function Bridge
+
+> Artistic character and commercial operations are simultaneous requirements. Industry constrains use, access and privacy; it does not dictate an architectural style.
+
+**Commercial Purpose**: 提供科学与美学结合的高端服务，强调精致工艺与信任
+
+**Spatial Translation (architecture → commercial action)**:
+Current-shot nodes and relationships are stated in Functional & Commercial Requirement.
+
+**Operation Constraints (hard, must hold)**:
+- Reception and waiting remain visually connected across the open lateral hall; a restrained translucent partition defines the semi-open onward service area without hiding its table and seating relationship.
+- Reception: an offset solid return beyond the semi-open service area protects private care access
+
+**Human Experience (path + rhythm)**:
+
+
+**Commercial Reality (compatible with project artistic character)**:
+Preserve the supplied differentiators in Functional & Commercial Requirement together with the artistic focus in Composition.
+
+**Concept Drift Guards (must avoid)**:
+- 由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。
+- 巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花
+- 包围全画面的旋转装置与双侧近景巨片夹击
+- 以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织
+- 艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子
+- 前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区
+- 密集诊室门排、狭长中轴走廊与极端超广角畸变
+- 冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带
+- 重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸
+
+**Cross-zone operational constraints (current-shot boundary only; other interiors remain off frame)**:
+- treatment activity and private room interiors remain off frame
+
+Off-frame program dependencies are retained in the source trace. Preserve access and privacy boundaries without exposing the interiors of other program areas.
+
+# Architectural Concept
+
+Use the experience goal in Spatial Intent and the source-scoped decisions in Architecture Language together with the artistic hierarchy in Composition.
+User instructions take priority over model proposals and optional examples. Do not make a generic building template displace the project's artistic expression.
+
+# Architecture DNA
+
+**Decision relationships**: Architecture Language owns architectural actions; Spatial Color Roles owns color scope; Material System owns optical behavior; Composition owns focal hierarchy.
+Keep buildable junctions, readable circulation and human scale. Complex curves, restrained geometry, strong color and gallery-like character remain available when supported by project intent. No industry-wide aesthetic is imposed.
+
+# Brand Translation
+
+> Preserve project identity and artistic expression together with the functional program. The artistic focus is stated in Composition.
+> Brand identity (logo, wordmark, signage text) is composited AFTER generation; do NOT render it in-scene.
+**Brand**: 九州美学 | **Industry**: 医疗美容/高端美学服务
+**Brand Role**: see the Commercial Purpose in Architecture-Function Bridge.
+**Brand Role Manifestation in Space**:
+
+# Functional & Commercial Requirement
+
+**Current-shot Program Nodes (source-scoped; other areas remain off frame)**:
+- 入口到达与清楚的分流区
+- 正式接待与员工工作区
+- 成组候客与短时交流区
+- 主厅内半开放后续服务洽谈区
+- 通向私密服务的受屏蔽过渡边界
+
+**Functional Network**:
+- Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.
+- Reception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.
+- Reception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.
+- Reception: visitors move from the counter or waiting group to a legible semi-open onward service area within the hall, where a small table and paired seats make the next service conversation readable through a transparent or staggered boundary; staff access stays clear of seated guests.
+
+**Visible hierarchy**: see Composition; an artistic focus does not replace operational facilities.
+
+**Positive Differentiators**:
+- 具有当代美术馆气质的高端医美商业接待主厅：完整可运营的前台、成组候客和半开放后续服务区共同建立空间，少量连续建筑曲面与半透明分隔提供克制艺术性；暖白米白、浅木色与柔和暖日光形成有层次、有人情感的真实服务环境。
+
+# Spatial Color Roles
+
+Palette identity rank does not determine interior area. Entries below are user-confirmed design intent, not verified material facts. Execute the explicit supplied surface scopes; leave unspecified ratios unknown.
+Proposed scopes and ratios retain their source meaning for review. Do not execute an unconfirmed dominant field or area allocation as a mandatory instruction. Area authority remains pending unless explicitly supplied by the current user instruction; that instruction takes priority.
+Unknown ratios stay unknown. Neither a color name, a palette rank, a gradient nor a proposed role independently authorizes geometry or whole-room color coverage.
+- 暖白与米白 | palette: primary | proposed spatial scope: dominant_field | execution authority: user_confirmed_design_intent
+  role: 温暖柔和的建筑基底
+  surfaceApplicability: 实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面
+  area ratio: unknown
+- 浅木色与暖中性色 | palette: secondary | proposed spatial scope: secondary_surface | execution authority: user_confirmed_design_intent
+  role: 建立真实商业家具与局部墙面的温暖层次
+  surfaceApplicability: 前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面
+  area ratio: unknown
+- 品牌紫 | palette: accent | proposed spatial scope: local_accent | execution authority: user_confirmed_design_intent
+  role: 非常有限的珠光内反射，正式品牌内容以后期真实素材体现
+  surfaceApplicability: 仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带
+  area ratio: unknown
+
+# Material System
+
+- **半透明珠光薄幕与曲面隔断**: 整洁连续的轻薄曲面保留透景，柔和反射与透射并存；局部少量轻薄分层和很弱的内层珠光，边缘清楚可读，分隔后方的服务家具仍可辨
+  brand role: 界定主厅内的候客及半开放服务边界，让出前台、通行面与大部分顶面
+  avoid: 密集羽片、花瓣团块与不透明艺术墙；整体紫色染色、自发光浮雕和独立巨大雕塑
+- **暖白米白矿物基底**: 温暖柔和的漫反射，保留真实表面质感和体积；与木质、软包及半透明界面形成清楚但低对比的层次
+  brand role: 建立完整实体建筑、安静顶面与可读入口框景
+  avoid: 冷白发蓝的无差别表面；高对比镜面拼贴和过曝洗白
+- **浅木质与暖中性软包**: 浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感；材料变化服务于前台、候客和半开放服务区的使用层次
+  brand role: 为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质
+  avoid: 紫色软包与大面积高饱和饰面；以装饰家具堆积代替清楚的功能分区
+
+# Lighting System
+
+**Primary Strategy**: 温暖、柔和、均匀的漫射自然日光、少量克制的暖调建筑间接光
+**Contrast**: 暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节
+**Light / Material Behavior**:
+- 漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影
+- 浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分
+- 局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节
+**Lighting Prohibitions**:
+- 冷白偏蓝的整体照明与玻璃发灰
+- 过曝抹平浅色材料层次
+- 紫色灯带、舞台照明与高饱和发光装置
+- 强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具
+
+# Composition & Photography
+
+**Output Ratio**: 16:9
+**Project Artistic Focus (separate from operational facilities)**:
+- No artistic installation is required by the supplied sources.
+Do not demote a supplied core artwork to background texture. Its mounting, dimensions and optical construction remain unspecified unless supplied; do not invent them.
+**Operational Elements (remain usable alongside the artistic focus)**:
+- A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner
+- One complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it
+- One legible semi-open onward service area within the reception hall, containing a small table and paired seats behind a transparent, translucent or staggered boundary; private care interiors stay screened
+- A clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines
+- One or two restrained continuous architectural curve relationships and translucent curtain-like partitions, with local sparse fine layering and readable quiet ceiling surfaces
+- One small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas
+**User-confirmed composition relationships**:
+- 从入口斜向观察一个完整商业接待大厅：前台完整服务面、成组候客、主厅内半开放后续服务区与横向宽度均清楚可读，具有前中后景但不沿长走廊收束。
+- 采用清晰、有厚度的实体建筑框景与平衡的透明或半透明曲面，左右前景留出开放视域，曲面界定分区而不遮住前台与候客。
+- 冲突排序为完整前台、候客组团、服务空间和通行关系优先，其次开放建筑体量，再次克制艺术构件，最后小型商业道具；冲突时减去装饰，保留功能面积与可用性。
+- 前台不必居中但视觉比重适当；候客与服务分区保持自然横向联系，安静顶面、实体界面及柔和光线共同建立建筑尺度，保持正常建筑摄影透视与可信人体尺度。
+**Positive Differentiators**:
+Use the differentiators in Functional & Commercial Requirement without repeating them as additional demands.
+Use a credible commercial architectural camera: controlled perspective, depth, hierarchy and human scale.
+
+# Rendering Requirements
+
+- High-end architectural visualization, photoreal, physically based materials.
+- Balanced exposure, accurate white balance, readable texture and shadow detail.
+- No blown highlights; clean, resolved, professionally finished.
+
+# Prohibited (fail-closed)
+
+The following MUST NOT appear in the generated image:
+- no rendered brand name, wordmark, logotype, signage text, or illuminated letters in the scene
+- no generic AI clinic look, no stock-photo medical aesthetic template
+- 由于大量使用丝绸、手提包、胸针、雨伞等时尚单品作为样机展示，品牌容易被误读为高端时尚品牌或珠宝品牌，而非医疗美容服务机构。
+- 密集羽片、花瓣团块与不透明艺术墙
+- 整体紫色染色、自发光浮雕和独立巨大雕塑
+- 冷白发蓝的无差别表面
+- 高对比镜面拼贴和过曝洗白
+- 紫色软包与大面积高饱和饰面
+- 以装饰家具堆积代替清楚的功能分区
+- 冷白偏蓝的整体照明与玻璃发灰
+- 过曝抹平浅色材料层次
+- 紫色灯带、舞台照明与高饱和发光装置
+- 强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具
+- 紫色扩散到家具、软包、窗帘或大面积建筑表面
+- 冷白偏蓝的单一色场与浅色材料层次消失

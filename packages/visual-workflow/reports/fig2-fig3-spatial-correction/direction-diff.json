@@ -1,0 +1,161 @@
+{
+  "changedFields": 16,
+  "differences": [
+    {
+      "field": "spatialConcept",
+      "before": "由展馆尺度的建筑体量、沿界面连续的半透明珠光层片系统与真实到达接待运营共同构成高端医美主接待空间；艺术性来自建筑、透景、光与功能之间的整体关系，安静、明亮、克制。",
+      "after": "具有当代美术馆气质的高端医美商业接待主厅：完整可运营的前台、成组候客和半开放后续服务区共同建立空间，少量连续建筑曲面与半透明分隔提供克制艺术性；暖白米白、浅木色与柔和暖日光形成有层次、有人情感的真实服务环境。"
+    },
+    {
+      "field": "structureLanguage",
+      "before": "接待主厅：完整竖向墙面、上部采光界面与具有抬升感的主厅体量共同建立净高和竖向呼吸；撤去艺术层片后，围合界面与前后开口仍能形成有比例的展馆式建筑空间。\n接待主厅：连续半透明层片从一侧竖向建筑界面延展至上部边界并向候客区边缘过渡；上部连续关系完整保留，侧向界面以局部建筑尺度主曲面、退让的过渡层片和通透间段形成主次，实体建筑面仍可读取。\n接待主厅：候客及过渡区域的层片逐渐疏开，间隙显露后方空间；近景边缘退让并轻薄收束，主厅中央与横向通行面保持开敞，上部保留净高及采光呼吸空间。\n接待主厅：接待服务区与成组候客区沿主厅横向舒展连接；建筑实体面局部退让、错位界面与开敞过厅共同形成后续服务入口的半开放递进，入口屏蔽室内视线，主厅不沿远端单一开口收束。\n周边墙地与实体顶面保持安静连续的建筑背景；顶面以体量高低与开口关系呈现秩序，保持简洁实体面，不依赖满顶构件和重复曲线灯槽。",
+      "after": "接待主厅：以清楚的实体墙、入口建筑框景、开敞通行面和可读顶面建立完整大厅；前台与候客沿横向展开，背景服务分区接入大厅而非沿狭长中轴走廊排列。\n接待主厅：采用一至两处干净连续的建筑曲面与半透明薄幕或隔断，局部与上部界面相接，局部围合服务分区；实体建筑面、开口和净高始终清楚可读。\n接待主厅：半透明界面以整洁的少量曲面形成分隔与透景，局部少量轻薄分层表达细腻珠光；前台、候客与主通行面保持开放视线，顶面以安静实体面和柔和间接采光维持呼吸。\n接待主厅：后续服务洽谈区属于大厅内的半开放功能分区，以透明、半透明或错位界面界定；可透见小桌与座位的服务关系，进入私密区域的路线由实体转折屏蔽。"
+    },
+    {
+      "field": "lightingLanguage",
+      "before": "经上部采光界面充分漫射的柔和自然日光\n克制的间接光",
+      "after": "温暖、柔和、均匀的漫射自然日光\n少量克制的暖调建筑间接光"
+    },
+    {
+      "field": "functionalProgram",
+      "before": "入口到达与通行区\n主厅接待服务区\n成组候客与艺术停留区\n背景半开放过渡区\n错位私密入口边界",
+      "after": "入口到达与清楚的分流区\n正式接待与员工工作区\n成组候客与短时交流区\n主厅内半开放后续服务洽谈区\n通向私密服务的受屏蔽过渡边界"
+    },
+    {
+      "field": "mustAvoid",
+      "before": "通用医美装修\n重复拱券、波浪灯槽及连续紫色发光描边\n装饰性羽毛堆叠\n厚重染色玻璃与不透明发光浮雕\n接待台紧邻狭长走廊、两侧连续密集房门与向狭窄尽端收束的空间组织\n整体贴顶下压的艺术装置、低矮商业吊顶比例与缺乏竖向留白\n角落孤立小沙发、无功能大空间堆砌或隐藏全部运营入口\n夸张无依据的科幻穹顶、不合理结构、超广角畸变与虚构已验证层高\n普通大厅中摆放一个巨大独立雕塑\n中央居中、完整落地成团的花束、贝壳或羽毛簇团装置\n前景厚重连续艺术墙占满主厅、遮挡横向通行及背景服务过渡\n左侧前台、右侧沙发与中央艺术品横向平均陈列且互不关联\n以面向室外景观的连续拱门代替商业服务转场、纯艺术展馆或普通医美装修",
+      "after": "巨型羽毛、花瓣、涡旋或密集重复薄片从近景墙面横扫天花\n包围全画面的旋转装置与双侧近景巨片夹击\n以中央独立雕塑或抢眼悬吊艺术灯替代建筑组织\n艺术馆中孤立摆放一张前台、空泛无功能展示大厅或角落零散小椅子\n前台服务面被遮挡、候客面积被装饰挤压、完全隐藏后续服务分区\n密集诊室门排、狭长中轴走廊与极端超广角畸变\n冷白偏蓝、全场过曝、紫色家具与紫色舞台灯带\n重复波浪灯槽、厚重不透明花瓣团块与无依据的施工尺寸"
+    },
+    {
+      "field": "lightingContrast",
+      "before": "建筑背景低对比，层片边缘保留细腻明暗",
+      "after": "暖白建筑、浅木质和中性软包具有可辨的温和明暗层次，半透明界面保留柔和透射与边缘细节"
+    },
+    {
+      "field": "lightingInteraction",
+      "before": "自然光穿透层片产生分层透射与细腻散射\n边缘反射温和，不以连续发光描边代替结构\n上部自然光在进入候客与服务界面前充分扩散，层间透射细腻，地面和家具仅保留柔和宽缓的阴影过渡，不以高亮曝光抹平薄边",
+      "after": "漫射自然光温暖地照亮前台、候客与半开放服务分区，家具和地面呈宽缓柔和阴影\n浅木质保留自然纹理与暖色反射，暖白墙面、软包和透光界面彼此可区分\n局部珠光随自然光产生很弱的内层虹彩，适度曝光保持表面体积、透景和薄边细节"
+    },
+    {
+      "field": "lightingAvoid",
+      "before": "全空间紫色灯带\n紫色霓虹\n强直射光与硬阴影\n以灯带、发光描边替代材料及建筑秩序",
+      "after": "冷白偏蓝的整体照明与玻璃发灰\n过曝抹平浅色材料层次\n紫色灯带、舞台照明与高饱和发光装置\n强直射光、硬阴影和抢夺空间焦点的独立雕塑灯具"
+    },
+    {
+      "field": "colorAvoid",
+      "before": "紫色共同主导墙、顶、窗帘与多类家具\n品牌紫扩散到沙发、靠垫、窗帘等主要软装表面",
+      "after": "紫色扩散到家具、软包、窗帘或大面积建筑表面\n冷白偏蓝的单一色场与浅色材料层次消失"
+    },
+    {
+      "field": "functionalNetwork",
+      "before": "Reception: arrival first reveals the complete visitor service face, then gives a clear approach to the counter before branching to waiting and a single onward service threshold; a usable staff work face and staff access remain behind the counter for check-in and appointment service.\nReception: reception service and a generous grouped waiting area spread laterally across the open main hall, joined by clear visitor circulation rather than a single longitudinal passage.\nReception: one sofa and armchair group faces small tables for waiting and brief conversation, with circulation around the group; the service relationship remains understandable even when no people are present.\nReception: one legible semi-open service threshold is reached from reception and waiting; a staggered solid return screens onward access, with staff circulation clear of the seated guest area.",
+      "after": "Reception: arrival reveals the complete visitor-facing reception counter and a clear approach, with a usable staff work surface and staff access behind it for check-in and appointment service.\nReception: the complete counter and grouped waiting area connect laterally across the open hall, with generous circulation rather than a narrow central corridor.\nReception: one complete sofa and armchair group faces small tables for sitting and conversation, with space to approach, sit and circulate around the group, understandable without people.\nReception: visitors move from the counter or waiting group to a legible semi-open onward service area within the hall, where a small table and paired seats make the next service conversation readable through a transparent or staggered boundary; staff access stays clear of seated guests."
+    },
+    {
+      "field": "functionalRelationships",
+      "before": "Reception and waiting remain visually linked across an open lateral main hall; gaps in the integrated translucent architectural interface reveal the semi-open transition.\nReception: the single semi-open service threshold screens subsequent consultation and care access behind an offset solid interface; consultation privacy remains protected while other room interiors stay off frame.",
+      "after": "Reception and waiting remain visually connected across the open lateral hall; a restrained translucent partition defines the semi-open onward service area without hiding its table and seating relationship.\nReception: an offset solid return beyond the semi-open service area protects private care access; treatment activity and private room interiors remain off frame."
+    },
+    {
+      "field": "visibleRequirements",
+      "before": "Reception counter integrated with a building interface, with its entire visitor service face visible from arrival, a clear approach, a separate usable staff work face and one discreet office device; a small unlettered desk card is optional and secondary\nWaiting area with one sofa and armchair group facing small tables beside the integrated translucent partition, partly free-standing with circulation around it; at most one small service accessory may be included\nOpen lateral reception and waiting circulation with a clear foreground arrival zone, readable building surfaces and one visible background semi-open service threshold\nReception single semi-open service threshold screened by a staggered solid return, readable from the counter with onward room interiors hidden; a small blank direction carrier may sit on the threshold interface\nReception integrated translucent sheet interface with large curved sections, spaced transition layers and fine thin edges revealing space behind it\nReception adjacent flat architectural wall with one small clean unlettered identity carrier, outside the art focus and unobstructed by sheets; service cues stay subordinate and may be reduced to protect the open hall",
+      "after": "A complete, reachable reception counter with an appropriately weighted visitor service face, a usable staff work surface and a small amount of real office equipment, integrated into the hall rather than hidden in a corner\nOne complete sofa and armchair waiting group with small tables, usable seating and conversation space, warm neutral upholstery and light timber details, with circulation clear around it\nOne legible semi-open onward service area within the reception hall, containing a small table and paired seats behind a transparent, translucent or staggered boundary; private care interiors stay screened\nA clear entrance arrival zone, lateral counter-to-waiting circulation and a readable onward route, with real building surfaces and open foreground sightlines\nOne or two restrained continuous architectural curve relationships and translucent curtain-like partitions, with local sparse fine layering and readable quiet ceiling surfaces\nOne small flat clean unlettered identity surface on an architectural interface, outside the main circulation and unobstructed; small operational carriers remain subordinate to the complete functional areas"
+    },
+    {
+      "field": "artisticFocus",
+      "before": "接待区：与竖向界面、上部边界及候客围合连续衔接的半透明珠光层片艺术装置，构成沿建筑边缘展开的一套空间系统；主艺术性是这种连续关系，不是一个可搬离的中央雕塑。\n接待区：同一艺术系统保留局部建筑尺度的大型主曲面，以中尺度过渡层片连接局部精密薄片；层片方向随界面衔接发生有序变化，主曲面与疏开的透景间段相间，候客边缘局部围合并向开放主厅释放，艺术、建筑与接待候客共同形成可读层级。",
+      "after": "接待区：艺术性由少量连续建筑曲面、轻薄半透明分隔、温暖材质和空间使用关系共同产生；曲面界定功能区而让出前台、就坐和通行，建筑界面本身是焦点。\n接待区：以一至两处简洁主结构关系保持界面连续，珠光仅在局部少量轻薄分层中表达，安静顶面与实体建筑框景共同形成层次。"
+    },
+    {
+      "field": "compositionRequirements",
+      "before": "单个开放主接待厅的入口斜向建筑摄影视角：前景到达区、主厅中央和接待—候客之间形成完整横向开敞空间；入口视线先清晰读取完整接待服务面，再连接候客与一处背景半开放服务门槛。\n珠光层片沿侧向建筑界面与上部连续衔接，局部围合候客边缘；近景左右留出开放视域，接待台服务面不被大型层片遮挡，侧面与顶面艺术不构成夹击主厅的狭窄画框。\n建筑体量、采光与连续艺术是主视觉，服务线索从属且不争夺焦点；一组候客桌椅与单一错位服务门槛构成横向联系，背景由退让的实体界面屏蔽后续空间，不陈列并列门洞或展示其他房间内部。\n保持可信人体尺度、正常建筑摄影透视和可读的竖向建筑比例；横向宽度从功能展开及开敞关系本身体现，中心与侧向均保留通行，不以超广角畸变放大空间。",
+      "after": "从入口斜向观察一个完整商业接待大厅：前台完整服务面、成组候客、主厅内半开放后续服务区与横向宽度均清楚可读，具有前中后景但不沿长走廊收束。\n采用清晰、有厚度的实体建筑框景与平衡的透明或半透明曲面，左右前景留出开放视域，曲面界定分区而不遮住前台与候客。\n冲突排序为完整前台、候客组团、服务空间和通行关系优先，其次开放建筑体量，再次克制艺术构件，最后小型商业道具；冲突时减去装饰，保留功能面积与可用性。\n前台不必居中但视觉比重适当；候客与服务分区保持自然横向联系，安静顶面、实体界面及柔和光线共同建立建筑尺度，保持正常建筑摄影透视与可信人体尺度。"
+    },
+    {
+      "field": "colorEntries",
+      "before": [
+        {
+          "name": "暖白与乳白",
+          "paletteRole": "primary",
+          "role": "安静明亮的建筑背景",
+          "surfaceApplicability": "墙面、地面及周边顶面；不包含主艺术结构内层",
+          "spatialUsage": "dominant_field"
+        },
+        {
+          "name": "浅暖灰",
+          "paletteRole": "secondary",
+          "role": "辅助接待表面的低对比层次",
+          "surfaceApplicability": "接待台次要台面与限定辅助表面",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "品牌紫",
+          "paletteRole": "accent",
+          "role": "局部材料内层的细微虹彩；视觉识别以后期真实标识体现",
+          "surfaceApplicability": "只允许在半透明层片内层和少量建筑细部出现；候客沙发、靠垫、窗帘及其他主要软装表面保持中性，不使用品牌紫",
+          "spatialUsage": "local_accent"
+        }
+      ],
+      "after": [
+        {
+          "name": "暖白与米白",
+          "paletteRole": "primary",
+          "role": "温暖柔和的建筑基底",
+          "surfaceApplicability": "实体墙、地面与安静顶面；保留材料明暗差异，不以纯白过曝抹平表面",
+          "spatialUsage": "dominant_field"
+        },
+        {
+          "name": "浅木色与暖中性色",
+          "paletteRole": "secondary",
+          "role": "建立真实商业家具与局部墙面的温暖层次",
+          "surfaceApplicability": "前台局部饰面、候客家具木质细节与中性软包、局部服务区墙面；不覆盖全部建筑界面",
+          "spatialUsage": "secondary_surface"
+        },
+        {
+          "name": "品牌紫",
+          "paletteRole": "accent",
+          "role": "非常有限的珠光内反射，正式品牌内容以后期真实素材体现",
+          "surfaceApplicability": "仅少量半透明界面的局部内层弱虹彩；不用于家具、花瓶、窗帘或发光灯带",
+          "spatialUsage": "local_accent"
+        }
+      ]
+    },
+    {
+      "field": "materialEntries",
+      "before": [
+        {
+          "material": "半透明珠光薄片",
+          "behavior": "自然光分层透射，可读取后方空间\n边缘细腻反射与温和高光\n轻薄层叠保留清楚深度\n珠母贝般温和虹彩，紫只在局部内层微弱出现\n大型主曲面保留张力，中尺度层片衔接；局部精密薄片边缘纤细收束，交叠轮廓逐层可分，前后间距与透景深度清楚可读\n各尺度构件以同一半透明珠光材质连续过渡，疏开处可辨后方界面与空间深度，近景保持轻薄与低遮挡\n局部内层弱紫虹彩随自然光变化，不成为整体染色或独立光源",
+          "brandRole": "与建筑界面连续相接并围合候客边缘的半透明空间系统；同时承担分隔、透景、方向引导和艺术体验",
+          "forbidden": "厚重染色玻璃\n不透明自发光浮雕\n圆厚花瓣、贝壳化或密实不透的团块\n对称图腾、婚庆摆件与独立中央雕塑\n平面墙饰化或简单发光灯槽化"
+        },
+        {
+          "material": "暖白矿物基底",
+          "behavior": "柔和漫反射\n连续、低对比的安静表面",
+          "brandRole": "衬托薄片与自然光的建筑背景",
+          "forbidden": "高对比镜面拼贴"
+        }
+      ],
+      "after": [
+        {
+          "material": "半透明珠光薄幕与曲面隔断",
+          "behavior": "整洁连续的轻薄曲面保留透景，柔和反射与透射并存\n局部少量轻薄分层和很弱的内层珠光，边缘清楚可读，分隔后方的服务家具仍可辨",
+          "brandRole": "界定主厅内的候客及半开放服务边界，让出前台、通行面与大部分顶面",
+          "forbidden": "密集羽片、花瓣团块与不透明艺术墙\n整体紫色染色、自发光浮雕和独立巨大雕塑"
+        },
+        {
+          "material": "暖白米白矿物基底",
+          "behavior": "温暖柔和的漫反射，保留真实表面质感和体积\n与木质、软包及半透明界面形成清楚但低对比的层次",
+          "brandRole": "建立完整实体建筑、安静顶面与可读入口框景",
+          "forbidden": "冷白发蓝的无差别表面\n高对比镜面拼贴和过曝洗白"
+        },
+        {
+          "material": "浅木质与暖中性软包",
+          "behavior": "浅木质保留自然纹理与温暖反射，软包呈柔和细腻触感\n材料变化服务于前台、候客和半开放服务区的使用层次",
+          "brandRole": "为接待工作、就坐交流与局部服务界面提供自然温暖的商业功能材质",
+          "forbidden": "紫色软包与大面积高饱和饰面\n以装饰家具堆积代替清楚的功能分区"
+        }
+      ]
+    }
+  ]
+}
